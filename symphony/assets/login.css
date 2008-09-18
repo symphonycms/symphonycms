@@ -1,0 +1,42 @@
+@import url("forms.css");
+
+/* Login */
+form {
+	position: absolute;
+	top: 96px;
+	left: 50%;
+	margin-left: -12.5em;
+	border: 1px solid #eee;
+	padding: 0;
+	min-height: 0;
+	width: 25em;
+}
+h1 {
+	margin: 0;
+	border: 1px solid #665;
+	border-top-color: #887;
+	border-bottom: none;
+	padding: 14px 26px 14px 51px;
+	background-position: 7px 50%;
+}
+fieldset,
+div.actions {
+	padding: 1em 2em;
+	border: 1px solid #bba;
+	border-top-color: #ddc;
+	background-color: #ccb;
+}
+div.actions {
+	margin-top: -1.25em;
+	border-top: none;
+	border-bottom: 1px solid #998;
+	padding-top: 0;
+	overflow: hidden;
+}
+button {
+	display: block;
+	margin: 0 0 0 auto;
+}
+legend {
+	display: none;
+}

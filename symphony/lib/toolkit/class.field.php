@@ -1,0 +1,464 @@
+<?php
+
+	if(!defined('__IN_SYMPHONY__')) die('<h2>Symphony Error</h2><p>You cannot directly access this file</p>');
+	
+	Class Field extends Object{
+		
+		protected $_fields;
+		protected $_Parent;
+		protected $_engine;
+		protected $_required;
+		protected $_showcolumn;
+		protected $Database;
+
+		const __OK__ = 100;
+		const __ERROR__ = 150;
+		const __MISSING_FIELDS__ = 200;
+		const __INVALID_FIELDS__ = 220;
+		const __DUPLICATE__ = 300;
+		const __ERROR_CUSTOM__ = 400;
+		const __INVALID_QNAME__ = 500;
+
+		const __TOGGLEABLE_ONLY__ = 600;
+		const __UNTOGGLEABLE_ONLY__ = 700;
+		const __FILTERABLE_ONLY__ = 800;
+		const __UNFILTERABLE_ONLY__ = 900;	
+		const __FIELD_ALL__ = 1000;
+				
+		function __construct(&$parent){
+			$this->_Parent = $parent;
+			
+			$this->_fields = array();
+			$this->_required = false;
+			$this->_showcolumn = true;
+			
+			$this->_handle = (strtolower(get_class($this)) == 'field' ? 'field' : strtolower(substr(get_class($this), 5)));
+
+			## Since we are not sure where the Admin object is, inspect
+			## all the parent objects
+			$this->catalogueParentObjects();
+
+			if(isset($this->_ParentCatalogue['administration']) && is_object($this->_ParentCatalogue['administration'])) $this->_engine = $this->_ParentCatalogue['administration'];
+			elseif(isset($this->_ParentCatalogue['frontend']) && is_object($this->_ParentCatalogue['frontend'])) $this->_engine = $this->_ParentCatalogue['frontend'];
+			else trigger_error('No suitable engine object found', E_USER_ERROR);
+			
+			$this->creationDate = DateTimeObj::getGMT('c'); //$this->_engine->getDateObj();
+			
+			$this->Database = $this->_engine->Database;
+
+		}
+		
+		public function canShowTableColumn(){
+			return $this->_showcolumn;
+		}
+		
+		public function canToggle(){
+			return false;
+		}
+		
+		public function canFilter(){
+			return false;
+		}
+		
+		public function allowDatasourceOutputGrouping(){
+			return false;
+		}
+			
+		public function allowDatasourceParamOutput(){
+			return false;
+		}	
+			
+		public function mustBeUnique(){
+			return false;
+		}
+			
+		// Abstract function
+		public function getToggleStates(){
+		}
+		
+		public function toggleFieldData($data, $newState){
+			return $data;
+		}
+		
+		public function handle(){
+			return $this->_handle;
+		}
+		
+		public function name(){
+			return ($this->_name ? $this->_name : $this->_handle);
+		}		
+		
+		public function set($field, $value){
+			$this->_fields[$field] = $value;
+		}
+		
+		public function entryDataCleanup($entry_id, $data=NULL){
+			$this->Database->delete('tbl_entries_data_' . $this->get('id'), " `entry_id` = '$entry_id' ");
+			
+			return true;
+		}
+		
+		public function setFromPOST($postdata){
+			$postdata['location'] = (isset($postdata['location']) ? $postdata['location'] : 'main');
+			$postdata['required'] = (isset($postdata['required']) ? 'yes' : 'no');
+			$postdata['show_column'] = (isset($postdata['show_column']) ? 'yes' : 'no');
+			$this->setArray($postdata);
+		}
+
+		public function setArray($array){
+			if(empty($array) || !is_array($array)) return;
+			foreach($array as $field => $value) $this->set($field, $value);
+		}
+
+		public function get($field=NULL){
+			if(!$field) return $this->_fields;
+			
+			return $this->_fields[$field];
+		}
+		
+		public function remove($field){
+			unset($this->_fields[$field]);
+		}
+		
+		public function removeSectionAssociation($child_field_id){
+			$this->Database->query("DELETE FROM `tbl_sections_association` WHERE `child_section_field_id` = '$child_field_id'");
+		}
+		
+		public function createSectionAssociation($parent_section_id, $child_field_id, $parent_field_id=NULL, $cascading_deletion=false){
+
+			if($parent_section_id == NULL && !$parent_field_id) return false;
+			
+			if($parent_section_id == NULL) $parent_section_id = $this->Database->fetchVar('parent_section', 0, "SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$parent_field_id' LIMIT 1");
+			
+			$child_section_id = $this->Database->fetchVar('parent_section', 0, "SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$child_field_id' LIMIT 1");
+			
+			$fields = array('parent_section_id' => $parent_section_id, 
+							'parent_section_field_id' => $parent_field_id, 
+							'child_section_id' => $child_section_id, 
+							'child_section_field_id' => $child_field_id,
+							'cascading_deletion' => ($cascading_deletion ? 'yes' : 'no'));
+
+			if(!$this->Database->insert($fields, 'tbl_sections_association')) return false;
+				
+			return true;		
+		}
+		
+		public function flush(){
+			$this->_fields = array();
+		}
+		
+		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+		}
+		
+		public function canPrePopulate(){
+			return false;
+		}
+		
+		public function appendFormattedElement(&$wrapper, $data, $encode=false){
+			$wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($this->prepareTableValue($data)) : $this->prepareTableValue($data))));
+		}
+		
+		public function getParameterPoolValue($data){
+			return $this->prepareTableValue($data);
+		}
+		
+		public function checkFields(&$errors, $checkForDuplicates=true){
+			
+			if(!is_array($errors)) $errors = array();
+			
+			if($this->get('label') == '') $errors['label'] = 'This is a required field.';
+
+			if($this->get('element_name') == '') $errors['element_name'] = 'This is a required field.';
+			elseif(!preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $this->get('element_name'))){
+				$errors['element_name'] = 'Invalid element name. Must be valid QName.';
+			}
+			
+			elseif($checkForDuplicates){
+				$sql = "SELECT * FROM `tbl_fields` 
+						WHERE `element_name` = '" . $this->get('element_name') . "'
+						".($this->get('id') ? " AND `id` != '".$this->get('id')."' " : '')." 
+						AND `parent_section` = '". $this->get('parent_section') ."' LIMIT 1";
+
+				if($this->Database->fetchRow(0, $sql)){
+					$errors['element_name'] = 'A field with that element name already exists. Please choose another.';
+				}
+			}
+
+			return (is_array($errors) && !empty($errors) ? self::__ERROR__ : self::__OK__);
+			
+		}
+		
+		public function findDefaults(&$fields){
+		}
+		
+		public function isSortable(){
+			return false;
+		}
+		
+		public function requiresSQLGrouping(){
+			return false;
+		}
+		
+		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
+			$joins .= "INNER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
+			$sort = 'ORDER BY ' . (strtolower($order) == 'random' ? 'RAND()' : "`ed`.`value` $order");
+		}
+		
+		protected static function isFilterRegex($string){
+			if(preg_match('/^regexp:/i', $string)) return true;				
+		}
+		
+		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation=false){
+			
+			$field_id = $this->get('id');
+			
+			if(self::isFilterRegex($data[0])):
+				
+				$pattern = str_replace('regexp:', '', $data[0]);
+				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id` ON (`e`.`id` = `t$field_id`.entry_id) ";
+				$where .= " AND `t$field_id`.value REGEXP '$pattern' ";
+						
+			
+			elseif($andOperation):
+			
+				foreach($data as $key => $bit){
+					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id$key` ON (`e`.`id` = `t$field_id$key`.entry_id) ";
+					$where .= " AND `t$field_id$key`.value = '$bit' ";
+				}
+							
+			else:
+			
+				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id` ON (`e`.`id` = `t$field_id`.entry_id) ";
+				$where .= " AND `t$field_id`.value IN ('".@implode("', '", $data)."') ";
+						
+			endif;
+			
+			return true;
+		}
+
+		public function checkPostFieldData($data, &$message, $entry_id=NULL){
+			$message = NULL;
+			
+			if($this->get('required') == 'yes' && strlen($data) == 0){
+				$message = "'". $this->get('label')."' is a required field.";
+				return self::__MISSING_FIELDS__;
+			}
+			
+			return self::__OK__;		
+		}
+		
+		/*
+		
+			$data - post data from the entry form
+			$status - refence variable. Will hold the status code
+			$simulate (optional) - this will tell CF's to simulate data creation. This is important if they
+								   will be deleting or adding data outside of the main entry object commit function
+			$entry_id (optionsl) - Useful for identifying the current entry
+		
+		*/
+		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+			
+			$status = self::__OK__;
+			
+			return array(
+				'value' => $data,
+			);
+		}
+		
+		public function prepareTableValue($data, XMLElement $link=NULL){
+			
+			$max_length = $this->_engine->Configuration->get('cell_truncation_length', 'symphony');
+			$max_length = ($max_length ? $max_length : 75);
+			
+			$value = strip_tags($data['value']);
+			
+			$value = (strlen($value) <= $max_length ? $value : substr($value, 0, $max_length) . '...');
+				
+			if($link){
+				$link->setValue($value);
+				return $link->generate();
+			}
+			
+			else return $value;
+			
+		}
+		
+		public function getExampleFormMarkup(){
+			$label = Widget::Label($this->get('label'));
+			$label->appendChild(Widget::Input('fields['.$this->get('element_name').']'));
+			
+			return $label;
+		}
+		
+		public function fetchIncludableElements(){
+			return array($this->get('element_name'));
+		}
+		
+		public function fetchAssociatedEntrySearchValue($data){
+			return $data;
+		}
+				
+		public function fetchAssociatedEntryCount($value){
+		}
+		
+		function fetchAssociatedEntryIDs($value){
+		}
+				
+		public function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+			$wrapper->appendChild(new XMLElement('h4', $this->get('label') . ' <i>'.$this->Name().'</i>'));
+			$label = Widget::Label('Value');
+			$label->appendChild(Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : NULL)));		
+			$wrapper->appendChild($label);	
+		}
+		
+		public function displaySettingsPanel(&$wrapper, $errors=NULL){		
+			$wrapper->appendChild(new XMLElement('h4', ucwords($this->name())));
+			$wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][type]', $this->handle(), 'hidden'));
+			if($this->get('id')) $wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][id]', $this->get('id'), 'hidden'));
+			
+			$wrapper->appendChild($this->buildSummaryBlock($errors));			
+
+		}
+		
+		public function buildSummaryBlock($errors=NULL){
+
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'group');
+			
+			$label = Widget::Label('Label');
+			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][label]', $this->get('label')));
+			if(isset($errors['label'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['label']));
+			else $div->appendChild($label);		
+			
+			$div->appendChild($this->buildLocationSelect($this->get('location'), 'fields['.$this->get('sortorder').'][location]'));
+
+			return $div;
+			
+		}
+		
+		public function appendRequiredCheckbox(&$wrapper){
+
+			if(!$this->_required) return;
+
+			$label = Widget::Label();				
+			$input = Widget::Input('fields['.$this->get('sortorder').'][required]', 'yes', 'checkbox');
+			if($this->get('required') == 'yes') $input->setAttribute('checked', 'checked');
+			$label->setValue($input->generate() . ' Make this a required field');
+			
+			$wrapper->appendChild($label);
+			
+		}
+		
+		public function appendShowColumnCheckbox(&$wrapper){
+		
+			if(!$this->_showcolumn) return;
+			
+			$label = Widget::Label();
+			$label->setAttribute('class', 'meta');
+			$input = Widget::Input('fields['.$this->get('sortorder').'][show_column]', 'yes', 'checkbox');
+			if($this->get('show_column') == 'yes') $input->setAttribute('checked', 'checked');
+			$label->setValue($input->generate() . ' Show column');
+
+			$wrapper->appendChild($label);			
+			
+		}
+
+		public function buildLocationSelect($selected=NULL, $name='fields[location]', $label_value='Placement'){
+			$label = Widget::Label($label_value);
+			$options = array(
+				array('main', $selected == 'main', 'Main content'),
+				array('sidebar', $selected == 'sidebar', 'Sidebar')				
+			);
+			$label->appendChild(Widget::Select($name, $options));
+			
+			return $label;
+		}
+
+		public function buildFormatterSelect($selected=NULL, $name='fields[format]', $label_value='Formatting'){
+			
+			include_once(TOOLKIT . '/class.textformattermanager.php');
+			
+			$TFM = new TextformatterManager($this->_engine);
+			$formatters = $TFM->listAll();
+					
+			$label = Widget::Label($label_value);
+		
+			$options = array();
+		
+			$options[] = array('none', false, 'None');
+		
+			if(!empty($formatters) && is_array($formatters)){
+				foreach($formatters as $handle => $about) {
+					$options[] = array($handle, ($selected == $handle), $about['name']);
+				}	
+			}
+		
+			$label->appendChild(Widget::Select($name, $options));
+			
+			return $label;			
+		}
+
+		public function buildValidationSelect(&$wrapper, $selected=NULL, $name='fields[validator]', $type='input'){
+
+			include(TOOLKIT . '/util.validators.php');
+			$rules = ($type == 'upload' ? $upload : $validators);
+
+			$label = Widget::Label('Validation Rule <i>Optional</i> ');
+			$label->appendChild(Widget::Input($name, $selected));
+			$wrapper->appendChild($label);
+			
+			$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
+			foreach($rules as $name => $rule) $ul->appendChild(new XMLElement('li', $name, array('class' => $rule)));
+			$wrapper->appendChild($ul);
+			
+		}
+		
+		public function groupRecords($records){			
+			trigger_error('Data source output grouping is not supported by the <code>' . $this->get('label') . '</code> field', E_USER_ERROR);		
+		}
+		
+		public function commit(){
+			
+			$fields = array();
+
+			$fields['element_name'] = Lang::createHandle($this->get('label'));
+			$fields['label'] = $this->get('label');
+			$fields['parent_section'] = $this->get('parent_section');
+			$fields['location'] = $this->get('location');
+			$fields['required'] = $this->get('required');	
+			$fields['type'] = $this->_handle;
+			$fields['show_column'] = $this->get('show_column');
+			$fields['sortorder'] = (string)$this->get('sortorder');
+			
+			if($id = $this->get('id')){
+				return $this->_Parent->edit($id, $fields);				
+			}
+			
+			elseif($id = $this->_Parent->add($fields)){
+				$this->set('id', $id);
+				$this->createTable();
+				return true;
+			}
+			
+			return false;
+			
+		}
+		
+		public function createTable(){
+			
+			return $this->Database->query(
+			
+				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
+				  `id` int(11) unsigned NOT NULL auto_increment,
+				  `entry_id` int(11) unsigned NOT NULL,
+				  `value` varchar(255) default NULL,
+				  PRIMARY KEY  (`id`),
+				  KEY `entry_id` (`entry_id`),
+				  KEY `value` (`value`)
+				) TYPE=MyISAM;"
+			
+			);
+		}
+
+	}
+

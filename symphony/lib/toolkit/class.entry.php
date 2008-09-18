@@ -1,0 +1,159 @@
+<?php
+
+	if(!defined('__IN_SYMPHONY__')) die('<h2>Symphony Error</h2><p>You cannot directly access this file</p>');
+	
+	define_safe('__ENTRY_OK__', 0);
+	define_safe('__ENTRY_FIELD_ERROR__', 100);
+	
+	Class Entry extends Object{
+		
+		var $_fields;
+		var $_Parent;
+		var $_data;
+		var $creationDate;
+		var $_engine;
+		
+		function __construct(&$parent){
+			$this->_Parent =& $parent;
+			$this->_fields = array();
+			$this->_data = array();
+			
+			## Since we are not sure where the Admin object is, inspect
+			## all the parent objects
+			$this->catalogueParentObjects();
+			
+			if(isset($this->_ParentCatalogue['administration']) && is_object($this->_ParentCatalogue['administration'])) $this->_engine = $this->_ParentCatalogue['administration'];
+			elseif(isset($this->_ParentCatalogue['frontend']) && is_object($this->_ParentCatalogue['frontend'])) $this->_engine = $this->_ParentCatalogue['frontend'];
+			else trigger_error('No suitable engine object found', E_USER_ERROR);
+			
+			$this->creationDate = DateTimeObj::getGMT('c'); //$this->_engine->getDateObj();
+		}
+		
+		function set($field, $value){
+			$this->_fields[$field] = $value;
+		}
+
+		function get($field=NULL){			
+			if($field == NULL) return $this->_fields;		
+			return $this->_fields[$field];
+		}
+		
+		function fetchAllAssociatedEntryCounts(){
+			
+			$section = $this->_Parent->sectionManager->fetch($this->get('section_id'));	
+			$associated_sections = $section->fetchAssociatedSections();
+
+			if(!is_array($associated_sections) || empty($associated_sections)) return NULL;
+			
+			$counts = array();
+			
+			foreach($associated_sections as $as){
+				
+				$field = $this->_Parent->fieldManager->fetch($as['child_section_field_id']);
+				$search_value = ($as['parent_section_field_id'] ? $field->fetchAssociatedEntrySearchValue($this->getData($as['parent_section_field_id'])) : $this->get('id'));
+				$counts[$as['child_section_id']] = $field->fetchAssociatedEntryCount($search_value);		
+					
+			}
+
+			return $counts;
+
+		}
+		
+		function checkPostData($data, &$errors, $ignore_missing_fields=false){
+			$errors = NULL;
+			$status = __ENTRY_OK__;
+			
+			if(!isset($this->_ParentCatalogue['sectionmanager'])) $SectionManager = new SectionManager($this->_engine);
+			else $SectionManager = $this->_ParentCatalogue['sectionmanager'];
+
+			$section = $SectionManager->fetch($this->get('section_id'));
+			$schema = $section->fetchFieldsSchema();
+
+			foreach($schema as $info){
+				$result = NULL;
+
+				$field = $this->_ParentCatalogue['entrymanager']->fieldManager->fetch($info['id']);
+
+				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
+
+				if(Field::__OK__ != $field->checkPostFieldData((isset($data[$info['element_name']]) ? $data[$info['element_name']] : NULL), $message, $this->get('id'))){
+					$strict = false;
+					$status = __ENTRY_FIELD_ERROR__;
+
+					$errors[$info['id']] = $message;
+				}
+
+			}
+			
+			return $status;			
+		}
+		
+		function setDataFromPost($data, &$error, $simulate=false, $ignore_missing_fields=false){
+			
+			$error = NULL;
+			
+			$status = __ENTRY_OK__;
+			
+			if(!isset($this->_ParentCatalogue['sectionmanager'])) $SectionManager = new SectionManager($this->_engine);
+			else $SectionManager = $this->_ParentCatalogue['sectionmanager'];
+
+			$section = $SectionManager->fetch($this->get('section_id'));		
+			$schema = $section->fetchFieldsSchema();
+
+			foreach($schema as $info){
+				$result = NULL;
+
+				$field = $this->_ParentCatalogue['entrymanager']->fieldManager->fetch($info['id']);
+				
+				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
+				
+				$result = $field->processRawFieldData((isset($data[$info['element_name']]) ? $data[$info['element_name']] : NULL), $s, $simulate, $this->get('id'));
+				
+				if($s != Field::__OK__){
+					$status = __ENTRY_FIELD_ERROR__;
+					$error = array('field_id' => $info['id'], 'message' => $m);
+				}
+
+				$this->setData($info['id'], $result);
+			}
+			
+			return $status;
+		}
+		
+		function setData($field_id, $data){
+			$this->_data[$field_id] = $data;
+		}
+		
+		function getData($field_id=NULL){
+			if(!$field_id) return $this->_data;
+			return $this->_data[$field_id];
+		}
+		
+		function findDefaultData(){
+			
+			if(!isset($this->_ParentCatalogue['sectionmanager'])) $SectionManager = new SectionManager($this->_engine);
+			else $SectionManager = $this->_ParentCatalogue['sectionmanager'];
+			
+			$section = $SectionManager->fetch($this->get('section_id'));		
+			$schema = $section->fetchFields();
+			
+			foreach($schema as $field){
+				if(isset($this->_data[$field->get('field_id')])) continue;
+				
+				$field->processRawFieldData(NULL, $result, $message, false);
+				$this->setData($field->get('field_id'), $result);
+			}
+			
+			if(!$this->get('creation_date')) $this->set('creation_date', DateTimeObj::get('c'));
+			
+			if(!$this->get('creation_date_gmt')) $this->set('creation_date_gmt', DateTimeObj::getGMT('c'));
+						
+		}
+		
+		function commit(){
+			$this->findDefaultData();
+			return ($this->get('id') ? $this->_ParentCatalogue['entrymanager']->edit($this) : $this->_ParentCatalogue['entrymanager']->add($this));	
+		}
+		
+	}
+	

@@ -1,0 +1,43 @@
+/* Syntax Highlighting */
+pre[class] {
+	margin-bottom: 1.5em;
+	border: 1px solid #393937;
+	overflow: hidden;
+	background-color: #191917;
+	white-space: normal;
+	font: inherit;
+}
+pre[class] code {
+	display: block;
+	margin-top: -1px;
+	border-top: 1px solid #1d1d1b;
+	padding: 2px 6px;
+	background-color: #191917;
+	color: #cf7;
+	min-height: 15px;
+	white-space: pre;
+	white-space: -moz-pre-wrap;
+	white-space: pre-wrap;
+	line-height: 15px;
+	cursor: text;
+}
+pre[class] .odd {
+	background-color: #151513;
+}
+
+/* XML */
+pre.XML .attribute {
+	color: #fb6;
+}
+pre.XML .value {
+	color: #9af;
+}
+pre.XML .content {
+	color: #fff;
+}
+pre.XML .meta,
+pre.XML .meta *,
+pre.XML .comment,
+pre.XML .comment * {
+	color: #727270;
+}

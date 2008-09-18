@@ -1,0 +1,127 @@
+@import url("basic.css");
+@import url("admin.css");
+
+/* Tables */
+table {
+	margin-top: 1em;
+	border-collapse: collapse;
+	width: 100%;
+}
+th {
+	padding-right: 32px;
+	color: #665;
+	text-align: left;
+	font-weight: normal;
+	line-height: 2;
+}
+td {
+	border: 1px solid #e6e6e4;
+	border-width: 1px 0;
+	padding: 0.67em 32px 0.67em 0;
+}
+th:first-child,
+td:first-child {
+	padding-left: 32px;
+}
+td[colspan] {
+	background-color: #f5f5f3;
+}
+tbody a {
+	padding: 0.67em 0;
+}
+table input {
+	float: right;
+	margin-right: 32px;
+}
+table.selectable input {
+	display: none;
+}
+
+/* Sorting */
+th a,
+th a:hover,
+th a:hover:after {
+	color: #665;
+	text-decoration: none;
+}
+th a:after {
+	color: #ccb;
+}
+th a:active,
+th a.active,
+th a.active:after {
+	color: #554;
+}
+th a:after,
+th a.active:hover:after,
+th a.active[href$=asc]:after {
+	margin-left: 3px;
+	content: "\2193"
+}
+th a.active:after,
+th a[href$=asc]:after,
+th a.active[href$=asc]:hover:after {
+	content: "\2191";
+}
+
+/* Controls */
+div.actions {
+	padding: 18px 32px 0 50%;
+	text-align: right;
+	height: 93px;
+}
+div.actions input:first-child {
+	padding: 1px;
+	width: 12em;
+	color: #aa9;
+	font-family: inherit;
+	vertical-align: top;
+	cursor: text;
+}
+div.actions input.active,
+div.actions input:first-child:focus {
+	color: #000;
+}
+div.actions select {
+	margin: 0 8px 0 11px;
+}
+div.actions + ul.page {
+	margin-top: -113px;
+}
+ul.page {
+	margin: 0;
+	padding: 20px 50px 0 32px;
+	height: 93px;
+	color: #887;
+}
+ul.page li {
+	display: inline;
+	margin-right: 0.75em;
+}
+ul.page li[title] {
+	color: #222;
+}
+ul.page a {
+	margin: 0 -0.67em;
+	padding: 0.67em;
+	text-decoration: none;
+}
+
+/* Modified Layout */
+h1,
+#nav,
+#notice {
+	margin-right: 0;
+	margin-left: 0;
+}
+form,
+#nav {
+	padding-right: 0;
+	padding-left: 0;
+}
+#nav > li {
+	margin: 0 -32px 0 32px;
+}
+h2 {
+	margin: 0 32px;
+}

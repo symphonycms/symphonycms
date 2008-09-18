@@ -1,0 +1,56 @@
+/* Basic Styles */
+body {
+	background: #fff;
+	color: #222;
+	font: 68.75%/1.5 "Lucida Grande", Verdana, sans-serif;
+	cursor: default;
+}
+a {
+	color: #5072bf;
+	text-decoration: underline;
+	cursor: pointer;
+}
+a:hover {
+	color: #000;
+}
+a:active {
+	color: #d42;
+}
+p {
+	margin-bottom: 1.5em;
+}
+h1,
+h2 {
+	position: relative;
+	margin-bottom: 1em;
+	text-shadow: -1px 2px 3px #ddd;
+	font-weight: normal;
+	font-size: 127.28%;
+}
+h3,
+h4 {
+	position: relative;
+	margin-bottom: 0.75em;
+	text-shadow: -1px 2px 2px #ddd;
+	font-weight: bold;
+}
+ul,
+ol {
+	margin: 0 0 1.5em 2.25em;
+}
+code {
+	font: 11px Monaco, Courier, monospace;
+}
+i,
+var {
+	position: absolute;
+	right: 0;
+	color: #aa9;
+	text-shadow: none;
+	font-style: normal;
+}
+* {
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+}

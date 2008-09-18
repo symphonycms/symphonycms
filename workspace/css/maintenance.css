@@ -1,0 +1,41 @@
+/* @override http://symphony.local:8888/workspace/css/maintenance.css */
+
+/******* Structure *******/
+
+* {
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	background: #424242 url("../images/background.gif") 0 0 repeat;
+	font: 0.8em/1.8em Helvetica, Verdana, sans-serif;
+	margin: 4em 0;
+}
+
+#package {
+	background: url("../images/spectrum.gif") 0 0 repeat-y;
+	padding-left: 150px;
+}
+
+h1 {
+	color: #e9f98c;
+	font:  normal 1.1em Helvetica;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	text-shadow: #222 3px 3px 2px;
+}
+
+p {
+	color: #baeec8;
+	line-height: 1em;
+	text-shadow: #000 0 0 0;
+	margin-top: 0.5em;
+}
+
+a {
+	color: #b8d5fe;
+	text-decoration: none;
+	border-bottom: 1px dotted #eee;
+	border-color: #545454;
+}

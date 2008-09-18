@@ -1,0 +1,135 @@
+@import url("basic.css");
+@import url("code.css");
+
+/* Debug */
+body {
+	padding-right: 21.25em;
+	background-color: #2b2b29;
+	color: #fff;
+	font-size: 75%;
+}
+a {
+	color: #bba;
+	text-decoration: none;
+}
+a:hover {
+	color: #eed;
+}
+a.active,
+h1 a:link {
+	color: #fff;
+}
+ul {
+	margin: 0 0 0 1.5em;
+	list-style: none;
+}
+
+/* Navigation */
+h1,
+#nav,
+#jump {
+	display: block;
+	position: fixed;
+	top: 3.5em;
+	right: 0;
+	margin-left: 0;
+	width: 19.25em;
+	list-style: none;
+	text-shadow: -2px 2px 3px #111;
+}
+h1 {
+	top: 1em;
+	width: 15.125em;
+}
+#nav li {
+	float: left;
+	margin-right: 0.75em;
+}
+#jump {
+	top: 6.5em;
+	padding-left: 2em;
+	overflow: hidden;
+	font-weight: bold;
+}
+#jump > li > ul {
+	font-size: 90.91%;
+}
+#jump a {
+	display: block;
+	margin-left: -20em;
+	padding: 0.5em 2em 0.5em 20em;
+}
+#jump a:hover {
+	background-color: #30302e;
+}
+#jump a.active {
+	background-color: #393937;
+	cursor: default;
+}
+
+/* Code */
+pre[class] {
+	border: none;
+	padding: 2em 0 2em 3.5em;
+	background: none;
+}
+pre[class] code {
+	border: 1px solid #393937;
+	border-top-color: #1d1d1b;
+	background-color: #191917;
+	counter-increment: line-numbers;
+}
+dl {
+	margin: -1px 0 2em 3.5em;
+	border-bottom: 1px solid #393937;
+	padding: 2em 1px 0 20em;
+	font: 11px/15px Monaco, Courier, monospace;
+}
+dt,
+dd {
+	border-right: 1px solid #393937;
+	border-left: 1px solid #393937;
+	padding: 0.2em 0.6em;
+	background-color: #191917;
+}
+dt {
+	margin: 0 0 0 -20em;
+	border-top: 1px solid #1d1d1b;
+	padding: 0.2em 100% 0 0.6em;
+	width: 19.4em;
+	color: #fb6;
+	counter-increment: line-numbers;
+}
+dd {
+	margin: -15px -1.5px 0 -20em;
+	padding: 0 0 0.2em 20em;
+	color: #9af;
+}
+pre[class] code:first-child,
+dt:first-child {
+	border-top-color: #393937;
+}
+code:before,
+dt:before {
+	content: counter(line-numbers);
+	display: block;
+	margin: 0 0 -15px -4em;
+	width: 3em;
+	color: #4b4b48;
+	text-align: right;
+}
+.odd {
+	background-color: #151513;
+}
+pre[class] code.warning {
+	background-color: #522;
+}
+pre[class] code.warning + code.warning {
+	border-top-color: #522;
+}
+code.warning:before {
+	color: #a55;
+}
+.hidden {
+	display: none;
+}

@@ -1,0 +1,223 @@
+<?php
+
+	$fieldPool = array();
+	$where = NULL;
+	$joins = NULL;
+	$group = false;
+
+	include_once(TOOLKIT . '/class.entrymanager.php');
+	$entryManager = new EntryManager($this->_Parent);
+	
+	$include_pagination_element = @in_array('system:pagination', $this->dsParamINCLUDEDELEMENTS);
+	
+	if(!function_exists('processRecordGroup')){
+		function processRecordGroup(&$wrapper, $element, $group, $ds, &$Parent, &$entryManager, &$fieldPool, &$param_pool, $param_output_only=false){
+			
+			$xGroup = new XMLElement($element, NULL, $group['attr']);
+			$key = 'ds-' . $ds->dsParamROOTELEMENT;
+			
+			if(is_array($group['records']) && !empty($group['records'])){
+				foreach($group['records'] as $entry){
+					
+					$data = $entry->getData();
+					$fields = array();
+
+					$xEntry = new XMLElement('entry');
+					$xEntry->setAttribute('id', $entry->get('id'));
+					
+					$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts();
+					if(is_array($associated_entry_counts) && !empty($associated_entry_counts)){
+						foreach($associated_entry_counts as $section_id => $count){
+							$section_handle = $Parent->Database->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '$section_id' LIMIT 1");
+							$xEntry->setAttribute($section_handle, ''.$count.'');
+						}
+					}
+
+					if(isset($ds->dsParamPARAMOUTPUT)){
+						if($ds->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
+						elseif($ds->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', strtotime($entry->creationDate));
+						elseif($ds->dsParamPARAMOUTPUT == 'system:author') $param_pool[$key][] = $entry->get('author_id');
+					}
+
+					foreach($data as $field_id => $values){
+
+						if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id]))
+							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
+
+						if(isset($ds->dsParamPARAMOUTPUT) && $ds->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
+							$param_pool[$key][] = $fieldPool[$field_id]->getParameterPoolValue($values);
+						}
+
+						if(!$param_output_only && in_array($fieldPool[$field_id]->get('element_name'), $ds->dsParamINCLUDEDELEMENTS))
+							$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($ds->dsParamHTMLENCODE ? true : false));
+
+					}
+
+					if(!$param_output_only) $xGroup->appendChild($xEntry);
+										
+				} 
+			}
+			
+			if(is_array($group['groups']) && !empty($group['groups'])){
+				foreach($group['groups'] as $element => $group){
+					foreach($group as $g) processRecordGroup($xGroup, $element, $g, $ds, $Parent, $entryManager, $fieldPool, $param_pool, $param_output_only);
+				}	
+			}
+					
+			if(!$param_output_only) $wrapper->appendChild($xGroup);
+			
+			return;
+		}
+	}
+	
+	if(!function_exists('buildPaginationElement')){
+		function buildPaginationElement($total_entries=0, $total_pages=0, $entries_per_page=1, $current_page=1){
+			$pageinfo = new XMLElement('pagination');
+			$pageinfo->setAttributeArray(array(
+				'total-entries' => $total_entries,
+				'total-pages' => $total_pages,
+				'entries-per-page' => $entries_per_page,
+				'current-page' => $current_page,
+			));
+
+			return $pageinfo;	
+		}
+	}
+	
+	if(is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
+		foreach($this->dsParamFILTERS as $field_id => $filter){
+			
+			if((is_array($filter) && empty($filter)) || trim($filter) == '') continue;
+			
+			if(!is_array($filter)){
+				$filter_type = $this->__determineFilterType($filter);
+	
+				$value = preg_split('/'.($filter_type == DS_FILTER_AND ? '\+' : ',').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);			
+				$value = array_map('trim', $value);
+			}
+			
+			else $value = $filter;
+			
+			if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id]))
+				$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
+			
+			if(!is_object($fieldPool[$field_id])){
+				trigger_error('Error creating field object with id ' . $field_id . ', for filtering, in datasource ' . $this->dsParamROOTELEMENT . '. Check this field exists.', E_USER_NOTICE);
+			}
+						
+			if($field_id == 'id') $where = " AND `e`.id IN ('".@implode("', '", $value)."') ";
+			else{ 
+				if(!$fieldPool[$field_id]->buildDSRetrivalSQL($value, $joins, $where, ($filter_type == DS_FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
+				if(!$group) $group = $fieldPool[$field_id]->requiresSQLGrouping();
+			}
+			
+		}
+	}
+	
+	if($this->dsParamSORT == 'system:id') $entryManager->setFetchSorting('id', $this->dsParamORDER);
+	elseif($this->dsParamSORT == 'system:date') $entryManager->setFetchSorting('date', $this->dsParamORDER);
+	else $entryManager->setFetchSorting($entryManager->fieldManager->fetchFieldIDFromElementName($this->dsParamSORT, $this->getSource()), $this->dsParamORDER);
+
+	$entries = $entryManager->fetchByPage($this->dsParamSTARTPAGE, 
+										  $this->getSource(), 
+										  ($this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : NULL), 
+										  $where, $joins, $group, 
+										  (!$include_pagination_element ? true : false), 
+										  true);
+
+	if(!$section = $entryManager->sectionManager->fetch($this->getSource())){
+		$about = $this->about();
+		trigger_error('The section associated with the data source <code>'.$about['name'].'</code> could not be found.', E_USER_ERROR);
+	}
+	
+	$sectioninfo = new XMLElement('section', $section->get('name'), array('id' => $section->get('id'), 'handle' => $section->get('handle')));
+	
+	$key = 'ds-' . $this->dsParamROOTELEMENT;
+									
+	if($entries['total-entries'] <= 0 && (!is_array($entries['records']) || empty($entries['records']))){
+		if($this->dsParamREDIRECTONEMPTY == 'yes') $this->__redirectToErrorPage();
+		$this->_force_empty_result = false;
+		$result = $this->emptyXMLSet();
+		$result->prependChild($sectioninfo);
+		if($include_pagination_element) $result->prependChild(buildPaginationElement());
+		$param_pool[$key][] = '';
+	}
+	
+	else{
+	
+		if(!$this->_param_output_only){			
+			$result = new XMLElement($this->dsParamROOTELEMENT);
+		
+			$result->appendChild($sectioninfo);
+			
+			if($include_pagination_element){
+				$result->appendChild(buildPaginationElement($entries['total-entries'], 
+															$entries['total-pages'], 
+															($this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : $entries['total-entries']),
+															$this->dsParamSTARTPAGE
+															));
+
+			}
+		}
+		
+		if(isset($this->dsParamPARAMOUTPUT) && !is_array($param_pool[$key])) $param_pool[$key] = array();
+		
+		if($this->dsParamLIMIT > 0){
+		
+			if(isset($this->dsParamGROUP)):
+				$fieldPool[$this->dsParamGROUP] =& $entryManager->fieldManager->fetch($this->dsParamGROUP);		
+				$groups = $fieldPool[$this->dsParamGROUP]->groupRecords($entries['records']);		
+		
+				foreach($groups as $element => $group){
+					foreach($group as $g) processRecordGroup($result, $element, $g, $this, $this->_Parent, $entryManager, $fieldPool, $param_pool, $this->_param_output_only);
+				}
+		
+			else:
+	
+				foreach($entries['records'] as $entry){
+
+					$data = $entry->getData();
+					$fields = array();
+		
+					$xEntry = new XMLElement('entry');
+					$xEntry->setAttribute('id', $entry->get('id'));
+					
+					$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts();
+					if(is_array($associated_entry_counts) && !empty($associated_entry_counts)){
+						foreach($associated_entry_counts as $section_id => $count){
+							$section_handle = $this->_Parent->Database->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '$section_id' LIMIT 1");
+							$xEntry->setAttribute($section_handle, ''.$count.'');
+						}
+					}
+
+					if(isset($this->dsParamPARAMOUTPUT)){
+						if($this->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
+						elseif($this->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', strtotime($entry->creationDate));
+						elseif($this->dsParamPARAMOUTPUT == 'system:author') $param_pool[$key][] = $entry->get('author_id');
+					}
+					
+					foreach($data as $field_id => $values){
+
+						if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id]))
+							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
+			
+						if(isset($this->dsParamPARAMOUTPUT) && $this->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
+							$param_pool[$key][] = $fieldPool[$field_id]->getParameterPoolValue($values);
+						}
+			
+						if(!$this->_param_output_only && in_array($fieldPool[$field_id]->get('element_name'), $this->dsParamINCLUDEDELEMENTS))
+							$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE ? true : false));
+			
+					}
+		
+					if($this->_param_output_only) continue;
+
+					$result->appendChild($xEntry);
+				}
+		
+			endif;
+		}
+		
+	}
+
+?>
