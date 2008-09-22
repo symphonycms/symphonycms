@@ -25,6 +25,14 @@
 			$this->_xsl = ($file ? @file_get_contents($xsl) : $xsl);
 		}
 		
+		public function getXML(){
+			return $this->_xml;
+		}
+		
+		public function getXSL(){
+			return $this->_xsl;
+		}
+		
 		public function setRuntimeParam($param){
 			$this->_param = $param;
 		}
