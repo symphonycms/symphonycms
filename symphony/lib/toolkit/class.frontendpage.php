@@ -3,7 +3,8 @@
 	require_once(TOOLKIT . '/class.xsltpage.php');
 	require_once(TOOLKIT . '/class.datasourcemanager.php');
 	require_once(TOOLKIT . '/class.eventmanager.php');
-		
+	require_once(TOOLKIT . '/class.extensionmanager.php');
+			
 	Class FrontendPage extends XSLTPage{
 		
 		const FRONTEND_OUTPUT_NORMAL = 0;
@@ -17,6 +18,7 @@
 		public $_param;		
 		public $_Parent;
 		public $DatasourceManager;
+		public $ExtensionManager;		
 				
 		function __construct(&$parent){
 			parent::__construct();
@@ -25,7 +27,8 @@
 			$this->_env = array();
 			
 			$this->DatasourceManager = new DatasourceManager($this->_Parent);
-			$this->EventManager = new EventManager($this->_Parent);			
+			$this->EventManager = new EventManager($this->_Parent);	
+			$this->ExtensionManager = new ExtensionManager($this->_Parent);
 		}
 		
 		public function generate($page, $mode=self::FRONTEND_OUTPUT_NORMAL){
@@ -35,8 +38,24 @@
 			$this->_page = $page;
 
 			$this->__buildPage();
+	
+
+			####
+			# Delegate: FrontendOutputPreGenerate
+			# Description: Immediately before generating the page. Provided with the page object, XML and XSLT
+			# Global: Yes
+			$this->ExtensionManager->notifyMembers('FrontendOutputPreGenerate', '/frontend/', array('page' => &$this, 'xml' => $this->_xml, 'xsl' => $this->_xsl));
+			
 			
 			$output = parent::generate();
+
+			####
+			# Delegate: FrontendOutputPostGenerate
+			# Description: Immediately after generating the page. Provided with string containing page source
+			# Global: Yes
+			$this->ExtensionManager->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
+			
+
 			$this->_Parent->Profiler->sample('XSLT Transformation', PROFILE_LAP);
 
 			if($mode == self::FRONTEND_OUTPUT_NORMAL && !$output){
@@ -170,6 +189,7 @@
 			
 			$this->_Parent->Profiler->seed($start);
 			$this->_Parent->Profiler->sample('Page Built', PROFILE_LAP);
+		
 		}
 
 		private function __resolvePage($page=NULL){
