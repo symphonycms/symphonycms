@@ -61,8 +61,8 @@
 				foreach($types as $type) $xTypes->appendChild(new XMLElement('type', $type));
 				$oPage->appendChild($xTypes);
 			}
-						
-			if($children = $database->fetch("SELECT * FROM `tbl_pages` WHERE `parent` = '".$page['id']."'")){
+			
+			if($children = $database->fetch("SELECT * FROM `tbl_pages` WHERE `parent` = '".$page['id']."' ORDER BY `sortorder` ASC")){
 				foreach($children as $c) $oPage->appendChild(__buildPageXML($c, $database));
 			}
 	
