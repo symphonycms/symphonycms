@@ -71,7 +71,7 @@
 
 			if(!empty($_POST)) $fields = $_POST['fields'];
 
-			$fields['body'] = General::sanitize(General::tabsToSpaces($fields['body'], 2));
+			$fields['body'] = General::sanitize($fields['body']);
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'primary');
