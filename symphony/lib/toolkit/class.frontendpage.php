@@ -106,19 +106,25 @@
 			
 			$start = precision_timer();
 			
-			if(!$page = $this->__resolvePage()){
+			if(!$page = $this->resolvePage()){
 				
 				$page = $this->_Parent->Database->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types` WHERE `tbl_pages_types`.page_id = `tbl_pages`.id AND tbl_pages_types.`type` = '404' LIMIT 1");
 
 				if(empty($page)) $this->_Parent->customError(E_USER_ERROR, 'Page Not Found', 'The page you requested does not exist.', false, true, 'error', array('header' => 'HTTP/1.0 404 Not Found'));
 				
-				$page['filelocation'] = $this->__resolvePageFileLocation($page['path'], $page['handle']);
+				$page['filelocation'] = $this->resolvePageFileLocation($page['path'], $page['handle']);
 					
 				$this->addHeaderToPage('HTTP/1.0 404 Not Found');
 			}
+			
+			####
+			# Delegate: FrontendPageResolved
+			# Description: Just after having resolved the page, but prior to any commencement of output creation
+			# Global: Yes
+			$this->ExtensionManager->notifyMembers('FrontendPageResolved', '/frontend/', array('page' => &$this, 'page_data' => &$page));
 
 			$this->_pageData = $page;
-			
+
 			$this->_param = array(
 				'today' => DateTimeObj::get('Y-m-d'),
 				'this-year' => DateTimeObj::get('Y'),
@@ -192,7 +198,7 @@
 		
 		}
 
-		private function __resolvePage($page=NULL){
+		public function resolvePage($page=NULL){
 		
 			if($page) $this->_page = $page;
 	
@@ -276,7 +282,7 @@
 				
  			}	
 
-			$row['filelocation'] = $this->__resolvePageFileLocation($row['path'], $row['handle']);
+			$row['filelocation'] = $this->resolvePageFileLocation($row['path'], $row['handle']);
 	
 			return $row;
 				
@@ -291,7 +297,7 @@
 		
 		}
 
-		private static function __resolvePageFileLocation($path, $handle){
+		private static function resolvePageFileLocation($path, $handle){
 			return (PAGES . '/' . trim(str_replace('/', '_', $path . '_' . $handle), '_') . '.xsl');
 		}
 		
@@ -398,29 +404,35 @@
 		
 		private function __processEvents($events, &$wrapper){
 			
-			if(trim($events) == '') return;
+			if(strlen(trim($events)) > 0){			
+				$events = preg_split('/,\s*/i', $events, -1, PREG_SPLIT_NO_EMPTY);
+				$events = array_map('trim', $events);
 			
-			$events = preg_split('/,\s*/i', $events, -1, PREG_SPLIT_NO_EMPTY);
-			$events = array_map('trim', $events);
+				if(!is_array($events) || empty($events)) return;
 			
-			if(!is_array($events) || empty($events)) return;
-			
-			foreach($events as $handle){
-				$this->_Parent->Profiler->seed();
+				foreach($events as $handle){
+					$this->_Parent->Profiler->seed();
 
-				$event = $this->EventManager->create($handle, array('env' => $this->_env, 'param' => $this->_param));
+					$event = $this->EventManager->create($handle, array('env' => $this->_env, 'param' => $this->_param));
 				
-				if($xml = $event->load()):
+					if($xml = $event->load()):
 				
-					if(is_object($xml)) $wrapper->appendChild($xml);
-					else $wrapper->setValue($wrapper->getValue() . self::CRLF . '	' . trim($xml));
+						if(is_object($xml)) $wrapper->appendChild($xml);
+						else $wrapper->setValue($wrapper->getValue() . self::CRLF . '	' . trim($xml));
 										
-				endif;
+					endif;
 				
-				$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Event');
+					$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Event');
 				
+				}
 			}
+			
+			####
+			# Delegate: FrontendEventPostProcess
+			# Description: Just after the page events have triggered. Provided with the XML object
+			# Global: Yes
+			$this->ExtensionManager->notifyMembers('FrontendEventPostProcess', '/frontend/', array('xml' => &$wrapper));
+			
 		}		
 	}
 	
-?>
