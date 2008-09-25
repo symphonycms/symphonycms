@@ -38,14 +38,15 @@
 			$this->_page = $page;
 
 			$this->__buildPage();
-	
+
+			if($mode == self::FRONTEND_OUTPUT_NORMAL && @in_array('XML', $this->_pageData['type']) || @in_array('xml', $this->_pageData['type']))
+				$this->addHeaderToPage('Content-Type', 'text/xml');	
 
 			####
 			# Delegate: FrontendOutputPreGenerate
 			# Description: Immediately before generating the page. Provided with the page object, XML and XSLT
 			# Global: Yes
 			$this->ExtensionManager->notifyMembers('FrontendOutputPreGenerate', '/frontend/', array('page' => &$this, 'xml' => $this->_xml, 'xsl' => $this->_xsl));
-			
 			
 			$output = parent::generate();
 
@@ -84,13 +85,6 @@
 				include_once(TOOLKIT . '/class.profilepage.php');
 				$profile = new ProfilePage();
 				$output = $profile->generate($this->_pageData, $this->_Parent->Profiler, $this->_Parent->Database);
-				
-			
-			else:
-				
-				## Set XML headers if this is an XML type page
-				if(@in_array('XML', $this->_pageData['type']) || @in_array('xml', $this->_pageData['type'])) $this->addHeaderToPage('Content-Type', 'text/xml');
-
 
 			endif;
 			
