@@ -313,7 +313,7 @@
 		Return: true or false
 
 		***/		
-		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, $additional_headers=array()){	
+		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers=array()){	
 
 			##Check for injection attacks (http://securephp.damonkohler.com/index.php/Email_Injection)
 			if ((eregi("\r", $from_email) || eregi("\n", $from_email))
@@ -322,21 +322,23 @@
 		   	}
 			####
 
-			$header  = "From: $from_name <$from_email>" . self::CRLF;
-			$header .= "Reply-To: $from_name <$from_email>\r\n";		
-			$header .= "Message-ID: <".md5(uniqid(time()))."@{$_SERVER['SERVER_NAME']}>" . self::CRLF;
-			$header .= "Return-Path: <$from_email>" . self::CRLF;
-			$header .= "Importance: normal" . self::CRLF;
-			$header .= "Priority: normal" . self::CRLF;
-			$header .= "X-Sender: Symphony Email Module <noreply@symphony21.com>" . self::CRLF;
-			$header .= "X-Mailer: Symphony Email Module" . self::CRLF;
-			$header .= "X-Priority: 3";
+			$headers = array(
+							"From: $from_name <$from_email>",
+					 		"Reply-To: $from_name <$from_email>",	
+							"Message-ID: <".md5(uniqid(time()))."@{$_SERVER['SERVER_NAME']}>",
+							"Return-Path: <$from_email>",
+							"Importance: normal",
+							"Priority: normal",
+							"X-Sender: Symphony Email Module <noreply@symphony21.com>",
+							"X-Mailer: Symphony Email Module",
+							"X-Priority: 3",
+						);
 
-			if(is_array($additional_headers) && !empty($additional_headers)){
-				$header .= self::CRLF . implode(self::CRLF, $additional_headers);
+			if(!empty($additional_headers)){
+				$headers = array_merge($headers, $additional_headers);
 			}
-
-			if(!mail($to_email, $subject, $message, $header)) return false;
+			
+			if(!mail($to_email, $subject, @wordwrap($message, 70), @implode(self::CRLF, $headers) . self::CRLF)) return false;
 
 			return true;
 		}
