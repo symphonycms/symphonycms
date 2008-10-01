@@ -99,11 +99,7 @@
 
 			$filter_errors = array();			
 			
-			###
-			# Delegate: EventPostSaveFilter
-			# Description: After saving entry from the front-end. This delegate will not force the Events to terminate if it populates the error
-			#              array reference. Provided with references to this object, the POST data and also the error array
-			$obj->ExtensionManager->notifyMembers('EventPostSaveFilter', '/frontend/', array('fields' => $fields, 'event' => &$event, 'errors' => &$filter_errors));
+
 
 			if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))):
 				$result->setAttribute('result', 'error');
@@ -228,14 +224,34 @@
 				}
 			}
 
-			## TODO: Allow extensions to run their filter rules
+			$filter_results = array();
 
+			###
+			# Delegate: EventPostSaveFilter
+			# Description: After saving entry from the front-end. This delegate will not force the Events to terminate if it populates the error
+			#              array reference. Provided with references to this object, the POST data and also the error array
+			$obj->ExtensionManager->notifyMembers('EventPostSaveFilter', '/frontend/', array('entry_id' => $entry_id, 
+																							 'fields' => $fields, 
+																							 'entry' => $entry, 
+																							 'event' => &$event, 
+																							 'messages' => &$filter_results));
+																							
+
+			if(is_array($filter_results) && !empty($filter_results)){
+				foreach($filter_results as $fr){
+					list($type, $status, $message) = $fr;
+
+					$result->appendChild(buildFilterElement($type, ($status ? 'passed' : 'failed'), $message));
+
+				}
+			}
+			
 			$result->setAttributeArray(array('result' => 'success', 'type' => (isset($entry_id) ? 'edited' : 'created')));
 			$result->appendChild(new XMLElement('message', 'Entry '.(isset($entry_id) ? 'edited' : 'created').' successfully.'));
 
 			return true;
 			
-			## ENd FUnction
+			## End FUnction
 		}
 	}
 	
