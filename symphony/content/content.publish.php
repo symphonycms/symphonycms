@@ -521,7 +521,7 @@
 						###
 						# Delegate: EntryPostCreate
 						# Description: Creation of an Entry. New Entry object is provided.			
-						$this->_Parent->ExtensionManager->notifyMembers('EntryPreCreate', '/publish/new/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
+						$this->_Parent->ExtensionManager->notifyMembers('EntryPostCreate', '/publish/new/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
 					
 			  		   	redirect(URL . '/symphony/publish/'.$this->_context['section_handle'].'/edit/'. $entry->get('id') . '/created' . (isset($_POST['prepopulate']) ? ':' . $_POST['prepopulate'] : '') . '/');
 
