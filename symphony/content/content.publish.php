@@ -505,12 +505,11 @@
 
 				else:
 
-					## TODO: Fix Me
 					###
-					# Delegate: PreCreate
-					# Description: Just prior to creation of an Entry. Entry object is provided
-					//$ExtensionManager->notifyMembers('PreCreate', getCurrentPage(), array('entry' => &$entry));
-
+					# Delegate: EntryPreCreate
+					# Description: Just prior to creation of an Entry. Entry object and fields are provided
+					$this->_Parent->ExtensionManager->notifyMembers('EntryPreCreate', getCurrentPage(), array('section' => $section, 'fields' => &$fields, 'entry' => &$entry));
+					
 					if(!$entry->commit()){
 						define_safe('__SYM_DB_INSERT_FAILED__', true);
 						$this->pageAlert(NULL, AdministrationPage::PAGE_ALERT_ERROR);
@@ -519,12 +518,11 @@
 
 					else{
 
-						## TODO: Fix Me
 						###
-						# Delegate: Create
-						# Description: Creation of an Entry. New Entry ID is provided.
-						//$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('entry_id' => $entry->get('id')));				
-
+						# Delegate: EntryPostCreate
+						# Description: Creation of an Entry. New Entry object is provided.			
+						$this->_Parent->ExtensionManager->notifyMembers('EntryPreCreate', getCurrentPage(), array('section' => $section, 'entry' => $entry, 'fields' => $fields));
+					
 			  		   	redirect(URL . '/symphony/publish/'.$this->_context['section_handle'].'/edit/'. $entry->get('id') . '/created' . (isset($_POST['prepopulate']) ? ':' . $_POST['prepopulate'] : '') . '/');
 
 					}
@@ -700,11 +698,11 @@
 						
 				else:
 
-					## TODO: Fix me
+
 					###
-					# Delegate: PreEdit
-					# Description: Just prior to editing of an Entry.
-					##$ExtensionManager->notifyMembers('PreEdit', getCurrentPage(), array('entry' => &$entry));
+					# Delegate: EntryPreEdit
+					# Description: Just prior to editing of an Entry.		
+					$this->_Parent->ExtensionManager->notifyMembers('EntryPreEdit', getCurrentPage(), array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
 
 					if(!$entry->commit()){
 						define_safe('__SYM_DB_INSERT_FAILED__', true);
@@ -714,11 +712,12 @@
 
 					else{
 						
-						## TODO: Fix me
+							
 						###
-						# Delegate: Edit
-						# Description: Editing an entry. Entry object is provided.
-						//$ExtensionManager->notifyMembers('Edit', getCurrentPage(), array('entry' => &$entry));				
+						# Delegate: EntryPostEdit
+						# Description: Editing an entry. Entry object is provided.		
+						$this->_Parent->ExtensionManager->notifyMembers('EntryPostEdit', getCurrentPage(), array('section' => $section, 'entry' => $entry, 'fields' => $fields));
+
 
 			  		    redirect(URL . '/symphony/publish/' . $this->_context['section_handle'] . '/edit/' . $entry_id . '/saved/');
 					}
