@@ -508,7 +508,7 @@
 					###
 					# Delegate: EntryPreCreate
 					# Description: Just prior to creation of an Entry. Entry object and fields are provided
-					$this->_Parent->ExtensionManager->notifyMembers('EntryPreCreate', getCurrentPage(), array('section' => $section, 'fields' => &$fields, 'entry' => &$entry));
+					$this->_Parent->ExtensionManager->notifyMembers('EntryPreCreate', '/publish/new/', array('section' => $section, 'fields' => &$fields, 'entry' => &$entry));
 					
 					if(!$entry->commit()){
 						define_safe('__SYM_DB_INSERT_FAILED__', true);
@@ -521,7 +521,7 @@
 						###
 						# Delegate: EntryPostCreate
 						# Description: Creation of an Entry. New Entry object is provided.			
-						$this->_Parent->ExtensionManager->notifyMembers('EntryPreCreate', getCurrentPage(), array('section' => $section, 'entry' => $entry, 'fields' => $fields));
+						$this->_Parent->ExtensionManager->notifyMembers('EntryPreCreate', '/publish/new/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
 					
 			  		   	redirect(URL . '/symphony/publish/'.$this->_context['section_handle'].'/edit/'. $entry->get('id') . '/created' . (isset($_POST['prepopulate']) ? ':' . $_POST['prepopulate'] : '') . '/');
 
@@ -702,7 +702,7 @@
 					###
 					# Delegate: EntryPreEdit
 					# Description: Just prior to editing of an Entry.		
-					$this->_Parent->ExtensionManager->notifyMembers('EntryPreEdit', getCurrentPage(), array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
+					$this->_Parent->ExtensionManager->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
 
 					if(!$entry->commit()){
 						define_safe('__SYM_DB_INSERT_FAILED__', true);
@@ -711,12 +711,11 @@
 					}
 
 					else{
-						
-							
+
 						###
 						# Delegate: EntryPostEdit
 						# Description: Editing an entry. Entry object is provided.		
-						$this->_Parent->ExtensionManager->notifyMembers('EntryPostEdit', getCurrentPage(), array('section' => $section, 'entry' => $entry, 'fields' => $fields));
+						$this->_Parent->ExtensionManager->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
 
 
 			  		    redirect(URL . '/symphony/publish/' . $this->_context['section_handle'] . '/edit/' . $entry_id . '/saved/');
