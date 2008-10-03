@@ -80,7 +80,7 @@
 		}
 		
 		function toggleFieldData($data, $newState){
-			$data['value'] = $newState;
+			$data['value'] = General::sanitize($newState);
 			return $data;
 		}
 
@@ -142,20 +142,21 @@
 			
 			if(!is_array($value)) $value = array($value);
 			
-			return parent::prepareTableValue(array('value' => General::sanitize(@implode(', ', $value))), $link);
+			return parent::prepareTableValue(array('value' => @implode(', ', $value)), $link);
 		}
 
 		function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
 			
 			$status = self::__OK__;
 			
-			if(!is_array($data)) return array('value' => $data, 'handle' => Lang::createHandle($data));
+			if(!is_array($data)) return array('value' => General::sanitize($data), 'handle' => Lang::createHandle($data));
 
 			if(empty($data)) return NULL;
 			
 			$result = array('value' => array(), 'handle' => array());
+
 			foreach($data as $value){ 
-				$result['value'][] = $value;
+				$result['value'][] = General::sanitize($value);
 				$result['handle'][] = Lang::createHandle($value);
 			}
 			
