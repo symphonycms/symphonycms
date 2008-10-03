@@ -270,9 +270,15 @@
 				
 				$status = self::__OK__;
 				
+				// Do a simple reconstruction of the file meta information. This is a workaround for
+				// bug which causes all meta information to be dropped
 				return array(
-					'file' => $data
-				);				
+					'file' => $data,
+					'mimetype' => self::__sniffMIMEType($data),
+					'size' => filesize(WORKSPACE . $data),
+					'meta' => serialize(self::getMetaInfo(WORKSPACE . $data, self::__sniffMIMEType($data)))
+				);
+	
 			}
 
 			if($simulate) return;
@@ -308,6 +314,21 @@
 				'meta' => serialize(self::getMetaInfo(WORKSPACE . $file, $data['type']))
 			);
 			
+		}
+		
+		private static function __sniffMIMEType($file){
+			
+			$imageMimeTypes = array(
+				'image/bmp',
+				'image/gif',
+				'image/jpg',
+				'image/jpeg',
+				'image/png',
+			);
+			
+			if(in_array('image/' . General::getExtension($file), $imageMimeTypes)) return 'image/' . General::getExtension($file);
+			
+			return 'unknown';
 		}
 		
 		public static function getMetaInfo($file, $type){
