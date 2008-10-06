@@ -45,7 +45,7 @@
 			if(!is_array($data['value'])) $data['value'] = array($data['value']);
 			
 			foreach($data['value'] as $value){
-				$list->appendChild(new XMLElement('item', ($encode ? General::sanitize($value) : $value), array('handle' => Lang::createHandle($value))));
+				$list->appendChild(new XMLElement('item', ($encode ? General::sanitize($value) : $value), array('handle' => $data['handle'])));
 			}
 
 			$wrapper->appendChild($list);
@@ -148,7 +148,7 @@
 		function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
 			
 			$status = self::__OK__;
-			
+
 			if(!is_array($data)) return array('value' => General::sanitize($data), 'handle' => Lang::createHandle($data));
 
 			if(empty($data)) return NULL;
