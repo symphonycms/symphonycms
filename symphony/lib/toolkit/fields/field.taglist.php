@@ -202,5 +202,34 @@
 			);
 		}		
 
+		function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation=false){
+			
+			$field_id = $this->get('id');
+			
+			if(self::isFilterRegex($data[0])):
+				
+				$pattern = str_replace('regexp:', '', $data[0]);
+				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id` ON (`e`.`id` = `t$field_id`.entry_id) ";
+				$where .= " AND (`t$field_id`.value REGEXP '$pattern' OR `t$field_id`.handle REGEXP '$pattern') ";
+
+			
+			elseif($andOperation):
+			
+				foreach($data as $key => $bit){
+					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id$key` ON (`e`.`id` = `t$field_id$key`.entry_id) ";
+					$where .= " AND (`t$field_id$key`.value = '$bit' OR `t$field_id$key`.handle = '$bit') ";
+				}
+							
+			else:
+			
+				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id` ON (`e`.`id` = `t$field_id`.entry_id) ";
+				$where .= " AND (`t$field_id`.value IN ('".@implode("', '", $data)."') OR `t$field_id`.handle IN ('".@implode("', '", $data)."')) ";
+						
+			endif;
+			
+			return true;
+			
+		}
+
 	}
 
