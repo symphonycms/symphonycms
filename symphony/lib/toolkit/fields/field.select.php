@@ -81,6 +81,7 @@
 		
 		function toggleFieldData($data, $newState){
 			$data['value'] = General::sanitize($newState);
+			$data['handle'] = Lang::createHandle($newState);
 			return $data;
 		}
 
