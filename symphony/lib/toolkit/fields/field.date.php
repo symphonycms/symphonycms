@@ -348,8 +348,8 @@
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `value` varchar(80) default NULL,
-				  `local` int(11) unsigned NOT NULL,
-				  `gmt` int(11) unsigned NOT NULL,
+				  `local` int(11) NOT NULL,
+				  `gmt` int(11) NOT NULL,
 				  PRIMARY KEY  (`id`),
 				  KEY `entry_id` (`entry_id`),
 				  KEY `value` (`value`)
