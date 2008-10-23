@@ -25,7 +25,7 @@
 			
 			$list = new XMLElement($this->get('element_name'));
 			foreach($data['value'] as $value){
-				$list->appendChild(new XMLElement('item', ($encode ? General::sanitize($value) : $value), array('handle' => Lang::createHandle($value))));
+				$list->appendChild(new XMLElement('item', General::sanitize($value), array('handle' => Lang::createHandle($value))));
 			}
 			
 			$wrapper->appendChild($list);
