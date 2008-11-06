@@ -20,10 +20,6 @@
 		public function mustBeUnique(){
 			return true;
 		}
-
-		function allowDatasourceParamOutput(){
-			return true;
-		}
 				
 		public function getParameterPoolValue($data){
 			return $data['relation_id'];
