@@ -130,6 +130,8 @@
 
 		function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation=false){
 			
+			if(self::isFilterRegex($data[0])) return parent::buildDSRetrivalSQL($data, $joins, $where, $andOperation);
+			
 			$parsed = array();
 
 			foreach($data as $string){
@@ -142,16 +144,16 @@
 				$parsed[$type][] = $string;
 			}
 
-			foreach($parsed as $type => $data){
+			foreach($parsed as $type => $value){
 				
 				switch($type){
 				
 					case self::RANGE:
-						$this->__buildRangeFilterSQL($data, $joins, $where, $andOperation);
+						$this->__buildRangeFilterSQL($value, $joins, $where, $andOperation);
 						break;
 				
 					case self::SIMPLE:
-						$this->__buildSimpleFilterSQL($data, $joins, $where, $andOperation);
+						$this->__buildSimpleFilterSQL($value, $joins, $where, $andOperation);
 						break;
 								
 				}
