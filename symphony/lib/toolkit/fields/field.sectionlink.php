@@ -19,6 +19,10 @@
 		
 		public function mustBeUnique(){
 			return true;
+		}
+				
+		public function getParameterPoolValue($data){
+			return $data['relation_id'];
 		}		
 
 		function groupRecords($records){

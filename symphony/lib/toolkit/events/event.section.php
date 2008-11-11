@@ -301,4 +301,4 @@
 	
 	if($success && isset($_REQUEST['redirect'])) redirect($_REQUEST['redirect']);
 	
-	return $result;
+	## return $result;
