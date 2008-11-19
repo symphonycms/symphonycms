@@ -72,9 +72,9 @@
 		}
 		
 		/***
-		
+
 		Method: createFilename
-		Description: given a string, this will clean it for use as a filename
+		Description: given a string, this will clean it for use as a filename. Preserves multi-byte characters
 		Param: $string - string to clean
 			   $delim - all non-valid characters will be replaced with this
 			   $apply_transliteration - If true, this will run the string through an array of substitution characters
@@ -85,25 +85,19 @@
 
 			## Use the transliteration table if provided
 			if($apply_transliteration) $string = _t($string);
-			
+
 			## Strip out any tag
 			$string = strip_tags($string);				
-								
-			## Replace underscores and other non-word, non-digit characters with $delim
-			$string = preg_replace('/[^a-z0-9\+=\-\._]/i', $delim, $string);
 
-			## Remove leading or trailing delim characters
-			$string = trim($string, $delim);	
+			## Find all legal characters
+			preg_match_all('/[\p{L}\w:;.,+=~]+/', $string, $matches);
 
-			## Make it lowercase
-			$string = strtolower($string);		
-			
-			$string = preg_replace('/'.$delim.'{2,}/', $delim, $string);
+			## Join only legal character with the $delim
+			$string = implode($delim, $matches[0]);
 
 			return $string;
-			
-		}
 
+		}
 		
 	}
 	
