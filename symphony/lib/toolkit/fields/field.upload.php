@@ -100,7 +100,7 @@
 				'type' => $data['mimetype'],
 			));
 			
-			$item->appendChild(new XMLElement('filename', basename($data['file'])));
+			$item->appendChild(new XMLElement('filename', General::sanitize(basename($data['file']))));
 						
 			$m = unserialize($data['meta']);
 			
@@ -232,6 +232,9 @@
 				return self::__ERROR_CUSTOM__;
 				
 			}
+
+			## Sanitize the filename
+			$data['name'] = Lang::createFilename($data['name']);
 			
 			if($this->get('validator') != NULL){
 				$rule = $this->get('validator');
@@ -284,7 +287,10 @@
 			if($simulate) return;
 			
 			if($data['error'] == UPLOAD_ERR_NO_FILE || $data['error'] != UPLOAD_ERR_OK) return;
-
+			
+			## Sanitize the filename
+			$data['name'] = Lang::createFilename($data['name']);
+			
 			## Upload the new file
 			$abs_path = DOCROOT . '/' . trim($this->get('destination'), '/');
 			$rel_path = str_replace('/workspace', '', $this->get('destination'));
