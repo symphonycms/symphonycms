@@ -132,12 +132,12 @@
 				'page-title' => $page['title'],
 				'root' => URL,
 				'workspace' => URL . '/workspace',
+				'root-page' => ($root_page ? $root_page : $page['handle']),
 				'current-page' => $page['handle'],
 				'current-page-id' => $page['id'],
 				'current-path' => $current_path,
 				'parent-path' => $page['path'],
 				'current-url' => URL . $current_path,
-				'root-page' => ($root_page ? $root_page : $page['handle']),
 				'symphony-build' => $this->_Parent->Configuration->get('build', 'symphony'),
 				'site-mode' => ($this->_Parent->Configuration->get('maintenance_mode', 'public') == 'yes' ? 'maintenance' : 'live')
 			);
