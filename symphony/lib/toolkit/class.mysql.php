@@ -188,7 +188,7 @@
 					
 					$sql .= ' ON DUPLICATE KEY UPDATE ';
 					
-					foreach($fields as $key => $value) $sql .= " `$key` = '$value',";
+					foreach($fields as $key => $value) $sql .= " `$key` = $value,";
 					
 					$sql = trim($sql, ',');
 				}
