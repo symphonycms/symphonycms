@@ -4,48 +4,47 @@
 	
 	Class datasourcewebsite_owner extends Datasource{
 		
-		var $dsParamROOTELEMENT = 'website-owner';
-		var $dsParamORDER = 'desc';
-		var $dsParamLIMIT = '1';
-		var $dsParamREDIRECTONEMPTY = 'no';
-		var $dsParamSORT = 'id';
-		var $dsParamSTARTPAGE = '1';
+		public $dsParamROOTELEMENT = 'website-owner';
+		public $dsParamORDER = 'desc';
+		public $dsParamLIMIT = '1';
+		public $dsParamREDIRECTONEMPTY = 'no';
+		public $dsParamSORT = 'id';
+		public $dsParamSTARTPAGE = '1';
 		
-		var $dsParamFILTERS = array(
+		public $dsParamFILTERS = array(
 				'id' => '1',
 		);
 		
-		var $dsParamINCLUDEDELEMENTS = array(
+		public $dsParamINCLUDEDELEMENTS = array(
 				'username',
 				'name'
 		);
 
-		
-		function __construct(&$parent, $env=NULL, $process_params=true){
+		public function __construct(&$parent, $env=NULL, $process_params=true){
 			parent::__construct($parent, $env, $process_params);
 			$this->_dependencies = array();
 		}
 		
-		function about(){
+		public function about(){
 			return array(
 					 'name' => 'Website Owner',
 					 'author' => array(
-							'name' => 'Allen Chang',
-							'website' => 'http://symphony.local:8888',
-							'email' => 'allen@21degrees.com.au'),
+							'name' => 'Admin Admin',
+							'website' => 'http://localhost:8888/projects/legacy/symphony-2-beta',
+							'email' => 'admin@admin.com'),
 					 'version' => '1.0',
-					 'release-date' => '2008-01-20T07:06:41+00:00');	
+					 'release-date' => '2008-12-03T04:59:32+00:00');	
 		}
 		
-		function getSource(){
+		public function getSource(){
 			return 'authors';
 		}
 		
-		function allowEditorToParse(){
+		public function allowEditorToParse(){
 			return true;
 		}
 		
-		function grab(&$param_pool){
+		public function grab(&$param_pool){
 			$result = NULL;
 				
 			include(TOOLKIT . '/data-sources/datasource.author.php');
@@ -55,4 +54,3 @@
 		}
 	}
 
-?>

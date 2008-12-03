@@ -4,43 +4,42 @@
 	
 	Class datasourcenotes extends Datasource{
 		
-		var $dsParamROOTELEMENT = 'notes';
-		var $dsParamORDER = 'desc';
-		var $dsParamLIMIT = '5';
-		var $dsParamREDIRECTONEMPTY = 'no';
-		var $dsParamSORT = 'date';
-		var $dsParamSTARTPAGE = '1';
-		var $dsParamINCLUDEDELEMENTS = array(
+		public $dsParamROOTELEMENT = 'notes';
+		public $dsParamORDER = 'desc';
+		public $dsParamLIMIT = '5';
+		public $dsParamREDIRECTONEMPTY = 'no';
+		public $dsParamSORT = 'date';
+		public $dsParamSTARTPAGE = '1';
+		public $dsParamINCLUDEDELEMENTS = array(
 				'date',
 				'note'
 		);
 
-		
-		function __construct(&$parent, $env=NULL, $process_params=true){
+		public function __construct(&$parent, $env=NULL, $process_params=true){
 			parent::__construct($parent, $env, $process_params);
 			$this->_dependencies = array();
 		}
 		
-		function about(){
+		public function about(){
 			return array(
 					 'name' => 'Notes',
 					 'author' => array(
-							'name' => 'Alistair Kearney',
-							'website' => 'http://symphony.local:8888',
-							'email' => 'alistair@21degrees.com.au'),
+							'name' => 'Admin Admin',
+							'website' => 'http://localhost:8888/projects/legacy/symphony-2-beta',
+							'email' => 'admin@admin.com'),
 					 'version' => '1.0',
-					 'release-date' => '2008-03-05T07:29:44+00:00');	
+					 'release-date' => '2008-12-03T04:59:26+00:00');	
 		}
 		
-		function getSource(){
+		public function getSource(){
 			return '8';
 		}
 		
-		function allowEditorToParse(){
+		public function allowEditorToParse(){
 			return true;
 		}
 		
-		function grab(&$param_pool){
+		public function grab(&$param_pool){
 			$result = NULL;
 				
 			include(TOOLKIT . '/data-sources/datasource.section.php');
@@ -50,4 +49,3 @@
 		}
 	}
 
-?>

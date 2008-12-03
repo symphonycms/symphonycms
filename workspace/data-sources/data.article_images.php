@@ -4,48 +4,47 @@
 	
 	Class datasourcearticle_images extends Datasource{
 		
-		var $dsParamROOTELEMENT = 'article-images';
-		var $dsParamORDER = 'asc';
-		var $dsParamLIMIT = '20';
-		var $dsParamREDIRECTONEMPTY = 'no';
-		var $dsParamSORT = 'system:id';
-		var $dsParamSTARTPAGE = '1';
+		public $dsParamROOTELEMENT = 'article-images';
+		public $dsParamORDER = 'asc';
+		public $dsParamLIMIT = '20';
+		public $dsParamREDIRECTONEMPTY = 'no';
+		public $dsParamSORT = 'system:id';
+		public $dsParamSTARTPAGE = '1';
 		
-		var $dsParamFILTERS = array(
+		public $dsParamFILTERS = array(
 				'45' => '{$ds-homepage-article:$ds-articles:$ds-drafts}',
 		);
 		
-		var $dsParamINCLUDEDELEMENTS = array(
+		public $dsParamINCLUDEDELEMENTS = array(
 				'image',
 				'description'
 		);
 
-		
-		function __construct(&$parent, $env=NULL, $process_params=true){
+		public function __construct(&$parent, $env=NULL, $process_params=true){
 			parent::__construct($parent, $env, $process_params);
 			$this->_dependencies = array('$ds-homepage-article', '$ds-articles', '$ds-drafts');
 		}
 		
-		function about(){
+		public function about(){
 			return array(
 					 'name' => 'Article Images',
 					 'author' => array(
-							'name' => 'Alistair Kearney',
-							'website' => 'http://symphony.local:8888',
-							'email' => 'alistair@21degrees.com.au'),
+							'name' => 'Admin Admin',
+							'website' => 'http://localhost:8888/projects/legacy/symphony-2-beta',
+							'email' => 'admin@admin.com'),
 					 'version' => '1.0',
-					 'release-date' => '2008-03-18T01:02:17+00:00');	
+					 'release-date' => '2008-12-03T04:59:08+00:00');	
 		}
 		
-		function getSource(){
+		public function getSource(){
 			return '10';
 		}
 		
-		function allowEditorToParse(){
+		public function allowEditorToParse(){
 			return true;
 		}
 		
-		function grab(&$param_pool){
+		public function grab(&$param_pool){
 			$result = NULL;
 				
 			include(TOOLKIT . '/data-sources/datasource.section.php');
@@ -55,4 +54,3 @@
 		}
 	}
 
-?>

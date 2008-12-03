@@ -4,50 +4,49 @@
 	
 	Class datasourcearchive extends Datasource{
 		
-		var $dsParamROOTELEMENT = 'archive';
-		var $dsParamORDER = 'desc';
-		var $dsParamGROUP = '29';
-		var $dsParamLIMIT = '100';
-		var $dsParamREDIRECTONEMPTY = 'no';
-		var $dsParamSORT = 'date';
-		var $dsParamSTARTPAGE = '1';
+		public $dsParamROOTELEMENT = 'archive';
+		public $dsParamORDER = 'desc';
+		public $dsParamGROUP = '29';
+		public $dsParamLIMIT = '100';
+		public $dsParamREDIRECTONEMPTY = 'no';
+		public $dsParamSORT = 'date';
+		public $dsParamSTARTPAGE = '1';
 		
-		var $dsParamFILTERS = array(
+		public $dsParamFILTERS = array(
 				'29' => '{$year:$this-year}',
 				'30' => 'yes',
 		);
 		
-		var $dsParamINCLUDEDELEMENTS = array(
+		public $dsParamINCLUDEDELEMENTS = array(
 				'title',
 				'date'
 		);
 
-		
-		function __construct(&$parent, $env=NULL, $process_params=true){
+		public function __construct(&$parent, $env=NULL, $process_params=true){
 			parent::__construct($parent, $env, $process_params);
 			$this->_dependencies = array();
 		}
 		
-		function about(){
+		public function about(){
 			return array(
 					 'name' => 'Archive',
 					 'author' => array(
-							'name' => 'Allen Chang',
-							'website' => 'http://symphony.local:8888',
-							'email' => 'allen@21degrees.com.au'),
+							'name' => 'Admin Admin',
+							'website' => 'http://localhost:8888/projects/legacy/symphony-2-beta',
+							'email' => 'admin@admin.com'),
 					 'version' => '1.0',
-					 'release-date' => '2008-01-22T07:03:10+00:00');	
+					 'release-date' => '2008-12-03T04:59:04+00:00');	
 		}
 		
-		function getSource(){
+		public function getSource(){
 			return '6';
 		}
 		
-		function allowEditorToParse(){
+		public function allowEditorToParse(){
 			return true;
 		}
 		
-		function grab(&$param_pool){
+		public function grab(&$param_pool){
 			$result = NULL;
 				
 			include(TOOLKIT . '/data-sources/datasource.section.php');
@@ -57,4 +56,3 @@
 		}
 	}
 
-?>
