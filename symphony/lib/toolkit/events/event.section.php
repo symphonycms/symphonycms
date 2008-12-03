@@ -246,6 +246,17 @@
 				}
 			}
 			
+			###
+			# Delegate: EventFinalSaveFilter
+			$obj->ExtensionManager->notifyMembers(
+				'EventFinalSaveFilter', '/frontend/', array(
+					'fields'	=> $fields,
+					'event'		=> &$event,
+					'errors'	=> &$filter_errors,
+					'entry'		=> $entry
+				)
+			);
+			
 			$result->setAttributeArray(array('result' => 'success', 'type' => (isset($entry_id) ? 'edited' : 'created')));
 			$result->appendChild(new XMLElement('message', 'Entry '.(isset($entry_id) ? 'edited' : 'created').' successfully.'));
 

@@ -118,6 +118,9 @@
 			$this->ExtensionManager->notifyMembers('FrontendPageResolved', '/frontend/', array('page' => &$this, 'page_data' => &$page));
 
 			$this->_pageData = $page;
+			$root_page = @array_shift(explode('/', $page['path']));
+			$current_path = explode(dirname($_SERVER['SCRIPT_NAME']), $_SERVER['REQUEST_URI'], 2);
+			$current_path = '/' . ltrim(end($current_path), '/');
 
 			$this->_param = array(
 				'today' => DateTimeObj::get('Y-m-d'),
@@ -129,8 +132,12 @@
 				'page-title' => $page['title'],
 				'root' => URL,
 				'workspace' => URL . '/workspace',
+				'root-page' => ($root_page ? $root_page : $page['handle']),
 				'current-page' => $page['handle'],
+				'current-page-id' => $page['id'],
+				'current-path' => $current_path,
 				'parent-path' => $page['path'],
+				'current-url' => URL . $current_path,
 				'symphony-build' => $this->_Parent->Configuration->get('build', 'symphony'),
 				'site-mode' => ($this->_Parent->Configuration->get('maintenance_mode', 'public') == 'yes' ? 'maintenance' : 'live')
 			);
