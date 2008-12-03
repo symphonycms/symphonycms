@@ -13,7 +13,13 @@
 	## Provice an interface for transliterations
 	function _t($str){
 		include(LANG . '/lang.' . __LANG__ . '.php');
-		return strtr($str, $transliterations);
+		
+		$patterns = array_keys($transliterations);
+		$values = array_values($transliterations);
+		
+		$str = preg_replace($patterns, $values, $str);
+		
+		return $str;
 	}
 	
 	Class Lang{
