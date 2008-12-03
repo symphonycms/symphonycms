@@ -336,8 +336,8 @@
 					
 						## TODO: Add delegate
 						
-						list($option, $field_id, $value) = explode('-', $_POST['with-selected']);
-
+						list($option, $field_id, $value) = explode('-', $_POST['with-selected'], 3);
+						
 						if($option == 'toggle'){
 
 							$entryManager = new EntryManager($this->_Parent);
