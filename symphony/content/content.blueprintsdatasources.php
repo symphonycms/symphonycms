@@ -991,14 +991,14 @@
 		function __injectIncludedElements(&$shell, $elements){
 			if(!is_array($elements) || empty($elements)) return;
 			
-			$shell = str_replace('<!-- INCLUDED ELEMENTS -->', "var \$dsParamINCLUDEDELEMENTS = array(" . self::CRLF . "\t\t\t\t'" . implode("'," . self::CRLF . "\t\t\t\t'", $elements) . "'" . self::CRLF . '		);' . self::CRLF, $shell);
+			$shell = str_replace('<!-- INCLUDED ELEMENTS -->', "public \$dsParamINCLUDEDELEMENTS = array(" . self::CRLF . "\t\t\t\t'" . implode("'," . self::CRLF . "\t\t\t\t'", $elements) . "'" . self::CRLF . '		);' . self::CRLF, $shell);
 			
 		}
 		
 		function __injectFilters(&$shell, $filters){
 			if(!is_array($filters) || empty($filters)) return;
 			
-			$string = 'var $dsParamFILTERS = array(' . self::CRLF;
+			$string = 'public $dsParamFILTERS = array(' . self::CRLF;
 			           							
 			foreach($filters as $key => $val){
 				if(trim($val) == '') continue;
@@ -1023,7 +1023,7 @@
 			$var_list = NULL;
 			foreach($vars as $key => $val){
 				if(trim($val) == '') continue;
-				$var_list .= '		var $dsParam' . strtoupper($key) . " = '" . addslashes($val) . "';" . self::CRLF;
+				$var_list .= '		public $dsParam' . strtoupper($key) . " = '" . addslashes($val) . "';" . self::CRLF;
 			}
 			
 			$shell = str_replace('<!-- VAR LIST -->', trim($var_list), $shell);
@@ -1057,4 +1057,3 @@
 	
 	}
 	
-?>
