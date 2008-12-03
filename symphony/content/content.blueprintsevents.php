@@ -336,7 +336,8 @@
 				$this->_Parent->ExtensionManager->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $fields['filters'], 'documentation' => &$documentation_parts));
 				
 				$documentation = join(self::CRLF, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $documentation_parts));
-
+				$documentation = str_replace('\'', '\\\'', $documentation);
+				
 				$eventShell = str_replace('<!-- CLASS NAME -->', $classname, $eventShell);
 				$eventShell = str_replace('<!-- SOURCE -->', $source, $eventShell);
 				$eventShell = str_replace('<!-- DOCUMENTATION -->', General::tabsToSpaces($documentation, 2), $eventShell);
