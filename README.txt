@@ -1,11 +1,10 @@
-
 Symphony 2 Beta
 ------------------------------------
 
 Version: 2.0 Beta Revision 5
 Build Date: 18th March 2008
 Change Log: http://beta.overture21.com/forum/comments.php?DiscussionID=114
-github Repository: http://github.com/symphony/symphony-cms/tree/master
+github Repository: http://github.com/symphony/symphony-2/tree/master
 
 
 [SYNOPSIS]
@@ -21,12 +20,12 @@ Visit the beta forum at http://beta.overture21.com/forum/
 
 1. Clone the git repository to the location you desire using:
 
-		git clone git://github.com/symphony/symphony-cms.git
+		git clone git://github.com/symphony/symphony-2.git
 	
 	Alternatively you can download the latest code as a zip or tarball via
 	
-		http://github.com/symphony/symphony-cms/tarball/master
-		http://github.com/symphony/symphony-cms/zipball/master
+		http://github.com/symphony/symphony-2/tarball/master
+		http://github.com/symphony/symphony-2/zipball/master
 	
 	Follow from step 1 of the installation process, below, if you have downloaded
 	an archive using the links above.
