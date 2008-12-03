@@ -1,6 +1,4 @@
 <?php
-
-	if(!defined('__IN_SYMPHONY__')) die('<h2>Symphony Error</h2><p>You cannot directly access this file</p>');
 	
 	Class Author{
 		

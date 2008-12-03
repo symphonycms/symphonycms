@@ -1,6 +1,4 @@
 <?php
-
-	if(!defined('__IN_SYMPHONY__')) die('<h2>Symphony Error</h2><p>You cannot directly access this file</p>');
 	
 	define_safe('__ENTRY_OK__', 0);
 	define_safe('__ENTRY_FIELD_ERROR__', 100);

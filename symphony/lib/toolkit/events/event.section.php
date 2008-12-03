@@ -256,7 +256,7 @@
 	}
 	
 	
-	$result = new XMLElement(self::ROOTELEMENT);
+	$result = new XMLElement($this->dsParamROOTELEMENT);
 	
 	if(in_array('admin-only', $this->eParamFILTERS) && !$this->_Parent->isLoggedIn()){
 		$result->setAttribute('result', 'error');			

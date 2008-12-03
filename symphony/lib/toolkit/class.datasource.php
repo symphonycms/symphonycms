@@ -1,6 +1,6 @@
 <?php
 
-	if(!defined('__IN_SYMPHONY__')) die('<h2>Symphony Error</h2><p>You cannot directly access this file</p>');
+	
 	
 	define_safe('DS_FILTER_AND', 1);
 	define_safe('DS_FILTER_OR', 2);

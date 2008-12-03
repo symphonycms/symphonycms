@@ -1,6 +1,6 @@
 <?php
 
-	if(!defined('__IN_SYMPHONY__')) die('<h2>Symphony Error</h2><p>You cannot directly access this file</p>');
+	
 
 	define_safe('PROFILE_RUNNING_TOTAL', 0);
 	define_safe('PROFILE_LAP', 1);
