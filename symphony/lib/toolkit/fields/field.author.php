@@ -1,6 +1,4 @@
 <?php
-
-	if(!defined('__IN_SYMPHONY__')) die('<h2>Symphony Error</h2><p>You cannot directly access this file</p>');
 	
 	include_once(TOOLKIT . '/class.authormanager.php');
 	
@@ -11,16 +9,16 @@
 			$this->_name = 'Author';
 		}
 
-		function canToggle(){
+		public function canToggle(){
 			return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
 		}
 		
-		function allowDatasourceOutputGrouping(){
+		public function allowDatasourceOutputGrouping(){
 			## Grouping follows the same rule as toggling.
 			return $this->canToggle();
 		}
 		
-		function getToggleStates(){
+		public function getToggleStates(){
 		    $authorManager = new AuthorManager($this->_engine);
 		    $authors = $authorManager->fetch();
 	
@@ -30,12 +28,12 @@
 			return $states;
 		}
 
-		function toggleFieldData($data, $newState){
+		public function toggleFieldData($data, $newState){
 			$data['author_id'] = $newState;
 			return $data;
 		}
 
-		function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){	
+		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){	
 			
 			$status = self::__OK__;
 			
@@ -49,7 +47,7 @@
 			return $result;
 		}
 
-		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 
 			
 			$value = (isset($data['author_id']) ? $data['author_id'] : NULL);			
@@ -80,7 +78,7 @@
 			else $wrapper->appendChild($label);
 		}
 		
-		function prepareTableValue($data, XMLElement $link=NULL){
+		public function prepareTableValue($data, XMLElement $link=NULL){
 			
 			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
 			
@@ -96,20 +94,20 @@
 			return parent::prepareTableValue(array('value' => General::sanitize(ucwords(implode(', ', $value)))), $link);
 		}
 
-		function isSortable(){
+		public function isSortable(){
 			return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
 		}
 		
-		function canFilter(){
+		public function canFilter(){
 			return true;
 		}
 		
-		function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
+		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
 			$joins .= "INNER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
 			$sort = 'ORDER BY ' . (strtolower($order) == 'random' ? 'RAND()' : "`ed`.`author_id` $order");
 		}
 		
-		function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation=false){
+		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation=false){
 			
 			$field_id = $this->get('id');
 			
@@ -138,7 +136,7 @@
 			
 		}
 		
-		function commit(){
+		public function commit(){
 			
 			if(!parent::commit()) return false;
 			
@@ -156,16 +154,24 @@
 					
 		}
 
-		function appendFormattedElement(&$wrapper, $data, $encode=false){
-			$author =& new Author($this->_engine, $data['author_id']);
-			$wrapper->appendChild(new XMLElement($this->get('element_name'), $author->getFullName(), array('id' => $author->get('id'), 'username' => $author->get('username'))));
-		}
+		public function appendFormattedElement(&$wrapper, $data, $encode=false){
+	        if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
+
+	        $list = new XMLElement($this->get('element_name'));
+	        foreach($data['author_id'] as $author_id){
+	            $author = new Author($this->_engine, $author_id);
+	            $list->appendChild(new XMLElement('item', 
+	                                    $author->getFullName(), 
+	                                    array('id' => $author->get('id'), 'username' => $author->get('username'))));
+	        }
+	        $wrapper->appendChild($list);
+	    }
 			
-		function findDefaults(&$fields){
+		public function findDefaults(&$fields){
 			if(!isset($fields['allow_multiple_selection'])) $fields['allow_multiple_selection'] = 'no';
 		}
 		
-		function displaySettingsPanel(&$wrapper){
+		public function displaySettingsPanel(&$wrapper){
 			
 			parent::displaySettingsPanel($wrapper);
 			
@@ -185,7 +191,7 @@
 					
 		}
 		
-		function createTable(){
+		public function createTable(){
 			return $this->_engine->Database->query(
 			
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') ."` (
