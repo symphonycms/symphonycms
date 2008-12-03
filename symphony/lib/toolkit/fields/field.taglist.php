@@ -5,7 +5,11 @@
 			parent::__construct($parent);
 			$this->_name = 'Tag List';
 		}
-
+		
+		public function requiresSQLGrouping() {
+			return true;
+		}
+		
 		public function allowDatasourceParamOutput(){
 			return true;
 		}
