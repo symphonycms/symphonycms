@@ -108,6 +108,15 @@
 	        return true;
 	    }
 		
+		public function cleanValue($value) {
+			if (function_exists('mysql_real_escape_string')) {
+				return mysql_real_escape_string($value);
+				
+			} else {
+				return addslashes($value);
+			}
+		}
+		
 		public function cleanFields(&$array){
 			foreach($array as $key => $val){				
 				if($val == '') $array[$key] = 'NULL';				
