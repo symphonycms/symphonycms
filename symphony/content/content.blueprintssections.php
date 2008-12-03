@@ -509,7 +509,7 @@
 				}
 
 				## Check for duplicate section handle
-				elseif($meta['name'] != $existing_section->get('name') && $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . $meta['name'] . "' LIMIT 1")){
+				elseif($meta['name'] != $existing_section->get('name') && $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . $meta['name'] . " AND `id` != ' . $section_id . ' LIMIT 1")){
 					$this->_errors['name'] = 'A Section with the name <code>'.$meta['name'].'</code> name already exists';
 					$canProceed = false;
 				}

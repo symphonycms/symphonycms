@@ -178,7 +178,7 @@ d/n/y t => 21/09/81 6:30pm
     <xsl:choose>
       <xsl:when test="(substring($day,2) = 1) and not(substring($day,1,1) = 1)">st</xsl:when>
       <xsl:when test="(substring($day,2) = 2) and not(substring($day,1,1) = 1)">nd</xsl:when>
-      <xsl:when test="(substring($day,2) = 3) and not(substring($day,1,1) = 1)">Rd</xsl:when>
+      <xsl:when test="(substring($day,2) = 3) and not(substring($day,1,1) = 1)">rd</xsl:when>
       <xsl:otherwise>th</xsl:otherwise>
     </xsl:choose>
   </xsl:param>
