@@ -10,12 +10,13 @@
 		
 		<!-- INCLUDED ELEMENTS -->
 		
-		function __construct(&$parent, $env=NULL, $process_params=true){
+		
+		public function __construct(&$parent, $env=NULL, $process_params=true){
 			parent::__construct($parent, $env, $process_params);
 			$this->_dependencies = array(<!-- DS DEPENDANCY LIST -->);
 		}
 		
-		function about(){
+		public function about(){
 			return array(
 					 'name' => '<!-- NAME -->',
 					 'author' => array(
@@ -26,15 +27,15 @@
 					 'release-date' => '<!-- RELEASE DATE -->');	
 		}
 		
-		function getSource(){
+		public function getSource(){
 			return '<!-- SOURCE -->';
 		}
 		
-		function allowEditorToParse(){
+		public function allowEditorToParse(){
 			return true;
 		}
 		
-		function grab(&$param_pool){
+		public function grab(&$param_pool){
 			$result = NULL;
 				
 			<!-- GRAB -->
@@ -47,4 +48,3 @@
 		}
 	}
 
-?>
