@@ -9,11 +9,17 @@
 
 <xsl:template match="article-images/entry">
   <li>
-    <a href="{$workspace}/uploads/{image}">
+    <a href="{$workspace}/uploads/{image/filename}">
       <xsl:if test="position() mod 4 = 0">
         <xsl:attribute name="class">last-column</xsl:attribute>
       </xsl:if>
-      <img src="{$root}/image/2/133/88/2/uploads/{image}" title="{description}"/>
+      <img title="{description}">
+        <xsl:attribute name="src">
+           <xsl:value-of select="$root"/>
+           <xsl:text>/image/2/133/88/2/uploads/</xsl:text>
+           <xsl:value-of select="image/filename"/>
+        </xsl:attribute>
+      </img>
     </a>
   </li>
 </xsl:template>
