@@ -2,17 +2,84 @@
 
 	
 	
-	Class fieldUpload extends Field{
-		
-		function __construct(&$parent){
+	Class fieldUpload extends Field {
+		public function __construct(&$parent){
 			parent::__construct($parent);
+			
 			$this->_name = 'File Upload';
 			$this->_required = true;
 			
 			$this->set('required', 'yes');
 		}
-
-		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+		
+		public function canFilter() {
+			return true;
+		}
+		
+		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
+			$field_id = $this->get('id');
+			
+			if (preg_match('/^mimetype:/', $data[0])) {
+				$data[0] = str_replace('mimetype:', '', $data[0]);
+				$column = 'mimetype';
+				
+			} else if (preg_match('/^size:/', $data[0])) {
+				$data[0] = str_replace('size:', '', $data[0]);
+				$column = 'size';
+				
+			} else {
+				$column = 'file';
+			}
+			
+			if (self::isFilterRegex($data[0])) {
+				$this->_key++;
+				$pattern = str_replace('regexp:', '', $this->cleanValue($data[0]));
+				$joins .= "
+					LEFT JOIN
+						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+				";
+				$where .= "
+					AND t{$field_id}_{$this->_key}.{$column} REGEXP '{$pattern}'
+				";
+				
+			} elseif ($andOperation) {
+				foreach ($data as $value) {
+					$this->_key++;
+					$value = $this->cleanValue($value);
+					$joins .= "
+						LEFT JOIN
+							`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+							ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+					";
+					$where .= "
+						AND t{$field_id}_{$this->_key}.{$column} = '{$value}'
+					";
+				}
+				
+			} else {
+				if (!is_array($data)) $data = array($data);
+				
+				foreach ($data as &$value) {
+					$value = $this->cleanValue($value);
+				}
+				
+				$this->_key++;
+				$data = implode("', '", $data);
+				$joins .= "
+					LEFT JOIN
+						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+				";
+				$where .= "
+					AND t{$field_id}_{$this->_key}.{$column} IN ('{$data}')
+				";
+			}
+			
+			return true;
+		}
+		
+		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 
 			if(!$flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/')) 
 				$flagWithError = 'Destination folder, <code>'.$this->get('destination').'</code>, is not writable. Please check permissions.';

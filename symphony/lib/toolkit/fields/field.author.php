@@ -2,8 +2,7 @@
 	
 	include_once(TOOLKIT . '/class.authormanager.php');
 	
-	Class fieldAuthor extends Field{
-		
+	Class fieldAuthor extends Field {
 		function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = 'Author';
@@ -107,33 +106,55 @@
 			$sort = 'ORDER BY ' . (strtolower($order) == 'random' ? 'RAND()' : "`ed`.`author_id` $order");
 		}
 		
-		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation=false){
-			
+		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
 			
-			if(self::isFilterRegex($data[0])):
+			if (self::isFilterRegex($data[0])) {
+				$this->_key++;
+				$pattern = str_replace('regexp:', '', $this->cleanValue($data[0]));
+				$joins .= "
+					LEFT JOIN
+						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+				";
+				$where .= "
+					AND t{$field_id}_{$this->_key}.author_id REGEXP '{$pattern}'
+				";
 				
-				$pattern = str_replace('regexp:', '', $data[0]);
-				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id` ON (`e`.`id` = `t$field_id`.entry_id) ";
-				$where .= " AND `t$field_id`.author_id REGEXP '$pattern' ";
-						
-			
-			elseif($andOperation):
-			
-				foreach($data as $key => $bit){
-					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id$key` ON (`e`.`id` = `t$field_id$key`.entry_id) ";
-					$where .= " AND `t$field_id$key`.author_id = '$bit' ";
+			} elseif ($andOperation) {
+				foreach ($data as $value) {
+					$this->_key++;
+					$value = $this->cleanValue($value);
+					$joins .= "
+						LEFT JOIN
+							`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+							ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+					";
+					$where .= "
+						AND t{$field_id}_{$this->_key}.author_id = '{$value}'
+					";
 				}
-							
-			else:
-			
-				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id` ON (`e`.`id` = `t$field_id`.entry_id) ";
-				$where .= " AND `t$field_id`.author_id IN ('".@implode("', '", $data)."') ";
-						
-			endif;
+				
+			} else {
+				if (!is_array($data)) $data = array($data);
+				
+				foreach ($data as &$value) {
+					$value = $this->cleanValue($value);
+				}
+				
+				$this->_key++;
+				$data = implode("', '", $data);
+				$joins .= "
+					LEFT JOIN
+						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+				";
+				$where .= "
+					AND t{$field_id}_{$this->_key}.author_id IN ('{$data}')
+				";
+			}
 			
 			return true;
-			
 		}
 		
 		public function commit(){

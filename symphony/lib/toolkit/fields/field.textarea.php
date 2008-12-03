@@ -2,8 +2,7 @@
 
 	
 	
-	Class fieldTextarea extends Field{
-		
+	Class fieldTextarea extends Field {
 		function __construct(&$parent){
 			
 			parent::__construct($parent);
@@ -56,28 +55,40 @@
 			return $this->_engine->Database->insert($fields, 'tbl_fields_' . $this->handle());
 					
 		}
-
-		function buildDSRetrivalSQL($data, &$joins, &$where){
-			
+		
+		public function buildDSRetrivalSQL($data, &$joins, &$where) {
 			$field_id = $this->get('id');
 			
-			if(self::isFilterRegex($data[0])):
+			if (self::isFilterRegex($data[0])) {
+				$this->_key++;
+				$pattern = str_replace('regexp:', '', $this->cleanValue($data[0]));
+				$joins .= "
+					LEFT JOIN
+						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+				";
+				$where .= "
+					AND t{$field_id}_{$this->_key}.value REGEXP '{$pattern}'
+				";
 				
-				$pattern = str_replace('regexp:', '', $data[0]);
-				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id` ON (`e`.`id` = `t$field_id`.entry_id) ";
-				$where .= " AND `t$field_id`.value REGEXP '$pattern' ";
-		
-			else:
-			
-				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id` ON (`e`.`id` = `t$field_id`.entry_id) ";
-				$where .= " AND MATCH (`t$field_id`.value) AGAINST ('{$data[0]}' IN BOOLEAN MODE) ";
-						
-			endif;
+			} else {
+				if (is_array($data)) $data = $data[0];
+				
+				$data = $this->cleanValue($data);
+				$this->_key++;
+				$joins .= "
+					LEFT JOIN
+						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+				";
+				$where .= "
+					AND MATCH (t{$field_id}_{$this->_key}.value) AGAINST ('{$data}' IN BOOLEAN MODE)
+				";
+			}
 			
 			return true;
-			
 		}
-
+		
 		function checkPostFieldData($data, &$message, $entry_id=NULL){
 			
 			$message = NULL;
@@ -103,16 +114,18 @@
 							
 		}
 		
-		function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
-
+		public function processRawFieldData($data, &$status, $simulate = false, $entry_id = null) {
 			$status = self::__OK__;
 			
 			$result = array(
-				'value' => $data,
+				'value' => $data
 			);
 			
-			if($formatted = $this->applyFormatting($data)) $result['value_formatted'] = $formatted;
-			else $result['value_formatted'] = General::sanitize($data);
+			if ($formatted = $this->applyFormatting($data)) {
+				$result['value_formatted'] = $formatted;
+			} else {
+				$result['value_formatted'] = General::sanitize($data);
+			}
 			
 			return $result;
 		}

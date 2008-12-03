@@ -1,10 +1,6 @@
 <?php
-
-
 	
-	
-	Class fieldCheckbox extends Field{
-
+	Class fieldCheckbox extends Field {
 		function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = 'Checkbox';
@@ -68,13 +64,19 @@
 			$joins .= "INNER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
 			$sort = 'ORDER BY ' . (strtolower($order) == 'random' ? 'RAND()' : "`ed`.`value` $order");
 		}
-
-		function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation=false){
-			
+		
+		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
-
-			$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id` ON (`e`.`id` = `t$field_id`.entry_id) ";
-			$where .= " AND `t$field_id`.`value` = '{$data[0]}' ";
+			$value = $this->cleanValue($data[0]);
+			$this->_key++;
+			$joins .= "
+				LEFT JOIN
+					`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+					ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+			";
+			$where .= "
+				AND t{$field_id}_{$this->_key}.value = '{$value}'
+			";
 			
 			return true;
 		}

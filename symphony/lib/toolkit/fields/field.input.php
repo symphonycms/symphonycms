@@ -2,8 +2,7 @@
 	
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 	
-	Class fieldInput extends Field{
-		
+	Class fieldInput extends Field {
 		function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = 'Text Input';
@@ -67,33 +66,64 @@
 			$sort = 'ORDER BY ' . (strtolower($order) == 'random' ? 'RAND()' : "`ed`.`value` $order");
 		}
 		
-		function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation=false){
-			
+		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
 			
-			if(self::isFilterRegex($data[0])):
+			if (self::isFilterRegex($data[0])) {
+				$this->_key++;
+				$pattern = str_replace('regexp:', '', $this->cleanValue($data[0]));
+				$joins .= "
+					LEFT JOIN
+						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+				";
+				$where .= "
+					AND (
+						t{$field_id}_{$this->_key}.value REGEXP '{$pattern}'
+						OR t{$field_id}_{$this->_key}.handle REGEXP '{$pattern}'
+					)
+				";
 				
-				$pattern = str_replace('regexp:', '', $data[0]);
-				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id` ON (`e`.`id` = `t$field_id`.entry_id) ";
-				$where .= " AND (`t$field_id`.value REGEXP '$pattern' OR `t$field_id`.handle REGEXP '$pattern') ";
-
-			
-			elseif($andOperation):
-			
-				foreach($data as $key => $bit){
-					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id$key` ON (`e`.`id` = `t$field_id$key`.entry_id) ";
-					$where .= " AND (`t$field_id$key`.value = '$bit' OR `t$field_id$key`.handle = '$bit') ";
+			} elseif ($andOperation) {
+				foreach ($data as $value) {
+					$this->_key++;
+					$value = $this->cleanValue($value);
+					$joins .= "
+						LEFT JOIN
+							`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+							ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+					";
+					$where .= "
+						AND (
+							t{$field_id}_{$this->_key}.value = '{$value}'
+							OR t{$field_id}_{$this->_key}.handle = '{$value}'
+						)
+					";
 				}
-							
-			else:
-			
-				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id` ON (`e`.`id` = `t$field_id`.entry_id) ";
-				$where .= " AND (`t$field_id`.value IN ('".@implode("', '", $data)."') OR `t$field_id`.handle IN ('".@implode("', '", $data)."')) ";
-						
-			endif;
+				
+			} else {
+				if (!is_array($data)) $data = array($data);
+				
+				foreach ($data as &$value) {
+					$value = $this->cleanValue($value);
+				}
+				
+				$this->_key++;
+				$data = implode("', '", $data);
+				$joins .= "
+					LEFT JOIN
+						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+				";
+				$where .= "
+					AND (
+						t{$field_id}_{$this->_key}.value IN ('{$data}')
+						OR t{$field_id}_{$this->_key}.handle IN ('{$data}')
+					)
+				";
+			}
 			
 			return true;
-			
 		}
 
 		function __applyValidationRules($data){			
@@ -126,19 +156,16 @@
 							
 		}
 		
-		function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
-			
-			if(trim($data) == '') return array();
+		public function processRawFieldData($data, &$status, $simulate = false, $entry_id = null) {
+			if (trim($data) == '') return array();
 			
 			$status = self::__OK__;
-		
-			$handle = Lang::createHandle($data);
 			
 			$result = array(
-				'handle' => $handle,
-				'value' => General::sanitize($data),
+				'value' => $data,
+				'handle' => Lang::createHandle($data)
 			);
-
+			
 			return $result;
 		}
 

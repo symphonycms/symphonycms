@@ -2,8 +2,7 @@
 
 	
 	
-	Class fieldSectionlink extends Field{
-		
+	Class fieldSectionlink extends Field {
 		function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = 'Section Link';
@@ -219,26 +218,43 @@
 			$sort = 'ORDER BY ' . (strtolower($order) == 'random' ? 'RAND()' : "`ed`.`relation_id` $order");
 		}
 		
-		function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation=false){
-
+		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
 			
-			if($andOperation):
-			
-				foreach($data as $key => $bit){
-					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id$key` ON (`e`.`id` = `t$field_id$key`.entry_id) ";
-					$where .= " AND `t$field_id$key`.relation_id = '$bit' ";
+			if ($andOperation) {
+				foreach ($data as $value) {
+					$this->_key++;
+					$value = $this->cleanValue($value);
+					$joins .= "
+						LEFT JOIN
+							`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+							ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+					";
+					$where .= "
+						AND t{$field_id}_{$this->_key}.relation_id = '{$value}'
+					";
 				}
-							
-			else:
+				
+			} else {
+				if (!is_array($data)) $data = array($data);
+				
+				foreach ($data as &$value) {
+					$value = $this->cleanValue($value);
+				}
+				
+				$this->_key++;
+				$data = implode("', '", $data);
+				$joins .= "
+					LEFT JOIN
+						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+				";
+				$where .= "
+					AND t{$field_id}_{$this->_key}.relation_id IN ('{$data}')
+				";
+			}
 			
-				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id` ON (`e`.`id` = `t$field_id`.entry_id) ";
-				$where .= " AND `t$field_id`.relation_id IN ('".@implode("', '", $data)."') ";
-						
-			endif;
-
 			return true;
-			
 		}
 
 		function displaySettingsPanel(&$wrapper, $errors=NULL){
