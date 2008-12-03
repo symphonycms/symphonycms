@@ -267,8 +267,8 @@
 
 					$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
 					$code->appendChild(new XMLElement('message', 'Entry encountered errors when saving.'));
-					$code->appendChild(new XMLElement('filter', NULL, array('type' => 'admin-only', 'status' => 'failed')));
-					$code->appendChild(new XMLElement('filter', 'Recipient username was invalid', array('type' => 'send-email', 'status' => 'failed')));					
+					$code->appendChild(new XMLElement('filter', NULL, array('name' => 'admin-only', 'status' => 'failed')));
+					$code->appendChild(new XMLElement('filter', 'Recipient username was invalid', array('name' => 'send-email', 'status' => 'failed')));					
 					$code->setValue('...', false);
 					$documentation_parts[] = self::processDocumentationCode($code);		
 				}
