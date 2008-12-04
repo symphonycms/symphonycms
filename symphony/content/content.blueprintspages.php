@@ -1,93 +1,99 @@
 <?php
-
+	
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.eventmanager.php');
 	require_once(TOOLKIT . '/class.datasourcemanager.php');
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 		
-	Class contentBlueprintsPages extends AdministrationPage{
-		
+	class contentBlueprintsPages extends AdministrationPage {
 		var $_errors;
 		
-		function __construct(&$parent){
+		public function __construct(&$parent) {
 			parent::__construct($parent);
 		}
 		
-		function __viewIndex(){
-			
+		public function __viewIndex() {
 			$this->setPageType('table');
 			$this->setTitle('Symphony &ndash; Pages');
 			
-			$this->appendSubheading('Pages', Widget::Anchor('Create New', $this->_Parent->getCurrentPageURL().'new/', 'Create a new page', 'create button'));
+			$this->appendSubheading('Pages', Widget::Anchor(
+				'Create New', $this->_Parent->getCurrentPageURL() . 'new/',
+				'Create a new page', 'create button'
+			));
 			
-			$pages = $this->_Parent->Database->fetch('SELECT * FROM `tbl_pages` ORDER BY `sortorder` ASC');
-
+			$pages = $this->_Parent->Database->fetch("
+				SELECT
+					p.*
+				FROM
+					`tbl_pages` AS p
+				ORDER BY
+					p.sortorder ASC
+			");
+			
 			$aTableHead = array(
-
 				array('Title', 'col'),
 				array('<acronym title="Univeral Resource Locator">URL</acronym>', 'col'),
 				array('<acronym title="Univeral Resource Locator">URL</acronym> Parameters', 'col'),
 				array('Type', 'col')
-
 			);	
-
+			
 			$aTableBody = array();
-
-			if(!is_array($pages) || empty($pages)){
-
-				$aTableBody = array(
-									Widget::TableRow(array(Widget::TableData(__('None Found.'), 'inactive', NULL, count($aTableHead))))
-								);
-			}
-
-			else{
-
-				foreach($pages as $p){
-
-					## Setup each cell
-					$params = NULL;
-					if($p['params']) $params = trim($p['params'], '/');
-
-					$front_url = URL . '/' . $this->_Parent->resolvePagePath($p['id']) . '/';
+			
+			if (!is_array($pages) or empty($pages)) {
+				$aTableBody = array(Widget::TableRow(array(
+					Widget::TableData(__('None Found.'), 'inactive', null, count($aTableHead))
+				)));
+				
+			} else {
+				foreach ($pages as $page) {
+					$page_title = $this->_Parent->resolvePageTitle($page['id']);
+					$page_url = URL . '/' . $this->_Parent->resolvePagePath($page['id']) . '/';
+					$page_edit_url = $this->_Parent->getCurrentPageURL() . 'edit/' . $page['id'] . '/';
 					
-					$types = $this->_Parent->Database->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE page_id = '".$p['id']."' ORDER BY `type` ASC");
+					$col_title = Widget::TableData(Widget::Anchor(
+						$page_title, $page_edit_url, $page['handle']
+					));
+					$col_title->appendChild(Widget::Input("items[{$page['id']}]", null, 'checkbox'));
 					
-					$td1 = Widget::TableData(Widget::Anchor($p['title'], $this->_Parent->getCurrentPageURL() . 'edit/' . $p['id'] . '/', $p['handle']));
-					$td2 = Widget::TableData(Widget::Anchor($front_url, $front_url));
-					$td3 = Widget::TableData(($params ? $params : 'None'), ($params ? NULL : 'inactive'));
-					$td4 = Widget::TableData(($types ? @implode(', ', $types) : 'None'), ($types ? NULL : 'inactive'));
-
-					$td4->appendChild(Widget::Input('items['.$p['id'].']', NULL, 'checkbox'));
-
-					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4));			
-
+					$col_url = Widget::TableData(Widget::Anchor($page_url, $page_url));
+					
+					if ($page['params']) {
+						$col_params = Widget::TableData(trim($page['params'], '/'));
+						
+					} else {
+						$col_params = Widget::TableData('None', 'inactive');
+					}
+					
+					if (!empty($page_types)) {
+						$col_types = Widget::TableData(implode(', ', $types));
+						
+					} else {
+						$col_types = Widget::TableData('None', 'inactive');
+					}
+					
+					$aTableBody[] = Widget::TableRow(array($col_title, $col_url, $col_params, $col_types));
 				}
 			}
-
+			
 			$table = Widget::Table(
-								Widget::TableHead($aTableHead), 
-								NULL, 
-								Widget::TableBody($aTableBody),
-								'orderable'
-						);
-
+				Widget::TableHead($aTableHead), null, 
+				Widget::TableBody($aTableBody), 'orderable'
+			);
+			
 			$this->Form->appendChild($table);
-
 			
 			$tableActions = new XMLElement('div');
 			$tableActions->setAttribute('class', 'actions');
 			
 			$options = array(
-				array(NULL, false, 'With Selected...'),
+				array(null, false, 'With Selected...'),
 				array('delete', false, 'Delete')									
 			);
-
+			
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
 			$tableActions->appendChild(Widget::Input('action[apply]', 'Apply', 'submit'));
 			
 			$this->Form->appendChild($tableActions);
-
 		}
 		
 		## Both the Edit and New pages need the same form
@@ -184,13 +190,24 @@
 			$options = array(
 				array('', false, '/')
 			);
-
-			if(is_array($pages) && !empty($pages)){
-				foreach($pages as $page){
-					$options[] = array($page['id'], $fields['parent'] == $page['id'], '/' . $this->_Parent->resolvePagePath($page['id'])); //$page['title']);
+			
+			if (is_array($pages) and !empty($pages)) {
+				if (!function_exists('__compare_pages')) {
+					function __compare_pages($a, $b) {
+						return strnatcasecmp($a[2], $b[2]);
+					}
 				}
+				
+				foreach ($pages as $page) {
+					$options[] = array(
+						$page['id'], $fields['parent'] == $page['id'],
+						'/' . $this->_Parent->resolvePagePath($page['id'])
+					);
+				}
+				
+				usort($options, '__compare_pages');
 			}
-
+			
 			$label->appendChild(Widget::Select('fields[parent]', $options));		
 			$group->appendChild($label);
 			

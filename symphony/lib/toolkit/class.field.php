@@ -98,7 +98,7 @@
 			return true;
 		}
 		
-		public function setFromPOST($postdata){
+		public function setFromPOST($postdata) {
 			$postdata['location'] = (isset($postdata['location']) ? $postdata['location'] : 'main');
 			$postdata['required'] = (isset($postdata['required']) ? 'yes' : 'no');
 			$postdata['show_column'] = (isset($postdata['show_column']) ? 'yes' : 'no');
@@ -166,30 +166,44 @@
 			return html_entity_decode($this->Database->cleanValue($value));
 		}
 		
-		public function checkFields(&$errors, $checkForDuplicates=true){
+		public function checkFields(&$errors, $checkForDuplicates = true) {
+			$parent_section = $this->get('parent_section');
+			$element_name = $this->get('element_name');
 			
-			if(!is_array($errors)) $errors = array();
+			//echo $this->get('id'), ': ', $this->get('required'), '<br />';
 			
-			if($this->get('label') == '') $errors['label'] = 'This is a required field.';
-
-			if($this->get('element_name') == '') $errors['element_name'] = 'This is a required field.';
-			elseif(!preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $this->get('element_name'))){
-				$errors['element_name'] = 'Invalid element name. Must be valid QName.';
+			if (!is_array($errors)) $errors = array();
+			
+			if ($this->get('label') == '') {
+				$errors['label'] = 'This is a required field.';
 			}
 			
-			elseif($checkForDuplicates){
-				$sql = "SELECT * FROM `tbl_fields` 
-						WHERE `element_name` = '" . $this->get('element_name') . "'
-						".($this->get('id') ? " AND `id` != '".$this->get('id')."' " : '')." 
-						AND `parent_section` = '". $this->get('parent_section') ."' LIMIT 1";
-
-				if($this->Database->fetchRow(0, $sql)){
+			if ($this->get('element_name') == '') {
+				$errors['element_name'] = 'This is a required field.';
+				
+			} elseif (!preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $this->get('element_name'))) {
+				$errors['element_name'] = 'Invalid element name. Must be valid QName.';
+				
+			} elseif($checkForDuplicates) {
+				$sql_id = ($this->get('id') ? " AND f.id != '".$this->get('id')."' " : '');
+				$sql = "
+					SELECT
+						f.*
+					FROM
+						`tbl_fields` AS f
+					WHERE
+						f.element_name = '{$element_name}'
+						{$sql_id} 
+						AND f.parent_section = '{$parent_section}'
+					LIMIT 1
+				";
+				
+				if ($this->Database->fetchRow(0, $sql)) {
 					$errors['element_name'] = 'A field with that element name already exists. Please choose another.';
 				}
 			}
-
-			return (is_array($errors) && !empty($errors) ? self::__ERROR__ : self::__OK__);
 			
+			return (is_array($errors) && !empty($errors) ? self::__ERROR__ : self::__OK__);
 		}
 		
 		public function findDefaults(&$fields){
@@ -266,8 +280,9 @@
 		public function checkPostFieldData($data, &$message, $entry_id=NULL){
 			$message = NULL;
 			
-			if($this->get('required') == 'yes' && strlen($data) == 0){
+			if ($this->get('required') == 'yes' && strlen($data) == 0){
 				$message = "'". $this->get('label')."' is a required field.";
+				
 				return self::__MISSING_FIELDS__;
 			}
 			
@@ -363,17 +378,17 @@
 			
 		}
 		
-		public function appendRequiredCheckbox(&$wrapper){
-
-			if(!$this->_required) return;
-
+		public function appendRequiredCheckbox(&$wrapper) {
+			if (!$this->_required) return;
+			
 			$label = Widget::Label();				
 			$input = Widget::Input('fields['.$this->get('sortorder').'][required]', 'yes', 'checkbox');
-			if($this->get('required') == 'yes') $input->setAttribute('checked', 'checked');
+			
+			if ($this->get('required') == 'yes') $input->setAttribute('checked', 'checked');
+			
 			$label->setValue($input->generate() . ' Make this a required field');
 			
 			$wrapper->appendChild($label);
-			
 		}
 		
 		public function appendShowColumnCheckbox(&$wrapper){
@@ -452,7 +467,7 @@
 			$fields['label'] = $this->get('label');
 			$fields['parent_section'] = $this->get('parent_section');
 			$fields['location'] = $this->get('location');
-			$fields['required'] = $this->get('required');	
+			$fields['required'] = $this->get('required');
 			$fields['type'] = $this->_handle;
 			$fields['show_column'] = $this->get('show_column');
 			$fields['sortorder'] = (string)$this->get('sortorder');

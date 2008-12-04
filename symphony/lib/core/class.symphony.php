@@ -198,30 +198,59 @@
 			
 			return false;
 						
-		}	
-
-		public function resolvePagePath($page_id){
+		}
 		
-			$path = array();
-		
-			$page = $this->Database->fetchRow(0, "SELECT * FROM `tbl_pages` WHERE `id` = '".$page_id."' OR `handle` = '".$page_id."'");
-		
-			$path[] = $page['handle'];
-		
-			if($page['parent'] != NULL) {
-		
-				$next_parent = $page['parent'];
+		public function resolvePageTitle($page_id) {
+			$path = $this->resolvePage($page_id, 'title');
 			
-				while($parent = $this->Database->fetchRow(0, "SELECT * FROM `tbl_pages` WHERE `id` = '". $next_parent ."'")){
+			return @implode(': ', $path);
+		}
+		
+		public function resolvePagePath($page_id) {
+			$path = $this->resolvePage($page_id, 'handle');
+			
+			return @implode('/', $path);
+		}
+
+		public function resolvePage($page_id, $column) {
+			header('content-type: text/plain');
+			
+			$page = $this->Database->fetchRow(0, "
+				SELECT
+					p.{$column},
+					p.parent
+				FROM 
+					`tbl_pages` AS p
+				WHERE
+					p.id = '{$page_id}'
+					OR p.handle = '{$page_id}'
+				LIMIT 1
+			");
+			
+			$path = array(
+				$page[$column]
+			);
+			
+			if ($page['parent'] != null) {
+				$next_parent = $page['parent'];
 				
-					array_unshift($path, $parent['handle']);
+				while (
+					$parent = $this->Database->fetchRow(0, "
+						SELECT
+							p.*
+						FROM
+							`tbl_pages` AS p
+						WHERE
+							p.id = '{$next_parent}'
+					")
+				) {
+					array_unshift($path, $parent[$column]);
+					
 					$next_parent = $parent['parent'];
-				
 				}
 			}
-		
-			return @implode('/', $path);
 			
+			return $path;
 		}
 		
 		public function customError($errno, $heading, $message, $log=true, $forcekill=false, $template='error', $additional=array()){
