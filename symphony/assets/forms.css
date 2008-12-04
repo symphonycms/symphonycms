@@ -179,6 +179,7 @@ div.actions button {
 	background-color: #887;
 	color: #fff;
 	line-height: 15px;
+	height: 15px;
 	cursor: pointer;
 }
 button.delete {
