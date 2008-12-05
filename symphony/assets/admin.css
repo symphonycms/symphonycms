@@ -33,12 +33,10 @@ h1 a:hover,
 	padding: 8px 32px;
 	width: 100%;
 	background: url("images/navigation.png") repeat-x;
-	color: #666;
+	color: #646464;
 	list-style: none;
 	text-transform: uppercase;
-	font-weight: bold;
-	font-size: 90.91%;
-	line-height: 2px;
+	font: bold 90.91%/2px Lucida Grande, Leelawadee, Lucida Sans Unicode, sans-serif;
 }
 #nav > li {
 	position: relative;

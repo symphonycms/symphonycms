@@ -458,7 +458,8 @@ ul.tags .more:hover {
 
 /* Text Editor */
 .code {
-	font: 11px Monaco, Courier, monospace;
+	font: 106%/1.5 Monaco, Consolas, Andale Mono, Lucida Console, monospace;
+	font-size-adjust: 0.5;
 }
 .editor.button {
 	float: right;
