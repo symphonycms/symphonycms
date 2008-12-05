@@ -24,7 +24,7 @@
 		    }
 
 			elseif($formHasErrors) $this->pageAlert('An error occurred while processing this form. <a href="#error">See below for details.</a>', AdministrationPage::PAGE_ALERT_ERROR);
-
+/*
 			### Website Settings ###
 			$group = new XMLElement('fieldset');
 			$group->setAttribute('class', 'settings');
@@ -104,6 +104,7 @@
 			$group->appendChild($ul);
 			$this->Form->appendChild($group);
 			###
+*/
 
 			###
 			# Delegate: AddCustomPreferenceFieldsets
@@ -126,7 +127,7 @@
 			##Do not proceed if the config file is read only
 		    if(!is_writable(CONFIG)) redirect($this->_Parent->getCurrentPageURL());
 			
-			if($_REQUEST['action'] == 'toggle-maintenance-mode'){			
+			/*if($_REQUEST['action'] == 'toggle-maintenance-mode'){			
 				$value = ($this->_Parent->Configuration->get('maintenance_mode', 'public') == 'no' ? 'yes' : 'no');					
 				$this->_Parent->Configuration->set('maintenance_mode', $value, 'public');
 				$this->_Parent->saveConfig();
@@ -142,18 +143,18 @@
 
 		        $this->_Parent->customError(E_USER_ERROR, 'Uninstall Successful', 'Extensions have been left intact, along with the <code>/symphony</code> folder and <code>index.php</code>. To complete the uninstall you will need to remove the aforementioned items manually.', false, true);
 
-			endif;
+			endif;*/
 
 			
 			if(isset($_POST['action']['save'])){
 
 				$settings = $_POST['settings'];
 				
-				$this->_errors = array();
+				//$this->_errors = array();
 				
-				if(trim($settings['general']['sitename']) == '') $this->_errors['general']['sitename'] = 'This is a required field.';
+				//if(trim($settings['general']['sitename']) == '') $this->_errors['general']['sitename'] = 'This is a required field.';
 
-				else{
+				//else{
 					
 					$settings['public']['maintenance_mode'] = ($settings['public']['maintenance_mode'] ? 'yes' : 'no');
 
@@ -175,7 +176,7 @@
 						redirect($this->_Parent->getCurrentPageURL());
 					}
 
-				}
+				//}
 			}
 		}	
 	}

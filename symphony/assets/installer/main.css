@@ -1,0 +1,167 @@
+/* Basic elements */
+body {
+	margin: 0 auto;
+	padding: 0 5em 5em 20em;
+	max-width: 32em;
+	background: #fff;
+	color: #222;
+	font: 68.75%/1.5 "Lucida Grande", Verdana, sans-serif;
+	cursor: default;
+}
+a {
+	color: #57b;
+	text-decoration: underline;
+	cursor: pointer;
+}
+a:hover {
+	color: #222;
+}
+h2 {
+	padding: 82px 0 1.5em;
+	color: #887;
+	text-shadow: -1px 2px 3px #ddd;
+	font-weight: normal;
+	font-size: 1em;
+}
+strong {
+	text-shadow: -1px 2px 2px #ddd;
+}
+abbr {
+	border: none;
+}
+code {
+	font: 108% Monaco, monospace;
+}
+* {
+	margin: 0;
+	padding: 0;
+}
+
+/* Forms */
+fieldset {
+	border: none;
+}
+legend {
+	padding: 82px 0 1.25em;
+	color: #887;
+	text-shadow: -1px 2px 3px #ddd;
+}
+fieldset fieldset {
+	margin-top: 1.5em;
+	padding: 0 1.75em 1.5em;
+	border-top: 3.25em solid #eed;
+	background: #eed;
+}
+fieldset fieldset legend {
+	padding-top: 1.5em;
+	color: #776;
+	text-shadow: -1px 2px 3px #ccc;
+}
+label {
+	display: block;
+	margin-top: 1.5em;
+}
+label input, select {
+	display: block;
+	margin-top: 0.25em;
+	min-width: 100%;
+	max-width: 100%;
+}
+.group {
+	position: relative;
+	left: 1em;
+	margin: 0 0 -1em -2em;
+	padding: 1.5em 1em 1em 3em;
+	overflow: hidden;
+}
+.group label {
+	margin: 0 0 0 2em;
+	float: left;
+	width: 50%;
+}
+.group label:first-child {
+	margin-left: -2em;
+}
+.group input {
+	float: right;
+}
+.option {
+	padding-left: 1.75em;
+}
+.option input {
+	margin-left: -1.75em;
+	float: left;
+	min-width: 0;
+}
+.option + p {
+	margin: 0.5em 0 0 1.9em;
+	color: #998;
+	font-size: 91%;
+}
+.submit {
+	margin: 1.5em 0 5em;
+	text-align: right;
+}
+
+/* Header */
+h1 {
+	position: fixed;
+	top: 80px;
+	right: 50%;
+	margin-right: 12em;
+	padding: 0 0 18px 40px;
+	background: url("logo.png") no-repeat;
+	text-align: right;
+	text-shadow: -2px 2px 3px #ccc;
+	font-weight: normal;
+	font-size: 1.25em;
+	line-height: 18px;
+}
+h1 em {
+	display: block;
+	margin-top: 0.5em;
+	color: #887;
+	text-align: right;
+	text-shadow: -1px 2px 3px #ddd;
+	font-style: normal;
+	font-size: 73.33%;
+}
+
+/* Requirements */
+dl {
+	margin-top: 1.5em;
+	padding-left: 12em;
+}
+dt {
+	margin: 0 0 1.5em -12em;
+	float: left;
+	clear: both;
+	width: 10em;
+	text-align: right;
+	text-shadow: -1px 2px 2px #ddd;
+	font-weight: bold;
+}
+dd {
+	margin-bottom: 1.5em;
+	color: #665;
+}
+
+/* Messages */
+.note, .warning {
+	margin-top: 1.5em;
+	padding: 1em 1.25em;
+	overflow: hidden;
+	background: #d41;
+	color: #fff;
+}
+.note {
+	background: #57b;
+}
+label.warning {
+	margin-bottom: -2.5em;
+}
+div.warning {
+	left: 0;
+	margin: 1.5em 0 -2.5em;
+	padding: 1em 1.25em 1em 3.25em;
+}

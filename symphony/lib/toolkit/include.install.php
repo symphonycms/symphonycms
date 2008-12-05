@@ -110,8 +110,8 @@
 		$compatibility = strtoupper($compatibility);
 
 		if($compatibility == 'HIGH'){	
-			$data = str_replace('ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci', '', $data);
-			$data = str_replace('collate utf8_unicode_ci', '', $data);
+			$data = str_replace('ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci', NULL, $data);
+			$data = str_replace('collate utf8_unicode_ci', NULL, $data);
 		}
 
 		## Silently attempt to change the storage engine. This prevents INNOdb errors.
@@ -121,7 +121,7 @@
 
         if(is_array($queries) && !empty($queries)){                                
             foreach($queries as $sql) {
-                if(trim($sql) != "") $result = $db->query($sql);
+                if(strlen(trim($sql)) > 0) $result = $db->query($sql);
                 if(!$result){ 
 					$err = $db->getLastError();
 					$error = $err['num'] . ': ' . $err['msg'];
@@ -715,19 +715,19 @@
 
 	 		switch($type){
 
-			    case "func":
+			    case 'func':
 
 			        $test = function_exists($item);
 			        if($test != $expected) return false;
 			        break;
 
-			    case "setting":
+			    case 'setting':
 			        $test = ini_get($item);
 			        if(strtolower($test) != strtolower($expected)) return false;
 			        break;
 
-			    case "ext":
-			        foreach(explode(":", $item) as $ext){
+			    case 'ext':
+			        foreach(explode(':', $item) as $ext){
 			            $test = extension_loaded($ext);         
 			            if($test == $expected) return true;
 			        }
@@ -735,17 +735,17 @@
 					return false;
 			        break;
 
-			     case "version":    
-			        if(version_compare($item, $expected, ">=") != 1) return false;
+			     case 'version':    
+			        if(version_compare($item, $expected, '>=') != 1) return false;
 			        break;       
 
-			     case "permission":
+			     case 'permission':
 			        if(!is_writable($item)) return false;
 			        break;
 
-			     case "remote":
+			     case 'remote':
 			        $result = curler($item);
-			        if(strpos(strtolower($result), "error") !== false) return false;   
+			        if(strpos(strtolower($result), 'error') !== false) return false;   
 			        break;
 
 			}
@@ -765,12 +765,12 @@
 				$this->open();
 				
 			}else{
-				$this->open("OVERRIDE");
-				$this->writeToLog("Symphony Installer Log", true);
-				$this->writeToLog("Opened: ". DateTimeObj::get('c'), true);
-				$this->writeToLog("Version: ". kVERSION, true);
-				$this->writeToLog("Domain: "._INSTALL_URL_, true);
-				$this->writeToLog("--------------------------------------------", true);
+				$this->open('OVERRIDE');
+				$this->writeToLog('Symphony Installer Log', true);
+				$this->writeToLog('Opened: '. DateTimeObj::get('c'), true);
+				$this->writeToLog('Version: '. kVERSION, true);
+				$this->writeToLog('Domain: '._INSTALL_URL_, true);
+				$this->writeToLog('--------------------------------------------', true);
 			}			
 		}		
 	}
@@ -781,33 +781,33 @@
 
 			$missing = array();
 
-			if(!GeneralExtended::checkRequirement(phpversion(), "version", "5.1")){
-				$Page->log->pushToLog("Requirement - PHP Version is not correct. ".phpversion()." detected." , SYM_LOG_ERROR, true);
+			if(!GeneralExtended::checkRequirement(phpversion(), 'version', '5.1')){
+				$Page->log->pushToLog('Requirement - PHP Version is not correct. '.phpversion().' detected.' , SYM_LOG_ERROR, true);
 				$missing[] = MISSING_PHP;	
 			}		
 
-			if(!GeneralExtended::checkRequirement('mysql_connect', "func", true)){
-				$Page->log->pushToLog("Requirement - MySQL extension not present" , SYM_LOG_ERROR, true);
+			if(!GeneralExtended::checkRequirement('mysql_connect', 'func', true)){
+				$Page->log->pushToLog('Requirement - MySQL extension not present' , SYM_LOG_ERROR, true);
 				$missing[] = MISSING_MYSQL;
 			}
 
-			elseif(!GeneralExtended::checkRequirement(mysql_get_client_info(), "version", '4.1')){
-				$Page->log->pushToLog("Requirement - MySQL Version is not correct. ".mysql_get_client_info()." detected." , SYM_LOG_ERROR, true);
+			elseif(!GeneralExtended::checkRequirement(mysql_get_client_info(), 'version', '4.1')){
+				$Page->log->pushToLog('Requirement - MySQL Version is not correct. '.mysql_get_client_info().' detected.' , SYM_LOG_ERROR, true);
 				$missing[] = MISSING_MYSQL;
 			}
 
-			if(!GeneralExtended::checkRequirement("zlib", "ext", true)){
-				$Page->log->pushToLog("Requirement - ZLib extension not present" , SYM_LOG_ERROR, true);
+			if(!GeneralExtended::checkRequirement('zlib', 'ext', true)){
+				$Page->log->pushToLog('Requirement - ZLib extension not present' , SYM_LOG_ERROR, true);
 				$missing[] = MISSING_ZLIB;
 			}
 
-			if(!GeneralExtended::checkRequirement("xml:libxml", "ext", true)){
-				$Page->log->pushToLog("Requirement - No XML extension present" , SYM_LOG_ERROR, true);
+			if(!GeneralExtended::checkRequirement('xml:libxml', 'ext', true)){
+				$Page->log->pushToLog('Requirement - No XML extension present' , SYM_LOG_ERROR, true);
 				$missing[] = MISSING_XML;
 			}
 
-			if(!GeneralExtended::checkRequirement("xsl:xslt", "ext", true) && !GeneralExtended::checkRequirement("domxml_xslt_stylesheet", "func", true))	{
-				$Page->log->pushToLog("Requirement - No XSL extension present" , SYM_LOG_ERROR, true);
+			if(!GeneralExtended::checkRequirement('xsl:xslt', 'ext', true) && !GeneralExtended::checkRequirement('domxml_xslt_stylesheet', 'func', true))	{
+				$Page->log->pushToLog('Requirement - No XSL extension present' , SYM_LOG_ERROR, true);
 				$missing[] = MISSING_XSL;
 			}
 
@@ -1010,11 +1010,11 @@
 				$conf = array();
 
   				$conf['define'] = array('DOCROOT' => $kDOCROOT,
-                                		'DOMAIN' => str_replace("http://", "", _INSTALL_DOMAIN_));
+                                		'DOMAIN' => str_replace("http://", NULL, _INSTALL_DOMAIN_));
 
 		        $conf['require'] = array($kDOCROOT . '/symphony/lib/boot/bundle.php');
 				
-				if(@!is_dir($fields['docroot'] . '/workspace')){
+				if(@is_dir($fields['docroot'] . '/workspace')){
 					foreach(getDynamicConfiguration() as $group => $settings){
 						if(!is_array($conf['settings'][$group])) $conf['settings'][$group] = array();
 						$conf['settings'][$group] = array_merge($conf['settings'][$group], $settings);
@@ -1029,7 +1029,6 @@
 					$conf['settings']['symphony']['lang'] = 'en';
 					$conf['settings']['log']['archive'] = '1';
 					$conf['settings']['log']['maxsize'] = '102400';
-					$conf['settings']['general']['sitename'] = 'Website Name';
 					$conf['settings']['general']['useragent'] = 'Symphony/2000';
 					$conf['settings']['image']['cache'] = '1';
 					$conf['settings']['image']['quality'] = '90';
@@ -1039,15 +1038,14 @@
 					$conf['settings']['database']['runtime_character_set_alter'] = '1';
 					$conf['settings']['database']['disable_query_caching'] = 'no';
 					$conf['settings']['public']['maintenance_mode'] = 'no';
-					$conf['settings']['public']['display_event_xml_in_source'] = 'yes';
-					$conf['settings']['region']['time_format'] = 'H:i';
-					$conf['settings']['region']['date_format'] = 'd F Y';
+					$conf['settings']['public']['display_event_xml_in_source'] = 'no';
 				
 				}
 				
 		        $conf['settings']['symphony']['build'] = kBUILD;
 				$conf['settings']['symphony']['cookie_prefix'] = 'sym-';
 		        $conf['settings']['general']['useragent'] = 'Symphony/' . kBUILD;
+				$conf['settings']['general']['sitename'] = (strlen(trim($config['general']['sitename'])) > 0 ? $config['general']['sitename'] : 'Website Name');		
 		        $conf['settings']['file']['write_mode'] = $config['permission']['file'];
 		        $conf['settings']['directory']['write_mode'] = $config['permission']['directory'];
 		        $conf['settings']['database']['host'] = $database['host'];
@@ -1056,6 +1054,8 @@
 		        $conf['settings']['database']['password'] = $database['password'];
 		        $conf['settings']['database']['db'] = $database['name'];
 		        $conf['settings']['database']['tbl_prefix'] = $database['prefix'];
+				$conf['settings']['region']['time_format'] = $config['region']['time_format'];
+				$conf['settings']['region']['date_format'] = $config['region']['date_format'];
 				$conf['settings']['region']['timezone'] = $config['region']['timezone'];
 				
 
@@ -1343,6 +1343,11 @@ IndexIgnore *
 		$fields['permission']['file'] = '0775';
 		$fields['permission']['directory'] = '0775';
 		
+		$conf = getDynamicConfiguration();
+		$fields['general']['sitename'] = $conf['general']['sitename'];
+		$fields['region']['date_format'] = $conf['region']['date_format'];
+		$fields['region']['time_format'] = $conf['region']['time_format'];
+		
 	}
 	
 	$warnings = array(
@@ -1398,7 +1403,8 @@ IndexIgnore *
 				if(defined('ERROR') && defined('kENVIRONMENT_WARNING')) $Environment->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
 				
 				$Form->appendChild($Environment);
-
+				
+				
 			/** END ENVIRONMENT SETTINGS **/
 								
 			/** 
@@ -1408,9 +1414,18 @@ IndexIgnore *
 			**/					
 
 				$Environment = new XMLElement('fieldset');
-				$Environment->appendChild(new XMLElement('legend', 'Date and Time'));
-				$Environment->appendChild(new XMLElement('p', 'Symphony date and time settings will be based on the following region.'));
-			
+				$Environment->appendChild(new XMLElement('legend', 'Website Preferences'));
+//				$Environment->appendChild(new XMLElement('p', '.'));
+				
+				$Environment->appendChild(Widget::label('Name', Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
+				
+
+				
+				$Fieldset = new XMLElement('fieldset');
+				$Fieldset->appendChild(new XMLElement('legend', 'Date and Time'));
+				$Fieldset->appendChild(new XMLElement('p', 'Customise how Date and Time values are displayed throughout the Administration interface.'));
+				
+				
 				$options = array();
 				$groups = array();
 				
@@ -1439,7 +1454,39 @@ IndexIgnore *
 					else $options[] = array($key, $key == $system_tz, str_replace('_', ' ', $key));
 				}
 				
-				$Environment->appendChild(Widget::label('Region', Widget::Select('fields[region][timezone]', $options)));
+				$Fieldset->appendChild(Widget::label('Region', Widget::Select('fields[region][timezone]', $options)));
+								
+				//$Div->appendChild(Widget::label('Date Format', Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
+				//$Div->appendChild(Widget::label('Time Format', Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
+
+				$dateformat = $fields['region']['date_format'];
+				$label = Widget::Label('Date Format');
+				$dateFormats = array( 			
+					array('Y/m/d', $dateformat == 'Y/m/d', DateTimeObj::get('Y/m/d')),
+					array('m/d/Y', $dateformat == 'm/d/Y', DateTimeObj::get('m/d/Y')),
+					array('m/d/y', $dateformat == 'm/d/y', DateTimeObj::get('m/d/y')),
+					array('d F Y', $dateformat == 'd F Y', DateTimeObj::get('d F Y')),
+				);
+				$label->appendChild(Widget::Select('fields[region][date_format]', $dateFormats));
+				$Fieldset->appendChild($label);	
+
+				$timeformat = $fields['region']['time_format'];
+				$label = Widget::Label('Time Format');
+				
+				//$label->setAttribute('title', 'Local' . (date('I') == 1 ? ' daylight savings' : '') . ' time for ' . date_default_timezone_get());
+				//if(date('I') == 1) $label->appendChild(new XMLElement('i', 'Daylight savings time'));
+
+				$timeformats = array(
+					array('H:i:s', $timeformat == 'H:i:s', DateTimeObj::get('H:i:s')),
+					array('H:i', $timeformat == 'H:i', DateTimeObj::get('H:i')),
+					array('g:i:s a', $timeformat == 'g:i:s a', DateTimeObj::get('g:i:s a')),
+					array('g:i a', $timeformat == 'g:i a', DateTimeObj::get('g:i a')),
+				);
+				$label->appendChild(Widget::Select('fields[region][time_format]', $timeformats));
+				$Fieldset->appendChild($label);
+				
+				
+				$Environment->appendChild($Fieldset);	
 				
 				$Form->appendChild($Environment);
 				
@@ -1524,30 +1571,6 @@ IndexIgnore *
 
 				$Div = new XMLElement('div');
 				$Div->setAttribute('class', 'group');
-
-				## fields[permission][file]
-				/*$options = array(
-					array('0777', $fields['permission']['file'] == '0777', '0777'), 
-					array('0775', $fields['permission']['file'] == '0775', '0775'),
-					array('0755', $fields['permission']['file'] == '0755', '0755'), 
-					array('0666', $fields['permission']['file'] == '0666', '0666'), 
-					array('0664', $fields['permission']['file'] == '0664', '0664'), 
-					array('0644', $fields['permission']['file'] == '0644', '0644'), 
-					array('0444', $fields['permission']['file'] == '0444', '0444'),
-				);
-				$Div->appendChild(Widget::label('Files', Widget::select('fields[permission][file]', $options)));
-	
-				## fields[permission][directory]
-				$options = array(
-					array('0777', $fields['permission']['directory'] == '0777', '0777'), 
-					array('0775', $fields['permission']['directory'] == '0775', '0775'),
-					array('0755', $fields['permission']['directory'] == '0755', '0755'), 
-					array('0666', $fields['permission']['directory'] == '0666', '0666'), 
-					array('0664', $fields['permission']['directory'] == '0664', '0664'),
-					array('0644', $fields['permission']['directory'] == '0644', '0644'), 
-					array('0444', $fields['permission']['directory'] == '0444', '0444'),
-				);										
-				$Div->appendChild(Widget::label('Directories', Widget::select('fields[permission][directory]', $options)));*/
 				
 				$Div->appendChild(Widget::label('Files', Widget::input('fields[permission][file]', $fields['permission']['file'])));
 				$Div->appendChild(Widget::label('Directories', Widget::input('fields[permission][directory]', $fields['permission']['directory'])));

@@ -129,12 +129,12 @@
 		
 		function appendAlert(){
 
-			if(!isset($this->_alert)){
+			/*if(!isset($this->_alert)){
 				
 				if($this->_Parent->Configuration->get('maintenance_mode', 'public') == 'yes') $this->pageAlert('This site is currently in maintenance mode. <a href="{1}">Restore?</a>', self::PAGE_ALERT_NOTICE, array(URL . '/symphony/system/preferences/?action=toggle-maintenance-mode&amp;redirect=' . getCurrentPage()));
 				else return;
 				
-			} 
+			}*/
 			
 			$p = new XMLElement('p', $this->_alert['message']);
 			$p->setAttribute('id', 'notice');
@@ -185,7 +185,7 @@
 
 			$xNav = new XMLElement('ul');
 			$xNav->setAttribute('id', 'nav');
-			
+
 			foreach($nav as $n){
 
 				$n_bits = explode('/', $n['link'], 3);
@@ -250,7 +250,22 @@
 										$can_access_child = true;
 
 									if($can_access_child) {
-
+										
+										## Make sure preferences menu only shows if extensions are subscribed to it
+										if($c['name'] == 'Preferences' && $n['name'] == 'System'){
+											$extensions = $this->_Parent->Database->fetch("
+													SELECT * 
+													FROM `tbl_extensions_delegates` 
+													WHERE `delegate` = 'AddCustomPreferenceFieldsets'"
+											);
+											
+											if(!is_array($extensions) || empty($extensions)){
+												continue;
+											}
+											
+										}
+										##
+										
 										$xChild = new XMLElement('li');
 										$xLink = new XMLElement('a', $c['name']);
 										$xLink->setAttribute('href', URL . '/symphony' . $c['link']);

@@ -83,7 +83,8 @@ dl {
 	margin: -1px 0 2em 3.5em;
 	border-bottom: 1px solid #393937;
 	padding: 2em 1px 0 20em;
-	font: 11px/15px Monaco, Courier, monospace;
+	font: 106%/1.5 Monaco, Consolas, Andale Mono, Lucida Console, monospace;
+	font-size-adjust: 0.5;
 }
 dt,
 dd {

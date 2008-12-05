@@ -1,5 +1,4 @@
 Symphony = {
-	VERSION: "2.0.0b",
 	WEBSITE: location.href.match(/.{7,}(?=\/symphony\/)|/)[0]
 };
 
@@ -20,31 +19,6 @@ Symphony.Language = {
 	MONTH           : "Month",
 	TIME            : "Time"
 };
-
-Symphony.Language.MONTHS = [
-	"January",
-	"February",
-	"March",
-	"April",
-	"May",
-	"June",
-	"July",
-	"August",
-	"September",
-	"October",
-	"November",
-	"December"
-];
-
-Symphony.Language.DAYS = [
-	"Sun",
-	"Mon",
-	"Tue",
-	"Wed",
-	"Thu",
-	"Fri",
-	"Sat"
-];
 
 // Abstract Utilities
 
@@ -95,7 +69,7 @@ Function.prototype.bind = function(context) {
 Abstract.call(Array.prototype, {
 	forEach: function(callback, context) {
 		var i = 0,
-		    n = this.length;
+			 n = this.length;
 
 		do {
 			if (i in this) callback.call(context, this[i], i, this);
@@ -103,8 +77,8 @@ Abstract.call(Array.prototype, {
 	},
 	map: function(callback, context) {
 		var n = this.length,
-		    i = 0,
-		    r = new Array(n);
+			 i = 0,
+			 r = new Array(n);
 
 		do {
 			if (i in this) r[i] = callback.call(context, this[i], i, this);
@@ -114,9 +88,9 @@ Abstract.call(Array.prototype, {
 	},
 	filter: function(callback, context) {
 		var i = 0,
-		    r = [],
-		    n = this.length,
-		    o;
+			 r = [],
+			 n = this.length,
+			 o;
 
 		do {
 			if (i in this && callback.call(context, o = this[i], i, this)) r.push(o);
@@ -124,19 +98,9 @@ Abstract.call(Array.prototype, {
 
 		return r;
 	},
-	every: function(callback, context) {
-		var i = 0,
-		    n = this.length;
-
-		do {
-			if (i in this && !callback.call(context, this[i], i, this)) return false;
-		} while (++i < n);
-
-		return true;
-	},
 	some: function(callback, context) {
 		var i = 0,
-		    n = this.length;
+			 n = this.length;
 
 		do {
 			if (i in this && callback.call(context, this[i], i, this)) return true;
@@ -146,7 +110,7 @@ Abstract.call(Array.prototype, {
 	},
 	indexOf: function(item, startIndex) {
 		var n = this.length,
-		    i = (startIndex < 0) ? Math.max(n + startIndex, 0) : startIndex >>> 0;
+			 i = (startIndex < 0) ? Math.max(n + startIndex, 0) : startIndex >>> 0;
 
 		do {
 			if (this[i] === item) return i;
@@ -156,7 +120,7 @@ Abstract.call(Array.prototype, {
 	},
 	reduce: function(callback, value) {
 		var i = 0,
-		    n = this.length;
+			 n = this.length;
 
 		while (value === undefined) {
 			value = this[i];
@@ -287,9 +251,6 @@ DOM = {
 	},
 	setClass: function(className, element, pass) {
 		return (pass ? DOM.addClass : DOM.removeClass)(className, element);
-	},
-	stripe: function(element, index) {
-		if (index % 2 == 0) DOM.addClass("odd", element);
 	}
 };
 
@@ -313,8 +274,8 @@ DOM.Selector.evaluateComponent = function(elements, component) {
 	if (!predicate) return DOM.Selector.getUniqueElements(component, elements);
 
 	var attribute = predicate[1],
-	    operator  = predicate[2],
-	    pattern   = predicate[3];
+		 operator  = predicate[2],
+		 pattern   = predicate[3];
 
 	return elements.filter(function(element) {
 		var value = element.getAttribute(attribute);
@@ -375,11 +336,7 @@ Abstract.defineFallbackMethods(DOM, "select", [
 
 // Event Utilities
 
-DOM.Event = {
-	preventDefault: function(event) {
-		event.preventDefault();
-	}
-};
+DOM.Event = {};
 
 Abstract.defineFallbackMethods(DOM.Event, "addListener", [
 	function(target, type, listener) {
@@ -428,14 +385,14 @@ Abstract.defineFallbackMethods(DOM.Event, "removeListener", [
 
 DOM.onready = (function() {
 	var listeners = [],
-	    available = false;
+		 available = false;
 
 	DOM.Event.addListener(document, "DOMContentLoaded", respond);
 
 	if ("readyState" in document) {
 		var handler = setInterval(function() {
 			if (available || !/complete|loaded/.test(document.readyState)) return;
-			
+
 			available = listeners.invoke("call", clearInterval(handler));
 		}, 100)
 	} else DOM.Event.addListener(window, "load", respond);
@@ -524,7 +481,7 @@ Request.setReadyStateHandler = function(request, callback) {
 
 function Cookie(name) {
 	var cookie = decodeURIComponent(document.cookie),
-	    match  = new RegExp("(?:^|;\s*)" + name + "=([^;]+)").exec(cookie);
+		 match  = new RegExp("(?:^|;\s*)" + name + "=([^;]+)").exec(cookie);
 
 	this.name  = name;
 	this.value = match && match[1];
@@ -534,7 +491,7 @@ Cookie.DURATION_SCALE = 24 * 3600 * 1000; // days
 
 Cookie.prototype.set = function(value, duration, path) {
 	var expiry = new Date().offset(duration * Cookie.DURATION_SCALE).toUTCString(),
-	    cookie = this.name + "=" + value + ";expires=" + expiry + ";path=" + path || ".";
+		 cookie = this.name + "=" + value + ";expires=" + expiry + ";path=" + path || ".";
 
 	document.cookie = cookie;
 	this.value      = value;
@@ -579,20 +536,20 @@ Animation.run = function(state, previous) {
 
 Animation.updateHeight = function(element, keep) {
 	var style = element.style,
-	    guide = document.body.style, // Force Gecko reflow
-	    items = DOM.select("label *", element);
+		 guide = document.body.style, // Force Gecko reflow
+		 items = DOM.select("label *", element);
 
 	return function(height, state) {
 		switch (height) {
 			case 0:                    style.display = "none";
-			                           keep ? items.invoke("blur") : DOM.removeNode(element);
+												keep ? items.invoke("blur") : DOM.removeNode(element);
 
 			case element.offsetHeight: return;
 
 			case state.target:         items[0].focus();
 
 			default:                   style.height  = guide.minHeight = height + "px";
-			                           style.display = "block";
+												style.display = "block";
 		}
 	};
 };
@@ -612,9 +569,9 @@ function Selectable(elements, callback, targets) {
 
 Selectable.prototype.select = function(event) {
 	var element = event.currentTarget,
-	    movable = Orderable.CURRENT_ITEM,
-	    shifted = movable && movable.element === element && movable.movement,
-	    allowed = this.targets.test(event.target.nodeName);
+		 movable = Orderable.CURRENT_ITEM,
+		 shifted = movable && movable.element === element && movable.movement,
+		 allowed = this.targets.test(event.target.nodeName);
 
 	if (!allowed || shifted) return;
 
@@ -641,9 +598,9 @@ function Orderable(element, callback) {
 
 Orderable.prototype.setBoundaries = function() {
 	var position  = new DOM.Coordinates(this.element).Y,
-	    height    = this.element.offsetHeight,
-	    roomAbove = (this.previous || this).offsetHeight - height,
-	    roomBelow = (this.next || this).offsetHeight;
+		 height    = this.element.offsetHeight,
+		 roomAbove = (this.previous || this).offsetHeight - height,
+		 roomBelow = (this.next || this).offsetHeight;
 
 	this.minimum = Math.min(position, position - roomAbove);
 	this.maximum = Math.max(position + height, position + roomBelow);
@@ -682,8 +639,8 @@ Orderable.grab = function(callback, targets, event) {
 
 Orderable.move = function(event) {
 	var position = new DOM.CursorPosition(event).Y,
-	    selected = Orderable.CURRENT_ITEM,
-	    element  = selected.element;
+		 selected = Orderable.CURRENT_ITEM,
+		 element  = selected.element;
 
 	if (position < selected.minimum && selected.previous) {
 		DOM.insertNode(element, element.parentNode, selected.previous);
@@ -725,8 +682,8 @@ function Subsection(list) {
 	this.templates = DOM.select("li.template", list).map(DOM.removeNode);
 
 	var container  = list.parentNode,
-	    items      = DOM.getChildren(list),
-	    actions    = DOM.createElementWithClass("div", "actions");
+		 items      = DOM.getChildren(list),
+		 actions    = DOM.createElementWithClass("div", "actions");
 
 	this.orderable = Orderable.implement(items);
 	this.selected  = new Selectable(items, this.updateActions.bind(this));
@@ -786,7 +743,7 @@ Subsection.prototype.removeItem = function() {
 
 	var animators = this.selected.items.map(function(item) {
 		var animate = Animation.updateHeight(item),
-		    maximum = item.offsetHeight;
+			 maximum = item.offsetHeight;
 
 		return function(scale) {
 			animate(Math.round(scale * maximum), this);
@@ -802,15 +759,15 @@ Subsection.prototype.removeItem = function() {
 
 Subsection.prototype.updateActions = function() {
 	var selected = this.selected.items.length,
-	    position = this.chooseTemplate ? this.chooseTemplate.selectedIndex : 0;
+		 position = this.chooseTemplate ? this.chooseTemplate.selectedIndex : 0;
 
 	switch (selected) {
 		case 0: this.removeButton.className = "inactive";
-		        break;
+				  break;
 
 		case 1: this.removeButton.firstChild.data = Symphony.Language.REMOVE_ITEM;
-		        this.removeButton.className       = "";
-		        break;
+				  this.removeButton.className       = "";
+				  break;
 
 		case 2: this.removeButton.firstChild.data = Symphony.Language.REMOVE_ITEMS;
 	}
@@ -818,8 +775,8 @@ Subsection.prototype.updateActions = function() {
 	this.activeTemplate = this.templates[position];
 
 	var isUnique = DOM.hasClass("unique", this.activeTemplate),
-	    disabled = this.chooseTemplate && this.chooseTemplate.options[position].firstChild.data,
-	    inactive = isUnique && (disabled ? DOM.select("h4", this.list).some(taken) : selected);
+		 disabled = this.chooseTemplate && this.chooseTemplate.options[position].firstChild.data,
+		 inactive = isUnique && (disabled ? DOM.select("h4", this.list).some(taken) : selected);
 
 	DOM.setClass("inactive", this.createButton, inactive);
 
@@ -861,7 +818,7 @@ UIControl.deploy = function(selector, callback, context) {
 
 UIControl.remove = function(selector) {
 	var controls = UIControl.ACTIVE_CONTROLS,
-	    i        = controls.length;
+		 i        = controls.length;
 
 	while (i--) {
 		if (controls[i].selector == selector) controls.splice(i, 1);
@@ -872,13 +829,13 @@ UIControl.remove = function(selector) {
 
 UIControl.deploy("label", function(label) {
 	var control  = DOM.getLastElement("*", label),
-	    overflow = control.offsetWidth - label.offsetWidth;
+		 overflow = control.offsetWidth - label.offsetWidth;
 
 	if (overflow <= 0) return;
 
 	if (DOM.hasClass("group", label.parentNode)) {
 		var width = label.offsetWidth,
-		    ratio = 1 - overflow / width;
+			 ratio = 1 - overflow / width;
 
 		control.style.width = ratio * 100 + "%";
 	} else label.style.paddingRight = overflow + "px";
@@ -890,10 +847,10 @@ UIControl.deploy("input[type=checkbox]", function(checkbox) {
 
 UIControl.deploy("button.confirm", function(button) {
 	var lang = Symphony.Language,
-	    name = document.title.split(/\u2013\s*/g)[2],
-	    deed = button.firstChild.data.toLowerCase().replace(/\bs(?=ymphony\b)/g, "S"),
-	    data = name ? lang.CONFIRM_SINGLE.replace("{$action}", deed).replace("{$name}", name)
-		            : lang.CONFIRM_ABSTRACT.replace("{$action}", deed);
+		 name = document.title.split(/\u2013\s*/g)[2],
+		 deed = button.firstChild.data.toLowerCase().replace(/\bs(?=ymphony\b)/g, "S"),
+		 data = name ? lang.CONFIRM_SINGLE.replace("{$action}", deed).replace("{$name}", name)
+						: lang.CONFIRM_ABSTRACT.replace("{$action}", deed);
 
 	DOM.Event.addListener(button, "click", function(event) {
 		if (!confirm(data)) event.preventDefault();
@@ -902,13 +859,13 @@ UIControl.deploy("button.confirm", function(button) {
 
 UIControl.deploy("ul.tags", function(tags) {
 	var input  = DOM.getFirstElement("input", DOM.getPreviousElement(tags)),
-	    single = DOM.hasClass("singular", tags),
-	    items  = DOM.select("li", tags),
-	    update = this.updateTags;
+		 single = DOM.hasClass("singular", tags),
+		 items  = DOM.select("li", tags),
+		 update = this.updateTags;
 
 	if (items.length > 15) { // TO-DO Localisability for "N more..."
 		var excess = document.createDocumentFragment(),
-		    more   = DOM.insertElementWithText("li", items.length - 15 + " more...", tags);
+			 more   = DOM.insertElementWithText("li", items.length - 15 + " more...", tags);
 
 		more.className = "more";
 
@@ -919,10 +876,10 @@ UIControl.deploy("ul.tags", function(tags) {
 
 	items.forEach(function(item, position) {
 		DOM.Event.addListener(item, "click", addTag);
-		DOM.Event.addListener(item, "mousedown", DOM.Event.preventDefault);
+		DOM.Event.addListener(item, "mousedown", this.preventDefault);
 
 		if (position >= 15) excess.appendChild(item);
-	});
+	}, this);
 
 	function addTag() {
 		update(input, this.className || this.firstChild.data, single);
@@ -934,19 +891,22 @@ UIControl.deploy("ul.tags", function(tags) {
 		if (single) return input.value = tag;
 
 		var value = input.value.replace(/(?:^\s+|\s(?=$|\s))/, ""),
-		    match = value.match(new RegExp("\\b" + tag + "\\b", "i"));
+			 match = value.match(new RegExp("\\b" + tag + "\\b", "i"));
 
 		return match
 			? input.setSelectionRange(match.index, match.index + tag.length)
 			: input.value += (value && ", ") + tag;
+	},
+	preventDefault: function(event) {
+		event.preventDefault();
 	}
 });
 
 UIControl.deploy("label.file input[type=hidden]", function(input) {
 	var name = input.name,
-	    span = input.parentNode,
-	    file = DOM.getFirstElement("a", span),
-	    back = DOM.insertElementWithText("em", "Remove File", span);
+		 span = input.parentNode,
+		 file = DOM.getFirstElement("a", span),
+		 back = DOM.insertElementWithText("em", "Remove File", span);
 
 	DOM.Event.addListener(back, "click", function(event) {
 		event.preventDefault();
@@ -957,7 +917,7 @@ UIControl.deploy("label.file input[type=hidden]", function(input) {
 }, {
 	remove: function(input) {
 		var file = input.parentNode,
-		    link = DOM.getFirstElement("a", file);
+			 link = DOM.getFirstElement("a", file);
 
 		file.removeChild(link);
 
@@ -970,75 +930,20 @@ UIControl.deploy("*.contextual", function(item) {
 
 	DOM.Event.addListener(context, "change", function() {
 		var parent = context.options[context.selectedIndex].parentNode,
-		    option = context.value.replace(/\W+/g, "_"),
-		    group  = parent.label && parent.label.replace(/\W+/g, "_"),
-		    target = DOM.hasClass(option, item) || parent && DOM.hasClass(group, item);
-		    active = target ^ DOM.hasClass("inverse", item);
+			 option = context.value.replace(/\W+/g, "_"),
+			 group  = parent.label && parent.label.replace(/\W+/g, "_"),
+			 target = DOM.hasClass(option, item) || parent && DOM.hasClass(group, item);
+			 active = target ^ DOM.hasClass("inverse", item);
 
 		DOM.setClass("irrelevant", item, !active, document.body.offsetHeight); // Opera reflow
 	})();
-});
-
-UIControl.deploy("pre.XML code", function(code) {
-	var parent = code.parentNode,
-	    source = code.innerHTML.replace(/>/g, "&gt;"),
-	    output = this.SYNTAX_REPLACEMENTS.reduce(this.process, source);
-
-	while (this.INVALID_HTML.test(output)) {
-		output = output.replace(this.INVALID_HTML, "$1</span>$3<span$2>");
-	}
-
-	parent.innerHTML = "<code>" + output + "</code>";
-
-	DOM.select("code", parent).forEach(DOM.stripe);
-}, {
-	process: function(data, item) {
-		return data.replace(item.find, item.replace);
-	},
-	SYNTAX_REPLACEMENTS: [
-		{
-			find: /&lt;(?=[!?])!?(--|\?|)[\S\s]*?\1&gt;/g,
-			replace: "<span class=\"meta\">$&</span>"
-		},
-		{
-			find: /(\S+=)("[^"]*")(?=[^>]*?&gt;)/g,
-			replace: "<span class=\"attribute\">$1</span><span class=\"value\">$2</span>"
-		},
-		{
-			find: /&gt;(?!&lt;)([^<]*?)&lt;/g,
-			replace: "&gt;<span class=\"content\">$1</span>&lt;"
-		},
-		{
-			find: /$\s+?^/gm,
-			replace: "</code>$&<code>"
-		}
-	],
-	INVALID_HTML: /(<span([^>]*)>[^<]*)(<\/code>\s*<code>)/g
-});
-
-// TO-DO Code Editor (This is just a temporary fix to appease Allen)
-
-DOM.onready(function() {
-	DOM.select("textarea.code").forEach(function(textarea) {
-		DOM.Event.addListener(textarea, "keypress", allowTabs);
-	});
-	function allowTabs(event) {
-		var key = event.which || event.keyCode || event.charCode;
-		if (key != 9) return;
-		var scrollTop = this.scrollTop,
-		    position  = this.selectionStart + 1;
-		with (this) value = value.slice(0, selectionStart) + "\t" + value.slice(selectionEnd);
-		this.setSelectionRange(position, position);
-		if (this.scrollTop != scrollTop) this.scrollTop = scrollTop;
-		event.preventDefault();
-	}
 });
 
 // System Messages
 
 DOM.onready(function() {
 	var heading = DOM.getFirstElement("h1"),
-	    message = document.getElementById("notice");
+		 message = document.getElementById("notice");
 
 	if (!message) {
 		message    = DOM.createElementWithText("p", "");
@@ -1067,34 +972,33 @@ DOM.onready(function() {
 
 DOM.onready(function() {
 	var table = DOM.getFirstElement("table"),
-	    rows  = DOM.select("tbody input").map(function(input, position) {
-		          var row = input.parentNode.parentNode;
+		 rows  = DOM.select("tbody input").map(function(input, position) {
+					 var row = input.parentNode.parentNode;
 
-		          if (input.checked) DOM.addClass("selected", row);
+					 if (input.checked) DOM.addClass("selected", row);
 
-		          return row;
-	          });
+					 return row;
+				 });
 
 	if (!table || rows.length == 0) return;
 
 	DOM.addClass("selectable", table);
-	DOM.select("tbody tr").forEach(DOM.stripe);
 
 	var action = DOM.select("div.actions select")[0],
-	    select = new Selectable(rows, function(row) {
-		             with (DOM.getFirstElement("input", row)) checked = !checked;
-	             });
+		 select = new Selectable(rows, function(row) {
+						 with (DOM.getFirstElement("input", row)) checked = !checked;
+					 });
 
 	if (DOM.hasClass("orderable", table)) {
 		var base = Symphony.WEBSITE + "/symphony",
-		    href = base + "/ajax/reorder" + location.href.slice(base.length),
-		    save = new Request(href, function(request) {
-			           DOM.removeClass("busy", table);
+			 href = base + "/ajax/reorder" + location.href.slice(base.length),
+			 save = new Request(href, function(request) {
+						  DOM.removeClass("busy", table);
 
-			           return (request.status != 200)
-				           ? Symphony.Message(Symphony.Language.REORDER_ERROR, "reorder error")
-				           : Symphony.Message.clear("reorder");
-		           });
+						  return (request.status != 200)
+							  ? Symphony.Message(Symphony.Language.REORDER_ERROR, "reorder error")
+							  : Symphony.Message.clear("reorder");
+					  });
 
 		Orderable.implement(rows, function(row) {
 			DOM.addClass("busy", table);
@@ -1110,22 +1014,22 @@ DOM.onready(function() {
 	if (!action) return;
 
 	var template    = Symphony.Language.SEARCH_ENTRIES,
-	    section     = /[^\u2013]+.\s*(.+)|/.exec(document.title)[1],
-	    placeholder = template.replace("{$section}", section),
-	    search      = DOM.getPreviousElement(action);
+		 section     = /[^\u2013]+.\s*(.+)|/.exec(document.title)[1],
+		 placeholder = template.replace("{$section}", section),
+		 search      = DOM.getPreviousElement(action);
 
 	DOM.Event.addListener(action.form, "submit", function(event) {
 		var actual = action.value && select.items.length,
-		    option = action.options[action.selectedIndex],
-		    denied = !actual || DOM.hasClass("destructive", option) && !permitted(option);
+			 option = action.options[action.selectedIndex],
+			 denied = !actual || DOM.hasClass("destructive", option) && !permitted(option);
 
 		if (denied) event.preventDefault();
 	});
 
 	function permitted(option) {
 		var lang = Symphony.Language.CONFIRM_MANY,
-		    deed = option.firstChild.data.toLowerCase(),
-		    data = select.items.length;
+			 deed = option.firstChild.data.toLowerCase(),
+			 data = select.items.length;
 
 		if (data == 1) {
 			lang = Symphony.Language.CONFIRM_SINGLE;
@@ -1160,9 +1064,9 @@ DOM.onready(function() {
 	if (!configure) return;
 
 	var maximum = configure.offsetHeight,
-	    initial = /blueprints?\/pages\/new/i.test(location.href) ? maximum : 0;
-	    animate = new Animation(initial, initial, Animation.updateHeight(configure, true)),
-	    button  = DOM.createElementWithClass("a", "configure button");
+		 initial = /blueprints?\/pages\/new/i.test(location.href) ? maximum : 0;
+		 animate = new Animation(initial, initial, Animation.updateHeight(configure, true)),
+		 button  = DOM.createElementWithClass("a", "configure button");
 
 	if (initial) {
 		DOM.addClass("active", button);
@@ -1196,15 +1100,13 @@ DOM.onready(function() {
 
 DOM.onready(function() {
 	var list     = document.getElementById("utilities"),
-	    textarea = DOM.getFirstElement("textarea");
+		 textarea = DOM.getFirstElement("textarea");
 
 	if (!list) return;
 
 	DOM.select("a", list).forEach(function(link, index) {
 		var path = new RegExp("<xsl:i(?:mport|nclude)\\s+href=\".*?" + link.firstChild.data),
-		    item = link.parentNode;
-
-		if (index % 2 == 0) DOM.addClass("odd", item);
+			 item = link.parentNode;
 
 		DOM.Event.addListener(textarea, "blur", function() {
 			DOM.setClass("selected", item, path.test(textarea.value));
@@ -1218,7 +1120,7 @@ DOM.onready(function() {
 
 DOM.onready(function() {
 	var source = document.getElementById("context"),
-	    output = document.getElementById("output-param-name");
+		 output = document.getElementById("output-param-name");
 
 	if (!output) return;
 
@@ -1230,7 +1132,7 @@ DOM.onready(function() {
 
 	DOM.select("select.filtered").forEach(function(select) {
 		var options = DOM.select("optgroup", select).reduce(getOptions, {}),
-		    minimum = select.options.length;
+			 minimum = select.options.length;
 
 		DOM.Event.addListener(source, "change", function() {
 			updateOptions(select, options, minimum);
@@ -1247,7 +1149,7 @@ DOM.onready(function() {
 
 	function updateOptions(select, options, minimum) {
 		var i    = select.length = minimum,
-		    name = source.options[source.selectedIndex].firstChild.data;
+			 name = source.options[source.selectedIndex].firstChild.data;
 
 		if (name in options) options[name].forEach(addOption, select);
 	}
@@ -1255,47 +1157,6 @@ DOM.onready(function() {
 	function addOption(option) {
 		this.options[this.options.length] = option;
 	}
-});
-
-// Debugger
-
-DOM.onready(function() {
-	var jump = document.getElementById("jump");
-
-	if (!jump) return;
-
-	var target = document.getElementById(/#?([^#:]*)/.exec(location.hash)[1]),
-	    active = target || DOM.getFirstElement("pre") || DOM.getFirstElement("dl"),
-	    errors = /[^:]*:?(.*)/.exec(location.hash)[1].split(/\D+/g),
-	    lines  = active.getElementsByTagName("code");
-
-	DOM.select("pre, dl").forEach(function(item) {
-		if (item !== active) DOM.addClass("hidden", item);
-	});
-
-	DOM.select("a", jump).forEach(function(item) {
-		var view = document.getElementById(/#(.+)/.exec(item.href)[1]);
-
-		if (view === active) DOM.addClass("active", item);
-
-		DOM.Event.addListener(item, "click", DOM.Event.preventDefault);
-
-		DOM.Event.addListener(jump, "click", function(event) {
-			DOM.setClass("active", item, event.target === item);
-			DOM.setClass("hidden", view, event.target !== item);
-		});
-	});
-
-	DOM.select("dl").forEach(function(defs) {
-		DOM.select("dt", defs).forEach(DOM.stripe);
-		DOM.select("dd", defs).forEach(DOM.stripe);
-	});
-
-	errors.forEach(function(line) {
-		var i = line - 1;
-
-		if (i in lines) DOM.addClass("warning", lines[i]);
-	});
 });
 
 // Change Password
@@ -1306,8 +1167,8 @@ DOM.onready(function() {
 	if (!fields) return;
 
 	var change = DOM.createElementWithText("div", "Password "),
-	    button = DOM.createElementWithText("button", "Change Password"),
-	    help   = DOM.getNextElement(fields);
+		 button = DOM.createElementWithText("button", "Change Password"),
+		 help   = DOM.getNextElement(fields);
 
 	change.className = "label";
 
@@ -1322,7 +1183,7 @@ DOM.onready(function() {
 	});
 
 	DOM.replaceNode(fields, change);
-	DOM.removeNode(help, document.body.offsetHeight); // Opera reflow
+	DOM.removeNode(help, document.body.offsetHeight); // Force Opera reflow
 });
 
 // Login
