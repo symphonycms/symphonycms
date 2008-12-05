@@ -976,59 +976,6 @@ UIControl.deploy("*.contextual", function(item) {
 	})();
 });
 
-UIControl.deploy("pre.XML code", function(code) {
-	var parent = code.parentNode,
-	    source = code.innerHTML.replace(/>/g, "&gt;"),
-	    output = this.SYNTAX_REPLACEMENTS.reduce(this.process, source);
-
-	while (this.INVALID_HTML.test(output)) {
-		output = output.replace(this.INVALID_HTML, "$1</span>$3<span$2>");
-	}
-
-	parent.innerHTML = "<code>" + output + "</code>";
-}, {
-	process: function(data, item) {
-		return data.replace(item.find, item.replace);
-	},
-	SYNTAX_REPLACEMENTS: [
-		{
-			find: /&lt;(?=[!?])!?(--|\?|)[\S\s]*?\1&gt;/g,
-			replace: "<span class=\"meta\">$&</span>"
-		},
-		{
-			find: /(\S+=)("[^"]*")(?=[^>]*?&gt;)/g,
-			replace: "<span class=\"attribute\">$1</span><span class=\"value\">$2</span>"
-		},
-		{
-			find: /&gt;(?!&lt;)([^<]*?)&lt;/g,
-			replace: "&gt;<span class=\"content\">$1</span>&lt;"
-		},
-		{
-			find: /$\s+?^/gm,
-			replace: "</code>$&<code>"
-		}
-	],
-	INVALID_HTML: /(<span([^>]*)>[^<]*)(<\/code>\s*<code>)/g
-});
-
-// TO-DO Code Editor (This is just a temporary fix to appease Allen)
-
-DOM.onready(function() {
-	DOM.select("textarea.code").forEach(function(textarea) {
-		DOM.Event.addListener(textarea, "keypress", allowTabs);
-	});
-	function allowTabs(event) {
-		var key = event.which || event.keyCode || event.charCode;
-		if (key != 9) return;
-		var scrollTop = this.scrollTop,
-		    position  = this.selectionStart + 1;
-		with (this) value = value.slice(0, selectionStart) + "\t" + value.slice(selectionEnd);
-		this.setSelectionRange(position, position);
-		if (this.scrollTop != scrollTop) this.scrollTop = scrollTop;
-		event.preventDefault();
-	}
-});
-
 // System Messages
 
 DOM.onready(function() {
@@ -1247,42 +1194,6 @@ DOM.onready(function() {
 	function addOption(option) {
 		this.options[this.options.length] = option;
 	}
-});
-
-// Debugger
-
-DOM.onready(function() {
-	var jump = document.getElementById("jump");
-
-	if (!jump) return;
-
-	var target = document.getElementById(/#?([^#:]*)/.exec(location.hash)[1]),
-	    active = target || DOM.getFirstElement("pre") || DOM.getFirstElement("dl"),
-	    errors = /[^:]*:?(.*)/.exec(location.hash)[1].split(/\D+/g),
-	    lines  = active.getElementsByTagName("code");
-
-	DOM.select("pre, dl").forEach(function(item) {
-		if (item !== active) DOM.addClass("hidden", item);
-	});
-
-	DOM.select("a", jump).forEach(function(item) {
-		var view = document.getElementById(/#(.+)/.exec(item.href)[1]);
-
-		if (view === active) DOM.addClass("active", item);
-
-		DOM.Event.addListener(item, "click", DOM.Event.preventDefault);
-
-		DOM.Event.addListener(jump, "click", function(event) {
-			DOM.setClass("active", item, event.target === item);
-			DOM.setClass("hidden", view, event.target !== item);
-		});
-	});
-
-	errors.forEach(function(line) {
-		var i = line - 1;
-
-		if (i in lines) DOM.addClass("warning", lines[i]);
-	});
 });
 
 // Change Password
