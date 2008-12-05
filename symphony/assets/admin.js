@@ -287,9 +287,6 @@ DOM = {
 	},
 	setClass: function(className, element, pass) {
 		return (pass ? DOM.addClass : DOM.removeClass)(className, element);
-	},
-	stripe: function(element, index) {
-		if (index % 2 == 0) DOM.addClass("odd", element);
 	}
 };
 
@@ -989,8 +986,6 @@ UIControl.deploy("pre.XML code", function(code) {
 	}
 
 	parent.innerHTML = "<code>" + output + "</code>";
-
-	DOM.select("code", parent).forEach(DOM.stripe);
 }, {
 	process: function(data, item) {
 		return data.replace(item.find, item.replace);
@@ -1078,7 +1073,6 @@ DOM.onready(function() {
 	if (!table || rows.length == 0) return;
 
 	DOM.addClass("selectable", table);
-	DOM.select("tbody tr").forEach(DOM.stripe);
 
 	var action = DOM.select("div.actions select")[0],
 	    select = new Selectable(rows, function(row) {
@@ -1204,8 +1198,6 @@ DOM.onready(function() {
 		var path = new RegExp("<xsl:i(?:mport|nclude)\\s+href=\".*?" + link.firstChild.data),
 		    item = link.parentNode;
 
-		if (index % 2 == 0) DOM.addClass("odd", item);
-
 		DOM.Event.addListener(textarea, "blur", function() {
 			DOM.setClass("selected", item, path.test(textarea.value));
 		})();
@@ -1284,11 +1276,6 @@ DOM.onready(function() {
 			DOM.setClass("active", item, event.target === item);
 			DOM.setClass("hidden", view, event.target !== item);
 		});
-	});
-
-	DOM.select("dl").forEach(function(defs) {
-		DOM.select("dt", defs).forEach(DOM.stripe);
-		DOM.select("dd", defs).forEach(DOM.stripe);
 	});
 
 	errors.forEach(function(line) {
