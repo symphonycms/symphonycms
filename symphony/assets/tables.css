@@ -15,7 +15,7 @@ th {
 	line-height: 2;
 }
 td {
-	border: 1px solid #e6e6e4;
+	border: 1px solid #e6e6e5;
 	border-width: 1px 0;
 	padding: 0.67em 19px 0.67em 0;
 }
@@ -23,8 +23,8 @@ th:first-child,
 td:first-child {
 	padding-left: 32px;
 }
-td[colspan] {
-	background-color: #f5f5f3;
+tr:nth-child(odd) td {
+	background-color: #f5f5f4;
 }
 tbody a {
 	padding: 0.67em 0;

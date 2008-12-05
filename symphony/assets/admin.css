@@ -166,23 +166,17 @@ h1 a:hover,
 	height: 0;
 	overflow: hidden;
 }
-.odd,
-.odd td {
-	background-color: #f5f5f3;
-}
 .selected,
 .selected td {
 	border-color: #617dc5 !important;
 	background-color: #5273c0;
 }
-.selected.odd,
-.selected.odd td {
+tr.selected:nth-child(odd) td {
 	background-color: #5677c3;
 }
 .movable,
-.movable td,
-.movable.odd,
-.movable.odd td {
+tr.movable td,
+tr.movable:nth-child(odd) td {
 	border-color: #998;
 	background-color: #887;
 }
