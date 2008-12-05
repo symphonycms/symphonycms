@@ -5,15 +5,16 @@ body {
 }
 form {
 	position: relative;
-	padding: 0 32px;
+	padding: 0 19px;
 	min-height: 100%;
 }
 h1 {
-	margin: 0 -32px;
-	padding: 19px 65px;
-	background: #353533 url("images/logo.png") 20px 50% no-repeat;
+	margin: 0 -19px;
+	padding: 20px 19px;
+	background: #353533;
 	color: #fff;
 	text-shadow: -1px 2px 3px #111;
+	font-weight: bold;
 }
 h1 a {
 	color: #fff;
@@ -27,63 +28,63 @@ h1 a:hover,
 /* Navigation */
 #nav {
 	position: relative;
-	z-index: 1;
+	z-index: 3;
 	float: left;
-	margin: -8px -32px 9px;
-	padding: 8px 32px;
+	margin: -5px 0 1.3em -19px;
+	padding: 0 38px 0 0;
 	width: 100%;
-	background: url("images/navigation.png") repeat-x;
+	background: url("images/navigation.png") 0 -60px repeat-x;
 	color: #646464;
+	white-space: nowrap;
 	list-style: none;
 	text-transform: uppercase;
 	font: bold 90.91%/2px Lucida Grande, Leelawadee, Lucida Sans Unicode, sans-serif;
 }
 #nav > li {
-	position: relative;
 	float: left;
+	margin: 5px -19px 5px 19px;
+	padding: 14px 1em;
 	height: 2px;
-	padding: 14px 10px;
 }
 #nav > li:hover,
 #nav > li.active {
-	background: #597bc6 url("images/navigation-active.png") repeat-x;
+	background: #517ca6 url("images/navigation.png") repeat-x;
 	color: #fff;
 }
 #nav > li:hover {
-	z-index: 1;
-	background-color: #818072;
-	background-position: 0 100%;
+	position: relative;
+	background-color: #7e7e70;
+	background-position: 0 -30px;
 }
 #nav ul {
 	display: none;
 	position: absolute;
 	top: 25px;
 	left: 5px;
-	margin-left: 0;
-	border: 1px solid #eee;
+	margin: 0;
+	border: 1px solid;
 	border-color: #fdfdfd #f1f1f1 #d2d2d2 #ececec;
+	padding-left: 0;
 	background-color: #fff;
 	background-color: rgba(255, 255, 255, 0.8);
 	list-style: none;
 	text-transform: none;
 	font-weight: normal;
-	font-size: 1.3em;
-	line-height: 1.5em;
+	font-size: 130%;
+	line-height: 2.5;
 }
 #nav li:hover ul {
 	display: block;
 }
 #nav a {
 	display: block;
-	padding: 0.67em 10px;
+	padding: 0 0.77em;
 	color: #444;
 	text-decoration: none;
-	white-space: pre;
 }
 #nav a:hover {
-	background-color: #887;
+	background-color: #7e7e70;
 	color: #fff;
-	opacity: 1;
 }
 
 /* User */
@@ -93,15 +94,14 @@ h1 a:hover,
 	bottom: 0;
 	left: 0;
 	margin: 0;
-	padding: 20px 32px;
-	background: #353533 url("images/navigation.png") 0 -38px repeat-x;
+	padding: 20px 12px;
+	background: #353533 url("images/navigation.png") 0 -95px repeat-x;
 	text-align: right;
 	text-shadow: -1px 2px 3px #111;
 	color: #fff;
 }
 #usr li {
 	display: inline;
-	margin-left: 0.5em;
 }
 #usr a {
 	padding: 5px;
@@ -112,7 +112,7 @@ h1 a:hover,
 
 /* System Messages */
 #notice {
-	margin: 0 -32px;
+	margin: 0 -19px;
 	border-bottom: 1px solid #887;
 	padding: 0 0.83em;
 	background-color: #7f7f72;
@@ -161,8 +161,8 @@ h1 a:hover,
 	display: none;
 }
 .wrapper {
-	margin: 0 -32px;
-	padding: 0 32px;
+	margin: 0 -19px;
+	padding: 0 19px;
 	height: 0;
 	overflow: hidden;
 }

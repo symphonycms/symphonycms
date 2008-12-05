@@ -22,6 +22,7 @@ p {
 h1,
 h2 {
 	position: relative;
+	clear: both;
 	margin-bottom: 1em;
 	text-shadow: -1px 2px 3px #ddd;
 	font: 127.28% Lucida Grande, Leelawadee, Lucida Sans Unicode, sans-serif;
@@ -29,6 +30,7 @@ h2 {
 h3,
 h4 {
 	position: relative;
+	clear: both;
 	margin-bottom: 0.75em;
 	text-shadow: -1px 2px 2px #ddd;
 	font-weight: bold;

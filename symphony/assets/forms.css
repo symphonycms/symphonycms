@@ -312,7 +312,7 @@ ul.tags .more:hover {
 
 /* Special Controls */
 #configure {
-	margin: -1.5em -32px 1.5em;
+	margin: -1.5em -19px 1.5em;
 	overflow: hidden;
 }
 #configure h3:first-child {
@@ -322,7 +322,7 @@ ul.tags .more:hover {
 #configure h3 {
 	margin-top: -1px;
 	border-bottom: 1px solid #e7e7e3;
-	padding: 0.5em 32px;
+	padding: 0.5em 19px;
 	background-color: #ccb;
 	color: #554;
 	text-shadow: 2px 2px 3px #ddd;
