@@ -234,7 +234,7 @@
 			$this->customError(E_USER_ERROR, 'Page Not Found', 'The page you requested does not exist.', false, true, 'error', array('header' => 'HTTP/1.0 404 Not Found'));			
 		}
 		
-		public function uninstall(){
+/*		public function uninstall(){
 			return;
 			## ASK EACH EXTENSION TO UNINSTALL ITSELF
 			if($extensions = $this->ExtensionManager->listAll()){
@@ -280,7 +280,8 @@
 			
 			return;
 		}
-		
+	*/
+/*		
 		public function export(){
 			
 			$sql_schema = $sql_data = NULL;
@@ -393,8 +394,6 @@
 			print $raw;
 			exit();
 			
-		}		
+		}	*/	
 	}
 
-
-?>
