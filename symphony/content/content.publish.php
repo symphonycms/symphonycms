@@ -597,7 +597,7 @@
 			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')))));
 			
 			if (trim($title) == '') {
-			//	$title = 'Untitled';
+				$title = 'Untitled';
 			}
 
 			$this->setPageType('form');
