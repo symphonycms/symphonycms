@@ -595,6 +595,10 @@
 			$field = $entryManager->fieldManager->fetch($field_id);
 
 			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')))));
+			
+			if (trim($title) == '') {
+			//	$title = 'Untitled';
+			}
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
