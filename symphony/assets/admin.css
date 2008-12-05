@@ -204,6 +204,28 @@ tr.movable:nth-child(odd) td {
 	color: #ccb;
 }
 
+/* Code */
+code {
+	font: 115%/1.5 Monaco, Consolas, Andale Mono, Lucida Console, monospace;
+	font-size-adjust: 0.5;
+}
+pre {
+	position: relative;
+	left: 275px;
+	margin: 0 0 1.75em -275px;
+	width: 100%;
+	color: #474742;
+	white-space: normal;
+	font: inherit;
+}
+pre code {
+	display: block;
+	border: 1px dashed #a1a19a;
+	padding: 5px 7px;
+	overflow: auto;
+	white-space: pre;
+}
+
 /* Buttons */
 a.button {
 	position: absolute;
