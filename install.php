@@ -16,8 +16,7 @@
 
 	$build = kBUILD;
 	define('kVERSION', $build{0} . '.' . $build{1} . ($build{2} != 0 || $build{3} != 0 ? '.' . $build{2} . $build{3} : ''));
-	define('kSUPPORT_SERVER', 'http://status.symphony21.com');
-	define('kINSTALL_ASSET_LOCATION', kSUPPORT_SERVER . '/install/assets/4.0');	
+	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	
 	define('kINSTALL_FILENAME', basename(__FILE__));
 	
