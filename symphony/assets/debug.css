@@ -45,7 +45,6 @@ h1 {
 
 /* Layout */
 pre {
-	display: none;
 	z-index: 1;
 	position: relative;
 	border: 1px solid #3e3e3b;
@@ -70,7 +69,6 @@ dl {
 	position: relative;
 	border: 1px solid #3e3e3b;
 	padding-left: 15em;
-	min-height: 50%;
 	overflow: hidden;
 }
 dt {
@@ -141,10 +139,6 @@ span.error {
 }
 
 /* Generic Elements */
-html,
-zbody {
-	height: 100%;
-}
 body {
 	padding: 19px 21.25em 19px 19px;
 	background-color: #2d2d2a;
