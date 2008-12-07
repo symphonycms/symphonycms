@@ -1,7 +1,7 @@
 <?php
 
 	require_once(TOOLKIT . '/class.htmlpage.php');
-	require_once(TOOLKIT . '/bitter/bitter.php');
+	require_once(TOOLKIT . '/class.bitterhtml.php');
 
 	Class DebugPage extends HTMLPage{
 		
@@ -106,10 +106,8 @@
 		}
 		
 		function __buildCodeBlock($code, $id){
-			//return new XMLElement('pre', '<code>' . str_replace('<', '&lt;', str_replace('&', '&amp;', General::tabsToSpaces($code, 2))) . '</code>', array('id' => $id, 'class' => 'XML'));
-			
-			require_once(TOOLKIT . '/bitter/langs/lang.html.php');
-			$lang = new BitterLangHTML; //BitterLang::open('html');
+
+			$lang = new BitterLangHTML;
 
 			$code = $lang->process(
 				stripslashes($code), 4
