@@ -89,7 +89,8 @@
 					}
 					
 					$li = new XMLElement('li');
-					$li->appendChild(new XMLElement('h2', '<a href="?debug#'.$filename.':'.@implode(':', $lines).'" title="Show debug view for '.$filename.'">'.$filename.'</a>'));					
+					$li->appendChild(new XMLElement('h2', sprintf('<a href="%s" title="Show debug view for %2$s">%2$s</a>', "?debug={$filename}#line-".$lines[0], $filename)));
+					
 					$li->appendChild($dl);
 					
 					$ul->appendChild($li);
@@ -115,7 +116,7 @@
 					}
 				
 					$li = new XMLElement('li');
-					$li->appendChild(new XMLElement('h2', '<a href="?debug#u-'.$filename.':'.@implode(':', $lines).'" title="Show debug view for '.$filename.'">'.$filename.'</a>'));					
+					$li->appendChild(new XMLElement('h2', sprintf('<a href="%s" title="Show debug view for %2$s">%2$s</a>', "?debug=u-{$filename}#line-".$lines[0], $filename)));
 					$li->appendChild($dl);
 				
 					$ul->appendChild($li);
@@ -139,7 +140,7 @@
 				}
 		
 				$li = new XMLElement('li');
-				$li->appendChild(new XMLElement('h2', '<a href="?debug#xml:'.@implode(':', $lines).'" title="Show debug view for XML">XML</a>'));					
+				$li->appendChild(new XMLElement('h2', sprintf('<a href="?debug=xml#line-%d" title="Show debug view for XML">XML</a>', $lines[0])));	
 				$li->appendChild($dl);
 		
 				$ul->appendChild($li);
@@ -156,4 +157,3 @@
 
 	exit();
 
-?>
