@@ -155,8 +155,6 @@
 				//if(trim($settings['general']['sitename']) == '') $this->_errors['general']['sitename'] = 'This is a required field.';
 
 				//else{
-					
-					$settings['public']['maintenance_mode'] = ($settings['public']['maintenance_mode'] ? 'yes' : 'no');
 
 					###
 					# Delegate: Save

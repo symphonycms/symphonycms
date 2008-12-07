@@ -333,7 +333,7 @@
 			
 				if(!isset($fields['title']) || trim($fields['title']) == '') $this->_errors['title'] = 'Title is a required field';
 
-				if(trim($fields['type']) != '' && preg_match('/(index|maintenance|404|403)/i', $fields['type'])){
+				if(trim($fields['type']) != '' && preg_match('/(index|404|403)/i', $fields['type'])){
 					
 					$haystack = strtolower($fields['type']);
 					
@@ -347,10 +347,6 @@
 					
 					elseif(preg_match('/\b403\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `type` = '403' LIMIT 1")){	
 						$this->_errors['type'] = 'A 403 type page already exists.';
-					}
-										
-					elseif(preg_match('/\bmaintenance\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `type` = 'maintenance' LIMIT 1")){	
-						$this->_errors['type'] = 'A maintenance type page already exists.';
 					}
 										
 				}			
@@ -481,7 +477,7 @@
 
 				if(!isset($fields['title']) || trim($fields['title']) == '') $this->_errors['title'] = 'Title is a required field';
 
-				if(trim($fields['type']) != '' && preg_match('/(index|maintenance|404|403)/i', $fields['type'])){
+				if(trim($fields['type']) != '' && preg_match('/(index|404|403)/i', $fields['type'])){
 					
 					$haystack = strtolower($fields['type']);
 					
@@ -495,11 +491,7 @@
 
 					elseif(preg_match('/\b403\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `page_id` != '$page_id' && `type` = '403' LIMIT 1")){	
 						$this->_errors['type'] = 'A 403 type page already exists.';
-					}
-					
-					elseif(preg_match('/\bmaintenance\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `page_id` != '$page_id' && `type` = 'maintenance' LIMIT 1")){	
-						$this->_errors['type'] = 'A maintenance type page already exists.';
-					}						
+					}					
 				}
 				
 				if(empty($this->_errors)){

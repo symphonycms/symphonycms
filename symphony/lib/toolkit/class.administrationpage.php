@@ -502,7 +502,7 @@
 
 		function __fetchAvailablePageTypes(){
 			
-			$system_types = array('index', 'XML', 'admin', 'maintenance', '404', '403');
+			$system_types = array('index', 'XML', 'admin', '404', '403');
 			
 			if(!$types = $this->_Parent->Database->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` ORDER BY `type` ASC")) return $system_types;
 			
