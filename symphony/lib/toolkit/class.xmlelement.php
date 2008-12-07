@@ -16,6 +16,7 @@
 		private $_allowEmptyAttributes;
 		private $_elementStyle;
 		private $_placeValueAfterChildElements;
+		private $_no_end_tags;
 		
 		const CRLF = "\r\n";
 		
@@ -26,6 +27,11 @@
 			$this->_attributes = array();
 			$this->_children = array();
 			$this->_processingInstructions = array();
+			
+			$this->_no_end_tags = array(
+				'area', 'base', 'basefont', 'br', 'col', 'frame', 'hr', 'img',
+				'input', 'isindex', 'link', 'meta', 'param'
+			);
 			
 			$this->setEncoding('utf-8');
 			$this->setVersion('1.0');
@@ -168,10 +174,20 @@
 				
 				$result .= '</' . $this->_name . '>' . $newline;	
 			
-			
+			// Empty elements:
+			} else {
+				if ($this->_elementStyle == 'xml') {
+					$result .= ' />';
+					
+				} else if (in_array($this->_name, $this->_no_end_tags)) {
+					$result .= '>';
+					
+				} else {
+					$result .= "</{$this->_name}>";
+				}
+				
+				$result .= $newline;
 			}
-			
-			else $result .= ($this->_elementStyle == 'xml' ? ' />' : '>') . $newline;
 		
 			return $result;
 		}

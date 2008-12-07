@@ -185,27 +185,24 @@
 						
 						$link = Widget::Anchor('None', $this->_Parent->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/', $entry->get('id'), 'content');
 						
-						foreach($visible_columns as $position => $column){
-
+						foreach ($visible_columns as $position => $column) {
 							$data = $entry->getData($column->get('id'));
+							$field = $field_pool[$column->get('id')];
 							
-							//if(!is_array($data) || empty($data)) $value = 'None';
-
-							//else{										
-								$field = $field_pool[$column->get('id')];							
-								$value = $field->prepareTableValue($data, ($position == 0 ? $link : NULL));
+							$value = $field->prepareTableValue($data, ($position == 0 ? $link : null));
+							
+							if (trim($value) == '') {
+								$value = ($position == 0 ? $link->generate() : 'None');
+							}
+							
+							if ($value == 'None') {
+								$tableData[] = Widget::TableData($value, 'inactive');
 								
-								if(trim($value) == '') $value = ($position == 0 ? $link->generate() : 'None');
-								
-							//}
-
-							//if($section->get('entry_order') == $column->get('id')) $value = '<strong>'.$value.'</strong>';
-
-							if(empty($tableData)) $tableData[] = Widget::TableData($value, ($value == 'None' ? 'inactive' : NULL));		
-							else $tableData[] = Widget::TableData($value, ($value == 'None' ? 'inactive' : NULL));
-
+							} else {
+								$tableData[] = Widget::TableData($value);
+							}
+							
 							unset($field);
-
 						}
 					}
 
@@ -598,6 +595,10 @@
 			$field = $entryManager->fieldManager->fetch($field_id);
 
 			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')))));
+			
+			if (trim($title) == '') {
+				$title = 'Untitled';
+			}
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
