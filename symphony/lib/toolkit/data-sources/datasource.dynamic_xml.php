@@ -4,7 +4,7 @@
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 	require_once(CORE . '/class.cacheable.php');
 	
-	if(isset($this->dsParamURL)) $this->dsParamURL = $this->__processParametersInString($this->dsParamURL, $this->_env);
+	if(isset($this->dsParamURL)) $this->dsParamURL = $this->__processParametersInString($this->dsParamURL, $this->_env, true, true);
 	if(isset($this->dsParamXPATH)) $this->dsParamXPATH = $this->__processParametersInString($this->dsParamXPATH, $this->_env);
 
 	$stylesheet = new XMLElement('xsl:stylesheet');

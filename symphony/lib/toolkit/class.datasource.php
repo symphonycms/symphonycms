@@ -1,7 +1,5 @@
 <?php
 
-	
-	
 	define_safe('DS_FILTER_AND', 1);
 	define_safe('DS_FILTER_OR', 2);
 	
@@ -19,20 +17,24 @@
 		function __construct(&$parent, $env=NULL, $process_params=true){
 			$this->_Parent = $parent;
 			$this->_force_empty_result = false;
-						
-			if($process_params) $this->processParameters($env);			
+
+			if($process_params){ 
+				$this->processParameters($env);
+			}
 		}
 		
 		function processParameters($env=NULL){
 									
 			if($env) $this->_env = $env;
-
+			
 			if((isset($this->_env) && is_array($this->_env)) && is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
 				foreach($this->dsParamFILTERS as $key => $value){
 					$value = stripslashes($value);
 					$new_value = $this->__processParametersInString($value, $this->_env);
-					if(trim($new_value) == '') unset($this->dsParamFILTERS[$key]);
+
+					if(strlen(trim($new_value)) == 0) unset($this->dsParamFILTERS[$key]);
 					else $this->dsParamFILTERS[$key] = $new_value;
+					
 				}
 			}
 
@@ -45,6 +47,7 @@
 			$this->_param_output_only = ((!is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) && !isset($this->dsParamGROUP));
 			
 			if($this->dsParamREDIRECTONEMPTY == 'yes' && $this->_force_empty_result) $this->__redirectToErrorPage();
+
 					
 		}
 		
@@ -87,7 +90,7 @@
 			return new XMLElement('error', 'No records found.');
 		}
 		
-		function __processParametersInString($value, $env, $includeParenthesis=true){
+		function __processParametersInString($value, $env, $includeParenthesis=true, $escape=false){
 			if(trim($value) == '') return NULL;
 
 			if(!$includeParenthesis) $value = '{'.$value.'}';
@@ -119,6 +122,7 @@
 						
 					}
 					
+					if($escape == true) $replacement = urlencode($replacement);
 					$value = str_replace($source, $replacement, $value);
 					
 				}
