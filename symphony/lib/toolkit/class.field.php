@@ -1,6 +1,4 @@
 <?php
-
-	
 	
 	Class Field extends Object{
 		protected $_key = 0;
@@ -464,6 +462,8 @@
 			$fields = array();
 
 			$fields['element_name'] = Lang::createHandle($this->get('label'));
+			if(is_numeric($fields['element_name']{0})) $fields['element_name'] = 'field-' . $fields['element_name'];
+			
 			$fields['label'] = $this->get('label');
 			$fields['parent_section'] = $this->get('parent_section');
 			$fields['location'] = $this->get('location');
