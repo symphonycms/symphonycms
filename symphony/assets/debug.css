@@ -91,7 +91,6 @@ span[id] {
 	position: absolute;
 	right: 0;
 	left: 0;
-	padding-bottom: 250em;
 	background-color: #191917;
 	color: #666660;
 	counter-increment: line-numbers;
@@ -108,9 +107,9 @@ span[id]:first-child {
 span[id]::before {
 	content: counter(line-numbers);
 	display: block;
-	margin: -0.3em 0 -250em -3.6em;
+	margin: -0.3em 0 0 -3.6em;
 	border-right: 1px solid #3e3e3b;
-	padding: 0.3em 0.6em 250em 0;
+	padding: 0.3em 0.6em 0.3em 0;
 	width: 3em;
 	background-color: #232320;
 	text-align: right;
