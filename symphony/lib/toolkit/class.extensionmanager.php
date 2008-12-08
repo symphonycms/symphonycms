@@ -38,6 +38,10 @@
 			
 			return $status_s2 - $status_s1;		
 		}
+		
+		function sortByName($a, $b) {
+			return strnatcasecmp($a['name'], $b['name']);	
+		}
  
 		/*function update($name){
 
