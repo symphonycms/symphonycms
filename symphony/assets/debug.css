@@ -72,13 +72,13 @@ ol li {
 dl {
 	position: relative;
 	border: 1px solid #3e3e3b;
-	padding-left: 15em;
+	padding-left: 21em;
 	overflow: hidden;
 }
 dt {
 	position: absolute;
-	margin: 0 0 -250em -15em;
-	padding: 0.3em 14.3em 250.3em 0.7em;
+	margin: 0 0 -250em -21em;
+	padding: 0.3em 20.3em 250.3em 0.7em;
 	width: 100%;
 	background-color: #191917;
 }
