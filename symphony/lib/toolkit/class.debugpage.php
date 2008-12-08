@@ -107,6 +107,8 @@
 		
 		function __buildCodeBlock($code, $id){
 
+			$line_numbering = new XMLElement('ol');
+
 			$lang = new BitterLangHTML;
 
 			$code = $lang->process(
@@ -121,11 +123,12 @@
 			
 			foreach($lines as $n => $l){
 				$value .= sprintf('<span id="line-%d"></span>%s', ($n + 1), $l) . General::CRLF;
+				$line_numbering->appendChild(new XMLElement('li', sprintf('<a href="#line-%d">%1$d</a>', ($n + 1))));
 			}
 			
 			$pre = new XMLElement('pre', sprintf('<code><span class="markup">%s</span></code>', trim($value)));
 			
-			return $pre;
+			return array($line_numbering, $pre);
 			
 		}
 		
@@ -159,17 +162,17 @@
 			}
 			
 			elseif($_GET['debug'] == 'xml' || strlen(trim($_GET['debug'])) <= 0){
-				$this->Body->appendChild($this->__buildCodeBlock($xml, 'xml'));
+				$this->Body->appendChildArray($this->__buildCodeBlock($xml, 'xml'));
 			}
 			
 			elseif($_GET['debug'] == 'result'){
-				$this->Body->appendChild($this->__buildCodeBlock($output, 'result'));
+				$this->Body->appendChildArray($this->__buildCodeBlock($output, 'result'));
 			}
 					
 			else{
 				
 				if($_GET['debug'] == basename($page['filelocation'])){
-					$this->Body->appendChild($this->__buildCodeBlock($xsl, basename($page['filelocation'])));
+					$this->Body->appendChildArray($this->__buildCodeBlock($xsl, basename($page['filelocation'])));
 				}
 				
 				elseif($_GET['debug']{0} == 'u'){
@@ -178,7 +181,8 @@
 							
 							if($_GET['debug'] != 'u-'.basename($u)) continue;
 							
-							$this->Body->appendChild($this->__buildCodeBlock(@file_get_contents(UTILITIES . '/' . basename($u)), 'u-'.basename($u)));	
+							$this->Body->appendChildArray($this->__buildCodeBlock(@file_get_contents(UTILITIES . '/' . basename($u)), 'u-'.basename($u)));
+							break;
 						}
 					}
 				}
