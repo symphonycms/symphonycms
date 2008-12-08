@@ -1193,3 +1193,13 @@ DOM.Event.addListener(window, "load", function() {
 
 	if (username && username.value.length == 0) username.focus();
 });
+
+// Horribleness
+
+if (/[?&]debug(?:[&=].*?)?#line-\d+$/.test(location.href)) {
+	DOM.onready(function() {
+		document.getElementsByTagName('ol')[0]
+		        .getElementsByTagName('a')[/#line-(\d+)/.exec(location.href)[1] - 1]
+		        .className = 'active';
+	});
+}
