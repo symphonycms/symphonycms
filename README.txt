@@ -19,12 +19,20 @@ Visit the beta forum at http://overture21.com/forum/
 
 1. Clone the git repository to the location you desire using:
 
-		git clone git://github.com/symphony/symphony-2.git
+	git clone git://github.com/symphony/symphony-2.git
 		
 	Should you wish to make contributions back to the project, feel free to fork the
 	master tree, instead of cloning, and issue pull requests via github.
+
+2. Grab the Maintenance Mode, Select Box Link Field and Markdown Extensions
+
+	git clone git://github.com/pointybeard/maintenance_mode.git
+	git clone git://github.com/pointybeard/markdown.git
+	git clone git://github.com/pointybeard/selectbox_link_field.git
 	
-2. Follow from step 2 below
+	Each of these need to be placed in the /extensions folder
+
+3. Follow from step 2 below
 
 
 
