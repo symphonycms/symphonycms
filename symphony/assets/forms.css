@@ -129,6 +129,10 @@ div.invalid {
 	background-color: #d42;
 	color: #fff;
 }
+.group > .invalid {
+	padding: 0.75em 3% 1em;
+	width: 44%;
+}
 div.invalid p {
 	margin: -1em 0 0;
 }

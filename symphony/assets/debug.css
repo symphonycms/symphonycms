@@ -134,7 +134,7 @@ span[id]:first-child {
 	margin-top: -0.3em;
 	padding-top: 0.3em;
 }
-span[id]:first-child {
+span[id]:last-child {
 	height: 1.8em;
 }
 span[id]:target {

@@ -169,10 +169,7 @@ h1 a:hover,
 .selected,
 .selected td {
 	border-color: #617dc5 !important;
-	background-color: #5273c0;
-}
-tr.selected:nth-child(odd) td {
-	background-color: #5677c3;
+	background-color: #5273c0 !important;
 }
 .movable,
 tr.movable td,
