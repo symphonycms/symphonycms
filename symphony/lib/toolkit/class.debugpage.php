@@ -117,7 +117,7 @@
 
 			$code = preg_replace(array('/^<span class="markup">/i', '/<\/span>$/i'), NULL, trim($code));
 			
-			$lines = preg_split('/[\r\n]+/i', $code);
+			$lines = preg_split('/[\r\n]+/i', rtrim($code));
 			
 			$value = NULL;
 			
