@@ -146,9 +146,17 @@ dt,
 span.attribute {
 	color: #f48435;
 }
+span.entity {
+	color: #eabe57;
+}
 dd,
 span.string {
 	color: #87a4ec;
+}
+span.string span.entity,
+span.string span.xpath,
+span.string span.variable {
+	color: #9cb4e5;
 }
 span.element {
 	color: #beea57;
@@ -156,10 +164,6 @@ span.element {
 span.comment,
 span.comment * {
 	color: #65655e;
-}
-span.xpath,
-span.variable {
-	color: #9cb4e5;
 }
 span.error {
 	background-color: #892005;
