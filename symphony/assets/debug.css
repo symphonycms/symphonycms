@@ -45,24 +45,29 @@ h1 {
 
 /* Layout */
 pre {
-	z-index: 1;
-	position: relative;
 	border: 1px solid #3e3e3b;
-	background-color: #191917;
+	background-color: #232320;
 	white-space: normal;
 }
 code {
 	display: block;
 	position: relative;
+	z-index: 1;
 	margin-left: 3.6em;
+	border-left: 1px solid #3e3e3b;
 	padding: 0.3em 0 0.3em 0.7em;
+	overflow: auto;
 	white-space: pre;
-	white-space: pre-wrap;
+}
+code > span {
+	display: block;
+	position: relative;
+	z-index: 2;
 }
 dl,
-code {
-	font: 115%/1.5 Monaco, Consolas, Andale Mono, Lucida Console, monospace;
-	font-size-adjust: 0.5;
+code,
+ol li {
+	font: 11px/1.5 Monaco, Consolas, Andale Mono, Lucida Console, monospace;
 }
 dl {
 	position: relative;
@@ -86,33 +91,54 @@ dd {
 }
 
 /* Line Numbers */
+ol {
+	position: absolute;
+	z-index: 1;
+	left: 21px;
+	right: 21.25em;
+	margin: 1px 1px 0 0;
+	text-align: right;
+	list-style: none;
+}
+ol li {
+	margin: 0 0 -0.3em 3.6em;
+	padding-bottom: 0.3em;
+	background-color: #191917;
+}
+ol li:first-child {
+	padding-top: 0.3em;
+}
+ol li:hover {
+	background-color: #1e1e1c;
+}
+ol a {
+	display: block;
+	position: relative;
+	z-index: 10;
+	margin-left: -3.6em;
+	width: 3em;
+	color: #666663;
+	cursor: default;
+}
+ol a.active {
+	color: #fff;
+}
 span[id] {
-	z-index: -1;
+	z-index: -2;
 	position: absolute;
 	right: 0;
-	left: 0;
-	background-color: #191917;
-	color: #666660;
-	counter-increment: line-numbers;
-}
-span[id]:hover,
-span[id]:target {
-	background-color: #1e1e1c;
-	color: #fff;
+	left: -1em;
+	height: 1.5em;
 }
 span[id]:first-child {
 	margin-top: -0.3em;
 	padding-top: 0.3em;
 }
-span[id]::before {
-	content: counter(line-numbers);
-	display: block;
-	margin: -0.3em 0 0 -3.6em;
-	border-right: 1px solid #3e3e3b;
-	padding: 0.3em 0.6em 0.3em 0;
-	width: 3em;
-	background-color: #232320;
-	text-align: right;
+span[id]:first-child {
+	height: 1.8em;
+}
+span[id]:target {
+	background-color: #3e3e3b;
 }
 
 /* Syntax Highlighting */
@@ -122,23 +148,23 @@ span.attribute {
 }
 dd,
 span.string {
-	color: #acf;
+	color: #9be;
 }
 span.element {
-	color: #be5;
+	color: #cf5;
 }
 span.comment,
 span.comment * {
 	color: #727270;
 }
-
-/*
-@Rowan: Your highlighter has bugs! :P <!-->-->
+span.xpath,
+span.variable {
+	color: #bdf;
+}
 span.error {
 	background-color: #892005;
 	color: #fff;
 }
-*/
 
 /* Generic Elements */
 body {
