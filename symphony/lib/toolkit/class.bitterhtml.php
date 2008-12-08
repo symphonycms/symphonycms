@@ -30,17 +30,17 @@
 
 	class BitterLangHTML {
 		
-		public static function htmlentities($string){
+		public static function htmlentities($string) {
 			return htmlentities($string, ENT_COMPAT, 'UTF-8');
 		}
-				
+		
 		public function process($source, $tabsize) {
 			
 			$tabsize = (integer)$tabsize;
-		
+			
 			if ($tabsize < 1) $tabsize = 1;
 			if ($tabsize > 8) $tabsize = 8;
-		
+			
 			if (!function_exists('__expander')) eval("
 				function __expander(\$matches) {
 					return \$matches[1] . str_repeat(
@@ -88,7 +88,7 @@
 			
 			while (strlen($context)) {
 				
-				$regexp = '%<\?|<!(--)?|</?|&[^;]*;%';
+				$regexp = '%<\?|<!(--)?|</?|&[^;\s]*;?%';
 				$start = $this->position($context, $regexp);
 
 				if ($start < 0) {
@@ -166,7 +166,7 @@
 					$context = $after;
 					
 				// Entity:
-				} else if (preg_match('%&[^;]*;%', $subject)) {
+				} else if (preg_match('%&[^;\s]*;?%', $subject)) {
 					$output .= $this->contextEntity($context, $start, $before, $subject);
 					
 				// Unknown:
@@ -282,7 +282,7 @@
 		protected function contextEntity(&$context, $start, $before, $subject) {
 			$after = $this->slice($context, $start + strlen($subject));
 			$class = "error"; $output = '';
-
+			
 			// Is valid?
 			if (preg_match('%&(#[0-9]{1,4}|#x[a-f0-9]{1,4}|[a-z\-]+);%i', $subject)) $class = "entity";
 			
@@ -300,7 +300,7 @@
 			$context = $source; $output = '';
 		
 			while (strlen($context)) {
-				$regexp = '%&[^;]*;|\{|\$%';
+				$regexp = '%&[^;\s]*;?|\{|\$%';
 				$start = $this->position($context, $regexp);
 				
 				if ($start < 0) {
@@ -314,7 +314,7 @@
 				}
 				
 				// Entity:
-				if (preg_match('%&[^;]*;%', $subject)) {
+				if (preg_match('%&[^;\s]*;?%', $subject)) {
 					$output .= $this->contextEntity($context, $start, $before, $subject);
 					
 				// XPath:
