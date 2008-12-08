@@ -11,11 +11,3 @@
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');	
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
 	require_once(BOOT . '/class.object.php');
-	
-	$url_bits = parse_url(URL);
-
-	if($_SERVER['HTTP_HOST'] != $url_bits['host'] && $_SERVER['HTTP_HOST'] != ($url_bits['host'] . ':' . $url_bits['port'])){
-		header('HTTP/1.1 301 Moved Permanently');
-		redirect(URL . symphony_request_uri());
-		exit();
-	}

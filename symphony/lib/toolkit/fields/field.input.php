@@ -8,7 +8,7 @@
 			$this->_name = 'Text Input';
 			$this->_required = true;
 			
-			$this->set('required', 'yes');
+			$this->set('required', 'no');
 		}
 
 		function allowDatasourceOutputGrouping(){

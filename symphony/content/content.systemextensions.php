@@ -104,7 +104,9 @@
 						#              This can not be modified.
 						//$ExtensionManager->notifyMembers('Enable', getCurrentPage(), array('services' => $checked));
 
-						foreach($checked as $name) $this->_Parent->ExtensionManager->enable($name);			
+						foreach($checked as $name){
+							if($this->_Parent->ExtensionManager->enable($name) === false) return;
+						}
 						break;
 
 
@@ -117,7 +119,9 @@
 						#              This can be modified.
 						//$ExtensionManager->notifyMembers('Disable', getCurrentPage(), array('services' => &$checked));
 	
-						foreach($checked as $name) $this->_Parent->ExtensionManager->disable($name);			
+						foreach($checked as $name){
+							if($this->_Parent->ExtensionManager->disable($name) === false) return;			
+						}
 						break;
 					
 					case 'uninstall':
@@ -128,10 +132,12 @@
 						# Description: Notifies of uninstalling Extension. Array of selected services is provided.
 						#              This can be modified.
 						//$ExtensionManager->notifyMembers('Uninstall', getCurrentPage(), array('services' => &$checked));
-
-						foreach($checked as $name) $this->_Parent->ExtensionManager->uninstall($name);			
-						break;						
-
+						
+						foreach($checked as $name){
+							if($this->_Parent->ExtensionManager->uninstall($name) === false) return;			
+						}
+						
+						break;
 				}		
 
 				redirect($this->_Parent->getCurrentPageURL());

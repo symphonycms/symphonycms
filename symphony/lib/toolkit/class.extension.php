@@ -12,15 +12,15 @@
 		
 		function __construct($args){ $this->_Parent =& $args['parent']; }
 		
-		public function update(){}
+		public function update(){return true;}
 		
-		public function enable(){}
+		public function enable(){return true;}
 		
-		public function disable(){}
+		public function disable(){return true;}
 		
-		public function uninstall(){}
+		public function uninstall(){return true;}
 		
-		public function install(){}
+		public function install(){return true;}
 		
 		public function about(){}
 

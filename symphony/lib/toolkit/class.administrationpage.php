@@ -128,13 +128,13 @@
 		}
 		
 		function appendAlert(){
+			
+			###
+			# Delegate: AppendPageAlert
+			# Description: Allows for appending of alerts. $context['alert'] is way to tell what is currently in the system
+			$this->_Parent->ExtensionManager->notifyMembers('AppendPageAlert', '/backend/', array('alert' => (isset($this->_alert) ? $this->_alert : NULL)));
 
-			/*if(!isset($this->_alert)){
-				
-				if($this->_Parent->Configuration->get('maintenance_mode', 'public') == 'yes') $this->pageAlert('This site is currently in maintenance mode. <a href="{1}">Restore?</a>', self::PAGE_ALERT_NOTICE, array(URL . '/symphony/system/preferences/?action=toggle-maintenance-mode&amp;redirect=' . getCurrentPage()));
-				else return;
-				
-			}*/
+			if(!isset($this->_alert)) return;
 			
 			$p = new XMLElement('p', $this->_alert['message']);
 			$p->setAttribute('id', 'notice');
@@ -502,7 +502,7 @@
 
 		function __fetchAvailablePageTypes(){
 			
-			$system_types = array('index', 'XML', 'admin', 'maintenance', '404', '403');
+			$system_types = array('index', 'XML', 'admin', '404', '403');
 			
 			if(!$types = $this->_Parent->Database->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` ORDER BY `type` ASC")) return $system_types;
 			

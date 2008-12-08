@@ -40,7 +40,7 @@
 			$this->__buildPage();
 
 			if($mode == self::FRONTEND_OUTPUT_NORMAL && @in_array('XML', $this->_pageData['type']) || @in_array('xml', $this->_pageData['type']))
-				$this->addHeaderToPage('Content-Type', 'text/xml');	
+				$this->addHeaderToPage('Content-Type', 'text/xml; charset=utf-8');
 
 			####
 			# Delegate: FrontendOutputPreGenerate
@@ -139,7 +139,6 @@
 				'parent-path' => $page['path'],
 				'current-url' => URL . $current_path,
 				'symphony-build' => $this->_Parent->Configuration->get('build', 'symphony'),
-				'site-mode' => ($this->_Parent->Configuration->get('maintenance_mode', 'public') == 'yes' ? 'maintenance' : 'live')
 			);
 		
 			if(is_array($this->_env['url'])){
@@ -208,24 +207,24 @@
 		public function resolvePage($page=NULL){
 		
 			if($page) $this->_page = $page;
-	
-			## Check for maintenance mode
-			if(!$this->_Parent->isLoggedIn() && $this->_Parent->Configuration->get('maintenance_mode', 'public') == 'yes'){
-				$row = $this->_Parent->Database->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types` 
-															  WHERE `tbl_pages_types`.page_id = `tbl_pages`.id AND tbl_pages_types.`type` = 'maintenance' 
-															  LIMIT 1");
-				
-				if(empty($row)) $this->_Parent->customError(E_USER_ERROR, 'Website Offline', 'This site is currently in maintenance. Please check back at a later date.', false, true); 		
-			}
+		
+			$row = NULL;
+
+			####
+			# Delegate: FrontendPrePageResolve
+			# Description: Before page resolve. Allows manipulation of page without redirection
+			# Global: Yes
+			$this->ExtensionManager->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => $this->_page));
+			
 			
 			## Default to the index page if no page has been specified
-			elseif(!$this->_page){
+			if(!$this->_page && is_null($row)){
 				$row = $this->_Parent->Database->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types` 
 															  WHERE `tbl_pages_types`.page_id = `tbl_pages`.id AND tbl_pages_types.`type` = 'index' 
 															  LIMIT 1");
 			}
 			
-			else{
+			elseif(is_null($row)){
 
 				$pathArr = preg_split('/\//', trim($this->_page, '/'), -1, PREG_SPLIT_NO_EMPTY);			
 				$prevPage = NULL;

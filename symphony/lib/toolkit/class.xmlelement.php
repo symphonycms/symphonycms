@@ -105,11 +105,15 @@
 			$this->_dtd = $dtd;
 		}
 	
-		public function appendChild($child){
+		public function appendChild(XMLElement $child){
 			array_push($this->_children, $child);
 		}
 		
-		public function prependChild($child){
+		public function appendChildArray(array $children){
+			foreach($children as $child) $this->appendChild($child);
+		}
+				
+		public function prependChild(XMLElement $child){
 			array_unshift($this->_children, $child);
 		}
 	
@@ -121,11 +125,11 @@
 	
 			$result = NULL;
 		
-			$newline = ($indent ? self::CRLF : '');
+			$newline = ($indent ? self::CRLF : NULL);
 			
 			if(!$hasParent){
 				if($this->_includeHeader){
-					$result .= '<?xml version="'.$this->_version.'" encoding="'.$this->_encoding.'" ?>' . $newline;
+					$result .= sprintf('<?xml version="%s" encoding="%s" ?>', $this->_version, $this->_encoding) . $newline;
 				}
 				
 				if($this->_dtd) $result .= $this->_dtd . $newline;
@@ -135,14 +139,14 @@
 				}
 			}
 			
-			$result .= ($indent ? General::repeatStr("\t", $tab_depth) : '') . '<' . $this->_name;
+			$result .= ($indent ? General::repeatStr("\t", $tab_depth) : NULL) . '<' . $this->_name;
 		
 			if(count($this->_attributes ) > 0 ){
 			
 				foreach($this->_attributes as $attribute => $value ){
 
 					if(strlen($value) != 0 || (strlen($value) == 0 && $this->_allowEmptyAttributes)){
-						$result .= " $attribute=\"$value\"";
+						$result .= sprintf(' %s="%s"', $attribute, $value);
 					}
 				}
 			}
@@ -164,15 +168,15 @@
 						$result .= $child->generate($indent, $tab_depth + 1, true);
 					}
 				
-					if($indent) $result .= General::repeatStr("\t", $tab_depth);
+					if($indent) $result .= str_repeat("\t", $tab_depth);
 				}
 				
 				if($this->_value != NULL && $this->_placeValueAfterChildElements){
-					if($indent) $result .= General::repeatStr("\t", max(1, $tab_depth));
+					if($indent) $result .= str_repeat("\t", max(1, $tab_depth));
 					$result .= $this->_value . $newline;
 				}
 				
-				$result .= '</' . $this->_name . '>' . $newline;	
+				$result .= "</{$this->_name}>{$newline}";	
 			
 			// Empty elements:
 			} else {

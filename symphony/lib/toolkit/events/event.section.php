@@ -135,6 +135,8 @@
 					if(isset($post_values) && is_object($post_values)) $result->appendChild($post_values);		
 					return false;
 				}
+				
+				$result->setAttribute('id', $entry->get('id'));
 
 			endif;			
 
@@ -267,7 +269,7 @@
 	}
 	
 	
-	$result = new XMLElement($this->dsParamROOTELEMENT);
+	$result = new XMLElement(self::ROOTELEMENT);
 	
 	if(in_array('admin-only', $this->eParamFILTERS) && !$this->_Parent->isLoggedIn()){
 		$result->setAttribute('result', 'error');			

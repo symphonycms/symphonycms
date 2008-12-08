@@ -40,7 +40,9 @@
 		elseif(preg_match_all('/utilities\/([^.\/]+\.xsl)\s+line\s+(\d+)/i', $val['message'], $matches))
 			$errors_grouped['utility'][$matches[1][0]][] = array('line'=>$matches[2][0], 'raw'=>$val);
 				
-		else $errors_grouped['general'][] = $val;
+		else{
+			$errors_grouped['general'][] = $val;
+		}
 				
 	}while(list($key, $val) = $additional['proc']->getError());
 
@@ -51,7 +53,7 @@
 			case 'general':
 			
 				$dl = new XMLElement('dl');
-				$dt = new XMLElement('dt', 'Compile');
+				$dt = new XMLElement('dt', '<a href="?debug" title="Show debug view">Compile</a>');
 				$dl->appendChild($dt);
 				
 				foreach($data as $e){
@@ -63,7 +65,7 @@
 				}
 			
 				$li = new XMLElement('li');
-				$li->appendChild(new XMLElement('h2', '<a href="?debug" title="Show debug view">General</a>'));					
+				$li->appendChild(new XMLElement('h2', 'General'));					
 				$li->appendChild($dl);
 			
 				$ul->appendChild($li);
@@ -75,21 +77,18 @@
 			
 				foreach($data as $filename => $errors){
 					
-					$lines = array();
-					
 					$dl = new XMLElement('dl');
 					
 					foreach($errors as $e){
-						$lines[] = $e['line'];
-						
-						$dt = new XMLElement('dt', 'Line ' . $e['line']);
+						$dt = new XMLElement('dt', sprintf('<a href="%s" title="Show debug view for %s">Line %d</a>', "?debug={$filename}#line-".$e['line'], $filename, $e['line']));
 						$dd = new XMLElement('dd', $e['raw']['message']);
 						$dl->appendChild($dt);
 						$dl->appendChild($dd);
 					}
 					
 					$li = new XMLElement('li');
-					$li->appendChild(new XMLElement('h2', '<a href="?debug#'.$filename.':'.@implode(':', $lines).'" title="Show debug view for '.$filename.'">'.$filename.'</a>'));					
+					$li->appendChild(new XMLElement('h2', $filename));
+					
 					$li->appendChild($dl);
 					
 					$ul->appendChild($li);
@@ -100,22 +99,18 @@
 			case 'utility':
 			
 				foreach($data as $filename => $errors){
-				
-					$lines = array();
-				
+					
 					$dl = new XMLElement('dl');
 				
-					foreach($errors as $e){
-						$lines[] = $e['line'];
-					
-						$dt = new XMLElement('dt', 'Line ' . $e['line']);
+					foreach($errors as $e){					
+						$dt = new XMLElement('dt', sprintf('<a href="%s" title="Show debug view for %s">Line %d</a>', "?debug=u-{$filename}#line-".$e['line'], $filename, $e['line']));						
 						$dd = new XMLElement('dd', $e['raw']['message']);
 						$dl->appendChild($dt);
 						$dl->appendChild($dd);
 					}
 				
 					$li = new XMLElement('li');
-					$li->appendChild(new XMLElement('h2', '<a href="?debug#u-'.$filename.':'.@implode(':', $lines).'" title="Show debug view for '.$filename.'">'.$filename.'</a>'));					
+					$li->appendChild(new XMLElement('h2', $filename));
 					$li->appendChild($dl);
 				
 					$ul->appendChild($li);
@@ -124,22 +119,19 @@
 				break;
 				
 			case 'xml':
-	
-				$lines = array();
 		
 				$dl = new XMLElement('dl');
 		
 				foreach($data as $e){
-					$lines[] = $e['line'];
-			
 					$dt = new XMLElement('dt', 'Line ' . $e['line']);
+					$dt = new XMLElement('dt', sprintf('<a href="?debug=xml#line-%1$d" title="Show debug view for XML">Line %1$d</a>', $e['line']));
 					$dd = new XMLElement('dd', $e['raw']['message']);
 					$dl->appendChild($dt);
 					$dl->appendChild($dd);
 				}
 		
 				$li = new XMLElement('li');
-				$li->appendChild(new XMLElement('h2', '<a href="?debug#xml:'.@implode(':', $lines).'" title="Show debug view for XML">XML</a>'));					
+				$li->appendChild(new XMLElement('h2', 'XML'));	
 				$li->appendChild($dl);
 		
 				$ul->appendChild($li);
@@ -156,4 +148,3 @@
 
 	exit();
 
-?>

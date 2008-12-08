@@ -71,7 +71,9 @@
 			}
 				
 			## If not installed, install it
-			if($this->__requiresInstallation($name)) $obj->install();
+			if($this->__requiresInstallation($name) && !$obj->install()){
+				return false;
+			}
 			
 			## If requires and upate before enabling, than update it first
 			elseif($about = $this->about($name) && $this->__requiresUpdate($about)) $obj->update();

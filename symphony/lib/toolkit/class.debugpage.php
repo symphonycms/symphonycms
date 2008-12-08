@@ -1,6 +1,7 @@
 <?php
 
 	require_once(TOOLKIT . '/class.htmlpage.php');
+	require_once(TOOLKIT . '/class.bitterhtml.php');
 
 	Class DebugPage extends HTMLPage{
 		
@@ -10,59 +11,61 @@
 			
 			$ul = new XMLElement('ul', NULL, array('id' => 'nav'));
 			
-			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor('Edit', URL . '/symphony/blueprints/pages/edit/' . $page['id'] . '/'));
-			$ul->appendChild($li);
+			$ul->appendChild(self::__appendNavigationItem('Edit', URL . '/symphony/blueprints/pages/edit/' . $page['id'] . '/'));
 			
 			$ul->appendChild(new XMLElement('li', 'Debug'));
 
-			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor('Profile', '?profile'));
-			$ul->appendChild($li);
+			$ul->appendChild(self::__appendNavigationItem('Profile', '?profile'));
 			
 			return $ul;
 		}
 		
-		function __buildJump($page, $xsl, $utilities=NULL){
+		private static function __appendNavigationItem($name, $link, $active=false){
+			
+			$li = new XMLElement('li');
+			$anchor = Widget::Anchor($name,  $link);
+			if($active == true){
+				$anchor->setAttribute('class', 'active');
+			}			
+			$li->appendChild($anchor);
+			
+			return $li;
+						
+		}
+		
+		function __buildJump($page, $xsl, $active_link=NULL, $utilities=NULL){
 			
 			$ul = new XMLElement('ul', NULL, array('id' => 'jump'));
 			
-			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor('Params',  '#params'));
-			$ul->appendChild($li);
+			$ul->appendChild(self::__appendNavigationItem('Params', '?debug=params', ($active_link == 'params')));
+			$ul->appendChild(self::__appendNavigationItem('XML', '?debug=xml', ($active_link == 'xml' || is_null($active_link) || strlen(trim($active_link)) == 0)));
 			
-			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor('XML',  '#xml')); 
-			$ul->appendChild($li);
-			
-			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(basename($page['filelocation']),  '#' . basename($page['filelocation'])));
-			$xUtil = $this->__buildUtilityList($utilities);
+			$filename = basename($page['filelocation']);
+			$li = self::__appendNavigationItem($filename, "?debug={$filename}", ($active_link == $filename));
+			$xUtil = $this->__buildUtilityList($utilities, 1, $active_link);
 			if(is_object($xUtil)) $li->appendChild($xUtil);
-			$ul->appendChild($li);
+			$ul->appendChild($li);	
+
 			
-			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor('Result',  '#result')); 
-			$ul->appendChild($li);					
-			
+			$ul->appendChild(self::__appendNavigationItem('Result', '?debug=result', ($active_link == 'result')));
 
 			return $ul;
 			
 		}
 		
-		function __buildUtilityList($utilities, $level=1){
+		function __buildUtilityList($utilities, $level=1, $active_link=NULL){
 			
 			if(!is_array($utilities) || empty($utilities)) return;
 			
 			$ul = new XMLElement('ul');
 			foreach($utilities as $u){
-				$item = new XMLElement('li');
+				
 				$filename = basename($u);
-				$item->appendChild(Widget::Anchor($filename, '#u-' . $filename));
+				$item = self::__appendNavigationItem($filename, "?debug=u-{$filename}", ($active_link == "u-{$filename}"));
 				
 				$child_utilities = $this->__findUtilitiesInXSL(@file_get_contents(UTILITIES . '/' . $filename));
 				
-				if(is_array($child_utilities) && !empty($child_utilities)) $item->appendChild($this->__buildUtilityList($child_utilities, $level+1));
+				if(is_array($child_utilities) && !empty($child_utilities)) $item->appendChild($this->__buildUtilityList($child_utilities, $level+1, $active_link));
 				
 				$ul->appendChild($item);
 			}
@@ -78,8 +81,8 @@
 			$dl = new XMLElement('dl', NULL, array('id' => 'params'));
 			
 			foreach($params as $key => $value){				
-				$dl->appendChild(new XMLElement('dt', "\$$key"));
-				$dl->appendChild(new XMLElement('dd', "'$value'"));
+				$dl->appendChild(new XMLElement('dt', "\${$key}"));
+				$dl->appendChild(new XMLElement('dd', "'{$value}'"));
 			}
 			
 			return $dl;
@@ -103,7 +106,30 @@
 		}
 		
 		function __buildCodeBlock($code, $id){
-			return new XMLElement('pre', '<code>' . str_replace('<', '&lt;', str_replace('&', '&amp;', General::tabsToSpaces($code, 2))) . '</code>', array('id' => $id, 'class' => 'XML'));
+
+			$line_numbering = new XMLElement('ol');
+
+			$lang = new BitterLangHTML;
+
+			$code = $lang->process(
+				stripslashes($code), 4
+			);
+	
+			$code = preg_replace(array('/^<span class="markup">/i', '/<\/span>$/i'), NULL, trim($code));
+			
+			$lines = preg_split('/[\r\n]+/i', $code);
+			
+			$value = NULL;
+			
+			foreach($lines as $n => $l){
+				$value .= sprintf('<span id="line-%d"></span>%s', ($n + 1), $l) . General::CRLF;
+				$line_numbering->appendChild(new XMLElement('li', sprintf('<a href="#line-%d">%1$d</a>', ($n + 1))));
+			}
+			
+			$pre = new XMLElement('pre', sprintf('<code><span class="markup">%s </span></code>', trim($value)));
+			
+			return array($line_numbering, $pre);
+			
 		}
 		
 		function generate($page, $xml, $xsl, $output, $parameters){
@@ -129,24 +155,42 @@
 			
 			$utilities = $this->__findUtilitiesInXSL($xsl);
 
-			$this->Body->appendChild($this->__buildJump($page, $xsl, $utilities));
+			$this->Body->appendChild($this->__buildJump($page, $xsl, $_GET['debug'], $utilities));
 			
-			if(is_array($parameters) && !empty($parameters)) $this->Body->appendChild($this->__buildParams($parameters));
-			
-			$this->Body->appendChild($this->__buildCodeBlock($xml, 'xml'));
-			$this->Body->appendChild($this->__buildCodeBlock($xsl, basename($page['filelocation'])));
-			$this->Body->appendChild($this->__buildCodeBlock($output, 'result'));
-			
-			if(is_array($this->_full_utility_list) && !empty($this->_full_utility_list)){
-				foreach($this->_full_utility_list as $u){
-					$this->Body->appendChild($this->__buildCodeBlock(@file_get_contents(UTILITIES . '/' . basename($u)), 'u-'.basename($u)));	
-				}
+			if($_GET['debug'] == 'params'){
+				$this->Body->appendChild($this->__buildParams($parameters));
 			}
 			
+			elseif($_GET['debug'] == 'xml' || strlen(trim($_GET['debug'])) <= 0){
+				$this->Body->appendChildArray($this->__buildCodeBlock($xml, 'xml'));
+			}
+			
+			elseif($_GET['debug'] == 'result'){
+				$this->Body->appendChildArray($this->__buildCodeBlock($output, 'result'));
+			}
+					
+			else{
+				
+				if($_GET['debug'] == basename($page['filelocation'])){
+					$this->Body->appendChildArray($this->__buildCodeBlock($xsl, basename($page['filelocation'])));
+				}
+				
+				elseif($_GET['debug']{0} == 'u'){
+					if(is_array($this->_full_utility_list) && !empty($this->_full_utility_list)){
+						foreach($this->_full_utility_list as $u){
+							
+							if($_GET['debug'] != 'u-'.basename($u)) continue;
+							
+							$this->Body->appendChildArray($this->__buildCodeBlock(@file_get_contents(UTILITIES . '/' . basename($u)), 'u-'.basename($u)));
+							break;
+						}
+					}
+				}
+			}
+
 			return parent::generate();
 						
 		}
 		
 	}
 	
-?>
