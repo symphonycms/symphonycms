@@ -6,11 +6,7 @@
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 		
 	class contentBlueprintsPages extends AdministrationPage {
-		var $_errors;
-		
-		public function __construct(&$parent) {
-			parent::__construct($parent);
-		}
+		private $_errors;
 		
 		public function __viewIndex() {
 			$this->setPageType('table');
@@ -44,11 +40,15 @@
 					Widget::TableData(__('None Found.'), 'inactive', null, count($aTableHead))
 				)));
 				
-			} else {
+			}
+			
+			else{
 				foreach ($pages as $page) {
 					$page_title = $this->_Parent->resolvePageTitle($page['id']);
 					$page_url = URL . '/' . $this->_Parent->resolvePagePath($page['id']) . '/';
 					$page_edit_url = $this->_Parent->getCurrentPageURL() . 'edit/' . $page['id'] . '/';
+					
+					$page_types = $this->_Parent->Database->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE page_id = '".$page['id']."' ORDER BY `type` ASC");
 					
 					$col_title = Widget::TableData(Widget::Anchor(
 						$page_title, $page_edit_url, $page['handle']
@@ -65,7 +65,7 @@
 					}
 					
 					if (!empty($page_types)) {
-						$col_types = Widget::TableData(implode(', ', $types));
+						$col_types = Widget::TableData(implode(', ', $page_types));
 						
 					} else {
 						$col_types = Widget::TableData('None', 'inactive');
