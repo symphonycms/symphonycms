@@ -14,8 +14,8 @@
 			$ExtensionManager = $this->_Parent->ExtensionManager; 		
 			$extensions = $ExtensionManager->listAll();
 			
-			## Sort the results by their status. Disabled at the bottom.
-			uasort($extensions, array('ExtensionManager', 'sortByStatus'));
+			## Sort by extensions name:
+			uasort($extensions, array('ExtensionManager', 'sortByName'));
 
 			$aTableHead = array(
 				array('Name', 'col'),
@@ -34,7 +34,6 @@
 			}
 
 			else{
-
 				foreach($extensions as $name => $about){
 
 					## Setup each cell
