@@ -30,6 +30,10 @@
 
 	class BitterLangHTML {
 		
+		public static function htmlentities($string){
+			return htmlentities($string, ENT_COMPAT, 'UTF-8');
+		}
+				
 		public function process($source, $tabsize) {
 			
 			$tabsize = (integer)$tabsize;
@@ -48,8 +52,9 @@
 			while (strstr($source, "\t")) {
 				$source = preg_replace_callback('%^([^\t\n]*)(\t+)%m', '__expander', $source);
 			}
-		
+			
 			return $this->contextMain($source);
+
 		}
 	
 		protected function match($context, $regexp, $offset = 0) {
@@ -82,11 +87,12 @@
 			$output = '<span class="markup">';
 			
 			while (strlen($context)) {
+				
 				$regexp = '%<\?|<!(--)?|</?|&[^;]*;%';
 				$start = $this->position($context, $regexp);
-				
+
 				if ($start < 0) {
-					$output .= htmlentities($context); break;
+					$output .= self::htmlentities($context); break;
 				}
 				
 				$subject = $this->match($context, $regexp); $before = '';
@@ -115,6 +121,7 @@
 					
 				// Element:
 				} else if ($subject == '<' or $subject == '</') {
+					
 					// Close
 					if (preg_match('%^</[a-z0-9_\-:]+>%i', $this->slice($context, $start))) {
 						$between = $this->match(
@@ -122,9 +129,9 @@
 						);
 						$after = $this->slice($context, $start + strlen($between));
 						
-						$output .= htmlentities($before);
+						$output .= self::htmlentities($before);
 						$output .= '<span class="element">';
-						$output .= htmlentities($between);
+						$output .= self::htmlentities($between);
 						$output .= '</span>';
 						
 					// Open:
@@ -136,11 +143,11 @@
 						);
 						$after = $this->slice($context, $start + strlen($open) + strlen($between) + strlen($close));
 						
-						$output .= htmlentities($before);
+						$output .= self::htmlentities($before);
 						$output .= '<span class="element">';
-						$output .= htmlentities($open);
+						$output .= self::htmlentities($open);
 						$output .= $this->contextElement($between);
-						$output .= htmlentities($close);
+						$output .= self::htmlentities($close);
 						$output .= '</span>';
 						
 					// Invalid:
@@ -150,9 +157,9 @@
 						);
 						$after = $this->slice($context, $start + strlen($between));
 						
-						$output .= htmlentities($before);
+						$output .= self::htmlentities($before);
 						$output .= '<span class="error">';
-						$output .= htmlentities($between);
+						$output .= self::htmlentities($between);
 						$output .= '</span>';
 					}
 					
@@ -164,7 +171,7 @@
 					
 				// Unknown:
 				} else {
-					$output .= htmlentities($context); break;
+					$output .= self::htmlentities($context); break;
 				}
 			}
 			
@@ -181,9 +188,9 @@
 			
 			// Valid:
 			if ($between) {
-				$output .= htmlentities($before);
+				$output .= self::htmlentities($before);
 				$output .= '<span class="comment">';
-				$output .= htmlentities($between);
+				$output .= self::htmlentities($between);
 				$output .= '</span>';
 				
 			// Invalid:
@@ -192,9 +199,9 @@
 					$this->slice($context, $start), '%<!([^<>]+>?)%s'
 				);
 				
-				$output .= htmlentities($before);
+				$output .= self::htmlentities($before);
 				$output .= '<span class="error comment">';
-				$output .= htmlentities($between);
+				$output .= self::htmlentities($between);
 				$output .= '</span>';
 			}
 			
@@ -211,7 +218,7 @@
 				$start = $this->position($context, $regexp);
 				
 				if ($start < 0) {
-					$output .= htmlentities($context); break;
+					$output .= self::htmlentities($context); break;
 				}
 				
 				$subject = $this->match($context, $regexp); $before = '';
@@ -232,9 +239,9 @@
 					
 					// Is valid?
 					if ($value) {
-						$output .= htmlentities($before);
+						$output .= self::htmlentities($before);
 						$output .= '<span class="attribute">';
-						$output .= htmlentities($subject);
+						$output .= self::htmlentities($subject);
 						$output .= '</span>';
 						$output .= '<span class="string">';
 						$output .= $this->contextString($value);
@@ -242,9 +249,9 @@
 						
 					// Invalid:
 					} else {
-						$output .= htmlentities($before);
+						$output .= self::htmlentities($before);
 						$output .= '<span class="error">';
-						$output .= htmlentities($subject);
+						$output .= self::htmlentities($subject);
 						$output .= '</span>';
 					}
 					
@@ -256,16 +263,16 @@
 					$between = $this->match($context, '%[^\s]+%');
 					$after = $this->slice($context, $start + strlen($between));
 					
-					$output .= htmlentities($before);
+					$output .= self::htmlentities($before);
 					$output .= '<span class="error">';
-					$output .= htmlentities($between);
+					$output .= self::htmlentities($between);
 					$output .= '</span>';
 					
 					$context = $after;
 					
 				// Unknown:
 				} else {
-					$output .= htmlentities($context); break;
+					$output .= self::htmlentities($context); break;
 				}
 			}
 			
@@ -275,13 +282,13 @@
 		protected function contextEntity(&$context, $start, $before, $subject) {
 			$after = $this->slice($context, $start + strlen($subject));
 			$class = "error"; $output = '';
-			
+
 			// Is valid?
 			if (preg_match('%&(#[0-9]{1,4}|#x[a-f0-9]{1,4}|[a-z\-]+);%i', $subject)) $class = "entity";
 			
-			$output .= htmlentities($before);
+			$output .= self::htmlentities($before);
 			$output .= '<span class="' . $class . '">';
-			$output .= htmlentities($subject);
+			$output .= self::htmlentities($subject);
 			$output .= '</span>';
 			
 			$context = $after;
@@ -291,13 +298,13 @@
 		
 		protected function contextString($source) {
 			$context = $source; $output = '';
-			
+		
 			while (strlen($context)) {
 				$regexp = '%&[^;]*;|\{|\$%';
 				$start = $this->position($context, $regexp);
 				
 				if ($start < 0) {
-					$output .= htmlentities($context); break;
+					$output .= self::htmlentities($context); break;
 				}
 				
 				$subject = $this->match($context, $regexp); $before = '';
@@ -318,9 +325,9 @@
 					
 					// Valid:
 					if ($between) {
-						$output .= htmlentities($before);
+						$output .= self::htmlentities($before);
 						$output .= '<span class="xpath">';
-						$output .= htmlentities($between);
+						$output .= self::htmlentities($between);
 						$output .= '</span>';
 						
 					// Invalid:
@@ -329,9 +336,9 @@
 							$this->slice($context, $start), '%.*%s'
 						);
 						
-						$output .= htmlentities($before);
+						$output .= self::htmlentities($before);
 						$output .= '<span class="error">';
-						$output .= htmlentities($between);
+						$output .= self::htmlentities($between);
 						$output .= '</span>';
 					}
 					
@@ -345,9 +352,9 @@
 					
 					// Valid:
 					if ($between) {
-						$output .= htmlentities($before);
+						$output .= self::htmlentities($before);
 						$output .= '<span class="variable">';
-						$output .= htmlentities($between);
+						$output .= self::htmlentities($between);
 						$output .= '</span>';
 						
 					// Invalid:
@@ -356,9 +363,9 @@
 							$this->slice($context, $start), '%\S*%s'
 						);
 						
-						$output .= htmlentities($before);
+						$output .= self::htmlentities($before);
 						$output .= '<span class="error">';
-						$output .= htmlentities($between);
+						$output .= self::htmlentities($between);
 						$output .= '</span>';
 					}
 					
@@ -366,7 +373,7 @@
 					
 				// Unknown:
 				} else {
-					$output .= htmlentities($context); break;
+					$output .= self::htmlentities($context); break;
 				}
 			}
 			
