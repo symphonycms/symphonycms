@@ -117,7 +117,7 @@ ol a {
 	z-index: 10;
 	margin-left: -3.6em;
 	width: 3em;
-	color: #666663;
+	color: #525350;
 	cursor: default;
 }
 ol a.active {
@@ -144,22 +144,22 @@ span[id]:target {
 /* Syntax Highlighting */
 dt,
 span.attribute {
-	color: #f94;
+	color: #f48435;
 }
 dd,
 span.string {
-	color: #9be;
+	color: #87a4ec;
 }
 span.element {
-	color: #cf5;
+	color: #beea57;
 }
 span.comment,
 span.comment * {
-	color: #727270;
+	color: #65655e;
 }
 span.xpath,
 span.variable {
-	color: #bdf;
+	color: #9cb4e5;
 }
 span.error {
 	background-color: #892005;
