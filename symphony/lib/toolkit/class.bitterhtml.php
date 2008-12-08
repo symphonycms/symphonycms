@@ -97,90 +97,21 @@
 				
 				// Pre Processor:
 				if ($subject == '<?') {
-					$between = $this->match(
-						$this->slice($context, $start), '%<\?.*?\?>%i'
+					$output .= $this->contextComment(
+						$context, $start, $before, '%<\?.*?\?>%s'
 					);
-					
-					// Valid:
-					if ($between) {
-						$output .= htmlentities($before);
-						$output .= '<span class="comment">';
-						$output .= htmlentities($between);
-						$output .= '</span>';
-						
-					// Invalid:
-					} else {
-						$between = $this->match(
-							$this->slice($context, $start), '%<\?([^<>]+>?)%i'
-						);
-						
-						$output .= htmlentities($before);
-						$output .= '<span class="error">';
-						$output .= htmlentities($between);
-						$output .= '</span>';
-					}
-					
-					$after = $this->slice($context, $start + strlen($between));
-					
-					$context = $after;
 					
 				// DTD:
 				} else if ($subject == '<!') {
-					$between = $this->match(
-						$this->slice($context, $start), '%<!.*?>%i'
+					$output .= $this->contextComment(
+						$context, $start, $before, '%<!.*?>%s'
 					);
-					
-					// Valid:
-					if ($between) {
-						$output .= htmlentities($before);
-						$output .= '<span class="comment">';
-						$output .= htmlentities($between);
-						$output .= '</span>';
-						
-					// Invalid:
-					} else {
-						$between = $this->match(
-							$this->slice($context, $start), '%<!([^<>]+>?)%i'
-						);
-						
-						$output .= htmlentities($before);
-						$output .= '<span class="error">';
-						$output .= htmlentities($between);
-						$output .= '</span>';
-					}
-					
-					$after = $this->slice($context, $start + strlen($between));
-					
-					$context = $after;
 					
 				// Comment:
 				} else if ($subject == '<!--') {
-					$between = $this->match(
-						$this->slice($context, $start), '%<!--.*?-->%i'
+					$output .= $this->contextComment(
+						$context, $start, $before, '%<!--.*?-->%s'
 					);
-					
-					// Valid:
-					if ($between) {
-						$output .= htmlentities($before);
-						$output .= '<span class="comment">';
-						$output .= htmlentities($between);
-						$output .= '</span>';
-						
-					// Invalid:
-					} else {
-						$between = $this->match(
-							$this->slice($context, $start), '%<!([^<>]+>?)%i'
-						);
-						
-						$output .= htmlentities($before);
-						$output .= '<span class="error">';
-						$output .= htmlentities($between);
-						$output .= '</span>';
-					}
-					
-					$after = $this->slice($context, $start + strlen($between));
-					
-					$context = $after;
 					
 				// Element:
 				} else if ($subject == '<' or $subject == '</') {
@@ -229,18 +160,7 @@
 					
 				// Entity:
 				} else if (preg_match('%&[^;]*;%', $subject)) {
-					$after = $this->slice($context, $start + strlen($subject));
-					$class = "error";
-					
-					// Is valid?
-					if (preg_match('%&(#[0-9]{1,4}|#x[a-f0-9]{1,4}|[a-z\-]+);%i', $subject)) $class = "entity";
-					
-					$output .= htmlentities($before);
-					$output .= '<span class="' . $class . '">';
-					$output .= htmlentities($subject);
-					$output .= '</span>';
-					
-					$context = $after;
+					$output .= $this->contextEntity($context, $start, $before, $subject);
 					
 				// Unknown:
 				} else {
@@ -249,6 +169,36 @@
 			}
 			
 			$output .= '</span>';
+			
+			return $output;
+		}
+		
+		protected function contextComment(&$context, $start, $before, $normal) {
+			$output = '';
+			$between = $this->match(
+				$this->slice($context, $start), $normal
+			);
+			
+			// Valid:
+			if ($between) {
+				$output .= htmlentities($before);
+				$output .= '<span class="comment">';
+				$output .= htmlentities($between);
+				$output .= '</span>';
+				
+			// Invalid:
+			} else {
+				$between = $this->match(
+					$this->slice($context, $start), '%<!([^<>]+>?)%s'
+				);
+				
+				$output .= htmlentities($before);
+				$output .= '<span class="error comment">';
+				$output .= htmlentities($between);
+				$output .= '</span>';
+			}
+			
+			$context = $this->slice($context, $start + strlen($between));
 			
 			return $output;
 		}
@@ -287,7 +237,7 @@
 						$output .= htmlentities($subject);
 						$output .= '</span>';
 						$output .= '<span class="string">';
-						$output .= htmlentities($value);
+						$output .= $this->contextString($value);
 						$output .= '</span>';
 						
 					// Invalid:
@@ -299,17 +249,6 @@
 					}
 					
 					$after = $this->slice($after, strlen($value));
-					$context = $after;
-					
-				// String:
-				} else if (preg_match('%"[^"\\\]*(?:\\\.[^"\\\]*)*"%', $subject)) {
-					$after = $this->slice($context, $start + strlen($subject));
-					
-					$output .= htmlentities($before);
-					$output .= '<span class="string">';
-					$output .= $this->contextString($subject);
-					$output .= '</span>';
-					
 					$context = $after;
 					
 				// Error:
@@ -333,11 +272,28 @@
 			return $output;
 		}
 		
+		protected function contextEntity(&$context, $start, $before, $subject) {
+			$after = $this->slice($context, $start + strlen($subject));
+			$class = "error"; $output = '';
+			
+			// Is valid?
+			if (preg_match('%&(#[0-9]{1,4}|#x[a-f0-9]{1,4}|[a-z\-]+);%i', $subject)) $class = "entity";
+			
+			$output .= htmlentities($before);
+			$output .= '<span class="' . $class . '">';
+			$output .= htmlentities($subject);
+			$output .= '</span>';
+			
+			$context = $after;
+			
+			return $output;
+		}
+		
 		protected function contextString($source) {
 			$context = $source; $output = '';
 			
 			while (strlen($context)) {
-				$regexp = '%&[^;]*;%';
+				$regexp = '%&[^;]*;|\{|\$%';
 				$start = $this->position($context, $regexp);
 				
 				if ($start < 0) {
@@ -352,18 +308,61 @@
 				
 				// Entity:
 				if (preg_match('%&[^;]*;%', $subject)) {
-					$after = $this->slice($context, $start + strlen($subject));
-					$class = "error";
+					$output .= $this->contextEntity($context, $start, $before, $subject);
 					
-					// Is valid?
-					if (preg_match('%&(#[0-9]{1,4}|#x[a-f0-9]{1,4}|[a-z\-]+);%i', $subject)) $class = "entity";
+				// XPath:
+				} else if ($subject == '{') {
+					$between = $this->match(
+						$this->slice($context, $start), '%{.*?}%s'
+					);
 					
-					$output .= htmlentities($before);
-					$output .= '<span class="' . $class . '">';
-					$output .= htmlentities($subject);
-					$output .= '</span>';
+					// Valid:
+					if ($between) {
+						$output .= htmlentities($before);
+						$output .= '<span class="xpath">';
+						$output .= htmlentities($between);
+						$output .= '</span>';
+						
+					// Invalid:
+					} else {
+						$between = $this->match(
+							$this->slice($context, $start), '%.*%s'
+						);
+						
+						$output .= htmlentities($before);
+						$output .= '<span class="error">';
+						$output .= htmlentities($between);
+						$output .= '</span>';
+					}
 					
-					$context = $after;
+					$context = $this->slice($context, $start + strlen($between));
+					
+				// Variable:
+				} else if ($subject == '$') {
+					$between = $this->match(
+						$this->slice($context, $start), '%\$[a-z0-9_\-:]+%s'
+					);
+					
+					// Valid:
+					if ($between) {
+						$output .= htmlentities($before);
+						$output .= '<span class="variable">';
+						$output .= htmlentities($between);
+						$output .= '</span>';
+						
+					// Invalid:
+					} else {
+						$between = $this->match(
+							$this->slice($context, $start), '%\S*%s'
+						);
+						
+						$output .= htmlentities($before);
+						$output .= '<span class="error">';
+						$output .= htmlentities($between);
+						$output .= '</span>';
+					}
+					
+					$context = $this->slice($context, $start + strlen($between));
 					
 				// Unknown:
 				} else {
@@ -374,4 +373,3 @@
 			return $output;
 		}
 	}
-	
