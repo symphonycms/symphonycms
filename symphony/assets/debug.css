@@ -48,7 +48,6 @@ pre {
 	z-index: 1;
 	position: relative;
 	border: 1px solid #3e3e3b;
-	overflow: hidden;
 	background-color: #191917;
 	white-space: normal;
 }
