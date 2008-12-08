@@ -61,7 +61,7 @@
 			$options = array();
 
 			foreach($authors as $a){
-				$options[] = array($a->get('id'), in_array($a->get('id'), $value), $a->get('first_name') . ' ' . $a->get('lastname'));
+				$options[] = array($a->get('id'), in_array($a->get('id'), $value), $a->get('first_name') . ' ' . $a->get('last_name'));
 			}
 			
 			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
