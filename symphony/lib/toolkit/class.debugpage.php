@@ -114,10 +114,10 @@
 			$code = $lang->process(
 				stripslashes($code), 4
 			);
-
+	
 			$code = preg_replace(array('/^<span class="markup">/i', '/<\/span>$/i'), NULL, trim($code));
 			
-			$lines = preg_split('/[\r\n]+/i', rtrim($code));
+			$lines = preg_split('/[\r\n]+/i', $code);
 			
 			$value = NULL;
 			
@@ -126,7 +126,7 @@
 				$line_numbering->appendChild(new XMLElement('li', sprintf('<a href="#line-%d">%1$d</a>', ($n + 1))));
 			}
 			
-			$pre = new XMLElement('pre', sprintf('<code><span class="markup">%s</span></code>', trim($value)));
+			$pre = new XMLElement('pre', sprintf('<code><span class="markup">%s </span></code>', trim($value)));
 			
 			return array($line_numbering, $pre);
 			
