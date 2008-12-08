@@ -117,21 +117,13 @@
 			
 			$lines = preg_split('/[\r\n]+/i', $code);
 			
-			$result = new XMLElement('span');
-			$result->setAttribute('class', 'markup');
-			
 			$value = NULL;
 			
 			foreach($lines as $n => $l){
 				$value .= sprintf('<span id="line-%d"></span>%s', ($n + 1), $l) . General::CRLF;
 			}
 			
-			$result->setValue($value);
-			
-			$pre = new XMLElement('pre');
-			$code = new XMLElement('code');
-			$code->appendChild($result);
-			$pre->appendChild($code);
+			$pre = new XMLElement('pre', sprintf('<code><span class="markup">%s</span></code>', trim($value)));
 			
 			return $pre;
 			
