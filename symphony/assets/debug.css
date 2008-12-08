@@ -48,7 +48,6 @@ pre {
 	z-index: 1;
 	position: relative;
 	border: 1px solid #3e3e3b;
-	overflow: hidden;
 	background-color: #191917;
 	white-space: normal;
 }
@@ -57,8 +56,6 @@ code {
 	position: relative;
 	margin-left: 3.6em;
 	padding: 0.3em 0 0.3em 0.7em;
-}
-code > span {
 	white-space: pre;
 	white-space: pre-wrap;
 }
@@ -135,10 +132,14 @@ span.comment,
 span.comment * {
 	color: #727270;
 }
+
+/*
+@Rowan: Your highlighter has bugs! :P <!-->-->
 span.error {
 	background-color: #892005;
 	color: #fff;
 }
+*/
 
 /* Generic Elements */
 body {
