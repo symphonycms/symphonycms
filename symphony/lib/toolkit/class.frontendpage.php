@@ -40,7 +40,7 @@
 			$this->__buildPage();
 
 			if($mode == self::FRONTEND_OUTPUT_NORMAL && @in_array('XML', $this->_pageData['type']) || @in_array('xml', $this->_pageData['type']))
-				$this->addHeaderToPage('Content-Type', 'text/xml');	
+				$this->addHeaderToPage('Content-Type', 'text/xml; charset=utf-8');
 
 			####
 			# Delegate: FrontendOutputPreGenerate
