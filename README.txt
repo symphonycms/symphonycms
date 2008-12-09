@@ -75,5 +75,10 @@ Updating requires you are running Symphony 2 Beta, revision 5.
 
 4. Put the backed up fields.sectionlink.php file into /symphony/lib/toolkit/fields
 
-5. Dance like it's 1999!
+5. If necessary, edit /manifest/config.php, changing any build numbers to 2000 E.G.
+
+	$settings['symphony']['build'] = '2000';
+	$settings['general']['useragent'] = 'Symphony/2000';
+
+6. Dance like it's 1999!
 
