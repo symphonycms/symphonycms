@@ -243,6 +243,21 @@
 				$string = "$string-01-01 to $string-12-31";
 			}	
 			
+			elseif(preg_match('/^(earlier|later) than (.*)$/i', $string, $match)){
+										
+				$string = $match[2];
+				
+				if(!self::__isValidDateString($string)) return self::ERROR;	
+				
+				$time = strtotime($string);
+
+				switch($match[1]){
+					case 'later': $string = DateTimeObj::get('Y-m-d H:i:s', $time+1) . ' to 2038-01-01'; break;
+					case 'earlier': $string = '1970-01-03 to ' . DateTimeObj::get('Y-m-d H:i:s', $time-1); break;
+				}
+
+			}
+
 			## Look to see if its a shorthand date (year and month), and convert to full date
 			elseif(preg_match('/^(1|2)\d{3}[-\/]\d{1,2}$/i', $string)){
 				
@@ -258,7 +273,7 @@
 
 				if(!self::__isValidDateString($string)) return self::ERROR;
 				
-				$string = DateTimeObj::get('Y-m-d', strtotime($string));
+				$string = DateTimeObj::get('Y-m-d H:i:s', strtotime($string));
 				return self::SIMPLE;
 				
 			}
