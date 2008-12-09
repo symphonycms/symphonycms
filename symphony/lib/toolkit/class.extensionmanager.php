@@ -75,7 +75,7 @@
 			}
 				
 			## If not installed, install it
-			if($this->__requiresInstallation($name) && !$obj->install()){
+			if($this->__requiresInstallation($name) && $obj->install() === false){
 				return false;
 			}
 			
