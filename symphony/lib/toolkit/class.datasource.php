@@ -116,7 +116,10 @@
 						
 						$replacement = $this->__findParameterInEnv($param, $env);
 						
-						if(is_array($replacement)) return $replacement;
+						if(is_array($replacement)){
+							if(count($replacement) > 1) return $replacement;
+							$replacement = end($replacement);
+						}
 						
 						if(!empty($replacement)) break;
 						
