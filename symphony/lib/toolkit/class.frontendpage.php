@@ -38,10 +38,22 @@
 			$this->_page = $page;
 
 			$this->__buildPage();
-
-			if($mode == self::FRONTEND_OUTPUT_NORMAL && @in_array('XML', $this->_pageData['type']) || @in_array('xml', $this->_pageData['type']))
-				$this->addHeaderToPage('Content-Type', 'text/xml; charset=utf-8');
-
+			
+			if($mode == self::FRONTEND_OUTPUT_NORMAL){
+				
+				if(@in_array('XML', $this->_pageData['type']) || @in_array('xml', $this->_pageData['type'])){
+					$this->addHeaderToPage('Content-Type', 'text/xml; charset=utf-8');
+				}
+					
+				elseif(@in_array('404', $this->_pageData['type'])){
+					$this->addHeaderToPage('HTTP/1.0 404 Not Found');
+				}
+				
+				elseif(@in_array('403', $this->_pageData['type'])){
+					$this->addHeaderToPage('HTTP/1.0 403 Forbidden');
+				}
+			}
+				
 			####
 			# Delegate: FrontendOutputPreGenerate
 			# Description: Immediately before generating the page. Provided with the page object, XML and XSLT
@@ -102,13 +114,25 @@
 			
 			if(!$page = $this->resolvePage()){
 				
-				$page = $this->_Parent->Database->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types` WHERE `tbl_pages_types`.page_id = `tbl_pages`.id AND tbl_pages_types.`type` = '404' LIMIT 1");
+				$page = $this->_Parent->Database->fetchRow(0, "
+								SELECT `tbl_pages`.* 
+								FROM `tbl_pages`, `tbl_pages_types` 
+								WHERE `tbl_pages_types`.page_id = `tbl_pages`.id 
+								AND tbl_pages_types.`type` = '404' 
+								LIMIT 1");
 
-				if(empty($page)) $this->_Parent->customError(E_USER_ERROR, 'Page Not Found', 'The page you requested does not exist.', false, true, 'error', array('header' => 'HTTP/1.0 404 Not Found'));
+				if(empty($page)){
+					$this->_Parent->customError(E_USER_ERROR, 
+												'Page Not Found', 
+												'The page you requested does not exist.', 
+												false, 
+												true, 
+												'error', 
+												array('header' => 'HTTP/1.0 404 Not Found'));
+				}
 				
 				$page['filelocation'] = $this->resolvePageFileLocation($page['path'], $page['handle']);
-					
-				$this->addHeaderToPage('HTTP/1.0 404 Not Found');
+				$page['type'] = $this->__fetchPageTypes($page['id']);	
 			}
 			
 			####
@@ -220,7 +244,8 @@
 			## Default to the index page if no page has been specified
 			if(!$this->_page && is_null($row)){
 				$row = $this->_Parent->Database->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types` 
-															  WHERE `tbl_pages_types`.page_id = `tbl_pages`.id AND tbl_pages_types.`type` = 'index' 
+															  WHERE `tbl_pages_types`.page_id = `tbl_pages`.id 
+															  AND tbl_pages_types.`type` = 'index' 
 															  LIMIT 1");
 			}
 			
@@ -273,7 +298,7 @@
 			
 			if(!is_array($row) || empty($row)) return;
 
-			$row['type'] = $this->_Parent->Database->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '".$row['id']."' ");
+			$row['type'] = $this->__fetchPageTypes($row['id']);
 
 			## Make sure the user has permission to access this page
 			if(!$this->_Parent->isLoggedIn() && in_array('admin', $row['type'])){
@@ -281,10 +306,13 @@
 															  WHERE `tbl_pages_types`.page_id = `tbl_pages`.id AND tbl_pages_types.`type` = '403' 
 															  LIMIT 1");
 				
-				if(empty($row)) 
-					$this->_Parent->customError(E_USER_ERROR, 'Forbidden', 'Please <a href="'.URL.'/symphony/login/">login</a> to view this page.', false, true, 'error', array('header' => 'HTTP/1.0 403 Forbidden'));
+				if(empty($row)){
+					$this->_Parent->customError(E_USER_ERROR, 'Forbidden', 
+						'Please <a href="'.URL.'/symphony/login/">login</a> to view this page.', false, true, 'error', 
+						array('header' => 'HTTP/1.0 403 Forbidden'));
+				}
 				
-				$this->addHeaderToPage('HTTP/1.0 403 Forbidden');
+				$row['type'] = $this->__fetchPageTypes($row['id']);
 				
  			}	
 
@@ -293,7 +321,11 @@
 			return $row;
 				
 		}
-
+		
+		private function __fetchPageTypes($page_id){
+			return $this->_Parent->Database->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '{$page_id}' ");
+		}
+		
 		private function __isSchemaValid($page_id, $bits){
 	
 			$schema = $this->_Parent->Database->fetchVar('params', 0, "SELECT `params` FROM `tbl_pages` WHERE `id` = '".$page_id."' LIMIT 1");					
