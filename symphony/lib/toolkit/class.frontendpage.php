@@ -44,14 +44,19 @@
 				if(@in_array('XML', $this->_pageData['type']) || @in_array('xml', $this->_pageData['type'])){
 					$this->addHeaderToPage('Content-Type', 'text/xml; charset=utf-8');
 				}
+				
+				else{
+					$this->addHeaderToPage('Content-Type', 'text/html; charset=utf-8');
+				}
 					
-				elseif(@in_array('404', $this->_pageData['type'])){
+				if(@in_array('404', $this->_pageData['type'])){
 					$this->addHeaderToPage('HTTP/1.0 404 Not Found');
 				}
 				
 				elseif(@in_array('403', $this->_pageData['type'])){
 					$this->addHeaderToPage('HTTP/1.0 403 Forbidden');
 				}
+				
 			}
 				
 			####
