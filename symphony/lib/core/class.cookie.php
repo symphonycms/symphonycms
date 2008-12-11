@@ -1,55 +1,66 @@
 <?php
 
+	if(!defined('__IN_SYMPHONY__')) die('<h2>Symphony Error</h2><p>You cannot directly access this file</p>');
+
+	require_once(CORE . '/class.session.php');
+
 	Class Cookie{
 		
 		private $_index;
+		private $_session;
+
 		private $_timeout;
 		private $_path;
-		private $_domain;		
+		private $_domain;
 		
-		function __construct($index, $timeout, $path, $domain=NULL){
+		function __construct($index, $timeout = 0, $path = '/', $domain = NULL){
 			$this->_index = $index;
 			$this->_timeout = $timeout;
 			$this->_path = $path;
-			$this->_domain = ($domain ? $domain : $this->__getDomain());				
+			$this->_domain = $domain;
+
+			// Symphony->__construct() creates Cookie before Database is created. So we need to start session AFTER Cookie is created.
+			$this->_session = false;
 		}
 		
 		public function set($name, $value){
-			setcookie($this->_index . "[$name]", $value, time() + $this->_timeout, $this->_path);
+			if (!$this->_session) {
+				$this->__init();
+			}
 
+			$_SESSION[$this->_index][$name] = $value;
 		}
 		
 		public function get($name){
-			return $_COOKIE[$this->_index][$name];
-		}
-		
-		public function expire(){		
-			if(!is_array($_COOKIE[$this->_index]) || empty($_COOKIE[$this->_index])) return;
-
-			foreach($_COOKIE[$this->_index] as $name => $val){
-				setcookie($this->_index . "[$name]", ' ', time() - $this->_timeout, $this->_path);
+			if (!$this->_session) {
+				$this->__init();
 			}
 
+			return $_SESSION[$this->_index][$name];
 		}
 		
-		private function __getDomain() {
-			
-			if(isset($_SERVER['HTTP_HOST'])){
+		public function expire(){
+			if (!$this->_session) {
+				$this->__init();
+			}
 
-				$dom = $_SERVER['HTTP_HOST'];
+			if(!is_array($_SESSION[$this->_index]) || empty($_SESSION[$this->_index])) return;
 
-				if(strtolower(substr($dom, 0, 4)) == 'www.') $dom = substr($dom, 4);
+			unset($_SESSION[$this->_index]);
+		}
 
-				$uses_port = strpos($dom, ':');
-				if($uses_port) $dom = substr($dom, 0, $uses_port);
+		private function __init() {
+			if ($this->_session) return $this->_session;
 
-				$dom = '.' . $dom;
+			$this->_session = Session::start($this->_timeout, $this->_path, $this->_domain);
+			if (!$this->_session) return false;
 
-				return $dom; 
-			} 
+			if (!isset($_SESSION[$this->_index])) $_SESSION[$this->_index] = array();
 
-			return false;
-		    
+			// Class FrontendPage uses $_COOKIE directly (inside it's __buildPage() function), so try to emulate it.
+			$_COOKIE[$this->_index] = &$_SESSION[$this->_index];
+
+			return $this->_session;
 		}
 	
 	}
