@@ -1,7 +1,5 @@
 <?php
 
-	
-	
 	require_once(CORE . '/class.symphony.php');
 	require_once(TOOLKIT . '/class.xmldoc.php');	
 	require_once(TOOLKIT . '/class.lang.php');
@@ -12,7 +10,14 @@
 		
 		public $displayProfilerReport;
 		
-		function __construct(){
+		public static function instance(){
+			if(!(self::$_instance instanceof Administration)) 
+				self::$_instance = new self;
+				
+			return self::$_instance;
+		}
+				
+		protected function __construct(){
 			parent::__construct();
 			
 			$this->Profiler->sample('Engine Initialisation');

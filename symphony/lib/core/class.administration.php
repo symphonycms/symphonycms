@@ -16,7 +16,14 @@
 		public $displayProfilerReport;
 		public $Page;
 		
-		function __construct(){
+		public static function instance(){
+			if(!(self::$_instance instanceof Administration)) 
+				self::$_instance = new self;
+				
+			return self::$_instance;
+		}
+		
+		protected function __construct(){
 			parent::__construct();
 			$this->Profiler->sample('Engine Initialisation');
 			$this->displayProfilerReport = false;
