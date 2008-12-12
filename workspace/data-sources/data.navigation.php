@@ -16,11 +16,11 @@
 			return array(
 					 'name' => 'Navigation',
 					 'author' => array(
-							'name' => 'Admin Admin',
-							'website' => 'http://localhost:8888/projects/legacy/symphony-2-beta',
-							'email' => 'admin@admin.com'),
+							'name' => 'Alistair Kearney',
+							'website' => 'http://symphony.local:8888/2',
+							'email' => 'alistair@symphony21.com'),
 					 'version' => '1.0',
-					 'release-date' => '2008-12-03T04:59:23+00:00');	
+					 'release-date' => '2008-12-12T04:29:18+00:00');	
 		}
 		
 		public function getSource(){
@@ -32,10 +32,16 @@
 		}
 		
 		public function grab(&$param_pool){
-			$result = NULL;
+			$result = new XMLElement($this->dsParamROOTELEMENT);
 				
-			include(TOOLKIT . '/data-sources/datasource.navigation.php');
-			
+			try{
+				include(TOOLKIT . '/data-sources/datasource.navigation.php');
+			}
+			catch(Exception $e){
+				$result->appendChild(new XMLElement('error', $e->getMessage()));
+				return $result;
+			}	
+
 			if($this->_force_empty_result) $result = $this->emptyXMLSet();
 			return $result;
 		}
