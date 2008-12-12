@@ -1,15 +1,14 @@
 <?php
 
-	if(!defined('__IN_SYMPHONY__')) die('<h2>Symphony Error</h2><p>You cannot directly access this file</p>');
-
 /**
  * Based on: http://pl.php.net/manual/en/function.session-set-save-handler.php#81761 by klose at openriverbed dot de
  *   which was based on: http://pl.php.net/manual/en/function.session-set-save-handler.php#79706 by maria at junkies dot jp
  */
 
 	require_once(CORE . '/class.cacheable.php');
-
+	
 	Class Session{
+		
 		private static $_initialized;
 		private static $_registered;
 		private static $_db;
