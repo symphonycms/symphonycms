@@ -24,11 +24,12 @@ Visit the beta forum at http://overture21.com/forum/
 	Should you wish to make contributions back to the project, feel free to fork the
 	master tree, instead of cloning, and issue pull requests via github.
 
-2. Grab the Maintenance Mode, Select Box Link Field and Markdown Extensions
+2. Grab the Maintenance Mode, Select Box Link Field, Export Ensemble and Markdown Extensions
 
 	git clone git://github.com/pointybeard/maintenance_mode.git
-	git clone git://github.com/pointybeard/markdown.git
 	git clone git://github.com/pointybeard/selectbox_link_field.git
+	git clone git://github.com/pointybeard/export_ensemble.git
+	git clone git://github.com/pointybeard/markdown.git
 	
 	Each of these need to be placed in the /extensions folder
 
