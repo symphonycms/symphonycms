@@ -489,32 +489,7 @@
 		
 		***/		
 		public static function realiseDirectory($path, $mode=0755){
-		
-			if(!empty($path)){
-				
-				if(@file_exists($path) && !@is_dir($path)){
-					return false;
-					
-				}elseif(!@is_dir($path)){
-				
-					preg_match_all('/([^\/]+)\/?/i', $path, $directories);
-		
-					$currDir = '';
-				
-					foreach($directories[0] as $dir){
-					
-						$currDir = $currDir . $dir;
-						
-						if(!@file_exists($currDir)){
-							if(!mkdir($currDir, intval($mode, 8))){
-								return false;
-							}
-						}	
-					}
-				}
-			}
-				
-			return true;
+			return @mkdir($path, intval($mode, 8), true);
 		}
 
 		/***
