@@ -1,11 +1,11 @@
 <?php
 
-	
-
 	require_once(CORE . '/class.configuration.php');
 	require_once(CORE . '/class.datetimeobj.php');
 	require_once(CORE . '/class.log.php');
 	require_once(CORE . '/class.cookie.php');
+
+	require_once(CORE . '/interface.singleton.php');
 	
 	require_once(TOOLKIT . '/class.page.php');
 	require_once(TOOLKIT . '/class.xmlelement.php');
@@ -14,8 +14,8 @@
 	require_once(TOOLKIT . '/class.profiler.php');
 	require_once(TOOLKIT . '/class.author.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
-	
-	Class Symphony{
+		
+	Abstract Class Symphony implements Singleton{
 		
 		public $Log;
 		public $Configuration;
@@ -24,9 +24,11 @@
 		public $Author;
 		public $ExtensionManager;
 		
+		protected static $_instance;
+		
 		const CRLF = "\r\n";
 		
-		function __construct(){
+		protected function __construct(){
 			
 			$this->Profiler = new Profiler;
 
