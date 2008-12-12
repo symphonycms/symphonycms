@@ -1,8 +1,5 @@
 <?php
 
-
-	
-
 	static $processErrors = array();
    
 	function trapXMLError($errno, $errstr, $errfile, $errline, $errcontext, $ret=false){

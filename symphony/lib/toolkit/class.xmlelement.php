@@ -1,6 +1,5 @@
 <?php
 
-
 	Class XMLElement {
 
 		private	$_name;
