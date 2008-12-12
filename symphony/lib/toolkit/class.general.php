@@ -302,6 +302,27 @@
 
 		/***
 
+		Method: encodeHeader
+		Description: Encodes parts of an email header if necessary, according to RFC2047;
+		             does not need the IMAP module installed (like the imap_8bit function);
+		Added by:    Michael Eichelsdoerfer
+		Source:      http://www.php.net/manual/en/function.imap-8bit.php (see comments);
+
+		***/
+		public static function encodeHeader($input, $charset='ISO-8859-1'){
+
+		   preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches);
+
+		   foreach($matches[1] as $value){
+		       $replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
+		       $input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
+		   }
+
+		   return wordwrap($input, 75, "\n\t", true);
+		}
+
+		/***
+
 		Method: sendEmail
 		Description: Allows you to send emails. It includes some simple injection attack
 		             protection and more comprehensive headers
@@ -315,23 +336,27 @@
 		***/		
 		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers=array()){	
 
-			##Check for injection attacks (http://securephp.damonkohler.com/index.php/Email_Injection)
+			## Check for injection attacks (http://securephp.damonkohler.com/index.php/Email_Injection)
 			if ((eregi("\r", $from_email) || eregi("\n", $from_email))
 				|| (eregi("\r", $from_name) || eregi("\n", $from_name))){
 					return false;
 		   	}
 			####
-
+			
+			$subject = General::encodeHeader(utf8_decode($subject));
+			$from_name = General::encodeHeader(utf8_decode($from_name));
+			
 			$headers = array(
-							"From: $from_name <$from_email>",
-					 		"Reply-To: $from_name <$from_email>",	
-							"Message-ID: <".md5(uniqid(time()))."@{$_SERVER['SERVER_NAME']}>",
-							"Return-Path: <$from_email>",
-							"Importance: normal",
-							"Priority: normal",
-							"X-Sender: Symphony Email Module <noreply@symphony21.com>",
-							"X-Mailer: Symphony Email Module",
-							"X-Priority: 3",
+							"From: {$from_name} <{$from_email}>",
+					 		"Reply-To: {$from_name} <{$from_email}>",	
+							sprintf('Message-ID: <%s@%s>', md5(uniqid(time())), $_SERVER['SERVER_NAME']),
+							"Return-Path: <{$from_email}>",
+							'Importance: normal',
+							'Priority: normal',
+							'X-Sender: Symphony Email Module <noreply@symphony21.com>',
+							'X-Mailer: Symphony Email Module',
+							'X-Priority: 3',
+							'Content-Type: text/plain; charset="UTF-8"',
 						);
 
 			if(!empty($additional_headers)){
