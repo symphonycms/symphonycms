@@ -367,7 +367,7 @@
 			##    the ones that have no dependencies, removing them from the list
 			foreach($dependenciesList as $handle => $dependencies){
 				
-				$dependenciesList[$handle] = array_intersect($dsKeyArray, $dependencies);
+				$dependenciesList[$handle] = @array_intersect($dsKeyArray, $dependencies);
 				
 				if(empty($dependenciesList[$handle])){ 
 					unset($dependenciesList[$handle]);
