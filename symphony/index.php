@@ -5,7 +5,7 @@
 	require_once('../manifest/config.php');	
 	require_once(CORE . '/class.administration.php');
 	
-	$Admin = new Administration();
+	$Admin = Administration::instance();
 
 	print $Admin->display(getCurrentPage());
 	

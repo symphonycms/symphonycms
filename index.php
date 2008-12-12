@@ -14,7 +14,7 @@
 	require_once('manifest/config.php');
 	require_once(CORE . '/class.frontend.php');
 	
-	$Frontend = new Frontend();
+	$Frontend = Frontend::instance();
 	
 	print $Frontend->display(getCurrentPage());
 
