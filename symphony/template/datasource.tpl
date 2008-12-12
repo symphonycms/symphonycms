@@ -36,10 +36,16 @@
 		}
 		
 		public function grab(&$param_pool){
-			$result = NULL;
+			$result = new XMLElement($this->dsParamROOTELEMENT);
 				
-			<!-- GRAB -->
-			
+			try{
+				<!-- GRAB -->
+			}
+			catch(Exception $e){
+				$result->appendChild(new XMLElement('error', $e->getMessage()));
+				return $result;
+			}	
+
 			if($this->_force_empty_result) $result = $this->emptyXMLSet();
 			
 			<!-- EXTRAS -->

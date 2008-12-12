@@ -101,8 +101,12 @@
 			if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id]))
 				$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 			
-			if(!is_object($fieldPool[$field_id])){
-				trigger_error('Error creating field object with id ' . $field_id . ', for filtering, in datasource ' . $this->dsParamROOTELEMENT . '. Check this field exists.', E_USER_NOTICE);
+			if(!($fieldPool[$field_id] instanceof Field)){
+				throw new Exception(
+					sprintf('Error creating field object with id %d, for filtering in data source "%s". Check this field exists.', 
+							$field_id, 
+							$this->dsParamROOTELEMENT)
+				);
 			}
 						
 			if($field_id == 'id') $where = " AND `e`.id IN ('".@implode("', '", $value)."') ";
