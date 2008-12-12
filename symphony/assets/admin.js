@@ -1166,6 +1166,11 @@ DOM.onready(function() {
 
 	if (!fields) return;
 
+	var labels = fields.getElementsByTagName("LABEL");
+	for (var i = 0; i < labels.length; i++) {
+		if (labels[i].title != "") return;
+	}
+
 	var change = DOM.createElementWithText("div", "Password "),
 		 button = DOM.createElementWithText("button", "Change Password"),
 		 help   = DOM.getNextElement(fields);

@@ -218,20 +218,27 @@
 
 			$group->appendChild($div);
 					
-			$div = new XMLElement('div', NULL, array('class' => 'group'));
-			if($this->_context[0] == 'edit') $div->setAttribute('id', 'change-password');
-			
+			$div = new XMLElement('div', NULL, array('class' => 'triple group'));
+			if($this->_context[0] == 'edit') {
+				$div->setAttribute('id', 'change-password');
+
+				$label = Widget::Label('Old Password');
+				if(isset($this->_errors['old-password'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['old-password']));	
+				$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password'));
+				$div->appendChild((isset($this->_errors['old-password']) ? $this->wrapFormElementWithError($label, $this->_errors['old-password']) : $label));
+			}
+
 			$label = Widget::Label(($this->_context[0] == 'edit' ? 'New ' : '') . 'Password');		
 			$label->appendChild(Widget::Input('fields[password]', NULL, 'password'));
 			$div->appendChild((isset($this->_errors['password']) ? $this->wrapFormElementWithError($label, $this->_errors['password']) : $label));
 
-			$label = Widget::Label('Confirm Password');
+			$label = Widget::Label('Confirm ' . ($this->_context[0] == 'edit' ? 'New ' : '') . 'Password');
 			if(isset($this->_errors['password-confirmation'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['password-confirmation']));	
 			$label->appendChild(Widget::Input('fields[password-confirmation]', NULL, 'password'));
 			$div->appendChild($label);
 			$group->appendChild($div);
 
-			if($this->_context[0] == 'edit') $group->appendChild(new XMLElement('p', 'Leave this field blank to keep the current password', array('class' => 'help')));
+			if($this->_context[0] == 'edit') $group->appendChild(new XMLElement('p', 'Leave new password field blank to keep the current password', array('class' => 'help')));
 
 			$label = Widget::Label();
 			$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
@@ -331,24 +338,37 @@
 				$fields = $_POST['fields'];
 				
 			    $this->_Author =& $this->_AuthorManager->fetchByID($author_id);
-				
+
+				$authenticated = false;
+				if($fields['email'] != $this->_Author->get('email')) $changing_email = true;
+				if(trim($fields['old-password']) != '' && md5(trim($fields['old-password'])) == $this->_Author->get('password')) {
+					$authenticated = true;
+				}
+
 				$this->_Author->set('id', $author_id);
 				if(isset($fields['user_type'])) $this->_Author->set('user_type', $fields['user_type']);
 				$this->_Author->set('email', $fields['email']);
 				$this->_Author->set('username', $fields['username']);
 				$this->_Author->set('first_name', General::sanitize($fields['first_name']));
 				$this->_Author->set('last_name', General::sanitize($fields['last_name']));
-				if(trim($fields['password']) != '') $this->_Author->set('password', md5($fields['password']));
+				if(trim($fields['password']) != ''){
+					$this->_Author->set('password', md5($fields['password']));
+					$changing_password = true;
+				}
 				$this->_Author->set('default_section', intval($fields['default_section']));
 				$this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
 				
 				if($this->_Author->validate($this->_errors)):
-					
-					if(($fields['password'] != '' || $fields['password-confirmation'] != '') && $fields['password'] != $fields['password-confirmation']){
+
+					if(!$authenticated && ($changing_password || $changing_email)){
+						if($changing_password) $this->_errors['old-password'] = 'Wrong password. Enter old password to change it.';
+						elseif($changing_email) $this->_errors['old-password'] = 'Wrong password. Enter old one to change email address.';
+					}
+
+					elseif(($fields['password'] != '' || $fields['password-confirmation'] != '') && $fields['password'] != $fields['password-confirmation']){
 						$this->_errors['password'] = 'Passwords did not match';
 						$this->_errors['password-confirmation'] = 'Passwords did not match';
 					}
-				
 				
 					elseif($this->_Author->commit()){					
 						
@@ -367,7 +387,7 @@
 					}
 				
 					else $this->pageAlert('Unknown errors occurred while attempting to save. Please check your <a href="{1}/symphony/system/log/">activity log</a>.', AdministrationPage::PAGE_ALERT_ERROR, array(URL));
-				
+
 				endif;
 
 			}
@@ -387,5 +407,4 @@
 		}
 		
 	}
-	
 ?>
