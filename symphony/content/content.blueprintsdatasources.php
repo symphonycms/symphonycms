@@ -685,7 +685,7 @@
 			$dl = new XMLElement('dl');
 			$dl->setAttribute('class', 'important');
 			
-			$dl->appendChild(new XMLElement('URL Parameters'));
+			$dl->appendChild(new XMLElement('dt', 'URL Parameters'));
 			if(!is_array($about['recognised-url-param']) || empty($about['recognised-url-param'])){
 				$dl->appendChild(new XMLElement('dd', '<code>None</code>'));
 			}
@@ -715,7 +715,7 @@
 				if(is_object($example)) $fieldset->appendChild($example);
 				else{
 					$p = new XMLElement('p');
-					$p->appendChild(new XMLElement('pre', '<code>' . str_replace('<', '&lt;', $datasource->example()) . '</code>'));
+					$p->appendChild(new XMLElement('pre', '<code>' . str_replace('<', '&lt;', $example) . '</code>'));
 					$fieldset->appendChild($p);
 				}
 			}
