@@ -828,6 +828,7 @@ UIControl.remove = function(selector) {
 // Admin UI Controls
 
 DOM.addClass('active', document.documentElement);
+DOM.Event.addListener('mousedown', function() {}, true); // Mobile Safari support
 
 UIControl.deploy("label", function(label) {
 	var control  = DOM.getLastElement("*", label),
