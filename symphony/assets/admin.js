@@ -828,7 +828,6 @@ UIControl.remove = function(selector) {
 // Admin UI Controls
 
 DOM.addClass('active', document.documentElement);
-DOM.Event.addListener('mousedown', function() {}, true); // Mobile Safari support
 
 UIControl.deploy("label", function(label) {
 	var control  = DOM.getLastElement("*", label),
@@ -1204,10 +1203,13 @@ DOM.Event.addListener(window, "load", function() {
 
 // Horribleness
 
-if (/[?&]debug(?:[&=].*?)?#line-\d+$/.test(location.href)) {
-	DOM.onready(function() {
+DOM.onready(function() {
+	if (/[?&]debug(?:[&=].*?)?#line-\d+$/.test(location.href)) {
 		document.getElementsByTagName('ol')[0]
 		        .getElementsByTagName('a')[/#line-(\d+)/.exec(location.href)[1] - 1]
 		        .className = 'active';
-	});
-}
+	}
+
+	// Mobile Safari support
+	DOM.Event.addListener(document.getElementById('nav'), 'mouseover', function() {});
+});
