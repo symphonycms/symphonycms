@@ -827,6 +827,8 @@ UIControl.remove = function(selector) {
 
 // Admin UI Controls
 
+DOM.addClass('active', document.documentElement);
+
 UIControl.deploy("label", function(label) {
 	var control  = DOM.getLastElement("*", label),
 		 overflow = control.offsetWidth - label.offsetWidth;
