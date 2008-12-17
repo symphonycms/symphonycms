@@ -101,7 +101,7 @@
 			if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id]))
 				$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 			
-			if(!($fieldPool[$field_id] instanceof Field)){
+			if($field_id != 'id' && !($fieldPool[$field_id] instanceof Field)){
 				throw new Exception(
 					sprintf('Error creating field object with id %d, for filtering in data source "%s". Check this field exists.', 
 							$field_id, 
