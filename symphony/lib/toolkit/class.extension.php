@@ -12,7 +12,7 @@
 		
 		function __construct($args){ $this->_Parent =& $args['parent']; }
 		
-		public function update(){return true;}
+		public function update($previousVersion=false){return true;}
 		
 		public function enable(){return true;}
 		

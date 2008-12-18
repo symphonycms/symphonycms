@@ -68,7 +68,6 @@
 		}*/
       
 		function enable($name){
-					
 			if(false == ($obj =& $this->create($name))){
 				trigger_error('Could not enable '.$name.', there was a problem loading the object. Check the driver class exists.', E_USER_WARNING);
 				return false;
@@ -80,8 +79,8 @@
 			}
 			
 			## If requires and upate before enabling, than update it first
-			elseif($about = $this->about($name) && $this->__requiresUpdate($about)) $obj->update();
-			
+			elseif(($about = $this->about($name)) && ($previousVersion = $this->__requiresUpdate($about)) !== false) $obj->update($previousVersion);
+
 			$id = $this->registerService($name);
 			
 			## Now enable the extension
@@ -292,7 +291,7 @@
 
 			if($info['status'] == EXTENSION_NOT_INSTALLED) return false;
 			
-			if($version = $this->fetchInstalledVersion($info['handle'])) return $version < floatval($info['version']);
+			if(($version = $this->fetchInstalledVersion($info['handle'])) && $version < floatval($info['version'])) return $version;
 				
 			return false;
 			
