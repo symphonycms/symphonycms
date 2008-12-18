@@ -40,7 +40,7 @@ h1 a:hover,
 	white-space: nowrap;
 	list-style: none;
 	text-transform: uppercase;
-	font: bold 90.91%/2px Lucida Grande, Leelawadee, Lucida Sans Unicode, sans-serif;
+	font: bold 90.91%/2px Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
 }
 html.active #nav {
 	margin-bottom: 1.3em;
@@ -266,7 +266,7 @@ tr.movable:nth-child(odd) td {
 
 /* Code */
 code {
-	font: 115%/1.5 Monaco, Consolas, Andale Mono, Lucida Console, monospace;
+	font: 115%/1.5 Monaco, Consolas, Andale Mono, monospace;
 	font-size-adjust: 0.5;
 }
 pre {

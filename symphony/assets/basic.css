@@ -2,7 +2,7 @@
 body {
 	background: #fff;
 	color: #222;
-	font: 68.75%/1.5 Lucida Grande, Meiryo, Tahoma, Lucida Sans Unicode, sans-serif;
+	font: 68.75%/1.5 Lucida Grande, Meiryo, Tahoma, Verdana, sans-serif;
 	cursor: default;
 }
 a {
@@ -25,7 +25,7 @@ h2 {
 	clear: both;
 	margin-bottom: 1em;
 	text-shadow: -1px 2px 3px #ddd;
-	font: 127.28% Lucida Grande, Leelawadee, Lucida Sans Unicode, sans-serif;
+	font: 127.28% Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
 }
 h3,
 h4 {
@@ -40,7 +40,7 @@ ol {
 	margin: 0 0 1.5em 2.25em;
 }
 code {
-	font: 115%/1.5 Monaco, Consolas, Andale Mono, Lucida Console, monospace;
+	font: 115%/1.5 Monaco, Consolas, Andale Mono, monospace;
 	font-size-adjust: 0.5;
 }
 i,
