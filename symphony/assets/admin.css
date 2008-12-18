@@ -5,16 +5,18 @@ body {
 }
 form {
 	position: relative;
-	padding: 0 19px;
+	margin-top: -5em;
+	padding: 0 19px 5em;
 	min-height: 100%;
 }
 h1 {
 	margin: 0 -19px;
-	padding: 20px 19px;
+	padding: 5.64em 19px 1.71em;
 	background: #353530;
 	color: #fff;
 	text-shadow: -1px 2px 3px #111;
 	font-weight: bold;
+	line-height: 1ex;
 }
 h1 a {
 	color: #fff;
@@ -117,11 +119,6 @@ html.active #nav > li li {
 	display: block;
 	margin-right: 0;
 }
-
-
-
-
-
 #nav a {
 	display: none;
 	text-decoration: none;
@@ -153,7 +150,6 @@ html.active #nav a:hover {
 	color: #fff;
 }
 
-
 /* User */
 #usr {
 	position: absolute;
@@ -161,7 +157,7 @@ html.active #nav a:hover {
 	bottom: 0;
 	left: 0;
 	margin: 0;
-	padding: 20px 12px;
+	padding: 1.75em 12px;
 	background: #353530 url("images/navigation.png") 0 -95px repeat-x;
 	text-align: right;
 	text-shadow: -1px 2px 3px #111;
