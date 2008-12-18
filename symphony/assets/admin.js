@@ -1,3 +1,7 @@
+/*
+Contributors: Scott Hughes, Marcin Konicki
+*/
+
 Symphony = {
 	WEBSITE: location.href.match(/.{7,}(?=\/symphony\/)|/)[0]
 };
