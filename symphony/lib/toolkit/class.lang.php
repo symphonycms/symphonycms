@@ -1,29 +1,99 @@
 <?php
 
-	
-	
 	## Provide an interface for translations
-	function __($str){
-		include(LANG . '/lang.' . __LANG__ . '.php');
-		$translated = trim($dictionary[$str]);
-
-		return ($translated ? $translated : $str);
+	function __($string, array $tokens=NULL){
+		return Lang::Dictionary()->translate($string, $tokens);
 	}
 	
 	## Provice an interface for transliterations
+	/*
 	function _t($str){
-		include(LANG . '/lang.' . __LANG__ . '.php');
 		
-		$patterns = array_keys($transliterations);
-		$values = array_values($transliterations);
+		$patterns = array_keys(Lang::Transliterations());
+		$values = array_values(Lang::Transliterations());
 		
 		$str = preg_replace($patterns, $values, $str);
 		
 		return $str;
 	}
+	*/
+	
+	Class Dictionary{
+		private $_strings;
+		
+		public function __construct(array $strings){
+			$this->_strings = $strings;
+		}
+		
+		public function translate($string, array $tokens=NULL){
+			$translated = $this->find($string);
+			
+			if($translated === false) $translated = $string;
+			
+			if(!is_null($tokens) && is_array($tokens) && !empty($tokens)){
+				$translated = vsprintf($translated, $tokens);
+			}
+		
+			return $translated;
+			
+		}
+		
+		public function find($string){
+			if(isset($this->_strings[$string])){
+				return $this->_strings[$string];
+			}
+			
+			return false;
+		}
+		
+		public function add($string){
+			$this->_strings[] = $string;
+		}
+		
+		public function remove($string){
+			unset($this->_strings[$string]);
+		}
+	}
 	
 	Class Lang{
+		
+		private static $_dictionary;
+		private static $_transliterations;		
+		private static $_instance;
+		
+		private function __load($path, $lang){
+			
+			$include = sprintf($path, $lang);
+			
+			if(!file_exists($include)){ 
+				throw new Exception(sprintf('Lang file "%s" could not be loaded. Please check path.', $include));
+			}
+			
+			require(sprintf($path, $lang));
+			
+			self::$_dictionary = new Dictionary($dictionary);
+			self::$_transliterations = $transliterations;
+		}
+		
+		public static function init($path, $lang){
+			
+			if(!(self::$_instance instanceof self)){
+				self::$_instance = new self;
+			}
+			
+			self::__load($path, $lang);
+			
+			return self::$_instance;
+		}
 
+		public static function Transliterations(){
+			return self::$_transliterations;
+		}
+				
+		public static function Dictionary(){
+			return self::$_dictionary;
+		}
+		
 		/***
 		
 		Method: createHandle
@@ -36,7 +106,7 @@
 		Return: resultant handle
 
 		***/					
-		function createHandle($string, $max_length=50, $delim='-', $uriencode=false, $apply_transliteration=true, $additional_rule_set=NULL){
+		public static function createHandle($string, $max_length=50, $delim='-', $uriencode=false, $apply_transliteration=true, $additional_rule_set=NULL){
 
 			## Use the transliteration table if provided
 			if($apply_transliteration) $string = _t($string);
@@ -87,7 +157,7 @@
 		Return: resultant filename
 
 		***/					
-		function createFilename($string, $delim='-', $apply_transliteration=true){
+		public static function createFilename($string, $delim='-', $apply_transliteration=true){
 
 			## Use the transliteration table if provided
 			if($apply_transliteration) $string = _t($string);

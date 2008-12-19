@@ -70,6 +70,13 @@
 
 			DateTimeObj::setDefaultTimezone($this->Configuration->get('timezone', 'region'));
 			
+			try{
+				Lang::init(LANG . '/lang.%s.php', __LANG__);
+			}
+			catch(Exception $e){
+				trigger_error($e->getMessage(), E_USER_ERROR);
+			}			
+
 		}
 		
 		public function initialiseExtensionManager(){
