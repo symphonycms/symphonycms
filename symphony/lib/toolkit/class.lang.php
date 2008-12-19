@@ -6,7 +6,6 @@
 	}
 	
 	## Provice an interface for transliterations
-	/*
 	function _t($str){
 		
 		$patterns = array_keys(Lang::Transliterations());
@@ -16,7 +15,7 @@
 		
 		return $str;
 	}
-	*/
+	
 	
 	Class Dictionary{
 		private $_strings;
