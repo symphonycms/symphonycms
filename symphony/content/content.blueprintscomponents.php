@@ -9,7 +9,7 @@
 		function __construct(&$parent){
 			parent::__construct($parent);
 			$this->setPageType('forms');
-			$this->setTitle('Symphony &ndash; Components');
+			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), __('Components'))));
 		}
 
 		function view(){
@@ -29,8 +29,8 @@
 			$events = $EventManager->listAll();
 			
 			$li = new XMLElement('li');
-			$h3 = new XMLElement('h3', 'Events');
-			$h3->appendChild(Widget::Anchor('Create new', URL . '/symphony/blueprints/events/new/', 'Create a new event', 'create button'));
+			$h3 = new XMLElement('h3', __('Events'));
+			$h3->appendChild(Widget::Anchor(__('Create new'), URL . '/symphony/blueprints/events/new/', __('Create a new event'), 'create button'));
 			$li->appendChild($h3);
 
 			$list = new XMLElement('ul');
@@ -61,8 +61,8 @@
 			
 			$li = new XMLElement('li');
 
-			$h3 = new XMLElement('h3', 'Data Sources');
-			$h3->appendChild(Widget::Anchor('Create new', URL . '/symphony/blueprints/datasources/new/', 'Create a new data source', 'create button'));
+			$h3 = new XMLElement('h3', __('Data Sources'));
+			$h3->appendChild(Widget::Anchor(__('Create new'), URL . '/symphony/blueprints/datasources/new/', __('Create a new data source'), 'create button'));
 			$li->appendChild($h3);
 
 			$list = new XMLElement('ul');
@@ -94,8 +94,8 @@
 			### UTILITIES ###
 			$li = new XMLElement('li');
 
-			$h3 = new XMLElement('h3', 'Utilities');
-			$h3->appendChild(Widget::Anchor('Create new', URL . '/symphony/blueprints/utilities/new/', 'Create a new utility', 'create button'));
+			$h3 = new XMLElement('h3', __('Utilities'));
+			$h3->appendChild(Widget::Anchor(__('Create new'), URL . '/symphony/blueprints/utilities/new/', __('Create a new utility'), 'create button'));
 			$li->appendChild($h3);
 
 			$list = new XMLElement('ul');

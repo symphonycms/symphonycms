@@ -6,8 +6,8 @@
 
 		function __viewIndex(){
 			$this->setPageType('table');	
-			$this->setTitle('Symphony &ndash; Extensions');
-			$this->appendSubheading('Extensions');
+			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), __('Extensions'))));
+			$this->appendSubheading(__('Extensions'));
 			
 			$this->Form->setAttribute('action', URL . '/symphony/system/extensions/');
 			
@@ -18,10 +18,10 @@
 			uasort($extensions, array('ExtensionManager', 'sortByName'));
 
 			$aTableHead = array(
-				array('Name', 'col'),
-				array('Enabled', 'col'),
-				array('Version', 'col'),
-				array('Author', 'col'),
+				array(__('Name'), 'col'),
+				array(__('Enabled'), 'col'),
+				array(__('Version'), 'col'),
+				array(__('Author'), 'col'),
 			);	
 
 			$aTableBody = array();
@@ -38,7 +38,7 @@
 
 					## Setup each cell
 					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], $this->_Parent->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));			
-					$td2 = Widget::TableData(($about['status'] == EXTENSION_ENABLED ? 'Yes' : 'No'));
+					$td2 = Widget::TableData(($about['status'] == EXTENSION_ENABLED ? __('Yes') : __('No')));
 					$td3 = Widget::TableData($about['version']);
 					
 					$link = $about['author']['name'];
@@ -71,14 +71,14 @@
 			$tableActions->setAttribute('class', 'actions');
 			
 			$options = array(
-				array(NULL, false, 'With Selected...'),
-				array('enable', false, 'Enable'),
-				array('disable', false, 'Disable'),
-				array('uninstall', false, 'Uninstall', 'confirm'),
+				array(NULL, false, __('With Selected...')),
+				array('enable', false, __('Enable')),
+				array('disable', false, __('Disable')),
+				array('uninstall', false, __('Uninstall'), 'confirm'),
 			);
 
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
-			$tableActions->appendChild(Widget::Input('action[apply]', 'Apply', 'submit'));
+			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
 			
 			$this->Form->appendChild($tableActions);			
 			

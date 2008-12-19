@@ -50,24 +50,24 @@
 			
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));			
-			if($formHasErrors) $this->pageAlert('An error occurred while processing this form. <a href="#error">See below for details.</a>', AdministrationPage::PAGE_ALERT_ERROR);
+			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), AdministrationPage::PAGE_ALERT_ERROR);
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 					
 					case 'saved':
-						$this->pageAlert('{1} updated successfully. <a href="'.URL.'/symphony/{2}">Create another?</a>', AdministrationPage::PAGE_ALERT_NOTICE, array('Utility', 'blueprints/utilities/new/'));
+						$this->pageAlert(__('%s updated successfully. <a href="%s/symphony/%s">Create another?</a>', array('Utility', URL, 'blueprints/utilities/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 						
 					case 'created':
-						$this->pageAlert('{1} created successfully. <a href="'.URL.'/symphony/{2}">Create another?</a>', AdministrationPage::PAGE_ALERT_NOTICE, array('Utility', 'blueprints/utilities/new/'));
+						$this->pageAlert(__('%s created successfully. <a href="%s/symphony/%s">Create another?</a>', array('Utility', URL, 'blueprints/utilities/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 					
 				}
 			}
 			
-			$this->setTitle('Symphony &ndash; Utilities ' . ($this->_context[0] == 'new' ? '' : "&ndash; $filename"));
-			$this->appendSubheading(($this->_context[0] == 'new' ? 'Untitled' : $filename));
+			$this->setTitle(__(($this->_context[0] == 'new' ? '%s &ndash; %s' : '%s &ndash; %s &ndash; %s'), array(__('Symphony'), __('Utilities'), $filename)));
+			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $filename));
 
 			if(!empty($_POST)) $fields = $_POST['fields'];
 
@@ -76,11 +76,11 @@
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'primary');
 			
-			$label = Widget::Label('Name');
+			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('fields[name]', $fields['name']));
 			$fieldset->appendChild((isset($this->_errors['name']) ? $this->wrapFormElementWithError($label, $this->_errors['name']) : $label));
 
-			$label = Widget::Label('Body');
+			$label = Widget::Label(__('Body'));
 			$label->appendChild(Widget::Textarea('fields[body]', 25, 50, $fields['body'], array('class' => 'code')));
 			$fieldset->appendChild((isset($this->_errors['body']) ? $this->wrapFormElementWithError($label, $this->_errors['body']) : $label));
 			
@@ -94,7 +94,7 @@
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'secondary');
 				
-				$h3 = new XMLElement('h3', 'Utilities');
+				$h3 = new XMLElement('h3', __('Utilities'));
 				$h3->setAttribute('class', 'label');
 				$div->appendChild($h3);
 				
@@ -115,11 +115,11 @@
 			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
-			$div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? 'Save Changes' : 'Create Utility'), 'submit', array('accesskey' => 's')));
+			$div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Utility')), 'submit', array('accesskey' => 's')));
 			
 			if($this->_context[0] == 'edit'){
-				$button = new XMLElement('button', 'Delete');
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => 'Delete this utility'));
+				$button = new XMLElement('button', __('Delete'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this utility')));
 				$div->appendChild($button);
 			}
 			
@@ -139,10 +139,10 @@
 
 				$this->_errors = array();
 
-				if(!isset($fields['name']) || trim($fields['name']) == '') $this->_errors['name'] = 'Name is a required field.';
+				if(!isset($fields['name']) || trim($fields['name']) == '') $this->_errors['name'] = __('Name is a required field.');
 				
-				if(!isset($fields['body']) || trim($fields['body']) == '') $this->_errors['body'] = 'Body is a required field.';
-				elseif(!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) $this->_errors['body'] = 'This document is not well formed. The following error was returned: <code>' . $errors[0]['message'] . '</code>';
+				if(!isset($fields['body']) || trim($fields['body']) == '') $this->_errors['body'] = __('Body is a required field.');
+				elseif(!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) $this->_errors['body'] = __('This document is not well formed. The following error was returned: <code>%s</code>', array($errors[0]['message']));
 				
 				if(empty($this->_errors)){
 
@@ -153,13 +153,13 @@
 					
 					##Duplicate
 					if($this->_context[0] == 'edit' && ($this->_existing_file != $fields['name'] && is_file($file)))
-						$this->_errors['name'] = 'A Utility with that name already exists. Please choose another.';
+						$this->_errors['name'] = __('A Utility with that name already exists. Please choose another.');
 					
-					elseif($this->_context[0] == 'new' && is_file($file)) $this->_errors['name'] = 'A Utility with that name already exists. Please choose another.'; 
+					elseif($this->_context[0] == 'new' && is_file($file)) $this->_errors['name'] = __('A Utility with that name already exists. Please choose another.'); 
 
 					##Write the file	
 					elseif(!$write = General::writeFile($file, $fields['body'], $this->_Parent->Configuration->get('write_mode', 'file')))
-						$this->pageAlert('Utility could not be written to disk. Please check permissions on <code>/workspace/utilities</code>.', AdministrationPage::PAGE_ALERT_ERROR); 			
+						$this->pageAlert(__('Utility could not be written to disk. Please check permissions on <code>/workspace/utilities</code>.'), AdministrationPage::PAGE_ALERT_ERROR);
 
 					##Write Successful, add record to the database
 					else{

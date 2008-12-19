@@ -44,12 +44,12 @@
 			$sectionManager = new SectionManager($this->_Parent);
 			
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, 'Unknown Section', 'The Section you are looking, <code>'.$this->_context['section_handle'].'</code> for could not be found.', false, true);
+				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])), false, true);
 			
 			$section = $sectionManager->fetch($section_id);
 
 			$this->setPageType('table');
-			$this->setTitle('Symphony &ndash; ' . $section->get('name'));
+			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), $section->get('name'))));
 
 			$entryManager = new EntryManager($this->_Parent);
 
@@ -107,7 +107,7 @@
 				$this->appendSubheading($section->get('name'));
 
 			else
-				$this->appendSubheading($section->get('name'), Widget::Anchor('Create New', $this->_Parent->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), 'Create a new entry', 'create button'));
+				$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), $this->_Parent->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), __('Create a new entry'), 'create button'));
 			
 			$entries = $entryManager->fetchByPage($current_page, $section_id, $this->_Parent->Configuration->get('pagination_maximum_rows', 'symphony'), $where, $joins);
 
@@ -124,12 +124,12 @@
 					
 						if($column->get('id') == $section->get('entry_order')){
 							$link = $this->_Parent->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order='. ($section->get('entry_order_direction') == 'desc' ? 'asc' : 'desc').($filter ? "&amp;filter=$field_handle:$filter_value" : '');							
-							$anchor = Widget::Anchor($label, $link, 'Sort by '.($section->get('entry_order_direction') == 'desc' ? 'a' : 'de').'scending ' . strtolower($column->get('label')), 'active');
+							$anchor = Widget::Anchor($label, $link, __('Sort by %s %s', array(($section->get('entry_order_direction') == 'desc' ? __('ascending') : __('descending')), strtolower($column->get('label')))), 'active');
 						}
 						
 						else{
 							$link = $this->_Parent->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order=asc'.($filter ? "&amp;filter=$field_handle:$filter_value" : '');							
-							$anchor = Widget::Anchor($label, $link, 'Sort by ascending ' . strtolower($column->get('label')));						
+							$anchor = Widget::Anchor($label, $link, __('Sort by ascending %s', array(strtolower($column->get('label')))));
 						}
 						
 						$aTableHead[] = array($anchor, 'col');
@@ -139,7 +139,7 @@
 				}
 			}
 
-			else $aTableHead[] = array('ID', 'col');
+			else $aTableHead[] = array(__('ID'), 'col');
 			
 			$child_sections = NULL;
 			
@@ -158,7 +158,7 @@
 			if(!is_array($entries['records']) || empty($entries['records'])){
 
 				$aTableBody = array(
-					Widget::TableRow(array(Widget::TableData('None found.', 'inactive', NULL, count($aTableHead))))
+					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))))
 				);
 			}
 
@@ -192,7 +192,7 @@
 							$value = $field->prepareTableValue($data, ($position == 0 ? $link : null));
 							
 							if (trim($value) == '') {
-								$value = ($position == 0 ? $link->generate() : 'None');
+								$value = ($position == 0 ? $link->generate() : __('None'));
 							}
 							
 							if ($value == 'None') {
@@ -242,8 +242,8 @@
 			$tableActions->setAttribute('class', 'actions');
 
 			$options = array(
-				array(NULL, false, 'With Selected...'),
-				array('delete', false, 'Delete')									
+				array(NULL, false, __('With Selected...')),
+				array('delete', false, __('Delete'))
 			);
 
 			$toggable_fields = $section->fetchToggleableFields();
@@ -254,7 +254,7 @@
 
 				foreach($toggable_fields as $field){
 
-					$options[$index] = array('label' => 'Set '.$field->get('label'), 'options' => array());
+					$options[$index] = array('label' => __('Set %s', array($field->get('label'))), 'options' => array());
 
 					foreach($field->getToggleStates() as $value => $state){
 						$options[$index]['options'][] = array('toggle-' . $field->get('id') . '-' . $value, false, $state);
@@ -265,7 +265,7 @@
 			}
 
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
-			$tableActions->appendChild(Widget::Input('action[apply]', 'Apply', 'submit'));
+			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
 			
 			$this->Form->appendChild($tableActions);
 
@@ -276,31 +276,31 @@
 
 				## First
 				$li = new XMLElement('li');
-				if($current_page > 1) $li->appendChild(Widget::Anchor('First', $this->_Parent->getCurrentPageURL(). '?pg=1'.($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
-				else $li->setValue('First');
+				if($current_page > 1) $li->appendChild(Widget::Anchor(__('First'), $this->_Parent->getCurrentPageURL(). '?pg=1'.($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
+				else $li->setValue(__('First'));
 				$ul->appendChild($li);
 
 				## Previous
 				$li = new XMLElement('li');
-				if($current_page > 1) $li->appendChild(Widget::Anchor('&larr; Previous', $this->_Parent->getCurrentPageURL(). '?pg=' . ($current_page - 1).($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
-				else $li->setValue('&larr; Previous');
+				if($current_page > 1) $li->appendChild(Widget::Anchor(__('&larr; Previous'), $this->_Parent->getCurrentPageURL(). '?pg=' . ($current_page - 1).($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
+				else $li->setValue(__('&larr; Previous'));
 				$ul->appendChild($li);
 
 				## Summary
-				$li = new XMLElement('li', 'Page ' . $current_page . ' of ' . max($current_page, $entries['total-pages']));
-				$li->setAttribute('title', 'Viewing ' . $entries['start'] . ' - ' . min($entries['limit'], max(1, $entries['remaining-entries'])) . ' of ' . $entries['total-entries'] . ' entries');
+				$li = new XMLElement('li', __('Page %s of %s', array($current_page, max($current_page, $entries['total-pages']))));
+				$li->setAttribute('title', __('Viewing %s - %s of %s entries', array($entries['start'], min($entries['limit'], max(1, $entries['remaining-entries'])), $entries['total-entries'])));
 				$ul->appendChild($li);
 
 				## Next
 				$li = new XMLElement('li');
-				if($current_page < $entries['total-pages']) $li->appendChild(Widget::Anchor('Next &rarr;', $this->_Parent->getCurrentPageURL(). '?pg=' . ($current_page + 1).($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
-				else $li->setValue('Next &rarr;');
+				if($current_page < $entries['total-pages']) $li->appendChild(Widget::Anchor(__('Next &rarr;'), $this->_Parent->getCurrentPageURL(). '?pg=' . ($current_page + 1).($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
+				else $li->setValue(__('Next &rarr;'));
 				$ul->appendChild($li);
 
 				## Last
 				$li = new XMLElement('li');
-				if($current_page < $entries['total-pages']) $li->appendChild(Widget::Anchor('Last', $this->_Parent->getCurrentPageURL(). '?pg=' . $entries['total-pages'].($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
-				else $li->setValue('Last');
+				if($current_page < $entries['total-pages']) $li->appendChild(Widget::Anchor(__('Last'), $this->_Parent->getCurrentPageURL(). '?pg=' . $entries['total-pages'].($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
+				else $li->setValue(__('Last'));
 				$ul->appendChild($li);			
 
 				$this->Form->appendChild($ul);	
@@ -360,14 +360,14 @@
 			$sectionManager = new SectionManager($this->_Parent);
 			
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, 'Unknown Section', 'The Section you are looking, <code>'.$this->_context['section_handle'].'</code> for could not be found.', false, true);
+				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])), false, true);
 		
 		    $section = $sectionManager->fetch($section_id);
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
-			$this->setTitle('Symphony &ndash; ' . $section->get('name'));
-			$this->appendSubheading('Untitled');
+			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), $section->get('name'))));
+			$this->appendSubheading(__('Untitled'));
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', $this->_Parent->Configuration->get('max_upload_size', 'admin'), 'hidden'));
 			
 			$entryManager = new EntryManager($this->_Parent);
@@ -415,7 +415,7 @@
 			$main_fields = $section->fetchFields(NULL, 'main');
 
 			if((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))){
-				$primary->appendChild(new XMLElement('p', 'It looks like your trying to create an entry. Perhaps you want fields first? <a href="'.URL.'/symphony/blueprints/sections/edit/'.$section->get('id').'/">Click here to create some.</a>'));
+				$primary->appendChild(new XMLElement('p', __('It looks like your trying to create an entry. Perhaps you want fields first? <a href="%s/symphony/blueprints/sections/edit/%s/">Click here to create some.</a>', array(URL, $section->get('id')))));
 				
 				$this->Form->appendChild($primary);
 			}
@@ -445,7 +445,7 @@
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
-			$div->appendChild(Widget::Input('action[save]', 'Create Entry', 'submit', array('accesskey' => 's')));
+			$div->appendChild(Widget::Input('action[save]', __('Create Entry'), 'submit', array('accesskey' => 's')));
 
 			$this->Form->appendChild($div);
 		
@@ -461,7 +461,7 @@
 				$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']);
 
 			    if(!$section = $sectionManager->fetch($section_id)) 
-					$this->_Parent->customError(E_USER_ERROR, 'Unknown Section', 'The Section you are looking, <code>'.$this->_context['section_handle'].'</code> for could not be found.', false, true);
+					$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', $this->_context['section_handle']), false, true);
 				
 				$entryManager = new EntryManager($this->_Parent);
 
@@ -495,7 +495,7 @@
 				}
 
 				if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)):
-					$this->pageAlert('Some errors were encountered while attempting to save.', AdministrationPage::PAGE_ALERT_ERROR);
+					$this->pageAlert(__('Some errors were encountered while attempting to save.'), AdministrationPage::PAGE_ALERT_ERROR);
 
 				elseif(__ENTRY_OK__ != $entry->setDataFromPost($fields, $error)):
 					$this->pageAlert($error['message'], AdministrationPage::PAGE_ALERT_ERROR);
@@ -535,7 +535,7 @@
 			$sectionManager = new SectionManager($this->_Parent);
 			
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, 'Unknown Section', 'The Section you are looking, <code>'.$this->_context['section_handle'].'</code> for could not be found.', false, true);
+				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])), false, true);
 		
 		    $section = $sectionManager->fetch($section_id);
 
@@ -543,7 +543,7 @@
 
 			$entryManager = new EntryManager($this->_Parent);
 
-			if(!$existingEntry = $entryManager->fetch($entry_id)) $this->_Parent->customError(E_USER_ERROR, 'Unknown Entry', 'The entry you are looking for could not be found.', false, true);
+			if(!$existingEntry = $entryManager->fetch($entry_id)) $this->_Parent->customError(E_USER_ERROR, __('Unknown Entry'), __('The entry you are looking for could not be found.'), false, true);
 			$existingEntry = $existingEntry[0];
 
 			## If there is post data floating around, due to errors, create an entry object
@@ -580,11 +580,11 @@
 				switch($flag){
 					
 					case 'saved':
-						$this->pageAlert('{1} updated successfully. <a href="'.URL.'/symphony/{2}">Create another?</a>', AdministrationPage::PAGE_ALERT_NOTICE, array('Entry', $link));
+						$this->pageAlert(__('%s updated successfully. <a href="%s/symphony/%s">Create another?</a>', array('Entry', URL, $link)), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 						
 					case 'created':
-						$this->pageAlert('{1} created successfully. <a href="'.URL.'/symphony/{2}">Create another?</a>', AdministrationPage::PAGE_ALERT_NOTICE, array('Entry', $link));
+						$this->pageAlert(__('%s created successfully. <a href="%s/symphony/%s">Create another?</a>', array('Entry', URL, $link)), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 					
 				}
@@ -602,7 +602,7 @@
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
-			$this->setTitle('Symphony &ndash; ' . $section->get('name') . ' &ndash; ' . $title);
+			$this->setTitle(__('%s &ndash; %s &ndash; %s', array(__('Symphony'), $section->get('name'), $title)));
 			$this->appendSubheading($title);
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', $this->_Parent->Configuration->get('max_upload_size', 'admin'), 'hidden'));
 			
@@ -615,7 +615,7 @@
 			$main_fields = $section->fetchFields(NULL, 'main');
 
 			if((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))){
-				$primary->appendChild(new XMLElement('p', 'It looks like your trying to create an entry. Perhaps you want custom fields first? <a href="'.URL.'/symphony/blueprints/sections/edit/'.$section->get('id').'/">Click here to create some.</a>'));
+				$primary->appendChild(new XMLElement('p', __('It looks like your trying to create an entry. Perhaps you want custom fields first? <a href="%s/symphony/blueprints/sections/edit/%s/">Click here to create some.</a>', array(URL, $section->get('id')))));
 			}
 
 			else{
@@ -643,10 +643,10 @@
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
-			$div->appendChild(Widget::Input('action[save]', 'Save Changes', 'submit', array('accesskey' => 's')));
+			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
 			
-			$button = new XMLElement('button', 'Delete');
-			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => 'Delete this entry'));
+			$button = new XMLElement('button', __('Delete'));
+			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this entry')));
 			$div->appendChild($button);
 
 			$this->Form->appendChild($div);
@@ -661,7 +661,7 @@
 
 				$entryManager = new EntryManager($this->_Parent);
 
-			    if(!$ret = $entryManager->fetch($entry_id)) $this->_Parent->customError(E_USER_ERROR, 'Unknown Entry', 'The entry you are looking for could not be found.', false, true);
+			    if(!$ret = $entryManager->fetch($entry_id)) $this->_Parent->customError(E_USER_ERROR, __('Unknown Entry'), __('The entry you are looking for could not be found.'), false, true);
 
 				$entry = $ret[0];
 
@@ -692,7 +692,7 @@
 				}
 
 				if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)):
-					$this->pageAlert('Some errors were encountered while attempting to save.', AdministrationPage::PAGE_ALERT_ERROR);
+					$this->pageAlert(__('Some errors were encountered while attempting to save.'), AdministrationPage::PAGE_ALERT_ERROR);
 
 				elseif(__ENTRY_OK__ != $entry->setDataFromPost($fields, $error)):
 					$this->pageAlert($error['message'], AdministrationPage::PAGE_ALERT_ERROR);

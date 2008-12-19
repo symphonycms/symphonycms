@@ -24,7 +24,7 @@
 					foreach($items as $id => $position) {
 						if(!$this->_Parent->Database->query("UPDATE `tbl_pages` SET `sortorder` = '$position' WHERE `id` = '$id' LIMIT 1")){
 							$this->_status = self::STATUS_ERROR;
-							$this->_Result->setValue('A database error occurred while attempting to reorder.');
+							$this->_Result->setValue(__('A database error occurred while attempting to reorder.'));
 							break;
 						}
 
@@ -35,7 +35,7 @@
 					foreach($items as $id => $position) {
 						if(!$this->_Parent->Database->query("UPDATE `tbl_sections` SET `sortorder` = '$position' WHERE `id` = '$id' LIMIT 1")){
 							$this->_status = self::STATUS_ERROR;
-							$this->_Result->setValue('A database error occurred while attempting to reorder.');
+							$this->_Result->setValue(__('A database error occurred while attempting to reorder.'));
 							break;
 						}
 					}			

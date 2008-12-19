@@ -19,16 +19,16 @@
 		
 		function __viewIndex(){
 			$this->setPageType('table');	
-			$this->setTitle('Symphony &ndash; Sections');
-			$this->appendSubheading('Sections', Widget::Anchor('Create New', $this->_Parent->getCurrentPageURL().'new/', 'Create a section', 'create button'));	
+			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), __('Sections'))));
+			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), $this->_Parent->getCurrentPageURL().'new/', __('Create a section'), 'create button'));
 
 		    $sectionManager = new SectionManager($this->_Parent);
 		    $sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 
 			$aTableHead = array(
 
-				array('Name', 'col'),
-				array('Entries', 'col'),
+				array(__('Name'), 'col'),
+				array(__('Entries'), 'col'),
 
 			);	
 
@@ -72,12 +72,12 @@
 			$tableActions->setAttribute('class', 'actions');
 			
 			$options = array(
-				array(NULL, false, 'With Selected...'),
-				array('delete', false, 'Delete')									
+				array(NULL, false, __('With Selected...')),
+				array('delete', false, __('Delete'))
 			);
 
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
-			$tableActions->appendChild(Widget::Input('action[apply]', 'Apply', 'submit'));
+			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
 			
 			$this->Form->appendChild($tableActions);			
 			
@@ -87,8 +87,8 @@
 		function __viewNew(){
 			
 			$this->setPageType('form');	
-			$this->setTitle('Symphony &ndash; Sections');
-			$this->appendSubheading('Untitled');
+			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), __('Sections'))));
+			$this->appendSubheading(__('Untitled'));
 		
 			$fieldManager = new FieldManager($this->_Parent);
 			$types = array_union_simple($this->_templateOrder, $fieldManager->fetchTypes());
@@ -98,7 +98,7 @@
 			
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			
-			if($formHasErrors) $this->pageAlert('An error occurred while processing this form. <a href="#error">See below for details.</a>', AdministrationPage::PAGE_ALERT_ERROR);
+			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), AdministrationPage::PAGE_ALERT_ERROR);
 			
 			@ksort($fields);
 
@@ -110,7 +110,7 @@
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', 'Essentials'));
+			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 			
 			$label = Widget::Label('Name');
 			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
@@ -120,18 +120,18 @@
 			
 			$label = Widget::Label();
 			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : NULL));
-			$label->setValue($input->generate(false) . ' Hide this section from the Publish menu');
+			$label->setValue(__('%s Hide this section from the Publish menu', array($input->generate(false))));
 			$fieldset->appendChild($label);			
 			
 			$this->Form->appendChild($fieldset);		
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', 'Fields'));
+			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
 			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'subsection');
-			$div->appendChild(new XMLElement('h3', 'Fields'));
+			$div->appendChild(new XMLElement('h3', __('Fields')));
 				
 			$ol = new XMLElement('ol');
 			
@@ -177,7 +177,7 @@
 		
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
-			$div->appendChild(Widget::Input('action[save]', 'Create Section', 'submit', array('accesskey' => 's')));
+			$div->appendChild(Widget::Input('action[save]', __('Create Section'), 'submit', array('accesskey' => 's')));
 
 			$this->Form->appendChild($div);			
 			
@@ -190,7 +190,7 @@
 		    $sectionManager = new SectionManager($this->_Parent);
 
 		    if(!$section = $sectionManager->fetch($section_id)) 
-				$this->_Parent->customError(E_USER_ERROR, 'Unknown Section', 'The Section you are looking for could not be found.', false, true);
+				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for could not be found.'), false, true);
 
 			$meta = $section->get();
 
@@ -198,18 +198,18 @@
 			$types = array_union_simple($this->_templateOrder, $fieldManager->fetchTypes());
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));			
-			if($formHasErrors) $this->pageAlert('An error occurred while processing this form. <a href="#error">See below for details.</a>', AdministrationPage::PAGE_ALERT_ERROR);	
+			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), AdministrationPage::PAGE_ALERT_ERROR);	
 
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 					
 					case 'saved':
-						$this->pageAlert('{1} updated successfully. <a href="'.URL.'/symphony/{2}">Create another?</a>', AdministrationPage::PAGE_ALERT_NOTICE, array('Section', 'blueprints/sections/new/'));
+						$this->pageAlert(__('%s updated successfully. <a href="%s/symphony/%s">Create another?</a>', array(__('Section'), URL, 'blueprints/sections/new/'), AdministrationPage::PAGE_ALERT_NOTICE));
 						break;
 						
 					case 'created':
-						$this->pageAlert('{1} created successfully. <a href="'.URL.'/symphony/{2}">Create another?</a>', AdministrationPage::PAGE_ALERT_NOTICE, array('Section', 'blueprints/sections/new/'));
+						$this->pageAlert(__('%s created successfully. <a href="%s/symphony/%s">Create another?</a>', array(__('Section'), URL, 'blueprints/sections/new/'), AdministrationPage::PAGE_ALERT_NOTICE));
 						break;
 					
 				}
@@ -240,17 +240,17 @@
 				if($meta['name'] == '') $meta['name'] = $section->get('name');
 			}
 			
-			$this->setPageType('form');	
-			$this->setTitle('Symphony &ndash; Sections &ndash; ' . $meta['name']);
+			$this->setPageType('form');
+			$this->setTitle(__('%s &ndash; %s &ndash; %s', array(__('Symphony'), __('Sections'), $meta['name'])));
 			$this->appendSubheading($meta['name']);
 
 			$fieldset = new XMLElement('fieldset');
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', 'Essentials'));
+			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 			
-			$label = Widget::Label('Name');
+			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
 			
 			if(isset($this->_errors['name'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
@@ -258,18 +258,18 @@
 
 			$label = Widget::Label();
 			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : NULL));
-			$label->setValue($input->generate(false) . ' Hide this section from the Publish menu');
+			$label->setValue(__('%s Hide this section from the Publish menu', array($input->generate(false))));
 			$fieldset->appendChild($label);
 			
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', 'Fields'));
+			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
 			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'subsection');
-			$div->appendChild(new XMLElement('h3', 'Fields'));
+			$div->appendChild(new XMLElement('h3', __('Fields')));
 				
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'orderable subsection');
@@ -311,10 +311,10 @@
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
-			$div->appendChild(Widget::Input('action[save]', 'Save Changes', 'submit', array('accesskey' => 's')));
+			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
 		
-			$button = new XMLElement('button', 'Delete');
-			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => 'Delete this section'));
+			$button = new XMLElement('button', __('Delete'));
+			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this section')));
 			$div->appendChild($button);
 
 			$this->Form->appendChild($div);			
@@ -353,13 +353,13 @@
 				## Check to ensure all the required section fields are filled
 				if(!isset($meta['name']) || trim($meta['name']) == ''){
 					$required = array('Name');
-					$this->_errors['name'] = 'This is a required field.';
+					$this->_errors['name'] = __('This is a required field.');
 					$canProceed = false;
 				}
 
 				## Check for duplicate section handle
 				elseif($this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . $meta['name'] . "' LIMIT 1")){
-					$this->_errors['name'] = 'A Section with the name <code>'.$meta['name'].'</code> name already exists';
+					$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
 					$canProceed = false;
 				}
 
@@ -370,7 +370,7 @@
 					/*if(isset($meta['subsection'])){
 						foreach($fields as $field){
 							if($field['type'] == 'subsection'){
-								$Admin->pageAlert('You cannot have Subsection type custom fields if the Section is a Subsection.', NULL, true, 'error');
+								$Admin->pageAlert(__('You cannot have Subsection type custom fields if the Section is a Subsection.'), NULL, true, 'error');
 								$canProceed = false;
 								break;
 							}
@@ -386,7 +386,7 @@
 								$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], NULL, '-', false, true, array('@^[\d-]+@i' => ''));
 
 							if(trim($data['element_name']) != '' && in_array($data['element_name'], $name_list)){
-								$this->_errors[$position] = array('element_name' => 'Two custom fields have the same element name. All element names must be unique.');
+								$this->_errors[$position] = array('element_name' => __('Two custom fields have the same element name. All element names must be unique.'));
 								$canProceed = false;
 								break;						
 							}		
@@ -411,7 +411,7 @@
 							elseif($field->mustBeUnique() && in_array($field->get('type'), $unique)){
 								## Warning. cannot have 2 of this field!
 								$canProceed = false;
-								$this->_errors[$position] = array('label' => 'There is already a field of type <code>'.$field->name().'</code>. There can only be one per section.');
+								$this->_errors[$position] = array('label' => __('There is already a field of type <code>%s</code>. There can only be one per section.', array($field->name())));
 							}
 
 							$errors = array();
@@ -438,7 +438,7 @@
 				 	$sectionManager = new SectionManager($this->_Parent);
 
 					if(!$section_id = $sectionManager->add($meta)){
-						$this->pageAlert('An unknown database occurred while attempting to create the section.', AdministrationPage::PAGE_ALERT_ERROR);
+						$this->pageAlert(__('An unknown database occurred while attempting to create the section.'), AdministrationPage::PAGE_ALERT_ERROR);
 					}
 
 					else{
@@ -504,13 +504,13 @@
 				## Check to ensure all the required section fields are filled
 				if(!isset($meta['name']) || trim($meta['name']) == ''){
 					$required = array('Name');
-					$this->_errors['name'] = 'This is a required field.';
+					$this->_errors['name'] = __('This is a required field.');
 					$canProceed = false;
 				}
 
 				## Check for duplicate section handle
 				elseif($meta['name'] != $existing_section->get('name') && $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . $meta['name'] . " AND `id` != ' . $section_id . ' LIMIT 1")){
-					$this->_errors['name'] = 'A Section with the name <code>'.$meta['name'].'</code> name already exists';
+					$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
 					$canProceed = false;
 				}
 
@@ -521,7 +521,7 @@
 					/*if(isset($meta['subsection'])){
 						foreach($fields as $f){
 							if($f['type'] == 'subsection'){
-								$Admin->pageAlert('You cannot have Subsection type custom fields if the Section is a Subsection.', NULL, true, 'error');
+								$Admin->pageAlert(__('You cannot have Subsection type custom fields if the Section is a Subsection.'), NULL, true, 'error');
 								$canProceed = false;
 								break;
 							}
@@ -537,7 +537,7 @@
 								$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], NULL, '-', false, true, array('@^[\d-]+@i' => ''));
 
 							if(trim($data['element_name']) != '' && in_array($data['element_name'], $name_list)){
-								$this->_errors[$position] = array('label' => 'Two custom fields have the same element name. All element names must be unique.');
+								$this->_errors[$position] = array('label' => __('Two custom fields have the same element name. All element names must be unique.'));
 								$canProceed = false;
 								break;						
 							}		
@@ -561,7 +561,7 @@
 							elseif($field->mustBeUnique() && in_array($field->get('type'), $unique)){
 								## Warning. cannot have 2 of this field!
 								$canProceed = false;
-								$this->_errors[$position] = array('label' => 'There is already a field of type <code>'.$field->name().'</code>. There can only be one per section.');
+								$this->_errors[$position] = array('label' => __('There is already a field of type <code>%s</code>. There can only be one per section.', array($field->name())));
 							}
 
 							$errors = array();
@@ -581,7 +581,7 @@
 					$meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
 
 			        if(!$sectionManager->edit($section_id, $meta)){
-						$this->pageAlert('An unknown database occurred while attempting to create the section.', AdministrationPage::PAGE_ALERT_ERROR);
+						$this->pageAlert(__('An unknown database occurred while attempting to create the section.'), AdministrationPage::PAGE_ALERT_ERROR);
 					}
 
 					else{

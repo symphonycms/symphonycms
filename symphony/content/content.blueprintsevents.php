@@ -22,17 +22,17 @@
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			
-			if($formHasErrors) $this->pageAlert('An error occurred while processing this form. <a href="#error">See below for details.</a>', AdministrationPage::PAGE_ALERT_ERROR);
+			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), AdministrationPage::PAGE_ALERT_ERROR);
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 					
 					case 'saved':
-						$this->pageAlert('{1} updated successfully. <a href="'.URL.'/symphony/{2}">Create another?</a>', AdministrationPage::PAGE_ALERT_NOTICE, array('Event', 'blueprints/events/new/'));
+						$this->pageAlert(__('%s updated successfully. <a href="%s/symphony/%s">Create another?</a>', array(__('Event'), URL, 'blueprints/events/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 						
 					case 'created':
-						$this->pageAlert('{1} created successfully. <a href="'.URL.'/symphony/{2}">Create another?</a>', AdministrationPage::PAGE_ALERT_NOTICE, array('Event', 'blueprints/events/new/'));
+						$this->pageAlert(__('%s created successfully. <a href="%s/symphony/%s">Create another?</a>', array(__('Event'), URL, 'blueprints/events/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 					
 				}
@@ -60,25 +60,25 @@
 			
 			if(isset($_POST['fields'])) $fields = $_POST['fields'];
 			
-			$this->setPageType('form');	
-			$this->setTitle('Symphony &ndash; Events' . ($isEditing ? ' &ndash; ' . $about['name'] : NULL));
-			$this->appendSubheading(($isEditing ? $about['name'] : 'Untitled'));
+			$this->setPageType('form');
+			$this->setTitle(__(($isEditing ? '%s &ndash; %s &ndash; %s' : '%s &ndash; %s'), array(__('Symphony'), __('Events'), $about['name'])));
+			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
 			
 			if(!$readonly):
 				$fieldset = new XMLElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
-				$fieldset->appendChild(new XMLElement('legend', 'Essentials'));
+				$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'group');
 			
-				$label = Widget::Label('Name');
+				$label = Widget::Label(__('Name'));
 				$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
 			
 				if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
 				else $div->appendChild($label);
 			
-				$label = Widget::Label('Source');	
+				$label = Widget::Label(__('Source'));	
 			
 			    $sections = $sectionManager->fetch(NULL, 'ASC', 'name');
 			
@@ -93,12 +93,12 @@
 			
 				$fieldset->appendChild($div);
 			
-				$label = Widget::Label('Filter Rules');	
+				$label = Widget::Label(__('Filter Rules'));	
 
 				$options = array(
-					array('admin-only', @in_array('admin-only', $fields['filters']), 'Admin Only'),
-					array('send-email', @in_array('send-email', $fields['filters']), 'Send Email'),
-					array('expect-multiple', @in_array('expect-multiple', $fields['filters']), 'Allow Multiple'),					
+					array('admin-only', @in_array('admin-only', $fields['filters']), __('Admin Only')),
+					array('send-email', @in_array('send-email', $fields['filters']), __('Send Email')),
+					array('expect-multiple', @in_array('expect-multiple', $fields['filters']), __('Allow Multiple')),					
 				);
 			
 				###
@@ -109,7 +109,7 @@
 				$label->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
 				$fieldset->appendChild($label);		
 			
-				$fieldset->appendChild(new XMLElement('p', 'This event will not be processed if any of these rules return true.', array('class' => 'help')));
+				$fieldset->appendChild(new XMLElement('p', __('This event will not be processed if any of these rules return true.'), array('class' => 'help')));
 			
 				$this->Form->appendChild($fieldset);
 			endif;
@@ -119,18 +119,18 @@
 				$fieldset->setAttribute('class', 'settings');
 
 				$doc = $existing->documentation();
-				$fieldset->setValue('<legend>Description</legend>' . self::CRLF . General::tabsToSpaces((is_object($doc) ? $doc->generate(true) : $doc), 2));
+				$fieldset->setValue('<legend>' . __('Description') . '</legend>' . self::CRLF . General::tabsToSpaces((is_object($doc) ? $doc->generate(true) : $doc), 2));
 
 				$this->Form->appendChild($fieldset);
 			endif;
 			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
-			$div->appendChild(Widget::Input('action[save]', ($isEditing ? 'Save Changes' : 'Create Event'), 'submit', array('accesskey' => 's')));
+			$div->appendChild(Widget::Input('action[save]', ($isEditing ? __('Save Changes') : __('Create Event')), 'submit', array('accesskey' => 's')));
 			
 			if($isEditing){
-				$button = new XMLElement('button', 'Delete');
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => 'Delete this event'));
+				$button = new XMLElement('button', __('Delete'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this event')));
 				$div->appendChild($button);
 			}
 			
@@ -153,7 +153,7 @@
 				#$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array("file" => EVENTS . "/event." . $_REQUEST['file'] . ".php"));
 
 		    	if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php'))
-					$this->pageAlert('Failed to delete <code>'.$this->_context[1].'</code>. Please check permissions.', AdministrationPage::PAGE_ALERT_ERROR);
+					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), AdministrationPage::PAGE_ALERT_ERROR);
 
 		    	else redirect(URL . '/symphony/blueprints/components/');
 						
@@ -165,7 +165,7 @@
 			
 			$this->_errors = array();
 			
-			if(trim($fields['name']) == '') $this->_errors['name'] = 'This is a required field';
+			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
 			
 			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
@@ -183,7 +183,7 @@
 			}
 			
 			##Duplicate
-			if($isDuplicate) $this->_errors['name'] = 'An Event with the name <code>'.$classname.'</code> name already exists';
+			if($isDuplicate) $this->_errors['name'] = __('An Event with the name <code>%s</code> name already exists', array($classname));
 			
 			if(empty($this->_errors)){
 				
@@ -212,20 +212,20 @@
 				$documentation_parts = array();
 				
 				
-				$documentation_parts[] = new XMLElement('h3', 'Success and Failure XML Examples');			
-				$documentation_parts[] = new XMLElement('p', 'When saved successfully, the following XML will be returned:');
+				$documentation_parts[] = new XMLElement('h3', __('Success and Failure XML Examples'));			
+				$documentation_parts[] = new XMLElement('p', __('When saved successfully, the following XML will be returned:'));
 			
 				if($multiple){
 					$code = new XMLElement($rootelement);
 					$entry = new XMLElement('entry', NULL, array('index' => '0', 'result' => 'success' , 'type' => 'create | edit'));
-					$entry->appendChild(new XMLElement('message', 'Entry [created | edited] successfully.'));	
+					$entry->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));	
 					
 					$code->appendChild($entry);				
 				}
 				
 				else{
 					$code = new XMLElement($rootelement, NULL, array('result' => 'success' , 'type' => 'create | edit'));
-					$code->appendChild(new XMLElement('message', 'Entry [created | edited] successfully.'));
+					$code->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
 				}
 				
 				
@@ -234,24 +234,24 @@
 				###
 
 
-				$documentation_parts[] = new XMLElement('p', 'When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned' . ($multiple ? ' (<b>Notice that it is possible to get mixtures of success and failure messages when using the "Allow Multiple" option</b>)' : NULL) . ':');
+				$documentation_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? __(' (<b>Notice that it is possible to get mixtures of success and failure messages when using the "Allow Multiple" option</b>)') : NULL) . ':');
 
 				if($multiple){
 					$code = new XMLElement($rootelement);
 					
 					$entry = new XMLElement('entry', NULL, array('index' => '0', 'result' => 'error'));
-					$entry->appendChild(new XMLElement('message', 'Entry encountered errors when saving.'));	
+					$entry->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));	
 					$entry->appendChild(new XMLElement('field-name', NULL, array('type' => 'invalid | missing')));
 					$code->appendChild($entry);	
 					
 					$entry = new XMLElement('entry', NULL, array('index' => '1', 'result' => 'success' , 'type' => 'create | edit'));
-					$entry->appendChild(new XMLElement('message', 'Entry [created | edited] successfully.'));
+					$entry->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
 					$code->appendChild($entry);								
 				}
 				
 				else{
 					$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
-					$code->appendChild(new XMLElement('message', 'Entry encountered errors when saving.'));
+					$code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 					$code->appendChild(new XMLElement('field-name', NULL, array('type' => 'invalid | missing')));
 				}
 				
@@ -263,21 +263,21 @@
 				
 
 				if(is_array($fields['filters']) && !empty($fields['filters'])){
-					$documentation_parts[] = new XMLElement('p', 'The following is an example of what is returned if any filters fail:');
+					$documentation_parts[] = new XMLElement('p', __('The following is an example of what is returned if any filters fail:'));
 
 					$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
-					$code->appendChild(new XMLElement('message', 'Entry encountered errors when saving.'));
+					$code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 					$code->appendChild(new XMLElement('filter', NULL, array('name' => 'admin-only', 'status' => 'failed')));
-					$code->appendChild(new XMLElement('filter', 'Recipient username was invalid', array('name' => 'send-email', 'status' => 'failed')));					
+					$code->appendChild(new XMLElement('filter', __('Recipient username was invalid'), array('name' => 'send-email', 'status' => 'failed')));					
 					$code->setValue('...', false);
 					$documentation_parts[] = self::processDocumentationCode($code);		
 				}
 				
 				###
 				
-				$documentation_parts[] = new XMLElement('h3', 'Example Front-end Form Markup');
+				$documentation_parts[] = new XMLElement('h3', __('Example Front-end Form Markup'));
 				
-				$documentation_parts[] = new XMLElement('p', 'This is an example of the form markup you can use on your frontend:');				
+				$documentation_parts[] = new XMLElement('p', __('This is an example of the form markup you can use on your frontend:'));				
 				$container = new XMLElement('form', NULL, array('method' => 'post', 'action' => '', 'enctype' => 'multipart/form-data'));
 				$container->appendChild(Widget::Input('MAX_FILE_SIZE', $this->_Parent->Configuration->get('max_upload_size', 'admin'), 'hidden'));
 
@@ -287,39 +287,39 @@
 				foreach($section->fetchFields() as $f){
 					$container->appendChild($f->getExampleFormMarkup());
 				}
-				$container->appendChild(Widget::Input('action['.$rootelement.']', 'Submit', 'submit'));
+				$container->appendChild(Widget::Input('action['.$rootelement.']', __('Submit'), 'submit'));
 				
 				$code = $container->generate(true);
 				
 				$documentation_parts[] = self::processDocumentationCode(($multiple ? str_replace('fields[', 'fields[0][', $code) : $code));
 				
 				
-				$documentation_parts[] = new XMLElement('p', 'To edit an existing entry, include the entry ID value of the entry in the form. This is best as a hidden field like so:');
+				$documentation_parts[] = new XMLElement('p', __('To edit an existing entry, include the entry ID value of the entry in the form. This is best as a hidden field like so:'));
 				$documentation_parts[] = self::processDocumentationCode(Widget::Input('id' . ($multiple ? '[0]' : NULL), 23, 'hidden'));
 				
 
-				$documentation_parts[] = new XMLElement('p', 'To redirect to a different location upon a successful save, include the redirect location in the form. This is best as a hidden field like so, where the value is the URL to redirect to:');
+				$documentation_parts[] = new XMLElement('p', __('To redirect to a different location upon a successful save, include the redirect location in the form. This is best as a hidden field like so, where the value is the URL to redirect to:'));
 				$documentation_parts[] = self::processDocumentationCode(Widget::Input('redirect', URL.'/success/', 'hidden'));
 
 				if(@in_array('send-email', $fields['filters'])){
 					
-					$documentation_parts[] = new XMLElement('h3', 'Send Email Filter');
+					$documentation_parts[] = new XMLElement('h3', __('Send Email Filter'));
 					
-					$documentation_parts[] = new XMLElement('p', 'The send email filter, upon the event successfully saving the entry, takes input from the form and send an email to the desired recipient. <b>This filter currently does not work with the "Allow Multiple" option.</b> The following are the recognised fields:');
+					$documentation_parts[] = new XMLElement('p', __('The send email filter, upon the event successfully saving the entry, takes input from the form and send an email to the desired recipient. <b>This filter currently does not work with the "Allow Multiple" option.</b> The following are the recognised fields:'));
 
 					$documentation_parts[] = self::processDocumentationCode(
 						'send-email[from]'.self::CRLF.
-						'send-email[subject] // Optional'.self::CRLF.
+						'send-email[subject] // '.__('Optional').self::CRLF.
 						'send-email[body]'.self::CRLF.
-						'send-email[recipient] // list of comma author usernames.');
+						'send-email[recipient] // '.__('list of comma author usernames.'));
 
-					$documentation_parts[] = new XMLElement('p', 'All of these fields can be set dynamically using the exact field name of another field in the form as shown below in the example form:');	
+					$documentation_parts[] = new XMLElement('p', __('All of these fields can be set dynamically using the exact field name of another field in the form as shown below in the example form:'));
 									
 			        $documentation_parts[] = self::processDocumentationCode('<form action="" method="post">
 	<fieldset>
-		<label>Name <input type="text" name="fields[author]" value="" /></label>
-		<label>Email <input type="text" name="fields[email]" value="" /></label>
-		<label>Message <textarea name="fields[message]" rows="5" cols="21"></textarea></label>
+		<label>'.__('Name').' <input type="text" name="fields[author]" value="" /></label>
+		<label>'.__('Email').' <input type="text" name="fields[email]" value="" /></label>
+		<label>'.__('Message').' <textarea name="fields[message]" rows="5" cols="21"></textarea></label>
 		<input name="send-email[from]" value="fields[email]" type="hidden" />
 		<input name="send-email[subject]" value="You are being contacted" type="hidden" />
 		<input name="send-email[body]" value="fields[message]" type="hidden" />
@@ -348,7 +348,7 @@
 
 				##Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, $this->_Parent->Configuration->get('write_mode', 'file')))
-					$this->pageAlert('Failed to write Event to <code>'.EVENTS.'</code>. Please check permissions.', AdministrationPage::PAGE_ALERT_ERROR);			
+					$this->pageAlert(__('Failed to write Event to <code>%s</code>. Please check permissions.', array(EVENTS)), AdministrationPage::PAGE_ALERT_ERROR);
 
 				##Write Successful, add record to the database
 				else{

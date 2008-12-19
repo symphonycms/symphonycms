@@ -10,11 +10,11 @@
 		
 		public function __viewIndex() {
 			$this->setPageType('table');
-			$this->setTitle('Symphony &ndash; Pages');
-			
-			$this->appendSubheading('Pages', Widget::Anchor(
-				'Create New', $this->_Parent->getCurrentPageURL() . 'new/',
-				'Create a new page', 'create button'
+			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), __('Pages'))));
+
+			$this->appendSubheading(__('Pages'), Widget::Anchor(
+				__('Create New'), $this->_Parent->getCurrentPageURL() . 'new/',
+				__('Create a new page'), 'create button'
 			));
 			
 			$pages = $this->_Parent->Database->fetch("
@@ -27,10 +27,10 @@
 			");
 			
 			$aTableHead = array(
-				array('Title', 'col'),
-				array('<acronym title="Univeral Resource Locator">URL</acronym>', 'col'),
-				array('<acronym title="Univeral Resource Locator">URL</acronym> Parameters', 'col'),
-				array('Type', 'col')
+				array(__('Title'), 'col'),
+				array(__('<acronym title="Univeral Resource Locator">URL</acronym>'), 'col'),
+				array(__('<acronym title="Univeral Resource Locator">URL</acronym> Parameters'), 'col'),
+				array(__('Type'), 'col')
 			);	
 			
 			$aTableBody = array();
@@ -86,12 +86,12 @@
 			$tableActions->setAttribute('class', 'actions');
 			
 			$options = array(
-				array(null, false, 'With Selected...'),
-				array('delete', false, 'Delete')									
+				array(null, false, __('With Selected...')),
+				array('delete', false, __('Delete'))							
 			);
 			
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
-			$tableActions->appendChild(Widget::Input('action[apply]', 'Apply', 'submit'));
+			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
 			
 			$this->Form->appendChild($tableActions);
 		}
@@ -115,18 +115,18 @@
 				if(!$page_id = $this->_context[1]) redirect(URL . '/symphony/blueprints/pages/');
 					
 				if(!$existing = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages` WHERE `id` = '$page_id' LIMIT 1"))
-					$this->_Parent->customError(E_USER_ERROR, 'Page not found', 'The page you requested to edit does not exist.', false, true, 'error', array('header' => 'HTTP/1.0 404 Not Found'));
+					$this->_Parent->customError(E_USER_ERROR, __('Page not found'), __('The page you requested to edit does not exist.'), false, true, 'error', array('header' => 'HTTP/1.0 404 Not Found'));
 			}
 			
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 					
 					case 'saved':
-						$this->pageAlert('{1} updated successfully. <a href="'.URL.'/symphony/{2}">Create another?</a>', AdministrationPage::PAGE_ALERT_NOTICE, array('Page', 'blueprints/pages/new/'));
+						$this->pageAlert(__('%s updated successfully. <a href="%s/symphony/%s">Create another?</a>', array('Page', URL, 'blueprints/pages/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 						
 					case 'created':
-						$this->pageAlert('{1} created successfully. <a href="'.URL.'/symphony/{2}">Create another?</a>', AdministrationPage::PAGE_ALERT_NOTICE, array('Page', 'blueprints/pages/new/'));
+						$this->pageAlert(__('%s created successfully. <a href="%s/symphony/%s">Create another?</a>', array('Page', URL, 'blueprints/pages/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 					
 				}
@@ -173,19 +173,19 @@
 			$title = ($this->_context[0] == 'edit' ? $fields['title'] : NULL);
 			if(trim($title) == '') $title = $existing['title'];
 			
-			$this->setTitle('Symphony &ndash; Pages' . ($title ? ' &ndash; ' . $title : NULL));
-			$this->appendSubheading(($title ? $title : 'Untitled'));
+			$this->setTitle(__(($title ? '%s &ndash; %s &ndash; %s' : '%s &ndash; %s'), array(__('Symphony'), __('Pages'), $title)));
+			$this->appendSubheading(($title ? $title : __('Untitled')));
 
 			$div = new XMLElement('div');
 			$div->setAttribute('id', 'configure');
 						
-			$div->appendChild(new XMLElement('h3', 'URL Settings'));
+			$div->appendChild(new XMLElement('h3', __('URL Settings')));
 			$group = new XMLElement('div');
 			$group->setAttribute('class', 'triple group');
 			
 			$pages = $this->_Parent->Database->fetch("SELECT * FROM `tbl_pages` " . ($this->_context[0] == 'edit' ? "WHERE `id` != '$page_id' " : '') . "ORDER BY `title` ASC");
 			
-			$label = Widget::Label('Parent Page');
+			$label = Widget::Label(__('Parent Page'));
 			
 			$options = array(
 				array('', false, '/')
@@ -211,22 +211,22 @@
 			$label->appendChild(Widget::Select('fields[parent]', $options));		
 			$group->appendChild($label);
 			
-			$label = Widget::Label('URL Handle');
+			$label = Widget::Label(__('URL Handle'));
 			$label->appendChild(Widget::Input('fields[handle]', $fields['handle']));
 			$group->appendChild((isset($this->_errors['handle']) ? $this->wrapFormElementWithError($label, $this->_errors['handle']) : $label));
 				
-			$label = Widget::Label('URL Parameters');
+			$label = Widget::Label(__('URL Parameters'));
 			$label->appendChild(Widget::Input('fields[params]', $fields['params']));				
 			$group->appendChild($label);
 			
 			$div->appendChild($group);
 		
-			$div->appendChild(new XMLElement('h3', 'Page Metadata'));
+			$div->appendChild(new XMLElement('h3', __('Page Metadata')));
 			
 			$group = new XMLElement('div');
 			$group->setAttribute('class', 'triple group');
 
-			$label = Widget::Label('Events');
+			$label = Widget::Label(__('Events'));
 			
 			$EventManager = new EventManager($this->_Parent);
 			$events = $EventManager->listAll();
@@ -239,7 +239,7 @@
 			$label->appendChild(Widget::Select('fields[events][]', $options, array('multiple' => 'multiple')));		
 			$group->appendChild($label);
 
-			$label = Widget::Label('Data Sources');
+			$label = Widget::Label(__('Data Sources'));
 			
 			$DSManager = new DatasourceManager($this->_Parent);
 			$datasources = $DSManager->listAll();
@@ -253,7 +253,7 @@
 			$group->appendChild($label);
 			
 			$div3 = new XMLElement('div');
-			$label = Widget::Label('Page Type');
+			$label = Widget::Label(__('Page Type'));
 			$label->appendChild(Widget::Input('fields[type]', $fields['type']));
 			$div3->appendChild((isset($this->_errors['type']) ? $this->wrapFormElementWithError($label, $this->_errors['type']) : $label));
 			
@@ -270,11 +270,11 @@
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'primary');
 			
-			$label = Widget::Label('Title');		
+			$label = Widget::Label(__('Title'));		
 			$label->appendChild(Widget::Input('fields[title]', General::sanitize($fields['title'])));
 			$fieldset->appendChild((isset($this->_errors['title']) ? $this->wrapFormElementWithError($label, $this->_errors['title']) : $label));
 			
-			$label = Widget::Label('Body');
+			$label = Widget::Label(__('Body'));
 			$label->appendChild(Widget::Textarea('fields[body]', '25', '50', General::sanitize($fields['body']), array('class' => 'code')));
 			$fieldset->appendChild((isset($this->_errors['body']) ? $this->wrapFormElementWithError($label, $this->_errors['body']) : $label));
 			
@@ -288,7 +288,7 @@
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'secondary');
 				
-				$h3 = new XMLElement('h3', 'Utilities');
+				$h3 = new XMLElement('h3', __('Utilities'));
 				$h3->setAttribute('class', 'label');
 				$div->appendChild($h3);
 				
@@ -309,11 +309,11 @@
 			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
-			$div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? 'Save Changes' : 'Create Page'), 'submit', array('accesskey' => 's')));
+			$div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Page')), 'submit', array('accesskey' => 's')));
 			
 			if($this->_context[0] == 'edit'){
-				$button = new XMLElement('button', 'Delete');
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => 'Delete this page'));
+				$button = new XMLElement('button', __('Delete'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this page')));
 				$div->appendChild($button);
 			}
 			
@@ -328,25 +328,25 @@
 				
 				$this->_errors = array();
 
-				if(!isset($fields['body']) || trim($fields['body']) == '') $this->_errors['body'] = 'Body is a required field';
-				elseif(!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) $this->_errors['body'] = 'This document is not well formed. The following error was returned: <code>' . $errors[0]['message'] . '</code>';
+				if(!isset($fields['body']) || trim($fields['body']) == '') $this->_errors['body'] = __('Body is a required field');
+				elseif(!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) $this->_errors['body'] = __('This document is not well formed. The following error was returned: <code>%s</code>', array($errors[0]['message']));
 			
-				if(!isset($fields['title']) || trim($fields['title']) == '') $this->_errors['title'] = 'Title is a required field';
+				if(!isset($fields['title']) || trim($fields['title']) == '') $this->_errors['title'] = __('Title is a required field');
 
 				if(trim($fields['type']) != '' && preg_match('/(index|404|403)/i', $fields['type'])){
 					
 					$haystack = strtolower($fields['type']);
 					
 					if(preg_match('/\bindex\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `type` = 'index' LIMIT 1")){					
-						$this->_errors['type'] = 'An index type page already exists.';
+						$this->_errors['type'] = __('An index type page already exists.');
 					}
 					
 					elseif(preg_match('/\b404\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `type` = '404' LIMIT 1")){	
-						$this->_errors['type'] = 'A 404 type page already exists.';
+						$this->_errors['type'] = __('A 404 type page already exists.');
 					}	
 					
 					elseif(preg_match('/\b403\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `type` = '403' LIMIT 1")){	
-						$this->_errors['type'] = 'A 403 type page already exists.';
+						$this->_errors['type'] = __('A 403 type page already exists.');
 					}
 										
 				}			
@@ -394,8 +394,8 @@
 										 AND `path` ".($fields['path'] ? " = '".$fields['path']."'" : ' IS NULL')." 
 										 LIMIT 1")){
 											
-						if($autogenerated_handle) $this->_errors['title'] = 'A page with that title already exists';
-						else $this->_errors['handle'] = 'A page with that handle already exists'; 
+						if($autogenerated_handle) $this->_errors['title'] = __('A page with that title already exists');
+						else $this->_errors['handle'] = __('A page with that handle already exists'); 
 
 					}
 					
@@ -403,7 +403,7 @@
 
 						## Write the file
 						if(!$write = General::writeFile(PAGES . "/$filename.xsl" , $fields['body'], $this->_Parent->Configuration->get('write_mode', 'file')))
-							$this->pageAlert('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.', AdministrationPage::PAGE_ALERT_ERROR); 			
+							$this->pageAlert(__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'), AdministrationPage::PAGE_ALERT_ERROR);
 
 						## Write Successful, add record to the database
 						else{
@@ -412,7 +412,7 @@
 							unset($fields['body']);
 
 							## Insert the new data
-							if(!$this->_Parent->Database->insert($fields, 'tbl_pages')) $this->pageAlert('Unknown errors occurred while attempting to save. Please check your <a href="{1}/symphony/system/log/">activity log</a>.', AdministrationPage::PAGE_ALERT_ERROR, array(URL));
+							if(!$this->_Parent->Database->insert($fields, 'tbl_pages')) $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s/symphony/system/log/">activity log</a>.', array(URL)), AdministrationPage::PAGE_ALERT_ERROR);
 
 							else{
 								
@@ -435,7 +435,7 @@
 					}
 				}
 				
-				if(is_array($this->_errors) && !empty($this->_errors)) $this->pageAlert('An error occurred while processing this form. <a href="#error">See below for details.</a>', AdministrationPage::PAGE_ALERT_ERROR);				
+				if(is_array($this->_errors) && !empty($this->_errors)) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), AdministrationPage::PAGE_ALERT_ERROR);				
 			}			
 		}
 		
@@ -472,25 +472,25 @@
 				
 				$this->_errors = array();
 				
-				if(!isset($fields['body']) || trim($fields['body']) == '') $this->_errors['body'] = 'Body is a required field';
-				elseif(!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) $this->_errors['body'] = 'This document is not well formed. The following error was returned: <code>' . $errors[0]['message'] . '</code>';
+				if(!isset($fields['body']) || trim($fields['body']) == '') $this->_errors['body'] = __('Body is a required field');
+				elseif(!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) $this->_errors['body'] = __('This document is not well formed. The following error was returned: <code>%s</code>', array($errors[0]['message']));
 
-				if(!isset($fields['title']) || trim($fields['title']) == '') $this->_errors['title'] = 'Title is a required field';
+				if(!isset($fields['title']) || trim($fields['title']) == '') $this->_errors['title'] = __('Title is a required field');
 
 				if(trim($fields['type']) != '' && preg_match('/(index|404|403)/i', $fields['type'])){
 					
 					$haystack = strtolower($fields['type']);
 					
 					if(preg_match('/\bindex\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `page_id` != '$page_id' && `type` = 'index' LIMIT 1")){					
-						$this->_errors['type'] = 'An index type page already exists.';
+						$this->_errors['type'] = __('An index type page already exists.');
 					}
 					
 					elseif(preg_match('/\b404\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `page_id` != '$page_id' && `type` = '404' LIMIT 1")){	
-						$this->_errors['type'] = 'A 404 type page already exists.';
+						$this->_errors['type'] = __('A 404 type page already exists.');
 					}	
 
 					elseif(preg_match('/\b403\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `page_id` != '$page_id' && `type` = '403' LIMIT 1")){	
-						$this->_errors['type'] = 'A 403 type page already exists.';
+						$this->_errors['type'] = __('A 403 type page already exists.');
 					}					
 				}
 				
@@ -543,8 +543,8 @@
 										 AND `path` ".($fields['path'] ? " = '".$fields['path']."'" : ' IS NULL')." 
 										 LIMIT 1")){
 											
-						if($autogenerated_handle) $this->_errors['title'] = 'A page with that title '.($fields['parent'] ? 'and parent ' : '').'already exists';
-						else $this->_errors['handle'] = 'A page with that handle '. ($fields['parent'] ? 'and parent ' : '') . 'already exists'; 
+						if($autogenerated_handle) $this->_errors['title'] = __('A page with that title %s already exists', array(($fields['parent'] ? __('and parent') : '')));
+						else $this->_errors['handle'] = __('A page with that handle %s already exists', array(($fields['parent'] ? __('and parent') : '')));
 
 					}
 					
@@ -552,7 +552,7 @@
 
 						## Write the file
 						if(!$write = General::writeFile(PAGES . "/$new_filename.xsl" , $fields['body'], $this->_Parent->Configuration->get('write_mode', 'file')))
-							$this->pageAlert('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.', AdministrationPage::PAGE_ALERT_ERROR); 			
+							$this->pageAlert(__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'), AdministrationPage::PAGE_ALERT_ERROR); 			
 
 						## Write Successful, add record to the database
 						else{
@@ -563,7 +563,7 @@
 							unset($fields['body']);
 
 							## Insert the new data
-							if(!$this->_Parent->Database->update($fields, 'tbl_pages', "`id` = '$page_id'")) $this->pageAlert('Unknown errors occurred while attempting to save. Please check your <a href="{1}/symphony/system/log/">activity log</a>.', AdministrationPage::PAGE_ALERT_ERROR, array(URL)); 
+							if(!$this->_Parent->Database->update($fields, 'tbl_pages', "`id` = '$page_id'")) $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s/symphony/system/log/">activity log</a>.', array(URL)), AdministrationPage::PAGE_ALERT_ERROR);
 							
 							else{
 								
@@ -586,7 +586,7 @@
 					}
 				}
 				
-				if(is_array($this->_errors) && !empty($this->_errors)) $this->pageAlert('An error occurred while processing this form. <a href="#error">See below for details.</a>', AdministrationPage::PAGE_ALERT_ERROR);				
+				if(is_array($this->_errors) && !empty($this->_errors)) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), AdministrationPage::PAGE_ALERT_ERROR);
 			}
 		}
 		

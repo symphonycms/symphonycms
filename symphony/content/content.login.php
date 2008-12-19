@@ -25,9 +25,9 @@
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 60);		
 			
 			
-			$this->setTitle('Symphony &ndash; Login');
+			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), __('Login'))));
 				
-			$this->_Parent->Profiler->sample('Page template created', PROFILE_LAP);			
+			$this->_Parent->Profiler->sample(__('Page template created'), PROFILE_LAP);			
 			
 		}
 		
@@ -45,28 +45,28 @@
 
 			$this->Form = Widget::Form('', 'post');
 			
-			$this->Form->appendChild(new XMLElement('h1', 'Symphony'));
+			$this->Form->appendChild(new XMLElement('h1', __('Symphony')));
 
 			$fieldset = new XMLElement('fieldset');	
 
 			if($this->_context[0] == 'retrieve-password'):
 			
 				if(isset($this->_email_sent) && $this->_email_sent){
-					$fieldset->appendChild(new XMLElement('p', 'An email containing a customised login link has been sent. It will expire in 2 hours.'));
+					$fieldset->appendChild(new XMLElement('p', __('An email containing a customised login link has been sent. It will expire in 2 hours.')));
 					$this->Form->appendChild($fieldset);
 				}
 			
 				else{
 				
-					$fieldset->appendChild(new XMLElement('p', 'Enter your email address to be sent a remote login link with further instructions for logging in.'));
+					$fieldset->appendChild(new XMLElement('p', __('Enter your email address to be sent a remote login link with further instructions for logging in.')));
 
-					$label = Widget::Label('Email Address');
+					$label = Widget::Label(__('Email Address'));
 					$label->appendChild(Widget::Input('email', $_POST['email']));
 
 					if(isset($this->_email_sent) && !$this->_email_sent){
 						$div = new XMLElement('div', NULL, array('class' => 'invalid'));					
 						$div->appendChild($label);
-						$div->appendChild(new XMLElement('p', 'There was a problem locating your account. Please check that you are using the correct email address.'));					
+						$div->appendChild(new XMLElement('p', __('There was a problem locating your account. Please check that you are using the correct email address.')));
 						$fieldset->appendChild($div);
 					}
 			
@@ -75,28 +75,28 @@
 					$this->Form->appendChild($fieldset);
 			
 					$div = new XMLElement('div', NULL, array('class' => 'actions'));
-					$div->appendChild(Widget::Input('action[reset]', 'Send Email', 'submit'));
+					$div->appendChild(Widget::Input('action[reset]', __('Send Email'), 'submit'));
 					$this->Form->appendChild($div);
 					
 				}
 				
 			else:
 
-				$fieldset->appendChild(new XMLElement('legend', 'Login'));
+				$fieldset->appendChild(new XMLElement('legend', __('Login')));
 
-				$label = Widget::Label('Username');
+				$label = Widget::Label(__('Username'));
 				$label->appendChild(Widget::Input('username'));
 				$fieldset->appendChild($label);
 
 				
-				$label = Widget::Label('Password');
+				$label = Widget::Label(__('Password'));
 				$label->appendChild(Widget::Input('password', NULL, 'password'));
 				
 				
 				if($this->_invalidPassword){
 					$div = new XMLElement('div', NULL, array('class' => 'invalid'));					
 					$div->appendChild($label);
-					$div->appendChild(new XMLElement('p', 'The supplied password was rejected. <a href="'.URL.'/symphony/login/retrieve-password/">Retrieve password?</a>'));					
+					$div->appendChild(new XMLElement('p', __('The supplied password was rejected. <a href="%s/symphony/login/retrieve-password/">Retrieve password?</a>', array(URL))));
 					$fieldset->appendChild($div);
 				}
 				
@@ -105,7 +105,7 @@
 				$this->Form->appendChild($fieldset);
 				
 				$div = new XMLElement('div', NULL, array('class' => 'actions'));
-				$div->appendChild(Widget::Input('action[login]', 'Login', 'submit'));
+				$div->appendChild(Widget::Input('action[login]', __('Login'), 'submit'));
 				if(!preg_match('@\/symphony\/login\/@i', $_SERVER['REQUEST_URI'])) $div->appendChild(Widget::Input('redirect', $_SERVER['REQUEST_URI'], 'hidden'));
 				$this->Form->appendChild($div);
 
@@ -170,14 +170,14 @@
 
 						$this->_email_sent = General::sendEmail($author['email'], 
 									$this->_Parent->Database->fetchVar('email', 0, "SELECT `email` FROM `tbl_authors` ORDER BY `id` ASC LIMIT 1"), 
-									'Symphony Concierge', 
-									'New Symphony Account Password', 
-									'Hi ' . $author['first_name']. ',' . self::CRLF .
-									'A new password has been requested for your account. Login using the following link, and change your password via the Authors area:' . self::CRLF .
+									__('Symphony Concierge'), 
+									__('New Symphony Account Password'),
+									__('Hi %s,', array($author['first_name'])) . self::CRLF .
+									__('A new password has been requested for your account. Login using the following link, and change your password via the Authors area:') . self::CRLF .
 									self::CRLF . '	' . URL . "/symphony/login/$token/" . self::CRLF . self::CRLF .
-									'It will expire in 2 hours. If you did not ask for a new password, please disregard this email.' . self::CRLF . self::CRLF .
-									'Best Regards,' . self::CRLF . 
-									'The Symphony Team');
+									__('It will expire in 2 hours. If you did not ask for a new password, please disregard this email.') . self::CRLF . self::CRLF .
+									__('Best Regards,') . self::CRLF . 
+									__('The Symphony Team'));
 										
 						
 						## TODO: Fix Me

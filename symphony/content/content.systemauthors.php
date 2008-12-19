@@ -20,7 +20,7 @@
 		function __viewIndex(){
 			
 			$this->setPageType('table');
-			$this->setTitle('Symphony &ndash; Authors');
+			$this->setTitle('%s &ndash; %s', array(__('Symphony'), __('Authors')));
 			$this->appendSubheading('Authors', Widget::Anchor('Add an author', $this->_Parent->getCurrentPageURL().'new/', 'Add a new author', 'create button'));
 			
 		    $authors = $this->_AuthorManager->fetch();
@@ -163,29 +163,29 @@
 
 			if($this->_context[0] == 'edit' && $author->get('id') == $this->_Parent->Author->get('id')) $isOwner = true;
 
-			$this->setTitle('Symphony &ndash; Authors' . ($this->_context[0] == 'new' ? NULL : ' &ndash; ' . $author->getFullName()));
+			$this->setTitle(__(($this->_context[0] == 'new' ? '%s &ndash; %s &ndash; %s' : '%s &ndash; %s'), array(__('Symphony'), __('Authors'), $author->getFullName())));
 			$this->appendSubheading(($this->_context[0] == 'new' ? 'Untitled' : $author->getFullName()));			
 			
 			### Essentials ###			
 			$group = new XMLElement('fieldset');
 			$group->setAttribute('class', 'settings');
-			$group->appendChild(new XMLElement('legend', 'Essentials'));
+			$group->appendChild(new XMLElement('legend', __('Essentials')));
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'group');
 
-			$label = Widget::Label('First Name');
+			$label = Widget::Label(__('First Name'));
 			$label->appendChild(Widget::Input('fields[first_name]', $author->get('first_name')));
 			$div->appendChild((isset($this->_errors['first_name']) ? $this->wrapFormElementWithError($label, $this->_errors['first_name']) : $label));
 
 
-			$label = Widget::Label('Last Name');
+			$label = Widget::Label(__('Last Name'));
 			$label->appendChild(Widget::Input('fields[last_name]', $author->get('last_name')));
 			$div->appendChild((isset($this->_errors['last_name']) ? $this->wrapFormElementWithError($label, $this->_errors['last_name']) : $label));
 
 			$group->appendChild($div);
 
-			$label = Widget::Label('Email Address');	
+			$label = Widget::Label(__('Email Address'));	
 			$label->appendChild(Widget::Input('fields[email]', $author->get('email')));
 			$group->appendChild((isset($this->_errors['email']) ? $this->wrapFormElementWithError($label, $this->_errors['email']) : $label));
 
@@ -195,21 +195,21 @@
 			### Login Details ###
 			$group = new XMLElement('fieldset');
 			$group->setAttribute('class', 'settings');
-			$group->appendChild(new XMLElement('legend', 'Login Details'));
+			$group->appendChild(new XMLElement('legend', __('Login Details')));
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'group');
 
-			$label = Widget::Label('Username');
+			$label = Widget::Label(__('Username'));
 			$label->appendChild(Widget::Input('fields[username]', $author->get('username'), NULL));
 			$div->appendChild((isset($this->_errors['username']) ? $this->wrapFormElementWithError($label, $this->_errors['username']) : $label));
 	
-			$label = Widget::Label('User Type');
+			$label = Widget::Label(__('User Type'));
 
 			$options = array(
 
-					array('author', false, 'Author'),
-					array('developer', $author->isDeveloper(), 'Developer')
+					array('author', false, __('Author')),
+					array('developer', $author->isDeveloper(), __('Developer'))
 
 			);
 
@@ -222,32 +222,33 @@
 			if($this->_context[0] == 'edit') {
 				$div->setAttribute('id', 'change-password');
 
-				$label = Widget::Label('Old Password');
+				$label = Widget::Label(__('Old Password'));
 				if(isset($this->_errors['old-password'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['old-password']));	
 				$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password'));
 				$div->appendChild((isset($this->_errors['old-password']) ? $this->wrapFormElementWithError($label, $this->_errors['old-password']) : $label));
 			}
 
-			$label = Widget::Label(($this->_context[0] == 'edit' ? 'New ' : '') . 'Password');		
+			$label = Widget::Label(($this->_context[0] == 'edit' ? __('New Password') : __('Password')));		
 			$label->appendChild(Widget::Input('fields[password]', NULL, 'password'));
 			$div->appendChild((isset($this->_errors['password']) ? $this->wrapFormElementWithError($label, $this->_errors['password']) : $label));
 
-			$label = Widget::Label('Confirm ' . ($this->_context[0] == 'edit' ? 'New ' : '') . 'Password');
+			$label = Widget::Label(($this->_context[0] == 'edit' ? __('Confirm New Password') : __('Confirm Password')));
 			if(isset($this->_errors['password-confirmation'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['password-confirmation']));	
 			$label->appendChild(Widget::Input('fields[password-confirmation]', NULL, 'password'));
 			$div->appendChild($label);
 			$group->appendChild($div);
 
-			if($this->_context[0] == 'edit') $group->appendChild(new XMLElement('p', 'Leave new password field blank to keep the current password', array('class' => 'help')));
+			if($this->_context[0] == 'edit') $group->appendChild(new XMLElement('p', __('Leave new password field blank to keep the current password'), array('class' => 'help')));
 
 			$label = Widget::Label();
 			$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
 			if($author->get('auth_token_active') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue($input->generate() . ' Allow remote login via <a href="'.URL . '/symphony/login/' . $author->createAuthToken() . '/">' . URL . '/symphony/login/' . $author->createAuthToken() . '/</a>');
+			$temp = URL . '/symphony/login/' . $author->createAuthToken() . '/';
+			$label->setValue(__('%s Allow remote login via <a href="%s">%s</a>', array($input->generate(), $temp, $temp)));
 
 			$group->appendChild($label);
 
-			$label = Widget::Label('Default Section');
+			$label = Widget::Label(__('Default Section'));
 			
 		    $sectionManager = new SectionManager($this->_Parent);
 		    $sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
@@ -266,11 +267,11 @@
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
 
-			$div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? 'Save Changes' : 'Create Author'), 'submit', array('accesskey' => 's')));
+			$div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Author')), 'submit', array('accesskey' => 's')));
 			
 			if($this->_context[0] == 'edit' && !$isOwner){
-				$button = new XMLElement('button', 'Delete');
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => 'Delete this author'));
+				$button = new XMLElement('button', __('Delete'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this author')));
 				$div->appendChild($button);
 			}
 			
@@ -301,7 +302,7 @@
 					
 					if($fields['password'] != $fields['password-confirmation']){
 						$this->_errors['password'] = 'Passwords did not match';
-						$this->_errors['password-confirmation'] = 'Passwords did not match';			
+						$this->_errors['password-confirmation'] = __('Passwords did not match');			
 					}
 				
 					elseif($author_id = $this->_Author->commit()){
@@ -319,10 +320,10 @@
 				endif;
 
 				if(is_array($this->_errors) && !empty($this->_errors))
-					$this->pageAlert('There were some problems while attempting to save. Please check below for problem fields.', AdministrationPage::PAGE_ALERT_ERROR);
+					$this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), AdministrationPage::PAGE_ALERT_ERROR);
 					
 				else
-					$this->pageAlert('Unknown errors occurred while attempting to save. Please check your <a href="{1}/symphony/system/log/">activity log</a>.', AdministrationPage::PAGE_ALERT_ERROR, array(URL));
+					$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s/symphony/system/log/">activity log</a>.', array(URL)), AdministrationPage::PAGE_ALERT_ERROR);
 				
 			}
 		}
@@ -361,13 +362,12 @@
 				if($this->_Author->validate($this->_errors)):
 
 					if(!$authenticated && ($changing_password || $changing_email)){
-						if($changing_password) $this->_errors['old-password'] = 'Wrong password. Enter old password to change it.';
-						elseif($changing_email) $this->_errors['old-password'] = 'Wrong password. Enter old one to change email address.';
+						if($changing_password) $this->_errors['old-password'] = __('Wrong password. Enter old password to change it.');
+						elseif($changing_email) $this->_errors['old-password'] = __('Wrong password. Enter old one to change email address.');
 					}
 
 					elseif(($fields['password'] != '' || $fields['password-confirmation'] != '') && $fields['password'] != $fields['password-confirmation']){
-						$this->_errors['password'] = 'Passwords did not match';
-						$this->_errors['password-confirmation'] = 'Passwords did not match';
+						$this->_errors['password'] = $this->_errors['password-confirmation'] = __('Passwords did not match');
 					}
 				
 					elseif($this->_Author->commit()){					
@@ -386,7 +386,7 @@
 
 					}
 				
-					else $this->pageAlert('Unknown errors occurred while attempting to save. Please check your <a href="{1}/symphony/system/log/">activity log</a>.', AdministrationPage::PAGE_ALERT_ERROR, array(URL));
+					else $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s/symphony/system/log/">activity log</a>.', array(URL)), AdministrationPage::PAGE_ALERT_ERROR);
 
 				endif;
 

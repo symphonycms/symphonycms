@@ -7,23 +7,23 @@
 		function __construct(&$parent){
 			parent::__construct($parent);
 			$this->setPageType('form');
-			$this->setTitle('Symphony &ndash; Preferences');
+			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), __('Preferences'))));
 		}
 		
 		## Overload the parent 'view' function since we dont need the switchboard logic
 		function view(){
 			
-			$this->appendSubheading('Preferences');
+			$this->appendSubheading(__('Preferences'));
 
 		    $bIsWritable = true;
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
 		    if(!is_writable(CONFIG)){
-		        $this->pageAlert('The Symphony configuration file, <code>/manifest/config.php</code>, is not writable. You will not be able to save changes to preferences.', AdministrationPage::PAGE_ALERT_ERROR);
+		        $this->pageAlert(__('The Symphony configuration file, <code>/manifest/config.php</code>, is not writable. You will not be able to save changes to preferences.'), AdministrationPage::PAGE_ALERT_ERROR);
 		        $bIsWritable = false;
 		    }
 
-			elseif($formHasErrors) $this->pageAlert('An error occurred while processing this form. <a href="#error">See below for details.</a>', AdministrationPage::PAGE_ALERT_ERROR);
+			elseif($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), AdministrationPage::PAGE_ALERT_ERROR);
 
 			###
 			# Delegate: AddCustomPreferenceFieldsets
@@ -35,7 +35,7 @@
 			
 			$attr = array('accesskey' => 's');
 			if(!$bIsWritable) $attr['disabled'] = 'disabled';
-			$div->appendChild(Widget::Input('action[save]', 'Save Changes', 'submit', $attr));
+			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', $attr));
 
 			$this->Form->appendChild($div);	
 
