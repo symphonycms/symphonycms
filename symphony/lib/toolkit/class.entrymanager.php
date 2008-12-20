@@ -163,7 +163,7 @@
 		function fetchByPage($page, $section_id, $entriesPerPage, $where=NULL, $joins=NULL, $group=false, $records_only=false, $buildentries=true){
 			
 			if(!is_string($entriesPerPage) && !is_numeric($entriesPerPage)){
-				trigger_error('Entry limit specified was not a valid type. String or Integer expected.', E_USER_WARNING);
+				trigger_error(__('Entry limit specified was not a valid type. String or Integer expected.'), E_USER_WARNING);
 				return NULL;
 			}
 			

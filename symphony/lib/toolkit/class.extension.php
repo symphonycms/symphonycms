@@ -33,17 +33,17 @@
 			
 			array(
 				'location' => 200,
-				'name' => 'File Manager',
+				'name' => __('File Manager'),
 				'link' => '/'
 			),		
 			
 			array(
 				'location' => 100,
-				'name' => 'File Manager',
+				'name' => __('File Manager'),
 				'children' => array(
 					
 					array(
-						'name' => 'Browse',
+						'name' => __('Browse'),
 						'link' => '/index/'							
 					)
 				)

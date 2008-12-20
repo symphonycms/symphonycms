@@ -25,14 +25,14 @@
 					if(in_array($item, $exclude)) continue;
 					
 					if(!$this->addFromString(NULL, trim($location . '/' . $item, '/') . '/'))
-						trigger_error('Could not add directory "'.trim($location . '/' . $item, '/') . '/".', E_USER_ERROR);
+						trigger_error(__('Could not add directory "%s".', array(trim($location . '/' . $item, '/') . '/')), E_USER_ERROR);
 
 					self::__traverse($path . '/' . $item, $root, $flag, $exclude);
 				}
 
 				else{
 					if(!$this->addFromFile($path . '/' . $item, trim($location . '/' . $item, '/')))
-						trigger_error('Could not add file "'.$path . '/' . $item.'".', E_USER_ERROR);
+						trigger_error(__('Could not add file "%s".', array($path . '/' . $item)), E_USER_ERROR);
 				}
 			}
 		}

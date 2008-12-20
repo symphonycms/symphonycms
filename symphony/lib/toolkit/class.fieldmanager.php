@@ -48,7 +48,7 @@
 	        $path = $this->__getDriverPath($type);
 
 	        if(!@is_file($path)){
-		        trigger_error("Could not find Field <code>'$type'</code> at <code>'$path'</code>. If the Field was provided by an Extension, ensure that it is installed, and enabled.", E_USER_ERROR);	
+		        trigger_error(__('Could not find Field <code>%s</code> at <code>%s</code>. If the Field was provided by an Extension, ensure that it is installed, and enabled.', array($type, $path)), E_USER_ERROR);	
 		        return false;
 	        }
 	        

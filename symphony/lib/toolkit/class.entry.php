@@ -22,7 +22,7 @@
 			
 			if(isset($this->_ParentCatalogue['administration']) && is_object($this->_ParentCatalogue['administration'])) $this->_engine = $this->_ParentCatalogue['administration'];
 			elseif(isset($this->_ParentCatalogue['frontend']) && is_object($this->_ParentCatalogue['frontend'])) $this->_engine = $this->_ParentCatalogue['frontend'];
-			else trigger_error('No suitable engine object found', E_USER_ERROR);
+			else trigger_error(__('No suitable engine object found'), E_USER_ERROR);
 			
 			$this->creationDate = DateTimeObj::getGMT('c'); //$this->_engine->getDateObj();
 		}

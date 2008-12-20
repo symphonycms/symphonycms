@@ -13,9 +13,9 @@
 			
 			$ul->appendChild(self::__appendNavigationItem('Edit', URL . '/symphony/blueprints/pages/edit/' . $page['id'] . '/'));
 			
-			$ul->appendChild(new XMLElement('li', 'Debug'));
+			$ul->appendChild(new XMLElement('li', __('Debug')));
 
-			$ul->appendChild(self::__appendNavigationItem('Profile', '?profile'));
+			$ul->appendChild(self::__appendNavigationItem(__('Profile'), '?profile'));
 			
 			return $ul;
 		}
@@ -37,8 +37,8 @@
 			
 			$ul = new XMLElement('ul', NULL, array('id' => 'jump'));
 			
-			$ul->appendChild(self::__appendNavigationItem('Params', '?debug=params', ($active_link == 'params')));
-			$ul->appendChild(self::__appendNavigationItem('XML', '?debug=xml', ($active_link == 'xml' || is_null($active_link) || strlen(trim($active_link)) == 0)));
+			$ul->appendChild(self::__appendNavigationItem(__('Params'), '?debug=params', ($active_link == 'params')));
+			$ul->appendChild(self::__appendNavigationItem(__('XML'), '?debug=xml', ($active_link == 'xml' || is_null($active_link) || strlen(trim($active_link)) == 0)));
 			
 			$filename = basename($page['filelocation']);
 			$li = self::__appendNavigationItem($filename, "?debug={$filename}", ($active_link == $filename));
@@ -47,7 +47,7 @@
 			$ul->appendChild($li);	
 
 			
-			$ul->appendChild(self::__appendNavigationItem('Result', '?debug=result', ($active_link == 'result')));
+			$ul->appendChild(self::__appendNavigationItem(__('Result'), '?debug=result', ($active_link == 'result')));
 
 			return $ul;
 			
@@ -145,7 +145,7 @@
 			$this->addElementToHead(new XMLElement('!--[if IE]><link rel="stylesheet" href="'.URL.'/symphony/assets/legacy.css" type="text/css"><![endif]--'), 50);
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 60);
 			
-			$this->setTitle('Symphony &ndash; Debug &ndash; ' . $page['title']);
+			$this->setTitle(__('%s &ndash; %s &ndash; %s', array(__('Symphony'), __('Debug'), $page['title'])));
 			
 			$h1 = new XMLElement('h1');
 			$h1->appendChild(Widget::Anchor($page['title'], '.'));

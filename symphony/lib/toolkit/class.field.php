@@ -38,7 +38,7 @@
 
 			if(isset($this->_ParentCatalogue['administration']) && is_object($this->_ParentCatalogue['administration'])) $this->_engine = $this->_ParentCatalogue['administration'];
 			elseif(isset($this->_ParentCatalogue['frontend']) && is_object($this->_ParentCatalogue['frontend'])) $this->_engine = $this->_ParentCatalogue['frontend'];
-			else trigger_error('No suitable engine object found', E_USER_ERROR);
+			else trigger_error(__('No suitable engine object found'), E_USER_ERROR);
 			
 			$this->creationDate = DateTimeObj::getGMT('c'); //$this->_engine->getDateObj();
 			
@@ -173,14 +173,14 @@
 			if (!is_array($errors)) $errors = array();
 			
 			if ($this->get('label') == '') {
-				$errors['label'] = 'This is a required field.';
+				$errors['label'] = __('This is a required field.');
 			}
 			
 			if ($this->get('element_name') == '') {
-				$errors['element_name'] = 'This is a required field.';
+				$errors['element_name'] = __('This is a required field.');
 				
 			} elseif (!preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $this->get('element_name'))) {
-				$errors['element_name'] = 'Invalid element name. Must be valid QName.';
+				$errors['element_name'] = __('Invalid element name. Must be valid QName.');
 				
 			} elseif($checkForDuplicates) {
 				$sql_id = ($this->get('id') ? " AND f.id != '".$this->get('id')."' " : '');
@@ -197,7 +197,7 @@
 				";
 				
 				if ($this->Database->fetchRow(0, $sql)) {
-					$errors['element_name'] = 'A field with that element name already exists. Please choose another.';
+					$errors['element_name'] = __('A field with that element name already exists. Please choose another.');
 				}
 			}
 			
@@ -279,7 +279,7 @@
 			$message = NULL;
 			
 			if ($this->get('required') == 'yes' && strlen($data) == 0){
-				$message = "'". $this->get('label')."' is a required field.";
+				$message = __("'%s' is a required field.", array($this->get('label')));
 				
 				return self::__MISSING_FIELDS__;
 			}
@@ -384,7 +384,7 @@
 			
 			if ($this->get('required') == 'yes') $input->setAttribute('checked', 'checked');
 			
-			$label->setValue($input->generate() . ' Make this a required field');
+			$label->setValue(__('%s Make this a required field', array($input->generate())));
 			
 			$wrapper->appendChild($label);
 		}
@@ -397,7 +397,7 @@
 			$label->setAttribute('class', 'meta');
 			$input = Widget::Input('fields['.$this->get('sortorder').'][show_column]', 'yes', 'checkbox');
 			if($this->get('show_column') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue($input->generate() . ' Show column');
+			$label->setValue(__('%s Show column', array($input->generate())));
 
 			$wrapper->appendChild($label);			
 			
@@ -425,7 +425,7 @@
 		
 			$options = array();
 		
-			$options[] = array('none', false, 'None');
+			$options[] = array('none', false, __('None'));
 		
 			if(!empty($formatters) && is_array($formatters)){
 				foreach($formatters as $handle => $about) {
@@ -443,7 +443,7 @@
 			include(TOOLKIT . '/util.validators.php');
 			$rules = ($type == 'upload' ? $upload : $validators);
 
-			$label = Widget::Label('Validation Rule <i>Optional</i> ');
+			$label = Widget::Label(__('Validation Rule <i>Optional</i>'));
 			$label->appendChild(Widget::Input($name, $selected));
 			$wrapper->appendChild($label);
 			
@@ -454,7 +454,7 @@
 		}
 		
 		public function groupRecords($records){			
-			trigger_error('Data source output grouping is not supported by the <code>' . $this->get('label') . '</code> field', E_USER_ERROR);		
+			trigger_error(__('Data source output grouping is not supported by the <code>%s</code> field', array($this->get('label'))), E_USER_ERROR);		
 		}
 		
 		public function commit(){

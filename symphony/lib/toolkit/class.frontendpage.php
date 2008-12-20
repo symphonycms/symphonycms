@@ -128,8 +128,8 @@
 
 				if(empty($page)){
 					$this->_Parent->customError(E_USER_ERROR, 
-												'Page Not Found', 
-												'The page you requested does not exist.', 
+												__('Page Not Found'), 
+												__('The page you requested does not exist.'), 
 												false, 
 												true, 
 												'error', 
@@ -313,8 +313,8 @@
 															  LIMIT 1");
 				
 				if(empty($row)){
-					$this->_Parent->customError(E_USER_ERROR, 'Forbidden', 
-						'Please <a href="'.URL.'/symphony/login/">login</a> to view this page.', false, true, 'error', 
+					$this->_Parent->customError(E_USER_ERROR, __('Forbidden'), 
+						__('Please <a href="%s">login</a> to view this page.', array(URL.'/symphony/login/')), false, true, 'error', 
 						array('header' => 'HTTP/1.0 403 Forbidden'));
 				}
 				

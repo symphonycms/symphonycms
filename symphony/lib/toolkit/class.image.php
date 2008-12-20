@@ -29,11 +29,11 @@
 			
 			else $tmp = file_get_contents($uri);
 			
-			if(!$tmp) trigger_error('Error reading external image <code>'.$uri.'</code>. Please check the URI.', E_USER_ERROR);
+			if(!$tmp) trigger_error(__('Error reading external image <code>%s</code>. Please check the URI.', array($uri)), E_USER_ERROR);
 			
 			$dest = tempnam(sys_get_temp_dir(), 'IMAGE');
 			
-			if(!@file_put_contents($dest, $tmp)) trigger_error('Error writing to temporary file <code>'.$dest.'</code>.', E_USER_ERROR);
+			if(!@file_put_contents($dest, $tmp)) trigger_error(__('Error writing to temporary file <code>%s</code>.', array($dest)), E_USER_ERROR);
 			
 			return self::load($dest, $meta);
 			
@@ -41,7 +41,7 @@
 		
 		public static function load($image, &$meta){
 			
-			if(!is_file($image) || !is_readable($image)) trigger_error('Error reading image <code>'.$image.'</code>. Check it exists and is readable.', E_USER_ERROR);
+			if(!is_file($image) || !is_readable($image)) trigger_error(__('Error reading image <code>%s</code>. Check it exists and is readable.', array($image)), E_USER_ERROR);
 			
 			$meta = self::meta($image);
 			
@@ -58,7 +58,7 @@
 					if($meta['channels'] <= 3) return imagecreatefromjpeg($image);
 						
 					## Cant handle CMYK JPEG files	
-					else trigger_error('Cannot load CMYK JPG Images', E_USER_ERROR);
+					else trigger_error(__('Cannot load CMYK JPG Images'), E_USER_ERROR);
 						
 					break;
 				
@@ -68,7 +68,7 @@
 					break;
 					
 				default: 
-					trigger_error('Unsupported image type. Supported types: GIF, JPEG and PNG', E_USER_ERROR);
+					trigger_error(__('Unsupported image type. Supported types: GIF, JPEG and PNG'), E_USER_ERROR);
 					break;
 			}			
 			
@@ -109,7 +109,7 @@
 
 		private static function __render($res, $dest, $quality, $interlacing, $output){
 			
-			if(!is_resource($res)) trigger_error('Invalid image resource supplied', E_USER_ERROR);
+			if(!is_resource($res)) trigger_error(__('Invalid image resource supplied'), E_USER_ERROR);
 			
 			## Turn interlacing on for JPEG or PNG only
 			if($interlacing && ($output == IMAGETYPE_JPEG || $output == IMAGETYPE_PNG)){		

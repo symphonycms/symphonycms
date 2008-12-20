@@ -54,7 +54,7 @@
 		function __redirectToErrorPage(){
 			$page_id = $this->_Parent->Database->fetchVar('page_id', 0, "SELECT `page_id` FROM `tbl_pages_types` WHERE tbl_pages_types.`type` = '404' LIMIT 1");
 			
-			if(!$page_id) $this->_Parent->customError(E_USER_ERROR, 'Page Not Found', 'The page you requested does not exist.', false, true, 'error', array('header' => 'HTTP/1.0 404 Not Found'));
+			if(!$page_id) $this->_Parent->customError(E_USER_ERROR, __('Page Not Found'), __('The page you requested does not exist.'), false, true, 'error', array('header' => 'HTTP/1.0 404 Not Found'));
 			else{
 				$url = URL . '/' . $this->_Parent->resolvePagePath($page_id) . '/';
 				redirect($url);
@@ -64,7 +64,7 @@
 		
 		function emptyXMLSet(){
 			$xml = new XMLElement($this->dsParamROOTELEMENT);
-			$xml->appendChild(new XMLElement('error', 'No Records Found.'));
+			$xml->appendChild(new XMLElement('error', __('No Records Found.')));
 			
 			return $xml;
 		}
@@ -75,7 +75,7 @@
 			foreach($this->dsParamINCLUDEDELEMENTS as $index) {
 				
 				if(!is_object($fields[$index])){
-					trigger_error($index . ' is not a valid object. Failed to append to XML.', E_USER_WARNING);
+					trigger_error(__('%s is not a valid object. Failed to append to XML.', array($index)), E_USER_WARNING);
 					continue;
 				}
 				$wrapper->appendChild($fields[$index]);
@@ -87,7 +87,7 @@
 		}
 		
 		function __noRecordsFound(){
-			return new XMLElement('error', 'No records found.');
+			return new XMLElement('error', __('No records found.'));
 		}
 		
 		function __processParametersInString($value, $env, $includeParenthesis=true, $escape=false){

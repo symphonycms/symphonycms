@@ -40,7 +40,7 @@
 		
 		public function handleFailedAuthorisation(){
 			$this->_status = self::STATUS_UNAUTHORISED;
-			$this->_Result->setValue('You are not authorised to access this page.');
+			$this->_Result->setValue(__('You are not authorised to access this page.'));
 		}
 		
 		public function generate(){

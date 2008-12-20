@@ -69,7 +69,7 @@
       
 		function enable($name){
 			if(false == ($obj =& $this->create($name))){
-				trigger_error('Could not enable '.$name.', there was a problem loading the object. Check the driver class exists.', E_USER_WARNING);
+				trigger_error(__('Could not enable %s, there was a problem loading the object. Check the driver class exists.', array($name)), E_USER_WARNING);
 				return false;
 			}
 				
@@ -95,7 +95,7 @@
 		function disable($name){
 			
 			if(false == ($obj =& $this->create($name))){
-				trigger_error('Could not disable '.$name.', there was a problem loading the object. Check the driver class exists.', E_USER_WARNING);
+				trigger_error(__('Could not disable %s, there was a problem loading the object. Check the driver class exists.', array($name)), E_USER_WARNING);
 				return false;
 			}
 
@@ -112,7 +112,7 @@
 		function uninstall($name){
 			
 			if(false == ($obj =& $this->create($name))){
-				trigger_error('Could not disable '.$name.', there was a problem loading the object. Check the driver class exists.', E_USER_WARNING);
+				trigger_error(__('Could not disable %s, there was a problem loading the object. Check the driver class exists.', array($name)), E_USER_WARNING);
 				return false;
 			}
 			
@@ -252,7 +252,7 @@
 	        $path = $this->__getDriverPath($name);
 	        
 	        if(!@is_file($path)){
-		        if(!$slient) trigger_error("Could not find extension at location '$path'", E_USER_ERROR);	        	
+		        if(!$slient) trigger_error(__('Could not find extension at location %s', array($path)), E_USER_ERROR);	        	
 		        return false;
 	        }
 	        

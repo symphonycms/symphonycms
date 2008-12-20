@@ -9,14 +9,14 @@
 			$ul = new XMLElement('ul', NULL, array('id' => 'nav'));
 			
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor('Edit', URL . '/symphony/blueprints/pages/edit/' . $page['id'] . '/'));
+			$li->appendChild(Widget::Anchor(__('Edit'), URL . '/symphony/blueprints/pages/edit/' . $page['id'] . '/'));
 			$ul->appendChild($li);
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor('Debug', '?debug'));
+			$li->appendChild(Widget::Anchor(__('Debug'), '?debug'));
 			$ul->appendChild($li);
 			
-			$ul->appendChild(new XMLElement('li', 'Profile'));
+			$ul->appendChild(new XMLElement('li', __('Profile')));
 
 			return $ul;
 		}
@@ -47,7 +47,7 @@
 			$this->addElementToHead(new XMLElement('!--[if IE]><link rel="stylesheet" href="'.URL.'/symphony/assets/legacy.css" type="text/css"><![endif]--'), 50);
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 60);			
 			
-			$this->setTitle('Symphony &ndash; Page Profiler &ndash; ' . $page['title']);
+			$this->setTitle(__('%s &ndash; %s &ndash; %s', array(__('Symphony'), __('Page Profiler'), $page['title'])));
 
 			$h1 = new XMLElement('h1');
 			$h1->appendChild(Widget::Anchor($page['title'], '.'));
@@ -149,14 +149,14 @@
 			
 					$records = array(
 				
-						array('Total Database Queries', $dbstats['queries'], NULL, NULL, false),
-						array('Slow Queries (> 0.09s)', count($dbstats['slow-queries']), NULL, NULL, false),
-						array('Total Time Spent on Queries', $dbstats['total-query-time']),
-						array('Time Triggering All Events', $event_total),
-						array('Time Running All Data Sources', $ds_total),
-						array('XML Generation Function', $xml_generation[1]),
-						array('XSLT Generation', $xsl_transformation[1]),
-						array('Output Creation Time', $profiler->retrieveTotalRunningTime()),
+						array(__('Total Database Queries'), $dbstats['queries'], NULL, NULL, false),
+						array(__('Slow Queries (> 0.09s)'), count($dbstats['slow-queries']), NULL, NULL, false),
+						array(__('Total Time Spent on Queries'), $dbstats['total-query-time']),
+						array(__('Time Triggering All Events'), $event_total),
+						array(__('Time Running All Data Sources'), $ds_total),
+						array(__('XML Generation Function'), $xml_generation[1]),
+						array(__('XSLT Generation'), $xsl_transformation[1]),
+						array(__('Output Creation Time'), $profiler->retrieveTotalRunningTime()),
 					);
 
 					$dl = new XMLElement('dl', NULL, array('id' => 'render-statistics'));

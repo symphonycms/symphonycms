@@ -106,24 +106,24 @@
 			
 			$errors = array();
 			
-			if($this->get('first_name') == '') $errors['first_name'] = 'First name is required';
+			if($this->get('first_name') == '') $errors['first_name'] = __('First name is required');
 			
-			if($this->get('last_name') == '') $errors['last_name'] = 'Last name is required';
+			if($this->get('last_name') == '') $errors['last_name'] = __('Last name is required');
 			
-			if($this->get('email') == '') $errors['email'] = 'E-mail address is required';
-			elseif(!General::validateString($this->get('email'), '/^[^@]+@[^\.@]+\.[^@]+$/i')) $errors['email'] = 'E-mail address entered is invalid';
+			if($this->get('email') == '') $errors['email'] = __('E-mail address is required');
+			elseif(!General::validateString($this->get('email'), '/^[^@]+@[^\.@]+\.[^@]+$/i')) $errors['email'] = __('E-mail address entered is invalid');
 			
-			if($this->get('username') == '') $errors['username'] = 'Username is required';
+			if($this->get('username') == '') $errors['username'] = __('Username is required');
 			elseif($this->get('id')){			
 				$current_username = $this->_Parent->Database->fetchVar('username', 0, "SELECT `username` FROM `tbl_authors` WHERE `id` = " . $this->get('id'));	
 				if($current_username != $this->get('username') && $this->_Parent->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '".$this->get('username')."' LIMIT 1"))
-					$errors['username'] = 'Username is already taken';			
+					$errors['username'] = __('Username is already taken');			
 			}
 				
 			elseif($this->_Parent->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '".$this->get('username')."' LIMIT 1"))
-				$errors['username'] = 'Username is already taken';
+				$errors['username'] = __('Username is already taken');
 			
-			if($this->get('password') == '') $errors['password'] = 'Password is required';
+			if($this->get('password') == '') $errors['password'] = __('Password is required');
 			
 			return (empty($errors) ? true : false);
 		}

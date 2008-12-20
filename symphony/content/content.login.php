@@ -27,7 +27,7 @@
 			
 			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), __('Login'))));
 				
-			$this->_Parent->Profiler->sample(__('Page template created'), PROFILE_LAP);			
+			$this->_Parent->Profiler->sample('Page template created', PROFILE_LAP);			
 			
 		}
 		

@@ -117,7 +117,7 @@
 	        $path = $this->__getDriverPath($name);
 	        
 	        if(!@is_file($path)){
-		        trigger_error("Could not find Event <code>'$name'</code>. If the Event was provided by an Extensions, ensure that it is installed, and enabled.", E_USER_ERROR);	
+		        trigger_error(__('Could not find Event <code>%s</code>. If the Event was provided by an Extensions, ensure that it is installed, and enabled.', array($name)), E_USER_ERROR);	
 		        return false;
 	        }
 	        

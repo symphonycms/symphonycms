@@ -25,7 +25,7 @@
 	
 		function parseFile($file){
      		
-	     	if(!is_readable($file)) $this->__error("Can't open file ".$file);	
+	     	if(!is_readable($file)) $this->__error(__("Can't open file %s", array($file)));
      			
 	     	$this->_flush();
      		

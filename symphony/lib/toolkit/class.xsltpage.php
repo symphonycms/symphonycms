@@ -12,7 +12,7 @@
 		
 		function __construct(){
 			
-			if(!XsltProcess::isXSLTProcessorAvailable()) trigger_error('No suitable XSLT processor was found.', E_USER_ERROR);
+			if(!XsltProcess::isXSLTProcessorAvailable()) trigger_error(__('No suitable XSLT processor was found.'), E_USER_ERROR);
 			
 			$this->Proc =& new XsltProcess;
 		}

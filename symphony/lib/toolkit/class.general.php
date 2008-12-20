@@ -293,8 +293,8 @@
 		***/			
 		public static function generatePassword(){
 		
-			$words[] = array('Large', 'Small', 'Hot', 'Cold', 'Big', 'Hairy', 'Round', 'Lumpy', 'Coconut', 'Encumbered');
-			$words[] = array('Cats', 'Dogs', 'Weasels', 'Birds', 'Worms', 'Bugs', 'Pigs', 'Monkeys', 'Pirates', 'Aardvarks', 'Men', 'Women');
+			$words[] = array(__('Large'), __('Small'), __('Hot'), __('Cold'), __('Big'), __('Hairy'), __('Round'), __('Lumpy'), __('Coconut'), __('Encumbered'));
+			$words[] = array(__('Cats'), __('Dogs'), __('Weasels'), __('Birds'), __('Worms'), __('Bugs'), __('Pigs'), __('Monkeys'), __('Pirates'), __('Aardvarks'), __('Men'), __('Women'));
 			
 			return (rand(2, 15) . $words[0][rand(0, 8)] . $words[1][rand(0, 7)]); 
 				
@@ -714,7 +714,7 @@
 		***/		
 		public static function deleteFile($file){
 			if(!@unlink($file)){
-				trigger_error('Unable to remove file - ' . $file, E_USER_WARNING);
+				trigger_error(__('Unable to remove file - %s', array($file)), E_USER_WARNING);
 				return false;
 			}
 			

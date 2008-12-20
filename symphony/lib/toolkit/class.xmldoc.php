@@ -53,7 +53,7 @@
 			$bytes_to_parse = 512;		   
 
 			if(!($fp = @fopen($this->_filename, 'r'))) {
-				$this->__error('Cannot open XML data file: '.$this->_filename);
+				$this->__error(__('Cannot open XML data file: %s', array($this->_filename)));
 				return false;
 			}
 

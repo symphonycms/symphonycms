@@ -36,7 +36,7 @@
 			$this->_context = $context;
 			
 			if(!$this->canAccessPage()){
-				$this->_Parent->customError(E_USER_ERROR, 'Access Denied', 'You are not authorised to access this page.');
+				$this->_Parent->customError(E_USER_ERROR, __('Access Denied'), __('You are not authorised to access this page.'));
 				exit();
 			}
 			
@@ -113,9 +113,8 @@
 
 			if($this->_alert == NULL || ($this->_alert != NULL && $this->_alert['type'] == self::PAGE_ALERT_NOTICE && $type == self::PAGE_ALERT_ERROR)){
 				
-				if(!$message) $message = 'There was a problem rendering this page. Please check the activity log for more details.';
-				
-				$message = __($message);
+				if(!$message) $message = __('There was a problem rendering this page. Please check the activity log for more details.');
+				else $message = __($message);
 				
 				if(is_array($dynamic_elements) && !empty($dynamic_elements)){
 					
@@ -224,7 +223,7 @@
 										$bits = preg_split('/\//i', $c['link'], 2, PREG_SPLIT_NO_EMPTY);
 
 										if(!$this->_Parent->Author->isDeveloper() && preg_match('#^/extension/#i'.$bits[2].'/i', $_REQUEST['page'])){
-											$this->_Parent->customError(E_USER_ERROR, 'Access Denied', 'You are not authorised to access this page.'); 
+											$this->_Parent->customError(E_USER_ERROR, __('Access Denied'), __('You are not authorised to access this page.'));
 										}
 
 									}
@@ -232,7 +231,7 @@
 									elseif($c['type'] == 'section'){
 
 										if($_REQUEST['section'] == $c['section_id'] && preg_match('#^/publish/section/#', $_REQUEST['page'])){
-											$this->_Parent->customError(E_USER_ERROR, 'Access Denied', 'You are not authorised to access this section.'); 
+											$this->_Parent->customError(E_USER_ERROR, __('Access Denied'), __('You are not authorised to access this section.'));
 										}
 
 									}
@@ -346,7 +345,7 @@
 		
 			$xml = new XmlDoc();
 			if(!$xml->parseFile(ASSETS . '/navigation.xml')) 
-				$this->_Parent->customError(E_USER_ERROR, 'Failed to load Navigation', 'There was a problem loading the Symphony navigation XML document.'); 
+				$this->_Parent->customError(E_USER_ERROR, __('Failed to load Navigation'), __('There was a problem loading the Symphony navigation XML document.'));
 		
 			$nodes = $xml->getArray();
 			
