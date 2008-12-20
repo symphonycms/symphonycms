@@ -17,7 +17,7 @@
 	$Page->addHeaderToPage('Symphony-Error-Type', 'generic');	
 	if(isset($additional['header'])) $Page->addHeaderToPage($additional['header']);
 
-	$Page->setTitle('Symphony &ndash; ' . $heading);
+	$Page->setTitle(__('%s &ndash; %s', array(__('Symphony'), $heading)));
 	
 	$div = new XMLElement('div', NULL, array('id' => 'description'));
 	$div->appendChild(new XMLElement('h1', $heading));

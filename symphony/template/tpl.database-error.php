@@ -16,10 +16,10 @@
 	$Page->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
 	$Page->addHeaderToPage('Symphony-Error-Type', 'database');
 	
-	$Page->setTitle('Symphony &ndash; Database Error');
+	$Page->setTitle('%s &ndash; %s', array(__('Symphony'), __('Database Error')));
 
 	$div = new XMLElement('div', NULL, array('id' => 'description'));
-	$div->appendChild(new XMLElement('h1', 'Symphony Database Error'));
+	$div->appendChild(new XMLElement('h1', __('Symphony Database Error')));
 	
 	$div->appendChild(new XMLElement('p', $additional['message']));
 
