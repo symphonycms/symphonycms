@@ -153,6 +153,7 @@
 
 			$this->_param = array(
 				'today' => DateTimeObj::get('Y-m-d'),
+				'current-time' => DateTimeObj::get('H:i'),
 				'this-year' => DateTimeObj::get('Y'),
 				'this-month' => DateTimeObj::get('m'),
 				'this-day' => DateTimeObj::get('d'),
