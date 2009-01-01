@@ -175,7 +175,9 @@ html.active #nav a:hover {
 
 /* System Messages */
 #notice {
-	margin: 0 -19px;
+	position: relative;
+	z-index: 2;
+	margin: 5.5em -19px -5.5em;
 	border-bottom: 1px solid #887;
 	padding: 0 0.83em;
 	background-color: #7f7f72;
