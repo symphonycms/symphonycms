@@ -294,13 +294,13 @@
 		}
 		
 		private static function __isValidDateString($string){
-			
+
 			$string = trim($string);
 			
 			if(empty($string)) return false;
 			
 			## Its not a valid date, so just return it as is
-			if(!$info = getdate($string)) return false;
+			if(!$info = getdate(strtotime($string))) return false;
 			elseif(!checkdate($info['mon'], $info['mday'], $info['year'])) return false;
 
 			return true;	
