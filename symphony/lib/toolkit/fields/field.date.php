@@ -162,7 +162,7 @@
 			return true;
 		}
 		
-		private function __buildSimpleFilterSQL($data, &$joins, &$where, $andOperation=false){
+		protected function __buildSimpleFilterSQL($data, &$joins, &$where, $andOperation=false){
 			
 			$field_id = $this->get('id');
 			
@@ -186,7 +186,7 @@
 			
 		}
 		
-		private function __buildRangeFilterSQL($data, &$joins, &$where, $andOperation=false){	
+		protected function __buildRangeFilterSQL($data, &$joins, &$where, $andOperation=false){	
 			
 			$field_id = $this->get('id');
 			
@@ -221,14 +221,14 @@
 			
 		}
 		
-		private static function __cleanFilterString($string){
+		protected static function __cleanFilterString($string){
 			$string = trim($string);
 			$string = trim($string, '-/');
 			
 			return $string;
 		}
 		
-		private static function __parseFilter(&$string){
+		protected static function __parseFilter(&$string){
 			
 			$string = self::__cleanFilterString($string);
 			
@@ -293,7 +293,7 @@
 			return self::RANGE;
 		}
 		
-		private static function __isValidDateString($string){
+		protected static function __isValidDateString($string){
 
 			$string = trim($string);
 			
