@@ -6,6 +6,11 @@
 			$this->_name = 'Tag List';
 		}
 		
+		public function set($field, $value){
+			if($field == 'pre_populate_source' && !is_array($value)) $value = preg_split('/\s*,\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
+			$this->_fields[$field] = $value;
+		}
+		
 		public function requiresSQLGrouping() {
 			return true;
 		}
@@ -87,11 +92,21 @@
 		}
 		
 		function findAllTags(){			
+			
+			$sql = "SELECT DISTINCT `value` FROM tbl_entries_data_%d ORDER BY `value` ASC";
+			
+			if(!is_array($this->get('pre_populate_source'))) return;
+			
+			$values = array();
+			
+			foreach($this->get('pre_populate_source') as $item){
+				$result = $this->_engine->Database->fetchCol('value', sprintf($sql, ($item == 'existing' ? $this->get('id') : $item)));
+				if(!is_array($result) || empty($result)) continue;
+				
+				$values = array_merge($values, $result);
+			}
 
-			$sql = "SELECT DISTINCT `value` FROM `tbl_entries_data_" . ($this->get('pre_populate_source') == 'existing' ? $this->get('id') : $this->get('pre_populate_source')) . "` 
-					ORDER BY `value` ASC";
-
-			return $this->_engine->Database->fetchCol('value', $sql);
+			return array_unique($values);
 		}
 		
 		function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
@@ -136,11 +151,11 @@
 			if($id === false) return false;
 			
 			$fields = array();
-			
+
 			$fields['field_id'] = $id;
-			$fields['pre_populate_source'] = ($this->get('pre_populate_source') == 'none' ? NULL : $this->get('pre_populate_source'));
+			$fields['pre_populate_source'] = (is_null($this->get('pre_populate_source')) ? NULL : implode(',', $this->get('pre_populate_source')));
 			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
-			
+
 			$this->_engine->Database->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 				
 			return $this->_engine->Database->insert($fields, 'tbl_fields_' . $this->handle());
@@ -148,7 +163,7 @@
 		}
 		
 		function findDefaults(&$fields){
-			if(!isset($fields['pre_populate_source'])) $fields['pre_populate_source'] = 'existing';
+			if(!isset($fields['pre_populate_source'])) $fields['pre_populate_source'] = array('existing');
 		}
 		
 		function canPrePopulate(){
@@ -156,7 +171,7 @@
 		}	
 		
 		function displaySettingsPanel(&$wrapper, $errors=NULL){
-			
+
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$label = Widget::Label('Suggestion List');
@@ -169,8 +184,8 @@
 				foreach($sections as $section) $field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
 			
 			$options = array(
-				array('none', false, 'None'),
-				array('existing', ($this->get('pre_populate_source') == 'existing'), 'Existing Values'),
+				//array('none', false, 'None'),
+				array('existing', (in_array('existing', $this->get('pre_populate_source'))), 'Existing Values'),
 			);
 			
 			foreach($field_groups as $group){
@@ -179,13 +194,13 @@
 				
 				$fields = array();
 				foreach($group['fields'] as $f){
-					if($f->get('id') != $this->get('id') && $f->canPrePopulate()) $fields[] = array($f->get('id'), ($this->get('pre_populate_source') == $f->get('id')), $f->get('label'));
+					if($f->get('id') != $this->get('id') && $f->canPrePopulate()) $fields[] = array($f->get('id'), (in_array($f->get('id'), $this->get('pre_populate_source'))), $f->get('label'));
 				}
 				
 				if(is_array($fields) && !empty($fields)) $options[] = array('label' => $group['section']->get('name'), 'options' => $fields);
 			}
 			
-			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][pre_populate_source]', $options));
+			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][pre_populate_source][]', $options, array('multiple' => 'multiple')));
 			$wrapper->appendChild($label);
 			
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');		
