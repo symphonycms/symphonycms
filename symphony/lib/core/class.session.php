@@ -16,17 +16,21 @@
 
 		public static function start($lifetime = 0, $path = '/', $domain = NULL) {
 			if (!self::$_initialized) {
-				global $Frontend;
-				global $Admin;
-				if (isset($Frontend->Database)) {
-					self::$_db = &$Frontend->Database;
+				
+				## Crude method of determining if we're in the admin or frontend
+				if(class_exists('Frontend')){
+					self::$_db =& Frontend::instance()->Database;
 				}
-				else if (isset($Admin->Database)) {
-					self::$_db = &$Admin->Database;
+				
+				elseif(class_exists('Administration')){
+					self::$_db =& Administration::instance()->Database;
 				}
-				else {
+				
+				else{ 
 					return false;
 				}
+				
+				if(!is_object(self::$_db) || !self::$_db->isConnected()) return false;
 
 				self::$_cache = new Cacheable(self::$_db);
 				$installed = self::$_cache->check('_session_config');
@@ -59,12 +63,12 @@
 			if (!self::$_db) return false;
 
 			return self::$_db->query(
-'CREATE TABLE IF NOT EXISTS `tbl_sessions` (
-  `session` varchar(255) character set utf8 collate utf8_bin NOT NULL,
-  `session_expires` int(10) unsigned NOT NULL default \'0\',
-  `session_data` text collate utf8_unicode_ci,
-  PRIMARY KEY  (`session`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;'
+				"CREATE TABLE IF NOT EXISTS `tbl_sessions` (
+				  `session` varchar(255) NOT NULL,
+				  `session_expires` int(10) unsigned NOT NULL default '0',
+				  `session_data` text,
+				  PRIMARY KEY  (`session`)
+				);"
 			);
 		}
 
