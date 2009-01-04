@@ -41,7 +41,7 @@
 			}
 			
 			$this->Html->setDTD('<!DOCTYPE html>');
-			$this->Html->setAttribute('lang', 'en');
+			$this->Html->setAttribute('lang', __LANG__);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
 			$this->addElementToHead(new XMLElement('link', NULL, array('rel' => 'icon', 'href' => URL.'/symphony/assets/images/bookmark.png', 'type' => 'image/png')), 20); 
 			$this->addElementToHead(new XMLElement('!--[if IE]><link rel="stylesheet" href="'.URL.'/symphony/assets/legacy.css" type="text/css"><![endif]--'), 40);			
