@@ -40,6 +40,10 @@
 		function canFilter(){
 			return true;
 		}
+		
+		public function canImport(){
+			return true;
+		}
 						
 		function getToggleStates(){
 			return array('yes' => 'Yes', 'no' => 'No');

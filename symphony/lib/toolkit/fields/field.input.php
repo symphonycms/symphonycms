@@ -60,6 +60,10 @@
 		function canFilter(){
 			return true;
 		}
+		
+		public function canImport(){
+			return true;
+		}
 
 		function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
 			$joins .= "INNER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";

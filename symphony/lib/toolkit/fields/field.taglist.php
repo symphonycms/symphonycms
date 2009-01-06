@@ -23,6 +23,10 @@
 			return true;
 		}
 		
+		public function canImport(){
+			return true;
+		}
+		
 		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
 			if (!is_array($data) or empty($data)) return;
 			

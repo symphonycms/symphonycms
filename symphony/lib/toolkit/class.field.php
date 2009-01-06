@@ -58,6 +58,10 @@
 			return false;
 		}
 		
+		public function canImport(){
+			return false;
+		}
+		
 		public function allowDatasourceOutputGrouping(){
 			return false;
 		}
@@ -349,6 +353,10 @@
 			$label = Widget::Label('Value');
 			$label->appendChild(Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : NULL)));		
 			$wrapper->appendChild($label);	
+		}
+		
+		public function displayImportPanel(&$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null) {
+			$this->displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);	
 		}
 		
 		public function displaySettingsPanel(&$wrapper, $errors=NULL){		

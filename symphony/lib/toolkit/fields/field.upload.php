@@ -14,6 +14,10 @@
 			return true;
 		}
 		
+		public function canImport(){
+			return true;
+		}
+		
 		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
 			

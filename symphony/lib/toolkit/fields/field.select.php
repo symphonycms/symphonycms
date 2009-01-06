@@ -26,6 +26,10 @@
 			return true;
 		}
 		
+		public function canImport(){
+			return true;
+		}
+		
 		function canPrePopulate(){
 			return true;
 		}	

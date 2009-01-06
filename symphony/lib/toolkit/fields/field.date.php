@@ -28,6 +28,10 @@
 		function canFilter(){
 			return true;
 		}
+		
+		public function canImport(){
+			return true;
+		}
 
 		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 
