@@ -622,7 +622,11 @@
 
 				if(is_array($main_fields) && !empty($main_fields)){
 					foreach($main_fields as $field){
-						$field->displayPublishPanel($primary, $entry->getData($field->get('id')), (isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL));	
+						$field->displayPublishPanel(
+							$primary, $entry->getData($field->get('id')),
+							(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
+							null, null, $entry->get('id')
+						);	
 					}
 					
 					$this->Form->appendChild($primary);
@@ -633,7 +637,11 @@
 					$sidebar->setAttribute('class', 'secondary');
 
 					foreach($sidebar_fields as $field){
-						$field->displayPublishPanel($sidebar, $entry->getData($field->get('id')), (isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL));
+						$field->displayPublishPanel(
+							$sidebar, $entry->getData($field->get('id')),
+							(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
+							null, null, $entry->get('id')
+						);
 					}
 
 					$this->Form->appendChild($sidebar);
