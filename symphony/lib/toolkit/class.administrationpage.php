@@ -27,7 +27,7 @@
 			$this->addStylesheetToHead(URL . '/symphony/assets/' . ($type == 'table' ? 'tables' : 'forms') . '.css', 'screen', 30);
 		}
 		
-		function setTitle($val, $position=10){
+		function setTitle($val, $position=null) {
 			return $this->addElementToHead(new XMLElement('title', $val), $position);
 		}
 		
