@@ -174,7 +174,7 @@
 
 					$dl = new XMLElement('dl', NULL, array('id' => 'slow-queries'));
 			
-					foreach($records as $r){
+					foreach($records['slow-queries'] as $r){
 						$dl->appendChild(new XMLElement('dt', $r[0]));
 						$dl->appendChild(new XMLElement('dd', $r[1] . (isset($r[4]) && $r[4] == false ? '' : ' s')));
 					}
