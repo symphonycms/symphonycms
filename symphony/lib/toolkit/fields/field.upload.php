@@ -84,12 +84,12 @@
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 
 			if(!$flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/')) 
-				$flagWithError = 'Destination folder, <code>'.$this->get('destination').'</code>, is not writable. Please check permissions.';
+				$flagWithError = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
 			
 			$label = Widget::Label($this->get('label'));
 			$class = 'file';
 			$label->setAttribute('class', $class);
-			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', 'Optional'));
+			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 			
 			$span = new XMLElement('span');
 			if($data['file']) $span->appendChild(Widget::Anchor('/workspace' . $data['file'], URL . '/workspace' . $data['file']));
@@ -120,7 +120,7 @@
 		public function checkFields(&$errors, $checkForDuplicates=true){
 			
 			if(!is_writable(DOCROOT . $this->get('destination') . '/'))
-				$errors['destination'] = 'Folder is not writable. Please check permissions.';
+				$errors['destination'] = __('Folder is not writable. Please check permissions.');
 			
 			parent::checkFields($errors, $checkForDuplicates);
 		}
@@ -188,7 +188,7 @@
 			$ignore = array('events', 'data-sources', 'text-formatters', 'pages', 'utilities');
 			$directories = General::listDirStructure(WORKSPACE, true, 'asc', DOCROOT, $ignore);	   	
 	
-			$label = Widget::Label('Destination Directory');
+			$label = Widget::Label(__('Destination Directory'));
 
 			$options = array();
 			$options[] = array('/workspace', false, '/workspace');
@@ -253,7 +253,7 @@
 			if(empty($data) || $data['error'] == UPLOAD_ERR_NO_FILE) {
 				
 				if($this->get('required') == 'yes'){
-					$message = "'". $this->get('label')."' is a required field.";
+					$message = __("'%s' is a required field.", $this->get('label'));
 					return self::__MISSING_FIELDS__;		
 				}
 				
@@ -264,7 +264,7 @@
 			if(!is_array($data)) return self::__OK__;
 
 			if(!is_writable(DOCROOT . $this->get('destination') . '/')){
-				$message = 'Destination folder, <code>'.$this->get('destination').'</code>, is not writable. Please check permissions.';
+				$message = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
 				return self::__ERROR__;
 			}
 
@@ -273,27 +273,27 @@
 				switch($data['error']){
 
 					case UPLOAD_ERR_INI_SIZE:
-						$message = "File chosen in '". $this->get('label')."' exceeds the maximum allowed upload size of ".(is_numeric(ini_get('upload_max_filesize')) ? General::formatFilesize(ini_get('upload_max_filesize')) : ini_get('upload_max_filesize'))." specified by your host.";
+						$message = __('File chosen in "%1$s" exceeds the maximum allowed upload size of %2$s specified by your host.', array($this->get('label'), (is_numeric(ini_get('upload_max_filesize')) ? General::formatFilesize(ini_get('upload_max_filesize')) : ini_get('upload_max_filesize'))));
 						break;
 						
 					case UPLOAD_ERR_FORM_SIZE:
-						$message = "File chosen in '". $this->get('label')."' exceeds the maximum allowed upload size of ".General::formatFilesize($this->_engine->Configuration->get('max_upload_size', 'admin')).", specified by Symphony.";
+						$message = __('File chosen in "%1$s" exceeds the maximum allowed upload size of %2$s, specified by Symphony.', array($this->get('label'), General::formatFilesize($this->_engine->Configuration->get('max_upload_size', 'admin'))));
 						break;
 
 					case UPLOAD_ERR_PARTIAL:
-						$message = "File chosen in '". $this->get('label')."' was only partially uploaded due to an error.";
+						$message = __("File chosen in '%s' was only partially uploaded due to an error.", array($this->get('label')));
 						break;
 
 					case UPLOAD_ERR_NO_TMP_DIR:
-						$message = "File chosen in '". $this->get('label')."' was only partially uploaded due to an error.";
+						$message = __("File chosen in '%s' was only partially uploaded due to an error.", array($this->get('label')));
 						break;
 
 					case UPLOAD_ERR_CANT_WRITE:
-						$message = "Uploading '". $this->get('label')."' failed. Could not write temporary file to disk.";
+						$message = __("Uploading '%s' failed. Could not write temporary file to disk.", array($this->get('label')));
 						break;
 
 					case UPLOAD_ERR_EXTENSION:
-						$message = "Uploading '". $this->get('label')."' failed. File upload stopped by extension.";
+						$message = __("Uploading '%s' failed. File upload stopped by extension.", array($this->get('label')));
 						break;
 
 				}
@@ -309,7 +309,7 @@
 				$rule = $this->get('validator');
 				
 				if(!General::validateString($data['name'], $rule)){
-					$message = "File chosen in '". $this->get('label')."' does not match allowable file types for that field.";
+					$message = __("File chosen in '%s' does not match allowable file types for that field.", array($this->get('label')));
 					return self::__INVALID_FIELDS__;
 				}
 				
@@ -325,7 +325,7 @@
 			}
 			
 			if(($existing_file != $new_file) && file_exists($new_file)){
-				$message = 'A file with the name '.$data['name'].' already exists in '.$this->get('destination').'. Please rename the file first, or choose another.';
+				$message = __('A file with the name %1$s already exists in %2$s. Please rename the file first, or choose another.', array($data['name'], $this->get('destination')));
 				return self::__INVALID_FIELDS__;				
 			}
 			
@@ -366,7 +366,7 @@
 
 			if(!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], $this->_engine->Configuration->get('write_mode', 'file'))){
 				
-				$message = "There was an error while trying to upload the file <code>" . $data['name'] . "</code> to the target directory <code>workspace/$rel_path</code>.";
+				$message = __('There was an error while trying to upload the file <code>%1$s</code> to the target directory <code>%2$s</code>.', array($data['name'], 'workspace/'.$rel_path));
 				$status = self::__ERROR_CUSTOM__;
 				return;
 			}

@@ -61,7 +61,7 @@
 
 					if(!$status){
 						$result->setAttribute('result', 'error');
-						$result->appendChild(new XMLElement('message', 'Entry encountered errors when saving.'));
+						$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 						return false;
 					}
 				}
@@ -74,7 +74,7 @@
 
 			if(!$section = $sectionManager->fetch($source)){
 				$result->setAttribute('result', 'error');			
-				$result->appendChild(new XMLElement('message', 'Section is invalid'));
+				$result->appendChild(new XMLElement('message', __('Section is invalid')));
 				return false;
 			}
 
@@ -86,7 +86,7 @@
 
 				if(!is_object($entry)){
 					$result->setAttribute('result', 'error');			
-					$result->appendChild(new XMLElement('message', 'Invalid Entry ID specified. Could not create Entry object.'));
+					$result->appendChild(new XMLElement('message', __('Invalid Entry ID specified. Could not create Entry object.')));
 					return false;
 				}
 
@@ -103,7 +103,7 @@
 
 			if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))):
 				$result->setAttribute('result', 'error');
-				$result->appendChild(new XMLElement('message', 'Entry encountered errors when saving.'));
+				$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 
 				foreach($errors as $field_id => $message){
 					$field = $entryManager->fieldManager->fetch($field_id);
@@ -116,7 +116,7 @@
 
 			elseif(__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors, false, ($entry->get('id') ? true : false))):
 				$result->setAttribute('result', 'error');
-				$result->appendChild(new XMLElement('message', 'Entry encountered errors when saving.'));
+				$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 
 				foreach($errors as $err){
 					$field = $entryManager->fieldManager->fetch($err['field_id']);
@@ -131,7 +131,7 @@
 
 				if(!$entry->commit()){
 					$result->setAttribute('result', 'error');
-					$result->appendChild(new XMLElement('message', 'Unknown errors where encountered when saving.'));
+					$result->appendChild(new XMLElement('message', __('Unknown errors where encountered when saving.')));
 					if(isset($post_values) && is_object($post_values)) $result->appendChild($post_values);		
 					return false;
 				}
@@ -176,14 +176,14 @@
 
 				$fields['recipient'] = $obj->Database->fetch("SELECT `email`, `first_name` FROM `tbl_authors` WHERE `username` IN ('".@implode("', '", $fields['recipient'])."') ");
 
-				$fields['subject'] = __sendEmailFindFormValue($fields['subject'], $_POST['fields'], true, '[Symphony] A new entry was created on ' . $obj->Configuration->get('sitename', 'general'));
+				$fields['subject'] = __sendEmailFindFormValue($fields['subject'], $_POST['fields'], true, __('[Symphony] A new entry was created on %s', array($obj->Configuration->get('sitename', 'general'))));
 				$fields['body'] = __sendEmailFindFormValue($fields['body'], $_POST['fields'], false, NULL, false);
 				$fields['sender-email'] = __sendEmailFindFormValue($fields['sender-email'], $_POST['fields'], true, 'noreply@' . parse_url(URL, PHP_URL_HOST));
 				$fields['sender-name'] = __sendEmailFindFormValue($fields['sender-name'], $_POST['fields'], true, 'Symphony');
 
 				$edit_link = URL.'/symphony/publish/'.$section->get('handle').'/edit/'.$entry->get('id').'/';
 
-				$body = 'Dear <!-- RECIPIENT NAME -->,' . General::CRLF . 'This is a courtesy email to notify you that an entry was created on the ' . $section->get('name') . ' section. You can edit the entry by going to: ' . $edit_link . General::CRLF . General::CRLF;
+				$body = __('Dear <!-- RECIPIENT NAME -->,') . General::CRLF . __('This is a courtesy email to notify you that an entry was created on the %1$s section. You can edit the entry by going to: %2$s', array($section->get('name'), $edit_link)). General::CRLF . General::CRLF;
 
 				if(is_array($fields['body'])){
 					foreach($fields['body'] as $field_handle => $value){
@@ -196,7 +196,7 @@
 				$errors = array();
 
 				if(!is_array($fields['recipient']) || empty($fields['recipient'])){
-					$result->appendChild(buildFilterElement('send-email', 'failed', 'No valid recipients found. Check send-email[recipient] field.'));
+					$result->appendChild(buildFilterElement('send-email', 'failed', __('No valid recipients found. Check send-email[recipient] field.')));
 				}
 
 				else{
@@ -260,7 +260,7 @@
 			);
 			
 			$result->setAttributeArray(array('result' => 'success', 'type' => (isset($entry_id) ? 'edited' : 'created')));
-			$result->appendChild(new XMLElement('message', 'Entry '.(isset($entry_id) ? 'edited' : 'created').' successfully.'));
+			$result->appendChild(new XMLElement('message', (isset($entry_id) ? __('Entry edited successfully.') : __('Entry created successfully.'))));
 
 			return true;
 			
@@ -273,7 +273,7 @@
 	
 	if(in_array('admin-only', $this->eParamFILTERS) && !$this->_Parent->isLoggedIn()){
 		$result->setAttribute('result', 'error');			
-		$result->appendChild(new XMLElement('message', 'Entry encountered errors when saving.'));
+		$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 		$result->appendChild(buildFilterElement('admin-only', 'failed'));
 		return $result;
 	}

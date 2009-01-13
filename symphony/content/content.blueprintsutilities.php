@@ -56,17 +56,17 @@
 				switch($this->_context[2]){
 					
 					case 'saved':
-						$this->pageAlert(__('%s updated successfully. <a href="%s/symphony/%s">Create another?</a>', array('Utility', URL, 'blueprints/utilities/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(__('%1$s updated successfully. <a href="%2$s">Create another?</a>', array('Utility', URL . '/symphony/blueprints/utilities/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 						
 					case 'created':
-						$this->pageAlert(__('%s created successfully. <a href="%s/symphony/%s">Create another?</a>', array('Utility', URL, 'blueprints/utilities/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(__('%1$s created successfully. <a href="%2$s">Create another?</a>', array('Utility', URL . '/symphony/blueprints/utilities/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 					
 				}
 			}
 			
-			$this->setTitle(__(($this->_context[0] == 'new' ? '%s &ndash; %s' : '%s &ndash; %s &ndash; %s'), array(__('Symphony'), __('Utilities'), $filename)));
+			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s' : '%1$s &ndash; %2$s &ndash; %3$s'), array(__('Symphony'), __('Utilities'), $filename)));
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $filename));
 
 			if(!empty($_POST)) $fields = $_POST['fields'];

@@ -24,7 +24,45 @@
 		phpinfo(); 
 		exit();
 	}
-	
+
+	function setLanguage() {
+		require_once('symphony/lib/toolkit/class.lang.php');
+		$lang = NULL;
+
+		if(!empty($_REQUEST['lang'])){
+			$l = preg_replace('/[^a-zA-Z\-]/', '', $_REQUEST['lang']);
+			if(file_exists("./symphony/lib/lang/lang.{$l}.php")) $lang = $l;
+		}
+
+		if($lang === NULL){
+			foreach(Lang::getBrowserLanguages() as $l){
+				if(file_exists("./symphony/lib/lang/lang.{$l}.php")) $lang = $l;
+				break;
+			}
+		}
+
+		## none of browser accepted languages is available, get first available
+		if($lang === NULL){
+			## default to English
+			if(file_exists('./symphony/lib/lang/lang.en.php')) $lang = 'en';
+			else{
+				$l = Lang::getAvailableLanguages();
+				if(is_array($l) && count($l) > 0) $lang = $l[0];
+			}
+		}
+
+		if($lang === NULL) return NULL;
+
+		try{
+			Lang::init('./symphony/lib/lang/lang.%s.php', $lang);
+		}
+		catch(Exception $s){
+			return NULL;
+		}
+
+		define('__LANG__', $lang);
+		return $lang;
+	}
 	
 	/***********************
 	         TESTS
@@ -59,6 +97,30 @@
 		die($code);
 		
 	}
+
+	// Check and set language
+	if(setLanguage() === NULL){
+
+		$code = '<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<title>Outstanding Requirements</title>
+		<link rel="stylesheet" type="text/css" href="'.kINSTALL_ASSET_LOCATION.'/main.css"/>
+		<script type="text/javascript" src="'.kINSTALL_ASSET_LOCATION.'/main.js"></script>
+	</head>
+		<body>
+			<h1>Install Symphony <em>Version '.kVERSION.'</em></h1>
+			<h2>Outstanding Requirements</h2>
+			<p>Symphony needs at least one language file to be present before installation can proceed.</p>
+
+		</body>
+
+</html>';
+		
+		die($code);
+
+	}
 	
 	// Check if Symphony is already installed
 	
@@ -68,14 +130,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
-		<title>Existing Installation</title>
+		<title>'.__('Existing Installation').'</title>
 		<link rel="stylesheet" type="text/css" href="'.kINSTALL_ASSET_LOCATION.'/main.css"/>
 		<script type="text/javascript" src="'.kINSTALL_ASSET_LOCATION.'/main.js"></script>
 	</head>
 		<body>
-			<h1>Install Symphony <em>Version '.kVERSION.'</em></h1>
-			<h2>Existing Installation</h2>
-			<p>It appears that Symphony has already been installed at this location.</p>
+			<h1>'.__('Install Symphony <em>Version %s</em>', array(kVERSION)).'</h1>
+			<h2>'.__('Existing Installation').'</h2>
+			<p>'.__('It appears that Symphony has already been installed at this location.').'</p>
 
 		</body>
 
@@ -94,10 +156,10 @@
 		$conf['admin']['max_upload_size'] = '5242880';
 		$conf['symphony']['pagination_maximum_rows'] = '17';
 		$conf['symphony']['allow_page_subscription'] = '1';
-		$conf['symphony']['lang'] = 'en';
+		$conf['symphony']['lang'] = (defined('__LANG__') ? __LANG__ : 'en');
 		$conf['log']['archive'] = '1';
 		$conf['log']['maxsize'] = '102400';
-		$conf['general']['sitename'] = 'Symphony Content Management System';
+		$conf['general']['sitename'] = __('Symphony Content Management System');
 		$conf['image']['cache'] = '1';
 		$conf['image']['quality'] = '90';
 		$conf['database']['driver'] = 'mysql';

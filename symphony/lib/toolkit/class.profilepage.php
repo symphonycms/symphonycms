@@ -3,6 +3,15 @@
 	require_once(TOOLKIT . '/class.htmlpage.php');
 
 	Class ProfilePage extends HTMLPage{
+
+		var $_query_string;
+
+		function __construct(){
+			parent::__construct();
+
+			$this->_query_string = parent::__buildQueryString(array('profile'));
+			if(!empty($this->_query_string)) $this->_query_string = '&amp;'.General::sanitize($this->_query_string);
+		}
 		
 		function __buildNavigation($page){		
 			
@@ -13,7 +22,7 @@
 			$ul->appendChild($li);
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(__('Debug'), '?debug'));
+			$li->appendChild(Widget::Anchor(__('Debug'), '?debug'.$this->_query_string));
 			$ul->appendChild($li);
 			
 			$ul->appendChild(new XMLElement('li', __('Profile')));
@@ -35,7 +44,7 @@
 		}
 				
 		function generate($page, $profiler, $database){
-			
+
 			$this->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
 			
 			$this->Html->setElementStyle('html');
@@ -47,10 +56,10 @@
 			$this->addElementToHead(new XMLElement('!--[if IE]><link rel="stylesheet" href="'.URL.'/symphony/assets/legacy.css" type="text/css"><![endif]--'), 50);
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 60);			
 			
-			$this->setTitle(__('%s &ndash; %s &ndash; %s', array(__('Symphony'), __('Page Profiler'), $page['title'])));
+			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Page Profiler'), $page['title'])));
 
 			$h1 = new XMLElement('h1');
-			$h1->appendChild(Widget::Anchor($page['title'], '.'));
+			$h1->appendChild(Widget::Anchor($page['title'], ($this->_query_string ? '?'.trim($this->_query_string, '&') : '.')));
 			$this->Body->appendChild($h1);
 			
 			$this->Body->appendChild($this->__buildNavigation($page));
@@ -61,30 +70,30 @@
 			
 			$dbstats = $database->getStatistics();
 	
-			$profile_group = (strlen(trim($_GET['profile'])) == 0 ? 'general' : $_GET['profile']);	
-			
+			$profile_group = (strlen(trim($_GET['profile'])) == 0 ? 'general' : $_GET['profile']);
+
 			$records['general'] = $profiler->retrieveGroup('General');
 			if(is_array($records['general']) && !empty($records['general'])){
-				$jump->appendChild(self::__appendNavigationItem('General Details', '?profile=general', ($profile_group == 'general')));
+				$jump->appendChild(self::__appendNavigationItem('General Details', '?profile=general'.$this->_query_string, ($profile_group == 'general')));
 			}
 			
 			$records['data-sources'] = $profiler->retrieveGroup('Datasource');	
 			if(is_array($records['data-sources']) && !empty($records['data-sources'])){
-				$jump->appendChild(self::__appendNavigationItem('Data Source Execution', '?profile=data-sources', ($profile_group == 'data-sources')));
+				$jump->appendChild(self::__appendNavigationItem('Data Source Execution', '?profile=data-sources'.$this->_query_string, ($profile_group == 'data-sources')));
 			}
 
 			$records['events'] = $profiler->retrieveGroup('Event');			
 			if(is_array($records['events']) && !empty($records['events'])){
-				$jump->appendChild(self::__appendNavigationItem('Event Execution', '?profile=events', ($profile_group == 'events')));
+				$jump->appendChild(self::__appendNavigationItem('Event Execution', '?profile=events'.$this->_query_string, ($profile_group == 'events')));
 			}
 
-			$jump->appendChild(self::__appendNavigationItem('Full Page Render Statistics', '?profile=render-statistics', ($profile_group == 'render-statistics')));
+			$jump->appendChild(self::__appendNavigationItem('Full Page Render Statistics', '?profile=render-statistics'.$this->_query_string, ($profile_group == 'render-statistics')));
 			
 			if(is_array($dbstats['slow-queries']) && !empty($dbstats['slow-queries'])){
 				$records['slow-queries'] = array();
 				foreach($dbstats['slow-queries'] as $q) $records['slow-queries'][] = array($q['time'], $q['query'], NULL, NULL, false);
 
-				$jump->appendChild(self::__appendNavigationItem('Slow Query Details', '?profile=slow-queries', ($profile_group == 'slow-queries')));
+				$jump->appendChild(self::__appendNavigationItem('Slow Query Details', '?profile=slow-queries'.$this->_query_string, ($profile_group == 'slow-queries')));
 							
 			}
 

@@ -6,6 +6,14 @@
 	Class DebugPage extends HTMLPage{
 		
 		var $_full_utility_list;
+		var $_query_string;
+
+		function __construct(){
+			parent::__construct();
+
+			$this->_query_string = parent::__buildQueryString(array('debug'));
+			if(!empty($this->_query_string)) $this->_query_string = '&amp;'.General::sanitize($this->_query_string);
+		}
 		
 		function __buildNavigation($page){		
 			
@@ -15,7 +23,7 @@
 			
 			$ul->appendChild(new XMLElement('li', __('Debug')));
 
-			$ul->appendChild(self::__appendNavigationItem(__('Profile'), '?profile'));
+			$ul->appendChild(self::__appendNavigationItem(__('Profile'), '?profile'.$this->_query_string));
 			
 			return $ul;
 		}
@@ -34,20 +42,20 @@
 		}
 		
 		function __buildJump($page, $xsl, $active_link=NULL, $utilities=NULL){
-			
+
 			$ul = new XMLElement('ul', NULL, array('id' => 'jump'));
 			
-			$ul->appendChild(self::__appendNavigationItem(__('Params'), '?debug=params', ($active_link == 'params')));
-			$ul->appendChild(self::__appendNavigationItem(__('XML'), '?debug=xml', ($active_link == 'xml' || is_null($active_link) || strlen(trim($active_link)) == 0)));
+			$ul->appendChild(self::__appendNavigationItem(__('Params'), '?debug=params'.$this->_query_string, ($active_link == 'params')));
+			$ul->appendChild(self::__appendNavigationItem(__('XML'), '?debug=xml'.$this->_query_string, ($active_link == 'xml' || is_null($active_link) || strlen(trim($active_link)) == 0)));
 			
 			$filename = basename($page['filelocation']);
-			$li = self::__appendNavigationItem($filename, "?debug={$filename}", ($active_link == $filename));
+			$li = self::__appendNavigationItem($filename, "?debug={$filename}".$this->_query_string, ($active_link == $filename));
 			$xUtil = $this->__buildUtilityList($utilities, 1, $active_link);
 			if(is_object($xUtil)) $li->appendChild($xUtil);
 			$ul->appendChild($li);	
 
 			
-			$ul->appendChild(self::__appendNavigationItem(__('Result'), '?debug=result', ($active_link == 'result')));
+			$ul->appendChild(self::__appendNavigationItem(__('Result'), '?debug=result'.$this->_query_string, ($active_link == 'result')));
 
 			return $ul;
 			
@@ -56,12 +64,12 @@
 		function __buildUtilityList($utilities, $level=1, $active_link=NULL){
 			
 			if(!is_array($utilities) || empty($utilities)) return;
-			
+
 			$ul = new XMLElement('ul');
 			foreach($utilities as $u){
 				
 				$filename = basename($u);
-				$item = self::__appendNavigationItem($filename, "?debug=u-{$filename}", ($active_link == "u-{$filename}"));
+				$item = self::__appendNavigationItem($filename, "?debug=u-{$filename}".$this->_query_string, ($active_link == "u-{$filename}"));
 				
 				$child_utilities = $this->__findUtilitiesInXSL(@file_get_contents(UTILITIES . '/' . $filename));
 				
@@ -145,10 +153,10 @@
 			$this->addElementToHead(new XMLElement('!--[if IE]><link rel="stylesheet" href="'.URL.'/symphony/assets/legacy.css" type="text/css"><![endif]--'), 50);
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 60);
 			
-			$this->setTitle(__('%s &ndash; %s &ndash; %s', array(__('Symphony'), __('Debug'), $page['title'])));
+			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Debug'), $page['title'])));
 			
 			$h1 = new XMLElement('h1');
-			$h1->appendChild(Widget::Anchor($page['title'], '.'));
+			$h1->appendChild(Widget::Anchor($page['title'], ($this->_query_string ? '?'.trim($this->_query_string, '&') : '.')));
 			$this->Body->appendChild($h1);
 			
 			$this->Body->appendChild($this->__buildNavigation($page));

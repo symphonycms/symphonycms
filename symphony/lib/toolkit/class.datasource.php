@@ -64,7 +64,7 @@
 		
 		function emptyXMLSet(){
 			$xml = new XMLElement($this->dsParamROOTELEMENT);
-			$xml->appendChild(new XMLElement('error', __('No Records Found.')));
+			$xml->appendChild($this->__noRecordsFound());
 			
 			return $xml;
 		}

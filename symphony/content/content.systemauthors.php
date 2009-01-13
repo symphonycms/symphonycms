@@ -20,7 +20,7 @@
 		function __viewIndex(){
 			
 			$this->setPageType('table');
-			$this->setTitle('%s &ndash; %s', array(__('Symphony'), __('Authors')));
+			$this->setTitle('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors')));
 			$this->appendSubheading('Authors', Widget::Anchor('Add an author', $this->_Parent->getCurrentPageURL().'new/', 'Add a new author', 'create button'));
 			
 		    $authors = $this->_AuthorManager->fetch();
@@ -38,7 +38,7 @@
 			if(!is_array($authors) || empty($authors)){
 
 				$aTableBody = array(
-									Widget::TableRow(array(Widget::TableData(__('None Found.'), 'inactive', NULL, count($aTableHead))))
+									Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))))
 								);
 			}
 
@@ -163,7 +163,7 @@
 
 			if($this->_context[0] == 'edit' && $author->get('id') == $this->_Parent->Author->get('id')) $isOwner = true;
 
-			$this->setTitle(__(($this->_context[0] == 'new' ? '%s &ndash; %s &ndash; %s' : '%s &ndash; %s'), array(__('Symphony'), __('Authors'), $author->getFullName())));
+			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Authors'), $author->getFullName())));
 			$this->appendSubheading(($this->_context[0] == 'new' ? 'Untitled' : $author->getFullName()));			
 			
 			### Essentials ###			
@@ -244,7 +244,7 @@
 			$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
 			if($author->get('auth_token_active') == 'yes') $input->setAttribute('checked', 'checked');
 			$temp = URL . '/symphony/login/' . $author->createAuthToken() . '/';
-			$label->setValue(__('%s Allow remote login via <a href="%s">%s</a>', array($input->generate(), $temp, $temp)));
+			$label->setValue(__('%1$s Allow remote login via <a href="%2$s">%2$s</a>', array($input->generate(), $temp)));
 
 			$group->appendChild($label);
 
@@ -323,7 +323,7 @@
 					$this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), AdministrationPage::PAGE_ALERT_ERROR);
 					
 				else
-					$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s/symphony/system/log/">activity log</a>.', array(URL)), AdministrationPage::PAGE_ALERT_ERROR);
+					$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), AdministrationPage::PAGE_ALERT_ERROR);
 				
 			}
 		}
@@ -386,7 +386,7 @@
 
 					}
 				
-					else $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s/symphony/system/log/">activity log</a>.', array(URL)), AdministrationPage::PAGE_ALERT_ERROR);
+					else $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), AdministrationPage::PAGE_ALERT_ERROR);
 
 				endif;
 

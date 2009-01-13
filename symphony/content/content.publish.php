@@ -49,7 +49,7 @@
 			$section = $sectionManager->fetch($section_id);
 
 			$this->setPageType('table');
-			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), $section->get('name'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
 
 			$entryManager = new EntryManager($this->_Parent);
 
@@ -124,12 +124,12 @@
 					
 						if($column->get('id') == $section->get('entry_order')){
 							$link = $this->_Parent->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order='. ($section->get('entry_order_direction') == 'desc' ? 'asc' : 'desc').($filter ? "&amp;filter=$field_handle:$filter_value" : '');							
-							$anchor = Widget::Anchor($label, $link, __('Sort by %s %s', array(($section->get('entry_order_direction') == 'desc' ? __('ascending') : __('descending')), strtolower($column->get('label')))), 'active');
+							$anchor = Widget::Anchor($label, $link, __('Sort by %1$s %2$s', array(($section->get('entry_order_direction') == 'desc' ? __('ascending') : __('descending')), strtolower($column->get('label')))), 'active');
 						}
 						
 						else{
 							$link = $this->_Parent->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order=asc'.($filter ? "&amp;filter=$field_handle:$filter_value" : '');							
-							$anchor = Widget::Anchor($label, $link, __('Sort by ascending %s', array(strtolower($column->get('label')))));
+							$anchor = Widget::Anchor($label, $link, __('Sort by %1$s %2$s', array(__('ascending'), strtolower($column->get('label')))));
 						}
 						
 						$aTableHead[] = array($anchor, 'col');
@@ -287,8 +287,8 @@
 				$ul->appendChild($li);
 
 				## Summary
-				$li = new XMLElement('li', __('Page %s of %s', array($current_page, max($current_page, $entries['total-pages']))));
-				$li->setAttribute('title', __('Viewing %s - %s of %s entries', array($entries['start'], min($entries['limit'], max(1, $entries['remaining-entries'])), $entries['total-entries'])));
+				$li = new XMLElement('li', __('Page %1$s of %2$s', array($current_page, max($current_page, $entries['total-pages']))));
+				$li->setAttribute('title', __('Viewing %1$s - %2$s of %3$s entries', array($entries['start'], min($entries['limit'], max(1, $entries['remaining-entries'])), $entries['total-entries'])));
 				$ul->appendChild($li);
 
 				## Next
@@ -366,7 +366,7 @@
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
-			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), $section->get('name'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
 			$this->appendSubheading(__('Untitled'));
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', $this->_Parent->Configuration->get('max_upload_size', 'admin'), 'hidden'));
 			
@@ -415,7 +415,7 @@
 			$main_fields = $section->fetchFields(NULL, 'main');
 
 			if((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))){
-				$primary->appendChild(new XMLElement('p', __('It looks like your trying to create an entry. Perhaps you want fields first? <a href="%s/symphony/blueprints/sections/edit/%s/">Click here to create some.</a>', array(URL, $section->get('id')))));
+				$primary->appendChild(new XMLElement('p', __('It looks like your trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>', array(URL . '/symphony/blueprints/sections/edit/' . $section->get('id') . '/'))));
 				
 				$this->Form->appendChild($primary);
 			}
@@ -424,7 +424,9 @@
 
 				if(is_array($main_fields) && !empty($main_fields)){
 					foreach($main_fields as $field){
-						$field->displayPublishPanel($primary, $entry->getData($field->get('id')), (isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL));	
+						$div = new XMLElement('div', NULL, array('class' => 'field '.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
+						$field->displayPublishPanel($div, $entry->getData($field->get('id')), (isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL));	
+						$primary->appendChild($div);
 					}
 					
 					$this->Form->appendChild($primary);
@@ -435,7 +437,9 @@
 					$sidebar->setAttribute('class', 'secondary');
 
 					foreach($sidebar_fields as $field){
-						$field->displayPublishPanel($sidebar, $entry->getData($field->get('id')), (isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL));
+						$div = new XMLElement('div', NULL, array('class' => 'field '.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
+						$field->displayPublishPanel($div, $entry->getData($field->get('id')), (isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL));
+						$sidebar->appendChild($div);
 					}
 
 					$this->Form->appendChild($sidebar);
@@ -580,11 +584,11 @@
 				switch($flag){
 					
 					case 'saved':
-						$this->pageAlert(__('%s updated successfully. <a href="%s/symphony/%s">Create another?</a>', array('Entry', URL, $link)), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(__('%1$s updated successfully. <a href="%2$s">Create another?</a>', array('Entry', URL . "/symphony/$link")), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 						
 					case 'created':
-						$this->pageAlert(__('%s created successfully. <a href="%s/symphony/%s">Create another?</a>', array('Entry', URL, $link)), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(__('%1$s created successfully. <a href="%2$s">Create another?</a>', array('Entry', URL . "/symphony/$link")), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 					
 				}
@@ -602,7 +606,7 @@
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
-			$this->setTitle(__('%s &ndash; %s &ndash; %s', array(__('Symphony'), $section->get('name'), $title)));
+			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), $section->get('name'), $title)));
 			$this->appendSubheading($title);
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', $this->_Parent->Configuration->get('max_upload_size', 'admin'), 'hidden'));
 			
@@ -615,18 +619,20 @@
 			$main_fields = $section->fetchFields(NULL, 'main');
 
 			if((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))){
-				$primary->appendChild(new XMLElement('p', __('It looks like your trying to create an entry. Perhaps you want custom fields first? <a href="%s/symphony/blueprints/sections/edit/%s/">Click here to create some.</a>', array(URL, $section->get('id')))));
+				$primary->appendChild(new XMLElement('p', __('It looks like your trying to create an entry. Perhaps you want custom fields first? <a href="%s">Click here to create some.</a>', array(URL . '/symphony/blueprints/sections/edit/'. $section->get('id') . '/'))));
 			}
 
 			else{
 
 				if(is_array($main_fields) && !empty($main_fields)){
 					foreach($main_fields as $field){
+						$div = new XMLElement('div', NULL, array('class' => 'field '.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
 						$field->displayPublishPanel(
-							$primary, $entry->getData($field->get('id')),
+							$div, $entry->getData($field->get('id')),
 							(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
 							null, null, $entry->get('id')
-						);	
+						);
+						$primary->appendChild($div);
 					}
 					
 					$this->Form->appendChild($primary);
@@ -637,11 +643,13 @@
 					$sidebar->setAttribute('class', 'secondary');
 
 					foreach($sidebar_fields as $field){
+						$div = new XMLElement('div', NULL, array('class' => 'field '.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
 						$field->displayPublishPanel(
-							$sidebar, $entry->getData($field->get('id')),
+							$div, $entry->getData($field->get('id')),
 							(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
 							null, null, $entry->get('id')
 						);
+						$sidebar->appendChild($div);
 					}
 
 					$this->Form->appendChild($sidebar);

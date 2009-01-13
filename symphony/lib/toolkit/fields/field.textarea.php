@@ -98,7 +98,7 @@
 			$message = NULL;
 			
 			if($this->get('required') == 'yes' && strlen($data) == 0){
-				$message = "'". $this->get('label')."' is a required field.";
+				$message = __("'%s' is a required field.", array($this->get('label')));
 				return self::__MISSING_FIELDS__;
 			}	
 			
@@ -110,7 +110,7 @@
 			$xsltProc =& new XsltProcess;	
 			
 			if(!General::validateXML(($formatted ? $formatted : General::sanitize($data)), $errors, false, $xsltProc)){
-				$message = "'". $this->get('label')."' contains invalid XML. The following error was returned: <code>" . $errors[0]['message'] . '</code>';
+				$message = __('"%1$s" contains invalid XML. The following error was returned: <code>%2$s</code>', array($this->get('label'), $errors[0]['message']));
 				return self::__INVALID_FIELDS__;
 			}
 			
@@ -183,7 +183,7 @@
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][size]', $this->get('size'));
 			$input->setAttribute('size', '3');
-			$label->setValue('Make textarea ' . $input->generate() . ' rows tall');
+			$label->setValue(__('Make textarea %s rows tall', array($input->generate())));
 			$div->appendChild($label);
 			
 			$this->appendRequiredCheckbox($div);

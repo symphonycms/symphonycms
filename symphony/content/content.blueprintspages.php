@@ -10,7 +10,7 @@
 		
 		public function __viewIndex() {
 			$this->setPageType('table');
-			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), __('Pages'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Pages'))));
 
 			$this->appendSubheading(__('Pages'), Widget::Anchor(
 				__('Create New'), $this->_Parent->getCurrentPageURL() . 'new/',
@@ -28,8 +28,8 @@
 			
 			$aTableHead = array(
 				array(__('Title'), 'col'),
-				array(__('<acronym title="Univeral Resource Locator">URL</acronym>'), 'col'),
-				array(__('<acronym title="Univeral Resource Locator">URL</acronym> Parameters'), 'col'),
+				array(__('<acronym title="Universal Resource Locator">URL</acronym>'), 'col'),
+				array(__('<acronym title="Universal Resource Locator">URL</acronym> Parameters'), 'col'),
 				array(__('Type'), 'col')
 			);	
 			
@@ -37,7 +37,7 @@
 			
 			if (!is_array($pages) or empty($pages)) {
 				$aTableBody = array(Widget::TableRow(array(
-					Widget::TableData(__('None Found.'), 'inactive', null, count($aTableHead))
+					Widget::TableData(__('None found.'), 'inactive', null, count($aTableHead))
 				)));
 				
 			}
@@ -122,11 +122,11 @@
 				switch($this->_context[2]){
 					
 					case 'saved':
-						$this->pageAlert(__('%s updated successfully. <a href="%s/symphony/%s">Create another?</a>', array('Page', URL, 'blueprints/pages/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(__('%1$s updated successfully. <a href="%2$s">Create another?</a>', array('Page', URL . '/symphony/blueprints/pages/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 						
 					case 'created':
-						$this->pageAlert(__('%s created successfully. <a href="%s/symphony/%s">Create another?</a>', array('Page', URL, 'blueprints/pages/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(__('%1$s created successfully. <a href="%2$s">Create another?</a>', array('Page', URL . '/symphony/blueprints/pages/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 					
 				}
@@ -173,7 +173,7 @@
 			$title = ($this->_context[0] == 'edit' ? $fields['title'] : NULL);
 			if(trim($title) == '') $title = $existing['title'];
 			
-			$this->setTitle(__(($title ? '%s &ndash; %s &ndash; %s' : '%s &ndash; %s'), array(__('Symphony'), __('Pages'), $title)));
+			$this->setTitle(__(($title ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Pages'), $title)));
 			$this->appendSubheading(($title ? $title : __('Untitled')));
 
 			$div = new XMLElement('div');
@@ -412,7 +412,7 @@
 							unset($fields['body']);
 
 							## Insert the new data
-							if(!$this->_Parent->Database->insert($fields, 'tbl_pages')) $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s/symphony/system/log/">activity log</a>.', array(URL)), AdministrationPage::PAGE_ALERT_ERROR);
+							if(!$this->_Parent->Database->insert($fields, 'tbl_pages')) $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), AdministrationPage::PAGE_ALERT_ERROR);
 
 							else{
 								
@@ -563,7 +563,7 @@
 							unset($fields['body']);
 
 							## Insert the new data
-							if(!$this->_Parent->Database->update($fields, 'tbl_pages', "`id` = '$page_id'")) $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s/symphony/system/log/">activity log</a>.', array(URL)), AdministrationPage::PAGE_ALERT_ERROR);
+							if(!$this->_Parent->Database->update($fields, 'tbl_pages', "`id` = '$page_id'")) $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), AdministrationPage::PAGE_ALERT_ERROR);
 							
 							else{
 								
