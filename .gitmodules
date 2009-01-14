@@ -10,3 +10,6 @@
 [submodule "extensions/selectbox_link_field"]
 	path = extensions/selectbox_link_field
 	url = git://github.com/pointybeard/selectbox_link_field.git
+[submodule "workspace"]
+	path = workspace
+	url = git://github.com/symphony/workspace.git
