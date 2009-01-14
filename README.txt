@@ -19,21 +19,26 @@ Visit the beta forum at http://overture21.com/forum/
 
 1. Clone the git repository to the location you desire using:
 
-	git clone git://github.com/symphony/symphony-2.git
+		git clone git://github.com/symphony/symphony-2.git
 		
 	Should you wish to make contributions back to the project, feel free to fork the
 	master tree, instead of cloning, and issue pull requests via github.
 
-2. Grab the Maintenance Mode, Select Box Link Field, Export Ensemble and Markdown Extensions
 
-	git clone git://github.com/pointybeard/maintenance_mode.git
-	git clone git://github.com/pointybeard/selectbox_link_field.git
-	git clone git://github.com/pointybeard/export_ensemble.git
-	git clone git://github.com/pointybeard/markdown.git
-	
-	Each of these need to be placed in the /extensions folder
+	The following repositories are included as submodules:
 
-3. Follow from step 2 below
+		- Maintenance Mode: http://github.com/pointybeard/maintenance_mode/tree
+		
+		- Select Box Link Field: https://github.com/pointybeard/selectbox_link_field/tree
+		
+		- Export Ensemble: http://github.com/pointybeard/export_ensemble/tree
+		
+		- Markdown: https://github.com/pointybeard/markdown/tree
+		
+		- Default Workspace: http://github.com/symphony/workspace/tree
+
+
+2. Follow from step 2 below
 
 
 
