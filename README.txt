@@ -36,10 +36,15 @@ Visit the forum at http://overture21.com/forum/
 		- Markdown: https://github.com/pointybeard/markdown/tree
 		
 		- Default Workspace: http://github.com/symphony/workspace/tree
+		
+
+3. Run the following commands to ensure the submodules are cloned:
+
+		git submodule init
+		git submodule update
 
 
-2. Follow from step 2 below
-
+3. Follow from step 2 below
 
 
 [INSTALLATION]
