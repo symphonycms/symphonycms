@@ -12,7 +12,7 @@ Github Repository: http://github.com/symphony/symphony-2/tree/master
 Symphony is a PHP & MySQL based CMS that utilises XML and XSLT as it's core 
 technologies. This repository represents version 2.0 and is considered stable.
 
-Visit the beta forum at http://overture21.com/forum/ 
+Visit the forum at http://overture21.com/forum/ 
 
 
 [INSTALLING FROM GIT]
