@@ -1,0 +1,12 @@
+[submodule "extensions/export_ensemble"]
+	path = extensions/export_ensemble
+	url = git://github.com/pointybeard/export_ensemble.git
+[submodule "extensions/markdown"]
+	path = extensions/markdown
+	url = git://github.com/pointybeard/markdown.git
+[submodule "extensions/maintenance_mode"]
+	path = extensions/maintenance_mode
+	url = git://github.com/pointybeard/maintenance_mode.git
+[submodule "extensions/selectbox_link_field"]
+	path = extensions/selectbox_link_field
+	url = git://github.com/pointybeard/selectbox_link_field.git
