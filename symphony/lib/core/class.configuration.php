@@ -1,77 +1,78 @@
 <?php
-
 	
-	
-	Class Configuration {
+	Class Configuration{
 		
-		private $_vars = array();
+		private $_properties = array();
 		private $_forceLowerCase = false;
-		
-		const CRLF = "\r\n";
-		
-		function __construct($forceLowerCase = false){
+
+		public function __construct($forceLowerCase=false){
 			$this->_forceLowerCase = $forceLowerCase;
 		}
 		
 		public function flush(){
-			$this->_vars = array();	
+			$this->_properties = array();	
 		}
 		
-		public function get($name=NULL, $index=NULL) {
+		public function get($name=NULL, $index=NULL){
 			
 			## Return the whole array if no name or index is requested
-			if(!$name && !$index) return $this->_vars;
+			if(!$name && !$index) return $this->_properties;
 			
-			if($this->_forceLowerCase){ $name = strtolower($name); $index = strtolower($index); }
+			if($this->_forceLowerCase){
+				$name = strtolower($name); $index = strtolower($index);
+			}
 					
-			if($index) return $this->_vars[$index][$name];
+			if($index){
+				return (isset($this->_properties[$index][$name]) ? stripslashes($this->_properties[$index][$name]) : NULL);
+			}
 				
-			return $this->_vars[$name];
+			return (isset($this->_properties[$name]) ? $this->_properties[$name] : NULL);
 		}
 		
-		public function set($name, $val, $index=NULL) {
+		public function set($name, $val, $index=NULL){
 			
-			if($this->_forceLowerCase) { $name = strtolower($name); $index = strtolower($index); }
-			
-			if($index){
-				$this->_vars[$index][$name] = $val;
-				
-			}else{
-				$this->_vars[$name] = $val;
+			if($this->_forceLowerCase){ 
+				$name = strtolower($name); $index = strtolower($index);
 			}
+			
+			if($index) $this->_properties[$index][$name] = $val;	
+			else $this->_properties[$name] = $val;
+
 		}
 		
 		public function remove($name, $index=NULL){
 			
-			if($this->_forceLowerCase) { $name = strtolower($name); $index = strtolower($index); }
+			if($this->_forceLowerCase){ 
+				$name = strtolower($name); $index = strtolower($index); 
+			}
 			
-			if($index && isset($this->_vars[$index][$name]))
-				unset($this->_vars[$index][$name]);
+			if($index && isset($this->_properties[$index][$name]))
+				unset($this->_properties[$index][$name]);
 				
-			elseif($this->_vars[$name])
-				unset($this->_vars[$name]);
-				
+			elseif($this->_properties[$name])
+				unset($this->_properties[$name]);
 					
 		}
 				
-		public function setArray($arr){
-			$this->_vars = array_merge($this->_vars, $arr);
-		}
+		public function setArray(array $array){
+			$this->_properties = array_merge($this->_properties, $array);
+		}		
 		
-		public function create(){
-			
-			$data = NULL;
+		public function __toString(){
 
-			foreach($this->_vars as $set => $array) {
-				
-				if(is_array($array) && !empty($array)){
-					foreach($array as $key => $val) {
-						$data .= "\t" . '$'."settings['$set']['$key'] = '".addslashes($val)."';" . self::CRLF;
-					}
+			$string = 'array(';
+			foreach($this->_properties as $group => $data){
+				$string .= "\r\n\r\n\r\n\t\t###### ".strtoupper($group)." ######";
+				$string .= "\r\n\t\t'$group' => array(";
+				foreach($data as $key => $value){
+					$string .= "\r\n\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'NULL').",";
 				}
+				$string .= "\r\n\t\t),";
+				$string .= "\r\n\t\t########";
 			}
-
-			return (empty($data) ? false : $data);
+			$string .= "\r\n\t)";
+			
+			return $string;
 		}
 		
 	}
