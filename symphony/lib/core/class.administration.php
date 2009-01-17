@@ -223,18 +223,15 @@
 		}
 
 		public function saveConfig(){
-			
+	
 			$string  = '<?php' . self::CRLF
-					 . "if(!defined('DOCROOT')) define('DOCROOT', '".DOCROOT."');" . self::CRLF
-					 . "if(!defined('DOMAIN')) define('DOMAIN', '".DOMAIN."');" . self::CRLF . self::CRLF
-					 . '$settings = array();' . self::CRLF;
-		
-			$string .= $this->Configuration->create('php');
-		
-			$string .= self::CRLF . "require_once(DOCROOT . '/symphony/lib/boot/bundle.php');" . self::CRLF;	
-		
+					 . "\tif(!defined('DOCROOT')) define('DOCROOT', '".DOCROOT."');" . self::CRLF
+					 . "\tif(!defined('DOMAIN')) define('DOMAIN', '".DOMAIN."');" . self::CRLF . self::CRLF			
+					 . "\t".'$settings = ' . (string)$this->Configuration . ';' . self::CRLF . self::CRLF	
+					 . "\trequire_once(DOCROOT . '/symphony/lib/boot/bundle.php');";
+
 			return General::writeFile(CONFIG, $string, $this->Configuration->get('write_mode', 'file'));
-			
+	
 		}
 		
 		public function errorPageNotFound(){
