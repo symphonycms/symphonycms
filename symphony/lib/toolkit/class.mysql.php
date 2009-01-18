@@ -378,7 +378,7 @@
 	                               			'msg' => $msg,
 	                               			'num' => $errornum);
 
-			trigger_error(__('MySQL Error (%s): %s in query "%s"', array($errornum, $msg, $this->_lastQuery)), E_USER_WARNING);
+			trigger_error(__('MySQL Error (%1$s): %2$s in query "%3$s"', array($errornum, $msg, $this->_lastQuery)), E_USER_WARNING);
 	    }
 			
 	    public function debug($section=NULL){			

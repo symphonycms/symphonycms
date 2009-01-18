@@ -38,6 +38,28 @@
 			parent::generate();			
 			return $this->Html->generate(true);
 		}
+
+		function __buildQueryString($exclude=array()){
+			static $q;
+			if (!is_array($q)) {
+				$q = array();
+				foreach($_GET as $k => $v){
+					if (is_array($v)) $q[$k] = $this->__flattenQueryArray($v, $k);
+					else $q[$k] = "{$k}={$v}";
+				}
+			}
+			$exclude[] = 'page';
+			return implode('&', array_diff_key($q, array_fill_keys($exclude, true)));
+		}
+
+		function __flattenQueryArray(&$array, $parent){
+			$values = array();
+			foreach($array as $k => $v){
+				if(is_array($v)) $values[] = $this->__flattenQueryArray($v, $parent."[{$k}]");
+				else $values[] = "{$parent}[{$k}]={$v}";
+			}
+			return implode('&', $values);
+		}
 		
 		function setTitle($val){
 			return $this->addElementToHead(new XMLElement('title', $val));

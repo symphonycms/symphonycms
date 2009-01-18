@@ -28,11 +28,11 @@
 				switch($this->_context[2]){
 					
 					case 'saved':
-						$this->pageAlert(__('%s updated successfully. <a href="%s/symphony/%s">Create another?</a>', array(__('Event'), URL, 'blueprints/events/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(__('%1$s updated successfully. <a href="%2$s">Create another?</a>', array(__('Event'), URL.'/symphony/blueprints/events/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 						
 					case 'created':
-						$this->pageAlert(__('%s created successfully. <a href="%s/symphony/%s">Create another?</a>', array(__('Event'), URL, 'blueprints/events/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(__('%1$s created successfully. <a href="%2$s">Create another?</a>', array(__('Event'), URL.'/symphony/blueprints/events/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 					
 				}
@@ -61,7 +61,7 @@
 			if(isset($_POST['fields'])) $fields = $_POST['fields'];
 			
 			$this->setPageType('form');
-			$this->setTitle(__(($isEditing ? '%s &ndash; %s &ndash; %s' : '%s &ndash; %s'), array(__('Symphony'), __('Events'), $about['name'])));
+			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Events'), $about['name'])));
 			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
 			
 			if(!$readonly):

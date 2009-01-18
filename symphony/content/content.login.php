@@ -25,7 +25,7 @@
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 60);		
 			
 			
-			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), __('Login'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Login'))));
 				
 			$this->_Parent->Profiler->sample('Page template created', PROFILE_LAP);			
 			
@@ -96,7 +96,7 @@
 				if($this->_invalidPassword){
 					$div = new XMLElement('div', NULL, array('class' => 'invalid'));					
 					$div->appendChild($label);
-					$div->appendChild(new XMLElement('p', __('The supplied password was rejected. <a href="%s/symphony/login/retrieve-password/">Retrieve password?</a>', array(URL))));
+					$div->appendChild(new XMLElement('p', __('The supplied password was rejected. <a href="%s">Retrieve password?</a>', array(URL.'/symphony/login/retrieve-password/'))));
 					$fieldset->appendChild($div);
 				}
 				

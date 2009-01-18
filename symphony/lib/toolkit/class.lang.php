@@ -45,8 +45,12 @@
 			return false;
 		}
 		
-		public function add($string){
-			$this->_strings[] = $string;
+		public function add($from, $to){
+			$this->_strings[$from] = $to;
+		}
+
+		public function merge($strings){
+			$this->_strings = array_merge($this->_strings, $strings);
 		}
 		
 		public function remove($string){
@@ -60,18 +64,29 @@
 		private static $_transliterations;		
 		private static $_instance;
 		
-		private function __load($path, $lang){
+		private function __load($path, $lang, $clear=false){
 			
 			$include = sprintf($path, $lang);
 			
 			if(!file_exists($include)){ 
-				throw new Exception(sprintf('Lang file "%s" could not be loaded. Please check path.', $include));
+				if((bool)$clear === true) {
+					## If there is no main language file, we have to init Dictionary or ugly errors will happen
+					if(!(self::$_dictionary instanceof Dictionary))
+						self::$_dictionary = new Dictionary(array());
+					throw new Exception(sprintf('Lang file "%s" could not be loaded. Please check path.', $include));
+				}
+				else return;
 			}
 			
 			require(sprintf($path, $lang));
-			
-			self::$_dictionary = new Dictionary($dictionary);
-			self::$_transliterations = $transliterations;
+
+			if((bool)$clear === true){
+				self::$_dictionary = new Dictionary(array());
+				self::$_transliterations = array();
+			}
+
+			self::$_dictionary->merge($dictionary);
+			self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
 		}
 		
 		public static function init($path, $lang){
@@ -79,10 +94,14 @@
 			if(!(self::$_instance instanceof self)){
 				self::$_instance = new self;
 			}
-			
-			self::__load($path, $lang);
+
+			self::__load($path, $lang, true);
 			
 			return self::$_instance;
+		}
+
+		public static function add($path, $lang){
+			self::__load($path, $lang);
 		}
 
 		public static function Transliterations(){
@@ -174,5 +193,49 @@
 
 		}
 		
+		/***
+
+		Method: getBrowserLanguages
+		Description: gets languages accepted by browser and returns array of them (sorted by priority when possible)
+		Return: array of language codes
+
+		***/
+		public static function getBrowserLanguages() {
+			if(strlen(trim($_SERVER['HTTP_ACCEPT_LANGUAGE'])) < 1) return array();
+
+			if(!preg_match_all('/(\w+(?:-\w+)?,?)+(?:;q=(?:\d+\.\d+))?/', preg_replace('/\s+/', '', $_SERVER['HTTP_ACCEPT_LANGUAGE']), $matches)) return array();
+
+			$status=1.0;
+			$languages = array();
+			foreach($matches[0] as $def){
+				list($list, $q) = explode(';q=', $def);
+				if(!empty($q)) $status=floatval($q);
+				$list = explode(',', $list);
+				foreach($list as $lang){
+					$languages[$lang] = $status;
+				}
+			}
+			arsort($languages);
+			## return list sorted by descending priority, e.g., array('en-gb','en');
+			return array_keys($languages);
+		}
+
+		/***
+
+		Method: getAvailableLanguages
+		Description: gets languages available in symphony/lib/lang directory
+		Return: array of language codes
+
+		***/
+		public static function getAvailableLanguages() {
+			$languages = array();
+			$iterator = new DirectoryIterator('./symphony/lib/lang');
+			foreach($iterator as $file){
+				if(!$file->isDot() && preg_match('/lang\.(\w+(-\w+)?)\.php$/', $file->getFilename(), $matches)){
+					$languages[$matches[1]] = $file;
+				}
+			}
+			return array_keys($languages);
+		}
 	}
 	

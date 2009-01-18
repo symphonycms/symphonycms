@@ -68,7 +68,7 @@
 					else{
 						$result = new XMLElement($this->dsParamROOTELEMENT);
 						$result->setAttribute('valid', 'false');
-						$result->appendChild(new XMLElement('error', 'XML returned is invalid.'));
+						$result->appendChild(new XMLElement('error', __('XML returned is invalid.')));
 					}
 				}
 			}
@@ -98,7 +98,7 @@
 	
 		if($proc->isErrors()){
 			$result->setAttribute('valid', 'false');
-			$result->appendChild(new XMLElement('error', 'XML returned is invalid.'));
+			$result->appendChild(new XMLElement('error', __('XML returned is invalid.')));
 		}
 		
 		elseif(trim($ret) == '') $this->_force_empty_result = true;

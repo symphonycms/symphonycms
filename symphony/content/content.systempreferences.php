@@ -7,7 +7,7 @@
 		function __construct(&$parent){
 			parent::__construct($parent);
 			$this->setPageType('form');
-			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), __('Preferences'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Preferences'))));
 		}
 		
 		## Overload the parent 'view' function since we dont need the switchboard logic

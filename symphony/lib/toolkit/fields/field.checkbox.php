@@ -158,7 +158,7 @@
 			parent::displaySettingsPanel($wrapper);
 			
 			## Long Description		
-			$label = Widget::Label('Long Description <i>Optional</i>');
+			$label = Widget::Label(__('Long Description <i>Optional</i>'));
 			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][description]', $this->get('description')));
 			$wrapper->appendChild($label);			
 		
@@ -166,7 +166,7 @@
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][default_state]', 'on', 'checkbox');
 			if($this->get('default_state') == 'on') $input->setAttribute('checked', 'checked');			
-			$label->setValue($input->generate() . ' Checked by default');
+			$label->setValue(__('%s Checked by default', array($input->generate())));
 			$wrapper->appendChild($label);
 
 			$this->appendShowColumnCheckbox($wrapper);			

@@ -25,11 +25,11 @@
 				switch($this->_context[2]){
 					
 					case 'saved':
-						$this->pageAlert(__('%s updated successfully. <a href="%s/symphony/%s">Create another?</a>', array(__('Data source'), URL, 'blueprints/datasources/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(__('%1$s updated successfully. <a href="%2$s">Create another?</a>', array(__('Data source'), URL . '/symphony/blueprints/datasources/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 						
 					case 'created':
-						$this->pageAlert(__('%s created successfully. <a href="%s/symphony/%s">Create another?</a>', array(__('Data source'), URL, 'blueprints/datasources/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(__('%1$s created successfully. <a href="%2$s">Create another?</a>', array(__('Data source'), URL . '/symphony/blueprints/datasources/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
 						break;
 					
 				}
@@ -126,7 +126,7 @@
 			}
 			
 			$this->setPageType('form');	
-			$this->setTitle(__(($isEditing ? '%s &ndash; %s &ndash; %s' : '%s &ndash; %s'), array(__('Symphony'), __('Data Sources'), $about['name'])));
+			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Data Sources'), $about['name'])));
 			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
 			
 			$fieldset = new XMLElement('fieldset');
@@ -373,9 +373,9 @@
 			$label = Widget::Label(__('Sort Order'));
 			
 			$options = array(
-				array('asc', ('asc' == $fields['order']), __('Ascending')),
-				array('desc', ('desc' == $fields['order']), __('Descending')),
-				array('rand', ('rand' == $fields['order']), __('Random')),
+				array('asc', ('asc' == $fields['order']), __('ascending')),
+				array('desc', ('desc' == $fields['order']), __('descending')),
+				array('rand', ('rand' == $fields['order']), __('random')),
 			);
 			
 			$label->appendChild(Widget::Select('fields[order]', $options));
@@ -461,7 +461,7 @@
 			$label->appendChild(Widget::Select('fields[param]', $options, array('class' => 'filtered')));
 			$li->appendChild($label);
 
-			$p = new XMLElement('p', __('The parameter <code id="output-param-name">$ds-%s</code> will be created with this field\'s value for XSLT or other data sources to use.', array(($this->_context[0] == 'edit' ? $existing->dsParamROOTELEMENT : __('untitled')))));
+			$p = new XMLElement('p', __('The parameter <code id="output-param-name">$ds-%s</code> will be created with this field\'s value for XSLT or other data sources to use.', array(($this->_context[0] == 'edit' ? $existing->dsParamROOTELEMENT : __('Untitled')))));
 			$p->setAttribute('class', 'help');
 			$li->appendChild($p);
 			
@@ -656,7 +656,7 @@
 			$datasource = $DSManager->create($this->_context[1]);	
 			$about = $datasource->about();
 
-			$this->setTitle(__('%s &ndash; %s &ndash; %s', array(__('Symphony'), __('Data Source'), $about['name'])));
+			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Data Source'), $about['name'])));
 			$this->appendSubheading($about['name']);
 			$this->Form->setAttribute('id', 'controller');
 

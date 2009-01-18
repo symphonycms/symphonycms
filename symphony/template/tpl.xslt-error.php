@@ -16,7 +16,7 @@
 	$Page->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
 	$Page->addHeaderToPage('Symphony-Error-Type', 'xslt');
 	
-	$Page->setTitle(__('%s &ndash; %s', array(__('Symphony'), __('XSLT Processing Error'))));
+	$Page->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('XSLT Processing Error'))));
 
 	$div = new XMLElement('div', NULL, array('id' => 'description'));
 	$div->appendChild(new XMLElement('h1', __('XSLT Processing Error')));
@@ -46,6 +46,8 @@
 				
 	}while(list($key, $val) = $additional['proc']->getError());
 
+	$query_string = General::sanitize($Page->__buildQueryString());
+	if(strlen(trim($query_string)) > 0) $query_string = "&amp;{$query_string}";
 	foreach($errors_grouped as $group => $data){
 			
 		switch($group){
@@ -53,7 +55,7 @@
 			case 'general':
 			
 				$dl = new XMLElement('dl');
-				$dt = new XMLElement('dt', __('<a href="?debug" title="Show debug view">Compile</a>'));
+				$dt = new XMLElement('dt', __('<a href="%s" title="Show debug view">Compile</a>', array('?debug'.$query_string)));
 				$dl->appendChild($dt);
 				
 				foreach($data as $e){
@@ -80,7 +82,7 @@
 					$dl = new XMLElement('dl');
 					
 					foreach($errors as $e){
-						$dt = new XMLElement('dt', __('<a href="%s" title="Show debug view for %s">Line %d</a>', array("?debug={$filename}#line-".$e['line'], $filename, $e['line'])));
+						$dt = new XMLElement('dt', __('<a href="%1$s" title="Show debug view for %2$s">Line %3$d</a>', array("?debug={$filename}{$query_string}#line-".$e['line'], $filename, $e['line'])));
 						$dd = new XMLElement('dd', $e['raw']['message']);
 						$dl->appendChild($dt);
 						$dl->appendChild($dd);
@@ -103,7 +105,8 @@
 					$dl = new XMLElement('dl');
 				
 					foreach($errors as $e){					
-						$dt = new XMLElement('dt', __('<a href="%s" title="Show debug view for %s">Line %d</a>', array("?debug=u-{$filename}#line-".$e['line'], $filename, $e['line'])));
+						$dt = new XMLElement('dt', __('<a href="%1$s" title="Show debug view for %2$s">Line %3$d</a>', array("?debug=u-{$filename}{$query_string}#line-".$e['line'], $filename, $e['line'])));
+
 						$dd = new XMLElement('dd', $e['raw']['message']);
 						$dl->appendChild($dt);
 						$dl->appendChild($dd);
@@ -124,7 +127,7 @@
 		
 				foreach($data as $e){
 					$dt = new XMLElement('dt', __('Line %s', array($e['line'])));
-					$dt = new XMLElement('dt', __('<a href="?debug=xml#line-%1$d" title="Show debug view for XML">Line %1$d</a>', array($e['line'])));
+					$dt = new XMLElement('dt', __('<a href="%1$s" title="Show debug view for %2$s">Line %3$d</a>', array('?debug=xml'.$query_string.'#line-'.$e['line'], 'XML', $e['line'])));
 					$dd = new XMLElement('dd', $e['raw']['message']);
 					$dl->appendChild($dt);
 					$dl->appendChild($dd);

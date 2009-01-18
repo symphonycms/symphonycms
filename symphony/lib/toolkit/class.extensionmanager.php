@@ -351,7 +351,9 @@
 				//$about['has-update-method'] = $this->__hasUpdateMethod($classname);
 				//$about['has-custom-menu'] = @call_user_func(array(&$classname, 'hasCustomMenu'));				
 				//$about['menu-group-position'] = @call_user_func(array(&$classname, 'fetchCustomMenuPosition'));
-				
+
+				if($about['status'] == EXTENSION_ENABLED) Lang::add($this->__getClassPath($name) . '/lang/lang.%s.php', __LANG__);
+
 				$nav = @call_user_func(array(&$classname, 'fetchNavigation'));
 				
 				if($nav != NULL) $about['navigation'] = $nav;

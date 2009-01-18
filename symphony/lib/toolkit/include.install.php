@@ -1026,7 +1026,7 @@
 					$conf['settings']['admin']['max_upload_size'] = '5242880';
 					$conf['settings']['symphony']['pagination_maximum_rows'] = '17';
 					$conf['settings']['symphony']['allow_page_subscription'] = '1';
-					$conf['settings']['symphony']['lang'] = 'en';
+					$conf['settings']['symphony']['lang'] = (defined('__LANG__') ? __LANG__ : 'en');
 					$conf['settings']['log']['archive'] = '1';
 					$conf['settings']['log']['maxsize'] = '102400';
 					$conf['settings']['general']['useragent'] = 'Symphony/2000';
@@ -1044,7 +1044,7 @@
 		        $conf['settings']['symphony']['build'] = kBUILD;
 				$conf['settings']['symphony']['cookie_prefix'] = 'sym-';
 		        $conf['settings']['general']['useragent'] = 'Symphony/' . kBUILD;
-				$conf['settings']['general']['sitename'] = (strlen(trim($config['general']['sitename'])) > 0 ? $config['general']['sitename'] : 'Website Name');		
+				$conf['settings']['general']['sitename'] = (strlen(trim($config['general']['sitename'])) > 0 ? $config['general']['sitename'] : __('Website Name'));
 		        $conf['settings']['file']['write_mode'] = $config['permission']['file'];
 		        $conf['settings']['directory']['write_mode'] = $config['permission']['directory'];
 		        $conf['settings']['database']['host'] = $database['host'];
@@ -1351,27 +1351,33 @@ IndexIgnore *
 	
 	$warnings = array(
 	
-		'no-symphony-dir' => 'No <code>/symphony</code> directory was found at this location. Please upload the contents of Symphony\'s install package here.',
-		'no-write-permission-workspace' => 'Symphony does not have write permission to the existing <code>/workspace</code> directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive <code>chmod -R</code> command.',
-		'no-write-permission-manifest' => 'Symphony does not have write permission to the <code>/manifest</code> directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive <code>chmod -R</code> command.',
-		'no-write-permission-root' => 'Symphony does not have write permission to the root directory. Please modify permission settings on this directory. This is necessary only if you are not including a workspace, and can be reverted once installation is complete.',
-		'no-write-permission-htaccess' => 'Symphony does not have write permission to the temporary <code>htaccess</code> file. Please modify permission settings on this file so it can be written to, and renamed.',
-		'no-write-permission-symphony' => 'Symphony does not have write permission to the <code>/symphony</code> directory. Please modify permission settings on this directory. This is necessary only during installation, and can be reverted once installation is complete.',
-		'existing-htaccess' => 'There appears to be an existing <code>.htaccess</code> file in the Symphony install location. To avoid name clashes, you will need to delete or rename this file.',								
-		'existing-htaccess-symphony' => 'There appears to be an existing <code>.htaccess</code> file in the <code>/symphony</code> directory.',										
-		'no-database-connection' => 'Symphony was unable to connect to the specified database. You may need to modify host or port settings.',
-		'database-table-clash' => 'The table prefix <code><!-- TABLE-PREFIX --></code> is already in use. Please choose a different prefix to use with Symphony.',
-		'user-password-mismatch' => 'The password and confirmation did not match. Please retype your password.',
-		'user-invalid-email' => 'This is not a valid email address. You must provide an email address since you will need it if you forget your password.',
-		'user-no-username' => 'You must enter a Username. This will be your Symphony login information.',
-		'user-no-password' => 'You must enter a Password. This will be your Symphony login information.',
-		'user-no-name' => 'You must enter your name.'
+		'no-symphony-dir' => __('No <code>/symphony</code> directory was found at this location. Please upload the contents of Symphony\'s install package here.'),
+		'no-write-permission-workspace' => __('Symphony does not have write permission to the existing <code>/workspace</code> directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive <code>chmod -R</code> command.'),
+		'no-write-permission-manifest' => __('Symphony does not have write permission to the <code>/manifest</code> directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive <code>chmod -R</code> command.'),
+		'no-write-permission-root' => __('Symphony does not have write permission to the root directory. Please modify permission settings on this directory. This is necessary only if you are not including a workspace, and can be reverted once installation is complete.'),
+		'no-write-permission-htaccess' => __('Symphony does not have write permission to the temporary <code>htaccess</code> file. Please modify permission settings on this file so it can be written to, and renamed.'),
+		'no-write-permission-symphony' => __('Symphony does not have write permission to the <code>/symphony</code> directory. Please modify permission settings on this directory. This is necessary only during installation, and can be reverted once installation is complete.'),
+		'existing-htaccess' => __('There appears to be an existing <code>.htaccess</code> file in the Symphony install location. To avoid name clashes, you will need to delete or rename this file.'),
+		'existing-htaccess-symphony' => __('There appears to be an existing <code>.htaccess</code> file in the <code>/symphony</code> directory.'),
+		'no-database-connection' => __('Symphony was unable to connect to the specified database. You may need to modify host or port settings.'),
+		'database-table-clash' => __('The table prefix <code><!-- TABLE-PREFIX --></code> is already in use. Please choose a different prefix to use with Symphony.'),
+		'user-password-mismatch' => __('The password and confirmation did not match. Please retype your password.'),
+		'user-invalid-email' => __('This is not a valid email address. You must provide an email address since you will need it if you forget your password.'),
+		'user-no-username' => __('You must enter a Username. This will be your Symphony login information.'),
+		'user-no-password' => __('You must enter a Password. This will be your Symphony login information.'),
+		'user-no-name' => __('You must enter your name.')
 		
 	);
 	
 	$notices = array(
-		'existing-workspace' => 'An existing <code>/workspace</code> directory was found at this location. Symphony will use this workspace.'
+		'existing-workspace' => __('An existing <code>/workspace</code> directory was found at this location. Symphony will use this workspace.')
 	);
+
+	$languages = array();
+	foreach(Lang::getAvailableLanguages() as $lang){
+		$languages[] = '<a href="?lang='.$lang.'">'.$lang.'</a>';
+	}
+	$languages = implode(', ', $languages);
 	
 	Class Display{
 		
@@ -1379,9 +1385,10 @@ IndexIgnore *
 		
 			global $warnings;
 			global $notices;
+			global $languages;
 		
 			$Form = new XMLElement('form');
-			$Form->setAttribute('action', kINSTALL_FILENAME);
+			$Form->setAttribute('action', kINSTALL_FILENAME.($_GET['lang'] ? '?lang='.$_GET['lang'] : ''));
 			$Form->setAttribute('method', 'post');
 		
 			/** 
@@ -1391,13 +1398,13 @@ IndexIgnore *
 			**/
 
 				$Environment = new XMLElement('fieldset');
-				$Environment->appendChild(new XMLElement('legend', 'Environment Settings'));
-				$Environment->appendChild(new XMLElement('p', 'Symphony is ready to be installed at the following location.'));
+				$Environment->appendChild(new XMLElement('legend', __('Environment Settings')));
+				$Environment->appendChild(new XMLElement('p', __('Symphony is ready to be installed at the following location.')));
 	
 				$class = NULL;
 				if(defined('kENVIRONMENT_WARNING') && kENVIRONMENT_WARNING == true) $class = 'warning';
 
-				$Environment->appendChild(Widget::label('Root Path', Widget::input('fields[docroot]', $fields['docroot']), $class));
+				$Environment->appendChild(Widget::label(__('Root Path'), Widget::input('fields[docroot]', $fields['docroot']), $class));
 			
 				if(defined('ERROR') && defined('kENVIRONMENT_WARNING')) $Environment->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
 				
@@ -1413,16 +1420,16 @@ IndexIgnore *
 			**/					
 
 				$Environment = new XMLElement('fieldset');
-				$Environment->appendChild(new XMLElement('legend', 'Website Preferences'));
+				$Environment->appendChild(new XMLElement('legend', __('Website Preferences')));
 //				$Environment->appendChild(new XMLElement('p', '.'));
 				
-				$Environment->appendChild(Widget::label('Name', Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
+				$Environment->appendChild(Widget::label(__('Name'), Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
 				
 
 				
 				$Fieldset = new XMLElement('fieldset');
-				$Fieldset->appendChild(new XMLElement('legend', 'Date and Time'));
-				$Fieldset->appendChild(new XMLElement('p', 'Customise how Date and Time values are displayed throughout the Administration interface.'));
+				$Fieldset->appendChild(new XMLElement('legend', __('Date and Time')));
+				$Fieldset->appendChild(new XMLElement('p', __('Customise how Date and Time values are displayed throughout the Administration interface.')));
 				
 				
 				$options = array();
@@ -1453,13 +1460,13 @@ IndexIgnore *
 					else $options[] = array($key, $key == $system_tz, str_replace('_', ' ', $key));
 				}
 				
-				$Fieldset->appendChild(Widget::label('Region', Widget::Select('fields[region][timezone]', $options)));
+				$Fieldset->appendChild(Widget::label(__('Region'), Widget::Select('fields[region][timezone]', $options)));
 								
 				//$Div->appendChild(Widget::label('Date Format', Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
 				//$Div->appendChild(Widget::label('Time Format', Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
 
 				$dateformat = $fields['region']['date_format'];
-				$label = Widget::Label('Date Format');
+				$label = Widget::Label(__('Date Format'));
 				$dateFormats = array( 			
 					array('Y/m/d', $dateformat == 'Y/m/d', DateTimeObj::get('Y/m/d')),
 					array('m/d/Y', $dateformat == 'm/d/Y', DateTimeObj::get('m/d/Y')),
@@ -1470,10 +1477,10 @@ IndexIgnore *
 				$Fieldset->appendChild($label);	
 
 				$timeformat = $fields['region']['time_format'];
-				$label = Widget::Label('Time Format');
+				$label = Widget::Label(__('Time Format'));
 				
-				//$label->setAttribute('title', 'Local' . (date('I') == 1 ? ' daylight savings' : '') . ' time for ' . date_default_timezone_get());
-				//if(date('I') == 1) $label->appendChild(new XMLElement('i', 'Daylight savings time'));
+				//$label->setAttribute('title', __('Local') . (date('I') == 1 ? ' daylight savings' : '') . ' time for ' . date_default_timezone_get());
+				//if(date('I') == 1) $label->appendChild(new XMLElement('i', __('Daylight savings time')));
 
 				$timeformats = array(
 					array('H:i:s', $timeformat == 'H:i:s', DateTimeObj::get('H:i:s')),
@@ -1498,23 +1505,23 @@ IndexIgnore *
 			**/
 
 				$Database = new XMLElement('fieldset');
-				$Database->appendChild(new XMLElement('legend', 'Database Connection'));
-				$Database->appendChild(new XMLElement('p', 'Please provide Symphony with access to a database.'));
+				$Database->appendChild(new XMLElement('legend', __('Database Connection')));
+				$Database->appendChild(new XMLElement('p', __('Please provide Symphony with access to a database.')));
 
 				$class = NULL;
 				if(defined('kDATABASE_CONNECTION_WARNING') && kDATABASE_CONNECTION_WARNING == true) $class = ' warning';		
 	
 				## fields[database][name]
-				$Database->appendChild(Widget::label('Database', Widget::input('fields[database][name]', $fields['database']['name'])));
+				$Database->appendChild(Widget::label(__('Database'), Widget::input('fields[database][name]', $fields['database']['name'])));
 
 				$Div = new XMLElement('div');
 				$Div->setAttribute('class', 'group' . $class);
 
 				## fields[database][username]
-				$Div->appendChild(Widget::label('Username', Widget::input('fields[database][username]', $fields['database']['username'])));
+				$Div->appendChild(Widget::label(__('Username'), Widget::input('fields[database][username]', $fields['database']['username'])));
 		
 				## fields[database][password]								
-				$Div->appendChild(Widget::label('Password', Widget::input('fields[database][password]', $fields['database']['password'], 'password')));
+				$Div->appendChild(Widget::label(__('Password'), Widget::input('fields[database][password]', $fields['database']['password'], 'password')));
 
 				$Database->appendChild($Div);
 			
@@ -1522,17 +1529,17 @@ IndexIgnore *
 					$Database->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
 
 				$Fieldset = new XMLElement('fieldset');
-				$Fieldset->appendChild(new XMLElement('legend', 'Advanced Configuration'));
-				$Fieldset->appendChild(new XMLElement('p', 'Leave these fields unless you are sure they need to be changed.'));
+				$Fieldset->appendChild(new XMLElement('legend', __('Advanced Configuration')));
+				$Fieldset->appendChild(new XMLElement('p', __('Leave these fields unless you are sure they need to be changed.')));
 		
 				$Div = new XMLElement('div');
 				$Div->setAttribute('class', 'group');
 		
 				## fields[database][host]
-				$Div->appendChild(Widget::label('Host', Widget::input('fields[database][host]', $fields['database']['host'])));
+				$Div->appendChild(Widget::label(__('Host'), Widget::input('fields[database][host]', $fields['database']['host'])));
 		
 				## fields[database][port]								
-				$Div->appendChild(Widget::label('Port', Widget::input('fields[database][port]', $fields['database']['port'])));
+				$Div->appendChild(Widget::label(__('Port'), Widget::input('fields[database][port]', $fields['database']['port'])));
 														
 				$Fieldset->appendChild($Div);
 
@@ -1540,7 +1547,7 @@ IndexIgnore *
 				if(defined('kDATABASE_PREFIX_WARNING') && kDATABASE_PREFIX_WARNING == true) $class = 'warning';		
 
 				## fields[database][prefix]
-				$Fieldset->appendChild(Widget::label('Table Prefix', Widget::input('fields[database][prefix]', $fields['database']['prefix']), $class));
+				$Fieldset->appendChild(Widget::label(__('Table Prefix'), Widget::input('fields[database][prefix]', $fields['database']['prefix']), $class));
 				
 				if(defined('ERROR') && defined('kDATABASE_PREFIX_WARNING'))
 					$Fieldset->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
@@ -1548,9 +1555,9 @@ IndexIgnore *
 				$Page->setTemplateVar('TABLE-PREFIX', $fields['database']['prefix']);
 										
 				## fields[database][high-compatibility]
-				$Fieldset->appendChild(Widget::label('Use compatibility mode', Widget::input('fields[database][high-compatibility]', 'yes', 'checkbox'), 'option'));											
+				$Fieldset->appendChild(Widget::label(__('Use compatibility mode'), Widget::input('fields[database][high-compatibility]', 'yes', 'checkbox'), 'option'));											
 
-				$Fieldset->appendChild(new XMLElement('p', 'Symphony normally specifies UTF-8 character encoding for database entries. With compatibility mode enabled, Symphony will instead use the default character encoding of your database.'));
+				$Fieldset->appendChild(new XMLElement('p', __('Symphony normally specifies UTF-8 character encoding for database entries. With compatibility mode enabled, Symphony will instead use the default character encoding of your database.')));
 				
 				$Database->appendChild($Fieldset);		
 						
@@ -1565,14 +1572,14 @@ IndexIgnore *
 			**/
 
 				$Permissions = new XMLElement('fieldset');
-				$Permissions->appendChild(new XMLElement('legend', 'Permission Settings'));
-				$Permissions->appendChild(new XMLElement('p', 'Symphony needs permission to read and write both files and directories.'));
+				$Permissions->appendChild(new XMLElement('legend', __('Permission Settings')));
+				$Permissions->appendChild(new XMLElement('p', __('Symphony needs permission to read and write both files and directories.')));
 
 				$Div = new XMLElement('div');
 				$Div->setAttribute('class', 'group');
 				
-				$Div->appendChild(Widget::label('Files', Widget::input('fields[permission][file]', $fields['permission']['file'])));
-				$Div->appendChild(Widget::label('Directories', Widget::input('fields[permission][directory]', $fields['permission']['directory'])));
+				$Div->appendChild(Widget::label(__('Files'), Widget::input('fields[permission][file]', $fields['permission']['file'])));
+				$Div->appendChild(Widget::label(__('Directories'), Widget::input('fields[permission][directory]', $fields['permission']['directory'])));
 
 				$Permissions->appendChild($Div);
 				$Form->appendChild($Permissions);
@@ -1586,14 +1593,14 @@ IndexIgnore *
 			**/
 
 				$User = new XMLElement('fieldset');
-				$User->appendChild(new XMLElement('legend', 'User Information'));
-				$User->appendChild(new XMLElement('p', 'Once installed, you will be able to login to the Symphony admin with these user details.'));
+				$User->appendChild(new XMLElement('legend', __('User Information')));
+				$User->appendChild(new XMLElement('p', __('Once installed, you will be able to login to the Symphony admin with these user details.')));
 
 				$class = NULL;
 				if(defined('kUSER_USERNAME_WARNING') && kUSER_PASSWORD_WARNING == true) $class = 'warning';
 
 				## fields[user][username]
-				$User->appendChild(Widget::label('Username', Widget::input('fields[user][username]', $fields['user']['username']), $class));
+				$User->appendChild(Widget::label(__('Username'), Widget::input('fields[user][username]', $fields['user']['username']), $class));
 
 				if(defined('ERROR') && defined('kUSER_USERNAME_WARNING'))
 					$User->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
@@ -1605,10 +1612,10 @@ IndexIgnore *
 				$Div->setAttribute('class', 'group' . $class);
 
 				## fields[user][password]							
-				$Div->appendChild(Widget::label('Password', Widget::input('fields[user][password]', $fields['user']['password'], 'password')));
+				$Div->appendChild(Widget::label(__('Password'), Widget::input('fields[user][password]', $fields['user']['password'], 'password')));
 		
 				## fields[user][confirm-password]						
-				$Div->appendChild(Widget::label('Confirm Password', Widget::input('fields[user][confirm-password]', $fields['user']['confirm-password'], 'password')));		
+				$Div->appendChild(Widget::label(__('Confirm Password'), Widget::input('fields[user][confirm-password]', $fields['user']['confirm-password'], 'password')));		
 
 				$User->appendChild($Div);
 
@@ -1616,8 +1623,8 @@ IndexIgnore *
 					$User->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
 
 				$Fieldset = new XMLElement('fieldset');
-				$Fieldset->appendChild(new XMLElement('legend', 'Personal Information'));
-				$Fieldset->appendChild(new XMLElement('p', 'Please add the following personal details for this user.'));
+				$Fieldset->appendChild(new XMLElement('legend', __('Personal Information')));
+				$Fieldset->appendChild(new XMLElement('p', __('Please add the following personal details for this user.')));
 
 				$class = NULL;
 				if(defined('kUSER_NAME_WARNING') && kUSER_EMAIL_WARNING == true) $class = ' warning';
@@ -1626,10 +1633,10 @@ IndexIgnore *
 				$Div->setAttribute('class', 'group' . $class);
 
 				## fields[database][host]
-				$Div->appendChild(Widget::label('First Name', Widget::input('fields[user][firstname]', $fields['user']['firstname'])));
+				$Div->appendChild(Widget::label(__('First Name'), Widget::input('fields[user][firstname]', $fields['user']['firstname'])));
 
 				## fields[database][port]								
-				$Div->appendChild(Widget::label('Last Name', Widget::input('fields[user][lastname]', $fields['user']['lastname'])));
+				$Div->appendChild(Widget::label(__('Last Name'), Widget::input('fields[user][lastname]', $fields['user']['lastname'])));
 
 				$Fieldset->appendChild($Div);
 
@@ -1640,7 +1647,7 @@ IndexIgnore *
 				if(defined('kUSER_EMAIL_WARNING') && kUSER_EMAIL_WARNING == true) $class = 'warning';
 			
 				## fields[user][email]
-				$Fieldset->appendChild(Widget::label('Email Address', Widget::input('fields[user][email]', $fields['user']['email']), $class));
+				$Fieldset->appendChild(Widget::label(__('Email Address'), Widget::input('fields[user][email]', $fields['user']['email']), $class));
 
 				if(defined('ERROR') && defined('kUSER_EMAIL_WARNING'))
 					$Fieldset->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));	
@@ -1658,14 +1665,14 @@ IndexIgnore *
 			 *
 			**/
 	
-				$Form->appendChild(new XMLElement('h2', 'Install Symphony'));
-				$Form->appendChild(new XMLElement('p', 'Make sure that you delete <code>'.kINSTALL_FILENAME.'</code> file after Symphony has installed successfully.'));
+				$Form->appendChild(new XMLElement('h2', __('Install Symphony')));
+				$Form->appendChild(new XMLElement('p', __('Make sure that you delete <code>'.kINSTALL_FILENAME.'</code> file after Symphony has installed successfully.')));
 				 
 				$Submit = new XMLElement('div');
 				$Submit->setAttribute('class', 'submit');
 
 				### submit		
-				$Submit->appendChild(Widget::input('submit', 'Install Symphony', 'submit'));
+				$Submit->appendChild(Widget::input('submit', __('Install Symphony'), 'submit'));
 		
 				### action[install]
 				$Submit->appendChild(Widget::input('action[install]', 'true', 'hidden'));	
@@ -1676,33 +1683,34 @@ IndexIgnore *
 			/** END FORM SUBMIT AREA **/
 		
 
-			$Page->setTemplateVar('title', 'Install Symphony');
-			$Page->setTemplateVar('tagline', 'Version ' . kVERSION);		
+			$Page->setTemplateVar('title', __('Install Symphony'));
+			$Page->setTemplateVar('tagline', __('Version %s', array(kVERSION)));
+			$Page->setTemplateVar('languages', $languages);
 		}
 	
 		function requirements(&$Page, &$Contents){
 	
-			$Contents->appendChild(new XMLElement('h2', 'Outstanding Requirements'));
-			$Contents->appendChild(new XMLElement('p', 'Symphony needs the following requirements satisfied before installation can proceed.'));
+			$Contents->appendChild(new XMLElement('h2', __('Outstanding Requirements')));
+			$Contents->appendChild(new XMLElement('p', __('Symphony needs the following requirements satisfied before installation can proceed.')));
 			
 	
 			$messages = array();
 		
 			if(in_array(MISSING_PHP, $Page->missing))					
-				$messages[] = array('<abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.1 or above',
-							  		'Symphony needs a recent version of <abbr title="PHP: Hypertext Pre-processor">PHP</abbr>.');
+				$messages[] = array(__('<abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.1 or above'),
+							  		__('Symphony needs a recent version of <abbr title="PHP: Hypertext Pre-processor">PHP</abbr>.'));
 		
 			if(in_array(MISSING_MYSQL, $Page->missing))				
-				$messages[] = array('My<abbr title="Structured Query Language">SQL</abbr> 4.1 or above',
-							  	'Symphony needs a recent version of My<abbr title="Structured Query Language">SQL</abbr>.');
+				$messages[] = array(__('My<abbr title="Structured Query Language">SQL</abbr> 4.1 or above'),
+							  	__('Symphony needs a recent version of My<abbr title="Structured Query Language">SQL</abbr>.'));
 
 			if(in_array(MISSING_ZLIB, $Page->missing))
-				$messages[] = array('ZLib Compression Library',
-							  		'Data retrieved from the Symphony support server is decompressed with the ZLib compression library.');
+				$messages[] = array(__('ZLib Compression Library'),
+							  		__('Data retrieved from the Symphony support server is decompressed with the ZLib compression library.'));
 
 			if(in_array(MISSING_XSL, $Page->missing) || in_array(MISSING_XML, $Page->missing))
-				$messages[] = array('<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr> Processor',
-							  		'Symphony needs an XSLT processor such as Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr> or Sablotron to build pages.');
+				$messages[] = array(__('<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr> Processor'),
+							  		__('Symphony needs an XSLT processor such as Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr> or Sablotron to build pages.'));
 		
 			$dl = new XMLElement('dl');
 			foreach($messages as $m){
@@ -1712,34 +1720,45 @@ IndexIgnore *
 																
 			$Contents->appendChild($dl);	
 		
-			$Page->setTemplateVar('title', 'Missing Requirements');
-			$Page->setTemplateVar('tagline', 'Version ' . kVERSION);
+			$Page->setTemplateVar('title', __('Missing Requirements'));
+			$Page->setTemplateVar('tagline', __('Version %s', array(kVERSION)));
+
+			global $languages;
+			$Page->setTemplateVar('languages', $languages);
 		}
 
 		function uptodate(&$Page, &$Contents){
-			$Contents->appendChild(new XMLElement('h2', 'Update Symphony'));
-			$Contents->appendChild(new XMLElement('p', 'You are already using the most recent version of Symphony. There is no need to run the installer, and can be safely deleted.'));
+			$Contents->appendChild(new XMLElement('h2', __('Update Symphony')));
+			$Contents->appendChild(new XMLElement('p', __('You are already using the most recent version of Symphony. There is no need to run the installer, and can be safely deleted.')));
 
-			$Page->setTemplateVar('title', 'Update Symphony');
-			$Page->setTemplateVar('tagline', 'Version ' . kVERSION);			
+			$Page->setTemplateVar('title', __('Update Symphony'));
+			$Page->setTemplateVar('tagline', __('Version %s', array(kVERSION)));
+
+			global $languages;
+			$Page->setTemplateVar('languages', $languages);
 		}
 
 		function incorrectVersion(&$Page, &$Contents){
-			$Contents->appendChild(new XMLElement('h2', 'Update Symphony'));
-			$Contents->appendChild(new XMLElement('p', 'You are not using the most recent version of Symphony. This update is only compatible with Symphony 2.'));
+			$Contents->appendChild(new XMLElement('h2', __('Update Symphony')));
+			$Contents->appendChild(new XMLElement('p', __('You are not using the most recent version of Symphony. This update is only compatible with Symphony 2.')));
 
-			$Page->setTemplateVar('title', 'Update Symphony');
-			$Page->setTemplateVar('tagline', 'Version ' . kVERSION);			
+			$Page->setTemplateVar('title', __('Update Symphony'));
+			$Page->setTemplateVar('tagline', __('Version %s', array(kVERSION)));
+
+			global $languages;
+			$Page->setTemplateVar('languages', $languages);
 		}
 
 		function failure(&$Page, &$Contents){
 
-			$Contents->appendChild(new XMLElement('h2', 'Installation Failure'));
-			$Contents->appendChild(new XMLElement('p', 'An error occurred during installation. You can view you log <a href="install-log.txt">here</a> for more details.'));
+			$Contents->appendChild(new XMLElement('h2', __('Installation Failure')));
+			$Contents->appendChild(new XMLElement('p', __('An error occurred during installation. You can view you log <a href="install-log.txt">here</a> for more details.')));
 
-			$Page->setTemplateVar('title', 'Installation Failure');
-			$Page->setTemplateVar('tagline', 'Version ' . kVERSION);
-					
+			$Page->setTemplateVar('title', __('Installation Failure'));
+			$Page->setTemplateVar('tagline', __('Version %s', array(kVERSION)));		
+
+			global $languages;
+			$Page->setTemplateVar('languages', $languages);
 		}
 
 	}
@@ -1752,7 +1771,7 @@ IndexIgnore *
 	$Page->setFooter(kFOOTER);
 
 	$Contents =& new XMLElement('body');
-	$Contents->appendChild(new XMLElement('h1', '<!-- TITLE --> <em><!-- TAGLINE --></em>'));
+	$Contents->appendChild(new XMLElement('h1', '<!-- TITLE --> <em><!-- TAGLINE --></em> <em><!-- LANGUAGES --></em>'));
 
 	if(defined('__IS_UPDATE__') && __IS_UPDATE__)
 		$Page->setPage((kCURRENT_BUILD < '1602' ? 'incorrectVersion' : 'update'));

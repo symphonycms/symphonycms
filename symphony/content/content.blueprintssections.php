@@ -19,7 +19,7 @@
 		
 		function __viewIndex(){
 			$this->setPageType('table');	
-			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), __('Sections'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), $this->_Parent->getCurrentPageURL().'new/', __('Create a section'), 'create button'));
 
 		    $sectionManager = new SectionManager($this->_Parent);
@@ -37,7 +37,7 @@
 			if(!is_array($sections) || empty($sections)){
 
 				$aTableBody = array(
-									Widget::TableRow(array(Widget::TableData(__('None Found.'), 'inactive', NULL, count($aTableHead))))
+									Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))))
 								);
 			}
 
@@ -87,7 +87,7 @@
 		function __viewNew(){
 			
 			$this->setPageType('form');	
-			$this->setTitle(__('%s &ndash; %s', array(__('Symphony'), __('Sections'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(__('Untitled'));
 		
 			$fieldManager = new FieldManager($this->_Parent);
@@ -205,11 +205,11 @@
 				switch($this->_context[2]){
 					
 					case 'saved':
-						$this->pageAlert(__('%s updated successfully. <a href="%s/symphony/%s">Create another?</a>', array(__('Section'), URL, 'blueprints/sections/new/'), AdministrationPage::PAGE_ALERT_NOTICE));
+						$this->pageAlert(__('%1$s updated successfully. <a href="%2$s">Create another?</a>', array(__('Section'), URL . '/symphony/blueprints/sections/new/'), AdministrationPage::PAGE_ALERT_NOTICE));
 						break;
 						
 					case 'created':
-						$this->pageAlert(__('%s created successfully. <a href="%s/symphony/%s">Create another?</a>', array(__('Section'), URL, 'blueprints/sections/new/'), AdministrationPage::PAGE_ALERT_NOTICE));
+						$this->pageAlert(__('%1$s created successfully. <a href="%2$s">Create another?</a>', array(__('Section'), URL . '/symphony/blueprints/sections/new/'), AdministrationPage::PAGE_ALERT_NOTICE));
 						break;
 					
 				}
@@ -241,7 +241,7 @@
 			}
 			
 			$this->setPageType('form');
-			$this->setTitle(__('%s &ndash; %s &ndash; %s', array(__('Symphony'), __('Sections'), $meta['name'])));
+			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Sections'), $meta['name'])));
 			$this->appendSubheading($meta['name']);
 
 			$fieldset = new XMLElement('fieldset');

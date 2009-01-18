@@ -103,7 +103,7 @@
 			
 			if($field_id != 'id' && !($fieldPool[$field_id] instanceof Field)){
 				throw new Exception(
-					sprintf('Error creating field object with id %d, for filtering in data source "%s". Check this field exists.', 
+					__('Error creating field object with id %1$d, for filtering in data source "%2$s". Check this field exists.', 
 							$field_id, 
 							$this->dsParamROOTELEMENT)
 				);
@@ -131,7 +131,7 @@
 
 	if(!$section = $entryManager->sectionManager->fetch($this->getSource())){
 		$about = $this->about();
-		trigger_error('The section associated with the data source <code>'.$about['name'].'</code> could not be found.', E_USER_ERROR);
+		trigger_error(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])), E_USER_ERROR);
 	}
 	
 	$sectioninfo = new XMLElement('section', $section->get('name'), array('id' => $section->get('id'), 'handle' => $section->get('handle')));
