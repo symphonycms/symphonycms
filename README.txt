@@ -35,16 +35,21 @@ Visit the forum at http://overture21.com/forum/
 		
 		- Markdown: https://github.com/pointybeard/markdown/tree
 		
-		- Default Workspace: http://github.com/symphony/workspace/tree
-		
 
 3. Run the following commands to ensure the submodules are cloned:
 
 		git submodule init
 		git submodule update
+		
 
+4. (Optional) If you would like the default theme (http://github.com/symphony/workspace/tree) 
+installed as well, you will need to use the following command from within the Symphony 2 
+folder you just created:
 
-3. Follow from step 2 below
+		git clone git://github.com/symphony/workspace.git
+		
+
+5. Follow from step 2 below
 
 
 [INSTALLATION]
