@@ -251,7 +251,7 @@
 									if($can_access_child) {
 										
 										## Make sure preferences menu only shows if extensions are subscribed to it
-										if($c['name'] == 'Preferences' && $n['name'] == 'System'){
+										if($c['name'] == __('Preferences') && $n['name'] == __('System')){
 											$extensions = $this->_Parent->Database->fetch("
 													SELECT * 
 													FROM `tbl_extensions_delegates` 
