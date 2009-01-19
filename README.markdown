@@ -54,16 +54,16 @@ you will need to use the following command from within the Symphony 2 folder you
 1. This step assumes you downloaded a zip archive from the [Symphony website](http://symphony21.com). 
 Upload the following files and directories to the root directory of your website:
 
-     - index.php
-     - install.php
-     - /symphony
-     - /workspace
-     - /extensions
+	- index.php
+	- install.php
+	- /symphony
+	- /workspace
+	- /extensions
 
-   (Alternatively, you can upload the .zip archive to the same location and
-   run 'unzip' from the command line.)
+   _Alternatively, you can upload the `.zip` archive to the same location and
+   run '`unzip`' from the command line._
 	
-   Note: You can leave `/workspace` out if you do not want the default theme.
+   **Note: You can leave `/workspace` out if you do not want the default theme.**
 
 2. Point your web browser at http://yourwebsite.com/install.php and provide
    details for establishing a database connection and about your server
