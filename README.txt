@@ -1,10 +1,10 @@
 Symphony 2
 ------------------------------------
 
-Version: 2.0
-Status: Stable
-Build Date: 8th December 2008
-Github Repository: http://github.com/symphony/symphony-2/tree/master
+Version: 2.1
+Status: Unstable
+Build Date: 19th January 2009
+Github Repository: http://github.com/symphony/symphony-2/tree/optmisation
 
 
 [SYNOPSIS]
@@ -27,13 +27,13 @@ Visit the forum at http://overture21.com/forum/
 
 	The following repositories are included as submodules:
 
-		- Maintenance Mode: http://github.com/pointybeard/maintenance_mode/tree
+		- Maintenance Mode: http://github.com/pointybeard/maintenance_mode
 		
-		- Select Box Link Field: https://github.com/pointybeard/selectbox_link_field/tree
+		- Select Box Link Field: https://github.com/pointybeard/selectbox_link_field
 		
-		- Export Ensemble: http://github.com/pointybeard/export_ensemble/tree
+		- Export Ensemble: http://github.com/pointybeard/export_ensemble
 		
-		- Markdown: https://github.com/pointybeard/markdown/tree
+		- Markdown: https://github.com/pointybeard/markdown
 		
 
 3. Run the following commands to ensure the submodules are cloned:
@@ -42,7 +42,7 @@ Visit the forum at http://overture21.com/forum/
 		git submodule update
 		
 
-4. (Optional) If you would like the default theme (http://github.com/symphony/workspace/tree) 
+4. (Optional) If you would like the default theme (http://github.com/symphony/workspace) 
 installed as well, you will need to use the following command from within the Symphony 2 
 folder you just created:
 
