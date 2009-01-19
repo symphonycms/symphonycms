@@ -66,7 +66,7 @@ Upload the following files and directories to the root directory of your website
 	
    **Note: You can leave `/workspace` out if you do not want the default theme.**
 
-2. Point your web browser at http://yourwebsite.com/install.php and provide
+2. Point your web browser at <http://yourwebsite.com/install.php> and provide
    details for establishing a database connection and about your server
    environment.
 
