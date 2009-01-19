@@ -47,10 +47,14 @@
 						if(isset($ds->dsParamPARAMOUTPUT) && $ds->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
 							$param_pool[$key][] = $fieldPool[$field_id]->getParameterPoolValue($values);
 						}
-
-						if(!$param_output_only && in_array($fieldPool[$field_id]->get('element_name'), $ds->dsParamINCLUDEDELEMENTS))
-							$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($ds->dsParamHTMLENCODE ? true : false));
-
+						
+						if (!$param_output_only) foreach ($ds->dsParamINCLUDEDELEMENTS as $handle) {
+							list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
+							
+							if ($fieldPool[$field_id]->get('element_name') == $handle) {
+								$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($ds->dsParamHTMLENCODE ? true : false), $mode);
+							}
+						}
 					}
 
 					if(!$param_output_only) $xGroup->appendChild($xEntry);
@@ -209,9 +213,13 @@
 							$param_pool[$key][] = $fieldPool[$field_id]->getParameterPoolValue($values);
 						}
 			
-						if(!$this->_param_output_only && in_array($fieldPool[$field_id]->get('element_name'), $this->dsParamINCLUDEDELEMENTS))
-							$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE ? true : false));
-			
+						if (!$this->_param_output_only) foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {
+							list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
+							
+							if ($fieldPool[$field_id]->get('element_name') == $handle) {
+								$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE ? true : false), $mode);
+							}
+						}
 					}
 		
 					if($this->_param_output_only) continue;
