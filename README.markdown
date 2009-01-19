@@ -9,7 +9,8 @@
 ### SYNOPSIS
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as it's core 
-technologies. This repository represents version 2.0 and is considered stable.
+technologies. This repository branch represents version `2.1` and is considered unstable. It 
+may contain bugs or behave in unintended ways.
 
 Visit the forum at <http://overture21.com/forum/>
 
