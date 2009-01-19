@@ -26,10 +26,10 @@ Visit the forum at <http://overture21.com/forum/>
 
 	The following repositories are included as submodules:
 
-		- [Maintenance Mode](http://github.com/pointybeard/maintenance_mode)
-		- [Select Box Link Field](http://github.com/pointybeard/selectbox_link_field)
-		- [Export Ensemble](http://github.com/pointybeard/export_ensemble)
-		- [Markdown](http://github.com/pointybeard/markdown)
+	- [Maintenance Mode](http://github.com/pointybeard/maintenance_mode)
+	- [Select Box Link Field](http://github.com/pointybeard/selectbox_link_field)
+	- [Export Ensemble](http://github.com/pointybeard/export_ensemble)
+	- [Markdown](http://github.com/pointybeard/markdown)
 		
 
 3. Run the following commands to ensure the submodules are cloned:
