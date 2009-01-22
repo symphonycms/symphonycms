@@ -211,7 +211,9 @@
 
 							$field = $entryManager->fieldManager->fetch($associated_sections[$key]['child_section_field_id']);
 
-							$search_value = ($associated_sections[$key]['parent_section_field_id'] ? $field->fetchAssociatedEntrySearchValue($entry->getData($associated_sections[$key]['parent_section_field_id'])) : $entry->get('id'));
+							$parent_section_field_id = $associated_sections[$key]['parent_section_field_id'];
+
+							$search_value = (!is_null($parent_section_field_id) ? $field->fetchAssociatedEntrySearchValue($entry->getData($parent_section_field_id), $parent_section_field_id) : $entry->get('id'));
 
 							$associated_entry_count = $field->fetchAssociatedEntryCount($search_value);
 
