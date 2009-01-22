@@ -21,7 +21,7 @@
 			
 			$this->setPageType('table');
 			$this->setTitle('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors')));
-			$this->appendSubheading('Authors', Widget::Anchor('Add an author', $this->_Parent->getCurrentPageURL().'new/', 'Add a new author', 'create button'));
+			$this->appendSubheading(__('Authors'), Widget::Anchor('Add an author', $this->_Parent->getCurrentPageURL().'new/', 'Add a new author', 'create button'));
 			
 		    $authors = $this->_AuthorManager->fetch();
 
