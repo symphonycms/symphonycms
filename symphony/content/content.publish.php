@@ -355,7 +355,17 @@
 				}
 			}
 		}		
-				
+		
+		private function __wrapFieldWithDiv(Field $field, Entry $entry){
+			$div = new XMLElement('div', NULL, array('class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
+			$field->displayPublishPanel(
+				$div, $entry->getData($field->get('id')),
+				(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
+				null, null, (is_numeric($entry->get('id')) ? $entry->get('id') : NULL)
+			);
+			return $div;
+		}
+		
 		function __viewNew(){
 			
 			$sectionManager = new SectionManager($this->_Parent);
@@ -425,9 +435,7 @@
 
 				if(is_array($main_fields) && !empty($main_fields)){
 					foreach($main_fields as $field){
-						$div = new XMLElement('div', NULL, array('class' => 'field '.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
-						$field->displayPublishPanel($div, $entry->getData($field->get('id')), (isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL));	
-						$primary->appendChild($div);
+						$primary->appendChild($this->__wrapFieldWithDiv($field, $entry));
 					}
 					
 					$this->Form->appendChild($primary);
@@ -438,9 +446,7 @@
 					$sidebar->setAttribute('class', 'secondary');
 
 					foreach($sidebar_fields as $field){
-						$div = new XMLElement('div', NULL, array('class' => 'field '.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
-						$field->displayPublishPanel($div, $entry->getData($field->get('id')), (isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL));
-						$sidebar->appendChild($div);
+						$sidebar->appendChild($this->__wrapFieldWithDiv($field, $entry));
 					}
 
 					$this->Form->appendChild($sidebar);
@@ -627,13 +633,7 @@
 
 				if(is_array($main_fields) && !empty($main_fields)){
 					foreach($main_fields as $field){
-						$div = new XMLElement('div', NULL, array('class' => 'field '.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
-						$field->displayPublishPanel(
-							$div, $entry->getData($field->get('id')),
-							(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
-							null, null, $entry->get('id')
-						);
-						$primary->appendChild($div);
+						$primary->appendChild($this->__wrapFieldWithDiv($field, $entry));
 					}
 					
 					$this->Form->appendChild($primary);
@@ -644,13 +644,7 @@
 					$sidebar->setAttribute('class', 'secondary');
 
 					foreach($sidebar_fields as $field){
-						$div = new XMLElement('div', NULL, array('class' => 'field '.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
-						$field->displayPublishPanel(
-							$div, $entry->getData($field->get('id')),
-							(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
-							null, null, $entry->get('id')
-						);
-						$sidebar->appendChild($div);
+						$sidebar->appendChild($this->__wrapFieldWithDiv($field, $entry));
 					}
 
 					$this->Form->appendChild($sidebar);
