@@ -40,7 +40,7 @@
 		}
 		
 		function __viewIndex(){	
-			
+
 			$sectionManager = new SectionManager($this->_Parent);
 			
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
@@ -316,12 +316,11 @@
 
 	            	case 'delete':
 
-						## TODO: Fix Me
 						###
 						# Delegate: Delete
 						# Description: Prior to deletion of entries. Array of Entries is provided.
 						#              The array can be manipulated
-						//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('entry_id' => &$checked));
+						Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
 
 						$entryManager = new EntryManager($this->_Parent);					
 
