@@ -182,6 +182,8 @@
 			if($this->get('apply_formatting') == 'yes' && isset($data['value_formatted'])) $value = $data['value_formatted'];
 			else $value = $data['value'];
 			
+			$value = General::sanitize($value);
+			
 			$wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($value) : $value), array('handle' => $data['handle'])));
 		}
 		
