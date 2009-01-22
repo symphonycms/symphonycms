@@ -328,7 +328,7 @@
 			foreach($schema as $f){
 				$field_id = $f['id'];
 				
-				$row = $this->_Parent->Database->fetch("SELECT * FROM `tbl_entries_data_$field_id` WHERE `entry_id` IN ('$id_list_string')");
+				$row = $this->_Parent->Database->fetch("SELECT * FROM `tbl_entries_data_$field_id` WHERE `entry_id` IN ('$id_list_string') ORDER BY `id` ASC");
 							
 				if(!is_array($row) || empty($row)) continue;			
 								
