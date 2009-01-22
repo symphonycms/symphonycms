@@ -481,15 +481,15 @@
 					
 					$haystack = strtolower($fields['type']);
 					
-					if(preg_match('/\bindex\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `page_id` != '$page_id' && `type` = 'index' LIMIT 1")){					
+					if(preg_match('/\bindex\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `page_id` != '$page_id' AND `type` = 'index' LIMIT 1")){					
 						$this->_errors['type'] = __('An index type page already exists.');
 					}
 					
-					elseif(preg_match('/\b404\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `page_id` != '$page_id' && `type` = '404' LIMIT 1")){	
+					elseif(preg_match('/\b404\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `page_id` != '$page_id' AND `type` = '404' LIMIT 1")){	
 						$this->_errors['type'] = __('A 404 type page already exists.');
 					}	
 
-					elseif(preg_match('/\b403\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `page_id` != '$page_id' && `type` = '403' LIMIT 1")){	
+					elseif(preg_match('/\b403\b/i', $haystack, $matches) && $row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_pages_types` WHERE `page_id` != '$page_id' AND `type` = '403' LIMIT 1")){	
 						$this->_errors['type'] = __('A 403 type page already exists.');
 					}					
 				}
