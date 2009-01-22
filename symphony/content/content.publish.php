@@ -217,7 +217,13 @@
 
 							$associated_entry_count = $field->fetchAssociatedEntryCount($search_value);
 
-							$tableData[] = Widget::TableData(Widget::Anchor(''.max(0, intval($associated_entry_count)).'', URL . '/symphony/publish/'.$as->get('handle').'/?filter=' . $field->get('element_name').':'.rawurlencode($search_value), $entry->get('id'), 'content'));
+							$tableData[] = Widget::TableData(
+								Widget::Anchor(
+									sprintf('%d &rarr;', max(0, intval($associated_entry_count))), 
+									sprintf('%s/symphony/publish/%s/?filter=%s:%s', URL, $as->get('handle'), $field->get('element_name'), rawurlencode($search_value)),
+									$entry->get('id'), 
+									'content')
+							);
 						}
 					}
 					
