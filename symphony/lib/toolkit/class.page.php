@@ -1,13 +1,12 @@
 <?php
 	
 	## This class should never be instanciated. Always extend
-	
 	Class Page{
 		
 		const CRLF = "\r\n";
 		
 		function addHeaderToPage($name, $value=NULL){
-			$this->_headers[$name] = $value;
+			$this->_headers[] = $name . (is_null($value) ? NULL : ":{$value}");
 		}
 
 		function generate(){
@@ -18,11 +17,9 @@
 
 			if(!is_array($this->_headers) || empty($this->_headers)) return;
 		
-			foreach($this->_headers as $name => $value){
-				if($value) header("$name: $value");
-				else header($name);
+			foreach($this->_headers as $value){
+				header($value);
 			}
 		}		
 	}
 
-?>
