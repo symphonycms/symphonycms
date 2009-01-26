@@ -18,11 +18,13 @@
 		private $_query_count;
 		
 		private $_cache;
+		private $_logEverything;
 		
 	    function __construct(){
 			$this->_query_count = 0;
 			$this->_log = array('error' => array(), 'query' => array());
 			$this->_cache = NULL;
+			$this->_logEverything = NULL;
 	    }
 
 	    function __destruct(){
@@ -44,6 +46,22 @@
 
 		public function isCachingEnabled(){
 			return $this->_cache;
+		}
+
+		public function toggleLogging(){
+			$this->_logEverything = !$this->_logEverything;
+		}
+
+		public function enableLogging(){
+			$this->_logEverything = true;
+		}
+
+		public function disableLogging(){
+			$this->_logEverything = false;
+		}
+
+		public function isLogging(){
+			return $this->_logEverything;
 		}
 	
 		public function setPrefix($prefix){
@@ -278,7 +296,8 @@
 	        @mysql_free_result($this->_result);
 			
 			$this->_log['query'][$query_hash]['time'] = precision_timer('stop', $this->_log['query'][$query_hash]['start']);
-			
+			if($this->_logEverything) $this->_log['query'][$query_hash]['lastResult'] = $this->_lastResult;
+
 	        return true;
 				
 	    }
