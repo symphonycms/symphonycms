@@ -8,7 +8,7 @@ table {
 	width: 100%;
 }
 th {
-	padding-right: 32px;
+	padding-right: 19px;
 	color: #665;
 	text-align: left;
 	font-weight: normal;
@@ -21,7 +21,7 @@ td {
 }
 th:first-child,
 td:first-child {
-	padding-left: 32px;
+	padding-left: 19px;
 }
 tr:nth-child(odd) td {
 	background-color: #f5f5f4;
