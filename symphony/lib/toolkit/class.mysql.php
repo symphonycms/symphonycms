@@ -22,9 +22,9 @@
 		
 	    function __construct(){
 			$this->_query_count = 0;
-			$this->_log = array('error' => array(), 'query' => array());
 			$this->_cache = NULL;
 			$this->_logEverything = NULL;
+			$this->flushLog();
 	    }
 
 	    function __destruct(){
@@ -383,7 +383,7 @@
 	    }
 	
 		public function flushLog(){
-			$this->_log = array();
+			$this->_log = array('error' => array(), 'query' => array());
 		}
 			
 	    private function __error($msg = NULL){
