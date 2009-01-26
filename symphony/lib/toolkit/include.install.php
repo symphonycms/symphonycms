@@ -1377,7 +1377,7 @@ IndexIgnore *
 	foreach(Lang::getAvailableLanguages() as $lang){
 		$languages[] = '<a href="?lang='.$lang.'">'.$lang.'</a>';
 	}
-	$languages = implode(', ', $languages);
+	$languages = (count($languages) > 1 ? implode(', ', $languages) : '');
 	
 	Class Display{
 		
