@@ -12,7 +12,7 @@
 	error_reporting(E_ALL ^ E_NOTICE);
 	set_error_handler('__errorHandler');
 
-	define('kBUILD', '2000');
+	define('kBUILD', '2001');
 
 	$build = kBUILD;
 	define('kVERSION', $build{0} . '.' . $build{1} . ($build{2} != 0 || $build{3} != 0 ? '.' . $build{2} . $build{3} : ''));
@@ -202,5 +202,3 @@ SQL;
 	define('INSTALL_REQUIREMENTS_PASSED', true);
 	include_once('./symphony/lib/toolkit/include.install.php');
 
-
-?>
