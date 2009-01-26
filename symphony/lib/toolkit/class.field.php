@@ -156,7 +156,7 @@
 			return false;
 		}
 		
-		public function appendFormattedElement(&$wrapper, $data, $encode=false){
+		public function appendFormattedElement(&$wrapper, $data, $encode = false, $mode = null) {
 			$wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($this->prepareTableValue($data)) : $this->prepareTableValue($data))));
 		}
 		
@@ -309,22 +309,22 @@
 			);
 		}
 		
-		public function prepareTableValue($data, XMLElement $link=NULL){
-			
+		public function prepareTableValue($data, XMLElement $link=NULL) {
 			$max_length = $this->_engine->Configuration->get('cell_truncation_length', 'symphony');
 			$max_length = ($max_length ? $max_length : 75);
 			
 			$value = strip_tags($data['value']);
-			
 			$value = (strlen($value) <= $max_length ? $value : substr($value, 0, $max_length) . '...');
-				
-			if($link){
+			
+			if (strlen($value) == 0) $value = 'None';
+			
+			if ($link) {
 				$link->setValue($value);
+				
 				return $link->generate();
 			}
 			
-			else return $value;
-			
+			return $value;
 		}
 		
 		public function getExampleFormMarkup(){

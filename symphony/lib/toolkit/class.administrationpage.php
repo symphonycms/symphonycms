@@ -251,7 +251,7 @@
 									if($can_access_child) {
 										
 										## Make sure preferences menu only shows if extensions are subscribed to it
-										if($c['name'] == 'Preferences' && $n['name'] == 'System'){
+										if($c['name'] == __('Preferences') && $n['name'] == __('System')){
 											$extensions = $this->_Parent->Database->fetch("
 													SELECT * 
 													FROM `tbl_extensions_delegates` 
@@ -451,8 +451,8 @@
 			# Description: After building the Navigation properties array. This is specifically for extentions to add their groups to the navigation or items to groups,
 			#			   already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need to edit existing navigation elements, use the 'NavigationPreRender' delegate.
 			# Global: Yes
-			//$this->_Parent->ExtensionManager->notifyMembers('ExtensionsAddToNavigation', '/administration/', array('navigation' => &$nav));
-			
+			$this->_Parent->ExtensionManager->notifyMembers('ExtensionsAddToNavigation', '/administration/', array('navigation' => &$nav));
+						
 			$pageCallback = $this->_Parent->getPageCallback();
 			
 			$pageRoot = $pageCallback['pageroot'] . (isset($pageCallback['context'][0]) ? $pageCallback['context'][0] . '/' : '');

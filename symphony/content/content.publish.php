@@ -40,7 +40,7 @@
 		}
 		
 		function __viewIndex(){	
-			
+
 			$sectionManager = new SectionManager($this->_Parent);
 			
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
@@ -211,11 +211,19 @@
 
 							$field = $entryManager->fieldManager->fetch($associated_sections[$key]['child_section_field_id']);
 
-							$search_value = ($associated_sections[$key]['parent_section_field_id'] ? $field->fetchAssociatedEntrySearchValue($entry->getData($associated_sections[$key]['parent_section_field_id'])) : $entry->get('id'));
+							$parent_section_field_id = $associated_sections[$key]['parent_section_field_id'];
+
+							$search_value = (!is_null($parent_section_field_id) ? $field->fetchAssociatedEntrySearchValue($entry->getData($parent_section_field_id), $parent_section_field_id) : $entry->get('id'));
 
 							$associated_entry_count = $field->fetchAssociatedEntryCount($search_value);
 
-							$tableData[] = Widget::TableData(Widget::Anchor(''.max(0, intval($associated_entry_count)).'', URL . '/symphony/publish/'.$as->get('handle').'/?filter=' . $field->get('element_name').':'.rawurlencode($search_value), $entry->get('id'), 'content'));
+							$tableData[] = Widget::TableData(
+								Widget::Anchor(
+									sprintf('%d &rarr;', max(0, intval($associated_entry_count))), 
+									sprintf('%s/symphony/publish/%s/?filter=%s:%s', URL, $as->get('handle'), $field->get('element_name'), rawurlencode($search_value)),
+									$entry->get('id'), 
+									'content')
+							);
 						}
 					}
 					
@@ -316,12 +324,11 @@
 
 	            	case 'delete':
 
-						## TODO: Fix Me
 						###
 						# Delegate: Delete
 						# Description: Prior to deletion of entries. Array of Entries is provided.
 						#              The array can be manipulated
-						//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('entry_id' => &$checked));
+						Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
 
 						$entryManager = new EntryManager($this->_Parent);					
 
@@ -354,7 +361,17 @@
 				}
 			}
 		}		
-				
+		
+		private function __wrapFieldWithDiv(Field $field, Entry $entry){
+			$div = new XMLElement('div', NULL, array('class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
+			$field->displayPublishPanel(
+				$div, $entry->getData($field->get('id')),
+				(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
+				null, null, (is_numeric($entry->get('id')) ? $entry->get('id') : NULL)
+			);
+			return $div;
+		}
+		
 		function __viewNew(){
 			
 			$sectionManager = new SectionManager($this->_Parent);
@@ -424,9 +441,7 @@
 
 				if(is_array($main_fields) && !empty($main_fields)){
 					foreach($main_fields as $field){
-						$div = new XMLElement('div', NULL, array('class' => 'field '.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
-						$field->displayPublishPanel($div, $entry->getData($field->get('id')), (isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL));	
-						$primary->appendChild($div);
+						$primary->appendChild($this->__wrapFieldWithDiv($field, $entry));
 					}
 					
 					$this->Form->appendChild($primary);
@@ -437,9 +452,7 @@
 					$sidebar->setAttribute('class', 'secondary');
 
 					foreach($sidebar_fields as $field){
-						$div = new XMLElement('div', NULL, array('class' => 'field '.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
-						$field->displayPublishPanel($div, $entry->getData($field->get('id')), (isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL));
-						$sidebar->appendChild($div);
+						$sidebar->appendChild($this->__wrapFieldWithDiv($field, $entry));
 					}
 
 					$this->Form->appendChild($sidebar);
@@ -626,13 +639,7 @@
 
 				if(is_array($main_fields) && !empty($main_fields)){
 					foreach($main_fields as $field){
-						$div = new XMLElement('div', NULL, array('class' => 'field '.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
-						$field->displayPublishPanel(
-							$div, $entry->getData($field->get('id')),
-							(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
-							null, null, $entry->get('id')
-						);
-						$primary->appendChild($div);
+						$primary->appendChild($this->__wrapFieldWithDiv($field, $entry));
 					}
 					
 					$this->Form->appendChild($primary);
@@ -643,13 +650,7 @@
 					$sidebar->setAttribute('class', 'secondary');
 
 					foreach($sidebar_fields as $field){
-						$div = new XMLElement('div', NULL, array('class' => 'field '.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
-						$field->displayPublishPanel(
-							$div, $entry->getData($field->get('id')),
-							(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
-							null, null, $entry->get('id')
-						);
-						$sidebar->appendChild($div);
+						$sidebar->appendChild($this->__wrapFieldWithDiv($field, $entry));
 					}
 
 					$this->Form->appendChild($sidebar);

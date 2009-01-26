@@ -61,14 +61,14 @@
 						$col_params = Widget::TableData(trim($page['params'], '/'));
 						
 					} else {
-						$col_params = Widget::TableData('None', 'inactive');
+						$col_params = Widget::TableData(__('None'), 'inactive');
 					}
 					
 					if (!empty($page_types)) {
 						$col_types = Widget::TableData(implode(', ', $page_types));
 						
 					} else {
-						$col_types = Widget::TableData('None', 'inactive');
+						$col_types = Widget::TableData(__('None'), 'inactive');
 					}
 					
 					$aTableBody[] = Widget::TableRow(array($col_title, $col_url, $col_params, $col_types));
