@@ -31,9 +31,9 @@ h1 a:hover,
 #nav {
 	position: relative;
 	z-index: 3;
-	float:  left;
-	margin: -5px 0 2.8em -19px;
-	padding: 5px 38px 23px 0;
+	float: left;
+	margin: -5px 0 1.3em -19px;
+	padding: 0 38px 0 0;
 	width: 100%;
 	background: url("images/navigation.png") 0 -60px repeat-x;
 	color: #646464;
@@ -42,110 +42,49 @@ h1 a:hover,
 	text-transform: uppercase;
 	font: bold 90.91%/2px Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
 }
-html.active #nav {
-	margin-bottom: 1.3em;
-	padding-bottom: 5px;
-}
 #nav > li {
-	position: relative;
 	float: left;
-	margin: 0 -19px 0 19px;
-	padding: 14px 10px;
+	margin: 5px -19px 5px 19px;
+	padding: 14px 1em;
 	height: 2px;
 }
-#nav > li.active {
-	position: static;
-}
-html.active #nav > li {
-	position: static;
-}
 #nav > li:hover,
-html #nav > li.active {
+#nav > li.active {
 	background: #517ca6 url("images/navigation.png") repeat-x;
 	color: #fff;
 }
-#nav > li:hover,
-html.active #nav > li:hover {
+#nav > li:hover {
+	position: relative;
 	background-color: #7e7e70;
 	background-position: 0 -30px;
 }
-html.active #nav > li:hover {
-	position: relative;
-}
 #nav ul {
-	padding-left: 0;
-	list-style: none;
-	text-shadow: -1px 2px 3px #ddd;
-	text-transform: none;
-	font-size: 110%;
-	line-height: 1.5;
-}
-#nav > li.active ul {
-	position: absolute;
-	top: 35px;
-	left: 0;
-	right: 0;
-	margin: 0;
-	border-bottom: 1px solid #e6e6e5;
-	padding: 10px 19px 8px;
-	overflow: hidden;
-	background: #f5f5f4 url("images/navigation.png") 0 -96px repeat-x;
-}
-html.active #nav ul {
 	display: none;
 	position: absolute;
 	top: 25px;
-	right: auto;
 	left: 5px;
 	margin: 0;
 	border: 1px solid;
 	border-color: #fdfdfd #f1f1f1 #d2d2d2 #ececec;
-	padding: 0;
-	background: #fff;
+	padding-left: 0;
+	background-color: #fff;
 	background-color: rgba(255, 255, 255, 0.8);
-	text-shadow: none;
+	list-style: none;
+	text-transform: none;
 	font-weight: normal;
 	font-size: 130%;
 	line-height: 2.5;
 }
-html.active #nav li:hover ul {
+#nav li:hover ul {
 	display: block;
-}
-#nav > li.active li {
-	display: inline;
-	margin-right: 1em;
-}
-html.active #nav > li li {
-	display: block;
-	margin-right: 0;
 }
 #nav a {
-	display: none;
-	text-decoration: none;
-}
-#nav a:first-child {
 	display: block;
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	overflow: hidden;
-	text-indent: 200%;
-}
-#nav > li.active a {
-	display: inline;
-	position: static;
-	text-indent: 0;
-}
-html.active #nav a {
-	display: block;
-	position: static;
 	padding: 0 0.77em;
 	color: #444;
-	text-indent: 0;
+	text-decoration: none;
 }
-html.active #nav a:hover {
+#nav a:hover {
 	background-color: #7e7e70;
 	color: #fff;
 }
