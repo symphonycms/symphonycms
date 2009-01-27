@@ -38,10 +38,12 @@
 		}
 		
 		function view(){
-						
-			if(isset($this->_context[0]) && in_array(strlen($this->_context[0]), array(6, 8))) $this->__loginFromToken($this->_context[0]);
+			$emergency = false;
+			if(isset($this->_context[0]) && in_array(strlen($this->_context[0]), array(6, 8))){
+				$emergency = $this->__loginFromToken($this->_context[0]);
+			}
 			
-			if($this->_Parent->isLoggedIn()) redirect(URL . '/symphony/');
+			if(!$emergency && $this->_Parent->isLoggedIn()) redirect(URL . '/symphony/');
 
 			$this->Form = Widget::Form('', 'post');
 			
@@ -79,6 +81,33 @@
 					$this->Form->appendChild($div);
 					
 				}
+
+			elseif($emergency):
+
+				$fieldset->appendChild(new XMLElement('legend', __('New Password')));
+
+				$label = Widget::Label(__('New Password'));
+				$label->appendChild(Widget::Input('password', NULL, 'password'));
+				$fieldset->appendChild($label);
+
+				$label = Widget::Label(__('Confirm New Password'));
+				$label->appendChild(Widget::Input('password-confirmation', NULL, 'password'));
+				
+				if($this->_mismatchedPassword){
+					$div = new XMLElement('div', NULL, array('class' => 'invalid'));					
+					$div->appendChild($label);
+					$div->appendChild(new XMLElement('p', __('The supplied password was rejected. Make sure it is not empty and that password matches password confirmation.')));
+					$fieldset->appendChild($div);
+				}
+				
+				else $fieldset->appendChild($label);		
+				
+				$this->Form->appendChild($fieldset);
+				
+				$div = new XMLElement('div', NULL, array('class' => 'actions'));
+				$div->appendChild(Widget::Input('action[change]', __('Save Changes'), 'submit'));
+				if(!preg_match('@\/symphony\/login\/@i', $_SERVER['REQUEST_URI'])) $div->appendChild(Widget::Input('redirect', $_SERVER['REQUEST_URI'], 'hidden'));
+				$this->Form->appendChild($div);
 				
 			else:
 
@@ -113,8 +142,15 @@
 						
 		}
 		
-		function __loginFromToken($token){			
-			if($this->_Parent->loginFromToken($token)) redirect(URL . '/symphony/');
+		function __loginFromToken($token){
+			##If token is invalid, return to login page
+			if(!$this->_Parent->loginFromToken($token)) return false;
+
+			##If token is valid and it is not "emergency" login (forgotten password case), redirect to administration pages
+			if(strlen($token) != 6) redirect(URL . '/symphony/'); // Regular token-based login
+
+			##Valid, emergency token - ask user to change password
+			return true;
 		}
 		
 		function action(){
@@ -197,8 +233,37 @@
 						//$ExtensionManager->notifyMembers('PasswordResetFailure', getCurrentPage(), array('author_id' => $author['id']));		
 
 						$this->_email_sent = false;
-					}	
-					
+					}
+
+				##Change of password requested	
+				elseif($action == 'change' && $this->_Parent->isLoggedIn()):
+
+					if(empty($_POST['password']) || empty($_POST['password-confirmation']) || $_POST['password'] != $_POST['password-confirmation']){
+						$this->_mismatchedPassword = true;
+					}
+
+					else{
+						$author_id = $this->_Parent->Author->get('id');
+
+						require_once(TOOLKIT . '/class.authormanager.php');
+						$authorManager = new AuthorManager($this->_Parent);
+						$author = $authorManager->fetchByID($author_id);
+
+						$author->set('password', md5($_POST['password']));
+
+						if(!$author->commit() || !$this->_Parent->login($author->get('username'), $_POST['password'])){
+							redirect(URL . "symphony/system/authors/edit/{$author_id}/error/");
+						}
+
+						## TODO: Fix me
+						###
+						# Delegate: PasswordChanged
+						# Description: After editing an author. ID of the author is provided.
+						//$ExtensionManager->notifyMembers('PasswordChanged', getCurrentPage(), array('author_id' => $author_id));  	
+
+						redirect(URL . '/symphony/');
+					}
+
 				endif;
 			}
 
@@ -245,5 +310,3 @@
 		
 	}
 
-
-?>
