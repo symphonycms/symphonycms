@@ -1029,7 +1029,6 @@
 					$conf['settings']['symphony']['lang'] = (defined('__LANG__') ? __LANG__ : 'en');
 					$conf['settings']['log']['archive'] = '1';
 					$conf['settings']['log']['maxsize'] = '102400';
-					$conf['settings']['general']['useragent'] = 'Symphony/2000';
 					$conf['settings']['image']['cache'] = '1';
 					$conf['settings']['image']['quality'] = '90';
 					$conf['settings']['database']['driver'] = 'mysql';
@@ -1042,6 +1041,7 @@
 				}
 				
 		        $conf['settings']['symphony']['build'] = kBUILD;
+		        $conf['settings']['symphony']['version'] = kVERSION;		
 				$conf['settings']['symphony']['cookie_prefix'] = 'sym-';
 		        $conf['settings']['general']['useragent'] = 'Symphony/' . kBUILD;
 				$conf['settings']['general']['sitename'] = (strlen(trim($config['general']['sitename'])) > 0 ? $config['general']['sitename'] : __('Website Name'));
@@ -1119,10 +1119,10 @@
 	RewriteRule .* - [S=14] 
 
 	### IMAGE RULES	
-	RewriteRule ^image\/3\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-f0-9]{3,6})(\/(0|1))?\/(.+)\.(jpg|gif|jpeg|png|bmp)$ /'.$rewrite_base.'symphony/image.php?param=3:$1:$2:$3:$4:$6:$7.$8 [L]
-	RewriteRule ^image\/2\/([0-9]+)\/([0-9]+)\/([1-9])(\/(0|1))?\/(.+)\.(jpg|gif|jpeg|png|bmp)$ /'.$rewrite_base.'symphony/image.php?param=2:$1:$2:$3:0:$5:$6.$7 [L]
-	RewriteRule ^image\/1\/([0-9]+)\/([0-9]+)(\/(0|1))?\/(.+)\.(jpg|gif|jpeg|png|bmp)$ /'.$rewrite_base.'symphony/image.php?param=1:$1:$2:0:0:$4:$5.$6 [L]
-	RewriteRule ^image(\/(0|1))?\/(.+)\.(jpg|gif|jpeg|png|bmp)$ /'.$rewrite_base.'symphony/image.php?param=0:0:0:0:0:$2:$3.$4 [L]
+	RewriteRule ^image\/3\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-f0-9]{3,6})(\/(0|1))?\/(.+)\.(jpg|gif|jpeg|png|bmp)$ /'.$rewrite_base.'symphony/image.php?param=3:$1:$2:$3:$4:$6:$7.$8 [NC,L]
+	RewriteRule ^image\/2\/([0-9]+)\/([0-9]+)\/([1-9])(\/(0|1))?\/(.+)\.(jpg|gif|jpeg|png|bmp)$ /'.$rewrite_base.'symphony/image.php?param=2:$1:$2:$3:0:$5:$6.$7 [NC,L]
+	RewriteRule ^image\/1\/([0-9]+)\/([0-9]+)(\/(0|1))?\/(.+)\.(jpg|gif|jpeg|png|bmp)$ /'.$rewrite_base.'symphony/image.php?param=1:$1:$2:0:0:$4:$5.$6 [NC,L]
+	RewriteRule ^image(\/(0|1))?\/(.+)\.(jpg|gif|jpeg|png|bmp)$ /'.$rewrite_base.'symphony/image.php?param=0:0:0:0:0:$2:$3.$4 [NC,L]
 
 	### CHECK FOR TRAILING SLASH - Will ignore files
 	RewriteCond %{REQUEST_FILENAME} !-f
@@ -1763,20 +1763,20 @@ IndexIgnore *
 
 	}
 
-	$Log =& new SymphonyLog("install-log.txt");
+	$Log = new SymphonyLog('install-log.txt');
 	
-	$Page =& new Page($Log);
+	$Page = new Page($Log);
 	
 	$Page->setHeader(kHEADER);
 	$Page->setFooter(kFOOTER);
 
-	$Contents =& new XMLElement('body');
+	$Contents = new XMLElement('body');
 	$Contents->appendChild(new XMLElement('h1', '<!-- TITLE --> <em><!-- TAGLINE --></em> <em><!-- LANGUAGES --></em>'));
 
-	if(defined('__IS_UPDATE__') && __IS_UPDATE__)
-		$Page->setPage((kCURRENT_BUILD < '1602' ? 'incorrectVersion' : 'update'));
+	if(defined('__IS_UPDATE__') && __IS_UPDATE__ == true)
+		$Page->setPage('update');
 		
-	elseif(defined('__ALREADY_UP_TO_DATE__') && __ALREADY_UP_TO_DATE__)	
+	elseif(defined('__ALREADY_UP_TO_DATE__') && __ALREADY_UP_TO_DATE__ == true)	
 		$Page->setPage('uptodate');
 				
 	else{
@@ -1801,4 +1801,3 @@ IndexIgnore *
 	print $Page->display();
 	exit;
 
-?>
