@@ -1,15 +1,14 @@
 <?php
 	
 	require_once(TOOLKIT . '/class.htmlpage.php');
+	require_once(TOOLKIT . '/class.alert.php');
 	
 	Class AdministrationPage extends HTMLPage{
 		
-		const PAGE_ALERT_NOTICE = 1;
-		const PAGE_ALERT_ERROR = 2;
+		public $Alert;
 		
 		var $_navigation;
 		var $_Parent;
-		var $_alert;
 		var $_context;
 		
 		function __construct(&$parent){
@@ -19,7 +18,7 @@
 			
 			$this->_Parent = $parent;
 			$this->_navigation = array();
-			$this->_alert = NULL;
+			$this->Alert = NULL;
 			
 		}
 		
@@ -109,20 +108,18 @@
 
 		}
 
-		function pageAlert($message=NULL, $type=self::PAGE_ALERT_NOTICE, $dynamic_elements=NULL){
-
-			if($this->_alert == NULL || ($this->_alert != NULL && $this->_alert['type'] == self::PAGE_ALERT_NOTICE && $type == self::PAGE_ALERT_ERROR)){
-				
-				if(!$message) $message = __('There was a problem rendering this page. Please check the activity log for more details.');
-				else $message = __($message);
-				
-				if(is_array($dynamic_elements) && !empty($dynamic_elements)){
-					
-					foreach($dynamic_elements as $index => $value) $message = str_replace('{'.($index + 1).'}', $value, $message);
-					
-				}
-				
-				if(trim(strip_tags($message)) != '') $this->_alert = array('type' => $type, 'message' => $message);					
+		function pageAlert($message=NULL, $type=Alert::NOTICE){
+			
+			if(is_null($message) && $type == Alert::ERROR){ 
+				$message = 'There was a problem rendering this page. Please check the activity log for more details.';
+			}
+			
+			$message = __($message);
+						
+			if(strlen(trim($message)) == 0) throw new Exception('A message must be supplied unless flagged as Alert::ERROR');				
+						
+			if(!($this->Alert instanceof Alert) || ($this->Alert->type == Alert::NOTICE && in_array($type, array(Alert::ERROR, Alert::SUCCESS)))){
+				$this->Alert = new Alert($message, $type);
 			}
 		}
 		
@@ -130,16 +127,13 @@
 			
 			###
 			# Delegate: AppendPageAlert
-			# Description: Allows for appending of alerts. $context['alert'] is way to tell what is currently in the system
-			$this->_Parent->ExtensionManager->notifyMembers('AppendPageAlert', '/backend/', array('alert' => (isset($this->_alert) ? $this->_alert : NULL)));
+			# Description: Allows for appending of alerts. Administration::instance()->Page->Alert is way to tell what 
+			# is currently in the system
+			$this->_Parent->ExtensionManager->notifyMembers('AppendPageAlert', '/backend/');
 
-			if(!isset($this->_alert)) return;
-			
-			$p = new XMLElement('p', $this->_alert['message']);
-			$p->setAttribute('id', 'notice');
-			if($this->_alert['type'] == self::PAGE_ALERT_ERROR) $p->setAttribute('class', 'error');
-			
-			$this->Form->prependChild($p);
+			if(($this->Alert instanceof Alert)){
+				$this->Form->prependChild($this->Alert->asXML());
+			}
 		}
 		
 		function appendFooter(){
