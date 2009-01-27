@@ -249,7 +249,7 @@
 						$authorManager = new AuthorManager($this->_Parent);
 						$author = $authorManager->fetchByID($author_id);
 
-						$author->set('password', md5($_POST['password']));
+						$author->set('password', md5($this->_Parent->Database->cleanValue($_POST['password'])));
 
 						if(!$author->commit() || !$this->_Parent->login($author->get('username'), $_POST['password'])){
 							redirect(URL . "symphony/system/authors/edit/{$author_id}/error/");
