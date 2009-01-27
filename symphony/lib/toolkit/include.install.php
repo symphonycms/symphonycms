@@ -1137,7 +1137,10 @@
 </IfModule>
 
 DirectoryIndex index.php
-IndexIgnore *
+
+<IfModule mod_autoindex.c>
+    IndexIgnore *
+</IfModule>
 
 ######		
 

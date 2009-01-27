@@ -56,7 +56,9 @@
 			$xsl = new DomDocument;	     
 			 
 			// Set up error handling					
-			$ehOLD = ini_set('html_errors', false);		
+			if(function_exists('ini_set')){
+				$ehOLD = ini_set('html_errors', false);
+			}	
 				
 			// Load the xml document
 			set_error_handler('trapXMLError');	
@@ -86,7 +88,10 @@
 			$processed = $xsltproc->transformToXML($xml);
 
 			// Restore error handling
-			ini_set('html_errors', $ehOLD);
+			if(function_exists('ini_set') && isset($ehOLD)){
+				ini_set('html_errors', $ehOLD);
+			}
+			
 			restore_error_handler();	
 				
 			// Put the result in a file when specified
