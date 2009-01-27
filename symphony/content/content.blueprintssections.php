@@ -98,7 +98,7 @@
 			
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), AdministrationPage::PAGE_ALERT_ERROR);
+			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
 			
 			@ksort($fields);
 
@@ -198,18 +198,40 @@
 			$types = array_union_simple($this->_templateOrder, $fieldManager->fetchTypes());
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));			
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), AdministrationPage::PAGE_ALERT_ERROR);	
+			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);	
 
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 					
 					case 'saved':
-						$this->pageAlert(__('%1$s updated successfully. <a href="%2$s">Create another?</a>', array(__('Section'), URL . '/symphony/blueprints/sections/new/'), AdministrationPage::PAGE_ALERT_NOTICE));
+						$this->pageAlert(
+							__(
+								'%1$s updated at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								array(
+									__('Section'), 
+									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									URL . '/symphony/blueprints/sections/new/', 
+									URL . '/symphony/blueprints/sections/', 
+									__('Sections')
+								)
+							), 
+							Alert::SUCCESS);
 						break;
 						
 					case 'created':
-						$this->pageAlert(__('%1$s created successfully. <a href="%2$s">Create another?</a>', array(__('Section'), URL . '/symphony/blueprints/sections/new/'), AdministrationPage::PAGE_ALERT_NOTICE));
+						$this->pageAlert(
+							__(
+								'%1$s created at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								array(
+									__('Section'), 
+									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									URL . '/symphony/blueprints/sections/new/', 
+									URL . '/symphony/blueprints/sections/', 
+									__('Sections')
+								)
+							), 
+							Alert::SUCCESS);
 						break;
 					
 				}
@@ -366,64 +388,45 @@
 				## Basic custom field checking
 				if(is_array($fields) && !empty($fields)){
 
-					## Ensure there are no subsections CF's if the section itself is a subsection
-					/*if(isset($meta['subsection'])){
-						foreach($fields as $field){
-							if($field['type'] == 'subsection'){
-								$Admin->pageAlert(__('You cannot have Subsection type custom fields if the Section is a Subsection.'), NULL, true, 'error');
-								$canProceed = false;
-								break;
-							}
+					$name_list = array();
+
+					foreach($fields as $position => $data){
+						if(trim($data['element_name']) == '') 
+							$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], NULL, '-', false, true, array('@^[\d-]+@i' => ''));
+
+						if(trim($data['element_name']) != '' && in_array($data['element_name'], $name_list)){
+							$this->_errors[$position] = array('element_name' => __('Two custom fields have the same element name. All element names must be unique.'));
+							$canProceed = false;
+							break;						
+						}		
+						$name_list[] = $data['element_name'];
+					}	
+
+					$fieldManager = new FieldManager($this->_Parent);
+
+					$unique = array();
+
+					foreach($fields as $position => $data){
+						$required = NULL;
+
+						$field = $fieldManager->create($data['type']);
+						$field->setFromPOST($data);
+
+						if($field->mustBeUnique() && !in_array($field->get('type'), $unique)) $unique[] = $field->get('type');
+						elseif($field->mustBeUnique() && in_array($field->get('type'), $unique)){
+							## Warning. cannot have 2 of this field!
+							$canProceed = false;
+							$this->_errors[$position] = array('label' => __('There is already a field of type <code>%s</code>. There can only be one per section.', array($field->name())));
 						}
-					}*/
 
-					## Check for duplicate CF names
-					//if($canProceed){
-						$name_list = array();
+						$errors = array();
 
-						foreach($fields as $position => $data){
-							if(trim($data['element_name']) == '') 
-								$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], NULL, '-', false, true, array('@^[\d-]+@i' => ''));
-
-							if(trim($data['element_name']) != '' && in_array($data['element_name'], $name_list)){
-								$this->_errors[$position] = array('element_name' => __('Two custom fields have the same element name. All element names must be unique.'));
-								$canProceed = false;
-								break;						
-							}		
-							$name_list[] = $data['element_name'];
-						}	
-					//}
-
-
-					//if($canProceed){
-
-						$fieldManager = new FieldManager($this->_Parent);
-
-						$unique = array();
-
-						foreach($fields as $position => $data){
-							$required = NULL;
-
-							$field = $fieldManager->create($data['type']);
-							$field->setFromPOST($data);
-
-							if($field->mustBeUnique() && !in_array($field->get('type'), $unique)) $unique[] = $field->get('type');
-							elseif($field->mustBeUnique() && in_array($field->get('type'), $unique)){
-								## Warning. cannot have 2 of this field!
-								$canProceed = false;
-								$this->_errors[$position] = array('label' => __('There is already a field of type <code>%s</code>. There can only be one per section.', array($field->name())));
-							}
-
-							$errors = array();
-
-							if(Field::__OK__ != $field->checkFields($errors, false, false) && !empty($errors)){
-								$this->_errors[$position] = $errors;
-								$canProceed = false;
-								break;					
-							}
+						if(Field::__OK__ != $field->checkFields($errors, false, false) && !empty($errors)){
+							$this->_errors[$position] = $errors;
+							$canProceed = false;
+							break;					
 						}
-						
-					//}
+					}
 				}
 
 
@@ -438,7 +441,7 @@
 				 	$sectionManager = new SectionManager($this->_Parent);
 
 					if(!$section_id = $sectionManager->add($meta)){
-						$this->pageAlert(__('An unknown database occurred while attempting to create the section.'), AdministrationPage::PAGE_ALERT_ERROR);
+						$this->pageAlert(__('An unknown database occurred while attempting to create the section.'), Alert::ERROR);
 					}
 
 					else{
@@ -517,17 +520,6 @@
 				## Basic custom field checking
 				elseif(is_array($fields) && !empty($fields)){
 
-					## Ensure there are no subsections CF's if the section itself is a subsection
-					/*if(isset($meta['subsection'])){
-						foreach($fields as $f){
-							if($f['type'] == 'subsection'){
-								$Admin->pageAlert(__('You cannot have Subsection type custom fields if the Section is a Subsection.'), NULL, true, 'error');
-								$canProceed = false;
-								break;
-							}
-						}
-					}*/
-
 					## Check for duplicate CF names
 					if($canProceed){
 						$name_list = array();
@@ -581,7 +573,7 @@
 					$meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
 
 			        if(!$sectionManager->edit($section_id, $meta)){
-						$this->pageAlert(__('An unknown database occurred while attempting to create the section.'), AdministrationPage::PAGE_ALERT_ERROR);
+						$this->pageAlert(__('An unknown database occurred while attempting to create the section.'), Alert::ERROR);
 					}
 
 					else{

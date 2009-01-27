@@ -50,17 +50,39 @@
 			
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));			
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), AdministrationPage::PAGE_ALERT_ERROR);
+			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 					
 					case 'saved':
-						$this->pageAlert(__('%1$s updated successfully. <a href="%2$s">Create another?</a>', array('Utility', URL . '/symphony/blueprints/utilities/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(
+							__(
+								'%1$s updated at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								array(
+									__('Utility'), 
+									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									URL . '/symphony/blueprints/utilities/new/', 
+									URL . '/symphony/blueprints/components/', 
+									__('Utilities')
+								)
+							), 
+							Alert::SUCCESS);
 						break;
 						
 					case 'created':
-						$this->pageAlert(__('%1$s created successfully. <a href="%2$s">Create another?</a>', array('Utility', URL . '/symphony/blueprints/utilities/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(
+							__(
+								'%1$s created at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								array(
+									__('Utility'), 
+									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									URL . '/symphony/blueprints/utilities/new/', 
+									URL . '/symphony/blueprints/components/', 
+									__('Utilities')
+								)
+							), 
+							Alert::SUCCESS);
 						break;
 					
 				}
@@ -159,7 +181,7 @@
 
 					##Write the file	
 					elseif(!$write = General::writeFile($file, $fields['body'], $this->_Parent->Configuration->get('write_mode', 'file')))
-						$this->pageAlert(__('Utility could not be written to disk. Please check permissions on <code>/workspace/utilities</code>.'), AdministrationPage::PAGE_ALERT_ERROR);
+						$this->pageAlert(__('Utility could not be written to disk. Please check permissions on <code>/workspace/utilities</code>.'), Alert::ERROR);
 
 					##Write Successful, add record to the database
 					else{

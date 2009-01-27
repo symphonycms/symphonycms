@@ -134,11 +134,37 @@
 				switch($this->_context[2]){
 					
 					case 'saved':
-						$this->pageAlert('{1} updated successfully. <a href="'.URL.'/symphony/{2}">Create another?</a>', AdministrationPage::PAGE_ALERT_NOTICE, array('Author', 'system/authors/new/'));
+					
+						$this->pageAlert(
+							__(
+								'%1$s updated at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								array(
+									__('Author'), 
+									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									URL . '/symphony/system/authors/new/', 
+									URL . '/symphony/system/authors/', 
+									__('Authors')
+								)
+							), 
+							Alert::SUCCESS);					
+
 						break;
 						
 					case 'created':
-						$this->pageAlert('{1} created successfully. <a href="'.URL.'/symphony/{2}">Create another?</a>', AdministrationPage::PAGE_ALERT_NOTICE, array('Author', 'system/authors/new/'));
+
+						$this->pageAlert(
+							__(
+								'%1$s created at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								array(
+									__('Author'), 
+									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									URL . '/symphony/system/authors/new/', 
+									URL . '/symphony/system/authors/', 
+									__('Authors')
+								)
+							), 
+							Alert::SUCCESS);
+
 						break;
 					
 				}
@@ -155,8 +181,9 @@
 			
 				if(!$author_id = $this->_context[1]) redirect(URL . '/symphony/system/authors/');
 			
-				if(!$author = $this->_AuthorManager->fetchByID($author_id)) $this->_Parent->customError(E_USER_ERROR, 'Author not found', 'The author profile you requested does not exist.');
-
+				if(!$author = $this->_AuthorManager->fetchByID($author_id)){
+					$this->_Parent->customError(E_USER_ERROR, 'Author not found', 'The author profile you requested does not exist.');
+				}
 			}
 			
 			else $author =& $this->_AuthorManager->create();
@@ -320,10 +347,10 @@
 				endif;
 
 				if(is_array($this->_errors) && !empty($this->_errors))
-					$this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), AdministrationPage::PAGE_ALERT_ERROR);
+					$this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), Alert::ERROR);
 					
 				else
-					$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), AdministrationPage::PAGE_ALERT_ERROR);
+					$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), Alert::ERROR);
 				
 			}
 		}
@@ -386,7 +413,7 @@
 
 					}
 				
-					else $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), AdministrationPage::PAGE_ALERT_ERROR);
+					else $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), Alert::ERROR);
 
 				endif;
 

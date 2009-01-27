@@ -512,10 +512,10 @@
 				}
 
 				if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)):
-					$this->pageAlert(__('Some errors were encountered while attempting to save.'), AdministrationPage::PAGE_ALERT_ERROR);
+					$this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
 				elseif(__ENTRY_OK__ != $entry->setDataFromPost($fields, $error)):
-					$this->pageAlert($error['message'], AdministrationPage::PAGE_ALERT_ERROR);
+					$this->pageAlert($error['message'], Alert::ERROR);
 
 				else:
 
@@ -526,7 +526,7 @@
 					
 					if(!$entry->commit()){
 						define_safe('__SYM_DB_INSERT_FAILED__', true);
-						$this->pageAlert(NULL, AdministrationPage::PAGE_ALERT_ERROR);
+						$this->pageAlert(NULL, Alert::ERROR);
 
 					}
 
@@ -552,7 +552,7 @@
 			$sectionManager = new SectionManager($this->_Parent);
 			
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])), false, true);
+				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
 		
 		    $section = $sectionManager->fetch($section_id);
 
@@ -597,11 +597,35 @@
 				switch($flag){
 					
 					case 'saved':
-						$this->pageAlert(__('%1$s updated successfully. <a href="%2$s">Create another?</a>', array('Entry', URL . "/symphony/$link")), AdministrationPage::PAGE_ALERT_NOTICE);
+						
+						$this->pageAlert(
+							__(
+								'%1$s updated at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								array(
+									__('Entry'), 
+									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									URL . "/symphony/$link", 
+									URL . '/symphony/publish/'.$this->_context['section_handle'].'/', 
+									__('Entries')
+								)
+							), 
+							Alert::SUCCESS);						
+						
 						break;
 						
 					case 'created':
-						$this->pageAlert(__('%1$s created successfully. <a href="%2$s">Create another?</a>', array('Entry', URL . "/symphony/$link")), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(
+							__(
+								'%1$s created at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								array(
+									__('Entry'), 
+									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									URL . "/symphony/$link", 
+									URL . '/symphony/publish/'.$this->_context['section_handle'].'/', 
+									__('Entries')
+								)
+							), 
+							Alert::SUCCESS);
 						break;
 					
 				}
@@ -709,10 +733,10 @@
 				}
 
 				if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)):
-					$this->pageAlert(__('Some errors were encountered while attempting to save.'), AdministrationPage::PAGE_ALERT_ERROR);
+					$this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
 				elseif(__ENTRY_OK__ != $entry->setDataFromPost($fields, $error)):
-					$this->pageAlert($error['message'], AdministrationPage::PAGE_ALERT_ERROR);
+					$this->pageAlert($error['message'], Alert::ERROR);
 						
 				else:
 
@@ -724,7 +748,7 @@
 
 					if(!$entry->commit()){
 						define_safe('__SYM_DB_INSERT_FAILED__', true);
-						$this->pageAlert(NULL, AdministrationPage::PAGE_ALERT_ERROR);
+						$this->pageAlert(NULL, Alert::ERROR);
 
 					}
 

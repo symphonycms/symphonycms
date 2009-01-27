@@ -22,17 +22,39 @@
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), AdministrationPage::PAGE_ALERT_ERROR);
+			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 					
 					case 'saved':
-						$this->pageAlert(__('%1$s updated successfully. <a href="%2$s">Create another?</a>', array(__('Event'), URL.'/symphony/blueprints/events/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(
+							__(
+								'%1$s updated at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								array(
+									__('Event'), 
+									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									URL . '/symphony/blueprints/events/new/', 
+									URL . '/symphony/blueprints/components/', 
+									__('Events')
+								)
+							), 
+							Alert::SUCCESS);
 						break;
 						
 					case 'created':
-						$this->pageAlert(__('%1$s created successfully. <a href="%2$s">Create another?</a>', array(__('Event'), URL.'/symphony/blueprints/events/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(
+							__(
+								'%1$s created at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								array(
+									__('Event'), 
+									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									URL . '/symphony/blueprints/datasources/new/', 
+									URL . '/symphony/blueprints/components/', 
+									__('Events')
+								)
+							), 
+							Alert::SUCCESS);
 						break;
 					
 				}
@@ -153,7 +175,7 @@
 				#$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array("file" => EVENTS . "/event." . $_REQUEST['file'] . ".php"));
 
 		    	if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php'))
-					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), AdministrationPage::PAGE_ALERT_ERROR);
+					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
 
 		    	else redirect(URL . '/symphony/blueprints/components/');
 						
@@ -348,7 +370,7 @@
 
 				##Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, $this->_Parent->Configuration->get('write_mode', 'file')))
-					$this->pageAlert(__('Failed to write Event to <code>%s</code>. Please check permissions.', array(EVENTS)), AdministrationPage::PAGE_ALERT_ERROR);
+					$this->pageAlert(__('Failed to write Event to <code>%s</code>. Please check permissions.', array(EVENTS)), Alert::ERROR);
 
 				##Write Successful, add record to the database
 				else{

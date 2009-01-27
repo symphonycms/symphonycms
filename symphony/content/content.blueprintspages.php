@@ -122,11 +122,34 @@
 				switch($this->_context[2]){
 					
 					case 'saved':
-						$this->pageAlert(__('%1$s updated successfully. <a href="%2$s">Create another?</a>', array('Page', URL . '/symphony/blueprints/pages/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(
+							__(
+								'%1$s updated at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								array(
+									__('Page'), 
+									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									URL . '/symphony/blueprints/pages/new/', 
+									URL . '/symphony/blueprints/pages/', 
+									__('Pages')
+								)
+							), 
+							Alert::SUCCESS);						
+						
 						break;
 						
 					case 'created':
-						$this->pageAlert(__('%1$s created successfully. <a href="%2$s">Create another?</a>', array('Page', URL . '/symphony/blueprints/pages/new/')), AdministrationPage::PAGE_ALERT_NOTICE);
+						$this->pageAlert(
+							__(
+								'%1$s created at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								array(
+									__('Page'), 
+									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									URL . '/symphony/blueprints/pages/new/', 
+									URL . '/symphony/blueprints/pages/', 
+									__('Pages')
+								)
+							), 
+							Alert::SUCCESS);
 						break;
 					
 				}
@@ -403,7 +426,7 @@
 
 						## Write the file
 						if(!$write = General::writeFile(PAGES . "/$filename.xsl" , $fields['body'], $this->_Parent->Configuration->get('write_mode', 'file')))
-							$this->pageAlert(__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'), AdministrationPage::PAGE_ALERT_ERROR);
+							$this->pageAlert(__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'), Alert::ERROR);
 
 						## Write Successful, add record to the database
 						else{
@@ -412,7 +435,7 @@
 							unset($fields['body']);
 
 							## Insert the new data
-							if(!$this->_Parent->Database->insert($fields, 'tbl_pages')) $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), AdministrationPage::PAGE_ALERT_ERROR);
+							if(!$this->_Parent->Database->insert($fields, 'tbl_pages')) $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), Alert::ERROR);
 
 							else{
 								
@@ -435,7 +458,7 @@
 					}
 				}
 				
-				if(is_array($this->_errors) && !empty($this->_errors)) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), AdministrationPage::PAGE_ALERT_ERROR);				
+				if(is_array($this->_errors) && !empty($this->_errors)) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);				
 			}			
 		}
 		
@@ -552,7 +575,7 @@
 
 						## Write the file
 						if(!$write = General::writeFile(PAGES . "/$new_filename.xsl" , $fields['body'], $this->_Parent->Configuration->get('write_mode', 'file')))
-							$this->pageAlert(__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'), AdministrationPage::PAGE_ALERT_ERROR); 			
+							$this->pageAlert(__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'), Alert::ERROR); 			
 
 						## Write Successful, add record to the database
 						else{
@@ -563,7 +586,7 @@
 							unset($fields['body']);
 
 							## Insert the new data
-							if(!$this->_Parent->Database->update($fields, 'tbl_pages', "`id` = '$page_id'")) $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), AdministrationPage::PAGE_ALERT_ERROR);
+							if(!$this->_Parent->Database->update($fields, 'tbl_pages', "`id` = '$page_id'")) $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), Alert::ERROR);
 							
 							else{
 								
@@ -586,7 +609,7 @@
 					}
 				}
 				
-				if(is_array($this->_errors) && !empty($this->_errors)) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), AdministrationPage::PAGE_ALERT_ERROR);
+				if(is_array($this->_errors) && !empty($this->_errors)) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
 			}
 		}
 		
