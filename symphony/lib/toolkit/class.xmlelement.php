@@ -163,6 +163,7 @@
 					$result .= $newline;
 				
 					foreach($this->_children as $child ){
+						if(!($child instanceof self)) throw new Exception('Child is not of type XMLElement');
 						$child->setElementStyle($this->_elementStyle);
 						$result .= $child->generate($indent, $tab_depth + 1, true);
 					}
