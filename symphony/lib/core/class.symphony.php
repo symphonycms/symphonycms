@@ -134,8 +134,8 @@
 
 		public function isLoggedIn(){
 
-			$un = addslashes($this->Cookie->get('username'));
-			$pw = addslashes($this->Cookie->get('pass'));
+			$un = $this->Database->cleanValue($this->Cookie->get('username'));
+			$pw = $this->Database->cleanValue($this->Cookie->get('pass'));
 
 			$id = $this->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$un' AND `password` = '$pw' LIMIT 1");
 
@@ -156,8 +156,8 @@
 		
 		public function login($username, $password, $isHash=false){
 			
-			$username = addslashes($username);
-			$password = addslashes($password);
+			$username = $this->Database->cleanValue($username);
+			$password = $this->Database->cleanValue($password);
 			
 			if(!$isHash) $password = md5($password);
 
@@ -178,7 +178,7 @@
 		
 		public function loginFromToken($token){
 			
-			$token = addslashes($token);
+			$token = $this->Database->cleanValue($token);
 			
 			if(strlen($token) == 6){
 				$row = $this->Database->fetchRow(0, "SELECT `a`.`id`, `a`.`username`, `a`.`password` 
