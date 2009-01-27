@@ -18,6 +18,11 @@
 			return true;
 		}
 		
+		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
+		    $joins .= "INNER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
+		    $sort = 'ORDER BY ' . (strtolower($order) == 'random' ? 'RAND()' : "`ed`.`file` $order");
+		}
+		
 		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
 			
