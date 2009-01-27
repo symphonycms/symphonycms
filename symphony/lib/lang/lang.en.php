@@ -2,15 +2,7 @@
 	
 	## Defines all error messages in the system
 	$strings = array(
-		'There was a problem rendering this page. Please check the activity log for more details.',
-		'None Found.',
-		'Unknown errors occurred while attempting to save. Please check your <a href="{1}">activity log</a>.',
-		'A Utility with that name already exists. Please choose another.',
-		'An error occurred while attempting to uninstall Symphony. Please check your activity logs.',
-		'The Symphony configuration file, <code>/manifest/config.php</code>, is not writable. You will not be able to save changes to preferences.',
-		'Website Name is a required field.',
-		'{1} updated successfully. <a href="'.URL.'/symphony/{2}">Create another?</a>',
-		'{1} created successfully. <a href="'.URL.'/symphony/{2}">Create another?</a>'
+		// Todo: Abstract all strings for reference purposes
 	);
 	
 	$dictionary = array_combine($strings, $strings);
@@ -72,4 +64,3 @@
 		'/&(?!&)/'		=> '-and-'
 	);
 	
-?>
