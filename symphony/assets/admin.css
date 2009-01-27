@@ -129,6 +129,11 @@ h1 a:hover,
 	background-color: #ffb;
 	color: #874;
 }
+#notice.success {
+	border-color: #68b;
+	background-color: #517ca6;
+	color: #fff;
+}
 #notice a,
 #notice button {
 	color: #fff;
@@ -144,6 +149,10 @@ h1 a:hover,
 #notice.error a:hover,
 #notice.error button:hover {
 	color: #610;
+}
+#notice.success a:hover,
+#notice.success button:hover {
+	color: #111;
 }
 #notice button {
 	border: none;
