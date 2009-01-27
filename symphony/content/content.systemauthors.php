@@ -328,8 +328,7 @@
 				if($this->_Author->validate($this->_errors)):
 					
 					if($fields['password'] != $fields['password-confirmation']){
-						$this->_errors['password'] = 'Passwords did not match';
-						$this->_errors['password-confirmation'] = __('Passwords did not match');			
+						$this->_errors['password'] = $this->_errors['password-confirmation'] = __('Passwords did not match');			
 					}
 				
 					elseif($author_id = $this->_Author->commit()){
