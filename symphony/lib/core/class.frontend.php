@@ -11,7 +11,7 @@
 		public $displayProfilerReport;
 		
 		public static function instance(){
-			if(!(self::$_instance instanceof Administration)) 
+			if(!(self::$_instance instanceof Frontend)) 
 				self::$_instance = new self;
 				
 			return self::$_instance;
