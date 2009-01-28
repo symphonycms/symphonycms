@@ -89,9 +89,11 @@
 			$dst_w = $param['width'];
 			$dst_h = $param['height'];
 			
-			if($dst_w > $dst_h) ImageFilters::resize($image, $dst_w, NULL);
-			else ImageFilters::resize($image, NULL, $dst_h);
-			
+      $src_r = ($src_w / $src_h);
+      $dst_r = ($dst_w / $dst_h);
+
+      if($src_r < $dst_r) ImageFilters::resize($image, $dst_w, NULL);
+      else ImageFilters::resize($image, NULL, $dst_h);			
 			
 			/*
 				if($src_h < $param['height'] || $src_h > $param['height']) ImageFilters::resize($image, NULL, $param['height']);
