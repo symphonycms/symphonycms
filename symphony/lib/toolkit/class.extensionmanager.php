@@ -69,7 +69,7 @@
       
 		function enable($name){
 			if(false == ($obj =& $this->create($name))){
-				trigger_error(__('Could not enable %s, there was a problem loading the object. Check the driver class exists.', array($name)), E_USER_WARNING);
+				trigger_error(__('Could not %s %s, there was a problem loading the object. Check the driver class exists.', array(__FUNCTION__, $name)), E_USER_WARNING);
 				return false;
 			}
 				
@@ -93,9 +93,9 @@
 		}
 
 		function disable($name){
-			
+		
 			if(false == ($obj =& $this->create($name))){
-				trigger_error(__('Could not disable %s, there was a problem loading the object. Check the driver class exists.', array($name)), E_USER_WARNING);
+				trigger_error(__('Could not %s %s, there was a problem loading the object. Check the driver class exists.', array(__FUNCTION__, $name)), E_USER_ERROR);
 				return false;
 			}
 
@@ -112,7 +112,7 @@
 		function uninstall($name){
 			
 			if(false == ($obj =& $this->create($name))){
-				trigger_error(__('Could not disable %s, there was a problem loading the object. Check the driver class exists.', array($name)), E_USER_WARNING);
+				trigger_error(__('Could not %s %s, there was a problem loading the object. Check the driver class exists.', array(__FUNCTION__, $name)), E_USER_WARNING);
 				return false;
 			}
 			
