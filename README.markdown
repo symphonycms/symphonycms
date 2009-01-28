@@ -1,18 +1,49 @@
 ## Symphony 2 ##
 
-- Version: 2.1
-- Status: Unstable
-- Build Date: 19th January 2009
-- Github Repository: <http://github.com/symphony/symphony-2/tree/optimisation>
+- Version: 2.0.1 (build 250)
+- Date: 28th January 2009
+- Github Repository: <http://github.com/symphony/symphony-2/tree/master>
 
 
 ### SYNOPSIS
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as it's core 
-technologies. This repository branch represents version `2.1` and is considered unstable. It 
-may contain bugs or behave in unintended ways.
+technologies. This repository represents version 2.0.1 and is considered stable.
 
 Visit the forum at <http://overture21.com/forum/>
+
+
+### UPDATING VIA GIT
+
+If you intend on pulling the latest changes to update your copy of Symphony, be forewarned.
+There have been some major structural changes and doing so will remove parts of your 
+workspace folder. To get around this, move your workspace folder some place safe, along with
+any of the extensions mentioned below in the "INSTALLING FROM GIT" instructions. Once you have
+pulled the latest version, move the workspace folder back in place and use the following command
+to get those extensions back:
+
+	git submodule init
+	git submodule update
+	
+The workspace folder will no longer be under git version control, which allows the Symphony
+team to make alterations to the default theme without risking your ability to pull changes.
+
+Finally, follow from step 4 below.
+
+
+### UPDATING
+
+Follow the instructions below if you are updating from Symphony version 2.0 (non Git)
+
+1. Backup `/symphony/.htaccess`
+
+2. Upload `/symphony`, `index.php` & `update.php`, replacing what is already on your server.
+
+3. Put the backed up `.htaccess` file into the new /symphony folder
+
+4. Go to `http://yoursite.com/update.php` to complete the update process.
+
+5. Dance like it's 1999!
 
 
 ### INSTALLING FROM GIT
@@ -71,25 +102,3 @@ Upload the following files and directories to the root directory of your website
    environment.
 
 3. Celebrate!
-
-
-
-### UPDATING
-
-Updating requires you are running Symphony 2 Beta, revision 5.
-
-1. Backup `/symphony/.htaccess` and `/symphony/lib/toolkit/fields/field.sectionlink.php`
-
-2. Replace `/symphony`, `index.php` with those contained in this archive.
-
-3. Put the backed up `.htaccess` file into the new `/symphony` folder
-
-4. Put the backed up `fields.sectionlink.php` file into `/symphony/lib/toolkit/fields`
-
-5. If necessary, edit `/manifest/config.php`, changing any build numbers to 2000 E.G.
-
-		settings['symphony']['build'] = '2000';
-		settings['general']['useragent'] = 'Symphony/2000';
-
-6. Dance like it's 1999!
-

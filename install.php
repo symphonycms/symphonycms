@@ -12,10 +12,8 @@
 	error_reporting(E_ALL ^ E_NOTICE);
 	set_error_handler('__errorHandler');
 
-	define('kBUILD', '2001');
-
-	$build = kBUILD;
-	define('kVERSION', $build{0} . '.' . $build{1} . ($build{2} != 0 || $build{3} != 0 ? '.' . $build{2} . $build{3} : ''));
+	define('kBUILD', '250');
+	define('kVERSION', '2.0.1');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
 	
@@ -167,7 +165,6 @@
 		$conf['database']['character_encoding'] = 'utf8';
 		$conf['database']['runtime_character_set_alter'] = '1';
 		$conf['database']['disable_query_caching'] = 'no';
-		$conf['public']['maintenance_mode'] = 'no';
 		$conf['public']['display_event_xml_in_source'] = 'yes';
 		$conf['region']['time_format'] = 'H:i';
 		$conf['region']['date_format'] = 'd F Y';
