@@ -50,7 +50,7 @@
 		}
 
 		public function merge($strings){
-			$this->_strings = array_merge($this->_strings, $strings);
+			if(is_array($strings)) $this->_strings = array_merge($this->_strings, $strings);
 		}
 		
 		public function remove($string){
