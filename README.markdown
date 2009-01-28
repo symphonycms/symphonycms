@@ -1,6 +1,6 @@
 ## Symphony 2 ##
 
-- Version: 2.0.1 (build 267)
+- Version: 2.0.1 (build 271)
 - Date: 28th January 2009
 - Github Repository: <http://github.com/symphony/symphony-2/tree/master>
 

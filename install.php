@@ -12,7 +12,7 @@
 	error_reporting(E_ALL ^ E_NOTICE);
 	set_error_handler('__errorHandler');
 
-	define('kBUILD', '267');
+	define('kBUILD', '271');
 	define('kVERSION', '2.0.1');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
