@@ -16,7 +16,7 @@
 	$Page->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
 	$Page->addHeaderToPage('Symphony-Error-Type', 'database');
 	
-	$Page->setTitle(sprintf('%1$s &ndash; %2$s', __('Symphony'), __('Database Error')));
+	$Page->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Database Error'))));
 
 	$div = new XMLElement('div', NULL, array('id' => 'description'));
 	$div->appendChild(new XMLElement('h1', __('Symphony Database Error')));
