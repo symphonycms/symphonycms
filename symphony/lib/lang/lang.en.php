@@ -5,7 +5,7 @@
 		// Todo: Abstract all strings for reference purposes
 	);
 	
-	$dictionary = array_combine($strings, $strings);
+	$dictionary = (!empty($strings) ? array_combine($strings, $strings) : array());
 	
 	// Alphabetical:
 	$transliterations = array(
