@@ -61,6 +61,13 @@
 			
 			$this->Cookie =& new Cookie(__SYM_COOKIE_PREFIX_, TWO_WEEKS, __SYM_COOKIE_PATH__);
 
+			try{
+				Lang::init(LANG . '/lang.%s.php', __LANG__);
+			}
+			catch(Exception $e){
+				trigger_error($e->getMessage(), E_USER_ERROR);
+			}
+
 			if(!$this->initialiseDatabase()){
 				$error = $this->Database->getLastError();
 				$this->customError(E_USER_ERROR, 'Symphony Database Error', $error['num'] . ': ' . $error['msg'], true, true, 'database-error', array('error' => $error, 'message' => __('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct. The following error was returned.')));
@@ -70,18 +77,11 @@
 
 			DateTimeObj::setDefaultTimezone($this->Configuration->get('timezone', 'region'));
 			
-			try{
-				Lang::init(LANG . '/lang.%s.php', __LANG__);
-			}
-			catch(Exception $e){
-				trigger_error($e->getMessage(), E_USER_ERROR);
-			}			
-
 		}
 		
 		public function initialiseExtensionManager(){
-			$this->ExtensionManager =& new ExtensionManager($this);
-			return is_object($this->ExtensionManager);
+			$this->ExtensionManager = new ExtensionManager($this);
+			return ($this->ExtensionManager instanceof ExtensionManager);
 		}
 		
 		public function initialiseDatabase(){
