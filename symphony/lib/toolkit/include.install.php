@@ -84,24 +84,26 @@
         $string  = "<?php\n";
 
         foreach($conf['define'] as $key => $val) {
-                $string .= "define('". $key ."', '". addslashes($val) ."');\n";
+                $string .= "\tdefine('". $key ."', '". addslashes($val) ."');\n";
         } 
 
-        $string .= '$settings = array();' . "\n\n";
-
-        foreach($conf['settings'] as $set => $array) {
-            foreach($array as $key => $val) {
-                $string .= '$'."settings['".$set."']['".$key."'] = '".addslashes($val)."';\n";
-            }
-        }
+		$string .= "\n\t\$settings = array(";
+		foreach($conf['settings'] as $group => $data){
+			$string .= "\r\n\r\n\r\n\t\t###### ".strtoupper($group)." ######";
+			$string .= "\r\n\t\t'$group' => array(";
+			foreach($data as $key => $value){
+				$string .= "\r\n\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'NULL').",";
+			}
+			$string .= "\r\n\t\t),";
+			$string .= "\r\n\t\t########";
+		}
+		$string .= "\r\n\t);\n\n";
 
         foreach($conf['require'] as $val) {
-                $string .= "require_once('". addslashes($val) . "');\n";
-        }  
+                $string .= "\trequire_once(DOCROOT . '". addslashes($val) . "');\n";
+        } 
 
-        $string .= "?>\n";
-
-        return GeneralExtended::writeFile($dest . "/config.php", $string, $mode);
+        return GeneralExtended::writeFile($dest . '/config.php', $string, $mode);
 
     }
 
@@ -1012,7 +1014,7 @@
   				$conf['define'] = array('DOCROOT' => $kDOCROOT,
                                 		'DOMAIN' => str_replace("http://", NULL, _INSTALL_DOMAIN_));
 
-		        $conf['require'] = array($kDOCROOT . '/symphony/lib/boot/bundle.php');
+		        $conf['require'] = array('/symphony/lib/boot/bundle.php');
 				
 				if(@is_dir($fields['docroot'] . '/workspace')){
 					foreach(getDynamicConfiguration() as $group => $settings){
