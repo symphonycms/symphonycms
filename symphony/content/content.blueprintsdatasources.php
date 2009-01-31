@@ -196,7 +196,7 @@
 			$this->Form->appendChild($fieldset);
 			
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual sections authors navigation Sections System');
+			$fieldset->setAttribute('class', 'settings contextual ' . __('sections') . ' ' . __('authors') . ' ' . __('navigation') . ' ' . __('Sections') . ' ' . __('System'));
 			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
 			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to filter by page parameters.'));
 			$p->setAttribute('class', 'help');
@@ -254,7 +254,7 @@
 			}
 			
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'subsection contextual authors');
+			$div->setAttribute('class', 'subsection contextual ' . __('authors'));
 
 			$div->appendChild(new XMLElement('h3', __('Filter Authors by')));
 
@@ -273,7 +273,7 @@
 
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'subsection contextual navigation');
+			$div->setAttribute('class', 'subsection contextual ' . __('navigation'));
 
 			$div->appendChild(new XMLElement('h3', __('Filter Navigation by')));
 			
@@ -339,15 +339,15 @@
 
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse static_xml dynamic_xml');
+			$fieldset->setAttribute('class', 'settings contextual inverse ' . __('static_xml') . ' ' . __('dynamic_xml'));
 			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));
 			
 			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to limit by page parameters.'));
-			$p->setAttribute('class', 'help contextual inverse navigation');
+			$p->setAttribute('class', 'help contextual inverse ' . __('navigation'));
 			$fieldset->appendChild($p);				
 			
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group contextual sections Sections');
+			$div->setAttribute('class', 'group contextual ' . __('sections') . ' ' . __('Sections'));
 			
 			$label = Widget::Label(__('Sort By'));
 			
@@ -406,7 +406,7 @@
 			$fieldset->appendChild($div);
 				
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group contextual inverse navigation');
+			$div->setAttribute('class', 'group contextual inverse ' . __('navigation'));
 
 			$label = Widget::Label();
 			$input = Widget::Input('fields[max_records]', $fields['max_records'], NULL, array('size' => '6'));
@@ -438,7 +438,7 @@
 			$this->Form->appendChild($fieldset);			
 		
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml');
+			$fieldset->setAttribute('class', 'settings contextual inverse ' .__('navigation') . ' ' . __('static_xml') . ' ' . __('dynamic_xml'));
 			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
 	
 			$ul = new XMLElement('ul');
@@ -553,7 +553,7 @@
 			$li->appendChild($label);			
 			
 			$label = Widget::Label();
-			$label->setAttribute('class', 'contextual inverse authors');
+			$label->setAttribute('class', 'contextual inverse ' . __('authors'));
 			$input = Widget::Input('fields[html_encode]', 'yes', 'checkbox', (isset($fields['html_encode']) ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s HTML-encode text', array($input->generate(false))));
 			$li->appendChild($label);
@@ -564,7 +564,7 @@
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual dynamic_xml');
+			$fieldset->setAttribute('class', 'settings contextual ' . __('dynamic_xml'));
 			$fieldset->appendChild(new XMLElement('legend', __('Dynamic XML')));	
 			$label = Widget::Label(__('URL'));
 			$label->appendChild(Widget::Input('fields[dynamic_xml][url]', General::sanitize($fields['dynamic_xml']['url'])));
@@ -646,7 +646,7 @@
 			$this->Form->appendChild($fieldset);
 						
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual static_xml');
+			$fieldset->setAttribute('class', 'settings contextual ' . __('static_xml'));
 			$fieldset->appendChild(new XMLElement('legend', __('Static XML')));	
 			$label = Widget::Label(__('Body'));
 			$label->appendChild(Widget::Textarea('fields[static_xml]', 12, 50, General::sanitize($fields['static_xml']), array('class' => 'code')));
