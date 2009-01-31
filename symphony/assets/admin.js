@@ -21,7 +21,10 @@ Symphony.Language = {
 	HIDE_CONFIG     : "Hide page settings",
 	REORDER_ERROR   : "Reordering was unsuccessful.",
 	MONTH           : "Month",
-	TIME            : "Time"
+	TIME            : "Time",
+	PASSWORD        : "Password",
+	CHANGE_PASSWORD : "Change Password",
+	REMOVE_FILE     : "Remove File"
 };
 
 // Abstract Utilities
@@ -912,7 +915,7 @@ UIControl.deploy("label.file input[type=hidden]", function(input) {
 	var name = input.name,
 		 span = input.parentNode,
 		 file = DOM.getFirstElement("a", span),
-		 back = DOM.insertElementWithText("em", "Remove File", span);
+		 back = DOM.insertElementWithText("em", Symphony.Language.REMOVE_FILE, span);
 
 	DOM.Event.addListener(back, "click", function(event) {
 		event.preventDefault();
@@ -1177,8 +1180,8 @@ DOM.onready(function() {
 		if (labels[i].title != "") return;
 	}
 
-	var change = DOM.createElementWithText("div", "Password "),
-		 button = DOM.createElementWithText("button", "Change Password"),
+	var change = DOM.createElementWithText("div", Symphony.Language.PASSWORD),
+		 button = DOM.createElementWithText("button", Symphony.Language.CHANGE_PASSWORD),
 		 help   = DOM.getNextElement(fields);
 
 	change.className = "label";
