@@ -7,6 +7,11 @@
 		
 		public $Alert;
 		
+		## These are here for Extension backwards compatibility. Will be 
+		## removed in a later version.
+		const PAGE_ALERT_NOTICE = 'notice';
+		const PAGE_ALERT_ERROR = 'error';
+		
 		var $_navigation;
 		var $_Parent;
 		var $_context;
