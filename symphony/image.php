@@ -6,7 +6,10 @@
 	
 	##Include some parts of the engine
 	require_once('../manifest/config.php');
-	
+	require_once(TOOLKIT . '/class.lang.php');
+
+	Lang::init(LANG . '/lang.%s.php', ($settings['symphony']['lang'] ? $settings['symphony']['lang'] : 'en'));
+
 	include(TOOLKIT . '/class.image.php');
 	include(TOOLKIT . '/class.imagefilters.php');
 	
@@ -58,7 +61,7 @@
 		
 		if(!$contents = @file_get_contents($image_path)){
 			header('HTTP/1.0 404 Not Found');
-			trigger_error('Image <code>'.$image_path.'</code> could not be found.', E_USER_ERROR);
+			trigger_error(__('Image <code>%s</code> could not be found.', array($image_path)), E_USER_ERROR);
 		}
 		
 		$meta = Image::meta($image_path);
@@ -72,7 +75,7 @@
 	
 	if(!$image = call_user_func_array(array('Image', $method), array($image_path, &$meta))){
 		header('HTTP/1.0 404 Not Found');
-		trigger_error('Error loading image', E_USER_ERROR);
+		trigger_error(__('Error loading image'), E_USER_ERROR);
 	}
 	
 	switch($param['mode']){
@@ -106,7 +109,7 @@
 			break;
 	}
 
-	if(!Image::display($image, intval($settings['image']['quality']), true, $meta['type'])) trigger_error('Error generating image', E_USER_ERROR);
+	if(!Image::display($image, intval($settings['image']['quality']), true, $meta['type'])) trigger_error(__('Error generating image'), E_USER_ERROR);
 	
 	if(CACHING && !is_file($cache_file)) Image::save($image, $cache_file, intval($settings['image']['quality']), true, $meta['type']);
 	
