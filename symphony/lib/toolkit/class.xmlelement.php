@@ -37,7 +37,7 @@
 			$this->setIncludeHeader();
 			$this->setSelfClosingTag();
 			$this->setAllowEmptyAttributes();
-			$this->setElementStyle((substr($this->_name, 0, 3) == '!--' ? 'comment' : ''));
+			$this->setElementStyle();
 			
 			$this->setValue($value);		
 			if(is_array($attributes) && !empty($attributes)) $this->setAttributeArray($attributes);			
@@ -183,7 +183,7 @@
 				if ($this->_elementStyle == 'xml') {
 					$result .= ' />';
 					
-				} else if ($this->_elementStyle == 'comment' || in_array($this->_name, $this->_no_end_tags)) {
+				} else if (in_array($this->_name, $this->_no_end_tags) || (substr($this->_name, 0, 3) == '!--')) {
 					$result .= '>';
 					
 				} else {
