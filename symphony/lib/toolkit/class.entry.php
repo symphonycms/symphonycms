@@ -48,9 +48,13 @@
 			foreach($associated_sections as $as){
 				
 				$field = $this->_Parent->fieldManager->fetch($as['child_section_field_id']);
-				$search_value = ($as['parent_section_field_id'] ? $field->fetchAssociatedEntrySearchValue($this->getData($as['parent_section_field_id'])) : $this->get('id'));
-				$counts[$as['child_section_id']] = $field->fetchAssociatedEntryCount($search_value);		
-					
+
+				$parent_section_field_id = $as['parent_section_field_id'];
+
+				$search_value = (!is_null($parent_section_field_id) ? $field->fetchAssociatedEntrySearchValue($this->getData($as['parent_section_field_id']), $as['parent_section_field_id']) : $this->get('id'));
+
+				$counts[$as['child_section_id']] = $field->fetchAssociatedEntryCount($search_value);			
+									
 			}
 
 			return $counts;
