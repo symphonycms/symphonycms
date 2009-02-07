@@ -168,13 +168,13 @@
 			$options = array(
 								
 				array('label' => __('System'), 'options' => array(
-							array('authors', ($fields['source'] == 'authors'), __('Authors')),
-							array('navigation', ($fields['source'] == 'navigation'), __('Navigation')),
+							array(__('authors'), ($fields['source'] == __('authors')), __('Authors')),
+							array(__('navigation'), ($fields['source'] == __('navigation')), __('Navigation')),
 					)),
 							
 				array('label' => __('Custom XML'), 'options' => array(			
-							array('dynamic_xml', ($fields['source'] == 'dynamic_xml'), __('Dynamic XML')),	
-							array('static_xml', ($fields['source'] == 'static_xml'), __('Static XML')),
+							array(__('dynamic_xml'), ($fields['source'] == __('dynamic_xml')), __('Dynamic XML')),	
+							array(__('static_xml'), ($fields['source'] == __('static_xml')), __('Static XML')),
 					)),
 				
 			);
