@@ -350,7 +350,7 @@
 				
 		public function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			$wrapper->appendChild(new XMLElement('h4', $this->get('label') . ' <i>'.$this->Name().'</i>'));
-			$label = Widget::Label('Value');
+			$label = Widget::Label(__('Value'));
 			$label->appendChild(Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : NULL)));		
 			$wrapper->appendChild($label);	
 		}
@@ -373,7 +373,7 @@
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'group');
 			
-			$label = Widget::Label('Label');
+			$label = Widget::Label(__('Label'));
 			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][label]', $this->get('label')));
 			if(isset($errors['label'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['label']));
 			else $div->appendChild($label);		
@@ -411,24 +411,26 @@
 			
 		}
 
-		public function buildLocationSelect($selected=NULL, $name='fields[location]', $label_value='Placement'){
+		public function buildLocationSelect($selected=NULL, $name='fields[location]', $label_value){
+			if(!$label_value) $label_value = __('Placement');
 			$label = Widget::Label($label_value);
 			$options = array(
-				array('main', $selected == 'main', 'Main content'),
-				array('sidebar', $selected == 'sidebar', 'Sidebar')				
+				array('main', $selected == 'main', __('Main content')),
+				array('sidebar', $selected == 'sidebar', __('Sidebar'))				
 			);
 			$label->appendChild(Widget::Select($name, $options));
 			
 			return $label;
 		}
 
-		public function buildFormatterSelect($selected=NULL, $name='fields[format]', $label_value='Formatting'){
+		public function buildFormatterSelect($selected=NULL, $name='fields[format]', $label_value){
 			
 			include_once(TOOLKIT . '/class.textformattermanager.php');
 			
 			$TFM = new TextformatterManager($this->_engine);
 			$formatters = $TFM->listAll();
 					
+			if(!$label_value) $label_value = __('Formatting');
 			$label = Widget::Label($label_value);
 		
 			$options = array();
