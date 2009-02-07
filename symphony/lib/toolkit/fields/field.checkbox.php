@@ -3,7 +3,7 @@
 	Class fieldCheckbox extends Field {
 		function __construct(&$parent){
 			parent::__construct($parent);
-			$this->_name = 'Checkbox';
+			$this->_name = __('Checkbox');
 		}
 
 		function canToggle(){

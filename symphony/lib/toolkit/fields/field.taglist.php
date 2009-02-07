@@ -3,7 +3,7 @@
 	Class fieldTagList extends Field {
 		public function __construct(&$parent){
 			parent::__construct($parent);
-			$this->_name = 'Tag List';
+			$this->_name = __('Tag List');
 		}
 		
 		public function set($field, $value){
