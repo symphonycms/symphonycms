@@ -58,13 +58,11 @@
 					case 'saved':
 						$this->pageAlert(
 							__(
-								'%1$s updated at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								'Utility updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Utilities</a>', 
 								array(
-									__('Utility'), 
 									DateTimeObj::get(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/utilities/new/', 
-									URL . '/symphony/blueprints/components/', 
-									__('Utilities')
+									URL . '/symphony/blueprints/components/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -73,13 +71,11 @@
 					case 'created':
 						$this->pageAlert(
 							__(
-								'%1$s created at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								'Utility created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Utilities</a>', 
 								array(
-									__('Utility'), 
 									DateTimeObj::get(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/utilities/new/', 
-									URL . '/symphony/blueprints/components/', 
-									__('Utilities')
+									URL . '/symphony/blueprints/components/'
 								)
 							), 
 							Alert::SUCCESS);

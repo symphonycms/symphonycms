@@ -600,13 +600,11 @@
 						
 						$this->pageAlert(
 							__(
-								'%1$s updated at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								'Entry updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Entries</a>', 
 								array(
-									__('Entry'), 
 									DateTimeObj::get(__SYM_TIME_FORMAT__), 
 									URL . "/symphony/$link", 
-									URL . '/symphony/publish/'.$this->_context['section_handle'].'/', 
-									__('Entries')
+									URL . '/symphony/publish/'.$this->_context['section_handle'].'/'
 								)
 							), 
 							Alert::SUCCESS);						
@@ -616,13 +614,11 @@
 					case 'created':
 						$this->pageAlert(
 							__(
-								'%1$s created at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								'Entry created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Entries</a>', 
 								array(
-									__('Entry'), 
 									DateTimeObj::get(__SYM_TIME_FORMAT__), 
 									URL . "/symphony/$link", 
-									URL . '/symphony/publish/'.$this->_context['section_handle'].'/', 
-									__('Entries')
+									URL . '/symphony/publish/'.$this->_context['section_handle'].'/' 
 								)
 							), 
 							Alert::SUCCESS);

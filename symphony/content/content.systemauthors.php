@@ -137,13 +137,11 @@
 					
 						$this->pageAlert(
 							__(
-								'%1$s updated at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								'Author updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>', 
 								array(
-									__('Author'), 
 									DateTimeObj::get(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/system/authors/new/', 
-									URL . '/symphony/system/authors/', 
-									__('Authors')
+									URL . '/symphony/system/authors/' 
 								)
 							), 
 							Alert::SUCCESS);					
@@ -154,13 +152,11 @@
 
 						$this->pageAlert(
 							__(
-								'%1$s created at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								'Author created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>', 
 								array(
-									__('Author'), 
 									DateTimeObj::get(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/system/authors/new/', 
-									URL . '/symphony/system/authors/', 
-									__('Authors')
+									URL . '/symphony/system/authors/' 
 								)
 							), 
 							Alert::SUCCESS);
