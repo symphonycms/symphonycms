@@ -316,7 +316,7 @@
 			$value = strip_tags($data['value']);
 			$value = (strlen($value) <= $max_length ? $value : substr($value, 0, $max_length) . '...');
 			
-			if (strlen($value) == 0) $value = 'None';
+			if (strlen($value) == 0) $value = __('None');
 			
 			if ($link) {
 				$link->setValue($value);

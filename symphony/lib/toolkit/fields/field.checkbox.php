@@ -46,7 +46,7 @@
 		}
 						
 		function getToggleStates(){
-			return array('yes' => 'Yes', 'no' => 'No');
+			return array('yes' => __('Yes'), 'no' => __('No'));
 		}
 		
 		function toggleFieldData($data, $newState){
@@ -122,8 +122,7 @@
 		}
 		
 		function prepareTableValue($data, XMLElement $link=NULL){
-			if(empty($data) || !isset($data['value'])) return ($this->get('default_state') == 'on' ? 'Yes' : 'No');
-			return parent::prepareTableValue(array('value' => ucfirst($data['value'])), $link);
+			return ($data['value'] == 'yes' ? __('Yes') : __('No'));
 		}
 
 		function isSortable(){
