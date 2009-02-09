@@ -334,8 +334,7 @@
 		Return: true or false
 
 		***/		
-		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers=array()){	
-
+		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers = array()) {
 			## Check for injection attacks (http://securephp.damonkohler.com/index.php/Email_Injection)
 			if ((eregi("\r", $from_email) || eregi("\n", $from_email))
 				|| (eregi("\r", $from_name) || eregi("\n", $from_name))){
@@ -345,25 +344,32 @@
 			
 			$subject = General::encodeHeader(utf8_decode($subject));
 			$from_name = General::encodeHeader(utf8_decode($from_name));
+			$headers = array();
 			
-			$headers = array(
-							"From: {$from_name} <{$from_email}>",
-					 		"Reply-To: {$from_name} <{$from_email}>",	
-							sprintf('Message-ID: <%s@%s>', md5(uniqid(time())), $_SERVER['SERVER_NAME']),
-							"Return-Path: <{$from_email}>",
-							'Importance: normal',
-							'Priority: normal',
-							'X-Sender: Symphony Email Module <noreply@symphony21.com>',
-							'X-Mailer: Symphony Email Module',
-							'X-Priority: 3',
-							'Content-Type: text/plain; charset="UTF-8"',
-						);
-
-			if(!empty($additional_headers)){
-				$headers = array_merge($headers, $additional_headers);
+			$default_headers = array(
+				'from'			=> "{$from_name} <{$from_email}>",
+		 		'reply-to'		=> "{$from_name} <{$from_email}>",	
+				'message-id'	=> sprintf('<%s@%s>', md5(uniqid(time())), $_SERVER['SERVER_NAME']),
+				'return-path'	=> "<{$from_email}>",
+				'importance'	=> 'normal',
+				'priority'		=> 'normal',
+				'x-sender'		=> 'Symphony Email Module <noreply@symphony21.com>',
+				'x-mailer'		=> 'Symphony Email Module',
+				'x-priority'	=> '3',
+				'content-type'	=> 'text/plain; charset="UTF-8"',
+			);
+			
+			if (!empty($additional_headers)) {
+				foreach ($additional_headers as $header => $value) {
+					$default_headers[strtolower($header)] = $value;
+				}
 			}
 			
-			if(!mail($to_email, $subject, @wordwrap($message, 70), @implode(self::CRLF, $headers) . self::CRLF)) return false;
+			foreach ($default_headers as $header => $value) {
+				$headers[] = sprintf('%s: %s', $header, $value);
+			}
+			
+			if (!mail($to_email, $subject, @wordwrap($message, 70), @implode(self::CRLF, $headers) . self::CRLF)) return false;
 
 			return true;
 		}
