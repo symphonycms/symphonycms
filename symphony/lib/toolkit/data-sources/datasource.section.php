@@ -56,6 +56,8 @@
 							
 							else $param_pool[$key][] = $pool_temp;
 							
+							$param_pool[$key] = array_unique($param_pool[$key]);
+							
 						}
 						
 						if (!$param_output_only) foreach ($ds->dsParamINCLUDEDELEMENTS as $handle) {
@@ -229,6 +231,8 @@
 							}
 							
 							else $param_pool[$key][] = $pool_temp;
+									
+							$param_pool[$key] = array_unique($param_pool[$key]);
 						}
 			
 						if (!$this->_param_output_only) foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {
