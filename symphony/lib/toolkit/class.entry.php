@@ -51,7 +51,19 @@
 
 				$parent_section_field_id = $as['parent_section_field_id'];
 
-				$search_value = (!is_null($parent_section_field_id) ? $field->fetchAssociatedEntrySearchValue($this->getData($as['parent_section_field_id']), $as['parent_section_field_id']) : $this->get('id'));
+				$search_value = NULL;
+						
+				if(!is_null($parent_section_field_id)){
+					$search_value = $field->fetchAssociatedEntrySearchValue(
+							$this->getData($as['parent_section_field_id']), 
+							$as['parent_section_field_id'],
+							$this->get('id')
+					);
+				}
+				
+				else{
+					$search_value = $this->get('id');	
+				} 
 
 				$counts[$as['child_section_id']] = $field->fetchAssociatedEntryCount($search_value);			
 									

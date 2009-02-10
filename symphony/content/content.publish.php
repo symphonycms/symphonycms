@@ -220,9 +220,10 @@
 							
 							if(!is_null($parent_section_field_id)){
 								$search_value = $field->fetchAssociatedEntrySearchValue(
-														$entry->getData($parent_section_field_id), 
-														$parent_section_field_id
-												);
+									$entry->getData($parent_section_field_id), 
+									$parent_section_field_id,
+									$entry->get('id')
+								);
 							}
 							
 							else{

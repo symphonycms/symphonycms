@@ -338,7 +338,7 @@
 			return array($this->get('element_name'));
 		}
 		
-		public function fetchAssociatedEntrySearchValue($data){
+		public function fetchAssociatedEntrySearchValue($data, $field_id=NULL, $parent_entry_id=NULL){
 			return $data;
 		}
 				
