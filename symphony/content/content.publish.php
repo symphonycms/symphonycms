@@ -183,7 +183,12 @@
 
 					else{
 						
-						$link = Widget::Anchor('None', $this->_Parent->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/', $entry->get('id'), 'content');
+						$link = Widget::Anchor(
+							'None', 
+							$this->_Parent->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/', 
+							$entry->get('id'), 
+							'content'
+						);
 						
 						foreach ($visible_columns as $position => $column) {
 							$data = $entry->getData($column->get('id'));
@@ -209,18 +214,33 @@
 					if(is_array($child_sections) && !empty($child_sections)){
 						foreach($child_sections as $key => $as){
 
-							$field = $entryManager->fieldManager->fetch($associated_sections[$key]['child_section_field_id']);
+							$field = $entryManager->fieldManager->fetch((int)$associated_sections[$key]['child_section_field_id']);
 
-							$parent_section_field_id = $associated_sections[$key]['parent_section_field_id'];
-
-							$search_value = (!is_null($parent_section_field_id) ? $field->fetchAssociatedEntrySearchValue($entry->getData($parent_section_field_id), $parent_section_field_id) : $entry->get('id'));
-
+							$parent_section_field_id = (int)$associated_sections[$key]['parent_section_field_id'];
+							
+							if(!is_null($parent_section_field_id)){
+								$search_value = $field->fetchAssociatedEntrySearchValue(
+														$entry->getData($parent_section_field_id), 
+														$parent_section_field_id
+												);
+							}
+							
+							else{
+								$search_value = $entry->get('id');
+							}
+							
 							$associated_entry_count = $field->fetchAssociatedEntryCount($search_value);
 
 							$tableData[] = Widget::TableData(
 								Widget::Anchor(
 									sprintf('%d &rarr;', max(0, intval($associated_entry_count))), 
-									sprintf('%s/symphony/publish/%s/?filter=%s:%s', URL, $as->get('handle'), $field->get('element_name'), rawurlencode($search_value)),
+									sprintf(
+										'%s/symphony/publish/%s/?filter=%s:%s', 
+										URL, 
+										$as->get('handle'), 
+										$field->get('element_name'), 
+										rawurlencode($search_value)
+									),
 									$entry->get('id'), 
 									'content')
 							);
