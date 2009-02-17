@@ -194,7 +194,7 @@
 							$data = $entry->getData($column->get('id'));
 							$field = $field_pool[$column->get('id')];
 							
-							$value = $field->prepareTableValue($data, ($position == 0 ? $link : null));
+							$value = $field->prepareTableValue($data, ($position == 0 ? $link : null), $entry->get('id'));
 							
 							if (trim($value) == '') {
 								$value = ($position == 0 ? $link->generate() : __('None'));
@@ -652,7 +652,7 @@
 			$field_id = $this->_Parent->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
 			$field = $entryManager->fieldManager->fetch($field_id);
 
-			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')))));
+			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')), NULL, $entry_id)));
 			
 			if (trim($title) == '') {
 				$title = 'Untitled';
