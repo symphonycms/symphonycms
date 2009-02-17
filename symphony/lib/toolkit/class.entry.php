@@ -108,6 +108,13 @@
 			
 			$status = __ENTRY_OK__;
 			
+			// Entry has no ID, create it:
+			if(!$this->get('id') && $simulate == false) {
+				$this->_engine->Database->insert($this->get(), 'tbl_entries');
+				if(!$entry_id = $this->_engine->Database->getInsertID()) return __ENTRY_FIELD_ERROR__;
+				$this->set('id', $entry_id);
+			}			
+			
 			if(!isset($this->_ParentCatalogue['sectionmanager'])) $SectionManager = new SectionManager($this->_engine);
 			else $SectionManager = $this->_ParentCatalogue['sectionmanager'];
 
@@ -130,6 +137,11 @@
 
 				$this->setData($info['id'], $result);
 			}
+			
+			// Failed to create entry, cleanup
+			if($status != __ENTRY_OK__ and !is_null($entry_id)) {
+				$this->_engine->Database->delete('tbl_entries', " `id` = '$entry_id' ");
+			}			
 			
 			return $status;
 		}
