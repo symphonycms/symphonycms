@@ -303,22 +303,14 @@
 		/***
 
 		Method: encodeHeader
-		Description: Encodes parts of an email header if necessary, according to RFC2047;
-		             does not need the IMAP module installed (like the imap_8bit function);
-		Added by:    Michael Eichelsdoerfer
-		Source:      http://www.php.net/manual/en/function.imap-8bit.php (see comments);
+		Description: Encodes header
+		Source:      http://bitprison.net/php_mail_utf-8_subject_and_message
+		More info:   http://www.ietf.org/rfc/rfc2047.txt
 
 		***/
 		public static function encodeHeader($input, $charset='ISO-8859-1'){
-
-		   preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches);
-
-		   foreach($matches[1] as $value){
-		       $replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
-		       $input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
-		   }
-
-		   return wordwrap($input, 75, "\n\t", true);
+			$separator = "?=".self::CRLF."=?{$charset}?B?";
+			return "=?{$charset}?B?".wordwrap(base64_encode($input), 75-strlen($separator), $separator, true).'?=';
 		}
 
 		/***
@@ -342,26 +334,28 @@
 		   	}
 			####
 			
-			$subject = General::encodeHeader(utf8_decode($subject));
-			$from_name = General::encodeHeader(utf8_decode($from_name));
+			$subject = General::encodeHeader($subject, 'UTF-8');
+			$from_name = General::encodeHeader($from_name, 'UTF-8');
 			$headers = array();
 			
 			$default_headers = array(
-				'from'			=> "{$from_name} <{$from_email}>",
-		 		'reply-to'		=> "{$from_name} <{$from_email}>",	
-				'message-id'	=> sprintf('<%s@%s>', md5(uniqid(time())), $_SERVER['SERVER_NAME']),
-				'return-path'	=> "<{$from_email}>",
-				'importance'	=> 'normal',
-				'priority'		=> 'normal',
-				'x-sender'		=> 'Symphony Email Module <noreply@symphony21.com>',
-				'x-mailer'		=> 'Symphony Email Module',
-				'x-priority'	=> '3',
-				'content-type'	=> 'text/plain; charset="UTF-8"',
+				'From'			=> "{$from_name} <{$from_email}>",
+		 		'Reply-To'		=> "{$from_name} <{$from_email}>",	
+				'Message-ID'	=> sprintf('<%s@%s>', md5(uniqid(time())), $_SERVER['SERVER_NAME']),
+				'Return-Path'	=> "<{$from_email}>",
+				'Importance'	=> 'normal',
+				'Priority'		=> 'normal',
+				'X-Sender'		=> 'Symphony Email Module <noreply@symphony21.com>',
+				'X-Mailer'		=> 'Symphony Email Module',
+				'X-Priority'	=> '3',
+				'MIME-Version'	=> '1.0',
+				'Content-Type'	=> 'text/plain; charset=UTF-8',
 			);
 			
 			if (!empty($additional_headers)) {
 				foreach ($additional_headers as $header => $value) {
-					$default_headers[strtolower($header)] = $value;
+					$header = preg_replace_callback('/\w+/', create_function('$m', 'if($m[0]=="MIME"||$m[0]=="ID") return $m[0]; else return ucfirst($m[0]);'), $header);
+					$default_headers[$header] = $value;
 				}
 			}
 			
