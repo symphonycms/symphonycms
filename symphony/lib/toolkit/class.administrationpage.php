@@ -392,7 +392,7 @@
 			}
 			
 			$extensions = $this->_Parent->ExtensionManager->listInstalledHandles();
-			//print_r($nav); die();
+
 			foreach($extensions as $e){
 				$info = $this->_Parent->ExtensionManager->about($e);
 				if(isset($info['navigation']) && is_array($info['navigation']) && !empty($info['navigation'])){
@@ -410,7 +410,8 @@
 								$nav[$index] = array(
 									'name' => $item['name'],
 									'index' => $index,
-									'children' => array()
+									'children' => array(),
+									'limit' => (!is_null($item['limit']) ? $item['limit'] : NULL)
 								);
 								
 								foreach($item['children'] as $child){
@@ -420,7 +421,7 @@
 										'link' => '/extension/' . $e . '/' . ltrim($child['link'], '/'),
 										'name' => $child['name'],
 										'visible' => ($child['visible'] == 'no' ? 'no' : 'yes'),
-
+										'limit' => (!is_null($child['limit']) ? $child['limit'] : NULL)
 									);									
 								}
 								
@@ -433,9 +434,11 @@
 									'link' => '/extension/' . $e . '/' . ltrim($item['link'], '/'),
 									'name' => $item['name'],
 									'visible' => ($item['visible'] == 'no' ? 'no' : 'yes'),
+									'limit' => (!is_null($item['limit']) ? $item['limit'] : NULL)
 									
 								);
-							
+
+						
 								break;
 							
 						}
