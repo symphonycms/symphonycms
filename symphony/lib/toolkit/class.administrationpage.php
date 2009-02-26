@@ -416,9 +416,16 @@
 								
 								foreach($item['children'] as $child){
 									
+									if(!isset($child['relative']) || $child['relative'] == true){
+										$link = '/extension/' . $e . '/' . ltrim($child['link'], '/');
+									}
+									else{
+										$link = '/' . ltrim($child['link'], '/');
+									}									
+									
 									$nav[$index]['children'][] = array(
 
-										'link' => '/extension/' . $e . '/' . ltrim($child['link'], '/'),
+										'link' => $link,
 										'name' => $child['name'],
 										'visible' => ($child['visible'] == 'no' ? 'no' : 'yes'),
 										'limit' => (!is_null($child['limit']) ? $child['limit'] : NULL)
@@ -429,9 +436,16 @@
 								
 							case Extension::NAV_CHILD:
 		
+								if(!isset($item['relative']) || $item['relative'] == true){
+									$link = '/extension/' . $e . '/' . ltrim($item['link'], '/');
+								}
+								else{
+									$link = '/' . ltrim($item['link'], '/');
+								}
+		
 								$nav[$item['location']]['children'][] = array(
 									
-									'link' => '/extension/' . $e . '/' . ltrim($item['link'], '/'),
+									'link' => $link,
 									'name' => $item['name'],
 									'visible' => ($item['visible'] == 'no' ? 'no' : 'yes'),
 									'limit' => (!is_null($item['limit']) ? $item['limit'] : NULL)
