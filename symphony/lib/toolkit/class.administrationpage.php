@@ -7,6 +7,11 @@
 		
 		public $Alert;
 		
+		## These are here for Extension backwards compatibility. Will be 
+		## removed in a later version.
+		const PAGE_ALERT_NOTICE = 'notice';
+		const PAGE_ALERT_ERROR = 'error';
+		
 		var $_navigation;
 		var $_Parent;
 		var $_context;
@@ -146,7 +151,7 @@
 			$ul->appendChild($li);
 			
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor('Logout', URL . '/symphony/logout/'));
+			$li->appendChild(Widget::Anchor(__('Logout'), URL . '/symphony/logout/'));
 			$ul->appendChild($li);
 			
 			###
@@ -387,7 +392,7 @@
 			}
 			
 			$extensions = $this->_Parent->ExtensionManager->listInstalledHandles();
-			//print_r($nav); die();
+
 			foreach($extensions as $e){
 				$info = $this->_Parent->ExtensionManager->about($e);
 				if(isset($info['navigation']) && is_array($info['navigation']) && !empty($info['navigation'])){
@@ -405,17 +410,25 @@
 								$nav[$index] = array(
 									'name' => $item['name'],
 									'index' => $index,
-									'children' => array()
+									'children' => array(),
+									'limit' => (!is_null($item['limit']) ? $item['limit'] : NULL)
 								);
 								
 								foreach($item['children'] as $child){
 									
+									if(!isset($child['relative']) || $child['relative'] == true){
+										$link = '/extension/' . $e . '/' . ltrim($child['link'], '/');
+									}
+									else{
+										$link = '/' . ltrim($child['link'], '/');
+									}									
+									
 									$nav[$index]['children'][] = array(
 
-										'link' => '/extension/' . $e . '/' . ltrim($child['link'], '/'),
+										'link' => $link,
 										'name' => $child['name'],
 										'visible' => ($child['visible'] == 'no' ? 'no' : 'yes'),
-
+										'limit' => (!is_null($child['limit']) ? $child['limit'] : NULL)
 									);									
 								}
 								
@@ -423,14 +436,23 @@
 								
 							case Extension::NAV_CHILD:
 		
+								if(!isset($item['relative']) || $item['relative'] == true){
+									$link = '/extension/' . $e . '/' . ltrim($item['link'], '/');
+								}
+								else{
+									$link = '/' . ltrim($item['link'], '/');
+								}
+		
 								$nav[$item['location']]['children'][] = array(
 									
-									'link' => '/extension/' . $e . '/' . ltrim($item['link'], '/'),
+									'link' => $link,
 									'name' => $item['name'],
 									'visible' => ($item['visible'] == 'no' ? 'no' : 'yes'),
+									'limit' => (!is_null($item['limit']) ? $item['limit'] : NULL)
 									
 								);
-							
+
+						
 								break;
 							
 						}

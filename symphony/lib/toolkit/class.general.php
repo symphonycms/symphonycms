@@ -303,22 +303,14 @@
 		/***
 
 		Method: encodeHeader
-		Description: Encodes parts of an email header if necessary, according to RFC2047;
-		             does not need the IMAP module installed (like the imap_8bit function);
-		Added by:    Michael Eichelsdoerfer
-		Source:      http://www.php.net/manual/en/function.imap-8bit.php (see comments);
+		Description: Encodes header
+		Source:      http://bitprison.net/php_mail_utf-8_subject_and_message
+		More info:   http://www.ietf.org/rfc/rfc2047.txt
 
 		***/
 		public static function encodeHeader($input, $charset='ISO-8859-1'){
-
-		   preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches);
-
-		   foreach($matches[1] as $value){
-		       $replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
-		       $input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
-		   }
-
-		   return wordwrap($input, 75, "\n\t", true);
+			$separator = "?=".self::CRLF."=?{$charset}?B?";
+			return "=?{$charset}?B?".wordwrap(base64_encode($input), 75-strlen($separator), $separator, true).'?=';
 		}
 
 		/***
@@ -334,8 +326,7 @@
 		Return: true or false
 
 		***/		
-		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers=array()){	
-
+		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers = array()) {
 			## Check for injection attacks (http://securephp.damonkohler.com/index.php/Email_Injection)
 			if ((eregi("\r", $from_email) || eregi("\n", $from_email))
 				|| (eregi("\r", $from_name) || eregi("\n", $from_name))){
@@ -343,27 +334,36 @@
 		   	}
 			####
 			
-			$subject = General::encodeHeader(utf8_decode($subject));
-			$from_name = General::encodeHeader(utf8_decode($from_name));
+			$subject = General::encodeHeader($subject, 'UTF-8');
+			$from_name = General::encodeHeader($from_name, 'UTF-8');
+			$headers = array();
 			
-			$headers = array(
-							"From: {$from_name} <{$from_email}>",
-					 		"Reply-To: {$from_name} <{$from_email}>",	
-							sprintf('Message-ID: <%s@%s>', md5(uniqid(time())), $_SERVER['SERVER_NAME']),
-							"Return-Path: <{$from_email}>",
-							'Importance: normal',
-							'Priority: normal',
-							'X-Sender: Symphony Email Module <noreply@symphony21.com>',
-							'X-Mailer: Symphony Email Module',
-							'X-Priority: 3',
-							'Content-Type: text/plain; charset="UTF-8"',
-						);
-
-			if(!empty($additional_headers)){
-				$headers = array_merge($headers, $additional_headers);
+			$default_headers = array(
+				'From'			=> "{$from_name} <{$from_email}>",
+		 		'Reply-To'		=> "{$from_name} <{$from_email}>",	
+				'Message-ID'	=> sprintf('<%s@%s>', md5(uniqid(time())), $_SERVER['SERVER_NAME']),
+				'Return-Path'	=> "<{$from_email}>",
+				'Importance'	=> 'normal',
+				'Priority'		=> 'normal',
+				'X-Sender'		=> 'Symphony Email Module <noreply@symphony21.com>',
+				'X-Mailer'		=> 'Symphony Email Module',
+				'X-Priority'	=> '3',
+				'MIME-Version'	=> '1.0',
+				'Content-Type'	=> 'text/plain; charset=UTF-8',
+			);
+			
+			if (!empty($additional_headers)) {
+				foreach ($additional_headers as $header => $value) {
+					$header = preg_replace_callback('/\w+/', create_function('$m', 'if($m[0]=="MIME"||$m[0]=="ID") return $m[0]; else return ucfirst($m[0]);'), $header);
+					$default_headers[$header] = $value;
+				}
 			}
 			
-			if(!mail($to_email, $subject, @wordwrap($message, 70), @implode(self::CRLF, $headers) . self::CRLF)) return false;
+			foreach ($default_headers as $header => $value) {
+				$headers[] = sprintf('%s: %s', $header, $value);
+			}
+			
+			if (!mail($to_email, $subject, @wordwrap($message, 70), @implode(self::CRLF, $headers) . self::CRLF)) return false;
 
 			return true;
 		}

@@ -20,16 +20,16 @@
 		function __viewIndex(){
 			
 			$this->setPageType('table');
-			$this->setTitle('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors')));
-			$this->appendSubheading(__('Authors'), Widget::Anchor('Add an author', $this->_Parent->getCurrentPageURL().'new/', 'Add a new author', 'create button'));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors'))));
+			$this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
 			
 		    $authors = $this->_AuthorManager->fetch();
 
 			$aTableHead = array(
 
-				array('Name', 'col'),
-				array('Email Address', 'col'),
-				array('Last Seen', 'col'),				
+				array(__('Name'), 'col'),
+				array(__('Email Address'), 'col'),
+				array(__('Last Seen'), 'col'),				
 
 			);	
 
@@ -137,13 +137,11 @@
 					
 						$this->pageAlert(
 							__(
-								'%1$s updated at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								'Author updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>', 
 								array(
-									__('Author'), 
 									DateTimeObj::get(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/system/authors/new/', 
-									URL . '/symphony/system/authors/', 
-									__('Authors')
+									URL . '/symphony/system/authors/' 
 								)
 							), 
 							Alert::SUCCESS);					
@@ -154,13 +152,11 @@
 
 						$this->pageAlert(
 							__(
-								'%1$s created at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								'Author created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>', 
 								array(
-									__('Author'), 
 									DateTimeObj::get(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/system/authors/new/', 
-									URL . '/symphony/system/authors/', 
-									__('Authors')
+									URL . '/symphony/system/authors/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -191,7 +187,7 @@
 			if($this->_context[0] == 'edit' && $author->get('id') == $this->_Parent->Author->get('id')) $isOwner = true;
 
 			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Authors'), $author->getFullName())));
-			$this->appendSubheading(($this->_context[0] == 'new' ? 'Untitled' : $author->getFullName()));			
+			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $author->getFullName()));			
 			
 			### Essentials ###			
 			$group = new XMLElement('fieldset');

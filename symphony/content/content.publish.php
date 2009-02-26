@@ -183,13 +183,18 @@
 
 					else{
 						
-						$link = Widget::Anchor('None', $this->_Parent->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/', $entry->get('id'), 'content');
+						$link = Widget::Anchor(
+							'None', 
+							$this->_Parent->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/', 
+							$entry->get('id'), 
+							'content'
+						);
 						
 						foreach ($visible_columns as $position => $column) {
 							$data = $entry->getData($column->get('id'));
 							$field = $field_pool[$column->get('id')];
 							
-							$value = $field->prepareTableValue($data, ($position == 0 ? $link : null));
+							$value = $field->prepareTableValue($data, ($position == 0 ? $link : null), $entry->get('id'));
 							
 							if (trim($value) == '') {
 								$value = ($position == 0 ? $link->generate() : __('None'));
@@ -209,18 +214,34 @@
 					if(is_array($child_sections) && !empty($child_sections)){
 						foreach($child_sections as $key => $as){
 
-							$field = $entryManager->fieldManager->fetch($associated_sections[$key]['child_section_field_id']);
+							$field = $entryManager->fieldManager->fetch((int)$associated_sections[$key]['child_section_field_id']);
 
-							$parent_section_field_id = $associated_sections[$key]['parent_section_field_id'];
-
-							$search_value = (!is_null($parent_section_field_id) ? $field->fetchAssociatedEntrySearchValue($entry->getData($parent_section_field_id), $parent_section_field_id) : $entry->get('id'));
-
+							$parent_section_field_id = (int)$associated_sections[$key]['parent_section_field_id'];
+							
+							if(!is_null($parent_section_field_id)){
+								$search_value = $field->fetchAssociatedEntrySearchValue(
+									$entry->getData($parent_section_field_id), 
+									$parent_section_field_id,
+									$entry->get('id')
+								);
+							}
+							
+							else{
+								$search_value = $entry->get('id');
+							}
+							
 							$associated_entry_count = $field->fetchAssociatedEntryCount($search_value);
 
 							$tableData[] = Widget::TableData(
 								Widget::Anchor(
 									sprintf('%d &rarr;', max(0, intval($associated_entry_count))), 
-									sprintf('%s/symphony/publish/%s/?filter=%s:%s', URL, $as->get('handle'), $field->get('element_name'), rawurlencode($search_value)),
+									sprintf(
+										'%s/symphony/publish/%s/?filter=%s:%s', 
+										URL, 
+										$as->get('handle'), 
+										$field->get('element_name'), 
+										rawurlencode($search_value)
+									),
 									$entry->get('id'), 
 									'content')
 							);
@@ -600,13 +621,11 @@
 						
 						$this->pageAlert(
 							__(
-								'%1$s updated at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								'Entry updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Entries</a>', 
 								array(
-									__('Entry'), 
 									DateTimeObj::get(__SYM_TIME_FORMAT__), 
 									URL . "/symphony/$link", 
-									URL . '/symphony/publish/'.$this->_context['section_handle'].'/', 
-									__('Entries')
+									URL . '/symphony/publish/'.$this->_context['section_handle'].'/'
 								)
 							), 
 							Alert::SUCCESS);						
@@ -616,13 +635,11 @@
 					case 'created':
 						$this->pageAlert(
 							__(
-								'%1$s created at %2$s. <a href="%3$s">Create another?</a> <a href="%4$s">View all %5$s</a>', 
+								'Entry created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Entries</a>', 
 								array(
-									__('Entry'), 
 									DateTimeObj::get(__SYM_TIME_FORMAT__), 
 									URL . "/symphony/$link", 
-									URL . '/symphony/publish/'.$this->_context['section_handle'].'/', 
-									__('Entries')
+									URL . '/symphony/publish/'.$this->_context['section_handle'].'/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -635,7 +652,7 @@
 			$field_id = $this->_Parent->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
 			$field = $entryManager->fieldManager->fetch($field_id);
 
-			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')))));
+			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')), NULL, $entry_id)));
 			
 			if (trim($title) == '') {
 				$title = 'Untitled';

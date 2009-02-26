@@ -50,7 +50,7 @@
 		}
 
 		public function merge($strings){
-			$this->_strings = array_merge($this->_strings, $strings);
+			if(is_array($strings)) $this->_strings = array_merge($this->_strings, $strings);
 		}
 		
 		public function remove($string){
@@ -66,27 +66,21 @@
 		
 		private function __load($path, $lang, $clear=false){
 			
-			$include = sprintf($path, $lang);
-			
-			if(!file_exists($include)){ 
-				if((bool)$clear === true) {
-					## If there is no main language file, we have to init Dictionary or ugly errors will happen
-					if(!(self::$_dictionary instanceof Dictionary))
-						self::$_dictionary = new Dictionary(array());
-					throw new Exception(sprintf('Lang file "%s" could not be loaded. Please check path.', $include));
-				}
-				else return;
-			}
-			
-			require(sprintf($path, $lang));
-
-			if((bool)$clear === true){
+			if((bool)$clear === true || !(self::$_dictionary instanceof Dictionary)){
 				self::$_dictionary = new Dictionary(array());
 				self::$_transliterations = array();
 			}
 
-			self::$_dictionary->merge($dictionary);
-			self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
+			$include = sprintf($path, $lang);
+			if(file_exists($include)) require($include);
+
+			if(is_array($dictionary)) self::$_dictionary->merge($dictionary);
+			if(is_array($transliterations)) self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
+
+			if(empty(self::$_transliterations)){
+				include(TOOLKIT . 'include.transliterations.php');
+				self::$_transliterations = $transliterations;
+			}
 		}
 		
 		public static function init($path, $lang){

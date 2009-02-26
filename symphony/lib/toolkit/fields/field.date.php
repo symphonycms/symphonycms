@@ -13,7 +13,7 @@
 		
 		function __construct(&$parent){
 			parent::__construct($parent);
-			$this->_name = 'Date';
+			$this->_name = __('Date');
 			$this->key = 1;
 		}
 

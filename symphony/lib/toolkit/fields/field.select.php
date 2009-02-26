@@ -3,7 +3,7 @@
 	Class fieldSelect extends Field {
 		function __construct(&$parent){
 			parent::__construct($parent);
-			$this->_name = 'Select Box';
+			$this->_name = __('Select Box');
 			
 			// Set default
 			$this->set('show_column', 'no');			
@@ -281,7 +281,8 @@
 
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 			
-			$label = Widget::Label(__('Static Options <i>Optional</i>'));
+			$label = Widget::Label(__('Static Options'));
+			$label->appendChild(new XMLElement('i', __('Optional')));
 			$input = Widget::Input('fields['.$this->get('sortorder').'][static_options]', General::sanitize($this->get('static_options')));
 			$label->appendChild($input);
 			$div->appendChild($label);

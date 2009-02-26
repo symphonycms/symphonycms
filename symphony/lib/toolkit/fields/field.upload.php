@@ -4,7 +4,7 @@
 		public function __construct(&$parent){
 			parent::__construct($parent);
 			
-			$this->_name = 'File Upload';
+			$this->_name = __('File Upload');
 			$this->_required = true;
 			
 			$this->set('required', 'yes');

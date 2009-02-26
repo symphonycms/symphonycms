@@ -16,6 +16,9 @@
 	
 	$Frontend = Frontend::instance();
 	
-	print $Frontend->display(getCurrentPage());
+	$output = $Frontend->display(getCurrentPage());
+
+	header(sprintf("Content-Length: %d", strlen($output)));
+	echo $output;
 
 	exit();

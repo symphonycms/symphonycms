@@ -45,7 +45,19 @@
 							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 
 						if(isset($ds->dsParamPARAMOUTPUT) && $ds->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
-							$param_pool[$key][] = $fieldPool[$field_id]->getParameterPoolValue($values);
+			
+							if(!is_array($param_pool[$key])) $param_pool[$key] = array();
+
+							$pool_temp = $fieldPool[$field_id]->getParameterPoolValue($values);
+
+							if(is_array($pool_temp)){
+								$param_pool[$key] = array_merge($param_pool[$key], $pool_temp);
+							}
+							
+							else $param_pool[$key][] = $pool_temp;
+							
+							$param_pool[$key] = array_unique($param_pool[$key]);
+							
 						}
 						
 						if (!$param_output_only) foreach ($ds->dsParamINCLUDEDELEMENTS as $handle) {
@@ -210,7 +222,17 @@
 							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 			
 						if(isset($this->dsParamPARAMOUTPUT) && $this->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
-							$param_pool[$key][] = $fieldPool[$field_id]->getParameterPoolValue($values);
+							if(!is_array($param_pool[$key])) $param_pool[$key] = array();
+
+							$pool_temp = $fieldPool[$field_id]->getParameterPoolValue($values);
+
+							if(is_array($pool_temp)){
+								$param_pool[$key] = array_merge($param_pool[$key], $pool_temp);
+							}
+							
+							else $param_pool[$key][] = $pool_temp;
+									
+							$param_pool[$key] = array_unique($param_pool[$key]);
 						}
 			
 						if (!$this->_param_output_only) foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {

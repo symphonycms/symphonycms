@@ -6,7 +6,7 @@
 		function __construct(&$parent){
 			
 			parent::__construct($parent);
-			$this->_name = 'Textarea';		
+			$this->_name = __('Textarea');		
 			$this->_required = true;
 			
 			// Set default
@@ -24,7 +24,7 @@
 		
 		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			$label = Widget::Label($this->get('label'));
-			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', 'Optional'));
+			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 			
 			$textarea = Widget::Textarea('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, $this->get('size'), '50', (strlen($data['value']) != 0 ? General::sanitize($data['value']) : NULL));
 			

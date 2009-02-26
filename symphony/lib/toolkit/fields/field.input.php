@@ -5,7 +5,7 @@
 	Class fieldInput extends Field {
 		function __construct(&$parent){
 			parent::__construct($parent);
-			$this->_name = 'Text Input';
+			$this->_name = __('Text Input');
 			$this->_required = true;
 			
 			$this->set('required', 'no');
@@ -46,7 +46,7 @@
 		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			$value = General::sanitize($data['value']);
 			$label = Widget::Label($this->get('label'));
-			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', 'Optional'));
+			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? $value : NULL)));
 
 			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));

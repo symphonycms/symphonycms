@@ -32,7 +32,7 @@
 
 	define_safe('STARTTIME', precision_timer());
 
-	define_safe('TWO_WEEKS',	72576000);
+	define_safe('TWO_WEEKS',	(60*60*24*14));
 	define_safe('CACHE_LIFETIME', TWO_WEEKS);
 	
 	define_safe('HTTPS', $_SERVER['HTTPS']);

@@ -3,7 +3,7 @@
 	Class fieldTagList extends Field {
 		public function __construct(&$parent){
 			parent::__construct($parent);
-			$this->_name = 'Tag List';
+			$this->_name = __('Tag List');
 		}
 		
 		public function set($field, $value){
@@ -70,8 +70,11 @@
 		}
 
 		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-
-			$value = $this->prepareTableValue($data);
+			
+			$value = NULL;
+			if(isset($data['value'])){
+				$value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
+			}
 			
 			$label = Widget::Label($this->get('label'));
 			
@@ -131,19 +134,30 @@
 				$result['value'][] = $value;
 				$result['handle'][] = Lang::createHandle($value);
 			}
-
+			
 			return $result;
+		}
+		
+		static private function __tagArrayToString(array $tags){
+			
+			if(empty($tags)) return NULL;
+			
+			sort($tags);
+			
+			return implode(', ', $tags);
+			
 		}
 		
 		function prepareTableValue($data, XMLElement $link=NULL){
 			
 			if(!is_array($data) || empty($data)) return;
 			
-			if(is_array($data['value']) && !empty($data['value'])) sort($data['value']);
-			
-			$values = (count($data['value']) > 1) ? @implode(', ', $data['value']) : $data['value'];
+			$value = NULL;
+			if(isset($data['value'])){
+				$value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
+			}
 
-			return parent::prepareTableValue(array('value' => General::sanitize($values)), $link);
+			return parent::prepareTableValue(array('value' => General::sanitize($value)), $link);
 		}
 		
 		function commit(){

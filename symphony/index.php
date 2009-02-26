@@ -7,15 +7,20 @@
 	
 	$Admin = Administration::instance();
 
-	print $Admin->display(getCurrentPage());
-	
+	$output = $Admin->display(getCurrentPage());
+
 	## Temporary: Display debuging information
 	if($Admin->displayProfilerReport == true){
-		print '<!-- ' . Administration::CRLF;
-		print 'Total Render Time: ' . $Admin->Profiler->retrieveTotalRunningTime() . Administration::CRLF . Administration::CRLF;
+		ob_start();
+		printf("\n<!-- \n Total Render Time: %s \n\n", $Admin->Profiler->retrieveTotalRunningTime());
 		print_r($Admin->Database->getStatistics());
 		print_r($Admin->Profiler);
-		print CRLF . ' -->';
+		print "\n -->";
+		$output .= ob_get_contents();
+		ob_end_clean();
 	}
-	
+
+	header(sprintf("Content-Length: %d", strlen($output)));
+	echo $output;
+
 	exit();

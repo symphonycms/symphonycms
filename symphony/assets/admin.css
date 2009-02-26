@@ -116,27 +116,27 @@ h1 a:hover,
 #notice {
 	position: relative;
 	z-index: 2;
-	margin: 0 -19px -5.5em;
-	border-bottom: 1px solid #887;
-	padding: 5.5em 0.83em 0;
-	background-color: #7f7f72;
-	color: #e1e1d6;
+	margin: 5.5em -19px -5.5em;
+	border-top: 3px solid #979792;
+	border-bottom: 2px solid #777;
+	padding: 0 0.83em 0;
+	background-color: #e4e4e0;
+	color: #555;
 	font-size: 90.91%;
-	line-height: 2;
+	line-height: 2.5;
 }
 #notice.error {
-	border-color: #cc8;
 	background-color: #ffb;
-	color: #874;
+	border-top: 3px solid #cc8;	
 }
 #notice.success {
-	border-color: #68b;
-	background-color: #517ca6;
-	color: #fff;
+	background-color: #ddf6bb;
+	border-top: 3px solid #90c349;
 }
 #notice a,
 #notice button {
-	color: #fff;
+	color: #999;
+	margin-left: 0.5em;
 }
 #notice a:hover,
 #notice button:hover {
@@ -148,7 +148,7 @@ h1 a:hover,
 }
 #notice.error a:hover,
 #notice.error button:hover {
-	color: #610;
+	color: #912712;
 }
 #notice.success a:hover,
 #notice.success button:hover {

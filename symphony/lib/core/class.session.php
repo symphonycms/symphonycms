@@ -78,7 +78,7 @@
 
 				$dom = $_SERVER['HTTP_HOST'];
 
-				if (preg_match('/(localhost|127\.0\.0\.1)/', $dom)) return NULL; // prevent problems on local setups
+				if (preg_match('/(localhost|127\.0\.0\.1)/', $dom) || $_SERVER['SERVER_ADDR'] == '127.0.0.1') return NULL; // prevent problems on local setups
 
 				if(strtolower(substr($dom, 0, 4)) == 'www.') $dom = substr($dom, 4);
 

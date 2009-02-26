@@ -1,8 +1,4 @@
 <?php
-	
-	// Dictionary
-	$dictionary = array();
-	
 	// Alphabetical:
 	$transliterations = array(
 		'/À/' => 'A', 		'/Á/' => 'A', 		'/Â/' => 'A', 		'/Ã/' => 'A', 		'/Ä/' => 'Ae', 		

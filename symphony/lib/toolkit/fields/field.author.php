@@ -5,7 +5,7 @@
 	Class fieldAuthor extends Field {
 		function __construct(&$parent){
 			parent::__construct($parent);
-			$this->_name = 'Author';
+			$this->_name = __('Author');
 		}
 
 		public function canToggle(){
