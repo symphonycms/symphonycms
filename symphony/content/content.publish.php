@@ -61,7 +61,7 @@
 
 			if(isset($_REQUEST['filter'])){
 				
-				list($field_handle, $filter_value) = explode(':', $_REQUEST['filter']);
+				list($field_handle, $filter_value) = explode(':', $_REQUEST['filter'], 2);
 				
 				$filter_value = rawurldecode($filter_value);
 				
