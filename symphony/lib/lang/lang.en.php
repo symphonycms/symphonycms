@@ -1,11 +1,7 @@
 <?php
 	
-	## Defines all error messages in the system
-	$strings = array(
-		// Todo: Abstract all strings for reference purposes
-	);
-	
-	$dictionary = (!empty($strings) ? array_combine($strings, $strings) : array());
+	// Dictionary
+	$dictionary = array();
 	
 	// Alphabetical:
 	$transliterations = array(
