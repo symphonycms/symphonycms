@@ -186,7 +186,8 @@ h1 a:hover,
 }
 .movable,
 tr.movable td,
-tr.movable:nth-child(odd) td {
+/* Until CSS3 widely supported, tr.movable:nth-child(odd) td */
+tr.movable.odd td {
 	border-color: #998;
 	background-color: #887;
 }

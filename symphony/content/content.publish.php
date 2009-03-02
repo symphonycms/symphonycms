@@ -253,7 +253,7 @@
 					## Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow($tableData, ($bEven ? 'even' : NULL));
 
-					$bEven = !$bEven;			
+					$bEven = !$bEven;
 
 				}
 			}
