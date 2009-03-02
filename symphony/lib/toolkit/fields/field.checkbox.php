@@ -59,7 +59,7 @@
 			$status = self::__OK__;
 			
 			return array(
-				'value' => ($data ? 'yes' : 'no')
+				'value' => (strtolower($data) == 'no' ? 'no' : 'yes')
 			);
 			
 		}
