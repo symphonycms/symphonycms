@@ -1,10 +1,8 @@
 <?php
 
 	require_once(TOOLKIT . '/class.page.php');
-
-	## This class should never be instanciated. Always extend
 	
-	Class AjaxPage extends Page{
+	Abstract Class AjaxPage extends Page{
 		
 		const STATUS_OK = 200;
 		const STATUS_BAD = 400;
@@ -14,6 +12,8 @@
 		protected $_Parent;
 		protected $_Result;
 		protected $_status;
+		
+		abstract public function view();
 		
 		function __construct(&$parent){
 			
@@ -32,10 +32,6 @@
 		public function build($context=NULL){
 			if($context) $this->_context = $context;
 			$this->view();
-		}
-				
-		public function view(){
-			// ABSTRACT FUNCTION
 		}
 		
 		public function handleFailedAuthorisation(){
@@ -70,4 +66,3 @@
 		
 	}
 
-?>

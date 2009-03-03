@@ -49,7 +49,7 @@
 					array('Session', 'gc')
 				);
 
-				session_set_cookie_params($lifetime, $path, ($domain ? $domain : self::getDomain()), false, true);
+				session_set_cookie_params($lifetime, $path, ($domain ? $domain : self::getDomain()), false, false);
 
 				self::$_initialized = true;
 
@@ -146,4 +146,3 @@
 		}
 	}
 
-?>
