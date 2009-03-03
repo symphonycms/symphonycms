@@ -339,10 +339,6 @@
 			return @call_user_func(array(&$classname, 'fetchCustomMenu'));		
 		}
 		
-		function __hasCustomInterface($name){
-			return (@is_file($this->__getClassPath($name) . '/interface/content.index.php') ? 1 : 0);
-		}
-		
         ## Returns the about details of a service
         function about($name){
 	
@@ -357,11 +353,7 @@
 				
 				$about['handle'] = $name;
 				$about['status'] = $this->fetchStatus($name);
-				$about['panel'] = $this->__hasCustomInterface($name);				
-				//$about['has-uninstall-method'] = $this->__hasUninstallMethod($classname);
-				//$about['has-update-method'] = $this->__hasUpdateMethod($classname);
-				//$about['has-custom-menu'] = @call_user_func(array(&$classname, 'hasCustomMenu'));				
-				//$about['menu-group-position'] = @call_user_func(array(&$classname, 'fetchCustomMenuPosition'));
+				$about['panel'] = $this->__hasCustomInterface($name);
 
 				if($about['status'] == EXTENSION_ENABLED) Lang::add($this->__getClassPath($name) . '/lang/lang.%s.php', __LANG__);
 
