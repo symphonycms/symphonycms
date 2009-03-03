@@ -23,7 +23,8 @@ th:first-child,
 td:first-child {
 	padding-left: 19px;
 }
-tr:nth-child(odd) td {
+/* Until CSS3 widely supported, tr:nth-child(odd) td */
+tr.odd td {
 	background-color: #f5f5f4;
 }
 tbody a {

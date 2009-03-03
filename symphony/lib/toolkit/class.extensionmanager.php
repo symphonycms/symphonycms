@@ -269,6 +269,17 @@
 	        
         }
 
+		## Return object instance of a named extension
+		function getInstance($name){
+			
+			$extensions = $this->_pool;
+			
+			foreach($extensions as $e){
+				if (get_class($e) == $name) return $e;
+			}
+			
+		}
+
   		/*function __hasUpdateMethod($classname){
 			if(!class_exists($classname)) return false;
 			
