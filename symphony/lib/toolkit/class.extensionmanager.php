@@ -353,7 +353,6 @@
 				
 				$about['handle'] = $name;
 				$about['status'] = $this->fetchStatus($name);
-				$about['panel'] = $this->__hasCustomInterface($name);
 
 				if($about['status'] == EXTENSION_ENABLED) Lang::add($this->__getClassPath($name) . '/lang/lang.%s.php', __LANG__);
 
