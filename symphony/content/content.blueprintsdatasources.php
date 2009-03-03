@@ -763,6 +763,11 @@
 			if(array_key_exists('save', $_POST['action'])) return $this->__formAction();
 		}
 		
+		private static function __isValidPageString($string){
+			return (bool)preg_match('/^(?:\{\$[\w-]+(?::\$[\w-]+)*(?::\d+)?}|\d+)$/', $string);
+			
+		}
+		
 		function __formAction(){
 				
 			$fields = $_POST['fields'];
@@ -799,14 +804,21 @@
 			else{
 							
 				if($fields['source'] != 'navigation'){
-					if(!preg_match('@({\$([A-Z0-9_-]++)})@i', $fields['max_records']) && !is_numeric($fields['max_records'])) $this->_errors['max_records'] = __('Must be a valid number or parameter');
-					elseif(is_numeric($fields['max_records']) && $fields['max_records'] < 1) $this->_errors['max_records'] = __('A result limit must be set');
-							
-				}
-				
-				if($fields['source'] != 'navigation'){
-					if(!preg_match('@({\$([A-Z0-9_-]++)})@i', $fields['page_number']) && !is_numeric($fields['page_number'])) $this->_errors['page_number'] = __('Must be a valid number or parameter');
-					elseif(is_numeric($fields['page_number']) && $fields['page_number'] < 1) $this->_errors['page_number'] = __('A page number must be set');
+					
+					if(strlen(trim($fields['max_records'])) == 0 || (is_numeric($fields['max_records']) && $fields['max_records'] < 1)){
+						$this->_errors['max_records'] = __('A result limit must be set');
+					}
+					elseif(!self::__isValidPageString($fields['max_records'])){
+						$this->_errors['max_records'] = __('Must be a valid number or parameter');
+					}
+
+
+					if(strlen(trim($fields['page_number'])) == 0 || (is_numeric($fields['page_number']) && $fields['page_number'] < 1)){
+						$this->_errors['page_number'] = __('A page number must be set');
+					}
+					elseif(!self::__isValidPageString($fields['page_number'])){
+						$this->_errors['page_number'] = __('Must be a valid number or parameter');
+					}
 				}
 				
 			}
