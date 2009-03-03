@@ -78,7 +78,7 @@
 			if(is_array($transliterations)) self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
 
 			if(empty(self::$_transliterations)){
-				include(TOOLKIT . 'include.transliterations.php');
+				include(TOOLKIT . '/include.transliterations.php');
 				self::$_transliterations = $transliterations;
 			}
 		}
