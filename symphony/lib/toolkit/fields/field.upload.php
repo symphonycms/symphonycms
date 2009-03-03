@@ -20,7 +20,7 @@
 		
 		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
 		    $joins .= "INNER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
-		    $sort = 'ORDER BY ' . (strtolower($order) == 'random' ? 'RAND()' : "`ed`.`file` $order");
+		    $sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`file` $order");
 		}
 		
 		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
