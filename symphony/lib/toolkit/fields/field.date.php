@@ -91,7 +91,11 @@
 
 		function prepareTableValue($data, XMLElement $link=NULL){
 			return parent::prepareTableValue(array('value' => DateTimeObj::get(__SYM_DATE_FORMAT__, $data['local'])), $link);
-		}		
+		}	
+		
+		public function getParameterPoolValue($data){
+     		return DateTimeObj::get('Y-m-d H:i:s', $data['local']);
+		}	
 			
 		function groupRecords($records){
 
