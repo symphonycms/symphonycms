@@ -89,13 +89,13 @@
 				
 				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
 					$sectionManager->edit($section->get('id'), array('entry_order' => $sort, 'entry_order_direction' => $order));
-					redirect($this->_Parent->getCurrentPageURL().'?pg='.$current_page.($filter ? "&filter=$field_handle:$filter_value" : ''));
+					redirect($this->_Parent->getCurrentPageURL().($filter ? "&filter=$field_handle:$filter_value" : ''));
 				}
 			}
 
 			elseif(isset($_REQUEST['unsort'])){
 				$sectionManager->edit($section->get('id'), array('entry_order' => NULL, 'entry_order_direction' => NULL));
-				redirect($this->_Parent->getCurrentPageURL().'?pg='.$current_page);
+				redirect($this->_Parent->getCurrentPageURL());
 			}
 
 			$this->Form->setAttribute('action', $this->_Parent->getCurrentPageURL(). '?pg=' . $current_page.($filter ? "&amp;filter=$field_handle:$filter_value" : ''));
