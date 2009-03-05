@@ -214,8 +214,9 @@
 				}
 			}
 			arsort($languages);
+			$languages = array_keys($languages);
 			## return list sorted by descending priority, e.g., array('en-gb','en');
-			return array_keys($languages);
+			return $languages;
 		}
 
 		/***
