@@ -93,7 +93,7 @@
 		function __noRecordsFound(){
 			return new XMLElement('error', __('No records found.'));
 		}
-		
+
 		function __processParametersInString($value, $env, $includeParenthesis=true, $escape=false){
 			if(trim($value) == '') return NULL;
 
@@ -121,8 +121,8 @@
 						$replacement = $this->__findParameterInEnv($param, $env);
 						
 						if(is_array($replacement)){
-							if(count($replacement) > 1) return $replacement;
-							$replacement = end($replacement);
+							if(count($replacement) > 1) $replacement = implode(',', $replacement);
+							else $replacement = end($replacement);
 						}
 						
 						if(!empty($replacement)) break;
