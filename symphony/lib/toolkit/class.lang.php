@@ -195,18 +195,22 @@
 
 		***/
 		public static function getBrowserLanguages() {
-			if(strlen(trim($_SERVER['HTTP_ACCEPT_LANGUAGE'])) < 1) return array();
+			static $languages;
+			if(is_array($languages)) return $languages;
 
-			if(!preg_match_all('/(\w+(?:-\w+)?,?)+(?:;q=(?:\d+\.\d+))?/', preg_replace('/\s+/', '', $_SERVER['HTTP_ACCEPT_LANGUAGE']), $matches)) return array();
+			$languages = array();
 
-			$status=1.0;
+			if(strlen(trim($_SERVER['HTTP_ACCEPT_LANGUAGE'])) < 1) return $languages;
+			if(!preg_match_all('/(\w+(?:-\w+)?,?)+(?:;q=(?:\d+\.\d+))?/', preg_replace('/\s+/', '', $_SERVER['HTTP_ACCEPT_LANGUAGE']), $matches)) return $languages;
+
+			$priority=1.0;
 			$languages = array();
 			foreach($matches[0] as $def){
 				list($list, $q) = explode(';q=', $def);
-				if(!empty($q)) $status=floatval($q);
+				if(!empty($q)) $priority=floatval($q);
 				$list = explode(',', $list);
 				foreach($list as $lang){
-					$languages[$lang] = $status;
+					$languages[$lang] = $priority;
 				}
 			}
 			arsort($languages);
