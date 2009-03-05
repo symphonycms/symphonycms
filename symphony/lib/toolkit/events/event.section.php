@@ -147,7 +147,7 @@
 				if(!function_exists('__sendEmailFindFormValue')){
 					function __sendEmailFindFormValue($needle, $haystack, $discard_field_name=true, $default=NULL, $collapse=true){
 
-						if(preg_match('/^(fields\[[a-z0-9-_]+\],?)+$/i', $needle)){
+						if(preg_match('/^(fields\[[^\]]+\],?)+$/i', $needle)){
 							$parts = preg_split('/\,/i', $needle, -1, PREG_SPLIT_NO_EMPTY);
 							$parts = array_map('trim', $parts);
 
@@ -170,7 +170,8 @@
 				}
 
 				$fields = $_POST['send-email'];
-
+				
+				$fields['recipient'] = __sendEmailFindFormValue($fields['recipient'], $_POST['fields'], true);
 				$fields['recipient'] = preg_split('/\,/i', $fields['recipient'], -1, PREG_SPLIT_NO_EMPTY);
 				$fields['recipient'] = array_map('trim', $fields['recipient']);
 
