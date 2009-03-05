@@ -10,3 +10,6 @@
 [submodule "extensions/selectbox_link_field"]
 	path = extensions/selectbox_link_field
 	url = git://github.com/pointybeard/selectbox_link_field.git
+[submodule "extensions/jit_image_manipulation"]
+	path = extensions/jit_image_manipulation
+	url = git://github.com/pointybeard/jit_image_manipulation.git
