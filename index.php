@@ -1,24 +1,16 @@
 <?php
 
-	## Check if Symphony needs installing
-	if(!file_exists('manifest/config.php')){
-		
-		if(file_exists('install.php')){
-			header('Location: install.php');
-			exit();
-		}
-		
-		die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');
-	}
-		
-	require_once('manifest/config.php');
+	define('DOCROOT', rtrim(dirname(__FILE__), '/'));
+	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . dirname($_SERVER['PHP_SELF']), '/'));
+
+	require(DOCROOT . '/symphony/lib/boot/bundle.php');
 	require_once(CORE . '/class.frontend.php');
 	
 	$Frontend = Frontend::instance();
 	
 	$output = $Frontend->display(getCurrentPage());
 
-	header(sprintf("Content-Length: %d", strlen($output)));
+	header(sprintf('Content-Length: %d', strlen($output)));
 	echo $output;
 
 	exit();

@@ -1,7 +1,5 @@
 <?php
 
-	
-	
 	require_once(CORE . '/class.symphony.php');
 	require_once(TOOLKIT . '/class.xmldoc.php');	
 	require_once(TOOLKIT . '/class.lang.php');
@@ -200,7 +198,6 @@
 		public function display($page){
 			
 			$this->Profiler->sample('Page build process started');
-			//$oPage = $this->__buildPage($page);
 			$this->__buildPage($page);
 			
 			####
@@ -223,181 +220,13 @@
 		}
 
 		public function saveConfig(){
-	
-			$string  = '<?php' . self::CRLF
-					 . "\tif(!defined('DOCROOT')) define('DOCROOT', '".DOCROOT."');" . self::CRLF
-					 . "\tif(!defined('DOMAIN')) define('DOMAIN', '".DOMAIN."');" . self::CRLF . self::CRLF			
-					 . "\t".'$settings = ' . (string)$this->Configuration . ';' . self::CRLF . self::CRLF	
-					 . "\trequire_once(DOCROOT . '/symphony/lib/boot/bundle.php');";
-
+			$string  = "<?php\n\t\$settings = {$this->Configuration};\n";
 			return General::writeFile(CONFIG, $string, $this->Configuration->get('write_mode', 'file'));
-	
 		}
 		
 		public function errorPageNotFound(){
 			$this->customError(E_USER_ERROR, 'Page Not Found', 'The page you requested does not exist.', false, true, 'error', array('header' => 'HTTP/1.0 404 Not Found'));			
 		}
-		
-/*		public function uninstall(){
-			return;
-			## ASK EACH EXTENSION TO UNINSTALL ITSELF
-			if($extensions = $this->ExtensionManager->listAll()){
-				foreach($extensions as $name => $about){
-					$this->ExtensionManager->uninstall($name);	
-				}
-			}
-			
-			## REMOVE ALL DB TABLES
-			$tables = array(
-				'tbl_authors',
-				'tbl_cache',
-				'tbl_entries',
-				'tbl_extensions',
-				'tbl_extensions_delegates',
-				'tbl_fields',			
-				'tbl_forgotpass',
-				'tbl_pages',
-				'tbl_pages_types',
-				'tbl_sections',
-				'tbl_sections_association'			
-			);
-			
-			if($ret = $this->Database->fetch("SHOW TABLES LIKE 'tbl_entries_data_%'; " )){
-				foreach($ret as $t) $tables[] = current($t);
-			}
-			
-			if($ret = $this->Database->fetch("SHOW TABLES LIKE 'tbl_fields_%'; " )){
-				foreach($ret as $t) $tables[] = current($t);
-			}
 
-			$sql = 'DROP TABLE `'.@implode('`, `', $tables).'`;';
-			$this->Database->query($sql);
-		
-			## REMOVE WORKSPACE FOLDER
-			General::rmdirr(WORKSPACE);
-								
-			## REMOVE MANIFEST FOLDER
-			General::rmdirr(MANIFEST);
-		
-			unlink(DOCROOT . '/.htaccess');
-			unlink(SYMPHONY . '/.htaccess');
-			
-			return;
-		}
-	*/
-/*		
-		public function export(){
-			
-			$sql_schema = $sql_data = NULL;
-			
-			require_once(TOOLKIT . '/class.mysqldump.php');
-			
-			$dump = new MySQLDump($this->Database);
-
-			$tables = array(
-				'tbl_authors',
-				'tbl_cache',
-				'tbl_entries',
-				'tbl_extensions',
-				'tbl_extensions_delegates',
-				'tbl_fields',
-				'tbl_fields_%',			
-				'tbl_forgotpass',
-				'tbl_pages',
-				'tbl_pages_types',
-				'tbl_sections',
-				'tbl_sections_association'			
-			);
-			
-			## Grab the schema
-			foreach($tables as $t) $sql_schema .= $dump->export($t, MySQLDump::STRUCTURE_ONLY);
-			$sql_schema = str_replace('`' . $this->Configuration->get('tbl_prefix', 'database'), '`tbl_', $sql_schema);
-			
-			$sql_schema = preg_replace('/AUTO_INCREMENT=\d+/i', '', $sql_schema);
-			
-			$tables = array(
-				'tbl_entries',
-				'tbl_extensions',
-				'tbl_extensions_delegates',
-				'tbl_fields',			
-				'tbl_pages',
-				'tbl_pages_types',
-				'tbl_sections',
-				'tbl_sections_association'			
-			);			
-			
-			## Field data and entry data schemas needs to be apart of the workspace sql dump
-			$sql_data  = $dump->export('tbl_fields_%', MySQLDump::ALL);
-			$sql_data .= $dump->export('tbl_entries_%', MySQLDump::ALL);
-			
-			## Grab the data
-			foreach($tables as $t) $sql_data .= $dump->export($t, MySQLDump::DATA_ONLY);
-			$sql_data = str_replace('`' . $this->Configuration->get('tbl_prefix', 'database'), '`tbl_', $sql_data);
-			
-			$config_string = NULL;
-			$config = $this->Configuration->get();			
-			
-			unset($config['symphony']['build']);
-			unset($config['symphony']['cookie_prefix']);
-			unset($config['general']['useragent']);
-			unset($config['file']['write_mode']);
-			unset($config['directory']['write_mode']);
-			unset($config['database']['host']);
-			unset($config['database']['port']);
-			unset($config['database']['user']);
-			unset($config['database']['password']);
-			unset($config['database']['db']);
-			unset($config['database']['tbl_prefix']);
-			unset($config['region']['timezone']);
-
-			foreach($config as $group => $set){
-				foreach($set as $key => $val) $config_string .= "		\$conf['".$group."']['".$key."'] = '".$val."';" . self::CRLF;
-			}
-			
-			$install_template = str_replace(
-				
-									array(
-										'<!-- BUILD -->',
-										'<!-- ENCODED SQL SCHEMA DUMP -->',
-										'<!-- ENCODED SQL DATA DUMP -->',
-										'<!-- CONFIGURATION -->'
-									),
-				
-									array(
-										$this->Configuration->get('build', 'symphony'),
-										base64_encode($sql_schema),
-										base64_encode($sql_data),
-										trim($config_string),										
-									),
-				
-									file_get_contents(TEMPLATE . '/installer.tpl')
-			);
-			
-			require_once(TOOLKIT . '/class.archivezip.php');
-			
-			$archive = new ArchiveZip;
-
-			$archive->addDirectory(EXTENSIONS, DOCROOT, ArchiveZip::IGNORE_HIDDEN);		
-			$archive->addDirectory(SYMPHONY, DOCROOT, ArchiveZip::IGNORE_HIDDEN);
-			$archive->addDirectory(WORKSPACE, DOCROOT, ArchiveZip::IGNORE_HIDDEN);
-			$archive->addFromFile(DOCROOT . '/index.php', 'index.php');
-			
-			if(is_file(DOCROOT . '/README.txt')) $archive->addFromFile(DOCROOT . '/README.txt', 'README.txt');
-			if(is_file(DOCROOT . '/LICENCE.txt')) $archive->addFromFile(DOCROOT . '/LICENCE.txt', 'LICENCE.txt');
-			if(is_file(DOCROOT . '/update.php')) $archive->addFromFile(DOCROOT . '/update.php', 'update.php');
-			
-			$archive->addFromString($install_template, 'install.php');
-						
-			$raw = $archive->save();
-
-			header('Content-type: application/octet-stream');	
-			header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-		    header('Content-disposition: attachment; filename='.Lang::createFilename($this->Configuration->get('sitename', 'general')).'-ensemble.zip');
-		    header('Pragma: no-cache');
-
-			print $raw;
-			exit();
-			
-		}	*/	
 	}
 
