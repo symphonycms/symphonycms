@@ -1,7 +1,5 @@
 <?php
 
-	
-
 	include_once(TOOLKIT . '/class.section.php');
 
 	Class SectionManager{

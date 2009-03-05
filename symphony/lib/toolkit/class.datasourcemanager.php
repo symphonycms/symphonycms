@@ -120,11 +120,8 @@
 	        }
 	        
 			if(!class_exists($classname)) require_once($path);
-			
-			##Create the object
-			$this->_pool[] =& new $classname($this->_Parent, $environment, $process_params);	
 								
-			return end($this->_pool);
+			return new $classname($this->_Parent, $environment, $process_params);
 	        
         }        
          

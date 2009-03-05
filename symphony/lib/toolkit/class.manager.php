@@ -1,33 +1,20 @@
 <?php
 
-	
-
-    Class Manager extends Object{
+    Abstract Class Manager extends Object{
 
 	    var $_Parent;
-	    var $_pool;
+	    protected static $_pool;
 	    
-        function __construct(&$parent){
+        public function __construct(&$parent){
 			$this->_Parent = $parent;
-	        $this->_pool = array();
         }
         
-        function __destruct(){
-			
-			if(is_array($this->_pool) && !empty($this->_pool)){	    
-		        foreach($this->_pool as $o){
-			     	unset($o);   
-		        }
-			}
-			
-        }
-        
-        function flush(){
-	        $this->_pool = array();	        
+        public function flush(){
+	        self::$_pool = array();	        
         }  
         
         ##Returns the about details
-        function about($name){
+        public function about($name){
 
 	        $classname = $this->__getClassName($name);   
 	        $path = $this->__getDriverPath($name);

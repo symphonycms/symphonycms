@@ -1,7 +1,5 @@
 <?php
 
-	
-	
 	##Interface for page event objects
 	abstract Class TextFormatter{
 		

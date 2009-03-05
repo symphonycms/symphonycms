@@ -1,7 +1,5 @@
 <?php
 
-	
-
 	include_once(TOOLKIT . '/class.textformatter.php');
 
     Class TextformatterManager extends Manager{
@@ -89,11 +87,8 @@
 	        
 			if(!@class_exists($classname))									
 				require_once($path);
-			
-			##Create the object
-			$this->_pool[] =& new $classname($this->_Parent);	
-								
-			return end($this->_pool);
+
+			return new $classname($this->_Parent);	
 	        
         }       
         

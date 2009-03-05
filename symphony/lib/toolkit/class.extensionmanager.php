@@ -9,7 +9,7 @@
 	define_safe('EXTENSION_REQUIRES_UPDATE', 13);	
 	
     Class ExtensionManager extends Manager{
-        
+		
         function __getClassName($name){
 	        return 'extension_' . $name;
         }
@@ -42,30 +42,6 @@
 		function sortByName($a, $b) {
 			return strnatcasecmp($a['name'], $b['name']);	
 		}
- 
-		/*function update($name){
-
-			$id = $this->registerService($name, false);
-			
-			## Run the update() function of the service
-			if(false != ($obj =& $this->create($name))){
-				$obj->update();
-				unset($obj);
-			}
-			
-			return $this->pruneService($name, true);			
-		}*/
- 
-		/*function install($name){
-			
-			$id = $this->registerService($name);
-
-			## Run the install() function of the service
-			if(false != ($obj =& $this->create($name))){
-				$obj->install();
-				unset($obj);
-			}					
-		}*/
       
 		function enable($name){
 			if(false == ($obj =& $this->create($name))){
@@ -248,24 +224,28 @@
         ## Creates a new object and returns a pointer to it
         function &create($name, $param=array(), $slient=false){
 	        
-	        $classname = $this->__getClassName($name);	        
-	        $path = $this->__getDriverPath($name);
+			if(!is_array(self::$_pool)) $this->flush();
+	
+			if(!isset(self::$_pool[$name])){
+		        $classname = $this->__getClassName($name);	        
+		        $path = $this->__getDriverPath($name);
 	        
-	        if(!@is_file($path)){
-		        if(!$slient) trigger_error(__('Could not find extension at location %s', array($path)), E_USER_ERROR);	        	
-		        return false;
-	        }
+		        if(!@is_file($path)){
+			        if(!$slient) trigger_error(__('Could not find extension at location %s', array($path)), E_USER_ERROR);	        	
+			        return false;
+		        }
 	        
-			if(!class_exists($classname)) require_once($path);
+				if(!class_exists($classname)) require_once($path);
 			
-			if(!is_array($param)) $param = array();	
+				if(!is_array($param)) $param = array();	
 				
-			if(!isset($param['parent'])) $param['parent'] =& $this->_Parent;	
+				if(!isset($param['parent'])) $param['parent'] =& $this->_Parent;	
 			
-			##Create the object
-			$this->_pool[] =& new $classname($param);	
-								
-			return end($this->_pool);
+				##Create the object
+				self::$_pool[$name] = new $classname($param);	
+			}
+			
+			return self::$_pool[$name];
 	        
         }
 
@@ -279,24 +259,6 @@
 			}
 			
 		}
-
-  		/*function __hasUpdateMethod($classname){
-			if(!class_exists($classname)) return false;
-			
-			$methods = get_class_methods($classname);
-
-			return (@in_array('update', $methods) ? true : false);
-			
-		}*/
-		     
-		/*function __hasUninstallMethod($classname){
-			if(!class_exists($classname)) return false;
-			
-			$methods = get_class_methods($classname);
-
-			return (@in_array('uninstall', $methods) ? true : false);
-			
-		}*/
 
 		function __requiresUpdate($info){
 
