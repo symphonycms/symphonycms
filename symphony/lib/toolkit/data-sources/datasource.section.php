@@ -1,15 +1,5 @@
 <?php
 
-	$fieldPool = array();
-	$where = NULL;
-	$joins = NULL;
-	$group = false;
-
-	include_once(TOOLKIT . '/class.entrymanager.php');
-	$entryManager = new EntryManager($this->_Parent);
-	
-	$include_pagination_element = @in_array('system:pagination', $this->dsParamINCLUDEDELEMENTS);
-	
 	if(!function_exists('processRecordGroup')){
 		function processRecordGroup(&$wrapper, $element, $group, $ds, &$Parent, &$entryManager, &$fieldPool, &$param_pool, $param_output_only=false){
 			
@@ -45,28 +35,14 @@
 							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 
 						if(isset($ds->dsParamPARAMOUTPUT) && $ds->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
-			
-							if(!is_array($param_pool[$key])) $param_pool[$key] = array();
-
-							$pool_temp = $fieldPool[$field_id]->getParameterPoolValue($values);
-
-							if(is_array($pool_temp)){
-								$param_pool[$key] = array_merge($param_pool[$key], $pool_temp);
-							}
-							
-							else $param_pool[$key][] = $pool_temp;
-							
-							$param_pool[$key] = array_unique($param_pool[$key]);
-							
+							$param_pool[$key][] = $fieldPool[$field_id]->getParameterPoolValue($values);
 						}
 						
-						if (!$param_output_only && is_array($ds->dsParamINCLUDEDELEMENTS) && !empty($ds->dsParamINCLUDEDELEMENTS)) {
-							foreach ($ds->dsParamINCLUDEDELEMENTS as $handle) {
-								list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
+						if (!$param_output_only) foreach ($ds->dsParamINCLUDEDELEMENTS as $handle) {
+							list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
 							
-								if ($fieldPool[$field_id]->get('element_name') == $handle) {
-									$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($ds->dsParamHTMLENCODE ? true : false), $mode);
-								}
+							if ($fieldPool[$field_id]->get('element_name') == $handle) {
+								$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($ds->dsParamHTMLENCODE ? true : false), $mode);
 							}
 						}
 					}
@@ -88,19 +64,15 @@
 		}
 	}
 	
-	if(!function_exists('buildPaginationElement')){
-		function buildPaginationElement($total_entries=0, $total_pages=0, $entries_per_page=1, $current_page=1){
-			$pageinfo = new XMLElement('pagination');
-			$pageinfo->setAttributeArray(array(
-				'total-entries' => $total_entries,
-				'total-pages' => $total_pages,
-				'entries-per-page' => $entries_per_page,
-				'current-page' => $current_page,
-			));
+	$fieldPool = array();
+	$where = NULL;
+	$joins = NULL;
+	$group = false;
 
-			return $pageinfo;	
-		}
-	}
+	include_once(TOOLKIT . '/class.entrymanager.php');
+	$entryManager = new EntryManager($this->_Parent);
+	
+	$include_pagination_element = @in_array('system:pagination', $this->dsParamINCLUDEDELEMENTS);
 	
 	if(is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
 		foreach($this->dsParamFILTERS as $field_id => $filter){
@@ -161,7 +133,15 @@
 		$this->_force_empty_result = false;
 		$result = $this->emptyXMLSet();
 		$result->prependChild($sectioninfo);
-		if($include_pagination_element) $result->prependChild(buildPaginationElement());
+		
+		if($include_pagination_element) {
+			$pagination_element = General::buildPaginationElement();
+			
+			if($pagination_element instanceof XMLElement && $result instanceof XMLElement){
+				$result->prependChild($pagination_element); 
+			}
+		}
+		
 		$param_pool[$key][] = '';
 	}
 	
@@ -173,12 +153,19 @@
 			$result->appendChild($sectioninfo);
 			
 			if($include_pagination_element){
-				$result->appendChild(buildPaginationElement($entries['total-entries'], 
-															$entries['total-pages'], 
-															($this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : $entries['total-entries']),
-															$this->dsParamSTARTPAGE
-															));
+				
+				$t = ($this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : $entries['total-entries']);
+				
+				$pagination_element = General::buildPaginationElement(
+					$entries['total-entries'], 
+					$entries['total-pages'], 
+					$t, 
+					$this->dsParamSTARTPAGE);
 
+				if($pagination_element instanceof XMLElement && $result instanceof XMLElement){
+					$result->prependChild($pagination_element); 
+				}
+				
 			}
 		}
 		
@@ -224,26 +211,14 @@
 							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 			
 						if(isset($this->dsParamPARAMOUTPUT) && $this->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
-							if(!is_array($param_pool[$key])) $param_pool[$key] = array();
-
-							$pool_temp = $fieldPool[$field_id]->getParameterPoolValue($values);
-
-							if(is_array($pool_temp)){
-								$param_pool[$key] = array_merge($param_pool[$key], $pool_temp);
-							}
-							
-							else $param_pool[$key][] = $pool_temp;
-									
-							$param_pool[$key] = array_unique($param_pool[$key]);
+							$param_pool[$key][] = $fieldPool[$field_id]->getParameterPoolValue($values);
 						}
 			
-						if (!$this->_param_output_only && is_array($this->dsParamINCLUDEDELEMENTS) && !empty($this->dsParamINCLUDEDELEMENTS)) {
-							foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {
-								list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
+						if (!$this->_param_output_only) foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {
+							list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
 							
-								if ($fieldPool[$field_id]->get('element_name') == $handle) {
-									$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE ? true : false), $mode);
-								}
+							if ($fieldPool[$field_id]->get('element_name') == $handle) {
+								$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE ? true : false), $mode);
 							}
 						}
 					}
@@ -258,4 +233,3 @@
 		
 	}
 
-?>
