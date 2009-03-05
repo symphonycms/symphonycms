@@ -399,7 +399,6 @@
 		private static function __sniffMIMEType($file){
 			
 			$imageMimeTypes = array(
-				'image/bmp',
 				'image/gif',
 				'image/jpg',
 				'image/jpeg',
@@ -412,9 +411,8 @@
 		}
 		
 		public static function getMetaInfo($file, $type){
-			
+
 			$imageMimeTypes = array(
-				'image/bmp',
 				'image/gif',
 				'image/jpg',
 				'image/jpeg',
@@ -425,14 +423,9 @@
 			
 			$meta['creation'] = DateTimeObj::get('c', filemtime($file));
 			
-			if(in_array($type, $imageMimeTypes)){
-				include_once(TOOLKIT . '/class.image.php');
-				
-				$imageMeta = Image::meta($file);
-				
-				$meta['width'] = $imageMeta['width'];
-				$meta['height'] = $imageMeta['height'];
-								
+			if(in_array($type, $imageMimeTypes) && $array = @getimagesize($file)){
+				$meta['width']    = $array[0];
+				$meta['height']   = $array[1];
 			}
 			
 			return $meta;
@@ -440,7 +433,6 @@
 		}
 		
 
-		
 		function createTable(){
 			
 			return $this->_engine->Database->query(
