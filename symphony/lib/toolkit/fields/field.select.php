@@ -68,11 +68,11 @@
 		}
 		
 		function fetchAssociatedEntryCount($value){
-			return $this->_engine->Database->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".addslashes($value)."'");
+			return $this->_engine->Database->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".$this->_engine->Database->cleanValue($value)."'");
 		}
 		
 		function fetchAssociatedEntryIDs($value){
-			return $this->_engine->Database->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".addslashes($value)."'");
+			return $this->_engine->Database->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".$this->_engine->Database->cleanValue($value)."'");
 		}	
 			
 		function getToggleStates(){
