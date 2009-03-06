@@ -211,6 +211,7 @@
 				$list = explode(',', $list);
 				foreach($list as $lang){
 					$languages[$lang] = $priority;
+					$priority -= 0.000000001;
 				}
 			}
 			arsort($languages);
