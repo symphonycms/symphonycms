@@ -37,7 +37,8 @@
 	define('DOCROOT', rtrim(dirname(__FILE__), '/'));
 	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . dirname($_SERVER['PHP_SELF']), '/'));
 	
-	require_once('symphony/lib/toolkit/class.general.php');
+	require_once('symphony/lib/boot/defines.php');
+	require_once(TOOLKIT . '/class.general.php');
 
 	error_reporting(E_ALL ^ E_NOTICE);
 	set_error_handler('__errorHandler');
@@ -76,8 +77,9 @@
 		if(writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']) === true){
 
 			$code = sprintf($shell, 
-'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=644">change log</a></em></h1>
+'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=754">change log</a></em></h1>
 				<h2>Update Complete</h2>
+				<p><strong>Post Installation Step:</strong> As of this release, the built in image manipulation features have been released with the "JIT: Image Manipulation" extension. Should you have uploaded this to your Extensions folder, be sure to <a href="http://'.URL.'/symphony/system/extensions/">enable it.</a></p>
 				<p>This script, <code>update.php</code>, should be removed as a safety precaution. <a href="'.URL.'/symphony/">Click here</a> to proceed to your administration area.</p>');
 
 		}
@@ -85,7 +87,7 @@
 		else{
 			
 			$code = sprintf($shell, 
-'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=644">change log</a></em></h1>
+'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=754">change log</a></em></h1>
 				<h2>Update Failed!</h2>
 				<p>An error occurred while attempting to write to the Symphony configuration, <code>manifest/config.php</code>. Please check it is writable and try again.</p>
 
@@ -106,7 +108,7 @@
 
 		if(isset($settings['symphony']['version']) && version_compare(kVERSION, $settings['symphony']['version'], '<=')){
 			$code = sprintf($shell,
-'			<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=644">change log</a></em></h1>
+'			<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=754">change log</a></em></h1>
 			<h2>Existing Installation</h2>
 			<p>It appears that Symphony has already been installed at this location and is up to date.</p>');
 
@@ -114,7 +116,7 @@
 		}
 
 		$code = sprintf($shell,
-'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=644">change log</a></em></h1>
+'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=754">change log</a></em></h1>
 				<h2>Update Existing Installation</h2>
 				<p>This script will update your existing Symphony '.$settings['symphony']['version'].' installation to version 2.0.2</p>
 			
