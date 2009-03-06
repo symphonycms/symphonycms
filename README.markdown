@@ -1,34 +1,26 @@
 ## Symphony 2 ##
 
-- Version: 2.0.1 (build 271)
-- Date: 28th January 2009
+- Version: 2.0.2 (build 375)
+- Date: 6th March 2009
 - Github Repository: <http://github.com/symphony/symphony-2/tree/master>
 
 
 ### SYNOPSIS
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as it's core 
-technologies. This repository represents version 2.0.1 and is considered stable.
+technologies. This repository represents version 2.0.2 and is considered stable.
 
 Visit the forum at <http://overture21.com/forum/>
 
 
 ### UPDATING VIA GIT
 
-If you intend on pulling the latest changes to update your copy of Symphony, be forewarned.
-There have been some major structural changes and doing so will remove parts of your 
-workspace folder. To get around this, move your workspace folder some place safe, along with
-any of the extensions mentioned below in the "INSTALLING FROM GIT" instructions. Once you have
-pulled the latest version, move the workspace folder back in place and use the following command
-to get those extensions back:
+1. Use the following command to get Extensions up to date
 
 	git submodule init
 	git submodule update
-	
-The workspace folder will no longer be under git version control, which allows the Symphony
-team to make alterations to the default theme without risking your ability to pull changes.
 
-Finally, follow from step 4 below.
+Finally, follow from step 5 below.
 
 
 ### UPDATING
@@ -39,11 +31,14 @@ Follow the instructions below if you are updating from Symphony version 2.0 (non
 
 2. Upload `/symphony`, `index.php` & `update.php`, replacing what is already on your server.
 
-3. Put the backed up `.htaccess` file into the new /symphony folder
+3. _Optional_ If you require the dynamic image manipulation features, removed as of this
+release, be sure up upload `extensions/jit\_image\_manipulation`.
 
-4. Go to `http://yoursite.com/update.php` to complete the update process.
+4. Put the backed up `.htaccess` file into the new `/symphony` folder
 
-5. Dance like it's 1999!
+5. Go to `http://yoursite.com/update.php` to complete the update process.
+
+6. Dance like it's 1999!
 
 
 ### INSTALLING FROM GIT
@@ -62,7 +57,7 @@ Follow the instructions below if you are updating from Symphony version 2.0 (non
 	- [Select Box Link Field](http://github.com/pointybeard/selectbox_link_field)
 	- [Export Ensemble](http://github.com/pointybeard/export_ensemble)
 	- [Markdown](http://github.com/pointybeard/markdown)
-		
+	- [JIT Image Manipulation](http://github.com/pointybeard/jit_image_manipulation)
 
 3. Run the following commands to ensure the submodules are cloned:
 

@@ -44,7 +44,7 @@
 	error_reporting(E_ALL ^ E_NOTICE);
 	set_error_handler('__errorHandler');
 
-	define('kBUILD', '353');
+	define('kBUILD', '375');
 	define('kVERSION', '2.0.2');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
