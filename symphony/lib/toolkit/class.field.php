@@ -412,7 +412,7 @@
 			
 		}
 
-		public function buildLocationSelect($selected=NULL, $name='fields[location]', $label_value){
+		public function buildLocationSelect($selected=NULL, $name='fields[location]', $label_value=NULL){
 			if(!$label_value) $label_value = __('Placement');
 			$label = Widget::Label($label_value);
 			$options = array(
