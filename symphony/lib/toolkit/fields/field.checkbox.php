@@ -57,18 +57,19 @@
 		function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
 			
 			$status = self::__OK__;
-			
+
 			return array(
-				'value' => (strtolower($data) == 'no' ? 'no' : 'yes')
+				'value' => (strtolower($data) == 'yes' ? 'yes' : 'no')
 			);
 			
 		}
-
+		
 		function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
 			$joins .= "INNER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
 			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`value` $order");
 		}
-		
+
+
 		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
 			$value = $this->cleanValue($data[0]);
