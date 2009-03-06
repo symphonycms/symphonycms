@@ -76,6 +76,7 @@
 			
 		// Abstract function
 		public function getToggleStates(){
+			return array();
 		}
 		
 		public function toggleFieldData($data, $newState){
