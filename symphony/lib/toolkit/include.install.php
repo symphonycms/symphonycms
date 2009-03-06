@@ -1107,6 +1107,9 @@
 	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
 	RewriteRule .* - [S=14] 
 
+	### IMAGE RULES	
+	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ /'.$rewrite_base.'extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
+
 	### CHECK FOR TRAILING SLASH - Will ignore files
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_URI} !/'.trim($rewrite_base, '/').'$
@@ -1148,9 +1151,6 @@ DirectoryIndex index.php
 	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
 	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
 	RewriteRule .* - [S=14] 
-
-	### IMAGE RULES	
-	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ /'.$rewrite_base.'latest/extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
 
 	### CHECK FOR TRAILING SLASH - Will ignore files
 	RewriteCond %{REQUEST_FILENAME} !-f
