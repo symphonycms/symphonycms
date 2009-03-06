@@ -80,7 +80,9 @@
 			$code = sprintf($shell, 
 '				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=754">change log</a></em></h1>
 				<h2>Update Complete</h2>
-				<p><strong>Post Installation Step:</strong> As of this release, the built in image manipulation features have been released with the "JIT: Image Manipulation" extension. Should you have uploaded this to your Extensions folder, be sure to <a href="http://'.URL.'/symphony/system/extensions/">enable it.</a></p>
+				
+				<p><strong>Post Installation Step:</strong> As of this release, the built in image manipulation features have been replaced with the "JIT: Image Manipulation" extension. Should you have uploaded this to your Extensions folder, be sure to <a href="http://'.URL.'/symphony/system/extensions/">enable it.</a></p>
+				<br />
 				<p>This script, <code>update.php</code>, should be removed as a safety precaution. <a href="'.URL.'/symphony/">Click here</a> to proceed to your administration area.</p>');
 
 		}
