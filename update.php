@@ -74,7 +74,7 @@
 		
 		$settings['symphony']['build'] = kBUILD;
 		$settings['symphony']['version'] = kVERSION;
-		$settings['symphony']['useragent'] = 'Symphony/' . kBUILD;
+		$settings['general']['useragent'] = 'Symphony/' . kBUILD;
 		
 		if(writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']) === true){
 
