@@ -37,6 +37,7 @@
 	define('DOCROOT', rtrim(dirname(__FILE__), '/'));
 	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . dirname($_SERVER['PHP_SELF']), '/'));
 	
+	require_once('symphony/lib/boot/func.utilities.php');
 	require_once('symphony/lib/boot/defines.php');
 	require_once(TOOLKIT . '/class.general.php');
 
