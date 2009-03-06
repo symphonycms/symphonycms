@@ -83,10 +83,6 @@
 
         $string  = "<?php\n";
 
-        foreach($conf['define'] as $key => $val) {
-                $string .= "\tdefine('". $key ."', '". addslashes($val) ."');\n";
-        } 
-
 		$string .= "\n\t\$settings = array(";
 		foreach($conf['settings'] as $group => $data){
 			$string .= "\r\n\r\n\r\n\t\t###### ".strtoupper($group)." ######";
@@ -98,10 +94,6 @@
 			$string .= "\r\n\t\t########";
 		}
 		$string .= "\r\n\t);\n\n";
-
-        foreach($conf['require'] as $val) {
-                $string .= "\trequire_once(DOCROOT . '". addslashes($val) . "');\n";
-        } 
 
         return GeneralExtended::writeFile($dest . '/config.php', $string, $mode);
 
@@ -1010,12 +1002,7 @@
 
 
 				$conf = array();
-
-  				$conf['define'] = array('DOCROOT' => $kDOCROOT,
-                                		'DOMAIN' => str_replace("http://", NULL, _INSTALL_DOMAIN_));
-
-		        $conf['require'] = array('/symphony/lib/boot/bundle.php');
-				
+			
 				if(@is_dir($fields['docroot'] . '/workspace')){
 					foreach(getDynamicConfiguration() as $group => $settings){
 						if(!is_array($conf['settings'][$group])) $conf['settings'][$group] = array();
@@ -1120,12 +1107,6 @@
 	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
 	RewriteRule .* - [S=14] 
 
-	### IMAGE RULES	
-	RewriteRule ^image\/3\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-f0-9]{3,6})(\/(0|1))?\/(.+)\.(jpg|gif|jpeg|png|bmp)$ /'.$rewrite_base.'symphony/image.php?param=3:$1:$2:$3:$4:$6:$7.$8 [NC,L]
-	RewriteRule ^image\/2\/([0-9]+)\/([0-9]+)\/([1-9])(\/(0|1))?\/(.+)\.(jpg|gif|jpeg|png|bmp)$ /'.$rewrite_base.'symphony/image.php?param=2:$1:$2:$3:0:$5:$6.$7 [NC,L]
-	RewriteRule ^image\/1\/([0-9]+)\/([0-9]+)(\/(0|1))?\/(.+)\.(jpg|gif|jpeg|png|bmp)$ /'.$rewrite_base.'symphony/image.php?param=1:$1:$2:0:0:$4:$5.$6 [NC,L]
-	RewriteRule ^image(\/(0|1))?\/(.+)\.(jpg|gif|jpeg|png|bmp)$ /'.$rewrite_base.'symphony/image.php?param=0:0:0:0:0:$2:$3.$4 [NC,L]
-
 	### CHECK FOR TRAILING SLASH - Will ignore files
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_URI} !/'.trim($rewrite_base, '/').'$
@@ -1167,6 +1148,9 @@ DirectoryIndex index.php
 	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
 	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
 	RewriteRule .* - [S=14] 
+
+	### IMAGE RULES	
+	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ /'.$rewrite_base.'latest/extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
 
 	### CHECK FOR TRAILING SLASH - Will ignore files
 	RewriteCond %{REQUEST_FILENAME} !-f
