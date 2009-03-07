@@ -44,7 +44,7 @@
 			
 			else{
 				
-				$bEven = false;
+				$bOdd = true;
 				
 				foreach ($pages as $page) {
 					$page_title = $this->_Parent->resolvePageTitle($page['id']);
@@ -74,9 +74,9 @@
 						$col_types = Widget::TableData(__('None'), 'inactive');
 					}
 					
-					$aTableBody[] = Widget::TableRow(array($col_title, $col_url, $col_params, $col_types), ($bEven ? 'even' : NULL));
+					$aTableBody[] = Widget::TableRow(array($col_title, $col_url, $col_params, $col_types), ($bOdd ? 'odd' : NULL));
 					
-					$bEven = !$bEven;
+					$bOdd = !$bOdd;
 				}
 			}
 			

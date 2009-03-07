@@ -43,7 +43,7 @@
 
 			else{
 				
-				$bEven = false;
+				$bOdd = true;
 
 				foreach($sections as $s){
 					
@@ -56,9 +56,9 @@
 					$td2->appendChild(Widget::Input('items['.$s->get('id').']', 'on', 'checkbox'));
 
 					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2), ($bEven ? 'even' : NULL));
+					$aTableBody[] = Widget::TableRow(array($td1, $td2), ($bOdd ? 'odd' : NULL));
 					
-					$bEven = !$bEven;
+					$bOdd = !$bOdd;
 
 				}
 			}

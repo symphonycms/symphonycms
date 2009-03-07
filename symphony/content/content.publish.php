@@ -164,7 +164,7 @@
 
 			else{
 
-				$bEven = false;
+				$bOdd = true;
 
 
 				$field_pool = array();
@@ -251,9 +251,9 @@
 					$tableData[count($tableData) - 1]->appendChild(Widget::Input('items['.$entry->get('id').']', NULL, 'checkbox'));
 
 					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow($tableData, ($bEven ? 'even' : NULL));
+					$aTableBody[] = Widget::TableRow($tableData, ($bOdd ? 'odd' : NULL));
 
-					$bEven = !$bEven;
+					$bOdd = !$bOdd;
 
 				}
 			}
