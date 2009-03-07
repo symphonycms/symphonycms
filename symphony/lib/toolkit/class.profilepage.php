@@ -155,7 +155,13 @@
 			
 					$xml_generation = $profiler->retrieveByMessage('XML Generation');
 					$xsl_transformation = $profiler->retrieveByMessage('XSLT Transformation');
-			
+
+					$event_total = 0;
+					foreach($records['events'] as $r) $event_total += $r[1];
+
+					$ds_total = 0;
+					foreach($records['data-sources'] as $r) $ds_total += $r[1];
+
 					$records = array(
 				
 						array(__('Total Database Queries'), $dbstats['queries'], NULL, NULL, false),
