@@ -38,7 +38,7 @@
 			if (!is_array($pages) or empty($pages)) {
 				$aTableBody = array(Widget::TableRow(array(
 					Widget::TableData(__('None found.'), 'inactive', null, count($aTableHead))
-				)));
+				), 'odd'));
 				
 			}
 			

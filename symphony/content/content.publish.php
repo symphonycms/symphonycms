@@ -158,7 +158,7 @@
 			if(!is_array($entries['records']) || empty($entries['records'])){
 
 				$aTableBody = array(
-					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))))
+					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
 				);
 			}
 
