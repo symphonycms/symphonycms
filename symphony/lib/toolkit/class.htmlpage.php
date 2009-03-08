@@ -66,7 +66,7 @@
 		}
 		
 		function addElementToHead($obj, $position=NULL){
-			if(($position && isset($this->_head[$position]))) $position = General::array_find_available_index($position);
+			if(($position && isset($this->_head[$position]))) $position = General::array_find_available_index($this->_head, $position);
 			elseif(!$position) $position = max(0, count($this->_head));			
 			$this->_head[$position] = $obj;
 			return $position;
