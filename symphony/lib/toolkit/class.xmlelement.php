@@ -182,12 +182,10 @@
 			} else {
 				if ($this->_elementStyle == 'xml') {
 					$result .= ' />';
-					
 				} else if (in_array($this->_name, $this->_no_end_tags) || (substr($this->_name, 0, 3) == '!--')) {
-					$result .= '>';
-					
+					$result .= '>';					
 				} else {
-					$result .= "</{$this->_name}>";
+					$result .= "></{$this->_name}>";
 				}
 				
 				$result .= $newline;
