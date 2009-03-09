@@ -465,7 +465,7 @@
 			
 			####
 			# Delegate: FrontendProcessEvents
-			# Description: Maniulate the events array and event element wrapper
+			# Description: Manipulate the events array and event element wrapper
 			# Global: Yes
 			$this->ExtensionManager->notifyMembers(
 				'FrontendProcessEvents', 
