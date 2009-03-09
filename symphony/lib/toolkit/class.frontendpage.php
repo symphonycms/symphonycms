@@ -463,6 +463,22 @@
 		
 		private function __processEvents($events, &$wrapper){
 			
+			####
+			# Delegate: FrontendProcessEvents
+			# Description: Maniulate the events array and event element wrapper
+			# Global: Yes
+			$this->ExtensionManager->notifyMembers(
+				'FrontendProcessEvents', 
+				'/frontend/', 
+				array(
+					'env' => $this->_env, 
+					'events' => &$events, 
+					'wrapper' => &$wrapper, 
+					'page_data' => $this->_pageData
+				)
+			);
+			#####
+
 			if(strlen(trim($events)) > 0){			
 				$events = preg_split('/,\s*/i', $events, -1, PREG_SPLIT_NO_EMPTY);
 				$events = array_map('trim', $events);
