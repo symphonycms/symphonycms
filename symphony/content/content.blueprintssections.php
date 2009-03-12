@@ -461,11 +461,10 @@
 
 						        if($field_id){
 
-									## TODO: Fix me
 									###
-									# Delegate: Create
-									# Description: After creation of a new custom field. The ID is provided.
-									#$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('field_id' => $field_id));			
+									# Delegate: FieldPostCreate
+									# Description: After creation of an Field. New Field object is provided.
+									$this->_Parent->ExtensionManager->notifyMembers('FieldPostCreate', '/blueprints/sections/', array('field' => &$field, 'data' => &$data));
 
 						        }
 							}
@@ -610,13 +609,12 @@
 								if($field->commit()){
 
 									$field_id = $field->get('id');
-									
-									## TODO: Fix Me
+
 									###
-									# Delegate: Create
-									# Delegate: Edit
-									# Description: After creation/editing of a new custom field. The ID is provided.
-									##$ExtensionManager->notifyMembers(($bEdit ? 'Edit' : 'Create'), getCurrentPage(), array('field_id' => $field_id));			
+									# Delegate: FieldPostCreate
+									# Delegate: FieldPostEdit
+									# Description: After creation/editing of an Field. New Field object is provided.
+									$this->_Parent->ExtensionManager->notifyMembers(($bEdit ? 'FieldPostEdit' : 'FieldPostCreate'), '/blueprints/sections/', array('field' => &$field, 'data' => &$data));
 
 								}
 							}
