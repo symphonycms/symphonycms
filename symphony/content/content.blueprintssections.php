@@ -111,16 +111,28 @@
 			$meta['entry_order'] = (isset($meta['entry_order']) ? $meta['entry_order'] : 'date');
 			$meta['subsection'] = (isset($meta['subsection']) ? 1 : 0);	
 			$meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');	
+			$meta['navigation_group'] = (isset($meta['navigation_group']) ? $meta['navigation_group'] : 'Publish');
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 			
+			$div = new XMLElement('div', NULL, array('class' => 'group'));
+			
 			$label = Widget::Label('Name');
 			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
 			
-			if(isset($this->_errors['name'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
-			else $fieldset->appendChild($label);	
+			if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+			else $div->appendChild($label);
+			
+			
+			$label = Widget::Label('Navigation Group <i>Created if does not exist</i>');
+			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
+			
+			if(isset($this->_errors['navigation_group'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
+			else $div->appendChild($label);
+			
+			$fieldset->appendChild($div);				
 			
 			$label = Widget::Label();
 			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : NULL));
@@ -272,11 +284,22 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 			
-			$label = Widget::Label(__('Name'));
+			$div = new XMLElement('div', NULL, array('class' => 'group'));
+			
+			$label = Widget::Label('Name');
 			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
 			
-			if(isset($this->_errors['name'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
-			else $fieldset->appendChild($label);
+			if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+			else $div->appendChild($label);
+			
+			
+			$label = Widget::Label('Navigation Group <i>Created if does not exist</i>');
+			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
+			
+			if(isset($this->_errors['navigation_group'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
+			else $div->appendChild($label);
+			
+			$fieldset->appendChild($div);
 
 			$label = Widget::Label();
 			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : NULL));
@@ -373,7 +396,7 @@
 				$this->_errors = array();
 					
 				## Check to ensure all the required section fields are filled
-				if(!isset($meta['name']) || trim($meta['name']) == ''){
+				if(!isset($meta['name']) || strlen(trim($meta['name'])) == 0){
 					$required = array('Name');
 					$this->_errors['name'] = __('This is a required field.');
 					$canProceed = false;
@@ -384,7 +407,14 @@
 					$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
 					$canProceed = false;
 				}
-
+				
+				## Check to ensure all the required section fields are filled
+				if(!isset($meta['navigation_group']) || strlen(trim($meta['navigation_group'])) == 0){
+					$required = array('Navigation Group');
+					$this->_errors['navigation_group'] = __('This is a required field.');
+					$canProceed = false;
+				}				
+				
 				## Basic custom field checking
 				if(is_array($fields) && !empty($fields)){
 
@@ -513,6 +543,13 @@
 				## Check for duplicate section handle
 				elseif($meta['name'] != $existing_section->get('name') && $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . $meta['name'] . " AND `id` != ' . $section_id . ' LIMIT 1")){
 					$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
+					$canProceed = false;
+				}
+
+				## Check to ensure all the required section fields are filled
+				if(!isset($meta['navigation_group']) || strlen(trim($meta['navigation_group'])) == 0){
+					$required = array('Navigation Group');
+					$this->_errors['navigation_group'] = __('This is a required field.');
 					$canProceed = false;
 				}
 
