@@ -337,27 +337,25 @@
 				
 			return false;			
 		}
-	
+		
+		private static function __navigationFindGroupIndex($nav, $name){
+			foreach($nav as $index => $item){
+				if($item['name'] == $name) return $index;
+			}
+			return false;
+		}
+		
 		function __buildNavigation(){
 
 			$nav = array();
-		
-			$xml = new XmlDoc();
-			if(!$xml->parseFile(ASSETS . '/navigation.xml')) 
-				$this->_Parent->customError(E_USER_ERROR, __('Failed to load Navigation'), __('There was a problem loading the Symphony navigation XML document.'));
-		
-			$nodes = $xml->getArray();
+
+			$xml = simplexml_load_file(ASSETS . '/navigation.xml');
 			
-			$sections_index = 0;
-			$extension_index = 0;
-			
-			foreach($nodes['navigation'] as $n){
+			foreach($xml->xpath('/navigation/group') as $n){
 				
-				$content = $n['group']['attributes'];
-				$children = $n['group'][0]['children'];
-				$index = $n['group']['attributes']['index'];
-				
-				if($n['group']['attributes']['sections'] == 'true') $sections_index = $index;
+				$index = (string)$n->attributes()->index;
+				$children = $n->xpath('children/item');
+				$content = $n->attributes();
 				
 				if(isset($nav[$index])){
 					do{
@@ -365,28 +363,60 @@
 					}while(isset($nav[$index]));
 				}
 				
-				if(!empty($content)) $nav[$index] = $content;
-			
-				if(@is_array($children)){
-					foreach($children as $n){
-						if(!empty($n['item']['attributes'])) $nav[$index]['children'][] = $n['item']['attributes'];
+				$nav[$index] = array(
+					'name' => (string)$content->name,
+					'index' => $index,
+					'children' => array()
+				);
+				
+				if(strlen(trim((string)$content->limit)) > 0){
+					$nav[$index]['limit'] = (string)$content->limit;
+				}
+					
+				if(count($children) > 0){
+					foreach($children as $child){
+						$limit = (string)$child->attributes()->limit;
+						
+						$item = array(
+							'link' => (string)$child->attributes()->link,
+							'name' => (string)$child->attributes()->name,
+							'visible' => ((string)$child->attributes()->visible == 'no' ? 'no' : 'yes'),
+						);
+						
+						if(strlen(trim($limit)) > 0) $item['limit'] = $limit;
+						
+						$nav[$index]['children'][] = $item;
 					}
 				}
 			}
-
+			
 			$sections = $this->_Parent->Database->fetch("SELECT * FROM `tbl_sections` ORDER BY `sortorder` ASC");
 
 			if(is_array($sections) && !empty($sections)){
 				foreach($sections as $s){
+					
+					$group_index = self::__navigationFindGroupIndex($nav, $s['navigation_group']);
+					
+					if($group_index === false){
+						$group_index = General::array_find_available_index($nav, 0);
 
-					//$visible = ($this->_Parent->Author->isDeveloper() || (!$this->_Parent->Author->isDeveloper() && in_array($s['id'], $this->_Parent->Author->getAuthorAllowableSections())));
-
-					$nav[$sections_index]['children'][] = array('link' => '/publish/' . $s['handle'] . '/', 
-															 		'name' => $s['name'], 
-															 		'type' => 'section',
-																	'section' => array('id' => $s['id'], 'handle' => $s['handle']),
-															 		'visible' => ($s['hidden'] == 'no' ? 'yes' : 'no'));
-															
+						$nav[$group_index] = array(
+							'name' => $s['navigation_group'],
+							'index' => $group_index,
+							'children' => array(),
+							'limit' => NULL
+						);
+						
+					}
+									
+					$nav[$group_index]['children'][] = array(
+						'link' => '/publish/' . $s['handle'] . '/', 
+						'name' => $s['name'], 
+						'type' => 'section',
+						'section' => array('id' => $s['id'], 'handle' => $s['handle']),
+						'visible' => ($s['hidden'] == 'no' ? 'yes' : 'no')
+					);
+													
 
 				}
 			}
