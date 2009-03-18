@@ -29,6 +29,7 @@
 
 				array(__('Name'), 'col'),
 				array(__('Entries'), 'col'),
+				array(__('Navigation Group'), 'col'),	
 
 			);	
 
@@ -52,11 +53,12 @@
 					## Setup each cell
 					$td1 = Widget::TableData(Widget::Anchor($s->get('name'), $this->_Parent->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', NULL, 'content'));
 					$td2 = Widget::TableData(Widget::Anchor("$entry_count", URL . '/symphony/publish/' . $s->get('handle') . '/'));
+					$td3 = Widget::TableData($s->get('navigation_group'));
 				
-					$td2->appendChild(Widget::Input('items['.$s->get('id').']', 'on', 'checkbox'));
+					$td3->appendChild(Widget::Input('items['.$s->get('id').']', 'on', 'checkbox'));
 
 					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2), ($bOdd ? 'odd' : NULL));
+					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3), ($bOdd ? 'odd' : NULL));
 					
 					$bOdd = !$bOdd;
 
