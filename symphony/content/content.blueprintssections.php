@@ -113,7 +113,7 @@
 			$meta['entry_order'] = (isset($meta['entry_order']) ? $meta['entry_order'] : 'date');
 			$meta['subsection'] = (isset($meta['subsection']) ? 1 : 0);	
 			$meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');	
-			$meta['navigation_group'] = (isset($meta['navigation_group']) ? $meta['navigation_group'] : 'Publish');
+			$meta['navigation_group'] = (isset($meta['navigation_group']) ? $meta['navigation_group'] : 'Content');
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');

@@ -17,7 +17,7 @@ Visit the forum at <http://overture21.com/forum/>
 
 1. Be sure to run the following MySQL commands to get the new section navigation group functionality. Change `sym_` to match your table prefix value
 
-	ALTER TABLE  `sym_sections` ADD  `navigation_group` VARCHAR( 50 ) NOT NULL DEFAULT  'Publish';
+	ALTER TABLE  `sym_sections` ADD  `navigation_group` VARCHAR( 50 ) NOT NULL DEFAULT  'Content';
 	
 	ALTER TABLE  `sym_sections` ADD INDEX (  `navigation_group` ) ;
 
