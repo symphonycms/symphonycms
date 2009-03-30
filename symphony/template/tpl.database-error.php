@@ -13,6 +13,7 @@
 	$Page->addStylesheetToHead(URL . '/symphony/assets/error.css', 'screen', 30);
 	$Page->addElementToHead(new XMLElement('!--[if IE]><link rel="stylesheet" href="'.URL.'/symphony/assets/legacy.css" type="text/css"><![endif]--'), 40);	
 
+	$Page->addHeaderToPage('HTTP/1.0 500 Server Error');
 	$Page->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
 	$Page->addHeaderToPage('Symphony-Error-Type', 'database');
 	
