@@ -390,26 +390,26 @@ Abstract.defineFallbackMethods(DOM.Event, "removeListener", [
 	}
 ]);
 
-DOM.onready = (function() {
-	var listeners = [],
-		 available = false;
+DOM.onready = function(listener) {
+	DOM.READY_LISTENERS.push(listener);
+};
 
-	DOM.Event.addListener(document, "DOMContentLoaded", respond);
+DOM.isReady = function(event) {
+	DOM.Event.removeListener(document, 'DOMContentLoaded', DOM.isReady);
+	DOM.Event.removeListener(window, 'load', DOM.isReady);
 
-	if ("readyState" in document) {
-		var handler = setInterval(function() {
-			if (available || !/complete|loaded/.test(document.readyState)) return;
+	DOM.READY_LISTENERS.forEach(function(listener) {
+		listener.call(document, event);
+	});
 
-			available = listeners.invoke("call", clearInterval(handler));
-		}, 100)
-	} else DOM.Event.addListener(window, "load", respond);
+	delete DOM.READY_LISTENERS;
+	delete DOM.isReady;
+};
 
-	return listeners.push.bind(listeners);
+DOM.READY_LISTENERS = [];
 
-	function respond() {
-		if (!available) available = listeners.invoke("call");
-	}
-})();
+DOM.Event.addListener(document, 'DOMContentLoaded', DOM.isReady);
+DOM.Event.addListener(window, 'load', DOM.isReady);
 
 // Layout Utilities
 
