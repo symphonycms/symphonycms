@@ -356,15 +356,13 @@ Abstract.defineFallbackMethods(DOM.Event, "addListener", [
 
 		if (!listeners) {
 			var handler = target["on" + type] = function() {
-				var listeners = arguments.callee.LISTENERS, allowDefaultResponse = true;
+				var event = arguments[0] || window.event,
+				    listeners = arguments.callee.LISTENERS,
+				    allowDefaultResponse = true;
 
-				Abstract.call(event, {
-					target        : event.srcElement,
-					currentTarget : this,
-					preventDefault: function() {
-						allowDefaultResponse = false;
-					}
-				});
+				event.target         = event.srcElement;
+				event.currentTarget  = this;
+				event.preventDefault = function() { allowDefaultResponse = false };
 
 				listeners.invoke("call", this, event);
 
