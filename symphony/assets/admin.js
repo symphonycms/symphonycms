@@ -834,20 +834,6 @@ UIControl.remove = function(selector) {
 
 DOM.addClass('active', document.documentElement);
 
-UIControl.deploy("label", function(label) {
-	var control  = DOM.getLastElement("*", label),
-		 overflow = control.offsetWidth - label.offsetWidth;
-
-	if (overflow <= 0) return;
-
-	if (DOM.hasClass("group", label.parentNode)) {
-		var width = label.offsetWidth,
-			 ratio = 1 - overflow / width;
-
-		control.style.width = ratio * 100 + "%";
-	} else label.style.paddingRight = overflow + "px";
-});
-
 UIControl.deploy("input[type=checkbox]", function(checkbox) {
 	DOM.addClass("toggle", checkbox.parentNode);
 });

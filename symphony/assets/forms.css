@@ -27,6 +27,11 @@ select {
 	display: block;
 	margin-top: 2px;
 	width: 100%;
+	box-sizing: border-box;
+	-khtml-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
 }
 select[multiple] {
 	height: 10em;
@@ -38,6 +43,11 @@ label input {
 	font-size: 109.09%;
 	font-family: inherit;
 	cursor: text;
+	box-sizing: border-box;
+	-khtml-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
 }
 label input {
 	padding: 2px;
