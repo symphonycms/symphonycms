@@ -472,7 +472,11 @@
 								else{
 									$link = '/' . ltrim($item['link'], '/');
 								}
-		
+								
+								if(!is_numeric($item['location'])){
+									$item['location'] = $this->__findLocationIndexFromName($nav, $item['location']);
+								}
+								
 								$nav[$item['location']]['children'][] = array(
 									
 									'link' => $link,
@@ -511,6 +515,16 @@
 			ksort($nav);		
 			$this->_navigation = $nav;
 		}		
+		
+		private function __findLocationIndexFromName($nav, $name){
+			foreach($nav as $index => $group){
+				if($group['name'] == $name){
+					return $index;
+				}
+			}
+			
+			return false;
+		}
 		
 		function __findActiveNavigationGroup(&$nav, $pageroot, $pattern=false){
 			
@@ -556,4 +570,3 @@
 		}
 	}
 
-?>
