@@ -1,7 +1,6 @@
 <?php
 
-	require_once(CORE . '/class.symphony.php');
-	require_once(TOOLKIT . '/class.xmldoc.php');	
+	require_once(CORE . '/class.symphony.php');	
 	require_once(TOOLKIT . '/class.lang.php');
 	require_once(TOOLKIT . '/class.manager.php');	
 	require_once(TOOLKIT . '/class.frontendpage.php');

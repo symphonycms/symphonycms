@@ -53,7 +53,7 @@
 
 				self::$_initialized = true;
 
-				if (session_id() == '') session_start();
+				if(strlen(trim(session_id())) == 0) session_start();
 			}
 
 			return session_id();

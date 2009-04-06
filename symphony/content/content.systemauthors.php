@@ -38,12 +38,12 @@
 			if(!is_array($authors) || empty($authors)){
 
 				$aTableBody = array(
-									Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))))
+									Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
 								);
 			}
 
 			else{
-				$bEven = false;
+				$bOdd = true;
 				foreach($authors as $a){			
 
 					if(intval($a->get('superuser')) == 1) $group = 'admin'; else $group = 'author'; 
@@ -61,9 +61,9 @@
 					if($a->get('id') != $this->_Parent->Author->get('id')) $td3->appendChild(Widget::Input('items['.$a->get('id').']', NULL, 'checkbox'));
 					
 					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3), ($bEven ? 'even' : NULL));
+					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3), ($bOdd ? 'odd' : NULL));
 
-					$bEven = !$bEven;			
+					$bOdd = !$bOdd;			
 
 				}
 			}

@@ -158,13 +158,13 @@
 			if(!is_array($entries['records']) || empty($entries['records'])){
 
 				$aTableBody = array(
-					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))))
+					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
 				);
 			}
 
 			else{
 
-				$bEven = false;
+				$bOdd = true;
 
 
 				$field_pool = array();
@@ -251,9 +251,9 @@
 					$tableData[count($tableData) - 1]->appendChild(Widget::Input('items['.$entry->get('id').']', NULL, 'checkbox'));
 
 					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow($tableData, ($bEven ? 'even' : NULL));
+					$aTableBody[] = Widget::TableRow($tableData, ($bOdd ? 'odd' : NULL));
 
-					$bEven = !$bEven;
+					$bOdd = !$bOdd;
 
 				}
 			}

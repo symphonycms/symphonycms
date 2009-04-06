@@ -29,7 +29,7 @@
 			if(!is_array($extensions) || empty($extensions)){
 
 				$aTableBody = array(
-									Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))))
+									Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
 								);
 			}
 

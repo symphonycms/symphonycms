@@ -422,7 +422,7 @@
 		***/
 		public static function array_find_available_index($array, $seed=NULL){
 			
-			if($seed) $index = $seed;
+			if(!is_null($seed)) $index = $seed;
 			else{
 				$keys = array_keys($array);
 				sort($keys);

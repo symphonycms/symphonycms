@@ -326,7 +326,8 @@
 	        elseif($this->_lastResult == NULL){
 	            return array();
 	        }
-				
+
+			$newArray = array();
 	        foreach ($this->_lastResult as $row){
 	            $newArray[] = get_object_vars($row);
 	        }		

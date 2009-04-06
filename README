@@ -13,8 +13,19 @@ technologies. This repository represents version 2.0.2 and is considered stable.
 
 Visit the forum at http://overture21.com/forum/ 
 
-
 ** See further down for installation instructions **
+
+
+IMPORTANT!! The following is not apart of the installer/updater and must be done separately. 
+
+1. Be sure to run the following MySQL commands to get the new section navigation group functionality
+
+	ALTER TABLE  `sym_sections` ADD  `navigation_group` VARCHAR( 50 ) NOT NULL DEFAULT  'Content';
+	ALTER TABLE  `sym_sections` ADD INDEX (  `navigation_group` ) ;
+
+	Change `sym_ to match your table prefix value
+	
+	
 
 [UPDATING VIA GIT]
 
@@ -24,7 +35,6 @@ Visit the forum at http://overture21.com/forum/
 	git submodule update
 
 Finally, follow from step 5 below.
-
 
 [UPDATING]
 
