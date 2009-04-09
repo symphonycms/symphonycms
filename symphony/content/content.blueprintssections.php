@@ -3,6 +3,7 @@
 	require_once(TOOLKIT . '/class.administrationpage.php');
  	require_once(TOOLKIT . '/class.sectionmanager.php');
  	require_once(TOOLKIT . '/class.fieldmanager.php');
+	require_once(TOOLKIT . '/class.entrymanager.php');
 
 	Class contentBlueprintsSections extends AdministrationPage{
 
@@ -79,7 +80,8 @@
 			
 			$options = array(
 				array(NULL, false, __('With Selected...')),
-				array('delete', false, __('Delete'))
+				array('delete', false, __('Delete')),
+				array('delete-entries', false, __('Delete Entries'))
 			);
 
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
@@ -379,6 +381,21 @@
 						$sectionManager = new SectionManager($this->_Parent);
 						foreach($checked as $section_id) $sectionManager->delete($section_id);
 
+						redirect(URL . '/symphony/blueprints/sections/');
+						break;
+						
+					case 'delete-entries':
+
+						$entryManager = new EntryManager($this->_Parent);
+						foreach($checked as $section_id) {
+							$entries = $entryManager->fetch(NULL, $section_id, NULL, NULL, NULL, NULL, false, false);
+							$entry_ids = array();
+							foreach($entries as $entry) {
+								$entry_ids[] = $entry['id'];
+							}
+							$entryManager->delete($entry_ids);
+						}
+						
 						redirect(URL . '/symphony/blueprints/sections/');
 						break;
 				}
