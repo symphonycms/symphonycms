@@ -181,13 +181,13 @@ h1 a:hover,
 }
 .selected,
 .selected td {
-	border-color: #617dc5 !important;
-	background-color: #5273c0 !important;
+	border-color: #617dc5;
+	background-color: #5273c0;
 }
 .movable,
 tr.movable td,
-/* Until CSS3 widely supported, tr.movable:nth-child(odd) td */
-tr.movable.odd td {
+tr.movable.odd td,
+tr.movable:nth-child(odd) td {
 	border-color: #998;
 	background-color: #887;
 }
