@@ -75,7 +75,9 @@
 				
 				$datasourceManager = new DatasourceManager($this->_Parent);
 				$existing =& $datasourceManager->create($handle, NULL, false);
-
+				
+				if (!$existing->allowEditorToParse()) redirect(URL . '/symphony/blueprints/datasources/info/' . $handle . '/');
+				
 				$about = $existing->about();
 				$fields['name'] = $about['name'];
 				$fields['order'] = $existing->dsParamORDER;

@@ -78,7 +78,6 @@
 
 					else{
 						$item->appendChild(Widget::Anchor($ds['name'], URL . '/symphony/blueprints/datasources/info/' . strtolower($ds['handle']) . '/', 'data.' . $ds['handle'] . '.php'));	
-						$item->setAttribute('class', 'external');
 					}
 
 					$list->appendChild($item);
