@@ -687,30 +687,59 @@
 			elseif(isset($about['author']['email']))
 				$link = Widget::Anchor($about['author']['name'], 'mailto:' . $about['author']['email']);
 							
-			$fieldset = new XMLElement('fieldset');
-			$dl = new XMLElement('dl');
-			
-			$dl->appendChild(new XMLElement('dt', __('Author')));
-			$dl->appendChild(new XMLElement('dd', $link->generate(false)));
-			
-			$dl->appendChild(new XMLElement('dt', __('Version')));
-			$dl->appendChild(new XMLElement('dd', $about['version']));	
+			foreach($about as $key => $value) {
+				
+				$fieldset = NULL;
+				
+				switch($key) {
+					case 'author':
+						$fieldset = new XMLElement('fieldset');
+						$fieldset->appendChild(new XMLElement('legend', 'Author'));
+						$fieldset->appendChild(new XMLElement('p', $link->generate(false)));
+						break;
 					
-			$dl->appendChild(new XMLElement('dt', __('Release Date')));
-			$dl->appendChild(new XMLElement('dd', DateTimeObj::get(__SYM_DATE_FORMAT__, strtotime($about['release-date'])))); //$date->get(true, true, strtotime($about['release-date']))));			
+					case 'version':
+						$fieldset = new XMLElement('fieldset');
+						$fieldset->appendChild(new XMLElement('legend', 'Version'));
+						$fieldset->appendChild(new XMLElement('p', $value . ', released on ' . DateTimeObj::get(__SYM_DATE_FORMAT__, strtotime($about['release-date']))));
+						break;
+						
+					case 'description':
+						$fieldset = new XMLElement('fieldset');
+						$fieldset->appendChild(new XMLElement('legend', 'Description'));
+						$fieldset->appendChild((is_object($about['description']) ? $about['description'] : new XMLElement('p', $about['description'])));
+					
+					case 'example':
+						if (is_callable(array($datasource, 'example'))) {
+							$fieldset = new XMLElement('fieldset');
+							$fieldset->appendChild(new XMLElement('legend', 'Example XML'));
+
+							$example = $datasource->example();
+
+							if(is_object($example)) {
+								 $fieldset->appendChild($example);
+							} else {
+								$p = new XMLElement('p');
+								$p->appendChild(new XMLElement('pre', '<code>' . str_replace('<', '&lt;', $example) . '</code>'));
+								$fieldset->appendChild($p);
+							}
+						}
+						break;
+				}
+				
+				if ($fieldset) {
+					$fieldset->setAttribute('class', 'settings');				
+					$this->Form->appendChild($fieldset);
+				}
+				
+			}
 			
-			$fieldset->appendChild($dl);
-			
-			$dl = new XMLElement('dl');
-			$dl->setAttribute('class', 'important');
-			
+			/*
 			$dl->appendChild(new XMLElement('dt', __('URL Parameters')));
 			if(!is_array($about['recognised-url-param']) || empty($about['recognised-url-param'])){
 				$dl->appendChild(new XMLElement('dd', '<code>'.__('None').'</code>'));
-			}
-			
+			}			
 			else{
-				
 				$dd = new XMLElement('dd');
 				$ul = new XMLElement('ul');
 				
@@ -718,28 +747,9 @@
 
 				$dd->appendChild($ul);
 				$dl->appendChild($dd);
-				
-			}
-			
+			}			
 			$fieldset->appendChild($dl);
-			
-			$fieldset->appendChild((is_object($about['description']) ? $about['description'] : new XMLElement('p', $about['description'])));
-
-
-			if(is_callable(array($datasource, 'example'))){
-				$fieldset->appendChild(new XMLElement('h3', __('Example XML')));
-				
-				$example = $datasource->example();
-				
-				if(is_object($example)) $fieldset->appendChild($example);
-				else{
-					$p = new XMLElement('p');
-					$p->appendChild(new XMLElement('pre', '<code>' . str_replace('<', '&lt;', $example) . '</code>'));
-					$fieldset->appendChild($p);
-				}
-			}
-			
-			$this->Form->appendChild($fieldset);
+			*/
 	
 		}
 		
