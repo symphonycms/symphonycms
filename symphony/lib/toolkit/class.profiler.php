@@ -27,12 +27,12 @@
 			return $last[1];
 		}
 		
-		function sample($msg, $type=PROFILE_RUNNING_TOTAL, $group='General'){	
+		function sample($msg, $type=PROFILE_RUNNING_TOTAL, $group='General', $queries=NULL){	
 		
 			$start = NULL;
 		
 			if($type == PROFILE_RUNNING_TOTAL)
-				$this->_records[] = array($msg, precision_timer('stop', $this->_starttime), precision_timer(), $group);
+				$this->_records[] = array($msg, precision_timer('stop', $this->_starttime), precision_timer(), $group, $queries);
 			
 			else{
 				
@@ -42,7 +42,7 @@
 				}
 				
 				$prev = end($this->_records);
-				$this->_records[] = array($msg, precision_timer('stop', ($start ? $start : $prev[2])), precision_timer(), $group);					
+				$this->_records[] = array($msg, precision_timer('stop', ($start ? $start : $prev[2])), precision_timer(), $group, $queries);
 			}
 		}
 		

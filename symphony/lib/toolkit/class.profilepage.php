@@ -123,7 +123,7 @@
 			
 					foreach($records['data-sources'] as $r){
 						$dl->appendChild(new XMLElement('dt', $r[0]));
-						$dl->appendChild(new XMLElement('dd', $r[1] . ' s'));
+						$dl->appendChild(new XMLElement('dd', $r[1] . ' s from ' . $r[4] . ' ' . ($r[4] == 1 ? 'query' : 'queries')));
 						$ds_total += $r[1];			
 					}
 			
@@ -140,7 +140,7 @@
 			
 					foreach($records['events'] as $r){
 						$dl->appendChild(new XMLElement('dt', $r[0]));
-						$dl->appendChild(new XMLElement('dd', $r[1] . ' s'));
+						$dl->appendChild(new XMLElement('dd', $r[1] . ' s from ' . $r[4] . ' ' . ($r[4] == 1 ? 'query' : 'queries')));
 						$event_total += $r[1];			
 					}
 			

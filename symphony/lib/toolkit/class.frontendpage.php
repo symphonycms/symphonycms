@@ -445,6 +445,9 @@
 
 				$this->_Parent->Profiler->seed();
 				
+				$dbstats = $this->_Parent->Database->getStatistics();
+				$queries = $dbstats['queries'];
+				
 				$ds = $pool[$handle];
 				$ds->processParameters(array('env' => $this->_env, 'param' => $this->_param));
 				
@@ -454,7 +457,10 @@
 					
 				endif;
 				
-				$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Datasource');
+				$dbstats = $this->_Parent->Database->getStatistics();
+				$queries = $dbstats['queries'] - $queries;
+				
+				$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Datasource', $queries);
 				
 				unset($ds);
 				
@@ -487,7 +493,10 @@
 			
 				foreach($events as $handle){
 					$this->_Parent->Profiler->seed();
-
+					
+					$dbstats = $this->_Parent->Database->getStatistics();
+					$queries = $dbstats['queries'];
+					
 					$event = $this->EventManager->create($handle, array('env' => $this->_env, 'param' => $this->_param));
 				
 					if($xml = $event->load()):
@@ -497,7 +506,10 @@
 										
 					endif;
 				
-					$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Event');
+					$dbstats = $this->_Parent->Database->getStatistics();
+					$queries = $dbstats['queries'] - $queries;
+
+					$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Datasource', $queries);
 				
 				}
 			}
