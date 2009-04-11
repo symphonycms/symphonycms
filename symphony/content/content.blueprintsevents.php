@@ -46,7 +46,7 @@
 								'Event created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Events</a>', 
 								array(
 									DateTimeObj::get(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/blueprints/datasources/new/', 
+									URL . '/symphony/blueprints/events/new/', 
 									URL . '/symphony/blueprints/components/' 
 								)
 							), 
