@@ -1,5 +1,10 @@
 var Symphony;
 
+/*
+	Bugs: 1. Login <body onload="document.forms[0].elements.username.focus()">
+	      2. CSS .odd overrides .selected under #utilities
+*/
+
 (function($) {
 	Symphony = {
 		WEBSITE: $('script')[0].src.split('/symphony/')[0],
@@ -45,6 +50,7 @@ var Symphony;
 						movable.target.insertBefore(t);
 						break;
 					}
+					movable.delta--;
 					t = n;
 				} while (true);
 			} else if (y > movable.max) {
@@ -55,6 +61,7 @@ var Symphony;
 						movable.target.insertAfter(t);
 						break;
 					}
+					movable.delta++;
 					t = n;
 				} while (true);
 			} else {
@@ -62,11 +69,7 @@ var Symphony;
 			}
 
 			movable.update(movable.target);
-			movable.delta++;
-
-			movable.target.parent().children().each(function(i) {
-				$(this).toggleClass('odd', i % 2 === 0);
-			});
+			movable.target.parent().children().each(function(i) {$(this).toggleClass('odd', i % 2 === 0)});
 		},
 		drop: function() {
 			$(document).unbind('mousemove', movable.move);
@@ -105,18 +108,18 @@ var Symphony;
 	$('table.orderable').live('reorder', function() {
 		var t = $(this).addClass('busy'),
 		    o = {
-				    type: 'POST',
-				    url: Symphony.WEBSITE + '/symphony/ajax/reorder' + location.href.slice(Symphony.WEBSITE.length + 9),
-				    data: $('input', this).map(function(i) {return this.name + '=' + i}).get().join('&'),
-				    complete: function(x) {
-					    if (x.status === 200) {
-						    Symphony.Message.clear('reorder');
-					    } else {
-						    Symphony.Message.post(Symphony.Language.REORDER_ERROR, 'reorder error');
-					    }
-					    t.removeClass('busy');
-				    }
-			    };
+				type: 'POST',
+				url: Symphony.WEBSITE + '/symphony/ajax/reorder' + location.href.slice(Symphony.WEBSITE.length + 9),
+				data: $('input', this).map(function(i) {return this.name + '=' + i}).get().join('&'),
+				complete: function(x) {
+					if (x.status === 200) {
+						Symphony.Message.clear('reorder');
+					} else {
+						Symphony.Message.post(Symphony.Language.REORDER_ERROR, 'reorder error');
+					}
+					t.removeClass('busy');
+				}
+			};
 
 		$.ajax(o);
 	});
@@ -159,13 +162,13 @@ var Symphony;
 
 	$(function() {
 		// Ugly DOM maintenance
-		$('table input').parents('table').addClass('selectable');
+		$('table:has(input)').addClass('selectable');
 
 		if (/[?&]debug[&=][^#]*#line-\d+$/.test(location.href)) {
 			$('ol a').eq(parseInt(/\d+$/.exec(location.href)[0], 10) - 1).addClass('active');
 		}
 
-		$('ul.tags > li, #nav').mousedown(function() {
+		$('ul.tags > li, #nav > li').mousedown(function() {
 			return false;
 		});
 
@@ -174,7 +177,7 @@ var Symphony;
 			var a = $(this),
 				b = a.next('p');
 
-			if (a.find('label[title]').length > 0) {
+			if (a.find('label').length !== 3) {
 				return;
 			}
 
@@ -184,7 +187,6 @@ var Symphony;
 			$('#change-password').click(function() {
 				$(this.parentNode.parentNode).replaceWith(a.add(b));
 				a.find('input')[0].focus();
-				return false;
 			});
 		});
 
@@ -203,15 +205,12 @@ var Symphony;
 			a.click(function() {
 				a.attr('title', Symphony.Language[(s = !s) ? 'HIDE_CONFIG' : 'SHOW_CONFIG']).toggleClass('active');
 				c.animate({height: s ? h : 0});
-				return false;
 			}).click();
 		});
 
 		// Upload fields
-		$('<em>' + Symphony.Language.REMOVE_FILE + '</em>').appendTo($('label.file a').parent()).click(function() {
+		$('<em>' + Symphony.Language.REMOVE_FILE + '</em>').appendTo('label.file:has(a)').click(function() {
 			$(this.parentNode).html('<input name="' + $(this).siblings('input').attr('name') + '" type="file">');
-			$(this).remove();
-			return false;
 		});
 
 		// confirm() dialogs
@@ -222,7 +221,7 @@ var Symphony;
 			return confirm(t.replace('{$action}', this.firstChild.data.toLowerCase()).replace('{$name}', n));
 		});
 
-		if ($('select[name=with-selected] option.confirm').length > 0) {
+		if ($('[name=with-selected] option.confirm').length > 0) {
 			$('form').submit(function() {
 				var i = $('table input:checked').length,
 				    t = Symphony.Language[i > 1 ? 'CONFIRM_MANY' : 'CONFIRM_SINGLE'],
@@ -240,7 +239,7 @@ var Symphony;
 		// XSLT utilities
 		$('#utilities a').each(function() {
 			var a = $(this.parentNode),
-			    r = new RegExp('href=["\']?../utilities/' + $(this).text());
+			    r = new RegExp('href=["\']?\\.{2}/utilities/' + $(this).text());
 
 			$('textarea').blur(function() {
 				a[r.test(this.value) ? 'addClass' : 'removeClass']('selected');
@@ -278,7 +277,7 @@ var Symphony;
 			$('form').submit(function() {
 				$('ol > li', m).each(function(i) {
 					$('input,select,textarea', this).each(function() {
-						this.name = this.name.replace(/\[\-?\d+(?=])/, '[' + i);
+						this.name = this.name.replace(/\[-?\d+(?=])/, '[' + i);
 					});
 				});
 			});
@@ -287,7 +286,7 @@ var Symphony;
 				var a = $(this);
 
 				if (a.hasClass('inactive')) {
-					return true;
+					return;
 				}
 
 				if (a.is(':last-child')) {
@@ -303,8 +302,6 @@ var Symphony;
 						$('input,select,textarea', this).eq(0).focus();
 					});
 				}
-
-				return false;
 			}
 		});
 
