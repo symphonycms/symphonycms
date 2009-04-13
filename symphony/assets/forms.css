@@ -352,6 +352,18 @@ ul.tags .more:hover {
 #utilities li:first-child {
 	border-top: none;
 }
+#utilities .odd,
+#utilities > :nth-child(odd) {
+	background-color: #f5f5f4;
+}
+#utilities .selected {
+	border-color: #617dc5;
+	background-color: #5273c0;
+}
+#utilities .selected.odd,
+#utilities .selected:nth-child(odd) {
+	background-color: #5677c3;
+}
 #components {
 	padding-bottom: 58px;
 }
@@ -383,60 +395,6 @@ ul.tags .more:hover {
 	float: left;
 	margin-left: -24em;
 	width: 22em;
-}
-.calendar th {
-	padding-bottom: 0.25em;
-	font-weight: normal;
-	font-size: 92.31%;
-}
-.calendar td:hover {
-	background-color: #434340;
-}
-.calendar td,
-.calendar td.inactive {
-	border: 1px solid #484846;
-	width: 14.28%;
-	background-color: #383836;
-	text-align: center;
-	line-height: 2.75;
-	cursor: pointer;
-}
-.calendar td.odd:hover {
-	background-color: #3d3d3a;
-}
-.calendar td.odd,
-.calendar td.odd.inactive {
-	background-color: #323230;
-}
-.calendar td.inactive {
-	color: #686864;
-	cursor: default;
-}
-.calendar strong {
-	display: block;
-	position: relative;
-	margin: -1px;
-	border: 1px solid #ddc;
-	background-color: #56564b;
-	color: #fff;
-	text-shadow: -1px 2px 2px #333;
-	font-weight: bold;
-	cursor: default;
-}
-.calendar label + label {
-	border-bottom: 1px solid #887;
-	padding-bottom: 0.75em;
-}
-.calendar a.slider {
-	position: absolute;
-	bottom: -0.4em;
-	left: 76%;
-	text-decoration: none;
-	text-shadow: -1px 2px 2px #222;
-	font-size: 2.5em;
-	line-height: 1;
-	color: #ddc;
-	cursor: move;
 }
 .file input {
 	margin: -3px 0;

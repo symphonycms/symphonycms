@@ -179,16 +179,11 @@ h1 a:hover,
 	height: 0;
 	overflow: hidden;
 }
-.selected,
-.selected td,
-#utilities .selected {
+.selected {
 	border-color: #617dc5;
 	background-color: #5273c0;
 }
-.movable,
-tr.movable td,
-tr.movable.odd td,
-tr.movable:nth-child(odd) td {
+.movable {
 	border-color: #998;
 	background-color: #887;
 }
