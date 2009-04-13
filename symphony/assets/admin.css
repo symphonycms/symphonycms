@@ -180,7 +180,8 @@ h1 a:hover,
 	overflow: hidden;
 }
 .selected,
-.selected td {
+.selected td,
+#utilities .selected {
 	border-color: #617dc5;
 	background-color: #5273c0;
 }

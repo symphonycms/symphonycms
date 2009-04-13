@@ -43,6 +43,8 @@
 			
 			if(!$emergency && $this->_Parent->isLoggedIn()) redirect(URL . '/symphony/');
 
+			$this->Body->setAttribute('onload', 'document.forms[0].elements[0].focus()');
+				
 			$this->Form = Widget::Form('', 'post');
 			
 			$this->Form->appendChild(new XMLElement('h1', __('Symphony')));
@@ -118,8 +120,7 @@
 				
 				$label = Widget::Label(__('Password'));
 				$label->appendChild(Widget::Input('password', NULL, 'password'));
-				
-				
+
 				if($this->_invalidPassword){
 					$div = new XMLElement('div', NULL, array('class' => 'invalid'));					
 					$div->appendChild($label);

@@ -352,9 +352,6 @@ ul.tags .more:hover {
 #utilities li:first-child {
 	border-top: none;
 }
-#utilities li:nth-child(odd) {
-	background-color: #f5f5f4;
-}
 #components {
 	padding-bottom: 58px;
 }
