@@ -241,14 +241,17 @@
 
 			$group->appendChild($div);
 					
-			$div = new XMLElement('div', NULL, array('class' => 'triple group'));
+			$div = new XMLElement('div');
 			if($this->_context[0] == 'edit') {
 				$div->setAttribute('id', 'change-password');
+				$div->setAttribute('class', 'triple group');
 
 				$label = Widget::Label(__('Old Password'));
 				if(isset($this->_errors['old-password'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['old-password']));	
 				$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password'));
 				$div->appendChild((isset($this->_errors['old-password']) ? $this->wrapFormElementWithError($label, $this->_errors['old-password']) : $label));
+			} else {
+				$div->setAttribute('class', 'group');
 			}
 
 			$label = Widget::Label(($this->_context[0] == 'edit' ? __('New Password') : __('Password')));		
