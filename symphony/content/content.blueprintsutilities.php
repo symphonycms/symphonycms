@@ -118,9 +118,15 @@
 				
 				$ul = new XMLElement('ul');
 				$ul->setAttribute('id', 'utilities');
-			
+
+				$i = 0;
 				foreach($utilities as $util){
 					$li = new XMLElement('li');
+
+					if ($i++ % 2 != 1) {
+						$li->setAttribute('class', 'odd');
+					}
+
 					$li->appendChild(Widget::Anchor($util, URL . '/symphony/blueprints/utilities/edit/' . str_replace('.xsl', '', $util) . '/', NULL));
 					$ul->appendChild($li);
 				}
