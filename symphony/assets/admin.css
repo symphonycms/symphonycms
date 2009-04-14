@@ -8,6 +8,7 @@ form {
 	margin-top: -5em;
 	padding: 0 19px 5em;
 	min-height: 100%;
+	overflow: hidden;
 }
 h1 {
 	margin: 0 -19px;
@@ -32,21 +33,21 @@ h1 a:hover,
 	position: relative;
 	z-index: 3;
 	float: left;
-	margin: -5px 0 1.3em -19px;
-	padding: 0 38px 0 0;
+	margin: -5px 0 1.2em -19px;
+	padding: 5px 38px 5px 0;
 	width: 100%;
 	background: url("images/navigation.png") 0 -60px repeat-x;
 	color: #646464;
 	white-space: nowrap;
 	list-style: none;
 	text-transform: uppercase;
-	font: bold 90.91%/2px Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
+	font: bold 90.91%/0 Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
 }
 #nav > li {
 	float: left;
-	margin: 5px -19px 5px 19px;
-	padding: 14px 1em;
-	height: 2px;
+	margin: 0 -19px 0 19px;
+	padding: 15px 1em;
+	height: 0;
 }
 #nav > li:hover,
 #nav > li.active {
@@ -92,11 +93,11 @@ h1 a:hover,
 /* User */
 #usr {
 	position: absolute;
-	right: 0;
 	bottom: 0;
 	left: 0;
+	width: 100%;
 	margin: 0;
-	padding: 1.75em 12px;
+	padding: 1.75em 0;
 	background: #353530 url("images/navigation.png") 0 -95px repeat-x;
 	text-align: right;
 	text-shadow: -1px 2px 3px #111;
@@ -104,6 +105,7 @@ h1 a:hover,
 }
 #usr li {
 	display: inline;
+	margin-right: 12px;
 }
 #usr a {
 	padding: 5px;
@@ -237,7 +239,7 @@ pre code {
 a.button {
 	position: absolute;
 	right: 0;
-	bottom: 2px;
+	bottom: 3px;
 	padding-top: 15px;
 	height: 0;
 	width: 0;

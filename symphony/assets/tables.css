@@ -23,7 +23,9 @@ th:first-child,
 td:first-child {
 	padding-left: 19px;
 }
-tr.odd td,
+tr.odd td {
+	background-color: #f5f5f4;
+}
 tr:nth-child(odd) td {
 	background-color: #f5f5f4;
 }
@@ -31,12 +33,18 @@ tr.selected td {
 	border-color: #617dc5;
 	background-color: #5273c0;
 }
-tr.selected.odd td,
+tr.selected.odd td {
+	background-color: #5677c3;
+}
 tr.selected:nth-child(odd) td {
 	background-color: #5677c3;
 }
 tr.movable td,
-tr.movable.odd td,
+tr.odd.movable td,
+tr.selected.odd.movable td {
+	border-color: #998;
+	background-color: #887;
+}
 tr.movable:nth-child(odd) td {
 	border-color: #998;
 	background-color: #887;
@@ -83,30 +91,18 @@ th a.active[href$=asc]:hover:after {
 div.actions {
 	padding: 18px 19px 0 50%;
 	text-align: right;
-	height: 93px;
-}
-div.actions input:first-child {
-	padding: 1px;
-	width: 12em;
-	color: #aa9;
-	font-family: inherit;
-	vertical-align: top;
-	cursor: text;
-}
-div.actions input.active,
-div.actions input:first-child:focus {
-	color: #000;
+	height: 38px;
 }
 div.actions select {
 	margin: 0 8px 0 11px;
 }
 div.actions + ul.page {
-	margin-top: -113px;
+	margin-top: -58px;
 }
 ul.page {
 	margin: 0;
 	padding: 20px 50px 0 19px;
-	height: 93px;
+	height: 36px;
 	color: #887;
 }
 ul.page li {

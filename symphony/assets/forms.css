@@ -23,6 +23,9 @@ label {
 label[title] {
 	cursor: help;
 }
+label > i {
+	top: 0;
+}
 select {
 	display: block;
 	margin-top: 2px;
@@ -314,6 +317,7 @@ ul.tags .more:hover {
 .subsection .actions select {
 	display: inline;
 	margin-top: 0;
+	min-width: 10em;
 	width: auto;
 }
 
@@ -352,7 +356,9 @@ ul.tags .more:hover {
 #utilities li:first-child {
 	border-top: none;
 }
-#utilities .odd,
+#utilities .odd {
+	background-color: #f5f5f4;
+}
 #utilities > :nth-child(odd) {
 	background-color: #f5f5f4;
 }
@@ -360,7 +366,9 @@ ul.tags .more:hover {
 	border-color: #617dc5;
 	background-color: #5273c0;
 }
-#utilities .selected.odd,
+#utilities .selected.odd {
+	background-color: #5677c3;
+}
 #utilities .selected:nth-child(odd) {
 	background-color: #5677c3;
 }
@@ -375,26 +383,6 @@ ul.tags .more:hover {
 }
 #components li {
 	margin-bottom: 0.75em;
-}
-.calendar {
-	margin-bottom: 1.5em;
-	padding: 1.25em 1.5em 0;
-	overflow: hidden;
-	background-color: #353533;
-	color: #fff;
-}
-.primary .calendar {
-	padding-left: 25.5em;
-}
-.calendar table {
-	margin-bottom: 1.5em;
-	border-collapse: collapse;
-	width: 100%;
-}
-.primary .calendar table {
-	float: left;
-	margin-left: -24em;
-	width: 22em;
 }
 .file input {
 	margin: -3px 0;
@@ -425,29 +413,4 @@ ul.tags .more:hover {
 .code {
 	font: 115%/1.5 Monaco, Consolas, Andale Mono, monospace;
 	font-size-adjust: 0.5;
-}
-.editor.button {
-	float: right;
-	padding: 16px 0 0 16px;
-	height: 0;
-	width: 0;
-	overflow: hidden;
-	background: #353533 url("images/editor.png") no-repeat;
-}
-#TextEditorSettings {
-	clear: both;
-	margin-bottom: 1.5em;
-	padding: 1em 1.67em 0;
-	overflow: hidden;
-	background-color: #353533;
-	color: #fff;
-}
-#TextEditorSettings h3 {
-	float: left;
-	width: 100%;
-	margin: 0 -1.67em 1em;
-	border-bottom: 1px solid #454440;
-	padding: 0 1.67em 0.5em;
-	color: #bba;
-	text-shadow: -1px 2px 3px #111;
 }
