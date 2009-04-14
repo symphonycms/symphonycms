@@ -64,7 +64,7 @@ var Symphony;
 			}
 
 			movable.update(movable.target);
-			movable.target.parent().children().each(function(i) {$(this).toggleClass('odd', i % 2 === 0)});
+			movable.target.parent().children().each(function(i) { $(this).toggleClass('odd', i % 2 === 0); });
 		},
 		drop: function() {
 			$(document).unbind('mousemove', movable.move);
@@ -106,7 +106,7 @@ var Symphony;
 		$.ajax({
 			type: 'POST',
 			url: Symphony.WEBSITE + '/symphony/ajax/reorder' + location.href.slice(Symphony.WEBSITE.length + 9),
-			data: $('input', this).map(function(i) {return this.name + '=' + i}).get().join('&'),
+			data: $('input', this).map(function(i) { return this.name + '=' + i; }).get().join('&'),
 			complete: function(x) {
 				if (x.status === 200) {
 					Symphony.Message.clear('reorder');
@@ -126,7 +126,7 @@ var Symphony;
 		var r = $(this.parentNode).toggleClass('selected');
 
 		r.trigger($.Event(r.hasClass('selected') ? 'select' : 'deselect'));
-		r.find('td input').each(function() {this.checked = !this.checked});
+		r.find('td input').each(function() { this.checked = !this.checked; });
 
 		return false;
 	});
@@ -162,9 +162,11 @@ var Symphony;
 			$('ol a').eq(parseInt(/\d+$/.exec(location.href)[0], 10) - 1).addClass('active');
 		}
 
-		$('ul.tags > li, #nav > li').mousedown(function() {
-			return false;
-		});
+		$('ul.tags > li').mousedown(silence);
+		$('#nav').mouseover(silence);
+		$('.orderable td, .subsection h4').bind('selectstart', silence); // Fix for IE bug
+
+		function silence() { return false; }
 
 		// Change user password
 		$('#change-password').each(function() {
@@ -246,7 +248,7 @@ var Symphony;
 		$('div.subsection').each(function() {
 			var m = this,
 			    t = $('.template', this),
-			    h = t.map(function() {return $(this).height()}).get();
+			    h = t.map(function() { return $(this).height(); }).get();
 
 			t.remove().css('height', 0);
 			$(this).append('<div class="actions"><a>' + Symphony.Language.CREATE_ITEM + '</a><a class="inactive">' + Symphony.Language.REMOVE_ITEMS + '</a></div>');
