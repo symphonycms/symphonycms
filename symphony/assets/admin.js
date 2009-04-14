@@ -170,19 +170,18 @@ var Symphony;
 
 		// Change user password
 		$('#change-password').each(function() {
-			var a = $(this),
-				b = a.next('p');
+			var f = $(this);
 
-			if (a.find('label').length !== 3) {
+			if (f.find('label').length !== 3) {
 				return;
 			}
 
-			b.remove();
-			a.replaceWith('<div class="label">' + Symphony.Language.PASSWORD + ' <span><button id="change-password" type="button">' + Symphony.Language.CHANGE_PASSWORD + '</button></span></div>');
+			f.before('<div class="label">' + Symphony.Language.PASSWORD + ' <span><button id="change-password" type="button">' + Symphony.Language.CHANGE_PASSWORD + '</button></span></div>');
+			f.add(f.next()).remove();
 
 			$('#change-password').click(function() {
-				$(this.parentNode.parentNode).replaceWith(a.add(b));
-				a.find('input')[0].focus();
+				$(this.parentNode.parentNode).replaceWith(f);
+				f.find('input')[0].focus();
 			});
 		});
 
