@@ -199,7 +199,12 @@ var Symphony;
 
 			a.click(function() {
 				a.attr('title', Symphony.Language[(s = !s) ? 'HIDE_CONFIG' : 'SHOW_CONFIG']).toggleClass('active');
-				c.animate({height: s ? h : 0});
+				c.css('display', 'block');
+				c.animate({height: s ? h : 0}, function() {
+					if ($(this).height() === 0) {
+						$(this).css('display', 'none');
+					}
+				});
 			}).click();
 		});
 
@@ -211,7 +216,7 @@ var Symphony;
 		// confirm() dialogs
 		$('button.confirm').live('click', function() {
 			var n = document.title.split(/[\u2013]\s*/g)[2],
-				t = Symphony.Language[n ? 'CONFIRM_SINGLE' : 'CONFIRM_ABSTRACT'];
+			    t = Symphony.Language[n ? 'CONFIRM_SINGLE' : 'CONFIRM_ABSTRACT'];
 
 			return confirm(t.replace('{$action}', this.firstChild.data.toLowerCase()).replace('{$name}', n));
 		});
