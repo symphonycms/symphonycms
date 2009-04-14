@@ -43,8 +43,6 @@
 			
 			if(!$emergency && $this->_Parent->isLoggedIn()) redirect(URL . '/symphony/');
 
-			$this->Body->setAttribute('onload', 'document.forms[0].elements[0].focus()');
-				
 			$this->Form = Widget::Form('', 'post');
 			
 			$this->Form->appendChild(new XMLElement('h1', __('Symphony')));
@@ -64,6 +62,8 @@
 
 					$label = Widget::Label(__('Email Address'));
 					$label->appendChild(Widget::Input('email', $_POST['email']));
+
+					$this->Body->setAttribute('onload', 'document.forms[0].elements.email.focus()');
 
 					if(isset($this->_email_sent) && !$this->_email_sent){
 						$div = new XMLElement('div', NULL, array('class' => 'invalid'));					
@@ -117,7 +117,8 @@
 				$label->appendChild(Widget::Input('username'));
 				$fieldset->appendChild($label);
 
-				
+				$this->Body->setAttribute('onload', 'document.forms[0].elements.username.focus()');
+
 				$label = Widget::Label(__('Password'));
 				$label->appendChild(Widget::Input('password', NULL, 'password'));
 
