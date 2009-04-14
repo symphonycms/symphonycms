@@ -1,3 +1,4 @@
+/* @override http://dev.symphony21.com/2/symphony/assets/debug.css */
 @import url("basic.css");
 
 /* Navigation */
@@ -36,17 +37,17 @@ h1 {
 	padding: 0.5em 2em 0.5em 20em;
 }
 #jump a:hover {
-	background-color: #30302e;
+	background-color: #2d2d2b;
 }
 #jump a.active {
-	background-color: #393937;
+	background-color: #343432;
 	cursor: default;
 }
 
 /* Layout */
 pre {
-	border: 1px solid #3e3e3b;
-	background-color: #232320;
+	border: 1px solid #343432;
+	background-color: #21211f;
 	white-space: normal;
 }
 code {
@@ -54,7 +55,7 @@ code {
 	position: relative;
 	z-index: 1;
 	margin-left: 3.6em;
-	border-left: 1px solid #3e3e3b;
+	border-left: 1px solid #2d2d2b;
 	padding: 0.3em 0 0.3em 0.7em;
 	overflow: auto;
 	white-space: pre;
@@ -117,7 +118,7 @@ ol a {
 	z-index: 10;
 	margin-left: -3.6em;
 	width: 3em;
-	color: #525350;
+	color: #444442;
 	cursor: default;
 }
 ol a.active {
@@ -144,26 +145,28 @@ span[id]:target {
 /* Syntax Highlighting */
 dt,
 span.attribute {
-	color: #f48435;
-}
-span.entity {
-	color: #eabe57;
+	color: #e3ad6e;
 }
 dd,
 span.string {
-	color: #87a4ec;
+	color: #8ec0e5;
+}
+/*
+span.entity {
+	color: #fff;
 }
 span.string span.entity,
 span.string span.xpath,
 span.string span.variable {
-	color: #9cb4e5;
+	color: #afd0e7;
 }
+*/
 span.element {
-	color: #beea57;
+	color: #c2db82;
 }
 span.comment,
 span.comment * {
-	color: #65655e;
+	color: #646462;
 }
 span.error {
 	background-color: #892005;
@@ -173,7 +176,7 @@ span.error {
 /* Generic Elements */
 body {
 	padding: 19px 21.25em 19px 19px;
-	background-color: #2d2d2a;
+	background-color: #292927;
 	color: #fff;
 	font-size: 75%;
 }
