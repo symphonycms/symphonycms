@@ -209,8 +209,11 @@ var Symphony;
 		});
 
 		// Upload fields
-		$('<em>' + Symphony.Language.REMOVE_FILE + '</em>').appendTo('label.file:has(a)').click(function() {
-			$(this.parentNode).html('<input name="' + $(this).siblings('input').attr('name') + '" type="file">');
+		$('<em>' + Symphony.Language.REMOVE_FILE + '</em>').appendTo('label.file:has(a) span').click(function() {
+			var s = $(this.parentNode),
+			    d = '<input name="' + $(this).siblings('input').attr('name') + '" type="file">';
+
+			setTimeout(function() { s.html(d); }, 50); // Delayed to avoid WebKit clickthrough bug
 		});
 
 		// confirm() dialogs
