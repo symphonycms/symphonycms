@@ -1,10 +1,5 @@
 var Symphony;
 
-/*
-	Bugs: 1. Login <body onload="document.forms[0].elements.username.focus()">
-	      2. CSS .odd overrides .selected under #utilities
-*/
-
 (function($) {
 	Symphony = {
 		WEBSITE: $('script')[0].src.split('/symphony/')[0],
@@ -106,22 +101,21 @@ var Symphony;
 	});
 
 	$('table.orderable').live('reorder', function() {
-		var t = $(this).addClass('busy'),
-		    o = {
-				type: 'POST',
-				url: Symphony.WEBSITE + '/symphony/ajax/reorder' + location.href.slice(Symphony.WEBSITE.length + 9),
-				data: $('input', this).map(function(i) {return this.name + '=' + i}).get().join('&'),
-				complete: function(x) {
-					if (x.status === 200) {
-						Symphony.Message.clear('reorder');
-					} else {
-						Symphony.Message.post(Symphony.Language.REORDER_ERROR, 'reorder error');
-					}
-					t.removeClass('busy');
-				}
-			};
+		var t = $(this).addClass('busy');
 
-		$.ajax(o);
+		$.ajax({
+			type: 'POST',
+			url: Symphony.WEBSITE + '/symphony/ajax/reorder' + location.href.slice(Symphony.WEBSITE.length + 9),
+			data: $('input', this).map(function(i) {return this.name + '=' + i}).get().join('&'),
+			complete: function(x) {
+				if (x.status === 200) {
+					Symphony.Message.clear('reorder');
+				} else {
+					Symphony.Message.post(Symphony.Language.REORDER_ERROR, 'reorder error');
+				}
+				t.removeClass('busy');
+			}
+		});
 	});
 
 	$('td, .subsection h4').live('click', function(e) {
@@ -129,10 +123,10 @@ var Symphony;
 			return true;
 		}
 
-		var i = $(this.parentNode).toggleClass('selected');
+		var r = $(this.parentNode).toggleClass('selected');
 
-		i.trigger($.Event(i.hasClass('selected') ? 'select' : 'deselect'));
-		i.find('td input').each(function() {this.checked = !this.checked});
+		r.trigger($.Event(r.hasClass('selected') ? 'select' : 'deselect'));
+		r.find('td input').each(function() {this.checked = !this.checked});
 
 		return false;
 	});
@@ -271,8 +265,11 @@ var Symphony;
 			var r = $('.actions > a.inactive', this),
 			    i = 0;
 
-			$(this).bind('select'  , function() {r.toggleClass('inactive', ++i === 0)});
-			$(this).bind('deselect', function() {r.toggleClass('inactive', --i === 0)});
+			$(this).bind('select', select).bind('deselect', select);
+
+			function select(e) {
+				r.toggleClass('inactive', (i += e.type === 'select' ? 1 : -1) === 0);
+			}
 
 			$('form').submit(function() {
 				$('ol > li', m).each(function(i) {
@@ -293,13 +290,15 @@ var Symphony;
 					$('li.selected', m).animate({height: 0}, function() {
 						$(this).remove();
 					});
+
+					i = 0;
 					a.addClass('inactive');
 				} else {
-					var i = s ? s[0].selectedIndex : 0,
+					var j = s ? s[0].selectedIndex : 0,
 					    w = $('ol', m);
 
-					$(t[i]).clone(true).appendTo(w).animate({height: h[i]}, function() {
-						$('input,select,textarea', this).eq(0).focus();
+					$(t[j]).clone(true).appendTo(w).animate({height: h[j]}, function() {
+						$('input:not([type=hidden]), select, textarea', this).eq(0).focus();
 					});
 				}
 			}
