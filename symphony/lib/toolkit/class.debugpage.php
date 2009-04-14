@@ -151,7 +151,6 @@
 			$this->addElementToHead(new XMLElement('link', NULL, array('rel' => 'icon', 'href' => URL.'/symphony/assets/images/bookmark.png', 'type' => 'image/png')), 20); 		
 			$this->addStylesheetToHead(URL . '/symphony/assets/debug.css', 'screen', 40);
 			$this->addElementToHead(new XMLElement('!--[if IE]><link rel="stylesheet" href="'.URL.'/symphony/assets/legacy.css" type="text/css"><![endif]--'), 50);
-			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 60);
 			
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Debug'), $page['title'])));
 			
