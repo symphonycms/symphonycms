@@ -255,7 +255,3 @@ a.create {
 	padding-left: 66px;
 	background: #81b934 url("images/create.png");
 }
-a.configure {
-	padding-left: 60px;
-	background-image: url("images/configure.png");
-}
