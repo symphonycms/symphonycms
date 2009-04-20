@@ -265,7 +265,7 @@ var Symphony;
 				var s = $(document.createElement('select'));
 
 				t.each(function() {
-					s.append(new Option($('h4', this).text()));
+					s.append('<option>' + $('h4', this).text() + '</option>');
 				});
 
 				$('.actions', this).prepend(s);
