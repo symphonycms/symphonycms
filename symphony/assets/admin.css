@@ -30,10 +30,11 @@ h1 a:hover,
 
 /* Navigation */
 #nav {
-	position: relative;
 	z-index: 3;
+	position: relative;
+	top: -5px;
 	float: left;
-	margin: -5px 0 1.2em -19px;
+	margin: 0 0 7px -19px;
 	padding: 5px 38px 5px 0;
 	width: 100%;
 	background: url("images/navigation.png") 0 -60px repeat-x;
