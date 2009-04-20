@@ -27,10 +27,12 @@ div.actions {
 	background-color: #ccb;
 }
 div.actions {
+	float: none;
 	margin-top: -1.25em;
 	border-top: none;
 	border-bottom: 1px solid #998;
 	padding-top: 0;
+	width: auto;
 	overflow: hidden;
 }
 button {
