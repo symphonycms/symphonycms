@@ -10,8 +10,6 @@ var Symphony;
 			CONFIRM_SINGLE:   "Are you sure you want to {$action} {$name}?",
 			CONFIRM_MANY:     "Are you sure you want to {$action} {$count} items?",
 			CONFIRM_ABSTRACT: "Are you sure you want to {$action}?",
-			SHOW_CONFIG:      "Configure page settings",
-			HIDE_CONFIG:      "Hide page settings",
 			REORDER_ERROR:    "Reordering was unsuccessful.",
 			PASSWORD:         "Password",
 			CHANGE_PASSWORD:  "Change Password",
@@ -183,29 +181,6 @@ var Symphony;
 				$(this.parentNode.parentNode).replaceWith(f);
 				f.find('input')[0].focus();
 			});
-		});
-
-		// Page settings
-		$('#configure').each(function() {
-			var c = $(this),
-			    h = c.height(),
-			    s = location.href.indexOf('/pages/new') === -1,
-			    a = $('<a class="configure button" accesskey="c"></a>').appendTo('h2');
-
-			if (s) {
-				c.css('height', 0);
-				a.addClass('active');
-			}
-
-			a.click(function() {
-				a.attr('title', Symphony.Language[(s = !s) ? 'HIDE_CONFIG' : 'SHOW_CONFIG']).toggleClass('active');
-				c.css('display', 'block');
-				c.animate({height: s ? h : 0}, function() {
-					if ($(this).height() === 0) {
-						$(this).css('display', 'none');
-					}
-				});
-			}).click();
 		});
 
 		// Upload fields

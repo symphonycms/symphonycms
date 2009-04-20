@@ -2,8 +2,11 @@
 @import url("admin.css");
 
 /* Form Elements */
-fieldset {
+fieldset,
+div.secondary {
+	position: relative;
 	border: none;
+	padding-top: 1em;
 }
 legend {
 	float: left;
@@ -84,18 +87,24 @@ button {
 	float: right;
 	width: 35%;
 }
+h2,
 .settings {
-	border-top: 1px solid #ddc;
-	padding: 11px 0 64px 275px;
+	margin-bottom: 0;
+	border-bottom: 1px solid #ddc;
+	padding-bottom: 1em;
+}
+.settings {
+	margin-bottom: 9px;
+	padding-left: 275px;
 }
 .settings + div,
 .settings + fieldset {
-	margin-top: -64px;
+	margin-top: -9px;
 }
 .settings > legend + p.help {
-	float: left;
-	clear: both;
-	margin: 2em 0 0 -275px;
+	position: absolute;
+	top: 3.5em;
+	left: 0;
 	width: 22em;
 }
 .group {
@@ -169,9 +178,15 @@ div.label span {
 	text-align: center;
 }
 div.actions {
+	position: relative;
+	float: left;
 	clear: both;
+	width: 100%;
 	border-top: 1px solid #ddc;
-	padding: 14px 0 93px;
+	padding: 14px 0 21px;
+}
+.settings + div.actions {
+	border: none;
 }
 div.actions input {
 	float: right;
@@ -323,11 +338,12 @@ ul.tags .more:hover {
 
 /* Special Controls */
 #configure {
-	margin: -1.5em -19px 1.5em;
+	margin: -1px -19px 1px;
+	padding-bottom: 0;
 	overflow: hidden;
 }
 #configure h3:first-child {
-	margin-top: 1.5em;
+	margin-top: 0;
 	border-top: 1px solid #998;
 }
 #configure h3 {
@@ -373,7 +389,9 @@ ul.tags .more:hover {
 	background-color: #5677c3;
 }
 #components {
-	padding-bottom: 58px;
+	margin-top: -5px;
+	padding-bottom: 5px;
+	background-color: #fff;
 }
 #components ul {
 	margin-left: 0;
