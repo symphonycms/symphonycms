@@ -311,7 +311,9 @@ ul.tags .more:hover {
 	right: 1em;
 }
 .subsection .actions {
+	float: none;
 	clear: none;
+	width: auto;
 	padding: 0.5em 1em;
 	border-top-color: #aa9;
 	text-align: right;
