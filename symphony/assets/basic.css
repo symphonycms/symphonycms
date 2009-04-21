@@ -3,12 +3,10 @@ body {
 	background: #fff;
 	color: #222;
 	font: 68.75%/1.5 Lucida Grande, Meiryo, Tahoma, Verdana, sans-serif;
-	cursor: default;
 }
 a {
 	color: #5072bf;
 	text-decoration: underline;
-	cursor: pointer;
 }
 a:hover {
 	color: #000;

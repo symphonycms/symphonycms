@@ -48,7 +48,6 @@ label input {
 	width: 100%;
 	font-size: 109.09%;
 	font-family: inherit;
-	cursor: text;
 	box-sizing: border-box;
 	-khtml-box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -64,11 +63,6 @@ input[type=checkbox] {
 	display: inline;
 	margin: 0 0.25em 0 0;
 	width: auto;
-}
-input[type=file],
-input[type=radio],
-input[type=checkbox] {
-	cursor: auto;
 }
 input[size],
 label + select {
