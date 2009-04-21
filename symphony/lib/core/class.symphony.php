@@ -84,6 +84,14 @@
 			return ($this->ExtensionManager instanceof ExtensionManager);
 		}
 		
+		public static function Database(){
+			if(class_exists('Frontend')){
+				return Frontend::instance()->Database;
+			}
+			
+			return Administration::instance()->Database;
+		}
+
 		public function initialiseDatabase(){
 			$error = NULL;
 			
