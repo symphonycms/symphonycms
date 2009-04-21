@@ -17,12 +17,20 @@ var Symphony;
 		},
 		Message: {
 			post: function(message, type) {
-				$('#notice').remove();
+				this.queue = this.queue.concat($('#notice').remove().get()); // Store previous message
+
 				$('h1').before('<div id="notice" class="' + type + '">' + message + '</div>');
 			},
 			clear: function(type) {
 				$('#notice.' + type).remove();
-			}
+
+				this.queue = $(this.queue).filter(':not(.' + type + ')').get();
+
+				if (document.getElementById('notice') === null && this.queue.length > 0) {
+					$(this.queue.pop()).insertBefore('h1'); // Show previous message
+				}
+			},
+			queue: []
 		}
 	};
 
