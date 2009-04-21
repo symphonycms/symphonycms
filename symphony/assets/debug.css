@@ -53,9 +53,9 @@ code {
 	display: block;
 	position: relative;
 	z-index: 1;
-	margin-left: 3.6em;
+	margin-left: 39px;
 	border-left: 1px solid #2d2d2b;
-	padding: 0.3em 0 0.3em 0.7em;
+	padding: 3px 0 3px 7px;
 	overflow: auto;
 	white-space: pre;
 }
@@ -67,19 +67,19 @@ code > span {
 dl,
 code,
 ol li {
-	font: 11px/1.5 Monaco, Consolas, Andale Mono, monospace;
+	font: 12px/16px monospace;
 }
 dl {
 	position: relative;
 	border: 1px solid #3e3e3b;
-	padding-left: 21em;
+	padding-left: 231px;
 	overflow: hidden;
 }
 dt {
 	position: absolute;
-	margin: 0 0 -250em -21em;
-	padding: 0.3em 20.3em 250.3em 0.7em;
-	width: 100%;
+	right: 0;
+	left: 0;
+	padding: 3px 7px;
 	background-color: #191917;
 }
 dt:hover {
@@ -87,7 +87,7 @@ dt:hover {
 }
 dd {
 	position: relative;
-	padding: 0.3em 0.7em;
+	padding: 3px 7px;
 }
 
 /* Line Numbers */
@@ -101,12 +101,12 @@ ol {
 	list-style: none;
 }
 ol li {
-	margin: 0 0 -0.3em 3.6em;
-	padding-bottom: 0.3em;
+	margin: 0 0 -3px 39px;
+	padding-bottom: 3px;
 	background-color: #191917;
 }
 ol li:first-child {
-	padding-top: 0.3em;
+	padding-top: 3px;
 }
 ol li:hover {
 	background-color: #1e1e1c;
@@ -115,8 +115,8 @@ ol a {
 	display: block;
 	position: relative;
 	z-index: 10;
-	margin-left: -3.6em;
-	width: 3em;
+	margin-left: -39px;
+	width: 33px;
 	color: #444442;
 	cursor: default;
 }
@@ -128,14 +128,14 @@ span[id] {
 	position: absolute;
 	right: 0;
 	left: -1em;
-	height: 1.5em;
+	height: 16px;
 }
 span[id]:first-child {
-	margin-top: -0.3em;
-	padding-top: 0.3em;
+	margin-top: -3px;
+	padding-top: 3px;
 }
 span[id]:last-child {
-	height: 1.8em;
+	height: 19px;
 }
 span[id]:target {
 	background-color: #3e3e3b;
@@ -150,16 +150,6 @@ dd,
 span.string {
 	color: #8ec0e5;
 }
-/*
-span.entity {
-	color: #fff;
-}
-span.string span.entity,
-span.string span.xpath,
-span.string span.variable {
-	color: #afd0e7;
-}
-*/
 span.element {
 	color: #c2db82;
 }
