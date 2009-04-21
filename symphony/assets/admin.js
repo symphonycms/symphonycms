@@ -299,11 +299,12 @@ var Symphony;
 		// Data source switcheroo
 		$('select.filtered > optgroup').each(function() {
 			var s = this.parentNode,
+			    l = this.label,
 			    z = $(this).siblings('option').length,
 			    o = $(this).remove().find('option');
 
 			$('#context').change(function() {
-				if ($(this.options[this.selectedIndex]).text() === o.label) {
+				if ($(this.options[this.selectedIndex]).text() === l) {
 					s.options.length = z;
 					o.clone(true).appendTo(s);
 				}
