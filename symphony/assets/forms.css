@@ -258,18 +258,22 @@ ul.tags .more:hover {
 	text-shadow: none;
 	font-weight: normal;
 }
-.subsection ol {
+.subsection > ol {
 	margin: 0 1px;
 	background-color: #ddc;
 	list-style: none;
 }
-.subsection li {
+.subsection > ol > li {
 	position: relative;
 	padding: 0 1.75em;
 	overflow: hidden;
-}
-.subsection ol > li:not(.movable):not(.selected) {
 	background-color: #ddc;
+}
+.subsection li.selected {
+	background-color: #5273c0;
+}
+.subsection li.movable {
+	background-color: #887;
 }
 .subsection li.template {
 	display: none;
