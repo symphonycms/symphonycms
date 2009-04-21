@@ -99,7 +99,7 @@
 			$fieldset->appendChild((isset($this->_errors['name']) ? $this->wrapFormElementWithError($label, $this->_errors['name']) : $label));
 
 			$label = Widget::Label(__('Body'));
-			$label->appendChild(Widget::Textarea('fields[body]', 25, 50, $fields['body'], array('class' => 'code')));
+			$label->appendChild(Widget::Textarea('fields[body]', 30, 80, $fields['body'], array('class' => 'code')));
 			$fieldset->appendChild((isset($this->_errors['body']) ? $this->wrapFormElementWithError($label, $this->_errors['body']) : $label));
 			
 			$this->Form->appendChild($fieldset);
