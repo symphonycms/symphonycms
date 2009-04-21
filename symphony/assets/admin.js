@@ -38,23 +38,23 @@ var Symphony;
 			if (y < movable.min) {
 				t = movable.target.prev();
 				do {
+					movable.delta--;
 					n = t.prev();
 					if (n.length === 0 || y >= (movable.min -= n.height())) {
 						movable.target.insertBefore(t);
 						break;
 					}
-					movable.delta--;
 					t = n;
 				} while (true);
 			} else if (y > movable.max) {
 				t = movable.target.next();
 				do {
+					movable.delta++;
 					n = t.next();
 					if (n.length === 0 || y <= (movable.max += n.height())) {
 						movable.target.insertAfter(t);
 						break;
 					}
-					movable.delta++;
 					t = n;
 				} while (true);
 			} else {
@@ -116,7 +116,7 @@ var Symphony;
 		});
 	});
 
-	$('td, .subsection h4').live('click', function(e) {
+	$('.selectable td, .subsection h4').live('click', function(e) {
 		if (movable.delta || !/^(?:td|h4)$/i.test(e.target.nodeName)) {
 			return true;
 		}
