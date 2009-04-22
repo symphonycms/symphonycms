@@ -34,7 +34,7 @@
 					GROUP BY `s`.id
 					".(!$id ? " ORDER BY `s`.`$sortfield` $order" : '');
 
-			if(!$sections = $this->_Parent->Database->fetch($sql)) return false;									
+			if(!$sections = Symphony::Database()->fetch($sql)) return false;									
 												
 			$ret = array();
 

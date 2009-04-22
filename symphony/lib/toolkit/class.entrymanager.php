@@ -301,7 +301,7 @@
 				
 			";
 
-			$rows = $this->_Parent->Database->fetch($sql);
+			$rows = Symphony::Database()->fetch($sql);
 			
 			return ($buildentries && (is_array($rows) && !empty($rows)) ? $this->__buildEntries($rows, $section_id) : $rows);
 			
@@ -313,7 +313,7 @@
 				
 			if(!is_array($id_list) || empty($id_list)) return $entries;
 			
-			$schema = $this->_Parent->Database->fetch("SELECT * FROM `tbl_fields` WHERE `parent_section` = '$section_id'");
+			$schema = Symphony::Database()->fetch("SELECT * FROM `tbl_fields` WHERE `parent_section` = '$section_id'");
 			
 			$tmp = array();
 			foreach($id_list as $r){
@@ -328,7 +328,7 @@
 			foreach($schema as $f){
 				$field_id = $f['id'];
 				
-				$row = $this->_Parent->Database->fetch("SELECT * FROM `tbl_entries_data_$field_id` WHERE `entry_id` IN ('$id_list_string') ORDER BY `id` ASC");
+				$row = Symphony::Database()->fetch("SELECT * FROM `tbl_entries_data_$field_id` WHERE `entry_id` IN ('$id_list_string') ORDER BY `id` ASC");
 							
 				if(!is_array($row) || empty($row)) continue;			
 								
@@ -385,7 +385,7 @@
 		}
 		
 		function fetchEntrySectionID($entry_id){
-			return $this->_Parent->Database->fetchVar('section_id', 0, "SELECT `section_id` FROM `tbl_entries` WHERE `id` = '$entry_id' LIMIT 1");
+			return Symphony::Database()->fetchVar('section_id', 0, "SELECT `section_id` FROM `tbl_entries` WHERE `id` = '$entry_id' LIMIT 1");
 		}
 		
 	}	
