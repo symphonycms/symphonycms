@@ -248,7 +248,7 @@ var Symphony;
 				var s = $(document.createElement('select'));
 
 				t.each(function() {
-					s.append('<option>' + $('h4', this).text() + '</option>');
+					s.append('<option>' + $('h4', this).get(0).firstChild.data + '</option>');
 				});
 
 				$('.actions', this).prepend(s);
