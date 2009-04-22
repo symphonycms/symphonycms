@@ -142,7 +142,7 @@
 			self::$_db->cleanFields($fields);
 
 			// Database->delete() does not return value :(
-			return self::$_db->query('DELETE FROM `tbl_sessions` WHERE `session_expires` = '.$fields['session_expires']);
+			return self::$_db->query('DELETE FROM `tbl_sessions` WHERE `session_expires` <= '.$fields['session_expires']);
 		}
 	}
 
