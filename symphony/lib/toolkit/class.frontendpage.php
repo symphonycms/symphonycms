@@ -150,6 +150,10 @@
 			$root_page = @array_shift(explode('/', $page['path']));
 			$current_path = explode(dirname($_SERVER['SCRIPT_NAME']), $_SERVER['REQUEST_URI'], 2);
 			$current_path = '/' . ltrim(end($current_path), '/');
+			
+			// Get max upload size from php and symphony config then choose the smallest
+			$upload_size_php = ini_size_to_bytes(ini_get('upload_max_filesize'));
+			$upload_size_sym = Frontend::instance()->Configuration->get('max_upload_size','admin');
 
 			$this->_param = array(
 				'today' => DateTimeObj::get('Y-m-d'),
@@ -168,6 +172,7 @@
 				'current-path' => $current_path,
 				'parent-path' => $page['path'],
 				'current-url' => URL . $current_path,
+				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'symphony-build' => $this->_Parent->Configuration->get('build', 'symphony'),
 			);
 		
