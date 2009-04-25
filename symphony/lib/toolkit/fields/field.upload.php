@@ -217,7 +217,7 @@
 		}
 		
 		function checkPostFieldData($data, &$message, $entry_id=NULL){
-			
+		
 			/*
 				UPLOAD_ERR_OK
 				Value: 0; There is no error, the file uploaded with success.
@@ -333,12 +333,12 @@
 				$message = __('A file with the name %1$s already exists in %2$s. Please rename the file first, or choose another.', array($data['name'], $this->get('destination')));
 				return self::__INVALID_FIELDS__;				
 			}
-			
+
 			return self::__OK__;		
 						
 		}
 		
-		function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+		function processRawFieldData($data, &$status, &$message, $simulate=false, $entry_id=NULL){
 
 			$status = self::__OK__;
 			
@@ -371,7 +371,7 @@
 
 			if(!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], $this->_engine->Configuration->get('write_mode', 'file'))){
 				
-				$message = __('There was an error while trying to upload the file <code>%1$s</code> to the target directory <code>%2$s</code>.', array($data['name'], 'workspace/'.$rel_path));
+				$message = __('There was an error while trying to upload the file <code>%1$s</code> to the target directory <code>%2$s</code>.', array($data['name'], 'workspace/'.ltrim($rel_path, '/')));
 				$status = self::__ERROR_CUSTOM__;
 				return;
 			}
@@ -386,7 +386,7 @@
 			$status = self::__OK__;
 			
 			$file = rtrim($rel_path, '/') . '/' . trim($data['name'], '/');
-			
+
 			return array(
 				'file' => $file,
 				'size' => $data['size'],
