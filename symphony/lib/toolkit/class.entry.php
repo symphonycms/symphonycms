@@ -103,7 +103,7 @@
 		}
 		
 		function setDataFromPost($data, &$error, $simulate=false, $ignore_missing_fields=false){
-			
+
 			$error = NULL;
 			
 			$status = __ENTRY_OK__;
@@ -128,7 +128,9 @@
 				
 				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
 				
-				$result = $field->processRawFieldData((isset($data[$info['element_name']]) ? $data[$info['element_name']] : NULL), $s, $simulate, $this->get('id'));
+				$result = $field->processRawFieldData(
+					(isset($data[$info['element_name']]) ? $data[$info['element_name']] : NULL), $s, $m, $simulate, $this->get('id')
+				);
 				
 				if($s != Field::__OK__){
 					$status = __ENTRY_FIELD_ERROR__;
@@ -137,7 +139,7 @@
 
 				$this->setData($info['id'], $result);
 			}
-			
+
 			// Failed to create entry, cleanup
 			if($status != __ENTRY_OK__ and !is_null($entry_id)) {
 				$this->_engine->Database->delete('tbl_entries', " `id` = '$entry_id' ");
@@ -166,7 +168,7 @@
 			foreach($schema as $field){
 				if(isset($this->_data[$field->get('field_id')])) continue;
 				
-				$field->processRawFieldData(NULL, $result, $message, false);
+				$field->processRawFieldData(NULL, $result, $status, $message, false);
 				$this->setData($field->get('field_id'), $result);
 			}
 			

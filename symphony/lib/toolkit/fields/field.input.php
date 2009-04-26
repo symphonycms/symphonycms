@@ -161,9 +161,10 @@
 		}
 		
 		public function processRawFieldData($data, &$status, $simulate = false, $entry_id = null) {
-			if (trim($data) == '') return array();
-			
+
 			$status = self::__OK__;
+			
+			if (strlen(trim($data)) == 0) return array();
 			
 			$result = array(
 				'value' => $data,
