@@ -31,6 +31,10 @@
 			$this->ExtensionManager = new ExtensionManager($this->_Parent);
 		}
 		
+		public function pageData(){
+			return $this->_pageData;
+		}
+		
 		public function generate($page, $mode=self::FRONTEND_OUTPUT_NORMAL){
 			
 			$this->_Parent->Profiler->sample('Page creation process started');
