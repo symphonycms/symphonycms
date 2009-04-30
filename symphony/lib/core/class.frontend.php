@@ -8,6 +8,7 @@
 	Class Frontend extends Symphony{
 		
 		public $displayProfilerReport;
+		private static $_page;
 		
 		public static function instance(){
 			if(!(self::$_instance instanceof Frontend)) 
@@ -30,6 +31,10 @@
 			return parent::isLoggedIn();
 		}
 		
+		public static function Page(){
+			return self::$_page;
+		}
+		
 		public function display($page){
 			
 			$mode = FrontendPage::FRONTEND_OUTPUT_NORMAL;
@@ -39,9 +44,9 @@
 				elseif(isset($_GET['profile'])) $mode = FrontendPage::FRONTEND_OUTPUT_PROFILE;
 			}
 			
-			$oPage =& new FrontendPage($this);
+			self::$_page = new FrontendPage($this);
 
-			$output = $oPage->generate($page, $mode);
+			$output = self::$_page->generate($page, $mode);
 
 			return $output;
 
