@@ -40,14 +40,18 @@
 						
 						if (!$param_output_only) foreach ($ds->dsParamINCLUDEDELEMENTS as $handle) {
 							list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
-							
-							if ($fieldPool[$field_id]->get('element_name') == $handle) {
-								$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($ds->dsParamHTMLENCODE ? true : false), $mode);
+							if($fieldPool[$field_id]->get('element_name') == $handle) {
+								$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE ? true : false), $mode);
 							}
 						}
 					}
 
-					if(!$param_output_only) $xGroup->appendChild($xEntry);
+					if(!$param_output_only){ 
+						if(in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){ 
+							$xEntry->appendChild(General::createXMLDateObject(strtotime($entry->creationDate), 'system-date'));
+						}
+						$xGroup->appendChild($xEntry);
+					}
 										
 				} 
 			}
@@ -213,18 +217,21 @@
 						if(isset($this->dsParamPARAMOUTPUT) && $this->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
 							$param_pool[$key][] = $fieldPool[$field_id]->getParameterPoolValue($values);
 						}
-			
+
 						if (!$this->_param_output_only) foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {
 							list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
-							
-							if ($fieldPool[$field_id]->get('element_name') == $handle) {
+							if($fieldPool[$field_id]->get('element_name') == $handle) {
 								$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE ? true : false), $mode);
 							}
 						}
 					}
-		
-					if($this->_param_output_only) continue;
 
+					if($this->_param_output_only) continue;
+					
+					if(in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){ 
+						$xEntry->appendChild(General::createXMLDateObject(strtotime($entry->creationDate), 'system-date'));
+					}
+					
 					$result->appendChild($xEntry);
 				}
 		
