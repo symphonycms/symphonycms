@@ -110,7 +110,12 @@
 			
 			// Entry has no ID, create it:
 			if(!$this->get('id') && $simulate == false) {
-				$this->_engine->Database->insert($this->get(), 'tbl_entries');
+				
+				$fields = $this->get();
+				$fields['creation_date'] = DateTimeObj::get('Y-m-d H:i:s');
+				$fields['creation_date_gmt'] = DateTimeObj::getGMT('Y-m-d H:i:s');
+				
+				$this->_engine->Database->insert($fields, 'tbl_entries');
 				if(!$entry_id = $this->_engine->Database->getInsertID()) return __ENTRY_FIELD_ERROR__;
 				$this->set('id', $entry_id);
 			}			
