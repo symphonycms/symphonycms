@@ -18,10 +18,10 @@
 			
 			## Since we are not sure where the Admin object is, inspect
 			## all the parent objects
-			$this->catalogueParentObjects();
-			
-			if(isset($this->_ParentCatalogue['administration']) && is_object($this->_ParentCatalogue['administration'])) $this->_engine = $this->_ParentCatalogue['administration'];
-			elseif(isset($this->_ParentCatalogue['frontend']) && is_object($this->_ParentCatalogue['frontend'])) $this->_engine = $this->_ParentCatalogue['frontend'];
+			$this->catalogueParentObjects();			
+
+			if(class_exists('Administration')) $this->_engine = Administration::instance();
+			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();
 			else trigger_error(__('No suitable engine object found'), E_USER_ERROR);
 			
 			$this->creationDate = DateTimeObj::getGMT('c'); //$this->_engine->getDateObj();
