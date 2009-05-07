@@ -46,6 +46,10 @@
 			
 			self::$_page = new FrontendPage($this);
 
+			####
+			# Delegate: FrontendInitialised
+			$this->ExtensionManager->notifyMembers('FrontendInitialised', '/frontend/');
+
 			$output = self::$_page->generate($page, $mode);
 
 			return $output;
