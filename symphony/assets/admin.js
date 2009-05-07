@@ -176,6 +176,9 @@ var Symphony;
 
 		// Change user password
 		$('#change-password').each(function() {
+			// Do not hide fields if there is some error there.
+			if ($('div.invalid', $(this)).length > 0) return;
+
 			var a = $(this),
 			    b = a.next('p.help').remove();
 
