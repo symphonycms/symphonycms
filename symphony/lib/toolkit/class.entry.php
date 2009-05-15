@@ -134,7 +134,7 @@
 				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
 				
 				$result = $field->processRawFieldData(
-					(isset($data[$info['element_name']]) ? $data[$info['element_name']] : NULL), $s, $m, $simulate, $this->get('id')
+					(isset($data[$info['element_name']]) ? $data[$info['element_name']] : NULL), $s, $simulate, $this->get('id')
 				);
 				
 				if($s != Field::__OK__){
@@ -173,7 +173,7 @@
 			foreach($schema as $field){
 				if(isset($this->_data[$field->get('field_id')])) continue;
 				
-				$field->processRawFieldData(NULL, $result, $status, $message, false);
+				$field->processRawFieldData(NULL, $result, $status, false);
 				$this->setData($field->get('field_id'), $result);
 			}
 			
