@@ -387,6 +387,11 @@
 			
 			$file = rtrim($rel_path, '/') . '/' . trim($data['name'], '/');
 
+			## If browser doesn't send MIME type (e.g. .flv in Safari)
+			if (strlen(trim($data['type'])) == 0){
+				$data['type'] = 'unknown';
+			}
+
 			return array(
 				'file' => $file,
 				'size' => $data['size'],
