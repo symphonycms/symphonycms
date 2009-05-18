@@ -20,6 +20,12 @@
 				$post_values = new XMLElement('post-values');
 				foreach($fields as $element_name => $value){
 					if(strlen($value) == 0) continue;
+					if(is_array($value)) {
+						foreach($value as $key => $value) {
+							$post_values->appendChild(new XMLElement($element_name, General::sanitize($value)));
+						}
+						continue;
+					}
 					$post_values->appendChild(new XMLElement($element_name, General::sanitize($value)));
 				}
 			}

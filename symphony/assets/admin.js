@@ -141,7 +141,7 @@ var Symphony;
 	$('.tags > li').live('click', function() {
 		var u = $(this.parentNode),
 		    i = u.prev().find('input')[0],
-		    t = this.title || $(this).text();
+		    t = this.className || $(this).text();
 
 		i.focus();
 
