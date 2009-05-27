@@ -63,23 +63,31 @@
 				
 				list($field_handle, $filter_value) = explode(':', $_REQUEST['filter'], 2);
 				
-				$filter_value = rawurldecode($filter_value);
+				$field_names = explode(',', $field_handle);
 				
-				$filter = $this->_Parent->Database->fetchVar('id', 0, "SELECT `f`.`id` 
-																		   FROM `tbl_fields` AS `f`, `tbl_sections` AS `s` 
-																		   WHERE `s`.`id` = `f`.`parent_section` 
-																		   AND f.`element_name` = '$field_handle' 
-																		   AND `s`.`handle` = '".$section->get('handle')."' LIMIT 1");
+				foreach($field_names as $field_name) {
 
-				$field =& $entryManager->fieldManager->fetch($filter);
-				
-				if(is_object($field)){
-					$field->buildDSRetrivalSQL(array($filter_value), $joins, $where, false);
-					$filter_value = rawurlencode($filter_value);
+					$filter_value = rawurldecode($filter_value);
+
+					$filter = $this->_Parent->Database->fetchVar('id', 0, "SELECT `f`.`id` 
+																			   FROM `tbl_fields` AS `f`, `tbl_sections` AS `s` 
+																			   WHERE `s`.`id` = `f`.`parent_section` 
+																			   AND f.`element_name` = '$field_name' 
+																			   AND `s`.`handle` = '".$section->get('handle')."' LIMIT 1");
+					$field =& $entryManager->fieldManager->fetch($filter);
+
+					if(is_object($field)){
+						$field->buildDSRetrivalSQL(array($filter_value), $joins, $where, false);
+						$filter_value = rawurlencode($filter_value);
+					}
+					
 				}
 				
-				else $filter = $filter_value = $where = $joins = NULL;
-				
+				if ($where != null) {
+					$where = str_replace('AND', 'OR', $where); // multiple fields need to be OR
+					$where = trim($where);
+					$where = ' AND (' . substr($where, 2, strlen($where)) . ')'; // replace leading OR with AND
+				}
 
 			}
 			
