@@ -133,7 +133,7 @@
 		public static function gc($max) {
 			return Symphony::Database()->query(
 				sprintf(
-					"DELETE FROM `tbl_sessions` WHERE `session_expires` = '%s'",
+					"DELETE FROM `tbl_sessions` WHERE `session_expires` <= '%s'",
 					Symphony::Database()->cleanValue(time() - $max)
 				)
 			);
