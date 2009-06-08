@@ -580,6 +580,7 @@
 			$entry_id = intval($this->_context['entry_id']);
 
 			$entryManager = new EntryManager($this->_Parent);
+			$entryManager->setFetchSorting('id', 'DESC');
 
 			if(!$existingEntry = $entryManager->fetch($entry_id)) $this->_Parent->customError(E_USER_ERROR, __('Unknown Entry'), __('The entry you are looking for could not be found.'), false, true);
 			$existingEntry = $existingEntry[0];
