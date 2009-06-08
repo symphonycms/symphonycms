@@ -239,6 +239,12 @@
 				}
 			}
 			
+			####
+			# Delegate: FrontendParamsPostResolve
+			# Description: Access to the resolved param pool, including additional parameters provided by Data Source outputs
+			# Global: Yes
+			$this->ExtensionManager->notifyMembers('FrontendParamsPostResolve', '/frontend/', array('params' => $this->_param));
+			
 			## TODO: Add delegate for adding/removing items in the params
 
 			$xsl = '<?xml version="1.0" encoding="UTF-8"?>
