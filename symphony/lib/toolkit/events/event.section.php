@@ -62,7 +62,8 @@
 					list($type, $status, $message) = $fr;
 
 					$result->appendChild(buildFilterElement($type, ($status ? 'passed' : 'failed'), $message));
-
+					$result->appendChild($post_values);
+					
 					if(!$status){
 						$result->setAttribute('result', 'error');
 						$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
