@@ -69,7 +69,7 @@
 
 	// Check for PHP 5.1+
 
-	if(version_compare(phpversion(), '5.1.3', '<=')){
+	if(version_compare(phpversion(), '5.2.0', '<=')){
 
 		$code = '<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
