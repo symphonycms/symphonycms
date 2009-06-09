@@ -393,8 +393,7 @@
 			return $div;
 		}
 		
-		function __viewNew(){
-			
+		public function __viewNew() {
 			$sectionManager = new SectionManager($this->_Parent);
 			
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
@@ -410,84 +409,82 @@
 			
 			$entryManager = new EntryManager($this->_Parent);
 			
-			$fields = array();
+			header('content-type: text/plain');
 			
-			## If there is post data floating around, due to errors, create an entry object
-			if(isset($_POST['fields'])){
-				
-				$fields = $_POST['fields'];
-				
-				$entry =& $entryManager->create();
+			// If there is post data floating around, due to errors, create an entry object
+			if (isset($_POST['fields'])) {
+				$entry = $entryManager->create();
 				$entry->set('section_id', $section_id);
-
-				$entry->setDataFromPost($fields, $error, true);
-
+				$entry->setDataFromPost($_POST['fields'], $error, true);
 			}
-
-			## Brand new entry, so need to create some various objects
-			else{		
-
-				$entry =& $entryManager->create();
+			
+			// Brand new entry, so need to create some various objects
+			else {
+				$entry = $entryManager->create();
 				$entry->set('section_id', $section_id);
+			}
+			
+			// Check if there is a field to prepopulate
+			if (isset($_REQUEST['prepopulate'])) {
+				$field_id = array_shift(array_keys($_REQUEST['prepopulate']));
+				$value = stripslashes(rawurldecode(array_shift($_REQUEST['prepopulate'])));
 				
-				## Check if there is a field to prepopulate
-				if(isset($_REQUEST['prepopulate'])){
-					$field_id = array_keys($_REQUEST['prepopulate']);
-					$field_id = end($field_id);
+				if ($field = $entryManager->fieldManager->fetch($field_id)) {
+					$entry->setData(
+						$field->get('id'),
+						$field->processRawFieldData($value, $error, true)
+					);
 					
-					$value = stripslashes(rawurldecode($_REQUEST['prepopulate'][$field_id]));
-					
-					if($field = $entryManager->fieldManager->fetch($field_id)){
-						$entry->setDataFromPost(array($field->get('element_name') => $value), $error, true);
-						$this->Form->prependChild(Widget::Input('prepopulate', "$field_id:".rawurlencode($value), 'hidden'));
-					}
-					
+					$this->Form->prependChild(Widget::Input(
+						'prepopulate',
+						"{$field_id}:" . rawurlencode($value),
+						'hidden'
+					));
 				}
-
-			}			
-
+			}
+			
 			$primary = new XMLElement('fieldset');
 			$primary->setAttribute('class', 'primary');
-
+			
 			$sidebar_fields = $section->fetchFields(NULL, 'sidebar');
 			$main_fields = $section->fetchFields(NULL, 'main');
-
-			if((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))){
-				$primary->appendChild(new XMLElement('p', __('It looks like your trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>', array(URL . '/symphony/blueprints/sections/edit/' . $section->get('id') . '/'))));
-				
+			
+			if ((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))) {
+				$primary->appendChild(new XMLElement('p', __(
+					'It looks like your trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>',
+					array(
+						URL . '/symphony/blueprints/sections/edit/' . $section->get('id') . '/'
+					)
+				)));
 				$this->Form->appendChild($primary);
 			}
-
-			else{
-
-				if(is_array($main_fields) && !empty($main_fields)){
-					foreach($main_fields as $field){
+			
+			else {
+				if (is_array($main_fields) && !empty($main_fields)) {
+					foreach ($main_fields as $field) {
 						$primary->appendChild($this->__wrapFieldWithDiv($field, $entry));
 					}
 					
 					$this->Form->appendChild($primary);
 				}
-
-				if(is_array($sidebar_fields) && !empty($sidebar_fields)){
+				
+				if (is_array($sidebar_fields) && !empty($sidebar_fields)) {
 					$sidebar = new XMLElement('fieldset');
 					$sidebar->setAttribute('class', 'secondary');
-
-					foreach($sidebar_fields as $field){
+					
+					foreach ($sidebar_fields as $field) {
 						$sidebar->appendChild($this->__wrapFieldWithDiv($field, $entry));
 					}
-
+					
 					$this->Form->appendChild($sidebar);
 				}
-
 			}
-
+			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
 			$div->appendChild(Widget::Input('action[save]', __('Create Entry'), 'submit', array('accesskey' => 's')));
-
+			
 			$this->Form->appendChild($div);
-		
-				
 		}
 		
 		function __actionNew(){
