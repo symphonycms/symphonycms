@@ -409,8 +409,6 @@
 			
 			$entryManager = new EntryManager($this->_Parent);
 			
-			header('content-type: text/plain');
-			
 			// If there is post data floating around, due to errors, create an entry object
 			if (isset($_POST['fields'])) {
 				$entry = $entryManager->create();
