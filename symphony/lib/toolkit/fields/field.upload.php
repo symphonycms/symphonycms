@@ -447,7 +447,7 @@
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `file` varchar(255) default NULL,
 				  `size` int(11) unsigned NOT NULL,
-				  `mimetype` varchar(50) NOT NULL,
+				  `mimetype` varchar(50) default NULL,
 				  `meta` varchar(255) default NULL,
 				  PRIMARY KEY  (`id`),
 				  KEY `entry_id` (`entry_id`),
