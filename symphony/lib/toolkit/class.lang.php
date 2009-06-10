@@ -118,7 +118,7 @@
 		Return: resultant handle
 
 		***/					
-		public static function createHandle($string, $max_length=50, $delim='-', $uriencode=false, $apply_transliteration=true, $additional_rule_set=NULL){
+		public static function createHandle($string, $max_length=255, $delim='-', $uriencode=false, $apply_transliteration=true, $additional_rule_set=NULL){
 
 			## Use the transliteration table if provided
 			if($apply_transliteration) $string = _t($string);

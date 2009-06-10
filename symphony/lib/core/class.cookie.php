@@ -13,7 +13,7 @@
 		private $_path;
 		private $_domain;
 		
-		function __construct($index, $timeout = 0, $path = '/', $domain = NULL){
+		public function __construct($index, $timeout = 0, $path = '/', $domain = NULL) {
 			$this->_index = $index;
 			$this->_timeout = $timeout;
 			$this->_path = $path;
@@ -23,7 +23,7 @@
 			$this->_session = false;
 		}
 		
-		public function set($name, $value){
+		public function set($name, $value) {
 			if (!$this->_session) {
 				$this->__init();
 			}
@@ -31,7 +31,7 @@
 			$_SESSION[$this->_index][$name] = $value;
 		}
 		
-		public function get($name){
+		public function get($name) {
 			if (!$this->_session) {
 				$this->__init();
 			}
@@ -39,7 +39,7 @@
 			return $_SESSION[$this->_index][$name];
 		}
 		
-		public function expire(){
+		public function expire() {
 			if (!$this->_session) {
 				$this->__init();
 			}
