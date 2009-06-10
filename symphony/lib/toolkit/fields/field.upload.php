@@ -338,7 +338,7 @@
 						
 		}
 		
-		function processRawFieldData($data, &$status, &$message, $simulate=false, $entry_id=NULL){
+		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
 
 			$status = self::__OK__;
 			
@@ -386,6 +386,11 @@
 			$status = self::__OK__;
 			
 			$file = rtrim($rel_path, '/') . '/' . trim($data['name'], '/');
+
+			## If browser doesn't send MIME type (e.g. .flv in Safari)
+			if (strlen(trim($data['type'])) == 0){
+				$data['type'] = 'unknown';
+			}
 
 			return array(
 				'file' => $file,
@@ -442,7 +447,7 @@
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `file` varchar(255) default NULL,
 				  `size` int(11) unsigned NOT NULL,
-				  `mimetype` varchar(50) NOT NULL,
+				  `mimetype` varchar(50) default NULL,
 				  `meta` varchar(255) default NULL,
 				  PRIMARY KEY  (`id`),
 				  KEY `entry_id` (`entry_id`),

@@ -248,40 +248,40 @@
 		
 		***/
 		function fetch($entry_id=NULL, $section_id=NULL, $limit=NULL, $start=NULL, $where=NULL, $joins=NULL, $group=false, $buildentries=true){
-
-			if(!$entry_id && !$section_id) return false;
-			elseif(!$section_id) $section_id = $this->fetchEntrySectionID($entry_id);
-
+			$sort = null;
+			
+			if (!$entry_id && !$section_id) return false;
+			
+			if (!$section_id) $section_id = $this->fetchEntrySectionID($entry_id);
+			
 			$section = $this->sectionManager->fetch($section_id);
 			
-			if(!is_object($section)) return false;
+			if (!is_object($section)) return false;
 			
-			$sort = NULL;
-
 			## We want to sort if there is a custom entry sort order
-			if($this->_fetchSortField == 'date'){
+			if ($this->_fetchSortField == 'date') {
 				$sort = 'ORDER BY ' . ($this->_fetchSortDirection != 'RAND' ? "`e`.`creation_date` $this->_fetchSortDirection" : 'RAND() ');
 			}
 			
-			elseif($this->_fetchSortField == 'id'){
+			else if ($this->_fetchSortField == 'id') {
 				$sort = 'ORDER BY ' . ($this->_fetchSortDirection != 'RAND' ? "`e`.`id` $this->_fetchSortDirection" : 'RAND() ');
 			}
-						
-			elseif($this->_fetchSortField && $field = $this->fieldManager->fetch($this->_fetchSortField)){
+			
+			else if ($this->_fetchSortField && $field = $this->fieldManager->fetch($this->_fetchSortField)) {
 				$field->buildSortingSQL($joins, $where, $sort, $this->_fetchSortDirection);
-				if(!$group) $group = $field->requiresSQLGrouping();
+				if (!$group) $group = $field->requiresSQLGrouping();
 			}
 			
-			elseif($section->get('entry_order') && $field = $this->fieldManager->fetch($section->get('entry_order'))){
+			else if ($section->get('entry_order') && $field = $this->fieldManager->fetch($section->get('entry_order'))) {
 				$field->buildSortingSQL($joins, $where, $sort, $section->get('entry_order_direction'));
-				if(!$group) $group = $field->requiresSQLGrouping();
+				if (!$group) $group = $field->requiresSQLGrouping();
 			}
 			
-			else{
+			else {
 				$sort = 'ORDER BY ' . ($this->_fetchSortDirection != 'RAND' ? "`e`.`id` $this->_fetchSortDirection" : 'RAND() ');
 			}
 			
-			if($entry_id && !is_array($entry_id)) $entry_id = array($entry_id);
+			if ($entry_id && !is_array($entry_id)) $entry_id = array($entry_id);
 			
 			$sql = "
 				

@@ -32,7 +32,7 @@
 			return $data;
 		}
 
-		public function processRawFieldData($data, &$status, &$message, $simulate=false, $entry_id=NULL){	
+		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){	
 			
 			$status = self::__OK__;
 			

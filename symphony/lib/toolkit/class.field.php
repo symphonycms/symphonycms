@@ -36,8 +36,8 @@
 			## all the parent objects
 			$this->catalogueParentObjects();
 
-			if(isset($this->_ParentCatalogue['administration']) && is_object($this->_ParentCatalogue['administration'])) $this->_engine = $this->_ParentCatalogue['administration'];
-			elseif(isset($this->_ParentCatalogue['frontend']) && is_object($this->_ParentCatalogue['frontend'])) $this->_engine = $this->_ParentCatalogue['frontend'];
+			if(class_exists('Administration')) $this->_engine = Administration::instance();
+			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();
 			else trigger_error(__('No suitable engine object found'), E_USER_ERROR);
 			
 			$this->creationDate = DateTimeObj::getGMT('c'); //$this->_engine->getDateObj();
@@ -301,7 +301,7 @@
 			$entry_id (optionsl) - Useful for identifying the current entry
 		
 		*/
-		public function processRawFieldData($data, &$status, &$message, $simulate=false, $entry_id=NULL){
+		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=null) {	
 			
 			$status = self::__OK__;
 			

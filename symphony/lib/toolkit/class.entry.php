@@ -18,10 +18,10 @@
 			
 			## Since we are not sure where the Admin object is, inspect
 			## all the parent objects
-			$this->catalogueParentObjects();
-			
-			if(isset($this->_ParentCatalogue['administration']) && is_object($this->_ParentCatalogue['administration'])) $this->_engine = $this->_ParentCatalogue['administration'];
-			elseif(isset($this->_ParentCatalogue['frontend']) && is_object($this->_ParentCatalogue['frontend'])) $this->_engine = $this->_ParentCatalogue['frontend'];
+			$this->catalogueParentObjects();			
+
+			if(class_exists('Administration')) $this->_engine = Administration::instance();
+			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();
 			else trigger_error(__('No suitable engine object found'), E_USER_ERROR);
 			
 			$this->creationDate = DateTimeObj::getGMT('c'); //$this->_engine->getDateObj();
@@ -110,7 +110,12 @@
 			
 			// Entry has no ID, create it:
 			if(!$this->get('id') && $simulate == false) {
-				$this->_engine->Database->insert($this->get(), 'tbl_entries');
+				
+				$fields = $this->get();
+				$fields['creation_date'] = DateTimeObj::get('Y-m-d H:i:s');
+				$fields['creation_date_gmt'] = DateTimeObj::getGMT('Y-m-d H:i:s');
+				
+				$this->_engine->Database->insert($fields, 'tbl_entries');
 				if(!$entry_id = $this->_engine->Database->getInsertID()) return __ENTRY_FIELD_ERROR__;
 				$this->set('id', $entry_id);
 			}			
@@ -129,7 +134,7 @@
 				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
 				
 				$result = $field->processRawFieldData(
-					(isset($data[$info['element_name']]) ? $data[$info['element_name']] : NULL), $s, $m, $simulate, $this->get('id')
+					(isset($data[$info['element_name']]) ? $data[$info['element_name']] : NULL), $s, $simulate, $this->get('id')
 				);
 				
 				if($s != Field::__OK__){
@@ -168,7 +173,7 @@
 			foreach($schema as $field){
 				if(isset($this->_data[$field->get('field_id')])) continue;
 				
-				$field->processRawFieldData(NULL, $result, $status, $message, false);
+				$field->processRawFieldData(NULL, $result, $status, false);
 				$this->setData($field->get('field_id'), $result);
 			}
 			

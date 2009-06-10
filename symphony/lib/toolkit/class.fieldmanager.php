@@ -131,7 +131,7 @@
 				 . $where
 				 . ($id ? " AND t1.`id` = '$id' LIMIT 1" : " ORDER BY t1.`$sortfield` $order");
 				
-			if(!$fields = $this->_Parent->Database->fetch($sql)) return false;
+			if(!$fields = Symphony::Database()->fetch($sql)) return false;
 			
 			$ret = array();
 			
@@ -143,7 +143,7 @@
 
 				$obj->setArray($f);
 		
-				$context = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_fields_".$obj->handle()."` WHERE `field_id` = '".$obj->get('id')."' LIMIT 1");
+				$context = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_fields_".$obj->handle()."` WHERE `field_id` = '".$obj->get('id')."' LIMIT 1");
 				
 				unset($context['id']);
 				$obj->setArray($context);

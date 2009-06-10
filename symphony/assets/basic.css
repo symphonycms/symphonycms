@@ -7,6 +7,7 @@ body {
 a {
 	color: #5072bf;
 	text-decoration: underline;
+	cursor: pointer;
 }
 a:hover {
 	color: #000;

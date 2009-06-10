@@ -45,7 +45,7 @@ var Symphony;
 
 			if (y < movable.min) {
 				t = movable.target.prev();
-				do {
+				for (;;) {
 					movable.delta--;
 					n = t.prev();
 					if (n.length === 0 || y >= (movable.min -= n.height())) {
@@ -53,10 +53,10 @@ var Symphony;
 						break;
 					}
 					t = n;
-				} while (true);
+				}
 			} else if (y > movable.max) {
 				t = movable.target.next();
-				do {
+				for (;;) {
 					movable.delta++;
 					n = t.next();
 					if (n.length === 0 || y <= (movable.max += n.height())) {
@@ -64,7 +64,7 @@ var Symphony;
 						break;
 					}
 					t = n;
-				} while (true);
+				}
 			} else {
 				return;
 			}
@@ -141,7 +141,7 @@ var Symphony;
 	$('.tags > li').live('click', function() {
 		var u = $(this.parentNode),
 		    i = u.prev().find('input')[0],
-		    t = this.title || $(this).text();
+		    t = this.className || $(this).text();
 
 		i.focus();
 
@@ -176,6 +176,9 @@ var Symphony;
 
 		// Change user password
 		$('#change-password').each(function() {
+			// Do not hide fields if there is some error there.
+			if ($('div.invalid', $(this)).length > 0) return;
+
 			var a = $(this),
 			    b = a.next('p.help').remove();
 
@@ -236,42 +239,33 @@ var Symphony;
 
 		// Repeating sections
 		$('div.subsection').each(function() {
-			var m = this,
-			    t = $('.template', this),
+			var m = $(this),
+			    t = m.find('.template'),
 			    h = t.map(function() { return $(this).height(); }).get();
 
 			t.remove().css('height', 0);
-			$(this).append('<div class="actions"><a>' + Symphony.Language.CREATE_ITEM + '</a><a class="inactive">' + Symphony.Language.REMOVE_ITEMS + '</a></div>');
-			$('.actions > a', this).click(update);
+			m.append('<div class="actions"><a>' + Symphony.Language.CREATE_ITEM + '</a><a class="inactive">' + Symphony.Language.REMOVE_ITEMS + '</a></div>')
+			m.bind('select', select).bind('deselect', select);
+
+			var r = m.find('.actions > a.inactive'),
+			    i = 0;
+
+			function select(e) {
+				r.toggleClass('inactive', !(i += e.type === 'select' ? 1 : -1));
+			}
 
 			if (t.length > 1) {
-				var s = $(document.createElement('select'));
+				var s = document.createElement('select'),
+				    l = t.find('h4');
 
-				t.each(function() {
-					s.append('<option>' + $('h4', this).get(0).firstChild.data + '</option>');
-				});
+				for (var i = 0; i < l.length; i++) {
+					s.options[i] = new Option(l[i].firstChild.data, i);
+				}
 
 				$('.actions', this).prepend(s);
 			}
 
-			var r = $('.actions > a.inactive', this),
-			    i = 0;
-
-			$(this).bind('select', select).bind('deselect', select);
-
-			function select(e) {
-				r.toggleClass('inactive', (i += e.type === 'select' ? 1 : -1) === 0);
-			}
-
-			$('form').submit(function() {
-				$('ol > li', m).each(function(i) {
-					$('input,select,textarea', this).each(function() {
-						this.name = this.name.replace(/\[-?\d+(?=])/, '[' + i);
-					});
-				});
-			});
-
-			function update() {
+			m.find('.actions > a').click(function() {
 				var a = $(this);
 
 				if (a.hasClass('inactive')) {
@@ -279,21 +273,29 @@ var Symphony;
 				}
 
 				if (a.is(':last-child')) {
-					$('li.selected', m).animate({height: 0}, function() {
+					m.find('li.selected').animate({height: 0}, function() {
 						$(this).remove();
 					});
 
 					i = 0;
 					a.addClass('inactive');
 				} else {
-					var j = s ? s[0].selectedIndex : 0,
-					    w = $('ol', m);
+					var j = s ? s.selectedIndex : 0,
+					    w = m.find('ol');
 
-					$(t[j]).clone(true).appendTo(w).animate({height: h[j]}, function() {
+					t.eq(j).clone(true).appendTo(w).animate({height: h[j]}, function() {
 						$('input:not([type=hidden]), select, textarea', this).eq(0).focus();
 					});
 				}
-			}
+			});
+
+			$('form').submit(function() {
+				m.find('ol > li').each(function(i) {
+					$('input,select,textarea', this).each(function() {
+						this.name = this.name.replace(/\[-?\d+(?=])/, '[' + i);
+					});
+				});
+			});
 		});
 
 		// Data source switcheroo
