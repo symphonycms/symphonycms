@@ -221,7 +221,7 @@
 		}
 		
 		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
-			$joins .= "INNER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
+			$joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
 			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`value` $order");
 		}
 		
@@ -412,8 +412,9 @@
 			
 		}
 
-		public function buildLocationSelect($selected=NULL, $name='fields[location]', $label_value=NULL){
-			if(!$label_value) $label_value = __('Placement');
+		public function buildLocationSelect($selected = null, $name = 'fields[location]', $label_value = null) {
+			if (!$label_value) $label_value = __('Placement');
+			
 			$label = Widget::Label($label_value);
 			$options = array(
 				array('main', $selected == 'main', __('Main content')),

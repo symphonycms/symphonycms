@@ -285,18 +285,16 @@
 
 			$toggable_fields = $section->fetchToggleableFields();
 
-			if(is_array($toggable_fields) && !empty($toggable_fields)){
-
+			if (is_array($toggable_fields) && !empty($toggable_fields)) {
 				$index = 2;
-
-				foreach($toggable_fields as $field){
-
+				
+				foreach ($toggable_fields as $field) {
 					$options[$index] = array('label' => __('Set %s', array($field->get('label'))), 'options' => array());
-
-					foreach($field->getToggleStates() as $value => $state){
+					
+					foreach ($field->getToggleStates() as $value => $state) {
 						$options[$index]['options'][] = array('toggle-' . $field->get('id') . '-' . $value, false, $state);
 					}
-
+					
 					$index++;
 				}		
 			}
