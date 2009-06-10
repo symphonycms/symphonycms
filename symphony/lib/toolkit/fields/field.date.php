@@ -33,28 +33,29 @@
 			return true;
 		}
 
-		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-
-			$timestamp = NULL;
+		function displayPublishPanel(&$wrapper, $data = null, $error = null, $prefix = null, $postfix = null) {
+			$name = $this->get('element_name');
+			$value = null;
 			
-			//$obDate = $Admin->getDateObj();
-			//$obDate->setFormat('d M Y H:i');
+			// New entry:
+			if (is_null($data) && $this->get('pre_populate') == 'yes') {
+				$value = DateTimeObj::get(__SYM_DATETIME_FORMAT__, null);
+			}
 			
-			## For new entries, the value will be a formatted date. Otherwise it will be a timestamp
-			if($data) {
-				$value = $data['gmt'];
-				$timestamp = (!is_numeric($value) ? strtotime($value) : $value);
-				//$obDate->set((!is_numeric($value) ? strtotime($value) : $value), false);
+			// Empty entry:
+			else if (isset($data['gmt']) && !is_null($data['gmt'])) {
+				$value = DateTimeObj::get(__SYM_DATETIME_FORMAT__, $data['gmt']);
 			}
 			
 			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, ($data || $this->get('pre_populate') == 'yes' ? DateTimeObj::get(__SYM_DATETIME_FORMAT__, $timestamp) : NULL)));
-			
+			$label->appendChild(Widget::Input("fields{$prefix}[{$name}]{$name}", $value));
 			$label->setAttribute('class', 'date');
 			
-			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
-			else $wrapper->appendChild($label);
+			if (!is_null($error)) {
+				$label = Widget::wrapFormElementWithError($label, $error);
+			}
 			
+			$wrapper->appendChild($label);
 		}
 		
 		function checkPostFieldData($data, &$message, $entry_id=NULL){
@@ -72,25 +73,40 @@
 		}
 			
 		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
-			
 			$status = self::__OK__;
-			$timestamp = NULL;
+			$timestamp = null;
 			
-			if($data != '') $timestamp = strtotime($data);
-							
+			if ($data != '') {
+				$timestamp = strtotime($data);
+				
+				return array(
+					'value' => DateTimeObj::get('c', $timestamp),
+					'local' => strtotime(DateTimeObj::get('c', $timestamp)),
+					'gmt' => strtotime(DateTimeObj::getGMT('c', $timestamp))			
+				);
+			}
+			
 			return array(
-				'value' => DateTimeObj::get('c', $timestamp),
-				'local' => strtotime(DateTimeObj::get('c', $timestamp)),
-				'gmt' => strtotime(DateTimeObj::getGMT('c', $timestamp))			
+				'value'		=> null,
+				'local'		=> null,
+				'gmt'		=> null
 			);
 		}
 		
-		function appendFormattedElement(&$wrapper, $data, $encode=false){
-			$wrapper->appendChild(General::createXMLDateObject($data['local'], $this->get('element_name')));
+		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
+			if (isset($data['gmt']) && !is_null($data['gmt'])) {
+				$wrapper->appendChild(General::createXMLDateObject($data['local'], $this->get('element_name')));
+			}
 		}
 
-		function prepareTableValue($data, XMLElement $link=NULL){
-			return parent::prepareTableValue(array('value' => DateTimeObj::get(__SYM_DATE_FORMAT__, $data['local'])), $link);
+		public function prepareTableValue($data, XMLElement $link=NULL) {
+			$value = null;
+			
+			if (isset($data['gmt']) && !is_null($data['gmt'])) {
+				$value = DateTimeObj::get(__SYM_DATETIME_FORMAT__, $data['gmt']);
+			}
+			
+			return parent::prepareTableValue(array('value' => $value), $link);
 		}	
 		
 		public function getParameterPoolValue($data){
@@ -373,8 +389,8 @@
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `value` varchar(80) default NULL,
-				  `local` int(11) NOT NULL,
-				  `gmt` int(11) NOT NULL,
+				  `local` int(11) default NULL,
+				  `gmt` int(11) default NULL,
 				  PRIMARY KEY  (`id`),
 				  KEY `entry_id` (`entry_id`),
 				  KEY `value` (`value`)

@@ -36,12 +36,13 @@
 			return $this->_fields[$field];
 		}
 		
-		function fetchAllAssociatedEntryCounts(){
+		public function fetchAllAssociatedEntryCounts() {
+			if (is_null($this->get('section_id'))) return null;
 			
-			$section = $this->_Parent->sectionManager->fetch($this->get('section_id'));	
+			$section = $this->_Parent->sectionManager->fetch($this->get('section_id'));
 			$associated_sections = $section->fetchAssociatedSections();
-
-			if(!is_array($associated_sections) || empty($associated_sections)) return NULL;
+			
+			if (!is_array($associated_sections) || empty($associated_sections)) return NULL;
 			
 			$counts = array();
 			
