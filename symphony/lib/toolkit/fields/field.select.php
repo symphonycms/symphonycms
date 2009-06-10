@@ -75,16 +75,19 @@
 			return $this->_engine->Database->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".$this->_engine->Database->cleanValue($value)."'");
 		}	
 			
-		function getToggleStates(){
-			
+		public function getToggleStates() {
 			$values = preg_split('/,\s*/i', $this->get('static_options'), -1, PREG_SPLIT_NO_EMPTY);
-
-			if($this->get('dynamic_options') != '') $this->findAndAddDynamicOptions($values);
+			
+			if ($this->get('dynamic_options') != '') $this->findAndAddDynamicOptions($values);
 			
 			$values = array_map('trim', $values);
-			
 			$states = array();
-			foreach($values as $value) $states[$value] = $value;
+			
+			foreach ($values as $value) {
+				$value = General::sanitize($value);
+				
+				$states[$value] = $value;
+			}
 			
 			return $states;
 		}
@@ -96,13 +99,17 @@
 		}
 
 		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-
+			header('content-type: text/plain');
 			$states = $this->getToggleStates();
 			
 			if(!is_array($data['value'])) $data['value'] = array($data['value']);
 			
 			$options = array();
-
+			
+			//var_dump($data);
+			//var_dump($states);
+			//exit;
+			
 			foreach($states as $handle => $v){
 				$options[] = array($v, in_array($v, $data['value']), $v);
 			}
