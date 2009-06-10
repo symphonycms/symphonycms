@@ -216,8 +216,7 @@
 			if($this->get('validator') == '') $this->remove('validator');				
 		}
 		
-		function displaySettingsPanel(&$wrapper, $errors=NULL){
-			
+		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 			
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');		

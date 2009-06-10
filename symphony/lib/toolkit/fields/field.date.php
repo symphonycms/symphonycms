@@ -358,9 +358,8 @@
 			if(!isset($fields['calendar'])) $fields['calendar'] = 'no';
 		}
 		
-		function displaySettingsPanel(&$wrapper){
-			
-			parent::displaySettingsPanel($wrapper);
+		public function displaySettingsPanel(&$wrapper, $errors = null) {
+			parent::displaySettingsPanel($wrapper, $errors);
 
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][pre_populate]', 'yes', 'checkbox');

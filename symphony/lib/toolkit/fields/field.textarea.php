@@ -171,9 +171,8 @@
 			if(!isset($fields['size'])) $fields['size'] = 15;				
 		}
 		
-		function displaySettingsPanel(&$wrapper){
-			
-			parent::displaySettingsPanel($wrapper);
+		public function displaySettingsPanel(&$wrapper, $errors = null) {
+			parent::displaySettingsPanel($wrapper, $errors);
 
 			$group = new XMLElement('div', NULL, array('class' => 'group'));
 			

@@ -188,8 +188,7 @@
 			return true;
 		}	
 		
-		function displaySettingsPanel(&$wrapper, $errors=NULL){
-
+		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$label = Widget::Label(__('Suggestion List'));

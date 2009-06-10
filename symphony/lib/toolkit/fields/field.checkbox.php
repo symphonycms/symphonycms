@@ -153,9 +153,8 @@
 			if(!isset($fields['default_state'])) $fields['default_state'] = 'off';
 		}
 				
-		function displaySettingsPanel(&$wrapper){
-			
-			parent::displaySettingsPanel($wrapper);
+		public function displaySettingsPanel(&$wrapper, $errors = null) {
+			parent::displaySettingsPanel($wrapper, $errors);
 			
 			## Long Description		
 			$label = Widget::Label(__('Long Description <i>Optional</i>'));

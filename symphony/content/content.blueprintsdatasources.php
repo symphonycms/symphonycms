@@ -928,14 +928,11 @@
 						break;
 						
 					case 'static_xml':
-												
-						$dsShell = str_replace('<!-- GRAB -->', 
-						
-						'$xml = <<<XML' . self::CRLF .
-						'	' . preg_replace('/([\r\n]+)/', '$1	', $fields['static_xml']) . self::CRLF .
-						'XML;' . self::CRLF .				
-						'			$result = self::CRLF . \'	\' . trim($xml) . self::CRLF;', $dsShell);
-					
+						$value = sprintf(
+							'$result = "%s";',
+							addslashes($fields['static_xml'])
+						);
+						$dsShell = str_replace('<!-- GRAB -->', $value, $dsShell);
 						break;
 						
 					default:
