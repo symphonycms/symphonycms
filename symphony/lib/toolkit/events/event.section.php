@@ -112,7 +112,7 @@
 
 				foreach($errors as $field_id => $message){
 					$field = $entryManager->fieldManager->fetch($field_id);
-					$result->appendChild(new XMLElement($field->get('element_name'), NULL, array('type' => ($fields[$field->get('element_name')] == '' ? 'missing' : 'invalid'))));
+					$result->appendChild(new XMLElement($field->get('element_name'), NULL, array('type' => ($fields[$field->get('element_name')] == '' ? 'missing' : 'invalid'), 'message' => General::sanitize($message))));
 				}
 
 				if(isset($post_values) && is_object($post_values)) $result->appendChild($post_values);		
