@@ -60,7 +60,7 @@
 						WHERE
 							t.page_id = '".$page['id']."'
 						ORDER BY
-							ttype ASC
+							t.type ASC
 					");
 					
 					$col_title = Widget::TableData(Widget::Anchor(
