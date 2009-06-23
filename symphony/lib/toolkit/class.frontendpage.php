@@ -184,7 +184,7 @@
 				'current-page' => $page['handle'],
 				'current-page-id' => $page['id'],
 				'current-path' => $current_path,
-				'parent-path' => $page['path'],
+				'parent-path' => '/' . $page['path'],
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'symphony-build' => $this->_Parent->Configuration->get('build', 'symphony'),
