@@ -71,14 +71,22 @@
 			
 			return self::__OK__;		
 		}
-			
+		
 		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
 			$status = self::__OK__;
 			$timestamp = null;
 			
-			if ($data != '') {
+			if (is_null($data) || $data == '') {
+				if ($this->get('pre_populate') == 'yes') {
+					$timestamp = strtotime(DateTimeObj::get(__SYM_DATETIME_FORMAT__, null));
+				}
+			}
+			
+			else  {
 				$timestamp = strtotime($data);
-				
+			}
+			
+			if (!is_null($timestamp)) {
 				return array(
 					'value' => DateTimeObj::get('c', $timestamp),
 					'local' => strtotime(DateTimeObj::get('c', $timestamp)),
