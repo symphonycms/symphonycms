@@ -139,24 +139,33 @@ var Symphony;
 
 	// Suggestion lists
 	$('.tags > li').live('click', function() {
-		var u = $(this.parentNode),
-		    i = u.prev().find('input')[0],
-		    t = this.className || $(this).text();
-
-		i.focus();
-
-		if (u.hasClass('singular')) {
-			i.value = t;
+		var list = $(this.parentNode);
+		var input = list.prev().find('input')[0];
+		var tag = this.className || $(this).text();
+		
+		input.focus();
+		
+		if (list.hasClass('singular')) {
+			input.value = tag;
+			
 		} else {
-			var m = new RegExp('(^|,\\s*)' + t + '(?:$|\\s*,)').exec(i.value);
-
-			if (m) {
-				if (typeof i.setSelectionRange === 'function') {
-					i.setSelectionRange(m = m.index + m[1].length, m + t.length);
+			var exp = new RegExp('^' + tag + '$', 'i');
+			var tags = input.value.split(/,\s*/);
+			var removed = false;
+			
+			for (var index in tags) {
+				if (tags[index].match(exp)) {
+					tags.splice(index, 1);
+					removed = true;
+					
+				} else if (tags[index] == '') {
+					tags.splice(index, 1);
 				}
-			} else {
-				i.value = i.value.replace(/((?:\S+\s*)+)$/, '$1, ') + t;
 			}
+			
+			if (!removed) tags.push(tag);
+			
+			input.value = tags.join(', ');
 		}
 	});
 
