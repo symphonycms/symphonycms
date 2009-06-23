@@ -118,7 +118,7 @@
 				$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), $this->_Parent->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), __('Create a new entry'), 'create button'));
 			
 			$entries = $entryManager->fetchByPage($current_page, $section_id, $this->_Parent->Configuration->get('pagination_maximum_rows', 'symphony'), $where, $joins);
-
+			
 			$aTableHead = array();
 			
 			$visible_columns = $section->fetchVisibleColumns();
@@ -568,16 +568,14 @@
 			
 		}
 		
-		function __viewEdit(){		
-			
-
+		function __viewEdit() {
 			$sectionManager = new SectionManager($this->_Parent);
 			
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
 				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
 		
 		    $section = $sectionManager->fetch($section_id);
-
+			
 			$entry_id = intval($this->_context['entry_id']);
 
 			$entryManager = new EntryManager($this->_Parent);
@@ -585,28 +583,25 @@
 
 			if(!$existingEntry = $entryManager->fetch($entry_id)) $this->_Parent->customError(E_USER_ERROR, __('Unknown Entry'), __('The entry you are looking for could not be found.'), false, true);
 			$existingEntry = $existingEntry[0];
-
-			## If there is post data floating around, due to errors, create an entry object
-			if(isset($_POST['fields'])){
-				
+			
+			// If there is post data floating around, due to errors, create an entry object
+			if (isset($_POST['fields'])) {
 				$fields = $_POST['fields'];
 				
 				$entry =& $entryManager->create();
 				$entry->set('section_id', $existingEntry->get('section_id'));
 				$entry->set('id', $entry_id);
-
-				$entry->setDataFromPost($fields, $error, true);
 				
+				$entry->setDataFromPost($fields, $error, true);
 			}
-
-			## Editing an entry, so need to create some various objects
-			else{
-
+			
+			// Editing an entry, so need to create some various objects
+			else {
 				$entry = $existingEntry;
-
-				$sectionManager = new SectionManager($this->_Parent);
-				$section = $sectionManager->fetch($entry->get('section_id'));
-
+				
+				if (!$section) {
+					$section = $sectionManager->fetch($entry->get('section_id'));
+				}
 			}
 
 			if(isset($this->_context['flag'])){

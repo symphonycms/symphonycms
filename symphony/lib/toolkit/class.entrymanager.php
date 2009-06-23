@@ -310,13 +310,13 @@
 		## Do not pass this function ID values from across more than one section.
 		function __buildEntries(array $id_list, $section_id){
 			$entries = array();
-				
-			if(!is_array($id_list) || empty($id_list)) return $entries;
+			
+			if (!is_array($id_list) || empty($id_list)) return $entries;
 			
 			$schema = Symphony::Database()->fetch("SELECT * FROM `tbl_fields` WHERE `parent_section` = '$section_id'");
 			
 			$tmp = array();
-			foreach($id_list as $r){
+			foreach ($id_list as $r) {
 				$tmp[$r['id']] = $r;
 			}
 			$id_list = $tmp;
@@ -325,62 +325,73 @@
 			
 			$id_list_string = @implode("', '", array_keys($id_list));
 			
-			foreach($schema as $f){
+			// Append meta data:
+			foreach ($id_list as $entry_id => $entry) {
+				$raw[$entry_id]['meta'] = $entry;
+			}
+			
+			// Append field data:
+			foreach ($schema as $f) {
 				$field_id = $f['id'];
 				
-				$row = Symphony::Database()->fetch("SELECT * FROM `tbl_entries_data_$field_id` WHERE `entry_id` IN ('$id_list_string') ORDER BY `id` ASC");
-							
-				if(!is_array($row) || empty($row)) continue;			
-								
+				$row = Symphony::Database()->fetch("SELECT * FROM `tbl_entries_data_{$field_id}` WHERE `entry_id` IN ('$id_list_string') ORDER BY `id` ASC");
+				
+				if (!is_array($row) || empty($row)) continue;
+				
 				$tmp = array();
-				foreach($row as $r){
-					
+				
+				foreach ($row as $r) {
 					$entry_id = $r['entry_id'];
-
+					
 					unset($r['id']);					
 					unset($r['entry_id']);
 					
-					if(!isset($raw[$entry_id]['fields'][$field_id])){
+					if (!isset($raw[$entry_id]['fields'][$field_id])) {
 						$raw[$entry_id]['fields'][$field_id] = $r;
-						$raw[$entry_id]['meta'] = $id_list[$entry_id];
 					}
 					
-					else{
-						foreach(array_keys($r) as $key){
-							if(isset($raw[$entry_id]['fields'][$field_id][$key]) && !is_array($raw[$entry_id]['fields'][$field_id][$key])) 
+					else {
+						foreach (array_keys($r) as $key) {
+							if (isset($raw[$entry_id]['fields'][$field_id][$key]) && !is_array($raw[$entry_id]['fields'][$field_id][$key])) {
 								$raw[$entry_id]['fields'][$field_id][$key] = array($raw[$entry_id]['fields'][$field_id][$key], $r[$key]);
+							}
 								
-							elseif(!isset($raw[$entry_id]['fields'][$field_id][$key])) $raw[$entry_id]['fields'][$field_id] = array($r[$key]);
+							else if (!isset($raw[$entry_id]['fields'][$field_id][$key])) {
+								$raw[$entry_id]['fields'][$field_id] = array($r[$key]);
+							}
 							
-							else $raw[$entry_id]['fields'][$field_id][$key][] = $r[$key];
-							
+							else {
+								$raw[$entry_id]['fields'][$field_id][$key][] = $r[$key];
+							}
 						}
 					}
 				}
 			}
 			
-			## Need to restore the correct ID ordering
+			// Need to restore the correct ID ordering
 			$tmp = array();
-			foreach(array_keys($id_list) as $entry_id) $tmp[$entry_id] = $raw[$entry_id];
+			
+			foreach (array_keys($id_list) as $entry_id) {
+				$tmp[$entry_id] = $raw[$entry_id];
+			}
+			
 			$raw = $tmp;
-
+			
 			$fieldPool = array();
-
-			foreach($raw as $entry){
+			
+			foreach ($raw as $entry) {
+				$obj = $this->create();
 				
-				$obj = $this->create();		
-							
 				$obj->creationDate = DateTimeObj::get('c', $entry['meta']['creation_date']);
 				$obj->set('id', $entry['meta']['id']);
 				$obj->set('author_id', $entry['meta']['author_id']);
 				$obj->set('section_id', $entry['meta']['section_id']);
-			
-				foreach($entry['fields'] as $field_id => $data) $obj->setData($field_id, $data);
+				
+				foreach ($entry['fields'] as $field_id => $data) $obj->setData($field_id, $data);
 				
 				$entries[] = $obj;
-
 			}
-
+			
 			return $entries;			
 		}
 		
