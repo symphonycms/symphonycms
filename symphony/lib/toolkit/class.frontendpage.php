@@ -40,17 +40,19 @@
 			$devkit = null;
 			$output = null;
 			
-			####
-			# Delegate: FrontendDevKitResolve
-			# Description: Allows a devkit object to be specified, and stop continued execution:
-			# Global: Yes
-			$this->ExtensionManager->notifyMembers(
-				'FrontendDevKitResolve', '/frontend/',
-				array(
-					'full_generate'	=> &$full_generate,
-					'devkit'		=> &$devkit
-				)
-			);
+			if ($this->_Parent->isLoggedIn()) {
+				####
+				# Delegate: FrontendDevKitResolve
+				# Description: Allows a devkit object to be specified, and stop continued execution:
+				# Global: Yes
+				$this->ExtensionManager->notifyMembers(
+					'FrontendDevKitResolve', '/frontend/',
+					array(
+						'full_generate'	=> &$full_generate,
+						'devkit'		=> &$devkit
+					)
+				);
+			}
 			
 			$this->_Parent->Profiler->sample('Page creation process started');
 			$this->_page = $page;
