@@ -189,7 +189,13 @@
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			## Destination Folder
-			$ignore = array('events', 'data-sources', 'text-formatters', 'pages', 'utilities');
+			$ignore = array(
+				'/workspace/events',
+				'/workspace/data-sources',
+				'/workspace/text-formatters',
+				'/workspace/pages',
+				'/workspace/utilities'
+			);
 			$directories = General::listDirStructure(WORKSPACE, true, 'asc', DOCROOT, $ignore);	   	
 	
 			$label = Widget::Label(__('Destination Directory'));

@@ -576,32 +576,33 @@
 		Return: nested array containing the directory structure
 
 		***/	    
-		public static function listDirStructure($dir='.', $recurse=true, $sort='asc', $strip_root=NULL, $exclude=array(), $ignore_hidden=true){
+		public static function listDirStructure($dir = '.', $recurse = true, $sort = 'asc', $strip_root = null, $exclude = array(), $ignore_hidden = true) {
+			if (!is_dir($dir)) return;
 			
-			if(!is_dir($dir)) return;
+			$filter_pattern_match = false;
+			$files = array();
 			
-		    $filter_pattern_match = false;
-
-		    if(isset($filters) && !is_array($filters)) $filter_pattern_match = true;
-
-		    $files = array();
-
-			foreach(scandir($dir) as $file){
-				if($file != '.' && $file != '..' && (!$ignore_hidden || ($ignore_hidden && $file{0} != '.'))){
-
-					if(@is_dir("$dir/$file") && !in_array($file, $exclude)){
-						$files[] = str_replace($strip_root, '', $dir) ."/$file/";
-
-						if($recurse){
-							$files = @array_merge($files, self::listDirStructure("$dir/$file", $recurse, $sort, $strip_root, $exclude, $ignore_hidden));
-						}
-
-					}
+			if (isset($filters) && !is_array($filters)) $filter_pattern_match = true;
+			if ($sort == 'asc') $sort = 0; else $sort = 1;
+			
+			foreach (scandir($dir) as $file) {
+				if (
+					($file == '.' or $file == '..')
+					or ($ignore_hidden and $file{0} == '.')
+					or !is_dir("$dir/$file")
+					or in_array($file, $exclude)
+					or in_array("$dir/$file", $exclude)
+				) continue;
+				
+				$files[] = str_replace($strip_root, '', $dir) ."/$file/";
+				
+				if ($recurse) {
+					$files = @array_merge($files, self::listDirStructure("$dir/$file", $recurse, $sort, $strip_root, $exclude, $ignore_hidden));
 				}
 			}
-
+			
 			return $files;
-		}		
+		}			
 	
 		/***
 		
