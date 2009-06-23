@@ -47,7 +47,7 @@
 					}
 
 					if(!$param_output_only){ 
-						if(in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){ 
+						if(in_array('system:date', $ds->dsParamINCLUDEDELEMENTS)){ 
 							$xEntry->appendChild(General::createXMLDateObject(strtotime($entry->creationDate), 'system-date'));
 						}
 						$xGroup->appendChild($xEntry);
