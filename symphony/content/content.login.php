@@ -144,7 +144,7 @@
 		function __loginFromToken($token){
 			##If token is invalid, return to login page
 			if(!$this->_Parent->loginFromToken($token)) return false;
-
+			
 			##If token is valid and it is not "emergency" login (forgotten password case), redirect to administration pages
 			if(strlen($token) != 6) redirect(URL . '/symphony/'); // Regular token-based login
 
@@ -200,7 +200,7 @@
 						if(!$token = $this->_Parent->Database->fetchVar('token', 0, "SELECT `token` FROM `tbl_forgotpass` WHERE `expiry` > '".DateTimeObj::getGMT('c')."' AND `author_id` = ".$author['id'])){
 							
 							$token = substr(md5(time() . rand(0, 200)), 0, 6);
-							$this->_Parent->Database->insert(array('author_id' => $author['id'], 'token' => $token, 'expiry' => DateTimeObj::get('c', time() + (120 * 60))), 'tbl_forgotpass');					
+							$this->_Parent->Database->insert(array('author_id' => $author['id'], 'token' => $token, 'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))), 'tbl_forgotpass');					
 						}
 
 						$this->_email_sent = General::sendEmail($author['email'], 

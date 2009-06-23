@@ -193,8 +193,8 @@
 													 FROM `tbl_authors` AS `a`, `tbl_forgotpass` AS `f`
 													 WHERE `a`.`id` = `f`.`author_id` AND `f`.`expiry` > '".DateTimeObj::getGMT('c')."' AND `f`.`token` = '$token'
 													 LIMIT 1");
-													
-				$this->Database->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' ");
+				
+				$this->Database->delete('tbl_forgotpass', " `token` = '{$token}' ");
 			}
 			
 			else{
