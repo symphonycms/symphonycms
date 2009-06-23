@@ -106,12 +106,8 @@
 			
 			$options = array();
 			
-			//var_dump($data);
-			//var_dump($states);
-			//exit;
-			
 			foreach($states as $handle => $v){
-				$options[] = array($v, in_array($v, $data['value']), $v);
+				$options[] = array(General::sanitize($v), in_array($v, $data['value']), $v);
 			}
 			
 			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
