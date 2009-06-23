@@ -145,8 +145,8 @@ div.invalid {
 	color: #fff;
 }
 .group > .invalid {
-	padding: 0.75em 3% 1em;
-	width: 44%;
+	padding: 0.75em 1% 1em;
+	width: 48%;
 }
 div.invalid p {
 	margin: -1em 0 0;
