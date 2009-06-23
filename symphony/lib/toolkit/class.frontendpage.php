@@ -35,85 +35,93 @@
 			return $this->_pageData;
 		}
 		
-		public function generate($page, $mode=self::FRONTEND_OUTPUT_NORMAL){
+		public function generate($page) {
+			$full_generate = true;
+			$devkit = null;
+			$output = null;
+			
+			####
+			# Delegate: FrontendDevKitResolve
+			# Description: Allows a devkit object to be specified, and stop continued execution:
+			# Global: Yes
+			$this->ExtensionManager->notifyMembers(
+				'FrontendDevKitResolve', '/frontend/',
+				array(
+					'full_generate'	=> &$full_generate,
+					'devkit'		=> &$devkit
+				)
+			);
 			
 			$this->_Parent->Profiler->sample('Page creation process started');
-			
 			$this->_page = $page;
-
-			$this->__buildPage();
+			$this->__buildPage($full_generate);
 			
-			if($mode == self::FRONTEND_OUTPUT_NORMAL){
+			if ($full_generate) {
+				####
+				# Delegate: FrontendOutputPreGenerate
+				# Description: Immediately before generating the page. Provided with the page object, XML and XSLT
+				# Global: Yes
+				$this->ExtensionManager->notifyMembers(
+					'FrontendOutputPreGenerate', '/frontend/',
+					array(
+						'page'		=> &$this,
+						'xml'		=> $this->_xml,
+						'xsl'		=> $this->_xsl
+					)
+				);
 				
-				if(@in_array('XML', $this->_pageData['type']) || @in_array('xml', $this->_pageData['type'])){
-					$this->addHeaderToPage('Content-Type', 'text/xml; charset=utf-8');
-				}
-				
-				else{
-					$this->addHeaderToPage('Content-Type', 'text/html; charset=utf-8');
-				}
+				if (is_null($devkit)) {
+					if(@in_array('XML', $this->_pageData['type']) || @in_array('xml', $this->_pageData['type'])) {
+						$this->addHeaderToPage('Content-Type', 'text/xml; charset=utf-8');
+					}
 					
-				if(@in_array('404', $this->_pageData['type'])){
-					$this->addHeaderToPage('HTTP/1.0 404 Not Found');
+					else{
+						$this->addHeaderToPage('Content-Type', 'text/html; charset=utf-8');
+					}
+						
+					if(@in_array('404', $this->_pageData['type'])){
+						$this->addHeaderToPage('HTTP/1.0 404 Not Found');
+					}
+					
+					elseif(@in_array('403', $this->_pageData['type'])){
+						$this->addHeaderToPage('HTTP/1.0 403 Forbidden');
+					}
 				}
 				
-				elseif(@in_array('403', $this->_pageData['type'])){
-					$this->addHeaderToPage('HTTP/1.0 403 Forbidden');
+				$output = parent::generate();
+				
+				####
+				# Delegate: FrontendOutputPostGenerate
+				# Description: Immediately after generating the page. Provided with string containing page source
+				# Global: Yes
+				$this->ExtensionManager->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
+				
+				$this->_Parent->Profiler->sample('XSLT Transformation', PROFILE_LAP);
+				
+				if (is_null($devkit) && !$output) {
+					$errstr = NULL;
+					
+					while (list($key, $val) = $this->Proc->getError()) {
+						$errstr .= 'Line: ' . $val['line'] . ' - ' . $val['message'] . self::CRLF;
+					};
+					
+					$this->_Parent->customError(E_USER_ERROR, NULL, trim($errstr), true, false, 'xslt-error', array('proc' => clone $this->Proc));
 				}
 				
+				$this->_Parent->Profiler->sample('Page creation complete');
 			}
+			
+			if (!is_null($devkit)) {
+				$devkit->prepare($this, $this->_pageData, $this->_xml, $this->_param, $output);
 				
-			####
-			# Delegate: FrontendOutputPreGenerate
-			# Description: Immediately before generating the page. Provided with the page object, XML and XSLT
-			# Global: Yes
-			$this->ExtensionManager->notifyMembers('FrontendOutputPreGenerate', '/frontend/', array('page' => &$this, 'xml' => $this->_xml, 'xsl' => $this->_xsl));
-			
-			$output = parent::generate();
-
-			####
-			# Delegate: FrontendOutputPostGenerate
-			# Description: Immediately after generating the page. Provided with string containing page source
-			# Global: Yes
-			$this->ExtensionManager->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
-			
-
-			$this->_Parent->Profiler->sample('XSLT Transformation', PROFILE_LAP);
-
-			if($mode == self::FRONTEND_OUTPUT_NORMAL && !$output){
-				$errstr = NULL;
-
-				while(list($key, $val) = $this->Proc->getError()){
-					$errstr .= 'Line: ' . $val['line'] . ' - ' . $val['message'] . self::CRLF;
-				};
-
-				$this->_Parent->customError(E_USER_ERROR, NULL, trim($errstr), true, false, 'xslt-error', array('proc' => clone $this->Proc));
+				return $devkit->generate();
 			}
-							
-			$this->_Parent->Profiler->sample('Page creation complete');
-			
-			## DEBUG
-			if($mode == self::FRONTEND_OUTPUT_DEBUG):
-				
-				include_once(TOOLKIT . '/class.debugpage.php');
-				$debug = new DebugPage();		
-				$output = $debug->generate($this->_pageData, $this->_xml, @file_get_contents($this->_pageData['filelocation']), $output, $this->_param);
-			
-			
-			## PROFILE
-			elseif($mode == self::FRONTEND_OUTPUT_PROFILE):
-	
-				include_once(TOOLKIT . '/class.profilepage.php');
-				$profile = new ProfilePage();
-				$output = $profile->generate($this->_pageData, $this->_Parent->Profiler, $this->_Parent->Database);
-
-			endif;
 			
 			## EVENT DETAILS IN SOURCE
-			if($this->_Parent->isLoggedIn() && $this->_Parent->Configuration->get('display_event_xml_in_source', 'public') == 'yes')
+			if ($this->_Parent->isLoggedIn() && $this->_Parent->Configuration->get('display_event_xml_in_source', 'public') == 'yes') {
 				$output .= self::CRLF . '<!-- ' . self::CRLF . $this->_events_xml->generate(true) . ' -->';
+			}
 			
-						
 			return $output;
 		}
 		
