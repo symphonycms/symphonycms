@@ -547,15 +547,17 @@
 				}
 				
 				if (trim($fields['type']) != '' && preg_match('/(index|404|403)/i', $fields['type'])) {
-					$haystack = strtolower($fields['type']);
+					$types = preg_split('/\s*,\s*/', strtolower($fields['type']), -1, PREG_SPLIT_NO_EMPTY);
 					
-					if (preg_match('/\bindex\b/i', $haystack, $matches) && $this->__typeUsed($page_id, 'index')) {
+					if (in_array('index', $types) && $this->__typeUsed($page_id, 'index')) {
 						$this->_errors['type'] = __('An index type page already exists.');
-						
-					} else if(preg_match('/\b404\b/i', $haystack, $matches) && $this->__typeUsed($page_id, 'index')) {	
+					}
+					
+					else if (in_array('404', $types) && $this->__typeUsed($page_id, '404')) {	
 						$this->_errors['type'] = __('A 404 type page already exists.');
-						
-					} else if(preg_match('/\b403\b/i', $haystack, $matches) && $this->__typeUsed($page_id, 'index')) {	
+					}
+					
+					else if (in_array('403', $types) && $this->__typeUsed($page_id, '403')) {	
 						$this->_errors['type'] = __('A 403 type page already exists.');
 					}
 				}
