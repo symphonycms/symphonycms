@@ -55,12 +55,7 @@ The table number, 'XX' should be whatever ID of your upload field. If you have m
 
 		git clone git://github.com/symphony/symphony-2.git
 		
-	Should you wish to make contributions back to the project, feel free to fork the
-<<<<<<< HEAD:README.markdown
-	master tree instead of cloning, and issue pull requests via github.
-=======
-	master tree, instead of cloning, and issue pull requests via github.
->>>>>>> fbb0eadaf97d4da6a6b304f9b4fb56442c300da7:README.markdown
+	Should you wish to make contributions back to the project, fork the master tree rather than cloning, and issue pull requests via github.
 
 	The following repositories are included as submodules:
 
@@ -98,12 +93,6 @@ Upload the following files and directories to the root directory of your website
 	- /workspace
 	- /extensions
 
-<<<<<<< HEAD:README.markdown
-=======
-	_Alternatively, you can upload the `.zip` archive to the same location and
-	run `unzip` from the command line._
-
->>>>>>> fbb0eadaf97d4da6a6b304f9b4fb56442c300da7:README.markdown
 2. Point your web browser at <http://yourwebsite.com/install.php> and provide
 details for establishing a database connection and about your server environment.
 
