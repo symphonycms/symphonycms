@@ -60,7 +60,6 @@ release, be sure up upload `extensions/jit\_image\_manipulation`.
 	Should you wish to make contributions back to the project, feel free to fork the
 	master tree, instead of cloning, and issue pull requests via github.
 
-
 	The following repositories are included as submodules:
 
 	- [Maintenance Mode](http://github.com/pointybeard/maintenance_mode)
@@ -86,7 +85,7 @@ you will need to use the following command from within the Symphony 2 folder you
 
 ### INSTALLATION
 
-** See further down for updating instructions **
+**Note: You can leave `/workspace` out if you do not want the default theme.**
 
 1. This step assumes you downloaded a zip archive from the [Symphony website](http://symphony21.com). 
 Upload the following files and directories to the root directory of your website:
@@ -97,13 +96,10 @@ Upload the following files and directories to the root directory of your website
 	- /workspace
 	- /extensions
 
-   _Alternatively, you can upload the `.zip` archive to the same location and
-   run '`unzip`' from the command line._
-	
-   **Note: You can leave `/workspace` out if you do not want the default theme.**
+	_Alternatively, you can upload the `.zip` archive to the same location and
+	run `unzip` from the command line._
 
 2. Point your web browser at <http://yourwebsite.com/install.php> and provide
-   details for establishing a database connection and about your server
-   environment.
+details for establishing a database connection and about your server environment.
 
 3. Celebrate!
