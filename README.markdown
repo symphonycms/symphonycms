@@ -1,6 +1,6 @@
 ## Symphony 2 ##
 
-- Version: 2.0.3 (build 512)
+- Version: 2.0.3 (build 515)
 - Date: 24th June 2009
 - Github Repository: <http://github.com/symphony/symphony-2/tree/master>
 
@@ -55,8 +55,7 @@ The table number, 'XX' should be whatever ID of your upload field. If you have m
 
 		git clone git://github.com/symphony/symphony-2.git
 		
-	Should you wish to make contributions back to the project, feel free to fork the
-	master tree instead of cloning, and issue pull requests via github.
+	Should you wish to make contributions back to the project, fork the master tree rather than cloning, and issue pull requests via github.
 
 	The following repositories are included as submodules:
 
