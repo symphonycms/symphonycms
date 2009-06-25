@@ -42,22 +42,21 @@ Follow the instructions below if you are updating from Symphony version 2.0 (non
 7. Dance like it's 1999!
 
 
-### Update Upload Field
-
-Update your corresponding entries_data_xx table with the following:
-
-	ALTER TABLE `tbl_entries_data_XX` CHANGE `mimetype` `mimetype` VARCHAR( 50 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL
-
-The table number, 'XX' should be whatever ID of your upload field. If you have more than one upload field, run the above query for each field.
-
-
-### Adding Navigation Group to sections
+#### Adding Navigation Group to sections
 
 Be sure to run the following MySQL commands to get the new section navigation group functionality. Change `sym_` to match your table prefix value
 
 	ALTER TABLE  `sym_sections` ADD  `navigation_group` VARCHAR( 50 ) NOT NULL DEFAULT  'Content';
 	
 	ALTER TABLE  `sym_sections` ADD INDEX (  `navigation_group` ) ;
+
+#### Update Upload Field
+
+Update your corresponding entries_data_xx table with the following:
+
+	ALTER TABLE `tbl_entries_data_XX` CHANGE `mimetype` `mimetype` VARCHAR( 50 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL
+
+The table number, 'XX' should be whatever ID of your upload field. If you have more than one upload field, run the above query for each field.
 
 
 ### INSTALLING VIA GIT
