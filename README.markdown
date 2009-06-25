@@ -35,9 +35,9 @@ Follow the instructions below if you are updating from Symphony version 2.0 (non
 
 4. Go to `http://yoursite.com/update.php` to complete the update process.
 
-5. For those who have an upload field, follow the instructions under "Update Upload Field".
+5. Follow the instruction under "Adding Navigation Group to sections".
 
-6. For those updating from 2.0.1 and below, follow the instructions under "Updating from v2.0.1 and below"
+6. For those who have an upload field, follow the instructions under "Update Upload Field".
 
 7. Dance like it's 1999!
 
@@ -51,9 +51,9 @@ Update your corresponding entries_data_xx table with the following:
 The table number, 'XX' should be whatever ID of your upload field. If you have more than one upload field, run the above query for each field.
 
 
-### Updating from v2.0.1 and below
+### Adding Navigation Group to sections
 
-1. Be sure to run the following MySQL commands to get the new section navigation group functionality. Change `sym_` to match your table prefix value
+Be sure to run the following MySQL commands to get the new section navigation group functionality. Change `sym_` to match your table prefix value
 
 	ALTER TABLE  `sym_sections` ADD  `navigation_group` VARCHAR( 50 ) NOT NULL DEFAULT  'Content';
 	
