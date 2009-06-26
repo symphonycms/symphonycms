@@ -46,6 +46,7 @@
 
 	define('kBUILD', '515');
 	define('kVERSION', '2.0.3');
+	define('kCHANGELOG', 'http://symphony-cms.com/forum/discussions/23280/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
 
@@ -120,9 +121,9 @@
 		}
 
 		$code = sprintf($shell,
-'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=754">change log</a></em></h1>
+'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 				<h2>Update Existing Installation</h2>
-				<p>This script will update your existing Symphony '.$settings['symphony']['version'].' installation to version 2.0.2</p>
+				<p>This script will update your existing Symphony '.$settings['symphony']['version'].' installation to version '.kVERSION'.</p>
 			
 				<div class="submit">
 					<input type="submit" name="action[update]" value="Update Symphony"/>
