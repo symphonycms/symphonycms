@@ -78,7 +78,27 @@
 		$settings['general']['useragent'] = 'Symphony/' . kBUILD;
 		
 		if(writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']) === true){
+			
+			// build a Frontend page instance to initialise database
+			require(DOCROOT . '/symphony/lib/boot/bundle.php');
+			require_once(DOCROOT . '/manifest/config.php');
+			require_once(CORE . '/class.frontend.php');
+			$frontend = Frontend::instance();
+			
+			if (kVERSION == '2.0.3') {
+			
+				// Add Navigation Groups
+				$frontend->Database->query("ALTER TABLE `tbl_sections` ADD `navigation_group` VARCHAR( 50 ) NOT NULL DEFAULT 'Content'");
+				$frontend->Database->query("ALTER TABLE `tbl_sections` ADD INDEX (`navigation_group`)");
 
+				// Added support for upload field to handle empty mimetypes.
+				$upload_fields = $frontend->Database->fetch("SELECT id FROM tbl_fields WHERE `type` = 'upload'");
+				foreach ($upload_fields as $upload_field) {
+					$frontend->Database->query("ALTER TABLE `tbl_entries_data_{$upload_field['id']}` CHANGE `mimetype` `mimetype` VARCHAR( 50 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL");
+				}
+				
+			}
+			
 			$code = sprintf($shell, 
 '				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=754">change log</a></em></h1>
 				<h2>Update Complete</h2>
