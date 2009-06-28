@@ -85,7 +85,7 @@
 			require_once(CORE . '/class.frontend.php');
 			$frontend = Frontend::instance();
 			
-			if (kVERSION == '2.0.3') {
+			if (version_compare(kVERSION, '2.0.3', '=')) {
 			
 				// Add Navigation Groups
 				$frontend->Database->query("ALTER TABLE `tbl_sections` ADD `navigation_group` VARCHAR( 50 ) NOT NULL DEFAULT 'Content'");
