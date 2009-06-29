@@ -143,7 +143,7 @@
 		$code = sprintf($shell,
 '				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 				<h2>Update Existing Installation</h2>
-				<p>This script will update your existing Symphony '.$settings['symphony']['version'].' installation to version '.kVERSION'.</p>
+				<p>This script will update your existing Symphony '.$settings['symphony']['version'].' installation to version '.kVERSION.'.</p>
 			
 				<div class="submit">
 					<input type="submit" name="action[update]" value="Update Symphony"/>
