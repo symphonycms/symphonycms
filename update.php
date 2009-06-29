@@ -54,7 +54,12 @@
 	header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 	header('Cache-Control: no-cache, must-revalidate, max-age=0');
 	header('Pragma: no-cache');
-
+	
+	if (isset($_GET['action']) && $_GET['action'] == 'remove') {
+		//unlink(DOCROOT . '/update.php');
+		redirect(URL . '/symphony/');
+	}
+	
 	$shell = '<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -103,9 +108,9 @@
 '				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=754">change log</a></em></h1>
 				<h2>Update Complete</h2>
 				
-				<p><strong>Post Installation Step:</strong> As of this release, the built in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></p>
+				<p><strong>Post Installation Step:</strong>Since 2.0.2, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></p>
 				<br />
-				<p>This script, <code>update.php</code>, should be removed as a safety precaution. <a href="'.URL.'/symphony/">Click here</a> to proceed to your administration area.</p>');
+				<p>This script, <code>update.php</code>, should be removed as a safety precaution. <a href="'.URL.'/update.php?action=remove">Click here</a> to remove this file and proceed to your administration area.</p>');
 
 		}
 		
