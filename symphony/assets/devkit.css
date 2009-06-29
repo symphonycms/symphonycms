@@ -79,7 +79,7 @@ code > span {
 dl,
 code,
 ol li {
-	font: 12px/16px monospace;
+	font: 12px/16px Monaco, Consolas, 'Andale Mono', monospace;
 }
 dl {
 	position: relative;
