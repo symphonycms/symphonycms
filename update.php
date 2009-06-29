@@ -40,7 +40,12 @@
 	require_once('symphony/lib/boot/func.utilities.php');
 	require_once('symphony/lib/boot/defines.php');
 	require_once(TOOLKIT . '/class.general.php');
-
+	
+	if (isset($_GET['action']) && $_GET['action'] == 'remove') {
+		unlink(DOCROOT . '/update.php');
+		redirect(URL . '/symphony/');
+	}
+	
 	error_reporting(E_ALL ^ E_NOTICE);
 	set_error_handler('__errorHandler');
 
@@ -54,11 +59,6 @@
 	header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 	header('Cache-Control: no-cache, must-revalidate, max-age=0');
 	header('Pragma: no-cache');
-	
-	if (isset($_GET['action']) && $_GET['action'] == 'remove') {
-		//unlink(DOCROOT . '/update.php');
-		redirect(URL . '/symphony/');
-	}
 	
 	$shell = '<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
@@ -76,7 +76,7 @@
 	
 	$settings = loadOldStyleConfig();
 	
-	if(isset($_POST['action']['update'])){
+	if(!isset($_POST['action']['update'])){
 		
 		$settings['symphony']['build'] = kBUILD;
 		$settings['symphony']['version'] = kVERSION;
@@ -108,7 +108,7 @@
 '				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=754">change log</a></em></h1>
 				<h2>Update Complete</h2>
 				
-				<p><strong>Post Installation Step:</strong>Since 2.0.2, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></p>
+				<p><strong>Post Installation Step: </strong>Since 2.0.2, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></p>
 				<br />
 				<p>This script, <code>update.php</code>, should be removed as a safety precaution. <a href="'.URL.'/update.php?action=remove">Click here</a> to remove this file and proceed to your administration area.</p>');
 
@@ -117,7 +117,7 @@
 		else{
 			
 			$code = sprintf($shell, 
-'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=754">change log</a></em></h1>
+'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 				<h2>Update Failed!</h2>
 				<p>An error occurred while attempting to write to the Symphony configuration, <code>manifest/config.php</code>. Please check it is writable and try again.</p>
 
@@ -138,7 +138,7 @@
 
 		if(isset($settings['symphony']['version']) && version_compare(kVERSION, $settings['symphony']['version'], '<=')){
 			$code = sprintf($shell,
-'			<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=754">change log</a></em></h1>
+'			<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 			<h2>Existing Installation</h2>
 			<p>It appears that Symphony has already been installed at this location and is up to date.</p>');
 
