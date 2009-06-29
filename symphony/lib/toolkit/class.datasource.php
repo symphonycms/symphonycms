@@ -46,7 +46,11 @@
 		
 			if(isset($this->dsParamLIMIT)) $this->dsParamLIMIT = $this->__processParametersInString($this->dsParamLIMIT, $this->_env);
 		
-			if(isset($this->dsParamREQUIREDPARAM) && $this->__processParametersInString($this->dsParamREQUIREDPARAM, $this->_env, false) == '') $this->_force_empty_result = true;
+			if(isset($this->dsParamREQUIREDPARAM) && $this->__processParametersInString($this->dsParamREQUIREDPARAM, $this->_env, false) == '') {
+				$this->_force_empty_result = true; // don't output any XML
+				$this->dsParamPARAMOUTPUT = NULL; // don't output any parameters
+				$this->dsParamINCLUDEDELEMENTS = NULL; // don't query any fields in this section
+			}
 			
 			$this->_param_output_only = ((!is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) && !isset($this->dsParamGROUP));
 			

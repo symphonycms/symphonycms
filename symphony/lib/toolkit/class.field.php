@@ -388,6 +388,10 @@
 		public function appendRequiredCheckbox(&$wrapper) {
 			if (!$this->_required) return;
 			
+			$wrapper->appendChild(
+				Widget::Input('fields['.$this->get('sortorder').'][required]', 'no', 'hidden')
+			);
+			
 			$label = Widget::Label();				
 			$input = Widget::Input('fields['.$this->get('sortorder').'][required]', 'yes', 'checkbox');
 			
