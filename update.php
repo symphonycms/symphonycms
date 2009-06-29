@@ -105,7 +105,7 @@
 			}
 			
 			$code = sprintf($shell, 
-'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=754">change log</a></em></h1>
+'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 				<h2>Update Complete</h2>
 				
 				<p><strong>Post Installation Step: </strong>Since 2.0.2, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></p>
