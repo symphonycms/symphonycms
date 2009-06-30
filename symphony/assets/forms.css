@@ -194,18 +194,14 @@ div.actions button {
 	background-color: #887;
 	color: #fff;
 	cursor: pointer;
-
 	padding: 0 1em .2em 1em;
 	line-height:2em;
 	height:2em;
 	text-transform: uppercase;
 	letter-spacing: .1em;
-
 	border-radius: 1em;
 	-moz-border-radius: 1em;
 	-webkit-border-radius: 1em;
-}
-button.delete {
 }
 button.delete:hover {
 	background-color: #d43;
