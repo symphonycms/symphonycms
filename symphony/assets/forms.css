@@ -191,18 +191,17 @@ div.actions button {
 	float: left;
 	margin-right: 1em;
 	border: none;
-	padding: 0;
-	overflow: hidden;
 	background-color: #887;
 	color: #fff;
-	line-height: 15px;
-	height: 15px;
 	cursor: pointer;
-}
-button.delete {
-	width: 51px;
-	background-image: url("images/delete.png");
-	text-indent: 200%;
+	padding: 0 1em .2em 1em;
+	line-height:2em;
+	height:2em;
+	text-transform: uppercase;
+	letter-spacing: .1em;
+	border-radius: 1em;
+	-moz-border-radius: 1em;
+	-webkit-border-radius: 1em;
 }
 button.delete:hover {
 	background-color: #d43;
