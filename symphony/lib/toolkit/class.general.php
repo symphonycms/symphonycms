@@ -173,7 +173,7 @@
 		Method: validateURL
 		Description: will check that a string is a valid URL
 		Param: $string - string to operate on
-		Return: true or false
+		Return: a blank string or a valid URL
 		
 		***/		
 		public static function validateURL($url){
@@ -181,8 +181,9 @@
 				if(!preg_match('#^http[s]?:\/\/#i', $url)){
 					$url = 'http://' . $url;
 				}
-		
-				if(!preg_match('/^[^\s:\/?#]+:(?:\/{2,3})?[^\s.\/?#]+(?:\.[^\s.\/?#]+)*(?:\/[^\s?#]*\??[^\s?#]*(#[^\s#]*)?)?$/', $url)){
+				
+				include(TOOLKIT . '/util.validators.php');
+				if(!preg_match($validators['URI'], $url)){
 					$url = '';
 				}
 			}

@@ -263,7 +263,7 @@
 			if(empty($data) || $data['error'] == UPLOAD_ERR_NO_FILE) {
 				
 				if($this->get('required') == 'yes'){
-					$message = __("'%s' is a required field.", $this->get('label'));
+					$message = __("'%s' is a required field.", array($this->get('label')));
 					return self::__MISSING_FIELDS__;		
 				}
 				
