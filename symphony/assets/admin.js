@@ -147,7 +147,18 @@ var Symphony;
 		
 		if (list.hasClass('singular')) {
 			input.value = tag;
+		} else if(list.hasClass('inline')) {
+			var start = input.selectionStart;
+			var end = input.selectionEnd;
 			
+			if(start >= 0) {
+			  input.value = input.value.substring(0, start) + tag + input.value.substring(end, input.value.length);
+			} else {
+			  input.value += tag;
+			}
+			
+			input.selectionStart = start + tag.length;
+			input.selectionEnd = start + tag.length;
 		} else {
 			var exp = new RegExp('^' + tag + '$', 'i');
 			var tags = input.value.split(/,\s*/);
