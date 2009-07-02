@@ -205,6 +205,9 @@
 					$this->_param['cookie-' . $key] = $val;
 				}
 			}
+			
+			// Flatten parameters:
+			General::flattenArray($this->_param);
 
 			####
 			# Delegate: FrontendParamsResolve

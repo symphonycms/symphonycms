@@ -29,7 +29,6 @@
 		public static function reverse_sanitize($str){		 
 		   return @htmlspecialchars_decode($str);
 		}
-
 		
 		/***
 		
@@ -172,8 +171,30 @@
 					$arr[$k] = stripslashes($v);
 			}
 		}
-
-
+		
+		public static function flattenArray(&$source, &$output = null, $path = null) {
+			if (is_null($output)) $output = array();
+			
+			foreach ($source as $key => $value) {
+				if (is_int($key)) $key = (string)($key + 1);
+				if (!is_null($path)) $key = $path . '.' . (string)$key;
+				
+				if (is_array($value)) self::flattenArray($value, $output, $key);
+				else $output[$key] = $value;
+			}
+			
+			$source = $output;
+		}
+		
+		protected static function flattenArraySub(&$output, &$source, $path) {
+			foreach ($source as $key => $value) {
+				$key = $path . ':' . $key;
+				
+				if (is_array($value)) self::flattenArraySub($output, $value, $key);
+				else $output[$key] = $value;
+			}
+		}
+		
 		/***
 		
 		Method: generatePassword

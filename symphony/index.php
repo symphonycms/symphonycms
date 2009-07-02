@@ -1,7 +1,7 @@
 <?php
 
-	define('DOCROOT', rtrim(dirname(dirname(__FILE__)), '/'));
-	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . dirname(dirname($_SERVER['PHP_SELF'])), '/'));
+	define('DOCROOT', rtrim(dirname(dirname(__FILE__)), '\\/'));
+	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '\\/') . dirname(dirname($_SERVER['PHP_SELF'])), '\\/'));
 
 	require(DOCROOT . '/symphony/lib/boot/bundle.php');
 	require_once(CORE . '/class.administration.php');
