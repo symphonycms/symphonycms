@@ -62,7 +62,7 @@
 	}
 	
 	function getCurrentPage($page=NULL){
-		if(!$page) $page = $_GET['page'];
+		if(!$page) $page = $_GET['symphony-page'];
 		return (trim($page, '/') != '' ? '/' . trim($page, '/') . '/' : NULL);
 	}
 	
