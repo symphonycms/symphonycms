@@ -74,46 +74,7 @@
 		
 		***/
 		
-		protected static $xml_error = array();
-		
-		public static function validateXMLError($number, $message, $file, $line) {
-			$message = strip_tags($message);
-			$message = trim(array_pop(explode(']:', $message, 2)));
-			
-			self::$xml_error = array(
-				array(
-					'number'	=> $number,
-					'message'	=> $message,
-					'type'		=> 'xml'
-				)
-			);
-			
-			restore_error_handler();
-		}
-		
-		public static function validateXML($data, &$errors, $is_file = true, $processor = null, $encoding = 'UTF-8') {
-			if ($is_file) $data = @file_get_contents($data);
-			
-			$data = preg_replace('/<!DOCTYPE[-.:"\'\/\\w\\s]+>/' , '', $data);
-			$data = preg_replace('/<\?xml.*?\?>/', '', $data);
-			
-			if ($data == '') return true;
-			
-			$document = new DOMDocument('1.0', $encoding);
-			$fragment = $document->createDocumentFragment();
-			
-			set_error_handler('General::validateXMLError');
-			$fragment->appendXML($data);
-			
-			if (!empty(self::$xml_error)) {
-				$errors = self::$xml_error;
-				return false;
-			}
-			
-			return true;
-		}
-		
-		public static function oldvalidateXML($data, &$errors, $isFile=true, $xsltProcessor=NULL, $encoding='UTF-8') {
+		public static function validateXML($data, &$errors, $isFile=true, $xsltProcessor=NULL, $encoding='UTF-8') {
 			$_parser 	= null;
 			$_data	 	= null;
 			$_vals		= array();
