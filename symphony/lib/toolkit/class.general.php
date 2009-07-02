@@ -12,8 +12,10 @@
 		Return: the encoded version of the string
 		
 		***/
-		public static function sanitize($str){
-			return @htmlspecialchars($str);
+		public static function sanitize($source) {
+			$source = @htmlspecialchars($source);
+			
+			return $source;
 		}
 		
 		/***

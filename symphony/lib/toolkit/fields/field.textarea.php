@@ -127,6 +127,7 @@
 			
 			if ($formatted = $this->applyFormatting($data)) {
 				$result['value_formatted'] = $formatted;
+				
 			} else {
 				$result['value_formatted'] = General::sanitize($data);
 			}
@@ -150,13 +151,17 @@
 			return NULL;		
 		}
 
-		function appendFormattedElement(&$wrapper, $data, $encode=false){
-
-			if($this->get('formatter') && isset($data['value_formatted'])) $value = $data['value_formatted'];
-			else $value = $data['value'];
+		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
+			if ($this->get('formatter') && isset($data['value_formatted'])) {
+				$value = $data['value_formatted'];
+			}
 			
-			$value = trim($value);
-
+			else {
+				$value = $data['value'];
+			}
+			
+			$value = preg_replace('/&(?!(#[0-9]+|#x[0-9a-f]+|amp|lt|gt);)/i', '&amp;', trim($value));
+			
 			$wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($value) : $value), array('word-count' => General::countWords($value))));
 		}
 
