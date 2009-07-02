@@ -60,7 +60,7 @@
 							__(
 								'Utility updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Utilities</a>', 
 								array(
-									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/utilities/new/', 
 									URL . '/symphony/blueprints/components/' 
 								)
@@ -73,7 +73,7 @@
 							__(
 								'Utility created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Utilities</a>', 
 								array(
-									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/utilities/new/', 
 									URL . '/symphony/blueprints/components/'
 								)

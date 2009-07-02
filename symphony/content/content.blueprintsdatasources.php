@@ -29,7 +29,7 @@
 							__(
 								'Data source updated at %1$s. <a href="%2$s">Create another?</a> <a href="%2$s">View all Data sources</a>', 
 								array(
-									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/datasources/new/', 
 									URL . '/symphony/blueprints/components/'								)
 							), 
@@ -41,7 +41,7 @@
 							__(
 								'Data source created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Data source</a>', 
 								array(
-									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/datasources/new/', 
 									URL . '/symphony/blueprints/components/' 
 								)
@@ -672,7 +672,7 @@
 			$this->setPageType('form');	
 			
 			$DSManager = new DatasourceManager($this->_Parent);
-			$datasource = $DSManager->create($this->_context[1], NULL, false);
+			$datasource = $DSManager->create($this->_context[1]);	
 			$about = $datasource->about();
 
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Data Source'), $about['name'])));

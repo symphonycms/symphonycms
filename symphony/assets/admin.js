@@ -13,7 +13,13 @@ var Symphony;
 			REORDER_ERROR:    "Reordering was unsuccessful.",
 			PASSWORD:         "Password",
 			CHANGE_PASSWORD:  "Change Password",
-			REMOVE_FILE:      "Remove File"
+			REMOVE_FILE:      "Remove File",
+			TIME_SEPARATOR:   "at",
+			TIME_NOW:         "just now",
+			TIME_MINUTE:      "a minute ago",
+			TIME_MINUTES:     "{$minutes} minutes ago",
+			TIME_HOUR:        "about 1 hour ago",
+			TIME_HOURS:       "about {$hours} hours ago"
 		},
 		Message: {
 			post: function(message, type) {
@@ -39,6 +45,22 @@ var Symphony;
 				}, 'slow', 'linear', function() {
 					$(this).removeClass('success');
 				});
+			},
+			timer: function() {
+				var time = Date.parse($('abbr.timeago').attr('title'));
+				var from = new Date;
+				from.setTime(time);
+				$('abbr.timeago').text(this.distance(from, new Date));
+				window.setTimeout("Symphony.Message.timer()", 60000);
+			},
+  			distance: function(from, to) {
+  				var distance = to - from;
+				var time = Math.floor(distance / 60000);
+				if (time < 1) { return Symphony.Language.TIME_NOW; }
+				if (time < 2) { return Symphony.Language.TIME_MINUTE; }
+				if (time < 45) { return Symphony.Language.TIME_MINUTES.replace('{$minutes}', time); }
+				if (time < 90) { return Symphony.Language.TIME_HOUR; }
+				else { return Symphony.Language.TIME_MINUTES.replace('{$hours}', time); }
 			},
 			queue: []
 		}
@@ -357,8 +379,13 @@ var Symphony;
 
 		$('#context').change();
 		
-		// fade success messages
+		// system messages
 		window.setTimeout("Symphony.Message.fade()", 10000);
+		$('abbr.timeago').each(function() {
+			var html = $(this).parent().html();
+			$(this).parent().html(html.replace(Symphony.Language.TIME_SEPARATOR + ' ', ''));
+		});
+		Symphony.Message.timer();
 	});
 })(jQuery.noConflict());
 

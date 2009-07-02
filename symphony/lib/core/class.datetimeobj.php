@@ -10,6 +10,10 @@
 			return self::get($format, $timestamp, 'GMT');
 		}
 		
+		public static function getTimeAgo($format){
+			return '<abbr class="timeago" title="'.self::get('r').'">'.self::get($format).'</abbr>';
+		}
+		
 		public static function get($format, $timestamp=NULL, $timezone=NULL){
 			if(!$timestamp || $timestamp == 'now') $timestamp = time();
 			if(!$timezone) $timezone = date_default_timezone_get();
@@ -26,4 +30,3 @@
 		}
 	
 	}
-
