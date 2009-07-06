@@ -74,7 +74,7 @@
 			
 			else{
 				array_push($this->_log, array('type' => $type, 'time' => time(), 'message' => $message));
-				$message = DateTimeObj::get('H:i:s') . ' > ' . $this->__defineNameString($type) . ': ' . $message;
+				$message = DateTimeObj::get('Y/m/d H:i:s') . ' > ' . $this->__defineNameString($type) . ': ' . $message;
 			}
 			
 			if($writeToLog) $this->writeToLog($message, $addbreak);
