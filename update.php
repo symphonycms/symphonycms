@@ -103,12 +103,12 @@
 			}
 			
 			if (version_compare(kVERSION, '2.0.4', '<=')) {
-				$date_fields = $frontend->Database->fetch("SELECT id FROM tbl_fields WHERE `type` = 'upload'");
+				$date_fields = $frontend->Database->fetch("SELECT id FROM tbl_fields WHERE `type` = 'date'");
 				
 				foreach ($date_fields as $field) {
 					$frontend->Database->query("
-						ALTER TABLE `tbl_entries_data_{$upload_field['id']}` CHANGE `local` `local` INT(11) DEFAULT NULL;
-						ALTER TABLE `tbl_entries_data_{$upload_field['id']}` CHANGE `gmt` `gmt` INT(11) DEFAULT NULL;
+						ALTER TABLE `tbl_entries_data_{$field['id']}` CHANGE `local` `local` INT(11) DEFAULT NULL;
+						ALTER TABLE `tbl_entries_data_{$field['id']}` CHANGE `gmt` `gmt` INT(11) DEFAULT NULL;
 					");
 				}
 			}
