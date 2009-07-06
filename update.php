@@ -91,7 +91,6 @@
 			$frontend = Frontend::instance();
 			
 			if (version_compare(kVERSION, '2.0.3', '<=')) {
-			
 				// Add Navigation Groups
 				$frontend->Database->query("ALTER TABLE `tbl_sections` ADD `navigation_group` VARCHAR( 50 ) NOT NULL DEFAULT 'Content'");
 				$frontend->Database->query("ALTER TABLE `tbl_sections` ADD INDEX (`navigation_group`)");
@@ -101,7 +100,17 @@
 				foreach ($upload_fields as $upload_field) {
 					$frontend->Database->query("ALTER TABLE `tbl_entries_data_{$upload_field['id']}` CHANGE `mimetype` `mimetype` VARCHAR( 50 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL");
 				}
+			}
+			
+			if (version_compare(kVERSION, '2.0.4', '<=')) {
+				$date_fields = $frontend->Database->fetch("SELECT id FROM tbl_fields WHERE `type` = 'upload'");
 				
+				foreach ($date_fields as $field) {
+					$frontend->Database->query("
+						ALTER TABLE `tbl_entries_data_{$upload_field['id']}` CHANGE `local` `local` INT(11) DEFAULT NULL;
+						ALTER TABLE `tbl_entries_data_{$upload_field['id']}` CHANGE `gmt` `gmt` INT(11) DEFAULT NULL;
+					");
+				}
 			}
 			
 			$code = sprintf($shell, 
