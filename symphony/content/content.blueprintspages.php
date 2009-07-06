@@ -525,7 +525,7 @@
 			}
 			
 			if (@array_key_exists('delete', $_POST['action'])) {
-				$this->__actionDelete($page_id);
+				$this->__actionDelete($page_id, URL . '/symphony/blueprints/pages/');
 			}
 			
 			if (@array_key_exists('save', $_POST['action'])) {
