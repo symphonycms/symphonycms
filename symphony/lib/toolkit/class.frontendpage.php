@@ -116,7 +116,7 @@
 			if (!is_null($devkit)) {
 				$devkit->prepare($this, $this->_pageData, $this->_xml, $this->_param, $output);
 				
-				return $devkit->generate();
+				return $devkit->build();
 			}
 			
 			## EVENT DETAILS IN SOURCE

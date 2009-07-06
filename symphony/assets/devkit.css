@@ -1,197 +1,97 @@
-@import url("basic.css");
-
-/* Navigation */
-h1,
-#nav {
-	display: block;
-	position: absolute;
-	top: 3.5em;
-	left: 19px;
-	margin-left: 0;
-	width: 19.25em;
-	list-style: none;
-	text-shadow: -2px 2px 3px #111;
-}
-h1 {
-	top: 1em;
-	width: 15.125em;
-}
-#nav li {
-	float: left;
-	margin-right: 0.75em;
-}
-
-#jump {
-	display: block;
-	font-weight: bold;
-	list-style: none;
-	margin-left: 0;
-	overflow: hidden;
-	padding-left: 2em;
-	position: absolute;
-	right: 0;
-	text-shadow: -2px 2px 3px #111;
-	top: 6em;
-	width: 19.25em;
-}
-#jump > li > ul {
-	font-size: 90.91%;
-}
-#jump a.active,
-#jump a.inactive {
-	display: block;
-	margin-left: -20em;
-	padding: 0.5em 2em 0.5em 20em;
-}
-#jump a.edit {
-	float: right;
-	padding: 0.5em 20px;
-}
-#jump a.inactive:hover {
-	background-color: #2d2d2b;
-}
-#jump a.active {
-	background-color: #343432;
-	cursor: default;
-}
-
-/* Layout */
-pre {
-	border: 1px solid #343432;
-	background-color: #21211f;
-	white-space: normal;
-}
-code {
-	display: block;
-	position: relative;
-	z-index: 1;
-	margin-left: 39px;
-	border-left: 1px solid #2d2d2b;
-	padding: 3px 0 3px 7px;
-	overflow: auto;
-	white-space: pre;
-}
-code > span {
-	display: block;
-	position: relative;
-	z-index: 2;
-}
-dl,
-code,
-ol li {
-	font: 12px/16px Monaco, Consolas, 'Andale Mono', monospace;
-}
-dl {
-	position: relative;
-	border: 1px solid #3e3e3b;
-	padding-left: 231px;
-}
-dt {
-	position: absolute;
-	right: 0;
-	left: 0;
-	padding: 3px 7px;
-	background-color: #191917;
-}
-dt:hover {
-	background-color: #1e1e1c;
-}
-dd {
-	position: relative;
-	padding: 3px 7px;
-}
-
-/* Line Numbers */
-ol {
-	position: absolute;
-	z-index: 1;
-	left: 21px;
-	right: 21.25em;
-	margin: 1px 1px 0 0;
-	text-align: right;
-	list-style: none;
-}
-ol li {
-	margin: 0 0 -3px 39px;
-	padding-bottom: 3px;
-	background-color: #191917;
-}
-ol li:first-child {
-	padding-top: 3px;
-}
-ol li:hover {
-	background-color: #1e1e1c;
-}
-ol a {
-	display: block;
-	position: relative;
-	z-index: 10;
-	margin-left: -39px;
-	width: 33px;
-	color: #444442;
-	cursor: default;
-}
-ol a.active {
-	color: #fff;
-}
-span[id] {
-	z-index: -2;
-	position: absolute;
-	right: 0;
-	left: -1em;
-	height: 16px;
-}
-span[id]:first-child {
-	margin-top: -3px;
-	padding-top: 3px;
-}
-span[id]:last-child {
-	height: 19px;
-}
-span[id]:target {
-	background-color: #3e3e3b;
-}
-
-/* Syntax Highlighting */
-dt,
-span.attribute {
-	color: #e3ad6e;
-}
-dd,
-span.string {
-	color: #8ec0e5;
-}
-span.element {
-	color: #c2db82;
-}
-span.comment,
-span.comment * {
-	color: #646462;
-}
-span.error {
-	background-color: #892005;
-	color: #fff;
-}
-
-/* Generic Elements */
-body {
-	padding: 6em 21.25em 19px 19px;
-	background-color: #292927;
-	color: #fff;
-	font-size: 75%;
-}
-a {
-	color: #bba;
-	text-decoration: none;
-}
-a:hover {
-	color: #eed;
-}
-a.active,
-h1 a:link {
-	color: #fff;
-}
-ul {
-	margin: 0 0 0 1.5em;
-	list-style: none;
-}
+/*---------------------------------------------------------------------------------
+	Reset
+---------------------------------------------------------------------------------*/
+	
+	* {
+		border: none;
+		-ms-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		color: inherit;
+		font: inherit;
+		line-height: 140%;
+		margin: 0;
+		outline: none;
+		padding: 0;
+	}
+	body {
+		background: hsl(210, 5%, 10%);
+		font: 80% sans-serif;
+	}
+	
+	a {
+		color: hsl(210, 5%, 70%);
+		text-decoration: none;
+		text-shadow: 2px 2px 3px hsl(210, 5%, 5%);
+	}
+	a:hover {
+		color: hsl(210, 5%, 90%);
+	}
+	
+/*---------------------------------------------------------------------------------
+	Header
+---------------------------------------------------------------------------------*/
+	
+	#header {
+		background: hsl(210, 5%, 20%);
+		border-left: 1px solid hsl(210, 5%, 30%);
+		bottom: 0;
+		color: #ffffff;
+		padding: 20px;
+		position: fixed;
+		text-shadow: 2px 2px 3px hsl(210, 5%, 5%);
+		right: 0;
+		top: 0;
+		width: 270px;
+	}
+	#header h1 {
+		font-size: 120%;
+		margin: 0;
+	}
+	#header h1 a {
+		color: #ffffff;
+	}
+	
+	#header #navigation {
+		margin: 5px 0 0 0;
+	}
+	#header #navigation li {
+		display: inline;
+		margin: 0 0.5em 0 0;
+	}
+	
+	#header #jump {
+		float: left;
+		margin: 20px 0 0 -20px;
+		overflow: hidden;
+		width: 269px;
+	}
+	#header #jump ul {
+		list-style: none;
+	}
+	#header #jump ul ul {
+		padding: 0 0 0 10px;
+	}
+	#header #jump a {
+		display: block;
+		margin: 0 0 0 -240px;
+		padding: 5px 10px 5px 260px;
+	}
+	#header #jump a:hover {
+		background: hsl(210, 5%, 22%);
+	}
+	#header #jump a.active {
+		background: hsl(210, 5%, 25%);
+		color: hsl(210, 5%, 100%);
+	}
+	
+/*---------------------------------------------------------------------------------
+	Content
+---------------------------------------------------------------------------------*/
+	
+	#content {
+		background: hsl(210, 5%, 10%);
+		padding: 0 270px 0 0;
+	}
+	
+/*-------------------------------------------------------------------------------*/
