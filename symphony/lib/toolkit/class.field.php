@@ -101,11 +101,11 @@
 			return true;
 		}
 		
-		public function setFromPOST($postdata) {
-			$postdata['location'] = (isset($postdata['location']) ? $postdata['location'] : 'main');
-			$postdata['required'] = (isset($postdata['required']) ? 'yes' : 'no');
-			$postdata['show_column'] = (isset($postdata['show_column']) ? 'yes' : 'no');
-			$this->setArray($postdata);
+		public function setFromPOST($data) {
+			$data['location'] = (isset($data['location']) ? $data['location'] : 'main');
+			$data['required'] = (isset($data['show_column']) && @$data['required'] == 'yes' ? 'yes' : 'no');
+			$data['show_column'] = (isset($data['show_column']) && @$data['required'] == 'yes' ? 'yes' : 'no');
+			$this->setArray($data);
 		}
 
 		public function setArray($array){
