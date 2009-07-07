@@ -103,11 +103,11 @@
 		
 		public function setFromPOST($data) {
 			$data['location'] = (isset($data['location']) ? $data['location'] : 'main');
-			$data['required'] = (isset($data['show_column']) && @$data['required'] == 'yes' ? 'yes' : 'no');
-			$data['show_column'] = (isset($data['show_column']) && @$data['required'] == 'yes' ? 'yes' : 'no');
+			$data['required'] = (isset($data['required']) && @$data['required'] == 'yes' ? 'yes' : 'no');
+			$data['show_column'] = (isset($data['show_column']) && @$data['show_column'] == 'yes' ? 'yes' : 'no');
 			$this->setArray($data);
 		}
-
+		
 		public function setArray($array){
 			if(empty($array) || !is_array($array)) return;
 			foreach($array as $field => $value) $this->set($field, $value);
@@ -388,12 +388,13 @@
 		public function appendRequiredCheckbox(&$wrapper) {
 			if (!$this->_required) return;
 			
-			$wrapper->appendChild(
-				Widget::Input('fields['.$this->get('sortorder').'][required]', 'no', 'hidden')
-			);
+			$order = $this->get('sortorder');
+			$name = "fields[{$order}][required]";
 			
-			$label = Widget::Label();				
-			$input = Widget::Input('fields['.$this->get('sortorder').'][required]', 'yes', 'checkbox');
+			$wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
+			
+			$label = Widget::Label();
+			$input = Widget::Input($name, 'yes', 'checkbox');
 			
 			if ($this->get('required') == 'yes') $input->setAttribute('checked', 'checked');
 			
@@ -402,18 +403,24 @@
 			$wrapper->appendChild($label);
 		}
 		
-		public function appendShowColumnCheckbox(&$wrapper){
 		
-			if(!$this->_showcolumn) return;
+		public function appendShowColumnCheckbox(&$wrapper) {
+			if (!$this->_showcolumn) return;
+			
+			$order = $this->get('sortorder');
+			$name = "fields[{$order}][show_column]";
+			
+			$wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
 			
 			$label = Widget::Label();
 			$label->setAttribute('class', 'meta');
-			$input = Widget::Input('fields['.$this->get('sortorder').'][show_column]', 'yes', 'checkbox');
-			if($this->get('show_column') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Show column', array($input->generate())));
-
-			$wrapper->appendChild($label);			
+			$input = Widget::Input($name, 'yes', 'checkbox');
 			
+			if ($this->get('show_column') == 'yes') $input->setAttribute('checked', 'checked');
+			
+			$label->setValue(__('%s Show column', array($input->generate())));
+			
+			$wrapper->appendChild($label);
 		}
 
 		public function buildLocationSelect($selected = null, $name = 'fields[location]', $label_value = null) {
