@@ -271,7 +271,8 @@
 			
 			$result->setAttributeArray(array('result' => 'success', 'type' => (isset($entry_id) ? 'edited' : 'created')));
 			$result->appendChild(new XMLElement('message', (isset($entry_id) ? __('Entry edited successfully.') : __('Entry created successfully.'))));
-
+			if(isset($post_values) && is_object($post_values)) $result->appendChild($post_values);
+			
 			return true;
 			
 			## End FUnction
