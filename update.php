@@ -49,8 +49,7 @@
 	error_reporting(E_ALL ^ E_NOTICE);
 	set_error_handler('__errorHandler');
 
-	define('kBUILD', '515');
-	define('kVERSION', '2.0.3');
+	define('kVERSION', '2.0.4');
 	define('kCHANGELOG', 'http://symphony-cms.com/forum/discussions/23280/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -78,9 +77,8 @@
 	
 	if(!isset($_POST['action']['update'])){
 		
-		$settings['symphony']['build'] = kBUILD;
 		$settings['symphony']['version'] = kVERSION;
-		$settings['general']['useragent'] = 'Symphony/' . kBUILD;
+		$settings['general']['useragent'] = 'Symphony/' . kVERSION;
 		
 		if(writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']) === true){
 			
