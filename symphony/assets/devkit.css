@@ -45,6 +45,11 @@
 		top: 0;
 		width: 270px;
 	}
+	#header,
+	#header * {
+		-moz-user-select: none;
+		-webkit-user-select: none;
+	}
 	#header h1 {
 		font-size: 120%;
 		margin: 0;
