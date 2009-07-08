@@ -115,16 +115,16 @@ details for establishing a database connection and about your server environment
 
 1. For a smooth install process, change permissions for the `root`, `symphony` and `workspace` directories.
 
-	cd /your/site/root
-	chmod 777 symphony .
-	chmod -R 777 workspace
+		cd /your/site/root
+		chmod 777 symphony .
+		chmod -R 777 workspace
 
 2. Once successfully installed, change permissions as per your server preferences:
 
-	chmod 755 symphony .
+		chmod 755 symphony .
 
 3. Remove installer files (unless you're fine with revealing all your trade secrets):
 
-	rm install.php install.sql workspace/install.sql update.php
+		rm install.php install.sql workspace/install.sql update.php
 
 4. Dance again like it's 1999!
