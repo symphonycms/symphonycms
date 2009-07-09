@@ -23,14 +23,6 @@
 					'content'		=> 'text/html; charset=UTF-8'
 				)
 			));
-			$this->addElementToHead(new XMLElement(
-				'link', null,
-				array(
-					'rel'			=> 'icon',
-					'href'			=> URL . '/symphony/assets/images/bookmark.png',
-					'type'			=> 'image/png'
-				)
-			));
 			$this->addStylesheetToHead(URL . '/symphony/assets/devkit.css', 'screen');
 		}
 		

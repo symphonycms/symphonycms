@@ -109,8 +109,7 @@ h1 {
 	top: 80px;
 	right: 50%;
 	margin-right: 12em;
-	padding: 0 0 18px 40px;
-	background: url("logo.png") no-repeat;
+	padding: 0 0 18px 0;
 	text-align: right;
 	text-shadow: -2px 2px 3px #ccc;
 	font-weight: normal;
