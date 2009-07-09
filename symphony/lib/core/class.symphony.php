@@ -134,7 +134,7 @@
 				
 			if($this->Log->open() == 1){
 				$this->Log->writeToLog('Symphony Log', true);
-				$this->Log->writeToLog('Build: '. $this->Configuration->get('build', 'symphony'), true);
+				$this->Log->writeToLog('Version: '. $this->Configuration->get('version', 'symphony'), true);
 				$this->Log->writeToLog('--------------------------------------------', true);
 			}
 						
@@ -149,7 +149,7 @@
 
 			if($id){
 				$this->_user_id = $id;
-				$this->Database->update(array('last_seen' => DateTimeObj::get('c')), 'tbl_authors', " `id` = '$id'");
+				$this->Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 				$this->Author =& new Author($this, $id);
 				return true;
 			}
@@ -176,7 +176,7 @@
 				$this->Author =& new Author($this, $id);
 				$this->Cookie->set('username', $username);
 				$this->Cookie->set('pass', $password);
-				$this->Database->update(array('last_seen' => DateTimeObj::get('c')), 'tbl_authors', " `id` = '$id'");
+				$this->Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 				return true;
 			}
 			
@@ -209,7 +209,7 @@
 				$this->Author =& new Author($this, $row['id']);
 				$this->Cookie->set('username', $row['username']);
 				$this->Cookie->set('pass', $row['password']);
-				$this->Database->update(array('last_seen' => DateTimeObj::getGMT('c')), 'tbl_authors', " `id` = '$id'");
+				$this->Database->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 				return true;
 			}
 			
