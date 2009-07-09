@@ -78,6 +78,8 @@
 	
 	if(isset($_POST['action']['update'])){
 		
+		$existing_version = $settings['symphony']['version'];
+		
 		$settings['symphony']['version'] = kVERSION;
 		$settings['general']['useragent'] = 'Symphony/' . kVERSION;
 		
@@ -92,7 +94,7 @@
 			require_once(CORE . '/class.frontend.php');
 			$frontend = Frontend::instance();
 			
-			if (version_compare(kVERSION, '2.0.3', '<=')) {
+			if (version_compare($existing_version, '2.0.3', '<=')) {
 				// Add Navigation Groups
 				$frontend->Database->query("ALTER TABLE `tbl_sections` ADD `navigation_group` VARCHAR( 50 ) NOT NULL DEFAULT 'Content'");
 				$frontend->Database->query("ALTER TABLE `tbl_sections` ADD INDEX (`navigation_group`)");
@@ -104,7 +106,7 @@
 				}
 			}
 			
-			if (version_compare(kVERSION, '2.0.4', '<=')) {
+			if (version_compare($existing_version, '2.0.4', '<=')) {
 				$date_fields = $frontend->Database->fetch("SELECT id FROM tbl_fields WHERE `type` = 'date'");
 				
 				foreach ($date_fields as $field) {
