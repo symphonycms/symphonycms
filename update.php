@@ -1,5 +1,7 @@
 <?php
-
+	
+	error_reporting(E_ALL ^ E_NOTICE);
+	
 	function __errorHandler($errno=NULL, $errstr, $errfile=NULL, $errline=NULL, $errcontext=NULL){
 		return;
 	}
@@ -46,7 +48,6 @@
 		redirect(URL . '/symphony/');
 	}
 	
-	error_reporting(E_ALL ^ E_NOTICE);
 	set_error_handler('__errorHandler');
 
 	define('kVERSION', '2.0.4');
