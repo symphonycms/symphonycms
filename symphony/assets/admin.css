@@ -66,6 +66,7 @@ h1 a:hover,
 	top: 25px;
 	left: 5px;
 	margin: 0;
+	min-width: 120px;
 	border: 1px solid;
 	border-color: #fdfdfd #f1f1f1 #d2d2d2 #ececec;
 	padding-left: 0;
