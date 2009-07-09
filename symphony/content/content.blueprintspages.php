@@ -7,7 +7,7 @@
 	
 	class contentBlueprintsPages extends AdministrationPage {
 		protected $_errors;
-		protected $_hilights;
+		protected $_hilights = array();
 		
 		public function __viewIndex() {
 			$this->setPageType('table');

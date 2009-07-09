@@ -672,7 +672,7 @@
 			$this->setPageType('form');	
 			
 			$DSManager = new DatasourceManager($this->_Parent);
-			$datasource = $DSManager->create($this->_context[1]);	
+			$datasource = $DSManager->create($this->_context[1], NULL, false);	
 			$about = $datasource->about();
 
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Data Source'), $about['name'])));
