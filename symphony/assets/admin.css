@@ -242,11 +242,10 @@ a.button {
 	float:right;
 	padding: 0 1em .1em 1em;
 	margin: 0;
-	line-height:2em;
-	height:2em;
-	font-size: .8em;
+	line-height: 2em;
+	height: 2em;
+	font-size: .7em;
 	text-decoration: none;
-	text-transform: uppercase;
 	text-shadow: none;
 	letter-spacing:.1em;
 	cursor: pointer;
