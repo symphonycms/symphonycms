@@ -16,8 +16,8 @@ h1 {
 	border: 1px solid #665;
 	border-top-color: #887;
 	border-bottom: none;
-	padding: 19px 26px 19px 51px;
-	background: #353530 url("images/logo.png") 7px 50% no-repeat;
+	padding: 19px;
+	background-color: #353530;
 }
 fieldset,
 div.actions {

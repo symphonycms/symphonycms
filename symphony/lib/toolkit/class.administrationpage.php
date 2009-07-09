@@ -47,7 +47,6 @@
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', __LANG__);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
-			$this->addElementToHead(new XMLElement('link', NULL, array('rel' => 'icon', 'href' => URL.'/symphony/assets/images/bookmark.png', 'type' => 'image/png')), 20);
 			$this->addScriptToHead(URL . '/symphony/assets/jquery.js', 50);
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 60);
 			
