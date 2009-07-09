@@ -75,10 +75,13 @@
 	
 	$settings = loadOldStyleConfig();
 	
-	if(!isset($_POST['action']['update'])){
+	if(isset($_POST['action']['update'])){
 		
 		$settings['symphony']['version'] = kVERSION;
 		$settings['general']['useragent'] = 'Symphony/' . kVERSION;
+		
+		## Build is no longer used
+		unset($settings['symphony']['build']);
 		
 		if(writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']) === true){
 			
@@ -104,12 +107,21 @@
 				$date_fields = $frontend->Database->fetch("SELECT id FROM tbl_fields WHERE `type` = 'date'");
 				
 				foreach ($date_fields as $field) {
-					$frontend->Database->query("
-						ALTER TABLE `tbl_entries_data_{$field['id']}` CHANGE `local` `local` INT(11) DEFAULT NULL;
-						ALTER TABLE `tbl_entries_data_{$field['id']}` CHANGE `gmt` `gmt` INT(11) DEFAULT NULL;
-					");
+					$frontend->Database->query("ALTER TABLE `tbl_entries_data_{$field['id']}` CHANGE `local` `local` INT(11) DEFAULT NULL;");
+					$frontend->Database->query("ALTER TABLE `tbl_entries_data_{$field['id']}` CHANGE `gmt` `gmt` INT(11) DEFAULT NULL;");
 				}
+				
+				## Change .htaccess from `page` to `symphony-page`
+				$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
+
+				if($htaccess !== false){
+					$htaccess = str_replace('index.php?page=$1&%{QUERY_STRING}', 'index.php?symphony-page=$1&%{QUERY_STRING}', $htaccess);
+					@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
+				}				
+				
 			}
+			
+
 			
 			$code = sprintf($shell, 
 '				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
@@ -147,7 +159,9 @@
 			$code = sprintf($shell,
 '			<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 			<h2>Existing Installation</h2>
-			<p>It appears that Symphony has already been installed at this location and is up to date.</p>');
+			<p>It appears that Symphony has already been installed at this location and is up to date.</p>
+			<br />
+			<p>This script, <code>update.php</code>, should be removed as a safety precaution. <a href="'.URL.'/update.php?action=remove">Click here</a> to remove this file and proceed to your administration area.</p>');
 
 			die($code);
 		}
