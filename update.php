@@ -112,6 +112,9 @@
 					$frontend->Database->query("ALTER TABLE `tbl_entries_data_{$field['id']}` CHANGE `gmt` `gmt` INT(11) DEFAULT NULL;");
 				}
 				
+				// Update author field table to support the default value checkbox
+				$frontend->Database->query("ALTER TABLE `tbl_fields_author` ADD `default_to_current_user` ENUM('yes', 'no') NOT NULL");
+				
 				## Change .htaccess from `page` to `symphony-page`
 				$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
 
