@@ -1,11 +1,11 @@
-## Symphony 2 ##
+# Symphony 2 #
 
 - Version: 2.0.4
 - Date: 9th July 2009
 - Github Repository: <http://github.com/symphony/symphony-2/tree/master>
 
 
-### SYNOPSIS
+## Synopsis
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core 
 technologies. This repository represents version 2.0.3 and is considered stable.
@@ -13,7 +13,9 @@ technologies. This repository represents version 2.0.3 and is considered stable.
 Visit the forum at <http://symphony-cms.com/forum/>
 
 
-### UPDATING VIA GIT
+## Updating
+
+### Via Git
 
 1. Use the following command to get Extensions up to date:
 
@@ -22,8 +24,7 @@ Visit the forum at <http://symphony-cms.com/forum/>
 
 2. Follow normal updating procedure below from step 4.
 
-
-### UPDATING
+### Via the old fashioned way
 
 Follow the instructions below if you are updating from Symphony version 2.0 (non Git)
 
@@ -42,7 +43,9 @@ Follow the instructions below if you are updating from Symphony version 2.0 (non
 7. Celebrate by shaving your friend's head for charity!
 
 
-### INSTALLING VIA GIT
+## INSTALLING
+
+### Via Git
 
 1. Clone the git repository to the location you desire using:
 
@@ -73,7 +76,7 @@ you will need to use the following command from within the Symphony 2 folder you
 5. Follow normal installation procedure below from step 2.
 
 
-### INSTALLATION
+### Via the old fashioned way
 
 **Note: You can leave `/workspace` out if you do not want the default theme.**
 
@@ -92,7 +95,7 @@ details for establishing a database connection and about your server environment
 3. Jump with both arms up like you're in a car commercial!
 
 
-### SECURITY
+## SECURITY
 
 **Secure Production Sites: Change permissions and remove installer files.**
 
