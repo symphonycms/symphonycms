@@ -51,11 +51,12 @@
 			$value = (isset($data['author_id']) ? $data['author_id'] : NULL);
 		
 			$callback = Administration::instance()->getPageCallback();
-			if($this->get('default_to_current_user') == 'yes' && $callback['context']['page'] == 'new' && empty($_POST)){
+			
+			if ($this->get('default_to_current_user') == 'yes' && empty($data) && empty($_POST)) {
 				$value = array(Administration::instance()->Author->get('id'));
 			}
 			
-			if(!is_array($value)){
+			if (!is_array($value)) {
 				$value = array($value);
 			}
 

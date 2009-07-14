@@ -749,8 +749,23 @@
 		
 		***/		
 		public static function countWords($string){
+			header('content-type: text/plain');
 			
 			$string = strip_tags($string);
+			
+			// Strip spaces:
+			$string = html_entity_decode($string, ENT_NOQUOTES, 'UTF-8');
+			$spaces = array(
+				'&#x2002;', '&#x2003;', '&#x2004;', '&#x2005;',
+				'&#x2006;', '&#x2007;', '&#x2009;', '&#x200a;',
+				'&#x200b;', '&#x2002f;', '&#x205f;'
+			);
+			
+			foreach ($spaces as &$space) {
+				$space = html_entity_decode($space, ENT_NOQUOTES, 'UTF-8');
+			}
+			
+			$string = str_replace($spaces, ' ', $string);
 			$string = preg_replace('/[^\w\s]/i', '', $string);
 			
 			$words = preg_split('/\s+/', $string, -1, PREG_SPLIT_NO_EMPTY);
