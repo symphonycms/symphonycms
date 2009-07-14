@@ -775,7 +775,7 @@
 
 			$missing = array();
 
-			if(!GeneralExtended::checkRequirement(phpversion(), 'version', '5.1')){
+			if(!GeneralExtended::checkRequirement(phpversion(), 'version', '5.2')){
 				$Page->log->pushToLog('Requirement - PHP Version is not correct. '.phpversion().' detected.' , SYM_LOG_ERROR, true);
 				$missing[] = MISSING_PHP;	
 			}		
@@ -1029,10 +1029,9 @@
 				
 				}
 				
-		        $conf['settings']['symphony']['build'] = kBUILD;
 		        $conf['settings']['symphony']['version'] = kVERSION;		
 				$conf['settings']['symphony']['cookie_prefix'] = 'sym-';
-		        $conf['settings']['general']['useragent'] = 'Symphony/' . kBUILD;
+		        $conf['settings']['general']['useragent'] = 'Symphony/' . kVERSION;
 				$conf['settings']['general']['sitename'] = (strlen(trim($config['general']['sitename'])) > 0 ? $config['general']['sitename'] : __('Website Name'));
 		        $conf['settings']['file']['write_mode'] = $config['permission']['file'];
 		        $conf['settings']['directory']['write_mode'] = $config['permission']['directory'];

@@ -229,7 +229,7 @@
 							__(
 								'Section updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Sections</a>', 
 								array(
-									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/sections/new/', 
 									URL . '/symphony/blueprints/sections/' 
 								)
@@ -242,7 +242,7 @@
 							__(
 								'Section created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Sections</a>', 
 								array(
-									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/sections/new/', 
 									URL . '/symphony/blueprints/sections/' 
 								)

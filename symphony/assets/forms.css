@@ -191,18 +191,16 @@ div.actions button {
 	float: left;
 	margin-right: 1em;
 	border: none;
-	padding: 0;
-	overflow: hidden;
 	background-color: #887;
 	color: #fff;
-	line-height: 15px;
-	height: 15px;
 	cursor: pointer;
-}
-button.delete {
-	width: 51px;
-	background-image: url("images/delete.png");
-	text-indent: 200%;
+	padding: 0 1em .2em 1em;
+	line-height: 2em;
+	font-size: 0.95em;
+	height: 2em;
+	border-radius: 1em;
+	-moz-border-radius: 1em;
+	-webkit-border-radius: 1em;
 }
 button.delete:hover {
 	background-color: #d43;
@@ -403,6 +401,10 @@ ul.tags .more:hover {
 }
 #components li {
 	margin-bottom: 0.75em;
+}
+#components .button {
+	font-size: 0.9em;
+	font-weight: normal;
 }
 .file input {
 	margin: -3px 0;

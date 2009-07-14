@@ -32,8 +32,8 @@
 	position: relative;
 	border-color: #bba #887;
 	border-bottom: none;
-	padding: 14px 25px 14px 51px;
-	background: #353533 url("images/logo.png") 7px 50% no-repeat;
+	padding: 14px;
+	background-color: #353533;
 	color: #fff;
 	text-shadow: -1px 2px 3px #111;
 }

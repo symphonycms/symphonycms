@@ -13,7 +13,13 @@ var Symphony;
 			REORDER_ERROR:    "Reordering was unsuccessful.",
 			PASSWORD:         "Password",
 			CHANGE_PASSWORD:  "Change Password",
-			REMOVE_FILE:      "Remove File"
+			REMOVE_FILE:      "Remove File",
+			TIME_SEPARATOR:   "at",
+			TIME_NOW:         "just now",
+			TIME_MINUTE:      "a minute ago",
+			TIME_MINUTES:     "{$minutes} minutes ago",
+			TIME_HOUR:        "about 1 hour ago",
+			TIME_HOURS:       "about {$hours} hours ago"
 		},
 		Message: {
 			post: function(message, type) {
@@ -29,6 +35,32 @@ var Symphony;
 				if (document.getElementById('notice') === null && this.queue.length > 0) {
 					$(this.queue.pop()).insertBefore('h1'); // Show previous message
 				}
+			},
+			fade: function() {
+				$('#notice.success').animate({
+					backgroundColor: '#e4e4e0',
+					borderTopColor: '#979792',
+					borderBottomColor: '#777',
+					color: '#555'
+				}, 'slow', 'linear', function() {
+					$(this).removeClass('success');
+				});
+			},
+			timer: function() {
+				var time = Date.parse($('abbr.timeago').attr('title'));
+				var from = new Date;
+				from.setTime(time);
+				$('abbr.timeago').text(this.distance(from, new Date));
+				window.setTimeout("Symphony.Message.timer()", 60000);
+			},
+  			distance: function(from, to) {
+  				var distance = to - from;
+				var time = Math.floor(distance / 60000);
+				if (time < 1) { return Symphony.Language.TIME_NOW; }
+				if (time < 2) { return Symphony.Language.TIME_MINUTE; }
+				if (time < 45) { return Symphony.Language.TIME_MINUTES.replace('{$minutes}', time); }
+				if (time < 90) { return Symphony.Language.TIME_HOUR; }
+				else { return Symphony.Language.TIME_MINUTES.replace('{$hours}', time); }
 			},
 			queue: []
 		}
@@ -140,14 +172,25 @@ var Symphony;
 	// Suggestion lists
 	$('.tags > li').live('click', function() {
 		var list = $(this.parentNode);
-		var input = list.prev().find('input')[0];
+		var input = list.prevAll('label').find('input')[0];
 		var tag = this.className || $(this).text();
 		
 		input.focus();
 		
 		if (list.hasClass('singular')) {
 			input.value = tag;
+		} else if(list.hasClass('inline')) {
+			var start = input.selectionStart;
+			var end = input.selectionEnd;
 			
+			if(start >= 0) {
+			  input.value = input.value.substring(0, start) + tag + input.value.substring(end, input.value.length);
+			} else {
+			  input.value += tag;
+			}
+			
+			input.selectionStart = start + tag.length;
+			input.selectionEnd = start + tag.length;
 		} else {
 			var exp = new RegExp('^' + tag + '$', 'i');
 			var tags = input.value.split(/,\s*/);
@@ -335,5 +378,88 @@ var Symphony;
 		});
 
 		$('#context').change();
+		
+		// system messages
+		window.setTimeout("Symphony.Message.fade()", 10000);
+		$('abbr.timeago').each(function() {
+			var html = $(this).parent().html();
+			$(this).parent().html(html.replace(Symphony.Language.TIME_SEPARATOR + ' ', ''));
+		});
+		Symphony.Message.timer();
 	});
 })(jQuery.noConflict());
+
+
+/*
+ * jQuery Color Animations
+ * Copyright 2007 John Resig
+ * Released under the MIT and GPL licenses.
+ */
+
+(function(jQuery){
+
+	// We override the animation for all of these color styles
+	jQuery.each(['backgroundColor', 'borderBottomColor', 'borderLeftColor', 'borderRightColor', 'borderTopColor', 'color', 'outlineColor'], function(i,attr){
+		jQuery.fx.step[attr] = function(fx){
+			if ( fx.state == 0 ) {
+				fx.start = getColor( fx.elem, attr );
+				fx.end = getRGB( fx.end );
+			}
+
+			fx.elem.style[attr] = "rgb(" + [
+				Math.max(Math.min( parseInt((fx.pos * (fx.end[0] - fx.start[0])) + fx.start[0]), 255), 0),
+				Math.max(Math.min( parseInt((fx.pos * (fx.end[1] - fx.start[1])) + fx.start[1]), 255), 0),
+				Math.max(Math.min( parseInt((fx.pos * (fx.end[2] - fx.start[2])) + fx.start[2]), 255), 0)
+			].join(",") + ")";
+		}
+	});
+
+	// Color Conversion functions from highlightFade
+	// By Blair Mitchelmore
+	// http://jquery.offput.ca/highlightFade/
+
+	// Parse strings looking for color tuples [255,255,255]
+	function getRGB(color) {
+		var result;
+
+		// Check if we're already dealing with an array of colors
+		if ( color && color.constructor == Array && color.length == 3 )
+			return color;
+
+		// Look for rgb(num,num,num)
+		if (result = /rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)/.exec(color))
+			return [parseInt(result[1]), parseInt(result[2]), parseInt(result[3])];
+
+		// Look for rgb(num%,num%,num%)
+		if (result = /rgb\(\s*([0-9]+(?:\.[0-9]+)?)\%\s*,\s*([0-9]+(?:\.[0-9]+)?)\%\s*,\s*([0-9]+(?:\.[0-9]+)?)\%\s*\)/.exec(color))
+			return [parseFloat(result[1])*2.55, parseFloat(result[2])*2.55, parseFloat(result[3])*2.55];
+
+		// Look for #a0b1c2
+		if (result = /#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})/.exec(color))
+			return [parseInt(result[1],16), parseInt(result[2],16), parseInt(result[3],16)];
+
+		// Look for #fff
+		if (result = /#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])/.exec(color))
+			return [parseInt(result[1]+result[1],16), parseInt(result[2]+result[2],16), parseInt(result[3]+result[3],16)];
+
+		// Otherwise, we're most likely dealing with a named color
+		return colors[jQuery.trim(color).toLowerCase()];
+	}
+	
+	function getColor(elem, attr) {
+		var color;
+
+		do {
+			color = jQuery.curCSS(elem, attr);
+
+			// Keep going until we find an element that has color, or we hit the body
+			if ( color != '' && color != 'transparent' || jQuery.nodeName(elem, "body") )
+				break; 
+
+			attr = "backgroundColor";
+		} while ( elem = elem.parentNode );
+
+		return getRGB(color);
+	};
+	
+})(jQuery);

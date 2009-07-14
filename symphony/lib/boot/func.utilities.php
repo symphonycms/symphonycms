@@ -61,9 +61,18 @@
 		if(!defined($name)) define($name, $val);
 	}
 	
-	function getCurrentPage($page=NULL){
-		if(!$page) $page = $_GET['page'];
-		return (trim($page, '/') != '' ? '/' . trim($page, '/') . '/' : NULL);
+	function getCurrentPage($page = null) {
+		if (!$page) {
+			if (isset($_GET['page'])) {
+				$page = $_GET['page'];
+			}
+			
+			else if (isset($_GET['symphony-page'])) {
+				$page = $_GET['symphony-page'];
+			}
+		}
+		
+		return (trim($page, '/') != '' ? '/' . trim($page, '/') . '/' : null);
 	}
 	
 	function precision_timer($action = 'start', $start_time = null){		

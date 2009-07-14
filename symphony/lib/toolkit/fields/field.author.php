@@ -48,12 +48,17 @@
 
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 
+			$value = (isset($data['author_id']) ? $data['author_id'] : NULL);
+		
+			$callback = Administration::instance()->getPageCallback();
 			
-			$value = (isset($data['author_id']) ? $data['author_id'] : NULL);			
+			if ($this->get('default_to_current_user') == 'yes' && empty($data) && empty($_POST)) {
+				$value = array(Administration::instance()->Author->get('id'));
+			}
 			
-			if(!is_array($value)) $value = array($value);
-			
-			if(!$value) $value = $this->_engine->getAuthorID();
+			if (!is_array($value)) {
+				$value = array($value);
+			}
 
 		    $authorManager = new AuthorManager($this->_engine);
 		    $authors = $authorManager->fetch();
@@ -173,6 +178,7 @@
 			
 			$fields['field_id'] = $id;
 			$fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
+			$fields['default_to_current_user'] = ($this->get('default_to_current_user') ? $this->get('default_to_current_user') : 'no');			
 			
 			$this->_engine->Database->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");		
 			return $this->_engine->Database->insert($fields, 'tbl_fields_' . $this->handle());
@@ -207,7 +213,14 @@
 			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Allow selection of multiple authors', array($input->generate())));
-			$div->appendChild($label);						
+			$div->appendChild($label);	
+			
+			## Default to current logged in user
+			$label = Widget::Label();
+			$input = Widget::Input('fields['.$this->get('sortorder').'][default_to_current_user]', 'yes', 'checkbox');
+			if($this->get('default_to_current_user') == 'yes') $input->setAttribute('checked', 'checked');
+			$label->setValue(__('%s Select current user by default', array($input->generate())));
+			$div->appendChild($label);								
 				
 			$wrapper->appendChild($div);	
 			

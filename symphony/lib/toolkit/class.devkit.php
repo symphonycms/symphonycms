@@ -10,7 +10,7 @@
 		protected $_param = array();
 		protected $_output = '';
 		
-		protected function appendHeader() {
+		protected function buildIncludes() {
 			$this->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
 			
 			$this->Html->setElementStyle('html');
@@ -23,16 +23,10 @@
 					'content'		=> 'text/html; charset=UTF-8'
 				)
 			));
-			$this->addElementToHead(new XMLElement(
-				'link', null,
-				array(
-					'rel'			=> 'icon',
-					'href'			=> URL . '/symphony/assets/images/bookmark.png',
-					'type'			=> 'image/png'
-				)
-			));
 			$this->addStylesheetToHead(URL . '/symphony/assets/devkit.css', 'screen');
-			
+		}
+		
+		protected function buildHeader($wrapper) {
 			$this->setTitle(__(
 				'%1$s &ndash; %2$s &ndash; %3$s',
 				array(
@@ -46,10 +40,11 @@
 			$h1->appendChild(Widget::Anchor(
 				$this->_pagedata['title'], ($this->_query_string ? '?' . trim(html_entity_decode($this->_query_string), '&') : '.')
 			));
-			$this->Body->appendChild($h1);
+			
+			$wrapper->appendChild($h1);
 		}
 		
-		protected function appendNavigation() {
+		protected function buildNavigation($wrapper) {
 			$xml = new DOMDocument();
 			$xml->preserveWhiteSpace = false;
 			$xml->formatOutput = true;
@@ -58,7 +53,7 @@
 			$first = $root->firstChild;
 			$xpath = new DOMXPath($xml);
 			$list = new XMLElement('ul');
-			$list->setAttribute('id', 'nav');
+			$list->setAttribute('id', 'navigation');
 			
 			// Add edit link:
 			$item = new XMLElement('li');
@@ -102,16 +97,15 @@
 				}
 			}
 			
-			$this->Body->appendChild($list);
+			$wrapper->appendChild($list);
 		}
 		
-		protected function appendJump() {
+		protected function buildJump($wrapper) {
 			
 		}
 		
-		protected function appendContent() {
-			$this->appendHeader();
-			$this->appendNavigation();
+		protected function buildContent($wrapper) {
+			
 		}
 		
 		protected function buildJumpItem($name, $link, $active = false) {
@@ -140,8 +134,26 @@
 			}
 		}
 		
-		public function generate() {
-			$this->appendContent();
+		public function build() {
+			$this->buildIncludes();
+			
+			$header = new XMLElement('div');
+			$header->setAttribute('id', 'header');
+			$jump = new XMLElement('div');
+			$jump->setAttribute('id', 'jump');
+			$content = new XMLElement('div');
+			$content->setAttribute('id', 'content');
+			
+			$this->buildHeader($header);
+			$this->buildNavigation($header);
+			
+			$this->buildJump($jump);
+			$header->appendChild($jump);
+			
+			$this->Body->appendChild($header);
+			
+			$this->buildContent($content);
+			$this->Body->appendChild($content);
 			
 			return parent::generate();
 		}

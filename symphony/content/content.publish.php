@@ -620,7 +620,7 @@
 							__(
 								'Entry updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Entries</a>', 
 								array(
-									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . "/symphony/$link", 
 									URL . '/symphony/publish/'.$this->_context['section_handle'].'/'
 								)
@@ -634,7 +634,7 @@
 							__(
 								'Entry created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Entries</a>', 
 								array(
-									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . "/symphony/$link", 
 									URL . '/symphony/publish/'.$this->_context['section_handle'].'/' 
 								)

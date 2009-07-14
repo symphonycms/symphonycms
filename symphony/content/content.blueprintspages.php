@@ -143,7 +143,7 @@
 						'%s %s at %s. <a href="%s">View all %s</a>',
 						array(
 							__('Page'), 'updated',
-							DateTimeObj::get(__SYM_TIME_FORMAT__),
+							DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 							URL . '/symphony/blueprints/pages/',
 							__('Pages')
 						)
@@ -285,7 +285,7 @@
 						array(
 							__('Page'),
 							($this->_context[2] == 'saved' ? 'updated' : 'created'),
-							DateTimeObj::get(__SYM_TIME_FORMAT__),
+							DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 							URL . '/symphony/blueprints/pages/new/',
 							URL . '/symphony/blueprints/pages/',
 							__('Pages')
@@ -525,7 +525,7 @@
 			}
 			
 			if (@array_key_exists('delete', $_POST['action'])) {
-				$this->__actionDelete($page_id);
+				$this->__actionDelete($page_id, URL . '/symphony/blueprints/pages/');
 			}
 			
 			if (@array_key_exists('save', $_POST['action'])) {

@@ -116,7 +116,7 @@
 			if (!is_null($devkit)) {
 				$devkit->prepare($this, $this->_pageData, $this->_xml, $this->_param, $output);
 				
-				return $devkit->generate();
+				return $devkit->build();
 			}
 			
 			## EVENT DETAILS IN SOURCE
@@ -196,7 +196,7 @@
 
 			if(is_array($_GET) && !empty($_GET)){
 			    foreach($_GET as $key => $val){			    
-			        if(!in_array($key, array('page', 'debug', 'profile'))) $this->_param['url-' . $key] = $val;
+			        if(!in_array($key, array('symphony-page', 'debug', 'profile'))) $this->_param['url-' . $key] = $val;
 			    }
 			}
 			
@@ -205,6 +205,9 @@
 					$this->_param['cookie-' . $key] = $val;
 				}
 			}
+			
+			// Flatten parameters:
+			General::flattenArray($this->_param);
 
 			####
 			# Delegate: FrontendParamsResolve

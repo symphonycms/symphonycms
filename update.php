@@ -1,5 +1,7 @@
 <?php
-
+	
+	error_reporting(E_ALL ^ E_NOTICE);
+	
 	function __errorHandler($errno=NULL, $errstr, $errfile=NULL, $errline=NULL, $errcontext=NULL){
 		return;
 	}
@@ -46,12 +48,10 @@
 		redirect(URL . '/symphony/');
 	}
 	
-	error_reporting(E_ALL ^ E_NOTICE);
 	set_error_handler('__errorHandler');
 
-	define('kBUILD', '515');
-	define('kVERSION', '2.0.3');
-	define('kCHANGELOG', 'http://symphony-cms.com/forum/discussions/23280/');
+	define('kVERSION', '2.0.4');
+	define('kCHANGELOG', 'http://symphony-cms.com/blog/entry/204-release/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
 
@@ -76,11 +76,15 @@
 	
 	$settings = loadOldStyleConfig();
 	
-	if(!isset($_POST['action']['update'])){
+	if(isset($_POST['action']['update'])){
 		
-		$settings['symphony']['build'] = kBUILD;
+		$existing_version = $settings['symphony']['version'];
+		
 		$settings['symphony']['version'] = kVERSION;
-		$settings['general']['useragent'] = 'Symphony/' . kBUILD;
+		$settings['general']['useragent'] = 'Symphony/' . kVERSION;
+		
+		## Build is no longer used
+		unset($settings['symphony']['build']);
 		
 		if(writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']) === true){
 			
@@ -90,8 +94,7 @@
 			require_once(CORE . '/class.frontend.php');
 			$frontend = Frontend::instance();
 			
-			if (version_compare(kVERSION, '2.0.3', '=')) {
-			
+			if (version_compare($existing_version, '2.0.3', '<=')) {
 				// Add Navigation Groups
 				$frontend->Database->query("ALTER TABLE `tbl_sections` ADD `navigation_group` VARCHAR( 50 ) NOT NULL DEFAULT 'Content'");
 				$frontend->Database->query("ALTER TABLE `tbl_sections` ADD INDEX (`navigation_group`)");
@@ -101,11 +104,33 @@
 				foreach ($upload_fields as $upload_field) {
 					$frontend->Database->query("ALTER TABLE `tbl_entries_data_{$upload_field['id']}` CHANGE `mimetype` `mimetype` VARCHAR( 50 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL");
 				}
+			}
+			
+			if (version_compare($existing_version, '2.0.4', '<=')) {
+				$date_fields = $frontend->Database->fetch("SELECT id FROM tbl_fields WHERE `type` = 'date'");
+				
+				foreach ($date_fields as $field) {
+					$frontend->Database->query("ALTER TABLE `tbl_entries_data_{$field['id']}` CHANGE `local` `local` INT(11) DEFAULT NULL;");
+					$frontend->Database->query("ALTER TABLE `tbl_entries_data_{$field['id']}` CHANGE `gmt` `gmt` INT(11) DEFAULT NULL;");
+				}
+				
+				// Update author field table to support the default value checkbox
+				$frontend->Database->query("ALTER TABLE `tbl_fields_author` ADD `default_to_current_user` ENUM('yes', 'no') NOT NULL");
+				
+				## Change .htaccess from `page` to `symphony-page`
+				$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
+
+				if($htaccess !== false){
+					$htaccess = str_replace('index.php?page=$1&%{QUERY_STRING}', 'index.php?symphony-page=$1&%{QUERY_STRING}', $htaccess);
+					@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
+				}				
 				
 			}
 			
+
+			
 			$code = sprintf($shell, 
-'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="http://overture21.com/forum/comments.php?DiscussionID=754">change log</a></em></h1>
+'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 				<h2>Update Complete</h2>
 				
 				<p><strong>Post Installation Step: </strong>Since 2.0.2, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></p>
@@ -140,7 +165,9 @@
 			$code = sprintf($shell,
 '			<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 			<h2>Existing Installation</h2>
-			<p>It appears that Symphony has already been installed at this location and is up to date.</p>');
+			<p>It appears that Symphony has already been installed at this location and is up to date.</p>
+			<br />
+			<p>This script, <code>update.php</code>, should be removed as a safety precaution. <a href="'.URL.'/update.php?action=remove">Click here</a> to remove this file and proceed to your administration area.</p>');
 
 			die($code);
 		}

@@ -75,10 +75,12 @@
 			$xsltproc->importStyleSheet($xsl);
 			
 			// Set parameters when defined
-			if($params) {
-			   foreach ($params as $param => $value) {
-			       $xsltproc->setParameter('', $param, $value);
-			   }
+			if ($params) {
+				General::flattenArray($params);
+				
+				foreach ($params as $param => $value) {
+					$xsltproc->setParameter('', $param, $value);
+				}
 			}
 			
 			restore_error_handler();

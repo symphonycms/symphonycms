@@ -21,7 +21,7 @@
 			
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors'))));
-			$this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
+			$this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
 			
 		    $authors = $this->_AuthorManager->fetch();
 
@@ -139,7 +139,7 @@
 							__(
 								'Author updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>', 
 								array(
-									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/system/authors/new/', 
 									URL . '/symphony/system/authors/' 
 								)
@@ -154,7 +154,7 @@
 							__(
 								'Author created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>', 
 								array(
-									DateTimeObj::get(__SYM_TIME_FORMAT__), 
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/system/authors/new/', 
 									URL . '/symphony/system/authors/' 
 								)
@@ -226,18 +226,19 @@
 			$label = Widget::Label(__('Username'));
 			$label->appendChild(Widget::Input('fields[username]', $author->get('username'), NULL));
 			$div->appendChild((isset($this->_errors['username']) ? $this->wrapFormElementWithError($label, $this->_errors['username']) : $label));
-	
-			$label = Widget::Label(__('User Type'));
 
-			$options = array(
+			// Only developers can change the user type. Primary account should NOT be able to change this
+			if ($this->_Parent->Author->isDeveloper() && !$author->isPrimaryAccount()) {
+				$label = Widget::Label(__('User Type'));
 
+				$options = array(
 					array('author', false, __('Author')),
 					array('developer', $author->isDeveloper(), __('Developer'))
+				);
 
-			);
-
-			$label->appendChild(Widget::Select('fields[user_type]', $options));
-			$div->appendChild($label);
+				$label->appendChild(Widget::Select('fields[user_type]', $options));
+				$div->appendChild($label);
+			}
 
 			$group->appendChild($div);
 					
@@ -295,7 +296,7 @@
 
 			$div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Author')), 'submit', array('accesskey' => 's')));
 			
-			if($this->_context[0] == 'edit' && !$isOwner){
+			if($this->_context[0] == 'edit' && !$isOwner && !$author->isPrimaryAccount()){
 				$button = new XMLElement('button', __('Delete'));
 				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this author')));
 				$div->appendChild($button);
@@ -372,7 +373,10 @@
 				}
 
 				$this->_Author->set('id', $author_id);
-				if(isset($fields['user_type'])) $this->_Author->set('user_type', $fields['user_type']);
+				if ($this->_Author->isPrimaryAccount() || ($isOwner && $this->_Parent->Author->isDeveloper()))
+					$this->_Author->set('user_type', 'developer'); // Primary accounts are always developer, Developers can't lower their level
+				elseif ($this->_Parent->Author->isDeveloper() && isset($fields['user_type']))
+					$this->_Author->set('user_type', $fields['user_type']); // Only developer can change user type
 				$this->_Author->set('email', $fields['email']);
 				$this->_Author->set('username', $fields['username']);
 				$this->_Author->set('first_name', General::sanitize($fields['first_name']));
@@ -432,4 +436,3 @@
 		}
 		
 	}
-?>

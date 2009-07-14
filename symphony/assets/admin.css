@@ -66,6 +66,7 @@ h1 a:hover,
 	top: 25px;
 	left: 5px;
 	margin: 0;
+	min-width: 120px;
 	border: 1px solid;
 	border-color: #fdfdfd #f1f1f1 #d2d2d2 #ececec;
 	padding-left: 0;
@@ -237,21 +238,26 @@ pre code {
 
 /* Buttons */
 a.button {
-	position: absolute;
-	right: 0;
-	bottom: 3px;
-	padding-top: 15px;
-	height: 0;
-	width: 0;
-	overflow: hidden;
 	background-color: #597bc6;
 	color: #fff;
+	float:right;
+	padding: 0 1em .1em 1em;
+	margin: 0;
+	line-height: 2em;
+	height: 2em;
+	font-size: .7em;
+	text-decoration: none;
+	text-shadow: none;
+	letter-spacing:.1em;
+	cursor: pointer;
+	border-radius: 1em;
+	-moz-border-radius: 1em;
+	-webkit-border-radius: 1em;
 }
 a.button:hover,
 a.button.active {
 	background-color: #222;
 }
 a.create {
-	padding-left: 66px;
-	background: #81b934 url("images/create.png");
+	background-color: #81b934;
 }

@@ -12,8 +12,10 @@
 		Return: the encoded version of the string
 		
 		***/
-		public static function sanitize($str){
-			return @htmlspecialchars($str);
+		public static function sanitize($source) {
+			$source = @htmlspecialchars($source);
+			
+			return $source;
 		}
 		
 		/***
@@ -27,7 +29,6 @@
 		public static function reverse_sanitize($str){		 
 		   return @htmlspecialchars_decode($str);
 		}
-
 		
 		/***
 		
@@ -72,7 +73,8 @@
 			 						  match the encoding of the XML
 		Return: true or false
 		
-		***/		
+		***/
+		
 		public static function validateXML($data, &$errors, $isFile=true, $xsltProcessor=NULL, $encoding='UTF-8') {
 			$_parser 	= null;
 			$_data	 	= null;
@@ -169,8 +171,30 @@
 					$arr[$k] = stripslashes($v);
 			}
 		}
-
-
+		
+		public static function flattenArray(&$source, &$output = null, $path = null) {
+			if (is_null($output)) $output = array();
+			
+			foreach ($source as $key => $value) {
+				if (is_int($key)) $key = (string)($key + 1);
+				if (!is_null($path)) $key = $path . '.' . (string)$key;
+				
+				if (is_array($value)) self::flattenArray($value, $output, $key);
+				else $output[$key] = $value;
+			}
+			
+			$source = $output;
+		}
+		
+		protected static function flattenArraySub(&$output, &$source, $path) {
+			foreach ($source as $key => $value) {
+				$key = $path . ':' . $key;
+				
+				if (is_array($value)) self::flattenArraySub($output, $value, $key);
+				else $output[$key] = $value;
+			}
+		}
+		
 		/***
 		
 		Method: generatePassword
@@ -725,8 +749,23 @@
 		
 		***/		
 		public static function countWords($string){
+			header('content-type: text/plain');
 			
 			$string = strip_tags($string);
+			
+			// Strip spaces:
+			$string = html_entity_decode($string, ENT_NOQUOTES, 'UTF-8');
+			$spaces = array(
+				'&#x2002;', '&#x2003;', '&#x2004;', '&#x2005;',
+				'&#x2006;', '&#x2007;', '&#x2009;', '&#x200a;',
+				'&#x200b;', '&#x2002f;', '&#x205f;'
+			);
+			
+			foreach ($spaces as &$space) {
+				$space = html_entity_decode($space, ENT_NOQUOTES, 'UTF-8');
+			}
+			
+			$string = str_replace($spaces, ' ', $string);
 			$string = preg_replace('/[^\w\s]/i', '', $string);
 			
 			$words = preg_split('/\s+/', $string, -1, PREG_SPLIT_NO_EMPTY);
