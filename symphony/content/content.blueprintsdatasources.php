@@ -423,7 +423,7 @@
 			$label->appendChild(Widget::Input('fields[required_url_param]', $fields['required_url_param']));
 			$fieldset->appendChild($label);
 			
-			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value.'));
+			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value. Do not wrap the parameter with curly-braces.'));
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);			
 
