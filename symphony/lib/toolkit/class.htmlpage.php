@@ -72,19 +72,31 @@
 			return $position;
 		}
 		
-		function addScriptToHead($path, $position=NULL){			
-			$script = new XMLElement('script');
-			$script->setSelfClosingTag(false);
-			$script->setAttributeArray(array('type' => 'text/javascript', 'src' => $path));
-			return $this->addElementToHead($script, $position);
-		}
-
-		function addStylesheetToHead($path, $type='screen', $position=NULL){
-			$link = new XMLElement('link');
-			$link->setAttributeArray(array('rel' => 'stylesheet', 'type' => 'text/css', 'media' => $type, 'href' => $path));
-			return $this->addElementToHead($link, $position);
-		}
-
+		function addScriptToHead($path, $position=NULL, $duplicate=true){
+	        if($duplicate == false) $presence = $this->checkElementsInHead($path, 'src');
+	        if(!$presence) {
+	            $script = new XMLElement('script');
+	            $script->setSelfClosingTag(false);
+	            $script->setAttributeArray(array('type' => 'text/javascript', 'src' => $path));
+	            return $this->addElementToHead($script, $position);
+	        }
+	    }
+	
+	    function addStylesheetToHead($path, $type='screen', $position=NULL, $duplicate=true){
+	        if($duplicate == false) $presence = $this->checkElementsInHead($path, 'href');
+	        if(!$presence) {
+	            $link = new XMLElement('link');
+	            $link->setAttributeArray(array('rel' => 'stylesheet', 'type' => 'text/css', 'media' => $type, 'href' => $path));
+	            return $this->addElementToHead($link, $position);
+	        }
+	    }
+	
+	    function checkElementsInHead($path, $attr){
+	        foreach($this->_head as $element) {
+	            if(basename($element->getAttribute($attr)) == basename($path)) return true;
+	        }   
+	    }
+        
 		function __generateHead(){
 			
 			ksort($this->_head);
