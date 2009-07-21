@@ -53,6 +53,7 @@
 	
 			$oPage = new XMLElement('page');
 			$oPage->setAttribute('handle', $page['handle']);
+			$oPage->setAttribute('id', $page['id']);
 			$oPage->appendChild(new XMLElement('name', General::sanitize($page['title'])));
 	
 			$types = $database->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '".$page['id']."'");
