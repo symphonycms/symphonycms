@@ -242,6 +242,13 @@
 			$this->setFetchSortingDirection($direction);
 		}
 		
+		public function getFetchSorting(){
+			return (object)array(
+				'field' => $this->_fetchSortField,
+				'direction' => $this->_fetchSortDirection
+			);
+		}
+		
 		/***
 		
 			Warning: Do not provide $entry_id as an array if not specifiying the $section_id
@@ -257,7 +264,7 @@
 			$section = $this->sectionManager->fetch($section_id);
 			
 			if (!is_object($section)) return false;
-			
+
 			## We want to sort if there is a custom entry sort order
 			if ($this->_fetchSortField == 'date') {
 				$sort = 'ORDER BY ' . ($this->_fetchSortDirection != 'RAND' ? "`e`.`creation_date` $this->_fetchSortDirection" : 'RAND() ');

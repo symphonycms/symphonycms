@@ -111,11 +111,16 @@
 			## Remove the create button if there is a section link field, and no filtering set for it
 			$section_links = $section->fetchFields('sectionlink');
 
-			if(count($section_links) > 1 || (!$filter && $section_links) || (is_object($section_links[0]) && $filter != $section_links[0]->get('id')))
+			if(count($section_links) > 1 || (!$filter && $section_links) || (is_object($section_links[0]) && $filter != $section_links[0]->get('id'))){
 				$this->appendSubheading($section->get('name'));
-
-			else
+			}
+			else{
 				$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), $this->_Parent->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), __('Create a new entry'), 'create button'));
+			}
+			
+			if(is_null($entryManager->getFetchSorting()->field) && is_null($entryManager->getFetchSorting()->direction)){
+				$entryManager->setFetchSortingDirection('DESC');
+			}
 			
 			$entries = $entryManager->fetchByPage($current_page, $section_id, $this->_Parent->Configuration->get('pagination_maximum_rows', 'symphony'), $where, $joins);
 			
