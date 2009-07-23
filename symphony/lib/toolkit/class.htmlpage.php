@@ -73,8 +73,7 @@
 		}
 		
 		function addScriptToHead($path, $position=NULL, $duplicate=true){
-	        if($duplicate == false) $presence = $this->checkElementsInHead($path, 'src');
-	        if(!$presence) {
+	        if($duplicate === false && $this->checkElementsInHead($path, 'src') !== true){
 	            $script = new XMLElement('script');
 	            $script->setSelfClosingTag(false);
 	            $script->setAttributeArray(array('type' => 'text/javascript', 'src' => $path));
@@ -83,8 +82,7 @@
 	    }
 	
 	    function addStylesheetToHead($path, $type='screen', $position=NULL, $duplicate=true){
-	        if($duplicate == false) $presence = $this->checkElementsInHead($path, 'href');
-	        if(!$presence) {
+	        if($duplicate === false && $this->checkElementsInHead($path, 'href') !== true){
 	            $link = new XMLElement('link');
 	            $link->setAttributeArray(array('rel' => 'stylesheet', 'type' => 'text/css', 'media' => $type, 'href' => $path));
 	            return $this->addElementToHead($link, $position);
