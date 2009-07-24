@@ -99,7 +99,6 @@
 		}
 
 		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-			header('content-type: text/plain');
 			$states = $this->getToggleStates();
 			
 			if(!is_array($data['value'])) $data['value'] = array($data['value']);

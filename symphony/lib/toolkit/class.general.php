@@ -749,8 +749,6 @@
 		
 		***/		
 		public static function countWords($string){
-			header('content-type: text/plain');
-			
 			$string = strip_tags($string);
 			
 			// Strip spaces:
