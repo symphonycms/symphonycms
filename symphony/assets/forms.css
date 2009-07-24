@@ -96,10 +96,10 @@ h2,
 	margin-top: -9px;
 }
 .settings > legend + p.help {
-    float:left;
-    width: 22em;
-    margin-top:1.5em;
-    margin-left:-275px;
+	float:left;
+	width: 22em;
+	margin-top:1.5em;
+	margin-left:-275px;
 }
 .group {
 	position: relative;
