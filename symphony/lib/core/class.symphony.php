@@ -230,8 +230,6 @@
 		}
 
 		public function resolvePage($page_id, $column) {
-			header('content-type: text/plain');
-			
 			$page = $this->Database->fetchRow(0, "
 				SELECT
 					p.{$column},
