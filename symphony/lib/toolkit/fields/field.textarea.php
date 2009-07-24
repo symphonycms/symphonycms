@@ -157,8 +157,6 @@
 		
 		public function appendFormattedElement(&$wrapper, $data, $encode = false, $mode) {
 			
-			$replace_regex = '';
-			
 			if ($mode == null || $mode == 'formatted') {
 				
 				if ($this->get('formatter') && isset($data['value_formatted'])) {
