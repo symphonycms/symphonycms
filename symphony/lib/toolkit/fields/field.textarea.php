@@ -150,19 +150,58 @@
 			
 			return NULL;		
 		}
+		
+		private function replaceAmpersands($value) {
+			return preg_replace('/&(?!(#[0-9]+|#x[0-9a-f]+|amp|lt|gt);)/i', '&amp;', trim($value));
+		}
+		
+		public function appendFormattedElement(&$wrapper, $data, $encode = false, $mode) {
+			
+			$replace_regex = '';
+			
+			if ($mode == null || $mode == 'formatted') {
+				
+				if ($this->get('formatter') && isset($data['value_formatted'])) {
+					$value = $data['value_formatted'];
+				}
 
-		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
-			if ($this->get('formatter') && isset($data['value_formatted'])) {
-				$value = $data['value_formatted'];
+				else {
+					$value = $data['value'];
+				}
+
+				$value = $this->replaceAmpersands($value);
+				
+				$attributes = array(
+					'word-count' => General::countWords($value)
+				);
+				
+				if ($mode == 'formatted') $attributes['mode'] = $mode;
+				
+				$wrapper->appendChild(
+					new XMLElement(
+						$this->get('element_name'),
+						($encode ? General::sanitize($value) : $value),
+						$attributes
+					)
+				);
+				
+			} elseif ($mode == 'unformatted') {
+				
+				$value = $this->replaceAmpersands($data['value']);
+
+				$wrapper->appendChild(
+					new XMLElement(
+						$this->get('element_name'),
+						($encode ? General::sanitize($value) : $value),
+						array(
+							'word-count' => General::countWords($value),
+							'mode' => $mode
+						)
+					)
+				);
+				
 			}
-			
-			else {
-				$value = $data['value'];
-			}
-			
-			$value = preg_replace('/&(?!(#[0-9]+|#x[0-9a-f]+|amp|lt|gt);)/i', '&amp;', trim($value));
-			
-			$wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($value) : $value), array('word-count' => General::countWords($value))));
+
 		}
 
 		function checkFields(&$required, $checkForDuplicates=true, $checkForParentSection=true){
@@ -222,6 +261,20 @@
 			$label->appendChild(Widget::Textarea('fields['.$this->get('element_name').']', $this->get('size'), 50));
 			
 			return $label;
+		}
+		
+		public function fetchIncludableElements() {
+			
+			if ($this->get('formatter')) {
+				return array(
+					$this->get('element_name') . ': formatted',
+					$this->get('element_name') . ': unformatted'
+				);
+			}
+		
+			return array(
+				$this->get('element_name')
+			);
 		}
 
 	}
