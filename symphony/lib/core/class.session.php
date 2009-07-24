@@ -68,7 +68,7 @@
 			
 			if(isset($_SERVER['HTTP_HOST'])){
 
-				if(in_array($_SERVER['HTTP_HOST'], array('localhost', '127.0.0.1')) || $_SERVER['SERVER_ADDR'] == '127.0.0.1'){
+				if(preg_match('/(localhost|127\.0\.0\.1)/', $_SERVER['HTTP_HOST']) || $_SERVER['SERVER_ADDR'] == '127.0.0.1'){
 					return NULL; // prevent problems on local setups
 				}
 								

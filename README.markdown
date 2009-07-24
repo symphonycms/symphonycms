@@ -36,11 +36,7 @@ Follow the instructions below if you are updating from Symphony version 2.0 (non
 
 4. Go to `http://yoursite.com/update.php` to complete the update process.
 
-5. Follow the instruction under "Adding Navigation Group to sections".
-
-6. For those who have an upload field, follow the instructions under "Update Upload Field".
-
-7. Celebrate by shaving your friend's head for charity!
+5. Celebrate by shaving your friend's head for charity!
 
 
 ## INSTALLING

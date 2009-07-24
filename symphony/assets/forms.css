@@ -96,10 +96,10 @@ h2,
 	margin-top: -9px;
 }
 .settings > legend + p.help {
-	position: absolute;
-	top: 3.5em;
-	left: 0;
+	float:left;
 	width: 22em;
+	margin-top:1.5em;
+	margin-left:-275px;
 }
 .group {
 	position: relative;
@@ -198,7 +198,6 @@ div.actions button {
 	line-height: 2em;
 	font-size: 0.95em;
 	height: 2em;
-	letter-spacing: .1em;
 	border-radius: 1em;
 	-moz-border-radius: 1em;
 	-webkit-border-radius: 1em;
