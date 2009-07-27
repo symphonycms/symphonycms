@@ -50,8 +50,8 @@
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.0.4');
-	define('kCHANGELOG', 'http://symphony-cms.com/blog/entry/204-release/');
+	define('kVERSION', '2.0.5');
+	define('kCHANGELOG', 'http://symphony-cms.com/blog/entry/205-release/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
 
