@@ -10,7 +10,6 @@
 		public $Form;
 		private $_title;
 		private $_head;
-		private $_headers;
 			
 		public function __construct(){
 			$this->Html = new XMLElement('html');
