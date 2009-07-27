@@ -3,6 +3,8 @@
 	## This class should never be instanciated. Always extend
 	Class Page{
 		
+		protected $_headers;
+		
 		const CRLF = "\r\n";
 		
 		function addHeaderToPage($name, $value=NULL){
