@@ -1,6 +1,10 @@
 <?php
 
-	error_reporting(E_ALL ^ E_NOTICE);
+	if (PHP_VERSION_ID >= 50300) {
+	    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+	} else {
+	    error_reporting(E_ALL ^ E_NOTICE);
+	}
 	set_magic_quotes_runtime(0);
 
 	header('Expires: Mon, 12 Dec 1982 06:14:00 GMT');
