@@ -1,10 +1,17 @@
 <?php
 
-	if (PHP_VERSION_ID >= 50300) {
+	if(!defined('PHP_VERSION_ID')){
+    	$version = PHP_VERSION;
+    	define('PHP_VERSION_ID', ($version{0} * 10000 + $version{2} * 100 + $version{4}));
+	}
+
+	if (PHP_VERSION_ID >= 50300){
 	    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
-	} else {
+	} 
+	else{
 	    error_reporting(E_ALL ^ E_NOTICE);
 	}
+	
 	set_magic_quotes_runtime(0);
 
 	header('Expires: Mon, 12 Dec 1982 06:14:00 GMT');
