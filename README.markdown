@@ -10,7 +10,7 @@
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core 
 technologies. This repository represents version 2.0.5 and is considered stable.
 
-Visit the forum at <http://symphony-cms.com/forum/>
+Visit the forum at <http://symphony-cms.com/community/>
 
 
 ## Updating
@@ -75,7 +75,7 @@ you will need to use the following command from within the Symphony 2 folder you
 
 **Note: You can leave `/workspace` out if you do not want the default theme.**
 
-1. This step assumes you downloaded a zip archive from the [Symphony website](http://symphony21.com). 
+1. This step assumes you downloaded a zip archive from the [Symphony website](http://symphony-cms.com). 
 Upload the following files and directories to the root directory of your website:
 
 	- index.php
