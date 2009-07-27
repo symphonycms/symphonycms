@@ -21,7 +21,8 @@
 			
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors'))));
-			$this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
+			if ($this->_Parent->Author->isDeveloper()) $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
+			else $this->appendSubheading(__('Authors'));
 			
 		    $authors = $this->_AuthorManager->fetch();
 
@@ -47,23 +48,30 @@
 				foreach($authors as $a){			
 
 					if(intval($a->get('superuser')) == 1) $group = 'admin'; else $group = 'author'; 
-
+					
 					## Setup each cell
-					$td1 = Widget::TableData(Widget::Anchor($a->getFullName(), $this->_Parent->getCurrentPageURL() . 'edit/' . $a->get('id') . '/', $a->get('username'), $group));
+					if($this->_Parent->Author->isDeveloper() || $this->_Parent->Author->get('id') == $a->get('id')) {
+						$td1 = Widget::TableData(Widget::Anchor($a->getFullName(), $this->_Parent->getCurrentPageURL() . 'edit/' . $a->get('id') . '/', $a->get('username'), $group));
+					} else {
+						$td1 = Widget::TableData($a->getFullName(), 'inactive');
+					}
+						
 					$td2 = Widget::TableData(Widget::Anchor($a->get('email'), 'mailto:'.$a->get('email'), 'Email this author'));
-
+					
 					if($a->get('last_seen') != NULL)
 						$td3 = Widget::TableData(DateTimeObj::get(__SYM_DATETIME_FORMAT__, strtotime($a->get('last_seen'))));
-
+						
 					else
 						$td3 = Widget::TableData('Unknown', 'inactive');
 					
-					if($a->get('id') != $this->_Parent->Author->get('id')) $td3->appendChild(Widget::Input('items['.$a->get('id').']', NULL, 'checkbox'));
+					if ($this->_Parent->Author->isDeveloper()) {
+						if ($a->get('id') != $this->_Parent->Author->get('id')) $td3->appendChild(Widget::Input('items['.$a->get('id').']', NULL, 'checkbox'));
+					}
 					
 					## Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3), ($bOdd ? 'odd' : NULL));
 
-					$bOdd = !$bOdd;			
+					$bOdd = !$bOdd;
 
 				}
 			}
@@ -72,22 +80,24 @@
 								Widget::TableHead($aTableHead), 
 								NULL, 
 								Widget::TableBody($aTableBody)
-						);
-
+							);
+							
 			$this->Form->appendChild($table);
-
-			$tableActions = new XMLElement('div');
-			$tableActions->setAttribute('class', 'actions');
-
-			$options = array(
-				array(NULL, false, 'With Selected...'),
-				array('delete', false, 'Delete')									
-			);
-
-			$tableActions->appendChild(Widget::Select('with-selected', $options));
-			$tableActions->appendChild(Widget::Input('action[apply]', 'Apply', 'submit'));
-
-			$this->Form->appendChild($tableActions);					
+			
+			if($this->_Parent->Author->isDeveloper()) {
+				$tableActions = new XMLElement('div');
+				$tableActions->setAttribute('class', 'actions');
+				
+				$options = array(
+					array(NULL, false, 'With Selected...'),
+					array('delete', false, 'Delete')									
+				);
+				
+				$tableActions->appendChild(Widget::Select('with-selected', $options));
+				$tableActions->appendChild(Widget::Input('action[apply]', 'Apply', 'submit'));
+				
+				$this->Form->appendChild($tableActions);					
+			}
 			
 		}
 		
@@ -95,7 +105,7 @@
 			if($_POST['with-selected'] == 'delete'){	 	
 				
 				$checked = @array_keys($_POST['items']);
-
+				
 				## TODO: Fix Me
 				###
 				# Delegate: Delete
@@ -185,6 +195,11 @@
 			else $author =& $this->_AuthorManager->create();
 
 			if($this->_context[0] == 'edit' && $author->get('id') == $this->_Parent->Author->get('id')) $isOwner = true;
+			
+			if ($this->_context[0] == 'edit' && !$isOwner && !$this->_Parent->Author->isDeveloper())
+				$this->_Parent->customError(E_USER_ERROR, 'Access Denied', 'You are not authorised to edit other authors.');
+			
+			
 
 			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Authors'), $author->getFullName())));
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $author->getFullName()));			
@@ -267,14 +282,14 @@
 
 			if($this->_context[0] == 'edit') $group->appendChild(new XMLElement('p', __('Leave new password field blank to keep the current password'), array('class' => 'help')));
 
-			$label = Widget::Label();
-			$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
-			if($author->get('auth_token_active') == 'yes') $input->setAttribute('checked', 'checked');
-			$temp = URL . '/symphony/login/' . $author->createAuthToken() . '/';
-			$label->setValue(__('%1$s Allow remote login via <a href="%2$s">%2$s</a>', array($input->generate(), $temp)));
-
-			$group->appendChild($label);
-
+			if($this->_Parent->Author->isDeveloper()) {
+				$label = Widget::Label();
+				$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
+				if($author->get('auth_token_active') == 'yes') $input->setAttribute('checked', 'checked');
+				$temp = URL . '/symphony/login/' . $author->createAuthToken() . '/';
+				$label->setValue(__('%1$s Allow remote login via <a href="%2$s">%2$s</a>', array($input->generate(), $temp)));
+				$group->appendChild($label);
+			}
 			$label = Widget::Label(__('Default Section'));
 			
 		    $sectionManager = new SectionManager($this->_Parent);
