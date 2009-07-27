@@ -1,21 +1,20 @@
 <?php
-	
-	## This class should never be instanciated. Always extend
-	Class Page{
+
+	Abstract Class Page{
 		
 		protected $_headers;
 		
 		const CRLF = "\r\n";
 		
-		function addHeaderToPage($name, $value=NULL){
+		public function addHeaderToPage($name, $value=NULL){
 			$this->_headers[] = $name . (is_null($value) ? NULL : ":{$value}");
 		}
 
-		function generate(){
+		public function generate(){
 			$this->__renderHeaders();
 		}
 		
-		function __renderHeaders(){
+		protected function __renderHeaders(){
 
 			if(!is_array($this->_headers) || empty($this->_headers)) return;
 		

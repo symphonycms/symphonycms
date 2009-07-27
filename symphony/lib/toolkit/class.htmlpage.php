@@ -8,8 +8,8 @@
 		public $Html;
 		public $Body;
 		public $Form;
-		private $_title;
-		private $_head;
+		protected $_title;
+		protected $_head;
 			
 		public function __construct(){
 			$this->Html = new XMLElement('html');
