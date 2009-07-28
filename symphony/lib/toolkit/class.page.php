@@ -14,6 +14,10 @@
 			$this->__renderHeaders();
 		}
 		
+		public function headers(){
+			return $this->_headers;
+		}
+		
 		protected function __renderHeaders(){
 
 			if(!is_array($this->_headers) || empty($this->_headers)) return;
