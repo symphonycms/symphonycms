@@ -66,9 +66,9 @@
 				$this->ExtensionManager->notifyMembers(
 					'FrontendOutputPreGenerate', '/frontend/',
 					array(
-						'page'		=> &$this,
-						'xml'		=> $this->_xml,
-						'xsl'		=> $this->_xsl
+						'page'	=> &$this,
+						'xml'	=> $this->_xml,
+						'xsl'	=> $this->_xsl
 					)
 				);
 				
