@@ -1,14 +1,14 @@
 # Symphony 2 #
 
-- Version: 2.0.5
-- Date: 27th July 2009
+- Version: 2.0.6
+- Date: -
 - Github Repository: <http://github.com/symphony/symphony-2/tree/master>
 
 
 ## Synopsis
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core 
-technologies. This repository represents version 2.0.5 and is considered stable.
+technologies. This repository represents version 2.0.6 and is **not** considered stable.
 
 Visit the forum at <http://symphony-cms.com/community/>
 
@@ -22,21 +22,19 @@ Visit the forum at <http://symphony-cms.com/community/>
 	git submodule init
 	git submodule update
 
-2. Follow normal updating procedure below from step 4.
+2. Follow normal updating procedure below from step 2.
 
 ### Via the old fashioned way
 
 Follow the instructions below if you are updating from Symphony version 2.0 (non Git)
 
-1. Backup `/symphony/.htaccess`.
+**Note:** As of 2.0.6, there is no longer a need to backup `/symphony/.htaccess`.
 
-2. Upload `/symphony`, `index.php` & `update.php`, replacing what is already on your server.
+1. Upload `/symphony`, `index.php` & `update.php`, replacing what is already on your server.
 
-3. Put the backed-up `.htaccess` file into the new `/symphony` folder.
+2. Go to `http://yoursite.com/update.php` to complete the update process.
 
-4. Go to `http://yoursite.com/update.php` to complete the update process.
-
-5. Celebrate by shaving your friend's head for charity!
+3. Celebrate by shaving your friend's head for charity!
 
 
 ## INSTALLING
