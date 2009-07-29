@@ -6,8 +6,12 @@
 		
 		const CRLF = "\r\n";
 		
+		public function __construct(){
+			$this->_headers = array();
+		}
+		
 		public function addHeaderToPage($name, $value=NULL){
-			$this->_headers[] = $name . (is_null($value) ? NULL : ":{$value}");
+			$this->_headers[strtolower($name)] = $name . (is_null($value) ? NULL : ":{$value}");
 		}
 
 		public function generate(){
@@ -21,10 +25,11 @@
 		protected function __renderHeaders(){
 
 			if(!is_array($this->_headers) || empty($this->_headers)) return;
-		
+
 			foreach($this->_headers as $value){
 				header($value);
 			}
+
 		}		
 	}
 

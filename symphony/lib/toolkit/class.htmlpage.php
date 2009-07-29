@@ -12,6 +12,9 @@
 		protected $_head;
 			
 		public function __construct(){
+			
+			parent::__construct();
+			
 			$this->Html = new XMLElement('html');
 			$this->Html->setIncludeHeader(false);
 		
@@ -22,7 +25,7 @@
 			$this->Body = new XMLElement('body');
 			$this->Form = NULL;
 			
-			$this->_headers = array();
+			
 		}
 	
 		protected function __build(){
