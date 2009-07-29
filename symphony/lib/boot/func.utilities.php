@@ -9,7 +9,7 @@
 	***/		
    	function redirect ($url){
 		
-		$url = str_replace('Location:', '', $url); //Just make sure.
+		$url = str_replace('Location:', NULL, $url); //Just make sure.
 		
 		if(headers_sent($filename, $line)){
 			print "<h1>Error: Cannot redirect to <a href=\"$url\">$url</a></h1><p>Output has already started in $filename on line $line</p>";
@@ -33,26 +33,6 @@
 	        );
 	}
 
-	function symphony_request_uri(){
-		
-		if(isset($_SERVER['REQUEST_URI'])) return $_SERVER['REQUEST_URI'];
-		
-		return str_replace('index.php', '', $_SERVER['PHP_SELF']) . trim($_REQUEST['page'], '/') . '/?' . preg_replace('@&?page='.$_REQUEST['page'].'&?@i', '', $_SERVER['QUERY_STRING']);
-	}
-
-	function strallpos($haystack, $needle, &$count, $offset=0) {
-		$match = array();
-		
-		if($offset > strlen($haystack)) return $match; 
-			
-		for ($count=0; (($pos = strpos($haystack, $needle, $offset)) !== false); $count++) {
-			$match[] = $pos;
-			$offset = $pos + strlen($needle);
-		}
-		
-		return $match;
-	}
-	
 	function getcwd_safe(){
 		return str_replace('\\', '/', getcwd());
 	}
@@ -61,21 +41,15 @@
 		if(!defined($name)) define($name, $val);
 	}
 	
-	function getCurrentPage($page = null) {
-		if (!$page) {
-			if (isset($_GET['page'])) {
-				$page = $_GET['page'];
-			}
-			
-			else if (isset($_GET['symphony-page'])) {
-				$page = $_GET['symphony-page'];
-			}
+	function getCurrentPage($page = NULL) {
+		if (is_null($page) && isset($_GET['symphony-page'])){
+			$page = $_GET['symphony-page'];
 		}
 		
-		return (trim($page, '/') != '' ? '/' . trim($page, '/') . '/' : null);
+		return (strlen(trim($page, '/')) > 0 ? '/' . trim($page, '/') . '/' : NULL);
 	}
 	
-	function precision_timer($action = 'start', $start_time = null){		
+	function precision_timer($action = 'start', $start_time = NULL){		
 		list($time, $micro) = explode(' ', microtime());
 		
 		$currtime = $time + $micro;
