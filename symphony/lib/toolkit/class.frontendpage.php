@@ -90,6 +90,12 @@
 					}
 				}
 				
+				####
+				# Delegate: FrontendPreRenderHeaders
+				# Description: This is just prior to the page headers being rendered, and is suitable for changing them
+				# Global: Yes
+				$this->ExtensionManager->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
+				
 				$output = parent::generate();
 				
 				####
@@ -97,7 +103,7 @@
 				# Description: Immediately after generating the page. Provided with string containing page source
 				# Global: Yes
 				$this->ExtensionManager->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
-				
+
 				$this->_Parent->Profiler->sample('XSLT Transformation', PROFILE_LAP);
 				
 				if (is_null($devkit) && !$output) {
