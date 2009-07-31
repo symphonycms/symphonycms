@@ -88,8 +88,13 @@
 		
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 
-			if(!$flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/')) 
+			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
+				$flagWithError = __('The destination directory, <code>%s</code>, does not exists.', array($this->get('destination')));
+			}
+			
+			elseif(!$flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/')){
 				$flagWithError = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
+			}
 			
 			$label = Widget::Label($this->get('label'));
 			$class = 'file';
@@ -123,9 +128,14 @@
 		}		
 
 		public function checkFields(&$errors, $checkForDuplicates=true){
-			
-			if(!is_writable(DOCROOT . $this->get('destination') . '/'))
-				$errors['destination'] = __('Folder is not writable. Please check permissions.');
+
+			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
+				$errors['destination'] = __('Directory <code>%s</code> does not exists.', array($this->get('destination')));
+			}
+
+			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
+				$errors['destination'] = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
+			}
 			
 			parent::checkFields($errors, $checkForDuplicates);
 		}
@@ -273,7 +283,13 @@
 			## Its not an array, so just retain the current data and return
 			if(!is_array($data)) return self::__OK__;
 
-			if(!is_writable(DOCROOT . $this->get('destination') . '/')){
+
+			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
+				$message = __('The destination directory, <code>%s</code>, does not exists.', array($this->get('destination')));
+				return self::__ERROR__;
+			}
+
+			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
 				$message = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
 				return self::__ERROR__;
 			}
