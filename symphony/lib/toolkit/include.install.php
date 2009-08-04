@@ -881,13 +881,6 @@
 				if(!defined("ERROR")) define("ERROR", 'no-write-permission-root');
 			}
 
-			## Cannot write to symphony folder.
-			elseif(!is_writable(rtrim($fields['docroot'], '/') . '/symphony')){
-				$Page->log->pushToLog("Configuration - Symphony folder not writable: " . rtrim($fields['docroot'], '/') . '/symphony', SYM_LOG_NOTICE, true);
-				define("kENVIRONMENT_WARNING", true);
-				if(!defined("ERROR")) define("ERROR", 'no-write-permission-symphony');
-			}
-
 			## Failed to establish database connection	
 			elseif(!$db->isConnected()){
 				$Page->log->pushToLog("Configuration - Could not establish database connection", SYM_LOG_NOTICE, true);
