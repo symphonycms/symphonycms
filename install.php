@@ -9,7 +9,18 @@
 		return;
 	}
 
-	error_reporting(E_ALL ^ E_NOTICE);
+	if(!defined('PHP_VERSION_ID')){
+    	$version = PHP_VERSION;
+    	define('PHP_VERSION_ID', ($version{0} * 10000 + $version{2} * 100 + $version{4}));
+	}
+
+	if (PHP_VERSION_ID >= 50300){
+	    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+	} 
+	else{
+	    error_reporting(E_ALL ^ E_NOTICE);
+	}
+	
 	set_error_handler('__errorHandler');
 
 	define('kVERSION', '2.0.6');
@@ -27,7 +38,7 @@
 		$lang = NULL;
 
 		if(!empty($_REQUEST['lang'])){
-			$l = preg_replace('/[^a-zA-Z\-]/', '', $_REQUEST['lang']);
+			$l = preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']);
 			if(file_exists("./symphony/lib/lang/lang.{$l}.php")) $lang = $l;
 		}
 
@@ -39,16 +50,20 @@
 		}
 
 		## none of browser accepted languages is available, get first available
-		if($lang === NULL){
+		if(is_null($lang)){
+			
 			## default to English
-			if(file_exists('./symphony/lib/lang/lang.en.php')) $lang = 'en';
-			else{
+			$lang = 'en';
+			
+			if(!file_exists('./symphony/lib/lang/lang.en.php')){
 				$l = Lang::getAvailableLanguages();
 				if(is_array($l) && count($l) > 0) $lang = $l[0];
 			}
 		}
 
-		if($lang === NULL) return NULL;
+		if(is_null($lang)){ 
+			return NULL;
+		}
 
 		try{
 			Lang::init('./symphony/lib/lang/lang.%s.php', $lang);
@@ -155,7 +170,7 @@
 		$conf['symphony']['pagination_maximum_rows'] = '17';
 		$conf['symphony']['allow_page_subscription'] = '1';
 		$conf['symphony']['lang'] = 'en';
-		$conf['symphony']['version'] = '2.0.5';
+		$conf['symphony']['version'] = '2.0.6';
 		$conf['log']['archive'] = '1';
 		$conf['log']['maxsize'] = '102400';
 		$conf['general']['sitename'] = 'Symphony CMS';
