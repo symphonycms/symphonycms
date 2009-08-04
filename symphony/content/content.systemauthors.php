@@ -21,7 +21,7 @@
 			
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors'))));
-			if ($this->_Parent->Author->isDeveloper()) $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
+			if (Administration::instance()->Author->isDeveloper()) $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
 			else $this->appendSubheading(__('Authors'));
 			
 		    $authors = $this->_AuthorManager->fetch();
@@ -50,7 +50,7 @@
 					if(intval($a->get('superuser')) == 1) $group = 'admin'; else $group = 'author'; 
 					
 					## Setup each cell
-					if($this->_Parent->Author->isDeveloper() || $this->_Parent->Author->get('id') == $a->get('id')) {
+					if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->get('id') == $a->get('id')) {
 						$td1 = Widget::TableData(Widget::Anchor($a->getFullName(), $this->_Parent->getCurrentPageURL() . 'edit/' . $a->get('id') . '/', $a->get('username'), $group));
 					} else {
 						$td1 = Widget::TableData($a->getFullName(), 'inactive');
@@ -64,8 +64,8 @@
 					else
 						$td3 = Widget::TableData('Unknown', 'inactive');
 					
-					if ($this->_Parent->Author->isDeveloper()) {
-						if ($a->get('id') != $this->_Parent->Author->get('id')) $td3->appendChild(Widget::Input('items['.$a->get('id').']', NULL, 'checkbox'));
+					if (Administration::instance()->Author->isDeveloper()) {
+						if ($a->get('id') != Administration::instance()->Author->get('id')) $td3->appendChild(Widget::Input('items['.$a->get('id').']', NULL, 'checkbox'));
 					}
 					
 					## Add a row to the body array, assigning each cell to the row
@@ -84,7 +84,7 @@
 							
 			$this->Form->appendChild($table);
 			
-			if($this->_Parent->Author->isDeveloper()) {
+			if(Administration::instance()->Author->isDeveloper()) {
 				$tableActions = new XMLElement('div');
 				$tableActions->setAttribute('class', 'actions');
 				
@@ -114,7 +114,7 @@
 				
 				foreach($checked as $author_id){
 					$a = $this->_AuthorManager->fetchByID($author_id);
-					if(is_object($a) && $a->get('id') != $this->_Parent->Author->get('id')) $this->_AuthorManager->delete($author_id);
+					if(is_object($a) && $a->get('id') != Administration::instance()->Author->get('id')) $this->_AuthorManager->delete($author_id);
 				}
 
 				redirect(URL . '/symphony/system/authors/');
@@ -137,7 +137,7 @@
 			## Handle unknow context
 			if(!in_array($this->_context[0], array('new', 'edit'))) $this->_Parent->errorPageNotFound();
 			
-			if($this->_context[0] == 'new' && !$this->_Parent->Author->isDeveloper()) 
+			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper()) 
 				$this->_Parent->customError(E_USER_ERROR, 'Access Denied', 'You are not authorised to access this page.');			
 
 			if(isset($this->_context[2])){
@@ -194,9 +194,9 @@
 			
 			else $author =& $this->_AuthorManager->create();
 
-			if($this->_context[0] == 'edit' && $author->get('id') == $this->_Parent->Author->get('id')) $isOwner = true;
+			if($this->_context[0] == 'edit' && $author->get('id') == Administration::instance()->Author->get('id')) $isOwner = true;
 			
-			if ($this->_context[0] == 'edit' && !$isOwner && !$this->_Parent->Author->isDeveloper())
+			if ($this->_context[0] == 'edit' && !$isOwner && !Administration::instance()->Author->isDeveloper())
 				$this->_Parent->customError(E_USER_ERROR, 'Access Denied', 'You are not authorised to edit other authors.');
 			
 			
@@ -243,7 +243,7 @@
 			$div->appendChild((isset($this->_errors['username']) ? $this->wrapFormElementWithError($label, $this->_errors['username']) : $label));
 
 			// Only developers can change the user type. Primary account should NOT be able to change this
-			if ($this->_Parent->Author->isDeveloper() && !$author->isPrimaryAccount()) {
+			if (Administration::instance()->Author->isDeveloper() && !$author->isPrimaryAccount()) {
 				$label = Widget::Label(__('User Type'));
 
 				$options = array(
@@ -257,17 +257,19 @@
 
 			$group->appendChild($div);
 					
-			$div = new XMLElement('div');
+			$div = new XMLElement('div', NULL, array('class' => 'group'));
+			
 			if($this->_context[0] == 'edit') {
 				$div->setAttribute('id', 'change-password');
-				$div->setAttribute('class', 'triple group');
-
-				$label = Widget::Label(__('Old Password'));
-				if(isset($this->_errors['old-password'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['old-password']));	
-				$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password'));
-				$div->appendChild((isset($this->_errors['old-password']) ? $this->wrapFormElementWithError($label, $this->_errors['old-password']) : $label));
-			} else {
-				$div->setAttribute('class', 'group');
+				
+				if(!Administration::instance()->Author->isDeveloper() || $isOwner === true){
+					$div->setAttribute('class', 'triple group');
+				
+					$label = Widget::Label(__('Old Password'));
+					if(isset($this->_errors['old-password'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['old-password']));	
+					$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password'));
+					$div->appendChild((isset($this->_errors['old-password']) ? $this->wrapFormElementWithError($label, $this->_errors['old-password']) : $label));
+				}
 			}
 
 			$label = Widget::Label(($this->_context[0] == 'edit' ? __('New Password') : __('Password')));		
@@ -280,9 +282,11 @@
 			$div->appendChild($label);
 			$group->appendChild($div);
 
-			if($this->_context[0] == 'edit') $group->appendChild(new XMLElement('p', __('Leave new password field blank to keep the current password'), array('class' => 'help')));
+			if($this->_context[0] == 'edit'){
+				$group->appendChild(new XMLElement('p', __('Leave password fields blank to keep the current password'), array('class' => 'help')));
+			}
 
-			if($this->_Parent->Author->isDeveloper()) {
+			if(Administration::instance()->Author->isDeveloper()) {
 				$label = Widget::Label();
 				$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
 				if($author->get('auth_token_active') == 'yes') $input->setAttribute('checked', 'checked');
@@ -373,7 +377,7 @@
 
 			if(!$author_id = $this->_context[1]) redirect(URL . '/symphony/system/authors/');
 
-			$isOwner = ($author_id == $this->_Parent->Author->get('id'));
+			$isOwner = ($author_id == Administration::instance()->Author->get('id'));
 
 			if(@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
 
@@ -383,15 +387,27 @@
 
 				$authenticated = false;
 				if($fields['email'] != $this->_Author->get('email')) $changing_email = true;
-				if(trim($fields['old-password']) != '' && md5(trim($fields['old-password'])) == $this->_Author->get('password')) {
+				
+				// Check the old password was correct
+				if(isset($fields['old-password']) && strlen(trim($fields['old-password'])) > 0 && md5(trim($fields['old-password'])) == $this->_Author->get('password')) {
 					$authenticated = true;
+				}
+				
+				// Developers don't need to specify the old password, unless it's their own account
+				elseif(Administration::instance()->Author->isDeveloper() && $isOwner === false){
+					$authenticated = true;					
 				}
 
 				$this->_Author->set('id', $author_id);
-				if ($this->_Author->isPrimaryAccount() || ($isOwner && $this->_Parent->Author->isDeveloper()))
+				
+				if ($this->_Author->isPrimaryAccount() || ($isOwner && Administration::instance()->Author->isDeveloper())){
 					$this->_Author->set('user_type', 'developer'); // Primary accounts are always developer, Developers can't lower their level
-				elseif ($this->_Parent->Author->isDeveloper() && isset($fields['user_type']))
+				}
+				
+				elseif (Administration::instance()->Author->isDeveloper() && isset($fields['user_type'])){
 					$this->_Author->set('user_type', $fields['user_type']); // Only developer can change user type
+				}
+					
 				$this->_Author->set('email', $fields['email']);
 				$this->_Author->set('username', $fields['username']);
 				$this->_Author->set('first_name', General::sanitize($fields['first_name']));
