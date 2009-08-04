@@ -21,12 +21,16 @@ Version `2.0.5` introduced multiple includable elements, in the Data Source Edit
 
 ### Via Git
 
-1. Use the following command to get Extensions up to date:
+1. Pull from the master branch at `git://github.com/symphony/symphony-2.git`
+
+2. Use the following command to get Extensions up to date:
 
 	git submodule init
 	git submodule update
 
-2. Follow normal updating procedure below from step 2.
+3. If updating from a version less than `2.0.5`, enable [Debug DevKit](http://github.com/symphony/debugdevkit/tree/master) and [Profile DevKit](http://github.com/symphony/profiledevkit/tree/master) extensions.
+
+4. Follow normal updating procedure below from step 2.
 
 ### Via the old fashioned way
 
@@ -36,9 +40,14 @@ Follow the instructions below if you are updating from Symphony version 2.0 (non
 
 1. Upload `/symphony`, `index.php` & `update.php`, replacing what is already on your server.
 
-2. Go to `http://yoursite.com/update.php` to complete the update process.
+2. If you are updating from a version < 2.0.5, download and install the Debug DevKit and Profile DevKit:
 
-3. Celebrate by shaving your friend's head for charity!
+	- [Debug DevKit](http://github.com/symphony/debugdevkit/tree/master)
+	- [Profile DevKit](http://github.com/symphony/profiledevkit/tree/master)
+
+3. Go to `http://yoursite.com/update.php` to complete the update process.
+
+4. Celebrate by shaving your friend's head for charity!
 
 
 ## INSTALLING
