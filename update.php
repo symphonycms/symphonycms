@@ -171,6 +171,11 @@
 
 				@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 				
+				// No longer need symphony/.htaccess
+				if(file_exists(DOCROOT . '/symphony/.htaccess') && is_writable(DOCROOT . '/symphony/.htaccess')){
+					unlink(DOCROOT . '/symphony/.htaccess');
+				}
+				
 			}
 			
 			
@@ -179,8 +184,13 @@
 				<h2>Update Complete</h2>
 				
 				<p><strong>Post-Installation Steps: </strong></p>
-				<br />				
+				<br />	
 				<ol>
+				'.
+				
+				(file_exists(DOCROOT . '/symphony/.htaccess') ? '<li><strong>WARNING:</strong> The updater tried, but failed, to remove the file <code>symphony/.htaccess</code>. It is vitally important that this file be removed, otherwise the administration area will not function. If you have customisations to this file, you should be able to just remove the Symphony related block, but there are no guarantees.</li>' : NULL)
+				
+				.'
 					<li>Version <code>2.0.5</code> introduced multiple includable elements, in the Data Source Editor, for a single field. After updating from <code>2.0.5</code> or lower, the DS editor will seem to "forget" about any <code>Textarea</code> fields selected when you are editing existing Data Sources. After updating, you must ensure you re-select them before saving. <strong>Note, this will only effect Data Sources that you edit and were created prior to <code>2.0.5</code></strong>. Until that point, the field will still be included in any front-end <code>XML</code></li>
 
 					<li>Since <code>2.0.2</code>, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></li>
