@@ -1,19 +1,23 @@
 # Symphony 2 #
 
 - Version: 2.0.6
-- Date: -
+- Date: 4th August 2009
 - Github Repository: <http://github.com/symphony/symphony-2/tree/master>
 
 
 ## Synopsis
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core 
-technologies. This repository represents version 2.0.6 and is **not** considered stable.
+technologies. This repository represents version 2.0.6 and is considered stable.
 
 Visit the forum at <http://symphony-cms.com/community/>
 
 
 ## Updating
+
+### Important Information
+
+Version `2.0.5` introduced multiple includable elements, in the Data Source Editor, for a single field. After updating from `2.0.5` or lower, the DS editor will seem to "forget" about any `Textarea` fields selected when you are editing existing Data Sources. After updating, you must ensure you re-select them before saving. Note, this will only effect Data Sources that you edit and were created prior to `2.0.5`. Until that point, the field will still be included in any front-end XML
 
 ### Via Git
 
