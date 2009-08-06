@@ -275,17 +275,25 @@
 				$string = "$string-01-01 to $string-12-31";
 			}	
 			
-			elseif(preg_match('/^(earlier|later) than (.*)$/i', $string, $match)){
+			## Human friendly terms
+			elseif(preg_match('/^(equal to or )?(earlier|later) than (.*)$/i', $string, $match)){
 										
-				$string = $match[2];
+				$string = $match[3];
 				
 				if(!self::__isValidDateString($string)) return self::ERROR;	
 				
 				$time = strtotime($string);
-
-				switch($match[1]){
-					case 'later': $string = DateTimeObj::get('Y-m-d H:i:s', $time+1) . ' to 2038-01-01'; break;
-					case 'earlier': $string = '1970-01-03 to ' . DateTimeObj::get('Y-m-d H:i:s', $time-1); break;
+				if($match[1] == "equal to or "){
+					$later = DateTimeObj::get('Y-m-d H:i:s', $time);
+					$earlier = $later;				
+				}
+				else {
+					$later = DateTimeObj::get('Y-m-d H:i:s', $time+1);
+					$earlier = DateTimeObj::get('Y-m-d H:i:s', $time-1);
+				}
+				switch($match[2]){
+					case 'later': $string = $later . ' to 2038-01-01'; break;
+					case 'earlier': $string = '1970-01-03 to ' . $earlier; break;
 				}
 
 			}
