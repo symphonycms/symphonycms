@@ -129,6 +129,16 @@
 			$filename = $this->_context[1] . '.xsl';
 			$file_abs = PAGES . '/' . $filename;
 			
+			$pagedata = $this->_Parent->Database->fetchRow(0, "
+					SELECT
+						p.*
+					FROM
+						`tbl_pages` AS p
+					WHERE
+						p.handle = '{$this->_context[1]}'
+					LIMIT 1
+				");
+			
 			if (!@is_file($file_abs)) redirect(URL . '/symphony/blueprints/pages/');
 			
 			$fields['body'] = @file_get_contents($file_abs);
@@ -160,7 +170,7 @@
 					$filename
 				)
 			));
-			$this->appendSubheading(($filename ? $filename : __('Untitled')));
+			$this->appendSubheading(__($filename ? $filename : __('Untitled')), Widget::Anchor(__('Edit Configuration'), URL . '/symphony/blueprints/pages/edit/' . $pagedata['id'], __('Edit Page Confguration'), 'button'));
 			
 			if (!empty($_POST)) $fields = $_POST['fields'];
 			
@@ -328,7 +338,12 @@
 					$title
 				)
 			));
-			$this->appendSubheading(($title ? $title : __('Untitled')));
+			if ($existing) {
+				$this->appendSubheading(__($title ? $title : __('Untitled')), Widget::Anchor(__('Edit Template'), URL . '/symphony/blueprints/pages/template/' . $fields['handle'], __('Edit Page Template'), 'button'));
+			}
+			else {
+				$this->appendSubheading(($title ? $title : __('Untitled')));
+			}
 			
 		// Title --------------------------------------------------------------
 			
