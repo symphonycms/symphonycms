@@ -276,7 +276,7 @@
 			
 			$ol = new XMLElement('ol');
 
-			$pages = $this->_Parent->Database->fetch("SELECT * FROM `tbl_pages` ORDER BY `title` ASC");
+			$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` ORDER BY `title` ASC");
 				
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tags');
@@ -999,7 +999,7 @@
 				$dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\r\n){2,}/', '/(\t+[\r\n]){2,}/'), '', $dsShell);	
 
 				##Write the file
-				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, $this->_Parent->Configuration->get('write_mode', 'file')))
+				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file')))
 					$this->pageAlert(__('Failed to write Data source to <code>%s</code>. Please check permissions.', array(DATASOURCES)), Alert::ERROR);
 
 				##Write Successful, add record to the database
@@ -1012,14 +1012,14 @@
 						## Update pages that use this DS
 				
 						$sql = "SELECT * FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]".$existing_handle."[[:>:]]' ";
-						$pages = $this->_Parent->Database->fetch($sql);
+						$pages = Symphony::Database()->fetch($sql);
 
 						if(is_array($pages) && !empty($pages)){
 							foreach($pages as $page){
 								
 								$page['data_sources'] = preg_replace('/\b'.$existing_handle.'\b/i', $classname, $page['data_sources']);
 								
-								$this->_Parent->Database->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
+								Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
 							}
 						}
 					}

@@ -101,7 +101,7 @@
 		}
 		
 		function fetchStatus($name){
-			if(!$status = $this->_Parent->Database->fetchVar('status', 0, "SELECT `status` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1")) return EXTENSION_NOT_INSTALLED;
+			if(!$status = Symphony::Database()->fetchVar('status', 0, "SELECT `status` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1")) return EXTENSION_NOT_INSTALLED;
 			
 			if($status == 'enabled') return EXTENSION_ENABLED;
 			
@@ -116,12 +116,12 @@
 
 			if(!@file_exists($path)) return false;
 			
-			$delegates = $this->_Parent->Database->fetchCol('id', "SELECT tbl_extensions_delegates.`id` FROM `tbl_extensions_delegates` 
+			$delegates = Symphony::Database()->fetchCol('id', "SELECT tbl_extensions_delegates.`id` FROM `tbl_extensions_delegates` 
 											 LEFT JOIN `tbl_extensions` ON (`tbl_extensions`.id = `tbl_extensions_delegates`.extension_id) 
 											 WHERE `tbl_extensions`.name = '$name'");
-			$this->_Parent->Database->delete('tbl_extensions_delegates', " `id` IN ('".@implode("', '", $delegates)."') ");
+			Symphony::Database()->delete('tbl_extensions_delegates', " `id` IN ('".@implode("', '", $delegates)."') ");
 											
-			if(!$delegates_only) $this->_Parent->Database->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name'");
+			if(!$delegates_only) Symphony::Database()->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name'");
 
 			## Remove the unused DB records
 			$this->__cleanupDatabase();
@@ -141,18 +141,18 @@
 			$subscribed = call_user_func(array(&$classname, "getSubscribedDelegates"));
 			
 			if($existing_id = $this->fetchExtensionID($name))
-				$this->_Parent->Database->query("DELETE FROM `tbl_extensions_delegates` WHERE `tbl_extensions_delegates`.extension_id = $existing_id");
+				Symphony::Database()->query("DELETE FROM `tbl_extensions_delegates` WHERE `tbl_extensions_delegates`.extension_id = $existing_id");
 
-			$this->_Parent->Database->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name'");				
+			Symphony::Database()->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name'");				
 
 			$info = $this->about($name);
 			
 			$sql = "INSERT INTO `tbl_extensions` 
 					VALUES (NULL, '$name', '".($enable ? 'enabled' : 'disabled')."', ".floatval($info['version']).")";
 			
-			$this->_Parent->Database->query($sql);	
+			Symphony::Database()->query($sql);	
 			
-			$id = $this->_Parent->Database->getInsertID();
+			$id = Symphony::Database()->getInsertID();
 						
 			if(is_array($subscribed) && !empty($subscribed)){
 				foreach($subscribed as $s){
@@ -160,7 +160,7 @@
 					$sql = "INSERT INTO `tbl_extensions_delegates` 
 							VALUES (NULL, '$id', '".$s['page']."', '".$s['delegate']."', '".$s['callback']."')";
 							
-					$this->_Parent->Database->query($sql);
+					Symphony::Database()->query($sql);
 					
 				}
 			}
@@ -172,7 +172,7 @@
 		}
 
 		function listInstalledHandles(){
-			return $this->_Parent->Database->fetchCol('name', "SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'");
+			return Symphony::Database()->fetchCol('name', "SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'");
 		}
 
         ## Will return a list of all extensions and their about information
@@ -195,9 +195,9 @@
         
         function notifyMembers($delegate, $page, $context=array()){
 
-	        if($this->_Parent->Configuration->get('allow_page_subscription', 'symphony') != '1') return;
+	        if(Symphony::Configuration()->get('allow_page_subscription', 'symphony') != '1') return;
 	        
-			$services = $this->_Parent->Database->fetch("SELECT t1.*, t2.callback FROM `tbl_extensions` as t1 
+			$services = Symphony::Database()->fetch("SELECT t1.*, t2.callback FROM `tbl_extensions` as t1 
 											LEFT JOIN `tbl_extensions_delegates` as t2 ON t1.id = t2.extension_id
 											WHERE (t2.page = '$page' OR t2.page = '*')
 											AND t2.delegate = '$delegate'
@@ -271,18 +271,18 @@
 		}
 		
 		function __requiresInstallation($name){	
-			$id = $this->_Parent->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
+			$id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
 			return (is_numeric($id) ? false : true);
 		}
 		
 		
 		function fetchInstalledVersion($name){
-			$version = $this->_Parent->Database->fetchVar('version', 0, "SELECT `version` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");		
+			$version = Symphony::Database()->fetchVar('version', 0, "SELECT `version` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");		
 			return ($version ? floatval($version) : NULL);
 		}
 		
 		function fetchExtensionID($name){
-			return $this->_Parent->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
+			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
 		}
 		
 		function fetchCustomMenu($name){
@@ -334,7 +334,7 @@
 		function __cleanupDatabase(){
 			
 			## Grab any extensions sitting in the database
-			$rows = $this->_Parent->Database->fetch("SELECT * FROM `tbl_extensions`");
+			$rows = Symphony::Database()->fetch("SELECT * FROM `tbl_extensions`");
 			
 			## Iterate over each row
 			if(is_array($rows) && !empty($rows)){
@@ -348,18 +348,18 @@
 					if(!@is_dir($path)){
 
 						if($existing_id = $this->fetchExtensionID($name))
-							$this->_Parent->Database->query("DELETE FROM `tbl_extensions_delegates` WHERE `tbl_extensions_delegates`.extension_id = $existing_id");
+							Symphony::Database()->query("DELETE FROM `tbl_extensions_delegates` WHERE `tbl_extensions_delegates`.extension_id = $existing_id");
 
-						$this->_Parent->Database->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
+						Symphony::Database()->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
 		
 					}
 				}
 			}
 			
 			## Remove old delegate information
-			$disabled = $this->_Parent->Database->fetchCol('id', "SELECT `id` FROM `tbl_extensions` WHERE `status` = 'disabled'");
+			$disabled = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_extensions` WHERE `status` = 'disabled'");
 			$sql = "DELETE FROM `tbl_extensions_delegates` WHERE `extension_id` IN ('".@implode("', '", $disabled)."')";
-			$this->_Parent->Database->query($sql);			
+			Symphony::Database()->query($sql);			
 			
 		}
     

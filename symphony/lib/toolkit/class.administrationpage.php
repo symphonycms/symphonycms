@@ -66,7 +66,7 @@
 			## Build the form
 			$this->Form = Widget::Form($this->_Parent->getCurrentPageURL(), 'post');
 			$h1 = new XMLElement('h1');
-			$h1->appendChild(Widget::Anchor($this->_Parent->Configuration->get('sitename', 'general'), rtrim(URL, '/') . '/'));
+			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
 			$this->Form->appendChild($h1);
 			
 			$this->appendNavigation();
@@ -250,7 +250,7 @@
 										
 										## Make sure preferences menu only shows if extensions are subscribed to it
 										if($c['name'] == __('Preferences') && $n['name'] == __('System')){
-											$extensions = $this->_Parent->Database->fetch("
+											$extensions = Symphony::Database()->fetch("
 													SELECT * 
 													FROM `tbl_extensions_delegates` 
 													WHERE `delegate` = 'AddCustomPreferenceFieldsets'"
@@ -389,7 +389,7 @@
 				}
 			}
 			
-			$sections = $this->_Parent->Database->fetch("SELECT * FROM `tbl_sections` ORDER BY `sortorder` ASC");
+			$sections = Symphony::Database()->fetch("SELECT * FROM `tbl_sections` ORDER BY `sortorder` ASC");
 
 			if(is_array($sections) && !empty($sections)){
 				foreach($sections as $s){
@@ -562,7 +562,7 @@
 			
 			$system_types = array('index', 'XML', 'admin', '404', '403');
 			
-			if(!$types = $this->_Parent->Database->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` ORDER BY `type` ASC")) return $system_types;
+			if(!$types = Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` ORDER BY `type` ASC")) return $system_types;
 			
 			return (is_array($types) && !empty($types) ? General::array_remove_duplicates(array_merge($system_types, $types)) : $system_types);
 

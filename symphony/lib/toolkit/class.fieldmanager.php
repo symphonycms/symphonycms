@@ -80,16 +80,16 @@
 		}
 		
 		function fetchFieldTypeFromID($id){
-			return $this->_Parent->Database->fetchVar('type', 0, "SELECT `type` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
+			return Symphony::Database()->fetchVar('type', 0, "SELECT `type` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
 		}
 		
 		## section_id allows for disambiguation
 		function fetchFieldIDFromElementName($element_name, $section_id=NULL){
-			return $this->_Parent->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `element_name` = '$element_name' ".($section_id ? " AND `parent_section` = '$section_id' " : '')." LIMIT 1");
+			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `element_name` = '$element_name' ".($section_id ? " AND `parent_section` = '$section_id' " : '')." LIMIT 1");
 		}
 		
 		//function fetchTypeIDFromHandle($handle){
-		//	return $this->_Parent->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields_types` WHERE `handle` = '$handle' LIMIT 1");
+		//	return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields_types` WHERE `handle` = '$handle' LIMIT 1");
 		//}
 		
 		function fetchTypes(){
@@ -164,12 +164,12 @@
 		function add($fields){
 			
 			if(!isset($fields['sortorder'])){
-		        $next = $this->_Parent->Database->fetchVar("next", 0, 'SELECT MAX(`sortorder`) + 1 AS `next` FROM tbl_fields LIMIT 1');
+		        $next = Symphony::Database()->fetchVar("next", 0, 'SELECT MAX(`sortorder`) + 1 AS `next` FROM tbl_fields LIMIT 1');
 				$fields['sortorder'] = ($next ? $next : '1');
 			}
 			
-			if(!$this->_Parent->Database->insert($fields, 'tbl_fields')) return false;
-			$field_id = $this->_Parent->Database->getInsertID();
+			if(!Symphony::Database()->insert($fields, 'tbl_fields')) return false;
+			$field_id = Symphony::Database()->getInsertID();
 	        
 			return $field_id;
 		}
@@ -179,10 +179,10 @@
 			## Clean up if we are changing types			
 			/*$existing = $this->fetch($id);
 			if($fields['type'] != $existing->handle()) {
-				$this->_Parent->Database->query("DELETE FROM `tbl_fields_".$existing->handle()."` WHERE `field_id` = '$id' LIMIT 1");	
+				Symphony::Database()->query("DELETE FROM `tbl_fields_".$existing->handle()."` WHERE `field_id` = '$id' LIMIT 1");	
 			}*/
 			
-			if(!$this->_Parent->Database->update($fields, "tbl_fields", " `id` = '$id'")) return false;		
+			if(!Symphony::Database()->update($fields, "tbl_fields", " `id` = '$id'")) return false;		
 
 			return true;			
 		}
@@ -191,11 +191,11 @@
 
 			$existing = $this->fetch($id);
 
-			$this->_Parent->Database->delete('tbl_fields', " `id` = '$id'");
-			$this->_Parent->Database->delete('tbl_fields_'.$existing->handle(), " `field_id` = '$id'");
-			$this->_Parent->Database->delete('tbl_sections_association', " `child_section_field_id` = '$id'"); 
+			Symphony::Database()->delete('tbl_fields', " `id` = '$id'");
+			Symphony::Database()->delete('tbl_fields_'.$existing->handle(), " `field_id` = '$id'");
+			Symphony::Database()->delete('tbl_sections_association', " `child_section_field_id` = '$id'"); 
 
-			$this->_Parent->Database->query('DROP TABLE `tbl_entries_data_'.$id.'`');
+			Symphony::Database()->query('DROP TABLE `tbl_entries_data_'.$id.'`');
 					
 			return true;
 		}

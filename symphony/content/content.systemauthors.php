@@ -432,7 +432,7 @@
 				
 					elseif($this->_Author->commit()){					
 						
-						$this->_Parent->Database->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' OR `author_id` = '".$author_id."' ");
+						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' OR `author_id` = '".$author_id."' ");
 						
 						if($isOwner) $this->_Parent->login($this->_Author->get('username'), $this->_Author->get('password'), true);
 

@@ -140,7 +140,7 @@
 			}
 		}
 		
-		public function insert($fields, $table, $updateOnDuplicate=false){
+		public function insert(array $fields, $table, $updateOnDuplicate=false){
 	
 		/*
 
@@ -196,6 +196,10 @@
 				$sql  = "INSERT INTO `$table` (`".implode('`, `', array_keys(current($fields))).'`) VALUES ';
 				
 				foreach($fields as $key => $array){
+					
+					// Sanity check: Make sure we dont end up with ',()' in the SQL.
+					if(!is_array($array)) continue;
+					
 					$this->cleanFields($array);
 					$rows[] = '('.implode(', ', $array).')';
 				}
@@ -208,7 +212,7 @@
 			else{
 				$this->cleanFields($fields);
 				$sql  = "INSERT INTO `$table` (`".implode('`, `', array_keys($fields)).'`) VALUES ('.implode(', ', $fields).')';
-				
+
 				if($updateOnDuplicate){
 					
 					$sql .= ' ON DUPLICATE KEY UPDATE ';

@@ -24,7 +24,7 @@
 			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();
 			else trigger_error(__('No suitable engine object found'), E_USER_ERROR);
 			
-			$this->creationDate = DateTimeObj::getGMT('c'); //$this->_engine->getDateObj();
+			$this->creationDate = DateTimeObj::getGMT('c');
 		}
 		
 		function set($field, $value){
@@ -116,8 +116,8 @@
 				$fields['creation_date'] = DateTimeObj::get('Y-m-d H:i:s');
 				$fields['creation_date_gmt'] = DateTimeObj::getGMT('Y-m-d H:i:s');
 				
-				$this->_engine->Database->insert($fields, 'tbl_entries');
-				if(!$entry_id = $this->_engine->Database->getInsertID()) return __ENTRY_FIELD_ERROR__;
+				Symphony::Database()->insert($fields, 'tbl_entries');
+				if(!$entry_id = Symphony::Database()->getInsertID()) return __ENTRY_FIELD_ERROR__;
 				$this->set('id', $entry_id);
 			}			
 			
@@ -148,7 +148,7 @@
 
 			// Failed to create entry, cleanup
 			if($status != __ENTRY_OK__ and !is_null($entry_id)) {
-				$this->_engine->Database->delete('tbl_entries', " `id` = '$entry_id' ");
+				Symphony::Database()->delete('tbl_entries', " `id` = '$entry_id' ");
 			}			
 			
 			return $status;

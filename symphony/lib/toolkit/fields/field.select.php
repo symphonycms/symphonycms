@@ -68,11 +68,11 @@
 		}
 		
 		function fetchAssociatedEntryCount($value){
-			return $this->_engine->Database->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".$this->_engine->Database->cleanValue($value)."'");
+			return Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
 		}
 		
 		function fetchAssociatedEntryIDs($value){
-			return $this->_engine->Database->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".$this->_engine->Database->cleanValue($value)."'");
+			return Symphony::Database()->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
 		}	
 			
 		public function getToggleStates() {
@@ -357,7 +357,7 @@
 		
 		function createTable(){
 			
-			return $this->_engine->Database->query(
+			return Symphony::Database()->query(
 			
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,

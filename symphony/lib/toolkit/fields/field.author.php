@@ -180,8 +180,8 @@
 			$fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
 			$fields['default_to_current_user'] = ($this->get('default_to_current_user') ? $this->get('default_to_current_user') : 'no');			
 			
-			$this->_engine->Database->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");		
-			return $this->_engine->Database->insert($fields, 'tbl_fields_' . $this->handle());
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");		
+			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 					
 		}
 
@@ -229,7 +229,7 @@
 		}
 		
 		public function createTable(){
-			return $this->_engine->Database->query(
+			return Symphony::Database()->query(
 			
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') ."` (
 				  `id` int(11) unsigned NOT NULL auto_increment,

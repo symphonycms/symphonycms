@@ -107,7 +107,7 @@
 			$values = array();
 			
 			foreach($this->get('pre_populate_source') as $item){
-				$result = $this->_engine->Database->fetchCol('value', sprintf($sql, ($item == 'existing' ? $this->get('id') : $item)));
+				$result = Symphony::Database()->fetchCol('value', sprintf($sql, ($item == 'existing' ? $this->get('id') : $item)));
 				if(!is_array($result) || empty($result)) continue;
 				
 				$values = array_merge($values, $result);
@@ -174,9 +174,9 @@
 			$fields['pre_populate_source'] = (is_null($this->get('pre_populate_source')) ? NULL : implode(',', $this->get('pre_populate_source')));
 			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
 
-			$this->_engine->Database->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 				
-			return $this->_engine->Database->insert($fields, 'tbl_fields_' . $this->handle());
+			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 					
 		}
 		
@@ -228,7 +228,7 @@
 
 		function createTable(){
 			
-			return $this->_engine->Database->query(
+			return Symphony::Database()->query(
 			
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,

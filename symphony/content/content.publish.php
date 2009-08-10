@@ -69,7 +69,7 @@
 
 					$filter_value = rawurldecode($filter_value);
 
-					$filter = $this->_Parent->Database->fetchVar('id', 0, "SELECT `f`.`id` 
+					$filter = Symphony::Database()->fetchVar('id', 0, "SELECT `f`.`id` 
 																			   FROM `tbl_fields` AS `f`, `tbl_sections` AS `s` 
 																			   WHERE `s`.`id` = `f`.`parent_section` 
 																			   AND f.`element_name` = '$field_name' 
@@ -122,7 +122,7 @@
 				$entryManager->setFetchSortingDirection('DESC');
 			}
 			
-			$entries = $entryManager->fetchByPage($current_page, $section_id, $this->_Parent->Configuration->get('pagination_maximum_rows', 'symphony'), $where, $joins);
+			$entries = $entryManager->fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins);
 			
 			$aTableHead = array();
 			
@@ -416,7 +416,7 @@
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
 			$this->appendSubheading(__('Untitled'));
-			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', $this->_Parent->Configuration->get('max_upload_size', 'admin'), 'hidden'));
+			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 			
 			$entryManager = new EntryManager($this->_Parent);
 			
@@ -664,7 +664,7 @@
 			}
 
 			### Determine the page title
-			$field_id = $this->_Parent->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
+			$field_id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
 			$field = $entryManager->fieldManager->fetch($field_id);
 
 			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')), NULL, $entry_id)));
@@ -677,7 +677,7 @@
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), $section->get('name'), $title)));
 			$this->appendSubheading($title);
-			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', $this->_Parent->Configuration->get('max_upload_size', 'admin'), 'hidden'));
+			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 			
 			###
 

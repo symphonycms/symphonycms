@@ -84,6 +84,15 @@
 			return ($this->ExtensionManager instanceof ExtensionManager);
 		}
 		
+		// The following 2 functions are stupid and I hate them
+		public static function Configuration(){
+			if(class_exists('Frontend')){
+				return Frontend::instance()->Configuration;
+			}
+			
+			return Administration::instance()->Configuration;
+		}
+				
 		public static function Database(){
 			if(class_exists('Frontend')){
 				return Frontend::instance()->Database;

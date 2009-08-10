@@ -15,9 +15,9 @@
 		}
 		
 		function loadAuthor($id){
-			if(!is_object($this->_Parent->Database)) return false;
+			if(!is_object(Symphony::Database())) return false;
 			
-			if(!$row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_authors` WHERE `id` = '$id' LIMIT 1")) return false;
+			if(!$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_authors` WHERE `id` = '$id' LIMIT 1")) return false;
 			
 			foreach($row as $key => $val)
 				$this->set($key, $val);
@@ -26,7 +26,7 @@
 		}
 		
 		function loadAuthorFromUsername($username){
-			if(!$row = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_authors` WHERE `username` = '$username' LIMIT 1")) return false;
+			if(!$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_authors` WHERE `username` = '$username' LIMIT 1")) return false;
 			
 			foreach($row as $key => $val)
 				$this->set($key, $val);
@@ -115,12 +115,12 @@
 			
 			if($this->get('username') == '') $errors['username'] = __('Username is required');
 			elseif($this->get('id')){			
-				$current_username = $this->_Parent->Database->fetchVar('username', 0, "SELECT `username` FROM `tbl_authors` WHERE `id` = " . $this->get('id'));	
-				if($current_username != $this->get('username') && $this->_Parent->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '".$this->get('username')."' LIMIT 1"))
+				$current_username = Symphony::Database()->fetchVar('username', 0, "SELECT `username` FROM `tbl_authors` WHERE `id` = " . $this->get('id'));	
+				if($current_username != $this->get('username') && Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '".$this->get('username')."' LIMIT 1"))
 					$errors['username'] = __('Username is already taken');			
 			}
 				
-			elseif($this->_Parent->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '".$this->get('username')."' LIMIT 1"))
+			elseif(Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '".$this->get('username')."' LIMIT 1"))
 				$errors['username'] = __('Username is already taken');
 			
 			if($this->get('password') == '') $errors['password'] = __('Password is required');

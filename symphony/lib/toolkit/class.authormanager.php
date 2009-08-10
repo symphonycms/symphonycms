@@ -7,7 +7,7 @@
 		
 		function __construct(&$parent){
 			$this->_Parent =& $parent;
-			$this->Database = $this->_Parent->Database;
+			$this->Database = Symphony::Database();
 		}
 		
 		function &create(){	
@@ -17,15 +17,15 @@
 		
 		function add($fields){
 			
-			if(!$this->_Parent->Database->insert($fields, 'tbl_authors')) return false;
-			$author_id = $this->_Parent->Database->getInsertID();
+			if(!Symphony::Database()->insert($fields, 'tbl_authors')) return false;
+			$author_id = Symphony::Database()->getInsertID();
 			
 			return $author_id;
 		}
 
 		function edit($id, $fields){
 			
-			if(!$this->_Parent->Database->update($fields, 'tbl_authors', " `id` = '$id'")) return false;
+			if(!Symphony::Database()->update($fields, 'tbl_authors', " `id` = '$id'")) return false;
 			
 			return true;			
 		}
@@ -33,12 +33,12 @@
 		function delete($id){		
 
 			## TODO: Delete author's entries
-			//$entries = $this->_Parent->Database->fetchCol('id', "SELECT `id` FROM `tbl_entries` WHERE `author_id` = '".$id."'");  
+			//$entries = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_entries` WHERE `author_id` = '".$id."'");  
 
-			$this->_Parent->Database->delete('tbl_authors', " `id` = '$id'");
+			Symphony::Database()->delete('tbl_authors', " `id` = '$id'");
 			
-			//$this->_Parent->Database->delete('tbl_entries', " `author_id` = '$id'");
-			//$this->_Parent->Database->delete('tbl_entries_data', " `entry_id` IN ('".@implode("', '", $entries)."')");			
+			//Symphony::Database()->delete('tbl_entries', " `author_id` = '$id'");
+			//Symphony::Database()->delete('tbl_entries_data', " `entry_id` IN ('".@implode("', '", $entries)."')");			
 				
 			return true;
 		}
@@ -51,7 +51,7 @@
 				 	ORDER BY ".($sortby ? $sortby : 'tbl_authors.id')." $sortdirection " .
 				 	($limit ? "LIMIT $limit ": '') . ($start && $limit ? ', ' . $start : '');
 
-			$rec = $this->_Parent->Database->fetch($sql);
+			$rec = Symphony::Database()->fetch($sql);
 
 			if(!is_array($rec) || empty($rec)) return NULL;
 			
@@ -81,7 +81,7 @@
 			
 			if(empty($id)) return;
 			
-			$rows = $this->_Parent->Database->fetch("SELECT * FROM `tbl_authors` 
+			$rows = Symphony::Database()->fetch("SELECT * FROM `tbl_authors` 
 													 WHERE `id` IN ('" . @implode("', '", $id). "') 
 													 ORDER BY `".($sortby ? $sortby : 'id')."` $sortdirection 
 													 ".($limit ? "LIMIT $limit ": '') . ($start && $limit ? ', ' . $start : ''));
@@ -104,7 +104,7 @@
 		}
 		
 		function fetchByUsername($username){
-			$rec = $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_authors` WHERE `username` = '$username' LIMIT 1");
+			$rec = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_authors` WHERE `username` = '$username' LIMIT 1");
 			
 			if(!is_array($rec) || empty($rec)) return NULL;
 			
@@ -117,11 +117,11 @@
 		}
 		
 		function deactivateAuthToken($author_id){
-			return $this->_Parent->Database->query("UPDATE `tbl_authors` SET `auth_token_active` = 'no' WHERE `id` = '$author_id' LIMIT 1");
+			return Symphony::Database()->query("UPDATE `tbl_authors` SET `auth_token_active` = 'no' WHERE `id` = '$author_id' LIMIT 1");
 		}
 		
 		function activateAuthToken($author_id){
-			return $this->_Parent->Database->query("UPDATE `tbl_authors` SET `auth_token_active` = 'yes' WHERE `id` = '$author_id' LIMIT 1");
+			return Symphony::Database()->query("UPDATE `tbl_authors` SET `auth_token_active` = 'yes' WHERE `id` = '$author_id' LIMIT 1");
 		}
 	}
 

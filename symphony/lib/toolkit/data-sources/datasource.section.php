@@ -198,7 +198,7 @@
 					$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts();
 					if(is_array($associated_entry_counts) && !empty($associated_entry_counts)){
 						foreach($associated_entry_counts as $section_id => $count){
-							$section_handle = $this->_Parent->Database->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '$section_id' LIMIT 1");
+							$section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '$section_id' LIMIT 1");
 							$xEntry->setAttribute($section_handle, ''.$count.'');
 						}
 					}

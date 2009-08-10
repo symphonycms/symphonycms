@@ -154,8 +154,8 @@
 			$fields['destination'] = $this->get('destination');
 			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
 			
-			$this->_engine->Database->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");		
-			return $this->_engine->Database->insert($fields, 'tbl_fields_' . $this->handle());
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");		
+			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 					
 		}		
 		
@@ -303,7 +303,7 @@
 						break;
 						
 					case UPLOAD_ERR_FORM_SIZE:
-						$message = __('File chosen in "%1$s" exceeds the maximum allowed upload size of %2$s, specified by Symphony.', array($this->get('label'), General::formatFilesize($this->_engine->Configuration->get('max_upload_size', 'admin'))));
+						$message = __('File chosen in "%1$s" exceeds the maximum allowed upload size of %2$s, specified by Symphony.', array($this->get('label'), General::formatFilesize(Symphony::Configuration()->get('max_upload_size', 'admin'))));
 						break;
 
 					case UPLOAD_ERR_PARTIAL:
@@ -390,7 +390,7 @@
 			$abs_path = DOCROOT . '/' . trim($this->get('destination'), '/');
 			$rel_path = str_replace('/workspace', '', $this->get('destination'));
 
-			if(!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], $this->_engine->Configuration->get('write_mode', 'file'))){
+			if(!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], Symphony::Configuration()->get('write_mode', 'file'))){
 				
 				$message = __('There was an error while trying to upload the file <code>%1$s</code> to the target directory <code>%2$s</code>.', array($data['name'], 'workspace/'.ltrim($rel_path, '/')));
 				$status = self::__ERROR_CUSTOM__;
@@ -461,7 +461,7 @@
 
 		function createTable(){
 			
-			return $this->_engine->Database->query(
+			return Symphony::Database()->query(
 			
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,

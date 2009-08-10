@@ -52,7 +52,7 @@
 
 			if(!is_array($value) && trim($value) == '') continue;
 			
-			$ret = __processAuthorFilter($field, $value, $this->_Parent->Database);
+			$ret = __processAuthorFilter($field, $value, Symphony::Database());
 		
 			if(empty($ret)){
 				$author_ids = array();
@@ -104,7 +104,7 @@
 	
 				if($author->isTokenActive()) $fields['author-token'] = new XMLElement('author-token', $author->createAuthToken());
 	
-				if($section = $this->_Parent->Database->fetchRow(0, "SELECT `id`, `handle`, `name` FROM `tbl_sections` WHERE `id` = '".$author->get('default_section')."' LIMIT 1")){
+				if($section = Symphony::Database()->fetchRow(0, "SELECT `id`, `handle`, `name` FROM `tbl_sections` WHERE `id` = '".$author->get('default_section')."' LIMIT 1")){
 					$default_section = new XMLElement('default-section', $section['name']);
 					$default_section->setAttributeArray(array('id' => $section['id'], 'handle' => $section['handle']));
 					$fields['default-section'] = $default_section;

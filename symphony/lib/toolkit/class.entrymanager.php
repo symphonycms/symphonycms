@@ -72,7 +72,7 @@
 			}
 			
 			$entry_list = @implode("', '", $entries);
-			$this->_Parent->Database->delete('tbl_entries', " `id` IN ('$entry_list') ");			
+			Symphony::Database()->delete('tbl_entries', " `id` IN ('$entry_list') ");			
 			
 			return true;
 		}
@@ -81,14 +81,14 @@
 			
 			$fields = $entry->get();
 			
-			$this->_Parent->Database->insert($fields, 'tbl_entries');
+			Symphony::Database()->insert($fields, 'tbl_entries');
 			
-			if(!$entry_id = $this->_Parent->Database->getInsertID()) return false;
+			if(!$entry_id = Symphony::Database()->getInsertID()) return false;
 
 			foreach($entry->getData() as $field_id => $field){
 				if(!is_array($field) || empty($field)) continue;
 				
-				$this->_Parent->Database->delete('tbl_entries_data_' . $field_id, " `entry_id` = '$entry_id'");
+				Symphony::Database()->delete('tbl_entries_data_' . $field_id, " `entry_id` = '$entry_id'");
 				
 				$data = array(
 					'entry_id' => $entry_id
@@ -109,7 +109,7 @@
 				
 				for($ii = 0; $ii < count($fields); $ii++) $fields[$ii] = array_merge($data, $fields[$ii]);
 
-				$this->_Parent->Database->insert($fields, 'tbl_entries_data_' . $field_id);				
+				Symphony::Database()->insert($fields, 'tbl_entries_data_' . $field_id);				
 				
 			}	
 			
@@ -125,11 +125,11 @@
 				'section_id' => $entry->get('section_id'),
 			);
 			
-			$this->_Parent->Database->update($fields, 'tbl_entries', " `id` = '".$entry->get('id')."' LIMIT 1");*/
+			Symphony::Database()->update($fields, 'tbl_entries', " `id` = '".$entry->get('id')."' LIMIT 1");*/
 
 			foreach($entry->getData() as $field_id => $field){
 					
-				$this->_Parent->Database->delete('tbl_entries_data_' . $field_id, " `entry_id` = '".$entry->get('id')."'");
+				Symphony::Database()->delete('tbl_entries_data_' . $field_id, " `entry_id` = '".$entry->get('id')."'");
 				
 				if(!is_array($field) || empty($field)) continue;
 				
@@ -152,7 +152,7 @@
 				
 				for($ii = 0; $ii < count($fields); $ii++) $fields[$ii] = array_merge($data, $fields[$ii]);
 
-				$this->_Parent->Database->insert($fields, 'tbl_entries_data_' . $field_id);
+				Symphony::Database()->insert($fields, 'tbl_entries_data_' . $field_id);
 
 			}
 
@@ -224,7 +224,7 @@
 				$where
 			";
 
-			return $this->_Parent->Database->fetchVar('count', 0, $sql);
+			return Symphony::Database()->fetchVar('count', 0, $sql);
 
 		}
 		
