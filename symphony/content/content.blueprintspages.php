@@ -129,6 +129,19 @@
 			$filename = $this->_context[1] . '.xsl';
 			$file_abs = PAGES . '/' . $filename;
 			
+			$is_child = strpos($this->_context[1],'_');
+			$pagename = ($is_child != false ? substr($this->_context[1], $is_child + 1) : $this->_context[1]);
+
+			$pagedata = $this->_Parent->Database->fetchRow(0, "
+					SELECT
+						p.*
+					FROM
+						`tbl_pages` AS p
+					WHERE
+						p.handle = '{$pagename}'
+					LIMIT 1
+				");
+			
 			if (!@is_file($file_abs)) redirect(URL . '/symphony/blueprints/pages/');
 			
 			$fields['body'] = @file_get_contents($file_abs);
@@ -160,7 +173,7 @@
 					$filename
 				)
 			));
-			$this->appendSubheading(($filename ? $filename : __('Untitled')));
+			$this->appendSubheading(__($filename ? $filename : __('Untitled')), Widget::Anchor(__('Edit Configuration'), URL . '/symphony/blueprints/pages/edit/' . $pagedata['id'], __('Edit Page Confguration'), 'button'));
 			
 			if (!empty($_POST)) $fields = $_POST['fields'];
 			
@@ -328,7 +341,25 @@
 					$title
 				)
 			));
-			$this->appendSubheading(($title ? $title : __('Untitled')));
+			$template_name = $fields['handle'];
+			if ($existing['parent']){
+				$parent_handle = $this->_Parent->Database->fetchRow(0, "
+					SELECT
+						p.handle
+					FROM
+						`tbl_pages` AS p
+					WHERE
+						p.id = '{$existing['parent']}'
+					LIMIT 1
+				");
+				$template_name = $parent_handle['handle'] . '_' . $fields['handle'];
+			}
+			if ($existing) {
+				$this->appendSubheading(__($title ? $title : __('Untitled')), Widget::Anchor(__('Edit Template'), URL . '/symphony/blueprints/pages/template/' . $template_name, __('Edit Page Template'), 'button'));
+			}
+			else {
+				$this->appendSubheading(($title ? $title : __('Untitled')));
+			}
 			
 		// Title --------------------------------------------------------------
 			
