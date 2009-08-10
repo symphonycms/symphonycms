@@ -187,7 +187,7 @@
 				'parent-path' => '/' . $page['path'],
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
-				'symphony-build' => $this->_Parent->Configuration->get('build', 'symphony'),
+				'symphony-version' => $this->_Parent->Configuration->get('version', 'symphony'),
 			);
 		
 			if(is_array($this->_env['url'])){
@@ -550,4 +550,3 @@
 			
 		}		
 	}
-	
