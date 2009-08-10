@@ -461,7 +461,7 @@
 			
 			if ((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))) {
 				$primary->appendChild(new XMLElement('p', __(
-					'It looks like you're trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>',
+					'It looks like you\'re trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>',
 					array(
 						URL . '/symphony/blueprints/sections/edit/' . $section->get('id') . '/'
 					)
