@@ -849,8 +849,8 @@
 			
 			$file_size = intval($file_size);
 			
-			if($file_size >= (1024 * 1024)) 	$file_size = number_format($file_size * (1 / (1024 * 1024)), 2) . ' mb';
-			elseif($file_size >= 1024) 			$file_size = intval($file_size * (1/1024)) . ' kb';
+			if($file_size >= (1024 * 1024)) 	$file_size = number_format($file_size * (1 / (1024 * 1024)), 2) . ' MB';
+			elseif($file_size >= 1024) 			$file_size = intval($file_size * (1/1024)) . ' KB';
 			else 								$file_size = intval($file_size) . ' bytes';
 			
 			return $file_size;
