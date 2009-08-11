@@ -17,8 +17,11 @@
 		
 	Abstract Class Symphony implements Singleton{
 		
+		
+		public static $Configuration;
+		public static $Database;
+		
 		public $Log;
-		public $Configuration;
 		public $Profiler;
 		public $Cookie;
 		public $Author;
@@ -40,18 +43,13 @@
 			}
 			
 			include(CONFIG);
-			$this->Configuration = new Configuration(true);
-			$this->Configuration->setArray($settings);
+			self::$Configuration = new Configuration(true);
+			self::$Configuration->setArray($settings);
 
-			$cookie_path = parse_url(URL, PHP_URL_PATH);
-			$cookie_path = '/' . trim($cookie_path, '/');
-			define_safe('__SYM_COOKIE_PATH__', $cookie_path);
-			define_safe('__SYM_COOKIE_PREFIX_', $this->Configuration->get('cookie_prefix', 'symphony'));
-
-			define_safe('__LANG__', ($this->Configuration->get('lang', 'symphony') ? $this->Configuration->get('lang', 'symphony') : 'en'));				
+			define_safe('__LANG__', (self::$Configuration->get('lang', 'symphony') ? self::$Configuration->get('lang', 'symphony') : 'en'));				
 			
-			define_safe('__SYM_DATE_FORMAT__', $this->Configuration->get('date_format', 'region'));
-			define_safe('__SYM_TIME_FORMAT__', $this->Configuration->get('time_format', 'region'));
+			define_safe('__SYM_DATE_FORMAT__', self::$Configuration->get('date_format', 'region'));
+			define_safe('__SYM_TIME_FORMAT__', self::$Configuration->get('time_format', 'region'));
 			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . ' ' . __SYM_TIME_FORMAT__);
 						
 			$this->initialiseLog();
@@ -59,8 +57,8 @@
 			error_reporting(E_ALL);
 			set_error_handler(array(&$this, '__errorHandler'));
 			
-			$this->Cookie =& new Cookie(__SYM_COOKIE_PREFIX_, TWO_WEEKS, __SYM_COOKIE_PATH__);
-
+			$this->initialiseCookie();
+			
 			try{
 				Lang::init(LANG . '/lang.%s.php', __LANG__);
 			}
@@ -69,14 +67,25 @@
 			}
 
 			if(!$this->initialiseDatabase()){
-				$error = $this->Database->getLastError();
+				$error = self::$Database->getLastError();
 				$this->customError(E_USER_ERROR, 'Symphony Database Error', $error['num'] . ': ' . $error['msg'], true, true, 'database-error', array('error' => $error, 'message' => __('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct. The following error was returned.')));
 			}
 			
 			if(!$this->initialiseExtensionManager()) trigger_error('Error creating Symphony extension manager.', E_USER_ERROR);
 
-			DateTimeObj::setDefaultTimezone($this->Configuration->get('timezone', 'region'));
+			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
 			
+		}
+		
+		public function initialiseCookie(){
+			
+			$cookie_path = @parse_url(URL, PHP_URL_PATH);
+			$cookie_path = '/' . trim($cookie_path, '/');
+			
+			define_safe('__SYM_COOKIE_PATH__', $cookie_path);
+			define_safe('__SYM_COOKIE_PREFIX_', self::$Configuration->get('cookie_prefix', 'symphony'));
+						
+			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX_, TWO_WEEKS, __SYM_COOKIE_PATH__);			
 		}
 		
 		public function initialiseExtensionManager(){
@@ -84,28 +93,20 @@
 			return ($this->ExtensionManager instanceof ExtensionManager);
 		}
 		
-		// The following 2 functions are stupid and I hate them
+		
 		public static function Configuration(){
-			if(class_exists('Frontend')){
-				return Frontend::instance()->Configuration;
-			}
-			
-			return Administration::instance()->Configuration;
+			return self::$Configuration;
 		}
 				
 		public static function Database(){
-			if(class_exists('Frontend')){
-				return Frontend::instance()->Database;
-			}
-			
-			return Administration::instance()->Database;
+			return self::$Database;
 		}
 
 		public function initialiseDatabase(){
 			$error = NULL;
 			
-			$driver_filename = TOOLKIT . '/class.' . $this->Configuration->get('driver', 'database') . '.php';
-			$driver = $this->Configuration->get('driver', 'database');
+			$driver_filename = TOOLKIT . '/class.' . self::$Configuration->get('driver', 'database') . '.php';
+			$driver = self::$Configuration->get('driver', 'database');
 			
 			if(!is_file($driver_filename)){
 				trigger_error("Could not find database driver '<code>$driver</code>'", E_USER_ERROR);
@@ -114,36 +115,36 @@
 			
 			require_once($driver_filename);
 			
-			$this->Database = new $driver;
+			self::$Database = new $driver;
 			
-			$details = $this->Configuration->get('database');
+			$details = self::$Configuration->get('database');
 			
-			if(!$this->Database->connect($details['host'], $details['user'], $details['password'], $details['port'])) return false;				
-			if(!$this->Database->select($details['db'])) return false;
-			if(!$this->Database->isConnected()) return false;
+			if(!self::$Database->connect($details['host'], $details['user'], $details['password'], $details['port'])) return false;				
+			if(!self::$Database->select($details['db'])) return false;
+			if(!self::$Database->isConnected()) return false;
 			
-			$this->Database->setPrefix($details['tbl_prefix']);
+			self::$Database->setPrefix($details['tbl_prefix']);
 
-			if($this->Configuration->get('runtime_character_set_alter', 'database') == '1'){
-				$this->Database->setCharacterEncoding($this->Configuration->get('character_encoding', 'database'));
-				$this->Database->setCharacterSet($this->Configuration->get('character_set', 'database'));
+			if(self::$Configuration->get('runtime_character_set_alter', 'database') == '1'){
+				self::$Database->setCharacterEncoding(self::$Configuration->get('character_encoding', 'database'));
+				self::$Database->setCharacterSet(self::$Configuration->get('character_set', 'database'));
 			}
 
-			if($this->Configuration->get('force_query_caching', 'database') == 'off') $this->Database->disableCaching();
-			elseif($this->Configuration->get('force_query_caching', 'database') == 'on') $this->Database->enableCaching();
-			
+			if(self::$Configuration->get('force_query_caching', 'database') == 'off') self::$Database->disableCaching();
+			elseif(self::$Configuration->get('force_query_caching', 'database') == 'on') self::$Database->enableCaching();
+
 			return true;
 		}
 		
 		public function initialiseLog(){
 			
-			$this->Log =& new Log(ACTIVITY_LOG);
-			$this->Log->setArchive(($this->Configuration->get('archive', 'log') == '1' ? true : false));
-			$this->Log->setMaxSize(intval($this->Configuration->get('maxsize', 'log')));
+			$this->Log = new Log(ACTIVITY_LOG);
+			$this->Log->setArchive((self::$Configuration->get('archive', 'log') == '1' ? true : false));
+			$this->Log->setMaxSize(intval(self::$Configuration->get('maxsize', 'log')));
 				
 			if($this->Log->open() == 1){
 				$this->Log->writeToLog('Symphony Log', true);
-				$this->Log->writeToLog('Version: '. $this->Configuration->get('version', 'symphony'), true);
+				$this->Log->writeToLog('Version: '. self::$Configuration->get('version', 'symphony'), true);
 				$this->Log->writeToLog('--------------------------------------------', true);
 			}
 						
@@ -151,15 +152,15 @@
 
 		public function isLoggedIn(){
 
-			$un = $this->Database->cleanValue($this->Cookie->get('username'));
-			$pw = $this->Database->cleanValue($this->Cookie->get('pass'));
+			$un = self::$Database->cleanValue($this->Cookie->get('username'));
+			$pw = self::$Database->cleanValue($this->Cookie->get('pass'));
 
-			$id = $this->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$un' AND `password` = '$pw' LIMIT 1");
+			$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$un' AND `password` = '$pw' LIMIT 1");
 
 			if($id){
 				$this->_user_id = $id;
-				$this->Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
-				$this->Author =& new Author($this, $id);
+				self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+				$this->Author = new Author($this, $id);
 				return true;
 			}
 			
@@ -173,19 +174,19 @@
 		
 		public function login($username, $password, $isHash=false){
 			
-			$username = $this->Database->cleanValue($username);
-			$password = $this->Database->cleanValue($password);
+			$username = self::$Database->cleanValue($username);
+			$password = self::$Database->cleanValue($password);
 			
 			if(!$isHash) $password = md5($password);
 
-			$id = $this->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
+			$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
 
 			if($id){
 				$this->_user_id = $id;
-				$this->Author =& new Author($this, $id);
+				$this->Author = new Author($this, $id);
 				$this->Cookie->set('username', $username);
 				$this->Cookie->set('pass', $password);
-				$this->Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+				self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 				return true;
 			}
 			
@@ -195,19 +196,19 @@
 		
 		public function loginFromToken($token){
 			
-			$token = $this->Database->cleanValue($token);
+			$token = self::$Database->cleanValue($token);
 			
 			if(strlen($token) == 6){
-				$row = $this->Database->fetchRow(0, "SELECT `a`.`id`, `a`.`username`, `a`.`password` 
+				$row = self::$Database->fetchRow(0, "SELECT `a`.`id`, `a`.`username`, `a`.`password` 
 													 FROM `tbl_authors` AS `a`, `tbl_forgotpass` AS `f`
 													 WHERE `a`.`id` = `f`.`author_id` AND `f`.`expiry` > '".DateTimeObj::getGMT('c')."' AND `f`.`token` = '$token'
 													 LIMIT 1");
 				
-				$this->Database->delete('tbl_forgotpass', " `token` = '{$token}' ");
+				self::$Database->delete('tbl_forgotpass', " `token` = '{$token}' ");
 			}
 			
 			else{
-				$row = $this->Database->fetchRow(0, "SELECT `id`, `username`, `password` 
+				$row = self::$Database->fetchRow(0, "SELECT `id`, `username`, `password` 
 													 FROM `tbl_authors` 
 													 WHERE SUBSTR(MD5(CONCAT(`username`, `password`)), 1, 8) = '$token' AND `auth_token_active` = 'yes' 
 													 LIMIT 1");				
@@ -215,10 +216,10 @@
 
 			if($row){
 				$this->_user_id = $row['id'];
-				$this->Author =& new Author($this, $row['id']);
+				$this->Author = new Author($this, $row['id']);
 				$this->Cookie->set('username', $row['username']);
 				$this->Cookie->set('pass', $row['password']);
-				$this->Database->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+				self::$Database->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 				return true;
 			}
 			
@@ -239,7 +240,7 @@
 		}
 
 		public function resolvePage($page_id, $column) {
-			$page = $this->Database->fetchRow(0, "
+			$page = self::$Database->fetchRow(0, "
 				SELECT
 					p.{$column},
 					p.parent
@@ -259,7 +260,7 @@
 				$next_parent = $page['parent'];
 				
 				while (
-					$parent = $this->Database->fetchRow(0, "
+					$parent = self::$Database->fetchRow(0, "
 						SELECT
 							p.*
 						FROM

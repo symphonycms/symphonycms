@@ -21,8 +21,11 @@
 			parent::__construct();
 			
 			$this->Profiler->sample('Engine Initialisation');
-
 			$this->_env = array();
+			
+			// Need this part for backwards compatiblity			
+			$this->Database = Symphony::Database();
+			$this->Configuration = Symphony::Configuration();
 		}
 		
 		public function isLoggedIn() {
