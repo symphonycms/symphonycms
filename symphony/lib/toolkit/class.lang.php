@@ -2,6 +2,7 @@
 
 	## Provide an interface for translations
 	function __($string, array $tokens=NULL){
+		if(!class_exists('Lang') || !(Lang::Dictionary() instanceof Dictionary)) return vsprintf($string, $tokens);
 		return Lang::Dictionary()->translate($string, $tokens);
 	}
 	
@@ -64,7 +65,7 @@
 		private static $_transliterations;		
 		private static $_instance;
 		
-		private function __load($path, $lang, $clear=false){
+		private static function __load($path, $lang, $clear=false){
 			
 			if((bool)$clear === true || !(self::$_dictionary instanceof Dictionary)){
 				self::$_dictionary = new Dictionary(array());
@@ -74,8 +75,8 @@
 			$include = sprintf($path, $lang);
 			if(file_exists($include)) require($include);
 
-			if(is_array($dictionary)) self::$_dictionary->merge($dictionary);
-			if(is_array($transliterations)) self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
+			if(isset($dictionary) && is_array($dictionary)) self::$_dictionary->merge($dictionary);
+			if(isset($transliterations) && is_array($transliterations)) self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
 
 			if(empty(self::$_transliterations)){
 				include(TOOLKIT . '/include.transliterations.php');

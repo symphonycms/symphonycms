@@ -1,10 +1,11 @@
 <?php
 
+	require_once(CORE . '/class.errorhandler.php');
+	
 	require_once(CORE . '/class.configuration.php');
 	require_once(CORE . '/class.datetimeobj.php');
 	require_once(CORE . '/class.log.php');
 	require_once(CORE . '/class.cookie.php');
-
 	require_once(CORE . '/interface.singleton.php');
 	
 	require_once(TOOLKIT . '/class.page.php');
@@ -53,9 +54,9 @@
 			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . ' ' . __SYM_TIME_FORMAT__);
 						
 			$this->initialiseLog();
-			
-			error_reporting(E_ALL);
-			set_error_handler(array(&$this, '__errorHandler'));
+
+			GenericExceptionHandler::initialise();
+			GenericErrorHandler::initialise($this->Log);
 			
 			$this->initialiseCookie();
 			
@@ -66,12 +67,11 @@
 				trigger_error($e->getMessage(), E_USER_ERROR);
 			}
 
-			if(!$this->initialiseDatabase()){
-				$error = self::$Database->getLastError();
-				$this->customError(E_USER_ERROR, 'Symphony Database Error', $error['num'] . ': ' . $error['msg'], true, true, 'database-error', array('error' => $error, 'message' => __('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct. The following error was returned.')));
+			$this->initialiseDatabase();
+	
+			if(!$this->initialiseExtensionManager()){
+				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
 			}
-			
-			if(!$this->initialiseExtensionManager()) trigger_error('Error creating Symphony extension manager.', E_USER_ERROR);
 
 			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
 			
@@ -107,10 +107,9 @@
 			
 			$driver_filename = TOOLKIT . '/class.' . self::$Configuration->get('driver', 'database') . '.php';
 			$driver = self::$Configuration->get('driver', 'database');
-			
+
 			if(!is_file($driver_filename)){
-				trigger_error("Could not find database driver '<code>$driver</code>'", E_USER_ERROR);
-				return false;
+				throw new SymphonyErrorPage("Could not find database driver '<code>{$driver}</code>'", 'Symphony Database Error');
 			}
 			
 			require_once($driver_filename);
@@ -119,20 +118,34 @@
 			
 			$details = self::$Configuration->get('database');
 			
-			if(!self::$Database->connect($details['host'], $details['user'], $details['password'], $details['port'])) return false;				
-			if(!self::$Database->select($details['db'])) return false;
-			if(!self::$Database->isConnected()) return false;
+			try{
+				if(!self::$Database->connect($details['host'], $details['user'], $details['password'], $details['port'])) return false;				
+				if(!self::$Database->select($details['db'])) return false;
+				if(!self::$Database->isConnected()) return false;
 			
-			self::$Database->setPrefix($details['tbl_prefix']);
+				self::$Database->setPrefix($details['tbl_prefix']);
 
-			if(self::$Configuration->get('runtime_character_set_alter', 'database') == '1'){
-				self::$Database->setCharacterEncoding(self::$Configuration->get('character_encoding', 'database'));
-				self::$Database->setCharacterSet(self::$Configuration->get('character_set', 'database'));
+				if(self::$Configuration->get('runtime_character_set_alter', 'database') == '1'){
+					self::$Database->setCharacterEncoding(self::$Configuration->get('character_encoding', 'database'));
+					self::$Database->setCharacterSet(self::$Configuration->get('character_set', 'database'));
+				}
+
+				if(self::$Configuration->get('force_query_caching', 'database') == 'off') self::$Database->disableCaching();
+				elseif(self::$Configuration->get('force_query_caching', 'database') == 'on') self::$Database->enableCaching();
 			}
-
-			if(self::$Configuration->get('force_query_caching', 'database') == 'off') self::$Database->disableCaching();
-			elseif(self::$Configuration->get('force_query_caching', 'database') == 'on') self::$Database->enableCaching();
-
+			catch(DatabaseException $e){
+				$error = self::$Database->getlastError();
+				throw new SymphonyErrorPage(
+					$error['num'] . ': ' . $error['msg'], 
+					'Symphony Database Error',
+					'database-error', 
+					array(
+						'error' => $error, 
+						'message' => __('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct. The following error was returned.')
+					)
+				);				
+			}
+			
 			return true;
 		}
 		
@@ -278,43 +291,64 @@
 			return $path;
 		}
 		
-		public function customError($errno, $heading, $message, $log=true, $forcekill=false, $template='error', $additional=array()){
-			$this->__errorHandler($errno, $message, NULL, NULL, NULL, $heading, $log, $template, $additional);
-			if($forcekill) exit();
+		public function customError($code, $heading, $message, $log=true, $forcekill=false, $template='error', array $additional=array()){
+			throw new SymphonyErrorPage($message, $heading, $template, $additional);
 		}
-		
-		public function __errorHandler($errno=NULL, $errstr, $errfile=NULL, $errline=NULL, $errcontext=NULL, $heading=NULL, $log=true, $template='error', $additional=array()){
+	
+	}
+	
+	Class SymphonyErrorPageHandler extends GenericExceptionHandler{
+		public static function render($e){
 			
-			if(error_reporting() == 0) return;
-			
-			switch ($errno) {
-		        case E_NOTICE:
-		        case E_USER_NOTICE:
-					//$this->Log->pushToLog("$errno - $errstr".($errfile ? " in file $errfile" : '') . ($errline ? " on line $errline" : ''), Log::kNOTICE, true);
-		            break;
-			
-				case E_WARNING:
-				case E_USER_WARNING:
-					if($log) $this->Log->pushToLog("{$errno} - ".strip_tags((is_object($errstr) ? $errstr->generate() : $errstr)).($errfile ? " in file {$errfile}" : '') . ($errline ? " on line {$errline}" : ''), Log::kWARNING, true);
-	            	break;				
-				
-				case E_ERROR:
-				case E_USER_ERROR:
-			
-					if($log) $this->Log->pushToLog("{$errno} - ".strip_tags((is_object($errstr) ? $errstr->generate() : $errstr)).($errfile ? " in file {$errfile}" : '') . ($errline ? " on line {$errline}" : ''), Log::kERROR, true);
-			
-					if(!is_object($errstr) && $errline) $errstr = "Line {$errline} &ndash; {$errstr}";
-			
-					if(!is_file(TEMPLATE . "/tpl.{$template}.php")) die("<h1>Symphony Fatal Error</h1><p>{$errstr}</p>");
-			
-					$heading = ($heading ? $heading : 'Symphony System Error');
-					
-					include(TEMPLATE . "/tpl.{$template}.php");
-					
-					break;
+			if($e->getTemplate() === false){
+				echo '<h1>Symphony Fatal Error</h1><p>'.$e->getMessage().'</p>';
+				exit;
 			}
 			
+			include($e->getTemplate());
+
+		}
+	}
+	
+	Class SymphonyErrorPage extends Exception{
+		
+		private $_heading;
+		private $_message;
+		private $_template;
+		private $_additional;
+		private $_messageObject;
+		
+		public function __construct($message, $heading='Symphony Fatal Error', $template='error', array $additional=NULL){
+			
+			$this->_messageObject = NULL;
+			if($message instanceof XMLElement){
+				$this->_messageObject = $message;
+				$message = $this->_messageObject->generate();
+			}
+			
+			parent::__construct($message);
+			
+			$this->_heading = $heading;
+
+			$this->_template = $template;
+			$this->_additional = (object)$additional;
 		}
 		
+		public function getMessageObject(){
+			return $this->_messageObject;
+		}
+		
+		public function getHeading(){
+			return $this->_heading;
+		}
+		
+		public function getTemplate(){
+			$template = sprintf('%s/tpl.%s.php', TEMPLATE, $this->_template);
+			return (file_exists($template) ? $template : false);
+		}
+		
+		public function getAdditional(){
+			return $this->_additional;
+		}	
 	}
 

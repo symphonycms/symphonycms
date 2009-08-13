@@ -14,16 +14,20 @@
 	$Page->addHeaderToPage('HTTP/1.0 500 Server Error');
 	$Page->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
 	$Page->addHeaderToPage('Symphony-Error-Type', 'generic');	
-	if(isset($additional['header'])) $Page->addHeaderToPage($additional['header']);
+	if(isset($e->getAdditional()->header)) $Page->addHeaderToPage($e->getAdditional()->header);
 
-	$Page->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $heading)));
+	$Page->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $e->getHeading())));
 	
 	$div = new XMLElement('div', NULL, array('id' => 'description'));
-	$div->appendChild(new XMLElement('h1', $heading));
-	$div->appendChild((is_object($errstr) ? $errstr : new XMLElement('p', trim($errstr))));
+	$div->appendChild(new XMLElement('h1', $e->getHeading()));
+	$div->appendChild(
+		($e->getMessageObject() instanceof XMLElement ? $e->getMessageObject() : new XMLElement('p', trim($e->getMessage())))
+	);
 	$Page->Body->appendChild($div);
+	
+	$output = $Page->generate();
+	header(sprintf('Content-Length: %d', strlen($output)));
+	echo $output;
 
-	print $Page->generate();
-
-	exit();
+	exit;
 	

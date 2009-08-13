@@ -34,6 +34,10 @@
 		function setTitle($val, $position=null) {
 			return $this->addElementToHead(new XMLElement('title', $val), $position);
 		}
+	
+		public function Context(){
+			return $this->_context;
+		}
 		
 		function build($context = NULL){
 			

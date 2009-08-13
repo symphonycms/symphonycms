@@ -9,7 +9,7 @@
 	    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 	} 
 	else{
-	    error_reporting(E_ALL ^ E_NOTICE);
+	    error_reporting(E_ALL & ~E_NOTICE);
 	}
 	
 	set_magic_quotes_runtime(0);

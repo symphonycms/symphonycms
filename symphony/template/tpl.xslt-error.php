@@ -26,7 +26,7 @@
 
 	$errors_grouped = array();
 
-	list($key, $val) = $additional['proc']->getError(false, true);
+	list($key, $val) = $e->getAdditional()->proc->getError(false, true);
 
 	do{
 		
@@ -43,7 +43,7 @@
 			$errors_grouped['general'][] = $val;
 		}
 				
-	}while(list($key, $val) = $additional['proc']->getError());
+	}while(list($key, $val) = $e->getAdditional()->proc->getError());
 
 	$query_string = General::sanitize($Page->__buildQueryString());
 	if(strlen(trim($query_string)) > 0) $query_string = "&amp;{$query_string}";

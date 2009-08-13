@@ -209,7 +209,7 @@
 							
 							$value = $field->prepareTableValue($data, ($position == 0 ? $link : null), $entry->get('id'));
 							
-							if (trim($value) == '') {
+							if (!is_object($value) && strlen(trim($value)) == 0) {
 								$value = ($position == 0 ? $link->generate() : __('None'));
 							}
 							

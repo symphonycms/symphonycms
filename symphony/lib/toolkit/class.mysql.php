@@ -1,4 +1,31 @@
 <?php
+
+	Class DatabaseException extends Exception{
+		
+		/*
+			Array
+			(
+			    [query] => 
+			    [msg] => Access denied for user 'rdoot'@'localhost' (using password: YES)
+			    [num] => 1045
+			)
+		*/
+		
+		private $_error;
+		public function __construct($message, array $error=NULL){
+			parent::__construct($message);
+			$this->_error = $error;
+		}
+		public function getQuery(){
+			return $this->_error['query'];
+		}
+		public function getDatabaseErrorMessage(){
+			return $this->_error['msg'];
+		}		
+		public function getDatabaseErrorCode(){
+			return $this->_error['num'];
+		}		
+	}
 	
 	Class MySQL {
 			
@@ -282,22 +309,24 @@
 	            $this->__error();
 	            return false;
 	        }
-
-	        while ($row = @mysql_fetch_object($this->_result)){	            
-	            @array_push($this->_lastResult, $row);
-	        }
+	
+			if(is_resource($this->_result)){
+		        while ($row = @mysql_fetch_object($this->_result)){	            
+		            @array_push($this->_lastResult, $row);
+		        }
 				
-	        if($query_type == self::__WRITE_OPERATION__){
+		        if($query_type == self::__WRITE_OPERATION__){
 					
-	            $this->_affectedRows = @mysql_affected_rows();
+		            $this->_affectedRows = @mysql_affected_rows();
 					
-	            if(stristr($query, 'insert') || stristr($query, 'replace')){
-	                $this->_insertID = @mysql_insert_id($this->_connection['id']);
-	            }
+		            if(stristr($query, 'insert') || stristr($query, 'replace')){
+		                $this->_insertID = @mysql_insert_id($this->_connection['id']);
+		            }
 						
-	        }
+		        }
 				
-	        @mysql_free_result($this->_result);
+		        @mysql_free_result($this->_result);
+			}
 			
 			$this->_log['query'][$query_hash]['time'] = precision_timer('stop', $this->_log['query'][$query_hash]['start']);
 			if($this->_logEverything) $this->_log['query'][$query_hash]['lastResult'] = $this->_lastResult;
@@ -398,11 +427,11 @@
 	            $errornum = @mysql_errno();
 	        }
 				
-	        $this->_log['error'][] = array ('query' => $this->_lastQuery,
+	        $this->_log['error'][] = array('query' => $this->_lastQuery,
 	                               			'msg' => $msg,
 	                               			'num' => $errornum);
 
-			trigger_error(__('MySQL Error (%1$s): %2$s in query "%3$s"', array($errornum, $msg, $this->_lastQuery)), E_USER_WARNING);
+			throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query "%3$s"', array($errornum, $msg, $this->_lastQuery)), end($this->_log['error']));
 	    }
 			
 	    public function debug($section=NULL){			
@@ -412,7 +441,6 @@
 	    }
 	
 		public function getLastError(){
-			@rewind($this->_log['error']);
 			return current($this->_log['error']);
 		}
 		
