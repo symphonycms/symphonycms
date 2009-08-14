@@ -11,7 +11,7 @@
 				trigger_error(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])), E_USER_ERROR);
 			}
 			
-			$associated_sections = $section->fetchAssociatedSections();
+			if (!isset($this->dsParamINCLUDEASSOCIATEDENTRYCOUNTS) || $this->dsParamINCLUDEASSOCIATEDENTRYCOUNTS == true) $associated_sections = $section->fetchAssociatedSections();
 			
 			if(is_array($group['records']) && !empty($group['records'])){
 				foreach($group['records'] as $entry){
@@ -22,11 +22,14 @@
 					$xEntry = new XMLElement('entry');
 					$xEntry->setAttribute('id', $entry->get('id'));
 					
-					$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts($associated_sections);
-					if(is_array($associated_entry_counts) && !empty($associated_entry_counts)){
-						foreach($associated_entry_counts as $section_id => $count){
-							$section_handle = $Parent->Database->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '$section_id' LIMIT 1");
-							$xEntry->setAttribute($section_handle, ''.$count.'');
+					if (is_array($associated_sections)) {
+						$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts($associated_sections);
+						if(is_array($associated_entry_counts) && !empty($associated_entry_counts)){
+							foreach($associated_entry_counts as $section_id => $count){
+								foreach($associated_sections as $section) { 
+									if ($section['id'] == $section_id) $xEntry->setAttribute($section['handle'], ''.$count.'');
+								}							
+							}
 						}
 					}
 
@@ -200,7 +203,7 @@
 		
 			else:
 				
-				$associated_sections = $section->fetchAssociatedSections();
+				if (!isset($this->dsParamINCLUDEASSOCIATEDENTRYCOUNTS) || $this->dsParamINCLUDEASSOCIATEDENTRYCOUNTS == true) $associated_sections = $section->fetchAssociatedSections();
 				
 				foreach($entries['records'] as $entry){
 
@@ -210,12 +213,14 @@
 					$xEntry = new XMLElement('entry');
 					$xEntry->setAttribute('id', $entry->get('id'));
 					
-					$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts($associated_sections);
-					if(is_array($associated_entry_counts) && !empty($associated_entry_counts)){
-						foreach($associated_entry_counts as $section_id => $count){
-							foreach($associated_sections as $section) { 
-								if ($section['id'] == $section_id) $xEntry->setAttribute($section['handle'], ''.$count.'');
-							}							
+					if (is_array($associated_sections)) {
+						$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts($associated_sections);
+						if(is_array($associated_entry_counts) && !empty($associated_entry_counts)){
+							foreach($associated_entry_counts as $section_id => $count){
+								foreach($associated_sections as $section) { 
+									if ($section['id'] == $section_id) $xEntry->setAttribute($section['handle'], ''.$count.'');
+								}							
+							}
 						}
 					}
 
