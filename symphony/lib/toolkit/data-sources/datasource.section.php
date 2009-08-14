@@ -11,7 +11,7 @@
 				trigger_error(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])), E_USER_ERROR);
 			}
 			
-			if (!isset($this->dsParamINCLUDEASSOCIATEDENTRYCOUNTS) || $this->dsParamINCLUDEASSOCIATEDENTRYCOUNTS == true) $associated_sections = $section->fetchAssociatedSections();
+			if (!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS == 'yes') $associated_sections = $section->fetchAssociatedSections();
 			
 			if(is_array($group['records']) && !empty($group['records'])){
 				foreach($group['records'] as $entry){
@@ -203,7 +203,7 @@
 		
 			else:
 				
-				if (!isset($this->dsParamINCLUDEASSOCIATEDENTRYCOUNTS) || $this->dsParamINCLUDEASSOCIATEDENTRYCOUNTS == true) $associated_sections = $section->fetchAssociatedSections();
+				if (!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS == 'yes') $associated_sections = $section->fetchAssociatedSections();
 				
 				foreach($entries['records'] as $entry){
 

@@ -89,6 +89,8 @@
 				$fields['limit_type'] = $existing->dsParamLIMITTYPE;
 				$fields['group'] = $existing->dsParamGROUP;
 				$fields['html_encode'] = $existing->dsParamHTMLENCODE;
+				$fields['associated_entry_counts'] = $existing->dsParamASSOCIATEDENTRYCOUNTS;				
+				if ($fields['associated_entry_counts'] == NULL) $fields['associated_entry_counts'] = 'yes';
 				if($existing->dsParamREDIRECTONEMPTY == 'yes') $fields['redirect_on_empty'] = 'yes';
 				
 				$existing->dsParamFILTERS = @array_map('stripslashes', $existing->dsParamFILTERS);
@@ -140,7 +142,9 @@
 				$fields['page_number'] = '1';
 				
 				$fields['order'] = 'desc';
-				$fields['limit_type'] = 'entries';		
+				$fields['limit_type'] = 'entries';
+				
+				$fields['associated_entry_counts'] = NULL;
 				
 			}
 			
@@ -558,7 +562,13 @@
 			}
 			
 			$label->appendChild(Widget::Select('fields[xml_elements][]', $options, array('multiple' => 'multiple', 'class' => 'filtered')));
-			$li->appendChild($label);			
+			$li->appendChild($label);
+			
+			$label = Widget::Label();
+			$label->setAttribute('class', 'contextual inverse ' . __('authors'));			
+			$input = Widget::Input('fields[associated_entry_counts]', 'yes', 'checkbox', ((isset($fields['associated_entry_counts']) && $fields['associated_entry_counts'] == 'yes') ? array('checked' => 'checked') : NULL));
+			$label->setValue(__('%s Include a count of entries in associated sections', array($input->generate(false))));
+			$li->appendChild($label);
 			
 			$label = Widget::Label();
 			$label->setAttribute('class', 'contextual inverse ' . __('authors'));
@@ -967,6 +977,9 @@
 						$params['sort'] = $fields['sort'];
 						$params['startpage'] = $fields['page_number'];
 						$params['htmlencode'] = $fields['html_encode'];
+						$params['associatedentrycounts'] = $fields['associated_entry_counts'];
+						
+						if ($params['associatedentrycounts'] == NULL) $params['associatedentrycounts'] = 'no';
 						
 						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.section.php');", $dsShell);
 						
