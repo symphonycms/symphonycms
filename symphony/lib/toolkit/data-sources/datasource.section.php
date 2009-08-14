@@ -115,13 +115,19 @@
 	if($this->dsParamSORT == 'system:id') $entryManager->setFetchSorting('id', $this->dsParamORDER);
 	elseif($this->dsParamSORT == 'system:date') $entryManager->setFetchSorting('date', $this->dsParamORDER);
 	else $entryManager->setFetchSorting($entryManager->fieldManager->fetchFieldIDFromElementName($this->dsParamSORT, $this->getSource()), $this->dsParamORDER);
-
+	
+	// combine INCLUDEDELEMENTS and PARAMOUTPUT into an array of field names
+	$datasource_schema = $this->dsParamINCLUDEDELEMENTS;
+	if (!is_array($datasource_schema)) $datasource_schema = array();
+	if ($this->dsParamPARAMOUTPUT) $datasource_schema[] = $this->dsParamPARAMOUTPUT;
+	
 	$entries = $entryManager->fetchByPage($this->dsParamSTARTPAGE, 
 										  $this->getSource(), 
 										  ($this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : NULL), 
 										  $where, $joins, $group, 
 										  (!$include_pagination_element ? true : false), 
-										  true);
+										  true,
+										  $datasource_schema);
 
 	if(!$section = $entryManager->sectionManager->fetch($this->getSource())){
 		$about = $this->about();

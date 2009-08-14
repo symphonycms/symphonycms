@@ -160,7 +160,7 @@
 			
 		}
 		
-		function fetchByPage($page, $section_id, $entriesPerPage, $where=NULL, $joins=NULL, $group=false, $records_only=false, $buildentries=true){
+		function fetchByPage($page, $section_id, $entriesPerPage, $where=NULL, $joins=NULL, $group=false, $records_only=false, $buildentries=true, $element_names=null){
 			
 			if(!is_string($entriesPerPage) && !is_numeric($entriesPerPage)){
 				trigger_error(__('Entry limit specified was not a valid type. String or Integer expected.'), E_USER_WARNING);
@@ -169,7 +169,7 @@
 			
 			$start = (max(1, $page) - 1) * $entriesPerPage;
 		
-			$records = ($entriesPerPage == '0' ? NULL : $this->fetch(NULL, $section_id, $entriesPerPage, $start, $where, $joins, $group, $buildentries));
+			$records = ($entriesPerPage == '0' ? NULL : $this->fetch(NULL, $section_id, $entriesPerPage, $start, $where, $joins, $group, $buildentries, $element_names));
 			
 			if($records_only) return array('records' => $records);
 			
@@ -254,7 +254,7 @@
 			Warning: Do not provide $entry_id as an array if not specifiying the $section_id
 		
 		***/
-		function fetch($entry_id=NULL, $section_id=NULL, $limit=NULL, $start=NULL, $where=NULL, $joins=NULL, $group=false, $buildentries=true){
+		function fetch($entry_id=NULL, $section_id=NULL, $limit=NULL, $start=NULL, $where=NULL, $joins=NULL, $group=false, $buildentries=true, $element_names=null){
 			$sort = null;
 			
 			if (!$entry_id && !$section_id) return false;
@@ -310,17 +310,37 @@
 
 			$rows = Symphony::Database()->fetch($sql);
 			
-			return ($buildentries && (is_array($rows) && !empty($rows)) ? $this->__buildEntries($rows, $section_id) : $rows);
+			return ($buildentries && (is_array($rows) && !empty($rows)) ? $this->__buildEntries($rows, $section_id, $element_names) : $rows);
 			
 		}
 		
 		## Do not pass this function ID values from across more than one section.
-		function __buildEntries(array $id_list, $section_id){
+		function __buildEntries(array $id_list, $section_id, $element_names=null){
 			$entries = array();
 			
 			if (!is_array($id_list) || empty($id_list)) return $entries;
 			
-			$schema = Symphony::Database()->fetch("SELECT * FROM `tbl_fields` WHERE `parent_section` = '$section_id'");
+			// choose whether to get data from a subset of fields or all fields in a section
+			if ($element_names){
+				// allow for pseudo-fields containing colons (e.g. Textarea formatted/unformatted)
+				foreach ($element_names as $index => $name) {
+					$parts = split(':', $name);
+					unset($element_names[$index]);
+					$element_names[] = trim($parts[0]);
+				}
+				$schema_sql = sprintf(
+					"SELECT * FROM `tbl_fields` WHERE `parent_section` = '%d' AND `element_name` IN (\"%s\")",
+					$section_id,
+					implode('", "', array_unique($element_names))
+				);
+			} else {
+				$schema_sql = sprintf(
+					"SELECT * FROM `tbl_fields` WHERE `parent_section` = '%d'",
+					$section_id
+				);
+			}
+			
+			$schema = Symphony::Database()->fetch($schema_sql);
 			
 			$tmp = array();
 			foreach ($id_list as $r) {
