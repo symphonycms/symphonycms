@@ -50,8 +50,8 @@
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.0.4');
-	define('kCHANGELOG', 'http://symphony-cms.com/blog/entry/204-release/');
+	define('kVERSION', '2.0.6');
+	define('kCHANGELOG', 'http://symphony-cms.com/blog/entry/206-release/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
 
@@ -127,14 +127,76 @@
 				
 			}
 			
+			
+			if (version_compare($existing_version, '2.0.5', '<=')) {
+				## Rebuild the .htaccess here
+				
+		        $rewrite_base = trim(dirname($_SERVER['PHP_SELF']), '/'); 
 
+		        if(strlen($rewrite_base) > 0){
+					$rewrite_base .= '/';
+				}
+
+		        $htaccess = '
+
+### Symphony 2.0.x ###
+<IfModule mod_rewrite.c>
+
+	RewriteEngine on
+	RewriteBase /'.$rewrite_base.'
+
+	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
+	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
+	RewriteRule .* - [S=14]	
+
+	### IMAGE RULES	
+	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ ./extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
+
+	### ADMIN REWRITE
+	RewriteRule ^symphony\/?$ ./index.php?mode=administration&%{QUERY_STRING} [NC,L]
+
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f	
+	RewriteRule ^symphony(\/(.*\/?))?$ ./index.php?symphony-page=$1&mode=administration&%{QUERY_STRING}	[NC,L]
+
+	### FRONTEND REWRITE - Will ignore files and folders
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^(.*\/?)$ ./index.php?symphony-page=$1&%{QUERY_STRING}	[L]
+
+</IfModule>
+######
+
+';
+
+				@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
+				
+				// No longer need symphony/.htaccess
+				if(file_exists(DOCROOT . '/symphony/.htaccess') && is_writable(DOCROOT . '/symphony/.htaccess')){
+					unlink(DOCROOT . '/symphony/.htaccess');
+				}
+				
+			}
+			
 			
 			$code = sprintf($shell, 
 '				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 				<h2>Update Complete</h2>
 				
-				<p><strong>Post Installation Step: </strong>Since 2.0.2, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></p>
-				<br />
+				<p><strong>Post-Installation Steps: </strong></p>
+				<br />	
+				<ol>
+				'.
+				
+				(file_exists(DOCROOT . '/symphony/.htaccess') ? '<li><strong>WARNING:</strong> The updater tried, but failed, to remove the file <code>symphony/.htaccess</code>. It is vitally important that this file be removed, otherwise the administration area will not function. If you have customisations to this file, you should be able to just remove the Symphony related block, but there are no guarantees.</li>' : NULL)
+				
+				.'
+					<li>Version <code>2.0.5</code> introduced multiple includable elements, in the Data Source Editor, for a single field. After updating from <code>2.0.5</code> or lower, the DS editor will seem to "forget" about any <code>Textarea</code> fields selected when you are editing existing Data Sources. After updating, you must ensure you re-select them before saving. <strong>Note, this will only effect Data Sources that you edit and were created prior to <code>2.0.5</code></strong>. Until that point, the field will still be included in any front-end <code>XML</code></li>
+
+					<li>Since <code>2.0.2</code>, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></li>
+
+				</ol>
+
 				<p>This script, <code>update.php</code>, should be removed as a safety precaution. <a href="'.URL.'/update.php?action=remove">Click here</a> to remove this file and proceed to your administration area.</p>');
 
 		}
@@ -176,7 +238,9 @@
 '				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 				<h2>Update Existing Installation</h2>
 				<p>This script will update your existing Symphony '.$settings['symphony']['version'].' installation to version '.kVERSION.'.</p>
-			
+				<br />
+				<p><strong>Pre-Installation Step: </strong> As of <code>2.0.6</code>, the core <code>.htaccess</code> has changed substantially. As a result, there is no fool proof way to automatically update it. Instead, if you have any customisations to your <code>.htaccess</code>, please back up the existing copy before updating. You will then need to manually migrate the customisations to the new <code>.htaccess</code>.</p>
+				<br />	
 				<div class="submit">
 					<input type="submit" name="action[update]" value="Update Symphony"/>
 				</div>');

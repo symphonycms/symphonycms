@@ -21,7 +21,8 @@
 			
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors'))));
-			$this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
+			if (Administration::instance()->Author->isDeveloper()) $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
+			else $this->appendSubheading(__('Authors'));
 			
 		    $authors = $this->_AuthorManager->fetch();
 
@@ -47,23 +48,30 @@
 				foreach($authors as $a){			
 
 					if(intval($a->get('superuser')) == 1) $group = 'admin'; else $group = 'author'; 
-
+					
 					## Setup each cell
-					$td1 = Widget::TableData(Widget::Anchor($a->getFullName(), $this->_Parent->getCurrentPageURL() . 'edit/' . $a->get('id') . '/', $a->get('username'), $group));
+					if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->get('id') == $a->get('id')) {
+						$td1 = Widget::TableData(Widget::Anchor($a->getFullName(), $this->_Parent->getCurrentPageURL() . 'edit/' . $a->get('id') . '/', $a->get('username'), $group));
+					} else {
+						$td1 = Widget::TableData($a->getFullName(), 'inactive');
+					}
+						
 					$td2 = Widget::TableData(Widget::Anchor($a->get('email'), 'mailto:'.$a->get('email'), 'Email this author'));
-
+					
 					if($a->get('last_seen') != NULL)
 						$td3 = Widget::TableData(DateTimeObj::get(__SYM_DATETIME_FORMAT__, strtotime($a->get('last_seen'))));
-
+						
 					else
 						$td3 = Widget::TableData('Unknown', 'inactive');
 					
-					if($a->get('id') != $this->_Parent->Author->get('id')) $td3->appendChild(Widget::Input('items['.$a->get('id').']', NULL, 'checkbox'));
+					if (Administration::instance()->Author->isDeveloper()) {
+						if ($a->get('id') != Administration::instance()->Author->get('id')) $td3->appendChild(Widget::Input('items['.$a->get('id').']', NULL, 'checkbox'));
+					}
 					
 					## Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3), ($bOdd ? 'odd' : NULL));
 
-					$bOdd = !$bOdd;			
+					$bOdd = !$bOdd;
 
 				}
 			}
@@ -72,22 +80,24 @@
 								Widget::TableHead($aTableHead), 
 								NULL, 
 								Widget::TableBody($aTableBody)
-						);
-
+							);
+							
 			$this->Form->appendChild($table);
-
-			$tableActions = new XMLElement('div');
-			$tableActions->setAttribute('class', 'actions');
-
-			$options = array(
-				array(NULL, false, 'With Selected...'),
-				array('delete', false, 'Delete')									
-			);
-
-			$tableActions->appendChild(Widget::Select('with-selected', $options));
-			$tableActions->appendChild(Widget::Input('action[apply]', 'Apply', 'submit'));
-
-			$this->Form->appendChild($tableActions);					
+			
+			if(Administration::instance()->Author->isDeveloper()) {
+				$tableActions = new XMLElement('div');
+				$tableActions->setAttribute('class', 'actions');
+				
+				$options = array(
+					array(NULL, false, 'With Selected...'),
+					array('delete', false, 'Delete')									
+				);
+				
+				$tableActions->appendChild(Widget::Select('with-selected', $options));
+				$tableActions->appendChild(Widget::Input('action[apply]', 'Apply', 'submit'));
+				
+				$this->Form->appendChild($tableActions);					
+			}
 			
 		}
 		
@@ -95,7 +105,7 @@
 			if($_POST['with-selected'] == 'delete'){	 	
 				
 				$checked = @array_keys($_POST['items']);
-
+				
 				## TODO: Fix Me
 				###
 				# Delegate: Delete
@@ -104,7 +114,7 @@
 				
 				foreach($checked as $author_id){
 					$a = $this->_AuthorManager->fetchByID($author_id);
-					if(is_object($a) && $a->get('id') != $this->_Parent->Author->get('id')) $this->_AuthorManager->delete($author_id);
+					if(is_object($a) && $a->get('id') != Administration::instance()->Author->get('id')) $this->_AuthorManager->delete($author_id);
 				}
 
 				redirect(URL . '/symphony/system/authors/');
@@ -127,7 +137,7 @@
 			## Handle unknow context
 			if(!in_array($this->_context[0], array('new', 'edit'))) $this->_Parent->errorPageNotFound();
 			
-			if($this->_context[0] == 'new' && !$this->_Parent->Author->isDeveloper()) 
+			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper()) 
 				$this->_Parent->customError(E_USER_ERROR, 'Access Denied', 'You are not authorised to access this page.');			
 
 			if(isset($this->_context[2])){
@@ -184,7 +194,12 @@
 			
 			else $author =& $this->_AuthorManager->create();
 
-			if($this->_context[0] == 'edit' && $author->get('id') == $this->_Parent->Author->get('id')) $isOwner = true;
+			if($this->_context[0] == 'edit' && $author->get('id') == Administration::instance()->Author->get('id')) $isOwner = true;
+			
+			if ($this->_context[0] == 'edit' && !$isOwner && !Administration::instance()->Author->isDeveloper())
+				$this->_Parent->customError(E_USER_ERROR, 'Access Denied', 'You are not authorised to edit other authors.');
+			
+			
 
 			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Authors'), $author->getFullName())));
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $author->getFullName()));			
@@ -228,7 +243,7 @@
 			$div->appendChild((isset($this->_errors['username']) ? $this->wrapFormElementWithError($label, $this->_errors['username']) : $label));
 
 			// Only developers can change the user type. Primary account should NOT be able to change this
-			if ($this->_Parent->Author->isDeveloper() && !$author->isPrimaryAccount()) {
+			if (Administration::instance()->Author->isDeveloper() && !$author->isPrimaryAccount()) {
 				$label = Widget::Label(__('User Type'));
 
 				$options = array(
@@ -242,17 +257,19 @@
 
 			$group->appendChild($div);
 					
-			$div = new XMLElement('div');
+			$div = new XMLElement('div', NULL, array('class' => 'group'));
+			
 			if($this->_context[0] == 'edit') {
 				$div->setAttribute('id', 'change-password');
-				$div->setAttribute('class', 'triple group');
-
-				$label = Widget::Label(__('Old Password'));
-				if(isset($this->_errors['old-password'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['old-password']));	
-				$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password'));
-				$div->appendChild((isset($this->_errors['old-password']) ? $this->wrapFormElementWithError($label, $this->_errors['old-password']) : $label));
-			} else {
-				$div->setAttribute('class', 'group');
+				
+				if(!Administration::instance()->Author->isDeveloper() || $isOwner === true){
+					$div->setAttribute('class', 'triple group');
+				
+					$label = Widget::Label(__('Old Password'));
+					if(isset($this->_errors['old-password'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['old-password']));	
+					$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password'));
+					$div->appendChild((isset($this->_errors['old-password']) ? $this->wrapFormElementWithError($label, $this->_errors['old-password']) : $label));
+				}
 			}
 
 			$label = Widget::Label(($this->_context[0] == 'edit' ? __('New Password') : __('Password')));		
@@ -265,16 +282,18 @@
 			$div->appendChild($label);
 			$group->appendChild($div);
 
-			if($this->_context[0] == 'edit') $group->appendChild(new XMLElement('p', __('Leave new password field blank to keep the current password'), array('class' => 'help')));
+			if($this->_context[0] == 'edit'){
+				$group->appendChild(new XMLElement('p', __('Leave password fields blank to keep the current password'), array('class' => 'help')));
+			}
 
-			$label = Widget::Label();
-			$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
-			if($author->get('auth_token_active') == 'yes') $input->setAttribute('checked', 'checked');
-			$temp = URL . '/symphony/login/' . $author->createAuthToken() . '/';
-			$label->setValue(__('%1$s Allow remote login via <a href="%2$s">%2$s</a>', array($input->generate(), $temp)));
-
-			$group->appendChild($label);
-
+			if(Administration::instance()->Author->isDeveloper()) {
+				$label = Widget::Label();
+				$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
+				if($author->get('auth_token_active') == 'yes') $input->setAttribute('checked', 'checked');
+				$temp = URL . '/symphony/login/' . $author->createAuthToken() . '/';
+				$label->setValue(__('%1$s Allow remote login via <a href="%2$s">%2$s</a>', array($input->generate(), $temp)));
+				$group->appendChild($label);
+			}
 			$label = Widget::Label(__('Default Section'));
 			
 		    $sectionManager = new SectionManager($this->_Parent);
@@ -358,7 +377,7 @@
 
 			if(!$author_id = $this->_context[1]) redirect(URL . '/symphony/system/authors/');
 
-			$isOwner = ($author_id == $this->_Parent->Author->get('id'));
+			$isOwner = ($author_id == Administration::instance()->Author->get('id'));
 
 			if(@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
 
@@ -368,15 +387,27 @@
 
 				$authenticated = false;
 				if($fields['email'] != $this->_Author->get('email')) $changing_email = true;
-				if(trim($fields['old-password']) != '' && md5(trim($fields['old-password'])) == $this->_Author->get('password')) {
+				
+				// Check the old password was correct
+				if(isset($fields['old-password']) && strlen(trim($fields['old-password'])) > 0 && md5(trim($fields['old-password'])) == $this->_Author->get('password')) {
 					$authenticated = true;
+				}
+				
+				// Developers don't need to specify the old password, unless it's their own account
+				elseif(Administration::instance()->Author->isDeveloper() && $isOwner === false){
+					$authenticated = true;					
 				}
 
 				$this->_Author->set('id', $author_id);
-				if ($this->_Author->isPrimaryAccount() || ($isOwner && $this->_Parent->Author->isDeveloper()))
+				
+				if ($this->_Author->isPrimaryAccount() || ($isOwner && Administration::instance()->Author->isDeveloper())){
 					$this->_Author->set('user_type', 'developer'); // Primary accounts are always developer, Developers can't lower their level
-				elseif ($this->_Parent->Author->isDeveloper() && isset($fields['user_type']))
+				}
+				
+				elseif (Administration::instance()->Author->isDeveloper() && isset($fields['user_type'])){
 					$this->_Author->set('user_type', $fields['user_type']); // Only developer can change user type
+				}
+					
 				$this->_Author->set('email', $fields['email']);
 				$this->_Author->set('username', $fields['username']);
 				$this->_Author->set('first_name', General::sanitize($fields['first_name']));

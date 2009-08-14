@@ -4,7 +4,7 @@
 		
 		protected $_ParentCatalogue;
 		
-	    function __construct() {	
+	    public function __construct() {	
 			$this->_ParentCatalogue = array();
 	    }
 
@@ -12,13 +12,19 @@
 		protected function catalogueParentObjects(){
 			
 			$ref = $this->_Parent;
-			$classname = strtolower(get_class($ref));
+			
+			if(!is_object($ref)) return;
+			
+			$classname = strtolower(@get_class($ref));
 			
 			do{	
 				$this->_ParentCatalogue[$classname] = $ref;
 				$ref = $ref->_Parent;
+				
+				if(!is_object($ref)) return;
+				
 				$lastClassname = $classname;
-				$classname = strtolower(get_class($ref));	
+				$classname = strtolower(@get_class($ref));	
 								
 			}while($lastClassname != $classname);
 

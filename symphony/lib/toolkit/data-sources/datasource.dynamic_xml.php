@@ -20,7 +20,9 @@
 	$instruction = new XMLElement('xsl:copy-of');
 
 	## Namespaces
-	foreach($this->dsParamFILTERS as $name => $uri) $instruction->setAttribute('xmlns' . ($name ? ":$name" : NULL), $uri);
+	if(isset($this->dsParamFILTERS) && is_array($this->dsParamFILTERS)){
+		foreach($this->dsParamFILTERS as $name => $uri) $instruction->setAttribute('xmlns' . ($name ? ":$name" : NULL), $uri);
+	}
 
 	## XPath
 	$instruction->setAttribute('select', $this->dsParamXPATH);

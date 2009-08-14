@@ -66,9 +66,9 @@
 				$this->ExtensionManager->notifyMembers(
 					'FrontendOutputPreGenerate', '/frontend/',
 					array(
-						'page'		=> &$this,
-						'xml'		=> $this->_xml,
-						'xsl'		=> $this->_xsl
+						'page'	=> &$this,
+						'xml'	=> $this->_xml,
+						'xsl'	=> $this->_xsl
 					)
 				);
 				
@@ -90,6 +90,12 @@
 					}
 				}
 				
+				####
+				# Delegate: FrontendPreRenderHeaders
+				# Description: This is just prior to the page headers being rendered, and is suitable for changing them
+				# Global: Yes
+				$this->ExtensionManager->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
+				
 				$output = parent::generate();
 				
 				####
@@ -97,7 +103,7 @@
 				# Description: Immediately after generating the page. Provided with string containing page source
 				# Global: Yes
 				$this->ExtensionManager->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
-				
+
 				$this->_Parent->Profiler->sample('XSLT Transformation', PROFILE_LAP);
 				
 				if (is_null($devkit) && !$output) {
@@ -287,7 +293,7 @@
 			# Delegate: FrontendPrePageResolve
 			# Description: Before page resolve. Allows manipulation of page without redirection
 			# Global: Yes
-			$this->ExtensionManager->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => $this->_page));
+			$this->ExtensionManager->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => &$this->_page));
 			
 			
 			## Default to the index page if no page has been specified

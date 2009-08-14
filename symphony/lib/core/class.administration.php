@@ -10,7 +10,7 @@
 		
 		private $_currentPage;
 		private $_callback;
-		public $displayProfilerReport;
+
 		public $Page;
 		
 		public static function instance(){
@@ -23,7 +23,7 @@
 		protected function __construct(){
 			parent::__construct();
 			$this->Profiler->sample('Engine Initialisation');
-			$this->displayProfilerReport = false;
+
 			$this->_callback = NULL;
 		}
 		

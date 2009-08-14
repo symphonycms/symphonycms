@@ -1,42 +1,53 @@
 # Symphony 2 #
 
-- Version: 2.0.4
-- Date: 9th July 2009
+- Version: 2.0.6
+- Date: 4th August 2009
 - Github Repository: <http://github.com/symphony/symphony-2/tree/master>
 
 
 ## Synopsis
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core 
-technologies. This repository represents version 2.0.3 and is considered stable.
+technologies. This repository represents version 2.0.6 and is considered stable.
 
-Visit the forum at <http://symphony-cms.com/forum/>
+Visit the forum at <http://symphony-cms.com/community/>
 
 
 ## Updating
 
+### Important Information
+
+Version `2.0.5` introduced multiple includable elements, in the Data Source Editor, for a single field. After updating from `2.0.5` or lower, the DS editor will seem to "forget" about any `Textarea` fields selected when you are editing existing Data Sources. After updating, you must ensure you re-select them before saving. Note, this will only effect Data Sources that you edit and were created prior to `2.0.5`. Until that point, the field will still be included in any front-end XML
+
 ### Via Git
 
-1. Use the following command to get Extensions up to date:
+1. Pull from the master branch at `git://github.com/symphony/symphony-2.git`
+
+2. Use the following command to get Extensions up to date:
 
 	git submodule init
 	git submodule update
 
-2. Follow normal updating procedure below from step 4.
+3. If updating from a version less than `2.0.5`, enable [Debug DevKit](http://github.com/symphony/debugdevkit/tree/master) and [Profile DevKit](http://github.com/symphony/profiledevkit/tree/master) extensions.
+
+4. Follow normal updating procedure below from step 2.
 
 ### Via the old fashioned way
 
 Follow the instructions below if you are updating from Symphony version 2.0 (non Git)
 
-1. Backup `/symphony/.htaccess`.
+**Note:** As of 2.0.6, there is no longer a need to backup `/symphony/.htaccess`.
 
-2. Upload `/symphony`, `index.php` & `update.php`, replacing what is already on your server.
+1. Upload `/symphony`, `index.php` & `update.php`, replacing what is already on your server.
 
-3. Put the backed-up `.htaccess` file into the new `/symphony` folder.
+2. If you are updating from a version < 2.0.5, download and install the Debug DevKit and Profile DevKit:
 
-4. Go to `http://yoursite.com/update.php` to complete the update process.
+	- [Debug DevKit](http://github.com/symphony/debugdevkit/tree/master)
+	- [Profile DevKit](http://github.com/symphony/profiledevkit/tree/master)
 
-5. Celebrate by shaving your friend's head for charity!
+3. Go to `http://yoursite.com/update.php` to complete the update process.
+
+4. Celebrate by shaving your friend's head for charity!
 
 
 ## INSTALLING
@@ -59,10 +70,9 @@ Follow the instructions below if you are updating from Symphony version 2.0 (non
 	- [Debug DevKit](http://github.com/symphony/debugdevkit/tree/master)
 	- [Profile DevKit](http://github.com/symphony/profiledevkit/tree/master)
 
-3. Run the following commands to ensure the submodules are cloned:
+3. Run the following command to ensure the submodules are cloned:
 
-		git submodule init
-		git submodule update
+		git submodule update --init
 
 4. _(Optional)_ If you would like the [default theme](http://github.com/symphony/workspace/tree) installed as well, 
 you will need to use the following command from within the Symphony 2 folder you just created:
@@ -76,7 +86,7 @@ you will need to use the following command from within the Symphony 2 folder you
 
 **Note: You can leave `/workspace` out if you do not want the default theme.**
 
-1. This step assumes you downloaded a zip archive from the [Symphony website](http://symphony21.com). 
+1. This step assumes you downloaded a zip archive from the [Symphony website](http://symphony-cms.com). 
 Upload the following files and directories to the root directory of your website:
 
 	- index.php

@@ -382,10 +382,11 @@
 			
 				foreach($haystack as $key => $val){
 					
-					if(is_array($val) && self::in_array_multi($needle, $val)){
-						return true;	
+					if(is_array($val)){
+						if(self::in_array_multi($needle, $val)) return true;
+					}
 					
-					}elseif(!strcmp($needle, $key) || !strcmp($needle, $val)){ 
+					elseif(!strcmp($needle, $key) || !strcmp($needle, $val)){ 
 						return true;
 													
 					}
@@ -749,8 +750,6 @@
 		
 		***/		
 		public static function countWords($string){
-			header('content-type: text/plain');
-			
 			$string = strip_tags($string);
 			
 			// Strip spaces:

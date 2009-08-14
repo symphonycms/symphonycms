@@ -59,6 +59,39 @@
 	define('kFOOTER', $footer);
 
 
+	
+	$warnings = array(
+	
+		'no-symphony-dir' => __('No <code>/symphony</code> directory was found at this location. Please upload the contents of Symphony\'s install package here.'),
+		'no-write-permission-workspace' => __('Symphony does not have write permission to the existing <code>/workspace</code> directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive <code>chmod -R</code> command.'),
+		'no-write-permission-manifest' => __('Symphony does not have write permission to the <code>/manifest</code> directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive <code>chmod -R</code> command.'),
+		'no-write-permission-root' => __('Symphony does not have write permission to the root directory. Please modify permission settings on this directory. This is necessary only if you are not including a workspace, and can be reverted once installation is complete.'),
+		'no-write-permission-htaccess' => __('Symphony does not have write permission to the temporary <code>htaccess</code> file. Please modify permission settings on this file so it can be written to, and renamed.'),
+		'no-write-permission-symphony' => __('Symphony does not have write permission to the <code>/symphony</code> directory. Please modify permission settings on this directory. This is necessary only during installation, and can be reverted once installation is complete.'),
+		'existing-htaccess' => __('There appears to be an existing <code>.htaccess</code> file in the Symphony install location. To avoid name clashes, you will need to delete or rename this file.'),
+		'existing-htaccess-symphony' => __('There appears to be an existing <code>.htaccess</code> file in the <code>/symphony</code> directory.'),
+		'no-database-connection' => __('Symphony was unable to connect to the specified database. You may need to modify host or port settings.'),
+		'database-incorrect-version' => __('Symphony requires <code>MySQL 4.1</code> or greater to work. This requirement must be met before installation can proceed.'),
+		'database-table-clash' => __('The table prefix <code><!-- TABLE-PREFIX --></code> is already in use. Please choose a different prefix to use with Symphony.'),
+		'user-password-mismatch' => __('The password and confirmation did not match. Please retype your password.'),
+		'user-invalid-email' => __('This is not a valid email address. You must provide an email address since you will need it if you forget your password.'),
+		'user-no-username' => __('You must enter a Username. This will be your Symphony login information.'),
+		'user-no-password' => __('You must enter a Password. This will be your Symphony login information.'),
+		'user-no-name' => __('You must enter your name.')
+		
+	);
+
+	$notices = array(
+		'existing-workspace' => __('An existing <code>/workspace</code> directory was found at this location. Symphony will use this workspace.')
+	);
+
+	$languages = array();
+	foreach(Lang::getAvailableLanguages() as $lang){
+		$languages[] = '<a href="?lang='.$lang.'">'.$lang.'</a>';
+	}
+	$languages = (count($languages) > 1 ? implode(', ', $languages) : '');
+	
+
     function installResult(&$Page, &$install_log, $start){
 
         if(!defined("_INSTALL_ERRORS_")){
@@ -784,12 +817,7 @@
 				$Page->log->pushToLog('Requirement - MySQL extension not present' , SYM_LOG_ERROR, true);
 				$missing[] = MISSING_MYSQL;
 			}
-
-			elseif(!GeneralExtended::checkRequirement(mysql_get_client_info(), 'version', '4.1')){
-				$Page->log->pushToLog('Requirement - MySQL Version is not correct. '.mysql_get_client_info().' detected.' , SYM_LOG_ERROR, true);
-				$missing[] = MISSING_MYSQL;
-			}
-
+			
 			if(!GeneralExtended::checkRequirement('zlib', 'ext', true)){
 				$Page->log->pushToLog('Requirement - ZLib extension not present' , SYM_LOG_ERROR, true);
 				$missing[] = MISSING_ZLIB;
@@ -812,7 +840,9 @@
 		}
 	
 		function install(&$Page, $fields){
-
+			
+			global $warnings;
+			
 			$db = new MySQL;
 
 			$db->connect($fields['database']['host'], 
@@ -835,12 +865,6 @@
 				$Page->log->pushToLog("Configuration - Existing '.htaccess' file found: " . $fields['docroot'] . '/.htaccess', SYM_LOG_NOTICE, true);
 				define("kENVIRONMENT_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'existing-htaccess');
-			}			
-
-			elseif(is_file(rtrim($fields['docroot'], '/') . '/symphony/.htaccess')){
-				$Page->log->pushToLog("Configuration - Existing '.htaccess' file found: " . $fields['docroot'] . '/.htaccess', SYM_LOG_NOTICE, true);
-				define("kENVIRONMENT_WARNING", true);
-				if(!defined("ERROR")) define("ERROR", 'existing-htaccess-symphony');
 			}
 
 			## Cannot write to workspace
@@ -857,18 +881,22 @@
 				if(!defined("ERROR")) define("ERROR", 'no-write-permission-root');
 			}
 
-			## Cannot write to symphony folder.
-			elseif(!is_writable(rtrim($fields['docroot'], '/') . '/symphony')){
-				$Page->log->pushToLog("Configuration - Symphony folder not writable: " . rtrim($fields['docroot'], '/') . '/symphony', SYM_LOG_NOTICE, true);
-				define("kENVIRONMENT_WARNING", true);
-				if(!defined("ERROR")) define("ERROR", 'no-write-permission-symphony');
-			}
-
 			## Failed to establish database connection	
 			elseif(!$db->isConnected()){
 				$Page->log->pushToLog("Configuration - Could not establish database connection", SYM_LOG_NOTICE, true);
 				define("kDATABASE_CONNECTION_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'no-database-connection');
+			}
+			
+			## Incorrect MySQL version
+			elseif(version_compare($db->fetchVar('version', 0, "SELECT VERSION() AS `version`;"), '4.1', '<')){
+				$version = $db->fetchVar('version', 0, "SELECT VERSION() AS `version`;");
+				$Page->log->pushToLog('Configuration - MySQL Version is not correct. '.$version.' detected.', SYM_LOG_NOTICE, true);
+				define("kDATABASE_VERSION_WARNING", true);
+
+				$warnings['database-incorrect-version'] = __('Symphony requires <code>MySQL 4.1</code> or greater to work, however version <code>%s</code> was detected. This requirement must be met before installation can proceed.', array($version));
+
+				if(!defined("ERROR")) define("ERROR", 'database-incorrect-version');
 			}
 
 			## Failed to select database
@@ -980,14 +1008,33 @@
 		            $install_log->pushToLog("Done", SYM_LOG_NOTICE,true, true, true);           
 		        }
 
-				$author_sql = "
-					INSERT INTO  `tbl_authors` (
-					`id` , `username` , `password` , `first_name` , `last_name` , `email` , `last_seen` , `user_type` , `primary` , `default_section` , `auth_token_active`
+				$author_sql = sprintf(
+					"INSERT INTO  `tbl_authors` (
+						`id` , 
+						`username` , 
+						`password` , 
+						`first_name` , 
+						`last_name` , 
+						`email` , 
+						`last_seen` , 
+						`user_type` , 
+						`primary` , 
+						`default_section` , 
+						`auth_token_active`
 					)
 					VALUES (
-					1 ,  '".$config['user']['username']."', MD5(  '".$config['user']['password']."' ) ,  '".$config['user']['firstname']."',  '".$config['user']['lastname']."',  '".$config['user']['email']."', NULL ,  'developer',  'yes',  '6',  'no'
-					);
-				";
+						1,
+						'%s',
+						MD5('%s'),
+						'%s',  
+						'%s',  
+						'%s', 
+						NULL ,  
+						'developer',  
+						'yes',  
+						'6',  
+						'no'
+					);", $config['user']['username'], $config['user']['password'], $config['user']['firstname'], $config['user']['lastname'], $config['user']['email']);
 				
 				$install_log->pushToLog("MYSQL: Creating Default Author...", SYM_LOG_NOTICE, true, false);
 		        if(!$db->query($author_sql)){
@@ -1088,46 +1135,41 @@
 		            installResult($Page, $install_log, $start);
 		        }
 
-		        $rewrite_base = dirname($_SERVER['PHP_SELF']); 
+		        $rewrite_base = trim(dirname($_SERVER['PHP_SELF']), '/'); 
 
-		        $rewrite_base = trim($rewrite_base, '/');
-
-		        if($rewrite_base != "") $rewrite_base .= '/';
+		        if(strlen($rewrite_base) > 0){
+					$rewrite_base .= '/';
+				}
 
 		        $htaccess = '
-		
-### Symphony 2.0 - Do not edit ###
 
+### Symphony 2.0.x ###
 <IfModule mod_rewrite.c>
+
 	RewriteEngine on
 	RewriteBase /'.$rewrite_base.'
 
 	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
 	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
-	RewriteRule .* - [S=14] 
+	RewriteRule .* - [S=14]	
 
 	### IMAGE RULES	
-	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ /'.$rewrite_base.'extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
+	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ ./extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
 
-	### CHECK FOR TRAILING SLASH - Will ignore files
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_URI} !/'.trim($rewrite_base, '/').'$
-	RewriteCond %{REQUEST_URI} !(.*)/$
-	RewriteRule ^(.*)$ /'.$rewrite_base.'$1/ [L,R=301]
+	### ADMIN REWRITE
+	RewriteRule ^symphony\/?$ ./index.php?mode=administration&%{QUERY_STRING} [NC,L]
 
-	### MAIN REWRITE - This will ignore directories
 	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^(.*)\/$ /'.$rewrite_base.'index.php?page=$1&%{QUERY_STRING}	[L]
+	RewriteCond %{REQUEST_FILENAME} !-f	
+	RewriteRule ^symphony(\/(.*\/?))?$ ./index.php?symphony-page=$1&mode=administration&%{QUERY_STRING}	[NC,L]
 
+	### FRONTEND REWRITE - Will ignore files and folders
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^(.*\/?)$ ./index.php?symphony-page=$1&%{QUERY_STRING}	[L]
+	
 </IfModule>
-
-DirectoryIndex index.php
-
-<IfModule mod_autoindex.c>
-    IndexIgnore *
-</IfModule>
-
-######		
+######
 
 ';
 
@@ -1135,42 +1177,6 @@ DirectoryIndex index.php
 		        if(!GeneralExtended::writeFile($kDOCROOT . "/.htaccess", $htaccess, $conf['settings']['file']['write_mode'])){
 		            define("_INSTALL_ERRORS_", "Could not write .htaccess file. Check permission on " . $kDOCROOT);       
 		            $install_log->pushToLog("ERROR: Writing .htaccess File Failed", SYM_LOG_ERROR, true, true);                          
-		            installResult($Page, $install_log, $start);
-		        }
-
-		        $htaccess = '
-
-### Symphony 2.0 - Do not edit ###
-
-<IfModule mod_rewrite.c>
-
-	RewriteEngine on
-	RewriteBase /'.$rewrite_base.'symphony/
-
-	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
-	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
-	RewriteRule .* - [S=14] 
-
-	### CHECK FOR TRAILING SLASH - Will ignore files
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_URI} !/'.$rewrite_base.'symphony$
-	RewriteCond %{REQUEST_URI} !(.*)/$
-	RewriteRule ^(.*)$ /'.$rewrite_base.'symphony/$1/ [L,R=301]
-
-	### MAIN REWRITE - This will ignore directories
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^(.*)\/$ /'.$rewrite_base.'symphony/index.php?page=$1&%{QUERY_STRING}	[L]
-
-</IfModule>
-
-######		
-
-';
-
-		        $install_log->pushToLog("CONFIGURING: Admin", SYM_LOG_NOTICE, true, true);
-		        if(!GeneralExtended::writeFile($kDOCROOT . "/symphony/.htaccess", $htaccess, $conf['settings']['file']['write_mode'])){
-		            define("_INSTALL_ERRORS_", "Could not write /symphony/.htaccess file. Check permission on " . $kDOCROOT . '/symphony');       
-		            $install_log->pushToLog("ERROR: Writing /symphony/.htaccess File Failed", SYM_LOG_ERROR, true, true);                          
 		            installResult($Page, $install_log, $start);
 		        }
 		
@@ -1337,36 +1343,6 @@ DirectoryIndex index.php
 		
 	}
 	
-	$warnings = array(
-	
-		'no-symphony-dir' => __('No <code>/symphony</code> directory was found at this location. Please upload the contents of Symphony\'s install package here.'),
-		'no-write-permission-workspace' => __('Symphony does not have write permission to the existing <code>/workspace</code> directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive <code>chmod -R</code> command.'),
-		'no-write-permission-manifest' => __('Symphony does not have write permission to the <code>/manifest</code> directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive <code>chmod -R</code> command.'),
-		'no-write-permission-root' => __('Symphony does not have write permission to the root directory. Please modify permission settings on this directory. This is necessary only if you are not including a workspace, and can be reverted once installation is complete.'),
-		'no-write-permission-htaccess' => __('Symphony does not have write permission to the temporary <code>htaccess</code> file. Please modify permission settings on this file so it can be written to, and renamed.'),
-		'no-write-permission-symphony' => __('Symphony does not have write permission to the <code>/symphony</code> directory. Please modify permission settings on this directory. This is necessary only during installation, and can be reverted once installation is complete.'),
-		'existing-htaccess' => __('There appears to be an existing <code>.htaccess</code> file in the Symphony install location. To avoid name clashes, you will need to delete or rename this file.'),
-		'existing-htaccess-symphony' => __('There appears to be an existing <code>.htaccess</code> file in the <code>/symphony</code> directory.'),
-		'no-database-connection' => __('Symphony was unable to connect to the specified database. You may need to modify host or port settings.'),
-		'database-table-clash' => __('The table prefix <code><!-- TABLE-PREFIX --></code> is already in use. Please choose a different prefix to use with Symphony.'),
-		'user-password-mismatch' => __('The password and confirmation did not match. Please retype your password.'),
-		'user-invalid-email' => __('This is not a valid email address. You must provide an email address since you will need it if you forget your password.'),
-		'user-no-username' => __('You must enter a Username. This will be your Symphony login information.'),
-		'user-no-password' => __('You must enter a Password. This will be your Symphony login information.'),
-		'user-no-name' => __('You must enter your name.')
-		
-	);
-	
-	$notices = array(
-		'existing-workspace' => __('An existing <code>/workspace</code> directory was found at this location. Symphony will use this workspace.')
-	);
-
-	$languages = array();
-	foreach(Lang::getAvailableLanguages() as $lang){
-		$languages[] = '<a href="?lang='.$lang.'">'.$lang.'</a>';
-	}
-	$languages = (count($languages) > 1 ? implode(', ', $languages) : '');
-	
 	Class Display{
 		
 		function index(&$Page, &$Contents, $fields){
@@ -1497,11 +1473,18 @@ DirectoryIndex index.php
 				$Database->appendChild(new XMLElement('p', __('Please provide Symphony with access to a database.')));
 
 				$class = NULL;
-				if(defined('kDATABASE_CONNECTION_WARNING') && kDATABASE_CONNECTION_WARNING == true) $class = ' warning';		
-	
+				if(defined('kDATABASE_VERSION_WARNING') && kDATABASE_VERSION_WARNING == true) $class = ' warning';
+				 
 				## fields[database][name]
-				$Database->appendChild(Widget::label(__('Database'), Widget::input('fields[database][name]', $fields['database']['name'])));
-
+				$label = Widget::label(__('Database'), Widget::input('fields[database][name]', $fields['database']['name']), $class);
+				$Database->appendChild($label);
+				
+				if(defined('ERROR') && defined('kDATABASE_VERSION_WARNING'))
+					$Database->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
+				
+				$class = NULL;
+				if(defined('kDATABASE_CONNECTION_WARNING') && kDATABASE_CONNECTION_WARNING == true) $class = ' warning';
+				
 				$Div = new XMLElement('div');
 				$Div->setAttribute('class', 'group' . $class);
 
@@ -1784,8 +1767,11 @@ DirectoryIndex index.php
 	call_user_func_array(array('Display', $Page->getPage()), array(&$Page, &$Contents, $fields));
 	
 	$Page->setContent($Contents->generate(true, 2));
+	$output = $Page->display();
 	
-	header('Content-Type: text/html; charset=UTF-8');
-	print $Page->display();
+	header('Content-Type: text/html; charset=UTF-8');	
+	header(sprintf('Content-Length: %d', strlen($output)));
+	echo $output;
+	
 	exit;
 

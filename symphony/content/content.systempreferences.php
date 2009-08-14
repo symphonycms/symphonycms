@@ -57,7 +57,7 @@
 				###
 				# Delegate: Save
 				# Description: Saving of system preferences.
-				$this->_Parent->ExtensionManager->notifyMembers('Save', getCurrentPage(), array('settings' => &$settings, 'errors' => &$this->_errors));
+				$this->_Parent->ExtensionManager->notifyMembers('Save', '/system/preferences/', array('settings' => &$settings, 'errors' => &$this->_errors));
 				
 				if (!is_array($this->_errors) || empty($this->_errors)) {
 

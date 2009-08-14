@@ -111,11 +111,16 @@
 			## Remove the create button if there is a section link field, and no filtering set for it
 			$section_links = $section->fetchFields('sectionlink');
 
-			if(count($section_links) > 1 || (!$filter && $section_links) || (is_object($section_links[0]) && $filter != $section_links[0]->get('id')))
+			if(count($section_links) > 1 || (!$filter && $section_links) || (is_object($section_links[0]) && $filter != $section_links[0]->get('id'))){
 				$this->appendSubheading($section->get('name'));
-
-			else
+			}
+			else{
 				$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), $this->_Parent->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), __('Create a new entry'), 'create button'));
+			}
+			
+			if(is_null($entryManager->getFetchSorting()->field) && is_null($entryManager->getFetchSorting()->direction)){
+				$entryManager->setFetchSortingDirection('DESC');
+			}
 			
 			$entries = $entryManager->fetchByPage($current_page, $section_id, $this->_Parent->Configuration->get('pagination_maximum_rows', 'symphony'), $where, $joins);
 			
@@ -432,18 +437,19 @@
 			if (isset($_REQUEST['prepopulate'])) {
 				$field_id = array_shift(array_keys($_REQUEST['prepopulate']));
 				$value = stripslashes(rawurldecode(array_shift($_REQUEST['prepopulate'])));
+
+				$this->Form->prependChild(Widget::Input(
+					"prepopulate[{$field_id}]",
+					rawurlencode($value),
+					'hidden'
+				));
 				
-				if ($field = $entryManager->fieldManager->fetch($field_id)) {
+				// The actual pre-populating should only happen if there is not existing fields post data
+				if(!isset($_POST['fields']) && $field = $entryManager->fieldManager->fetch($field_id)) {
 					$entry->setData(
 						$field->get('id'),
 						$field->processRawFieldData($value, $error, true)
 					);
-					
-					$this->Form->prependChild(Widget::Input(
-						'prepopulate',
-						"{$field_id}:" . rawurlencode($value),
-						'hidden'
-					));
 				}
 			}
 			
@@ -558,8 +564,20 @@
 						# Delegate: EntryPostCreate
 						# Description: Creation of an Entry. New Entry object is provided.			
 						$this->_Parent->ExtensionManager->notifyMembers('EntryPostCreate', '/publish/new/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
-					
-			  		   	redirect(URL . '/symphony/publish/'.$this->_context['section_handle'].'/edit/'. $entry->get('id') . '/created' . (isset($_POST['prepopulate']) ? ':' . $_POST['prepopulate'] : '') . '/');
+						
+						$prepopulate_field_id = $prepopulate_value = NULL;
+						if(isset($_POST['prepopulate'])){
+							$prepopulate_field_id = array_shift(array_keys($_POST['prepopulate']));
+							$prepopulate_value = stripslashes(rawurldecode(array_shift($_POST['prepopulate'])));
+						}
+						
+			  		   	redirect(sprintf(
+							'%s/symphony/publish/%s/edit/%d/created%s/',
+							URL,
+							$this->_context['section_handle'],
+							$entry->get('id'),
+							(!is_null($prepopulate_field_id) ? ":{$prepopulate_field_id}:{$prepopulate_value}" : NULL)
+						));
 
 					}
 
