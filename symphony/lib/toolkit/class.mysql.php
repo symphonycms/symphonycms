@@ -314,17 +314,7 @@
 		        while ($row = @mysql_fetch_object($this->_result)){	            
 		            @array_push($this->_lastResult, $row);
 		        }
-				
-		        if($query_type == self::__WRITE_OPERATION__){
-					
-		            $this->_affectedRows = @mysql_affected_rows();
-					
-		            if(stristr($query, 'insert') || stristr($query, 'replace')){
-		                $this->_insertID = @mysql_insert_id($this->_connection['id']);
-		            }
-						
-		        }
-				
+		
 		        @mysql_free_result($this->_result);
 			}
 			
@@ -345,7 +335,7 @@
 	    }
 			
 	    public function getInsertID(){
-	        return $this->_insertID;
+	        return @mysql_insert_id($this->_connection['id']);
 	    }
 	
 		public function queryCount(){
