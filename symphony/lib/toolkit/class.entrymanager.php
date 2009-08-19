@@ -394,7 +394,9 @@
 				$obj->set('author_id', $entry['meta']['author_id']);
 				$obj->set('section_id', $entry['meta']['section_id']);
 				
-				foreach ($entry['fields'] as $field_id => $data) $obj->setData($field_id, $data);
+				if(isset($entry['fields']) && is_array($entry['fields'])){
+					foreach ($entry['fields'] as $field_id => $data) $obj->setData($field_id, $data);
+				}
 				
 				$entries[] = $obj;
 			}
