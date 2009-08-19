@@ -2,16 +2,19 @@
 
 	if(!function_exists('processRecordGroup')){
 		function processRecordGroup(&$wrapper, $element, $group, $ds, &$Parent, &$entryManager, &$fieldPool, &$param_pool, $param_output_only=false){
+			$associated_sections = NULL;
 			
 			$xGroup = new XMLElement($element, NULL, $group['attr']);
 			$key = 'ds-' . $ds->dsParamROOTELEMENT;
 			
-			if(!$section = $entryManager->sectionManager->fetch($this->getSource())){
-				$about = $this->about();
-				trigger_error(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])), E_USER_ERROR);
+			if(!$section = $entryManager->sectionManager->fetch($ds->getSource())){
+				$about = $ds->about();
+				throw new Exception(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])));
 			}
 			
-			if (!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS == 'yes') $associated_sections = $section->fetchAssociatedSections();
+			if(!isset($ds->dsParamASSOCIATEDENTRYCOUNTS) || $ds->dsParamASSOCIATEDENTRYCOUNTS == 'yes'){
+				$associated_sections = $section->fetchAssociatedSections();
+			}
 			
 			if(is_array($group['records']) && !empty($group['records'])){
 				foreach($group['records'] as $entry){
@@ -22,12 +25,12 @@
 					$xEntry = new XMLElement('entry');
 					$xEntry->setAttribute('id', $entry->get('id'));
 					
-					if (is_array($associated_sections)) {
+					if(is_array($associated_sections)) {
 						$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts($associated_sections);
 						if(is_array($associated_entry_counts) && !empty($associated_entry_counts)){
 							foreach($associated_entry_counts as $section_id => $count){
 								foreach($associated_sections as $section) { 
-									if ($section['id'] == $section_id) $xEntry->setAttribute($section['handle'], ''.$count.'');
+									if ($section['id'] == $section_id) $xEntry->setAttribute($section['handle'], (string)$count);
 								}							
 							}
 						}
@@ -107,9 +110,11 @@
 			
 			if($field_id != 'id' && !($fieldPool[$field_id] instanceof Field)){
 				throw new Exception(
-					__('Error creating field object with id %1$d, for filtering in data source "%2$s". Check this field exists.', 
-							$field_id, 
-							$this->dsParamROOTELEMENT)
+					__(
+						'Error creating field object with id %1$d, for filtering in data source "%2$s". Check this field exists.', 
+						$field_id, 
+						$this->dsParamROOTELEMENT
+					)
 				);
 			}
 						
@@ -219,7 +224,7 @@
 						if(is_array($associated_entry_counts) && !empty($associated_entry_counts)){
 							foreach($associated_entry_counts as $section_id => $count){
 								foreach($associated_sections as $section) { 
-									if ($section['id'] == $section_id) $xEntry->setAttribute($section['handle'], ''.$count.'');
+									if ($section['id'] == $section_id) $xEntry->setAttribute($section['handle'], (string)$count);
 								}							
 							}
 						}

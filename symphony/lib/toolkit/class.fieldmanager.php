@@ -1,13 +1,12 @@
 <?php
 
-	
-	
 	require_once(TOOLKIT . '/class.field.php');
 	
 	Class FieldManager extends Object{
 
-		var $_Parent;
-		static $initialiased_fields = array();
+		public $_Parent;
+		private static $_initialiased_fields = array();
+		private static $_pool = array();
 
 		function __construct(&$parent){
 			$this->_Parent = &$parent;
@@ -15,7 +14,7 @@
 
 	    function __find($type){
 		 
-		    if(@is_file(TOOLKIT . "/fields/field.$type.php")) return TOOLKIT . '/fields';
+		    if(@is_file(TOOLKIT . "/fields/field.{$type}.php")) return TOOLKIT . '/fields';
 			else{	  
 				
 				$extensionManager = new ExtensionManager($this->_Parent);
@@ -23,7 +22,7 @@
 
 				if(is_array($extensions) && !empty($extensions)){
 					foreach($extensions as $e){
-						if(@is_file(EXTENSIONS . "/$e/fields/field.$type.php")) return EXTENSIONS . "/$e/fields";	
+						if(@is_file(EXTENSIONS . "/{$e}/fields/field.{$type}.php")) return EXTENSIONS . "/{$e}/fields";	
 					}	
 				}		    
 	    	}
@@ -40,52 +39,46 @@
         }
         
         function __getDriverPath($type){	        
-	        return $this->__getClassPath($type) . "/field.$type.php";
+	        return $this->__getClassPath($type) . "/field.{$type}.php";
         }
 		
-		function &create($type=NULL){
+		public function create($type){
 	        
-	        $classname = $this->__getClassName($type);	        
-	        $path = $this->__getDriverPath($type);
+			if(!isset(self::$_pool[$type])){
+	
+		        $classname = $this->__getClassName($type);	        
+		        $path = $this->__getDriverPath($type);
 
-	        if(!@is_file($path)){
-		        trigger_error(__('Could not find Field <code>%1$s</code> at <code>%2$s</code>. If the Field was provided by an Extension, ensure that it is installed, and enabled.', array($type, $path)), E_USER_ERROR);	
-		        return false;
-	        }
+		        if(!file_exists($path)){
+			        throw new Exception(
+						__(
+							'Could not find Field <code>%1$s</code> at <code>%2$s</code>. If the Field was provided by an Extension, ensure that it is installed, and enabled.',
+							array($type, $path)
+						)
+					);	
+			        return false;
+		        }
 	        
-			if(!@class_exists($classname)) require_once($path);
+				if(!class_exists($classname)){
+					require_once($path);
+				}
 			
-			/*if($type){
-				$classname = 'field' . ucfirst(strtolower($type));
-				$classpath = TOOLKIT . '/fields/field.' . strtolower($type) . '.php';
-				
-				if(!is_file($classpath)) return false;
-
-				include_once($classpath);
+				self::$_pool[$type] = new $classname($this);
+			
+				if(self::$_pool[$type]->canShowTableColumn() && !self::$_pool[$type]->get('show_column')){
+					self::$_pool[$type]->set('show_column', 'yes');
+				}
 			}
 			
-			else $classname = 'field';*/
-			
-			$obj =& new $classname($this);
-			
-			if($obj->canShowTableColumn() && !$obj->get('show_column')) $obj->set('show_column', 'yes');
-			
-			return $obj;
-			
-			/*if(isset($this->_pool[$classname]) && is_object($this->_pool[$classname])) 
-				return $this->_pool[$classname];
-			
-			$this->_pool[$classname] =& new $classname($this);
-
-			return $this->_pool[$classname];*/
+			return clone self::$_pool[$type];
 		}
 		
-		function fetchFieldTypeFromID($id){
+		public function fetchFieldTypeFromID($id){
 			return Symphony::Database()->fetchVar('type', 0, "SELECT `type` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
 		}
 		
 		## section_id allows for disambiguation
-		function fetchFieldIDFromElementName($element_name, $section_id=NULL){
+		public function fetchFieldIDFromElementName($element_name, $section_id=NULL){
 			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `element_name` = '$element_name' ".($section_id ? " AND `parent_section` = '$section_id' " : '')." LIMIT 1");
 		}
 		
@@ -93,11 +86,11 @@
 		//	return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields_types` WHERE `handle` = '$handle' LIMIT 1");
 		//}
 		
-		function fetchHandleFromElementName($id){
+		public function fetchHandleFromElementName($id){
 			return $this->_Parent->Database->fetchVar('element_name', 0, "SELECT `element_name` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
 		}
 		
-		function fetchTypes(){
+		public function fetchTypes(){
 			$structure = General::listStructure(TOOLKIT . '/fields', '/field.[a-z0-9_-]+.php/i', false, 'asc', TOOLKIT . '/fields');
 			
 			$extensions = $this->_Parent->ExtensionManager->listInstalledHandles();
@@ -122,48 +115,52 @@
 			return $types;
 		}
 		
-		function fetch($id=NULL, $section_id=NULL, $order='ASC', $sortfield='sortorder', $type=NULL, $location=NULL, $where=NULL, $restrict=Field::__FIELD_ALL__){
-
-			if($id && is_numeric($id)) $returnSingle = true;
+		public function fetch($id=NULL, $section_id=NULL, $order='ASC', $sortfield='sortorder', $type=NULL, $location=NULL, $where=NULL, $restrict=Field::__FIELD_ALL__){
 			
-			$obj = null;
+			$obj = NULL;
+			$ret = array();
 			
-			foreach(self::$initialiased_fields as $initialised_field) {
-				if ($initialised_field->get('id') == $id) {
-					$obj = $initialised_field;
-					$ret[] = $obj;
-				}
+			if(!is_null($id) && is_numeric($id)){
+				$returnSingle = true;
+			}
+	
+			if(!is_null($id) && is_numeric($id) && isset(self::$_initialiased_fields[$id]) && self::$_initialiased_fields[$id] instanceof Field){
+				$ret[] = $obj = clone self::$_initialiased_fields[$id];
 			}
 			
-			if ($obj == null) {
+			else{
 				
-				$sql = 	
-					   "SELECT t1.* "
+				$sql = "SELECT t1.* "
 					 . "FROM tbl_fields as t1 "
 					 . "WHERE 1 "
-					 . ($type ? " AND t1.`type` = '$type' " : '')
-					 . ($location ? " AND t1.`location` = '$location' " : '')
-					 . ($section_id ? " AND t1.`parent_section` = '$section_id' " : '')
+					 . ($type ? " AND t1.`type` = '{$type}' " : NULL)
+					 . ($location ? " AND t1.`location` = '{$location}' " : NULL)
+					 . ($section_id ? " AND t1.`parent_section` = '{$section_id}' " : NULL)
 					 . $where
-					 . ($id ? " AND t1.`id` = '$id' LIMIT 1" : " ORDER BY t1.`$sortfield` $order");
+					 . ($id ? " AND t1.`id` = '{$id}' LIMIT 1" : " ORDER BY t1.`{$sortfield}` {$order}");
 
 				if(!$fields = Symphony::Database()->fetch($sql)) return false;
 
-				$ret = array();
-
-				$total_time = NULL;
-
 				foreach($fields as $f){
+					
+					if(isset(self::$_initialiased_fields[$f['id']]) && self::$_initialiased_fields[$f['id']] instanceof Field){
+						$obj = clone self::$_initialiased_fields[$f['id']];
+					}
+					else{
+						$obj = $this->create($f['type']);
 
-					$obj =& $this->create($f['type']);
+						$obj->setArray($f);
 
-					$obj->setArray($f);
+						$context = Symphony::Database()->fetchRow(0, sprintf(
+							"SELECT * FROM `tbl_fields_%s` WHERE `field_id` = '%s' LIMIT 1", $obj->handle(), $obj->get('id')
+						));
 
-					$context = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_fields_".$obj->handle()."` WHERE `field_id` = '".$obj->get('id')."' LIMIT 1");
-
-					unset($context['id']);
-					$obj->setArray($context);
-
+						unset($context['id']);
+						$obj->setArray($context);
+						
+						self::$_initialiased_fields[$obj->get('id')] = clone $obj;
+					}
+					
 					if($restrict == Field::__FIELD_ALL__ 
 							|| ($restrict == Field::__TOGGLEABLE_ONLY__ && $obj->canToggle()) 
 							|| ($restrict == Field::__UNTOGGLEABLE_ONLY__ && !$obj->canToggle())
@@ -173,15 +170,13 @@
 						$ret[] = $obj;
 					endif;
 
-					self::$initialiased_fields[] = $obj;
-
 				}
 			}
 
 			return (count($ret) <= 1 && $returnSingle ? $ret[0] : $ret);
 		}
 		
-		function add($fields){
+		public function add($fields){
 			
 			if(!isset($fields['sortorder'])){
 		        $next = Symphony::Database()->fetchVar("next", 0, 'SELECT MAX(`sortorder`) + 1 AS `next` FROM tbl_fields LIMIT 1');
@@ -194,7 +189,7 @@
 			return $field_id;
 		}
 
-		function edit($id, $fields){
+		public function edit($id, $fields){
 
 			## Clean up if we are changing types			
 			/*$existing = $this->fetch($id);
@@ -207,7 +202,7 @@
 			return true;			
 		}
 		
-		function delete($id){
+		public function delete($id){
 
 			$existing = $this->fetch($id);
 

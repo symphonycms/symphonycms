@@ -37,14 +37,14 @@
 		}
 		
 		public function fetchAllAssociatedEntryCounts($associated_sections=NULL) {
-			if (is_null($this->get('section_id'))) return null;
+			if(is_null($this->get('section_id'))) return NULL;
 			
-			if ($associated_sections==NULL) {
+			if(is_null($associated_sections)) {
 				$section = $this->_Parent->sectionManager->fetch($this->get('section_id'));
 				$associated_sections = $section->fetchAssociatedSections();
 			}
-			
-			if (!is_array($associated_sections) || empty($associated_sections)) return NULL;
+
+			if(!is_array($associated_sections) || empty($associated_sections)) return NULL;
 			
 			$counts = array();
 			

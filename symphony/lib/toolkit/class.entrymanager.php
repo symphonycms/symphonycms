@@ -291,7 +291,6 @@
 			if ($entry_id && !is_array($entry_id)) $entry_id = array($entry_id);
 			
 			$sql = "
-				
 				SELECT  ".($group ? 'DISTINCT ' : '')."`e`.id, 
 						`e`.section_id, e.`author_id`, 
 						UNIX_TIMESTAMP(e.`creation_date`) AS `creation_date`, 
@@ -304,9 +303,7 @@
 				".($section_id ? "AND `e`.`section_id` = '$section_id' " : '')."
 				$where
 				$sort
-				".($limit ? 'LIMIT ' . intval($start) . ', ' . intval($limit) : '')."
-				
-			";
+				".($limit ? 'LIMIT ' . intval($start) . ', ' . intval($limit) : '');
 
 			$rows = Symphony::Database()->fetch($sql);
 			
@@ -315,27 +312,34 @@
 		}
 		
 		## Do not pass this function ID values from across more than one section.
-		function __buildEntries(array $id_list, $section_id, $element_names=null){
+		function __buildEntries(array $id_list, $section_id, $element_names=NULL){
 			$entries = array();
 			
 			if (!is_array($id_list) || empty($id_list)) return $entries;
 			
 			// choose whether to get data from a subset of fields or all fields in a section
-			if ($element_names){
+			if (!is_null($element_names) && is_array($element_names)){
+				
 				// allow for pseudo-fields containing colons (e.g. Textarea formatted/unformatted)
 				foreach ($element_names as $index => $name) {
-					$parts = split(':', $name);
+					$parts = explode(':', $name, 2);
+					
+					if(count($parts) == 1) continue;
+					
 					unset($element_names[$index]);
 					$element_names[] = trim($parts[0]);
 				}
+				
 				$schema_sql = sprintf(
-					"SELECT * FROM `tbl_fields` WHERE `parent_section` = '%d' AND `element_name` IN (\"%s\")",
+					"SELECT * FROM `tbl_fields` WHERE `parent_section` = %d AND `element_name` IN ('%s')",
 					$section_id,
-					implode('", "', array_unique($element_names))
+					implode("', '", array_unique($element_names))
 				);
-			} else {
+				
+			}
+			else{
 				$schema_sql = sprintf(
-					"SELECT * FROM `tbl_fields` WHERE `parent_section` = '%d'",
+					"SELECT * FROM `tbl_fields` WHERE `parent_section` = %d",
 					$section_id
 				);
 			}

@@ -10,7 +10,7 @@
 	
     Class ExtensionManager extends Manager{
 		
-		static $enabled_extensions = null;
+		static private $_enabled_extensions = NULL;
 		
         function __getClassName($name){
 	        return 'extension_' . $name;
@@ -28,7 +28,7 @@
 	        return EXTENSIONS . strtolower("/$name");
         }
 
-		function sortByStatus($s1, $s2){
+		public function sortByStatus($s1, $s2){
 			
 			if($s1['status'] == EXTENSION_ENABLED) $status_s1 = 2;
 			elseif(in_array($s1['status'], array(EXTENSION_DISABLED, EXTENSION_NOT_INSTALLED, EXTENSION_REQUIRES_UPDATE))) $status_s1 = 1;
@@ -41,11 +41,11 @@
 			return $status_s2 - $status_s1;		
 		}
 		
-		function sortByName($a, $b) {
+		public function sortByName($a, $b) {
 			return strnatcasecmp($a['name'], $b['name']);	
 		}
       
-		function enable($name){
+		public function enable($name){
 			if(false == ($obj =& $this->create($name))){
 				trigger_error(__('Could not %1$s %2$s, there was a problem loading the object. Check the driver class exists.', array(__FUNCTION__, $name)), E_USER_WARNING);
 				return false;
@@ -70,7 +70,7 @@
 						
 		}
 
-		function disable($name){
+		public function disable($name){
 		
 			if(false == ($obj =& $this->create($name))){
 				trigger_error(__('Could not %1$s %2$s, there was a problem loading the object. Check the driver class exists.', array(__FUNCTION__, $name)), E_USER_ERROR);
@@ -87,7 +87,7 @@
 			return true;			
 		}
 
-		function uninstall($name){
+		public function uninstall($name){
 			
 			if(false == ($obj =& $this->create($name))){
 				trigger_error(__('Could not %1$s %2$s, there was a problem loading the object. Check the driver class exists.', array(__FUNCTION__, $name)), E_USER_WARNING);
@@ -102,7 +102,7 @@
 			return true;	
 		}
 		
-		function fetchStatus($name){
+		public function fetchStatus($name){
 			if(!$status = Symphony::Database()->fetchVar('status', 0, "SELECT `status` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1")) return EXTENSION_NOT_INSTALLED;
 			
 			if($status == 'enabled') return EXTENSION_ENABLED;
@@ -111,7 +111,7 @@
 
 		}
 		
-		function pruneService($name, $delegates_only=false){
+		public function pruneService($name, $delegates_only=false){
 
 	        $classname = $this->__getClassName($name);   
 	        $path = $this->__getDriverPath($name);
@@ -131,7 +131,7 @@
 			return true;					
 		}
 		
-		function registerService($name, $enable=true){
+		public function registerService($name, $enable=true){
 
 	        $classname = $this->__getClassName($name);   
 	        $path = $this->__getDriverPath($name);
@@ -173,11 +173,11 @@
 			return $id;
 		}
 
-		function listInstalledHandles(){
-			if (self::$enabled_extensions == null) {
-				self::$enabled_extensions = $this->_Parent->Database->fetchCol('name', "SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'");
+		public function listInstalledHandles(){
+			if(is_null(self::$_enabled_extensions)) {
+				self::$_enabled_extensions = Symphony::Database()->fetchCol('name', "SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'");
 			}
-			return self::$enabled_extensions;
+			return self::$_enabled_extensions;
 		}
 
         ## Will return a list of all extensions and their about information
@@ -255,12 +255,12 @@
         }
 
 		## Return object instance of a named extension
-		function getInstance($name){
+		public function getInstance($name){
 			
 			$extensions = $this->_pool;
 			
 			foreach($extensions as $e){
-				if (get_class($e) == $name) return $e;
+				if(get_class($e) == $name) return $e;
 			}
 			
 		}
@@ -281,16 +281,16 @@
 		}
 		
 		
-		function fetchInstalledVersion($name){
+		public function fetchInstalledVersion($name){
 			$version = Symphony::Database()->fetchVar('version', 0, "SELECT `version` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");		
 			return ($version ? floatval($version) : NULL);
 		}
 		
-		function fetchExtensionID($name){
+		public function fetchExtensionID($name){
 			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
 		}
 		
-		function fetchCustomMenu($name){
+		public function fetchCustomMenu($name){
 			
 		    $classname = $this->__getClassName($name); 	
 				
