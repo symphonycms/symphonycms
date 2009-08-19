@@ -27,7 +27,7 @@
 					case 'saved':
 						$this->pageAlert(
 							__(
-								'Data source updated at %1$s. <a href="%2$s">Create another?</a> <a href="%2$s">View all Data sources</a>', 
+								'Data source updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Data sources</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/datasources/new/', 
@@ -39,7 +39,7 @@
 					case 'created':
 						$this->pageAlert(
 							__(
-								'Data source created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Data source</a>', 
+								'Data source created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Data sources</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/datasources/new/', 

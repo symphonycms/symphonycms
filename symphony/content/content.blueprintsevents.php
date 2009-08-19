@@ -303,7 +303,8 @@
 				$section = $sectionManager->fetch($fields['source']);
 				$markup = NULL;
 				foreach($section->fetchFields() as $f){
-					$container->appendChild($f->getExampleFormMarkup());
+					if ($f->getExampleFormMarkup() instanceof XMLElement)
+						$container->appendChild($f->getExampleFormMarkup());
 				}
 				$container->appendChild(Widget::Input('action['.$rootelement.']', __('Submit'), 'submit'));
 				
