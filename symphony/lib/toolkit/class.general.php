@@ -81,14 +81,14 @@
 			$_vals		= array();
 			$_index		= array();
 			
-			if($isFile)
+			if($isFile){
 				$_data = @file_get_contents($data);
-				
-			else
+			}	
+			else{
 				$_data = $data;
-
-			$_data = preg_replace('/(&[\\w]{2,6};)/', '',$_data);
-			$_data = preg_replace('/<!DOCTYPE[-.:"\'\/\\w\\s]+>/' , '', $_data);
+			}
+			
+			$_data = preg_replace('/<!DOCTYPE[-.:"\'\/\\w\\s]+>/', NULL, $_data);
 			
 			if(strpos($_data, '<?xml') === false){
 				$_data = '<?xml version="1.0" encoding="'.$encoding.'"?><rootelement>'.$_data.'</rootelement>';
