@@ -7,6 +7,7 @@
 	Class FieldManager extends Object{
 
 		var $_Parent;
+		static $initialiased_fields = array();
 
 		function __construct(&$parent){
 			$this->_Parent = &$parent;
@@ -92,6 +93,10 @@
 		//	return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields_types` WHERE `handle` = '$handle' LIMIT 1");
 		//}
 		
+		function fetchHandleFromElementName($id){
+			return $this->_Parent->Database->fetchVar('element_name', 0, "SELECT `element_name` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
+		}
+		
 		function fetchTypes(){
 			$structure = General::listStructure(TOOLKIT . '/fields', '/field.[a-z0-9_-]+.php/i', false, 'asc', TOOLKIT . '/fields');
 			
@@ -121,41 +126,56 @@
 
 			if($id && is_numeric($id)) $returnSingle = true;
 			
-			$sql = 	
-				   "SELECT t1.* "
-				 . "FROM tbl_fields as t1 "
-				 . "WHERE 1 "
-				 . ($type ? " AND t1.`type` = '$type' " : '')
-				 . ($location ? " AND t1.`location` = '$location' " : '')
-				 . ($section_id ? " AND t1.`parent_section` = '$section_id' " : '')
-				 . $where
-				 . ($id ? " AND t1.`id` = '$id' LIMIT 1" : " ORDER BY t1.`$sortfield` $order");
-				
-			if(!$fields = Symphony::Database()->fetch($sql)) return false;
+			$obj = null;
 			
-			$ret = array();
-			
-			$total_time = NULL;
-			
-			foreach($fields as $f){
-
-				$obj =& $this->create($f['type']);
-
-				$obj->setArray($f);
-		
-				$context = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_fields_".$obj->handle()."` WHERE `field_id` = '".$obj->get('id')."' LIMIT 1");
-				
-				unset($context['id']);
-				$obj->setArray($context);
-					
-				if($restrict == Field::__FIELD_ALL__ 
-						|| ($restrict == Field::__TOGGLEABLE_ONLY__ && $obj->canToggle()) 
-						|| ($restrict == Field::__UNTOGGLEABLE_ONLY__ && !$obj->canToggle())
-						|| ($restrict == Field::__FILTERABLE_ONLY__ && $obj->canFilter())
-						|| ($restrict == Field::__UNFILTERABLE_ONLY__ && !$obj->canFilter())
-				):	
+			foreach(self::$initialiased_fields as $initialised_field) {
+				if ($initialised_field->get('id') == $id) {
+					$obj = $initialised_field;
 					$ret[] = $obj;
-				endif;
+				}
+			}
+			
+			if ($obj == null) {
+				
+				$sql = 	
+					   "SELECT t1.* "
+					 . "FROM tbl_fields as t1 "
+					 . "WHERE 1 "
+					 . ($type ? " AND t1.`type` = '$type' " : '')
+					 . ($location ? " AND t1.`location` = '$location' " : '')
+					 . ($section_id ? " AND t1.`parent_section` = '$section_id' " : '')
+					 . $where
+					 . ($id ? " AND t1.`id` = '$id' LIMIT 1" : " ORDER BY t1.`$sortfield` $order");
+
+				if(!$fields = Symphony::Database()->fetch($sql)) return false;
+
+				$ret = array();
+
+				$total_time = NULL;
+
+				foreach($fields as $f){
+
+					$obj =& $this->create($f['type']);
+
+					$obj->setArray($f);
+
+					$context = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_fields_".$obj->handle()."` WHERE `field_id` = '".$obj->get('id')."' LIMIT 1");
+
+					unset($context['id']);
+					$obj->setArray($context);
+
+					if($restrict == Field::__FIELD_ALL__ 
+							|| ($restrict == Field::__TOGGLEABLE_ONLY__ && $obj->canToggle()) 
+							|| ($restrict == Field::__UNTOGGLEABLE_ONLY__ && !$obj->canToggle())
+							|| ($restrict == Field::__FILTERABLE_ONLY__ && $obj->canFilter())
+							|| ($restrict == Field::__UNFILTERABLE_ONLY__ && !$obj->canFilter())
+					):	
+						$ret[] = $obj;
+					endif;
+
+					self::$initialiased_fields[] = $obj;
+
+				}
 			}
 
 			return (count($ret) <= 1 && $returnSingle ? $ret[0] : $ret);

@@ -10,6 +10,8 @@
 	
     Class ExtensionManager extends Manager{
 		
+		static $enabled_extensions = null;
+		
         function __getClassName($name){
 	        return 'extension_' . $name;
         }
@@ -172,7 +174,10 @@
 		}
 
 		function listInstalledHandles(){
-			return Symphony::Database()->fetchCol('name', "SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'");
+			if (self::$enabled_extensions == null) {
+				self::$enabled_extensions = $this->_Parent->Database->fetchCol('name', "SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'");
+			}
+			return self::$enabled_extensions;
 		}
 
         ## Will return a list of all extensions and their about information
