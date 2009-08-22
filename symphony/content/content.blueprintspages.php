@@ -129,7 +129,7 @@
 			$filename = $this->_context[1] . '.xsl';
 			$file_abs = PAGES . '/' . $filename;
 			
-			$is_child = strpos($this->_context[1],'_');
+			$is_child = strrpos($this->_context[1],'_');
 			$pagename = ($is_child != false ? substr($this->_context[1], $is_child + 1) : $this->_context[1]);
 
 			$pagedata = $this->_Parent->Database->fetchRow(0, "
