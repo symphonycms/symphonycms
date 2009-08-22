@@ -52,7 +52,9 @@
 			
 			foreach ($data['value'] as $index => $value) {
 				$list->appendChild(new XMLElement(
-					'item', General::sanitize($value), array(
+					'item',
+					General::sanitize($value),
+					array(
 						'handle'	=> $data['handle'][$index]
 					)
 				));
@@ -84,8 +86,7 @@
 			$states = array();
 			
 			foreach ($values as $value) {
-				$value = General::sanitize($value);
-				
+				$value = $value;
 				$states[$value] = $value;
 			}
 			
@@ -93,7 +94,7 @@
 		}
 		
 		function toggleFieldData($data, $newState){
-			$data['value'] = General::sanitize($newState);
+			$data['value'] = $newState;
 			$data['handle'] = Lang::createHandle($newState);
 			return $data;
 		}
@@ -106,6 +107,7 @@
 			$options = array();
 			
 			foreach($states as $handle => $v){
+				var_dump($v);
 				$options[] = array(General::sanitize($v), in_array($v, $data['value']), $v);
 			}
 			
@@ -162,7 +164,7 @@
 			
 			$status = self::__OK__;
 
-			if(!is_array($data)) return array('value' => General::sanitize($data), 'handle' => Lang::createHandle($data));
+			if(!is_array($data)) return array('value' => $data, 'handle' => Lang::createHandle($data));
 
 			if(empty($data)) return NULL;
 			
