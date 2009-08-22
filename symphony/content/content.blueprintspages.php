@@ -341,20 +341,12 @@
 					$title
 				)
 			));
-			$template_name = $fields['handle'];
-			if ($existing['parent']){
-				$parent_handle = $this->_Parent->Database->fetchRow(0, "
-					SELECT
-						p.handle
-					FROM
-						`tbl_pages` AS p
-					WHERE
-						p.id = '{$existing['parent']}'
-					LIMIT 1
-				");
-				$template_name = $parent_handle['handle'] . '_' . $fields['handle'];
-			}
 			if ($existing) {
+				$template_name = $fields['handle'];
+				if ($existing['parent']){
+					$parents = $this->__getParent($existing['parent']);
+					$template_name = $parents . '_' . $fields['handle'];
+				}
 				$this->appendSubheading(__($title ? $title : __('Untitled')), Widget::Anchor(__('Edit Template'), URL . '/symphony/blueprints/pages/template/' . $template_name, __('Edit Page Template'), 'button'));
 			}
 			else {
@@ -529,6 +521,24 @@
 			}
 			
 			$this->Form->appendChild($div);
+		}
+		
+		protected function __getParent($page_id) {
+			$parent = Symphony::Database()->fetchRow(0, "
+					SELECT
+						p.*
+					FROM
+						`tbl_pages` AS p
+					WHERE
+						p.id = '{$page_id}'
+					LIMIT 1
+				");
+			$handle = $parent['handle'];
+			if($parent['parent']){
+				$ancestor = $this->__getParent($parent['parent']);
+				$handle = $ancestor . '_' . $handle;
+			}
+			return $handle;
 		}
 		
 		protected function __typeUsed($page_id, $type) {
