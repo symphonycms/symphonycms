@@ -107,7 +107,6 @@
 			$options = array();
 			
 			foreach($states as $handle => $v){
-				var_dump($v);
 				$options[] = array(General::sanitize($v), in_array($v, $data['value']), $v);
 			}
 			
