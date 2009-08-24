@@ -165,16 +165,20 @@
 
 		public function isLoggedIn(){
 
-			$un = self::$Database->cleanValue($this->Cookie->get('username'));
-			$pw = self::$Database->cleanValue($this->Cookie->get('pass'));
+			$username = self::$Database->cleanValue($this->Cookie->get('username'));
+			$password = self::$Database->cleanValue($this->Cookie->get('pass'));
+			
+			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
+			
+				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
 
-			$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$un' AND `password` = '$pw' LIMIT 1");
-
-			if($id){
-				$this->_user_id = $id;
-				self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
-				$this->Author = new Author($this, $id);
-				return true;
+				if($id){
+					$this->_user_id = $id;
+					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+					$this->Author = new Author($this, $id);
+					return true;
+				}
+				
 			}
 			
 			$this->Cookie->expire();
@@ -190,17 +194,20 @@
 			$username = self::$Database->cleanValue($username);
 			$password = self::$Database->cleanValue($password);
 			
-			if(!$isHash) $password = md5($password);
+			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){			
+				
+				if(!$isHash) $password = md5($password);
 
-			$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
+				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
 
-			if($id){
-				$this->_user_id = $id;
-				$this->Author = new Author($this, $id);
-				$this->Cookie->set('username', $username);
-				$this->Cookie->set('pass', $password);
-				self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
-				return true;
+				if($id){
+					$this->_user_id = $id;
+					$this->Author = new Author($this, $id);
+					$this->Cookie->set('username', $username);
+					$this->Cookie->set('pass', $password);
+					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+					return true;
+				}
 			}
 			
 			return false;
@@ -210,6 +217,8 @@
 		public function loginFromToken($token){
 			
 			$token = self::$Database->cleanValue($token);
+			
+			if(strlen(trim($token)) == 0) return false;
 			
 			if(strlen($token) == 6){
 				$row = self::$Database->fetchRow(0, "SELECT `a`.`id`, `a`.`username`, `a`.`password` 
