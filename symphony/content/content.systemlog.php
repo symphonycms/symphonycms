@@ -4,11 +4,11 @@
 		
 		var $_Parent;
 		
-		function __construct(&$parent){
+		public function __construct(&$parent){
 			$this->_Parent = $parent;
 		}
 		
-		function build(){
+		public function build(){
 			
 			if(!is_file(ACTIVITY_LOG) || !$log = @file_get_contents(ACTIVITY_LOG)) $this->_Parent->errorPageNotFound();
 			
@@ -20,4 +20,3 @@
 		
 	}
 	
-?>

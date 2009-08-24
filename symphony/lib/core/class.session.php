@@ -20,9 +20,9 @@
 				if(!is_object(Symphony::Database()) || !Symphony::Database()->isConnected()) return false;
 
 				self::$_cache = new Cacheable(Symphony::Database());
-				$installed = self::$_cache->check('_session_config');
-				if (!$installed) {
-					if (!self::createTable()) return false;
+
+				if (self::$_cache->check('_session_config') === false) {
+					self::createTable();
 					self::$_cache->write('_session_config', true);
 				}
 
@@ -54,7 +54,7 @@
 		}
 
 		public static function createTable() {
-			return Symphony::Database()->query(
+			Symphony::Database()->query(
 				"CREATE TABLE IF NOT EXISTS `tbl_sessions` (
 				  `session` varchar(255) NOT NULL,
 				  `session_expires` int(10) unsigned NOT NULL default '0',
