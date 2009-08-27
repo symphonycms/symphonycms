@@ -13,9 +13,9 @@
 	require_once(TOOLKIT . '/class.widget.php');
 	require_once(TOOLKIT . '/class.general.php');
 	require_once(TOOLKIT . '/class.profiler.php');
-	require_once(TOOLKIT . '/class.author.php');
+	require_once(TOOLKIT . '/class.user.php');
 
-	require_once(TOOLKIT . '/class.authormanager.php');	
+	require_once(TOOLKIT . '/class.usermanager.php');	
 	require_once(TOOLKIT . '/class.extensionmanager.php');
 		
 	Abstract Class Symphony implements Singleton{
