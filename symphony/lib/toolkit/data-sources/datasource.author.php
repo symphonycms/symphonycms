@@ -19,10 +19,10 @@
 					$sql = "SELECT `a`.`id`
 							FROM (
 
-								SELECT `tbl_authors`.id, COUNT(`tbl_authors`.id) AS `count` 
-								FROM  `tbl_authors`
-								WHERE `tbl_authors`.`".$field."` IN ('".implode("', '", $bits)."')
-								GROUP BY `tbl_authors`.`id`
+								SELECT `tbl_users`.id, COUNT(`tbl_users`.id) AS `count` 
+								FROM  `tbl_users`
+								WHERE `tbl_users`.`".$field."` IN ('".implode("', '", $bits)."')
+								GROUP BY `tbl_users`.`id`
 
 							) AS `a` 
 							WHERE `a`.`count` >= " . count($bits);
@@ -30,7 +30,7 @@
 					break;*/
 
 				//case DS_FILTER_OR:
-					$sql = "SELECT `id` FROM `tbl_authors` WHERE `".$field."` IN ('".implode("', '", $bits)."')";				
+					$sql = "SELECT `id` FROM `tbl_users` WHERE `".$field."` IN ('".implode("', '", $bits)."')";				
 					//break;
 
 			//}
@@ -65,10 +65,10 @@
 			
 		}
 		
-		$authors = AuthorManager::fetchByID(array_values($author_ids), $this->dsParamSORT, $this->dsParamORDER, $this->dsParamLIMIT, (max(0, ($this->dsParamSTARTPAGE - 1)) * $this->dsParamLIMIT));
+		$authors = UserManager::fetchByID(array_values($author_ids), $this->dsParamSORT, $this->dsParamORDER, $this->dsParamLIMIT, (max(0, ($this->dsParamSTARTPAGE - 1)) * $this->dsParamLIMIT));
 	}
 	
-	else $authors = AuthorManager::fetch($this->dsParamSORT, $this->dsParamORDER, $this->dsParamLIMIT, (max(0, ($this->dsParamSTARTPAGE - 1)) * $this->dsParamLIMIT));
+	else $authors = UserManager::fetch($this->dsParamSORT, $this->dsParamORDER, $this->dsParamLIMIT, (max(0, ($this->dsParamSTARTPAGE - 1)) * $this->dsParamLIMIT));
 
 	
 	if((!is_array($authors) || empty($authors)) && $this->dsParamREDIRECTONEMPTY == 'yes') $this->__redirectToErrorPage();

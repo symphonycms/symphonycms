@@ -1009,17 +1009,15 @@
 		        }
 
 				$author_sql = sprintf(
-					"INSERT INTO  `tbl_authors` (
-						`id` , 
-						`username` , 
-						`password` , 
-						`first_name` , 
-						`last_name` , 
-						`email` , 
-						`last_seen` , 
-						`user_type` , 
-						`primary` , 
-						`default_section` , 
+					"INSERT INTO `tbl_users` (
+						`id`, 
+						`username`, 
+						`password`, 
+						`first_name`, 
+						`last_name`, 
+						`email`, 
+						`last_seen`,
+						`default_section`, 
 						`auth_token_active`
 					)
 					VALUES (
@@ -1029,17 +1027,15 @@
 						'%s',  
 						'%s',  
 						'%s', 
-						NULL ,  
-						'developer',  
-						'yes',  
+						NULL,
 						'6',  
 						'no'
 					);", $config['user']['username'], $config['user']['password'], $config['user']['firstname'], $config['user']['lastname'], $config['user']['email']);
 				
-				$install_log->pushToLog("MYSQL: Creating Default Author...", SYM_LOG_NOTICE, true, false);
+				$install_log->pushToLog("MYSQL: Creating Default User...", SYM_LOG_NOTICE, true, false);
 		        if(!$db->query($author_sql)){
 					$error = $db->getLastError();
-		            define('_INSTALL_ERRORS_', "There was an error while trying create the default author. MySQL returned: " . $error['num'] . ': ' . $error['msg']);       
+		            define('_INSTALL_ERRORS_', "There was an error while trying create the default user. MySQL returned: " . $error['num'] . ': ' . $error['msg']);       
 		            $install_log->pushToLog("Failed", SYM_LOG_ERROR, true, true, true);                         
 		            installResult($Page, $install_log, $start);   
 

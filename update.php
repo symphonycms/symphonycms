@@ -50,7 +50,7 @@
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.0.6');
+	define('kVERSION', '2.0.7');
 	define('kCHANGELOG', 'http://symphony-cms.com/blog/entry/206-release/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -127,7 +127,6 @@
 				
 			}
 			
-			
 			if (version_compare($existing_version, '2.0.5', '<=')) {
 				## Rebuild the .htaccess here
 				
@@ -140,6 +139,8 @@
 		        $htaccess = '
 
 ### Symphony 2.0.x ###
+Options +FollowSymlinks
+
 <IfModule mod_rewrite.c>
 
 	RewriteEngine on
@@ -150,19 +151,19 @@
 	RewriteRule .* - [S=14]	
 
 	### IMAGE RULES	
-	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ ./extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
+	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
 
 	### ADMIN REWRITE
-	RewriteRule ^symphony\/?$ ./index.php?mode=administration&%{QUERY_STRING} [NC,L]
+	RewriteRule ^symphony\/?$ index.php?mode=administration&%{QUERY_STRING} [NC,L]
 
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteCond %{REQUEST_FILENAME} !-f	
-	RewriteRule ^symphony(\/(.*\/?))?$ ./index.php?symphony-page=$1&mode=administration&%{QUERY_STRING}	[NC,L]
+	RewriteRule ^symphony(\/(.*\/?))?$ index.php?symphony-page=$1&mode=administration&%{QUERY_STRING}	[NC,L]
 
 	### FRONTEND REWRITE - Will ignore files and folders
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule ^(.*\/?)$ ./index.php?symphony-page=$1&%{QUERY_STRING}	[L]
+	RewriteRule ^(.*\/?)$ index.php?symphony-page=$1&%{QUERY_STRING}	[L]
 
 </IfModule>
 ######
@@ -177,6 +178,14 @@
 				}
 				
 			}
+			
+			
+
+			if (version_compare($existing_version, '2.0.6', '<=')) {
+				// Author table rename and structure change
+				$frontend->Database->query('ALTER TABLE `tbl_authors` DROP `user_type`, DROP `primary`;');
+				$frontend->Database->query('RENAME TABLE `tbl_authors` TO `tbl_users`;');
+			}			
 			
 			
 			$code = sprintf($shell, 

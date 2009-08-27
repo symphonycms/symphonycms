@@ -18,10 +18,10 @@
 			
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors'))));
-			if (Administration::instance()->Author->isDeveloper()) $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
+			if (Administration::instance()->Author->isDeveloper()) $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new User'), 'create button'));
 			else $this->appendSubheading(__('Authors'));
 			
-		    $authors = AuthorManager::fetch();
+		    $authors = UserManager::fetch();
 
 			$aTableHead = array(
 
@@ -110,8 +110,8 @@
 				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('author_id' => $author_id));		
 				
 				foreach($checked as $author_id){
-					$a = AuthorManager::fetchByID($author_id);
-					if(is_object($a) && $a->get('id') != Administration::instance()->Author->get('id')) AuthorManager::delete($author_id);
+					$a = UserManager::fetchByID($author_id);
+					if(is_object($a) && $a->get('id') != Administration::instance()->Author->get('id')) UserManager::delete($author_id);
 				}
 
 				redirect(URL . '/symphony/system/authors/');
@@ -184,12 +184,12 @@
 			
 				if(!$author_id = $this->_context[1]) redirect(URL . '/symphony/system/authors/');
 			
-				if(!$author = AuthorManager::fetchByID($author_id)){
+				if(!$author = UserManager::fetchByID($author_id)){
 					$this->_Parent->customError(E_USER_ERROR, 'Author not found', 'The author profile you requested does not exist.');
 				}
 			}
 			
-			else $author = new Author;
+			else $author = new User;
 
 			if($this->_context[0] == 'edit' && $author->get('id') == Administration::instance()->Author->get('id')) $isOwner = true;
 			
@@ -328,7 +328,7 @@
 
 				$fields = $_POST['fields'];
 
-			    $this->_Author = new Author;
+			    $this->_Author = new User;
 
 				$this->_Author->set('user_type', $fields['user_type']);
 				$this->_Author->set('primary', 'no');
@@ -352,7 +352,7 @@
 						## TODO: Fix Me
 						###
 						# Delegate: Create
-						# Description: Creation of a new Author. The ID of the author is provided.
+						# Description: Creation of a new User. The ID of the author is provided.
 						//$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('author_id' => $author_id)); 	
 
 			  		   redirect(URL."/symphony/system/authors/edit/$author_id/created/");	
@@ -380,7 +380,7 @@
 
 				$fields = $_POST['fields'];
 				
-			    $this->_Author = AuthorManager::fetchByID($author_id);
+			    $this->_Author = UserManager::fetchByID($author_id);
 
 				$authenticated = false;
 				if($fields['email'] != $this->_Author->get('email')) $changing_email = true;
@@ -457,7 +457,7 @@
 				# Description: Prior to deleting an author. ID is provided.
 				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('author_id' => $author_id));		
 
-				AuthorManager::delete($author_id);
+				UserManager::delete($author_id);
 
 				redirect(URL . '/symphony/system/authors/');
 			}						

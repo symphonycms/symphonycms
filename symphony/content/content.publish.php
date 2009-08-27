@@ -53,7 +53,7 @@
 
 			$entryManager = new EntryManager($this->_Parent);
 
-		    $authors = AuthorManager::fetch();
+		    $authors = UserManager::fetch();
 		
 			$filter = $filter_value = $where = $joins = NULL;		
 			$current_page = (isset($_REQUEST['pg']) && is_numeric($_REQUEST['pg']) ? max(1, intval($_REQUEST['pg'])) : 1);

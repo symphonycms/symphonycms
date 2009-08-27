@@ -190,7 +190,7 @@
 				##Reset of password requested	
 				elseif($action == 'reset'):
 
-					$author = Symphony::Database()->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_authors` WHERE `email` = '".$_POST['email']."'");	
+					$author = Symphony::Database()->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_users` WHERE `email` = '".$_POST['email']."'");	
 
 					if(!empty($author)){
 						
@@ -203,7 +203,7 @@
 						}
 
 						$this->_email_sent = General::sendEmail($author['email'], 
-									Symphony::Database()->fetchVar('email', 0, "SELECT `email` FROM `tbl_authors` ORDER BY `id` ASC LIMIT 1"), 
+									Symphony::Database()->fetchVar('email', 0, "SELECT `email` FROM `tbl_users` ORDER BY `id` ASC LIMIT 1"), 
 									__('Symphony Concierge'), 
 									__('New Symphony Account Password'),
 									__('Hi %s,', array($author['first_name'])) . self::CRLF .
@@ -243,7 +243,7 @@
 					else{
 						$author_id = $this->_Parent->Author->get('id');
 
-						$author = AuthorManager::fetchByID($author_id);
+						$author = UserManager::fetchByID($author_id);
 
 						$author->set('password', md5(Symphony::Database()->cleanValue($_POST['password'])));
 
@@ -268,7 +268,7 @@
 			elseif($_REQUEST['action'] == 'resetpass' && isset($_REQUEST['token'])){
 
 				$sql = "SELECT t1.`id`, t1.`email`, t1.`first_name` 
-					    FROM `tbl_authors` as t1, `tbl_forgotpass` as t2
+					    FROM `tbl_users` as t1, `tbl_forgotpass` as t2
 					 	WHERE t2.`token` = '".$_REQUEST['token']."' AND t1.`id` = t2.`author_id`
 					 	LIMIT 1";
 
@@ -287,7 +287,7 @@
 								'Best Regards,' . self::CRLF . 
 								'The Symphony Team');
 
-					Symphony::Database()->update(array('password' => md5($newpass)), 'tbl_authors', " `id` = '".$author['id']."' LIMIT 1");			
+					Symphony::Database()->update(array('password' => md5($newpass)), 'tbl_users', " `id` = '".$author['id']."' LIMIT 1");			
 					Symphony::Database()->delete('tbl_forgotpass', " `author_id` = '".$author['id']."'");
 
 

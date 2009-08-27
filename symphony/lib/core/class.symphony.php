@@ -172,12 +172,12 @@
 			
 			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
 			
-				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
+				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_users` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
 
 				if($id){
 					$this->_user_id = $id;
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
-					$this->Author = new Author($id);
+					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");
+					$this->Author = new User($id);
 					return true;
 				}
 				
@@ -200,14 +200,14 @@
 				
 				if(!$isHash) $password = md5($password);
 
-				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
+				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_users` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
 
 				if($id){
 					$this->_user_id = $id;
-					$this->Author = new Author($id);
+					$this->Author = new User($id);
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");
 					return true;
 				}
 			}
@@ -224,7 +224,7 @@
 			
 			if(strlen($token) == 6){
 				$row = self::$Database->fetchRow(0, "SELECT `a`.`id`, `a`.`username`, `a`.`password` 
-													 FROM `tbl_authors` AS `a`, `tbl_forgotpass` AS `f`
+													 FROM `tbl_users` AS `a`, `tbl_forgotpass` AS `f`
 													 WHERE `a`.`id` = `f`.`author_id` AND `f`.`expiry` > '".DateTimeObj::getGMT('c')."' AND `f`.`token` = '$token'
 													 LIMIT 1");
 				
@@ -233,17 +233,17 @@
 			
 			else{
 				$row = self::$Database->fetchRow(0, "SELECT `id`, `username`, `password` 
-													 FROM `tbl_authors` 
+													 FROM `tbl_users` 
 													 WHERE SUBSTR(MD5(CONCAT(`username`, `password`)), 1, 8) = '$token' AND `auth_token_active` = 'yes' 
 													 LIMIT 1");				
 			}
 
 			if($row){
 				$this->_user_id = $row['id'];
-				$this->Author = new Author($row['id']);
+				$this->Author = new User($row['id']);
 				$this->Cookie->set('username', $row['username']);
 				$this->Cookie->set('pass', $row['password']);
-				self::$Database->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+				self::$Database->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");
 				return true;
 			}
 			

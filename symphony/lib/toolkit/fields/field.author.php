@@ -17,7 +17,7 @@
 		
 		public function getToggleStates(){
 
-		    $authors = AuthorManager::fetch();
+		    $authors = UserManager::fetch();
 	
 			$states = array();
 			foreach($authors as $a) $states[$a->get('id')] = $a->get('first_name') . ' ' . $a->get('lastname');
@@ -58,7 +58,7 @@
 				$value = array($value);
 			}
 
-		    $authors = AuthorManager::fetch();
+		    $authors = UserManager::fetch();
 		
 			$options = array();
 
@@ -88,7 +88,7 @@
 			$value = array();
 			
 			foreach($data['author_id'] as $author_id){
-				$author = new Author($this->_engine);
+				$author = new User($this->_engine);
 				if($author->loadAuthor($author_id)) $value[] = $author->getFullName();
 			}
 			
@@ -187,7 +187,7 @@
 
 	        $list = new XMLElement($this->get('element_name'));
 	        foreach($data['author_id'] as $author_id){
-	            $author = new Author($this->_engine, $author_id);
+	            $author = new User($this->_engine, $author_id);
 	            $list->appendChild(new XMLElement('item', 
 	                                    $author->getFullName(), 
 	                                    array('id' => $author->get('id'), 'username' => $author->get('username'))));
@@ -242,7 +242,7 @@
 
 		public function getExampleFormMarkup(){
 
-		    $authors = AuthorManager::fetch();
+		    $authors = UserManager::fetch();
 		
 			$options = array();
 
