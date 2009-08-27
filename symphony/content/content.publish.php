@@ -3,7 +3,6 @@
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.entrymanager.php');
 	require_once(TOOLKIT . '/class.sectionmanager.php');
-	require_once(TOOLKIT . '/class.authormanager.php');	
 	
 	Class contentPublish extends AdministrationPage{
 		
@@ -54,8 +53,7 @@
 
 			$entryManager = new EntryManager($this->_Parent);
 
-		    $authorManager = new AuthorManager($this->_Parent);
-		    $authors = $authorManager->fetch();
+		    $authors = AuthorManager::fetch();
 		
 			$filter = $filter_value = $where = $joins = NULL;		
 			$current_page = (isset($_REQUEST['pg']) && is_numeric($_REQUEST['pg']) ? max(1, intval($_REQUEST['pg'])) : 1);
@@ -182,8 +180,10 @@
 
 
 				$field_pool = array();
-				foreach($visible_columns as $column){
-					$field_pool[$column->get('id')] = $column;
+				if(is_array($visible_columns) && !empty($visible_columns)){
+					foreach($visible_columns as $column){
+						$field_pool[$column->get('id')] = $column;
+					}
 				}
 
 				foreach($entries['records'] as $entry){

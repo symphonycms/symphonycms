@@ -243,9 +243,7 @@
 					else{
 						$author_id = $this->_Parent->Author->get('id');
 
-						require_once(TOOLKIT . '/class.authormanager.php');
-						$authorManager = new AuthorManager($this->_Parent);
-						$author = $authorManager->fetchByID($author_id);
+						$author = AuthorManager::fetchByID($author_id);
 
 						$author->set('password', md5(Symphony::Database()->cleanValue($_POST['password'])));
 

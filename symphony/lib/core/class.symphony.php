@@ -14,6 +14,8 @@
 	require_once(TOOLKIT . '/class.general.php');
 	require_once(TOOLKIT . '/class.profiler.php');
 	require_once(TOOLKIT . '/class.author.php');
+
+	require_once(TOOLKIT . '/class.authormanager.php');	
 	require_once(TOOLKIT . '/class.extensionmanager.php');
 		
 	Abstract Class Symphony implements Singleton{
@@ -175,7 +177,7 @@
 				if($id){
 					$this->_user_id = $id;
 					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
-					$this->Author = new Author($this, $id);
+					$this->Author = new Author($id);
 					return true;
 				}
 				
@@ -202,7 +204,7 @@
 
 				if($id){
 					$this->_user_id = $id;
-					$this->Author = new Author($this, $id);
+					$this->Author = new Author($id);
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
 					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
@@ -238,7 +240,7 @@
 
 			if($row){
 				$this->_user_id = $row['id'];
-				$this->Author = new Author($this, $row['id']);
+				$this->Author = new Author($row['id']);
 				$this->Cookie->set('username', $row['username']);
 				$this->Cookie->set('pass', $row['password']);
 				self::$Database->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
