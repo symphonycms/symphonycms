@@ -275,17 +275,25 @@
 				$string = "$string-01-01 to $string-12-31";
 			}	
 			
-			elseif(preg_match('/^(earlier|later) than (.*)$/i', $string, $match)){
+			## Human friendly terms
+			elseif(preg_match('/^(equal to or )?(earlier|later) than (.*)$/i', $string, $match)){
 										
-				$string = $match[2];
+				$string = $match[3];
 				
 				if(!self::__isValidDateString($string)) return self::ERROR;	
 				
 				$time = strtotime($string);
-
-				switch($match[1]){
-					case 'later': $string = DateTimeObj::get('Y-m-d H:i:s', $time+1) . ' to 2038-01-01'; break;
-					case 'earlier': $string = '1970-01-03 to ' . DateTimeObj::get('Y-m-d H:i:s', $time-1); break;
+				if($match[1] == "equal to or "){
+					$later = DateTimeObj::get('Y-m-d H:i:s', $time);
+					$earlier = $later;				
+				}
+				else {
+					$later = DateTimeObj::get('Y-m-d H:i:s', $time+1);
+					$earlier = DateTimeObj::get('Y-m-d H:i:s', $time-1);
+				}
+				switch($match[2]){
+					case 'later': $string = $later . ' to 2038-01-01'; break;
+					case 'earlier': $string = '1970-01-03 to ' . $earlier; break;
 				}
 
 			}
@@ -356,8 +364,8 @@
 			$fields['pre_populate'] = ($this->get('pre_populate') ? $this->get('pre_populate') : 'no');
 			$fields['calendar'] = ($this->get('calendar') ? $this->get('calendar') : 'no');
 			
-			$this->_engine->Database->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");			
-			$this->_engine->Database->insert($fields, 'tbl_fields_' . $this->handle());
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");			
+			Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 					
 		}
 		
@@ -390,7 +398,7 @@
 
 		function createTable(){
 			
-			return $this->_engine->Database->query(
+			return Symphony::Database()->query(
 			
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,

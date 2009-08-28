@@ -165,7 +165,27 @@ var Symphony;
 
 		r.trigger($.Event(r.hasClass('selected') ? 'select' : 'deselect'));
 		r.find('td input').each(function() { this.checked = !this.checked; });
-
+		
+		// when shift held when selecting a row
+		if (e.shiftKey && r.hasClass('selected')) {
+			
+			// find first selected row above newly-selected row
+			var selected_above = r.prevAll('.selected');
+			if (selected_above.length) {
+				var from = $('.selectable tr').index(selected_above);
+				var to = $('.selectable tr').index(r);				
+				$('.selectable tr').each(function(i) {
+					if (i > from && i < to) {
+						var r = $(this).toggleClass('selected');
+						r.trigger($.Event(r.hasClass('selected') ? 'select' : 'deselect'));
+						r.find('td input').each(function() { this.checked = !this.checked; });
+					}
+				});
+			}
+			// de-select text caused by holding shift
+			if (window.getSelection) window.getSelection().removeAllRanges();
+		}
+		
 		return false;
 	});
 

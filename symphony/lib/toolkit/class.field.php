@@ -40,9 +40,9 @@
 			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();
 			else trigger_error(__('No suitable engine object found'), E_USER_ERROR);
 			
-			$this->creationDate = DateTimeObj::getGMT('c'); //$this->_engine->getDateObj();
+			$this->creationDate = DateTimeObj::getGMT('c');
 			
-			$this->Database = $this->_engine->Database;
+			$this->Database = Symphony::Database();
 
 		}
 		
@@ -311,7 +311,7 @@
 		}
 		
 		public function prepareTableValue($data, XMLElement $link=NULL) {
-			$max_length = $this->_engine->Configuration->get('cell_truncation_length', 'symphony');
+			$max_length = Symphony::Configuration()->get('cell_truncation_length', 'symphony');
 			$max_length = ($max_length ? $max_length : 75);
 			
 			$value = strip_tags($data['value']);

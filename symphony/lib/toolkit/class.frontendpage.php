@@ -113,7 +113,7 @@
 						$errstr .= 'Line: ' . $val['line'] . ' - ' . $val['message'] . self::CRLF;
 					};
 					
-					$this->_Parent->customError(E_USER_ERROR, NULL, trim($errstr), true, false, 'xslt-error', array('proc' => clone $this->Proc));
+					throw new SymphonyErrorPage(trim($errstr), NULL, 'xslt-error', array('proc' => clone $this->Proc));
 				}
 				
 				$this->_Parent->Profiler->sample('Page creation complete');
@@ -126,7 +126,7 @@
 			}
 			
 			## EVENT DETAILS IN SOURCE
-			if ($this->_Parent->isLoggedIn() && $this->_Parent->Configuration->get('display_event_xml_in_source', 'public') == 'yes') {
+			if ($this->_Parent->isLoggedIn() && Symphony::Configuration()->get('display_event_xml_in_source', 'public') == 'yes') {
 				$output .= self::CRLF . '<!-- ' . self::CRLF . $this->_events_xml->generate(true) . ' -->';
 			}
 			
@@ -139,7 +139,7 @@
 			
 			if(!$page = $this->resolvePage()){
 				
-				$page = $this->_Parent->Database->fetchRow(0, "
+				$page = Symphony::Database()->fetchRow(0, "
 								SELECT `tbl_pages`.* 
 								FROM `tbl_pages`, `tbl_pages_types` 
 								WHERE `tbl_pages_types`.page_id = `tbl_pages`.id 
@@ -147,13 +147,12 @@
 								LIMIT 1");
 
 				if(empty($page)){
-					$this->_Parent->customError(E_USER_ERROR, 
-												__('Page Not Found'), 
-												__('The page you requested does not exist.'), 
-												false, 
-												true, 
-												'error', 
-												array('header' => 'HTTP/1.0 404 Not Found'));
+					throw new SymphonyErrorPage(
+						__('The page you requested does not exist.'), 	
+						__('Page Not Found'),
+						'error', 
+						array('header' => 'HTTP/1.0 404 Not Found')
+					);
 				}
 				
 				$page['filelocation'] = $this->resolvePageFileLocation($page['path'], $page['handle']);
@@ -182,7 +181,7 @@
 				'this-month' => DateTimeObj::get('m'),
 				'this-day' => DateTimeObj::get('d'),
 				'timezone' => DateTimeObj::get('P'),
-				'website-name' => $this->_Parent->Configuration->get('sitename', 'general'),
+				'website-name' => Symphony::Configuration()->get('sitename', 'general'),
 				'page-title' => $page['title'],
 				'root' => URL,
 				'workspace' => URL . '/workspace',
@@ -193,7 +192,7 @@
 				'parent-path' => '/' . $page['path'],
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
-				'symphony-build' => $this->_Parent->Configuration->get('build', 'symphony'),
+				'symphony-version' => $this->_Parent->Configuration->get('version', 'symphony'),
 			);
 		
 			if(is_array($this->_env['url'])){
@@ -298,7 +297,7 @@
 			
 			## Default to the index page if no page has been specified
 			if(!$this->_page && is_null($row)){
-				$row = $this->_Parent->Database->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types` 
+				$row = Symphony::Database()->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types` 
 															  WHERE `tbl_pages_types`.page_id = `tbl_pages`.id 
 															  AND tbl_pages_types.`type` = 'index' 
 															  LIMIT 1");
@@ -321,7 +320,7 @@
 							WHERE `path` ".($path ? " = '$path'" : 'IS NULL')." 
 							AND `handle` = '$handle' LIMIT 1";
 
-					if($row = $this->_Parent->Database->fetchRow(0, $sql)){
+					if($row = Symphony::Database()->fetchRow(0, $sql)){
 
 						array_push($pathArr, $handle);
 						$valid_page_path = $pathArr;
@@ -357,14 +356,17 @@
 
 			## Make sure the user has permission to access this page
 			if(!$this->_Parent->isLoggedIn() && in_array('admin', $row['type'])){
-				$row = $this->_Parent->Database->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types` 
+				$row = Symphony::Database()->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types` 
 															  WHERE `tbl_pages_types`.page_id = `tbl_pages`.id AND tbl_pages_types.`type` = '403' 
 															  LIMIT 1");
 				
 				if(empty($row)){
-					$this->_Parent->customError(E_USER_ERROR, __('Forbidden'), 
-						__('Please <a href="%s">login</a> to view this page.', array(URL.'/symphony/login/')), false, true, 'error', 
-						array('header' => 'HTTP/1.0 403 Forbidden'));
+					throw new SymphonyErrorPage( 
+						__('Please <a href="%s">login</a> to view this page.', array(URL.'/symphony/login/')), 
+						__('Forbidden'), 
+						'error', 
+						array('header' => 'HTTP/1.0 403 Forbidden')
+					);
 				}
 				
 				$row['type'] = $this->__fetchPageTypes($row['id']);
@@ -378,12 +380,12 @@
 		}
 		
 		private function __fetchPageTypes($page_id){
-			return $this->_Parent->Database->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '{$page_id}' ");
+			return Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '{$page_id}' ");
 		}
 		
 		private function __isSchemaValid($page_id, $bits){
 	
-			$schema = $this->_Parent->Database->fetchVar('params', 0, "SELECT `params` FROM `tbl_pages` WHERE `id` = '".$page_id."' LIMIT 1");					
+			$schema = Symphony::Database()->fetchVar('params', 0, "SELECT `params` FROM `tbl_pages` WHERE `id` = '".$page_id."' LIMIT 1");					
 			$schema_arr = preg_split('/\//', $schema, -1, PREG_SPLIT_NO_EMPTY);		
 	
 			return (count($schema_arr) >= count($bits));
@@ -479,7 +481,7 @@
 
 				$this->_Parent->Profiler->seed();
 				
-				$dbstats = $this->_Parent->Database->getStatistics();
+				$dbstats = Symphony::Database()->getStatistics();
 				$queries = $dbstats['queries'];
 				
 				$ds = $pool[$handle];
@@ -491,7 +493,7 @@
 					
 				endif;
 				
-				$dbstats = $this->_Parent->Database->getStatistics();
+				$dbstats = Symphony::Database()->getStatistics();
 				$queries = $dbstats['queries'] - $queries;
 				
 				$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Datasource', $queries);
@@ -528,7 +530,7 @@
 				foreach($events as $handle){
 					$this->_Parent->Profiler->seed();
 					
-					$dbstats = $this->_Parent->Database->getStatistics();
+					$dbstats = Symphony::Database()->getStatistics();
 					$queries = $dbstats['queries'];
 					
 					$event = $this->EventManager->create($handle, array('env' => $this->_env, 'param' => $this->_param));
@@ -540,7 +542,7 @@
 										
 					endif;
 				
-					$dbstats = $this->_Parent->Database->getStatistics();
+					$dbstats = Symphony::Database()->getStatistics();
 					$queries = $dbstats['queries'] - $queries;
 
 					$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Datasource', $queries);
@@ -556,4 +558,3 @@
 			
 		}		
 	}
-	

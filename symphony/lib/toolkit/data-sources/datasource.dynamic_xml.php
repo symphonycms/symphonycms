@@ -38,7 +38,7 @@
 
 	$cache_id = md5($this->dsParamURL . serialize($this->dsParamFILTERS) . $this->dsParamXPATH);
 
-	$cache = new Cacheable($this->_Parent->Database);
+	$cache = new Cacheable(Symphony::Database());
 	
 	$cachedData = $cache->check($cache_id);
 	

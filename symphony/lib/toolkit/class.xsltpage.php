@@ -12,7 +12,7 @@
 		
 		function __construct(){
 			
-			if(!XsltProcess::isXSLTProcessorAvailable()) trigger_error(__('No suitable XSLT processor was found.'), E_USER_ERROR);
+			if(!XsltProcess::isXSLTProcessorAvailable()) throw new SymphonyErrorPage(__('No suitable XSLT processor was found.'));
 			
 			$this->Proc =& new XsltProcess;
 		}

@@ -76,21 +76,21 @@
 	$result = new XMLElement($this->dsParamROOTELEMENT);
 		
 	if(trim($this->dsParamFILTERS['type']) != '') 
-		$types = __processNavigationTypeFilter($this->dsParamFILTERS['type'], $this->_Parent->Database, $this->__determineFilterType($this->dsParamFILTERS['type']));
+		$types = __processNavigationTypeFilter($this->dsParamFILTERS['type'], Symphony::Database(), $this->__determineFilterType($this->dsParamFILTERS['type']));
 	
 	$sql = "SELECT * FROM `tbl_pages` 
 			WHERE ".(NULL != ($parent_sql = __processNavigationParentFilter($this->dsParamFILTERS['parent'])) ? $parent_sql : '`parent` IS NULL') . "
 			".($types != NULL ? " AND `id` IN ('" . @implode("', '", $types) . "') " : NULL) . "
 		 	ORDER BY `sortorder` ASC";
 
-	$pages = $this->_Parent->Database->fetch($sql);
+	$pages = Symphony::Database()->fetch($sql);
 	
 	if((!is_array($pages) || empty($pages))){
 		if($this->dsParamREDIRECTONEMPTY == 'yes') $this->__redirectToErrorPage();
 		$result->appendChild($this->__noRecordsFound());
 	}
 	
-	else foreach($pages as $p) $result->appendChild(__buildPageXML($p, $this->_Parent->Database));
+	else foreach($pages as $p) $result->appendChild(__buildPageXML($p, Symphony::Database()));
 
 
 ?>

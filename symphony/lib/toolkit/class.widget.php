@@ -2,7 +2,7 @@
 
 	Class Widget{
 	
-		function Label($name=NULL, XMLElement $child=NULL, $class=NULL, $id=NULL){
+		public static function Label($name=NULL, XMLElement $child=NULL, $class=NULL, $id=NULL){
 			$label = new XMLElement('label', ($name ? $name : NULL));
 			
 			if(is_object($child)) $label->appendChild($child);
@@ -13,7 +13,7 @@
 			return $label;
 		}
 
-		function Input($name, $value=NULL, $type='text', $attributes=NULL){
+		public static function Input($name, $value=NULL, $type='text', $attributes=NULL){
 			$obj = new XMLElement('input');		
 			$obj->setAttribute('name', $name);
 			
@@ -29,7 +29,7 @@
 			return $obj;
 		}
 		
-		function Textarea($name, $rows, $cols, $value=NULL, $attributes=NULL){
+		public static function Textarea($name, $rows, $cols, $value=NULL, $attributes=NULL){
 			$obj = new XMLElement('textarea', $value);	
 			
 			$obj->setSelfClosingTag(false);
@@ -46,7 +46,7 @@
 			return $obj;		
 		}
 		
-		function Anchor($value, $href, $title=NULL, $class=NULL, $id=NULL){
+		public static function Anchor($value, $href, $title=NULL, $class=NULL, $id=NULL){
 			$a = new XMLElement('a', $value);
 			$a->setAttribute('href', $href);
 			
@@ -57,7 +57,7 @@
 			return $a;		
 		}
 		
-		function Form($action, $method, $class=NULL, $id=NULL, $attributes=NULL){
+		public static function Form($action, $method, $class=NULL, $id=NULL, $attributes=NULL){
 			$form = new XMLElement('form');
 			$form->setAttribute('action', $action);
 			$form->setAttribute('method', $method);
@@ -75,7 +75,7 @@
 		
 		###
 		# Simple way to create generic Symphony table wrapper
-		function Table($head=NULL, $foot=NULL, $body=NULL, $class=NULL, $id=NULL){
+		public static function Table($head=NULL, $foot=NULL, $body=NULL, $class=NULL, $id=NULL){
  			$table = new XMLElement('table');
 
 			if($class) $table->setAttribute('class', $class);
@@ -89,7 +89,7 @@
 		}
 		
 		## Provided with an array of colum names, this will return an XML object
-		function TableHead($array){
+		public static function TableHead($array){
 			
 			$thead = new XMLElement('thead');
 			$tr = new XMLElement('tr');
@@ -98,8 +98,12 @@
 				
 				$th = new XMLElement('th');
 				
-				list($value, $scope, $attr) = $col;
+				$value = $scope = $attr = NULL;
 				
+				$value = $col[0];
+				if(isset($col[1])) $scope = $col[1];
+				if(isset($col[2])) $attr = $col[2];
+								
 				if(is_object($value)) $th->appendChild($value);
 				else $th->setValue($value);
 			
@@ -116,7 +120,7 @@
 			
 		}
 		
-		function TableBody($rows, $class=NULL, $id=NULL){
+		public static function TableBody($rows, $class=NULL, $id=NULL){
 			$tbody = new XMLElement('tbody');
 			
 			if($class) $tbody->setAttribute('class', $class);
@@ -127,7 +131,7 @@
 			return $tbody;			
 		}
 		
-		function TableData($value, $class=NULL, $id=NULL, $colspan=NULL, array $attr=NULL){
+		public static function TableData($value, $class=NULL, $id=NULL, $colspan=NULL, array $attr=NULL){
 
 			if(is_object($value)){
 				$td = new XMLElement('td');
@@ -145,7 +149,7 @@
 			return $td;
 		}
 	
-		function TableRow($data, $class=NULL, $id=NULL, $rowspan=NULL){
+		public static function TableRow($data, $class=NULL, $id=NULL, $rowspan=NULL){
 			$tr = new XMLElement('tr');
 
 			if($class) $tr->setAttribute('class', $class);
@@ -157,7 +161,7 @@
 			return $tr;
 		}
 	
-		function Select($name, $options, $attributes=NULL){
+		public static function Select($name, $options, $attributes=NULL){
 			$obj = new XMLElement('select');
 			$obj->setAttribute('name', $name);	
 			
@@ -201,7 +205,7 @@
 			return $obj;
 		}
 		
-		function __SelectBuildOption($option){
+		private static function __SelectBuildOption($option){
 			
 			list($value, $selected, $desc, $class, $id, $attr) = $option;
 			if(!$desc) $desc = $value;
@@ -222,7 +226,7 @@
 			
 		}
 		
-		function wrapFormElementWithError($element, $message){
+		public static function wrapFormElementWithError($element, $message){
 			$div = new XMLElement('div');
 			$div->setAttributeArray(array('id' => 'error', 'class' => 'invalid'));
 			

@@ -190,20 +190,20 @@
 				##Reset of password requested	
 				elseif($action == 'reset'):
 
-					$author = $this->_Parent->Database->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_authors` WHERE `email` = '".$_POST['email']."'");	
+					$author = Symphony::Database()->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_authors` WHERE `email` = '".$_POST['email']."'");	
 
 					if(!empty($author)){
 						
-						$this->_Parent->Database->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' ");
+						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' ");
 						
-						if(!$token = $this->_Parent->Database->fetchVar('token', 0, "SELECT `token` FROM `tbl_forgotpass` WHERE `expiry` > '".DateTimeObj::getGMT('c')."' AND `author_id` = ".$author['id'])){
+						if(!$token = Symphony::Database()->fetchVar('token', 0, "SELECT `token` FROM `tbl_forgotpass` WHERE `expiry` > '".DateTimeObj::getGMT('c')."' AND `author_id` = ".$author['id'])){
 							
 							$token = substr(md5(time() . rand(0, 200)), 0, 6);
-							$this->_Parent->Database->insert(array('author_id' => $author['id'], 'token' => $token, 'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))), 'tbl_forgotpass');					
+							Symphony::Database()->insert(array('author_id' => $author['id'], 'token' => $token, 'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))), 'tbl_forgotpass');					
 						}
 
 						$this->_email_sent = General::sendEmail($author['email'], 
-									$this->_Parent->Database->fetchVar('email', 0, "SELECT `email` FROM `tbl_authors` ORDER BY `id` ASC LIMIT 1"), 
+									Symphony::Database()->fetchVar('email', 0, "SELECT `email` FROM `tbl_authors` ORDER BY `id` ASC LIMIT 1"), 
 									__('Symphony Concierge'), 
 									__('New Symphony Account Password'),
 									__('Hi %s,', array($author['first_name'])) . self::CRLF .
@@ -243,11 +243,9 @@
 					else{
 						$author_id = $this->_Parent->Author->get('id');
 
-						require_once(TOOLKIT . '/class.authormanager.php');
-						$authorManager = new AuthorManager($this->_Parent);
-						$author = $authorManager->fetchByID($author_id);
+						$author = AuthorManager::fetchByID($author_id);
 
-						$author->set('password', md5($this->_Parent->Database->cleanValue($_POST['password'])));
+						$author->set('password', md5(Symphony::Database()->cleanValue($_POST['password'])));
 
 						if(!$author->commit() || !$this->_Parent->login($author->get('username'), $_POST['password'])){
 							redirect(URL . "symphony/system/authors/edit/{$author_id}/error/");
@@ -274,7 +272,7 @@
 					 	WHERE t2.`token` = '".$_REQUEST['token']."' AND t1.`id` = t2.`author_id`
 					 	LIMIT 1";
 
-				$author = $this->_Parent->Database->fetchRow(0, $sql);	
+				$author = Symphony::Database()->fetchRow(0, $sql);	
 
 				if(!empty($author)){
 
@@ -289,8 +287,8 @@
 								'Best Regards,' . self::CRLF . 
 								'The Symphony Team');
 
-					$this->_Parent->Database->update(array('password' => md5($newpass)), 'tbl_authors', " `id` = '".$author['id']."' LIMIT 1");			
-					$this->_Parent->Database->delete('tbl_forgotpass', " `author_id` = '".$author['id']."'");
+					Symphony::Database()->update(array('password' => md5($newpass)), 'tbl_authors', " `id` = '".$author['id']."' LIMIT 1");			
+					Symphony::Database()->delete('tbl_forgotpass', " `author_id` = '".$author['id']."'");
 
 
 					## TODO: Fix Me

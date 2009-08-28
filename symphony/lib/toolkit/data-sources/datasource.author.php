@@ -42,9 +42,6 @@
 		}
 	}
 
-	include_once(TOOLKIT . '/class.authormanager.php');
-	$AuthorManager =& new AuthorManager($this->_Parent);
-
 	$author_ids = array();
 
 	if(is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
@@ -52,7 +49,7 @@
 
 			if(!is_array($value) && trim($value) == '') continue;
 			
-			$ret = __processAuthorFilter($field, $value, $this->_Parent->Database);
+			$ret = __processAuthorFilter($field, $value, Symphony::Database());
 		
 			if(empty($ret)){
 				$author_ids = array();
@@ -68,10 +65,10 @@
 			
 		}
 		
-		$authors = $AuthorManager->fetchByID(array_values($author_ids), $this->dsParamSORT, $this->dsParamORDER, $this->dsParamLIMIT, (max(0, ($this->dsParamSTARTPAGE - 1)) * $this->dsParamLIMIT));
+		$authors = AuthorManager::fetchByID(array_values($author_ids), $this->dsParamSORT, $this->dsParamORDER, $this->dsParamLIMIT, (max(0, ($this->dsParamSTARTPAGE - 1)) * $this->dsParamLIMIT));
 	}
 	
-	else $authors = $AuthorManager->fetch($this->dsParamSORT, $this->dsParamORDER, $this->dsParamLIMIT, (max(0, ($this->dsParamSTARTPAGE - 1)) * $this->dsParamLIMIT));
+	else $authors = AuthorManager::fetch($this->dsParamSORT, $this->dsParamORDER, $this->dsParamLIMIT, (max(0, ($this->dsParamSTARTPAGE - 1)) * $this->dsParamLIMIT));
 
 	
 	if((!is_array($authors) || empty($authors)) && $this->dsParamREDIRECTONEMPTY == 'yes') $this->__redirectToErrorPage();
@@ -104,7 +101,7 @@
 	
 				if($author->isTokenActive()) $fields['author-token'] = new XMLElement('author-token', $author->createAuthToken());
 	
-				if($section = $this->_Parent->Database->fetchRow(0, "SELECT `id`, `handle`, `name` FROM `tbl_sections` WHERE `id` = '".$author->get('default_section')."' LIMIT 1")){
+				if($section = Symphony::Database()->fetchRow(0, "SELECT `id`, `handle`, `name` FROM `tbl_sections` WHERE `id` = '".$author->get('default_section')."' LIMIT 1")){
 					$default_section = new XMLElement('default-section', $section['name']);
 					$default_section->setAttributeArray(array('id' => $section['id'], 'handle' => $section['handle']));
 					$fields['default-section'] = $default_section;

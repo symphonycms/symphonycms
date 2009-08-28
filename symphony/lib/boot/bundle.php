@@ -9,7 +9,11 @@
 	    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 	} 
 	else{
+<<<<<<< HEAD:symphony/lib/boot/bundle.php
 	    error_reporting(E_ALL ^ E_NOTICE);
+=======
+	    error_reporting(E_ALL & ~E_NOTICE);
+>>>>>>> 0514b90088041d1d90bc3f99c2a9a10ea1e60fe6:symphony/lib/boot/bundle.php
 	}
 	
 	set_magic_quotes_runtime(0);

@@ -63,7 +63,7 @@
 
 					foreach($settings as $set => $values) {
 						foreach($values as $key => $val) {
-							$this->_Parent->Configuration->set($key, $val, $set);
+							Symphony::Configuration()->set($key, $val, $set);
 						}
 					}
 					

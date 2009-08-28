@@ -1,6 +1,4 @@
 <?php
-
-	
 	
 	require_once(TOOLKIT . '/class.mutex.php');
 	
@@ -9,8 +7,8 @@
 
 		public $Database;
 
-		function __construct(&$database){			
-			$this->Database = $database;
+		function __construct(MySQL $Database){			
+			$this->Database = $Database;
 		}
 
 		private function __optimise(){

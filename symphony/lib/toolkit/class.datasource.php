@@ -60,7 +60,7 @@
 		}
 		
 		function __redirectToErrorPage(){
-			$page_id = $this->_Parent->Database->fetchVar('page_id', 0, "SELECT `page_id` FROM `tbl_pages_types` WHERE tbl_pages_types.`type` = '404' LIMIT 1");
+			$page_id = Symphony::Database()->fetchVar('page_id', 0, "SELECT `page_id` FROM `tbl_pages_types` WHERE tbl_pages_types.`type` = '404' LIMIT 1");
 			
 			if(!$page_id) $this->_Parent->customError(E_USER_ERROR, __('Page Not Found'), __('The page you requested does not exist.'), false, true, 'error', array('header' => 'HTTP/1.0 404 Not Found'));
 			else{

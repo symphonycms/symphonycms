@@ -1,20 +1,17 @@
 <?php
 
 	require_once(TOOLKIT . '/class.administrationpage.php');
-	require_once(TOOLKIT . '/class.authormanager.php');
  	require_once(TOOLKIT . '/class.sectionmanager.php');
 
 	Class contentSystemAuthors extends AdministrationPage{
 
 		var $_Author;
-		var $_AuthorManager;
 		var $_errors;
 
 		function __construct(&$parent){
 			parent::__construct($parent);
 			
-			$this->_errors = array();
-		    $this->_AuthorManager = new AuthorManager($parent);			
+			$this->_errors = array();		
 		}
 		
 		function __viewIndex(){
@@ -24,7 +21,7 @@
 			if (Administration::instance()->Author->isDeveloper()) $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
 			else $this->appendSubheading(__('Authors'));
 			
-		    $authors = $this->_AuthorManager->fetch();
+		    $authors = AuthorManager::fetch();
 
 			$aTableHead = array(
 
@@ -113,8 +110,8 @@
 				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('author_id' => $author_id));		
 				
 				foreach($checked as $author_id){
-					$a = $this->_AuthorManager->fetchByID($author_id);
-					if(is_object($a) && $a->get('id') != Administration::instance()->Author->get('id')) $this->_AuthorManager->delete($author_id);
+					$a = AuthorManager::fetchByID($author_id);
+					if(is_object($a) && $a->get('id') != Administration::instance()->Author->get('id')) AuthorManager::delete($author_id);
 				}
 
 				redirect(URL . '/symphony/system/authors/');
@@ -187,12 +184,12 @@
 			
 				if(!$author_id = $this->_context[1]) redirect(URL . '/symphony/system/authors/');
 			
-				if(!$author = $this->_AuthorManager->fetchByID($author_id)){
+				if(!$author = AuthorManager::fetchByID($author_id)){
 					$this->_Parent->customError(E_USER_ERROR, 'Author not found', 'The author profile you requested does not exist.');
 				}
 			}
 			
-			else $author =& $this->_AuthorManager->create();
+			else $author = new Author;
 
 			if($this->_context[0] == 'edit' && $author->get('id') == Administration::instance()->Author->get('id')) $isOwner = true;
 			
@@ -331,7 +328,7 @@
 
 				$fields = $_POST['fields'];
 
-			    $this->_Author =& $this->_AuthorManager->create();
+			    $this->_Author = new Author;
 
 				$this->_Author->set('user_type', $fields['user_type']);
 				$this->_Author->set('primary', 'no');
@@ -383,7 +380,7 @@
 
 				$fields = $_POST['fields'];
 				
-			    $this->_Author =& $this->_AuthorManager->fetchByID($author_id);
+			    $this->_Author = AuthorManager::fetchByID($author_id);
 
 				$authenticated = false;
 				if($fields['email'] != $this->_Author->get('email')) $changing_email = true;
@@ -432,7 +429,7 @@
 				
 					elseif($this->_Author->commit()){					
 						
-						$this->_Parent->Database->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' OR `author_id` = '".$author_id."' ");
+						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' OR `author_id` = '".$author_id."' ");
 						
 						if($isOwner) $this->_Parent->login($this->_Author->get('username'), $this->_Author->get('password'), true);
 
@@ -460,7 +457,7 @@
 				# Description: Prior to deleting an author. ID is provided.
 				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('author_id' => $author_id));		
 
-				$this->_AuthorManager->delete($author_id);
+				AuthorManager::delete($author_id);
 
 				redirect(URL . '/symphony/system/authors/');
 			}						

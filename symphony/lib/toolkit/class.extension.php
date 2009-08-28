@@ -1,7 +1,5 @@
 <?php
 
-	
-
 	Class Extension{
 		
 		const NAV_CHILD = 0;

@@ -9,7 +9,7 @@
 		if($ret === true) return $processErrors;
 		
 		$tag = 'DOMDocument::';
-		$processErrors[] = array('type' => 'xml', 'number' => $errno, 'message' => str_replace($tag, '', $errstr), 'file' => $errfile, 'line' => $errline);
+		$processErrors[] = array('type' => 'xml', 'number' => $errno, 'message' => str_replace($tag, NULL, $errstr), 'file' => $errfile, 'line' => $errline);
 	}
 	
 	function trapXSLError($errno, $errstr, $errfile, $errline, $errcontext, $ret=false){
@@ -19,7 +19,7 @@
 		if($ret === true) return $processErrors;
 		
 		$tag = 'DOMDocument::';
-		$processErrors[] = array('type' => 'xsl', 'number' => $errno, 'message' => str_replace($tag, '', $errstr), 'file' => $errfile, 'line' => $errline);
+		$processErrors[] = array('type' => 'xsl', 'number' => $errno, 'message' => str_replace($tag, NULL, $errstr), 'file' => $errfile, 'line' => $errline);
 	}	
 
 	Class XsltProcess{

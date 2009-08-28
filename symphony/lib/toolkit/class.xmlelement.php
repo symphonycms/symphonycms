@@ -52,6 +52,14 @@
 			return $this->_children;
 		}
 		
+		public function getAttributes(){ 
+			return $this->_attributes;
+		}
+		
+		public function getName(){ 
+			return $this->_name;
+		}
+		
 		public function setElementStyle($style='xml'){
 			$this->_elementStyle = $style;
 		}

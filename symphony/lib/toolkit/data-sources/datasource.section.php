@@ -2,9 +2,19 @@
 
 	if(!function_exists('processRecordGroup')){
 		function processRecordGroup(&$wrapper, $element, $group, $ds, &$Parent, &$entryManager, &$fieldPool, &$param_pool, $param_output_only=false){
+			$associated_sections = NULL;
 			
 			$xGroup = new XMLElement($element, NULL, $group['attr']);
 			$key = 'ds-' . $ds->dsParamROOTELEMENT;
+			
+			if(!$section = $entryManager->sectionManager->fetch($ds->getSource())){
+				$about = $ds->about();
+				throw new Exception(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])));
+			}
+			
+			if(!isset($ds->dsParamASSOCIATEDENTRYCOUNTS) || $ds->dsParamASSOCIATEDENTRYCOUNTS == 'yes'){
+				$associated_sections = $section->fetchAssociatedSections();
+			}
 			
 			if(is_array($group['records']) && !empty($group['records'])){
 				foreach($group['records'] as $entry){
@@ -15,11 +25,14 @@
 					$xEntry = new XMLElement('entry');
 					$xEntry->setAttribute('id', $entry->get('id'));
 					
-					$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts();
-					if(is_array($associated_entry_counts) && !empty($associated_entry_counts)){
-						foreach($associated_entry_counts as $section_id => $count){
-							$section_handle = $Parent->Database->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '$section_id' LIMIT 1");
-							$xEntry->setAttribute($section_handle, ''.$count.'');
+					if(is_array($associated_sections)) {
+						$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts($associated_sections);
+						if(is_array($associated_entry_counts) && !empty($associated_entry_counts)){
+							foreach($associated_entry_counts as $section_id => $count){
+								foreach($associated_sections as $section) { 
+									if ($section['id'] == $section_id) $xEntry->setAttribute($section['handle'], (string)$count);
+								}							
+							}
 						}
 					}
 
@@ -35,7 +48,16 @@
 							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 
 						if(isset($ds->dsParamPARAMOUTPUT) && $ds->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
-							$param_pool[$key][] = $fieldPool[$field_id]->getParameterPoolValue($values);
+							if(!isset($param_pool[$key]) || !is_array($param_pool[$key])) $param_pool[$key] = array();
+							
+							$param_pool_values = $fieldPool[$field_id]->getParameterPoolValue($values);
+							
+							if(is_array($param_pool_values)){
+								$param_pool[$key] = array_merge($param_pool_values, $param_pool[$key]);
+							}
+							else{
+								$param_pool[$key][] = $param_pool_values;
+							}
 						}
 						
 						if (!$param_output_only) foreach ($ds->dsParamINCLUDEDELEMENTS as $handle) {
@@ -97,9 +119,11 @@
 			
 			if($field_id != 'id' && !($fieldPool[$field_id] instanceof Field)){
 				throw new Exception(
-					__('Error creating field object with id %1$d, for filtering in data source "%2$s". Check this field exists.', 
-							$field_id, 
-							$this->dsParamROOTELEMENT)
+					__(
+						'Error creating field object with id %1$d, for filtering in data source "%2$s". Check this field exists.', 
+						$field_id, 
+						$this->dsParamROOTELEMENT
+					)
 				);
 			}
 						
@@ -115,13 +139,20 @@
 	if($this->dsParamSORT == 'system:id') $entryManager->setFetchSorting('id', $this->dsParamORDER);
 	elseif($this->dsParamSORT == 'system:date') $entryManager->setFetchSorting('date', $this->dsParamORDER);
 	else $entryManager->setFetchSorting($entryManager->fieldManager->fetchFieldIDFromElementName($this->dsParamSORT, $this->getSource()), $this->dsParamORDER);
-
+	
+	// combine INCLUDEDELEMENTS and PARAMOUTPUT into an array of field names
+	$datasource_schema = $this->dsParamINCLUDEDELEMENTS;
+	if (!is_array($datasource_schema)) $datasource_schema = array();
+	if ($this->dsParamPARAMOUTPUT) $datasource_schema[] = $this->dsParamPARAMOUTPUT;
+	if ($this->dsParamGROUP) $datasource_schema[] = $entryManager->fieldManager->fetchHandleFromElementName($this->dsParamGROUP);
+	
 	$entries = $entryManager->fetchByPage($this->dsParamSTARTPAGE, 
 										  $this->getSource(), 
 										  ($this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : NULL), 
 										  $where, $joins, $group, 
 										  (!$include_pagination_element ? true : false), 
-										  true);
+										  true,
+										  $datasource_schema);
 
 	if(!$section = $entryManager->sectionManager->fetch($this->getSource())){
 		$about = $this->about();
@@ -186,7 +217,9 @@
 				}
 		
 			else:
-	
+				
+				if (!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS == 'yes') $associated_sections = $section->fetchAssociatedSections();
+				
 				foreach($entries['records'] as $entry){
 
 					$data = $entry->getData();
@@ -195,11 +228,14 @@
 					$xEntry = new XMLElement('entry');
 					$xEntry->setAttribute('id', $entry->get('id'));
 					
-					$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts();
-					if(is_array($associated_entry_counts) && !empty($associated_entry_counts)){
-						foreach($associated_entry_counts as $section_id => $count){
-							$section_handle = $this->_Parent->Database->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '$section_id' LIMIT 1");
-							$xEntry->setAttribute($section_handle, ''.$count.'');
+					if (is_array($associated_sections)) {
+						$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts($associated_sections);
+						if(is_array($associated_entry_counts) && !empty($associated_entry_counts)){
+							foreach($associated_entry_counts as $section_id => $count){
+								foreach($associated_sections as $section) { 
+									if ($section['id'] == $section_id) $xEntry->setAttribute($section['handle'], (string)$count);
+								}							
+							}
 						}
 					}
 
@@ -215,7 +251,16 @@
 							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 			
 						if(isset($this->dsParamPARAMOUTPUT) && $this->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
-							$param_pool[$key][] = $fieldPool[$field_id]->getParameterPoolValue($values);
+							if(!isset($param_pool[$key]) || !is_array($param_pool[$key])) $param_pool[$key] = array();
+							
+							$param_pool_values = $fieldPool[$field_id]->getParameterPoolValue($values);
+							
+							if(is_array($param_pool_values)){
+								$param_pool[$key] = array_merge($param_pool_values, $param_pool[$key]);
+							}
+							else{
+								$param_pool[$key][] = $param_pool_values;
+							}
 						}
 
 						if (!$this->_param_output_only) foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {

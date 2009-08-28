@@ -49,7 +49,7 @@
 
 				foreach($sections as $s){
 					
-					$entry_count = intval($this->_Parent->Database->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries` WHERE `section_id` = '".$s->get('id')."' "));
+					$entry_count = intval(Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries` WHERE `section_id` = '".$s->get('id')."' "));
 					
 					## Setup each cell
 					$td1 = Widget::TableData(Widget::Anchor($s->get('name'), $this->_Parent->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', NULL, 'content'));
@@ -422,7 +422,7 @@
 				}
 
 				## Check for duplicate section handle
-				elseif($this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . $meta['name'] . "' LIMIT 1")){
+				elseif(Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . $meta['name'] . "' LIMIT 1")){
 					$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
 					$canProceed = false;
 				}
@@ -482,7 +482,7 @@
 				if($canProceed){
 
 			        $query = 'SELECT MAX(`sortorder`) + 1 AS `next` FROM tbl_sections LIMIT 1';
-			        $next = $this->_Parent->Database->fetchVar('next', 0, $query);
+			        $next = Symphony::Database()->fetchVar('next', 0, $query);
 
 			        $meta['sortorder'] = ($next ? $next : '1');
 					$meta['handle'] = Lang::createHandle($meta['name']);
@@ -560,7 +560,7 @@
 				}
 
 				## Check for duplicate section handle
-				elseif($meta['name'] != $existing_section->get('name') && $this->_Parent->Database->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . $meta['name'] . " AND `id` != ' . $section_id . ' LIMIT 1")){
+				elseif($meta['name'] != $existing_section->get('name') && Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . $meta['name'] . " AND `id` != ' . $section_id . ' LIMIT 1")){
 					$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
 					$canProceed = false;
 				}
@@ -641,7 +641,7 @@
 							}
 						}
 
-						$missing_cfs = $this->_Parent->Database->fetchCol('id', "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '$section_id' AND `id` NOT IN ('".@implode("', '", $id_list)."')");
+						$missing_cfs = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '$section_id' AND `id` NOT IN ('".@implode("', '", $id_list)."')");
 
 						if(is_array($missing_cfs) && !empty($missing_cfs)){
 							foreach($missing_cfs as $id){

@@ -81,14 +81,14 @@
 			$_vals		= array();
 			$_index		= array();
 			
-			if($isFile)
+			if($isFile){
 				$_data = @file_get_contents($data);
-				
-			else
+			}	
+			else{
 				$_data = $data;
-
-			$_data = preg_replace('/(&[\\w]{2,6};)/', '',$_data);
-			$_data = preg_replace('/<!DOCTYPE[-.:"\'\/\\w\\s]+>/' , '', $_data);
+			}
+			
+			$_data = preg_replace('/<!DOCTYPE[-.:"\'\/\\w\\s]+>/', NULL, $_data);
 			
 			if(strpos($_data, '<?xml') === false){
 				$_data = '<?xml version="1.0" encoding="'.$encoding.'"?><rootelement>'.$_data.'</rootelement>';
@@ -849,8 +849,8 @@
 			
 			$file_size = intval($file_size);
 			
-			if($file_size >= (1024 * 1024)) 	$file_size = number_format($file_size * (1 / (1024 * 1024)), 2) . ' mb';
-			elseif($file_size >= 1024) 			$file_size = intval($file_size * (1/1024)) . ' kb';
+			if($file_size >= (1024 * 1024)) 	$file_size = number_format($file_size * (1 / (1024 * 1024)), 2) . ' MB';
+			elseif($file_size >= 1024) 			$file_size = intval($file_size * (1/1024)) . ' KB';
 			else 								$file_size = intval($file_size) . ' bytes';
 			
 			return $file_size;

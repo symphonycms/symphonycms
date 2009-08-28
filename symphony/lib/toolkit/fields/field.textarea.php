@@ -55,8 +55,8 @@
 			if($this->get('formatter') != 'none') $fields['formatter'] = $this->get('formatter');
 			$fields['size'] = $this->get('size');
 			
-			$this->_engine->Database->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");		
-			return $this->_engine->Database->insert($fields, 'tbl_fields_' . $this->handle());
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");		
+			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 					
 		}
 		
@@ -101,19 +101,7 @@
 				$message = __("'%s' is a required field.", array($this->get('label')));
 				return self::__MISSING_FIELDS__;
 			}	
-			
-			if(empty($data)) self::__OK__;
-			
-			$formatted = $this->applyFormatting($data);
-			
-			include_once(TOOLKIT . '/class.xsltprocess.php');
-			$xsltProc =& new XsltProcess;	
-			
-			if(!General::validateXML(($formatted ? $formatted : General::sanitize($data)), $errors, false, $xsltProc)){
-				$message = __('"%1$s" contains invalid XML. The following error was returned: <code>%2$s</code>', array($this->get('label'), $errors[0]['message']));
-				return self::__INVALID_FIELDS__;
-			}
-			
+
 			return self::__OK__;
 							
 		}
@@ -125,13 +113,21 @@
 				'value' => $data
 			);
 			
-			if ($formatted = $this->applyFormatting($data)) {
-				$result['value_formatted'] = $formatted;
-				
-			} else {
-				$result['value_formatted'] = General::sanitize($data);
-			}
+			$formatted = $this->applyFormatting($data);
+
+			include_once(TOOLKIT . '/class.xsltprocess.php');
 			
+			$result['value_formatted'] = $formatted;
+			
+			if(!General::validateXML($formatted, $errors, false, new XsltProcess)){
+				$result['value_formatted'] = html_entity_decode($formatted, ENT_QUOTES, 'UTF-8');
+				$result['value_formatted'] = $this->__replaceAmpersands($result['value_formatted']);
+
+				if(!General::validateXML($result['value_formatted'], $errors, false, new XsltProcess)){
+					$result['value_formatted'] = General::sanitize($formatted);
+				}
+			}
+
 			return $result;
 		}
 
@@ -144,14 +140,14 @@
 				
 				$formatter = $tfm->create($this->get('formatter'));
 
-				return $formatter->run($data);
+				return $data = $formatter->run($data);
 
 			}	
-			
-			return NULL;		
+
+			return $data;		
 		}
 		
-		private function replaceAmpersands($value) {
+		private function __replaceAmpersands($value) {
 			return preg_replace('/&(?!(#[0-9]+|#x[0-9a-f]+|amp|lt|gt);)/i', '&amp;', trim($value));
 		}
 		
@@ -167,11 +163,7 @@
 					$value = $data['value'];
 				}
 
-				$value = $this->replaceAmpersands($value);
-				
-				$attributes = array(
-					'word-count' => General::countWords($value)
-				);
+				$value = $this->__replaceAmpersands($value);
 				
 				if ($mode == 'formatted') $attributes['mode'] = $mode;
 				
@@ -183,16 +175,15 @@
 					)
 				);
 				
-			} elseif ($mode == 'unformatted') {
+			}
 				
-				$value = $this->replaceAmpersands($data['value']);
+			elseif ($mode == 'unformatted') {
 
 				$wrapper->appendChild(
 					new XMLElement(
 						$this->get('element_name'),
-						($encode ? General::sanitize($value) : $value),
+						sprintf('<![CDATA[%s]]>', $data['value']),
 						array(
-							'word-count' => General::countWords($value),
 							'mode' => $mode
 						)
 					)
@@ -239,7 +230,7 @@
 		
 		function createTable(){
 			
-			return $this->_engine->Database->query(
+			return Symphony::Database()->query(
 			
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,

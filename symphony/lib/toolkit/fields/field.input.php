@@ -3,7 +3,7 @@
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 	
 	Class fieldInput extends Field {
-		function __construct(&$parent){
+		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Text Input');
 			$this->_required = true;
@@ -11,15 +11,15 @@
 			$this->set('required', 'no');
 		}
 
-		function allowDatasourceOutputGrouping(){
+		public function allowDatasourceOutputGrouping(){
 			return true;
 		}
 		
-		function allowDatasourceParamOutput(){
+		public function allowDatasourceParamOutput(){
 			return true;
 		}
 
-		function groupRecords($records){
+		public function groupRecords($records){
 			
 			if(!is_array($records) || empty($records)) return;
 			
@@ -43,7 +43,7 @@
 			return $groups;
 		}
 
-		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			$value = General::sanitize($data['value']);
 			$label = Widget::Label($this->get('label'));
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
@@ -53,11 +53,11 @@
 			else $wrapper->appendChild($label);
 		}
 		
-		function isSortable(){
+		public function isSortable(){
 			return true;
 		}
 		
-		function canFilter(){
+		public function canFilter(){
 			return true;
 		}
 		
@@ -65,7 +65,7 @@
 			return true;
 		}
 
-		function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
+		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
 			$joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
 			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`value` $order");
 		}
@@ -130,12 +130,16 @@
 			return true;
 		}
 
-		function __applyValidationRules($data){			
+		private function __applyValidationRules($data){			
 			$rule = $this->get('validator');
 			return ($rule ? General::validateString($data, $rule) : true);
 		}
+		
+		private function __replaceAmpersands($value) {
+			return preg_replace('/&(?!(#[0-9]+|#x[0-9a-f]+|amp|lt|gt);)/i', '&amp;', trim($value));
+		}
 
-		function checkPostFieldData($data, &$message, $entry_id=NULL){
+		public function checkPostFieldData($data, &$message, $entry_id=NULL){
 
 			$message = NULL;
 			
@@ -150,12 +154,7 @@
 				$message = __("'%s' contains invalid data. Please check the contents.", array($this->get('label')));
 				return self::__INVALID_FIELDS__;	
 			}
-			
-			if(!General::validateXML(General::sanitize($data), $errors, false, new XsltProcess)){
-				$message = __('"%1$s" contains invalid XML. The following error was returned: <code>%2$s</code>', array($this->get('label'), $errors[0]['message']));
-				return self::__INVALID_FIELDS__;
-			}
-			
+
 			return self::__OK__;
 							
 		}
@@ -167,32 +166,45 @@
 			if (strlen(trim($data)) == 0) return array();
 			
 			$result = array(
-				'value' => $data,
-				'handle' => Lang::createHandle($data)
+				'value' => $data
 			);
+
+			include_once(TOOLKIT . '/class.xsltprocess.php');
+			
+			if(!General::validateXML($data, $errors, false, new XsltProcess)){
+				$result['value'] = html_entity_decode($data, ENT_QUOTES, 'UTF-8');
+				$result['value'] = $this->__replaceAmpersands($result['value']);
+
+				if(!General::validateXML($result['value'], $errors, false, new XsltProcess)){
+					$result['value'] = General::sanitize($data);
+				}
+			}
+			
+			$result['handle'] = Lang::createHandle($result['value']);
 			
 			return $result;
 		}
 
-		function canPrePopulate(){
+		public function canPrePopulate(){
 			return true;
 		}
 
-		function appendFormattedElement(&$wrapper, $data, $encode=false){
+		public function appendFormattedElement(&$wrapper, $data, $encode=false){
+
+			$value = $data['value'];
+
+			if($encode === true){
+				$value = General::sanitize($value);
+			}
 			
-			if($this->get('apply_formatting') == 'yes' && isset($data['value_formatted'])) $value = $data['value_formatted'];
-			else $value = $data['value'];
-			
-			$value = General::sanitize($value);
-			
-			$wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($value) : $value), array('handle' => $data['handle'])));
+			$wrapper->appendChild(
+				new XMLElement(
+					$this->get('element_name'), $value, array('handle' => $data['handle'])
+				)
+			);
 		}
 		
-		function getEntryFormatter($entry_id){
-			return $this->_engine->Database->fetchVar('formatter', 0, "SELECT `formatter` FROM `tbl_entries` WHERE `id` = '$entry_id' LIMIT 1");
-		}
-		
-		function commit(){
+		public function commit(){
 
 			if(!parent::commit()) return false;
 			
@@ -205,13 +217,13 @@
 			$fields['field_id'] = $id;
 			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
 			
-			$this->_engine->Database->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 				
-			return $this->_engine->Database->insert($fields, 'tbl_fields_' . $this->handle());
+			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 					
 		}
 		
-		function setFromPOST($postdata){		
+		public function setFromPOST($postdata){		
 			parent::setFromPOST($postdata);			
 			if($this->get('validator') == '') $this->remove('validator');				
 		}
@@ -226,9 +238,9 @@
 						
 		}
 		
-		function createTable(){
+		public function createTable(){
 			
-			return $this->_engine->Database->query(
+			return Symphony::Database()->query(
 			
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,

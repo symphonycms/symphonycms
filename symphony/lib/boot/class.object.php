@@ -8,7 +8,7 @@
 			$this->_ParentCatalogue = array();
 	    }
 
-		// Special function for autodiscovery of parent objects and their type
+		// Special function for autodiscovery of parent objects and their type. I hate this too.
 		protected function catalogueParentObjects(){
 			
 			$ref = $this->_Parent;

@@ -4,13 +4,33 @@
 		
 	Class Log{
 
-		const kNOTICE = 0;
-		const kWARNING = 1;
-		const kERROR = 2;
-		const kALL = 3;
+		const kNOTICE = E_NOTICE;
+		const kWARNING = E_WARNING;
+		const kERROR = E_ERROR;
 
 		const kAPPEND = 10;
 		const kOVERWRITE = 11;
+
+		private static $__errorTypeStrings = array (
+			
+			E_NOTICE         		=> 'NOTICE',
+			E_WARNING        		=> 'WARNING',
+			E_ERROR          		=> 'ERROR',
+			E_PARSE          		=> 'PARSING ERROR',
+                                       
+			E_CORE_ERROR     		=> 'CORE ERROR',
+			E_CORE_WARNING   		=> 'CORE WARNING',
+			E_COMPILE_ERROR  		=> 'COMPILE ERROR',
+			E_COMPILE_WARNING 		=> 'COMPILE WARNING',
+			                           
+			E_USER_NOTICE    		=> 'USER NOTICE',
+			E_USER_WARNING   		=> 'USER WARNING',
+			E_USER_ERROR     		=> 'USER ERROR',
+			                           
+			E_STRICT         		=> 'STRICT NOTICE',
+			E_RECOVERABLE_ERROR  	=> 'RECOVERABLE ERROR'
+			
+		);
 
 		private $_log_path;
 		private $_log;
@@ -41,28 +61,15 @@
 		
 		private function __defineNameString($type){
 		
-			switch($type){
-				
-				case self::kNOTICE:
-					return 'NOTICE';
-					
-				case self::kWARNING:
-					return 'WARNING';
-					
-				case self::kERROR:
-					return 'ERROR';
-					
-				case self::kALL:
-					return 'ALL';
-					
-				default:
-					return 'UNKNOWN';
-				
+			if(isset(self::$__errorTypeStrings[$type])){
+				return self::$__errorTypeStrings[$type];
 			}
-				
+
+			return 'UNKNOWN';
+			
 		}
 		
-		public function pushToLog($message, $type=self::kNOTICE, $writeToLog=false, $addbreak=true, $append=false){
+		public function pushToLog($message, $type=E_NOTICE, $writeToLog=false, $addbreak=true, $append=false){
 			
 			if(empty($this->_log) && !is_array($this->_log))
 				$this->_log = array();

@@ -26,13 +26,24 @@
 			
 			return $last[1];
 		}
+
+		function retrieveTotalMemoryUsage(){
+			$base = $this->retrieve(0);
+			$total = $last = 0;
+			foreach($this->retrieve() as $item){
+				$total += max(0, (($item[5]-$base[5]) - $last));
+				$last = $item[5]-$base[5];
+			} 
+
+			return $total;
+		}
 		
 		function sample($msg, $type=PROFILE_RUNNING_TOTAL, $group='General', $queries=NULL){	
 		
 			$start = NULL;
 		
 			if($type == PROFILE_RUNNING_TOTAL)
-				$this->_records[] = array($msg, precision_timer('stop', $this->_starttime), precision_timer(), $group, $queries);
+				$this->_records[] = array($msg, precision_timer('stop', $this->_starttime), precision_timer(), $group, $queries, memory_get_usage());
 			
 			else{
 				
@@ -42,7 +53,7 @@
 				}
 				
 				$prev = end($this->_records);
-				$this->_records[] = array($msg, precision_timer('stop', ($start ? $start : $prev[2])), precision_timer(), $group, $queries);
+				$this->_records[] = array($msg, precision_timer('stop', ($start ? $start : $prev[2])), precision_timer(), $group, $queries, memory_get_usage());
 			}
 		}
 		

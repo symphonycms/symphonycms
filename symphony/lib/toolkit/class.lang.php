@@ -2,6 +2,7 @@
 
 	## Provide an interface for translations
 	function __($string, array $tokens=NULL){
+		if(!class_exists('Lang') || !(Lang::Dictionary() instanceof Dictionary)) return vsprintf($string, $tokens);
 		return Lang::Dictionary()->translate($string, $tokens);
 	}
 	
@@ -64,7 +65,7 @@
 		private static $_transliterations;		
 		private static $_instance;
 		
-		private function __load($path, $lang, $clear=false){
+		private static function __load($path, $lang, $clear=false){
 			
 			if((bool)$clear === true || !(self::$_dictionary instanceof Dictionary)){
 				self::$_dictionary = new Dictionary(array());
@@ -74,8 +75,8 @@
 			$include = sprintf($path, $lang);
 			if(file_exists($include)) require($include);
 
-			if(is_array($dictionary)) self::$_dictionary->merge($dictionary);
-			if(is_array($transliterations)) self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
+			if(isset($dictionary) && is_array($dictionary)) self::$_dictionary->merge($dictionary);
+			if(isset($transliterations) && is_array($transliterations)) self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
 
 			if(empty(self::$_transliterations)){
 				include(TOOLKIT . '/include.transliterations.php');
@@ -109,7 +110,7 @@
 		/***
 		
 		Method: createHandle
-		Description: given a string, this will clean it for use as a Symphony handle
+		Description: given a string, this will clean it for use as a Symphony handle. Preserves multi-byte characters
 		Param: $string - string to clean
 		       $max_length - the maximum number of characters in the handle
 			   $delim - all non-valid characters will be replaced with this
@@ -129,17 +130,19 @@
 			$string = strip_tags($string);
 			
 			## Remove punctuation
-			$string = preg_replace('/([\\.\'"]++)/', '', $string);	
+			$string = preg_replace('/[\\.\'"]+/', NULL, $string);	
 						
 			## Trim it
 			if($max_length != NULL && is_numeric($max_length)) $string = General::limitWords($string, $max_length);
 								
 			## Replace spaces (tab, newline etc) with the delimiter
-			$string = preg_replace('/([\s]++)/', $delim, $string);					
-								
-			## Replace underscores and other non-word, non-digit characters with $delim
-			//$string = preg_replace('/[^a-zA-Z0-9]++/', $delim, $string);
-			$string = preg_replace('/[<>?@:!-\/\[-`ëí;‘’]++/', $delim, $string);
+			$string = preg_replace('/[\s]+/', $delim, $string);					
+
+			## Find all legal characters
+			preg_match_all('/[^<>?@:!-\/\[-`ëí;‘’]+/u', $string, $matches);
+
+			## Join only legal character with the $delim
+			$string = implode($delim, $matches[0]);
 			
 			## Allow for custom rules
 			if(is_array($additional_rule_set) && !empty($additional_rule_set)){
@@ -178,7 +181,7 @@
 			$string = strip_tags($string);				
 
 			## Find all legal characters
-			preg_match_all('/[\p{L}\w:;.,+=~]+/', $string, $matches);
+			preg_match_all('/[\p{L}\w:;.,+=~]+/u', $string, $matches);
 
 			## Join only legal character with the $delim
 			$string = implode($delim, $matches[0]);

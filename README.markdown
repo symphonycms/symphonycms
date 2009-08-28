@@ -91,6 +91,7 @@ Upload the following files and directories to the root directory of your website
 
 	- index.php
 	- install.php
+	- install.sql
 	- /symphony
 	- /workspace
 	- /extensions
@@ -105,18 +106,17 @@ details for establishing a database connection and about your server environment
 
 **Secure Production Sites: Change permissions and remove installer files.**
 
-1. For a smooth install process, change permissions for the `root`, `symphony` and `workspace` directories.
+1. For a smooth install process, change permissions for the `root` and `workspace` directories.
 
-		cd /your/site/root
-		chmod 777 symphony .
-		chmod -R 777 workspace
+	cd /your/site/root
+	chmod -R 777 workspace
 
-2. Once successfully installed, change permissions as per your server preferences:
+2. Once successfully installed, change permissions as per your server preferences, E.G.
 
-		chmod 755 symphony .
+	chmod 755 .
 
 3. Remove installer files (unless you're fine with revealing all your trade secrets):
 
-		rm install.php install.sql workspace/install.sql update.php
+	rm install.php install.sql workspace/install.sql update.php
 
 4. Dance like it's 1999!

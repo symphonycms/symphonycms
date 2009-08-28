@@ -9,7 +9,7 @@
 	    
         function __construct(&$parent){
 			$this->_Parent = $parent;						
-	        $this->Database = $this->_Parent->Database;
+	        $this->Database = Symphony::Database();
         }
 		
 		function &create(){	
@@ -18,7 +18,7 @@
 		}
 		
 		function fetchIDFromHandle($handle){
-			return $this->_Parent->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_sections` WHERE `handle` = '$handle' LIMIT 1");
+			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_sections` WHERE `handle` = '$handle' LIMIT 1");
 		}
 		
 		function fetch($id=NULL, $order='ASC', $sortfield='name'){
@@ -54,15 +54,15 @@
 			
 		function add($fields){
 			
-			if(!$this->_Parent->Database->insert($fields, 'tbl_sections')) return false;
-			$section_id = $this->_Parent->Database->getInsertID();
+			if(!Symphony::Database()->insert($fields, 'tbl_sections')) return false;
+			$section_id = Symphony::Database()->getInsertID();
 					
 			return $section_id;
 		}
 
 		function edit($id, $fields){
 		
-			if(!$this->_Parent->Database->update($fields, 'tbl_sections', " `id` = '$id'")) return false;
+			if(!Symphony::Database()->update($fields, 'tbl_sections', " `id` = '$id'")) return false;
 
 			return true;			
 		}
@@ -70,30 +70,30 @@
 		function delete($section_id){
 
 			$query = "SELECT `id`, `sortorder` FROM tbl_sections WHERE `id` = '$section_id'";
-			$details = $this->_Parent->Database->fetchRow(0, $query);
+			$details = Symphony::Database()->fetchRow(0, $query);
 
 			## Delete all the entries
 			include_once(TOOLKIT . '/class.entrymanager.php');
 			$entryManager = new EntryManager($this->_Parent);
-			$entries = $this->_Parent->Database->fetchCol('id', "SELECT `id` FROM `tbl_entries` WHERE `section_id` = '$section_id'");			
+			$entries = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_entries` WHERE `section_id` = '$section_id'");			
 			$entryManager->delete($entries);
 			
 			## Delete all the fields
 			$fieldManager = new FieldManager($this->_Parent);
-			$fields = $this->_Parent->Database->fetchCol('id', "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '$section_id'");				
+			$fields = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '$section_id'");				
 			
 			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $field_id) $fieldManager->delete($field_id);
 			}
 			
 			## Delete the section
-			$this->_Parent->Database->delete('tbl_sections', " `id` = '$section_id'");
+			Symphony::Database()->delete('tbl_sections', " `id` = '$section_id'");
 
 			## Update the sort orders
-			$this->_Parent->Database->query("UPDATE tbl_sections SET `sortorder` = (`sortorder` - 1) WHERE `sortorder` > '".$details['sortorder']."'");	
+			Symphony::Database()->query("UPDATE tbl_sections SET `sortorder` = (`sortorder` - 1) WHERE `sortorder` > '".$details['sortorder']."'");	
 			
 			## Delete the section associations
-			$this->_Parent->Database->delete('tbl_sections_association', " `parent_section_id` = '$section_id'");				
+			Symphony::Database()->delete('tbl_sections_association', " `parent_section_id` = '$section_id'");				
 			
 			return true;
 		}

@@ -3,7 +3,6 @@
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.entrymanager.php');
 	require_once(TOOLKIT . '/class.sectionmanager.php');
-	require_once(TOOLKIT . '/class.authormanager.php');	
 	
 	Class contentPublish extends AdministrationPage{
 		
@@ -50,11 +49,11 @@
 
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
+			$this->Form->setAttribute("class", $this->_context['section_handle']);
 
 			$entryManager = new EntryManager($this->_Parent);
 
-		    $authorManager = new AuthorManager($this->_Parent);
-		    $authors = $authorManager->fetch();
+		    $authors = AuthorManager::fetch();
 		
 			$filter = $filter_value = $where = $joins = NULL;		
 			$current_page = (isset($_REQUEST['pg']) && is_numeric($_REQUEST['pg']) ? max(1, intval($_REQUEST['pg'])) : 1);
@@ -69,7 +68,7 @@
 
 					$filter_value = rawurldecode($filter_value);
 
-					$filter = $this->_Parent->Database->fetchVar('id', 0, "SELECT `f`.`id` 
+					$filter = Symphony::Database()->fetchVar('id', 0, "SELECT `f`.`id` 
 																			   FROM `tbl_fields` AS `f`, `tbl_sections` AS `s` 
 																			   WHERE `s`.`id` = `f`.`parent_section` 
 																			   AND f.`element_name` = '$field_name' 
@@ -122,7 +121,7 @@
 				$entryManager->setFetchSortingDirection('DESC');
 			}
 			
-			$entries = $entryManager->fetchByPage($current_page, $section_id, $this->_Parent->Configuration->get('pagination_maximum_rows', 'symphony'), $where, $joins);
+			$entries = $entryManager->fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins);
 			
 			$aTableHead = array();
 			
@@ -181,8 +180,10 @@
 
 
 				$field_pool = array();
-				foreach($visible_columns as $column){
-					$field_pool[$column->get('id')] = $column;
+				if(is_array($visible_columns) && !empty($visible_columns)){
+					foreach($visible_columns as $column){
+						$field_pool[$column->get('id')] = $column;
+					}
 				}
 
 				foreach($entries['records'] as $entry){
@@ -209,7 +210,7 @@
 							
 							$value = $field->prepareTableValue($data, ($position == 0 ? $link : null), $entry->get('id'));
 							
-							if (trim($value) == '') {
+							if (!is_object($value) && strlen(trim($value)) == 0) {
 								$value = ($position == 0 ? $link->generate() : __('None'));
 							}
 							
@@ -416,7 +417,7 @@
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
 			$this->appendSubheading(__('Untitled'));
-			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', $this->_Parent->Configuration->get('max_upload_size', 'admin'), 'hidden'));
+			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 			
 			$entryManager = new EntryManager($this->_Parent);
 			
@@ -461,7 +462,7 @@
 			
 			if ((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))) {
 				$primary->appendChild(new XMLElement('p', __(
-					'It looks like your trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>',
+					'It looks like you\'re trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>',
 					array(
 						URL . '/symphony/blueprints/sections/edit/' . $section->get('id') . '/'
 					)
@@ -664,7 +665,7 @@
 			}
 
 			### Determine the page title
-			$field_id = $this->_Parent->Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
+			$field_id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
 			$field = $entryManager->fieldManager->fetch($field_id);
 
 			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')), NULL, $entry_id)));
@@ -677,7 +678,7 @@
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), $section->get('name'), $title)));
 			$this->appendSubheading($title);
-			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', $this->_Parent->Configuration->get('max_upload_size', 'admin'), 'hidden'));
+			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 			
 			###
 

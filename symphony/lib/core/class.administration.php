@@ -23,7 +23,11 @@
 		protected function __construct(){
 			parent::__construct();
 			$this->Profiler->sample('Engine Initialisation');
-
+			
+			// Need this part for backwards compatiblity			
+			$this->Database = Symphony::Database();
+			$this->Configuration = Symphony::Configuration();
+						
 			$this->_callback = NULL;
 		}
 		
