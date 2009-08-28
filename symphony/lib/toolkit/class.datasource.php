@@ -125,6 +125,7 @@
 						$replacement = $this->__findParameterInEnv($param, $env);
 						
 						if(is_array($replacement)){
+							$replacement = array_map(array('Datasource', 'escapeCommas'), $replacement);							
 							if(count($replacement) > 1) $replacement = implode(',', $replacement);
 							else $replacement = end($replacement);
 						}
@@ -140,7 +141,15 @@
 			}
 
 			return $value;
-		}	
+		}
+
+		public static function escapeCommas($string){
+			return preg_replace('/(?<!\\\\),/', "\\,", $string);
+		}
+		
+		public static function removeEscapedCommas($string){
+			return preg_replace('/(?<!\\\\)\\\\,/', ',', $string);
+		}
 		
 		function __findParameterInEnv($needle, $env){
 
