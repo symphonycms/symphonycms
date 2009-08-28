@@ -47,17 +47,14 @@
 				
 				else:
 				
-					$section_handle = $this->Database->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '".$this->Author->get('default_section')."' LIMIT 1");
+					$section_handle = $this->Database->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '".$this->User->get('default_section')."' LIMIT 1");
 				
-					if(!$section_handle){
+					if(strlen(trim($section_handle)) == 0){
 						$section_handle = $this->Database->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
 					}
 				
-					if(!$section_handle){
-						
-						if($this->Author->isDeveloper()) redirect(URL . '/symphony/blueprints/sections/');
-						else redirect(URL);
-						
+					if(strlen(trim($section_handle)) == 0){
+						redirect(URL . '/symphony/blueprints/sections/');
 					}
 				
 					else{

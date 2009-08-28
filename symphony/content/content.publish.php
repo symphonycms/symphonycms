@@ -53,7 +53,7 @@
 
 			$entryManager = new EntryManager($this->_Parent);
 
-		    $authors = UserManager::fetch();
+		    $users = UserManager::fetch();
 		
 			$filter = $filter_value = $where = $joins = NULL;		
 			$current_page = (isset($_REQUEST['pg']) && is_numeric($_REQUEST['pg']) ? max(1, intval($_REQUEST['pg'])) : 1);
@@ -96,16 +96,16 @@
 				
 				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
 					$sectionManager->edit($section->get('id'), array('entry_order' => $sort, 'entry_order_direction' => $order));
-					redirect($this->_Parent->getCurrentPageURL().($filter ? "&filter=$field_handle:$filter_value" : ''));
+					redirect(Administration::instance()->getCurrentPageURL().($filter ? "&filter=$field_handle:$filter_value" : ''));
 				}
 			}
 
 			elseif(isset($_REQUEST['unsort'])){
 				$sectionManager->edit($section->get('id'), array('entry_order' => NULL, 'entry_order_direction' => NULL));
-				redirect($this->_Parent->getCurrentPageURL());
+				redirect(Administration::instance()->getCurrentPageURL());
 			}
 
-			$this->Form->setAttribute('action', $this->_Parent->getCurrentPageURL(). '?pg=' . $current_page.($filter ? "&amp;filter=$field_handle:$filter_value" : ''));
+			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter ? "&amp;filter=$field_handle:$filter_value" : ''));
 			
 			## Remove the create button if there is a section link field, and no filtering set for it
 			$section_links = $section->fetchFields('sectionlink');
@@ -114,7 +114,7 @@
 				$this->appendSubheading($section->get('name'));
 			}
 			else{
-				$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), $this->_Parent->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), __('Create a new entry'), 'create button'));
+				$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), __('Create a new entry'), 'create button'));
 			}
 			
 			if(is_null($entryManager->getFetchSorting()->field) && is_null($entryManager->getFetchSorting()->direction)){
@@ -135,12 +135,12 @@
 					if($column->isSortable()) {
 					
 						if($column->get('id') == $section->get('entry_order')){
-							$link = $this->_Parent->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order='. ($section->get('entry_order_direction') == 'desc' ? 'asc' : 'desc').($filter ? "&amp;filter=$field_handle:$filter_value" : '');							
+							$link = Administration::instance()->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order='. ($section->get('entry_order_direction') == 'desc' ? 'asc' : 'desc').($filter ? "&amp;filter=$field_handle:$filter_value" : '');							
 							$anchor = Widget::Anchor($label, $link, __('Sort by %1$s %2$s', array(($section->get('entry_order_direction') == 'desc' ? __('ascending') : __('descending')), strtolower($column->get('label')))), 'active');
 						}
 						
 						else{
-							$link = $this->_Parent->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order=asc'.($filter ? "&amp;filter=$field_handle:$filter_value" : '');							
+							$link = Administration::instance()->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order=asc'.($filter ? "&amp;filter=$field_handle:$filter_value" : '');							
 							$anchor = Widget::Anchor($label, $link, __('Sort by %1$s %2$s', array(__('ascending'), strtolower($column->get('label')))));
 						}
 						
@@ -192,14 +192,14 @@
 
 					## Setup each cell
 					if(!is_array($visible_columns) || empty($visible_columns)){
-						$tableData[] = Widget::TableData(Widget::Anchor($entry->get('id'), $this->_Parent->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/'));
+						$tableData[] = Widget::TableData(Widget::Anchor($entry->get('id'), Administration::instance()->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/'));
 					}
 
 					else{
 						
 						$link = Widget::Anchor(
 							'None', 
-							$this->_Parent->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/', 
+							Administration::instance()->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/', 
 							$entry->get('id'), 
 							'content'
 						);
@@ -317,13 +317,13 @@
 
 				## First
 				$li = new XMLElement('li');
-				if($current_page > 1) $li->appendChild(Widget::Anchor(__('First'), $this->_Parent->getCurrentPageURL(). '?pg=1'.($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
+				if($current_page > 1) $li->appendChild(Widget::Anchor(__('First'), Administration::instance()->getCurrentPageURL(). '?pg=1'.($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
 				else $li->setValue(__('First'));
 				$ul->appendChild($li);
 
 				## Previous
 				$li = new XMLElement('li');
-				if($current_page > 1) $li->appendChild(Widget::Anchor(__('&larr; Previous'), $this->_Parent->getCurrentPageURL(). '?pg=' . ($current_page - 1).($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
+				if($current_page > 1) $li->appendChild(Widget::Anchor(__('&larr; Previous'), Administration::instance()->getCurrentPageURL(). '?pg=' . ($current_page - 1).($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
 				else $li->setValue(__('&larr; Previous'));
 				$ul->appendChild($li);
 
@@ -334,13 +334,13 @@
 
 				## Next
 				$li = new XMLElement('li');
-				if($current_page < $entries['total-pages']) $li->appendChild(Widget::Anchor(__('Next &rarr;'), $this->_Parent->getCurrentPageURL(). '?pg=' . ($current_page + 1).($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
+				if($current_page < $entries['total-pages']) $li->appendChild(Widget::Anchor(__('Next &rarr;'), Administration::instance()->getCurrentPageURL(). '?pg=' . ($current_page + 1).($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
 				else $li->setValue(__('Next &rarr;'));
 				$ul->appendChild($li);
 
 				## Last
 				$li = new XMLElement('li');
-				if($current_page < $entries['total-pages']) $li->appendChild(Widget::Anchor(__('Last'), $this->_Parent->getCurrentPageURL(). '?pg=' . $entries['total-pages'].($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
+				if($current_page < $entries['total-pages']) $li->appendChild(Widget::Anchor(__('Last'), Administration::instance()->getCurrentPageURL(). '?pg=' . $entries['total-pages'].($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
 				else $li->setValue(__('Last'));
 				$ul->appendChild($li);			
 
@@ -513,7 +513,7 @@
 
 				$entry =& $entryManager->create();
 				$entry->set('section_id', $section_id);
-				$entry->set('author_id', $this->_Parent->Author->get('id'));
+				$entry->set('author_id', Administration::instance()->User->get('id'));
 				$entry->set('creation_date', DateTimeObj::get('Y-m-d H:i:s'));
 				$entry->set('creation_date_gmt', DateTimeObj::getGMT('Y-m-d H:i:s'));
 

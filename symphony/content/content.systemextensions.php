@@ -37,7 +37,7 @@
 				foreach($extensions as $name => $about){
 
 					## Setup each cell
-					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], $this->_Parent->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));			
+					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], Administration::instance()->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));			
 					$td2 = Widget::TableData(($about['status'] == EXTENSION_ENABLED ? __('Yes') : __('No')));
 					$td3 = Widget::TableData($about['version']);
 					
@@ -139,7 +139,7 @@
 						break;
 				}		
 
-				redirect($this->_Parent->getCurrentPageURL());
+				redirect(Administration::instance()->getCurrentPageURL());
 			}			
 		}
 		

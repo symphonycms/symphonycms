@@ -185,6 +185,7 @@ Options +FollowSymlinks
 				// Author table rename and structure change
 				$frontend->Database->query('ALTER TABLE `tbl_authors` DROP `user_type`, DROP `primary`;');
 				$frontend->Database->query('RENAME TABLE `tbl_authors` TO `tbl_users`;');
+				$frontend->Database->query('ALTER TABLE `tbl_forgotpass` CHANGE `author_id` `user_id` INT(11) NOT NULL DEFAULT '0';');
 			}			
 			
 			

@@ -213,9 +213,9 @@
 					'name' => $fields['name'],
 					'version' => '1.0',
 					'release date' => DateTimeObj::getGMT('c'),
-					'author name' => $this->_Parent->Author->getFullName(),
+					'author name' => Administration::instance()->User->getFullName(),
 					'author website' => URL,
-					'author email' => $this->_Parent->Author->get('email'),
+					'author email' => Administration::instance()->User->get('email'),
 					'trigger condition' => $rootelement
 				);
 

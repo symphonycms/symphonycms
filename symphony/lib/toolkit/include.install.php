@@ -1008,7 +1008,7 @@
 		            $install_log->pushToLog("Done", SYM_LOG_NOTICE,true, true, true);           
 		        }
 
-				$author_sql = sprintf(
+				$user_sql = sprintf(
 					"INSERT INTO `tbl_users` (
 						`id`, 
 						`username`, 
@@ -1033,7 +1033,7 @@
 					);", $config['user']['username'], $config['user']['password'], $config['user']['firstname'], $config['user']['lastname'], $config['user']['email']);
 				
 				$install_log->pushToLog("MYSQL: Creating Default User...", SYM_LOG_NOTICE, true, false);
-		        if(!$db->query($author_sql)){
+		        if(!$db->query($user_sql)){
 					$error = $db->getLastError();
 		            define('_INSTALL_ERRORS_', "There was an error while trying create the default user. MySQL returned: " . $error['num'] . ': ' . $error['msg']);       
 		            $install_log->pushToLog("Failed", SYM_LOG_ERROR, true, true, true);                         

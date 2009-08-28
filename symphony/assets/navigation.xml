@@ -1,5 +1,5 @@
 <navigation>
-	<group name="Blueprints" limit="developer" index="100">
+	<group name="Blueprints" index="100">
 		<children>
 			<item link="/blueprints/pages/" name="Pages" />
 			<item link="/blueprints/pages/new/" name="Pages New" visible="no" />
@@ -25,18 +25,16 @@
 	
 	<group name="System" index="200">
 		<children>
-			<item link="/system/authors/" name="Authors" />
-			<item link="/system/authors/edit/" name="Author Edit" visible="no" />
-			<item link="/system/authors/new/" name="Author New" visible="no" limit="developer" />
-			<item link="/system/authors/summary/" name="Author Summary" visible="no" />
+			<item link="/system/users/" name="Users" />
+			<item link="/system/users/edit/" name="User Edit" visible="no" />
+			<item link="/system/users/new/" name="User New" visible="no"  />
 			
-			<item link="/system/preferences/" limit="developer" name="Preferences" />
+			<item link="/system/preferences/" name="Preferences" />
 			
-			<item link="/system/extensions/" limit="developer" name="Extensions" />
-			<item link="/system/extensions/info/" name="Extension Information" visible="no" />	
+			<item link="/system/extensions/" name="Extensions" />
 			
-			<item link="/system/actions/" limit="primary" visible="no" name="File Actions" />
-			<item link="/system/log/" limit="primary" visible="no" name="Activity Log" />					
+			<item link="/system/actions/" visible="no" name="File Actions" />
+			<item link="/system/log/" visible="no" name="Activity Log" />					
 		</children>
 	</group>
 </navigation>

@@ -27,7 +27,7 @@
 		public $Log;
 		public $Profiler;
 		public $Cookie;
-		public $Author;
+		public $User;
 		public $ExtensionManager;
 		
 		protected static $_instance;
@@ -177,7 +177,7 @@
 				if($id){
 					$this->_user_id = $id;
 					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");
-					$this->Author = new User($id);
+					$this->User = new User($id);
 					return true;
 				}
 				
@@ -204,7 +204,7 @@
 
 				if($id){
 					$this->_user_id = $id;
-					$this->Author = new User($id);
+					$this->User = new User($id);
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
 					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");
@@ -225,7 +225,7 @@
 			if(strlen($token) == 6){
 				$row = self::$Database->fetchRow(0, "SELECT `a`.`id`, `a`.`username`, `a`.`password` 
 													 FROM `tbl_users` AS `a`, `tbl_forgotpass` AS `f`
-													 WHERE `a`.`id` = `f`.`author_id` AND `f`.`expiry` > '".DateTimeObj::getGMT('c')."' AND `f`.`token` = '$token'
+													 WHERE `a`.`id` = `f`.`user_id` AND `f`.`expiry` > '".DateTimeObj::getGMT('c')."' AND `f`.`token` = '$token'
 													 LIMIT 1");
 				
 				self::$Database->delete('tbl_forgotpass', " `token` = '{$token}' ");
@@ -240,7 +240,7 @@
 
 			if($row){
 				$this->_user_id = $row['id'];
-				$this->Author = new User($row['id']);
+				$this->User = new User($row['id']);
 				$this->Cookie->set('username', $row['username']);
 				$this->Cookie->set('pass', $row['password']);
 				self::$Database->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");

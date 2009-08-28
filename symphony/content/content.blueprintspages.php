@@ -14,7 +14,7 @@
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Pages'))));
 			
 			$this->appendSubheading(__('Pages'), Widget::Anchor(
-				__('Create New'), $this->_Parent->getCurrentPageURL() . 'new/',
+				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/',
 				__('Create a new page'), 'create button'
 			));
 			
@@ -49,9 +49,9 @@
 					$class = array();
 					$page_title = $this->_Parent->resolvePageTitle($page['id']);
 					$page_url = URL . '/' . $this->_Parent->resolvePagePath($page['id']) . '/';
-					$page_edit_url = $this->_Parent->getCurrentPageURL() . 'edit/' . $page['id'] . '/';
+					$page_edit_url = Administration::instance()->getCurrentPageURL() . 'edit/' . $page['id'] . '/';
 					$page_template = $this->__createHandle($page['path'], $page['handle']);
-					$page_template_url = $this->_Parent->getCurrentPageURL() . 'template/' . $page_template . '/';
+					$page_template_url = Administration::instance()->getCurrentPageURL() . 'template/' . $page_template . '/';
 					$page_types = Symphony::Database()->fetchCol('type', "
 						SELECT
 							t.type

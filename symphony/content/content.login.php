@@ -190,24 +190,24 @@
 				##Reset of password requested	
 				elseif($action == 'reset'):
 
-					$author = Symphony::Database()->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_users` WHERE `email` = '".$_POST['email']."'");	
+					$user = Symphony::Database()->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_users` WHERE `email` = '".$_POST['email']."'");	
 
-					if(!empty($author)){
+					if(!empty($user)){
 						
 						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' ");
 						
-						if(!$token = Symphony::Database()->fetchVar('token', 0, "SELECT `token` FROM `tbl_forgotpass` WHERE `expiry` > '".DateTimeObj::getGMT('c')."' AND `author_id` = ".$author['id'])){
+						if(!$token = Symphony::Database()->fetchVar('token', 0, "SELECT `token` FROM `tbl_forgotpass` WHERE `expiry` > '".DateTimeObj::getGMT('c')."' AND `author_id` = ".$user['id'])){
 							
 							$token = substr(md5(time() . rand(0, 200)), 0, 6);
-							Symphony::Database()->insert(array('author_id' => $author['id'], 'token' => $token, 'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))), 'tbl_forgotpass');					
+							Symphony::Database()->insert(array('author_id' => $user['id'], 'token' => $token, 'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))), 'tbl_forgotpass');					
 						}
 
-						$this->_email_sent = General::sendEmail($author['email'], 
+						$this->_email_sent = General::sendEmail($user['email'], 
 									Symphony::Database()->fetchVar('email', 0, "SELECT `email` FROM `tbl_users` ORDER BY `id` ASC LIMIT 1"), 
 									__('Symphony Concierge'), 
 									__('New Symphony Account Password'),
-									__('Hi %s,', array($author['first_name'])) . self::CRLF .
-									__('A new password has been requested for your account. Login using the following link, and change your password via the Authors area:') . self::CRLF .
+									__('Hi %s,', array($user['first_name'])) . self::CRLF .
+									__('A new password has been requested for your account. Login using the following link, and change your password via the Users area:') . self::CRLF .
 									self::CRLF . '	' . URL . "/symphony/login/$token/" . self::CRLF . self::CRLF .
 									__('It will expire in 2 hours. If you did not ask for a new password, please disregard this email.') . self::CRLF . self::CRLF .
 									__('Best Regards,') . self::CRLF . 
@@ -218,7 +218,7 @@
 						###
 						# Delegate: PasswordResetSuccess
 						# Description: A successful password reset has taken place. Author ID is provided
-						//$ExtensionManager->notifyMembers('PasswordResetSuccess', getCurrentPage(), array('author_id' => $author['id']));
+						//$ExtensionManager->notifyMembers('PasswordResetSuccess', getCurrentPage(), array('author_id' => $user['id']));
 
 					}
 					
@@ -228,7 +228,7 @@
 						###
 						# Delegate: PasswordResetFailure
 						# Description: A failed password reset has taken place. Author ID is provided
-						//$ExtensionManager->notifyMembers('PasswordResetFailure', getCurrentPage(), array('author_id' => $author['id']));		
+						//$ExtensionManager->notifyMembers('PasswordResetFailure', getCurrentPage(), array('author_id' => $user['id']));		
 
 						$this->_email_sent = false;
 					}
@@ -241,21 +241,21 @@
 					}
 
 					else{
-						$author_id = $this->_Parent->Author->get('id');
+						$user_id = Administration::instance()->User->get('id');
 
-						$author = UserManager::fetchByID($author_id);
+						$user = UserManager::fetchByID($user_id);
 
-						$author->set('password', md5(Symphony::Database()->cleanValue($_POST['password'])));
+						$user->set('password', md5(Symphony::Database()->cleanValue($_POST['password'])));
 
-						if(!$author->commit() || !$this->_Parent->login($author->get('username'), $_POST['password'])){
-							redirect(URL . "symphony/system/authors/edit/{$author_id}/error/");
+						if(!$user->commit() || !$this->_Parent->login($user->get('username'), $_POST['password'])){
+							redirect(URL . "symphony/system/users/edit/{$user_id}/error/");
 						}
 
 						## TODO: Fix me
 						###
 						# Delegate: PasswordChanged
 						# Description: After editing an author. ID of the author is provided.
-						//$ExtensionManager->notifyMembers('PasswordChanged', getCurrentPage(), array('author_id' => $author_id));  	
+						//$ExtensionManager->notifyMembers('PasswordChanged', getCurrentPage(), array('author_id' => $user_id));  	
 
 						redirect(URL . '/symphony/');
 					}
@@ -272,30 +272,30 @@
 					 	WHERE t2.`token` = '".$_REQUEST['token']."' AND t1.`id` = t2.`author_id`
 					 	LIMIT 1";
 
-				$author = Symphony::Database()->fetchRow(0, $sql);	
+				$user = Symphony::Database()->fetchRow(0, $sql);	
 
-				if(!empty($author)){
+				if(!empty($user)){
 
 					$newpass = General::generatePassword();
 
-					General::sendEmail($author['email'], 
+					General::sendEmail($user['email'], 
 								'DONOTREPLY@symphony21.com', 
 								'Symphony Concierge', 
 								'RE: New Symphony Account Password', 
-								'Hi ' . $author['first_name']. ',' . self::CRLF .
+								'Hi ' . $user['first_name']. ',' . self::CRLF .
 								"As requested, here is your new Symphony Author Password for '". URL ."'".self::CRLF ."	$newpass" . self::CRLF . self::CRLF .
 								'Best Regards,' . self::CRLF . 
 								'The Symphony Team');
 
-					Symphony::Database()->update(array('password' => md5($newpass)), 'tbl_users', " `id` = '".$author['id']."' LIMIT 1");			
-					Symphony::Database()->delete('tbl_forgotpass', " `author_id` = '".$author['id']."'");
+					Symphony::Database()->update(array('password' => md5($newpass)), 'tbl_users', " `id` = '".$user['id']."' LIMIT 1");			
+					Symphony::Database()->delete('tbl_forgotpass', " `author_id` = '".$user['id']."'");
 
 
 					## TODO: Fix Me
 					###
 					# Delegate: PasswordResetRequest
 					# Description: User has requested a password reset. Author ID is provided.
-					//$ExtensionManager->notifyMembers('PasswordResetRequest', getCurrentPage(), array('author_id' => $author['id']));				
+					//$ExtensionManager->notifyMembers('PasswordResetRequest', getCurrentPage(), array('author_id' => $user['id']));				
 
 					$this->_alert = 'Password reset. Check your email';
 

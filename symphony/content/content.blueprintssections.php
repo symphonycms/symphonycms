@@ -21,7 +21,7 @@
 		function __viewIndex(){
 			$this->setPageType('table');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
-			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), $this->_Parent->getCurrentPageURL().'new/', __('Create a section'), 'create button'));
+			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a section'), 'create button'));
 
 		    $sectionManager = new SectionManager($this->_Parent);
 		    $sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
@@ -52,7 +52,7 @@
 					$entry_count = intval(Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries` WHERE `section_id` = '".$s->get('id')."' "));
 					
 					## Setup each cell
-					$td1 = Widget::TableData(Widget::Anchor($s->get('name'), $this->_Parent->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', NULL, 'content'));
+					$td1 = Widget::TableData(Widget::Anchor($s->get('name'), Administration::instance()->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', NULL, 'content'));
 					$td2 = Widget::TableData(Widget::Anchor("$entry_count", URL . '/symphony/publish/' . $s->get('handle') . '/'));
 					$td3 = Widget::TableData($s->get('navigation_group'));
 				

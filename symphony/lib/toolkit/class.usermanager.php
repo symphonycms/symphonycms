@@ -5,9 +5,9 @@
 		public static function add($fields){
 			
 			if(!Symphony::Database()->insert($fields, 'tbl_users')) return false;
-			$author_id = Symphony::Database()->getInsertID();
+			$user_id = Symphony::Database()->getInsertID();
 			
-			return $author_id;
+			return $user_id;
 		}
 
 		public static function edit($id, $fields){
@@ -34,18 +34,18 @@
 
 			if(!is_array($rec) || empty($rec)) return NULL;
 			
-			$authors = array();
+			$users = array();
 
 			foreach($rec as $row){
-				$author = new User;
+				$user = new User;
 				
 				foreach($row as $field => $val)
-					$author->set($field, $val);
+					$user->set($field, $val);
 				
-				$authors[] = $author;
+				$users[] = $user;
 			}
 			
-			return $authors;		
+			return $users;		
 		}
 		
 		public static function fetchByID($id, $sortby=NULL, $sortdirection='ASC', $limit=NULL, $start=NULL){
@@ -69,12 +69,12 @@
 			
 			foreach($rows as $rec){
 			
-				$author = new User;
+				$user = new User;
 			
 				foreach($rec as $field => $val)
-					$author->set($field, $val);
+					$user->set($field, $val);
 				
-				$result[] = $author;
+				$result[] = $user;
 				
 			}
 			
@@ -87,20 +87,20 @@
 			
 			if(!is_array($rec) || empty($rec)) return NULL;
 			
-			$author = new User;
+			$user = new User;
 			
 			foreach($rec as $field => $val)
-				$author->set($field, $val);
+				$user->set($field, $val);
 				
-			return $author;		
+			return $user;		
 		}
 		
-		public static function deactivateAuthToken($author_id){
-			return Symphony::Database()->query("UPDATE `tbl_users` SET `auth_token_active` = 'no' WHERE `id` = '$author_id' LIMIT 1");
+		public static function deactivateAuthToken($user_id){
+			return Symphony::Database()->query("UPDATE `tbl_users` SET `auth_token_active` = 'no' WHERE `id` = '$user_id' LIMIT 1");
 		}
 		
-		public static function activateAuthToken($author_id){
-			return Symphony::Database()->query("UPDATE `tbl_users` SET `auth_token_active` = 'yes' WHERE `id` = '$author_id' LIMIT 1");
+		public static function activateAuthToken($user_id){
+			return Symphony::Database()->query("UPDATE `tbl_users` SET `auth_token_active` = 'yes' WHERE `id` = '$user_id' LIMIT 1");
 		}
 	}
 

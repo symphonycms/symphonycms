@@ -174,7 +174,7 @@
 			$options = array(
 								
 				array('label' => __('System'), 'options' => array(
-							array(__('authors'), ($fields['source'] == __('authors')), __('Authors')),
+							array(__('authors'), ($fields['source'] == __('authors')), __('Users')),
 							array(__('navigation'), ($fields['source'] == __('navigation')), __('Navigation')),
 					)),
 							
@@ -257,7 +257,7 @@
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'subsection contextual ' . __('authors'));
 
-			$div->appendChild(new XMLElement('h3', __('Filter Authors by')));
+			$div->appendChild(new XMLElement('h3', __('Filter Users by')));
 
 			$ol = new XMLElement('ol');
 			
@@ -353,7 +353,7 @@
 			$label = Widget::Label(__('Sort By'));
 			
 			$options = array(
-				array('label' => __('Authors'), 'options' => array(	
+				array('label' => __('Users'), 'options' => array(	
 						array('id', ($fields['source'] == 'authors' && $fields['sort'] == 'id'), __('Author ID')),
 						array('username', ($fields['source'] == 'authors' && $fields['sort'] == 'username'), __('Username')),
 						array('first-name', ($fields['source'] == 'authors' && $fields['sort'] == 'first-name'), __('First Name')),
@@ -451,7 +451,7 @@
 			$label = Widget::Label(__('Use Field'));
 			$options = array(
 				array('', false, __('None')),
-				array('label' => __('Authors'), 'options' => array(	
+				array('label' => __('Users'), 'options' => array(	
 						array('id', ($fields['source'] == 'authors' && $fields['param'] == 'id'), __('Author ID')),
 						array('username', ($fields['source'] == 'authors' && $fields['param'] == 'username'), __('Username')),
 						array('name', ($fields['source'] == 'authors' && $fields['param'] == 'name'), __('Name')),
@@ -524,7 +524,7 @@
 			$label = Widget::Label(__('Included Elements'));
 			
 			$options = array(
-				array('label' => __('Authors'), 'options' => array(				
+				array('label' => __('Users'), 'options' => array(				
 						array('username', ($fields['source'] == 'authors' && in_array('username', $fields['xml_elements'])), 'username'),
 						array('name', ($fields['source'] == 'authors' && in_array('name', $fields['xml_elements'])), 'name'),
 						array('email', ($fields['source'] == 'authors' && in_array('email', $fields['xml_elements'])), 'email'),
@@ -888,9 +888,9 @@
 					'name' => $fields['name'],
 					'version' => '1.0',
 					'release date' => DateTimeObj::getGMT('c'), //date('Y-m-d', $oDate->get(true, false)),
-					'author name' => $this->_Parent->Author->getFullName(),
+					'author name' => Administration::instance()->User->getFullName(),
 					'author website' => URL,
-					'author email' => $this->_Parent->Author->get('email')
+					'author email' => Administration::instance()->User->get('email')
 				);
 
 				$source = $fields['source'];

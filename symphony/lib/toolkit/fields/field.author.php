@@ -51,7 +51,7 @@
 			$callback = Administration::instance()->getPageCallback();
 			
 			if ($this->get('default_to_current_user') == 'yes' && empty($data) && empty($_POST)) {
-				$value = array(Administration::instance()->Author->get('id'));
+				$value = array(Administration::instance()->User->get('id'));
 			}
 			
 			if (!is_array($value)) {
@@ -89,7 +89,7 @@
 			
 			foreach($data['author_id'] as $author_id){
 				$author = new User($this->_engine);
-				if($author->loadAuthor($author_id)) $value[] = $author->getFullName();
+				if($author->loadUser($author_id)) $value[] = $author->getFullName();
 			}
 			
 			return parent::prepareTableValue(array('value' => General::sanitize(ucwords(implode(', ', $value)))), $link);
