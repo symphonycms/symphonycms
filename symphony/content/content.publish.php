@@ -622,6 +622,11 @@
 					$section = $sectionManager->fetch($entry->get('section_id'));
 				}
 			}
+			
+			###
+			# Delegate: EntryPreRender
+			# Description: Just prior to rendering of an Entry edit form. Entry object can be modified.
+			$this->_Parent->ExtensionManager->notifyMembers('EntryPreRender', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
 
 			if(isset($this->_context['flag'])){
 				
