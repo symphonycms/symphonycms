@@ -801,11 +801,10 @@
 
 			elseif(@array_key_exists('delete', $_POST['action']) && is_numeric($entry_id)){
 
-				## TODO: Fix Me
 				###
 				# Delegate: Delete
-				# Description: Prior to deleting an entry. Entry ID is provided.
-				##$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('entry_id' => $entry_id));
+				# Description: Prior to deleting an entry. Entry ID is provided, as an array to remain compatible with other Delete delegate call
+				Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => $entry_id));
 
 				$entryManager = new EntryManager($this->_Parent);
 
