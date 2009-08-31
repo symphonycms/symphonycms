@@ -168,55 +168,7 @@
 		}
 		
 		public function insert(array $fields, $table, $updateOnDuplicate=false){
-	
-		/*
 
-			$result = true;
-
-			if(is_array(current($fields))){
-				foreach($fields as $key => $array){
-
-					if($updateOnDuplicate) 
-						if(!$this->insert($array, $table, $updateOnDuplicate)) return false;
-
-					else{
-
-						$sql  = "INSERT INTO `$table` (`".implode('`, `', array_keys(current($fields))).'`) VALUES ';
-
-						foreach($fields as $key => $array){
-							$this->cleanFields($array);
-							$rows[] = '('.implode(', ', $array).')';
-						}
-
-						$sql .= implode(", ", $rows);
-
-					}					
-
-				}
-
-			}
-
-			else{
-				$this->cleanFields($fields);
-				$sql  = "INSERT INTO `$table` (`".implode('`, `', array_keys($fields)).'`) VALUES ('.implode(', ', $fields).')';
-
-				if($updateOnDuplicate){
-
-					$sql .= ' ON DUPLICATE KEY UPDATE ';
-
-					foreach($fields as $key => $value) $sql .= " `$key` = $value,";
-
-					$sql = trim($sql, ',');
-
-				}
-
-			}
-
-			return $this->query($sql);
-
-
-		*/		
-	
 			// Multiple Insert
 			if(is_array(current($fields))){
 

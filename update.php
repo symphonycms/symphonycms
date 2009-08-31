@@ -179,6 +179,9 @@ Options +FollowSymlinks
 				
 			}
 			
+			if (version_compare($existing_version, '2.0.6', '<=')){
+				$frontend->Database->query('ALTER TABLE  `tbl_extensions` CHANGE  `version`  `version` VARCHAR(20) NOT NULL');
+			}
 			
 
 			if (version_compare($existing_version, '2.0.6', '<=')) {
