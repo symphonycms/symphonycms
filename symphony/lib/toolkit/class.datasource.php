@@ -54,20 +54,16 @@
 			
 			$this->_param_output_only = ((!is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) && !isset($this->dsParamGROUP));
 			
-			if($this->dsParamREDIRECTONEMPTY == 'yes' && $this->_force_empty_result) $this->__redirectToErrorPage();
-
+			if($this->dsParamREDIRECTONEMPTY == 'yes' && $this->_force_empty_result){
+				throw new FrontendPageNotFoundException;
+			}
 					
 		}
 		
+		// THIS FUNCTION WILL BE REMOVED IN THE NEXT 
+		// VERSION, PLEASE THROW AN EXCEPTION INSTEAD
 		function __redirectToErrorPage(){
-			$page_id = Symphony::Database()->fetchVar('page_id', 0, "SELECT `page_id` FROM `tbl_pages_types` WHERE tbl_pages_types.`type` = '404' LIMIT 1");
-			
-			if(!$page_id) $this->_Parent->customError(E_USER_ERROR, __('Page Not Found'), __('The page you requested does not exist.'), false, true, 'error', array('header' => 'HTTP/1.0 404 Not Found'));
-			else{
-				$url = URL . '/' . $this->_Parent->resolvePagePath($page_id) . '/';
-				redirect($url);
-			}
-			
+			throw new FrontendPageNotFoundException;
 		}
 		
 		function emptyXMLSet(XMLElement $xml=NULL){

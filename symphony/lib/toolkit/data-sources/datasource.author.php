@@ -71,7 +71,10 @@
 	else $authors = UserManager::fetch($this->dsParamSORT, $this->dsParamORDER, $this->dsParamLIMIT, (max(0, ($this->dsParamSTARTPAGE - 1)) * $this->dsParamLIMIT));
 
 	
-	if((!is_array($authors) || empty($authors)) && $this->dsParamREDIRECTONEMPTY == 'yes') $this->__redirectToErrorPage();
+	if((!is_array($authors) || empty($authors)) && $this->dsParamREDIRECTONEMPTY == 'yes'){
+		throw new FrontendPageNotFoundException;
+	}
+	
 	else{
 	
 		if(!$this->_param_output_only) $result = new XMLElement($this->dsParamROOTELEMENT);
