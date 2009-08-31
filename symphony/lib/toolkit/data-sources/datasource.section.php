@@ -166,7 +166,9 @@
 	$key = 'ds-' . $this->dsParamROOTELEMENT;
 									
 	if($entries['total-entries'] <= 0 && (!is_array($entries['records']) || empty($entries['records']))){
-		if($this->dsParamREDIRECTONEMPTY == 'yes') $this->__redirectToErrorPage();
+		if($this->dsParamREDIRECTONEMPTY == 'yes'){
+			throw new FrontendPageNotFoundException;
+		}
 		$this->_force_empty_result = false;
 		$result = $this->emptyXMLSet();
 		$result->prependChild($sectioninfo);
