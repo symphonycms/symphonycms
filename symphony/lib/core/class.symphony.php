@@ -308,58 +308,212 @@
 	
 	}
 	
+
 	Class SymphonyErrorPageHandler extends GenericExceptionHandler{
 		public static function render($e){
-			
+
 			if($e->getTemplate() === false){
 				echo '<h1>Symphony Fatal Error</h1><p>'.$e->getMessage().'</p>';
 				exit;
 			}
-			
+
 			include($e->getTemplate());
 
 		}
 	}
-	
+
 	Class SymphonyErrorPage extends Exception{
-		
+
 		private $_heading;
 		private $_message;
 		private $_template;
 		private $_additional;
 		private $_messageObject;
-		
+
 		public function __construct($message, $heading='Symphony Fatal Error', $template='error', array $additional=NULL){
-			
+
 			$this->_messageObject = NULL;
 			if($message instanceof XMLElement){
 				$this->_messageObject = $message;
 				$message = $this->_messageObject->generate();
 			}
-			
+
 			parent::__construct($message);
-			
+
 			$this->_heading = $heading;
 
 			$this->_template = $template;
 			$this->_additional = (object)$additional;
 		}
-		
+
 		public function getMessageObject(){
 			return $this->_messageObject;
 		}
-		
+
 		public function getHeading(){
 			return $this->_heading;
 		}
-		
+
 		public function getTemplate(){
 			$template = sprintf('%s/tpl.%s.php', TEMPLATE, $this->_template);
 			return (file_exists($template) ? $template : false);
 		}
-		
+
 		public function getAdditional(){
 			return $this->_additional;
 		}	
+	}
+
+
+	Class DatabaseExceptionHandler{
+
+		public static function render($e){
+
+			$trace = NULL;
+			$odd = true;
+
+			foreach($e->getTrace() as $t){
+				$trace .= sprintf(
+					'<li%s><code>[%s:%d] <strong>%s%s%s();</strong></code></li>', 
+					($odd == true ? ' class="odd"' : NULL),
+					$t['file'], 
+					$t['line'], 
+					(isset($t['class']) ? $t['class'] : NULL), 
+					(isset($t['type']) ? $t['type'] : NULL),  
+					$t['function']
+				);
+				$odd = !$odd;
+			}
+
+			$queries = NULL;
+			$odd = true;
+
+			if(is_object(Symphony::Database())){
+
+				$debug = Symphony::Database()->debug();
+
+				if(count($debug['query']) > 0){
+					foreach($debug['query'] as $query){
+
+						$queries .= sprintf(
+							'<li%s><code>%s;</code> <small>[%01.4f]</small></li>',
+							($odd == true ? ' class="odd"' : NULL),
+							htmlspecialchars($query['query']),
+							(isset($query['time']) ? $query['time'] : NULL)
+						);
+						$odd = !$odd;
+					}
+				}
+
+			}
+
+			return sprintf('<html>
+<head>
+	<title>Symphony Fatal Error</title>
+	<style type="text/css" media="all">
+		*{
+			margin: 0; padding: 0;
+		}
+
+
+		body{
+			margin: 20px auto;
+			width: 95%%;
+			min-width: 950px;
+			font-family: Helvetica, "MS Trebuchet", Arial, sans-serif;
+			background-color: #ccc;
+			font-size: 12px;
+		}
+
+		.bubble{
+			background-color: white;
+			padding: 22px;
+
+			-webkit-border-radius: 20px;
+			-moz-border-radius: 20px;
+
+			/*
+			-webkit-border-top-right-radius: 20px;
+			-webkit-border-top-left-radius: 20px;
+
+			-moz-border-radius-topright: 20px;
+			-moz-border-radius-topleft: 20px;
+			*/
+
+
+			border: 2px solid #bbb;
+		}
+
+		h1{
+			font-size: 34px;
+			text-shadow: 2px 2px 2px #999;
+			margin-bottom: 10px;
+		}
+
+		h2, h3{
+			text-shadow: 2px 2px 2px #ccc;
+		}
+
+		code{
+			font-size: 11px;
+			font-family: Monaco, "Courier New", Courier;
+		}
+
+		ul{
+			list-style: none;
+			color: #111;
+			margin: 20px;
+			border-left: 5px solid #bbb;
+		}
+
+		li{
+			background-color: #dedede;
+			padding: 1px 5px;
+
+			border-left: 1px solid #ddd;
+		}
+
+		li.odd{
+			background-color: #efefef;
+		}
+
+		li#error{
+			background-color: #E8CACA;
+			color: #B9191A;			
+		}
+
+		li small{
+			font-size: 10px;
+			color: #666;						
+		}
+
+	</style>
+</head>
+<body>
+	<h1>Symphony Fatal Database Error</h1>
+	<div class="bubble">
+		<h2>%s</h2>
+		<p>An error occurred while attempting to execute the following query</p>
+		<ul>
+			<li>%s</li>
+		</ul>
+
+		<h3>Backtrace:</h3>
+		<ul>%s</ul>
+
+		<h3>Database Query Log:</h3>
+		<ul>%s</ul>
+
+	</div>
+</body>
+<html>', 
+
+				$e->getDatabaseErrorMessage(), 
+				$e->getQuery(),
+				$trace,
+				$queries
+			);
+
+		}
 	}
 

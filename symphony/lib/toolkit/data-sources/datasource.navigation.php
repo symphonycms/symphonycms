@@ -86,7 +86,9 @@
 	$pages = Symphony::Database()->fetch($sql);
 	
 	if((!is_array($pages) || empty($pages))){
-		if($this->dsParamREDIRECTONEMPTY == 'yes') $this->__redirectToErrorPage();
+		if($this->dsParamREDIRECTONEMPTY == 'yes'){
+			throw new FrontendPageNotFoundException;
+		}
 		$result->appendChild($this->__noRecordsFound());
 	}
 	
