@@ -195,11 +195,18 @@
 					if(!empty($user)){
 						
 						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' ");
+						$token = Symphony::Database()->fetchVar(
+							'token', 0, 
+							"SELECT `token` FROM `tbl_forgotpass` WHERE `expiry` > '".DateTimeObj::getGMT('c')."' AND `user_id` = ".$user['id']
+						);
 						
-						if(!$token = Symphony::Database()->fetchVar('token', 0, "SELECT `token` FROM `tbl_forgotpass` WHERE `expiry` > '".DateTimeObj::getGMT('c')."' AND `author_id` = ".$user['id'])){
+						if(!is_null($token)){
 							
 							$token = substr(md5(time() . rand(0, 200)), 0, 6);
-							Symphony::Database()->insert(array('author_id' => $user['id'], 'token' => $token, 'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))), 'tbl_forgotpass');					
+							Symphony::Database()->insert(
+								array('user_id' => $user['id'], 'token' => $token, 'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))), 
+								'tbl_forgotpass'
+							);					
 						}
 
 						$this->_email_sent = General::sendEmail($user['email'], 
@@ -217,8 +224,8 @@
 						## TODO: Fix Me
 						###
 						# Delegate: PasswordResetSuccess
-						# Description: A successful password reset has taken place. Author ID is provided
-						//$ExtensionManager->notifyMembers('PasswordResetSuccess', getCurrentPage(), array('author_id' => $user['id']));
+						# Description: A successful password reset has taken place. User ID is provided
+						//$ExtensionManager->notifyMembers('PasswordResetSuccess', getCurrentPage(), array('user_id' => $user['id']));
 
 					}
 					
@@ -227,8 +234,8 @@
 						## TODO: Fix Me
 						###
 						# Delegate: PasswordResetFailure
-						# Description: A failed password reset has taken place. Author ID is provided
-						//$ExtensionManager->notifyMembers('PasswordResetFailure', getCurrentPage(), array('author_id' => $user['id']));		
+						# Description: A failed password reset has taken place. User ID is provided
+						//$ExtensionManager->notifyMembers('PasswordResetFailure', getCurrentPage(), array('user_id' => $user['id']));		
 
 						$this->_email_sent = false;
 					}
@@ -241,7 +248,7 @@
 					}
 
 					else{
-						$user_id = Administration::instance()->User->get('id');
+						$user_id = Administration::instance()->User->id;
 
 						$user = UserManager::fetchByID($user_id);
 
@@ -254,8 +261,8 @@
 						## TODO: Fix me
 						###
 						# Delegate: PasswordChanged
-						# Description: After editing an author. ID of the author is provided.
-						//$ExtensionManager->notifyMembers('PasswordChanged', getCurrentPage(), array('author_id' => $user_id));  	
+						# Description: After editing an User. ID of the User is provided.
+						//$ExtensionManager->notifyMembers('PasswordChanged', getCurrentPage(), array('user_id' => $user_id));  	
 
 						redirect(URL . '/symphony/');
 					}
@@ -269,7 +276,7 @@
 
 				$sql = "SELECT t1.`id`, t1.`email`, t1.`first_name` 
 					    FROM `tbl_users` as t1, `tbl_forgotpass` as t2
-					 	WHERE t2.`token` = '".$_REQUEST['token']."' AND t1.`id` = t2.`author_id`
+					 	WHERE t2.`token` = '".$_REQUEST['token']."' AND t1.`id` = t2.`user_id`
 					 	LIMIT 1";
 
 				$user = Symphony::Database()->fetchRow(0, $sql);	
@@ -283,19 +290,19 @@
 								'Symphony Concierge', 
 								'RE: New Symphony Account Password', 
 								'Hi ' . $user['first_name']. ',' . self::CRLF .
-								"As requested, here is your new Symphony Author Password for '". URL ."'".self::CRLF ."	$newpass" . self::CRLF . self::CRLF .
+								"As requested, here is your new Symphony User Password for '". URL ."'".self::CRLF ."	{$newpass}" . self::CRLF . self::CRLF .
 								'Best Regards,' . self::CRLF . 
 								'The Symphony Team');
 
 					Symphony::Database()->update(array('password' => md5($newpass)), 'tbl_users', " `id` = '".$user['id']."' LIMIT 1");			
-					Symphony::Database()->delete('tbl_forgotpass', " `author_id` = '".$user['id']."'");
+					Symphony::Database()->delete('tbl_forgotpass', " `user_id` = '".$user['id']."'");
 
 
 					## TODO: Fix Me
 					###
 					# Delegate: PasswordResetRequest
-					# Description: User has requested a password reset. Author ID is provided.
-					//$ExtensionManager->notifyMembers('PasswordResetRequest', getCurrentPage(), array('author_id' => $user['id']));				
+					# Description: User has requested a password reset. User ID is provided.
+					//$ExtensionManager->notifyMembers('PasswordResetRequest', getCurrentPage(), array('user_id' => $user['id']));				
 
 					$this->_alert = 'Password reset. Check your email';
 

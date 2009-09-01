@@ -109,7 +109,7 @@
 			$fields = $this->get();
 			$fields['creation_date'] = DateTimeObj::get('Y-m-d H:i:s');
 			$fields['creation_date_gmt'] = DateTimeObj::getGMT('Y-m-d H:i:s');
-			$fields['author_id'] = is_null($this->get('author_id')) ? '1' : $this->get('author_id'); // Author_id cannot be NULL
+			$fields['user_id'] = is_null($this->get('user_id')) ? '1' : $this->get('user_id'); // user_id cannot be NULL
 			
 			Symphony::Database()->insert($fields, 'tbl_entries');
 			

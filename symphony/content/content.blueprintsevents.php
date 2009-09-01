@@ -215,7 +215,7 @@
 					'release date' => DateTimeObj::getGMT('c'),
 					'author name' => Administration::instance()->User->getFullName(),
 					'author website' => URL,
-					'author email' => Administration::instance()->User->get('email'),
+					'author email' => Administration::instance()->User->email,
 					'trigger condition' => $rootelement
 				);
 
@@ -330,7 +330,7 @@
 						'send-email[from]'.self::CRLF.
 						'send-email[subject] // '.__('Optional').self::CRLF.
 						'send-email[body]'.self::CRLF.
-						'send-email[recipient] // '.__('list of comma author usernames.'));
+						'send-email[recipient] // '.__('list of comma separated usernames.'));
 
 					$documentation_parts[] = new XMLElement('p', __('All of these fields can be set dynamically using the exact field name of another field in the form as shown below in the example form:'));
 									

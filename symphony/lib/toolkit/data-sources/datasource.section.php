@@ -39,7 +39,7 @@
 					if(isset($ds->dsParamPARAMOUTPUT)){
 						if($ds->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
 						elseif($ds->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', strtotime($entry->creationDate));
-						elseif($ds->dsParamPARAMOUTPUT == 'system:author') $param_pool[$key][] = $entry->get('author_id');
+						elseif($ds->dsParamPARAMOUTPUT == 'system:user') $param_pool[$key][] = $entry->get('user_id');
 					}
 
 					foreach($data as $field_id => $values){
@@ -246,7 +246,7 @@
 					if(isset($this->dsParamPARAMOUTPUT)){
 						if($this->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
 						elseif($this->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', strtotime($entry->creationDate));
-						elseif($this->dsParamPARAMOUTPUT == 'system:author') $param_pool[$key][] = $entry->get('author_id');
+						elseif($this->dsParamPARAMOUTPUT == 'system:user') $param_pool[$key][] = $entry->get('user_id');
 					}
 					
 					foreach($data as $field_id => $values){

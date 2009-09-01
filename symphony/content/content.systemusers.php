@@ -56,7 +56,7 @@
 						$td3 = Widget::TableData('Unknown', 'inactive');
 					}
 					
-					if ($u->get('id') != Administration::instance()->User->get('id')) $td3->appendChild(Widget::Input('items['.$u->get('id').']', NULL, 'checkbox'));
+					if ($u->get('id') != Administration::instance()->User->id) $td3->appendChild(Widget::Input('items['.$u->get('id').']', NULL, 'checkbox'));
 					
 					## Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3), ($bOdd ? 'odd' : NULL));
@@ -97,12 +97,12 @@
 				## TODO: Fix Me
 				###
 				# Delegate: Delete
-				# Description: Prior to deleting an author. ID is provided.
-				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('author_id' => $user_id));		
+				# Description: Prior to deleting an User. ID is provided.
+				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('user_id' => $user_id));		
 				
 				foreach($checked as $user_id){
 					$a = UserManager::fetchByID($user_id);
-					if(is_object($a) && $a->get('id') != Administration::instance()->User->get('id')) UserManager::delete($user_id);
+					if(is_object($a) && $a->get('id') != Administration::instance()->User->id) UserManager::delete($user_id);
 				}
 
 				redirect(URL . '/symphony/system/users/');
@@ -179,7 +179,7 @@
 			
 			else $user = new User;
 
-			if($this->_context[0] == 'edit' && $user->get('id') == Administration::instance()->User->get('id')) $isOwner = true;
+			if($this->_context[0] == 'edit' && $user->get('id') == Administration::instance()->User->id) $isOwner = true;
 			
 			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Users'), $user->getFullName())));
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $user->getFullName()));			
@@ -289,17 +289,15 @@
 				$fields = $_POST['fields'];
 
 			    $this->_User = new User;
-
-				$this->_User->set('user_type', $fields['user_type']);
-				$this->_User->set('primary', 'no');
-				$this->_User->set('email', $fields['email']);
-				$this->_User->set('username', $fields['username']);
-				$this->_User->set('first_name', General::sanitize($fields['first_name']));
-				$this->_User->set('last_name', General::sanitize($fields['last_name']));
-				$this->_User->set('last_seen', NULL);
-				$this->_User->set('password', (trim($fields['password']) == '' ? '' : md5($fields['password'])));
-				$this->_User->set('default_section', intval($fields['default_section']));
-				$this->_User->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
+			
+				$this->_User->email = $fields['email'];
+				$this->_User->username = $fields['username'];
+				$this->_User->first_name = General::sanitize($fields['first_name']);
+				$this->_User->last_name = General::sanitize($fields['last_name']);
+				$this->_User->last_seen = NULL;
+				$this->_User->password = (trim($fields['password']) == '' ? '' : md5($fields['password']));
+				$this->_User->default_section = intval($fields['default_section']);
+				$this->_User->auth_token_active = ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no');
 				
 				if($this->_User->validate($this->_errors)):
 					
@@ -312,8 +310,8 @@
 						## TODO: Fix Me
 						###
 						# Delegate: Create
-						# Description: Creation of a new User. The ID of the author is provided.
-						//$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('author_id' => $user_id)); 	
+						# Description: Creation of a new User. The ID of the User is provided.
+						//$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('user_id' => $user_id)); 	
 
 			  		   redirect(URL."/symphony/system/users/edit/$user_id/created/");	
 	
@@ -334,7 +332,7 @@
 
 			if(!$user_id = $this->_context[1]) redirect(URL . '/symphony/system/users/');
 
-			$isOwner = ($user_id == Administration::instance()->User->get('id'));
+			$isOwner = ($user_id == Administration::instance()->User->id);
 
 			if(@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
 
@@ -342,20 +340,22 @@
 				
 			    $this->_User = UserManager::fetchByID($user_id);
 
-				if($fields['email'] != $this->_User->get('email')) $changing_email = true;
+				if($fields['email'] != $this->_User->email) $changing_email = true;
 
-				$this->_User->set('id', $user_id);
+				$this->_User->id = $user_id;
 					
-				$this->_User->set('email', $fields['email']);
-				$this->_User->set('username', $fields['username']);
-				$this->_User->set('first_name', General::sanitize($fields['first_name']));
-				$this->_User->set('last_name', General::sanitize($fields['last_name']));
+				$this->_User->email = $fields['email'];
+				$this->_User->username = $fields['username'];
+				$this->_User->first_name = General::sanitize($fields['first_name']);
+				$this->_User->last_name = General::sanitize($fields['last_name']);
+				
 				if(trim($fields['password']) != ''){
-					$this->_User->set('password', md5($fields['password']));
+					$this->_User->password = md5($fields['password']);
 					$changing_password = true;
 				}
-				$this->_User->set('default_section', intval($fields['default_section']));
-				$this->_User->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
+				
+				$this->_User->default_section = intval($fields['default_section']);
+				$this->_User->auth_token_active = ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no');
 				
 				if($this->_User->validate($this->_errors)):
 
@@ -365,21 +365,26 @@
 				
 					elseif($this->_User->commit()){					
 						
-						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' OR `author_id` = '".$user_id."' ");
+						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' OR `user_id` = '{$user_id}' ");
 						
-						if($isOwner) $this->_Parent->login($this->_User->get('username'), $this->_User->get('password'), true);
+						if($isOwner) $this->_Parent->login($this->_User->username, $this->_User->password, true);
 
 						## TODO: Fix me
 						###
 						# Delegate: Edit
-						# Description: After editing an author. ID of the author is provided.
-						//$ExtensionManager->notifyMembers('Edit', getCurrentPage(), array('author_id' => $_REQUEST['id']));  	
+						# Description: After editing an User. ID of the User is provided.
+						//$ExtensionManager->notifyMembers('Edit', getCurrentPage(), array('user_id' => $_REQUEST['id']));  	
 
 		  		    	redirect(URL . '/symphony/system/users/edit/' . $user_id . '/saved/');	
 
 					}
 				
-					else $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), Alert::ERROR);
+					else{
+						$this->pageAlert(
+							__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), 
+							Alert::ERROR
+						);
+					}
 
 				endif;
 
@@ -390,8 +395,8 @@
 				## TODO: Fix Me
 				###
 				# Delegate: Delete
-				# Description: Prior to deleting an author. ID is provided.
-				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('author_id' => $user_id));		
+				# Description: Prior to deleting an User. ID is provided.
+				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('user_id' => $user_id));		
 
 				UserManager::delete($user_id);
 

@@ -50,7 +50,7 @@
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.0.7');
+	define('kVERSION', '2.1.0');
 	define('kCHANGELOG', 'http://symphony-cms.com/blog/entry/206-release/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -178,17 +178,24 @@ Options +FollowSymlinks
 				}
 				
 			}
-			
-			if (version_compare($existing_version, '2.0.6', '<=')){
-				$frontend->Database->query('ALTER TABLE  `tbl_extensions` CHANGE  `version`  `version` VARCHAR(20) NOT NULL');
-			}
-			
 
 			if (version_compare($existing_version, '2.0.6', '<=')) {
+				$frontend->Database->query('ALTER TABLE  `tbl_extensions` CHANGE  `version`  `version` VARCHAR(20) NOT NULL');
+				
 				// Author table rename and structure change
 				$frontend->Database->query('ALTER TABLE `tbl_authors` DROP `user_type`, DROP `primary`;');
 				$frontend->Database->query('RENAME TABLE `tbl_authors` TO `tbl_users`;');
-				$frontend->Database->query('ALTER TABLE `tbl_forgotpass` CHANGE `author_id` `user_id` INT(11) NOT NULL DEFAULT '0';');
+				$frontend->Database->query("ALTER TABLE `tbl_forgotpass` CHANGE `author_id` `user_id` INT(11) NOT NULL DEFAULT '0';");
+				
+				$author_fields = $frontend->Database->fetchCol('id', "SELECT `id` FROM tbl_fields WHERE `type` = 'author'");
+				$frontend->Database->query("UPDATE `tbl_fields` SET `type` = 'user' WHERE `type` = 'author'");
+				$frontend->Database->query("RENAME TABLE `tbl_fields_author` TO `tbl_fields_user`");
+				
+				foreach ($author_fields as $field_id) {
+					$frontend->Database->query("ALTER TABLE `tbl_entries_data_{$field_id}` CHANGE `author_id` `user_id` INT(11) UNSIGNED NOT NULL;");
+				}
+				
+				$frontend->Database->query('ALTER TABLE `tbl_entries` CHANGE `author_id` `user_id` INT(11) UNSIGNED NOT NULL');
 			}			
 			
 			

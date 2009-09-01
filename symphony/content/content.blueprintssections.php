@@ -7,15 +7,12 @@
 
 	Class contentBlueprintsSections extends AdministrationPage{
 
-		var $_errors;
-		
-		var $_templateOrder;
+		private $_errors;
+		private $_templateOrder;
 		
 		function __construct(&$parent){
 			parent::__construct($parent);
-			
-			$this->_templateOrder = array('input', 'textarea', 'taglist', 'select', 'checkbox', 'date', 'author', 'upload');
-			
+			$this->_templateOrder = array('input', 'textarea', 'taglist', 'select', 'checkbox', 'date', 'user', 'upload');
 		}
 		
 		function __viewIndex(){
@@ -37,10 +34,9 @@
 			$aTableBody = array();
 
 			if(!is_array($sections) || empty($sections)){
-
 				$aTableBody = array(
-									Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
-								);
+					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
+				);
 			}
 
 			else{
