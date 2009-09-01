@@ -116,6 +116,8 @@
 			if (!$entry_id = Symphony::Database()->getInsertID()) return null;
 			
 			$this->set('id', $entry_id);
+			
+			return $entry_id;
 		}
 		
 		function setDataFromPost($data, &$error, $simulate=false, $ignore_missing_fields=false){
