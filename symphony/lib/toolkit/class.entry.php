@@ -105,6 +105,19 @@
 			return $status;			
 		}
 		
+		public function assignEntryId() {
+			$fields = $this->get();
+			$fields['creation_date'] = DateTimeObj::get('Y-m-d H:i:s');
+			$fields['creation_date_gmt'] = DateTimeObj::getGMT('Y-m-d H:i:s');
+			$fields['author_id'] = is_null($this->get('author_id')) ? '1' : $this->get('author_id'); // Author_id cannot be NULL
+			
+			Symphony::Database()->insert($fields, 'tbl_entries');
+			
+			if (!$entry_id = Symphony::Database()->getInsertID()) return null;
+			
+			$this->set('id', $entry_id);
+		}
+		
 		function setDataFromPost($data, &$error, $simulate=false, $ignore_missing_fields=false){
 
 			$error = NULL;
@@ -112,16 +125,10 @@
 			$status = __ENTRY_OK__;
 			
 			// Entry has no ID, create it:
-			if(!$this->get('id') && $simulate == false) {
+			if (!$this->get('id') && $simulate == false) {
+				$entry_id = $this->assignEntryId();
 				
-				$fields = $this->get();
-				$fields['creation_date'] = DateTimeObj::get('Y-m-d H:i:s');
-				$fields['creation_date_gmt'] = DateTimeObj::getGMT('Y-m-d H:i:s');
-				$fields['author_id'] = is_null($this->get('author_id')) ? '1' : $this->get('author_id'); // Author_id cannot be NULL
-				
-				Symphony::Database()->insert($fields, 'tbl_entries');
-				if(!$entry_id = Symphony::Database()->getInsertID()) return __ENTRY_FIELD_ERROR__;
-				$this->set('id', $entry_id);
+				if (is_null($entry_id)) return __ENTRY_FIELD_ERROR__;
 			}			
 			
 			if(!isset($this->_ParentCatalogue['sectionmanager'])) $SectionManager = new SectionManager($this->_engine);
