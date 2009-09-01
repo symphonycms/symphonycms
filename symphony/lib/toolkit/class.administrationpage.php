@@ -145,7 +145,7 @@
 			$ul->setAttribute('id', 'usr');
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(Administration::instance()->User->getFullName(), URL . '/symphony/system/users/edit/' . Administration::instance()->User->get('id') . '/'));
+			$li->appendChild(Widget::Anchor(Administration::instance()->User->getFullName(), URL . '/symphony/system/users/edit/' . Administration::instance()->User->id . '/'));
 			$ul->appendChild($li);
 			
 			$li = new XMLElement('li');
