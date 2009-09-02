@@ -124,7 +124,7 @@ var Symphony;
 		}
 	};
 
-	$('.orderable tr, .subsection > ol > li').live('mousedown', function(e) {
+	$('.orderable tr, .orderable li').live('mousedown', function(e) {
 		if (!/^(?:h4|td)$/i.test(e.target.nodeName)) {
 			return true;
 		}
