@@ -29,25 +29,9 @@
 					$post_values->appendChild(new XMLElement($element_name, General::sanitize($value)));
 				}
 			}
-
-			## Combine FILES and POST arrays, indexed by their custom field handles
-			if(isset($_FILES['fields'])){
-				$filedata = General::processFilePostData($_FILES['fields']);
-
-				foreach($filedata as $handle => $data){
-					if(!isset($fields[$handle])) $fields[$handle] = $data;
-					elseif(isset($data['error']) && $data['error'] == 4) $fields[$handle] = NULL;
-					else{
-						foreach($data as $ii => $d){
-							if(isset($d['error']) && $d['error'] == 4) $fields[$handle][$ii] = NULL;
-							elseif(is_array($d) && !empty($d)){
-								foreach($d as $key => $val)
-									$fields[$handle][$ii][$key] = $val;
-							}						
-						}
-					}
-				}
-			}
+			
+			$post = General::getPostData();
+			$fields = $post['fields'];
 			
 			$filter_results = array();			
 

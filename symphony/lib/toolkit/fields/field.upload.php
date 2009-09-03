@@ -401,7 +401,7 @@
 				$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
 				$existing_file = $abs_path . '/' . basename($row['file']);
 
-				General::deleteFile($existing_file);
+				//if (file_exists($existing_file)) General::deleteFile($existing_file);
 			}
 
 			$status = self::__OK__;
