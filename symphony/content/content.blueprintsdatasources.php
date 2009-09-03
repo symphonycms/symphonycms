@@ -206,11 +206,13 @@
 			foreach($field_groups as $section_id => $section_data){	
 
 				$div = new XMLElement('div');
-				$div->setAttribute('class', 'subsection contextual ' . $section_data['section']->get('id'));
-				
-				$div->appendChild(new XMLElement('h3', __('Filter %s by', array($section_data['section']->get('name')))));
+				$div->setAttribute('class', 'contextual ' . $section_data['section']->get('id'));
+				$h3 = new XMLElement('h3', __('Filter %s by', array($section_data['section']->get('name'))));
+				$h3->setAttribute('class', 'label');
+				$div->appendChild($h3);
 				
 				$ol = new XMLElement('ol');
+				$ol->setAttribute('id', 'filters-duplicator');
 
 				if(isset($fields['filter'][$section_data['section']->get('id')]['id'])){
 					$li = new XMLElement('li');

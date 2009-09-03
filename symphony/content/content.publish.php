@@ -748,7 +748,7 @@
 				$section = $sectionManager->fetch($entry->get('section_id'));
 
 				$fields = $_POST['fields'];
-
+				
 				## Combine FILES and POST arrays, indexed by their custom field handles
 				if(isset($_FILES['fields'])){
 					$filedata = General::processFilePostData($_FILES['fields']);
@@ -769,7 +769,7 @@
 						}
 					}
 				}
-
+				
 				if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)):
 					$this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 

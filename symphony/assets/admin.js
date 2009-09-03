@@ -309,7 +309,12 @@ var Symphony;
 		});
 
 		$('textarea').blur();
-
+		
+		// Internal duplicators:
+		$('#fields-duplicator, #filters-duplicator').symphonyDuplicator({
+			orderable:	true
+		});
+		
 		// Repeating sections
 		$('div.subsection').each(function() {
 			var m = $(this),

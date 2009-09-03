@@ -150,10 +150,12 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
 			
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'subsection');
-			$div->appendChild(new XMLElement('h3', __('Fields')));
-				
+			$h3 = new XMLElement('h3', __('Fields'));
+			$h3->setAttribute('class', 'label');
+			$div->appendChild($h3);
+			
 			$ol = new XMLElement('ol');
+			$ol->setAttribute('id', 'fields-duplicator');
 			
 			if(!$showEmptyTemplate){
 
@@ -317,11 +319,12 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
 			
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'subsection');
-			$div->appendChild(new XMLElement('h3', __('Fields')));
-				
+			$h3 = new XMLElement('h3', __('Fields'));
+			$h3->setAttribute('class', 'label');
+			$div->appendChild($h3);
+			
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('class', 'orderable subsection');
+			$ol->setAttribute('id', 'fields-duplicator');
 			
 			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $position => $field){
