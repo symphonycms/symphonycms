@@ -257,11 +257,13 @@
 			}
 			
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'subsection contextual ' . __('authors'));
-
-			$div->appendChild(new XMLElement('h3', __('Filter Authors by')));
-
+			$div->setAttribute('class', 'contextual ' . __('authors'));
+			$h3 = new XMLElement('h3', __('Filter Authors by'));
+			$h3->setAttribute('class', 'label');
+			$div->appendChild($h3);
+			
 			$ol = new XMLElement('ol');
+			$ol->setAttribute('id', 'filters-duplicator');
 			
 			$this->__appendAuthorFilter($ol, __('ID'), 'id', $fields['filter']['author']['id'], (!isset($fields['filter']['author']['id'])));	
 			$this->__appendAuthorFilter($ol, __('Username'), 'username', $fields['filter']['author']['username'], (!isset($fields['filter']['author']['username'])));
@@ -276,11 +278,13 @@
 
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'subsection contextual ' . __('navigation'));
-
-			$div->appendChild(new XMLElement('h3', __('Filter Navigation by')));
+			$div->setAttribute('class', 'contextual ' . __('navigation'));
+			$h3 = new XMLElement('h3', __('Filter Navigation by'));
+			$h3->setAttribute('class', 'label');
+			$div->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
+			$ol->setAttribute('id', 'filters-duplicator');
 
 			$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` ORDER BY `title` ASC");
 				
@@ -596,10 +600,12 @@
 			$fieldset->appendChild($p);
 			
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'subsection');
-			$div->appendChild(new XMLElement('h3', __('Namespace Declarations <i>Optional</i>')));
+			$h3 = new XMLElement('h3', __('Namespace Declarations <i>Optional</i>'));
+			$h3->setAttribute('class', 'label');
+			$div->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
+			$ol->setAttribute('id', 'filters-duplicator');
 			
 			if(is_array($fields['dynamic_xml']['namespace']['name'])){
 				
