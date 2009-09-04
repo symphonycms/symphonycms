@@ -13,9 +13,6 @@
 		
 		function __construct(&$parent){
 			parent::__construct($parent);
-			
-			$this->_templateOrder = array('input', 'textarea', 'taglist', 'select', 'checkbox', 'date', 'author', 'upload');
-			
 		}
 		
 		function __viewIndex(){
