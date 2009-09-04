@@ -7,9 +7,7 @@
 
 	Class contentBlueprintsSections extends AdministrationPage{
 
-		var $_errors;
-		
-		var $_templateOrder;
+		public $_errors;
 		
 		function __construct(&$parent){
 			parent::__construct($parent);
