@@ -97,9 +97,9 @@
 			$this->setPageType('form');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(__('Untitled'));
-		
+			
 			$fieldManager = new FieldManager($this->_Parent);
-			$types = array_union_simple($this->_templateOrder, $fieldManager->fetchTypes());
+			$types = array();
 			
 		    $fields = $_POST['fields'];
 			$meta = $_POST['meta'];
@@ -158,7 +158,6 @@
 			$ol->setAttribute('id', 'fields-duplicator');
 			
 			if(!$showEmptyTemplate){
-
 				foreach($fields as $position => $data){
 					if($input = $fieldManager->create($data['type'])){
 						$input->setArray($data);
@@ -172,24 +171,28 @@
 					}
 				}
 			}
-
-			foreach($types as $t){		
-				if($input = $fieldManager->create($t)){
-
-					$defaults = array();
-
-					$input->findDefaults($defaults);			
-					$input->setArray($defaults);
-
-					$wrapper =& new XMLElement('li');
-					$wrapper->setAttribute('class', 'template');
-					
-					$input->set('sortorder', '-1');
-					$input->displaySettingsPanel($wrapper);
-				
-					$ol->appendChild($wrapper);
-
+			
+			foreach ($fieldManager->fetchTypes() as $type) {
+				if ($type = $fieldManager->create($type)) {
+					array_push($types, $type);
 				}
+			}
+			
+			uasort($types, create_function('$a, $b', 'return strnatcasecmp($a->_name, $b->_name);'));
+			
+			foreach ($types as $type) {		
+				$defaults = array();
+				
+				$type->findDefaults($defaults);			
+				$type->setArray($defaults);
+				
+				$wrapper = new XMLElement('li');
+				$wrapper->setAttribute('class', 'template');
+				
+				$type->set('sortorder', '-1');
+				$type->displaySettingsPanel($wrapper);
+				
+				$ol->appendChild($wrapper);
 			}
 
 			$div->appendChild($ol);
@@ -215,9 +218,9 @@
 				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for could not be found.'), false, true);
 
 			$meta = $section->get();
-
-			$fieldManager = new FieldManager($this->_Parent);	
-			$types = array_union_simple($this->_templateOrder, $fieldManager->fetchTypes());
+			
+			$fieldManager = new FieldManager($this->_Parent);
+			$types = array();
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));			
 			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);	
@@ -337,25 +340,30 @@
 
 				}
 			}
-
-			foreach($types as $t){	
-				if($field = $fieldManager->create($t)){
-
-					$defaults = array();
-
-					$field->findDefaults($defaults);			
-					$field->setArray($defaults);
-
-					$wrapper =& new XMLElement('li');
-					$wrapper->setAttribute('class', 'template');
-
-					$field->set('sortorder', '-1');
-					$field->displaySettingsPanel($wrapper);
-					$ol->appendChild($wrapper);
-
+			
+			foreach ($fieldManager->fetchTypes() as $type) {
+				if ($type = $fieldManager->create($type)) {
+					array_push($types, $type);
 				}
 			}
-
+			
+			uasort($types, create_function('$a, $b', 'return strnatcasecmp($a->_name, $b->_name);'));
+			
+			foreach ($types as $type) {		
+				$defaults = array();
+				
+				$type->findDefaults($defaults);			
+				$type->setArray($defaults);
+				
+				$wrapper = new XMLElement('li');
+				$wrapper->setAttribute('class', 'template');
+				
+				$type->set('sortorder', '-1');
+				$type->displaySettingsPanel($wrapper);
+				
+				$ol->appendChild($wrapper);
+			}
+			
 			$div->appendChild($ol);
 			$fieldset->appendChild($div);
 			
