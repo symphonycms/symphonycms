@@ -255,7 +255,7 @@
 			}
 			
 			if(self::isEnabled() !== true || self::isErrorsEnabled($code) !== true) return;
-			throw new ErrorException($message, 0, $code, $file, $line);
+			GenericExceptionHandler::handler(new ErrorException($message, 0, $code, $file, $line));
 		}
 		
 		// Thanks to 'DarkGool' for inspiring this function
