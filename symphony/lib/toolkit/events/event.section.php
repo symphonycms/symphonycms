@@ -10,24 +10,36 @@
 			return $ret;
 		}
 	}
-
-
-	if(!function_exists('__doit')){	
-		function __doit($source, $fields, &$result, &$obj, &$event, $filters, $position=NULL, $entry_id=NULL){
-
-			## Create the post data cookie element
-			if(is_array($fields) && !empty($fields)){
-				$post_values = new XMLElement('post-values');
-				foreach($fields as $element_name => $value){
-					if(strlen($value) == 0) continue;
-					if(is_array($value)) {
-						foreach($value as $key => $value) {
-							$post_values->appendChild(new XMLElement($element_name, General::sanitize($value)));
-						}
-						continue;
-					}
-					$post_values->appendChild(new XMLElement($element_name, General::sanitize($value)));
+	
+	if (!function_exists('__array_to_xml')) {
+		function __array_to_xml($parent, $data) {
+			foreach ($data as $element_name => $value) {
+				if (strlen($value) == 0) continue;
+				
+				if (is_int($element_name)) {
+					$child = new XMLElement('item');
+					$child->setAttribute('index', $element_name);
 				}
+				
+				else {
+					$child = new XMLElement($element_name);
+				}
+				
+				if (is_array($value)) __array_to_xml($child, $value);
+				else $child->setValue(General::sanitize($value));
+				
+				$parent->appendChild($child);
+			}
+		}
+	}
+	
+	if (!function_exists('__doit')) {
+		function __doit($source, $fields, &$result, &$obj, &$event, $filters, $position=NULL, $entry_id=NULL){
+			$post_values = new XMLElement('post-values');
+			
+			## Create the post data cookie element
+			if (is_array($fields) && !empty($fields)) {
+				__array_to_xml($post_values, $fields);
 			}
 			
 			$post = General::getPostData();
