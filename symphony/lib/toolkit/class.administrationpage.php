@@ -190,7 +190,8 @@
 			$xNav->setAttribute('id', 'nav');
 
 			foreach($nav as $n){
-
+				if (!isset($n['link'])) continue;
+				
 				$n_bits = explode('/', $n['link'], 3);
 
 				$can_access = false;
@@ -326,7 +327,7 @@
 
 				}
 				
-				elseif(($page == $item['link']) && isset($item['limit'])){						
+				elseif(isset($item['link']) && ($page == $item['link']) && isset($item['limit'])){						
 					$page_limit	= $item['limit'];	  	
 				}
 			}

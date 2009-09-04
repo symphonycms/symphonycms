@@ -185,9 +185,7 @@
 		}
 
 		public function fetchCount($section_id=NULL, $where=NULL, $joins=NULL, $group=false){
-
-			if(!$entry_id && !$section_id) return false;
-			elseif(!$section_id) $section_id = $this->fetchEntrySectionID($entry_id);
+			if(!$section_id) return false;
 
 			$section = $this->sectionManager->fetch($section_id);
 			

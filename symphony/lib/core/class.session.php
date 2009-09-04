@@ -76,6 +76,8 @@
 					preg_replace('/^www./i', NULL, $_SERVER['HTTP_HOST'])
 				);
 				
+				if (!isset($parsed['host'])) return NULL;
+				
 				$domain = $parsed['host'];
 				
 				if(isset($parsed['port'])){

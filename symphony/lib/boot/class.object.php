@@ -19,9 +19,10 @@
 			
 			do{	
 				$this->_ParentCatalogue[$classname] = $ref;
-				$ref = $ref->_Parent;
 				
-				if(!is_object($ref)) return;
+				if(!isset($ref->_Parent) || !is_object($ref->_Parent)) return;
+				
+				$ref = $ref->_Parent;
 				
 				$lastClassname = $classname;
 				$classname = strtolower(@get_class($ref));	
