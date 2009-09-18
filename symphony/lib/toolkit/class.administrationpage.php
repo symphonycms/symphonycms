@@ -47,6 +47,8 @@
 			$this->Html->setAttribute('lang', __LANG__);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
 			$this->addScriptToHead(URL . '/symphony/assets/jquery.js', 50);
+			$this->addStylesheetToHead(URL . '/symphony/assets/symphony.duplicator.css', 'screen', 70);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.duplicator.js', 70);
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 60);
 			
 			###
@@ -183,7 +185,6 @@
 			$xNav->setAttribute('id', 'nav');
 
 			foreach($nav as $n){
-
 				$n_bits = explode('/', $n['link'], 3);
 
 				$can_access = true;

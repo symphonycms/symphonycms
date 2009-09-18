@@ -207,7 +207,7 @@
 		
 		private static function __SelectBuildOption($option){
 			
-			list($value, $selected, $desc, $class, $id, $attr) = $option;
+			@list($value, $selected, $desc, $class, $id, $attr) = $option;
 			if(!$desc) $desc = $value;
 			
 			$obj = new XMLElement('option', "$desc");

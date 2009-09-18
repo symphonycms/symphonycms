@@ -116,6 +116,8 @@
 		public function get($field=NULL){
 			if(!$field) return $this->_fields;
 			
+			if (!isset($this->_fields[$field])) return null;
+			
 			return $this->_fields[$field];
 		}
 		

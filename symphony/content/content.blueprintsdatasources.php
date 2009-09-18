@@ -206,11 +206,13 @@
 			foreach($field_groups as $section_id => $section_data){	
 
 				$div = new XMLElement('div');
-				$div->setAttribute('class', 'subsection contextual ' . $section_data['section']->get('id'));
-				
-				$div->appendChild(new XMLElement('h3', __('Filter %s by', array($section_data['section']->get('name')))));
+				$div->setAttribute('class', 'contextual ' . $section_data['section']->get('id'));
+				$h3 = new XMLElement('h3', __('Filter %s by', array($section_data['section']->get('name'))));
+				$h3->setAttribute('class', 'label');
+				$div->appendChild($h3);
 				
 				$ol = new XMLElement('ol');
+				$ol->setAttribute('id', 'filters-duplicator');
 
 				if(isset($fields['filter'][$section_data['section']->get('id')]['id'])){
 					$li = new XMLElement('li');
@@ -255,11 +257,13 @@
 			}
 			
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'subsection contextual ' . __('users'));
-
-			$div->appendChild(new XMLElement('h3', __('Filter Users by')));
-
+			$div->setAttribute('class', 'contextual ' . __('users'));
+			$h3 = new XMLElement('h3', __('Filter Users by'));
+			$h3->setAttribute('class', 'label');
+			$div->appendChild($h3);
+			
 			$ol = new XMLElement('ol');
+			$ol->setAttribute('id', 'filters-duplicator');
 			
 			$this->__appendUserFilter($ol, __('ID'), 'id', $fields['filter']['user']['id'], (!isset($fields['filter']['user']['id'])));	
 			$this->__appendUserFilter($ol, __('Username'), 'username', $fields['filter']['user']['username'], (!isset($fields['filter']['user']['username'])));
@@ -274,11 +278,13 @@
 
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'subsection contextual ' . __('navigation'));
-
-			$div->appendChild(new XMLElement('h3', __('Filter Navigation by')));
+			$div->setAttribute('class', 'contextual ' . __('navigation'));
+			$h3 = new XMLElement('h3', __('Filter Navigation by'));
+			$h3->setAttribute('class', 'label');
+			$div->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
+			$ol->setAttribute('id', 'filters-duplicator');
 
 			$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` ORDER BY `title` ASC");
 				
@@ -593,10 +599,12 @@
 			$fieldset->appendChild($p);
 			
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'subsection');
-			$div->appendChild(new XMLElement('h3', __('Namespace Declarations <i>Optional</i>')));
+			$h3 = new XMLElement('h3', __('Namespace Declarations <i>Optional</i>'));
+			$h3->setAttribute('class', 'label');
+			$div->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
+			$ol->setAttribute('id', 'filters-duplicator');
 			
 			if(is_array($fields['dynamic_xml']['namespace']['name'])){
 				
