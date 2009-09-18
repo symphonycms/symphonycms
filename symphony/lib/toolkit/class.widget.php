@@ -226,12 +226,14 @@
 			
 		}
 		
-		public static function wrapFormElementWithError($element, $message){
+		public static function wrapFormElementWithError($element, $message=NULL){
 			$div = new XMLElement('div');
 			$div->setAttributeArray(array('id' => 'error', 'class' => 'invalid'));
 			
 			$div->appendChild($element);
-			$div->appendChild(new XMLElement('p', $message));
+			if(!is_null($message)){
+				$div->appendChild(new XMLElement('p', $message));
+			}
 			
 			return $div;
 			

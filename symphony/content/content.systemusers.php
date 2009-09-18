@@ -56,7 +56,7 @@
 						$td3 = Widget::TableData('Unknown', 'inactive');
 					}
 					
-					if ($u->get('id') != Administration::instance()->User->id) $td3->appendChild(Widget::Input('items['.$u->get('id').']', NULL, 'checkbox'));
+					$td3->appendChild(Widget::Input('items['.$u->get('id').']', NULL, 'checkbox'));
 					
 					## Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3), ($bOdd ? 'odd' : NULL));
@@ -101,8 +101,8 @@
 				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('user_id' => $user_id));		
 				
 				foreach($checked as $user_id){
-					$a = UserManager::fetchByID($user_id);
-					if(is_object($a) && $a->get('id') != Administration::instance()->User->id) UserManager::delete($user_id);
+					if(Administration::instance()->User->id == $user_id) continue;
+					UserManager::delete($user_id);
 				}
 
 				redirect(URL . '/symphony/system/users/');
@@ -295,11 +295,23 @@
 				$this->_User->first_name = General::sanitize($fields['first_name']);
 				$this->_User->last_name = General::sanitize($fields['last_name']);
 				$this->_User->last_seen = NULL;
-				$this->_User->password = (trim($fields['password']) == '' ? '' : md5($fields['password']));
+				$this->_User->password = (trim($fields['password']) == '' ? NULL : md5($fields['password']));
 				$this->_User->default_section = intval($fields['default_section']);
 				$this->_User->auth_token_active = ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no');
+
+				###
+				# Delegate: PreCreate
+				# Description: Just before creation of a new User. User object, fields and error array provided
+				Administration::instance()->ExtensionManager->notifyMembers(
+					'PreCreate', '/system/users/new/', 
+					array(
+						'fields' => $fields, 
+						'user' => &$this->_User, 
+						'errors' => &$this->_errors
+					)
+				);
 				
-				if($this->_User->validate($this->_errors)):
+				if(empty($this->_errors) && $this->_User->validate($this->_errors)):
 					
 					if($fields['password'] != $fields['password-confirmation']){
 						$this->_errors['password'] = $this->_errors['password-confirmation'] = __('Passwords did not match');			
@@ -307,23 +319,23 @@
 				
 					elseif($user_id = $this->_User->commit()){
 
-						## TODO: Fix Me
 						###
-						# Delegate: Create
-						# Description: Creation of a new User. The ID of the User is provided.
-						//$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('user_id' => $user_id)); 	
-
-			  		   redirect(URL."/symphony/system/users/edit/$user_id/created/");	
+						# Delegate: PostCreate
+						# Description: Just after creation of a new User. The ID of the User is provided.
+						Administration::instance()->ExtensionManager->notifyMembers('PostCreate', '/system/users/new/', array('user' => $this->_User));
+						
+			  		   redirect(URL . "/symphony/system/users/edit/{$this->_User->id}/created/");	
 	
 					}
 					
 				endif;
 
-				if(is_array($this->_errors) && !empty($this->_errors))
+				if(is_array($this->_errors) && !empty($this->_errors)){
 					$this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), Alert::ERROR);
-					
-				else
+				}	
+				else{
 					$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), Alert::ERROR);
+				}
 				
 			}
 		}
@@ -357,7 +369,19 @@
 				$this->_User->default_section = intval($fields['default_section']);
 				$this->_User->auth_token_active = ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no');
 				
-				if($this->_User->validate($this->_errors)):
+				###
+				# Delegate: PreSave
+				# Description: Just before creation of a new User. User object, fields and error array provided
+				Administration::instance()->ExtensionManager->notifyMembers(
+					'PreSave', '/system/users/edit/', 
+					array(
+						'fields' => $fields, 
+						'user' => &$this->_User, 
+						'errors' => &$this->_errors
+					)
+				);				
+				
+				if(empty($this->_errors) && $this->_User->validate($this->_errors)):
 
 					if(($fields['password'] != '' || $fields['password-confirmation'] != '') && $fields['password'] != $fields['password-confirmation']){
 						$this->_errors['password'] = $this->_errors['password-confirmation'] = __('Passwords did not match');
@@ -367,15 +391,16 @@
 						
 						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' OR `user_id` = '{$user_id}' ");
 						
-						if($isOwner) $this->_Parent->login($this->_User->username, $this->_User->password, true);
+						if($isOwner){
+							Administration::instance()->login($this->_User->username, $this->_User->password, true);
+						}
 
-						## TODO: Fix me
 						###
-						# Delegate: Edit
-						# Description: After editing an User. ID of the User is provided.
-						//$ExtensionManager->notifyMembers('Edit', getCurrentPage(), array('user_id' => $_REQUEST['id']));  	
+						# Delegate: PostSave
+						# Description: Just after creation of a new User. The ID of the User is provided.
+						Administration::instance()->ExtensionManager->notifyMembers('PostSave', '/system/users/edit/', array('user' => $this->_User));	
 
-		  		    	redirect(URL . '/symphony/system/users/edit/' . $user_id . '/saved/');	
+		  		    	redirect(URL . "/symphony/system/users/edit/{$this->_User->id}/saved/");
 
 					}
 				

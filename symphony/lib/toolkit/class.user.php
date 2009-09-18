@@ -84,6 +84,10 @@
 			$this->_fields[trim($name)] = $value;
 		}
 		
+		public function __isset($name){
+			return isset($this->_fields[$name]);
+		}
+		
 		public function validate(&$errors){
 			
 			$errors = array();
@@ -114,15 +118,14 @@
 		public function commit(){
 						
 			$fields = $this->_fields;	
-				
-			if(isset($fields['id'])){
-				$id = $fields['id'];
+
+			if(isset($this->id) && !is_null($this->id)){
 				unset($fields['id']);
-				return UserManager::edit($id, $fields);	
+				return UserManager::edit($this->id, $fields);	
 			}
-			
-			return UserManager::add($fields);	
-			
+
+			$this->id = UserManager::add($fields);	
+			return $this->id;
 		}
 
 	}

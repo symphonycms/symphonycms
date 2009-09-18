@@ -163,7 +163,7 @@
 			# Delegate: FrontendPageResolved
 			# Description: Just after having resolved the page, but prior to any commencement of output creation
 			# Global: Yes
-			$this->ExtensionManager->notifyMembers('FrontendPageResolved', '/frontend/', array('page' => &$this, 'page_data' => &$page));
+			$this->ExtensionManager->notifyMembers('FrontendPageResolved', '/frontend/', array('env' => &$this->_env, 'page' => &$this, 'page_data' => &$page));
 
 			$this->_pageData = $page;
 			$root_page = @array_shift(explode('/', $page['path']));
