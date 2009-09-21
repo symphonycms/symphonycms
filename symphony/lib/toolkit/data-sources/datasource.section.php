@@ -1,5 +1,20 @@
 <?php
 
+	if(!function_exists('appendParamOutputValue')){
+		function appendParamOutputValue(&$param_pool, $key, $value){
+			if(!is_array($param_pool[$key])) $param_pool[$key] = array();
+
+			if(is_array($value)){
+				$param_pool[$key] = array_merge($value, $param_pool[$key]);
+			}
+			else{
+				$param_pool[$key][] = $value;	
+			}
+
+			return true;
+		}
+	}
+
 	if(!function_exists('processRecordGroup')){
 		function processRecordGroup(&$wrapper, $element, $group, $ds, &$Parent, &$entryManager, &$fieldPool, &$param_pool, $param_output_only=false){
 			$associated_sections = NULL;
@@ -36,10 +51,15 @@
 						}
 					}
 
+					
 					if(isset($ds->dsParamPARAMOUTPUT)){
-						if($ds->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
-						elseif($ds->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', strtotime($entry->creationDate));
-						elseif($ds->dsParamPARAMOUTPUT == 'system:user') $param_pool[$key][] = $entry->get('user_id');
+						if(in_array('system:id', $ds->dsParamPARAMOUTPUT)) appendParamOutputValue($param_pool, "{$key}-system-id", $entry->get('id'));
+						
+						if(in_array('system:date', $ds->dsParamPARAMOUTPUT)){
+							appendParamOutputValue($param_pool, "{$key}-system-date", DateTimeObj::get('c', strtotime($entry->creationDate)));
+						}
+						
+						if(in_array('system:user', $ds->dsParamPARAMOUTPUT)) appendParamOutputValue($param_pool, "{$key}-system-user", $entry->get('user_id'));
 					}
 
 					foreach($data as $field_id => $values){
@@ -48,16 +68,11 @@
 							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 
 						if(isset($ds->dsParamPARAMOUTPUT) && $ds->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
-							if(!isset($param_pool[$key]) || !is_array($param_pool[$key])) $param_pool[$key] = array();
-							
-							$param_pool_values = $fieldPool[$field_id]->getParameterPoolValue($values);
-							
-							if(is_array($param_pool_values)){
-								$param_pool[$key] = array_merge($param_pool_values, $param_pool[$key]);
-							}
-							else{
-								$param_pool[$key][] = $param_pool_values;
-							}
+							appendParamOutputValue(
+								$param_pool, 
+								"{$key}-" . $fieldPool[$field_id]->get('element_name'), 
+								$fieldPool[$field_id]->getParameterPoolValue($values)
+							);
 						}
 						
 						if (!$param_output_only) foreach ($ds->dsParamINCLUDEDELEMENTS as $handle) {
@@ -181,7 +196,19 @@
 			}
 		}
 		
-		$param_pool[$key][] = '';
+		if(isset($this->dsParamPARAMOUTPUT) && !empty($this->dsParamPARAMOUTPUT)){
+			$param_output = $this->dsParamPARAMOUTPUT;
+			if(!is_array($param_output)) $param_output = array($param_output);
+			foreach($param_output as $field){
+				
+				if($field == 'system:id') $field = 'system-id';
+				elseif($field == 'system:date') $field = 'system-date';
+				elseif($field == 'system:user') $field = 'system-user';
+
+				appendParamOutputValue($param_pool, "{$key}-{$field}", '');
+			}
+		}
+
 	}
 	
 	else{
@@ -207,8 +234,6 @@
 				
 			}
 		}
-		
-		if(isset($this->dsParamPARAMOUTPUT) && !is_array($param_pool[$key])) $param_pool[$key] = array();
 		
 		if($this->dsParamLIMIT > 0){
 		
@@ -244,9 +269,14 @@
 					}
 
 					if(isset($this->dsParamPARAMOUTPUT)){
-						if($this->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
-						elseif($this->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', strtotime($entry->creationDate));
-						elseif($this->dsParamPARAMOUTPUT == 'system:user') $param_pool[$key][] = $entry->get('user_id');
+						if(in_array('system:id', $this->dsParamPARAMOUTPUT)) appendParamOutputValue($param_pool, "{$key}-system-id", $entry->get('id'));
+						
+						if(in_array('system:date', $this->dsParamPARAMOUTPUT)){
+							appendParamOutputValue($param_pool, "{$key}-system-date", DateTimeObj::get('c', strtotime($entry->creationDate)));
+						}
+						
+						if(in_array('system:user', $this->dsParamPARAMOUTPUT)) appendParamOutputValue($param_pool, "{$key}-system-user", $entry->get('user_id'));
+
 					}
 					
 					foreach($data as $field_id => $values){
@@ -255,16 +285,11 @@
 							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 			
 						if(isset($this->dsParamPARAMOUTPUT) && $this->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
-							if(!isset($param_pool[$key]) || !is_array($param_pool[$key])) $param_pool[$key] = array();
-							
-							$param_pool_values = $fieldPool[$field_id]->getParameterPoolValue($values);
-							
-							if(is_array($param_pool_values)){
-								$param_pool[$key] = array_merge($param_pool_values, $param_pool[$key]);
-							}
-							else{
-								$param_pool[$key][] = $param_pool_values;
-							}
+							appendParamOutputValue(
+								$param_pool, 
+								"{$key}-" . $fieldPool[$field_id]->get('element_name'), 
+								$fieldPool[$field_id]->getParameterPoolValue($values)
+							);
 						}
 
 						if (!$this->_param_output_only) foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {
@@ -288,4 +313,3 @@
 		}
 		
 	}
-

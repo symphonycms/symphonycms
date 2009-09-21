@@ -418,27 +418,35 @@
 			## 1. First do a cleanup of each dependency list, removing non-existant DS's and find 
 			##    the ones that have no dependencies, removing them from the list
 			foreach($dependenciesList as $handle => $dependencies){
+
+				if(!empty($dependencies)) continue;
 				
-				$dependenciesList[$handle] = @array_intersect($dsKeyArray, $dependencies);
+				unset($dependenciesList[$handle]);
+				$orderedList[] = str_replace('_', '-', $handle);
 				
-				if(empty($dependenciesList[$handle])){ 
-					unset($dependenciesList[$handle]);
-					$orderedList[] = str_replace('_', '-', $handle);
-				}
 			}
-			
+
+
 			## 2. Iterate over the remaining DS's. Find if all their dependencies are
 			##    in the $orderedList array. Keep iterating until all DS's are in that list
 			##	  or there are circular dependencies (list doesn't change between iterations of the while loop)
 			do{
 				
 				$last_count = count($dependenciesList);
-				
-				foreach($dependenciesList as $handle => $dependencies){					
-					if(General::in_array_all(array_map(create_function('$a', "return str_replace('\$ds-', '', \$a);"), $dependencies), $orderedList)){
-						$orderedList[] = str_replace('_', '-', $handle);
-						unset($dependenciesList[$handle]);
-					}		
+
+				foreach($dependenciesList as $handle => $dependencies){		
+					
+					$dependencies = array_map(create_function('$a', "return str_replace('\$ds-', NULL, \$a);"), $dependencies);
+					
+					foreach($dependencies as $d){
+						foreach($orderedList as $o){
+							if(!preg_match("/^{$o}/i", $d)) break;
+							
+							$orderedList[] = str_replace('_', '-', $handle);
+							unset($dependenciesList[$handle]);
+						}
+					}
+	
 				}
 								
 			}while(!empty($dependenciesList) && $last_count > count($dependenciesList));
@@ -476,7 +484,7 @@
 			}
 			
 			$dsOrder = $this->__findDatasourceOrder($dependencies);
-			
+
 			foreach($dsOrder as $handle){
 
 				$this->_Parent->Profiler->seed();

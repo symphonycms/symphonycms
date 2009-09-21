@@ -17,7 +17,11 @@
 		function __construct(&$parent, $env=NULL, $process_params=true){
 			$this->_Parent = $parent;
 			$this->_force_empty_result = false;
-
+			
+			if(isset($this->dsParamPARAMOUTPUT) && !is_array($this->dsParamPARAMOUTPUT)){
+				$this->dsParamPARAMOUTPUT = array($this->dsParamPARAMOUTPUT);
+			}
+			
 			if($process_params){ 
 				$this->processParameters($env);
 			}

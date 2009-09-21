@@ -31,7 +31,8 @@
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/datasources/new/', 
-									URL . '/symphony/blueprints/components/'								)
+									URL . '/symphony/blueprints/components/'
+								)
 							), 
 							Alert::SUCCESS);
 						break;
@@ -81,7 +82,7 @@
 				$about = $existing->about();
 				$fields['name'] = $about['name'];
 				$fields['order'] = $existing->dsParamORDER;
-				$fields['param'] = $existing->dsParamPARAMOUTPUT;
+				$fields['param'] = (isset($existing->dsParamPARAMOUTPUT) ? $existing->dsParamPARAMOUTPUT : array());
 				$fields['required_url_param'] = $existing->dsParamREQUIREDPARAM;
 				$fields['xml_elements'] = $existing->dsParamINCLUDEDELEMENTS;
 				$fields['sort'] = $existing->dsParamSORT;
@@ -92,6 +93,10 @@
 				$fields['associated_entry_counts'] = $existing->dsParamASSOCIATEDENTRYCOUNTS;				
 				if ($fields['associated_entry_counts'] == NULL) $fields['associated_entry_counts'] = 'yes';
 				if($existing->dsParamREDIRECTONEMPTY == 'yes') $fields['redirect_on_empty'] = 'yes';
+				
+				if(!empty($fields['param']) && !is_array($fields['param'])){
+					$fields['param'] = array($fields['param']);
+				}
 				
 				$existing->dsParamFILTERS = @array_map('stripslashes', $existing->dsParamFILTERS);
 				
@@ -456,13 +461,13 @@
 			
 			$label = Widget::Label(__('Use Field'));
 			$options = array(
-				array('', false, __('None')),
+				//array('', false, __('None')),
 				array('label' => __('Users'), 'options' => array(	
-						array('id', ($fields['source'] == 'users' && $fields['param'] == 'id'), __('User ID')),
-						array('username', ($fields['source'] == 'users' && $fields['param'] == 'username'), __('Username')),
-						array('name', ($fields['source'] == 'users' && $fields['param'] == 'name'), __('Name')),
-						array('email', ($fields['source'] == 'users' && $fields['param'] == 'email'), __('Email')),
-						array('user_type', ($fields['source'] == 'users' && $fields['param'] == 'user_type'), __('User type')),
+						array('id', ($fields['source'] == 'users' && in_array('id', $fields['param'])), __('User ID')),
+						array('username', ($fields['source'] == 'users' && in_array('username', $fields['param'])), __('Username')),
+						array('name', ($fields['source'] == 'users' && in_array('name', $fields['param'])), __('Name')),
+						array('email', ($fields['source'] == 'users' && in_array('email', $fields['param'])), __('Email')),
+						array('user_type', ($fields['source'] == 'users' && in_array('user_type', $fields['param'])), __('User type')),
 						)
 					),				
 			);
@@ -470,27 +475,31 @@
 			foreach($field_groups as $section_id => $section_data){	
 			
 				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array(				
-					array('system:id', ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == 'system:id'), __('System ID')),
-					array('system:date', ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == 'system:date'), __('System Date')),
-					array('system:user', ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == 'system:user'), __('System User'))
+					array('system:id', ($fields['source'] == $section_data['section']->get('id') && in_array('system:id', $fields['param'])), __('System ID')),
+					array('system:date', ($fields['source'] == $section_data['section']->get('id') && in_array('system:date', $fields['param'])), __('System Date')),
+					array('system:user', ($fields['source'] == $section_data['section']->get('id') && in_array('system:user', $fields['param'])), __('System User'))
 				));
 			
 				$userOverride = false;
-				
+
 				foreach($section_data['fields'] as $input){
 				
 					if(!$input->allowDatasourceParamOutput()) continue;
 				
-					$optgroup['options'][] = array($input->get('element_name'), ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == $input->get('element_name')), $input->get('label'));
+					$optgroup['options'][] = array(
+						$input->get('element_name'), 
+						($fields['source'] == $section_data['section']->get('id') && in_array($input->get('element_name'), $fields['param'])), 
+						$input->get('label')
+					);
 				}
 			
 				$options[] = $optgroup;
 			}
 			
-			$label->appendChild(Widget::Select('fields[param]', $options, array('class' => 'filtered')));
+			$label->appendChild(Widget::Select('fields[param][]', $options, array('class' => 'filtered', 'multiple' => 'multiple')));
 			$li->appendChild($label);
 
-			$p = new XMLElement('p', __('The parameter <code id="output-param-name">$ds-%s</code> will be created with this field\'s value for XSLT or other data sources to use.', array(($this->_context[0] == 'edit' ? $existing->dsParamROOTELEMENT : __('Untitled')))));
+			$p = new XMLElement('p', __('The parameter <code id="output-param-name">$ds-%s-FIELD</code> will be created with this field\'s value for XSLT or other data sources to use. <code>FIELD</code> is the element name of the chosen field.', array(($this->_context[0] == 'edit' ? $existing->dsParamROOTELEMENT : __('Untitled')))));
 			$p->setAttribute('class', 'help');
 			$li->appendChild($p);
 			
@@ -1060,7 +1069,7 @@
 		function __injectIncludedElements(&$shell, $elements){
 			if(!is_array($elements) || empty($elements)) return;
 			
-			$shell = str_replace('<!-- INCLUDED ELEMENTS -->', "public \$dsParamINCLUDEDELEMENTS = array(" . self::CRLF . "\t\t\t\t'" . implode("'," . self::CRLF . "\t\t\t\t'", $elements) . "'" . self::CRLF . '		);' . self::CRLF, $shell);
+			$shell = str_replace('<!-- INCLUDED ELEMENTS -->', "public \$dsParamINCLUDEDELEMENTS = array(" . self::CRLF . "\t\t\t'" . implode("'," . self::CRLF . "\t\t\t'", $elements) . "'" . self::CRLF . '		);' . self::CRLF, $shell);
 			
 		}
 		
@@ -1070,8 +1079,8 @@
 			$string = 'public $dsParamFILTERS = array(' . self::CRLF;
 			           							
 			foreach($filters as $key => $val){
-				if(trim($val) == '') continue;
-				$string .= "\t\t\t\t'$key' => '" . addslashes($val) . "'," . self::CRLF;
+				if(strlen(trim($val)) == 0) continue;
+				$string .= "\t\t\t'$key' => '" . addslashes($val) . "'," . self::CRLF;
 			}
 			
 			$string .= '		);' . self::CRLF;
@@ -1091,8 +1100,21 @@
 			
 			$var_list = NULL;
 			foreach($vars as $key => $val){
-				if(trim($val) == '') continue;
-				$var_list .= '		public $dsParam' . strtoupper($key) . " = '" . addslashes($val) . "';" . self::CRLF;
+				
+				if(!is_array($val) && strlen(trim($val)) == 0) continue;
+				
+				$var_list .= sprintf('		public $dsParam%s = ', strtoupper($key));
+				
+				if(is_array($val) && !empty($val)){
+					$var_list .= 'array(' . self::CRLF;
+					foreach($val as $item){
+						$var_list .= sprintf("\t\t\t'%s',", addslashes($item)) . self::CRLF;	
+					}
+					$var_list .= '		);' . self::CRLF;
+				}
+				else{
+					$var_list .= sprintf("'%s';", addslashes($val)) . self::CRLF;
+				}
 			}
 			
 			$shell = str_replace('<!-- VAR LIST -->', trim($var_list), $shell);
