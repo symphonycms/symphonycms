@@ -74,6 +74,34 @@
 				$fields['name'] = $about['name'];
 				$fields['source'] = $existing->getSource();
 				$fields['filters'] = $existing->eParamFILTERS;
+				$fields['output_id_on_save'] = ($existing->eParamOUTPUT_ID_ON_SAVE === true ? 'yes' : 'no');
+				
+				if(isset($existing->eParamOVERRIDES) && !empty($existing->eParamOVERRIDES)){
+					$fields['overrides'] = array(
+						'field' => array(),
+						'replacement' => array()
+					);
+					
+					foreach($existing->eParamOVERRIDES as $field_name => $replacement_value){
+						$fields['overrides']['field'][] = $field_name;
+						$fields['overrides']['replacement'][] = $replacement_value;
+					}
+					
+				}
+
+				if(isset($existing->eParamDEFAULTS) && !empty($existing->eParamDEFAULTS)){
+					$fields['defaults'] = array(
+						'field' => array(),
+						'replacement' => array()
+					);
+					
+					foreach($existing->eParamDEFAULTS as $field_name => $replacement_value){
+						$fields['defaults']['field'][] = $field_name;
+						$fields['defaults']['replacement'][] = $replacement_value;
+					}
+					
+				}
+				
 			}
 			
 			if(isset($_POST['fields'])) $fields = $_POST['fields'];
@@ -111,6 +139,9 @@
 			
 				$fieldset->appendChild($div);
 			
+				//$div = new XMLElement('div');
+				//$div->setAttribute('class', 'group');
+			
 				$label = Widget::Label(__('Filter Rules'));	
 
 				$options = array(
@@ -126,11 +157,135 @@
 			
 				$label->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
 				$fieldset->appendChild($label);		
-			
-				$fieldset->appendChild(new XMLElement('p', __('This event will not be processed if any of these rules return true.'), array('class' => 'help')));
-			
+							
+				$fieldset->appendChild(new XMLElement('p', '&uarr; ' . __('This event will not be processed if any of these rules return true.'), array('class' => 'help')));
+				
+				$label = Widget::Label();
+				$input = Widget::Input('fields[output_id_on_save]', 'yes', 'checkbox');
+				if(isset($fields['output_id_on_save']) && $fields['output_id_on_save'] == 'yes'){ 
+					$input->setAttribute('checked', 'checked');
+				}
+
+				$label->setValue(__('%s When saving is successful, add the entry ID value/s to page parameters. This will take the format <code>$event-name-id</code>', array($input->generate())));
+				$fieldset->appendChild($label);
+				//$fieldset->appendChild($div);
+
+				
 				$this->Form->appendChild($fieldset);
 			endif;
+
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('Input Overrides &amp; Default Values')));	
+			$fieldset->appendChild(new XMLElement('p', __('Specify fields in the <code>POST</code> data to either override or set to a default value if not set.'), array('class' => 'help')));
+				
+			$div = new XMLElement('div');
+			$h3 = new XMLElement('h3', __('Fields <i>Optional</i>'));
+			$h3->setAttribute('class', 'label');
+			$div->appendChild($h3);
+			
+			$ol = new XMLElement('ol');
+			$ol->setAttribute('id', 'filters-duplicator');
+			
+			if(is_array($fields['overrides'])){
+
+				$field_names = $fields['overrides']['field'];
+				$replacement_values = $fields['overrides']['replacement'];
+				
+				for($ii = 0; $ii < count($field_names); $ii++){
+					
+					$li = new XMLElement('li');
+					$li->appendChild(new XMLElement('h4', __('Override')));
+
+					$group = new XMLElement('div');
+					$group->setAttribute('class', 'group');
+
+					$label = Widget::Label(__('Element Name'));
+					$label->appendChild(Widget::Input('fields[overrides][field][]', General::sanitize($field_names[$ii])));
+					$group->appendChild($label);
+
+					$label = Widget::Label(__('Replacement'));
+					$label->appendChild(Widget::Input('fields[overrides][replacement][]', General::sanitize($replacement_values[$ii])));
+					$group->appendChild($label);
+
+					$li->appendChild($group);
+					$ol->appendChild($li);
+				
+				}
+			}
+
+			if(is_array($fields['defaults'])){
+
+				$field_names = $fields['defaults']['field'];
+				$replacement_values = $fields['defaults']['replacement'];
+				
+				for($ii = 0; $ii < count($field_names); $ii++){
+					
+					$li = new XMLElement('li');
+					$li->appendChild(new XMLElement('h4', __('Default Value')));
+
+					$group = new XMLElement('div');
+					$group->setAttribute('class', 'group');
+
+					$label = Widget::Label(__('Element Name'));
+					$label->appendChild(Widget::Input('fields[defaults][field][]', General::sanitize($field_names[$ii])));
+					$group->appendChild($label);
+
+					$label = Widget::Label(__('Replacement'));
+					$label->appendChild(Widget::Input('fields[defaults][replacement][]', General::sanitize($replacement_values[$ii])));
+					$group->appendChild($label);
+
+					$li->appendChild($group);
+					$ol->appendChild($li);
+				
+				}
+			}
+			
+			$li = new XMLElement('li');
+			$li->setAttribute('class', 'template');
+			$li->appendChild(new XMLElement('h4', __('Override')));
+			
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
+			
+			$label = Widget::Label(__('Element Name'));
+			$label->appendChild(Widget::Input('fields[overrides][field][]'));
+			$group->appendChild($label);
+					
+			$label = Widget::Label(__('Replacement'));
+			$label->appendChild(Widget::Input('fields[overrides][replacement][]'));
+			$group->appendChild($label);
+
+			$li->appendChild($group);
+			$ol->appendChild($li);
+			
+
+			$li = new XMLElement('li');
+			$li->setAttribute('class', 'template');
+			$li->appendChild(new XMLElement('h4', __('Default Value')));
+			
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
+			
+			$label = Widget::Label(__('Element Name'));
+			$label->appendChild(Widget::Input('fields[defaults][field][]'));
+			$group->appendChild($label);
+					
+			$label = Widget::Label(__('Replacement'));
+			$label->appendChild(Widget::Input('fields[defaults][replacement][]'));
+			$group->appendChild($label);
+			
+			$li->appendChild($group);
+			$ol->appendChild($li);
+			
+			
+			$div->appendChild($ol);
+			$fieldset->appendChild($div);
+			$this->Form->appendChild($fieldset);
+			
+			
+			$fieldset->appendChild(new XMLElement('p', __('Use <code>{$param}</code> syntax in "Replacement Value" for access to page parameters.'), array('class' => 'help')));
+			
 			
 			if($isEditing):
 				$fieldset = new XMLElement('fieldset');
@@ -141,6 +296,7 @@
 
 				$this->Form->appendChild($fieldset);
 			endif;
+			
 			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
@@ -223,13 +379,22 @@
 				
 				$filter = NULL;
 				$elements = NULL;
-				$this->__injectAboutInformation($eventShell, $about);
-				$this->__injectFilters($eventShell, $fields['filters']);
+				
+				$eventShell = self::__injectAboutInformation($eventShell, $about);
+				
+				if(isset($fields['filters']) && is_array($fields['filters']) && !empty($fields['filters'])){
+					$eventShell = self::__injectArrayValues($eventShell, 'FILTERS', $fields['filters']);
+				}
+				
+				$eventShell = self::__injectOverridesAndDefaults(
+					$eventShell, 
+					(isset($fields['overrides']) && is_array($fields['overrides']) && !empty($fields['overrides']) ? $fields['overrides'] : NULL),
+					(isset($fields['defaults']) && is_array($fields['defaults']) && !empty($fields['defaults']) ? $fields['defaults'] : NULL)				
+				);
 				
 				$documentation = NULL;
 				$documentation_parts = array();
-				
-				
+					
 				$documentation_parts[] = new XMLElement('h3', __('Success and Failure XML Examples'));			
 				$documentation_parts[] = new XMLElement('p', __('When saved successfully, the following XML will be returned:'));
 			
@@ -352,18 +517,37 @@
 				###
 				# Delegate: AppendEventFilterDocumentation
 				# Description: Allows adding documentation for new filters. A reference to the $documentation array is provided, along with selected filters
-				$this->_Parent->ExtensionManager->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $fields['filters'], 'documentation' => &$documentation_parts));
+				$this->_Parent->ExtensionManager->notifyMembers(
+					'AppendEventFilterDocumentation', 
+					'/blueprints/events/' . $this->_context[0] . '/', 
+					array('selected' => $fields['filters'], 'documentation' => &$documentation_parts)
+				);
 				
 				$documentation = join(self::CRLF, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $documentation_parts));
 				$documentation = str_replace('\'', '\\\'', $documentation);
 				
-				$eventShell = str_replace('<!-- CLASS NAME -->', $classname, $eventShell);
-				$eventShell = str_replace('<!-- SOURCE -->', $source, $eventShell);
-				$eventShell = str_replace('<!-- DOCUMENTATION -->', General::tabsToSpaces($documentation, 2), $eventShell);
-				$eventShell = str_replace('<!-- ROOT ELEMENT -->', $rootelement, $eventShell);
+				$pattern = array(
+					'<!-- CLASS NAME -->',
+					'<!-- SOURCE -->',
+					'<!-- DOCUMENTATION -->',
+					'<!-- ROOT ELEMENT -->',
+					'<!-- OUTPUT ID ON SAVE -->'
+				);
+				
+				$replacements = array(
+					$classname,
+					$source,
+					General::tabsToSpaces($documentation, 2),
+					$rootelement,
+					(isset($fields['output_id_on_save']) && $fields['output_id_on_save'] == 'yes' ? 'true' : 'false')
+				);
+								
+				$eventShell = str_replace($pattern, $replacements, $eventShell);
+
 				
 				## Remove left over placeholders
 				$eventShell = preg_replace(array('/<!--[\w ]++-->/'), '', $eventShell);	
+				header('Content-Type: text/plain');
 
 				##Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file')))
@@ -407,18 +591,72 @@
 		}
 
 		
-		function __injectFilters(&$shell, $elements){
-			if(!is_array($elements) || empty($elements)) return;
-			
-			$shell = str_replace('<!-- FILTERS -->',  "'" . implode("'," . self::CRLF . "\t\t\t\t'", $elements) . "'", $shell);
-			
+		private static function __injectArrayValues($shell, $variable, array $elements){
+			return str_replace('<!-- '.strtoupper($variable).' -->',  "'" . implode("'," . self::CRLF . "\t\t\t'", $elements) . "'", $shell);
 		}
 		
-		function __injectAboutInformation(&$shell, $details){
-			if(!is_array($details) || empty($details)) return;
+		private static function __injectOverridesAndDefaults($shell, array $overrides=NULL, array $defaults=NULL){
+
+			/*
+			Array
+			(
+			    [field] => Array
+			        (
+			            [0] => id
+			        )
+
+			    [replacement] => Array
+			        (
+			            [0] => 43
+			        )
+
+			)
+			Array
+			(
+			    [field] => Array
+			        (
+			            [0] => title
+			            [1] => published
+			        )
+
+			    [replacement] => Array
+			        (
+			            [0] => I am {$title}
+			            [1] => no
+			        )
+
+			)
+			*/
+
+			if(!is_null($overrides)){
+				$values = array();
+				foreach($overrides['field'] as $index => $handle){
+					$values[] = sprintf("%s' => '%s", addslashes($handle), addslashes($overrides['replacement'][$index]));
+				}
+				
+				$shell = self::__injectArrayValues($shell, 'OVERRIDES', $values);
+			}
+
+			if(!is_null($defaults)){
+				$values = array();
+				foreach($defaults['field'] as $index => $handle){
+					$values[] = sprintf("%s' => '%s", addslashes($handle), addslashes($defaults['replacement'][$index]));
+				}
+				
+				$shell = self::__injectArrayValues($shell, 'DEFAULTS', $values);
+			}
 			
-			foreach($details as $key => $val) $shell = str_replace('<!-- ' . strtoupper($key) . ' -->', addslashes($val), $shell);
+			return $shell;
+		}			
+		
+		private static function __injectAboutInformation($shell, array $details){
+			foreach($details as $key => $val){
+				$shell = str_replace('<!-- ' . strtoupper($key) . ' -->', addslashes($val), $shell);
+			}
+			
+			return $shell;
 		}
+
+		
 	}
 	
-?>
