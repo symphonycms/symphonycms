@@ -18,7 +18,7 @@
 		border-bottom: 1px solid #eeeedd;
 		overflow: hidden;
 		margin: 0 -2em;
-		padding: 0 3.75em;
+		padding: 0 2em;
 		position: relative;
 		z-index: 1;
 	}
@@ -26,10 +26,12 @@
 		background: #ccccbb;
 		border-bottom: 1px solid #eeeedd;
 		color: #666655;
-		cursor: pointer;
-		margin: 0 -1.75em 1em -1.75em;
+		margin: 0;
 		padding: 0.5em 1.75em;
 		position: relative;
+	}
+	.duplicator.orderable > .instance > .header {
+		cursor: move;
 	}
 	.duplicator > .instance > .header .destructor {
 		font-weight: normal;
@@ -49,22 +51,14 @@
 		cursor: default;
 		opacity: 0.4;
 	}
-	
-/*-----------------------------------------------------------------------------
-	Collapsing
------------------------------------------------------------------------------*/
-	
-	.duplicator > .instance.collapsed > * {
-		display: none;
-	}
-	.duplicator > .instance.collapsed > .header {
-		border-bottom: none;
-		display: block;
-		margin-bottom: 0;
+	.duplicator > .instance > .content {
+		overflow: hidden;
+		padding: 1em 1.75em 0 1.75em;
+		position: relative;
 	}
 	
 /*-----------------------------------------------------------------------------
-	Ordering
+	States
 -----------------------------------------------------------------------------*/
 	
 	.duplicator.ordering > .instance {
@@ -83,15 +77,20 @@
 		cursor: move;
 	}
 	
+	.duplicator > .instance.collapsed {
+		border-bottom: none;
+	}
+	.duplicator > .instance.collapsed > .content {
+		display: none;
+	}
+	
 /*-----------------------------------------------------------------------------
 	Controls
 -----------------------------------------------------------------------------*/
 	
 	.duplicator > .controls {
 		background: #aaaa99;
-		border-top: 1px solid #eeeedd;
 		cursor: default;
-		margin: -1px 0 0 0;
 		padding: 0 1.75em;
 		position: relative;
 		text-align: right;
