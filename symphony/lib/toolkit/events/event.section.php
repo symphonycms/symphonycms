@@ -13,7 +13,7 @@
 	
 	if (!function_exists('__doit')) {
 		function __doit($source, $fields, &$result, &$obj, &$event, $filters, $position=NULL, $entry_id=NULL){
-			$post_values = new XMLElement('post');
+			$post_values = new XMLElement('request');
 			$post = General::getPostData();
 			$fields = $post['fields'];
 			$filter_results = array();	
