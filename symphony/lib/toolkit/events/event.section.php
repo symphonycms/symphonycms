@@ -11,42 +11,18 @@
 		}
 	}
 	
-	if (!function_exists('__array_to_xml')) {
-		function __array_to_xml($parent, $data) {
-			foreach ($data as $element_name => $value) {
-				if (strlen($value) == 0) continue;
-				
-				if (is_int($element_name)) {
-					$child = new XMLElement('item');
-					$child->setAttribute('index', $element_name);
-				}
-				
-				else {
-					$child = new XMLElement($element_name);
-				}
-				
-				if (is_array($value)) __array_to_xml($child, $value);
-				else $child->setValue(General::sanitize($value));
-				
-				$parent->appendChild($child);
-			}
-		}
-	}
-	
 	if (!function_exists('__doit')) {
 		function __doit($source, $fields, &$result, &$obj, &$event, $filters, $position=NULL, $entry_id=NULL){
-			$post_values = new XMLElement('post-values');
-			
-			## Create the post data cookie element
-			if (is_array($fields) && !empty($fields)) {
-				__array_to_xml($post_values, $fields);
-			}
-			
+			$post_values = new XMLElement('post');
 			$post = General::getPostData();
 			$fields = $post['fields'];
+			$filter_results = array();	
 			
-			$filter_results = array();			
-
+			## Create the post data cookie element
+			if (is_array($post) && !empty($post)) {
+				General::array_to_xml($post_values, $post);
+			}
+			
 			###
 			# Delegate: EventPreSaveFilter
 			# Description: Prior to saving entry from the front-end. This delegate will force the Event to terminate if it populates the error

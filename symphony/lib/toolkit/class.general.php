@@ -539,7 +539,35 @@
 			return $tmp;
 				
 		}
-
+		
+		/***
+		
+		Method: array_to_xml
+		Description: Convert an array into an XML element.
+		Param: $parent - XML Element to append to
+		Param: $data - Array of data to process.
+		Return: rebuilt array
+		
+		***/
+		public static function array_to_xml($parent, $data) {
+			foreach ($data as $element_name => $value) {
+				if (strlen($value) == 0) continue;
+				
+				if (is_int($element_name)) {
+					$child = new XMLElement('item');
+					$child->setAttribute('index', $element_name + 1);
+				}
+				
+				else {
+					$child = new XMLElement($element_name);
+				}
+				
+				if (is_array($value)) General::array_to_xml($child, $value);
+				else $child->setValue(General::sanitize($value));
+				
+				$parent->appendChild($child);
+			}
+		}
 
 		/***
 		
