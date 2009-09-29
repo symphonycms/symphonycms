@@ -4,7 +4,7 @@
 	require_once(TOOLKIT . '/class.datasourcemanager.php');
 	require_once(TOOLKIT . '/class.eventmanager.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
-			
+	
 	Class FrontendPage extends XSLTPage{
 		
 		const FRONTEND_OUTPUT_NORMAL = 0;
@@ -29,10 +29,15 @@
 			$this->DatasourceManager = new DatasourceManager($this->_Parent);
 			$this->EventManager = new EventManager($this->_Parent);	
 			$this->ExtensionManager = new ExtensionManager($this->_Parent);
+
 		}
 		
 		public function pageData(){
 			return $this->_pageData;
+		}
+		
+		public function env(){
+			return array('env' => &$this->_env, 'param' => &$this->_param);
 		}
 		
 		public function generate($page) {
@@ -172,7 +177,7 @@
 			
 			// Get max upload size from php and symphony config then choose the smallest
 			$upload_size_php = ini_size_to_bytes(ini_get('upload_max_filesize'));
-			$upload_size_sym = Frontend::instance()->Configuration->get('max_upload_size','admin');
+			$upload_size_sym = Symphony::Configuration()->get('max_upload_size','admin');
 
 			$this->_param = array(
 				'today' => DateTimeObj::get('Y-m-d'),
@@ -182,17 +187,17 @@
 				'this-day' => DateTimeObj::get('d'),
 				'timezone' => DateTimeObj::get('P'),
 				'website-name' => Symphony::Configuration()->get('sitename', 'general'),
-				'page-title' => $page['title'],
+				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
+				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'root' => URL,
 				'workspace' => URL . '/workspace',
+				'page-title' => $page['title'],
 				'root-page' => ($root_page ? $root_page : $page['handle']),
 				'current-page' => $page['handle'],
 				'current-page-id' => $page['id'],
 				'current-path' => $current_path,
 				'parent-path' => '/' . $page['path'],
 				'current-url' => URL . $current_path,
-				'upload-limit' => min($upload_size_php, $upload_size_sym),
-				'symphony-version' => $this->_Parent->Configuration->get('version', 'symphony'),
 			);
 		
 			if(is_array($this->_env['url'])){
@@ -263,8 +268,12 @@
 			# Global: Yes
 			$this->ExtensionManager->notifyMembers('FrontendParamsPostResolve', '/frontend/', array('params' => $this->_param));
 			
-			## TODO: Add delegate for adding/removing items in the params
-
+			$xParam = new XMLElement('parameters');
+			foreach($this->_param as $key => $value){
+				$xParam->appendChild(new XMLElement($key, General::sanitize($value)));
+			}
+			$xml->prependChild($xParam);
+			
 			$xsl = '<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="./workspace/pages/' . basename($page['filelocation']).'"/>
