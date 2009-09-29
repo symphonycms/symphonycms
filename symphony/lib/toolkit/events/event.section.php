@@ -45,6 +45,10 @@
 			$post = General::getPostData();
 			$fields = $post['fields'];
 			
+			## Apply overrides and defaults
+			
+			
+			
 			$filter_results = array();			
 
 			###
@@ -139,6 +143,19 @@
 					$result->appendChild(new XMLElement('message', __('Unknown errors where encountered when saving.')));
 					if(isset($post_values) && is_object($post_values)) $result->appendChild($post_values);		
 					return false;
+				}
+				
+				// Put the newly created ID into the param pool
+				if($event->eParamOUTPUT_ID_ON_SAVE === true){
+					$env = Frontend::instance()->Page()->env();
+					
+					$key = 'event-' . constant(get_class($event) . '::ROOTELEMENT') . '-id';
+					
+					if(!isset($env['env']['pool'][$key])){
+						$env['env']['pool'][$key] = array();
+					}
+					
+					$env['env']['pool'][$key][] = $entry->get('id');
 				}
 				
 				$result->setAttribute('id', $entry->get('id'));
