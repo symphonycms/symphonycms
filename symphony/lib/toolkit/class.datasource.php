@@ -6,15 +6,15 @@
 	##Interface for datasouce objects
 	Class DataSource{
 		
-		var $_env;
-		var $_Parent;
-		var $_param_output_only;
-		var $_dependencies;
-		var $_force_empty_result;
+		protected $_env;
+		protected $_Parent;
+		protected $_param_output_only;
+		protected $_dependencies;
+		protected $_force_empty_result;
 		
 		const CRLF = "\r\n";
 		
-		function __construct(&$parent, $env=NULL, $process_params=true){
+		public function __construct(&$parent, $env=NULL, $process_params=true){
 			$this->_Parent = $parent;
 			$this->_force_empty_result = false;
 			
@@ -27,7 +27,7 @@
 			}
 		}
 		
-		function processParameters($env=NULL){
+		public function processParameters($env=NULL){
 									
 			if($env) $this->_env = $env;
 			
@@ -66,18 +66,18 @@
 		
 		// THIS FUNCTION WILL BE REMOVED IN THE NEXT 
 		// VERSION, PLEASE THROW AN EXCEPTION INSTEAD
-		function __redirectToErrorPage(){
+		protected function __redirectToErrorPage(){
 			throw new FrontendPageNotFoundException;
 		}
 		
-		function emptyXMLSet(XMLElement $xml=NULL){
+		public function emptyXMLSet(XMLElement $xml=NULL){
 			if(is_null($xml)) $xml = new XMLElement($this->dsParamROOTELEMENT);
 			$xml->appendChild($this->__noRecordsFound());
 			
 			return $xml;
 		}
 		
-		function __appendIncludedElements(&$wrapper, $fields){
+		protected function __appendIncludedElements(&$wrapper, $fields){
 			if(!isset($this->dsParamINCLUDEDELEMENTS) || !is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) return;
 			
 			foreach($this->dsParamINCLUDEDELEMENTS as $index) {
@@ -90,15 +90,15 @@
 			}	
 		}
 		
-		function __determineFilterType($value){
+		protected function __determineFilterType($value){
 			return (false === strpos($value, '+') ? DS_FILTER_OR : DS_FILTER_AND);
 		}
 		
-		function __noRecordsFound(){
+		protected function __noRecordsFound(){
 			return new XMLElement('error', __('No records found.'));
 		}
 
-		function __processParametersInString($value, $env, $includeParenthesis=true, $escape=false){
+		protected function __processParametersInString($value, $env, $includeParenthesis=true, $escape=false){
 			if(trim($value) == '') return NULL;
 
 			if(!$includeParenthesis) $value = '{'.$value.'}';
@@ -151,7 +151,7 @@
 			return preg_replace('/(?<!\\\\)\\\\,/', ',', $string);
 		}
 		
-		function __findParameterInEnv($needle, $env){
+		protected function __findParameterInEnv($needle, $env){
 
 			if(isset($env['env']['url'][$needle])) return $env['env']['url'][$needle];
 
@@ -166,26 +166,26 @@
 		## This function is required in order to edit it in the data source editor page. 
 		## Do not overload this function if you are creating a custom data source. It is only
 		## used by the data source editor
-		function allowEditorToParse(){
+		public function allowEditorToParse(){
 			return false;
 		}
 				
 		## This function is required in order to identify what type of data source this is for
 		## use in the data source editor. It must remain intact. Do not overload this function into
 		## custom data sources.
-		function getSource(){
+		public function getSource(){
 			return NULL;
 		}
 				
-		function getDependencies(){
+		public function getDependencies(){
 			return $this->_dependencies;
 		}
 				
 		##Static function
-		function about(){		
+		public function about(){		
 		}
 
-		function grab($param=array()){
+		public function grab(){
 		}
 	
 	}
