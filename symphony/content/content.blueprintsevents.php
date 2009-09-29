@@ -139,9 +139,6 @@
 			
 				$fieldset->appendChild($div);
 			
-				//$div = new XMLElement('div');
-				//$div->setAttribute('class', 'group');
-			
 				$label = Widget::Label(__('Filter Rules'));	
 
 				$options = array(
@@ -168,8 +165,6 @@
 
 				$label->setValue(__('%s When saving is successful, add the entry ID value/s to page parameters. This will take the format <code>$event-name-id</code>', array($input->generate())));
 				$fieldset->appendChild($label);
-				//$fieldset->appendChild($div);
-
 				
 				$this->Form->appendChild($fieldset);
 			endif;
@@ -631,6 +626,7 @@
 			if(!is_null($overrides)){
 				$values = array();
 				foreach($overrides['field'] as $index => $handle){
+					if(strlen(trim($handle)) == 0) continue;
 					$values[] = sprintf("%s' => '%s", addslashes($handle), addslashes($overrides['replacement'][$index]));
 				}
 				
@@ -640,6 +636,7 @@
 			if(!is_null($defaults)){
 				$values = array();
 				foreach($defaults['field'] as $index => $handle){
+					if(strlen(trim($handle)) == 0) continue;
 					$values[] = sprintf("%s' => '%s", addslashes($handle), addslashes($defaults['replacement'][$index]));
 				}
 				
