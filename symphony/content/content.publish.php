@@ -43,7 +43,7 @@
 			$sectionManager = new SectionManager($this->_Parent);
 			
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])), false, true);
+				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
 			
 			$section = $sectionManager->fetch($section_id);
 
@@ -409,7 +409,7 @@
 			$sectionManager = new SectionManager($this->_Parent);
 			
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])), false, true);
+				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
 		
 		    $section = $sectionManager->fetch($section_id);
 
@@ -507,7 +507,7 @@
 				$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']);
 
 			    if(!$section = $sectionManager->fetch($section_id)) 
-					$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', $this->_context['section_handle']), false, true);
+					$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', $this->_context['section_handle']), false, true);
 				
 				$entryManager = new EntryManager($this->_Parent);
 
