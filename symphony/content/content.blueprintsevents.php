@@ -111,6 +111,7 @@
 			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
 			
 			if(!$readonly):
+			
 				$fieldset = new XMLElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
@@ -181,6 +182,25 @@
 			
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'filters-duplicator');
+
+			
+			
+			$options = array(
+				array('', false, __('None')),
+			);
+			
+			$field_groups = array();
+			
+			foreach($sections as $s){
+				
+				$field_groups[$s->get('name')] = array();
+				
+				$rows = Symphony::Database()->fetch("SELECT `element_name`, `label` FROM `tbl_fields` WHERE `parent_section` = " . $s->get('id'));
+				foreach($rows as $r){
+					$field_groups[$s->get('name')][$r['element_name']] = $r['label'];
+				}
+			}
+			
 			
 			if(is_array($fields['overrides'])){
 
@@ -196,7 +216,15 @@
 					$group->setAttribute('class', 'group');
 
 					$label = Widget::Label(__('Element Name'));
-					$label->appendChild(Widget::Input('fields[overrides][field][]', General::sanitize($field_names[$ii])));
+					$options = array(array('system:id', false, 'System ID'));
+					foreach($field_groups as $section_name => $field_list){
+						$tmp = array();
+						foreach($field_list as $element_name => $field_label){
+							$tmp[] = array(General::sanitize($element_name), in_array($element_name, $fields['overrides']['field']), General::sanitize($field_label));
+						}
+						if(is_array($tmp) && !empty($tmp)) $options[] = array('label' => General::sanitize($section_name), 'options' => $tmp);
+					}
+					$label->appendChild(Widget::Select('fields[overrides][field][]', $options));
 					$group->appendChild($label);
 
 					$label = Widget::Label(__('Replacement'));
@@ -221,10 +249,19 @@
 
 					$group = new XMLElement('div');
 					$group->setAttribute('class', 'group');
-
+					
 					$label = Widget::Label(__('Element Name'));
-					$label->appendChild(Widget::Input('fields[defaults][field][]', General::sanitize($field_names[$ii])));
+					$options = array(array('system:id', false, 'System ID'));
+					foreach($field_groups as $section_name => $field_list){
+						$tmp = array();
+						foreach($field_list as $element_name => $field_label){
+							$tmp[] = array(General::sanitize($element_name), in_array($element_name, $fields['defaults']['field']), General::sanitize($field_label));
+						}
+						if(is_array($tmp) && !empty($tmp)) $options[] = array('label' => General::sanitize($section_name), 'options' => $tmp);
+					}
+					$label->appendChild(Widget::Select('fields[defaults][field][]', $options));
 					$group->appendChild($label);
+					
 
 					$label = Widget::Label(__('Replacement'));
 					$label->appendChild(Widget::Input('fields[defaults][replacement][]', General::sanitize($replacement_values[$ii])));
@@ -244,7 +281,15 @@
 			$group->setAttribute('class', 'group');
 			
 			$label = Widget::Label(__('Element Name'));
-			$label->appendChild(Widget::Input('fields[overrides][field][]'));
+			$options = array(array('system:id', false, 'System ID'));
+			foreach($field_groups as $section_name => $field_list){
+				$tmp = array();
+				foreach($field_list as $element_name => $field_label){
+					$tmp[] = array(General::sanitize($element_name), false, General::sanitize($field_label));
+				}
+				if(is_array($tmp) && !empty($tmp)) $options[] = array('label' => General::sanitize($section_name), 'options' => $tmp);
+			}
+			$label->appendChild(Widget::Select('fields[overrides][field][]', $options));
 			$group->appendChild($label);
 					
 			$label = Widget::Label(__('Replacement'));
@@ -263,7 +308,15 @@
 			$group->setAttribute('class', 'group');
 			
 			$label = Widget::Label(__('Element Name'));
-			$label->appendChild(Widget::Input('fields[defaults][field][]'));
+			$options = array(array('system:id', false, 'System ID'));
+			foreach($field_groups as $section_name => $field_list){
+				$tmp = array();
+				foreach($field_list as $element_name => $field_label){
+					$tmp[] = array(General::sanitize($element_name), false, General::sanitize($field_label));
+				}
+				if(is_array($tmp) && !empty($tmp)) $options[] = array('label' => General::sanitize($section_name), 'options' => $tmp);
+			}
+			$label->appendChild(Widget::Select('fields[defaults][field][]', $options));
 			$group->appendChild($label);
 					
 			$label = Widget::Label(__('Replacement'));
