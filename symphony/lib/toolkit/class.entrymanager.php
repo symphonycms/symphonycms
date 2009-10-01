@@ -232,7 +232,7 @@
 			$this->setFetchSortingDirection($direction);
 		}
 		
-		public public function getFetchSorting(){
+		public function getFetchSorting(){
 			return (object)array(
 				'field' => $this->_fetchSortField,
 				'direction' => $this->_fetchSortDirection
