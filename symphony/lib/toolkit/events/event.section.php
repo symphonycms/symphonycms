@@ -11,100 +11,18 @@
 		}
 	}
 	
-	if (!function_exists('__array_to_xml')) {
-		function __array_to_xml($parent, $data) {
-			foreach ($data as $element_name => $value) {
-				if (strlen($value) == 0) continue;
-				
-				if (is_int($element_name)) {
-					$child = new XMLElement('item');
-					$child->setAttribute('index', $element_name);
-				}
-				
-				else {
-					$child = new XMLElement($element_name);
-				}
-				
-				if (is_array($value)) __array_to_xml($child, $value);
-				else $child->setValue(General::sanitize($value));
-				
-				$parent->appendChild($child);
-			}
-		}
-	}
-	
 	if (!function_exists('__doit')) {
 		function __doit($source, $fields, &$result, &$obj, &$event, $filters, $position=NULL, $entry_id=NULL){
-			$post_values = new XMLElement('post-values');
-			
-			## Create the post data cookie element
-			if (is_array($fields) && !empty($fields)) {
-				__array_to_xml($post_values, $fields);
-			}
-			
+			$post_values = new XMLElement('request');
 			$post = General::getPostData();
 			$fields = $post['fields'];
+			$filter_results = array();	
 			
-			## Apply overrides and defaults
-			/*
-			Array
-			(
-			    [title] => 
-			    [body] => blah blah
-			    [date] => 2009-01-01
-			    [categories] => ...
-			    [publish] => on
-			    [user] => 2
-			    [email-address] => pointybeard@me.com
-			)
-			
-			eventtest Object
-			(
-			    [eParamOVERRIDES] => Array
-			        (
-			            [publish] => no
-			            [system:id] => 43
-			        )
-
-			    [eParamDEFAULTS] => Array
-			        (
-			            [title] => Sexy Man Beast
-			        )
-			*/
-			
-			//print_r($fields);
-			//print_r($event->eParamOVERRIDES);
-			//print_r($event->eParamDEFAULTS);
-			
-			if(isset($event->eParamOVERRIDES) && is_array($event->eParamOVERRIDES) && !empty($event->eParamOVERRIDES)){
-				foreach($event->eParamOVERRIDES as $element_name => $value){
-					if($element_name == 'system:id' && !is_null($entry_id)){
-						$entry_id = (int)$value;
-					}
-					
-					elseif(isset($fields[$element_name])){
-						$fields[$element_name] = $value;
-					}
-				}
+			## Create the post data cookie element
+			if (is_array($post) && !empty($post)) {
+				General::array_to_xml($post_values, $post);
 			}
 			
-			if(isset($event->eParamDEFAULTS) && is_array($event->eParamDEFAULTS) && !empty($event->eParamDEFAULTS)){
-				foreach($event->eParamDEFAULTS as $element_name => $value){
-					if($element_name == 'system:id' && is_null($entry_id)){
-						$entry_id = (int)$value;
-					}
-					
-					elseif(!isset($fields[$element_name]) || strlen(trim($fields[$element_name])) == 0){
-						$fields[$element_name] = $value;
-					}
-				}
-			}			
-			
-			//print_r($fields);
-			//die();
-			
-			$filter_results = array();			
-
 			###
 			# Delegate: EventPreSaveFilter
 			# Description: Prior to saving entry from the front-end. This delegate will force the Event to terminate if it populates the error

@@ -2,7 +2,7 @@ var Symphony;
 
 (function($) {
 	Symphony = {
-		WEBSITE: $('script')[0].src.split('/symphony/')[0],
+		WEBSITE: $('script')[0].src.match('(.*)/symphony')[1],
 		Language: {
 			UNTITLED:         "Untitled",
 			CREATE_ITEM:      "Add item",

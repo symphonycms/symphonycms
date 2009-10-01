@@ -116,15 +116,9 @@
 		}
 		
 		public function edit($entry){
-
-			/*$fields = array(
-				'section_id' => $entry->get('section_id'),
-			);
-			
-			Symphony::Database()->update($fields, 'tbl_entries', " `id` = '".$entry->get('id')."' LIMIT 1");*/
-
-			foreach($entry->getData() as $field_id => $field){
-					
+			foreach ($entry->getData() as $field_id => $field) {
+				if (empty($field_id)) continue;
+				
 				Symphony::Database()->delete('tbl_entries_data_' . $field_id, " `entry_id` = '".$entry->get('id')."'");
 				
 				if(!is_array($field) || empty($field)) continue;
@@ -146,7 +140,9 @@
 					}
 				}
 				
-				for($ii = 0; $ii < count($fields); $ii++) $fields[$ii] = array_merge($data, $fields[$ii]);
+				foreach ($fields as $index => $field_data) {
+					$fields[$index] = array_merge($data, $field_data);
+				}
 
 				Symphony::Database()->insert($fields, 'tbl_entries_data_' . $field_id);
 
