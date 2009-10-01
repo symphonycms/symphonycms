@@ -466,36 +466,30 @@
 			
 		}
 		
-		private function __processDatasources($datasources, &$wrapper){
-			
-			if(trim($datasources) == '') return;
+		public function __processDatasources($datasources, &$wrapper) {
+			if (trim($datasources) == '') return;
 			
 			$datasources = preg_split('/,\s*/i', $datasources, -1, PREG_SPLIT_NO_EMPTY);
 			$datasources = array_map('trim', $datasources);
 			
-			if(!is_array($datasources) || empty($datasources)) return;
+			if (!is_array($datasources) || empty($datasources)) return;
 			
 			$this->_env['pool'] = array();
-			
 			$pool = array();
 			$dependencies = array();
 			
-			foreach($datasources as $handle){
-
+			foreach ($datasources as $handle) {
 				$this->_Parent->Profiler->seed();
-
-				$pool[$handle] =& $this->DatasourceManager->create($handle, NULL, false);
 				
+				$pool[$handle] =& $this->DatasourceManager->create($handle, NULL, false);
 				$dependencies[$handle] = $pool[$handle]->getDependencies();
 				
 				unset($ds);
-				
 			}
 			
 			$dsOrder = $this->__findDatasourceOrder($dependencies);
-
-			foreach($dsOrder as $handle){
-
+			
+			foreach ($dsOrder as $handle) {
 				$this->_Parent->Profiler->seed();
 				
 				$dbstats = Symphony::Database()->getStatistics();
@@ -504,11 +498,12 @@
 				$ds = $pool[$handle];
 				$ds->processParameters(array('env' => $this->_env, 'param' => $this->_param));
 				
-				if($xml = $ds->grab($this->_env['pool'])):
-					if(is_object($xml)) $wrapper->appendChild($xml);
-					else $wrapper->setValue($wrapper->getValue() . self::CRLF . '	' . trim($xml));
-					
-				endif;
+				if ($xml = $ds->grab($this->_env['pool'])) {
+					if (is_object($xml)) $wrapper->appendChild($xml);
+					else $wrapper->setValue(
+						$wrapper->getValue() . self::CRLF . '	' . trim($xml)
+					);
+				}
 				
 				$dbstats = Symphony::Database()->getStatistics();
 				$queries = $dbstats['queries'] - $queries;
@@ -516,7 +511,6 @@
 				$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Datasource', $queries);
 				
 				unset($ds);
-				
 			}
 		}
 		

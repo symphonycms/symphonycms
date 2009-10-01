@@ -302,7 +302,7 @@
 		}
 		
 		## Do not pass this function ID values from across more than one section.
-		private function __buildEntries(array $id_list, $section_id, $element_names=NULL){
+		 function __buildEntries(array $id_list, $section_id, $element_names=NULL){
 			$entries = array();
 			
 			if (!is_array($id_list) || empty($id_list)) return $entries;
