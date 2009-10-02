@@ -41,7 +41,7 @@
 			try{
 				<!-- GRAB -->
 			}
-			catch(Exception $e){
+			catch(DatabaseException $e){
 				$result->appendChild(new XMLElement('error', $e->getMessage()));
 				return $result;
 			}	
