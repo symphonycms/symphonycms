@@ -18,6 +18,30 @@
 			$fields = $post['fields'];
 			$filter_results = array();	
 			
+			if(isset($event->eParamOVERRIDES) && is_array($event->eParamOVERRIDES) && !empty($event->eParamOVERRIDES)){
+				foreach($event->eParamOVERRIDES as $element_name => $value){
+					if($element_name == 'system:id' && !is_null($entry_id)){
+						$entry_id = (int)$value;
+					}
+					
+					elseif(isset($fields[$element_name])){
+						$fields[$element_name] = $value;
+					}
+				}
+			}
+			
+			if(isset($event->eParamDEFAULTS) && is_array($event->eParamDEFAULTS) && !empty($event->eParamDEFAULTS)){
+				foreach($event->eParamDEFAULTS as $element_name => $value){
+					if($element_name == 'system:id' && is_null($entry_id)){
+						$entry_id = (int)$value;
+					}
+					
+					elseif(!isset($fields[$element_name]) || strlen(trim($fields[$element_name])) == 0){
+						$fields[$element_name] = $value;
+					}
+				}
+			}
+
 			## Create the post data cookie element
 			if (is_array($post) && !empty($post)) {
 				General::array_to_xml($post_values, $post);
@@ -73,10 +97,7 @@
 				$entry =& $entryManager->create();
 				$entry->set('section_id', $source);
 			}
-
-			$filter_errors = array();			
-			
-
+		
 
 			if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))):
 				$result->setAttribute('result', 'error');
