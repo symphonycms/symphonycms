@@ -181,8 +181,8 @@
 	$sectioninfo = new XMLElement('section', $section->get('name'), array('id' => $section->get('id'), 'handle' => $section->get('handle')));
 	
 	$key = 'ds-' . $this->dsParamROOTELEMENT;
-	
-	if($entries['total-entries'] <= 0 && (!is_array($entries['records']) || empty($entries['records']))){
+									
+	if(($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records']))){
 		if($this->dsParamREDIRECTONEMPTY == 'yes'){
 			throw new FrontendPageNotFoundException;
 		}
