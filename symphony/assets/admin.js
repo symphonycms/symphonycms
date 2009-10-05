@@ -60,7 +60,7 @@ var Symphony;
 				if (time < 2) { return Symphony.Language.TIME_MINUTE; }
 				if (time < 45) { return Symphony.Language.TIME_MINUTES.replace('{$minutes}', time); }
 				if (time < 90) { return Symphony.Language.TIME_HOUR; }
-				else { return Symphony.Language.TIME_MINUTES.replace('{$hours}', time); }
+				else { return Symphony.Language.TIME_HOURS.replace('{$hours}', time); }
 			},
 			queue: []
 		}
