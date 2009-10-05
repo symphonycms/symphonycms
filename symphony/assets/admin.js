@@ -489,3 +489,35 @@ var Symphony;
 	};
 	
 })(jQuery);
+
+/*
+ * Event context toggle
+ */
+ 
+(function($) {
+	$(document).ready(function() {
+		var selector = jQuery('#event-context-selector');
+		
+		selector.bind('change', function() {
+			var options = selector.find('option');
+			
+			options.each(function() {
+				var option = $(this);
+				var context = jQuery('#event-context-' + option.val());
+				
+				if (context.length == 0) return;
+				
+				if (option.val() == selector.val()) {
+					context.show();
+				}
+				
+				else {
+					context.hide();
+				}
+			});
+		});
+		
+		selector.trigger('change');
+	});
+	
+})(jQuery);

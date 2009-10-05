@@ -135,7 +135,7 @@
 					foreach($sections as $s) $options[] = array($s->get('id'), ($fields['source'] == $s->get('id')), $s->get('name'));
 				}
 			
-				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
+				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'event-context-selector')));
 				$div->appendChild($label);
 			
 				$fieldset->appendChild($div);
@@ -174,161 +174,20 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Input Overrides &amp; Default Values')));	
 			$fieldset->appendChild(new XMLElement('p', __('Specify fields in the <code>POST</code> data to either override or set to a default value if not set.'), array('class' => 'help')));
-				
-			$div = new XMLElement('div');
-			$h3 = new XMLElement('h3', __('Fields <i>Optional</i>'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
-			
-			$ol = new XMLElement('ol');
-			$ol->setAttribute('id', 'filters-duplicator');
-
-			
-			
-			$options = array(
-				array('', false, __('None')),
-			);
-			
-			$field_groups = array();
 			
 			foreach($sections as $s){
 				
-				$field_groups[$s->get('name')] = array();
-				
-				$rows = Symphony::Database()->fetch("SELECT `element_name`, `label` FROM `tbl_fields` WHERE `parent_section` = " . $s->get('id'));
-				foreach($rows as $r){
-					$field_groups[$s->get('name')][$r['element_name']] = $r['label'];
-				}
-			}
-			
-			
-			if(is_array($fields['overrides'])){
-
-				$field_names = $fields['overrides']['field'];
-				$replacement_values = $fields['overrides']['replacement'];
-				
-				for($ii = 0; $ii < count($field_names); $ii++){
-					
-					$li = new XMLElement('li');
-					$li->appendChild(new XMLElement('h4', __('Override')));
-
-					$group = new XMLElement('div');
-					$group->setAttribute('class', 'group');
-
-					$label = Widget::Label(__('Element Name'));
-					$options = array(array('system:id', false, 'System ID'));
-					foreach($field_groups as $section_name => $field_list){
-						$tmp = array();
-						foreach($field_list as $element_name => $field_label){
-							$tmp[] = array(General::sanitize($element_name), in_array($element_name, $fields['overrides']['field']), General::sanitize($field_label));
-						}
-						if(is_array($tmp) && !empty($tmp)) $options[] = array('label' => General::sanitize($section_name), 'options' => $tmp);
-					}
-					$label->appendChild(Widget::Select('fields[overrides][field][]', $options));
-					$group->appendChild($label);
-
-					$label = Widget::Label(__('Replacement'));
-					$label->appendChild(Widget::Input('fields[overrides][replacement][]', General::sanitize($replacement_values[$ii])));
-					$group->appendChild($label);
-
-					$li->appendChild($group);
-					$ol->appendChild($li);
-				
-				}
+				$fieldset->appendChild(
+					$this->__buildDefaultsAndOverridesDuplicator(
+						$s, 
+						($fields['source'] == $s->get('id') 
+							? array('overrides' => $fields['overrides'], 'defaults' => $fields['defaults'])
+							: NULL
+						)
+					)
+				);
 			}
 
-			if(is_array($fields['defaults'])){
-
-				$field_names = $fields['defaults']['field'];
-				$replacement_values = $fields['defaults']['replacement'];
-				
-				for($ii = 0; $ii < count($field_names); $ii++){
-					
-					$li = new XMLElement('li');
-					$li->appendChild(new XMLElement('h4', __('Default Value')));
-
-					$group = new XMLElement('div');
-					$group->setAttribute('class', 'group');
-					
-					$label = Widget::Label(__('Element Name'));
-					$options = array(array('system:id', false, 'System ID'));
-					foreach($field_groups as $section_name => $field_list){
-						$tmp = array();
-						foreach($field_list as $element_name => $field_label){
-							$tmp[] = array(General::sanitize($element_name), in_array($element_name, $fields['defaults']['field']), General::sanitize($field_label));
-						}
-						if(is_array($tmp) && !empty($tmp)) $options[] = array('label' => General::sanitize($section_name), 'options' => $tmp);
-					}
-					$label->appendChild(Widget::Select('fields[defaults][field][]', $options));
-					$group->appendChild($label);
-					
-
-					$label = Widget::Label(__('Replacement'));
-					$label->appendChild(Widget::Input('fields[defaults][replacement][]', General::sanitize($replacement_values[$ii])));
-					$group->appendChild($label);
-
-					$li->appendChild($group);
-					$ol->appendChild($li);
-				
-				}
-			}
-			
-			$li = new XMLElement('li');
-			$li->setAttribute('class', 'template');
-			$li->appendChild(new XMLElement('h4', __('Override')));
-			
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
-			
-			$label = Widget::Label(__('Element Name'));
-			$options = array(array('system:id', false, 'System ID'));
-			foreach($field_groups as $section_name => $field_list){
-				$tmp = array();
-				foreach($field_list as $element_name => $field_label){
-					$tmp[] = array(General::sanitize($element_name), false, General::sanitize($field_label));
-				}
-				if(is_array($tmp) && !empty($tmp)) $options[] = array('label' => General::sanitize($section_name), 'options' => $tmp);
-			}
-			$label->appendChild(Widget::Select('fields[overrides][field][]', $options));
-			$group->appendChild($label);
-					
-			$label = Widget::Label(__('Replacement'));
-			$label->appendChild(Widget::Input('fields[overrides][replacement][]'));
-			$group->appendChild($label);
-
-			$li->appendChild($group);
-			$ol->appendChild($li);
-			
-
-			$li = new XMLElement('li');
-			$li->setAttribute('class', 'template');
-			$li->appendChild(new XMLElement('h4', __('Default Value')));
-			
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
-			
-			$label = Widget::Label(__('Element Name'));
-			$options = array(array('system:id', false, 'System ID'));
-			foreach($field_groups as $section_name => $field_list){
-				$tmp = array();
-				foreach($field_list as $element_name => $field_label){
-					$tmp[] = array(General::sanitize($element_name), false, General::sanitize($field_label));
-				}
-				if(is_array($tmp) && !empty($tmp)) $options[] = array('label' => General::sanitize($section_name), 'options' => $tmp);
-			}
-			$label->appendChild(Widget::Select('fields[defaults][field][]', $options));
-			$group->appendChild($label);
-					
-			$label = Widget::Label(__('Replacement'));
-			$label->appendChild(Widget::Input('fields[defaults][replacement][]'));
-			$group->appendChild($label);
-			
-			$li->appendChild($group);
-			$ol->appendChild($li);
-			
-			
-			$div->appendChild($ol);
-			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
 			
 			
@@ -358,6 +217,144 @@
 			
 			if(!$readonly) $this->Form->appendChild($div);	
 						
+		}
+		
+		private function __buildDefaultsAndOverridesDuplicator(Section $section, array $items=NULL){
+
+			$fields = Symphony::Database()->fetch("SELECT `element_name`, `label` FROM `tbl_fields` WHERE `parent_section` = " . $section->get('id'));
+			
+			$duplicator = new XMLElement('div', NULL, array('id' => 'event-context-' . $section->get('id')));
+			$h3 = new XMLElement('h3', __('Fields <i>Optional</i>'));
+			$h3->setAttribute('class', 'label');
+			$duplicator->appendChild($h3);
+			
+			$ol = new XMLElement('ol');
+			$ol->setAttribute('id', 'filters-duplicator');
+			
+			$options = array(
+				array('', false, __('None')),
+			);
+			
+
+			if(is_array($items['overrides'])){
+
+				$field_names = $items['overrides']['field'];
+				$replacement_values = $items['overrides']['replacement'];
+				
+				for($ii = 0; $ii < count($field_names); $ii++){
+					
+					$li = new XMLElement('li');
+					$li->appendChild(new XMLElement('h4', __('Override')));
+
+					$group = new XMLElement('div');
+					$group->setAttribute('class', 'group');
+
+					$label = Widget::Label(__('Element Name'));
+					$options = array(array('system:id', false, 'System ID'));
+
+					foreach($fields as $f){
+						$options[] = array(General::sanitize($f['element_name']), $f['element_name'] == $field_names[$ii], General::sanitize($f['label']));
+					}
+
+					$label->appendChild(Widget::Select('fields[overrides][field][]', $options));
+					$group->appendChild($label);
+
+					$label = Widget::Label(__('Replacement'));
+					$label->appendChild(Widget::Input('fields[overrides][replacement][]', General::sanitize($replacement_values[$ii])));
+					$group->appendChild($label);
+
+					$li->appendChild($group);
+					$ol->appendChild($li);
+				
+				}
+			}
+
+			if(is_array($items['defaults'])){
+
+				$field_names = $items['defaults']['field'];
+				$replacement_values = $items['defaults']['replacement'];
+				
+				for($ii = 0; $ii < count($field_names); $ii++){
+					
+					$li = new XMLElement('li');
+					$li->appendChild(new XMLElement('h4', __('Default Value')));
+
+					$group = new XMLElement('div');
+					$group->setAttribute('class', 'group');
+					
+					$label = Widget::Label(__('Element Name'));
+					$options = array(array('system:id', false, 'System ID'));
+					
+					foreach($fields as $f){
+						$options[] = array(General::sanitize($f['element_name']), $f['element_name'] == $field_names[$ii], General::sanitize($f['label']));
+					}
+					
+					$label->appendChild(Widget::Select('fields[defaults][field][]', $options));
+					$group->appendChild($label);
+					
+
+					$label = Widget::Label(__('Replacement'));
+					$label->appendChild(Widget::Input('fields[defaults][replacement][]', General::sanitize($replacement_values[$ii])));
+					$group->appendChild($label);
+
+					$li->appendChild($group);
+					$ol->appendChild($li);
+				
+				}
+			}
+			
+			$li = new XMLElement('li');
+			$li->setAttribute('class', 'template');
+			$li->appendChild(new XMLElement('h4', __('Override')));
+			
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
+			
+			$label = Widget::Label(__('Element Name'));
+			$options = array(array('system:id', false, 'System ID'));
+			
+			foreach($fields as $f){
+				$options[] = array(General::sanitize($f['element_name']), false, General::sanitize($f['label']));
+			}
+			
+			$label->appendChild(Widget::Select('fields[overrides][field][]', $options));
+			$group->appendChild($label);
+					
+			$label = Widget::Label(__('Replacement'));
+			$label->appendChild(Widget::Input('fields[overrides][replacement][]'));
+			$group->appendChild($label);
+
+			$li->appendChild($group);
+			$ol->appendChild($li);
+			
+
+			$li = new XMLElement('li');
+			$li->setAttribute('class', 'template');
+			$li->appendChild(new XMLElement('h4', __('Default Value')));
+			
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
+			
+			$label = Widget::Label(__('Element Name'));
+			$options = array(array('system:id', false, 'System ID'));
+			
+			foreach($fields as $f){
+				$options[] = array(General::sanitize($f['element_name']), false, General::sanitize($f['label']));
+			}
+			
+			$label->appendChild(Widget::Select('fields[defaults][field][]', $options));
+			$group->appendChild($label);
+					
+			$label = Widget::Label(__('Replacement'));
+			$label->appendChild(Widget::Input('fields[defaults][replacement][]'));
+			$group->appendChild($label);
+			
+			$li->appendChild($group);
+			$ol->appendChild($li);
+			
+			$duplicator->appendChild($ol);
+			
+			return $duplicator;
 		}
 		
 		function __actionNew(){
