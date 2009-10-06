@@ -111,9 +111,25 @@
 	$where = NULL;
 	$joins = NULL;
 	$group = false;
-
+	
+	$key = 'ds-' . $this->dsParamROOTELEMENT;
+	
 	include_once(TOOLKIT . '/class.entrymanager.php');
 	$entryManager = new EntryManager($this->_Parent);
+
+	if(!$section = $entryManager->sectionManager->fetch($this->getSource())){
+		$about = $this->about();
+		trigger_error(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])), E_USER_ERROR);
+	}
+	
+	$sectioninfo = new XMLElement('section', $section->get('name'), array('id' => $section->get('id'), 'handle' => $section->get('handle')));
+	
+	if($this->_force_empty_result == true){
+		$this->_force_empty_result = false; //this is so the section info element doesn't dissapear.
+		$result = $this->emptyXMLSet();
+		$result->prependChild($sectioninfo);
+		return;
+	}
 	
 	$include_pagination_element = @in_array('system:pagination', $this->dsParamINCLUDEDELEMENTS);
 	
@@ -172,16 +188,7 @@
 										  (!$include_pagination_element ? true : false), 
 										  true,
 										  $datasource_schema);
-
-	if(!$section = $entryManager->sectionManager->fetch($this->getSource())){
-		$about = $this->about();
-		trigger_error(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])), E_USER_ERROR);
-	}
-	
-	$sectioninfo = new XMLElement('section', $section->get('name'), array('id' => $section->get('id'), 'handle' => $section->get('handle')));
-	
-	$key = 'ds-' . $this->dsParamROOTELEMENT;
-									
+								
 	if(($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records']))){
 		if($this->dsParamREDIRECTONEMPTY == 'yes'){
 			throw new FrontendPageNotFoundException;
