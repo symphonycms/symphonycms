@@ -136,7 +136,7 @@
 			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label('Navigation Group <i>Created if does not exist</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
-			$ul = new XMLElement('ul', NULL, array('class' => 'tags'));
+			$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
 			foreach($sections as $s){
 					$ul->appendChild(new XMLElement('li', $s->get('navigation_group')));
 				}
@@ -316,7 +316,7 @@
 			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label('Navigation Group <i>Choose only one. Created if does not exist</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
-			$ul = new XMLElement('ul', NULL, array('class' => 'tags'));
+			$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
 			foreach($sections as $s){
 					$ul->appendChild(new XMLElement('li', $s->get('navigation_group')));
 				}
