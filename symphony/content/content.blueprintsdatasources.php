@@ -957,9 +957,17 @@
 						break;
 						
 					case 'static_xml':
+						
+						$fields['static_xml'] = trim($fields['static_xml']);
+						
+						if(preg_match('/^<\?xml/i', $fields['static_xml']) == true){
+							// Need to remove any XML declaration
+							$fields['static_xml'] = preg_replace('/^<\?xml[^>]+>/i', NULL, $fields['static_xml']);
+						}
+						
 						$value = sprintf(
 							'$result = "%s";',
-							addslashes($fields['static_xml'])
+							addslashes(trim($fields['static_xml']))
 						);
 						$dsShell = str_replace('<!-- GRAB -->', $value, $dsShell);
 						break;
