@@ -117,26 +117,36 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 			
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
+			$namediv = new XMLElement('div', NULL);
 			
 			$label = Widget::Label('Name');
 			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
 			
-			if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
-			else $div->appendChild($label);
-			
-			
-			$label = Widget::Label('Navigation Group <i>Created if does not exist</i>');
-			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
-			
-			if(isset($this->_errors['navigation_group'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
-			else $div->appendChild($label);
-			
-			$fieldset->appendChild($div);				
+			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+			else $namediv->appendChild($label);
 			
 			$label = Widget::Label();
 			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s Hide this section from the Publish menu', array($input->generate(false))));
-			$fieldset->appendChild($label);			
+			$namediv->appendChild($label);
+			$div->appendChild($namediv);
+			
+			$navgroupdiv = new XMLElement('div', NULL);
+			$sectionManager = new SectionManager($this->_Parent);
+			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+			$label = Widget::Label('Navigation Group <i>Created if does not exist</i>');
+			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
+			$ul = new XMLElement('ul', NULL, array('class' => 'tags'));
+			foreach($sections as $s){
+					$ul->appendChild(new XMLElement('li', $s->get('navigation_group')));
+				}
+			
+			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
+			else $navgroupdiv->appendChild($label);
+			$navgroupdiv->appendChild($ul);
+			$div->appendChild($navgroupdiv);
+			
+			$fieldset->appendChild($div);						
 			
 			$this->Form->appendChild($fieldset);		
 
@@ -283,32 +293,40 @@
 			$this->appendSubheading($meta['name']);
 
 			$fieldset = new XMLElement('fieldset');
-
-			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 			
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
+			$namediv = new XMLElement('div', NULL);
 			
 			$label = Widget::Label('Name');
 			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
 			
-			if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
-			else $div->appendChild($label);
+			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+			else $namediv->appendChild($label);
 			
-			
-			$label = Widget::Label('Navigation Group <i>Created if does not exist</i>');
-			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
-			
-			if(isset($this->_errors['navigation_group'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
-			else $div->appendChild($label);
-			
-			$fieldset->appendChild($div);
-
 			$label = Widget::Label();
 			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s Hide this section from the Publish menu', array($input->generate(false))));
-			$fieldset->appendChild($label);
+			$namediv->appendChild($label);
+			$div->appendChild($namediv);
+			
+			$navgroupdiv = new XMLElement('div', NULL);
+			$sectionManager = new SectionManager($this->_Parent);
+			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+			$label = Widget::Label('Navigation Group <i>Choose only one. Created if does not exist</i>');
+			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
+			$ul = new XMLElement('ul', NULL, array('class' => 'tags'));
+			foreach($sections as $s){
+					$ul->appendChild(new XMLElement('li', $s->get('navigation_group')));
+				}
+			
+			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
+			else $navgroupdiv->appendChild($label);
+			$navgroupdiv->appendChild($ul);
+			$div->appendChild($navgroupdiv);
+			
+			$fieldset->appendChild($div);
 			
 			$this->Form->appendChild($fieldset);
 
