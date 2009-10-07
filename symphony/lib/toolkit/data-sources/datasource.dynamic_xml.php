@@ -34,8 +34,6 @@
 
 	$xsl = $stylesheet->generate(true);
 
-	$proc =& new XsltProcess;
-
 	$cache_id = md5($this->dsParamURL . serialize($this->dsParamFILTERS) . $this->dsParamXPATH);
 
 	$cache = new Cacheable(Symphony::Database());
@@ -64,7 +62,7 @@
 			$xml = trim($xml);
 			
 			if(!empty($xml)){
-				$valid = General::validateXML($xml, $errors, false, $proc);
+				$valid = General::validateXML($xml, $errors, false, new XsltProcess);
 				if(!$valid){
 					if($cachedData) $xml = $cachedData['data'];
 					else{
@@ -82,6 +80,7 @@
 		elseif($cachedData){ 
 			$xml = trim($cachedData['data']);
 			$valid = false;
+			$creation = DateTimeObj::get('c', $cachedData['creation']);
 			if(empty($xml)) $this->_force_empty_result = true;
 		}
 		
@@ -89,13 +88,16 @@
 		
 	}
 	
-	else $xml = $cachedData['data'];
-
+	else{
+		$xml = $cachedData['data'];
+		$creation = DateTimeObj::get('c', $cachedData['creation']);
+	}
 		
 	if(!$this->_force_empty_result && !is_object($result)):
 	
 		$result = new XMLElement($this->dsParamROOTELEMENT);
 
+		$proc = new XsltProcess;
 		$ret = $proc->process($xml, $xsl);
 	
 		if($proc->isErrors()){
@@ -103,17 +105,18 @@
 			$result->appendChild(new XMLElement('error', __('XML returned is invalid.')));
 		}
 		
-		elseif(trim($ret) == '') $this->_force_empty_result = true;
+		elseif(strlen(trim($ret)) == 0){
+			$this->_force_empty_result = true;
+		}
 		
 		else{
 			
 			if($writeToCache) $cache->write($cache_id, $xml);
 			
 			$result->setValue(self::CRLF . preg_replace('/([\r\n]+)/', '$1	', $ret));
-			$result->setAttribute('status', ($valid ? 'fresh' : 'stale'));
+			$result->setAttribute('status', ($valid === true ? 'fresh' : 'stale'));
 			$result->setAttribute('creation', $creation);
 			
 		}
 		
 	endif;
-?>
