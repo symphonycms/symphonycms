@@ -171,8 +171,8 @@
 										  (!$include_pagination_element ? true : false), 
 										  true,
 										  $datasource_schema);
-								
-	if(($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records']))){
+
+	if(($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records'])) || !ctype_digit($this->dsParamSTARTPAGE) || $this->dsParamSTARTPAGE == '0'){		
 		if($this->dsParamREDIRECTONEMPTY == 'yes'){
 			throw new FrontendPageNotFoundException;
 		}
