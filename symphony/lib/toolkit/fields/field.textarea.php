@@ -1,7 +1,5 @@
 <?php
 
-	
-	
 	Class fieldTextarea extends Field {
 		function __construct(&$parent){
 			
@@ -102,6 +100,11 @@
 				return self::__MISSING_FIELDS__;
 			}	
 
+			if($this->__applyFormatting($data, true, $errors) === false){
+				$message = __('"%1$s" contains invalid XML. The following error was returned: <code>%2$s</code>', array($this->get('label'), $errors[0]['message']));
+				return self::__INVALID_FIELDS__;
+			}
+			
 			return self::__OK__;
 							
 		}
@@ -113,25 +116,16 @@
 				'value' => $data
 			);
 			
-			$formatted = $this->applyFormatting($data);
-
-			include_once(TOOLKIT . '/class.xsltprocess.php');
-			
-			$result['value_formatted'] = $formatted;
-			
-			if(!General::validateXML($formatted, $errors, false, new XsltProcess)){
-				$result['value_formatted'] = html_entity_decode($formatted, ENT_QUOTES, 'UTF-8');
-				$result['value_formatted'] = $this->__replaceAmpersands($result['value_formatted']);
-
-				if(!General::validateXML($result['value_formatted'], $errors, false, new XsltProcess)){
-					$result['value_formatted'] = General::sanitize($formatted);
-				}
+			$result['value_formatted'] = $this->__applyFormatting($data, true, $errors);
+			if($result['value_formatted'] === false){
+				//run the formatter again, but this time do not validate. We will sanitize the output
+				$result['value_formatted'] = General::sanitize($this->__applyFormatting($data));	
 			}
-
+			
 			return $result;
 		}
 
-		function applyFormatting($data){
+		protected function __applyFormatting($data, $validate=false, &$errors=NULL){
 	
 			if($this->get('formatter')){
 
@@ -140,11 +134,30 @@
 				
 				$formatter = $tfm->create($this->get('formatter'));
 
-				return $data = $formatter->run($data);
-
+				$result = $formatter->run($data);
+				
 			}	
 
-			return $data;		
+			if($validate === true){
+
+				include_once(TOOLKIT . '/class.xsltprocess.php');
+
+				if(!General::validateXML($result, $errors, false, new XsltProcess)){
+					$result = html_entity_decode($result, ENT_QUOTES, 'UTF-8');
+					$result = $this->__replaceAmpersands($result);
+
+					if(!General::validateXML($result, $errors, false, new XsltProcess)){
+
+						$result = $formatter->run(General::sanitize($data));
+					
+						if(!General::validateXML($result, $errors, false, new XsltProcess)){
+							return false;
+						}
+					}
+				}
+			}
+
+			return $result;		
 		}
 		
 		private function __replaceAmpersands($value) {

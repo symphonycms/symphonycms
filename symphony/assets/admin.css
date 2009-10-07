@@ -77,6 +77,8 @@ h1 a:hover,
 	font-weight: normal;
 	font-size: 130%;
 	line-height: 2.5;
+	-moz-box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+	-webkit-box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
 }
 #nav li:hover ul {
 	display: block;

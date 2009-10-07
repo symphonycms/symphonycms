@@ -24,7 +24,7 @@
 	        return $this->__getClassPath($name) . '/extension.driver.php';
         }       
         
-        function getClassPath($name){
+        public function getClassPath($name){
 	        return EXTENSIONS . strtolower("/$name");
         }
 
@@ -148,21 +148,30 @@
 			Symphony::Database()->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name'");				
 
 			$info = $this->about($name);
-			
-			$sql = "INSERT INTO `tbl_extensions` 
-					VALUES (NULL, '$name', '".($enable ? 'enabled' : 'disabled')."', ".floatval($info['version']).")";
-			
-			Symphony::Database()->query($sql);	
-			
+
+			Symphony::Database()->insert(
+				array(
+					'name' => $name, 
+					'status' => ($enable ? 'enabled' : 'disabled'), 
+					'version' => $info['version']
+				), 
+				'tbl_extensions'
+			);	
+
 			$id = Symphony::Database()->getInsertID();
 						
 			if(is_array($subscribed) && !empty($subscribed)){
 				foreach($subscribed as $s){
-					
-					$sql = "INSERT INTO `tbl_extensions_delegates` 
-							VALUES (NULL, '$id', '".$s['page']."', '".$s['delegate']."', '".$s['callback']."')";
-							
-					Symphony::Database()->query($sql);
+
+					Symphony::Database()->insert(
+						array(
+							'extension_id' => $id, 
+							'page' => $s['page'], 
+							'delegate' => $s['delegate'],
+							'callback' => $s['callback']
+						), 
+						'tbl_extensions_delegates'
+					);
 					
 				}
 			}
@@ -181,7 +190,7 @@
 		}
 
         ## Will return a list of all extensions and their about information
-        function listAll(){
+        public function listAll(){
 	        
 			$extensions = array();
 			$result = array();
@@ -198,28 +207,27 @@
 			return $result;
         }
         
-        function notifyMembers($delegate, $page, $context=array()){
+        public function notifyMembers($delegate, $page, $context=array()){
 
-	        if(Symphony::Configuration()->get('allow_page_subscription', 'symphony') != '1') return;
+	        if((int)Symphony::Configuration()->get('allow_page_subscription', 'symphony') != 1) return;
 	        
 			$services = Symphony::Database()->fetch("SELECT t1.*, t2.callback FROM `tbl_extensions` as t1 
 											LEFT JOIN `tbl_extensions_delegates` as t2 ON t1.id = t2.extension_id
 											WHERE (t2.page = '$page' OR t2.page = '*')
 											AND t2.delegate = '$delegate'
 											AND t1.status = 'enabled'");							
-			
+
 			if(!is_array($services) || empty($services)) return NULL;
 	
 	        $context += array('parent' => &$this->_Parent, 'page' => $page, 'delegate' => $delegate);
 			
 			foreach($services as $s){
 
-				if(false != ($obj =& $this->create($s['name']))){
+				$obj = $this->create($s['name']);
 
-					if(is_callable(array($obj, $s['callback']))){
-						$obj->{$s['callback']}($context);
-						unset($obj);
-					}				
+				if(is_object($obj) && in_array($s['callback'], get_class_methods($obj))){
+					$obj->{$s['callback']}($context);
+					unset($obj);
 				}	
 								
 			}
@@ -227,7 +235,7 @@
         }
         
         ## Creates a new object and returns a pointer to it
-        function &create($name, $param=array(), $slient=false){
+        public function create($name, $param=array(), $slient=false){
 	        
 			if(!is_array(self::$_pool)) $this->flush();
 	
@@ -265,25 +273,23 @@
 			
 		}
 
-		function __requiresUpdate($info){
+		private function __requiresUpdate($info){
 
 			if($info['status'] == EXTENSION_NOT_INSTALLED) return false;
 			
-			if(($version = $this->fetchInstalledVersion($info['handle'])) && $version < floatval($info['version'])) return $version;
-				
-			return false;
-			
+			$current_version = $this->fetchInstalledVersion($info['handle']);
+
+			return (version_compare($current_version, $info['version'], '<') ? $current_version : false);
 		}
 		
-		function __requiresInstallation($name){	
+		private function __requiresInstallation($name){	
 			$id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
 			return (is_numeric($id) ? false : true);
 		}
 		
 		
 		public function fetchInstalledVersion($name){
-			$version = Symphony::Database()->fetchVar('version', 0, "SELECT `version` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");		
-			return ($version ? floatval($version) : NULL);
+			return Symphony::Database()->fetchVar('version', 0, "SELECT `version` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
 		}
 		
 		public function fetchExtensionID($name){
@@ -307,7 +313,7 @@
 		}
 		
         ## Returns the about details of a service
-        function about($name){
+        public function about($name){
 	
 	        $classname = $this->__getClassName($name);   
 	        $path = $this->__getDriverPath($name);
@@ -336,7 +342,7 @@
 									        
         }
 
-		function __cleanupDatabase(){
+		private function __cleanupDatabase(){
 			
 			## Grab any extensions sitting in the database
 			$rows = Symphony::Database()->fetch("SELECT * FROM `tbl_extensions`");

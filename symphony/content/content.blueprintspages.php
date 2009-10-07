@@ -153,12 +153,10 @@
 			if (isset($this->_context[2])) {
 				$this->pageAlert(
 					__(
-						'%s %s at %s. <a href="%s">View all %s</a>',
+						'Page updated at %s. <a href="%s">View all Pages</a>',
 						array(
-							__('Page'), 'updated',
 							DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-							URL . '/symphony/blueprints/pages/',
-							__('Pages')
+							URL . '/symphony/blueprints/pages/'
 						)
 					),
 					Alert::SUCCESS
@@ -291,21 +289,42 @@
 			}
 			
 			// Status message:
-			if (isset($this->_context[2])) {
-				$this->pageAlert(
-					__(
-						'%s %s at %s. <a href="%s">Create another?</a> <a href="%s">View all %s</a>',
-						array(
-							__('Page'),
-							($this->_context[2] == 'saved' ? 'updated' : 'created'),
-							DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-							URL . '/symphony/blueprints/pages/new/',
-							URL . '/symphony/blueprints/pages/',
-							__('Pages')
-						)
-					),
-					Alert::SUCCESS
-				);
+			$flag = $this->_context[2];
+			if (isset($flag)){
+
+				switch($flag){
+					
+					case 'saved':
+						
+						$this->pageAlert(
+							__(
+								'Page updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Pages</a>', 
+								array(
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
+									URL . '/symphony/blueprints/pages/new/',
+									URL . '/symphony/blueprints/pages/',
+								)
+							), 
+							Alert::SUCCESS);
+													
+						break;
+						
+					case 'created':
+
+						$this->pageAlert(
+							__(
+								'Page created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Pages</a>', 
+								array(
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
+									URL . '/symphony/blueprints/pages/new/',
+									URL . '/symphony/blueprints/pages/',
+								)
+							), 
+							Alert::SUCCESS);
+							
+						break;
+					
+				}
 			}
 			
 			// Find values:

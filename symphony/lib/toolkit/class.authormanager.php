@@ -2,20 +2,7 @@
 	
 	Class AuthorManager{
 		
-		var $Database;
-		var $_Parent;
-		
-		function __construct(&$parent){
-			$this->_Parent =& $parent;
-			$this->Database = Symphony::Database();
-		}
-		
-		function &create(){	
-			$obj = new Author($this);
-			return $obj;
-		}
-		
-		function add($fields){
+		public static function add($fields){
 			
 			if(!Symphony::Database()->insert($fields, 'tbl_authors')) return false;
 			$author_id = Symphony::Database()->getInsertID();
@@ -23,27 +10,19 @@
 			return $author_id;
 		}
 
-		function edit($id, $fields){
+		public static function edit($id, $fields){
 			
 			if(!Symphony::Database()->update($fields, 'tbl_authors', " `id` = '$id'")) return false;
 			
 			return true;			
 		}
 		
-		function delete($id){		
-
-			## TODO: Delete author's entries
-			//$entries = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_entries` WHERE `author_id` = '".$id."'");  
-
-			Symphony::Database()->delete('tbl_authors', " `id` = '$id'");
-			
-			//Symphony::Database()->delete('tbl_entries', " `author_id` = '$id'");
-			//Symphony::Database()->delete('tbl_entries_data', " `entry_id` IN ('".@implode("', '", $entries)."')");			
-				
+		public static function delete($id){		
+			Symphony::Database()->delete('tbl_authors', " `id` = '$id'");		
 			return true;
 		}
 		
-		function fetch($sortby=NULL, $sortdirection='ASC', $limit=NULL, $start=NULL){
+		public static function fetch($sortby=NULL, $sortdirection='ASC', $limit=NULL, $start=NULL){
 		
 	    	$sql = "SELECT tbl_authors.*
 				    FROM tbl_authors
@@ -58,7 +37,7 @@
 			$authors = array();
 
 			foreach($rec as $row){
-				$author = $this->create();
+				$author = new Author;
 				
 				foreach($row as $field => $val)
 					$author->set($field, $val);
@@ -69,7 +48,7 @@
 			return $authors;		
 		}
 		
-		function fetchByID($id, $sortby=NULL, $sortdirection='ASC', $limit=NULL, $start=NULL){
+		public static function fetchByID($id, $sortby=NULL, $sortdirection='ASC', $limit=NULL, $start=NULL){
 			
 			$return_single = false;
 			$result = array();
@@ -90,7 +69,7 @@
 			
 			foreach($rows as $rec){
 			
-				$author = $this->create();
+				$author = new Author;
 			
 				foreach($rec as $field => $val)
 					$author->set($field, $val);
@@ -103,12 +82,12 @@
 			
 		}
 		
-		function fetchByUsername($username){
+		public static function fetchByUsername($username){
 			$rec = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_authors` WHERE `username` = '$username' LIMIT 1");
 			
 			if(!is_array($rec) || empty($rec)) return NULL;
 			
-			$author = $this->create();
+			$author = new Author;
 			
 			foreach($rec as $field => $val)
 				$author->set($field, $val);
@@ -116,11 +95,11 @@
 			return $author;		
 		}
 		
-		function deactivateAuthToken($author_id){
+		public static function deactivateAuthToken($author_id){
 			return Symphony::Database()->query("UPDATE `tbl_authors` SET `auth_token_active` = 'no' WHERE `id` = '$author_id' LIMIT 1");
 		}
 		
-		function activateAuthToken($author_id){
+		public static function activateAuthToken($author_id){
 			return Symphony::Database()->query("UPDATE `tbl_authors` SET `auth_token_active` = 'yes' WHERE `id` = '$author_id' LIMIT 1");
 		}
 	}

@@ -1,7 +1,5 @@
 <?php
 	
-	include_once(TOOLKIT . '/class.authormanager.php');
-	
 	Class fieldAuthor extends Field {
 		function __construct(&$parent){
 			parent::__construct($parent);
@@ -18,8 +16,8 @@
 		}
 		
 		public function getToggleStates(){
-		    $authorManager = new AuthorManager($this->_engine);
-		    $authors = $authorManager->fetch();
+
+		    $authors = AuthorManager::fetch();
 	
 			$states = array();
 			foreach($authors as $a) $states[$a->get('id')] = $a->get('first_name') . ' ' . $a->get('lastname');
@@ -60,8 +58,7 @@
 				$value = array($value);
 			}
 
-		    $authorManager = new AuthorManager($this->_engine);
-		    $authors = $authorManager->fetch();
+		    $authors = AuthorManager::fetch();
 		
 			$options = array();
 
@@ -244,9 +241,8 @@
 		}
 
 		public function getExampleFormMarkup(){
-			
-		    $authorManager = new AuthorManager($this->_engine);
-		    $authors = $authorManager->fetch();
+
+		    $authors = AuthorManager::fetch();
 		
 			$options = array();
 

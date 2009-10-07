@@ -53,18 +53,29 @@
                     $url_parsed = parse_url($value);
                     
                     $this->_host = $url_parsed['host'];
-                    $this->_port = $url_parsed['port'];
-                    $this->_path = $url_parsed['path'];
+
+					if(isset($url_parsed['scheme']) && strlen(trim($url_parsed['scheme'])) > 0){
+						$this->_host = $url_parsed['scheme'] . '://' . $this->_host;
+					}
+					
+					$this->_port = 80;
+					if(isset($url_parsed['port'])){
+                    	$this->_port = $url_parsed['port'];
+					}
+					
+					if(isset($url_parsed['path'])){
+                    	$this->_path = $url_parsed['path'];
+					}
                      
-                    if(isset($url_parsed['query'])) $this->_path .= '?' . $url_parsed['query'];
-		
-                    if(!$this->_port) $this->_port = 80;  
+                    if(isset($url_parsed['query'])){
+						$this->_path .= '?' . $url_parsed['query'];
+					}  
                                   
                     break;
             
             
                 case 'POST':
-                    $this->_method = (strtoupper($value) == '1' ? 'POST' : 'GET');
+                    $this->_method = ($value == 1 ? 'POST' : 'GET');
                     break;
 
                 case 'POSTFIELDS':

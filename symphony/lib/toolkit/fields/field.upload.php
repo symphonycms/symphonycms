@@ -89,7 +89,7 @@
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$flagWithError = __('The destination directory, <code>%s</code>, does not exists.', array($this->get('destination')));
+				$flagWithError = __('The destination directory, <code>%s</code>, does not exist.', array($this->get('destination')));
 			}
 			
 			elseif(!$flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/')){
@@ -130,7 +130,7 @@
 		public function checkFields(&$errors, $checkForDuplicates=true){
 
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$errors['destination'] = __('Directory <code>%s</code> does not exists.', array($this->get('destination')));
+				$errors['destination'] = __('Directory <code>%s</code> does not exist.', array($this->get('destination')));
 			}
 
 			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
@@ -285,7 +285,7 @@
 
 
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$message = __('The destination directory, <code>%s</code>, does not exists.', array($this->get('destination')));
+				$message = __('The destination directory, <code>%s</code>, does not exist.', array($this->get('destination')));
 				return self::__ERROR__;
 			}
 
@@ -401,7 +401,7 @@
 				$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
 				$existing_file = $abs_path . '/' . basename($row['file']);
 
-				General::deleteFile($existing_file);
+				if (file_exists($existing_file)) General::deleteFile($existing_file);
 			}
 
 			$status = self::__OK__;

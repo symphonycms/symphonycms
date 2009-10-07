@@ -42,9 +42,6 @@
 		}
 	}
 
-	include_once(TOOLKIT . '/class.authormanager.php');
-	$AuthorManager =& new AuthorManager($this->_Parent);
-
 	$author_ids = array();
 
 	if(is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
@@ -68,13 +65,16 @@
 			
 		}
 		
-		$authors = $AuthorManager->fetchByID(array_values($author_ids), $this->dsParamSORT, $this->dsParamORDER, $this->dsParamLIMIT, (max(0, ($this->dsParamSTARTPAGE - 1)) * $this->dsParamLIMIT));
+		$authors = AuthorManager::fetchByID(array_values($author_ids), $this->dsParamSORT, $this->dsParamORDER, $this->dsParamLIMIT, (max(0, ($this->dsParamSTARTPAGE - 1)) * $this->dsParamLIMIT));
 	}
 	
-	else $authors = $AuthorManager->fetch($this->dsParamSORT, $this->dsParamORDER, $this->dsParamLIMIT, (max(0, ($this->dsParamSTARTPAGE - 1)) * $this->dsParamLIMIT));
+	else $authors = AuthorManager::fetch($this->dsParamSORT, $this->dsParamORDER, $this->dsParamLIMIT, (max(0, ($this->dsParamSTARTPAGE - 1)) * $this->dsParamLIMIT));
 
 	
-	if((!is_array($authors) || empty($authors)) && $this->dsParamREDIRECTONEMPTY == 'yes') $this->__redirectToErrorPage();
+	if((!is_array($authors) || empty($authors)) && $this->dsParamREDIRECTONEMPTY == 'yes'){
+		throw new FrontendPageNotFoundException;
+	}
+	
 	else{
 	
 		if(!$this->_param_output_only) $result = new XMLElement($this->dsParamROOTELEMENT);

@@ -3,7 +3,6 @@
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.entrymanager.php');
 	require_once(TOOLKIT . '/class.sectionmanager.php');
-	require_once(TOOLKIT . '/class.authormanager.php');	
 	
 	Class contentPublish extends AdministrationPage{
 		
@@ -54,8 +53,7 @@
 
 			$entryManager = new EntryManager($this->_Parent);
 
-		    $authorManager = new AuthorManager($this->_Parent);
-		    $authors = $authorManager->fetch();
+		    $authors = AuthorManager::fetch();
 		
 			$filter = $filter_value = $where = $joins = NULL;		
 			$current_page = (isset($_REQUEST['pg']) && is_numeric($_REQUEST['pg']) ? max(1, intval($_REQUEST['pg'])) : 1);
@@ -182,8 +180,10 @@
 
 
 				$field_pool = array();
-				foreach($visible_columns as $column){
-					$field_pool[$column->get('id')] = $column;
+				if(is_array($visible_columns) && !empty($visible_columns)){
+					foreach($visible_columns as $column){
+						$field_pool[$column->get('id')] = $column;
+					}
 				}
 
 				foreach($entries['records'] as $entry){
@@ -622,6 +622,11 @@
 					$section = $sectionManager->fetch($entry->get('section_id'));
 				}
 			}
+			
+			###
+			# Delegate: EntryPreRender
+			# Description: Just prior to rendering of an Entry edit form. Entry object can be modified.
+			$this->_Parent->ExtensionManager->notifyMembers('EntryPreRender', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
 
 			if(isset($this->_context['flag'])){
 				
@@ -741,30 +746,10 @@
 
 				$sectionManager = new SectionManager($this->_Parent);
 				$section = $sectionManager->fetch($entry->get('section_id'));
-
-				$fields = $_POST['fields'];
-
-				## Combine FILES and POST arrays, indexed by their custom field handles
-				if(isset($_FILES['fields'])){
-					$filedata = General::processFilePostData($_FILES['fields']);
-
-					foreach($filedata as $handle => $data){
-						if(!isset($fields[$handle])) $fields[$handle] = $data;
-						elseif(isset($data['error']) && $data['error'] == 4) $fields['handle'] = NULL;
-						else{
-
-							foreach($data as $ii => $d){
-								if(isset($d['error']) && $d['error'] == 4) $fields[$handle][$ii] = NULL;
-								elseif(is_array($d) && !empty($d)){
-
-									foreach($d as $key => $val)
-										$fields[$handle][$ii][$key] = $val;
-								}						
-							}
-						}
-					}
-				}
-
+				
+				$post = General::getPostData();
+				$fields = $post['fields'];
+				
 				if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)):
 					$this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
@@ -801,11 +786,10 @@
 
 			elseif(@array_key_exists('delete', $_POST['action']) && is_numeric($entry_id)){
 
-				## TODO: Fix Me
 				###
 				# Delegate: Delete
-				# Description: Prior to deleting an entry. Entry ID is provided.
-				##$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('entry_id' => $entry_id));
+				# Description: Prior to deleting an entry. Entry ID is provided, as an array to remain compatible with other Delete delegate call
+				Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => $entry_id));
 
 				$entryManager = new EntryManager($this->_Parent);
 

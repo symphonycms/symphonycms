@@ -50,7 +50,7 @@
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.0.6');
+	define('kVERSION', '2.0.7');
 	define('kCHANGELOG', 'http://symphony-cms.com/blog/entry/206-release/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -178,6 +178,9 @@
 				
 			}
 			
+			if (version_compare($existing_version, '2.0.6', '<=')){
+				$frontend->Database->query('ALTER TABLE  `tbl_extensions` CHANGE  `version`  `version` VARCHAR(20) NOT NULL');
+			}
 			
 			$code = sprintf($shell, 
 '				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>

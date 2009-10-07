@@ -94,7 +94,7 @@
 
     function installResult(&$Page, &$install_log, $start){
 
-        if(!defined("_INSTALL_ERRORS_")){
+        if(!defined('_INSTALL_ERRORS_')){
             
             $install_log->writeToLog("============================================", true);
             $install_log->writeToLog("INSTALLATION COMPLETED: Execution Time - ".max(1, time() - $start)." sec (" . date("d.m.y H:i:s") . ")", true);
@@ -973,7 +973,7 @@
 		        $db = new MySQL;
 
 		        if(!$db->connect($database['host'], $database['username'], $database['password'], $database['port'])){
-		            define("_INSTALL_ERRORS_", "There was a problem while trying to establish a connection to the MySQL server. Please check your settings.");                                
+		            define('_INSTALL_ERRORS_', "There was a problem while trying to establish a connection to the MySQL server. Please check your settings.");                                
 		            $install_log->pushToLog("Failed", SYM_LOG_NOTICE,true, true, true);
 		            installResult($Page, $install_log, $start);
 		        }else{
@@ -983,7 +983,7 @@
 		        $install_log->pushToLog("MYSQL: Selecting Database '".$database['name']."'...", SYM_LOG_NOTICE, true, false); 
 
 		        if(!$db->select($database['name'])){
-		            define("_INSTALL_ERRORS_", "Could not connect to specified database. Please check your settings.");       
+		            define('_INSTALL_ERRORS_', "Could not connect to specified database. Please check your settings.");       
 		            $install_log->pushToLog("Failed", SYM_LOG_NOTICE,true, true, true);                         
 		            installResult($Page, $install_log, $start);
 		        }else{
@@ -1001,7 +1001,7 @@
 		        $install_log->pushToLog("MYSQL: Importing Table Schema...", SYM_LOG_NOTICE, true, false);
 		        $error = NULL;
 		        if(!fireSql($db, getTableSchema(), $error, ($config['database']['high-compatibility'] == 'yes' ? 'high' : 'normal'))){
-		            define("_INSTALL_ERRORS_", "There was an error while trying to import data to the database. MySQL returned: $error");       
+		            define('_INSTALL_ERRORS_', "There was an error while trying to import data to the database. MySQL returned: $error");       
 		            $install_log->pushToLog("Failed", SYM_LOG_ERROR,true, true, true);                         
 		            installResult($Page, $install_log, $start);
 		        }else{
@@ -1039,7 +1039,7 @@
 				$install_log->pushToLog("MYSQL: Creating Default Author...", SYM_LOG_NOTICE, true, false);
 		        if(!$db->query($author_sql)){
 					$error = $db->getLastError();
-		            define("_INSTALL_ERRORS_", "There was an error while trying create the default author. MySQL returned: " . $error['num'] . ': ' . $error['msg']);       
+		            define('_INSTALL_ERRORS_', "There was an error while trying create the default author. MySQL returned: " . $error['num'] . ': ' . $error['msg']);       
 		            $install_log->pushToLog("Failed", SYM_LOG_ERROR, true, true, true);                         
 		            installResult($Page, $install_log, $start);   
 
@@ -1098,7 +1098,7 @@
 
 		        $install_log->pushToLog("WRITING: Creating 'manifest' folder (/manifest)", SYM_LOG_NOTICE, true, true);
 		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest', $conf['settings']['directory']['write_mode'])){
-		            define("_INSTALL_ERRORS_", "Could not create 'manifest' directory. Check permission on the root folder.");       
+		            define('_INSTALL_ERRORS_', "Could not create 'manifest' directory. Check permission on the root folder.");       
 		            $install_log->pushToLog("ERROR: Creation of 'manifest' folder failed.", SYM_LOG_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
 					return;
@@ -1106,7 +1106,7 @@
 
 		        $install_log->pushToLog("WRITING: Creating 'logs' folder (/manifest/logs)", SYM_LOG_NOTICE, true, true);
 		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest/logs', $conf['settings']['directory']['write_mode'])){
-		            define("_INSTALL_ERRORS_", "Could not create 'logs' directory. Check permission on /manifest.");       
+		            define('_INSTALL_ERRORS_', "Could not create 'logs' directory. Check permission on /manifest.");       
 		            $install_log->pushToLog("ERROR: Creation of 'logs' folder failed.", SYM_LOG_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
 					return;
@@ -1114,7 +1114,7 @@
 
 		        $install_log->pushToLog("WRITING: Creating 'cache' folder (/manifest/cache)", SYM_LOG_NOTICE, true, true);
 		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest/cache', $conf['settings']['directory']['write_mode'])){
-		            define("_INSTALL_ERRORS_", "Could not create 'cache' directory. Check permission on /manifest.");       
+		            define('_INSTALL_ERRORS_', "Could not create 'cache' directory. Check permission on /manifest.");       
 		            $install_log->pushToLog("ERROR: Creation of 'cache' folder failed.", SYM_LOG_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
 					return;
@@ -1122,16 +1122,23 @@
 
 		        $install_log->pushToLog("WRITING: Creating 'tmp' folder (/manifest/tmp)", SYM_LOG_NOTICE, true, true);
 		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest/tmp', $conf['settings']['directory']['write_mode'])){
-		            define("_INSTALL_ERRORS_", "Could not create 'tmp' directory. Check permission on /manifest.");       
+		            define('_INSTALL_ERRORS_', "Could not create 'tmp' directory. Check permission on /manifest.");       
 		            $install_log->pushToLog("ERROR: Creation of 'tmp' folder failed.", SYM_LOG_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
 					return;
 		        }
 
 		        $install_log->pushToLog("WRITING: Configuration File", SYM_LOG_NOTICE, true, true);
-		        if(!writeConfig($kDOCROOT . "/manifest/", $conf, $conf['settings']['file']['write_mode'])){
-		            define("_INSTALL_ERRORS_", "Could not write config file. Check permission on /manifest.");       
+		        if(!writeConfig($kDOCROOT . '/manifest/', $conf, $conf['settings']['file']['write_mode'])){
+		            define('_INSTALL_ERRORS_', "Could not write config file. Check permission on /manifest.");       
 		            $install_log->pushToLog("ERROR: Writing Configuration File Failed", SYM_LOG_ERROR, true, true);                         
+		            installResult($Page, $install_log, $start);
+		        }
+
+		        $install_log->pushToLog("WRITING: Manifest .htaccess File", SYM_LOG_NOTICE, true, true);
+		        if(!GeneralExtended::writeFile($kDOCROOT . "/manifest/.htaccess", 'deny from all', $conf['settings']['file']['write_mode'])){
+		            define('_INSTALL_ERRORS_', "Could not write manifest/.htaccess file. Check permission on /manifest.");       
+		            $install_log->pushToLog("ERROR: Writing manifest/.htaccess Failed", SYM_LOG_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
 		        }
 
@@ -1142,6 +1149,8 @@
 				}
 
 		        $htaccess = '
+### Symphony 2.0.x ###
+Options +FollowSymlinks
 
 ### Symphony 2.0.x ###
 <IfModule mod_rewrite.c>
@@ -1154,28 +1163,27 @@
 	RewriteRule .* - [S=14]	
 
 	### IMAGE RULES	
-	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ ./extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
+	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
 
 	### ADMIN REWRITE
-	RewriteRule ^symphony\/?$ ./index.php?mode=administration&%{QUERY_STRING} [NC,L]
+	RewriteRule ^symphony\/?$ index.php?mode=administration&%{QUERY_STRING} [NC,L]
 
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteCond %{REQUEST_FILENAME} !-f	
-	RewriteRule ^symphony(\/(.*\/?))?$ ./index.php?symphony-page=$1&mode=administration&%{QUERY_STRING}	[NC,L]
+	RewriteRule ^symphony(\/(.*\/?))?$ index.php?symphony-page=$1&mode=administration&%{QUERY_STRING}	[NC,L]
 
 	### FRONTEND REWRITE - Will ignore files and folders
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule ^(.*\/?)$ ./index.php?symphony-page=$1&%{QUERY_STRING}	[L]
+	RewriteRule ^(.*\/?)$ index.php?symphony-page=$1&%{QUERY_STRING}	[L]
 	
 </IfModule>
 ######
-
 ';
 
 		        $install_log->pushToLog("CONFIGURING: Frontend", SYM_LOG_NOTICE, true, true);
 		        if(!GeneralExtended::writeFile($kDOCROOT . "/.htaccess", $htaccess, $conf['settings']['file']['write_mode'])){
-		            define("_INSTALL_ERRORS_", "Could not write .htaccess file. Check permission on " . $kDOCROOT);       
+		            define('_INSTALL_ERRORS_', "Could not write .htaccess file. Check permission on " . $kDOCROOT);       
 		            $install_log->pushToLog("ERROR: Writing .htaccess File Failed", SYM_LOG_ERROR, true, true);                          
 		            installResult($Page, $install_log, $start);
 		        }
@@ -1187,7 +1195,7 @@
 					
 			        $install_log->pushToLog("WRITING: Creating 'workspace' folder (/workspace)", SYM_LOG_NOTICE, true, true);
 			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace', $conf['settings']['directory']['write_mode'])){
-			            define("_INSTALL_ERRORS_", "Could not create 'workspace' directory. Check permission on the root folder.");       
+			            define('_INSTALL_ERRORS_', "Could not create 'workspace' directory. Check permission on the root folder.");       
 			            $install_log->pushToLog("ERROR: Creation of 'workspace' folder failed.", SYM_LOG_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
 						return;
@@ -1195,7 +1203,7 @@
 
 			        $install_log->pushToLog("WRITING: Creating 'data-sources' folder (/workspace/data-sources)", SYM_LOG_NOTICE, true, true);
 			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/data-sources', $conf['settings']['directory']['write_mode'])){
-			            define("_INSTALL_ERRORS_", "Could not create 'workspace/data-sources' directory. Check permission on the root folder.");       
+			            define('_INSTALL_ERRORS_', "Could not create 'workspace/data-sources' directory. Check permission on the root folder.");       
 			            $install_log->pushToLog("ERROR: Creation of 'workspace/data-sources' folder failed.", SYM_LOG_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
 						return;
@@ -1203,7 +1211,7 @@
 
 			        $install_log->pushToLog("WRITING: Creating 'events' folder (/workspace/events)", SYM_LOG_NOTICE, true, true);
 			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/events', $conf['settings']['directory']['write_mode'])){
-			            define("_INSTALL_ERRORS_", "Could not create 'workspace/events' directory. Check permission on the root folder.");       
+			            define('_INSTALL_ERRORS_', "Could not create 'workspace/events' directory. Check permission on the root folder.");       
 			            $install_log->pushToLog("ERROR: Creation of 'workspace/events' folder failed.", SYM_LOG_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
 						return;
@@ -1211,7 +1219,7 @@
 
 			        $install_log->pushToLog("WRITING: Creating 'pages' folder (/workspace/pages)", SYM_LOG_NOTICE, true, true);
 			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/pages', $conf['settings']['directory']['write_mode'])){
-			            define("_INSTALL_ERRORS_", "Could not create 'workspace/pages' directory. Check permission on the root folder.");       
+			            define('_INSTALL_ERRORS_', "Could not create 'workspace/pages' directory. Check permission on the root folder.");       
 			            $install_log->pushToLog("ERROR: Creation of 'workspace/pages' folder failed.", SYM_LOG_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
 						return;
@@ -1219,7 +1227,7 @@
 
 			        $install_log->pushToLog("WRITING: Creating 'utilities' folder (/workspace/utilities)", SYM_LOG_NOTICE, true, true);
 			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/utilities', $conf['settings']['directory']['write_mode'])){
-			            define("_INSTALL_ERRORS_", "Could not create 'workspace/utilities' directory. Check permission on the root folder.");       
+			            define('_INSTALL_ERRORS_', "Could not create 'workspace/utilities' directory. Check permission on the root folder.");       
 			            $install_log->pushToLog("ERROR: Creation of 'workspace/utilities' folder failed.", SYM_LOG_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
 						return;
@@ -1232,7 +1240,7 @@
 					$install_log->pushToLog("MYSQL: Importing Workspace Data...", SYM_LOG_NOTICE, true, false);
 			        $error = NULL;
 			        if(!fireSql($db, getWorkspaceData(), $error, ($config['database']['high-compatibility'] == 'yes' ? 'high' : 'normal'))){
-			            define("_INSTALL_ERRORS_", "There was an error while trying to import data to the database. MySQL returned: $error");       
+			            define('_INSTALL_ERRORS_', "There was an error while trying to import data to the database. MySQL returned: $error");       
 			            $install_log->pushToLog("Failed", SYM_LOG_ERROR,true, true, true);                         
 			            installResult($Page, $install_log, $start);
 			        }else{
@@ -1244,7 +1252,7 @@
 				if(@!is_dir($fields['docroot'] . '/extensions')){
 			        $install_log->pushToLog("WRITING: Creating 'campfire' folder (/extensions)", SYM_LOG_NOTICE, true, true);
 			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/extensions', $conf['settings']['directory']['write_mode'])){
-			            define("_INSTALL_ERRORS_", "Could not create 'extensions' directory. Check permission on the root folder.");       
+			            define('_INSTALL_ERRORS_', "Could not create 'extensions' directory. Check permission on the root folder.");       
 			            $install_log->pushToLog("ERROR: Creation of 'extensions' folder failed.", SYM_LOG_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
 						return;

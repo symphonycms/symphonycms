@@ -10,47 +10,19 @@
 			return $ret;
 		}
 	}
-
-
-	if(!function_exists('__doit')){	
+	
+	if (!function_exists('__doit')) {
 		function __doit($source, $fields, &$result, &$obj, &$event, $filters, $position=NULL, $entry_id=NULL){
-
+			$post_values = new XMLElement('request');
+			$post = General::getPostData();
+			$fields = $post['fields'];
+			$filter_results = array();	
+			
 			## Create the post data cookie element
-			if(is_array($fields) && !empty($fields)){
-				$post_values = new XMLElement('post-values');
-				foreach($fields as $element_name => $value){
-					if(strlen($value) == 0) continue;
-					if(is_array($value)) {
-						foreach($value as $key => $value) {
-							$post_values->appendChild(new XMLElement($element_name, General::sanitize($value)));
-						}
-						continue;
-					}
-					$post_values->appendChild(new XMLElement($element_name, General::sanitize($value)));
-				}
-			}
-
-			## Combine FILES and POST arrays, indexed by their custom field handles
-			if(isset($_FILES['fields'])){
-				$filedata = General::processFilePostData($_FILES['fields']);
-
-				foreach($filedata as $handle => $data){
-					if(!isset($fields[$handle])) $fields[$handle] = $data;
-					elseif(isset($data['error']) && $data['error'] == 4) $fields[$handle] = NULL;
-					else{
-						foreach($data as $ii => $d){
-							if(isset($d['error']) && $d['error'] == 4) $fields[$handle][$ii] = NULL;
-							elseif(is_array($d) && !empty($d)){
-								foreach($d as $key => $val)
-									$fields[$handle][$ii][$key] = $val;
-							}						
-						}
-					}
-				}
+			if (is_array($post) && !empty($post)) {
+				General::array_to_xml($post_values, $post);
 			}
 			
-			$filter_results = array();			
-
 			###
 			# Delegate: EventPreSaveFilter
 			# Description: Prior to saving entry from the front-end. This delegate will force the Event to terminate if it populates the error

@@ -51,7 +51,11 @@
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', __LANG__);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
+			$this->addStylesheetToHead(URL . '/symphony/assets/symphony.duplicator.css', 'screen', 70);
 			$this->addScriptToHead(URL . '/symphony/assets/jquery.js', 50);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.collapsible.js', 70);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.orderable.js', 71);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.duplicator.js', 72);
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 60);
 			
 			###
@@ -188,7 +192,6 @@
 			$xNav->setAttribute('id', 'nav');
 
 			foreach($nav as $n){
-
 				$n_bits = explode('/', $n['link'], 3);
 
 				$can_access = false;
@@ -324,7 +327,7 @@
 
 				}
 				
-				elseif(($page == $item['link']) && isset($item['limit'])){						
+				elseif(isset($item['link']) && ($page == $item['link']) && isset($item['limit'])){						
 					$page_limit	= $item['limit'];	  	
 				}
 			}

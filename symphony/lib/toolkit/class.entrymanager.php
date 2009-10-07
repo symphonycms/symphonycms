@@ -1,10 +1,6 @@
 <?php
-
-	
 	
 	include_once(TOOLKIT . '/class.sectionmanager.php');
-	
-	include_once(TOOLKIT . '/class.authormanager.php');
 	include_once(TOOLKIT . '/class.textformattermanager.php');
 	include_once(TOOLKIT . '/class.entry.php');
 	
@@ -17,8 +13,8 @@
 		var $_fetchSortField;
 		var $_fetchSortDirection;
 		
-		function __construct(&$parent){
-			$this->_Parent =& $parent;
+		public function __construct($parent){
+			$this->_Parent = $parent;
 			
 			$this->formatterManager = new TextformatterManager($this->_Parent);		
 			$this->sectionManager = new SectionManager($this->_Parent);		
@@ -29,12 +25,12 @@
 			
 		}
 		
-		function create(){	
+		public function create(){	
 			$obj = new Entry($this);
 			return $obj;
 		}
 		
-		function delete($entries){
+		public function delete($entries){
 			
 			if(!is_array($entries))	$entries = array($entries);
 	
@@ -77,7 +73,7 @@
 			return true;
 		}
 		
-		function add(&$entry){
+		public function add($entry){
 			
 			$fields = $entry->get();
 			
@@ -119,16 +115,10 @@
 			
 		}
 		
-		function edit(&$entry){
-
-			/*$fields = array(
-				'section_id' => $entry->get('section_id'),
-			);
-			
-			Symphony::Database()->update($fields, 'tbl_entries', " `id` = '".$entry->get('id')."' LIMIT 1");*/
-
-			foreach($entry->getData() as $field_id => $field){
-					
+		public function edit($entry){
+			foreach ($entry->getData() as $field_id => $field) {
+				if (empty($field_id)) continue;
+				
 				Symphony::Database()->delete('tbl_entries_data_' . $field_id, " `entry_id` = '".$entry->get('id')."'");
 				
 				if(!is_array($field) || empty($field)) continue;
@@ -150,7 +140,9 @@
 					}
 				}
 				
-				for($ii = 0; $ii < count($fields); $ii++) $fields[$ii] = array_merge($data, $fields[$ii]);
+				foreach ($fields as $index => $field_data) {
+					$fields[$index] = array_merge($data, $field_data);
+				}
 
 				Symphony::Database()->insert($fields, 'tbl_entries_data_' . $field_id);
 
@@ -160,7 +152,7 @@
 			
 		}
 		
-		function fetchByPage($page, $section_id, $entriesPerPage, $where=NULL, $joins=NULL, $group=false, $records_only=false, $buildentries=true, $element_names=null){
+		public function fetchByPage($page, $section_id, $entriesPerPage, $where=NULL, $joins=NULL, $group=false, $records_only=false, $buildentries=true, $element_names=null){
 			
 			if(!is_string($entriesPerPage) && !is_numeric($entriesPerPage)){
 				trigger_error(__('Entry limit specified was not a valid type. String or Integer expected.'), E_USER_WARNING);
@@ -188,10 +180,8 @@
 			
 		}
 
-		function fetchCount($section_id=NULL, $where=NULL, $joins=NULL, $group=false){
-
-			if(!$entry_id && !$section_id) return false;
-			elseif(!$section_id) $section_id = $this->fetchEntrySectionID($entry_id);
+		public function fetchCount($section_id=NULL, $where=NULL, $joins=NULL, $group=false){
+			if(!$section_id) return false;
 
 			$section = $this->sectionManager->fetch($section_id);
 			
@@ -228,16 +218,16 @@
 
 		}
 		
-		function setFetchSortingField($field_id){
+		public function setFetchSortingField($field_id){
 			$this->_fetchSortField = $field_id;
 		}
 		
-		function setFetchSortingDirection($direction){
+		public function setFetchSortingDirection($direction){
 			$direction = strtoupper($direction);
 			$this->_fetchSortDirection = (in_array($direction, array('RAND', 'ASC', 'DESC')) ? $direction : NULL);
 		}
 		
-		function setFetchSorting($field_id, $direction='ASC'){
+		public function setFetchSorting($field_id, $direction='ASC'){
 			$this->setFetchSortingField($field_id);
 			$this->setFetchSortingDirection($direction);
 		}
@@ -254,7 +244,7 @@
 			Warning: Do not provide $entry_id as an array if not specifiying the $section_id
 		
 		***/
-		function fetch($entry_id=NULL, $section_id=NULL, $limit=NULL, $start=NULL, $where=NULL, $joins=NULL, $group=false, $buildentries=true, $element_names=null){
+		public function fetch($entry_id=NULL, $section_id=NULL, $limit=NULL, $start=NULL, $where=NULL, $joins=NULL, $group=false, $buildentries=true, $element_names=null){
 			$sort = null;
 			
 			if (!$entry_id && !$section_id) return false;
@@ -312,7 +302,7 @@
 		}
 		
 		## Do not pass this function ID values from across more than one section.
-		function __buildEntries(array $id_list, $section_id, $element_names=NULL){
+		 function __buildEntries(array $id_list, $section_id, $element_names=NULL){
 			$entries = array();
 			
 			if (!is_array($id_list) || empty($id_list)) return $entries;
@@ -428,7 +418,7 @@
 			return $entries;			
 		}
 		
-		function fetchEntrySectionID($entry_id){
+		public function fetchEntrySectionID($entry_id){
 			return Symphony::Database()->fetchVar('section_id', 0, "SELECT `section_id` FROM `tbl_entries` WHERE `id` = '$entry_id' LIMIT 1");
 		}
 		

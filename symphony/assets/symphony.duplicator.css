@@ -1,0 +1,122 @@
+/*-----------------------------------------------------------------------------
+	Duplicator plugin
+-----------------------------------------------------------------------------*/
+	
+	.duplicator {
+		background: #444433;
+		border: 1px solid #999988;
+		margin: 0 0 1.75em 0;
+		list-style: none;
+		overflow: hidden;
+		position: relative;
+	}
+	.invalid .duplicator {
+		border-color: #aa2211;
+	}
+	.duplicator > .instance {
+		background: #ddddcc;
+		border-bottom: 1px solid #eeeedd;
+		overflow: hidden;
+		margin: 0 -2em;
+		padding: 0 2em;
+		position: relative;
+		z-index: 1;
+	}
+	.duplicator > .instance > .header {
+		background: #ccccbb;
+		border-bottom: 1px solid #eeeedd;
+		color: #666655;
+		margin: 0;
+		padding: 0.5em 1.75em;
+		position: relative;
+	}
+	.duplicator.orderable > .instance > .header {
+		cursor: move;
+	}
+	.duplicator > .instance > .header .destructor {
+		font-weight: normal;
+		color: #333322;
+		margin: 0 1.75em;
+		padding: 0.5em 0;
+		position: absolute;
+		right: 0;
+		text-decoration: none;
+		top: 0;
+	}
+	.duplicator > .instance > .header .destructor:hover {
+		color: #555544;
+	}
+	.duplicator > .instance > .header .destructor.disabled {
+		color: #333322;
+		cursor: default;
+		opacity: 0.4;
+	}
+	.duplicator > .instance > .content {
+		overflow: hidden;
+		padding: 1em 1.75em 0 1.75em;
+		position: relative;
+	}
+	
+/*-----------------------------------------------------------------------------
+	States
+-----------------------------------------------------------------------------*/
+	
+	.duplicator.ordering > .instance {
+		opacity: 0.8;
+	}
+	.duplicator > .instance.ordering {
+		border-top: 1px solid #eeeedd;
+		-moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+		-webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+		margin-top: -1px;
+		opacity: 1;
+		z-index: 2;
+	}
+	.duplicator > .instance.ordering,
+	.duplicator > .instance.ordering * {
+		cursor: move;
+	}
+	
+	.duplicator > .instance.collapsed {
+		border-bottom: none;
+	}
+	.duplicator > .instance.collapsed > .content {
+		display: none;
+	}
+	
+/*-----------------------------------------------------------------------------
+	Controls
+-----------------------------------------------------------------------------*/
+	
+	.duplicator > .controls {
+		background: #aaaa99;
+		cursor: default;
+		padding: 0 1.75em;
+		position: relative;
+		text-align: right;
+		z-index: 3;
+	}
+	.duplicator > .controls > * {
+		display: inline-block;
+		margin: 0 0 0 0.75em;
+	}
+	.duplicator > .controls > select {
+		min-width: 15em;
+		width: auto;
+	}
+	.duplicator > .controls > .constructor {
+		color: #ffffff;
+		cursor: pointer;
+		padding: 0.5em 0;
+		text-decoration: none;
+	}
+	.duplicator > .controls > .constructor:hover {
+		color: #ffffee;
+	}
+	.duplicator > .controls > .constructor.disabled {
+		color: #eeeedd;
+		cursor: default;
+		opacity: 0.6;
+	}
+	
+/*---------------------------------------------------------------------------*/
