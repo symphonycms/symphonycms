@@ -171,7 +171,17 @@
 										  (!$include_pagination_element ? true : false), 
 										  true,
 										  $datasource_schema);
-
+	
+	####
+	# Delegate: DataSourceEntriesBuilt
+	# Description: Immediately after building entries allow modification of the Data Source entry list
+	# Global: Yes
+	$this->_Parent->ExtensionManager->notifyMembers('DataSourceEntriesBuilt', '/frontend/', array(
+	'datasource' => &$this,
+	'entries' => &$entries,
+	'filters' => $this->dsParamFILTERS
+	));
+	
 	if(($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records'])) || !ctype_digit($this->dsParamSTARTPAGE) || $this->dsParamSTARTPAGE == '0'){		
 		if($this->dsParamREDIRECTONEMPTY == 'yes'){
 			throw new FrontendPageNotFoundException;
