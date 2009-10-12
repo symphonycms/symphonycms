@@ -1151,7 +1151,6 @@
 ### Symphony 2.0.x ###
 Options +FollowSymlinks
 
-### Symphony 2.0.x ###
 <IfModule mod_rewrite.c>
 
 	RewriteEngine on

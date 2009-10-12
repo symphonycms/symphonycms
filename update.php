@@ -5,7 +5,14 @@
 	function __errorHandler($errno=NULL, $errstr, $errfile=NULL, $errline=NULL, $errcontext=NULL){
 		return;
 	}
+	
+	function tableContainsField($table, $field){
+		$sql = "DESC `{$table}` `{$field}`";
+		$results = Frontend::instance()->Database->fetch($sql);
 
+		return (is_array($results) && !empty($results));
+	}
+	
     function writeConfig($dest, $conf, $mode){
 
         $string  = "<?php\n";
@@ -85,7 +92,7 @@
 		
 		## Build is no longer used
 		unset($settings['symphony']['build']);
-		
+
 		if(writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']) === true){
 			
 			// build a Frontend page instance to initialise database
@@ -95,10 +102,13 @@
 			$frontend = Frontend::instance();
 			
 			if (version_compare($existing_version, '2.0.3', '<=')) {
+				
 				// Add Navigation Groups
-				$frontend->Database->query("ALTER TABLE `tbl_sections` ADD `navigation_group` VARCHAR( 50 ) NOT NULL DEFAULT 'Content'");
-				$frontend->Database->query("ALTER TABLE `tbl_sections` ADD INDEX (`navigation_group`)");
-
+				if(!tableContainsField('tbl_sections', 'navigation_group')){
+					$frontend->Database->query("ALTER TABLE `tbl_sections` ADD `navigation_group` VARCHAR( 50 ) NOT NULL DEFAULT 'Content'");
+					$frontend->Database->query("ALTER TABLE `tbl_sections` ADD INDEX (`navigation_group`)");
+				}
+				
 				// Added support for upload field to handle empty mimetypes.
 				$upload_fields = $frontend->Database->fetch("SELECT id FROM tbl_fields WHERE `type` = 'upload'");
 				foreach ($upload_fields as $upload_field) {
@@ -115,7 +125,9 @@
 				}
 				
 				// Update author field table to support the default value checkbox
-				$frontend->Database->query("ALTER TABLE `tbl_fields_author` ADD `default_to_current_user` ENUM('yes', 'no') NOT NULL");
+				if(!tableContainsField('tbl_fields_author', 'default_to_current_user')){
+					$frontend->Database->query("ALTER TABLE `tbl_fields_author` ADD `default_to_current_user` ENUM('yes', 'no') NOT NULL");
+				}
 				
 				## Change .htaccess from `page` to `symphony-page`
 				$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
@@ -138,8 +150,9 @@
 				}
 
 		        $htaccess = '
-
 ### Symphony 2.0.x ###
+Options +FollowSymlinks
+
 <IfModule mod_rewrite.c>
 
 	RewriteEngine on
@@ -150,23 +163,28 @@
 	RewriteRule .* - [S=14]	
 
 	### IMAGE RULES	
-	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ ./extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
+	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
+
+	### CHECK FOR TRAILING SLASH - Will ignore files
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_URI} !/$
+	RewriteCond %{REQUEST_URI} !(.*)/$
+	RewriteRule ^(.*)$ $1/ [L,R=301]
 
 	### ADMIN REWRITE
-	RewriteRule ^symphony\/?$ ./index.php?mode=administration&%{QUERY_STRING} [NC,L]
+	RewriteRule ^symphony\/?$ index.php?mode=administration&%{QUERY_STRING} [NC,L]
 
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteCond %{REQUEST_FILENAME} !-f	
-	RewriteRule ^symphony(\/(.*\/?))?$ ./index.php?symphony-page=$1&mode=administration&%{QUERY_STRING}	[NC,L]
+	RewriteRule ^symphony(\/(.*\/?))?$ index.php?symphony-page=$1&mode=administration&%{QUERY_STRING}	[NC,L]
 
 	### FRONTEND REWRITE - Will ignore files and folders
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule ^(.*\/?)$ ./index.php?symphony-page=$1&%{QUERY_STRING}	[L]
+	RewriteRule ^(.*\/?)$ index.php?symphony-page=$1&%{QUERY_STRING}	[L]
 
 </IfModule>
 ######
-
 ';
 
 				@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
@@ -179,7 +197,7 @@
 			}
 			
 			if (version_compare($existing_version, '2.0.6', '<=')){
-				$frontend->Database->query('ALTER TABLE  `tbl_extensions` CHANGE  `version`  `version` VARCHAR(20) NOT NULL');
+				$frontend->Database->query('ALTER TABLE `tbl_extensions` CHANGE `version` `version` VARCHAR(20) NOT NULL');
 			}
 			
 			$code = sprintf($shell, 
