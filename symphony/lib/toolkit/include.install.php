@@ -1071,7 +1071,6 @@
 					$conf['settings']['database']['character_set'] = 'utf8';
 					$conf['settings']['database']['character_encoding'] = 'utf8';
 					$conf['settings']['database']['runtime_character_set_alter'] = '1';
-					$conf['settings']['database']['disable_query_caching'] = 'no';
 					$conf['settings']['public']['display_event_xml_in_source'] = 'no';
 				
 				}
