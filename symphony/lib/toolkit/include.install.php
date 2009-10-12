@@ -1165,6 +1165,12 @@ Options +FollowSymlinks
 	### IMAGE RULES	
 	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
 
+	### CHECK FOR TRAILING SLASH - Will ignore files
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_URI} !/$
+	RewriteCond %{REQUEST_URI} !(.*)/$
+	RewriteRule ^(.*)$ $1/ [L,R=301]
+
 	### ADMIN REWRITE
 	RewriteRule ^symphony\/?$ index.php?mode=administration&%{QUERY_STRING} [NC,L]
 
