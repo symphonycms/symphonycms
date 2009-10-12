@@ -634,7 +634,15 @@
 				
 				list($flag, $field_id, $value) = preg_split('/:/i', $this->_context['flag'], 3);
 				
-				if(is_numeric($field_id) && $value) $link .= "?prepopulate[$field_id]=$value";
+				if(is_numeric($field_id) && $value){
+					$link .= "?prepopulate[$field_id]=$value";
+
+					$this->Form->prependChild(Widget::Input(
+						"prepopulate[{$field_id}]",
+						rawurlencode($value),
+						'hidden'
+					));
+				}
 				
 				switch($flag){
 					
@@ -678,6 +686,18 @@
 			if (trim($title) == '') {
 				$title = 'Untitled';
 			}
+			
+			// Check if there is a field to prepopulate
+			if (isset($_REQUEST['prepopulate'])) {
+				$field_id = array_shift(array_keys($_REQUEST['prepopulate']));
+				$value = stripslashes(rawurldecode(array_shift($_REQUEST['prepopulate'])));
+
+				$this->Form->prependChild(Widget::Input(
+					"prepopulate[{$field_id}]",
+					rawurlencode($value),
+					'hidden'
+				));
+			}
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
@@ -694,7 +714,7 @@
 			$main_fields = $section->fetchFields(NULL, 'main');
 
 			if((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))){
-				$primary->appendChild(new XMLElement('p', __('It looks like your trying to create an entry. Perhaps you want custom fields first? <a href="%s">Click here to create some.</a>', array(URL . '/symphony/blueprints/sections/edit/'. $section->get('id') . '/'))));
+				$primary->appendChild(new XMLElement('p', __('It looks like your trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>', array(URL . '/symphony/blueprints/sections/edit/'. $section->get('id') . '/'))));
 			}
 
 			else{
@@ -776,9 +796,24 @@
 						# Delegate: EntryPostEdit
 						# Description: Editing an entry. Entry object is provided.		
 						$this->_Parent->ExtensionManager->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
+						
+						
+						$prepopulate_field_id = $prepopulate_value = NULL;
+						if(isset($_POST['prepopulate'])){
+							$prepopulate_field_id = array_shift(array_keys($_POST['prepopulate']));
+							$prepopulate_value = stripslashes(rawurldecode(array_shift($_POST['prepopulate'])));
+						}
 
-
-			  		    redirect(URL . '/symphony/publish/' . $this->_context['section_handle'] . '/edit/' . $entry_id . '/saved/');
+			  		    //redirect(URL . '/symphony/publish/' . $this->_context['section_handle'] . '/edit/' . $entry_id . '/saved/');
+			
+			  		   	redirect(sprintf(
+							'%s/symphony/publish/%s/edit/%d/saved%s/',
+							URL,
+							$this->_context['section_handle'],
+							$entry->get('id'),
+							(!is_null($prepopulate_field_id) ? ":{$prepopulate_field_id}:{$prepopulate_value}" : NULL)
+						));
+			
 					}
 
 				endif;
