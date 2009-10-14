@@ -247,7 +247,7 @@
 			
 			if (empty($this->_errors)) {
 				if (!$write = General::writeFile($file_abs, $fields['body'], Symphony::Configuration()->get('write_mode', 'file'))) {
-					$this->pageAlert(__('Utility could not be written to disk. Please check permissions on <code>/workspace/utilities</code>.'), Alert::ERROR);
+					$this->pageAlert(__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'), Alert::ERROR);
 					
 				} else {
 					redirect(URL . '/symphony/blueprints/pages/template/' . $this->_context[1] . '/saved/');
