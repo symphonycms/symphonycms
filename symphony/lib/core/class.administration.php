@@ -207,7 +207,7 @@
 			# Delegate: AdminPagePreGenerate
 			# Description: Immediately before generating the admin page. Provided with the page object
 			# Global: Yes
-			$this->ExtensionManager->notifyMembers('AdminPagePreGenerate', '/administration/', array('oPage' => &$this->Page));
+			$this->ExtensionManager->notifyMembers('AdminPagePreGenerate', '/backend/', array('oPage' => &$this->Page));
 			
 			$output = $this->Page->generate();
 
@@ -215,7 +215,7 @@
 			# Delegate: AdminPagePostGenerate
 			# Description: Immediately after generating the admin page. Provided with string containing page source
 			# Global: Yes
-			$this->ExtensionManager->notifyMembers('AdminPagePostGenerate', '/administration/', array('output' => &$output));
+			$this->ExtensionManager->notifyMembers('AdminPagePostGenerate', '/backend/', array('output' => &$output));
 
 			$this->Profiler->sample('Page built');
 			
