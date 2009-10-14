@@ -181,7 +181,7 @@
 			# Description: Immediately before displaying the admin navigation. Provided with the navigation array
 			#              Manipulating it will alter the navigation for all pages.
 			# Global: Yes
-			$this->_Parent->ExtensionManager->notifyMembers('NavigationPreRender', '/administration/', array('navigation' => &$nav));
+			$this->_Parent->ExtensionManager->notifyMembers('NavigationPreRender', '/backend/', array('navigation' => &$nav));
 
 			$xNav = new XMLElement('ul');
 			$xNav->setAttribute('id', 'nav');
@@ -421,7 +421,7 @@
 			# Description: After building the Navigation properties array. This is specifically for extentions to add their groups to the navigation or items to groups,
 			#			   already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need to edit existing navigation elements, use the 'NavigationPreRender' delegate.
 			# Global: Yes
-			$this->_Parent->ExtensionManager->notifyMembers('ExtensionsAddToNavigation', '/administration/', array('navigation' => &$nav));
+			$this->_Parent->ExtensionManager->notifyMembers('ExtensionsAddToNavigation', '/backend/', array('navigation' => &$nav));
 						
 			$pageCallback = $this->_Parent->getPageCallback();
 			

@@ -1067,7 +1067,6 @@
 					$conf['settings']['database']['character_set'] = 'utf8';
 					$conf['settings']['database']['character_encoding'] = 'utf8';
 					$conf['settings']['database']['runtime_character_set_alter'] = '1';
-					$conf['settings']['database']['disable_query_caching'] = 'no';
 					$conf['settings']['public']['display_event_xml_in_source'] = 'no';
 				
 				}
@@ -1148,7 +1147,6 @@
 ### Symphony 2.0.x ###
 Options +FollowSymlinks
 
-### Symphony 2.0.x ###
 <IfModule mod_rewrite.c>
 
 	RewriteEngine on
@@ -1160,6 +1158,12 @@ Options +FollowSymlinks
 
 	### IMAGE RULES	
 	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
+
+	### CHECK FOR TRAILING SLASH - Will ignore files
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_URI} !/$
+	RewriteCond %{REQUEST_URI} !(.*)/$
+	RewriteRule ^(.*)$ $1/ [L,R=301]
 
 	### ADMIN REWRITE
 	RewriteRule ^symphony\/?$ index.php?mode=administration&%{QUERY_STRING} [NC,L]

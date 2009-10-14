@@ -210,10 +210,31 @@
         public function notifyMembers($delegate, $page, $context=array()){
 
 	        if((int)Symphony::Configuration()->get('allow_page_subscription', 'symphony') != 1) return;
-	        
+				
+			// Make sure $page is an array
+			if(!is_array($page)){
+				
+				// Support for pseudo-global delegates (including legacy support for /administration/)
+				if(preg_match('/\/?(administration|backend)\/?/', $page)){
+					$page = array(
+						'backend', '/backend/',
+						'administration', '/administration/'
+					);
+				}
+				
+				else{
+					$page = array($page);
+				}
+			}
+			
+			// Support for global delegate subscription
+			if(!in_array('*', $page)){
+				$page[] = '*';
+			}
+			
 			$services = Symphony::Database()->fetch("SELECT t1.*, t2.callback FROM `tbl_extensions` as t1 
 											LEFT JOIN `tbl_extensions_delegates` as t2 ON t1.id = t2.extension_id
-											WHERE (t2.page = '$page' OR t2.page = '*')
+											WHERE (t2.page IN ('".implode("', '", $page)."'))
 											AND t2.delegate = '$delegate'
 											AND t1.status = 'enabled'");							
 
@@ -233,7 +254,7 @@
 			}
 		  	
         }
-        
+
         ## Creates a new object and returns a pointer to it
         public function create($name, $param=array(), $slient=false){
 	        

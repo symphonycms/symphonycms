@@ -132,8 +132,8 @@
 					self::$Database->setCharacterSet(self::$Configuration->get('character_set', 'database'));
 				}
 
-				if(self::$Configuration->get('force_query_caching', 'database') == 'off') self::$Database->disableCaching();
-				elseif(self::$Configuration->get('force_query_caching', 'database') == 'on') self::$Database->enableCaching();
+				if(self::$Configuration->get('query_caching', 'database') == 'off') self::$Database->disableCaching();
+				elseif(self::$Configuration->get('query_caching', 'database') == 'on') self::$Database->enableCaching();
 			}
 			catch(DatabaseException $e){
 				$error = self::$Database->getlastError();
