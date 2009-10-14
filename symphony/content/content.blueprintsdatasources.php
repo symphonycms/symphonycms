@@ -1011,16 +1011,8 @@
 				$dsShell = str_replace('<!-- CLASS NAME -->', $classname, $dsShell);
 				$dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
 				
-				if(preg_match_all('@{(\$ds-[^}]+)}@i', $dsShell, $matches)){
-					
-					$dependancies = array();
-					
-					foreach($matches[1] as $match){
-						if(preg_match_all('/(\$ds-[^:]+)/i', $match, $inner_matches)) $dependancies = array_merge($dependancies, $inner_matches[1]);
-					}
-					
-					$dependancies = General::array_remove_duplicates($dependancies);
-					
+				if(preg_match_all('@(\$ds-[^:}]+)@i', $dsShell, $matches)){
+					$dependancies = General::array_remove_duplicates($matches[1]);
 					$dsShell = str_replace('<!-- DS DEPENDANCY LIST -->', "'" . implode("', '", $dependancies) . "'", $dsShell);
 				}
 								
