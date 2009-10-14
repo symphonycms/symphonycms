@@ -606,12 +606,15 @@
 		Method: deleteFile
 		Description: deletes a file using the unlink function
 		Param: $file - file to delete	
-		Return: true or false
+		Return: true on success
 		
 		***/		
-		public static function deleteFile($file){
+		public static function deleteFile($file, $slient=true){
 			if(!@unlink($file)){
-				trigger_error(__('Unable to remove file - %s', array($file)), E_USER_WARNING);
+				if($slient == false){
+					throw new Exception(__('Unable to remove file - %s', array($file)));
+				}
+				
 				return false;
 			}
 			
