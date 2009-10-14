@@ -689,13 +689,14 @@
 							$current['path'], $current['handle']
 						);
 					}
-					
+
 					if (!$file_created) {
 						$redirect = null;
 						$this->pageAlert(
 							__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'),
 							Alert::ERROR
 						);
+						return;
 					}
 					
 					if ($duplicate) {
@@ -813,17 +814,25 @@
 			$data = null;
 			
 			// Nothing to do:
-			if (file_exists($new) && $new == old) return true;
-			
-			// Old file doesn't exist, use template:
-			if (!file_exists($old)) {
-				$data = file_get_contents(TEMPLATE . '/page.xsl');
-				
-			} else {
-				$data = file_get_contents($old); @unlink($old);
+			if(file_exists($new) && $new == $old){
+				return true;
 			}
 			
-			return General::writeFile($new, $data, Symphony::Configuration()->get('write_mode', 'file'));
+			// Old file doesn't exist, use template:
+			if(!file_exists($old)) {
+				$data = file_get_contents(TEMPLATE . '/page.xsl');
+			} 
+			else{
+				$data = file_get_contents($old);
+			}
+			
+			$result = General::writeFile($new, $data, Symphony::Configuration()->get('write_mode', 'file'));
+			
+			if($result == true && file_exists($old)){
+				General::deleteFile($old);
+			}
+			
+			return $result;
 		}
 		
 		protected function __deletePageFiles($path, $handle) {
@@ -926,4 +935,3 @@
 		}	
 	}
 	
-?>
