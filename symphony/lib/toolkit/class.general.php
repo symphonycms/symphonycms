@@ -205,24 +205,38 @@
 		***/			
 		public static function generatePassword(){
 		
-			$words[] = array(__('Large'), __('Small'), __('Hot'), __('Cold'), __('Big'), __('Hairy'), __('Round'), __('Lumpy'), __('Coconut'), __('Encumbered'));
-			$words[] = array(__('Cats'), __('Dogs'), __('Weasels'), __('Birds'), __('Worms'), __('Bugs'), __('Pigs'), __('Monkeys'), __('Pirates'), __('Aardvarks'), __('Men'), __('Women'));
-			
-			return (rand(2, 15) . $words[0][rand(0, 8)] . $words[1][rand(0, 7)]); 
+			$words = array(
+				array(
+					__('Large'), 
+					__('Small'), 
+					__('Hot'), 
+					__('Cold'), 
+					__('Big'), 
+					__('Hairy'), 
+					__('Round'),
+					__('Lumpy'), 
+					__('Coconut'), 
+					__('Encumbered')
+				),
 				
-		}
-
-		/***
-
-		Method: encodeHeader
-		Description: Encodes header
-		Source:      http://bitprison.net/php_mail_utf-8_subject_and_message
-		More info:   http://www.ietf.org/rfc/rfc2047.txt
-
-		***/
-		public static function encodeHeader($input, $charset='ISO-8859-1'){
-			$separator = "?=".self::CRLF."=?{$charset}?B?";
-			return "=?{$charset}?B?".wordwrap(base64_encode($input), 75-strlen($separator), $separator, true).'?=';
+				array(
+					__('Cats'), 
+					__('Dogs'), 
+					__('Weasels'), 
+					__('Birds'), 
+					__('Worms'), 
+					__('Bugs'), 
+					__('Pigs'), 
+					__('Monkeys'),
+					__('Pirates'), 
+					__('Aardvarks'), 
+					__('Men'), 
+					__('Women')
+				)
+			);
+			
+			return (rand(2, 15) . $words[0][rand(0, count($words[0]) - 1)] . $words[1][rand(0, count($words[1]) - 1)]); 
+				
 		}
 
 		/***
@@ -266,7 +280,7 @@
 			
 			if (!empty($additional_headers)) {
 				foreach ($additional_headers as $header => $value) {
-					$header = preg_replace_callback('/\w+/', create_function('$m', 'if($m[0]=="MIME"||$m[0]=="ID") return $m[0]; else return ucfirst($m[0]);'), $header);
+					$header = preg_replace_callback('/\w+/', create_function('$m', 'if(in_array($m[0], array("MIME", "ID"))) return $m[0]; else return ucfirst($m[0]);'), $header);
 					$default_headers[$header] = $value;
 				}
 			}
@@ -280,7 +294,18 @@
 			return true;
 		}
 
+		/***
 
+		Method: encodeHeader
+		Description: Encodes header
+		Source:      http://bitprison.net/php_mail_utf-8_subject_and_message
+		More info:   http://www.ietf.org/rfc/rfc2047.txt
+
+		***/
+		public static function encodeHeader($input, $charset='ISO-8859-1'){
+			return sprintf('=?%s?B?%s?=', $charset, base64_encode($input));
+		}
+		
 		/***
 		
 		Method: repeatStr
