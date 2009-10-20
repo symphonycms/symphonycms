@@ -27,7 +27,9 @@
         private $_host;
         private $_port;
         private $_path;
-        
+        private $_url;
+
+		private $_info_last = array();
         private $_method = 'GET';
         private $_agent = 'Symphony';
         private $_headers = NULL;
@@ -49,7 +51,9 @@
             switch($opt){
             
                 case 'URL':
-                
+
+                	$this->_url = $value;
+
                     $url_parsed = parse_url($value);
                     
                     $this->_host = $url_parsed['host'];
@@ -129,7 +133,11 @@
             
         
         }
-  
+  	
+		public function getInfoLast(){
+			return $this->_info_last;
+		}
+
        	public function exec($force_connection_method=GATEWAY_NO_FORCE){
 
 			if($force_connection_method != GATEWAY_FORCE_SOCKET && self::isCurlAvailable()){			
@@ -153,13 +161,15 @@
 				##Grab the result
 				$result = curl_exec($ch);
 
+				$this->_info_last = curl_getinfo($ch);
+				
 				##Close the connection
 				curl_close ($ch);
 
 				return $result;
 			}
 			
-			##No CURL is available, use attempt to use normal sockets		
+			##No CURL is available, use attempt to use normal sockets
 			if(!$handle = fsockopen($this->_host, $this->_port, $errno, $errstr, 30)) return false;
 
 			else{
@@ -228,7 +238,20 @@
 				}
 			}
 
-			return ($this->_returnHeaders ? $headers : NULL) . $response;
+			// Following code emulates part of the function curl_getinfo()
+			preg_match('/Content-Type:\s*([^\r\n]+)/i', $header, $match);
+			$content_type = $match[1];
+			
+			preg_match('/HTTP\/\d+.\d+\s+(\d+)/i', $header, $match);
+			$status = $match[1];			
+			
+			$this->_info_last = array(
+				'url' => $this->_url,
+				'content_type' => $content_type,
+				'http_code' => $status
+			);
+			
+			return ($this->_returnHeaders ? $header : NULL) . $response;
 		}
 				
 		public function flush(){
