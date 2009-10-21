@@ -591,7 +591,7 @@
 					self::array_to_xml($child, $value);
 				}
 				
-				elseif(!self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)){
+				elseif($validate == true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)){
 					return;
 				} 
 				else{

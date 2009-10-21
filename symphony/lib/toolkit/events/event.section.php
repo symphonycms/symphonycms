@@ -20,7 +20,7 @@
 			
 			## Create the post data cookie element
 			if (is_array($post) && !empty($post)) {
-				General::array_to_xml($post_values, $post['fields']);
+				General::array_to_xml($post_values, $post['fields'], true);
 			}
 			
 			###
