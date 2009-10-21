@@ -63,7 +63,7 @@
 		
 		Method: validateXML
 		Description: This checks an xml document for well-formedness
-		Param: $data - filename or xml document as a string
+		Param: $data - filename, xml document as a string, or arbitary string
 		       $errors - pointer to an array which will contain any validation errors
 		       $isFile (optional) - if this is true, the method will attempt to read
 		                            from a file ($data) instead.
@@ -260,8 +260,8 @@
 		   	}
 			####
 			
-			$subject = General::encodeHeader($subject, 'UTF-8');
-			$from_name = General::encodeHeader($from_name, 'UTF-8');
+			$subject = self::encodeHeader($subject, 'UTF-8');
+			$from_name = self::encodeHeader($from_name, 'UTF-8');
 			$headers = array();
 			
 			$default_headers = array(
@@ -574,7 +574,7 @@
 		Return: rebuilt array
 		
 		***/
-		public static function array_to_xml($parent, $data) {
+		public static function array_to_xml(XMLElement $parent, array $data, $validate=false) {
 			foreach ($data as $element_name => $value) {
 				if (strlen($value) == 0) continue;
 				
@@ -587,8 +587,16 @@
 					$child = new XMLElement($element_name);
 				}
 				
-				if (is_array($value)) General::array_to_xml($child, $value);
-				else $child->setValue(General::sanitize($value));
+				if(is_array($value)){
+					self::array_to_xml($child, $value);
+				}
+				
+				elseif(!self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)){
+					return;
+				} 
+				else{
+					$child->setValue(self::sanitize($value));
+				}
 				
 				$parent->appendChild($child);
 			}
