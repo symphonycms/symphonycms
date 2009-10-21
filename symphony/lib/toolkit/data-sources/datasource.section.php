@@ -198,7 +198,9 @@
 			}
 		}
 		
-		$param_pool[$key][] = '';
+		if(isset($this->dsParamPARAMOUTPUT)){
+			$param_pool[$key][] = '';
+		}
 	}
 	
 	else{
