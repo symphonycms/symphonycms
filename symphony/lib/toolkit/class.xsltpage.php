@@ -5,16 +5,19 @@
 
 	Class XSLTPage extends Page{
 		
+		public $Proc;
+		
 		protected $_xml;
 		protected $_xsl;
 		protected $_param;
-		public $Proc;
+		protected $_registered_php_functions;
 		
-		function __construct(){
+		public function __construct(){
 			
 			if(!XsltProcess::isXSLTProcessorAvailable()) throw new SymphonyErrorPage(__('No suitable XSLT processor was found.'));
 			
-			$this->Proc =& new XsltProcess;
+			$this->Proc = new XsltProcess;
+			$this->_registered_php_functions = array();
 		}
 		
 		public function setXML($xml, $file=false){
@@ -41,9 +44,16 @@
 			return $this->Proc->getError();
 		}
 		
+		public function registerPHPFunction($function){
+			if(!is_array($this->_registered_php_functions)) $this->_registered_php_functions = array();
+				
+			if(is_array($function)) $this->_registered_php_functions += $function;
+			else $this->_registered_php_functions[] = $function;
+		}
+		
 		public function generate(){
 						
-			$result = $this->Proc->process($this->_xml, $this->_xsl, $this->_param);	
+			$result = $this->Proc->process($this->_xml, $this->_xsl, $this->_param, $this->_registered_php_functions);	
 			
 			if($this->Proc->isErrors()) return false;
 			
@@ -53,5 +63,3 @@
 		}
 			
 	}
-
-
