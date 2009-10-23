@@ -295,15 +295,23 @@
 		}
 
 		/***
-
 		Method: encodeHeader
-		Description: Encodes header
-		Source:      http://bitprison.net/php_mail_utf-8_subject_and_message
-		More info:   http://www.ietf.org/rfc/rfc2047.txt
+		Description: Encodes parts of an email header if necessary, according to RFC2047;
+		             does not need the IMAP module installed (like the imap_8bit function);
+		Added by:    Michael Eichelsdoerfer
+		Source:      http://www.php.net/manual/en/function.imap-8bit.php (see comments);
 
 		***/
 		public static function encodeHeader($input, $charset='ISO-8859-1'){
-			return sprintf('=?%s?B?%s?=', $charset, base64_encode($input));
+
+		   preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches);
+
+		   foreach($matches[1] as $value){
+		       $replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
+		       $input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
+		   }
+
+		   return wordwrap($input, 75, "\n\t", true);
 		}
 		
 		/***
