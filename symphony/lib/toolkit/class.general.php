@@ -294,25 +294,35 @@
 			return true;
 		}
 
+
 		/***
+
 		Method: encodeHeader
-		Description: Encodes parts of an email header if necessary, according to RFC2047;
-		             does not need the IMAP module installed (like the imap_8bit function);
-		Added by:    Michael Eichelsdoerfer
-		Source:      http://www.php.net/manual/en/function.imap-8bit.php (see comments);
+		Description: Encodes (parts of) an email header if necessary, according to RFC2047 if mbstring is available;
+		Added by: Michael Eichelsdoerfer
 
 		***/
-		public static function encodeHeader($input, $charset='ISO-8859-1'){
-
-		   preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches);
-
-		   foreach($matches[1] as $value){
-		       $replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
-		       $input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
-		   }
-
-		   return wordwrap($input, 75, "\n\t", true);
+		public static function encodeHeader($input, $charset='ISO-8859-1')
+		{
+		    if(preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches))
+		    {
+		        if(function_exists('mb_internal_encoding'))
+		        {
+		            mb_internal_encoding($charset);
+		            $input = mb_encode_mimeheader($input, $charset, 'Q');
+		        }
+		        else
+		        {
+		            foreach ($matches[1] as $value)
+		            {
+		                $replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
+		                $input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
+		            }
+		        }
+		    }
+		    return $input;
 		}
+		
 		
 		/***
 		
