@@ -37,7 +37,7 @@
 		}
 		
 		public function setRuntimeParam($param){
-			$this->_param = $param;
+			$this->_param = str_replace("'", "&apos;", $param);
 		}
 		
 		public function getError(){
