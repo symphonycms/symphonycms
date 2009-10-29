@@ -136,14 +136,22 @@
 			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label('Navigation Group <i>Created if does not exist</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
-			$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
-			foreach($sections as $s){
-					$ul->appendChild(new XMLElement('li', $s->get('navigation_group')));
-				}
-			
+
 			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
 			else $navgroupdiv->appendChild($label);
-			$navgroupdiv->appendChild($ul);
+			
+			if(is_array($sections) && !empty($sections)){
+				$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
+				$groups = array();
+				foreach($sections as $s){
+					if(in_array($s->get('navigation_group'), $groups)) continue;
+					$ul->appendChild(new XMLElement('li', $s->get('navigation_group')));
+					$groups[] = $s->get('navigation_group');
+				}
+
+				$navgroupdiv->appendChild($ul);
+			}
+			
 			$div->appendChild($navgroupdiv);
 			
 			$fieldset->appendChild($div);						
@@ -316,14 +324,22 @@
 			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label('Navigation Group <i>Choose only one. Created if does not exist</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
-			$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
-			foreach($sections as $s){
-					$ul->appendChild(new XMLElement('li', $s->get('navigation_group')));
-				}
-			
+
 			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
 			else $navgroupdiv->appendChild($label);
-			$navgroupdiv->appendChild($ul);
+			
+			if(is_array($sections) && !empty($sections)){
+				$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
+				$groups = array();
+				foreach($sections as $s){
+					if(in_array($s->get('navigation_group'), $groups)) continue;
+					$ul->appendChild(new XMLElement('li', $s->get('navigation_group')));
+					$groups[] = $s->get('navigation_group');
+				}
+
+				$navgroupdiv->appendChild($ul);
+			}
+
 			$div->appendChild($navgroupdiv);
 			
 			$fieldset->appendChild($div);
