@@ -35,6 +35,10 @@
 			return $this->_pageData;
 		}
 		
+		public function Env(){
+			return $this->_env;
+		}
+		
 		public function generate($page) {
 			$full_generate = true;
 			$devkit = null;
