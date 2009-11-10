@@ -327,6 +327,8 @@
 			$this->setPageType('form');
 			$fields = array();
 			
+			$nesting = (Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes');
+			
 			// Verify page exists:
 			if($this->_context[0] == 'edit') {
 				if(!$page_id = $this->_context[1]) redirect(URL . '/symphony/blueprints/pages/');
@@ -358,6 +360,10 @@
 				
 				if(isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])){
 					$link_suffix = "?parent=" . $_REQUEST['parent'];
+				}
+				
+				elseif($nesting == true && isset($existing) && !is_null($existing['parent'])){
+					$link_suffix = '?parent=' . $existing['parent'];
 				}
 				
 				switch($flag){
