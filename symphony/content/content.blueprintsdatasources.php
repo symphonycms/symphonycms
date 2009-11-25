@@ -386,14 +386,16 @@
 					array('system:id', ($fields['source'] == $section_data['section']->get('id') && $fields['sort'] == 'system:id'), __('System ID')),
 					array('system:date', ($fields['source'] == $section_data['section']->get('id') && $fields['sort'] == 'system:date'), __('System Date')),
 				));
-			
-				foreach($section_data['fields'] as $input){
+
+				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
+					foreach($section_data['fields'] as $input){
 				
-					if(!$input->isSortable()) continue;
+						if(!$input->isSortable()) continue;
 				
-					$optgroup['options'][] = array($input->get('element_name'), ($fields['source'] == $section_data['section']->get('id') && $input->get('element_name') == $fields['sort']), $input->get('label'));
+						$optgroup['options'][] = array($input->get('element_name'), ($fields['source'] == $section_data['section']->get('id') && $input->get('element_name') == $fields['sort']), $input->get('label'));
+					}
 				}
-			
+				
 				$options[] = $optgroup;
 			}			
 			
@@ -478,14 +480,16 @@
 				));
 			
 				$authorOverride = false;
+
+				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
+					foreach($section_data['fields'] as $input){
 				
-				foreach($section_data['fields'] as $input){
+						if(!$input->allowDatasourceParamOutput()) continue;
 				
-					if(!$input->allowDatasourceParamOutput()) continue;
-				
-					$optgroup['options'][] = array($input->get('element_name'), ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == $input->get('element_name')), $input->get('label'));
+						$optgroup['options'][] = array($input->get('element_name'), ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == $input->get('element_name')), $input->get('label'));
+					}
 				}
-			
+				
 				$options[] = $optgroup;
 			}
 			
@@ -512,13 +516,15 @@
 				
 				$authorOverride = false;
 				
-				foreach($section_data['fields'] as $input){
+				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
+					foreach($section_data['fields'] as $input){
 					
-					if(!$input->allowDatasourceOutputGrouping()) continue;
+						if(!$input->allowDatasourceOutputGrouping()) continue;
 					
-					if($input->get('element_name') == 'author') $authorOverride = true;
+						if($input->get('element_name') == 'author') $authorOverride = true;
 					
-					$optgroup['options'][] = array($input->get('id'), ($fields['source'] == $section_data['section']->get('id') && $fields['group'] == $input->get('id')), $input->get('label'));
+						$optgroup['options'][] = array($input->get('id'), ($fields['source'] == $section_data['section']->get('id') && $fields['group'] == $input->get('id')), $input->get('label'));
+					}
 				}
 				
 				if(!$authorOverride) $optgroup['options'][] = array('author', ($fields['source'] == $section_data['section']->get('id') && $fields['group'] == 'author'), __('Author'));
@@ -552,17 +558,19 @@
 					'pagination'
 				);
 				
-				foreach($section_data['fields'] as $input){
-					$elements = $input->fetchIncludableElements();
+				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
+					foreach($section_data['fields'] as $input){
+						$elements = $input->fetchIncludableElements();
 					
-					foreach($elements as $name){
-						$selected = false;
+						foreach($elements as $name){
+							$selected = false;
 						
-						if($fields['source'] == $section_data['section']->get('id') && @in_array($name, $fields['xml_elements'])){
-							$selected = true;	
+							if($fields['source'] == $section_data['section']->get('id') && @in_array($name, $fields['xml_elements'])){
+								$selected = true;	
+							}
+						
+							$optgroup['options'][] = array($name, $selected, $name);
 						}
-						
-						$optgroup['options'][] = array($name, $selected, $name);
 					}
 				}
 				
