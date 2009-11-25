@@ -232,22 +232,24 @@
 				$li->appendChild($label);
 				$ol->appendChild($li);
 				
-				foreach($section_data['fields'] as $input){
+				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
+					foreach($section_data['fields'] as $input){
 					
-					if(!$input->canFilter()) continue;
+						if(!$input->canFilter()) continue;
 								
-					if(isset($fields['filter'][$section_data['section']->get('id')][$input->get('id')])){
-						$wrapper = new XMLElement('li');
-						$wrapper->setAttribute('class', 'unique');
-						$input->displayDatasourceFilterPanel($wrapper, $fields['filter'][$section_data['section']->get('id')][$input->get('id')], $this->_errors[$input->get('id')], $section_data['section']->get('id'));
-						$ol->appendChild($wrapper);					
-					}
+						if(isset($fields['filter'][$section_data['section']->get('id')][$input->get('id')])){
+							$wrapper = new XMLElement('li');
+							$wrapper->setAttribute('class', 'unique');
+							$input->displayDatasourceFilterPanel($wrapper, $fields['filter'][$section_data['section']->get('id')][$input->get('id')], $this->_errors[$input->get('id')], $section_data['section']->get('id'));
+							$ol->appendChild($wrapper);					
+						}
 				
-					$wrapper = new XMLElement('li');
-					$wrapper->setAttribute('class', 'unique template');
-					$input->displayDatasourceFilterPanel($wrapper, NULL, NULL, $section_data['section']->get('id'));
-					$ol->appendChild($wrapper);
+						$wrapper = new XMLElement('li');
+						$wrapper->setAttribute('class', 'unique template');
+						$input->displayDatasourceFilterPanel($wrapper, NULL, NULL, $section_data['section']->get('id'));
+						$ol->appendChild($wrapper);
 
+					}
 				}
 				
 				$div->appendChild($ol);			
