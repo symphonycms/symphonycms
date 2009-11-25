@@ -63,7 +63,7 @@
 			
 			$xml = trim($xml);
 
-			if((int)$info['http_code'] != 200 || !preg_match('/^text\/(xml|plain)/i', $info['content_type'])){
+			if((int)$info['http_code'] != 200 || !preg_match('/(xml|plain|text)/i', $info['content_type'])){
 				
 				$writeToCache = false;
 				
