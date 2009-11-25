@@ -132,10 +132,21 @@
 
 		$proc = new XsltProcess;
 		$ret = $proc->process($xml, $xsl);
-	
+
 		if($proc->isErrors()){
+			
 			$result->setAttribute('valid', 'false');
-			$result->appendChild(new XMLElement('error', __('XML returned is invalid.')));
+			$error = new XMLElement('error', __('XML returned is invalid.'));
+			$result->appendChild($error);
+			
+			$messages = new XMLElement('messages');
+			
+			foreach($proc->getError() as $e){
+				if(strlen(trim($e['message'])) == 0) continue;
+				$messages->appendChild(new XMLElement('item', General::sanitize($e['message'])));
+			}
+			$result->appendChild($messages);
+			
 		}
 		
 		elseif(strlen(trim($ret)) == 0){
