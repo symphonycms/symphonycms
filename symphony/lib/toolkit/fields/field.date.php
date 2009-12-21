@@ -190,7 +190,7 @@
 								
 				}
 			}
-			
+
 			return true;
 		}
 		
@@ -210,7 +210,7 @@
 			else:
 				
 				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-				$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d') IN ('".@implode("', '", $data)."') ";
+				$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') IN ('".@implode("', '", $data)."') ";
 				$this->key++;
 				
 			endif;			
@@ -301,21 +301,26 @@
 			## Look to see if its a shorthand date (year and month), and convert to full date
 			elseif(preg_match('/^(1|2)\d{3}[-\/]\d{1,2}$/i', $string)){
 				
-				$start = "$string-01";
+				$start = "{$string}-01";
 				
 				if(!self::__isValidDateString($start)) return self::ERROR;
 				
-				$string = "$start to $string-" . date('t', strtotime($start));
+				$string = "{$start} to {$string}-" . date('t', strtotime($start));
 			}
 					
 			## Match for a simple date (Y-m-d), check its ok using checkdate() and go no further
 			elseif(!preg_match('/to/i', $string)){
-
-				if(!self::__isValidDateString($string)) return self::ERROR;
 				
-				$string = DateTimeObj::get('Y-m-d H:i:s', strtotime($string));
-				return self::SIMPLE;
+				if(preg_match('/^(1|2)\d{3}[-\/]\d{1,2}[-\/]\d{1,2}$/i', $string)){
+					$string = "{$string} to {$string}";
+				}
 				
+				else{
+					if(!self::__isValidDateString($string)) return self::ERROR;
+				
+					$string = DateTimeObj::get('Y-m-d H:i:s', strtotime($string));
+					return self::SIMPLE;
+				}
 			}
 		
 			## Parse the full date range and return an array
