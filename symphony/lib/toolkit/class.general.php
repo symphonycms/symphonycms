@@ -554,32 +554,26 @@
 		Return: rebuilt array
 		
 		***/		
-		public static function array_remove_duplicates($array){
+		public static function array_remove_duplicates(array $array, $ignore_case=false){
+			return ($ignore_case == true ? self::array_iunique($array) : array_unique($array));
+		}
+
 		
-			/*
-			//Flip once to remove duplicates
-			$array = array_flip($array);
-			
-			//Flip back to get desired result
-			$array = array_flip($array);
-			
-			return $array;
-			
-			*/
-			
-			if(!is_array($array)) return array($array);
-			elseif(empty($array)) return array();
-			
-			$tmp = array();
-			
-			foreach($array as $item){
-			
-				if(!@in_array($item, $tmp))
-					$tmp[] = $item;
+		public static function in_iarray($needle, array $haystack){
+			foreach($haystack as $key => $value){
+				if(strcasecmp($value, $needle) == 0) return true;
 			}
-			
+			return false;
+		}
+
+		public static function array_iunique(array $array){
+			$tmp = array();
+			foreach($array as $key => $value){
+				if(!self::in_iarray($value, $tmp)){
+					$tmp[$key] = $value;
+				}
+			}
 			return $tmp;
-				
 		}
 		
 		/***
