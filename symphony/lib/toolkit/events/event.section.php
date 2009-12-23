@@ -27,7 +27,7 @@
 			# Delegate: EventPreSaveFilter
 			# Description: Prior to saving entry from the front-end. This delegate will force the Event to terminate if it populates the error
 			#              array reference. Provided with references to this object, the POST data and also the error array
-			$obj->ExtensionManager->notifyMembers('EventPreSaveFilter', '/frontend/', array('fields' => $fields, 'event' => &$event, 'messages' => &$filter_results));
+			$obj->ExtensionManager->notifyMembers('EventPreSaveFilter', '/frontend/', array('fields' => $fields, 'event' => &$event, 'messages' => &$filter_results, 'post_values'  => &$post_values));
 
 			if(is_array($filter_results) && !empty($filter_results)){
 				foreach($filter_results as $fr){

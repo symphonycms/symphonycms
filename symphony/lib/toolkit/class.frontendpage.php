@@ -230,12 +230,12 @@
 			$xml->setIncludeHeader(true);
 			
 			$events = new XMLElement('events');
-			$this->__processEvents($page['events'], $events);
+			$this->processEvents($page['events'], $events);
 			$xml->appendChild($events);
 			
 			$this->_events_xml = clone $events;
 						
-			$this->__processDatasources($page['data_sources'], $xml);
+			$this->processDatasources($page['data_sources'], $xml);
 			
 			$this->_Parent->Profiler->seed($xml_build_start);
 			$this->_Parent->Profiler->sample('XML Built', PROFILE_LAP);
@@ -453,7 +453,7 @@
 			
 		}
 		
-		public function __processDatasources($datasources, &$wrapper) {
+		public function processDatasources($datasources, &$wrapper, array $params = array()) {
 			if (trim($datasources) == '') return;
 			
 			$datasources = preg_split('/,\s*/i', $datasources, -1, PREG_SPLIT_NO_EMPTY);
@@ -461,8 +461,8 @@
 			
 			if (!is_array($datasources) || empty($datasources)) return;
 			
-			$this->_env['pool'] = array();
-			$pool = array();
+			$this->_env['pool'] = $params;
+			$pool = $params;
 			$dependencies = array();
 			
 			foreach ($datasources as $handle) {
@@ -508,7 +508,7 @@
 		    return(($a->priority() > $b->priority()) ? -1 : 1);
 		}
 		
-		private function __processEvents($events, &$wrapper){
+		private function processEvents($events, &$wrapper){
 			
 			####
 			# Delegate: FrontendProcessEvents
