@@ -1,7 +1,5 @@
 <?php
 
-	
-
 	abstract Class Event{
 		
 		protected $_Parent;
@@ -29,6 +27,10 @@
 		## custom events.
 		public static function getSource(){
 			return NULL;
+		}
+		
+		public function priority(){
+			return self::kNORMAL;
 		}
 						
 		abstract public static function about();
