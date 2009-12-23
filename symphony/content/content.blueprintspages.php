@@ -902,7 +902,7 @@
 			$data = null;
 			
 			// Nothing to do:
-			if(file_exists($new) && $new == old) return true;
+			if(file_exists($new) && $new == $old) return true;
 			
 			// Old file doesn't exist, use template:
 			if(!file_exists($old)) {
