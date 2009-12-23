@@ -56,12 +56,12 @@
 					if(!$section_handle){
 						
 						if($this->Author->isDeveloper()) redirect(URL . '/symphony/blueprints/sections/');
-						else redirect(URL);
+						else redirect(URL . "/symphony/system/authors/edit/".$this->Author->get('id')."/");
 						
 					}
 				
 					else{
-						redirect(URL . '/symphony/publish/' . $section_handle . '/');
+						redirect(URL . "/symphony/publish/{$section_handle}/");
 					}
 				
 				endif;
