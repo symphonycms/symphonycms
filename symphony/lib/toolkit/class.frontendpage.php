@@ -501,6 +501,13 @@
 			}
 		}
 		
+		private function __findEventOrder($a, $b){
+			if ($a->priority() == $b->priority()) {
+		        return 0;
+		    }
+		    return(($a->priority() > $b->priority()) ? -1 : 1);
+		}
+		
 		private function __processEvents($events, &$wrapper){
 			
 			####
@@ -524,15 +531,20 @@
 				$events = array_map('trim', $events);
 			
 				if(!is_array($events) || empty($events)) return;
-			
+				
+				$pool = array();
 				foreach($events as $handle){
+					$pool[$handle] = $this->EventManager->create($handle, array('env' => $this->_env, 'param' => $this->_param));
+				}
+				
+				uasort($pool, array($this, '__findEventOrder'));
+				
+				foreach($pool as $handle => $event){
 					$this->_Parent->Profiler->seed();
 					
 					$dbstats = Symphony::Database()->getStatistics();
 					$queries = $dbstats['queries'];
-					
-					$event = $this->EventManager->create($handle, array('env' => $this->_env, 'param' => $this->_param));
-				
+	
 					if($xml = $event->load()):
 				
 						if(is_object($xml)) $wrapper->appendChild($xml);
