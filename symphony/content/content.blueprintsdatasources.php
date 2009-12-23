@@ -117,7 +117,9 @@
 					
 						$fields['dynamic_xml']['url'] = $existing->dsParamURL;
 						$fields['dynamic_xml']['xpath'] = $existing->dsParamXPATH;
-						$fields['dynamic_xml']['cache'] = $existing->dsParamCACHE;						
+						$fields['dynamic_xml']['cache'] = $existing->dsParamCACHE;
+						$fields['dynamic_xml']['timeout'] =	(isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6);
+										
 						break;
 						
 					case 'static_xml':
@@ -137,6 +139,7 @@
 				$fields['dynamic_xml']['url'] = 'http://';
 				$fields['dynamic_xml']['cache'] = '30';
 				$fields['dynamic_xml']['xpath'] = '/';
+				$fields['dynamic_xml']['timeout'] = '6';
 				
 				$fields['max_records'] = '20';
 				$fields['page_number'] = '1';
@@ -678,6 +681,11 @@
 			$label->setValue('Update cached result every ' . $input->generate(false) . ' minutes');
 			if(isset($this->_errors['dynamic_xml']['cache'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['cache']));
 			else $fieldset->appendChild($label);		
+
+			$label = Widget::Label();
+			$input = Widget::Input('fields[dynamic_xml][timeout]', max(1, intval($fields['dynamic_xml']['timeout'])), NULL, array('type' => 'hidden'));
+			$label->appendChild($input);
+			$fieldset->appendChild($label);
 		
 			$this->Form->appendChild($fieldset);
 						
@@ -961,6 +969,7 @@
 						$params['url'] = $fields['dynamic_xml']['url'];
 						$params['xpath'] = $fields['dynamic_xml']['xpath'];
 						$params['cache'] = $fields['dynamic_xml']['cache'];
+						$params['timeout'] = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : '6');
 						
 						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.dynamic_xml.php');", $dsShell);
 						
