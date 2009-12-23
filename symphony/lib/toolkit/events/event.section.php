@@ -214,7 +214,7 @@
 			# Delegate: EventPostSaveFilter
 			# Description: After saving entry from the front-end. This delegate will not force the Events to terminate if it populates the error
 			#              array reference. Provided with references to this object, the POST data and also the error array
-			$obj->ExtensionManager->notifyMembers('EventPostSaveFilter', '/frontend/', array('entry_id' => $entry_id, 
+			$obj->ExtensionManager->notifyMembers('EventPostSaveFilter', '/frontend/', array('entry_id' => $entry->get('id'), 
 																							 'fields' => $fields, 
 																							 'entry' => $entry, 
 																							 'event' => &$event, 
