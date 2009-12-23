@@ -39,7 +39,7 @@
    		private $_returnHeaders = 0;
 		private $_timeout = 4;
     	private $_custom_opt = array();
-    
+    	
         public function init(){
         }
         
@@ -75,7 +75,18 @@
                     if(isset($url_parsed['query'])){
 						$this->_path .= '?' . $url_parsed['query'];
 					}  
-                                  
+                    
+					// Allow basic HTTP authentiction
+					if(isset($url_parsed['user']) && isset($url_parsed['pass'])){
+						$this->setopt(CURLOPT_USERPWD, sprintf('%s:%s', $url_parsed['user'], $url_parsed['pass']));
+						$this->setopt(CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+					}
+					
+					// Better support for HTTPS requests
+					if($url_parsed['scheme'] == 'https'){
+						$this->setopt(CURLOPT_SSL_VERIFYPEER, false);
+					}
+              
                     break;
             
             
@@ -162,6 +173,12 @@
 				if($this->_method == 'POST') {
 					curl_setopt($ch, CURLOPT_POST, 1);
 					curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postfields);
+				}
+				
+				if(is_array($this->_custom_opt) && !empty($this->_custom_opt)){
+					foreach($this->_custom_opt as $opt => $value){
+						curl_setopt($ch, $opt, $value);
+					}
 				}
 				
 				##Grab the result
