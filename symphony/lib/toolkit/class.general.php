@@ -664,30 +664,6 @@
 			
 			return true;
 		}
-		
-		/***
-		
-		Method: rmdirr
-		Description: Recursively deletes all folders and files from a given start location
-		
-		***/
-		public static function rmdirr($folder){
-			
-			$folder = rtrim($folder, '/');
-			
-			if(empty($folder)) return;
-			
-		    if(is_dir($folder) && !is_link($folder)){
-		        foreach(scandir($folder) as $item){
-		            if(!strcmp($item, '.') || !strcmp($item, '..')) continue;        
-		            self::rmdirr($folder . '/' . $item);
-		        }    
-		        rmdir($f);
-		    }
-		
-		    else unlink($f);
-
-		}
 
 		/***
 		
