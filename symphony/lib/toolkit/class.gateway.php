@@ -38,6 +38,7 @@
         private $_http_version = '1.1';
    		private $_returnHeaders = 0;
 		private $_timeout = 4;
+    	private $_custom_opt = array();
     
         public function init(){
         }
@@ -127,6 +128,11 @@
 
 				case 'TIMEOUT':
 					$this->_timeout = max(1, intval($value));
+            		break;
+
+				default:
+					$this->_custom_opt[$opt] = $value;
+					break;
            
             
             }
@@ -143,7 +149,7 @@
 			if($force_connection_method != GATEWAY_FORCE_SOCKET && self::isCurlAvailable()){			
 
 				$ch = curl_init();
-				curl_setopt($ch, CURLOPT_URL, $this->_host . ':' . $this->_port . $this->_path);
+				curl_setopt($ch, CURLOPT_URL, $this->_host . (!is_null($this->_port) ? ':' . $this->_port : NULL) . $this->_path);
 				curl_setopt($ch, CURLOPT_HEADER, $this->_returnHeaders);
 				curl_setopt($ch, CURLOPT_USERAGENT, $this->_agent);
 				curl_setopt($ch, CURLOPT_PORT, $this->_port);
