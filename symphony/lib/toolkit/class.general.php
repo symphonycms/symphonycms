@@ -271,7 +271,7 @@
 				'Return-Path'	=> "<{$from_email}>",
 				'Importance'	=> 'normal',
 				'Priority'		=> 'normal',
-				'X-Sender'		=> 'Symphony Email Module <noreply@symphony21.com>',
+				'X-Sender'		=> 'Symphony Email Module <noreply@symphony-cms.com>',
 				'X-Mailer'		=> 'Symphony Email Module',
 				'X-Priority'	=> '3',
 				'MIME-Version'	=> '1.0',
@@ -289,9 +289,8 @@
 				$headers[] = sprintf('%s: %s', $header, $value);
 			}
 			
-			if (!mail($to_email, $subject, @wordwrap($message, 70), @implode(self::CRLF, $headers) . self::CRLF)) return false;
-
-			return true;
+			return mail($to_email, $subject, @wordwrap($message, 70), @implode(self::CRLF, $headers) . self::CRLF, "-f{$from_email}");
+			
 		}
 
 
