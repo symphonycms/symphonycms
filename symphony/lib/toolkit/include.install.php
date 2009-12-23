@@ -1034,7 +1034,14 @@
 						'yes',  
 						'6',  
 						'no'
-					);", $config['user']['username'], $config['user']['password'], $config['user']['firstname'], $config['user']['lastname'], $config['user']['email']);
+					);", 
+					
+					$db->cleanValue($config['user']['username']), 
+					$db->cleanValue($config['user']['password']), 
+					$db->cleanValue($config['user']['firstname']), 
+					$db->cleanValue($config['user']['lastname']), 
+					$db->cleanValue($config['user']['email'])
+				);
 				
 				$install_log->pushToLog("MYSQL: Creating Default Author...", SYM_LOG_NOTICE, true, false);
 		        if(!$db->query($author_sql)){
