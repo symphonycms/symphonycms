@@ -7,21 +7,21 @@
 	    var $_Parent;
 		var $Database;
 	    
-        function __construct(&$parent){
+        public function __construct(&$parent){
 			$this->_Parent = $parent;						
 	        $this->Database = Symphony::Database();
         }
 		
-		function &create(){	
-			$obj =& new Section($this);
+		public function &create(){	
+			$obj = new Section($this);
 			return $obj;
 		}
 		
-		function fetchIDFromHandle($handle){
+		public function fetchIDFromHandle($handle){
 			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_sections` WHERE `handle` = '$handle' LIMIT 1");
 		}
 		
-		function fetch($id=NULL, $order='ASC', $sortfield='name'){
+		public function fetch($id=NULL, $order='ASC', $sortfield='name'){
 			
 			if($id && is_numeric($id)) $returnSingle = true;
 
@@ -52,7 +52,7 @@
 			return (count($ret) <= 1 && $returnSingle ? $ret[0] : $ret);
 		}
 			
-		function add($fields){
+		public function add($fields){
 			
 			if(!Symphony::Database()->insert($fields, 'tbl_sections')) return false;
 			$section_id = Symphony::Database()->getInsertID();
@@ -60,14 +60,14 @@
 			return $section_id;
 		}
 
-		function edit($id, $fields){
+		public function edit($id, $fields){
 		
 			if(!Symphony::Database()->update($fields, 'tbl_sections', " `id` = '$id'")) return false;
 
 			return true;			
 		}
 	
-		function delete($section_id){
+		public function delete($section_id){
 
 			$query = "SELECT `id`, `sortorder` FROM tbl_sections WHERE `id` = '$section_id'";
 			$details = Symphony::Database()->fetchRow(0, $query);

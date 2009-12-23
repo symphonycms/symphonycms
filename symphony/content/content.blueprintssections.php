@@ -9,11 +9,11 @@
 
 		public $_errors;
 		
-		function __construct(&$parent){
+		public function __construct(&$parent){
 			parent::__construct($parent);
 		}
 		
-		function __viewIndex(){
+		public function __viewIndex(){
 			$this->setPageType('table');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), $this->_Parent->getCurrentPageURL().'new/', __('Create a section'), 'create button'));
@@ -87,7 +87,7 @@
 			
 		}
 	
-		function __viewNew(){
+		public function __viewNew(){
 			
 			$this->setPageType('form');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
@@ -175,7 +175,7 @@
 					if($input = $fieldManager->create($data['type'])){
 						$input->setArray($data);
 
-						$wrapper =& new XMLElement('li');
+						$wrapper = new XMLElement('li');
 						
 						$input->set('sortorder', $position);
 						$input->displaySettingsPanel($wrapper, (isset($this->_errors[$position]) ? $this->_errors[$position] : NULL));
@@ -221,7 +221,7 @@
 			
 		}
 		
-		function __viewEdit(){
+		public function __viewEdit(){
 			
 			$section_id = $this->_context[1];	
 
@@ -361,7 +361,7 @@
 			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $position => $field){
 
-					$wrapper =& new XMLElement('li');
+					$wrapper = new XMLElement('li');
 					
 					$field->set('sortorder', $position);
 					$field->displaySettingsPanel($wrapper, (isset($this->_errors[$position]) ? $this->_errors[$position] : NULL));
@@ -409,7 +409,7 @@
 			$this->Form->appendChild($div);			
 		}
 		
-		function __actionIndex(){
+		public function __actionIndex(){
 
 			$checked = @array_keys($_POST['items']);
 
@@ -443,7 +443,7 @@
 						
 		}
 		
-		function __actionNew(){		
+		public function __actionNew(){		
 			
 			if(@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
 
@@ -574,7 +574,7 @@
 			
 		}
 		
-		function __actionEdit(){
+		public function __actionEdit(){
 
 
 			if(@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
@@ -738,5 +738,3 @@
 		}
 		
 	}
-
-?>
