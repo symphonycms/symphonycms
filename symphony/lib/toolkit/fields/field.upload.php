@@ -424,6 +424,8 @@
 		
 		private static function __sniffMIMEType($file){
 			
+			$ext = strtolower(General::getExtension($file));
+			
 			$imageMimeTypes = array(
 				'image/gif',
 				'image/jpg',
@@ -431,7 +433,7 @@
 				'image/png',
 			);
 			
-			if(in_array('image/' . General::getExtension($file), $imageMimeTypes)) return 'image/' . General::getExtension($file);
+			if(General::in_iarray("image/{$ext}", $imageMimeTypes)) return "image/{$ext}";
 			
 			return 'unknown';
 		}
@@ -449,7 +451,7 @@
 			
 			$meta['creation'] = DateTimeObj::get('c', filemtime($file));
 			
-			if(in_array($type, $imageMimeTypes) && $array = @getimagesize($file)){
+			if(General::in_iarray($type, $imageMimeTypes) && $array = @getimagesize($file)){
 				$meta['width']    = $array[0];
 				$meta['height']   = $array[1];
 			}
