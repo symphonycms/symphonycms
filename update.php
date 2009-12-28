@@ -216,6 +216,10 @@ Options +FollowSymlinks
 				
 				.
 				
+				(version_compare($existing_version, '2.0.5', '<=') ? '<li>As of 2.0.5, Symphony comes pre-packaged with the "Debug Dev Kit" and "Profile Dev Kit" extensions, which replace the built-in functionality. Prior to using them, you must ensure the folder <code>extensions/debugdevkit/lib/bitter/caches/</code> is writable by <code>PHP</code>.</li>' : NULL)
+
+				.
+				
 				(version_compare($existing_version, '2.0.2', '<') ? '<li>Since <code>2.0.2</code>, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></li>' : NULL)
 				
 				.'</ol>
