@@ -14,7 +14,7 @@ considered stable.
 
 Visit the forum at <http://symphony-cms.com/community/>
 
-## Symphony Server Requirements
+### Symphony Server Requirements
 
 - PHP 5.2 or above
 - PHP's LibXML module, with the XSLT extension enabled (--with-xsl)
@@ -117,7 +117,7 @@ details for establishing a database connection and about your server environment
 3. Jump with both arms up like you're in a car commercial!
 
 
-## SECURITY
+## Security
 
 **Secure Production Sites: Change permissions and remove installer files.**
 
