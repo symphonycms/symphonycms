@@ -13,9 +13,10 @@
 	
 	if (!function_exists('__doit')) {
 		function __doit($source, $fields, &$result, &$obj, &$event, $filters, $position=NULL, $entry_id=NULL){
+
 			$post_values = new XMLElement('post-values');
 			$post = General::getPostData();
-			$fields = $post['fields'];
+
 			$filter_results = array();	
 			
 			## Create the post data cookie element
@@ -74,9 +75,7 @@
 				$entry->set('section_id', $source);
 			}
 
-			$filter_errors = array();			
-			
-
+			$filter_errors = array();
 
 			if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))):
 				$result->setAttribute('result', 'error');
@@ -295,7 +294,7 @@
 						}
 					}			
 				}
-				
+
 				$ret = __doit(self::getSource(), $fields, $entry, $this->_Parent, $this, $this->eParamFILTERS, $position, $entry_id);
 				
 				if(!$ret) $success = false;
