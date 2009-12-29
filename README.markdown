@@ -8,17 +8,31 @@
 
 ## Synopsis
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core 
-technologies. This repository represents version 2.0.7 and is considered stable.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as 
+its core technologies. This repository represents version 2.0.7 and is 
+considered stable.
 
 Visit the forum at <http://symphony-cms.com/community/>
 
+### Symphony Server Requirements
 
-## Updating
+- PHP 5.2 or above
+- PHP's LibXML module, with the XSLT extension enabled (--with-xsl)
+- MySQL 4.1 or above
+- An Apache or Litespeed webserver
+- Apache's mod_rewrite module or equivalent
+
+## Updating From an Older Version
 
 ### Important Information
 
-Version `2.0.5` introduced multiple includable elements, in the Data Source Editor, for a single field. After updating from `2.0.5` or lower, the DS editor will seem to "forget" about any `Textarea` fields selected when you are editing existing Data Sources. After updating, you must ensure you re-select them before saving. Note, this will only effect Data Sources that you edit and were created prior to `2.0.5`. Until that point, the field will still be included in any front-end XML
+Version `2.0.5` introduced multiple includable elements, in the Data Source 
+Editor, for a single field. After updating from `2.0.5` or lower, the DS 
+editor will seem to "forget" about any `Textarea` fields selected when you 
+are editing existing Data Sources. After updating, you must ensure you 
+re-select them before saving. Note, this will only effect Data Sources that 
+you edit and were created prior to `2.0.5`. Until that point, the field will 
+still be included in any front-end XML
 
 ### Via Git
 
@@ -29,19 +43,19 @@ Version `2.0.5` introduced multiple includable elements, in the Data Source Edit
 	git submodule init
 	git submodule update
 
-3. If updating from a version less than `2.0.5`, enable [Debug DevKit](http://github.com/symphony/debugdevkit/tree/master) and [Profile DevKit](http://github.com/symphony/profiledevkit/tree/master) extensions.
+3. If updating from a version older than `2.0.5`, enable [Debug DevKit](http://github.com/symphony/debugdevkit/tree/master) and [Profile DevKit](http://github.com/symphony/profiledevkit/tree/master) extensions.
 
 4. Follow normal updating procedure below from step 2.
 
 ### Via the old fashioned way
 
-Follow the instructions below if you are updating from Symphony version 2.0 (non Git)
+Follow the instructions below if you are updating from Symphony version 2.0 (not from Git)
 
 **Note:** As of 2.0.6, there is no longer a need to backup `/symphony/.htaccess`.
 
 1. Upload `/symphony`, `index.php` & `update.php`, replacing what is already on your server.
 
-2. If you are updating from a version < 2.0.5, download and install the Debug DevKit and Profile DevKit:
+2. If you are updating from a version older than 2.0.5, download and install the Debug DevKit and Profile DevKit:
 
 	- [Debug DevKit](http://github.com/symphony/debugdevkit/tree/master)
 	- [Profile DevKit](http://github.com/symphony/profiledevkit/tree/master)
@@ -51,7 +65,7 @@ Follow the instructions below if you are updating from Symphony version 2.0 (non
 4. Celebrate by shaving your friend's head for charity!
 
 
-## INSTALLING
+## Installing Symphony
 
 ### Via Git
 
@@ -103,7 +117,7 @@ details for establishing a database connection and about your server environment
 3. Jump with both arms up like you're in a car commercial!
 
 
-## SECURITY
+## Security
 
 **Secure Production Sites: Change permissions and remove installer files.**
 
