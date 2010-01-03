@@ -10,16 +10,21 @@
 			$this->_fields = array();
 			$this->_accessSections = NULL; 
 			
-			if(!is_null($id)) $this->loadAuthor($id);
+			if(!is_null($id) && is_numeric($id)){
+				$this->loadAuthor($id);
+			}
 		}
 		
 		public function loadAuthor($id){
 			if(!is_object(Symphony::Database())) return false;
+
+			$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_authors` WHERE `id` = '$id' LIMIT 1");
+
+			if(!is_array($row) || empty($row)) return false;
 			
-			if(!$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_authors` WHERE `id` = '$id' LIMIT 1")) return false;
-			
-			foreach($row as $key => $val)
+			foreach($row as $key => $val){
 				$this->set($key, $val);
+			}
 			
 			return true;
 		}

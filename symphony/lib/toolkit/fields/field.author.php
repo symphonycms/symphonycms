@@ -80,7 +80,7 @@
 		}
 		
 		public function prepareTableValue($data, XMLElement $link=NULL){
-			
+
 			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
 			
 			if(empty($data['author_id'])) return NULL;
@@ -88,8 +88,11 @@
 			$value = array();
 			
 			foreach($data['author_id'] as $author_id){
-				$author = new Author($this->_engine);
-				if($author->loadAuthor($author_id)) $value[] = $author->getFullName();
+				$author = new Author;
+				
+				if($author->loadAuthor($author_id)){
+					$value[] = $author->getFullName();
+				}
 			}
 			
 			return parent::prepareTableValue(array('value' => General::sanitize(ucwords(implode(', ', $value)))), $link);
