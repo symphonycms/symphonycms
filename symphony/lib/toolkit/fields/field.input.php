@@ -197,6 +197,19 @@
 				$value = General::sanitize($value);
 			}
 			
+			else{
+				include_once(TOOLKIT . '/class.xsltprocess.php');
+
+				if(!General::validateXML($data['value'], $errors, false, new XsltProcess)){
+					$value = html_entity_decode($data['value'], ENT_QUOTES, 'UTF-8');
+					$value = $this->__replaceAmpersands($value);
+
+					if(!General::validateXML($value, $errors, false, new XsltProcess)){
+						$value = General::sanitize($data['value']);
+					}
+				}
+			}
+			
 			$wrapper->appendChild(
 				new XMLElement(
 					$this->get('element_name'), $value, array('handle' => $data['handle'])
