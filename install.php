@@ -196,6 +196,7 @@
 		$conf['symphony']['allow_page_subscription'] = '1';
 		$conf['symphony']['lang'] = 'en';
 		$conf['symphony']['version'] = '2.0.7';
+		$conf['symphony']['pages_table_nest_children'] = 'no';
 		$conf['log']['archive'] = '1';
 		$conf['log']['maxsize'] = '102400';
 		$conf['general']['sitename'] = 'Symphony CMS';
