@@ -843,16 +843,26 @@
 			
 			global $warnings;
 			
-			$db = new MySQL;
+			$database_connection_error = false;
+			
+			try{
+				$db = new MySQL;
+				$db->connect($fields['database']['host'], 
+							 $fields['database']['username'], 
+							 $fields['database']['password'], 
+							 $fields['database']['port']);
 
-			$db->connect($fields['database']['host'], 
-						 $fields['database']['username'], 
-						 $fields['database']['password'], 
-						 $fields['database']['port']);
+				$tables = $db->fetch(sprintf(
+					"SHOW TABLES FROM `%s` LIKE '%s'",
+					mysql_escape_string($fields['database']['name']),
+					mysql_escape_string($fields['database']['prefix']) . '%'
+				));
 
-			if($db->isConnected())
-				$tables = $db->fetch("SHOW TABLES FROM `".$fields['database']['name']."` LIKE '".mysql_escape_string($fields['database']['prefix'])."%'");
-
+			}
+			catch(DatabaseException $e){
+				$database_connection_error = true;
+			}
+			
 			## Invalid path
 			if(!@is_dir(rtrim($fields['docroot'], '/') . '/symphony')){
 				$Page->log->pushToLog("Configuration - Bad Document Root Specified: " . $fields['docroot'], SYM_LOG_NOTICE, true);
@@ -882,7 +892,7 @@
 			}
 
 			## Failed to establish database connection	
-			elseif(!$db->isConnected()){
+			elseif($database_connection_error){
 				$Page->log->pushToLog("Configuration - Could not establish database connection", SYM_LOG_NOTICE, true);
 				define("kDATABASE_CONNECTION_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'no-database-connection');
