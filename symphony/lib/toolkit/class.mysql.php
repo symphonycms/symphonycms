@@ -260,7 +260,7 @@
 	            $query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', $this->_connection['tbl_prefix'].'\\1\\2', $query);
 	        }
 
-			$query_hash = md5($query.time());
+			$query_hash = md5($query.microtime());
 			
 			$this->_log['query'][$query_hash] = array('query' => $query, 'start' => precision_timer());
 
