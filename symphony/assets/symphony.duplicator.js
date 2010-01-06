@@ -67,7 +67,7 @@
 				
 				widgets.controls.before(instance);
 				object.trigger('construct', [instance]);
-				refresh();
+				refresh(true);
 				
 				return instance;
 			};
@@ -108,7 +108,7 @@
 			};
 			
 			// Refresh disabled states:
-			var refresh = function() {
+			var refresh = function(input_focus) {
 				var constructor = settings.constructable;
 				var selector = settings.constructable;
 				var destructor = settings.destructable;
@@ -126,9 +126,9 @@
 						}
 					});
 				});
-				
+
 				// Give focus to the first input in the first instance
-				instances.filter(':first').find('input[type!=hidden]:first').focus();
+				if (input_focus) instances.filter(':last').find('input[type!=hidden]:first').focus();
 				
 				// No templates to add:
 				if (templates.length < 1) {
