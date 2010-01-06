@@ -311,9 +311,8 @@ var Symphony;
 		$('textarea').blur();
 		
 		// Internal duplicators:
-		$('#fields-duplicator, #filters-duplicator').symphonyDuplicator({
-			orderable:	true
-		});
+		$('#fields-duplicator').symphonyDuplicator({ orderable: true });
+		$('.filters-duplicator').symphonyDuplicator();
 		
 		// Repeating sections
 		$('div.subsection').each(function() {

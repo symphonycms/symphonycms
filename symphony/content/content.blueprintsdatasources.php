@@ -218,7 +218,7 @@
 				$div->appendChild($h3);
 				
 				$ol = new XMLElement('ol');
-				$ol->setAttribute('id', 'filters-duplicator');
+				$ol->setAttribute('class', 'filters-duplicator');
 
 				if(isset($fields['filter'][$section_data['section']->get('id')]['id'])){
 					$li = new XMLElement('li');
@@ -271,7 +271,7 @@
 			$div->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('id', 'filters-duplicator');
+			$ol->setAttribute('class', 'filters-duplicator');
 			
 			$this->__appendAuthorFilter($ol, __('ID'), 'id', $fields['filter']['author']['id'], (!isset($fields['filter']['author']['id'])));	
 			$this->__appendAuthorFilter($ol, __('Username'), 'username', $fields['filter']['author']['username'], (!isset($fields['filter']['author']['username'])));
@@ -292,7 +292,7 @@
 			$div->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('id', 'filters-duplicator');
+			$ol->setAttribute('class', 'filters-duplicator');
 
 			$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` ORDER BY `title` ASC");
 				
@@ -621,7 +621,7 @@
 			$div->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('id', 'filters-duplicator');
+			$ol->setAttribute('class', 'filters-duplicator');
 			
 			if(is_array($fields['dynamic_xml']['namespace']['name'])){
 				
