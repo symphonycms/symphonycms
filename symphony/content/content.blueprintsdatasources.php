@@ -172,6 +172,9 @@
 			
 		    $sections = $sectionManager->fetch(NULL, 'ASC', 'name');
 			
+			if (!is_array($sections)) $sections = array();
+			$field_groups = array();
+			
 			foreach($sections as $section) $field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
 			
 			$options = array(
