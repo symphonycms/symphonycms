@@ -42,7 +42,10 @@
 			
 			if(isset($this->dsParamSORT)) $this->dsParamSORT = $this->__processParametersInString($this->dsParamSORT, $this->_env);
 
-			if(isset($this->dsParamSTARTPAGE)) $this->dsParamSTARTPAGE = $this->__processParametersInString($this->dsParamSTARTPAGE, $this->_env);
+			if(isset($this->dsParamSTARTPAGE)) {
+				$this->dsParamSTARTPAGE = $this->__processParametersInString($this->dsParamSTARTPAGE, $this->_env);
+				if ($this->dsParamSTARTPAGE == '') $this->dsParamSTARTPAGE = '1';
+			}
 		
 			if(isset($this->dsParamLIMIT)) $this->dsParamLIMIT = $this->__processParametersInString($this->dsParamLIMIT, $this->_env);
 		
