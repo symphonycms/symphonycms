@@ -224,8 +224,14 @@
 						var header = template.find(settings.headers).addClass('header');
 						var option = widgets.selector.append('<option />')
 							.find('option:last');
-						
-						option.text(header.text()).val(position);
+							
+						var header_children = header.children();
+						if (header_children.length) {
+							header_text = header.get(0).childNodes[0].nodeValue + ' (' + header_children.filter(':eq(0)').text() + ')';
+						} else {
+							header_text = header.text();
+						}
+						option.text(header_text).val(position);
 						
 						templates.push(template.removeClass('template'));
 					});
