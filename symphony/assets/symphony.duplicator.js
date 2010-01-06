@@ -127,6 +127,9 @@
 					});
 				});
 				
+				// Give focus to the first input in the first instance
+				instances.filter(':first').find('input[type!=hidden]:first').focus();
+				
 				// No templates to add:
 				if (templates.length < 1) {
 					constructor = false;
