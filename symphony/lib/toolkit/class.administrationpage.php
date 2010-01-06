@@ -440,7 +440,7 @@
 						switch($type){
 							
 							case Extension::NAV_GROUP:
-							
+
 								$index = General::array_find_available_index($nav, $item['location']);
 
 								$nav[$index] = array(
@@ -480,17 +480,33 @@
 								}
 								
 								if(!is_numeric($item['location'])){
-									$item['location'] = $this->__findLocationIndexFromName($nav, $item['location']);
+									// is a navigation group
+									$group_name = $item['location'];
+									$group_index = $this->__findLocationIndexFromName($nav, $item['location']);
+								} else {
+									// is a legacy numeric index
+									$group_index = $item['location'];
 								}
 								
-								$nav[$item['location']]['children'][] = array(
-									
+								$child = array(									
 									'link' => $link,
 									'name' => $item['name'],
 									'visible' => ($item['visible'] == 'no' ? 'no' : 'yes'),
-									'limit' => (!is_null($item['limit']) ? $item['limit'] : NULL)
-									
+									'limit' => (!is_null($item['limit']) ? $item['limit'] : NULL)									
 								);
+
+								if ($group_index === false) {
+									// add new navigation group
+									$nav[] = array(
+										'name' => $group_name,
+										'index' => $group_index,
+										'children' => array($child),
+										'limit' => (!is_null($item['limit']) ? $item['limit'] : NULL)
+									);
+								} else {
+									// add new location by index
+									$nav[$group_index]['children'][] = $child;
+								}
 
 						
 								break;
@@ -500,6 +516,7 @@
 					}
 					
 				}
+				
 			}
 			
 			####
@@ -508,7 +525,7 @@
 			#			   already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need to edit existing navigation elements, use the 'NavigationPreRender' delegate.
 			# Global: Yes
 			$this->_Parent->ExtensionManager->notifyMembers('ExtensionsAddToNavigation', '/backend/', array('navigation' => &$nav));
-						
+			
 			$pageCallback = $this->_Parent->getPageCallback();
 			
 			$pageRoot = $pageCallback['pageroot'] . (isset($pageCallback['context'][0]) ? $pageCallback['context'][0] . '/' : '');
@@ -520,6 +537,9 @@
 
 			ksort($nav);		
 			$this->_navigation = $nav;
+			
+			//die;
+			
 		}		
 		
 		private function __findLocationIndexFromName($nav, $name){
