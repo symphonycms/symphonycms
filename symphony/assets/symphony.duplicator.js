@@ -236,6 +236,9 @@
 						}
 						option.text(header_text).val(position);
 						
+						// HACK: preselect Text Input for Section editor
+						if (header_text == 'Text Input') option.attr('selected', 'selected');
+						
 						templates.push(template.removeClass('template'));
 					});
 					
