@@ -166,7 +166,9 @@
 		}
 
 		public function isLoggedIn(){
-
+			
+			if ($this->Author) return true;
+			
 			$username = self::$Database->cleanValue($this->Cookie->get('username'));
 			$password = self::$Database->cleanValue($this->Cookie->get('pass'));
 			
