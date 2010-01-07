@@ -338,7 +338,7 @@
 			
 				if(empty($valid_page_path)) return;
 			
-				if(!$this->__isSchemaValid($row['id'], $page_extra_bits)) return;
+				if(!$this->__isSchemaValid($row['params'], $page_extra_bits)) return;
 			}
 
 			##Process the extra URL params
@@ -387,9 +387,10 @@
 			return Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '{$page_id}' ");
 		}
 		
-		private function __isSchemaValid($page_id, $bits){
+		private function __isSchemaValid($schema, $bits){
 	
-			$schema = Symphony::Database()->fetchVar('params', 0, "SELECT `params` FROM `tbl_pages` WHERE `id` = '".$page_id."' LIMIT 1");					
+			if (is_numeric($schema)) $schema = Symphony::Database()->fetchVar('params', 0, "SELECT `params` FROM `tbl_pages` WHERE `id` = '1' LIMIT 1");
+			
 			$schema_arr = preg_split('/\//', $schema, -1, PREG_SPLIT_NO_EMPTY);		
 	
 			return (count($schema_arr) >= count($bits));
