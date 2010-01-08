@@ -86,7 +86,7 @@
 	);
 
 	$languages = array();
-	foreach(Lang::getAvailableLanguages() as $lang){
+	foreach(array_keys(Lang::getAvailableLanguages()) as $lang){
 		$languages[] = '<a href="?lang='.$lang.'">'.$lang.'</a>';
 	}
 	$languages = (count($languages) > 1 ? implode(', ', $languages) : '');

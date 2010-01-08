@@ -1,12 +1,18 @@
 <?php
 
-	## Provide an interface for translations
+	/**
+	 * Symphony Language Class
+	 *
+	 * Provides an interface for translations and transliterations
+	 */
+
+	// Translations
 	function __($string, array $tokens=NULL){
 		if(!class_exists('Lang') || !(Lang::Dictionary() instanceof Dictionary)) return vsprintf($string, $tokens);
 		return Lang::Dictionary()->translate($string, $tokens);
 	}
 	
-	## Provice an interface for transliterations
+	// Transliterations
 	function _t($str){
 		
 		$patterns = array_keys(Lang::Transliterations());
@@ -17,20 +23,25 @@
 		return $str;
 	}
 	
+	/**
+	 * Dictionary Class
+	 *
+	 * Contains the dictionary for the current language and provides the translate function
+	 */
+	Class Dictionary {
 	
-	Class Dictionary{
 		private $_strings;
 		
-		public function __construct(array $strings){
+		public function __construct(array $strings) {
 			$this->_strings = $strings;
 		}
 		
-		public function translate($string, array $tokens=NULL){
+		public function translate($string, array $tokens=NULL) {
 			$translated = $this->find($string);
 			
 			if($translated === false) $translated = $string;
 			
-			if(!is_null($tokens) && is_array($tokens) && !empty($tokens)){
+			if(!is_null($tokens) && is_array($tokens) && !empty($tokens)) {
 				$translated = vsprintf($translated, $tokens);
 			}
 		
@@ -38,36 +49,42 @@
 			
 		}
 		
-		public function find($string){
-			if(isset($this->_strings[$string])){
+		public function find($string) {
+			if(isset($this->_strings[$string])) {
 				return $this->_strings[$string];
 			}
 			
 			return false;
 		}
 		
-		public function add($from, $to){
+		public function add($from, $to) {
 			$this->_strings[$from] = $to;
 		}
 
-		public function merge($strings){
+		public function merge($strings) {
 			if(is_array($strings)) $this->_strings = array_merge($this->_strings, $strings);
 		}
 		
-		public function remove($string){
+		public function remove($string) {
 			unset($this->_strings[$string]);
 		}
+		
 	}
 	
-	Class Lang{
+	/**
+	 * Lanuage Class
+	 *
+	 * Loads and manages languages
+	 */
+	Class Lang {
 		
 		private static $_dictionary;
 		private static $_transliterations;		
 		private static $_instance;
-		
-		private static function __load($path, $lang, $clear=false){
+				
+		private static function __load($path, $lang, $clear=false) {
 			
-			if((bool)$clear === true || !(self::$_dictionary instanceof Dictionary)){
+			if((bool)$clear === true || !(self::$_dictionary instanceof Dictionary)) {
 				self::$_dictionary = new Dictionary(array());
 				self::$_transliterations = array();
 			}
@@ -78,15 +95,15 @@
 			if(isset($dictionary) && is_array($dictionary)) self::$_dictionary->merge($dictionary);
 			if(isset($transliterations) && is_array($transliterations)) self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
 
-			if(empty(self::$_transliterations)){
+			if(empty(self::$_transliterations)) {
 				include(TOOLKIT . '/include.transliterations.php');
 				self::$_transliterations = $transliterations;
 			}
 		}
 		
-		public static function init($path, $lang){
+		public static function init($path, $lang) {
 			
-			if(!(self::$_instance instanceof self)){
+			if(!(self::$_instance instanceof self)) {
 				self::$_instance = new self;
 			}
 
@@ -94,109 +111,111 @@
 			
 			return self::$_instance;
 		}
+		
+		public static function enable() {
+		
+		}
 
-		public static function add($path, $lang){
+		public static function add($path, $lang) {
 			self::__load($path, $lang);
 		}
 
-		public static function Transliterations(){
+		public static function Transliterations() {
 			return self::$_transliterations;
 		}
 				
-		public static function Dictionary(){
+		public static function Dictionary() {
 			return self::$_dictionary;
 		}
 		
-		/***
-		
-		Method: createHandle
-		Description: given a string, this will clean it for use as a Symphony handle. Preserves multi-byte characters
-		Param: $string - string to clean
-		       $max_length - the maximum number of characters in the handle
-			   $delim - all non-valid characters will be replaced with this
-			   $uriencode - force the resultant string to be uri encoded making it safe for URL's
-			   $apply_transliteration - If true, this will run the string through an array of substitution characters
-		Return: resultant handle
+		/**
+		 * Create handle
+		 *
+		 * Given a string, this will clean it for use as a Symphony handle. Preserves multi-byte characters
+		 * @param string $string
+		 * @param int $max_length the maximum number of characters in the handle
+		 * @param string $delim all non-valid characters will be replaced with this
+		 * @param boolean $uriencode force the resultant string to be uri encoded making it safe for URL's
+		 * @param boolean $apply_transliteration if true, this will run the string through an array of substitution characters
+		 * @return string resultant handle
+		 */					
+		public static function createHandle($string, $max_length=255, $delim='-', $uriencode=false, $apply_transliteration=true, $additional_rule_set=NULL) {
 
-		***/					
-		public static function createHandle($string, $max_length=255, $delim='-', $uriencode=false, $apply_transliteration=true, $additional_rule_set=NULL){
-
-			## Use the transliteration table if provided
+			// Use the transliteration table if provided
 			if($apply_transliteration) $string = _t($string);
 
 			$max_length = intval($max_length);
 			
-			## Strip out any tag
+			// Strip out any tag
 			$string = strip_tags($string);
 			
-			## Remove punctuation
+			// Remove punctuation
 			$string = preg_replace('/[\\.\'"]+/', NULL, $string);	
 						
-			## Trim it
+			// Trim it
 			if($max_length != NULL && is_numeric($max_length)) $string = General::limitWords($string, $max_length);
 								
-			## Replace spaces (tab, newline etc) with the delimiter
+			// Replace spaces (tab, newline etc) with the delimiter
 			$string = preg_replace('/[\s]+/', $delim, $string);					
 
-			## Find all legal characters
+			// Find all legal characters
 			preg_match_all('/[^<>?@:!-\/\[-`ëí;‘’]+/u', $string, $matches);
 
-			## Join only legal character with the $delim
+			// Join only legal character with the $delim
 			$string = implode($delim, $matches[0]);
 			
-			## Allow for custom rules
+			// Allow for custom rules
 			if(is_array($additional_rule_set) && !empty($additional_rule_set)){
 				foreach($additional_rule_set as $rule => $replacement) $string = preg_replace($rule, $replacement, $string);
 			}
 			
-			## Remove leading or trailing delim characters
+			// Remove leading or trailing delim characters
 			$string = trim($string, $delim);
 				
-			## Encode it for URI use
+			// Encode it for URI use
 			if($uriencode) $string = urlencode($string);	
 					
-			## Make it lowercase
+			// Make it lowercase
 			$string = strtolower($string);		
 
 			return $string;
 			
 		}
 		
-		/***
+		/**
+		 * Create filename
+		 *
+		 * Given a string, this will clean it for use as a filename. 
+		 * Preserves multi-byte characters.
+		 * @param string $string string to clean
+		 * @param string $delim replacement for invalid characters
+		 * @param boolean $apply_transliteration if true, umlauts and special characters will be substituted
+		 * @return string created filename
+		 */					
+		public static function createFilename($string, $delim = '-', $apply_transliteration = true) {
 
-		Method: createFilename
-		Description: given a string, this will clean it for use as a filename. Preserves multi-byte characters
-		Param: $string - string to clean
-			   $delim - all non-valid characters will be replaced with this
-			   $apply_transliteration - If true, this will run the string through an array of substitution characters
-		Return: resultant filename
-
-		***/					
-		public static function createFilename($string, $delim='-', $apply_transliteration=true){
-
-			## Use the transliteration table if provided
+			// Use the transliteration table if provided
 			if($apply_transliteration) $string = _t($string);
 
-			## Strip out any tag
+			// Strip out any tag
 			$string = strip_tags($string);				
 
-			## Find all legal characters
+			// Find all legal characters
 			preg_match_all('/[\p{L}\w:;.,+=~]+/u', $string, $matches);
 
-			## Join only legal character with the $delim
+			// Join only legal character with the $delim
 			$string = implode($delim, $matches[0]);
 
 			return $string;
 
 		}
 		
-		/***
-
-		Method: getBrowserLanguages
-		Description: gets languages accepted by browser and returns array of them (sorted by priority when possible)
-		Return: array of language codes
-
-		***/
+		/**
+		 * Get browser languages
+		 *
+		 * Return languages accepted by browser as an array sorted by priority
+		 * @return array language codes, e. g. 'en'
+		 */	 
 		public static function getBrowserLanguages() {
 			static $languages;
 			if(is_array($languages)) return $languages;
@@ -206,7 +225,7 @@
 			if(strlen(trim($_SERVER['HTTP_ACCEPT_LANGUAGE'])) < 1) return $languages;
 			if(!preg_match_all('/(\w+(?:-\w+)?,?)+(?:;q=(?:\d+\.\d+))?/', preg_replace('/\s+/', '', $_SERVER['HTTP_ACCEPT_LANGUAGE']), $matches)) return $languages;
 
-			$priority=1.0;
+			$priority = 1.0;
 			$languages = array();
 			foreach($matches[0] as $def){
 				list($list, $q) = explode(';q=', $def);
@@ -219,26 +238,47 @@
 			}
 			arsort($languages);
 			$languages = array_keys($languages);
-			## return list sorted by descending priority, e.g., array('en-gb','en');
+			// return list sorted by descending priority, e.g., array('en-gb','en');
 			return $languages;
 		}
 
-		/***
-
-		Method: getAvailableLanguages
-		Description: gets languages available in symphony/lib/lang directory
-		Return: array of language codes
-
-		***/
-		public static function getAvailableLanguages() {
+		/**
+         * Get codes of available languages
+         *
+		 * Return all available languages (core and extensions)
+		 * @return array language codes, e. g. 'en'
+		 */
+		public static function getAvailableLanguages($extensionManager) {
 			$languages = array();
-			$iterator = new DirectoryIterator('./symphony/lib/lang');
-			foreach($iterator as $file){
-				if(!$file->isDot() && preg_match('/lang\.(\w+(-\w+)?)\.php$/', $file->getFilename(), $matches)){
-					$languages[$matches[1]] = $file;
+			// Get core translation files
+			$languages = self::getLanguageCodes('./symphony/lib/lang', $languages);
+			// Get extension translation files
+			foreach ($extensionManager->listAll() as $extension => $about) {
+				$path = EXTENSIONS . '/' . $about['handle'] . '/lang';
+				if(file_exists($path)) $languages = self::getLanguageCodes($path, $languages);
+			}
+			// Return languages codes	
+			return $languages;
+		}
+		
+		/**
+		 * Get languages
+		 *
+		 * Extract language codes and files
+		 * @return array language codes and files
+		 */
+		public static function getLanguageCodes($path, $languages) {
+			$iterator = new DirectoryIterator($path);
+			foreach($iterator as $file) {
+				if(!$file->isDot() && preg_match('/lang\.(\w+(-\w+)?)\.php$/', $file->getFilename(), $matches)) {
+					if(!isset($languages[$matches[1]])) {
+						include($file->getPathname());
+						$languages[$matches[1]] = $about['name'];
+					}
 				}
 			}
-			return array_keys($languages);
+			return $languages;
 		}
+		
 	}
 	
