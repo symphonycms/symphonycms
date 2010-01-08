@@ -307,6 +307,32 @@
 			$this->Form->appendChild($group);
 			###
 			
+			### Custom Language Selection ###
+			$languages = LANG::getAvailableLanguages(new ExtensionManager($this->_parent));
+			if(count($languages > 1)) {
+				$group = new XMLElement('fieldset');
+				$group->setAttribute('class', 'settings');
+				$group->appendChild(new XMLElement('legend', __('Custom Preferences')));
+	
+				$div = new XMLElement('div');
+				$div->setAttribute('class', 'group');
+
+				// Get language names
+				asort($languages);
+				$label = Widget::Label(__('Language'));
+				$custom_lang = Administration::instance()->Author->get('language');
+				$options = array(array('system', ($custom_lang == 'system' ? true : false), __('System Standard')));
+				foreach($languages as $code => $name) {
+					$options[] = array($code, ($custom_lang != 'system' && $code == $custom_lang ? true : false), $name);
+				}
+				$select = Widget::Select('fields[language]', $options);			
+				$label->appendChild($select);
+				$group->appendChild($label);			
+	
+				$this->Form->appendChild($group);
+			}
+			###			
+			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
 
@@ -340,6 +366,7 @@
 				$this->_Author->set('password', (trim($fields['password']) == '' ? '' : md5($fields['password'])));
 				$this->_Author->set('default_section', intval($fields['default_section']));
 				$this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
+				$this->_Author->set('language', $fields['language']);
 				
 				if($this->_Author->validate($this->_errors)):
 					
@@ -415,6 +442,7 @@
 				}
 				$this->_Author->set('default_section', intval($fields['default_section']));
 				$this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
+				$this->_Author->set('language', $fields['language']);
 				
 				if($this->_Author->validate($this->_errors)):
 

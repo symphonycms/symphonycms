@@ -36,7 +36,7 @@
 				$group->appendChild(new XMLElement('legend', __('System Language')));			
 				$label = Widget::Label();
 				// Get language names
-				sort($languages);
+				asort($languages);
 				foreach($languages as $code => $name) {
 					$options[] = array($code, ($code == __LANG__ ? true : false), $name);
 				}
