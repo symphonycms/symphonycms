@@ -20,7 +20,7 @@
 			$filter_results = array();	
 			
 			## Create the post data cookie element
-			if (is_array($post) && !empty($post)) {
+			if (is_array($fields) && !empty($fields)) {
 				General::array_to_xml($post_values, $fields, true);
 			}
 			
@@ -259,63 +259,39 @@
 		$result->appendChild(buildFilterElement('admin-only', 'failed'));
 		return $result;
 	}
-
-	$entry_id = $position = $fields = NULL;	
 	
-	if(in_array('expect-multiple', $this->eParamFILTERS)){
-		if(is_array($_POST['fields']) && isset($_POST['fields'][0])){
-
-			$filedata = NULL;
-			if(isset($_FILES['fields'])){
-				$filedata = General::processFilePostData($_FILES['fields']);
-				unset($_FILES['fields']);
-			}
-			
-			foreach($_POST['fields'] as $position => $fields){
-				if(isset($_POST['id'][$position]) && is_numeric($_POST['id'][$position])) $entry_id = $_POST['id'][$position];
-
-				$entry = new XMLElement('entry', NULL, array('position' => $position));
-			
-				if(!is_null($filedata[$position])){
-					foreach($filedata[$position] as $handle => $data){
-
-						if(!isset($fields[$handle])) $fields[$handle] = NULL;
-						
-						if($data[3] == 0){
-							$fields[$handle] = array_combine(
-								array(
-								    'name',
-								    'type',
-								    'tmp_name',
-								    'error',
-								    'size',
-								), $data
-							);
-						}
-					}			
+	$entry_id = $position = $fields = NULL;	
+	$post = General::getPostData();
+	
+	if (in_array('expect-multiple', $this->eParamFILTERS)) {
+		if (is_array($post['fields']) && isset($post['fields'][0])) {
+			foreach ($post['fields'] as $position => $fields) {
+				if (isset($post['id'][$position]) && is_numeric($post['id'][$position])) {
+					$entry_id = $post['id'][$position];
 				}
-
-				$ret = __doit(self::getSource(), $fields, $entry, $this->_Parent, $this, $this->eParamFILTERS, $position, $entry_id);
 				
-				if(!$ret) $success = false;
+				$entry = new XMLElement('entry', NULL, array('position' => $position));
+				
+				$ret = __doit(
+					self::getSource(), $fields, $entry, $this->_Parent,
+					$this, $this->eParamFILTERS, $position, $entry_id
+				);
+				
+				if (!$ret) $success = false;
 				
 				$result->appendChild($entry);
-				
 			}
 		}
-		
 	}
-		
-	else{
-		
-		$fields = $_POST['fields'];
+	
+	else {
+		$fields = $post['fields'];
 		
 		$entry_id = NULL;
 		
-		if(isset($_POST['id']) && is_numeric($_POST['id'])) $entry_id = $_POST['id'];
+		if (isset($post['id']) && is_numeric($post['id'])) $entry_id = $post['id'];
 		
 		$success = __doit(self::getSource(), $fields, $result, $this->_Parent, $this, $this->eParamFILTERS, NULL, $entry_id);
-		
 	}
 	
 	if($success && isset($_REQUEST['redirect'])) redirect($_REQUEST['redirect']);
