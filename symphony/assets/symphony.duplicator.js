@@ -227,17 +227,18 @@
 						var header = template.find(settings.headers).addClass('header');
 						var option = widgets.selector.append('<option />')
 							.find('option:last');
-							
 						var header_children = header.children();
+						
 						if (header_children.length) {
-							header_text = header.get(0).childNodes[0].nodeValue + ' (' + header_children.filter(':eq(0)').text() + ')';
-						} else {
+							header_text = header.get(0).childNodes[0].nodeValue
+							+ ' (' + header_children.filter(':eq(0)').text() + ')';
+						}
+						
+						else {
 							header_text = header.text();
 						}
-						option.text(header_text).val(position);
 						
-						// HACK: preselect Text Input for Section editor
-						if (header_text == 'Text Input') option.attr('selected', 'selected');
+						option.text(header_text).val(position);
 						
 						templates.push(template.removeClass('template'));
 					});
@@ -297,6 +298,31 @@
 			});
 			
 			object.duplicator.initialize();
+		});
+		
+		return objects;
+	};
+	
+/*-----------------------------------------------------------------------------
+	Fields Duplicator
+-----------------------------------------------------------------------------*/
+	
+	jQuery.fn.symphonyFieldsDuplicator = function(custom_settings) {
+		var objects = jQuery(this).symphonyDuplicator(custom_settings);
+		
+		objects = objects.map(function() {
+			var object = this;
+			
+			// Select Text Input fields by default:
+			object.find('.controls select option').each(function() {
+				var option = jQuery(this);
+				
+				if (option.text() == 'Text Input') {
+					option.attr('selected', 'selected');
+					
+					return false;
+				}
+			});
 		});
 		
 		return objects;

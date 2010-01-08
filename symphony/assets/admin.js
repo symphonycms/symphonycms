@@ -311,7 +311,7 @@ var Symphony;
 		$('textarea').blur();
 		
 		// Internal duplicators:
-		$('#fields-duplicator').symphonyDuplicator({ orderable: true });
+		$('#fields-duplicator').symphonyFieldsDuplicator({ orderable: true });
 		$('.filters-duplicator').symphonyDuplicator();
 		
 		// Repeating sections
