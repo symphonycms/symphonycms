@@ -86,12 +86,12 @@
 				$tableActions->setAttribute('class', 'actions');
 				
 				$options = array(
-					array(NULL, false, 'With Selected...'),
-					array('delete', false, 'Delete')									
+					array(NULL, false, __('With Selected...')),
+					array('delete', false, __('Delete'))									
 				);
 				
 				$tableActions->appendChild(Widget::Select('with-selected', $options));
-				$tableActions->appendChild(Widget::Input('action[apply]', 'Apply', 'submit'));
+				$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
 				
 				$this->Form->appendChild($tableActions);					
 			}
