@@ -2,7 +2,7 @@
 
 	include_once(TOOLKIT . '/class.section.php');
 
-	Class SectionManager{
+	Class SectionManager extends Manager{
 		
 	    var $_Parent;
 		var $Database;
@@ -24,7 +24,13 @@
 		public function fetch($id=NULL, $order='ASC', $sortfield='name'){
 			
 			if($id && is_numeric($id)) $returnSingle = true;
-
+			
+			if(!is_array(self::$_pool)) $this->flush();
+	
+			if($returnSingle && isset(self::$_pool[$id])){
+				return self::$_pool[$id];
+			}
+			
 			$sql = "SELECT `s`.*, count(`e`.`id`) as `entry_count`
 			
 					FROM `tbl_sections` AS `s`
@@ -45,6 +51,8 @@
 				foreach($s as $name => $value){
 					$obj->set($name, $value);
 				}
+				
+				self::$_pool[$obj->get('id')] = $obj;
 				
 				$ret[] = $obj;
 			}
