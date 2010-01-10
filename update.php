@@ -197,6 +197,7 @@ Options +FollowSymlinks
 			
 			if (version_compare($existing_version, '2.0.6', '<=')){
 				$frontend->Database->query('ALTER TABLE `tbl_extensions` CHANGE `version` `version` VARCHAR(20) NOT NULL');
+				$frontend->Database->query("ALTER TABLE `tbl_authors` ADD `language` VARCHAR(255) DEFAULT 'system'");
 			}
 			
 			$sbl_version = $frontend->Database->fetchVar('version', 0, 
