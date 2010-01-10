@@ -60,10 +60,12 @@
 				$this->_Parent->ExtensionManager->notifyMembers('Save', '/system/preferences/', array('settings' => &$settings, 'errors' => &$this->_errors));
 				
 				if (!is_array($this->_errors) || empty($this->_errors)) {
-
-					foreach($settings as $set => $values) {
-						foreach($values as $key => $val) {
-							Symphony::Configuration()->set($key, $val, $set);
+					
+					if(is_array($settings) && !empty($settings)){
+						foreach($settings as $set => $values) {
+							foreach($values as $key => $val) {
+								Symphony::Configuration()->set($key, $val, $set);
+							}
 						}
 					}
 					
