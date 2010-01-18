@@ -1152,7 +1152,11 @@
 		        }
 
 		        $install_log->pushToLog("WRITING: Manifest .htaccess File", SYM_LOG_NOTICE, true, true);
-		        if(!GeneralExtended::writeFile($kDOCROOT . "/manifest/.htaccess", 'deny from all', $conf['settings']['file']['write_mode'])){
+		        $htaccess = '
+<FilesMatch "^config.php$">
+	deny from all
+</FilesMatch>';
+				if(!GeneralExtended::writeFile($kDOCROOT . "/manifest/.htaccess", $htaccess, $conf['settings']['file']['write_mode'])){
 		            define('_INSTALL_ERRORS_', "Could not write manifest/.htaccess file. Check permission on /manifest.");       
 		            $install_log->pushToLog("ERROR: Writing manifest/.htaccess Failed", SYM_LOG_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
