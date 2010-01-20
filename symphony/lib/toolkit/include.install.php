@@ -29,11 +29,6 @@
 
 	define('CRLF', "\r\n");
 
-    define('SYM_LOG_NOTICE', 0);
-    define('SYM_LOG_WARNING', 1);
-    define('SYM_LOG_ERROR', 2);
-    define('SYM_LOG_ALL', 3);
-
 	define('BAD_BROWSER', 0);
 	define('MISSING_MYSQL', 3);
 	define('MISSING_ZLIB', 5);
@@ -102,7 +97,7 @@
         
         }else{  
 			          
-            $install_log->pushToLog(_INSTALL_ERRORS_, SYM_LOG_ERROR, true);
+            $install_log->pushToLog(_INSTALL_ERRORS_, E_ERROR, true);
             $install_log->writeToLog("============================================", true);
             $install_log->writeToLog("INSTALLATION ABORTED: Execution Time - ".max(1, time() - $start)." sec (" . date("d.m.y H:i:s") . ")", true);
             $install_log->writeToLog("============================================" . CRLF . CRLF . CRLF, true);
@@ -809,27 +804,27 @@
 			$missing = array();
 
 			if(!GeneralExtended::checkRequirement(phpversion(), 'version', '5.2')){
-				$Page->log->pushToLog('Requirement - PHP Version is not correct. '.phpversion().' detected.' , SYM_LOG_ERROR, true);
+				$Page->log->pushToLog('Requirement - PHP Version is not correct. '.phpversion().' detected.' , E_ERROR, true);
 				$missing[] = MISSING_PHP;	
 			}		
 
 			if(!GeneralExtended::checkRequirement('mysql_connect', 'func', true)){
-				$Page->log->pushToLog('Requirement - MySQL extension not present' , SYM_LOG_ERROR, true);
+				$Page->log->pushToLog('Requirement - MySQL extension not present' , E_ERROR, true);
 				$missing[] = MISSING_MYSQL;
 			}
 			
 			if(!GeneralExtended::checkRequirement('zlib', 'ext', true)){
-				$Page->log->pushToLog('Requirement - ZLib extension not present' , SYM_LOG_ERROR, true);
+				$Page->log->pushToLog('Requirement - ZLib extension not present' , E_ERROR, true);
 				$missing[] = MISSING_ZLIB;
 			}
 
 			if(!GeneralExtended::checkRequirement('xml:libxml', 'ext', true)){
-				$Page->log->pushToLog('Requirement - No XML extension present' , SYM_LOG_ERROR, true);
+				$Page->log->pushToLog('Requirement - No XML extension present' , E_ERROR, true);
 				$missing[] = MISSING_XML;
 			}
 
 			if(!GeneralExtended::checkRequirement('xsl:xslt', 'ext', true) && !GeneralExtended::checkRequirement('domxml_xslt_stylesheet', 'func', true))	{
-				$Page->log->pushToLog('Requirement - No XSL extension present' , SYM_LOG_ERROR, true);
+				$Page->log->pushToLog('Requirement - No XSL extension present' , E_ERROR, true);
 				$missing[] = MISSING_XSL;
 			}
 
@@ -865,35 +860,35 @@
 			
 			## Invalid path
 			if(!@is_dir(rtrim($fields['docroot'], '/') . '/symphony')){
-				$Page->log->pushToLog("Configuration - Bad Document Root Specified: " . $fields['docroot'], SYM_LOG_NOTICE, true);
+				$Page->log->pushToLog("Configuration - Bad Document Root Specified: " . $fields['docroot'], E_NOTICE, true);
 				define("kENVIRONMENT_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'no-symphony-dir');
 			}
 	
 			## Existing .htaccess
 			elseif(is_file(rtrim($fields['docroot'], '/') . '/.htaccess')){
-				$Page->log->pushToLog("Configuration - Existing '.htaccess' file found: " . $fields['docroot'] . '/.htaccess', SYM_LOG_NOTICE, true);
+				$Page->log->pushToLog("Configuration - Existing '.htaccess' file found: " . $fields['docroot'] . '/.htaccess', E_NOTICE, true);
 				define("kENVIRONMENT_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'existing-htaccess');
 			}
 
 			## Cannot write to workspace
 			elseif(is_dir(rtrim($fields['docroot'], '/') . '/workspace') && !is_writable(rtrim($fields['docroot'], '/') . '/workspace')){
-				$Page->log->pushToLog("Configuration - Workspace folder not writable: " . $fields['docroot'] . '/workspace', SYM_LOG_NOTICE, true);
+				$Page->log->pushToLog("Configuration - Workspace folder not writable: " . $fields['docroot'] . '/workspace', E_NOTICE, true);
 				define("kENVIRONMENT_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'no-write-permission-workspace');
 			}
 
 			## Cannot write to root folder.
 			elseif(!is_writable(rtrim($fields['docroot'], '/'))){
-				$Page->log->pushToLog("Configuration - Root folder not writable: " . $fields['docroot'], SYM_LOG_NOTICE, true);
+				$Page->log->pushToLog("Configuration - Root folder not writable: " . $fields['docroot'], E_NOTICE, true);
 				define("kENVIRONMENT_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'no-write-permission-root');
 			}
 
 			## Failed to establish database connection	
 			elseif($database_connection_error){
-				$Page->log->pushToLog("Configuration - Could not establish database connection", SYM_LOG_NOTICE, true);
+				$Page->log->pushToLog("Configuration - Could not establish database connection", E_NOTICE, true);
 				define("kDATABASE_CONNECTION_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'no-database-connection');
 			}
@@ -901,7 +896,7 @@
 			## Incorrect MySQL version
 			elseif(version_compare($db->fetchVar('version', 0, "SELECT VERSION() AS `version`;"), '4.1', '<')){
 				$version = $db->fetchVar('version', 0, "SELECT VERSION() AS `version`;");
-				$Page->log->pushToLog('Configuration - MySQL Version is not correct. '.$version.' detected.', SYM_LOG_NOTICE, true);
+				$Page->log->pushToLog('Configuration - MySQL Version is not correct. '.$version.' detected.', E_NOTICE, true);
 				define("kDATABASE_VERSION_WARNING", true);
 
 				$warnings['database-incorrect-version'] = __('Symphony requires <code>MySQL 4.1</code> or greater to work, however version <code>%s</code> was detected. This requirement must be met before installation can proceed.', array($version));
@@ -911,49 +906,49 @@
 
 			## Failed to select database
 			elseif(!$db->select($fields['database']['name'])){
-				$Page->log->pushToLog("Configuration - Database '".$fields['database']['name']."' Not Found", SYM_LOG_NOTICE, true);	
+				$Page->log->pushToLog("Configuration - Database '".$fields['database']['name']."' Not Found", E_NOTICE, true);	
 				define("kDATABASE_CONNECTION_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'no-database-connection');
 			}
 
 			## Failed to establish connection	
 			elseif(is_array($tables) && !empty($tables)){
-				$Page->log->pushToLog("Configuration - Database table prefix clash with '".$fields['database']['name']."'", SYM_LOG_NOTICE, true);	
+				$Page->log->pushToLog("Configuration - Database table prefix clash with '".$fields['database']['name']."'", E_NOTICE, true);	
 				define("kDATABASE_PREFIX_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'database-table-clash');
 			}
 
 			## Username Not Entered	
 			elseif(trim($fields['user']['username']) == ''){
-				$Page->log->pushToLog("Configuration - No username entered.", SYM_LOG_NOTICE, true);	
+				$Page->log->pushToLog("Configuration - No username entered.", E_NOTICE, true);	
 				define("kUSER_USERNAME_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'user-no-username');
 			}
 
 			## Password Not Entered	
 			elseif(trim($fields['user']['password']) == ''){
-				$Page->log->pushToLog("Configuration - No password entered.", SYM_LOG_NOTICE, true);	
+				$Page->log->pushToLog("Configuration - No password entered.", E_NOTICE, true);	
 				define("kUSER_PASSWORD_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'user-no-password');
 			}
 
 			## Password mismatch	
 			elseif($fields['user']['password'] != $fields['user']['confirm-password']){
-				$Page->log->pushToLog("Configuration - Passwords did not match.", SYM_LOG_NOTICE, true);	
+				$Page->log->pushToLog("Configuration - Passwords did not match.", E_NOTICE, true);	
 				define("kUSER_PASSWORD_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'user-password-mismatch');
 			}
 			
 			## No Name entered
 			elseif(trim($fields['user']['firstname']) == '' || trim($fields['user']['lastname']) == ''){
-				$Page->log->pushToLog("Configuration - Did not enter First and Last names.", SYM_LOG_NOTICE, true);	
+				$Page->log->pushToLog("Configuration - Did not enter First and Last names.", E_NOTICE, true);	
 				define("kUSER_NAME_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'user-no-name');
 			}
 					
 			## Invalid Email	
 			elseif(!preg_match('/^\w(?:\.?[\w%+-]+)*@\w(?:[\w-]*\.)+?[a-z]{2,}$/i', $fields['user']['email'])){
-				$Page->log->pushToLog("Configuration - Invalid email address supplied.", SYM_LOG_NOTICE, true);	
+				$Page->log->pushToLog("Configuration - Invalid email address supplied.", E_NOTICE, true);	
 				define("kUSER_EMAIL_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'user-invalid-email');
 			}
@@ -979,25 +974,25 @@
 	            $install_log->writeToLog('INSTALLATION PROCESS STARTED (' . DateTimeObj::get('c') . ')', true);
 	            $install_log->writeToLog('============================================', true);	         
 
-		        $install_log->pushToLog("MYSQL: Establishing Connection...", SYM_LOG_NOTICE, true, false);       
+		        $install_log->pushToLog("MYSQL: Establishing Connection...", E_NOTICE, true, false);       
 		        $db = new MySQL;
 
 		        if(!$db->connect($database['host'], $database['username'], $database['password'], $database['port'])){
 		            define('_INSTALL_ERRORS_', "There was a problem while trying to establish a connection to the MySQL server. Please check your settings.");                                
-		            $install_log->pushToLog("Failed", SYM_LOG_NOTICE,true, true, true);
+		            $install_log->pushToLog("Failed", E_NOTICE,true, true, true);
 		            installResult($Page, $install_log, $start);
 		        }else{
-		            $install_log->pushToLog("Done", SYM_LOG_NOTICE,true, true, true);           
+		            $install_log->pushToLog("Done", E_NOTICE,true, true, true);           
 		        }      
 
-		        $install_log->pushToLog("MYSQL: Selecting Database '".$database['name']."'...", SYM_LOG_NOTICE, true, false); 
+		        $install_log->pushToLog("MYSQL: Selecting Database '".$database['name']."'...", E_NOTICE, true, false); 
 
 		        if(!$db->select($database['name'])){
 		            define('_INSTALL_ERRORS_', "Could not connect to specified database. Please check your settings.");       
-		            $install_log->pushToLog("Failed", SYM_LOG_NOTICE,true, true, true);                         
+		            $install_log->pushToLog("Failed", E_NOTICE,true, true, true);                         
 		            installResult($Page, $install_log, $start);
 		        }else{
-		            $install_log->pushToLog("Done", SYM_LOG_NOTICE,true, true, true);           
+		            $install_log->pushToLog("Done", E_NOTICE,true, true, true);           
 		        }
 
 				$db->setPrefix($database['prefix']); 
@@ -1008,14 +1003,14 @@
 					$db->setCharacterSet($conf['database']['character_set']);			
 				}
 			
-		        $install_log->pushToLog("MYSQL: Importing Table Schema...", SYM_LOG_NOTICE, true, false);
+		        $install_log->pushToLog("MYSQL: Importing Table Schema...", E_NOTICE, true, false);
 		        $error = NULL;
 		        if(!fireSql($db, getTableSchema(), $error, ($config['database']['high-compatibility'] == 'yes' ? 'high' : 'normal'))){
 		            define('_INSTALL_ERRORS_', "There was an error while trying to import data to the database. MySQL returned: $error");       
-		            $install_log->pushToLog("Failed", SYM_LOG_ERROR,true, true, true);                         
+		            $install_log->pushToLog("Failed", E_ERROR,true, true, true);                         
 		            installResult($Page, $install_log, $start);
 		        }else{
-		            $install_log->pushToLog("Done", SYM_LOG_NOTICE,true, true, true);           
+		            $install_log->pushToLog("Done", E_NOTICE,true, true, true);           
 		        }
 
 				$author_sql = sprintf(
@@ -1053,15 +1048,15 @@
 					$db->cleanValue($config['user']['email'])
 				);
 				
-				$install_log->pushToLog("MYSQL: Creating Default Author...", SYM_LOG_NOTICE, true, false);
+				$install_log->pushToLog("MYSQL: Creating Default Author...", E_NOTICE, true, false);
 		        if(!$db->query($author_sql)){
 					$error = $db->getLastError();
 		            define('_INSTALL_ERRORS_', "There was an error while trying create the default author. MySQL returned: " . $error['num'] . ': ' . $error['msg']);       
-		            $install_log->pushToLog("Failed", SYM_LOG_ERROR, true, true, true);                         
+		            $install_log->pushToLog("Failed", E_ERROR, true, true, true);                         
 		            installResult($Page, $install_log, $start);   
 
 		        }else{	        
-					$install_log->pushToLog("Done", SYM_LOG_NOTICE, true, true, true); 
+					$install_log->pushToLog("Done", E_NOTICE, true, true, true); 
 				}	
 
 
@@ -1112,53 +1107,53 @@
 				## Create Manifest directory structure
 				#
 
-		        $install_log->pushToLog("WRITING: Creating 'manifest' folder (/manifest)", SYM_LOG_NOTICE, true, true);
+		        $install_log->pushToLog("WRITING: Creating 'manifest' folder (/manifest)", E_NOTICE, true, true);
 		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest', $conf['settings']['directory']['write_mode'])){
 		            define('_INSTALL_ERRORS_', "Could not create 'manifest' directory. Check permission on the root folder.");       
-		            $install_log->pushToLog("ERROR: Creation of 'manifest' folder failed.", SYM_LOG_ERROR, true, true);                         
+		            $install_log->pushToLog("ERROR: Creation of 'manifest' folder failed.", E_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
 					return;
 		        }
 
-		        $install_log->pushToLog("WRITING: Creating 'logs' folder (/manifest/logs)", SYM_LOG_NOTICE, true, true);
+		        $install_log->pushToLog("WRITING: Creating 'logs' folder (/manifest/logs)", E_NOTICE, true, true);
 		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest/logs', $conf['settings']['directory']['write_mode'])){
 		            define('_INSTALL_ERRORS_', "Could not create 'logs' directory. Check permission on /manifest.");       
-		            $install_log->pushToLog("ERROR: Creation of 'logs' folder failed.", SYM_LOG_ERROR, true, true);                         
+		            $install_log->pushToLog("ERROR: Creation of 'logs' folder failed.", E_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
 					return;
 		        }
 
-		        $install_log->pushToLog("WRITING: Creating 'cache' folder (/manifest/cache)", SYM_LOG_NOTICE, true, true);
+		        $install_log->pushToLog("WRITING: Creating 'cache' folder (/manifest/cache)", E_NOTICE, true, true);
 		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest/cache', $conf['settings']['directory']['write_mode'])){
 		            define('_INSTALL_ERRORS_', "Could not create 'cache' directory. Check permission on /manifest.");       
-		            $install_log->pushToLog("ERROR: Creation of 'cache' folder failed.", SYM_LOG_ERROR, true, true);                         
+		            $install_log->pushToLog("ERROR: Creation of 'cache' folder failed.", E_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
 					return;
 		        }
 
-		        $install_log->pushToLog("WRITING: Creating 'tmp' folder (/manifest/tmp)", SYM_LOG_NOTICE, true, true);
+		        $install_log->pushToLog("WRITING: Creating 'tmp' folder (/manifest/tmp)", E_NOTICE, true, true);
 		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest/tmp', $conf['settings']['directory']['write_mode'])){
 		            define('_INSTALL_ERRORS_', "Could not create 'tmp' directory. Check permission on /manifest.");       
-		            $install_log->pushToLog("ERROR: Creation of 'tmp' folder failed.", SYM_LOG_ERROR, true, true);                         
+		            $install_log->pushToLog("ERROR: Creation of 'tmp' folder failed.", E_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
 					return;
 		        }
 
-		        $install_log->pushToLog("WRITING: Configuration File", SYM_LOG_NOTICE, true, true);
+		        $install_log->pushToLog("WRITING: Configuration File", E_NOTICE, true, true);
 		        if(!writeConfig($kDOCROOT . '/manifest/', $conf, $conf['settings']['file']['write_mode'])){
 		            define('_INSTALL_ERRORS_', "Could not write config file. Check permission on /manifest.");       
-		            $install_log->pushToLog("ERROR: Writing Configuration File Failed", SYM_LOG_ERROR, true, true);                         
+		            $install_log->pushToLog("ERROR: Writing Configuration File Failed", E_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
 		        }
 
-		        $install_log->pushToLog("WRITING: Manifest .htaccess File", SYM_LOG_NOTICE, true, true);
+		        $install_log->pushToLog("WRITING: Manifest .htaccess File", E_NOTICE, true, true);
 		        $htaccess = '
 <FilesMatch "^config.php$">
 	deny from all
 </FilesMatch>';
 				if(!GeneralExtended::writeFile($kDOCROOT . "/manifest/.htaccess", $htaccess, $conf['settings']['file']['write_mode'])){
 		            define('_INSTALL_ERRORS_', "Could not write manifest/.htaccess file. Check permission on /manifest.");       
-		            $install_log->pushToLog("ERROR: Writing manifest/.htaccess Failed", SYM_LOG_ERROR, true, true);                         
+		            $install_log->pushToLog("ERROR: Writing manifest/.htaccess Failed", E_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
 		        }
 
@@ -1206,10 +1201,10 @@ Options +FollowSymlinks
 ######
 ';
 
-		        $install_log->pushToLog("CONFIGURING: Frontend", SYM_LOG_NOTICE, true, true);
+		        $install_log->pushToLog("CONFIGURING: Frontend", E_NOTICE, true, true);
 		        if(!GeneralExtended::writeFile($kDOCROOT . "/.htaccess", $htaccess, $conf['settings']['file']['write_mode'])){
 		            define('_INSTALL_ERRORS_', "Could not write .htaccess file. Check permission on " . $kDOCROOT);       
-		            $install_log->pushToLog("ERROR: Writing .htaccess File Failed", SYM_LOG_ERROR, true, true);                          
+		            $install_log->pushToLog("ERROR: Writing .htaccess File Failed", E_ERROR, true, true);                          
 		            installResult($Page, $install_log, $start);
 		        }
 		
@@ -1218,42 +1213,42 @@ Options +FollowSymlinks
 					### Create the workspace folder structure
 					#
 					
-			        $install_log->pushToLog("WRITING: Creating 'workspace' folder (/workspace)", SYM_LOG_NOTICE, true, true);
+			        $install_log->pushToLog("WRITING: Creating 'workspace' folder (/workspace)", E_NOTICE, true, true);
 			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace', $conf['settings']['directory']['write_mode'])){
 			            define('_INSTALL_ERRORS_', "Could not create 'workspace' directory. Check permission on the root folder.");       
-			            $install_log->pushToLog("ERROR: Creation of 'workspace' folder failed.", SYM_LOG_ERROR, true, true);                         
+			            $install_log->pushToLog("ERROR: Creation of 'workspace' folder failed.", E_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
 						return;
 			        }
 
-			        $install_log->pushToLog("WRITING: Creating 'data-sources' folder (/workspace/data-sources)", SYM_LOG_NOTICE, true, true);
+			        $install_log->pushToLog("WRITING: Creating 'data-sources' folder (/workspace/data-sources)", E_NOTICE, true, true);
 			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/data-sources', $conf['settings']['directory']['write_mode'])){
 			            define('_INSTALL_ERRORS_', "Could not create 'workspace/data-sources' directory. Check permission on the root folder.");       
-			            $install_log->pushToLog("ERROR: Creation of 'workspace/data-sources' folder failed.", SYM_LOG_ERROR, true, true);                         
+			            $install_log->pushToLog("ERROR: Creation of 'workspace/data-sources' folder failed.", E_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
 						return;
 			        }
 
-			        $install_log->pushToLog("WRITING: Creating 'events' folder (/workspace/events)", SYM_LOG_NOTICE, true, true);
+			        $install_log->pushToLog("WRITING: Creating 'events' folder (/workspace/events)", E_NOTICE, true, true);
 			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/events', $conf['settings']['directory']['write_mode'])){
 			            define('_INSTALL_ERRORS_', "Could not create 'workspace/events' directory. Check permission on the root folder.");       
-			            $install_log->pushToLog("ERROR: Creation of 'workspace/events' folder failed.", SYM_LOG_ERROR, true, true);                         
+			            $install_log->pushToLog("ERROR: Creation of 'workspace/events' folder failed.", E_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
 						return;
 			        }
 
-			        $install_log->pushToLog("WRITING: Creating 'pages' folder (/workspace/pages)", SYM_LOG_NOTICE, true, true);
+			        $install_log->pushToLog("WRITING: Creating 'pages' folder (/workspace/pages)", E_NOTICE, true, true);
 			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/pages', $conf['settings']['directory']['write_mode'])){
 			            define('_INSTALL_ERRORS_', "Could not create 'workspace/pages' directory. Check permission on the root folder.");       
-			            $install_log->pushToLog("ERROR: Creation of 'workspace/pages' folder failed.", SYM_LOG_ERROR, true, true);                         
+			            $install_log->pushToLog("ERROR: Creation of 'workspace/pages' folder failed.", E_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
 						return;
 			        }
 
-			        $install_log->pushToLog("WRITING: Creating 'utilities' folder (/workspace/utilities)", SYM_LOG_NOTICE, true, true);
+			        $install_log->pushToLog("WRITING: Creating 'utilities' folder (/workspace/utilities)", E_NOTICE, true, true);
 			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/utilities', $conf['settings']['directory']['write_mode'])){
 			            define('_INSTALL_ERRORS_', "Could not create 'workspace/utilities' directory. Check permission on the root folder.");       
-			            $install_log->pushToLog("ERROR: Creation of 'workspace/utilities' folder failed.", SYM_LOG_ERROR, true, true);                         
+			            $install_log->pushToLog("ERROR: Creation of 'workspace/utilities' folder failed.", E_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
 						return;
 			        }
@@ -1262,29 +1257,29 @@ Options +FollowSymlinks
 				
 				else {
 					
-					$install_log->pushToLog("MYSQL: Importing Workspace Data...", SYM_LOG_NOTICE, true, false);
+					$install_log->pushToLog("MYSQL: Importing Workspace Data...", E_NOTICE, true, false);
 			        $error = NULL;
 			        if(!fireSql($db, getWorkspaceData(), $error, ($config['database']['high-compatibility'] == 'yes' ? 'high' : 'normal'))){
 			            define('_INSTALL_ERRORS_', "There was an error while trying to import data to the database. MySQL returned: $error");       
-			            $install_log->pushToLog("Failed", SYM_LOG_ERROR,true, true, true);                         
+			            $install_log->pushToLog("Failed", E_ERROR,true, true, true);                         
 			            installResult($Page, $install_log, $start);
 			        }else{
-			            $install_log->pushToLog("Done", SYM_LOG_NOTICE,true, true, true);           
+			            $install_log->pushToLog("Done", E_NOTICE,true, true, true);           
 			        }
 					
 				}	
 							
 				if(@!is_dir($fields['docroot'] . '/extensions')){
-			        $install_log->pushToLog("WRITING: Creating 'campfire' folder (/extensions)", SYM_LOG_NOTICE, true, true);
+			        $install_log->pushToLog("WRITING: Creating 'campfire' folder (/extensions)", E_NOTICE, true, true);
 			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/extensions', $conf['settings']['directory']['write_mode'])){
 			            define('_INSTALL_ERRORS_', "Could not create 'extensions' directory. Check permission on the root folder.");       
-			            $install_log->pushToLog("ERROR: Creation of 'extensions' folder failed.", SYM_LOG_ERROR, true, true);                         
+			            $install_log->pushToLog("ERROR: Creation of 'extensions' folder failed.", E_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
 						return;
 			        }	
 				}
 
-		        $install_log->pushToLog("Installation Process Completed In ".max(1, time() - $start)." sec", SYM_LOG_NOTICE, true);
+		        $install_log->pushToLog("Installation Process Completed In ".max(1, time() - $start)." sec", E_NOTICE, true);
 
 		        installResult($Page, $install_log, $start);
 		
