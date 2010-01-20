@@ -199,16 +199,6 @@ Options +FollowSymlinks
 				$frontend->Database->query('ALTER TABLE `tbl_extensions` CHANGE `version` `version` VARCHAR(20) NOT NULL');
 			}
 			
-			
-			if (version_compare($existing_version, '2.0.7', '<=')){
-		        $htaccess = '
-<FilesMatch "^config.php$">
-	deny from all
-</FilesMatch>';
-				@file_put_contents(DOCROOT . '/manifest/.htaccess', $htaccess);
-
-			}
-			
 			$sbl_version = $frontend->Database->fetchVar('version', 0, 
 				"SELECT `version` FROM `tbl_extensions` WHERE `name` = 'selectbox_link_field' LIMIT 1"
 			);
