@@ -624,6 +624,7 @@
 					$conf['settings']['symphony']['pagination_maximum_rows'] = '17';
 					$conf['settings']['symphony']['allow_page_subscription'] = '1';
 					$conf['settings']['symphony']['lang'] = (defined('__LANG__') ? __LANG__ : 'en');
+					$conf['settings']['symphony']['pages_table_nest_children'] = 'no';
 					$conf['settings']['log']['archive'] = '1';
 					$conf['settings']['log']['maxsize'] = '102400';
 					$conf['settings']['image']['cache'] = '1';
@@ -633,7 +634,6 @@
 					$conf['settings']['database']['character_encoding'] = 'utf8';
 					$conf['settings']['database']['runtime_character_set_alter'] = '1';
 					$conf['settings']['public']['display_event_xml_in_source'] = 'no';
-				
 				}
 				
 		        $conf['settings']['symphony']['version'] = kVERSION;		
