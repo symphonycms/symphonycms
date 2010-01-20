@@ -568,15 +568,18 @@
 					foreach($section_data['fields'] as $input){
 						$elements = $input->fetchIncludableElements();
 					
-						foreach($elements as $name){
-							$selected = false;
+						if(is_array($elements) && !empty($elements)){
+							foreach($elements as $name){
+								$selected = false;
 						
-							if($fields['source'] == $section_data['section']->get('id') && @in_array($name, $fields['xml_elements'])){
-								$selected = true;	
+								if($fields['source'] == $section_data['section']->get('id') && @in_array($name, $fields['xml_elements'])){
+									$selected = true;	
+								}
+						
+								$optgroup['options'][] = array($name, $selected, $name);
 							}
-						
-							$optgroup['options'][] = array($name, $selected, $name);
 						}
+						
 					}
 				}
 				
