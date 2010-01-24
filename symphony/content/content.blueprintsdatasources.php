@@ -414,7 +414,7 @@
 			$options = array(
 				array('asc', ('asc' == $fields['order']), __('ascending')),
 				array('desc', ('desc' == $fields['order']), __('descending')),
-				array('rand', ('rand' == $fields['order']), __('random')),
+				array('random', ('random' == $fields['order']), __('random')),
 			);
 			
 			$label->appendChild(Widget::Select('fields[order]', $options));
