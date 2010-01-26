@@ -215,7 +215,7 @@
 			if (is_null(self::$_subscriptions)) {
 				self::$_subscriptions = Symphony::Database()->fetch("
 					SELECT t1.name, t2.page, t2.delegate, t2.callback
-					FROM `sym_extensions` as t1 INNER JOIN sym_extensions_delegates as t2 ON t1.id = t2.extension_id
+					FROM `tbl_extensions` as t1 INNER JOIN `tbl_extensions_delegates` as t2 ON t1.id = t2.extension_id
 					WHERE t1.status = 'enabled'");										
 			}
 				

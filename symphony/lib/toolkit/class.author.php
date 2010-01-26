@@ -16,7 +16,7 @@
 		}
 		
 		public function loadAuthor($id){
-			if(!is_object(Symphony::Database())) return false;
+			if(!is_object(Symphony::Database()) || !is_numeric($id)) return false;
 
 			$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_authors` WHERE `id` = '$id' LIMIT 1");
 

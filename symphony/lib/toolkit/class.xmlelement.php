@@ -101,6 +101,7 @@
 		}
 		
 		public function getAttribute($name){
+			if(!isset($this->_attributes[$name])) return NULL;			
 			return $this->_attributes[$name];
 		}
 	

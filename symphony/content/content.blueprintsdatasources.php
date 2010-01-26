@@ -414,7 +414,7 @@
 			$options = array(
 				array('asc', ('asc' == $fields['order']), __('ascending')),
 				array('desc', ('desc' == $fields['order']), __('descending')),
-				array('rand', ('rand' == $fields['order']), __('random')),
+				array('random', ('random' == $fields['order']), __('random')),
 			);
 			
 			$label->appendChild(Widget::Select('fields[order]', $options));
@@ -568,15 +568,18 @@
 					foreach($section_data['fields'] as $input){
 						$elements = $input->fetchIncludableElements();
 					
-						foreach($elements as $name){
-							$selected = false;
+						if(is_array($elements) && !empty($elements)){
+							foreach($elements as $name){
+								$selected = false;
 						
-							if($fields['source'] == $section_data['section']->get('id') && @in_array($name, $fields['xml_elements'])){
-								$selected = true;	
+								if($fields['source'] == $section_data['section']->get('id') && @in_array($name, $fields['xml_elements'])){
+									$selected = true;	
+								}
+						
+								$optgroup['options'][] = array($name, $selected, $name);
 							}
-						
-							$optgroup['options'][] = array($name, $selected, $name);
 						}
+						
 					}
 				}
 				

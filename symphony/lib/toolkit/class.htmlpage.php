@@ -107,40 +107,19 @@
 
 		}
 
-		public function removeFromHead($kind, $val, $type='screen'){
-	
-			switch($kind){
-		
-				case 'js':
-				case 'string':
-					if(is_array($this->_head[$kind]) && !empty($this->_head[$kind])){
-						foreach($this->_head[$kind] as $k => $v){
-							if($v == $val){
-								unset($this->_head[$kind][$k]);
-								return true;
-							}
-						}
-					}
+		public function removeFromHead($elementName, $attribute=NULL, $attributeValue=NULL){
+			foreach($this->_head as $index => $element){
+				if($element->getName() != $elementName) continue;
 				
-					break;
-			
-				case 'css':
-					if(is_array($this->_head['css'][$type]) && !empty($this->_head['css'][$type])){
-						foreach($this->_head['css'][$type] as $k => $v){
-							if($v == $val){
-								unset($this->_head['css'][$type][$k]);
-								return true;
-							}
-						}
-					}
-			
-					break;
-			
+				if(!is_null($attribute) && !is_null($attributeValue)){
+					$value = $element->getAttribute($attribute);
+					
+					if(is_null($value) || $attributeValue != $value) continue;
+				}
+				
+				unset($this->_head[$index]);
 			}
-	
-			return false;
 		}
 
-	
 	}
 
