@@ -712,7 +712,7 @@
 			$div->appendChild(Widget::Input('action[save]', ($isEditing ? __('Save Changes') : __('Create Data Source')), 'submit', array('accesskey' => 's')));
 			
 			if($isEditing){
-				$button = new XMLElement('button', 'Delete');
+				$button = new XMLElement('button', __('Delete'));
 				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this data source'), 'type' => 'submit'));
 				$div->appendChild($button);
 			}

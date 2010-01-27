@@ -1,7 +1,7 @@
 <?php
 
 	require_once(TOOLKIT . '/class.administrationpage.php');
- 	require_once(TOOLKIT . '/class.sectionmanager.php');
+require_once(TOOLKIT . '/class.sectionmanager.php');
 
 	Class contentSystemAuthors extends AdministrationPage{
 
@@ -11,7 +11,7 @@
 		function __construct(&$parent){
 			parent::__construct($parent);
 			
-			$this->_errors = array();		
+			$this->_errors = array();
 		}
 		
 		function __viewIndex(){
@@ -21,15 +21,15 @@
 			if (Administration::instance()->Author->isDeveloper()) $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
 			else $this->appendSubheading(__('Authors'));
 			
-		    $authors = AuthorManager::fetch();
+		$authors = AuthorManager::fetch();
 
 			$aTableHead = array(
 
 				array(__('Name'), 'col'),
 				array(__('Email Address'), 'col'),
-				array(__('Last Seen'), 'col'),				
+				array(__('Last Seen'), 'col'),
 
-			);	
+			);
 
 			$aTableBody = array();
 
@@ -42,9 +42,9 @@
 
 			else{
 				$bOdd = true;
-				foreach($authors as $a){			
+				foreach($authors as $a){
 
-					if(intval($a->get('superuser')) == 1) $group = 'admin'; else $group = 'author'; 
+					if(intval($a->get('superuser')) == 1) $group = 'admin'; else $group = 'author';
 					
 					## Setup each cell
 					if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->get('id') == $a->get('id')) {
@@ -74,8 +74,8 @@
 			}
 
 			$table = Widget::Table(
-								Widget::TableHead($aTableHead), 
-								NULL, 
+								Widget::TableHead($aTableHead),
+								NULL,
 								Widget::TableBody($aTableBody)
 							);
 							
@@ -86,20 +86,20 @@
 				$tableActions->setAttribute('class', 'actions');
 				
 				$options = array(
-					array(NULL, false, 'With Selected...'),
-					array('delete', false, 'Delete')									
+					array(NULL, false, __('With Selected...')),
+					array('delete', false, __('Delete'))
 				);
 				
 				$tableActions->appendChild(Widget::Select('with-selected', $options));
-				$tableActions->appendChild(Widget::Input('action[apply]', 'Apply', 'submit'));
+				$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
 				
-				$this->Form->appendChild($tableActions);					
+				$this->Form->appendChild($tableActions);
 			}
 			
 		}
 		
 		function __actionIndex(){
-			if($_POST['with-selected'] == 'delete'){	 	
+			if($_POST['with-selected'] == 'delete'){
 				
 				$checked = @array_keys($_POST['items']);
 				
@@ -107,7 +107,7 @@
 				###
 				# Delegate: Delete
 				# Description: Prior to deleting an author. ID is provided.
-				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('author_id' => $author_id));		
+				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('author_id' => $author_id));
 				
 				foreach($checked as $author_id){
 					$a = AuthorManager::fetchByID($author_id);
@@ -115,7 +115,7 @@
 				}
 
 				redirect(URL . '/symphony/system/authors/');
-			}			
+			}
 		}
 		
 		## Both the Edit and New pages need the same form
@@ -124,18 +124,18 @@
 		}
 		
 		function __viewEdit(){
-			$this->__form();			
+			$this->__form();
 		}
 		
 		function __form(){
 			
-			require_once(TOOLKIT . '/class.field.php');	
+			require_once(TOOLKIT . '/class.field.php');
 			
 			## Handle unknow context
 			if(!in_array($this->_context[0], array('new', 'edit'))) $this->_Parent->errorPageNotFound();
 			
-			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper()) 
-				$this->_Parent->customError(E_USER_ERROR, 'Access Denied', 'You are not authorised to access this page.');			
+			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper())
+				$this->_Parent->customError(E_USER_ERROR, 'Access Denied', 'You are not authorised to access this page.');
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
@@ -144,14 +144,14 @@
 					
 						$this->pageAlert(
 							__(
-								'Author updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>', 
+								'Author updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>',
 								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/system/authors/new/', 
-									URL . '/symphony/system/authors/' 
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
+									URL . '/symphony/system/authors/new/',
+									URL . '/symphony/system/authors/'
 								)
-							), 
-							Alert::SUCCESS);					
+							),
+							Alert::SUCCESS);
 
 						break;
 						
@@ -159,13 +159,13 @@
 
 						$this->pageAlert(
 							__(
-								'Author created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>', 
+								'Author created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>',
 								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/system/authors/new/', 
-									URL . '/symphony/system/authors/' 
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
+									URL . '/symphony/system/authors/new/',
+									URL . '/symphony/system/authors/'
 								)
-							), 
+							),
 							Alert::SUCCESS);
 
 						break;
@@ -178,7 +178,7 @@
 			$isOwner = false;
 			
 			if(isset($_POST['fields']))
-				$author = $this->_Author;			
+				$author = $this->_Author;
 			
 			elseif($this->_context[0] == 'edit'){
 			
@@ -199,9 +199,9 @@
 			
 
 			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Authors'), $author->getFullName())));
-			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $author->getFullName()));			
+			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $author->getFullName()));
 			
-			### Essentials ###			
+			### Essentials ###
 			$group = new XMLElement('fieldset');
 			$group->setAttribute('class', 'settings');
 			$group->appendChild(new XMLElement('legend', __('Essentials')));
@@ -220,11 +220,11 @@
 
 			$group->appendChild($div);
 
-			$label = Widget::Label(__('Email Address'));	
+			$label = Widget::Label(__('Email Address'));
 			$label->appendChild(Widget::Input('fields[email]', $author->get('email')));
 			$group->appendChild((isset($this->_errors['email']) ? $this->wrapFormElementWithError($label, $this->_errors['email']) : $label));
 
-			$this->Form->appendChild($group);	
+			$this->Form->appendChild($group);
 			###
 
 			### Login Details ###
@@ -263,18 +263,18 @@
 					$div->setAttribute('class', 'triple group');
 				
 					$label = Widget::Label(__('Old Password'));
-					if(isset($this->_errors['old-password'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['old-password']));	
+					if(isset($this->_errors['old-password'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['old-password']));
 					$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password'));
 					$div->appendChild((isset($this->_errors['old-password']) ? $this->wrapFormElementWithError($label, $this->_errors['old-password']) : $label));
 				}
 			}
 
-			$label = Widget::Label(($this->_context[0] == 'edit' ? __('New Password') : __('Password')));		
+			$label = Widget::Label(($this->_context[0] == 'edit' ? __('New Password') : __('Password')));
 			$label->appendChild(Widget::Input('fields[password]', NULL, 'password'));
 			$div->appendChild((isset($this->_errors['password']) ? $this->wrapFormElementWithError($label, $this->_errors['password']) : $label));
 
 			$label = Widget::Label(($this->_context[0] == 'edit' ? __('Confirm New Password') : __('Confirm Password')));
-			if(isset($this->_errors['password-confirmation'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['password-confirmation']));	
+			if(isset($this->_errors['password-confirmation'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['password-confirmation']));
 			$label->appendChild(Widget::Input('fields[password-confirmation]', NULL, 'password'));
 			$div->appendChild($label);
 			$group->appendChild($div);
@@ -293,12 +293,12 @@
 			}
 			$label = Widget::Label(__('Default Section'));
 			
-		    $sectionManager = new SectionManager($this->_Parent);
-		    $sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+		$sectionManager = new SectionManager($this->_Parent);
+		$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 		
 			$options = array();
 			
-			if(is_array($sections) && !empty($sections)) 
+			if(is_array($sections) && !empty($sections))
 				foreach($sections as $s) $options[] = array($s->get('id'), $author->get('default_section') == $s->get('id'), $s->get('name'));
 			
 			$label->appendChild(Widget::Select('fields[default_section]', $options));
@@ -328,7 +328,7 @@
 
 				$fields = $_POST['fields'];
 
-			    $this->_Author = new Author;
+			$this->_Author = new Author;
 
 				$this->_Author->set('user_type', $fields['user_type']);
 				$this->_Author->set('primary', 'no');
@@ -344,7 +344,7 @@
 				if($this->_Author->validate($this->_errors)):
 					
 					if($fields['password'] != $fields['password-confirmation']){
-						$this->_errors['password'] = $this->_errors['password-confirmation'] = __('Passwords did not match');			
+						$this->_errors['password'] = $this->_errors['password-confirmation'] = __('Passwords did not match');
 					}
 				
 					elseif($author_id = $this->_Author->commit()){
@@ -353,9 +353,9 @@
 						###
 						# Delegate: Create
 						# Description: Creation of a new Author. The ID of the author is provided.
-						//$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('author_id' => $author_id)); 	
+						//$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('author_id' => $author_id));
 
-			  		   redirect(URL."/symphony/system/authors/edit/$author_id/created/");	
+			redirect(URL."/symphony/system/authors/edit/$author_id/created/");
 	
 					}
 					
@@ -380,7 +380,7 @@
 
 				$fields = $_POST['fields'];
 				
-			    $this->_Author = AuthorManager::fetchByID($author_id);
+			$this->_Author = AuthorManager::fetchByID($author_id);
 
 				$authenticated = false;
 				if($fields['email'] != $this->_Author->get('email')) $changing_email = true;
@@ -392,7 +392,7 @@
 				
 				// Developers don't need to specify the old password, unless it's their own account
 				elseif(Administration::instance()->Author->isDeveloper() && $isOwner === false){
-					$authenticated = true;					
+					$authenticated = true;
 				}
 
 				$this->_Author->set('id', $author_id);
@@ -427,7 +427,7 @@
 						$this->_errors['password'] = $this->_errors['password-confirmation'] = __('Passwords did not match');
 					}
 				
-					elseif($this->_Author->commit()){					
+					elseif($this->_Author->commit()){
 						
 						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' OR `author_id` = '".$author_id."' ");
 						
@@ -437,9 +437,9 @@
 						###
 						# Delegate: Edit
 						# Description: After editing an author. ID of the author is provided.
-						//$ExtensionManager->notifyMembers('Edit', getCurrentPage(), array('author_id' => $_REQUEST['id']));  	
+						//$ExtensionManager->notifyMembers('Edit', getCurrentPage(), array('author_id' => $_REQUEST['id']));
 
-		  		    	redirect(URL . '/symphony/system/authors/edit/' . $author_id . '/saved/');	
+		redirect(URL . '/symphony/system/authors/edit/' . $author_id . '/saved/');
 
 					}
 				
@@ -449,18 +449,18 @@
 
 			}
 			
-			elseif(@array_key_exists('delete', $_POST['action'])){	 	
+			elseif(@array_key_exists('delete', $_POST['action'])){
 
 				## TODO: Fix Me
 				###
 				# Delegate: Delete
 				# Description: Prior to deleting an author. ID is provided.
-				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('author_id' => $author_id));		
+				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('author_id' => $author_id));
 
 				AuthorManager::delete($author_id);
 
 				redirect(URL . '/symphony/system/authors/');
-			}						
+			}
 		}
 		
 	}
