@@ -3,6 +3,7 @@ var Symphony;
 (function($) {
 	Symphony = {
 		WEBSITE: $('script')[0].src.match('(.*)/symphony')[1],
+		LANG: $('html').attr('lang'),
 		Language: {
 			UNTITLED:         "Untitled",
 			CREATE_ITEM:      "Add item",
@@ -66,6 +67,22 @@ var Symphony;
 		}
 	};
 
+	// Load translations for foreign languages
+	if(Symphony.LANG != 'en') {
+		$.ajax({
+			type: 'POST',
+			url: Symphony.WEBSITE + '/symphony/ajax/translate',
+			data: { 
+				language: Symphony.Language 
+			},
+			dataType: 'json',
+			success: function(result) {
+				Symphony.Language = result;
+			}
+		});
+	}
+
+	// Set JavaScript status
 	$(document.documentElement).addClass('active');
 
 	// Sortable lists
