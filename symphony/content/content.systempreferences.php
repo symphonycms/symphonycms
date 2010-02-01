@@ -28,15 +28,18 @@
 		    }
 		    
 		    // Get available languages
-		    $languages = LANG::getAvailableLanguages(new ExtensionManager($this->_parent));
+		    $languages = Lang::getAvailableLanguages(new ExtensionManager(Administration::instance()));
+		
 			if(count($languages > 1)) {
 			    // Create language selection
 				$group = new XMLElement('fieldset');
 				$group->setAttribute('class', 'settings');
 				$group->appendChild(new XMLElement('legend', __('System Language')));			
 				$label = Widget::Label();
+				
 				// Get language names
-				sort($languages);
+				ksort($languages); 
+				
 				foreach($languages as $code => $name) {
 					$options[] = array($code, ($code == __LANG__ ? true : false), $name);
 				}
