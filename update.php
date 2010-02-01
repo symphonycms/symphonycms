@@ -92,6 +92,11 @@
 		## Build is no longer used
 		unset($settings['symphony']['build']);
 
+		## Set the default language
+		if(!isset($settings['symphony']['lang'])){
+			$settings['symphony']['lang'] = 'en';
+		}
+
 		if(writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']) === true){
 			
 			// build a Frontend page instance to initialise database
