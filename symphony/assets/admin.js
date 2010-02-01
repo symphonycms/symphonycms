@@ -70,6 +70,7 @@ var Symphony;
 	// Load translations for foreign languages
 	if(Symphony.LANG != 'en') {
 		$.ajax({
+			async: false,
 			type: 'POST',
 			url: Symphony.WEBSITE + '/symphony/ajax/translate',
 			data: { 
