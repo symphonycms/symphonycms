@@ -116,10 +116,11 @@ var Symphony;
 		},
 		update: function(target) {
 			var a = target.height(),
-			    b = target.offset().top;
-
+			    b = target.offset().top,
+				prev_offset = (target.prev().length) ? target.prev().offset().top : 0;
+			
 			movable.target = target;
-			movable.min    = Math.min(b, a + (target.prev().offset().top || -Infinity));
+			movable.min    = Math.min(b, a + (prev_offset || -Infinity));
 			movable.max    = Math.max(a + b, b + (target.next().height() ||  Infinity));
 		}
 	};
