@@ -47,7 +47,7 @@
 				FrontendPageNotFoundExceptionHandler::render($e);
 			}			
 			catch(Exception $e){
-				$result->appendChild(new XMLElement('error', $e->getMessage()));
+				$result->appendChild(new XMLElement('error', General::sanitize($e->getMessage())));
 				return $result;
 			}	
 
