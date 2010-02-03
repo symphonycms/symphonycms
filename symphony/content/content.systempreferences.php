@@ -46,7 +46,7 @@
 				$select = Widget::Select('settings[symphony][lang]', $options);			
 				$label->appendChild($select);
 				$group->appendChild($label);			
-				//$group->appendChild(new XMLElement('p', __('Authors can set up a differing language in their profiles.'), array('class' => 'help')));
+				$group->appendChild(new XMLElement('p', __('Authors can set up a differing language in their profiles.'), array('class' => 'help')));
 				// Append language selection
 				$this->Form->appendChild($group);
 			}
