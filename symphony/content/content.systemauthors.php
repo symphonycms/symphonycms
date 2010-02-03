@@ -293,8 +293,8 @@ require_once(TOOLKIT . '/class.sectionmanager.php');
 			}
 			$label = Widget::Label(__('Default Section'));
 			
-		$sectionManager = new SectionManager($this->_Parent);
-		$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+			$sectionManager = new SectionManager($this->_Parent);
+			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 		
 			$options = array();
 			
@@ -305,6 +305,37 @@ require_once(TOOLKIT . '/class.sectionmanager.php');
 			$group->appendChild($label);
 			
 			$this->Form->appendChild($group);
+			###
+			
+			### Custom Language Selection ###
+			$languages = Lang::getAvailableLanguages(Administration::instance()->ExtensionManager);
+			if(count($languages > 1)) {
+				
+				// Get language names
+				asort($languages);
+				
+				$group = new XMLElement('fieldset');
+				$group->setAttribute('class', 'settings');
+				$group->appendChild(new XMLElement('legend', __('Custom Preferences')));
+	
+				$div = new XMLElement('div');
+				$div->setAttribute('class', 'group');
+			
+				$label = Widget::Label(__('Language'));
+
+				$options = array(
+					array(NULL, is_null($author->get('language')), __('System Default'))
+				);
+				
+				foreach($languages as $code => $name) {
+					$options[] = array($code, $code == $author->get('language'), $name);
+				}
+				$select = Widget::Select('fields[language]', $options);			
+				$label->appendChild($select);
+				$group->appendChild($label);			
+	
+				$this->Form->appendChild($group);
+			}
 			###
 			
 			$div = new XMLElement('div');
@@ -340,6 +371,7 @@ require_once(TOOLKIT . '/class.sectionmanager.php');
 				$this->_Author->set('password', (trim($fields['password']) == '' ? '' : md5($fields['password'])));
 				$this->_Author->set('default_section', intval($fields['default_section']));
 				$this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
+				$this->_Author->set('language', $fields['language']);
 				
 				if($this->_Author->validate($this->_errors)):
 					
@@ -355,7 +387,7 @@ require_once(TOOLKIT . '/class.sectionmanager.php');
 						# Description: Creation of a new Author. The ID of the author is provided.
 						//$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('author_id' => $author_id));
 
-			redirect(URL."/symphony/system/authors/edit/$author_id/created/");
+						redirect(URL."/symphony/system/authors/edit/$author_id/created/");
 	
 					}
 					
@@ -409,6 +441,8 @@ require_once(TOOLKIT . '/class.sectionmanager.php');
 				$this->_Author->set('username', $fields['username']);
 				$this->_Author->set('first_name', General::sanitize($fields['first_name']));
 				$this->_Author->set('last_name', General::sanitize($fields['last_name']));
+				$this->_Author->set('language', $fields['language']);
+				
 				if(trim($fields['password']) != ''){
 					$this->_Author->set('password', md5($fields['password']));
 					$changing_password = true;
@@ -439,7 +473,7 @@ require_once(TOOLKIT . '/class.sectionmanager.php');
 						# Description: After editing an author. ID of the author is provided.
 						//$ExtensionManager->notifyMembers('Edit', getCurrentPage(), array('author_id' => $_REQUEST['id']));
 
-		redirect(URL . '/symphony/system/authors/edit/' . $author_id . '/saved/');
+						redirect(URL . '/symphony/system/authors/edit/' . $author_id . '/saved/');
 
 					}
 				

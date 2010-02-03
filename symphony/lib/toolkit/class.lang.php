@@ -82,15 +82,18 @@
 		private static $_transliterations;		
 		private static $_instance;
 				
-		private static function __load($path, $lang, $clear=false) {
-			
+		public static function load($path, $lang, $clear=false) {
+
 			if((bool)$clear === true || !(self::$_dictionary instanceof Dictionary)) {
 				self::$_dictionary = new Dictionary(array());
 				self::$_transliterations = array();
 			}
 
 			$include = sprintf($path, $lang);
-			if(file_exists($include)) require($include);
+			
+			if(file_exists($include)){
+				require($include);
+			}
 
 			if(isset($dictionary) && is_array($dictionary)) self::$_dictionary->merge($dictionary);
 			if(isset($transliterations) && is_array($transliterations)) self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
@@ -101,7 +104,7 @@
 			}
 		}
 		
-		public static function init($path, $lang) {
+		/*public static function ($path, $lang) {
 			
 			if(!(self::$_instance instanceof self)) {
 				self::$_instance = new self;
@@ -110,10 +113,10 @@
 			self::__load($path, $lang, true);
 			
 			return self::$_instance;
-		}
+		}*/
 
 		public static function add($path, $lang) {
-			self::__load($path, $lang);
+			self::load($path, $lang);
 		}
 
 		public static function Transliterations() {

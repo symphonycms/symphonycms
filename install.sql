@@ -13,6 +13,7 @@ CREATE TABLE `tbl_authors` (
   `primary` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `default_section` int(11) NOT NULL,
   `auth_token_active` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
+  `language` varchar(3) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

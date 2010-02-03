@@ -38,10 +38,10 @@
 				$label = Widget::Label();
 				
 				// Get language names
-				ksort($languages); 
+				asort($languages); 
 				
 				foreach($languages as $code => $name) {
-					$options[] = array($code, ($code == __LANG__ ? true : false), $name);
+					$options[] = array($code, $code == Symphony::Configuration()->get('lang', 'symphony'), $name);
 				}
 				$select = Widget::Select('settings[symphony][lang]', $options);			
 				$label->appendChild($select);

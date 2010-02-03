@@ -360,7 +360,9 @@
 				$about['handle'] = $name;
 				$about['status'] = $this->fetchStatus($name);
 
-				if($about['status'] == EXTENSION_ENABLED) Lang::add($this->__getClassPath($name) . '/lang/lang.%s.php', __LANG__);
+				if($about['status'] == EXTENSION_ENABLED){
+					Lang::add($this->__getClassPath($name) . '/lang/lang.%s.php', Symphony::lang());
+				}
 
 				$nav = @call_user_func(array(&$classname, 'fetchNavigation'));
 				
