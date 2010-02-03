@@ -71,11 +71,9 @@ var Symphony;
 	if(Symphony.LANG != 'en') {
 		$.ajax({
 			async: false,
-			type: 'POST',
+			type: 'GET',
 			url: Symphony.WEBSITE + '/symphony/ajax/translate',
-			data: { 
-				language: Symphony.Language 
-			},
+			data: Symphony.Language,
 			dataType: 'json',
 			success: function(result) {
 				Symphony.Language = result;

@@ -15,9 +15,9 @@
 		}
 
 		public function view(){
-			$strings = $_POST['language'];
+			$strings = $_GET;			
 			foreach($strings as $id => $string) {
-				$strings[$id] = __($string);
+				$strings[$id] = __(urldecode($string));
 			}
 			$this->_Result = json_encode($strings);	
 		}
