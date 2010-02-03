@@ -28,22 +28,25 @@
 		    }
 		    
 		    // Get available languages
-		    $languages = LANG::getAvailableLanguages(new ExtensionManager($this->_parent));
+		    $languages = Lang::getAvailableLanguages(new ExtensionManager(Administration::instance()));
+		
 			if(count($languages > 1)) {
 			    // Create language selection
 				$group = new XMLElement('fieldset');
 				$group->setAttribute('class', 'settings');
 				$group->appendChild(new XMLElement('legend', __('System Language')));			
 				$label = Widget::Label();
+				
 				// Get language names
-				asort($languages);
+				asort($languages); 
+				
 				foreach($languages as $code => $name) {
-					$options[] = array($code, ($code == __LANG__ ? true : false), $name);
+					$options[] = array($code, $code == Symphony::Configuration()->get('lang', 'symphony'), $name);
 				}
 				$select = Widget::Select('settings[symphony][lang]', $options);			
 				$label->appendChild($select);
 				$group->appendChild($label);			
-				$group->appendChild(new XMLElement('p', __('Authors can set up a differing language in their profiles.'), array('class' => 'help')));
+				//$group->appendChild(new XMLElement('p', __('Authors can set up a differing language in their profiles.'), array('class' => 'help')));
 				// Append language selection
 				$this->Form->appendChild($group);
 			}
@@ -81,7 +84,7 @@
 				$this->_Parent->ExtensionManager->notifyMembers('Save', '/system/preferences/', array('settings' => &$settings, 'errors' => &$this->_errors));
 				
 				if (!is_array($this->_errors) || empty($this->_errors)) {
-					
+
 					if(is_array($settings) && !empty($settings)){
 						foreach($settings as $set => $values) {
 							foreach($values as $key => $val) {
@@ -97,4 +100,3 @@
 			}
 		}	
 	}
-

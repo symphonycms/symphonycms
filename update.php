@@ -57,7 +57,7 @@
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.0.7');
+	define('kVERSION', '2.0.7RC2');
 	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/'.kVERSION.'/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -91,6 +91,11 @@
 		
 		## Build is no longer used
 		unset($settings['symphony']['build']);
+
+		## Set the default language
+		if(!isset($settings['symphony']['lang'])){
+			$settings['symphony']['lang'] = 'en';
+		}
 
 		if(writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']) === true){
 			
@@ -198,6 +203,10 @@ Options +FollowSymlinks
 			if (version_compare($existing_version, '2.0.6', '<=')){
 				$frontend->Database->query('ALTER TABLE `tbl_extensions` CHANGE `version` `version` VARCHAR(20) NOT NULL');
 				$frontend->Database->query("ALTER TABLE `tbl_authors` ADD `language` VARCHAR(255) DEFAULT 'system'");
+			}
+			
+			if(version_compare($existing_version, '2.0.7RC1', '<=')){
+				$frontend->Database->query('ALTER TABLE `tbl_authors` ADD `language` VARCHAR(3) NULL DEFAULT NULL');
 			}
 			
 			$sbl_version = $frontend->Database->fetchVar('version', 0, 

@@ -30,7 +30,7 @@ h1 a:hover,
 
 /* Navigation */
 #nav {
-	z-index: 3;
+	z-index: 30;
 	position: relative;
 	top: -5px;
 	float: left;

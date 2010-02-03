@@ -24,6 +24,8 @@
 		public static $Configuration;
 		public static $Database;
 		
+		private static $_lang;
+		
 		public $Log;
 		public $Profiler;
 		public $Cookie;
@@ -48,8 +50,11 @@
 			include(CONFIG);
 			self::$Configuration = new Configuration(true);
 			self::$Configuration->setArray($settings);
-
-			define_safe('__LANG__', (self::$Configuration->get('lang', 'symphony') ? self::$Configuration->get('lang', 'symphony') : 'en'));				
+			
+			self::$_lang = (self::$Configuration->get('lang', 'symphony') ? self::$Configuration->get('lang', 'symphony') : 'en');		
+			
+			// Legacy support for __LANG__ constant
+			define_safe('__LANG__', self::lang());
 			
 			define_safe('__SYM_DATE_FORMAT__', self::$Configuration->get('date_format', 'region'));
 			define_safe('__SYM_TIME_FORMAT__', self::$Configuration->get('time_format', 'region'));
@@ -63,7 +68,11 @@
 			$this->initialiseCookie();
 			
 			try{
-				Lang::init(LANG . '/lang.%s.php', __LANG__);
+				Lang::load(
+					LANG . '/lang.%s.php', 
+					self::lang(),
+					true
+				);
 			}
 			catch(Exception $e){
 				trigger_error($e->getMessage(), E_USER_ERROR);
@@ -77,6 +86,10 @@
 
 			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
 			
+		}
+		
+		public function lang(){
+			return self::$_lang;
 		}
 		
 		public function initialiseCookie(){
@@ -180,6 +193,9 @@
 					$this->_user_id = $id;
 					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 					$this->Author = new Author($id);
+					
+					$this->reloadLangFromAuthorPreference();
+					
 					return true;
 				}
 				
@@ -192,7 +208,7 @@
 		public function logout(){
 			$this->Cookie->expire();
 		}
-		
+
 		public function login($username, $password, $isHash=false){
 			
 			$username = self::$Database->cleanValue($username);
@@ -210,6 +226,9 @@
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
 					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+					
+					$this->reloadLangFromAuthorPreference();
+
 					return true;
 				}
 			}
@@ -246,11 +265,28 @@
 				$this->Cookie->set('username', $row['username']);
 				$this->Cookie->set('pass', $row['password']);
 				self::$Database->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+				
+				$this->reloadLangFromAuthorPreference();
+				
 				return true;
 			}
 			
 			return false;
 						
+		}
+		
+		public function reloadLangFromAuthorPreference(){	
+			
+			if($this->Author->get('language') != self::lang()){
+				try{
+					Lang::load(LANG . '/lang.%s.php', $this->Author->get('language'), true);
+					self::$_lang = $this->Author->get('language');
+				}
+				catch(Exception $e){
+					trigger_error($e->getMessage(), E_USER_ERROR);
+				}
+			}
+			
 		}
 		
 		public function resolvePageTitle($page_id) {
