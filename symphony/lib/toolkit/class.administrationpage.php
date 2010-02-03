@@ -370,7 +370,7 @@
 				}
 				
 				$nav[$index] = array(
-					'name' => (string)$content->name,
+					'name' => __(strval($content->name)),
 					'index' => $index,
 					'children' => array()
 				);
@@ -385,7 +385,7 @@
 						
 						$item = array(
 							'link' => (string)$child->attributes()->link,
-							'name' => (string)$child->attributes()->name,
+							'name' => __(strval($child->attributes()->name)),
 							'visible' => ((string)$child->attributes()->visible == 'no' ? 'no' : 'yes'),
 						);
 						
