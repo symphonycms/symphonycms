@@ -427,10 +427,11 @@
 				}
 			}
 			
-			$extensions = $this->_Parent->ExtensionManager->listInstalledHandles();
+			$extensions = Administration::instance()->ExtensionManager->listInstalledHandles();
 
 			foreach($extensions as $e){
-				$info = $this->_Parent->ExtensionManager->about($e);
+				$info = Administration::instance()->ExtensionManager->about($e);
+
 				if(isset($info['navigation']) && is_array($info['navigation']) && !empty($info['navigation'])){
 					
 					foreach($info['navigation'] as $item){
@@ -518,28 +519,30 @@
 				}
 				
 			}
-			
+
 			####
 			# Delegate: ExtensionsAddToNavigation
-			# Description: After building the Navigation properties array. This is specifically for extentions to add their groups to the navigation or items to groups,
-			#			   already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need to edit existing navigation elements, use the 'NavigationPreRender' delegate.
+			# Description: After building the Navigation properties array. This is specifically 
+			# 			for extentions to add their groups to the navigation or items to groups,
+			# 			already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need 
+			#			to edit existing navigation elements, use the 'NavigationPreRender' delegate.
 			# Global: Yes
-			$this->_Parent->ExtensionManager->notifyMembers('ExtensionsAddToNavigation', '/backend/', array('navigation' => &$nav));
+			Administration::instance()->ExtensionManager->notifyMembers(
+				'ExtensionsAddToNavigation', '/backend/', array('navigation' => &$nav)
+			);
 			
-			$pageCallback = $this->_Parent->getPageCallback();
+			$pageCallback = Administration::instance()->getPageCallback();
 			
 			$pageRoot = $pageCallback['pageroot'] . (isset($pageCallback['context'][0]) ? $pageCallback['context'][0] . '/' : '');
 			$found = $this->__findActiveNavigationGroup($nav, $pageRoot);
 
-			## Normal searches failed. Use a regular expression using the page root. This is less efficent and should never really get invoked
-			## unless something weird is going on
+			## Normal searches failed. Use a regular expression using the page root. This is less 
+			## efficent and should never really get invoked unless something weird is going on
 			if(!$found) $this->__findActiveNavigationGroup($nav, '/^' . str_replace('/', '\/', $pageCallback['pageroot']) . '/i', true);
 
 			ksort($nav);		
 			$this->_navigation = $nav;
-			
-			//die;
-			
+
 		}		
 		
 		private function __findLocationIndexFromName($nav, $name){

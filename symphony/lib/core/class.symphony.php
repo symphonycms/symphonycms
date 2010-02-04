@@ -281,6 +281,8 @@
 				try{
 					Lang::load(LANG . '/lang.%s.php', $this->Author->get('language'), true);
 					self::$_lang = $this->Author->get('language');
+					
+					$this->ExtensionManager->loadAdditionalLanguages();
 				}
 				catch(Exception $e){
 					trigger_error($e->getMessage(), E_USER_ERROR);
