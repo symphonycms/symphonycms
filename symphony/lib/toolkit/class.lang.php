@@ -104,17 +104,6 @@
 			}
 		}
 		
-		/*public static function ($path, $lang) {
-			
-			if(!(self::$_instance instanceof self)) {
-				self::$_instance = new self;
-			}
-
-			self::__load($path, $lang, true);
-			
-			return self::$_instance;
-		}*/
-
 		public static function add($path, $lang) {
 			self::load($path, $lang);
 		}
@@ -247,14 +236,16 @@
 		 * Return all available languages (core and extensions)
 		 * @return array language codes, e. g. 'en'
 		 */
-		public static function getAvailableLanguages($extensionManager) {
+		public static function getAvailableLanguages($extensionManager=false) {
 			$languages = array();
 			// Get core translation files
 			$languages = self::getLanguageCodes('./symphony/lib/lang', $languages);
 			// Get extension translation files
-			foreach ($extensionManager->listAll() as $extension => $about) {
-				$path = EXTENSIONS . '/' . $about['handle'] . '/lang';
-				if(file_exists($path)) $languages = self::getLanguageCodes($path, $languages);
+			if($extensionManager) {
+				foreach ($extensionManager->listAll() as $extension => $about) {
+					$path = EXTENSIONS . '/' . $about['handle'] . '/lang';
+					if(file_exists($path)) $languages = self::getLanguageCodes($path, $languages);
+				}
 			}
 			// Return languages codes	
 			return $languages;
