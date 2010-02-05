@@ -104,6 +104,21 @@
 			}
 		}
 		
+		public static function findLanguagePath($lang, $extensionManager) {
+			$file = sprintf('/lang.%s.php', $lang);
+			if(!file_exists(LANG . $file)) {
+				foreach($extensionManager->listAll() as $extension => $about) {
+					$path = EXTENSIONS . '/' . $about['handle'] . '/lang';
+					if(file_exists($path . $file)) {
+						return $path;
+					}
+				}
+			}
+			else {
+				return LANG;
+			}
+		}
+		
 		public static function add($path, $lang) {
 			self::load($path, $lang);
 		}
