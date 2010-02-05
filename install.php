@@ -66,7 +66,11 @@
 		}
 
 		try{
-			Lang::init('./symphony/lib/lang/lang.%s.php', $lang);
+			Lang::load(
+				'./symphony/lib/lang/lang.%s.php', 
+				$lang,
+				true
+			);
 		}
 		catch(Exception $s){
 			return NULL;
