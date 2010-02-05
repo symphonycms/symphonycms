@@ -49,6 +49,7 @@ h1 a:hover,
 	margin: 0 -19px 0 19px;
 	padding: 15px 1em;
 	height: 0;
+	cursor:pointer;
 }
 #nav > li:hover,
 #nav > li.active {
