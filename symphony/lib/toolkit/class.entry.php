@@ -170,9 +170,9 @@
 			$this->_data[$field_id] = $data;
 		}
 		
-		function getData($field_id=NULL){
+		function getData($field_id=NULL, $asObject=false){
 			if(!$field_id) return $this->_data;
-			return $this->_data[$field_id];
+			return ($asObject == true ? (object)$this->_data[$field_id] : $this->_data[$field_id]);
 		}
 		
 		function findDefaultData(){
