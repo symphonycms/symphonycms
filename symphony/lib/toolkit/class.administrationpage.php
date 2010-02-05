@@ -255,15 +255,16 @@
 
 									if($can_access_child) {
 										
-										## Make sure preferences menu only shows if extensions are subscribed to it
+										## Make sure preferences menu only shows if multiple languages or extension preferences are available
 										if($c['name'] == __('Preferences') && $n['name'] == __('System')){
 											$extensions = Symphony::Database()->fetch("
 													SELECT * 
 													FROM `tbl_extensions_delegates` 
 													WHERE `delegate` = 'AddCustomPreferenceFieldsets'"
 											);
-											
-											if(!is_array($extensions) || empty($extensions)){
+
+											$l = Lang::getAvailableLanguages(new ExtensionManager($this->_Parent));
+											if(count($l) == 1 && (!is_array($extensions) || empty($extensions))){
 												continue;
 											}
 											
