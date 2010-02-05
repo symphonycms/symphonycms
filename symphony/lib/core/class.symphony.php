@@ -66,10 +66,16 @@
 			GenericErrorHandler::initialise($this->Log);
 			
 			$this->initialiseCookie();
+
+			$this->initialiseDatabase();
+
+			if(!$this->initialiseExtensionManager()){
+				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
+			}
 			
 			try{
 				Lang::load(
-					LANG . '/lang.%s.php', 
+					Lang::findLanguagePath(self::lang(), $this->ExtensionManager) . '/lang.%s.php', 
 					self::lang(),
 					true
 				);
@@ -77,13 +83,7 @@
 			catch(Exception $e){
 				trigger_error($e->getMessage(), E_USER_ERROR);
 			}
-
-			$this->initialiseDatabase();
 	
-			if(!$this->initialiseExtensionManager()){
-				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
-			}
-
 			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
 			
 		}
@@ -277,10 +277,15 @@
 		
 		public function reloadLangFromAuthorPreference(){	
 			
-			if($this->Author->get('language') && $this->Author->get('language') != self::lang()){
+			$lang = $this->Author->get('language');
+			if($lang && $lang != self::lang()){
 				try{
-					Lang::load(LANG . '/lang.%s.php', $this->Author->get('language'), true);
-					self::$_lang = $this->Author->get('language');
+					Lang::load(
+						Lang::findLanguagePath($lang, $this->ExtensionManager) . '/lang.%s.php', 
+						$lang, 
+						true
+					);
+					self::$_lang = $lang;
 					
 					$this->ExtensionManager->loadAdditionalLanguages();
 				}
