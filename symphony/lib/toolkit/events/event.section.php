@@ -35,9 +35,11 @@
 					list($type, $status, $message) = $fr;
 
 					$result->appendChild(buildFilterElement($type, ($status ? 'passed' : 'failed'), $message));
-					$result->appendChild($post_values);
+					
 					
 					if(!$status){
+						$result->appendChild($post_values);
+						
 						$result->setAttribute('result', 'error');
 						$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 						return false;
@@ -122,7 +124,7 @@
 
 			## PASSIVE FILTERS ONLY AT THIS STAGE. ENTRY HAS ALREADY BEEN CREATED. 
 
-			if(in_array('send-email', $filters) && !in_array('expect-multiple', $filters)){
+			if(@in_array('send-email', $filters) && !@in_array('expect-multiple', $filters)){
 
 				if(!function_exists('__sendEmailFindFormValue')){
 					function __sendEmailFindFormValue($needle, $haystack, $discard_field_name=true, $default=NULL, $collapse=true){
@@ -246,14 +248,14 @@
 			
 			return true;
 			
-			## End FUnction
+			## End Function
 		}
 	}
 	
 	
 	$result = new XMLElement(self::ROOTELEMENT);
 	
-	if(in_array('admin-only', $this->eParamFILTERS) && !$this->_Parent->isLoggedIn()){
+	if(@in_array('admin-only', $this->eParamFILTERS) && !$this->_Parent->isLoggedIn()){
 		$result->setAttribute('result', 'error');			
 		$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 		$result->appendChild(buildFilterElement('admin-only', 'failed'));
@@ -262,7 +264,7 @@
 
 	$entry_id = $position = $fields = NULL;	
 	
-	if(in_array('expect-multiple', $this->eParamFILTERS)){
+	if(@in_array('expect-multiple', $this->eParamFILTERS)){
 		if(is_array($_POST['fields']) && isset($_POST['fields'][0])){
 
 			$filedata = NULL;
