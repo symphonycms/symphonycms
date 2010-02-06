@@ -73,17 +73,8 @@
 				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
 			}
 			
-			try{
-				Lang::load(
-					Lang::findLanguagePath(self::lang(), $this->ExtensionManager) . '/lang.%s.php', 
-					self::lang(),
-					true
-				);
-			}
-			catch(Exception $e){
-				trigger_error($e->getMessage(), E_USER_ERROR);
-			}
-	
+			Lang::loadAll($this->ExtensionManager);
+
 			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
 			
 		}
@@ -279,18 +270,13 @@
 			
 			$lang = $this->Author->get('language');
 			if($lang && $lang != self::lang()){
-				try{
-					Lang::load(
-						Lang::findLanguagePath($lang, $this->ExtensionManager) . '/lang.%s.php', 
-						$lang, 
-						true
-					);
-					self::$_lang = $lang;
-					
-					$this->ExtensionManager->loadAdditionalLanguages();
+				self::$_lang = $lang;
+				if($lang != 'en') {
+					Lang::loadAll($this->ExtensionManager);
 				}
-				catch(Exception $e){
-					trigger_error($e->getMessage(), E_USER_ERROR);
+				else {
+					// As there is no English dictionary the default dictionary needs to be cleared
+					Lang::clear();
 				}
 			}
 			
