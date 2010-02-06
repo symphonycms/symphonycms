@@ -148,7 +148,7 @@
 			if(!file_exists(LANG . $file)) {
 				foreach($ExtensionManager->listAll() as $extension => $about) {
 					// Explicitly match localisation extensions
-					if(strpos($about['handle'], 'lang_')) continue;
+					if(strpos($about['handle'], 'lang_') === false) continue;
 					$path = EXTENSIONS . '/' . $about['handle'] . '/lang';
 					if(file_exists($path . $file)) {
 						return $path;
