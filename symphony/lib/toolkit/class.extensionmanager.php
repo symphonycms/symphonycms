@@ -374,17 +374,7 @@
 			return false;
 									        
         }
-		
-		public function loadAdditionalLanguages(){
-			foreach($this->listAll() as $handle => $e){
-				$lang_path = $this->__getClassPath($handle) . '/lang/lang.%s.php';
-				if($e['status'] == EXTENSION_ENABLED && file_exists(sprintf($lang_path, Symphony::lang()))){
-					Lang::add($lang_path, Symphony::lang());
-				}			
-			}
-
-		}
-		
+				
 		private function __cleanupDatabase(){
 			
 			## Grab any extensions sitting in the database
