@@ -36,7 +36,7 @@
 			
 			$status = self::__OK__;
 			
-			if(!is_array($data)) return array('user_id' => $data);
+			if(!is_array($data) && !is_null($data)) return array('user_id' => $data);
 			
 			if(empty($data)) return NULL;
 			

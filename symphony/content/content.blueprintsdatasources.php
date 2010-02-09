@@ -556,7 +556,8 @@
 						array('name', ($fields['source'] == 'users' && in_array('name', $fields['xml_elements'])), 'name'),
 						array('email', ($fields['source'] == 'users' && in_array('email', $fields['xml_elements'])), 'email'),
 						array('authentication-token', ($fields['source'] == 'users' && in_array('authentication-token', $fields['xml_elements'])), 'authentication-token'),
-						array('default-section', ($fields['source'] == 'users' && in_array('default-section', $fields['xml_elements'])), 'default-section'),
+						array('default-section', ($fields['source'] == 'users' && in_array('default-section', $fields['xml_elements'])), 'default-section'),	
+						array('formatting-preference', ($fields['source'] == 'users' && in_array('formatting-preference', $fields['xml_elements'])), 'formatting-preference'),
 				)),					
 			);
 			

@@ -36,7 +36,7 @@
 			return $this->_pageData;
 		}
 		
-		public function env(){
+		public function Env(){
 			return array('env' => &$this->_env, 'param' => &$this->_param);
 		}
 		

@@ -286,7 +286,7 @@
 					$newpass = General::generatePassword();
 
 					General::sendEmail($user['email'], 
-								'DONOTREPLY@symphony21.com', 
+								'noreply@symphony-cms.com', 
 								'Symphony Concierge', 
 								'RE: New Symphony Account Password', 
 								'Hi ' . $user['first_name']. ',' . self::CRLF .

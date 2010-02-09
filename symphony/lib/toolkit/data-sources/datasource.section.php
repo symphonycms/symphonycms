@@ -3,7 +3,7 @@
 	if(!function_exists('appendParamOutputValue')){
 		function appendParamOutputValue($key, $value){
 			
-			$env = Frontend::instance()->Page()->env();
+			$env = Frontend::instance()->Page()->Env();
 
 			if(!is_array($env['env']['pool'][$key])) $env['env']['pool'][$key] = array();
 

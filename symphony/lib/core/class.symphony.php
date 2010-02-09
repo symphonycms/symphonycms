@@ -168,10 +168,10 @@
 			}
 						
 		}
-
+		
 		public function isLoggedIn(){
 			
-			if ($this->Author) return true;
+			if ($this->User) return true;
 			
 			$username = self::$Database->cleanValue($this->Cookie->get('username'));
 			$password = self::$Database->cleanValue($this->Cookie->get('pass'));
@@ -182,8 +182,8 @@
 
 				if($id){
 					$this->_user_id = $id;
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
-					$this->Author = new Author($id);
+					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");
+					$this->User = new User($id);
 					
 					$this->reloadLangFromAuthorPreference();
 					
@@ -216,7 +216,7 @@
 					$this->User = new User($id);
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");
 					
 					$this->reloadLangFromAuthorPreference();
 

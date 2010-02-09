@@ -144,7 +144,7 @@
 				
 				// Put the newly created ID into the param pool
 				if($event->eParamOUTPUT_ID_ON_SAVE === true){
-					$env = Frontend::instance()->Page()->env();
+					$env = Frontend::instance()->Page()->Env();
 					
 					$key = 'event-' . constant(get_class($event) . '::ROOTELEMENT') . '-id';
 					

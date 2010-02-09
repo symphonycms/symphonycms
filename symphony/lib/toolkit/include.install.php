@@ -593,10 +593,10 @@
 					$db->cleanValue($config['user']['email'])
 				);
 				
-				$install_log->pushToLog("MYSQL: Creating Default Author...", E_NOTICE, true, false);
-		        if(!$db->query($author_sql)){
+				$install_log->pushToLog("MYSQL: Creating Default User...", E_NOTICE, true, false);
+		        if(!$db->query($user_sql)){
 					$error = $db->getLastError();
-		            define('_INSTALL_ERRORS_', "There was an error while trying create the default author. MySQL returned: " . $error['num'] . ': ' . $error['msg']);       
+		            define('_INSTALL_ERRORS_', "There was an error while trying create the default user. MySQL returned: " . $error['num'] . ': ' . $error['msg']);       
 		            $install_log->pushToLog("Failed", E_ERROR, true, true, true);                         
 		            installResult($Page, $install_log, $start);   
 
