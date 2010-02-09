@@ -159,7 +159,7 @@
 			return false;
 		}
 		
-		public function appendFormattedElement(&$wrapper, $data, $encode = false, $mode = null) {
+		public function appendFormattedElement(&$wrapper, $data, $encode=false, $mode=NULL, $entry_id=NULL) {
 			$wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($this->prepareTableValue($data)) : $this->prepareTableValue($data))));
 		}
 		

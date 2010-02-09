@@ -11,6 +11,7 @@
     Class ExtensionManager extends Manager{
 		
 		static private $_enabled_extensions = NULL;
+		static private $_subscriptions = NULL;
 		
         function __getClassName($name){
 	        return 'extension_' . $name;
@@ -184,7 +185,9 @@
 
 		public function listInstalledHandles(){
 			if(is_null(self::$_enabled_extensions)) {
-				self::$_enabled_extensions = Symphony::Database()->fetchCol('name', "SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'");
+				self::$_enabled_extensions = Symphony::Database()->fetchCol('name', 
+					"SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'"
+				);
 			}
 			return self::$_enabled_extensions;
 		}
@@ -210,6 +213,13 @@
         public function notifyMembers($delegate, $page, $context=array()){
 
 	        if((int)Symphony::Configuration()->get('allow_page_subscription', 'symphony') != 1) return;
+	
+			if (is_null(self::$_subscriptions)) {
+				self::$_subscriptions = Symphony::Database()->fetch("
+					SELECT t1.name, t2.page, t2.delegate, t2.callback
+					FROM `tbl_extensions` as t1 INNER JOIN `tbl_extensions_delegates` as t2 ON t1.id = t2.extension_id
+					WHERE t1.status = 'enabled'");										
+			}
 				
 			// Make sure $page is an array
 			if(!is_array($page)){
@@ -232,12 +242,16 @@
 				$page[] = '*';
 			}
 			
-			$services = Symphony::Database()->fetch("SELECT t1.*, t2.callback FROM `tbl_extensions` as t1 
-											LEFT JOIN `tbl_extensions_delegates` as t2 ON t1.id = t2.extension_id
-											WHERE (t2.page IN ('".implode("', '", $page)."'))
-											AND t2.delegate = '$delegate'
-											AND t1.status = 'enabled'");							
-
+			$services = null;
+			foreach(self::$_subscriptions as $subscription) {
+				foreach($page as $p) {
+					if ($p == $subscription['page'] && $delegate == $subscription['delegate']) {
+						if (!is_array($services)) $services = array();
+						$services[] = $subscription;
+					}
+				}				
+			}
+			
 			if(!is_array($services) || empty($services)) return NULL;
 	
 	        $context += array('parent' => &$this->_Parent, 'page' => $page, 'delegate' => $delegate);
@@ -348,8 +362,6 @@
 				$about['handle'] = $name;
 				$about['status'] = $this->fetchStatus($name);
 
-				if($about['status'] == EXTENSION_ENABLED) Lang::add($this->__getClassPath($name) . '/lang/lang.%s.php', __LANG__);
-
 				$nav = @call_user_func(array(&$classname, 'fetchNavigation'));
 				
 				if($nav != NULL) $about['navigation'] = $nav;
@@ -362,7 +374,7 @@
 			return false;
 									        
         }
-
+				
 		private function __cleanupDatabase(){
 			
 			## Grab any extensions sitting in the database

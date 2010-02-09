@@ -1,7 +1,5 @@
 <?php
 
-	
-	
 	require_once(TOOLKIT . '/class.fieldmanager.php');
 	
 	Class Section{
@@ -11,14 +9,14 @@
 		var $_fields;
 		var $_fieldManager;
 		
-		function __construct(&$parent){
+		public function __construct(&$parent){
 			$this->_Parent = $parent;
 			$this->_data = $this->_fields = array();
 			
-			$this->_fieldManager =& new FieldManager($this->_Parent);
+			$this->_fieldManager = new FieldManager($this->_Parent);
 		}
 		
-		function fetchAssociatedSections(){
+		public function fetchAssociatedSections(){
 			return Symphony::Database()->fetch("SELECT * 
 													FROM `tbl_sections_association` AS `sa`, `tbl_sections` AS `s` 
 													WHERE `sa`.`parent_section_id` = '".$this->get('id')."' 
@@ -28,40 +26,40 @@
 													
 		}
 		
-		function set($field, $value){
+		public function set($field, $value){
 			$this->_data[$field] = $value;
 		}
 
-		function get($field=NULL){			
+		public function get($field=NULL){			
 			if($field == NULL) return $this->_data;		
 			return $this->_data[$field];
 		}
 		
-		function addField(){
-			$this->_fields[] =& new Field($this->_fieldManager);
+		public function addField(){
+			$this->_fields[] = new Field($this->_fieldManager);
 		}
 		
-		function fetchVisibleColumns(){
+		public function fetchVisibleColumns(){
 			return $this->_fieldManager->fetch(NULL, $this->get('id'), 'ASC', 'sortorder', NULL, NULL, " AND t1.show_column = 'yes' ");	
 		}
 		
-		function fetchFields($type=NULL, $location=NULL){	
+		public function fetchFields($type=NULL, $location=NULL){	
 			return $this->_fieldManager->fetch(NULL, $this->get('id'), 'ASC', 'sortorder', $type, $location);
 		}
 		
-		function fetchFilterableFields($location=NULL){
+		public function fetchFilterableFields($location=NULL){
 			return $this->_fieldManager->fetch(NULL, $this->get('id'), 'ASC', 'sortorder', NULL, $location, NULL, Field::__FILTERABLE_ONLY__);
 		}
 				
-		function fetchToggleableFields($location=NULL){
+		public function fetchToggleableFields($location=NULL){
 			return $this->_fieldManager->fetch(NULL, $this->get('id'), 'ASC', 'sortorder', NULL, $location, NULL, Field::__TOGGLEABLE_ONLY__);
 		}
 		
-		function fetchFieldsSchema(){
+		public function fetchFieldsSchema(){
 			return Symphony::Database()->fetch("SELECT `id`, `element_name`, `type`, `location` FROM `tbl_fields` WHERE `parent_section` = '".$this->get('id')."' ORDER BY `sortorder` ASC");
 		}		
 				
-		function commit(){
+		public function commit(){
 			$fields = $this->_data;	
 			$retVal = NULL;
 			

@@ -49,6 +49,7 @@ h1 a:hover,
 	margin: 0 -19px 0 19px;
 	padding: 15px 1em;
 	height: 0;
+	cursor:pointer;
 }
 #nav > li:hover,
 #nav > li.active {
@@ -89,6 +90,11 @@ h1 a:hover,
 	color: #444;
 	text-decoration: none;
 }
+*:first-child+html #nav a {
+	background-color:#fff;
+	color: #444;
+}
+*:first-child+html #nav a:hover,
 #nav a:hover {
 	background-color: #7e7e70;
 	color: #fff;

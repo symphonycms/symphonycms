@@ -9,11 +9,11 @@
 
 		public $_errors;
 		
-		function __construct(&$parent){
+		public function __construct(&$parent){
 			parent::__construct($parent);
 		}
 		
-		function __viewIndex(){
+		public function __viewIndex(){
 			$this->setPageType('table');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a section'), 'create button'));
@@ -86,7 +86,7 @@
 			
 		}
 	
-		function __viewNew(){
+		public function __viewNew(){
 			
 			$this->setPageType('form');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
@@ -135,14 +135,22 @@
 			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label('Navigation Group <i>Created if does not exist</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
-			$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
-			foreach($sections as $s){
-					$ul->appendChild(new XMLElement('li', $s->get('navigation_group')));
-				}
-			
+
 			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
 			else $navgroupdiv->appendChild($label);
-			$navgroupdiv->appendChild($ul);
+			
+			if(is_array($sections) && !empty($sections)){
+				$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
+				$groups = array();
+				foreach($sections as $s){
+					if(in_array($s->get('navigation_group'), $groups)) continue;
+					$ul->appendChild(new XMLElement('li', $s->get('navigation_group')));
+					$groups[] = $s->get('navigation_group');
+				}
+
+				$navgroupdiv->appendChild($ul);
+			}
+			
 			$div->appendChild($navgroupdiv);
 			
 			$fieldset->appendChild($div);						
@@ -166,7 +174,7 @@
 					if($input = $fieldManager->create($data['type'])){
 						$input->setArray($data);
 
-						$wrapper =& new XMLElement('li');
+						$wrapper = new XMLElement('li');
 						
 						$input->set('sortorder', $position);
 						$input->displaySettingsPanel($wrapper, (isset($this->_errors[$position]) ? $this->_errors[$position] : NULL));
@@ -212,7 +220,7 @@
 			
 		}
 		
-		function __viewEdit(){
+		public function __viewEdit(){
 			
 			$section_id = $this->_context[1];	
 
@@ -313,16 +321,24 @@
 			$navgroupdiv = new XMLElement('div', NULL);
 			$sectionManager = new SectionManager($this->_Parent);
 			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
-			$label = Widget::Label('Navigation Group <i>Choose only one. Created if does not exist</i>');
+			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Choose only one. Created if does not exist') . '</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
-			$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
-			foreach($sections as $s){
-					$ul->appendChild(new XMLElement('li', $s->get('navigation_group')));
-				}
-			
+
 			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
 			else $navgroupdiv->appendChild($label);
-			$navgroupdiv->appendChild($ul);
+			
+			if(is_array($sections) && !empty($sections)){
+				$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
+				$groups = array();
+				foreach($sections as $s){
+					if(in_array($s->get('navigation_group'), $groups)) continue;
+					$ul->appendChild(new XMLElement('li', $s->get('navigation_group')));
+					$groups[] = $s->get('navigation_group');
+				}
+
+				$navgroupdiv->appendChild($ul);
+			}
+
 			$div->appendChild($navgroupdiv);
 			
 			$fieldset->appendChild($div);
@@ -344,7 +360,7 @@
 			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $position => $field){
 
-					$wrapper =& new XMLElement('li');
+					$wrapper = new XMLElement('li');
 					
 					$field->set('sortorder', $position);
 					$field->displaySettingsPanel($wrapper, (isset($this->_errors[$position]) ? $this->_errors[$position] : NULL));
@@ -386,13 +402,13 @@
 			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
 		
 			$button = new XMLElement('button', __('Delete'));
-			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this section')));
+			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this section'), 'type' => 'submit'));
 			$div->appendChild($button);
 
 			$this->Form->appendChild($div);			
 		}
 		
-		function __actionIndex(){
+		public function __actionIndex(){
 
 			$checked = @array_keys($_POST['items']);
 
@@ -426,7 +442,7 @@
 						
 		}
 		
-		function __actionNew(){		
+		public function __actionNew(){		
 			
 			if(@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
 
@@ -557,7 +573,7 @@
 			
 		}
 		
-		function __actionEdit(){
+		public function __actionEdit(){
 
 
 			if(@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
@@ -583,7 +599,7 @@
 				}
 
 				## Check for duplicate section handle
-				elseif($meta['name'] != $existing_section->get('name') && Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . $meta['name'] . " AND `id` != ' . $section_id . ' LIMIT 1")){
+				elseif($meta['name'] != $existing_section->get('name') && Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . $meta['name'] . "' AND `id` != {$section_id} LIMIT 1")){
 					$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
 					$canProceed = false;
 				}
@@ -721,5 +737,3 @@
 		}
 		
 	}
-
-?>

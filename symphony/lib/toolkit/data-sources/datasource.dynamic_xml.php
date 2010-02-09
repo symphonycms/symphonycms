@@ -45,39 +45,90 @@
 	$result = NULL;
 	$creation = DateTimeObj::get('c');
 	
-	if(!$cachedData || (time() - $cachedData['creation']) > ($this->dsParamCACHE * 60)){
-
-		if(Mutex::acquire($cache_id, 6, TMP)){
-		
+	$timeout = 6;
+	if(isset($this->dsParamTIMEOUT)){
+		$timeout = (int)max(1, $this->dsParamTIMEOUT);
+	}
+	
+	if((!is_array($cachedData) || empty($cachedData)) || (time() - $cachedData['creation']) > ($this->dsParamCACHE * 60)){
+		if(Mutex::acquire($cache_id, $timeout, TMP)){
+			
+			$start = precision_timer();		
+			
 			$ch = new Gateway;
 
 			$ch->init();
 			$ch->setopt('URL', $this->dsParamURL);
-			$ch->setopt('TIMEOUT', 6);
-			$xml = $ch->exec();	
+			$ch->setopt('TIMEOUT', $timeout);
+			$xml = $ch->exec();
 			$writeToCache = true;
 			
+			$end = precision_timer('STOP', $start);
+			
+			$info = $ch->getInfoLast();
+						
 			Mutex::release($cache_id, TMP);
 			
 			$xml = trim($xml);
-			
-			if(!empty($xml)){
-				$valid = General::validateXML($xml, $errors, false, new XsltProcess);
-				if(!$valid){
-					if($cachedData) $xml = $cachedData['data'];
-					else{
-						$result = new XMLElement($this->dsParamROOTELEMENT);
-						$result->setAttribute('valid', 'false');
-						$result->appendChild(new XMLElement('error', __('XML returned is invalid.')));
+
+			if((int)$info['http_code'] != 200 || !preg_match('/(xml|plain|text)/i', $info['content_type'])){
+				
+				$writeToCache = false;
+				
+				if(is_array($cachedData) && !empty($cachedData)){ 
+					$xml = trim($cachedData['data']);
+					$valid = false;
+					$creation = DateTimeObj::get('c', $cachedData['creation']);
+				}
+				
+				else{
+					$result = new XMLElement($this->dsParamROOTELEMENT);
+					$result->setAttribute('valid', 'false');
+					
+					if($end > $timeout){
+						$result->appendChild(
+							new XMLElement('error', 
+								sprintf('Request timed out. %d second limit reached.', $timeout)
+							)
+						);
 					}
+					else{
+						$result->appendChild(
+							new XMLElement('error', 
+								sprintf('Status code %d was returned. Content-type: %s', $info['http_code'], $info['content_type'])
+							)
+						);
+					}
+					
+					return $result;
 				}
 			}
+
+			elseif(strlen($xml) > 0 && !General::validateXML($xml, $errors, false, new XsltProcess)){
+					
+				$writeToCache = false;
+				
+				if(is_array($cachedData) && !empty($cachedData)){ 
+					$xml = trim($cachedData['data']);
+					$valid = false;
+					$creation = DateTimeObj::get('c', $cachedData['creation']);
+				}
+				
+				else{
+					$result = new XMLElement($this->dsParamROOTELEMENT);
+					$result->setAttribute('valid', 'false');
+					$result->appendChild(new XMLElement('error', __('XML returned is invalid.')));
+				}
+				
+			}
 			
-			else $this->_force_empty_result = true;
+			elseif(strlen($xml) == 0){
+				$this->_force_empty_result = true;
+			}
 			
 		}
 		
-		elseif($cachedData){ 
+		elseif(is_array($cachedData) && !empty($cachedData)){ 
 			$xml = trim($cachedData['data']);
 			$valid = false;
 			$creation = DateTimeObj::get('c', $cachedData['creation']);
@@ -89,9 +140,10 @@
 	}
 	
 	else{
-		$xml = $cachedData['data'];
+		$xml = trim($cachedData['data']);
 		$creation = DateTimeObj::get('c', $cachedData['creation']);
 	}
+	
 		
 	if(!$this->_force_empty_result && !is_object($result)):
 	
@@ -99,10 +151,21 @@
 
 		$proc = new XsltProcess;
 		$ret = $proc->process($xml, $xsl);
-	
+
 		if($proc->isErrors()){
+			
 			$result->setAttribute('valid', 'false');
-			$result->appendChild(new XMLElement('error', __('XML returned is invalid.')));
+			$error = new XMLElement('error', __('XML returned is invalid.'));
+			$result->appendChild($error);
+			
+			$messages = new XMLElement('messages');
+			
+			foreach($proc->getError() as $e){
+				if(strlen(trim($e['message'])) == 0) continue;
+				$messages->appendChild(new XMLElement('item', General::sanitize($e['message'])));
+			}
+			$result->appendChild($messages);
+			
 		}
 		
 		elseif(strlen(trim($ret)) == 0){

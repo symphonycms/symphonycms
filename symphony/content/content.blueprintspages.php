@@ -9,24 +9,53 @@
 		protected $_errors;
 		protected $_hilights = array();
 		
+		private static function __countChildren($id){
+			$children = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_pages` WHERE `parent` = {$id}");
+			$count = count($children);
+			
+			if(count($children) > 0){
+				foreach($children as $c){
+					$count += self::__countChildren($c);
+				}
+			}
+			
+			return $count;
+		}
+		
+		private static function __buildParentBreadcrumb($id, $last=true){
+			$page = Symphony::Database()->fetchRow(0, "SELECT `title`, `id`, `parent` FROM `tbl_pages` WHERE `id` = {$id}");
+			
+			if(!is_array($page) || empty($page)) return NULL;
+			
+			if($last != true){			
+				$anchor = Widget::Anchor(
+					$page['title'], Administration::instance()->getCurrentPageURL() . '?parent=' . $page['id']
+				);
+			}
+			
+			$result = (!is_null($page['parent']) ? self::__buildParentBreadcrumb($page['parent'], false) . ' &gt; ' : NULL) . ($anchor instanceof XMLElement ? $anchor->generate() : $page['title']);
+			
+			return $result;
+			
+		}
+		
 		public function __viewIndex() {
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Pages'))));
 			
-			$this->appendSubheading(__('Pages'), Widget::Anchor(
-				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/',
+			$nesting = (Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes');
+			
+			$heading = NULL;
+			if($nesting == true && isset($_GET['parent']) && is_numeric($_GET['parent'])){
+				$parent = (int)$_GET['parent'];
+				$heading = ' &mdash; ' . self::__buildParentBreadcrumb($parent);
+			}
+			
+			$this->appendSubheading(__('Pages') . $heading, Widget::Anchor(
+				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/' . ($nesting == true && isset($parent) ? "?parent={$parent}" : NULL),
 				__('Create a new page'), 'create button'
 			));
-			
-			$pages = Symphony::Database()->fetch("
-				SELECT
-					p.*
-				FROM
-					`tbl_pages` AS p
-				ORDER BY
-					p.sortorder ASC
-			");
-			
+
 			$aTableHead = array(
 				array(__('Title'), 'col'),
 				array(__('Template'), 'col'),
@@ -35,19 +64,38 @@
 				array(__('Type'), 'col')
 			);	
 			
+			$sql = "SELECT p.*
+				FROM `tbl_pages` AS p
+				%s
+				ORDER BY p.sortorder ASC";
+			
+			if($nesting == true){
+				$aTableHead[] = array(__('Children'), 'col');
+				$sql = sprintf($sql, ' WHERE p.parent ' . (isset($parent) ? " = {$parent} " : ' IS NULL '));
+			}
+			
+			else{
+				$sql = sprintf($sql, NULL);
+			}
+			
+			$pages = Symphony::Database()->fetch($sql);
+			
 			$aTableBody = array();
 			
-			if (!is_array($pages) or empty($pages)) {
+			if(!is_array($pages) or empty($pages)) {
 				$aTableBody = array(Widget::TableRow(array(
 					Widget::TableData(__('None found.'), 'inactive', null, count($aTableHead))
 				), 'odd'));
 				
-			} else {
+			}
+			else{
+				
 				$bOdd = true;
 				
 				foreach ($pages as $page) {
 					$class = array();
-					$page_title = $this->_Parent->resolvePageTitle($page['id']);
+					
+					$page_title = ($nesting == true ? $page['title'] : $this->_Parent->resolvePageTitle($page['id']));
 					$page_url = URL . '/' . $this->_Parent->resolvePagePath($page['id']) . '/';
 					$page_edit_url = Administration::instance()->getCurrentPageURL() . 'edit/' . $page['id'] . '/';
 					$page_template = $this->__createHandle($page['path'], $page['handle']);
@@ -75,25 +123,41 @@
 					
 					$col_url = Widget::TableData(Widget::Anchor($page_url, $page_url));
 					
-					if ($page['params']) {
+					if($page['params']) {
 						$col_params = Widget::TableData(trim($page['params'], '/'));
 						
 					} else {
 						$col_params = Widget::TableData(__('None'), 'inactive');
 					}
 					
-					if (!empty($page_types)) {
+					if(!empty($page_types)) {
 						$col_types = Widget::TableData(implode(', ', $page_types));
 						
 					} else {
 						$col_types = Widget::TableData(__('None'), 'inactive');
 					}
 					
-					if ($bOdd) $class[] = 'odd';
-					if (in_array($page['id'], $this->_hilights)) $class[] = 'failed';
+					if($bOdd) $class[] = 'odd';
+					if(in_array($page['id'], $this->_hilights)) $class[] = 'failed';
+					
+					$columns = array($col_title, $col_template, $col_url, $col_params, $col_types);
+					
+					if($nesting == true){
+						if($this->__hasChildren($page['id'])){
+							$col_children = Widget::TableData(
+								Widget::Anchor(self::__countChildren($page['id']) . ' &rarr;', 
+								URL . '/symphony/blueprints/pages/?parent=' . $page['id'])
+							);
+						}
+						else{
+							$col_children = Widget::TableData(__('None'), 'inactive');
+						}
+						
+						$columns[] = $col_children;
+					}
 					
 					$aTableBody[] = Widget::TableRow(
-						array($col_title, $col_template, $col_url, $col_params, $col_types),
+						$columns,
 						implode(' ', $class)
 					);
 					
@@ -142,7 +206,7 @@
 					LIMIT 1
 				");
 			
-			if (!@is_file($file_abs)) redirect(URL . '/symphony/blueprints/pages/');
+			if(!@is_file($file_abs)) redirect(URL . '/symphony/blueprints/pages/');
 			
 			$fields['body'] = @file_get_contents($file_abs);
 			
@@ -150,7 +214,7 @@
 			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
 			
 			// Status message:
-			if (isset($this->_context[2])) {
+			if(isset($this->_context[2])) {
 				$this->pageAlert(
 					__(
 						'Page updated at %s. <a href="%s">View all Pages</a>',
@@ -173,7 +237,7 @@
 			));
 			$this->appendSubheading(__($filename ? $filename : __('Untitled')), Widget::Anchor(__('Edit Configuration'), URL . '/symphony/blueprints/pages/edit/' . $pagedata['id'], __('Edit Page Confguration'), 'button'));
 			
-			if (!empty($_POST)) $fields = $_POST['fields'];
+			if(!empty($_POST)) $fields = $_POST['fields'];
 			
 			$fields['body'] = General::sanitize($fields['body']);
 			
@@ -188,7 +252,7 @@
 				)
 			));
 			
-			if (isset($this->_errors['body'])) {
+			if(isset($this->_errors['body'])) {
 				$label = $this->wrapFormElementWithError($label, $this->_errors['body']);
 			}
 			
@@ -198,7 +262,7 @@
 			$utilities = General::listStructure(UTILITIES, array('xsl'), false, 'asc', UTILITIES);
 			$utilities = $utilities['filelist'];
 			
-			if (is_array($utilities) && !empty($utilities)) {
+			if(is_array($utilities) && !empty($utilities)) {
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'secondary');
 				
@@ -212,7 +276,7 @@
 				foreach ($utilities as $index => $util) {
 					$li = new XMLElement('li');
 					
-					if ($index % 2 != 1) $li->setAttribute('class', 'odd');
+					if($index % 2 != 1) $li->setAttribute('class', 'odd');
 					
 					$li->appendChild(Widget::Anchor($util, URL . '/symphony/blueprints/utilities/edit/' . str_replace('.xsl', '', $util) . '/', NULL));
 					$ul->appendChild($li);
@@ -238,15 +302,15 @@
 			$fields = $_POST['fields'];
 			$this->_errors = array();
 			
-			if (!isset($fields['body']) || trim($fields['body']) == '') {
+			if(!isset($fields['body']) || trim($fields['body']) == '') {
 				$this->_errors['body'] = __('Body is a required field.');
 				
-			} else if (!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) {
+			} elseif(!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) {
 				$this->_errors['body'] = __('This document is not well formed. The following error was returned: <code>%s</code>', array($errors[0]['message']));
 			}
 			
-			if (empty($this->_errors)) {
-				if (!$write = General::writeFile($file_abs, $fields['body'], Symphony::Configuration()->get('write_mode', 'file'))) {
+			if(empty($this->_errors)) {
+				if(!$write = General::writeFile($file_abs, $fields['body'], Symphony::Configuration()->get('write_mode', 'file'))) {
 					$this->pageAlert(__('Utility could not be written to disk. Please check permissions on <code>/workspace/utilities</code>.'), Alert::ERROR);
 					
 				} else {
@@ -263,9 +327,11 @@
 			$this->setPageType('form');
 			$fields = array();
 			
+			$nesting = (Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes');
+			
 			// Verify page exists:
-			if ($this->_context[0] == 'edit') {
-				if (!$page_id = $this->_context[1]) redirect(URL . '/symphony/blueprints/pages/');
+			if($this->_context[0] == 'edit') {
+				if(!$page_id = $this->_context[1]) redirect(URL . '/symphony/blueprints/pages/');
 				
 				$existing = Symphony::Database()->fetchRow(0, "
 					SELECT
@@ -277,7 +343,7 @@
 					LIMIT 1
 				");
 				
-				if (!$existing) {
+				if(!$existing) {
 					$this->_Parent->customError(
 						E_USER_ERROR, __('Page not found'),
 						__('The page you requested to edit does not exist.'),
@@ -290,8 +356,16 @@
 			
 			// Status message:
 			$flag = $this->_context[2];
-			if (isset($flag)){
-
+			if(isset($flag)){
+				
+				if(isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])){
+					$link_suffix = "?parent=" . $_REQUEST['parent'];
+				}
+				
+				elseif($nesting == true && isset($existing) && !is_null($existing['parent'])){
+					$link_suffix = '?parent=' . $existing['parent'];
+				}
+				
 				switch($flag){
 					
 					case 'saved':
@@ -301,8 +375,8 @@
 								'Page updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Pages</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/blueprints/pages/new/',
-									URL . '/symphony/blueprints/pages/',
+									URL . '/symphony/blueprints/pages/new/' . $link_suffix,
+									URL . '/symphony/blueprints/pages/' . $link_suffix,
 								)
 							), 
 							Alert::SUCCESS);
@@ -316,8 +390,8 @@
 								'Page created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Pages</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/blueprints/pages/new/',
-									URL . '/symphony/blueprints/pages/',
+									URL . '/symphony/blueprints/pages/new/' . $link_suffix,
+									URL . '/symphony/blueprints/pages/' . $link_suffix,
 								)
 							), 
 							Alert::SUCCESS);
@@ -328,10 +402,11 @@
 			}
 			
 			// Find values:
-			if (isset($_POST['fields'])) {
-				$fields = $_POST['fields'];
-				
-			} else if ($this->_context[0] == 'edit') {
+			if(isset($_POST['fields'])) {
+				$fields = $_POST['fields'];	
+			}
+			
+			elseif($this->_context[0] == 'edit') {
 				$fields = $existing;
 				$types = Symphony::Database()->fetchCol('type', "
 					SELECT
@@ -349,8 +424,12 @@
 				$fields['events'] = preg_split('/,/i', $fields['events'], -1, PREG_SPLIT_NO_EMPTY);
 			}
 			
+			elseif(isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])){
+				$fields['parent'] = $_REQUEST['parent'];
+			}
+			
 			$title = $fields['title'];
-			if (trim($title) == '') $title = $existing['title'];
+			if(trim($title) == '') $title = $existing['title'];
 			
 			$this->setTitle(__(
 				($title ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'),
@@ -360,9 +439,9 @@
 					$title
 				)
 			));
-			if ($existing) {
+			if($existing) {
 				$template_name = $fields['handle'];
-				if ($existing['parent']){
+				if($existing['parent']){
 					$parents = $this->__getParent($existing['parent']);
 					$template_name = $parents . '_' . $fields['handle'];
 				}
@@ -383,7 +462,7 @@
 				'fields[title]', General::sanitize($fields['title'])
 			));
 			
-			if (isset($this->_errors['title'])) {
+			if(isset($this->_errors['title'])) {
 				$label = $this->wrapFormElementWithError($label, $this->_errors['title']);
 			}
 			
@@ -400,7 +479,7 @@
 				'fields[handle]', $fields['handle']
 			));
 			
-			if (isset($this->_errors['handle'])) {
+			if(isset($this->_errors['handle'])) {
 				$label = $this->wrapFormElementWithError($label, $this->_errors['handle']);
 			}
 			
@@ -425,8 +504,8 @@
 				array('', false, '/')
 			);
 			
-			if (is_array($pages) && !empty($pages)) {
-				if (!function_exists('__compare_pages')) {
+			if(is_array($pages) && !empty($pages)) {
+				if(!function_exists('__compare_pages')) {
 					function __compare_pages($a, $b) {
 						return strnatcasecmp($a[2], $b[2]);
 					}
@@ -462,7 +541,7 @@
 			$label = Widget::Label(__('Page Type'));
 			$label->appendChild(Widget::Input('fields[type]', $fields['type']));
 			
-			if (isset($this->_errors['type'])) {
+			if(isset($this->_errors['type'])) {
 				$label = $this->wrapFormElementWithError($label, $this->_errors['type']);
 			}
 			
@@ -471,7 +550,7 @@
 			$tags = new XMLElement('ul');
 			$tags->setAttribute('class', 'tags');
 			
-			if ($types = $this->__fetchAvailablePageTypes()) {
+			if($types = $this->__fetchAvailablePageTypes()) {
 				foreach($types as $type) $tags->appendChild(new XMLElement('li', $type));
 			}
 			$column->appendChild($tags);
@@ -495,7 +574,7 @@
 			
 			$options = array();
 			
-			if (is_array($events) && !empty($events)) {		
+			if(is_array($events) && !empty($events)) {		
 				foreach ($events as $name => $about) $options[] = array(
 					$name, @in_array($name, $fields['events']), $about['name']
 				);
@@ -513,7 +592,7 @@
 			
 			$options = array();
 			
-			if (is_array($datasources) && !empty($datasources)) {		
+			if(is_array($datasources) && !empty($datasources)) {		
 				foreach ($datasources as $name => $about) $options[] = array(
 					$name, @in_array($name, $fields['data_sources']), $about['name']
 				);
@@ -540,6 +619,10 @@
 			}
 			
 			$this->Form->appendChild($div);
+			
+			if(isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])){
+				$this->Form->appendChild(new XMLElement('input', NULL, array('type' => 'hidden', 'name' => 'parent', 'value' => $_REQUEST['parent'])));
+			}
 		}
 		
 		protected function __getParent($page_id) {
@@ -580,15 +663,21 @@
 		}
 		
 		public function __actionEdit() {
-			if ($this->_context[0] != 'new' && !$page_id = (integer)$this->_context[1]) {
+			if($this->_context[0] != 'new' && !$page_id = (integer)$this->_context[1]) {
 				redirect(URL . '/symphony/blueprints/pages/');
 			}
-			
-			if (@array_key_exists('delete', $_POST['action'])) {
-				$this->__actionDelete($page_id, URL . '/symphony/blueprints/pages/');
+				
+			$parent_link_suffix = NULL;
+			if(isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])){
+				$parent_link_suffix = "?parent=" . $_REQUEST['parent'];
+			}
+		
+			if(@array_key_exists('delete', $_POST['action'])) {
+				$this->__actionDelete($page_id, URL . '/symphony/blueprints/pages/' . $parent_link_suffix);
 			}
 			
-			if (@array_key_exists('save', $_POST['action'])) {
+			if(@array_key_exists('save', $_POST['action'])) {
+				
 				$fields = $_POST['fields'];
 				$this->_errors = array();
 				
@@ -602,30 +691,30 @@
 					LIMIT 1
 				");
 				
-				if (!isset($fields['title']) || trim($fields['title']) == '') {
+				if(!isset($fields['title']) || trim($fields['title']) == '') {
 					$this->_errors['title'] = __('Title is a required field');
 				}
 				
-				if (trim($fields['type']) != '' && preg_match('/(index|404|403)/i', $fields['type'])) {
+				if(trim($fields['type']) != '' && preg_match('/(index|404|403)/i', $fields['type'])) {
 					$types = preg_split('/\s*,\s*/', strtolower($fields['type']), -1, PREG_SPLIT_NO_EMPTY);
 					
-					if (in_array('index', $types) && $this->__typeUsed($page_id, 'index')) {
+					if(in_array('index', $types) && $this->__typeUsed($page_id, 'index')) {
 						$this->_errors['type'] = __('An index type page already exists.');
 					}
 					
-					else if (in_array('404', $types) && $this->__typeUsed($page_id, '404')) {	
+					elseif(in_array('404', $types) && $this->__typeUsed($page_id, '404')) {	
 						$this->_errors['type'] = __('A 404 type page already exists.');
 					}
 					
-					else if (in_array('403', $types) && $this->__typeUsed($page_id, '403')) {	
+					elseif(in_array('403', $types) && $this->__typeUsed($page_id, '403')) {	
 						$this->_errors['type'] = __('A 403 type page already exists.');
 					}
 				}
 				
-				if (empty($this->_errors)) {
+				if(empty($this->_errors)) {
 					$autogenerated_handle = false;
 					
-					if (empty($current)) {
+					if(empty($current)) {
 						$fields['sortorder'] = Symphony::Database()->fetchVar('next', 0, "
 							SELECT
 								MAX(p.sortorder) + 1 AS `next`
@@ -634,19 +723,19 @@
 							LIMIT 1
 						");
 						
-						if (empty($fields['sortorder']) || !is_numeric($fields['sortorder'])) {
+						if(empty($fields['sortorder']) || !is_numeric($fields['sortorder'])) {
 							$fields['sortorder'] = 1;
 						}
 					}
 					
-					if (trim($fields['handle'] ) == '') { 
+					if(trim($fields['handle'] ) == '') { 
 						$fields['handle'] = $fields['title'];
 						$autogenerated_handle = true;
 					}
 					
 					$fields['handle'] = Lang::createHandle($fields['handle']);		
 
-					if ($fields['params']) {
+					if($fields['params']) {
 						$fields['params'] = trim(preg_replace('@\/{2,}@', '/', $fields['params']), '/');
 					}
 					
@@ -660,7 +749,7 @@
 					$fields['events'] = @implode(',', $fields['events']);
 					$fields['path'] = null;
 					
-					if ($fields['parent']) {
+					if($fields['parent']) {
 						$fields['path'] = $this->_Parent->resolvePagePath((integer)$fields['parent']);
 					}
 					
@@ -678,7 +767,7 @@
 					");
 					
 					// Create or move files:
-					if (empty($current)) {
+					if(empty($current)) {
 						$file_created = $this->__updatePageFiles(
 							$fields['path'], $fields['handle']
 						);
@@ -690,7 +779,7 @@
 						);
 					}
 					
-					if (!$file_created) {
+					if(!$file_created) {
 						$redirect = null;
 						$this->pageAlert(
 							__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'),
@@ -698,8 +787,8 @@
 						);
 					}
 					
-					if ($duplicate) {
-						if ($autogenerated_handle) {
+					if($duplicate) {
+						if($autogenerated_handle) {
 							$this->_errors['title'] = __('A page with that title already exists');
 							
 						} else {
@@ -707,8 +796,8 @@
 						}
 						
 					// Insert the new data:
-					} else if (empty($current)) {
-						if (!Symphony::Database()->insert($fields, 'tbl_pages')) {
+					} elseif(empty($current)) {
+						if(!Symphony::Database()->insert($fields, 'tbl_pages')) {
 							$this->pageAlert(
 								__(
 									'Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.',
@@ -721,12 +810,12 @@
 							
 						} else {
 							$page_id = Symphony::Database()->getInsertID();
-							$redirect = "/symphony/blueprints/pages/edit/{$page_id}/created/";
+							$redirect = "/symphony/blueprints/pages/edit/{$page_id}/created/{$parent_link_suffix}/";
 						}
 						
 					// Update existing:
 					} else {
-						if (!Symphony::Database()->update($fields, 'tbl_pages', "`id` = '$page_id'")) {
+						if(!Symphony::Database()->update($fields, 'tbl_pages', "`id` = '$page_id'")) {
 							$this->pageAlert(
 								__(
 									'Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.',
@@ -739,12 +828,12 @@
 							
 						} else {
 							Symphony::Database()->delete('tbl_pages_types', " `page_id` = '$page_id'");
-							$redirect = "/symphony/blueprints/pages/edit/{$page_id}/saved/";
+							$redirect = "/symphony/blueprints/pages/edit/{$page_id}/saved/{$parent_link_suffix}/";
 						}
 					}
 					
 					// Assign page types:
-					if (is_array($types) && !empty($types)) {
+					if(is_array($types) && !empty($types)) {
 						foreach ($types as $type) Symphony::Database()->insert(
 							array(
 								'page_id' => $page_id,
@@ -755,14 +844,14 @@
 					}
 					
 					// Find and update children:
-					if ($this->_context[0] == 'edit') {
+					if($this->_context[0] == 'edit') {
 						$this->__updatePageChildren($page_id, $fields['path'] . '/' . $fields['handle']);
 					}
 					
-					if ($redirect) redirect(URL . $redirect);
+					if($redirect) redirect(URL . $redirect);
 				}
 				
-				if (is_array($this->_errors) && !empty($this->_errors)) {
+				if(is_array($this->_errors) && !empty($this->_errors)) {
 					$this->pageAlert(
 						__('An error occurred while processing this form. <a href="#error">See below for details.</a>'),
 						Alert::ERROR
@@ -789,11 +878,11 @@
 					'path'	=> $page_path
 				);
 				
-				if (!$this->__updatePageFiles($page_path, $child['handle'], $child['path'], $child['handle'])) {
+				if(!$this->__updatePageFiles($page_path, $child['handle'], $child['path'], $child['handle'])) {
 					$success = false;
 				}
 				
-				if (!Symphony::Database()->update($fields, 'tbl_pages', "`id` = '$child_id'")) {
+				if(!Symphony::Database()->update($fields, 'tbl_pages', "`id` = '$child_id'")) {
 					$success = false;
 				}
 				
@@ -813,13 +902,14 @@
 			$data = null;
 			
 			// Nothing to do:
-			if (file_exists($new) && $new == old) return true;
+			if(file_exists($new) && $new == $old) return true;
 			
 			// Old file doesn't exist, use template:
-			if (!file_exists($old)) {
+			if(!file_exists($old)) {
 				$data = file_get_contents(TEMPLATE . '/page.xsl');
 				
-			} else {
+			}
+			else{
 				$data = file_get_contents($old); @unlink($old);
 			}
 			
@@ -830,10 +920,10 @@
 			$file = PAGES . '/' . trim(str_replace('/', '_', $path . '_' . $handle), '_') . '.xsl';
 			
 			// Nothing to do:
-			if (!file_exists($file)) return true;
+			if(!file_exists($file)) return true;
 			
 			// Delete it:
-			if (@unlink($file)) return true;
+			if(@unlink($file)) return true;
 			
 			return false;
 		}
@@ -853,7 +943,7 @@
 		protected function __actionDelete($pages, $redirect) {
 			$success = true;
 			
-			if (!is_array($pages)) $pages = array($pages);
+			if(!is_array($pages)) $pages = array($pages);
 			
 			foreach ($pages as $page_id) {
 				$page = Symphony::Database()->fetchRow(0, "
@@ -866,7 +956,7 @@
 					LIMIT 1
 				");
 				
-				if (empty($page)) {
+				if(empty($page)) {
 					$success = false;
 					$this->pageAlert(
 						__('Page could not be deleted because it does not exist.'),
@@ -876,7 +966,7 @@
 					break;
 				}
 				
-				if ($this->__hasChildren($page_id)) {
+				if($this->__hasChildren($page_id)) {
 					$this->_hilights[] = $page['id'];
 					$success = false;
 					$this->pageAlert(
@@ -887,7 +977,7 @@
 					continue;
 				}
 				
-				if (!$this->__deletePageFiles($page['path'], $page['handle'])) {
+				if(!$this->__deletePageFiles($page['path'], $page['handle'])) {
 					$this->_hilights[] = $page['id'];
 					$success = false;
 					$this->pageAlert(
@@ -910,13 +1000,13 @@
 				");
 			}
 			
-			if ($success) redirect($redirect);
+			if($success) redirect($redirect);
 		}
 		
 		public function __actionIndex() {
 			$checked = @array_keys($_POST['items']);
 			
-			if (is_array($checked) && !empty($checked)) {
+			if(is_array($checked) && !empty($checked)) {
 				switch ($_POST['with-selected']) {
 					case 'delete':
 						$this->__actionDelete($checked, URL . '/symphony/blueprints/pages/');
@@ -926,4 +1016,3 @@
 		}	
 	}
 	
-?>

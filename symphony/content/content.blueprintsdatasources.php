@@ -122,7 +122,9 @@
 					
 						$fields['dynamic_xml']['url'] = $existing->dsParamURL;
 						$fields['dynamic_xml']['xpath'] = $existing->dsParamXPATH;
-						$fields['dynamic_xml']['cache'] = $existing->dsParamCACHE;						
+						$fields['dynamic_xml']['cache'] = $existing->dsParamCACHE;
+						$fields['dynamic_xml']['timeout'] =	(isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6);
+										
 						break;
 						
 					case 'static_xml':
@@ -142,6 +144,7 @@
 				$fields['dynamic_xml']['url'] = 'http://';
 				$fields['dynamic_xml']['cache'] = '30';
 				$fields['dynamic_xml']['xpath'] = '/';
+				$fields['dynamic_xml']['timeout'] = '6';
 				
 				$fields['max_records'] = '20';
 				$fields['page_number'] = '1';
@@ -173,6 +176,9 @@
 			$label = Widget::Label(__('Source'));	
 			
 		    $sections = $sectionManager->fetch(NULL, 'ASC', 'name');
+			
+			if (!is_array($sections)) $sections = array();
+			$field_groups = array();
 			
 			foreach($sections as $section) $field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
 			
@@ -217,7 +223,7 @@
 				$div->appendChild($h3);
 				
 				$ol = new XMLElement('ol');
-				$ol->setAttribute('id', 'filters-duplicator');
+				$ol->setAttribute('class', 'filters-duplicator');
 
 				if(isset($fields['filter'][$section_data['section']->get('id')]['id'])){
 					$li = new XMLElement('li');
@@ -237,22 +243,24 @@
 				$li->appendChild($label);
 				$ol->appendChild($li);
 				
-				foreach($section_data['fields'] as $input){
+				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
+					foreach($section_data['fields'] as $input){
 					
-					if(!$input->canFilter()) continue;
+						if(!$input->canFilter()) continue;
 								
-					if(isset($fields['filter'][$section_data['section']->get('id')][$input->get('id')])){
-						$wrapper = new XMLElement('li');
-						$wrapper->setAttribute('class', 'unique');
-						$input->displayDatasourceFilterPanel($wrapper, $fields['filter'][$section_data['section']->get('id')][$input->get('id')], $this->_errors[$input->get('id')], $section_data['section']->get('id'));
-						$ol->appendChild($wrapper);					
-					}
+						if(isset($fields['filter'][$section_data['section']->get('id')][$input->get('id')])){
+							$wrapper = new XMLElement('li');
+							$wrapper->setAttribute('class', 'unique');
+							$input->displayDatasourceFilterPanel($wrapper, $fields['filter'][$section_data['section']->get('id')][$input->get('id')], $this->_errors[$input->get('id')], $section_data['section']->get('id'));
+							$ol->appendChild($wrapper);					
+						}
 				
-					$wrapper = new XMLElement('li');
-					$wrapper->setAttribute('class', 'unique template');
-					$input->displayDatasourceFilterPanel($wrapper, NULL, NULL, $section_data['section']->get('id'));
-					$ol->appendChild($wrapper);
+						$wrapper = new XMLElement('li');
+						$wrapper->setAttribute('class', 'unique template');
+						$input->displayDatasourceFilterPanel($wrapper, NULL, NULL, $section_data['section']->get('id'));
+						$ol->appendChild($wrapper);
 
+					}
 				}
 				
 				$div->appendChild($ol);			
@@ -268,7 +276,7 @@
 			$div->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('id', 'filters-duplicator');
+			$ol->setAttribute('class', 'filters-duplicator');
 			
 			$this->__appendUserFilter($ol, __('ID'), 'id', $fields['filter']['user']['id'], (!isset($fields['filter']['user']['id'])));	
 			$this->__appendUserFilter($ol, __('Username'), 'username', $fields['filter']['user']['username'], (!isset($fields['filter']['user']['username'])));
@@ -289,7 +297,7 @@
 			$div->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('id', 'filters-duplicator');
+			$ol->setAttribute('class', 'filters-duplicator');
 
 			$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` ORDER BY `title` ASC");
 				
@@ -389,14 +397,16 @@
 					array('system:id', ($fields['source'] == $section_data['section']->get('id') && $fields['sort'] == 'system:id'), __('System ID')),
 					array('system:date', ($fields['source'] == $section_data['section']->get('id') && $fields['sort'] == 'system:date'), __('System Date')),
 				));
-			
-				foreach($section_data['fields'] as $input){
+
+				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
+					foreach($section_data['fields'] as $input){
 				
-					if(!$input->isSortable()) continue;
+						if(!$input->isSortable()) continue;
 				
-					$optgroup['options'][] = array($input->get('element_name'), ($fields['source'] == $section_data['section']->get('id') && $input->get('element_name') == $fields['sort']), $input->get('label'));
+						$optgroup['options'][] = array($input->get('element_name'), ($fields['source'] == $section_data['section']->get('id') && $input->get('element_name') == $fields['sort']), $input->get('label'));
+					}
 				}
-			
+				
 				$options[] = $optgroup;
 			}			
 			
@@ -409,7 +419,7 @@
 			$options = array(
 				array('asc', ('asc' == $fields['order']), __('ascending')),
 				array('desc', ('desc' == $fields['order']), __('descending')),
-				array('rand', ('rand' == $fields['order']), __('random')),
+				array('random', ('random' == $fields['order']), __('random')),
 			);
 			
 			$label->appendChild(Widget::Select('fields[order]', $options));
@@ -519,13 +529,15 @@
 				
 				$userOverride = false;
 				
-				foreach($section_data['fields'] as $input){
+				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
+					foreach($section_data['fields'] as $input){
 					
-					if(!$input->allowDatasourceOutputGrouping()) continue;
+						if(!$input->allowDatasourceOutputGrouping()) continue;
 					
 					if($input->get('element_name') == 'user') $userOverride = true;
 					
-					$optgroup['options'][] = array($input->get('id'), ($fields['source'] == $section_data['section']->get('id') && $fields['group'] == $input->get('id')), $input->get('label'));
+						$optgroup['options'][] = array($input->get('id'), ($fields['source'] == $section_data['section']->get('id') && $fields['group'] == $input->get('id')), $input->get('label'));
+					}
 				}
 				
 				if(!$userOverride) $optgroup['options'][] = array('user', ($fields['source'] == $section_data['section']->get('id') && $fields['group'] == 'user'), __('User'));
@@ -558,17 +570,22 @@
 					'pagination'
 				);
 				
-				foreach($section_data['fields'] as $input){
-					$elements = $input->fetchIncludableElements();
+				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
+					foreach($section_data['fields'] as $input){
+						$elements = $input->fetchIncludableElements();
 					
-					foreach($elements as $name){
-						$selected = false;
+						if(is_array($elements) && !empty($elements)){
+							foreach($elements as $name){
+								$selected = false;
 						
-						if($fields['source'] == $section_data['section']->get('id') && @in_array($name, $fields['xml_elements'])){
-							$selected = true;	
+								if($fields['source'] == $section_data['section']->get('id') && @in_array($name, $fields['xml_elements'])){
+									$selected = true;	
+								}
+						
+								$optgroup['options'][] = array($name, $selected, $name);
+							}
 						}
 						
-						$optgroup['options'][] = array($name, $selected, $name);
 					}
 				}
 				
@@ -613,7 +630,7 @@
 			$div->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('id', 'filters-duplicator');
+			$ol->setAttribute('class', 'filters-duplicator');
 			
 			if(is_array($fields['dynamic_xml']['namespace']['name'])){
 				
@@ -676,6 +693,11 @@
 			$label->setValue('Update cached result every ' . $input->generate(false) . ' minutes');
 			if(isset($this->_errors['dynamic_xml']['cache'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['cache']));
 			else $fieldset->appendChild($label);		
+
+			$label = Widget::Label();
+			$input = Widget::Input('fields[dynamic_xml][timeout]', max(1, intval($fields['dynamic_xml']['timeout'])), NULL, array('type' => 'hidden'));
+			$label->appendChild($input);
+			$fieldset->appendChild($label);
 		
 			$this->Form->appendChild($fieldset);
 						
@@ -696,8 +718,8 @@
 			$div->appendChild(Widget::Input('action[save]', ($isEditing ? __('Save Changes') : __('Create Data Source')), 'submit', array('accesskey' => 's')));
 			
 			if($isEditing){
-				$button = new XMLElement('button', 'Delete');
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this data source')));
+				$button = new XMLElement('button', __('Delete'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this data source'), 'type' => 'submit'));
 				$div->appendChild($button);
 			}
 			
@@ -959,6 +981,7 @@
 						$params['url'] = $fields['dynamic_xml']['url'];
 						$params['xpath'] = $fields['dynamic_xml']['xpath'];
 						$params['cache'] = $fields['dynamic_xml']['cache'];
+						$params['timeout'] = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : '6');
 						
 						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.dynamic_xml.php');", $dsShell);
 						

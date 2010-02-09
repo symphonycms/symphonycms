@@ -3,6 +3,7 @@ var Symphony;
 (function($) {
 	Symphony = {
 		WEBSITE: $('script')[0].src.match('(.*)/symphony')[1],
+		LANG: $('html').attr('lang'),
 		Language: {
 			UNTITLED:         "Untitled",
 			CREATE_ITEM:      "Add item",
@@ -66,6 +67,21 @@ var Symphony;
 		}
 	};
 
+	// Load translations for foreign languages
+	if(Symphony.LANG != 'en') {
+		$.ajax({
+			async: false,
+			type: 'GET',
+			url: Symphony.WEBSITE + '/symphony/ajax/translate',
+			data: Symphony.Language,
+			dataType: 'json',
+			success: function(result) {
+				Symphony.Language = result;
+			}
+		});
+	}
+
+	// Set JavaScript status
 	$(document.documentElement).addClass('active');
 
 	// Sortable lists
@@ -116,10 +132,11 @@ var Symphony;
 		},
 		update: function(target) {
 			var a = target.height(),
-			    b = target.offset().top;
-
+			    b = target.offset().top,
+				prev_offset = (target.prev().length) ? target.prev().offset().top : 0;
+			
 			movable.target = target;
-			movable.min    = Math.min(b, a + (target.prev().offset().top || -Infinity));
+			movable.min    = Math.min(b, a + (prev_offset || -Infinity));
 			movable.max    = Math.max(a + b, b + (target.next().height() ||  Infinity));
 		}
 	};
@@ -311,9 +328,8 @@ var Symphony;
 		$('textarea').blur();
 		
 		// Internal duplicators:
-		$('#fields-duplicator, #filters-duplicator').symphonyDuplicator({
-			orderable:	true
-		});
+		$('#fields-duplicator').symphonyDuplicator({ orderable: true });
+		$('.filters-duplicator').symphonyDuplicator();
 		
 		// Repeating sections
 		$('div.subsection').each(function() {

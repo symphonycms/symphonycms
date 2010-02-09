@@ -67,7 +67,7 @@
 				
 				widgets.controls.before(instance);
 				object.trigger('construct', [instance]);
-				refresh();
+				refresh(true);
 				
 				return instance;
 			};
@@ -108,7 +108,7 @@
 			};
 			
 			// Refresh disabled states:
-			var refresh = function() {
+			var refresh = function(input_focus) {
 				var constructor = settings.constructable;
 				var selector = settings.constructable;
 				var destructor = settings.destructable;
@@ -126,6 +126,9 @@
 						}
 					});
 				});
+
+				// Give focus to the first input in the first instance
+				if (input_focus) instances.filter(':last').find('input[type!=hidden]:first').focus();
 				
 				// No templates to add:
 				if (templates.length < 1) {
@@ -224,8 +227,17 @@
 						var header = template.find(settings.headers).addClass('header');
 						var option = widgets.selector.append('<option />')
 							.find('option:last');
+							
+						var header_children = header.children();
+						if (header_children.length) {
+							header_text = header.get(0).childNodes[0].nodeValue + ' (' + header_children.filter(':eq(0)').text() + ')';
+						} else {
+							header_text = header.text();
+						}
+						option.text(header_text).val(position);
 						
-						option.text(header.text()).val(position);
+						// HACK: preselect Text Input for Section editor
+						if (header_text == 'Text Input') option.attr('selected', 'selected');
 						
 						templates.push(template.removeClass('template'));
 					});

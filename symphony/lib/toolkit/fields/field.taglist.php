@@ -125,7 +125,8 @@
 			
 			if(empty($data)) return;
 			
-			$data = General::array_remove_duplicates($data);
+			// Do a case insensitive removal of duplicates
+			$data = General::array_remove_duplicates($data, true);
 			
 			sort($data);
 			

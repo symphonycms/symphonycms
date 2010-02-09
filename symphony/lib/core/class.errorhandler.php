@@ -44,6 +44,12 @@
 			$lines = NULL;
 			$odd = true;
 			
+			$markdown .= "\t" . $e->getMessage() . "\n";
+			$markdown .= "\t" . $e->getFile() . " line " . $e->getLine() . "\n\n";
+			foreach(self::__nearByLines($e->getLine(), $e->getFile()) as $line => $string) {
+			    $markdown .= "\t" . ($line+1) . $string;
+			}
+			
 			foreach(self::__nearByLines($e->getLine(), $e->getFile()) as $line => $string){
 				$lines .= sprintf(
 					'<li%s%s><strong>%d:</strong> <code>%s</code></li>', 
@@ -140,16 +146,28 @@
 			text-shadow: 2px 2px 2px #ccc;
 		}
 		
+		a.markdown {
+			float: right;
+			margin-right: 20px;
+			font-weight: normal;
+			color: blue;
+		}
+		
 		code{
 			font-size: 11px;
 			font-family: Monaco, "Courier New", Courier;
 		}
 		
-		ul{
+		pre#markdown {
+			padding: 10px 0;
+		}
+		
+		ul, pre#markdown{
 			list-style: none;
 			color: #111;
 			margin: 20px;
 			border-left: 5px solid #bbb;
+			background-color: #efefef;
 		}
 		
 		li{
@@ -178,9 +196,14 @@
 <body>
 	<h1>Symphony %s</h1>
 	<div class="bubble">
+		
+		<a class="markdown" href="#markdown" onclick="javascript:document.getElementById(\'markdown\').style.display = ((document.getElementById(\'markdown\').style.display == \'none\') ? \'block\' : \'none\'); return false;">Show Markdown for copy/paste</a>
+		
 		<h2>%s</h2>
 		<p>An error occurred in <code>%s</code> around line <code>%d</code></p>
-	
+		
+		<pre id="markdown" style="display: none;">%s</pre>
+		
 		<ul>%s</ul>
 	
 		<h3>Backtrace:</h3>
@@ -196,7 +219,8 @@
 				$e->getMessage(), 
 				$e->getFile(), 
 				$e->getLine(), 
-				$lines, 
+				$markdown,
+				$lines,
 				$trace,
 				$queries
 			);

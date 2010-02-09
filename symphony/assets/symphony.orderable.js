@@ -31,6 +31,8 @@
 				jQuery(document).mousemove(change);
 				jQuery(document).mouseup(stop);
 				
+				jQuery(document).mousemove();
+				
 				return false;
 			};
 			

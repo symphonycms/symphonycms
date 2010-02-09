@@ -231,12 +231,12 @@
 			$xml->setIncludeHeader(true);
 			
 			$events = new XMLElement('events');
-			$this->__processEvents($page['events'], $events);
+			$this->processEvents($page['events'], $events);
 			$xml->appendChild($events);
 			
 			$this->_events_xml = clone $events;
 						
-			$this->__processDatasources($page['data_sources'], $xml);
+			$this->processDatasources($page['data_sources'], $xml);
 			
 			$this->_Parent->Profiler->seed($xml_build_start);
 			$this->_Parent->Profiler->sample('XML Built', PROFILE_LAP);
@@ -427,12 +427,13 @@
 			## 1. First do a cleanup of each dependency list, removing non-existant DS's and find 
 			##    the ones that have no dependencies, removing them from the list
 			foreach($dependenciesList as $handle => $dependencies){
-
-				if(!empty($dependencies)) continue;
 				
-				unset($dependenciesList[$handle]);
-				$orderedList[] = str_replace('_', '-', $handle);
+				$dependenciesList[$handle] = @array_intersect($dsKeyArray, $dependencies);
 				
+				if(empty($dependenciesList[$handle])){ 
+					unset($dependenciesList[$handle]);
+					$orderedList[] = str_replace('_', '-', $handle);
+				}
 			}
 
 
@@ -466,7 +467,7 @@
 			
 		}
 		
-		public function __processDatasources($datasources, &$wrapper) {
+		public function processDatasources($datasources, &$wrapper, array $params = array()) {
 			if (trim($datasources) == '') return;
 			
 			$datasources = preg_split('/,\s*/i', $datasources, -1, PREG_SPLIT_NO_EMPTY);
@@ -474,8 +475,8 @@
 			
 			if (!is_array($datasources) || empty($datasources)) return;
 			
-			$this->_env['pool'] = array();
-			$pool = array();
+			$this->_env['pool'] = $params;
+			$pool = $params;
 			$dependencies = array();
 			
 			foreach ($datasources as $handle) {
@@ -514,7 +515,14 @@
 			}
 		}
 		
-		private function __processEvents($events, &$wrapper){
+		private function __findEventOrder($a, $b){
+			if ($a->priority() == $b->priority()) {
+		        return 0;
+		    }
+		    return(($a->priority() > $b->priority()) ? -1 : 1);
+		}
+		
+		private function processEvents($events, &$wrapper){
 			
 			####
 			# Delegate: FrontendProcessEvents
@@ -537,15 +545,20 @@
 				$events = array_map('trim', $events);
 			
 				if(!is_array($events) || empty($events)) return;
-			
+				
+				$pool = array();
 				foreach($events as $handle){
+					$pool[$handle] = $this->EventManager->create($handle, array('env' => $this->_env, 'param' => $this->_param));
+				}
+				
+				uasort($pool, array($this, '__findEventOrder'));
+				
+				foreach($pool as $handle => $event){
 					$this->_Parent->Profiler->seed();
 					
 					$dbstats = Symphony::Database()->getStatistics();
 					$queries = $dbstats['queries'];
-					
-					$event = $this->EventManager->create($handle, array('env' => $this->_env, 'param' => $this->_param));
-				
+	
 					if($xml = $event->load()):
 				
 						if(is_object($xml)) $wrapper->appendChild($xml);

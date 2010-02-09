@@ -100,6 +100,7 @@
 
 		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			$states = $this->getToggleStates();
+			natsort($states);
 			
 			if(!is_array($data['value'])) $data['value'] = array($data['value']);
 			

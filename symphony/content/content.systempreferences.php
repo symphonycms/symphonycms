@@ -26,6 +26,30 @@
 		    } else if (isset($this->_context[0]) && $this->_context[0] == 'success') {
 		    	$this->pageAlert(__('Preferences saved.'), Alert::SUCCESS);
 		    }
+		    
+		    // Get available languages
+		    $languages = Lang::getAvailableLanguages(new ExtensionManager(Administration::instance()));
+		
+			if(count($languages > 1)) {
+			    // Create language selection
+				$group = new XMLElement('fieldset');
+				$group->setAttribute('class', 'settings');
+				$group->appendChild(new XMLElement('legend', __('System Language')));			
+				$label = Widget::Label();
+				
+				// Get language names
+				asort($languages); 
+				
+				foreach($languages as $code => $name) {
+					$options[] = array($code, $code == Symphony::Configuration()->get('lang', 'symphony'), $name);
+				}
+				$select = Widget::Select('settings[symphony][lang]', $options);			
+				$label->appendChild($select);
+				$group->appendChild($label);			
+				$group->appendChild(new XMLElement('p', __('Authors can set up a differing language in their profiles.'), array('class' => 'help')));
+				// Append language selection
+				$this->Form->appendChild($group);
+			}
 			
 			###
 			# Delegate: AddCustomPreferenceFieldsets
@@ -61,9 +85,11 @@
 				
 				if (!is_array($this->_errors) || empty($this->_errors)) {
 
-					foreach($settings as $set => $values) {
-						foreach($values as $key => $val) {
-							Symphony::Configuration()->set($key, $val, $set);
+					if(is_array($settings) && !empty($settings)){
+						foreach($settings as $set => $values) {
+							foreach($values as $key => $val) {
+								Symphony::Configuration()->set($key, $val, $set);
+							}
 						}
 					}
 					
@@ -74,4 +100,3 @@
 			}
 		}	
 	}
-

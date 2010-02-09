@@ -23,7 +23,7 @@
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.0.6');
+	define('kVERSION', '2.0.7RC2');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
 	
@@ -66,7 +66,11 @@
 		}
 
 		try{
-			Lang::init('./symphony/lib/lang/lang.%s.php', $lang);
+			Lang::load(
+				'./symphony/lib/lang/lang.%s.php', 
+				$lang,
+				true
+			);
 		}
 		catch(Exception $s){
 			return NULL;
@@ -134,9 +138,32 @@
 		die($code);
 
 	}
+	
+	// Make sure the install.sql file exists
+	if(!file_exists('install.sql') || !is_readable('install.sql')){
+
+		$code = '<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<title>'.__('Missing File').'</title>
+		<link rel="stylesheet" type="text/css" href="'.kINSTALL_ASSET_LOCATION.'/main.css"/>
+		<script type="text/javascript" src="'.kINSTALL_ASSET_LOCATION.'/main.js"></script>
+	</head>
+		<body>
+			<h1>'.__('Install Symphony <em>Version %s</em>', array(kVERSION)).'</h1>
+			<h2>'.__('Missing File').'</h2>
+			<p>'.__('It appears that <code>install.sql</code> is either missing or not readable. This is required to populate the database and must be uploaded before installation can commence. Ensure that <code>PHP</code> has read permissions.').'</p>
+
+		</body>
+
+</html>';
+
+		die($code);
+
+	}
 
 	// Check if Symphony is already installed
-
 	if(file_exists('manifest/config.php')){
 
 		$code = '<?xml version="1.0" encoding="utf-8"?>
@@ -159,6 +186,8 @@
 		die($code);
 
 	}
+
+
 		
 	/////////////////////////
 	
@@ -170,7 +199,8 @@
 		$conf['symphony']['pagination_maximum_rows'] = '17';
 		$conf['symphony']['allow_page_subscription'] = '1';
 		$conf['symphony']['lang'] = 'en';
-		$conf['symphony']['version'] = '2.0.6';
+		$conf['symphony']['version'] = '2.0.7RC2';
+		$conf['symphony']['pages_table_nest_children'] = 'no';
 		$conf['log']['archive'] = '1';
 		$conf['log']['maxsize'] = '102400';
 		$conf['general']['sitename'] = 'Symphony CMS';

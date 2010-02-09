@@ -211,7 +211,7 @@
 			
 			if($isEditing){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this event')));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this event'), 'type' => 'submit'));
 				$div->appendChild($button);
 			}
 			
@@ -537,7 +537,8 @@
 					$documentation_parts[] = new XMLElement('p', __('The send email filter, upon the event successfully saving the entry, takes input from the form and send an email to the desired recipient. <b>This filter currently does not work with the "Allow Multiple" option.</b> The following are the recognised fields:'));
 
 					$documentation_parts[] = self::processDocumentationCode(
-						'send-email[from]'.self::CRLF.
+						'send-email[sender-email] // '.__('Optional').self::CRLF.
+						'send-email[sender-name] // '.__('Optional').self::CRLF.						
 						'send-email[subject] // '.__('Optional').self::CRLF.
 						'send-email[body]'.self::CRLF.
 						'send-email[recipient] // '.__('list of comma separated usernames.'));
@@ -549,7 +550,8 @@
 		<label>'.__('Name').' <input type="text" name="fields[author]" value="" /></label>
 		<label>'.__('Email').' <input type="text" name="fields[email]" value="" /></label>
 		<label>'.__('Message').' <textarea name="fields[message]" rows="5" cols="21"></textarea></label>
-		<input name="send-email[from]" value="fields[email]" type="hidden" />
+		<input name="send-email[sender-email]" value="fields[email]" type="hidden" />
+		<input name="send-email[sender-name]" value="fields[author]" type="hidden" />		
 		<input name="send-email[subject]" value="You are being contacted" type="hidden" />
 		<input name="send-email[body]" value="fields[message]" type="hidden" />
 		<input name="send-email[recipient]" value="fred" type="hidden" />

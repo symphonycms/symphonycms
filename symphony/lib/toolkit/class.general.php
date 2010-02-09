@@ -63,7 +63,7 @@
 		
 		Method: validateXML
 		Description: This checks an xml document for well-formedness
-		Param: $data - filename or xml document as a string
+		Param: $data - filename, xml document as a string, or arbitary string
 		       $errors - pointer to an array which will contain any validation errors
 		       $isFile (optional) - if this is true, the method will attempt to read
 		                            from a file ($data) instead.
@@ -205,24 +205,38 @@
 		***/			
 		public static function generatePassword(){
 		
-			$words[] = array(__('Large'), __('Small'), __('Hot'), __('Cold'), __('Big'), __('Hairy'), __('Round'), __('Lumpy'), __('Coconut'), __('Encumbered'));
-			$words[] = array(__('Cats'), __('Dogs'), __('Weasels'), __('Birds'), __('Worms'), __('Bugs'), __('Pigs'), __('Monkeys'), __('Pirates'), __('Aardvarks'), __('Men'), __('Women'));
-			
-			return (rand(2, 15) . $words[0][rand(0, 8)] . $words[1][rand(0, 7)]); 
+			$words = array(
+				array(
+					__('Large'), 
+					__('Small'), 
+					__('Hot'), 
+					__('Cold'), 
+					__('Big'), 
+					__('Hairy'), 
+					__('Round'),
+					__('Lumpy'), 
+					__('Coconut'), 
+					__('Encumbered')
+				),
 				
-		}
-
-		/***
-
-		Method: encodeHeader
-		Description: Encodes header
-		Source:      http://bitprison.net/php_mail_utf-8_subject_and_message
-		More info:   http://www.ietf.org/rfc/rfc2047.txt
-
-		***/
-		public static function encodeHeader($input, $charset='ISO-8859-1'){
-			$separator = "?=".self::CRLF."=?{$charset}?B?";
-			return "=?{$charset}?B?".wordwrap(base64_encode($input), 75-strlen($separator), $separator, true).'?=';
+				array(
+					__('Cats'), 
+					__('Dogs'), 
+					__('Weasels'), 
+					__('Birds'), 
+					__('Worms'), 
+					__('Bugs'), 
+					__('Pigs'), 
+					__('Monkeys'),
+					__('Pirates'), 
+					__('Aardvarks'), 
+					__('Men'), 
+					__('Women')
+				)
+			);
+			
+			return (rand(2, 15) . $words[0][rand(0, count($words[0]) - 1)] . $words[1][rand(0, count($words[1]) - 1)]); 
+				
 		}
 
 		/***
@@ -246,8 +260,8 @@
 		   	}
 			####
 			
-			$subject = General::encodeHeader($subject, 'UTF-8');
-			$from_name = General::encodeHeader($from_name, 'UTF-8');
+			$subject = self::encodeHeader($subject, 'UTF-8');
+			$from_name = self::encodeHeader($from_name, 'UTF-8');
 			$headers = array();
 			
 			$default_headers = array(
@@ -257,7 +271,7 @@
 				'Return-Path'	=> "<{$from_email}>",
 				'Importance'	=> 'normal',
 				'Priority'		=> 'normal',
-				'X-Sender'		=> 'Symphony Email Module <noreply@symphony21.com>',
+				'X-Sender'		=> 'Symphony Email Module <noreply@symphony-cms.com>',
 				'X-Mailer'		=> 'Symphony Email Module',
 				'X-Priority'	=> '3',
 				'MIME-Version'	=> '1.0',
@@ -266,7 +280,7 @@
 			
 			if (!empty($additional_headers)) {
 				foreach ($additional_headers as $header => $value) {
-					$header = preg_replace_callback('/\w+/', create_function('$m', 'if($m[0]=="MIME"||$m[0]=="ID") return $m[0]; else return ucfirst($m[0]);'), $header);
+					$header = preg_replace_callback('/\w+/', create_function('$m', 'if(in_array($m[0], array("MIME", "ID"))) return $m[0]; else return ucfirst($m[0]);'), $header);
 					$default_headers[$header] = $value;
 				}
 			}
@@ -275,12 +289,40 @@
 				$headers[] = sprintf('%s: %s', $header, $value);
 			}
 			
-			if (!mail($to_email, $subject, @wordwrap($message, 70), @implode(self::CRLF, $headers) . self::CRLF)) return false;
-
-			return true;
+			return mail($to_email, $subject, @wordwrap($message, 70), @implode(self::CRLF, $headers) . self::CRLF, "-f{$from_email}");
+			
 		}
 
 
+		/***
+
+		Method: encodeHeader
+		Description: Encodes (parts of) an email header if necessary, according to RFC2047 if mbstring is available;
+		Added by: Michael Eichelsdoerfer
+
+		***/
+		public static function encodeHeader($input, $charset='ISO-8859-1')
+		{
+		    if(preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches))
+		    {
+		        if(function_exists('mb_internal_encoding'))
+		        {
+		            mb_internal_encoding($charset);
+		            $input = mb_encode_mimeheader($input, $charset, 'Q');
+		        }
+		        else
+		        {
+		            foreach ($matches[1] as $value)
+		            {
+		                $replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
+		                $input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
+		            }
+		        }
+		    }
+		    return $input;
+		}
+		
+		
 		/***
 		
 		Method: repeatStr
@@ -512,32 +554,26 @@
 		Return: rebuilt array
 		
 		***/		
-		public static function array_remove_duplicates($array){
+		public static function array_remove_duplicates(array $array, $ignore_case=false){
+			return ($ignore_case == true ? self::array_iunique($array) : array_unique($array));
+		}
+
 		
-			/*
-			//Flip once to remove duplicates
-			$array = array_flip($array);
-			
-			//Flip back to get desired result
-			$array = array_flip($array);
-			
-			return $array;
-			
-			*/
-			
-			if(!is_array($array)) return array($array);
-			elseif(empty($array)) return array();
-			
-			$tmp = array();
-			
-			foreach($array as $item){
-			
-				if(!@in_array($item, $tmp))
-					$tmp[] = $item;
+		public static function in_iarray($needle, array $haystack){
+			foreach($haystack as $key => $value){
+				if(strcasecmp($value, $needle) == 0) return true;
 			}
-			
+			return false;
+		}
+
+		public static function array_iunique(array $array){
+			$tmp = array();
+			foreach($array as $key => $value){
+				if(!self::in_iarray($value, $tmp)){
+					$tmp[$key] = $value;
+				}
+			}
 			return $tmp;
-				
 		}
 		
 		/***
@@ -549,7 +585,7 @@
 		Return: rebuilt array
 		
 		***/
-		public static function array_to_xml($parent, $data) {
+		public static function array_to_xml(XMLElement $parent, array $data, $validate=false) {
 			foreach ($data as $element_name => $value) {
 				if (strlen($value) == 0) continue;
 				
@@ -562,8 +598,16 @@
 					$child = new XMLElement($element_name);
 				}
 				
-				if (is_array($value)) General::array_to_xml($child, $value);
-				else $child->setValue(General::sanitize($value));
+				if(is_array($value)){
+					self::array_to_xml($child, $value);
+				}
+				
+				elseif($validate == true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)){
+					return;
+				} 
+				else{
+					$child->setValue(self::sanitize($value));
+				}
 				
 				$parent->appendChild($child);
 			}
@@ -606,40 +650,19 @@
 		Method: deleteFile
 		Description: deletes a file using the unlink function
 		Param: $file - file to delete	
-		Return: true or false
+		Return: true on success
 		
 		***/		
-		public static function deleteFile($file){
+		public static function deleteFile($file, $slient=true){
 			if(!@unlink($file)){
-				trigger_error(__('Unable to remove file - %s', array($file)), E_USER_WARNING);
+				if($slient == false){
+					throw new Exception(__('Unable to remove file - %s', array($file)));
+				}
+				
 				return false;
 			}
 			
 			return true;
-		}
-		
-		/***
-		
-		Method: rmdirr
-		Description: Recursively deletes all folders and files from a given start location
-		
-		***/
-		public static function rmdirr($folder){
-			
-			$folder = rtrim($folder, '/');
-			
-			if(empty($folder)) return;
-			
-		    if(is_dir($folder) && !is_link($folder)){
-		        foreach(scandir($folder) as $item){
-		            if(!strcmp($item, '.') || !strcmp($item, '..')) continue;        
-		            self::rmdirr($folder . '/' . $item);
-		        }    
-		        rmdir($f);
-		    }
-		
-		    else unlink($f);
-
 		}
 
 		/***

@@ -24,6 +24,8 @@
 		public static $Configuration;
 		public static $Database;
 		
+		private static $_lang;
+		
 		public $Log;
 		public $Profiler;
 		public $Cookie;
@@ -48,8 +50,11 @@
 			include(CONFIG);
 			self::$Configuration = new Configuration(true);
 			self::$Configuration->setArray($settings);
-
-			define_safe('__LANG__', (self::$Configuration->get('lang', 'symphony') ? self::$Configuration->get('lang', 'symphony') : 'en'));				
+			
+			self::$_lang = (self::$Configuration->get('lang', 'symphony') ? self::$Configuration->get('lang', 'symphony') : 'en');		
+			
+			// Legacy support for __LANG__ constant
+			define_safe('__LANG__', self::lang());
 			
 			define_safe('__SYM_DATE_FORMAT__', self::$Configuration->get('date_format', 'region'));
 			define_safe('__SYM_TIME_FORMAT__', self::$Configuration->get('time_format', 'region'));
@@ -61,22 +66,21 @@
 			GenericErrorHandler::initialise($this->Log);
 			
 			$this->initialiseCookie();
-			
-			try{
-				Lang::init(LANG . '/lang.%s.php', __LANG__);
-			}
-			catch(Exception $e){
-				trigger_error($e->getMessage(), E_USER_ERROR);
-			}
 
 			$this->initialiseDatabase();
-	
+
 			if(!$this->initialiseExtensionManager()){
 				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
 			}
+			
+			Lang::loadAll($this->ExtensionManager);
 
 			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
 			
+		}
+		
+		public function lang(){
+			return self::$_lang;
 		}
 		
 		public function initialiseCookie(){
@@ -166,7 +170,9 @@
 		}
 
 		public function isLoggedIn(){
-
+			
+			if ($this->Author) return true;
+			
 			$username = self::$Database->cleanValue($this->Cookie->get('username'));
 			$password = self::$Database->cleanValue($this->Cookie->get('pass'));
 			
@@ -176,8 +182,11 @@
 
 				if($id){
 					$this->_user_id = $id;
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");
-					$this->User = new User($id);
+					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+					$this->Author = new Author($id);
+					
+					$this->reloadLangFromAuthorPreference();
+					
 					return true;
 				}
 				
@@ -190,7 +199,7 @@
 		public function logout(){
 			$this->Cookie->expire();
 		}
-		
+
 		public function login($username, $password, $isHash=false){
 			
 			$username = self::$Database->cleanValue($username);
@@ -207,7 +216,10 @@
 					$this->User = new User($id);
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");
+					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+					
+					$this->reloadLangFromAuthorPreference();
+
 					return true;
 				}
 			}
@@ -243,12 +255,31 @@
 				$this->User = new User($row['id']);
 				$this->Cookie->set('username', $row['username']);
 				$this->Cookie->set('pass', $row['password']);
-				self::$Database->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");
+				self::$Database->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+				
+				$this->reloadLangFromAuthorPreference();
+				
 				return true;
 			}
 			
 			return false;
 						
+		}
+		
+		public function reloadLangFromAuthorPreference(){	
+			
+			$lang = $this->Author->get('language');
+			if($lang && $lang != self::lang()){
+				self::$_lang = $lang;
+				if($lang != 'en') {
+					Lang::loadAll($this->ExtensionManager);
+				}
+				else {
+					// As there is no English dictionary the default dictionary needs to be cleared
+					Lang::clear();
+				}
+			}
+			
 		}
 		
 		public function resolvePageTitle($page_id) {

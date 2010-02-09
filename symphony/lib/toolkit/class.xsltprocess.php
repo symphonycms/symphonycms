@@ -45,7 +45,7 @@
 			return (class_exists('XsltProcessor') || function_exists('xslt_process'));
 		}
 		
-		private function __process($xsltproc, $xml_arg, $xsl_arg, $xslcontainer = null, $args = null, $params = null) {
+		private function __process($XSLProc, $xml_arg, $xsl_arg, $xslcontainer = null, $args = null, $params = null) {
 		                         
 			// Start with preparing the arguments
 			$xml_arg = str_replace('arg:', '', $xml_arg);
@@ -72,14 +72,14 @@
 			$xsl->loadXML($args[$xsl_arg]);
 
 			// Load the xsl template
-			$xsltproc->importStyleSheet($xsl);
+			$XSLProc->importStyleSheet($xsl);
 			
 			// Set parameters when defined
 			if ($params) {
 				General::flattenArray($params);
 				
 				foreach ($params as $param => $value) {
-					$xsltproc->setParameter('', $param, $value);
+					$XSLProc->setParameter('', $param, $value);
 				}
 			}
 			
@@ -87,7 +87,7 @@
 			
 			// Start the transformation
 			set_error_handler('trapXMLError');	
-			$processed = $xsltproc->transformToXML($xml);
+			$processed = $XSLProc->transformToXML($xml);
 
 			// Restore error handling
 			if(function_exists('ini_set') && isset($ehOLD)){
@@ -102,7 +102,7 @@
 			
 		}	
 		
-		public function process($xml=null, $xsl=null, $param=array()){
+		public function process($xml=null, $xsl=null, array $parameters=array(), array $register_functions=array()){
 
 			global $processErrors;
 			
@@ -114,8 +114,6 @@
 			$xml = trim($xml);
 			$xsl = trim($xsl);
 			
-			if(!is_array($param)) $param = array();
-			
 			if(!self::isXSLTProcessorAvailable()) return false; //dont let process continue if no xsl functionality exists
 			
 			$arguments = array(
@@ -123,20 +121,22 @@
 		   		'/_xsl' => $this->_xsl
 			);
 			
-			$xsltproc = new XsltProcessor();
+			$XSLProc = new XsltProcessor;
+			
+			if(!empty($register_functions)) $XSLProc->registerPHPFunctions($register_functions);
 				
 			$result = @$this->__process(
-			   $xsltproc,
+			   $XSLProc,
 			   'arg:/_xml',
 			   'arg:/_xsl',
 			   null,
 			   $arguments,
-			   $param
+			   $parameters
 			);	
 				
 			while($error = @array_shift($processErrors)) $this->__error($error['number'], $error['message'], $error['type'], $error['line']);
 			
-			unset($xsltproc);
+			unset($XSLProc);
 			
 			return $result;		
 		}

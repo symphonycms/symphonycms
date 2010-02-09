@@ -151,7 +151,7 @@
 	        return true;
 	    }
 		
-		public function cleanValue($value) {
+		public static function cleanValue($value) {
 			if (function_exists('mysql_real_escape_string')) {
 				return mysql_real_escape_string($value);
 				
@@ -160,10 +160,24 @@
 			}
 		}
 		
-		public function cleanFields(&$array){
-			foreach($array as $key => $val){				
-				if($val == '') $array[$key] = 'NULL';				
-				else $array[$key] = "'".(function_exists('mysql_real_escape_string') ? mysql_real_escape_string($val) : addslashes($val))."'";
+		public static function cleanFields(array &$array){
+			foreach($array as $key => $val){
+				
+				// Handle arrays with more than 1 level
+				if(is_array($val)){
+					self::cleanFields($val);
+					continue;
+				}	
+						
+				elseif(strlen($val) == 0){
+					$array[$key] = 'NULL';
+				}
+				
+				else{
+					$array[$key] = "'" . (function_exists('mysql_real_escape_string') 
+											? mysql_real_escape_string($val) 
+											: addslashes($val)) . "'";
+				}
 			}
 		}
 		
@@ -179,7 +193,7 @@
 					// Sanity check: Make sure we dont end up with ',()' in the SQL.
 					if(!is_array($array)) continue;
 					
-					$this->cleanFields($array);
+					self::cleanFields($array);
 					$rows[] = '('.implode(', ', $array).')';
 				}
 				
@@ -189,7 +203,7 @@
 			
 			// Single Insert
 			else{
-				$this->cleanFields($fields);
+				self::cleanFields($fields);
 				$sql  = "INSERT INTO `$table` (`".implode('`, `', array_keys($fields)).'`) VALUES ('.implode(', ', $fields).')';
 
 				if($updateOnDuplicate){
@@ -206,7 +220,7 @@
 		}
 		
 		public function update($fields, $table, $where=NULL){
-			$this->cleanFields($fields);
+			self::cleanFields($fields);
 			$sql = "UPDATE $table SET ";
 			
 			foreach($fields as $key => $val)
@@ -246,7 +260,7 @@
 	            $query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', $this->_connection['tbl_prefix'].'\\1\\2', $query);
 	        }
 
-			$query_hash = md5($query.time());
+			$query_hash = md5($query.microtime());
 			
 			$this->_log['query'][$query_hash] = array('query' => $query, 'start' => precision_timer());
 

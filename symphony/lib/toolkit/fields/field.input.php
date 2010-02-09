@@ -168,17 +168,6 @@
 			$result = array(
 				'value' => $data
 			);
-
-			include_once(TOOLKIT . '/class.xsltprocess.php');
-			
-			if(!General::validateXML($data, $errors, false, new XsltProcess)){
-				$result['value'] = html_entity_decode($data, ENT_QUOTES, 'UTF-8');
-				$result['value'] = $this->__replaceAmpersands($result['value']);
-
-				if(!General::validateXML($result['value'], $errors, false, new XsltProcess)){
-					$result['value'] = General::sanitize($data);
-				}
-			}
 			
 			$result['handle'] = Lang::createHandle($result['value']);
 			
@@ -195,6 +184,19 @@
 
 			if($encode === true){
 				$value = General::sanitize($value);
+			}
+			
+			else{
+				include_once(TOOLKIT . '/class.xsltprocess.php');
+
+				if(!General::validateXML($data['value'], $errors, false, new XsltProcess)){
+					$value = html_entity_decode($data['value'], ENT_QUOTES, 'UTF-8');
+					$value = $this->__replaceAmpersands($value);
+
+					if(!General::validateXML($value, $errors, false, new XsltProcess)){
+						$value = General::sanitize($data['value']);
+					}
+				}
 			}
 			
 			$wrapper->appendChild(

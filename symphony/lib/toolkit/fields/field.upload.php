@@ -347,10 +347,10 @@
 			
 			if($entry_id){
 				$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
-				$existing_file = $abs_path . '/' . trim($row['file'], '/');
+				$existing_file = $abs_path . '/' . basename($row['file'], '/');
 			}
 			
-			if(($existing_file != $new_file) && file_exists($new_file)){
+			if((strtolower($existing_file) != strtolower($new_file)) && file_exists($new_file)){
 				$message = __('A file with the name %1$s already exists in %2$s. Please rename the file first, or choose another.', array($data['name'], $this->get('destination')));
 				return self::__INVALID_FIELDS__;				
 			}
@@ -397,16 +397,18 @@
 				return;
 			}
 
-			if($entry_id){
-				$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
-				$existing_file = $abs_path . '/' . basename($row['file']);
-
-				if (file_exists($existing_file)) General::deleteFile($existing_file);
-			}
-
 			$status = self::__OK__;
 			
 			$file = rtrim($rel_path, '/') . '/' . trim($data['name'], '/');
+
+			if($entry_id){
+				$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
+				$existing_file = rtrim($rel_path, '/') . '/' . trim(basename($row['file']), '/');
+
+				if((strtolower($existing_file) != strtolower($file)) && file_exists(WORKSPACE . $existing_file)){
+					General::deleteFile(WORKSPACE . $existing_file);
+				}
+			}
 
 			## If browser doesn't send MIME type (e.g. .flv in Safari)
 			if (strlen(trim($data['type'])) == 0){
@@ -424,6 +426,8 @@
 		
 		private static function __sniffMIMEType($file){
 			
+			$ext = strtolower(General::getExtension($file));
+			
 			$imageMimeTypes = array(
 				'image/gif',
 				'image/jpg',
@@ -431,7 +435,7 @@
 				'image/png',
 			);
 			
-			if(in_array('image/' . General::getExtension($file), $imageMimeTypes)) return 'image/' . General::getExtension($file);
+			if(General::in_iarray("image/{$ext}", $imageMimeTypes)) return "image/{$ext}";
 			
 			return 'unknown';
 		}
@@ -449,7 +453,7 @@
 			
 			$meta['creation'] = DateTimeObj::get('c', filemtime($file));
 			
-			if(in_array($type, $imageMimeTypes) && $array = @getimagesize($file)){
+			if(General::in_iarray($type, $imageMimeTypes) && $array = @getimagesize($file)){
 				$meta['width']    = $array[0];
 				$meta['height']   = $array[1];
 			}

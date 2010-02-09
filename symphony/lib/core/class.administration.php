@@ -58,7 +58,7 @@
 					}
 				
 					else{
-						redirect(URL . '/symphony/publish/' . $section_handle . '/');
+						redirect(URL . "/symphony/publish/{$section_handle}/");
 					}
 				
 				endif;

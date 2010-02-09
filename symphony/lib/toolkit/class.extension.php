@@ -26,27 +26,4 @@
 		
 		public function fetchNavigation(){ return NULL; }
 		
-		/*
-		return array(
-			
-			array(
-				'location' => 200,
-				'name' => __('File Manager'),
-				'link' => '/'
-			),		
-			
-			array(
-				'location' => 100,
-				'name' => __('File Manager'),
-				'children' => array(
-					
-					array(
-						'name' => __('Browse'),
-						'link' => '/index/'							
-					)
-				)
-			)
-		);
-		*/
-		
 	}

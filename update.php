@@ -57,8 +57,8 @@
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.1.0');
-	define('kCHANGELOG', 'http://symphony-cms.com/blog/entry/206-release/');
+	define('kVERSION', '2.0.7RC2');
+	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/'.kVERSION.'/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
 
@@ -82,16 +82,20 @@
 </html>';
 	
 	$settings = loadOldStyleConfig();
+	$existing_version = $settings['symphony']['version'];
 	
 	if(isset($_POST['action']['update'])){
-		
-		$existing_version = $settings['symphony']['version'];
 		
 		$settings['symphony']['version'] = kVERSION;
 		$settings['general']['useragent'] = 'Symphony/' . kVERSION;
 		
 		## Build is no longer used
 		unset($settings['symphony']['build']);
+
+		## Set the default language
+		if(!isset($settings['symphony']['lang'])){
+			$settings['symphony']['lang'] = 'en';
+		}
 
 		if(writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']) === true){
 			
@@ -215,6 +219,14 @@ Options +FollowSymlinks
 			}			
 			
 			
+			if(version_compare($existing_version, '2.0.7RC1', '<=')){
+				$frontend->Database->query('ALTER TABLE `tbl_authors` ADD `language` VARCHAR(15) NULL DEFAULT NULL');
+			}
+			
+			$sbl_version = $frontend->Database->fetchVar('version', 0, 
+				"SELECT `version` FROM `tbl_extensions` WHERE `name` = 'selectbox_link_field' LIMIT 1"
+			);
+			
 			$code = sprintf($shell, 
 '				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 				<h2>Update Complete</h2>
@@ -226,12 +238,23 @@ Options +FollowSymlinks
 				
 				(file_exists(DOCROOT . '/symphony/.htaccess') ? '<li><strong>WARNING:</strong> The updater tried, but failed, to remove the file <code>symphony/.htaccess</code>. It is vitally important that this file be removed, otherwise the administration area will not function. If you have customisations to this file, you should be able to just remove the Symphony related block, but there are no guarantees.</li>' : NULL)
 				
-				.'
-					<li>Version <code>2.0.5</code> introduced multiple includable elements, in the Data Source Editor, for a single field. After updating from <code>2.0.5</code> or lower, the DS editor will seem to "forget" about any <code>Textarea</code> fields selected when you are editing existing Data Sources. After updating, you must ensure you re-select them before saving. <strong>Note, this will only effect Data Sources that you edit and were created prior to <code>2.0.5</code></strong>. Until that point, the field will still be included in any front-end <code>XML</code></li>
+				.
+				
+				(version_compare($existing_version, '2.0.5', '<') ? '<li>Version <code>2.0.5</code> introduced multiple includable elements, in the Data Source Editor, for a single field. After updating from <code>2.0.5</code> or lower, the DS editor will seem to "forget" about any <code>Textarea</code> fields selected when you are editing existing Data Sources. After updating, you must ensure you re-select them before saving. <strong>Note, this will only effect Data Sources that you edit and were created prior to <code>2.0.5</code></strong>. Until that point, the field will still be included in any front-end <code>XML</code></li>' : NULL)
+				
+				.
+				
+				(version_compare($existing_version, '2.0.5', '<=') ? '<li>As of 2.0.5, Symphony comes pre-packaged with the "Debug Dev Kit" and "Profile Dev Kit" extensions, which replace the built-in functionality. Prior to using them, you must ensure the folder <code>extensions/debugdevkit/lib/bitter/caches/</code> is writable by <code>PHP</code>.</li>' : NULL)
 
-					<li>Since <code>2.0.2</code>, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></li>
+				.
+				
+				(version_compare($existing_version, '2.0.2', '<') ? '<li>Since <code>2.0.2</code>, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></li>' : NULL)
 
-				</ol>
+				.
+			
+				(!is_null($sbl_version) && version_compare($sbl_version, '1.14', '<') ? '<li>The "Select Box Link" field extension has been updated to 1.14, however this installation of Symphony appears to be running an older version ('.$sbl_version.'). Versions prior to 1.14 will not work correctly under Symphony 2.0.7. The latest version can be download via the <a href"http://symphony-cms.com/download/extensions/view/20054/">Select Box Link download page</a> on the Symphony site.</li>' : NULL)
+				
+				.'</ol>
 
 				<p>This script, <code>update.php</code>, should be removed as a safety precaution. <a href="'.URL.'/update.php?action=remove">Click here</a> to remove this file and proceed to your administration area.</p>');
 
@@ -274,8 +297,10 @@ Options +FollowSymlinks
 '				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 				<h2>Update Existing Installation</h2>
 				<p>This script will update your existing Symphony '.$settings['symphony']['version'].' installation to version '.kVERSION.'.</p>
+				'.
+				(version_compare($existing_version, '2.0.6', '<') ? '
 				<br />
-				<p><strong>Pre-Installation Step: </strong> As of <code>2.0.6</code>, the core <code>.htaccess</code> has changed substantially. As a result, there is no fool proof way to automatically update it. Instead, if you have any customisations to your <code>.htaccess</code>, please back up the existing copy before updating. You will then need to manually migrate the customisations to the new <code>.htaccess</code>.</p>
+				<p><strong>Pre-Installation Step: </strong> As of <code>2.0.6</code>, the core <code>.htaccess</code> has changed substantially. As a result, there is no fool proof way to automatically update it. Instead, if you have any customisations to your <code>.htaccess</code>, please back up the existing copy before updating. You will then need to manually migrate the customisations to the new <code>.htaccess</code>.</p>' : NULL) .'
 				<br />	
 				<div class="submit">
 					<input type="submit" name="action[update]" value="Update Symphony"/>
