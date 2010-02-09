@@ -268,7 +268,7 @@
 		
 		public function reloadLangFromAuthorPreference(){	
 			
-			$lang = $this->Author->get('language');
+			$lang = $this->User->get('language');
 			if($lang && $lang != self::lang()){
 				self::$_lang = $lang;
 				if($lang != 'en') {
