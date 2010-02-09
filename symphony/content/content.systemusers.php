@@ -267,6 +267,37 @@
 			$this->Form->appendChild($group);
 			###
 			
+			### Custom Language Selection ###
+			$languages = Lang::getAvailableLanguages(Administration::instance()->ExtensionManager);
+			if(count($languages > 1)) {
+				
+				// Get language names
+				asort($languages);
+				
+				$group = new XMLElement('fieldset');
+				$group->setAttribute('class', 'settings');
+				$group->appendChild(new XMLElement('legend', __('Custom Preferences')));
+	
+				$div = new XMLElement('div');
+				$div->setAttribute('class', 'group');
+			
+				$label = Widget::Label(__('Language'));
+
+				$options = array(
+					array(NULL, is_null($user->get('language')), __('System Default'))
+				);
+				
+				foreach($languages as $code => $name) {
+					$options[] = array($code, $code == $user->get('language'), $name);
+				}
+				$select = Widget::Select('fields[language]', $options);			
+				$label->appendChild($select);
+				$group->appendChild($label);			
+	
+				$this->Form->appendChild($group);
+			}
+			###			
+			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
 
@@ -298,6 +329,7 @@
 				$this->_User->password = (trim($fields['password']) == '' ? NULL : md5($fields['password']));
 				$this->_User->default_section = intval($fields['default_section']);
 				$this->_User->auth_token_active = ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no');
+				$this->_User->language = $fields['language'];
 
 				###
 				# Delegate: PreCreate
@@ -368,6 +400,7 @@
 				
 				$this->_User->default_section = intval($fields['default_section']);
 				$this->_User->auth_token_active = ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no');
+				$this->_User->language = $fields['language'];
 				
 				###
 				# Delegate: PreSave
