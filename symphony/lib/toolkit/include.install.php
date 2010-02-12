@@ -1338,5 +1338,4 @@ Options +FollowSymlinks
 	header('Content-Type: text/html; charset=UTF-8');	
 	header(sprintf('Content-Length: %d', strlen($output)));
 	echo $output;
-	
-	exit;
+
