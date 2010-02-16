@@ -1,9 +1,9 @@
 <?php
 	
-	Class fieldAuthor extends Field {
-		function __construct(&$parent){
+	Class fieldUser extends Field {
+		function __construct($parent){
 			parent::__construct($parent);
-			$this->_name = __('Author');
+			$this->_name = __('User');
 		}
 
 		public function canToggle(){
@@ -17,16 +17,18 @@
 		
 		public function getToggleStates(){
 
-		    $authors = AuthorManager::fetch();
+		    $users = UserManager::fetch();
 	
 			$states = array();
-			foreach($authors as $a) $states[$a->get('id')] = $a->get('first_name') . ' ' . $a->get('lastname');
+			foreach($users as $u){
+				$states[$u->id] = $u->getFullName();
+			}
 			
 			return $states;
 		}
 
 		public function toggleFieldData($data, $newState){
-			$data['author_id'] = $newState;
+			$data['user_id'] = $newState;
 			return $data;
 		}
 
@@ -34,36 +36,36 @@
 			
 			$status = self::__OK__;
 			
-			if(!is_array($data) && !is_null($data)) return array('author_id' => $data);
+			if(!is_array($data) && !is_null($data)) return array('user_id' => $data);
 			
 			if(empty($data)) return NULL;
 			
 			$result = array();
-			foreach($data as $id) $result['author_id'][] = $id;
+			foreach($data as $id) $result['user_id'][] = $id;
 
 			return $result;
 		}
 
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 
-			$value = (isset($data['author_id']) ? $data['author_id'] : NULL);
+			$value = (isset($data['user_id']) ? $data['user_id'] : NULL);
 		
 			$callback = Administration::instance()->getPageCallback();
 			
 			if ($this->get('default_to_current_user') == 'yes' && empty($data) && empty($_POST)) {
-				$value = array(Administration::instance()->Author->get('id'));
+				$value = array(Administration::instance()->User->id);
 			}
 			
 			if (!is_array($value)) {
 				$value = array($value);
 			}
 
-		    $authors = AuthorManager::fetch();
+		    $users = UserManager::fetch();
 		
 			$options = array();
 
-			foreach($authors as $a){
-				$options[] = array($a->get('id'), in_array($a->get('id'), $value), $a->get('first_name') . ' ' . $a->get('last_name'));
+			foreach($users as $u){
+				$options[] = array($u->id, in_array($u->id, $value), $u->getFullName());
 			}
 			
 			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
@@ -80,22 +82,41 @@
 		}
 		
 		public function prepareTableValue($data, XMLElement $link=NULL){
-
-			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
 			
-			if(empty($data['author_id'])) return NULL;
+			if(!is_array($data['user_id'])) $data['user_id'] = array($data['user_id']);
+			
+			if(empty($data['user_id'])) return __('None');
 			
 			$value = array();
-			
-			foreach($data['author_id'] as $author_id){
-				$author = new Author;
+
+			foreach($data['user_id'] as $user_id){
 				
-				if($author->loadAuthor($author_id)){
-					$value[] = $author->getFullName();
+				if(is_null($user_id)) continue;
+				
+				$user = new User($user_id);
+
+				if($user instanceof User){
+					
+					if(is_null($link)){
+						$a = Widget::Anchor(
+							General::sanitize($user->getFullName()), 
+							URL . '/symphony/system/users/edit/' . $user->get('id') . '/'
+						);
+						$value[] = $a->generate();
+					}
+					
+					else{
+						$value[] = $user->getFullName();
+					}
 				}
 			}
-			
-			return parent::prepareTableValue(array('value' => General::sanitize(ucwords(implode(', ', $value)))), $link);
+
+			if(!is_null($link)){
+				$link->setValue(General::sanitize(implode(', ', $value)));
+				return $link->generate();
+			}
+
+			return (empty($value) ? __('None') : implode(', ', $value));
 		}
 
 		public function isSortable(){
@@ -112,7 +133,7 @@
 		
 		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
 			$joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
-			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`author_id` $order");
+			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`user_id` $order");
 		}
 		
 		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
@@ -127,7 +148,7 @@
 						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
 				";
 				$where .= "
-					AND t{$field_id}_{$this->_key}.author_id REGEXP '{$pattern}'
+					AND t{$field_id}_{$this->_key}.user_id REGEXP '{$pattern}'
 				";
 				
 			} elseif ($andOperation) {
@@ -140,7 +161,7 @@
 							ON (e.id = t{$field_id}_{$this->_key}.entry_id)
 					";
 					$where .= "
-						AND t{$field_id}_{$this->_key}.author_id = '{$value}'
+						AND t{$field_id}_{$this->_key}.user_id = '{$value}'
 					";
 				}
 				
@@ -159,7 +180,7 @@
 						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
 				";
 				$where .= "
-					AND t{$field_id}_{$this->_key}.author_id IN ('{$data}')
+					AND t{$field_id}_{$this->_key}.user_id IN ('{$data}')
 				";
 			}
 			
@@ -186,14 +207,14 @@
 		}
 
 		public function appendFormattedElement(&$wrapper, $data, $encode=false){
-	        if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
+	        if(!is_array($data['user_id'])) $data['user_id'] = array($data['user_id']);
 
 	        $list = new XMLElement($this->get('element_name'));
-	        foreach($data['author_id'] as $author_id){
-	            $author = new Author($this->_engine, $author_id);
+	        foreach($data['user_id'] as $user_id){
+	            $user = new User($user_id);
 	            $list->appendChild(new XMLElement('item', 
-	                                    $author->getFullName(), 
-	                                    array('id' => $author->get('id'), 'username' => $author->get('username'))));
+	                                    $user->getFullName(), 
+	                                    array('id' => $user->id, 'username' => $user->username)));
 	        }
 	        $wrapper->appendChild($list);
 	    }
@@ -212,7 +233,7 @@
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Allow selection of multiple authors', array($input->generate())));
+			$label->setValue(__('%s Allow selection of multiple users', array($input->generate())));
 			$div->appendChild($label);	
 			
 			## Default to current logged in user
@@ -234,10 +255,10 @@
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') ."` (
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
-				  `author_id` int(11) unsigned NOT NULL,
+				  `user_id` int(11) unsigned NOT NULL,
 				  PRIMARY KEY  (`id`),
 				  KEY `entry_id` (`entry_id`),
-				  KEY `author_id` (`author_id`)
+				  KEY `user_id` (`user_id`)
 				) TYPE=MyISAM;"
 				
 			);
@@ -245,12 +266,12 @@
 
 		public function getExampleFormMarkup(){
 
-		    $authors = AuthorManager::fetch();
+		    $users = UserManager::fetch();
 		
 			$options = array();
 
-			foreach($authors as $a){
-				$options[] = array($a->get('id'), NULL, $a->get('first_name') . ' ' . $a->get('lastname'));
+			foreach($users as $u){
+				$options[] = array($u->id, NULL, $u->getFullName());
 			}
 			
 			$fieldname = 'fields['.$this->get('element_name').']';

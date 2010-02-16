@@ -13,9 +13,9 @@
 	require_once(TOOLKIT . '/class.widget.php');
 	require_once(TOOLKIT . '/class.general.php');
 	require_once(TOOLKIT . '/class.profiler.php');
-	require_once(TOOLKIT . '/class.author.php');
+	require_once(TOOLKIT . '/class.user.php');
 
-	require_once(TOOLKIT . '/class.authormanager.php');	
+	require_once(TOOLKIT . '/class.usermanager.php');	
 	require_once(TOOLKIT . '/class.extensionmanager.php');
 		
 	Abstract Class Symphony implements Singleton{
@@ -29,7 +29,7 @@
 		public $Log;
 		public $Profiler;
 		public $Cookie;
-		public $Author;
+		public $User;
 		public $ExtensionManager;
 		
 		protected static $_instance;
@@ -66,23 +66,14 @@
 			GenericErrorHandler::initialise($this->Log);
 			
 			$this->initialiseCookie();
-			
-			try{
-				Lang::load(
-					LANG . '/lang.%s.php', 
-					self::lang(),
-					true
-				);
-			}
-			catch(Exception $e){
-				trigger_error($e->getMessage(), E_USER_ERROR);
-			}
 
 			$this->initialiseDatabase();
-	
+
 			if(!$this->initialiseExtensionManager()){
 				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
 			}
+			
+			Lang::loadAll($this->ExtensionManager);
 
 			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
 			
@@ -177,22 +168,22 @@
 			}
 						
 		}
-
+		
 		public function isLoggedIn(){
 			
-			if ($this->Author) return true;
+			if ($this->User) return true;
 			
 			$username = self::$Database->cleanValue($this->Cookie->get('username'));
 			$password = self::$Database->cleanValue($this->Cookie->get('pass'));
 			
 			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
 			
-				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
+				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_users` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
 
 				if($id){
 					$this->_user_id = $id;
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
-					$this->Author = new Author($id);
+					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");
+					$this->User = new User($id);
 					
 					$this->reloadLangFromAuthorPreference();
 					
@@ -218,14 +209,14 @@
 				
 				if(!$isHash) $password = md5($password);
 
-				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
+				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_users` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
 
 				if($id){
 					$this->_user_id = $id;
-					$this->Author = new Author($id);
+					$this->User = new User($id);
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");
 					
 					$this->reloadLangFromAuthorPreference();
 
@@ -245,8 +236,8 @@
 			
 			if(strlen($token) == 6){
 				$row = self::$Database->fetchRow(0, "SELECT `a`.`id`, `a`.`username`, `a`.`password` 
-													 FROM `tbl_authors` AS `a`, `tbl_forgotpass` AS `f`
-													 WHERE `a`.`id` = `f`.`author_id` AND `f`.`expiry` > '".DateTimeObj::getGMT('c')."' AND `f`.`token` = '$token'
+													 FROM `tbl_users` AS `a`, `tbl_forgotpass` AS `f`
+													 WHERE `a`.`id` = `f`.`user_id` AND `f`.`expiry` > '".DateTimeObj::getGMT('c')."' AND `f`.`token` = '$token'
 													 LIMIT 1");
 				
 				self::$Database->delete('tbl_forgotpass', " `token` = '{$token}' ");
@@ -254,14 +245,14 @@
 			
 			else{
 				$row = self::$Database->fetchRow(0, "SELECT `id`, `username`, `password` 
-													 FROM `tbl_authors` 
+													 FROM `tbl_users` 
 													 WHERE SUBSTR(MD5(CONCAT(`username`, `password`)), 1, 8) = '$token' AND `auth_token_active` = 'yes' 
 													 LIMIT 1");				
 			}
 
 			if($row){
 				$this->_user_id = $row['id'];
-				$this->Author = new Author($row['id']);
+				$this->User = new User($row['id']);
 				$this->Cookie->set('username', $row['username']);
 				$this->Cookie->set('pass', $row['password']);
 				self::$Database->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
@@ -277,13 +268,15 @@
 		
 		public function reloadLangFromAuthorPreference(){	
 			
-			if($this->Author->get('language') != self::lang()){
-				try{
-					Lang::load(LANG . '/lang.%s.php', $this->Author->get('language'), true);
-					self::$_lang = $this->Author->get('language');
+			$lang = $this->User->get('language');
+			if($lang && $lang != self::lang()){
+				self::$_lang = $lang;
+				if($lang != 'en') {
+					Lang::loadAll($this->ExtensionManager);
 				}
-				catch(Exception $e){
-					trigger_error($e->getMessage(), E_USER_ERROR);
+				else {
+					// As there is no English dictionary the default dictionary needs to be cleared
+					Lang::clear();
 				}
 			}
 			

@@ -185,7 +185,9 @@
 
 		public function listInstalledHandles(){
 			if(is_null(self::$_enabled_extensions)) {
-				self::$_enabled_extensions = Symphony::Database()->fetchCol('name', "SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'");
+				self::$_enabled_extensions = Symphony::Database()->fetchCol('name', 
+					"SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'"
+				);
 			}
 			return self::$_enabled_extensions;
 		}
@@ -360,10 +362,6 @@
 				$about['handle'] = $name;
 				$about['status'] = $this->fetchStatus($name);
 
-				if($about['status'] == EXTENSION_ENABLED){
-					Lang::add($this->__getClassPath($name) . '/lang/lang.%s.php', Symphony::lang());
-				}
-
 				$nav = @call_user_func(array(&$classname, 'fetchNavigation'));
 				
 				if($nav != NULL) $about['navigation'] = $nav;
@@ -376,7 +374,7 @@
 			return false;
 									        
         }
-
+				
 		private function __cleanupDatabase(){
 			
 			## Grab any extensions sitting in the database

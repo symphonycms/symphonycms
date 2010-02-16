@@ -15,11 +15,14 @@
 		}
 
 		public function view(){
-			$strings = $_POST['language'];
+			$strings = $_GET;
+			$new = array();		
 			foreach($strings as $id => $string) {
-				$strings[$id] = __($string);
+				if($id == 'mode' || $id == 'symphony-page') continue;
+				$translation = str_replace('_', ' ', urldecode($id));
+				$new[$id] = __($translation);
 			}
-			$this->_Result = json_encode($strings);	
+			$this->_Result = json_encode($new);	
 		}
 		
 		public function generate(){

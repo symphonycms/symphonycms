@@ -562,18 +562,16 @@
 		            $install_log->pushToLog("Done", E_NOTICE,true, true, true);           
 		        }
 
-				$author_sql = sprintf(
-					"INSERT INTO  `tbl_authors` (
-						`id` , 
-						`username` , 
-						`password` , 
-						`first_name` , 
-						`last_name` , 
-						`email` , 
-						`last_seen` , 
-						`user_type` , 
-						`primary` , 
-						`default_section` , 
+				$user_sql = sprintf(
+					"INSERT INTO `tbl_users` (
+						`id`, 
+						`username`, 
+						`password`, 
+						`first_name`, 
+						`last_name`, 
+						`email`, 
+						`last_seen`,
+						`default_section`, 
 						`auth_token_active`
 					)
 					VALUES (
@@ -583,9 +581,7 @@
 						'%s',  
 						'%s',  
 						'%s', 
-						NULL ,  
-						'developer',  
-						'yes',  
+						NULL,
 						'6',  
 						'no'
 					);", 
@@ -597,10 +593,10 @@
 					$db->cleanValue($config['user']['email'])
 				);
 				
-				$install_log->pushToLog("MYSQL: Creating Default Author...", E_NOTICE, true, false);
-		        if(!$db->query($author_sql)){
+				$install_log->pushToLog("MYSQL: Creating Default User...", E_NOTICE, true, false);
+		        if(!$db->query($user_sql)){
 					$error = $db->getLastError();
-		            define('_INSTALL_ERRORS_', "There was an error while trying create the default author. MySQL returned: " . $error['num'] . ': ' . $error['msg']);       
+		            define('_INSTALL_ERRORS_', "There was an error while trying create the default user. MySQL returned: " . $error['num'] . ': ' . $error['msg']);       
 		            $install_log->pushToLog("Failed", E_ERROR, true, true, true);                         
 		            installResult($Page, $install_log, $start);   
 
@@ -623,7 +619,7 @@
 					$conf['settings']['admin']['max_upload_size'] = '5242880';
 					$conf['settings']['symphony']['pagination_maximum_rows'] = '17';
 					$conf['settings']['symphony']['allow_page_subscription'] = '1';
-					$conf['settings']['symphony']['lang'] = (defined('Symphony::lang()') ? Symphony::lang() : 'en');
+					$conf['settings']['symphony']['lang'] = (defined('__LANG__') ? __LANG__ : 'en');
 					$conf['settings']['symphony']['pages_table_nest_children'] = 'no';
 					$conf['settings']['log']['archive'] = '1';
 					$conf['settings']['log']['maxsize'] = '102400';
@@ -1338,5 +1334,4 @@ Options +FollowSymlinks
 	header('Content-Type: text/html; charset=UTF-8');	
 	header(sprintf('Content-Length: %d', strlen($output)));
 	echo $output;
-	
-	exit;
+

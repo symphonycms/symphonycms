@@ -4,7 +4,7 @@
 	require_once(TOOLKIT . '/class.datasourcemanager.php');
 	require_once(TOOLKIT . '/class.eventmanager.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
-			
+	
 	Class FrontendPage extends XSLTPage{
 		
 		const FRONTEND_OUTPUT_NORMAL = 0;
@@ -29,6 +29,7 @@
 			$this->DatasourceManager = new DatasourceManager($this->_Parent);
 			$this->EventManager = new EventManager($this->_Parent);	
 			$this->ExtensionManager = new ExtensionManager($this->_Parent);
+
 		}
 		
 		public function pageData(){
@@ -36,7 +37,7 @@
 		}
 		
 		public function Env(){
-			return $this->_env;
+			return array('env' => &$this->_env, 'param' => &$this->_param);
 		}
 		
 		public function generate($page) {
@@ -167,7 +168,7 @@
 			# Delegate: FrontendPageResolved
 			# Description: Just after having resolved the page, but prior to any commencement of output creation
 			# Global: Yes
-			$this->ExtensionManager->notifyMembers('FrontendPageResolved', '/frontend/', array('page' => &$this, 'page_data' => &$page));
+			$this->ExtensionManager->notifyMembers('FrontendPageResolved', '/frontend/', array('env' => &$this->_env, 'page' => &$this, 'page_data' => &$page));
 
 			$this->_pageData = $page;
 			$root_page = @array_shift(explode('/', $page['path']));
@@ -176,7 +177,7 @@
 			
 			// Get max upload size from php and symphony config then choose the smallest
 			$upload_size_php = ini_size_to_bytes(ini_get('upload_max_filesize'));
-			$upload_size_sym = Frontend::instance()->Configuration->get('max_upload_size','admin');
+			$upload_size_sym = Symphony::Configuration()->get('max_upload_size','admin');
 
 			$this->_param = array(
 				'today' => DateTimeObj::get('Y-m-d'),
@@ -186,17 +187,17 @@
 				'this-day' => DateTimeObj::get('d'),
 				'timezone' => DateTimeObj::get('P'),
 				'website-name' => Symphony::Configuration()->get('sitename', 'general'),
-				'page-title' => $page['title'],
+				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
+				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'root' => URL,
 				'workspace' => URL . '/workspace',
+				'page-title' => $page['title'],
 				'root-page' => ($root_page ? $root_page : $page['handle']),
 				'current-page' => $page['handle'],
 				'current-page-id' => $page['id'],
 				'current-path' => $current_path,
 				'parent-path' => '/' . $page['path'],
 				'current-url' => URL . $current_path,
-				'upload-limit' => min($upload_size_php, $upload_size_sym),
-				'symphony-version' => $this->_Parent->Configuration->get('version', 'symphony'),
 			);
 		
 			if(is_array($this->_env['url'])){
@@ -267,8 +268,12 @@
 			# Global: Yes
 			$this->ExtensionManager->notifyMembers('FrontendParamsPostResolve', '/frontend/', array('params' => $this->_param));
 			
-			## TODO: Add delegate for adding/removing items in the params
-
+			$xParam = new XMLElement('parameters');
+			foreach($this->_param as $key => $value){
+				$xParam->appendChild(new XMLElement($key, General::sanitize($value)));
+			}
+			$xml->prependChild($xParam);
+			
 			$xsl = '<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="./workspace/pages/' . basename($page['filelocation']).'"/>
@@ -338,7 +343,7 @@
 			
 				if(empty($valid_page_path)) return;
 			
-				if(!$this->__isSchemaValid($row['params'], $page_extra_bits)) return;
+				if(!$this->__isSchemaValid($row['id'], $page_extra_bits)) return;
 			}
 
 			##Process the extra URL params
@@ -387,10 +392,9 @@
 			return Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '{$page_id}' ");
 		}
 		
-		private function __isSchemaValid($schema, $bits){
+		private function __isSchemaValid($page_id, $bits){
 	
-			if (is_numeric($schema)) $schema = Symphony::Database()->fetchVar('params', 0, "SELECT `params` FROM `tbl_pages` WHERE `id` = '1' LIMIT 1");
-			
+			$schema = Symphony::Database()->fetchVar('params', 0, "SELECT `params` FROM `tbl_pages` WHERE `id` = '".$page_id."' LIMIT 1");					
 			$schema_arr = preg_split('/\//', $schema, -1, PREG_SPLIT_NO_EMPTY);		
 	
 			return (count($schema_arr) >= count($bits));
@@ -431,19 +435,28 @@
 					$orderedList[] = str_replace('_', '-', $handle);
 				}
 			}
-			
+
+
 			## 2. Iterate over the remaining DS's. Find if all their dependencies are
 			##    in the $orderedList array. Keep iterating until all DS's are in that list
 			##	  or there are circular dependencies (list doesn't change between iterations of the while loop)
 			do{
 				
 				$last_count = count($dependenciesList);
-				
-				foreach($dependenciesList as $handle => $dependencies){					
-					if(General::in_array_all(array_map(create_function('$a', "return str_replace('\$ds-', '', \$a);"), $dependencies), $orderedList)){
-						$orderedList[] = str_replace('_', '-', $handle);
-						unset($dependenciesList[$handle]);
-					}		
+
+				foreach($dependenciesList as $handle => $dependencies){		
+					
+					$dependencies = array_map(create_function('$a', "return str_replace('\$ds-', NULL, \$a);"), $dependencies);
+					
+					foreach($dependencies as $d){
+						foreach($orderedList as $o){
+							if(!preg_match("/^{$o}/i", $d)) break;
+							
+							$orderedList[] = str_replace('_', '-', $handle);
+							unset($dependenciesList[$handle]);
+						}
+					}
+	
 				}
 								
 			}while(!empty($dependenciesList) && $last_count > count($dependenciesList));

@@ -31,7 +31,8 @@
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/datasources/new/', 
-									URL . '/symphony/blueprints/components/'								)
+									URL . '/symphony/blueprints/components/'
+								)
 							), 
 							Alert::SUCCESS);
 						break;
@@ -57,7 +58,7 @@
 			if(isset($_POST['fields'])){
 				$fields = $_POST['fields'];
 
-				if(!in_array($fields['source'], array('authors', 'navigation', 'dynamic_xml', 'static_xml')) && is_array($fields['filter']) && !empty($fields['filter'])){
+				if(!in_array($fields['source'], array('users', 'navigation', 'dynamic_xml', 'static_xml')) && is_array($fields['filter']) && !empty($fields['filter'])){
 					$filters = array();
 					foreach($fields['filter'] as $f){
 						foreach($f as $key => $val) $filters[$key] = $val;
@@ -81,7 +82,7 @@
 				$about = $existing->about();
 				$fields['name'] = $about['name'];
 				$fields['order'] = $existing->dsParamORDER;
-				$fields['param'] = $existing->dsParamPARAMOUTPUT;
+				$fields['param'] = (isset($existing->dsParamPARAMOUTPUT) ? $existing->dsParamPARAMOUTPUT : array());
 				$fields['required_url_param'] = $existing->dsParamREQUIREDPARAM;
 				$fields['xml_elements'] = $existing->dsParamINCLUDEDELEMENTS;
 				$fields['sort'] = $existing->dsParamSORT;
@@ -93,13 +94,17 @@
 				if ($fields['associated_entry_counts'] == NULL) $fields['associated_entry_counts'] = 'yes';
 				if($existing->dsParamREDIRECTONEMPTY == 'yes') $fields['redirect_on_empty'] = 'yes';
 				
+				if(!empty($fields['param']) && !is_array($fields['param'])){
+					$fields['param'] = array($fields['param']);
+				}
+				
 				$existing->dsParamFILTERS = @array_map('stripslashes', $existing->dsParamFILTERS);
 				
 				$fields['source'] = $existing->getSource();
 				
 				switch($fields['source']){
-					case 'authors':					
-						$fields['filter']['author'] = $existing->dsParamFILTERS;
+					case 'users':					
+						$fields['filter']['user'] = $existing->dsParamFILTERS;
 						$fields['max_records'] = $existing->dsParamLIMIT;			
 						break;
 						
@@ -180,7 +185,7 @@
 			$options = array(
 								
 				array('label' => __('System'), 'options' => array(
-							array(__('authors'), ($fields['source'] == __('authors')), __('Authors')),
+							array(__('users'), ($fields['source'] == __('users')), __('Users')),
 							array(__('navigation'), ($fields['source'] == __('navigation')), __('Navigation')),
 					)),
 							
@@ -203,7 +208,7 @@
 			$this->Form->appendChild($fieldset);
 			
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual ' . __('sections') . ' ' . __('authors') . ' ' . __('navigation') . ' ' . __('Sections') . ' ' . __('System'));
+			$fieldset->setAttribute('class', 'settings contextual ' . __('sections') . ' ' . __('users') . ' ' . __('navigation') . ' ' . __('Sections') . ' ' . __('System'));
 			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
 			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to filter by page parameters.'));
 			$p->setAttribute('class', 'help');
@@ -265,20 +270,20 @@
 			}
 			
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'contextual ' . __('authors'));
-			$h3 = new XMLElement('h3', __('Filter Authors by'));
+			$div->setAttribute('class', 'contextual ' . __('users'));
+			$h3 = new XMLElement('h3', __('Filter Users by'));
 			$h3->setAttribute('class', 'label');
 			$div->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
 			
-			$this->__appendAuthorFilter($ol, __('ID'), 'id', $fields['filter']['author']['id'], (!isset($fields['filter']['author']['id'])));	
-			$this->__appendAuthorFilter($ol, __('Username'), 'username', $fields['filter']['author']['username'], (!isset($fields['filter']['author']['username'])));
-			$this->__appendAuthorFilter($ol, __('First Name'), 'first_name', $fields['filter']['author']['first_name'], (!isset($fields['filter']['author']['first_name'])));
-			$this->__appendAuthorFilter($ol, __('Last Name'), 'last_name', $fields['filter']['author']['last_name'], (!isset($fields['filter']['author']['last_name'])));
-			$this->__appendAuthorFilter($ol, __('Email'), 'email', $fields['filter']['author']['email'], (!isset($fields['filter']['author']['email'])));
-			$this->__appendAuthorFilter($ol, __('User Type'), 'user_type', $fields['filter']['author']['user_type'], (!isset($fields['filter']['author']['user_type'])));
+			$this->__appendUserFilter($ol, __('ID'), 'id', $fields['filter']['user']['id'], (!isset($fields['filter']['user']['id'])));	
+			$this->__appendUserFilter($ol, __('Username'), 'username', $fields['filter']['user']['username'], (!isset($fields['filter']['user']['username'])));
+			$this->__appendUserFilter($ol, __('First Name'), 'first_name', $fields['filter']['user']['first_name'], (!isset($fields['filter']['user']['first_name'])));
+			$this->__appendUserFilter($ol, __('Last Name'), 'last_name', $fields['filter']['user']['last_name'], (!isset($fields['filter']['user']['last_name'])));
+			$this->__appendUserFilter($ol, __('Email'), 'email', $fields['filter']['user']['email'], (!isset($fields['filter']['user']['email'])));
+			$this->__appendUserFilter($ol, __('User Type'), 'user_type', $fields['filter']['user']['user_type'], (!isset($fields['filter']['user']['user_type'])));
 								
 			$div->appendChild($ol);			
 						
@@ -367,13 +372,13 @@
 			$label = Widget::Label(__('Sort By'));
 			
 			$options = array(
-				array('label' => __('Authors'), 'options' => array(	
-						array('id', ($fields['source'] == 'authors' && $fields['sort'] == 'id'), __('Author ID')),
-						array('username', ($fields['source'] == 'authors' && $fields['sort'] == 'username'), __('Username')),
-						array('first-name', ($fields['source'] == 'authors' && $fields['sort'] == 'first-name'), __('First Name')),
-						array('last-name', ($fields['source'] == 'authors' && $fields['sort'] == 'last-name'), __('Last Name')),
-						array('email', ($fields['source'] == 'authors' && $fields['sort'] == 'email'), __('Email')),
-						array('status', ($fields['source'] == 'authors' && $fields['sort'] == 'status'), __('Status')),
+				array('label' => __('Users'), 'options' => array(	
+						array('id', ($fields['source'] == 'users' && $fields['sort'] == 'id'), __('User ID')),
+						array('username', ($fields['source'] == 'users' && $fields['sort'] == 'username'), __('Username')),
+						array('first-name', ($fields['source'] == 'users' && $fields['sort'] == 'first-name'), __('First Name')),
+						array('last-name', ($fields['source'] == 'users' && $fields['sort'] == 'last-name'), __('Last Name')),
+						array('email', ($fields['source'] == 'users' && $fields['sort'] == 'email'), __('Email')),
+						array('status', ($fields['source'] == 'users' && $fields['sort'] == 'status'), __('Status')),
 						)
 					),
 					
@@ -466,13 +471,13 @@
 			
 			$label = Widget::Label(__('Use Field'));
 			$options = array(
-				array('', false, __('None')),
-				array('label' => __('Authors'), 'options' => array(	
-						array('id', ($fields['source'] == 'authors' && $fields['param'] == 'id'), __('Author ID')),
-						array('username', ($fields['source'] == 'authors' && $fields['param'] == 'username'), __('Username')),
-						array('name', ($fields['source'] == 'authors' && $fields['param'] == 'name'), __('Name')),
-						array('email', ($fields['source'] == 'authors' && $fields['param'] == 'email'), __('Email')),
-						array('user_type', ($fields['source'] == 'authors' && $fields['param'] == 'user_type'), __('User type')),
+				//array('', false, __('None')),
+				array('label' => __('Users'), 'options' => array(	
+						array('id', ($fields['source'] == 'users' && in_array('id', $fields['param'])), __('User ID')),
+						array('username', ($fields['source'] == 'users' && in_array('username', $fields['param'])), __('Username')),
+						array('name', ($fields['source'] == 'users' && in_array('name', $fields['param'])), __('Name')),
+						array('email', ($fields['source'] == 'users' && in_array('email', $fields['param'])), __('Email')),
+						array('user_type', ($fields['source'] == 'users' && in_array('user_type', $fields['param'])), __('User type')),
 						)
 					),				
 			);
@@ -480,29 +485,31 @@
 			foreach($field_groups as $section_id => $section_data){	
 			
 				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array(				
-					array('system:id', ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == 'system:id'), __('System ID')),
-					array('system:date', ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == 'system:date'), __('System Date')),
-					array('system:author', ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == 'system:author'), __('System Author'))
+					array('system:id', ($fields['source'] == $section_data['section']->get('id') && in_array('system:id', $fields['param'])), __('System ID')),
+					array('system:date', ($fields['source'] == $section_data['section']->get('id') && in_array('system:date', $fields['param'])), __('System Date')),
+					array('system:user', ($fields['source'] == $section_data['section']->get('id') && in_array('system:user', $fields['param'])), __('System User'))
 				));
 			
-				$authorOverride = false;
+				$userOverride = false;
 
-				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
-					foreach($section_data['fields'] as $input){
+				foreach($section_data['fields'] as $input){
 				
-						if(!$input->allowDatasourceParamOutput()) continue;
+					if(!$input->allowDatasourceParamOutput()) continue;
 				
-						$optgroup['options'][] = array($input->get('element_name'), ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == $input->get('element_name')), $input->get('label'));
-					}
+					$optgroup['options'][] = array(
+						$input->get('element_name'), 
+						($fields['source'] == $section_data['section']->get('id') && in_array($input->get('element_name'), $fields['param'])), 
+						$input->get('label')
+					);
 				}
-				
+			
 				$options[] = $optgroup;
 			}
 			
-			$label->appendChild(Widget::Select('fields[param]', $options, array('class' => 'filtered')));
+			$label->appendChild(Widget::Select('fields[param][]', $options, array('class' => 'filtered', 'multiple' => 'multiple')));
 			$li->appendChild($label);
 
-			$p = new XMLElement('p', __('The parameter <code id="output-param-name">$ds-%s</code> will be created with this field\'s value for XSLT or other data sources to use.', array(($this->_context[0] == 'edit' ? $existing->dsParamROOTELEMENT : __('Untitled')))));
+			$p = new XMLElement('p', __('The parameter <code id="output-param-name">$ds-%s-FIELD</code> will be created with this field\'s value for XSLT or other data sources to use. <code>FIELD</code> is the element name of the chosen field.', array(($this->_context[0] == 'edit' ? $existing->dsParamROOTELEMENT : __('Untitled')))));
 			$p->setAttribute('class', 'help');
 			$li->appendChild($p);
 			
@@ -520,20 +527,20 @@
 				
 				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array());
 				
-				$authorOverride = false;
+				$userOverride = false;
 				
 				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
 					foreach($section_data['fields'] as $input){
 					
 						if(!$input->allowDatasourceOutputGrouping()) continue;
 					
-						if($input->get('element_name') == 'author') $authorOverride = true;
+					if($input->get('element_name') == 'user') $userOverride = true;
 					
 						$optgroup['options'][] = array($input->get('id'), ($fields['source'] == $section_data['section']->get('id') && $fields['group'] == $input->get('id')), $input->get('label'));
 					}
 				}
 				
-				if(!$authorOverride) $optgroup['options'][] = array('author', ($fields['source'] == $section_data['section']->get('id') && $fields['group'] == 'author'), __('Author'));
+				if(!$userOverride) $optgroup['options'][] = array('user', ($fields['source'] == $section_data['section']->get('id') && $fields['group'] == 'user'), __('User'));
 				
 				$options[] = $optgroup;
 			}
@@ -544,13 +551,13 @@
 			$label = Widget::Label(__('Included Elements'));
 			
 			$options = array(
-				array('label' => __('Authors'), 'options' => array(				
-						array('username', ($fields['source'] == 'authors' && in_array('username', $fields['xml_elements'])), 'username'),
-						array('name', ($fields['source'] == 'authors' && in_array('name', $fields['xml_elements'])), 'name'),
-						array('email', ($fields['source'] == 'authors' && in_array('email', $fields['xml_elements'])), 'email'),
-						array('author-token', ($fields['source'] == 'authors' && in_array('author-token', $fields['xml_elements'])), 'author-token'),
-						array('default-section', ($fields['source'] == 'authors' && in_array('default-section', $fields['xml_elements'])), 'default-section'),
-						array('formatting-preference', ($fields['source'] == 'authors' && in_array('formatting-preference', $fields['xml_elements'])), 'formatting-preference'),
+				array('label' => __('Users'), 'options' => array(				
+						array('username', ($fields['source'] == 'users' && in_array('username', $fields['xml_elements'])), 'username'),
+						array('name', ($fields['source'] == 'users' && in_array('name', $fields['xml_elements'])), 'name'),
+						array('email', ($fields['source'] == 'users' && in_array('email', $fields['xml_elements'])), 'email'),
+						array('authentication-token', ($fields['source'] == 'users' && in_array('authentication-token', $fields['xml_elements'])), 'authentication-token'),
+						array('default-section', ($fields['source'] == 'users' && in_array('default-section', $fields['xml_elements'])), 'default-section'),	
+						array('formatting-preference', ($fields['source'] == 'users' && in_array('formatting-preference', $fields['xml_elements'])), 'formatting-preference'),
 				)),					
 			);
 			
@@ -590,13 +597,13 @@
 			$li->appendChild($label);
 			
 			$label = Widget::Label();
-			$label->setAttribute('class', 'contextual inverse ' . __('authors'));			
+			$label->setAttribute('class', 'contextual inverse ' . __('users'));			
 			$input = Widget::Input('fields[associated_entry_counts]', 'yes', 'checkbox', ((isset($fields['associated_entry_counts']) && $fields['associated_entry_counts'] == 'yes') ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s Include a count of entries in associated sections', array($input->generate(false))));
 			$li->appendChild($label);
 			
 			$label = Widget::Label();
-			$label->setAttribute('class', 'contextual inverse ' . __('authors'));
+			$label->setAttribute('class', 'contextual inverse ' . __('users'));
 			$input = Widget::Input('fields[html_encode]', 'yes', 'checkbox', (isset($fields['html_encode']) ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s HTML-encode text', array($input->generate(false))));
 			$li->appendChild($label);
@@ -732,22 +739,22 @@
 			$this->appendSubheading($about['name']);
 			$this->Form->setAttribute('id', 'controller');
 
-			$link = $about['author']['name'];
+			$link = $about['user']['name'];
 
-			if(isset($about['author']['website']))
-				$link = Widget::Anchor($about['author']['name'], General::validateURL($about['author']['website']));
+			if(isset($about['user']['website']))
+				$link = Widget::Anchor($about['user']['name'], General::validateURL($about['user']['website']));
 
-			elseif(isset($about['author']['email']))
-				$link = Widget::Anchor($about['author']['name'], 'mailto:' . $about['author']['email']);
+			elseif(isset($about['user']['email']))
+				$link = Widget::Anchor($about['user']['name'], 'mailto:' . $about['user']['email']);
 							
 			foreach($about as $key => $value) {
 				
 				$fieldset = NULL;
 				
 				switch($key) {
-					case 'author':
+					case 'user':
 						$fieldset = new XMLElement('fieldset');
-						$fieldset->appendChild(new XMLElement('legend', 'Author'));
+						$fieldset->appendChild(new XMLElement('legend', 'User'));
 						$fieldset->appendChild(new XMLElement('p', $link->generate(false)));
 						break;
 					
@@ -920,9 +927,9 @@
 					'name' => $fields['name'],
 					'version' => '1.0',
 					'release date' => DateTimeObj::getGMT('c'), //date('Y-m-d', $oDate->get(true, false)),
-					'author name' => $this->_Parent->Author->getFullName(),
+					'author name' => Administration::instance()->User->getFullName(),
 					'author website' => URL,
-					'author email' => $this->_Parent->Author->get('email')
+					'author email' => Administration::instance()->User->email
 				);
 
 				$source = $fields['source'];
@@ -932,9 +939,9 @@
 							
 				switch($source){
 					
-					case 'authors':
+					case 'users':
 					
-						$filters = $fields['filter']['author'];
+						$filters = $fields['filter']['user'];
 						
 						$elements = $fields['xml_elements'];
 						
@@ -946,7 +953,7 @@
 						$params['sort'] = $fields['sort'];
 						$params['startpage'] = $fields['page_number'];
 						
-						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.author.php');", $dsShell);
+						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.user.php');", $dsShell);
 						
 						break;
 						
@@ -1036,8 +1043,16 @@
 				$dsShell = str_replace('<!-- CLASS NAME -->', $classname, $dsShell);
 				$dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
 				
-				if(preg_match_all('@(\$ds-[-_0-9a-z]+)@i', $dsShell, $matches)){
-					$dependancies = General::array_remove_duplicates($matches[1]);
+				if(preg_match_all('@{(\$ds-[^}]+)}@i', $dsShell, $matches)){
+					
+					$dependancies = array();
+					
+					foreach($matches[1] as $match){
+						if(preg_match_all('/(\$ds-[^:]+)/i', $match, $inner_matches)) $dependancies = array_merge($dependancies, $inner_matches[1]);
+					}
+					
+					$dependancies = General::array_remove_duplicates($dependancies);
+					
 					$dsShell = str_replace('<!-- DS DEPENDANCY LIST -->', "'" . implode("', '", $dependancies) . "'", $dsShell);
 				}
 								
@@ -1086,7 +1101,7 @@
 		function __injectIncludedElements(&$shell, $elements){
 			if(!is_array($elements) || empty($elements)) return;
 			
-			$shell = str_replace('<!-- INCLUDED ELEMENTS -->', "public \$dsParamINCLUDEDELEMENTS = array(" . self::CRLF . "\t\t\t\t'" . implode("'," . self::CRLF . "\t\t\t\t'", $elements) . "'" . self::CRLF . '		);' . self::CRLF, $shell);
+			$shell = str_replace('<!-- INCLUDED ELEMENTS -->', "public \$dsParamINCLUDEDELEMENTS = array(" . self::CRLF . "\t\t\t'" . implode("'," . self::CRLF . "\t\t\t'", $elements) . "'" . self::CRLF . '		);' . self::CRLF, $shell);
 			
 		}
 		
@@ -1096,8 +1111,8 @@
 			$string = 'public $dsParamFILTERS = array(' . self::CRLF;
 			           							
 			foreach($filters as $key => $val){
-				if(trim($val) == '') continue;
-				$string .= "\t\t\t\t'$key' => '" . addslashes($val) . "'," . self::CRLF;
+				if(strlen(trim($val)) == 0) continue;
+				$string .= "\t\t\t'$key' => '" . addslashes($val) . "'," . self::CRLF;
 			}
 			
 			$string .= '		);' . self::CRLF;
@@ -1117,15 +1132,28 @@
 			
 			$var_list = NULL;
 			foreach($vars as $key => $val){
-				if(trim($val) == '') continue;
-				$var_list .= '		public $dsParam' . strtoupper($key) . " = '" . addslashes($val) . "';" . self::CRLF;
+				
+				if(!is_array($val) && strlen(trim($val)) == 0) continue;
+				
+				$var_list .= sprintf('		public $dsParam%s = ', strtoupper($key));
+				
+				if(is_array($val) && !empty($val)){
+					$var_list .= 'array(' . self::CRLF;
+					foreach($val as $item){
+						$var_list .= sprintf("\t\t\t'%s',", addslashes($item)) . self::CRLF;	
+					}
+					$var_list .= '		);' . self::CRLF;
+				}
+				else{
+					$var_list .= sprintf("'%s';", addslashes($val)) . self::CRLF;
+				}
 			}
 			
 			$shell = str_replace('<!-- VAR LIST -->', trim($var_list), $shell);
 			
 		}
 			
-		function __appendAuthorFilter(&$wrapper, $h4_label, $name, $value=NULL, $templateOnly=true){
+		function __appendUserFilter(&$wrapper, $h4_label, $name, $value=NULL, $templateOnly=true){
 						
 			if(!$templateOnly){				
 			
@@ -1133,7 +1161,7 @@
 				$li->setAttribute('class', 'unique');
 				$li->appendChild(new XMLElement('h4', $h4_label));		
 				$label = Widget::Label(__('Value'));
-				$label->appendChild(Widget::Input('fields[filter][author]['.$name.']', General::sanitize($value)));
+				$label->appendChild(Widget::Input('fields[filter][user]['.$name.']', General::sanitize($value)));
 				$li->appendChild($label);
 			
 			 	$wrapper->appendChild($li);	
@@ -1143,7 +1171,7 @@
 			$li->setAttribute('class', 'unique template');
 			$li->appendChild(new XMLElement('h4', $h4_label));		
 			$label = Widget::Label(__('Value'));
-			$label->appendChild(Widget::Input('fields[filter][author]['.$name.']'));
+			$label->appendChild(Widget::Input('fields[filter][user]['.$name.']'));
 			$li->appendChild($label);
 		
 		 	$wrapper->appendChild($li);

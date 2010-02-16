@@ -42,12 +42,7 @@
 		function build($context = NULL){
 			
 			$this->_context = $context;
-			
-			if(!$this->canAccessPage()){
-				$this->_Parent->customError(E_USER_ERROR, __('Access Denied'), __('You are not authorised to access this page.'));
-				exit();
-			}
-			
+
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Symphony::lang());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
@@ -72,7 +67,7 @@
 			}
 			
 			## Build the form
-			$this->Form = Widget::Form($this->_Parent->getCurrentPageURL(), 'post');
+			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
 			$h1 = new XMLElement('h1');
 			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
 			$this->Form->appendChild($h1);
@@ -154,7 +149,7 @@
 			$ul->setAttribute('id', 'usr');
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor($this->_Parent->Author->getFullName(), URL . '/symphony/system/authors/edit/' . $this->_Parent->Author->get('id') . '/'));
+			$li->appendChild(Widget::Anchor(Administration::instance()->User->getFullName(), URL . '/symphony/system/users/edit/' . Administration::instance()->User->id . '/'));
 			$ul->appendChild($li);
 			
 			$li = new XMLElement('li');
@@ -194,20 +189,11 @@
 			foreach($nav as $n){
 				$n_bits = explode('/', $n['link'], 3);
 
-				$can_access = false;
+				$can_access = true;
 
 				if($n['visible'] != 'no'){
 					
-					if(!isset($n['limit']) || $n['limit'] == 'author')
-						$can_access = true;
-
-					elseif($n['limit'] == 'developer' && $this->_Parent->Author->isDeveloper())
-						$can_access = true;
-
-					elseif($n['limit'] == 'primary' && $this->_Parent->Author->isPrimaryAccount())
-						$can_access = true;
-					
-					if($can_access) {
+					if($can_access == true) {
 
 						$xGroup = new XMLElement('li', $n['name']);
 						if(isset($n['class']) && trim($n['name']) != '') $xGroup->setAttribute('class', $n['class']);
@@ -219,51 +205,22 @@
 						if(is_array($n['children']) && !empty($n['children'])){ 
 							foreach($n['children'] as $c){
 
-								$can_access_child = false;	
-
-								## Check if this is a Section or Extension, and die if the user is not allowed to access it	
-								if(!$this->_Parent->Author->isDeveloper() && $c['visible'] == 'no'){
-									if($c['type'] == 'extension'){
-
-										$bits = preg_split('/\//i', $c['link'], 2, PREG_SPLIT_NO_EMPTY);
-
-										if(!$this->_Parent->Author->isDeveloper() && preg_match('#^/extension/#i'.$bits[2].'/i', $_REQUEST['page'])){
-											$this->_Parent->customError(E_USER_ERROR, __('Access Denied'), __('You are not authorised to access this page.'));
-										}
-
-									}
-
-									elseif($c['type'] == 'section'){
-
-										if($_REQUEST['section'] == $c['section_id'] && preg_match('#^/publish/section/#', $_REQUEST['page'])){
-											$this->_Parent->customError(E_USER_ERROR, __('Access Denied'), __('You are not authorised to access this section.'));
-										}
-
-									}
-								}
+								$can_access_child = true;
 
 								if($c['visible'] != 'no'){
 
-									if(!isset($c['limit']) || $c['limit'] == 'author')
-										$can_access_child = true;
-
-									elseif($c['limit'] == 'developer' && $this->_Parent->Author->isDeveloper())
-										$can_access_child = true;		
-
-									elseif($c['limit'] == 'primary' && $this->_Parent->Author->isPrimaryAccount())
-										$can_access_child = true;
-
-									if($can_access_child) {
+									if($can_access_child == true) {
 										
-										## Make sure preferences menu only shows if extensions are subscribed to it
+										## Make sure preferences menu only shows if multiple languages or extension preferences are available
 										if($c['name'] == __('Preferences') && $n['name'] == __('System')){
 											$extensions = Symphony::Database()->fetch("
 													SELECT * 
 													FROM `tbl_extensions_delegates` 
 													WHERE `delegate` = 'AddCustomPreferenceFieldsets'"
 											);
-											
-											if(!is_array($extensions) || empty($extensions)){
+
+											$l = Lang::getAvailableLanguages(new ExtensionManager($this->_Parent));
+											if(count($l) == 1 && (!is_array($extensions) || empty($extensions))){
 												continue;
 											}
 											
@@ -301,49 +258,7 @@
 			if(empty($this->_navigation)) $this->__buildNavigation();
 			return $this->_navigation;
 		}
-
-		function canAccessPage(){
-			
-			$nav = $this->getNavigationArray();
-			
-			$page = '/' . trim(getCurrentPage(), '/') . '/';
-			
-			$page_limit = 'author';					
-
-			foreach($nav as $item){
-
-				if(General::in_array_multi($page, $item['children'])){
-
-		            if(is_array($item['children'])){
-		                foreach($item['children'] as $c){
-		                    if($c['link'] == $page && isset($c['limit']))
-		                        $page_limit	= $c['limit'];	          
-		                }
-		            }
-		
-					if(isset($item['limit']) && $page_limit != 'primary'){					
-						if($page_limit == 'author' && $item['limit'] == 'developer') $page_limit = 'developer';
-					}
-
-				}
-				
-				elseif(isset($item['link']) && ($page == $item['link']) && isset($item['limit'])){						
-					$page_limit	= $item['limit'];	  	
-				}
-			}
-
-			if($page_limit == 'author')
-				return true;
-
-			elseif($page_limit == 'developer' && ($this->_Parent->Author->isDeveloper()))
-				return true;		
-
-			elseif($page_limit == 'primary' && $this->_Parent->Author->isPrimaryAccount())
-				return true;
-				
-			return false;			
-		}
-		
+	
 		private static function __navigationFindGroupIndex($nav, $name){
 			foreach($nav as $index => $item){
 				if($item['name'] == $name) return $index;
@@ -370,7 +285,7 @@
 				}
 				
 				$nav[$index] = array(
-					'name' => (string)$content->name,
+					'name' => __(strval($content->name)),
 					'index' => $index,
 					'children' => array()
 				);
@@ -385,7 +300,7 @@
 						
 						$item = array(
 							'link' => (string)$child->attributes()->link,
-							'name' => (string)$child->attributes()->name,
+							'name' => __(strval($child->attributes()->name)),
 							'visible' => ((string)$child->attributes()->visible == 'no' ? 'no' : 'yes'),
 						);
 						
@@ -427,10 +342,11 @@
 				}
 			}
 			
-			$extensions = $this->_Parent->ExtensionManager->listInstalledHandles();
+			$extensions = Administration::instance()->ExtensionManager->listInstalledHandles();
 
 			foreach($extensions as $e){
-				$info = $this->_Parent->ExtensionManager->about($e);
+				$info = Administration::instance()->ExtensionManager->about($e);
+
 				if(isset($info['navigation']) && is_array($info['navigation']) && !empty($info['navigation'])){
 					
 					foreach($info['navigation'] as $item){
@@ -518,28 +434,30 @@
 				}
 				
 			}
-			
+
 			####
 			# Delegate: ExtensionsAddToNavigation
-			# Description: After building the Navigation properties array. This is specifically for extentions to add their groups to the navigation or items to groups,
-			#			   already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need to edit existing navigation elements, use the 'NavigationPreRender' delegate.
+			# Description: After building the Navigation properties array. This is specifically 
+			# 			for extentions to add their groups to the navigation or items to groups,
+			# 			already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need 
+			#			to edit existing navigation elements, use the 'NavigationPreRender' delegate.
 			# Global: Yes
-			$this->_Parent->ExtensionManager->notifyMembers('ExtensionsAddToNavigation', '/backend/', array('navigation' => &$nav));
+			Administration::instance()->ExtensionManager->notifyMembers(
+				'ExtensionsAddToNavigation', '/backend/', array('navigation' => &$nav)
+			);
 			
-			$pageCallback = $this->_Parent->getPageCallback();
+			$pageCallback = Administration::instance()->getPageCallback();
 			
 			$pageRoot = $pageCallback['pageroot'] . (isset($pageCallback['context'][0]) ? $pageCallback['context'][0] . '/' : '');
 			$found = $this->__findActiveNavigationGroup($nav, $pageRoot);
 
-			## Normal searches failed. Use a regular expression using the page root. This is less efficent and should never really get invoked
-			## unless something weird is going on
+			## Normal searches failed. Use a regular expression using the page root. This is less 
+			## efficent and should never really get invoked unless something weird is going on
 			if(!$found) $this->__findActiveNavigationGroup($nav, '/^' . str_replace('/', '\/', $pageCallback['pageroot']) . '/i', true);
 
 			ksort($nav);		
 			$this->_navigation = $nav;
-			
-			//die;
-			
+
 		}		
 		
 		private function __findLocationIndexFromName($nav, $name){

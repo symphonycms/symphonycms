@@ -47,17 +47,14 @@
 				
 				else:
 				
-					$section_handle = $this->Database->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '".$this->Author->get('default_section')."' LIMIT 1");
+					$section_handle = $this->Database->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '".$this->User->default_section."' LIMIT 1");
 				
-					if(!$section_handle){
+					if(strlen(trim($section_handle)) == 0){
 						$section_handle = $this->Database->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
 					}
 				
-					if(!$section_handle){
-						
-						if($this->Author->isDeveloper()) redirect(URL . '/symphony/blueprints/sections/');
-						else redirect(URL . "/symphony/system/authors/edit/".$this->Author->get('id')."/");
-						
+					if(strlen(trim($section_handle)) == 0){
+						redirect(URL . '/symphony/blueprints/sections/');
 					}
 				
 					else{
@@ -92,8 +89,8 @@
 		
 		public function getPageCallback($page=NULL, $update=false){
 			
-			if((!$page || !$update) && $this->_callback) return $this->_callback;
-			elseif(!$page && !$this->_callback) trigger_error('Cannot request a page callback without first specifying the page.');
+			if((!$page || !$update) && !is_null($this->_callback)) return $this->_callback;
+			elseif(!$page && is_null($this->_callback)) trigger_error('Cannot request a page callback without first specifying the page.');
 			
 			$this->_currentPage = URL . preg_replace('/\/{2,}/', '/', '/symphony' . $page);
 			$bits = preg_split('/\//', trim($page, '/'), 3, PREG_SPLIT_NO_EMPTY);

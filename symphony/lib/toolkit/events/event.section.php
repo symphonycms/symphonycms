@@ -13,12 +13,35 @@
 	
 	if (!function_exists('__doit')) {
 		function __doit($source, $fields, &$result, &$obj, &$event, $filters, $position=NULL, $entry_id=NULL){
-
-			$post_values = new XMLElement('post-values');
+			$post_values = new XMLElement('request');
 			$post = General::getPostData();
-
+			$fields = $post['fields'];
 			$filter_results = array();	
 			
+			if(isset($event->eParamOVERRIDES) && is_array($event->eParamOVERRIDES) && !empty($event->eParamOVERRIDES)){
+				foreach($event->eParamOVERRIDES as $element_name => $value){
+					if($element_name == 'system:id' && !is_null($entry_id)){
+						$entry_id = (int)$value;
+					}
+					
+					elseif(isset($fields[$element_name])){
+						$fields[$element_name] = $value;
+					}
+				}
+			}
+			
+			if(isset($event->eParamDEFAULTS) && is_array($event->eParamDEFAULTS) && !empty($event->eParamDEFAULTS)){
+				foreach($event->eParamDEFAULTS as $element_name => $value){
+					if($element_name == 'system:id' && is_null($entry_id)){
+						$entry_id = (int)$value;
+					}
+					
+					elseif(!isset($fields[$element_name]) || strlen(trim($fields[$element_name])) == 0){
+						$fields[$element_name] = $value;
+					}
+				}
+			}
+
 			## Create the post data cookie element
 			if (is_array($fields) && !empty($fields)) {
 				General::array_to_xml($post_values, $fields, true);
@@ -35,9 +58,11 @@
 					list($type, $status, $message) = $fr;
 
 					$result->appendChild(buildFilterElement($type, ($status ? 'passed' : 'failed'), $message));
-					$result->appendChild($post_values);
+					
 					
 					if(!$status){
+						$result->appendChild($post_values);
+						
 						$result->setAttribute('result', 'error');
 						$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 						return false;
@@ -74,6 +99,7 @@
 				$entry =& $entryManager->create();
 				$entry->set('section_id', $source);
 			}
+		
 
 			$filter_errors = array();
 
@@ -116,13 +142,26 @@
 					return false;
 				}
 				
+				// Put the newly created ID into the param pool
+				if($event->eParamOUTPUT_ID_ON_SAVE === true){
+					$env = Frontend::instance()->Page()->Env();
+					
+					$key = 'event-' . constant(get_class($event) . '::ROOTELEMENT') . '-id';
+					
+					if(!isset($env['env']['pool'][$key])){
+						$env['env']['pool'][$key] = array();
+					}
+					
+					$env['env']['pool'][$key][] = $entry->get('id');
+				}
+				
 				$result->setAttribute('id', $entry->get('id'));
 
 			endif;			
 
 			## PASSIVE FILTERS ONLY AT THIS STAGE. ENTRY HAS ALREADY BEEN CREATED. 
 
-			if(in_array('send-email', $filters) && !in_array('expect-multiple', $filters)){
+			if(@in_array('send-email', $filters) && !@in_array('expect-multiple', $filters)){
 
 				if(!function_exists('__sendEmailFindFormValue')){
 					function __sendEmailFindFormValue($needle, $haystack, $discard_field_name=true, $default=NULL, $collapse=true){
@@ -155,7 +194,7 @@
 				$fields['recipient'] = preg_split('/\,/i', $fields['recipient'], -1, PREG_SPLIT_NO_EMPTY);
 				$fields['recipient'] = array_map('trim', $fields['recipient']);
 
-				$fields['recipient'] = $obj->Database->fetch("SELECT `email`, `first_name` FROM `tbl_authors` WHERE `username` IN ('".@implode("', '", $fields['recipient'])."') ");
+				$fields['recipient'] = $obj->Database->fetch("SELECT `email`, `first_name` FROM `tbl_users` WHERE `username` IN ('".@implode("', '", $fields['recipient'])."') ");
 
 				$fields['subject'] = __sendEmailFindFormValue($fields['subject'], $_POST['fields'], true, __('[Symphony] A new entry was created on %s', array($obj->Configuration->get('sitename', 'general'))));
 				$fields['body'] = __sendEmailFindFormValue($fields['body'], $_POST['fields'], false, NULL, false);
@@ -246,14 +285,14 @@
 			
 			return true;
 			
-			## End FUnction
+			## End Function
 		}
 	}
 	
 	
 	$result = new XMLElement(self::ROOTELEMENT);
 	
-	if(in_array('admin-only', $this->eParamFILTERS) && !$this->_Parent->isLoggedIn()){
+	if(@in_array('admin-only', $this->eParamFILTERS) && !$this->_Parent->isLoggedIn()){
 		$result->setAttribute('result', 'error');			
 		$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 		$result->appendChild(buildFilterElement('admin-only', 'failed'));

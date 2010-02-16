@@ -321,7 +321,7 @@
 			
 			if (strlen($value) == 0) $value = __('None');
 			
-			if ($link) {
+			if (!is_null($link)) {
 				$link->setValue($value);
 				
 				return $link->generate();

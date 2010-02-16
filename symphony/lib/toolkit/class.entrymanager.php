@@ -282,7 +282,7 @@
 			
 			$sql = "
 				SELECT  ".($group ? 'DISTINCT ' : '')."`e`.id, 
-						`e`.section_id, e.`author_id`, 
+						`e`.section_id, e.`user_id`, 
 						UNIX_TIMESTAMP(e.`creation_date`) AS `creation_date`, 
 						UNIX_TIMESTAMP(e.`creation_date_gmt`) AS `creation_date_gmt`
 						
@@ -405,7 +405,7 @@
 				
 				$obj->creationDate = DateTimeObj::get('c', $entry['meta']['creation_date']);
 				$obj->set('id', $entry['meta']['id']);
-				$obj->set('author_id', $entry['meta']['author_id']);
+				$obj->set('user_id', $entry['meta']['user_id']);
 				$obj->set('section_id', $entry['meta']['section_id']);
 				
 				if(isset($entry['fields']) && is_array($entry['fields'])){

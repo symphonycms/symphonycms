@@ -23,7 +23,7 @@
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.0.7');
+	define('kVERSION', '2.0.7RC2');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
 	
@@ -66,13 +66,17 @@
 		}
 
 		try{
-			Lang::init('./symphony/lib/lang/lang.%s.php', $lang);
+			Lang::load(
+				'./symphony/lib/lang/lang.%s.php', 
+				$lang,
+				true
+			);
 		}
 		catch(Exception $s){
 			return NULL;
 		}
 
-		define('Symphony::lang()', $lang);
+		define('__LANG__', $lang);
 		return $lang;
 	}
 

@@ -3,10 +3,11 @@
 	require_once(CORE . '/class.symphony.php');	
 	require_once(TOOLKIT . '/class.lang.php');
 	require_once(TOOLKIT . '/class.manager.php');	
-	require_once(TOOLKIT . '/class.frontendpage.php');
+	require_once(TOOLKIT . '/class.frontendpage.php');	
 		
 	Class Frontend extends Symphony {
 		public $displayProfilerReport;
+		
 		private static $_page;
 		
 		public static function instance() {

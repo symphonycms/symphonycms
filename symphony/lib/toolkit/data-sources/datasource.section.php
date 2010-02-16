@@ -1,7 +1,25 @@
 <?php
 
+	if(!function_exists('appendParamOutputValue')){
+		function appendParamOutputValue($key, $value){
+			
+			$env = Frontend::instance()->Page()->Env();
+
+			if(!is_array($env['env']['pool'][$key])) $env['env']['pool'][$key] = array();
+
+			if(is_array($value)){
+				$env['env']['pool'][$key] = array_merge($value, $env['env']['pool'][$key]);
+			}
+			else{
+				$env['env']['pool'][$key][] = $value;	
+			}
+			
+			return true;
+		}
+	}
+
 	if(!function_exists('processRecordGroup')){
-		function processRecordGroup(&$wrapper, $element, $group, $ds, &$Parent, &$entryManager, &$fieldPool, &$param_pool, $param_output_only=false){
+		function processRecordGroup(&$wrapper, $element, $group, $ds, &$Parent, &$entryManager, &$fieldPool, $param_output_only=false){
 			$associated_sections = NULL;
 			
 			$xGroup = new XMLElement($element, NULL, $group['attr']);
@@ -36,10 +54,15 @@
 						}
 					}
 
+					
 					if(isset($ds->dsParamPARAMOUTPUT)){
-						if($ds->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
-						elseif($ds->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', strtotime($entry->creationDate));
-						elseif($ds->dsParamPARAMOUTPUT == 'system:author') $param_pool[$key][] = $entry->get('author_id');
+						if(in_array('system:id', $ds->dsParamPARAMOUTPUT)) appendParamOutputValue("{$key}-system-id", $entry->get('id'));
+						
+						if(in_array('system:date', $ds->dsParamPARAMOUTPUT)){
+							appendParamOutputValue("{$key}-system-date", DateTimeObj::get('c', strtotime($entry->creationDate)));
+						}
+						
+						if(in_array('system:user', $ds->dsParamPARAMOUTPUT)) appendParamOutputValue("{$key}-system-user", $entry->get('user_id'));
 					}
 
 					foreach($data as $field_id => $values){
@@ -48,16 +71,10 @@
 							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 
 						if(isset($ds->dsParamPARAMOUTPUT) && $ds->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
-							if(!isset($param_pool[$key]) || !is_array($param_pool[$key])) $param_pool[$key] = array();
-							
-							$param_pool_values = $fieldPool[$field_id]->getParameterPoolValue($values);
-							
-							if(is_array($param_pool_values)){
-								$param_pool[$key] = array_merge($param_pool_values, $param_pool[$key]);
-							}
-							else{
-								$param_pool[$key][] = $param_pool_values;
-							}
+							appendParamOutputValue(
+								"{$key}-" . $fieldPool[$field_id]->get('element_name'), 
+								$fieldPool[$field_id]->getParameterPoolValue($values)
+							);
 						}
 						
 						if (!$param_output_only) foreach ($ds->dsParamINCLUDEDELEMENTS as $handle) {
@@ -80,7 +97,7 @@
 			
 			if(is_array($group['groups']) && !empty($group['groups'])){
 				foreach($group['groups'] as $element => $group){
-					foreach($group as $g) processRecordGroup($xGroup, $element, $g, $ds, $Parent, $entryManager, $fieldPool, $param_pool, $param_output_only);
+					foreach($group as $g) processRecordGroup($xGroup, $element, $g, $ds, $Parent, $entryManager, $fieldPool, $param_output_only);
 				}	
 			}
 					
@@ -197,10 +214,20 @@
 				$result->prependChild($pagination_element); 
 			}
 		}
-		
-		if(isset($this->dsParamPARAMOUTPUT)){
-			$param_pool[$key][] = '';
+
+		if(isset($this->dsParamPARAMOUTPUT) && !empty($this->dsParamPARAMOUTPUT)){
+			$param_output = $this->dsParamPARAMOUTPUT;
+			if(!is_array($param_output)) $param_output = array($param_output);
+			foreach($param_output as $field){
+				
+				if($field == 'system:id') $field = 'system-id';
+				elseif($field == 'system:date') $field = 'system-date';
+				elseif($field == 'system:user') $field = 'system-user';
+
+				appendParamOutputValue("{$key}-{$field}", '');
+			}
 		}
+
 	}
 	
 	else{
@@ -227,8 +254,6 @@
 			}
 		}
 		
-		if(isset($this->dsParamPARAMOUTPUT) && !is_array($param_pool[$key])) $param_pool[$key] = array();
-		
 		if($this->dsParamLIMIT > 0){
 		
 			if(isset($this->dsParamGROUP)):
@@ -236,7 +261,7 @@
 				$groups = $fieldPool[$this->dsParamGROUP]->groupRecords($entries['records']);		
 		
 				foreach($groups as $element => $group){
-					foreach($group as $g) processRecordGroup($result, $element, $g, $this, $this->_Parent, $entryManager, $fieldPool, $param_pool, $this->_param_output_only);
+					foreach($group as $g) processRecordGroup($result, $element, $g, $this, $this->_Parent, $entryManager, $fieldPool, $this->_param_output_only);
 				}
 		
 			else:
@@ -263,9 +288,15 @@
 					}
 
 					if(isset($this->dsParamPARAMOUTPUT)){
-						if($this->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
-						elseif($this->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', strtotime($entry->creationDate));
-						elseif($this->dsParamPARAMOUTPUT == 'system:author') $param_pool[$key][] = $entry->get('author_id');
+
+						if(in_array('system:id', $this->dsParamPARAMOUTPUT)) appendParamOutputValue("{$key}-system-id", $entry->get('id'));
+						
+						if(in_array('system:date', $this->dsParamPARAMOUTPUT)){
+							appendParamOutputValue("{$key}-system-date", DateTimeObj::get('c', strtotime($entry->creationDate)));
+						}
+						
+						if(in_array('system:user', $this->dsParamPARAMOUTPUT)) appendParamOutputValue("{$key}-system-user", $entry->get('user_id'));
+
 					}
 					
 					foreach($data as $field_id => $values){
@@ -274,16 +305,10 @@
 							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 			
 						if(isset($this->dsParamPARAMOUTPUT) && $this->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
-							if(!isset($param_pool[$key]) || !is_array($param_pool[$key])) $param_pool[$key] = array();
-							
-							$param_pool_values = $fieldPool[$field_id]->getParameterPoolValue($values);
-							
-							if(is_array($param_pool_values)){
-								$param_pool[$key] = array_merge($param_pool_values, $param_pool[$key]);
-							}
-							else{
-								$param_pool[$key][] = $param_pool_values;
-							}
+							appendParamOutputValue(
+								"{$key}-" . $fieldPool[$field_id]->get('element_name'), 
+								$fieldPool[$field_id]->getParameterPoolValue($values)
+							);
 						}
 
 						if (!$this->_param_output_only) foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {
@@ -307,4 +332,4 @@
 		}
 		
 	}
-
+	

@@ -267,7 +267,7 @@
 	        $this->flush();
 	        $this->_lastQuery = $query;
 
-			$this->_result = @mysql_query($query, $this->_connection['id']);	
+			$this->_result = mysql_query($query, $this->_connection['id']);	
 
 			$this->_query_count++;
 

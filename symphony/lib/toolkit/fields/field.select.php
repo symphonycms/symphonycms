@@ -86,7 +86,6 @@
 			$states = array();
 			
 			foreach ($values as $value) {
-				$value = $value;
 				$states[$value] = $value;
 			}
 			
@@ -101,13 +100,14 @@
 
 		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			$states = $this->getToggleStates();
+			natsort($states);
 			
 			if(!is_array($data['value'])) $data['value'] = array($data['value']);
 			
 			$options = array();
 			
 			foreach($states as $handle => $v){
-				$options[] = array(General::sanitize($v), in_array($v, $data['value']), $v);
+				$options[] = array(General::sanitize($v), in_array($v, $data['value']), General::sanitize($v));
 			}
 			
 			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;

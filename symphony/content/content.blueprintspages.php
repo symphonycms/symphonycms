@@ -810,7 +810,7 @@
 							
 						} else {
 							$page_id = Symphony::Database()->getInsertID();
-							$redirect = "/symphony/blueprints/pages/edit/{$page_id}/created/{$parent_link_suffix}";
+							$redirect = "/symphony/blueprints/pages/edit/{$page_id}/created/{$parent_link_suffix}/";
 						}
 						
 					// Update existing:
@@ -828,7 +828,7 @@
 							
 						} else {
 							Symphony::Database()->delete('tbl_pages_types', " `page_id` = '$page_id'");
-							$redirect = "/symphony/blueprints/pages/edit/{$page_id}/saved/{$parent_link_suffix}";
+							$redirect = "/symphony/blueprints/pages/edit/{$page_id}/saved/{$parent_link_suffix}/";
 						}
 					}
 					
