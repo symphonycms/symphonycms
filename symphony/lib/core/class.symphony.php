@@ -107,6 +107,16 @@
 		public static function Database(){
 			return self::$Database;
 		}
+		
+		public static function Parent() {
+			if (class_exists('Administration')) {
+				return Administration::instance();
+			}
+			
+			else {
+				return Frontend::instance();
+			}
+		}
 
 		public function initialiseDatabase(){
 			$error = NULL;

@@ -1,9 +1,10 @@
 <?php
 
-    Abstract Class Manager extends Object{
-
-	    var $_Parent;
+    Abstract Class Manager implements Singleton {
 	    protected static $_pool;
+		protected static $_instance;
+
+	    public $_Parent;
 	    
         public function __construct(&$parent){
 			$this->_Parent = $parent;

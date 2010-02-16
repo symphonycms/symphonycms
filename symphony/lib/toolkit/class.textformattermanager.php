@@ -3,6 +3,14 @@
 	include_once(TOOLKIT . '/class.textformatter.php');
 
     Class TextformatterManager extends Manager{
+		
+		public static function instance() {
+			if (!(self::$_instance instanceof self)) {
+				self::$_instance = new self;
+			}
+				
+			return self::$_instance;
+		}
 	    
 	    function __find($name){
 		 

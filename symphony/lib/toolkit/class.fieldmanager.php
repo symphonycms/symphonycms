@@ -7,6 +7,14 @@
 		public $_Parent;
 		private static $_initialiased_fields = array();
 		private static $_pool = array();
+		
+		public static function instance() {
+			if (!(self::$_instance instanceof self)) {
+				self::$_instance = new self;
+			}
+				
+			return self::$_instance;
+		}
 
 		function __construct(&$parent){
 			$this->_Parent = &$parent;
@@ -90,16 +98,20 @@
 			return $this->_Parent->Database->fetchVar('element_name', 0, "SELECT `element_name` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
 		}
 		
-		public function fetchTypes(){
-			$structure = General::listStructure(TOOLKIT . '/fields', '/field.[a-z0-9_-]+.php/i', false, 'asc', TOOLKIT . '/fields');
+		public function fetchTypes() {
+			$extensions = ExtensionManager::instance()->listInstalledHandles();
+			$structure = array(
+				'filelist'	=> array()
+			);
 			
-			$extensions = $this->_Parent->ExtensionManager->listInstalledHandles();
-
-			if(is_array($extensions) && !empty($extensions)){
+			if (is_array($extensions) && !empty($extensions)) {
 				foreach($extensions as $handle){
 					if(is_dir(EXTENSIONS . '/' . $handle . '/fields')){
 						$tmp = General::listStructure(EXTENSIONS . '/' . $handle . '/fields', '/field.[a-z0-9_-]+.php/i', false, 'asc', EXTENSIONS . '/' . $handle . '/fields');
-						if(is_array($tmp['filelist']) && !empty($tmp['filelist'])) $structure['filelist'] = array_merge($structure['filelist'], $tmp['filelist']);
+						
+						if (is_array($tmp['filelist']) && !empty($tmp['filelist'])) {
+							$structure['filelist'] = array_merge($structure['filelist'], $tmp['filelist']);
+						}
 					}
 				}
 				

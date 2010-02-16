@@ -13,6 +13,14 @@
 		static private $_enabled_extensions = NULL;
 		static private $_subscriptions = NULL;
 		
+		public static function instance() {
+			if (!(self::$_instance instanceof self)) {
+				self::$_instance = new self(Symphony::Parent());
+			}
+			
+			return self::$_instance;
+		}
+		
         function __getClassName($name){
 	        return 'extension_' . $name;
         }
