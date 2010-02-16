@@ -315,7 +315,7 @@
 		public static function getLanguageCodes($path, $languages) {
 			$iterator = new DirectoryIterator($path);
 			foreach($iterator as $file) {
-				if(!$file->isDot() && preg_match('/lang\.(\w+(-\w+)?)\.php$/', $file->getFilename(), $matches)) {
+				if(!$file->isDot() && preg_match('/^lang\.(\w+(-\w+)?)\.php$/', $file->getFilename(), $matches)) {
 					if(!isset($languages[$matches[1]])) {
 						include($file->getPathname());
 						$languages[$matches[1]] = $about['name'];
