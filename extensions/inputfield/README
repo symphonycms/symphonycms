@@ -1,0 +1,17 @@
+Input Field
+------------------------------------
+
+Version: 2.0.0
+Author: Symphony Team (team@symphony-cms.com)
+Build Date: 16 February 2010
+Requirements: Symphony 2.1
+
+
+Installation
+-------------------------------------------------------------------------------
+
+1.  Upload the 'inputfield' folder in this archive to your Symphony 'extensions' folder.
+
+2.  Enable it by selecting "Field: Input" and choosing "Enable" from the with-selected menu, then click Apply.
+
+4. You can now add the "Input" field to your sections.
