@@ -71,7 +71,7 @@
 			$h1 = new XMLElement('h1');
 			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
 			$this->Form->appendChild($h1);
-			
+			$this->appendSession();
 			$this->appendNavigation();
 			$this->view();
 			
@@ -81,7 +81,6 @@
 			#			   for access to the page object
 			$this->_Parent->ExtensionManager->notifyMembers('AppendElementBelowView', '/backend/');			
 						
-			$this->appendFooter();
 			$this->appendAlert();
 
 			$this->_Parent->Profiler->sample('Page content created', PROFILE_LAP);
@@ -143,10 +142,10 @@
 			}
 		}
 		
-		function appendFooter(){
+		function appendSession(){
 						
 			$ul = new XMLElement('ul');
-			$ul->setAttribute('id', 'usr');
+			$ul->setAttribute('id', 'session');
 
 			$li = new XMLElement('li');
 			$li->appendChild(Widget::Anchor(Administration::instance()->User->getFullName(), URL . '/symphony/system/users/edit/' . Administration::instance()->User->id . '/'));
