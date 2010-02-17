@@ -1,23 +1,18 @@
 /* Framework */
-html,
-body {
-	height: 100%;
-}
+
 form {
 	position: relative;
-	margin-top: -5em;
-	padding: 0 19px 5em;
-	min-height: 100%;
+	padding: 0 19px;
 	overflow: hidden;
 }
 h1 {
 	margin: 0 -19px;
-	padding: 5.64em 19px 1.71em;
+	padding: 1em 19px;
 	background: #353530;
 	color: #fff;
 	text-shadow: -1px 2px 3px #111;
 	font-weight: bold;
-	line-height: 1ex;
+	line-height: 1em;
 }
 h1 a {
 	color: #fff;
@@ -103,10 +98,9 @@ h1 a:hover,
 /* Session */
 #session {
 	position: absolute;
-	top: 5em;
+	top: 1em;
 	right: 0;
 	margin: 0;
-	padding: 1.75em 0;
 	text-align: right;
 	color: #fff;
 }
