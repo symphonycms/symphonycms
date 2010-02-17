@@ -27,17 +27,24 @@ var Symphony;
 				var search = string.replace(/ /gi, '_');
 				// Return string if it cannot be found in the dictionary
 				if(Symphony.Language.DICTIONARY[search] === false) {
+					if(tokens) {
+						string = Symphony.Language.insert(string, tokens);
+					}
 					return string;
 				}
 				// Get translated string
 				string = Symphony.Language.DICTIONARY[search];
 				// Insert tokens
 				if(tokens) {
-					$.each(tokens, function(index, value) { 
-						string = string.replace('{$' + index + '}', value);
-					});
+					string = Symphony.Language.insert(string, tokens);
 				}
 				// Return translated string
+				return string;
+			},
+			insert: function(string, tokens) {
+				$.each(tokens, function(index, value) { 
+					string = string.replace('{$' + index + '}', value);
+				});
 				return string;
 			},
 			add: function(strings) {
