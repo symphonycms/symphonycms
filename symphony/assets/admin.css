@@ -100,24 +100,21 @@ h1 a:hover,
 	color: #fff;
 }
 
-/* User */
-#usr {
+/* Session */
+#session {
 	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 100%;
+	top: 5em;
+	right: 0;
 	margin: 0;
 	padding: 1.75em 0;
-	background: #353530 url("images/navigation.png") 0 -95px repeat-x;
 	text-align: right;
-	text-shadow: -1px 2px 3px #111;
 	color: #fff;
 }
-#usr li {
+#session li {
 	display: inline;
 	margin-right: 12px;
 }
-#usr a {
+#session a {
 	padding: 5px;
 	border: none;
 	text-decoration: none;
