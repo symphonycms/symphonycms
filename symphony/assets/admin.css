@@ -42,9 +42,9 @@ h1 a:hover,
 	cursor: pointer;
 }
 
-#nav #nav-system, #nav #nav-blueprints {float: right;}
+#nav #nav-system, #nav #nav-blueprints, #nav #nav-expand {float: right;}
 
-#nav li.active {background-color: #3a3a3a;}
+#nav li.active {background-color: #424242;}
 #nav > li:hover {background-color: #121212;}
 
 #nav a {
@@ -110,6 +110,27 @@ h1 a:hover,
 	border-bottom-right-radius: 5px;
 	border-bottom-left-radius: 5px;
 }
+
+/* Expanded Navigation */
+#nav.expanded li {width:11em;font-size:1.1em;font-weight: bold;pg:0;}
+#nav.expanded #nav-expand {width: auto;}
+#nav.expanded li ul li {font-size: .9em;font-weight:normal;}
+
+#nav.expanded li.active, #nav.expanded li a:hover, #nav.expanded > li:hover {background-color:transparent;}
+
+#nav.expanded ul, #nav.expanded #nav-system ul, #nav.expanded #nav-blueprints ul, #nav.expanded li:hover ul {
+    position: relative;
+    float: left;
+    top: 0;
+    left: auto;
+    right: auto;
+    margin: .5em 0;
+    background-color: transparent;
+    border: none;
+}
+
+#nav.expanded ul li a {padding: 0;color: #aaa;}
+#nav.expanded ul li a:hover {color: #fff;}
 
 /* Session */
 #session {
@@ -269,4 +290,24 @@ a.create {
 	font-size: 1em;
 	background-color:#161616;
 	}
-	#session .button:hover {background-color:#363636;}
+	#session .button:hover {background-color:#000;color:#fff;}
+	
+/* Subhead */
+
+.subhead {
+    margin: -1em 0 0;
+    padding: 0 1.3em .5em;
+    line-height: 3em;
+    list-style: none;
+    background: transparent url('images/shadows.png') 0 -9.7em repeat-x;
+    color: #777;
+}
+
+.subhead li {
+    display: inline;
+    line-height: 3em;
+}
+
+.subhead li a {
+    padding: 1em;
+}

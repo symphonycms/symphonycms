@@ -184,6 +184,9 @@
 
 			$xNav = new XMLElement('ul');
 			$xNav->setAttribute('id', 'nav');
+			
+			$xLi = new XMLElement('li', '+', array('id' => 'nav-expand'));
+			$xNav->appendChild($xLi);
 
 			foreach($nav as $n){
 				$n_bits = explode('/', $n['link'], 3);

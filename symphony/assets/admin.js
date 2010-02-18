@@ -295,6 +295,10 @@ var Symphony;
 			input.value = tags.join(', ');
 		}
 	});
+	
+	$('#nav-expand').live('click', function(e){
+		$('#nav').toggleClass('expanded');
+	});
 
 	$(function() {
 		// Ugly DOM maintenance
