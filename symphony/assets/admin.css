@@ -8,7 +8,7 @@ form {
 h1 {
 	margin: 0;
 	padding: 1.1em 1em;
-	background: #262626 url('images/shadows.png') 0 -103px repeat-x;
+	background: #262626 url('images/shadows.png') 0 -102px repeat-x;
 	color: #d5d5d5;
 	line-height: 1em;
 }
@@ -34,25 +34,27 @@ h1 a:hover,
 	line-height: 1.5em;
 	margin: 0 0 1em 0;
 }
-#nav > li {
-	float: left;
+
+#nav li {position:relative; float: left;}
+#nav #nav-system, #nav #nav-blueprints {float: right;}
+
+#nav a {
+	display: block;
 	padding: .75em 1.3em;
-	cursor:pointer;
+	color: #fff;
+	text-decoration: none;
 }
-#nav > li:hover,
-#nav > li.active {
+
+/*#nav li a:hover,
+#nav li.active a {
 	background-color: #363636;
 	color: #fff;
-}
-#nav > li:hover {
-	position: relative;
-	background-color: #161616;
-}
+}*/
+
 #nav ul {
-	display: none;
 	position: absolute;
 	top: 2.7em;
-	left: 5px;
+	left: -999em;
 	margin: 0;
 	min-width: 120px;
 	padding-left: 0;
@@ -60,30 +62,19 @@ h1 a:hover,
 	list-style: none;
 	text-transform: none;
 	font-weight: normal;
-	line-height: 3em;
 	border-radius: .5em;
 	-moz-border-radius: .5em;
 	-webkit-border-radius: .5em;
 	-moz-box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
 	-webkit-box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
 }
-#nav li:hover ul {
-	display: block;
+
+#nav #nav-system ul, #nav #nav-blueprints ul {
+	left: auto;
+	right: -999em;
 }
-#nav a {
-	display: block;
-	padding: 0 0.77em;
-	color: #fff;
-	text-decoration: none;
-}
-*:first-child+html #nav a {
-	color: #fff;
-}
-*:first-child+html #nav a:hover,
-#nav a:hover {
-	background-color: #000;
-	color: #fff;
-}
+
+#nav ul a {width:100%;}
 
 /* Session */
 #session {
