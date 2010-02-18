@@ -194,7 +194,7 @@
 					
 					if($can_access == true) {
 
-						$xGroup = new XMLElement('li');
+						$xGroup = new XMLElement('li', $n['name']);
 						$xGroup->setAttribute('id', 'nav-' . Lang::createHandle($n['name']));
 						
 						if(isset($n['class']) && trim($n['name']) != '') $xGroup->setAttribute('class', $n['class']);
