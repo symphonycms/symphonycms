@@ -250,7 +250,6 @@
 				}
 			}
 			
-			
 			$this->Form->appendChild($xNav);
 			$this->_Parent->Profiler->sample('Navigation Built', PROFILE_LAP);	
 		}
