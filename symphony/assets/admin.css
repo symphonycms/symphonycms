@@ -8,7 +8,7 @@ form {
 h1 {
 	margin: 0;
 	padding: 1.1em 1em;
-	background: #262626 url('images/shadows.png') 0 -102px repeat-x;
+	background: #292929 url('images/shadows.png') 0 -102px repeat-x;
 	color: #d5d5d5;
 	line-height: 1em;
 }
@@ -27,7 +27,7 @@ h1 a:hover,
 	position: relative;
 	float: left;
 	width: 100%;
-	background-color: #292929;
+	background-color: #323232;
 	color: #fff;
 	white-space: nowrap;
 	list-style: none;
@@ -35,38 +35,44 @@ h1 a:hover,
 	margin: 0 0 1em 0;
 }
 
-#nav li {position:relative; float: left;}
+#nav li {
+	position:relative;
+	float: left;
+	padding: .75em 1.3em;
+	cursor: pointer;
+}
+
 #nav #nav-system, #nav #nav-blueprints {float: right;}
+
+#nav li.active {background-color: #3a3a3a;}
+#nav > li:hover {background-color: #121212;}
 
 #nav a {
 	display: block;
-	padding: .75em 1.3em;
 	color: #fff;
 	text-decoration: none;
 }
 
-/*#nav li a:hover,
-#nav li.active a {
-	background-color: #363636;
-	color: #fff;
-}*/
+#nav li a:hover {
+	background-color: #2a2a2a;
+}
 
 #nav ul {
 	position: absolute;
 	top: 2.7em;
 	left: -999em;
 	margin: 0;
-	min-width: 120px;
+	width: 12em;
 	padding-left: 0;
-	background-color: #111;
+	background-color: #121212;
+	border-top: 1px solid #2a2a2a;
 	list-style: none;
 	text-transform: none;
 	font-weight: normal;
 	border-radius: .5em;
 	-moz-border-radius: .5em;
 	-webkit-border-radius: .5em;
-	-moz-box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-	-webkit-box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+	z-index: 5;
 }
 
 #nav #nav-system ul, #nav #nav-blueprints ul {
@@ -74,7 +80,36 @@ h1 a:hover,
 	right: -999em;
 }
 
-#nav ul a {width:100%;}
+#nav li:hover ul {left:.5em;}
+#nav #nav-system:hover ul, #nav #nav-blueprints:hover ul {right: .5em;}
+
+#nav ul li {
+	width: 12em;
+	padding: 0;
+}
+
+#nav ul li a {
+	display: block;
+	padding: .75em 1.3em;
+}
+
+#nav ul li:first-child a {
+	-moz-border-radius-topright: 5px;
+	-moz-border-radius-topleft: 5px;
+	-webkit-border-top-right-radius: 5px;
+	-webkit-border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-top-left-radius: 5px;
+}
+
+#nav ul li:last-child a {
+	-moz-border-radius-bottomright: 5px;
+	-moz-border-radius-bottomleft: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+}
 
 /* Session */
 #session {
