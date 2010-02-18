@@ -41,7 +41,7 @@ h1 a:hover,
 }
 #nav > li:hover,
 #nav > li.active {
-	background-color: #202020;
+	background-color: #363636;
 	color: #fff;
 }
 #nav > li:hover {
@@ -51,19 +51,20 @@ h1 a:hover,
 #nav ul {
 	display: none;
 	position: absolute;
-	top: 2.8em;
+	top: 2.7em;
 	left: 5px;
 	margin: 0;
 	min-width: 120px;
-	border: 1px solid;
-	border-color: #fdfdfd #f1f1f1 #d2d2d2 #ececec;
 	padding-left: 0;
-	background-color: #fff;
-	background-color: rgba(255, 255, 255, 0.8);
+	background-color: #111;
+	background-color: rgba(0, 0, 0, 0.95);
 	list-style: none;
 	text-transform: none;
 	font-weight: normal;
 	line-height: 3em;
+	border-radius: .5em;
+	-moz-border-radius: .5em;
+	-webkit-border-radius: .5em;
 	-moz-box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
 	-webkit-box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -73,12 +74,12 @@ h1 a:hover,
 #nav a {
 	display: block;
 	padding: 0 0.77em;
-	color: #444;
+	color: #fff;
 	text-decoration: none;
 }
 *:first-child+html #nav a {
-	background-color:#fff;
-	color: #444;
+	background-color:#000;
+	color: #fff;
 }
 *:first-child+html #nav a:hover,
 #nav a:hover {
@@ -90,9 +91,10 @@ h1 a:hover,
 #session {
 	position: relative;
 	float: right;
-	margin: -2.7em 0 0;
+	margin: -3.1em 1em 0 0;
 	text-align: right;
 	color: #fff;
+	line-height: 2.3em;
 }
 #session li {
 	display: inline;
@@ -239,3 +241,8 @@ a.button.active {
 a.create {
 	background-color: #81b934;
 }
+#session .button {
+	font-size: 1em;
+	background-color:#161616;
+	}
+	#session .button:hover {background-color:#363636;}
