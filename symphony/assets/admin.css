@@ -112,9 +112,9 @@ h1 a:hover,
 }
 
 /* Expanded Navigation */
-#nav.expanded li {width:11em;font-size:1.1em;font-weight: bold;pg:0;}
+#nav.expanded li {width:11em;font-weight:bold;}
 #nav.expanded #nav-expand {width: auto;}
-#nav.expanded li ul li {font-size: .9em;font-weight:normal;}
+#nav.expanded li ul li {font-weight:normal;}
 
 #nav.expanded li.active, #nav.expanded li a:hover, #nav.expanded > li:hover {background-color:transparent;}
 
