@@ -44,7 +44,7 @@ h1 a:hover,
 
 #nav #nav-system, #nav #nav-blueprints, #nav #nav-expand {float: right;}
 
-#nav li.active {background-color: #424242;}
+#nav li.active {background-color: #4a4a4a;}
 #nav > li:hover {background-color: #121212;}
 
 #nav a {
@@ -59,19 +59,21 @@ h1 a:hover,
 
 #nav ul {
 	position: absolute;
-	top: 2.7em;
+	top: 3em;
 	left: -999em;
 	margin: 0;
 	width: 12em;
 	padding-left: 0;
 	background-color: #121212;
-	border-top: 1px solid #2a2a2a;
 	list-style: none;
 	text-transform: none;
 	font-weight: normal;
-	border-radius: .5em;
-	-moz-border-radius: .5em;
-	-webkit-border-radius: .5em;
+	-moz-border-radius-bottomright: 5px;
+	-moz-border-radius-bottomleft: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
 	z-index: 5;
 }
 
@@ -80,8 +82,8 @@ h1 a:hover,
 	right: -999em;
 }
 
-#nav li:hover ul {left:.5em;}
-#nav #nav-system:hover ul, #nav #nav-blueprints:hover ul {right: .5em;}
+#nav li:hover ul {left:0;}
+#nav #nav-system:hover ul, #nav #nav-blueprints:hover ul {right: 0;}
 
 #nav ul li {
 	width: 12em;
@@ -91,15 +93,6 @@ h1 a:hover,
 #nav ul li a {
 	display: block;
 	padding: .75em 1.3em;
-}
-
-#nav ul li:first-child a {
-	-moz-border-radius-topright: 5px;
-	-moz-border-radius-topleft: 5px;
-	-webkit-border-top-right-radius: 5px;
-	-webkit-border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	border-top-left-radius: 5px;
 }
 
 #nav ul li:last-child a {
@@ -126,7 +119,6 @@ h1 a:hover,
     right: auto;
     margin: .5em 0;
     background-color: transparent;
-    border: none;
 }
 
 #nav.expanded ul li a {padding: 0;color: #aaa;}

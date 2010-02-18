@@ -6,7 +6,7 @@ body {
 	background: #fff;
 	color: #222;
 	font-size: 100.01%;
-	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", sans-serif;
+	font-family: LucidaSans, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 a {
 	color: #5072bf;
