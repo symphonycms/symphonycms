@@ -348,7 +348,7 @@ ul.tags .more:hover {
 
 /* Special Controls */
 #configure {
-	margin: -1px -19px 1px;
+	margin: -1px 0 1px;
 	padding-bottom: 0;
 	overflow: hidden;
 }

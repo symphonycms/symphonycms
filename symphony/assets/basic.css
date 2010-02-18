@@ -6,7 +6,7 @@ body {
 	background: #fff;
 	color: #222;
 	font-size: 100.01%;
-	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", LucidaSans, sans-serif;
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", sans-serif;
 }
 a {
 	color: #5072bf;
@@ -26,10 +26,10 @@ h1,
 h2 {
 	position: relative;
 	clear: both;
-	margin-bottom: 1em;
 	font-size: 1.3em;
 	font-weight: normal;
 }
+h2 {margin: 0 1em 1em;}
 h3,
 h4 {
 	position: relative;
