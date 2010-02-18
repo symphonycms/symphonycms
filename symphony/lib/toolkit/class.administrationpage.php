@@ -194,7 +194,12 @@
 					
 					if($can_access == true) {
 
-						$xGroup = new XMLElement('li', $n['name']);
+						$xGroup = new XMLElement('li');
+						$xGroup->setAttribute('id', 'nav-' . Lang::createHandle($n['name']));
+						
+						$xAnchor = Widget::Anchor($n['name'], '#');
+						$xGroup->appendChild($xAnchor);
+						
 						if(isset($n['class']) && trim($n['name']) != '') $xGroup->setAttribute('class', $n['class']);
 
 						$xChildren = new XMLElement('ul');
