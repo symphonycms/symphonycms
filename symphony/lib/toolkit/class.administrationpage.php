@@ -152,7 +152,7 @@
 			$ul->appendChild($li);
 			
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(__('Logout'), URL . '/symphony/logout/'));
+			$li->appendChild(Widget::Anchor(__('Logout'), URL . '/symphony/logout/', NULL, 'button'));
 			$ul->appendChild($li);
 			
 			###
