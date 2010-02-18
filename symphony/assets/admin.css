@@ -46,7 +46,7 @@ h1 a:hover,
 }
 #nav > li:hover {
 	position: relative;
-	background-color: #464646;
+	background-color: #161616;
 }
 #nav ul {
 	display: none;
@@ -57,7 +57,6 @@ h1 a:hover,
 	min-width: 120px;
 	padding-left: 0;
 	background-color: #111;
-	background-color: rgba(0, 0, 0, 0.95);
 	list-style: none;
 	text-transform: none;
 	font-weight: normal;
@@ -78,12 +77,11 @@ h1 a:hover,
 	text-decoration: none;
 }
 *:first-child+html #nav a {
-	background-color:#000;
 	color: #fff;
 }
 *:first-child+html #nav a:hover,
 #nav a:hover {
-	background-color: #7e7e70;
+	background-color: #000;
 	color: #fff;
 }
 
