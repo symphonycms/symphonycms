@@ -100,7 +100,7 @@
 					if(is_null($link)){
 						$a = Widget::Anchor(
 							General::sanitize($user->getFullName()), 
-							URL . '/symphony/system/users/edit/' . $user->get('id') . '/'
+							ADMIN_URL . '/system/users/edit/' . $user->get('id') . '/'
 						);
 						$value[] = $a->generate();
 					}

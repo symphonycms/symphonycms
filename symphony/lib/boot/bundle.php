@@ -21,8 +21,7 @@
 		
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');	
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
-	require_once(BOOT . '/class.object.php');
-	
+
 	if (!file_exists(CONFIG)) {
 		
 		if (file_exists(DOCROOT . '/install.php')) {
@@ -34,3 +33,6 @@
 	}
 	
 	include(CONFIG);
+	
+	define_safe('ADMIN', trim($settings['admin']['path'], '/'));
+	define_safe('ADMIN_URL', URL . '/' . ADMIN);

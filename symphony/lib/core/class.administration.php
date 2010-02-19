@@ -54,11 +54,11 @@
 					}
 				
 					if(strlen(trim($section_handle)) == 0){
-						redirect(URL . '/symphony/blueprints/sections/');
+						redirect(ADMIN_URL . '/blueprints/sections/');
 					}
 				
 					else{
-						redirect(URL . "/symphony/publish/{$section_handle}/");
+						redirect(ADMIN_URL . "/publish/{$section_handle}/");
 					}
 				
 				endif;
@@ -165,7 +165,8 @@
 								'driver' => NULL,
 								'context' => NULL,
 								'pageroot' => NULL,
-								'classname' => NULL
+								'classname' => NULL,
+								'flag' => NULL
 							);
 			
 				$callback['driver'] = ucfirst($bits[0]);
@@ -175,7 +176,12 @@
 					$callback['driver'] = $callback['driver'] . ucfirst($bits[1]);
 					$callback['pageroot'] .= $bits[1] . '/';
 				}
-			
+		
+				if(preg_match('/\/:([^\/]+)\/?$/', $bits[2], $matches)){
+					$callback['flag'] = $matches[1];
+					$bits[2] = str_replace($matches[0], NULL, $bits[2]);
+				}	
+
 				if(isset($bits[2])) $callback['context'] = preg_split('/\//', $bits[2], -1, PREG_SPLIT_NO_EMPTY);
 			
 				$callback['classname'] = 'content' . $callback['driver'];
@@ -221,7 +227,7 @@
 
 		public function saveConfig(){
 			$string  = "<?php\n\t\$settings = {$this->Configuration};\n";
-			return General::writeFile(CONFIG, $string, $this->Configuration->get('write_mode', 'file'));
+			return General::writeFile(CONFIG, $string, $this->Configuration->get('file_write_mode', 'symphony'));
 		}
 		
 		public function errorPageNotFound(){

@@ -3,7 +3,7 @@
 	define_safe('__ENTRY_OK__', 0);
 	define_safe('__ENTRY_FIELD_ERROR__', 100);
 	
-	Class Entry extends Object{
+	Class Entry{
 		
 		var $_fields;
 		var $_Parent;
@@ -15,10 +15,6 @@
 			$this->_Parent =& $parent;
 			$this->_fields = array();
 			$this->_data = array();
-			
-			## Since we are not sure where the Admin object is, inspect
-			## all the parent objects
-			$this->catalogueParentObjects();			
 
 			if(class_exists('Administration')) $this->_engine = Administration::instance();
 			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();

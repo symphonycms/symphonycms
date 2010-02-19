@@ -1,6 +1,6 @@
 <?php
 	
-	Class Field extends Object{
+	Class Field{
 		protected $_key = 0;
 		protected $_fields;
 		protected $_Parent;
@@ -31,10 +31,6 @@
 			$this->_showcolumn = true;
 			
 			$this->_handle = (strtolower(get_class($this)) == 'field' ? 'field' : strtolower(substr(get_class($this), 5)));
-
-			## Since we are not sure where the Admin object is, inspect
-			## all the parent objects
-			$this->catalogueParentObjects();
 
 			if(class_exists('Administration')) $this->_engine = Administration::instance();
 			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();

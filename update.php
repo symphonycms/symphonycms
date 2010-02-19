@@ -52,7 +52,7 @@
 	
 	if (isset($_GET['action']) && $_GET['action'] == 'remove') {
 		unlink(DOCROOT . '/update.php');
-		redirect(URL . '/symphony/');
+		redirect(ADMIN_URL . '/');
 	}
 	
 	set_error_handler('__errorHandler');
@@ -87,17 +87,32 @@
 	if(isset($_POST['action']['update'])){
 		
 		$settings['symphony']['version'] = kVERSION;
-		$settings['general']['useragent'] = 'Symphony/' . kVERSION;
-		
-		## Build is no longer used
-		unset($settings['symphony']['build']);
 
+		## Build and Useragent are no longer used
+		unset($settings['symphony']['build']);
+		
+		if(isset($settings['general']['useragent'])){
+			$settings['symphony']['sitename'] = $settings['general']['useragent'];
+			unset($settings['general']['useragent']);
+		}
+		
+		## Move "file:write_mode" and "directory:write_mode" under the "symphony" heading
+		if(isset($settings['file']['write_mode'])){
+			$settings['symphony']['file_write_mode'] = $settings['file']['write_mode'];
+			unset($settings['file']['write_mode']);
+		}	
+			
+		if(isset($settings['directory']['write_mode'])){
+			$settings['symphony']['file_write_mode'] = $settings['directory']['write_mode'];
+			unset($settings['directory']['write_mode']);
+		}
+				
 		## Set the default language
 		if(!isset($settings['symphony']['lang'])){
 			$settings['symphony']['lang'] = 'en';
 		}
 
-		if(writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']) === true){
+		if(writeConfig(DOCROOT . '/manifest', $settings, $settings['symphony']['file_write_mode']) === true){
 			
 			// build a Frontend page instance to initialise database
 			require(DOCROOT . '/symphony/lib/boot/bundle.php');
@@ -248,7 +263,7 @@ Options +FollowSymlinks
 
 				.
 				
-				(version_compare($existing_version, '2.0.2', '<') ? '<li>Since <code>2.0.2</code>, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></li>' : NULL)
+				(version_compare($existing_version, '2.0.2', '<') ? '<li>Since <code>2.0.2</code>, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.ADMIN_URL . '/system/extensions/">enable it.</a></li>' : NULL)
 
 				.
 			

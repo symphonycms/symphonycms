@@ -105,7 +105,7 @@
 					UserManager::delete($user_id);
 				}
 
-				redirect(URL . '/symphony/system/users/');
+				redirect(ADMIN_URL . '/system/users/');
 			}			
 		}
 		
@@ -135,8 +135,8 @@
 								'User updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Users</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/system/users/new/', 
-									URL . '/symphony/system/users/' 
+									ADMIN_URL . '/system/users/new/', 
+									ADMIN_URL . '/system/users/' 
 								)
 							), 
 							Alert::SUCCESS);					
@@ -150,8 +150,8 @@
 								'User created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Users</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/system/users/new/', 
-									URL . '/symphony/system/users/' 
+									ADMIN_URL . '/system/users/new/', 
+									ADMIN_URL . '/system/users/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -170,7 +170,7 @@
 			
 			elseif($this->_context[0] == 'edit'){
 			
-				if(!$user_id = $this->_context[1]) redirect(URL . '/symphony/system/users/');
+				if(!$user_id = $this->_context[1]) redirect(ADMIN_URL . '/system/users/');
 			
 				if(!$user = UserManager::fetchByID($user_id)){
 					$this->_Parent->customError(E_USER_ERROR, 'User not found', 'The user profile you requested does not exist.');
@@ -260,7 +260,7 @@
 			$label = Widget::Label();
 			$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
 			if($user->get('auth_token_active') == 'yes') $input->setAttribute('checked', 'checked');
-			$temp = URL . '/symphony/login/' . $user->createAuthToken() . '/';
+			$temp = ADMIN_URL . '/login/' . $user->createAuthToken() . '/';
 			$label->setValue(__('%1$s Allow remote login via <a href="%2$s">%2$s</a>', array($input->generate(), $temp)));
 			$group->appendChild($label);
 				
@@ -356,7 +356,7 @@
 						# Description: Just after creation of a new User. The ID of the User is provided.
 						Administration::instance()->ExtensionManager->notifyMembers('PostCreate', '/system/users/new/', array('user' => $this->_User));
 						
-			  		   redirect(URL . "/symphony/system/users/edit/{$this->_User->id}/created/");	
+			  		   redirect(ADMIN_URL . "/system/users/edit/{$this->_User->id}/created/");	
 	
 					}
 					
@@ -366,7 +366,7 @@
 					$this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), Alert::ERROR);
 				}	
 				else{
-					$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), Alert::ERROR);
+					$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(ADMIN_URL . '/system/log/')), Alert::ERROR);
 				}
 				
 			}
@@ -374,7 +374,7 @@
 		
 		public function __actionEdit(){
 
-			if(!$user_id = $this->_context[1]) redirect(URL . '/symphony/system/users/');
+			if(!$user_id = $this->_context[1]) redirect(ADMIN_URL . '/system/users/');
 
 			$isOwner = ($user_id == Administration::instance()->User->id);
 
@@ -433,13 +433,13 @@
 						# Description: Just after creation of a new User. The ID of the User is provided.
 						Administration::instance()->ExtensionManager->notifyMembers('PostSave', '/system/users/edit/', array('user' => $this->_User));	
 
-		  		    	redirect(URL . "/symphony/system/users/edit/{$this->_User->id}/saved/");
+		  		    	redirect(ADMIN_URL . "/system/users/edit/{$this->_User->id}/saved/");
 
 					}
 				
 					else{
 						$this->pageAlert(
-							__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(URL.'/symphony/system/log/')), 
+							__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(ADMIN_URL . '/system/log/')), 
 							Alert::ERROR
 						);
 					}
@@ -458,7 +458,7 @@
 
 				UserManager::delete($user_id);
 
-				redirect(URL . '/symphony/system/users/');
+				redirect(ADMIN_URL . '/system/users/');
 			}						
 		}
 		

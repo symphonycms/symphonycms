@@ -390,7 +390,7 @@
 			$abs_path = DOCROOT . '/' . trim($this->get('destination'), '/');
 			$rel_path = str_replace('/workspace', '', $this->get('destination'));
 
-			if(!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], Symphony::Configuration()->get('write_mode', 'file'))){
+			if(!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], Symphony::Configuration()->get('file_write_mode', 'symphony'))){
 				
 				$message = __('There was an error while trying to upload the file <code>%1$s</code> to the target directory <code>%2$s</code>.', array($data['name'], 'workspace/'.ltrim($rel_path, '/')));
 				$status = self::__ERROR_CUSTOM__;

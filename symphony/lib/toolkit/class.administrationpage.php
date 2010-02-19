@@ -28,7 +28,7 @@
 		}
 		
 		function setPageType($type){
-			$this->addStylesheetToHead(URL . '/symphony/assets/' . ($type == 'table' ? 'tables' : 'forms') . '.css', 'screen', 30);
+			$this->addStylesheetToHead(ADMIN_URL . '/assets/' . ($type == 'table' ? 'tables' : 'forms') . '.css', 'screen', 30);
 		}
 		
 		function setTitle($val, $position=null) {
@@ -46,12 +46,12 @@
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Symphony::lang());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
-			$this->addStylesheetToHead(URL . '/symphony/assets/symphony.duplicator.css', 'screen', 70);
-			$this->addScriptToHead(URL . '/symphony/assets/jquery.js', 50);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.collapsible.js', 70);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.orderable.js', 71);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.duplicator.js', 72);
-			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 60);
+			$this->addStylesheetToHead(ADMIN_URL . '/assets/symphony.duplicator.css', 'screen', 70);
+			$this->addScriptToHead(ADMIN_URL . '/assets/jquery.js', 50);
+			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.collapsible.js', 70);
+			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.orderable.js', 71);
+			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.duplicator.js', 72);
+			$this->addScriptToHead(ADMIN_URL . '/assets/admin.js', 60);
 			
 			###
 			# Delegate: InitaliseAdminPageHead
@@ -69,7 +69,7 @@
 			## Build the form
 			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
 			$h1 = new XMLElement('h1');
-			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
+			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'symphony'), rtrim(URL, '/') . '/'));
 			$this->Form->appendChild($h1);
 			$this->appendSession();
 			$this->appendNavigation();
@@ -148,11 +148,11 @@
 			$ul->setAttribute('id', 'session');
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(Administration::instance()->User->getFullName(), URL . '/symphony/system/users/edit/' . Administration::instance()->User->id . '/'));
+			$li->appendChild(Widget::Anchor(Administration::instance()->User->getFullName(), ADMIN_URL . '/system/users/edit/' . Administration::instance()->User->id . '/'));
 			$ul->appendChild($li);
 			
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(__('Logout'), URL . '/symphony/logout/', NULL, 'button'));
+			$li->appendChild(Widget::Anchor(__('Logout'), ADMIN_URL . '/logout/', NULL, 'button'));
 			$ul->appendChild($li);
 			
 			###
@@ -236,7 +236,7 @@
 										
 										$xChild = new XMLElement('li');
 										$xLink = new XMLElement('a', $c['name']);
-										$xLink->setAttribute('href', URL . '/symphony' . $c['link']);
+										$xLink->setAttribute('href', ADMIN_URL . '' . $c['link']);
 										$xChild->appendChild($xLink);
 
 										$xChildren->appendChild($xChild);

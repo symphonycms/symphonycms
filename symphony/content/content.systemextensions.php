@@ -9,7 +9,7 @@
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Extensions'))));
 			$this->appendSubheading(__('Extensions'));
 			
-			$this->Form->setAttribute('action', URL . '/symphony/system/extensions/');
+			$this->Form->setAttribute('action', ADMIN_URL . '/system/extensions/');
 			
 			$ExtensionManager = $this->_Parent->ExtensionManager; 		
 			$extensions = $ExtensionManager->listAll();
@@ -147,7 +147,7 @@
 	
 			$date = $this->_Parent->getDateObj();
 
-			if(!$extension_name = $this->_context[1]) redirect(URL . '/symphony/system/extensions/');
+			if(!$extension_name = $this->_context[1]) redirect(ADMIN_URL . '/system/extensions/');
 
 			if(!$extension = $this->_Parent->ExtensionManager->about($extension_name)) $this->_Parent->customError(E_USER_ERROR, 'Extension not found', 'The Symphony Extension you were looking for, <code>'.$extension_name.'</code>, could not be found.', 'Please check it has been installed correctly.');
 	
@@ -205,7 +205,7 @@
 		
 		function __actionDetail(){
 
-			if(!$extension_name = $this->_context[1]) redirect(URL . '/symphony/system/extensions/');
+			if(!$extension_name = $this->_context[1]) redirect(ADMIN_URL . '/system/extensions/');
 
 			if(!$extension = $this->_Parent->ExtensionManager->about($extension_name)) $this->_Parent->customError(E_USER_ERROR, 'Extension not found', 'The Symphony Extension you were looking for, <code>'.$extension_name.'</code>, could not be found.', 'Please check it has been installed correctly.');
 			
