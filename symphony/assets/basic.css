@@ -1,8 +1,12 @@
 /* Basic Styles */
+
+html {font-size:62.5%;}
+
 body {
 	background: #fff;
 	color: #222;
-	font: 68.75%/1.5 Lucida Grande, Meiryo, Tahoma, Verdana, sans-serif;
+	font-size: 100.01%;
+	font-family: LucidaSans, "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 a {
 	color: #5072bf;
@@ -22,16 +26,15 @@ h1,
 h2 {
 	position: relative;
 	clear: both;
-	margin-bottom: 1em;
-	text-shadow: -1px 2px 3px #ddd;
-	font: 127.28% Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
+	font-size: 1.3em;
+	font-weight: normal;
 }
+h2 {padding: .5em 1em;}
 h3,
 h4 {
 	position: relative;
 	clear: both;
 	margin-bottom: 0.75em;
-	text-shadow: -1px 2px 2px #ddd;
 	font-weight: bold;
 }
 ul,

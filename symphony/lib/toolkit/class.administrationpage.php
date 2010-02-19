@@ -71,7 +71,7 @@
 			$h1 = new XMLElement('h1');
 			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
 			$this->Form->appendChild($h1);
-			
+			$this->appendSession();
 			$this->appendNavigation();
 			$this->view();
 			
@@ -81,7 +81,6 @@
 			#			   for access to the page object
 			$this->_Parent->ExtensionManager->notifyMembers('AppendElementBelowView', '/backend/');			
 						
-			$this->appendFooter();
 			$this->appendAlert();
 
 			$this->_Parent->Profiler->sample('Page content created', PROFILE_LAP);
@@ -143,17 +142,17 @@
 			}
 		}
 		
-		function appendFooter(){
+		function appendSession(){
 						
 			$ul = new XMLElement('ul');
-			$ul->setAttribute('id', 'usr');
+			$ul->setAttribute('id', 'session');
 
 			$li = new XMLElement('li');
 			$li->appendChild(Widget::Anchor(Administration::instance()->User->getFullName(), URL . '/symphony/system/users/edit/' . Administration::instance()->User->id . '/'));
 			$ul->appendChild($li);
 			
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(__('Logout'), URL . '/symphony/logout/'));
+			$li->appendChild(Widget::Anchor(__('Logout'), URL . '/symphony/logout/', NULL, 'button'));
 			$ul->appendChild($li);
 			
 			###
@@ -185,6 +184,12 @@
 
 			$xNav = new XMLElement('ul');
 			$xNav->setAttribute('id', 'nav');
+			if($_COOKIE['nav'] == 'expanded') {
+				$xNav->setAttribute('class', 'expanded');
+			}
+			
+			$xLi = new XMLElement('li', ($_COOKIE['nav'] == 'expanded' ? '-' : '+'), array('id' => 'nav-expand'));
+			$xNav->appendChild($xLi);
 
 			foreach($nav as $n){
 				$n_bits = explode('/', $n['link'], 3);
@@ -196,6 +201,8 @@
 					if($can_access == true) {
 
 						$xGroup = new XMLElement('li', $n['name']);
+						$xGroup->setAttribute('id', 'nav-' . Lang::createHandle($n['name']));
+						
 						if(isset($n['class']) && trim($n['name']) != '') $xGroup->setAttribute('class', $n['class']);
 
 						$xChildren = new XMLElement('ul');
@@ -248,7 +255,6 @@
 					}
 				}
 			}
-			
 			
 			$this->Form->appendChild($xNav);
 			$this->_Parent->Profiler->sample('Navigation Built', PROFILE_LAP);	
