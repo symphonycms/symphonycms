@@ -7,6 +7,7 @@ div.secondary {
 	position: relative;
 	border: none;
 	padding-top: 1em;
+	margin: 0 1.3em;
 }
 legend {
 	float: left;
@@ -179,11 +180,10 @@ div.label span {
 }
 div.actions {
 	position: relative;
-	float: left;
 	clear: both;
-	width: 100%;
 	border-top: 1px solid #ddc;
 	padding: 14px 0 21px;
+	margin: 0 1.3em;
 }
 .settings + div.actions {
 	border: none;
@@ -399,24 +399,6 @@ ul.tags .more:hover {
 }
 #utilities .selected:nth-child(odd) {
 	background-color: #5677c3;
-}
-#components {
-	margin-top: -5px;
-	padding-bottom: 5px;
-	background-color: #fff;
-}
-#components ul {
-	margin-left: 0;
-	border-top: 1px solid #ddc;
-	padding-top: 0.75em;
-	list-style: none;
-}
-#components li {
-	margin-bottom: 0.75em;
-}
-#components .button {
-	font-size: 0.9em;
-	font-weight: normal;
 }
 .file input {
 	margin: -3px 0;
