@@ -59,7 +59,7 @@ h1 a:hover,
 
 #nav ul {
 	position: absolute;
-	top: 3em;
+	top: 2.9em;
 	left: -999em;
 	margin: 0;
 	width: 12em;
@@ -105,6 +105,7 @@ h1 a:hover,
 }
 
 /* Expanded Navigation */
+#nav.expanded {padding-bottom: .5em;}
 #nav.expanded li {width:11em;font-weight:bold;cursor:default;}
 #nav.expanded #nav-expand {width: auto;}
 #nav.expanded li ul li {font-weight:normal;}
@@ -113,7 +114,6 @@ h1 a:hover,
 
 #nav.expanded ul, #nav.expanded #nav-system ul, #nav.expanded #nav-blueprints ul, #nav.expanded li:hover ul {
     position: relative;
-    float: left;
     top: 0;
     left: auto;
     right: auto;
@@ -128,14 +128,16 @@ h1 a:hover,
 #session {
 	position: relative;
 	float: right;
-	margin: -3.1em 1em 0 0;
+	margin: -3.1em 0 0 0;
 	text-align: right;
 	color: #fff;
 	line-height: 2.3em;
+	list-style:none;
 }
 #session li {
-	display: inline;
-	margin-right: 12px;
+	display:inline;
+	float:left;
+	margin-right: 1.3em;
 }
 
 /* System Messages */
@@ -277,8 +279,9 @@ a.create {
 	background-color: #81b934;
 }
 #session .button {
+	float:left;
 	font-size: 1em;
-	background-color:#121212
+	background-color:#121212;
 	}
 	#session .button:hover {background-color:#000;color:#fff;}
 	
