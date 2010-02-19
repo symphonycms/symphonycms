@@ -9,6 +9,7 @@
 	require_once(CORE . '/interface.singleton.php');
 	
 	require_once(TOOLKIT . '/class.page.php');
+	require_once(TOOLKIT . '/class.view.php');
 	require_once(TOOLKIT . '/class.xmlelement.php');
 	require_once(TOOLKIT . '/class.widget.php');
 	require_once(TOOLKIT . '/class.general.php');

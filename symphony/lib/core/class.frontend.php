@@ -37,11 +37,23 @@
 			return parent::isLoggedIn();
 		}
 		
-		public static function Page() {
+		public static function Page(){
 			return self::$_page;
 		}
 		
-		public function display($page) {
+		public function display($page=NULL){
+			
+			if(is_null($page)){
+				$views = View::findFromType('index');
+				self::$_page = $views[0];
+			}
+			
+			else{
+				self::$_page = View::loadFromURL($page);
+			}
+			
+			print_r(self::$_page); die();
+			
 			self::$_page = new FrontendPage($this);
 			
 			####

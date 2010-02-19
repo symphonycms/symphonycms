@@ -1,9 +1,9 @@
 <navigation>
 	<group name="Blueprints" index="100">
 		<children>
-			<item link="/blueprints/pages/" name="Pages" />
-			<item link="/blueprints/pages/new/" name="Pages New" visible="no" />
-			<item link="/blueprints/pages/edit/" name="Pages Edit" visible="no" />
+			<item link="/blueprints/views/" name="Views" />
+			<item link="/blueprints/views/new/" name="Views New" visible="no" />
+			<item link="/blueprints/views/edit/" name="Views Edit" visible="no" />
 
 			<item link="/blueprints/components/" name="Components" />
 			

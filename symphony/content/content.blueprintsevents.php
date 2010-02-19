@@ -33,8 +33,8 @@
 								'Event updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Events</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/blueprints/events/new/', 
-									URL . '/symphony/blueprints/components/' 
+									ADMIN_URL . '/blueprints/events/new/', 
+									ADMIN_URL . '/blueprints/components/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -46,8 +46,8 @@
 								'Event created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Events</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/blueprints/events/new/', 
-									URL . '/symphony/blueprints/components/' 
+									ADMIN_URL . '/blueprints/events/new/', 
+									ADMIN_URL . '/blueprints/components/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -229,7 +229,7 @@
 			$duplicator->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('id', 'filters-duplicator');
+			$ol->setAttribute('class', 'filters-duplicator');
 			
 			$options = array(
 				array('', false, __('None')),
@@ -374,7 +374,7 @@
 		    	if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php'))
 					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
 
-		    	else redirect(URL . '/symphony/blueprints/components/');
+		    	else redirect(ADMIN_URL . '/blueprints/components/');
 						
 			}	
 		}
@@ -597,7 +597,7 @@
 				header('Content-Type: text/plain');
 
 				##Write the file
-				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file')))
+				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('file_write_mode', 'symphony')))
 					$this->pageAlert(__('Failed to write Event to <code>%s</code>. Please check permissions.', array(EVENTS)), Alert::ERROR);
 
 				##Write Successful, add record to the database
@@ -627,7 +627,7 @@
 					#              of variables set by the editor
 					#$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('file' => $file, 'defines' => $defines, 'var' => $var));
 
-	                redirect(URL . '/symphony/blueprints/events/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
+	                redirect(ADMIN_URL . '/blueprints/events/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
 
 				}
 			}						

@@ -634,10 +634,9 @@
 				
 		        $conf['settings']['symphony']['version'] = kVERSION;		
 				$conf['settings']['symphony']['cookie_prefix'] = 'sym-';
-		        $conf['settings']['general']['useragent'] = 'Symphony/' . kVERSION;
-				$conf['settings']['general']['sitename'] = (strlen(trim($config['general']['sitename'])) > 0 ? $config['general']['sitename'] : __('Website Name'));
-		        $conf['settings']['file']['write_mode'] = $config['permission']['file'];
-		        $conf['settings']['directory']['write_mode'] = $config['permission']['directory'];
+				$conf['settings']['symphony']['sitename'] = (strlen(trim($config['symphony']['sitename'])) > 0 ? $config['symphony']['sitename'] : __('Website Name'));
+		        $conf['settings']['symphony']['file_write_mode'] = $config['permission']['file'];
+		        $conf['settings']['symphony']['directory_write_mode'] = $config['permission']['directory'];
 		        $conf['settings']['database']['host'] = $database['host'];
 		        $conf['settings']['database']['port'] = $database['port'];
 		        $conf['settings']['database']['user'] = $database['username'];
@@ -653,7 +652,7 @@
 				#
 
 		        $install_log->pushToLog("WRITING: Creating 'manifest' folder (/manifest)", E_NOTICE, true, true);
-		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest', $conf['settings']['directory']['write_mode'])){
+		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest', $conf['settings']['symphony']['directory_write_mode'])){
 		            define('_INSTALL_ERRORS_', "Could not create 'manifest' directory. Check permission on the root folder.");       
 		            $install_log->pushToLog("ERROR: Creation of 'manifest' folder failed.", E_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
@@ -661,7 +660,7 @@
 		        }
 
 		        $install_log->pushToLog("WRITING: Creating 'logs' folder (/manifest/logs)", E_NOTICE, true, true);
-		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest/logs', $conf['settings']['directory']['write_mode'])){
+		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest/logs', $conf['settings']['symphony']['directory_write_mode'])){
 		            define('_INSTALL_ERRORS_', "Could not create 'logs' directory. Check permission on /manifest.");       
 		            $install_log->pushToLog("ERROR: Creation of 'logs' folder failed.", E_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
@@ -669,7 +668,7 @@
 		        }
 
 		        $install_log->pushToLog("WRITING: Creating 'cache' folder (/manifest/cache)", E_NOTICE, true, true);
-		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest/cache', $conf['settings']['directory']['write_mode'])){
+		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest/cache', $conf['settings']['symphony']['directory_write_mode'])){
 		            define('_INSTALL_ERRORS_', "Could not create 'cache' directory. Check permission on /manifest.");       
 		            $install_log->pushToLog("ERROR: Creation of 'cache' folder failed.", E_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
@@ -677,7 +676,7 @@
 		        }
 
 		        $install_log->pushToLog("WRITING: Creating 'tmp' folder (/manifest/tmp)", E_NOTICE, true, true);
-		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest/tmp', $conf['settings']['directory']['write_mode'])){
+		        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/manifest/tmp', $conf['settings']['symphony']['directory_write_mode'])){
 		            define('_INSTALL_ERRORS_', "Could not create 'tmp' directory. Check permission on /manifest.");       
 		            $install_log->pushToLog("ERROR: Creation of 'tmp' folder failed.", E_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
@@ -685,7 +684,7 @@
 		        }
 
 		        $install_log->pushToLog("WRITING: Configuration File", E_NOTICE, true, true);
-		        if(!writeConfig($kDOCROOT . '/manifest/', $conf, $conf['settings']['file']['write_mode'])){
+		        if(!writeConfig($kDOCROOT . '/manifest/', $conf, $conf['settings']['symphony']['file_write_mode'])){
 		            define('_INSTALL_ERRORS_', "Could not write config file. Check permission on /manifest.");       
 		            $install_log->pushToLog("ERROR: Writing Configuration File Failed", E_ERROR, true, true);                         
 		            installResult($Page, $install_log, $start);
@@ -736,7 +735,7 @@ Options +FollowSymlinks
 ';
 
 		        $install_log->pushToLog("CONFIGURING: Frontend", E_NOTICE, true, true);
-		        if(!GeneralExtended::writeFile($kDOCROOT . "/.htaccess", $htaccess, $conf['settings']['file']['write_mode'])){
+		        if(!GeneralExtended::writeFile($kDOCROOT . "/.htaccess", $htaccess, $conf['settings']['symphony']['file_write_mode'])){
 		            define('_INSTALL_ERRORS_', "Could not write .htaccess file. Check permission on " . $kDOCROOT);       
 		            $install_log->pushToLog("ERROR: Writing .htaccess File Failed", E_ERROR, true, true);                          
 		            installResult($Page, $install_log, $start);
@@ -748,7 +747,7 @@ Options +FollowSymlinks
 					#
 					
 			        $install_log->pushToLog("WRITING: Creating 'workspace' folder (/workspace)", E_NOTICE, true, true);
-			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace', $conf['settings']['directory']['write_mode'])){
+			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace', $conf['settings']['symphony']['directory_write_mode'])){
 			            define('_INSTALL_ERRORS_', "Could not create 'workspace' directory. Check permission on the root folder.");       
 			            $install_log->pushToLog("ERROR: Creation of 'workspace' folder failed.", E_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
@@ -756,7 +755,7 @@ Options +FollowSymlinks
 			        }
 
 			        $install_log->pushToLog("WRITING: Creating 'data-sources' folder (/workspace/data-sources)", E_NOTICE, true, true);
-			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/data-sources', $conf['settings']['directory']['write_mode'])){
+			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/data-sources', $conf['settings']['symphony']['directory_write_mode'])){
 			            define('_INSTALL_ERRORS_', "Could not create 'workspace/data-sources' directory. Check permission on the root folder.");       
 			            $install_log->pushToLog("ERROR: Creation of 'workspace/data-sources' folder failed.", E_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
@@ -764,7 +763,7 @@ Options +FollowSymlinks
 			        }
 
 			        $install_log->pushToLog("WRITING: Creating 'events' folder (/workspace/events)", E_NOTICE, true, true);
-			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/events', $conf['settings']['directory']['write_mode'])){
+			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/events', $conf['settings']['symphony']['directory_write_mode'])){
 			            define('_INSTALL_ERRORS_', "Could not create 'workspace/events' directory. Check permission on the root folder.");       
 			            $install_log->pushToLog("ERROR: Creation of 'workspace/events' folder failed.", E_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
@@ -772,7 +771,7 @@ Options +FollowSymlinks
 			        }
 
 			        $install_log->pushToLog("WRITING: Creating 'pages' folder (/workspace/pages)", E_NOTICE, true, true);
-			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/pages', $conf['settings']['directory']['write_mode'])){
+			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/pages', $conf['settings']['symphony']['directory_write_mode'])){
 			            define('_INSTALL_ERRORS_', "Could not create 'workspace/pages' directory. Check permission on the root folder.");       
 			            $install_log->pushToLog("ERROR: Creation of 'workspace/pages' folder failed.", E_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
@@ -780,7 +779,7 @@ Options +FollowSymlinks
 			        }
 
 			        $install_log->pushToLog("WRITING: Creating 'utilities' folder (/workspace/utilities)", E_NOTICE, true, true);
-			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/utilities', $conf['settings']['directory']['write_mode'])){
+			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/workspace/utilities', $conf['settings']['symphony']['directory_write_mode'])){
 			            define('_INSTALL_ERRORS_', "Could not create 'workspace/utilities' directory. Check permission on the root folder.");       
 			            $install_log->pushToLog("ERROR: Creation of 'workspace/utilities' folder failed.", E_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
@@ -805,7 +804,7 @@ Options +FollowSymlinks
 							
 				if(@!is_dir($fields['docroot'] . '/extensions')){
 			        $install_log->pushToLog("WRITING: Creating 'campfire' folder (/extensions)", E_NOTICE, true, true);
-			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/extensions', $conf['settings']['directory']['write_mode'])){
+			        if(!GeneralExtended::realiseDirectory($kDOCROOT . '/extensions', $conf['settings']['symphony']['directory_write_mode'])){
 			            define('_INSTALL_ERRORS_', "Could not create 'extensions' directory. Check permission on the root folder.");       
 			            $install_log->pushToLog("ERROR: Creation of 'extensions' folder failed.", E_ERROR, true, true);                         
 			            installResult($Page, $install_log, $start);
@@ -899,7 +898,7 @@ Options +FollowSymlinks
 		$fields['permission']['directory'] = '0775';
 		
 		$conf = getDynamicConfiguration();
-		$fields['general']['sitename'] = $conf['general']['sitename'];
+		$fields['symphony']['sitename'] = $conf['symphony']['sitename'];
 		$fields['region']['date_format'] = $conf['region']['date_format'];
 		$fields['region']['time_format'] = $conf['region']['time_format'];
 		
@@ -949,7 +948,7 @@ Options +FollowSymlinks
 				$Environment->appendChild(new XMLElement('legend', __('Website Preferences')));
 //				$Environment->appendChild(new XMLElement('p', '.'));
 				
-				$Environment->appendChild(Widget::label(__('Name'), Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
+				$Environment->appendChild(Widget::label(__('Name'), Widget::input('fields[general][sitename]', $fields['symphony']['sitename'])));
 				
 
 				
@@ -988,8 +987,8 @@ Options +FollowSymlinks
 				
 				$Fieldset->appendChild(Widget::label(__('Region'), Widget::Select('fields[region][timezone]', $options)));
 								
-				//$Div->appendChild(Widget::label('Date Format', Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
-				//$Div->appendChild(Widget::label('Time Format', Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
+				//$Div->appendChild(Widget::label('Date Format', Widget::input('fields[general][sitename]', $fields['symphony']['sitename'])));
+				//$Div->appendChild(Widget::label('Time Format', Widget::input('fields[general][sitename]', $fields['symphony']['sitename'])));
 
 				$dateformat = $fields['region']['date_format'];
 				$label = Widget::Label(__('Date Format'));

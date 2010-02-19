@@ -1,6 +1,6 @@
 <?php
 
-    Abstract Class Manager extends Object{
+    Abstract Class Manager{
 
 	    var $_Parent;
 	    protected static $_pool;

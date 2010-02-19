@@ -26,12 +26,12 @@
 				$file_abs = UTILITIES . '/' . $this->_existing_file;
 				$filename = $this->_existing_file;
 
-				if(!@is_file($file_abs)) redirect(URL . '/symphony/blueprints/utilities/new/');
+				if(!@is_file($file_abs)) redirect(ADMIN_URL . '/blueprints/utilities/new/');
 				
 				$fields['name'] = $filename; 
 				$fields['body'] = @file_get_contents($file_abs);
 				
-				$this->Form->setAttribute('action', URL . '/symphony/blueprints/utilities/edit/' . $this->_context[1] . '/');							
+				$this->Form->setAttribute('action', ADMIN_URL . '/blueprints/utilities/edit/' . $this->_context[1] . '/');							
 			}
 			
 			else{
@@ -61,8 +61,8 @@
 								'Utility updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Utilities</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/blueprints/utilities/new/', 
-									URL . '/symphony/blueprints/components/' 
+									ADMIN_URL . '/blueprints/utilities/new/', 
+									ADMIN_URL . '/blueprints/components/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -74,8 +74,8 @@
 								'Utility created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Utilities</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/blueprints/utilities/new/', 
-									URL . '/symphony/blueprints/components/'
+									ADMIN_URL . '/blueprints/utilities/new/', 
+									ADMIN_URL . '/blueprints/components/'
 								)
 							), 
 							Alert::SUCCESS);
@@ -127,7 +127,7 @@
 						$li->setAttribute('class', 'odd');
 					}
 
-					$li->appendChild(Widget::Anchor($util, URL . '/symphony/blueprints/utilities/edit/' . str_replace('.xsl', '', $util) . '/', NULL));
+					$li->appendChild(Widget::Anchor($util, ADMIN_URL . '/blueprints/utilities/edit/' . str_replace('.xsl', '', $util) . '/', NULL));
 					$ul->appendChild($li);
 				}
 			
@@ -182,7 +182,7 @@
 					elseif($this->_context[0] == 'new' && is_file($file)) $this->_errors['name'] = __('A Utility with that name already exists. Please choose another.'); 
 
 					##Write the file	
-					elseif(!$write = General::writeFile($file, $fields['body'], Symphony::Configuration()->get('write_mode', 'file')))
+					elseif(!$write = General::writeFile($file, $fields['body'], Symphony::Configuration()->get('file_write_mode', 'symphony')))
 						$this->pageAlert(__('Utility could not be written to disk. Please check permissions on <code>/workspace/utilities</code>.'), Alert::ERROR);
 
 					##Write Successful, add record to the database
@@ -198,7 +198,7 @@
 						# Description: After saving the asset, the file path is provided.
 						//$ExtensionManager->notifyMembers('Edit', getCurrentPage(), array('file' => $file));
 						
-						redirect(URL . '/symphony/blueprints/utilities/edit/'.str_replace('.xsl', '', $fields['name']) . '/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
+						redirect(ADMIN_URL . '/blueprints/utilities/edit/'.str_replace('.xsl', '', $fields['name']) . '/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
 
 					}
 				}
@@ -214,7 +214,7 @@
 
 		    	General::deleteFile(UTILITIES . '/' . $this->_existing_file);
 
-		    	redirect(URL . '/symphony/blueprints/components/');	
+		    	redirect(ADMIN_URL . '/blueprints/components/');	
 		  	}	
 		}
 	}
