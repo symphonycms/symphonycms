@@ -72,7 +72,8 @@
 			return NULL;
 		}
 
-		define('Symphony::lang()', $lang);
+		define('__LANG__', $lang);
+
 		return $lang;
 	}
 
@@ -209,7 +210,6 @@
 		$conf['region']['time_format'] = 'H:i';
 		$conf['region']['date_format'] = 'd F Y';
 		$conf['maintenance_mode']['enabled'] = 'no';
-		$conf['members']['cookie-prefix'] = 'sym-members';
 	
 		return $conf;
 	
