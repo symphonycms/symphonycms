@@ -3,6 +3,7 @@
 
 /* Tables */
 table {
+	clear: both;
 	margin-top: 1em;
 	border-collapse: collapse;
 	width: 100%;

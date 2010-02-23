@@ -11,6 +11,25 @@
 			
 			$this->Form->setAttribute('action', ADMIN_URL . '/system/extensions/');
 			
+			$subhead = new XMLElement('ul', NULL, array('class' => 'subhead'));
+			
+			$tab1 = new XMLElement('li');
+			$a1 = Widget::Anchor('All','#', NULL, 'active');
+			$tab1->appendChild($a1);
+			$subhead->appendChild($tab1);
+			
+			$tab2 = new XMLElement('li');
+			$a2 = Widget::Anchor('Core','#');
+			$tab2->appendChild($a2);
+			$subhead->appendChild($tab2);
+			
+			$tab3 = new XMLElement('li');
+			$a3 = Widget::Anchor('Fields', '#');
+			$tab3->appendChild($a3);
+			$subhead->appendChild($tab3);
+			
+			$this->Form->appendChild($subhead);
+			
 			$ExtensionManager = $this->_Parent->ExtensionManager; 		
 			$extensions = $ExtensionManager->listAll();
 			
@@ -19,9 +38,9 @@
 
 			$aTableHead = array(
 				array(__('Name'), 'col'),
-				array(__('Enabled'), 'col'),
 				array(__('Version'), 'col'),
 				array(__('Author'), 'col'),
+				array(__('Status'), 'col')
 			);	
 
 			$aTableBody = array();
@@ -38,8 +57,8 @@
 
 					## Setup each cell
 					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], Administration::instance()->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));			
-					$td2 = Widget::TableData(($about['status'] == EXTENSION_ENABLED ? __('Yes') : __('No')));
-					$td3 = Widget::TableData($about['version']);
+
+					$td2 = Widget::TableData($about['version']);
 					
 					$link = $about['author']['name'];
 
@@ -49,9 +68,23 @@
 					elseif(isset($about['author']['email']))
 						$link = Widget::Anchor($about['author']['name'], 'mailto:' . $about['author']['email']);	
 						
-					$td4 = Widget::TableData($link);	
+					$td3 = Widget::TableData($link);	
 					
-					$td4->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox'));
+					$td3->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox'));
+					
+					switch ($about['status']) {
+						case EXTENSION_ENABLED:
+							$td4 = Widget::TableData('Enabled');
+							break;
+						case EXTENSION_DISABLED:
+							$td4 = Widget::TableData('Disabled');
+							break;
+						case EXTENSION_NOT_INSTALLED:
+							$td4 = Widget::TableData('Not Installed');
+							break;
+						default:
+							$td4 = '-';
+					}
 
 					## Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4), ($about['status'] == EXTENSION_NOT_INSTALLED ? 'inactive' : NULL));		
