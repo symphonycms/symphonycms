@@ -21,7 +21,6 @@
 		
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');	
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
-	require_once(BOOT . '/class.object.php');
 	
 	if (!file_exists(CONFIG)) {
 		

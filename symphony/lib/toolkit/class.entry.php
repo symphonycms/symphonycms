@@ -3,7 +3,7 @@
 	define_safe('__ENTRY_OK__', 0);
 	define_safe('__ENTRY_FIELD_ERROR__', 100);
 	
-	Class Entry extends Object{
+	Class Entry{
 		
 		var $_fields;
 		var $_Parent;
@@ -15,10 +15,6 @@
 			$this->_Parent =& $parent;
 			$this->_fields = array();
 			$this->_data = array();
-			
-			## Since we are not sure where the Admin object is, inspect
-			## all the parent objects
-			$this->catalogueParentObjects();			
 
 			if(class_exists('Administration')) $this->_engine = Administration::instance();
 			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();
@@ -80,8 +76,8 @@
 			$errors = NULL;
 			$status = __ENTRY_OK__;
 			
-			if(!isset($this->_ParentCatalogue['sectionmanager'])) $SectionManager = new SectionManager($this->_engine);
-			else $SectionManager = $this->_ParentCatalogue['sectionmanager'];
+			$SectionManager = new SectionManager($this->_engine);
+			$EntryManager = new EntryManager($this->_engine);
 
 			$section = $SectionManager->fetch($this->get('section_id'));
 			$schema = $section->fetchFieldsSchema();
@@ -89,7 +85,7 @@
 			foreach($schema as $info){
 				$result = NULL;
 
-				$field = $this->_ParentCatalogue['entrymanager']->fieldManager->fetch($info['id']);
+				$field = $EntryManager->fieldManager->fetch($info['id']);
 
 				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
 
@@ -133,16 +129,16 @@
 				if (is_null($entry_id)) return __ENTRY_FIELD_ERROR__;
 			}			
 			
-			if(!isset($this->_ParentCatalogue['sectionmanager'])) $SectionManager = new SectionManager($this->_engine);
-			else $SectionManager = $this->_ParentCatalogue['sectionmanager'];
-
+			$SectionManager = new SectionManager($this->_engine);
+			$EntryManager = new EntryManager($this->_engine);
+			
 			$section = $SectionManager->fetch($this->get('section_id'));		
 			$schema = $section->fetchFieldsSchema();
 
 			foreach($schema as $info){
 				$result = NULL;
 
-				$field = $this->_ParentCatalogue['entrymanager']->fieldManager->fetch($info['id']);
+				$field = $EntryManager->fieldManager->fetch($info['id']);
 				
 				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
 				
@@ -177,8 +173,7 @@
 		
 		function findDefaultData(){
 			
-			if(!isset($this->_ParentCatalogue['sectionmanager'])) $SectionManager = new SectionManager($this->_engine);
-			else $SectionManager = $this->_ParentCatalogue['sectionmanager'];
+			$SectionManager = new SectionManager($this->_engine);
 			
 			$section = $SectionManager->fetch($this->get('section_id'));		
 			$schema = $section->fetchFields();
@@ -198,7 +193,8 @@
 		
 		function commit(){
 			$this->findDefaultData();
-			return ($this->get('id') ? $this->_ParentCatalogue['entrymanager']->edit($this) : $this->_ParentCatalogue['entrymanager']->add($this));	
+			$EntryManager = new EntryManager($this->_engine);
+			return ($this->get('id') ? $EntryManager->edit($this) : $EntryManager->add($this));	
 		}
 		
 	}

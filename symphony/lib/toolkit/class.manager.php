@@ -1,6 +1,6 @@
 <?php
 
-    Abstract Class Manager extends Object{
+    Abstract Class Manager{
 
 	    var $_Parent;
 	    protected static $_pool;
@@ -44,10 +44,10 @@
 		function __getHandleFromFilename($filename){
 		}
 
-        function listAll(){
+        public function listAll(){
         }
                
-        function &create($name){
+        public function &create($name){
         }       
         
     }

@@ -2,7 +2,7 @@
 
 	require_once(TOOLKIT . '/class.field.php');
 	
-	Class FieldManager extends Object{
+	Class FieldManager{
 
 		public $_Parent;
 		private static $_initialiased_fields = array();
