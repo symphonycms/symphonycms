@@ -67,10 +67,10 @@
 			);
 
 			$iterator = new ViewIterator;
-
-			$aTableBody = array();
 			
-			if(false) {
+			$aTableBody = array();
+
+			if(!$iterator->valid()) {
 				$aTableBody = array(Widget::TableRow(array(
 					Widget::TableData(__('None found.'), 'inactive', null, count($aTableHead))
 				), 'odd'));
@@ -79,7 +79,7 @@
 			else{
 				foreach ($iterator as $view) {
 					$class = array();
-					
+
 					$page_title = View::buildPageTitle($view);
 					$page_url = sprintf('%s/%s/', URL, $view->path); 
 					$page_edit_url = sprintf('%sedit/%s/', Administration::instance()->getCurrentPageURL(), $view->path);
@@ -149,18 +149,17 @@
 			array_shift($context);
 			$view_pathname = implode('/', $context);
 			
+			$view = View::loadFromPath($view_pathname);
+			
 			$this->setPageType('form');
-			$this->Form->setAttribute('action', ADMIN_URL . '/blueprints/views/template/' . $view_pathname . '/');
+			$this->Form->setAttribute('action', ADMIN_URL . '/blueprints/views/template/' . $view->path . '/');
 
-			$filename = end($context) . '.xsl';
-			$file_abs = VIEWS . '/' . $view_pathname . '/' . $filename;
-			
-			if(!@is_file($file_abs)) redirect(ADMIN_URL . '/blueprints/views/');
-			
-			$fields['body'] = @file_get_contents($file_abs);
-			
-			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));			
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
+			$filename = $view->handle . '.xsl';
+
+			$formHasErrors = ($this->_errors instanceof MessageStack && $this->_errors->length() > 0);			
+			if($formHasErrors){
+				$this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
+			}
 			
 			// Status message:
 			if(!is_null($callback['flag']) && $callback['flag'] == 'saved') {
@@ -184,25 +183,25 @@
 					$filename
 				)
 			));
-			$this->appendSubheading(__($filename ? $filename : __('Untitled')), Widget::Anchor(__('Edit Configuration'), ADMIN_URL . '/blueprints/views/edit/' . $pagedata['id'], __('Edit View Configuration'), 'button'));
+			$this->appendSubheading(__($filename ? $filename : __('Untitled')), Widget::Anchor(__('Edit Configuration'), ADMIN_URL . '/blueprints/views/edit/' . $view_pathname . '/', __('Edit View Configuration'), 'button'));
 			
-			if(!empty($_POST)) $fields = $_POST['fields'];
-			
-			$fields['body'] = General::sanitize($fields['body']);
+			if(!empty($_POST)){
+				$view->template = $_POST['fields']['template'];
+			}
 			
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'primary');
 			
-			$label = Widget::Label(__('Body'));
+			$label = Widget::Label(__('Template'));
 			$label->appendChild(Widget::Textarea(
-				'fields[body]', 30, 80, $fields['body'],
+				'fields[template]', 30, 80, General::sanitize($view->template),
 				array(
 					'class'	=> 'code'
 				)
 			));
 			
-			if(isset($this->_errors['body'])) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors['body']);
+			if(isset($this->_errors->template)) {
+				$label = $this->wrapFormElementWithError($label, $this->_errors->template);
 			}
 			
 			$fieldset->appendChild($label);
@@ -223,8 +222,9 @@
 				
 				foreach ($utilities as $u) {
 					$li = new XMLElement('li');
-					
-					$li->appendChild(Widget::Anchor($u->name, ADMIN_URL . '/blueprints/utilities/edit/' . str_replace('.xsl', NULL, $u->name) . '/', NULL));
+					$li->appendChild(Widget::Anchor(
+						$u->name, ADMIN_URL . '/blueprints/utilities/edit/' . str_replace('.xsl', NULL, $u->name) . '/', NULL
+					));
 					$ul->appendChild($li);
 				}
 				
@@ -246,31 +246,34 @@
 			
 			$context = $this->_context;
 			array_shift($context);
-			$view_pathname = implode('/', $context);
 			
-			$filename = end($context) . '.xsl';
-			$file_abs = VIEWS . '/' . $view_pathname . '/' . $filename;
-
-			$fields = $_POST['fields'];
-			$this->_errors = array();
+			$view = self::__loadExistingView(implode('/', $context));
 			
-			if(!isset($fields['body']) || trim($fields['body']) == '') {
-				$this->_errors['body'] = __('Body is a required field.');
+			$view->template = $_POST['fields']['template'];
+			
+			$this->_errors = new MessageStack;
+			
+			try{	
+				View::save($view, $view->path, $this->_errors); 
+				redirect(ADMIN_URL . '/blueprints/views/template/' . $view->path . '/:saved/');
 			}
-			
-			elseif(!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) {
-				$this->_errors['body'] = __('This document is not well formed. The following error was returned: <code>%s</code>', array($errors[0]['message']));
-			}
-			
-			if(empty($this->_errors)) {
-				if(!$write = General::writeFile($file_abs, $fields['body'], Symphony::Configuration()->get('file_write_mode', 'symphony'))) {
-					$this->pageAlert(__('Template could not be written to disk. Please check permissions on <code>/workspace/views</code>.'), Alert::ERROR);
-				} 
-				
-				else{
-					redirect(ADMIN_URL . '/blueprints/views/template/' . $view_pathname . '/:saved/');
+			catch(ViewException $e){
+				switch($e->getCode()){
+					case View::ERROR_MISSING_OR_INVALID_FIELDS:
+						// Dont really need to do anything.
+						break;
+						
+					case View::ERROR_FAILED_TO_WRITE:
+						$this->pageAlert($e->getMessage(), Alert::ERROR);
+						break;
 				}
 			}
+			catch(Exception $e){
+				// Errors!!
+				// Not sure what happened!!
+				$this->pageAlert(__("An unknown error has occurred. %s", $e->getMessage()), Alert::ERROR);
+			}
+
 		}
 		
 		public function __viewNew() {
@@ -320,8 +323,6 @@
 					)
 				);
 			}
-			
-
 		}
 		
 		public function __form() {
@@ -340,6 +341,7 @@
 				$view_pathname = implode('/', $context);
 				
 				$existing = self::__loadExistingView($view_pathname);
+
 			}
 			
 			// Status message:
@@ -661,26 +663,33 @@
 				}
 				
 				if(strlen(trim($fields['handle'])) == 0){
-					$fields['handle'] = Lang::createHandle($fields['handle']);
+					$fields['handle'] = Lang::createHandle($fields['title']);
 				}
-				
-				$this->_errors = array();
 				
 				if($this->_context[0] == 'edit'){
 					$view = self::__loadExistingView($view_pathname);
 				}
 				else{
 					$view = View::loadFromFieldsArray($fields);
+					$view->template = file_get_contents(TEMPLATE . '/page.xsl');
 				}
 				
+				$view->handle = $fields['handle'];
 				
-				print "<pre>";
-				print htmlspecialchars((string)$view); die();
+				$path = $fields['parent'] . '/' . $view->handle;
+
+				$this->_errors = new MessageStack;
+				View::save($view, $path, $this->_errors);
+				
+				//print "<pre>";
+				//print htmlspecialchars((string)$view); die();
 				
 				print "<pre>";
 				print_r($view);
 				print_r($fields);
 				die();
+				
+				
 				
 				if(!isset($fields['title']) || trim($fields['title']) == '') {
 					$this->_errors['title'] = __('Title is a required field');

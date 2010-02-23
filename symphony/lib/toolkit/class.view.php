@@ -4,17 +4,12 @@
 
 	Class ViewFilterIterator extends FilterIterator{
 		public function __construct(){
-			parent::__construct(
-				new RecursiveIteratorIterator(
-					new RecursiveDirectoryIterator(VIEWS), 
-					RecursiveIteratorIterator::SELF_FIRST
-				)
-			);
+			parent::__construct(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(VIEWS), RecursiveIteratorIterator::SELF_FIRST));
 		}
 		
 		// Only return folders, and only those that have a 'X.config.xml' file within. This characterises a View.
 		public function accept(){
-			if(!$this->isDir()) return false;
+			if($this->getInnerIterator()->isDir() == false) return false;
 			preg_match('/\/?([^\/]+)$/', $this->getInnerIterator()->getPathname(), $match); //Find the view handle
 			return (file_exists(sprintf('%s/%s.config.xml', $this->getInnerIterator()->getPathname(), $match[1])));
 		}
@@ -27,17 +22,21 @@
 		const ERROR_DOES_NOT_ACCEPT_PARAMETERS = 2;
 		const ERROR_TOO_MANY_PARAMETERS = 3;
 		
-		//private $_doc;
+		const ERROR_MISSING_OR_INVALID_FIELDS = 4;
+		const ERROR_FAILED_TO_WRITE = 5;
+
 		private $_about;
 		private $_path;
 		private $_parent;
 		private $_parameters;
+		private $_template;
+		private $_handle;
+		private $_guid;
 
 		public function __construct(){
 			$this->_about = new StdClass;
 			$this->_parameters = new StdClass;
-			$this->_path = NULL;
-			$this->_parent = NULL;
+			$this->_path = $this->_parent = $this->_template = $this->_handle = $this->_guid = NULL;
 		}
 		
 		public function about(){
@@ -46,28 +45,39 @@
 		
 		public function __get($name){
 			if($name == 'path') return $this->_path;
+			elseif($name == 'template') return $this->_template;
+			elseif($name == 'handle') return $this->_handle;
+			elseif($name == 'guid') return $this->_guid;			
 			return $this->_about->$name;
 		}
 	
 		public function __set($name, $value){
 			if($name == 'path') $this->_path = $value;
+			elseif($name == 'template') $this->_template = $value;
+			elseif($name == 'handle') $this->_handle = $value;	
+			elseif($name == 'guid') $this->_guid = $value;		
 			else $this->_about->$name = $value;
 		}
 
 		public static function loadFromPath($path, array $params=NULL){
-			
+
 			$view = new View;
 			
 			$view->path = trim($path, '/');
 			
 			preg_match('/\/?([^\/]+)$/', $path, $match); //Find the view handle
-			$pathname = sprintf('%s/%s/%s.config.xml', VIEWS, $view->path, $match[1]);
+			$view->handle = $match[1];
+			$pathname = sprintf('%s/%s/%s.config.xml', VIEWS, $view->path, $view->handle);
 			
-			if(!file_exists($pathname)) throw new ViewException(__('View, %s, could not be found.', array($pathname)), self::ERROR_VIEW_NOT_FOUND);
+			if(!file_exists($pathname)){
+				throw new ViewException(__('View, %s, could not be found.', array($pathname)), self::ERROR_VIEW_NOT_FOUND);
+			}
 			
 			$doc = @simplexml_load_file($pathname);
 			
-			if(!($doc instanceof SimpleXMLElement)) throw new ViewException(__('Failed to load view configuration file: %s', array($pathname)), self::ERROR_FAILED_TO_LOAD);
+			if(!($doc instanceof SimpleXMLElement)){
+				throw new ViewException(__('Failed to load view configuration file: %s', array($pathname)), self::ERROR_FAILED_TO_LOAD);
+			}
 
 			foreach($doc as $name => $value){
 				if(isset($value->item)){
@@ -80,6 +90,12 @@
 				else $view->$name = (string)$value;
 			}
 			
+			if(isset($doc->attributes()->guid)){
+				$view->guid = (string)$doc->attributes()->guid;
+			}
+			else{
+				$view->guid = uniqid();
+			}
 			
 			if(!is_null($params)){
 				
@@ -94,6 +110,11 @@
 				foreach($params as $index => $p){
 					$view->setParameter($view->{'url-parameters'}[$index], $p);
 				}
+			}
+			
+			$template = sprintf('%s/%s/%s.xsl', VIEWS, $view->path, $view->handle);
+			if(file_exists($template) && is_readable($template)){
+				$view->template = file_get_contents($template);
 			}
 			
 			return $view;
@@ -145,9 +166,11 @@
 		}
 		
 		public static function buildPageTitle(View $v){
+
 			$title = $v->title;
 			
 			$current = $v->parent();
+			
 			while(!is_null($current)){
 				$title = sprintf('%s: %s', $current->title, $title);
 				$current = $current->parent();
@@ -156,8 +179,37 @@
 			return $title;
 		}
 		
-		public static function save(self $view, $path){
+		public static function save(self $view, $path, MessageStack &$messages){
 			
+			print_r($view); die($path);
+			
+			$pathname = sprintf('%s/%s/%s.config.xml', VIEWS, $path, $view->handle);
+			if(file_exists($pathname)){
+				$existing = self::loadFromPath($path);
+				if($existing->guid != $view->guid){
+					$messages->append('handle', 'A view with that handle already exists.');
+					return false;
+				}
+				unset($existing);
+			}
+			
+			if(strlen(trim($view->template)) == 0){
+				$messages->append('template', 'Template is required, and cannot be empty.');
+			}
+			elseif(!General::validateXML($view->template, $errors, false, new XSLTProcess())) {
+				$messages->append('template', __('This document is not well formed. The following error was returned: <code>%s</code>', array($errors[0]['message'])));
+			}
+			
+			if($messages->length() > 0){
+				throw new ViewException(__('View could not be saved. Validation failed.'), self::ERROR_MISSING_OR_INVALID_FIELDS);
+			}
+			
+			// Save the template file
+			if(!General::writeFile(sprintf('%s/%s/%s.xsl', VIEWS, $path, $view->handle), $view->template, Symphony::Configuration()->get('file_write_mode', 'symphony'))){
+				throw new ViewException(__('Template could not be written to disk. Please check permissions on <code>/workspace/views</code>.'), self::ERROR_FAILED_TO_WRITE);
+			}
+			
+			return true;
 		}
 		
 		public function __toString(){
@@ -167,9 +219,13 @@
 			$root = $doc->createElement('view');
 			$doc->appendChild($root);
 			
-			$root->appendChild($doc->createElement('title', General::sanitize($this->title)));
+			if(!isset($this->guid) || is_null($this->guid)){
+				$this->guid = uniqid();
+			}
 			
-			$root->appendChild($doc->createElement('handle', General::sanitize($this->handle)));
+			$root->setAttribute('guid', $this->guid);
+			
+			$root->appendChild($doc->createElement('title', General::sanitize($this->title)));
 			
 			if(is_array($this->{'url-parameters'}) && count($this->{'url-parameters'}) > 0){
 				$url_parameters = $doc->createElement('url-parameters');
@@ -201,25 +257,28 @@
 		public function parent(){
 			if($this->_path == $this->handle) return NULL;
 			elseif(!($this->_parent instanceof self)){
-				$this->_parent = self::loadFromPath(rtrim($this->_path, "/{$this->_about->handle}"));
+				$this->_parent = self::loadFromPath(rtrim($this->_path, "/{$this->handle}"));
 			} 
-			
 			return $this->_parent;
 		}
 	}
 
 
 	Class ViewIterator implements Iterator{
+
 		private $_iterator;
-		
-		protected $_position;
-		protected $_lastPosition;
-		protected $_current;
-				
+		private $_length;
+		private $_position;
+
 		public function __construct(){
 			$this->_iterator = new ViewFilterIterator;
+			$this->_length = $this->_position = 0;
+			foreach($this->_iterator as $f){
+				$this->_length++;
+			}
+			$this->_iterator->rewind();
 		}
-			
+
 		public function current(){
 			$path = str_replace(VIEWS, NULL, $this->_iterator->current()->getPathname());
 			
@@ -230,13 +289,21 @@
 			return $this->_current;
 		}
 					
+		public function innerIterator(){
+			return $this->_iterator;
+		}
+
 		public function next(){
 			$this->_position++;
 			$this->_iterator->next();
 		}
 
-		public function position(){
-			return $this->_position;
+		public function key(){
+			return $this->_iterator->key();
+		}
+
+		public function valid(){
+			return $this->_position < $this->_length;
 		}
 
 		public function rewind(){
@@ -244,16 +311,12 @@
 			$this->_iterator->rewind();
 		}
 
-		public function key(){
+		public function position(){
 			return $this->_position;
 		}
 
 		public function length(){
-			throw new Exception('Cannot call length() on FilterIterator');
+			return $this->_length;
 		}
-
-		public function valid(){
-			return $this->_iterator->valid();
-		}		
 
 	}
