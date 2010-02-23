@@ -30,7 +30,7 @@
 		    // Get available languages
 		    $languages = Lang::getAvailableLanguages(new ExtensionManager(Administration::instance()));
 		
-			if(count($languages > 1)) {
+			if(count($languages) > 1) {
 			    // Create language selection
 				$group = new XMLElement('fieldset');
 				$group->setAttribute('class', 'settings');

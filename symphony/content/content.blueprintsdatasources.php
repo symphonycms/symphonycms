@@ -84,7 +84,12 @@
 				$fields['order'] = $existing->dsParamORDER;
 				$fields['param'] = (isset($existing->dsParamPARAMOUTPUT) ? $existing->dsParamPARAMOUTPUT : array());
 				$fields['required_url_param'] = $existing->dsParamREQUIREDPARAM;
-				$fields['xml_elements'] = $existing->dsParamINCLUDEDELEMENTS;
+				
+				$fields['xml_elements'] = array();
+				if(isset($existing->dsParamINCLUDEDELEMENTS) && is_array($existing->dsParamINCLUDEDELEMENTS)){
+					$fields['xml_elements'] = $existing->dsParamINCLUDEDELEMENTS;
+				}
+				
 				$fields['sort'] = $existing->dsParamSORT;
 				$fields['page_number'] = $existing->dsParamSTARTPAGE;
 				$fields['limit_type'] = $existing->dsParamLIMITTYPE;

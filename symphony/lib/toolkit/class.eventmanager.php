@@ -1,7 +1,5 @@
 <?php
 
-	
-	
 	require_once(TOOLKIT . '/class.event.php');
 
     Class EventManager extends Manager{
@@ -49,7 +47,7 @@
 	
 	        if(is_array($structure['filelist']) && !empty($structure['filelist'])){		        
 	        	foreach($structure['filelist'] as $f){
-		        	$f = self::__getHandleFromFilename($f); //preg_replace(array('/^event./i', '/.php$/i'), '', $f);					        	
+		        	$f = self::__getHandleFromFilename($f);
 
 					if($about = $this->about($f)){
 
@@ -61,19 +59,16 @@
 						if(is_callable(array($classname,'allowEditorToParse')))
 							$can_parse = @call_user_func(array(&$classname, 'allowEditorToParse'));
 		
-						if(is_callable(array($classname,'getType')))	
-							$type = @call_user_func(array(&$classname, 'getType'));
+						if(is_callable(array($classname,'getSource')))	
+							$type = @call_user_func(array(&$classname, 'getSource'));
 							
 						$about['can_parse'] = $can_parse;
-						$about['type'] = $type;
+						$about['source'] = $source;
 						$result[$f] = $about;		
 		
 					}
 				}
 			}
-
-			//$structure = General::listStructure(EXTENSIONS, array(), false, 'ASC', EXTENSIONS);
-			//$extensions = $structure['dirlist'];
 			
 			$extensionManager = new ExtensionManager($this->_Parent);
 			$extensions = $extensionManager->listInstalledHandles();
@@ -97,10 +92,8 @@
 								$type = NULL;
 																		
 								$about['can_parse'] = $can_parse;
-								$about['type'] = $type;
 								$result[$f] = $about;	
 							}
-
 						}						
 					}					
 				}	

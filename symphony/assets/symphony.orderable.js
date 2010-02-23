@@ -41,8 +41,9 @@
 				var target, next, top = event.pageY;
 				var a = item.height();
 				var b = item.offset().top;
+				var prev = item.prev();
 				
-				state.min = Math.min(b, a + (item.prev().offset().top || -Infinity));
+				state.min = Math.min(b, a + (prev.size() > 0 ? prev.offset().top : -Infinity));
 				state.max = Math.max(a + b, b + (item.next().height() ||  Infinity));
 				
 				if (!object.is('.ordering')) {

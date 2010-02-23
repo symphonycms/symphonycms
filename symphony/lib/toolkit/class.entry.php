@@ -76,8 +76,8 @@
 			$errors = NULL;
 			$status = __ENTRY_OK__;
 			
-			if(!isset($this->_ParentCatalogue['sectionmanager'])) $SectionManager = new SectionManager($this->_engine);
-			else $SectionManager = $this->_ParentCatalogue['sectionmanager'];
+			$SectionManager = new SectionManager($this->_engine);
+			$EntryManager = new EntryManager($this->_engine);
 
 			$section = $SectionManager->fetch($this->get('section_id'));
 			$schema = $section->fetchFieldsSchema();
@@ -85,7 +85,7 @@
 			foreach($schema as $info){
 				$result = NULL;
 
-				$field = $this->_ParentCatalogue['entrymanager']->fieldManager->fetch($info['id']);
+				$field = $EntryManager->fieldManager->fetch($info['id']);
 
 				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
 
@@ -129,16 +129,16 @@
 				if (is_null($entry_id)) return __ENTRY_FIELD_ERROR__;
 			}			
 			
-			if(!isset($this->_ParentCatalogue['sectionmanager'])) $SectionManager = new SectionManager($this->_engine);
-			else $SectionManager = $this->_ParentCatalogue['sectionmanager'];
-
+			$SectionManager = new SectionManager($this->_engine);
+			$EntryManager = new EntryManager($this->_engine);
+			
 			$section = $SectionManager->fetch($this->get('section_id'));		
 			$schema = $section->fetchFieldsSchema();
 
 			foreach($schema as $info){
 				$result = NULL;
 
-				$field = $this->_ParentCatalogue['entrymanager']->fieldManager->fetch($info['id']);
+				$field = $EntryManager->fieldManager->fetch($info['id']);
 				
 				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
 				
@@ -173,8 +173,7 @@
 		
 		function findDefaultData(){
 			
-			if(!isset($this->_ParentCatalogue['sectionmanager'])) $SectionManager = new SectionManager($this->_engine);
-			else $SectionManager = $this->_ParentCatalogue['sectionmanager'];
+			$SectionManager = new SectionManager($this->_engine);
 			
 			$section = $SectionManager->fetch($this->get('section_id'));		
 			$schema = $section->fetchFields();
@@ -194,7 +193,8 @@
 		
 		function commit(){
 			$this->findDefaultData();
-			return ($this->get('id') ? $this->_ParentCatalogue['entrymanager']->edit($this) : $this->_ParentCatalogue['entrymanager']->add($this));	
+			$EntryManager = new EntryManager($this->_engine);
+			return ($this->get('id') ? $EntryManager->edit($this) : $EntryManager->add($this));	
 		}
 		
 	}

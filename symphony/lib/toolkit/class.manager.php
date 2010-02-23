@@ -44,10 +44,10 @@
 		function __getHandleFromFilename($filename){
 		}
 
-        function listAll(){
+        public function listAll(){
         }
                
-        function &create($name){
+        public function &create($name){
         }       
         
     }

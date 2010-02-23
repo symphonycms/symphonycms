@@ -13,6 +13,7 @@ CREATE TABLE `tbl_authors` (
   `primary` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `default_section` int(11) NOT NULL,
   `auth_token_active` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
+  `role_id` int(11) NOT NULL,
   `language` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
@@ -142,18 +143,6 @@ CREATE TABLE `tbl_fields_select` (
   PRIMARY KEY (`id`),
   KEY `field_id` (`field_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- *** STRUCTURE: `tbl_fields_selectbox_link` ***
-DROP TABLE IF EXISTS `tbl_fields_selectbox_link`;
-CREATE TABLE `tbl_fields_selectbox_link` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `field_id` int(11) unsigned NOT NULL,
-  `allow_multiple_selection` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
-  `related_field_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `limit` int(4) unsigned NOT NULL DEFAULT '20',
-  PRIMARY KEY (`id`),
-  KEY `field_id` (`field_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- *** STRUCTURE: `tbl_fields_taglist` ***
 DROP TABLE IF EXISTS `tbl_fields_taglist`;
