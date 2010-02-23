@@ -288,19 +288,37 @@ a.create {
 /* Subhead */
 
 .subhead {
-    margin: -1em 0 0;
-    padding: 0 1.3em .5em;
-    line-height: 3em;
-    list-style: none;
-    background: transparent url('images/shadows.png') 0 -9.7em repeat-x;
-    color: #777;
+	float: left;
+	width: 100%;
+	margin: .5em 0 1em;
+	padding: 0 1.3em 0;
+	line-height: 2.4em;
+	list-style: none;
+	background: transparent url('images/shadows.png') 0 -10.9em repeat-x;
+	color: #777;
 }
 
 .subhead li {
-    display: inline;
-    line-height: 3em;
+	display: inline;
 }
 
 .subhead li a {
-    padding: 1em;
+	display: block;
+	float: left;
+	padding: 0 1em;
+	margin-right: .5em;
+	background: #f4f4f4 url('images/shadows.png') 0 -10.9em repeat-x;
+	text-decoration: none;
+	border: 1px solid #ddd;
+	border-bottom: none;
+	-moz-border-radius-topright: .5em;
+	-moz-border-radius-topleft: .5em;
+	-webkit-border-top-right-radius: .5em;
+	-webkit-border-top-left-radius: .5em;
+	border-top-right-radius: .5em;
+	border-top-left-radius: .5em;
+}
+
+.subhead li a:hover, .subhead a.active {
+	background: #fff;
 }
