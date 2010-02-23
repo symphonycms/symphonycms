@@ -52,6 +52,14 @@
 				unset($this->_messages[$element]);
 			}
 		}
+		
+		public function __get($element){
+			return (isset($this->_messages[$element]) ? $this->_messages[$element] : NULL);
+		}
+		
+		public function __isset($element){
+			return isset($this->_messages[$element]);
+		}
 
 	}
 
