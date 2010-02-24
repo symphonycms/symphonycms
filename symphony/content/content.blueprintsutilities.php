@@ -9,11 +9,81 @@
 
 		function __construct(&$parent){
 			parent::__construct($parent);
-			$this->setPageType('form');
 		}
 		
-		## Overload the parent 'view' function since we dont need the switchboard logic
-		function view(){
+		public function __viewIndex() {
+			$this->setPageType('table');
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Utilities'))));
+			
+			$this->appendSubheading(__('Utilities') . $heading, Widget::Anchor(
+				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/',
+				__('Create a new utility'), 'create button'
+			));
+			
+			$uTableHead = array(
+				array(__('Name'), 'col')
+			);
+			
+			$uTableBody = array();
+			
+			$utilities = General::listStructure(UTILITIES, array('xsl'), false, 'asc', UTILITIES);
+			$utilities = $utilities['filelist'];
+			
+			if(!is_array($utilities) or empty($utilities)) {
+				$uTableBody = array(Widget::TableRow(array(
+					Widget::TableData(__('None found.'), 'inactive', null, count($uTableHead))
+				), 'odd'));
+			}
+			else {
+				$bOdd = true;
+				foreach($utilities as $util){
+					$class = array();
+					if($bOdd) $class[] = 'odd';
+					
+					$uRow = Widget::TableData(
+						Widget::Anchor(
+							$util, 
+							URL . '/symphony/blueprints/utilities/edit/' . str_replace('.xsl', '', $util) . '/', NULL)
+						);
+						
+					$uRow->appendChild(Widget::Input("items[{$util}]", null, 'checkbox'));
+						
+					$uTableBody[] = Widget::TableRow(
+						array($uRow),
+						implode(' ', $class)
+					);
+					
+					$bOdd = !$bOdd;
+				}
+			}
+			
+			$table = Widget::Table(
+				Widget::TableHead($uTableHead), null, 
+				Widget::TableBody($uTableBody), null
+			);
+			
+			$this->Form->appendChild($table);
+			
+			$tableActions = new XMLElement('div');
+			$tableActions->setAttribute('class', 'actions');
+			
+			$options = array(
+				array(null, false, __('With Selected...')),
+				array('delete', false, __('Delete'))							
+			);
+			
+			$tableActions->appendChild(Widget::Select('with-selected', $options));
+			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
+			
+			$this->Form->appendChild($tableActions);
+		}
+		
+		public function __viewNew() {
+			$this->__viewEdit();
+		}
+		
+		public function __viewEdit() {
+			$this->setPageType('form');
 			
 			$this->_existing_file = (isset($this->_context[1]) ? $this->_context[1] . '.xsl' : NULL);
 			
@@ -26,12 +96,12 @@
 				$file_abs = UTILITIES . '/' . $this->_existing_file;
 				$filename = $this->_existing_file;
 
-				if(!@is_file($file_abs)) redirect(ADMIN_URL . '/blueprints/utilities/new/');
+				if(!@is_file($file_abs)) redirect(URL . '/symphony/blueprints/utilities/new/');
 				
 				$fields['name'] = $filename; 
 				$fields['body'] = @file_get_contents($file_abs);
 				
-				$this->Form->setAttribute('action', ADMIN_URL . '/blueprints/utilities/edit/' . $this->_context[1] . '/');							
+				$this->Form->setAttribute('action', URL . '/symphony/blueprints/utilities/edit/' . $this->_context[1] . '/');							
 			}
 			
 			else{
@@ -61,8 +131,8 @@
 								'Utility updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Utilities</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									ADMIN_URL . '/blueprints/utilities/new/', 
-									ADMIN_URL . '/blueprints/components/' 
+									URL . '/symphony/blueprints/utilities/new/', 
+									URL . '/symphony/blueprints/utilities/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -74,8 +144,8 @@
 								'Utility created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Utilities</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									ADMIN_URL . '/blueprints/utilities/new/', 
-									ADMIN_URL . '/blueprints/components/'
+									URL . '/symphony/blueprints/utilities/new/', 
+									URL . '/symphony/blueprints/utilities/'
 								)
 							), 
 							Alert::SUCCESS);
@@ -127,7 +197,7 @@
 						$li->setAttribute('class', 'odd');
 					}
 
-					$li->appendChild(Widget::Anchor($util, ADMIN_URL . '/blueprints/utilities/edit/' . str_replace('.xsl', '', $util) . '/', NULL));
+					$li->appendChild(Widget::Anchor($util, URL . '/symphony/blueprints/utilities/edit/' . str_replace('.xsl', '', $util) . '/', NULL));
 					$ul->appendChild($li);
 				}
 			
@@ -153,7 +223,11 @@
 			
 		}
 		
-		function action(){
+		public function __actionNew() {
+			$this->__actionEdit();
+		}
+		
+		public function __actionEdit(){
 			
 			$this->_existing_file = (isset($this->_context[1]) ? $this->_context[1] . '.xsl' : NULL);
 			
@@ -182,7 +256,7 @@
 					elseif($this->_context[0] == 'new' && is_file($file)) $this->_errors['name'] = __('A Utility with that name already exists. Please choose another.'); 
 
 					##Write the file	
-					elseif(!$write = General::writeFile($file, $fields['body'], Symphony::Configuration()->get('file_write_mode', 'symphony')))
+					elseif(!$write = General::writeFile($file, $fields['body'], Symphony::Configuration()->get('write_mode', 'file')))
 						$this->pageAlert(__('Utility could not be written to disk. Please check permissions on <code>/workspace/utilities</code>.'), Alert::ERROR);
 
 					##Write Successful, add record to the database
@@ -198,7 +272,7 @@
 						# Description: After saving the asset, the file path is provided.
 						//$ExtensionManager->notifyMembers('Edit', getCurrentPage(), array('file' => $file));
 						
-						redirect(ADMIN_URL . '/blueprints/utilities/edit/'.str_replace('.xsl', '', $fields['name']) . '/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
+						redirect(URL . '/symphony/blueprints/utilities/edit/'.str_replace('.xsl', '', $fields['name']) . '/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
 
 					}
 				}
@@ -214,9 +288,34 @@
 
 		    	General::deleteFile(UTILITIES . '/' . $this->_existing_file);
 
-		    	redirect(ADMIN_URL . '/blueprints/components/');	
+		    	redirect(URL . '/symphony/blueprints/components/');	
 		  	}	
 		}
+		
+		protected function __actionDelete($utils, $redirect) {
+			$success = true;
+
+			if(!is_array($utils)) $utils = array($utils);
+			
+			foreach ($utils as $util) {
+				General::deleteFile(UTILITIES . '/' . $util);
+			}
+			
+			if($success) redirect($redirect);
+		}
+		
+		public function __actionIndex() {
+			$checked = @array_keys($_POST['items']);
+			
+			if(is_array($checked) && !empty($checked)) {
+				switch ($_POST['with-selected']) {
+					case 'delete':
+						$this->__actionDelete($checked, URL . '/symphony/blueprints/utilities/');
+						break; 
+				}
+			}
+		}	
+		
 	}
 	
 ?>

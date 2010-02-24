@@ -5,6 +5,87 @@
 	require_once(TOOLKIT . '/class.sectionmanager.php');
 	
 	Class contentBlueprintsEvents extends AdministrationPage{
+	
+		public function __viewIndex() {
+			$this->setPageType('table');
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Events'))));
+			
+			$this->appendSubheading(__('Events') . $heading, Widget::Anchor(
+				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/',
+				__('Create a new event'), 'create button'
+			));
+			
+			$eTableHead = array(
+				array(__('Name'), 'col'),
+				array(__('Source'), 'col')
+			);
+			
+			$eTableBody = array();
+			
+			$EventManager = new EventManager($this->_Parent);
+			$sectionManager = new SectionManager($this->_Parent);
+			$events = $EventManager->listAll();
+			
+			if(!is_array($events) or empty($events)) {
+				$eTableBody = array(Widget::TableRow(array(
+					Widget::TableData(__('None found.'), 'inactive', null, count($eTableHead))
+				), 'odd'));
+			}
+			else {
+				$bOdd = true;
+				foreach($events as $e){
+					$class = array();
+					if($bOdd) $class[] = 'odd';
+					
+					$sectionData = $sectionManager->fetch($e['source']);
+					
+					$col_name = Widget::TableData(
+						Widget::Anchor(
+							$e['name'],
+							URL . '/symphony/blueprints/events/'.($e['can_parse'] ? 'edit' : 'info').'/' . strtolower($e['handle']) . '/', 'event.' . $e['handle'] . '.php')
+						);
+						
+					$col_name->appendChild(Widget::Input("items[{$e['handle']}]", null, 'checkbox'));
+					
+					$col_source = Widget::TableData(
+						Widget::Anchor(
+							$sectionData->_data['name'],
+							URL . '/symphony/blueprints/sections/edit/' . $sectionData->_data['id'] . '/',
+							$sectionData->_data['handle']
+						)
+					);
+					
+					$columns = array($col_name, $col_source);
+						
+					$eTableBody[] = Widget::TableRow(
+						$columns,
+						implode(' ', $class)
+					);
+					
+					$bOdd = !$bOdd;
+				}
+			}
+			
+			$table = Widget::Table(
+				Widget::TableHead($eTableHead), null, 
+				Widget::TableBody($eTableBody), null
+			);
+			
+			$this->Form->appendChild($table);
+			
+			$tableActions = new XMLElement('div');
+			$tableActions->setAttribute('class', 'actions');
+			
+			$options = array(
+				array(null, false, __('With Selected...')),
+				array('delete', false, __('Delete'))							
+			);
+			
+			$tableActions->appendChild(Widget::Select('with-selected', $options));
+			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
+			
+			$this->Form->appendChild($tableActions);
+		}
 		
 		function __viewNew(){
 			$this->__form();			
@@ -33,8 +114,8 @@
 								'Event updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Events</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									ADMIN_URL . '/blueprints/events/new/', 
-									ADMIN_URL . '/blueprints/components/' 
+									URL . '/symphony/blueprints/events/new/', 
+									URL . '/symphony/blueprints/events/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -46,8 +127,8 @@
 								'Event created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Events</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									ADMIN_URL . '/blueprints/events/new/', 
-									ADMIN_URL . '/blueprints/components/' 
+									URL . '/symphony/blueprints/events/new/', 
+									URL . '/symphony/blueprints/events/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -229,7 +310,7 @@
 			$duplicator->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('class', 'filters-duplicator');
+			$ol->setAttribute('id', 'filters-duplicator');
 			
 			$options = array(
 				array('', false, __('None')),
@@ -374,7 +455,7 @@
 		    	if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php'))
 					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
 
-		    	else redirect(ADMIN_URL . '/blueprints/components/');
+		    	else redirect(URL . '/symphony/blueprints/components/');
 						
 			}	
 		}
@@ -597,7 +678,7 @@
 				header('Content-Type: text/plain');
 
 				##Write the file
-				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('file_write_mode', 'symphony')))
+				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file')))
 					$this->pageAlert(__('Failed to write Event to <code>%s</code>. Please check permissions.', array(EVENTS)), Alert::ERROR);
 
 				##Write Successful, add record to the database
@@ -627,7 +708,7 @@
 					#              of variables set by the editor
 					#$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('file' => $file, 'defines' => $defines, 'var' => $var));
 
-	                redirect(ADMIN_URL . '/blueprints/events/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
+	                redirect(URL . '/symphony/blueprints/events/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
 
 				}
 			}						
@@ -704,6 +785,31 @@
 			}
 			
 			return $shell;
+		}
+		
+		protected function __actionDelete($events, $redirect) {
+			$success = true;
+
+			if(!is_array($events)) $events = array($events);
+			
+			foreach ($events as $event) {
+				if(!General::deleteFile(EVENTS . '/event.' . $event . '.php'))
+					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
+			}
+			
+			if($success) redirect($redirect);
+		}
+		
+		public function __actionIndex() {
+			$checked = @array_keys($_POST['items']);
+			
+			if(is_array($checked) && !empty($checked)) {
+				switch ($_POST['with-selected']) {
+					case 'delete':
+						$this->__actionDelete($checked, URL . '/symphony/blueprints/events/');
+						break; 
+				}
+			}
 		}
 
 		

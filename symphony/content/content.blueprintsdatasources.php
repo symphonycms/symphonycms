@@ -5,6 +5,102 @@
 	require_once(TOOLKIT . '/class.sectionmanager.php');
 	
 	Class contentBlueprintsDatasources extends AdministrationPage{
+	
+		public function __viewIndex() {
+			$this->setPageType('table');
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Data Sources'))));
+			
+			$this->appendSubheading(__('Data Sources') . $heading, Widget::Anchor(
+				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/',
+				__('Create a new data source'), 'create button'
+			));
+			
+			$dsTableHead = array(
+				array(__('Name'), 'col'),
+				array(__('Source'), 'col')
+			);
+			
+			$dsTableBody = array();
+			
+			$DSManager = new DatasourceManager($this->_Parent);
+			$sectionManager = new SectionManager($this->_Parent);
+			$datasources = $DSManager->listAll();
+			
+			if(!is_array($datasources) or empty($datasources)) {
+				$dsTableBody = array(Widget::TableRow(array(
+					Widget::TableData(__('None found.'), 'inactive', null, count($dsTableHead))
+				), 'odd'));
+			}
+			else {
+				$bOdd = true;
+				foreach($datasources as $ds){
+				
+					$datasourceManager = new DatasourceManager($this->_Parent);
+					$details =& $datasourceManager->create($ds['handle'], NULL, false);
+				
+					$class = array();
+					if($bOdd) $class[] = 'odd';
+					
+					$col_name = Widget::TableData(Widget::Anchor(
+							$ds['name'],
+							URL . '/symphony/blueprints/datasources/' . ($ds['can_parse'] == true ? 'edit' : 'info') . '/' . strtolower($ds['handle']) . '/', 'data.' . $ds['handle'] . '.php'
+					));
+					$col_name->appendChild(Widget::Input("items[{$ds['handle']}]", null, 'checkbox'));
+					
+					switch ($ds['type']) {
+						case (is_numeric($ds['type'])):
+							$sectionData = $sectionManager->fetch($ds['type']);
+						 
+							$col_source = Widget::TableData(
+								Widget::Anchor(
+									$sectionData->_data['name'],
+									URL . '/symphony/blueprints/sections/edit/' . $sectionData->_data['id'] . '/',
+									$sectionData->_data['handle']
+								)
+							);
+							break;
+						case "dynamic_xml":
+							$url_parts = parse_url($details->dsParamURL);
+							$col_source = Widget::TableData(ucwords($url_parts['host']));
+							break;
+						case "static_xml":
+							$col_source = Widget::TableData('Static XML');
+							break;
+						default:
+							$col_source = Widget::TableData(ucwords(preg_replace('/_/',' ', $ds['type'])));
+					}
+					
+					$columns = array($col_name, $col_source);
+						
+					$dsTableBody[] = Widget::TableRow(
+						$columns,
+						implode(' ', $class)
+					);
+					
+					$bOdd = !$bOdd;
+				}
+			}
+			
+			$table = Widget::Table(
+				Widget::TableHead($dsTableHead), null, 
+				Widget::TableBody($dsTableBody), null
+			);
+			
+			$this->Form->appendChild($table);
+			
+			$tableActions = new XMLElement('div');
+			$tableActions->setAttribute('class', 'actions');
+			
+			$options = array(
+				array(null, false, __('With Selected...')),
+				array('delete', false, __('Delete'))							
+			);
+			
+			$tableActions->appendChild(Widget::Select('with-selected', $options));
+			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
+			
+			$this->Form->appendChild($tableActions);
+		}
 
 		## Both the Edit and New pages need the same form
 		function __viewNew(){
@@ -30,8 +126,8 @@
 								'Data source updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Data sources</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									ADMIN_URL . '/blueprints/datasources/new/', 
-									ADMIN_URL . '/blueprints/components/'
+									URL . '/symphony/blueprints/datasources/new/', 
+									URL . '/symphony/blueprints/datasources/'
 								)
 							), 
 							Alert::SUCCESS);
@@ -43,8 +139,8 @@
 								'Data source created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Data sources</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									ADMIN_URL . '/blueprints/datasources/new/', 
-									ADMIN_URL . '/blueprints/components/' 
+									URL . '/symphony/blueprints/datasources/new/', 
+									URL . '/symphony/blueprints/datasources/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -77,19 +173,18 @@
 				$datasourceManager = new DatasourceManager($this->_Parent);
 				$existing =& $datasourceManager->create($handle, NULL, false);
 				
-				if (!$existing->allowEditorToParse()) redirect(ADMIN_URL . '/blueprints/datasources/info/' . $handle . '/');
+				if (!$existing->allowEditorToParse()) redirect(URL . '/symphony/blueprints/datasources/info/' . $handle . '/');
 				
 				$about = $existing->about();
 				$fields['name'] = $about['name'];
 				$fields['order'] = $existing->dsParamORDER;
 				$fields['param'] = (isset($existing->dsParamPARAMOUTPUT) ? $existing->dsParamPARAMOUTPUT : array());
 				$fields['required_url_param'] = $existing->dsParamREQUIREDPARAM;
-				
-				$fields['xml_elements'] = array();
-				if(isset($existing->dsParamINCLUDEDELEMENTS) && is_array($existing->dsParamINCLUDEDELEMENTS)){
+				if ($existing->dsParamINCLUDEDELEMENTS) {
 					$fields['xml_elements'] = $existing->dsParamINCLUDEDELEMENTS;
+				} else {
+					$fields['xml_elements'] = array();
 				}
-				
 				$fields['sort'] = $existing->dsParamSORT;
 				$fields['page_number'] = $existing->dsParamSTARTPAGE;
 				$fields['limit_type'] = $existing->dsParamLIMITTYPE;
@@ -831,7 +926,7 @@
 		    	if(!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php'))
 					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
 
-		    	else redirect(ADMIN_URL . '/blueprints/components/');
+		    	else redirect(URL . '/symphony/blueprints/components/');
 						
 			} 
 		}
@@ -1065,7 +1160,7 @@
 				$dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\r\n){2,}/', '/(\t+[\r\n]){2,}/'), '', $dsShell);	
 
 				##Write the file
-				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('file_write_mode', 'symphony')))
+				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file')))
 					$this->pageAlert(__('Failed to write Data source to <code>%s</code>. Please check permissions.', array(DATASOURCES)), Alert::ERROR);
 
 				##Write Successful, add record to the database
@@ -1097,7 +1192,7 @@
 					#              of variables set by the editor
 					#$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('file' => $file, 'defines' => $defines, 'var' => $var));
 
-	                redirect(ADMIN_URL . '/blueprints/datasources/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
+	                redirect(URL . '/symphony/blueprints/datasources/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
 
 				}
 			}
@@ -1182,6 +1277,44 @@
 		 	$wrapper->appendChild($li);
 						
 		}
+		
+		protected function __actionDelete($datasources, $redirect) {
+			$success = true;
+
+			if(!is_array($datasources)) $datasources = array($datasources);
+			
+			foreach ($datasources as $ds) {
+				if(!General::deleteFile(DATASOURCES . '/data.' . $ds . '.php'))
+					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
+				
+				$sql = "SELECT * FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]".$ds."[[:>:]]' ";
+				$pages = Symphony::Database()->fetch($sql);
+
+				if(is_array($pages) && !empty($pages)){
+					foreach($pages as $page){
+
+						$page['data_sources'] = preg_replace('/\b'.$ds.'\b/i', '', $page['data_sources']);
+						
+						Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
+					}
+				}
+			}
+			
+			if($success) redirect($redirect);
+		}
+		
+		public function __actionIndex() {
+			$checked = @array_keys($_POST['items']);
+			
+			if(is_array($checked) && !empty($checked)) {
+				switch ($_POST['with-selected']) {
+					case 'delete':
+						$this->__actionDelete($checked, URL . '/symphony/blueprints/datasources/');
+						break; 
+				}
+			}
+		}
+
 	
 	}
 	
