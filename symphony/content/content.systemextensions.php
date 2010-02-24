@@ -74,16 +74,16 @@
 					
 					switch ($about['status']) {
 						case EXTENSION_ENABLED:
-							$td4 = Widget::TableData('Enabled');
+							$td4 = Widget::TableData(__('Enabled'));
 							break;
 						case EXTENSION_DISABLED:
-							$td4 = Widget::TableData('Disabled');
+							$td4 = Widget::TableData(__('Disabled'));
 							break;
 						case EXTENSION_NOT_INSTALLED:
-							$td4 = Widget::TableData('Not Installed');
+							$td4 = Widget::TableData(__('Not Installed'));
 							break;
-						default:
-							$td4 = '-';
+						case EXTENSION_REQUIRES_UPDATE:
+							$td4 = Widget::TableData(__('Requires Update'));
 					}
 
 					## Add a row to the body array, assigning each cell to the row
