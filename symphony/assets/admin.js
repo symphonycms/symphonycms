@@ -42,6 +42,8 @@ var Symphony;
 				return string;
 			},
 			insert: function(string, tokens) {
+				if (!string) return null;
+				
 				$.each(tokens, function(index, value) { 
 					string = string.replace('{$' + index + '}', value);
 				});
