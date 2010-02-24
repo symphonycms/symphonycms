@@ -19,7 +19,7 @@
 			$this->Html->setDTD('<!DOCTYPE html>'); //PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"
 			$this->Html->setAttribute('lang', Symphony::lang());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
-			$this->addStylesheetToHead(URL . '/symphony/assets/login.css', 'screen', 40);
+			$this->addStylesheetToHead(ADMIN_URL . '/assets/login.css', 'screen', 40);
 			
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Login'))));
 				
@@ -39,7 +39,7 @@
 				$emergency = $this->__loginFromToken($this->_context[0]);
 			}
 			
-			if(!$emergency && $this->_Parent->isLoggedIn()) redirect(URL . '/symphony/');
+			if(!$emergency && $this->_Parent->isLoggedIn()) redirect(ADMIN_URL . '/');
 
 			$this->Form = Widget::Form('', 'post');
 			
@@ -123,7 +123,7 @@
 				if($this->_invalidPassword){
 					$div = new XMLElement('div', NULL, array('class' => 'invalid'));					
 					$div->appendChild($label);
-					$div->appendChild(new XMLElement('p', __('The supplied password was rejected. <a href="%s">Retrieve password?</a>', array(URL.'/symphony/login/retrieve-password/'))));
+					$div->appendChild(new XMLElement('p', __('The supplied password was rejected. <a href="%s">Retrieve password?</a>', array(ADMIN_URL . '/login/retrieve-password/'))));
 					$fieldset->appendChild($div);
 				}
 				
@@ -145,7 +145,7 @@
 			if(!$this->_Parent->loginFromToken($token)) return false;
 			
 			##If token is valid and it is not "emergency" login (forgotten password case), redirect to administration pages
-			if(strlen($token) != 6) redirect(URL . '/symphony/'); // Regular token-based login
+			if(strlen($token) != 6) redirect(ADMIN_URL . '/'); // Regular token-based login
 
 			##Valid, emergency token - ask user to change password
 			return true;
@@ -169,8 +169,8 @@
 						# Description: Failed login attempt. Username is provided.
 						//$ExtensionManager->notifyMembers('LoginFailure', getCurrentPage(), array('username' => $_POST['username']));					
 
-						//$this->Body->appendChild(new XMLElement('p', 'Login invalid. <a href="'.URL.'/symphony/?forgot">Forgot your password?</a>'));
-						//$this->_alert = 'Login invalid. <a href="'.URL.'/symphony/?forgot">Forgot your password?</a>';
+						//$this->Body->appendChild(new XMLElement('p', 'Login invalid. <a href="'.ADMIN_URL . '/?forgot">Forgot your password?</a>'));
+						//$this->_alert = 'Login invalid. <a href="'.ADMIN_URL . '/?forgot">Forgot your password?</a>';
 						$this->_invalidPassword = true;
 					}
 
@@ -184,7 +184,7 @@
 
 						if(isset($_POST['redirect'])) redirect(URL . str_replace(parse_url(URL, PHP_URL_PATH), '', $_POST['redirect']));
 						
-						redirect(URL . '/symphony/');
+						redirect(ADMIN_URL . '/');
 					}
 					
 				##Reset of password requested	
@@ -215,7 +215,7 @@
 									__('New Symphony Account Password'),
 									__('Hi %s,', array($user['first_name'])) . self::CRLF .
 									__('A new password has been requested for your account. Login using the following link, and change your password via the Users area:') . self::CRLF .
-									self::CRLF . '	' . URL . "/symphony/login/$token/" . self::CRLF . self::CRLF .
+									self::CRLF . '	' . ADMIN_URL . "/login/$token/" . self::CRLF . self::CRLF .
 									__('It will expire in 2 hours. If you did not ask for a new password, please disregard this email.') . self::CRLF . self::CRLF .
 									__('Best Regards,') . self::CRLF . 
 									__('The Symphony Team'));
@@ -264,7 +264,7 @@
 						# Description: After editing an User. ID of the User is provided.
 						//$ExtensionManager->notifyMembers('PasswordChanged', getCurrentPage(), array('user_id' => $user_id));  	
 
-						redirect(URL . '/symphony/');
+						redirect(ADMIN_URL . '/');
 					}
 
 				endif;

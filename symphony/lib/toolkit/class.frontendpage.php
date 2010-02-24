@@ -186,7 +186,7 @@
 				'this-month' => DateTimeObj::get('m'),
 				'this-day' => DateTimeObj::get('d'),
 				'timezone' => DateTimeObj::get('P'),
-				'website-name' => Symphony::Configuration()->get('sitename', 'general'),
+				'website-name' => Symphony::Configuration()->get('sitename', 'symphony'),
 				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'root' => URL,
@@ -371,7 +371,7 @@
 				
 				if(empty($row)){
 					throw new SymphonyErrorPage( 
-						__('Please <a href="%s">login</a> to view this page.', array(URL.'/symphony/login/')), 
+						__('Please <a href="%s">login</a> to view this page.', array(ADMIN_URL . '/login/')), 
 						__('Forbidden'), 
 						'error', 
 						array('header' => 'HTTP/1.0 403 Forbidden')

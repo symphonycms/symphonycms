@@ -28,7 +28,7 @@
 		}
 		
 		function setPageType($type){
-			$this->addStylesheetToHead(URL . '/symphony/assets/' . ($type == 'table' ? 'tables' : 'forms') . '.css', 'screen', 30);
+			$this->addStylesheetToHead(ADMIN_URL . '/assets/' . ($type == 'table' ? 'tables' : 'forms') . '.css', 'screen', 30);
 		}
 		
 		function setTitle($val, $position=null) {
@@ -46,12 +46,12 @@
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Symphony::lang());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
-			$this->addStylesheetToHead(URL . '/symphony/assets/symphony.duplicator.css', 'screen', 70);
-			$this->addScriptToHead(URL . '/symphony/assets/jquery.js', 50);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.collapsible.js', 70);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.orderable.js', 71);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.duplicator.js', 72);
-			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 60);
+			$this->addStylesheetToHead(ADMIN_URL . '/assets/symphony.duplicator.css', 'screen', 70);
+			$this->addScriptToHead(ADMIN_URL . '/assets/jquery.js', 50);
+			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.collapsible.js', 70);
+			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.orderable.js', 71);
+			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.duplicator.js', 72);
+			$this->addScriptToHead(ADMIN_URL . '/assets/admin.js', 60);
 			
 			###
 			# Delegate: InitaliseAdminPageHead
@@ -69,9 +69,9 @@
 			## Build the form
 			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
 			$h1 = new XMLElement('h1');
-			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
+			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'symphony'), rtrim(URL, '/') . '/'));
 			$this->Form->appendChild($h1);
-			
+			$this->appendSession();
 			$this->appendNavigation();
 			$this->view();
 			
@@ -81,7 +81,6 @@
 			#			   for access to the page object
 			$this->_Parent->ExtensionManager->notifyMembers('AppendElementBelowView', '/backend/');			
 						
-			$this->appendFooter();
 			$this->appendAlert();
 
 			$this->_Parent->Profiler->sample('Page content created', PROFILE_LAP);
@@ -143,17 +142,17 @@
 			}
 		}
 		
-		function appendFooter(){
+		function appendSession(){
 						
 			$ul = new XMLElement('ul');
-			$ul->setAttribute('id', 'usr');
+			$ul->setAttribute('id', 'session');
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(Administration::instance()->User->getFullName(), URL . '/symphony/system/users/edit/' . Administration::instance()->User->id . '/'));
+			$li->appendChild(Widget::Anchor(Administration::instance()->User->getFullName(), ADMIN_URL . '/system/users/edit/' . Administration::instance()->User->id . '/'));
 			$ul->appendChild($li);
 			
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(__('Logout'), URL . '/symphony/logout/'));
+			$li->appendChild(Widget::Anchor(__('Logout'), ADMIN_URL . '/logout/', NULL, 'button'));
 			$ul->appendChild($li);
 			
 			###
@@ -185,6 +184,12 @@
 
 			$xNav = new XMLElement('ul');
 			$xNav->setAttribute('id', 'nav');
+			if($_COOKIE['nav'] == 'expanded') {
+				$xNav->setAttribute('class', 'expanded');
+			}
+			
+			$xLi = new XMLElement('li', ($_COOKIE['nav'] == 'expanded' ? '-' : '+'), array('id' => 'nav-expand'));
+			$xNav->appendChild($xLi);
 
 			foreach($nav as $n){
 				$n_bits = explode('/', $n['link'], 3);
@@ -196,6 +201,8 @@
 					if($can_access == true) {
 
 						$xGroup = new XMLElement('li', $n['name']);
+						$xGroup->setAttribute('id', 'nav-' . Lang::createHandle($n['name']));
+						
 						if(isset($n['class']) && trim($n['name']) != '') $xGroup->setAttribute('class', $n['class']);
 
 						$xChildren = new XMLElement('ul');
@@ -229,7 +236,7 @@
 										
 										$xChild = new XMLElement('li');
 										$xLink = new XMLElement('a', $c['name']);
-										$xLink->setAttribute('href', URL . '/symphony' . $c['link']);
+										$xLink->setAttribute('href', ADMIN_URL . '' . $c['link']);
 										$xChild->appendChild($xLink);
 
 										$xChildren->appendChild($xChild);
@@ -248,7 +255,6 @@
 					}
 				}
 			}
-			
 			
 			$this->Form->appendChild($xNav);
 			$this->_Parent->Profiler->sample('Navigation Built', PROFILE_LAP);	

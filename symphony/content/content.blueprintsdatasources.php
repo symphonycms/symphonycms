@@ -30,8 +30,8 @@
 								'Data source updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Data sources</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/blueprints/datasources/new/', 
-									URL . '/symphony/blueprints/components/'
+									ADMIN_URL . '/blueprints/datasources/new/', 
+									ADMIN_URL . '/blueprints/components/'
 								)
 							), 
 							Alert::SUCCESS);
@@ -43,8 +43,8 @@
 								'Data source created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Data sources</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/blueprints/datasources/new/', 
-									URL . '/symphony/blueprints/components/' 
+									ADMIN_URL . '/blueprints/datasources/new/', 
+									ADMIN_URL . '/blueprints/components/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -77,14 +77,19 @@
 				$datasourceManager = new DatasourceManager($this->_Parent);
 				$existing =& $datasourceManager->create($handle, NULL, false);
 				
-				if (!$existing->allowEditorToParse()) redirect(URL . '/symphony/blueprints/datasources/info/' . $handle . '/');
+				if (!$existing->allowEditorToParse()) redirect(ADMIN_URL . '/blueprints/datasources/info/' . $handle . '/');
 				
 				$about = $existing->about();
 				$fields['name'] = $about['name'];
 				$fields['order'] = $existing->dsParamORDER;
 				$fields['param'] = (isset($existing->dsParamPARAMOUTPUT) ? $existing->dsParamPARAMOUTPUT : array());
 				$fields['required_url_param'] = $existing->dsParamREQUIREDPARAM;
-				$fields['xml_elements'] = $existing->dsParamINCLUDEDELEMENTS;
+				
+				$fields['xml_elements'] = array();
+				if(isset($existing->dsParamINCLUDEDELEMENTS) && is_array($existing->dsParamINCLUDEDELEMENTS)){
+					$fields['xml_elements'] = $existing->dsParamINCLUDEDELEMENTS;
+				}
+				
 				$fields['sort'] = $existing->dsParamSORT;
 				$fields['page_number'] = $existing->dsParamSTARTPAGE;
 				$fields['limit_type'] = $existing->dsParamLIMITTYPE;
@@ -826,7 +831,7 @@
 		    	if(!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php'))
 					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
 
-		    	else redirect(URL . '/symphony/blueprints/components/');
+		    	else redirect(ADMIN_URL . '/blueprints/components/');
 						
 			} 
 		}
@@ -1060,7 +1065,7 @@
 				$dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\r\n){2,}/', '/(\t+[\r\n]){2,}/'), '', $dsShell);	
 
 				##Write the file
-				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file')))
+				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('file_write_mode', 'symphony')))
 					$this->pageAlert(__('Failed to write Data source to <code>%s</code>. Please check permissions.', array(DATASOURCES)), Alert::ERROR);
 
 				##Write Successful, add record to the database
@@ -1092,7 +1097,7 @@
 					#              of variables set by the editor
 					#$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('file' => $file, 'defines' => $defines, 'var' => $var));
 
-	                redirect(URL . '/symphony/blueprints/datasources/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
+	                redirect(ADMIN_URL . '/blueprints/datasources/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
 
 				}
 			}

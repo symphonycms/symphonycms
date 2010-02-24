@@ -129,8 +129,7 @@
 	
 			if($this->get('formatter')){
 
-				if(isset($this->_ParentCatalogue['entrymanager'])) $tfm = $this->_ParentCatalogue['entrymanager']->formatterManager;
-				else $tfm = new TextformatterManager($this->_engine);
+				$tfm = new TextformatterManager($this->_engine);
 				
 				$formatter = $tfm->create($this->get('formatter'));
 

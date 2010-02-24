@@ -232,6 +232,7 @@
 		
 		public function setFetchSortingDirection($direction){
 			$direction = strtoupper($direction);
+			if($direction == 'RANDOM') $direction = 'RAND';
 			$this->_fetchSortDirection = (in_array($direction, array('RAND', 'ASC', 'DESC')) ? $direction : NULL);
 		}
 		

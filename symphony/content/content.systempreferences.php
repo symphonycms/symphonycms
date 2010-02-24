@@ -30,7 +30,7 @@
 		    // Get available languages
 		    $languages = Lang::getAvailableLanguages(new ExtensionManager(Administration::instance()));
 		
-			if(count($languages > 1)) {
+			if(count($languages) > 1) {
 			    // Create language selection
 				$group = new XMLElement('fieldset');
 				$group->setAttribute('class', 'settings');
@@ -68,7 +68,7 @@
 		
 		public function action() {
 			##Do not proceed if the config file is read only
-		    if (!is_writable(CONFIG)) redirect(URL . '/symphony/system/preferences/');
+		    if (!is_writable(CONFIG)) redirect(ADMIN_URL . '/system/preferences/');
 			
 			###
 			# Delegate: CustomActions
@@ -95,7 +95,7 @@
 					
 					$this->_Parent->saveConfig();
 					
-					redirect(URL . '/symphony/system/preferences/success/');
+					redirect(ADMIN_URL . '/system/preferences/success/');
 				}
 			}
 		}	

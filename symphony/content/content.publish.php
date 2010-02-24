@@ -464,7 +464,7 @@
 				$primary->appendChild(new XMLElement('p', __(
 					'It looks like you\'re trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>',
 					array(
-						URL . '/symphony/blueprints/sections/edit/' . $section->get('id') . '/'
+						ADMIN_URL . '/blueprints/sections/edit/' . $section->get('id') . '/'
 					)
 				)));
 				$this->Form->appendChild($primary);
@@ -633,8 +633,8 @@
 								'Entry updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Entries</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . "/symphony/$link", 
-									URL . '/symphony/publish/'.$this->_context['section_handle'].'/'
+									ADMIN_URL . "/$link", 
+									ADMIN_URL . '/publish/'.$this->_context['section_handle'].'/'
 								)
 							), 
 							Alert::SUCCESS);						
@@ -647,8 +647,8 @@
 								'Entry created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Entries</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . "/symphony/$link", 
-									URL . '/symphony/publish/'.$this->_context['section_handle'].'/' 
+									ADMIN_URL . "/$link", 
+									ADMIN_URL . '/publish/'.$this->_context['section_handle'].'/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -694,7 +694,7 @@
 			$main_fields = $section->fetchFields(NULL, 'main');
 
 			if((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))){
-				$primary->appendChild(new XMLElement('p', __('It looks like your trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>', array(URL . '/symphony/blueprints/sections/edit/'. $section->get('id') . '/'))));
+				$primary->appendChild(new XMLElement('p', __('It looks like your trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>', array(ADMIN_URL . '/blueprints/sections/edit/'. $section->get('id') . '/'))));
 			}
 
 			else{
@@ -784,7 +784,7 @@
 							$prepopulate_value = stripslashes(rawurldecode(array_shift($_POST['prepopulate'])));
 						}
 
-			  		    //redirect(URL . '/symphony/publish/' . $this->_context['section_handle'] . '/edit/' . $entry_id . '/saved/');
+			  		    //redirect(ADMIN_URL . '/publish/' . $this->_context['section_handle'] . '/edit/' . $entry_id . '/saved/');
 			
 			  		   	redirect(sprintf(
 							'%s/symphony/publish/%s/edit/%d/saved%s/',
@@ -810,7 +810,7 @@
 
 				$entryManager->delete($entry_id);
 
-				redirect(URL . '/symphony/publish/'.$this->_context['section_handle'].'/');
+				redirect(ADMIN_URL . '/publish/'.$this->_context['section_handle'].'/');
 			}			
 			
 		}		

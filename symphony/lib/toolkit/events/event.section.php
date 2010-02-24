@@ -196,12 +196,12 @@
 
 				$fields['recipient'] = $obj->Database->fetch("SELECT `email`, `first_name` FROM `tbl_users` WHERE `username` IN ('".@implode("', '", $fields['recipient'])."') ");
 
-				$fields['subject'] = __sendEmailFindFormValue($fields['subject'], $_POST['fields'], true, __('[Symphony] A new entry was created on %s', array($obj->Configuration->get('sitename', 'general'))));
+				$fields['subject'] = __sendEmailFindFormValue($fields['subject'], $_POST['fields'], true, __('[Symphony] A new entry was created on %s', array($obj->Configuration->get('sitename', 'symphony'))));
 				$fields['body'] = __sendEmailFindFormValue($fields['body'], $_POST['fields'], false, NULL, false);
 				$fields['sender-email'] = __sendEmailFindFormValue($fields['sender-email'], $_POST['fields'], true, 'noreply@' . parse_url(URL, PHP_URL_HOST));
 				$fields['sender-name'] = __sendEmailFindFormValue($fields['sender-name'], $_POST['fields'], true, 'Symphony');
 
-				$edit_link = URL.'/symphony/publish/'.$section->get('handle').'/edit/'.$entry->get('id').'/';
+				$edit_link = ADMIN_URL . '/publish/'.$section->get('handle').'/edit/'.$entry->get('id').'/';
 
 				$body = __('Dear <!-- RECIPIENT NAME -->,') . General::CRLF . __('This is a courtesy email to notify you that an entry was created on the %1$s section. You can edit the entry by going to: %2$s', array($section->get('name'), $edit_link)). General::CRLF . General::CRLF;
 

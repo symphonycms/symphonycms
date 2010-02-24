@@ -47,7 +47,7 @@
 					
 					## Setup each cell
 					$td1 = Widget::TableData(Widget::Anchor($s->get('name'), Administration::instance()->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', NULL, 'content'));
-					$td2 = Widget::TableData(Widget::Anchor("$entry_count", URL . '/symphony/publish/' . $s->get('handle') . '/'));
+					$td2 = Widget::TableData(Widget::Anchor("$entry_count", ADMIN_URL . '/publish/' . $s->get('handle') . '/'));
 					$td3 = Widget::TableData($s->get('navigation_group'));
 				
 					$td3->appendChild(Widget::Input('items['.$s->get('id').']', 'on', 'checkbox'));
@@ -247,8 +247,8 @@
 								'Section updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Sections</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/blueprints/sections/new/', 
-									URL . '/symphony/blueprints/sections/' 
+									ADMIN_URL . '/blueprints/sections/new/', 
+									ADMIN_URL . '/blueprints/sections/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -260,8 +260,8 @@
 								'Section created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Sections</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/blueprints/sections/new/', 
-									URL . '/symphony/blueprints/sections/' 
+									ADMIN_URL . '/blueprints/sections/new/', 
+									ADMIN_URL . '/blueprints/sections/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -420,7 +420,7 @@
 						$sectionManager = new SectionManager($this->_Parent);
 						foreach($checked as $section_id) $sectionManager->delete($section_id);
 
-						redirect(URL . '/symphony/blueprints/sections/');
+						redirect(ADMIN_URL . '/blueprints/sections/');
 						break;
 						
 					case 'delete-entries':
@@ -435,7 +435,7 @@
 							$entryManager->delete($entry_ids);
 						}
 						
-						redirect(URL . '/symphony/blueprints/sections/');
+						redirect(ADMIN_URL . '/blueprints/sections/');
 						break;
 				}
 			}
@@ -564,7 +564,7 @@
 						# Description: Creation of a new Section. Section ID and Primary Field ID are provided.
 						#$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('section_id' => $section_id));
 
-		               	redirect(URL . "/symphony/blueprints/sections/edit/$section_id/created/");
+		               	redirect(ADMIN_URL . "/blueprints/sections/edit/$section_id/created/");
 								
 
 			        }       
@@ -721,7 +721,7 @@
 						# Description: After editing a Section. The ID is provided.
 						#$ExtensionManager->notifyMembers('Edit', getCurrentPage(), array('section_id' => $section_id));
 
-		                redirect(URL . "/symphony/blueprints/sections/edit/$section_id/saved/");							
+		                redirect(ADMIN_URL . "/blueprints/sections/edit/$section_id/saved/");							
 
 			        }       
 			    }
@@ -731,7 +731,7 @@
 				$section_id = $this->_context[1];
 			    $sectionManager = new SectionManager($this->_Parent);
 				$sectionManager->delete($section_id);
-				redirect(URL . '/symphony/blueprints/sections/');
+				redirect(ADMIN_URL . '/blueprints/sections/');
 			}
 	
 		}

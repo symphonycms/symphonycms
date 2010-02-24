@@ -1,4 +1,13 @@
 /*-----------------------------------------------------------------------------
+	Language strings
+-----------------------------------------------------------------------------*/
+
+	Symphony.Language.add({
+		'Add item': false,
+		'Remove item': false
+	});
+
+/*-----------------------------------------------------------------------------
 	Duplicator plugin
 -----------------------------------------------------------------------------*/
 	
@@ -16,12 +25,6 @@
 			maximum:			1000,					// Do not allow instances to be added above this limit.
 			speed:				'fast',					// Control the speed of any animations
 			delay_initialize:	false
-		};
-		
-		// Awaiting a better alternative...
-		var strings = {
-			constructor:	'Add item',
-			destructor:		'Remove item'
 		};
 		
 		jQuery.extend(settings, custom_settings);
@@ -91,7 +94,7 @@
 				var destructor = header
 					.append('<a class="destructor" />')
 					.find('a.destructor:first')
-					.text(strings.destructor);
+					.text(Symphony.Language.get('Remove item'));
 				
 				header.nextAll().wrapAll('<div class="content" />');
 				
@@ -212,7 +215,7 @@
 					widgets.constructor = widgets.controls
 						.append('<a class="constructor" />')
 						.find('> a.constructor:first')
-						.text(strings.constructor);
+						.text(Symphony.Language.get('Add item'));
 					
 					// Prepare instances:
 					object.find(settings.instances).each(function() {

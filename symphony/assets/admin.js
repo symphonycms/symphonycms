@@ -486,6 +486,20 @@ var Symphony;
 			var html = $(this).parent().html();
 			$(this).parent().html(html.replace(Symphony.Language.get('at') + ' ', ''));
 		});
+		$(':not(.expanded) #nav-expand').live('click',
+			function(){
+				$('#nav').addClass('expanded');
+				$(this).text('-');
+				document.cookie = 'nav=expanded;path=/';
+			}
+		);
+		$('.expanded #nav-expand').live('click',
+			function(){
+				$('#nav').removeClass('expanded');
+				$(this).text('+');
+				document.cookie = 'nav=collapse;path=/';
+			}
+		);
 		Symphony.Message.timer();
 	});
 })(jQuery.noConflict());

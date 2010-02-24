@@ -30,7 +30,7 @@
 			
 			$li = new XMLElement('li');
 			$h3 = new XMLElement('h3', __('Events'));
-			$h3->appendChild(Widget::Anchor(__('Create New'), URL . '/symphony/blueprints/events/new/', __('Create a new event'), 'create button'));
+			$h3->appendChild(Widget::Anchor(__('Create New'), ADMIN_URL . '/blueprints/events/new/', __('Create a new event'), 'create button'));
 			$li->appendChild($h3);
 
 			$list = new XMLElement('ul');
@@ -41,7 +41,7 @@
 
 					$item = new XMLElement('li');
 
-					$item->appendChild(Widget::Anchor($e['name'], URL . '/symphony/blueprints/events/'.($e['can_parse'] ? 'edit' : 'info').'/' . strtolower($e['handle']) . '/', 'event.' . $e['handle'] . '.php'));	
+					$item->appendChild(Widget::Anchor($e['name'], ADMIN_URL . '/blueprints/events/'.($e['can_parse'] ? 'edit' : 'info').'/' . strtolower($e['handle']) . '/', 'event.' . $e['handle'] . '.php'));	
 					$item->setAttribute('class', 'external');			
 
 					$list->appendChild($item);
@@ -62,7 +62,7 @@
 			$li = new XMLElement('li');
 
 			$h3 = new XMLElement('h3', __('Data Sources'));
-			$h3->appendChild(Widget::Anchor(__('Create New'), URL . '/symphony/blueprints/datasources/new/', __('Create a new data source'), 'create button'));
+			$h3->appendChild(Widget::Anchor(__('Create New'), ADMIN_URL . '/blueprints/datasources/new/', __('Create a new data source'), 'create button'));
 			$li->appendChild($h3);
 
 			$list = new XMLElement('ul');
@@ -74,10 +74,10 @@
 					$item = new XMLElement('li');
 
 					if($ds['can_parse']) 
-						$item->appendChild(Widget::Anchor($ds['name'], URL . '/symphony/blueprints/datasources/edit/' . strtolower($ds['handle']) . '/', 'data.' . $ds['handle'] . '.php'));
+						$item->appendChild(Widget::Anchor($ds['name'], ADMIN_URL . '/blueprints/datasources/edit/' . strtolower($ds['handle']) . '/', 'data.' . $ds['handle'] . '.php'));
 
 					else{
-						$item->appendChild(Widget::Anchor($ds['name'], URL . '/symphony/blueprints/datasources/info/' . strtolower($ds['handle']) . '/', 'data.' . $ds['handle'] . '.php'));	
+						$item->appendChild(Widget::Anchor($ds['name'], ADMIN_URL . '/blueprints/datasources/info/' . strtolower($ds['handle']) . '/', 'data.' . $ds['handle'] . '.php'));	
 					}
 
 					$list->appendChild($item);
@@ -94,7 +94,7 @@
 			$li = new XMLElement('li');
 
 			$h3 = new XMLElement('h3', __('Utilities'));
-			$h3->appendChild(Widget::Anchor(__('Create New'), URL . '/symphony/blueprints/utilities/new/', __('Create a new utility'), 'create button'));
+			$h3->appendChild(Widget::Anchor(__('Create New'), ADMIN_URL . '/blueprints/utilities/new/', __('Create a new utility'), 'create button'));
 			$li->appendChild($h3);
 
 			$list = new XMLElement('ul');
@@ -104,7 +104,7 @@
 				foreach($utilities as $u){
 
 					$item = new XMLElement('li');
-					$item->appendChild(Widget::Anchor($u, URL . '/symphony/blueprints/utilities/edit/' . str_replace('.xsl', '', $u) . '/'));
+					$item->appendChild(Widget::Anchor($u, ADMIN_URL . '/blueprints/utilities/edit/' . str_replace('.xsl', '', $u) . '/'));
 					$list->appendChild($item);
 
 				}

@@ -3,7 +3,7 @@
     Abstract Class Manager implements Singleton {
 	    protected static $_pool;
 		protected static $_instance;
-
+		
 	    public $_Parent;
 	    
         public function __construct(&$parent){
@@ -45,10 +45,10 @@
 		function __getHandleFromFilename($filename){
 		}
 
-        function listAll(){
+        public function listAll(){
         }
                
-        function &create($name){
+        public function &create($name){
         }       
         
     }
