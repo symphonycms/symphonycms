@@ -3,32 +3,28 @@
 	require_once(TOOLKIT . '/class.administrationpage.php');
 
 	Class contentSystemExtensions extends AdministrationPage{
-
+	
 		function __viewIndex(){
+			return $this->__viewAll();
+		}
+
+		function __viewAll(){
 			$this->setPageType('table');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Extensions'))));
 			$this->appendSubheading(__('Extensions'));
 			
-			$this->Form->setAttribute('action', URL . '/symphony/system/extensions/');
+			$path = URL . '/symphony/system/extensions/';
+			$this->Form->setAttribute('action', $path);
 			
-			$subhead = new XMLElement('ul', NULL, array('class' => 'subhead'));
+			$viewoptions = array(
+				'subnav'	=> array(
+					'All'		=>	$path . 'all/',
+					'Core'		=>	$path . 'core/',
+					'Fields'	=>	$path . 'fields/'
+				)
+			);
 			
-			$tab1 = new XMLElement('li');
-			$a1 = Widget::Anchor('All','#', NULL, 'active');
-			$tab1->appendChild($a1);
-			$subhead->appendChild($tab1);
-			
-			$tab2 = new XMLElement('li');
-			$a2 = Widget::Anchor('Core','#');
-			$tab2->appendChild($a2);
-			$subhead->appendChild($tab2);
-			
-			$tab3 = new XMLElement('li');
-			$a3 = Widget::Anchor('Fields', '#');
-			$tab3->appendChild($a3);
-			$subhead->appendChild($tab3);
-			
-			$this->Form->appendChild($subhead);
+			$this->appendViewOptions($viewoptions);
 			
 			$ExtensionManager = $this->_Parent->ExtensionManager; 		
 			$extensions = $ExtensionManager->listAll();
@@ -74,13 +70,26 @@
 					
 					switch ($about['status']) {
 						case EXTENSION_ENABLED:
-							$td4 = Widget::TableData('Enabled');
+							$td4 = new XMLElement('td');
+							$a = Widget::Anchor('Disable', '#');
+							$a->setAttribute('class', 'action disable');
+							$span = new XMLElement('span', 'On');
+							$a->appendChild($span);
+							$td4->appendChild($a);
 							break;
 						case EXTENSION_DISABLED:
-							$td4 = Widget::TableData('Disabled');
+							$td4 = new XMLElement('td');
+							$a = Widget::Anchor('Enable', '#');
+							$a->setAttribute('class', 'action enable');
+							$span = new XMLElement('span', 'Off');
+							$a->appendChild($span);
+							$td4->appendChild($a);
 							break;
 						case EXTENSION_NOT_INSTALLED:
-							$td4 = Widget::TableData('Not Installed');
+							$td4 = new XMLElement('td');
+							$a = Widget::Anchor('Not Installed', '#');
+							$a->setAttribute('class', 'action install');
+							$td4->appendChild($a);
 							break;
 						default:
 							$td4 = '-';

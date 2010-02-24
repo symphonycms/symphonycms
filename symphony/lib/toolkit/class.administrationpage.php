@@ -500,6 +500,28 @@
 			
 		}
 		
+		function appendViewOptions(array $options) {
+			$div = new XMLElement('div', NULL, array('id' => 'view-options'));
+			
+			if(array_key_exists('subnav', $options)){
+				$ul = new XMLElement('ul');
+				foreach($options['subnav'] as $name => $link){
+					$li = new XMLElement('li');
+					$li->appendChild(Widget::Anchor($name, $link, NULL, ($this->_Parent->getCurrentPageURL() == $link ? 'active' : '')));
+					$ul->appendChild($li);
+				}
+				$div->appendChild($ul);
+			}
+			
+			foreach($options as $item){
+				if(is_a($item, 'XMLElement')){
+					$div->appendChild($item);
+				}
+			}
+			
+			$this->Form->appendChild($div);
+		}
+		
 		function wrapFormElementWithError($element, $error=NULL){
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'invalid');
