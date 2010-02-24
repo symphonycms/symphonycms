@@ -324,7 +324,7 @@
 			$duplicator->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('id', 'filters-duplicator');
+			$ol->setAttribute('class', 'events-duplicator');
 			
 			$options = array(
 				array('', false, __('None')),

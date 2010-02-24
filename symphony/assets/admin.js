@@ -67,6 +67,8 @@ var Symphony;
 				return string;
 			},
 			insert: function(string, tokens) {
+				if (!string) return null;
+				
 				$.each(tokens, function(index, value) { 
 					string = string.replace('{$' + index + '}', value);
 				});
@@ -422,7 +424,11 @@ var Symphony;
 		//console.log(fields[0].collapsible.collapseAll());
 		
 		// Filters duplicator:
-		$('.filters-duplicator').symphonyDuplicator();
+		$('.filters-duplicator, .events-duplicator').symphonyDuplicator();
+		
+		$('.events-duplicator').each(function() {
+			
+		});
 		
 		// Repeating sections
 		$('div.subsection').each(function() {
@@ -625,7 +631,7 @@ var Symphony;
 /*
  * Event context toggle
  */
- 
+
 (function($) {
 	$(document).ready(function() {
 		var selector = jQuery('#event-context-selector');
