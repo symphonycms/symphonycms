@@ -3,8 +3,16 @@
 	Class ViewException extends Exception {}
 
 	Class ViewFilterIterator extends FilterIterator{
-		public function __construct(){
-			parent::__construct(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(VIEWS), RecursiveIteratorIterator::SELF_FIRST));
+		public function __construct($path=NULL, $recurse=true){
+			if(!is_null($path)) $path = VIEWS . '/' . trim($path, '/');
+			else $path = VIEWS;
+			
+			parent::__construct(
+				$recurse == true 
+					?	new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST)
+					:	new DirectoryIterator($path)
+			);
+			
 		}
 		
 		// Only return folders, and only those that have a 'X.config.xml' file within. This characterises a View.
@@ -43,19 +51,24 @@
 			return $this->_about;
 		}
 		
+		public function __isset($name){
+			if(in_array($name, array('path', 'template', 'handle', 'guid'))){
+				return isset($this->{"_{$name}"});
+			}
+			return isset($this->_about->$name);		
+		}
+		
 		public function __get($name){
-			if($name == 'path') return $this->_path;
-			elseif($name == 'template') return $this->_template;
-			elseif($name == 'handle') return $this->_handle;
-			elseif($name == 'guid') return $this->_guid;			
+			if(in_array($name, array('path', 'template', 'handle', 'guid'))){
+				return $this->{"_{$name}"};
+			}
 			return $this->_about->$name;
 		}
 	
 		public function __set($name, $value){
-			if($name == 'path') $this->_path = $value;
-			elseif($name == 'template') $this->_template = $value;
-			elseif($name == 'handle') $this->_handle = $value;	
-			elseif($name == 'guid') $this->_guid = $value;		
+			if(in_array($name, array('path', 'template', 'handle', 'guid'))){
+				$this->{"_{$name}"} = $value;
+			}
 			else $this->_about->$name = $value;
 		}
 
@@ -67,6 +80,7 @@
 			
 			preg_match('/\/?([^\/]+)$/', $path, $match); //Find the view handle
 			$view->handle = $match[1];
+			
 			$pathname = sprintf('%s/%s/%s.config.xml', VIEWS, $view->path, $view->handle);
 			
 			if(!file_exists($pathname)){
@@ -139,7 +153,7 @@
 			$views = array();
 			foreach(new ViewIterator as $v){
 				if(@in_array($type, $v->types)){
-					$views[] = $v;
+					$views[$v->guid] = $v;
 				}
 			}
 			return $views;
@@ -179,18 +193,65 @@
 			return $title;
 		}
 		
-		public static function save(self $view, $path, MessageStack &$messages){
+		public static function move(self &$view, $dest){
+			$bits = preg_split('~\/~', $dest, -1, PREG_SPLIT_NO_EMPTY);
+			$handle = $bits[count($bits) - 1];
+
+			// Config
+			rename(
+				sprintf('%s/%s/%s.config.xml', VIEWS, $view->path, $view->handle), 
+				sprintf('%s/%s/%s.config.xml', VIEWS, $view->path, $handle)
+			);
 			
-			print_r($view); die($path);
+			// Template
+			rename(
+				sprintf('%s/%s/%s.xsl', VIEWS, $view->path, $view->handle), 
+				sprintf('%s/%s/%s.xsl', VIEWS, $view->path, $handle)
+			);	
 			
-			$pathname = sprintf('%s/%s/%s.config.xml', VIEWS, $path, $view->handle);
+			// Folder
+			rename(
+				sprintf('%s/%s/', VIEWS, $view->path), 
+				sprintf('%s/%s/', VIEWS, implode('/', $bits))
+			);		
+
+			$view->path = implode('/', $bits);
+			$view->handle = $handle;
+		}
+		
+		public static function save(self $view, MessageStack &$messages, $simulate=false){
+			
+			$pathname = sprintf('%s/%s/%s.config.xml', VIEWS, $view->path, $view->handle);
+
 			if(file_exists($pathname)){
-				$existing = self::loadFromPath($path);
+				$existing = self::loadFromPath($view->path);
 				if($existing->guid != $view->guid){
 					$messages->append('handle', 'A view with that handle already exists.');
 					return false;
 				}
 				unset($existing);
+			}
+			
+			if(!isset($view->title) || strlen(trim($view->title)) == 0){
+				$messages->append('title', __('Title is required.'));
+			}
+
+			if(isset($view->types) && is_array($view->types) && (bool)array_intersect($view->types, array('index', '404', '403'))){
+				foreach($view->types as $t){
+					switch($t){
+						case 'index':
+						case '404':
+						case '403':
+							$views = self::findFromType($t);
+							if(isset($views[$view->guid])) unset($views[$view->guid]);
+							
+							if(!empty($views)){
+								$messages->append('types', __('A view of type "%s" already exists.', array($t)));
+								break 2;	
+							}
+							break;
+					}
+				}
 			}
 			
 			if(strlen(trim($view->template)) == 0){
@@ -204,9 +265,35 @@
 				throw new ViewException(__('View could not be saved. Validation failed.'), self::ERROR_MISSING_OR_INVALID_FIELDS);
 			}
 			
-			// Save the template file
-			if(!General::writeFile(sprintf('%s/%s/%s.xsl', VIEWS, $path, $view->handle), $view->template, Symphony::Configuration()->get('file_write_mode', 'symphony'))){
-				throw new ViewException(__('Template could not be written to disk. Please check permissions on <code>/workspace/views</code>.'), self::ERROR_FAILED_TO_WRITE);
+			if($simulate != true){
+				if(!is_dir(dirname($pathname)) && !mkdir(dirname($pathname), intval(Symphony::Configuration()->get('directory_write_mode', 'symphony'), 8), true)){
+					throw new ViewException(
+						__('Could not create view directory. Please check permissions on <code>%s</code>.', $view->path), 
+						self::ERROR_FAILED_TO_WRITE
+					);
+				}
+
+				// Save the config
+				if(!General::writeFile($pathname, (string)$view, Symphony::Configuration()->get('file_write_mode', 'symphony'))){
+					throw new ViewException(
+						__('View configuration XML could not be written to disk. Please check permissions on <code>%s</code>.', $view->path),
+						self::ERROR_FAILED_TO_WRITE
+					);
+				}			
+			
+				// Save the template file
+				$result = General::writeFile(
+					sprintf('%s/%s/%s.xsl', VIEWS, $view->path, $view->handle), 
+					$view->template, 
+					Symphony::Configuration()->get('file_write_mode', 'symphony')
+				);
+				
+				if(!$result){
+					throw new ViewException(
+						__('Template could not be written to disk. Please check permissions on <code>%s</code>.', $view->path),
+						self::ERROR_FAILED_TO_WRITE
+					);
+				}
 			}
 			
 			return true;
@@ -251,15 +338,81 @@
 				$root->appendChild($data_sources);
 			}						
 
+			if(is_array($this->types) && count($this->types) > 0){
+				$types = $doc->createElement('types');
+				foreach($this->types as $t){
+					$types->appendChild($doc->createElement('item', General::sanitize($t)));
+				}
+				$root->appendChild($types);
+			}
+
 			return $doc->saveXML();
 		}
 		
 		public function parent(){
 			if($this->_path == $this->handle) return NULL;
 			elseif(!($this->_parent instanceof self)){
-				$this->_parent = self::loadFromPath(rtrim($this->_path, "/{$this->handle}"));
+				$this->_parent = self::loadFromPath(preg_replace("~/{$this->handle}~", NULL, $this->_path));
 			} 
 			return $this->_parent;
+		}
+
+		public function children(){
+			return new ViewIterator($this->path, false);
+		}
+		
+		public static function delete($path, $cascade=false){
+			$view = self::loadFromPath($path);
+			
+			if($cascade == false){
+				foreach($view->children() as $child){
+					$bits = preg_split('~\/~', $child->path, -1, PREG_SPLIT_NO_EMPTY);
+					unset($bits[count($bits) - 2]);
+					View::move($child, trim(implode('/', $bits), '/'));
+				}
+			}
+			
+			self::rmdirr(VIEWS . '/' . trim($path, '/'));
+			
+		}
+		
+		/**
+		 * Delete a file, or a folder and its contents (recursive algorithm)
+		 *
+		 * @author      Aidan Lister <aidan@php.net>
+		 * @version     1.0.3
+		 * @link        http://aidanlister.com/repos/v/function.rmdirr.php
+		 * @param       string   $dirname    Directory to delete
+		 * @return      bool     Returns TRUE on success, FALSE on failure
+		 */
+		function rmdirr($dirname)
+		{
+			
+		    // Sanity check
+		    if (!file_exists($dirname)) {
+		        return false;
+		    }
+
+		    // Simple delete for a file
+		    if (is_file($dirname) || is_link($dirname)) {
+				return unlink($dirname);
+		    }
+
+		    // Loop through the folder
+		    $dir = dir($dirname);
+		    while (false !== $entry = $dir->read()) {
+		        // Skip pointers
+		        if ($entry == '.' || $entry == '..') {
+		            continue;
+		        }
+
+		        // Recurse
+		        self::rmdirr($dirname . DIRECTORY_SEPARATOR . $entry);
+		    }
+
+		    // Clean up
+		    $dir->close();
+		    return rmdir($dirname);
 		}
 	}
 
@@ -270,13 +423,13 @@
 		private $_length;
 		private $_position;
 
-		public function __construct(){
-			$this->_iterator = new ViewFilterIterator;
+		public function __construct($path=NULL, $recurse=true){
+			$this->_iterator = new ViewFilterIterator($path, $recurse);
 			$this->_length = $this->_position = 0;
 			foreach($this->_iterator as $f){
 				$this->_length++;
 			}
-			$this->_iterator->rewind();
+			$this->_iterator->getInnerIterator()->rewind();
 		}
 
 		public function current(){
@@ -303,7 +456,7 @@
 		}
 
 		public function valid(){
-			return $this->_position < $this->_length;
+			return $this->_iterator->getInnerIterator()->valid();
 		}
 
 		public function rewind(){
