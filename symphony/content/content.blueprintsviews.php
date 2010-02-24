@@ -65,9 +65,8 @@
 				array(__('<acronym title="Universal Resource Locator">URL</acronym> Parameters'), 'col'),
 				array(__('Type'), 'col')
 			);
-
-			$iterator = new ViewIterator;
 			
+			$iterator = new ViewIterator;			
 			$aTableBody = array();
 
 			if(!$iterator->valid()) {
@@ -379,10 +378,10 @@
 							Alert::SUCCESS);
 							
 						break;
-					
+
 				}
 			}
-
+			
 			// Find values:
 			if(isset($_POST['fields'])) {
 				$fields = $_POST['fields'];	
@@ -393,6 +392,7 @@
 				$fields['types'] = @implode(', ', $fields['types']); //Flatten the types array
 				$fields['url-parameters'] = @implode('/', $fields['url-parameters']); //Flatten the url-parameters array
 				$fields['parent'] = ($existing->parent() instanceof View ? $existing->parent()->path : NULL);
+				$fields['handle'] = $existing->handle;
 			}
 			
 			$title = $fields['title'];
@@ -431,8 +431,8 @@
 				'fields[title]', General::sanitize($fields['title'])
 			));
 			
-			if(isset($this->_errors['title'])) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors['title']);
+			if(isset($this->_errors->title)) {
+				$label = $this->wrapFormElementWithError($label, $this->_errors->title);
 			}
 			
 			$fieldset->appendChild($label);
@@ -448,8 +448,8 @@
 				'fields[handle]', $fields['handle']
 			));
 			
-			if(isset($this->_errors['handle'])) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors['handle']);
+			if(isset($this->_errors->handle)) {
+				$label = $this->wrapFormElementWithError($label, $this->_errors->handle);
 			}
 			
 			$column->appendChild($label);
@@ -506,8 +506,8 @@
 			$label = Widget::Label(__('View Type'));
 			$label->appendChild(Widget::Input('fields[types]', $fields['types']));
 			
-			if(isset($this->_errors['types'])) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors['types']);
+			if(isset($this->_errors->types)) {
+				$label = $this->wrapFormElementWithError($label, $this->_errors->types);
 			}
 			
 			$column->appendChild($label);
@@ -639,23 +639,13 @@
 			$view_pathname = implode('/', $context);
 			
 			if(@array_key_exists('delete', $_POST['action'])) {
-				//$this->__actionDelete($page_id, ADMIN_URL . '/blueprints/views/' . $parent_link_suffix);
-				try{
-					View::delete($view_pathname);
-					redirect(ADMIN_URL . '/blueprints/views/');
-				}
-				catch(ViewException $e){
-					die('DOH!!1');
-				}
-				catch(Exception $e){
-					die('DOH!!2');
-				}
+				$this->__actionDelete(array($view_pathname), ADMIN_URL . '/blueprints/views/');
 			}
 			
 			elseif(@array_key_exists('save', $_POST['action'])) {
 				
 				$fields = $_POST['fields'];
-				
+
 				$fields['types'] = preg_split('/\s*,\s*/', $fields['types'], -1, PREG_SPLIT_NO_EMPTY);
 				
 				if(strlen(trim($fields['url-parameters'])) > 0){
@@ -666,27 +656,70 @@
 					$fields['handle'] = Lang::createHandle($fields['title']);
 				}
 				
+				$path = trim($fields['parent'] . '/' . $fields['handle'], '/');
+				
 				if($this->_context[0] == 'edit'){
 					$view = self::__loadExistingView($view_pathname);
+					
+					$view->types = $fields['types'];
+					$view->title = $fields['title'];	
+					$view->{'data-sources'} = $fields['data-sources'];
+					$view->events = $fields['events'];	
+					$view->{'url-parameters'} = $fields['url-parameters'];	
+					
+					// Path has changed - Need to move the existing one, then save it
+					if($view->path != $path){
+
+						$this->_errors = new MessageStack;
+						
+						try{
+							// Before moving or renaming, simulate saving to check for potential errors
+							View::save($view, $this->_errors, true);
+							View::move($view, $path);
+						}
+						catch(Exception $e){
+							// Saving failed, catch it further down
+						}
+					}
+
 				}
 				else{
 					$view = View::loadFromFieldsArray($fields);
 					$view->template = file_get_contents(TEMPLATE . '/page.xsl');
+					$view->handle = $fields['handle'];
+					$view->path = $path;
 				}
-				
-				$view->handle = $fields['handle'];
-				
-				$path = $fields['parent'] . '/' . $view->handle;
 
 				$this->_errors = new MessageStack;
-				View::save($view, $path, $this->_errors);
+				
+				try{	
+					View::save($view, $this->_errors);
+					redirect(ADMIN_URL . '/blueprints/views/edit/' . $view->path . '/:saved/');
+				}
+				catch(ViewException $e){
+					switch($e->getCode()){
+						case View::ERROR_MISSING_OR_INVALID_FIELDS:
+							// Dont really need to do anything.
+							break;
+
+						case View::ERROR_FAILED_TO_WRITE:
+							$this->pageAlert($e->getMessage(), Alert::ERROR);
+							break;
+					}
+				}
+				catch(Exception $e){
+					// Errors!!
+					// Not sure what happened!!
+					$this->pageAlert(__("An unknown error has occurred. %s", $e->getMessage()), Alert::ERROR);
+				}
 				
 				//print "<pre>";
 				//print htmlspecialchars((string)$view); die();
 				
-				print "<pre>";
-				print_r($view);
-				print_r($fields);
+			/*	print "<pre>";
+				print_r($this->_errors);
+//				print_r($view);
+//				print_r($fields);
 				die();
 				
 				
@@ -696,7 +729,7 @@
 				}
 				
 				if(trim($fields['type']) != '' && preg_match('/(index|404|403)/i', $fields['type'])) {
-					$types = preg_split('/\s*,\s*/', strtolower($fields['type']), -1, PREG_SPLIT_NO_EMPTY);
+					$types = preg_split('~\s*,\s*~', strtolower($fields['type']), -1, PREG_SPLIT_NO_EMPTY);
 					
 					if(in_array('index', $types) && $this->__typeUsed($page_id, 'index')) {
 						$this->_errors['type'] = __('An index type view already exists.');
@@ -740,7 +773,7 @@
 					}
 					
 					// Clean up type list
-					$types = preg_split('/\s*,\s*/', $fields['type'], -1, PREG_SPLIT_NO_EMPTY);
+					$types = preg_split('~\s*,\s*~', $fields['type'], -1, PREG_SPLIT_NO_EMPTY);
 					$types = @array_map('trim', $types);
 					unset($fields['type']);
 					
@@ -856,151 +889,29 @@
 						__('An error occurred while processing this form. <a href="#error">See below for details.</a>'),
 						Alert::ERROR
 					);
-				}
+				}*/
 			}			
 		}
-		
-		protected function __updatePageChildren($page_id, $page_path, &$success = true) {
-		/*	$page_path = trim($page_path, '/');
-			$children = Symphony::Database()->fetch("
-				SELECT
-					p.id, p.path, p.handle
-				FROM
-					`tbl_pages` AS p
-				WHERE
-					p.id != '{$page_id}'
-					AND p.parent = '{$page_id}'
-			");
 			
-			foreach ($children as $child) {
-				$child_id = $child['id'];
-				$fields = array(
-					'path'	=> $page_path
-				);
-				
-				if(!$this->__updatePageFiles($page_path, $child['handle'], $child['path'], $child['handle'])) {
-					$success = false;
-				}
-				
-				if(!Symphony::Database()->update($fields, 'tbl_pages', "`id` = '$child_id'")) {
-					$success = false;
-				}
-				
-				$this->__updatePageChildren($child_id, $page_path . '/' . $child['handle']);
-			}
-			
-			return $success;*/
-		}
-		
-		protected function __createHandle($path, $handle) {
-			return trim(str_replace('/', '_', $path . '_' . $handle), '_');
-		}
-		
-		protected function __updatePageFiles($new_path, $new_handle, $old_path = null, $old_handle = null) {
-			$new = PAGES . '/' . $this->__createHandle($new_path, $new_handle) . '.xsl';
-			$old = PAGES . '/' . $this->__createHandle($old_path, $old_handle) . '.xsl';
-			$data = null;
-			
-			// Nothing to do:
-			if(file_exists($new) && $new == $old) return true;
-			
-			// Old file doesn't exist, use template:
-			if(!file_exists($old)) {
-				$data = file_get_contents(TEMPLATE . '/page.xsl');
-				
-			}
-			else{
-				$data = file_get_contents($old); @unlink($old);
-			}
-			
-			return General::writeFile($new, $data, Symphony::Configuration()->get('file_write_mode', 'symphony'));
-		}
-		
-		protected function __deletePageFiles($path, $handle) {
-			$file = PAGES . '/' . trim(str_replace('/', '_', $path . '_' . $handle), '_') . '.xsl';
-			
-			// Nothing to do:
-			if(!file_exists($file)) return true;
-			
-			// Delete it:
-			if(@unlink($file)) return true;
-			
-			return false;
-		}
-		
-		protected function __hasChildren($page_id) {
-			return (boolean)Symphony::Database()->fetchVar('id', 0, "
-				SELECT
-					p.id
-				FROM
-					`tbl_pages` AS p
-				WHERE
-					p.parent = '{$page_id}'
-				LIMIT 1
-			");
-		}
-		
-		protected function __actionDelete($pages, $redirect) {
+		protected function __actionDelete(array $views, $redirect) {
+
+			rsort($views);
+
 			$success = true;
 			
-			if(!is_array($pages)) $pages = array($pages);
-			
-			foreach ($pages as $page_id) {
-				$page = Symphony::Database()->fetchRow(0, "
-					SELECT
-						p.*
-					FROM
-						`tbl_pages` AS p
-					WHERE
-						p.id = '{$page_id}'
-					LIMIT 1
-				");
-				
-				if(empty($page)) {
-					$success = false;
-					$this->pageAlert(
-						__('View could not be deleted because it does not exist.'),
-						Alert::ERROR
-					);
-					
-					break;
+			foreach($views as $path){
+				try{
+					View::delete($path);
 				}
-				
-				if($this->__hasChildren($page_id)) {
-					$this->_hilights[] = $page['id'];
-					$success = false;
-					$this->pageAlert(
-						__('View could not be deleted because it has children.'),
-						Alert::ERROR
-					);
-					
-					continue;
+				catch(ViewException $e){
+					die($e->getMessage() . 'DOH!!1');
 				}
-				
-				if(!$this->__deletePageFiles($page['path'], $page['handle'])) {
-					$this->_hilights[] = $page['id'];
-					$success = false;
-					$this->pageAlert(
-						__('One or more views could not be deleted. Please check permissions on <code>/workspace/views</code>.'),
-						Alert::ERROR
-					);
-					
-					continue;
+				catch(Exception $e){
+					die($e->getMessage() . 'DOH!!2');
 				}
-				
-				Symphony::Database()->delete('tbl_pages', " `id` = '{$page_id}'");
-				Symphony::Database()->delete('tbl_pages_types', " `page_id` = '{$page_id}'");
-				Symphony::Database()->query("
-					UPDATE
-						tbl_pages
-					SET
-						`sortorder` = (`sortorder` + 1)
-					WHERE
-						`sortorder` < '$page_id'
-				");
 			}
 			
-			if($success) redirect($redirect);
+			if($success == true) redirect($redirect);
 		}
 		
 		public function __actionIndex() {
