@@ -3,8 +3,10 @@
 -----------------------------------------------------------------------------*/
 
 	Symphony.Language.add({
-		'Add item': false,
-		'Remove item': false
+		'Add item':		false,
+		'Remove item':	false,
+		'Collapse all':	false,
+		'Expand all':	false
 	});
 
 /*-----------------------------------------------------------------------------
@@ -35,7 +37,7 @@
 		
 		if (settings.collapsible) objects = objects.symphonyCollapsible({
 			items:			'.instance',
-			handles:		'.header'
+			handles:		'.header:first'
 		});
 		
 	/*-------------------------------------------------------------------------
@@ -44,7 +46,7 @@
 		
 		if (settings.orderable) objects = objects.symphonyOrderable({
 			items:			'.instance',
-			handles:		'.header'
+			handles:		'.header:first'
 		});
 		
 	/*-------------------------------------------------------------------------
@@ -177,6 +179,8 @@
 			}
 			
 			object.duplicator = {
+				settings: settings,
+				
 				refresh: function() {
 					refresh();
 				},
@@ -268,6 +272,10 @@
 			return object;
 		});
 		
+		objects.duplicator = {
+			settings: settings
+		};
+		
 		return objects;
 	};
 	
@@ -307,25 +315,86 @@
 	};
 	
 /*-----------------------------------------------------------------------------
-	Fields Duplicator
+	Collapsed duplicator
 -----------------------------------------------------------------------------*/
 	
-	jQuery.fn.symphonyFieldsDuplicator = function(custom_settings) {
-		var objects = jQuery(this).symphonyDuplicator(custom_settings);
+	jQuery.fn.symphonyCollapsedDuplicator = function(custom_settings) {
+		var objects = jQuery(this).symphonyDuplicator(jQuery.extend(
+			custom_settings, {
+				collapsible:		true,
+				delay_initialize:	true
+			}
+		));
+		var settings = objects.duplicator.settings;
 		
 		objects = objects.map(function() {
 			var object = this;
-			
-			// Select Text Input fields by default:
-			object.find('.controls select option').each(function() {
-				var option = jQuery(this);
+			var collapse_all = null, expand_all = null;
+			var cookie_id = '', open = [];
+			var construct = function(event, instance, x) {
+				// Don't collapse on error:
+				if (instance.find('#error').length) return;
 				
-				if (option.text() == 'Text Input') {
-					option.attr('selected', 'selected');
-					
-					return false;
+				// Remember open states:
+				if (open && open.indexOf(instance.index().toString()) >= 0) return;
+				
+				instance.removeClass('expanded').addClass('collapsed');
+			};
+			var refresh = function() {
+				var open = [];
+				
+				object.find(settings.instances).each(function(index) {
+					if (jQuery(this).is('.expanded')) open.push(index);
+				});
+				
+				Symphony.Cookie.set(cookie_id, open.join(','));
+				
+				// Toggle expand/collape all buttons:
+				if (open.length) {
+					collapse_all.show();
+					expand_all.hide();
 				}
-			});
+				
+				else {
+					collapse_all.hide();
+					expand_all.show();
+				}
+			};
+			
+			// Make sure it has an id:
+			if (!object.attr('id')) return object;
+			
+			cookie_id = 'symphony-collapsed-duplicator-' + object.attr('id');
+			
+			// Read cookie:
+			if (Symphony.Cookie.get(cookie_id)) {
+				open = Symphony.Cookie.get(cookie_id).split(',');
+			}
+			
+			// Collapse items as they are constructed:
+			object.bind('construct', construct);
+			object.duplicator.initialize();
+			object.unbind('construct', construct);
+			
+			// Listen for changes:
+			object.bind('collapsestop', refresh);
+			object.bind('expandstop', refresh);
+			object.bind('orderstop', refresh);
+			
+			// Add collapse/expand all toggle:
+			collapse_all = jQuery('<a />')
+				.addClass('collapse-all')
+				.text('Collapse All')
+				.appendTo(object.children('.controls:last'))
+				.bind('click', object.collapsible.collapseAll);
+			
+			expand_all = jQuery('<a />')
+				.addClass('collapse-all')
+				.text('Expand All')
+				.appendTo(object.children('.controls:last'))
+				.bind('click', object.collapsible.expandAll);
+			
+			refresh();
 		});
 		
 		return objects;

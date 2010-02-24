@@ -31,8 +31,6 @@
 				jQuery(document).mousemove(change);
 				jQuery(document).mouseup(stop);
 				
-				jQuery(document).mousemove();
-				
 				return false;
 			};
 			
@@ -108,6 +106,8 @@
 			}
 			
 			object.orderable = {
+				settings: settings,
+				
 				cancel: function() {
 					jQuery(document).unbind('mousemove', change);
 					jQuery(document).unbind('mouseup', stop);
@@ -138,6 +138,10 @@
 			
 			return object;
 		});
+		
+		objects.collapsible = {
+			settings: settings
+		};
 		
 		return objects;
 	};

@@ -104,16 +104,16 @@
 		min-width: 15em;
 		width: auto;
 	}
-	.duplicator > .controls > .constructor {
+	.duplicator > .controls > a {
 		color: #ffffff;
 		cursor: pointer;
 		padding: 0.5em 0;
 		text-decoration: none;
 	}
-	.duplicator > .controls > .constructor:hover {
+	.duplicator > .controls > a:hover {
 		color: #ffffee;
 	}
-	.duplicator > .controls > .constructor.disabled {
+	.duplicator > .controls > a.disabled {
 		color: #eeeedd;
 		cursor: default;
 		opacity: 0.6;

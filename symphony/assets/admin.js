@@ -3,6 +3,31 @@ var Symphony;
 (function($) {
 	Symphony = {
 		WEBSITE: $('script')[0].src.match('(.*)/symphony')[1],
+		Cookie: {
+			set: function(name, value, seconds) {
+				var expires = "";
+				
+				if (seconds) {
+					var date = new Date();
+					date.setTime(date.getTime() + seconds);
+					expires = "; expires=" + date.toGMTString();
+				}
+				
+				document.cookie = name + "=" + value + expires + "; path=/";
+			},
+			get: function(name) {
+				var nameEQ = name + "=";
+				var ca = document.cookie.split(';');
+				
+				for (var i=0;i < ca.length;i++) {
+					var c = ca[i];
+					while (c.charAt(0)==' ') c = c.substring(1,c.length);
+					if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+				}
+				
+				return null;
+			}
+		},
 		Language: {
 			NAME: $('html').attr('lang'),
 			DICTIONARY: {
@@ -386,8 +411,17 @@ var Symphony;
 
 		$('textarea').blur();
 		
-		// Internal duplicators:
-		$('#fields-duplicator').symphonyFieldsDuplicator({ orderable: true });
+		// Fields duplicator:
+		$('.section-duplicator[id]').symphonyCollapsedDuplicator({
+			orderable:		true
+		});
+		$('.section-duplicator:not([id])').symphonyDuplicator({
+			orderable:		true
+		});
+		
+		//console.log(fields[0].collapsible.collapseAll());
+		
+		// Filters duplicator:
 		$('.filters-duplicator').symphonyDuplicator();
 		
 		// Repeating sections
@@ -486,18 +520,27 @@ var Symphony;
 			var html = $(this).parent().html();
 			$(this).parent().html(html.replace(Symphony.Language.get('at') + ' ', ''));
 		});
+		
+		if (Symphony.Cookie.get('symphony-nav') == 'expanded') {
+			$('#nav').addClass('expanded');
+			$('#nav-expand').text('-');
+		}
+		
 		$(':not(.expanded) #nav-expand').live('click',
 			function(){
 				$('#nav').addClass('expanded');
 				$(this).text('-');
-				document.cookie = 'nav=expanded;path=/';
+				
+				Symphony.Cookie.set('symphony-nav', 'expanded');
 			}
 		);
+		
 		$('.expanded #nav-expand').live('click',
 			function(){
 				$('#nav').removeClass('expanded');
 				$(this).text('+');
-				document.cookie = 'nav=collapse;path=/';
+				
+				Symphony.Cookie.set('symphony-nav', 'collapsed');
 			}
 		);
 		Symphony.Message.timer();

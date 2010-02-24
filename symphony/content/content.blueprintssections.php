@@ -167,7 +167,7 @@
 			$div->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('id', 'fields-duplicator');
+			$ol->setAttribute('class', 'fields-duplicator');
 			
 			if(!$showEmptyTemplate){
 				foreach($fields as $position => $data){
@@ -355,7 +355,8 @@
 			$div->appendChild($h3);
 			
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('id', 'fields-duplicator');
+			$ol->setAttribute('id', 'section-' . $section_id);
+			$ol->setAttribute('class', 'section-duplicator');
 			
 			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $position => $field){

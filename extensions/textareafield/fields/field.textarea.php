@@ -228,6 +228,7 @@
 			$input = Widget::Input('fields['.$this->get('sortorder').'][size]', $this->get('size'));
 			$input->setAttribute('size', '3');
 			$label->setValue(__('Make textarea %s rows tall', array($input->generate())));
+			
 			$div->appendChild($label);
 			
 			$this->appendRequiredCheckbox($div);
