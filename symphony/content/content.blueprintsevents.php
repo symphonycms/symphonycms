@@ -17,53 +17,67 @@
 			
 			$eTableHead = array(
 				array(__('Name'), 'col'),
-				array(__('Source'), 'col')
+				array(__('Source'), 'col'),
+				array(__('Author'), 'col')
 			);
 			
 			$eTableBody = array();
 			
-			$EventManager = new EventManager($this->_Parent);
+			$eventManager = new EventManager($this->_Parent);
 			$sectionManager = new SectionManager($this->_Parent);
-			$events = $EventManager->listAll();
+			$events = $eventManager->listAll();
 			
 			if(!is_array($events) or empty($events)) {
-				$eTableBody = array(Widget::TableRow(array(
+				$eTableBody[] = Widget::TableRow(array(
 					Widget::TableData(__('None found.'), 'inactive', null, count($eTableHead))
-				), 'odd'));
+				));
 			}
-			else {
-				$bOdd = true;
-				foreach($events as $e){
-					$class = array();
-					if($bOdd) $class[] = 'odd';
-					
-					$sectionData = $sectionManager->fetch($e['source']);
-					
-					$col_name = Widget::TableData(
-						Widget::Anchor(
-							$e['name'],
-							URL . '/symphony/blueprints/events/'.($e['can_parse'] ? 'edit' : 'info').'/' . strtolower($e['handle']) . '/', 'event.' . $e['handle'] . '.php')
-						);
-						
-					$col_name->appendChild(Widget::Input("items[{$e['handle']}]", null, 'checkbox'));
-					
-					$col_source = Widget::TableData(
-						Widget::Anchor(
-							$sectionData->_data['name'],
-							URL . '/symphony/blueprints/sections/edit/' . $sectionData->_data['id'] . '/',
-							$sectionData->_data['handle']
-						)
-					);
-					
-					$columns = array($col_name, $col_source);
-						
-					$eTableBody[] = Widget::TableRow(
-						$columns,
-						implode(' ', $class)
-					);
-					
-					$bOdd = !$bOdd;
+			
+			else foreach($events as $event) {
+				$instance = $eventManager->create($event['handle']);
+				$section = $sectionManager->fetch($instance->getSource());
+				
+				$view_mode = ($event['can_parse'] ? 'edit' : 'info');
+				
+				$col_name = Widget::TableData(Widget::Anchor(
+					$event['name'], URL . '/symphony/blueprints/events/' . $view_mode . '/' . $event['handle'] . '/', 'event.' . $event['handle'] . '.php'
+				));
+				$col_name->appendChild(Widget::Input("items[{$event['handle']}]", null, 'checkbox'));
+				
+				if ($section instanceof Section) {
+					$section = $section->_data;
+					$col_source = Widget::TableData(Widget::Anchor(
+						$section['name'],
+						URL . '/symphony/blueprints/sections/edit/' . $section['id'] . '/',
+						$section['handle']
+					));
 				}
+				
+				else {
+					$col_source = Widget::TableData(__('None'), 'inactive');
+				}
+				
+				if (isset($event['author']['website'])) {
+					$col_author = Widget::TableData(Widget::Anchor(
+						$event['author']['name'],
+						General::validateURL($event['author']['website'])
+					));
+				}
+				
+				else if (isset($event['author']['email'])) {
+					$col_author = Widget::TableData(Widget::Anchor(
+						$event['author']['name'],
+						'mailto:' . $event['author']['email']
+					));	
+				}
+				
+				else {
+					$col_author = Widget::TableData($event['author']['name']);
+				}
+				
+				$eTableBody[] = Widget::TableRow(
+					array($col_name, $col_source, $col_author)
+				);
 			}
 			
 			$table = Widget::Table(

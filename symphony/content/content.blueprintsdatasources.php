@@ -17,7 +17,8 @@
 			
 			$dsTableHead = array(
 				array(__('Name'), 'col'),
-				array(__('Source'), 'col')
+				array(__('Source'), 'col'),
+				array(__('Author'), 'col')
 			);
 			
 			$dsTableBody = array();
@@ -26,59 +27,79 @@
 			$sectionManager = new SectionManager($this->_Parent);
 			$datasources = $DSManager->listAll();
 			
-			if(!is_array($datasources) or empty($datasources)) {
-				$dsTableBody = array(Widget::TableRow(array(
-					Widget::TableData(__('None found.'), 'inactive', null, count($dsTableHead))
-				), 'odd'));
+			if (!is_array($datasources) or empty($datasources)) {
+				$dsTableBody[] = Widget::TableRow(array(Widget::TableData(
+					__('None found.'), 'inactive', null, count($dsTableHead)
+				)));
 			}
-			else {
-				$bOdd = true;
-				foreach($datasources as $ds){
+			
+			else foreach ($datasources as $ds) {
+				$instance = $DSManager->create($ds['handle'], NULL, false);
+				$view_mode = ($ds['can_parse'] == true ? 'edit' : 'info');
 				
-					$datasourceManager = new DatasourceManager($this->_Parent);
-					$details =& $datasourceManager->create($ds['handle'], NULL, false);
+				$col_name = Widget::TableData(Widget::Anchor(
+					$ds['name'],
+					URL . '/symphony/blueprints/datasources/' . $view_mode . '/' . $ds['handle'] . '/',
+					'data.' . $ds['handle'] . '.php'
+				));
+				$col_name->appendChild(Widget::Input("items[{$ds['handle']}]", null, 'checkbox'));
 				
-					$class = array();
-					if($bOdd) $class[] = 'odd';
-					
-					$col_name = Widget::TableData(Widget::Anchor(
-							$ds['name'],
-							URL . '/symphony/blueprints/datasources/' . ($ds['can_parse'] == true ? 'edit' : 'info') . '/' . strtolower($ds['handle']) . '/', 'data.' . $ds['handle'] . '.php'
-					));
-					$col_name->appendChild(Widget::Input("items[{$ds['handle']}]", null, 'checkbox'));
-					
-					switch ($ds['type']) {
-						case (is_numeric($ds['type'])):
-							$sectionData = $sectionManager->fetch($ds['type']);
-						 
-							$col_source = Widget::TableData(
-								Widget::Anchor(
-									$sectionData->_data['name'],
-									URL . '/symphony/blueprints/sections/edit/' . $sectionData->_data['id'] . '/',
-									$sectionData->_data['handle']
-								)
-							);
-							break;
-						case "dynamic_xml":
-							$url_parts = parse_url($details->dsParamURL);
-							$col_source = Widget::TableData(ucwords($url_parts['host']));
-							break;
-						case "static_xml":
-							$col_source = Widget::TableData('Static XML');
-							break;
-						default:
-							$col_source = Widget::TableData(ucwords(preg_replace('/_/',' ', $ds['type'])));
-					}
-					
-					$columns = array($col_name, $col_source);
+				switch ($ds['type']) {
+					case null:
+						$col_source = Widget::TableData(__('None'), 'inactive');
+						break;
 						
-					$dsTableBody[] = Widget::TableRow(
-						$columns,
-						implode(' ', $class)
-					);
+					case (is_numeric($ds['type'])):
+						$section = $sectionManager->fetch($ds['type']);
+						
+						if ($section instanceof Section) {
+							$section = $section->_data;
+							$col_source = Widget::TableData(Widget::Anchor(
+								$section['name'],
+								URL . '/symphony/blueprints/sections/edit/' . $section['id'] . '/',
+								$section['handle']
+							));
+						}
+						
+						else {
+							$col_source = Widget::TableData(__('None'), 'inactive');
+						}
+						break;
+						
+					case "dynamic_xml":
+						$url_parts = parse_url($instance->dsParamURL);
+						$col_source = Widget::TableData(ucwords($url_parts['host']));
+						break;
+						
+					case "static_xml":
+						$col_source = Widget::TableData('Static XML');
+						break;
 					
-					$bOdd = !$bOdd;
+					default:
+						$col_source = Widget::TableData(ucwords(preg_replace('/_/',' ', $ds['type'])));
 				}
+				
+				if (isset($ds['author']['website'])) {
+					$col_author = Widget::TableData(Widget::Anchor(
+						$ds['author']['name'],
+						General::validateURL($ds['author']['website'])
+					));
+				}
+				
+				else if (isset($ds['author']['email'])) {
+					$col_author = Widget::TableData(Widget::Anchor(
+						$ds['author']['name'],
+						'mailto:' . $ds['author']['email']
+					));	
+				}
+				
+				else {
+					$col_author = Widget::TableData($ds['author']['name']);
+				}
+				
+				$dsTableBody[] = Widget::TableRow(array(
+					$col_name, $col_source, $col_author
+				));
 			}
 			
 			$table = Widget::Table(
