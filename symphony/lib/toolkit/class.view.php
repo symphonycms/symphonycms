@@ -51,6 +51,10 @@
 			return $this->_about;
 		}
 		
+		public function parameters(){
+			return $this->_parameters;
+		}
+		
 		public function __isset($name){
 			if(in_array($name, array('path', 'template', 'handle', 'guid'))){
 				return isset($this->{"_{$name}"});
@@ -132,6 +136,10 @@
 			}
 			
 			return $view;
+		}
+		
+		public function templatePathname(){
+			return sprintf('%s/%s.xsl', $this->path, $this->handle);
 		}
 		
 		public function setParameter($name, $value){

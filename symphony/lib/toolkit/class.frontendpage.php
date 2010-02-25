@@ -139,19 +139,18 @@
 		}
 		
 		private function __buildPage(){
-			
+
 			$start = precision_timer();
 			
-			if(!$page = $this->resolvePage()){
-				
-				$page = Symphony::Database()->fetchRow(0, "
-								SELECT `tbl_pages`.* 
-								FROM `tbl_pages`, `tbl_pages_types` 
-								WHERE `tbl_pages_types`.page_id = `tbl_pages`.id 
-								AND tbl_pages_types.`type` = '404' 
-								LIMIT 1");
+			try{
+				$page = $this->resolvePage();
+			}
+			catch(Exception $e){
 
-				if(empty($page)){
+				$views = View::findFromType('404');
+				$view = array_shift($views);
+
+				if(!($view instanceof View)){
 					throw new SymphonyErrorPage(
 						__('The page you requested does not exist.'), 	
 						__('Page Not Found'),
@@ -159,11 +158,22 @@
 						array('header' => 'HTTP/1.0 404 Not Found')
 					);
 				}
-				
-				$page['filelocation'] = $this->resolvePageFileLocation($page['path'], $page['handle']);
-				$page['type'] = $this->__fetchPageTypes($page['id']);	
+
+				$page = array(
+					'id' => $view->guid,
+					'path' => $view->parent()->path,
+					'parent' => $view->parent()->handle,
+					'title' => $view->title,
+					'handle' => $view->handle,
+					'params' => @implode('/', $view->{'url-parameters'}),
+					'data_sources' => @implode(',', $view->{'data-sources'}),
+					'events' => @implode(',', $view->events),
+					'type' => $view->types,
+					'filelocation' => $view->templatePathname()
+				);
+
 			}
-			
+
 			####
 			# Delegate: FrontendPageResolved
 			# Description: Just after having resolved the page, but prior to any commencement of output creation
@@ -174,7 +184,7 @@
 			$root_page = @array_shift(explode('/', $page['path']));
 			$current_path = explode(dirname($_SERVER['SCRIPT_NAME']), $_SERVER['REQUEST_URI'], 2);
 			$current_path = '/' . ltrim(end($current_path), '/');
-			
+
 			// Get max upload size from php and symphony config then choose the smallest
 			$upload_size_php = ini_size_to_bytes(ini_get('upload_max_filesize'));
 			$upload_size_sym = Symphony::Configuration()->get('max_upload_size','admin');
@@ -199,23 +209,23 @@
 				'parent-path' => '/' . $page['path'],
 				'current-url' => URL . $current_path,
 			);
-		
+
 			if(is_array($this->_env['url'])){
 				foreach($this->_env['url'] as $key => $val) $this->_param[$key] = $val;
 			}
 
 			if(is_array($_GET) && !empty($_GET)){
-			    foreach($_GET as $key => $val){			    
-			        if(!in_array($key, array('symphony-page', 'debug', 'profile'))) $this->_param['url-' . $key] = $val;
-			    }
+				foreach($_GET as $key => $val){
+					if(!in_array($key, array('symphony-page', 'debug', 'profile'))) $this->_param['url-' . $key] = $val;
+				}
 			}
-			
-			if(is_array($_COOKIE[__SYM_COOKIE_PREFIX_]) && !empty($_COOKIE[__SYM_COOKIE_PREFIX_])){
-				foreach($_COOKIE[__SYM_COOKIE_PREFIX_] as $key => $val){
+
+			if(is_array($_COOKIE[__SYM_COOKIE_PREFIX__]) && !empty($_COOKIE[__SYM_COOKIE_PREFIX__])){
+				foreach($_COOKIE[__SYM_COOKIE_PREFIX__] as $key => $val){
 					$this->_param['cookie-' . $key] = $val;
 				}
 			}
-			
+
 			// Flatten parameters:
 			General::flattenArray($this->_param);
 
@@ -224,29 +234,29 @@
 			# Description: Just after having resolved the page params, but prior to any commencement of output creation
 			# Global: Yes
 			$this->ExtensionManager->notifyMembers('FrontendParamsResolve', '/frontend/', array('params' => &$this->_param));
-			
+
 			$xml_build_start = precision_timer();
-			
+
 			$xml = new XMLElement('data');
 			$xml->setIncludeHeader(true);
-			
+
 			$events = new XMLElement('events');
 			$this->processEvents($page['events'], $events);
 			$xml->appendChild($events);
-			
+
 			$this->_events_xml = clone $events;
-						
+
 			$this->processDatasources($page['data_sources'], $xml);
-			
+
 			$this->_Parent->Profiler->seed($xml_build_start);
 			$this->_Parent->Profiler->sample('XML Built', PROFILE_LAP);
-			
+
 			if(is_array($this->_env['pool']) && !empty($this->_env['pool'])){
 				foreach($this->_env['pool'] as $handle => $p){
-		
+
 					if(!is_array($p)) $p = array($p);
 					foreach($p as $key => $value){
-						
+
 						if(is_array($value) && !empty($value)){
 							foreach($value as $kk => $vv){
 								$this->_param[$handle] .= @implode(', ', $vv) . ',';
@@ -257,27 +267,28 @@
 							$this->_param[$handle] = @implode(', ', $p);
 						}
 					}
-					
+
 					$this->_param[$handle] = trim($this->_param[$handle], ',');
 				}
 			}
-			
+
 			####
 			# Delegate: FrontendParamsPostResolve
 			# Description: Access to the resolved param pool, including additional parameters provided by Data Source outputs
 			# Global: Yes
 			$this->ExtensionManager->notifyMembers('FrontendParamsPostResolve', '/frontend/', array('params' => $this->_param));
-			
+
 			$xParam = new XMLElement('parameters');
 			foreach($this->_param as $key => $value){
 				$xParam->appendChild(new XMLElement($key, General::sanitize($value)));
 			}
 			$xml->prependChild($xParam);
-			
-			$xsl = '<?xml version="1.0" encoding="UTF-8"?>
+
+			chdir(WORKSPACE);
+			$xsl = file_get_contents(VIEWS . '/' . $page['filelocation']); /*'<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:import href="./workspace/pages/' . basename($page['filelocation']).'"/>
-</xsl:stylesheet>';
+	<xsl:import href="' . VIEWS . '/' . $page['filelocation'] . '"/>
+</xsl:stylesheet>';*/
 			
 			$this->_Parent->Profiler->seed();
 			$this->setXML($xml->generate(true, 0));
@@ -294,82 +305,34 @@
 		public function resolvePage($page=NULL){
 		
 			if($page) $this->_page = $page;
-		
-			$row = NULL;
-
+			
+			$view = NULL;
+			
 			####
 			# Delegate: FrontendPrePageResolve
 			# Description: Before page resolve. Allows manipulation of page without redirection
 			# Global: Yes
-			$this->ExtensionManager->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => &$this->_page));
+			$this->ExtensionManager->notifyMembers('FrontendPrePageResolve', '/frontend/', array('view' => &$view, 'page' => &$this->_page));
+
+			if(is_null($view)){
+				if(is_null($this->_page)){
+					$views = View::findFromType('index');
+					$view = array_shift($views);
+				}
 			
-			
-			## Default to the index page if no page has been specified
-			if(!$this->_page && is_null($row)){
-				$row = Symphony::Database()->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types` 
-															  WHERE `tbl_pages_types`.page_id = `tbl_pages`.id 
-															  AND tbl_pages_types.`type` = 'index' 
-															  LIMIT 1");
+				else{
+					$view = View::loadFromURL($this->_page);
+				}
 			}
 			
-			elseif(is_null($row)){
-
-				$pathArr = preg_split('/\//', trim($this->_page, '/'), -1, PREG_SPLIT_NO_EMPTY);			
-				$prevPage = NULL;
-
-				$valid_page_path = array();
-				$page_extra_bits = array();
-	
-				$handle = array_pop($pathArr);
-
-				do{
-					$path = implode('/', $pathArr);
-
-					$sql = "SELECT * FROM `tbl_pages`
-							WHERE `path` ".($path ? " = '$path'" : 'IS NULL')." 
-							AND `handle` = '$handle' LIMIT 1";
-
-					if($row = Symphony::Database()->fetchRow(0, $sql)){
-
-						array_push($pathArr, $handle);
-						$valid_page_path = $pathArr;
-
-						break 1;	
-
-					}else
-						$page_extra_bits[] = $handle;
-				
-				}while($handle = array_pop($pathArr));
+			if(!($view instanceof View)) return;
 			
-				if(empty($valid_page_path)) return;
-			
-				if(!$this->__isSchemaValid($row['id'], $page_extra_bits)) return;
-			}
-
-			##Process the extra URL params
-			$url_params = preg_split('/\//', $row['params'], -1, PREG_SPLIT_NO_EMPTY);
-
-			foreach($url_params as $var){
-				$this->_env['url'][$var] = NULL;
-			}
-			
-			if(is_array($page_extra_bits) && !empty($page_extra_bits)) $page_extra_bits = array_reverse($page_extra_bits);
-
-			for($ii = 0; $ii < count($page_extra_bits); $ii++){
-				$this->_env['url'][$url_params[$ii]] = str_replace(' ', '+', $page_extra_bits[$ii]);
-			}
-			
-			if(!is_array($row) || empty($row)) return;
-
-			$row['type'] = $this->__fetchPageTypes($row['id']);
-
-			## Make sure the user has permission to access this page
 			if(!$this->_Parent->isLoggedIn() && in_array('admin', $row['type'])){
-				$row = Symphony::Database()->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types` 
-															  WHERE `tbl_pages_types`.page_id = `tbl_pages`.id AND tbl_pages_types.`type` = '403' 
-															  LIMIT 1");
 				
-				if(empty($row)){
+				$views = View::findFromType('403');
+				$view = array_shift($views);
+				
+				if(!($view instanceof View)){
 					throw new SymphonyErrorPage( 
 						__('Please <a href="%s">login</a> to view this page.', array(ADMIN_URL . '/login/')), 
 						__('Forbidden'), 
@@ -377,18 +340,37 @@
 						array('header' => 'HTTP/1.0 403 Forbidden')
 					);
 				}
-				
-				$row['type'] = $this->__fetchPageTypes($row['id']);
-				
- 			}	
+			}
+			
+			$row = array(
+				'id' => $view->guid,
+				'path' => $view->parent()->path,
+				'parent' => $view->parent()->handle,
+				'title' => $view->title,
+				'handle' => $view->handle,
+				'params' => @implode('/', $view->{'url-parameters'}),
+				'data_sources' => @implode(',', $view->{'data-sources'}),
+				'events' => @implode(',', $view->events),
+				'type' => $view->types,
+				'filelocation' => $view->templatePathname()
+			);
+		
+			if(isset($view->{'url-parameters'}) && is_array($view->{'url-parameters'})){
+				foreach($view->{'url-parameters'} as $p){
+					$this->_env['url'][$p] = NULL;
+				}
 
-			$row['filelocation'] = $this->resolvePageFileLocation($row['path'], $row['handle']);
-	
-			return $row;
+				foreach($view->parameters() as $p => $v){
+					$this->_env['url'][$p] = str_replace(' ', '+', $v);
+				}
 				
+			}
+
+			return $row;
+	
 		}
 		
-		private function __fetchPageTypes($page_id){
+		/*private function __fetchPageTypes($page_id){
 			return Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '{$page_id}' ");
 		}
 		
@@ -403,7 +385,7 @@
 
 		private static function resolvePageFileLocation($path, $handle){
 			return (PAGES . '/' . trim(str_replace('/', '_', $path . '_' . $handle), '_') . '.xsl');
-		}
+		}*/
 		
 		private function __buildDatasourcePooledParamList($datasources){
 			if(!is_array($datasources) || empty($datasources)) return array();

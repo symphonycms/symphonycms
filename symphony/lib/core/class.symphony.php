@@ -90,9 +90,9 @@
 			$cookie_path = '/' . trim($cookie_path, '/');
 			
 			define_safe('__SYM_COOKIE_PATH__', $cookie_path);
-			define_safe('__SYM_COOKIE_PREFIX_', self::$Configuration->get('cookie_prefix', 'symphony'));
+			define_safe('__SYM_COOKIE_PREFIX__', self::$Configuration->get('cookie_prefix', 'symphony'));
 						
-			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX_, TWO_WEEKS, __SYM_COOKIE_PATH__);			
+			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX__, TWO_WEEKS, __SYM_COOKIE_PATH__);			
 		}
 		
 		public function initialiseExtensionManager(){

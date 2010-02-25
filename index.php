@@ -5,17 +5,18 @@
 
 	require(DOCROOT . '/symphony/lib/boot/bundle.php');
 	
-	function renderer($mode='frontend'){
-		if(!in_array($mode, array('frontend', 'administration'))){
-			throw new Exception('Invalid Symphony Renderer mode specified. Must be either "frontend" or "administration".');
+	function renderer($mode){
+		if(!file_exists(CORE . "/class.{$mode}.php")){
+			throw new Exception('Invalid Symphony Renderer mode specified.');
 		}
+
 		require_once(CORE . "/class.{$mode}.php");
 		return ($mode == 'administration' ? Administration::instance() : Frontend::instance());
 	}
 	
 	$renderer = (isset($_GET['mode']) && strtolower($_GET['mode']) == 'administration' 
-			? 'administration' 
-			: 'frontend');
+		? 'administration' 
+		: 'frontend');
 
 	$output = renderer($renderer)->display(getCurrentPage());
 	
