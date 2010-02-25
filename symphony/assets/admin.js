@@ -23,27 +23,23 @@ var Symphony;
 				'about {$hours} hours ago': false
 			},
 			get: function(string, tokens) {
-				// Prepare search
-				var search = string.replace(/ /gi, '_');
 				// Return string if it cannot be found in the dictionary
-				if(Symphony.Language.DICTIONARY[search] === false) {
+				if(Symphony.Language.DICTIONARY[string] === false) {
 					if(tokens) {
 						string = Symphony.Language.insert(string, tokens);
 					}
 					return string;
 				}
 				// Get translated string
-				string = Symphony.Language.DICTIONARY[search];
+				string = Symphony.Language.DICTIONARY[string];
 				// Insert tokens
-				if(tokens) {
+				if(tokens != undefined) {
 					string = Symphony.Language.insert(string, tokens);
 				}
 				// Return translated string
 				return string;
 			},
 			insert: function(string, tokens) {
-				if (!string) return null;
-				
 				$.each(tokens, function(index, value) { 
 					string = string.replace('{$' + index + '}', value);
 				});
