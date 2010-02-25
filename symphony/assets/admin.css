@@ -286,28 +286,29 @@ a.create {
 	#session .button:hover {background-color:#000;color:#fff;}
 	
 /* Subhead */
-
-.subhead {
+#view-options {
 	float: left;
 	width: 100%;
 	margin: .5em 0 1em;
 	padding: 0 1.3em 0;
 	line-height: 2.4em;
 	list-style: none;
-	background: transparent url('images/shadows.png') 0 -10.9em repeat-x;
+	background: transparent url('images/shadows.png') 0 -10.7em repeat-x;
 	color: #777;
 }
 
-.subhead li {
+#view-options ul {margin:0;padding:0;}
+
+#view-options li {
 	display: inline;
 }
 
-.subhead li a {
+#view-options li a {
 	display: block;
 	float: left;
 	padding: 0 1em;
 	margin-right: .5em;
-	background: #f4f4f4 url('images/shadows.png') 0 -10.9em repeat-x;
+	background: #f4f4f4 url('images/shadows.png') 0 -10.7em repeat-x;
 	text-decoration: none;
 	border: 1px solid #ddd;
 	border-bottom: none;
@@ -319,6 +320,43 @@ a.create {
 	border-top-left-radius: .5em;
 }
 
-.subhead li a:hover, .subhead a.active {
+#view-options li a:hover, #view-options li a.active {
 	background: #fff;
 }
+
+
+
+
+td a.action {
+	display: block;
+    float: left;
+    padding:0;
+    text-indent: -999em;
+    text-align: center;
+    width: 45px;
+    color: #666;
+    background-color: #ccc;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    -moz-border-radius: .3em;
+    font-size: .9em;
+}
+
+	td a.install {background-color: transparent;border:none;text-indent:0;}
+
+td a.action span {
+	float: left;
+	text-indent: 0;
+    width: 30px;
+    background-color: #eee;
+    -moz-border-radius: .3em;
+}
+
+td a.disable span {float:right;}
+
+td span.disable a {
+	float:right;
+}
+
+td span.disable:hover a {float:left;}
+td span.enable:hover a {float:right;}
