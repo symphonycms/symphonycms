@@ -291,7 +291,7 @@ a.create {
 	}
 	#session .button:hover {background-color:#000;color:#fff;}
 	
-/* Subhead */
+/* View Options */
 #view-options {
 	float: left;
 	width: 100%;
@@ -330,22 +330,21 @@ a.create {
 	background: #fff;
 }
 
-
-
+/* Extension Actions */
 
 td a.action {
 	display: block;
-    float: left;
-    padding:0;
-    text-indent: -999em;
-    text-align: center;
-    width: 45px;
-    color: #666;
-    background-color: #ccc;
-    border: 1px solid #ccc;
-    text-decoration: none;
-    -moz-border-radius: .3em;
-    font-size: .9em;
+	float: left;
+	padding:0;
+	text-indent: -999em;
+	text-align: center;
+	width: 45px;
+	color: #666;
+	background-color: #ccc;
+	border: 1px solid #ccc;
+	text-decoration: none;
+	-moz-border-radius: .3em;
+	font-size: .9em;
 }
 
 	td a.install {background-color: transparent;border:none;text-indent:0;}
@@ -353,9 +352,9 @@ td a.action {
 td a.action span {
 	float: left;
 	text-indent: 0;
-    width: 30px;
-    background-color: #eee;
-    -moz-border-radius: .3em;
+	width: 30px;
+	background-color: #eee;
+	-moz-border-radius: .3em;
 }
 
 td a.disable span {float:right;}
@@ -364,5 +363,14 @@ td span.disable a {
 	float:right;
 }
 
-td span.disable:hover a {float:left;}
-td span.enable:hover a {float:right;}
+/* Table Labels */
+
+td .label {
+	padding: .25em .5em;
+	margin-right: .5em;
+	background-color: #ddd;
+	color: #777;
+	-moz-border-radius: .3em;
+	-webkit-border-radius: .3em;
+	border-radius: .3em;
+}

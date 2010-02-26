@@ -8,17 +8,38 @@
 			$ExtensionManager = $this->_Parent->ExtensionManager; 		
 			$extensions = $ExtensionManager->listAll();		
 			
+			$this->buildTable($extensions, true);
+		}
+		
+		function __viewCore(){
+			$ExtensionManager = $this->_Parent->ExtensionManager; 		
+			$extensions = $ExtensionManager->listByType('Core');		
+			
+			$this->buildTable($extensions);
+		}
+		
+		function __viewDatasources(){
+			$ExtensionManager = $this->_Parent->ExtensionManager; 		
+			$extensions = $ExtensionManager->listByType('Data Source Type');		
+			
 			$this->buildTable($extensions);
 		}
 		
 		function __viewFields(){
 			$ExtensionManager = $this->_Parent->ExtensionManager; 		
-			$extensions = $ExtensionManager->listByType('field');		
+			$extensions = $ExtensionManager->listByType('Field');		
 			
 			$this->buildTable($extensions);
 		}
 		
-		function buildTable($extensions){
+		function __viewTextformatters(){
+			$ExtensionManager = $this->_Parent->ExtensionManager; 		
+			$extensions = $ExtensionManager->listByType('Text Formatter');		
+			
+			$this->buildTable($extensions);
+		}
+		
+		function buildTable($extensions, $prefixes=false){
 		
 			$this->setPageType('table');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Extensions'))));
@@ -29,8 +50,11 @@
 			
 			$viewoptions = array(
 				'subnav'	=> array(
-					'All'		=>	$path,
-					'Fields'	=>	$path . 'fields/'
+					'All'				=>	$path,
+					'Core'				=>	$path . 'core/',
+					'Data Source Types'	=>	$path . 'datasources/',
+					'Fields'			=>	$path . 'fields/',
+					'Text Formatters'	=>	$path . 'textformatters/'
 				)
 			);
 			
@@ -59,7 +83,7 @@
 				foreach($extensions as $name => $about){
 
 					## Setup each cell
-					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], Administration::instance()->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));			
+					$td1 = Widget::TableData(($prefixes && isset($about['type']) ? '<span class="label">' . $about['type'][0] . '</span>' : NULL) . (!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], Administration::instance()->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));			
 
 					$td2 = Widget::TableData($about['version']);
 					
