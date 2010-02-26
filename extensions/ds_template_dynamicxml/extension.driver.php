@@ -1,9 +1,9 @@
 <?php
 	
-	class Extension_DynamicXMLDS extends Extension {
+	class Extension_DS_Template_DynamicXML extends Extension {
 		public function about() {
 			return array(
-				'name'			=> 'Dynamic XML Datasources',
+				'name'			=> 'Data Source Template: Dynamic XML',
 				'version'		=> '1.0.0',
 				'release-date'	=> '2010-02-26',
 				'author'		=> array(

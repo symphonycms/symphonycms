@@ -1,9 +1,9 @@
 <?php
 	
-	class Extension_StaticXMLDS extends Extension {
+	class Extension_DS_Template_StaticXML extends Extension {
 		public function about() {
 			return array(
-				'name'			=> 'Static XML Datasources',
+				'name'			=> 'Data Source Template: Static XML',
 				'version'		=> '1.0.0',
 				'release-date'	=> '2010-02-26',
 				'author'		=> array(
