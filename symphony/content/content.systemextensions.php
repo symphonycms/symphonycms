@@ -5,25 +5,36 @@
 	Class contentSystemExtensions extends AdministrationPage{
 	
 		function __viewIndex(){
+			$ExtensionManager = $this->_Parent->ExtensionManager; 		
+			$extensions = $ExtensionManager->listAll();		
+			
+			$this->buildTable($extensions);
+		}
+		
+		function __viewFields(){
+			$ExtensionManager = $this->_Parent->ExtensionManager; 		
+			$extensions = $ExtensionManager->listByType('field');		
+			
+			$this->buildTable($extensions);
+		}
+		
+		function buildTable($extensions){
+		
 			$this->setPageType('table');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Extensions'))));
 			$this->appendSubheading(__('Extensions'));
 			
 			$path = URL . '/symphony/system/extensions/';
-			$this->Form->setAttribute('action', $path);
+			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL());
 			
 			$viewoptions = array(
 				'subnav'	=> array(
 					'All'		=>	$path,
-					'Core'		=>	$path . 'core/',
 					'Fields'	=>	$path . 'fields/'
 				)
 			);
 			
 			$this->appendViewOptions($viewoptions);
-			
-			$ExtensionManager = $this->_Parent->ExtensionManager; 		
-			$extensions = $ExtensionManager->listAll();
 			
 			## Sort by extensions name:
 			uasort($extensions, array('ExtensionManager', 'sortByName'));
@@ -118,12 +129,10 @@
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
 			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
 			
-			$this->Form->appendChild($tableActions);			
-			
-			
+			$this->Form->appendChild($tableActions);
 		}
 
-		function __actionIndex(){
+		function action(){
 			$checked  = @array_keys($_POST['items']);
 
 			if(isset($_POST['with-selected']) && is_array($checked) && !empty($checked)){
