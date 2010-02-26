@@ -41,7 +41,7 @@
 		}
 		
 		protected function getTemplate() {
-			$file = EXTENSIONS . '/dynamicxmlds/templates/datasource.php';
+			$file = EXTENSIONS . '/ds_template_dynamicxml/templates/datasource.php';
 			
 			if (!file_exists($file)) {
 				throw new Exception(sprintf("Unable to find template '%s'.", $file));

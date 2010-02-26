@@ -1,6 +1,6 @@
 <?php
 	
-	require_once EXTENSIONS . '/dynamicxmlds/lib/dynamicxmldatasource.php';
+	require_once EXTENSIONS . '/ds_template_dynamicxml/lib/dynamicxmldatasource.php';
 	
 	class DataSource%s extends DynamicXMLDataSource {
 		public $dsParamROOTELEMENT = %s;
