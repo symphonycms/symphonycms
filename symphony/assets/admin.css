@@ -23,8 +23,14 @@ h1 a:hover,
 
 #master {
 	float: right;
-	margin-top: -3.45em;
+	position: relative;
+	margin: 0 9px 0 0;
 	width: auto;
+	z-index: 2;
+}
+#master + h2 {
+	clear: none;
+	z-index: 1;
 }
 
 /* Navigation */
