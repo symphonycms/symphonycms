@@ -5,10 +5,6 @@
 	Class contentSystemExtensions extends AdministrationPage{
 	
 		function __viewIndex(){
-			return $this->__viewAll();
-		}
-
-		function __viewAll(){
 			$this->setPageType('table');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Extensions'))));
 			$this->appendSubheading(__('Extensions'));
@@ -18,7 +14,7 @@
 			
 			$viewoptions = array(
 				'subnav'	=> array(
-					'All'		=>	$path . 'all/',
+					'All'		=>	$path,
 					'Core'		=>	$path . 'core/',
 					'Fields'	=>	$path . 'fields/'
 				)
