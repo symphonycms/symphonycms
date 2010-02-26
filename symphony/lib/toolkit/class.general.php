@@ -972,5 +972,14 @@
 			return $pageinfo;
 				
 		}
+
+		public static function rmdirr($path){
+			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::CHILD_FIRST);
+			foreach($iterator as $file){
+			    if($file->isDir()) rmdir($file->getPathname());
+				else unlink($file->getPathname());
+			}
+			return rmdir($path);
+		}
 		
 	}
