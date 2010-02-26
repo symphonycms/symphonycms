@@ -3,11 +3,11 @@
 	class Extension_TextareaField extends Extension {
 		public function about() {
 			return array(
-				'name'			=> 'Field: Textarea',
+				'name'			=> 'Textarea',
 				'version'		=> '2.0.0',
 				'release-date'	=> '2010-02-16',
 				'type'			=> array(
-					'field'
+					'Field'
 				),
 				'author'		=> array(
 					'name'			=> 'Symphony Team',
