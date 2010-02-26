@@ -3,6 +3,7 @@
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.eventmanager.php');
 	require_once(TOOLKIT . '/class.datasourcemanager.php');
+	require_once(TOOLKIT . '/class.messagestack.php');
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 	require_once(TOOLKIT . '/class.utility.php');
 
