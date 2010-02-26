@@ -233,7 +233,7 @@
 			$this->appendRequiredCheckbox($div);
 			$group->appendChild($div);
 			
-			$group->appendChild($this->buildFormatterSelect($this->get('formatter'), 'fields['.$this->get('sortorder').'][formatter]', 'Text Formatter'));
+			$group->appendChild($this->buildFormatterSelect($this->get('formatter'), 'fields['.$this->get('sortorder').'][formatter]', __('Text Formatter')));
 			
 			$wrapper->appendChild($group);
 			
