@@ -211,7 +211,27 @@
 
 	        if(is_array($extensions) && !empty($extensions)){
 		        foreach($extensions as $e){	        
-					if($about = $this->about($e)) $result[$e] = $about;							        
+					if($about = $this->about($e)) $result[$e] = $about;
+		        }
+	        }
+
+			return $result;
+        }
+
+		public function listByType($type){
+			$extensions = array();
+			$result = array();
+	        $structure = General::listStructure(EXTENSIONS, array(), false, 'asc', EXTENSIONS);
+	
+	        $extensions = $structure['dirlist'];
+
+	        if(is_array($extensions) && !empty($extensions)){
+		        foreach($extensions as $e){    
+					if($about = $this->about($e)) {
+						if(isset($about['type']) && in_array($type, $about['type'])){
+							$result[$e] = $about;
+						}
+					}
 		        }
 	        }
 
