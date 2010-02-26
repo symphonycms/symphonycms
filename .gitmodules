@@ -19,3 +19,6 @@
 [submodule "extensions/debugdevkit"]
 	path = extensions/debugdevkit
 	url = git://github.com/symphony/debugdevkit.git
+[submodule "extensions/uploadfield"]
+	path = extensions/uploadfield
+	url = git://github.com/rowan-lewis/uploadfield.git
