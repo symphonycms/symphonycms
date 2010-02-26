@@ -298,10 +298,13 @@ a.create {
 	margin: .5em 0 1em;
 	padding: 0 1.3em 0;
 	line-height: 2.4em;
+	font-size: 1em;
 	list-style: none;
 	background: transparent url('images/shadows.png') 0 -10.7em repeat-x;
 	color: #777;
 }
+
+	#view-options form, #view-options fieldset {margin: -.5em 0 .5em; font-size:1em;}
 
 #view-options ul {margin:0;padding:0;}
 
