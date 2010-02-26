@@ -993,7 +993,17 @@
 				$source = $fields['source'];
 			}
 			
-			call_user_func(array($this, '__source' . $source), $fields);
+			###
+			# Delegate: NewDataSourceForm
+			# Description: Just prior to creation of an Entry. Entry object and fields are provided
+			ExtensionManager::instance()->notifyMembers(
+				($isEditing ? 'EditDataSourceForm' : 'NewDataSourceForm'), '/backend/', array(
+					'type'		=> $source,
+					'fields'	=> $fields,
+					'errors'	=> null,
+					'wrapper'	=> $this->Form
+				)
+			);
 			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
@@ -1434,31 +1444,6 @@
 			
 			$shell = str_replace('<!-- VAR LIST -->', trim($var_list), $shell);
 			
-		}
-			
-		function __appendUserFilter(&$wrapper, $h4_label, $name, $value=NULL, $templateOnly=true){
-						
-			if(!$templateOnly){				
-			
-				$li = new XMLElement('li');
-				$li->setAttribute('class', 'unique');
-				$li->appendChild(new XMLElement('h4', $h4_label));		
-				$label = Widget::Label(__('Value'));
-				$label->appendChild(Widget::Input('fields[filter][user]['.$name.']', General::sanitize($value)));
-				$li->appendChild($label);
-			
-			 	$wrapper->appendChild($li);	
-			}
-			
-			$li = new XMLElement('li');
-			$li->setAttribute('class', 'unique template');
-			$li->appendChild(new XMLElement('h4', $h4_label));		
-			$label = Widget::Label(__('Value'));
-			$label->appendChild(Widget::Input('fields[filter][user]['.$name.']'));
-			$li->appendChild($label);
-		
-		 	$wrapper->appendChild($li);
-						
 		}
 		
 		protected function __actionDelete($datasources, $redirect) {

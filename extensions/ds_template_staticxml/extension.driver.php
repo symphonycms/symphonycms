@@ -3,7 +3,7 @@
 	class Extension_DS_Template_StaticXML extends Extension {
 		public function about() {
 			return array(
-				'name'			=> 'Data Source Template: Static XML',
+				'name'			=> 'Data Source Template: Static XML',
 				'version'		=> '1.0.0',
 				'release-date'	=> '2010-02-26',
 				'author'		=> array(
@@ -51,25 +51,44 @@
 		}
 		
 		public function action($context = array()) {
+			$template = $this->getTemplate();
+			
 			/*
 			$context = array(
 				'type'		=> '',			// Type of datasource
-				'data'		=> array(),		// Array of post data
+				'fields'	=> array(),		// Array of post data
 				'errors'	=> null			// Instance of MessageStack to be filled with errors
 			);
 			*/
 		}
 		
 		public function form($context = array()) {
-			/*
-			$context = array(
-				'type'		=> '',			// Type of datasource
-				'data'		=> array(),		// Array of post data
-				'errors'	=> null			// Instance of MessageStack to be checked for errors
-				'wrapper'	=> null			// XMLElement so additional fieldsets can be added
+			if ($context['type'] != 'static_xml') return;
+			
+			$fields = $context['fields'];
+			$errors = $context['errors'];
+			$wrapper = $context['wrapper'];
+			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement(
+				'legend', __('Static XML')
+			));
+			
+			$label = Widget::Label(__('Body'));
+			$input = Widget::Textarea(
+				'fields[static_xml]', 12, 50,
+				General::sanitize($fields['static_xml'])
 			);
-			*/
-			$template = $this->getTemplate();
+			$input->setAttribute('class', 'code');
+			$label->appendChild($input);
+			
+			if (isset($errors['static_xml'])) {
+				$label = Widget::wrapFormElementWithError($label, $errors['static_xml']);
+			}
+			
+			$fieldset->appendChild($label);
+			$wrapper->appendChild($fieldset);
 		}
 	}
 	
