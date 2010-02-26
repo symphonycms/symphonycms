@@ -17,6 +17,7 @@
 		public function __construct(&$parent, $env=NULL, $process_params=true){
 			$this->_Parent = $parent;
 			$this->_force_empty_result = false;
+			$this->_dependencies = array();
 			
 			if(isset($this->dsParamPARAMOUTPUT) && !is_array($this->dsParamPARAMOUTPUT)){
 				$this->dsParamPARAMOUTPUT = array($this->dsParamPARAMOUTPUT);

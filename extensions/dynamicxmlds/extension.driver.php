@@ -40,19 +40,34 @@
 			);
 		}
 		
+		protected function getTemplate() {
+			$file = EXTENSIONS . '/templates/datasource.php';
+			
+			if (!file_exists($file)) {
+				throw new Exception(sprintf("Unable to find template '%s'.", $file));
+			}
+			
+			return file_get_contents($file);
+		}
+		
 		public function action($context = array()) {
+			/*
 			$context = array(
 				'data'		=> array(),		// Array of post data
 				'errors'	=> null			// Instance of MessageStack to be filled with errors
 			);
+			*/
 		}
 		
 		public function form($context = array()) {
+			/*
 			$context = array(
 				'data'		=> array(),		// Array of post data
 				'errors'	=> null			// Instance of MessageStack to be checked for errors
 				'wrapper'	=> null			// XMLElement so additional fieldsets can be added
 			);
+			*/
+			$template = $this->getTemplate();
 		}
 	}
 	
