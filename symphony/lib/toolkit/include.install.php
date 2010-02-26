@@ -1202,7 +1202,7 @@ Options +FollowSymlinks
 			**/
 	
 				$Form->appendChild(new XMLElement('h2', __('Install Symphony')));
-				$Form->appendChild(new XMLElement('p', __('Make sure that you delete <code>'.kINSTALL_FILENAME.'</code> file after Symphony has installed successfully.')));
+				$Form->appendChild(new XMLElement('p', __('Make sure that you delete <code>%s</code> file after Symphony has installed successfully.', array(kINSTALL_FILENAME))));
 				 
 				$Submit = new XMLElement('div');
 				$Submit->setAttribute('class', 'submit');
