@@ -1,8 +1,8 @@
 <?php
 	
-	require_once EXTENSIONS . '/ds_template_dynamicxml/lib/dynamicxmldatasource.php';
+	require_once EXTENSIONS . '/ds_template_users/lib/usersdatasource.php';
 	
-	class DataSource%s extends DynamicXMLDataSource {
+	class DataSource%s extends UsersDataSource {
 		public function about() {
 			return array(
 				'name'			=> %s,
@@ -17,9 +17,6 @@
 		}
 		
 		public $dsParamROOTELEMENT = %s;
-		public $dsParamURL = %s;
-		public $dsParamXPATH = %s;
-		public $dsParamCACHE = %d;
 		
 		public function allowEditorToParse() {
 			return true;

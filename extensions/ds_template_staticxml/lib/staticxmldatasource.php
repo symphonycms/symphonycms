@@ -1,6 +1,6 @@
 <?php
 	
-	class StaticXMLDataSource extends StaticXMLDataSource {
+	class StaticXMLDataSource extends DataSource {
 		public $dsParamROOTELEMENT = 'static-xml';
 		
 		public function grab() {
