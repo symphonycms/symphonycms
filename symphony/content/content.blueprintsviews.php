@@ -69,7 +69,7 @@
 			$iterator = new ViewIterator;			
 			$aTableBody = array();
 
-			if(!$iterator->valid()) {
+			if($iterator->length() <= 0) {
 				$aTableBody = array(Widget::TableRow(array(
 					Widget::TableData(__('None found.'), 'inactive', null, count($aTableHead))
 				), 'odd'));

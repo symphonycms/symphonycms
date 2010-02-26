@@ -132,6 +132,683 @@
 			$this->__form();			
 		}
 		
+		private function __sourceDynamic_XML(array $fields=array()){
+			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual ' . __('dynamic_xml'));
+			$fieldset->appendChild(new XMLElement('legend', __('Dynamic XML')));	
+			$label = Widget::Label(__('URL'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][url]', General::sanitize($fields['dynamic_xml']['url'])));
+			if(isset($this->_errors['dynamic_xml']['url'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['url']));
+			else $fieldset->appendChild($label);
+
+			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to specify dynamic portions of the URL.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
+			
+			$div = new XMLElement('div');
+			$h3 = new XMLElement('h3', __('Namespace Declarations <i>Optional</i>'));
+			$h3->setAttribute('class', 'label');
+			$div->appendChild($h3);
+			
+			$ol = new XMLElement('ol');
+			$ol->setAttribute('class', 'filters-duplicator');
+			
+			if(is_array($fields['dynamic_xml']['namespace']['name'])){
+				
+				$namespaces = $fields['dynamic_xml']['namespace']['name'];
+				$uri = $fields['dynamic_xml']['namespace']['uri'];
+				
+				for($ii = 0; $ii < count($namespaces); $ii++){
+					
+					$li = new XMLElement('li');
+					$li->appendChild(new XMLElement('h4', 'Namespace'));
+
+					$group = new XMLElement('div');
+					$group->setAttribute('class', 'group');
+
+					$label = Widget::Label(__('Name'));
+					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]', General::sanitize($namespaces[$ii])));
+					$group->appendChild($label);
+
+					$label = Widget::Label(__('URI'));
+					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]', General::sanitize($uri[$ii])));
+					$group->appendChild($label);
+
+					$li->appendChild($group);
+					$ol->appendChild($li);					
+				}
+			}
+			
+			$li = new XMLElement('li');
+			$li->setAttribute('class', 'template');
+			$li->appendChild(new XMLElement('h4', __('Namespace')));
+			
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
+			
+			$label = Widget::Label(__('Name'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]'));
+			$group->appendChild($label);
+					
+			$label = Widget::Label(__('URI'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]'));
+			$group->appendChild($label);
+			
+			$li->appendChild($group);
+			$ol->appendChild($li);
+			
+			$div->appendChild($ol);
+			$fieldset->appendChild($div);
+			
+			$label = Widget::Label(__('Included Elements'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][xpath]', General::sanitize($fields['dynamic_xml']['xpath'])));	
+			if(isset($this->_errors['dynamic_xml']['xpath'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['xpath']));
+			else $fieldset->appendChild($label);
+
+			$p = new XMLElement('p', __('Use an XPath expression to select which elements from the source XML to include.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
+		
+			$label = Widget::Label();
+			$input = Widget::Input('fields[dynamic_xml][cache]', max(1, intval($fields['dynamic_xml']['cache'])), NULL, array('size' => '6'));
+			$label->setValue('Update cached result every ' . $input->generate(false) . ' minutes');
+			if(isset($this->_errors['dynamic_xml']['cache'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['cache']));
+			else $fieldset->appendChild($label);		
+
+			$label = Widget::Label();
+			$input = Widget::Input('fields[dynamic_xml][timeout]', max(1, intval($fields['dynamic_xml']['timeout'])), NULL, array('type' => 'hidden'));
+			$label->appendChild($input);
+			$fieldset->appendChild($label);
+		
+			$this->Form->appendChild($fieldset);
+
+		}
+		
+		private function __sourceStatic_XML(array $fields=array()){
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual ' . __('static_xml'));
+			$fieldset->appendChild(new XMLElement('legend', __('Static XML')));	
+			$label = Widget::Label(__('Body'));
+			$label->appendChild(Widget::Textarea('fields[static_xml]', 12, 50, General::sanitize($fields['static_xml']), array('class' => 'code')));
+			
+			if(isset($this->_errors['static_xml'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['static_xml']));
+			else $fieldset->appendChild($label);
+
+			$this->Form->appendChild($fieldset);
+		}	
+		
+		private function __sourceUsers(array $fields=array()){
+			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual ' . __('sections') . ' ' . __('users') . ' ' . __('navigation') . ' ' . __('Sections') . ' ' . __('System'));
+			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
+			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to filter by page parameters.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
+			
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'contextual ' . __('users'));
+			$h3 = new XMLElement('h3', __('Filter Users by'));
+			$h3->setAttribute('class', 'label');
+			$div->appendChild($h3);
+			
+			$ol = new XMLElement('ol');
+			$ol->setAttribute('class', 'filters-duplicator');
+			
+			$this->__appendUserFilter($ol, __('ID'), 'id', $fields['filter']['user']['id'], (!isset($fields['filter']['user']['id'])));	
+			$this->__appendUserFilter($ol, __('Username'), 'username', $fields['filter']['user']['username'], (!isset($fields['filter']['user']['username'])));
+			$this->__appendUserFilter($ol, __('First Name'), 'first_name', $fields['filter']['user']['first_name'], (!isset($fields['filter']['user']['first_name'])));
+			$this->__appendUserFilter($ol, __('Last Name'), 'last_name', $fields['filter']['user']['last_name'], (!isset($fields['filter']['user']['last_name'])));
+			$this->__appendUserFilter($ol, __('Email'), 'email', $fields['filter']['user']['email'], (!isset($fields['filter']['user']['email'])));
+			$this->__appendUserFilter($ol, __('User Type'), 'user_type', $fields['filter']['user']['user_type'], (!isset($fields['filter']['user']['user_type'])));
+								
+			$div->appendChild($ol);			
+						
+			$fieldset->appendChild($div);
+			$this->Form->appendChild($fieldset);
+			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual inverse ' . __('static_xml') . ' ' . __('dynamic_xml'));
+			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));
+			
+			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to limit by page parameters.'));
+			$p->setAttribute('class', 'help contextual inverse ' . __('navigation'));
+			$fieldset->appendChild($p);				
+			
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'group contextual ' . __('sections') . ' ' . __('Sections'));
+			
+			$label = Widget::Label(__('Sort By'));
+			
+			$options = array(
+				array('id', ($fields['source'] == 'users' && $fields['sort'] == 'id'), __('User ID')),
+				array('username', ($fields['source'] == 'users' && $fields['sort'] == 'username'), __('Username')),
+				array('first-name', ($fields['source'] == 'users' && $fields['sort'] == 'first-name'), __('First Name')),
+				array('last-name', ($fields['source'] == 'users' && $fields['sort'] == 'last-name'), __('Last Name')),
+				array('email', ($fields['source'] == 'users' && $fields['sort'] == 'email'), __('Email')),
+				array('status', ($fields['source'] == 'users' && $fields['sort'] == 'status'), __('Status')),
+			);
+		
+			
+			$label->appendChild(Widget::Select('fields[sort]', $options, array('class' => 'filtered')));
+			$div->appendChild($label);
+			
+
+			$label = Widget::Label(__('Sort Order'));
+			
+			$options = array(
+				array('asc', ('asc' == $fields['order']), __('ascending')),
+				array('desc', ('desc' == $fields['order']), __('descending')),
+				array('random', ('random' == $fields['order']), __('random')),
+			);
+			
+			$label->appendChild(Widget::Select('fields[order]', $options));
+			$div->appendChild($label);
+			
+			$fieldset->appendChild($div);
+				
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'group contextual inverse ' . __('navigation'));
+
+			$label = Widget::Label();
+			$input = Widget::Input('fields[max_records]', $fields['max_records'], NULL, array('size' => '6'));
+			$label->setValue(__('Show a maximum of %s results', array($input->generate(false))));
+			if(isset($this->_errors['max_records'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['max_records']));
+			else $div->appendChild($label);
+			
+			$label = Widget::Label();
+			$input = Widget::Input('fields[page_number]', $fields['page_number'], NULL, array('size' => '6'));		
+			$label->setValue(__('Show page %s of results', array($input->generate(false))));
+			if(isset($this->_errors['page_number'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['page_number']));
+			else $div->appendChild($label);
+			
+			$fieldset->appendChild($div);
+			
+			$label = Widget::Label(__('Required URL Parameter <i>Optional</i>'));
+			$label->appendChild(Widget::Input('fields[required_url_param]', $fields['required_url_param']));
+			$fieldset->appendChild($label);
+			
+			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value. Do not wrap the parameter with curly-braces.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);			
+
+			$label = Widget::Label();
+			$input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) ? array('checked' => 'checked') : NULL));
+			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
+			$fieldset->appendChild($label);
+						
+			$this->Form->appendChild($fieldset);			
+		
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual inverse ' .__('navigation') . ' ' . __('static_xml') . ' ' . __('dynamic_xml'));
+			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
+	
+			$ul = new XMLElement('ul');
+			$ul->setAttribute('class', 'group');
+			
+			$li = new XMLElement('li');
+			$li->appendChild(new XMLElement('h3', __('Parameter Output')));
+			
+			$label = Widget::Label(__('Use Field'));
+			$options = array(
+				array('id', ($fields['source'] == 'users' && in_array('id', $fields['param'])), __('User ID')),
+				array('username', ($fields['source'] == 'users' && in_array('username', $fields['param'])), __('Username')),
+				array('name', ($fields['source'] == 'users' && in_array('name', $fields['param'])), __('Name')),
+				array('email', ($fields['source'] == 'users' && in_array('email', $fields['param'])), __('Email')),
+				array('user_type', ($fields['source'] == 'users' && in_array('user_type', $fields['param'])), __('User type')),
+			);
+			
+			$label->appendChild(Widget::Select('fields[param][]', $options, array('class' => 'filtered', 'multiple' => 'multiple')));
+			$li->appendChild($label);
+
+			$p = new XMLElement('p', __('The parameter <code id="output-param-name">$ds-%s-FIELD</code> will be created with this field\'s value for XSLT or other data sources to use. <code>FIELD</code> is the element name of the chosen field.', array(($this->_context[0] == 'edit' ? $existing->dsParamROOTELEMENT : __('Untitled')))));
+			$p->setAttribute('class', 'help');
+			$li->appendChild($p);
+			
+			$ul->appendChild($li);
+
+			$li = new XMLElement('li');
+			$li->appendChild(new XMLElement('h3', __('XML Output')));
+
+			$label = Widget::Label(__('Included Elements'));
+			
+			$options = array(
+				array('username', ($fields['source'] == 'users' && in_array('username', $fields['xml_elements'])), 'username'),
+				array('name', ($fields['source'] == 'users' && in_array('name', $fields['xml_elements'])), 'name'),
+				array('email', ($fields['source'] == 'users' && in_array('email', $fields['xml_elements'])), 'email'),
+				array('authentication-token', (@in_array('authentication-token', $fields['xml_elements'])), 'authentication-token'),
+				array('default-section', (@in_array('default-section', $fields['xml_elements'])), 'default-section'),	
+				array('formatting-preference', (@in_array('formatting-preference', $fields['xml_elements'])), 'formatting-preference'),
+			);
+			
+			$label->appendChild(Widget::Select('fields[xml_elements][]', $options, array('multiple' => 'multiple', 'class' => 'filtered')));
+			$li->appendChild($label);
+			$ul->appendChild($li);
+
+			$fieldset->appendChild($ul);
+			
+			
+			
+			$this->Form->appendChild($fieldset);
+			
+
+		}			
+		
+		private function __sourceNavigation(array $fields=array()){
+			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual ' . __('sections') . ' ' . __('users') . ' ' . __('navigation') . ' ' . __('Sections') . ' ' . __('System'));
+			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
+			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to filter by page parameters.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
+			
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'contextual ' . __('navigation'));
+			$h3 = new XMLElement('h3', __('Filter Navigation by'));
+			$h3->setAttribute('class', 'label');
+			$div->appendChild($h3);
+			
+			$ol = new XMLElement('ol');
+			$ol->setAttribute('class', 'filters-duplicator');
+
+			$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` ORDER BY `title` ASC");
+				
+			$ul = new XMLElement('ul');
+			$ul->setAttribute('class', 'tags');
+	
+			foreach($pages as $page){
+				$ul->appendChild(new XMLElement('li', preg_replace('/\/{2,}/i', '/', '/' . $page['path'] . '/' . $page['handle'])));
+			}
+				
+			if(isset($fields['filter']['navigation']['parent'])){
+				$li = new XMLElement('li');
+				$li->setAttribute('class', 'unique');
+				$li->appendChild(new XMLElement('h4', __('Parent Page')));		
+				$label = Widget::Label(__('Value'));
+				$label->appendChild(Widget::Input('fields[filter][navigation][parent]', General::sanitize($fields['filter']['navigation']['parent'])));
+				$li->appendChild($label);
+				$li->appendChild($ul);
+				$ol->appendChild($li);
+			}
+			
+			$li = new XMLElement('li');
+			$li->setAttribute('class', 'unique template');
+			$li->appendChild(new XMLElement('h4', __('Parent Page')));		
+			$label = Widget::Label(__('Value'));
+			$label->appendChild(Widget::Input('fields[filter][navigation][parent]'));
+			$li->appendChild($label);
+			$li->appendChild($ul);
+			$ol->appendChild($li);
+
+			$ul = new XMLElement('ul');
+			$ul->setAttribute('class', 'tags');
+			if($types = $this->__fetchAvailablePageTypes()) foreach($types as $type) $ul->appendChild(new XMLElement('li', $type));
+
+			if(isset($fields['filter']['navigation']['type'])){
+				$li = new XMLElement('li');
+				$li->setAttribute('class', 'unique');
+				$li->appendChild(new XMLElement('h4', __('Page Type')));		
+				$label = Widget::Label(__('Value'));
+				$label->appendChild(Widget::Input('fields[filter][navigation][type]', General::sanitize($fields['filter']['navigation']['type'])));
+				$li->appendChild($label);
+				$li->appendChild($ul);
+				$ol->appendChild($li);
+			}
+			
+			$li = new XMLElement('li');
+			$li->setAttribute('class', 'unique template');
+			$li->appendChild(new XMLElement('h4', __('Page Type')));		
+			$label = Widget::Label(__('Value'));
+			$label->appendChild(Widget::Input('fields[filter][navigation][type]'));
+			$li->appendChild($label);
+			$li->appendChild($ul);
+			$ol->appendChild($li);
+			
+			$div->appendChild($ol);			
+						
+			$fieldset->appendChild($div);	
+			$this->Form->appendChild($fieldset);
+			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual inverse ' . __('static_xml') . ' ' . __('dynamic_xml'));
+			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));		
+
+			$label = Widget::Label(__('Required URL Parameter <i>Optional</i>'));
+			$label->appendChild(Widget::Input('fields[required_url_param]', $fields['required_url_param']));
+			$fieldset->appendChild($label);
+			
+			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value. Do not wrap the parameter with curly-braces.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);			
+
+			$label = Widget::Label();
+			$input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) ? array('checked' => 'checked') : NULL));
+			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
+			$fieldset->appendChild($label);
+						
+			$this->Form->appendChild($fieldset);	
+
+		}	
+		
+		private function __sourceSections(array $fields=array()){
+			
+			$sectionManager = new SectionManager($this->_Parent);
+			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
+						
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'group');
+
+			$label = Widget::Label(__('Source'));	
+			
+		    $sections = $sectionManager->fetch(NULL, 'ASC', 'name');
+			
+			if (!is_array($sections)) $sections = array();
+			$field_groups = array();
+			
+			foreach($sections as $section) $field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
+			
+			$options = array();
+			
+			if(is_array($sections) && !empty($sections)){
+				array_unshift($options, array('label' => __('Sections'), 'options' => array()));
+				foreach($sections as $s) $options[0]['options'][] = array($s->get('id'), ($fields['source'] == $s->get('id')), $s->get('name'));
+			}
+			
+			$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
+			$div->appendChild($label);
+			
+			$fieldset->appendChild($div);
+			$this->Form->appendChild($fieldset);
+			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual ' . __('sections') . ' ' . __('users') . ' ' . __('navigation') . ' ' . __('Sections') . ' ' . __('System'));
+			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
+			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to filter by page parameters.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
+
+			foreach($field_groups as $section_id => $section_data){	
+
+				$div = new XMLElement('div');
+				$div->setAttribute('class', 'contextual ' . $section_data['section']->get('id'));
+				$h3 = new XMLElement('h3', __('Filter %s by', array($section_data['section']->get('name'))));
+				$h3->setAttribute('class', 'label');
+				$div->appendChild($h3);
+				
+				$ol = new XMLElement('ol');
+				$ol->setAttribute('class', 'filters-duplicator');
+
+				if(isset($fields['filter'][$section_data['section']->get('id')]['id'])){
+					$li = new XMLElement('li');
+					$li->setAttribute('class', 'unique');
+					$li->appendChild(new XMLElement('h4', __('System ID')));
+					$label = Widget::Label(__('Value'));
+					$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][id]', General::sanitize($fields['filter'][$section_data['section']->get('id')]['id'])));
+					$li->appendChild($label);
+					$ol->appendChild($li);				
+				}
+				
+				$li = new XMLElement('li');
+				$li->setAttribute('class', 'unique template');
+				$li->appendChild(new XMLElement('h4', __('System ID')));
+				$label = Widget::Label(__('Value'));
+				$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][id]'));
+				$li->appendChild($label);
+				$ol->appendChild($li);
+				
+				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
+					foreach($section_data['fields'] as $input){
+					
+						if(!$input->canFilter()) continue;
+								
+						if(isset($fields['filter'][$section_data['section']->get('id')][$input->get('id')])){
+							$wrapper = new XMLElement('li');
+							$wrapper->setAttribute('class', 'unique');
+							$input->displayDatasourceFilterPanel($wrapper, $fields['filter'][$section_data['section']->get('id')][$input->get('id')], $this->_errors[$input->get('id')], $section_data['section']->get('id'));
+							$ol->appendChild($wrapper);					
+						}
+				
+						$wrapper = new XMLElement('li');
+						$wrapper->setAttribute('class', 'unique template');
+						$input->displayDatasourceFilterPanel($wrapper, NULL, NULL, $section_data['section']->get('id'));
+						$ol->appendChild($wrapper);
+
+					}
+				}
+				
+				$div->appendChild($ol);			
+
+				$fieldset->appendChild($div);
+				
+			}
+			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual inverse ' . __('static_xml') . ' ' . __('dynamic_xml'));
+			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));
+			
+			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to limit by page parameters.'));
+			$p->setAttribute('class', 'help contextual inverse ' . __('navigation'));
+			$fieldset->appendChild($p);				
+			
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'group contextual ' . __('sections') . ' ' . __('Sections'));
+			
+			$label = Widget::Label(__('Sort By'));
+			
+			$options = array();
+			
+			foreach($field_groups as $section_id => $section_data){	
+			
+				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array(
+					array('system:id', ($fields['source'] == $section_data['section']->get('id') && $fields['sort'] == 'system:id'), __('System ID')),
+					array('system:date', ($fields['source'] == $section_data['section']->get('id') && $fields['sort'] == 'system:date'), __('System Date')),
+				));
+
+				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
+					foreach($section_data['fields'] as $input){
+				
+						if(!$input->isSortable()) continue;
+				
+						$optgroup['options'][] = array($input->get('element_name'), ($fields['source'] == $section_data['section']->get('id') && $input->get('element_name') == $fields['sort']), $input->get('label'));
+					}
+				}
+				
+				$options[] = $optgroup;
+			}			
+			
+			$label->appendChild(Widget::Select('fields[sort]', $options, array('class' => 'filtered')));
+			$div->appendChild($label);
+			
+
+			$label = Widget::Label(__('Sort Order'));
+			
+			$options = array(
+				array('asc', ('asc' == $fields['order']), __('ascending')),
+				array('desc', ('desc' == $fields['order']), __('descending')),
+				array('random', ('random' == $fields['order']), __('random')),
+			);
+			
+			$label->appendChild(Widget::Select('fields[order]', $options));
+			$div->appendChild($label);
+			
+			$fieldset->appendChild($div);
+				
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'group contextual inverse ' . __('navigation'));
+
+			$label = Widget::Label();
+			$input = Widget::Input('fields[max_records]', $fields['max_records'], NULL, array('size' => '6'));
+			$label->setValue(__('Show a maximum of %s results', array($input->generate(false))));
+			if(isset($this->_errors['max_records'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['max_records']));
+			else $div->appendChild($label);
+			
+			$label = Widget::Label();
+			$input = Widget::Input('fields[page_number]', $fields['page_number'], NULL, array('size' => '6'));		
+			$label->setValue(__('Show page %s of results', array($input->generate(false))));
+			if(isset($this->_errors['page_number'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['page_number']));
+			else $div->appendChild($label);
+			
+			$fieldset->appendChild($div);
+			
+			$label = Widget::Label(__('Required URL Parameter <i>Optional</i>'));
+			$label->appendChild(Widget::Input('fields[required_url_param]', $fields['required_url_param']));
+			$fieldset->appendChild($label);
+			
+			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value. Do not wrap the parameter with curly-braces.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);			
+
+			$label = Widget::Label();
+			$input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) ? array('checked' => 'checked') : NULL));
+			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
+			$fieldset->appendChild($label);
+						
+			$this->Form->appendChild($fieldset);			
+		
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual inverse ' .__('navigation') . ' ' . __('static_xml') . ' ' . __('dynamic_xml'));
+			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
+	
+			$ul = new XMLElement('ul');
+			$ul->setAttribute('class', 'group');
+			
+			$li = new XMLElement('li');
+			$li->appendChild(new XMLElement('h3', __('Parameter Output')));
+			
+			$label = Widget::Label(__('Use Field'));
+			$options = array();
+			
+			foreach($field_groups as $section_id => $section_data){	
+			
+				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array(				
+					array('system:id', ($fields['source'] == $section_data['section']->get('id') && in_array('system:id', $fields['param'])), __('System ID')),
+					array('system:date', ($fields['source'] == $section_data['section']->get('id') && in_array('system:date', $fields['param'])), __('System Date')),
+					array('system:user', ($fields['source'] == $section_data['section']->get('id') && in_array('system:user', $fields['param'])), __('System User'))
+				));
+			
+				$userOverride = false;
+
+				foreach($section_data['fields'] as $input){
+				
+					if(!$input->allowDatasourceParamOutput()) continue;
+				
+					$optgroup['options'][] = array(
+						$input->get('element_name'), 
+						($fields['source'] == $section_data['section']->get('id') && in_array($input->get('element_name'), $fields['param'])), 
+						$input->get('label')
+					);
+				}
+			
+				$options[] = $optgroup;
+			}
+			
+			$label->appendChild(Widget::Select('fields[param][]', $options, array('class' => 'filtered', 'multiple' => 'multiple')));
+			$li->appendChild($label);
+
+			$p = new XMLElement('p', __('The parameter <code id="output-param-name">$ds-%s-FIELD</code> will be created with this field\'s value for XSLT or other data sources to use. <code>FIELD</code> is the element name of the chosen field.', array(($this->_context[0] == 'edit' ? $existing->dsParamROOTELEMENT : __('Untitled')))));
+			$p->setAttribute('class', 'help');
+			$li->appendChild($p);
+			
+			$ul->appendChild($li);
+
+			$li = new XMLElement('li');
+			$li->appendChild(new XMLElement('h3', __('XML Output')));
+
+			$label = Widget::Label(__('Group By'));
+			$options = array(
+				array('', NULL, __('None')),
+			);
+			
+			foreach($field_groups as $section_id => $section_data){	
+				
+				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array());
+				
+				$userOverride = false;
+				
+				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
+					foreach($section_data['fields'] as $input){
+					
+						if(!$input->allowDatasourceOutputGrouping()) continue;
+					
+					if($input->get('element_name') == 'user') $userOverride = true;
+					
+						$optgroup['options'][] = array($input->get('id'), ($fields['source'] == $section_data['section']->get('id') && $fields['group'] == $input->get('id')), $input->get('label'));
+					}
+				}
+				
+				if(!$userOverride) $optgroup['options'][] = array('user', ($fields['source'] == $section_data['section']->get('id') && $fields['group'] == 'user'), __('User'));
+				
+				$options[] = $optgroup;
+			}
+			
+			$label->appendChild(Widget::Select('fields[group]', $options, array('class' => 'filtered')));
+			$li->appendChild($label);
+
+			$label = Widget::Label(__('Included Elements'));
+			
+			$options = array();
+			
+			foreach($field_groups as $section_id => $section_data){	
+				
+				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array());
+				
+				$optgroup['options'][] = array(
+					'system:pagination', 
+					($fields['source'] == $section_data['section']->get('id') && @in_array('system:pagination', $fields['xml_elements'])), 
+					'pagination'
+				);
+				
+				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
+					foreach($section_data['fields'] as $input){
+						$elements = $input->fetchIncludableElements();
+					
+						if(is_array($elements) && !empty($elements)){
+							foreach($elements as $name){
+								$selected = false;
+						
+								if($fields['source'] == $section_data['section']->get('id') && @in_array($name, $fields['xml_elements'])){
+									$selected = true;	
+								}
+						
+								$optgroup['options'][] = array($name, $selected, $name);
+							}
+						}
+						
+					}
+				}
+				
+				$options[] = $optgroup;
+			}
+			
+			$label->appendChild(Widget::Select('fields[xml_elements][]', $options, array('multiple' => 'multiple', 'class' => 'filtered')));
+			$li->appendChild($label);
+			
+			$label = Widget::Label();
+			$label->setAttribute('class', 'contextual inverse ' . __('users'));			
+			$input = Widget::Input('fields[associated_entry_counts]', 'yes', 'checkbox', ((isset($fields['associated_entry_counts']) && $fields['associated_entry_counts'] == 'yes') ? array('checked' => 'checked') : NULL));
+			$label->setValue(__('%s Include a count of entries in associated sections', array($input->generate(false))));
+			$li->appendChild($label);
+			
+			$label = Widget::Label();
+			$label->setAttribute('class', 'contextual inverse ' . __('users'));
+			$input = Widget::Input('fields[html_encode]', 'yes', 'checkbox', (isset($fields['html_encode']) ? array('checked' => 'checked') : NULL));
+			$label->setValue(__('%s HTML-encode text', array($input->generate(false))));
+			$li->appendChild($label);
+			
+			$ul->appendChild($li);
+
+			$fieldset->appendChild($ul);
+			$this->Form->appendChild($fieldset);
+
+			
+			
+		}
+				
 		function __form(){
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
@@ -170,7 +847,7 @@
 				}
 			}
 			
-			$sectionManager = new SectionManager($this->_Parent);
+			$fields = array();
 			
 			if(isset($_POST['fields'])){
 				$fields = $_POST['fields'];
@@ -277,6 +954,17 @@
 				
 			}
 			
+			$options = array(
+				array(__('users'), ($fields['source'] == __('users')), __('Users')),
+				array(__('navigation'), ($fields['source'] == __('navigation')), __('Navigation')),
+				array(__('dynamic_xml'), ($fields['source'] == __('dynamic_xml')), __('Dynamic XML')),	
+				array(__('static_xml'), ($fields['source'] == __('static_xml')), __('Static XML')),
+			);
+			$master_select = new XMLElement('div', NULL, array('id' => 'master'));
+			$master_select->appendChild(Widget::Select('tab', $options));
+			$this->Form->appendChild($master_select);
+			
+			
 			$this->setPageType('form');	
 			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Data Sources'), $about['name'])));
 			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
@@ -294,547 +982,19 @@
 			if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
 			else $div->appendChild($label);
 			
-			$label = Widget::Label(__('Source'));	
-			
-		    $sections = $sectionManager->fetch(NULL, 'ASC', 'name');
-			
-			if (!is_array($sections)) $sections = array();
-			$field_groups = array();
-			
-			foreach($sections as $section) $field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
-			
-			$options = array(
-								
-				array('label' => __('System'), 'options' => array(
-							array(__('users'), ($fields['source'] == __('users')), __('Users')),
-							array(__('navigation'), ($fields['source'] == __('navigation')), __('Navigation')),
-					)),
-							
-				array('label' => __('Custom XML'), 'options' => array(			
-							array(__('dynamic_xml'), ($fields['source'] == __('dynamic_xml')), __('Dynamic XML')),	
-							array(__('static_xml'), ($fields['source'] == __('static_xml')), __('Static XML')),
-					)),
-				
-			);
-			
-			if(is_array($sections) && !empty($sections)){
-				array_unshift($options, array('label' => __('Sections'), 'options' => array()));
-				foreach($sections as $s) $options[0]['options'][] = array($s->get('id'), ($fields['source'] == $s->get('id')), $s->get('name'));
-			}
-			
-			$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
-			$div->appendChild($label);
-			
 			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
 			
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual ' . __('sections') . ' ' . __('users') . ' ' . __('navigation') . ' ' . __('Sections') . ' ' . __('System'));
-			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to filter by page parameters.'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
-
-			foreach($field_groups as $section_id => $section_data){	
-
-				$div = new XMLElement('div');
-				$div->setAttribute('class', 'contextual ' . $section_data['section']->get('id'));
-				$h3 = new XMLElement('h3', __('Filter %s by', array($section_data['section']->get('name'))));
-				$h3->setAttribute('class', 'label');
-				$div->appendChild($h3);
-				
-				$ol = new XMLElement('ol');
-				$ol->setAttribute('class', 'filters-duplicator');
-
-				if(isset($fields['filter'][$section_data['section']->get('id')]['id'])){
-					$li = new XMLElement('li');
-					$li->setAttribute('class', 'unique');
-					$li->appendChild(new XMLElement('h4', __('System ID')));
-					$label = Widget::Label(__('Value'));
-					$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][id]', General::sanitize($fields['filter'][$section_data['section']->get('id')]['id'])));
-					$li->appendChild($label);
-					$ol->appendChild($li);				
-				}
-				
-				$li = new XMLElement('li');
-				$li->setAttribute('class', 'unique template');
-				$li->appendChild(new XMLElement('h4', __('System ID')));
-				$label = Widget::Label(__('Value'));
-				$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][id]'));
-				$li->appendChild($label);
-				$ol->appendChild($li);
-				
-				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
-					foreach($section_data['fields'] as $input){
-					
-						if(!$input->canFilter()) continue;
-								
-						if(isset($fields['filter'][$section_data['section']->get('id')][$input->get('id')])){
-							$wrapper = new XMLElement('li');
-							$wrapper->setAttribute('class', 'unique');
-							$input->displayDatasourceFilterPanel($wrapper, $fields['filter'][$section_data['section']->get('id')][$input->get('id')], $this->_errors[$input->get('id')], $section_data['section']->get('id'));
-							$ol->appendChild($wrapper);					
-						}
-				
-						$wrapper = new XMLElement('li');
-						$wrapper->setAttribute('class', 'unique template');
-						$input->displayDatasourceFilterPanel($wrapper, NULL, NULL, $section_data['section']->get('id'));
-						$ol->appendChild($wrapper);
-
-					}
-				}
-				
-				$div->appendChild($ol);			
-
-				$fieldset->appendChild($div);
-				
+			$source = 'Sections';
+			if(isset($_GET['source'])){
+				$source = $_GET['source'];
+			}
+			elseif(in_array($fields['source'], array('users', 'navigation', 'dynamic_xml', 'static_xml'))){
+				$source = $fields['source'];
 			}
 			
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'contextual ' . __('users'));
-			$h3 = new XMLElement('h3', __('Filter Users by'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
+			call_user_func(array($this, '__source' . $source), $fields);
 			
-			$ol = new XMLElement('ol');
-			$ol->setAttribute('class', 'filters-duplicator');
-			
-			$this->__appendUserFilter($ol, __('ID'), 'id', $fields['filter']['user']['id'], (!isset($fields['filter']['user']['id'])));	
-			$this->__appendUserFilter($ol, __('Username'), 'username', $fields['filter']['user']['username'], (!isset($fields['filter']['user']['username'])));
-			$this->__appendUserFilter($ol, __('First Name'), 'first_name', $fields['filter']['user']['first_name'], (!isset($fields['filter']['user']['first_name'])));
-			$this->__appendUserFilter($ol, __('Last Name'), 'last_name', $fields['filter']['user']['last_name'], (!isset($fields['filter']['user']['last_name'])));
-			$this->__appendUserFilter($ol, __('Email'), 'email', $fields['filter']['user']['email'], (!isset($fields['filter']['user']['email'])));
-			$this->__appendUserFilter($ol, __('User Type'), 'user_type', $fields['filter']['user']['user_type'], (!isset($fields['filter']['user']['user_type'])));
-								
-			$div->appendChild($ol);			
-						
-			$fieldset->appendChild($div);
-
-
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'contextual ' . __('navigation'));
-			$h3 = new XMLElement('h3', __('Filter Navigation by'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
-			
-			$ol = new XMLElement('ol');
-			$ol->setAttribute('class', 'filters-duplicator');
-
-			$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` ORDER BY `title` ASC");
-				
-			$ul = new XMLElement('ul');
-			$ul->setAttribute('class', 'tags');
-	
-			foreach($pages as $page){
-				$ul->appendChild(new XMLElement('li', preg_replace('/\/{2,}/i', '/', '/' . $page['path'] . '/' . $page['handle'])));
-			}
-				
-			if(isset($fields['filter']['navigation']['parent'])){
-				$li = new XMLElement('li');
-				$li->setAttribute('class', 'unique');
-				$li->appendChild(new XMLElement('h4', __('Parent Page')));		
-				$label = Widget::Label(__('Value'));
-				$label->appendChild(Widget::Input('fields[filter][navigation][parent]', General::sanitize($fields['filter']['navigation']['parent'])));
-				$li->appendChild($label);
-				$li->appendChild($ul);
-				$ol->appendChild($li);
-			}
-			
-			$li = new XMLElement('li');
-			$li->setAttribute('class', 'unique template');
-			$li->appendChild(new XMLElement('h4', __('Parent Page')));		
-			$label = Widget::Label(__('Value'));
-			$label->appendChild(Widget::Input('fields[filter][navigation][parent]'));
-			$li->appendChild($label);
-			$li->appendChild($ul);
-			$ol->appendChild($li);
-
-			$ul = new XMLElement('ul');
-			$ul->setAttribute('class', 'tags');
-			if($types = $this->__fetchAvailablePageTypes()) foreach($types as $type) $ul->appendChild(new XMLElement('li', $type));
-
-			if(isset($fields['filter']['navigation']['type'])){
-				$li = new XMLElement('li');
-				$li->setAttribute('class', 'unique');
-				$li->appendChild(new XMLElement('h4', __('Page Type')));		
-				$label = Widget::Label(__('Value'));
-				$label->appendChild(Widget::Input('fields[filter][navigation][type]', General::sanitize($fields['filter']['navigation']['type'])));
-				$li->appendChild($label);
-				$li->appendChild($ul);
-				$ol->appendChild($li);
-			}
-			
-			$li = new XMLElement('li');
-			$li->setAttribute('class', 'unique template');
-			$li->appendChild(new XMLElement('h4', __('Page Type')));		
-			$label = Widget::Label(__('Value'));
-			$label->appendChild(Widget::Input('fields[filter][navigation][type]'));
-			$li->appendChild($label);
-			$li->appendChild($ul);
-			$ol->appendChild($li);
-			
-			$div->appendChild($ol);			
-						
-			$fieldset->appendChild($div);	
-			$this->Form->appendChild($fieldset);
-
-
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse ' . __('static_xml') . ' ' . __('dynamic_xml'));
-			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));
-			
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to limit by page parameters.'));
-			$p->setAttribute('class', 'help contextual inverse ' . __('navigation'));
-			$fieldset->appendChild($p);				
-			
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group contextual ' . __('sections') . ' ' . __('Sections'));
-			
-			$label = Widget::Label(__('Sort By'));
-			
-			$options = array(
-				array('label' => __('Users'), 'options' => array(	
-						array('id', ($fields['source'] == 'users' && $fields['sort'] == 'id'), __('User ID')),
-						array('username', ($fields['source'] == 'users' && $fields['sort'] == 'username'), __('Username')),
-						array('first-name', ($fields['source'] == 'users' && $fields['sort'] == 'first-name'), __('First Name')),
-						array('last-name', ($fields['source'] == 'users' && $fields['sort'] == 'last-name'), __('Last Name')),
-						array('email', ($fields['source'] == 'users' && $fields['sort'] == 'email'), __('Email')),
-						array('status', ($fields['source'] == 'users' && $fields['sort'] == 'status'), __('Status')),
-						)
-					),
-					
-				array('label' => __('Navigation'), 'options' => array(	
-						array('id', ($fields['source'] == 'navigation' && $fields['sort'] == 'id'), __('Page ID')),
-						array('handle', ($fields['source'] == 'navigation' && $fields['sort'] == 'handle'), __('Handle')),
-						array('sortorder', ($fields['source'] == 'navigation' && $fields['sort'] == 'sortorder'), __('Sort Order')),
-
-						)
-					),									
-			);
-			
-			foreach($field_groups as $section_id => $section_data){	
-			
-				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array(
-					array('system:id', ($fields['source'] == $section_data['section']->get('id') && $fields['sort'] == 'system:id'), __('System ID')),
-					array('system:date', ($fields['source'] == $section_data['section']->get('id') && $fields['sort'] == 'system:date'), __('System Date')),
-				));
-
-				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
-					foreach($section_data['fields'] as $input){
-				
-						if(!$input->isSortable()) continue;
-				
-						$optgroup['options'][] = array($input->get('element_name'), ($fields['source'] == $section_data['section']->get('id') && $input->get('element_name') == $fields['sort']), $input->get('label'));
-					}
-				}
-				
-				$options[] = $optgroup;
-			}			
-			
-			$label->appendChild(Widget::Select('fields[sort]', $options, array('class' => 'filtered')));
-			$div->appendChild($label);
-			
-
-			$label = Widget::Label(__('Sort Order'));
-			
-			$options = array(
-				array('asc', ('asc' == $fields['order']), __('ascending')),
-				array('desc', ('desc' == $fields['order']), __('descending')),
-				array('random', ('random' == $fields['order']), __('random')),
-			);
-			
-			$label->appendChild(Widget::Select('fields[order]', $options));
-			$div->appendChild($label);
-			
-			$fieldset->appendChild($div);
-				
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group contextual inverse ' . __('navigation'));
-
-			$label = Widget::Label();
-			$input = Widget::Input('fields[max_records]', $fields['max_records'], NULL, array('size' => '6'));
-			$label->setValue(__('Show a maximum of %s results', array($input->generate(false))));
-			if(isset($this->_errors['max_records'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['max_records']));
-			else $div->appendChild($label);
-			
-			$label = Widget::Label();
-			$input = Widget::Input('fields[page_number]', $fields['page_number'], NULL, array('size' => '6'));		
-			$label->setValue(__('Show page %s of results', array($input->generate(false))));
-			if(isset($this->_errors['page_number'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['page_number']));
-			else $div->appendChild($label);
-			
-			$fieldset->appendChild($div);
-			
-			$label = Widget::Label(__('Required URL Parameter <i>Optional</i>'));
-			$label->appendChild(Widget::Input('fields[required_url_param]', $fields['required_url_param']));
-			$fieldset->appendChild($label);
-			
-			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value. Do not wrap the parameter with curly-braces.'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);			
-
-			$label = Widget::Label();
-			$input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) ? array('checked' => 'checked') : NULL));
-			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
-			$fieldset->appendChild($label);
-						
-			$this->Form->appendChild($fieldset);			
-		
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse ' .__('navigation') . ' ' . __('static_xml') . ' ' . __('dynamic_xml'));
-			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
-	
-			$ul = new XMLElement('ul');
-			$ul->setAttribute('class', 'group');
-			
-			$li = new XMLElement('li');
-			$li->appendChild(new XMLElement('h3', __('Parameter Output')));
-			
-			$label = Widget::Label(__('Use Field'));
-			$options = array(
-				//array('', false, __('None')),
-				array('label' => __('Users'), 'options' => array(	
-						array('id', ($fields['source'] == 'users' && in_array('id', $fields['param'])), __('User ID')),
-						array('username', ($fields['source'] == 'users' && in_array('username', $fields['param'])), __('Username')),
-						array('name', ($fields['source'] == 'users' && in_array('name', $fields['param'])), __('Name')),
-						array('email', ($fields['source'] == 'users' && in_array('email', $fields['param'])), __('Email')),
-						array('user_type', ($fields['source'] == 'users' && in_array('user_type', $fields['param'])), __('User type')),
-						)
-					),				
-			);
-			
-			foreach($field_groups as $section_id => $section_data){	
-			
-				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array(				
-					array('system:id', ($fields['source'] == $section_data['section']->get('id') && in_array('system:id', $fields['param'])), __('System ID')),
-					array('system:date', ($fields['source'] == $section_data['section']->get('id') && in_array('system:date', $fields['param'])), __('System Date')),
-					array('system:user', ($fields['source'] == $section_data['section']->get('id') && in_array('system:user', $fields['param'])), __('System User'))
-				));
-			
-				$userOverride = false;
-
-				foreach($section_data['fields'] as $input){
-				
-					if(!$input->allowDatasourceParamOutput()) continue;
-				
-					$optgroup['options'][] = array(
-						$input->get('element_name'), 
-						($fields['source'] == $section_data['section']->get('id') && in_array($input->get('element_name'), $fields['param'])), 
-						$input->get('label')
-					);
-				}
-			
-				$options[] = $optgroup;
-			}
-			
-			$label->appendChild(Widget::Select('fields[param][]', $options, array('class' => 'filtered', 'multiple' => 'multiple')));
-			$li->appendChild($label);
-
-			$p = new XMLElement('p', __('The parameter <code id="output-param-name">$ds-%s-FIELD</code> will be created with this field\'s value for XSLT or other data sources to use. <code>FIELD</code> is the element name of the chosen field.', array(($this->_context[0] == 'edit' ? $existing->dsParamROOTELEMENT : __('Untitled')))));
-			$p->setAttribute('class', 'help');
-			$li->appendChild($p);
-			
-			$ul->appendChild($li);
-
-			$li = new XMLElement('li');
-			$li->appendChild(new XMLElement('h3', __('XML Output')));
-
-			$label = Widget::Label(__('Group By'));
-			$options = array(
-				array('', NULL, __('None')),
-			);
-			
-			foreach($field_groups as $section_id => $section_data){	
-				
-				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array());
-				
-				$userOverride = false;
-				
-				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
-					foreach($section_data['fields'] as $input){
-					
-						if(!$input->allowDatasourceOutputGrouping()) continue;
-					
-					if($input->get('element_name') == 'user') $userOverride = true;
-					
-						$optgroup['options'][] = array($input->get('id'), ($fields['source'] == $section_data['section']->get('id') && $fields['group'] == $input->get('id')), $input->get('label'));
-					}
-				}
-				
-				if(!$userOverride) $optgroup['options'][] = array('user', ($fields['source'] == $section_data['section']->get('id') && $fields['group'] == 'user'), __('User'));
-				
-				$options[] = $optgroup;
-			}
-			
-			$label->appendChild(Widget::Select('fields[group]', $options, array('class' => 'filtered')));
-			$li->appendChild($label);
-
-			$label = Widget::Label(__('Included Elements'));
-			
-			$options = array(
-				array('label' => __('Users'), 'options' => array(				
-						array('username', ($fields['source'] == 'users' && in_array('username', $fields['xml_elements'])), 'username'),
-						array('name', ($fields['source'] == 'users' && in_array('name', $fields['xml_elements'])), 'name'),
-						array('email', ($fields['source'] == 'users' && in_array('email', $fields['xml_elements'])), 'email'),
-						array('authentication-token', ($fields['source'] == 'users' && in_array('authentication-token', $fields['xml_elements'])), 'authentication-token'),
-						array('default-section', ($fields['source'] == 'users' && in_array('default-section', $fields['xml_elements'])), 'default-section'),	
-						array('formatting-preference', ($fields['source'] == 'users' && in_array('formatting-preference', $fields['xml_elements'])), 'formatting-preference'),
-				)),					
-			);
-			
-			foreach($field_groups as $section_id => $section_data){	
-				
-				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array());
-				
-				$optgroup['options'][] = array(
-					'system:pagination', 
-					($fields['source'] == $section_data['section']->get('id') && @in_array('system:pagination', $fields['xml_elements'])), 
-					'pagination'
-				);
-				
-				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
-					foreach($section_data['fields'] as $input){
-						$elements = $input->fetchIncludableElements();
-					
-						if(is_array($elements) && !empty($elements)){
-							foreach($elements as $name){
-								$selected = false;
-						
-								if($fields['source'] == $section_data['section']->get('id') && @in_array($name, $fields['xml_elements'])){
-									$selected = true;	
-								}
-						
-								$optgroup['options'][] = array($name, $selected, $name);
-							}
-						}
-						
-					}
-				}
-				
-				$options[] = $optgroup;
-			}
-			
-			$label->appendChild(Widget::Select('fields[xml_elements][]', $options, array('multiple' => 'multiple', 'class' => 'filtered')));
-			$li->appendChild($label);
-			
-			$label = Widget::Label();
-			$label->setAttribute('class', 'contextual inverse ' . __('users'));			
-			$input = Widget::Input('fields[associated_entry_counts]', 'yes', 'checkbox', ((isset($fields['associated_entry_counts']) && $fields['associated_entry_counts'] == 'yes') ? array('checked' => 'checked') : NULL));
-			$label->setValue(__('%s Include a count of entries in associated sections', array($input->generate(false))));
-			$li->appendChild($label);
-			
-			$label = Widget::Label();
-			$label->setAttribute('class', 'contextual inverse ' . __('users'));
-			$input = Widget::Input('fields[html_encode]', 'yes', 'checkbox', (isset($fields['html_encode']) ? array('checked' => 'checked') : NULL));
-			$label->setValue(__('%s HTML-encode text', array($input->generate(false))));
-			$li->appendChild($label);
-			
-			$ul->appendChild($li);
-
-			$fieldset->appendChild($ul);
-			$this->Form->appendChild($fieldset);
-
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual ' . __('dynamic_xml'));
-			$fieldset->appendChild(new XMLElement('legend', __('Dynamic XML')));	
-			$label = Widget::Label(__('URL'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][url]', General::sanitize($fields['dynamic_xml']['url'])));
-			if(isset($this->_errors['dynamic_xml']['url'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['url']));
-			else $fieldset->appendChild($label);
-
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to specify dynamic portions of the URL.'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
-			
-			$div = new XMLElement('div');
-			$h3 = new XMLElement('h3', __('Namespace Declarations <i>Optional</i>'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
-			
-			$ol = new XMLElement('ol');
-			$ol->setAttribute('class', 'filters-duplicator');
-			
-			if(is_array($fields['dynamic_xml']['namespace']['name'])){
-				
-				$namespaces = $fields['dynamic_xml']['namespace']['name'];
-				$uri = $fields['dynamic_xml']['namespace']['uri'];
-				
-				for($ii = 0; $ii < count($namespaces); $ii++){
-					
-					$li = new XMLElement('li');
-					$li->appendChild(new XMLElement('h4', 'Namespace'));
-
-					$group = new XMLElement('div');
-					$group->setAttribute('class', 'group');
-
-					$label = Widget::Label(__('Name'));
-					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]', General::sanitize($namespaces[$ii])));
-					$group->appendChild($label);
-
-					$label = Widget::Label(__('URI'));
-					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]', General::sanitize($uri[$ii])));
-					$group->appendChild($label);
-
-					$li->appendChild($group);
-					$ol->appendChild($li);					
-				}
-			}
-			
-			$li = new XMLElement('li');
-			$li->setAttribute('class', 'template');
-			$li->appendChild(new XMLElement('h4', __('Namespace')));
-			
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
-			
-			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]'));
-			$group->appendChild($label);
-					
-			$label = Widget::Label(__('URI'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]'));
-			$group->appendChild($label);
-			
-			$li->appendChild($group);
-			$ol->appendChild($li);
-			
-			$div->appendChild($ol);
-			$fieldset->appendChild($div);
-			
-			$label = Widget::Label(__('Included Elements'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][xpath]', General::sanitize($fields['dynamic_xml']['xpath'])));	
-			if(isset($this->_errors['dynamic_xml']['xpath'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['xpath']));
-			else $fieldset->appendChild($label);
-
-			$p = new XMLElement('p', __('Use an XPath expression to select which elements from the source XML to include.'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
-		
-			$label = Widget::Label();
-			$input = Widget::Input('fields[dynamic_xml][cache]', max(1, intval($fields['dynamic_xml']['cache'])), NULL, array('size' => '6'));
-			$label->setValue('Update cached result every ' . $input->generate(false) . ' minutes');
-			if(isset($this->_errors['dynamic_xml']['cache'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['cache']));
-			else $fieldset->appendChild($label);		
-
-			$label = Widget::Label();
-			$input = Widget::Input('fields[dynamic_xml][timeout]', max(1, intval($fields['dynamic_xml']['timeout'])), NULL, array('type' => 'hidden'));
-			$label->appendChild($input);
-			$fieldset->appendChild($label);
-		
-			$this->Form->appendChild($fieldset);
-						
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual ' . __('static_xml'));
-			$fieldset->appendChild(new XMLElement('legend', __('Static XML')));	
-			$label = Widget::Label(__('Body'));
-			$label->appendChild(Widget::Textarea('fields[static_xml]', 12, 50, General::sanitize($fields['static_xml']), array('class' => 'code')));
-			
-			if(isset($this->_errors['static_xml'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['static_xml']));
-			else $fieldset->appendChild($label);
-
-			$this->Form->appendChild($fieldset);
-			
-	
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
 			$div->appendChild(Widget::Input('action[save]', ($isEditing ? __('Save Changes') : __('Create Data Source')), 'submit', array('accesskey' => 's')));
@@ -846,7 +1006,9 @@
 			}
 			
 			$this->Form->appendChild($div);			
-				
+			
+			return;
+
 		}
 
 		function __viewInfo(){

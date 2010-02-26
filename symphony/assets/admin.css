@@ -21,6 +21,12 @@ h1 a:hover,
 	color: #a5a5a5;
 }
 
+#master {
+	float: right;
+	margin-top: -3.45em;
+	width: auto;
+}
+
 /* Navigation */
 #nav {
 	z-index: 30;
