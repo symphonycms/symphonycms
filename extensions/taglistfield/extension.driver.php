@@ -6,6 +6,9 @@
 				'name'			=> 'Field: Taglist',
 				'version'		=> '2.0.0',
 				'release-date'	=> '2010-02-16',
+				'type'			=> array(
+					'field'
+				),
 				'author'		=> array(
 					'name'			=> 'Symphony Team',
 					'website'		=> 'http://symphony-cms.com/',
