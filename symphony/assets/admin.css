@@ -367,9 +367,10 @@ td span.disable a {
 
 td .label {
 	padding: .25em .5em;
-	margin-right: .5em;
-	background-color: #ddd;
-	color: #777;
+	margin-right: .75em;
+	background-color: #999;
+	color: #fff;
+	font-size: .95em;
 	-moz-border-radius: .3em;
 	-webkit-border-radius: .3em;
 	border-radius: .3em;
