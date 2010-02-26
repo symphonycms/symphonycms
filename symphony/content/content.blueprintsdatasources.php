@@ -633,7 +633,7 @@
 				$source = $fields['source'];
 			}
 			
-			if ($source != 'Sections') {
+			if (strtolower($source) != 'sections') {
 				###
 				# Delegate: EditDataSourceForm|NewDataSourceForm
 				# Description: Just prior to creation of an Entry. Entry object and fields are provided
