@@ -19,8 +19,8 @@
 			$new = array();		
 			foreach($strings as $id => $string) {
 				if($id == 'mode' || $id == 'symphony-page') continue;
-				$id = str_replace('_', ' ', urldecode($id));
-				$new[$id] = __($id);
+				$string = urldecode($string);
+				$new[$string] = __($string);
 			}
 			$this->_Result = json_encode($new);	
 		}

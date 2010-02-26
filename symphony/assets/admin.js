@@ -5,23 +5,7 @@ var Symphony;
 		WEBSITE: $('script')[0].src.match('(.*)/symphony')[1],
 		Language: {
 			NAME: $('html').attr('lang'),
-			DICTIONARY: {
-				'Add item': false,
-				'Remove selected items': false,
-				'Are you sure you want to {$action} {$name}?': false,
-				'Are you sure you want to {$action} {$count} items?': false,
-				'Are you sure you want to {$action}?': false,
-				'Reordering was unsuccessful.': false,
-				'Password': false,
-				'Change Password': false,
-				'Remove File': false,
-				'at': false,
-				'just now': false,
-				'a minute ago': false,
-				'{$minutes} minutes ago': false,
-				'about 1 hour ago': false,
-				'about {$hours} hours ago': false
-			},
+			DICTIONARY: {},
 			get: function(string, tokens) {
 				// Return string if it cannot be found in the dictionary
 				if(Symphony.Language.DICTIONARY[string] === false) {
@@ -40,15 +24,27 @@ var Symphony;
 				return string;
 			},
 			insert: function(string, tokens) {
+				// Replace tokens
 				$.each(tokens, function(index, value) { 
 					string = string.replace('{$' + index + '}', value);
 				});
 				return string;
 			},
 			add: function(strings) {
-				Symphony.Language.translate(strings, 'add');
+				// Set key as value
+				$.each(strings, function(key, value) {
+					strings[key] = key;
+				});
+				// Save English strings
+				if(Symphony.Language.NAME == 'en') {
+					Symphony.Language.DICTIONARY = $.extend(Symphony.Language.DICTIONARY, strings);
+				}
+				// Translate strings
+				else {
+					Symphony.Language.translate(strings);
+				}
 			},
-			translate: function(strings, mode) {
+			translate: function(strings) {
 				// Load translations synchronous
 				$.ajax({
 					async: false,
@@ -57,14 +53,7 @@ var Symphony;
 					data: strings,
 					dataType: 'json',
 					success: function(result) {
-						if(mode == 'add') {
-							// Add additional strings
-							Symphony.Language.DICTIONARY = $.extend(Symphony.Language.DICTIONARY, result);
-						}
-						else {
-							// Repopulate the dictionary
-							Symphony.Language.DICTIONARY = result;
-						}
+						Symphony.Language.DICTIONARY = $.extend(Symphony.Language.DICTIONARY, result);
 					}
 				});
 			}
@@ -128,10 +117,24 @@ var Symphony;
 		}
 	};
 
-	// Load translations for foreign LanguageOLDs
-	if(Symphony.Language.NAME != 'en') {
-		Symphony.Language.translate(Symphony.Language.DICTIONARY);
-	}
+	// Add language strings
+	Symphony.Language.add({
+		'Add item': false,
+		'Remove selected items': false,
+		'Are you sure you want to {$action} {$name}?': false,
+		'Are you sure you want to {$action} {$count} items?': false,
+		'Are you sure you want to {$action}?': false,
+		'Reordering was unsuccessful.': false,
+		'Password': false,
+		'Change Password': false,
+		'Remove File': false,
+		'at': false,
+		'just now': false,
+		'a minute ago': false,
+		'{$minutes} minutes ago': false,
+		'about 1 hour ago': false,
+		'about {$hours} hours ago': false
+	});
 
 	// Set JavaScript status
 	$(document.documentElement).addClass('active');
