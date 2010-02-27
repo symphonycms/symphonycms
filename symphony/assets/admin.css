@@ -349,6 +349,8 @@ td a.action {
 	border: 1px solid #ccc;
 	text-decoration: none;
 	-moz-border-radius: .3em;
+	-webkit-border-radius: .3em;
+	border-radius: .3em;
 	font-size: .9em;
 }
 
