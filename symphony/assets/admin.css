@@ -4,6 +4,7 @@ form {
 	position: relative;
 	overflow: hidden;
 	font-size: 1.1em;
+	padding-bottom: 5em;
 }
 h1 {
 	margin: 0;
@@ -52,6 +53,7 @@ h1 a:hover,
 
 #nav li.active {background-color: #4a4a4a;}
 #nav > li:hover {background-color: #121212;}
+#nav > li#nav-expand:hover {background-color: transparent;}
 
 #nav a {
 	display: block;
@@ -304,7 +306,7 @@ a.create {
 	color: #777;
 }
 
-	#view-options form, #view-options fieldset {margin: -.5em 0 .5em; font-size:1em;}
+	#view-options form, #view-options fieldset {margin: -.5em 0 .5em; font-size:1em; padding:0;}
 
 #view-options ul {margin:0;padding:0;}
 
