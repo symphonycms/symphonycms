@@ -32,9 +32,10 @@
 			$this->buildTable($extensions);
 		}
 		
-		function __viewTextformatters(){
-			$ExtensionManager = $this->_Parent->ExtensionManager; 		
-			$extensions = $ExtensionManager->listByType('Text Formatter');		
+		function __viewOther(){
+			$ExtensionManager = $this->_Parent->ExtensionManager;
+			//this probably needs a new method that fetches all excluding the above...
+			$extensions = $ExtensionManager->listByType('Other');		
 			
 			$this->buildTable($extensions);
 		}
@@ -54,7 +55,7 @@
 					'Core'				=>	$path . 'core/',
 					'Data Source Types'	=>	$path . 'datasources/',
 					'Fields'			=>	$path . 'fields/',
-					'Text Formatters'	=>	$path . 'textformatters/'
+					'Other'				=>	$path . 'other/'
 				)
 			);
 			
