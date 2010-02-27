@@ -352,7 +352,7 @@ td a.action {
 	font-size: .9em;
 }
 
-	td a.install {background-color: transparent;border:none;text-indent:0;}
+	td a.install {background-color: transparent;border:none;text-indent:0; width: 70px; text-align:left;}
 
 td a.action span {
 	float: left;
