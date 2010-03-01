@@ -3,8 +3,8 @@
 -----------------------------------------------------------------------------*/
 	
 	.duplicator {
-		background: #444433;
-		border: 1px solid #999988;
+		background: #444;
+		border: 1px solid #999;
 		margin: 0 0 1.75em 0;
 		list-style: none;
 		overflow: hidden;
@@ -14,8 +14,8 @@
 		border-color: #aa2211;
 	}
 	.duplicator > .instance {
-		background: #ddddcc;
-		border-bottom: 1px solid #eeeedd;
+		background: #ddd;
+		border-bottom: 1px solid #eee;
 		overflow: hidden;
 		margin: 0 -2em;
 		padding: 0 2em;
@@ -23,9 +23,9 @@
 		z-index: 1;
 	}
 	.duplicator > .instance > .header {
-		background: #ccccbb;
-		border-bottom: 1px solid #eeeedd;
-		color: #666655;
+		background: #ccc;
+		border-bottom: 1px solid #eee;
+		color: #666;
 		margin: 0;
 		padding: 0.5em 1.75em;
 		position: relative;
@@ -35,7 +35,7 @@
 	}
 	.duplicator > .instance > .header .destructor {
 		font-weight: normal;
-		color: #333322;
+		color: #333;
 		margin: 0 1.75em;
 		padding: 0.5em 0;
 		position: absolute;
@@ -44,10 +44,10 @@
 		top: 0;
 	}
 	.duplicator > .instance > .header .destructor:hover {
-		color: #555544;
+		color: #555;
 	}
 	.duplicator > .instance > .header .destructor.disabled {
-		color: #333322;
+		color: #333;
 		cursor: default;
 		opacity: 0.4;
 	}
@@ -65,7 +65,7 @@
 		opacity: 0.8;
 	}
 	.duplicator > .instance.ordering {
-		border-top: 1px solid #eeeedd;
+		border-top: 1px solid #eee;
 		-moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 		-webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 		margin-top: -1px;
@@ -89,7 +89,7 @@
 -----------------------------------------------------------------------------*/
 	
 	.duplicator > .controls {
-		background: #aaaa99;
+		background: #aaa;
 		cursor: default;
 		padding: 0 1.75em;
 		position: relative;
@@ -105,16 +105,16 @@
 		width: auto;
 	}
 	.duplicator > .controls > a {
-		color: #ffffff;
+		color: #fff;
 		cursor: pointer;
 		padding: 0.5em 0;
 		text-decoration: none;
 	}
 	.duplicator > .controls > a:hover {
-		color: #ffffee;
+		color: #fff;
 	}
 	.duplicator > .controls > a.disabled {
-		color: #eeeedd;
+		color: #eee;
 		cursor: default;
 		opacity: 0.6;
 	}
