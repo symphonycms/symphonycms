@@ -238,6 +238,26 @@
 			return $result;
         }
         
+        public function listOthers(array $types){
+			$extensions = array();
+			$result = array();
+	        $structure = General::listStructure(EXTENSIONS, array(), false, 'asc', EXTENSIONS);
+	
+	        $extensions = $structure['dirlist'];
+
+	        if(is_array($extensions) && !empty($extensions)){
+		        foreach($extensions as $e){    
+					if($about = $this->about($e)) {
+						if(!isset($about['type']) || !array_intersect((array)$types, $about['type'])){
+							$result[$e] = $about;
+						}
+					}
+		        }
+	        }
+
+			return $result;
+        }
+        
         public function notifyMembers($delegate, $page, $context=array()){
 
 	        if((int)Symphony::Configuration()->get('allow_page_subscription', 'symphony') != 1) return;
