@@ -50,11 +50,11 @@
 			
 			$viewoptions = array(
 				'subnav'	=> array(
-					'All'				=>	$path,
-					'Core'				=>	$path . 'core/',
-					'Data Source Types'	=>	$path . 'datasources/',
-					'Fields'			=>	$path . 'fields/',
-					'Other'				=>	$path . 'other/'
+					__('All')				=>	$path,
+					__('Core')				=>	$path . 'core/',
+					__('Data Source Types')	=>	$path . 'datasources/',
+					__('Fields')			=>	$path . 'fields/',
+					__('Other')				=>	$path . 'other/'
 				)
 			);
 			
