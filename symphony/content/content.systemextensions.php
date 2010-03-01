@@ -102,29 +102,16 @@
 					
 					switch ($about['status']) {
 						case EXTENSION_ENABLED:
-							$td4 = new XMLElement('td');
-							$a = Widget::Anchor('Disable', '#');
-							$a->setAttribute('class', 'action disable');
-							$span = new XMLElement('span', 'On');
-							$a->appendChild($span);
-							$td4->appendChild($a);
+							$td4 = Widget::TableData(__('Enabled'), 'enabled');
 							break;
 						case EXTENSION_DISABLED:
-							$td4 = new XMLElement('td');
-							$a = Widget::Anchor('Enable', '#');
-							$a->setAttribute('class', 'action enable');
-							$span = new XMLElement('span', 'Off');
-							$a->appendChild($span);
-							$td4->appendChild($a);
+							$td4 = Widget::TableData(__('Disabled'), 'disabled');
 							break;
 						case EXTENSION_NOT_INSTALLED:
-							$td4 = new XMLElement('td');
-							$a = Widget::Anchor('Not Installed', '#');
-							$a->setAttribute('class', 'action install');
-							$td4->appendChild($a);
+							$td4 = Widget::TableData(__('Not Installed'), 'not-installed');
 							break;
 						case EXTENSION_REQUIRES_UPDATE:
-							$td4 = Widget::TableData(__('Requires Update'));
+							$td4 = Widget::TableData(__('Needs Update'), 'updatable');
 					}
 
 					## Add a row to the body array, assigning each cell to the row
