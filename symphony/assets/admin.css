@@ -4,6 +4,7 @@ form {
 	position: relative;
 	overflow: hidden;
 	font-size: 1.1em;
+	padding-bottom: 5em;
 }
 h1 {
 	margin: 0;
@@ -58,6 +59,7 @@ h1 a:hover,
 
 #nav li.active {background-color: #4a4a4a;}
 #nav > li:hover {background-color: #121212;}
+#nav > li#nav-expand:hover {background-color: transparent;}
 
 #nav a {
 	display: block;
@@ -297,17 +299,20 @@ a.create {
 	}
 	#session .button:hover {background-color:#000;color:#fff;}
 	
-/* Subhead */
+/* View Options */
 #view-options {
 	float: left;
 	width: 100%;
 	margin: .5em 0 1em;
 	padding: 0 1.3em 0;
 	line-height: 2.4em;
+	font-size: 1em;
 	list-style: none;
 	background: transparent url('images/shadows.png') 0 -10.7em repeat-x;
 	color: #777;
 }
+
+	#view-options form, #view-options fieldset {margin: -.5em 0 .5em; font-size:1em; padding:0;}
 
 #view-options ul {margin:0;padding:0;}
 
@@ -336,32 +341,33 @@ a.create {
 	background: #fff;
 }
 
-
-
+/* Extension Actions */
 
 td a.action {
 	display: block;
-    float: left;
-    padding:0;
-    text-indent: -999em;
-    text-align: center;
-    width: 45px;
-    color: #666;
-    background-color: #ccc;
-    border: 1px solid #ccc;
-    text-decoration: none;
-    -moz-border-radius: .3em;
-    font-size: .9em;
+	float: left;
+	padding:0;
+	text-indent: -999em;
+	text-align: center;
+	width: 45px;
+	color: #666;
+	background-color: #ccc;
+	border: 1px solid #ccc;
+	text-decoration: none;
+	-moz-border-radius: .3em;
+	-webkit-border-radius: .3em;
+	border-radius: .3em;
+	font-size: .9em;
 }
 
-	td a.install {background-color: transparent;border:none;text-indent:0;}
+	td a.install {background-color: transparent;border:none;text-indent:0; width: 70px; text-align:left;}
 
 td a.action span {
 	float: left;
 	text-indent: 0;
-    width: 30px;
-    background-color: #eee;
-    -moz-border-radius: .3em;
+	width: 30px;
+	background-color: #eee;
+	-moz-border-radius: .3em;
 }
 
 td a.disable span {float:right;}
@@ -370,5 +376,15 @@ td span.disable a {
 	float:right;
 }
 
-td span.disable:hover a {float:left;}
-td span.enable:hover a {float:right;}
+/* Table Labels */
+
+td .label {
+	padding: .25em .5em;
+	margin-right: .75em;
+	background-color: #999;
+	color: #fff;
+	font-size: .95em;
+	-moz-border-radius: .3em;
+	-webkit-border-radius: .3em;
+	border-radius: .3em;
+}

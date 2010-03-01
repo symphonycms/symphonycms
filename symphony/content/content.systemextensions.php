@@ -5,29 +5,61 @@
 	Class contentSystemExtensions extends AdministrationPage{
 	
 		function __viewIndex(){
-			return $this->__viewAll();
+			$ExtensionManager = $this->_Parent->ExtensionManager; 		
+			$extensions = $ExtensionManager->listAll();		
+			
+			$this->buildTable($extensions, true);
 		}
-
-		function __viewAll(){
+		
+		function __viewCore(){
+			$ExtensionManager = $this->_Parent->ExtensionManager; 		
+			$extensions = $ExtensionManager->listByType('Core');		
+			
+			$this->buildTable($extensions);
+		}
+		
+		function __viewDatasources(){
+			$ExtensionManager = $this->_Parent->ExtensionManager; 		
+			$extensions = $ExtensionManager->listByType('Data Source Type');		
+			
+			$this->buildTable($extensions);
+		}
+		
+		function __viewFields(){
+			$ExtensionManager = $this->_Parent->ExtensionManager; 		
+			$extensions = $ExtensionManager->listByType('Field');		
+			
+			$this->buildTable($extensions);
+		}
+		
+		function __viewOther(){
+			$ExtensionManager = $this->_Parent->ExtensionManager;
+			//this probably needs a new method that fetches all excluding the above...
+			$extensions = $ExtensionManager->listByType('Other');		
+			
+			$this->buildTable($extensions);
+		}
+		
+		function buildTable($extensions, $prefixes=false){
+		
 			$this->setPageType('table');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Extensions'))));
 			$this->appendSubheading(__('Extensions'));
 			
 			$path = URL . '/symphony/system/extensions/';
-			$this->Form->setAttribute('action', $path);
+			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL());
 			
 			$viewoptions = array(
 				'subnav'	=> array(
-					'All'		=>	$path . 'all/',
-					'Core'		=>	$path . 'core/',
-					'Fields'	=>	$path . 'fields/'
+					'All'				=>	$path,
+					'Core'				=>	$path . 'core/',
+					'Data Source Types'	=>	$path . 'datasources/',
+					'Fields'			=>	$path . 'fields/',
+					'Other'				=>	$path . 'other/'
 				)
 			);
 			
 			$this->appendViewOptions($viewoptions);
-			
-			$ExtensionManager = $this->_Parent->ExtensionManager; 		
-			$extensions = $ExtensionManager->listAll();
 			
 			## Sort by extensions name:
 			uasort($extensions, array('ExtensionManager', 'sortByName'));
@@ -52,7 +84,7 @@
 				foreach($extensions as $name => $about){
 
 					## Setup each cell
-					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], Administration::instance()->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));			
+					$td1 = Widget::TableData(($prefixes && isset($about['type']) ? '<span class="label">' . $about['type'][0] . '</span>' : NULL) . (!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], Administration::instance()->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));			
 
 					$td2 = Widget::TableData($about['version']);
 					
@@ -122,12 +154,10 @@
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
 			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
 			
-			$this->Form->appendChild($tableActions);			
-			
-			
+			$this->Form->appendChild($tableActions);
 		}
 
-		function __actionIndex(){
+		function action(){
 			$checked  = @array_keys($_POST['items']);
 
 			if(isset($_POST['with-selected']) && is_array($checked) && !empty($checked)){

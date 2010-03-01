@@ -3,9 +3,12 @@
 	class Extension_DS_Template_Users extends Extension {
 		public function about() {
 			return array(
-				'name'			=> 'Data Source Template: Users',
+				'name'			=> 'Users',
 				'version'		=> '1.0.0',
 				'release-date'	=> '2010-02-26',
+				'type'			=> array(
+					'Data Source Type'
+				),
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',
 					'website'		=> 'http://rowanlewis.com/',
