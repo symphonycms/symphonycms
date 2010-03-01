@@ -30,7 +30,9 @@
 			// Essentials
 			$group = new XMLElement('fieldset');
 		    $group->setAttribute('class', 'settings');
-			$group->appendChild(new XMLElement('legend', __('Essentials')));
+			$group->appendChild(new XMLElement('legend', __('Site Setup')));
+			
+			$group->appendChild(new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array('class' => 'help')));
 			
 			$div = New XMLElement('div');
 			$div->setAttribute('class', 'group');
@@ -67,46 +69,6 @@
 			# Delegate: AddCustomPreferenceFieldsets
 			# Description: Add Extension custom preferences. Use the $wrapper reference to append objects.
 			$this->_Parent->ExtensionManager->notifyMembers('AddCustomPreferenceFieldsets', '/system/preferences/', array('wrapper' => &$this->Form));
-			
-			// Basic System Info
-		    $group = new XMLElement('fieldset');
-		    $group->setAttribute('class', 'settings');
-			$group->appendChild(new XMLElement('legend', __('Information')));
-			
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group triple');
-			
-			//Symphony
-			$dl = new XMLElement('dl');
-
-			$dt = new XMLElement('dt', __('Symphony Version'));
-			$dl->appendChild($dt);
-			$dd = new XMLElement('dd', Symphony::Configuration()->get('version', 'symphony'));
-			$dl->appendChild($dd);
-			
-			$div->appendChild($dl);
-			
-			// PHP
-			$dl = new XMLElement('dl');
-			
-			$dt = new XMLElement('dt', __('PHP Version'));
-			$dl->appendChild($dt);
-			$dd = new XMLElement('dd', phpversion());
-			$dl->appendChild($dd);
-			
-			$div->appendChild($dl);
-			
-			// MySQL
-			$dl = new XMLElement('dl');
-			$dt = new XMLElement('dt', __('MySQL Version'));
-			$dl->appendChild($dt);
-			$dd = new XMLElement('dd', mysql_get_server_info());
-			$dl->appendChild($dd);
-			
-			$div->appendChild($dl);
-			
-			$group->appendChild($div);
-			$this->Form->appendChild($group);
 			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
