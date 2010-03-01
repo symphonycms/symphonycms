@@ -34,8 +34,7 @@
 		
 		function __viewOther(){
 			$ExtensionManager = $this->_Parent->ExtensionManager;
-			//this probably needs a new method that fetches all excluding the above...
-			$extensions = $ExtensionManager->listByType('Other');		
+			$extensions = $ExtensionManager->listOthers(array('Core','Data Source Type','Field'));		
 			
 			$this->buildTable($extensions);
 		}
