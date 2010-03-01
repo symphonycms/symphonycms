@@ -48,7 +48,7 @@ h1 a:hover,
 	color: #666;
 	position:relative;
 	float: left;
-	padding: .7em 1.5em;
+	padding: .7em 1.3em;
 	cursor: pointer;
 	font-weight: bold;
 }
@@ -74,8 +74,8 @@ h1 a:hover,
 
 #nav > li:hover {
 	color: #fff;
-	background: -webkit-gradient(linear, left top, left bottom, from(#444), to(#222), color-stop(0.02, #333));
-	background: -moz-linear-gradient(top center, #444 0%, #333 1%, #222 100%);
+	background: -webkit-gradient(linear, left top, left bottom, from(#666), to(#444), color-stop(0.02, #555));
+	background: -moz-linear-gradient(top center, #666 0%, #555 1%, #444 100%);
 }
 
 #nav > li#nav-expand:hover {
@@ -85,12 +85,13 @@ h1 a:hover,
 
 #nav a {
 	display: block;
-	color: #fff;
+	color: #ccc;
 	text-decoration: none;
 }
 
 #nav li a:hover {
-	color:#e6b85e;
+	color:#fff;
+	background-color:#333;
 }
 
 #nav ul {
@@ -100,7 +101,7 @@ h1 a:hover,
 	margin: 0;
 	width: 12em;
 	padding-left: 0;
-	background: #222;
+	background: #444;
 	list-style: none;
 	text-transform: none;
 	-moz-border-radius-bottomright: 5px;
@@ -318,7 +319,7 @@ a.button {
 }
 a.button:hover,
 a.button.active {
-	background-color: #222;
+	background-color: #121212;
 }
 a.create {
 	background-color: #81b934;
