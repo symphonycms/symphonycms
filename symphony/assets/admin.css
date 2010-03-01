@@ -355,50 +355,7 @@ a.create {
 	background: #fff;
 }
 
-/* Extension Actions */
+/* Extension Statuses */
 
-td a.action {
-	display: block;
-	float: left;
-	padding:0;
-	text-indent: -999em;
-	text-align: center;
-	width: 45px;
-	color: #666;
-	background-color: #ccc;
-	border: 1px solid #ccc;
-	text-decoration: none;
-	-moz-border-radius: .3em;
-	-webkit-border-radius: .3em;
-	border-radius: .3em;
-	font-size: .9em;
-}
-
-	td a.install {background-color: transparent;border:none;text-indent:0; width: 70px; text-align:left;}
-
-td a.action span {
-	float: left;
-	text-indent: 0;
-	width: 30px;
-	background-color: #eee;
-	-moz-border-radius: .3em;
-}
-
-td a.disable span {float:right;}
-
-td span.disable a {
-	float:right;
-}
-
-/* Table Labels */
-
-td .label {
-	padding: .25em .5em;
-	margin-right: .75em;
-	background-color: #999;
-	color: #fff;
-	font-size: .95em;
-	-moz-border-radius: .3em;
-	-webkit-border-radius: .3em;
-	border-radius: .3em;
-}
+td.disabled {color:#822;}
+span.label {color: #888;}
