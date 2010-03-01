@@ -594,16 +594,17 @@
 				
 			}
 			
-			$options = array(
-				array(__('users'), ($fields['source'] == __('users')), __('Users')),
-				array(__('navigation'), ($fields['source'] == __('navigation')), __('Navigation')),
-				array(__('dynamic_xml'), ($fields['source'] == __('dynamic_xml')), __('Dynamic XML')),	
-				array(__('static_xml'), ($fields['source'] == __('static_xml')), __('Static XML')),
-			);
-			$master_select = new XMLElement('div', NULL, array('id' => 'master'));
-			$master_select->appendChild(Widget::Select('tab', $options));
-			$this->Form->appendChild($master_select);
-			
+			if (!$isEditing) {
+				$options = array(
+					array(__('users'), ($fields['source'] == __('users')), __('Users')),
+					array(__('navigation'), ($fields['source'] == __('navigation')), __('Navigation')),
+					array(__('dynamic_xml'), ($fields['source'] == __('dynamic_xml')), __('Dynamic XML')),	
+					array(__('static_xml'), ($fields['source'] == __('static_xml')), __('Static XML')),
+				);
+				$master_select = new XMLElement('div', NULL, array('id' => 'master'));
+				$master_select->appendChild(Widget::Select('tab', $options));
+				$this->Form->appendChild($master_select);
+			}
 			
 			$this->setPageType('form');	
 			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Data Sources'), $about['name'])));
