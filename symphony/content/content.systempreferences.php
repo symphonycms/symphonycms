@@ -26,16 +26,26 @@
 		    } else if (isset($this->_context[0]) && $this->_context[0] == 'success') {
 		    	$this->pageAlert(__('Preferences saved.'), Alert::SUCCESS);
 		    }
+			
+			// Essentials
+			$group = new XMLElement('fieldset');
+		    $group->setAttribute('class', 'settings');
+			$group->appendChild(new XMLElement('legend', __('Essentials')));
+			
+			$div = New XMLElement('div');
+			$div->setAttribute('class', 'group');
+			
+			$label = Widget::Label(__('Site Name'));
+			$input = Widget::Input('settings[symphony][sitename]', Symphony::Configuration()->get('sitename', 'symphony'));
+			$label->appendChild($input);
+			$div->appendChild($label);
 		    
 		    // Get available languages
 		    $languages = Lang::getAvailableLanguages(new ExtensionManager(Administration::instance()));
 		
 			if(count($languages) > 1) {
 			    // Create language selection
-				$group = new XMLElement('fieldset');
-				$group->setAttribute('class', 'settings');
-				$group->appendChild(new XMLElement('legend', __('System Language')));			
-				$label = Widget::Label();
+				$label = Widget::Label(__('Default Language'));
 				
 				// Get language names
 				asort($languages); 
@@ -45,16 +55,58 @@
 				}
 				$select = Widget::Select('settings[symphony][lang]', $options);			
 				$label->appendChild($select);
-				$group->appendChild($label);			
-				$group->appendChild(new XMLElement('p', __('Authors can set up a differing language in their profiles.'), array('class' => 'help')));
+				$div->appendChild($label);			
+				//$group->appendChild(new XMLElement('p', __('Users can set individual language preferences in their profiles.'), array('class' => 'help')));
 				// Append language selection
-				$this->Form->appendChild($group);
+				$group->appendChild($div);
 			}
+			
+			$this->Form->appendChild($group);
 			
 			###
 			# Delegate: AddCustomPreferenceFieldsets
 			# Description: Add Extension custom preferences. Use the $wrapper reference to append objects.
 			$this->_Parent->ExtensionManager->notifyMembers('AddCustomPreferenceFieldsets', '/system/preferences/', array('wrapper' => &$this->Form));
+			
+			// Basic System Info
+		    $group = new XMLElement('fieldset');
+		    $group->setAttribute('class', 'settings');
+			$group->appendChild(new XMLElement('legend', __('Information')));
+			
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'group triple');
+			
+			//Symphony
+			$dl = new XMLElement('dl');
+
+			$dt = new XMLElement('dt', __('Symphony Version'));
+			$dl->appendChild($dt);
+			$dd = new XMLElement('dd', Symphony::Configuration()->get('version', 'symphony'));
+			$dl->appendChild($dd);
+			
+			$div->appendChild($dl);
+			
+			// PHP
+			$dl = new XMLElement('dl');
+			
+			$dt = new XMLElement('dt', __('PHP Version'));
+			$dl->appendChild($dt);
+			$dd = new XMLElement('dd', phpversion());
+			$dl->appendChild($dd);
+			
+			$div->appendChild($dl);
+			
+			// MySQL
+			$dl = new XMLElement('dl');
+			$dt = new XMLElement('dt', __('MySQL Version'));
+			$dl->appendChild($dt);
+			$dd = new XMLElement('dd', mysql_get_server_info());
+			$dl->appendChild($dd);
+			
+			$div->appendChild($dl);
+			
+			$group->appendChild($div);
+			$this->Form->appendChild($group);
 			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
