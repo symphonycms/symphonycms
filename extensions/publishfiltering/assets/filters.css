@@ -1,0 +1,23 @@
+.filters {
+    margin: 1em 0;
+    padding: 1em 19px;
+	background-color: #f5f5f4;
+    vertical-align: middle;
+}
+.filters .field,
+.filters input {
+	margin: 0 0.3em;
+}
+.filters .field {
+	margin-left: 0;
+}
+.filters .value {
+	width: 25em;
+	margin: 0 0.3em 0 0.6em;
+}
+.filters input.apply {
+	margin-right: 0;
+}
+.filters input.clear {
+	margin-left: 0;
+}

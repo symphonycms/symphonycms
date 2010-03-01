@@ -3,9 +3,12 @@
 	class Extension_SelectboxField extends Extension {
 		public function about() {
 			return array(
-				'name'			=> 'Field: Selectbox',
+				'name'			=> 'Selectbox',
 				'version'		=> '2.0.0',
 				'release-date'	=> '2010-02-16',
+				'type'			=> array(
+					'Field'
+				),
 				'author'		=> array(
 					'name'			=> 'Symphony Team',
 					'website'		=> 'http://symphony-cms.com/',

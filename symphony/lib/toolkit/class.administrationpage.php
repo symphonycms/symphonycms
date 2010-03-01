@@ -507,7 +507,7 @@
 				$ul = new XMLElement('ul');
 				foreach($options['subnav'] as $name => $link){
 					$li = new XMLElement('li');
-					$li->appendChild(Widget::Anchor($name, $link, NULL, ($this->_Parent->getCurrentPageURL() == $link ? 'active' : '')));
+					$li->appendChild(Widget::Anchor($name, $link, NULL, ($this->_Parent->getCurrentPageURL() == $link ? 'active' : NULL)));
 					$ul->appendChild($li);
 				}
 				$div->appendChild($ul);
