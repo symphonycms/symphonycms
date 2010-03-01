@@ -9,7 +9,7 @@ form {
 h1 {
 	margin: 0;
 	padding: 1.1em 1em;
-	background: #292929 url('images/shadows.png') 0 -102px repeat-x;
+	background: #111;
 	color: #d5d5d5;
 	line-height: 1em;
 }
@@ -24,14 +24,8 @@ h1 a:hover,
 
 #master {
 	float: right;
-	position: relative;
-	margin: 0 9px 0 0;
+	margin-top: -3.45em;
 	width: auto;
-	z-index: 2;
-}
-#master + h2 {
-	clear: none;
-	z-index: 1;
 }
 
 /* Navigation */
@@ -40,26 +34,41 @@ h1 a:hover,
 	position: relative;
 	float: left;
 	width: 100%;
-	background-color: #363636;
-	color: #fff;
 	white-space: nowrap;
 	list-style: none;
-	line-height: 1.5em;
+	line-height: 1.8em;
 	margin: 0 0 1em 0;
+	background: -webkit-gradient(linear, left top, left bottom, from(#f4f4f4), to(#d8d8d8), color-stop(0.04, #ededed));
+	background: -moz-linear-gradient(top center, #f4f4f4 0%, #ededed 1%, #d8d8d8 100%);
+	-webkit-box-shadow: 0 1px 3px #888;
+	-moz-box-shadow: 0 1px 3px #888;
 }
 
 #nav li {
+	color: #666;
 	position:relative;
 	float: left;
-	padding: .75em 1.3em;
+	padding: .7em 1.5em;
 	cursor: pointer;
+	font-weight: bold;
 }
 
-#nav #nav-system, #nav #nav-blueprints, #nav #nav-expand {float: right;}
+#nav #nav-system, #nav #nav-blueprints, #nav #nav-expand {
+	float: right;
+	background-position: 0;
+}
 
-#nav li.active {background-color: #4a4a4a;}
-#nav > li:hover {background-color: #121212;}
-#nav > li#nav-expand:hover {background-color: transparent;}
+#nav li.active {
+	color: #fff;
+	background: -webkit-gradient(linear, left top, left bottom, from(#a6c4e8), to(#5e84b1), color-stop(0.02, #749dc3));
+	background: -moz-linear-gradient(top center, #a6c4e8 0%, #749dc3 1%, #5e84b1 100%);
+}
+
+#nav > li:hover {
+	color: #fff;
+	background: -webkit-gradient(linear, left top, left bottom, from(#444), to(#222), color-stop(0.02, #333));
+	background: -moz-linear-gradient(top center, #444 0%, #333 1%, #222 100%);
+}
 
 #nav a {
 	display: block;
@@ -68,20 +77,19 @@ h1 a:hover,
 }
 
 #nav li a:hover {
-	color:#E6B85E;
+	color:#e6b85e;
 }
 
 #nav ul {
 	position: absolute;
-	top: 2.9em;
+	top: 3em;
 	left: -999em;
 	margin: 0;
 	width: 12em;
 	padding-left: 0;
-	background-color: #121212;
+	background: #222;
 	list-style: none;
 	text-transform: none;
-	font-weight: normal;
 	-moz-border-radius-bottomright: 5px;
 	-moz-border-radius-bottomleft: 5px;
 	-webkit-border-bottom-right-radius: 5px;
@@ -89,6 +97,12 @@ h1 a:hover,
 	border-bottom-right-radius: 5px;
 	border-bottom-left-radius: 5px;
 	z-index: 5;
+}
+
+#nav ul li {
+	font-weight: normal;
+	background: none;
+	text-shadow: none;
 }
 
 #nav #nav-system ul, #nav #nav-blueprints ul {
@@ -124,7 +138,7 @@ h1 a:hover,
 #nav.expanded #nav-expand {width: auto;}
 #nav.expanded li ul li {font-weight:normal;}
 
-#nav.expanded li.active, #nav.expanded li a:hover, #nav.expanded > li:hover {background-color:transparent;}
+#nav.expanded li.active, #nav.expanded li a:hover, #nav.expanded > li:hover {background:none;color: #666;}
 
 #nav.expanded ul, #nav.expanded #nav-system ul, #nav.expanded #nav-blueprints ul, #nav.expanded li:hover ul {
     position: relative;
@@ -135,8 +149,8 @@ h1 a:hover,
     background-color: transparent;
 }
 
-#nav.expanded ul li a {padding: 0;color: #aaa;}
-#nav.expanded ul li a:hover {color: #fff;}
+#nav.expanded ul li a {padding: 0;color: #888;}
+#nav.expanded ul li a:hover {color: #333;}
 
 /* Session */
 #session {
