@@ -36,7 +36,7 @@ h1 a:hover,
 	width: 100%;
 	white-space: nowrap;
 	list-style: none;
-	line-height: 1.8em;
+	line-height: 1.6em;
 	margin: 0 0 1em 0;
 	background: -webkit-gradient(linear, left top, left bottom, from(#f4f4f4), to(#d8d8d8), color-stop(0.04, #ededed));
 	background: -moz-linear-gradient(top center, #f4f4f4 0%, #ededed 1%, #d8d8d8 100%);
@@ -58,6 +58,14 @@ h1 a:hover,
 	background-position: 0;
 }
 
+#nav #nav-expand {
+	margin: .55em .95em;
+	padding: .15em .55em;
+	-moz-border-radius: 1em;
+	-webkit-border-radius: 1em;
+	border-radius: 1em;
+}
+
 #nav li.active {
 	color: #fff;
 	background: -webkit-gradient(linear, left top, left bottom, from(#a6c4e8), to(#5e84b1), color-stop(0.02, #749dc3));
@@ -68,6 +76,11 @@ h1 a:hover,
 	color: #fff;
 	background: -webkit-gradient(linear, left top, left bottom, from(#444), to(#222), color-stop(0.02, #333));
 	background: -moz-linear-gradient(top center, #444 0%, #333 1%, #222 100%);
+}
+
+#nav > li#nav-expand:hover {
+	background: #aaa;
+	color: #fff;
 }
 
 #nav a {
@@ -135,7 +148,11 @@ h1 a:hover,
 /* Expanded Navigation */
 #nav.expanded {padding-bottom: .5em;}
 #nav.expanded li {width:11em;font-weight:bold;cursor:default;}
-#nav.expanded #nav-expand {width: auto;}
+#nav.expanded #nav-expand {
+	width: auto;
+	margin: .55em .9em;
+	padding: .15em .8em;
+	}
 #nav.expanded li ul li {font-weight:normal;}
 
 #nav.expanded li.active, #nav.expanded li a:hover, #nav.expanded > li:hover {background:none;color: #666;}
