@@ -152,7 +152,7 @@
 			$ul->appendChild($li);
 			
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(__('Logout'), ADMIN_URL . '/logout/', NULL, 'button'));
+			$li->appendChild(Widget::Anchor(__('Logout'), ADMIN_URL . '/logout/'));
 			$ul->appendChild($li);
 			
 			###
