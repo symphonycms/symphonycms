@@ -359,7 +359,7 @@
 		}
 		
 		public function displaySettingsPanel(&$wrapper, $errors=NULL){		
-			$wrapper->appendChild(new XMLElement('h4', ucwords($this->name())));
+			$wrapper->appendChild(new XMLElement('h4', ucwords($this->name()) . ($this->get('label') ? ' - "' . $this->get('label') . '"' : '')));
 			$wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][type]', $this->handle(), 'hidden'));
 			if($this->get('id')) $wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][id]', $this->get('id'), 'hidden'));
 			
