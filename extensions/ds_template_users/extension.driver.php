@@ -44,6 +44,8 @@
 		public function prepare($context = array()) {
 			if ($context['template'] != 'users') return;
 			
+			require_once $this->getExtensionPath() . '/lib/usersdatasource.php';
+			
 			$datasource = $context['datasource'];
 			
 			// Load defaults:
@@ -51,16 +53,26 @@
 				$datasource = new UsersDataSource(Administration::instance());
 			}
 			
-			$context['fields']['filters'] = $datasource->getFilters();
-			$context['fields']['limit'] = $datasource->getLimit();
-			$context['fields']['start_page'] = $datasource->getStartPage();
-			$context['fields']['required_url_param'] = $datasource->getRequiredURLParam();
-			$context['fields']['redirect_on_empty'] = 'no';
+			$context['fields']['can_append_pagination'] = 'no';
+			$context['fields']['can_html_encode_text'] = 'no';
+			$context['fields']['can_redirect_on_empty'] = 'no';
 			
-			if ($datasource->canRedirectOnEmpty()) {
-				$context['fields']['redirect_on_empty'] = 'yes';
+			if ($datasource->canAppendPagination()) {
+				$context['fields']['can_append_pagination'] = 'yes';
 			}
 			
+			if ($datasource->canHTMLEncodeText()) {
+				$context['fields']['can_html_encode_text'] = 'yes';
+			}
+			
+			if ($datasource->canRedirectOnEmpty()) {
+				$context['fields']['can_redirect_on_empty'] = 'yes';
+			}
+			
+			$context['fields']['filters'] = $datasource->getFilters();
+			$context['fields']['pagination_limit'] = $datasource->getPaginationLimit();
+			$context['fields']['pagination_page'] = $datasource->getPaginationPage();
+			$context['fields']['required_url_param'] = $datasource->getRequiredURLParam();
 			$context['fields']['sort_field'] = $datasource->getSortField();
 			$context['fields']['sort_order'] = $datasource->getSortOrder();
 			$context['fields']['output_params'] = (array)$datasource->getOutputParams();
@@ -75,17 +87,17 @@
 			$errors = $context['errors'];
 			$failed = $context['failed'];
 			
-			if (!isset($fields['redirect_on_empty'])) {
-				$fields['redirect_on_empty'] = 'no';
+			if (!isset($fields['can_redirect_on_empty'])) {
+				$fields['can_redirect_on_empty'] = 'no';
 			}
 			
-			if (!isset($fields['limit']) or empty($fields['limit'])) {
-				$errors['limit'] = 'Limit must not be empty.';
+			if (!isset($fields['pagination_limit']) or empty($fields['pagination_limit'])) {
+				$errors['pagination_limit'] = 'Limit must not be empty.';
 				$failed = true;
 			}
 			
-			if (!isset($fields['start_page']) or empty($fields['start_page'])) {
-				$errors['start_page'] = 'Show page must not be empty.';
+			if (!isset($fields['pagination_page']) or empty($fields['pagination_page'])) {
+				$errors['pagination_page'] = 'Show page must not be empty.';
 				$failed = true;
 			}
 			
@@ -95,15 +107,18 @@
 			// Send back template to save:
 			$context['template_file'] = EXTENSIONS . '/ds_template_users/templates/datasource.php';
 			$context['template_data'] = array(
-				$fields['redirect_on_empty'] == 'yes',
+				$fields['can_append_pagination'] == 'yes',
+				$fields['can_html_encode_text'] == 'yes',
+				$fields['can_redirect_on_empty'] == 'yes',
 				(array)$fields['filters'],
-				$fields['limit'],
+				(array)$fields['included_elements'],
 				(array)$fields['output_params'],
+				$fields['pagination_limit'],
+				$fields['pagination_page'],
 				$fields['required_url_param'],
 				Lang::createHandle($fields['about']['name']),
 				$fields['sort_field'],
-				$fields['sort_order'],
-				$fields['start_page']
+				$fields['sort_order']
 			);
 		}
 		
@@ -114,9 +129,29 @@
 			$errors = $context['errors'];
 			$wrapper = $context['wrapper'];
 			
+		//	Essentials --------------------------------------------------------
+			
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
+			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
+			
+			// Name:
+			$label = Widget::Label(__('Name'));
+			$input = Widget::Input('fields[about][name]', General::sanitize($fields['about']['name']));
+			$label->appendChild($input);
+			
+			if (isset($errors['about']['name'])) {
+				$label = Widget::wrapFormElementWithError($label, $errors['about']['name']);
+			}
+			
+			$fieldset->appendChild($label);
+			$wrapper->appendChild($fieldset);
+			
+		//	Filtering ---------------------------------------------------------
+			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('Filtering')));
 			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to filter by page parameters.'));
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
@@ -139,11 +174,36 @@
 			$div->appendChild($ol);			
 						
 			$fieldset->appendChild($div);
+			
+		//	Redirect/404 ------------------------------------------------------
+			
+			$label = Widget::Label(__('Required URL Parameter <i>Optional</i>'));
+			$label->appendChild(Widget::Input('fields[required_url_param]', $fields['required_url_param']));
+			$fieldset->appendChild($label);
+			
+			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value. Do not wrap the parameter with curly-braces.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
+			
+			// Can redirect on empty:
+			$fieldset->appendChild(Widget::Input('fields[can_redirect_on_empty]', 'no', 'hidden'));
+			
+			$label = Widget::Label();
+			$input = Widget::Input('fields[can_redirect_on_empty]', 'yes', 'checkbox');
+			
+			if ($fields['can_redirect_on_empty'] == 'yes') {
+				$input->setAttribute('checked', 'checked');
+			}
+			
+			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
+			$fieldset->appendChild($label);
 			$wrapper->appendChild($fieldset);
+			
+		//	Sorting -----------------------------------------------------------
 			
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));
+			$fieldset->appendChild(new XMLElement('legend', __('Sorting')));
 			
 			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to limit by page parameters.'));
 			$p->setAttribute('class', 'help contextual inverse ' . __('navigation'));
@@ -180,36 +240,52 @@
 				
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'group');
-
-			$label = Widget::Label();
-			$input = Widget::Input('fields[limit]', $fields['limit'], NULL, array('size' => '6'));
-			$label->setValue(__('Show a maximum of %s results', array($input->generate(false))));
-			if(isset($errors['limit'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['limit']));
-			else $div->appendChild($label);
+			$wrapper->appendChild($fieldset);
+			
+		//	Limiting ----------------------------------------------------------
+			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('Limiting')));
+			
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
 			
 			$label = Widget::Label();
-			$input = Widget::Input('fields[start_page]', $fields['start_page'], NULL, array('size' => '6'));		
+			$input = Widget::Input('fields[pagination_limit]', $fields['pagination_limit'], NULL, array('size' => '6'));
+			$label->setValue(__('Show a maximum of %s results', array($input->generate(false))));
+			
+			if (isset($errors['pagination_limit'])) {
+				$label = Widget::wrapFormElementWithError($label, $errors['pagination_limit']);
+			}
+			
+			$group->appendChild($label);
+			
+			$label = Widget::Label();
+			$input = Widget::Input('fields[pagination_page]', $fields['pagination_page'], NULL, array('size' => '6'));		
 			$label->setValue(__('Show page %s of results', array($input->generate(false))));
 			
-			if(isset($errors['start_page'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['start_page']));
-			else $div->appendChild($label);
+			if (isset($errors['pagination_page'])) {
+				$label = Widget::wrapFormElementWithError($label, $errors['pagination_page']);
+			}
 			
-			$fieldset->appendChild($div);
+			$group->appendChild($label);
+			$fieldset->appendChild($group);
 			
-			$label = Widget::Label(__('Required URL Parameter <i>Optional</i>'));
-			$label->appendChild(Widget::Input('fields[required_url_param]', $fields['required_url_param']));
-			$fieldset->appendChild($label);
+			$fieldset->appendChild(Widget::Input('fields[can_append_pagination]', 'no', 'hidden'));
 			
-			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value. Do not wrap the parameter with curly-braces.'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);			
-
 			$label = Widget::Label();
-			$input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) ? array('checked' => 'checked') : NULL));
-			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
+			$input = Widget::Input('fields[can_append_pagination]', 'yes', 'checkbox');
+			
+			if ($fields['can_append_pagination'] == 'yes') {
+				$input->setAttribute('checked', 'checked');
+			}
+			
+			$label->setValue(__('%s Append pagination data to output', array($input->generate(false))));
 			$fieldset->appendChild($label);
-						
-			$wrapper->appendChild($fieldset);			
+			$wrapper->appendChild($fieldset);
+			
+		//	Output options ----------------------------------------------------
 			
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');

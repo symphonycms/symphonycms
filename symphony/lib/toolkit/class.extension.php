@@ -26,4 +26,9 @@
 		
 		public function fetchNavigation(){ return NULL; }
 		
+		public function getExtensionPath() {
+			$em = ExtensionManager::instance();
+			
+			return $em->getClassPath(strtolower(substr(get_class($this), 10)));
+		}
 	}

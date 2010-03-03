@@ -22,14 +22,15 @@ h1 a:hover,
 	color: #a5a5a5;
 }
 
-#master {
+#datasource_template_switch {
+	clear: both;
 	float: right;
 	position: relative;
-	margin: 0 9px 0 0;
+	margin: 1.3em 1.3em 0 0;
 	width: auto;
 	z-index: 2;
 }
-#master + h2 {
+#datasource_template_switch + h2 {
 	clear: none;
 	z-index: 1;
 }
@@ -38,14 +39,14 @@ h1 a:hover,
 #nav {
 	z-index: 30;
 	position: relative;
-	float: left;
 	width: 100%;
 	background-color: #363636;
 	color: #fff;
 	white-space: nowrap;
 	list-style: none;
 	line-height: 1.5em;
-	margin: 0 0 1em 0;
+	height: 3em;
+	margin: 0;
 }
 
 #nav li {

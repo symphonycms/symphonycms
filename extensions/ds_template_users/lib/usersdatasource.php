@@ -1,6 +1,14 @@
 <?php
 	
 	class UsersDataSource extends DataSource {
+		public function canAppendPagination() {
+			return false;
+		}
+		
+		public function canHTMLEncodeText() {
+			return false;
+		}
+		
 		public function canRedirectOnEmpty() {
 			return false;
 		}
@@ -13,12 +21,16 @@
 			return array();
 		}
 		
-		public function getLimit() {
+		public function getOutputParams() {
+			return array();
+		}
+		
+		public function getPaginationLimit() {
 			return 20;
 		}
 		
-		public function getOutputParams() {
-			return array();
+		public function getPaginationPage() {
+			return 1;
 		}
 		
 		public function getRequiredURLParam() {
@@ -35,10 +47,6 @@
 		
 		public function getSortOrder() {
 			return 'desc';
-		}
-		
-		public function getStartPage() {
-			return 1;
 		}
 		
 		public function getTemplate() {

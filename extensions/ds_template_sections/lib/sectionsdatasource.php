@@ -9,6 +9,10 @@
 			return false;
 		}
 		
+		public function canHTMLEncodeText() {
+			return false;
+		}
+		
 		public function canRedirectOnEmpty() {
 			return false;
 		}

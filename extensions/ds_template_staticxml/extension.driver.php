@@ -54,6 +54,8 @@
 		public function action($context = array()) {
 			if ($context['template'] != 'static_xml') return;
 			
+			require_once TOOLKIT . '/class.xsltprocess.php';
+			
 			// Validate:
 			$fields = $context['fields'];
 			$errors = $context['errors'];
@@ -61,6 +63,20 @@
 			
 			if (!isset($fields['static_xml']) or empty($fields['static_xml'])) {
 				$errors['static_xml'] = 'Body must not be empty.';
+				$failed = true;
+			}
+			
+			$xml_errors = null;
+			
+			General::validateXML($fields['static_xml'], $xml_errors, false, new XsltProcess());
+
+			if (!empty($xml_errors)) {
+				$errors['static_xml'] = __('XML is invalid');
+				
+				foreach ($xml_errors as $error) {
+					$errors['static_xml'] .= "<br />" . General::sanitize($error['message']);
+				}
+				
 				$failed = true;
 			}
 			
@@ -83,15 +99,26 @@
 			$errors = $context['errors'];
 			$wrapper = $context['wrapper'];
 			
+		//	Essentials --------------------------------------------------------
+			
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement(
-				'legend', __('Static XML')
-			));
+			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 			
-			$label = Widget::Label(__('Body'));
+			// Name:
+			$label = Widget::Label(__('Name'));
+			$input = Widget::Input('fields[about][name]', General::sanitize($fields['about']['name']));
+			$label->appendChild($input);
+			
+			if (isset($errors['about']['name'])) {
+				$label = Widget::wrapFormElementWithError($label, $errors['about']['name']);
+			}
+			
+			$fieldset->appendChild($label);
+			
+			$label = Widget::Label(__('Static XML'));
 			$input = Widget::Textarea(
-				'fields[static_xml]', 12, 50,
+				'fields[static_xml]', 24, 50,
 				General::sanitize($fields['static_xml'])
 			);
 			$input->setAttribute('class', 'code');

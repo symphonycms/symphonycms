@@ -491,6 +491,7 @@ var Symphony;
 		});
 
 		// Data source switcheroo
+		/*
 		$('select.filtered > optgroup').each(function() {
 			var s = this.parentNode,
 			    l = this.label,
@@ -505,7 +506,6 @@ var Symphony;
 			});
 		});
 		
-		/*
 		$('*.contextual').each(function() {
 			var a = $(this);
 

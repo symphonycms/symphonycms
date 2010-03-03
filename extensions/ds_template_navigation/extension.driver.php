@@ -44,39 +44,33 @@
 		public function prepare($context = array()) {
 			if ($context['template'] != 'navigation') return;
 			
+			require_once $this->getExtensionPath() . '/lib/navigationdatasource.php';
+			
 			$datasource = $context['datasource'];
 			
-			if ($datasource instanceof NavigationDataSource) {
-				$context['fields']['filters'] = $datasource->getFilters();
-				$context['fields']['required_url_param'] = $datasource->getRequiredURLParam();
-				$context['fields']['redirect_on_empty'] = 'no';
-				
-				if ($datasource->canRedirectOnEmpty()) {
-					$context['fields']['redirect_on_empty'] = 'yes';
-				}
+			// Load defaults:
+			if (!$datasource instanceof NavigationDataSource) {
+				$datasource = new NavigationDataSource(Administration::instance());
+			}
+			
+			$context['fields']['filters'] = $datasource->getFilters();
+			$context['fields']['required_url_param'] = $datasource->getRequiredURLParam();
+			$context['fields']['can_redirect_on_empty'] = 'no';
+			
+			if ($datasource->canRedirectOnEmpty()) {
+				$context['fields']['can_redirect_on_empty'] = 'yes';
 			}
 		}
 		
 		public function action($context = array()) {
 			if ($context['template'] != 'navigation') return;
 			
-			// Validate data:
 			$fields = $context['fields'];
-			$errors = $context['errors'];
-			$failed = $context['failed'];
-			
-			if (!isset($fields['redirect_on_empty'])) {
-				$fields['redirect_on_empty'] = 'no';
-			}
-			
-			$context['fields'] = $fields;
-			$context['errors'] = $errors;
-			$context['failed'] = $failed;
 			
 			// Send back template to save:
 			$context['template_file'] = EXTENSIONS . '/ds_template_navigation/templates/datasource.php';
 			$context['template_data'] = array(
-				$fields['redirect_on_empty'] == 'yes',
+				$fields['can_redirect_on_empty'] == 'yes',
 				(array)$fields['filters'],
 				$fields['required_url_param'],
 				Lang::createHandle($fields['about']['name'])
@@ -91,9 +85,29 @@
 			$wrapper = $context['wrapper'];
 			$admin = Administration::instance()->Page;
 			
+		//	Essentials --------------------------------------------------------
+			
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual ' . __('sections') . ' ' . __('users') . ' ' . __('navigation') . ' ' . __('Sections') . ' ' . __('System'));
-			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
+			
+			// Name:
+			$label = Widget::Label(__('Name'));
+			$input = Widget::Input('fields[about][name]', General::sanitize($fields['about']['name']));
+			$label->appendChild($input);
+			
+			if (isset($errors['about']['name'])) {
+				$label = Widget::wrapFormElementWithError($label, $errors['about']['name']);
+			}
+			
+			$fieldset->appendChild($label);
+			$wrapper->appendChild($fieldset);
+			
+		//	Filtering ---------------------------------------------------------
+			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('Filtering')));
 			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to filter by page parameters.'));
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
@@ -165,25 +179,29 @@
 			$li->appendChild($ul);
 			$ol->appendChild($li);
 			
-			$div->appendChild($ol);			
-						
-			$fieldset->appendChild($div);	
-			$wrapper->appendChild($fieldset);
+			$div->appendChild($ol);
+			$fieldset->appendChild($div);
 			
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));		
-
+		//	Redirect/404 ------------------------------------------------------
+			
 			$label = Widget::Label(__('Required URL Parameter <i>Optional</i>'));
 			$label->appendChild(Widget::Input('fields[required_url_param]', $fields['required_url_param']));
 			$fieldset->appendChild($label);
 			
 			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value. Do not wrap the parameter with curly-braces.'));
 			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);			
+			$fieldset->appendChild($p);
+			
+			// Can redirect on empty:
+			$fieldset->appendChild(Widget::Input('fields[can_redirect_on_empty]', 'no', 'hidden'));
 			
 			$label = Widget::Label();
-			$input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) ? array('checked' => 'checked') : NULL));
+			$input = Widget::Input('fields[can_redirect_on_empty]', 'yes', 'checkbox');
+			
+			if ($fields['can_redirect_on_empty'] == 'yes') {
+				$input->setAttribute('checked', 'checked');
+			}
+			
 			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
 			$fieldset->appendChild($label);
 			$wrapper->appendChild($fieldset);

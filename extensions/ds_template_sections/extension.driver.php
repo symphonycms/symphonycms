@@ -44,6 +44,8 @@
 		public function prepare($context = array()) {
 			if ($context['template'] != 'sections') return;
 			
+			require_once $this->getExtensionPath() . '/lib/sectionsdatasource.php';
+			
 			$datasource = $context['datasource'];
 			
 			// Load defaults:
@@ -110,6 +112,7 @@
 			$context['template_data'] = array(
 				$fields['can_append_associated_entry_count'] == 'yes',
 				$fields['can_append_pagination'] == 'yes',
+				$fields['can_html_encode_text'] == 'yes',
 				$fields['can_redirect_on_empty'] == 'yes',
 				(array)$fields['filters'],
 				(array)$fields['included_elements'],
@@ -179,7 +182,7 @@
 			$fieldset->appendChild($group);
 			$wrapper->appendChild($fieldset);
 			
-		//	Filter results ----------------------------------------------------
+		//	Filtering ---------------------------------------------------------
 			
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
@@ -315,7 +318,7 @@
 			$container_xml_output = new XMLElement('div');
 			$li->appendChild($container_xml_output);
 			
-			$fieldset->appendChild(Widget::Input('fields[can_append_associated_entry_count]', 'yes', 'hidden'));
+			$fieldset->appendChild(Widget::Input('fields[can_append_associated_entry_count]', 'no', 'hidden'));
 			
 			$label = Widget::Label();
 			$input = Widget::Input('fields[can_append_associated_entry_count]', 'yes', 'checkbox');
@@ -327,7 +330,7 @@
 			$label->setValue(__('%s Include a count of entries in associated sections', array($input->generate(false))));
 			$li->appendChild($label);
 			
-			$fieldset->appendChild(Widget::Input('fields[can_html_encode_text]', 'yes', 'hidden'));
+			$fieldset->appendChild(Widget::Input('fields[can_html_encode_text]', 'no', 'hidden'));
 			
 			$label = Widget::Label();
 			$input = Widget::Input('fields[can_html_encode_text]', 'yes', 'checkbox');

@@ -20,6 +20,14 @@
 			return true;
 		}
 		
+		public function canAppendPagination() {
+			return %s;
+		}
+		
+		public function canHTMLEncodeText() {
+			return %s;
+		}
+		
 		public function canRedirectOnEmpty() {
 			return %s;
 		}
@@ -32,11 +40,15 @@
 			return %s;
 		}
 		
-		public function getLimit() {
+		public function getOutputParams() {
 			return %s;
 		}
 		
-		public function getOutputParams() {
+		public function getPaginationLimit() {
+			return %s;
+		}
+		
+		public function getPaginationPage() {
 			return %s;
 		}
 		
@@ -53,10 +65,6 @@
 		}
 		
 		public function getSortOrder() {
-			return %s;
-		}
-		
-		public function getStartPage() {
 			return %s;
 		}
 	}

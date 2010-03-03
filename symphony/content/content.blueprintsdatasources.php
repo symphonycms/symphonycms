@@ -147,7 +147,9 @@
 			$this->editing = isset($this->_context[1]);
 			
 			if (!$this->editing) {
-				$this->template = $_GET['template'];
+				$this->template = $_REQUEST['template'];
+				
+				if (!$this->template) $this->template = 'sections';
 			}
 			
 			else {
@@ -260,7 +262,7 @@
 		
 		protected function __viewForm() {
 			// Show page alert:
-			if (is_array($this->_errors) and !empty($this->_errors)) {
+			if ($this->failed) {
 				$this->pageAlert(
 					__('An error occurred while processing this form. <a href="#error">See below for details.</a>'),
 					Alert::ERROR
@@ -301,21 +303,25 @@
 			
 			$this->setPageType('form');
 			
-			$label = Widget::Label(__('Template'));
-			$select = Widget::Select('template', array(
-				array('sections', ($this->template == 'sections'), __('Sections')),
-				array('users', ($this->template == 'users'), __('Users')),
-				array('navigation', ($this->template == 'navigation'), __('Navigation')),
-				array('dynamic_xml', ($this->template == 'dynamic_xml'), __('Dynamic XML')),	
-				array('static_xml', ($this->template == 'static_xml'), __('Static XML')),
-			));
-			$select->setAttribute('id', 'datasource_template_switch');
-			
-			if ($this->editing) {
-				$select->setAttribute('disabled', 'disabled');
+			// Track template type with a hidden field:
+			if ($this->editing or isset($_POST['template'])) {
+				$input = Widget::Input('template', $this->template, 'hidden');
+				$this->Form->appendChild($input);
 			}
 			
-			$this->Form->appendChild($select);
+			// Let user choose template type:
+			else {
+				$label = Widget::Label(__('Template'));
+				$select = Widget::Select('template', array(
+					array('sections', ($this->template == 'sections'), __('Sections')),
+					array('users', ($this->template == 'users'), __('Users')),
+					array('navigation', ($this->template == 'navigation'), __('Navigation')),
+					array('dynamic_xml', ($this->template == 'dynamic_xml'), __('Dynamic XML')),	
+					array('static_xml', ($this->template == 'static_xml'), __('Static XML')),
+				));
+				$select->setAttribute('id', 'datasource_template_switch');
+				$this->Form->appendChild($select);
+			}
 			
 			if (!isset($this->fields['about']['name']) or empty($this->fields['about']['name'])) {
 				$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(
@@ -452,290 +458,6 @@
 	
 		}
 		
-		function __oldactionEdit(){
-			if(array_key_exists('save', $_POST['action'])) return $this->__formAction();
-			elseif(array_key_exists('delete', $_POST['action'])){
-				
-				## TODO: Fix Me
-				###
-				# Delegate: Delete
-				# Description: Prior to deleting the datasource file. Target file path is provided.
-				#$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array("file" => DATASOURCES . "/data." . $_REQUEST['file'] . ".php"));
-
-		    	if(!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php'))
-					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
-
-		    	else redirect(URL . '/symphony/blueprints/components/');
-						
-			} 
-		}
-		
-		function __oldactionNew(){
-			if(array_key_exists('save', $_POST['action'])) return $this->__formAction();
-		}
-		
-		private static function __isValidPageString($string){
-			return (bool)preg_match('/^(?:\{\$[\w-]+(?::\$[\w-]+)*(?::\d+)?}|\d+)$/', $string);
-			
-		}
-		
-		function __oldformAction(){
-				
-			$fields = $_POST['fields'];
-			
-			$this->_errors = array();
-			
-			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
-			
-			if($fields['source'] == 'static_xml'){
-
-				if(trim($fields['static_xml']) == '') $this->_errors['static_xml'] = __('This is a required field');
-				else{
-					$xml_errors = NULL;
-					
-					include_once(TOOLKIT . '/class.xsltprocess.php');
-					
-					General::validateXML($fields['static_xml'], $xml_errors, false, new XsltProcess());
-
-					if(!empty($xml_errors)) $this->_errors['static_xml'] = __('XML is invalid');
-				}
-			}
-			
-			elseif($fields['source'] == 'dynamic_xml'){
-				
-				if(trim($fields['dynamic_xml']['url']) == '') $this->_errors['dynamic_xml']['url'] = __('This is a required field');
-				
-				if(trim($fields['dynamic_xml']['xpath']) == '') $this->_errors['dynamic_xml']['xpath'] = __('This is a required field');
-				
-				if(!is_numeric($fields['dynamic_xml']['cache'])) $this->_errors['dynamic_xml']['cache'] = __('Must be a valid number');
-				elseif($fields['dynamic_xml']['cache'] < 1) $this->_errors['dynamic_xml']['cache'] = __('Must be greater than zero');
-				
-			}
-			
-			else{
-							
-				if($fields['source'] != 'navigation'){
-					
-					if(strlen(trim($fields['max_records'])) == 0 || (is_numeric($fields['max_records']) && $fields['max_records'] < 1)){
-						$this->_errors['max_records'] = __('A result limit must be set');
-					}
-					elseif(!self::__isValidPageString($fields['max_records'])){
-						$this->_errors['max_records'] = __('Must be a valid number or parameter');
-					}
-
-
-					if(strlen(trim($fields['page_number'])) == 0 || (is_numeric($fields['page_number']) && $fields['page_number'] < 1)){
-						$this->_errors['page_number'] = __('A page number must be set');
-					}
-					elseif(!self::__isValidPageString($fields['page_number'])){
-						$this->_errors['page_number'] = __('Must be a valid number or parameter');
-					}
-				}
-				
-			}
-
-			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z]+@i' => '', '/[^\w-\.]/i' => ''));
-			$rootelement = str_replace('_', '-', $classname);
-			
-			$file = DATASOURCES . '/data.' . $classname . '.php';
-			
-			$isDuplicate = false;
-			$queueForDeletion = NULL;
-			
-			if($this->_context[0] == 'new' && @is_file($file)) $isDuplicate = true;
-			elseif($this->_context[0] == 'edit'){
-				$existing_handle = $this->_context[1];
-				if($classname != $existing_handle && @is_file($file)) $isDuplicate = true;
-				elseif($classname != $existing_handle) $queueForDeletion = DATASOURCES . '/data.' . $existing_handle . '.php';			
-			}
-			
-			##Duplicate
-			if($isDuplicate) $this->_errors['name'] = __('A Data source with the name <code>%s</code> name already exists', array($classname));
-			
-			if(empty($this->_errors)){
-				
-				$dsShell = file_get_contents(TEMPLATE . '/datasource.tpl');
-				
-				//$oDate = $this->_Parent->getDateObj();
-			
-				$params = array(
-					'rootelement' => $rootelement,
-				);
-				
-				$about = array(
-					'name' => $fields['name'],
-					'version' => '1.0',
-					'release date' => DateTimeObj::getGMT('c'), //date('Y-m-d', $oDate->get(true, false)),
-					'author name' => Administration::instance()->User->getFullName(),
-					'author website' => URL,
-					'author email' => Administration::instance()->User->email
-				);
-
-				$source = $fields['source'];
-				
-				$filter = NULL;
-				$elements = NULL;
-							
-				switch($source){
-					
-					case 'users':
-					
-						$filters = $fields['filter']['user'];
-						
-						$elements = $fields['xml_elements'];
-						
-						$params['order'] = $fields['order'];
-						$params['limit'] = $fields['max_records'];						
-						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
-						$params['requiredparam'] = $fields['required_url_param'];
-						$params['paramoutput'] = $fields['param'];
-						$params['sort'] = $fields['sort'];
-						$params['startpage'] = $fields['page_number'];
-						
-						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.user.php');", $dsShell);
-						
-						break;
-						
-					case 'navigation':
-					
-						$filters = $fields['filter']['navigation'];
-					
-						$params['order'] = $fields['order'];
-						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
-						$params['requiredparam'] = $fields['required_url_param'];			
-						
-						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.navigation.php');", $dsShell);
-						
-						break;
-						
-					case 'dynamic_xml':
-					
-						$namespaces = $fields['dynamic_xml']['namespace'];
-						
-						$filters = array();
-						
-						for($ii = 0; $ii < count($namespaces['name']); $ii++){
-							$filters[$namespaces['name'][$ii]] = $namespaces['uri'][$ii];
-						}
-						
-						$params['url'] = $fields['dynamic_xml']['url'];
-						$params['xpath'] = $fields['dynamic_xml']['xpath'];
-						$params['cache'] = $fields['dynamic_xml']['cache'];
-						$params['timeout'] = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : '6');
-						
-						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.dynamic_xml.php');", $dsShell);
-						
-						break;
-						
-					case 'static_xml':
-						
-						$fields['static_xml'] = trim($fields['static_xml']);
-						
-						if(preg_match('/^<\?xml/i', $fields['static_xml']) == true){
-							// Need to remove any XML declaration
-							$fields['static_xml'] = preg_replace('/^<\?xml[^>]+>/i', NULL, $fields['static_xml']);
-						}
-						
-						$value = sprintf(
-							'$result = "%s";',
-							addslashes(trim($fields['static_xml']))
-						);
-						$dsShell = str_replace('<!-- GRAB -->', $value, $dsShell);
-						break;
-						
-					default:
-
-						$elements = $fields['xml_elements'];
-
-						if(is_array($fields['filter']) && !empty($fields['filter'])){
-							$filters = array();
-							
-							foreach($fields['filter'] as $f){
-								foreach($f as $key => $val) $filters[$key] = $val;
-							}
-						}
-						
-						$params['order'] = $fields['order'];
-						$params['group'] = $fields['group'];
-						$params['limit'] = $fields['max_records'];
-						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
-						$params['requiredparam'] = $fields['required_url_param'];
-						$params['paramoutput'] = $fields['param'];
-						$params['sort'] = $fields['sort'];
-						$params['startpage'] = $fields['page_number'];
-						$params['htmlencode'] = $fields['html_encode'];
-						$params['associatedentrycounts'] = $fields['associated_entry_counts'];
-						
-						if ($params['associatedentrycounts'] == NULL) $params['associatedentrycounts'] = 'no';
-						
-						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.section.php');", $dsShell);
-						
-						break;
-											
-				}
-				
-				$this->__injectVarList($dsShell, $params);
-				$this->__injectAboutInformation($dsShell, $about);
-				$this->__injectIncludedElements($dsShell, $elements);
-				$this->__injectFilters($dsShell, $filters);
-				
-				$dsShell = str_replace('<!-- CLASS NAME -->', $classname, $dsShell);
-				$dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
-				
-				if(preg_match_all('@{(\$ds-[^}]+)}@i', $dsShell, $matches)){
-					
-					$dependancies = array();
-					
-					foreach($matches[1] as $match){
-						if(preg_match_all('/(\$ds-[^:]+)/i', $match, $inner_matches)) $dependancies = array_merge($dependancies, $inner_matches[1]);
-					}
-					
-					$dependancies = General::array_remove_duplicates($dependancies);
-					
-					$dsShell = str_replace('<!-- DS DEPENDANCY LIST -->', "'" . implode("', '", $dependancies) . "'", $dsShell);
-				}
-								
-				## Remove left over placeholders
-				$dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\r\n){2,}/', '/(\t+[\r\n]){2,}/'), '', $dsShell);	
-
-				##Write the file
-				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file')))
-					$this->pageAlert(__('Failed to write Data source to <code>%s</code>. Please check permissions.', array(DATASOURCES)), Alert::ERROR);
-
-				##Write Successful, add record to the database
-				else{
-					
-					if($queueForDeletion){
-						
-						General::deleteFile($queueForDeletion);
-						
-						## Update pages that use this DS
-				
-						$sql = "SELECT * FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]".$existing_handle."[[:>:]]' ";
-						$pages = Symphony::Database()->fetch($sql);
-
-						if(is_array($pages) && !empty($pages)){
-							foreach($pages as $page){
-								
-								$page['data_sources'] = preg_replace('/\b'.$existing_handle.'\b/i', $classname, $page['data_sources']);
-								
-								Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
-							}
-						}
-					}
-					
-					### TODO: Fix me
-					###
-					# Delegate: Create
-					# Description: After saving the datasource, the file path is provided and an array 
-					#              of variables set by the editor
-					#$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('file' => $file, 'defines' => $defines, 'var' => $var));
-
-	                redirect(URL . '/symphony/blueprints/datasources/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
-
-				}
-			}
-		}
 		
 		function __injectIncludedElements(&$shell, $elements){
 			if(!is_array($elements) || empty($elements)) return;

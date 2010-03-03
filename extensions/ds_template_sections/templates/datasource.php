@@ -28,6 +28,10 @@
 			return %s;
 		}
 		
+		public function canHTMLEncodeText() {
+			return %s;
+		}
+		
 		public function canRedirectOnEmpty() {
 			return %s;
 		}
