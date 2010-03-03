@@ -1,7 +1,11 @@
 <?php
 	
 	class SectionsDataSource extends DataSource {
-		public function canCountAssociatedEntries() {
+		public function canAppendAssociatedEntryCount() {
+			return false;
+		}
+		
+		public function canAppendPagination() {
 			return false;
 		}
 		
@@ -21,12 +25,16 @@
 			return array();
 		}
 		
-		public function getLimit() {
-			return 20;
-		}
-		
 		public function getOutputParams() {
 			return array();
+		}
+		
+		public function getPaginationLimit() {
+			return '20';
+		}
+		
+		public function getPaginationPage() {
+			return '1';
 		}
 		
 		public function getRequiredURLParam() {
@@ -37,16 +45,16 @@
 			return 'sections';
 		}
 		
+		public function getSection() {
+			return null;
+		}
+		
 		public function getSortField() {
 			return 'system:id';
 		}
 		
 		public function getSortOrder() {
 			return 'desc';
-		}
-		
-		public function getStartPage() {
-			return 1;
 		}
 		
 		public function getTemplate() {

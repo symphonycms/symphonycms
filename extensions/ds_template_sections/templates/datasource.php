@@ -20,7 +20,11 @@
 			return true;
 		}
 		
-		public function canCountAssociatedEntries() {
+		public function canAppendAssociatedEntryCount() {
+			return %s;
+		}
+		
+		public function canAppendPagination() {
 			return %s;
 		}
 		
@@ -40,11 +44,15 @@
 			return %s;
 		}
 		
-		public function getLimit() {
+		public function getOutputParams() {
 			return %s;
 		}
 		
-		public function getOutputParams() {
+		public function getPaginationLimit() {
+			return %s;
+		}
+		
+		public function getPaginationPage() {
 			return %s;
 		}
 		
@@ -56,15 +64,15 @@
 			return %s;
 		}
 		
+		public function getSection() {
+			return %s;
+		}
+		
 		public function getSortField() {
 			return %s;
 		}
 		
 		public function getSortOrder() {
-			return %s;
-		}
-		
-		public function getStartPage() {
 			return %s;
 		}
 	}

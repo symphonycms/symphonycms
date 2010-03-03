@@ -89,7 +89,6 @@
 				$failed = true;
 			}
 			
-			$context['fields'] = $fields;
 			$context['errors'] = $errors;
 			$context['failed'] = $failed;
 			
