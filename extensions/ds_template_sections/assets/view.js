@@ -1,7 +1,9 @@
 jQuery(document).ready(function() {
-	jQuery('#context').bind('change', function() {
+	var update = function() {
 		jQuery('.context').hide().filter('.context-' + this.value).show();
-	}).change();
+	};
+	
+	jQuery('#context').bind('change', update).bind('keyup', update).change();
 	
 	// Cleanup old contexts:
 	jQuery('form').bind('submit', function() {
