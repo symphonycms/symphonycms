@@ -19,13 +19,13 @@
 	}
 
 	if(!function_exists('processRecordGroup')){
-		function processRecordGroup(&$wrapper, $element, $group, $ds, &$Parent, &$entryManager, &$fieldPool, $param_output_only=false){
+		function processRecordGroup(&$wrapper, $element, $group, $ds, &$Parent, &$EntryManager, &$fieldPool, $param_output_only=false){
 			$associated_sections = NULL;
 			
 			$xGroup = new XMLElement($element, NULL, $group['attr']);
 			$key = 'ds-' . $ds->dsParamROOTELEMENT;
 			
-			if(!$section = $entryManager->sectionManager->fetch($ds->getSource())){
+			if(!$section = SectionManager::instance()->fetch($ds->getSource())){
 				$about = $ds->about();
 				throw new Exception(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])));
 			}
@@ -68,7 +68,7 @@
 					foreach($data as $field_id => $values){
 
 						if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id]))
-							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
+							$fieldPool[$field_id] = FieldManager::instance()->fetch($field_id);
 
 						if(isset($ds->dsParamPARAMOUTPUT) && $ds->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
 							appendParamOutputValue(
@@ -97,7 +97,7 @@
 			
 			if(is_array($group['groups']) && !empty($group['groups'])){
 				foreach($group['groups'] as $element => $group){
-					foreach($group as $g) processRecordGroup($xGroup, $element, $g, $ds, $Parent, $entryManager, $fieldPool, $param_output_only);
+					foreach($group as $g) processRecordGroup($xGroup, $element, $g, $ds, $Parent, $EntryManager, $fieldPool, $param_output_only);
 				}	
 			}
 					
@@ -115,9 +115,8 @@
 	$key = 'ds-' . $this->dsParamROOTELEMENT;
 	
 	include_once(TOOLKIT . '/class.entrymanager.php');
-	$entryManager = new EntryManager($this->_Parent);
 
-	if(!$section = $entryManager->sectionManager->fetch($this->getSource())){
+	if(!$section = SectionManager::instance()->fetch($this->getSource())){
 		$about = $this->about();
 		trigger_error(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])), E_USER_ERROR);
 	}
@@ -141,7 +140,7 @@
 			if(!is_array($filter)){
 				$filter_type = $this->__determineFilterType($filter);
 	
-				$value = preg_split('/'.($filter_type == DS_FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);			
+				$value = preg_split('/'.($filter_type == Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);			
 				$value = array_map('trim', $value);
 				
 				$value = array_map(array('Datasource', 'removeEscapedCommas'), $value);
@@ -150,7 +149,7 @@
 			else $value = $filter;
 			
 			if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id]))
-				$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
+				$fieldPool[$field_id] = FieldManager::instance()->fetch($field_id);
 			
 			if($field_id != 'id' && !($fieldPool[$field_id] instanceof Field)){
 				throw new Exception(
@@ -164,24 +163,24 @@
 						
 			if($field_id == 'id') $where = " AND `e`.id IN ('".@implode("', '", $value)."') ";
 			else{ 
-				if(!$fieldPool[$field_id]->buildDSRetrivalSQL($value, $joins, $where, ($filter_type == DS_FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
+				if(!$fieldPool[$field_id]->buildDSRetrivalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
 				if(!$group) $group = $fieldPool[$field_id]->requiresSQLGrouping();
 			}
 			
 		}
 	}
 	
-	if($this->dsParamSORT == 'system:id') $entryManager->setFetchSorting('id', $this->dsParamORDER);
-	elseif($this->dsParamSORT == 'system:date') $entryManager->setFetchSorting('date', $this->dsParamORDER);
-	else $entryManager->setFetchSorting($entryManager->fieldManager->fetchFieldIDFromElementName($this->dsParamSORT, $this->getSource()), $this->dsParamORDER);
+	if($this->dsParamSORT == 'system:id') EntryManager::instance()->setFetchSorting('id', $this->dsParamORDER);
+	elseif($this->dsParamSORT == 'system:date') EntryManager::instance()->setFetchSorting('date', $this->dsParamORDER);
+	else EntryManager::instance()->setFetchSorting(FieldManager::instance()->fetchFieldIDFromElementName($this->dsParamSORT, $this->getSource()), $this->dsParamORDER);
 	
 	// combine INCLUDEDELEMENTS and PARAMOUTPUT into an array of field names
 	$datasource_schema = $this->dsParamINCLUDEDELEMENTS;
 	if (!is_array($datasource_schema)) $datasource_schema = array();
 	if ($this->dsParamPARAMOUTPUT) $datasource_schema[] = $this->dsParamPARAMOUTPUT;
-	if ($this->dsParamGROUP) $datasource_schema[] = $entryManager->fieldManager->fetchHandleFromElementName($this->dsParamGROUP);
+	if ($this->dsParamGROUP) $datasource_schema[] = FieldManager::instance()->fetchHandleFromElementName($this->dsParamGROUP);
 	
-	$entries = $entryManager->fetchByPage($this->dsParamSTARTPAGE, 
+	$entries = EntryManager::instance()->fetchByPage($this->dsParamSTARTPAGE, 
 										  $this->getSource(), 
 										  ($this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : NULL), 
 										  $where, $joins, $group, 
@@ -193,7 +192,7 @@
 	# Delegate: DataSourceEntriesBuilt
 	# Description: Immediately after building entries allow modification of the Data Source entry list
 	# Global: Yes
-	$this->_Parent->ExtensionManager->notifyMembers('DataSourceEntriesBuilt', '/frontend/', array(
+	ExtensionManager::instance()->notifyMembers('DataSourceEntriesBuilt', '/frontend/', array(
 	'datasource' => &$this,
 	'entries' => &$entries,
 	'filters' => $this->dsParamFILTERS
@@ -257,11 +256,11 @@
 		if($this->dsParamLIMIT > 0){
 		
 			if(isset($this->dsParamGROUP)):
-				$fieldPool[$this->dsParamGROUP] =& $entryManager->fieldManager->fetch($this->dsParamGROUP);		
+				$fieldPool[$this->dsParamGROUP] = FieldManager::instance()->fetch($this->dsParamGROUP);		
 				$groups = $fieldPool[$this->dsParamGROUP]->groupRecords($entries['records']);		
 		
 				foreach($groups as $element => $group){
-					foreach($group as $g) processRecordGroup($result, $element, $g, $this, $this->_Parent, $entryManager, $fieldPool, $this->_param_output_only);
+					foreach($group as $g) processRecordGroup($result, $element, $g, $this, $this->_Parent, $EntryManager, $fieldPool, $this->_param_output_only);
 				}
 		
 			else:
@@ -302,7 +301,7 @@
 					foreach($data as $field_id => $values){
 
 						if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id]))
-							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
+							$fieldPool[$field_id] = FieldManager::instance()->fetch($field_id);
 			
 						if(isset($this->dsParamPARAMOUTPUT) && $this->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
 							appendParamOutputValue(

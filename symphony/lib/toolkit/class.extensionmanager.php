@@ -15,9 +15,9 @@
 		
 		public static function instance() {
 			if (!(self::$_instance instanceof self)) {
-				self::$_instance = new self(Symphony::Parent());
+				self::$_instance = new self;
 			}
-			
+
 			return self::$_instance;
 		}
 		
@@ -202,7 +202,7 @@
 
         ## Will return a list of all extensions and their about information
         public function listAll(){
-	        
+
 			$extensions = array();
 			$result = array();
 	        $structure = General::listStructure(EXTENSIONS, array(), false, 'asc', EXTENSIONS);

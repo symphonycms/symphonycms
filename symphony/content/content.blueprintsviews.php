@@ -121,8 +121,7 @@
 			}
 			
 			$table = Widget::Table(
-				Widget::TableHead($aTableHead), null, 
-				Widget::TableBody($aTableBody), 'orderable'
+				Widget::TableHead($aTableHead), NULL, Widget::TableBody($aTableBody)
 			);
 			
 			$this->Form->appendChild($table);
@@ -131,8 +130,8 @@
 			$tableActions->setAttribute('class', 'actions');
 			
 			$options = array(
-				array(null, false, __('With Selected...')),
-				array('delete', false, __('Delete'))							
+				array(NULL, false, __('With Selected...')),
+				array('delete', false, __('Delete'))
 			);
 			
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
@@ -263,7 +262,7 @@
 			$this->_errors = new MessageStack;
 			
 			try{	
-				View::save($view, $view->path, $this->_errors); 
+				View::save($view, $this->_errors); 
 				redirect(ADMIN_URL . '/blueprints/views/template/' . $view->path . '/:saved/');
 			}
 			catch(ViewException $e){
@@ -489,7 +488,7 @@
 				foreach ($pages as $page) {
 					$options[] = array(
 						$page['id'], $fields['parent'] == $page['id'],
-						'/' . $this->_Parent->resolvePagePath($page['id'])
+						'/' . Administration::instance()->resolvePagePath($page['id'])
 					);
 				}
 				
@@ -551,7 +550,6 @@
 			
 			$label = Widget::Label(__('Events'));
 			
-			$manager = new EventManager($this->_Parent);
 			$events = $manager->listAll();
 			
 			$options = array();
@@ -569,7 +567,6 @@
 
 			$label = Widget::Label(__('Data Sources'));
 			
-			$manager = new DatasourceManager($this->_Parent);
 			$datasources = $manager->listAll();
 			
 			$options = array();
@@ -800,7 +797,7 @@
 					$fields['path'] = null;
 					
 					if($fields['parent']) {
-						$fields['path'] = $this->_Parent->resolvePagePath((integer)$fields['parent']);
+						$fields['path'] = Administration::instance()->resolvePagePath((integer)$fields['parent']);
 					}
 					
 					// Check for duplicates:

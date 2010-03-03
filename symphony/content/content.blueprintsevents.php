@@ -23,9 +23,7 @@
 			
 			$eTableBody = array();
 			
-			$eventManager = new EventManager($this->_Parent);
-			$sectionManager = new SectionManager($this->_Parent);
-			$events = $eventManager->listAll();
+			$events = eventManager::instance()->listAll();
 			
 			if(!is_array($events) or empty($events)) {
 				$eTableBody[] = Widget::TableRow(array(
@@ -34,8 +32,8 @@
 			}
 			
 			else foreach($events as $event) {
-				$instance = $eventManager->create($event['handle']);
-				$section = $sectionManager->fetch($instance->getSource());
+				$instance = eventManager::instance()->create($event['handle']);
+				$section = SectionManager::instance()->fetch($instance->getSource());
 				
 				$view_mode = ($event['can_parse'] ? 'edit' : 'info');
 				
@@ -154,15 +152,13 @@
 			$isEditing = ($readonly ? true : false);
 			$fields = array();
 			
-			$sectionManager = new SectionManager($this->_Parent);
 			
 			if($this->_context[0] == 'edit' || $this->_context[0] == 'info'){	
 				$isEditing = true;
 				
 				$handle = $this->_context[1];
 				
-				$EventManager = new EventManager($this->_Parent);
-				$existing =& $EventManager->create($handle);
+				$existing =& EventManager::instance()->create($handle);
 				
 				$about = $existing->about();
 				
@@ -222,7 +218,7 @@
 			
 				$label = Widget::Label(__('Source'));	
 			
-			    $sections = $sectionManager->fetch(NULL, 'ASC', 'name');
+			    $sections = SectionManager::instance()->fetch(NULL, 'ASC', 'name');
 			
 				$options = array();
 			
@@ -246,7 +242,7 @@
 				###
 				# Delegate: AppendEventFilter
 				# Description: Allows adding of new filter rules to the Event filter rule select box. A reference to the $options array is provided, and selected filters
-				$this->_Parent->ExtensionManager->notifyMembers('AppendEventFilter', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $fields['filters'], 'options' => &$options));
+				ExtensionManager::instance()->notifyMembers('AppendEventFilter', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $fields['filters'], 'options' => &$options));
 			
 				$label->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
 				$fieldset->appendChild($label);		
@@ -265,24 +261,26 @@
 				$this->Form->appendChild($fieldset);
 			endif;
 
+
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Input Overrides &amp; Default Values')));	
 			$fieldset->appendChild(new XMLElement('p', __('Specify fields in the <code>POST</code> data to either override or set to a default value if not set.'), array('class' => 'help')));
 			
-			foreach($sections as $s){
-				
-				$fieldset->appendChild(
-					$this->__buildDefaultsAndOverridesDuplicator(
-						$s, 
-						($fields['source'] == $s->get('id') 
-							? array('overrides' => $fields['overrides'], 'defaults' => $fields['defaults'])
-							: NULL
+			if(is_array($sections) && !empty($sections)){
+				foreach($sections as $s){
+					$fieldset->appendChild(
+						$this->__buildDefaultsAndOverridesDuplicator(
+							$s, 
+							($fields['source'] == $s->get('id') 
+								? array('overrides' => $fields['overrides'], 'defaults' => $fields['defaults'])
+								: NULL
+							)
 						)
-					)
-				);
+					);
+				}
 			}
-
+			
 			$this->Form->appendChild($fieldset);
 			
 			
@@ -464,7 +462,7 @@
 				###
 				# Delegate: Delete
 				# Description: Prior to deleting the event file. Target file path is provided.
-				#$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array("file" => EVENTS . "/event." . $_REQUEST['file'] . ".php"));
+				#ExtensionManager::instance()->notifyMembers('Delete', getCurrentPage(), array("file" => EVENTS . "/event." . $_REQUEST['file'] . ".php"));
 
 		    	if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php'))
 					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
@@ -604,8 +602,7 @@
 				$container = new XMLElement('form', NULL, array('method' => 'post', 'action' => '', 'enctype' => 'multipart/form-data'));
 				$container->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 
-				$sectionManager = new SectionManager($this->_Parent);
-				$section = $sectionManager->fetch($fields['source']);
+				$section = SectionManager::instance()->fetch($fields['source']);
 				$markup = NULL;
 				foreach($section->fetchFields() as $f){
 					if ($f->getExampleFormMarkup() instanceof XMLElement)
@@ -659,7 +656,7 @@
 				###
 				# Delegate: AppendEventFilterDocumentation
 				# Description: Allows adding documentation for new filters. A reference to the $documentation array is provided, along with selected filters
-				$this->_Parent->ExtensionManager->notifyMembers(
+				ExtensionManager::instance()->notifyMembers(
 					'AppendEventFilterDocumentation', 
 					'/blueprints/events/' . $this->_context[0] . '/', 
 					array('selected' => $fields['filters'], 'documentation' => &$documentation_parts)
@@ -720,7 +717,7 @@
 					# Delegate: Create
 					# Description: After saving the event, the file path is provided and an array 
 					#              of variables set by the editor
-					#$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('file' => $file, 'defines' => $defines, 'var' => $var));
+					#ExtensionManager::instance()->notifyMembers('Create', getCurrentPage(), array('file' => $file, 'defines' => $defines, 'var' => $var));
 
 	                redirect(URL . '/symphony/blueprints/events/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
 

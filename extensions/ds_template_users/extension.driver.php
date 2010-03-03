@@ -7,7 +7,7 @@
 				'version'		=> '1.0.0',
 				'release-date'	=> '2010-02-26',
 				'type'			=> array(
-					'Data Source Type'
+					'Data Source Template',
 				),
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',
@@ -246,5 +246,3 @@
 		 	$wrapper->appendChild($li);
 		}
 	}
-	
-?>

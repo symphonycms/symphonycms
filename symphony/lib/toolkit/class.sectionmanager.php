@@ -90,16 +90,14 @@
 
 			## Delete all the entries
 			include_once(TOOLKIT . '/class.entrymanager.php');
-			$entryManager = new EntryManager($this->_Parent);
 			$entries = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_entries` WHERE `section_id` = '$section_id'");			
-			$entryManager->delete($entries);
+			EntryManager::instance()->delete($entries);
 			
 			## Delete all the fields
-			$fieldManager = new FieldManager($this->_Parent);
 			$fields = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '$section_id'");				
 			
 			if(is_array($fields) && !empty($fields)){
-				foreach($fields as $field_id) $fieldManager->delete($field_id);
+				foreach($fields as $field_id) fieldManager::instance()->delete($field_id);
 			}
 			
 			## Delete the section

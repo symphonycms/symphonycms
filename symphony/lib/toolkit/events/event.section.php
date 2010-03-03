@@ -51,7 +51,7 @@
 			# Delegate: EventPreSaveFilter
 			# Description: Prior to saving entry from the front-end. This delegate will force the Event to terminate if it populates the error
 			#              array reference. Provided with references to this object, the POST data and also the error array
-			$obj->ExtensionManager->notifyMembers('EventPreSaveFilter', '/frontend/', array('fields' => $fields, 'event' => &$event, 'messages' => &$filter_results, 'post_values'  => &$post_values));
+			ExtensionManager::instance()->notifyMembers('EventPreSaveFilter', '/frontend/', array('fields' => $fields, 'event' => &$event, 'messages' => &$filter_results, 'post_values'  => &$post_values));
 
 			if(is_array($filter_results) && !empty($filter_results)){
 				foreach($filter_results as $fr){
@@ -69,22 +69,16 @@
 					}
 				}
 			}
-			
-			include_once(TOOLKIT . '/class.sectionmanager.php');
-			include_once(TOOLKIT . '/class.entrymanager.php');
 
-			$sectionManager = new SectionManager($obj);
-
-			if(!$section = $sectionManager->fetch($source)){
+			if(!$section = SectionManager::instance()->fetch($source)){
 				$result->setAttribute('result', 'error');			
 				$result->appendChild(new XMLElement('message', __('Section is invalid')));
 				return false;
 			}
 
-			$entryManager = new EntryManager($obj);
 
 			if(isset($entry_id) && $entry_id != NULL){
-				$entry =& $entryManager->fetch($entry_id);	
+				$entry =& EntryManager::instance()->fetch($entry_id);	
 				$entry = $entry[0];
 
 				if(!is_object($entry)){
@@ -96,7 +90,7 @@
 			}
 
 			else{
-				$entry =& $entryManager->create();
+				$entry =& EntryManager::instance()->create();
 				$entry->set('section_id', $source);
 			}
 		
@@ -108,7 +102,7 @@
 				$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 
 				foreach($errors as $field_id => $message){
-					$field = $entryManager->fieldManager->fetch($field_id);
+					$field = FieldManager::instance()->fetch($field_id);
 					$result->appendChild(new XMLElement($field->get('element_name'), NULL, array('type' => ($fields[$field->get('element_name')] == '' ? 'missing' : 'invalid'), 'message' => General::sanitize($message))));
 				}
 
@@ -125,7 +119,7 @@
 				}
 
 				foreach($errors as $err){
-					$field = $entryManager->fieldManager->fetch($err['field_id']);
+					$field = FieldManager::instance()->fetch($err['field_id']);
 					$result->appendChild(new XMLElement($field->get('element_name'), NULL, array('type' => 'invalid')));
 				}		
 
@@ -252,7 +246,7 @@
 			# Delegate: EventPostSaveFilter
 			# Description: After saving entry from the front-end. This delegate will not force the Events to terminate if it populates the error
 			#              array reference. Provided with references to this object, the POST data and also the error array
-			$obj->ExtensionManager->notifyMembers('EventPostSaveFilter', '/frontend/', array('entry_id' => $entry->get('id'), 
+			ExtensionManager::instance()->notifyMembers('EventPostSaveFilter', '/frontend/', array('entry_id' => $entry->get('id'), 
 																							 'fields' => $fields, 
 																							 'entry' => $entry, 
 																							 'event' => &$event, 
@@ -270,7 +264,7 @@
 			
 			###
 			# Delegate: EventFinalSaveFilter
-			$obj->ExtensionManager->notifyMembers(
+			ExtensionManager::instance()->notifyMembers(
 				'EventFinalSaveFilter', '/frontend/', array(
 					'fields'	=> $fields,
 					'event'		=> &$event,

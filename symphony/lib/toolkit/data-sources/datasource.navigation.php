@@ -11,14 +11,14 @@
 	}
 
 	if(!function_exists('__processNavigationTypeFilter')){	
-		function __processNavigationTypeFilter($filter, $database, $filtertype=DS_FILTER_OR){
+		function __processNavigationTypeFilter($filter, $database, $filtertype=Datasource::FILTER_OR){
 
-			$types = preg_split('/'.($filtertype == DS_FILTER_AND ? '\+' : ',').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);			
+			$types = preg_split('/'.($filtertype == Datasource::FILTER_AND ? '\+' : ',').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);			
 			$types = array_map('trim', $types);
 
 			switch($filtertype){
 		
-				case DS_FILTER_AND:
+				case Datasource::FILTER_AND:
 		
 					$sql = "SELECT `a`.`id`
 							FROM (
@@ -34,7 +34,7 @@
 			
 					break;
 			
-				case DS_FILTER_OR:
+				case Datasource::FILTER_OR:
 		
 					$sql = "SELECT `page_id` AS `id` FROM `tbl_pages_types` WHERE `type` IN ('".implode("', '", $types)."')";		
 					break;

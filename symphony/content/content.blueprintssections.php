@@ -8,18 +8,13 @@
 	Class contentBlueprintsSections extends AdministrationPage{
 
 		public $_errors;
-		
-		public function __construct(&$parent){
-			parent::__construct($parent);
-		}
-		
+
 		public function __viewIndex(){
 			$this->setPageType('table');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a section'), 'create button'));
 
-		    $sectionManager = new SectionManager($this->_Parent);
-		    $sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+		    $sections = SectionManager::instance()->fetch(NULL, 'ASC', 'sortorder');
 
 			$aTableHead = array(
 
@@ -92,7 +87,6 @@
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(__('Untitled'));
 			
-			$fieldManager = new FieldManager($this->_Parent);
 			$types = array();
 			
 		    $fields = $_POST['fields'];
@@ -118,7 +112,7 @@
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 			$namediv = new XMLElement('div', NULL);
 			
-			$label = Widget::Label(__('Name'));
+			$label = Widget::Label('Name');
 			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
 			
 			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
@@ -131,9 +125,8 @@
 			$div->appendChild($namediv);
 			
 			$navgroupdiv = new XMLElement('div', NULL);
-			$sectionManager = new SectionManager($this->_Parent);
-			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
-			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Created if does not exist') . '</i>');
+			$sections = SectionManager::instance()->fetch(NULL, 'ASC', 'sortorder');
+			$label = Widget::Label('Navigation Group <i>Created if does not exist</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
 			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
@@ -171,7 +164,7 @@
 			
 			if(!$showEmptyTemplate){
 				foreach($fields as $position => $data){
-					if($input = $fieldManager->create($data['type'])){
+					if($input = fieldManager::instance()->create($data['type'])){
 						$input->setArray($data);
 
 						$wrapper = new XMLElement('li');
@@ -184,8 +177,8 @@
 				}
 			}
 			
-			foreach ($fieldManager->fetchTypes() as $type) {
-				if ($type = $fieldManager->create($type)) {
+			foreach (fieldManager::instance()->fetchTypes() as $type) {
+				if ($type = fieldManager::instance()->create($type)) {
 					array_push($types, $type);
 				}
 			}
@@ -224,14 +217,12 @@
 			
 			$section_id = $this->_context[1];	
 
-		    $sectionManager = new SectionManager($this->_Parent);
 
-		    if(!$section = $sectionManager->fetch($section_id)) 
-				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for could not be found.'), false, true);
+		    if(!$section = SectionManager::instance()->fetch($section_id)) 
+				Administration::instance()->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for could not be found.'), false, true);
 
 			$meta = $section->get();
 			
-			$fieldManager = new FieldManager($this->_Parent);
 			$types = array();
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));			
@@ -275,7 +266,7 @@
 
 				if(is_array($_POST['fields']) && !empty($_POST['fields'])){
 					foreach($_POST['fields'] as $position => $data){
-						if($fields[$position] = $fieldManager->create($data['type'])){
+						if($fields[$position] = fieldManager::instance()->create($data['type'])){
 							$fields[$position]->setArray($data);
 							$fields[$position]->set('sortorder', $position);
 						}
@@ -283,7 +274,7 @@
 				}
 			}
 
-			else $fields = $fieldManager->fetch(NULL, $section_id);
+			else $fields = fieldManager::instance()->fetch(NULL, $section_id);
 
 			$meta['subsection'] = ($meta['subsection'] == 'yes' ? 1 : 0);
 			$meta['entry_order'] = (isset($meta['entry_order']) ? $meta['entry_order'] : 'date');
@@ -319,8 +310,7 @@
 			$div->appendChild($namediv);
 			
 			$navgroupdiv = new XMLElement('div', NULL);
-			$sectionManager = new SectionManager($this->_Parent);
-			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+			$sections = SectionManager::instance()->fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label(__('Navigation Group ') . '<i>' . __('Choose only one. Created if does not exist') . '</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
@@ -370,8 +360,8 @@
 				}
 			}
 			
-			foreach ($fieldManager->fetchTypes() as $type) {
-				if ($type = $fieldManager->create($type)) {
+			foreach (fieldManager::instance()->fetchTypes() as $type) {
+				if ($type = fieldManager::instance()->create($type)) {
 					array_push($types, $type);
 				}
 			}
@@ -418,22 +408,20 @@
 
 					case 'delete':
 					
-						$sectionManager = new SectionManager($this->_Parent);
-						foreach($checked as $section_id) $sectionManager->delete($section_id);
+						foreach($checked as $section_id) SectionManager::instance()->delete($section_id);
 
 						redirect(ADMIN_URL . '/blueprints/sections/');
 						break;
 						
 					case 'delete-entries':
 
-						$entryManager = new EntryManager($this->_Parent);
 						foreach($checked as $section_id) {
-							$entries = $entryManager->fetch(NULL, $section_id, NULL, NULL, NULL, NULL, false, false);
+							$entries = EntryManager::instance()->fetch(NULL, $section_id, NULL, NULL, NULL, NULL, false, false);
 							$entry_ids = array();
 							foreach($entries as $entry) {
 								$entry_ids[] = $entry['id'];
 							}
-							$entryManager->delete($entry_ids);
+							EntryManager::instance()->delete($entry_ids);
 						}
 						
 						redirect(ADMIN_URL . '/blueprints/sections/');
@@ -462,7 +450,7 @@
 				}
 
 				## Check for duplicate section handle
-				elseif(Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . Symphony::Database()->cleanValue($meta['name']) . "' LIMIT 1")){
+				elseif(Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . $meta['name'] . "' LIMIT 1")){
 					$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
 					$canProceed = false;
 				}
@@ -491,14 +479,13 @@
 						$name_list[] = $data['element_name'];
 					}	
 
-					$fieldManager = new FieldManager($this->_Parent);
 
 					$unique = array();
 
 					foreach($fields as $position => $data){
 						$required = NULL;
 
-						$field = $fieldManager->create($data['type']);
+						$field = fieldManager::instance()->create($data['type']);
 						$field->setFromPOST($data);
 
 						if($field->mustBeUnique() && !in_array($field->get('type'), $unique)) $unique[] = $field->get('type');
@@ -527,9 +514,8 @@
 			        $meta['sortorder'] = ($next ? $next : '1');
 					$meta['handle'] = Lang::createHandle($meta['name']);
 					
-				 	$sectionManager = new SectionManager($this->_Parent);
 
-					if(!$section_id = $sectionManager->add($meta)){
+					if(!$section_id = SectionManager::instance()->add($meta)){
 						$this->pageAlert(__('An unknown database occurred while attempting to create the section.'), Alert::ERROR);
 					}
 
@@ -539,7 +525,7 @@
 						if(is_array($fields) && !empty($fields)){
 							foreach($fields as $position => $data){
 
-								$field = $fieldManager->create($data['type']);
+								$field = fieldManager::instance()->create($data['type']);
 								$field->setFromPOST($data);
 								$field->set('sortorder', $position);
 								$field->set('parent_section', $section_id);
@@ -553,7 +539,7 @@
 									###
 									# Delegate: FieldPostCreate
 									# Description: After creation of an Field. New Field object is provided.
-									$this->_Parent->ExtensionManager->notifyMembers('FieldPostCreate', '/blueprints/sections/', array('field' => &$field, 'data' => &$data));
+									ExtensionManager::instance()->notifyMembers('FieldPostCreate', '/blueprints/sections/', array('field' => &$field, 'data' => &$data));
 
 						        }
 							}
@@ -563,7 +549,7 @@
 						###
 						# Delegate: Create
 						# Description: Creation of a new Section. Section ID and Primary Field ID are provided.
-						#$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('section_id' => $section_id));
+						#ExtensionManager::instance()->notifyMembers('Create', getCurrentPage(), array('section_id' => $section_id));
 
 		               	redirect(ADMIN_URL . "/blueprints/sections/edit/$section_id/created/");
 								
@@ -585,10 +571,8 @@
 				$meta = $_POST['meta'];
 
 				$section_id = $this->_context[1];	
-			    $sectionManager = new SectionManager($this->_Parent);
-				$existing_section = $sectionManager->fetch($section_id);
+				$existing_section = SectionManager::instance()->fetch($section_id);
 
-				$fieldManager = new FieldManager($this->_Parent);
 
 				$this->_errors = array();
 
@@ -634,14 +618,13 @@
 
 					if($canProceed){
 
-						$fieldManager = new FieldManager($this->_Parent);
 						
 						$unique = array();
 						
 						foreach($fields as $position => $data){
 							$required = NULL;
 
-							$field = $fieldManager->create($data['type']);
+							$field = fieldManager::instance()->create($data['type']);
 							$field->setFromPOST($data);
 
 							if($field->mustBeUnique() && !in_array($field->get('type'), $unique)) $unique[] = $field->get('type');
@@ -667,7 +650,7 @@
 					$meta['handle'] = Lang::createHandle($meta['name']);
 					$meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
 
-			        if(!$sectionManager->edit($section_id, $meta)){
+			        if(!SectionManager::instance()->edit($section_id, $meta)){
 						$this->pageAlert(__('An unknown database occurred while attempting to create the section.'), Alert::ERROR);
 					}
 
@@ -685,7 +668,7 @@
 
 						if(is_array($missing_cfs) && !empty($missing_cfs)){
 							foreach($missing_cfs as $id){
-								$fieldManager->delete($id);
+								fieldManager::instance()->delete($id);
 							}
 						}
 
@@ -693,7 +676,7 @@
 						if(is_array($fields) && !empty($fields)){				
 							foreach($fields as $position => $data){
 
-								$field = $fieldManager->create($data['type']);
+								$field = fieldManager::instance()->create($data['type']);
 								$field->setFromPOST($data);
 								$field->set('sortorder', (string)$position);
 								$field->set('parent_section', $section_id);
@@ -710,7 +693,7 @@
 									# Delegate: FieldPostCreate
 									# Delegate: FieldPostEdit
 									# Description: After creation/editing of an Field. New Field object is provided.
-									$this->_Parent->ExtensionManager->notifyMembers(($bEdit ? 'FieldPostEdit' : 'FieldPostCreate'), '/blueprints/sections/', array('field' => &$field, 'data' => &$data));
+									ExtensionManager::instance()->notifyMembers(($bEdit ? 'FieldPostEdit' : 'FieldPostCreate'), '/blueprints/sections/', array('field' => &$field, 'data' => &$data));
 
 								}
 							}
@@ -720,7 +703,7 @@
 						###
 						# Delegate: Edit
 						# Description: After editing a Section. The ID is provided.
-						#$ExtensionManager->notifyMembers('Edit', getCurrentPage(), array('section_id' => $section_id));
+						#ExtensionManager::instance()->notifyMembers('Edit', getCurrentPage(), array('section_id' => $section_id));
 
 		                redirect(ADMIN_URL . "/blueprints/sections/edit/$section_id/saved/");							
 
@@ -730,8 +713,7 @@
 
 			if(@array_key_exists("delete", $_POST['action'])){
 				$section_id = $this->_context[1];
-			    $sectionManager = new SectionManager($this->_Parent);
-				$sectionManager->delete($section_id);
+				SectionManager::instance()->delete($section_id);
 				redirect(ADMIN_URL . '/blueprints/sections/');
 			}
 	

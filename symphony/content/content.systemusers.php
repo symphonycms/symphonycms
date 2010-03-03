@@ -8,8 +8,8 @@
 		private $_User;
 		private $_errors;
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function __construct(){
+			parent::__construct();
 			$this->_errors = array();		
 		}
 		
@@ -98,7 +98,7 @@
 				###
 				# Delegate: Delete
 				# Description: Prior to deleting an User. ID is provided.
-				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('user_id' => $user_id));		
+				//ExtensionManager::instance()->notifyMembers('Delete', getCurrentPage(), array('user_id' => $user_id));		
 				
 				foreach($checked as $user_id){
 					if(Administration::instance()->User->id == $user_id) continue;
@@ -123,7 +123,7 @@
 			require_once(TOOLKIT . '/class.field.php');	
 			
 			## Handle unknow context
-			if(!in_array($this->_context[0], array('new', 'edit'))) $this->_Parent->errorPageNotFound();	
+			if(!in_array($this->_context[0], array('new', 'edit'))) Administration::instance()->errorPageNotFound();	
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
@@ -173,7 +173,7 @@
 				if(!$user_id = $this->_context[1]) redirect(ADMIN_URL . '/system/users/');
 			
 				if(!$user = UserManager::fetchByID($user_id)){
-					$this->_Parent->customError(E_USER_ERROR, 'User not found', 'The user profile you requested does not exist.');
+					Administration::instance()->customError(E_USER_ERROR, 'User not found', 'The user profile you requested does not exist.');
 				}
 			}
 			
@@ -224,8 +224,7 @@
 
 			$label = Widget::Label(__('Default Section'));
 			
-		    $sectionManager = new SectionManager($this->_Parent);
-		    $sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+		    $sections = SectionManager::instance()->fetch(NULL, 'ASC', 'sortorder');
 		
 			$options = array();
 			
@@ -268,7 +267,7 @@
 			###
 			
 			### Custom Language Selection ###
-			$languages = Lang::getAvailableLanguages(Administration::instance()->ExtensionManager);
+			$languages = Lang::getAvailableLanguages(true);
 			if(count($languages > 1)) {
 				
 				// Get language names
@@ -334,7 +333,7 @@
 				###
 				# Delegate: PreCreate
 				# Description: Just before creation of a new User. User object, fields and error array provided
-				Administration::instance()->ExtensionManager->notifyMembers(
+				ExtensionManager::instance()->notifyMembers(
 					'PreCreate', '/system/users/new/', 
 					array(
 						'fields' => $fields, 
@@ -354,7 +353,7 @@
 						###
 						# Delegate: PostCreate
 						# Description: Just after creation of a new User. The ID of the User is provided.
-						Administration::instance()->ExtensionManager->notifyMembers('PostCreate', '/system/users/new/', array('user' => $this->_User));
+						ExtensionManager::instance()->notifyMembers('PostCreate', '/system/users/new/', array('user' => $this->_User));
 						
 			  		   redirect(ADMIN_URL . "/system/users/edit/{$this->_User->id}/created/");	
 	
@@ -405,7 +404,7 @@
 				###
 				# Delegate: PreSave
 				# Description: Just before creation of a new User. User object, fields and error array provided
-				Administration::instance()->ExtensionManager->notifyMembers(
+				ExtensionManager::instance()->notifyMembers(
 					'PreSave', '/system/users/edit/', 
 					array(
 						'fields' => $fields, 
@@ -431,7 +430,7 @@
 						###
 						# Delegate: PostSave
 						# Description: Just after creation of a new User. The ID of the User is provided.
-						Administration::instance()->ExtensionManager->notifyMembers('PostSave', '/system/users/edit/', array('user' => $this->_User));	
+						ExtensionManager::instance()->notifyMembers('PostSave', '/system/users/edit/', array('user' => $this->_User));	
 
 		  		    	redirect(ADMIN_URL . "/system/users/edit/{$this->_User->id}/saved/");
 
@@ -454,7 +453,7 @@
 				###
 				# Delegate: Delete
 				# Description: Prior to deleting an User. ID is provided.
-				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('user_id' => $user_id));		
+				//ExtensionManager::instance()->notifyMembers('Delete', getCurrentPage(), array('user_id' => $user_id));		
 
 				UserManager::delete($user_id);
 

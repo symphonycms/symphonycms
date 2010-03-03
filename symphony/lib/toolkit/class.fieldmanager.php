@@ -2,9 +2,10 @@
 
 	require_once(TOOLKIT . '/class.field.php');
 	
-	Class FieldManager{
+	Class FieldManager implements Singleton{
+		
+		static private $_instance;
 
-		public $_Parent;
 		private static $_initialiased_fields = array();
 		private static $_pool = array();
 		
@@ -16,17 +17,12 @@
 			return self::$_instance;
 		}
 
-		function __construct(&$parent){
-			$this->_Parent = &$parent;
-		}
-
 	    function __find($type){
 		 
 		    if(@is_file(TOOLKIT . "/fields/field.{$type}.php")) return TOOLKIT . '/fields';
 			else{	  
 				
-				$extensionManager = new ExtensionManager($this->_Parent);
-				$extensions = $extensionManager->listInstalledHandles();
+				$extensions = ExtensionManager::instance()->listInstalledHandles();
 
 				if(is_array($extensions) && !empty($extensions)){
 					foreach($extensions as $e){
@@ -95,7 +91,7 @@
 		//}
 		
 		public function fetchHandleFromElementName($id){
-			return $this->_Parent->Database->fetchVar('element_name', 0, "SELECT `element_name` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
+			return Symphony::Database()->fetchVar('element_name', 0, "SELECT `element_name` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
 		}
 		
 		public function fetchTypes() {

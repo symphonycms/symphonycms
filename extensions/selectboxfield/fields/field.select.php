@@ -292,8 +292,7 @@
 			
 			$label = Widget::Label(__('Dynamic Options'));
 			
-			$sectionManager = new SectionManager($this->_engine);
-		    $sections = $sectionManager->fetch(NULL, 'ASC', 'name');
+		    $sections = SectionManager::instance()->fetch(NULL, 'ASC', 'name');
 			$field_groups = array();
 			
 			if(is_array($sections) && !empty($sections))

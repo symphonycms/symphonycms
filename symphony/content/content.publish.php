@@ -6,10 +6,10 @@
 	
 	Class contentPublish extends AdministrationPage{
 		
-		var $_errors;
+		private $_errors;
 		
-		function __construct(&$parent){
-			parent::__construct($parent);
+		function __construct(){
+			parent::__construct();
 			$this->_errors = array();
 		}
 		
@@ -22,7 +22,7 @@
 				## If there is no action function, just return without doing anything
 				if($type == 'action') return;
 				
-				$this->_Parent->errorPageNotFound();
+				Administration::instance()->errorPageNotFound();
 				
 			}
 			
@@ -40,18 +40,16 @@
 		
 		function __viewIndex(){	
 
-			$sectionManager = new SectionManager($this->_Parent);
 			
-			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
+			if(!$section_id = SectionManager::instance()->fetchIDFromHandle($this->_context['section_handle']))
+				Administration::instance()->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
 			
-			$section = $sectionManager->fetch($section_id);
+			$section = SectionManager::instance()->fetch($section_id);
 
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
 			$this->Form->setAttribute("class", $this->_context['section_handle']);
 
-			$entryManager = new EntryManager($this->_Parent);
 
 		    $users = UserManager::fetch();
 		
@@ -73,7 +71,7 @@
 																			   WHERE `s`.`id` = `f`.`parent_section` 
 																			   AND f.`element_name` = '$field_name' 
 																			   AND `s`.`handle` = '".$section->get('handle')."' LIMIT 1");
-					$field =& $entryManager->fieldManager->fetch($filter);
+					$field = FieldManager::instance()->fetch($filter);
 
 					if(is_object($field)){
 						$field->buildDSRetrivalSQL(array($filter_value), $joins, $where, false);
@@ -95,13 +93,13 @@
 				$order = ($_REQUEST['order'] ? strtolower($_REQUEST['order']) : 'asc');
 				
 				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
-					$sectionManager->edit($section->get('id'), array('entry_order' => $sort, 'entry_order_direction' => $order));
+					SectionManager::instance()->edit($section->get('id'), array('entry_order' => $sort, 'entry_order_direction' => $order));
 					redirect(Administration::instance()->getCurrentPageURL().($filter ? "&filter=$field_handle:$filter_value" : ''));
 				}
 			}
 
 			elseif(isset($_REQUEST['unsort'])){
-				$sectionManager->edit($section->get('id'), array('entry_order' => NULL, 'entry_order_direction' => NULL));
+				SectionManager::instance()->edit($section->get('id'), array('entry_order' => NULL, 'entry_order_direction' => NULL));
 				redirect(Administration::instance()->getCurrentPageURL());
 			}
 
@@ -117,11 +115,11 @@
 				$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), __('Create a new entry'), 'create button'));
 			}
 			
-			if(is_null($entryManager->getFetchSorting()->field) && is_null($entryManager->getFetchSorting()->direction)){
-				$entryManager->setFetchSortingDirection('DESC');
+			if(is_null(EntryManager::instance()->getFetchSorting()->field) && is_null(EntryManager::instance()->getFetchSorting()->direction)){
+				EntryManager::instance()->setFetchSortingDirection('DESC');
 			}
 			
-			$entries = $entryManager->fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins);
+			$entries = EntryManager::instance()->fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins);
 			
 			$aTableHead = array();
 			
@@ -159,7 +157,7 @@
 			if(is_array($associated_sections) && !empty($associated_sections)){
 				$child_sections = array();
 				foreach($associated_sections as $key => $as){
-					$child_sections[$key] = $sectionManager->fetch($as['child_section_id']);
+					$child_sections[$key] = SectionManager::instance()->fetch($as['child_section_id']);
 					$aTableHead[] = array($child_sections[$key]->get('name'), 'col');
 				}
 			}
@@ -228,7 +226,7 @@
 					if(is_array($child_sections) && !empty($child_sections)){
 						foreach($child_sections as $key => $as){
 
-							$field = $entryManager->fieldManager->fetch((int)$associated_sections[$key]['child_section_field_id']);
+							$field = FieldManager::instance()->fetch((int)$associated_sections[$key]['child_section_field_id']);
 
 							$parent_section_field_id = (int)$associated_sections[$key]['parent_section_field_id'];
 							
@@ -361,11 +359,11 @@
 						# Delegate: Delete
 						# Description: Prior to deletion of entries. Array of Entries is provided.
 						#              The array can be manipulated
-						Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
+						ExtensionManager::instance()->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
 
-						$entryManager = new EntryManager($this->_Parent);					
+						$EntryManager = new EntryManager($this->_Parent);					
 
-						$entryManager->delete($checked);
+						EntryManager::instance()->delete($checked);
 
 					 	redirect($_SERVER['REQUEST_URI']);
 
@@ -377,11 +375,10 @@
 						
 						if($option == 'toggle'){
 
-							$entryManager = new EntryManager($this->_Parent);
-							$field = $entryManager->fieldManager->fetch($field_id);
+							$field = FieldManager::instance()->fetch($field_id);
 
 							foreach($checked as $entry_id){
-								$entry = $entryManager->fetch($entry_id);						
+								$entry = EntryManager::instance()->fetch($entry_id);						
 								$entry[0]->setData($field_id, $field->toggleFieldData($entry[0]->getData($field_id), $value));							
 								$entry[0]->commit();
 							}
@@ -406,12 +403,11 @@
 		}
 		
 		public function __viewNew() {
-			$sectionManager = new SectionManager($this->_Parent);
 			
-			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
+			if(!$section_id = SectionManager::instance()->fetchIDFromHandle($this->_context['section_handle']))
+				Administration::instance()->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
 		
-		    $section = $sectionManager->fetch($section_id);
+		    $section = SectionManager::instance()->fetch($section_id);
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
@@ -419,18 +415,17 @@
 			$this->appendSubheading(__('Untitled'));
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 			
-			$entryManager = new EntryManager($this->_Parent);
 			
 			// If there is post data floating around, due to errors, create an entry object
 			if (isset($_POST['fields'])) {
-				$entry = $entryManager->create();
+				$entry = EntryManager::instance()->create();
 				$entry->set('section_id', $section_id);
 				$entry->setDataFromPost($_POST['fields'], $error, true);
 			}
 			
 			// Brand new entry, so need to create some various objects
 			else {
-				$entry = $entryManager->create();
+				$entry = EntryManager::instance()->create();
 				$entry->set('section_id', $section_id);
 			}
 			
@@ -446,7 +441,7 @@
 				));
 				
 				// The actual pre-populating should only happen if there is not existing fields post data
-				if(!isset($_POST['fields']) && $field = $entryManager->fieldManager->fetch($field_id)) {
+				if(!isset($_POST['fields']) && $field = FieldManager::instance()->fetch($field_id)) {
 					$entry->setData(
 						$field->get('id'),
 						$field->processRawFieldData($value, $error, true)
@@ -502,16 +497,14 @@
 			
 			if(array_key_exists('save', $_POST['action']) || array_key_exists("done", $_POST['action'])) {
 
-				$sectionManager = new SectionManager($this->_Parent);
 
-				$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']);
+				$section_id = SectionManager::instance()->fetchIDFromHandle($this->_context['section_handle']);
 
-			    if(!$section = $sectionManager->fetch($section_id)) 
-					$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', $this->_context['section_handle']), false, true);
+			    if(!$section = SectionManager::instance()->fetch($section_id)) 
+					Administration::instance()->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', $this->_context['section_handle']), false, true);
 				
-				$entryManager = new EntryManager($this->_Parent);
 
-				$entry =& $entryManager->create();
+				$entry =& EntryManager::instance()->create();
 				$entry->set('section_id', $section_id);
 				$entry->set('user_id', Administration::instance()->User->id);
 				$entry->set('creation_date', DateTimeObj::get('Y-m-d H:i:s'));
@@ -531,7 +524,7 @@
 					###
 					# Delegate: EntryPreCreate
 					# Description: Just prior to creation of an Entry. Entry object and fields are provided
-					$this->_Parent->ExtensionManager->notifyMembers('EntryPreCreate', '/publish/new/', array('section' => $section, 'fields' => &$fields, 'entry' => &$entry));
+					ExtensionManager::instance()->notifyMembers('EntryPreCreate', '/publish/new/', array('section' => $section, 'fields' => &$fields, 'entry' => &$entry));
 					
 					if(!$entry->commit()){
 						define_safe('__SYM_DB_INSERT_FAILED__', true);
@@ -544,7 +537,7 @@
 						###
 						# Delegate: EntryPostCreate
 						# Description: Creation of an Entry. New Entry object is provided.			
-						$this->_Parent->ExtensionManager->notifyMembers('EntryPostCreate', '/publish/new/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
+						ExtensionManager::instance()->notifyMembers('EntryPostCreate', '/publish/new/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
 						
 						$prepopulate_field_id = $prepopulate_value = NULL;
 						if(isset($_POST['prepopulate'])){
@@ -568,26 +561,24 @@
 		}
 		
 		function __viewEdit() {
-			$sectionManager = new SectionManager($this->_Parent);
 			
-			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
+			if(!$section_id = SectionManager::instance()->fetchIDFromHandle($this->_context['section_handle']))
+				Administration::instance()->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
 		
-		    $section = $sectionManager->fetch($section_id);
+		    $section = SectionManager::instance()->fetch($section_id);
 			
 			$entry_id = intval($this->_context['entry_id']);
 
-			$entryManager = new EntryManager($this->_Parent);
-			$entryManager->setFetchSorting('id', 'DESC');
+			EntryManager::instance()->setFetchSorting('id', 'DESC');
 
-			if(!$existingEntry = $entryManager->fetch($entry_id)) $this->_Parent->customError(E_USER_ERROR, __('Unknown Entry'), __('The entry you are looking for could not be found.'), false, true);
+			if(!$existingEntry = EntryManager::instance()->fetch($entry_id)) Administration::instance()->customError(E_USER_ERROR, __('Unknown Entry'), __('The entry you are looking for could not be found.'), false, true);
 			$existingEntry = $existingEntry[0];
 			
 			// If there is post data floating around, due to errors, create an entry object
 			if (isset($_POST['fields'])) {
 				$fields = $_POST['fields'];
 				
-				$entry =& $entryManager->create();
+				$entry =& EntryManager::instance()->create();
 				$entry->set('section_id', $existingEntry->get('section_id'));
 				$entry->set('id', $entry_id);
 				
@@ -599,14 +590,14 @@
 				$entry = $existingEntry;
 				
 				if (!$section) {
-					$section = $sectionManager->fetch($entry->get('section_id'));
+					$section = SectionManager::instance()->fetch($entry->get('section_id'));
 				}
 			}
 			
 			###
 			# Delegate: EntryPreRender
 			# Description: Just prior to rendering of an Entry edit form. Entry object can be modified.
-			$this->_Parent->ExtensionManager->notifyMembers('EntryPreRender', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
+			ExtensionManager::instance()->notifyMembers('EntryPreRender', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
 
 			if(isset($this->_context['flag'])){
 				
@@ -659,7 +650,7 @@
 
 			### Determine the page title
 			$field_id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
-			$field = $entryManager->fieldManager->fetch($field_id);
+			$field = FieldManager::instance()->fetch($field_id);
 
 			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')), NULL, $entry_id)));
 			
@@ -738,14 +729,12 @@
 
 			if(@array_key_exists('save', $_POST['action']) || @array_key_exists("done", $_POST['action'])){		
 
-				$entryManager = new EntryManager($this->_Parent);
 
-			    if(!$ret = $entryManager->fetch($entry_id)) $this->_Parent->customError(E_USER_ERROR, __('Unknown Entry'), __('The entry you are looking for could not be found.'), false, true);
+			    if(!$ret = EntryManager::instance()->fetch($entry_id)) Administration::instance()->customError(E_USER_ERROR, __('Unknown Entry'), __('The entry you are looking for could not be found.'), false, true);
 
 				$entry = $ret[0];
 
-				$sectionManager = new SectionManager($this->_Parent);
-				$section = $sectionManager->fetch($entry->get('section_id'));
+				$section = SectionManager::instance()->fetch($entry->get('section_id'));
 				
 				$post = General::getPostData();
 				$fields = $post['fields'];
@@ -762,7 +751,7 @@
 					###
 					# Delegate: EntryPreEdit
 					# Description: Just prior to editing of an Entry.		
-					$this->_Parent->ExtensionManager->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
+					ExtensionManager::instance()->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
 
 					if(!$entry->commit()){
 						define_safe('__SYM_DB_INSERT_FAILED__', true);
@@ -775,7 +764,7 @@
 						###
 						# Delegate: EntryPostEdit
 						# Description: Editing an entry. Entry object is provided.		
-						$this->_Parent->ExtensionManager->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
+						ExtensionManager::instance()->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
 						
 						
 						$prepopulate_field_id = $prepopulate_value = NULL;
@@ -804,11 +793,10 @@
 				###
 				# Delegate: Delete
 				# Description: Prior to deleting an entry. Entry ID is provided, as an array to remain compatible with other Delete delegate call
-				Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => $entry_id));
+				ExtensionManager::instance()->notifyMembers('Delete', '/publish/', array('entry_id' => $entry_id));
 
-				$entryManager = new EntryManager($this->_Parent);
 
-				$entryManager->delete($entry_id);
+				EntryManager::instance()->delete($entry_id);
 
 				redirect(ADMIN_URL . '/publish/'.$this->_context['section_handle'].'/');
 			}			

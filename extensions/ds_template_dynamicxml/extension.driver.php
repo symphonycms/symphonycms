@@ -3,11 +3,11 @@
 	class Extension_DS_Template_DynamicXML extends Extension {
 		public function about() {
 			return array(
-				'name'			=> 'Data Source Template: Dynamic XML',
+				'name'			=> 'Dynamic XML',
 				'version'		=> '1.0.0',
 				'release-date'	=> '2010-02-26',
 				'type'			=> array(
-					'Data Source Type'
+					'Data Source Template',
 				),
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',
@@ -159,5 +159,3 @@
 			$wrapper->appendChild($fieldset);
 		}
 	}
-	
-?>

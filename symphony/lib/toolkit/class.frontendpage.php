@@ -20,15 +20,13 @@
 		public $DatasourceManager;
 		public $ExtensionManager;		
 				
-		function __construct(&$parent){
+		function __construct(){
 			parent::__construct();
-			
-			$this->_Parent = $parent;
+
 			$this->_env = array();
 			
-			$this->DatasourceManager = new DatasourceManager($this->_Parent);
-			$this->EventManager = new EventManager($this->_Parent);	
-			$this->ExtensionManager = new ExtensionManager($this->_Parent);
+			$this->DatasourceManager = new DatasourceManager;
+			$this->EventManager = new EventManager;
 
 		}
 		
@@ -45,12 +43,12 @@
 			$devkit = null;
 			$output = null;
 			
-			if ($this->_Parent->isLoggedIn()) {
+			if (Frontend::instance()->isLoggedIn()) {
 				####
 				# Delegate: FrontendDevKitResolve
 				# Description: Allows a devkit object to be specified, and stop continued execution:
 				# Global: Yes
-				$this->ExtensionManager->notifyMembers(
+				ExtensionManager::instance()->notifyMembers(
 					'FrontendDevKitResolve', '/frontend/',
 					array(
 						'full_generate'	=> &$full_generate,
@@ -59,7 +57,7 @@
 				);
 			}
 			
-			$this->_Parent->Profiler->sample('Page creation process started');
+			Frontend::instance()->Profiler->sample('Page creation process started');
 			$this->_page = $page;
 			$this->__buildPage($full_generate);
 			
@@ -68,7 +66,7 @@
 				# Delegate: FrontendOutputPreGenerate
 				# Description: Immediately before generating the page. Provided with the page object, XML and XSLT
 				# Global: Yes
-				$this->ExtensionManager->notifyMembers(
+				ExtensionManager::instance()->notifyMembers(
 					'FrontendOutputPreGenerate', '/frontend/',
 					array(
 						'page'	=> &$this,
@@ -99,7 +97,7 @@
 				# Delegate: FrontendPreRenderHeaders
 				# Description: This is just prior to the page headers being rendered, and is suitable for changing them
 				# Global: Yes
-				$this->ExtensionManager->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
+				ExtensionManager::instance()->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
 				
 				$output = parent::generate();
 				
@@ -107,9 +105,9 @@
 				# Delegate: FrontendOutputPostGenerate
 				# Description: Immediately after generating the page. Provided with string containing page source
 				# Global: Yes
-				$this->ExtensionManager->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
+				ExtensionManager::instance()->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
 
-				$this->_Parent->Profiler->sample('XSLT Transformation', PROFILE_LAP);
+				Frontend::instance()->Profiler->sample('XSLT Transformation', PROFILE_LAP);
 				
 				if (is_null($devkit) && !$output) {
 					$errstr = NULL;
@@ -121,7 +119,7 @@
 					throw new SymphonyErrorPage(trim($errstr), NULL, 'xslt-error', array('proc' => clone $this->Proc));
 				}
 				
-				$this->_Parent->Profiler->sample('Page creation complete');
+				Frontend::instance()->Profiler->sample('Page creation complete');
 			}
 			
 			if (!is_null($devkit)) {
@@ -131,7 +129,7 @@
 			}
 			
 			## EVENT DETAILS IN SOURCE
-			if ($this->_Parent->isLoggedIn() && Symphony::Configuration()->get('display_event_xml_in_source', 'public') == 'yes') {
+			if (Frontend::instance()->isLoggedIn() && Symphony::Configuration()->get('display_event_xml_in_source', 'public') == 'yes') {
 				$output .= self::CRLF . '<!-- ' . self::CRLF . $this->_events_xml->generate(true) . ' -->';
 			}
 			
@@ -178,7 +176,7 @@
 			# Delegate: FrontendPageResolved
 			# Description: Just after having resolved the page, but prior to any commencement of output creation
 			# Global: Yes
-			$this->ExtensionManager->notifyMembers('FrontendPageResolved', '/frontend/', array('env' => &$this->_env, 'page' => &$this, 'page_data' => &$page));
+			ExtensionManager::instance()->notifyMembers('FrontendPageResolved', '/frontend/', array('env' => &$this->_env, 'page' => &$this, 'page_data' => &$page));
 
 			$this->_pageData = $page;
 			$root_page = @array_shift(explode('/', $page['path']));
@@ -233,7 +231,7 @@
 			# Delegate: FrontendParamsResolve
 			# Description: Just after having resolved the page params, but prior to any commencement of output creation
 			# Global: Yes
-			$this->ExtensionManager->notifyMembers('FrontendParamsResolve', '/frontend/', array('params' => &$this->_param));
+			ExtensionManager::instance()->notifyMembers('FrontendParamsResolve', '/frontend/', array('params' => &$this->_param));
 
 			$xml_build_start = precision_timer();
 
@@ -248,8 +246,8 @@
 
 			$this->processDatasources($page['data_sources'], $xml);
 
-			$this->_Parent->Profiler->seed($xml_build_start);
-			$this->_Parent->Profiler->sample('XML Built', PROFILE_LAP);
+			Frontend::instance()->Profiler->seed($xml_build_start);
+			Frontend::instance()->Profiler->sample('XML Built', PROFILE_LAP);
 
 			if(is_array($this->_env['pool']) && !empty($this->_env['pool'])){
 				foreach($this->_env['pool'] as $handle => $p){
@@ -276,7 +274,7 @@
 			# Delegate: FrontendParamsPostResolve
 			# Description: Access to the resolved param pool, including additional parameters provided by Data Source outputs
 			# Global: Yes
-			$this->ExtensionManager->notifyMembers('FrontendParamsPostResolve', '/frontend/', array('params' => $this->_param));
+			ExtensionManager::instance()->notifyMembers('FrontendParamsPostResolve', '/frontend/', array('params' => $this->_param));
 
 			$xParam = new XMLElement('parameters');
 			foreach($this->_param as $key => $value){
@@ -290,15 +288,15 @@
 	<xsl:import href="' . VIEWS . '/' . $page['filelocation'] . '"/>
 </xsl:stylesheet>';*/
 			
-			$this->_Parent->Profiler->seed();
+			Frontend::instance()->Profiler->seed();
 			$this->setXML($xml->generate(true, 0));
-			$this->_Parent->Profiler->sample('XML Generation', PROFILE_LAP);
+			Frontend::instance()->Profiler->sample('XML Generation', PROFILE_LAP);
 
 			$this->setXSL($xsl, false);
 			$this->setRuntimeParam($this->_param);
 			
-			$this->_Parent->Profiler->seed($start);
-			$this->_Parent->Profiler->sample('Page Built', PROFILE_LAP);
+			Frontend::instance()->Profiler->seed($start);
+			Frontend::instance()->Profiler->sample('Page Built', PROFILE_LAP);
 		
 		}
 
@@ -312,7 +310,7 @@
 			# Delegate: FrontendPrePageResolve
 			# Description: Before page resolve. Allows manipulation of page without redirection
 			# Global: Yes
-			$this->ExtensionManager->notifyMembers('FrontendPrePageResolve', '/frontend/', array('view' => &$view, 'page' => &$this->_page));
+			ExtensionManager::instance()->notifyMembers('FrontendPrePageResolve', '/frontend/', array('view' => &$view, 'page' => &$this->_page));
 
 			if(is_null($view)){
 				if(is_null($this->_page)){
@@ -327,7 +325,7 @@
 			
 			if(!($view instanceof View)) return;
 			
-			if(!$this->_Parent->isLoggedIn() && in_array('admin', $row['type'])){
+			if(!Frontend::instance()->isLoggedIn() && in_array('admin', $row['type'])){
 				
 				$views = View::findFromType('403');
 				$view = array_shift($views);
@@ -462,7 +460,7 @@
 			$dependencies = array();
 			
 			foreach ($datasources as $handle) {
-				$this->_Parent->Profiler->seed();
+				Frontend::instance()->Profiler->seed();
 				
 				$pool[$handle] =& $this->DatasourceManager->create($handle, NULL, false);
 				$dependencies[$handle] = $pool[$handle]->getDependencies();
@@ -473,7 +471,7 @@
 			$dsOrder = $this->__findDatasourceOrder($dependencies);
 			
 			foreach ($dsOrder as $handle) {
-				$this->_Parent->Profiler->seed();
+				Frontend::instance()->Profiler->seed();
 				
 				$dbstats = Symphony::Database()->getStatistics();
 				$queries = $dbstats['queries'];
@@ -491,7 +489,7 @@
 				$dbstats = Symphony::Database()->getStatistics();
 				$queries = $dbstats['queries'] - $queries;
 				
-				$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Datasource', $queries);
+				Frontend::instance()->Profiler->sample($handle, PROFILE_LAP, 'Datasource', $queries);
 				
 				unset($ds);
 			}
@@ -510,7 +508,7 @@
 			# Delegate: FrontendProcessEvents
 			# Description: Manipulate the events array and event element wrapper
 			# Global: Yes
-			$this->ExtensionManager->notifyMembers(
+			ExtensionManager::instance()->notifyMembers(
 				'FrontendProcessEvents', 
 				'/frontend/', 
 				array(
@@ -536,7 +534,7 @@
 				uasort($pool, array($this, '__findEventOrder'));
 				
 				foreach($pool as $handle => $event){
-					$this->_Parent->Profiler->seed();
+					Frontend::instance()->Profiler->seed();
 					
 					$dbstats = Symphony::Database()->getStatistics();
 					$queries = $dbstats['queries'];
@@ -551,7 +549,7 @@
 					$dbstats = Symphony::Database()->getStatistics();
 					$queries = $dbstats['queries'] - $queries;
 
-					$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Datasource', $queries);
+					Frontend::instance()->Profiler->sample($handle, PROFILE_LAP, 'Datasource', $queries);
 				
 				}
 			}
@@ -560,7 +558,7 @@
 			# Delegate: FrontendEventPostProcess
 			# Description: Just after the page events have triggered. Provided with the XML object
 			# Global: Yes
-			$this->ExtensionManager->notifyMembers('FrontendEventPostProcess', '/frontend/', array('xml' => &$wrapper));
+			ExtensionManager::instance()->notifyMembers('FrontendEventPostProcess', '/frontend/', array('xml' => &$wrapper));
 			
 		}		
 	}

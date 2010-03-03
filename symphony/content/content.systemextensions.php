@@ -3,42 +3,73 @@
 	require_once(TOOLKIT . '/class.administrationpage.php');
 
 	Class contentSystemExtensions extends AdministrationPage{
-	
-		function __viewIndex(){
-			$ExtensionManager = $this->_Parent->ExtensionManager; 		
-			$extensions = $ExtensionManager->listAll();		
+
+		public function __call($name, $args){
+
+			$type = NULL;
 			
+			switch($name){
+				
+				case '__viewIndex':
+					$this->buildTable(
+						ExtensionManager::instance()->listAll(), 
+						true
+					);
+					return;
+					break;
+				
+				case '__viewCore':
+					$type = 'Core';
+					break;
+					
+				case '__viewDatasources':
+					$type = 'Data Source Template';
+					break;
+				
+				case '__viewFields':
+					$type = 'Field';
+					break;
+					
+				case '__viewOther':
+					$type = 'Other';
+					break;
+				
+				default:
+					throw new Exception('No such method or function "contentSystemExtensions::'.$name.'()".');
+					break;
+			}
+
+			$this->buildTable(
+				ExtensionManager::instance()->listByType($type)
+			);
+		}
+		
+/*		public function __viewIndex(){		
+			$extensions = ExtensionManager::instance()->listAll();
 			$this->buildTable($extensions, true);
 		}
 		
-		function __viewCore(){
-			$ExtensionManager = $this->_Parent->ExtensionManager; 		
-			$extensions = $ExtensionManager->listByType('Core');		
-			
+		public function __viewCore(){
+			$extensions = ExtensionManager::instance()->listByType('Core');
 			$this->buildTable($extensions);
 		}
 		
 		function __viewDatasources(){
-			$ExtensionManager = $this->_Parent->ExtensionManager; 		
-			$extensions = $ExtensionManager->listByType('Data Source Type');		
-			
+			$extensions = ExtensionManager::instance()->listByType('Data Source Template');		
 			$this->buildTable($extensions);
 		}
 		
 		function __viewFields(){
-			$ExtensionManager = $this->_Parent->ExtensionManager; 		
-			$extensions = $ExtensionManager->listByType('Field');		
-			
+			$extensions = ExtensionManager::instance()->listByType('Field');
 			$this->buildTable($extensions);
 		}
 		
 		function __viewOther(){
-			$ExtensionManager = $this->_Parent->ExtensionManager;
-			$extensions = $ExtensionManager->listOthers(array('Core','Data Source Type','Field'));		
-			
+			//this probably needs a new method that fetches all excluding the above...
+			$extensions = ExtensionManager::instance()->listByType('Other');
 			$this->buildTable($extensions);
 		}
-		
+	*/	
 		function buildTable($extensions, $prefixes=false){
 		
 			$this->setPageType('table');	
@@ -50,11 +81,11 @@
 			
 			$viewoptions = array(
 				'subnav'	=> array(
-					__('All')				=>	$path,
-					__('Core')				=>	$path . 'core/',
-					__('Data Source Types')	=>	$path . 'datasources/',
-					__('Fields')			=>	$path . 'fields/',
-					__('Other')				=>	$path . 'other/'
+					'All'				=>	$path,
+					'Core'				=>	$path . 'core/',
+					'Data Source Templates'	=>	$path . 'datasources/',
+					'Fields'			=>	$path . 'fields/',
+					'Other'				=>	$path . 'other/'
 				)
 			);
 			
@@ -75,8 +106,13 @@
 			if(!is_array($extensions) || empty($extensions)){
 
 				$aTableBody = array(
-									Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
-								);
+					Widget::TableRow(
+						array(
+							Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))
+						),
+						'odd'
+					)
+				);
 			}
 
 			else{
@@ -89,12 +125,14 @@
 					
 					$link = $about['author']['name'];
 
-					if(isset($about['author']['website']))
+					if(isset($about['author']['website'])){
 						$link = Widget::Anchor($about['author']['name'], General::validateURL($about['author']['website']));
-
-					elseif(isset($about['author']['email']))
+					}
+					
+					elseif(isset($about['author']['email'])){
 						$link = Widget::Anchor($about['author']['name'], 'mailto:' . $about['author']['email']);	
-						
+					}
+					
 					$td3 = Widget::TableData($link);	
 					
 					$td3->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox'));
@@ -103,27 +141,33 @@
 						case EXTENSION_ENABLED:
 							$td4 = Widget::TableData(__('Enabled'), 'enabled');
 							break;
+							
 						case EXTENSION_DISABLED:
 							$td4 = Widget::TableData(__('Disabled'), 'disabled');
 							break;
+							
 						case EXTENSION_NOT_INSTALLED:
 							$td4 = Widget::TableData(__('Not Installed'), 'not-installed');
 							break;
+							
 						case EXTENSION_REQUIRES_UPDATE:
 							$td4 = Widget::TableData(__('Needs Update'), 'updatable');
 					}
 
 					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4), ($about['status'] == EXTENSION_NOT_INSTALLED ? 'inactive' : NULL));		
+					$aTableBody[] = Widget::TableRow(
+						array($td1, $td2, $td3, $td4), 
+						($about['status'] == EXTENSION_NOT_INSTALLED ? 'inactive' : NULL)
+					);
 
 				}
 			}
 
 			$table = Widget::Table(
-								Widget::TableHead($aTableHead), 
-								NULL, 
-								Widget::TableBody($aTableBody)
-						);
+				Widget::TableHead($aTableHead), 
+				NULL, 
+				Widget::TableBody($aTableBody)
+			);
 
 			$this->Form->appendChild($table);
 			
@@ -159,10 +203,10 @@
 						# Delegate: Enable
 						# Description: Notifies of enabling Extension. Array of selected services is provided.
 						#              This can not be modified.
-						//$ExtensionManager->notifyMembers('Enable', getCurrentPage(), array('services' => $checked));
+						//ExtensionManager::instance()->notifyMembers('Enable', getCurrentPage(), array('services' => $checked));
 
 						foreach($checked as $name){
-							if($this->_Parent->ExtensionManager->enable($name) === false) return;
+							if(ExtensionManager::instance()->enable($name) === false) return;
 						}
 						break;
 
@@ -174,10 +218,10 @@
 						# Delegate: Disable
 						# Description: Notifies of disabling Extension. Array of selected services is provided.
 						#              This can be modified.
-						//$ExtensionManager->notifyMembers('Disable', getCurrentPage(), array('services' => &$checked));
+						//ExtensionManager::instance()->notifyMembers('Disable', getCurrentPage(), array('services' => &$checked));
 	
 						foreach($checked as $name){
-							if($this->_Parent->ExtensionManager->disable($name) === false) return;			
+							if(ExtensionManager::instance()->disable($name) === false) return;			
 						}
 						break;
 					
@@ -188,10 +232,10 @@
 						# Delegate: Uninstall
 						# Description: Notifies of uninstalling Extension. Array of selected services is provided.
 						#              This can be modified.
-						//$ExtensionManager->notifyMembers('Uninstall', getCurrentPage(), array('services' => &$checked));
+						//ExtensionManager::instance()->notifyMembers('Uninstall', getCurrentPage(), array('services' => &$checked));
 						
 						foreach($checked as $name){
-							if($this->_Parent->ExtensionManager->uninstall($name) === false) return;			
+							if(ExtensionManager::instance()->uninstall($name) === false) return;			
 						}
 						
 						break;
@@ -203,11 +247,11 @@
 		
 		/*function __viewDetail(){
 	
-			$date = $this->_Parent->getDateObj();
+			$date = Administration::instance()->getDateObj();
 
 			if(!$extension_name = $this->_context[1]) redirect(ADMIN_URL . '/system/extensions/');
 
-			if(!$extension = $this->_Parent->ExtensionManager->about($extension_name)) $this->_Parent->customError(E_USER_ERROR, 'Extension not found', 'The Symphony Extension you were looking for, <code>'.$extension_name.'</code>, could not be found.', 'Please check it has been installed correctly.');
+			if(!$extension = ExtensionManager::instance()->about($extension_name)) Administration::instance()->customError(E_USER_ERROR, 'Extension not found', 'The Symphony Extension you were looking for, <code>'.$extension_name.'</code>, could not be found.', 'Please check it has been installed correctly.');
 	
 			$link = $extension['author']['name'];
 
@@ -265,20 +309,18 @@
 
 			if(!$extension_name = $this->_context[1]) redirect(ADMIN_URL . '/system/extensions/');
 
-			if(!$extension = $this->_Parent->ExtensionManager->about($extension_name)) $this->_Parent->customError(E_USER_ERROR, 'Extension not found', 'The Symphony Extension you were looking for, <code>'.$extension_name.'</code>, could not be found.', 'Please check it has been installed correctly.');
+			if(!$extension = ExtensionManager::instance()->about($extension_name)) Administration::instance()->customError(E_USER_ERROR, 'Extension not found', 'The Symphony Extension you were looking for, <code>'.$extension_name.'</code>, could not be found.', 'Please check it has been installed correctly.');
 			
 			if(isset($_POST['action']['install']) && $extension['status'] == EXTENSION_NOT_INSTALLED){
-				$this->_Parent->ExtensionManager->enable($extension_name);
+				ExtensionManager::instance()->enable($extension_name);
 			}
 			
 			elseif(isset($_POST['action']['update']) && $extension['status'] == EXTENSION_REQUIRES_UPDATE){
-				$this->_Parent->ExtensionManager->enable($extension_name);	
+				ExtensionManager::instance()->enable($extension_name);	
 			}
 			
 			elseif(isset($_POST['action']['uninstall']) && in_array($extension['status'], array(EXTENSION_ENABLED, EXTENSION_DISABLED))){
-				$this->_Parent->ExtensionManager->uninstall($extension_name);	
+				ExtensionManager::instance()->uninstall($extension_name);	
 			}
 		}*/
 	}
-	
-?>

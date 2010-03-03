@@ -5,21 +5,15 @@
 	
 	Class Entry{
 		
-		var $_fields;
-		var $_Parent;
-		var $_data;
-		var $creationDate;
-		var $_engine;
+		protected $_fields;
+		protected $_data;
 		
-		function __construct(&$parent){
-			$this->_Parent =& $parent;
+		public $creationDate;
+		
+		function __construct(){
 			$this->_fields = array();
 			$this->_data = array();
 
-			if(class_exists('Administration')) $this->_engine = Administration::instance();
-			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();
-			else trigger_error(__('No suitable engine object found'), E_USER_ERROR);
-			
 			$this->creationDate = DateTimeObj::getGMT('c');
 		}
 		
@@ -36,7 +30,7 @@
 			if(is_null($this->get('section_id'))) return NULL;
 			
 			if(is_null($associated_sections)) {
-				$section = $this->_Parent->sectionManager->fetch($this->get('section_id'));
+				$section = SectionManager::instance()->fetch($this->get('section_id'));
 				$associated_sections = $section->fetchAssociatedSections();
 			}
 
@@ -46,7 +40,7 @@
 			
 			foreach($associated_sections as $as){
 				
-				$field = $this->_Parent->fieldManager->fetch($as['child_section_field_id']);
+				$field = FieldManager::instance()->fetch($as['child_section_field_id']);
 
 				$parent_section_field_id = $as['parent_section_field_id'];
 
@@ -76,16 +70,14 @@
 			$errors = NULL;
 			$status = __ENTRY_OK__;
 			
-			$SectionManager = new SectionManager($this->_engine);
-			$EntryManager = new EntryManager($this->_engine);
 
-			$section = $SectionManager->fetch($this->get('section_id'));
+			$section = SectionManager::instance()->fetch($this->get('section_id'));
 			$schema = $section->fetchFieldsSchema();
 
 			foreach($schema as $info){
 				$result = NULL;
 
-				$field = $EntryManager->fieldManager->fetch($info['id']);
+				$field = FieldManager::instance()->fetch($info['id']);
 
 				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
 
@@ -129,16 +121,14 @@
 				if (is_null($entry_id)) return __ENTRY_FIELD_ERROR__;
 			}			
 			
-			$SectionManager = new SectionManager($this->_engine);
-			$EntryManager = new EntryManager($this->_engine);
 			
-			$section = $SectionManager->fetch($this->get('section_id'));		
+			$section = SectionManager::instance()->fetch($this->get('section_id'));		
 			$schema = $section->fetchFieldsSchema();
 
 			foreach($schema as $info){
 				$result = NULL;
 
-				$field = $EntryManager->fieldManager->fetch($info['id']);
+				$field = FieldManager::instance()->fetch($info['id']);
 				
 				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
 				
@@ -173,9 +163,8 @@
 		
 		function findDefaultData(){
 			
-			$SectionManager = new SectionManager($this->_engine);
 			
-			$section = $SectionManager->fetch($this->get('section_id'));		
+			$section = SectionManager::instance()->fetch($this->get('section_id'));		
 			$schema = $section->fetchFields();
 			
 			foreach($schema as $field){
@@ -193,8 +182,7 @@
 		
 		function commit(){
 			$this->findDefaultData();
-			$EntryManager = new EntryManager($this->_engine);
-			return ($this->get('id') ? $EntryManager->edit($this) : $EntryManager->add($this));	
+			return ($this->get('id') ? EntryManager::instance()->edit($this) : EntryManager::instance()->add($this));	
 		}
 		
 	}

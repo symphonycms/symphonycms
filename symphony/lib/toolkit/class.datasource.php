@@ -1,10 +1,10 @@
 <?php
 
-	define_safe('DS_FILTER_AND', 1);
-	define_safe('DS_FILTER_OR', 2);
-	
 	##Interface for datasouce objects
-	Class DataSource{
+	Abstract Class DataSource{
+		
+		const FILTER_AND = 1;
+		const FILTER_OR = 2;
 		
 		protected $_env;
 		protected $_Parent;
@@ -14,8 +14,58 @@
 		
 		const CRLF = "\r\n";
 		
-		public function __construct(&$parent, $env=NULL, $process_params=true){
-			$this->_Parent = $parent;
+		public static function loadFromName($name, $environment=NULL, $process_params=true){
+			$classname = self::__getClassName($name);	        
+	        $path = self::__getDriverPath($name);
+	        
+	        if(!@is_file($path)){
+		        throw new Exception(
+					__('Could not find Data Source <code>%s</code>. If the Data Source was provided by an Extensions, ensure that it is installed, and enabled.', array($name))
+				);
+	        }
+	        
+			if(!class_exists($classname)){
+				require_once($path);
+			}
+								
+			return new $classname($environment, $process_params);
+		}
+		
+		protected static function __find($name){
+		 
+		    if(@is_file(DATASOURCES . "/data.{$name}.php")) return DATASOURCES;
+		    else{	
+
+				$extensions = ExtensionManager::instance()->listInstalledHandles();
+				
+				if(is_array($extensions) && !empty($extensions)){
+					foreach($extensions as $e){
+						if(@is_file(EXTENSIONS . "/{$e}/data-sources/data.{$name}.php")) return EXTENSIONS . "/{$e}/data-sources";
+					}	
+				}		    
+	    	}
+	    		    
+		    return false;
+	    }
+        
+		protected static function __getHandleFromFilename($filename){
+			return preg_replace(array('/^data./i', '/.php$/i'), '', $filename);
+		}
+
+        protected static function __getClassName($name){
+	        return 'datasource' . $name;
+        }
+        
+        protected static function __getClassPath($name){
+	        return self::__find($name);
+        }
+        
+        protected static function __getDriverPath($name){	        
+	        return self::__getClassPath($name) . "/data.{$name}.php";
+        }
+		
+		public function __construct($env=NULL, $process_params=true){
+			$this->_Parent = Symphony::Parent();
 			$this->_force_empty_result = false;
 			$this->_dependencies = array();
 			
@@ -95,7 +145,7 @@
 		}
 		
 		protected function __determineFilterType($value){
-			return (false === strpos($value, '+') ? DS_FILTER_OR : DS_FILTER_AND);
+			return (false === strpos($value, '+') ? Datasource::FILTER_OR : Datasource::FILTER_AND);
 		}
 		
 		protected function __noRecordsFound(){

@@ -17,9 +17,8 @@
 		 
 		    if(@is_file(DATASOURCES . "/data.$name.php")) return DATASOURCES;
 		    else{	
-			      
-				$extensionManager = new ExtensionManager($this->_Parent);
-				$extensions = $extensionManager->listInstalledHandles();
+
+				$extensions = ExtensionManager::instance()->listInstalledHandles();
 				
 				if(is_array($extensions) && !empty($extensions)){
 					foreach($extensions as $e){
@@ -81,11 +80,7 @@
 				}
 			}
 			
-			//$structure = General::listStructure(EXTENSIONS, array(), false, 'ASC', EXTENSIONS);
-			//$extensions = $structure['dirlist'];
-			
-			$extensionManager = new ExtensionManager($this->_Parent);
-			$extensions = $extensionManager->listInstalledHandles();
+			$extensions = ExtensionManager::instance()->listInstalledHandles();
 			
 			if(is_array($extensions) && !empty($extensions)){
 				foreach($extensions as $e){											
@@ -115,21 +110,9 @@
         }
                
         ##Creates a new extension object and returns a pointer to it
-        function &create($name, $environment=NULL, $process_params=true){
-	        
-	        $classname = $this->__getClassName($name);	        
-	        $path = $this->__getDriverPath($name);
-	        
-	        if(!@is_file($path)){
-		        trigger_error(__('Could not find Data Source <code>%s</code>. If the Data Source was provided by an Extensions, ensure that it is installed, and enabled.', array($name)), E_USER_ERROR);
-		        return false;
-	        }
-	        
-			if(!class_exists($classname)) require_once($path);
-								
-			return new $classname($this->_Parent, $environment, $process_params);
-	        
-        }        
-         
+        public function &create($name, $environment=NULL, $process_params=true){
+			return Datasource::loadFromName($name, $environment, $process_params);
+        }
+
     }
     

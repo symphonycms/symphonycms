@@ -2,11 +2,10 @@
 
 	Class contentAjaxTranslate extends AjaxPage{
 
-		function __construct(&$parent){
-			$this->_Parent = $parent;
+		function __construct(){
 			$this->_status = self::STATUS_OK;
 			$this->addHeaderToPage('Content-Type', 'application/json');
-			$this->_Parent->Profiler->sample('Page template created', PROFILE_LAP);	
+			Administration::instance()->Profiler->sample('Page template created', PROFILE_LAP);	
 		}
 		
 		public function handleFailedAuthorisation(){

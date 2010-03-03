@@ -14,8 +14,9 @@
 	define_safe('DATASOURCES',		WORKSPACE . '/data-sources');
 	define_safe('EVENTS',			WORKSPACE . '/events');
 	define_safe('TEXTFORMATTERS',	WORKSPACE . '/text-formatters');
-	define_safe('PAGES',			WORKSPACE . '/pages');	
+	
 	define_safe('VIEWS',			WORKSPACE . '/views');	
+	define_safe('SECTIONS',			WORKSPACE . '/sections');		
 	
 	define_safe('CACHE',	MANIFEST . '/cache');
 	define_safe('TMP',		MANIFEST . '/tmp');

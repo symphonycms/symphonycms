@@ -4,14 +4,12 @@
 	include_once(TOOLKIT . '/class.textformattermanager.php');
 	include_once(TOOLKIT . '/class.entry.php');
 	
-	Class EntryManager{
+	Class EntryManager implements Singleton{
 		
-		var $_Parent;
-		var $formatterManager;
-		var $sectionManager;
-		var $fieldManager;
-		var $_fetchSortField;
-		var $_fetchSortDirection;
+		static private $_instance;
+
+		private $_fetchSortField;
+		private $_fetchSortDirection;
 		
 		public static function instance() {
 			if (!(self::$_instance instanceof self)) {
@@ -21,21 +19,13 @@
 			return self::$_instance;
 		}
 		
-		public function __construct($parent){
-			$this->_Parent = $parent;
-			
-			$this->formatterManager = new TextformatterManager($this->_Parent);		
-			$this->sectionManager = new SectionManager($this->_Parent);		
-			$this->fieldManager = new FieldManager($this->_Parent);
-			
+		public function __construct(){	
 			$this->_fetchSortField = NULL;
 			$this->_fetchSortDirection = NULL;
-			
 		}
 		
 		public function create(){	
-			$obj = new Entry($this);
-			return $obj;
+			return new Entry;
 		}
 		
 		public function delete($entries){
@@ -48,11 +38,11 @@
 				if(!is_object($e[0])) continue;
 				
 				foreach($e[0]->getData() as $field_id => $data){
-					$field = $this->fieldManager->fetch($field_id);
+					$field = FieldManager::instance()->fetch($field_id);
 					$field->entryDataCleanup($id, $data);
 				}
 				
-				$section = $this->sectionManager->fetch($e[0]->get('section_id'));
+				$section = SectionManager::instance()->fetch($e[0]->get('section_id'));
 				
 				if(!is_object($section)) continue;
 				
@@ -63,7 +53,7 @@
 						
 						if($as['cascading_deletion'] != 'yes') continue;
 						
-						$field = $this->fieldManager->fetch($as['child_section_field_id']);
+						$field = FieldManager::instance()->fetch($as['child_section_field_id']);
 
 						$search_value = ($associated_sections[$key]['parent_section_field_id'] ? $field->fetchAssociatedEntrySearchValue($e[0]->getData($as['parent_section_field_id'])) : $e[0]->get('id'));
 
@@ -191,19 +181,19 @@
 		public function fetchCount($section_id=NULL, $where=NULL, $joins=NULL, $group=false){
 			if(!$section_id) return false;
 
-			$section = $this->sectionManager->fetch($section_id);
+			$section = SectionManager::instance()->fetch($section_id);
 			
 			if(!is_object($section)) return false;
 			
 			$sort = NULL;
 			
 			## We want to sort if thereis a custom entry sort order
-			/*if($this->_fetchSortField && $field = $this->fieldManager->fetch($this->_fetchSortField)){
+			/*if($this->_fetchSortField && $field = FieldManager::instance()->fetch($this->_fetchSortField)){
 				$field->buildSortingSQL($joins, $where, $sort, $this->_fetchSortDirection);
 				if(!$group) $group = $field->requiresSQLGrouping();
 			}
 			
-			elseif($section->get('entry_order') && $field = $this->fieldManager->fetch($section->get('entry_order'))){
+			elseif($section->get('entry_order') && $field = FieldManager::instance()->fetch($section->get('entry_order'))){
 				$field->buildSortingSQL($joins, $where, $sort, $section->get('entry_order_direction'));
 				if(!$group) $group = $field->requiresSQLGrouping();
 			}
@@ -260,7 +250,7 @@
 			
 			if (!$section_id) $section_id = $this->fetchEntrySectionID($entry_id);
 			
-			$section = $this->sectionManager->fetch($section_id);
+			$section = SectionManager::instance()->fetch($section_id);
 			
 			if (!is_object($section)) return false;
 
@@ -273,12 +263,12 @@
 				$sort = 'ORDER BY ' . ($this->_fetchSortDirection != 'RAND' ? "`e`.`id` $this->_fetchSortDirection" : 'RAND() ');
 			}
 			
-			else if ($this->_fetchSortField && $field = $this->fieldManager->fetch($this->_fetchSortField)) {
+			else if ($this->_fetchSortField && $field = FieldManager::instance()->fetch($this->_fetchSortField)) {
 				$field->buildSortingSQL($joins, $where, $sort, $this->_fetchSortDirection);
 				if (!$group) $group = $field->requiresSQLGrouping();
 			}
 			
-			else if ($section->get('entry_order') && $field = $this->fieldManager->fetch($section->get('entry_order'))) {
+			else if ($section->get('entry_order') && $field = FieldManager::instance()->fetch($section->get('entry_order'))) {
 				$field->buildSortingSQL($joins, $where, $sort, $section->get('entry_order_direction'));
 				if (!$group) $group = $field->requiresSQLGrouping();
 			}

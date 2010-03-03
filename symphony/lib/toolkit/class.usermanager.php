@@ -12,13 +12,13 @@
 
 		public static function edit($id, $fields){
 			
-			if(!Symphony::Database()->update($fields, 'tbl_users', " `id` = '$id'")) return false;
+			if(!Symphony::Database()->update($fields, 'tbl_users', " `id` = '{$id}'")) return false;
 			
 			return true;			
 		}
 		
 		public static function delete($id){		
-			Symphony::Database()->delete('tbl_users', " `id` = '$id'");		
+			Symphony::Database()->delete('tbl_users', " `id` = '{$id}'");		
 			return true;
 		}
 		
@@ -27,8 +27,8 @@
 	    	$sql = "SELECT tbl_users.*
 				    FROM tbl_users
 				    GROUP BY tbl_users.id 		
-				 	ORDER BY ".($sortby ? $sortby : 'tbl_users.id')." $sortdirection " .
-				 	($limit ? "LIMIT $limit ": '') . ($start && $limit ? ', ' . $start : '');
+				 	ORDER BY ".($sortby ? $sortby : 'tbl_users.id')." {$sortdirection} " .
+				 	($limit ? "LIMIT {$limit} ": '') . ($start && $limit ? ', ' . $start : '');
 
 			$rec = Symphony::Database()->fetch($sql);
 
@@ -62,8 +62,8 @@
 			
 			$rows = Symphony::Database()->fetch("SELECT * FROM `tbl_users` 
 													 WHERE `id` IN ('" . @implode("', '", $id). "') 
-													 ORDER BY `".($sortby ? $sortby : 'id')."` $sortdirection 
-													 ".($limit ? "LIMIT $limit ": '') . ($start && $limit ? ', ' . $start : ''));
+													 ORDER BY `".($sortby ? $sortby : 'id')."` {$sortdirection} 
+													 ".($limit ? "LIMIT {$limit} ": '') . ($start && $limit ? ', ' . $start : ''));
 			
 			if(!is_array($rows) || empty($rows)) return NULL;
 			
@@ -83,7 +83,7 @@
 		}
 		
 		public static function fetchByUsername($username){
-			$rec = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_users` WHERE `username` = '$username' LIMIT 1");
+			$rec = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_users` WHERE `username` = '{$username}' LIMIT 1");
 			
 			if(!is_array($rec) || empty($rec)) return NULL;
 			
@@ -96,11 +96,11 @@
 		}
 		
 		public static function deactivateAuthToken($user_id){
-			return Symphony::Database()->query("UPDATE `tbl_users` SET `auth_token_active` = 'no' WHERE `id` = '$user_id' LIMIT 1");
+			return Symphony::Database()->query("UPDATE `tbl_users` SET `auth_token_active` = 'no' WHERE `id` = '{$user_id}' LIMIT 1");
 		}
 		
 		public static function activateAuthToken($user_id){
-			return Symphony::Database()->query("UPDATE `tbl_users` SET `auth_token_active` = 'yes' WHERE `id` = '$user_id' LIMIT 1");
+			return Symphony::Database()->query("UPDATE `tbl_users` SET `auth_token_active` = 'yes' WHERE `id` = '{$user_id}' LIMIT 1");
 		}
 	}
 

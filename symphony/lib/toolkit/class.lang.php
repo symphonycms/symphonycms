@@ -119,17 +119,17 @@
 		 * It may be possible that there are only translations for an extension, 
 		 * so don't stop if there is no core translation as Symphony will always display the English strings.
 		 */		
-		public static function loadAll($ExtensionManager) {		
+		public static function loadAll() {		
 			// Load localisation file for the Symphony core
-			$file = Lang::findLanguagePath(Symphony::lang(), $ExtensionManager) . '/lang.%s.php';
+			$file = Lang::findLanguagePath(Symphony::lang()) . '/lang.%s.php';
 			$path = sprintf($file, Symphony::lang());
 			if(file_exists($path)) {
 				Lang::load($file, Symphony::lang(), true);
 			}
 
 			// Load localisation files for extensions
-			foreach($ExtensionManager->listAll() as $handle => $e){
-				$path = $ExtensionManager->__getClassPath($handle) . '/lang/lang.%s.php';
+			foreach(ExtensionManager::instance()->listAll() as $handle => $e){
+				$path = ExtensionManager::instance()->__getClassPath($handle) . '/lang/lang.%s.php';
 				if($e['status'] == EXTENSION_ENABLED && file_exists(sprintf($path, Symphony::lang()))){
 					Lang::add($path, Symphony::lang());
 				}			
@@ -142,10 +142,10 @@
 		 * The default English language strings are stored in /symphony/lib/lang whereas
 		 * the localisation files for other languages are stored in the extension folder.
 		 */		
-		public static function findLanguagePath($lang, $ExtensionManager) {
+		public static function findLanguagePath($lang) {
 			$file = sprintf('/lang.%s.php', $lang);
 			if(!file_exists(LANG . $file)) {
-				foreach($ExtensionManager->listAll() as $extension => $about) {
+				foreach(ExtensionManager::instance()->listAll() as $extension => $about) {
 					// Explicitly match localisation extensions
 					if(strpos($about['handle'], 'lang_') === false) continue;
 					$path = EXTENSIONS . '/' . $about['handle'] . '/lang';
@@ -291,13 +291,13 @@
 		 * Return all available languages (core and extensions)
 		 * @return array language codes, e. g. 'en'
 		 */
-		public static function getAvailableLanguages($ExtensionManager=false) {
+		public static function getAvailableLanguages($includeExtensions=false) {
 			$languages = array();
 			// Get core translation files
 			$languages = self::getLanguageCodes('./symphony/lib/lang', $languages);
 			// Get extension translation files
-			if($ExtensionManager) {
-				foreach ($ExtensionManager->listAll() as $extension => $about) {
+			if($includeExtensions) {
+				foreach (ExtensionManager::instance()->listAll() as $extension => $about) {
 					$path = EXTENSIONS . '/' . $about['handle'] . '/lang';
 					if(file_exists($path)) $languages = self::getLanguageCodes($path, $languages);
 				}

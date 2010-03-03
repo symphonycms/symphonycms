@@ -3,11 +3,8 @@
 	Class Field{
 		protected $_key = 0;
 		protected $_fields;
-		protected $_Parent;
-		protected $_engine;
 		protected $_required;
 		protected $_showcolumn;
-		protected $Database;
 
 		const __OK__ = 100;
 		const __ERROR__ = 150;
@@ -23,22 +20,15 @@
 		const __UNFILTERABLE_ONLY__ = 900;	
 		const __FIELD_ALL__ = 1000;
 				
-		function __construct(&$parent){
-			$this->_Parent = $parent;
+		function __construct(){
 			
 			$this->_fields = array();
 			$this->_required = false;
 			$this->_showcolumn = true;
 			
 			$this->_handle = (strtolower(get_class($this)) == 'field' ? 'field' : strtolower(substr(get_class($this), 5)));
-
-			if(class_exists('Administration')) $this->_engine = Administration::instance();
-			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();
-			else trigger_error(__('No suitable engine object found'), E_USER_ERROR);
 			
 			$this->creationDate = DateTimeObj::getGMT('c');
-			
-			$this->Database = Symphony::Database();
 
 		}
 		
@@ -92,7 +82,7 @@
 		}
 		
 		public function entryDataCleanup($entry_id, $data=NULL){
-			$this->Database->delete('tbl_entries_data_' . $this->get('id'), " `entry_id` = '$entry_id' ");
+			Symphony::Database()->delete('tbl_entries_data_' . $this->get('id'), " `entry_id` = '$entry_id' ");
 			
 			return true;
 		}
@@ -122,16 +112,16 @@
 		}
 		
 		public function removeSectionAssociation($child_field_id){
-			$this->Database->query("DELETE FROM `tbl_sections_association` WHERE `child_section_field_id` = '$child_field_id'");
+			Symphony::Database()->query("DELETE FROM `tbl_sections_association` WHERE `child_section_field_id` = '$child_field_id'");
 		}
 		
 		public function createSectionAssociation($parent_section_id, $child_field_id, $parent_field_id=NULL, $cascading_deletion=false){
 
 			if($parent_section_id == NULL && !$parent_field_id) return false;
 			
-			if($parent_section_id == NULL) $parent_section_id = $this->Database->fetchVar('parent_section', 0, "SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$parent_field_id' LIMIT 1");
+			if($parent_section_id == NULL) $parent_section_id = Symphony::Database()->fetchVar('parent_section', 0, "SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$parent_field_id' LIMIT 1");
 			
-			$child_section_id = $this->Database->fetchVar('parent_section', 0, "SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$child_field_id' LIMIT 1");
+			$child_section_id = Symphony::Database()->fetchVar('parent_section', 0, "SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$child_field_id' LIMIT 1");
 			
 			$fields = array('parent_section_id' => $parent_section_id, 
 							'parent_section_field_id' => $parent_field_id, 
@@ -139,7 +129,7 @@
 							'child_section_field_id' => $child_field_id,
 							'cascading_deletion' => ($cascading_deletion ? 'yes' : 'no'));
 
-			if(!$this->Database->insert($fields, 'tbl_sections_association')) return false;
+			if(!Symphony::Database()->insert($fields, 'tbl_sections_association')) return false;
 				
 			return true;		
 		}
@@ -164,7 +154,7 @@
 		}
 		
 		public function cleanValue($value) {
-			return html_entity_decode($this->Database->cleanValue($value));
+			return html_entity_decode(Symphony::Database()->cleanValue($value));
 		}
 		
 		public function checkFields(&$errors, $checkForDuplicates = true) {
@@ -199,7 +189,7 @@
 					LIMIT 1
 				";
 				
-				if ($this->Database->fetchRow(0, $sql)) {
+				if (Symphony::Database()->fetchRow(0, $sql)) {
 					$errors['element_name'] = __('A field with that element name already exists. Please choose another.');
 				}
 			}
@@ -438,8 +428,7 @@
 			
 			include_once(TOOLKIT . '/class.textformattermanager.php');
 			
-			$TFM = new TextformatterManager($this->_engine);
-			$formatters = $TFM->listAll();
+			$formatters = TextFormatterManager::instance()->listAll();
 					
 			if(!$label_value) $label_value = __('Formatting');
 			$label = Widget::Label($label_value);
@@ -494,10 +483,10 @@
 			$fields['sortorder'] = (string)$this->get('sortorder');
 			
 			if($id = $this->get('id')){
-				return $this->_Parent->edit($id, $fields);				
+				return FieldManager::instance()->edit($id, $fields);				
 			}
 			
-			elseif($id = $this->_Parent->add($fields)){
+			elseif($id = FieldManager::instance()->add($fields)){
 				$this->set('id', $id);
 				$this->createTable();
 				return true;
@@ -509,7 +498,7 @@
 		
 		public function createTable(){
 			
-			return $this->Database->query(
+			return Symphony::Database()->query(
 			
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,

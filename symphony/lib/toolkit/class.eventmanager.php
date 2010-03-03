@@ -16,9 +16,8 @@
 		 
 		    if(@is_file(EVENTS . "/event.$name.php")) return EVENTS;
 			else{	
-				
-				$extensionManager = new ExtensionManager($this->_Parent);
-				$extensions = $extensionManager->listInstalledHandles();
+
+				$extensions = ExtensionManager::instance()->listInstalledHandles();
 				
 				if(is_array($extensions) && !empty($extensions)){
 					foreach($extensions as $e){
@@ -77,9 +76,8 @@
 					}
 				}
 			}
-			
-			$extensionManager = new ExtensionManager($this->_Parent);
-			$extensions = $extensionManager->listInstalledHandles();
+
+			$extensions = ExtensionManager::instance()->listInstalledHandles();
 			
 			if(is_array($extensions) && !empty($extensions)){
 				foreach($extensions as $e){										

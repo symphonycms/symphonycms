@@ -186,7 +186,7 @@
 			// Multiple Insert
 			if(is_array(current($fields))){
 
-				$sql  = "INSERT INTO `$table` (`".implode('`, `', array_keys(current($fields))).'`) VALUES ';
+				$sql  = "INSERT INTO `{$table}` (`".implode('`, `', array_keys(current($fields))).'`) VALUES ';
 				
 				foreach($fields as $key => $array){
 					
@@ -204,13 +204,13 @@
 			// Single Insert
 			else{
 				self::cleanFields($fields);
-				$sql  = "INSERT INTO `$table` (`".implode('`, `', array_keys($fields)).'`) VALUES ('.implode(', ', $fields).')';
+				$sql  = "INSERT INTO `{$table}` (`".implode('`, `', array_keys($fields)).'`) VALUES ('.implode(', ', $fields).')';
 
 				if($updateOnDuplicate){
 					
 					$sql .= ' ON DUPLICATE KEY UPDATE ';
 					
-					foreach($fields as $key => $value) $sql .= " `$key` = $value,";
+					foreach($fields as $key => $value) $sql .= " `{$key}` = {$value},";
 					
 					$sql = trim($sql, ',');
 				}
@@ -221,10 +221,10 @@
 		
 		public function update($fields, $table, $where=NULL){
 			self::cleanFields($fields);
-			$sql = "UPDATE $table SET ";
+			$sql = "UPDATE `{$table}` SET ";
 			
 			foreach($fields as $key => $val)
-				$rows[] = " `$key` = $val";
+				$rows[] = " `{$key}` = {$val}";
 			
 			$sql .= implode(', ', $rows) . ($where != NULL ? ' WHERE ' . $where : NULL);
 			
@@ -232,7 +232,7 @@
 		}
 		
 		public function delete($table, $where){
-			$this->query("DELETE FROM $table WHERE $where");
+			$this->query("DELETE FROM `{$table}` WHERE `{$where}`");
 		}
 		
 	    public function close(){

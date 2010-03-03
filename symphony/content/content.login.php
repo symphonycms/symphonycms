@@ -2,14 +2,11 @@
 	
 	Class contentLogin extends HTMLPage{
 		
-		var $_Parent;
-		var $_context;
-		var $_invalidPassword;
+		private $_context;
+		private $_invalidPassword;
 		
-		function __construct(&$parent){
+		function __construct(){
 			parent::__construct();
-			
-			$this->_Parent = $parent;
 			
 			$this->_invalidPassword = false;
 			
@@ -23,7 +20,7 @@
 			
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Login'))));
 				
-			$this->_Parent->Profiler->sample('Page template created', PROFILE_LAP);			
+			Administration::instance()->Profiler->sample('Page template created', PROFILE_LAP);			
 			
 		}
 		
@@ -39,7 +36,7 @@
 				$emergency = $this->__loginFromToken($this->_context[0]);
 			}
 			
-			if(!$emergency && $this->_Parent->isLoggedIn()) redirect(ADMIN_URL . '/');
+			if(!$emergency && Administration::instance()->isLoggedIn()) redirect(ADMIN_URL . '/');
 
 			$this->Form = Widget::Form('', 'post');
 			
@@ -142,7 +139,7 @@
 		
 		function __loginFromToken($token){
 			##If token is invalid, return to login page
-			if(!$this->_Parent->loginFromToken($token)) return false;
+			if(!Administration::instance()->loginFromToken($token)) return false;
 			
 			##If token is valid and it is not "emergency" login (forgotten password case), redirect to administration pages
 			if(strlen($token) != 6) redirect(ADMIN_URL . '/'); // Regular token-based login
@@ -161,13 +158,13 @@
 				##Login Attempted
 				if($action == 'login'):
 
-					if(empty($_POST['username']) || empty($_POST['password']) || !$this->_Parent->login($_POST['username'], $_POST['password'])) {
+					if(empty($_POST['username']) || empty($_POST['password']) || !Administration::instance()->login($_POST['username'], $_POST['password'])) {
 
 						## TODO: Fix Me
 						###
 						# Delegate: LoginFailure
 						# Description: Failed login attempt. Username is provided.
-						//$ExtensionManager->notifyMembers('LoginFailure', getCurrentPage(), array('username' => $_POST['username']));					
+						//ExtensionManager::instance()->notifyMembers('LoginFailure', getCurrentPage(), array('username' => $_POST['username']));					
 
 						//$this->Body->appendChild(new XMLElement('p', 'Login invalid. <a href="'.ADMIN_URL . '/?forgot">Forgot your password?</a>'));
 						//$this->_alert = 'Login invalid. <a href="'.ADMIN_URL . '/?forgot">Forgot your password?</a>';
@@ -180,7 +177,7 @@
 						###
 						# Delegate: LoginSuccess
 						# Description: Successful login attempt. Username is provided.
-						//$ExtensionManager->notifyMembers('LoginSuccess', getCurrentPage(), array('username' => $_POST['username']));					
+						//ExtensionManager::instance()->notifyMembers('LoginSuccess', getCurrentPage(), array('username' => $_POST['username']));					
 
 						if(isset($_POST['redirect'])) redirect(URL . str_replace(parse_url(URL, PHP_URL_PATH), '', $_POST['redirect']));
 						
@@ -225,7 +222,7 @@
 						###
 						# Delegate: PasswordResetSuccess
 						# Description: A successful password reset has taken place. User ID is provided
-						//$ExtensionManager->notifyMembers('PasswordResetSuccess', getCurrentPage(), array('user_id' => $user['id']));
+						//ExtensionManager::instance()->notifyMembers('PasswordResetSuccess', getCurrentPage(), array('user_id' => $user['id']));
 
 					}
 					
@@ -235,13 +232,13 @@
 						###
 						# Delegate: PasswordResetFailure
 						# Description: A failed password reset has taken place. User ID is provided
-						//$ExtensionManager->notifyMembers('PasswordResetFailure', getCurrentPage(), array('user_id' => $user['id']));		
+						//ExtensionManager::instance()->notifyMembers('PasswordResetFailure', getCurrentPage(), array('user_id' => $user['id']));		
 
 						$this->_email_sent = false;
 					}
 
 				##Change of password requested	
-				elseif($action == 'change' && $this->_Parent->isLoggedIn()):
+				elseif($action == 'change' && Administration::instance()->isLoggedIn()):
 
 					if(empty($_POST['password']) || empty($_POST['password-confirmation']) || $_POST['password'] != $_POST['password-confirmation']){
 						$this->_mismatchedPassword = true;
@@ -254,7 +251,7 @@
 
 						$user->set('password', md5(Symphony::Database()->cleanValue($_POST['password'])));
 
-						if(!$user->commit() || !$this->_Parent->login($user->get('username'), $_POST['password'])){
+						if(!$user->commit() || !Administration::instance()->login($user->get('username'), $_POST['password'])){
 							redirect(URL . "symphony/system/users/edit/{$user_id}/error/");
 						}
 
@@ -262,7 +259,7 @@
 						###
 						# Delegate: PasswordChanged
 						# Description: After editing an User. ID of the User is provided.
-						//$ExtensionManager->notifyMembers('PasswordChanged', getCurrentPage(), array('user_id' => $user_id));  	
+						//ExtensionManager::instance()->notifyMembers('PasswordChanged', getCurrentPage(), array('user_id' => $user_id));  	
 
 						redirect(ADMIN_URL . '/');
 					}
@@ -302,7 +299,7 @@
 					###
 					# Delegate: PasswordResetRequest
 					# Description: User has requested a password reset. User ID is provided.
-					//$ExtensionManager->notifyMembers('PasswordResetRequest', getCurrentPage(), array('user_id' => $user['id']));				
+					//ExtensionManager::instance()->notifyMembers('PasswordResetRequest', getCurrentPage(), array('user_id' => $user['id']));				
 
 					$this->_alert = 'Password reset. Check your email';
 

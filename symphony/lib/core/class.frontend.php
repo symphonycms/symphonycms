@@ -43,11 +43,11 @@
 		
 		public function display($page=NULL){
 
-			self::$_page = new FrontendPage($this);
+			self::$_page = new FrontendPage;
 			
 			####
 			# Delegate: FrontendInitialised
-			$this->ExtensionManager->notifyMembers('FrontendInitialised', '/frontend/');
+			ExtensionManager::instance()->notifyMembers('FrontendInitialised', '/frontend/');
 			
 			$output = self::$_page->generate($page);
 			

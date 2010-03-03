@@ -31,7 +31,6 @@
 		public $Profiler;
 		public $Cookie;
 		public $User;
-		public $ExtensionManager;
 		
 		protected static $_instance;
 		
@@ -69,12 +68,8 @@
 			$this->initialiseCookie();
 
 			$this->initialiseDatabase();
-
-			if(!$this->initialiseExtensionManager()){
-				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
-			}
 			
-			Lang::loadAll($this->ExtensionManager);
+			Lang::loadAll(true);
 
 			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
 			
@@ -94,12 +89,6 @@
 						
 			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX__, TWO_WEEKS, __SYM_COOKIE_PATH__);			
 		}
-		
-		public function initialiseExtensionManager(){
-			$this->ExtensionManager = new ExtensionManager($this);
-			return ($this->ExtensionManager instanceof ExtensionManager);
-		}
-		
 		
 		public static function Configuration(){
 			return self::$Configuration;
@@ -227,7 +216,7 @@
 					$this->User = new User($id);
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");
+					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_users', " `id` = '{$id}'");
 					
 					$this->reloadLangFromAuthorPreference();
 
@@ -283,7 +272,7 @@
 			if($lang && $lang != self::lang()){
 				self::$_lang = $lang;
 				if($lang != 'en') {
-					Lang::loadAll($this->ExtensionManager);
+					Lang::loadAll();
 				}
 				else {
 					// As there is no English dictionary the default dictionary needs to be cleared

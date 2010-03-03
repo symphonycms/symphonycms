@@ -6,8 +6,8 @@
 
 	Class contentBlueprintsComponents extends AdministrationPage{
 
-		function __construct(&$parent){
-			parent::__construct($parent);
+		function __construct(){
+			parent::__construct();
 			$this->setPageType('forms');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Components'))));
 		}
@@ -25,8 +25,7 @@
 
 			### EVENTS ###
 			
-			$EventManager = new EventManager($this->_Parent);
-			$events = $EventManager->listAll();
+			$events = EventManager::instance()->listAll();
 			
 			$li = new XMLElement('li');
 			$h3 = new XMLElement('h3', __('Events'));
@@ -56,8 +55,7 @@
 
 			### DATASOURCES ###
 			
-			$DSManager = new DatasourceManager($this->_Parent);
-			$datasources = $DSManager->listAll();			
+			$datasources = DSManager::instance()->listAll();			
 			
 			$li = new XMLElement('li');
 

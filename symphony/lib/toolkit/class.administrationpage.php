@@ -16,22 +16,21 @@
 		var $_Parent;
 		var $_context;
 		
-		function __construct(&$parent){
+		public function __construct(){
 			parent::__construct();
 			
 			$this->Html->setElementStyle('html');
-			
-			$this->_Parent = $parent;
+
 			$this->_navigation = array();
 			$this->Alert = NULL;
 			
 		}
 		
-		function setPageType($type){
+		public function setPageType($type){
 			$this->addStylesheetToHead(ADMIN_URL . '/assets/' . ($type == 'table' ? 'tables' : 'forms') . '.css', 'screen', 30);
 		}
 		
-		function setTitle($val, $position=null) {
+		public function setTitle($val, $position=null) {
 			return $this->addElementToHead(new XMLElement('title', $val), $position);
 		}
 	
@@ -39,7 +38,7 @@
 			return $this->_context;
 		}
 		
-		function build($context = NULL){
+		public function build($context = NULL){
 			
 			$this->_context = $context;
 
@@ -57,13 +56,13 @@
 			# Delegate: InitaliseAdminPageHead
 			# Description: Allows developers to insert items into the page HEAD. Use $context['parent']->Page
 			#			   for access to the page object
-			$this->_Parent->ExtensionManager->notifyMembers('InitaliseAdminPageHead', '/backend/');	
+			ExtensionManager::instance()->notifyMembers('InitaliseAdminPageHead', '/backend/');	
 			
 			$this->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
 				
 			if(isset($_REQUEST['action'])){
 				$this->action();
-				$this->_Parent->Profiler->sample('Page action run', PROFILE_LAP);
+				Administration::instance()->Profiler->sample('Page action run', PROFILE_LAP);
 			}
 			
 			## Build the form
@@ -79,70 +78,70 @@
 			# Delegate: AppendElementBelowView
 			# Description: Allows developers to add items just above the page footer. Use $context['parent']->Page
 			#			   for access to the page object
-			$this->_Parent->ExtensionManager->notifyMembers('AppendElementBelowView', '/backend/');			
+			ExtensionManager::instance()->notifyMembers('AppendElementBelowView', '/backend/');			
 						
 			$this->appendAlert();
 
-			$this->_Parent->Profiler->sample('Page content created', PROFILE_LAP);
+			Administration::instance()->Profiler->sample('Page content created', PROFILE_LAP);
 		}
 		
-		function view(){
+		public function view(){
 			$this->__switchboard();
 		}
 		
-		function action(){
+		public function action(){
 			$this->__switchboard('action');
 		}
 
-		function __switchboard($type='view'){
-			
+		public function __switchboard($type='view'){
+
 			if(!isset($this->_context[0]) || trim($this->_context[0]) == '') $context = 'index';
 			else $context = $this->_context[0];
 			
 			$function = ($type == 'action' ? '__action' : '__view') . ucfirst($context);
 			
-			if(!method_exists($this, $function)) {
-				
+			if(!is_callable(array($this, $function), true)) {
+
 				## If there is no action function, just return without doing anything
 				if($type == 'action') return;
-				
-				$this->_Parent->errorPageNotFound();
-				
+
+				Administration::instance()->errorPageNotFound();
+
 			}
 			
 			$this->$function();
 
 		}
 
-		function pageAlert($message=NULL, $type=Alert::NOTICE){
-			
+		public function pageAlert($message=NULL, $type=Alert::NOTICE){
+
 			if(is_null($message) && $type == Alert::ERROR){ 
 				$message = 'There was a problem rendering this page. Please check the activity log for more details.';
 			}
-			
+
 			$message = __($message);
-						
+
 			if(strlen(trim($message)) == 0) throw new Exception('A message must be supplied unless flagged as Alert::ERROR');				
-						
+
 			if(!($this->Alert instanceof Alert) || ($this->Alert->type == Alert::NOTICE && in_array($type, array(Alert::ERROR, Alert::SUCCESS)))){
 				$this->Alert = new Alert($message, $type);
 			}
 		}
-		
-		function appendAlert(){
+
+		public function appendAlert(){
 			
 			###
 			# Delegate: AppendPageAlert
 			# Description: Allows for appending of alerts. Administration::instance()->Page->Alert is way to tell what 
 			# is currently in the system
-			$this->_Parent->ExtensionManager->notifyMembers('AppendPageAlert', '/backend/');
+			ExtensionManager::instance()->notifyMembers('AppendPageAlert', '/backend/');
 
 			if(($this->Alert instanceof Alert)){
 				$this->Form->prependChild($this->Alert->asXML());
 			}
 		}
 		
-		function appendSession(){
+		public function appendSession(){
 						
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('id', 'session');
@@ -158,12 +157,12 @@
 			###
 			# Delegate: AddElementToFooter
 			# Description: Add new list elements to the footer
-			$this->_Parent->ExtensionManager->notifyMembers('AddElementToFooter', '/backend/', array('wrapper' => &$ul));
+			ExtensionManager::instance()->notifyMembers('AddElementToFooter', '/backend/', array('wrapper' => &$ul));
 						
 			$this->Form->appendChild($ul);
 		}
 		
-		function appendSubheading($string, $link=NULL){
+		public function appendSubheading($string, $link=NULL){
 			
 			if($link && is_object($link)) $string .= ' ' . $link->generate(false);
 			elseif($link) $string .= ' ' . $link;
@@ -171,7 +170,7 @@
 			$this->Form->appendChild(new XMLElement('h2', $string));
 		}
 		
-		function appendNavigation(){
+		public function appendNavigation(){
 
 			$nav = $this->getNavigationArray();
 
@@ -180,7 +179,7 @@
 			# Description: Immediately before displaying the admin navigation. Provided with the navigation array
 			#              Manipulating it will alter the navigation for all pages.
 			# Global: Yes
-			$this->_Parent->ExtensionManager->notifyMembers('NavigationPreRender', '/backend/', array('navigation' => &$nav));
+			ExtensionManager::instance()->notifyMembers('NavigationPreRender', '/backend/', array('navigation' => &$nav));
 
 			$xNav = new XMLElement('ul');
 			$xNav->setAttribute('id', 'nav');
@@ -226,7 +225,7 @@
 													WHERE `delegate` = 'AddCustomPreferenceFieldsets'"
 											);
 
-											$l = Lang::getAvailableLanguages(new ExtensionManager($this->_Parent));
+											$l = Lang::getAvailableLanguages(true);
 											if(count($l) == 1 && (!is_array($extensions) || empty($extensions))){
 												continue;
 											}
@@ -257,10 +256,10 @@
 			}
 			
 			$this->Form->appendChild($xNav);
-			$this->_Parent->Profiler->sample('Navigation Built', PROFILE_LAP);	
+			Administration::instance()->Profiler->sample('Navigation Built', PROFILE_LAP);	
 		}
 		
-		function getNavigationArray(){
+		public function getNavigationArray(){
 			if(empty($this->_navigation)) $this->__buildNavigation();
 			return $this->_navigation;
 		}
@@ -272,7 +271,7 @@
 			return false;
 		}
 		
-		function __buildNavigation(){
+		protected function __buildNavigation(){
 
 			$nav = array();
 
@@ -348,10 +347,10 @@
 				}
 			}
 			
-			$extensions = Administration::instance()->ExtensionManager->listInstalledHandles();
+			$extensions = ExtensionManager::instance()->listInstalledHandles();
 
 			foreach($extensions as $e){
-				$info = Administration::instance()->ExtensionManager->about($e);
+				$info = ExtensionManager::instance()->about($e);
 
 				if(isset($info['navigation']) && is_array($info['navigation']) && !empty($info['navigation'])){
 					
@@ -448,7 +447,7 @@
 			# 			already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need 
 			#			to edit existing navigation elements, use the 'NavigationPreRender' delegate.
 			# Global: Yes
-			Administration::instance()->ExtensionManager->notifyMembers(
+			ExtensionManager::instance()->notifyMembers(
 				'ExtensionsAddToNavigation', '/backend/', array('navigation' => &$nav)
 			);
 			
@@ -466,7 +465,7 @@
 
 		}		
 		
-		private function __findLocationIndexFromName($nav, $name){
+		protected function __findLocationIndexFromName($nav, $name){
 			foreach($nav as $index => $group){
 				if($group['name'] == $name){
 					return $index;
@@ -476,7 +475,7 @@
 			return false;
 		}
 		
-		function __findActiveNavigationGroup(&$nav, $pageroot, $pattern=false){
+		protected function __findActiveNavigationGroup(&$nav, $pageroot, $pattern=false){
 			
 			foreach($nav as $index => $contents){
 				if(is_array($contents['children']) && !empty($contents['children'])){
@@ -500,14 +499,14 @@
 			
 		}
 		
-		function appendViewOptions(array $options) {
+		public function appendViewOptions(array $options) {
 			$div = new XMLElement('div', NULL, array('id' => 'view-options'));
 			
 			if(array_key_exists('subnav', $options)){
 				$ul = new XMLElement('ul');
 				foreach($options['subnav'] as $name => $link){
 					$li = new XMLElement('li');
-					$li->appendChild(Widget::Anchor($name, $link, NULL, ($this->_Parent->getCurrentPageURL() == $link ? 'active' : NULL)));
+					$li->appendChild(Widget::Anchor($name, $link, NULL, (Administration::instance()->getCurrentPageURL() == $link ? 'active' : NULL)));
 					$ul->appendChild($li);
 				}
 				$div->appendChild($ul);
@@ -522,7 +521,7 @@
 			$this->Form->appendChild($div);
 		}
 		
-		function wrapFormElementWithError($element, $error=NULL){
+		public function wrapFormElementWithError($element, $error=NULL){
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'invalid');
 			$div->appendChild($element);
@@ -531,7 +530,7 @@
 			return $div;
 		}
 
-		function __fetchAvailablePageTypes(){
+		protected function __fetchAvailablePageTypes(){
 			
 			$system_types = array('index', 'XML', 'admin', '404', '403');
 			

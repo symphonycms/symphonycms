@@ -3,26 +3,26 @@
 	class Extension_TextareaField extends Extension {
 		public function about() {
 			return array(
-				'name'			=> 'Textarea',
+				'name'			=> ' Textarea',
 				'version'		=> '2.0.0',
 				'release-date'	=> '2010-02-16',
-				'type'			=> array(
-					'Field'
-				),
 				'author'		=> array(
 					'name'			=> 'Symphony Team',
 					'website'		=> 'http://symphony-cms.com/',
 					'email'			=> 'team@symphony-cms.com'
-				)
+				),
+				'type'			=> array(
+					'Field', 'Core'
+				),
 			);
 		}
 		
 		public function uninstall() {
-			$this->_Parent->Database->query("DROP TABLE `tbl_fields_textarea`");
+			Symphony::Database()->query("DROP TABLE `tbl_fields_textarea`");
 		}
 		
 		public function install() {
-			return $this->_Parent->Database->query("
+			return Symphony::Database()->query("
 				CREATE TABLE IF NOT EXISTS `tbl_fields_textarea` (
 					`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 					`field_id` int(11) unsigned NOT NULL,

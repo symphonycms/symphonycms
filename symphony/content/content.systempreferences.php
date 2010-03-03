@@ -3,8 +3,8 @@
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	
 	class contentSystemPreferences extends AdministrationPage {
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function __construct(){
+			parent::__construct();
 			$this->setPageType('form');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Preferences'))));
 		}
@@ -43,7 +43,7 @@
 			$div->appendChild($label);
 		    
 		    // Get available languages
-		    $languages = Lang::getAvailableLanguages(new ExtensionManager(Administration::instance()));
+		    $languages = Lang::getAvailableLanguages(true);
 		
 			if(count($languages) > 1) {
 			    // Create language selection
@@ -68,7 +68,7 @@
 			###
 			# Delegate: AddCustomPreferenceFieldsets
 			# Description: Add Extension custom preferences. Use the $wrapper reference to append objects.
-			$this->_Parent->ExtensionManager->notifyMembers('AddCustomPreferenceFieldsets', '/system/preferences/', array('wrapper' => &$this->Form));
+			ExtensionManager::instance()->notifyMembers('AddCustomPreferenceFieldsets', '/system/preferences/', array('wrapper' => &$this->Form));
 			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
@@ -87,7 +87,7 @@
 			###
 			# Delegate: CustomActions
 			# Description: This is where Extensions can hook on to custom actions they may need to provide.
-			$this->_Parent->ExtensionManager->notifyMembers('CustomActions', '/system/preferences/');
+			ExtensionManager::instance()->notifyMembers('CustomActions', '/system/preferences/');
 			
 			if (isset($_POST['action']['save'])) {
 				$settings = $_POST['settings'];
@@ -95,7 +95,7 @@
 				###
 				# Delegate: Save
 				# Description: Saving of system preferences.
-				$this->_Parent->ExtensionManager->notifyMembers('Save', '/system/preferences/', array('settings' => &$settings, 'errors' => &$this->_errors));
+				ExtensionManager::instance()->notifyMembers('Save', '/system/preferences/', array('settings' => &$settings, 'errors' => &$this->_errors));
 				
 				if (!is_array($this->_errors) || empty($this->_errors)) {
 
@@ -107,7 +107,7 @@
 						}
 					}
 					
-					$this->_Parent->saveConfig();
+					Administration::instance()->saveConfig();
 					
 					redirect(ADMIN_URL . '/system/preferences/success/');
 				}

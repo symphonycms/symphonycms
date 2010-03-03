@@ -4,11 +4,11 @@
 	    protected static $_pool;
 		protected static $_instance;
 		
-	    public $_Parent;
+	    /*public $_Parent;
 	    
-        public function __construct(&$parent){
+        public function __construct(){
 			$this->_Parent = $parent;
-        }
+        }*/
         
         public function flush(){
 	        self::$_pool = array();	        

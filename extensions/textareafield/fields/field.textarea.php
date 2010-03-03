@@ -31,7 +31,7 @@
 			###
 			# Delegate: ModifyTextareaFieldPublishWidget
 			# Description: Allows developers modify the textarea before it is rendered in the publish forms
-			$this->_engine->ExtensionManager->notifyMembers('ModifyTextareaFieldPublishWidget', '/backend/', array('field' => &$this, 'label' => &$label, 'textarea' => &$textarea));
+			ExtensionManager::instance()->notifyMembers('ModifyTextareaFieldPublishWidget', '/backend/', array('field' => &$this, 'label' => &$label, 'textarea' => &$textarea));
 			
 			$label->appendChild($textarea);
 			
@@ -129,7 +129,6 @@
 	
 			if($this->get('formatter')){
 
-				$tfm = new TextformatterManager($this->_engine);
 				
 				$formatter = $tfm->create($this->get('formatter'));
 

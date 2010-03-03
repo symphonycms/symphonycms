@@ -5,11 +5,7 @@
 
 	Class contentBlueprintsUtilities extends AdministrationPage{
 
-		var $_existing_file;
-
-		function __construct(&$parent){
-			parent::__construct($parent);
-		}
+		private $_existing_file;
 		
 		public function __viewIndex() {
 			$this->setPageType('table');
@@ -88,7 +84,7 @@
 			$this->_existing_file = (isset($this->_context[1]) ? $this->_context[1] . '.xsl' : NULL);
 			
 			## Handle unknown context
-			if(!in_array($this->_context[0], array('new', 'edit'))) $this->_Parent->errorPageNotFound();
+			if(!in_array($this->_context[0], array('new', 'edit'))) Administration::instance()->errorPageNotFound();
 			
 			## Edit Utility context
 			if($this->_context[0] == 'edit'){
@@ -270,7 +266,7 @@
 						###
 						# Delegate: Edit
 						# Description: After saving the asset, the file path is provided.
-						//$ExtensionManager->notifyMembers('Edit', getCurrentPage(), array('file' => $file));
+						//ExtensionManager::instance()->notifyMembers('Edit', getCurrentPage(), array('file' => $file));
 						
 						redirect(URL . '/symphony/blueprints/utilities/edit/'.str_replace('.xsl', '', $fields['name']) . '/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
 
@@ -284,7 +280,7 @@
 				###
 				# Delegate: Delete
 				# Description: Prior to deleting the asset file. Target file path is provided.
-				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('file' => WORKSPACE . '/' . $this->_existing_file_rel));
+				//ExtensionManager::instance()->notifyMembers('Delete', getCurrentPage(), array('file' => WORKSPACE . '/' . $this->_existing_file_rel));
 
 		    	General::deleteFile(UTILITIES . '/' . $this->_existing_file);
 
