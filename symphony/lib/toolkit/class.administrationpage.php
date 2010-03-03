@@ -60,7 +60,9 @@
 			$this->_Parent->ExtensionManager->notifyMembers('InitaliseAdminPageHead', '/backend/');	
 			
 			$this->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
-				
+			
+			$this->prepare();
+			
 			if(isset($_REQUEST['action'])){
 				$this->action();
 				$this->_Parent->Profiler->sample('Page action run', PROFILE_LAP);
@@ -93,21 +95,24 @@
 		function action(){
 			$this->__switchboard('action');
 		}
+		
+		function prepare(){
+			$this->__switchboard('prepare');
+		}
 
 		function __switchboard($type='view'){
 			
 			if(!isset($this->_context[0]) || trim($this->_context[0]) == '') $context = 'index';
 			else $context = $this->_context[0];
 			
-			$function = ($type == 'action' ? '__action' : '__view') . ucfirst($context);
+			$function = '__' . $type . ucfirst($context);
 			
-			if(!method_exists($this, $function)) {
+			// If there is no view function, throw and error:
+			if (!method_exists($this, $function)) {
 				
-				## If there is no action function, just return without doing anything
-				if($type == 'action') return;
+				if ($type == 'view') $this->_Parent->errorPageNotFound();
 				
-				$this->_Parent->errorPageNotFound();
-				
+				return false;
 			}
 			
 			$this->$function();

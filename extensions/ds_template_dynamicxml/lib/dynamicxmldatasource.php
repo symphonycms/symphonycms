@@ -10,6 +10,10 @@
 		public $dsParamXPATH = '/';
 		public $dsParamCACHE = 60;
 		
+		public function getTemplate() {
+			return 'dynamic_xml';
+		}
+		
 		public function grab(&$param_pool) {
 			$result = null;
 			

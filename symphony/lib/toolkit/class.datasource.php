@@ -180,6 +180,10 @@
 		public function getSource(){
 			return NULL;
 		}
+		
+		public function getTemplate() {
+			return null;
+		}
 				
 		public function getDependencies(){
 			return $this->_dependencies;

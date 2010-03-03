@@ -1,7 +1,13 @@
 <?php
 	
 	class StaticXMLDataSource extends DataSource {
-		public $dsParamROOTELEMENT = 'static-xml';
+		public function getRootElement() {
+			return 'static-xml';
+		}
+		
+		public function getTemplate() {
+			return 'static_xml';
+		}
 		
 		public function grab() {
 			$result = new XMLElement($this->dsParamROOTELEMENT);

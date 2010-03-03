@@ -1,25 +1,40 @@
 <?php
 	
 	class NavigationDataSource extends DataSource {
-		public $dsParamROOTELEMENT = 'navigation';
-		public $dsParamORDER = 'desc';
-		public $dsParamREDIRECTONEMPTY = 'no';
+		public function canRedirectOnEmpty() {
+			return false;
+		}
 		
-		protected function processNavigationParentFilter($parent) {
+		public function getFilters() {
+			return array();
+		}
+		
+		public function getRequiredURLParam() {
+			return '';
+		}
+		
+		public function getRootElement() {
+			return 'navigation';
+		}
+		
+		public function getTemplate() {
+			return 'navigation';
+		}
+		
+		protected function buildParentFilter($parent) {
 			$parent_paths = preg_split('/,\s*/', $parent, -1, PREG_SPLIT_NO_EMPTY);			
 			$parent_paths = array_map(create_function('$a', 'return trim($a, " /");'), $parent_paths);
-	
+			
 			return (is_array($parent_paths) && !empty($parent_paths) ? "`path` IN ('".implode("', '", $parent_paths)."')" : NULL);
 		}
 		
-		protected function processNavigationTypeFilter($filter, $database, $filtertype = DS_FILTER_OR) {
+		protected function buildTypeFilter($filter, $filtertype = DS_FILTER_OR) {
+			$database = Symphony::Database();
 			$types = preg_split('/'.($filtertype == DS_FILTER_AND ? '\+' : ',').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);			
 			$types = array_map('trim', $types);
-	
-			switch($filtertype){
-		
+			
+			switch ($filtertype) {
 				case DS_FILTER_AND:
-		
 					$sql = "SELECT `a`.`id`
 							FROM (
 	
@@ -35,66 +50,68 @@
 					break;
 			
 				case DS_FILTER_OR:
-		
 					$sql = "SELECT `page_id` AS `id` FROM `tbl_pages_types` WHERE `type` IN ('".implode("', '", $types)."')";		
 					break;
 		
 			}
-	
+			
 			$pages = $database->fetchCol('id', $sql);
-	
+			
 			return (is_array($pages) && !empty($pages) ? $pages : NULL);
 		}
 		
+		protected function buildPageXML($page) {
+			$oPage = new XMLElement('page');
+			$oPage->setAttribute('handle', $page['handle']);
+			$oPage->setAttribute('id', $page['id']);
+			$oPage->appendChild(new XMLElement('name', General::sanitize($page['title'])));
+	
+			$types = Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '".$page['id']."'");
+			if(is_array($types) && !empty($types)){
+				$xTypes = new XMLElement('types');
+				foreach($types as $type) $xTypes->appendChild(new XMLElement('type', $type));
+				$oPage->appendChild($xTypes);
+			}
+			
+			if($children = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` WHERE `parent` = '".$page['id']."' ORDER BY `sortorder` ASC")){
+				foreach($children as $c) $oPage->appendChild($this->buildPageXML($c));
+			}
+	
+			return $oPage;
+		}
+		
 		public function grab() {
-			$result = new XMLElement($this->dsParamROOTELEMENT);
+			throw new Exception('TODO: Fix navigation datasource template.');
+			
+			$result = new XMLElement($this->getRootElement());
 			
 			try {
-				if(!function_exists('__buildPageXML')){
-					function __buildPageXML($page, &$database){
+				$result = new XMLElement($this->getRootElement());
+				$filters = $this->getFilters();
 				
-						$oPage = new XMLElement('page');
-						$oPage->setAttribute('handle', $page['handle']);
-						$oPage->setAttribute('id', $page['id']);
-						$oPage->appendChild(new XMLElement('name', General::sanitize($page['title'])));
-				
-						$types = $database->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '".$page['id']."'");
-						if(is_array($types) && !empty($types)){
-							$xTypes = new XMLElement('types');
-							foreach($types as $type) $xTypes->appendChild(new XMLElement('type', $type));
-							$oPage->appendChild($xTypes);
-						}
-						
-						if($children = $database->fetch("SELECT * FROM `tbl_pages` WHERE `parent` = '".$page['id']."' ORDER BY `sortorder` ASC")){
-							foreach($children as $c) $oPage->appendChild(__buildPageXML($c, $database));
-						}
-				
-						return $oPage;
-					}
+				if (trim($filters['type']) != '') {
+					$types = $this->buildTypeFilter(
+						$filters['type'],
+						$this->__determineFilterType($filters['type'])
+					);
 				}
 				
-				### BEGIN XML GENERATION CODE ###
-				
-				$result = new XMLElement($this->dsParamROOTELEMENT);
-					
-				if(trim($this->dsParamFILTERS['type']) != '') 
-					$types = $this->processNavigationTypeFilter($this->dsParamFILTERS['type'], Symphony::Database(), $this->__determineFilterType($this->dsParamFILTERS['type']));
-				
 				$sql = "SELECT * FROM `tbl_pages` 
-						WHERE ".(NULL != ($parent_sql = $this->processNavigationParentFilter($this->dsParamFILTERS['parent'])) ? $parent_sql : '`parent` IS NULL') . "
+						WHERE ".(NULL != ($parent_sql = $this->buildParentFilter($filters['parent'])) ? $parent_sql : '`parent` IS NULL') . "
 						".($types != NULL ? " AND `id` IN ('" . @implode("', '", $types) . "') " : NULL) . "
 					 	ORDER BY `sortorder` ASC";
 				
 				$pages = Symphony::Database()->fetch($sql);
 				
 				if((!is_array($pages) || empty($pages))){
-					if($this->dsParamREDIRECTONEMPTY == 'yes'){
+					if ($this->canRedirectOnEmpty()) {
 						throw new FrontendPageNotFoundException;
 					}
+					
 					$result->appendChild($this->__noRecordsFound());
 				}
 				
-				else foreach($pages as $p) $result->appendChild(__buildPageXML($p, Symphony::Database()));
+				else foreach($pages as $p) $result->appendChild($this->buildPageXML($p));
 			}
 			
 			catch (FrontendPageNotFoundException $error) {

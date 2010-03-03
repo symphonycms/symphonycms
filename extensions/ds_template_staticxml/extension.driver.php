@@ -14,6 +14,9 @@
 					'website'		=> 'http://rowanlewis.com/',
 					'email'			=> 'me@rowanlewis.com'
 				),
+				'provides'		=> array(
+					'datasource_template'
+				),
 				'description'	=> 'Create data sources from an XML string.'
 			);
 		}
@@ -22,51 +25,59 @@
 			return array(
 				array(
 					'page'		=> '/backend/',
-					'delegate'	=> 'NewDataSourceAction',
+					'delegate'	=> 'DataSourceFormPrepare',
+					'callback'	=> 'prepare'
+				),
+				array(
+					'page'		=> '/backend/',
+					'delegate'	=> 'DataSourceFormAction',
 					'callback'	=> 'action'
 				),
 				array(
 					'page'		=> '/backend/',
-					'delegate'	=> 'NewDataSourceForm',
-					'callback'	=> 'form'
-				),
-				array(
-					'page'		=> '/backend/',
-					'delegate'	=> 'EditDataSourceAction',
-					'callback'	=> 'action'
-				),
-				array(
-					'page'		=> '/backend/',
-					'delegate'	=> 'EditDataSourceForm',
-					'callback'	=> 'form'
+					'delegate'	=> 'DataSourceFormView',
+					'callback'	=> 'view'
 				)
 			);
 		}
 		
-		protected function getTemplate() {
-			$file = EXTENSIONS . '/ds_template_staticxml/templates/datasource.php';
+		public function prepare($context = array()) {
+			if ($context['template'] != 'static_xml') return;
 			
-			if (!file_exists($file)) {
-				throw new Exception(sprintf("Unable to find template '%s'.", $file));
+			$datasource = $context['datasource'];
+			
+			if ($datasource instanceof StaticXMLDataSource) {
+				$context['fields']['static_xml'] = $datasource->getStaticXML();
 			}
-			
-			return file_get_contents($file);
 		}
 		
 		public function action($context = array()) {
-			$template = $this->getTemplate();
+			if ($context['template'] != 'static_xml') return;
 			
-			/*
-			$context = array(
-				'type'		=> '',			// Type of datasource
-				'fields'	=> array(),		// Array of post data
-				'errors'	=> null			// Instance of MessageStack to be filled with errors
+			// Validate:
+			$fields = $context['fields'];
+			$errors = $context['errors'];
+			$failed = $context['failed'];
+			
+			if (!isset($fields['static_xml']) or empty($fields['static_xml'])) {
+				$errors['static_xml'] = 'Body must not be empty.';
+				$failed = true;
+			}
+			
+			$context['fields'] = $fields;
+			$context['errors'] = $errors;
+			$context['failed'] = $failed;
+			
+			// Send back template to save:
+			$context['template_file'] = EXTENSIONS . '/ds_template_staticxml/templates/datasource.php';
+			$context['template_data'] = array(
+				Lang::createHandle($fields['about']['name']),
+				$fields['static_xml']
 			);
-			*/
 		}
 		
-		public function form($context = array()) {
-			if ($context['type'] != 'static_xml') return;
+		public function view($context = array()) {
+			if ($context['template'] != 'static_xml') return;
 			
 			$fields = $context['fields'];
 			$errors = $context['errors'];

@@ -13,13 +13,15 @@
 				),
 				'version'		=> %s,
 				'release-date'	=> %s
-			);	
+			);
 		}
-		
-		public $dsParamROOTELEMENT = %s;
 		
 		public function allowEditorToParse() {
 			return true;
+		}
+		
+		public function getRootElement() {
+			return %s;
 		}
 		
 		public function getStaticXML() {

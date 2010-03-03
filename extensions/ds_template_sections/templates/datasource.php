@@ -1,8 +1,8 @@
 <?php
 	
-	require_once EXTENSIONS . '/ds_template_users/lib/usersdatasource.php';
+	require_once EXTENSIONS . '/ds_template_sections/lib/sectionsdatasource.php';
 	
-	class DataSource%s extends UsersDataSource {
+	class DataSource%s extends SectionsDataSource {
 		public function about() {
 			return array(
 				'name'			=> %s,
@@ -20,6 +20,10 @@
 			return true;
 		}
 		
+		public function canCountAssociatedEntries() {
+			return %s;
+		}
+		
 		public function canRedirectOnEmpty() {
 			return %s;
 		}
@@ -29,6 +33,10 @@
 		}
 		
 		public function getIncludedElements() {
+			return %s;
+		}
+		
+		public function getGroupField() {
 			return %s;
 		}
 		
