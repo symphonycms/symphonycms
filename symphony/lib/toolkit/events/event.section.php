@@ -309,7 +309,7 @@
 	else{
 		
 		$fields = General::getPostData();
-		
+		$fields = $fields['fields'];
 		$entry_id = NULL;
 		
 		if(isset($_POST['id']) && is_numeric($_POST['id'])) $entry_id = $_POST['id'];
