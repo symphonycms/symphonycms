@@ -291,16 +291,20 @@
 			
 			
 			$label = Widget::Label(__('Dynamic Options'));
+
+			$options = array(
+				array('', false, __('None')),
+			);
 			
-		    $sections = SectionManager::instance()->fetch(NULL, 'ASC', 'name');
+			//TODO: Fix me
+			
+		    /*$sections = SectionManager::instance()->fetch(NULL, 'ASC', 'name');
 			$field_groups = array();
 			
 			if(is_array($sections) && !empty($sections))
 				foreach($sections as $section) $field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
 			
-			$options = array(
-				array('', false, __('None')),
-			);
+
 			
 			foreach($field_groups as $group){
 				
@@ -312,7 +316,7 @@
 				}
 				
 				if(is_array($fields) && !empty($fields)) $options[] = array('label' => $group['section']->get('name'), 'options' => $fields);
-			}
+			}*/
 			
 			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][dynamic_options]', $options));
 			$div->appendChild($label);

@@ -193,18 +193,19 @@
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$label = Widget::Label(__('Suggestion List'));
+
+			$options = array(
+				array('existing', (in_array('existing', $this->get('pre_populate_source'))), __('Existing Values')),
+			);
+
 			
-		    $sections = SectionManager::instance()->fetch(NULL, 'ASC', 'name');
+/*		    $sections = SectionManager::instance()->fetch(NULL, 'ASC', 'name');
 			$field_groups = array();
 
 			if(is_array($sections) && !empty($sections))
 				foreach($sections as $section) $field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
 			
-			$options = array(
-				//array('none', false, __('None')),
-				array('existing', (in_array('existing', $this->get('pre_populate_source'))), __('Existing Values')),
-			);
-			
+
 			foreach($field_groups as $group){
 				
 				if(!is_array($group['fields'])) continue;
@@ -216,6 +217,7 @@
 				
 				if(is_array($fields) && !empty($fields)) $options[] = array('label' => $group['section']->get('name'), 'options' => $fields);
 			}
+			*/
 			
 			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][pre_populate_source][]', $options, array('multiple' => 'multiple')));
 			$wrapper->appendChild($label);

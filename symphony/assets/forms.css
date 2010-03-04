@@ -6,7 +6,6 @@ fieldset,
 div.secondary {
 	position: relative;
 	border: none;
-	clear: both;
 	padding-top: 1em;
 	margin: 0 1.3em;
 }

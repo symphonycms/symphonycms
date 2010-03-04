@@ -19,19 +19,15 @@
 
 	    function __find($type){
 		 
-		    if(@is_file(TOOLKIT . "/fields/field.{$type}.php")) return TOOLKIT . '/fields';
-			else{	  
-				
-				$extensions = ExtensionManager::instance()->listInstalledHandles();
+		    $extensions = ExtensionManager::instance()->listInstalledHandles();
 
-				if(is_array($extensions) && !empty($extensions)){
-					foreach($extensions as $e){
-						if(@is_file(EXTENSIONS . "/{$e}/fields/field.{$type}.php")) return EXTENSIONS . "/{$e}/fields";	
-					}	
-				}		    
-	    	}
-	    		    
-		    return false;
+			if(is_array($extensions) && !empty($extensions)){
+				foreach($extensions as $e){
+					if(@is_file(EXTENSIONS . "/{$e}/fields/field.{$type}.php")) return EXTENSIONS . "/{$e}/fields";	
+				}	
+			}		    
+
+			return false;
 	    }
 	            
         function __getClassName($type){

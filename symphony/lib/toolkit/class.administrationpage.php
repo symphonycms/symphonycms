@@ -535,14 +535,5 @@
 			return $div;
 		}
 
-		protected function __fetchAvailablePageTypes(){
-			
-			$system_types = array('index', 'XML', 'admin', '404', '403');
-			
-			if(!$types = Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` ORDER BY `type` ASC")) return $system_types;
-			
-			return (is_array($types) && !empty($types) ? General::array_remove_duplicates(array_merge($system_types, $types)) : $system_types);
-
-		}
 	}
 

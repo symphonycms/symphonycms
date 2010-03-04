@@ -1,9 +1,228 @@
 <?php
 
 	require_once(TOOLKIT . '/class.administrationpage.php');
- 	require_once(TOOLKIT . '/class.sectionmanager.php');
+	require_once(TOOLKIT . '/class.messagestack.php');	
+ 	//require_once(TOOLKIT . '/class.sectionmanager.php');
  	require_once(TOOLKIT . '/class.fieldmanager.php');
-	require_once(TOOLKIT . '/class.entrymanager.php');
+	//require_once(TOOLKIT . '/class.entrymanager.php');
+
+	Class SectionException extends Exception {}
+
+	Class SectionFilterIterator extends FilterIterator{
+		public function __construct(){
+			parent::__construct(new DirectoryIterator(SECTIONS));		
+		}
+	
+		public function accept(){
+			if($this->isDir() == false && preg_match('/^section\.(.+)\.php$/i', $this->getFilename())){
+				return true;
+			}
+			return false;
+		}
+	}	
+	
+	Class SectionIterator implements Iterator{
+
+		private $_iterator;
+		private $_length;
+		private $_position;
+
+		public function __construct($path=NULL, $recurse=true){
+			$this->_iterator = new SectionFilterIterator;
+			$this->_length = $this->_position = 0;
+			foreach($this->_iterator as $f){
+				$this->_length++;
+			}
+			$this->_iterator->getInnerIterator()->rewind();
+		}
+
+		public function current(){
+			return Section::loadFromPath($this->_iterator->current()->getPathname());
+		}
+					
+		public function innerIterator(){
+			return $this->_iterator;
+		}
+
+		public function next(){
+			$this->_position++;
+			$this->_iterator->next();
+		}
+
+		public function key(){
+			return $this->_iterator->key();
+		}
+
+		public function valid(){
+			return $this->_iterator->valid();
+		}
+
+		public function rewind(){
+			$this->_position = 0;
+			$this->_iterator->rewind();
+		}
+
+		public function position(){
+			return $this->_position;
+		}
+
+		public function length(){
+			return $this->_length;
+		}
+
+	}
+
+	
+	Class Section{
+		
+		const ERROR_SECTION_NOT_FOUND = 0;
+		const ERROR_FAILED_TO_LOAD = 1;
+		const ERROR_DOES_NOT_ACCEPT_PARAMETERS = 2;
+		const ERROR_TOO_MANY_PARAMETERS = 3;
+		
+		const ERROR_MISSING_OR_INVALID_FIELDS = 4;
+		const ERROR_FAILED_TO_WRITE = 5;
+		
+		protected static $_sections = array();
+		protected $_about;
+
+		public function __isset($name){
+			//if(in_array($name, array('path', 'template', 'handle', 'guid'))){
+			//	return isset($this->{"_{$name}"});
+		//	}
+			return isset($this->_about->$name);		
+		}
+		
+		public function initialise(){
+			if(!($this->_about instanceof StdClass)) $this->_about = new StdClass;
+		}
+		
+		public function __get($name){
+			
+			if($name == 'classname'){
+				$classname = Lang::createHandle($this->_about->name, NULL, '-', false, true, array('@^[^a-z]+@i' => NULL, '/[^\w-\.]/i' => NULL));
+				$classname = str_replace(' ', NULL, ucwords(str_replace('-', ' ', $classname)));
+				return 'section' . $classname;
+			}
+			elseif($name == 'handle'){
+				if(!isset($this->_about->handle) || strlen(trim($this->_about->handle)) > 0){
+					$this->handle = Lang::createHandle($this->_about->name, NULL, '-', false, true, array('@^[\d-]+@i' => ''));
+				}
+				return $this->_about->handle;
+				
+			}
+			elseif($name == 'guid'){
+				if(is_null($this->_about->guid)){
+					$this->_about->guid = uniqid();
+				}
+				return $this->_about->guid;
+			}
+			return $this->_about->$name;
+		}
+	
+		public function __set($name, $value){
+			//if(in_array($name, array('path', 'template', 'handle', 'guid'))){
+			//	$this->{"_{$name}"} = $value;
+		//	}
+		//	else 
+			if($name == 'guid') return; //guid cannot be set manually
+			$this->_about->$name = $value;
+		}
+		
+		public static function fetchUsedNavigationGroups(){
+			$groups = array();
+			foreach(new SectionIterator as $s){
+				$groups[] = $s->{'navigation-group'};
+			}
+			return General::array_remove_duplicates($groups);
+		}
+		
+		public static function loadFromPath($path){
+
+			if(!isset(self::$_sections[$path])){
+				self::$_sections[$path] = array('handle' => NULL, 'classname' => include_once($path));
+			}
+
+			$obj = new self::$_sections[$path]['classname'];
+
+			self::$_sections[$path]['handle'] = $obj->handle;
+			
+			$obj->initialise();
+			
+			return $obj;
+		}
+		
+		public static function loadFromHandle($handle){
+
+			$classname = NULL;
+
+			if(is_array(self::$_sections) && !empty(self::$_sections)){
+				foreach(self::$_sections as $s){
+					if($s['handle'] == $handle) $classname = $s['classname'];
+				}
+			}
+
+			if(is_null($classname)){
+				foreach(new SectionIterator as $section){
+					if($section->handle == $handle) return $section;
+				}
+			}
+
+			if(is_null($classname)){
+				throw new SectionException("Could not locate section with handle '{$handle}'.");
+			}
+
+			$obj = new $classname;
+			
+			$obj->initialise();
+			
+			return $obj;
+		}
+		
+		public static function save(Section $section, MessageStack &$messages, $simulate=false){
+
+			## Check to ensure all the required section fields are filled
+			if(!isset($section->name) || strlen(trim($section->name)) == 0){
+				$messages->append('name', __('This is a required field.'));
+			}
+
+			## Check for duplicate section handle
+			elseif(file_exists(SECTIONS . "/section.{$section->handle}.php")){
+				$existing = self::loadFromPath(SECTIONS . "/section.{$section->handle}.php");
+				if($existing->guid != $section->guid){
+					$messages->append('name', __('A Section with the name <code>%s</code> already exists', array($section->name)));
+				}
+				unset($existing);
+			}
+			
+			## Check to ensure all the required section fields are filled
+			if(!isset($section->{'navigation-group'}) || strlen(trim($section->{'navigation-group'})) == 0){
+				$messages->append('navigation-group', __('This is a required field.'));
+			}
+			
+			if($messages->length() > 0){
+				throw new SectionException(__('Section could not be saved. Validation failed.'), self::ERROR_MISSING_OR_INVALID_FIELDS);
+			}
+			
+			return ($simulate == true ? true : file_put_contents(SECTIONS . "/section.{$section->handle}.php", (string)$section));
+		}
+		
+		public function __toString(){
+			$template = file_get_contents(TEMPLATE . '/section.tpl');
+
+			$vars = array(
+				$this->classname,
+				var_export($this->name, true),
+				var_export($this->handle, true),
+				var_export($this->{'navigation-group'}, true),
+				var_export((bool)$this->hidden, true),
+				var_export($this->guid, true),
+			);
+			
+			return vsprintf($template, $vars);
+		}
+	}
+
 
 	Class contentBlueprintsSections extends AdministrationPage{
 
@@ -14,53 +233,45 @@
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a section'), 'create button'));
 
-		    $sections = SectionManager::instance()->fetch(NULL, 'ASC', 'sortorder');
+		    $sections = new SectionIterator;
 
 			$aTableHead = array(
-
 				array(__('Name'), 'col'),
 				array(__('Entries'), 'col'),
-				array(__('Navigation Group'), 'col'),	
-
+				array(__('Navigation Group'), 'col'),
 			);	
 
 			$aTableBody = array();
 
-			if(!is_array($sections) || empty($sections)){
+			if($sections->length() <= 0){
 				$aTableBody = array(
 					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
 				);
 			}
 
 			else{
-				
-				$bOdd = true;
 
 				foreach($sections as $s){
-					
-					$entry_count = intval(Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries` WHERE `section_id` = '".$s->get('id')."' "));
-					
+
+					$entry_count = (int)Symphony::Database()->fetchVar('count', 0, 
+						"SELECT count(*) AS `count` FROM `tbl_entries` WHERE `section_id` = '{$s->handle}' "
+					);
+
 					## Setup each cell
-					$td1 = Widget::TableData(Widget::Anchor($s->get('name'), Administration::instance()->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', NULL, 'content'));
-					$td2 = Widget::TableData(Widget::Anchor("$entry_count", ADMIN_URL . '/publish/' . $s->get('handle') . '/'));
-					$td3 = Widget::TableData($s->get('navigation_group'));
-				
-					$td3->appendChild(Widget::Input('items['.$s->get('id').']', 'on', 'checkbox'));
+					$td1 = Widget::TableData(Widget::Anchor($s->name, Administration::instance()->getCurrentPageURL() . "edit/{$s->handle}/", NULL, 'content'));
+					$td2 = Widget::TableData(Widget::Anchor((string)$entry_count, ADMIN_URL . "/publish/{$s->handle}/"));
+					$td3 = Widget::TableData($s->{'navigation-group'});
+
+					$td3->appendChild(Widget::Input('items['.$s->handle.']', 'on', 'checkbox'));
 
 					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3), ($bOdd ? 'odd' : NULL));
-					
-					$bOdd = !$bOdd;
-
+					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
 				}
 			}
 
 			$table = Widget::Table(
-								Widget::TableHead($aTableHead), 
-								NULL, 
-								Widget::TableBody($aTableBody),
-								'orderable'
-						);
+				Widget::TableHead($aTableHead), NULL, Widget::TableBody($aTableBody)
+			);
 
 			$this->Form->appendChild($table);
 			
@@ -75,12 +286,263 @@
 
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
 			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
-			
-			$this->Form->appendChild($tableActions);			
-			
-			
+
+			$this->Form->appendChild($tableActions);
+
 		}
-	
+		
+		private function __save(array $essentials, array $fields=NULL, Section $section=NULL){
+			if(is_null($section)) $section = new Section;
+			
+			$section->name = $essentials['name'];
+			$section->{'navigation-group'} = $essentials['navigation-group'];
+			$section->hidden = (bool)(isset($essentials['hidden']) && $essentials['hidden'] == 'yes');
+			
+			$this->_errors = new MessageStack;
+			try{
+				Section::save($section, $this->_errors);
+				return $section;
+			}
+			catch(SectionException $e){
+				switch($e->getCode()){
+					case Section::ERROR_MISSING_OR_INVALID_FIELDS:
+						// Dont really need to do anything since everything was captured in the MessageStack object
+						break;
+
+					case Section::ERROR_FAILED_TO_WRITE:
+						$this->pageAlert($e->getMessage(), Alert::ERROR);
+						break;
+				}
+			}
+			catch(Exception $e){
+				// Errors!!
+				// Not sure what happened!!
+				$this->pageAlert(__("An unknown error has occurred. %s", $e->getMessage()), Alert::ERROR);
+			}
+			
+			return false;
+		}
+		
+		public function __actionNew(){
+			if(isset($_POST['action']['save'])){
+				$section = $this->__save($_POST['essentials'], (isset($_POST['fields']) ? $_POST['fields'] : NULL));
+				if($section instanceof Section){
+					redirect(ADMIN_URL . "/blueprints/sections/edit/{$section->handle}/:created/");
+				}
+			}
+		}
+
+		public function __actionEdit(){
+			if(isset($_POST['action']['save'])){
+				$section = $this->__save($_POST['essentials'], (isset($_POST['fields']) ? $_POST['fields'] : NULL), Section::loadFromHandle($this->_context[1]));
+				if($section instanceof Section){
+					redirect(ADMIN_URL . "/blueprints/sections/edit/{$section->handle}/:saved/");
+				}
+			}
+		}
+		
+		private static function __loadExistingSection($handle){
+			try{
+				$existing = Section::loadFromHandle($handle);
+				return $existing;
+			}
+			catch(SectionException $e){
+				
+				switch($e->getCode()){
+					case Section::ERROR_SECTION_NOT_FOUND:
+						throw new SymphonyErrorPage(
+							__('The section you requested to edit does not exist.'), 
+							__('Section not found'), 
+							'error', 
+							array(
+								'header' => 'HTTP/1.0 404 Not Found'
+							)
+						);
+						break;
+
+					default:
+					case Section::ERROR_FAILED_TO_LOAD:
+						throw new SymphonyErrorPage(
+							__('The section you requested could not be loaded. Please check it is readable.'), 
+							__('Failed to load section'), 
+							'error'
+						);
+						break;
+				}
+			}
+			catch(Exception $e){
+				throw new SymphonyErrorPage(
+					sprintf(__("An unknown error has occurred. %s"), $e->getMessage()), 
+					__('Unknown Error'), 
+					'error', 
+					array(
+						'header' => 'HTTP/1.0 500 Internal Server Error'
+					)
+				);
+			}
+		}
+		
+		public function __viewNew(){
+			$this->__form(new Section);
+		}
+		
+		public function __viewEdit(){
+			$this->__form(self::__loadExistingSection($this->_context[1]), self::__loadExistingSection($this->_context[1]));
+		}
+		
+		private function __form(Section $section, Section $existing=NULL){
+			
+			// Status message:
+			$callback = Administration::instance()->getPageCallback();
+			if(isset($callback['flag']) && !is_null($callback['flag'])){
+
+				switch($callback['flag']){
+					
+					case 'saved':
+
+						$this->pageAlert(
+							__(
+								'Section updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Views</a>', 
+								array(
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
+									ADMIN_URL . '/blueprints/sections/new/',
+									ADMIN_URL . '/blueprints/sections/',
+								)
+							), 
+							Alert::SUCCESS);
+													
+						break;
+						
+					case 'created':
+
+						$this->pageAlert(
+							__(
+								'Section created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Views</a>', 
+								array(
+									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
+									ADMIN_URL . '/blueprints/sections/new/',
+									ADMIN_URL . '/blueprints/sections/',
+								)
+							), 
+							Alert::SUCCESS);
+							
+						break;
+
+				}
+			}
+			
+			$this->setPageType('form');	
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
+			$this->appendSubheading(($existing instanceof Section ? $existing->name : __('Untitled')));
+			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
+			
+			$div = new XMLElement('div', NULL, array('class' => 'group'));
+			$namediv = new XMLElement('div', NULL);
+			
+			$label = Widget::Label('Name');
+			$label->appendChild(Widget::Input('essentials[name]', $section->name));
+			
+			if(isset($this->_errors->name)) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors->name));
+			else $namediv->appendChild($label);
+			
+			$label = Widget::Label();
+			$input = Widget::Input('essentials[hidden]', 'yes', 'checkbox', ($section->hidden == true ? array('checked' => 'checked') : NULL));
+			$label->setValue(__('%s Hide this section from the Publish menu', array($input->generate(false))));
+			$namediv->appendChild($label);
+			$div->appendChild($namediv);
+			
+			$navgroupdiv = new XMLElement('div', NULL);
+
+			$label = Widget::Label('Navigation Group <i>Created if does not exist</i>');
+			$label->appendChild(Widget::Input('essentials[navigation-group]', $section->{"navigation-group"}));
+
+			if(isset($this->_errors->{'navigation-group'})) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors->{'navigation-group'}));
+			else $navgroupdiv->appendChild($label);
+			
+			$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
+			foreach(Section::fetchUsedNavigationGroups() as $g){
+				$ul->appendChild(new XMLElement('li', $g));
+			}
+			$navgroupdiv->appendChild($ul);
+
+			$div->appendChild($navgroupdiv);
+			
+			$fieldset->appendChild($div);
+			
+			$this->Form->appendChild($fieldset);
+			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
+			
+			$div = new XMLElement('div');
+			$h3 = new XMLElement('h3', __('Fields'));
+			$h3->setAttribute('class', 'label');
+			$div->appendChild($h3);
+			
+			$ol = new XMLElement('ol');
+			$ol->setAttribute('id', 'section-' . $section_id);
+			$ol->setAttribute('class', 'section-duplicator');
+			
+			/*if(is_array($fields) && !empty($fields)){
+				foreach($fields as $position => $field){
+
+					$wrapper = new XMLElement('li');
+					
+					$field->set('sortorder', $position);
+					$field->displaySettingsPanel($wrapper, (isset($this->_errors[$position]) ? $this->_errors[$position] : NULL));
+					$ol->appendChild($wrapper);
+
+				}
+			}*/
+			
+			$types = array();
+			foreach (FieldManager::instance()->fetchTypes() as $type) {
+				if ($type = FieldManager::instance()->create($type)) {
+					array_push($types, $type);
+				}
+			}
+			
+			uasort($types, create_function('$a, $b', 'return strnatcasecmp($a->_name, $b->_name);'));
+			
+			foreach ($types as $type) {		
+				$defaults = array();
+				
+				$type->findDefaults($defaults);			
+				$type->setArray($defaults);
+				
+				$wrapper = new XMLElement('li');
+				$wrapper->setAttribute('class', 'template');
+				
+				$type->set('sortorder', '-1');
+				$type->displaySettingsPanel($wrapper);
+				
+				$ol->appendChild($wrapper);
+			}
+			
+			$div->appendChild($ol);
+			$fieldset->appendChild($div);
+			
+			$this->Form->appendChild($fieldset);
+			
+			
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'actions');
+			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
+			
+			if($editing == true){
+				$button = new XMLElement('button', __('Delete'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this section'), 'type' => 'submit'));
+				$div->appendChild($button);
+			}
+			
+			$this->Form->appendChild($div);
+		}
+		
+/*	
 		public function __viewNew(){
 			
 			$this->setPageType('form');	
@@ -396,7 +858,7 @@
 			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this section'), 'type' => 'submit'));
 			$div->appendChild($button);
 
-			$this->Form->appendChild($div);			
+			$this->Form->appendChild($div);
 		}
 		
 		public function __actionIndex(){
@@ -718,5 +1180,6 @@
 			}
 	
 		}
-		
+*/
+
 	}

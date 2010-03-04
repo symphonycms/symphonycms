@@ -269,7 +269,7 @@
 			catch(ViewException $e){
 				switch($e->getCode()){
 					case View::ERROR_MISSING_OR_INVALID_FIELDS:
-						// Dont really need to do anything.
+						// Dont really need to do anything since everything was captured in the MessageStack object
 						break;
 						
 					case View::ERROR_FAILED_TO_WRITE:
@@ -366,8 +366,8 @@
 								'View updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Views</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									ADMIN_URL . '/blueprints/views/new/' . $link_suffix,
-									ADMIN_URL . '/blueprints/views/' . $link_suffix,
+									ADMIN_URL . '/blueprints/views/new/',
+									ADMIN_URL . '/blueprints/views/',
 								)
 							), 
 							Alert::SUCCESS);
@@ -381,8 +381,8 @@
 								'View created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Views</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									ADMIN_URL . '/blueprints/views/new/' . $link_suffix,
-									ADMIN_URL . '/blueprints/views/' . $link_suffix,
+									ADMIN_URL . '/blueprints/views/new/',
+									ADMIN_URL . '/blueprints/views/',
 								)
 							), 
 							Alert::SUCCESS);
@@ -479,27 +479,14 @@
 				array(NULL, false, '/')
 			);
 			
-			/*if(is_array($pages) && !empty($pages)) {
-				if(!function_exists('__compare_pages')) {
-					function __compare_pages($a, $b) {
-						return strnatcasecmp($a[2], $b[2]);
-					}
-				}
-				
-				foreach ($pages as $page) {
-					$options[] = array(
-						$page['id'], $fields['parent'] == $page['id'],
-						'/' . Administration::instance()->resolvePagePath($page['id'])
-					);
-				}
-				
-				usort($options, '__compare_pages');
-			}*/
-			
 			foreach(new ViewIterator as $v){
+				// Make sure the current view cannot be set as either a child of itself, or a child of 
+				// another view that is already at child of the current view.
+				if(isset($existing) && $existing instanceof View && ($v->isChildOf($existing) || $v->guid == $existing->guid)) continue;
+				
 				$options[] = array(
 					$v->path, $fields['parent'] == $v->path, "/{$v->path}"
-				);				
+				);
 			}
 			
 			
@@ -531,10 +518,11 @@
 			
 			$tags = new XMLElement('ul');
 			$tags->setAttribute('class', 'tags');
-			
-			if($types = $this->__fetchAvailablePageTypes()) {
-				foreach($types as $type) $tags->appendChild(new XMLElement('li', $type));
+
+			foreach(self::__fetchAvailableViewTypes() as $t){
+				$tags->appendChild(new XMLElement('li', $t));
 			}
+
 			$column->appendChild($tags);
 			$group->appendChild($column);
 			$fieldset->appendChild($group);
@@ -700,7 +688,7 @@
 				}
 				else{
 					$view = View::loadFromFieldsArray($fields);
-					$view->template = file_get_contents(TEMPLATE . '/page.xsl');
+					$view->template = file_get_contents(TEMPLATE . '/view.xsl');
 					$view->handle = $fields['handle'];
 					$view->path = $path;
 				}
@@ -907,6 +895,21 @@
 				}*/
 			}			
 		}
+			
+		private static function __fetchAvailableViewTypes(){
+			
+			$types = array('index', 'XML', 'admin', '404', '403');
+			
+			foreach(View::fetchUsedTypes() as $t){
+				$types[] = $t;
+			}
+			
+			
+			//if(!$types = Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` ORDER BY `type` ASC")) return $system_types;
+			
+			return General::array_remove_duplicates($types);
+
+		}	
 			
 		protected function __actionDelete(array $views, $redirect) {
 

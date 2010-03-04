@@ -3,6 +3,7 @@
 form {
 	position: relative;
 	font-size: 1.1em;
+	overflow: hidden;
 	padding-bottom: 5em;
 }
 h1 {

@@ -167,6 +167,25 @@
 			return $views;
 		}
 		
+		public static function fetchUsedTypes(){
+			$types = array();
+			foreach(new ViewIterator as $v){
+				$types = array_merge((array)$v->types, $types);
+			}
+			return General::array_remove_duplicates($types);
+		}
+		
+		public function isChildOf(View $view){
+			$current = $this->parent();
+			
+			while(!is_null($current)){
+				if($current->guid == $view->guid) return true;
+				$current = $current->parent();
+			}
+			
+			return false;
+		}
+		
 		public static function loadFromURL($path){
 			$parts = preg_split('/\//', $path, -1, PREG_SPLIT_NO_EMPTY);
 			$view = NULL;
@@ -228,6 +247,10 @@
 		}
 		
 		public static function save(self $view, MessageStack &$messages, $simulate=false){
+
+			if(!isset($view->title) || strlen(trim($view->title)) == 0){
+				$messages->append('title', __('Title is required.'));
+			}
 			
 			$pathname = sprintf('%s/%s/%s.config.xml', VIEWS, $view->path, $view->handle);
 
@@ -235,13 +258,8 @@
 				$existing = self::loadFromPath($view->path);
 				if($existing->guid != $view->guid){
 					$messages->append('handle', 'A view with that handle already exists.');
-					return false;
 				}
 				unset($existing);
-			}
-			
-			if(!isset($view->title) || strlen(trim($view->title)) == 0){
-				$messages->append('title', __('Title is required.'));
 			}
 
 			if(isset($view->types) && is_array($view->types) && (bool)array_intersect($view->types, array('index', '404', '403'))){
