@@ -378,7 +378,7 @@ var Symphony;
 			    t = (n ? 'Are you sure you want to {$action} {$name}?' : 'Are you sure you want to {$action}?');
 
 			return confirm(Symphony.Language.get(t, { 
-				'action': this.firstChild.data.toLowerCase(),
+				'action': this.firstChild.data.toLowerCase().trim(),
 				'name': n
 			}));
 		});

@@ -232,7 +232,7 @@
 		}
 		
 		public function delete($table, $where){
-			$this->query("DELETE FROM `{$table}` WHERE `{$where}`");
+			$this->query("DELETE FROM `{$table}` WHERE {$where}");
 		}
 		
 	    public function close(){

@@ -121,7 +121,8 @@
 			}
 			
 			$table = Widget::Table(
-				Widget::TableHead($aTableHead), NULL, Widget::TableBody($aTableBody)
+				Widget::TableHead($aTableHead), null, 
+				Widget::TableBody($aTableBody), 'orderable'
 			);
 			
 			$this->Form->appendChild($table);
@@ -130,8 +131,8 @@
 			$tableActions->setAttribute('class', 'actions');
 			
 			$options = array(
-				array(NULL, false, __('With Selected...')),
-				array('delete', false, __('Delete'))
+				array(null, false, __('With Selected...')),
+				array('delete', false, __('Delete'))							
 			);
 			
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
@@ -550,7 +551,7 @@
 			
 			$label = Widget::Label(__('Events'));
 			
-			$events = $manager->listAll();
+			$events = EventManager::instance()->listAll();
 			
 			$options = array();
 			
@@ -567,7 +568,7 @@
 
 			$label = Widget::Label(__('Data Sources'));
 			
-			$datasources = $manager->listAll();
+			$datasources = DataSourceManager::instance()->listAll();
 			
 			$options = array();
 			

@@ -130,7 +130,9 @@
 			$delegates = Symphony::Database()->fetchCol('id', "SELECT tbl_extensions_delegates.`id` FROM `tbl_extensions_delegates` 
 											 LEFT JOIN `tbl_extensions` ON (`tbl_extensions`.id = `tbl_extensions_delegates`.extension_id) 
 											 WHERE `tbl_extensions`.name = '$name'");
-			Symphony::Database()->delete('tbl_extensions_delegates', " `id` IN ('".@implode("', '", $delegates)."') ");
+			if (is_array($delegates) and !empty($delegates)) {
+				Symphony::Database()->delete('tbl_extensions_delegates', " `id` IN ('".@implode("', '", $delegates)."') ");
+			}
 											
 			if(!$delegates_only) Symphony::Database()->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name'");
 

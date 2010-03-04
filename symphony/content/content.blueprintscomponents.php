@@ -55,7 +55,7 @@
 
 			### DATASOURCES ###
 			
-			$datasources = DSManager::instance()->listAll();			
+			$datasources = DataSourceManager::instance()->listAll();			
 			
 			$li = new XMLElement('li');
 

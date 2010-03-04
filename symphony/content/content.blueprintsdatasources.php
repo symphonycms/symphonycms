@@ -23,7 +23,7 @@
 			
 			$dsTableBody = array();
 			
-			$datasources = DSManager::instance()->listAll();
+			$datasources = DataSourceManager::instance()->listAll();
 			
 			if (!is_array($datasources) or empty($datasources)) {
 				$dsTableBody[] = Widget::TableRow(array(Widget::TableData(
@@ -32,7 +32,7 @@
 			}
 			
 			else foreach ($datasources as $ds) {
-				$instance = DSManager::instance()->create($ds['handle'], NULL, false);
+				$instance = DataSourceManager::instance()->create($ds['handle'], NULL, false);
 				$view_mode = ($ds['can_parse'] == true ? 'edit' : 'info');
 				
 				$col_name = Widget::TableData(Widget::Anchor(

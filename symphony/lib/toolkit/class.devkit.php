@@ -73,7 +73,8 @@
 			# Delegate: ManipulateDevKitNavigation
 			# Description: Allow navigation XML to be manipulated before it is rendered.
 			# Global: Yes
-			$this->_page->ExtensionManager->notifyMembers(
+			#$this->_page->ExtensionManager->notifyMembers(
+			ExtensionManager::instance()->notifyMembers(
 				'ManipulateDevKitNavigation', '/frontend/',
 				array(
 					'xml'	=> $xml

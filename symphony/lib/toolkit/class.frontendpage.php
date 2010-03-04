@@ -324,8 +324,8 @@
 			}
 			
 			if(!($view instanceof View)) return;
-			
-			if(!Frontend::instance()->isLoggedIn() && in_array('admin', $row['type'])){
+
+			if(!Frontend::instance()->isLoggedIn() && in_array('admin', $view->types)){
 				
 				$views = View::findFromType('403');
 				$view = array_shift($views);
