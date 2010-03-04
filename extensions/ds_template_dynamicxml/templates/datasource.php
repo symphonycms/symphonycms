@@ -16,13 +16,28 @@
 			);	
 		}
 		
-		public $dsParamROOTELEMENT = %s;
-		public $dsParamURL = %s;
-		public $dsParamXPATH = %s;
-		public $dsParamCACHE = %d;
-		
 		public function allowEditorToParse() {
 			return true;
+		}
+		
+		public function getCacheTime() {
+			return %d;
+		}
+		
+		public function getNamespaces() {
+			return %s;
+		}
+		
+		public function getRootElement() {
+			return %s;
+		}
+		
+		public function getURL() {
+			return %s;
+		}
+		
+		public function getXPath() {
+			return %s;
 		}
 	}
 	

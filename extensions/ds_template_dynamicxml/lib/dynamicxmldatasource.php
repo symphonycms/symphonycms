@@ -1,14 +1,42 @@
 <?php
 	
 	require_once TOOLKIT . '/class.gateway.php';
-	require_once TOOLKIT . '/class.xsltprocess.php');
+	require_once TOOLKIT . '/class.xsltprocess.php';
 	require_once CORE . '/class.cacheable.php';
 	
 	class DynamicXMLDataSource extends DataSource {
-		public $dsParamROOTELEMENT = 'dynamic-xml';
-		public $dsParamURL = '';
-		public $dsParamXPATH = '/';
-		public $dsParamCACHE = 60;
+		public function getCacheTime() {
+			return 60;
+		}
+		
+		public function getNamespaces() {
+			return array(
+				array(
+					'name'	=> 'rss',
+					'uri'	=> 'http://rss.com/'
+				),
+				array(
+					'name'	=> 'atom',
+					'uri'	=> 'http://atom.com/'
+				)
+			);
+		}
+		
+		public function getRootElement() {
+			return 'dynamic-xml';
+		}
+		
+		public function getURL() {
+			return '';
+		}
+		
+		public function getXPath() {
+			return '/';
+		}
+		
+		public function getTemplate() {
+			return 'dynamic_xml';
+		}
 		
 		public function grab(&$param_pool) {
 			$result = null;

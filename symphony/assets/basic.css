@@ -29,7 +29,9 @@ h2 {
 	font-size: 1.3em;
 	font-weight: normal;
 }
-h2 {padding: .5em 1em;}
+h2 {
+	padding: 1em;
+}
 h3,
 h4 {
 	position: relative;

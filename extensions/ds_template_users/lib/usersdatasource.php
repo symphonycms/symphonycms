@@ -1,13 +1,57 @@
 <?php
 	
 	class UsersDataSource extends DataSource {
-		public $dsParamROOTELEMENT = 'users';
-		public $dsParamORDER = 'desc';
-		public $dsParamLIMIT = '20';
-		public $dsParamREDIRECTONEMPTY = 'no';
-		public $dsParamSORT = 'id';
-		public $dsParamSTARTPAGE = '1';
-		public $dsParamFILTERS = array();
+		public function canAppendPagination() {
+			return false;
+		}
+		
+		public function canHTMLEncodeText() {
+			return false;
+		}
+		
+		public function canRedirectOnEmpty() {
+			return false;
+		}
+		
+		public function getFilters() {
+			return array();
+		}
+		
+		public function getIncludedElements() {
+			return array();
+		}
+		
+		public function getOutputParams() {
+			return array();
+		}
+		
+		public function getPaginationLimit() {
+			return 20;
+		}
+		
+		public function getPaginationPage() {
+			return 1;
+		}
+		
+		public function getRequiredURLParam() {
+			return '';
+		}
+		
+		public function getRootElement() {
+			return 'users';
+		}
+		
+		public function getSortField() {
+			return 'system:id';
+		}
+		
+		public function getSortOrder() {
+			return 'desc';
+		}
+		
+		public function getTemplate() {
+			return 'users';
+		}
 		
 		protected function processUserFilter($field, $filter) {
 			if (!is_array($filter)) {
@@ -25,6 +69,8 @@
 		}
 		
 		public function grab() {
+			throw new Exception('TODO: Fix users datasource template.');
+			
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 			
 			try {

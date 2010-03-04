@@ -491,6 +491,7 @@ var Symphony;
 		});
 
 		// Data source switcheroo
+		/*
 		$('select.filtered > optgroup').each(function() {
 			var s = this.parentNode,
 			    l = this.label,
@@ -504,7 +505,7 @@ var Symphony;
 				}
 			});
 		});
-
+		
 		$('*.contextual').each(function() {
 			var a = $(this);
 
@@ -517,7 +518,7 @@ var Symphony;
 			});
 		});
 
-		$('#context').change();
+		$('#context').change();*/
 		
 		// system messages
 		window.setTimeout("Symphony.Message.fade()", 10000);
@@ -626,6 +627,16 @@ var Symphony;
 	};
 	
 })(jQuery);
+
+jQuery(document).ready(function() {
+	var $ = jQuery;
+	
+	$('#datasource_template_switch').bind('change', function() {
+		var select = $(this);
+		
+		window.location.search = '?template=' + select.val();
+	});
+});
 
 /*
  * Event context toggle
