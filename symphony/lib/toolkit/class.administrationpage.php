@@ -109,7 +109,7 @@
 			// If there is no view function, throw and error:
 			if (!method_exists($this, $function)) {
 				
-				if ($type == 'view') $this->_Parent->errorPageNotFound();
+				if ($type == 'view') Administration::instance()->errorPageNotFound();
 				
 				return false;
 			}
