@@ -30,7 +30,7 @@
 																		 'records' => array(), 'groups' => array());
 				}	
 																					
-				$groups[$this->get('element_name')][$handle]['records'][] = $r;
+				$groups[$this->get('element_name')][$value]['records'][] = $r;
 								
 			}
 
