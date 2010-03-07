@@ -80,7 +80,8 @@
 				
 				$about = $existing->about();
 				$fields['name'] = $about['name'];
-				$fields['order'] = $existing->dsParamORDER;
+				
+				$fields['order'] = ($existing->dsParamORDER == 'rand' ? 'random' : $existing->dsParamORDER);
 				$fields['param'] = $existing->dsParamPARAMOUTPUT;
 				$fields['required_url_param'] = $existing->dsParamREQUIREDPARAM;
 				
