@@ -162,7 +162,7 @@
 			return preg_replace('/&(?!(#[0-9]+|#x[0-9a-f]+|amp|lt|gt);)/i', '&amp;', trim($value));
 		}
 		
-		public function appendFormattedElement(&$wrapper, $data, $encode = false, $mode) {
+		public function appendFormattedElement(&$wrapper, $data, $encode = false, $mode = null) {
 			
 			if ($mode == null || $mode == 'formatted') {
 				

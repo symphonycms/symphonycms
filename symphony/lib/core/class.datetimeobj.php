@@ -3,7 +3,7 @@
 	Class DateTimeObj{
 
 		public static function setDefaultTimezone($timezone){
-			if(!@date_default_timezone_set($timezone)) trigger_error(E_USER_WARNING, "Invalid timezone '{$timezone}'");
+			if(!@date_default_timezone_set($timezone)) trigger_error(__("Invalid timezone '{$timezone}'"), E_USER_WARNING);
 		}
 		
 		public static function getGMT($format, $timestamp=NULL){

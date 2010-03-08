@@ -89,8 +89,8 @@
 		
 		public function getPageCallback($page=NULL, $update=false){
 			
-			if((!$page || !$update) && !is_null($this->_callback)) return $this->_callback;
-			elseif(!$page && is_null($this->_callback)) trigger_error('Cannot request a page callback without first specifying the page.');
+			if((!$page || !$update) && $this->_callback) return $this->_callback;
+			elseif(!$page && !$this->_callback) trigger_error(__('Cannot request a page callback without first specifying the page.'));
 			
 			$this->_currentPage = URL . preg_replace('/\/{2,}/', '/', '/symphony' . $page);
 			$bits = preg_split('/\//', trim($page, '/'), 3, PREG_SPLIT_NO_EMPTY);
