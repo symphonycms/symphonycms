@@ -6,13 +6,8 @@
 	
 	Class contentPublish extends AdministrationPage{
 		
-		private $_errors;
-		
-		function __construct(){
-			parent::__construct();
-			$this->_errors = array();
-		}
-		
+		private $_errors = array();
+
 		function __switchboard($type='view'){
 
 			$function = ($type == 'action' ? '__action' : '__view') . ucfirst($this->_context['page']);
