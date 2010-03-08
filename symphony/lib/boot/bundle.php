@@ -22,12 +22,12 @@
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');	
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
 
-	if (!file_exists(CONFIG . '/core.config.php')) {
+	if (!file_exists(CONFIG . '/db.xml')) {
 		
 		if (file_exists(DOCROOT . '/install.php')) {
 			header(sprintf('Location: %s/install.php', URL));
 			exit();
 		}
 		
-		die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');
+		die('<h2>Error</h2><p>Could not locate Symphony configuration files. Please check they exist in <code>manifest/conf/</code>.</p>');
 	}
