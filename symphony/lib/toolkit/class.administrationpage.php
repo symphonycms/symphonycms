@@ -107,14 +107,21 @@
 			$function = '__' . $type . ucfirst($context);
 			
 			// If there is no view function, throw and error:
-			if (!method_exists($this, $function)) {
+			if (!is_callable(array($this, $function))){
 				
-				if ($type == 'view') Administration::instance()->errorPageNotFound();
+				if ($type == 'view'){
+					Administration::instance()->errorPageNotFound();
+				}
 				
 				return false;
 			}
 			
-			$this->$function();
+			try{
+				$this->$function();
+			}
+			catch(Exception $e){
+				// Todo: Better handle this correctly. For now, Discard.
+			}
 
 		}
 

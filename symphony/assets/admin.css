@@ -43,7 +43,7 @@ h1 a:hover,
 	width: 100%;
 	white-space: nowrap;
 	list-style: none;
-	line-height: 1.6em;
+	line-height: 18px;
 	margin: 0 0 1em 0;
 	background: -webkit-gradient(linear, left top, left bottom, from(#f4f4f4), to(#d8d8d8), color-stop(0.04, #ededed));
 	background: -moz-linear-gradient(top center, #f4f4f4 0%, #ededed 1%, #d8d8d8 100%);
@@ -55,7 +55,7 @@ h1 a:hover,
 	color: #666;
 	position:relative;
 	float: left;
-	padding: .7em 1.3em;
+	padding: 7px 1.3em;
 	cursor: pointer;
 	font-weight: bold;
 }
@@ -103,7 +103,7 @@ h1 a:hover,
 
 #nav ul {
 	position: absolute;
-	top: 3em;
+	top: 32px;
 	left: -999em;
 	margin: 0;
 	width: 12em;

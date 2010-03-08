@@ -3,7 +3,7 @@
 	require_once(TOOLKIT . '/class.administrationpage.php');
 
 	Class contentSystemExtensions extends AdministrationPage{
-
+		
 		public function __call($name, $args){
 
 			$type = NULL;
@@ -11,6 +11,7 @@
 			switch($name){
 				
 				case '__viewIndex':
+				case '__viewAll':
 					$this->buildTable(
 						ExtensionManager::instance()->listAll(), 
 						true
