@@ -112,10 +112,10 @@
 			}
 			
 			$types = array();
-			
-			for($ii = 0; $ii < count($structure['filelist']); $ii++)
-				$types[] = str_replace(array('field.', '.php'), '', $structure['filelist'][$ii]);
-			
+
+			foreach($structure['filelist'] as $filename) {
+				$types[] = str_replace(array('field.', '.php'), '', $filename);
+			}
 			return $types;
 		}
 		
