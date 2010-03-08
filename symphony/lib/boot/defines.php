@@ -21,7 +21,7 @@
 	define_safe('CACHE',	MANIFEST . '/cache');
 	define_safe('TMP',		MANIFEST . '/tmp');
 	define_safe('LOGS',		MANIFEST . '/logs');
-	define_safe('CONFIG', 	MANIFEST . '/config.php');
+	define_safe('CONFIG', 	MANIFEST . '/conf');
 
 	define_safe('TOOLKIT',	LIBRARY . '/toolkit');	
 	define_safe('LANG',		LIBRARY . '/lang');	

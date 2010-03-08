@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<configuration>
+	<symphony>
+		<default-max-upload-size>5242880</default-max-upload-size>
+		<administration-path>symphony/</administration-path>
+		<pagination-maximum-rows>17</pagination-maximum-rows>
+		<allow-page-subscription>1</allow-page-subscription>
+		<lang>en</lang>
+		<cookie-prefix>sym-</cookie-prefix>
+		<version>2.1.0</version>
+		<sitename>Symphony Content Management System</sitename>
+		<file-write-mode>0775</file-write-mode>
+		<directory-write-mode>0775</directory-write-mode>
+	</symphony>
+	<log>
+		<archive>1</archive>
+		<maxsize>102400</maxsize>
+	</log>
+	<public>
+		<display-event-xml-in-source>yes</display-event-xml-in-source>
+	</public>
+	<region>
+		<time-format>H:i</time-format>
+		<date-format>d F Y</date-format>
+		<timezone>Australia/Melbourne</timezone>
+	</region>
+	<maintenance-mode>
+		<enabled>no</enabled>
+	</maintenance-mode>
+</configuration>

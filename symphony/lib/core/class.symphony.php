@@ -21,11 +21,10 @@
 		
 	Abstract Class Symphony implements Singleton{
 		
+		protected static $Configuration;
+		protected static $Database;
 		
-		public static $Configuration;
-		public static $Database;
-		
-		private static $_lang;
+		protected static $_lang;
 		
 		public $Log;
 		public $Profiler;
@@ -37,7 +36,7 @@
 		const CRLF = "\r\n";
 		
 		protected function __construct(){
-			
+
 			$this->Profiler = new Profiler;
 
 			if(get_magic_quotes_gpc()) {
@@ -46,20 +45,21 @@
 				General::cleanArray($_GET);
 				General::cleanArray($_POST);	
 			}
-			
-			include(CONFIG);
-			self::$Configuration = new Configuration(true);
-			self::$Configuration->setArray($settings);
-			
-			self::$_lang = (self::$Configuration->get('lang', 'symphony') ? self::$Configuration->get('lang', 'symphony') : 'en');		
+
+			self::$Configuration = new Configuration;
+
+			self::$_lang = (self::Configuration()->get('lang', 'symphony') ? self::Configuration()->get('lang', 'symphony') : 'en');
 			
 			// Legacy support for __LANG__ constant
 			define_safe('__LANG__', self::lang());
 			
-			define_safe('__SYM_DATE_FORMAT__', self::$Configuration->get('date_format', 'region'));
-			define_safe('__SYM_TIME_FORMAT__', self::$Configuration->get('time_format', 'region'));
+			define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
+			define_safe('__SYM_TIME_FORMAT__', self::Configuration()->get('time_format', 'region'));
 			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . ' ' . __SYM_TIME_FORMAT__);
-						
+
+			define_safe('ADMIN', trim(self::Configuration()->core()->symphony->{'administration-path'}, '/'));
+			define_safe('ADMIN_URL', URL . '/' . ADMIN);
+			
 			$this->initialiseLog();
 
 			GenericExceptionHandler::initialise();
@@ -71,7 +71,7 @@
 			
 			Lang::loadAll(true);
 
-			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
+			DateTimeObj::setDefaultTimezone(self::Configuration()->get('timezone', 'region'));
 			
 		}
 		
@@ -85,7 +85,7 @@
 			$cookie_path = '/' . trim($cookie_path, '/');
 			
 			define_safe('__SYM_COOKIE_PATH__', $cookie_path);
-			define_safe('__SYM_COOKIE_PREFIX__', self::$Configuration->get('cookie_prefix', 'symphony'));
+			define_safe('__SYM_COOKIE_PREFIX__', self::Configuration()->get('cookie_prefix', 'symphony'));
 						
 			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX__, TWO_WEEKS, __SYM_COOKIE_PATH__);			
 		}
@@ -111,8 +111,9 @@
 		public function initialiseDatabase(){
 			$error = NULL;
 			
-			$driver_filename = TOOLKIT . '/class.' . self::$Configuration->get('driver', 'database') . '.php';
-			$driver = self::$Configuration->get('driver', 'database');
+			$driver = self::Configuration()->db()->driver;
+			$driver_filename = TOOLKIT . "/class.{$driver}.php";
+			
 
 			if(!is_file($driver_filename)){
 				throw new SymphonyErrorPage("Could not find database driver '<code>{$driver}</code>'", 'Symphony Database Error');
@@ -122,22 +123,22 @@
 			
 			self::$Database = new $driver;
 			
-			$details = self::$Configuration->get('database');
-			
+			$details = self::Configuration()->db()->properties();
+
 			try{
-				if(!self::$Database->connect($details['host'], $details['user'], $details['password'], $details['port'])) return false;				
-				if(!self::$Database->select($details['db'])) return false;
+				if(!self::$Database->connect($details->host, $details->user, $details->password, $details->port)) return false;
+				if(!self::$Database->select($details->db)) return false;
 				if(!self::$Database->isConnected()) return false;
 			
-				self::$Database->setPrefix($details['tbl_prefix']);
+				self::$Database->setPrefix($details->{'tbl-prefix'});
 
-				if(self::$Configuration->get('runtime_character_set_alter', 'database') == '1'){
-					self::$Database->setCharacterEncoding(self::$Configuration->get('character_encoding', 'database'));
-					self::$Database->setCharacterSet(self::$Configuration->get('character_set', 'database'));
+				if($details->{'runtime_character_set_alter'} == '1'){
+					self::$Database->setCharacterEncoding($details->{'character_encoding'});
+					self::$Database->setCharacterSet($details->{'character_set'});
 				}
 
-				if(self::$Configuration->get('query_caching', 'database') == 'off') self::$Database->disableCaching();
-				elseif(self::$Configuration->get('query_caching', 'database') == 'on') self::$Database->enableCaching();
+				if($details->{'query-caching'} == 'off') self::$Database->disableCaching();
+				elseif($details->{'query-caching'} == 'on') self::$Database->enableCaching();
 			}
 			catch(DatabaseException $e){
 				$error = self::$Database->getlastError();
@@ -158,12 +159,12 @@
 		public function initialiseLog(){
 			
 			$this->Log = new Log(ACTIVITY_LOG);
-			$this->Log->setArchive((self::$Configuration->get('archive', 'log') == '1' ? true : false));
-			$this->Log->setMaxSize(intval(self::$Configuration->get('maxsize', 'log')));
+			$this->Log->setArchive((self::Configuration()->get('archive', 'log') == '1' ? true : false));
+			$this->Log->setMaxSize(intval(self::Configuration()->get('maxsize', 'log')));
 				
 			if($this->Log->open() == 1){
 				$this->Log->writeToLog('Symphony Log', true);
-				$this->Log->writeToLog('Version: '. self::$Configuration->get('version', 'symphony'), true);
+				$this->Log->writeToLog('Version: '. self::Configuration()->get('version', 'symphony'), true);
 				$this->Log->writeToLog('--------------------------------------------', true);
 			}
 						

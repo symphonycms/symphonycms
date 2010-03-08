@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<configuration>
+	<driver>mysql</driver>
+	<character-set>utf8</character-set>
+	<character-encoding>utf8</character-encoding>
+	<runtime-character-set-alter>1</runtime-character-set-alter>
+	<disable-query-caching>no</disable-query-caching>
+	<host>localhost</host>
+	<port>3306</port>
+	<user>root</user>
+	<password>root</password>
+	<db>projects_symphony_2.1</db>
+	<tbl-prefix>tbl_</tbl-prefix>
+</configuration>

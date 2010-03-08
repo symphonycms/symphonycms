@@ -108,7 +108,7 @@
 		}
 		
 		public function connect($host=NULL, $user=NULL, $password=NULL, $port ='3306'){
-			
+
 			$this->_connection['id'] = NULL;
 			
 	        if($host) $this->_connection['host'] = $host;

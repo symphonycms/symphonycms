@@ -22,7 +22,7 @@
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');	
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
 
-	if (!file_exists(CONFIG)) {
+	if (!file_exists(CONFIG . '/core.config.php')) {
 		
 		if (file_exists(DOCROOT . '/install.php')) {
 			header(sprintf('Location: %s/install.php', URL));
@@ -31,8 +31,3 @@
 		
 		die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');
 	}
-	
-	include(CONFIG);
-	
-	define_safe('ADMIN', trim($settings['admin']['path'], '/'));
-	define_safe('ADMIN_URL', URL . '/' . ADMIN);
