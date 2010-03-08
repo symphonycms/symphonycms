@@ -75,13 +75,13 @@
 			$this->appendSession();
 			$this->appendNavigation();
 			$this->view();
-			
+
 			###
 			# Delegate: AppendElementBelowView
 			# Description: Allows developers to add items just above the page footer. Use $context['parent']->Page
 			#			   for access to the page object
-			ExtensionManager::instance()->notifyMembers('AppendElementBelowView', '/backend/');			
-						
+			ExtensionManager::instance()->notifyMembers('AppendElementBelowView', '/backend/');
+
 			$this->appendAlert();
 
 			Administration::instance()->Profiler->sample('Page content created', PROFILE_LAP);
@@ -115,14 +115,7 @@
 				
 				return false;
 			}
-			
-			try{
-				$this->$function();
-			}
-			catch(Exception $e){
-				// Todo: Better handle this correctly. For now, Discard.
-			}
-
+			$this->$function();
 		}
 
 		public function pageAlert($message=NULL, $type=Alert::NOTICE){
@@ -133,7 +126,7 @@
 
 			$message = __($message);
 
-			if(strlen(trim($message)) == 0) throw new Exception('A message must be supplied unless flagged as Alert::ERROR');				
+			if(strlen(trim($message)) == 0) throw new Exception('A message must be supplied unless flagged as Alert::ERROR');
 
 			if(!($this->Alert instanceof Alert) || ($this->Alert->type == Alert::NOTICE && in_array($type, array(Alert::ERROR, Alert::SUCCESS)))){
 				$this->Alert = new Alert($message, $type);

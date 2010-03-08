@@ -36,7 +36,7 @@
 					break;
 				
 				default:
-					throw new Exception('No such method or function "contentSystemExtensions::'.$name.'()".');
+					return NULL;
 					break;
 			}
 
