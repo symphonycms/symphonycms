@@ -209,17 +209,21 @@ var Symphony;
 	$('table.orderable').live('reorder', function() {
 		var t = $(this).addClass('busy');
 
+		console.log($('input',this));
+		console.log($('input').serialize());
+		console.log($('input').serializeArray());
+		console.log($(this).closest('form').serialize());
+
 		$.ajax({
 			type: 'POST',
 			url: Symphony.WEBSITE + '/symphony/ajax/reorder' + location.href.slice(Symphony.WEBSITE.length + 9),
-			data: $('input', this).map(function(i) { return this.name + '=' + i; }).get().join('&'),
-			success: function() {
-				Symphony.Message.clear('reorder');
-			},
-			error: function() {
-				Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'reorder error');
-			},
-			complete: function() {
+			data: $('input').serialize(),
+			complete: function(x) {
+				if (x.status === 200) {
+					Symphony.Message.clear('reorder');
+				} else {
+					Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'reorder error');
+				}
 				t.removeClass('busy');
 			}
 		});
