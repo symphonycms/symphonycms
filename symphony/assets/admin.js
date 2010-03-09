@@ -2,7 +2,7 @@ var Symphony;
 
 (function($) {
 	Symphony = {
-		WEBSITE: $('script')[0].src.match('(.*)/symphony')[1],
+		WEBSITE: $('script[src]')[0].src.match('(.*)/symphony')[1],
 		Language: {
 			NAME: $('html').attr('lang'),
 			DICTIONARY: {},
