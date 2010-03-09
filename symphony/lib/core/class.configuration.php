@@ -87,6 +87,7 @@
 		
 		// Deprecated
 		public function get($name=NULL, $index=NULL){
+			//throw new Exception("Configuration::get() has been deprecated. Did you mean <code>Symphony::Configuration()->core()->{$index}->{$name}</code>?");
 			
 			$name = str_replace('_', '-', $name);
 			$index = str_replace('_', '-', $index);
@@ -96,5 +97,18 @@
 			}
 				
 			return (array)$this->core()->$name;
+		}
+		
+		// Deprecated
+		public function set($name, $value, $index=NULL){
+			//throw new Exception("Configuration::set() has been deprecated. Did you mean <code>Symphony::Configuration()->core()->{$index}->{$name} = '{$value}'</code>?");
+			$name = str_replace('_', '-', $name);
+			$index = str_replace('_', '-', $index);
+			
+			if($index){
+				$this->core()->$index->$name = $value;
+			}
+				
+			$this->core()->$name = $value;
 		}
 	}
