@@ -206,6 +206,9 @@ Options +FollowSymlinks
 			
 			if(version_compare($existing_version, '2.0.7RC1', '<=')){
 				$frontend->Database->query('ALTER TABLE `tbl_authors` ADD `language` VARCHAR(15) NULL DEFAULT NULL');
+
+				$settings['symphony']['pages_table_nest_children'] = 'no';
+				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 			
 			$sbl_version = $frontend->Database->fetchVar('version', 0, 
