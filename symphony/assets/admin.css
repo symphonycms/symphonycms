@@ -339,9 +339,11 @@ a.button.active {
 #session .button {
 	float:left;
 	font-size: 1em;
-	background-color:#121212;
+	background:#121212;
+	padding: 0 6px;
+	text-shadow: none;
 	}
-	#session .button:hover {background-color:#000;color:#fff;}
+	#session .button:hover {background-color:#343434;color:#fff;}
 	
 /* View Options */
 #view-options {
