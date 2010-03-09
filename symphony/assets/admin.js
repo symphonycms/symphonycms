@@ -7,19 +7,15 @@ var Symphony;
 			NAME: $('html').attr('lang'),
 			DICTIONARY: {},
 			get: function(string, tokens) {
-				if(tokens === undefined) return;
+				// Get translated string
+				translatedString = Symphony.Language.DICTIONARY[string];
 
 				// Return string if it cannot be found in the dictionary
-				if(Symphony.Language.DICTIONARY[string] === false) {
-					string = Symphony.Language.insert(string, tokens);
-				}
-				else {
-					// Get translated string
-					string = Symphony.Language.DICTIONARY[string];
-					// Insert tokens
-					string = Symphony.Language.insert(string, tokens);
-				}
-
+				if(translatedString !== false) string = translatedString;
+					
+				// Insert tokens
+				if(tokens !== undefined) string = Symphony.Language.insert(string, tokens);
+				
 				// Return translated string
 				return string;
 			},
