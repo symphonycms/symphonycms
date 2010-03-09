@@ -6,38 +6,44 @@ form {
 	top: 96px;
 	left: 50%;
 	margin-left: -12.5em;
-	border: 1px solid #eee;
-	padding: 0;
-	min-height: 0;
+	padding-bottom: 2em;
 	width: 25em;
+	background: -webkit-gradient(linear, left top, left bottom, from(#f4f4f4), to(#d8d8d8), color-stop(0.04, #ededed));
+	background: -moz-linear-gradient(top center, #f4f4f4 0%, #ededed 1%, #d8d8d8 100%);
+	-webkit-box-shadow: 0 1px 3px #888;
+	-moz-box-shadow: 0 1px 3px #888;
+	-moz-border-radius: 0.5em;
+	-webkit-border-radius: 0.5em;
+}
+fieldset {
+	color: #666;
+	padding: 0;
+	margin: 0 30px;
 }
 h1 {
-	margin: 0;
-	border: 1px solid #665;
-	border-top-color: #887;
-	border-bottom: none;
-	padding: 19px;
-	background-color: #353530;
-}
-fieldset,
-div.actions {
-	padding: 1em 2em;
-	border: 1px solid #bba;
-	border-top-color: #ddc;
-	background-color: #ccb;
+	color: #666;
+	font-size: 1.8em;
+	background: none;
+	padding: 1em 30px;
+	text-shadow: 1px 1px 2px #fff;
 }
 div.actions {
-	float: none;
-	margin-top: -1.25em;
-	border-top: none;
-	border-bottom: 1px solid #998;
-	padding-top: 0;
-	width: auto;
-	overflow: hidden;
+	border: none;
+	padding: 0;
+	margin-right: 30px;
 }
-button {
-	display: block;
-	margin: 0 0 0 auto;
+div.actions input {
+	color: #fff;
+	font-weight: bold;
+	text-shadow: 1px 1px 2px #333;
+	border: none;
+	padding: 0.4em 0.7em 0.5em;
+	background: -webkit-gradient(linear, left top, left bottom, from(#777), to(#444));
+	background: -moz-linear-gradient(top center, #777 0%, #444 100%);
+	-webkit-box-shadow: 0 1px 2px #777;
+	-moz-box-shadow: 0 1px 2px #777;
+	-moz-border-radius: 0.3em;
+	-webkit-border-radius: 0.3em;	
 }
 legend {
 	display: none;

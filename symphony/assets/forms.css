@@ -2,19 +2,19 @@
 @import url("admin.css");
 
 /* Form Elements */
+
 fieldset,
 div.secondary {
 	position: relative;
 	border: none;
 	padding-top: 1em;
-	margin: 0 1.3em;
 }
 legend {
 	float: left;
-	margin-bottom: -3em;
+	margin: 0 0 -3em 0;
 	padding: 0;
 	color: #665;
-	text-indent: -275px;
+	text-indent: -200px;
 	text-shadow: -1px 2px 3px #ddd;
 	font-weight: bold;
 	line-height: 1;
@@ -32,7 +32,7 @@ label > i {
 }
 select {
 	display: block;
-	margin-top: 2px;
+	margin-top: 6px;
 	width: 100%;
 	box-sizing: border-box;
 	-khtml-box-sizing: border-box;
@@ -45,7 +45,7 @@ select[multiple] {
 }
 textarea,
 label input {
-	margin-top: 2px;
+	margin-top: 5px;
 	width: 100%;
 	font-size: 109.09%;
 	font-family: inherit;
@@ -77,30 +77,25 @@ button {
 .primary {
 	float: left;
 	width: 60%;
+	margin: 0 -15px 0 15px;
 }
 .secondary {
 	float: right;
 	width: 35%;
+	margin: 0 15px 0 -15px;
 }
 h2,
 .settings {
-	margin-bottom: 0;
 	border-bottom: 1px solid #ddc;
-	padding-bottom: 1em;
 }
 .settings {
-	margin-bottom: 9px;
-	padding-left: 275px;
-}
-.settings + div,
-.settings + fieldset {
-	margin-top: -9px;
+	margin: 0 15px;
+	padding: 1em 0 1em 200px;
 }
 .settings > legend + p.help {
 	float:left;
-	width: 22em;
-	margin-top:1.5em;
-	margin-left:-275px;
+	width: 180px;
+	margin: 1.5em 0 0 -200px;
 }
 .group {
 	position: relative;
@@ -183,33 +178,42 @@ div.actions {
 	clear: both;
 	border-top: 1px solid #ddc;
 	padding: 14px 0 21px;
-	margin: 0 1.3em;
+	margin: 0 15px;
 }
 .settings + div.actions {
 	border: none;
 }
 div.actions input {
+	color: #fff;
 	float: right;
-	margin-left: 1em;
-	padding: 3.5px 6px 4px;
+	text-shadow: 0 1px 2px #333;
+	border: none;
+	padding: 4px 7px 6px;
+	background: -webkit-gradient(linear, left top, left bottom, from(#777), to(#444));
+	background: -moz-linear-gradient(top center, #777 0%, #444 100%);
+	cursor: pointer;
+	-moz-border-radius: 0.3em;
+	-webkit-border-radius: 0.3em;
+}
+div.actions input:hover {
+	background: -webkit-gradient(linear, left top, left bottom, from(#555), to(#222));
+	background: -moz-linear-gradient(top center, #555 0%, #222 1%);
 }
 div.actions button {
-	float: left;
-	margin-right: 1em;
-	border: none;
-	background-color: #887;
 	color: #fff;
+	float: left;
 	cursor: pointer;
-	padding: 0 1em .2em 1em;
-	line-height: 2em;
-	font-size: 0.95em;
-	height: 2em;
-	border-radius: 1em;
-	-moz-border-radius: 1em;
-	-webkit-border-radius: 1em;
+	text-shadow: 0 1px 2px #777;
+	border: none;
+	padding: 4px 7px 6px;
+	background: -webkit-gradient(linear, left top, left bottom, from(#aaa), to(#888));
+	background: -moz-linear-gradient(top center, #aaa 0%, #888 100%);
+	-moz-border-radius: 0.3em;
+	-webkit-border-radius: 0.3em;
 }
 button.delete:hover {
-	background-color: #d43;
+	background: -webkit-gradient(linear, left top, left bottom, from(#d43), to(#bc4242));
+	background: -moz-linear-gradient(top center, #d43 0%, #bc4242 100%);
 }
 ul.tags {
 	margin: -1em 0 1.5em -6px;
