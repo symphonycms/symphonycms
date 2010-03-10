@@ -39,10 +39,17 @@
 					return NULL;
 					break;
 			}
-
-			$this->buildTable(
-				ExtensionManager::instance()->listByType($type)
-			);
+			
+			if($type == 'Other'){
+				$this->buildTable(
+					ExtensionManager::instance()->listOthers(array('Core', 'Data Source Type', 'Field'))
+				);
+			}
+			else {
+				$this->buildTable(
+					ExtensionManager::instance()->listByType($type)
+				);
+			}
 		}
 		
 /*		public function __viewIndex(){		
