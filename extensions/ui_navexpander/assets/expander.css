@@ -1,0 +1,33 @@
+#nav > li#nav-expand {
+	text-indent: -1000em;
+	background: url('expander.png') 0 50% no-repeat;
+	padding: 0;
+	width: 38px;
+}
+
+#nav > li#nav-expand:hover {
+	background-color: #aaa;
+	color: #fff;
+}
+
+#nav.expanded {padding-bottom: .5em;}
+#nav.expanded li {width:11em;font-weight:bold;cursor:default;}
+#nav.expanded #nav-expand {
+	background: url('expander.png') 100% 50% no-repeat;
+	cursor: pointer;
+	}
+#nav.expanded li ul li {font-weight:normal;}
+
+#nav.expanded li.active, #nav.expanded li a:hover, #nav.expanded > li:hover {background:none;color: #666;}
+
+#nav.expanded ul, #nav.expanded #nav-system ul, #nav.expanded #nav-blueprints ul, #nav.expanded li:hover ul {
+    position: relative;
+    top: 0;
+    left: auto;
+    right: auto;
+    margin: .5em 0;
+    background-color: transparent;
+}
+
+#nav.expanded ul li a {padding: 0;color: #888;line-height: 2em;}
+#nav.expanded ul li a:hover {color: #333;}

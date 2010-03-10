@@ -188,12 +188,6 @@
 
 			$xNav = new XMLElement('ul');
 			$xNav->setAttribute('id', 'nav');
-			if($_COOKIE['nav'] == 'expanded') {
-				$xNav->setAttribute('class', 'expanded');
-			}
-			
-			$xLi = new XMLElement('li', ($_COOKIE['nav'] == 'expanded' ? '-' : '+'), array('id' => 'nav-expand'));
-			$xNav->appendChild($xLi);
 
 			foreach($nav as $n){
 				$n_bits = explode('/', $n['link'], 3);
