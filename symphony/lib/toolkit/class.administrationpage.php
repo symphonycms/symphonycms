@@ -39,7 +39,7 @@
 		}
 		
 		public function build($context = NULL){
-			
+					
 			$this->_context = $context;
 
 			$this->Html->setDTD('<!DOCTYPE html>');
@@ -95,7 +95,7 @@
 			$this->__switchboard('action');
 		}
 		
-		function prepare(){
+		public function prepare(){
 			$this->__switchboard('prepare');
 		}
 
@@ -106,11 +106,11 @@
 			
 			$function = '__' . $type . ucfirst($context);
 			
-			// If there is no view function, throw and error:
+			// If there is no view function, throw an error
 			if (!is_callable(array($this, $function))){
 				
 				if ($type == 'view'){
-					Administration::instance()->errorPageNotFound();
+					throw new AdministrationPageNotFoundException;
 				}
 				
 				return false;

@@ -1,7 +1,7 @@
 <?php
 	
 	require_once TOOLKIT . '/class.gateway.php';
-	require_once TOOLKIT . '/class.xsltprocess.php';
+	require_once TOOLKIT . '/class.xslproc.php';
 	require_once CORE . '/class.cacheable.php';
 	
 	class DynamicXMLDataSource extends DataSource {
@@ -141,7 +141,7 @@
 						}
 					}
 		
-					elseif(strlen($xml) > 0 && !General::validateXML($xml, $errors, false, new XsltProcess)){
+					elseif(strlen($xml) > 0 && !General::validateXML($xml, $errors)){
 							
 						$writeToCache = false;
 						
@@ -150,7 +150,7 @@
 							$valid = false;
 							$creation = DateTimeObj::get('c', $cachedData['creation']);
 						}
-						
+
 						else{
 							$result = new XMLElement($this->dsParamROOTELEMENT);
 							$result->setAttribute('valid', 'false');
@@ -158,7 +158,7 @@
 						}
 						
 					}
-					
+
 					elseif(strlen($xml) == 0){
 						$this->_force_empty_result = true;
 					}
@@ -186,10 +186,9 @@
 			
 				$result = new XMLElement($this->dsParamROOTELEMENT);
 		
-				$proc = new XsltProcess;
-				$ret = $proc->process($xml, $xsl);
+				$ret = XSLProc::transform($xml, $xsl);
 		
-				if($proc->isErrors()){
+				if(XSLProc::hasErrors()){
 					
 					$result->setAttribute('valid', 'false');
 					$error = new XMLElement('error', __('XML returned is invalid.'));

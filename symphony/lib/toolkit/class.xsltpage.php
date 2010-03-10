@@ -1,22 +1,19 @@
 <?php
 
 	require_once(TOOLKIT . '/class.page.php');
-	require_once(TOOLKIT . '/class.xsltprocess.php');
+	require_once(TOOLKIT . '/class.xslproc.php');
 
 	Class XSLTPage extends Page{
 		
-		public $Proc;
-		
 		protected $_xml;
 		protected $_xsl;
-		protected $_param;
+		protected $_parameters;
 		protected $_registered_php_functions;
 		
 		public function __construct(){
 			
-			if(!XsltProcess::isXSLTProcessorAvailable()) throw new SymphonyErrorPage(__('No suitable XSLT processor was found.'));
-			
-			$this->Proc = new XsltProcess;
+			if(!XSLProc::isXSLTProcessorAvailable()) throw new SymphonyErrorPage(__('No suitable XSLT processor was found.'));
+
 			$this->_registered_php_functions = array();
 		}
 		
@@ -37,7 +34,7 @@
 		}
 		
 		public function setRuntimeParam($param){
-			$this->_param = str_replace("'", "&apos;", $param);
+			$this->_parameters = str_replace("'", "&apos;", $param);
 		}
 		
 		public function getError(){
@@ -52,10 +49,14 @@
 		}
 		
 		public function generate(){
-						
-			$result = $this->Proc->process($this->_xml, $this->_xsl, $this->_param, $this->_registered_php_functions);	
 			
-			if($this->Proc->isErrors()) return false;
+			$result = XSLProc::transform($this->_xml, $this->_xsl, XSLProc::XML, $this->_parameters, $this->_registered_php_functions);
+			
+			if(XSLProc::hasErrors()) return false;
+			
+			//$result = $this->Proc->process($this->_xml, $this->_xsl, $this->_param, $this->_registered_php_functions);	
+			
+			//if($this->Proc->isErrors()) return false;
 			
 			parent::generate();
 			

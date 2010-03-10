@@ -5,6 +5,23 @@
 	require_once(TOOLKIT . '/class.manager.php');	
 	require_once(TOOLKIT . '/class.htmlpage.php');
 	require_once(TOOLKIT . '/class.ajaxpage.php');
+
+	Class AdministrationPageNotFoundException extends SymphonyErrorPage{
+		public function __construct(){
+			parent::__construct(
+				__('The page you requested does not exist.'),
+				__('Page Not Found'),
+				'general',
+				array('header' => 'HTTP/1.0 404 Not Found')
+			);
+		}
+	}
+	
+	Class AdministrationPageNotFoundExceptionHandler extends SymphonyErrorPageHandler{
+		public static function render($e){
+			parent::render($e);
+		}
+	}
 		
 	Class Administration extends Symphony{
 		
@@ -24,7 +41,7 @@
 			parent::__construct();
 			$this->Profiler->sample('Engine Initialisation');
 			
-			// Need this part for backwards compatiblity			
+			// Need this part for backwards compatiblity
 			$this->Database = Symphony::Database();
 			$this->Configuration = Symphony::Configuration();
 						
@@ -47,10 +64,10 @@
 				
 				else:
 				
-					$section_handle = $this->Database->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '".$this->User->default_section."' LIMIT 1");
+					$section_handle = self::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '".$this->User->default_section."' LIMIT 1");
 				
 					if(strlen(trim($section_handle)) == 0){
-						$section_handle = $this->Database->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
+						$section_handle = self::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
 					}
 				
 					if(strlen(trim($section_handle)) == 0){
@@ -65,7 +82,7 @@
 			}
 			
 			if(!$this->_callback = $this->getPageCallback($page)){
-				$this->errorPageNotFound();
+				throw new AdministrationPageNotFoundException;
 			}
 				
 			include_once((isset($this->_callback['driverlocation']) ? $this->_callback['driverlocation'] : CONTENT) . '/content.' . $this->_callback['driver'] . '.php'); 			
@@ -224,15 +241,11 @@
 			
 			return $output;	
 		}
-
-		public function saveConfig(){
-			$string  = "<?php\n\t\$settings = {$this->Configuration};\n";
-			return General::writeFile(CONFIG, $string, $this->Configuration->get('file_write_mode', 'symphony'));
-		}
 		
-		public function errorPageNotFound(){
-			$this->customError(E_USER_ERROR, 'Page Not Found', 'The page you requested does not exist.', false, true, 'error', array('header' => 'HTTP/1.0 404 Not Found'));			
+		//Deprecated
+		public function saveConfig(){
+			self::Configuration()->core()->save();
 		}
-
 	}
-
+	
+	return 'Administration';

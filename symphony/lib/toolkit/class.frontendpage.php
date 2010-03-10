@@ -110,13 +110,7 @@
 				Frontend::instance()->Profiler->sample('XSLT Transformation', PROFILE_LAP);
 				
 				if (is_null($devkit) && !$output) {
-					$errstr = NULL;
-					
-					while (list($key, $val) = $this->Proc->getError()) {
-						$errstr .= 'Line: ' . $val['line'] . ' - ' . $val['message'] . self::CRLF;
-					};
-					
-					throw new SymphonyErrorPage(trim($errstr), NULL, 'xslt-error', array('proc' => clone $this->Proc));
+					throw new XSLProcException('Transformation Failed');
 				}
 				
 				Frontend::instance()->Profiler->sample('Page creation complete');
@@ -124,7 +118,6 @@
 			
 			if (!is_null($devkit)) {
 				$devkit->prepare($this, $this->_pageData, $this->_xml, $this->_param, $output);
-				
 				return $devkit->build();
 			}
 			
@@ -283,7 +276,8 @@
 			$xml->prependChild($xParam);
 
 			chdir(WORKSPACE);
-			$xsl = file_get_contents(VIEWS . '/' . $page['filelocation']); /*'<?xml version="1.0" encoding="UTF-8"?>
+			$xsl = file_get_contents(VIEWS . '/' . $page['filelocation']); 
+			/* '<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="' . VIEWS . '/' . $page['filelocation'] . '"/>
 </xsl:stylesheet>';*/
