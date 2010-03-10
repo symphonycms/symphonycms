@@ -230,6 +230,12 @@
 				$div->appendChild($label);
 			
 				$fieldset->appendChild($div);
+				
+				$this->Form->appendChild($fieldset);
+				
+				$fieldset = new XMLElement('fieldset');
+				$fieldset->setAttribute('class', 'settings');
+				$fieldset->appendChild(new XMLElement('legend', __('Processing Options')));
 			
 				$label = Widget::Label(__('Filter Rules'));	
 
@@ -246,8 +252,6 @@
 			
 				$label->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
 				$fieldset->appendChild($label);		
-							
-				$fieldset->appendChild(new XMLElement('p', '&uarr; ' . __('This event will not be processed if any of these rules return true.'), array('class' => 'help')));
 				
 				$label = Widget::Label();
 				$input = Widget::Input('fields[output_id_on_save]', 'yes', 'checkbox');
@@ -264,7 +268,7 @@
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Input Overrides &amp; Default Values')));	
+			$fieldset->appendChild(new XMLElement('legend', __('Overrides &amp; Default Values')));	
 			$fieldset->appendChild(new XMLElement('p', __('Specify fields in the <code>POST</code> data to either override or set to a default value if not set.'), array('class' => 'help')));
 			
 			if(is_array($sections) && !empty($sections)){
