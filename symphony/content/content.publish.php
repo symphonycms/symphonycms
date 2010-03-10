@@ -8,21 +8,20 @@
 		
 		private $_errors = array();
 
-		function __switchboard($type='view'){
+		public function __switchboard($type='view'){
 
-			$function = ($type == 'action' ? '__action' : '__view') . ucfirst($this->_context['page']);
+			$function = "__{$type}" . ucfirst($this->_context['page']);
 			
-			if(!method_exists($this, $function)) {
+			// If there is no view function, throw an error
+			if (!is_callable(array($this, $function))){
 				
-				## If there is no action function, just return without doing anything
-				if($type == 'action') return;
+				if ($type == 'view'){
+					throw new AdministrationPageNotFoundException;
+				}
 				
-				Administration::instance()->errorPageNotFound();
-				
+				return false;
 			}
-			
 			$this->$function();
-
 		}
 		
 		function view(){			

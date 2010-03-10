@@ -1,6 +1,6 @@
 <?php
 	
-	require_once(TOOLKIT . '/class.xsltprocess.php');
+	require_once(TOOLKIT . '/class.xslproc.php');
 	
 	Class fieldInput extends Field {
 		public function __construct(&$parent){
@@ -187,13 +187,13 @@
 			}
 			
 			else{
-				include_once(TOOLKIT . '/class.xsltprocess.php');
+				include_once(TOOLKIT . '/class.xslproc.php');
 
-				if(!General::validateXML($data['value'], $errors, false, new XsltProcess)){
+				if(!General::validateXML($data['value'], $errors)){
 					$value = html_entity_decode($data['value'], ENT_QUOTES, 'UTF-8');
 					$value = $this->__replaceAmpersands($value);
 
-					if(!General::validateXML($value, $errors, false, new XsltProcess)){
+					if(!General::validateXML($value, $errors)){
 						$value = General::sanitize($data['value']);
 					}
 				}

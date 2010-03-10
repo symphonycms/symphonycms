@@ -1,7 +1,7 @@
 <?php
 
 	require_once(TOOLKIT . '/class.administrationpage.php');
-	require_once(TOOLKIT . '/class.xsltprocess.php');	
+	require_once(TOOLKIT . '/class.xslproc.php');	
 
 	Class contentBlueprintsUtilities extends AdministrationPage{
 
@@ -84,7 +84,7 @@
 			$this->_existing_file = (isset($this->_context[1]) ? $this->_context[1] . '.xsl' : NULL);
 			
 			## Handle unknown context
-			if(!in_array($this->_context[0], array('new', 'edit'))) Administration::instance()->errorPageNotFound();
+			if(!in_array($this->_context[0], array('new', 'edit'))) throw new AdministrationPageNotFoundException;
 			
 			## Edit Utility context
 			if($this->_context[0] == 'edit'){
@@ -236,7 +236,7 @@
 				if(!isset($fields['name']) || trim($fields['name']) == '') $this->_errors['name'] = __('Name is a required field.');
 				
 				if(!isset($fields['body']) || trim($fields['body']) == '') $this->_errors['body'] = __('Body is a required field.');
-				elseif(!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) $this->_errors['body'] = __('This document is not well formed. The following error was returned: <code>%s</code>', array($errors[0]['message']));
+				elseif(!General::validateXML($fields['body'], $errors)) $this->_errors['body'] = __('This document is not well formed. The following error was returned: <code>%s</code>', array($errors[0]->message));
 				
 				if(empty($this->_errors)){
 

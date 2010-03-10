@@ -123,7 +123,7 @@
 			require_once(TOOLKIT . '/class.field.php');	
 			
 			## Handle unknow context
-			if(!in_array($this->_context[0], array('new', 'edit'))) Administration::instance()->errorPageNotFound();	
+			if(!in_array($this->_context[0], array('new', 'edit'))) throw new AdministrationPageNotFoundException;
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){

@@ -130,27 +130,22 @@
 			if($this->get('formatter')){
 
 				
-				$formatter = $tfm->create($this->get('formatter'));
+				$formatter = TextformatterManager::instance()->create($this->get('formatter'));
 
 				$result = $formatter->run($data);
 				
 			}	
 
-			if($validate === true){
+			if($validate === true && !General::validateXML($result, $errors)){
+				$result = html_entity_decode($result, ENT_QUOTES, 'UTF-8');
+				$result = $this->__replaceAmpersands($result);
 
-				include_once(TOOLKIT . '/class.xsltprocess.php');
+				if(!General::validateXML($result, $errors)){
 
-				if(!General::validateXML($result, $errors, false, new XsltProcess)){
-					$result = html_entity_decode($result, ENT_QUOTES, 'UTF-8');
-					$result = $this->__replaceAmpersands($result);
-
-					if(!General::validateXML($result, $errors, false, new XsltProcess)){
-
-						$result = $formatter->run(General::sanitize($data));
-					
-						if(!General::validateXML($result, $errors, false, new XsltProcess)){
-							return false;
-						}
+					$result = $formatter->run(General::sanitize($data));
+				
+					if(!General::validateXML($result, $errors)){
+						return false;
 					}
 				}
 			}

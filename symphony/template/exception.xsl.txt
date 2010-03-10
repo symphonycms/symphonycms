@@ -1,0 +1,18 @@
+<html>
+	<head>
+		<title>Symphony Error</title>
+		<link rel="stylesheet" type="text/css" media="screen" href="%s/symphony/assets/exception.css"> 
+	</head>
+	<body>
+		<h1>Symphony %s</h1>
+		<div class="bubble">
+			<a class="markdown" href="#markdown" onclick="javascript:document.getElementById('markdown').style.display = ((document.getElementById('markdown').style.display == 'none') ? 'block' : 'none'); return false;">Show Markdown for copy/paste</a>
+			<h2>%s</h2>
+			<p>An error occurred during the XSL transformation process around line <code>%d</code> of <code>%s</code>.</p>
+			<pre id="markdown" style="display: none;">%s</pre>
+			<ul>%s</ul>
+			<h2>Processor Errors</h2>
+			<ul>%s</ul>
+		</div>
+	</body>
+<html>

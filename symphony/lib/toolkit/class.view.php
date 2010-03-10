@@ -283,8 +283,8 @@
 			if(strlen(trim($view->template)) == 0){
 				$messages->append('template', 'Template is required, and cannot be empty.');
 			}
-			elseif(!General::validateXML($view->template, $errors, false, new XSLTProcess())) {
-				$messages->append('template', __('This document is not well formed. The following error was returned: <code>%s</code>', array($errors[0]['message'])));
+			elseif(!General::validateXML($view->template, $errors)) {
+				$messages->append('template', __('This document is not well formed. The following error was returned: <code>%s</code>', array($errors[0]->message)));
 			}
 			
 			if($messages->length() > 0){

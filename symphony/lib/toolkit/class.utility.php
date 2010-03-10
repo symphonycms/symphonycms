@@ -158,9 +158,9 @@
 					
 				$valid = false;				
 			}
-			elseif(!General::validateXML($this->body, $error, false)){
+			elseif(!General::validateXML($this->body, $errors)){
 				if($messages instanceof MessageStack) 
-					$messages->append('body', sprintf('XSLT specified is invalid. The following error was returned: "%s near line %s"', $error['message'], $error['line']));
+					$messages->append('body', sprintf('XSLT specified is invalid. The following error was returned: "%s near line %s"', $error[0]->message, $error[0]->line));
 					
 				$valid = false;				
 			}

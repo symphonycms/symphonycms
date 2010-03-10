@@ -54,7 +54,7 @@
 		public function action($context = array()) {
 			if ($context['template'] != 'static_xml') return;
 			
-			require_once TOOLKIT . '/class.xsltprocess.php';
+			require_once TOOLKIT . '/class.xslproc.php';
 			
 			// Validate:
 			$fields = $context['fields'];
@@ -68,13 +68,13 @@
 			
 			$xml_errors = null;
 			
-			General::validateXML($fields['static_xml'], $xml_errors, false, new XsltProcess());
+			General::validateXML($fields['static_xml'], $xml_errors);
 
 			if (!empty($xml_errors)) {
 				$errors['static_xml'] = __('XML is invalid');
 				
 				foreach ($xml_errors as $error) {
-					$errors['static_xml'] .= "<br />" . General::sanitize($error['message']);
+					$errors['static_xml'] .= "<br />" . General::sanitize($error->message);
 				}
 				
 				$failed = true;

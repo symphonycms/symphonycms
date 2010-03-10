@@ -10,8 +10,8 @@
 			throw new Exception('Invalid Symphony Renderer mode specified.');
 		}
 
-		require_once(CORE . "/class.{$mode}.php");
-		return ($mode == 'administration' ? Administration::instance() : Frontend::instance());
+		$classname = require_once(CORE . "/class.{$mode}.php");
+		return call_user_func("{$classname}::instance");
 	}
 	
 	$renderer = (isset($_GET['mode']) && strtolower($_GET['mode']) == 'administration' 

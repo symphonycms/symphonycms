@@ -1,7 +1,7 @@
 <?php
 
 	require_once(TOOLKIT . '/class.gateway.php');
-	require_once(TOOLKIT . '/class.xsltprocess.php');
+	require_once(TOOLKIT . '/class.xslproc.php');
 	require_once(CORE . '/class.cacheable.php');
 	
 	if(isset($this->dsParamURL)) $this->dsParamURL = $this->__processParametersInString($this->dsParamURL, $this->_env, true, true);
@@ -104,7 +104,7 @@
 				}
 			}
 
-			elseif(strlen($xml) > 0 && !General::validateXML($xml, $errors, false, new XsltProcess)){
+			elseif(strlen($xml) > 0 && !General::validateXML($xml, $errors)){
 					
 				$writeToCache = false;
 				

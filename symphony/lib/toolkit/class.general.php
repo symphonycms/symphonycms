@@ -63,70 +63,34 @@
 		
 		Method: validateXML
 		Description: This checks an xml document for well-formedness
-		Param: $data - filename, xml document as a string, or arbitary string
-		       $errors - pointer to an array which will contain any validation errors
-		       $isFile (optional) - if this is true, the method will attempt to read
-		                            from a file ($data) instead.
-			   $xsltProcessor (optional) - If set, the validation will be done using this
-										   xslt processor rather than the built in XML parser
+		Param: $string - filename, xml document as a string, or arbitary string
+		       $errors - pointer to an array of libXMLError objects which will contain any validation errors
 			   $encoding (optional) - If no XML header is expected, than this should be set to
 			 						  match the encoding of the XML
 		Return: true or false
 		
 		***/
 		
-		public static function validateXML($data, &$errors, $isFile=true, $xsltProcessor=NULL, $encoding='UTF-8') {
-			$_parser 	= null;
-			$_data	 	= null;
-			$_vals		= array();
-			$_index		= array();
+		public static function validateXML($string, &$errors, $encoding='UTF-8') {
 			
-			if($isFile){
-				$_data = @file_get_contents($data);
-			}	
-			else{
-				$_data = $data;
+			$xsl = '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+			<xsl:template match="/"></xsl:template>
+			</xsl:stylesheet>';
+			
+			$xml = trim($string);
+
+			if(strpos($string, '<?xml') === false){
+				$xml = sprintf('<?xml version="1.0" encoding="%s"?><rootelement>%s</rootelement>', $encoding, $string);
 			}
 			
-			$_data = preg_replace('/<!DOCTYPE[-.:"\'\/\\w\\s]+>/', NULL, $_data);
+			XSLProc::transform($xml, $xsl);
 			
-			if(strpos($_data, '<?xml') === false){
-				$_data = '<?xml version="1.0" encoding="'.$encoding.'"?><rootelement>'.$_data.'</rootelement>';
-			}
-			
-			if(@is_object($xsltProcessor)){
-				
-				$xsl = '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-
-				<xsl:template match="/"></xsl:template>
-
-				</xsl:stylesheet>';
-
-				$xsltProcessor->process($_data, $xsl, array());
-
-				if($xsltProcessor->isErrors()) {
-					$errors = $xsltProcessor->getError(true);
-					return false;
-				}
-				
-			}else{
-			
-				$_parser = xml_parser_create();
-				xml_parser_set_option($_parser, XML_OPTION_SKIP_WHITE, 0);
-				xml_parser_set_option($_parser, XML_OPTION_CASE_FOLDING, 0);
-				
-				if(!@xml_parse($_parser, $_data)) {
-					$errors = array('error' => xml_get_error_code($_parser) . ': ' . xml_error_string(xml_get_error_code($_parser)), 
-									'col' => xml_get_current_column_number($_parser), 
-									'line' => (xml_get_current_line_number($_parser) - 2));
-					return false;
-				}
-
-				xml_parser_free($_parser);
+			if(XSLProc::hasErrors()){
+				$errors = XSLProc::getErrors();
+				return false;
 			}
 			
 			return true;
-			
 		}
 		
 
@@ -602,7 +566,7 @@
 					self::array_to_xml($child, $value);
 				}
 				
-				elseif($validate == true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)){
+				elseif($validate == true && !self::validateXML(self::sanitize($value), $errors)){
 					return;
 				} 
 				else{
