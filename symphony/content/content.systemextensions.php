@@ -51,33 +51,7 @@
 				);
 			}
 		}
-		
-/*		public function __viewIndex(){		
-			$extensions = ExtensionManager::instance()->listAll();
-			$this->buildTable($extensions, true);
-		}
-		
-		public function __viewCore(){
-			$extensions = ExtensionManager::instance()->listByType('Core');
-			$this->buildTable($extensions);
-		}
-		
-		function __viewDatasources(){
-			$extensions = ExtensionManager::instance()->listByType('Data Source Template');		
-			$this->buildTable($extensions);
-		}
-		
-		function __viewFields(){
-			$extensions = ExtensionManager::instance()->listByType('Field');
-			$this->buildTable($extensions);
-		}
-		
-		function __viewOther(){
-			//this probably needs a new method that fetches all excluding the above...
-			$extensions = ExtensionManager::instance()->listByType('Other');
-			$this->buildTable($extensions);
-		}
-	*/	
+
 		function buildTable($extensions, $prefixes=false){
 		
 			$this->setPageType('table');	
