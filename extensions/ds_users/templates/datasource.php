@@ -1,6 +1,6 @@
 <?php
 	
-	require_once EXTENSIONS . '/ds_template_users/lib/usersdatasource.php';
+	require_once EXTENSIONS . '/ds_users/lib/usersdatasource.php';
 	
 	class DataSource%s extends UsersDataSource {
 		public function about() {

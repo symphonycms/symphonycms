@@ -42,7 +42,7 @@
 			
 			if($type == 'Other'){
 				$this->buildTable(
-					ExtensionManager::instance()->listOthers(array('Core', 'Data Source Type', 'Field'))
+					ExtensionManager::instance()->listOthers(array('Core', 'Data Source', 'Field'))
 				);
 			}
 			else {

@@ -1,6 +1,6 @@
 <?php
 	
-	require_once EXTENSIONS . '/ds_template_sections/lib/sectionsdatasource.php';
+	require_once EXTENSIONS . '/ds_sections/lib/sectionsdatasource.php';
 	
 	class DataSource%s extends SectionsDataSource {
 		public function about() {

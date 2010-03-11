@@ -1,6 +1,6 @@
 <?php
 	
-	require_once EXTENSIONS . '/ds_template_staticxml/lib/staticxmldatasource.php';
+	require_once EXTENSIONS . '/ds_staticxml/lib/staticxmldatasource.php';
 	
 	class DataSource%s extends StaticXMLDataSource {
 		public function about() {

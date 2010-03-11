@@ -7,7 +7,7 @@
 				'version'		=> '1.0.0',
 				'release-date'	=> '2010-02-26',
 				'type'			=> array(
-					'Data Source',
+					'Data Source', 'Core'
 				),
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',
@@ -68,7 +68,7 @@
 			$fields = $context['fields'];
 			
 			// Send back template to save:
-			$context['template_file'] = EXTENSIONS . '/ds_template_navigation/templates/datasource.php';
+			$context['template_file'] = EXTENSIONS . '/ds_navigation/templates/datasource.php';
 			$context['template_data'] = array(
 				$fields['can_redirect_on_empty'] == 'yes',
 				(array)$fields['filters'],

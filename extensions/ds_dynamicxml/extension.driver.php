@@ -7,7 +7,7 @@
 				'version'		=> '1.0.0',
 				'release-date'	=> '2010-02-26',
 				'type'			=> array(
-					'Data Source',
+					'Data Source', 'Core'
 				),
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',
@@ -92,7 +92,7 @@
 			$context['failed'] = $failed;
 			
 			// Send back template to save:
-			$context['template_file'] = EXTENSIONS . '/ds_template_dynamicxml/templates/datasource.php';
+			$context['template_file'] = EXTENSIONS . '/ds_dynamicxml/templates/datasource.php';
 			$context['template_data'] = array(
 				(integer)$fields['cache'],
 				(array)$fields['namespaces'],

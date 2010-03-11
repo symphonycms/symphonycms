@@ -7,7 +7,7 @@
 				'version'		=> '1.0.0',
 				'release-date'	=> '2010-03-02',
 				'type'			=> array(
-					'Data Source Type'
+					'Data Source', 'Core'
 				),
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',
@@ -108,7 +108,7 @@
 			$context['failed'] = $failed;
 			
 			// Send back template to save:
-			$context['template_file'] = EXTENSIONS . '/ds_template_sections/templates/datasource.php';
+			$context['template_file'] = EXTENSIONS . '/ds_sections/templates/datasource.php';
 			$context['template_data'] = array(
 				$fields['can_append_associated_entry_count'] == 'yes',
 				$fields['can_append_pagination'] == 'yes',
@@ -135,7 +135,7 @@
 			$errors = $context['errors'];
 			$wrapper = $context['wrapper'];
 			$page = Administration::instance()->Page;
-			$page->addScriptToHead(URL . '/extensions/ds_template_sections/assets/view.js', 55533140);
+			$page->addScriptToHead(URL . '/extensions/ds_sections/assets/view.js', 55533140);
 			
 		//	Essentials --------------------------------------------------------
 			

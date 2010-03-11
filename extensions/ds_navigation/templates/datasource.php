@@ -1,6 +1,6 @@
 <?php
 	
-	require_once EXTENSIONS . '/ds_template_navigation/lib/navigationdatasource.php';
+	require_once EXTENSIONS . '/ds_navigation/lib/navigationdatasource.php';
 	
 	class DataSource%s extends NavigationDataSource {
 		public function about() {

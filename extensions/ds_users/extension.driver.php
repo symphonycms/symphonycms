@@ -7,7 +7,7 @@
 				'version'		=> '1.0.0',
 				'release-date'	=> '2010-02-26',
 				'type'			=> array(
-					'Data Source',
+					'Data Source', 'Core'
 				),
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',
@@ -105,7 +105,7 @@
 			$context['failed'] = $failed;
 			
 			// Send back template to save:
-			$context['template_file'] = EXTENSIONS . '/ds_template_users/templates/datasource.php';
+			$context['template_file'] = EXTENSIONS . '/ds_users/templates/datasource.php';
 			$context['template_data'] = array(
 				$fields['can_append_pagination'] == 'yes',
 				$fields['can_html_encode_text'] == 'yes',
