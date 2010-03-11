@@ -5,7 +5,6 @@
 	</head>
 	<body>
 		<h1>Symphony %s</h1>
-		<div class="bubble">
 		<h2>%s</h2>
 		<p class="error-line">An error occurred in <code>%s</code> around line <code>%d</code></p>
 		<a class="markdown" href="#markdown" onclick="javascript:document.getElementById('markdown').style.display = ((document.getElementById('markdown').style.display == 'none') ? 'block' : 'none'); return false;">Show Markdown for copy/paste</a>
@@ -14,7 +13,6 @@
 		<h3>Backtrace</h3>
 		<ul>%s</ul>
 		<h3>Database Query Log (<a href="#query-log" onclick="javascript:document.getElementById('query-log').style.display = ((document.getElementById('query-log').style.display == 'none') ? 'block' : 'none'); return false;">Show</a>)</h3>
-		<div id="query-log">%6$s</div>
-		</div>
+		<ul id="query-log">%s</ul>
 	</body>
 </html>
