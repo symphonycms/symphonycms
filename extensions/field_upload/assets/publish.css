@@ -1,0 +1,86 @@
+.field-advancedupload {
+	margin-bottom: 1.75em;
+	overflow: hidden;
+	position: relative;
+}
+.field-advancedupload > label {
+	margin: 0 0 2px 0;
+}
+
+.field-advancedupload > div {
+	background: rgb(55, 55, 52);
+}
+
+.field-advancedupload > div > .upload {
+	color: #ffffff;
+	display: block;
+	overflow: hidden;
+	padding: 12px;
+	position: relative;
+}
+.field-advancedupload > div > .upload input {
+	background: rgb(55, 55, 52);
+	color: #ffffff;
+}
+
+
+.field-advancedupload > div > .details {
+	color: #ffffff;
+	display: block;
+	height: 6.5em;
+	position: relative;
+}
+.field-advancedupload > div > .details a {
+	color: #ffffff;
+	outline: none;
+}
+.field-advancedupload > div > .details a:hover {
+	color: #ffffff;
+}
+.field-advancedupload > div > .details img {
+	cursor: pointer;
+	opacity: 0.8;
+	max-height: 500%;
+	max-width: 100%;
+	position: absolute;
+	vertical-align: bottom;
+}
+.field-advancedupload > div > .details dl {
+	bottom: 0;
+	left: 0;
+	padding: 1em;
+	position: absolute;
+	right: 0;
+	text-shadow: 0 0 2px rgba(0, 0, 0, 0.9);
+	top: 0;
+}
+.field-advancedupload > div > .details dt,
+.field-advancedupload > div > .details dd {
+	float: left;
+}
+.field-advancedupload > div > .details dt {
+	clear: both;
+	margin: 0 1ex;
+}
+.field-advancedupload > div > .details dt.clear {
+	float: right;
+}
+.field-advancedupload > div > .details dt.popup {
+	clear: none;
+}
+
+.field-advancedupload-overlay {
+	background: rgba(0, 0, 0, 0.6);
+	height: 100%;
+	left: 0;
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 20000;
+}
+.field-advancedupload-overlay img {
+	display: block;
+	margin: 0 auto;
+	max-height: 100%;
+	max-width: 100%;
+}
