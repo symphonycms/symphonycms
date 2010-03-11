@@ -6,15 +6,15 @@
 	<body>
 		<h1>Symphony %1$s</h1>
 		<div class="bubble">
-		<h2>%3$s</h2>
-		<p>An error occurred while attempting to execute the following query</p>
-		<ul>
-		<li>%4$s</li>
-		</ul>
-		<h3>Backtrace:</h3>
-		<ul>%5$s</ul>
-		<h3>Database Query Log (<a href="#query-log" onclick="javascript:document.getElementById('query-log').style.display = ((document.getElementById('query-log').style.display == 'none') ? 'block' : 'none'); return false;">Show</a>)</h3>
-		<ul id="query-log">%6$s</ul>
+			<h2>%3$s</h2>
+			<p>An error occurred while attempting to execute the following query</p>
+			<ul>
+			<li>%4$s</li>
+			</ul>
+			<h3>Backtrace:</h3>
+			<ul>%5$s</ul>
+			<h3>Database Query Log (<a href="#query-log" onclick="javascript:document.getElementById('query-log').style.display = ((document.getElementById('query-log').style.display == 'none') ? 'block' : 'none'); return false;">Show</a>)</h3>
+			<ul id="query-log">%6$s</ul>
 		</div>
 	</body>
 </html>
