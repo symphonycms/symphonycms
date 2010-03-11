@@ -1,6 +1,14 @@
 <navigation>
 	<group name="Blueprints" index="200">
 		<children>
+			<item link="/blueprints/views/" name="Views" />
+			<item link="/blueprints/views/new/" name="Views New" visible="no" />
+			<item link="/blueprints/views/edit/" name="Views Edit" visible="no" />
+
+			<item link="/blueprints/sections/" name="Sections" />
+			<item link="/blueprints/sections/new/" name="Section New" visible="no" />
+			<item link="/blueprints/sections/edit/" name="Section Edit" visible="no" />
+
 			<item link="/blueprints/datasources/" name="Data Sources" />
 			<item link="/blueprints/datasources/new/" name="Data Sources New" visible="no" />
 			<item link="/blueprints/datasources/edit/" name="Data Sources Edit" visible="no" />			
@@ -11,20 +19,12 @@
 			<item link="/blueprints/events/edit/" name="Event Edit" visible="no" />
 			<item link="/blueprints/events/info/" name="Event Info" visible="no" />
 			
-			<item link="/blueprints/sections/" name="Sections" />
-			<item link="/blueprints/sections/new/" name="Section New" visible="no" />
-			<item link="/blueprints/sections/edit/" name="Section Edit" visible="no" />
-			
 			<item link="/blueprints/utilities/" name="Utilities" />
 			<item link="/blueprints/utilities/new/" name="Utility New" visible="no" />
 			<item link="/blueprints/utilities/edit/" name="Utility Edit" visible="no" />
-			
-			<item link="/blueprints/views/" name="Views" />
-			<item link="/blueprints/views/new/" name="Views New" visible="no" />
-			<item link="/blueprints/views/edit/" name="Views Edit" visible="no" />
 		</children>
 	</group>
-	
+
 	<group name="System" index="100">
 		<children>
 			<item link="/system/users/" name="Users" />
