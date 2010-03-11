@@ -88,8 +88,7 @@
 		
 		public function action($context = array()) {
 			if ($context['template'] != 'ds_sections') return;
-			print "<pre>";
-			print_r($context['fields']); die();
+
 			// Validate data:
 			$fields = $context['fields'];
 			$errors = $context['errors'];
@@ -108,6 +107,15 @@
 			$context['errors'] = $errors;
 			$context['failed'] = $failed;
 			
+			$conditions = array();
+			foreach((array)$fields['conditions']['parameter'] as $index => $value){
+				$conditions[] = array(
+					'parameter' => $value,
+					'logic' => $fields['conditions']['logic'][$index],
+					'action' => $fields['conditions']['action'][$index],
+				);
+			}
+			
 			// Send back template to save:
 			$context['template_file'] = EXTENSIONS . '/ds_sections/templates/datasource.php';
 			$context['template_data'] = array(
@@ -116,7 +124,7 @@
 				$fields['can_html_encode_text'] == 'yes',
 				$fields['can_redirect_on_empty'] == 'yes',
 				(array)$fields['filters'],
-				(array)$fields['conditionals'],
+				$conditions,
 				(array)$fields['included_elements'],
 				$fields['group_field'],
 				(array)$fields['output_params'],
@@ -184,7 +192,7 @@
 			$fieldset->appendChild($group);
 			$wrapper->appendChild($fieldset);
 			
-		//	Conditionals ---------------------------------------------------------
+		//	Conditions ---------------------------------------------------------
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
@@ -208,12 +216,12 @@
 		
 			// Parameter
 			$label = new XMLElement('label', 'Parameter');
-			$label->appendChild(Widget::input('fields[conditional][parameter][]'));
+			$label->appendChild(Widget::input('fields[conditions][parameter][]'));
 			$group->appendChild($label);
 		
 			// Logic
 			$label = new XMLElement('label', 'Logic');
-			$label->appendChild(Widget::select('fields[conditional][logic][]', array(
+			$label->appendChild(Widget::select('fields[conditions][logic][]', array(
 				array('set', false, 'is set'),
 				array('not-set', false, 'is not set'),
 			), array('class' => 'filtered')));
@@ -221,15 +229,15 @@
 		
 			// Action
 			$label = new XMLElement('label', 'Action');
-			$label->appendChild(Widget::select('fields[conditional][action][]', array(
-				array('label' => 'Execution', 'options' => array(
+			$label->appendChild(Widget::select('fields[conditions][action][]', array(
+				//array('label' => 'Execution', 'options' => array(
 					array('execute', false, 'Execute'),
 					array('do-not-execute', false, 'Do not Execute'),
-				)),
-				array('label' => 'Redirect', 'options' => array(
-					array('redirect:404', false, '404'),
-					array('redirect:/about/me/', false, '/about/me/'),
-				)),
+				//)),
+				//array('label' => 'Redirect', 'options' => array(
+				//	array('redirect:404', false, '404'),
+				//	array('redirect:/about/me/', false, '/about/me/'),
+				//)),
 			), array('class' => 'filtered')));
 			$group->appendChild($label);
 		
@@ -265,21 +273,20 @@
 			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value. Do not wrap the parameter with curly-braces.'));
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
-			
+		*/	
 			// Can redirect on empty:
 			$fieldset->appendChild(Widget::Input('fields[can_redirect_on_empty]', 'no', 'hidden'));
 			
 			$label = Widget::Label();
 			$input = Widget::Input('fields[can_redirect_on_empty]', 'yes', 'checkbox');
-			
+		
 			if ($fields['can_redirect_on_empty'] == 'yes') {
 				$input->setAttribute('checked', 'checked');
 			}
 			
 			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
 			$fieldset->appendChild($label);
-		*/
-			
+
 			$wrapper->appendChild($fieldset);
 		
 			

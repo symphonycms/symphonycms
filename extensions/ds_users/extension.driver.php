@@ -42,7 +42,7 @@
 		}
 		
 		public function prepare($context = array()) {
-			if ($context['template'] != 'users') return;
+			if ($context['template'] != 'ds_users') return;
 			
 			require_once $this->getExtensionPath() . '/lib/usersdatasource.php';
 			
@@ -80,7 +80,7 @@
 		}
 		
 		public function action($context = array()) {
-			if ($context['template'] != 'users') return;
+			if ($context['template'] != 'ds_users') return;
 			
 			// Validate data:
 			$fields = $context['fields'];
@@ -123,7 +123,7 @@
 		}
 		
 		public function view($context = array()) {
-			if ($context['template'] != 'users') return;
+			if ($context['template'] != 'ds_users') return;
 			
 			$fields = $context['fields'];
 			$errors = $context['errors'];

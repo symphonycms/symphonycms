@@ -121,14 +121,14 @@
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
 
-			$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` ORDER BY `title` ASC");
+			//$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` ORDER BY `title` ASC");
 			
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tags');
 			
-			foreach ($pages as $page) {
-				$ul->appendChild(new XMLElement('li', preg_replace('/\/{2,}/i', '/', '/' . $page['path'] . '/' . $page['handle'])));
-			}
+			//foreach ($pages as $page) {
+			//	$ul->appendChild(new XMLElement('li', preg_replace('/\/{2,}/i', '/', '/' . $page['path'] . '/' . $page['handle'])));
+			//}
 			
 			if (isset($fields['filters']['parent'])) {
 				$li = new XMLElement('li');
@@ -154,7 +154,7 @@
 			
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tags');
-			if($types = $admin->__fetchAvailablePageTypes()) foreach($types as $type) $ul->appendChild(new XMLElement('li', $type));
+			//if($types = $admin->__fetchAvailablePageTypes()) foreach($types as $type) $ul->appendChild(new XMLElement('li', $type));
 			
 			if (isset($fields['filters']['type'])) {
 				$li = new XMLElement('li');

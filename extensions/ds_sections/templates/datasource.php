@@ -40,6 +40,10 @@
 			return %s;
 		}
 		
+		public function getConditions() {
+			return %s;
+		}
+		
 		public function getIncludedElements() {
 			return %s;
 		}

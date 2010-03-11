@@ -42,7 +42,7 @@
 		}
 		
 		public function prepare($context = array()) {
-			if ($context['template'] != 'dynamic_xml') return;
+			if ($context['template'] != 'ds_dynamicxml') return;
 			
 			require_once $this->getExtensionPath() . '/lib/dynamicxmldatasource.php';
 			
@@ -61,7 +61,7 @@
 		}
 		
 		public function action($context = array()) {
-			if ($context['template'] != 'dynamic_xml') return;
+			if ($context['template'] != 'ds_dynamicxml') return;
 			
 			// Validate data:
 			$fields = $context['fields'];
@@ -103,7 +103,7 @@
 		}
 		
 		public function view($context = array()) {
-			if ($context['template'] != 'dynamic_xml') return;
+			if ($context['template'] != 'ds_dynamicxml') return;
 			
 			$fields = $context['fields'];
 			$errors = $context['errors'];

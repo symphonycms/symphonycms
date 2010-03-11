@@ -42,7 +42,7 @@
 		}
 		
 		public function prepare($context = array()) {
-			if ($context['template'] != 'static_xml') return;
+			if ($context['template'] != 'ds_staticxml') return;
 			
 			$datasource = $context['datasource'];
 			
@@ -52,7 +52,7 @@
 		}
 		
 		public function action($context = array()) {
-			if ($context['template'] != 'static_xml') return;
+			if ($context['template'] != 'ds_staticxml') return;
 			
 			require_once TOOLKIT . '/class.xslproc.php';
 			
@@ -93,7 +93,7 @@
 		}
 		
 		public function view($context = array()) {
-			if ($context['template'] != 'static_xml') return;
+			if ($context['template'] != 'ds_staticxml') return;
 			
 			$fields = $context['fields'];
 			$errors = $context['errors'];

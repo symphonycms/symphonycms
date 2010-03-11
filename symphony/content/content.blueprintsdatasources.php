@@ -163,10 +163,8 @@
 			if (!$this->editing) {
 				$this->template = $_REQUEST['template'];
 				
-				if (!$this->template){
-					$datasource_templates = ExtensionManager::instance()->listByType('Data Source');
-					if(!is_array($datasource_templates) || empty($datasource_templates)) throw new Exception('No Data Source templates found');
-					$this->template = current(array_keys($datasource_templates));
+				if (is_null($this->template)){
+					$this->template = Symphony::Configuration()->core()->{'default-datasource-type'};
 				}
 			}
 			
@@ -245,7 +243,7 @@
 					'template_data'	=> &$template_data
 				)
 			);
-			
+
 			// Save template:
 			if ($this->failed === false) {
 				$user = Administration::instance()->User;
@@ -268,7 +266,7 @@
 					var_export('1.0', true),
 					var_export(DateTimeObj::getGMT('c'), true),
 				);
-				
+
 				foreach ($template_data as $value) {
 					$default_data[] = var_export($value, true);
 				}

@@ -12,6 +12,7 @@
 		<file-write-mode>0775</file-write-mode>
 		<directory-write-mode>0775</directory-write-mode>
 	</symphony>
+	<default-datasource-type>ds_sections</default-datasource-type>
 	<log>
 		<archive>1</archive>
 		<maxsize>102400</maxsize>
