@@ -1,6 +1,6 @@
 <?php
 	
-	class Extension_DS_Template_Sections extends Extension {
+	class Extension_DS_Sections extends Extension {
 		public function about() {
 			return array(
 				'name'			=> 'Sections',

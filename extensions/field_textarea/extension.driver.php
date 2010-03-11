@@ -1,9 +1,9 @@
 <?php
 	
-	class Extension_TextareaField extends Extension {
+	class Extension_Field_Textarea extends Extension {
 		public function about() {
 			return array(
-				'name'			=> ' Textarea',
+				'name'			=> 'Textarea',
 				'version'		=> '2.0.0',
 				'release-date'	=> '2010-02-16',
 				'author'		=> array(
@@ -34,5 +34,3 @@
 			");
 		}
 	}
-	
-?>

@@ -14,7 +14,7 @@
 		<h3>Backtrace:</h3>
 		<ul>%s</ul>
 		<h3>Database Query Log (<a href="#query-log" onclick="javascript:document.getElementById('query-log').style.display = ((document.getElementById('query-log').style.display == 'none') ? 'block' : 'none'); return false;">Show</a>)</h3>
-		<ul>%s</ul>	
+		<ul id="query-log">%6$s</ul>
 		</div>
 	</body>
-<html>
+</html>

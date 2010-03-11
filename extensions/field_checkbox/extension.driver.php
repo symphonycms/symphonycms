@@ -1,9 +1,9 @@
 <?php
 	
-	class Extension_UserField extends Extension {
+	class Extension_Field_Checkbox extends Extension {
 		public function about() {
 			return array(
-				'name'			=> ' User',
+				'name'			=> 'Checkbox',
 				'version'		=> '2.0.0',
 				'release-date'	=> '2010-02-16',
 				'author'		=> array(
@@ -11,29 +11,26 @@
 					'website'		=> 'http://symphony-cms.com/',
 					'email'			=> 'team@symphony-cms.com'
 				),
-				'type' => array(
+				'type'			=> array(
 					'Field', 'Core'
 				),
 			);
 		}
 		
 		public function uninstall() {
-			Symphony::Database()->query("DROP TABLE `tbl_fields_user`");
+			Symphony::Database()->query("DROP TABLE `tbl_fields_checkbox`");
 		}
 		
 		public function install() {
 			return Symphony::Database()->query("
-				CREATE TABLE IF NOT EXISTS `tbl_fields_user` (
+				CREATE TABLE IF NOT EXISTS `tbl_fields_checkbox` (
 					`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 					`field_id` int(11) unsigned NOT NULL,
-					`allow_author_change` enum('yes','no') NOT NULL,
-					`allow_multiple_selection` enum('yes','no') NOT NULL DEFAULT 'no',
-					`default_to_current_user` enum('yes','no') NOT NULL,
+					`default_state` enum('on','off') NOT NULL DEFAULT 'on',
+					`description` varchar(255) DEFAULT NULL,
 					PRIMARY KEY (`id`),
-					UNIQUE KEY `field_id` (`field_id`)
+					KEY `field_id` (`field_id`)
 				)
 			");
 		}
 	}
-	
-?>

@@ -1,13 +1,13 @@
 <?php
 	
-	class Extension_DS_Template_Navigation extends Extension {
+	class Extension_DS_Navigation extends Extension {
 		public function about() {
 			return array(
 				'name'			=> 'Navigation',
 				'version'		=> '1.0.0',
 				'release-date'	=> '2010-02-26',
 				'type'			=> array(
-					'Data Source Template',
+					'Data Source',
 				),
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',

@@ -3,30 +3,41 @@
 	include_once(TOOLKIT . '/class.manager.php');
 	include_once(TOOLKIT . '/class.extension.php');
 	
-	define_safe('EXTENSION_ENABLED', 10);
-	define_safe('EXTENSION_DISABLED', 11);
-	define_safe('EXTENSION_NOT_INSTALLED', 12);	
-	define_safe('EXTENSION_REQUIRES_UPDATE', 13);	
-	
     Class ExtensionManager extends Manager{
-		
+
 		static private $_enabled_extensions = NULL;
 		static private $_subscriptions = NULL;
+		static private $_extension_status = NULL;
+		static private $_extension_version = NULL;
+		
+		private function __construct(){
+			
+			self::$_extension_version = self::$_extension_version = array();
+			
+			// Build status array
+			$extensions = Symphony::Database()->fetch("SELECT * FROM `tbl_extensions`");
+			foreach($extensions as $e){
+				if($e['status'] == 'disabled') self::$_extension_status[$e['name']] = Extension::DISABLED;
+				elseif($e['status'] == 'enabled') self::$_extension_status[$e['name']] = Extension::ENABLED;
+				else self::$_extension_status[$e['name']] = Extension::NOT_INSTALLED;
+				
+				self::$_extension_version[$e['name']] = $e['version'];
+			}
+		}
 		
 		public static function instance() {
 			if (!(self::$_instance instanceof self)) {
 				self::$_instance = new self;
 			}
-
 			return self::$_instance;
 		}
 		
         function __getClassName($name){
-	        return 'extension_' . $name;
+	        return "extension_{$name}";
         }
         
         function __getClassPath($name){
-	        return EXTENSIONS . strtolower("/$name");
+	        return EXTENSIONS . strtolower("/{$name}");
         }
         
         function __getDriverPath($name){
@@ -34,20 +45,20 @@
         }       
         
         public function getClassPath($name){
-	        return EXTENSIONS . strtolower("/$name");
+	        return EXTENSIONS . strtolower("/{$name}");
         }
 
 		public function sortByStatus($s1, $s2){
 			
-			if($s1['status'] == EXTENSION_ENABLED) $status_s1 = 2;
-			elseif(in_array($s1['status'], array(EXTENSION_DISABLED, EXTENSION_NOT_INSTALLED, EXTENSION_REQUIRES_UPDATE))) $status_s1 = 1;
+			if($s1['status'] == Extension::ENABLED) $status_s1 = 2;
+			elseif(in_array($s1['status'], array(Extension::DISABLED, Extension::NOT_INSTALLED, Extension::REQUIRES_UPDATE))) $status_s1 = 1;
 			else $status_s1 = 0;
 			
-			if($s2['status'] == EXTENSION_ENABLED) $status_s2 = 2;
-			elseif(in_array($s2['status'], array(EXTENSION_DISABLED, EXTENSION_NOT_INSTALLED, EXTENSION_REQUIRES_UPDATE))) $status_s2 = 1;			
+			if($s2['status'] == Extension::ENABLED) $status_s2 = 2;
+			elseif(in_array($s2['status'], array(Extension::DISABLED, Extension::NOT_INSTALLED, Extension::REQUIRES_UPDATE))) $status_s2 = 1;
 			else $status_s2 = 0;	
 			
-			return $status_s2 - $status_s1;		
+			return $status_s2 - $status_s1;
 		}
 		
 		public function sortByName($a, $b) {
@@ -55,7 +66,7 @@
 		}
       
 		public function enable($name){
-			if(false == ($obj =& $this->create($name))){
+			if(false == ($obj = $this->create($name))){
 				trigger_error(__('Could not %1$s %2$s, there was a problem loading the object. Check the driver class exists.', array(__FUNCTION__, $name)), E_USER_WARNING);
 				return false;
 			}
@@ -81,7 +92,7 @@
 
 		public function disable($name){
 		
-			if(false == ($obj =& $this->create($name))){
+			if(false == ($obj = $this->create($name))){
 				trigger_error(__('Could not %1$s %2$s, there was a problem loading the object. Check the driver class exists.', array(__FUNCTION__, $name)), E_USER_ERROR);
 				return false;
 			}
@@ -98,7 +109,7 @@
 
 		public function uninstall($name){
 			
-			if(false == ($obj =& $this->create($name))){
+			if(false == ($obj = $this->create($name))){
 				trigger_error(__('Could not %1$s %2$s, there was a problem loading the object. Check the driver class exists.', array(__FUNCTION__, $name)), E_USER_WARNING);
 				return false;
 			}
@@ -112,12 +123,8 @@
 		}
 		
 		public function fetchStatus($name){
-			if(!$status = Symphony::Database()->fetchVar('status', 0, "SELECT `status` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1")) return EXTENSION_NOT_INSTALLED;
-			
-			if($status == 'enabled') return EXTENSION_ENABLED;
-			
-			return EXTENSION_DISABLED;
-
+			if(isset(self::$_extension_status[$name])) return self::$_extension_status[$name];
+			return Extension::NOT_INSTALLED;
 		}
 		
 		public function pruneService($name, $delegates_only=false){
@@ -133,15 +140,15 @@
 			if (is_array($delegates) and !empty($delegates)) {
 				Symphony::Database()->delete('tbl_extensions_delegates', " `id` IN ('".@implode("', '", $delegates)."') ");
 			}
-											
+
 			if(!$delegates_only) Symphony::Database()->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name'");
 
 			## Remove the unused DB records
 			$this->__cleanupDatabase();
 			
-			return true;					
+			return true;
 		}
-		
+
 		public function registerService($name, $enable=true){
 
 	        $classname = $this->__getClassName($name);   
@@ -156,7 +163,7 @@
 			if($existing_id = $this->fetchExtensionID($name))
 				Symphony::Database()->query("DELETE FROM `tbl_extensions_delegates` WHERE `tbl_extensions_delegates`.extension_id = $existing_id");
 
-			Symphony::Database()->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name'");				
+			Symphony::Database()->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name'");
 
 			$info = $this->about($name);
 
@@ -268,7 +275,7 @@
 				self::$_subscriptions = Symphony::Database()->fetch("
 					SELECT t1.name, t2.page, t2.delegate, t2.callback
 					FROM `tbl_extensions` as t1 INNER JOIN `tbl_extensions_delegates` as t2 ON t1.id = t2.extension_id
-					WHERE t1.status = 'enabled'");										
+					WHERE t1.status = 'enabled'");
 			}
 				
 			// Make sure $page is an array
@@ -360,7 +367,7 @@
 
 		private function __requiresUpdate($info){
 
-			if($info['status'] == EXTENSION_NOT_INSTALLED) return false;
+			if($info['status'] == Extension::NOT_INSTALLED) return false;
 			
 			$current_version = $this->fetchInstalledVersion($info['handle']);
 
@@ -368,13 +375,12 @@
 		}
 		
 		private function __requiresInstallation($name){	
-			$id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
-			return (is_numeric($id) ? false : true);
+			return isset(self::$_extension_status[$name]);
 		}
 		
 		
 		public function fetchInstalledVersion($name){
-			return Symphony::Database()->fetchVar('version', 0, "SELECT `version` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
+			return self::$_extension_version[$name];
 		}
 		
 		public function fetchExtensionID($name){
@@ -416,7 +422,7 @@
 				
 				if($nav != NULL) $about['navigation'] = $nav;
 				
-				if($this->__requiresUpdate($about)) $about['status'] = EXTENSION_REQUIRES_UPDATE;
+				if($this->__requiresUpdate($about)) $about['status'] = Extension::REQUIRES_UPDATE;
 
 				return $about;
 			}

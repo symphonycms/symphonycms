@@ -1,7 +1,5 @@
 <?php
 
-	
-	
 	Class fieldDate extends Field{
 
 		const SIMPLE = 0;
