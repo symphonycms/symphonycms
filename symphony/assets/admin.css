@@ -8,7 +8,7 @@ form {
 }
 h1 {
 	margin: 0;
-	padding: 1.1em 1em;
+	padding: 1.1em 15px;
 	background: #111;
 	color: #d5d5d5;
 	line-height: 1em;
@@ -156,7 +156,7 @@ h1 a:hover,
 #session li {
 	display:inline;
 	float:left;
-	margin-right: 1.3em;
+	margin-right: 8px;
 }
 
 /* System Messages */
@@ -288,11 +288,6 @@ a.button {
 	cursor: pointer;
 	-moz-border-radius: 0.5em;
 	-webkit-border-radius: 0.5em;
-}
-div.actions input:hover {
-	background: -webkit-gradient(linear, left top, left bottom, from(#555), to(#222));
-	background: -moz-linear-gradient(top center, #555 0%, #222 1%);
-	background-color: #222;
 }
 a.create {
 	text-shadow: 0 1px 2px #67902f;
