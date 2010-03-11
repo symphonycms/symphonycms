@@ -221,7 +221,7 @@
 											$extensions = Symphony::Database()->fetch("
 													SELECT * 
 													FROM `tbl_extensions_delegates` 
-													WHERE `delegate` = 'AddCustomPreferenceFieldsets'"
+													WHERE `delegate` = 'AddCustomToolFieldsets'"
 											);
 
 											$l = Lang::getAvailableLanguages(true);

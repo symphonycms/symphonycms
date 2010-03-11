@@ -341,19 +341,7 @@
 			
 			$group->appendChild($label);
 			$fieldset->appendChild($group);
-			
-			/*$fieldset->appendChild(Widget::Input('fields[can_append_pagination]', 'no', 'hidden'));
-			
-			$label = Widget::Label();
-			$input = Widget::Input('fields[can_append_pagination]', 'yes', 'checkbox');
-			
-			if ($fields['can_append_pagination'] == 'yes') {
-				$input->setAttribute('checked', 'checked');
-			}
-			
-			$label->setValue(__('%s Append pagination data to output', array($input->generate(false))));
-			$fieldset->appendChild($label);*/
-			
+
 			$wrapper->appendChild($fieldset);
 			
 		//	Output options ----------------------------------------------------
@@ -376,30 +364,6 @@
 			
 			$container_xml_output = new XMLElement('div');
 			$li->appendChild($container_xml_output);
-			/*
-			$fieldset->appendChild(Widget::Input('fields[can_append_associated_entry_count]', 'no', 'hidden'));
-			
-			$label = Widget::Label();
-			$input = Widget::Input('fields[can_append_associated_entry_count]', 'yes', 'checkbox');
-			
-			if ($fields['can_append_associated_entry_count'] == 'yes') {
-				$input->setAttribute('checked', 'checked');
-			}
-			
-			$label->setValue(__('%s Include a count of entries in associated sections', array($input->generate(false))));
-			$li->appendChild($label);
-			
-			$fieldset->appendChild(Widget::Input('fields[can_html_encode_text]', 'no', 'hidden'));
-			
-			$label = Widget::Label();
-			$input = Widget::Input('fields[can_html_encode_text]', 'yes', 'checkbox');
-			
-			if ($fields['can_html_encode_text'] == 'yes') {
-				$input->setAttribute('checked', 'checked');
-			}
-			
-			$label->setValue(__('%s HTML-encode text', array($input->generate(false))));
-			$li->appendChild($label);*/
 			
 			$ul->appendChild($li);
 			$fieldset->appendChild($ul);
@@ -446,28 +410,7 @@
 			$wrapper->appendChild($fieldset);
 			
 		//	Build contexts ----------------------------------------------------
-			/*
-			<fieldset class="settings">
-				<legend>Filtering</legend>
-				<p class="help"><code>{$param}</code> or <code>Value</code></p>
-				<div>
-					<ol class="filters-duplicator">
-						<li class="unique template">
-							<h4>ID</h4>
-							<label>Value
-								<input name="fields[filters][id]" type="text">
-							</label>
-						</li>
-						<li class="unique template">
-							<h4>Username</h4>
-							<label>Value
-								<input name="fields[filters][username]" type="text">
-							</label>
-						</li>
-					</ol>
-				</div>
-			</fieldset>
-			*/
+
 			foreach ($field_groups as $section_id => $section_data) {
 				$section = $section_data['section'];
 				$section_handle = $section->get('handle');
@@ -554,19 +497,6 @@
 						__('System User')
 					)
 				);
-				/*$group_options = array(
-					array('', null, __('None')),
-					array(
-						'system:date',
-						($section_active and $fields['group_field'] == 'system:date'),
-						__('System Date')
-					),
-					array(
-						'system:user',
-						($section_active and $fields['group_field'] == 'system:user'),
-						__('System User')
-					)
-				);*/
 				$included_elements_options = array(
 					// TODO: Determine what system fields will be included.
 					array(
@@ -603,14 +533,6 @@
 							);
 						}
 						
-						/*if ($field->allowDatasourceOutputGrouping()) {
-							$group_options[] = array(
-								$field_handle,
-								($section_active and $field_handle == $fields['group_field']),
-								$field_label
-							);
-						}*/
-						
 						if (is_array($modes)) foreach ($modes as $field_mode) {
 							$included_elements_options[] = array(
 								$field_mode,
@@ -636,15 +558,6 @@
 				
 				$label->appendChild($select);
 				$container_parameter_output->appendChild($label);
-				
-				/*$label = Widget::Label(__('Group By'));
-				$label->setAttribute('class', 'context context-' . $section_id);
-				
-				$select = Widget::Select('fields[group_field]', $group_options);
-				$select->setAttribute('class', 'filtered');
-				
-				$label->appendChild($select);
-				$container_xml_output->appendChild($label);*/
 				
 				$label = Widget::Label(__('Included XML Elements'));
 				$label->setAttribute('class', 'context context-' . $section_id);

@@ -1,6 +1,6 @@
 <?php
 	
-	class NavigationDataSource extends DataSource {
+	Abstract Class NavigationDataSource extends DataSource {
 		public function canRedirectOnEmpty() {
 			return false;
 		}
@@ -127,5 +127,3 @@
 			return $result;
 		}
 	}
-	
-?>

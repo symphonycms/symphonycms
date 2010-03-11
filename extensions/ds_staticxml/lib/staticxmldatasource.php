@@ -1,6 +1,6 @@
 <?php
 	
-	class StaticXMLDataSource extends DataSource {
+	Abstract Class StaticXMLDataSource extends DataSource {
 		public function getRootElement() {
 			return 'static-xml';
 		}
@@ -29,5 +29,3 @@
 			return $result;
 		}
 	}
-	
-?>

@@ -110,7 +110,7 @@
         }
                
         ##Creates a new extension object and returns a pointer to it
-        public function &create($name, $environment=NULL, $process_params=true){
+        public function create($name, $environment=NULL, $process_params=true){
 			return Datasource::loadFromName($name, $environment, $process_params);
         }
 

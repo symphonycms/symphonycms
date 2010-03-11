@@ -1,6 +1,6 @@
 <?php
 	
-	class SectionsDataSource extends DataSource {
+	Abstract Class SectionsDataSource extends DataSource {
 		public function canAppendAssociatedEntryCount() {
 			return false;
 		}
@@ -67,9 +67,22 @@
 		
 		public function grab() {
 			throw new Exception('TODO: Fix sections datasource template.');
-			
-			
+		}
+		
+		public function prepareSourceColumnValue(){
+			$section = SectionManager::instance()->fetch($this->getSection());
+		
+			if ($section instanceof Section) {
+				$section = $section->_data;
+				return Widget::TableData(Widget::Anchor(
+					$section['name'],
+					URL . '/symphony/blueprints/sections/edit/' . $section['id'] . '/',
+					$section['handle']
+				));
+			}
+		
+			else {
+				return Widget::TableData(__('None'), 'inactive');
+			}
 		}
 	}
-	
-?>

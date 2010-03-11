@@ -6,6 +6,17 @@
 	
 	Class ContentBlueprintsDatasources extends AdministrationPage{
 		
+		protected $errors = array(
+			'about' => array()
+		);
+		protected $fields = array();
+		protected $editing = false;
+		protected $failed = false;
+		protected $datasource = NULL;
+		protected $handle = NULL;
+		protected $status = NULL;
+		protected $template = NULL;
+
 		public function __viewIndex() {
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Data Sources'))));
@@ -27,82 +38,98 @@
 			
 			if (!is_array($datasources) or empty($datasources)) {
 				$dsTableBody[] = Widget::TableRow(array(Widget::TableData(
-					__('None found.'), 'inactive', null, count($dsTableHead)
+					__('None found.'), 'inactive', NULL, count($dsTableHead)
 				)));
 			}
 			
-			else foreach ($datasources as $ds) {
-				$instance = DataSourceManager::instance()->create($ds['handle'], NULL, false);
-				$view_mode = ($ds['can_parse'] == true ? 'edit' : 'info');
-				
-				$col_name = Widget::TableData(Widget::Anchor(
-					$ds['name'],
-					URL . '/symphony/blueprints/datasources/' . $view_mode . '/' . $ds['handle'] . '/',
-					'data.' . $ds['handle'] . '.php'
-				));
-				$col_name->appendChild(Widget::Input("items[{$ds['handle']}]", null, 'checkbox'));
-				
-				switch ($ds['type']) {
-					case null:
-						$col_source = Widget::TableData(__('None'), 'inactive');
-						break;
-						
-					case (is_numeric($ds['type'])):
-						$section = SectionManager::instance()->fetch($ds['type']);
-						
-						if ($section instanceof Section) {
-							$section = $section->_data;
-							$col_source = Widget::TableData(Widget::Anchor(
-								$section['name'],
-								URL . '/symphony/blueprints/sections/edit/' . $section['id'] . '/',
-								$section['handle']
-							));
-						}
-						
-						else {
-							$col_source = Widget::TableData(__('None'), 'inactive');
-						}
-						break;
-						
-					case "dynamic_xml":
-						$url_parts = parse_url($instance->dsParamURL);
-						$col_source = Widget::TableData(ucwords($url_parts['host']));
-						break;
-						
-					case "static_xml":
-						$col_source = Widget::TableData('Static XML');
-						break;
+			else {
+				foreach ($datasources as $ds) {
+					$instance = DataSourceManager::instance()->create($ds['handle'], NULL, false);
+					$view_mode = ($ds['can_parse'] == true ? 'edit' : 'info');
+					$col_source = Widget::TableData(__('None'), 'inactive');
 					
-					default:
-						$col_source = Widget::TableData(ucwords(preg_replace('/_/',' ', $ds['type'])));
-				}
+					$col_name = Widget::TableData(Widget::Anchor(
+						$ds['name'],
+						URL . '/symphony/blueprints/datasources/' . $view_mode . '/' . $ds['handle'] . '/',
+						'data.' . $ds['handle'] . '.php'
+					));
+					$col_name->appendChild(Widget::Input("items[{$ds['handle']}]", NULL, 'checkbox'));
+					
+					if(!isset($ds['type']) || strlen(trim($ds['type'])) == 0){
+						$col_source = Widget::TableData(__('None'), 'inactive');
+					}
+					
+					else{
+						$col_source = Widget::TableData(ucwords(preg_replace('/_/', ' ', $ds['type'])));
+						
+						$obj = DatasourceManager::instance()->create($ds['handle'], NULL, false);
+						if(is_callable(array($obj, 'prepareSourceColumnValue'))){
+							$col_source = $obj->prepareSourceColumnValue();
+						}
+					}
 				
-				if (isset($ds['author']['website'])) {
-					$col_author = Widget::TableData(Widget::Anchor(
-						$ds['author']['name'],
-						General::validateURL($ds['author']['website'])
+					/*switch ($ds['type']) {
+						case NULL:
+							$col_source = Widget::TableData(__('None'), 'inactive');
+							break;
+						
+						case (is_numeric($ds['type'])):
+							$section = SectionManager::instance()->fetch($ds['type']);
+						
+							if ($section instanceof Section) {
+								$section = $section->_data;
+								$col_source = Widget::TableData(Widget::Anchor(
+									$section['name'],
+									URL . '/symphony/blueprints/sections/edit/' . $section['id'] . '/',
+									$section['handle']
+								));
+							}
+						
+							else {
+								$col_source = Widget::TableData(__('None'), 'inactive');
+							}
+							break;
+						
+						case "dynamic_xml":
+							$url_parts = parse_url($instance->dsParamURL);
+							$col_source = Widget::TableData(ucwords($url_parts['host']));
+							break;
+						
+						case "static_xml":
+							$col_source = Widget::TableData('Static XML');
+							break;
+					
+						default:
+							$col_source = Widget::TableData(ucwords(preg_replace('/_/', ' ', $ds['type'])));
+					}*/
+				
+					if (isset($ds['author']['website'])) {
+						$col_author = Widget::TableData(Widget::Anchor(
+							$ds['author']['name'],
+							General::validateURL($ds['author']['website'])
+						));
+					}
+				
+					else if (isset($ds['author']['email'])) {
+						$col_author = Widget::TableData(Widget::Anchor(
+							$ds['author']['name'],
+							'mailto:' . $ds['author']['email']
+						));	
+					}
+				
+					else {
+						$col_author = Widget::TableData($ds['author']['name']);
+					}
+				
+					$dsTableBody[] = Widget::TableRow(array(
+						$col_name, $col_source, $col_author
 					));
 				}
-				
-				else if (isset($ds['author']['email'])) {
-					$col_author = Widget::TableData(Widget::Anchor(
-						$ds['author']['name'],
-						'mailto:' . $ds['author']['email']
-					));	
-				}
-				
-				else {
-					$col_author = Widget::TableData($ds['author']['name']);
-				}
-				
-				$dsTableBody[] = Widget::TableRow(array(
-					$col_name, $col_source, $col_author
-				));
 			}
 			
 			$table = Widget::Table(
-				Widget::TableHead($dsTableHead), null, 
-				Widget::TableBody($dsTableBody), null
+				Widget::TableHead($dsTableHead), NULL, 
+				Widget::TableBody($dsTableBody), NULL
 			);
 			
 			$this->Form->appendChild($table);
@@ -111,27 +138,15 @@
 			$tableActions->setAttribute('class', 'actions');
 			
 			$options = array(
-				array(null, false, __('With Selected...')),
-				array('delete', false, __('Delete'))							
+				array(NULL, false, __('With Selected...')),
+				array('delete', false, __('Delete'))
 			);
 			
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
 			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
 			
 			$this->Form->appendChild($tableActions);
-		}		
-		
-		
-		protected $errors = array(
-			'about'		=> array()
-		);
-		protected $fields = array();
-		protected $editing = false;
-		protected $failed = false;
-		protected $datasource = null;
-		protected $handle = null;
-		protected $status = null;
-		protected $template = null;
+		}
 		
 		public function build($context) {
 			if (isset($context[0]) and ($context[0] == 'edit' or $context[0] == 'new')) {
@@ -160,7 +175,7 @@
 				$this->status = $this->_context[2];
 				
 				$datasourceManager = DatasourceManager::instance();
-				$this->datasource = $datasourceManager->create($this->handle, null, false);
+				$this->datasource = $datasourceManager->create($this->handle, NULL, false);
 				
 				if (!$this->datasource->allowEditorToParse()) {
 					redirect(URL . '/symphony/blueprints/datasources/info/' . $this->handle . '/');
@@ -174,7 +189,8 @@
 			# Delegate: DataSourceFormPrepare
 			# Description: Prepare any data before the form view and action are fired.
 			ExtensionManager::instance()->notifyMembers(
-				'DataSourceFormPrepare', '/backend/', array(
+				'DataSourceFormPrepare', '/backend/',
+				array(
 					'template'		=> &$this->template,
 					'handle'		=> &$this->handle,
 					'datasource'	=> $this->datasource,
@@ -187,11 +203,11 @@
 		}
 		
 		protected function __actionForm() {
-			$template_file = null;
+			$template_file = NULL;
 			$template_data = array();
 			
 			// Delete datasource:
-			if ($this->editing and array_key_exists('delete', $_POST['action'])) {
+			if ($this->editing && array_key_exists('delete', $_POST['action'])) {
 		    	if (!General::deleteFile(DATASOURCES . '/data.' . $this->handle . '.php')) {
 					$this->pageAlert(
 						__('Failed to delete <code>%s</code>. Please check permissions.', array(
@@ -216,7 +232,8 @@
 			# Delegate: DataSourceFormAction
 			# Description: Prepare any data before the form view and action are fired.
 			ExtensionManager::instance()->notifyMembers(
-				'DataSourceFormAction', '/backend/', array(
+				'DataSourceFormAction', '/backend/', 
+				array(
 					'template'		=> &$this->template,
 					'handle'		=> &$this->handle,
 					'datasource'	=> $this->datasource,
@@ -325,7 +342,7 @@
 				}
 
 				$select = Widget::Select('template', $options);
-				$select->setAttribute('id', 'datasource_template_switch');
+				$select->setAttribute('id', 'master-switch');
 				$this->Form->appendChild($select);
 			}
 			
@@ -347,7 +364,8 @@
 			# Delegate: DataSourceFormView
 			# Description: Prepare any data before the form view and action are fired.
 			ExtensionManager::instance()->notifyMembers(
-				'DataSourceFormView', '/backend/', array(
+				'DataSourceFormView', '/backend/',
+				array(
 					'template'		=> &$this->template,
 					'handle'		=> &$this->handle,
 					'datasource'	=> $this->datasource,
@@ -376,7 +394,7 @@
 				$actions->appendChild($button);
 			}
 			
-			$this->Form->appendChild($actions);			
+			$this->Form->appendChild($actions);
 		}
 		
 		function __viewInfo(){
@@ -391,12 +409,14 @@
 
 			$link = $about['user']['name'];
 
-			if(isset($about['user']['website']))
+			if(isset($about['user']['website'])){
 				$link = Widget::Anchor($about['user']['name'], General::validateURL($about['user']['website']));
-
-			elseif(isset($about['user']['email']))
+			}
+			
+			elseif(isset($about['user']['email'])){
 				$link = Widget::Anchor($about['user']['name'], 'mailto:' . $about['user']['email']);
-							
+			}
+			
 			foreach($about as $key => $value) {
 				
 				$fieldset = NULL;

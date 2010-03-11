@@ -1,6 +1,6 @@
 <?php
 	
-	class UsersDataSource extends DataSource {
+	Abstract Class UsersDataSource extends DataSource {
 		public function canAppendPagination() {
 			return false;
 		}
@@ -164,5 +164,3 @@
 			return $result;
 		}
 	}
-	
-?>

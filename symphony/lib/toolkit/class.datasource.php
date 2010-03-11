@@ -14,6 +14,10 @@
 		
 		const CRLF = "\r\n";
 		
+		// Abstract function
+		abstract public function about();
+		abstract public function grab();
+
 		public static function loadFromName($name, $environment=NULL, $process_params=true){
 			$classname = self::__getClassName($name);	        
 	        $path = self::__getDriverPath($name);
@@ -225,7 +229,7 @@
 		}
 				
 		## This function is required in order to identify what type of data source this is for
-		## use in the data source editor. It must remain intact. Do not overload this function into
+		## use in the data source editor. It must remain intact. Do not overload this function in
 		## custom data sources.
 		public function getSource(){
 			return NULL;
@@ -239,12 +243,6 @@
 			return $this->_dependencies;
 		}
 				
-		##Static function
-		public function about(){		
-		}
-
-		public function grab(){
-		}
 	
 	}
 	
