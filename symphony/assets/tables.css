@@ -22,7 +22,7 @@ td {
 }
 th:first-child,
 td:first-child {
-	padding-left: 20px;
+	padding-left: 1.3em;
 }
 tr.odd td {
 	background-color: #f5f5f4;
