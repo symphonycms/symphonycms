@@ -1,7 +1,8 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 	<head>
 		<title>Symphony Error</title>
-		<link rel="stylesheet" type="text/css" media="screen" href="%s/symphony/assets/exception.css"> 
+		<link rel="stylesheet" type="text/css" media="screen" href="%s/symphony/assets/exception.css" /> 
 	</head>
 	<body>
 		<h1>Symphony %s</h1>
