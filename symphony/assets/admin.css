@@ -4,7 +4,7 @@ form {
 	position: relative;
 	font-size: 1.1em;
 	overflow: hidden;
-	padding-bottom: 5em;
+	padding-bottom: 10em;
 }
 h1 {
 	margin: 0;
@@ -47,6 +47,7 @@ h1 a:hover,
 	list-style: none;
 	background: -webkit-gradient(linear, left top, left bottom, from(#f4f4f4), to(#d8d8d8), color-stop(0.04, #ededed));
 	background: -moz-linear-gradient(top center, #f4f4f4 0%, #ededed 1%, #d8d8d8 100%);
+	background-color: #d8d8d8;
 	-webkit-box-shadow: 0 1px 3px #888;
 	-moz-box-shadow: 0 1px 3px #888;
 }
@@ -69,12 +70,14 @@ h1 a:hover,
 	color: #fff;
 	background: -webkit-gradient(linear, left top, left bottom, from(#a6c4e8), to(#5e84b1), color-stop(0.02, #749dc3));
 	background: -moz-linear-gradient(top center, #a6c4e8 0%, #749dc3 1%, #5e84b1 100%);
+	background-color: #5e84b1;
 }
 
 #nav > li:hover {
 	color: #fff;
 	background: -webkit-gradient(linear, left top, left bottom, from(#666), to(#444), color-stop(0.02, #555));
 	background: -moz-linear-gradient(top center, #666 0%, #555 1%, #444 100%);
+	background-color: #444;
 }
 
 #nav a {
@@ -278,9 +281,10 @@ a.button {
 	float: right;
 	text-shadow: 0 2px 1px #455e96;
 	border: none;
-	padding: 4px 7px 6px;
+	padding: 4px 7px;
 	background: -webkit-gradient(linear, left top, left bottom, from(#7190d4), to(#4f72be));
 	background: -moz-linear-gradient(top center, #7190d4 0%, #4f72be 100%);
+	background-color: #4f72be;
 	cursor: pointer;
 	-moz-border-radius: 0.5em;
 	-webkit-border-radius: 0.5em;
@@ -288,6 +292,7 @@ a.button {
 div.actions input:hover {
 	background: -webkit-gradient(linear, left top, left bottom, from(#555), to(#222));
 	background: -moz-linear-gradient(top center, #555 0%, #222 1%);
+	background-color: #222;
 }
 a.create {
 	text-shadow: 0 1px 2px #67902f;
@@ -300,6 +305,7 @@ a.button.active {
 	text-shadow: 0 1px 2px #111;
 	background: -webkit-gradient(linear, left top, left bottom, from(#444), to(#222));
 	background: -moz-linear-gradient(top center, #444 0%, #222 100%);
+	background-color: #222;
 }
 #session .button {
 	float:left;
