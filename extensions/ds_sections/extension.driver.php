@@ -88,7 +88,8 @@
 		
 		public function action($context = array()) {
 			if ($context['template'] != 'ds_sections') return;
-			
+			print "<pre>";
+			print_r($context['fields']); die();
 			// Validate data:
 			$fields = $context['fields'];
 			$errors = $context['errors'];
@@ -115,6 +116,7 @@
 				$fields['can_html_encode_text'] == 'yes',
 				$fields['can_redirect_on_empty'] == 'yes',
 				(array)$fields['filters'],
+				(array)$fields['conditionals'],
 				(array)$fields['included_elements'],
 				$fields['group_field'],
 				(array)$fields['output_params'],
@@ -206,12 +208,12 @@
 		
 			// Parameter
 			$label = new XMLElement('label', 'Parameter');
-			$label->appendChild(Widget::input('fields[parameter]'));
+			$label->appendChild(Widget::input('fields[conditional][parameter][]'));
 			$group->appendChild($label);
 		
 			// Logic
 			$label = new XMLElement('label', 'Logic');
-			$label->appendChild(Widget::select('fields[logic]', array(
+			$label->appendChild(Widget::select('fields[conditional][logic][]', array(
 				array('set', false, 'is set'),
 				array('not-set', false, 'is not set'),
 			), array('class' => 'filtered')));
@@ -219,7 +221,7 @@
 		
 			// Action
 			$label = new XMLElement('label', 'Action');
-			$label->appendChild(Widget::select('fields[action]', array(
+			$label->appendChild(Widget::select('fields[conditional][action][]', array(
 				array('label' => 'Execution', 'options' => array(
 					array('execute', false, 'Execute'),
 					array('do-not-execute', false, 'Do not Execute'),

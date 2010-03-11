@@ -42,7 +42,7 @@
 		}
 		
 		public function prepare($context = array()) {
-			if ($context['template'] != 'navigation') return;
+			if ($context['template'] != 'ds_navigation') return;
 			
 			require_once $this->getExtensionPath() . '/lib/navigationdatasource.php';
 			
@@ -63,7 +63,7 @@
 		}
 		
 		public function action($context = array()) {
-			if ($context['template'] != 'navigation') return;
+			if ($context['template'] != 'ds_navigation') return;
 			
 			$fields = $context['fields'];
 			
@@ -78,7 +78,7 @@
 		}
 		
 		public function view($context = array()) {
-			if ($context['template'] != 'navigation') return;
+			if ($context['template'] != 'ds_navigation') return;
 			
 			$fields = $context['fields'];
 			$errors = $context['errors'];

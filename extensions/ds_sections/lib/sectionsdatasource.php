@@ -1,6 +1,7 @@
 <?php
 	
-	Abstract Class SectionsDataSource extends DataSource {
+	Class SectionsDataSource extends DataSource {
+		
 		public function canAppendAssociatedEntryCount() {
 			return false;
 		}

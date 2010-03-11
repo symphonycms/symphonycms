@@ -4,7 +4,7 @@
 	require_once TOOLKIT . '/class.xslproc.php';
 	require_once CORE . '/class.cacheable.php';
 	
-	Abstract Class DynamicXMLDataSource extends DataSource {
+	Class DynamicXMLDataSource extends DataSource {
 		public function getCacheTime() {
 			return 60;
 		}

@@ -15,8 +15,8 @@
 		const CRLF = "\r\n";
 		
 		// Abstract function
-		abstract public function about();
-		abstract public function grab();
+		public function about(){}
+		public function grab(){}
 
 		public static function loadFromName($name, $environment=NULL, $process_params=true){
 			$classname = self::__getClassName($name);	        
