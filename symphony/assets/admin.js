@@ -609,7 +609,7 @@ var Symphony;
 jQuery(document).ready(function() {
 	var $ = jQuery;
 	
-	$('#datasource_template_switch').bind('change', function() {
+	$('#master-switch').bind('change', function() {
 		var select = $(this);
 		
 		window.location.search = '?template=' + select.val();

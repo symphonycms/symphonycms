@@ -22,7 +22,7 @@ h1 a:hover,
 	color: #a5a5a5;
 }
 
-#datasource_template_switch {
+#master-switch {
 	clear: both;
 	float: right;
 	position: relative;
@@ -30,7 +30,7 @@ h1 a:hover,
 	width: auto;
 	z-index: 2;
 }
-#datasource_template_switch + h2 {
+#master-switch + h2 {
 	clear: none;
 	z-index: 1;
 	margin: 2.5em 15px 0;
