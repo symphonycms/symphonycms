@@ -104,6 +104,9 @@
 		min-width: 15em;
 		width: auto;
 	}
+	.duplicator > .controls > select.disabled {
+		display: none;
+	}
 	.duplicator > .controls > a {
 		color: #fff;
 		cursor: pointer;
