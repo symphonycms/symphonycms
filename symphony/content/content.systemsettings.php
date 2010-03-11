@@ -11,7 +11,7 @@
 		
 		## Overload the parent 'view' function since we dont need the switchboard logic
 		public function __viewIndex() {
-			$this->appendSubheading(__('Settings &raquo; Preferences'));
+			$this->appendSubheading(__('Settings'));
 			
 			$path = URL . '/symphony/system/settings/';
 			
@@ -92,7 +92,7 @@
 		}
 		
 		public function __viewTools() {
-			$this->appendSubheading(__('Settings &raquo; Tools'));
+			$this->appendSubheading(__('Settings'));
 			
 			$path = URL . '/symphony/system/settings/';
 			
@@ -112,10 +112,14 @@
 		        $this->pageAlert(__('The Symphony configuration file, <code>/manifest/config.php</code>, is not writable. You will not be able to save changes to preferences.'), Alert::ERROR);
 		        $bIsWritable = false;
 		        
-		    } else if ($formHasErrors) {
+		    } 
+		
+			elseif ($formHasErrors) {
 		    	$this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
 		    	
-		    } else if (isset($this->_context[0]) && $this->_context[0] == 'success') {
+		    } 
+		
+			elseif (isset($this->_context[0]) && $this->_context[0] == 'success') {
 		    	$this->pageAlert(__('Preferences saved.'), Alert::SUCCESS);
 		    }
 			
