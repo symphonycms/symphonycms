@@ -31,7 +31,7 @@
 			<item link="/system/users/edit/" name="User Edit" visible="no" />
 			<item link="/system/users/new/" name="User New" visible="no"  />
 			
-			<item link="/system/preferences/" name="Preferences" />
+			<item link="/system/settings/" name="Settings" />
 			
 			<item link="/system/extensions/" name="Extensions" />
 			
