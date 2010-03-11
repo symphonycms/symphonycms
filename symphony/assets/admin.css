@@ -8,7 +8,7 @@ form {
 }
 h1 {
 	margin: 0;
-	padding: 1.1em 1em;
+	padding: 1.1em 20px;
 	background: #111;
 	color: #d5d5d5;
 	line-height: 1em;
@@ -33,7 +33,7 @@ h1 a:hover,
 #datasource_template_switch + h2 {
 	clear: none;
 	z-index: 1;
-	margin: 2.5em 15px 0;
+	margin: 2.5em 20px 0;
 }
 
 /* Navigation */
@@ -52,11 +52,23 @@ h1 a:hover,
 	-moz-box-shadow: 0 1px 3px #888;
 }
 
+#nav > li:first-child {
+	margin-left: 10px;
+}
+
+#nav li#nav-system {
+	margin-right: 10px;
+}
+
+#nav li#last-child {
+	margin: 0;
+}
+
 #nav li {
 	color: #666;
 	position:relative;
 	float: left;
-	padding: 0 1.3em;
+	padding: 0 10px;
 	line-height: 32px;
 	cursor: pointer;
 	font-weight: bold;
