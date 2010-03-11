@@ -142,12 +142,17 @@
 		}
 		
 		protected function __prepareForm() {
+
 			$this->editing = isset($this->_context[1]);
 			
 			if (!$this->editing) {
 				$this->template = $_REQUEST['template'];
 				
-				if (!$this->template) $this->template = 'sections';
+				if (!$this->template){
+					$datasource_templates = ExtensionManager::instance()->listByType('Data Source');
+					if(!is_array($datasource_templates) || empty($datasource_templates)) throw new Exception('No Data Source templates found');
+					$this->template = current(array_keys($datasource_templates));
+				}
 			}
 			
 			else {
@@ -301,8 +306,10 @@
 			
 			$this->setPageType('form');
 			
+			$datasource_templates = ExtensionManager::instance()->listByType('Data Source');
+			
 			// Track template type with a hidden field:
-			if ($this->editing or isset($_POST['template'])) {
+			if ($this->editing || isset($_POST['template'])) {
 				$input = Widget::Input('template', $this->template, 'hidden');
 				$this->Form->appendChild($input);
 			}
@@ -310,13 +317,14 @@
 			// Let user choose template type:
 			else {
 				$label = Widget::Label(__('Template'));
-				$select = Widget::Select('template', array(
-					array('sections', ($this->template == 'sections'), __('Sections')),
-					array('users', ($this->template == 'users'), __('Users')),
-					array('navigation', ($this->template == 'navigation'), __('Navigation')),
-					array('dynamic_xml', ($this->template == 'dynamic_xml'), __('Dynamic XML')),	
-					array('static_xml', ($this->template == 'static_xml'), __('Static XML')),
-				));
+				
+				$options = array();
+				foreach($datasource_templates as $e){
+					if($e['status'] != Extension::ENABLED) continue;
+					$options[] = array($e['handle'], ($this->template == $e['handle']), $e['name']);
+				}
+
+				$select = Widget::Select('template', $options);
 				$select->setAttribute('id', 'datasource_template_switch');
 				$this->Form->appendChild($select);
 			}
