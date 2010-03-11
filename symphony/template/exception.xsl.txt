@@ -15,4 +15,4 @@
 			<ul>%s</ul>
 		</div>
 	</body>
-<html>
+</html>

@@ -24,7 +24,7 @@
 					break;
 					
 				case '__viewDatasources':
-					$type = 'Data Source Template';
+					$type = 'Data Source';
 					break;
 				
 				case '__viewFields':
@@ -42,7 +42,7 @@
 			
 			if($type == 'Other'){
 				$this->buildTable(
-					ExtensionManager::instance()->listOthers(array('Core', 'Data Source Type', 'Field'))
+					ExtensionManager::instance()->listOthers(array('Core', 'Data Source', 'Field'))
 				);
 			}
 			else {
@@ -65,7 +65,7 @@
 				'subnav'	=> array(
 					'All'				=>	$path,
 					'Core'				=>	$path . 'core/',
-					'Data Source Templates'	=>	$path . 'datasources/',
+					'Data Sources'	=>	$path . 'datasources/',
 					'Fields'			=>	$path . 'fields/',
 					'Other'				=>	$path . 'other/'
 				)
@@ -101,7 +101,7 @@
 				foreach($extensions as $name => $about){
 
 					## Setup each cell
-					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], Administration::instance()->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']) . ($prefixes && isset($about['type']) ? ' <span class="label">&middot; ' . $about['type'][0] . '</span>' : NULL));			
+					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == Extension::ENABLED ? Widget::Anchor($about['name'], Administration::instance()->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']) . ($prefixes && isset($about['type']) ? ' <span class="label">&middot; ' . $about['type'][0] . '</span>' : NULL));			
 
 					$td2 = Widget::TableData($about['version']);
 					
@@ -120,26 +120,26 @@
 					$td3->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox'));
 					
 					switch ($about['status']) {
-						case EXTENSION_ENABLED:
+						case Extension::ENABLED:
 							$td4 = Widget::TableData(__('Enabled'), 'enabled');
 							break;
 							
-						case EXTENSION_DISABLED:
+						case Extension::DISABLED:
 							$td4 = Widget::TableData(__('Disabled'), 'disabled');
 							break;
 							
-						case EXTENSION_NOT_INSTALLED:
+						case Extension::NOT_INSTALLED:
 							$td4 = Widget::TableData(__('Not Installed'), 'not-installed');
 							break;
 							
-						case EXTENSION_REQUIRES_UPDATE:
+						case Extension::REQUIRES_UPDATE:
 							$td4 = Widget::TableData(__('Needs Update'), 'updatable');
 					}
 
 					## Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(
 						array($td1, $td2, $td3, $td4), 
-						($about['status'] == EXTENSION_NOT_INSTALLED ? 'inactive' : NULL)
+						($about['status'] == Extension::NOT_INSTALLED ? 'inactive' : NULL)
 					);
 
 				}
@@ -266,18 +266,18 @@
 			
 			switch($extension['status']){
 				
-				case EXTENSION_DISABLED:
-				case EXTENSION_ENABLED:
+				case Extension::DISABLED:
+				case Extension::ENABLED:
 					$fieldset->appendChild(new XMLElement('p', '<strong>Uninstall this Extension, which will remove anything created by it, but will leave the original files intact. To fully remove it, you will need to manually delete the files.</strong>'));		
 					$fieldset->appendChild(Widget::Input('action[uninstall]', 'Uninstall Extension', 'submit'));				
 					break;
 					
-				case EXTENSION_REQUIRES_UPDATE:
+				case Extension::REQUIRES_UPDATE:
 					$fieldset->appendChild(new XMLElement('p', '<strong>Note: This Extension is currently disabled as it is ready for updating. Use the button below to complete the update process.</strong>'));
 					$fieldset->appendChild(Widget::Input('action[update]', 'Update Extension', 'submit'));				
 					break;
 					
-				case EXTENSION_NOT_INSTALLED:
+				case Extension::NOT_INSTALLED:
 					$fieldset->appendChild(new XMLElement('p', '<strong>Note: This Extension has not been installed. If you wish to install it, please use the button below.</strong>'));
 					$fieldset->appendChild(Widget::Input('action[install]', 'Install Extension', 'submit'));				
 					break;					
@@ -293,15 +293,15 @@
 
 			if(!$extension = ExtensionManager::instance()->about($extension_name)) Administration::instance()->customError(E_USER_ERROR, 'Extension not found', 'The Symphony Extension you were looking for, <code>'.$extension_name.'</code>, could not be found.', 'Please check it has been installed correctly.');
 			
-			if(isset($_POST['action']['install']) && $extension['status'] == EXTENSION_NOT_INSTALLED){
+			if(isset($_POST['action']['install']) && $extension['status'] == Extension::NOT_INSTALLED){
 				ExtensionManager::instance()->enable($extension_name);
 			}
 			
-			elseif(isset($_POST['action']['update']) && $extension['status'] == EXTENSION_REQUIRES_UPDATE){
+			elseif(isset($_POST['action']['update']) && $extension['status'] == Extension::REQUIRES_UPDATE){
 				ExtensionManager::instance()->enable($extension_name);	
 			}
 			
-			elseif(isset($_POST['action']['uninstall']) && in_array($extension['status'], array(EXTENSION_ENABLED, EXTENSION_DISABLED))){
+			elseif(isset($_POST['action']['uninstall']) && in_array($extension['status'], array(Extension::ENABLED, Extension::DISABLED))){
 				ExtensionManager::instance()->uninstall($extension_name);	
 			}
 		}*/

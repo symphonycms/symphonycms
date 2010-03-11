@@ -6,11 +6,12 @@
 		const NAV_GROUP = 1;
 		const CRLF = "\r\n";
 		
-		protected $_Parent;
+		const ENABLED = 3;
+		const DISABLED = 4;
+		const NOT_INSTALLED = 5;	
+		const REQUIRES_UPDATE = 6;
 		
 		abstract public function about();
-		
-		public function __construct($args){ $this->_Parent =& $args['parent']; }
 		
 		public function update($previousVersion=false){return true;}
 		
@@ -28,7 +29,6 @@
 		
 		public function getExtensionPath() {
 			$em = ExtensionManager::instance();
-			
 			return $em->getClassPath(strtolower(substr(get_class($this), 10)));
 		}
 	}

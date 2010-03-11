@@ -130,7 +130,7 @@
 			// Load localisation files for extensions
 			foreach(ExtensionManager::instance()->listAll() as $handle => $e){
 				$path = ExtensionManager::instance()->__getClassPath($handle) . '/lang/lang.%s.php';
-				if($e['status'] == EXTENSION_ENABLED && file_exists(sprintf($path, Symphony::lang()))){
+				if($e['status'] == Extension::ENABLED && file_exists(sprintf($path, Symphony::lang()))){
 					Lang::add($path, Symphony::lang());
 				}			
 			}
