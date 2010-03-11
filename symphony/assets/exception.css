@@ -1,3 +1,5 @@
+/* @override http://localhost/symphony-21/symphony/assets/exception.css */
+
 * {
 	margin: 0;
 	padding: 0;
@@ -12,11 +14,11 @@ body {
 }
 
 h1 {
-	font-size: 2.5em;
+	font-size: 20px;
 	text-align: right;
 	font-weight: normal;
-	line-height: 1.5em;
-	margin-bottom: 25px;
+	line-height: 40px;
+	margin-bottom: 15px;
 	padding-right: 0.5em;
 	background-color: #333;
 	color: #fff;
@@ -24,7 +26,18 @@ h1 {
 	-moz-border-radius: 7px;
 }
 
-h2 { margin-bottom: .25em;}
+h2 { 
+	font-size: 14px;
+	margin-bottom: 10px;
+}
+
+h3 {
+	margin: 20px 0 10px;
+}
+
+p.error-line {
+	margin-bottom: 10px;
+}
 
 a {
 	color: #69c;
@@ -32,60 +45,73 @@ a {
 }
 
 a.markdown {
-	float: right;
-	background-color: #5895c2;
+	display: block;
+	text-align: right;
 	font-weight: normal;
-	color: #fff;
-	padding: 0.4em 0.7em;
-	text-decoration: none;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border: 1px solid #567f9f;
+	color: #069;
+	text-decoration: underline;
+	padding-bottom: 10px;
 }
 
 a.markdown:hover {
-	background-color: #4675aa;
-	border-color: #2f6491;
+	color: #69c;
 }
 
 code {
-	/*font-family: Helvetica, "MS Trebuchet", Arial, sans-serif;*/
+	font-size: 11px;
 	font-family: Monaco, "Courier New", Courier;
+}
+
+code strong {
+	display: block;
+	font-family: Helvetica, "MS Trebuchet", Arial, sans-serif;
+	margin-top: 5px;
 }
 
 code span.important{
 	font-weight: bold;
 }
 
-strong {
-	font-size: 11px;
-}
-
-code strong {
-	margin-left: 10px;
-}
-
 pre#markdown {
+	border: 2px dotted #ddd;
 	padding: 10px 0;
+	margin-bottom: 20px;
+	overflow: auto;
 }
 
-ul, pre#markdown {
+ul {
 	list-style: none;
 	color: #111;
-	margin: 25px 0;
-	border-left: 5px solid #d5d5d5;
-	background-color: #efefef;
+	border-left: 5px solid #ccc;
 }
 
 li {
-	padding: 5px;
+	padding: 8px;
+	border-bottom: 1px solid #ddd;
 }
 
-li.odd {
-	background-color: #f8f8f8;
+li:first-child {
+	border-top: 1px solid #ddd;
 }
 
-li#error {
+ul.focus {
+	background-color: #efefef;
+}
+
+ul.focus li {
+	padding: 2px;
+	border-bottom-color: #ccc;
+}
+
+ul.focus li:first-child {
+	border-top-color: #ccc;
+}
+
+ul.focus li.odd {
+	background-color: #dfdfdf;
+}
+
+ul.focus li#error {
 	background-color: #e8caca;
 	color: #b9191a;
 }
