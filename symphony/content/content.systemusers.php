@@ -21,6 +21,15 @@
 				__('Users'), Widget::Anchor(__('Add a User'), Administration::instance()->getCurrentPageURL().'new/', __('Add a new User'), 'create button')
 			);
 			
+			$viewoptions = array(
+				'subnav'	=>	array(
+					'Users'	=> URL . '/symphony/system/users/',
+					'Roles' => URL . '/symphony/system/roles/',
+				)
+			);
+			
+			$this->appendViewOptions($viewoptions);
+			
 		    $users = UserManager::fetch();
 
 			$aTableHead = array(
