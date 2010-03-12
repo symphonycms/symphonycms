@@ -46,7 +46,7 @@
 			$group->appendChild(new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array('class' => 'help')));
 			
 			$label = Widget::Label(__('Site Name'));
-			$input = Widget::Input('settings[symphony][sitename]', Symphony::Configuration()->core()->{'symphony'}->{'sitename'});
+			$input = Widget::Input('settings[symphony][sitename]', Symphony::Configuration()->core()->symphony->sitename);
 			$label->appendChild($input);
 			$group->appendChild($label);
 			
