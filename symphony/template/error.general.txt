@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xml:lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Symphony &ndash; %s</title>
+		<link rel="stylesheet" type="text/css" media="screen" href="http://symphony.local:8888/2.1/symphony/assets/error.css">
+	</head>
+	<body>
+		<div id="description">
+			<h1>%1$s</h1>
+			<p>%2$s</p>
+		</div>
+	</body>
+</html>

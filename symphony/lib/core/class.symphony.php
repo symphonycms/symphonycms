@@ -232,7 +232,7 @@
 				throw new SymphonyErrorPage(
 					$error['num'] . ': ' . $error['msg'], 
 					'Symphony Database Error',
-					'database-error', 
+					'general', 
 					array(
 						'error' => $error, 
 						'message' => __('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct. The following error was returned.')
