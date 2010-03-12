@@ -259,7 +259,7 @@
 					$input->setAttribute('checked', 'checked');
 				}
 
-				$label->setValue(__('%s When saving is successful, add the entry ID value/s to page parameters. This will take the format <code>$event-name-id</code>', array($input->generate())));
+				$label->setValue(__('%s Add entry ID to the parameter pool in the format of <code>$event-name-id</code> when saving is successful.', array($input->generate())));
 				$fieldset->appendChild($label);
 				
 				$this->Form->appendChild($fieldset);
@@ -268,8 +268,8 @@
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Overrides &amp; Default Values')));	
-			$fieldset->appendChild(new XMLElement('p', __('Specify fields in the <code>POST</code> data to either override or set to a default value if not set.'), array('class' => 'help')));
+			$fieldset->appendChild(new XMLElement('legend', __('Overrides &amp; Defaults')));	
+			$fieldset->appendChild(new XMLElement('p', __('{$param}'), array('class' => 'help')));
 			
 			if(is_array($sections) && !empty($sections)){
 				foreach($sections as $s){
@@ -285,11 +285,7 @@
 				}
 			}
 			
-			$this->Form->appendChild($fieldset);
-			
-			
-			$fieldset->appendChild(new XMLElement('p', __('Use <code>{$param}</code> syntax in "Replacement Value" for access to page parameters.'), array('class' => 'help')));
-			
+			$this->Form->appendChild($fieldset);			
 			
 			if($isEditing):
 				$fieldset = new XMLElement('fieldset');
@@ -321,7 +317,7 @@
 			$fields = Symphony::Database()->fetch("SELECT `element_name`, `label` FROM `tbl_fields` WHERE `parent_section` = " . $section->get('id'));
 			
 			$duplicator = new XMLElement('div', NULL, array('id' => 'event-context-' . $section->get('id')));
-			$h3 = new XMLElement('h3', __('Fields <i>Optional</i>'));
+			$h3 = new XMLElement('h3', __('Fields'));
 			$h3->setAttribute('class', 'label');
 			$duplicator->appendChild($h3);
 			
