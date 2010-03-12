@@ -38,20 +38,24 @@
 		    	$this->pageAlert(__('Preferences saved.'), Alert::SUCCESS);
 		    }
 			
-			// Essentials
+		// ESSENTIALS
 			$group = new XMLElement('fieldset');
 		    $group->setAttribute('class', 'settings');
 			$group->appendChild(new XMLElement('legend', __('Site Setup')));
 			
 			$group->appendChild(new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array('class' => 'help')));
 			
-			$div = New XMLElement('div');
-			$div->setAttribute('class', 'group');
-			
 			$label = Widget::Label(__('Site Name'));
-			$input = Widget::Input('settings[symphony][sitename]', Symphony::Configuration()->get('sitename', 'symphony'));
+			$input = Widget::Input('settings[symphony][sitename]', Symphony::Configuration()->core()->symphony->sitename);
 			$label->appendChild($input);
-			$div->appendChild($label);
+			$group->appendChild($label);
+			
+			$this->Form->appendChild($group);
+		    
+		// REGIONAL SETTINGS
+			$group = new XMLElement('fieldset');
+		    $group->setAttribute('class', 'settings');
+			$group->appendChild(new XMLElement('legend', __('Regional Settings')));
 		    
 		    // Get available languages
 		    $languages = Lang::getAvailableLanguages(true);
@@ -64,16 +68,78 @@
 				asort($languages); 
 				
 				foreach($languages as $code => $name) {
-					$options[] = array($code, $code == Symphony::Configuration()->get('lang', 'symphony'), $name);
+					$options[] = array($code, $code == Symphony::Configuration()->core()->symphony->lang, $name);
 				}
-				$select = Widget::Select('settings[symphony][lang]', $options);			
-				$label->appendChild($select);
-				$div->appendChild($label);			
+				$select = Widget::Select('settings[symphony][lang]', $options);
+				unset($options);
+				$label->appendChild($select);			
 				//$group->appendChild(new XMLElement('p', __('Users can set individual language preferences in their profiles.'), array('class' => 'help')));
 				// Append language selection
-				$group->appendChild($div);
+				$group->appendChild($label);
 			}
 			
+			// Date and Time Settings
+			$div = New XMLElement('div');
+			$div->setAttribute('class', 'group triple');
+			
+			$label = Widget::Label(__('Date Format'));
+			$input = Widget::Input('settings[region][date-format]', Symphony::Configuration()->core()->region->{'date-format'});
+			$label->appendChild($input);
+			$div->appendChild($label);
+			
+			$label = Widget::Label(__('Time Format'));
+			$input = Widget::Input('settings[region][time-format]', Symphony::Configuration()->core()->region->{'time-format'});
+			$label->appendChild($input);
+			$div->appendChild($label);
+			
+			$label = Widget::Label(__('Timezone'));
+			
+			$timezones = timezone_identifiers_list();
+			foreach($timezones as $timezone) {
+				$options[] = array($timezone, $timezone == Symphony::Configuration()->core()->region->timezone, $timezone);
+				}
+			$select = Widget::Select('settings[region][timezone]', $options);			
+			unset($options);
+			$label->appendChild($select);
+			$div->appendChild($label);
+			
+			$group->appendChild($div);
+			$this->Form->appendChild($group);
+			
+		// PERMISSIONS
+		
+			$group = new XMLElement('fieldset');
+		    $group->setAttribute('class', 'settings');
+			$group->appendChild(new XMLElement('legend', __('Permissions')));
+			
+			$div = New XMLElement('div');
+			$div->setAttribute('class', 'group');
+			
+			$permissions = array(
+				'777',
+				'755',
+				'644'				
+			);
+			
+			$label = Widget::Label(__('File Permissions'));
+			foreach($permissions as $p) {
+					$options[] = array($p, $p == Symphony::Configuration()->core()->symphony->{'file-write-mode'}, $p);
+				}
+			$select = Widget::Select('settings[symphony][file-write-mode]', $options);
+			unset($options);
+			$label->appendChild($select);
+			$div->appendChild($label);
+			
+			$label = Widget::Label(__('Directory Permissions'));
+			foreach($permissions as $p) {
+					$options[] = array($p, $p == Symphony::Configuration()->core()->symphony->{'directory-write-mode'}, $p);
+				}
+			$select = Widget::Select('settings[symphony][directory-write-mode]', $options);
+			unset($options);
+			$label->appendChild($select);
+			$div->appendChild($label);
+			
+			$group->appendChild($div);
 			$this->Form->appendChild($group);
 			
 			###
