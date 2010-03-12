@@ -46,8 +46,7 @@
 	define('DOCROOT', rtrim(dirname(__FILE__), '/'));
 	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . dirname($_SERVER['PHP_SELF']), '/'));
 	
-	require_once('symphony/lib/boot/func.utilities.php');
-	require_once('symphony/lib/boot/defines.php');
+	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
 	require_once(TOOLKIT . '/class.general.php');
 	
 	if (isset($_GET['action']) && $_GET['action'] == 'remove') {
@@ -100,8 +99,6 @@
 		if(writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']) === true){
 			
 			// build a Frontend page instance to initialise database
-			require(DOCROOT . '/symphony/lib/boot/bundle.php');
-			require_once(DOCROOT . '/manifest/config.php');
 			require_once(CORE . '/class.frontend.php');
 			$frontend = Frontend::instance();
 			
@@ -206,6 +203,9 @@ Options +FollowSymlinks
 			
 			if(version_compare($existing_version, '2.0.7RC1', '<=')){
 				$frontend->Database->query('ALTER TABLE `tbl_authors` ADD `language` VARCHAR(15) NULL DEFAULT NULL');
+
+				$settings['symphony']['pages_table_nest_children'] = 'no';
+				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 			
 			$sbl_version = $frontend->Database->fetchVar('version', 0, 
