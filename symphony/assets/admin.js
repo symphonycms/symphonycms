@@ -2,6 +2,7 @@ var Symphony;
 
 (function($) {
 	Symphony = {
+		WEBSITE: $('script[src]')[0].src.match('(.*)/symphony')[1],
 		WEBSITE: $('script')[0].src.match('(.*)/symphony')[1],
 		Cookie: {
 			set: function(name, value, seconds) {
@@ -32,19 +33,15 @@ var Symphony;
 			NAME: $('html').attr('lang'),
 			DICTIONARY: {},
 			get: function(string, tokens) {
-				// Return string if it cannot be found in the dictionary
-				if(Symphony.Language.DICTIONARY[string] === false) {
-					if(tokens) {
-						string = Symphony.Language.insert(string, tokens);
-					}
-					return string;
-				}
 				// Get translated string
-				string = Symphony.Language.DICTIONARY[string];
+				translatedString = Symphony.Language.DICTIONARY[string];
+
+				// Return string if it cannot be found in the dictionary
+				if(translatedString !== false) string = translatedString;
+					
 				// Insert tokens
-				if(tokens != undefined) {
-					string = Symphony.Language.insert(string, tokens);
-				}
+				if(tokens !== undefined) string = Symphony.Language.insert(string, tokens);
+				
 				// Return translated string
 				return string;
 			},

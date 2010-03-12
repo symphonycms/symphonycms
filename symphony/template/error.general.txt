@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xml:lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Symphony &ndash; %1$s</title>
+		<link rel="stylesheet" type="text/css" media="screen" href="%2$s/symphony/assets/error.css">
+	</head>
+	<body>
+		<div id="description">
+			<h1>%1$s</h1>
+			<p>%3$s</p>
+		</div>
+	</body>
+</html>
