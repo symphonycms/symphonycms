@@ -88,7 +88,7 @@
 				
 				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
 					SectionManager::instance()->edit($section->get('id'), array('entry_order' => $sort, 'entry_order_direction' => $order));
-					redirect(Administration::instance()->getCurrentPageURL().($filter ? "&filter=$field_handle:$filter_value" : ''));
+					redirect(Administration::instance()->getCurrentPageURL().($filter ? "?filter=$field_handle:$filter_value" : ''));
 				}
 			}
 
