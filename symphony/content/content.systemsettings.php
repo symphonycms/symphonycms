@@ -116,15 +116,23 @@
 			$div->setAttribute('class', 'group');
 			
 			$permissions = array(
-				'777',
-				'755',
-				'644'				
+				'0777',
+				'0775',
+				'0755',
+				'0666',
+				'0644'				
 			);
+			
+			$fileperms = Symphony::Configuration()->core()->symphony->{'file-write-mode'};
+			$dirperms = Symphony::Configuration()->core()->symphony->{'directory-write-mode'};
 			
 			$label = Widget::Label(__('File Permissions'));
 			foreach($permissions as $p) {
-					$options[] = array($p, $p == Symphony::Configuration()->core()->symphony->{'file-write-mode'}, $p);
-				}
+				$options[] = array($p, $p == $fileperms, $p);
+			}
+			if(!in_array($fileperms, $permissions)){
+				$options[] = array($fileperms, true, $fileperms);
+			}
 			$select = Widget::Select('settings[symphony][file-write-mode]', $options);
 			unset($options);
 			$label->appendChild($select);
@@ -132,8 +140,11 @@
 			
 			$label = Widget::Label(__('Directory Permissions'));
 			foreach($permissions as $p) {
-					$options[] = array($p, $p == Symphony::Configuration()->core()->symphony->{'directory-write-mode'}, $p);
-				}
+				$options[] = array($p, $p == $dirperms, $p);
+			}
+			if(!in_array($dirperms, $permissions)){
+				$options[] = array($dirperms, true, $dirperms);
+			}
 			$select = Widget::Select('settings[symphony][directory-write-mode]', $options);
 			unset($options);
 			$label->appendChild($select);
