@@ -34,6 +34,7 @@
 
 			$args = array(
 				$e->getHeading(),
+				URL,
 				($e->getMessageObject() instanceof XMLElement ? $e->getMessageObject()->generate(true) : trim($e->getMessage())),
 			);
 			//$args = array_merge($args, array_values((array)$e->getAdditional()));
