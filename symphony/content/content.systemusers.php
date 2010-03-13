@@ -190,7 +190,7 @@
 
 			if($this->_context[0] == 'edit' && $user->get('id') == Administration::instance()->User->id) $isOwner = true;
 			
-			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Users'), $user->getFullName())));
+			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; Untitled' : '%1$s &ndash; %2$s &ndash; %3$s'), array(__('Symphony'), __('Users'), $user->getFullName())));
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $user->getFullName()));			
 			
 			### Essentials ###			

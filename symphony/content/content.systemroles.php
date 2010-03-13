@@ -166,6 +166,10 @@
 		}
 		
 		private function __form(){
+		
+			Administration::instance()->Page->addStylesheetToHead(URL . '/symphony/assets/symphony.roles.css', 'screen', 9126441);
+			Administration::instance()->Page->addScriptToHead(URL . '/symphony/assets/jquery-ui.js', 9126442);
+			Administration::instance()->Page->addScriptToHead(URL . '/symphony/assets/symphony.roles.js', 9126443);
 			
 			if(!in_array($this->_context[0], array('new', 'edit'))) throw new AdministrationPageNotFoundException;
 
@@ -214,7 +218,7 @@
 
 			**********/
 			
-			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Roles'), $EDIT_____rolename_____EDIT)));
+			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; Untitled' : '%1$s &ndash; %2$s &ndash; %3$s'), array(__('Symphony'), __('Roles'), $EDIT_____rolename_____EDIT)));
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $EDIT_____rolename_____EDIT));
 			
 			/**********
@@ -229,15 +233,19 @@
 			$group = new XMLElement('fieldset');
 			$group->setAttribute('class', 'settings');
 			$group->appendChild(new XMLElement('legend', __('Essentials')));
+			
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('fields[name]', $role->get('name')));
-			$group->appendChild((isset($this->_errors['name']) ? $this->wrapFormElementWithError($label, $this->_errors['name']) : $label));
+			$div->appendChild((isset($this->_errors['name']) ? $this->wrapFormElementWithError($label, $this->_errors['name']) : $label));
 
 			$label = Widget::Label(__('Description'));
 			$label->appendChild(Widget::Input('fields[description]', $role->get('description')));
-			$group->appendChild((isset($this->_errors['description']) ? $this->wrapFormElementWithError($label, $this->_errors['description']) : $label));
+			$div->appendChild((isset($this->_errors['description']) ? $this->wrapFormElementWithError($label, $this->_errors['description']) : $label));
 
+			$group->appendChild($div);
 			$this->Form->appendChild($group);	
 			
 			/** SECTION PERMISSIONS **/
@@ -247,11 +255,84 @@
 
 			$sections = SectionManager::instance()->fetch(NULL, 'ASC', 'sortorder');
 
-			/**********
+			if(!is_array($sections) || empty($sections)){
 
-				BUILD section list and set up permissions sliders
+				$p = new XMLElement('p', 'No sections exist. ');
+				$p->appendChild(Widget::Anchor(
+					__('Create one'),
+					URL . '/symphony/sections/new/'
+				));
+				$group->appendChild($p);
 
-			**********/
+			}
+			
+			else{
+				$thead = array(
+					array(__('Section'), 'col'),
+					array(__('Create'), 'col'),
+					array(__('Edit'), 'col'),
+				);
+				$tbody = array();
+				$bOdd = true;
+				
+				$td1 = Widget::TableData(__('Global Permissions'));
+				
+				$td2 = Widget::TableData(Widget::Input(
+				'global-add',
+				'1',
+				'checkbox'
+				), 'add');
+				 
+				$td3 = Widget::TableData(NULL, 'edit');
+				$td3->appendChild(new XMLElement('p', NULL, array('class' => 'global-slider')));
+				$td3->appendChild(new XMLElement('span', 'n/a'));
+				 
+				$tbody[] = Widget::TableRow(array($td1, $td2, $td3), 'global');
+				
+				foreach($sections as $section){
+					
+					$td1 = Widget::TableData(
+						$section->get('name')
+					);
+					
+					$td2 = Widget::TableData(
+					 	Widget::Input(
+							"fields[permissions][{$section->get('handle')}][create]",
+							'1',
+							'checkbox',
+							($permissions['create'] == 1 ? array('checked' => 'checked') : NULL)
+						),
+						'add'
+					);
+					
+					$td3 = Widget::TableData(NULL, 'edit');
+					$td3->appendChild(new XMLElement('p', NULL, array('class' => 'slider')));
+					$span = new XMLElement('span');
+					$span->setSelfClosingTag(false);
+					$td3->appendChild($span);
+					 
+					$td3->appendChild(Widget::Input(
+					'fields[permissions][' . $section->get('handle') .'][edit]',
+					(isset($permissions['edit']) ? $permissions['edit'] : '0'),
+					'hidden'
+					));
+					
+					$tbody[] = Widget::TableRow(array($td1, $td2, $td3), ($bOdd ? 'odd' : NULL));
+
+					$bOdd = !$bOdd;
+
+				}
+				
+				$table = Widget::Table(
+					Widget::TableHead($thead),
+					NULL, 
+					Widget::TableBody($tbody),
+					'role-permissions'
+				);
+				
+				$group->appendChild($table);
+			
+			}
 			
 			$this->Form->appendChild($group);
 					
@@ -326,7 +407,14 @@
 	
 	Class Role {
 		function get($property){
-			return 'test';
+			switch($property){
+				case 'name':
+					return 'Ninja';
+					break;
+				case 'description':
+					return 'Ultra-stealthy Symphony assassins';
+					break;
+			}
 		}
 		
 		function getUserCount(){
