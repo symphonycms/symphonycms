@@ -1,4 +1,7 @@
-/* @override http://localhost/symphony-21/symphony/assets/exception.css */
+/* @override 
+	http://localhost/symphony-21/symphony/assets/exception.css
+	http://localhost/projects/symphony-21/symphony/assets/exception.css
+*/
 
 * {
 	margin: 0;
@@ -15,27 +18,23 @@ body {
 
 h1 {
 	font-size: 20px;
-	text-align: right;
 	font-weight: normal;
-	line-height: 40px;
-	margin-bottom: 15px;
-	padding-right: 0.5em;
-	background-color: #333;
-	color: #fff;
-	-webkit-border-radius: 7px;
-	-moz-border-radius: 7px;
+	margin-bottom: 20px;
 }
 
 h2 { 
 	font-size: 14px;
-	margin-bottom: 10px;
+	color: #a54665;
+	margin: 0 0 10px 20px;
+	text-shadow: 1px 1px 1px #fff;
 }
 
 h3 {
-	margin: 20px 0 10px;
+	margin: 20px 0;
 }
 
-p.error-line {
+p {
+	padding: 0 20px;
 	margin-bottom: 10px;
 }
 
@@ -79,39 +78,36 @@ pre#markdown {
 	overflow: auto;
 }
 
+.panel {
+	background: -webkit-gradient(linear, left top, left bottom, from(#f4f4f4), to(#d8d8d8), color-stop(0.04, #ededed));
+	background: -moz-linear-gradient(top center, #f4f4f4 0%, #ededed 1%, #d8d8d8 100%);
+	border: none;
+	background-color: #d8d8d8;
+	-webkit-box-shadow: 0 1px 3px #888;
+	-moz-box-shadow: 0 1px 3px #888;
+	-moz-border-radius: 0.5em;
+	-webkit-border-radius: 0.5em;
+	padding: 20px 0;
+}
+
 ul {
 	list-style: none;
-	color: #111;
-	border-left: 5px solid #ccc;
+	color: #333;
+	background-color: rgba(255,255,255,0.5);
+	border: none;
 }
 
 li {
-	padding: 8px;
-	border-bottom: 1px solid #ddd;
+	padding: 8px 8px 8px 20px;
+	border-bottom: 1px solid #ccc;
+	border-top: 1px solid #fff;
 }
 
-li:first-child {
-	border-top: 1px solid #ddd;
+li.odd {
+	background-color: rgba(252,254,255,0.8);
 }
 
-ul.focus {
-	background-color: #efefef;
-}
-
-ul.focus li {
-	padding: 2px;
-	border-bottom-color: #ccc;
-}
-
-ul.focus li:first-child {
-	border-top-color: #ccc;
-}
-
-ul.focus li.odd {
-	background-color: #dfdfdf;
-}
-
-ul.focus li#error {
+li#error {
 	background-color: #e8caca;
 	color: #b9191a;
 }
@@ -119,8 +115,4 @@ ul.focus li#error {
 li small{
 	font-size: 10px;
 	color: #666;
-}
-
-ul#query-log{
-	display: none;
 }
