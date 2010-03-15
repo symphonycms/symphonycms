@@ -408,6 +408,7 @@ ul.tags .more:hover {
 }
 .sections-tool {
 	border: 1px solid #999;
+	margin-bottom: 1.75em;
 }
 .sections-tool span {
 	display: block;
