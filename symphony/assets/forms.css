@@ -96,8 +96,7 @@ h2,
 	width: 180px;
 	margin: 1.5em 0 0 -200px;
 }
-.settings > table {
-	width: 100%;
+.settings table {
 	border: 1px solid #bbb;
 	border-spacing:0;
 }
@@ -115,9 +114,9 @@ h2,
 }
 .settings table td {
 	padding: .5em 1em;
-	border-top: 1px solid #bbb;
-	border-right: 1px solid #bbb;
-	background-color: #ededed;
+	border-top: 1px solid #ccc;
+	border-left: 1px solid #ccc;
+	background-color: #f2f2f2;
 }
 td.checkbox {
 	width: 50px;
@@ -126,8 +125,8 @@ td.checkbox {
 .settings table .odd td {
 	background-color: #fff;
 }
-.settings table td:last-child {
-	border-right: none;
+.settings table td:first-child {
+	border-left: none;
 }
 .group {
 	position: relative;
