@@ -207,6 +207,12 @@
 			
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
+
+			/*
+				Do not show sections or fields that have not changed.
+				Add .added or .removed to the table row on the field and/or section.
+				@rowspan is calculated by the number of fields + 1.
+			*/
 			$fieldset->setValue('
 				<legend>Section Update</legend>
 				<div class="sections-tool">
