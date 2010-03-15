@@ -1,3 +1,5 @@
+/* @override http://localhost/symphony-21/symphony/assets/forms.css */
+
 @import url("basic.css");
 @import url("admin.css");
 
@@ -403,6 +405,54 @@ ul.tags .more:hover {
 }
 #utilities .selected:nth-child(odd) {
 	background-color: #5677c3;
+}
+.sections-tool {
+	border: 1px solid #999;
+}
+.sections-tool span {
+	display: block;
+	background-color: #a6a6a6;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#aaa));
+	background: -moz-linear-gradient(top center, #ccc 0%, #aaa 100%);
+	text-align: center;	
+	border-bottom: 1px solid #888;
+	padding: 12px;
+}
+.sections-tool table {
+	width: 100%;
+	background-color: #dcdcdc;
+	border-collapse: collapse;
+}
+.sections-tool table td {
+	padding: 0.5em;
+	border-top: 1px solid #bbb;
+}
+.sections-tool table td span {
+	float: right;
+	display: inline;
+	color: #888;
+	background: inherit;
+	border: none;
+	margin: 0;
+	padding: 0;
+}
+.sections-tool table td[rowspan] {
+	padding-left: 20px;
+	width: 35%;
+	font-weight: bold;
+	border-right: 1px solid #bbb;
+}
+.sections-tool .added td:before {
+	content: "+";
+	font-size: 1.1em;
+	font-weight: bold;
+	margin-right: 3px;
+}
+.sections-tool .removed td:before {
+	content: "-";
+	font-size: 1.1em;
+	font-weight: bold;
+	margin-right: 3px;
 }
 .file input {
 	margin: -3px 0;
