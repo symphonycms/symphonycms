@@ -410,14 +410,19 @@ ul.tags .more:hover {
 	border: 1px solid #999;
 	margin-bottom: 1.75em;
 }
-.sections-tool span {
+.sections-tool div {
 	display: block;
 	background-color: #a6a6a6;
 	background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#aaa));
 	background: -moz-linear-gradient(top center, #ccc 0%, #aaa 100%);
-	text-align: center;	
 	border-bottom: 1px solid #888;
 	padding: 12px;
+}
+.sections-tool div p {
+	display: inline;
+	color: #555;
+	margin: 0.4em 0;
+	float: right;
 }
 .sections-tool table {
 	width: 100%;
@@ -430,12 +435,7 @@ ul.tags .more:hover {
 }
 .sections-tool table td span {
 	float: right;
-	display: inline;
 	color: #888;
-	background: inherit;
-	border: none;
-	margin: 0;
-	padding: 0;
 }
 .sections-tool table td[rowspan] {
 	width: 35%;

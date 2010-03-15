@@ -210,9 +210,10 @@
 			$fieldset->setValue('
 				<legend>Section Update</legend>
 				<div class="sections-tool">
-					<span>
+					<div>
 						<button name="action[export]" type="submit">Update Sections</button>
-					</span>
+						<p>332 existing entries will be effected</p>
+					</div>
 					<table>
 						<tr >
 							<td rowspan="4">Articles</td>
