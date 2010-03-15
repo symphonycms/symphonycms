@@ -96,6 +96,38 @@ h2,
 	width: 180px;
 	margin: 1.5em 0 0 -200px;
 }
+.settings table {
+	border: 1px solid #bbb;
+	border-spacing:0;
+}
+.settings table thead tr {
+	background-color: #a6a6a6;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#aaa));
+	background: -moz-linear-gradient(top center, #ccc 0%, #aaa 100%);
+}
+.settings table th {
+	padding: .75em;
+	border-bottom: 1px solid #888;
+	color: #555;
+	font-weight: normal;
+	font-size: 1.1em;
+}
+.settings table td {
+	padding: .5em 1em;
+	border-top: 1px solid #ccc;
+	border-left: 1px solid #ccc;
+	background-color: #f2f2f2;
+}
+td.checkbox {
+	width: 50px;
+	text-align: center;
+}
+.settings table .odd td {
+	background-color: #fff;
+}
+.settings table td:first-child {
+	border-left: none;
+}
 .group {
 	position: relative;
 	right: -8px;

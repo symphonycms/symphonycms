@@ -40,8 +40,8 @@ jQuery(document).ready(function(){
 		}
 	});
 	
-	$(".global .add input[type='checkbox']").change(function() {
-		$(".add input").attr("checked", $(this).attr('checked'));
+	$(".global .checkbox input[type='checkbox']").change(function() {
+		$(".checkbox input").attr("checked", $(this).attr('checked'));
 	});
 	
 	$(".edit input, .delete input").setSliderValue();
