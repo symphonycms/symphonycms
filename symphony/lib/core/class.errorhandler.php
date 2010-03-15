@@ -41,6 +41,14 @@
 			exit;
 		}
 		
+		private static function __getTemplate(){
+			if(file_exists(MANIFEST . '/templates/exception.generic.xsl')){
+				return file_get_contents(MANIFEST . '/templates/exception.generic.xsl');
+			}
+			
+			return file_get_contents(TEMPLATES . '/exception.generic.xsl');
+		}
+		
 		public static function render($e){
 			
 			$xml = new DOMDocument('1.0', 'utf-8');
@@ -115,7 +123,7 @@
 			
 			return XSLProc::transform(
 				$xml,
-				file_get_contents(TEMPLATE . '/exception.generic.xsl'),
+				self::__getTemplate(),
 				XSLProc::XML,
 				array('root' => URL)
 			);

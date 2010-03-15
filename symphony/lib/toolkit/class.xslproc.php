@@ -128,11 +128,18 @@
 
 			return XSLProc::transform(
 				$xml,
-				file_get_contents(TEMPLATE . '/exception.xslt.xsl'),
+				self::__getTemplate(),
 				XSLProc::XML,
 				array('root' => URL)
 			);
-
+		}
+		
+		private static function __getTemplate(){
+			if(file_exists(MANIFEST . '/templates/exception.xslt.xsl')){
+				return file_get_contents(MANIFEST . '/templates/exception.xslt.xsl');
+			}
+			
+			return file_get_contents(TEMPLATES . '/exception.xslt.xsl');
 		}
 	}
 
