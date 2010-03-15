@@ -304,11 +304,8 @@
 					case View::ERROR_VIEW_NOT_FOUND:
 						throw new SymphonyErrorPage(
 							__('The view you requested to edit does not exist.'), 
-							__('View not found'), 
-							'error', 
-							array(
-								'header' => 'HTTP/1.0 404 Not Found'
-							)
+							__('View not found'), NULL,
+							array('header' => 'HTTP/1.0 404 Not Found')
 						);
 						break;
 					
@@ -316,8 +313,7 @@
 					case View::ERROR_FAILED_TO_LOAD:
 						throw new SymphonyErrorPage(
 							__('The view you requested could not be loaded. Please check it is readable and the XML is valid.'), 
-							__('Failed to load view'), 
-							'error'
+							__('Failed to load view')
 						);
 						break;
 				}
@@ -325,11 +321,8 @@
 			catch(Exception $e){
 				throw new SymphonyErrorPage(
 					sprintf(__("An unknown error has occurred. %s"), $e->getMessage()), 
-					__('Unknown Error'), 
-					'error', 
-					array(
-						'header' => 'HTTP/1.0 500 Internal Server Error'
-					)
+					__('Unknown Error'), NULL,
+					array('header' => 'HTTP/1.0 500 Internal Server Error')
 				);
 			}
 		}
@@ -688,7 +681,7 @@
 				}
 				else{
 					$view = View::loadFromFieldsArray($fields);
-					$view->template = file_get_contents(TEMPLATE . '/view.xsl');
+					$view->template = file_get_contents(TEMPLATES . '/view.xsl');
 					$view->handle = $fields['handle'];
 					$view->path = $path;
 				}

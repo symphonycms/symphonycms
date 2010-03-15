@@ -99,7 +99,11 @@
 				# Global: Yes
 				ExtensionManager::instance()->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
 				
+				// When the XSLT executes, it uses the CWD as set here
+				$cwd = getcwd();
+				chdir(WORKSPACE);
 				$output = parent::generate();
+				chdir($cwd);
 				
 				####
 				# Delegate: FrontendOutputPostGenerate
@@ -144,9 +148,8 @@
 				if(!($view instanceof View)){
 					throw new SymphonyErrorPage(
 						__('The page you requested does not exist.'), 	
-						__('Page Not Found'),
-						'error', 
-						array('header' => 'HTTP/1.0 404 Not Found')
+						__('Page Not Found'), NULL,
+						array('HTTP/1.0 404 Not Found')
 					);
 				}
 
@@ -275,9 +278,9 @@
 			}
 			$xml->prependChild($xParam);
 
-			chdir(WORKSPACE);
 			$xsl = file_get_contents(VIEWS . '/' . $page['filelocation']); 
-			/* '<?xml version="1.0" encoding="UTF-8"?>
+			
+			/*$xsl = '<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="' . VIEWS . '/' . $page['filelocation'] . '"/>
 </xsl:stylesheet>';*/
@@ -327,9 +330,8 @@
 				if(!($view instanceof View)){
 					throw new SymphonyErrorPage( 
 						__('Please <a href="%s">login</a> to view this page.', array(ADMIN_URL . '/login/')), 
-						__('Forbidden'), 
-						'error', 
-						array('header' => 'HTTP/1.0 403 Forbidden')
+						__('Forbidden'), NULL,
+						array('HTTP/1.0 403 Forbidden')
 					);
 				}
 			}

@@ -11,9 +11,7 @@
 		protected $_registered_php_functions;
 		
 		public function __construct(){
-			
-			if(!XSLProc::isXSLTProcessorAvailable()) throw new SymphonyErrorPage(__('No suitable XSLT processor was found.'));
-
+			if(!XSLProc::isXSLTProcessorAvailable()) throw new Exception(__('No suitable XSLT processor was found.'));
 			$this->_registered_php_functions = array();
 		}
 		

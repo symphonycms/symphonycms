@@ -22,29 +22,44 @@
 	Class SymphonyErrorPageHandler extends GenericExceptionHandler{
 		public static function render($e){
 
-			$template_path = $e->getTemplate();
-
-			if(is_null($template_path)){
+			if(is_null($e->getTemplatePath())){
 				header('HTTP/1.0 500 Server Error');
 				echo '<h1>Symphony Fatal Error</h1><p>'.$e->getMessage().'</p>';
 				exit;
 			}
-
-			$template = file_get_contents($template_path);
-
-			$args = array(
+			
+			$xml = new DOMDocument('1.0', 'utf-8');
+			$xml->formatOutput = true;
+			
+			$root = $xml->createElement('data');
+			$xml->appendChild($root);
+			
+			$root->appendChild($xml->createElement('heading', General::sanitize($e->getHeading())));
+			$root->appendChild($xml->createElement('message', General::sanitize(
+				$e->getMessageObject() instanceof XMLElement ? $e->getMessageObject()->generate(true) : trim($e->getMessage())
+			)));
+			if(!is_null($e->getDescription())){
+				$root->appendChild($xml->createElement('description', General::sanitize($e->getDescription())));
+			}
+			
+			
+			
+			/*$args = array(
 				$e->getHeading(),
 				URL,
 				($e->getMessageObject() instanceof XMLElement ? $e->getMessageObject()->generate(true) : trim($e->getMessage())),
-			);
-			//$args = array_merge($args, array_values((array)$e->getAdditional()));
+			);*/
 
 			header('HTTP/1.0 500 Server Error');
 			header('Content-Type: text/html; charset=UTF-8');
 			header('Symphony-Error-Type: ' . $e->getErrorType());
-			if(isset($e->getAdditional()->header)) header($e->getAdditional()->header);
+			
+			foreach($e->getHeaders() as $header){
+				header($header);
+			}
 
-			$output = vsprintf($template, $args);
+			$output = parent::__transform($xml, 'error.symphony.xsl');
+
 			header(sprintf('Content-Length: %d', strlen($output)));
 			echo $output;
 
@@ -57,10 +72,11 @@
 		private $_heading;
 		private $_message;
 		private $_type;
-		private $_additional;
+		private $_headers;
 		private $_messageObject;
+		private $_help_line;
 
-		public function __construct($message, $heading='Symphony Fatal Error', $type='general', array $additional=NULL){
+		public function __construct($message, $heading='Symphony Fatal Error', $description=NULL, array $headers=array()){
 
 			$this->_messageObject = NULL;
 			if($message instanceof XMLElement){
@@ -71,9 +87,8 @@
 			parent::__construct($message);
 
 			$this->_heading = $heading;
-
-			$this->_type = $type;
-			$this->_additional = (object)$additional;
+			$this->_headers = $headers;
+			$this->_description = $description;
 		}
 
 		public function getMessageObject(){
@@ -87,23 +102,28 @@
 		public function getErrorType(){
 			return $this->_template;
 		}
+		
+		public function getDescription(){
+			return $this->_description;
+		}
 
-		public function getTemplate(){
+		public function getTemplatePath(){
 
 			$template = NULL;
 
-			if(file_exists(MANIFEST . "/templates/error.{$this->_type}.txt")){
-				$template = MANIFEST . "/templates/error.{$this->_type}.txt";
+			if(file_exists(MANIFEST . '/templates/error.symphony.xsl')){
+				$template = MANIFEST . '/templates/error.symphony.xsl';
 			}
-			elseif(file_exists(TEMPLATE . "/error.{$this->_type}.txt")){
-				$template = TEMPLATE . "/error.{$this->_type}.txt";
+			
+			elseif(file_exists(TEMPLATES . '/error.symphony.xsl')){
+				$template = TEMPLATES . '/error.symphony.xsl';
 			}
 
 			return $template;
 		}
 
-		public function getAdditional(){
-			return $this->_additional;
+		public function getHeaders(){
+			return $this->_headers;
 		}	
 	}
 		
@@ -175,7 +195,7 @@
 			define_safe('__SYM_COOKIE_PATH__', $cookie_path);
 			define_safe('__SYM_COOKIE_PREFIX__', self::Configuration()->get('cookie_prefix', 'symphony'));
 						
-			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX__, TWO_WEEKS, __SYM_COOKIE_PATH__);			
+			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX__, TWO_WEEKS, __SYM_COOKIE_PATH__);
 		}
 		
 		public static function Configuration(){
@@ -201,10 +221,13 @@
 			
 			$driver = self::Configuration()->db()->driver;
 			$driver_filename = TOOLKIT . "/class.{$driver}.php";
-			
 
 			if(!is_file($driver_filename)){
-				throw new SymphonyErrorPage("Could not find database driver '<code>{$driver}</code>'", 'Symphony Database Error');
+				throw new SymphonyErrorPage(
+					__('Missing database driver "%s"', array($driver)), 
+					__('Symphony Database Error'), 
+					__('The database driver specified in "manifest/conf/db.xml" could not be found. Please ensure it exists and is readable.')
+				);
 			}
 			
 			require_once($driver_filename);
@@ -233,11 +256,7 @@
 				throw new SymphonyErrorPage(
 					$error['num'] . ': ' . $error['msg'], 
 					'Symphony Database Error',
-					'general', 
-					array(
-						'error' => $error, 
-						'message' => __('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct. The following error was returned.')
-					)
+					__('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct. The following error was returned.')
 				);				
 			}
 			

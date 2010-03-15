@@ -120,7 +120,7 @@
 		protected static function __transform(DOMDocument $xml, $template='exception.generic.xsl'){
 
 			$path = TEMPLATES . '/'. $template;
-			if(!Symphony::parent()->isLoggedIn() && file_exists(MANIFEST . '/templates/' . $template)){
+			if(file_exists(MANIFEST . '/templates/' . $template)){
 				$path = MANIFEST . '/templates/' . $template;
 			}
 

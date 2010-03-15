@@ -17,7 +17,7 @@
 		}		
 	}
 
-	Class DatabaseExceptionHandler{
+	Class DatabaseExceptionHandler extends GenericExceptionHandler{
 
 		public static function render($e){
 			
@@ -163,7 +163,7 @@
 	        if($user) $this->_connection['user'] = $user;
 	        if($password) $this->_connection['pass'] = $password;
 	        if($port) $this->_connection['port'] = $port;
-	        
+	
 	        $this->_connection['id'] = @mysql_connect($this->_connection['host'] . ':' . $this->_connection['port'], $this->_connection['user'], $this->_connection['pass']);
 	        
 	        if(!$this->isConnected()){
