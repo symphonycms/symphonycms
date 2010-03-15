@@ -126,20 +126,7 @@
 			
 			$root->appendChild($processing_errors);
 
-			return XSLProc::transform(
-				$xml,
-				self::__getTemplate(),
-				XSLProc::XML,
-				array('root' => URL)
-			);
-		}
-		
-		private static function __getTemplate(){
-			if(file_exists(MANIFEST . '/templates/exception.xslt.xsl')){
-				return file_get_contents(MANIFEST . '/templates/exception.xslt.xsl');
-			}
-			
-			return file_get_contents(TEMPLATES . '/exception.xslt.xsl');
+			return parent::__transform($xml, 'exception.xslt.xsl');
 		}
 	}
 
