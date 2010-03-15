@@ -1,5 +1,6 @@
-/* Framework */
+/* @override http://localhost/symphony-21/symphony/assets/admin.css */
 
+/* Framework */
 form {
 	position: relative;
 	font-size: 1.1em;
@@ -21,7 +22,6 @@ h1 a:hover,
 #session a:hover {
 	color: #a5a5a5;
 }
-
 #master-switch {
 	clear: both;
 	float: right;
@@ -51,7 +51,6 @@ h1 a:hover,
 	-webkit-box-shadow: 0 1px 3px #888;
 	-moz-box-shadow: 0 1px 3px #888;
 }
-
 #nav li {
 	color: #666;
 	position:relative;
@@ -61,36 +60,32 @@ h1 a:hover,
 	cursor: pointer;
 	font-weight: bold;
 }
-
-#nav #nav-system, #nav #nav-blueprints, #nav #nav-expand {
+#nav #nav-system,
+#nav #nav-blueprints,
+#nav #nav-expand {
 	float: right;
 }
-
 #nav li.active {
 	color: #fff;
 	background: -webkit-gradient(linear, left top, left bottom, from(#a6c4e8), to(#5e84b1), color-stop(0.02, #749dc3));
 	background: -moz-linear-gradient(top center, #a6c4e8 0%, #749dc3 1%, #5e84b1 100%);
 	background-color: #5e84b1;
 }
-
 #nav > li:hover {
 	color: #fff;
 	background: -webkit-gradient(linear, left top, left bottom, from(#666), to(#444), color-stop(0.02, #555));
 	background: -moz-linear-gradient(top center, #666 0%, #555 1%, #444 100%);
 	background-color: #444;
 }
-
 #nav a {
 	display: block;
 	color: #ccc;
 	text-decoration: none;
 }
-
 #nav li a:hover {
-	color:#fff;
-	background-color:#333;
+	color: #fff;
+	background-color: #333;
 }
-
 #nav ul {
 	position: absolute;
 	top: 32px;
@@ -109,31 +104,31 @@ h1 a:hover,
 	border-bottom-left-radius: 5px;
 	z-index: 5;
 }
-
 #nav ul li {
 	padding: 0;
 	font-weight: normal;
 	background: none;
 	text-shadow: none;
 }
-
-#nav #nav-system ul, #nav #nav-blueprints ul {
+#nav #nav-system ul,
+#nav #nav-blueprints ul {
 	left: auto;
 	right: -999em;
 }
-
-#nav li:hover ul {left:0;}
-#nav #nav-system:hover ul, #nav #nav-blueprints:hover ul {right: 0;}
-
+#nav li:hover ul {
+	left: 0;
+}
+#nav #nav-system:hover ul,
+#nav #nav-blueprints:hover ul {
+	right: 0;
+}
 #nav ul li {
 	width: 12em;
 }
-
 #nav ul li a {
 	display: block;
 	padding: 0 1em;
 }
-
 #nav ul li:last-child a {
 	-moz-border-radius-bottomright: 5px;
 	-moz-border-radius-bottomleft: 5px;
@@ -303,13 +298,16 @@ a.button.active {
 	background-color: #222;
 }
 #session .button {
-	float:left;
+	float: left;
 	font-size: 1em;
-	background:#121212;
+	background: #121212;
 	padding: 0 6px;
 	text-shadow: none;
-	}
-	#session .button:hover {background-color:#343434;color:#fff;}
+}
+#session .button:hover {
+	background-color: #343434;
+	color: #fff;
+}
 	
 /* View Options */
 #view-options {
@@ -322,25 +320,33 @@ a.button.active {
 	line-height: 2.4em;
 	font-size: 1em;
 	list-style: none;
-	background: #fff url('images/shadows.png') 0 -10.7em repeat-x;
+	background: -webkit-gradient(linear, left bottom, left top, from(#eee), to(#fff), color-stop(0.1, #fff));
+	background: -moz-linear-gradient(bottom center, #eee 0%, #fff 10%, #fff 100%);
+	background-color: #fff;
 	color: #777;
+	border-bottom: 1px solid #eaeaea;
 }
-
-	#view-options form, #view-options fieldset {margin: -.5em 0 .5em; font-size:1em; padding:0;}
-
-#view-options ul {margin:0;padding:0;}
-
+#view-options form,
+#view-options fieldset {
+	margin: -.5em 0 .5em;
+	font-size:1em;
+	padding: 0;
+}
+#view-options ul {
+	margin:0;
+	padding:0;
+}
 #view-options li {
 	display: inline;
 }
-
 #view-options li a {
+	position: relative;
+	top: 1px;
 	color: #444;
 	display: block;
 	float: left;
 	padding: 0 1em;
 	margin-right: .5em;
-	background: #f4f4f4 url('images/shadows.png') 0 -10.7em repeat-x;
 	text-decoration: none;
 	border: 1px solid #ddd;
 	border-bottom: none;
@@ -351,12 +357,15 @@ a.button.active {
 	border-top-right-radius: .5em;
 	border-top-left-radius: .5em;
 }
-
-#view-options li a:hover, #view-options li a.active {
+#view-options li a:hover,
+#view-options li a.active {
 	background: #fff;
 }
 
 /* Extension Statuses */
-
-td.disabled {color:#a21;}
-span.label {color: #888;}
+td.disabled {
+	color: #a21;
+}
+span.label {
+	color: #888;
+}

@@ -1,112 +1,95 @@
 table.role-permissions {
-text-align: center;
-width: 100%;
-margin-bottom: 2em;
-border: 1px solid #ddd;
-padding: 0;
-}
- 
+	text-align: center;
+	width: 100%;
+	margin-bottom: 2em;
+	border: 1px solid #ddd;
+	padding: 0;
+} 
 table.narrow {
-width: 30%;
+	width: 30%;
 }
- 
- 
 table.role-permissions th:first-child {
-text-align: left;
+	text-align: left;
 }
- 
 table.role-permissions th {
-background-color: #d6d4c8;
-padding: 5px
+	background-color: #d6d4c8;
+	padding: 5px
 }
- 
 table.role-permissions tr td {
-background-color: #f5f5f5;
-padding: 5px;
+	background-color: #f5f5f5;
+	padding: 5px;
 }
- 
 table.role-permissions tr.odd td {
-background-color: #fff;
+	background-color: #fff;
 }
- 
 table.role-permissions td:first-child {
-text-align: left;
+	text-align: left;
 }
- 
 table.role-permissions td.add {
-width: 50px;
+	width: 50px;
 }
- 
 table.role-permissions tr.selected td {
-color: #222;
+	color: #222;
 }
- 
 table.role-permissions tr.selected.odd td {
-background-color: #fff !important;
+	background-color: #fff !important;
 }
- 
 table.role-permissions tr.selected td {
-background-color: #f5f5f3 !important;
+	background-color: #f5f5f3 !important;
 }
  
 /* Slider */
- 
 table.role-permissions .edit, table.role-permissions .delete {
-width: 325px;
+	width: 325px;
 }
- 
 table.role-permissions td .slider, table.role-permissions td .global-slider {
-float: left;
-margin: 0 10px;
-width: 200px;
-}
- 
+	float: left;
+	margin: 0 10px;
+	width: 200px;
+} 
 table.role-permissions td span {
-float: right;
-width: 95px;
-text-align: right;
-font-weight: bold;
-color: #C6C4B8;
+	float: right;
+	width: 95px;
+	text-align: right;
+	font-weight: bold;
+	color: #C6C4B8;
+} 
+table.role-permissions td span.perm-0 {
+	color:#C6C4B8;
 }
- 
-table.role-permissions td span.perm-0 {color:#C6C4B8;}
-table.role-permissions td span.perm-1 {color:#868478;}
-table.role-permissions td span.perm-2 {color:#464438;}
+table.role-permissions td span.perm-1 {
+	color:#868478;
+}
+table.role-permissions td span.perm-2 {
+	color:#464438;
+}
  
 /* Role Operations */
- 
 #role-operations {
-background-color: #d6d4c8;
-width: 100%;
-margin-bottom: 1em;
-}
- 
+	background-color: #d6d4c8;
+	width: 100%;
+	margin-bottom: 1em;
+} 
 #role-operations tr.odd td {
-background-color: #d6d4c8;
+	background-color: #d6d4c8;
 }
- 
 #role-operations td {
-padding: 10px;
-border-bottom: 1px solid #fff;
-text-align: right;
-width: 100px;
-}
- 
+	padding: 10px;
+	border-bottom: 1px solid #fff;
+	text-align: right;
+	width: 100px;
+} 
 #role-operations tr td + td {
-text-align: center;
-width: auto;
-}
- 
+	text-align: center;
+	width: auto;
+} 
 #role-operations tr td + td + td {
-width: 10%;
-text-align: center;
-}
- 
+	width: 10%;
+	text-align: center;
+} 
 #role-operations input {
-width: 70px;
+	width: 70px;
 }
-
-
 
 /*
 * jQuery UI CSS Framework
@@ -127,11 +110,9 @@ width: 70px;
 /* end clearfix */
 .ui-helper-zfix { width: 100%; height: 100%; top: 0; left: 0; position: absolute; opacity: 0; filter:Alpha(Opacity=0); }
 
-
 /* Interaction Cues
 ----------------------------------*/
 .ui-state-disabled { cursor: default !important; }
-
 
 /* Icons
 ----------------------------------*/
@@ -139,13 +120,11 @@ width: 70px;
 /* states and images */
 .ui-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
 
-
 /* Misc visuals
 ----------------------------------*/
 
 /* Overlays */
 .ui-widget-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-
 
 /*
 * jQuery UI CSS Framework
@@ -153,7 +132,6 @@ width: 70px;
 * Dual licensed under the MIT (MIT-LICENSE.txt) and GPL (GPL-LICENSE.txt) licenses.
 * To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Trebuchet%20MS,%20Tahoma,%20Verdana,%20Arial,%20sans-serif&fwDefault=bold&fsDefault=1.1em&cornerRadius=4px&bgColorHeader=f6a828&bgTextureHeader=12_gloss_wave.png&bgImgOpacityHeader=35&borderColorHeader=e78f08&fcHeader=ffffff&iconColorHeader=ffffff&bgColorContent=eeeeee&bgTextureContent=03_highlight_soft.png&bgImgOpacityContent=100&borderColorContent=dddddd&fcContent=333333&iconColorContent=222222&bgColorDefault=f6f6f6&bgTextureDefault=02_glass.png&bgImgOpacityDefault=100&borderColorDefault=cccccc&fcDefault=1c94c4&iconColorDefault=ef8c08&bgColorHover=fdf5ce&bgTextureHover=02_glass.png&bgImgOpacityHover=100&borderColorHover=fbcb09&fcHover=c77405&iconColorHover=ef8c08&bgColorActive=ffffff&bgTextureActive=02_glass.png&bgImgOpacityActive=65&borderColorActive=fbd850&fcActive=eb8f00&iconColorActive=ef8c08&bgColorHighlight=ffe45c&bgTextureHighlight=03_highlight_soft.png&bgImgOpacityHighlight=75&borderColorHighlight=fed22f&fcHighlight=363636&iconColorHighlight=228ef1&bgColorError=b81900&bgTextureError=08_diagonals_thick.png&bgImgOpacityError=18&borderColorError=cd0a0a&fcError=ffffff&iconColorError=ffd27a&bgColorOverlay=666666&bgTextureOverlay=08_diagonals_thick.png&bgImgOpacityOverlay=20&opacityOverlay=50&bgColorShadow=000000&bgTextureShadow=01_flat.png&bgImgOpacityShadow=10&opacityShadow=20&thicknessShadow=5px&offsetTopShadow=-5px&offsetLeftShadow=-5px&cornerRadiusShadow=5px
 */
-
 
 /* Component containers
 ----------------------------------*/

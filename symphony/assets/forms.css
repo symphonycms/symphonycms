@@ -1,10 +1,7 @@
-/* @override http://localhost/symphony-21/symphony/assets/forms.css */
-
 @import url("basic.css");
 @import url("admin.css");
 
 /* Form Elements */
-
 fieldset,
 div.secondary {
 	position: relative;

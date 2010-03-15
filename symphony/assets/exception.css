@@ -1,83 +1,44 @@
-/* @override 
-	http://localhost/symphony-21/symphony/assets/exception.css
-	http://localhost/projects/symphony-21/symphony/assets/exception.css
-*/
-
 * {
 	margin: 0;
 	padding: 0;
 }
-
-
 body {
 	margin: 50px 10%;
 	font-family: Helvetica, "MS Trebuchet", Arial, sans-serif;
 	background-color: #fff;
 	font-size: 12px;
 }
-
 h1 {
 	font-size: 20px;
 	font-weight: normal;
 	margin-bottom: 20px;
 }
-
 h2 { 
 	font-size: 14px;
 	color: #a54665;
 	margin: 0 0 10px 20px;
 	text-shadow: 1px 1px 1px #fff;
 }
-
 h3 {
 	margin: 20px 0;
 }
-
 p {
 	padding: 0 20px;
-	margin-bottom: 10px;
+	margin-bottom: 20px;
 }
-
 a {
 	color: #69c;
 	text-decoration: none;
 }
-
-a.markdown {
-	display: block;
-	text-align: right;
-	font-weight: normal;
-	color: #069;
-	text-decoration: underline;
-	padding-bottom: 10px;
-}
-
-a.markdown:hover {
-	color: #69c;
-}
-
 code {
 	font-size: 11px;
 	font-family: Monaco, "Courier New", Courier;
 }
-
 code strong {
 	display: block;
 	font-family: Helvetica, "MS Trebuchet", Arial, sans-serif;
 	margin-top: 5px;
 }
-
-code span.important{
-	font-weight: bold;
-}
-
-pre#markdown {
-	border: 2px dotted #ddd;
-	padding: 10px 0;
-	margin-bottom: 20px;
-	overflow: auto;
-}
-
 .panel {
 	background: -webkit-gradient(linear, left top, left bottom, from(#f4f4f4), to(#d8d8d8), color-stop(0.04, #ededed));
 	background: -moz-linear-gradient(top center, #f4f4f4 0%, #ededed 1%, #d8d8d8 100%);
@@ -89,34 +50,48 @@ pre#markdown {
 	-webkit-border-radius: 0.5em;
 	padding: 20px 0;
 }
-
 ul {
 	list-style: none;
-	color: #333;
-	background-color: rgba(255,255,255,0.5);
-	border: none;
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #fff;
+	background-color: rgba(255,255,255,0.4);
 }
-
 li {
-	padding: 8px 8px 8px 20px;
+	padding: 6px 20px;
 	border-bottom: 1px solid #ccc;
 	border-top: 1px solid #fff;
 }
-
-li.odd {
-	background-color: rgba(252,254,255,0.8);
+li span {
+	color: #888;
+	font-weight: normal;
+	margin-right: 10px;
+	font-size: 11px;
 }
-
-li#error {
-	background-color: #e8caca;
+li.odd {
+	background-color: rgba(255,255,255,0.6);
+}
+li#error,
+li#error span {
 	color: #b9191a;
 }
-
 li small{
 	font-size: 10px;
 	color: #666;
 }
-
-#query-log{
-	display: none;
+a.markdown {
+	display: block;
+	text-align: right;
+	font-weight: normal;
+	color: #069;
+	text-decoration: underline;
+	padding-bottom: 10px;
+}
+a.markdown:hover {
+	color: #69c;
+}
+pre#markdown {
+	border: 2px dotted #ddd;
+	padding: 10px 0;
+	margin-bottom: 20px;
+	overflow: auto;
 }
