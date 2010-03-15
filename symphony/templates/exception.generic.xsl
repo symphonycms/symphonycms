@@ -11,11 +11,11 @@
 <xsl:template match="data">
 	<html>
 		<head>
-			<title><xsl:value-of select="details/@type"/></title>
+			<title><xsl:value-of select="concat('Symphony ', details/@type)"/></title>
 			<link rel="stylesheet" type="text/css" media="screen" href="{$root}/symphony/assets/exception.css" /> 
 		</head>
 		<body>
-			<h1><xsl:value-of select="details/@type"/></h1>
+			<h1><xsl:value-of select="concat('Symphony ', details/@type)"/></h1>
 			<div class="panel">
 				<h2><xsl:value-of select="details"/></h2>
 				<p>

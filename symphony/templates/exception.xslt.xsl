@@ -11,11 +11,11 @@
 <xsl:template match="data">
 	<html>
 		<head>
-			<title>XSLT Error</title>
+			<title>Symphony XSLT Error</title>
 			<link rel="stylesheet" type="text/css" media="screen" href="{$root}/symphony/assets/exception.css" /> 
 		</head>
 		<body>
-			<h1>XSLT Error</h1>
+			<h1>Symphony XSLT Error</h1>
 			<div class="panel">
 				<h2><xsl:value-of select="details"/></h2>
 				<p>

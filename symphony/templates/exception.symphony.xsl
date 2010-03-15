@@ -12,11 +12,11 @@
 	<html>
 		<head>
 			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-			<title><xsl:value-of select="heading"/></title>
+			<title><xsl:value-of select="concat('Symphony ', heading)"/></title>
 			<link rel="stylesheet" type="text/css" media="screen" href="{$root}/symphony/assets/exception.css" /> 
 		</head>
 		<body>
-			<h1><xsl:value-of select="heading"/></h1>
+			<h1><xsl:value-of select="concat('Symphony ', heading)"/></h1>
 			<div class="panel">
 				<h2><xsl:value-of select="message"/></h2>
 				<xsl:if test="not(description = '')">

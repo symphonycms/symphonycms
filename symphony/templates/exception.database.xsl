@@ -11,11 +11,11 @@
 <xsl:template match="data">
 	<html>
 		<head>
-			<title>Fatal Database Error</title>
+			<title>Symphony Fatal Database Error</title>
 			<link rel="stylesheet" type="text/css" media="screen" href="{$root}/symphony/assets/exception.css" /> 
 		</head>
 		<body>
-			<h1>Fatal Database Error</h1>
+			<h1>Symphony Fatal Database Error</h1>
 			<div class="panel">
 				<h2><xsl:value-of select="details/message"/></h2>
 				<p>An error occurred while attempting to execute the following query</p>
