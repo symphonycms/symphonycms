@@ -1,16 +1,6 @@
 <?php
 
 	Class DatabaseException extends Exception{
-		
-		/*
-			Array
-			(
-			    [query] => 
-			    [msg] => Access denied for user 'rdoot'@'localhost' (using password: YES)
-			    [num] => 1045
-			)
-		*/
-		
 		private $_error;
 		public function __construct($message, array $error=NULL){
 			parent::__construct($message);
@@ -30,54 +20,63 @@
 	Class DatabaseExceptionHandler{
 
 		public static function render($e){
+			
+			require_once(TOOLKIT . '/class.xslproc.php');
+			
+			$xml = new DOMDocument('1.0', 'utf-8');
+			$xml->formatOutput = true;
+			
+			$root = $xml->createElement('data');
+			$xml->appendChild($root);
+			
+			$details = $xml->createElement('details');
+			$details->appendChild($xml->createElement('message', General::sanitize($e->getDatabaseErrorMessage())));
+			$details->appendChild($xml->createElement('query', General::sanitize($e->getQuery())));
+			$root->appendChild($details);
+			
 
-			$trace = NULL;
-			$odd = true;
-
+			$trace = $xml->createElement('backtrace');
+			
 			foreach($e->getTrace() as $t){
-				$trace .= sprintf(
-					'<li%s><code>[%s:%d] <strong>%s%s%s();</strong></code></li>', 
-					($odd == true ? ' class="odd"' : NULL),
-					$t['file'], 
-					$t['line'], 
-					(isset($t['class']) ? $t['class'] : NULL), 
-					(isset($t['type']) ? $t['type'] : NULL),  
-					$t['function']
-				);
-				$odd = !$odd;
-			}
 
-			$queries = NULL;
-			$odd = true;
+				$item = $xml->createElement('item');
+				
+				if(isset($t['file'])) $item->setAttribute('file', General::sanitize($t['file']));
+				if(isset($t['line'])) $item->setAttribute('line', $t['line']);
+				if(isset($t['class'])) $item->setAttribute('class', General::sanitize($t['class']));
+				if(isset($t['type'])) $item->setAttribute('type', $t['type']);
+				$item->setAttribute('function', General::sanitize($t['function']));
+				
+				$trace->appendChild($item);	
+			}
+			$root->appendChild($trace);
 
 			if(is_object(Symphony::Database())){
 
 				$debug = Symphony::Database()->debug();
 
 				if(count($debug['query']) > 0){
-					foreach(array_reverse($debug['query']) as $query){
 
-						$queries .= sprintf(
-							'<li%s><code>%s;</code> <small>[%01.4f]</small></li>',
-							($odd == true ? ' class="odd"' : NULL),
-							htmlspecialchars($query['query']),
-							(isset($query['time']) ? $query['time'] : NULL)
-						);
-						$odd = !$odd;
+					$queries = $xml->createElement('query-log');
+
+					foreach($debug['query'] as $query){
+					
+						$item = $xml->createElement('item', General::sanitize($query['query']));
+						if(isset($query['time'])) $item->setAttribute('time', $query['time']);
+						$queries->appendChild($item);	
 					}
+					
+					$root->appendChild($queries);
 				}
-
+				
 			}
 			
-			return sprintf(file_get_contents(TEMPLATE . '/exception.database.txt'),
-				'Fatal Database Error',
-				URL,
-				$e->getDatabaseErrorMessage(),
-				$e->getQuery(),
-				$trace,
-				$queries
+			return XSLProc::transform(
+				$xml,
+				file_get_contents(TEMPLATE . '/exception.database.xsl'),
+				XSLProc::XML,
+				array('root' => URL)
 			);
-
 		}
 	}
 
