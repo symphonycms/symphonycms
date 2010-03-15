@@ -105,14 +105,14 @@
 				$markdown .= "\t" . ($line_number + 1) . General::sanitize($string);
 				
 				$string = trim(str_replace("\t", '&nbsp;&nbsp;&nbsp;&nbsp;', General::sanitize($string)));
-				$item = $xml->createElement('item', (strlen($string) == 0 ? '&nbsp;' : $string));
+				$item = $xml->createElement('item');
 				$item->setAttribute('number', $line_number + 1); 
+				$cdata = $xml->createCDATASection(strlen($string) == 0 ? '&nbsp;' : $string);
+				$item->appendChild($cdata);
 				$lines->appendChild($item);
-				
 			}
 			$root->appendChild($lines);
 			$root->appendChild($xml->createElement('markdown', General::sanitize($markdown)));
-			
 
 			$processing_errors = $xml->createElement('processing-errors');
 
