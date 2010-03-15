@@ -30,7 +30,8 @@
 	
 	define_safe('CONTENT', 	SYMPHONY . '/content');
 	
-	define_safe('TEMPLATE', SYMPHONY . '/template');
+	define_safe('TEMPLATES', SYMPHONY . '/templates');
+	define_safe('TEMPLATE', SYMPHONY . '/templates');
 
 	define_safe('STARTTIME', precision_timer());
 
