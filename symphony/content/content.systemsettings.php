@@ -229,13 +229,13 @@
 						<tr class="added">
 							<td rowspan="2">Forum</td>
 						</tr>
-						<tr>
+						<tr class="added">
 							<td>6 fields added</td>
 						</tr>
 						<tr class="removed">
 							<td rowspan="2">Staff Members</td>
 						</tr>
-						<tr>
+						<tr class="removed">
 							<td>10 fields removed</td>
 						</tr>
 					</table>
