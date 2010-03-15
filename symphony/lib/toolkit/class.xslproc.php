@@ -10,7 +10,8 @@
 		public function __construct($message){
 			parent::__construct($message);
 			$this->_error = NULL;
-
+			$bFoundFile = false;
+			
 			$errors = XSLProc::getErrors();
 			
 			foreach($errors as $e){
@@ -19,6 +20,7 @@
 					$this->_error = $errors[0];
 					$this->file = XSLProc::lastXML();
 					$this->line = $this->_error->line;
+					$bFoundFile = true;
 					return;
 				}
 				elseif(strlen(trim($e->file)) == 0) continue;
@@ -27,6 +29,7 @@
 				
 				$this->file = $this->_error->file;
 				$this->line = $this->_error->line;
+				$bFoundFile = true;
 				break;
 			}
 			
@@ -35,6 +38,7 @@
 					if(preg_match_all('/(\/?[^\/\s]+\/.+.xsl) line (\d+)/i', $e->message, $matches, PREG_SET_ORDER)){
 						$this->file = $matches[0][1];
 						$this->line = $matches[0][2];
+						$bFoundFile = true;
 						break;
 					}
 					
@@ -42,6 +46,25 @@
 						$this->line = $matches[0][3];
 						$page = Symphony::parent()->Page()->pageData();
 						$this->file = VIEWS . '/' . $page['filelocation'];
+						$bFoundFile = true;
+					}
+				}
+			}
+			
+			// This happens when there is an error in the page XSL. Since it is loaded 
+			// in to a string then passed to the processor
+			// it does not return a file
+			if(!$bFoundFile){
+				$page = Symphony::parent()->Page()->pageData();
+				$this->file = VIEWS . '/' . $page['filelocation'];
+				$this->line = 0;
+				
+				// Need to look for a potential line number, since 
+				// it will not have been grabbed
+				foreach($errors as $e){
+					if($e->line > 0){
+						$this->line = $e->line;
+						break;
 					}
 				}
 			}
@@ -64,7 +87,7 @@
 			$markdown .= "\t" . $e->getMessage() . "\n";
 			$markdown .= "\t" . $e->getFile() . " line " . $e->getLine() . "\n\n";
 
-			foreach(self::__nearByLines($e->getLine(), $e->getFile(), $e->getType() == XSLProc::ERROR_XML, 11) as $line => $string){
+			foreach(self::__nearByLines($e->getLine(), $e->getFile(), $e->getType() == XSLProc::ERROR_XML, 6) as $line => $string){
 				
 				$markdown .= "\t" . ($line+1) . "\t" . htmlspecialchars($string);
 				
@@ -100,8 +123,8 @@
 			}
 
 			return sprintf(file_get_contents(TEMPLATE . '/exception.xsl.txt'),
-				URL,
 				'XSLT Processing Error',
+				URL,
 				$e->getMessage(), 
 				$e->getLine(),
 				($e->getType() == XSLProc::ERROR_XML ? 'XML' : $e->getFile()), 

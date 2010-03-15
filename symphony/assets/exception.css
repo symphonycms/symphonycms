@@ -116,3 +116,7 @@ li small{
 	font-size: 10px;
 	color: #666;
 }
+
+#query-log{
+	display: none;
+}

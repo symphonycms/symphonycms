@@ -101,8 +101,8 @@
 			}
 			
 			return sprintf(file_get_contents(TEMPLATE . '/exception.generic.txt'),
-				URL,
 				($e instanceof ErrorException ? GenericErrorHandler::$errorTypeStrings[$e->getSeverity()] : 'Fatal Error'),
+				URL,
 				$e->getMessage(), 
 				$e->getFile(), 
 				$e->getLine(), 
