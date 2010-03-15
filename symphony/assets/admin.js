@@ -609,7 +609,7 @@ jQuery(document).ready(function() {
 	$('#master-switch').bind('change', function() {
 		var select = $(this);
 		
-		window.location.search = '?template=' + select.val();
+		window.location.search = '?type=' + select.val();
 	});
 });
 
