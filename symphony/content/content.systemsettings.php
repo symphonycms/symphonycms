@@ -205,6 +205,44 @@
 			# Description: Add Extension custom tools. Use the $wrapper reference to append objects.
 			ExtensionManager::instance()->notifyMembers('AddCustomToolFieldsets', '/system/settings/', array('wrapper' => &$this->Form));
 			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->setValue('
+				<legend>Section Update</legend>
+				<div class="sections-tool">
+					<span>
+						<button name="action[export]" type="submit">Update Sections</button>
+					</span>
+					<table>
+						<tr >
+							<td rowspan="4">Articles</td>
+						</tr>
+						<tr class="added">
+							<td>Title <span>Input Field</span></td>
+						</tr>
+						<tr class="removed">
+							<td>Body <span>Textarea</span></td>
+						</tr>
+						<tr class="removed">
+							<td>Publish <span>Checkbox</span></td>
+						</tr>
+						<tr class="added">
+							<td rowspan="2">Forum</td>
+						</tr>
+						<tr>
+							<td>6 fields added</td>
+						</tr>
+						<tr class="removed">
+							<td rowspan="2">Staff Members</td>
+						</tr>
+						<tr>
+							<td>10 fields removed</td>
+						</tr>
+					</table>
+				</div>');
+			
+			$this->Form->appendChild($fieldset);
+			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
 			
