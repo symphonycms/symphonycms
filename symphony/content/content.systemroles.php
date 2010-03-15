@@ -281,7 +281,7 @@
 				'global-add',
 				'1',
 				'checkbox'
-				), 'add');
+				), 'checkbox');
 				 
 				$td3 = Widget::TableData(NULL, 'edit');
 				$td3->appendChild(new XMLElement('p', NULL, array('class' => 'global-slider')));
@@ -302,7 +302,7 @@
 							'checkbox',
 							($permissions['create'] == 1 ? array('checked' => 'checked') : NULL)
 						),
-						'add'
+						'checkbox'
 					);
 					
 					$td3 = Widget::TableData(NULL, 'edit');
