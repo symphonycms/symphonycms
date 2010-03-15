@@ -118,7 +118,7 @@
 
 			foreach(XSLProc::getErrors() as $error){
 				$error->file = str_replace(WORKSPACE . '/', NULL, $error->file);
-				$item = $xml->createElement('item', General::sanitize($error->message));
+				$item = $xml->createElement('item', trim(General::sanitize($error->message)));
 				if(strlen(trim($error->file)) == 0) $item->setAttribute('file', General::sanitize($error->file));
 				if(strlen(trim($error->line)) == 0) $item->setAttribute('line', $error->line);
 				$processing_errors->appendChild($item);
