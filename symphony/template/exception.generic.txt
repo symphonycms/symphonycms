@@ -1,19 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 	<head>
-		<title>Symphony Error</title>
-		<link rel="stylesheet" type="text/css" media="screen" href="%s/symphony/assets/exception.css" /> 
+		<title>Symphony %1$s</title>
+		<link rel="stylesheet" type="text/css" media="screen" href="%2$s/symphony/assets/exception.css" /> 
 	</head>
 	<body>
-		<h1>Symphony %s</h1>
-		<h2>%s</h2>
-		<p class="error-line">An error occurred in <code>%s</code> around line <code>%d</code></p>
-		<a class="markdown" href="#markdown" onclick="javascript:document.getElementById('markdown').style.display = ((document.getElementById('markdown').style.display == 'none') ? 'block' : 'none'); return false;">Show Markdown for copy/paste</a>
-		<pre id="markdown" style="display: none;">%s</pre>
-		<ul class="focus">%s</ul>
+		<h1>Symphony %1$s</h1>
+		<div class="panel">
+			<a class="markdown" href="#markdown" onclick="javascript:document.getElementById('markdown').style.display = ((document.getElementById('markdown').style.display == 'none') ? 'block' : 'none'); return false;">Show Markdown for copy/paste</a>
+			<h2>%3$s</h2>
+			<p class="error-line">An error occurred in <code>%4$s</code> around line <code>%5$d</code></p>
+			<pre id="markdown" style="display: none;">%6$s</pre>
+			<ul class="focus">%7$s</ul>
+		</div>
 		<h3>Backtrace</h3>
-		<ul>%s</ul>
+		<div class="panel">
+			<ul class="focus">%8$s</ul>
+		</div>
 		<h3>Database Query Log (<a href="#query-log" onclick="javascript:document.getElementById('query-log').style.display = ((document.getElementById('query-log').style.display == 'none') ? 'block' : 'none'); return false;">Show</a>)</h3>
-		<ul id="query-log">%s</ul>
+		<div class="panel">
+			<ul class="focus" id="query-log">%9$s</ul>
+		</div>
 	</body>
 </html>
