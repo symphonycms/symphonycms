@@ -425,7 +425,7 @@ ul.tags .more:hover {
 	border-collapse: collapse;
 }
 .sections-tool table td {
-	padding: 0.5em;
+	padding: 0.5em 1em;
 	border-top: 1px solid #bbb;
 }
 .sections-tool table td span {
@@ -438,10 +438,15 @@ ul.tags .more:hover {
 	padding: 0;
 }
 .sections-tool table td[rowspan] {
-	padding-left: 20px;
 	width: 35%;
 	font-weight: bold;
 	border-right: 1px solid #bbb;
+}
+.sections-tool .added td {
+	background-color: #bde98d;
+}
+.sections-tool .removed td {
+	background-color: #efc5ca;
 }
 .sections-tool .added td:before {
 	content: "+";
@@ -454,6 +459,10 @@ ul.tags .more:hover {
 	font-size: 1.1em;
 	font-weight: bold;
 	margin-right: 3px;
+}
+.sections-tool .added td[rowspan]:before,
+.sections-tool .removed td[rowspan]:before {
+	content: "";
 }
 .file input {
 	margin: -3px 0;
