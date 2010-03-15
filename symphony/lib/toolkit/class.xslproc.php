@@ -81,56 +81,56 @@
 		
 		public static function render($e){
 			
-			$lines = NULL;
-			$odd = true;
+			$xml = new DOMDocument('1.0', 'utf-8');
+			$xml->formatOutput = true;
+			
+			$root = $xml->createElement('data');
+			$xml->appendChild($root);
+			
+			$details = $xml->createElement('details', $e->getMessage());
+			$details->setAttribute('type', ($e->getType() == XSLProc::ERROR_XML ? 'XML' : $e->getFile()));
+			$details->setAttribute('file', General::sanitize($e->getFile()));
+			$details->setAttribute('line', $e->getLine());
+			$root->appendChild($details);
+			
+			$nearby_lines = self::__nearByLines($e->getLine(), $e->getFile(), $e->getType() == XSLProc::ERROR_XML, 6);
 
+			$lines = $xml->createElement('nearby-lines');
+			
 			$markdown .= "\t" . $e->getMessage() . "\n";
 			$markdown .= "\t" . $e->getFile() . " line " . $e->getLine() . "\n\n";
-
-			foreach(self::__nearByLines($e->getLine(), $e->getFile(), $e->getType() == XSLProc::ERROR_XML, 6) as $line => $string){
+			
+			foreach($nearby_lines as $line_number => $string){
 				
-				$markdown .= "\t" . ($line+1) . "\t" . htmlspecialchars($string);
+				$markdown .= "\t" . ($line_number + 1) . General::sanitize($string);
 				
-				// Make sure there is at least 1 tab at the beginning.
-				if(strlen(trim($string)) > 0){
-					$string = "\t{$string}";
-				}
-
-				$lines .= sprintf(
-					'<li%s%s><strong>%d:</strong> <code>%s</code></li>', 
-					($odd == true ? ' class="odd"' : NULL),
-					(($line+1) == $e->getLine() ? ' id="error"' : NULL),
-					++$line, 
-					str_replace("\t", '&nbsp;&nbsp;&nbsp;&nbsp;', htmlspecialchars($string))
-				);
-
-				$odd = !$odd;
+				$string = trim(str_replace("\t", '&nbsp;&nbsp;&nbsp;&nbsp;', General::sanitize($string)));
+				$item = $xml->createElement('item', (strlen($string) == 0 ? '&nbsp;' : $string));
+				$item->setAttribute('number', $line_number + 1); 
+				$lines->appendChild($item);
+				
 			}
+			$root->appendChild($lines);
+			$root->appendChild($xml->createElement('markdown', General::sanitize($markdown)));
+			
 
-			$processing_errors = NULL;
-			$odd = true;
+			$processing_errors = $xml->createElement('processing-errors');
 
 			foreach(XSLProc::getErrors() as $error){
 				$error->file = str_replace(WORKSPACE . '/', NULL, $error->file);
-				
-				$processing_errors .= sprintf(
-					'<li%s><code>%s %s</code></li>', 
-					($odd == true ? ' class="odd"' : NULL),
-					(strlen(trim($error->file)) == 0 ? NULL : "<span class=\"important\">[{$error->file}:{$error->line}]</span> "),
-					preg_replace('/([^:]+):/', '<span class="important">$1:</span>', htmlspecialchars($error->message))
-				);
-				$odd = !$odd;
+				$item = $xml->createElement('item', General::sanitize($error->message));
+				if(strlen(trim($error->file)) == 0) $item->setAttribute('file', General::sanitize($error->file));
+				if(strlen(trim($error->line)) == 0) $item->setAttribute('line', $error->line);
+				$processing_errors->appendChild($item);
 			}
+			
+			$root->appendChild($processing_errors);
 
-			return sprintf(file_get_contents(TEMPLATE . '/exception.xsl.txt'),
-				'XSLT Processing Error',
-				URL,
-				$e->getMessage(), 
-				$e->getLine(),
-				($e->getType() == XSLProc::ERROR_XML ? 'XML' : $e->getFile()), 
-				$markdown,
-				$lines,
-				$processing_errors
+			return XSLProc::transform(
+				$xml,
+				file_get_contents(TEMPLATE . '/exception.xslt.xsl'),
+				XSLProc::XML,
+				array('root' => URL)
 			);
 
 		}
