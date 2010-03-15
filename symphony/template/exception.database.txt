@@ -1,7 +1,7 @@
 <html>
 	<head>
-		<title>Symphony %s</title>
-		<link rel="stylesheet" type="text/css" media="screen" href="%s/symphony/assets/exception.css"> 
+		<title>Symphony %1$s</title>
+		<link rel="stylesheet" type="text/css" media="screen" href="%2$s/symphony/assets/exception.css"> 
 	</head>
 	<body>
 		<h1>Symphony %1$s</h1>
