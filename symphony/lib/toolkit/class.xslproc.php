@@ -207,14 +207,25 @@
 
 			libxml_use_internal_errors(true);
 			
-			$XMLDoc = new DOMDocument;
-			$XMLDoc->loadXML($xml);
+			if($xml instanceof DOMDocument){
+				$XMLDoc = $xml;
+			}
+			else{
+				$XMLDoc = new DOMDocument;
+				$XMLDoc->loadXML($xml);
+			}
+			
 			self::__processLibXMLerrors(self::ERROR_XML);
+			
+			if($xsl instanceof DOMDocument){
+				$XSLDoc = $xsl;
+			}
+			else{
+				$XSLDoc = new DOMDocument;
+				$XSLDoc->loadXML($xsl);
+			}
 
-			$XSLDoc = new DOMDocument;
-			$XSLDoc->loadXML($xsl);
-
-			if(!self::hasErrors() && $XSLDoc instanceof DOMDocument && $XMLDoc instanceof DOMDocument){
+			if(!self::hasErrors() && ($XSLDoc instanceof DOMDocument) && ($XMLDoc instanceof DOMDocument)){
 				$XSLProc = new XSLTProcessor;
 				if(!empty($register_functions)) $XSLProc->registerPHPFunctions($register_functions);
 				$XSLProc->importStyleSheet($XSLDoc);
