@@ -8,22 +8,23 @@
 	encoding="UTF-8"
 	indent="yes" />
 
-<xsl:template match="/">
+<xsl:template match="data">
 	<html>
 		<head>
 			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-			<title>Symphony - <xsl:value-of select="/data/heading"/></title>
+			<title><xsl:value-of select="heading"/></title>
 			<link rel="stylesheet" type="text/css" media="screen" href="{$root}/symphony/assets/exception.css" /> 
 		</head>
 		<body>
-			<h1><xsl:value-of select="/data/heading"/></h1>
+			<h1><xsl:value-of select="heading"/></h1>
 			<div class="panel">
-				<h2><xsl:value-of select="/data/message"/></h2>
-				<xsl:if test="not(/data/description = '')">
-					<p><xsl:value-of select="/data/description"/></p>
+				<h2><xsl:value-of select="message"/></h2>
+				<xsl:if test="not(description = '')">
+					<p><xsl:value-of select="description"/></p>
 				</xsl:if>
 			</div>
 		</body>
 	</html>
 </xsl:template>
+
 </xsl:stylesheet>
