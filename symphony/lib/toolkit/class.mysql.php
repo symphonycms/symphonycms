@@ -73,10 +73,18 @@
 			
 			return XSLProc::transform(
 				$xml,
-				file_get_contents(TEMPLATE . '/exception.database.xsl'),
+				self::__getTemplate(),
 				XSLProc::XML,
 				array('root' => URL)
 			);
+		}
+		
+		private static function __getTemplate(){
+			if(file_exists(MANIFEST . '/templates/exception.database.xsl')){
+				return file_get_contents(MANIFEST . '/templates/exception.database.xsl');
+			}
+			
+			return file_get_contents(TEMPLATES . '/exception.database.xsl');
 		}
 	}
 
