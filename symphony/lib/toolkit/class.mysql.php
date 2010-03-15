@@ -71,20 +71,7 @@
 				
 			}
 			
-			return XSLProc::transform(
-				$xml,
-				self::__getTemplate(),
-				XSLProc::XML,
-				array('root' => URL)
-			);
-		}
-		
-		private static function __getTemplate(){
-			if(file_exists(MANIFEST . '/templates/exception.database.xsl')){
-				return file_get_contents(MANIFEST . '/templates/exception.database.xsl');
-			}
-			
-			return file_get_contents(TEMPLATES . '/exception.database.xsl');
+			return parent::__transform($xml, 'exception.database.xsl');
 		}
 	}
 

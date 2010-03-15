@@ -41,14 +41,6 @@
 			exit;
 		}
 		
-		private static function __getTemplate(){
-			if(file_exists(MANIFEST . '/templates/exception.generic.xsl')){
-				return file_get_contents(MANIFEST . '/templates/exception.generic.xsl');
-			}
-			
-			return file_get_contents(TEMPLATES . '/exception.generic.xsl');
-		}
-		
 		public static function render($e){
 			
 			$xml = new DOMDocument('1.0', 'utf-8');
@@ -121,13 +113,19 @@
 				
 			}
 			
-			return XSLProc::transform(
-				$xml,
-				self::__getTemplate(),
-				XSLProc::XML,
-				array('root' => URL)
-			);
+			return self::__transform($xml);
 			
+		}
+
+		protected static function __transform(DOMDocument $xml, $template='exception.generic.xsl'){
+
+			$path = TEMPLATES . '/'. $template;
+			if(!Symphony::parent()->isLoggedIn() && file_exists(MANIFEST . '/templates/' . $template)){
+				$path = MANIFEST . '/templates/' . $template;
+			}
+
+			return XSLProc::transform($xml, file_get_contents($path), XSLProc::XML, array('root' => URL));
+
 		}
 	}
 	
