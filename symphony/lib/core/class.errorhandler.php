@@ -17,11 +17,13 @@
 				$length = NULL;
 				foreach($result as $string){
 					preg_match('/^\t+/', $string, $match);
-					if(strlen($match[0]) > 0 && (is_null($length) || strlen($match[0]) < $length)) $length = strlen($match[0]);
+					if(strlen(trim($string)) > 0 && (is_null($length) || strlen($match[0]) < $length)) $length = strlen($match[0]);
 				}
 				
-				foreach($result as $index => $string){
-					$result[$index] = preg_replace('/^\t{'.$length.'}/', NULL, $string);
+				if(!is_null($length) && $length > 0){
+					foreach($result as $index => $string){
+						$result[$index] = preg_replace('/^\t{'.$length.'}/', NULL, $string);
+					}
 				}
 			}
 			
