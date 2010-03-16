@@ -457,6 +457,7 @@ ul.tags .more:hover {
 	width: 100%;
 	background-color: #dcdcdc;
 	border-collapse: collapse;
+	border: none;
 }
 .sections-tool table td {
 	padding: 0.5em 1em;
