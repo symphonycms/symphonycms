@@ -15,7 +15,8 @@
 	require_once(TOOLKIT . '/class.general.php');
 	require_once(TOOLKIT . '/class.profiler.php');
 	require_once(TOOLKIT . '/class.user.php');
-
+	require_once(TOOLKIT . '/class.xslproc.php');
+	
 	require_once(TOOLKIT . '/class.usermanager.php');	
 	require_once(TOOLKIT . '/class.extensionmanager.php');
 		
@@ -41,14 +42,6 @@
 			if(!is_null($e->getDescription())){
 				$root->appendChild($xml->createElement('description', General::sanitize($e->getDescription())));
 			}
-			
-			
-			
-			/*$args = array(
-				$e->getHeading(),
-				URL,
-				($e->getMessageObject() instanceof XMLElement ? $e->getMessageObject()->generate(true) : trim($e->getMessage())),
-			);*/
 
 			header('HTTP/1.0 500 Server Error');
 			header('Content-Type: text/html; charset=UTF-8');
@@ -58,7 +51,7 @@
 				header($header);
 			}
 
-			$output = parent::__transform($xml, 'error.symphony.xsl');
+			$output = parent::__transform($xml, basename($e->getTemplatePath()));
 
 			header(sprintf('Content-Length: %d', strlen($output)));
 			echo $output;
@@ -111,12 +104,12 @@
 
 			$template = NULL;
 
-			if(file_exists(MANIFEST . '/templates/error.symphony.xsl')){
-				$template = MANIFEST . '/templates/error.symphony.xsl';
+			if(file_exists(MANIFEST . '/templates/exception.symphony.xsl')){
+				$template = MANIFEST . '/templates/exception.symphony.xsl';
 			}
 			
-			elseif(file_exists(TEMPLATES . '/error.symphony.xsl')){
-				$template = TEMPLATES . '/error.symphony.xsl';
+			elseif(file_exists(TEMPLATES . '/exception.symphony.xsl')){
+				$template = TEMPLATES . '/exception.symphony.xsl';
 			}
 
 			return $template;
