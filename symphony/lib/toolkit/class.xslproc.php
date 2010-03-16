@@ -72,13 +72,7 @@
 	}
 	
 	Class XSLProcExceptionHandler extends GenericExceptionHandler{
-		
-		protected static function __nearbyLines($line, $file, $isString=false, $window=5){
-			if($isString === false) return array_slice(file($file), max(0, ($line - 1) - $window), $window*2, true);
-			return array_slice(preg_split('/[\r\n]+/', $file), max(0, ($line - 1) - $window), $window*2, true);
-			
-		}
-		
+
 		public static function render($e){
 			
 			$xml = new DOMDocument('1.0', 'utf-8');
@@ -99,7 +93,7 @@
 			
 			$markdown .= "\t" . $e->getMessage() . "\n";
 			$markdown .= "\t" . $e->getFile() . " line " . $e->getLine() . "\n\n";
-			
+
 			foreach($nearby_lines as $line_number => $string){
 				
 				$markdown .= "\t{$string}";

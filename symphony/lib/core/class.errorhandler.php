@@ -9,10 +9,25 @@
 			set_exception_handler(array(__CLASS__, 'handler'));
 		}
 		
-		protected static function __nearbyLines($line, $file, $window=5){
-			return array_slice(file($file), max(0, ($line - 1) - $window), $window*2, true);
-		}
+		protected static function __nearbyLines($line, $file, $isString=false, $window=5, $normalise_tabs=true){
+			if($isString === false) $result = array_slice(file($file), max(0, ($line - 1) - $window), $window*2, true);
+			else $result = array_slice(preg_split('/[\r\n]+/', $file), max(0, ($line - 1) - $window), $window*2, true);
 
+			if($normalise_tabs == true && !empty($result)){
+				$length = NULL;
+				foreach($result as $string){
+					preg_match('/^\t+/', $string, $match);
+					if(strlen($match[0]) > 0 && (is_null($length) || strlen($match[0]) < $length)) $length = strlen($match[0]);
+				}
+				
+				foreach($result as $index => $string){
+					$result[$index] = preg_replace('/^\t{'.$length.'}/', NULL, $string);
+				}
+			}
+			
+			return $result;
+		}
+		
 		public static function handler($e){
 			try{
 
