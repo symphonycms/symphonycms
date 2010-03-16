@@ -69,7 +69,7 @@
 		private $_messageObject;
 		private $_help_line;
 
-		public function __construct($message, $heading='Symphony Fatal Error', $description=NULL, array $headers=array()){
+		public function __construct($message, $heading='Fatal Error', $description=NULL, array $headers=array()){
 
 			$this->_messageObject = NULL;
 			if($message instanceof XMLElement){
@@ -218,7 +218,7 @@
 			if(!is_file($driver_filename)){
 				throw new SymphonyErrorPage(
 					__('Missing database driver "%s"', array($driver)), 
-					__('Symphony Database Error'), 
+					__('Database Error'), 
 					__('The database driver specified in "manifest/conf/db.xml" could not be found. Please ensure it exists and is readable.')
 				);
 			}
@@ -248,7 +248,7 @@
 				$error = self::$Database->getlastError();
 				throw new SymphonyErrorPage(
 					$error['num'] . ': ' . $error['msg'], 
-					'Symphony Database Error',
+					'Database Error',
 					__('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct. The following error was returned.')
 				);				
 			}
