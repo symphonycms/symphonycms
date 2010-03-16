@@ -102,7 +102,7 @@
 			
 			foreach($nearby_lines as $line_number => $string){
 				
-				$markdown .= "\t" . ($line_number + 1) . General::sanitize($string);
+				$markdown .= "\t{$string}";
 				
 				$string = trim(str_replace("\t", '&nbsp;&nbsp;&nbsp;&nbsp;', General::sanitize($string)));
 				$item = $xml->createElement('item');
@@ -112,8 +112,11 @@
 				$lines->appendChild($item);
 			}
 			$root->appendChild($lines);
-			$root->appendChild($xml->createElement('markdown', General::sanitize($markdown)));
-
+			
+			$element = $xml->createElement('markdown'); //, General::sanitize($markdown)));
+			$element->appendChild($xml->createCDATASection($markdown));
+			$root->appendChild($element);
+			
 			$processing_errors = $xml->createElement('processing-errors');
 
 			foreach(XSLProc::getErrors() as $error){
