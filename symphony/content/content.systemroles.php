@@ -251,7 +251,10 @@
 			/** SECTION PERMISSIONS **/
 			$group = new XMLElement('fieldset');
 			$group->setAttribute('class', 'settings');
-			$group->appendChild(new XMLElement('legend', __('Section Permissions')));
+			$group->appendChild(new XMLElement('legend', __('Permissions')));
+			
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'group');
 
 			$sections = SectionManager::instance()->fetch(NULL, 'ASC', 'sortorder');
 
@@ -281,7 +284,7 @@
 				'global-add',
 				'1',
 				'checkbox'
-				), 'add');
+				), 'checkbox');
 				 
 				$td3 = Widget::TableData(NULL, 'edit');
 				$td3->appendChild(new XMLElement('p', NULL, array('class' => 'global-slider')));
@@ -302,7 +305,7 @@
 							'checkbox',
 							($permissions['create'] == 1 ? array('checked' => 'checked') : NULL)
 						),
-						'add'
+						'checkbox'
 					);
 					
 					$td3 = Widget::TableData(NULL, 'edit');
@@ -330,16 +333,10 @@
 					'role-permissions'
 				);
 				
-				$group->appendChild($table);
+				$div->appendChild($table);
+				$group->appendChild($div);
 			
 			}
-			
-			$this->Form->appendChild($group);
-					
-			/** PAGE PERMISSIONS **/
-			$group = new XMLElement('fieldset');
-			$group->setAttribute('class', 'settings');
-			$group->appendChild(new XMLElement('legend', __('Page Permissions')));
 
 			/**********
 
