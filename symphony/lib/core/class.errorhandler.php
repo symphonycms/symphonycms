@@ -232,6 +232,7 @@
 		
 		public static $enabled;
 		private static $_Log;
+		protected static $_enabledErrorTypes;
 		
 		public static $errorTypeStrings = array (
 			
@@ -256,7 +257,8 @@
 
 		public static function initialise(Log $Log=NULL){
 			self::$enabled = true;
-
+			self::$_enabledErrorTypes = NULL;
+			
 			if(!is_null($Log)){
 				self::$_Log = $Log;
 			}
@@ -286,17 +288,19 @@
 		// http://www.php.net/manual/en/function.error-reporting.php#55985
 		public static function isErrorsEnabled($type){
 			
-			$bit = ini_get('error_reporting');
-			$errors = array();
+			if(is_null(self::$_enabledErrorTypes)){
+				self::$_enabledErrorTypes = array();
+				$bit = ini_get('error_reporting');
 
-			while ($bit > 0) { 
-			    for($i = 0, $n = 0; $i <= $bit; $i = 1 * pow(2, $n), $n++) { 
-			        $end = $i; 
-			    } 
-			    $errors[] = $end; 
-			    $bit = $bit - $end; 
+				while ($bit > 0) { 
+				    for($i = 0, $n = 0; $i <= $bit; $i = 1 * pow(2, $n), $n++) { 
+				        $end = $i; 
+				    } 
+				    self::$_enabledErrorTypes[] = $end; 
+				    $bit = $bit - $end; 
+				}
 			}
-
-			return in_array($type, $errors);			
+			
+			return in_array($type, self::$_enabledErrorTypes);
 		}
 	}
