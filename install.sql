@@ -13,7 +13,6 @@ CREATE TABLE `tbl_authors` (
   `primary` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `default_section` int(11) NOT NULL,
   `auth_token_active` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
-  `role_id` int(11) NOT NULL,
   `language` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
