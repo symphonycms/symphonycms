@@ -96,7 +96,7 @@
 				
 				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
 					$sectionManager->edit($section->get('id'), array('entry_order' => $sort, 'entry_order_direction' => $order));
-					redirect($this->_Parent->getCurrentPageURL().($filter ? "&filter=$field_handle:$filter_value" : ''));
+					redirect($this->_Parent->getCurrentPageURL().($filter ? "?filter=$field_handle:$filter_value" : ''));
 				}
 			}
 

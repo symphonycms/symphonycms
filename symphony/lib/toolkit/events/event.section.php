@@ -15,12 +15,10 @@
 		function __doit($source, $fields, &$result, &$obj, &$event, $filters, $position=NULL, $entry_id=NULL){
 
 			$post_values = new XMLElement('post-values');
-			$post = General::getPostData();
-
 			$filter_results = array();	
 			
 			## Create the post data cookie element
-			if (is_array($post) && !empty($post)) {
+			if (is_array($fields) && !empty($fields)) {
 				General::array_to_xml($post_values, $fields, true);
 			}
 			
@@ -310,8 +308,8 @@
 		
 	else{
 		
-		$fields = $_POST['fields'];
-		
+		$fields = General::getPostData();
+		$fields = $fields['fields'];
 		$entry_id = NULL;
 		
 		if(isset($_POST['id']) && is_numeric($_POST['id'])) $entry_id = $_POST['id'];

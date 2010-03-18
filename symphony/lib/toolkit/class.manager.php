@@ -25,23 +25,23 @@
 
 			$handle = $this->__getHandleFromFilename(basename($path));
 
-	        if($about = @call_user_func(array(&$classname, 'about')))			
-				return array_merge($about, array('handle' => $handle));	
-			
-			return false;
-									        
+	        if(is_callable(array($classname, 'about'))){
+				$about = call_user_func(array($classname, 'about'));
+				return array_merge($about, array('handle' => $handle));
+			}
+
         } 
                      
-        function __getClassName($name){
+        public function __getClassName($name){
         }
         
-        function __getClassPath($name){
+        public function __getClassPath($name){
         }
         
-        function __getDriverPath($name){
+        public function __getDriverPath($name){
         }        
         
-		function __getHandleFromFilename($filename){
+		public function __getHandleFromFilename($filename){
 		}
 
         public function listAll(){
