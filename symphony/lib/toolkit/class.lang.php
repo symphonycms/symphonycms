@@ -235,18 +235,18 @@
 		 * @param string $delim replacement for invalid characters
 		 * @param boolean $apply_transliteration if true, umlauts and special characters will be substituted
 		 * @return string created filename
-		 */					
+		 */
 		public static function createFilename($string, $delim = '-', $apply_transliteration = true) {
 
 			// Use the transliteration table if provided
 			if($apply_transliteration) $string = _t($string);
 
 			// Strip out any tag
-			$string = strip_tags($string);				
+			$string = strip_tags($string);
 
 			// Find all legal characters
-			preg_match_all('/[\p{L}\w:;.,+=~]+/u', $string, $matches);
-
+			preg_match_all('/[\w:;.,+=~]+/', $string, $matches);
+			
 			// Join only legal character with the $delim
 			$string = implode($delim, $matches[0]);
 
