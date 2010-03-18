@@ -90,6 +90,9 @@
 		
 		## Build is no longer used
 		unset($settings['symphony']['build']);
+		
+		## Remove the old Maintenance Mode setting
+		unset($settings['public']['maintenance_mode']);
 
 		## Set the default language
 		if(!isset($settings['symphony']['lang'])){
