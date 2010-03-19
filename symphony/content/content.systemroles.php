@@ -252,9 +252,6 @@
 			$group = new XMLElement('fieldset');
 			$group->setAttribute('class', 'settings');
 			$group->appendChild(new XMLElement('legend', __('Permissions')));
-			
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
 
 			$sections = SectionManager::instance()->fetch(NULL, 'ASC', 'sortorder');
 
@@ -333,8 +330,7 @@
 					'role-permissions'
 				);
 				
-				$div->appendChild($table);
-				$group->appendChild($div);
+				$group->appendChild($table);
 			
 			}
 

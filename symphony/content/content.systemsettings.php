@@ -216,9 +216,9 @@
 			$fieldset->setValue('
 				<legend>Section Update</legend>
 				<div class="sections-tool">
-					<div>
+					<div class="system-action">
 						<button name="action[export]" type="submit">Update Sections</button>
-						<p>332 existing entries will be effected</p>
+						<p>Updates the database structure. <strong>332</strong> existing entries will be effected</p>
 					</div>
 					<table>
 						<tr >
