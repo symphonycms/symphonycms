@@ -82,6 +82,11 @@
 					$class = array();
 					
 					$page_title = $view->title;
+					
+					if ($view->parent()) {
+						$page_title = '&#x00bb ' . $page_title;
+					}
+					
 					$page_url = sprintf('%s/%s/', URL, $view->path); 
 					$page_edit_url = sprintf('%sedit/%s/', Administration::instance()->getCurrentPageURL(), $view->path);
 					$page_template = $view->handle . '.xsl';
@@ -90,7 +95,7 @@
 					$page_types = $view->types;
 					
 					$link = Widget::Anchor($page_title, $page_edit_url, $view->handle);
-					$link->setAttribute('style', sprintf('margin-left: %dpx;', 20 * View::countParents($view)));
+					$link->setAttribute('style', sprintf('margin-left: %dpx;', 10 * View::countParents($view)));
 					
 					$col_title = Widget::TableData($link);
 					$col_title->appendChild(Widget::Input("items[{$view->path}]", null, 'checkbox'));
