@@ -23,10 +23,10 @@
 		
 		public static $Configuration;
 		public static $Database;
+		public static $Log;
 		
 		private static $_lang;
-		
-		public $Log;
+
 		public $Profiler;
 		public $Cookie;
 		public $Author;
@@ -65,7 +65,7 @@
 			$this->initialiseLog();
 
 			GenericExceptionHandler::initialise();
-			GenericErrorHandler::initialise($this->Log);
+			GenericErrorHandler::initialise(self::$Log);
 			
 			$this->initialiseCookie();
 
@@ -157,14 +157,14 @@
 		
 		public function initialiseLog(){
 			
-			$this->Log = new Log(ACTIVITY_LOG);
-			$this->Log->setArchive((self::$Configuration->get('archive', 'log') == '1' ? true : false));
-			$this->Log->setMaxSize(intval(self::$Configuration->get('maxsize', 'log')));
+			self::$Log = new Log(ACTIVITY_LOG);
+			self::$Log->setArchive((self::$Configuration->get('archive', 'log') == '1' ? true : false));
+			self::$Log->setMaxSize(intval(self::$Configuration->get('maxsize', 'log')));
 				
-			if($this->Log->open() == 1){
-				$this->Log->writeToLog('Symphony Log', true);
-				$this->Log->writeToLog('Version: '. self::$Configuration->get('version', 'symphony'), true);
-				$this->Log->writeToLog('--------------------------------------------', true);
+			if(self::$Log->open() == 1){
+				self::$Log->writeToLog('Symphony Log', true);
+				self::$Log->writeToLog('Version: '. self::$Configuration->get('version', 'symphony'), true);
+				self::$Log->writeToLog('--------------------------------------------', true);
 			}
 						
 		}
