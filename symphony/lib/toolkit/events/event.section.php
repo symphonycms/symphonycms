@@ -24,26 +24,36 @@
 			
 			###
 			# Delegate: EventPreSaveFilter
-			# Description: Prior to saving entry from the front-end. This delegate will force the Event to terminate if it populates the error
-			#              array reference. Provided with references to this object, the POST data and also the error array
-			$obj->ExtensionManager->notifyMembers('EventPreSaveFilter', '/frontend/', array('fields' => $fields, 'event' => &$event, 'messages' => &$filter_results, 'post_values'  => &$post_values));
+			# Description: Prior to saving entry from the front-end. This delegate will 
+			#			   force the Event to terminate if it populates the error
+			#              array reference. Provided with references to this object, the 
+			#			   POST data and also the error array
+			$obj->ExtensionManager->notifyMembers(
+				'EventPreSaveFilter', 
+				'/frontend/', 
+				array(
+					'fields' => $fields, 
+					'event' => &$event, 
+					'messages' => &$filter_results, 
+					'post_values' => &$post_values
+				)
+			);
 			
 			if (is_array($filter_results) && !empty($filter_results)) {
-				$all_filters_status = true;
-				
+				$can_proceed = true;
+
 				foreach ($filter_results as $fr) {
 					list($type, $status, $message) = $fr;
 					
 					$result->appendChild(buildFilterElement($type, ($status ? 'passed' : 'failed'), $message));
 					
-					if (!$status) $all_filters_status = false;
+					if($status === false) $can_proceed = false;
 				}
-				
-				if (!$all_filters_status) {
+
+				if ($can_proceed !== true) {
 					$result->appendChild($post_values);
 					$result->setAttribute('result', 'error');
 					$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
-					
 					return false;
 				}
 			}
