@@ -645,7 +645,7 @@ jQuery(document).ready(function() {
 			
 			if (link.is('.hide')) {
 				link.text('Show').removeClass('hide').addClass('show');
-				children.hide();
+				children.hide().removeClass('selected');
 			}
 			
 			else if (link.is('.show')) {
