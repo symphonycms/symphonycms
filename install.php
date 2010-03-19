@@ -23,7 +23,7 @@
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.0.7');
+	define('kVERSION', '2.0.8RC1');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
 	
@@ -206,7 +206,7 @@
 		$conf['database']['character_encoding'] = 'utf8';
 		$conf['database']['runtime_character_set_alter'] = '1';
 		$conf['database']['query_caching'] = 'default';
-		$conf['public']['display_event_xml_in_source'] = 'yes';
+		$conf['public']['display_event_xml_in_source'] = 'no';
 		$conf['region']['time_format'] = 'H:i';
 		$conf['region']['date_format'] = 'd F Y';
 		$conf['maintenance_mode']['enabled'] = 'no';
