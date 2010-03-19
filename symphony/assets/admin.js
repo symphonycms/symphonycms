@@ -614,6 +614,51 @@ jQuery(document).ready(function() {
 });
 
 /*
+ * Toggle visibility of children views:
+ */
+
+(function($) {
+	$(document).ready(function() {
+		var table = $('table#views-list');
+		var rows = table.find('tbody tr[id]');
+		
+		// Insert toggle controls:
+		rows.each(function() {
+			var row = $(this);
+			
+			if (table.find('tr.' + row.attr('id')).length) {
+				$('<a />')
+					.text('Hide')
+					.addClass('hide')
+					.appendTo(row.find('td:last'));
+			}
+		});
+		
+		$('table#views-list tr[id] td:last-child a').live('mousedown', function() {
+			return false;
+		});
+		
+		$('table#views-list tr[id] td:last-child a').live('click', function() {
+			var link = $(this);
+			var row = link.parents('tr');
+			var children = table.find('tr.' + row.attr('id'));
+			
+			if (link.is('.hide')) {
+				link.text('Show').removeClass('hide').addClass('show');
+				children.hide();
+			}
+			
+			else if (link.is('.show')) {
+				link.text('Hide').removeClass('show').addClass('hide');
+				children.show();
+			}
+		});
+	});
+	
+})(jQuery);
+
+
+/*
  * Event context toggle
  */
 

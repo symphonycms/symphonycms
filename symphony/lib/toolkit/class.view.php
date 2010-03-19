@@ -220,6 +220,18 @@
 			return $title;
 		}
 		
+		public static function countParents(View $v) {
+			$current = $v->parent();
+			$count = 0;
+			
+			while (!is_null($current)) {
+				$current = $current->parent();
+				$count++;
+			}
+			
+			return $count;
+		}
+		
 		public static function move(self &$view, $dest){
 			$bits = preg_split('~\/~', $dest, -1, PREG_SPLIT_NO_EMPTY);
 			$handle = $bits[count($bits) - 1];
