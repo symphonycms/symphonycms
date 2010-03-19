@@ -206,7 +206,7 @@
 		$conf['database']['character_encoding'] = 'utf8';
 		$conf['database']['runtime_character_set_alter'] = '1';
 		$conf['database']['query_caching'] = 'default';
-		$conf['public']['display_event_xml_in_source'] = 'yes';
+		$conf['public']['display_event_xml_in_source'] = 'no';
 		$conf['region']['time_format'] = 'H:i';
 		$conf['region']['date_format'] = 'd F Y';
 		$conf['maintenance_mode']['enabled'] = 'no';
