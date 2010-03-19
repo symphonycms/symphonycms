@@ -15,7 +15,7 @@
 	url = git://github.com/pointybeard/jit_image_manipulation.git
 [submodule "extensions/profiledevkit"]
 	path = extensions/profiledevkit
-	url = git://github.com/rowan-lewis/profiledevkit.git
+	url = git://github.com/symphony/profiledevkit.git
 [submodule "extensions/debugdevkit"]
 	path = extensions/debugdevkit
-	url = git://github.com/rowan-lewis/debugdevkit.git
+	url = git://github.com/symphony/debugdevkit.git
