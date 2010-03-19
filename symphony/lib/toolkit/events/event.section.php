@@ -27,21 +27,24 @@
 			# Description: Prior to saving entry from the front-end. This delegate will force the Event to terminate if it populates the error
 			#              array reference. Provided with references to this object, the POST data and also the error array
 			$obj->ExtensionManager->notifyMembers('EventPreSaveFilter', '/frontend/', array('fields' => $fields, 'event' => &$event, 'messages' => &$filter_results, 'post_values'  => &$post_values));
-
-			if(is_array($filter_results) && !empty($filter_results)){
-				foreach($filter_results as $fr){
+			
+			if (is_array($filter_results) && !empty($filter_results)) {
+				$all_filters_status = true;
+				
+				foreach ($filter_results as $fr) {
 					list($type, $status, $message) = $fr;
-
+					
 					$result->appendChild(buildFilterElement($type, ($status ? 'passed' : 'failed'), $message));
 					
+					if (!$status) $all_filters_status = false;
+				}
+				
+				if (!$all_filters_status) {
+					$result->appendChild($post_values);
+					$result->setAttribute('result', 'error');
+					$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 					
-					if(!$status){
-						$result->appendChild($post_values);
-						
-						$result->setAttribute('result', 'error');
-						$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
-						return false;
-					}
+					return false;
 				}
 			}
 			
@@ -261,61 +264,36 @@
 	}
 
 	$entry_id = $position = $fields = NULL;	
+	$post = General::getPostData();
 	
-	if(@in_array('expect-multiple', $this->eParamFILTERS)){
-		if(is_array($_POST['fields']) && isset($_POST['fields'][0])){
-
-			$filedata = NULL;
-			if(isset($_FILES['fields'])){
-				$filedata = General::processFilePostData($_FILES['fields']);
-				unset($_FILES['fields']);
-			}
-			
-			foreach($_POST['fields'] as $position => $fields){
-				if(isset($_POST['id'][$position]) && is_numeric($_POST['id'][$position])) $entry_id = $_POST['id'][$position];
-
-				$entry = new XMLElement('entry', NULL, array('position' => $position));
-			
-				if(!is_null($filedata[$position])){
-					foreach($filedata[$position] as $handle => $data){
-
-						if(!isset($fields[$handle])) $fields[$handle] = NULL;
-						
-						if($data[3] == 0){
-							$fields[$handle] = array_combine(
-								array(
-								    'name',
-								    'type',
-								    'tmp_name',
-								    'error',
-								    'size',
-								), $data
-							);
-						}
-					}			
+	if (in_array('expect-multiple', $this->eParamFILTERS)) {
+		if (is_array($post['fields']) && isset($post['fields'][0])) {
+			foreach ($post['fields'] as $position => $fields) {
+				if (isset($post['id'][$position]) && is_numeric($post['id'][$position])) {
+					$entry_id = $post['id'][$position];
 				}
-
-				$ret = __doit(self::getSource(), $fields, $entry, $this->_Parent, $this, $this->eParamFILTERS, $position, $entry_id);
 				
-				if(!$ret) $success = false;
+				$entry = new XMLElement('entry', NULL, array('position' => $position));
+				
+				$ret = __doit(
+					self::getSource(), $fields, $entry, $this->_Parent,
+					$this, $this->eParamFILTERS, $position, $entry_id
+				);
+				
+				if (!$ret) $success = false;
 				
 				$result->appendChild($entry);
-				
 			}
 		}
-		
 	}
-		
-	else{
-		
-		$fields = General::getPostData();
-		$fields = $fields['fields'];
+	
+	else {
+		$fields = $post['fields'];
 		$entry_id = NULL;
 		
-		if(isset($_POST['id']) && is_numeric($_POST['id'])) $entry_id = $_POST['id'];
+		if (isset($post['id']) && is_numeric($post['id'])) $entry_id = $post['id'];
 		
 		$success = __doit(self::getSource(), $fields, $result, $this->_Parent, $this, $this->eParamFILTERS, NULL, $entry_id);
-		
 	}
 	
 	if($success && isset($_REQUEST['redirect'])) redirect($_REQUEST['redirect']);
