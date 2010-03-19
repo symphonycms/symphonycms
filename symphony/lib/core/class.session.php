@@ -26,8 +26,10 @@
 					self::$_cache->write('_session_config', true);
 				}
 
-				ini_set('session.save_handler', 'user');
-				ini_set('session.gc_maxlifetime', $lifetime);
+				if (!session_id()) {
+				    ini_set('session.save_handler', 'user');
+				    ini_set('session.gc_maxlifetime', $lifetime);
+				}
 				
 				session_set_save_handler(
 					array('Session', 'open'),
