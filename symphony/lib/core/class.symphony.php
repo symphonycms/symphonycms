@@ -51,6 +51,8 @@
 			self::$Configuration = new Configuration(true);
 			self::$Configuration->setArray($settings);
 			
+			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
+			
 			self::$_lang = (self::$Configuration->get('lang', 'symphony') ? self::$Configuration->get('lang', 'symphony') : 'en');		
 			
 			// Legacy support for __LANG__ constant
@@ -74,8 +76,6 @@
 			}
 			
 			Lang::loadAll($this->ExtensionManager);
-
-			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
 			
 		}
 		
