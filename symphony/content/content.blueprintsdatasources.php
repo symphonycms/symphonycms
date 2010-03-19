@@ -181,20 +181,19 @@
 			if (!is_array($sections)) $sections = array();
 			$field_groups = array();
 			
-			foreach($sections as $section) $field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
+			foreach($sections as $section){
+				$field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
+			}
 			
 			$options = array(
-								
 				array('label' => __('System'), 'options' => array(
-							array(__('authors'), ($fields['source'] == __('authors')), __('Authors')),
-							array(__('navigation'), ($fields['source'] == __('navigation')), __('Navigation')),
-					)),
-							
-				array('label' => __('Custom XML'), 'options' => array(			
-							array(__('dynamic_xml'), ($fields['source'] == __('dynamic_xml')), __('Dynamic XML')),	
-							array(__('static_xml'), ($fields['source'] == __('static_xml')), __('Static XML')),
-					)),
-				
+						array(__('authors'), ($fields['source'] == __('authors')), __('Authors')),
+						array(__('navigation'), ($fields['source'] == __('navigation')), __('Navigation')),
+				)),
+				array('label' => __('Custom XML'), 'options' => array(
+						array(__('dynamic_xml'), ($fields['source'] == __('dynamic_xml')), __('Dynamic XML')),
+						array(__('static_xml'), ($fields['source'] == __('static_xml')), __('Static XML')),
+				)),
 			);
 			
 			if(is_array($sections) && !empty($sections)){
