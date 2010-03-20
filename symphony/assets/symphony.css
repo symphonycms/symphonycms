@@ -1,0 +1,196 @@
+/* @group Symphony */
+	
+	* {
+		box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		font-family: inherit;
+		font-size: inherit;
+		font-style: inherit;
+		font-weight: inherit;
+		line-height: inherit;
+		margin: 0;
+		padding: 0;
+	}
+	a {
+		outline: none;
+	}
+	img {
+		border: none;
+	}
+	
+	body {
+		font-family: "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+		font-style: normal;
+		font-size: 9pt;
+		font-weight: normal;
+	}
+	
+	/* @group Header */
+		
+		h1 {
+			background: #222222; /* TODO: Find fallback colour. */
+			background: -moz-linear-gradient(
+				top,
+				hsla(0, 0%, 10%, 1),
+				hsla(0, 0%, 20%, 1) 57px,
+				hsla(0, 0%, 10%, 1)
+			);
+			font-size: 12pt;
+			line-height: 60px;
+			padding: 0 20px;
+			text-shadow: 2px 2px 12px black;
+		}
+		h1 a,
+		#session a {
+			color: hsla(0, 0%, 100%, 0.8);
+			text-decoration: none;
+		}
+		h1 a:hover,
+		#session a:hover {
+			color: hsla(0, 0%, 100%, 1);
+		}
+		
+		/* @group Session */
+			
+			#session {
+				line-height: 60px;
+				list-style: none;
+				position: absolute;
+				right: 20px;
+				top: 0;
+			}
+			#session li {
+				display: block;
+				float: left;
+				margin: 0 0 0 10px;
+			}
+			#session li a {
+				border-radius: 3px;
+				-moz-border-radius: 3px;
+				-webkit-border-radius: 3px;
+				display: inline-block;
+				line-height: 15px;
+				padding: 5px;
+			}
+			#session li a:hover {
+				background: hsla(0, 0%, 50%, 0.2);
+			}
+			
+		/* @end */
+		
+		/* @group Navigation */
+			
+			#nav {
+				background: #d8d8d8; /* TODO: Find fallback colour. */
+				background: -moz-linear-gradient(
+					top,
+					hsla(0, 0%, 95%, 1),
+					hsla(0, 0%, 90%, 1) 1px,
+					hsla(0, 0%, 80%, 1) 32px,
+					hsla(0, 0%, 0%, 0.4) 32px,
+					hsla(0, 0%, 0%, 0.2) 33px,
+					hsla(0, 0%, 0%, 0)
+				);
+				left: 0;
+				list-style: none;
+				padding: 0 10px 3px 10px;
+				position: absolute;
+				right: 0;
+				top: 60px;
+				white-space: nowrap;
+			}
+			#nav > li {
+				color: hsla(0, 0%, 0%, 0.8);
+				display: block;
+				float: left;
+				font-weight: bold;
+				height: 32px;
+				line-height: 31px;
+				padding: 0 10px;
+				position: relative;
+			}
+			#nav #nav-system,
+			#nav #nav-blueprints,
+			#nav #nav-expand {
+				float: right;
+			}
+			#nav > li.active {
+				background: #5e84b1; /* TODO: Find fallback colour. */
+				background: -moz-linear-gradient(
+					top,
+					hsla(215, 40%, 75%, 1),
+					hsla(215, 40%, 60%, 1) 1px,
+					hsla(215, 40%, 50%, 1)
+				);
+				color: #ffffff;
+			}
+			#nav > li:hover {
+				color: #ffffff;
+				background: #444444; /* TODO: Find fallback colour. */
+				background: -moz-linear-gradient(
+					top,
+					hsla(0, 0%, 50%, 1),
+					hsla(0, 0%, 35%, 1) 1px,
+					hsla(0, 0%, 25%, 1)
+				);
+			}
+			
+			/* @group Sub Navigation */
+				
+				#nav ul {
+					background: #444444; /* TODO: Find fallback colour. */
+					background: -moz-linear-gradient(
+						top,
+						hsla(0, 0%, 25%, 1),
+						hsla(0, 0%, 20%, 1)
+					);
+					display: none;
+					left: 0;
+					list-style: none;
+					min-width: 100%;
+					position: absolute;
+					top: 32px;
+				}
+				#nav li:hover ul {
+					display: block;
+				}
+				#nav #nav-system ul,
+				#nav #nav-blueprints ul,
+				#nav #nav-expand ul {
+					left: auto;
+					right: 0;
+				}
+				#nav ul a {
+					color: #ffffff;
+					display: block;
+					font-weight: normal;
+					padding: 0 10px;
+					text-decoration: none;
+				}
+				#nav ul a:hover {
+					background: #333333;
+					background: hsla(0, 0%, 0%, 0.2);
+				}
+				#nav ul,
+				#nav ul li:last-child a {
+					border-bottom-right-radius: 5px;
+					border-bottom-left-radius: 5px;
+					-moz-border-radius-bottomright: 5px;
+					-moz-border-radius-bottomleft: 5px;
+					-webkit-border-bottom-right-radius: 5px;
+					-webkit-border-bottom-left-radius: 5px;
+				}
+				
+			/* @end */
+			
+			#nav + *,
+			#nav ~ * {
+				display: none;
+			}
+			
+		/* @end */
+		
+	/* @end */
+	
+/* @end */
