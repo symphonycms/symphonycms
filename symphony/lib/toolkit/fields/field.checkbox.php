@@ -145,7 +145,13 @@
 			$wrapper->appendChild($label);			
 		}
 		
-		function prepareTableValue($data, XMLElement $link=NULL){
+		public function appendFormattedElement(&$wrapper, $data, $encode=false, $mode=NULL, $entry_id=NULL) {
+			$value = ($data['value'] == 'yes' ? 'Yes' : 'No');
+			
+			$wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($value) : $value)));
+		}
+		
+		public function prepareTableValue($data, XMLElement $link=NULL){
 			return ($data['value'] == 'yes' ? __('Yes') : __('No'));
 		}
 
