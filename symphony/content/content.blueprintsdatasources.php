@@ -131,6 +131,7 @@
 				Widget::TableHead($dsTableHead), NULL, 
 				Widget::TableBody($dsTableBody), NULL
 			);
+			$table->setAttribute('id', 'datasources-list');
 			
 			$this->Form->appendChild($table);
 			

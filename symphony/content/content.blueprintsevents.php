@@ -82,6 +82,7 @@
 				Widget::TableHead($eTableHead), null, 
 				Widget::TableBody($eTableBody), null
 			);
+			$table->setAttribute('id', 'events-list');
 			
 			$this->Form->appendChild($table);
 			
