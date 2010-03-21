@@ -48,7 +48,7 @@
 			);
 			font-size: 12pt;
 			line-height: 60px;
-			padding: 0 20px;
+			padding: 0 30px;
 			text-shadow: 2px 2px 12px black;
 		}
 		h1 a,
@@ -67,7 +67,7 @@
 				line-height: 60px;
 				list-style: none;
 				position: absolute;
-				right: 20px;
+				right: 30px;
 				top: 0;
 			}
 			#session li {
@@ -105,7 +105,7 @@
 				height: 35px;
 				list-style: none;
 				margin: 0 0 -3px 0;
-				padding: 0 10px;
+				padding: 0 20px;
 				white-space: nowrap;
 			}
 			#nav > li {
@@ -202,7 +202,7 @@
 		
 		h2 {
 			font-size: 12pt;
-			margin: 20px;
+			margin: 20px 30px;
 		}
 		
 		/* @group Buttons */
@@ -259,12 +259,12 @@
 			}
 			table th:first-child,
 			table td:first-child {
-				padding-left: 20px;
+				padding-left: 30px;
 				width: 20%;
 			}
 			table th:last-child,
 			table td:last-child {
-				padding-right: 20px;
+				padding-right: 30px;
 			}
 			table thead tr th,
 			table tbody tr td {
@@ -299,7 +299,7 @@
 		/* @group Actions */
 			
 			.actions {
-				margin: 20px;
+				margin: 20px 30px;
 				text-align: right;
 			}
 			.actions input {
@@ -312,28 +312,28 @@
 	
 	/* @group Views List */
 		
-		#views-list td.toggle {
-			padding-left: 3.3em;
+		#views-list td.toggle div {
+			margin: -6px 0;
+			padding: 6px 0;
+			position: relative;
 		}
 		#views-list td.toggle a.hide,
 		#views-list td.toggle a.show {
+			border-radius: 5px;
+			-moz-border-radius: 5px;
+			-webkit-border-radius: 5px;
 			display: inline-block;
-			left: 0;
-			line-height: 1;
-			margin: -0.5em 0 -0.5em -2.3em;
-			padding: 0.5em 0;
+			left: -25px;
+			position: absolute;
 			text-align: center;
 			text-decoration: none;
-			width: 2em;
+			width: 20px;
 		}
 		#views-list td.toggle a.hide:hover,
 		#views-list td.toggle a.show:hover {
 			background: hsla(0, 0%, 0%, 0.1);
-			border-radius: 0.5em;
-			-moz-border-radius: 0.5em;
-			-webkit-border-radius: 0.5em;
 		}
-		#views-list td.toggle span {
+		#views-list td.toggle div span {
 			color: #888877;
 			display: inline-block;
 			-moz-transform: matrix(-1, 0, 0, 1, 0, 0);
@@ -341,7 +341,7 @@
 			-o-transform:matrix(-1, 0, 0, 1, 0, 0);
 			font-size: 7pt;
 		}
-		#views-list .selected td.toggle span {
+		#views-list .selected td.toggle div span {
 			color: #aabbee;
 		}
 		

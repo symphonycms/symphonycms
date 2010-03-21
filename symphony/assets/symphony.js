@@ -216,7 +216,7 @@ var Symphony;
 				if (depth) {
 					$('<span />')
 						.html('&#x21b5;')
-						.css('margin-left', ((depth - 1) * 2) + 'em')
+						.css('margin-left', ((depth - 1) * 20) + 'px')
 						.prependTo(cell);
 				}
 				
@@ -233,11 +233,12 @@ var Symphony;
 			}
 			
 			else {
-				var span = $('<span />')
+				$('<span />')
 					.html('&#x21b5;')
 					.prependTo(cell);
-				
 			}
+			
+			cell.wrapInner('<div />');
 		});
 		
 		$('#views-list td.toggle a, #views-list td.toggle + td span').live('mousedown', function() {
