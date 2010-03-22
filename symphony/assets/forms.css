@@ -97,26 +97,42 @@ h2,
 	margin: 1.5em 0 0 -200px;
 }
 .settings table {
+	width: 100%;
 	border: 1px solid #bbb;
 	border-spacing:0;
 }
-.settings table thead tr {
+.settings table thead tr, .settings .system-action {
 	background-color: #a6a6a6;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#aaa));
-	background: -moz-linear-gradient(top center, #ccc 0%, #aaa 100%);
+	background: -webkit-gradient(linear, left top, left bottom, from(#ddd), to(#bbb));
+	background: -moz-linear-gradient(top center, #ddd 0%, #bbb 100%);
 }
 .settings table th {
 	padding: .75em;
 	border-bottom: 1px solid #888;
 	color: #555;
 	font-weight: normal;
-	font-size: 1.1em;
+	line-height: 2.6em;
 }
 .settings table td {
 	padding: .5em 1em;
 	border-top: 1px solid #ccc;
 	border-left: 1px solid #ccc;
 	background-color: #f2f2f2;
+}
+.settings .system-action {
+	float: left;
+	width: 100%;
+	padding: 1em 0;
+	text-align: left;
+	color: #555;
+}
+.settings .system-action button {
+	float: right;
+	margin-right: 1em;
+}
+.settings .system-action p {
+	margin: 0 0 0 1em;
+	line-height: 2.6em;
 }
 td.checkbox {
 	width: 50px;
@@ -436,28 +452,13 @@ ul.tags .more:hover {
 	background-color: #5677c3;
 }
 .sections-tool {
-	border: 1px solid #999;
 	margin-bottom: 1.75em;
 }
-.sections-tool div {
-	display: block;
-	background-color: #a6a6a6;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#aaa));
-	background: -moz-linear-gradient(top center, #ccc 0%, #aaa 100%);
-	border-bottom: 1px solid #888;
-	padding: 12px;
-}
-.sections-tool div p {
-	display: inline;
-	color: #555;
-	margin: 0.4em 0;
-	float: right;
-}
 .sections-tool table {
+	clear:both;
 	width: 100%;
 	background-color: #dcdcdc;
-	border-collapse: collapse;
-	border: none;
+	border-top: none;
 }
 .sections-tool table td {
 	padding: 0.5em 1em;
