@@ -95,6 +95,7 @@ div.actions {
 }
 div.actions select {
 	margin: 0 8px 0 11px;
+	max-width: 50%;
 }
 div.actions + ul.page {
 	margin-top: -58px;
