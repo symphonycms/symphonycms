@@ -363,7 +363,7 @@ var Symphony;
 
 				t = Symphony.Language.get(t, {
 					'action': o.text().toLowerCase(),
-					'name': $('table input:checked').parents('tr').find('td').eq(0).text(),
+					'name': $.trim($('table input:checked').parents('tr').find('td').eq(0).text()),
 					'count': i
 				});
 
