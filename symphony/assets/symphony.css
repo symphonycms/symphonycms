@@ -34,6 +34,7 @@
 		font-style: normal;
 		font-size: 9pt;
 		font-weight: normal;
+		line-height: 1.3;
 	}
 	
 	/* @group Header */
@@ -209,7 +210,28 @@
 		
 		h2 {
 			font-size: 12pt;
-			margin: 20px 30px;
+			padding: 20px 30px;
+		}
+		
+		h3 {
+			margin: 10px 0;
+		}
+		
+		code {
+			font-family: 'Monaco', 'Consolas', 'Andale Mono', monospace;
+			font-size: 8pt;
+			color: hsla(0, 0%, 0%, 0.8);
+		}
+		
+		pre {
+			border-bottom: 1px solid hsla(0, 0%, 0%, 0.1);
+			border-top: 1px solid hsla(0, 0%, 0%, 0.1);
+			margin: 10px 0;
+			padding: 10px 0;
+		}
+		
+		p {
+			margin: 10px 0;
 		}
 		
 		.inactive {
@@ -305,11 +327,48 @@
 			
 		/* @end */
 		
+		/* @group Forms */
+			
+			form fieldset {
+				border: none;
+				border-top: 1px solid hsla(0, 0%, 0%, 0.1);
+				padding: 10px 30px 10px 230px;
+			}
+			form fieldset legend {
+				float: left;
+				font-weight: bold;
+				margin: 10px 0 0 0;
+				text-indent: -200px;
+			}
+			form fieldset legend + .help {
+				float: left;
+				margin-top: 2.5em;
+				margin-left: -200px;
+			}
+			
+			form label {
+				display: block;
+				margin: 10px 0;
+			}
+			
+			form label input,
+			form .label input,
+			form label select,
+			form .label select {
+				margin: 2px 0 0 0;
+				width: 100%;
+			}
+			
+		/* @end */
+		
 		/* @group Actions */
 			
 			.actions {
-				margin: 20px 30px;
+				padding: 20px 30px;
 				text-align: right;
+			}
+			fieldset + .actions {
+				border-top: 1px solid hsla(0, 0%, 0%, 0.1);
 			}
 			.actions input {
 				float: none;
