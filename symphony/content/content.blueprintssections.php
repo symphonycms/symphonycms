@@ -272,6 +272,7 @@
 			$table = Widget::Table(
 				Widget::TableHead($aTableHead), NULL, Widget::TableBody($aTableBody)
 			);
+			$table->setAttribute('id', 'sections-list');
 
 			$this->Form->appendChild($table);
 			

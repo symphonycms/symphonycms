@@ -57,6 +57,7 @@
 				Widget::TableHead($uTableHead), null, 
 				Widget::TableBody($uTableBody), null
 			);
+			$table->setAttribute('id', 'utilities-list');
 			
 			$this->Form->appendChild($table);
 			

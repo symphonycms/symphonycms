@@ -27,7 +27,7 @@
 		}
 		
 		public function setPageType($type){
-			$this->addStylesheetToHead(ADMIN_URL . '/assets/' . ($type == 'table' ? 'tables' : 'forms') . '.css', 'screen', 30);
+			//$this->addStylesheetToHead(ADMIN_URL . '/assets/' . ($type == 'table' ? 'tables' : 'forms') . '.css', 'screen', 30);
 		}
 		
 		public function setTitle($val, $position=null) {
@@ -45,12 +45,15 @@
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Symphony::lang());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
+			
+			$this->addStylesheetToHead(ADMIN_URL . '/assets/symphony.css', 'screen', 60);
 			$this->addStylesheetToHead(ADMIN_URL . '/assets/symphony.duplicator.css', 'screen', 70);
+			
 			$this->addScriptToHead(ADMIN_URL . '/assets/jquery.js', 50);
-			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.collapsible.js', 70);
-			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.orderable.js', 71);
-			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.duplicator.js', 72);
-			$this->addScriptToHead(ADMIN_URL . '/assets/admin.js', 60);
+			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.collapsible.js', 51);
+			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.orderable.js', 52);
+			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.duplicator.js', 53);
+			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.js', 54);
 			
 			###
 			# Delegate: InitaliseAdminPageHead
@@ -156,7 +159,7 @@
 			$ul->appendChild($li);
 			
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(__('Logout'), ADMIN_URL . '/logout/', NULL, 'button'));
+			$li->appendChild(Widget::Anchor(__('Logout'), ADMIN_URL . '/logout/'));
 			$ul->appendChild($li);
 			
 			###

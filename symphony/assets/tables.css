@@ -131,3 +131,36 @@ form,
 	padding-right: 0;
 	padding-left: 0;
 }
+
+table#views-list td.toggle {
+	padding-left: 3.3em;
+}
+table#views-list td.toggle a.hide,
+table#views-list td.toggle a.show {
+	display: inline-block;
+	left: 0;
+	line-height: 1;
+	margin: -0.5em 0 -0.5em -2.3em;
+	padding: 0.5em 0;
+	text-align: center;
+	text-decoration: none;
+	width: 2em;
+}
+table#views-list td.toggle a.hide:hover,
+table#views-list td.toggle a.show:hover {
+	background: hsla(0, 0%, 0%, 0.1);
+	border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
+	-webkit-border-radius: 0.5em;
+}
+table#views-list td.toggle span {
+	color: #888877;
+	display: inline-block;
+	-moz-transform: matrix(-1, 0, 0, 1, 0, 0);
+	-webkit-transform: matrix(-1, 0, 0, 1, 0, 0);
+	-o-transform:matrix(-1, 0, 0, 1, 0, 0);
+	font-size: 7pt;
+}
+table#views-list .selected td.toggle span {
+	color: #aabbee;
+}

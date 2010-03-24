@@ -64,8 +64,7 @@
 				array(__('Template'), 'col'),
 				array(__('<acronym title="Universal Resource Locator">URL</acronym>'), 'col'),
 				array(__('<acronym title="Universal Resource Locator">URL</acronym> Parameters'), 'col'),
-				array(__('Type'), 'col'),
-				array(__('Toggle'), 'col')
+				array(__('Type'), 'col')
 			);
 			
 			$iterator = new ViewIterator;			
@@ -83,10 +82,6 @@
 					
 					$page_title = $view->title;
 					
-					if ($view->parent()) {
-						$page_title = '&#x00bb ' . $page_title;
-					}
-					
 					$page_url = sprintf('%s/%s/', URL, $view->path); 
 					$page_edit_url = sprintf('%sedit/%s/', Administration::instance()->getCurrentPageURL(), $view->path);
 					$page_template = $view->handle . '.xsl';
@@ -95,7 +90,6 @@
 					$page_types = $view->types;
 					
 					$link = Widget::Anchor($page_title, $page_edit_url, $view->handle);
-					$link->setAttribute('style', sprintf('margin-left: %dpx;', 10 * View::countParents($view)));
 					
 					$col_title = Widget::TableData($link);
 					$col_title->appendChild(Widget::Input("items[{$view->path}]", null, 'checkbox'));
@@ -105,8 +99,8 @@
 						$page_template_url
 					));
 					
-					$col_url = Widget::TableData(Widget::Anchor($page_url, $page_url));
-					$view->parent();
+					$col_url = Widget::TableData(Widget::Anchor(substr($page_url, strlen(URL)), $page_url));
+					
 					if(is_array($view->{'url-parameters'}) && count($view->{'url-parameters'}) > 0){
 						$col_params = Widget::TableData(implode('/', $view->{'url-parameters'}));
 						
@@ -121,7 +115,10 @@
 						$col_types = Widget::TableData(__('None'), 'inactive');
 					}
 					
-					$columns = array($col_title, $col_template, $col_url, $col_params, $col_types, Widget::TableData(''));
+					$col_toggle = Widget::TableData('');
+					$col_toggle->setAttribute('class', 'toggle');
+					
+					$columns = array($col_title, $col_template, $col_url, $col_params, $col_types);
 					
 					$row = Widget::TableRow($columns);
 					$next = $view->parent();
@@ -133,9 +130,9 @@
 						$next = $next->parent();
 					}
 					
-					if (is_null($view->parent())) {
+					//if (is_null($view->parent())) {
 						$row->setAttribute('id', 'view-' . $view->guid);
-					}
+					//}
 					
 					if (trim($class)) {
 						$row->setAttribute('class', trim($class));
@@ -147,7 +144,7 @@
 			
 			$table = Widget::Table(
 				Widget::TableHead($aTableHead), null, 
-				Widget::TableBody($aTableBody), 'orderable'
+				Widget::TableBody($aTableBody)
 			);
 			$table->setAttribute('id', 'views-list');
 			
