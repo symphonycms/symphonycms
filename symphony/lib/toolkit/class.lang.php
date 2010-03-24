@@ -176,50 +176,47 @@
 		 *
 		 * Given a string, this will clean it for use as a Symphony handle. Preserves multi-byte characters
 		 * @param string $string
-		 * @param int $max_length the maximum number of characters in the handle
-		 * @param string $delim all non-valid characters will be replaced with this
+		 * @param string $delimiter all non-valid characters will be replaced with this
 		 * @param boolean $uriencode force the resultant string to be uri encoded making it safe for URL's
 		 * @param boolean $apply_transliteration if true, this will run the string through an array of substitution characters
+		 * @param boolean $preserve_case if false, the resultant string is passed through the strtolower() function
 		 * @return string resultant handle
-		 */					
-		public static function createHandle($string, $max_length=255, $delim='-', $uriencode=false, $apply_transliteration=true, $additional_rule_set=NULL) {
+		 */
+		public static function createHandle($string, $delimiter='-', $uri_encode=false, $apply_transliteration=true, array $additional_rule_set=NULL, $preserve_case=false) {
 
 			// Use the transliteration table if provided
 			if($apply_transliteration) $string = _t($string);
-
-			$max_length = intval($max_length);
 			
 			// Strip out any tag
 			$string = strip_tags($string);
 			
 			// Remove punctuation
 			$string = preg_replace('/[\\.\'"]+/', NULL, $string);	
-						
-			// Trim it
-			if($max_length != NULL && is_numeric($max_length)) $string = General::limitWords($string, $max_length);
 								
 			// Replace spaces (tab, newline etc) with the delimiter
-			$string = preg_replace('/[\s]+/', $delim, $string);					
+			$string = preg_replace('/[\s]+/', $delim, $string);
 
 			// Find all legal characters
 			preg_match_all('/[^<>?@:!-\/\[-`ëí;‘’]+/u', $string, $matches);
 
 			// Join only legal character with the $delim
-			$string = implode($delim, $matches[0]);
+			$string = implode($delimiter, $matches[0]);
 			
 			// Allow for custom rules
 			if(is_array($additional_rule_set) && !empty($additional_rule_set)){
-				foreach($additional_rule_set as $rule => $replacement) $string = preg_replace($rule, $replacement, $string);
+				foreach($additional_rule_set as $rule => $replacement){
+					$string = preg_replace($rule, $replacement, $string);
+				}
 			}
 			
 			// Remove leading or trailing delim characters
-			$string = trim($string, $delim);
+			$string = trim($string, $delimiter);
 				
 			// Encode it for URI use
-			if($uriencode) $string = urlencode($string);	
+			if($uri_encode === true) $string = urlencode($string);
 					
 			// Make it lowercase
-			$string = strtolower($string);		
+			if($preserve_case === false) $string = strtolower($string);
 
 			return $string;
 			
@@ -233,21 +230,28 @@
 		 * @param string $string string to clean
 		 * @param string $delim replacement for invalid characters
 		 * @param boolean $apply_transliteration if true, umlauts and special characters will be substituted
+		 * @param boolean $preserve_case if false, the resultant string is passed through the strtolower() function
 		 * @return string created filename
-		 */					
-		public static function createFilename($string, $delim = '-', $apply_transliteration = true) {
+		 */
+		public static function createFilename($string, $delimiter='-', $apply_transliteration = true, $preserve_case=false) {
 
 			// Use the transliteration table if provided
-			if($apply_transliteration) $string = _t($string);
+			if($apply_transliteration == true) $string = _t($string);
 
 			// Strip out any tag
-			$string = strip_tags($string);				
+			$string = strip_tags($string);
 
 			// Find all legal characters
-			preg_match_all('/[\p{L}\w:;.,+=~]+/u', $string, $matches);
+			$count = preg_match_all('/[\p{L}\w:;.,+=~]+/u', $string, $matches);
+			if($count <= 0 || $count == false){
+				preg_match_all('/[\w:;.,+=~]+/', $string, $matches);
+			}
 
 			// Join only legal character with the $delim
-			$string = implode($delim, $matches[0]);
+			$string = implode($delimiter, $matches[0]);
+			
+			// Make it lowercase
+			if($preserve_case === false) $string = strtolower($string);
 
 			return $string;
 

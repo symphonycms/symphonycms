@@ -1,10 +1,79 @@
 <?php
+	
+	Class DatasourceException extends Exception {}
 
+	Class DatasourceFilterIterator extends FilterIterator{
+		public function __construct(){
+			parent::__construct(new DirectoryIterator(DATASOURCES));
+		}
+	
+		public function accept(){
+			if($this->isDir() == false && preg_match('/\.php$/i', $this->getFilename())){
+				return true;
+			}
+			return false;
+		}
+	}	
+	
+	Class DatasourceIterator implements Iterator{
+
+		private $_iterator;
+		private $_length;
+		private $_position;
+
+		public function __construct($path=NULL, $recurse=true){
+			$this->_iterator = new DatasourceFilterIterator;
+			$this->_length = $this->_position = 0;
+			foreach($this->_iterator as $f){
+				$this->_length++;
+			}
+			$this->_iterator->getInnerIterator()->rewind();
+		}
+
+		public function current(){
+			return Datasource::loadFromPath($this->_iterator->current()->getPathname());
+		}
+					
+		public function innerIterator(){
+			return $this->_iterator;
+		}
+
+		public function next(){
+			$this->_position++;
+			$this->_iterator->next();
+		}
+
+		public function key(){
+			return $this->_iterator->key();
+		}
+
+		public function valid(){
+			return $this->_iterator->valid();
+		}
+
+		public function rewind(){
+			$this->_position = 0;
+			$this->_iterator->rewind();
+		}
+
+		public function position(){
+			return $this->_position;
+		}
+
+		public function length(){
+			return $this->_length;
+		}
+
+	}
+	
 	##Interface for datasouce objects
 	Abstract Class DataSource{
 		
 		const FILTER_AND = 1;
 		const FILTER_OR = 2;
+		
+		protected $_about;
+		protected $_parameters;
 		
 		protected $_env;
 		protected $_Parent;
@@ -12,39 +81,55 @@
 		protected $_dependencies;
 		protected $_force_empty_result;
 		
-		const CRLF = "\r\n";
+		protected static $_loaded;
 		
 		// Abstract function
-		public function about(){}
-		public function grab(){}
-
-		public static function loadFromName($name, $environment=NULL, $process_params=true){
-			$classname = self::__getClassName($name);	        
-	        $path = self::__getDriverPath($name);
-	        
-	        if(!@is_file($path)){
+		abstract public function grab();
+		
+		public function &about(){
+			return $this->_about;
+		}
+		
+		public function &parameters(){
+			return $this->_parameters;
+		}
+		
+		public static function loadFromPath($pathname){
+			if(!is_array(self::$_loaded)){
+				self::$_loaded = array();
+			}
+			
+			if(!@is_file($pathname)){
 		        throw new Exception(
 					__('Could not find Data Source <code>%s</code>. If the Data Source was provided by an Extensions, ensure that it is installed, and enabled.', array($name))
 				);
-	        }
-	        
-			if(!class_exists($classname)){
-				require_once($path);
 			}
-								
-			return new $classname($environment, $process_params);
+			
+			if(!isset(self::$_loaded[$pathname])){
+				self::$_loaded[$pathname] = require($pathname);
+			}
+			
+			$obj = new self::$_loaded[$pathname];
+			$obj->parameters()->pathname = $pathname;
+			
+			return $obj;
+			
+		}
+		
+		public static function loadFromName($name, $environment=NULL, $process_params=true){
+			return self::loadFromPath(self::__find($name) . "/{$name}.php");
 		}
 		
 		protected static function __find($name){
 		 
-		    if(@is_file(DATASOURCES . "/data.{$name}.php")) return DATASOURCES;
+		    if(@is_file(DATASOURCES . "/{$name}.php")) return DATASOURCES;
 		    else{	
 
 				$extensions = ExtensionManager::instance()->listInstalledHandles();
 				
 				if(is_array($extensions) && !empty($extensions)){
 					foreach($extensions as $e){
-						if(@is_file(EXTENSIONS . "/{$e}/data-sources/data.{$name}.php")) return EXTENSIONS . "/{$e}/data-sources";
+						if(@is_file(EXTENSIONS . "/{$e}/data-sources/{$name}.php")) return EXTENSIONS . "/{$e}/data-sources";
 					}	
 				}		    
 	    	}
@@ -67,7 +152,85 @@
         protected static function __getDriverPath($name){	        
 	        return self::__getClassPath($name) . "/data.{$name}.php";
         }
+
+		## This function is required in order to edit it in the data source editor page. 
+		## Do not overload this function if you are creating a custom data source. It is only
+		## used by the data source editor
+		public function allowEditorToParse(){
+			return false;
+		}
+				
+		## This function is required in order to identify what type of data source this is for
+		## use in the data source editor. It must remain intact. Do not overload this function in
+		## custom data sources.
+		public function getSource(){
+			return NULL;
+		}
 		
+		public function type(){
+			return NULL;
+		}
+		
+		public function template(){
+			return NULL;
+		}
+		
+		public function save(MessageStack &$errors){
+			// About info:
+			if (!isset($this->about()->name) || empty($this->about()->name)) {
+				$errors->append('about::name', __('This is a required field'));
+			}
+
+			// Save type:
+			if ($errors->length() <= 0) {
+				$user = Administration::instance()->User;
+				
+				if (!file_exists($this->template())) {
+					$errors->append('write', __("Unable to find Data Source Type template '%s'.", array($this->template())));
+					throw new Exception(__("Unable to find Data Source Type template '%s'.", array($this->template())));
+				}
+				
+				$handle = Lang::createFilename($this->about()->name);
+				$filename = "{$handle}.php";
+				$classname = Lang::createHandle(ucwords($this->about()->name), '_', false, true, array('/[^a-zA-Z0-9_\x7f-\xff]/' => NULL), true);
+				$pathname = DATASOURCES . "/{$filename}";
+
+				// To Do: Check for duplicates
+				
+				$data = array(
+					$classname,
+					// About info:
+					var_export($this->about()->name, true),
+					var_export($user->getFullName(), true),
+					var_export(URL, true),
+					var_export($user->get('email'), true),
+					var_export('1.0', true),
+					var_export(DateTimeObj::getGMT('c'), true),
+				);
+
+				foreach ($this->parameters() as $value) {
+					$data[] = var_export($value, true);
+				}
+
+				if(General::writeFile(
+					$pathname, 
+					vsprintf(file_get_contents($this->template()), $data), 
+					Symphony::Configuration()->core()->symphony->{'file-write-mode'}
+				)){
+					return $pathname;
+				}
+				
+				$errors->append('write', __('Failed to write datasource "%s" to disk.', array($filename)));
+			}
+			
+			throw new Exception('Errors were encountered whilst attempting to save.');
+		}
+		
+				
+		public function getDependencies(){
+			return $this->_dependencies;
+		}
+/*
 		public function __construct($env=NULL, $process_params=true){
 			$this->_Parent = Symphony::Parent();
 			$this->_force_empty_result = false;
@@ -127,7 +290,7 @@
 		protected function __redirectToErrorPage(){
 			throw new FrontendPageNotFoundException;
 		}
-		
+*/		
 		public function emptyXMLSet(XMLElement $xml=NULL){
 			if(is_null($xml)) $xml = new XMLElement($this->dsParamROOTELEMENT);
 			$xml->appendChild($this->__noRecordsFound());
@@ -220,29 +383,6 @@
 			return NULL;
 						
 		}
-
-		## This function is required in order to edit it in the data source editor page. 
-		## Do not overload this function if you are creating a custom data source. It is only
-		## used by the data source editor
-		public function allowEditorToParse(){
-			return false;
-		}
-				
-		## This function is required in order to identify what type of data source this is for
-		## use in the data source editor. It must remain intact. Do not overload this function in
-		## custom data sources.
-		public function getSource(){
-			return NULL;
-		}
 		
-		public function getTemplate() {
-			return null;
-		}
-				
-		public function getDependencies(){
-			return $this->_dependencies;
-		}
-				
-	
 	}
 	

@@ -2,7 +2,41 @@
 	
 	Class SectionsDataSource extends DataSource {
 		
-		public function canAppendAssociatedEntryCount() {
+		public function __construct(){
+			// Set Default Values
+			$this->_about = new StdClass;
+			$this->_parameters = (object)array(
+			   'root-element' => NULL,
+			   'limit' => 20,
+			   'page' => 1,
+			   'section' => NULL,
+			   'conditions' => array(),
+			   'filter' => array(),
+			   'redirect-404-on-empty' => false,
+			   'append-pagination' => false,
+			   'append-associated-entry-count' => false,
+			   'html-encode' => false,
+			   'sort-field' => 'system:id',
+			   'sort-order' => 'desc',
+			   'included-elements' => array(),
+			   'parameter-output' => array(),
+			);
+		}
+		
+		public function save(MessageStack &$errors){
+
+			if (strlen(trim($this->parameters()->limit)) == 0 || (is_numeric($this->parameters()->limit) && $this->parameters()->limit < 1)) {
+				$errors->append('limit', __('A result limit must be set'));
+			}
+			
+			if (strlen(trim($this->parameters()->page)) == 0 || (is_numeric($this->parameters()->page) && $this->parameters()->page < 1)) {
+				$errors->append('page', __('A page number must be set'));
+			}
+			
+			return parent::save($errors);
+		}
+		
+		/*public function canAppendAssociatedEntryCount() {
 			return false;
 		}
 		
@@ -60,10 +94,14 @@
 		
 		public function getSortOrder() {
 			return 'desc';
+		}*/
+		
+		final public function type(){
+			return 'ds_sections';
 		}
 		
-		public function getTemplate() {
-			return 'sections';
+		public function template(){
+			return EXTENSIONS . '/ds_sections/templates/datasource.php';
 		}
 		
 		public function grab() {

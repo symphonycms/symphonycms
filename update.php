@@ -49,14 +49,14 @@
 	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
 	require_once(TOOLKIT . '/class.general.php');
 	
-	if (isset($_GET['action']) && $_GET['action'] == 'remove') {
+	if(isset($_GET['action']) && $_GET['action'] == 'remove'){
 		unlink(DOCROOT . '/update.php');
 		redirect(ADMIN_URL . '/');
 	}
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.0.7');
+	define('kVERSION', '2.0.8RC1');
 	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/'.kVERSION.'/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -203,7 +203,7 @@ Options +FollowSymlinks
 ';
 
 				@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
-				
+
 				// No longer need symphony/.htaccess
 				if(file_exists(DOCROOT . '/symphony/.htaccess') && is_writable(DOCROOT . '/symphony/.htaccess')){
 					unlink(DOCROOT . '/symphony/.htaccess');
@@ -237,6 +237,10 @@ Options +FollowSymlinks
 				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 			
+			if(version_compare($existing_version, '2.0.8', '<')){
+				$frontend->Database->query('ALTER TABLE `tbl_fields_date` DROP `calendar`');
+			}
+
 			$sbl_version = $frontend->Database->fetchVar('version', 0, 
 				"SELECT `version` FROM `tbl_extensions` WHERE `name` = 'selectbox_link_field' LIMIT 1"
 			);

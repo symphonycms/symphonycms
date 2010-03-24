@@ -1,24 +1,23 @@
 <?php
 	
 	Class NavigationDataSource extends DataSource {
-		public function canRedirectOnEmpty() {
-			return false;
+		
+		public function __construct(){
+			// Set Default Values
+			$this->_about = new StdClass;
+			$this->_parameters = (object)array(
+				'root-element' => NULL,
+				'parent' => NULL,
+				'type' => NULL
+			);
 		}
 		
-		public function getFilters() {
-			return array();
+		final public function type(){
+			return 'ds_navigation';
 		}
 		
-		public function getRequiredURLParam() {
-			return '';
-		}
-		
-		public function getRootElement() {
-			return 'navigation';
-		}
-		
-		public function getTemplate() {
-			return 'navigation';
+		public function template(){
+			return EXTENSIONS . '/ds_navigation/templates/datasource.php';
 		}
 		
 		protected function buildParentFilter($parent) {

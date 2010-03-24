@@ -479,7 +479,7 @@
 			
 			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
 			
-			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z]+@i' => '', '/[^\w-\.]/i' => ''));
+			$classname = Lang::createHandle($fields['name'], '_', false, true, array('@^[^a-z]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
 			
 			$file = EVENTS . '/event.' . $classname . '.php';
@@ -501,7 +501,7 @@
 				
 				$multiple = @in_array('expect-multiple', $fields['filters']);
 				
-				$eventShell = file_get_contents(TEMPLATE . '/event.tpl');
+				$eventShell = file_get_contents(TEMPLATES . '/event.tpl');
 				
 				$about = array(
 					'name' => $fields['name'],

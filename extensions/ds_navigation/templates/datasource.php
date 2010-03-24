@@ -2,39 +2,33 @@
 	
 	require_once EXTENSIONS . '/ds_navigation/lib/navigationdatasource.php';
 	
-	class DataSource%s extends NavigationDataSource {
-		public function about() {
-			return array(
-				'name'			=> %s,
-				'author'		=> array(
-					'name'			=> %s,
-					'website'		=> %s,
-					'email'			=> %s
+	Final Class DataSource%1$s extends NavigationDataSource {
+
+		public function __construct(){
+			parent::__construct();
+
+			$this->_about = (object)array(
+				'name'			=> %2$s,
+				'author'		=> (object)array(
+					'name'			=> %3$s,
+					'website'		=> %4$s,
+					'email'			=> %5$s
 				),
-				'version'		=> %s,
-				'release-date'	=> %s
+				'version'		=> %6$s,
+				'release-date'	=> %7$s
 			);
+			
+			$this->_parameters = (object)array(
+				'root-element' => %8$s,
+				'parent' => %9$s,
+				'type' => %10$s
+			);
+
 		}
 		
 		public function allowEditorToParse() {
 			return true;
 		}
-		
-		public function canRedirectOnEmpty() {
-			return %s;
-		}
-		
-		public function getFilters() {
-			return %s;
-		}
-		
-		public function getRequiredURLParam() {
-			return %s;
-		}
-		
-		public function getRootElement() {
-			return %s;
-		}
 	}
 	
-?>
+	return 'DataSource%1$s';

@@ -337,7 +337,7 @@
 		function fetchAssociatedEntryIDs($value){
 		}
 				
-		public function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+		public function displayDatasourceFilterPanel(&$wrapper, $data=NULL, MessageStack $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			$wrapper->appendChild(new XMLElement('h4', $this->get('label') . ' <i>'.$this->Name().'</i>'));
 			$label = Widget::Label(__('Value'));
 			$label->appendChild(Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : NULL)));		

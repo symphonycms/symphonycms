@@ -100,13 +100,13 @@
 		public function __get($name){
 			
 			if($name == 'classname'){
-				$classname = Lang::createHandle($this->_about->name, NULL, '-', false, true, array('@^[^a-z]+@i' => NULL, '/[^\w-\.]/i' => NULL));
+				$classname = Lang::createHandle($this->_about->name, '-', false, true, array('@^[^a-z]+@i' => NULL, '/[^\w-\.]/i' => NULL));
 				$classname = str_replace(' ', NULL, ucwords(str_replace('-', ' ', $classname)));
 				return 'section' . $classname;
 			}
 			elseif($name == 'handle'){
 				if(!isset($this->_about->handle) || strlen(trim($this->_about->handle)) > 0){
-					$this->handle = Lang::createHandle($this->_about->name, NULL, '-', false, true, array('@^[\d-]+@i' => ''));
+					$this->handle = Lang::createHandle($this->_about->name, '-', false, true, array('@^[\d-]+@i' => ''));
 				}
 				return $this->_about->handle;
 				
@@ -208,7 +208,7 @@
 		}
 		
 		public function __toString(){
-			$template = file_get_contents(TEMPLATE . '/section.tpl');
+			$template = file_get_contents(TEMPLATES . '/section.tpl');
 
 			$vars = array(
 				$this->classname,
@@ -352,11 +352,8 @@
 					case Section::ERROR_SECTION_NOT_FOUND:
 						throw new SymphonyErrorPage(
 							__('The section you requested to edit does not exist.'), 
-							__('Section not found'), 
-							'error', 
-							array(
-								'header' => 'HTTP/1.0 404 Not Found'
-							)
+							__('Section not found'), NULL,
+							array('HTTP/1.0 404 Not Found')
 						);
 						break;
 
@@ -364,8 +361,7 @@
 					case Section::ERROR_FAILED_TO_LOAD:
 						throw new SymphonyErrorPage(
 							__('The section you requested could not be loaded. Please check it is readable.'), 
-							__('Failed to load section'), 
-							'error'
+							__('Failed to load section')
 						);
 						break;
 				}
@@ -373,11 +369,8 @@
 			catch(Exception $e){
 				throw new SymphonyErrorPage(
 					sprintf(__("An unknown error has occurred. %s"), $e->getMessage()), 
-					__('Unknown Error'), 
-					'error', 
-					array(
-						'header' => 'HTTP/1.0 500 Internal Server Error'
-					)
+					__('Unknown Error'), NULL,
+					array('HTTP/1.0 500 Internal Server Error')
 				);
 			}
 		}
@@ -931,7 +924,7 @@
 
 					foreach($fields as $position => $data){
 						if(trim($data['element_name']) == '') 
-							$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], NULL, '-', false, true, array('@^[\d-]+@i' => ''));
+							$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], '-', false, true, array('@^[\d-]+@i' => ''));
 
 						if(trim($data['element_name']) != '' && in_array($data['element_name'], $name_list)){
 							$this->_errors[$position] = array('element_name' => __('Two custom fields have the same element name. All element names must be unique.'));
@@ -1067,7 +1060,7 @@
 
 						foreach($fields as $position => $data){
 							if(trim($data['element_name']) == '') 
-								$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], NULL, '-', false, true, array('@^[\d-]+@i' => ''));
+								$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], '-', false, true, array('@^[\d-]+@i' => ''));
 
 							if(trim($data['element_name']) != '' && in_array($data['element_name'], $name_list)){
 								$this->_errors[$position] = array('label' => __('Two custom fields have the same element name. All element names must be unique.'));

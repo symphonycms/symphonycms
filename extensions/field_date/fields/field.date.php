@@ -46,7 +46,7 @@
 			}
 			
 			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Input("fields{$prefix}[{$name}]{$name}", $value));
+			$label->appendChild(Widget::Input("fields{$prefix}[{$name}]", $value));
 			$label->setAttribute('class', 'date');
 			
 			if (!is_null($error)) {
@@ -365,16 +365,14 @@
 
 			$fields['field_id'] = $id;
 			$fields['pre_populate'] = ($this->get('pre_populate') ? $this->get('pre_populate') : 'no');
-			$fields['calendar'] = ($this->get('calendar') ? $this->get('calendar') : 'no');
-			
-			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");			
+
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 			Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 					
 		}
 		
 		function findDefaults(&$fields){	
 			if(!isset($fields['pre_populate'])) $fields['pre_populate'] = 'yes';
-			if(!isset($fields['calendar'])) $fields['calendar'] = 'no';
 		}
 		
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
@@ -384,16 +382,7 @@
 			$input = Widget::Input('fields['.$this->get('sortorder').'][pre_populate]', 'yes', 'checkbox');
 			if($this->get('pre_populate') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Pre-populate this field with today\'s date', array($input->generate())));
-			$wrapper->appendChild($label);		
-			
-			/*								
-			
-			## Display as Calendar
-			$label = Widget::Label();
-			$input = Widget::Input('fields['.$this->get('sortorder').'][calendar]', 'yes', 'checkbox');
-			if($this->get('calendar') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue($input->generate() . ' Display calendar');
-			$wrapper->appendChild($label);*/
+			$wrapper->appendChild($label);
 			
 			$this->appendShowColumnCheckbox($wrapper);
 						

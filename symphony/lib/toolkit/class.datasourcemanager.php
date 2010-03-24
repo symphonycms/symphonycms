@@ -13,7 +13,7 @@
 			return self::$_instance;
 		}
 
-	    function __find($name){
+	    /*function __find($name){
 		 
 		    if(@is_file(DATASOURCES . "/data.$name.php")) return DATASOURCES;
 		    else{	
@@ -45,7 +45,7 @@
         
         function __getDriverPath($name){	        
 	        return $this->__getClassPath($name) . "/data.$name.php";
-        }
+        }*/
                
         function listAll(){
 	        
@@ -83,36 +83,36 @@
 			$extensions = ExtensionManager::instance()->listInstalledHandles();
 			
 			if(is_array($extensions) && !empty($extensions)){
-				foreach($extensions as $e){											
+				foreach($extensions as $e){
 					
 					if(!is_dir(EXTENSIONS . "/$e/data-sources")) continue;
 					
 					$tmp = General::listStructure(EXTENSIONS . "/$e/data-sources", '/data.[\\w-]+.php/', false, 'ASC', EXTENSIONS . "/$e/data-sources");
 
-			    	if(is_array($tmp['filelist']) && !empty($tmp['filelist'])){		        
-			        	foreach($tmp['filelist'] as $f){					        	
-				        	$f = self::__getHandleFromFilename($f);	   
+			    	if(is_array($tmp['filelist']) && !empty($tmp['filelist'])){
+			        	foreach($tmp['filelist'] as $f){
+				        	$f = self::__getHandleFromFilename($f);
 
 							if($about = $this->about($f)){
 								
 								$about['can_parse'] = false;
 								$about['type'] = NULL;
-								$result[$f] = $about;	
+								$result[$f] = $about;
 								
 							}
 						}
-					}				
+					}
 				}	
 			}
 
 			ksort($result);
-			return $result;	        
+			return $result; 
         }
                
         ##Creates a new extension object and returns a pointer to it
-        public function create($name, $environment=NULL, $process_params=true){
-			return Datasource::loadFromName($name, $environment, $process_params);
-        }
+        //public function create($name, $environment=NULL, $process_params=true){
+		//	return Datasource::loadFromName($name, $environment, $process_params);
+        //}
 
     }
     

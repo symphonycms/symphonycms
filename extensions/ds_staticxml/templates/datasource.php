@@ -1,32 +1,34 @@
 <?php
 	
 	require_once EXTENSIONS . '/ds_staticxml/lib/staticxmldatasource.php';
-	
-	class DataSource%s extends StaticXMLDataSource {
-		public function about() {
-			return array(
-				'name'			=> %s,
-				'author'		=> array(
-					'name'			=> %s,
-					'website'		=> %s,
-					'email'			=> %s
+
+	Final Class DataSource%1$s extends StaticXMLDataSource {
+
+		public function __construct(){
+			parent::__construct();
+
+			$this->_about = (object)array(
+				'name'			=> %2$s,
+				'author'		=> (object)array(
+					'name'			=> %3$s,
+					'website'		=> %4$s,
+					'email'			=> %5$s
 				),
-				'version'		=> %s,
-				'release-date'	=> %s
+				'version'		=> %6$s,
+				'release-date'	=> %7$s
 			);
+		
+			$this->_parameters = (object)array(
+				'xml' => %8$s,
+				'root-element' => %9$s
+			);
+			
 		}
 		
-		public function allowEditorToParse() {
+		public function allowEditorToParse(){
 			return true;
 		}
 		
-		public function getRootElement() {
-			return %s;
-		}
-		
-		public function getStaticXML() {
-			return %s;
-		}
 	}
-	
-?>
+
+	return 'DataSource%1$s';
