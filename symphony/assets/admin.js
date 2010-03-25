@@ -614,6 +614,90 @@ jQuery(document).ready(function() {
 });
 
 /*
+ * Toggle visibility of children views:
+ */
+
+(function($) {
+	$(document).ready(function() {
+		var table = $('table#views-list');
+		var rows = table.find('tbody tr');
+		var parents = [];
+		
+		// Insert toggle controls:
+		rows.each(function() {
+			var row = $(this);
+			var cell = row.find('td:first').addClass('toggle');
+			
+			if (row.is('[id]')) {
+				var depth = 0;
+				
+				$(parents).each(function(index, value) {
+					if (row.is('.' + value)) depth++;
+				});
+				
+				if (depth) {
+					$('<span />')
+						.html('&#x21b5;')
+						.css('margin-left', ((depth - 1) * 2) + 'em')
+						.prependTo(cell);
+				}
+				
+				if (table.find('tr.' + row.attr('id')).length) {
+					parents.push(row.attr('id'));
+					
+					if (!depth) {
+						$('<a />')
+							.text('-')
+							.addClass('hide')
+							.prependTo(cell);
+					}
+				}
+			}
+			
+			else {
+				var span = $('<span />')
+					.html('&#x21b5;')
+					.prependTo(cell);
+				
+			}
+		});
+		
+		$('table#views-list td.toggle a, table#views-list td.toggle + td span').live('mousedown', function() {
+			return false;
+		});
+		
+		$('table#views-list td.toggle a').live('click', function() {
+			var link = $(this);
+			var row = link.parents('tr');
+			var children = table.find('tr.' + row.attr('id'));
+			
+			if (link.is('.hide')) {
+				link.text('+').removeClass('hide').addClass('show');
+				children.hide().removeClass('selected');
+			}
+			
+			else if (link.is('.show')) {
+				link.text('-').removeClass('show').addClass('hide');
+				children.show();
+			}
+		});
+		
+		$('table#views-list td.toggle + td span').live('click', function() {
+			$(this).parent().click();
+			
+			return false;
+		});
+		
+		// Collapse by default on long pages:
+		if (table.find('tbody tr').length > 17) {
+			$('table#views-list tr[id] td.toggle a').click();
+		}
+	});
+	
+})(jQuery);
+
+
+/*
  * Event context toggle
  */
 

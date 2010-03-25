@@ -79,8 +79,9 @@
 			else{
 				foreach ($iterator as $view) {
 					$class = array();
-
-					$page_title = View::buildPageTitle($view);
+					
+					$page_title = $view->title;
+					
 					$page_url = sprintf('%s/%s/', URL, $view->path); 
 					$page_edit_url = sprintf('%sedit/%s/', Administration::instance()->getCurrentPageURL(), $view->path);
 					$page_template = $view->handle . '.xsl';
@@ -88,9 +89,9 @@
 
 					$page_types = $view->types;
 					
-					$col_title = Widget::TableData(Widget::Anchor(
-						$page_title, $page_edit_url, $view->handle
-					));
+					$link = Widget::Anchor($page_title, $page_edit_url, $view->handle);
+					
+					$col_title = Widget::TableData($link);
 					$col_title->appendChild(Widget::Input("items[{$view->path}]", null, 'checkbox'));
 					
 					$col_template = Widget::TableData(Widget::Anchor(
@@ -98,8 +99,8 @@
 						$page_template_url
 					));
 					
-					$col_url = Widget::TableData(Widget::Anchor($page_url, $page_url));
-					$view->parent();
+					$col_url = Widget::TableData(Widget::Anchor(substr($page_url, strlen(URL)), $page_url));
+					
 					if(is_array($view->{'url-parameters'}) && count($view->{'url-parameters'}) > 0){
 						$col_params = Widget::TableData(implode('/', $view->{'url-parameters'}));
 						
@@ -113,17 +114,39 @@
 					} else {
 						$col_types = Widget::TableData(__('None'), 'inactive');
 					}
-
+					
+					$col_toggle = Widget::TableData('');
+					$col_toggle->setAttribute('class', 'toggle');
+					
 					$columns = array($col_title, $col_template, $col_url, $col_params, $col_types);
 					
-					$aTableBody[] = Widget::TableRow($columns);
+					$row = Widget::TableRow($columns);
+					$next = $view->parent();
+					$class = '';
+					
+					while (!is_null($next)) {
+						$class .= ' view-' . $next->guid;
+						
+						$next = $next->parent();
+					}
+					
+					//if (is_null($view->parent())) {
+						$row->setAttribute('id', 'view-' . $view->guid);
+					//}
+					
+					if (trim($class)) {
+						$row->setAttribute('class', trim($class));
+					}
+					
+					$aTableBody[] = $row;
 				}
 			}
 			
 			$table = Widget::Table(
 				Widget::TableHead($aTableHead), null, 
-				Widget::TableBody($aTableBody), 'orderable'
+				Widget::TableBody($aTableBody)
 			);
+			$table->setAttribute('id', 'views-list');
 			
 			$this->Form->appendChild($table);
 			
