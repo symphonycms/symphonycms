@@ -1,3 +1,5 @@
+/* @override http://symphony-21.local/symphony/assets/symphony.duplicator.css */
+
 /*-----------------------------------------------------------------------------
 	Duplicator plugin
 -----------------------------------------------------------------------------*/
@@ -94,7 +96,6 @@
 		padding: 0 1.75em;
 		position: relative;
 		text-align: right;
-		z-index: 3;
 	}
 	.duplicator > .controls > * {
 		display: inline-block;
