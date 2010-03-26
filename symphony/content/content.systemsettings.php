@@ -80,7 +80,7 @@
 			
 			// Date and Time Settings
 			$div = New XMLElement('div');
-			$div->setAttribute('class', 'group triple');
+			$div->setAttribute('class', 'group');
 			
 			$label = Widget::Label(__('Date Format'));
 			$input = Widget::Input('settings[region][date-format]', Symphony::Configuration()->core()->region->{'date-format'});

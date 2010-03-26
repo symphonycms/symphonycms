@@ -53,7 +53,8 @@
 			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.collapsible.js', 51);
 			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.orderable.js', 52);
 			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.duplicator.js', 53);
-			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.js', 54);
+			$this->addScriptToHead(ADMIN_URL . '/assets/admin.js', 54);
+			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.js', 55);
 			
 			###
 			# Delegate: InitaliseAdminPageHead
@@ -502,7 +503,7 @@
 		}
 		
 		public function appendViewOptions(array $options) {
-			$div = new XMLElement('div', NULL, array('id' => 'view-options'));
+			$div = new XMLElement('div', NULL, array('id' => 'tab'));
 			
 			if(array_key_exists('subnav', $options)){
 				$ul = new XMLElement('ul');

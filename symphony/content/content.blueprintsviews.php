@@ -452,13 +452,18 @@
 			else {
 				$this->appendSubheading(($title ? $title : __('Untitled')));
 			}
-			
-		// Title --------------------------------------------------------------
-			
+
+		// Fieldset -----------------------------------------------------------
+
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('View Settings')));
 			
+		// Title --------------------------------------------------------------
+						
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
+						
 			$label = Widget::Label(__('Title'));		
 			$label->appendChild(Widget::Input(
 				'fields[title]', General::sanitize($fields['title'])
@@ -468,27 +473,37 @@
 				$label = $this->wrapFormElementWithError($label, $this->_errors->title);
 			}
 			
-			$fieldset->appendChild($label);
+			$group->appendChild($label);
 			
-		// Handle -------------------------------------------------------------
-			
+		// Type -----------------------------------------------------------
+
+			$container = new XMLElement('div');
+
+			$label = Widget::Label(__('View Type'));
+			$label->appendChild(Widget::Input('fields[types]', $fields['types']));
+
+			if(isset($this->_errors->types)) {
+				$label = $this->wrapFormElementWithError($label, $this->_errors->types);
+			}
+
+			$tags = new XMLElement('ul');
+			$tags->setAttribute('class', 'tags');
+
+			foreach(self::__fetchAvailableViewTypes() as $t){
+				$tags->appendChild(new XMLElement('li', $t));
+			}
+
+			$container->appendChild($label);
+			$container->appendChild($tags);
+			$group->appendChild($container);
+						
+			$fieldset->appendChild($group);
+
+		// Parent ---------------------------------------------------------
+
 			$group = new XMLElement('div');
 			$group->setAttribute('class', 'group');
-			$column = new XMLElement('div');
-			
-			$label = Widget::Label(__('URL Handle'));
-			$label->appendChild(Widget::Input(
-				'fields[handle]', $fields['handle']
-			));
-			
-			if(isset($this->_errors->handle)) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors->handle);
-			}
-			
-			$column->appendChild($label);
-			
-		// Parent ---------------------------------------------------------
-			
+
 			$label = Widget::Label(__('Parent View'));
 			
 			$options = array(
@@ -505,42 +520,33 @@
 				);
 			}
 			
-			
 			$label->appendChild(Widget::Select(
 				'fields[parent]', $options
 			));
-			$column->appendChild($label);
-			$group->appendChild($column);
-			
+
+			$group->appendChild($label);
+		
+		// Handle -------------------------------------------------------------
+
+			$label = Widget::Label(__('URL Handle'));
+			$label->appendChild(Widget::Input(
+				'fields[handle]', $fields['handle']
+			));
+
+			if(isset($this->_errors->handle)) {
+				$label = $this->wrapFormElementWithError($label, $this->_errors->handle);
+			}
+
+			$group->appendChild($label);
+
 		// Parameters ---------------------------------------------------------
 			
-			$column = new XMLElement('div');
 			$label = Widget::Label(__('URL Parameters'));
 			$label->appendChild(Widget::Input(
 				'fields[url-parameters]', $fields['url-parameters']
-			));				
-			$column->appendChild($label);
-			
-		// Type -----------------------------------------------------------
-			
-			$label = Widget::Label(__('View Type'));
-			$label->appendChild(Widget::Input('fields[types]', $fields['types']));
-			
-			if(isset($this->_errors->types)) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors->types);
-			}
-			
-			$column->appendChild($label);
-			
-			$tags = new XMLElement('ul');
-			$tags->setAttribute('class', 'tags');
+			));
 
-			foreach(self::__fetchAvailableViewTypes() as $t){
-				$tags->appendChild(new XMLElement('li', $t));
-			}
-
-			$column->appendChild($tags);
-			$group->appendChild($column);
+			$group->appendChild($label);
 			$fieldset->appendChild($group);
 			$this->Form->appendChild($fieldset);
 			

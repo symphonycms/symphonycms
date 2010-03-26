@@ -1,5 +1,7 @@
+/* @override http://symphony-21.local/symphony/assets/symphony.css */
+
 /* @group Symphony */
-	
+
 	* {
 		box-sizing: border-box;
 		-moz-box-sizing: border-box;
@@ -12,6 +14,9 @@
 		line-height: inherit;
 		margin: 0;
 		padding: 0;
+	}
+	body {
+		font: normal 8pt/1.3 "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 	}
 	a {
 		color: #5072bf;
@@ -29,46 +34,45 @@
 		border: none;
 	}
 	
-	body {
-		font-family: "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-		font-style: normal;
-		font-size: 9pt;
-		font-weight: normal;
-		line-height: 1.3;
-	}
-	
 	/* @group Header */
 		
 		h1 {
-			background: #222222; /* TODO: Find fallback colour. */
+			background-color: #222;
 			background: -moz-linear-gradient(
 				top,
-				hsla(0, 0%, 10%, 1),
-				hsla(0, 0%, 20%, 1) 57px,
-				hsla(0, 0%, 10%, 1)
+				#111 0%,
+				#333 100%
 			);
-			font-size: 12pt;
-			line-height: 60px;
+			background: -webkit-gradient(
+				linear,
+				left top,
+				left bottom,
+				from(#111),
+				to(#333)
+			);
+			font-size: 10pt;
+			font-weight: bold;
+			line-height: 45px;
 			padding: 0 30px;
-			text-shadow: 2px 2px 12px black;
+			text-shadow: 1px 1px 2px #222;
 		}
 		h1 a,
 		#session a {
-			color: hsla(0, 0%, 100%, 0.8);
+			color: #ccc;
 			text-decoration: none;
 		}
 		h1 a:hover,
 		#session a:hover {
-			color: hsla(0, 0%, 100%, 1);
+			color: #fff;
 		}
 		
 		/* @group Session */
 			
 			#session {
-				line-height: 60px;
+				line-height: 50px;
 				list-style: none;
 				position: absolute;
-				right: 30px;
+				right: 25px;
 				top: 0;
 			}
 			#session li {
@@ -86,16 +90,17 @@
 				padding: 0 5px;
 			}
 			#session li a:hover {
+				background-color: #333;
 				background: hsla(0, 0%, 50%, 0.2);
 				-moz-box-shadow: 1px 1px 2px hsla(0, 0%, 0%, 0.2);
 			}
 			
 		/* @end */
-		
+
 		/* @group Navigation */
-			
+
 			#nav {
-				background: #d8d8d8; /* TODO: Find fallback colour. */
+				background-color: #ccc;
 				background: -moz-linear-gradient(
 					top,
 					hsla(0, 0%, 95%, 1),
@@ -105,21 +110,33 @@
 					hsla(0, 0%, 0%, 0.2) 33px,
 					hsla(0, 0%, 0%, 0)
 				);
+				background: -webkit-gradient(
+					linear,
+					left top,
+					left bottom,
+					color-stop(0, hsla(0, 0%, 95%, 1)),
+					color-stop(0.03, hsla(0, 0%, 90%, 1)),
+					color-stop(0.91, hsla(0, 0%, 80%, 1)),
+					color-stop(0.92, hsla(0, 0%, 0%, 0.4)),
+					color-stop(.94, hsla(0, 0%, 0%, 0.2)),
+					color-stop(1, hsla(0, 0%, 0%, 0))
+				);
 				height: 35px;
 				list-style: none;
-				margin: 0 0 -3px 0;
 				padding: 0 20px;
 				white-space: nowrap;
 			}
 			#nav > li {
-				color: hsla(0, 0%, 0%, 0.8);
+				color: #555;
+				color: hsla(0, 0%, 0%, 0.65);
 				display: block;
 				float: left;
 				font-weight: bold;
-				height: 32px;
-				line-height: 31px;
+				height: 35px;
+				line-height: 33px;
 				padding: 0 10px;
 				position: relative;
+				text-shadow: 0 1px 0 #eee;
 			}
 			#nav #nav-system,
 			#nav #nav-blueprints,
@@ -127,27 +144,47 @@
 				float: right;
 			}
 			#nav > li.active {
-				background: #5e84b1; /* TODO: Find fallback colour. */
+				background-color: #5e84b1;
 				background: -moz-linear-gradient(
 					top,
 					hsla(215, 40%, 75%, 1),
 					hsla(215, 40%, 60%, 1) 1px,
 					hsla(215, 40%, 50%, 1) 32px,
-					hsla(215, 40%, 40%, 1)
+					hsla(0, 0%, 0%, 0.6) 32px,
+					hsla(0, 0%, 0%, 0) 33px,
+					hsla(0, 0%, 0%, 0)
 				);
-				color: #ffffff;
-				height: 33px;
-				text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.5);
+				background: -webkit-gradient(
+					linear,
+					left top,
+					left bottom,
+					color-stop(0, hsla(215, 40%, 75%, 1)),
+					color-stop(0.03, hsla(215, 40%, 60%, 1)),
+					color-stop(0.91, hsla(215, 40%, 50%, 1)),
+					color-stop(0.92, hsla(0, 0%, 0%, 0.6)),
+					color-stop(.93, hsla(0, 0%, 0%, 0)),
+					color-stop(1, hsla(0, 0%, 0%, 0))
+				);
+				color: #fff;
+				text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.2);
 				z-index: 1;
 			}
 			#nav > li:hover {
-				color: #ffffff;
-				background: #444444; /* TODO: Find fallback colour. */
+				color: #fff;
+				background-color: #444;
 				background: -moz-linear-gradient(
 					top,
 					hsla(0, 0%, 50%, 1),
 					hsla(0, 0%, 35%, 1) 1px,
-					hsla(0, 0%, 25%, 1)
+					hsla(0, 0%, 25%, 1) 32px
+				);
+				background: -webkit-gradient(
+					linear,
+					left top,
+					left bottom,
+					color-stop(0, hsla(0, 0%, 50%, 1)),
+					color-stop(0.03, hsla(0, 0%, 35%, 1)),
+					color-stop(0.91, hsla(0, 0%, 25%, 1))
 				);
 				text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.5);
 				z-index: 2;
@@ -156,16 +193,25 @@
 			/* @group Sub Navigation */
 				
 				#nav ul {
-					background: #444444; /* TODO: Find fallback colour. */
+					background-color: #444;
 					background: -moz-linear-gradient(
 						top,
 						hsla(0, 0%, 25%, 1),
-						hsla(0, 0%, 20%, 1)
+						hsla(0, 0%, 15%, 1)
 					);
-					-moz-box-shadow: 1px 1px 2px hsla(0, 0%, 0%, 0.2);
+					background: -webkit-gradient(
+						linear,
+						left top,
+						left bottom,
+						from(hsla(0, 0%, 25%, 1)),
+						to(hsla(0, 0%, 15%, 1))
+					);
+					-moz-box-shadow: 1px 2px 2px hsla(0, 0%, 0%, 0.2);
+					-webkit-box-shadow: 1px 2px 2px hsla(0, 0%, 0%, 0.2);
 					display: none;
 					left: 0;
 					list-style: none;
+					width: 120px;
 					min-width: 100%;
 					position: absolute;
 					top: 32px;
@@ -180,14 +226,14 @@
 					right: 0;
 				}
 				#nav ul a {
-					color: #ffffff;
+					color: #fff;
 					display: block;
 					font-weight: normal;
 					padding: 0 10px;
 					text-decoration: none;
 				}
 				#nav ul a:hover {
-					background: #333333;
+					background-color: #333;
 					background: hsla(0, 0%, 0%, 0.2);
 				}
 				#nav ul,
@@ -202,38 +248,96 @@
 				
 			/* @end */
 			
-		/* @end */
-		
+			/* @group Tab Navigation */
+
+				#tab {
+					position: relative;
+					display: inline-table;
+					width: 100%;
+					line-height: 25px;
+					color: #777;
+					background-color: #fff;
+					background: -moz-linear-gradient(
+						bottom,
+						#eee 0%,
+						#fff 10%,
+						#fff 100%
+					);
+					background: -webkit-gradient(
+						linear,
+						left bottom,
+						left top,
+						from(#eee),
+						to(#fff),
+						color-stop(0.1, #fff)
+					);
+					border-bottom: 1px solid #eaeaea;
+					padding-left: 20px;
+					margin-bottom: 15px;
+				}
+				#tab li {
+					display: inline;
+				}
+				#tab li a {
+					background: hsla(0, 0%, 0%, 0.03);
+					display: block;
+					position: relative;
+					top: 1px;
+					color: #444;
+					float: left;
+					padding: 0 10px;
+					margin-right: 5px;
+					text-decoration: none;
+					border: 1px solid #ddd;
+					border-bottom: none;
+					-moz-border-radius-topright: .5em;
+					-moz-border-radius-topleft: .5em;
+					-webkit-border-top-right-radius: .5em;
+					-webkit-border-top-left-radius: .5em;
+					border-top-right-radius: .5em;
+					border-top-left-radius: .5em;
+				}
+				#tab li a:hover,
+				#tab li a.active {
+					background: #fff;
+				}
+				#tab + fieldset {
+					border: none;
+					margin-top: -20px;
+				}
+				h2 + #tab {
+					margin-top: -5px;
+				}
+
+			/* @end */
+
+		/* @end */		
+
 	/* @end */
 	
 	/* @group Content */
 		
 		h2 {
-			font-size: 12pt;
-			padding: 20px 30px;
+			font-size: 11pt;
+			padding: 15px 30px 20px;
 		}
-		
 		h3 {
 			margin: 10px 0;
 		}
-		
 		code {
 			font-family: 'Monaco', 'Consolas', 'Andale Mono', monospace;
 			font-size: 8pt;
 			color: hsla(0, 0%, 0%, 0.8);
 		}
-		
 		pre {
 			border-bottom: 1px solid hsla(0, 0%, 0%, 0.1);
 			border-top: 1px solid hsla(0, 0%, 0%, 0.1);
 			margin: 10px 0;
 			padding: 10px 0;
 		}
-		
 		p {
 			margin: 10px 0;
 		}
-		
 		.inactive {
 			color: hsla(0, 0%, 0%, 0.3);
 		}
@@ -241,25 +345,33 @@
 		/* @group Buttons */
 			
 			.button {
+				background-color: #85ab38;
 				background: -moz-linear-gradient(
 					top,
 					hsla(215, 40%, 60%, 1),
 					hsla(215, 40%, 50%, 1)
+				);
+				background: -webkit-gradient(
+					linear,
+					left top,
+					left bottom,
+					from(hsla(215, 40%, 60%, 1)),
+					to(hsla(215, 40%, 50%, 1))
 				);
 				border: none;
 				border-radius: 5px;
 				-moz-border-radius: 5px;
 				-webkit-border-radius: 5px;
 				-moz-box-shadow: 1px 1px 2px hsla(0, 0%, 0%, 0.2);
-				color: #ffffff;
+				color: #fff;
 				display: inline;
 				float: right;
-				font-size: 9pt;
+				font-size: 8pt;
 				height: 22px;
 				line-height: 22px;
 				padding: 0 7px;
 				text-decoration: none;
-				text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.5);
+				text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.2);
 				white-space: nowrap;
 			}
 			.button.create {
@@ -268,14 +380,29 @@
 					hsla(80, 50%, 50%, 1),
 					hsla(80, 50%, 40%, 1)
 				);
+				background: -webkit-gradient(
+					linear,
+					left top,
+					left bottom,
+					from(hsla(80, 50%, 50%, 1)),
+					to(hsla(80, 50%, 40%, 1))
+				);
 			}
 			.button:hover {
+				color: #fff;
+				background-color: #555;
 				background: -moz-linear-gradient(
 					top,
 					hsla(0, 0%, 40%, 1),
 					hsla(0, 0%, 30%, 1)
 				);
-				color: #ffffff;
+				background: -webkit-gradient(
+					linear,
+					left top,
+					left bottom,
+					from(hsla(0, 0%, 40%, 1)),
+					to(hsla(0, 0%, 30%, 1))
+				);
 			}
 			
 		/* @end */
@@ -288,6 +415,7 @@
 				width: 100%;
 			}
 			table thead tr th {
+				color: #666;
 				padding: 0 10px 8px 10px;
 			}
 			table tbody tr td {
@@ -307,57 +435,116 @@
 				border-bottom: 1px solid hsla(0, 0%, 0%, 0.1);
 				text-align: left;
 			}
-			table tbody tr td {
+			table tbody tr:nth-child(odd) td {
+				background: #f3f3f3;
 				background: -moz-linear-gradient(
 					top,
-					hsla(0, 0%, 0%, 0),
-					hsla(0, 0%, 0%, 0.01)
+					hsla(0, 0%, 0%, 0.03),
+					hsla(0, 0%, 0%, 0.04)
+				);
+				background: -webkit-gradient(
+					linear,
+					left top,
+					left bottom,
+					from(hsla(0, 0%, 0%, 0.03)),
+					to(hsla(0, 0%, 0%, 0.04))
 				);
 			}
-			table tbody tr:nth-child(even) td {
-				background: -moz-linear-gradient(
-					top,
-					hsla(0, 0%, 0%, 0.02),
-					hsla(0, 0%, 0%, 0.03)
-				);
-			}
-			table tbody tr td input {
+			table tbody tr td input[type=checkbox] {
 				display: none;
 			}
 			
 		/* @end */
-		
+
 		/* @group Forms */
-			
+		
 			form fieldset {
 				border: none;
 				border-top: 1px solid hsla(0, 0%, 0%, 0.1);
-				padding: 10px 30px 10px 230px;
+				padding: 0 30px 0 230px;
 			}
 			form fieldset legend {
+				color: #666;
 				float: left;
-				font-weight: bold;
-				margin: 10px 0 0 0;
+				margin: 15px 0 -3em 0;
 				text-indent: -200px;
+				font-weight: bold;
+			}
+			form .help {
+				color: #888;
+				margin-top: -10px;
 			}
 			form fieldset legend + .help {
 				float: left;
 				margin-top: 2.5em;
 				margin-left: -200px;
 			}
-			
 			form label {
 				display: block;
-				margin: 10px 0;
+				margin: 15px 0;
 			}
-			
 			form label input,
 			form .label input,
 			form label select,
-			form .label select {
-				margin: 2px 0 0 0;
+			form .label select,
+			form label textarea,
+			form .label textarea {
+				margin: 3px 0 0 0;
 				width: 100%;
+				padding: 2px;
 			}
+			input[size],
+			input[type=radio],
+			input[type=checkbox] {
+				display: inline;
+				margin: 0 3px 0 0;
+				width: auto;
+			}
+			form label input {
+				cursor: text;
+			}
+			.group {
+				display: table;
+				table-layout: fixed;
+				width: 100%;
+				margin: 15px 0;
+			}
+			.group label {
+				display: table-cell;
+				padding-left: 20px;
+				width: 50%;
+			}
+			.group > label:first-child,
+			.group > div:first-child label {
+				padding-left: 0;
+			}
+
+			/* @group Tags */
+			
+				ul.tags {
+					list-style: none;
+					margin: 3px 0 0 20px;
+				}
+				.tags li {
+					color: #888;
+					display: inline;
+					margin-right: 8px;
+				}
+				.group > div:first-child .tags {
+					margin-left: 0;
+				}
+			
+			/* @end */
+
+			/* @group Master Switch */
+			
+				#master-switch {
+					float: right;
+					margin-right: 30px;
+					margin-top: 15px;
+				}
+			
+			/* @end */
 			
 		/* @end */
 		
