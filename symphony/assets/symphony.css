@@ -33,8 +33,8 @@
 	img {
 		border: none;
 	}
-	
-	/* @group Header */
+
+/* @group Header */
 		
 		h1 {
 			background-color: #222;
@@ -92,7 +92,6 @@
 			#session li a:hover {
 				background-color: #333;
 				background: hsla(0, 0%, 50%, 0.2);
-				-moz-box-shadow: 1px 1px 2px hsla(0, 0%, 0%, 0.2);
 			}
 			
 		/* @end */
@@ -290,12 +289,12 @@
 					text-decoration: none;
 					border: 1px solid #ddd;
 					border-bottom: none;
-					-moz-border-radius-topright: .5em;
-					-moz-border-radius-topleft: .5em;
-					-webkit-border-top-right-radius: .5em;
-					-webkit-border-top-left-radius: .5em;
-					border-top-right-radius: .5em;
-					border-top-left-radius: .5em;
+					-moz-border-radius-topright: 5px;
+					-moz-border-radius-topleft: 5px;
+					-webkit-border-top-right-radius: 5px;
+					-webkit-border-top-left-radius: 5px;
+					border-top-right-radius: 5px;
+					border-top-left-radius: 5px;
 				}
 				#tab li a:hover,
 				#tab li a.active {
@@ -466,7 +465,7 @@
 			form fieldset legend {
 				color: #666;
 				float: left;
-				margin: 15px 0 -3em 0;
+				margin: 15px 0 -30px 0;
 				text-indent: -200px;
 				font-weight: bold;
 			}
@@ -476,7 +475,7 @@
 			}
 			form fieldset legend + .help {
 				float: left;
-				margin-top: 2.5em;
+				margin-top: 25px;
 				margin-left: -200px;
 			}
 			form label {
@@ -500,6 +499,10 @@
 				margin: 0 3px 0 0;
 				width: auto;
 			}
+			select[multiple] {
+				min-height: 100px;
+				padding: 0;
+			}
 			form label input {
 				cursor: text;
 			}
@@ -509,13 +512,19 @@
 				width: 100%;
 				margin: 15px 0;
 			}
-			.group label {
+			.group label,
+			.group div {
 				display: table-cell;
 				padding-left: 20px;
-				width: 50%;
+			}
+			.group div label {
+				display: block;
+				padding: 0;
+				margin-bottom: 3px;
 			}
 			.group > label:first-child,
-			.group > div:first-child label {
+			.group > div:first-child label,
+			.group > div:first-child {
 				padding-left: 0;
 			}
 
@@ -523,15 +532,12 @@
 			
 				ul.tags {
 					list-style: none;
-					margin: 3px 0 0 20px;
+					margin: 3px 0 0 0;
 				}
 				.tags li {
 					color: #888;
 					display: inline;
 					margin-right: 8px;
-				}
-				.group > div:first-child .tags {
-					margin-left: 0;
 				}
 			
 			/* @end */
@@ -602,6 +608,108 @@
 		}
 		#views-list .selected td.toggle div span {
 			color: #aabbee;
+		}
+		
+	/* @end */
+
+	/* @group Errors */
+
+		#notice {
+			z-index: 10;
+			position: absolute;
+			width: 40%;
+			left: 50%;
+			margin: 0 0 0 -20%;
+			color: #fff;
+			line-height: 20px;
+			padding: 6px 12px;
+			padding-left: 40px;
+			background-color: #970707;
+			background: -moz-linear-gradient(
+				top,
+				hsla(0, 90%, 35%, 1),
+				hsla(0, 90%, 25%, 1)
+			);
+			background: -webkit-gradient(
+				linear,
+				left top,
+				left bottom,
+				from(hsla(0, 0%, 75%, 1)),
+				to(hsla(0, 0%, 45%, 1))
+			);
+			border-top: none;
+			border-bottom-right-radius: 5px;
+			border-bottom-left-radius: 5px;
+			-moz-border-radius-bottomright: 5px;
+			-moz-border-radius-bottomleft: 5px;
+			-webkit-border-bottom-right-radius: 5px;
+			-webkit-border-bottom-left-radius: 5px;
+			-moz-box-shadow: 1px 1px 3px #000;
+			-webkit-box-shadow: 1px 1px 3px #000;
+		}
+		#notice:before {
+			float: left;
+			margin: 0 10px 0 -30px;
+			display: block;
+			content: "!";
+			width: 20px;
+			height: 20px;
+			color: #000;
+			text-align: center;
+			font-weight: bold;
+			font-size: 13pt;
+			background-color: #fff9c9;
+			border-radius: 20px;
+			-moz-border-radius: 20px;
+			-webkit-border-radius: 20px;
+		}
+		#notice.error {
+			background-color: #970707;
+			background: -moz-linear-gradient(
+				top,
+				hsla(0, 90%, 35%, 1),
+				hsla(0, 90%, 25%, 1)
+			);
+			background: -webkit-gradient(
+				linear,
+				left top,
+				left bottom,
+				from(hsla(0, 90%, 35%, 1)),
+				to(hsla(0, 90%, 25%, 1))
+			);	
+		}
+		#notice.success {
+			background: -moz-linear-gradient(
+				top,
+				hsla(110, 60%, 55%, 1),
+				hsla(110, 40%, 40%, 1)
+			);
+			background: -webkit-gradient(
+				linear,
+				left top,
+				left bottom,
+				from(hsla(110, 60%, 55%, 1)),
+				to(hsla(110, 50%, 40%, 1))
+			);
+		}
+		#notice a {
+			color: #fff9c9;
+		}
+		.invalid {
+			margin: 10px 0;
+		}
+		.invalid label {
+			color: #cc2828;
+			font-weight: bold;
+			margin: 0;
+		}
+		.invalid p {
+			color: #666;
+			margin: 3px 0 0;
+		}
+		.invalid p:before {
+			content: "↑";
+			margin-right: 3px;
 		}
 		
 	/* @end */

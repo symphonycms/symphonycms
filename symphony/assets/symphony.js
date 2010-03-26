@@ -49,7 +49,7 @@ var Symphony;
 					backgroundColor: '#e4e4e0',
 					borderTopColor: '#979792',
 					borderBottomColor: '#777',
-					color: '#555'
+					color: '#fff'
 				}, 'slow', 'linear', function() {
 					$(this).removeClass('success');
 				});
