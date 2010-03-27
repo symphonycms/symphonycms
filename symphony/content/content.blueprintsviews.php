@@ -474,8 +474,9 @@
 			}
 			
 			$group->appendChild($label);
-			
-		// Type -----------------------------------------------------------
+			$fieldset->appendChild($group);
+
+		// Type ---------------------------------------------------------------
 
 			$container = new XMLElement('div');
 
@@ -496,15 +497,20 @@
 			$container->appendChild($label);
 			$container->appendChild($tags);
 			$group->appendChild($container);
-						
-			$fieldset->appendChild($group);
+			$this->Form->appendChild($fieldset);
 
-		// Parent ---------------------------------------------------------
+		// Fieldset -----------------------------------------------------------
+
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('URL Settings')));
+
+		// Parent -------------------------------------------------------------
 
 			$group = new XMLElement('div');
 			$group->setAttribute('class', 'group');
 
-			$label = Widget::Label(__('Parent View'));
+			$label = Widget::Label(__('Parent'));
 			
 			$options = array(
 				array(NULL, false, '/')
@@ -525,10 +531,10 @@
 			));
 
 			$group->appendChild($label);
-		
+
 		// Handle -------------------------------------------------------------
 
-			$label = Widget::Label(__('URL Handle'));
+			$label = Widget::Label(__('Handle'));
 			$label->appendChild(Widget::Input(
 				'fields[handle]', $fields['handle']
 			));
@@ -541,7 +547,7 @@
 
 		// Parameters ---------------------------------------------------------
 			
-			$label = Widget::Label(__('URL Parameters'));
+			$label = Widget::Label(__('Parameters'));
 			$label->appendChild(Widget::Input(
 				'fields[url-parameters]', $fields['url-parameters']
 			));
@@ -549,8 +555,8 @@
 			$group->appendChild($label);
 			$fieldset->appendChild($group);
 			$this->Form->appendChild($fieldset);
-			
-		// Events -------------------------------------------------------------
+
+		// Fieldset -----------------------------------------------------------
 			
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');

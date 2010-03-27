@@ -359,26 +359,19 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
 			
-			$ul = new XMLElement('ul');
-			$ul->setAttribute('class', 'group');
-			
-			$li = new XMLElement('li');
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
 			
 			$container_parameter_output = new XMLElement('div');
-			$li->appendChild($container_parameter_output);
-			
-			$ul->appendChild($li);
-			
-			$li = new XMLElement('li');
+			$group->appendChild($container_parameter_output);
 			
 			$container_xml_output = new XMLElement('div');
-			$li->appendChild($container_xml_output);
-			
-			$ul->appendChild($li);
-			$fieldset->appendChild($ul);
+			$group->appendChild($container_xml_output);
+
+			$fieldset->appendChild($group);
 
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group triple');
+			$group->setAttribute('class', 'group');
 
 			$fieldset->appendChild(Widget::Input('fields[can_append_pagination]', 'no', 'hidden'));
 			
@@ -412,8 +405,8 @@
 			}
 			
 			$label->setValue(__('%s HTML-encode text', array($input->generate(false))));
-			$group->appendChild($label);			
-			
+			$group->appendChild($label);
+						
 			$fieldset->appendChild($group);
 			
 			$wrapper->appendChild($fieldset);

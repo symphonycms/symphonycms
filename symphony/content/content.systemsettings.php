@@ -39,24 +39,21 @@
 		    }
 			
 		// ESSENTIALS
-			$group = new XMLElement('fieldset');
-		    $group->setAttribute('class', 'settings');
-			$group->appendChild(new XMLElement('legend', __('Site Setup')));
-			
-			$group->appendChild(new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array('class' => 'help')));
+			$fieldset = new XMLElement('fieldset');
+		    $fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('Site Setup')));
+
+			$fieldset->appendChild(new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array('class' => 'help')));
+
+			$group = New XMLElement('div');
+			$group->setAttribute('class', 'group');
 			
 			$label = Widget::Label(__('Site Name'));
 			$input = Widget::Input('settings[symphony][sitename]', Symphony::Configuration()->core()->symphony->sitename);
 			$label->appendChild($input);
+
 			$group->appendChild($label);
-			
-			$this->Form->appendChild($group);
-		    
-		// REGIONAL SETTINGS
-			$group = new XMLElement('fieldset');
-		    $group->setAttribute('class', 'settings');
-			$group->appendChild(new XMLElement('legend', __('Regional Settings')));
-		    
+
 		    // Get available languages
 		    $languages = Lang::getAvailableLanguages(true);
 		
@@ -77,6 +74,13 @@
 				// Append language selection
 				$group->appendChild($label);
 			}
+			$fieldset->appendChild($group);
+			$this->Form->appendChild($fieldset);
+		    
+		// REGIONAL SETTINGS
+			$group = new XMLElement('fieldset');
+		    $group->setAttribute('class', 'settings');
+			$group->appendChild(new XMLElement('legend', __('Date &amp; Time Settings')));
 			
 			// Date and Time Settings
 			$div = New XMLElement('div');

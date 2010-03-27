@@ -272,9 +272,11 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Overrides &amp; Defaults')));	
 			$fieldset->appendChild(new XMLElement('p', __('{$param}'), array('class' => 'help')));
 			
+			$div = new XMLElement('div');
+
 			if(is_array($sections) && !empty($sections)){
 				foreach($sections as $s){
-					$fieldset->appendChild(
+					$div->appendChild(
 						$this->__buildDefaultsAndOverridesDuplicator(
 							$s, 
 							($fields['source'] == $s->get('id') 
@@ -285,8 +287,9 @@
 					);
 				}
 			}
-			
-			$this->Form->appendChild($fieldset);			
+
+			$fieldset->appendChild($div);
+			$this->Form->appendChild($fieldset);	
 			
 			if($isEditing):
 				$fieldset = new XMLElement('fieldset');

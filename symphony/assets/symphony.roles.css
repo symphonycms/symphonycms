@@ -4,7 +4,6 @@ table.role-permissions {
 	table-layout: auto;
 	white-space: nowrap;
 	border: 1px solid #ccc;
-	margin: 15px 0;
 }
 table.role-permissions th {
 	background-color: #ccc;
@@ -157,6 +156,7 @@ table.role-permissions td span.perm-2 {
 	width: 200px;
 	height: 3px;
 	margin-left: 5px;
+	top: 8px;
 	border-bottom-color: #d8d8d8;
 }
 .ui-slider-horizontal .ui-slider-handle {

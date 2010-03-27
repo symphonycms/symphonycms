@@ -7,10 +7,14 @@
 	.duplicator {
 		background: #444;
 		border: 1px solid #999;
-		margin: 0 0 1.75em 0;
 		list-style: none;
 		overflow: hidden;
 		position: relative;
+		margin-bottom: 15px;
+	}
+	div:last-child .duplicator {
+		background: #333;
+		margin: 0;
 	}
 	.invalid .duplicator {
 		border-color: #aa2211;
