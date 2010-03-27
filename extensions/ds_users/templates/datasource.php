@@ -1,72 +1,35 @@
 <?php
-	
+
 	require_once EXTENSIONS . '/ds_users/lib/usersdatasource.php';
-	
-	class DataSource%s extends UsersDataSource {
-		public function about() {
-			return array(
-				'name'			=> %s,
-				'author'		=> array(
-					'name'			=> %s,
-					'website'		=> %s,
-					'email'			=> %s
+
+	Final Class DataSource%1$s extends UsersDataSource {
+
+		public function __construct(){
+			parent::__construct();
+
+			$this->_about = (object)array(
+				'name'			=> %2$s,
+				'author'		=> (object)array(
+					'name'			=> %3$s,
+					'website'		=> %4$s,
+					'email'			=> %5$s
 				),
-				'version'		=> %s,
-				'release-date'	=> %s
-			);	
+				'version'		=> %6$s,
+				'release-date'	=> %7$s
+			);
+
+			$this->_parameters = (object)array(
+				'root-element' => %8$s,
+				'included-elements' => %9$s,
+				'filters' => %10$s
+			);
+
 		}
-		
-		public function allowEditorToParse() {
+
+		public function allowEditorToParse(){
 			return true;
 		}
-		
-		public function canAppendPagination() {
-			return %s;
-		}
-		
-		public function canHTMLEncodeText() {
-			return %s;
-		}
-		
-		public function canRedirectOnEmpty() {
-			return %s;
-		}
-		
-		public function getFilters() {
-			return %s;
-		}
-		
-		public function getIncludedElements() {
-			return %s;
-		}
-		
-		public function getOutputParams() {
-			return %s;
-		}
-		
-		public function getPaginationLimit() {
-			return %s;
-		}
-		
-		public function getPaginationPage() {
-			return %s;
-		}
-		
-		public function getRequiredURLParam() {
-			return %s;
-		}
-		
-		public function getRootElement() {
-			return %s;
-		}
-		
-		public function getSortField() {
-			return %s;
-		}
-		
-		public function getSortOrder() {
-			return %s;
-		}
+
 	}
-	
-?>
+
+	return 'DataSource%1$s';

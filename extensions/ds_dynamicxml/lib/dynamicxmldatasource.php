@@ -1,44 +1,60 @@
 <?php
-	
-	require_once TOOLKIT . '/class.gateway.php';
+
+	require_once CORE . '/class.cacheable.php';	
 	require_once TOOLKIT . '/class.xslproc.php';
-	require_once CORE . '/class.cacheable.php';
+	require_once TOOLKIT . '/class.datasource.php';
+	
+	require_once 'class.gateway.php';
 	
 	Class DynamicXMLDataSource extends DataSource {
-		public function getCacheTime() {
-			return 60;
-		}
-		
-		public function getNamespaces() {
-			return array(
-				array(
-					'name'	=> 'rss',
-					'uri'	=> 'http://rss.com/'
-				),
-				array(
-					'name'	=> 'atom',
-					'uri'	=> 'http://atom.com/'
-				)
+
+		public function __construct(){
+			// Set Default Values
+			$this->_about = new StdClass;
+			$this->_parameters = (object)array(
+				'cache-lifetime' => 60,
+				'namespaces' => array(),
+				'url' => NULL,
+				'xpath' => '/',
+				'root-element' => NULL,
+				'redirect-on-empty' => false
 			);
 		}
 		
-		public function getRootElement() {
-			return 'dynamic-xml';
+		final public function type(){
+			return 'ds_dynamicxml';
 		}
 		
-		public function getURL() {
-			return '';
+		public function template(){
+			return EXTENSIONS . '/ds_dynamicxml/templates/datasource.php';
 		}
 		
-		public function getXPath() {
-			return '/';
+		public function save(MessageStack &$errors){
+
+			if(strlen(trim($this->parameters()->url)) == 0){
+				$errors->append('url', __('This is a required field'));
+			}
+			
+			if(strlen(trim($this->parameters()->xpath)) == 0){
+				$errors->append('xpath', __('This is a required field'));
+			}
+			
+			if(!is_numeric($this->parameters()->{'cache-lifetime'})){
+				$errors->append('cache-lifetime', __('Must be a valid number'));
+			}
+			
+			elseif($this->parameters()->{'cache-lifetime'} <= 0){
+				$errors->append('cache-lifetime', __('Must be greater than zero'));
+			}
+			
+			else{
+				$this->parameters()->{'cache-lifetime'} = (int)$this->parameters()->{'cache-lifetime'};
+			}
+			
+			return parent::save($errors);
 		}
 		
-		public function getTemplate() {
-			return 'dynamic_xml';
-		}
-		
-		public function grab(&$param_pool) {
+		public function grab(){
 			$result = null;
 			
 			if(isset($this->dsParamURL)) $this->dsParamURL = $this->__processParametersInString($this->dsParamURL, $this->_env, true, true);

@@ -122,12 +122,13 @@
 		
 	Abstract Class Symphony implements Singleton{
 		
+		public static $Log;
+		
 		protected static $Configuration;
 		protected static $Database;
 		
 		protected static $_lang;
-		
-		public $Log;
+
 		public $Profiler;
 		public $Cookie;
 		public $User;
@@ -148,7 +149,9 @@
 			}
 
 			self::$Configuration = new Configuration;
-
+			
+			DateTimeObj::setDefaultTimezone(self::Configuration()->get('timezone', 'region'));
+			
 			self::$_lang = (self::Configuration()->get('lang', 'symphony') ? self::Configuration()->get('lang', 'symphony') : 'en');
 			
 			// Legacy support for __LANG__ constant
@@ -164,7 +167,7 @@
 			$this->initialiseLog();
 
 			GenericExceptionHandler::initialise();
-			GenericErrorHandler::initialise($this->Log);
+			GenericErrorHandler::initialise(self::$Log);
 			
 			$this->initialiseCookie();
 
@@ -172,8 +175,6 @@
 			
 			Lang::loadAll(true);
 
-			DateTimeObj::setDefaultTimezone(self::Configuration()->get('timezone', 'region'));
-			
 		}
 		
 		public function lang(){
@@ -258,14 +259,14 @@
 		
 		public function initialiseLog(){
 			
-			$this->Log = new Log(ACTIVITY_LOG);
-			$this->Log->setArchive((self::Configuration()->get('archive', 'log') == '1' ? true : false));
-			$this->Log->setMaxSize(intval(self::Configuration()->get('maxsize', 'log')));
+			self::$Log = new Log(ACTIVITY_LOG);
+			self::$Log->setArchive((self::Configuration()->get('archive', 'log') == '1' ? true : false));
+			self::$Log->setMaxSize(intval(self::Configuration()->get('maxsize', 'log')));
 				
-			if($this->Log->open() == 1){
-				$this->Log->writeToLog('Symphony Log', true);
-				$this->Log->writeToLog('Version: '. self::Configuration()->get('version', 'symphony'), true);
-				$this->Log->writeToLog('--------------------------------------------', true);
+			if(self::$Log->open() == 1){
+				self::$Log->writeToLog('Symphony Log', true);
+				self::$Log->writeToLog('Version: '. self::Configuration()->get('version', 'symphony'), true);
+				self::$Log->writeToLog('--------------------------------------------', true);
 			}
 						
 		}

@@ -13,9 +13,8 @@
 	
 	if (!function_exists('__doit')) {
 		function __doit($source, $fields, &$result, &$obj, &$event, $filters, $position=NULL, $entry_id=NULL){
-			$post_values = new XMLElement('request');
-			$post = General::getPostData();
-			$fields = $post['fields'];
+
+			$post_values = new XMLElement('post-values');
 			$filter_results = array();	
 			
 			if(isset($event->eParamOVERRIDES) && is_array($event->eParamOVERRIDES) && !empty($event->eParamOVERRIDES)){
@@ -49,24 +48,37 @@
 			
 			###
 			# Delegate: EventPreSaveFilter
-			# Description: Prior to saving entry from the front-end. This delegate will force the Event to terminate if it populates the error
-			#              array reference. Provided with references to this object, the POST data and also the error array
-			ExtensionManager::instance()->notifyMembers('EventPreSaveFilter', '/frontend/', array('fields' => $fields, 'event' => &$event, 'messages' => &$filter_results, 'post_values'  => &$post_values));
+			# Description: Prior to saving entry from the front-end. This delegate will 
+			#			   force the Event to terminate if it populates the error
+			#              array reference. Provided with references to this object, the 
+			#			   POST data and also the error array
+			$obj->ExtensionManager->notifyMembers(
+				'EventPreSaveFilter', 
+				'/frontend/', 
+				array(
+					'fields' => $fields, 
+					'event' => &$event, 
+					'messages' => &$filter_results, 
+					'post_values' => &$post_values
+				)
+			);
+			
+			if (is_array($filter_results) && !empty($filter_results)) {
+				$can_proceed = true;
 
-			if(is_array($filter_results) && !empty($filter_results)){
-				foreach($filter_results as $fr){
+				foreach ($filter_results as $fr) {
 					list($type, $status, $message) = $fr;
-
+					
 					$result->appendChild(buildFilterElement($type, ($status ? 'passed' : 'failed'), $message));
 					
-					
-					if(!$status){
-						$result->appendChild($post_values);
-						
-						$result->setAttribute('result', 'error');
-						$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
-						return false;
-					}
+					if($status === false) $can_proceed = false;
+				}
+
+				if ($can_proceed !== true) {
+					$result->appendChild($post_values);
+					$result->setAttribute('result', 'error');
+					$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
+					return false;
 				}
 			}
 
@@ -319,7 +331,6 @@
 	
 	else {
 		$fields = $post['fields'];
-		
 		$entry_id = NULL;
 		
 		if (isset($post['id']) && is_numeric($post['id'])) $entry_id = $post['id'];

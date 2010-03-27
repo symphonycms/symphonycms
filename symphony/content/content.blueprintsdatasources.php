@@ -1,22 +1,30 @@
 <?php
 
 	require_once(TOOLKIT . '/class.administrationpage.php');
-	require_once(TOOLKIT . '/class.datasourcemanager.php');	
+	//require_once(TOOLKIT . '/class.datasourcemanager.php');	
 	require_once(TOOLKIT . '/class.sectionmanager.php');
+	require_once(TOOLKIT . '/class.messagestack.php');
 	
 	Class ContentBlueprintsDatasources extends AdministrationPage{
 		
-		protected $errors = array(
-			'about' => array()
-		);
-		protected $fields = array();
-		protected $editing = false;
-		protected $failed = false;
-		protected $datasource = NULL;
-		protected $handle = NULL;
-		protected $status = NULL;
-		protected $template = NULL;
-
+		protected $errors;
+		protected $fields;
+		protected $editing;
+		protected $failed;
+		protected $datasource;
+		protected $handle;
+		protected $status;
+		protected $type;
+		
+		public function __construct(){
+			parent::__construct();
+			
+			$this->errors = new MessageStack;
+			$this->fields = array();
+			$this->editing = $this->failed = false;
+			$this->datasource = $this->handle = $this->status = $this->type = NULL;
+		}
+		
 		public function __viewIndex() {
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Data Sources'))));
@@ -34,9 +42,9 @@
 			
 			$dsTableBody = array();
 			
-			$datasources = DataSourceManager::instance()->listAll();
+			$datasources = new DatasourceIterator;
 			
-			if (!is_array($datasources) or empty($datasources)) {
+			if ($datasources->length() <= 0) {
 				$dsTableBody[] = Widget::TableRow(array(Widget::TableData(
 					__('None found.'), 'inactive', NULL, count($dsTableHead)
 				)));
@@ -44,81 +52,42 @@
 			
 			else {
 				foreach ($datasources as $ds) {
-					$instance = DataSourceManager::instance()->create($ds['handle'], NULL, false);
-					$view_mode = ($ds['can_parse'] == true ? 'edit' : 'info');
+
+					$view_mode = ($ds->allowEditorToParse() == true ? 'edit' : 'info');
 					$col_source = Widget::TableData(__('None'), 'inactive');
+					$handle = preg_replace('/.php$/i', NULL, basename($ds->parameters()->pathname));
 					
 					$col_name = Widget::TableData(Widget::Anchor(
-						$ds['name'],
-						URL . '/symphony/blueprints/datasources/' . $view_mode . '/' . $ds['handle'] . '/',
-						'data.' . $ds['handle'] . '.php'
+						$ds->about()->name,
+						URL . "/symphony/blueprints/datasources/{$view_mode}/{$handle}/",
+						$handle . '.php'
 					));
-					$col_name->appendChild(Widget::Input("items[{$ds['handle']}]", NULL, 'checkbox'));
+					$col_name->appendChild(Widget::Input("items[{$handle}]", NULL, 'checkbox'));
 					
-					if(!isset($ds['type']) || strlen(trim($ds['type'])) == 0){
+					if(is_null($ds->type())){
 						$col_source = Widget::TableData(__('None'), 'inactive');
 					}
-					
 					else{
-						$col_source = Widget::TableData(ucwords(preg_replace('/_/', ' ', $ds['type'])));
-						
-						$obj = DatasourceManager::instance()->create($ds['handle'], NULL, false);
-						if(is_callable(array($obj, 'prepareSourceColumnValue'))){
-							$col_source = $obj->prepareSourceColumnValue();
-						}
+						$extension = ExtensionManager::instance()->about($ds->type());
+						$col_source = Widget::TableData($extension['name'], 'inactive');
 					}
-				
-					/*switch ($ds['type']) {
-						case NULL:
-							$col_source = Widget::TableData(__('None'), 'inactive');
-							break;
-						
-						case (is_numeric($ds['type'])):
-							$section = SectionManager::instance()->fetch($ds['type']);
-						
-							if ($section instanceof Section) {
-								$section = $section->_data;
-								$col_source = Widget::TableData(Widget::Anchor(
-									$section['name'],
-									URL . '/symphony/blueprints/sections/edit/' . $section['id'] . '/',
-									$section['handle']
-								));
-							}
-						
-							else {
-								$col_source = Widget::TableData(__('None'), 'inactive');
-							}
-							break;
-						
-						case "dynamic_xml":
-							$url_parts = parse_url($instance->dsParamURL);
-							$col_source = Widget::TableData(ucwords($url_parts['host']));
-							break;
-						
-						case "static_xml":
-							$col_source = Widget::TableData('Static XML');
-							break;
-					
-						default:
-							$col_source = Widget::TableData(ucwords(preg_replace('/_/', ' ', $ds['type'])));
-					}*/
-				
-					if (isset($ds['author']['website'])) {
+
+					if (isset($ds->about()->author->website)) {
 						$col_author = Widget::TableData(Widget::Anchor(
-							$ds['author']['name'],
-							General::validateURL($ds['author']['website'])
+							$ds->about()->author->name,
+							General::validateURL($ds->about()->author->website)
 						));
 					}
 				
-					else if (isset($ds['author']['email'])) {
+					else if (isset($ds->about()->author->email)) {
 						$col_author = Widget::TableData(Widget::Anchor(
-							$ds['author']['name'],
-							'mailto:' . $ds['author']['email']
+							$ds->about()->author->name,
+							'mailto:' . $ds->about()->author->email
 						));	
 					}
 				
 					else {
-						$col_author = Widget::TableData($ds['author']['name']);
+						$col_author = Widget::TableData($ds->about()->author->name);
 					}
 				
 					$dsTableBody[] = Widget::TableRow(array(
@@ -162,35 +131,49 @@
 			$this->editing = isset($this->_context[1]);
 			
 			if (!$this->editing) {
-				$this->template = $_REQUEST['template'];
+				$this->type = $_REQUEST['type'];
 				
-				if (is_null($this->template)){
-					$this->template = Symphony::Configuration()->core()->{'default-datasource-type'};
+				if (is_null($this->type)){
+					$this->type = Symphony::Configuration()->core()->{'default-datasource-type'};
 				}
+				
+				$this->datasource = ExtensionManager::instance()->create($this->type)->prepare(
+					(isset($_POST['fields']) ? $_POST['fields'] : NULL)
+				);
 			}
 			
 			else {
 				$this->handle = $this->_context[1];
-				$this->status = $this->_context[2];
+
+				// Status message:
+				$callback = Administration::instance()->getPageCallback();
+				if(isset($callback['flag']) && !is_null($callback['flag'])){
+					$this->status = $callback['flag'];
+				}
 				
-				$datasourceManager = DatasourceManager::instance();
-				$this->datasource = $datasourceManager->create($this->handle, NULL, false);
+				$this->datasource = Datasource::loadFromName($this->handle, NULL, false);
+				$this->type = $this->datasource->type();
+				
+				$this->datasource = ExtensionManager::instance()->create($this->type)->prepare(
+					(isset($_POST['fields']) ? $_POST['fields'] : NULL), $this->datasource
+				);
+				
+				//$this->datasource = Datasource::loadFromName($this->handle, NULL, false); //DatasourceManager::instance()->create($this->handle, NULL, false);
 				
 				if (!$this->datasource->allowEditorToParse()) {
 					redirect(URL . '/symphony/blueprints/datasources/info/' . $this->handle . '/');
 				}
 				
-				$this->template = $this->datasource->getTemplate();
-				$this->fields['about'] = $this->datasource->about();
+				$this->type = $this->datasource->type();
 			}
 			
 			###
 			# Delegate: DataSourceFormPrepare
 			# Description: Prepare any data before the form view and action are fired.
-			ExtensionManager::instance()->notifyMembers(
+			/*ExtensionManager::instance()->notifyMembers(
 				'DataSourceFormPrepare', '/backend/',
 				array(
-					'template'		=> &$this->template,
+					'type'		=> &$this->type,
 					'handle'		=> &$this->handle,
 					'datasource'	=> $this->datasource,
 					'editing'		=> $this->editing,
@@ -198,32 +181,52 @@
 					'fields'		=> &$this->fields,
 					'errors'		=> &$this->errors
 				)
-			);
+			);*/
 		}
 		
 		protected function __actionForm() {
-			$template_file = NULL;
-			$template_data = array();
-			
+
 			// Delete datasource:
 			if ($this->editing && array_key_exists('delete', $_POST['action'])) {
-		    	if (!General::deleteFile(DATASOURCES . '/data.' . $this->handle . '.php')) {
+
+				//if (!General::deleteFile(DATASOURCES . '/data.' . $this->handle . '.php')) {
+				$this->__actionDelete(array($this->handle), URL . '/symphony/blueprints/datasources/');
+
+				$this->pageAlert(
+					__('Failed to delete <code>%s</code>. Please check permissions.', array(
+						$this->handle
+					)),
+					Alert::ERROR
+				);
+			}
+
+			try{
+				$pathname = $this->datasource->save($this->errors);
+				$handle = preg_replace('/.php$/i', NULL, basename($pathname));
+				redirect(URL . "/symphony/blueprints/datasources/edit/{$handle}/:".($this->editing == true ? 'saved' : 'created')."/");
+			}
+			catch(Exception $e){
+				$this->failed = true;
+				
+				// There is a special error if writing fails.
+				if(isset($this->errors->write)){
 					$this->pageAlert(
-						__('Failed to delete <code>%s</code>. Please check permissions.', array(
-							$this->handle
-						)),
+						$this->errors->write,
 						Alert::ERROR
 					);
 				}
-				
-		    	else redirect(URL . '/symphony/blueprints/datasources/');
 			}
+			
+			/*$type_file = NULL;
+			$type_data = array();
+			
+
 			
 			$this->fields = $_POST['fields'];
 			
 			// About info:
-			if (!isset($this->fields['about']['name']) or empty($this->fields['about']['name'])) {
-				$this->errors['about']['name'] = 'Name must not be empty.';
+			if (!isset($this->fields['about']['name']) || empty($this->fields['about']['name'])) {
+				$this->errors->append('about::name', __('This is a required field'));
 				$this->failed = true;
 			}
 			
@@ -233,24 +236,24 @@
 			ExtensionManager::instance()->notifyMembers(
 				'DataSourceFormAction', '/backend/', 
 				array(
-					'template'		=> &$this->template,
+					'type'		=> &$this->type,
 					'handle'		=> &$this->handle,
 					'datasource'	=> $this->datasource,
 					'editing'		=> $this->editing,
 					'failed'		=> &$this->failed,
 					'fields'		=> &$this->fields,
 					'errors'		=> &$this->errors,
-					'template_file'	=> &$template_file,
-					'template_data'	=> &$template_data
+					'type_file'	=> &$type_file,
+					'type_data'	=> &$type_data
 				)
 			);
 
-			// Save template:
-			if ($this->failed === false) {
+			// Save type:
+			if ($this->errors->length() <= 0) {
 				$user = Administration::instance()->User;
 				
-				if (!file_exists($template_file)) {
-					throw new Exception(sprintf("Unable to find Data Source Template '%s'.", $template_file));
+				if (!file_exists($type_file)) {
+					throw new Exception(sprintf("Unable to find Data Source type '%s'.", $type_file));
 				}
 				
 				$default_data = array(
@@ -268,18 +271,19 @@
 					var_export(DateTimeObj::getGMT('c'), true),
 				);
 
-				foreach ($template_data as $value) {
+				foreach ($type_data as $value) {
 					$default_data[] = var_export($value, true);
 				}
 				
 				header('content-type: text/plain');
-				echo vsprintf(file_get_contents($template_file), $default_data);
+				echo vsprintf(file_get_contents($type_file), $default_data);
 				
 				exit;
-			}
+			}*/
 		}
 		
 		protected function __viewForm() {
+
 			// Show page alert:
 			if ($this->failed) {
 				$this->pageAlert(
@@ -288,8 +292,8 @@
 				);
 			}
 			
-			else if ($this->_status) {
-				switch ($this->_status) {
+			else if (!is_null($this->status)) {
+				switch ($this->status) {
 					case 'saved':
 						$this->pageAlert(
 							__(
@@ -322,50 +326,51 @@
 			
 			$this->setPageType('form');
 			
-			$datasource_templates = ExtensionManager::instance()->listByType('Data Source');
-			
-			// Track template type with a hidden field:
-			if ($this->editing || isset($_POST['template'])) {
-				$input = Widget::Input('template', $this->template, 'hidden');
+			// Track type with a hidden field:
+			if($this->editing || ($this->editing && isset($_POST['type']))){
+				$input = Widget::Input('type', $this->type, 'hidden');
 				$this->Form->appendChild($input);
 			}
 			
-			// Let user choose template type:
-			else {
-				$label = Widget::Label(__('Template'));
+			// Let user choose type:
+			else{
+				$label = Widget::Label(__('Type'));
 				
 				$options = array();
-				foreach($datasource_templates as $e){
+				foreach(ExtensionManager::instance()->listByType('Data Source') as $e){
 					if($e['status'] != Extension::ENABLED) continue;
-					$options[] = array($e['handle'], ($this->template == $e['handle']), $e['name']);
+					$options[] = array($e['handle'], ($this->type == $e['handle']), $e['name']);
 				}
 
-				$select = Widget::Select('template', $options);
+				$select = Widget::Select('type', $options);
 				$select->setAttribute('id', 'master-switch');
 				$this->Form->appendChild($select);
 			}
 			
-			if (!isset($this->fields['about']['name']) or empty($this->fields['about']['name'])) {
+			if(is_null($this->datasource->about()->name) || strlen(trim($this->datasource->about()->name)) == 0){
 				$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(
 					__('Symphony'), __('Data Sources'), __('Untitled')
 				)));
 				$this->appendSubheading(General::sanitize(__('Untitled')));
 			}
 			
-			else {
+			else{
 				$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(
-					__('Symphony'), __('Data Sources'), $this->fields['about']['name']
+					__('Symphony'), __('Data Sources'), $this->datasource->about()->name
 				)));
-				$this->appendSubheading(General::sanitize($this->fields['about']['name']));
+				$this->appendSubheading(General::sanitize($this->datasource->about()->name));
 			}
 			
+			ExtensionManager::instance()->create($this->type)->view($this->datasource, $this->Form, $this->errors);
+			
+			/*
 			###
 			# Delegate: DataSourceFormView
 			# Description: Prepare any data before the form view and action are fired.
 			ExtensionManager::instance()->notifyMembers(
 				'DataSourceFormView', '/backend/',
 				array(
-					'template'		=> &$this->template,
+					'type'		=> &$this->type,
 					'handle'		=> &$this->handle,
 					'datasource'	=> $this->datasource,
 					'editing'		=> $this->editing,
@@ -375,6 +380,7 @@
 					'wrapper'		=> $this->Form
 				)
 			);
+			*/
 			
 			$actions = new XMLElement('div');
 			$actions->setAttribute('class', 'actions');
@@ -383,7 +389,7 @@
 			$save->setAttribute('accesskey', 's');
 			$actions->appendChild($save);
 			
-			if ($this->is_editing) {
+			if ($this->editing == true) {
 				$save->setAttribute('value', __('Save Changes'));
 				$button = new XMLElement('button', __('Delete'));
 				$button->setAttribute('name', 'action[delete]');
@@ -402,18 +408,18 @@
 			$datasource = DataSource::loadFromName($this->_context[1], NULL, false);	
 			$about = $datasource->about();
 
-			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Data Source'), $about['name'])));
-			$this->appendSubheading($about['name']);
+			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Data Source'), $about->name)));
+			$this->appendSubheading($about->name);
 			$this->Form->setAttribute('id', 'controller');
 
-			$link = $about['user']['name'];
+			$link = $about->author->name;
 
-			if(isset($about['user']['website'])){
-				$link = Widget::Anchor($about['user']['name'], General::validateURL($about['user']['website']));
+			if(isset($about->author->website)){
+				$link = Widget::Anchor($about->author->name, General::validateURL($about->author->website));
 			}
 			
-			elseif(isset($about['user']['email'])){
-				$link = Widget::Anchor($about['user']['name'], 'mailto:' . $about['user']['email']);
+			elseif(isset($about->author->email)){
+				$link = Widget::Anchor($about->author->name, 'mailto:' . $about->author->email);
 			}
 			
 			foreach($about as $key => $value) {
@@ -430,13 +436,13 @@
 					case 'version':
 						$fieldset = new XMLElement('fieldset');
 						$fieldset->appendChild(new XMLElement('legend', 'Version'));
-						$fieldset->appendChild(new XMLElement('p', $value . ', released on ' . DateTimeObj::get(__SYM_DATE_FORMAT__, strtotime($about['release-date']))));
+						$fieldset->appendChild(new XMLElement('p', $value . ', released on ' . DateTimeObj::get(__SYM_DATE_FORMAT__, strtotime($about->{'release-date'}))));
 						break;
 						
 					case 'description':
 						$fieldset = new XMLElement('fieldset');
 						$fieldset->appendChild(new XMLElement('legend', 'Description'));
-						$fieldset->appendChild((is_object($about['description']) ? $about['description'] : new XMLElement('p', $about['description'])));
+						$fieldset->appendChild((is_object($about->description) ? $about->description : new XMLElement('p', $about->description)));
 					
 					case 'example':
 						if (is_callable(array($datasource, 'example'))) {
@@ -563,16 +569,17 @@
 						
 		}
 		
-		protected function __actionDelete($datasources, $redirect) {
+		protected function __actionDelete(array $datasources, $redirect=NULL) {
 			$success = true;
 
-			if(!is_array($datasources)) $datasources = array($datasources);
-			
 			foreach ($datasources as $ds) {
-				if(!General::deleteFile(DATASOURCES . '/data.' . $ds . '.php'))
+				if(!General::deleteFile(DATASOURCES . "/{$ds}.php")){
 					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
+				}
 				
-				$sql = "SELECT * FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]".$ds."[[:>:]]' ";
+				// To Do: Delete reference from View XML
+				
+				/*$sql = "SELECT * FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]".$ds."[[:>:]]' ";
 				$pages = Symphony::Database()->fetch($sql);
 
 				if(is_array($pages) && !empty($pages)){
@@ -582,10 +589,12 @@
 						
 						Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
 					}
-				}
+				}*/
 			}
 			
-			if($success) redirect($redirect);
+			if($success == true && !is_null($redirect)){
+				redirect($redirect);
+			}
 		}
 		
 		public function __actionIndex() {

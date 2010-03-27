@@ -1,4 +1,5 @@
 <?php
+	require_once('lib/dynamicxmldatasource.php');
 	
 	class Extension_DS_DynamicXML extends Extension {
 		public function about() {
@@ -10,9 +11,9 @@
 					'Data Source', 'Core'
 				),
 				'author'		=> array(
-					'name'			=> 'Rowan Lewis',
-					'website'		=> 'http://rowanlewis.com/',
-					'email'			=> 'me@rowanlewis.com'
+					'name'			=> 'Symphony Team',
+					'website'		=> 'http://symphony-cms.com/',
+					'email'			=> 'team@symphony-cms.com'
 				),
 				'provides'		=> array(
 					'datasource_template'
@@ -20,94 +21,28 @@
 				'description'	=> 'Create data sources from XML fetched over HTTP or FTP.'
 			);
 		}
-		
-		public function getSubscribedDelegates() {
-			return array(
-				array(
-					'page'		=> '/backend/',
-					'delegate'	=> 'DataSourceFormPrepare',
-					'callback'	=> 'prepare'
-				),
-				array(
-					'page'		=> '/backend/',
-					'delegate'	=> 'DataSourceFormAction',
-					'callback'	=> 'action'
-				),
-				array(
-					'page'		=> '/backend/',
-					'delegate'	=> 'DataSourceFormView',
-					'callback'	=> 'view'
-				)
-			);
+
+		public function prepare(array $data=NULL) {
+			$datasource = new DynamicXMLDataSource;
+
+			if(!is_null($data)){
+				if(isset($data['about']['name'])) $datasource->about()->name = $data['about']['name'];
+				
+				if(isset($data['namespaces']) && is_array($data['namespaces'])){
+					foreach($data['namespaces']['name'] as $index => $name){
+						$datasource->parameters()->namespaces[$index] = array('uri' => $data['namespaces']['uri'][$index], 'name' => $name);
+					}
+				}
+				
+				if(isset($data['url'])) $datasource->parameters()->url = $data['url'];
+				if(isset($data['xpath'])) $datasource->parameters()->xpath = $data['xpath'];
+				if(isset($data['cache-lifetime'])) $datasource->parameters()->{'cache-lifetime'} = $data['cache-lifetime'];
+			}
+			
+			return $datasource;
 		}
 		
-		public function prepare($context = array()) {
-			if ($context['template'] != 'ds_dynamicxml') return;
-			
-			require_once $this->getExtensionPath() . '/lib/dynamicxmldatasource.php';
-			
-			$datasource = $context['datasource'];
-			
-			// Load defaults:
-			if (!$datasource instanceof DynamicXMLDataSource) {
-				$datasource = new DynamicXMLDataSource(Administration::instance());
-			}
-			
-			$context['fields']['namespaces'] = $datasource->getNamespaces();
-			$context['fields']['url'] = $datasource->getURL();
-			$context['fields']['xpath'] = $datasource->getXPath();
-			$context['fields']['cache'] = $datasource->getCacheTime();
-			$context['fields']['can_redirect_on_empty'] = 'no';
-		}
-		
-		public function action($context = array()) {
-			if ($context['template'] != 'ds_dynamicxml') return;
-			
-			// Validate data:
-			$fields = $context['fields'];
-			$errors = $context['errors'];
-			$failed = $context['failed'];
-			
-			if (trim($fields['url']) == '') {
-				$errors['url'] = __('This is a required field');
-				$failed = true;
-			}
-			
-			if (trim($fields['xpath']) == '') {
-				$errors['xpath'] = __('This is a required field');
-				$failed = true;
-			}
-			
-			if (!is_numeric($fields['cache'])) {
-				$errors['cache'] = __('Must be a valid number');
-				$failed = true;
-			}
-			
-			else if ($fields['cache'] < 0) {
-				$this->_errors['cache'] = __('Must be greater than zero');
-				$failed = true;
-			}
-			
-			$context['errors'] = $errors;
-			$context['failed'] = $failed;
-			
-			// Send back template to save:
-			$context['template_file'] = EXTENSIONS . '/ds_dynamicxml/templates/datasource.php';
-			$context['template_data'] = array(
-				(integer)$fields['cache'],
-				(array)$fields['namespaces'],
-				Lang::createHandle($fields['about']['name']),
-				$fields['url'],
-				$fields['xpath']
-			);
-		}
-		
-		public function view($context = array()) {
-			if ($context['template'] != 'ds_dynamicxml') return;
-			
-			$fields = $context['fields'];
-			$errors = $context['errors'];
-			$wrapper = $context['wrapper'];
+		public function view(Datasource $datasource, XMLElement &$wrapper, MessageStack $errors) {
 			
 		//	Essentials --------------------------------------------------------
 			
@@ -117,11 +52,11 @@
 			
 			// Name:
 			$label = Widget::Label(__('Name'));
-			$input = Widget::Input('fields[about][name]', General::sanitize($fields['about']['name']));
+			$input = Widget::Input('fields[about][name]', General::sanitize($datasource->about()->name));
 			$label->appendChild($input);
 			
-			if (isset($errors['about']['name'])) {
-				$label = Widget::wrapFormElementWithError($label, $errors['about']['name']);
+			if (isset($errors->{'about::name'})) {
+				$label = Widget::wrapFormElementWithError($label, $errors->{'about::name'});
 			}
 			
 			$fieldset->appendChild($label);
@@ -134,11 +69,11 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Source')));	
 			$label = Widget::Label(__('URL'));
 			$label->appendChild(Widget::Input(
-				'fields[url]', General::sanitize($fields['url'])
+				'fields[url]', General::sanitize($datasource->parameters()->url)
 			));
 			
-			if (isset($errors['url'])) {
-				$label = Widget::wrapFormElementWithError($label, $errors['url']);
+			if (isset($errors->url)) {
+				$label = Widget::wrapFormElementWithError($label, $errors->url);
 			}
 			
 			$fieldset->appendChild($label);
@@ -155,25 +90,26 @@
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
 			
-			if (is_array($fields['namespaces'])) foreach ($fields['namespaces'] as $index => $namespace) {
-				$name = "fields[namespaces][{$index}]";
+			if(is_array($datasource->parameters()->namespaces)){
+				foreach($datasource->parameters()->namespaces as $index => $namespace){
 				
-				$li = new XMLElement('li');
-				$li->appendChild(new XMLElement('h4', 'Namespace'));
+					$li = new XMLElement('li');
+					$li->appendChild(new XMLElement('h4', 'Namespace'));
 				
-				$group = new XMLElement('div');
-				$group->setAttribute('class', 'group');
+					$group = new XMLElement('div');
+					$group->setAttribute('class', 'group');
 				
-				$label = Widget::Label(__('Name'));
-				$label->appendChild(Widget::Input("{$name}[name]", General::sanitize($namespace['name'])));
-				$group->appendChild($label);
+					$label = Widget::Label(__('Name'));
+					$label->appendChild(Widget::Input("fields[namespaces][name][{$index}]", General::sanitize($namespace['name'])));
+					$group->appendChild($label);
 				
-				$label = Widget::Label(__('URI'));
-				$label->appendChild(Widget::Input("{$name}[uri]", General::sanitize($namespace['uri'])));
-				$group->appendChild($label);
+					$label = Widget::Label(__('URI'));
+					$label->appendChild(Widget::Input("fields[namespaces][uri][{$index}]", General::sanitize($namespace['uri'])));
+					$group->appendChild($label);
 				
-				$li->appendChild($group);
-				$ol->appendChild($li);
+					$li->appendChild($group);
+					$ol->appendChild($li);
+				}
 			}
 			
 			$li = new XMLElement('li');
@@ -184,11 +120,11 @@
 			$group->setAttribute('class', 'group');
 			
 			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('fields[namespaces][][name]'));
+			$label->appendChild(Widget::Input('fields[namespaces][name][]'));
 			$group->appendChild($label);
 					
 			$label = Widget::Label(__('URI'));
-			$label->appendChild(Widget::Input('fields[namespaces][][uri]'));
+			$label->appendChild(Widget::Input('fields[namespaces][uri][]'));
 			$group->appendChild($label);
 			
 			$li->appendChild($group);
@@ -213,10 +149,10 @@
 			*/
 			
 			$label = Widget::Label(__('Included Elements'));
-			$label->appendChild(Widget::Input('fields[xpath]', General::sanitize($fields['xpath'])));
+			$label->appendChild(Widget::Input('fields[xpath]', General::sanitize($datasource->parameters()->xpath)));
 			
-			if (isset($errors['xpath'])) {
-				$label = Widget::wrapFormElementWithError($label, $errors['xpath']);
+			if(isset($errors->xpath)){
+				$label = Widget::wrapFormElementWithError($label, $errors->xpath);
 			}
 			
 			$fieldset->appendChild($label);
@@ -226,13 +162,13 @@
 			$help->setValue(__('Use an XPath expression to select which elements from the source XML to include.'));
 			$fieldset->appendChild($help);
 			
-			$input = Widget::Input('fields[cache]', max(0, intval($fields['cache'])));
+			$input = Widget::Input('fields[cache-lifetime]', max(0, intval($datasource->parameters()->{'cache-lifetime'})));
 			$input->setAttribute('size', 6);
 			
 			$label = Widget::Label(__('Update cached result every %s minutes', array($input->generate())));
 			
-			if (isset($errors['cache'])) {
-				$label = Widget::wrapFormElementWithError($label, $errors['cache']);
+			if(isset($errors->{'cache-lifetime'})){
+				$label = Widget::wrapFormElementWithError($label, $errors->{'cache-lifetime'});
 			}
 			
 			$fieldset->appendChild($label);

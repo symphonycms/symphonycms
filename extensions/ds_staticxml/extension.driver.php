@@ -1,5 +1,7 @@
 <?php
-	
+
+	require_once('lib/staticxmldatasource.php');
+		
 	class Extension_DS_StaticXML extends Extension {
 		public function about() {
 			return array(
@@ -10,9 +12,9 @@
 					'Data Source', 'Core'
 				),
 				'author'		=> array(
-					'name'			=> 'Rowan Lewis',
-					'website'		=> 'http://rowanlewis.com/',
-					'email'			=> 'me@rowanlewis.com'
+					'name'			=> 'Symphony Team',
+					'website'		=> 'http://symphony-cms.com/',
+					'email'			=> 'team@symphony-cms.com'
 				),
 				'provides'		=> array(
 					'datasource_template'
@@ -21,38 +23,19 @@
 			);
 		}
 		
-		public function getSubscribedDelegates() {
-			return array(
-				array(
-					'page'		=> '/backend/',
-					'delegate'	=> 'DataSourceFormPrepare',
-					'callback'	=> 'prepare'
-				),
-				array(
-					'page'		=> '/backend/',
-					'delegate'	=> 'DataSourceFormAction',
-					'callback'	=> 'action'
-				),
-				array(
-					'page'		=> '/backend/',
-					'delegate'	=> 'DataSourceFormView',
-					'callback'	=> 'view'
-				)
-			);
-		}
-		
-		public function prepare($context = array()) {
-			if ($context['template'] != 'ds_staticxml') return;
-			
-			$datasource = $context['datasource'];
-			
-			if ($datasource instanceof StaticXMLDataSource) {
-				$context['fields']['static_xml'] = $datasource->getStaticXML();
+		public function prepare(array $data=NULL) {
+			$datasource = new StaticXMLDataSource;
+
+			if(!is_null($data)){
+				if(isset($data['about']['name'])) $datasource->about()->name = $data['about']['name'];
+				if(isset($data['xml'])) $datasource->parameters()->{'xml'} = $data['xml'];
 			}
+			
+			return $datasource;
 		}
 		
+		/*
 		public function action($context = array()) {
-			if ($context['template'] != 'ds_staticxml') return;
 			
 			require_once TOOLKIT . '/class.xslproc.php';
 			
@@ -91,44 +74,41 @@
 				$fields['static_xml']
 			);
 		}
+		*/
 		
-		public function view($context = array()) {
-			if ($context['template'] != 'ds_staticxml') return;
+		public function view(Datasource $datasource, XMLElement &$wrapper, MessageStack $errors) {
 			
-			$fields = $context['fields'];
-			$errors = $context['errors'];
-			$wrapper = $context['wrapper'];
+			//	Essentials --------------------------------------------------------
+
+				$fieldset = new XMLElement('fieldset');
+				$fieldset->setAttribute('class', 'settings');
+				$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
+
+				// Name:
+				$label = Widget::Label(__('Name'));
+				$input = Widget::Input('fields[about][name]', General::sanitize($datasource->about()->name));
+				$label->appendChild($input);
+
+				if (isset($errors->{'about::name'})) {
+					$label = Widget::wrapFormElementWithError($label, $errors->{'about::name'});
+				}
+
+				$fieldset->appendChild($label);
 			
-		//	Essentials --------------------------------------------------------
+				$label = Widget::Label(__('XML'));
+				$input = Widget::Textarea(
+					'fields[xml]', 24, 50,
+					General::sanitize($datasource->parameters()->{'xml'})
+				);
+				$input->setAttribute('class', 'code');
+				$label->appendChild($input);
 			
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
+				if (isset($errors->{'xml'})) {
+					$label = Widget::wrapFormElementWithError($label, $errors->{'xml'});
+				}
 			
-			// Name:
-			$label = Widget::Label(__('Name'));
-			$input = Widget::Input('fields[about][name]', General::sanitize($fields['about']['name']));
-			$label->appendChild($input);
-			
-			if (isset($errors['about']['name'])) {
-				$label = Widget::wrapFormElementWithError($label, $errors['about']['name']);
-			}
-			
-			$fieldset->appendChild($label);
-			
-			$label = Widget::Label(__('Static XML'));
-			$input = Widget::Textarea(
-				'fields[static_xml]', 24, 50,
-				General::sanitize($fields['static_xml'])
-			);
-			$input->setAttribute('class', 'code');
-			$label->appendChild($input);
-			
-			if (isset($errors['static_xml'])) {
-				$label = Widget::wrapFormElementWithError($label, $errors['static_xml']);
-			}
-			
-			$fieldset->appendChild($label);
+				$fieldset->appendChild($label);
+				
 			$wrapper->appendChild($fieldset);
 		}
 	}

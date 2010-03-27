@@ -1,19 +1,49 @@
 <?php
 	
 	Class StaticXMLDataSource extends DataSource {
-		public function getRootElement() {
-			return 'static-xml';
+		
+		public function __construct(){
+			// Set Default Values
+			$this->_about = new StdClass;
+			$this->_parameters = (object)array(
+				'root-element' => 'static-xml',
+				'xml' => '<?xml version="1.0" encoding="UTF-8"?>'."\n<data>\n\t\n</data>"
+			);
 		}
 		
-		public function getTemplate() {
-			return 'static_xml';
+		final public function type(){
+			return 'ds_staticxml';
+		}
+		
+		public function template(){
+			return EXTENSIONS . '/ds_staticxml/templates/datasource.php';
+		}
+
+		public function save(MessageStack &$errors){
+			$xsl_errors = new MessageStack;
+			
+			if(strlen(trim($this->parameters()->xml)) == 0){
+				$errors->append('xml', __('This is a required field'));
+			}
+			
+			elseif(!General::validateXML($this->parameters()->xml, $xsl_errors)){
+
+				if(XSLProc::hasErrors()){
+					$errors->append('xml', sprintf('XSLT specified is invalid. The following error was returned: "%s near line %s"', $xsl_errors[0]->message, $xsl_errors[0]->line));
+				}
+				else{
+					$errors->append('xml', 'XSLT specified is invalid.');
+				}
+			}
+			
+			return parent::save($errors);
 		}
 		
 		public function grab() {
-			$result = new XMLElement($this->dsParamROOTELEMENT);
+			$result = new XMLElement($this->about()->{'root-element'});
 			
 			try {
-				$result = $this->getStaticXML();
+				$result = $this->parameters()->xml;
 			}
 			
 			catch (FrontendPageNotFoundException $error) {

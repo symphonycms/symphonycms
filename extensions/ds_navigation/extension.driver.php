@@ -1,4 +1,6 @@
 <?php
+
+	require_once('lib/navigationdatasource.php');
 	
 	class Extension_DS_Navigation extends Extension {
 		public function about() {
@@ -10,9 +12,9 @@
 					'Data Source', 'Core'
 				),
 				'author'		=> array(
-					'name'			=> 'Rowan Lewis',
-					'website'		=> 'http://rowanlewis.com/',
-					'email'			=> 'me@rowanlewis.com'
+					'name'			=> 'Symphony Team',
+					'website'		=> 'http://symphony-cms.com/',
+					'email'			=> 'team@symphony-cms.com'
 				),
 				'provides'		=> array(
 					'datasource_template'
@@ -41,15 +43,18 @@
 			);
 		}
 		
-		public function prepare($context = array()) {
-			if ($context['template'] != 'ds_navigation') return;
+		public function prepare(array $data=NULL) {
 			
-			require_once $this->getExtensionPath() . '/lib/navigationdatasource.php';
+			$datasource = new NavigationDataSource;
 			
-			$datasource = $context['datasource'];
+			if(!is_null($data)){
+				if(isset($data['about']['name'])) $datasource->about()->name = $data['about']['name'];
+				if(isset($data['parent'])) $datasource->parameters()->parent = $data['parent'];
+				if(isset($data['type'])) $datasource->parameters()->type = $data['type'];
+			}
 			
 			// Load defaults:
-			if (!$datasource instanceof NavigationDataSource) {
+			/*if (!$datasource instanceof NavigationDataSource) {
 				$datasource = new NavigationDataSource(Administration::instance());
 			}
 			
@@ -59,10 +64,12 @@
 			
 			if ($datasource->canRedirectOnEmpty()) {
 				$context['fields']['can_redirect_on_empty'] = 'yes';
-			}
+			}*/
+			
+			return $datasource;
 		}
 		
-		public function action($context = array()) {
+	/*	public function action($context = array()) {
 			if ($context['template'] != 'ds_navigation') return;
 			
 			$fields = $context['fields'];
@@ -75,14 +82,13 @@
 				$fields['required_url_param'],
 				Lang::createHandle($fields['about']['name'])
 			);
-		}
+		}*/
 		
-		public function view($context = array()) {
-			if ($context['template'] != 'ds_navigation') return;
+		public function view(Datasource $datasource, XMLElement &$wrapper, MessageStack $errors) {
 			
-			$fields = $context['fields'];
+			/*$fields = $context['fields'];
 			$errors = $context['errors'];
-			$wrapper = $context['wrapper'];
+			$wrapper = $context['wrapper'];*/
 			$admin = Administration::instance()->Page;
 			
 		//	Essentials --------------------------------------------------------
@@ -93,13 +99,13 @@
 			
 			// Name:
 			$label = Widget::Label(__('Name'));
-			$input = Widget::Input('fields[about][name]', General::sanitize($fields['about']['name']));
+			$input = Widget::Input('fields[about][name]', General::sanitize($datasource->about()->name));
 			$label->appendChild($input);
-			
-			if (isset($errors['about']['name'])) {
-				$label = Widget::wrapFormElementWithError($label, $errors['about']['name']);
+
+			if (isset($errors->{'about::name'})) {
+				$label = Widget::wrapFormElementWithError($label, $errors->{'about::name'});
 			}
-			
+
 			$fieldset->appendChild($label);
 			$wrapper->appendChild($fieldset);
 			
@@ -108,35 +114,67 @@
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Filtering')));
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to filter by page parameters.'));
+			$p = new XMLElement('p', __('<code>{$param}</code> or <code>Value</code>'));
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
+			
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
+
+			$div = new XMLElement('div');
+			
+			// Parent View:
+			$label = Widget::Label(__('Parent View'));
+			$input = Widget::Input('fields[parent]', General::sanitize($datasource->parameters()->parent));
+			$label->appendChild($input);
+
+			if (isset($errors->{'parent'})) {
+				$label = Widget::wrapFormElementWithError($label, $errors->{'parent'});
+			}
+
+			$div->appendChild($label);
+
+			$ul = new XMLElement('ul');
+			$ul->setAttribute('class', 'tags');
+			
+			foreach (new ViewIterator as $view) {
+				$ul->appendChild(new XMLElement('li', $view->path));
+			}
+			
+			$div->appendChild($ul);
+			$group->appendChild($div);
 			
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'contextual ' . __('navigation'));
-			$h3 = new XMLElement('h3', __('Filter Navigation by'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
 			
-			$ol = new XMLElement('ol');
-			$ol->setAttribute('class', 'filters-duplicator');
+			// View Type:
+			$label = Widget::Label(__('View Type'));
+			$input = Widget::Input('fields[type]', General::sanitize($datasource->parameters()->type));
+			$label->appendChild($input);
 
-			//$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` ORDER BY `title` ASC");
-			
+			if (isset($errors->{'type'})) {
+				$label = Widget::wrapFormElementWithError($label, $errors->{'type'});
+			}
+
+			$div->appendChild($label);
+
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tags');
 			
-			//foreach ($pages as $page) {
-			//	$ul->appendChild(new XMLElement('li', preg_replace('/\/{2,}/i', '/', '/' . $page['path'] . '/' . $page['handle'])));
-			//}
+			foreach(View::fetchUsedTypes() as $type){
+				$ul->appendChild(new XMLElement('li', $type));
+			}
 			
-			if (isset($fields['filters']['parent'])) {
+			$div->appendChild($ul);
+			$group->appendChild($div);			
+			
+/*
+			if (isset($datasource->parameters()->parent) && !is_null($datasource->parameters()->parent)){
 				$li = new XMLElement('li');
 				$li->setAttribute('class', 'unique');
-				$li->appendChild(new XMLElement('h4', __('Parent Page')));		
+				$li->appendChild(new XMLElement('h4', __('Parent View')));
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input(
-					'fields[filters][parent]', General::sanitize($fields['filters']['parent'])
+					'fields[parent]', General::sanitize($datasource->parameters()->parent)
 				));
 				$li->appendChild($label);
 				$li->appendChild($ul);
@@ -145,25 +183,25 @@
 			
 			$li = new XMLElement('li');
 			$li->setAttribute('class', 'unique template');
-			$li->appendChild(new XMLElement('h4', __('Parent Page')));		
+			$li->appendChild(new XMLElement('h4', __('Parent View')));		
 			$label = Widget::Label(__('Value'));
-			$label->appendChild(Widget::Input('fields[filters][parent]'));
+			$label->appendChild(Widget::Input('fields[parent]'));
 			$li->appendChild($label);
 			$li->appendChild($ul);
 			$ol->appendChild($li);
 			
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tags');
-			//if($types = $admin->__fetchAvailablePageTypes()) foreach($types as $type) $ul->appendChild(new XMLElement('li', $type));
+			foreach(View::fetchUsedTypes() as $type) $ul->appendChild(new XMLElement('li', $type));
 			
-			if (isset($fields['filters']['type'])) {
+			if (isset($datasource->parameters()->type) && !is_null($datasource->parameters()->type)){
 				$li = new XMLElement('li');
 				$li->setAttribute('class', 'unique');
-				$li->appendChild(new XMLElement('h4', __('Page Type')));		
+				$li->appendChild(new XMLElement('h4', __('View Type')));		
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input(
-					'fields[filters][type]',
-					General::sanitize($fields['filters']['type'])
+					'fields[type]',
+					General::sanitize($datasource->parameters()->type)
 				));
 				$li->appendChild($label);
 				$li->appendChild($ul);
@@ -172,38 +210,16 @@
 			
 			$li = new XMLElement('li');
 			$li->setAttribute('class', 'unique template');
-			$li->appendChild(new XMLElement('h4', __('Page Type')));		
+			$li->appendChild(new XMLElement('h4', __('View Type')));		
 			$label = Widget::Label(__('Value'));
-			$label->appendChild(Widget::Input('fields[filters][type]'));
+			$label->appendChild(Widget::Input('fields[type]'));
 			$li->appendChild($label);
 			$li->appendChild($ul);
-			$ol->appendChild($li);
+			$ol->appendChild($li);*/
 			
-			$div->appendChild($ol);
-			$fieldset->appendChild($div);
-			
-		//	Redirect/404 ------------------------------------------------------
-			
-			$label = Widget::Label(__('Required URL Parameter <i>Optional</i>'));
-			$label->appendChild(Widget::Input('fields[required_url_param]', $fields['required_url_param']));
-			$fieldset->appendChild($label);
-			
-			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value. Do not wrap the parameter with curly-braces.'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
-			
-			// Can redirect on empty:
-			$fieldset->appendChild(Widget::Input('fields[can_redirect_on_empty]', 'no', 'hidden'));
-			
-			$label = Widget::Label();
-			$input = Widget::Input('fields[can_redirect_on_empty]', 'yes', 'checkbox');
-			
-			if ($fields['can_redirect_on_empty'] == 'yes') {
-				$input->setAttribute('checked', 'checked');
-			}
-			
-			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
-			$fieldset->appendChild($label);
+
+			$fieldset->appendChild($group);
+
 			$wrapper->appendChild($fieldset);
 		}
 	}

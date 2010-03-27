@@ -1,61 +1,36 @@
 <?php
 	
 	Class UsersDataSource extends DataSource {
-		public function canAppendPagination() {
-			return false;
+		
+		public function __construct(){
+			// Set Default Values
+			$this->_about = new StdClass;
+			$this->_parameters = (object)array(
+				'root-element' => NULL,
+				'included-elements' => array(),
+				'filters' => array()
+			);
+		}
+		final public function type(){
+			return 'ds_users';
 		}
 		
-		public function canHTMLEncodeText() {
-			return false;
+		public function template(){
+			return EXTENSIONS . '/ds_users/templates/datasource.php';
 		}
-		
-		public function canRedirectOnEmpty() {
-			return false;
-		}
-		
-		public function getFilters() {
-			return array();
-		}
-		
-		public function getIncludedElements() {
-			return array();
-		}
-		
-		public function getOutputParams() {
-			return array();
-		}
-		
-		public function getPaginationLimit() {
-			return 20;
-		}
-		
-		public function getPaginationPage() {
-			return 1;
-		}
-		
-		public function getRequiredURLParam() {
-			return '';
-		}
-		
-		public function getRootElement() {
-			return 'users';
-		}
-		
-		public function getSortField() {
-			return 'system:id';
-		}
-		
-		public function getSortOrder() {
-			return 'desc';
-		}
-		
-		public function getTemplate() {
-			return 'users';
+
+		public function save(MessageStack &$errors){
+
+			//if(strlen(trim($this->parameters()->url)) == 0){
+			//	$errors->append('url', __('This is a required field'));
+			//}
+
+			return parent::save($errors);
 		}
 		
 		protected function processUserFilter($field, $filter) {
 			if (!is_array($filter)) {
-				$bits = preg_split('/,\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);			
+				$bits = preg_split('/,\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
 				$bits = array_map('trim', $bits);
 			}
 			
