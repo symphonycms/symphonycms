@@ -278,7 +278,7 @@
 	
 			if(is_resource($this->_result)){
 		        while ($row = @mysql_fetch_object($this->_result)){	            
-		            @array_push($this->_lastResult, $row);
+		            $this->_lastResult[] = $row;
 		        }
 		
 		        @mysql_free_result($this->_result);

@@ -114,7 +114,7 @@
 		}
 	
 		public function appendChild(XMLElement $child){
-			array_push($this->_children, $child);
+			$this->_children[] = $child;
 		}
 		
 		public function appendChildArray(array $children){
