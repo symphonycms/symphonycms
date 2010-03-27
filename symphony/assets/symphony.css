@@ -408,8 +408,8 @@
 				background-color: #444;
 				background: -moz-linear-gradient(
 					top,
-					hsla(215, 40%, 60%, 1),
-					hsla(215, 40%, 50%, 1)
+					#888,
+					#666
 				);
 				background: -webkit-gradient(
 					linear,
@@ -472,6 +472,14 @@
 			table + .actions {
 				border: none;
 			}
+			table .selected {
+				background-color: #6a8ebf;
+			}
+			table .selected td,
+			table .selected td a {
+				color: #fff;
+			}
+			
 		/* @end */
 
 		/* @group Forms */
@@ -497,6 +505,7 @@
 				margin-top: -15px;
 			}
 			form legend + .help {
+				display: none;
 				position: absolute;
 				top: -2px;
 				right: 30px;
@@ -647,12 +656,12 @@
 			background: hsla(0, 0%, 0%, 0.1);
 		}
 		#views-list td.toggle div span {
-			color: #888877;
+			color: #aaa;
 			display: inline-block;
 			-moz-transform: matrix(-1, 0, 0, 1, 0, 0);
 			-webkit-transform: matrix(-1, 0, 0, 1, 0, 0);
 			-o-transform:matrix(-1, 0, 0, 1, 0, 0);
-			font-size: 8pt;
+			font-size: 7pt;
 		}
 		#views-list .selected td.toggle div span {
 			color: #aabbee;

@@ -61,7 +61,6 @@
 
 			$aTableHead = array(
 				array(__('Title'), 'col'),
-				array(__('Template'), 'col'),
 				array(__('<acronym title="Universal Resource Locator">URL</acronym>'), 'col'),
 				array(__('<acronym title="Universal Resource Locator">URL</acronym> Parameters'), 'col'),
 				array(__('Type'), 'col')
@@ -84,8 +83,6 @@
 					
 					$page_url = sprintf('%s/%s/', URL, $view->path); 
 					$page_edit_url = sprintf('%sedit/%s/', Administration::instance()->getCurrentPageURL(), $view->path);
-					$page_template = $view->handle . '.xsl';
-					$page_template_url = Administration::instance()->getCurrentPageURL() . 'template/' . $view->path . '/';
 
 					$page_types = $view->types;
 					
@@ -93,11 +90,6 @@
 					
 					$col_title = Widget::TableData($link);
 					$col_title->appendChild(Widget::Input("items[{$view->path}]", null, 'checkbox'));
-					
-					$col_template = Widget::TableData(Widget::Anchor(
-						$page_template,
-						$page_template_url
-					));
 					
 					$col_url = Widget::TableData(Widget::Anchor(substr($page_url, strlen(URL)), $page_url));
 					
@@ -118,7 +110,7 @@
 					$col_toggle = Widget::TableData('');
 					$col_toggle->setAttribute('class', 'toggle');
 					
-					$columns = array($col_title, $col_template, $col_url, $col_params, $col_types);
+					$columns = array($col_title, $col_url, $col_params, $col_types);
 					
 					$row = Widget::TableRow($columns);
 					$next = $view->parent();
