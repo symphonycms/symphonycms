@@ -147,7 +147,7 @@
 				}
 			}
 			
-			$result .= ($indent ? General::repeatStr("\t", $tab_depth) : NULL) . '<' . $this->_name;
+			$result .= ($indent ? str_repeat("\t", $tab_depth) : NULL) . '<' . $this->_name;
 		
 			if(count($this->_attributes ) > 0 ){
 			
