@@ -408,7 +408,7 @@
 			$query_timer = 0.0;
 			$slow_queries = array();
 			foreach($query_log as $key => $val)	{
-				$query_timer += floatval($val['time']);
+				$query_timer += $val['time'];
 				if($val['time'] > 0.0999) $slow_queries[] = $val;
 			}				
 
