@@ -303,6 +303,10 @@
 				h2 + #tab {
 					margin-top: -5px;
 				}
+				#tab + fieldset {
+					border: none;
+					margin-top: -20px;
+				}
 
 			/* @end */
 
@@ -470,7 +474,9 @@
 				display: none;
 			}
 			table + .actions {
+				background: transparent;
 				border: none;
+				margin: 0;
 			}
 			table .selected {
 				background-color: #6a8ebf;
@@ -487,31 +493,30 @@
 				margin-bottom: 20px;
 			}
 			form fieldset {
-				position: relative;
 				border: none;
-				border-top: 1px solid hsla(0, 0%, 0%, 0.1);
-				padding: 10px 30px 15px 30px;
-				min-height: 60px;
+				border-top: 1px dotted #ddd;
+				padding: 15px 30px 25px 230px;
 			}
-			form legend {
+			form fieldset legend {
 				color: #666;
-				font-weight: bold;
-				background: #fff;
-				padding: 5px 10px;
-				margin-left: -10px;
+				float: left;
+				margin: 0 0 -30px 0;
+				text-indent: -200px;
 			}
 			form .help {
-				color: #999;
-				margin-top: -15px;
+				color: #aaa;
+				margin: -10px 0 15px;
 			}
-			form legend + .help {
-				display: none;
-				position: absolute;
-				top: -2px;
-				right: 30px;
-				background: #fff;
-				padding: 5px 10px;
-				margin: 0 -10px 0 0;
+			form fieldset legend + .help {
+				color: #aaa;
+				float: left;
+				font-size: 8pt;
+				margin: 12pt 0 -60px 0;
+				text-indent: -200px;
+			}
+			form fieldset legend + .help code {
+				color: inherit;
+				font-size: inherit;
 			}
 			form label {
 				display: block;
@@ -590,7 +595,7 @@
 			
 				ul.tags {
 					list-style: none;
-					margin: 3px 0 0 0;
+					margin: 3px 0 -10px 0;
 				}
 				.tags li {
 					color: #888;
@@ -616,9 +621,9 @@
 		/* @group Actions */
 			
 			.actions {
-				padding: 20px 30px;
 				text-align: right;
-				border-top: 1px solid hsla(0, 0%, 0%, 0.1);
+				border-top: 1px dotted #ddd;
+				padding: 20px 30px;
 			}
 			.actions input {
 				float: none;
