@@ -708,7 +708,7 @@
 				}
 				else{
 					$view = View::loadFromFieldsArray($fields);
-					$view->template = file_get_contents(TEMPLATES . '/view.xsl');
+					$view->template = file_get_contents(TEMPLATES . '/template.view.txt');
 					$view->handle = $fields['handle'];
 					$view->path = $path;
 				}

@@ -98,25 +98,15 @@
 				$fields['name'] = $filename; 
 				$fields['body'] = @file_get_contents($file_abs);
 				
-				$this->Form->setAttribute('action', URL . '/symphony/blueprints/utilities/edit/' . $this->_context[1] . '/');							
+				$this->Form->setAttribute('action', URL . '/symphony/blueprints/utilities/edit/' . $this->_context[1] . '/');
 			}
 			
 			else{
-				
-				$fields['body'] = '<?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0"
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-
-<xsl:template name="">
-
-</xsl:template>
-
-</xsl:stylesheet>';
-				
+				$fields['body'] = file_get_contents(TEMPLATES . '/template.utility.txt');
 			}
 			
 
-			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));			
+			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
 
 			if(isset($this->_context[2])){
