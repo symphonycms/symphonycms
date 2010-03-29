@@ -23,7 +23,7 @@
 					'content'		=> 'text/html; charset=UTF-8'
 				)
 			));
-			$this->addStylesheetToHead(ADMIN_URL . '/assets/devkit.css', 'screen');
+			$this->addStylesheetToHead(ADMIN_URL . '/assets/css/devkit.css', 'screen');
 		}
 		
 		protected function buildHeader($wrapper) {

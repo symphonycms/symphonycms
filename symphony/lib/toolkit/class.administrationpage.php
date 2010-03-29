@@ -27,7 +27,7 @@
 		}
 		
 		public function setPageType($type){
-			//$this->addStylesheetToHead(ADMIN_URL . '/assets/' . ($type == 'table' ? 'tables' : 'forms') . '.css', 'screen', 30);
+			//$this->addStylesheetToHead(ADMIN_URL . '/assets/css/' . ($type == 'table' ? 'tables' : 'forms') . '.css', 'screen', 30);
 		}
 		
 		public function setTitle($val, $position=null) {
@@ -46,15 +46,15 @@
 			$this->Html->setAttribute('lang', Symphony::lang());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
 			
-			$this->addStylesheetToHead(ADMIN_URL . '/assets/symphony.css', 'screen', 60);
-			$this->addStylesheetToHead(ADMIN_URL . '/assets/symphony.duplicator.css', 'screen', 70);
+			$this->addStylesheetToHead(ADMIN_URL . '/assets/css/symphony.css', 'screen', 60);
+			$this->addStylesheetToHead(ADMIN_URL . '/assets/css/symphony.duplicator.css', 'screen', 70);
 			
-			$this->addScriptToHead(ADMIN_URL . '/assets/jquery.js', 50);
-			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.collapsible.js', 51);
-			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.orderable.js', 52);
-			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.duplicator.js', 53);
-			$this->addScriptToHead(ADMIN_URL . '/assets/admin.js', 54);
-			$this->addScriptToHead(ADMIN_URL . '/assets/symphony.js', 55);
+			$this->addScriptToHead(ADMIN_URL . '/assets/js/jquery.js', 50);
+			$this->addScriptToHead(ADMIN_URL . '/assets/js/symphony.collapsible.js', 51);
+			$this->addScriptToHead(ADMIN_URL . '/assets/js/symphony.orderable.js', 52);
+			$this->addScriptToHead(ADMIN_URL . '/assets/js/symphony.duplicator.js', 53);
+			$this->addScriptToHead(ADMIN_URL . '/assets/js/admin.js', 54);
+			$this->addScriptToHead(ADMIN_URL . '/assets/js/symphony.js', 55);
 			
 			###
 			# Delegate: InitaliseAdminPageHead

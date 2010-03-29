@@ -167,9 +167,9 @@
 		
 		private function __form(){
 		
-			Administration::instance()->Page->addStylesheetToHead(URL . '/symphony/assets/symphony.roles.css', 'screen', 9126441);
-			Administration::instance()->Page->addScriptToHead(URL . '/symphony/assets/jquery-ui.js', 9126442);
-			Administration::instance()->Page->addScriptToHead(URL . '/symphony/assets/symphony.roles.js', 9126443);
+			Administration::instance()->Page->addStylesheetToHead(URL . '/symphony/assets/css/symphony.roles.css', 'screen', 9126441);
+			Administration::instance()->Page->addScriptToHead(URL . '/symphony/assets/js/jquery-ui.js', 9126442);
+			Administration::instance()->Page->addScriptToHead(URL . '/symphony/assets/js/symphony.roles.js', 9126443);
 			
 			if(!in_array($this->_context[0], array('new', 'edit'))) throw new AdministrationPageNotFoundException;
 
