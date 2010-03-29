@@ -48,8 +48,9 @@
 			$xml = new DOMDocument();
 			$xml->preserveWhiteSpace = false;
 			$xml->formatOutput = true;
-			$xml->load(ASSETS . '/devkit_navigation.xml');
-			$root = $xml->documentElement;
+			$root = $xml->createElement('navigation');
+			$xml->appendChild($root);
+			
 			$first = $root->firstChild;
 			$xpath = new DOMXPath($xml);
 			$list = new XMLElement('ul');
