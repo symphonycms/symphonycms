@@ -1,6 +1,8 @@
 /* @override http://symphony-21.local/symphony/assets/symphony.css */
 
-/* @group Symphony */
+/*-----------------------------------------------------------------------------
+	Symphony Global
+-----------------------------------------------------------------------------*/
 
 	* {
 		box-sizing: border-box;
@@ -34,747 +36,746 @@
 		border: none;
 	}
 
-/* @group Header */
+/*-----------------------------------------------------------------------------
+	Header
+-----------------------------------------------------------------------------*/
 		
-		h1 {
-			background-color: #222;
-			background: -moz-linear-gradient(
-				top,
-				#111 0%,
-				#333 100%
-			);
-			background: -webkit-gradient(
-				linear,
-				left top,
-				left bottom,
-				from(#111),
-				to(#333)
-			);
-			font-size: 10pt;
-			font-weight: bold;
-			line-height: 45px;
-			padding: 0 30px;
-			text-shadow: 1px 1px 2px #222;
-		}
-		h1 a,
-		#session a {
-			color: #ccc;
-			text-decoration: none;
-		}
-		h1 a:hover,
-		#session a:hover {
-			color: #fff;
-		}
+	h1 {
+		background-color: #222;
+		background: -moz-linear-gradient(
+			top,
+			#111 0%,
+			#333 100%
+		);
+		background: -webkit-gradient(
+			linear,
+			left top,
+			left bottom,
+			from(#111),
+			to(#333)
+		);
+		font-size: 10pt;
+		font-weight: bold;
+		line-height: 45px;
+		padding: 0 30px;
+		text-shadow: 1px 1px 2px #222;
+	}
+	h1 a,
+	#session a {
+		color: #ccc;
+		text-decoration: none;
+	}
+	h1 a:hover,
+	#session a:hover {
+		color: #fff;
+	}
 		
-		/* @group Session */
+/*-----------------------------------------------------------------------------
+	Header: Session
+-----------------------------------------------------------------------------*/
 			
-			#session {
-				line-height: 50px;
-				list-style: none;
-				position: absolute;
-				right: 25px;
-				top: 0;
-			}
-			#session li {
-				display: block;
-				float: left;
-				margin: 0 0 0 10px;
-			}
-			#session li a {
-				border-radius: 5px;
-				-moz-border-radius: 5px;
-				-webkit-border-radius: 5px;
-				display: inline-block;
-				height: 22px;
-				line-height: 22px;
-				padding: 0 5px;
-			}
-			#session li a:hover {
-				background-color: #333;
-				background: hsla(0, 0%, 50%, 0.2);
-			}
-			
-		/* @end */
+	#session {
+		line-height: 50px;
+		list-style: none;
+		position: absolute;
+		right: 25px;
+		top: 0;
+	}
+	#session li {
+		display: block;
+		float: left;
+		margin: 0 0 0 10px;
+	}
+	#session li a {
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		display: inline-block;
+		height: 22px;
+		line-height: 22px;
+		padding: 0 5px;
+	}
+	#session li a:hover {
+		background-color: #333;
+		background: hsla(0, 0%, 50%, 0.2);
+	}
 
-		/* @group Navigation */
+/*-----------------------------------------------------------------------------
+	Header: Navigation
+-----------------------------------------------------------------------------*/
 
-			#nav {
-				background-color: #ccc;
-				background: -moz-linear-gradient(
-					top,
-					hsla(0, 0%, 95%, 1),
-					hsla(0, 0%, 90%, 1) 1px,
-					hsla(0, 0%, 80%, 1) 32px,
-					hsla(0, 0%, 0%, 0.4) 32px,
-					hsla(0, 0%, 0%, 0.2) 33px,
-					hsla(0, 0%, 0%, 0)
-				);
-				background: -webkit-gradient(
-					linear,
-					left top,
-					left bottom,
-					color-stop(0, hsla(0, 0%, 95%, 1)),
-					color-stop(0.03, hsla(0, 0%, 90%, 1)),
-					color-stop(0.91, hsla(0, 0%, 80%, 1)),
-					color-stop(0.92, hsla(0, 0%, 0%, 0.4)),
-					color-stop(.94, hsla(0, 0%, 0%, 0.2)),
-					color-stop(1, hsla(0, 0%, 0%, 0))
-				);
-				height: 35px;
-				list-style: none;
-				padding: 0 20px;
-				white-space: nowrap;
-			}
-			#nav > li {
-				color: #555;
-				color: hsla(0, 0%, 0%, 0.65);
-				display: block;
-				float: left;
-				font-weight: bold;
-				height: 35px;
-				line-height: 33px;
-				padding: 0 10px;
-				position: relative;
-				text-shadow: 0 1px 0 #eee;
-			}
-			#nav #nav-system,
-			#nav #nav-blueprints,
-			#nav #nav-expand {
-				float: right;
-			}
-			#nav > li.active {
-				background-color: #5e84b1;
-				background: -moz-linear-gradient(
-					top,
-					hsla(215, 40%, 75%, 1),
-					hsla(215, 40%, 60%, 1) 1px,
-					hsla(215, 40%, 50%, 1) 32px,
-					hsla(0, 0%, 0%, 0.6) 32px,
-					hsla(0, 0%, 0%, 0) 33px,
-					hsla(0, 0%, 0%, 0)
-				);
-				background: -webkit-gradient(
-					linear,
-					left top,
-					left bottom,
-					color-stop(0, hsla(215, 40%, 75%, 1)),
-					color-stop(0.03, hsla(215, 40%, 60%, 1)),
-					color-stop(0.91, hsla(215, 40%, 50%, 1)),
-					color-stop(0.92, hsla(0, 0%, 0%, 0.6)),
-					color-stop(.93, hsla(0, 0%, 0%, 0)),
-					color-stop(1, hsla(0, 0%, 0%, 0))
-				);
-				color: #fff;
-				text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.2);
-				z-index: 1;
-			}
-			#nav > li:hover {
-				color: #fff;
-				background-color: #444;
-				background: -moz-linear-gradient(
-					top,
-					hsla(0, 0%, 50%, 1),
-					hsla(0, 0%, 35%, 1) 1px,
-					hsla(0, 0%, 25%, 1) 32px
-				);
-				background: -webkit-gradient(
-					linear,
-					left top,
-					left bottom,
-					color-stop(0, hsla(0, 0%, 50%, 1)),
-					color-stop(0.03, hsla(0, 0%, 35%, 1)),
-					color-stop(0.91, hsla(0, 0%, 25%, 1))
-				);
-				text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.5);
-				z-index: 2;
-			}
-			
-			/* @group Sub Navigation */
+	#nav {
+		background-color: #ccc;
+		background: -moz-linear-gradient(
+			top,
+			hsla(0, 0%, 95%, 1),
+			hsla(0, 0%, 90%, 1) 1px,
+			hsla(0, 0%, 80%, 1) 32px,
+			hsla(0, 0%, 0%, 0.4) 32px,
+			hsla(0, 0%, 0%, 0.2) 33px,
+			hsla(0, 0%, 0%, 0)
+		);
+		background: -webkit-gradient(
+			linear,
+			left top,
+			left bottom,
+			color-stop(0, hsla(0, 0%, 95%, 1)),
+			color-stop(0.03, hsla(0, 0%, 90%, 1)),
+			color-stop(0.91, hsla(0, 0%, 80%, 1)),
+			color-stop(0.92, hsla(0, 0%, 0%, 0.4)),
+			color-stop(.94, hsla(0, 0%, 0%, 0.2)),
+			color-stop(1, hsla(0, 0%, 0%, 0))
+		);
+		height: 35px;
+		list-style: none;
+		padding: 0 20px;
+		white-space: nowrap;
+	}
+	#nav > li {
+		color: #555;
+		color: hsla(0, 0%, 0%, 0.65);
+		display: block;
+		float: left;
+		font-weight: bold;
+		height: 35px;
+		line-height: 33px;
+		padding: 0 10px;
+		position: relative;
+		text-shadow: 0 1px 0 #eee;
+	}
+	#nav #nav-system,
+	#nav #nav-blueprints,
+	#nav #nav-expand {
+		float: right;
+	}
+	#nav > li.active {
+		background-color: #5e84b1;
+		background: -moz-linear-gradient(
+			top,
+			hsla(215, 40%, 75%, 1),
+			hsla(215, 40%, 60%, 1) 1px,
+			hsla(215, 40%, 50%, 1) 32px,
+			hsla(0, 0%, 0%, 0.6) 32px,
+			hsla(0, 0%, 0%, 0) 33px,
+			hsla(0, 0%, 0%, 0)
+		);
+		background: -webkit-gradient(
+			linear,
+			left top,
+			left bottom,
+			color-stop(0, hsla(215, 40%, 75%, 1)),
+			color-stop(0.03, hsla(215, 40%, 60%, 1)),
+			color-stop(0.91, hsla(215, 40%, 50%, 1)),
+			color-stop(0.92, hsla(0, 0%, 0%, 0.6)),
+			color-stop(.93, hsla(0, 0%, 0%, 0)),
+			color-stop(1, hsla(0, 0%, 0%, 0))
+		);
+		color: #fff;
+		text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.2);
+		z-index: 1;
+	}
+	#nav > li:hover {
+		color: #fff;
+		background-color: #444;
+		background: -moz-linear-gradient(
+			top,
+			hsla(0, 0%, 50%, 1),
+			hsla(0, 0%, 35%, 1) 1px,
+			hsla(0, 0%, 25%, 1) 32px
+		);
+		background: -webkit-gradient(
+			linear,
+			left top,
+			left bottom,
+			color-stop(0, hsla(0, 0%, 50%, 1)),
+			color-stop(0.03, hsla(0, 0%, 35%, 1)),
+			color-stop(0.91, hsla(0, 0%, 25%, 1))
+		);
+		text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.5);
+		z-index: 2;
+	}
+
+/*-----------------------------------------------------------------------------
+	Header: Navigation: Subnavigation
+-----------------------------------------------------------------------------*/
 				
-				#nav ul {
-					display: none;
-					background-color: #444;
-					background: -moz-linear-gradient(
-						top,
-						hsla(0, 0%, 25%, 1),
-						hsla(0, 0%, 15%, 1)
-					);
-					background: -webkit-gradient(
-						linear,
-						left top,
-						left bottom,
-						from(hsla(0, 0%, 25%, 1)),
-						to(hsla(0, 0%, 15%, 1))
-					);
-					-moz-box-shadow: 1px 2px 2px hsla(0, 0%, 0%, 0.2);
-					-webkit-box-shadow: 1px 2px 2px hsla(0, 0%, 0%, 0.2);
-					left: 0;
-					list-style: none;
-					width: 120px;
-					min-width: 100%;
-					position: absolute;
-					top: 32px;
-				}
-				#nav li:hover ul {
-					display: block;
-				}
-				#nav #nav-system ul,
-				#nav #nav-blueprints ul,
-				#nav #nav-expand ul {
-					left: auto;
-					right: 0;
-				}
-				#nav ul a {
-					color: #fff;
-					display: block;
-					font-weight: normal;
-					padding: 0 10px;
-					text-decoration: none;
-				}
-				#nav ul a:hover {
-					background-color: #333;
-					background: hsla(0, 0%, 0%, 0.2);
-				}
-				#nav ul,
-				#nav ul li:last-child a {
-					border-bottom-right-radius: 5px;
-					border-bottom-left-radius: 5px;
-					-moz-border-radius-bottomright: 5px;
-					-moz-border-radius-bottomleft: 5px;
-					-webkit-border-bottom-right-radius: 5px;
-					-webkit-border-bottom-left-radius: 5px;
-				}
+	#nav ul {
+		display: none;
+		background-color: #444;
+		background: -moz-linear-gradient(
+			top,
+			hsla(0, 0%, 25%, 1),
+			hsla(0, 0%, 15%, 1)
+		);
+		background: -webkit-gradient(
+			linear,
+			left top,
+			left bottom,
+			from(hsla(0, 0%, 25%, 1)),
+			to(hsla(0, 0%, 15%, 1))
+		);
+		-moz-box-shadow: 1px 2px 2px hsla(0, 0%, 0%, 0.2);
+		-webkit-box-shadow: 1px 2px 2px hsla(0, 0%, 0%, 0.2);
+		left: 0;
+		list-style: none;
+		width: 120px;
+		min-width: 100%;
+		position: absolute;
+		top: 32px;
+	}
+	#nav li:hover ul {
+		display: block;
+	}
+	#nav #nav-system ul,
+	#nav #nav-blueprints ul,
+	#nav #nav-expand ul {
+		left: auto;
+		right: 0;
+	}
+	#nav ul a {
+		color: #fff;
+		display: block;
+		font-weight: normal;
+		padding: 0 10px;
+		text-decoration: none;
+	}
+	#nav ul a:hover {
+		background-color: #333;
+		background: hsla(0, 0%, 0%, 0.2);
+	}
+	#nav ul,
+	#nav ul li:last-child a {
+		border-bottom-right-radius: 5px;
+		border-bottom-left-radius: 5px;
+		-moz-border-radius-bottomright: 5px;
+		-moz-border-radius-bottomleft: 5px;
+		-webkit-border-bottom-right-radius: 5px;
+		-webkit-border-bottom-left-radius: 5px;
+	}
 				
-			/* @end */
-			
-			/* @group Tab Navigation */
+/*-----------------------------------------------------------------------------
+	Header: Navigation: Tab Navigation
+-----------------------------------------------------------------------------*/
 
-				#tab {
-					position: relative;
-					display: inline-table;
-					width: 100%;
-					line-height: 25px;
-					color: #777;
-					background-color: #fff;
-					background: -moz-linear-gradient(
-						bottom,
-						#eee 0%,
-						#fff 10%,
-						#fff 100%
-					);
-					background: -webkit-gradient(
-						linear,
-						left bottom,
-						left top,
-						from(#eee),
-						to(#fff),
-						color-stop(0.1, #fff)
-					);
-					border-bottom: 1px solid #eaeaea;
-					padding-left: 20px;
-					margin-bottom: 15px;
-				}
-				#tab li {
-					display: inline;
-				}
-				#tab li a {
-					background: hsla(0, 0%, 0%, 0.03);
-					display: block;
-					position: relative;
-					top: 1px;
-					color: #444;
-					float: left;
-					padding: 0 10px;
-					margin-right: 5px;
-					text-decoration: none;
-					border: 1px solid #ddd;
-					border-bottom: none;
-					-moz-border-radius-topright: 5px;
-					-moz-border-radius-topleft: 5px;
-					-webkit-border-top-right-radius: 5px;
-					-webkit-border-top-left-radius: 5px;
-					border-top-right-radius: 5px;
-					border-top-left-radius: 5px;
-				}
-				#tab li a:hover,
-				#tab li a.active {
-					background: #fff;
-				}
-				h2 + #tab {
-					margin-top: -5px;
-				}
-				#tab + fieldset {
-					border: none;
-					margin-top: -20px;
-				}
+	#tab {
+		position: relative;
+		display: inline-table;
+		width: 100%;
+		line-height: 25px;
+		color: #777;
+		background-color: #fff;
+		background: -moz-linear-gradient(
+			bottom,
+			#eee 0%,
+			#fff 10%,
+			#fff 100%
+		);
+		background: -webkit-gradient(
+			linear,
+			left bottom,
+			left top,
+			from(#eee),
+			to(#fff),
+			color-stop(0.1, #fff)
+		);
+		border-bottom: 1px solid #eaeaea;
+		padding-left: 20px;
+		margin-bottom: 15px;
+	}
+	#tab li {
+		display: inline;
+	}
+	#tab li a {
+		background: hsla(0, 0%, 0%, 0.03);
+		display: block;
+		position: relative;
+		top: 1px;
+		color: #444;
+		float: left;
+		padding: 0 10px;
+		margin-right: 5px;
+		text-decoration: none;
+		border: 1px solid #ddd;
+		border-bottom: none;
+		-moz-border-radius-topright: 5px;
+		-moz-border-radius-topleft: 5px;
+		-webkit-border-top-right-radius: 5px;
+		-webkit-border-top-left-radius: 5px;
+		border-top-right-radius: 5px;
+		border-top-left-radius: 5px;
+	}
+	#tab li a:hover,
+	#tab li a.active {
+		background: #fff;
+	}
+	h2 + #tab {
+		margin-top: -5px;
+	}
+	#tab + fieldset {
+		border: none;
+		margin-top: -20px;
+	}
 
-			/* @end */
+/*-----------------------------------------------------------------------------
+	Content
+-----------------------------------------------------------------------------*/
 
-		/* @end */		
-
-	/* @end */
-	
-	/* @group Content */
+	h2 {
+		font-size: 11pt;
+		padding: 15px 30px 20px;
+	}
+	code {
+		font-family: 'Monaco', 'Consolas', 'Andale Mono', monospace;
+		font-size: 8pt;
+		color: hsla(0, 0%, 0%, 0.8);
+	}
+	pre {
+		border-bottom: 1px solid hsla(0, 0%, 0%, 0.1);
+		border-top: 1px solid hsla(0, 0%, 0%, 0.1);
+		margin: 10px 0;
+		padding: 10px 0;
+	}
+	p {
+		margin: 0 0 10px;
+	}
+	p:last-child {
+		margin: 0;
+	}
+	.inactive {
+		color: hsla(0, 0%, 0%, 0.3);
+	}
 		
-		h2 {
-			font-size: 11pt;
-			padding: 15px 30px 20px;
-		}
-		code {
-			font-family: 'Monaco', 'Consolas', 'Andale Mono', monospace;
-			font-size: 8pt;
-			color: hsla(0, 0%, 0%, 0.8);
-		}
-		pre {
-			border-bottom: 1px solid hsla(0, 0%, 0%, 0.1);
-			border-top: 1px solid hsla(0, 0%, 0%, 0.1);
-			margin: 10px 0;
-			padding: 10px 0;
-		}
-		p {
-			margin: 0 0 10px;
-		}
-		p:last-child {
-			margin: 0;
-		}
-		.inactive {
-			color: hsla(0, 0%, 0%, 0.3);
-		}
-		
-		/* @group Buttons */
-			
-			fieldset + .actions input[type=submit],
-			button,
-			.button {
-				background-color: #222;
-				background: -moz-linear-gradient(
-					top,
-					#6f6f6f,
-					#1c1c1c
-				);
-				background: -webkit-gradient(
-					linear,
-					left top,
-					left bottom,
-					from(#6f6f6f),
-					to(#1c1c1c)
-				);
-				border: 1px solid #5f605e;
-				border-radius: 5px;
-				-moz-border-radius: 5px;
-				-webkit-border-radius: 5px;
-				color: #fff;
-				display: inline;
-				float: right;
-				font-size: 8pt;
-				padding: 3px 7px;
-				text-decoration: none;
-				text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.1);
-				white-space: nowrap;
-				cursor: pointer;
-			}
-			.button.create {
-				background: -moz-linear-gradient(
-					top,
-					#8ed130,
-					#88bd3c
-				);
-				background: -webkit-gradient(
-					linear,
-					left top,
-					left bottom,
-					from(#8ed130),
-					to(#88bd3c)
-				);
-				border: 1px solid #88bd3c;
-			}
-			button.delete {
-				float: left;
-				background-color: #db4355;
-				background: -moz-linear-gradient(
-					top,
-					#db4355,
-					#ab3939
-				);
-				background: -webkit-gradient(
-					linear,
-					left top,
-					left bottom,
-					from(#db4355),
-					to(#ab3939)
-				);
-				border: 1px solid #cb1f2b;
-			}
-			fieldset + .actions input[type=submit]:hover,
-			button:hover,
-			.button:hover {
-				color: #fff;
-				background-color: #444;
-				background: -moz-linear-gradient(
-					top,
-					#888,
-					#666
-				);
-				background: -webkit-gradient(
-					linear,
-					left top,
-					left bottom,
-					from(#888),
-					to(#666)
-				);
-				border: 1px solid #777;
-			}
-			
-		/* @end */
-		
-		/* @group Tables */
-			
-			table {
-				border-spacing: 0;
-				table-layout: fixed;
-				width: 100%;
-			}
-			table thead tr th {
-				color: #666;
-				padding: 0 10px 8px 10px;
-			}
-			table tbody tr td {
-				padding: 8px 10px;
-			}
-			table th:first-child,
-			table td:first-child {
-				padding-left: 30px;
-				width: 20%;
-			}
-			table th:last-child,
-			table td:last-child {
-				padding-right: 30px;
-			}
-			table thead tr th,
-			table tbody tr td {
-				border-bottom: 1px solid hsla(0, 0%, 0%, 0.1);
-				text-align: left;
-			}
-			table tbody tr:nth-child(odd) td {
-				background: #f3f3f3;
-				background: -moz-linear-gradient(
-					top,
-					hsla(0, 0%, 0%, 0.03),
-					hsla(0, 0%, 0%, 0.04)
-				);
-				background: -webkit-gradient(
-					linear,
-					left top,
-					left bottom,
-					from(hsla(0, 0%, 0%, 0.03)),
-					to(hsla(0, 0%, 0%, 0.04))
-				);
-			}
-			table tbody tr td input[type=checkbox] {
-				display: none;
-			}
-			table + .actions {
-				background: transparent;
-				border: none;
-				margin: 0;
-			}
-			table .selected {
-				background-color: #6a8ebf;
-			}
-			table .selected td,
-			table .selected td a {
-				color: #fff;
-			}
-			
-		/* @end */
+/*-----------------------------------------------------------------------------
+	Content: Buttons
+-----------------------------------------------------------------------------*/
 
-		/* @group Forms */
-			form {
-				margin-bottom: 20px;
-			}
-			form fieldset {
-				border: none;
-				border-top: 1px dotted #ddd;
-				padding: 15px 30px 25px 230px;
-			}
-			form fieldset legend {
-				color: #666;
-				float: left;
-				margin: 0 0 -30px 0;
-				text-indent: -200px;
-			}
-			form .help {
-				color: #aaa;
-				margin: -10px 0 15px;
-			}
-			form fieldset legend + .help {
-				color: #aaa;
-				float: left;
-				font-size: 8pt;
-				margin: 12pt 0 -60px 0;
-				text-indent: -200px;
-			}
-			form fieldset legend + .help code {
-				color: inherit;
-				font-size: inherit;
-			}
-			form label {
-				display: block;
-				margin-bottom: 15px;
-			}
-			form .label {
-				margin-bottom: 3px;
-			}
-			form label input,
-			form .label input,
-			form label select,
-			form .label select,
-			form label textarea,
-			form .label textarea {
-				margin: 3px 0 0 0;
-				width: 100%;
-				padding: 2px;
-			}
-			form input {
-				cursor: text;
-			}
-			form input[type=submit] {
-				cursor: default;
-			}
-			form input[size],
-			form input[type=radio],
-			form input[type=checkbox] {
-				display: inline;
-				margin: 0 3px 0 0;
-				width: auto;
-			}
-			form select[multiple] {
-				min-height: 100px;
-				padding: 0;
-			}
-			form .label span {
-				display: block;
-				background-color: #f3f3f3;
-				border: 1px solid #ddd;
-				padding: 8px;
-				margin-bottom: 15px;
-			}
-			form .label #change-password {
-				display: block;
-				margin: 0 auto;
-			}
-			form .group {
-				display: table;
-				table-layout: fixed;
-				width: 100%;
-				margin-bottom: 15px;
-			}
-			form label:last-child,
-			form .group:last-child,
-			form .label:last-child span {
-				margin-bottom: 0;
-			}
-			form .group label,
-			form .group div {
-				display: table-cell;
-				padding-left: 20px;
-				margin-top: 0;
-			}
-			form .group div label {
-				display: block;
-				padding: 0;
-				margin-bottom: 3px;
-			}
-			form .group > label:first-child,
-			form .group > div:first-child label,
-			form .group > div:first-child {
-				padding-left: 0;
-			}
+	fieldset + .actions input[type=submit],
+	button,
+	.button {
+		background-color: #222;
+		background: -moz-linear-gradient(
+			top,
+			#6f6f6f,
+			#1c1c1c
+		);
+		background: -webkit-gradient(
+			linear,
+			left top,
+			left bottom,
+			from(#6f6f6f),
+			to(#1c1c1c)
+		);
+		border: 1px solid #5f605e;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		color: #fff;
+		display: inline;
+		float: right;
+		font-size: 8pt;
+		padding: 3px 7px;
+		text-decoration: none;
+		text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.1);
+		white-space: nowrap;
+		cursor: pointer;
+	}
+	.button.create {
+		background: -moz-linear-gradient(
+			top,
+			#8ed130,
+			#88bd3c
+		);
+		background: -webkit-gradient(
+			linear,
+			left top,
+			left bottom,
+			from(#8ed130),
+			to(#88bd3c)
+		);
+		border: 1px solid #88bd3c;
+	}
+	button.delete {
+		float: left;
+		background-color: #db4355;
+		background: -moz-linear-gradient(
+			top,
+			#db4355,
+			#ab3939
+		);
+		background: -webkit-gradient(
+			linear,
+			left top,
+			left bottom,
+			from(#db4355),
+			to(#ab3939)
+		);
+		border: 1px solid #cb1f2b;
+	}
+	fieldset + .actions input[type=submit]:hover,
+	button:hover,
+	.button:hover {
+		color: #fff;
+		background-color: #444;
+		background: -moz-linear-gradient(
+			top,
+			#888,
+			#666
+		);
+		background: -webkit-gradient(
+			linear,
+			left top,
+			left bottom,
+			from(#888),
+			to(#666)
+		);
+		border: 1px solid #777;
+	}
 
-			/* @group Tags */
+/*-----------------------------------------------------------------------------
+	Content: Table
+-----------------------------------------------------------------------------*/
 			
-				ul.tags {
-					list-style: none;
-					margin: 3px 0 -10px 0;
-				}
-				.tags li {
-					color: #888;
-					display: inline;
-					margin-right: 8px;
-					cursor: pointer;
-				}
+	table {
+		border-spacing: 0;
+		table-layout: fixed;
+		width: 100%;
+	}
+	table thead tr th {
+		color: #666;
+		padding: 0 10px 8px 10px;
+	}
+	table tbody tr td {
+		padding: 8px 10px;
+	}
+	table th:first-child,
+	table td:first-child {
+		padding-left: 30px;
+		width: 20%;
+	}
+	table th:last-child,
+	table td:last-child {
+		padding-right: 30px;
+	}
+	table thead tr th,
+	table tbody tr td {
+		border-bottom: 1px solid hsla(0, 0%, 0%, 0.1);
+		text-align: left;
+	}
+	table tbody tr:nth-child(odd) td {
+		background: #f3f3f3;
+		background: -moz-linear-gradient(
+			top,
+			hsla(0, 0%, 0%, 0.03),
+			hsla(0, 0%, 0%, 0.04)
+		);
+		background: -webkit-gradient(
+			linear,
+			left top,
+			left bottom,
+			from(hsla(0, 0%, 0%, 0.03)),
+			to(hsla(0, 0%, 0%, 0.04))
+		);
+	}
+	table tbody tr td input[type=checkbox] {
+		display: none;
+	}
+	table + .actions {
+		background: transparent;
+		border: none;
+		margin: 0;
+	}
+	table .selected {
+		background-color: #6a8ebf;
+	}
+	table .selected td,
+	table .selected td a {
+		color: #fff;
+	}
 			
-			/* @end */
+/*-----------------------------------------------------------------------------
+	Content: Form
+-----------------------------------------------------------------------------*/
 
-			/* @group Master Switch */
-			
-				#master-switch {
-					float: right;
-					margin-right: 30px;
-					margin-top: 15px;
-				}
-			
-			/* @end */
-			
-		/* @end */
-		
-		/* @group Actions */
-			
-			.actions {
-				text-align: right;
-				border-top: 1px dotted #ddd;
-				padding: 20px 30px;
-			}
-			.actions input {
-				float: none;
-			}
-			
-		/* @end */
-		
-	/* @end */
-	
-	/* @group Views List */
-		
-		#views-list td.toggle div {
-			margin: -8px 0;
-			padding: 8px 0;
-			position: relative;
-		}
-		#views-list td.toggle a.hide,
-		#views-list td.toggle a.show {
-			border-radius: 5px;
-			-moz-border-radius: 5px;
-			-webkit-border-radius: 5px;
-			display: inline-block;
-			left: -25px;
-			height: 20px;
-			line-height: 20px;
-			font-size: 8pt;
-			margin: -2px 0;
-			position: absolute;
-			text-align: center;
-			text-decoration: none;
-			width: 20px;
-		}
-		#views-list td.toggle a.hide:hover,
-		#views-list td.toggle a.show:hover {
-			background: hsla(0, 0%, 0%, 0.1);
-		}
-		#views-list td.toggle div span {
-			color: #aaa;
-			display: inline-block;
-			-moz-transform: matrix(-1, 0, 0, 1, 0, 0);
-			-webkit-transform: matrix(-1, 0, 0, 1, 0, 0);
-			-o-transform:matrix(-1, 0, 0, 1, 0, 0);
-			font-size: 7pt;
-		}
-		#views-list .selected td.toggle div span {
-			color: #aabbee;
-		}
-		
-	/* @end */
+	form {
+		margin-bottom: 20px;
+	}
+	form fieldset {
+		border: none;
+		border-top: 1px dotted #ddd;
+		padding: 15px 30px 25px 230px;
+	}
+	form fieldset legend {
+		color: #666;
+		float: left;
+		margin: 0 0 -30px 0;
+		text-indent: -200px;
+	}
+	form .help {
+		color: #aaa;
+		margin: -10px 0 15px;
+	}
+	form fieldset legend + .help {
+		color: #aaa;
+		float: left;
+		font-size: 8pt;
+		margin: 12pt 0 -60px 0;
+		text-indent: -200px;
+	}
+	form fieldset legend + .help code {
+		color: inherit;
+		font-size: inherit;
+	}
+	form label {
+		display: block;
+		margin-bottom: 15px;
+	}
+	form .label {
+		margin-bottom: 3px;
+	}
+	form label input,
+	form .label input,
+	form label select,
+	form .label select,
+	form label textarea,
+	form .label textarea {
+		margin: 3px 0 0 0;
+		width: 100%;
+		padding: 2px;
+	}
+	form input {
+		cursor: text;
+	}
+	form input[type=submit] {
+		cursor: default;
+	}
+	form input[size],
+	form input[type=radio],
+	form input[type=checkbox] {
+		display: inline;
+		margin: 0 3px 0 0;
+		width: auto;
+	}
+	form select[multiple] {
+		min-height: 100px;
+		padding: 0;
+	}
+	form .label span {
+		display: block;
+		background-color: #f3f3f3;
+		border: 1px solid #ddd;
+		padding: 8px;
+		margin-bottom: 15px;
+	}
+	form .label #change-password {
+		display: block;
+		margin: 0 auto;
+	}
+	form .group {
+		display: table;
+		table-layout: fixed;
+		width: 100%;
+		margin-bottom: 15px;
+	}
+	form label:last-child,
+	form .group:last-child,
+	form .label:last-child span {
+		margin-bottom: 0;
+	}
+	form .group label,
+	form .group div {
+		display: table-cell;
+		padding-left: 20px;
+		margin-top: 0;
+	}
+	form .group div label {
+		display: block;
+		padding: 0;
+		margin-bottom: 3px;
+	}
+	form .group > label:first-child,
+	form .group > div:first-child label,
+	form .group > div:first-child {
+		padding-left: 0;
+	}
 
-	/* @group System Notifiaction */
+/*-----------------------------------------------------------------------------
+	Content: Form: Tags
+-----------------------------------------------------------------------------*/
 
-		#notice {
-			z-index: 10;
-			position: absolute;
-			width: 50%;
-			left: 50%;
-			margin: 0 0 0 -25%;
-			color: #fff;
-			line-height: 20px;
-			padding: 6px 12px;
-			padding-left: 40px;
-			background-color: #970707;
-			background: -moz-linear-gradient(
-				top,
-				hsla(0, 90%, 35%, 1),
-				hsla(0, 90%, 25%, 1)
-			);
-			background: -webkit-gradient(
-				linear,
-				left top,
-				left bottom,
-				from(hsla(0, 0%, 75%, 1)),
-				to(hsla(0, 0%, 45%, 1))
-			);
-			border-top: none;
-			border-bottom-right-radius: 5px;
-			border-bottom-left-radius: 5px;
-			-moz-border-radius-bottomright: 5px;
-			-moz-border-radius-bottomleft: 5px;
-			-webkit-border-bottom-right-radius: 5px;
-			-webkit-border-bottom-left-radius: 5px;
-			-moz-box-shadow: 1px 1px 3px #000;
-			-webkit-box-shadow: 1px 1px 3px #000;
-		}
-		#notice:before {
-			float: left;
-			margin: 0 10px 0 -30px;
-			display: block;
-			content: "!";
-			width: 20px;
-			height: 20px;
-			color: #000;
-			text-align: center;
-			font-weight: bold;
-			font-size: 13pt;
-			font-family: serif;
-			background-color: #fff9c9;
-			border-radius: 20px;
-			-moz-border-radius: 20px;
-			-webkit-border-radius: 20px;
-		}
-		#notice.error {
-			background-color: #970707;
-			background: -moz-linear-gradient(
-				top,
-				hsla(0, 90%, 35%, 1),
-				hsla(0, 90%, 25%, 1)
-			);
-			background: -webkit-gradient(
-				linear,
-				left top,
-				left bottom,
-				from(hsla(0, 90%, 35%, 1)),
-				to(hsla(0, 90%, 25%, 1))
-			);	
-		}
-		#notice.success {
-			background: -moz-linear-gradient(
-				top,
-				hsla(110, 60%, 55%, 1),
-				hsla(110, 40%, 40%, 1)
-			);
-			background: -webkit-gradient(
-				linear,
-				left top,
-				left bottom,
-				from(hsla(110, 60%, 55%, 1)),
-				to(hsla(110, 50%, 40%, 1))
-			);
-		}
-		#notice a {
-			color: #fff9c9;
-		}
-		.invalid {
-			margin: 10px 0;
-		}
-		.invalid label {
-			color: #cc2828;
-			font-weight: bold;
-			margin: 0;
-		}
-		.invalid p {
-			color: #666;
-			margin: 3px 0 0;
-		}
-		.invalid p:before {
-			content: "↑";
-			margin-right: 3px;
-		}
-		
-	/* @end */
-	
-/* @end */
+	ul.tags {
+		list-style: none;
+		margin: 3px 0 -10px 0;
+	}
+	.tags li {
+		color: #888;
+		display: inline;
+		margin-right: 8px;
+		cursor: pointer;
+	}
+
+/*-----------------------------------------------------------------------------
+	Content: Form: Master Switch
+-----------------------------------------------------------------------------*/
+
+	#master-switch {
+		float: right;
+		margin-right: 30px;
+		margin-top: 15px;
+	}
+
+/*-----------------------------------------------------------------------------
+	Content: Form: Actions
+-----------------------------------------------------------------------------*/
+			
+	.actions {
+		text-align: right;
+		border-top: 1px dotted #ddd;
+		padding: 20px 30px;
+	}
+	.actions input {
+		float: none;
+	}
+
+/*-----------------------------------------------------------------------------
+	Content: Views List
+-----------------------------------------------------------------------------*/
+
+	#views-list td.toggle div {
+		margin: -8px 0;
+		padding: 8px 0;
+		position: relative;
+	}
+	#views-list td.toggle a.hide,
+	#views-list td.toggle a.show {
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		display: inline-block;
+		left: -25px;
+		height: 20px;
+		line-height: 20px;
+		font-size: 8pt;
+		margin: -2px 0;
+		position: absolute;
+		text-align: center;
+		text-decoration: none;
+		width: 20px;
+	}
+	#views-list td.toggle a.hide:hover,
+	#views-list td.toggle a.show:hover {
+		background: hsla(0, 0%, 0%, 0.1);
+	}
+	#views-list td.toggle div span {
+		color: #aaa;
+		display: inline-block;
+		-moz-transform: matrix(-1, 0, 0, 1, 0, 0);
+		-webkit-transform: matrix(-1, 0, 0, 1, 0, 0);
+		-o-transform:matrix(-1, 0, 0, 1, 0, 0);
+		font-size: 7pt;
+	}
+	#views-list .selected td.toggle div span {
+		color: #aabbee;
+	}
+
+/*-----------------------------------------------------------------------------
+	System Notification
+-----------------------------------------------------------------------------*/
+
+	#notice {
+		z-index: 10;
+		position: absolute;
+		width: 50%;
+		left: 50%;
+		margin: 0 0 0 -25%;
+		color: #fff;
+		line-height: 20px;
+		padding: 6px 12px;
+		padding-left: 40px;
+		background-color: #970707;
+		background: -moz-linear-gradient(
+			top,
+			hsla(0, 90%, 35%, 1),
+			hsla(0, 90%, 25%, 1)
+		);
+		background: -webkit-gradient(
+			linear,
+			left top,
+			left bottom,
+			from(hsla(0, 0%, 75%, 1)),
+			to(hsla(0, 0%, 45%, 1))
+		);
+		border-top: none;
+		border-bottom-right-radius: 5px;
+		border-bottom-left-radius: 5px;
+		-moz-border-radius-bottomright: 5px;
+		-moz-border-radius-bottomleft: 5px;
+		-webkit-border-bottom-right-radius: 5px;
+		-webkit-border-bottom-left-radius: 5px;
+		-moz-box-shadow: 1px 1px 3px #000;
+		-webkit-box-shadow: 1px 1px 3px #000;
+	}
+	#notice:before {
+		float: left;
+		margin: 0 10px 0 -30px;
+		display: block;
+		content: "!";
+		width: 20px;
+		height: 20px;
+		color: #000;
+		text-align: center;
+		font-weight: bold;
+		font-size: 13pt;
+		font-family: serif;
+		background-color: #fff9c9;
+		border-radius: 20px;
+		-moz-border-radius: 20px;
+		-webkit-border-radius: 20px;
+	}
+	#notice.error {
+		background-color: #970707;
+		background: -moz-linear-gradient(
+			top,
+			hsla(0, 90%, 35%, 1),
+			hsla(0, 90%, 25%, 1)
+		);
+		background: -webkit-gradient(
+			linear,
+			left top,
+			left bottom,
+			from(hsla(0, 90%, 35%, 1)),
+			to(hsla(0, 90%, 25%, 1))
+		);	
+	}
+	#notice.success {
+		background: -moz-linear-gradient(
+			top,
+			hsla(110, 60%, 55%, 1),
+			hsla(110, 40%, 40%, 1)
+		);
+		background: -webkit-gradient(
+			linear,
+			left top,
+			left bottom,
+			from(hsla(110, 60%, 55%, 1)),
+			to(hsla(110, 50%, 40%, 1))
+		);
+	}
+	#notice a {
+		color: #fff9c9;
+	}
+	.invalid {
+		margin: 10px 0;
+	}
+	.invalid label {
+		color: #cc2828;
+		font-weight: bold;
+		margin: 0;
+	}
+	.invalid p {
+		color: #666;
+		margin: 3px 0 0;
+	}
+	.invalid p:before {
+		content: "↑";
+		margin-right: 3px;
+	}
