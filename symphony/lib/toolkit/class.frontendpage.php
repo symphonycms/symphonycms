@@ -56,7 +56,7 @@
 					)
 				);
 			}
-			
+
 			Frontend::instance()->Profiler->sample('Page creation process started');
 			$this->_page = $page;
 			$this->__buildPage($full_generate);
