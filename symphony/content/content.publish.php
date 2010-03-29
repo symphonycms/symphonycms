@@ -53,8 +53,6 @@
 
 			$entryManager = new EntryManager($this->_Parent);
 
-		    $authors = AuthorManager::fetch();
-		
 			$filter = $filter_value = $where = $joins = NULL;		
 			$current_page = (isset($_REQUEST['pg']) && is_numeric($_REQUEST['pg']) ? max(1, intval($_REQUEST['pg'])) : 1);
 
@@ -69,10 +67,10 @@
 					$filter_value = rawurldecode($filter_value);
 
 					$filter = Symphony::Database()->fetchVar('id', 0, "SELECT `f`.`id` 
-																			   FROM `tbl_fields` AS `f`, `tbl_sections` AS `s` 
-																			   WHERE `s`.`id` = `f`.`parent_section` 
-																			   AND f.`element_name` = '$field_name' 
-																			   AND `s`.`handle` = '".$section->get('handle')."' LIMIT 1");
+										  FROM `tbl_fields` AS `f`, `tbl_sections` AS `s` 
+										  WHERE `s`.`id` = `f`.`parent_section` 
+										  AND f.`element_name` = '$field_name' 
+										  AND `s`.`handle` = '".$section->get('handle')."' LIMIT 1");
 					$field =& $entryManager->fieldManager->fetch($filter);
 
 					if(is_object($field)){
@@ -273,10 +271,10 @@
 			}
 
 			$table = Widget::Table(
-								Widget::TableHead($aTableHead), 
-								NULL, 
-								Widget::TableBody($aTableBody)
-						);
+				Widget::TableHead($aTableHead), 
+				NULL, 
+				Widget::TableBody($aTableBody)
+			);
 
 			$this->Form->appendChild($table);
 
@@ -411,7 +409,7 @@
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
 				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])), false, true);
 		
-		    $section = $sectionManager->fetch($section_id);
+		    	$section = $sectionManager->fetch($section_id);
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
@@ -506,7 +504,7 @@
 
 				$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']);
 
-			    if(!$section = $sectionManager->fetch($section_id)) 
+			    	if(!$section = $sectionManager->fetch($section_id)) 
 					$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', $this->_context['section_handle']), false, true);
 				
 				$entryManager = new EntryManager($this->_Parent);

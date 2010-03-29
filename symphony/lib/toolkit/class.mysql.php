@@ -278,7 +278,7 @@
 	
 			if(is_resource($this->_result)){
 		        while ($row = @mysql_fetch_object($this->_result)){	            
-		            @array_push($this->_lastResult, $row);
+		            $this->_lastResult[] = $row;
 		        }
 		
 		        @mysql_free_result($this->_result);
@@ -408,7 +408,7 @@
 			$query_timer = 0.0;
 			$slow_queries = array();
 			foreach($query_log as $key => $val)	{
-				$query_timer += floatval($val['time']);
+				$query_timer += $val['time'];
 				if($val['time'] > 0.0999) $slow_queries[] = $val;
 			}				
 

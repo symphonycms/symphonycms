@@ -49,13 +49,11 @@
 		return (strlen(trim($page, '/')) > 0 ? '/' . trim($page, '/') . '/' : NULL);
 	}
 	
-	function precision_timer($action = 'start', $start_time = NULL){		
-		list($time, $micro) = explode(' ', microtime());
+	function precision_timer($action = 'start', $start_time = NULL){
+		$currtime = microtime(true);
 		
-		$currtime = $time + $micro;
-		
-		if(strtolower($action) == 'stop')
-			return number_format(abs($currtime - $start_time), 4, '.', ',');	
+		if($action == 'stop')
+			return $currtime - $start_time;
 		
 		return $currtime;
 	}
