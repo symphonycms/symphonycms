@@ -669,7 +669,7 @@
 				
 			$parent_link_suffix = NULL;
 			if(isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])){
-				$parent_link_suffix = '?parent=' . $_REQUEST['parent'] . '/';
+				$parent_link_suffix = '?parent=' . $_REQUEST['parent'];
 			}
 		
 			if(@array_key_exists('delete', $_POST['action'])) {
