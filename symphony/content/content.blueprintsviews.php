@@ -284,7 +284,7 @@
 			catch(ViewException $e){
 				switch($e->getCode()){
 					case View::ERROR_MISSING_OR_INVALID_FIELDS:
-						// Dont really need to do anything since everything was captured in the MessageStack object
+						$this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
 						break;
 						
 					case View::ERROR_FAILED_TO_WRITE:
@@ -722,7 +722,7 @@
 				catch(ViewException $e){
 					switch($e->getCode()){
 						case View::ERROR_MISSING_OR_INVALID_FIELDS:
-							// Dont really need to do anything.
+							$this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
 							break;
 
 						case View::ERROR_FAILED_TO_WRITE:
