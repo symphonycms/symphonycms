@@ -232,17 +232,17 @@
 							<tr class="added">
 								<td class="status">Added</td>
 								<td>Articles</td>
-								<td>Title <span>Input Field</span></td>
+								<td><span>Input Field</span>Title</td>
 							</tr>
 							<tr class="removed">
 								<td class="status">Removed</td>
 								<td>Articles</td>
-								<td>Body <span>Textarea</span></td>
+								<td><span>Textarea</span>Body</td>
 							</tr>
 							<tr class="removed">
 								<td class="status">Removed</td>
 								<td>Articles</td>
-								<td>Publish <span>Checkbox</span></td>
+								<td><span>Checkbox</span>Publish</td>
 							</tr>
 							<tr class="added">
 								<td class="status">Added</td>

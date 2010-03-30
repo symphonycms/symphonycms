@@ -814,6 +814,7 @@
 	#sections-tool td + td + td {
 		font-weight: normal;
 		width: 65%;
+		line-height: 20px;
 	}
 	#sections-tool div {
 		overflow: hidden;
