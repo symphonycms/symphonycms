@@ -283,7 +283,7 @@
 		);
 		border-bottom: 1px solid #eaeaea;
 		padding-left: 20px;
-		margin-bottom: 15px;
+		margin-bottom: 25px;
 	}
 	#tab li {
 		display: inline;
@@ -352,37 +352,38 @@
 	Content: Buttons
 -----------------------------------------------------------------------------*/
 
-	fieldset + .actions input[type=submit],
+	fieldset ~ .actions input[type=submit],
+	.column ~ .actions input[type=submit],
 	button,
 	.button {
 		background-color: #222;
 		background: -moz-linear-gradient(
 			top,
 			#6f6f6f,
-			#1c1c1c
+			#222
 		);
 		background: -webkit-gradient(
 			linear,
 			left top,
 			left bottom,
 			from(#6f6f6f),
-			to(#1c1c1c)
+			to(#222)
 		);
 		border: 1px solid #5f605e;
 		border-radius: 5px;
 		-moz-border-radius: 5px;
 		-webkit-border-radius: 5px;
-		color: #fff;
-		display: inline;
-		float: right;
 		font-size: 8pt;
-		padding: 3px 7px;
+		color: #fff;
+		float: right;
+		padding: 3px 8px 4px;
 		text-decoration: none;
 		text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.1);
 		white-space: nowrap;
 		cursor: pointer;
 	}
 	.button.create {
+		background-color: #8ac438;
 		background: -moz-linear-gradient(
 			top,
 			#8ed130,
@@ -399,7 +400,7 @@
 	}
 	button.delete {
 		float: left;
-		background-color: #db4355;
+		background-color: #b73b40;
 		background: -moz-linear-gradient(
 			top,
 			#db4355,
@@ -414,7 +415,8 @@
 		);
 		border: 1px solid #cb1f2b;
 	}
-	fieldset + .actions input[type=submit]:hover,
+	fieldset ~ .actions input[type=submit]:hover,
+	.column ~ .actions input[type=submit]:hover,
 	button:hover,
 	.button:hover {
 		color: #fff;
@@ -496,6 +498,40 @@
 	}
 
 /*-----------------------------------------------------------------------------
+	Content: Table: Settings
+-----------------------------------------------------------------------------*/
+
+	.settings table {
+		table-layout: auto;
+		white-space: nowrap;
+		border-collapse: collapse;
+	}
+	.settings table th {
+		border: none;
+		padding: 5px 10px;
+	}
+	.settings table td {
+		padding: 5px 10px;
+		border: 1px solid #ddd;
+	}
+	.settings table td:first-child {
+		border-left: none;
+	}
+	.settings table td:last-child {
+		border-right: none;
+	}
+	.settings table td span {
+		line-height: 20px;
+		float: right;
+		text-align: right;
+		color: #aaa;
+	}
+	.settings table input[type=checkbox] {
+		display: block;
+		margin: 0 auto;
+	}
+
+/*-----------------------------------------------------------------------------
 	Content: Form
 -----------------------------------------------------------------------------*/
 
@@ -571,6 +607,7 @@
 	}
 	form .label #change-password {
 		display: block;
+		width: auto;
 		margin: 0 auto;
 	}
 	form .group {
@@ -584,24 +621,45 @@
 	form .label:last-child span {
 		margin-bottom: 0;
 	}
-	form .group label,
-	form .group div {
+	form .group > label,
+	form .group > div {
 		display: table-cell;
 		padding-left: 20px;
 		margin-top: 0;
 	}
-	form .group div label {
+	form .group > div > label {
 		display: block;
 		padding: 0;
 		margin: 10px 0 3px;
 	}
-	form .group div label:first-child {
+	form .group > div > label:first-child {
 		margin-top: 0;
 	}
 	form .group > label:first-child,
 	form .group > div:first-child label,
 	form .group > div:first-child {
 		padding-left: 0;
+	}
+
+/*-----------------------------------------------------------------------------
+	Content: Form: Column Layout
+-----------------------------------------------------------------------------*/
+
+	form .column {
+		display: table;
+		width: 100%;
+		padding: 0 30px;
+		margin-bottom: 30px;
+	}
+
+	form .column > div {
+		display: table-cell;
+		padding-left: 30px;
+	}
+
+	.column > div:first-child {
+		width: 60%;
+		padding: 0;
 	}
 
 /*-----------------------------------------------------------------------------
@@ -640,6 +698,34 @@
 	}
 	.actions input {
 		float: none;
+	}
+	.actions select {
+		margin-right: 5px;
+	}
+
+/*-----------------------------------------------------------------------------
+	Content: XSLT Utilities
+-----------------------------------------------------------------------------*/
+
+	#utilities {
+		list-style: none;
+		background-color: #f3f3f3;
+		border: 1px solid #ccc;
+		max-height: 480px;
+		overflow: auto;
+	}
+
+	#utilities li {
+		padding: 5px 10px;
+		border-top: 1px solid #e3e3e3;
+	}
+
+	#utilities li:nth-child(even) {
+		background-color: #fff;
+	}
+	
+	#utilities li:first-child {
+		border-top: 0;
 	}
 
 /*-----------------------------------------------------------------------------
@@ -684,6 +770,66 @@
 	}
 
 /*-----------------------------------------------------------------------------
+	Settings: Section Tools
+-----------------------------------------------------------------------------*/
+
+	#sections-tool th input {
+		float: right;
+	}
+	#sections-tool strong {
+		font-weight: bold;
+	}
+	#sections-tool .status {
+		width: 40px;
+		text-indent: -2000px;
+		font-size: 1pt;
+		overflow: hidden;
+	}
+	#sections-tool tbody .status:before {
+		float: left;
+		width: 18px;
+		height: 18px;
+		color: #fff;
+		line-height: 16px;
+		text-align: center;
+		text-indent: 0;
+		font-size: 13pt;
+		font-family: sans-serif;
+		border-radius: 9px;
+		-moz-border-radius: 9px;
+		-webkit-border-radius: 9px;
+		display: block;	
+	}
+	#sections-tool tbody .added .status:before {
+		content: "+";
+		background-color: #8ac438;
+	}
+	#sections-tool tbody .removed .status:before {
+		content: "-";
+		background-color: #b73b40;
+	}
+	#sections-tool td + td {
+		font-weight: bold;
+	}
+	#sections-tool td + td + td {
+		font-weight: normal;
+		width: 65%;
+	}
+	#sections-tool div {
+		overflow: hidden;
+		padding: 10px 0;
+	}
+	#sections-tool div p {
+		color: #888;
+		display: inline;
+		vertical-align: middle;
+		margin: 0;
+	}
+	#sections-tool div input {
+		float: right;
+	}
+
+/*-----------------------------------------------------------------------------
 	System Notification
 -----------------------------------------------------------------------------*/
 
@@ -700,14 +846,14 @@
 		background-color: #970707;
 		background: -moz-linear-gradient(
 			top,
-			hsla(0, 90%, 35%, 1),
-			hsla(0, 90%, 25%, 1)
+			hsla(0, 0%, 65%, 1),
+			hsla(0, 0%, 45%, 1)
 		);
 		background: -webkit-gradient(
 			linear,
 			left top,
 			left bottom,
-			from(hsla(0, 0%, 75%, 1)),
+			from(hsla(0, 0%, 65%, 1)),
 			to(hsla(0, 0%, 45%, 1))
 		);
 		border-top: none;

@@ -354,7 +354,7 @@ var Symphony;
 				return;
 			}
 
-			a.before('<div class="label">' + Symphony.Language.get('Password') + ' <span><button id="change-password" type="button">' + Symphony.Language.get('Change Password') + '</button></span></div>').remove();
+			a.before('<div class="label">' + Symphony.Language.get('Password') + ' <span><input id="change-password" type="submit" value="'+ Symphony.Language.get('Change Password') + '"></button></span></div>').remove();
 
 			$('#change-password').click(function() {
 				$(this.parentNode.parentNode).replaceWith(b);
