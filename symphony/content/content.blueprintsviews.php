@@ -61,7 +61,6 @@
 
 			$aTableHead = array(
 				array(__('Title'), 'col'),
-				array(__('Template'), 'col'),
 				array(__('<acronym title="Universal Resource Locator">URL</acronym>'), 'col'),
 				array(__('<acronym title="Universal Resource Locator">URL</acronym> Parameters'), 'col'),
 				array(__('Type'), 'col')
@@ -84,8 +83,6 @@
 					
 					$page_url = sprintf('%s/%s/', URL, $view->path); 
 					$page_edit_url = sprintf('%sedit/%s/', Administration::instance()->getCurrentPageURL(), $view->path);
-					$page_template = $view->handle . '.xsl';
-					$page_template_url = Administration::instance()->getCurrentPageURL() . 'template/' . $view->path . '/';
 
 					$page_types = $view->types;
 					
@@ -93,11 +90,6 @@
 					
 					$col_title = Widget::TableData($link);
 					$col_title->appendChild(Widget::Input("items[{$view->path}]", null, 'checkbox'));
-					
-					$col_template = Widget::TableData(Widget::Anchor(
-						$page_template,
-						$page_template_url
-					));
 					
 					$col_url = Widget::TableData(Widget::Anchor(substr($page_url, strlen(URL)), $page_url));
 					
@@ -118,7 +110,7 @@
 					$col_toggle = Widget::TableData('');
 					$col_toggle->setAttribute('class', 'toggle');
 					
-					$columns = array($col_title, $col_template, $col_url, $col_params, $col_types);
+					$columns = array($col_title, $col_url, $col_params, $col_types);
 					
 					$row = Widget::TableRow($columns);
 					$next = $view->parent();
@@ -452,13 +444,18 @@
 			else {
 				$this->appendSubheading(($title ? $title : __('Untitled')));
 			}
-			
-		// Title --------------------------------------------------------------
-			
+
+		// Fieldset -----------------------------------------------------------
+
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('View Settings')));
 			
+		// Title --------------------------------------------------------------
+						
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
+						
 			$label = Widget::Label(__('Title'));		
 			$label->appendChild(Widget::Input(
 				'fields[title]', General::sanitize($fields['title'])
@@ -468,28 +465,44 @@
 				$label = $this->wrapFormElementWithError($label, $this->_errors->title);
 			}
 			
-			$fieldset->appendChild($label);
-			
-		// Handle -------------------------------------------------------------
-			
+			$group->appendChild($label);
+			$fieldset->appendChild($group);
+
+		// Type ---------------------------------------------------------------
+
+			$container = new XMLElement('div');
+
+			$label = Widget::Label(__('View Type'));
+			$label->appendChild(Widget::Input('fields[types]', $fields['types']));
+
+			if(isset($this->_errors->types)) {
+				$label = $this->wrapFormElementWithError($label, $this->_errors->types);
+			}
+
+			$tags = new XMLElement('ul');
+			$tags->setAttribute('class', 'tags');
+
+			foreach(self::__fetchAvailableViewTypes() as $t){
+				$tags->appendChild(new XMLElement('li', $t));
+			}
+
+			$container->appendChild($label);
+			$container->appendChild($tags);
+			$group->appendChild($container);
+			$this->Form->appendChild($fieldset);
+
+		// Fieldset -----------------------------------------------------------
+
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('URL Settings')));
+
+		// Parent -------------------------------------------------------------
+
 			$group = new XMLElement('div');
 			$group->setAttribute('class', 'group');
-			$column = new XMLElement('div');
-			
-			$label = Widget::Label(__('URL Handle'));
-			$label->appendChild(Widget::Input(
-				'fields[handle]', $fields['handle']
-			));
-			
-			if(isset($this->_errors->handle)) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors->handle);
-			}
-			
-			$column->appendChild($label);
-			
-		// Parent ---------------------------------------------------------
-			
-			$label = Widget::Label(__('Parent View'));
+
+			$label = Widget::Label(__('Parent'));
 			
 			$options = array(
 				array(NULL, false, '/')
@@ -505,46 +518,37 @@
 				);
 			}
 			
-			
 			$label->appendChild(Widget::Select(
 				'fields[parent]', $options
 			));
-			$column->appendChild($label);
-			$group->appendChild($column);
-			
+
+			$group->appendChild($label);
+
+		// Handle -------------------------------------------------------------
+
+			$label = Widget::Label(__('Handle'));
+			$label->appendChild(Widget::Input(
+				'fields[handle]', $fields['handle']
+			));
+
+			if(isset($this->_errors->handle)) {
+				$label = $this->wrapFormElementWithError($label, $this->_errors->handle);
+			}
+
+			$group->appendChild($label);
+
 		// Parameters ---------------------------------------------------------
 			
-			$column = new XMLElement('div');
-			$label = Widget::Label(__('URL Parameters'));
+			$label = Widget::Label(__('Parameters'));
 			$label->appendChild(Widget::Input(
 				'fields[url-parameters]', $fields['url-parameters']
-			));				
-			$column->appendChild($label);
-			
-		// Type -----------------------------------------------------------
-			
-			$label = Widget::Label(__('View Type'));
-			$label->appendChild(Widget::Input('fields[types]', $fields['types']));
-			
-			if(isset($this->_errors->types)) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors->types);
-			}
-			
-			$column->appendChild($label);
-			
-			$tags = new XMLElement('ul');
-			$tags->setAttribute('class', 'tags');
+			));
 
-			foreach(self::__fetchAvailableViewTypes() as $t){
-				$tags->appendChild(new XMLElement('li', $t));
-			}
-
-			$column->appendChild($tags);
-			$group->appendChild($column);
+			$group->appendChild($label);
 			$fieldset->appendChild($group);
 			$this->Form->appendChild($fieldset);
-			
-		// Events -------------------------------------------------------------
+
+		// Fieldset -----------------------------------------------------------
 			
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
@@ -704,7 +708,7 @@
 				}
 				else{
 					$view = View::loadFromFieldsArray($fields);
-					$view->template = file_get_contents(TEMPLATES . '/view.xsl');
+					$view->template = file_get_contents(TEMPLATES . '/template.view.txt');
 					$view->handle = $fields['handle'];
 					$view->path = $path;
 				}

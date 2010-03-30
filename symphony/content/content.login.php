@@ -16,7 +16,7 @@
 			$this->Html->setDTD('<!DOCTYPE html>'); //PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"
 			$this->Html->setAttribute('lang', Symphony::lang());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
-			$this->addStylesheetToHead(ADMIN_URL . '/assets/login.css', 'screen', 40);
+			$this->addStylesheetToHead(ADMIN_URL . '/assets/css/login.css', 'screen', 40);
 			
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Login'))));
 				

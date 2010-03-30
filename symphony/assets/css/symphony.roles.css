@@ -1,0 +1,175 @@
+/* @override http://symphony-21.local/symphony/assets/css/symphony.roles.css */
+
+table.role-permissions {
+	table-layout: auto;
+	white-space: nowrap;
+	border: 1px solid #ccc;
+}
+table.role-permissions th {
+	background-color: #ccc;
+	background: -moz-linear-gradient(
+		top,
+		#ddd 0%,
+		#bbb 98%,
+		#444 99%,
+		#666 100%
+	);
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #ddd),
+		color-stop(0.98, #bbb),
+		color-stop(0.99, #444),
+		color-stop(1, #666)
+	);
+	padding: 8px 10px;
+}
+table.role-permissions td {
+	padding: 3px 10px;
+}
+table.role-permissions tr:last-child td {
+	border-bottom: none;
+}
+table.role-permissions input[type=checkbox] {
+	display: block;
+	margin: 0 auto;
+}
+table.role-permissions .checkbox {
+	width: 40px;
+	border-left: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+}
+table.role-permissions td span {
+	line-height: 20px;
+	float: right;
+	text-align: right;
+	color: #aaa;
+} 
+table.role-permissions td span.perm-0 {
+	color:#aaa;
+}
+table.role-permissions td span.perm-1 {
+	color:#888;
+}
+table.role-permissions td span.perm-2 {
+	color:#666;
+}
+.ui-widget-content {
+	border: 1px solid #bbb;
+	color: #333;
+}
+.ui-state-default a,
+.ui-state-default a:link,
+.ui-state-default a:visited {
+	color: #1c94c4;
+}
+.ui-state-hover,
+.ui-widget-content .ui-state-hover,
+.ui-state-focus,
+.ui-widget-content .ui-state-focus {
+	border: 1px solid #bbb;
+	background: #f6f6f6;
+	font-weight: bold;
+	color: #bbb;
+}
+.ui-state-hover a,
+.ui-state-hover a:hover {
+	color: #777;
+	text-decoration: none;
+}
+.ui-state-active,
+.ui-widget-content .ui-state-active {
+	border: 1px solid #ccc;
+	background: #f2f2f2;
+	font-weight: bold;
+	color: #ccc;
+}
+.ui-state-active a,
+.ui-state-active a:link,
+.ui-state-active a:visited {
+	color: #eb8f00;
+	text-decoration: none;
+}
+.ui-widget :active {
+	outline: none;
+}
+.ui-state-highlight,
+.ui-widget-content .ui-state-highlight {
+	border: 1px solid #777;
+	background: #ffe45c;
+	color: #363636;
+}
+.ui-state-highlight a,
+.ui-widget-content .ui-state-highlight a {
+	color: #363636;
+}
+.ui-state-error,
+.ui-widget-content .ui-state-error {
+	border: 1px solid #cd0a0a;
+	background: #b81900;
+	color: #ffffff;
+}
+.ui-state-error a,
+.ui-widget-content .ui-state-error a {
+	color: #ffffff;
+}
+.ui-state-error-text,
+.ui-widget-content .ui-state-error-text {
+	color: #ffffff;
+}
+.ui-priority-primary,
+.ui-widget-content .ui-priority-primary {
+	font-weight: bold;
+}
+.ui-slider {
+	position: relative;
+	text-align: left;
+}
+.ui-slider .ui-slider-handle {
+	border: 1px solid #aaa;
+	background: #f6f6f6;
+	color: #bbb;
+	position: absolute;
+	z-index: 2;
+	width: 13px;
+	height: 13px;
+	cursor: default;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	background-color: #ddd;
+	background: -moz-linear-gradient(
+		top,
+		#fff 0%,
+		#ccc 100%
+	);
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		from(#fff),
+		to(#ccc)
+	);
+}
+.ui-slider-horizontal {
+	float: left;
+	width: 200px;
+	height: 3px;
+	margin-left: 5px;
+	top: 8px;
+	border-bottom-color: #d8d8d8;
+}
+.ui-slider-horizontal .ui-slider-handle {
+	top: -6px;
+	margin-left: -5px;
+}
+.ui-slider-horizontal .ui-slider-range {
+	top: 0;
+	height: 100%;
+}
+.ui-slider-horizontal .ui-slider-range-min {
+	left: 0;
+}
+.ui-slider-horizontal .ui-slider-range-max {
+	right: 0;
+}

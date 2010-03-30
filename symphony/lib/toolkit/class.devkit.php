@@ -23,7 +23,7 @@
 					'content'		=> 'text/html; charset=UTF-8'
 				)
 			));
-			$this->addStylesheetToHead(ADMIN_URL . '/assets/devkit.css', 'screen');
+			$this->addStylesheetToHead(ADMIN_URL . '/assets/css/devkit.css', 'screen');
 		}
 		
 		protected function buildHeader($wrapper) {
@@ -48,8 +48,9 @@
 			$xml = new DOMDocument();
 			$xml->preserveWhiteSpace = false;
 			$xml->formatOutput = true;
-			$xml->load(ASSETS . '/devkit_navigation.xml');
-			$root = $xml->documentElement;
+			$root = $xml->createElement('navigation');
+			$xml->appendChild($root);
+			
 			$first = $root->firstChild;
 			$xpath = new DOMXPath($xml);
 			$list = new XMLElement('ul');
