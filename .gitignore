@@ -9,3 +9,5 @@ workspace/
 manifest/
 *.esproj
 *~
+/symphony/templates/view.xsl
+/extensions/uploadfield
