@@ -208,7 +208,7 @@
 		}
 		
 		public function __toString(){
-			$template = file_get_contents(TEMPLATES . '/section.tpl');
+			$template = file_get_contents(TEMPLATES . '/template.section.php');
 
 			$vars = array(
 				$this->classname,
@@ -456,12 +456,15 @@
 			if(isset($this->_errors->{'navigation-group'})) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors->{'navigation-group'}));
 			else $navgroupdiv->appendChild($label);
 			
-			$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
-			foreach(Section::fetchUsedNavigationGroups() as $g){
-				$ul->appendChild(new XMLElement('li', $g));
+			$navigation_groups = Section::fetchUsedNavigationGroups();
+			if(is_array($navigation_groups) && !empty($navigation_groups)){
+				$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
+				foreach($navigation_groups as $g){
+					$ul->appendChild(new XMLElement('li', $g));
+				}
+				$navgroupdiv->appendChild($ul);
 			}
-			$navgroupdiv->appendChild($ul);
-
+			
 			$div->appendChild($navgroupdiv);
 			
 			$fieldset->appendChild($div);
