@@ -269,7 +269,7 @@
 			else{
 				$thead = array(
 					array(__('Section'), 'col'),
-					array(__('Create'), 'col'),
+					array(__('Create'), 'col', array('class' => 'checkbox')),
 					array(__('Edit'), 'col'),
 				);
 				$tbody = array();

@@ -213,8 +213,10 @@
 				$view->template = $_POST['fields']['template'];
 			}
 			
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'primary');
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'column');
+
+			$div = new XMLElement('div');
 			
 			$label = Widget::Label(__('Template'));
 			$label->appendChild(Widget::Textarea(
@@ -228,14 +230,15 @@
 				$label = $this->wrapFormElementWithError($label, $this->_errors->template);
 			}
 			
-			$fieldset->appendChild($label);
-			$this->Form->appendChild($fieldset);
+			$div->appendChild($label);
+			$group->appendChild($div);
+
+			$this->Form->appendChild($group);
 			
 			$utilities = new UtilityIterator;
 
 			if($utilities->length() > 0){
 				$div = new XMLElement('div');
-				$div->setAttribute('class', 'secondary');
 				
 				$h3 = new XMLElement('h3', __('Utilities'));
 				$h3->setAttribute('class', 'label');
@@ -253,7 +256,7 @@
 				}
 				
 				$div->appendChild($ul);
-				$this->Form->appendChild($div);
+				$group->appendChild($div);
 			}
 			
 			$div = new XMLElement('div');

@@ -148,18 +148,20 @@
 
 			$fields['body'] = General::sanitize($fields['body']);
 
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'primary');
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'column');
+
+			$div = new XMLElement('div');
 			
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('fields[name]', $fields['name']));
-			$fieldset->appendChild((isset($this->_errors['name']) ? $this->wrapFormElementWithError($label, $this->_errors['name']) : $label));
+			$div->appendChild((isset($this->_errors['name']) ? $this->wrapFormElementWithError($label, $this->_errors['name']) : $label));
 
 			$label = Widget::Label(__('Body'));
 			$label->appendChild(Widget::Textarea('fields[body]', 30, 80, $fields['body'], array('class' => 'code')));
-			$fieldset->appendChild((isset($this->_errors['body']) ? $this->wrapFormElementWithError($label, $this->_errors['body']) : $label));
+			$div->appendChild((isset($this->_errors['body']) ? $this->wrapFormElementWithError($label, $this->_errors['body']) : $label));
 			
-			$this->Form->appendChild($fieldset);
+			$group->appendChild($div);
 
 			$utilities = General::listStructure(UTILITIES, array('xsl'), false, 'asc', UTILITIES);
 			$utilities = $utilities['filelist'];			
@@ -167,7 +169,6 @@
 			if(is_array($utilities) && !empty($utilities)){
 			
 				$div = new XMLElement('div');
-				$div->setAttribute('class', 'secondary');
 				
 				$h3 = new XMLElement('h3', __('Utilities'));
 				$h3->setAttribute('class', 'label');
@@ -190,8 +191,9 @@
 			
 				$div->appendChild($ul);
 			
-				$this->Form->appendChild($div);
-							
+				$group->appendChild($div);
+
+				$this->Form->appendChild($group);
 			}
 			
 			$div = new XMLElement('div');

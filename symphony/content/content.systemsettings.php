@@ -219,37 +219,47 @@
 			*/
 			$fieldset->setValue('
 				<legend>Section Update</legend>
-				<div class="sections-tool">
-					<div class="system-action">
-						<button name="action[export]" type="submit">Update Sections</button>
-						<p>Updates the database structure. <strong>332</strong> existing entries will be effected</p>
-					</div>
+				<div id="sections-tool">
 					<table>
-						<tr >
-							<td rowspan="4">Articles</td>
-						</tr>
-						<tr class="added">
-							<td>Title <span>Input Field</span></td>
-						</tr>
-						<tr class="removed">
-							<td>Body <span>Textarea</span></td>
-						</tr>
-						<tr class="removed">
-							<td>Publish <span>Checkbox</span></td>
-						</tr>
-						<tr class="added">
-							<td rowspan="2">Forum</td>
-						</tr>
-						<tr class="added">
-							<td>6 fields added</td>
-						</tr>
-						<tr class="removed">
-							<td rowspan="2">Staff Members</td>
-						</tr>
-						<tr class="removed">
-							<td>10 fields removed</td>
-						</tr>
+						<thead>
+							<tr>
+								<th class="status">Status</th>
+								<th>Section</th>
+								<th>Content</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="added">
+								<td class="status">Added</td>
+								<td>Articles</td>
+								<td>Title <span>Input Field</span></td>
+							</tr>
+							<tr class="removed">
+								<td class="status">Removed</td>
+								<td>Articles</td>
+								<td>Body <span>Textarea</span></td>
+							</tr>
+							<tr class="removed">
+								<td class="status">Removed</td>
+								<td>Articles</td>
+								<td>Publish <span>Checkbox</span></td>
+							</tr>
+							<tr class="added">
+								<td class="status">Added</td>
+								<td>Forum</td>
+								<td>6 fields added</td>
+							</tr>
+							<tr class="removed">
+								<td class="status">Removed</td>
+								<td>Staff Members</td>
+								<td>10 fields removed</td>
+							</tr>
+						</tbody>
 					</table>
+					<div>
+						<p>Updates the database structure. <strong>332</strong> existing entries will be effected</p>
+						<input name="action[export]" type="submit" value="Update Sections" />
+					</div>
 				</div>');
 			
 			$this->Form->appendChild($fieldset);

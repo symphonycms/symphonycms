@@ -1,51 +1,10 @@
 /* @override http://symphony-21.local/symphony/assets/css/symphony.roles.css */
 
-table.role-permissions {
-	table-layout: auto;
-	white-space: nowrap;
-	border: 1px solid #ccc;
-}
-table.role-permissions th {
-	background-color: #ccc;
-	background: -moz-linear-gradient(
-		top,
-		#ddd 0%,
-		#bbb 98%,
-		#444 99%,
-		#666 100%
-	);
-	background: -webkit-gradient(
-		linear,
-		left top,
-		left bottom,
-		color-stop(0, #ddd),
-		color-stop(0.98, #bbb),
-		color-stop(0.99, #444),
-		color-stop(1, #666)
-	);
-	padding: 8px 10px;
-}
-table.role-permissions td {
-	padding: 3px 10px;
-}
-table.role-permissions tr:last-child td {
-	border-bottom: none;
-}
-table.role-permissions input[type=checkbox] {
-	display: block;
-	margin: 0 auto;
-}
 table.role-permissions .checkbox {
-	width: 40px;
-	border-left: 1px solid #ddd;
-	border-right: 1px solid #ddd;
+	width: 60px;
+	text-align: center;
 }
-table.role-permissions td span {
-	line-height: 20px;
-	float: right;
-	text-align: right;
-	color: #aaa;
-} 
+
 table.role-permissions td span.perm-0 {
 	color:#aaa;
 }
@@ -153,7 +112,7 @@ table.role-permissions td span.perm-2 {
 }
 .ui-slider-horizontal {
 	float: left;
-	width: 200px;
+	width: 60%;
 	height: 3px;
 	margin-left: 5px;
 	top: 8px;
