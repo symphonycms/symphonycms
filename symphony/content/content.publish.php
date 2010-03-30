@@ -265,10 +265,10 @@
 			}
 
 			$table = Widget::Table(
-								Widget::TableHead($aTableHead), 
-								NULL, 
-								Widget::TableBody($aTableBody)
-						);
+				Widget::TableHead($aTableHead), 
+				NULL, 
+				Widget::TableBody($aTableBody)
+			);
 
 			$this->Form->appendChild($table);
 

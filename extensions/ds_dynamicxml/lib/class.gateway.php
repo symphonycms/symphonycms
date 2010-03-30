@@ -174,6 +174,10 @@
 				@curl_setopt($ch, CURLOPT_COOKIEFILE, TMP . '/cookie.txt');
 				curl_setopt($ch, CURLOPT_TIMEOUT, $this->_timeout);
 				
+                if(is_array($this->_headers) && !empty($this->_headers)) {
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_headers);
+                }
+
 				if($this->_method == 'POST') {
 					curl_setopt($ch, CURLOPT_POST, 1);
 					curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postfields);
