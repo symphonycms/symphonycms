@@ -1,4 +1,7 @@
-/* @override http://symphony-21.local/symphony/assets/css/symphony.css */
+/* @override 
+	http://symphony-21.local/symphony/assets/css/symphony.css
+	http://localhost/projects/symphony-21/symphony/assets/css/symphony.css
+*/
 
 /*-----------------------------------------------------------------------------
 	Symphony Global
@@ -590,7 +593,10 @@
 	form .group div label {
 		display: block;
 		padding: 0;
-		margin-bottom: 3px;
+		margin: 10px 0 3px;
+	}
+	form .group div label:first-child {
+		margin-top: 0;
 	}
 	form .group > label:first-child,
 	form .group > div:first-child label,
