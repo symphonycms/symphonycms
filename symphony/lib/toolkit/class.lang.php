@@ -190,18 +190,23 @@
 			// Strip out any tag
 			$string = strip_tags($string);
 			
-			// Remove punctuation
-			$string = preg_replace('/[\\.\'"]+/', NULL, $string);	
+			// Remove punctuation first, to limit the overall number of delim characters.
+			$string = preg_replace('/\p{P}+/', NULL, $string);	
 								
 			// Replace spaces (tab, newline etc) with the delimiter
-			$string = preg_replace('/[\s]+/', $delim, $string);
+			//$string = preg_replace('/[\s]+/', $delim, $string);
 
 			// Find all legal characters
-			preg_match_all('/[^<>?@:!-\/\[-`ëí;‘’]+/u', $string, $matches);
+			//preg_match_all('/[^<>?@:!-\/\[-`ëí;‘’]+/u', $string, $matches);
+
+			$count = preg_match_all('/[\p{L}A-Za-z0-9_]+/u', $string, $matches);
+			if($count <= 0 || $count == false){
+				preg_match_all('/[A-Za-z0-9_]+/', $string, $matches);
+			}
 
 			// Join only legal character with the $delim
 			$string = implode($delimiter, $matches[0]);
-			
+
 			// Allow for custom rules
 			if(is_array($additional_rule_set) && !empty($additional_rule_set)){
 				foreach($additional_rule_set as $rule => $replacement){
@@ -241,11 +246,12 @@
 			// Strip out any tag
 			$string = strip_tags($string);
 
-			// Find all legal characters
-			$count = preg_match_all('/[\p{L}\w:;.,+=~]+/u', $string, $matches);
-			if($count <= 0 || $count == false){
+			// Find all legal characters (although spaces and tabs are legal, going to discount 
+			// them to make the filename cleaner)
+			$count = preg_match_all('/[^\s\/?*:;{}\\\\]+/', $string, $matches);
+			/*if($count <= 0 || $count == false){
 				preg_match_all('/[\w:;.,+=~]+/', $string, $matches);
-			}
+			}*/
 
 			// Join only legal character with the $delim
 			$string = implode($delimiter, $matches[0]);
