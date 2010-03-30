@@ -108,8 +108,10 @@
 			
 			if((!$page || !$update) && $this->_callback) return $this->_callback;
 			elseif(!$page && !$this->_callback) trigger_error(__('Cannot request a page callback without first specifying the page.'));
+
+			// Remove multiple slashes and any flags from the URL (e.g. :saved/ or :created/)
+			$this->_currentPage = URL . preg_replace(array('/:[^\/]+\/?$/', '/\/{2,}/'), '/', '/symphony' . $page);
 			
-			$this->_currentPage = URL . preg_replace('/\/{2,}/', '/', '/symphony' . $page);
 			$bits = preg_split('/\//', trim($page, '/'), 3, PREG_SPLIT_NO_EMPTY);
 			
 			if($bits[0] == 'login'){
