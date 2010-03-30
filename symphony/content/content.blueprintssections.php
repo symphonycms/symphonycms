@@ -14,7 +14,7 @@
 		}
 	
 		public function accept(){
-			if($this->isDir() == false && preg_match('/^section\.(.+)\.php$/i', $this->getFilename())){
+			if($this->isDir() == false && preg_match('/^(.+)\.xml$/i', $this->getFilename())){
 				return true;
 			}
 			return false;
@@ -37,7 +37,7 @@
 		}
 
 		public function current(){
-			return Section::loadFromPath($this->_iterator->current()->getPathname());
+			return Section::load($this->_iterator->current()->getPathname());
 		}
 					
 		public function innerIterator(){
@@ -83,21 +83,50 @@
 		const ERROR_MISSING_OR_INVALID_FIELDS = 4;
 		const ERROR_FAILED_TO_WRITE = 5;
 		
-		protected static $_sections = array();
-		protected $_about;
+		protected static $sections = array();
 
-		public function __isset($name){
-			//if(in_array($name, array('path', 'template', 'handle', 'guid'))){
-			//	return isset($this->{"_{$name}"});
-		//	}
-			return isset($this->_about->$name);		
+		protected $parameters;
+		
+		public function __construct(){
+			$this->parameters = new StdClass;
 		}
 		
-		public function initialise(){
-			if(!($this->_about instanceof StdClass)) $this->_about = new StdClass;
+		public function __isset($name){
+			return isset($this->parameters->$name);
 		}
 		
 		public function __get($name){
+			
+			if($name == 'handle'){
+				
+				/*
+				[4]   	NameStartChar	   ::=   	":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] | [#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
+				[4a]   	NameChar	   ::=   	NameStartChar | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]
+				*/
+				
+				//if(!isset($this->handle) || strlen(trim($this->parameters->handle)) < 0){
+					$this->handle = Lang::createHandle($this->parameters->name, '-', false, true, array('/^[^:_a-z]+/i' => NULL, '/[^:_a-z0-9\.-]/i' => NULL));
+				//}
+			}
+			
+			elseif($name == 'guid'){
+				if(is_null($this->parameters->guid)){
+					$this->parameters->guid = uniqid();
+				}
+			}
+			
+			return $this->parameters->$name;
+		}
+	
+		public function __set($name, $value){
+			$this->parameters->$name = $value;
+		}
+		
+		//public function initialise(){
+		//	if(!($this->_about instanceof StdClass)) $this->_about = new StdClass;
+		//}
+		
+		/*public function __get($name){
 			
 			if($name == 'classname'){
 				$classname = Lang::createHandle($this->_about->name, '-', false, true, array('@^[^a-z]+@i' => NULL, '/[^\w-\.]/i' => NULL));
@@ -127,7 +156,7 @@
 		//	else 
 			if($name == 'guid') return; //guid cannot be set manually
 			$this->_about->$name = $value;
-		}
+		}*/
 		
 		public static function fetchUsedNavigationGroups(){
 			$groups = array();
@@ -136,9 +165,44 @@
 			}
 			return General::array_remove_duplicates($groups);
 		}
-		
-		public static function loadFromPath($path){
 
+		public static function load($path){
+
+			$section = new self;
+
+			$section->handle = preg_replace('/\.xml$/', NULL, basename($path));
+			$section->path = dirname($path);
+			
+			if(!file_exists($path)){
+				throw new SectionException(__('Section, %s, could not be found.', array($path)), self::ERROR_SECTION_NOT_FOUND);
+			}
+			
+			$doc = @simplexml_load_file($path);
+			
+			if(!($doc instanceof SimpleXMLElement)){
+				throw new SectionException(__('Failed to load section configuration file: %s', array($path)), self::ERROR_FAILED_TO_LOAD);
+			}
+
+			foreach($doc as $name => $value){
+				if(isset($value->item)){
+					$stack = array();
+					foreach($value->item as $item){
+						array_push($stack, (string)$item);
+					}
+					$section->$name = $stack;
+				}
+				else $section->$name = (string)$value;
+			}
+			
+			if(isset($doc->attributes()->guid)){
+				$section->guid = (string)$doc->attributes()->guid;
+			}
+			else{
+				$section->guid = uniqid();
+			}
+
+			return $section;
+/*
 			if(!isset(self::$_sections[$path])){
 				self::$_sections[$path] = array('handle' => NULL, 'classname' => include_once($path));
 			}
@@ -149,10 +213,10 @@
 			
 			$obj->initialise();
 			
-			return $obj;
+			return $obj;*/
 		}
 		
-		public static function loadFromHandle($handle){
+		/*public static function loadFromHandle($handle){
 
 			$classname = NULL;
 
@@ -177,9 +241,11 @@
 			$obj->initialise();
 			
 			return $obj;
-		}
+		}*/
 		
 		public static function save(Section $section, MessageStack &$messages, $simulate=false){
+
+			$pathname = sprintf('%s/%s.xml', $section->path, $section->handle);
 
 			## Check to ensure all the required section fields are filled
 			if(!isset($section->name) || strlen(trim($section->name)) == 0){
@@ -187,8 +253,8 @@
 			}
 
 			## Check for duplicate section handle
-			elseif(file_exists(SECTIONS . "/section.{$section->handle}.php")){
-				$existing = self::loadFromPath(SECTIONS . "/section.{$section->handle}.php");
+			elseif(file_exists($pathname)){
+				$existing = self::load($pathname);
 				if($existing->guid != $section->guid){
 					$messages->append('name', __('A Section with the name <code>%s</code> already exists', array($section->name)));
 				}
@@ -204,10 +270,34 @@
 				throw new SectionException(__('Section could not be saved. Validation failed.'), self::ERROR_MISSING_OR_INVALID_FIELDS);
 			}
 			
-			return ($simulate == true ? true : file_put_contents(SECTIONS . "/section.{$section->handle}.php", (string)$section));
+			return ($simulate == true ? true : file_put_contents($pathname, (string)$section));
 		}
 		
 		public function __toString(){
+			$doc = new DOMDocument('1.0', 'UTF-8');
+			$doc->formatOutput = true;
+			
+			$root = $doc->createElement('view');
+			$doc->appendChild($root);
+			
+			if(!isset($this->guid) || is_null($this->guid)){
+				$this->guid = uniqid();
+			}
+			
+			$root->setAttribute('guid', $this->guid);
+			
+			$root->appendChild($doc->createElement('name', General::sanitize($this->name)));
+			$root->appendChild($doc->createElement('hidden-from-publish-menu', (
+				isset($this->{'hidden-from-publish-menu'}) && strtolower(trim($this->{'hidden-from-publish-menu'})) == 'yes' 
+					? 'yes' 
+					: 'no'
+			)));
+			$root->appendChild($doc->createElement('navigation-group', General::sanitize($this->{'navigation-group'})));
+
+			return $doc->saveXML();
+		}
+		
+		/*public function __toString(){
 			$template = file_get_contents(TEMPLATES . '/template.section.php');
 
 			$vars = array(
@@ -220,14 +310,15 @@
 			);
 			
 			return vsprintf($template, $vars);
-		}
+		}*/
 	}
 
 
 	Class contentBlueprintsSections extends AdministrationPage{
 
-		public $_errors;
-
+		private $errors;
+		private $section;
+		
 		public function __viewIndex(){
 			$this->setPageType('table');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
@@ -294,14 +385,51 @@
 		
 		private function __save(array $essentials, array $fields=NULL, Section $section=NULL){
 			if(is_null($section)) $section = new Section;
-			
+
 			$section->name = $essentials['name'];
 			$section->{'navigation-group'} = $essentials['navigation-group'];
-			$section->hidden = (bool)(isset($essentials['hidden']) && $essentials['hidden'] == 'yes');
+			$section->{'hidden-from-publish-menu'} = (bool)(isset($essentials['hidden-from-publish-menu']) && $essentials['hidden-from-publish-menu'] == 'yes');
 			
-			$this->_errors = new MessageStack;
+			/*
+			Array
+			(
+			    [0] => Array
+			        (
+			            [type] => checkbox
+			            [label] => Test Checkbox
+			            [location] => sidebar
+			            [description] => Please Check Me!!
+			            [default_state] => on
+			            [show_column] => yes
+			        )
+
+			    [1] => Array
+			        (
+			            [type] => input
+			            [label] => I am the name
+			            [location] => main
+			            [validator] => /^[^\s:\/?#]+:(?:\/{2,3})?[^\s.\/?#]+(?:\.[^\s.\/?#]+)*(?:\/[^\s?#]*\??[^\s?#]*(#[^\s#]*)?)?$/
+			            [required] => yes
+			            [show_column] => yes
+			        )
+
+			)
+			*/
+			
+			if(!is_null($fields) && !empty($fields)){
+				foreach($fields as $f){
+					$field = fieldManager::instance()->create($f['type']);
+					$field->setFromPOST($f);
+					if($field->checkFields($errors, false, false) != Field::__OK__ && !empty($errors)){
+						print_r($errors);
+					}
+					print_r($field); die();
+				}
+			}
+			
+			$this->errors = new MessageStack;
 			try{
-				Section::save($section, $this->_errors);
+				Section::save($section, $this->errors);
 				return $section;
 			}
 			catch(SectionException $e){
@@ -326,29 +454,28 @@
 		
 		public function __actionNew(){
 			if(isset($_POST['action']['save'])){
-				$section = $this->__save($_POST['essentials'], (isset($_POST['fields']) ? $_POST['fields'] : NULL));
-				if($section instanceof Section){
-					redirect(ADMIN_URL . "/blueprints/sections/edit/{$section->handle}/:created/");
+				$this->section = $this->__save($_POST['essentials'], (isset($_POST['fields']) ? $_POST['fields'] : NULL));
+				if($this->section instanceof Section){
+					redirect(ADMIN_URL . "/blueprints/sections/edit/{$this->section->handle}/:created/");
 				}
 			}
 		}
 
 		public function __actionEdit(){
 			if(isset($_POST['action']['save'])){
-				$section = $this->__save($_POST['essentials'], (isset($_POST['fields']) ? $_POST['fields'] : NULL), Section::loadFromHandle($this->_context[1]));
-				if($section instanceof Section){
-					redirect(ADMIN_URL . "/blueprints/sections/edit/{$section->handle}/:saved/");
+				$this->section = $this->__save($_POST['essentials'], (isset($_POST['fields']) ? $_POST['fields'] : NULL), Section::load(SECTIONS . '/' . $this->_context[1] . '.xml'));
+				if($this->section instanceof Section){
+					redirect(ADMIN_URL . "/blueprints/sections/edit/{$this->section->handle}/:saved/");
 				}
 			}
 		}
 		
 		private static function __loadExistingSection($handle){
 			try{
-				$existing = Section::loadFromHandle($handle);
-				return $existing;
+				return Section::load(SECTIONS . "/{$handle}.xml");
 			}
 			catch(SectionException $e){
-				
+
 				switch($e->getCode()){
 					case Section::ERROR_SECTION_NOT_FOUND:
 						throw new SymphonyErrorPage(
@@ -377,15 +504,22 @@
 		}
 		
 		public function __viewNew(){
-			$this->__form(new Section);
+			if(!($this->section instanceof Section)){
+				$this->section = new Section;
+			}
+			$this->__form();
 		}
 		
 		public function __viewEdit(){
-			$this->__form(self::__loadExistingSection($this->_context[1]), self::__loadExistingSection($this->_context[1]));
+			$existing = self::__loadExistingSection($this->_context[1]);
+			if(!($this->section instanceof Section)){
+				$this->section = $existing;
+			}
+			$this->__form($existing);
 		}
 		
-		private function __form(Section $section, Section $existing=NULL){
-			
+		private function __form(Section $existing=NULL){
+
 			// Status message:
 			$callback = Administration::instance()->getPageCallback();
 			if(isset($callback['flag']) && !is_null($callback['flag'])){
@@ -437,13 +571,16 @@
 			$namediv = new XMLElement('div', NULL);
 			
 			$label = Widget::Label('Name');
-			$label->appendChild(Widget::Input('essentials[name]', $section->name));
+			$label->appendChild(Widget::Input('essentials[name]', $this->section->name));
 			
-			if(isset($this->_errors->name)) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors->name));
-			else $namediv->appendChild($label);
+			$namediv->appendChild((
+				isset($this->errors->name) 
+					? Widget::wrapFormElementWithError($label, $this->errors->name) 
+					: $label
+			));
 			
 			$label = Widget::Label();
-			$input = Widget::Input('essentials[hidden]', 'yes', 'checkbox', ($section->hidden == true ? array('checked' => 'checked') : NULL));
+			$input = Widget::Input('essentials[hidden-from-publish-menu]', 'yes', 'checkbox', ($this->section->{'hidden-from-publish-menu'} == 'yes' ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s Hide this section from the Publish menu', array($input->generate(false))));
 			$namediv->appendChild($label);
 			$div->appendChild($namediv);
@@ -451,11 +588,14 @@
 			$navgroupdiv = new XMLElement('div', NULL);
 
 			$label = Widget::Label('Navigation Group <i>Created if does not exist</i>');
-			$label->appendChild(Widget::Input('essentials[navigation-group]', $section->{"navigation-group"}));
+			$label->appendChild(Widget::Input('essentials[navigation-group]', $this->section->{"navigation-group"}));
 
-			if(isset($this->_errors->{'navigation-group'})) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors->{'navigation-group'}));
-			else $navgroupdiv->appendChild($label);
-			
+			$navgroupdiv->appendChild((
+				isset($this->errors->{'navigation-group'}) 
+					? Widget::wrapFormElementWithError($label, $this->errors->{'navigation-group'})
+					: $label
+			));
+					
 			$navigation_groups = Section::fetchUsedNavigationGroups();
 			if(is_array($navigation_groups) && !empty($navigation_groups)){
 				$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
@@ -490,25 +630,26 @@
 					$wrapper = new XMLElement('li');
 					
 					$field->set('sortorder', $position);
-					$field->displaySettingsPanel($wrapper, (isset($this->_errors[$position]) ? $this->_errors[$position] : NULL));
+					$field->displaySettingsPanel($wrapper, (isset($this->errors[$position]) ? $this->errors[$position] : NULL));
 					$ol->appendChild($wrapper);
 
 				}
 			}*/
 			
 			$types = array();
-			foreach (FieldManager::instance()->fetchTypes() as $type) {
-				if ($type = FieldManager::instance()->create($type)) {
+			foreach (FieldManager::instance()->fetchTypes() as $type){
+				if ($type = FieldManager::instance()->create($type)){
 					array_push($types, $type);
 				}
 			}
 			
-			uasort($types, create_function('$a, $b', 'return strnatcasecmp($a->_name, $b->_name);'));
+			// To Do: Sort this list based on how many times a field has been used across the system
+			uasort($types, create_function('$a, $b', 'return strnatcasecmp($a->name(), $b->name());'));
 			
-			foreach ($types as $type) {		
+			foreach ($types as $type){
 				$defaults = array();
 				
-				$type->findDefaults($defaults);			
+				$type->findDefaults($defaults);
 				$type->setArray($defaults);
 				
 				$wrapper = new XMLElement('li');
@@ -551,7 +692,7 @@
 		    $fields = $_POST['fields'];
 			$meta = $_POST['meta'];
 			
-			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
+			$formHasErrors = (is_array($this->errors) && !empty($this->errors));
 			
 			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
 			
@@ -574,7 +715,7 @@
 			$label = Widget::Label('Name');
 			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
 			
-			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+			if(isset($this->errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->errors['name']));
 			else $namediv->appendChild($label);
 			
 			$label = Widget::Label();
@@ -588,7 +729,7 @@
 			$label = Widget::Label('Navigation Group <i>Created if does not exist</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
-			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
+			if(isset($this->errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->errors['navigation_group']));
 			else $navgroupdiv->appendChild($label);
 			
 			if(is_array($sections) && !empty($sections)){
@@ -629,7 +770,7 @@
 						$wrapper = new XMLElement('li');
 						
 						$input->set('sortorder', $position);
-						$input->displaySettingsPanel($wrapper, (isset($this->_errors[$position]) ? $this->_errors[$position] : NULL));
+						$input->displaySettingsPanel($wrapper, (isset($this->errors[$position]) ? $this->errors[$position] : NULL));
 						$ol->appendChild($wrapper);
 
 					}
@@ -684,7 +825,7 @@
 			
 			$types = array();
 
-			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));			
+			$formHasErrors = (is_array($this->errors) && !empty($this->errors));			
 			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);	
 
 
@@ -759,7 +900,7 @@
 			$label = Widget::Label('Name');
 			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
 			
-			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+			if(isset($this->errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->errors['name']));
 			else $namediv->appendChild($label);
 			
 			$label = Widget::Label();
@@ -773,7 +914,7 @@
 			$label = Widget::Label(__('Navigation Group ') . '<i>' . __('Choose only one. Created if does not exist') . '</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
-			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
+			if(isset($this->errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->errors['navigation_group']));
 			else $navgroupdiv->appendChild($label);
 			
 			if(is_array($sections) && !empty($sections)){
@@ -813,7 +954,7 @@
 					$wrapper = new XMLElement('li');
 					
 					$field->set('sortorder', $position);
-					$field->displaySettingsPanel($wrapper, (isset($this->_errors[$position]) ? $this->_errors[$position] : NULL));
+					$field->displaySettingsPanel($wrapper, (isset($this->errors[$position]) ? $this->errors[$position] : NULL));
 					$ol->appendChild($wrapper);
 
 				}
@@ -899,25 +1040,25 @@
 			    $fields = $_POST['fields'];
 				$meta = $_POST['meta'];
 				
-				$this->_errors = array();
+				$this->errors = array();
 					
 				## Check to ensure all the required section fields are filled
 				if(!isset($meta['name']) || strlen(trim($meta['name'])) == 0){
 					$required = array('Name');
-					$this->_errors['name'] = __('This is a required field.');
+					$this->errors['name'] = __('This is a required field.');
 					$canProceed = false;
 				}
 
 				## Check for duplicate section handle
 				elseif(Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . $meta['name'] . "' LIMIT 1")){
-					$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
+					$this->errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
 					$canProceed = false;
 				}
 				
 				## Check to ensure all the required section fields are filled
 				if(!isset($meta['navigation_group']) || strlen(trim($meta['navigation_group'])) == 0){
 					$required = array('Navigation Group');
-					$this->_errors['navigation_group'] = __('This is a required field.');
+					$this->errors['navigation_group'] = __('This is a required field.');
 					$canProceed = false;
 				}				
 				
@@ -931,7 +1072,7 @@
 							$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], '-', false, true, array('@^[\d-]+@i' => ''));
 
 						if(trim($data['element_name']) != '' && in_array($data['element_name'], $name_list)){
-							$this->_errors[$position] = array('element_name' => __('Two custom fields have the same element name. All element names must be unique.'));
+							$this->errors[$position] = array('element_name' => __('Two custom fields have the same element name. All element names must be unique.'));
 							$canProceed = false;
 							break;						
 						}		
@@ -951,13 +1092,13 @@
 						elseif($field->mustBeUnique() && in_array($field->get('type'), $unique)){
 							## Warning. cannot have 2 of this field!
 							$canProceed = false;
-							$this->_errors[$position] = array('label' => __('There is already a field of type <code>%s</code>. There can only be one per section.', array($field->name())));
+							$this->errors[$position] = array('label' => __('There is already a field of type <code>%s</code>. There can only be one per section.', array($field->name())));
 						}
 
 						$errors = array();
 
 						if(Field::__OK__ != $field->checkFields($errors, false, false) && !empty($errors)){
-							$this->_errors[$position] = $errors;
+							$this->errors[$position] = $errors;
 							$canProceed = false;
 							break;					
 						}
@@ -1033,25 +1174,25 @@
 				$existing_section = SectionManager::instance()->fetch($section_id);
 
 
-				$this->_errors = array();
+				$this->errors = array();
 
 				## Check to ensure all the required section fields are filled
 				if(!isset($meta['name']) || trim($meta['name']) == ''){
 					$required = array('Name');
-					$this->_errors['name'] = __('This is a required field.');
+					$this->errors['name'] = __('This is a required field.');
 					$canProceed = false;
 				}
 
 				## Check for duplicate section handle
 				elseif($meta['name'] != $existing_section->get('name') && Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . $meta['name'] . "' AND `id` != {$section_id} LIMIT 1")){
-					$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
+					$this->errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
 					$canProceed = false;
 				}
 
 				## Check to ensure all the required section fields are filled
 				if(!isset($meta['navigation_group']) || strlen(trim($meta['navigation_group'])) == 0){
 					$required = array('Navigation Group');
-					$this->_errors['navigation_group'] = __('This is a required field.');
+					$this->errors['navigation_group'] = __('This is a required field.');
 					$canProceed = false;
 				}
 
@@ -1067,7 +1208,7 @@
 								$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], '-', false, true, array('@^[\d-]+@i' => ''));
 
 							if(trim($data['element_name']) != '' && in_array($data['element_name'], $name_list)){
-								$this->_errors[$position] = array('label' => __('Two custom fields have the same element name. All element names must be unique.'));
+								$this->errors[$position] = array('label' => __('Two custom fields have the same element name. All element names must be unique.'));
 								$canProceed = false;
 								break;						
 							}		
@@ -1090,13 +1231,13 @@
 							elseif($field->mustBeUnique() && in_array($field->get('type'), $unique)){
 								## Warning. cannot have 2 of this field!
 								$canProceed = false;
-								$this->_errors[$position] = array('label' => __('There is already a field of type <code>%s</code>. There can only be one per section.', array($field->name())));
+								$this->errors[$position] = array('label' => __('There is already a field of type <code>%s</code>. There can only be one per section.', array($field->name())));
 							}
 
 							$errors = array();
 
 							if(Field::__OK__ != $field->checkFields($errors, false, false) && !empty($errors)){
-								$this->_errors[$position] = $errors;
+								$this->errors[$position] = $errors;
 								$canProceed = false;
 								break;					
 							}
