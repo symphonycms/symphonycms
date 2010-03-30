@@ -78,7 +78,7 @@
 
 		public static function loadFromPath($path, array $params=NULL){
 
-			$view = new View;
+			$view = new self;
 			
 			$view->path = trim($path, '/');
 			
