@@ -32,6 +32,36 @@
 
 		}
 		
+		public function __toString(){
+			
+			/*
+			Array
+			(
+			    [show_column] => yes
+			    [required] => yes
+			    [type] => textarea
+			    [label] => Happy Days
+			    [location] => main
+			    [size] => 12
+			    [formatter] => markdown_with_purifier
+			    [element_name] => happy-days
+			)
+			*/
+			
+			$doc = new DOMDocument('1.0', 'UTF-8');
+			$doc->formatOutput = true;
+			
+			$root = $doc->createElement('field');
+			$doc->appendChild($root);
+			
+			//$root->appendChild($doc->createElement('name', General::sanitize($this->name)));
+			foreach($this->get() as $name => $value){
+				$root->appendChild($doc->createElement($name, General::sanitize($value)));
+			}
+
+			return $doc->saveXML();
+		}
+		
 		public function canShowTableColumn(){
 			return $this->_showcolumn;
 		}
@@ -100,11 +130,18 @@
 		}
 
 		public function get($field=NULL){
-			if(!$field) return $this->_fields;
 			
-			if (!isset($this->_fields[$field])) return null;
+			if(is_null($field)){
+				return $this->_fields;
+			}
 			
-			return $this->_fields[$field];
+			if($field == 'element_name' 
+				&& (isset($this->_fields['label']) && strlen(trim($this->_fields['label'])) > 0) 
+					&& (!isset($this->_fields[$field]) || strlen(trim($this->_fields[$field])) == 0)){
+						$this->_fields[$field] = Lang::createHandle($this->_fields['label'], '-', false, true, array('/^[^:_a-z]+/i' => NULL, '/[^:_a-z0-9\.-]/i' => NULL));
+			}
+
+			return (isset($this->_fields[$field]) ? $this->_fields[$field] : NULL);
 		}
 		
 		public function remove($field){
