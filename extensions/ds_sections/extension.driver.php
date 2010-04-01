@@ -93,22 +93,20 @@
 			$group->appendChild($label);
 			
 			// Section:
-			$sectionManager = SectionManager::instance();
-		    $sections = $sectionManager->fetch(NULL, 'ASC', 'name');
+			//$sectionManager = SectionManager::instance();
+		    //$sections = $sectionManager->fetch(NULL, 'ASC', 'name');
 			$field_groups = $options = array();
 			
-			if (is_array($sections) && !empty($sections)) {
-				foreach ((array)$sections as $section) {
-					$field_groups[$section->get('id')] = array(
-						'fields'	=> $section->fetchFields(),
+			//if (is_array($sections) && !empty($sections)) {
+				foreach (new SectionIterator as $section) {
+					$field_groups[$section->handle] = array(
+						'fields'	=> $section->fields,
 						'section'	=> $section
 					);
+
+					$options[] = array($section->handle, ($datasource->parameters()->source == $section->handle), $s->name);
 				}
-				
-				foreach ($sections as $s) {
-					$options[] = array($s->get('id'), ($datasource->parameters()->source == $s->get('id')), $s->get('name'));
-				}
-			}
+			//}
 			
 			$label = Widget::Label(__('Section'));
 			$label->appendChild(Widget::Select('fields[section]', $options, array('id' => 'context')));
@@ -381,7 +379,7 @@
 
 			foreach ($field_groups as $section_id => $section_data) {
 				$section = $section_data['section'];
-				$section_handle = $section->get('handle');
+				$section_handle = $section->handle;
 				$section_active = ($datasource->parameters()->section == $section_id);
 				$filter_data = $datasource->parameters()->filter;
 				
