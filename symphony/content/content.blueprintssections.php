@@ -86,9 +86,11 @@
 		protected static $sections = array();
 
 		protected $parameters;
+		protected $fields;
 		
 		public function __construct(){
 			$this->parameters = new StdClass;
+			$this->fields = array();
 		}
 		
 		public function __isset($name){
@@ -113,6 +115,10 @@
 				if(is_null($this->parameters->guid)){
 					$this->parameters->guid = uniqid();
 				}
+			}
+			
+			elseif($name == 'fields'){
+				return $this->fields;
 			}
 			
 			return $this->parameters->$name;
@@ -158,6 +164,30 @@
 			$this->_about->$name = $value;
 		}*/
 		
+		public function appendField($type, array $data=NULL){
+			
+			$field = fieldManager::instance()->create($type);
+			
+			if(!is_null($data)){
+				$field->setFromPOST($data);
+			}
+			
+			$this->fields[] = $field;
+			
+		}
+		
+		public function removeAllFields(){
+			$this->fields = array();
+		}
+		
+		public function removeField($name){
+			foreach($this->fields as $index => $f){
+				if($f->get('label') == $name || $f->get('element_name') == $name){
+					unset($this->fields[$index]);
+				}
+			}
+		}
+		
 		public static function fetchUsedNavigationGroups(){
 			$groups = array();
 			foreach(new SectionIterator as $s){
@@ -184,13 +214,24 @@
 			}
 
 			foreach($doc as $name => $value){
-				if(isset($value->item)){
+				if($name == 'fields' && isset($value->field)){
+					foreach($value->field as $field){
+						$data = array();
+						foreach($field as $property_name => $property_value){
+							$data[(string)$property_name] = (string)$property_value;
+						}
+						$section->appendField($data['type'], $data);
+					}
+				}
+				
+				elseif(isset($value->item)){
 					$stack = array();
 					foreach($value->item as $item){
 						array_push($stack, (string)$item);
 					}
 					$section->$name = $stack;
 				}
+				
 				else $section->$name = (string)$value;
 			}
 			
@@ -266,6 +307,16 @@
 				$messages->append('navigation-group', __('This is a required field.'));
 			}
 			
+			
+			if(is_array($section->fields) && !empty($section->fields)){
+				foreach($section->fields as $index => $field){
+					$errors = NULL;
+					if($field->checkFields($errors, false, false) != Field::__OK__ && !empty($errors)){
+						$messages->append("field::{$index}", $errors);
+					}
+				}
+			}
+			
 			if($messages->length() > 0){
 				throw new SectionException(__('Section could not be saved. Validation failed.'), self::ERROR_MISSING_OR_INVALID_FIELDS);
 			}
@@ -293,7 +344,21 @@
 					: 'no'
 			)));
 			$root->appendChild($doc->createElement('navigation-group', General::sanitize($this->{'navigation-group'})));
-
+			
+			if(is_array($this->fields) && !empty($this->fields)){
+				$fields = $doc->createElement('fields');
+				foreach($this->fields as $index => $field){
+					
+					// the XML returned will have a declaration. Need to remove that.
+					$string = trim(preg_replace('/<\?xml.*\?>/i', NULL, (string)$field, 1));
+					
+					$fragment = $doc->createDocumentFragment();
+					$fragment->appendXML($string);
+					$fields->appendChild($fragment);
+				}
+				$root->appendChild($fields);
+			}
+			
 			return $doc->saveXML();
 		}
 		
@@ -385,10 +450,12 @@
 		
 		private function __save(array $essentials, array $fields=NULL, Section $section=NULL){
 			if(is_null($section)) $section = new Section;
-
-			$section->name = $essentials['name'];
-			$section->{'navigation-group'} = $essentials['navigation-group'];
-			$section->{'hidden-from-publish-menu'} = (bool)(isset($essentials['hidden-from-publish-menu']) && $essentials['hidden-from-publish-menu'] == 'yes');
+			
+			$this->section = $section;
+			
+			$this->section->name = $essentials['name'];
+			$this->section->{'navigation-group'} = $essentials['navigation-group'];
+			$this->section->{'hidden-from-publish-menu'} = (bool)(isset($essentials['hidden-from-publish-menu']) && $essentials['hidden-from-publish-menu'] == 'yes');
 			
 			/*
 			Array
@@ -416,26 +483,26 @@
 			)
 			*/
 			
-			if(!is_null($fields) && !empty($fields)){
-				foreach($fields as $f){
-					$field = fieldManager::instance()->create($f['type']);
-					$field->setFromPOST($f);
-					if($field->checkFields($errors, false, false) != Field::__OK__ && !empty($errors)){
-						print_r($errors);
-					}
-					print_r($field); die();
-				}
-			}
 			
-			$this->errors = new MessageStack;
 			try{
-				Section::save($section, $this->errors);
-				return $section;
+				
+				$this->errors = new MessageStack;
+				
+				$this->section->removeAllFields();
+				
+				if(!is_null($fields) && !empty($fields)){
+					foreach($fields as $index => $f){
+						$this->section->appendField($f['type'], $f);
+					}
+				}
+
+				Section::save($this->section, $this->errors);
+				return true;
 			}
 			catch(SectionException $e){
 				switch($e->getCode()){
 					case Section::ERROR_MISSING_OR_INVALID_FIELDS:
-						// Dont really need to do anything since everything was captured in the MessageStack object
+						$this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
 						break;
 
 					case Section::ERROR_FAILED_TO_WRITE:
@@ -446,7 +513,7 @@
 			catch(Exception $e){
 				// Errors!!
 				// Not sure what happened!!
-				$this->pageAlert(__("An unknown error has occurred. %s", $e->getMessage()), Alert::ERROR);
+				$this->pageAlert(__('An unknown error has occurred. %s', $e->getMessage()), Alert::ERROR);
 			}
 			
 			return false;
@@ -454,8 +521,7 @@
 		
 		public function __actionNew(){
 			if(isset($_POST['action']['save'])){
-				$this->section = $this->__save($_POST['essentials'], (isset($_POST['fields']) ? $_POST['fields'] : NULL));
-				if($this->section instanceof Section){
+				if($this->__save($_POST['essentials'], (isset($_POST['fields']) ? $_POST['fields'] : NULL)) == true){
 					redirect(ADMIN_URL . "/blueprints/sections/edit/{$this->section->handle}/:created/");
 				}
 			}
@@ -463,8 +529,7 @@
 
 		public function __actionEdit(){
 			if(isset($_POST['action']['save'])){
-				$this->section = $this->__save($_POST['essentials'], (isset($_POST['fields']) ? $_POST['fields'] : NULL), Section::load(SECTIONS . '/' . $this->_context[1] . '.xml'));
-				if($this->section instanceof Section){
+				if($this->__save($_POST['essentials'], (isset($_POST['fields']) ? $_POST['fields'] : NULL), Section::load(SECTIONS . '/' . $this->_context[1] . '.xml')) == true){
 					redirect(ADMIN_URL . "/blueprints/sections/edit/{$this->section->handle}/:saved/");
 				}
 			}
@@ -624,17 +689,19 @@
 			$ol->setAttribute('id', 'section-' . $section_id);
 			$ol->setAttribute('class', 'section-duplicator');
 			
-			/*if(is_array($fields) && !empty($fields)){
+			$fields = $this->section->fields;
+
+			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $position => $field){
 
 					$wrapper = new XMLElement('li');
 					
 					$field->set('sortorder', $position);
-					$field->displaySettingsPanel($wrapper, (isset($this->errors[$position]) ? $this->errors[$position] : NULL));
+					$field->displaySettingsPanel($wrapper, (isset($this->errors->{"field::{$position}"}) ? $this->errors->{"field::{$position}"} : NULL));
 					$ol->appendChild($wrapper);
 
 				}
-			}*/
+			}
 			
 			$types = array();
 			foreach (FieldManager::instance()->fetchTypes() as $type){
