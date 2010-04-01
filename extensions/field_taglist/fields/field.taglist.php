@@ -193,9 +193,11 @@
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$label = Widget::Label(__('Suggestion List'));
-
+			
+			$pre_populate_source = $this->get('pre_populate_source');
+			
 			$options = array(
-				array('existing', (in_array('existing', $this->get('pre_populate_source'))), __('Existing Values')),
+				array('existing', (is_array($pre_populate_source) && in_array('existing', $pre_populate_source)), __('Existing Values')),
 			);
 
 			
