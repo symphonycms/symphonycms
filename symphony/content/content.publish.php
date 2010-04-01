@@ -24,33 +24,129 @@
 			$this->$function();
 		}
 		
-		function view(){			
-			$this->__switchboard();	
+		public function view(){
+			$this->__switchboard();
 		}
 		
-		function action(){			
-			$this->__switchboard('action');		
+		public function action(){
+			$this->__switchboard('action');
 		}
 		
-		function __viewIndex(){	
+		public function __viewIndex(){
 
 			
-			if(!$section_id = SectionManager::instance()->fetchIDFromHandle($this->_context['section_handle']))
+			/*if(!$section_id = SectionManager::instance()->fetchIDFromHandle($this->_context['section_handle']))
 				Administration::instance()->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
 			
-			$section = SectionManager::instance()->fetch($section_id);
+			$section = SectionManager::instance()->fetch($section_id);*/
+			
+			$section = Section::load(sprintf('%s/%s.xml', SECTIONS, $this->_context['section_handle']));
 
 			$this->setPageType('table');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
-			$this->Form->setAttribute("class", $this->_context['section_handle']);
-
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->name)));
+			$this->Form->setAttribute("class", $section->handle);
 
 		    $users = UserManager::fetch();
 		
 			$filter = $filter_value = $where = $joins = NULL;		
 			$current_page = (isset($_REQUEST['pg']) && is_numeric($_REQUEST['pg']) ? max(1, intval($_REQUEST['pg'])) : 1);
+			
+			$this->appendSubheading(
+				$section->name, 
+				Widget::Anchor(
+					__('Create New'), 
+					sprintf('%snew/%s', Administration::instance()->getCurrentPageURL(), ($filter ? "?prepopulate[{$filter}]={$filter_value}" : NULL)), 
+					__('Create a new entry'), 
+					'create button'
+				)
+			);
+			
 
-			if(isset($_REQUEST['filter'])){
+			$aTableHead = array();
+			
+
+			foreach($section->fields as $column){
+				if($column->get('show_column') != 'yes') continue;
+				
+				$label = $column->get('label');
+				
+				// TO DO: Fix the ordering links
+				/*if($column->isSortable()) {
+			
+					if($column->get('id') == $section->get('entry_order')){
+						$link = Administration::instance()->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order='. ($section->get('entry_order_direction') == 'desc' ? 'asc' : 'desc').($filter ? "&amp;filter=$field_handle:$filter_value" : '');							
+						$anchor = Widget::Anchor($label, $link, __('Sort by %1$s %2$s', array(($section->get('entry_order_direction') == 'desc' ? __('ascending') : __('descending')), strtolower($column->get('label')))), 'active');
+					}
+				
+					else{
+						$link = Administration::instance()->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order=asc'.($filter ? "&amp;filter=$field_handle:$filter_value" : '');							
+						$anchor = Widget::Anchor($label, $link, __('Sort by %1$s %2$s', array(__('ascending'), strtolower($column->get('label')))));
+					}
+				
+					$aTableHead[] = array($anchor, 'col');
+				}
+
+				else */
+				$aTableHead[] = array($label, 'col');
+			}
+			
+
+			## Table Body
+			$aTableBody = array();
+
+			if(!is_array($entries['records']) || empty($entries['records'])){
+
+				$aTableBody = array(
+					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
+				);
+			}
+
+			else{
+			}
+
+			$table = Widget::Table(
+				Widget::TableHead($aTableHead), 
+				NULL, 
+				Widget::TableBody($aTableBody)
+			);
+
+			$this->Form->appendChild($table);
+
+			
+			$tableActions = new XMLElement('div');
+			$tableActions->setAttribute('class', 'actions');
+
+			$options = array(
+				array(NULL, false, __('With Selected...')),
+				array('delete', false, __('Delete'))
+			);
+		
+			// TO DO: Add toggable fields back
+			/*
+			$toggable_fields = $section->fetchToggleableFields();
+
+			if (is_array($toggable_fields) && !empty($toggable_fields)) {
+				$index = 2;
+				
+				foreach ($toggable_fields as $field) {
+					$options[$index] = array('label' => __('Set %s', array($field->get('label'))), 'options' => array());
+					
+					foreach ($field->getToggleStates() as $value => $state) {
+						$options[$index]['options'][] = array('toggle-' . $field->get('id') . '-' . $value, false, $state);
+					}
+					
+					$index++;
+				}		
+			}
+			*/
+			
+			$tableActions->appendChild(Widget::Select('with-selected', $options));
+			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
+			
+			$this->Form->appendChild($tableActions);
+			
+			// TO DO: Fix Filtering
+			/*if(isset($_REQUEST['filter'])){
 				
 				list($field_handle, $filter_value) = explode(':', $_REQUEST['filter'], 2);
 				
@@ -64,7 +160,7 @@
 																			   FROM `tbl_fields` AS `f`, `tbl_sections` AS `s` 
 																			   WHERE `s`.`id` = `f`.`parent_section` 
 																			   AND f.`element_name` = '$field_name' 
-																			   AND `s`.`handle` = '".$section->get('handle')."' LIMIT 1");
+																			   AND `s`.`handle` = '".$section->handle."' LIMIT 1");
 					$field = FieldManager::instance()->fetch($filter);
 
 					if(is_object($field)){
@@ -80,9 +176,10 @@
 					$where = ' AND (' . substr($where, 2, strlen($where)) . ')'; // replace leading OR with AND
 				}
 
-			}
+			}*/
 			
-			if(isset($_REQUEST['sort']) && is_numeric($_REQUEST['sort'])){
+			// TO DO: Fix Sorting
+			/*if(isset($_REQUEST['sort']) && is_numeric($_REQUEST['sort'])){
 				$sort = intval($_REQUEST['sort']);
 				$order = ($_REQUEST['order'] ? strtolower($_REQUEST['order']) : 'asc');
 				
@@ -95,8 +192,9 @@
 			elseif(isset($_REQUEST['unsort'])){
 				SectionManager::instance()->edit($section->get('id'), array('entry_order' => NULL, 'entry_order_direction' => NULL));
 				redirect(Administration::instance()->getCurrentPageURL());
-			}
+			}*/
 
+			/*
 			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter ? "&amp;filter=$field_handle:$filter_value" : ''));
 			
 			## Remove the create button if there is a section link field, and no filtering set for it
@@ -339,6 +437,7 @@
 				$this->Form->appendChild($ul);	
 
 			}
+			*/
 		}
 
 		function __actionIndex(){	

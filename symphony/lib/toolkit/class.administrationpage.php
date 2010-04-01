@@ -318,36 +318,29 @@
 					}
 				}
 			}
-			
-			$sections = Symphony::Database()->fetch("SELECT * FROM `tbl_sections` ORDER BY `sortorder` ASC");
 
-			if(is_array($sections) && !empty($sections)){
-				foreach($sections as $s){
-					
-					$group_index = self::__navigationFindGroupIndex($nav, $s['navigation_group']);
-					
-					if($group_index === false){
-						$group_index = General::array_find_available_index($nav, 0);
+			foreach(new SectionIterator as $s){
 
-						$nav[$group_index] = array(
-							'name' => $s['navigation_group'],
-							'index' => $group_index,
-							'children' => array(),
-							'limit' => NULL
-						);
-						
-					}
-									
-					$nav[$group_index]['children'][] = array(
-						'link' => '/publish/' . $s['handle'] . '/', 
-						'name' => $s['name'], 
-						'type' => 'section',
-						'section' => array('id' => $s['id'], 'handle' => $s['handle']),
-						'visible' => ($s['hidden'] == 'no' ? 'yes' : 'no')
+				$group_index = self::__navigationFindGroupIndex($nav, $s->{'navigation-group'});
+
+				if($group_index === false){
+					$group_index = General::array_find_available_index($nav, 0);
+
+					$nav[$group_index] = array(
+						'name' => $s->{'navigation-group'},
+						'index' => $group_index,
+						'children' => array(),
+						'limit' => NULL
 					);
-													
-
 				}
+
+				$nav[$group_index]['children'][] = array(
+					'link' => '/publish/' . $s->handle . '/', 
+					'name' => $s->name, 
+					'type' => 'section',
+					'section' => array('id' => $s->guid, 'handle' => $s->handle),
+					'visible' => ($s->{'hidden-from-publish-menu'} == 'no' ? 'yes' : 'no')
+				);
 			}
 			
 			$extensions = ExtensionManager::instance()->listInstalledHandles();
