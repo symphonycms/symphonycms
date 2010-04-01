@@ -795,10 +795,6 @@
 					# Description: Just prior to editing of an Entry.
 					$this->_Parent->ExtensionManager->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
 
-//var_dump($section);
-//var_dump($entry);
-var_dump($fields);
-
 					if(!$entry->commit()){
 						define_safe('__SYM_DB_INSERT_FAILED__', true);
 						$this->pageAlert(NULL, Alert::ERROR);
