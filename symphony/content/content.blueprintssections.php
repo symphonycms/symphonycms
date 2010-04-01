@@ -352,6 +352,9 @@
 					// the XML returned will have a declaration. Need to remove that.
 					$string = trim(preg_replace('/<\?xml.*\?>/i', NULL, (string)$field, 1));
 					
+					// Prepare indenting by adding an extra tab to each line (except the first one)
+					$string = preg_replace('/[\r\n]/', "\n\t", $string);
+
 					$fragment = $doc->createDocumentFragment();
 					$fragment->appendXML($string);
 					$fields->appendChild($fragment);
