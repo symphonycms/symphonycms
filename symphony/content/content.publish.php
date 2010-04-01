@@ -485,32 +485,34 @@
 			}
 		}		
 		
-		private function __wrapFieldWithDiv(Field $field, Entry $entry){
+		private function __wrapFieldWithDiv(Field $field, Entry $entry=NULL){
 			$div = new XMLElement('div', NULL, array('class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
 			$field->displayPublishPanel(
-				$div, $entry->getData($field->get('id')),
+				$div, (!is_null($entry) ? $entry->getData($field->get('id')) : NULL),
 				(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
-				null, null, (is_numeric($entry->get('id')) ? $entry->get('id') : NULL)
+				null, null, (!is_null($entry) && is_numeric($entry->get('id')) ? $entry->get('id') : NULL)
 			);
 			return $div;
 		}
 		
 		public function __viewNew() {
 			
-			if(!$section_id = SectionManager::instance()->fetchIDFromHandle($this->_context['section_handle']))
+			/*if(!$section_id = SectionManager::instance()->fetchIDFromHandle($this->_context['section_handle']))
 				Administration::instance()->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
 		
-		    $section = SectionManager::instance()->fetch($section_id);
+		    $section = SectionManager::instance()->fetch($section_id);*/
+		
+			$section = Section::load(sprintf('%s/%s.xml', SECTIONS, $this->_context['section_handle']));
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->name)));
 			$this->appendSubheading(__('Untitled'));
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 			
 			
 			// If there is post data floating around, due to errors, create an entry object
-			if (isset($_POST['fields'])) {
+			/*if (isset($_POST['fields'])) {
 				$entry = EntryManager::instance()->create();
 				$entry->set('section_id', $section_id);
 				$entry->setDataFromPost($_POST['fields'], $error, true);
@@ -540,15 +542,15 @@
 						$field->processRawFieldData($value, $error, true)
 					);
 				}
-			}
+			}*/
 			
 			$primary = new XMLElement('fieldset');
 			$primary->setAttribute('class', 'primary');
 			
-			$sidebar_fields = $section->fetchFields(NULL, 'sidebar');
-			$main_fields = $section->fetchFields(NULL, 'main');
+			//$sidebar_fields = $section->fetchFields(NULL, 'sidebar');
+			//$main_fields = $section->fetchFields(NULL, 'main');
 			
-			if ((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))) {
+			/*if ((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))) {
 				$primary->appendChild(new XMLElement('p', __(
 					'It looks like you\'re trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>',
 					array(
@@ -577,6 +579,28 @@
 					
 					$this->Form->appendChild($sidebar);
 				}
+			}
+			*/
+			
+			foreach($section->fields as $index => $field){
+				$element = $this->__wrapFieldWithDiv($field);
+
+				if($field->get('location') == 'main') $primary->appendChild($element);
+				else{
+					
+					if(!isset($sidebar) || !($sidebar instanceof XMLElement)){
+						$sidebar = new XMLElement('fieldset');
+						$sidebar->setAttribute('class', 'secondary');
+					}
+					
+					$sidebar->appendChild($element);
+				}
+				
+			}
+			
+			$this->Form->appendChild($primary);
+			if(isset($sidebar) && $sidebar instanceof XMLElement){
+				$this->Form->appendChild($sidebar);
 			}
 			
 			$div = new XMLElement('div');
