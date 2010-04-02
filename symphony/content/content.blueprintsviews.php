@@ -213,8 +213,11 @@
 				$view->template = $_POST['fields']['template'];
 			}
 			
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'column');
+			$group->setAttribute('class', 'group');
 
 			$div = new XMLElement('div');
 			
@@ -232,13 +235,15 @@
 			
 			$div->appendChild($label);
 			$group->appendChild($div);
+			$fieldset->appendChild($group);
 
-			$this->Form->appendChild($group);
+			$this->Form->appendChild($fieldset);
 			
 			$utilities = new UtilityIterator;
 
 			if($utilities->length() > 0){
 				$div = new XMLElement('div');
+				$div->setAttribute('class', 'small');
 				
 				$h3 = new XMLElement('h3', __('Utilities'));
 				$h3->setAttribute('class', 'label');
@@ -452,7 +457,6 @@
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('View Settings')));
 			
 		// Title --------------------------------------------------------------
 						
