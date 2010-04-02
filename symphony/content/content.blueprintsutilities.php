@@ -148,15 +148,18 @@
 
 			$fields['body'] = General::sanitize($fields['body']);
 
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'column');
+			$group->setAttribute('class', 'group');
 
 			$div = new XMLElement('div');
 			
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('fields[name]', $fields['name']));
 			$div->appendChild((isset($this->_errors['name']) ? $this->wrapFormElementWithError($label, $this->_errors['name']) : $label));
-
+			
 			$label = Widget::Label(__('Body'));
 			$label->appendChild(Widget::Textarea('fields[body]', 30, 80, $fields['body'], array('class' => 'code')));
 			$div->appendChild((isset($this->_errors['body']) ? $this->wrapFormElementWithError($label, $this->_errors['body']) : $label));
@@ -169,6 +172,7 @@
 			if(is_array($utilities) && !empty($utilities)){
 			
 				$div = new XMLElement('div');
+				$div->setAttribute('class', 'small');
 				
 				$h3 = new XMLElement('h3', __('Utilities'));
 				$h3->setAttribute('class', 'label');
@@ -192,8 +196,9 @@
 				$div->appendChild($ul);
 			
 				$group->appendChild($div);
-
-				$this->Form->appendChild($group);
+				$fieldset->appendChild($group);
+				
+				$this->Form->appendChild($fieldset);
 			}
 			
 			$div = new XMLElement('div');
@@ -207,9 +212,6 @@
 			}
 			
 			$this->Form->appendChild($div);
-			
-				
-			
 		}
 		
 		public function __actionNew() {
