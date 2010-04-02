@@ -315,7 +315,7 @@
 		margin-top: -5px;
 	}
 	#tab + fieldset {
-		margin-top: -20px;
+		margin-top: -10px;
 		border: none;
 	}
 
@@ -544,7 +544,7 @@
 		margin: 0 30px;
 	}
 	form fieldset legend {
-		font-size: 9pt;
+		font-size: 10pt;
 		color: #666;
 		padding: 0 10px;
 		margin: 15px 0 0 -10px;
