@@ -2,7 +2,8 @@
 	
 	require_once(TOOLKIT . '/class.htmlpage.php');
 	require_once(TOOLKIT . '/class.alert.php');
-	
+	require_once(TOOLKIT . '/class.section.php');
+		
 	Class AdministrationPage extends HTMLPage{
 		
 		public $Alert;

@@ -374,23 +374,29 @@
 		function fetchAssociatedEntryIDs($value){
 		}
 				
-		public function displayDatasourceFilterPanel(&$wrapper, $data=NULL, MessageStack $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-			$wrapper->appendChild(new XMLElement('h4', $this->get('label') . ' <i>'.$this->Name().'</i>'));
+		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data=NULL, MessageStack $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+			$wrapper->appendChild(new XMLElement('h4', $this->get('label') . ' <i>' . $this->Name() . '</i>'));
 			$label = Widget::Label(__('Value'));
-			$label->appendChild(Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : NULL)));		
+			$label->appendChild(Widget::Input(
+				'fields[filter]'
+				. (!is_null($fieldnamePrefix) ? "[{$fieldnamePrefix}]" : NULL)
+				. '[' . $this->get('id') . ']'
+				. (!is_null($fieldnamePostfix) ? "[{$fieldnamePostfix}]" : NULL), 
+				(!is_null($data) ? General::sanitize($data) : NULL)
+			));
 			$wrapper->appendChild($label);	
 		}
 		
-		public function displayImportPanel(&$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null) {
+		public function displayImportPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null) {
 			$this->displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);	
 		}
 		
-		public function displaySettingsPanel(&$wrapper, $errors=NULL){		
+		public function displaySettingsPanel(XMLElement &$wrapper, $errors=NULL){		
 			$wrapper->appendChild(new XMLElement('h4', ucwords($this->name()) . ($this->get('label') ? ' - "' . $this->get('label') . '"' : '')));
 			$wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][type]', $this->handle(), 'hidden'));
 			if($this->get('id')) $wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][id]', $this->get('id'), 'hidden'));
 			
-			$wrapper->appendChild($this->buildSummaryBlock($errors));			
+			$wrapper->appendChild($this->buildSummaryBlock($errors));
 
 		}
 		
@@ -410,7 +416,7 @@
 			
 		}
 		
-		public function appendRequiredCheckbox(&$wrapper) {
+		public function appendRequiredCheckbox(XMLElement &$wrapper) {
 			if (!$this->_required) return;
 			
 			$order = $this->get('sortorder');
@@ -429,7 +435,7 @@
 		}
 		
 		
-		public function appendShowColumnCheckbox(&$wrapper) {
+		public function appendShowColumnCheckbox(XMLElement &$wrapper) {
 			if (!$this->_showcolumn) return;
 			
 			$order = $this->get('sortorder');
@@ -454,7 +460,7 @@
 			$label = Widget::Label($label_value);
 			$options = array(
 				array('main', $selected == 'main', __('Main content')),
-				array('sidebar', $selected == 'sidebar', __('Sidebar'))				
+				array('sidebar', $selected == 'sidebar', __('Sidebar'))
 			);
 			$label->appendChild(Widget::Select($name, $options));
 			
@@ -482,7 +488,7 @@
 		
 			$label->appendChild(Widget::Select($name, $options));
 			
-			return $label;			
+			return $label;
 		}
 
 		public function buildValidationSelect(&$wrapper, $selected=NULL, $name='fields[validator]', $type='input'){
