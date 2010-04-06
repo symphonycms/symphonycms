@@ -41,6 +41,43 @@
 			}
 
 			return $groups;
+		}	
+		
+		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data=NULL, MessageStack $errors=NULL){ //, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+
+			$wrapper->appendChild(new XMLElement('h4', $this->get('label') . ' <i>' . $this->Name() . '</i>'));
+			
+			
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
+			
+			$label = Widget::Label(__('Operation'));
+			$label->appendChild(Widget::Select(
+				'fields[filter]'
+				//. (!is_null($fieldnamePrefix) ? "[{$fieldnamePrefix}]" : NULL)
+				. '[' . $this->get('element_name') . '][operation]',
+				//. (!is_null($fieldnamePostfix) ? "[{$fieldnamePostfix}]" : NULL), 
+				//(!is_null($data) ? General::sanitize($data) : NULL)
+				array(
+					array('is', false, 'Is'),
+					array('is-not', ($data['operation'] == 'is-not'), 'Is Not'),
+					array('contains', ($data['operation'] == 'contains'), 'Contains'),
+					array('matches-expression', ($data['operation'] == 'matches-expression'), 'Matches Expression'),
+				)
+			));
+			$group->appendChild($label);
+			
+			$label = Widget::Label(__('Value'));
+			$label->appendChild(Widget::Input(
+				'fields[filter]'
+				//. (!is_null($fieldnamePrefix) ? "[{$fieldnamePrefix}]" : NULL)
+				. '[' . $this->get('element_name') . '][value]',
+				//. (!is_null($fieldnamePostfix) ? "[{$fieldnamePostfix}]" : NULL), 
+				(!is_null($data) && isset($data['value']) ? General::sanitize($data['value']) : NULL)
+			));
+			$group->appendChild($label);
+			
+			$wrapper->appendChild($group);	
 		}
 
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
