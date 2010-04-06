@@ -315,8 +315,8 @@
 		margin-top: -5px;
 	}
 	#tab + fieldset {
+		margin-top: -10px;
 		border: none;
-		margin-top: -20px;
 	}
 
 /*-----------------------------------------------------------------------------
@@ -353,7 +353,6 @@
 -----------------------------------------------------------------------------*/
 
 	fieldset ~ .actions input[type=submit],
-	.column ~ .actions input[type=submit],
 	button,
 	.button {
 		background-color: #222;
@@ -416,7 +415,6 @@
 		border: 1px solid #cb1f2b;
 	}
 	fieldset ~ .actions input[type=submit]:hover,
-	.column ~ .actions input[type=submit]:hover,
 	button:hover,
 	.button:hover {
 		color: #fff;
@@ -539,26 +537,24 @@
 		margin-bottom: 20px;
 	}
 	form fieldset {
+		position: relative;
 		border: none;
 		border-top: 1px dotted #ddd;
-		padding: 15px 30px 25px 230px;
+		padding: 15px 0 25px;
+		margin: 0 30px;
 	}
 	form fieldset legend {
+		font-size: 10pt;
 		color: #666;
-		float: left;
-		margin: 0 0 -30px 0;
-		text-indent: -200px;
+		padding: 0 10px;
+		margin: 15px 0 0 -10px;
 	}
 	form .help {
 		color: #aaa;
 		margin: -10px 0 15px;
 	}
 	form fieldset legend + .help {
-		color: #aaa;
-		float: left;
-		font-size: 8pt;
-		margin: 12pt 0 -60px 0;
-		text-indent: -200px;
+		display: none;
 	}
 	form fieldset legend + .help code {
 		color: inherit;
@@ -627,10 +623,13 @@
 		padding-left: 20px;
 		margin-top: 0;
 	}
+	.group > div.small {
+		width: 35%;
+	}
 	form .group > div > label {
 		display: block;
 		padding: 0;
-		margin: 10px 0 3px;
+		margin: 15px 0 3px;
 	}
 	form .group > div > label:first-child {
 		margin-top: 0;
@@ -639,27 +638,6 @@
 	form .group > div:first-child label,
 	form .group > div:first-child {
 		padding-left: 0;
-	}
-
-/*-----------------------------------------------------------------------------
-	Content: Form: Column Layout
------------------------------------------------------------------------------*/
-
-	form .column {
-		display: table;
-		width: 100%;
-		padding: 0 30px;
-		margin-bottom: 30px;
-	}
-
-	form .column > div {
-		display: table-cell;
-		padding-left: 30px;
-	}
-
-	.column > div:first-child {
-		width: 60%;
-		padding: 0;
 	}
 
 /*-----------------------------------------------------------------------------
