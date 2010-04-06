@@ -75,7 +75,10 @@
 		}
 		
 		private function __save(array $essentials, array $fields=NULL, Section $section=NULL){
-			if(is_null($section)) $section = new Section;
+			if(is_null($section)){
+				$section = new Section;
+				$section->path = SECTIONS;
+			}
 			
 			$this->section = $section;
 			

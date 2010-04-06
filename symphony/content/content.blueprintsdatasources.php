@@ -198,8 +198,12 @@
 					)),
 					Alert::ERROR
 				);
+				
+				return;
 			}
 
+			
+			// Saving
 			try{
 				$pathname = $this->datasource->save($this->errors);
 				$handle = preg_replace('/.php$/i', NULL, basename($pathname));

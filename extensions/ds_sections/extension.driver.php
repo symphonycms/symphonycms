@@ -406,7 +406,7 @@
 				$li->setAttribute('class', 'unique template');
 				$li->appendChild(new XMLElement('h4', __('System ID')));
 				$label = Widget::Label(__('Value'));
-				$label->appendChild(Widget::Input("fields[filter][id]"));
+				$label->appendChild(Widget::Input('fields[filter][id]'));
 				$li->appendChild($label);
 				$ol->appendChild($li);
 				
