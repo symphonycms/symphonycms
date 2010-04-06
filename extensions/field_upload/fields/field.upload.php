@@ -22,6 +22,9 @@
 				$this->Symphony = Frontend::instance();
 			}
 			
+			
+			var_dump(ExtensionManager::instance()); exit;
+			
 			$this->Driver = ExtensionManager::instance()->create('field_upload');
 			
 			$this->_name = 'Upload';
