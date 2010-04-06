@@ -380,7 +380,7 @@
 			$label->appendChild(Widget::Input(
 				'fields[filter]'
 				. (!is_null($fieldnamePrefix) ? "[{$fieldnamePrefix}]" : NULL)
-				. '[' . $this->get('id') . ']'
+				. '[' . $this->get('element_name') . ']'
 				. (!is_null($fieldnamePostfix) ? "[{$fieldnamePostfix}]" : NULL), 
 				(!is_null($data) ? General::sanitize($data) : NULL)
 			));
