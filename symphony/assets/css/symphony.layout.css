@@ -1,0 +1,233 @@
+/* @group Layout */
+	
+	.layout {
+		background: #eeeeee;
+		border: 1px solid #cccccc;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		display: -moz-box;
+		display: -webkit-box;
+		margin: 15px 0;
+		width: 100%;
+	}
+	.layout:last-child {
+		margin-bottom: 0;
+	}
+	.layout > .content {
+		padding: 20px;
+	}
+	.layout > .settings {
+		background: -moz-linear-gradient(left, #cccccc, #dddddd 5px);
+		background: -webkit-gradient(linear, left top, 3 top, from(#cccccc), to(#dddddd));
+		-webkit-border-top-right-radius: 4px;
+		-webkit-border-bottom-right-radius: 4px;
+		padding: 20px;
+		width: 300px;
+	}
+	.layout > .content {
+		-moz-box-flex: 1;
+		-webkit-box-flex: 1;
+		min-width: 300px;
+	}
+	
+	/* @group Menu */
+		
+		.layout > .menu {
+			background: hsla(0, 0%, 20%, 0.95);
+			-moz-border-radius: 5px;
+			-webkit-border-radius: 5px;
+			-moz-box-shadow: 1px 1px 4px hsla(0, 0%, 0%, 0.5);
+			-webkit-box-shadow: 1px 1px 4px hsla(0, 0%, 0%, 0.5);
+			color: #ffffff;
+			cursor: default;
+			display: none;
+			padding: 1px 0;
+			position: absolute;
+			z-index: 4;
+		}
+		.layout > .menu ol + ol {
+			border-top: 1px solid hsla(0, 0%, 100%, 0.2);
+		}
+		.layout > .menu ol li {
+			border: 1px solid hsla(0, 0%, 100%, 0.2);
+			border-bottom: none;
+			border-top: none;
+			display: block;
+			height: 23px;
+			line-height: 21px;
+			margin: 0 1px;
+			padding: 0 10px;
+		}
+		.layout > .menu ol li:hover {
+			background: hsla(0, 0%, 100%, 0.1);
+		}
+		.layout > .menu ol:first-child li:first-child {
+			border-top: 1px solid hsla(0, 0%, 100%, 0.2);
+			-moz-border-radius-topleft: 5px;
+			-moz-border-radius-topright: 5px;
+			-webkit-border-top-left-radius: 5px;
+			-webkit-border-top-right-radius: 5px;
+		}
+		.layout > .menu ol:last-child li:last-child {
+			border-bottom: 1px solid hsla(0, 0%, 100%, 0.2);
+			-moz-border-radius-bottomleft: 5px;
+			-moz-border-radius-bottomright: 5px;
+			-webkit-border-bottom-left-radius: 5px;
+			-webkit-border-bottom-right-radius: 5px;
+		}
+		.layout > .menu .settings {
+			display: none;
+		}
+		
+	/* @end */
+	
+	/* @group Fieldsets */
+		
+		.layout {
+			cursor: default;
+		}
+		.layout > .content > .fieldset {
+			border-top: 1px dotted #dddddd;
+			display: -moz-box;
+			display: -webkit-box;
+			-moz-box-orient: vertical;
+			-webkit-box-orient: vertical;
+			padding: 10px 0 0 0;
+			width: 100%;
+		}
+		.layout > .content > .fieldset:first-child {
+			border-top: none;
+			padding-top: 0
+		}
+		.layout > .content > .fieldset + .fieldset {
+			margin-top: 10px;
+		}
+		.layout > .content > .fieldset .settings {
+			display: none;
+		}
+		
+		.layout > .content > .fieldset .line {
+			display: -moz-grid-line;
+			display: -webkit-box;
+			height: 25px;
+			line-height: 23px;
+			list-style: none;
+			margin: 0 0 10px 0;
+			position: relative;
+			width: 100%;
+		}
+		.layout > .content > .fieldset .line li {
+			background: hsla(0, 0%, 0%, 0.8);
+			background: -moz-linear-gradient(hsla(0, 0%, 0%, 0.6), hsla(0, 0%, 0%, 0.7));
+			background: -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 0%, 0.6)), to(hsla(0, 0%, 0%, 0.7)));
+			-moz-border-radius: 5px;
+			-webkit-border-radius: 5px;
+			color: #ffffff;
+			height: 25px;
+			margin: 0 0 0 10px;
+			position: relative;
+		}
+		.layout > .content > .fieldset .line li.control {
+			background: -moz-linear-gradient(hsla(0, 0%, 0%, 0.7), hsla(0, 0%, 0%, 0.8));
+			background: -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 0%, 0.7)), to(hsla(0, 0%, 0%, 0.8)));
+			width: 25px;
+		}
+		.layout > .content > .fieldset .line li.control.dropdown {
+			margin-left: 0;
+		}
+		.layout > .content > .fieldset .line li.selected {
+			background: hsla(210, 60%, 40%, 0.9);
+			background: -moz-linear-gradient(hsla(210, 60%, 40%, 0.7), hsla(210, 60%, 40%, 0.9));
+			background: -webkit-gradient(linear, left top, left bottom, from(hsla(210, 60%, 40%, 0.7)), to(hsla(210, 60%, 40%, 0.9)));
+			-moz-box-shadow: 0 0 100px hsla(0, 0%, 100%, 0.5);
+			-webkit-box-shadow: 0 0 100px hsla(0, 0%, 100%, 0.5);
+			z-index: 2;
+		}
+		.layout > .content > .fieldset .line li span {
+			left: 10px;
+			position: absolute;
+			top: 0;
+		}
+		
+		/* @group Title */
+			
+			.layout > .content > .fieldset .line li .title {
+				border: 1px solid hsla(0, 0%, 100%, 0.1);
+				-moz-border-radius: 5px;
+				-webkit-border-radius: 5px;
+				display: block;
+				height: 23px;
+				left: 1px;
+				line-height: 21px;
+				padding: 0 10px;
+				position: absolute;
+				right: 1px;
+				top: 1px;
+			}
+			.layout > .content > .fieldset .line li.control .title {
+				padding: 0;
+				text-align: center;
+			}
+			.layout > .content > .fieldset .line li:hover .title {
+				border: 1px solid hsla(0, 0%, 100%, 0.2);
+				-moz-box-shadow: 1px 1px 4px hsla(0, 0%, 50%, 0.5);
+				-webkit-box-shadow: 1px 1px 4px hsla(0, 0%, 50%, 0.5);
+			}
+			
+		/* @end */
+		
+		/* @group Remove */
+			
+			.layout > .content > .fieldset .line li .remove-field {
+				background: hsla(0, 0%, 100%, 0.05);
+				border-left: 1px solid hsla(0, 0%, 100%, 0.05);
+				left: auto;
+				right: 0;
+				text-align: center;
+				top: 0;
+				width: 25px;
+			}
+			.layout > .content > .fieldset .line li .remove-field:hover {
+				background: hsla(0, 0%, 100%, 0.15);
+			}
+			
+		/* @end */
+		
+		/* @ Sorting */
+			
+			.layout > .content > .fieldset .line.ui-sortable-highlight {
+				background: hsla(0, 0%, 0%, 0.06);
+				background: -moz-linear-gradient(hsla(210, 0%, 0%, 0.09), hsla(210, 0%, 0%, 0.04));
+				background: -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 0%, 0.09)), to(hsla(0, 0%, 0%, 0.04)));
+				-moz-border-radius: 5px;
+				-webkit-border-radius: 5px;
+				height: 25px;
+			}
+			
+			.layout > .content > .fieldset .line li.ui-sortable-highlight,
+			.layout > .content > .fieldset .line:nth-child(2n) li.ui-sortable-highlight {
+				background: hsla(0, 0%, 0%, 0.06);
+				background: -moz-linear-gradient(hsla(210, 0%, 0%, 0.09), hsla(210, 0%, 0%, 0.04));
+				background: -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 0%, 0.09)), to(hsla(0, 0%, 0%, 0.04)));
+			}
+			
+			.layout > .content > .fieldset .line li.ui-sortable-helper {
+				background: hsla(0, 0%, 0%, 0.8);
+				background: -moz-linear-gradient(hsla(210, 0%, 0%, 0.7), hsla(210, 0%, 0%, 0.8));
+				background: -webkit-gradient(linear, left top, left bottom, from(hsla(0, 0%, 0%, 0.7)), to(hsla(0, 0%, 0%, 0.8)));
+				-moz-box-shadow: none;
+				-webkit-box-shadow: none;
+				cursor: default;
+				opacity: 1;
+			}
+			.layout > .content > .fieldset .line li.ui-sortable-helper .title {
+				border: 1px solid hsla(0, 0%, 100%, 0.2);
+				-moz-box-shadow: 1px 1px 4px hsla(0, 0%, 0%, 0.5);
+				-webkit-box-shadow: 1px 1px 4px hsla(0, 0%, 0%, 0.5);
+			}
+			
+		/* @end */
+		
+	/* @end */
+	
+/* @end */
