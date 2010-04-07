@@ -207,32 +207,29 @@
 		}
 
 		function findDefaults(&$fields){
-			if(!isset($fields['size'])) $fields['size'] = 15;				
+			if(!isset($fields['size'])) $fields['size'] = 15;
 		}
 		
-		public function displaySettingsPanel(&$wrapper, $errors = null) {
+		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
-
-			$group = new XMLElement('div', NULL, array('class' => 'group'));
 			
-			$div = new XMLElement('div');
+			$wrapper->appendChild($this->buildFormatterSelect($this->get('formatter'), 'formatter', __('Text Formatter')));
 			
 			## Textarea Size
 			$label = Widget::Label();
-			$input = Widget::Input('fields['.$this->get('sortorder').'][size]', $this->get('size'));
+			$input = Widget::Input('size', $this->get('size'));
 			$input->setAttribute('size', '3');
 			$label->setValue(__('Make textarea %s rows tall', array($input->generate())));
 			
-			$div->appendChild($label);
+			$wrapper->appendChild($label);
 			
-			$this->appendRequiredCheckbox($div);
-			$group->appendChild($div);
 			
-			$group->appendChild($this->buildFormatterSelect($this->get('formatter'), 'fields['.$this->get('sortorder').'][formatter]', __('Text Formatter')));
+			$options_list = new XMLElement('ul');
+			$options_list->setAttribute('class', 'options-list');
+			$this->appendShowColumnCheckbox($options_list);
+			$this->appendRequiredCheckbox($options_list);
+			$wrapper->appendChild($options_list);
 			
-			$wrapper->appendChild($group);
-			
-			$this->appendShowColumnCheckbox($wrapper);						
 		}
 		
 		function createTable(){

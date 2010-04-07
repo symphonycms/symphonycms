@@ -281,13 +281,13 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$div = new XMLElement('div', NULL, array('class' => 'group'));
+			//$div = new XMLElement('div', NULL, array('class' => 'group'));
 			
 			$label = Widget::Label(__('Static Options'));
 			$label->appendChild(new XMLElement('i', __('Optional')));
-			$input = Widget::Input('fields['.$this->get('sortorder').'][static_options]', General::sanitize($this->get('static_options')));
+			$input = Widget::Input('static_options', General::sanitize($this->get('static_options')));
 			$label->appendChild($input);
-			$div->appendChild($label);
+			$wrapper->appendChild($label);
 			
 			
 			$label = Widget::Label(__('Dynamic Options'));
@@ -318,20 +318,23 @@
 				if(is_array($fields) && !empty($fields)) $options[] = array('label' => $group['section']->get('name'), 'options' => $fields);
 			}*/
 			
-			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][dynamic_options]', $options));
-			$div->appendChild($label);
+			$label->appendChild(Widget::Select('dynamic_options', $options));
 						
-			if(isset($errors['dynamic_options'])) $wrapper->appendChild(Widget::wrapFormElementWithError($div, $errors['dynamic_options']));
-			else $wrapper->appendChild($div);
-						
+			if(isset($errors['dynamic_options'])) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $errors['dynamic_options']));
+			else $wrapper->appendChild($label);
+
+			$options_list = new XMLElement('ul');
+			$options_list->setAttribute('class', 'options-list');
+			
 			## Allow selection of multiple items
 			$label = Widget::Label();
-			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
+			$input = Widget::Input('allow_multiple_selection', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');			
 			$label->setValue(__('%s Allow selection of multiple options', array($input->generate())));
-			$wrapper->appendChild($label);
+			$options_list->appendChild($label);
 			
-			$this->appendShowColumnCheckbox($wrapper);
+			$this->appendShowColumnCheckbox($options_list);
+			$wrapper->appendChild($options_list);
 						
 		}
 

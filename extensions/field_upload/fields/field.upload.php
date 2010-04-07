@@ -11,8 +11,8 @@
 		Definition:
 	-------------------------------------------------------------------------*/
 		
-		public function __construct(&$parent) {
-			parent::__construct($parent);
+		public function __construct() {
+			parent::__construct();
 			
 			if (class_exists('Administration')) {
 				$this->Symphony = Administration::instance();
@@ -21,9 +21,6 @@
 			else {
 				$this->Symphony = Frontend::instance();
 			}
-			
-			
-			var_dump(ExtensionManager::instance()); exit;
 			
 			$this->Driver = ExtensionManager::instance()->create('field_upload');
 			
@@ -132,7 +129,7 @@
 			parent::checkFields($errors, $checkForDuplicates);
 		}
 		
-		public function displaySettingsPanel(&$wrapper, $errors = null) {
+		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 			
 			$order = $this->get('sortorder');
@@ -164,9 +161,7 @@
 				}	
 			}
 			
-			$label->appendChild(Widget::Select(
-				"fields[{$order}][destination]", $options
-			));
+			$label->appendChild(Widget::Select('destination', $options));
 				
 			if (isset($errors['destination'])) {
 				$label = Widget::wrapFormElementWithError($label, $errors['destination']);
@@ -176,22 +171,29 @@
 			
 		// Validator ----------------------------------------------------------
 			
-			$this->buildValidationSelect($wrapper, $this->get('validator'), "fields[{$order}][validator]", 'upload');
+			$this->buildValidationSelect($wrapper, $this->get('validator'), 'validator', 'upload');
 			
-		// Serialise ----------------------------------------------------------
+
 			
-			$label = Widget::Label();
-			$input = Widget::Input(
-				"fields[{$order}][serialise]", 'yes', 'checkbox'
-			);
+			$options_list = new XMLElement('ul');
+			$options_list->setAttribute('class', 'options-list');
 			
-			if ($this->get('serialise') == 'yes') $input->setAttribute('checked', 'checked');
+			// Serialise ----------------------------------------------------------
+
+				$label = Widget::Label();
+				$input = Widget::Input(
+					'serialise', 'yes', 'checkbox'
+				);
+
+				if ($this->get('serialise') == 'yes') $input->setAttribute('checked', 'checked');
+
+				$label->setValue($input->generate() . ' ' . __('Serialise file names'));
+				$options_list->appendChild($label);
 			
-			$label->setValue($input->generate() . ' ' . __('Serialise file names'));
-			$wrapper->appendChild($label);
 			
-			$this->appendRequiredCheckbox($wrapper);
-			$this->appendShowColumnCheckbox($wrapper);
+			$this->appendShowColumnCheckbox($options_list);
+			$this->appendRequiredCheckbox($options_list);
+			$wrapper->appendChild($options_list);
 		}
 		
 		public function commit() {

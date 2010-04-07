@@ -378,14 +378,19 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
+			$options_list = new XMLElement('ul');
+			$options_list->setAttribute('class', 'options-list');
+			
 			$label = Widget::Label();
-			$input = Widget::Input('fields['.$this->get('sortorder').'][pre_populate]', 'yes', 'checkbox');
+			$input = Widget::Input('pre_populate', 'yes', 'checkbox');
 			if($this->get('pre_populate') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Pre-populate this field with today\'s date', array($input->generate())));
-			$wrapper->appendChild($label);
+			$options_list->appendChild($label);
 			
-			$this->appendShowColumnCheckbox($wrapper);
-						
+			$this->appendShowColumnCheckbox($options_list);
+
+			$wrapper->appendChild($options_list);
+
 		}
 
 		function createTable(){

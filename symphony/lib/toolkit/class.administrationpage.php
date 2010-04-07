@@ -46,16 +46,19 @@
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Symphony::lang());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
-			
-			$this->addStylesheetToHead(ADMIN_URL . '/assets/css/symphony.css', 'screen', 60);
-			$this->addStylesheetToHead(ADMIN_URL . '/assets/css/symphony.duplicator.css', 'screen', 70);
-			
-			$this->addScriptToHead(ADMIN_URL . '/assets/js/jquery.js', 50);
+
+			$this->addScriptToHead(ADMIN_URL . '/assets/js/jquery.js', 49);
+			$this->addScriptToHead(ADMIN_URL . '/assets/js/jquery-ui.js', 50);
 			$this->addScriptToHead(ADMIN_URL . '/assets/js/symphony.collapsible.js', 51);
 			$this->addScriptToHead(ADMIN_URL . '/assets/js/symphony.orderable.js', 52);
 			$this->addScriptToHead(ADMIN_URL . '/assets/js/symphony.duplicator.js', 53);
 			$this->addScriptToHead(ADMIN_URL . '/assets/js/admin.js', 54);
 			$this->addScriptToHead(ADMIN_URL . '/assets/js/symphony.js', 55);
+			$this->addScriptToHead(ADMIN_URL . '/assets/js/symphony.layout.js', 56);
+			
+			$this->addStylesheetToHead(ADMIN_URL . '/assets/css/symphony.css', 'screen', 60);
+			$this->addStylesheetToHead(ADMIN_URL . '/assets/css/symphony.duplicator.css', 'screen', 70);
+			$this->addStylesheetToHead(ADMIN_URL . '/assets/css/symphony.layout.css', 'screen', 80);
 			
 			###
 			# Delegate: InitaliseAdminPageHead

@@ -270,10 +270,15 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 			
-			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');		
+			$this->buildValidationSelect($wrapper, $this->get('validator'), 'validator');
 			
-			$this->appendRequiredCheckbox($wrapper);
-			$this->appendShowColumnCheckbox($wrapper);
+			$options_list = new XMLElement('ul');
+			$options_list->setAttribute('class', 'options-list');
+			
+			$this->appendRequiredCheckbox($options_list);
+			$this->appendShowColumnCheckbox($options_list);
+			
+			$wrapper->appendChild($options_list);
 						
 		}
 		
