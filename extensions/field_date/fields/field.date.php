@@ -36,7 +36,7 @@
 			$value = null;
 			
 			// New entry:
-			if (is_null($data) && $this->get('pre_populate') == 'yes') {
+			if (is_null($data) && $this->get('pre-populate') == 'yes') {
 				$value = DateTimeObj::get(__SYM_DATETIME_FORMAT__, null);
 			}
 			
@@ -75,7 +75,7 @@
 			$timestamp = null;
 			
 			if (is_null($data) || $data == '') {
-				if ($this->get('pre_populate') == 'yes') {
+				if ($this->get('pre-populate') == 'yes') {
 					$timestamp = strtotime(DateTimeObj::get(__SYM_DATETIME_FORMAT__, null));
 				}
 			}
@@ -364,7 +364,7 @@
 			$fields = array();
 
 			$fields['field_id'] = $id;
-			$fields['pre_populate'] = ($this->get('pre_populate') ? $this->get('pre_populate') : 'no');
+			$fields['pre-populate'] = ($this->get('pre-populate') ? $this->get('pre-populate') : 'no');
 
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 			Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
@@ -372,20 +372,25 @@
 		}
 		
 		function findDefaults(&$fields){	
-			if(!isset($fields['pre_populate'])) $fields['pre_populate'] = 'yes';
+			if(!isset($fields['pre-populate'])) $fields['pre-populate'] = 'yes';
 		}
 		
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$label = Widget::Label();
-			$input = Widget::Input('fields['.$this->get('sortorder').'][pre_populate]', 'yes', 'checkbox');
-			if($this->get('pre_populate') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Pre-populate this field with today\'s date', array($input->generate())));
-			$wrapper->appendChild($label);
+			$options_list = new XMLElement('ul');
+			$options_list->setAttribute('class', 'options-list');
 			
-			$this->appendShowColumnCheckbox($wrapper);
-						
+			$label = Widget::Label();
+			$input = Widget::Input('pre-populate', 'yes', 'checkbox');
+			if($this->get('pre-populate') == 'yes') $input->setAttribute('checked', 'checked');
+			$label->setValue(__('%s Pre-populate this field with today\'s date', array($input->generate())));
+			$options_list->appendChild($label);
+			
+			$this->appendShowColumnCheckbox($options_list);
+
+			$wrapper->appendChild($options_list);
+
 		}
 
 		function createTable(){

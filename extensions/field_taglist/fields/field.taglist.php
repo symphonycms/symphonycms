@@ -189,15 +189,15 @@
 			return true;
 		}	
 		
-		public function displaySettingsPanel(&$wrapper, $errors = null) {
+		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$label = Widget::Label(__('Suggestion List'));
 			
-			$pre_populate_source = $this->get('pre_populate_source');
+			$suggestion_list_source = $this->get('suggestion-list-source');
 			
 			$options = array(
-				array('existing', (is_array($pre_populate_source) && in_array('existing', $pre_populate_source)), __('Existing Values')),
+				array('existing', (is_array($suggestion_list_source) && in_array('existing', $suggestion_list_source)), __('Existing Values')),
 			);
 
 			
@@ -221,12 +221,15 @@
 			}
 			*/
 			
-			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][pre_populate_source][]', $options, array('multiple' => 'multiple')));
+			$label->appendChild(Widget::Select('suggestion-list-source', $options, array('multiple' => 'multiple')));
 			$wrapper->appendChild($label);
 			
-			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');		
+			$this->buildValidationSelect($wrapper, $this->get('validator'), 'validator');
 			
-			$this->appendShowColumnCheckbox($wrapper);
+			$options_list = new XMLElement('ul');
+			$options_list->setAttribute('class', 'options-list');
+			$this->appendShowColumnCheckbox($options_list);
+			$wrapper->appendChild($options_list);
 						
 		}
 

@@ -414,14 +414,15 @@
 					foreach ($section_data['fields'] as $input) {
 						if (!$input->canFilter()) continue;
 						
-						$field_id = $input->get('id');
+						//$field_id = $input->get('id');
+						$element_name = $input->get('element_name');
 						
-						if (isset($filter_data[$field_id])) {
+						if (isset($filter_data[$element_name])) {
 							$filter = new XMLElement('li');
 							$filter->setAttribute('class', 'unique');
 							$input->displayDatasourceFilterPanel(
-								$filter, $filter_data[$field_id],
-								$errors->$field_id//, $section->get('id')
+								$filter, $filter_data[$element_name],
+								$errors->$element_name//, $section->get('id')
 							);
 							$ol->appendChild($filter);
 						}
@@ -441,7 +442,7 @@
 					array('system:id', ($section_active and $datasource->parameters()->{'sort-field'} == 'system:id'), __('System ID')),
 					array('system:date', ($section_active and $datasource->parameters()->{'sort-field'} == 'system:date'), __('System Date')),
 				);
-				$options_parameter_output = array(				
+				$options_parameter_output = array(
 					array(
 						'system:id',
 						($section_active and in_array('system:id', $datasource->parameters()->{'parameter-output'})),

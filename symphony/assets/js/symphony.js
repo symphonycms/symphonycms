@@ -100,7 +100,7 @@ var Symphony;
 			translatedString = Symphony.Language.DICTIONARY[string];
 
 			// Return string if it cannot be found in the dictionary
-			if(translatedString !== false) string = translatedString;
+			if(translatedString !== undefined) string = translatedString;
 				
 			// Insert tokens
 			if(tokens !== undefined) string = Symphony.Language.insert(string, tokens);
@@ -225,7 +225,7 @@ var Symphony;
 					
 					if (!depth) {
 						$('<a />')
-							.text('-')
+							.text('▼')
 							.addClass('hide')
 							.prependTo(cell);
 					}
@@ -251,12 +251,12 @@ var Symphony;
 			var children = table.find('tr.' + row.attr('id'));
 			
 			if (link.is('.hide')) {
-				link.text('+').removeClass('hide').addClass('show');
+				link.text('▼').removeClass('hide').addClass('show');
 				children.hide().removeClass('selected');
 			}
 			
 			else if (link.is('.show')) {
-				link.text('-').removeClass('show').addClass('hide');
+				link.text('▼').removeClass('show').addClass('hide');
 				children.show();
 			}
 		});

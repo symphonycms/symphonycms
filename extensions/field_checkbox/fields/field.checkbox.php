@@ -181,17 +181,24 @@
 			
 			## Long Description		
 			$label = Widget::Label(__('Long Description <i>Optional</i>'));
-			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][description]', $this->get('description')));
+			$label->appendChild(Widget::Input('description', $this->get('description')));
 			$wrapper->appendChild($label);			
 		
+			$options_list = new XMLElement('ul');
+			$options_list->setAttribute('class', 'options-list');
+			
 			## Checkbox Default State
 			$label = Widget::Label();
-			$input = Widget::Input('fields['.$this->get('sortorder').'][default_state]', 'on', 'checkbox');
+			$input = Widget::Input('default_state', 'on', 'checkbox');
 			if($this->get('default_state') == 'on') $input->setAttribute('checked', 'checked');			
 			$label->setValue(__('%s Checked by default', array($input->generate())));
-			$wrapper->appendChild($label);
+			$options_list->appendChild($label);
 
-			$this->appendShowColumnCheckbox($wrapper);			
+			$this->appendShowColumnCheckbox($options_list);
+			
+			$wrapper->appendChild($options_list);
+		
+
 		}
 		
 		function createTable(){

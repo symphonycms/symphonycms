@@ -380,7 +380,7 @@
 			$label->appendChild(Widget::Input(
 				'fields[filter]'
 				. (!is_null($fieldnamePrefix) ? "[{$fieldnamePrefix}]" : NULL)
-				. '[' . $this->get('id') . ']'
+				. '[' . $this->get('element_name') . ']'
 				. (!is_null($fieldnamePostfix) ? "[{$fieldnamePostfix}]" : NULL), 
 				(!is_null($data) ? General::sanitize($data) : NULL)
 			));
@@ -391,13 +391,27 @@
 			$this->displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);	
 		}
 		
-		public function displaySettingsPanel(XMLElement &$wrapper, $errors=NULL){		
-			$wrapper->appendChild(new XMLElement('h4', ucwords($this->name()) . ($this->get('label') ? ' - "' . $this->get('label') . '"' : '')));
-			$wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][type]', $this->handle(), 'hidden'));
-			if($this->get('id')) $wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][id]', $this->get('id'), 'hidden'));
-			
+		public function displaySettingsPanel(XMLElement &$wrapper, $errors=NULL){
+			$wrapper->appendChild(new XMLElement('h3', ucwords($this->name())));
 			$wrapper->appendChild($this->buildSummaryBlock($errors));
-
+			$wrapper->appendChild($this->buildWidthSelect());
+		}
+		
+		public function buildWidthSelect(){
+			
+			$label = Widget::Label(__('Width'));
+			$label->setAttribute('class', 'field-flex');
+			
+			$label->appendChild(Widget::Select(
+				'width',
+				array(
+					array(1, $this->get('width') == 1, 'Small'),
+					array(2, $this->get('width') == 2, 'Medium'),
+					array(3, $this->get('width') == 3, 'Large'),
+				)
+			));
+			
+			return $label;
 		}
 		
 		public function buildSummaryBlock($errors=NULL){
@@ -406,11 +420,10 @@
 			$div->setAttribute('class', 'group');
 			
 			$label = Widget::Label(__('Label'));
-			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][label]', $this->get('label')));
+			$label->setAttribute('class', 'field-label');
+			$label->appendChild(Widget::Input('label', $this->get('label')));
 			if(isset($errors['label'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['label']));
 			else $div->appendChild($label);		
-			
-			$div->appendChild($this->buildLocationSelect($this->get('location'), 'fields['.$this->get('sortorder').'][location]'));
 
 			return $div;
 			
@@ -452,19 +465,6 @@
 			$label->setValue(__('%s Show column', array($input->generate())));
 			
 			$wrapper->appendChild($label);
-		}
-
-		public function buildLocationSelect($selected = null, $name = 'fields[location]', $label_value = null) {
-			if (!$label_value) $label_value = __('Placement');
-			
-			$label = Widget::Label($label_value);
-			$options = array(
-				array('main', $selected == 'main', __('Main content')),
-				array('sidebar', $selected == 'sidebar', __('Sidebar'))
-			);
-			$label->appendChild(Widget::Select($name, $options));
-			
-			return $label;
 		}
 
 		public function buildFormatterSelect($selected=NULL, $name='fields[format]', $label_value){

@@ -150,6 +150,7 @@
 		
 		public function __actionNew(){
 			if(isset($_POST['action']['save'])){
+				print "<pre>"; print_r($_POST); die();
 				if($this->__save($_POST['essentials'], (isset($_POST['fields']) ? $_POST['fields'] : NULL)) == true){
 					redirect(ADMIN_URL . "/blueprints/sections/edit/{$this->section->handle}/:created/");
 				}
@@ -259,7 +260,7 @@
 			
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
+			$fieldset->appendChild(new XMLElement('h3', __('Essentials')));
 			
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 			$namediv = new XMLElement('div', NULL);
@@ -302,13 +303,23 @@
 			$div->appendChild($navgroupdiv);
 			
 			$fieldset->appendChild($div);
-			
 			$this->Form->appendChild($fieldset);
-			
+
+			// Fields
+
+			$fields = $this->section->fields;
+
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
+			$fieldset->appendChild(new XMLElement('h3', __('Fields')));
 			
+			$layout = new XMLElement('div');
+			$layout->setAttribute('class', 'layout');
+			
+			$templates = new XMLElement('ol');
+			$templates->setAttribute('class', 'templates');
+			
+			/*
 			$div = new XMLElement('div');
 			$h3 = new XMLElement('h3', __('Fields'));
 			$h3->setAttribute('class', 'label');
@@ -319,7 +330,7 @@
 			$ol->setAttribute('class', 'section-duplicator');
 			
 			$fields = $this->section->fields;
-
+			
 			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $position => $field){
 
@@ -331,7 +342,10 @@
 
 				}
 			}
+			*/
 			
+			
+						
 			$types = array();
 			foreach (FieldManager::instance()->fetchTypes() as $type){
 				if ($type = FieldManager::instance()->create($type)){
@@ -342,6 +356,7 @@
 			// To Do: Sort this list based on how many times a field has been used across the system
 			uasort($types, create_function('$a, $b', 'return strnatcasecmp($a->name(), $b->name());'));
 			
+			
 			foreach ($types as $type){
 				$defaults = array();
 				
@@ -349,19 +364,217 @@
 				$type->setArray($defaults);
 				
 				$wrapper = new XMLElement('li');
-				$wrapper->setAttribute('class', 'template');
-				
-				$type->set('sortorder', '-1');
 				$type->displaySettingsPanel($wrapper);
-				
-				$ol->appendChild($wrapper);
+
+				$templates->appendChild($wrapper);
 			}
 			
-			$div->appendChild($ol);
-			$fieldset->appendChild($div);
+			
+			$layout->appendChild($templates);
+			
+			
+			// Existing Fields
+			$content = new XMLElement('div');
+			$content->setAttribute('class', 'content');
+			
+			$row = new XMLElement('div');
+			$h3 = new XMLElement('h3');
+			$h3->appendChild(Widget::Input('label', 'Default Fieldset'));
+			$row->appendChild($h3);
+			
+			$row->appendChild(new XMLElement('ol', ' '));
+			$content->appendChild($row);
+			
+			$layout->appendChild($content);
+			
+			$fieldset->appendChild($layout);
 			
 			$this->Form->appendChild($fieldset);
 			
+			
+			
+			
+			/*
+				<h3>Fields</h3> 
+
+				<div class="layout"> 
+					<ol class="templates"> 
+						<li> 
+							<h3>Checkbox</h3> 
+
+							<label class="field-label"> 
+								Label
+								<input name="label" value="" /> 
+							</label> 
+							<label class="field-flex"> 
+								Width
+								<select name="width"> 
+									<option value="1">Small</option> 
+									<option value="2" selected="selected">Medium</option> 
+									<option value="3">Large</option> 
+								</select> 
+							</label> 
+							<label> 
+								Alternate label
+								<input name="alternate-label" value="" /> 
+							</label> 
+
+							<ul class="options-list"> 
+								<li> 
+									<label> 
+										<input type="checkbox" checked="checked" /> 
+										Show column
+									</label> 
+								</li> 
+							</ul> 
+						</li> 
+						<li> 
+							<h3>Taglist</h3> 
+
+							<label class="field-label"> 
+								Label
+								<input name="label" value="" /> 
+							</label> 
+							<label class="field-flex"> 
+								Width
+								<select name="width"> 
+									<option value="1">Small</option> 
+									<option value="2" selected="selected">Medium</option> 
+									<option value="3">Large</option> 
+								</select> 
+							</label> 
+							<label> 
+								Static Options
+								<input name="static-options" value="" /> 
+							</label> 
+							<label> 
+								Dynamic Options
+								<select> 
+									<option>None</option> 
+								</select> 
+							</label> 
+
+							<ul class="options-list"> 
+								<li> 
+									<label> 
+										<input type="checkbox" checked="checked" /> 
+										Show column
+									</label> 
+								</li> 
+							</ul> 
+						</li> 
+						<li> 
+							<h3>Textbox</h3> 
+
+							<label class="field-label"> 
+								Label
+								<input name="label" value="" /> 
+							</label> 
+
+							<div class="group"> 
+								<label class="field-flex"> 
+									Width
+									<select name="width"> 
+										<option value="1">Small</option> 
+										<option value="2" selected="selected">Medium</option> 
+										<option value="3">Large</option> 
+									</select> 
+								</label> 
+								<label> 
+									Height
+									<select name="height"> 
+										<option>Single Line</option> 
+										<option>Small</option> 
+										<option selected="selected">Medium</option> 
+										<option>Large</option> 
+									</select> 
+								</label> 
+							</div> 
+
+							<label> 
+								Text Formatter
+								<select name="text-formatter"> 
+									<option>None</option> 
+									<option>HTML Normal</option> 
+									<option>HTML Pretty</option> 
+								</select> 
+							</label> 
+
+							<div class="group"> 
+								<label> 
+									Limit (characters)
+									<input name="limit" value="0" /> 
+								</label> 
+								<label> 
+									Preview length 
+									<input name="preview-length" value="75" /> 
+								</label> 
+							</div> 
+
+							<ul class="options-list"> 
+								<li> 
+									<label> 
+										<input type="checkbox" /> 
+										Output with handles
+									</label> 
+								</li> 
+								<li> 
+									<label> 
+										<input type="checkbox" /> 
+										Output as CDATA
+									</label> 
+								</li> 
+								<li> 
+									<label> 
+										<input type="checkbox" /> 
+										Make this a required field
+									</label> 
+								</li> 
+								<li> 
+									<label> 
+										<input type="checkbox" checked="checked" /> 
+										Show column
+									</label> 
+								</li> 
+							</ul> 
+						</li> 
+						<li> 
+							<h3>Upload</h3> 
+
+							<label class="field-label"> 
+								Label
+								<input name="label" value="" /> 
+							</label> 
+							<label class="field-flex"> 
+								Width
+								<select name="width"> 
+									<option value="1">Small</option> 
+									<option value="2" selected="selected">Medium</option> 
+									<option value="3">Large</option> 
+								</select> 
+							</label> 
+
+							<ul class="options-list"> 
+								<li> 
+									<label> 
+										<input type="checkbox" checked="checked" /> 
+										Show column
+									</label> 
+								</li> 
+							</ul> 
+						</li> 
+					</ol> 
+
+					<div class="content"> 
+						<div> 
+							<h3><input value="One" /></h3> 
+							<ol></ol>
+						</div> 
+
+					</div> 
+				</div>
+*/
+
 			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
@@ -403,7 +616,7 @@
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
+			$fieldset->appendChild(new XMLElement('h3', __('Essentials')));
 			
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 			$namediv = new XMLElement('div', NULL);
@@ -448,7 +661,7 @@
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
+			$fieldset->appendChild(new XMLElement('h3', __('Fields')));
 			
 			$div = new XMLElement('div');
 			$h3 = new XMLElement('h3', __('Fields'));
@@ -588,7 +801,7 @@
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
+			$fieldset->appendChild(new XMLElement('h3', __('Essentials')));
 			
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 			$namediv = new XMLElement('div', NULL);
@@ -633,7 +846,7 @@
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
+			$fieldset->appendChild(new XMLElement('h3', __('Fields')));
 			
 			$div = new XMLElement('div');
 			$h3 = new XMLElement('h3', __('Fields'));

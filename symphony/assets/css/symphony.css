@@ -21,7 +21,7 @@
 		padding: 0;
 	}
 	body {
-		font: normal 8pt/1.3 "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+		font: normal 8pt/1.6 "Lucida Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 	}
 	a {
 		color: #5072bf;
@@ -539,15 +539,42 @@
 	form fieldset {
 		position: relative;
 		border: none;
-		border-top: 1px dotted #ddd;
+		border-top: 1px dotted #dddddd;
+		border-top-color: hsla(0, 0%, 0%, 0.2);
 		padding: 15px 0 25px;
 		margin: 0 30px;
+	}
+	form h2 + fieldset {
+		margin: 0;
+		padding:  15px 30px 25px;
 	}
 	form fieldset legend {
 		font-size: 10pt;
 		color: #666;
 		padding: 0 10px;
 		margin: 15px 0 0 -10px;
+	}
+	form h3 {
+		color: #666666;
+		font-size: 10pt;
+		margin: 0 0 10px 0;
+	}
+	form h3 input {
+		background: transparent;
+		border: none;
+		color: #666666;
+		width: 100%;
+	}
+	form h3 input:focus,
+	form h3 input:hover {
+		border: 1px solid #dddddd;
+		border-color: hsla(0, 0%, 0%, 0.2);
+		box-sizing: content-box;
+		-moz-box-sizing: content-box;
+		-webkit-box-sizing: content-box;
+		outline: none;
+		margin: -3px -3px;
+		padding: 2px 2px;
 	}
 	form .help {
 		color: #aaa;
@@ -564,16 +591,12 @@
 		display: block;
 		margin-bottom: 15px;
 	}
-	form .label {
-		margin-bottom: 3px;
-	}
 	form label input,
 	form .label input,
 	form label select,
 	form .label select,
 	form label textarea,
 	form .label textarea {
-		margin: 3px 0 0 0;
 		width: 100%;
 		padding: 2px;
 	}
@@ -587,7 +610,6 @@
 	form input[type=radio],
 	form input[type=checkbox] {
 		display: inline;
-		margin: 0 3px 0 0;
 		width: auto;
 	}
 	form select[multiple] {
@@ -641,6 +663,21 @@
 	}
 
 /*-----------------------------------------------------------------------------
+	Content: Form: Options List
+-----------------------------------------------------------------------------*/
+	
+	.options-list {
+		border-top: 1px dotted #dddddd;
+		border-top-color: hsla(0, 0%, 0%, 0.2);
+		list-style: none;
+		margin: 20px 0 0 0;
+		padding: 20px 0 0 0;
+	}
+	.options-list li label {
+		margin: 0;
+	}
+	
+/*-----------------------------------------------------------------------------
 	Content: Form: Tags
 -----------------------------------------------------------------------------*/
 
@@ -671,7 +708,8 @@
 
 	.actions {
 		text-align: right;
-		border-top: 1px dotted #ddd;
+		border-top: 1px dotted #dddddd;
+		border-top-color: hsla(0, 0%, 0%, 0.2);
 		padding: 20px 30px;
 	}
 	.actions input {
@@ -723,13 +761,18 @@
 		display: inline-block;
 		left: -25px;
 		height: 20px;
-		line-height: 20px;
-		font-size: 8pt;
+		line-height: 22px;
+		font-size: 7pt;
 		margin: -2px 0;
 		position: absolute;
 		text-align: center;
 		text-decoration: none;
 		width: 20px;
+	}
+	#views-list td.toggle a.show {
+		-moz-transform: rotate(270deg);
+		-webkit-transform: rotate(270deg);
+		-o-transform: rotate(270deg);
 	}
 	#views-list td.toggle a.hide:hover,
 	#views-list td.toggle a.show:hover {

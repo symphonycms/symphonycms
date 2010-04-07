@@ -225,27 +225,26 @@
 		
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
-			
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'related');
+
+			$options_list = new XMLElement('ul');
+			$options_list->setAttribute('class', 'options-list');
 
 			## Allow multiple selection
 			$label = Widget::Label();
-			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
-			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
+			$input = Widget::Input('allow-multiple-selection', 'yes', 'checkbox');
+			if($this->get('allow-multiple-selection') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Allow selection of multiple users', array($input->generate())));
-			$div->appendChild($label);	
+			$options_list->appendChild($label);	
 			
 			## Default to current logged in user
 			$label = Widget::Label();
-			$input = Widget::Input('fields['.$this->get('sortorder').'][default_to_current_user]', 'yes', 'checkbox');
-			if($this->get('default_to_current_user') == 'yes') $input->setAttribute('checked', 'checked');
+			$input = Widget::Input('default-to-current-user', 'yes', 'checkbox');
+			if($this->get('default-to-current-user') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Select current user by default', array($input->generate())));
-			$div->appendChild($label);								
-				
-			$wrapper->appendChild($div);	
-			
-			$this->appendShowColumnCheckbox($wrapper);
+			$options_list->appendChild($label);								
+
+			$this->appendShowColumnCheckbox($options_list);
+			$wrapper->appendChild($options_list);
 					
 		}
 		

@@ -5,22 +5,22 @@
 -----------------------------------------------------------------------------*/
 	
 	.duplicator {
-		background: #444;
+		background: #aaa;
 		border: 1px solid #999;
+		-webkit-border-radius: 5px;
 		list-style: none;
 		overflow: hidden;
 		position: relative;
 		margin-bottom: 15px;
 	}
 	div:last-child .duplicator {
-		background: #333;
+		background: #aaa;
 		margin: 0;
 	}
 	.invalid .duplicator {
 		border-color: #aa2211;
 	}
 	.duplicator > .instance {
-		background: #ddd;
 		border-bottom: 1px solid #eee;
 		overflow: hidden;
 		margin: 0 -2em;
@@ -35,6 +35,12 @@
 		margin: 0;
 		padding: 0.5em 1.75em;
 		position: relative;
+	}
+	.duplicator > .instance:first-child > .header {
+		-moz-border-radius-topleft: 5px;
+		-moz-border-radius-topright: 5px;
+		-webkit-border-top-left-radius: 5px;
+		-webkit-border-top-right-radius: 5px;
 	}
 	.duplicator.orderable > .instance > .header {
 		cursor: move;
@@ -58,6 +64,7 @@
 		opacity: 0.4;
 	}
 	.duplicator > .instance > .content {
+		background: #ddd;
 		overflow: hidden;
 		padding: 1em 1.75em 0 1.75em;
 		position: relative;
@@ -95,7 +102,6 @@
 -----------------------------------------------------------------------------*/
 	
 	.duplicator > .controls {
-		background: #aaa;
 		cursor: default;
 		padding: 0 1.75em;
 		position: relative;
