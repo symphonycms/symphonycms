@@ -125,7 +125,7 @@
 
 			if(!empty($delegates)) Symphony::Database()->delete('tbl_extensions_delegates', " `id` IN ('". implode("', '", $delegates). "') ");
 
-			if(!$delegates_only) Symphony::Database()->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name'");
+			if(!$delegates_only) Symphony::Database()->delete('tbl_extensions', " `name` = '$name' ");
 
 			## Remove the unused DB records
 			$this->__cleanupDatabase();
@@ -145,9 +145,9 @@
 			$subscribed = call_user_func(array(&$classname, "getSubscribedDelegates"));
 
 			if($existing_id = $this->fetchExtensionID($name))
-				Symphony::Database()->query("DELETE FROM `tbl_extensions_delegates` WHERE `tbl_extensions_delegates`.extension_id = $existing_id");
+				Symphony::Database()->delete('tbl_extensions_delegates', " `extension_id` = '$existing_id' ");
 
-			Symphony::Database()->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name'");
+			Symphony::Database()->delete('tbl_extensions', " `name` = '$name' ");
 
 			$info = $this->about($name);
 
@@ -393,9 +393,9 @@
 					if(!@is_dir($path)){
 
 						if($existing_id = $this->fetchExtensionID($name))
-							Symphony::Database()->query("DELETE FROM `tbl_extensions_delegates` WHERE `tbl_extensions_delegates`.extension_id = $existing_id");
+							Symphony::Database()->delete("tbl_extensions_delegates", " `extension_id` = $existing_id ");
 
-						Symphony::Database()->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
+						Symphony::Database()->delete('tbl_extensions', " `name` = '$name' LIMIT 1");
 
 					}
 				}
