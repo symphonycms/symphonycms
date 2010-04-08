@@ -504,7 +504,7 @@ jQuery.fn.positionAncestor = function(selector) {
 		$('form').submit(function() {
 			$('.layout').trigger('prepare-submit');
 			
-			return false;
+			return true;
 		});
 	});
 	

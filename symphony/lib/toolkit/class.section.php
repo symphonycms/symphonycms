@@ -1,7 +1,7 @@
 <?php
 
 	require_once(TOOLKIT . '/class.fieldmanager.php');
-
+	
 	Class SectionException extends Exception {}
 
 	Class SectionFilterIterator extends FilterIterator{
@@ -169,7 +169,8 @@
 			}
 
 			$this->fields[] = $field;
-
+			
+			return $field;
 		}
 
 		public function removeAllFields(){
@@ -219,7 +220,30 @@
 						$section->appendField($data['type'], $data);
 					}
 				}
-
+				
+				elseif($name == 'layout' && isset($value->fieldset)){
+					$section->layout = (object)array(
+						'fieldsets' => array()
+					);
+					
+					foreach($value->fieldset as $fieldset){
+						$array = (object)array(
+							'label' => (string)$fieldset->label,
+							'rows' => array()
+						);
+						
+						foreach($fieldset->row as $row){
+							$new_row = array();
+							foreach($row->fields->item as $field){
+								$new_row[] = (string)$field;
+							}
+							$array->rows[] = $new_row;
+						}
+						
+						$section->layout->fieldsets[] = $array;
+					}
+				}
+				
 				elseif(isset($value->item)){
 					$stack = array();
 					foreach($value->item as $item){
@@ -228,7 +252,9 @@
 					$section->$name = $stack;
 				}
 
-				else $section->$name = (string)$value;
+				else{
+					$section->$name = (string)$value;
+				}
 			}
 
 			if(isset($doc->attributes()->guid)){
@@ -237,7 +263,7 @@
 			else{
 				$section->guid = uniqid();
 			}
-
+			
 			return $section;
 /*
 			if(!isset(self::$_sections[$path])){
@@ -280,7 +306,7 @@
 			return $obj;
 		}*/
 
-		public static function save(Section $section, MessageStack &$messages, $simulate=false){
+		public static function save(Section $section, MessageStack &$messages, array $additional_fragments=NULL, $simulate=false){
 
 			$pathname = sprintf('%s/%s.xml', $section->path, $section->handle);
 
@@ -316,11 +342,13 @@
 			if($messages->length() > 0){
 				throw new SectionException(__('Section could not be saved. Validation failed.'), self::ERROR_MISSING_OR_INVALID_FIELDS);
 			}
-
-			return ($simulate == true ? true : file_put_contents($pathname, (string)$section));
+			
+			$doc = $section->toDoc($additional_fragments);
+			
+			return ($simulate == true ? true : file_put_contents($pathname, $doc->saveXML()));
 		}
-
-		public function __toString(){
+		
+		public function toDoc(array $additional_fragments=NULL){
 			$doc = new DOMDocument('1.0', 'UTF-8');
 			$doc->formatOutput = true;
 
@@ -348,8 +376,8 @@
 					// the XML returned will have a declaration. Need to remove that.
 					$string = trim(preg_replace('/<\?xml.*\?>/i', NULL, (string)$field, 1));
 
-					// Prepare indenting by adding an extra tab to each line (except the first one)
-					$string = preg_replace('/[\r\n]/', "\n\t", $string);
+					// Prepare indenting by adding an 4 spaces to each line (except the first one)
+					$string = preg_replace('/[\r\n]/', "\n    ", $string);
 
 					$fragment = $doc->createDocumentFragment();
 					$fragment->appendXML($string);
@@ -357,8 +385,21 @@
 				}
 				$root->appendChild($fields);
 			}
+			
+			if(!is_null($additional_fragments)){
+				foreach($additional_fragments as $fragment){
+					if(!($fragment instanceof DOMDocument)) continue;
 
-			return $doc->saveXML();
+					$node = $doc->importNode($fragment->documentElement, true);
+					$root->appendChild($node);
+				}
+			}
+			
+			return $doc;
+		}
+		
+		public function __toString(){
+			return $this->toDoc()->saveXML();
 		}
 
 		/*public function __toString(){

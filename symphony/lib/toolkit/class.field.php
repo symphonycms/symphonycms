@@ -432,13 +432,10 @@
 		public function appendRequiredCheckbox(XMLElement &$wrapper) {
 			if (!$this->_required) return;
 			
-			$order = $this->get('sortorder');
-			$name = "fields[{$order}][required]";
-			
-			$wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
+			$wrapper->appendChild(Widget::Input('required', 'no', 'hidden'));
 			
 			$label = Widget::Label();
-			$input = Widget::Input($name, 'yes', 'checkbox');
+			$input = Widget::Input('required', 'yes', 'checkbox');
 			
 			if ($this->get('required') == 'yes') $input->setAttribute('checked', 'checked');
 			
@@ -451,14 +448,11 @@
 		public function appendShowColumnCheckbox(XMLElement &$wrapper) {
 			if (!$this->_showcolumn) return;
 			
-			$order = $this->get('sortorder');
-			$name = "fields[{$order}][show_column]";
-			
-			$wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
+			$wrapper->appendChild(Widget::Input('show_column', 'no', 'hidden'));
 			
 			$label = Widget::Label();
 			$label->setAttribute('class', 'meta');
-			$input = Widget::Input($name, 'yes', 'checkbox');
+			$input = Widget::Input('show_column', 'yes', 'checkbox');
 			
 			if ($this->get('show_column') == 'yes') $input->setAttribute('checked', 'checked');
 			
