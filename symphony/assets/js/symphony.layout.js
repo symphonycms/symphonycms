@@ -452,7 +452,7 @@ jQuery.fn.positionAncestor = function(selector) {
 	----------------------------------------------------------------------------*/
 		
 		layout.live('prepare-submit', function() {
-			var expression = /^fieldset\[[0-9]+\]\[fields\]\[[0-9]+\]\[(.*)]$/;
+			var expression = /^fieldset\[[0-9]+\]\[rows\]\[[0-9]+\]\[fields\]\[[0-9]+\]\[(.*)]$/;
 			
 			layout.find('> .content > .fieldset').each(function(fieldset_index) {
 				var fieldset = $(this);
@@ -460,34 +460,38 @@ jQuery.fn.positionAncestor = function(selector) {
 				
 				input.attr('name', 'fieldset[' + fieldset_index + '][label]');
 				
-				fieldset.find('.field').each(function(field_index) {
-					var field = $(this)
-					var settings = $(this).children('.settings');
-					
-					if (!settings.length) {
-						settings = layout.find('> .settings');
-					}
-					
-					if (!settings.length) return;
-					
-					settings.find('[name]').each(function() {
-						var input = $(this);
-						var name = input.attr('name');
-						var match = null;
+				fieldset.find('> .line').each(function(line_index) {
+					$(this).find('> .field').each(function(field_index) {
+						var field = $(this)
+						var settings = $(this).children('.settings');
 						
-						// Extract name:
-						if (match = name.match(expression)) name = match[1];
+						if (!settings.length) {
+							settings = layout.find('> .settings');
+						}
 						
-						input.attr(
-							'name',
-							'fieldset['
-							+ fieldset_index
-							+ '][fields]['
-							+ field_index
-							+ ']['
-							+ name
-							+ ']'
-						);
+						if (!settings.length) return;
+						
+						settings.find('[name]').each(function() {
+							var input = $(this);
+							var name = input.attr('name');
+							var match = null;
+							
+							// Extract name:
+							if (match = name.match(expression)) name = match[1];
+							
+							input.attr(
+								'name',
+								'fieldset['
+								+ fieldset_index
+								+ '][rows]['
+								+ line_index
+								+ '][fields]['
+								+ field_index
+								+ ']['
+								+ name
+								+ ']'
+							);
+						});
 					});
 				});
 			});
@@ -499,9 +503,8 @@ jQuery.fn.positionAncestor = function(selector) {
 		
 		$('form').submit(function() {
 			$('.layout').trigger('prepare-submit');
-			console.log($(this).attr('action'));
 			
-			return true;
+			return false;
 		});
 	});
 	
