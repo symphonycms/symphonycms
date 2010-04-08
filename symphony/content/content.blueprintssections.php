@@ -74,7 +74,7 @@
 
 		}
 		
-		private function __save(array $essentials, array $fields=NULL, Section $section=NULL){
+		private function __save(array $essentials, array $fieldsets=NULL, Section $section=NULL){
 			if(is_null($section)){
 				$section = new Section;
 				$section->path = SECTIONS;
@@ -118,14 +118,98 @@
 				$this->errors = new MessageStack;
 				
 				$this->section->removeAllFields();
-				
-				if(!is_null($fields) && !empty($fields)){
-					foreach($fields as $index => $f){
-						$this->section->appendField($f['type'], $f);
+/*
+[0] => Array
+    (
+        [label] => Essentials
+        [rows] => Array
+            (
+                [0] => Array
+                    (
+                        [fields] => Array
+                            (
+                                [1] => Array
+                                    (
+                                        [label] => Date
+                                        [width] => 1
+                                        [pre-populate] => yes
+                                        [show_column] => no
+                                    )
+
+                                [0] => Array
+                                    (
+                                        [label] => Title
+                                        [width] => 2
+                                        [validator] => 
+                                        [required] => no
+                                        [show_column] => no
+                                    )
+
+                            )
+
+                    )
+
+                [1] => Array
+                    (
+                        [fields] => Array
+                            (
+                                [0] => Array
+                                    (
+                                        [label] => Body
+                                        [width] => 1
+                                        [formatter] => markdown_with_purifier
+                                        [size] => 15
+                                        [show_column] => no
+                                        [required] => no
+                                    )
+
+                            )
+
+                    )
+
+            )
+
+    )
+
+*/
+				if(!is_null($fieldsets) && !empty($fieldsets)){
+					
+					$doc = new DOMDocument('1.0', 'utf-8');
+					$doc->formatOutput = true;
+					
+					$layout = $doc->createElement('layout');
+					$doc->appendChild($layout);
+					
+					foreach($fieldsets as $f){
+						
+						$fieldset = $doc->createElement('fieldset');
+						$fieldset->appendChild($doc->createElement('label', General::sanitize($f['label'])));
+						
+						foreach($f['rows'] as $r){
+							
+							if(!isset($r['fields']) || empty($r['fields'])) continue;
+							
+							$row = $doc->createElement('row');
+							
+							$fields = $doc->createElement('fields');
+							
+							ksort($r['fields']);
+							
+							foreach($r['fields'] as $index => $f){
+								$obj = $this->section->appendField($f['type'], $f);
+								$fields->appendChild($doc->createElement('item', General::sanitize($obj->get('element_name'))));
+							}
+							
+							$row->appendChild($fields);
+							$fieldset->appendChild($row);
+						}
+						
+						
+						$layout->appendChild($fieldset);
 					}
 				}
-
-				Section::save($this->section, $this->errors);
+				
+				Section::save($this->section, $this->errors, array($doc));
 				return true;
 			}
 			catch(SectionException $e){
@@ -142,7 +226,7 @@
 			catch(Exception $e){
 				// Errors!!
 				// Not sure what happened!!
-				$this->pageAlert(__('An unknown error has occurred. %s', $e->getMessage()), Alert::ERROR);
+				$this->pageAlert(__('An unknown error has occurred. %s', array($e->getMessage())), Alert::ERROR);
 			}
 			
 			return false;
@@ -150,8 +234,7 @@
 		
 		public function __actionNew(){
 			if(isset($_POST['action']['save'])){
-				print "<pre>"; print_r($_POST); die();
-				if($this->__save($_POST['essentials'], (isset($_POST['fields']) ? $_POST['fields'] : NULL)) == true){
+				if($this->__save($_POST['essentials'], (isset($_POST['fieldset']) ? $_POST['fieldset'] : NULL)) == true){
 					redirect(ADMIN_URL . "/blueprints/sections/edit/{$this->section->handle}/:created/");
 				}
 			}
@@ -159,7 +242,7 @@
 
 		public function __actionEdit(){
 			if(isset($_POST['action']['save'])){
-				if($this->__save($_POST['essentials'], (isset($_POST['fields']) ? $_POST['fields'] : NULL), Section::load(SECTIONS . '/' . $this->_context[1] . '.xml')) == true){
+				if($this->__save($_POST['essentials'], (isset($_POST['fieldset']) ? $_POST['fieldset'] : NULL), Section::load(SECTIONS . '/' . $this->_context[1] . '.xml')) == true){
 					redirect(ADMIN_URL . "/blueprints/sections/edit/{$this->section->handle}/:saved/");
 				}
 			}
@@ -253,7 +336,7 @@
 
 				}
 			}
-			
+
 			$this->setPageType('form');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(($existing instanceof Section ? $existing->name : __('Untitled')));
@@ -307,7 +390,6 @@
 
 			// Fields
 
-			$fields = $this->section->fields;
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
@@ -348,8 +430,8 @@
 						
 			$types = array();
 			foreach (FieldManager::instance()->fetchTypes() as $type){
-				if ($type = FieldManager::instance()->create($type)){
-					array_push($types, $type);
+				if ($field = FieldManager::instance()->create($type)){
+					$types[$type] = $field;
 				}
 			}
 			
@@ -357,14 +439,15 @@
 			uasort($types, create_function('$a, $b', 'return strnatcasecmp($a->name(), $b->name());'));
 			
 			
-			foreach ($types as $type){
+			foreach ($types as $type => $field){
 				$defaults = array();
 				
-				$type->findDefaults($defaults);
-				$type->setArray($defaults);
+				$field->findDefaults($defaults);
+				$field->setArray($defaults);
 				
 				$wrapper = new XMLElement('li');
-				$type->displaySettingsPanel($wrapper);
+				$field->displaySettingsPanel($wrapper);
+				$wrapper->appendChild(Widget::Input('type', General::sanitize($type), 'hidden'));
 
 				$templates->appendChild($wrapper);
 			}
@@ -374,25 +457,118 @@
 			
 			
 			// Existing Fields
+			// 			var_dump($existing->layout->fieldsets); die();
+			
+			// Organise the fields into an array indexed by the element name
+			$fields = array();
+
+			if(is_array($this->section->fields) && count($this->section->fields) > 0){
+				foreach($this->section->fields as $position => $field){
+					
+					$fields[$field->get('element_name')] = array('position' => $position, 'field' => $field);
+					
+					//$wrapper = new XMLElement('li');
+					
+				//	$field->set('sortorder', $position);
+				//	$field->displaySettingsPanel($wrapper, (isset($this->errors->{"field::{$position}"}) ? $this->errors->{"field::{$position}"} : NULL));
+				//	$ol->appendChild($wrapper);
+
+				}
+			}
+
+			
 			$content = new XMLElement('div');
 			$content->setAttribute('class', 'content');
 			
-			$row = new XMLElement('div');
-			$h3 = new XMLElement('h3');
-			$h3->appendChild(Widget::Input('label', 'Default Fieldset'));
-			$row->appendChild($h3);
+			if(!isset($this->section->layout) || !isset($this->section->layout->fieldsets) || empty($this->section->layout->fieldsets)){
 			
-			$row->appendChild(new XMLElement('ol', ' '));
-			$content->appendChild($row);
+				$row = new XMLElement('div');
+				$h3 = new XMLElement('h3');
+				$h3->appendChild(Widget::Input('label', 'Default Fieldset'));
+				$row->appendChild($h3);
+
+				if(is_array($fields) && !empty($fields)){
+					foreach($fields as $element_name => $data){
+						
+						$ol = new XMLElement('ol');
+						
+						$field = $data['field'];
+						$position = $data['position'];
+						
+						$li = new XMLElement('li');
+					
+						$settings_div = new XMLElement('div');
+						$settings_div->setAttribute('class', 'settings');
+
+						$field->set('sortorder', $position);
+						$field->displaySettingsPanel($settings_div, (isset($this->errors->{"field::{$position}"}) ? $this->errors->{"field::{$position}"} : NULL));
+						$settings_div->appendChild(Widget::Input('type', General::sanitize($field->get('type')), 'hidden'));
+						$li->appendChild($settings_div);
+						$ol->appendChild($li);
+						
+						$row->appendChild($ol);
+					}
+				}
+				
+				else{
+					$row->appendChild(new XMLElement('ol'));
+					
+				}
+
+				$content->appendChild($row);
+
+			}
+			
+			else{
+
+				foreach($this->section->layout->fieldsets as $f){
+
+					$group = new XMLElement('div');
+					$h3 = new XMLElement('h3');
+					$h3->appendChild(Widget::Input('label', $f->label));
+					$group->appendChild($h3);
+
+					foreach($f->rows as $r){
+						if(isset($r) && !empty($r)){
+							
+							$ol = new XMLElement('ol');
+							
+							foreach($r as $element_name){
+
+								if(!isset($fields[$element_name]['field']) || !($fields[$element_name]['field'] instanceof Field)) continue;
+
+								$field = $fields[$element_name]['field'];
+								$position = $fields[$element_name]['position'];
+							
+								$li = new XMLElement('li');
+							
+								$settings_div = new XMLElement('div');
+								$settings_div->setAttribute('class', 'settings');
+
+								$field->set('sortorder', $position);
+								$field->displaySettingsPanel($settings_div, (isset($this->errors->{"field::{$position}"}) ? $this->errors->{"field::{$position}"} : NULL));
+								$settings_div->appendChild(Widget::Input('type', General::sanitize($field->get('type')), 'hidden'));
+								$li->appendChild($settings_div);
+								$ol->appendChild($li);
+
+							}
+							
+							$group->appendChild($ol);
+						}
+					}
+					
+					
+					$content->appendChild($group);
+
+
+				}
+			}
 			
 			$layout->appendChild($content);
-			
+
 			$fieldset->appendChild($layout);
-			
+
 			$this->Form->appendChild($fieldset);
-			
-			
-			
 			
 			/*
 				<h3>Fields</h3> 
