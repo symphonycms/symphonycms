@@ -308,7 +308,7 @@
 
 						$this->pageAlert(
 							__(
-								'Section updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Views</a>', 
+								'Section updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Sections</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									ADMIN_URL . '/blueprints/sections/new/',
@@ -323,7 +323,7 @@
 
 						$this->pageAlert(
 							__(
-								'Section created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Views</a>', 
+								'Section created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Sections</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									ADMIN_URL . '/blueprints/sections/new/',
