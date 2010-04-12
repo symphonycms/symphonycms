@@ -231,12 +231,13 @@ var Symphony;
 					}
 				}
 			}
-			
+/*			
 			else {
 				$('<span />')
 					.html('&#x21b5;')
 					.prependTo(cell);
 			}
+*/
 			
 			cell.wrapInner('<div />');
 		});

@@ -41,7 +41,6 @@
 			    [required] => yes
 			    [type] => textarea
 			    [label] => Happy Days
-			    [location] => main
 			    [size] => 12
 			    [formatter] => markdown_with_purifier
 			    [element_name] => happy-days
@@ -118,7 +117,6 @@
 		}
 		
 		public function setFromPOST($data) {
-			$data['location'] = (isset($data['location']) ? $data['location'] : 'main');
 			$data['required'] = (isset($data['required']) && $data['required'] == 'yes' ? 'yes' : 'no');
 			$data['show_column'] = (isset($data['show_column']) && $data['show_column'] == 'yes' ? 'yes' : 'no');
 			$this->setArray($data);
@@ -515,7 +513,6 @@
 			
 			$fields['label'] = $this->get('label');
 			$fields['parent_section'] = $this->get('parent_section');
-			$fields['location'] = $this->get('location');
 			$fields['required'] = $this->get('required');
 			$fields['type'] = $this->_handle;
 			$fields['show_column'] = $this->get('show_column');
