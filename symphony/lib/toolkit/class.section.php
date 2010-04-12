@@ -371,8 +371,10 @@
 
 			$root->setAttribute('guid', $this->guid);
 
-			$root->appendChild($doc->createElement('name', General::sanitize($this->name)));
-			$root->appendChild($doc->createElement('handle', General::sanitize($this->handle)));
+			$name = $doc->createElement('name', General::sanitize($this->name));
+			$name->setAttribute('handle', $this->handle);
+
+			$root->appendChild($name);
 			$root->appendChild($doc->createElement('hidden-from-publish-menu', (
 				isset($this->{'hidden-from-publish-menu'}) && strtolower(trim($this->{'hidden-from-publish-menu'})) == 'yes'
 					? 'yes'

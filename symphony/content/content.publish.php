@@ -550,8 +550,8 @@
 			}
 
 			// Parse the layout
- 			foreach($section->layout as $layout) {
-				foreach($layout as $a_fieldset) {
+ 			foreach($section->layout as $a_layout) {
+				foreach($a_layout as $a_fieldset) {
 
 					$fieldset = new XMLElement('fieldset');
 					$fieldset->appendChild(
@@ -607,7 +607,8 @@
 				}
 				*/
 			}
-			/*
+
+/*
 
 			// If there is post data floating around, due to errors, create an entry object
 			if (isset($_POST['fields'])) {
@@ -620,65 +621,6 @@
 			else {
 				$entry = EntryManager::instance()->create();
 				$entry->set('section_id', $section_id);
-			}
-
-			//$sidebar_fields = $section->fetchFields(NULL, 'sidebar');
-			//$main_fields = $section->fetchFields(NULL, 'main');
-
-			if ((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))) {
-				$primary->appendChild(new XMLElement('p', __(
-					'It looks like you\'re trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>',
-					array(
-						ADMIN_URL . '/blueprints/sections/edit/' . $section->get('id') . '/'
-					)
-				)));
-				$this->Form->appendChild($primary);
-			}
-
-			else {
-				if (is_array($main_fields) && !empty($main_fields)) {
-					foreach ($main_fields as $field) {
-						$primary->appendChild($this->__wrapFieldWithDiv($field, $entry));
-					}
-
-					$this->Form->appendChild($primary);
-				}
-
-				if (is_array($sidebar_fields) && !empty($sidebar_fields)) {
-					$sidebar = new XMLElement('fieldset');
-					$sidebar->setAttribute('class', 'secondary');
-
-					foreach ($sidebar_fields as $field) {
-						$sidebar->appendChild($this->__wrapFieldWithDiv($field, $entry));
-					}
-
-					$this->Form->appendChild($sidebar);
-				}
-			}
-
-			foreach($section->fields as $index => $field){
-				$primary->appendChild(
-					$this->__wrapFieldWithDiv($field)
-				);
-
-				if($field->get('location') == 'main') $primary->appendChild($element);
-				else{
-
-					if(!isset($sidebar) || !($sidebar instanceof XMLElement)){
-						$sidebar = new XMLElement('fieldset');
-						$sidebar->setAttribute('class', 'secondary');
-					}
-
-					$sidebar->appendChild($element);
-				}
-
-			}
-
-
-			$this->Form->appendChild($primary);
-
-			if(isset($sidebar) && $sidebar instanceof XMLElement){
-				$this->Form->appendChild($sidebar);
 			}
 */
 			$div = new XMLElement('div');
