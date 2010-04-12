@@ -471,8 +471,8 @@
 							$field = FieldManager::instance()->fetch($field_id);
 
 							foreach($checked as $entry_id){
-								$entry = EntryManager::instance()->fetch($entry_id);						
-								$entry[0]->setData($field_id, $field->toggleFieldData($entry[0]->getData($field_id), $value));							
+								$entry = EntryManager::instance()->fetch($entry_id);
+								$entry[0]->setData($field_id, $field->toggleFieldData($entry[0]->getData($field_id), $value));
 								$entry[0]->commit();
 							}
 
@@ -583,9 +583,11 @@
 			*/
 			
 			foreach($section->fields as $index => $field){
-				$element = $this->__wrapFieldWithDiv($field);
-
-				if($field->get('location') == 'main') $primary->appendChild($element);
+				$primary->appendChild(
+					$this->__wrapFieldWithDiv($field)
+				);
+				
+				/*if($field->get('location') == 'main') $primary->appendChild($element);
 				else{
 					
 					if(!isset($sidebar) || !($sidebar instanceof XMLElement)){
@@ -594,14 +596,15 @@
 					}
 					
 					$sidebar->appendChild($element);
-				}
+				}*/
 				
 			}
 			
 			$this->Form->appendChild($primary);
-			if(isset($sidebar) && $sidebar instanceof XMLElement){
-				$this->Form->appendChild($sidebar);
-			}
+			
+			//if(isset($sidebar) && $sidebar instanceof XMLElement){
+			//	$this->Form->appendChild($sidebar);
+			//}
 			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');

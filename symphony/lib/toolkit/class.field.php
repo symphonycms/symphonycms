@@ -119,8 +119,8 @@
 		
 		public function setFromPOST($data) {
 			$data['location'] = (isset($data['location']) ? $data['location'] : 'main');
-			$data['required'] = (isset($data['required']) && @$data['required'] == 'yes' ? 'yes' : 'no');
-			$data['show_column'] = (isset($data['show_column']) && @$data['show_column'] == 'yes' ? 'yes' : 'no');
+			$data['required'] = (isset($data['required']) && $data['required'] == 'yes' ? 'yes' : 'no');
+			$data['show_column'] = (isset($data['show_column']) && $data['show_column'] == 'yes' ? 'yes' : 'no');
 			$this->setArray($data);
 		}
 		
@@ -520,7 +520,7 @@
 			$fields['sortorder'] = (string)$this->get('sortorder');
 			
 			if($id = $this->get('id')){
-				return FieldManager::instance()->edit($id, $fields);				
+				return FieldManager::instance()->edit($id, $fields);
 			}
 			
 			elseif($id = FieldManager::instance()->add($fields)){
@@ -534,20 +534,19 @@
 		}
 		
 		public function createTable(){
-			
 			return Symphony::Database()->query(
-			
-				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
-				  `id` int(11) unsigned NOT NULL auto_increment,
-				  `entry_id` int(11) unsigned NOT NULL,
-				  `value` varchar(255) default NULL,
-				  PRIMARY KEY  (`id`),
-				  KEY `entry_id` (`entry_id`),
-				  KEY `value` (`value`)
-				) TYPE=MyISAM;"
-			
+				sprintf(
+					'CREATE TABLE IF NOT EXISTS `tbl_data_%s_%s` (
+						`id` int(11) unsigned NOT NULL auto_increment,
+						`entry_id` int(11) unsigned NOT NULL,
+						`value` varchar(255) default NULL,
+					PRIMARY KEY  (`id`),
+					KEY `entry_id` (`entry_id`),
+					KEY `value` (`value`)
+					)', 
+					$this->get('section'), 
+					$this->get('element_name')
+				)
 			);
 		}
-
 	}
-

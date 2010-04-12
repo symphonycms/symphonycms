@@ -167,7 +167,9 @@
 			if(!is_null($data)){
 				$field->setFromPOST($data);
 			}
-
+			
+			$field->set('section', $this->handle);
+			
 			$this->fields[] = $field;
 			
 			return $field;
@@ -305,7 +307,15 @@
 
 			return $obj;
 		}*/
-
+		
+		public function synchroniseDataTables(){
+			if(is_array($this->fields) && !empty($this->fields)){
+				foreach($this->fields as $index => $field){
+					$field->createTable();
+				}
+			}
+		}
+		
 		public static function save(Section $section, MessageStack &$messages, array $additional_fragments=NULL, $simulate=false){
 
 			$pathname = sprintf('%s/%s.xml', $section->path, $section->handle);
@@ -342,6 +352,8 @@
 			if($messages->length() > 0){
 				throw new SectionException(__('Section could not be saved. Validation failed.'), self::ERROR_MISSING_OR_INVALID_FIELDS);
 			}
+			
+			$section->synchroniseDataTables();
 			
 			$doc = $section->toDoc($additional_fragments);
 			

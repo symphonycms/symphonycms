@@ -47,25 +47,27 @@
 			$this->set('required', 'yes');
 		}
 		
-		public function createTable() {
-			$field_id = $this->get('id');
-			
-			return $this->Symphony->Database->query("
-				CREATE TABLE IF NOT EXISTS `tbl_entries_data_{$field_id}` (
-					`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-					`entry_id` INT(11) UNSIGNED NOT NULL,
-					`name` TEXT DEFAULT NULL,
-					`file` TEXT DEFAULT NULL,
-					`size` INT(11) UNSIGNED NOT NULL,
-					`mimetype` VARCHAR(50) NOT NULL,
-					`meta` VARCHAR(255) DEFAULT NULL,
-					PRIMARY KEY (`id`),
-					KEY `entry_id` (`entry_id`),
-					KEY `mimetype` (`mimetype`),
-					FULLTEXT KEY `name` (`name`),
-					FULLTEXT KEY `file` (`file`)
+		public function createTable(){
+			return Symphony::Database()->query(
+				sprintf(
+					'CREATE TABLE IF NOT EXISTS `tbl_data_%s_%s` (
+						`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+						`entry_id` INT(11) UNSIGNED NOT NULL,
+						`name` TEXT DEFAULT NULL,
+						`file` TEXT DEFAULT NULL,
+						`size` INT(11) UNSIGNED NOT NULL,
+						`mimetype` VARCHAR(50) NOT NULL,
+						`meta` VARCHAR(255) DEFAULT NULL,
+						PRIMARY KEY (`id`),
+						KEY `entry_id` (`entry_id`),
+						KEY `mimetype` (`mimetype`),
+						FULLTEXT KEY `name` (`name`),
+						FULLTEXT KEY `file` (`file`)
+					)',
+					$this->get('section'), 
+					$this->get('element_name')
 				)
-			");
+			);
 		}
 		
 		public function canFilter() {
