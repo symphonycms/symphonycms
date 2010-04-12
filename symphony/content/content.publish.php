@@ -3,7 +3,7 @@
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.entrymanager.php');
 	//require_once(TOOLKIT . '/class.sectionmanager.php');
-	
+
 	Class contentPublish extends AdministrationPage{
 
 		private $_errors = array();
@@ -555,31 +555,39 @@
 
 					$fieldset = new XMLElement('fieldset');
 					$fieldset->appendChild(
-						new XMLElement('legend', $a_fieldset->label)
+						new XMLElement('h3', $a_fieldset->label, array('class' => 'legend'))
 					);
 
 					// Got the fieldsets, now lets loop the rows
 					foreach($a_fieldset->rows as $a_row) {
+						$do_grouping = (count($a_row) > 1) ? true : false;
+
+						if($do_grouping) $group = new XMLElement('div', NULL, array('class' => 'group'));
+
 						foreach($a_row as $a_field) {
+
 							$field = $section_fields[$a_field];
 
 							$div = new XMLElement('div', NULL, array(
-									'class' => sprintf('field field-%s %s %s',
+									'class' => trim(sprintf('field field-%s %s %s',
 										$field->handle(),
-										($field->get('required') == 'yes' ? 'required' : ''),
-										$this->__calculateWidth($field->get('width'))
-									)
+										$this->__calculateWidth($field->get('width')),
+										($field->get('required') == 'yes' ? 'required' : '')
+									))
 								)
 							);
 
-							$field->displayPublishPanel(
-								$div,
-								null,
-								(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL)
+							$field->displayPublishPanel($div, null, (isset($this->_errors[$field->get('id')])
+								? $this->_errors[$field->get('id')]
+								: NULL)
 							);
 
-							$fieldset->appendChild($div);
+							($do_grouping) ? $group->appendChild($div) : $fieldset->appendChild($div);
+
 						}
+
+						($do_grouping) ? $fieldset->appendChild($group) : NULL;
+
 					}
 
 					$this->Form->appendChild($fieldset);
