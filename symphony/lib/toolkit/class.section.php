@@ -364,7 +364,7 @@
 			$doc = new DOMDocument('1.0', 'UTF-8');
 			$doc->formatOutput = true;
 
-			$root = $doc->createElement('view');
+			$root = $doc->createElement('section');
 			$doc->appendChild($root);
 
 			if(!isset($this->guid) || is_null($this->guid)){
