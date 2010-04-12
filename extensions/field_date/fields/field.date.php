@@ -392,24 +392,23 @@
 			$wrapper->appendChild($options_list);
 
 		}
-
-		function createTable(){
-			
+		
+		public function createTable(){
 			return Symphony::Database()->query(
-			
-				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
-				  `id` int(11) unsigned NOT NULL auto_increment,
-				  `entry_id` int(11) unsigned NOT NULL,
-				  `value` varchar(80) default NULL,
-				  `local` int(11) default NULL,
-				  `gmt` int(11) default NULL,
-				  PRIMARY KEY  (`id`),
-				  KEY `entry_id` (`entry_id`),
-				  KEY `value` (`value`)
-				) TYPE=MyISAM;"
-			
+				sprintf(
+					'CREATE TABLE IF NOT EXISTS `tbl_data_%s_%s` (
+						`id` int(11) unsigned NOT NULL auto_increment,
+						`entry_id` int(11) unsigned NOT NULL,
+						`value` varchar(80) default NULL,
+						`local` int(11) default NULL,
+						`gmt` int(11) default NULL,
+						PRIMARY KEY  (`id`),
+						KEY `entry_id` (`entry_id`),
+						KEY `value` (`value`)
+					)',
+					$this->get('section'), 
+					$this->get('element_name')
+				)
 			);
 		}
-
 	}
-

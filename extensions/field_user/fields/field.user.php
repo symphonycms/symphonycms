@@ -241,25 +241,27 @@
 			$input = Widget::Input('default-to-current-user', 'yes', 'checkbox');
 			if($this->get('default-to-current-user') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Select current user by default', array($input->generate())));
-			$options_list->appendChild($label);								
+			$options_list->appendChild($label);
 
 			$this->appendShowColumnCheckbox($options_list);
 			$wrapper->appendChild($options_list);
 					
 		}
-		
+
 		public function createTable(){
 			return Symphony::Database()->query(
-			
-				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') ."` (
-				  `id` int(11) unsigned NOT NULL auto_increment,
-				  `entry_id` int(11) unsigned NOT NULL,
-				  `user_id` int(11) unsigned NOT NULL,
-				  PRIMARY KEY  (`id`),
-				  KEY `entry_id` (`entry_id`),
-				  KEY `user_id` (`user_id`)
-				) TYPE=MyISAM;"
-				
+				sprintf(
+					'CREATE TABLE IF NOT EXISTS `tbl_data_%s_%s` (
+						`id` int(11) unsigned NOT NULL auto_increment,
+						`entry_id` int(11) unsigned NOT NULL,
+						`user_id` int(11) unsigned NOT NULL,
+						PRIMARY KEY  (`id`),
+						KEY `entry_id` (`entry_id`),
+						KEY `user_id` (`user_id`)
+					)',
+					$this->get('section'), 
+					$this->get('element_name')
+				)
 			);
 		}
 
@@ -274,7 +276,7 @@
 			}
 			
 			$fieldname = 'fields['.$this->get('element_name').']';
-			if($this->get('allow_multiple_selection') == 'yes') $fieldname .= '[]';			
+			if($this->get('allow_multiple_selection') == 'yes') $fieldname .= '[]';
 			
 			$attr = array();
 			
