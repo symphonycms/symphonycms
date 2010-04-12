@@ -1,5 +1,5 @@
 <?php
-	
+/*	
 	Class DatasourceException extends Exception {}
 
 	Class DatasourceFilterIterator extends FilterIterator{
@@ -65,6 +65,73 @@
 		}
 
 	}
+*/
+
+	
+	Class DataSourceException extends Exception {}
+
+	Class DataSourceFilterIterator extends FilterIterator{
+		public function __construct($path){
+			parent::__construct(new DirectoryIterator($path));
+		}
+
+		public function accept(){
+			if($this->isDir() == false && preg_match('/^.+\.php$/i', $this->getFilename())){
+				return true;
+			}
+			return false;
+		}
+	}	
+
+	Class DataSourceIterator implements Iterator{
+
+		private $position;
+		private $datasources;
+
+		public function __construct(){
+			
+			$this->datasources = array();
+
+			foreach(new DataSourceFilterIterator(WORKSPACE . '/data-sources') as $file){
+				$this->datasources[] = $file->getPathname();
+			}
+
+			foreach(new DirectoryIterator(EXTENSIONS) as $dir){
+				if(!$dir->isDir() || $dir->isDot() || !is_dir($dir->getPathname() . '/data-sources')) continue;
+				
+				foreach(new DataSourceFilterIterator($dir->getPathname() . '/data-sources') as $file){
+					$this->datasources[] = $file->getPathname();
+				}
+			}
+			
+		}
+		
+		public function length(){
+			return count($this->datasources);
+		}
+		
+		public function rewind(){
+			$this->position = 0;
+		}
+
+		public function current(){
+			return $this->datasources[$this->position]; //Datasource::loadFromPath($this->datasources[$this->position]);
+		}
+
+		public function key(){
+			return $this->position;
+		}
+
+		public function next(){
+			++$this->position;
+		}
+
+		public function valid(){
+			return isset($this->datasources[$this->position]);
+		}
+	}
+
+
 	
 	##Interface for datasouce objects
 	Abstract Class DataSource{
@@ -86,6 +153,10 @@
 		// Abstract function
 		abstract public function grab();
 		
+		public static function getHandleFromFilename($filename){
+			return preg_replace('/.php$/i', NULL, $filename);
+		}
+		
 		public function &about(){
 			return $this->_about;
 		}
@@ -94,7 +165,7 @@
 			return $this->_parameters;
 		}
 		
-		public static function loadFromPath($pathname){
+		public static function load($pathname){
 			if(!is_array(self::$_loaded)){
 				self::$_loaded = array();
 			}
@@ -117,7 +188,7 @@
 		}
 		
 		public static function loadFromName($name, $environment=NULL, $process_params=true){
-			return self::loadFromPath(self::__find($name) . "/{$name}.php");
+			return self::load(self::__find($name) . "/{$name}.php");
 		}
 		
 		protected static function __find($name){

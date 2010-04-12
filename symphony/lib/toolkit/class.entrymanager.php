@@ -1,7 +1,7 @@
 <?php
 	
-	include_once(TOOLKIT . '/class.sectionmanager.php');
-	include_once(TOOLKIT . '/class.textformattermanager.php');
+	//include_once(TOOLKIT . '/class.sectionmanager.php');
+	//include_once(TOOLKIT . '/class.textformattermanager.php');
 	include_once(TOOLKIT . '/class.entry.php');
 	
 	Class EntryManager implements Singleton{

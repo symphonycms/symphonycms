@@ -2,7 +2,7 @@
 
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.eventmanager.php');	
-	require_once(TOOLKIT . '/class.sectionmanager.php');
+	//require_once(TOOLKIT . '/class.sectionmanager.php');
 	
 	Class contentBlueprintsEvents extends AdministrationPage{
 	
@@ -33,7 +33,7 @@
 			
 			else foreach($events as $event) {
 				$instance = eventManager::instance()->create($event['handle']);
-				$section = SectionManager::instance()->fetch($instance->getSource());
+				//$section = SectionManager::instance()->fetch($instance->getSource());
 				
 				$view_mode = ($event['can_parse'] ? 'edit' : 'info');
 				
@@ -42,7 +42,7 @@
 				));
 				$col_name->appendChild(Widget::Input("items[{$event['handle']}]", null, 'checkbox'));
 				
-				if ($section instanceof Section) {
+				/*if ($section instanceof Section) {
 					$section = $section->_data;
 					$col_source = Widget::TableData(Widget::Anchor(
 						$section['name'],
@@ -51,9 +51,9 @@
 					));
 				}
 				
-				else {
+				else {*/
 					$col_source = Widget::TableData(__('None'), 'inactive');
-				}
+				//}
 				
 				if (isset($event['author']['website'])) {
 					$col_author = Widget::TableData(Widget::Anchor(

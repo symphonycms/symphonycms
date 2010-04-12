@@ -1,7 +1,7 @@
 <?php
 
 	require_once(TOOLKIT . '/class.administrationpage.php');
- 	require_once(TOOLKIT . '/class.sectionmanager.php');
+ 	//require_once(TOOLKIT . '/class.sectionmanager.php');
 
 	Class contentSystemUsers extends AdministrationPage{
 
@@ -233,12 +233,14 @@
 
 			$label = Widget::Label(__('Default Section'));
 			
-		    $sections = SectionManager::instance()->fetch(NULL, 'ASC', 'sortorder');
+		    //$sections = SectionManager::instance()->fetch(NULL, 'ASC', 'sortorder');
 		
 			$options = array();
 			
-			if(is_array($sections) && !empty($sections)) 
-				foreach($sections as $s) $options[] = array($s->get('id'), $user->get('default_section') == $s->get('id'), $s->get('name'));
+			//if(is_array($sections) && !empty($sections)) 
+			foreach(new SectionIterator as $s){
+				$options[] = array($s->handle, $user->get('default_section') == $s->handle, $s->name);
+			}
 			
 			$label->appendChild(Widget::Select('fields[default_section]', $options));
 			$div->appendChild($label);

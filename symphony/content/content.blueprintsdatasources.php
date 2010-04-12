@@ -2,7 +2,7 @@
 
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	//require_once(TOOLKIT . '/class.datasourcemanager.php');	
-	require_once(TOOLKIT . '/class.sectionmanager.php');
+	//require_once(TOOLKIT . '/class.sectionmanager.php');
 	require_once(TOOLKIT . '/class.messagestack.php');
 	
 	Class ContentBlueprintsDatasources extends AdministrationPage{
@@ -51,8 +51,9 @@
 			}
 			
 			else {
-				foreach ($datasources as $ds) {
-
+				foreach ($datasources as $pathname) {
+					$ds = DataSource::load($pathname);
+					
 					$view_mode = ($ds->allowEditorToParse() == true ? 'edit' : 'info');
 					$col_source = Widget::TableData(__('None'), 'inactive');
 					$handle = preg_replace('/.php$/i', NULL, basename($ds->parameters()->pathname));
