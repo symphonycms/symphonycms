@@ -2,6 +2,7 @@
 
 	require_once(CORE . '/class.errorhandler.php');
 	
+	require_once(TOOLKIT . '/class.dbc.php');
 	require_once(CORE . '/class.configuration.php');
 	require_once(CORE . '/class.datetimeobj.php');
 	require_once(CORE . '/class.log.php');
@@ -213,21 +214,9 @@
 		public function initialiseDatabase(){
 			$error = NULL;
 			
-			$driver = self::Configuration()->db()->driver;
-			$driver_filename = TOOLKIT . "/class.{$driver}.php";
-
-			if(!is_file($driver_filename)){
-				throw new SymphonyErrorPage(
-					__('Missing database driver "%s"', array($driver)), 
-					__('Database Error'), 
-					__('The database driver specified in "manifest/conf/db.xml" could not be found. Please ensure it exists and is readable.')
-				);
-			}
+			self::$Database = DBCLoader::instance(true);
 			
-			require_once($driver_filename);
-			
-			self::$Database = new $driver;
-			
+			/*
 			$details = self::Configuration()->db()->properties();
 
 			try{
@@ -253,6 +242,7 @@
 					__('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct. The following error was returned.')
 				);				
 			}
+			*/
 			
 			return true;
 		}

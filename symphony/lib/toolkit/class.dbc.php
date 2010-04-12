@@ -30,7 +30,7 @@
 
 		static private function __init($enableProfiling=false){
 			
-			$details = (object)Symphony::$Configuration->get('database');
+			$details = (object)Symphony::Configuration()->get('database');
 
 			$driver = 'DBCMySQL';
 			if($enableProfiling) $driver .= 'Profiler';
