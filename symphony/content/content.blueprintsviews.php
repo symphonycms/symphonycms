@@ -2,7 +2,7 @@
 	
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.eventmanager.php');
-	require_once(TOOLKIT . '/class.datasourcemanager.php');
+	//require_once(TOOLKIT . '/class.datasourcemanager.php');
 	require_once(TOOLKIT . '/class.messagestack.php');
 	require_once(TOOLKIT . '/class.xslproc.php');
 	require_once(TOOLKIT . '/class.utility.php');
@@ -583,14 +583,17 @@
 
 			$label = Widget::Label(__('Data Sources'));
 			
-			$datasources = DataSourceManager::instance()->listAll();
-			
 			$options = array();
 			
-			if(is_array($datasources) && !empty($datasources)) {		
-				foreach ($datasources as $name => $about) $options[] = array(
-					$name, @in_array($name, $fields['data-sources']), $about['name']
-				);
+			$iterator = new DataSourceIterator;
+			if($iterator->length() > 0){
+				foreach ($iterator as $pathname){
+					$ds = DataSource::load($pathname);
+					$handle = DataSource::getHandleFromFilename($pathname);
+					$options[] = array(
+						$handle, in_array($handle, (array)$fields['data-sources']), $ds->about()->name
+					);
+				}
 			}
 			
 			$label->appendChild(Widget::Select('fields[data-sources][]', $options, array('multiple' => 'multiple')));

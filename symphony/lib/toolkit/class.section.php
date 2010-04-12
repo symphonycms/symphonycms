@@ -23,7 +23,7 @@
 		private $_length;
 		private $_position;
 
-		public function __construct($path=NULL, $recurse=true){
+		public function __construct(){
 			$this->_iterator = new SectionFilterIterator;
 			$this->_length = $this->_position = 0;
 			foreach($this->_iterator as $f){

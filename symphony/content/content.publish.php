@@ -2,7 +2,7 @@
 
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.entrymanager.php');
-	require_once(TOOLKIT . '/class.sectionmanager.php');
+	//require_once(TOOLKIT . '/class.sectionmanager.php');
 	
 	Class contentPublish extends AdministrationPage{
 		

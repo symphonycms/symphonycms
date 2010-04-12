@@ -463,20 +463,22 @@
 
 		public function buildFormatterSelect($selected=NULL, $name='fields[format]', $label_value){
 			
-			include_once(TOOLKIT . '/class.textformattermanager.php');
-			
-			$formatters = TextFormatterManager::instance()->listAll();
+			require_once(TOOLKIT . '/class.textformatter.php');
 					
 			if(!$label_value) $label_value = __('Formatting');
 			$label = Widget::Label($label_value);
 		
 			$options = array();
 		
-			$options[] = array('none', false, __('None'));
-		
-			if(!empty($formatters) && is_array($formatters)){
-				foreach($formatters as $handle => $about) {
-					$options[] = array($handle, ($selected == $handle), $about['name']);
+			$options[] = array(NULL, false, __('None'));
+			
+			$iterator = new TextFormatterIterator;
+			if($iterator->length() > 0){
+				foreach($iterator as $pathname) {
+					$handle = TextFormatter::getHandleFromFilename(basename($pathname));
+					$tf = TextFormatter::load($pathname);
+					
+					$options[] = array($handle, ($selected == $handle), constant(sprintf('%s::NAME', get_class($tf))));
 				}	
 			}
 		
