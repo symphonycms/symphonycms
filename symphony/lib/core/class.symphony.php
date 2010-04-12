@@ -212,38 +212,29 @@
 		}
 
 		public function initialiseDatabase(){
-			$error = NULL;
+			$details = (object)Symphony::Configuration()->db();
 			
-			self::$Database = DBCLoader::instance(true);
+			$db = new DBCMySQLProfiler;
 			
-			/*
-			$details = self::Configuration()->db()->properties();
-
-			try{
-				if(!self::$Database->connect($details->host, $details->user, $details->password, $details->port)) return false;
-				if(!self::$Database->select($details->db)) return false;
-				if(!self::$Database->isConnected()) return false;
-			
-				self::$Database->setPrefix($details->{'tbl-prefix'});
-
-				if($details->{'runtime_character_set_alter'} == '1'){
-					self::$Database->setCharacterEncoding($details->{'character_encoding'});
-					self::$Database->setCharacterSet($details->{'character_set'});
-				}
-
-				if($details->{'query-caching'} == 'off') self::$Database->disableCaching();
-				elseif($details->{'query-caching'} == 'on') self::$Database->enableCaching();
+			if($details->runtime_character_set_alter == 'yes'){
+				$db->character_encoding = $details->character_encoding;
+				$db->character_set = $details->character_set;
 			}
-			catch(DatabaseException $e){
-				$error = self::$Database->getlastError();
-				throw new SymphonyErrorPage(
-					$error['num'] . ': ' . $error['msg'], 
-					'Database Error',
-					__('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct. The following error was returned.')
-				);				
-			}
-			*/
 			
+			$connection_string = sprintf('mysql://%s:%s@%s:%s/%s/',
+											$details->user, 
+											$details->password, 
+											$details->host, 
+											$details->port, 
+											$details->db);
+
+			$db->connect($connection_string);
+			$db->prefix = $details->tbl_prefix;
+
+
+			$db->force_query_caching = NULL;
+			if(!is_null($details->disable_query_caching)) $db->force_query_caching = ($details->disable_query_caching == 'yes' ? true : false);
+						
 			return true;
 		}
 		
