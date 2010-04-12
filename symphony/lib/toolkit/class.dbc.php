@@ -144,12 +144,16 @@
 	        return @mysql_affected_rows($this->_connection); 
 	    } 
 
-		private function __prepareQuery($query){
+		private function __prepareQuery($query, $values = array()){
+			if ($this->prefix != 'tbl_') {
+				$query = preg_replace('/tbl_([^\b`]+)/i', $this->prefix . '\\1', $query);
+			}
 			
-			$query = trim($query);
+			$query = vsprintf(trim($query), $values);
 			
-			if($this->prefix != 'tbl_') $query = preg_replace('/tbl_([^\b`]+)/i', $this->prefix . '\\1', $query);
-			if(isset($details->force_query_caching)) $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_'.(!$details->force_query_caching ? 'NO_' : NULL).'CACHE ', $query);
+			if (isset($details->force_query_caching)) {
+				$query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_'.(!$details->force_query_caching ? 'NO_' : NULL).'CACHE ', $query);
+			}
 			
 			return $query;
 		}
@@ -232,10 +236,10 @@
 			return $this->query("TRUNCATE TABLE `{$table}`");
 		}
 
-	    public function query($query, $returnType='DBCMySQLResult'){ 
+	    public function query($query, $values = array(), $returnType='DBCMySQLResult'){ 
 	        if(!$this->connected()) throw new Exception('No Database Connection Found.'); 
 
-			$query = $this->__prepareQuery($query);
+			$query = $this->__prepareQuery($query, $values);
 		
 			$this->_last_query = $query;
 		
@@ -332,9 +336,9 @@
 			return number_format((float)$total, 4, '.', ',');
 		}	
 		
-		public function query($query, $returnType='DBCMySQLResult'){ 
+		public function query($query, $values = array(), $returnType='DBCMySQLResult'){ 
 			$start = self::__precisionTimer();
-			$result = parent::query($query, $returnType);
+			$result = parent::query($query, $values, $returnType);
 			
 			$query = preg_replace(array('/[\r\n]/', '/\s{2,}/'), ' ', $query);
 			

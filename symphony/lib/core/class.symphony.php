@@ -229,12 +229,13 @@
 											$details->db);
 
 			$db->connect($connection_string);
-			$db->prefix = $details->tbl_prefix;
-
-
+			$db->prefix = $details->{'tbl-prefix'};
+			
 			$db->force_query_caching = NULL;
 			if(!is_null($details->disable_query_caching)) $db->force_query_caching = ($details->disable_query_caching == 'yes' ? true : false);
-						
+			
+			self::$Database = $db;
+			
 			return true;
 		}
 		

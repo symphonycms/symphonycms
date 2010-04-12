@@ -15,7 +15,7 @@
 			self::$_extension_version = self::$_extension_version = array();
 			
 			// Build status array
-			$extensions = Symphony::Database()->fetch("SELECT * FROM `tbl_extensions`");
+			$extensions = Symphony::Database()->query("SELECT * FROM `tbl_extensions`");
 			foreach($extensions as $e){
 				if($e['status'] == 'disabled') self::$_extension_status[$e['name']] = Extension::DISABLED;
 				elseif($e['status'] == 'enabled') self::$_extension_status[$e['name']] = Extension::ENABLED;
