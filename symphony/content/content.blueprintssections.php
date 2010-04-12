@@ -180,12 +180,12 @@
 					$layout = $doc->createElement('layout');
 					$doc->appendChild($layout);
 					
-					foreach($fieldsets as $f){
+					if (is_array($fieldsets)) foreach($fieldsets as $f){
 						
 						$fieldset = $doc->createElement('fieldset');
 						$fieldset->appendChild($doc->createElement('label', General::sanitize($f['label'])));
 						
-						foreach($f['rows'] as $r){
+						if (is_array($f['rows'])) foreach($f['rows'] as $r){
 							
 							if(!isset($r['fields']) || empty($r['fields'])) continue;
 							
