@@ -73,7 +73,7 @@
 								s.handle
 							FROM
 								tbl_sections
-						
+							
 						"
 					);
 					

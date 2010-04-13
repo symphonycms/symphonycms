@@ -280,9 +280,18 @@
 					$this->_user_id = $id;
 					
 					Symphony::Database()->update(
-						'tbl_users', "`id` = '%s'",
-						array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
-						array($id)
+						"
+							UPDATE
+								`tbl_users`
+							SET
+								`last_seen` = '%s'
+							WHERE
+								`id` = %d
+						",
+						array(
+							DateTimeObj::get('Y-m-d H:i:s'),
+							$id
+						)
 					);
 					
 					$this->User = new User($id);
@@ -327,9 +336,18 @@
 					$this->Cookie->set('pass', $password);
 					
 					Symphony::Database()->update(
-						'tbl_users', "`id` = '%s'",
-						array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
-						array($id)
+						"
+							UPDATE
+								`tbl_users`
+							SET
+								`last_seen` = '%s'
+							WHERE
+								`id` = %d
+						",
+						array(
+							DateTimeObj::get('Y-m-d H:i:s'),
+							$id
+						)
 					);
 					
 					$this->reloadLangFromAuthorPreference();
