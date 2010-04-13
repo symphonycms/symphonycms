@@ -272,6 +272,17 @@
 	        if((int)Symphony::Configuration()->get('allow_page_subscription', 'symphony') != 1) return;
 	
 			if (is_null(self::$_subscriptions)) {
+				Symphony::Database()->query("
+					SELECT
+						t1.name, t2.page, t2.delegate, t2.callback
+					FROM
+						`tbl_extensions` as t1
+					INNER JOIN
+						`tbl_extensions_delegates` as t2
+						ON t1.id = t2.extension_id
+					WHERE t1.status = 'enabled'
+				");
+				
 				self::$_subscriptions = Symphony::Database()->fetch("
 					SELECT t1.name, t2.page, t2.delegate, t2.callback
 					FROM `tbl_extensions` as t1 INNER JOIN `tbl_extensions_delegates` as t2 ON t1.id = t2.extension_id
