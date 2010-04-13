@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<title>Symphony Duplicator Demo</title>
+<script type="text/javascript" src="symphony/assets/js/jquery.js"></script>
+<script type="text/javascript" src="symphony/assets/js/jquery-ui.js"></script>
+<script type="text/javascript" src="symphony/assets/js/symphony.collapsible.js"></script>
+<script type="text/javascript" src="symphony/assets/js/symphony.orderable.js"></script>
+<script type="text/javascript" src="symphony/assets/js/symphony.duplicator.js"></script>
+<script type="text/javascript" src="symphony/assets/js/admin.js"></script>
+<script type="text/javascript" src="symphony/assets/js/symphony.js"></script>
+<script type="text/javascript" src="symphony/assets/js/symphony.layout.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="symphony/assets/css/symphony.css">
+<link rel="stylesheet" type="text/css" media="screen" href="symphony/assets/css/symphony.duplicator.css">
+<link rel="stylesheet" type="text/css" media="screen" href="symphony/assets/css/symphony.layout.css" />
+<form method="post" action="capture.php">
+	<h1>
+		<a href="symphony/2.1/">Symphony 2.1</a>
+	</h1>
+	<ul id="session">
+		<li>
+			<a href="symphony/2.1/symphony/system/users/edit/1/">Symphony Team</a>
+		</li>
+		<li>
+			<a href="symphony/2.1/symphony/logout/">Logout</a>
+		</li>
+	</ul>
+	<ul id="nav">
+		<li id="nav-system">System
+			<ul>
+				<li>
+					<a href="symphony/2.1/symphony/system/users/">Users</a>
+				</li>
+				<li>
+					<a href="symphony/2.1/symphony/system/settings/">Settings</a>
+				</li>
+				<li>
+					<a href="symphony/2.1/symphony/system/extensions/">Extensions</a>
+				</li>
+			</ul>
+		</li>
+		<li id="nav-blueprints" class="active">Blueprints
+			<ul>
+				<li>
+					<a href="symphony/2.1/symphony/blueprints/views/">Views</a>
+				</li>
+				<li>
+					<a href="symphony/2.1/symphony/blueprints/sections/">Sections</a>
+				</li>
+				<li>
+					<a href="symphony/2.1/symphony/blueprints/datasources/">Data Sources</a>
+				</li>
+				<li>
+					<a href="symphony/2.1/symphony/blueprints/events/">Events</a>
+				</li>
+				<li>
+					<a href="symphony/2.1/symphony/blueprints/utilities/">Utilities</a>
+				</li>
+			</ul>
+		</li>
+	</ul>
+	<h2>Untitled</h2>
+	
+	<fieldset class="settings">
+		<h3>Fields</h3>
+		
+		<div class="duplicator">
+			<div class="controls">
+				<div class="add">
+					<a>Add Item</a>
+				</div>
+				<div class="remove">
+					<a>Remove Item</a>
+				</div>
+			</div>
+			<ol class="tabs">
+				<li>Checkbox</li>
+				<li>Taglist</li>
+				<li>Textbox</li>
+				<li>Upload</li>
+				<li>Taglist</li>
+				<li>Textbox</li>
+				<li>Upload</li>
+				<li>Taglist</li>
+				<li>Textbox</li>
+				<li>Upload</li>
+			</ol>
+			<ol class="instances">
+				<li>
+					<label class="field-label">
+						Label
+						<input name="label" value="" />
+					</label>
+					<label class="field-flex">
+						Width
+						<select name="width">
+							<option value="1">Small</option>
+							<option value="2" selected="selected">Medium</option>
+							<option value="3">Large</option>
+						</select>
+					</label>
+					<label>
+						Alternate label
+						<input name="alternate-label" value="" />
+					</label>
+					
+					<ul class="options-list">
+						<li>
+							<label>
+								<input type="checkbox" checked="checked" />
+								Show column
+							</label>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<label class="field-label">
+						Label
+						<input name="label" value="" />
+					</label>
+					<label class="field-flex">
+						Width
+						<select name="width">
+							<option value="1">Small</option>
+							<option value="2" selected="selected">Medium</option>
+							<option value="3">Large</option>
+						</select>
+					</label>
+					<label>
+						Static Options
+						<input name="static-options" value="" />
+					</label>
+					<label>
+						Dynamic Options
+						<select>
+							<option>None</option>
+						</select>
+					</label>
+					
+					<ul class="options-list">
+						<li>
+							<label>
+								<input type="checkbox" checked="checked" />
+								Show column
+							</label>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<label class="field-label">
+						Label
+						<input name="label" value="" />
+					</label>
+					
+					<div class="group">
+						<label class="field-flex">
+							Width
+							<select name="width">
+								<option value="1">Small</option>
+								<option value="2" selected="selected">Medium</option>
+								<option value="3">Large</option>
+							</select>
+						</label>
+						<label>
+							Height
+							<select name="height">
+								<option>Single Line</option>
+								<option>Small</option>
+								<option selected="selected">Medium</option>
+								<option>Large</option>
+							</select>
+						</label>
+					</div>
+					
+					<label>
+						Text Formatter
+						<select name="text-formatter">
+							<option>None</option>
+							<option>HTML Normal</option>
+							<option>HTML Pretty</option>
+						</select>
+					</label>
+					
+					<div class="group">
+						<label>
+							Limit (characters)
+							<input name="limit" value="0" />
+						</label>
+						<label>
+							Preview length 
+							<input name="preview-length" value="75" />
+						</label>
+					</div>
+					
+					<ul class="options-list">
+						<li>
+							<label>
+								<input type="checkbox" />
+								Output with handles
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="checkbox" />
+								Output as CDATA
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="checkbox" />
+								Make this a required field
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="checkbox" checked="checked" />
+								Show column
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="checkbox" checked="checked" />
+								Show column
+							</label>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<label class="field-label">
+						Label
+						<input name="label" value="" />
+					</label>
+					<label class="field-flex">
+						Width
+						<select name="width">
+							<option value="1">Small</option>
+							<option value="2" selected="selected">Medium</option>
+							<option value="3">Large</option>
+						</select>
+					</label>
+					
+					<ul class="options-list">
+						<li>
+							<label>
+								<input type="checkbox" checked="checked" />
+								Show column
+							</label>
+						</li>
+					</ul>
+				</li>
+			</ol>
+		</div>
+	</fieldset>
+	<div class="actions">
+		<input name="action[save]" accesskey="s" type="submit" value="Save Changes">
+	</div>
+</form>

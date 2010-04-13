@@ -1,9 +1,122 @@
-/* @override http://symphony-21.local/symphony/assets/css/symphony.duplicator.css */
-
 /*-----------------------------------------------------------------------------
 	Duplicator plugin
 -----------------------------------------------------------------------------*/
 	
+	.duplicator {
+		background: -moz-linear-gradient(left, #cccccc 195px, #bbbbbb 200px, #bbbbbb 201px, #eeeeee 202px);
+		border: 1px solid #bbbbbb;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		min-height: 100px;
+		overflow: hidden;
+		padding: 35px 0 0 0;
+		position: relative;
+	}
+	
+	.duplicator > .tabs {
+		float: left;
+		list-style: none;
+		margin: 0 -200px 0 0;
+		position: relative;
+		width: 200px;
+		z-index: 1;
+	}
+	.duplicator > .tabs > * {
+		border-bottom: 1px solid hsla(0, 0%, 0%, 0.1);
+		color: #444444;
+		line-height: 35px;
+		padding: 0 20px;
+		position: relative;
+	}
+	.duplicator > .tabs > :last-child {
+		-moz-border-radius-bottomleft: 5px;
+		margin-bottom: -1px;
+	}
+	.duplicator > .tabs > :hover {
+		background: hsla(0, 0%, 100%, 0.2);
+	}
+	.duplicator > .tabs > .active {
+		background: #eeeeee;
+		border-bottom: 1px solid hsla(0, 0%, 0%, 0.25);
+		-moz-box-shadow: 0 0 10px hsla(0, 0%, 0%, 0.15);
+		color: #000000;
+		width: 201px;
+	}
+	
+	.duplicator > .instances {
+		background: #eeeeee;
+		-moz-border-radius-topright: 4px;
+		list-style: none;
+		margin: 0 0 -1000em 201px;
+		position: relative;
+		padding: 0 0 1000em 0;
+		z-index: 2;
+	}
+	.duplicator > .instances > * {
+		display: none;
+		padding: 20px;
+		float: right;
+		width: 100%;
+	}
+	.duplicator > .instances > .active {
+		display: block;
+	}
+	
+	.duplicator > .controls {
+		background: -moz-linear-gradient(top, hsl(0, 0%, 77%), hsl(0, 0%, 72%));
+		-moz-border-radius-topleft: 5px;
+		-moz-border-radius-topright: 5px;
+		height: 35px;
+		left: 0;
+		line-height: 33px;
+		right: 0;
+		position: absolute;
+		top: 0;
+		z-index: 4;
+	}
+	.duplicator > .controls a {
+		color: #444444;
+		text-decoration: none;
+	}
+	.duplicator > .controls a:hover {
+		color: #000000;
+	}
+	.duplicator > .controls .add,
+	.duplicator > .controls .remove {
+		border-top: 1px solid hsla(0, 0%, 100%, 0.4);
+		border-bottom: 1px solid hsla(0, 0%, 0%, 0.2);
+		bottom: 0;
+		padding: 0 20px;
+		position: absolute;
+		top: 0;
+		z-index: 3;
+	}
+	.duplicator > .controls .add {
+		-moz-border-radius-topleft: 5px;
+		position: absolute;
+		z-index: 3;
+		width: 50%;
+	}
+	.duplicator > .controls .remove {
+		-moz-border-radius-topright: 5px;
+		left: 50%;
+		position: absolute;
+		right: 0;
+		text-align: right;
+		z-index: 3;
+	}
+	
+	.options-list {
+		-moz-column-count: 3;
+		-moz-column-width: 200px;
+		-moz-column-gap: 40px;
+		-moz-column-rule: 1px dotted hsla(0, 0%, 0%, 0.2);
+	}
+	
+/*-----------------------------------------------------------------------------
+	Duplicator plugin
+-----------------------------------------------------------------------------*/
+	/*
 	.duplicator {
 		background: #aaa;
 		border: 1px solid #999;
@@ -69,11 +182,11 @@
 		padding: 1em 1.75em 0 1.75em;
 		position: relative;
 	}
-	
+	*/
 /*-----------------------------------------------------------------------------
 	States
 -----------------------------------------------------------------------------*/
-	
+	/*
 	.duplicator.ordering > .instance {
 		opacity: 0.8;
 	}
@@ -96,11 +209,11 @@
 	.duplicator > .instance.collapsed > .content {
 		display: none;
 	}
-	
+	*/
 /*-----------------------------------------------------------------------------
 	Controls
 -----------------------------------------------------------------------------*/
-	
+	/*
 	.duplicator > .controls {
 		cursor: default;
 		padding: 0 1.75em;
@@ -132,5 +245,5 @@
 		cursor: default;
 		opacity: 0.6;
 	}
-	
+	*/
 /*---------------------------------------------------------------------------*/

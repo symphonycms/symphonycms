@@ -2,6 +2,64 @@
 	Duplicator plugin
 -----------------------------------------------------------------------------*/
 	
+	jQuery.fn.symphonyDuplicatorNew = function(custom_settings) {
+		var objects = this;
+		var settings = {
+			instances:			'> .instances > *',
+			tabs:				'> .tabs > *'
+		};
+		
+		objects = objects.map(function() {
+			var object = this;
+			
+			if (object instanceof jQuery === false) {
+				object = jQuery(object);
+			}
+			
+		/*-------------------------------------------------------------------*/
+			
+			object.find('*').live('tab-initialize', function() {
+				var tab = jQuery(this);
+				var index = tab.prevAll().length;
+				
+				tab.data('index', index);
+			});
+			
+			object.find('*').live('tab-select', function() {
+				var tab = jQuery(this);
+				var index = tab.data('index');
+				
+				object.find(settings.tabs)
+					.removeClass('active')
+					.filter(':eq(' + index + ')')
+					.addClass('active');
+				
+				object.find(settings.instances)
+					.removeClass('active')
+					.filter(':eq(' + index + ')')
+					.addClass('active');
+			});
+			
+		/*-------------------------------------------------------------------*/
+			
+			object.find(settings.tabs)
+				.trigger('tab-initialize')
+				.filter(':first')
+				.trigger('tab-select');
+				
+			object.find(settings.tabs)
+				.bind('click', function() {
+					jQuery(this).trigger('tab-select');
+				});
+				
+			object.find(settings.instances).filter(':first').addClass('active');
+		});
+	};
+	
+	jQuery(document).ready(function() {
+		jQuery('.duplicator').symphonyDuplicatorNew();
+	});
+	
 	jQuery.fn.symphonyDuplicator = function(custom_settings) {
 		var objects = this;
 		var settings = {
