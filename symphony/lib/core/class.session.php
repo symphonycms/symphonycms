@@ -5,13 +5,12 @@
 	 *   which was based on: http://pl.php.net/manual/en/function.session-set-save-handler.php#79706 by maria at junkies dot jp
 	 */
 
-	require_once(CORE . '/class.cacheable.php');
+	require_once(CORE . '/class.cache.php');
 	
 	Class Session{
 		
 		private static $_initialized;
 		private static $_registered;
-		private static $_cache;
 
 		public static function start($lifetime = 0, $path = '/', $domain = NULL) {
 
@@ -19,13 +18,13 @@
 				
 				if(!is_object(Symphony::Database()) || !Symphony::Database()->isConnected()) return false;
 
-				self::$_cache = new Cacheable(Symphony::Database());
-
-				if (self::$_cache->check('_session_config') === false) {
+				$cache = Cache::instance()->read('_session_config');
+				
+				if(is_null($cache) || $cache === false){
 					self::createTable();
-					self::$_cache->write('_session_config', true);
+					Cache::instance()->write('_session_config', true);
 				}
-
+				
 				if (!session_id()) {
 					ini_set('session.save_handler', 'user');
 					ini_set('session.gc_maxlifetime', $lifetime);

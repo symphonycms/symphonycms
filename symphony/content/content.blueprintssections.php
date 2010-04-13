@@ -36,7 +36,7 @@
 				foreach($sections as $s){
 
 					$entry_count = (int)Symphony::Database()->fetchVar('count', 0,
-						"SELECT count(*) AS `count` FROM `tbl_entries` WHERE `section_id` = '{$s->handle}' "
+						"SELECT count(*) AS `count` FROM `tbl_entries` WHERE `section` = '{$s->handle}' "
 					);
 
 					## Setup each cell
