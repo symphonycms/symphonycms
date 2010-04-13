@@ -76,7 +76,7 @@
 			if ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
-					$value = $this->cleanValue($value);
+					$value = $this->escape($value);
 					$joins .= "
 						LEFT JOIN
 							`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
@@ -91,7 +91,7 @@
 				if (!is_array($data)) $data = array($data);
 				
 				foreach ($data as &$value) {
-					$value = $this->cleanValue($value);
+					$value = $this->escape($value);
 				}
 				
 				$this->_key++;

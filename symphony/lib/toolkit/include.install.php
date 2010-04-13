@@ -586,11 +586,11 @@
 						'no'
 					);", 
 					
-					$db->cleanValue($config['user']['username']), 
-					$db->cleanValue($config['user']['password']), 
-					$db->cleanValue($config['user']['firstname']), 
-					$db->cleanValue($config['user']['lastname']), 
-					$db->cleanValue($config['user']['email'])
+					$db->escape($config['user']['username']), 
+					$db->escape($config['user']['password']), 
+					$db->escape($config['user']['firstname']), 
+					$db->escape($config['user']['lastname']), 
+					$db->escape($config['user']['email'])
 				);
 				
 				$install_log->pushToLog("MYSQL: Creating Default User...", E_NOTICE, true, false);

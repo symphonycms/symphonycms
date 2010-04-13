@@ -70,11 +70,11 @@
 		}
 		
 		function fetchAssociatedEntryCount($value){
-			return Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
+			return Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->escape($value)."'");
 		}
 		
 		function fetchAssociatedEntryIDs($value){
-			return Symphony::Database()->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
+			return Symphony::Database()->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->escape($value)."'");
 		}	
 			
 		public function getToggleStates() {
@@ -182,7 +182,7 @@
 			
 			if (self::isFilterRegex($data[0])) {
 				$this->_key++;
-				$pattern = str_replace('regexp:', '', $this->cleanValue($data[0]));
+				$pattern = str_replace('regexp:', '', $this->escape($data[0]));
 				$joins .= "
 					LEFT JOIN
 						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
@@ -198,7 +198,7 @@
 			} elseif ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
-					$value = $this->cleanValue($value);
+					$value = $this->escape($value);
 					$joins .= "
 						LEFT JOIN
 							`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
@@ -216,7 +216,7 @@
 				if (!is_array($data)) $data = array($data);
 				
 				foreach ($data as &$value) {
-					$value = $this->cleanValue($value);
+					$value = $this->escape($value);
 				}
 				
 				$this->_key++;

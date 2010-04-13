@@ -63,7 +63,7 @@
 			
 			if (self::isFilterRegex($data[0])) {
 				$this->_key++;
-				$pattern = str_replace('regexp:', '', $this->cleanValue($data[0]));
+				$pattern = str_replace('regexp:', '', $this->escape($data[0]));
 				$joins .= "
 					LEFT JOIN
 						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
@@ -76,7 +76,7 @@
 			} else {
 				if (is_array($data)) $data = $data[0];
 				
-				$data = $this->cleanValue($data);
+				$data = $this->escape($data);
 				$this->_key++;
 				$joins .= "
 					LEFT JOIN
