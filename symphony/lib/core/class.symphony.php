@@ -280,18 +280,10 @@
 					$this->_user_id = $id;
 					
 					Symphony::Database()->update(
-						"
-							UPDATE
-								`tbl_users`
-							SET
-								`last_seen` = '%s'
-							WHERE
-								`id` = %d
-						",
-						array(
-							DateTimeObj::get('Y-m-d H:i:s'),
-							$id
-						)
+						'tbl_users',
+						array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
+						"`id` = '%s'",
+						array($id)
 					);
 					
 					$this->User = new User($id);
@@ -336,18 +328,10 @@
 					$this->Cookie->set('pass', $password);
 					
 					Symphony::Database()->update(
-						"
-							UPDATE
-								`tbl_users`
-							SET
-								`last_seen` = '%s'
-							WHERE
-								`id` = %d
-						",
-						array(
-							DateTimeObj::get('Y-m-d H:i:s'),
-							$id
-						)
+						'tbl_users',
+						array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
+						"`id` = '%s'",
+						array($id)
 					);
 					
 					$this->reloadLangFromAuthorPreference();
@@ -359,7 +343,7 @@
 			return false;
 		}
 		
-		public function loginFromToken($token) {
+		public function loginFromToken($token){
 			$token = self::$Database->cleanValue($token);
 			
 			if (strlen(trim($token)) == 0) return false;
