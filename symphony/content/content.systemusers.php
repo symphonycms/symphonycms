@@ -128,6 +128,7 @@
 		}
 		
 		private function __form(){
+			$layout = new Layout(3, '1:1:1');
 			
 			require_once(TOOLKIT . '/class.field.php');	
 			
@@ -170,7 +171,7 @@
 				}
 			}
 			
-			$this->setPageType('form');
+			## DEPRECATED? $this->setPageType('form');
 			
 			$isOwner = false;
 			
@@ -194,42 +195,30 @@
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $user->getFullName()));			
 			
 			### Essentials ###			
-			$group = new XMLElement('fieldset');
-			$group->setAttribute('class', 'settings');
-			$group->appendChild(new XMLElement('legend', __('Essentials')));
-
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
+			$fieldset = Widget::Fieldset(__('Essentials'));
 
 			$label = Widget::Label(__('First Name'));
 			$label->appendChild(Widget::Input('fields[first_name]', $user->get('first_name')));
-			$div->appendChild((isset($this->_errors['first_name']) ? $this->wrapFormElementWithError($label, $this->_errors['first_name']) : $label));
+			$fieldset->appendChild((isset($this->_errors['first_name']) ? $this->wrapFormElementWithError($label, $this->_errors['first_name']) : $label));
 
 
 			$label = Widget::Label(__('Last Name'));
 			$label->appendChild(Widget::Input('fields[last_name]', $user->get('last_name')));
-			$div->appendChild((isset($this->_errors['last_name']) ? $this->wrapFormElementWithError($label, $this->_errors['last_name']) : $label));
-
-			$group->appendChild($div);
+			$fieldset->appendChild((isset($this->_errors['last_name']) ? $this->wrapFormElementWithError($label, $this->_errors['last_name']) : $label));
 
 			$label = Widget::Label(__('Email Address'));	
 			$label->appendChild(Widget::Input('fields[email]', $user->get('email')));
-			$group->appendChild((isset($this->_errors['email']) ? $this->wrapFormElementWithError($label, $this->_errors['email']) : $label));
+			$fieldset->appendChild((isset($this->_errors['email']) ? $this->wrapFormElementWithError($label, $this->_errors['email']) : $label));
 
-			$this->Form->appendChild($group);	
+			$layout->appendToCol($fieldset, 1);
 			###
 
 			### Login Details ###
-			$group = new XMLElement('fieldset');
-			$group->setAttribute('class', 'settings');
-			$group->appendChild(new XMLElement('legend', __('Login Details')));
-
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
+			$fieldset = Widget::Fieldset(__('Login Details'));
 
 			$label = Widget::Label(__('Username'));
 			$label->appendChild(Widget::Input('fields[username]', $user->get('username'), NULL));
-			$div->appendChild((isset($this->_errors['username']) ? $this->wrapFormElementWithError($label, $this->_errors['username']) : $label));
+			$fieldset->appendChild((isset($this->_errors['username']) ? $this->wrapFormElementWithError($label, $this->_errors['username']) : $label));
 
 			$label = Widget::Label(__('Default Section'));
 			
@@ -243,28 +232,23 @@
 			}
 			
 			$label->appendChild(Widget::Select('fields[default_section]', $options));
-			$div->appendChild($label);
-
-			$group->appendChild($div);
-					
-			$div = new XMLElement('div', NULL, array('class' => 'group'));
+			$fieldset->appendChild($label);
 			
 			if($this->_context[0] == 'edit') {
-				$div->setAttribute('id', 'change-password');
+				$fieldset->setAttribute('id', 'change-password');
 			}
 
 			$label = Widget::Label(($this->_context[0] == 'edit' ? __('New Password') : __('Password')));		
 			$label->appendChild(Widget::Input('fields[password]', NULL, 'password'));
-			$div->appendChild((isset($this->_errors['password']) ? $this->wrapFormElementWithError($label, $this->_errors['password']) : $label));
+			$fieldset->appendChild((isset($this->_errors['password']) ? $this->wrapFormElementWithError($label, $this->_errors['password']) : $label));
 
 			$label = Widget::Label(($this->_context[0] == 'edit' ? __('Confirm New Password') : __('Confirm Password')));
 			if(isset($this->_errors['password-confirmation'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['password-confirmation']));	
 			$label->appendChild(Widget::Input('fields[password-confirmation]', NULL, 'password'));
-			$div->appendChild($label);
-			$group->appendChild($div);
+			$fieldset->appendChild($label);
 
 			if($this->_context[0] == 'edit'){
-				$group->appendChild(new XMLElement('p', __('Leave password fields blank to keep the current password'), array('class' => 'help')));
+				$fieldset->appendChild(new XMLElement('p', __('Leave password fields blank to keep the current password'), array('class' => 'help')));
 			}
 			
 			$label = Widget::Label();
@@ -272,9 +256,10 @@
 			if($user->get('auth_token_active') == 'yes') $input->setAttribute('checked', 'checked');
 			$temp = ADMIN_URL . '/login/' . $user->createAuthToken() . '/';
 			$label->setValue(__('%1$s Allow remote login via <a href="%2$s">%2$s</a>', array($input->generate(), $temp)));
-			$group->appendChild($label);
-				
-			$this->Form->appendChild($group);
+			$fieldset->appendChild($label);
+			
+			$layout->appendToCol($fieldset, 2);
+			
 			###
 			
 			### Custom Language Selection ###
@@ -284,13 +269,8 @@
 				// Get language names
 				asort($languages);
 				
-				$group = new XMLElement('fieldset');
-				$group->setAttribute('class', 'settings');
-				$group->appendChild(new XMLElement('legend', __('Custom Preferences')));
+				$fieldset = Widget::Fieldset(__('Custom Preferences'));
 	
-				$div = new XMLElement('div');
-				$div->setAttribute('class', 'group');
-			
 				$label = Widget::Label(__('Language'));
 
 				$options = array(
@@ -302,9 +282,11 @@
 				}
 				$select = Widget::Select('fields[language]', $options);			
 				$label->appendChild($select);
-				$group->appendChild($label);			
+				$fieldset->appendChild($label);
+				
+				$layout->appendToCol($fieldset, 3);		
 	
-				$this->Form->appendChild($group);
+				$this->Form->appendChild($layout->generate());
 			}
 			###			
 			
