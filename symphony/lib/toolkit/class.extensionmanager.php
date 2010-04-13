@@ -328,10 +328,10 @@
 
 			foreach($services as $s){
 
-				$obj = $this->create($s['name']);
+				$obj = $this->create($s->name);
 
-				if(is_object($obj) && in_array($s['callback'], get_class_methods($obj))){
-					$obj->{$s['callback']}($context);
+				if(is_object($obj) && in_array($s->callback, get_class_methods($obj))){
+					$obj->{$s->callback}($context);
 					unset($obj);
 				}
 

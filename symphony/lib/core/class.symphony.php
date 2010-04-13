@@ -262,7 +262,16 @@
 			
 			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
 				$result = Symphony::Database()->query(
-					"SELECT `id` FROM `tbl_users` AS u WHERE u.username = '%s' AND u.password = '%s' LIMIT 1",
+					"
+						SELECT
+							u.id
+						FROM
+							tbl_users AS u
+						WHERE
+							u.username = '%s'
+							AND u.password = '%s'
+						LIMIT 1
+					",
 					array($username, $password)
 				);
 				
@@ -286,28 +295,42 @@
 			$this->Cookie->expire();
 			return false;
 		}
-
+		
 		public function logout(){
 			$this->Cookie->expire();
 		}
-
-		public function login($username, $password, $isHash=false){
-			
-			$username = self::$Database->cleanValue($username);
-			$password = self::$Database->cleanValue($password);
-			
-			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){			
+		
+		// TODO: Most of this logic is duplicated with the isLoggedIn function.
+		public function login($username, $password, $isHash = false) {
+			if (strlen(trim($username)) > 0 && strlen(trim($password)) > 0) {
+				if (!$isHash) $password = md5($password);
 				
-				if(!$isHash) $password = md5($password);
-
-				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_users` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
-
-				if($id){
+				$result = Symphony::Database()->query(
+					"
+						SELECT
+							u.id
+						FROM
+							tbl_users AS u
+						WHERE
+							u.username = '%s'
+							AND u.password = '%s'
+						LIMIT 1
+					",
+					array($username, $password)
+				);
+				
+				if ($result->valid()) {
+					$id = $result->current()->id;
 					$this->_user_id = $id;
 					$this->User = new User($id);
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_users', " `id` = '{$id}'");
+					
+					Symphony::Database()->update(
+						'tbl_users', "`id` = '%s'",
+						array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
+						array($id)
+					);
 					
 					$this->reloadLangFromAuthorPreference();
 
@@ -316,16 +339,14 @@
 			}
 			
 			return false;
-			
 		}
 		
-		public function loginFromToken($token){
-			
+		public function loginFromToken($token) {
 			$token = self::$Database->cleanValue($token);
 			
-			if(strlen(trim($token)) == 0) return false;
+			if (strlen(trim($token)) == 0) return false;
 			
-			if(strlen($token) == 6){
+			if (strlen($token) == 6){
 				$row = self::$Database->fetchRow(0, "SELECT `a`.`id`, `a`.`username`, `a`.`password` 
 													 FROM `tbl_users` AS `a`, `tbl_forgotpass` AS `f`
 													 WHERE `a`.`id` = `f`.`user_id` AND `f`.`expiry` > '".DateTimeObj::getGMT('c')."' AND `f`.`token` = '$token'

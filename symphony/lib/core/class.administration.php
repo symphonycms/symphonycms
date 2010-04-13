@@ -60,12 +60,27 @@
 			
 			if(empty($page)){
 				
-				if(!$this->isLoggedIn()): $page = '/login';
+				if (!$this->isLoggedIn()) {
+					$page = '/login';
+				}
 				
-				else:
-				
+				else {
+					var_dump($this->User->default_section);
+					exit;
+					$result = Symphony::Database()->query(
+						"
+							SELECT
+								s.handle
+							FROM
+								tbl_sections
+						
+						"
+					);
+					
+					exit;
+					
 					$section_handle = self::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '".$this->User->default_section."' LIMIT 1");
-				
+					
 					if(strlen(trim($section_handle)) == 0){
 						$section_handle = self::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
 					}
@@ -77,8 +92,7 @@
 					else{
 						redirect(ADMIN_URL . "/publish/{$section_handle}/");
 					}
-				
-				endif;
+				}
 			}
 			
 			if(!$this->_callback = $this->getPageCallback($page)){
