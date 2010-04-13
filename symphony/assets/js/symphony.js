@@ -95,6 +95,17 @@ var Symphony;
 	Symphony.Language = {
 		NAME: $('html').attr('lang'),
 		DICTIONARY: {},
+		
+		// TODO: Load regular expressions from lang.php.
+		createHandle: function(value) {
+			var exp = /[^\w]+/;
+			
+			value = value.split(exp).join('-');
+			value = value.replace(/^-/, '');
+			value = value.replace(/-$/, '');
+			
+			return value.toLowerCase();
+		},
 		get: function(string, tokens) {
 			// Get translated string
 			translatedString = Symphony.Language.DICTIONARY[string];
@@ -231,12 +242,13 @@ var Symphony;
 					}
 				}
 			}
-			
+/*			
 			else {
 				$('<span />')
 					.html('&#x21b5;')
 					.prependTo(cell);
 			}
+*/
 			
 			cell.wrapInner('<div />');
 		});

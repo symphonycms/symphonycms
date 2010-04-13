@@ -47,6 +47,7 @@ jQuery.fn.positionAncestor = function(selector) {
 		// Initialize fieldset:
 		layout.find('*').live('fieldset-initialize', function() {
 			var fieldset = $(this).addClass('fieldset');
+			var lines = fieldset.children('ol');
 			
 			fieldset.sortable({
 				connectWith:	'.fieldset',
@@ -70,8 +71,12 @@ jQuery.fn.positionAncestor = function(selector) {
 				}
 			});
 			
-			fieldset.children('ol')
-				.trigger('line-initialize')
+			if (lines.length == 0) {
+				$('<ol />').appendTo(fieldset);
+				lines = fieldset.children('ol');
+			}
+			
+			lines.trigger('line-initialize')
 				.children('li:not(.control)')
 				.trigger('field-initialize');
 			
@@ -502,9 +507,52 @@ jQuery.fn.positionAncestor = function(selector) {
 		var $ = jQuery;
 		
 		$('form').submit(function() {
+			var passed = true;
+			var fields = {};
+			
 			$('.layout').trigger('prepare-submit');
 			
-			return true;
+			// Force removal of duplicate field labels:
+			$('.layout .field-label > input').each(function() {
+				var input = $(this);
+				var field = input.parents('.field');
+				var handle = Symphony.Language.createHandle(input.val());
+				
+				if (field.length == 0) {
+					field = $('.layout .field.selected');
+				}
+				
+				if (fields[handle] != undefined) {
+					$('.layout .field.selected').trigger('field-edit-stop');
+					field.trigger('field-edit-start');
+					
+					passed = false;
+					return false;
+				}
+				
+				fields[handle] = field;
+			});
+			
+			// Force field labels to be set:
+			if (passed) $('.layout .field-label > input').each(function() {
+				var input = $(this);
+				var field = input.parents('.field');
+				var empty = input.val() == '';
+				
+				if (empty) {
+					if (field.length) {
+						$('.layout .field.selected').trigger('field-edit-stop');
+						field.trigger('field-edit-start');
+					}
+					
+					// TODO: Create error notice:
+					
+					passed = false;
+					return false;
+				}
+			});
+			
+			return passed;
 		});
 	});
 	
