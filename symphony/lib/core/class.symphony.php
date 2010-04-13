@@ -282,8 +282,8 @@
 					Symphony::Database()->update(
 						'tbl_users',
 						array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
-						"`id` = '%s'",
-						array($id)
+						array($id),
+						"`id` = '%s'"						
 					);
 					
 					$this->User = new User($id);
@@ -330,8 +330,8 @@
 					Symphony::Database()->update(
 						'tbl_users',
 						array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
-						"`id` = '%s'",
-						array($id)
+						array($id),
+						"`id` = '%s'"
 					);
 					
 					$this->reloadLangFromAuthorPreference();
