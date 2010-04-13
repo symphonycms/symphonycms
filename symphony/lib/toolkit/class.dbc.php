@@ -37,9 +37,9 @@
 		abstract public function escape($string);
 		abstract public function connect($string);
 		abstract public function select($database);
-		abstract public function insert($query, array $values = array());
-		abstract public function update($query, array $values = array());
-		abstract public function delete($query, array $values = array());
+		abstract public function insert($table, array $fields, $flag = null);
+		abstract public function update($table, array $fields, array $values = array(), $where = null);
+		abstract public function delete($table, array $values = array(), $where = null);
 		abstract public function query($query);
 		abstract public function truncate($table);
 		abstract public function lastError();
@@ -270,18 +270,55 @@
 			if(!mysql_select_db($database, $this->_connection)) throw new Exception('Could not select database "'.$database.'"');
 		}
 
-		public function insert($query, array $values = array()) {
+		public function insert($table, array $fields, $flag = null) {
+			$values = array(); $sets = array();
+
+			foreach ($fields as $key => $value) {
+				if (strlen($value) == 0) {
+					$sets[] = "`{$key}` = NULL";
+				}
+				else {
+					$values[] = $value;
+					$sets[] = "`{$key}` = '%" . count($values) . '$s\'';
+				}
+			}
+
+			$query = "INSERT INTO `{$table}` SET " . implode(', ', $sets);
+
+			if ($flag == Database::UPDATE_ON_DUPLICATE) {
+				$query .= ' ON DUPLICATE KEY UPDATE ' . implode(', ', $sets);
+			}
+
 			$this->query($query, $values);
 
 			return mysql_insert_id($this->_connection);
 		}
 
-		public function update($query, array $values = array()){
-			return $this->query($query, $values);
+		public function update($table, array $fields, array $values = array(), $where = null){
+			$sets = array(); $set_values = array();
+
+			foreach ($fields as $key => $value) {
+				if (strlen($value) == 0) {
+					$sets[] = "`{$key}` = NULL";
+				}
+				else {
+					$set_values[] = $value;
+					$sets[] = "`{$key}` = '%s'";
+				}
+			}
+
+			if (!is_null($where)) {
+				$where = " WHERE {$where}";
+			}
+
+			$values = array_merge($set_values, $values);
+
+			$this->query("UPDATE `{$table}` SET " . implode(', ', $sets) . $where, $values);
+
 		}
 
-		public function delete($query, array $values = array()){
-			return $this->query($query, $values);
+		public function delete($table, array $values = array(), $where = null){
+			return $this->query("DELETE FROM `$table` WHERE {$where}", $values);
 		}
 
 		public function truncate($table){
