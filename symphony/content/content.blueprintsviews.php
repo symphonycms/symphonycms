@@ -351,7 +351,8 @@
 		}
 		
 		public function __form() {
-			$this->setPageType('form');
+			$layout = new Layout(3, '1:1:1');
+			
 			$fields = array();
 			
 			// Verify view exists:
@@ -452,16 +453,12 @@
 			else {
 				$this->appendSubheading(($title ? $title : __('Untitled')));
 			}
-
+			
 		// Fieldset -----------------------------------------------------------
 
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings');
+			$fieldset = Widget::Fieldset(__('Essentials'));
 			
 		// Title --------------------------------------------------------------
-						
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
 						
 			$label = Widget::Label(__('Title'));		
 			$label->appendChild(Widget::Input(
@@ -472,8 +469,7 @@
 				$label = $this->wrapFormElementWithError($label, $this->_errors->title);
 			}
 			
-			$group->appendChild($label);
-			$fieldset->appendChild($group);
+			$fieldset->appendChild($label);
 
 		// Type ---------------------------------------------------------------
 
@@ -495,19 +491,15 @@
 
 			$container->appendChild($label);
 			$container->appendChild($tags);
-			$group->appendChild($container);
-			$this->Form->appendChild($fieldset);
+			$fieldset->appendChild($container);
+			
+			$layout->appendToCol($fieldset, 1);
 
 		// Fieldset -----------------------------------------------------------
-
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('URL Settings')));
+		
+			$fieldset = Widget::Fieldset(__('URL Settings'));
 
 		// Parent -------------------------------------------------------------
-
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('Parent'));
 			
@@ -529,7 +521,7 @@
 				'fields[parent]', $options
 			));
 
-			$group->appendChild($label);
+			$fieldset->appendChild($label);
 
 		// Handle -------------------------------------------------------------
 
@@ -542,7 +534,7 @@
 				$label = $this->wrapFormElementWithError($label, $this->_errors->handle);
 			}
 
-			$group->appendChild($label);
+			$fieldset->appendChild($label);
 
 		// Parameters ---------------------------------------------------------
 			
@@ -551,18 +543,12 @@
 				'fields[url-parameters]', $fields['url-parameters']
 			));
 
-			$group->appendChild($label);
-			$fieldset->appendChild($group);
-			$this->Form->appendChild($fieldset);
+			$fieldset->appendChild($label);
+			$layout->appendToCol($fieldset, 2);
 
 		// Fieldset -----------------------------------------------------------
 			
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('View Resources')));
-			
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
+			$fieldset = Widget::Fieldset(__('View Resources'));
 			
 			$label = Widget::Label(__('Events'));
 			
@@ -577,7 +563,7 @@
 			}
 
 			$label->appendChild(Widget::Select('fields[events][]', $options, array('multiple' => 'multiple')));		
-			$group->appendChild($label);
+			$fieldset->appendChild($label);
 			
 		// Data Sources -------------------------------------------------------
 
@@ -597,9 +583,10 @@
 			}
 			
 			$label->appendChild(Widget::Select('fields[data-sources][]', $options, array('multiple' => 'multiple')));
-			$group->appendChild($label);
-			$fieldset->appendChild($group);
-			$this->Form->appendChild($fieldset);
+			$fieldset->appendChild($label);
+			$layout->appendToCol($fieldset, 3);
+			
+			$this->Form->appendChild($layout->generate());
 			
 		// Controls -----------------------------------------------------------
 			

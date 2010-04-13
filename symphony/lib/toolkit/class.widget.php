@@ -73,6 +73,31 @@
 			return $form;		
 		}
 		
+		## First take at a generic fieldset builder for the new form layout
+		public static function Fieldset($title=NULL, $help=NULL, $attributes=NULL){
+			$fieldset = new XMLElement('fieldset');
+			
+			if(is_array($attributes) && !empty($attributes)){
+				foreach($attributes as $key => $val)
+					$form->setAttribute($key, $val);	
+			}			
+			
+			if($title){
+				$fieldset->appendChild(
+					new XMLElement('h3',$title)
+				);
+			}
+			if($help){
+				$fieldset->appendChild(
+					new XMLElement('p', $help, array(
+						'class' => 'help'
+					))
+				);
+			}
+			
+			return $fieldset;		
+		}
+		
 		###
 		# Simple way to create generic Symphony table wrapper
 		public static function Table($head=NULL, $foot=NULL, $body=NULL, $class=NULL, $id=NULL){
