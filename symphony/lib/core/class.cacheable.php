@@ -4,15 +4,8 @@
 	
 	##Interface for cacheable objects
 	Class Cacheable{
-
-		public $Database;
-
-		function __construct(MySQL $Database){			
-			$this->Database = $Database;
-		}
-
 		private function __optimise(){
-			$this->Database->query('OPTIMIZE TABLE `tbl_cache`');
+			Symphony::Database()->query('OPTIMIZE TABLE `tbl_cache`');
 		}
 
 		public function decompressData($data){
@@ -26,27 +19,33 @@
 		}
 
 		public function forceExpiry($hash){	
-			$this->Database->query("DELETE FROM `tbl_cache` WHERE `hash` = '$hash' LIMIT 1");				
+			// TODO: Replace with delete():
+			Symphony::Database()->query("DELETE FROM `tbl_cache` WHERE `hash` = '$hash' LIMIT 1");				
 		}
 
-		public function clean(){
-			$this->Database->query("DELETE FROM `tbl_cache` WHERE UNIX_TIMESTAMP() > `expiry`");
+		public function clean(){	
+			// TODO: Replace with delete():
+			Symphony::Database()->query("DELETE FROM `tbl_cache` WHERE UNIX_TIMESTAMP() > `expiry`");
 			$this->__optimise();
 		}
 
 		public function check($hash){
-
-			if($c = $this->Database->fetchRow(0, "SELECT SQL_NO_CACHE * FROM `tbl_cache` WHERE `hash` = '$hash' AND (`expiry` IS NULL OR UNIX_TIMESTAMP() <= `expiry`) LIMIT 1")){
-
-				if(!$c['data'] = $this->decompressData($c['data'])){
+			$results = Symphony::Database()->query(
+				"SELECT SQL_NO_CACHE * FROM `tbl_cache` AS c WHERE c.hash = '%s' AND (c.expiry IS NULL OR UNIX_TIMESTAMP() <= c.expiry) LIMIT 1",
+				array($hash)
+			);
+			
+			if ($results->valid()) {
+				$cache = $results->current();
+				
+				if (!$cache->data = $this->decompressData($cache->data)) {
 					$this->forceExpiry($hash);
 					return false;
 				}
-
-				return $c;			
-
+				
+				return $cache;
 			}
-
+			
 			$this->clean();
 			return false;
 		}

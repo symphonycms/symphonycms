@@ -14,13 +14,14 @@
 		}
 		
 		public function loadUser($id){
-
-			$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_users` WHERE `id` = '{$id}' LIMIT 1");
-
-			if(is_null($row)) return false;
-
-			foreach($row as $key => $val){
-				$this->$key = $val;
+			$result = Symphony::Database()->query("SELECT * FROM `tbl_users` WHERE `id` = '%s' LIMIT 1", array($id));
+			
+			if (!$result->valid()) return false;
+			
+			$row = $result->current();
+			
+			foreach ($row as $key => $value) {
+				$this->$key = $value;
 			}
 			
 			return true;

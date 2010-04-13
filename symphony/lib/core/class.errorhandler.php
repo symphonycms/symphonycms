@@ -115,7 +115,8 @@
 			$root->appendChild($trace);
 
 			if(is_object(Symphony::Database())){
-
+				
+				/*
 				$debug = Symphony::Database()->debug();
 
 				if(count($debug['query']) > 0){
@@ -130,7 +131,7 @@
 					
 					$root->appendChild($queries);
 				}
-				
+				*/
 			}
 			
 			return self::__transform($xml);

@@ -17,7 +17,7 @@
 
 			if (!self::$_initialized) {
 				
-				if(!is_object(Symphony::Database()) || !Symphony::Database()->isConnected()) return false;
+				if(!is_object(Symphony::Database()) || !Symphony::Database()->connected()) return false;
 
 				self::$_cache = new Cacheable(Symphony::Database());
 
@@ -109,13 +109,16 @@
 		}
 		
 		public static function read($id) {
-			return Symphony::Database()->fetchVar(
-				'session_data', 0, 
-				sprintf(
-					"SELECT `session_data` FROM `tbl_sessions` WHERE `session` = '%s' LIMIT 1", 
-					Symphony::Database()->cleanValue($id)
-				)
+			$result = Symphony::Database()->query(
+				"SELECT `session_data` FROM `tbl_sessions` WHERE `session` = '%s' LIMIT 1",
+				array($id)
 			);
+			
+			if ($result->valid()) {
+				return $result->current()->session_data;
+			}
+			
+			return null;
 		}
 
 		public static function write($id, $data) {
@@ -124,26 +127,18 @@
 				'session_expires' => time(), 
 				'session_data' => $data
 			);
-			return Symphony::Database()->insert($fields, 'tbl_sessions', true);
+			
+			return Symphony::Database()->insert('tbl_sessions', $fields, Database::UPDATE_ON_DUPLICATE);
 		}
-
+		
 		public static function destroy($id) {
-			return Symphony::Database()->query(
-				sprintf(
-					"DELETE FROM `tbl_sessions` WHERE `session` = '%s'",
-					Symphony::Database()->cleanValue($id)
-				)
-			);
+			return Symphony::Database()->delete('tbl_sessions', "`session` = '%s'", array($id));
 		}
-
+		
 		public static function gc($max) {
 			Symphony::$Log->pushToLog("Session: Taking out the trash!", E_NOTICE, true);
-			return Symphony::Database()->query(
-				sprintf(
-					"DELETE FROM `tbl_sessions` WHERE `session_expires` <= '%s'",
-					Symphony::Database()->cleanValue(time() - $max)
-				)
-			);
+			
+			return Symphony::Database()->delete('tbl_sessions', "`session_expires` <= '%s'", array(time() - $max));
 		}
 	}
 

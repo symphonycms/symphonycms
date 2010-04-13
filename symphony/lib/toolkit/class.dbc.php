@@ -1,7 +1,25 @@
 <?php
 	
+	Class DatabaseException extends Exception{
+		private $_error;
+		public function __construct($message, array $error=NULL){
+			parent::__construct($message);
+			$this->_error = $error;
+		}
+		public function getQuery(){
+			return $this->_error['query'];
+		}
+		public function getDatabaseErrorMessage(){
+			return $this->_error['msg'];
+		}		
+		public function getDatabaseErrorCode(){
+			return $this->_error['num'];
+		}		
+	}
+	
 	Abstract Class Database{ 
-
+		const UPDATE_ON_DUPLICATE = 1;
+		
 	    private $_props;
 	    protected $_connection;
 		protected $_last_query;
@@ -19,11 +37,11 @@
 		abstract public function escape($string);
 		abstract public function connect($string);
 		abstract public function select($database);
-		abstract public function insert(array $fields, $table);
-		abstract public function update(array $fields, $table, $where=NULL);
+		abstract public function insert($table, array $fields);
+		abstract public function update($table, $where=NULL, array $fields, array $values = array());
 		abstract public function query($query);	
 		abstract public function truncate($table);		
-		abstract public function delete($table, $where);
+		abstract public function delete($table, $where, array $values = array());
 		abstract public function lastError();
 		abstract public function connected();
 		
@@ -133,22 +151,46 @@
 	
 	}
 	
-	Class DBCMySQL extends Database{ 
-
-	    public function connected(){ 
+	Class DBCMySQL extends Database{
+	    protected $_log;
+	    
+	    protected function handleError($query) {
+			$msg = @mysql_error();
+			$num = @mysql_errno();
+			
+			$this->_log['error'][] = array(
+				'query'	=> $query,
+				'msg'	=> $msg,
+				'num'	=> $num
+			);
+			
+			throw new DatabaseException(
+				__(
+					'MySQL Error (%1$s): %2$s in query "%3$s"',
+					array($num, $msg, $query)
+				),
+				end($this->_log['error'])
+			);
+	    }
+	    
+	    public function connected(){
 	        if(is_resource($this->_connection)) return true;
 			return false;
-	    } 
+	    }
 
-	    public function affectedRows(){ 
-	        return @mysql_affected_rows($this->_connection); 
-	    } 
+	    public function affectedRows(){
+	        return @mysql_affected_rows($this->_connection);
+	    }
 
-		private function __prepareQuery($query, $values = array()){
+		private function __prepareQuery($query, array $values = array()){
 			if ($this->prefix != 'tbl_') {
 				$query = preg_replace('/tbl_([^\b`]+)/i', $this->prefix . '\\1', $query);
 			}
 			
+			// Sanitise values:
+			$values = array_map(array($this, 'escape'), $values);
+			
+			// Inject values:
 			$query = vsprintf(trim($query), $values);
 			
 			if (isset($details->force_query_caching)) {
@@ -212,40 +254,73 @@
 			if(!mysql_select_db($database, $this->_connection)) throw new Exception('Could not select database "'.$database.'"'); 
 		}
 		
-		public function insert(array $fields, $table){
-			foreach($this->cleanFields($fields) as $key => $val) 
-				$rows[] = " `$key` = $val";
+		public function insert($table, array $fields, $flag = null) {
+			$values = array(); $sets = array();
+			
+			foreach ($fields as $key => $value) {
+				if (strlen($value) == 0) {
+					$sets[] = "`{$key}` = NULL";
+				}
 				
-			$this->query("INSERT INTO $table SET " . implode(', ', $rows));
+				else {
+					$values[] = $value;
+					$sets[] = "`{$key}` = '%" . count($values) . '$s\'';
+				}
+			}
+			
+			$query = "INSERT INTO `{$table}` SET " . implode(', ', $sets);
+			
+			if ($flag == Database::UPDATE_ON_DUPLICATE) {
+				$query .= ' ON DUPLICATE KEY UPDATE ' . implode(', ', $sets);
+			}
+			
+			$this->query($query, $values);
 			
 			return mysql_insert_id($this->_connection);
 		}
-
-		public function update(array $fields, $table, $where=NULL){
-			foreach($this->cleanFields($fields) as $key => $val) 
-				$rows[] = " `$key` = $val";
+		
+		public function update($table, $where=NULL, array $fields, array $values = array()){
+			$sets = array(); $set_values = array();
+			
+			foreach ($fields as $key => $value) {
+				if (strlen($value) == 0) {
+					$sets[] = "`{$key}` = NULL";
+				}
 				
-			return $this->query("UPDATE $table SET " . implode(', ', $rows) . ($where != NULL ? " WHERE $where" : NULL));
+				else {
+					$set_values[] = $value;
+					$sets[] = "`{$key}` = '%s'";
+				}
+			}
+			
+			if (!is_null($where)) {
+				$where = " WHERE {$where}";
+			}
+			
+			$values = array_merge($set_values, $values);
+			
+			$this->query("UPDATE `{$table}` SET " . implode(', ', $sets) . $where, $values);
 		}
 		
-		public function delete($table, $where){
-			return $this->query("DELETE FROM `$table` WHERE $where");
-		}	
+		public function delete($table, $where, array $values = array()){
+			return $this->query("DELETE FROM `$table` WHERE {$where}", $values);
+		}
 
 		public function truncate($table){
 			return $this->query("TRUNCATE TABLE `{$table}`");
 		}
 
-	    public function query($query, $values = array(), $returnType='DBCMySQLResult'){ 
-	        if(!$this->connected()) throw new Exception('No Database Connection Found.'); 
-
+	    public function query($query, array $values = array(), $returnType='DBCMySQLResult'){ 
+	        if (!$this->connected()) throw new Exception('No Database Connection Found.'); 
+			
 			$query = $this->__prepareQuery($query, $values);
 		
 			$this->_last_query = $query;
-		
-			$result = mysql_query($query, $this->_connection); 
-	        if($result === false) throw new Exception('An error occurred while attempting to run query: ' . $query);
-
+			
+			$result = mysql_query($query, $this->_connection);
+			
+	        if ($result === false) $this->handleError($query);
+			
 	        return new $returnType($this, $result);
 	    } 
 
@@ -336,7 +411,7 @@
 			return number_format((float)$total, 4, '.', ',');
 		}	
 		
-		public function query($query, $values = array(), $returnType='DBCMySQLResult'){ 
+		public function query($query, array $values = array(), $returnType='DBCMySQLResult'){ 
 			$start = self::__precisionTimer();
 			$result = parent::query($query, $values, $returnType);
 			
