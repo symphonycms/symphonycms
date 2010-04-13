@@ -16,12 +16,12 @@
 			
 			// Build status array
 			$extensions = Symphony::Database()->query("SELECT * FROM `tbl_extensions`");
-			foreach($extensions as $e){
-				if($e['status'] == 'disabled') self::$_extension_status[$e['name']] = Extension::DISABLED;
-				elseif($e['status'] == 'enabled') self::$_extension_status[$e['name']] = Extension::ENABLED;
-				else self::$_extension_status[$e['name']] = Extension::NOT_INSTALLED;
+			if ($extensions->valid()) foreach($extensions as $e) {
+				if($e->status == 'disabled') self::$_extension_status[$e->name] = Extension::DISABLED;
+				elseif($e->status == 'enabled') self::$_extension_status[$e->name] = Extension::ENABLED;
+				else self::$_extension_status[$e->name] = Extension::NOT_INSTALLED;
 				
-				self::$_extension_version[$e['name']] = $e['version'];
+				self::$_extension_version[$e->name] = $e->version;
 			}
 		}
 		

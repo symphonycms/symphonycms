@@ -257,23 +257,30 @@
 			
 			if ($this->User) return true;
 			
-			$username = self::$Database->cleanValue($this->Cookie->get('username'));
-			$password = self::$Database->cleanValue($this->Cookie->get('pass'));
+			$username = $this->Cookie->get('username');
+			$password = $this->Cookie->get('pass');
 			
 			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
-			
-				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_users` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
-
-				if($id){
+				$result = Symphony::Database()->query(
+					"SELECT `id` FROM `tbl_users` AS u WHERE u.username = '%s' AND u.password = '%s' LIMIT 1",
+					array($username, $password)
+				);
+				
+				if ($result->valid()) {
+					$id = $result->current()->id;
 					$this->_user_id = $id;
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_users', " `id` = '$id'");
-					$this->User = new User($id);
 					
+					Symphony::Database()->update(
+						'tbl_users', "`id` = '%s'",
+						array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
+						array($id)
+					);
+					
+					$this->User = new User($id);
 					$this->reloadLangFromAuthorPreference();
 					
 					return true;
 				}
-				
 			}
 			
 			$this->Cookie->expire();
