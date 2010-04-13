@@ -65,30 +65,12 @@
 				}
 				
 				else {
-					var_dump($this->User->default_section);
-					exit;
-					$result = Symphony::Database()->query(
-						"
-							SELECT
-								s.handle
-							FROM
-								tbl_sections
-							
-						"
-					);
+					$section_handle = $this->User->default_section;
 					
-					exit;
-					
-					$section_handle = self::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '".$this->User->default_section."' LIMIT 1");
-					
-					if(strlen(trim($section_handle)) == 0){
-						$section_handle = self::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
-					}
-				
-					if(strlen(trim($section_handle)) == 0){
+					if (strlen(trim($section_handle)) == 0) {
 						redirect(ADMIN_URL . '/blueprints/sections/');
 					}
-				
+					
 					else{
 						redirect(ADMIN_URL . "/publish/{$section_handle}/");
 					}
