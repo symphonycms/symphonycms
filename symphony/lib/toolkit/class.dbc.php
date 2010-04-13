@@ -270,56 +270,18 @@
 			if(!mysql_select_db($database, $this->_connection)) throw new Exception('Could not select database "'.$database.'"');
 		}
 
-		public function insert($table, array $fields, $flag = null) {
-			$values = array(); $sets = array();
-
-			foreach ($fields as $key => $value) {
-				if (strlen($value) == 0) {
-					$sets[] = "`{$key}` = NULL";
-				}
-
-				else {
-					$values[] = $value;
-					$sets[] = "`{$key}` = '%" . count($values) . '$s\'';
-				}
-			}
-
-			$query = "INSERT INTO `{$table}` SET " . implode(', ', $sets);
-
-			if ($flag == Database::UPDATE_ON_DUPLICATE) {
-				$query .= ' ON DUPLICATE KEY UPDATE ' . implode(', ', $sets);
-			}
-
+		public function insert($table, array $values = array()) {
 			$this->query($query, $values);
 
 			return mysql_insert_id($this->_connection);
 		}
 
-		public function update($table, $where=NULL, array $fields, array $values = array()){
-			$sets = array(); $set_values = array();
-
-			foreach ($fields as $key => $value) {
-				if (strlen($value) == 0) {
-					$sets[] = "`{$key}` = NULL";
-				}
-
-				else {
-					$set_values[] = $value;
-					$sets[] = "`{$key}` = '%s'";
-				}
-			}
-
-			if (!is_null($where)) {
-				$where = " WHERE {$where}";
-			}
-
-			$values = array_merge($set_values, $values);
-
-			$this->query("UPDATE `{$table}` SET " . implode(', ', $sets) . $where, $values);
+		public function update($query, array $values = array()){
+			return $this->query($query, $values);
 		}
 
-		public function delete($table, $where, array $values = array()){
-			return $this->query("DELETE FROM `$table` WHERE {$where}", $values);
+		public function delete($query, array $values = array()){
+			return $this->query($query, $values);
 		}
 
 		public function truncate($table){

@@ -134,13 +134,12 @@
 			return $user;
 		}
 
-		/* TODO: Make these use update() */
 		public static function deactivateAuthToken($user_id){
-			return Symphony::Database()->query("UPDATE `tbl_users` SET `auth_token_active` = 'no' WHERE `id` = '$user_id' LIMIT 1");
+			return Symphony::Database()->update("UPDATE `tbl_users` SET `auth_token_active` = 'no' WHERE `id` = '%d' LIMIT 1", array($user_id));
 		}
 
 		public static function activateAuthToken($user_id){
-			return Symphony::Database()->query("UPDATE `tbl_users` SET `auth_token_active` = 'yes' WHERE `id` = '$user_id' LIMIT 1");
+			return Symphony::Database()->update("UPDATE `tbl_users` SET `auth_token_active` = 'yes' WHERE `id` = '%d' LIMIT 1", array($user_id));
 		}
 	}
 
