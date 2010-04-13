@@ -1,6 +1,6 @@
 <?php
 
-	require_once CORE . '/class.cacheable.php';	
+	require_once CORE . '/class.cache.php';	
 	require_once TOOLKIT . '/class.xslproc.php';
 	require_once TOOLKIT . '/class.datasource.php';
 	

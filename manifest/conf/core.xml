@@ -35,4 +35,5 @@
   <date-format>d F Y</date-format>
   <time-format>H:i</time-format>
   <timezone>Australia/Melbourne</timezone>
+  <cache-driver>File</cache-driver>
 </configuration>

@@ -8,6 +8,7 @@
 	require_once(CORE . '/class.log.php');
 	require_once(CORE . '/class.cookie.php');
 	require_once(CORE . '/interface.singleton.php');
+	require_once(CORE . '/class.cache.php');
 	
 	require_once(TOOLKIT . '/class.page.php');
 	require_once(TOOLKIT . '/class.view.php');
@@ -174,6 +175,8 @@
 
 			$this->initialiseDatabase();
 			
+			Cache::setDriver(self::Configuration()->core()->{'cache-driver'});
+			
 			Lang::loadAll(true);
 
 		}
@@ -181,7 +184,6 @@
 		public function lang(){
 			return self::$_lang;
 		}
-		
 		public function initialiseCookie(){
 			
 			$cookie_path = @parse_url(URL, PHP_URL_PATH);

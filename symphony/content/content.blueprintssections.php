@@ -30,7 +30,6 @@
 					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
 				);
 			}
-
 			else {
 				foreach ($sections as $s) {
 					$entry_count = 0;
