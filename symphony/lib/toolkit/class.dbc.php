@@ -37,11 +37,11 @@
 		abstract public function escape($string);
 		abstract public function connect($string);
 		abstract public function select($database);
-		abstract public function insert($table, array $fields);
-		abstract public function update($table, $where=NULL, array $fields, array $values = array());
+		abstract public function insert($query, array $values = array());
+		abstract public function update($query, array $values = array());
+		abstract public function delete($query, array $values = array());
 		abstract public function query($query);
 		abstract public function truncate($table);
-		abstract public function delete($table, $where, array $values = array());
 		abstract public function lastError();
 		abstract public function connected();
 
@@ -270,7 +270,7 @@
 			if(!mysql_select_db($database, $this->_connection)) throw new Exception('Could not select database "'.$database.'"');
 		}
 
-		public function insert($table, array $values = array()) {
+		public function insert($query, array $values = array()) {
 			$this->query($query, $values);
 
 			return mysql_insert_id($this->_connection);
