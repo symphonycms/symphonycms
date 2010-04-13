@@ -3,23 +3,19 @@
 	Class UserManager{
 
 		public static function add($fields){
+			$user_id = Symphony::Database()->insert('tbl_users', $fields);
 
-			if(!Symphony::Database()->insert($fields, 'tbl_users')) return false;
-			$user_id = Symphony::Database()->getInsertID();
+			if($user_id == 0 || !$user_id) return false;
 
 			return $user_id;
 		}
 
 		public static function edit($id, $fields){
-
-			if(!Symphony::Database()->update($fields, 'tbl_users', " `id` = '$id'")) return false;
-
-			return true;
+			return Symphony::Database()->update('tbl_users', $fields, array($id), "`id` = %d");
 		}
 
 		public static function delete($id){
-			Symphony::Database()->delete('tbl_users', " `id` = '$id'");
-			return true;
+			return Symphony::Database()->delete('tbl_users', array($id), "`id` = %d");
 		}
 
 		public static function fetch($sortby=NULL, $sortdirection='ASC', $limit=NULL, $start=NULL){
@@ -117,7 +113,7 @@
 					FROM
 						`tbl_users` AS u
 					WHERE
-						u.username = '%%s'
+						u.username = '%s'
 					LIMIT
 						1
 				",

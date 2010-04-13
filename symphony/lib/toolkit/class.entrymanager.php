@@ -1,4 +1,7 @@
 <?php
+	/*
+	**	NO DBC INTEGRATION HAS BEEN DONE ON THIS PAGE
+	*/
 	
 	//include_once(TOOLKIT . '/class.sectionmanager.php');
 	//include_once(TOOLKIT . '/class.textformattermanager.php');

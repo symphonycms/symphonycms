@@ -136,7 +136,7 @@
 		}
 
 		## Silently attempt to change the storage engine. This prevents INNOdb errors.
-		$db->query('SET storage_engine=MYISAM', $e);
+		$db->query('SET storage_engine=MYISAM');
 		
         $queries = preg_split('/;[\\r\\n]+/', $data, -1, PREG_SPLIT_NO_EMPTY);
 
@@ -395,8 +395,9 @@
 							 $fields['database']['password'], 
 							 $fields['database']['port']);
 
-				$tables = $db->fetch(sprintf(
-					"SHOW TABLES FROM `%s` LIKE '%s'",
+				$tables = $db->query("
+						SHOW TABLES FROM `%s` LIKE '%s'
+					",
 					mysql_escape_string($fields['database']['name']),
 					mysql_escape_string($fields['database']['prefix']) . '%'
 				));

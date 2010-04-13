@@ -1,4 +1,7 @@
-<?php
+<?php	
+	/*
+	**	NO DBC INTEGRATION HAS BEEN DONE ON THIS PAGE
+	*/
 	
 	define_safe('__ENTRY_OK__', 0);
 	define_safe('__ENTRY_FIELD_ERROR__', 100);

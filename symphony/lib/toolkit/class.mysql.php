@@ -1,4 +1,7 @@
 <?php
+	/*
+	** Deprecated, to be removed ASAP, here for reference
+	*/
 
 	Class DatabaseException extends Exception{
 		private $_error;

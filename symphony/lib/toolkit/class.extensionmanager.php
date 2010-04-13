@@ -132,16 +132,31 @@
 	        $classname = $this->__getClassName($name);
 	        $path = $this->__getDriverPath($name);
 
-			if(!@file_exists($path)) return false;
+			if(!file_exists($path)) return false;
 
-			$delegates = Symphony::Database()->fetchCol('id', "SELECT tbl_extensions_delegates.`id` FROM `tbl_extensions_delegates`
-											 LEFT JOIN `tbl_extensions` ON (`tbl_extensions`.id = `tbl_extensions_delegates`.extension_id)
-											 WHERE `tbl_extensions`.name = '$name'");
-			if (is_array($delegates) and !empty($delegates)) {
-				Symphony::Database()->delete('tbl_extensions_delegates', " `id` IN ('".@implode("', '", $delegates)."') ");
-			}
+			$query = sprintf("
+					SELECT
+						ed.`id`
+					FROM
+						`tbl_extensions_delegates` AS ed
+					LEFT JOIN
+						`tbl_extensions` AS e
+					ON
+						(e.id = ed.extension_id)
+					WHERE
+						e.name = '%s'
+				",
+				array($name)
+			);
 
-			if(!$delegates_only) Symphony::Database()->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name'");
+			$result = Symphony::Database()->query($query);
+			$delegates = $result->resultColumn('id');
+
+			if(is_array($delegates) && !empty($delegates))
+				Symphony::Database()->delete("tbl_extensions_delegates", array(implode("', '", $delegates)), "`extension_id` IN ('%s')");
+
+			if(!$delegates_only)
+				Symphony::Database()->delete("tbl_extensions", array($name), "`name` = '%s'");
 
 			## Remove the unused DB records
 			$this->__cleanupDatabase();
@@ -154,41 +169,39 @@
 	        $classname = $this->__getClassName($name);
 	        $path = $this->__getDriverPath($name);
 
-			if(!@file_exists($path)) return false;
+			if(!file_exists($path)) return false;
 
 			require_once($path);
 
 			$subscribed = call_user_func(array(&$classname, "getSubscribedDelegates"));
 
 			if($existing_id = $this->fetchExtensionID($name))
-				Symphony::Database()->query("DELETE FROM `tbl_extensions_delegates` WHERE `tbl_extensions_delegates`.extension_id = $existing_id");
+				Symphony::Database()->delete("tbl_extensions_delegates", array($existing_id), "`extension_id` = %d");
 
-			Symphony::Database()->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name'");
+			Symphony::Database()->delete("tbl_extensions", array($name), "`name` = '%s'");
 
 			$info = $this->about($name);
 
-			Symphony::Database()->insert(
+			$id = Symphony::Database()->insert(
+				'tbl_extensions',
 				array(
 					'name' => $name,
 					'status' => ($enable ? 'enabled' : 'disabled'),
 					'version' => $info['version']
-				),
-				'tbl_extensions'
+				)
 			);
-
-			$id = Symphony::Database()->getInsertID();
 
 			if(is_array($subscribed) && !empty($subscribed)){
 				foreach($subscribed as $s){
 
 					Symphony::Database()->insert(
+						'tbl_extensions_delegates',
 						array(
 							'extension_id' => $id,
 							'page' => $s['page'],
 							'delegate' => $s['delegate'],
 							'callback' => $s['callback']
-						),
-						'tbl_extensions_delegates'
+						)
 					);
 
 				}
@@ -202,14 +215,7 @@
 
 		public function listInstalledHandles(){
 			if(is_null(self::$_enabled_extensions)) {
-				$result = Symphony::Database()->query("
-					SELECT
-						`name`
-					FROM
-						`tbl_extensions`
-					WHERE
-						`status` = 'enabled'
-				");
+				$result = Symphony::Database()->query("SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'");
 
 				self::$_enabled_extensions = $result->resultColumn('name');
 			}
@@ -348,7 +354,7 @@
 		        $classname = $this->__getClassName($name);
 		        $path = $this->__getDriverPath($name);
 
-		        if(!@is_file($path)){
+		        if(!is_file($path)){
 			        if(!$slient) trigger_error(__('Could not find extension at location %s', array($path)), E_USER_ERROR);
 			        return false;
 		        }
@@ -397,7 +403,20 @@
 		}
 
 		public function fetchExtensionID($name){
-			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
+			$result = Symphony::Database()->query("
+					SELECT
+						`id`
+					FROM
+						`tbl_extensions`
+					WHERE
+						`name` = '%s'
+					LIMIT
+						1
+				",
+				array($name)
+			);
+
+			return $result->resultValue('id');
 		}
 
 		public function fetchCustomMenu($name){
@@ -408,12 +427,12 @@
 
 		        $path = $this->__getDriverPath($name);
 
-				if(!@file_exists($path)) return false;
+				if(!file_exists($path)) return false;
 
 				require_once($path);
 			}
 
-			return @call_user_func(array(&$classname, 'fetchCustomMenu'));
+			return call_user_func(array(&$classname, 'fetchCustomMenu'));
 		}
 
         ## Returns the about details of a service
@@ -422,16 +441,16 @@
 	        $classname = $this->__getClassName($name);
 	        $path = $this->__getDriverPath($name);
 
-			if(!@file_exists($path)) return false;
+			if(!file_exists($path)) return false;
 
 			require_once($path);
 
-	        if($about = @call_user_func(array(&$classname, "about"))){
+	        if($about = call_user_func(array(&$classname, "about"))){
 
 				$about['handle'] = $name;
 				$about['status'] = $this->fetchStatus($name);
 
-				$nav = @call_user_func(array(&$classname, 'fetchNavigation'));
+				$nav = call_user_func(array(&$classname, 'fetchNavigation'));
 
 				if($nav != NULL) $about['navigation'] = $nav;
 
@@ -447,32 +466,39 @@
 		private function __cleanupDatabase(){
 
 			## Grab any extensions sitting in the database
-			$rows = Symphony::Database()->fetch("SELECT * FROM `tbl_extensions`");
+			$result = Symphony::Database()->query("SELECT `name` FROM `tbl_extensions`");
 
 			## Iterate over each row
-			if(is_array($rows) && !empty($rows)){
-				foreach($rows as $r){
-					$name = $r['name'];
+			if($result->valid()) foreach($result as $r) {
+				$name = $r->name;
 
-					## Grab the install location
-					$path = $this->__getClassPath($name);
+				## Grab the install location
+				$path = $this->__getClassPath($name);
 
-					## If it doesnt exist, remove the DB rows
-					if(!@is_dir($path)){
+				## If it doesnt exist, remove the DB rows
+				if(!is_dir($path)){
+					if($existing_id = $this->fetchExtensionID($name))
+						Symphony::Database()->delete("tbl_extensions_delegates", array($existing_id), "`extension_id` = %d");
 
-						if($existing_id = $this->fetchExtensionID($name))
-							Symphony::Database()->query("DELETE FROM `tbl_extensions_delegates` WHERE `tbl_extensions_delegates`.extension_id = $existing_id");
+					Symphony::Database()->delete("tbl_extensions", array($name), "`name` = '%s'");
 
-						Symphony::Database()->query("DELETE FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
-
-					}
 				}
 			}
 
 			## Remove old delegate information
-			$disabled = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_extensions` WHERE `status` = 'disabled'");
-			$sql = "DELETE FROM `tbl_extensions_delegates` WHERE `extension_id` IN ('".@implode("', '", $disabled)."')";
-			Symphony::Database()->query($sql);
+			$disabled = Symphony::Database()->query("
+					SELECT
+						`id`
+					FROM
+						`tbl_extensions`
+					WHERE
+						`status` = '%s'
+				",
+				array('disabled')
+			);
+
+			if($disabled->valid())
+				Symphony::Database()->delete("tbl_extensions_delegates", array(implode("', '", $disabled)), "`extension_id` IN ('%s')");
 
 		}
 

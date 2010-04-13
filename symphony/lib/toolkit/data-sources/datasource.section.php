@@ -1,4 +1,7 @@
 <?php
+	/*
+	**	NO DBC INTEGRATION HAS BEEN DONE ON THIS PAGE
+	*/
 
 	if(!function_exists('appendParamOutputValue')){
 		function appendParamOutputValue($key, $value){

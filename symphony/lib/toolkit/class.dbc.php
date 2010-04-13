@@ -17,6 +17,64 @@
 		}
 	}
 
+	Class DatabaseExceptionHandler extends GenericExceptionHandler{
+
+		public static function render($e){
+
+			require_once(TOOLKIT . '/class.xslproc.php');
+
+			$xml = new DOMDocument('1.0', 'utf-8');
+			$xml->formatOutput = true;
+
+			$root = $xml->createElement('data');
+			$xml->appendChild($root);
+
+			$details = $xml->createElement('details');
+			$details->appendChild($xml->createElement('message', General::sanitize($e->getDatabaseErrorMessage())));
+			$details->appendChild($xml->createElement('query', General::sanitize($e->getQuery())));
+			$root->appendChild($details);
+
+
+			$trace = $xml->createElement('backtrace');
+
+			foreach($e->getTrace() as $t){
+
+				$item = $xml->createElement('item');
+
+				if(isset($t['file'])) $item->setAttribute('file', General::sanitize($t['file']));
+				if(isset($t['line'])) $item->setAttribute('line', $t['line']);
+				if(isset($t['class'])) $item->setAttribute('class', General::sanitize($t['class']));
+				if(isset($t['type'])) $item->setAttribute('type', $t['type']);
+				$item->setAttribute('function', General::sanitize($t['function']));
+
+				$trace->appendChild($item);
+			}
+			$root->appendChild($trace);
+
+			if(is_object(Symphony::Database())){
+
+				$debug = Symphony::Database()->debug();
+
+				if(count($debug['query']) > 0){
+
+					$queries = $xml->createElement('query-log');
+
+					foreach($debug['query'] as $query){
+
+						$item = $xml->createElement('item', General::sanitize($query['query']));
+						if(isset($query['time'])) $item->setAttribute('time', $query['time']);
+						$queries->appendChild($item);
+					}
+
+					$root->appendChild($queries);
+				}
+
+			}
+
+			return parent::__transform($xml, 'exception.database.xsl');
+		}
+	}
+
 	Abstract Class Database{
 		const UPDATE_ON_DUPLICATE = 1;
 
@@ -133,7 +191,7 @@
 		public function __construct(Database &$db, $result){
 			parent::__construct($db, $result);
 
-			if(!is_resource($this->_result)) throw new Exception("Not a valid MySQL Resource.");
+			if(!is_resource($this->_result)) throw new DatabaseException("Not a valid MySQL Resource.");
 
 			$this->_length = (integer)mysql_num_rows($this->_result);
 			$this->resultOutput = self::RESULT_OBJECT;
@@ -145,20 +203,23 @@
 
 		public function current(){
 			// TODO: Finalise Exception Message
-			if($this->_length == 0) throw new Exception('Cannot get current, no data returned.');
+			if($this->_length == 0) throw new DatabaseException('Cannot get current, no data returned.');
 
 			if($this->_lastPosition != NULL && $this->position() != ($this->_lastPosition + 1)){
 				mysql_data_seek($this->_result, $this->position());
 			}
 
-			$this->_current = ($this->resultOutput == self::RESULT_OBJECT ? mysql_fetch_object($this->_result) : mysql_fetch_assoc($this->_result));
+			$this->_current = ($this->resultOutput == self::RESULT_OBJECT
+				? mysql_fetch_object($this->_result)
+				: mysql_fetch_assoc($this->_result)
+			);
 
 			return $this->_current;
 		}
 
 		public function rewind(){
 			// TODO: Finalise Exception Message
-			if($this->_length == 0) throw new Exception('Cannot rewind, no data returned.');
+			if($this->_length == 0) throw new DatabaseException('Cannot rewind, no data returned.');
 
 			mysql_data_seek($this->_result, 0);
 
@@ -233,9 +294,9 @@
 			$details = (object)parse_url($string);
 			$details->path = trim($details->path, '/');
 
-	        if(is_null($details->path)) throw new Exception('MySQL database not selected');
+	        if(is_null($details->path)) throw new DatabaseException('MySQL database not selected');
 
-	        if(is_null($details->host)) throw new Exception('MySQL hostname not set');
+	        if(is_null($details->host)) throw new DatabaseException('MySQL hostname not set');
 
 			if(isset($resource) && is_resource($resource)){
 				$this->_connection = $resource;
@@ -267,7 +328,7 @@
 		}
 
 		public function select($database){
-			if(!mysql_select_db($database, $this->_connection)) throw new Exception('Could not select database "'.$database.'"');
+			if(!mysql_select_db($database, $this->_connection)) throw new DatabaseException('Could not select database "'.$database.'"');
 		}
 
 		public function insert($table, array $fields, $flag = null) {
@@ -326,7 +387,7 @@
 		}
 
 	    public function query($query, array $values = array(), $returnType='DBCMySQLResult'){
-	        if (!$this->connected()) throw new Exception('No Database Connection Found.');
+	        if (!$this->connected()) throw new DatabaseException('No Database Connection Found.');
 
 			$query = $this->__prepareQuery($query, $values);
 
@@ -365,21 +426,25 @@
 		public function lastQuery(){
 			return $this->_last_query;
 		}
+
+		public function debug() {
+			// TODO: This function/look at moving it to Profiler based.
+		}
+		
+		public function getLastError() {
+			// TODO: This function
+		}
 	}
 
+	/*
+	**	Look at removing/altering/fixing this ..
+	*/
 	Final Class DBCMySQLProfiler extends DBCMySQL{
 
 		private $_query_log;
 
 		private static function __precisionTimer($action = 'start', $start_time = null){
-			list($time, $micro) = explode(' ', microtime());
-
-			$currtime = $time + $micro;
-
-			if(strtolower($action) == 'stop')
-				return number_format(abs($currtime - $start_time), 4, '.', ',');
-
-			return $currtime;
+			return precision_timer($action, $start_time);
 		}
 
 		public function __construct(){
