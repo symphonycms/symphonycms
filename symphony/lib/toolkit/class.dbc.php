@@ -161,7 +161,7 @@
 			$result = array();
 			$this->rewind();
 
-			if(!$this->valid()) return;
+			if(!$this->valid()) return false;
 
 			$this->resultOutput = DatabaseResultIterator::RESULT_OBJECT;
 
@@ -176,7 +176,7 @@
 			if($offset == 0) $this->rewind();
 			else $this->offset($offset);
 
-			if(!$this->valid()) return;
+			if(!$this->valid()) return false;
 
 			$this->resultOutput = DatabaseResultIterator::RESULT_OBJECT;
 

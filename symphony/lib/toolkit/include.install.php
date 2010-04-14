@@ -389,7 +389,7 @@
 			$database_connection_error = false;
 			
 			try{
-				$db = new MySQL;
+				$db = new DBCMySQLProfiler;
 				$db->connect($fields['database']['host'], 
 							 $fields['database']['username'], 
 							 $fields['database']['password'], 
@@ -406,6 +406,9 @@
 			catch(DatabaseException $e){
 				$database_connection_error = true;
 			}
+			
+			$mysql_version = $db->query("SELECT VERSION() AS `version`");
+			$mysql_version = ($mysql_version->valid()) ? $mysql_version->current()->version : null;
 			
 			## Invalid path
 			if(!@is_dir(rtrim($fields['docroot'], '/') . '/symphony')){
@@ -443,9 +446,8 @@
 			}
 			
 			## Incorrect MySQL version
-			elseif(version_compare($db->fetchVar('version', 0, "SELECT VERSION() AS `version`;"), '4.1', '<')){
-				$version = $db->fetchVar('version', 0, "SELECT VERSION() AS `version`;");
-				$Page->log->pushToLog('Configuration - MySQL Version is not correct. '.$version.' detected.', E_NOTICE, true);
+			elseif(version_compare($mysql_version, '4.1', '<')){
+				$Page->log->pushToLog('Configuration - MySQL Version is not correct. '.$mysql_version.' detected.', E_NOTICE, true);
 				define("kDATABASE_VERSION_WARNING", true);
 
 				$warnings['database-incorrect-version'] = __('Symphony requires <code>MySQL 4.1</code> or greater to work, however version <code>%s</code> was detected. This requirement must be met before installation can proceed.', array($version));
