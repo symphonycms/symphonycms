@@ -57,7 +57,9 @@
 	
 		public function __construct($version='1.0', $encoding='utf-8', DOMDocumentType $dtd=NULL){
 			
-			$this->Headers = new DocumentHeaders;
+			$this->Headers = new DocumentHeaders(array(
+				'Content-Type', "text/html; charset={$encoding}",
+			));
 			
 			if(is_null($dtd)){
 				$dtd = DOMImplementation::createDocumentType('html');
@@ -159,8 +161,8 @@
 		);
 	}
 	
-	$page->Headers->append('Content-Type', 'text/plain');
-	
+	//Uncomment this to see output as plain text
+	//$page->Headers->append('Content-Type', 'text/plain');
 	
 	$output = (string)$page;
 	$page->Headers->append('Content-Length', strlen($output));
