@@ -181,7 +181,7 @@
 
 			$fields = array(
 				'field_id' => $field_id,
-				'pre_populate_source' => (is_null($this->get('pre_populate_source')) ? NULL : implode(',', $this->get('pre_populate_source')),
+				'pre_populate_source' => (is_null($this->get('pre_populate_source'))) ? NULL : implode(',', $this->get('pre_populate_source')),
 				'validator' => ($fields['validator'] == 'custom' ? NULL : $this->get('validator'))
 			);
 
