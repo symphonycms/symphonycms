@@ -45,8 +45,6 @@
 		*/
 
 		public function __viewIndex() {
-
-			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Views'))));
 
 			$nesting = (Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes');
@@ -169,7 +167,6 @@
 
 			$view = View::loadFromPath($view_pathname);
 
-			$this->setPageType('form');
 			$this->Form->setAttribute('action', ADMIN_URL . '/blueprints/views/template/' . $view->path . '/');
 
 			$filename = $view->handle . '.xsl';

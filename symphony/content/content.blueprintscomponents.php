@@ -8,7 +8,6 @@
 
 		function __construct(){
 			parent::__construct();
-			$this->setPageType('forms');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Components'))));
 		}
 

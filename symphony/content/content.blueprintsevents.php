@@ -7,7 +7,6 @@
 	Class contentBlueprintsEvents extends AdministrationPage{
 
 		public function __viewIndex() {
-			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Events'))));
 
 			$this->appendSubheading(__('Events') . $heading, Widget::Anchor(
@@ -199,7 +198,6 @@
 
 			if(isset($_POST['fields'])) $fields = $_POST['fields'];
 
-			$this->setPageType('form');
 			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Events'), $about['name'])));
 			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
 

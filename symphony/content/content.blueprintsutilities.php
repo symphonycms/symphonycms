@@ -8,7 +8,6 @@
 		private $_existing_file;
 		
 		public function __viewIndex() {
-			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Utilities'))));
 			
 			$this->appendSubheading(__('Utilities') . $heading, Widget::Anchor(
@@ -80,7 +79,6 @@
 		}
 		
 		public function __viewEdit() {
-			## DEPRECATED? $this->setPageType('form');
 			$layout = new Layout('2', '2:1');
 			
 			$this->_existing_file = (isset($this->_context[1]) ? $this->_context[1] . '.xsl' : NULL);

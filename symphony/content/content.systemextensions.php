@@ -53,8 +53,6 @@
 		}
 
 		function buildTable($extensions, $prefixes=false){
-		
-			$this->setPageType('table');	
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Extensions'))));
 			$this->appendSubheading(__('Extensions'));
 			

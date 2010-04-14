@@ -26,7 +26,6 @@
 		}
 
 		public function __viewIndex() {
-			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Data Sources'))));
 
 			$this->appendSubheading(__('Data Sources') . $heading, Widget::Anchor(
@@ -341,8 +340,6 @@
 				}
 			}
 
-			$this->setPageType('form');
-
 			// Track type with a hidden field:
 			if($this->editing || ($this->editing && isset($_POST['type']))){
 				$input = Widget::Input('type', $this->type, 'hidden');
@@ -420,8 +417,6 @@
 		}
 
 		function __viewInfo(){
-			$this->setPageType('form');
-
 			$datasource = DataSource::loadFromName($this->_context[1], NULL, false);
 			$about = $datasource->about();
 

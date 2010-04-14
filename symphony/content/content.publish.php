@@ -33,16 +33,8 @@
 		}
 
 		public function __viewIndex(){
-
-
-			/*if(!$section_id = SectionManager::instance()->fetchIDFromHandle($this->_context['section_handle']))
-				Administration::instance()->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
-
-			$section = SectionManager::instance()->fetch($section_id);*/
-
 			$section = Section::load(sprintf('%s/%s.xml', SECTIONS, $this->_context['section_handle']));
 
-			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->name)));
 			$this->Form->setAttribute("class", $section->handle);
 
@@ -524,7 +516,6 @@
 
 			$section = Section::load(sprintf('%s/%s.xml', SECTIONS, $this->_context['section_handle']));
 
-			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->name)));
 			$this->appendSubheading(__('Untitled'));
@@ -815,7 +806,6 @@
 				));
 			}
 
-			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), $section->get('name'), $title)));
 			$this->appendSubheading($title);

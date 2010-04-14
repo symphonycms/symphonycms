@@ -13,8 +13,6 @@
 		}
 		
 		public function __viewIndex(){
-			
-			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('User Roles'))));
 			$this->appendSubheading(
 				__('User Roles'), Widget::Anchor(__('Add a Role'), Administration::instance()->getCurrentPageURL().'new/', __('Add a new Role'), 'create button')
@@ -208,8 +206,6 @@
 					
 				}
 			}
-			
-			$this->setPageType('form');
 			
 			/**********
 

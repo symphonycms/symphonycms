@@ -14,8 +14,6 @@
 		}
 		
 		public function __viewIndex(){
-			
-			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Users'))));
 			$this->appendSubheading(
 				__('Users'), Widget::Anchor(__('Add a User'), Administration::instance()->getCurrentPageURL().'new/', __('Add a new User'), 'create button')
@@ -170,8 +168,6 @@
 					
 				}
 			}
-			
-			## DEPRECATED? $this->setPageType('form');
 			
 			$isOwner = false;
 			

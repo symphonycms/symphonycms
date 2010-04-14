@@ -11,7 +11,6 @@
 		private $section;
 
 		public function __viewIndex(){
-			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a section'), 'create button'));
 
@@ -403,7 +402,6 @@
 				}
 			}
 
-			$this->setPageType('form');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(($existing instanceof Section ? $existing->name : __('Untitled')));
 

@@ -6,7 +6,6 @@
 		public function __construct(){
 			parent::__construct();
 			
-			## DEPRECATED $this->setPageType('form');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Settings'))));
 		}
 		

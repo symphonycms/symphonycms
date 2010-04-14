@@ -31,10 +31,6 @@
 
 		}
 
-		public function setPageType($type){
-			//$this->addStylesheetToHead(ADMIN_URL . '/assets/css/' . ($type == 'table' ? 'tables' : 'forms') . '.css', 'screen', 30);
-		}
-
 		public function setTitle($val, $position=null) {
 			return $this->addElementToHead(new XMLElement('title', $val), $position);
 		}
