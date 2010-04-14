@@ -334,6 +334,28 @@
 			return ($simulate == true ? true : file_put_contents($pathname, $doc->saveXML()));
 		}
 
+		public function rename(array $sections) {
+			/*
+				$sections = array(
+					'old-section-name',
+					'new-section-name'
+				)
+
+			 	TODO:
+				Upon renaming a section, data-sources/events attached to it must update.
+				Views will also need to update to ensure they still have references to the same
+				data-sources/sections
+			*/
+
+			list($old, $new) = $sections;
+
+			self::delete($old);
+		}
+
+		public function delete($handle){
+			return General::deleteFile(SECTIONS . '/' . $handle . '.xml');
+		}
+
 		public function toDoc(array $additional_fragments=NULL){
 			$doc = new DOMDocument('1.0', 'UTF-8');
 			$doc->formatOutput = true;

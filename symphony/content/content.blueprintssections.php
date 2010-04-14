@@ -44,18 +44,18 @@
 						",
 						array($s->handle)
 					);
-					
+
 					if ($result->valid()) {
 						$entry_count = (integer)$result->current()->count;
 					}
-					
+
 					// Setup each cell
 					$td1 = Widget::TableData(Widget::Anchor($s->name, Administration::instance()->getCurrentPageURL() . "edit/{$s->handle}/", NULL, 'content'));
 					$td2 = Widget::TableData(Widget::Anchor((string)$entry_count, ADMIN_URL . "/publish/{$s->handle}/"));
 					$td3 = Widget::TableData($s->{'navigation-group'});
-					
+
 					$td3->appendChild(Widget::Input('items['.$s->handle.']', 'on', 'checkbox'));
-					
+
 					// Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
 				}
@@ -85,12 +85,17 @@
 		}
 
 		private function __save(array $essentials, array $fieldsets=NULL, Section $section=NULL){
-			var_dump($section);exit;
-			
-			
+			$renamed = false;
+
 			if(is_null($section)){
 				$section = new Section;
 				$section->path = SECTIONS;
+			}
+			elseif($essentials['name'] !== $section->name) {
+				$renamed = array(
+					$section->handle,
+					$essentials['name']
+				);
 			}
 
 			$this->section = $section;
@@ -192,14 +197,14 @@
 
 					$layout = $doc->createElement('layout');
 					$doc->appendChild($layout);
-					
+
 					if (is_array($fieldsets)) foreach($fieldsets as $f){
-						
+
 						$fieldset = $doc->createElement('fieldset');
 						$fieldset->appendChild($doc->createElement('label', General::sanitize($f['label'])));
-						
+
 						if (is_array($f['rows'])) foreach($f['rows'] as $r){
-							
+
 							if(!isset($r['fields']) || empty($r['fields'])) continue;
 
 							$row = $doc->createElement('row');
@@ -222,6 +227,10 @@
 				}
 
 				Section::save($this->section, $this->errors, array($doc));
+
+				// If it's a renamed section, cleanup!
+				if($renamed !== false) Section::rename($renamed);
+
 				return true;
 			}
 			catch(SectionException $e){
