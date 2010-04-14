@@ -27,7 +27,6 @@
 					`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 					`field_id` int(11) unsigned NOT NULL,
 					`pre_populate` enum('yes','no') NOT NULL DEFAULT 'no',
-					`calendar` enum('yes','no') NOT NULL DEFAULT 'no',
 					PRIMARY KEY (`id`),
 					KEY `field_id` (`field_id`)
 				)

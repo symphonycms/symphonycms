@@ -60,25 +60,21 @@
 			
 			if(empty($page)){
 				
-				if(!$this->isLoggedIn()): $page = '/login';
+				if (!$this->isLoggedIn()) {
+					$page = '/login';
+				}
 				
-				else:
-				
-					$section_handle = self::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '".$this->User->default_section."' LIMIT 1");
-				
-					if(strlen(trim($section_handle)) == 0){
-						$section_handle = self::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
-					}
-				
-					if(strlen(trim($section_handle)) == 0){
+				else {
+					$section_handle = $this->User->default_section;
+					
+					if (strlen(trim($section_handle)) == 0) {
 						redirect(ADMIN_URL . '/blueprints/sections/');
 					}
-				
+					
 					else{
 						redirect(ADMIN_URL . "/publish/{$section_handle}/");
 					}
-				
-				endif;
+				}
 			}
 			
 			if(!$this->_callback = $this->getPageCallback($page)){

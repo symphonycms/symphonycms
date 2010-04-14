@@ -2,7 +2,7 @@
 
 	Class General{
 		
-		const CRLF = "\r\n";
+		const CRLF = PHP_EOL;
 		
 		/***
 		

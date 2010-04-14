@@ -30,23 +30,33 @@
 					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
 				);
 			}
-
-			else{
-
-				foreach($sections as $s){
-
-					$entry_count = (int)Symphony::Database()->fetchVar('count', 0,
-						"SELECT count(*) AS `count` FROM `tbl_entries` WHERE `section` = '{$s->handle}' "
+			else {
+				foreach ($sections as $s) {
+					$entry_count = 0;
+					$result = Symphony::Database()->query(
+						"
+							SELECT
+								count(*) AS `count`
+							FROM
+								`tbl_entries` AS e
+							WHERE
+								e.section_id = '%s'
+						",
+						array($s->handle)
 					);
-
-					## Setup each cell
+					
+					if ($result->valid()) {
+						$entry_count = (integer)$result->current()->count;
+					}
+					
+					// Setup each cell
 					$td1 = Widget::TableData(Widget::Anchor($s->name, Administration::instance()->getCurrentPageURL() . "edit/{$s->handle}/", NULL, 'content'));
 					$td2 = Widget::TableData(Widget::Anchor((string)$entry_count, ADMIN_URL . "/publish/{$s->handle}/"));
 					$td3 = Widget::TableData($s->{'navigation-group'});
-
+					
 					$td3->appendChild(Widget::Input('items['.$s->handle.']', 'on', 'checkbox'));
-
-					## Add a row to the body array, assigning each cell to the row
+					
+					// Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
 				}
 			}

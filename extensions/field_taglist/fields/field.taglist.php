@@ -1,44 +1,44 @@
 <?php
-	
+
 	Class fieldTagList extends Field {
 		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Tag List');
 		}
-		
+
 		public function set($field, $value){
 			if($field == 'pre_populate_source' && !is_array($value)) $value = preg_split('/\s*,\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
 			$this->_fields[$field] = $value;
 		}
-		
+
 		public function requiresSQLGrouping() {
 			return true;
 		}
-		
+
 		public function allowDatasourceParamOutput(){
 			return true;
 		}
-		
+
 		public function canFilter() {
 			return true;
 		}
-		
+
 		public function canImport(){
 			return true;
 		}
-		
+
 		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
 			if (!is_array($data) or empty($data)) return;
-			
+
 			$list = new XMLElement($this->get('element_name'));
-			
+
 			if (!is_array($data['handle']) and !is_array($data['value'])) {
 				$data = array(
 					'handle'	=> array($data['handle']),
 					'value'		=> array($data['value'])
 				);
 			}
-			
+
 			foreach ($data['value'] as $index => $value) {
 				$list->appendChild(new XMLElement(
 					'item', General::sanitize($value), array(
@@ -48,111 +48,120 @@
 			}
 
 			$wrapper->appendChild($list);
-		}		
+		}
 
 		function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-			
+
 			parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
-			
+
 			if($this->get('pre_populate_source') != NULL){
-				
+
 				$existing_tags = $this->findAllTags();
 
 				if(is_array($existing_tags) && !empty($existing_tags)){
 					$taglist = new XMLElement('ul');
 					$taglist->setAttribute('class', 'tags');
-					
+
 					foreach($existing_tags as $tag) $taglist->appendChild(new XMLElement('li', $tag));
-							
+
 					$wrapper->appendChild($taglist);
 				}
-			}			
+			}
 		}
 
 		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-			
+
 			$value = NULL;
 			if(isset($data['value'])){
 				$value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
 			}
-			
+
 			$label = Widget::Label($this->get('label'));
-			
+
 			$label->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? $value : NULL)));
-		
+
 			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
 			else $wrapper->appendChild($label);
 
 			if($this->get('pre_populate_source') != NULL){
-				
+
 				$existing_tags = $this->findAllTags();
 
 				if(is_array($existing_tags) && !empty($existing_tags)){
 					$taglist = new XMLElement('ul');
 					$taglist->setAttribute('class', 'tags');
-					
+
 					foreach($existing_tags as $tag) $taglist->appendChild(new XMLElement('li', $tag));
-							
+
 					$wrapper->appendChild($taglist);
 				}
 			}
 		}
-		
-		function findAllTags(){			
-			
-			$sql = "SELECT DISTINCT `value` FROM tbl_entries_data_%d ORDER BY `value` ASC";
-			
+
+		function findAllTags(){
+
 			if(!is_array($this->get('pre_populate_source'))) return;
-			
+
 			$values = array();
-			
+
 			foreach($this->get('pre_populate_source') as $item){
-				$result = Symphony::Database()->fetchCol('value', sprintf($sql, ($item == 'existing' ? $this->get('id') : $item)));
-				if(!is_array($result) || empty($result)) continue;
-				
-				$values = array_merge($values, $result);
+
+				$result = Symphony::Database()->query("
+					SELECT
+						DISTINCT `value`
+					FROM
+						`tbl_entries_data_%d`
+					ORDER BY
+						`value` ASC
+					",
+					($item == 'existing') ? $this->get('id') : $item
+				);
+
+				if(!$result->valid()) continue;
+
+				$values = array_merge($values, $result->resultColumn('value'));
 			}
 
 			return array_unique($values);
 		}
-		
+
 		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
-						
+
 			$status = self::__OK__;
-			
+
 			$data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
 			$data = array_map('trim', $data);
-			
+
 			if(empty($data)) return;
-			
+
 			// Do a case insensitive removal of duplicates
 			$data = General::array_remove_duplicates($data, true);
-			
+
 			sort($data);
-			
+
 			$result = array();
 			foreach($data as $value){
 				$result['value'][] = $value;
 				$result['handle'][] = Lang::createHandle($value);
 			}
-			
+
 			return $result;
 		}
-		
+
 		static private function __tagArrayToString(array $tags){
-			
+
 			if(empty($tags)) return NULL;
-			
+
 			sort($tags);
-			
+
 			return implode(', ', $tags);
-			
+
 		}
-		
+
 		function prepareTableValue($data, XMLElement $link=NULL){
-			
+
 			if(!is_array($data) || empty($data)) return;
-			
+
 			$value = NULL;
 			if(isset($data['value'])){
 				$value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
@@ -160,78 +169,79 @@
 
 			return parent::prepareTableValue(array('value' => General::sanitize($value)), $link);
 		}
-		
+
 		function commit(){
 
 			if(!parent::commit()) return false;
-			
-			$id = $this->get('id');
 
-			if($id === false) return false;
-			
-			$fields = array();
+			$field_id = $this->get('id');
+			$handle = $this->handle();
 
-			$fields['field_id'] = $id;
-			$fields['pre_populate_source'] = (is_null($this->get('pre_populate_source')) ? NULL : implode(',', $this->get('pre_populate_source')));
-			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
+			if($field_id === false) return false;
 
-			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
-				
-			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
-					
+			$fields = array(
+				'field_id' => $field_id,
+				'pre_populate_source' => (is_null($this->get('pre_populate_source')) ? NULL : implode(',', $this->get('pre_populate_source')),
+				'validator' => ($fields['validator'] == 'custom' ? NULL : $this->get('validator'))
+			);
+
+			Symphony::Database()->delete('tbl_fields_' . $handle, array($field_id), "`field_id` = %d LIMIT 1");
+			$field_id = Symphony::Database()->insert('tbl_fields_' . $handle, $fields);
+
+			return ($field_id == 0 || !$field_id) ? false : true;
 		}
-		
+
 		function findDefaults(&$fields){
 			if(!isset($fields['pre_populate_source'])) $fields['pre_populate_source'] = array('existing');
 		}
-		
+
 		function canPrePopulate(){
 			return true;
-		}	
-		
+		}
+
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$label = Widget::Label(__('Suggestion List'));
-			
+
 			$suggestion_list_source = $this->get('suggestion-list-source');
-			
+
 			$options = array(
 				array('existing', (is_array($suggestion_list_source) && in_array('existing', $suggestion_list_source)), __('Existing Values')),
 			);
 
-			
+
 /*		    $sections = SectionManager::instance()->fetch(NULL, 'ASC', 'name');
 			$field_groups = array();
 
 			if(is_array($sections) && !empty($sections))
 				foreach($sections as $section) $field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
-			
+
 
 			foreach($field_groups as $group){
-				
+
 				if(!is_array($group['fields'])) continue;
-				
+
 				$fields = array();
 				foreach($group['fields'] as $f){
 					if($f->get('id') != $this->get('id') && $f->canPrePopulate()) $fields[] = array($f->get('id'), (in_array($f->get('id'), $this->get('pre_populate_source'))), $f->get('label'));
 				}
-				
+
 				if(is_array($fields) && !empty($fields)) $options[] = array('label' => $group['section']->get('name'), 'options' => $fields);
 			}
 			*/
-			
+
 			$label->appendChild(Widget::Select('suggestion-list-source', $options, array('multiple' => 'multiple')));
 			$wrapper->appendChild($label);
-			
+
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'validator');
-			
+
 			$options_list = new XMLElement('ul');
 			$options_list->setAttribute('class', 'options-list');
 			$this->appendShowColumnCheckbox($options_list);
 			$wrapper->appendChild($options_list);
 		}
-		
+
 		public function createTable(){
 			return Symphony::Database()->query(
 				sprintf(
@@ -245,7 +255,7 @@
 						KEY `handle` (`handle`),
 						KEY `value` (`value`)
 					)',
-					$this->get('section'), 
+					$this->get('section'),
 					$this->get('element_name')
 				)
 			);
@@ -253,10 +263,10 @@
 
 		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
-			
+
 			if (self::isFilterRegex($data[0])) {
 				$this->_key++;
-				$pattern = str_replace('regexp:', '', $this->cleanValue($data[0]));
+				$pattern = str_replace('regexp:', '', $this->escape($data[0]));
 				$joins .= "
 					LEFT JOIN
 						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
@@ -268,11 +278,11 @@
 						OR t{$field_id}_{$this->_key}.handle REGEXP '{$pattern}'
 					)
 				";
-				
+
 			} elseif ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
-					$value = $this->cleanValue($value);
+					$value = $this->escape($value);
 					$joins .= "
 						LEFT JOIN
 							`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
@@ -285,14 +295,14 @@
 						)
 					";
 				}
-				
+
 			} else {
 				if (!is_array($data)) $data = array($data);
-				
+
 				foreach ($data as &$value) {
-					$value = $this->cleanValue($value);
+					$value = $this->escape($value);
 				}
-				
+
 				$this->_key++;
 				$data = implode("', '", $data);
 				$joins .= "
@@ -307,7 +317,7 @@
 					)
 				";
 			}
-			
+
 			return true;
 		}
 	}
