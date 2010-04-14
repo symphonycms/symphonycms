@@ -15,17 +15,17 @@
 
 		### By CZ: Should be checked and/or rewritten
 		var $_layout;
-		
+
 		public function __construct(){
 			parent::__construct('1.0', 'utf-8', "html");
 		}
-		
+
 		public function setPageType($type){
 			//$this->addStylesheetToHead(ADMIN_URL . '/assets/css/' . ($type == 'table' ? 'tables' : 'forms') . '.css', 'screen', 30);
 		}
 
 		public function setTitle($val, $position=null) {
-			return $this->addElementToHead(new XMLElement('title', $val), $position);
+			return $this->insertNodeIntoHead($this->createElement('title', $val), $position);
 		}
 
 		public function Context(){
@@ -35,12 +35,12 @@
 		public function build($context = NULL){
 
 			$this->_context = $context;
-			
+
 			$meta = $this->createElement('meta');
 			$this->insertNodeIntoHead($meta);
 			$meta->setAttribute('http-equiv', 'Content-Type');
 			$meta->setAttribute('content', 'text/html; charset=UTF-8');
-			
+
 			$this->insertNodeIntoHead($this->createScriptElement(ADMIN_URL . '/assets/js/jquery.js'));
 			$this->insertNodeIntoHead($this->createScriptElement(ADMIN_URL . '/assets/js/jquery-ui.js'));
 			$this->insertNodeIntoHead($this->createScriptElement(ADMIN_URL . '/assets/js/symphony.collapsible.js'));
@@ -74,13 +74,13 @@
 			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL());
 			$this->Form->setAttribute('method', 'POST');
 			$this->Body->appendChild($this->Form);
-			
+
 			$h1 = $this->createElement('h1');
 			$anchor = $this->createElement('a', Symphony::Configuration()->get('sitename', 'symphony'));
 			$anchor->setAttribute('href', rtrim(URL, '/') . '/');
 			$h1->appendChild($anchor);
 			$this->Form->appendChild($h1);
-			
+
 			$this->appendSession();
 			$this->appendNavigation();
 			$this->view();
@@ -156,7 +156,7 @@
 		}
 
 		public function appendSession(){
-			
+
 			$ul = $this->createElement('ul');
 			$ul->setAttribute('id', 'session');
 

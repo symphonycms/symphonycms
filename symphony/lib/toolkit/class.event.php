@@ -5,7 +5,7 @@
 		protected $_Parent;
 		protected $_env;
 		
-		const CRLF = "\r\n";
+		const CRLF = PHP_EOL;
 		const kHIGH = 3;
 		const kNORMAL = 2;
 		const kLOW = 1;

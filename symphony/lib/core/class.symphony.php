@@ -137,7 +137,7 @@
 
 		protected static $_instance;
 
-		const CRLF = "\r\n";
+		const CRLF = PHP_EOL;
 
 		protected function __construct(){
 

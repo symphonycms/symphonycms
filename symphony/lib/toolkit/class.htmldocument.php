@@ -1,12 +1,12 @@
 <?php
-	
+
 	Class DocumentHeaders{
 		protected $headers;
-		
+
 		public function __construct(array $headers=array()){
 			$this->headers = $headers;
 		}
-		
+
 		public function append($name, $value=NULL){
 			$this->headers[strtolower($name)] = $name . (is_null($value) ? NULL : ":{$value}");
 		}
@@ -18,31 +18,31 @@
 				header($value);
 			}
 		}
-		
+
 		public function headers(){
 			return $this->headers;
 		}
 	}
-	
+
+
 	Class HTMLDocument extends DOMDocument{
 		//protected $Document;
 		public $Html;
 		public $Head;
 		public $Body;
 		public $Headers;
-		protected $dtd;
-	
+
 		public function createScriptElement($path){
 			$element = $this->createElement('script');
 			$element->setAttribute('type', 'text/javascript');
 			$element->setAttribute('src', $path);
-		
+
 			// Creating an empty text node forces <script></script>
 			$element->appendChild($this->createTextNode(''));
-		
+
 			return $element;
 		}
-	
+
 		public function createStylesheetElement($path, $type='screen'){
 			$element = $this->createElement('link');
 			$element->setAttribute('type', 'text/css');
@@ -51,42 +51,42 @@
 			$element->setAttribute('href', $path);
 			return $element;
 		}
-		
+
 		public function setDTD($value){
 			$this->dtd = $value;
 		}
-	
+
 		public function __construct($version='1.0', $encoding='utf-8', $dtd='html'){ //}, DOMDocumentType $dtd=NULL){
 			parent::__construct($version, $encoding);
-			
+
 			$this->appendChild($this->createElement('html'));
-			
+
 			$this->Headers = new DocumentHeaders(array(
 				'Content-Type', "text/html; charset={$encoding}",
 			));
-			
+
 			$this->dtd = $dtd;
 
 			//if(is_null($dtd)){
 			//	$dtd = DOMImplementation::createDocumentType('html');
 			//}
-		
+
 			//$this->Document = DOMImplementation::createDocument(NULL, 'html', $dtd);
 			//$this->version = $version;
 			//$this->encoding = $encoding;
-		
+
 			$this->preserveWhitespace = false;
 			$this->formatOutput = true;
-		
+
 			$this->Html = $this->documentElement;
 
 			$this->Head = $this->createElement('head');
 			$this->Html->appendChild($this->Head);
-		
+
 			$this->Body = $this->createElement('body');
 			$this->Html->appendChild($this->Body);
 		}
-	
+
 		public function insertNodeIntoHead(DOMElement $element, $position=NULL){
 
 			if(is_null($position)){
@@ -95,27 +95,27 @@
 			}
 
 			$node = $this->xpath("/html/head/*[position() >= {$position}]")->item(0);
-		
+
 			if(is_null($node)){
 				$this->Head->appendChild($element);
 			}
 			else{
 				$node->parentNode->insertBefore($element, $node);
 			}
-		
+
 		}
-	
+
 		public function isElementInHead($element, $attr=NULL, $nodeValue=NULL){
-		
+
 			$xpath = "/html/head/{$element}";
 			if(!is_null($attr)){
 				$xpath .= "/@{$attr}[contains(.,'{$nodeValue}')]";
 			}
-		
+
 			$nodes = $this->xpath($xpath);
 			return ($nodes->length > 0 ? true : false);
 	    }
-	
+
 		public function xpath($query){
 			$xpath = new DOMXPath($this);
 			return $xpath->query($query);
@@ -124,13 +124,38 @@
 		public function __toString(){
 			return sprintf("<!DOCTYPE %s>\n%s", $this->dtd, $this->saveHTML());
 		}
-	
+
+
+		/*
+		**	OVERLOAD METHODS FOR CONVIENENCE
+		*/
+		public function createElement($name, $value = null, array $attributes = array()){
+			$element = $this->createElement($name, $value);
+
+			if(is_array($attributes) && !empty($attributes)){
+				foreach($attributes as $key => $val) $element->setAttribute($key, $val);
+			}
+
+			return $element;
+		}
+
+		public function setValue(DOMElement &$element, $value) {
+			if(is_object($value) {
+				$element->appendChild($value);
+			}
+			else {
+				$element->appendChild(
+					$this->createTextNode($value)
+				);
+			}
+		}
+
 	}
 
 
-/*	
+/*
 	// USAGE EXAMPLE:
-	
+
 	$page = new HTMLDocument('1.0', 'utf-8', 'html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"');
 
 	$page->Head->appendChild(
@@ -149,24 +174,24 @@
 		$page->createStylesheetElement('./blah/styles.css', 'print')
 	);
 
-	$page->insertNodeIntoHead(	
+	$page->insertNodeIntoHead(
 		$page->createScriptElement('./blah/scripts.js'), 2
 	);
 
 	if($page->isElementInHead('script', 'src', 'scripts.js') == false){
-		$page->insertNodeIntoHead(	
+		$page->insertNodeIntoHead(
 			$page->createScriptElement('./blah/scripts.js'), 2
 		);
 	}
-	
+
 	//Uncomment this to see output as plain text
 	//$page->Headers->append('Content-Type', 'text/plain');
-	
+
 	$output = (string)$page;
 	$page->Headers->append('Content-Length', strlen($output));
 
 	$page->Headers->render();
 	echo $output;
 	exit();
-	
+
 */
