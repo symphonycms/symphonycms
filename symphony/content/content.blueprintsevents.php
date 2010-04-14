@@ -43,7 +43,7 @@
 				$col_name->appendChild(Widget::Input("items[{$event['handle']}]", null, 'checkbox'));
 
 				// Source
-				if(is_null($instance->getSource()){
+				if(is_null($instance->getSource())){
 					$col_source = Widget::TableData(__('None'), 'inactive');
 				}
 				else{

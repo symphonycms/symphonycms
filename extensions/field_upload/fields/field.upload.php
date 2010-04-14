@@ -421,7 +421,7 @@
 					LIMIT 1
 				");
 
-				if($row->valid() $existing_file = $abs_path . '/' . trim($row->current->file, '/');
+				if($row->valid()) $existing_file = $abs_path . '/' . trim($row->current->file, '/');
 			}
 
 			if (($existing_file != $new_file) and file_exists($new_file)) {
@@ -460,7 +460,7 @@
 
 			// No file sent, cleanup existing:
 			if (is_null($data) or $data == '' or (isset($data['error']) and $data['error'] != UPLOAD_ERR_OK)) {
-				if (isset($existing->file) and is_file(WORKSPACE . $existing->file])) {
+				if (isset($existing->file) and is_file(WORKSPACE . $existing->file)) {
 					General::deleteFile(WORKSPACE . $existing->file);
 				}
 

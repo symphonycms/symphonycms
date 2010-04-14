@@ -85,6 +85,9 @@
 		}
 
 		private function __save(array $essentials, array $fieldsets=NULL, Section $section=NULL){
+			var_dump($section);exit;
+			
+			
 			if(is_null($section)){
 				$section = new Section;
 				$section->path = SECTIONS;
