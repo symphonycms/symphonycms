@@ -7,25 +7,25 @@ var Symphony;
 		Cookie: {
 			set: function(name, value, seconds) {
 				var expires = "";
-				
+
 				if (seconds) {
 					var date = new Date();
 					date.setTime(date.getTime() + seconds);
 					expires = "; expires=" + date.toGMTString();
 				}
-				
+
 				document.cookie = name + "=" + value + expires + "; path=/";
 			},
 			get: function(name) {
 				var nameEQ = name + "=";
 				var ca = document.cookie.split(';');
-				
+
 				for (var i=0;i < ca.length;i++) {
 					var c = ca[i];
 					while (c.charAt(0)==' ') c = c.substring(1,c.length);
 					if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
 				}
-				
+
 				return null;
 			}
 		},
@@ -38,16 +38,16 @@ var Symphony;
 
 				// Return string if it cannot be found in the dictionary
 				if(translatedString !== false) string = translatedString;
-					
+
 				// Insert tokens
 				if(tokens !== undefined) string = Symphony.Language.insert(string, tokens);
-				
+
 				// Return translated string
 				return string;
 			},
 			insert: function(string, tokens) {
 				// Replace tokens
-				$.each(tokens, function(index, value) { 
+				$.each(tokens, function(index, value) {
 					string = string.replace('{$' + index + '}', value);
 				});
 				return string;
@@ -115,24 +115,24 @@ var Symphony;
   			distance: function(from, to) {
   				var distance = to - from;
 				var time = Math.floor(distance / 60000);
-				if (time < 1) { 
-					return Symphony.Language.get('just now'); 
+				if (time < 1) {
+					return Symphony.Language.get('just now');
 				}
-				if (time < 2) { 
-					return Symphony.Language.get('a minute ago'); 
+				if (time < 2) {
+					return Symphony.Language.get('a minute ago');
 				}
-				if (time < 45) { 
+				if (time < 45) {
 					return Symphony.Language.get('{$minutes} minutes ago', {
 						'minutes': time
-					}); 
+					});
 				}
-				if (time < 90) { 
-					return Symphony.Language.get('about 1 hour ago'); 
+				if (time < 90) {
+					return Symphony.Language.get('about 1 hour ago');
 				}
-				else { 
+				else {
 					return Symphony.Language.get('about {$hours} hours ago', {
 						'hours': Math.floor(time / 60)
-					}); 
+					});
 				}
 			},
 			queue: []
@@ -211,7 +211,7 @@ var Symphony;
 			var a = target.height(),
 			    b = target.offset().top,
 				prev_offset = (target.prev().length) ? target.prev().offset().top : 0;
-			
+
 			movable.target = target;
 			movable.min    = Math.min(b, a + (prev_offset || -Infinity));
 			movable.max    = Math.max(a + b, b + (target.next().height() ||  Infinity));
@@ -260,15 +260,15 @@ var Symphony;
 
 		r.trigger($.Event(r.hasClass('selected') ? 'select' : 'deselect'));
 		r.find('td input').each(function() { this.checked = !this.checked; });
-		
+
 		// when shift held when selecting a row
 		if (e.shiftKey && r.hasClass('selected')) {
-			
+
 			// find first selected row above newly-selected row
 			var selected_above = r.prevAll('.selected');
 			if (selected_above.length) {
 				var from = $('.selectable tr').index(selected_above);
-				var to = $('.selectable tr').index(r);				
+				var to = $('.selectable tr').index(r);
 				$('.selectable tr').each(function(i) {
 					if (i > from && i < to) {
 						var r = $(this).toggleClass('selected');
@@ -280,7 +280,7 @@ var Symphony;
 			// de-select text caused by holding shift
 			if (window.getSelection) window.getSelection().removeAllRanges();
 		}
-		
+
 		return false;
 	});
 
@@ -289,40 +289,40 @@ var Symphony;
 		var list = $(this.parentNode);
 		var input = list.prevAll('label').find('input')[0];
 		var tag = this.className || $(this).text();
-		
+
 		input.focus();
-		
+
 		if (list.hasClass('singular')) {
 			input.value = tag;
 		} else if(list.hasClass('inline')) {
 			var start = input.selectionStart;
 			var end = input.selectionEnd;
-			
+
 			if(start >= 0) {
 			  input.value = input.value.substring(0, start) + tag + input.value.substring(end, input.value.length);
 			} else {
 			  input.value += tag;
 			}
-			
+
 			input.selectionStart = start + tag.length;
 			input.selectionEnd = start + tag.length;
 		} else {
 			var exp = new RegExp('^' + tag + '$', 'i');
 			var tags = input.value.split(/,\s*/);
 			var removed = false;
-			
+
 			for (var index in tags) {
 				if (tags[index].match(exp)) {
 					tags.splice(index, 1);
 					removed = true;
-					
+
 				} else if (tags[index] == '') {
 					tags.splice(index, 1);
 				}
 			}
-			
+
 			if (!removed) tags.push(tag);
-			
+
 			input.value = tags.join(', ');
 		}
 	});
@@ -343,7 +343,7 @@ var Symphony;
 
 		// Change user password
 		$('#change-password').each(function() {
-			
+
 			// Do not hide fields if there is some error there.
 			if ($('div.invalid', $(this)).length > 0) return;
 
@@ -375,7 +375,7 @@ var Symphony;
 			var n = document.title.split(/[\u2013]\s*/g)[2],
 			    t = (n ? 'Are you sure you want to {$action} {$name}?' : 'Are you sure you want to {$action}?');
 
-			return confirm(Symphony.Language.get(t, { 
+			return confirm(Symphony.Language.get(t, {
 				'action': this.firstChild.data.toLowerCase().trim(),
 				'name': n
 			}));
@@ -384,13 +384,13 @@ var Symphony;
 		if ($('[name=with-selected] option.confirm').length > 0) {
 			$('form').submit(function() {
 				var i = $('table input:checked').length,
-				    t = (i > 1 ? 'Are you sure you want to {$action} {$count} items?' : 'Are you sure you want to {$action} {$name}?'),
-				    s = document.getElementsByName('with-selected')[0],
+					t = (i > 1 ? 'Are you sure you want to {$action} {$count} items?' : 'Are you sure you want to {$action} from {$name}?'),
+					s = document.getElementsByName('with-selected')[0],
 				    o = $(s.options[s.selectedIndex]);
 
 				t = Symphony.Language.get(t, {
 					'action': o.text().toLowerCase(),
-					'name': $('table input:checked').parents('tr').find('td').eq(0).text(),
+					'name': $.trim($('table input:checked').parents('tr').find('td').eq(0).text()),
 					'count': i
 				});
 
@@ -409,7 +409,7 @@ var Symphony;
 		});
 
 		$('textarea').blur();
-		
+
 		// Fields duplicator:
 		$('.section-duplicator[id]').symphonyCollapsedDuplicator({
 			orderable:		true
@@ -417,16 +417,16 @@ var Symphony;
 		$('.section-duplicator:not([id])').symphonyDuplicator({
 			orderable:		true
 		});
-		
+
 		//console.log(fields[0].collapsible.collapseAll());
-		
+
 		// Filters duplicator:
 		$('.filters-duplicator, .events-duplicator').symphonyDuplicator();
-		
+
 		$('.events-duplicator').each(function() {
-			
+
 		});
-		
+
 		// Repeating sections
 		$('div.subsection').each(function() {
 			var m = $(this),
@@ -487,14 +487,14 @@ var Symphony;
 				});
 			});
 		});
-		
+
 		// system messages
 		window.setTimeout("Symphony.Message.fade()", 10000);
 		$('abbr.timeago').each(function() {
 			var html = $(this).parent().html();
 			$(this).parent().html(html.replace(Symphony.Language.get('at') + ' ', ''));
 		});
-		
+
 		Symphony.Message.timer();
 	});
 })(jQuery.noConflict());
@@ -555,7 +555,7 @@ var Symphony;
 		// Otherwise, we're most likely dealing with a named color
 		return colors[jQuery.trim(color).toLowerCase()];
 	}
-	
+
 	function getColor(elem, attr) {
 		var color;
 
@@ -564,22 +564,22 @@ var Symphony;
 
 			// Keep going until we find an element that has color, or we hit the body
 			if ( color != '' && color != 'transparent' || jQuery.nodeName(elem, "body") )
-				break; 
+				break;
 
 			attr = "backgroundColor";
 		} while ( elem = elem.parentNode );
 
 		return getRGB(color);
 	};
-	
+
 })(jQuery);
 
 jQuery(document).ready(function() {
 	var $ = jQuery;
-	
+
 	$('#master-switch').bind('change', function() {
 		var select = $(this);
-		
+
 		window.location.search = '?type=' + select.val();
 	});
 });

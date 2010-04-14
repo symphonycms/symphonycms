@@ -52,9 +52,9 @@
 					// Setup each cell
 					$td1 = Widget::TableData(Widget::Anchor($s->name, Administration::instance()->getCurrentPageURL() . "edit/{$s->handle}/", NULL, 'content'));
 					$td2 = Widget::TableData(Widget::Anchor((string)$entry_count, ADMIN_URL . "/publish/{$s->handle}/"));
-					$td3 = Widget::TableData($s->{'navigation-group'});				
+					$td3 = Widget::TableData($s->{'navigation-group'});
 					$td3->appendChild(Widget::Input("items[{$s->handle}]", 'on', 'checkbox'));
-					
+
 					// Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
 				}
@@ -251,6 +251,22 @@
 
 			return false;
 		}
+		
+		public function __actionIndex() {
+			$checked = array_keys($_POST['items']);
+
+			if(is_array($checked) && !empty($checked)) {
+				switch ($_POST['with-selected']) {
+					case 'delete':
+						$this->__actionDelete($checked, ADMIN_URL . '/blueprints/sections/');
+						break;
+						
+					case 'delete-entries':
+						// TODO: Call EntryManager to delete Entrys where Section Handle = this one
+						break;
+				}
+			}
+		}
 
 		public function __actionNew(){
 			if(isset($_POST['action']['save'])){
@@ -261,11 +277,41 @@
 		}
 
 		public function __actionEdit(){
-			if(isset($_POST['action']['save'])){
-				if($this->__save($_POST['essentials'], (isset($_POST['fieldset']) ? $_POST['fieldset'] : NULL), Section::load(SECTIONS . '/' . $this->_context[1] . '.xml')) == true){
+			$context = $this->_context;
+			array_shift($context);
+
+			$section_pathname = implode('/', $context);
+
+			if(array_key_exists('delete', $_POST['action'])) {
+				$this->__actionDelete(array($section_pathname), ADMIN_URL . '/blueprints/sections/');
+			}
+			elseif(array_key_exists('save', $_POST['action'])) {
+				if($this->__save(
+					$_POST['essentials'],
+					(isset($_POST['fieldset']) ? $_POST['fieldset'] : NULL),
+					Section::load(SECTIONS . '/' . $this->_context[1] . '.xml')) == true
+				) {
 					redirect(ADMIN_URL . "/blueprints/sections/edit/{$this->section->handle}/:saved/");
 				}
 			}
+		}
+
+		public function __actionDelete(array $sections, $redirect) {
+			$success = true;
+
+			foreach($sections as $handle){
+				try{
+					Section::delete($handle);
+				}
+				catch(SectionException $e){
+					die($e->getMessage() . 'DOH!!1');
+				}
+				catch(Exception $e){
+					die($e->getMessage() . 'DOH!!2');
+				}
+			}
+
+			if($success == true) redirect($redirect);
 		}
 
 		private static function __loadExistingSection($handle){
@@ -776,7 +822,7 @@
 			$div->setAttribute('class', 'actions');
 			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
 
-			if($editing == true){
+			if($this->_context[0] == 'edit'){
 				$button = new XMLElement('button', __('Delete'));
 				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this section'), 'type' => 'submit'));
 				$div->appendChild($button);

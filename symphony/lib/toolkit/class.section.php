@@ -161,7 +161,7 @@
 		}*/
 
 		public function appendField($type, array $data=NULL){
-			
+
 			$field = fieldManager::instance()->create($type);
 
 			if(!is_null($data)){
@@ -223,7 +223,7 @@
 							// Couldnt find the field. Ignore it for now
 							// TO DO: Might need to more than just ignore it
 						}
-							
+
 					}
 				}
 
@@ -360,6 +360,21 @@
 		}
 
 		public function delete($handle){
+			/*
+				TODO:
+				Upon deletion it should update all data-sources/events attached to it.
+				Either by deleting them, or making section $unknown.
+
+				I think deletion is best because if the section is renamed, the rename()
+				function will take care of moving the dependancies, so there should be
+				no data-sources/events to delete anyway.
+
+				However, if you delete page accidentally (hm, even though you clicked
+				confirm), do you really want your data-sources/events to just be deleted?
+
+				Verdict?
+			*/
+
 			return General::deleteFile(SECTIONS . '/' . $handle . '.xml');
 		}
 

@@ -349,6 +349,7 @@
 -----------------------------------------------------------------------------*/
 
 	fieldset ~ .actions input[type=submit],
+	div ~ .actions input[type=submit],
 	button,
 	.button {
 		background-color: #222;

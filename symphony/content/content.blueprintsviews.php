@@ -661,11 +661,11 @@
 
 			$view_pathname = implode('/', $context);
 
-			if(@array_key_exists('delete', $_POST['action'])) {
+			if(array_key_exists('delete', $_POST['action'])) {
 				$this->__actionDelete(array($view_pathname), ADMIN_URL . '/blueprints/views/');
 			}
 
-			elseif(@array_key_exists('save', $_POST['action'])) {
+			elseif(array_key_exists('save', $_POST['action'])) {
 
 				$fields = $_POST['fields'];
 
