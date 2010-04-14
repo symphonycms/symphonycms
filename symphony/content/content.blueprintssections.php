@@ -40,7 +40,7 @@
 							FROM
 								`tbl_entries` AS e
 							WHERE
-								e.section_id = '%s'
+								e.section = '%s'
 						",
 						array($s->handle)
 					);
@@ -54,7 +54,7 @@
 					$td2 = Widget::TableData(Widget::Anchor((string)$entry_count, ADMIN_URL . "/publish/{$s->handle}/"));
 					$td3 = Widget::TableData($s->{'navigation-group'});
 					
-					$td3->appendChild(Widget::Input('items['.$s->handle.']', 'on', 'checkbox'));
+					$td3->appendChild(Widget::Input("items[{$s->handle}]", 'on', 'checkbox'));
 					
 					// Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
