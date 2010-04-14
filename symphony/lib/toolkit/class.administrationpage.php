@@ -3,6 +3,7 @@
 	require_once(TOOLKIT . '/class.htmlpage.php');
 	require_once(TOOLKIT . '/class.alert.php');
 	require_once(TOOLKIT . '/class.section.php');
+	require_once(TOOLKIT . '/class.layout.php');
 
 	Class AdministrationPage extends HTMLPage{
 
@@ -16,6 +17,9 @@
 		var $_navigation;
 		var $_Parent;
 		var $_context;
+
+		### By CZ: Should be checked and/or rewritten
+		var $_layout;
 
 		public function __construct(){
 			parent::__construct();

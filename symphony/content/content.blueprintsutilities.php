@@ -80,7 +80,8 @@
 		}
 		
 		public function __viewEdit() {
-			$this->setPageType('form');
+			## DEPRECATED? $this->setPageType('form');
+			$layout = new Layout('2', '2:1');
 			
 			$this->_existing_file = (isset($this->_context[1]) ? $this->_context[1] . '.xsl' : NULL);
 			
@@ -148,35 +149,24 @@
 
 			$fields['body'] = General::sanitize($fields['body']);
 
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings');
-
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
-
-			$div = new XMLElement('div');
+			$fieldset = Widget::Fieldset();
 			
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('fields[name]', $fields['name']));
-			$div->appendChild((isset($this->_errors['name']) ? $this->wrapFormElementWithError($label, $this->_errors['name']) : $label));
+			$fieldset->appendChild((isset($this->_errors['name']) ? $this->wrapFormElementWithError($label, $this->_errors['name']) : $label));
 			
 			$label = Widget::Label(__('Body'));
 			$label->appendChild(Widget::Textarea('fields[body]', 30, 80, $fields['body'], array('class' => 'code')));
-			$div->appendChild((isset($this->_errors['body']) ? $this->wrapFormElementWithError($label, $this->_errors['body']) : $label));
+			$fieldset->appendChild((isset($this->_errors['body']) ? $this->wrapFormElementWithError($label, $this->_errors['body']) : $label));
 			
-			$group->appendChild($div);
+			$layout->appendToCol($fieldset, 1);
 
 			$utilities = General::listStructure(UTILITIES, array('xsl'), false, 'asc', UTILITIES);
 			$utilities = $utilities['filelist'];			
 			
 			if(is_array($utilities) && !empty($utilities)){
 			
-				$div = new XMLElement('div');
-				$div->setAttribute('class', 'small');
-				
-				$h3 = new XMLElement('h3', __('Utilities'));
-				$h3->setAttribute('class', 'label');
-				$div->appendChild($h3);
+				$fieldset = Widget::Fieldset(__('Utilities'));
 				
 				$ul = new XMLElement('ul');
 				$ul->setAttribute('id', 'utilities');
@@ -193,13 +183,12 @@
 					$ul->appendChild($li);
 				}
 			
-				$div->appendChild($ul);
+				$fieldset->appendChild($ul);
 			
-				$group->appendChild($div);
-				$fieldset->appendChild($group);
-				
-				$this->Form->appendChild($fieldset);
+				$layout->appendToCol($fieldset, 2);
 			}
+			
+			$this->Form->appendChild($layout->generate());
 			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');

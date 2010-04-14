@@ -314,11 +314,7 @@
 	h2 + #tab {
 		margin-top: -5px;
 	}
-	#tab + fieldset {
-		margin-top: -10px;
-		border: none;
-	}
-
+	
 /*-----------------------------------------------------------------------------
 	Content
 -----------------------------------------------------------------------------*/
@@ -536,28 +532,56 @@
 	form {
 		margin-bottom: 20px;
 	}
+	form #layout {
+		display: -moz-box;
+		display: -webkit-box;
+		-moz-box-orient: horizontal;
+		-webkit-box-orient: horizontal;
+		width: 100%;
+		max-width: 1200px;
+		padding: 0 15px;
+	}
+	form #layout .column {
+		padding: 15px;
+	}
+		.span-1 {
+			width: 210px;
+			-moz-box-flex: 1;
+			-webkit-box-flex: 1;
+		}
+		.span-2 {
+			width: 420px;
+			-moz-box-flex: 2;
+			-webkit-box-flex: 2;
+		}
+		.span-3 {
+			width: 630px;
+			-moz-box-flex: 3;
+			-webkit-box-flex: 3;
+		}
+		.span-4 {
+			width: 840px;
+			-moz-box-flex: 4;
+			-webkit-box-flex: 4;
+		}
+		
 	form fieldset {
 		position: relative;
 		border: none;
-		border-top: 1px dotted #dddddd;
-		border-top-color: hsla(0, 0%, 0%, 0.2);
-		padding: 15px 0 25px;
-		margin: 0 30px;
+		margin-bottom: 25px;
 	}
 	form h2 + fieldset {
-		margin: 0;
-		padding:  15px 30px 25px;
 	}
 	form fieldset legend {
-		font-size: 10pt;
-		color: #666;
-		padding: 0 10px;
-		margin: 15px 0 0 -10px;
 	}
 	form h3 {
 		color: #666666;
 		font-size: 10pt;
-		margin: 0 0 10px 0;
+		border-width: 0 0 1px 0;
+		border-color: hsla(0, 0%, 0%, 0.15);
+		border-style: solid;
+		padding-bottom: 6px;
+		margin-bottom: 20px;
 	}
 	form h3 input {
 		background: transparent;
@@ -578,10 +602,12 @@
 	}
 	form .help {
 		color: #aaa;
-		margin: -10px 0 15px;
 	}
-	form fieldset legend + .help {
-		display: none;
+	form fieldset h3 + .help {
+		position: absolute;
+		top: 0;
+		right: 0;
+		line-height: 2em;
 	}
 	form fieldset legend + .help code {
 		color: inherit;
@@ -686,7 +712,7 @@
 
 	ul.tags {
 		list-style: none;
-		margin: 3px 0 -10px 0;
+		margin: 0;
 	}
 	.tags li {
 		color: #888;

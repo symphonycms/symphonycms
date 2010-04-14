@@ -5,7 +5,8 @@
 	class contentSystemSettings extends AdministrationPage {
 		public function __construct(){
 			parent::__construct();
-			$this->setPageType('form');
+			
+			## DEPRECATED $this->setPageType('form');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Settings'))));
 		}
 		
@@ -37,22 +38,19 @@
 		    } else if (isset($this->_context[0]) && $this->_context[0] == 'success') {
 		    	$this->pageAlert(__('Preferences saved.'), Alert::SUCCESS);
 		    }
-			
-		// ESSENTIALS
-			$fieldset = new XMLElement('fieldset');
-		    $fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Site Setup')));
+		
+		// SETUP PAGE
+			$layout = new Layout(3, '2:1:1');
+		
+		// SITE SETUP
+			$helptext = 'Symphony version: ' . Symphony::Configuration()->get('version', 'symphony');
+			$fieldset = Widget::Fieldset(__('Site Setup'), $helptext);
 
-			$fieldset->appendChild(new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array('class' => 'help')));
-
-			$group = New XMLElement('div');
-			$group->setAttribute('class', 'group');
-			
 			$label = Widget::Label(__('Site Name'));
 			$input = Widget::Input('settings[symphony][sitename]', Symphony::Configuration()->core()->symphony->sitename);
 			$label->appendChild($input);
 
-			$group->appendChild($label);
+			$fieldset->appendChild($label);
 
 		    // Get available languages
 		    $languages = Lang::getAvailableLanguages(true);
@@ -72,29 +70,24 @@
 				$label->appendChild($select);			
 				//$group->appendChild(new XMLElement('p', __('Users can set individual language preferences in their profiles.'), array('class' => 'help')));
 				// Append language selection
-				$group->appendChild($label);
+				$fieldset->appendChild($label);
 			}
-			$fieldset->appendChild($group);
-			$this->Form->appendChild($fieldset);
+			$layout->appendToCol($fieldset, 1);
 		    
 		// REGIONAL SETTINGS
-			$group = new XMLElement('fieldset');
-		    $group->setAttribute('class', 'settings');
-			$group->appendChild(new XMLElement('legend', __('Date &amp; Time Settings')));
+		
+			$fieldset = Widget::Fieldset(__('Date &amp; Time Settings'));
 			
 			// Date and Time Settings
-			$div = New XMLElement('div');
-			$div->setAttribute('class', 'group');
-			
 			$label = Widget::Label(__('Date Format'));
 			$input = Widget::Input('settings[region][date-format]', Symphony::Configuration()->core()->region->{'date-format'});
 			$label->appendChild($input);
-			$div->appendChild($label);
+			$fieldset->appendChild($label);
 			
 			$label = Widget::Label(__('Time Format'));
 			$input = Widget::Input('settings[region][time-format]', Symphony::Configuration()->core()->region->{'time-format'});
 			$label->appendChild($input);
-			$div->appendChild($label);
+			$fieldset->appendChild($label);
 			
 			$label = Widget::Label(__('Timezone'));
 			
@@ -105,19 +98,13 @@
 			$select = Widget::Select('settings[region][timezone]', $options);			
 			unset($options);
 			$label->appendChild($select);
-			$div->appendChild($label);
+			$fieldset->appendChild($label);
 			
-			$group->appendChild($div);
-			$this->Form->appendChild($group);
+			$layout->appendToCol($fieldset, 2);
 			
 		// PERMISSIONS
 		
-			$group = new XMLElement('fieldset');
-		    $group->setAttribute('class', 'settings');
-			$group->appendChild(new XMLElement('legend', __('Permissions')));
-			
-			$div = New XMLElement('div');
-			$div->setAttribute('class', 'group');
+			$fieldset = Widget::Fieldset(__('Permissions'));
 			
 			$permissions = array(
 				'0777',
@@ -140,7 +127,7 @@
 			$select = Widget::Select('settings[symphony][file-write-mode]', $options);
 			unset($options);
 			$label->appendChild($select);
-			$div->appendChild($label);
+			$fieldset->appendChild($label);
 			
 			$label = Widget::Label(__('Directory Permissions'));
 			foreach($permissions as $p) {
@@ -152,15 +139,16 @@
 			$select = Widget::Select('settings[symphony][directory-write-mode]', $options);
 			unset($options);
 			$label->appendChild($select);
-			$div->appendChild($label);
+			$fieldset->appendChild($label);
 			
-			$group->appendChild($div);
-			$this->Form->appendChild($group);
+			$layout->appendToCol($fieldset, 3);
 			
 			###
 			# Delegate: AddCustomPreferenceFieldsets
 			# Description: Add Extension custom preferences. Use the $wrapper reference to append objects.
 			ExtensionManager::instance()->notifyMembers('AddCustomPreferenceFieldsets', '/system/settings/', array('wrapper' => &$this->Form));
+			
+			$this->Form->appendChild($layout->generate());
 			
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
