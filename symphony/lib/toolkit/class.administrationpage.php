@@ -17,9 +17,7 @@
 		var $_layout;
 		
 		public function __construct(){
-			parent::__construct('1.0', 'utf-8', DOMImplementation::createDocumentType(
-				"html"
-			));
+			parent::__construct('1.0', 'utf-8', "html");
 		}
 		
 		public function setPageType($type){
