@@ -24,60 +24,66 @@
 		}
 	}
 	
-	Class HTMLDocument{
-		protected $Document;
+	Class HTMLDocument extends DOMDocument{
+		//protected $Document;
 		public $Html;
 		public $Head;
 		public $Body;
 		public $Headers;
-		
-		public function createElement($name, $value=NULL){
-			return $this->innerDocument()->createElement($name, $value);
-		}
+		protected $dtd;
 	
 		public function createScriptElement($path){
-			$element = $this->innerDocument()->createElement('script');
+			$element = $this->createElement('script');
 			$element->setAttribute('type', 'text/javascript');
 			$element->setAttribute('src', $path);
 		
 			// Creating an empty text node forces <script></script>
-			$element->appendChild($this->innerDocument()->createTextNode(''));
+			$element->appendChild($this->createTextNode(''));
 		
 			return $element;
 		}
 	
 		public function createStylesheetElement($path, $type='screen'){
-			$element = $this->innerDocument()->createElement('link');
+			$element = $this->createElement('link');
 			$element->setAttribute('type', 'text/css');
 			$element->setAttribute('rel', 'stylesheet');
 			$element->setAttribute('media', $type);
 			$element->setAttribute('href', $path);
 			return $element;
 		}
+		
+		public function setDTD($value){
+			$this->dtd = $value;
+		}
 	
-		public function __construct($version='1.0', $encoding='utf-8', DOMDocumentType $dtd=NULL){
+		public function __construct($version='1.0', $encoding='utf-8', $dtd='html'){ //}, DOMDocumentType $dtd=NULL){
+			parent::__construct($version, $encoding);
+			
+			$this->appendChild($this->createElement('html'));
 			
 			$this->Headers = new DocumentHeaders(array(
 				'Content-Type', "text/html; charset={$encoding}",
 			));
 			
-			if(is_null($dtd)){
-				$dtd = DOMImplementation::createDocumentType('html');
-			}
-		
-			$this->Document = DOMImplementation::createDocument(NULL, 'html', $dtd);
-			$this->Document->version = $version;
-			$this->Document->encoding = $encoding;
-		
-			$this->Document->preserveWhitespace = false;
-			$this->Document->formatOutput = true;
-		
-			$this->Html = $this->Document->documentElement;
+			$this->dtd = $dtd;
 
-			$this->Head = $this->Document->createElement('head');
+			//if(is_null($dtd)){
+			//	$dtd = DOMImplementation::createDocumentType('html');
+			//}
+		
+			//$this->Document = DOMImplementation::createDocument(NULL, 'html', $dtd);
+			//$this->version = $version;
+			//$this->encoding = $encoding;
+		
+			$this->preserveWhitespace = false;
+			$this->formatOutput = true;
+		
+			$this->Html = $this->documentElement;
+
+			$this->Head = $this->createElement('head');
 			$this->Html->appendChild($this->Head);
 		
-			$this->Body = $this->Document->createElement('body');
+			$this->Body = $this->createElement('body');
 			$this->Html->appendChild($this->Body);
 		}
 	
@@ -111,16 +117,12 @@
 	    }
 	
 		public function xpath($query){
-			$xpath = new DOMXPath($this->innerDocument());
+			$xpath = new DOMXPath($this);
 			return $xpath->query($query);
 		}
-	
-		public function innerDocument(){
-			return $this->Document;
-		}
-	
+
 		public function __toString(){
-			return $this->Document->saveHTML();
+			return sprintf("<!DOCTYPE %s>\n%s", $this->dtd, $this->saveHTML());
 		}
 	
 	}
@@ -129,11 +131,7 @@
 /*	
 	// USAGE EXAMPLE:
 	
-	$page = new HTMLDocument('1.0', 'utf-8', DOMImplementation::createDocumentType(
-		"html", 
-		"-//W3C//DTD HTML 4.01//EN", 
-		"http://www.w3.org/TR/html4/strict.dtd"
-	));
+	$page = new HTMLDocument('1.0', 'utf-8', 'html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"');
 
 	$page->Head->appendChild(
 		$page->createElement('title', 'A New Page')
