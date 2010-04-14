@@ -216,8 +216,8 @@
 		public function listInstalledHandles(){
 			if(is_null(self::$_enabled_extensions)) {
 				$result = Symphony::Database()->query("SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'");
-
-				self::$_enabled_extensions = $result->resultColumn('name');
+				
+				self::$_enabled_extensions = ($result->length() > 0 ? $result->resultColumn('name') : array());
 			}
 			return self::$_enabled_extensions;
 		}
@@ -296,7 +296,9 @@
 					WHERE t1.status = 'enabled'
 				");
 			}
-
+			
+			if(self::$_subscriptions->length() <= 0) return;
+			
 			// Make sure $page is an array
 			if(!is_array($page)){
 
@@ -403,20 +405,24 @@
 		}
 
 		public function fetchExtensionID($name){
-			$result = Symphony::Database()->query("
-					SELECT
-						`id`
-					FROM
-						`tbl_extensions`
-					WHERE
-						`name` = '%s'
-					LIMIT
-						1
-				",
-				array($name)
-			);
-
-			return $result->resultValue('id');
+			try{
+				return Symphony::Database()->query("
+						SELECT
+							`id`
+						FROM
+							`tbl_extensions`
+						WHERE
+							`name` = '%s'
+						LIMIT
+							1
+					",
+					array($name)
+				)->current()->id;
+			}
+			catch(Exception $e){
+				// No result found.
+			}
+			return false;
 		}
 
 		public function fetchCustomMenu($name){

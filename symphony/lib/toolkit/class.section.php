@@ -161,7 +161,7 @@
 		}*/
 
 		public function appendField($type, array $data=NULL){
-
+			
 			$field = fieldManager::instance()->create($type);
 
 			if(!is_null($data)){
@@ -216,7 +216,14 @@
 						foreach($field as $property_name => $property_value){
 							$data[(string)$property_name] = (string)$property_value;
 						}
-						$section->appendField($data['type'], $data);
+						try{
+							$section->appendField($data['type'], $data);
+						}
+						catch(Exception $e){
+							// Couldnt find the field. Ignore it for now
+							// TO DO: Might need to more than just ignore it
+						}
+							
 					}
 				}
 
