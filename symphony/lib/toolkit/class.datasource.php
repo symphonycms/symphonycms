@@ -170,9 +170,9 @@
 				self::$_loaded = array();
 			}
 
-			if(!@is_file($pathname)){
-		        throw new Exception(
-					__('Could not find Data Source <code>%s</code>. If the Data Source was provided by an Extensions, ensure that it is installed, and enabled.', array($name))
+			if(!is_file($pathname)){
+		        throw new DataSourceException(
+					__('Could not find Data Source <code>%s</code>. If the Data Source was provided by an Extensions, ensure that it is installed, and enabled.', array(basename($pathname)))
 				);
 			}
 
