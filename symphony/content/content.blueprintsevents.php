@@ -42,18 +42,19 @@
 				));
 				$col_name->appendChild(Widget::Input("items[{$event['handle']}]", null, 'checkbox'));
 
-				/*if ($section instanceof Section) {
-					$section = $section->_data;
-					$col_source = Widget::TableData(Widget::Anchor(
-						$section['name'],
-						URL . '/symphony/blueprints/sections/edit/' . $section['id'] . '/',
-						$section['handle']
+				// Source
+				if(is_null($instance->getSource()){
+					$col_source = Widget::TableData(__('None'), 'inactive');
+				}
+				else{
+					$section = Section::loadFromHandle($instance->getSource());
+
+					return Widget::TableData(Widget::Anchor(
+						$section->name,
+						URL . '/symphony/blueprints/sections/edit/' . $section->handle . '/',
+						$section->handle
 					));
 				}
-
-				else {*/
-					$col_source = Widget::TableData(__('None'), 'inactive');
-				//}
 
 				if (isset($event['author']['website'])) {
 					$col_author = Widget::TableData(Widget::Anchor(
@@ -219,12 +220,10 @@
 
 				$label = Widget::Label(__('Source'));
 
-			    $sections = SectionManager::instance()->fetch(NULL, 'ASC', 'name');
+			    $options = array();
 
-				$options = array();
-
-				if(is_array($sections) && !empty($sections)){
-					foreach($sections as $s) $options[] = array($s->get('id'), ($fields['source'] == $s->get('id')), $s->get('name'));
+				foreach (new SectionIterator as $section) {
+					$options[] = array($section->handle, ($fields['source'] == $section->handle), $section->name);
 				}
 
 				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'event-context-selector')));
@@ -240,10 +239,12 @@
 
 				$label = Widget::Label(__('Filter Rules'));
 
+				if(!is_array($fields['filters'])) $fields['filters'] = array($fields['filters']);
+
 				$options = array(
-					array('admin-only', @in_array('admin-only', $fields['filters']), __('Admin Only')),
-					array('send-email', @in_array('send-email', $fields['filters']), __('Send Email')),
-					array('expect-multiple', @in_array('expect-multiple', $fields['filters']), __('Allow Multiple')),
+					array('admin-only', in_array('admin-only', $fields['filters']), __('Admin Only')),
+					array('send-email', in_array('send-email', $fields['filters']), __('Send Email')),
+					array('expect-multiple', in_array('expect-multiple', $fields['filters']), __('Allow Multiple')),
 				);
 
 				###
