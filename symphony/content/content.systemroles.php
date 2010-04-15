@@ -1,7 +1,7 @@
 <?php
 
 	require_once(TOOLKIT . '/class.administrationpage.php');
-	require_once(TOOLKIT . '/class.sectionmanager.php');
+	//require_once(TOOLKIT . '/class.sectionmanager.php');
 
 	Class contentSystemRoles extends AdministrationPage{
 
