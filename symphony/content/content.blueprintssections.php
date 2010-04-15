@@ -209,7 +209,7 @@
 */
 				if(!is_null($fieldsets) && !empty($fieldsets)) {
 
-					$doc = $this->createDocumentFragment();
+					$doc = new DOMDocument('1.0', 'UTF-8');
 					$doc->formatOutput = true;
 
 					$layout = $doc->createElement('layout');

@@ -106,6 +106,18 @@
 
 		}
 
+		//	TODO: Make this work regardless of Form
+		public function insertAlert($element) {
+			$node = $this->xpath("/html/body/form/*[1]")->item(0);
+
+			if(is_null($node)){
+				$this->Form->appendChild($element);
+			}
+			else{
+				$node->parentNode->insertBefore($element, $node);
+			}
+		}
+
 		public function isElementInHead($element, $attr=NULL, $nodeValue=NULL){
 
 			$xpath = "/html/head/{$element}";

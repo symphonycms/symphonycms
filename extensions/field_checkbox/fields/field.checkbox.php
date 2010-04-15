@@ -140,7 +140,7 @@
 			$label = Widget::Label();
 			$input = Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, 'yes', 'checkbox', ($value == 'yes' ? array('checked' => 'checked') : NULL));
 
-			$label->setValue($input->generate(false) . ' ' . ($this->get('description') != NULL ? $this->get('description') : $this->get('label')));
+			$label->setValue($input . ' ' . ($this->get('description') != NULL ? $this->get('description') : $this->get('label')));
 
 			$wrapper->appendChild($label);
 		}
@@ -182,7 +182,8 @@
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			## Long Description
-			$label = Widget::Label(__('Long Description <i>Optional</i>'));
+			$label = Widget::Label(__('Long Description'));
+			$label->appendChild(Symphony::Parent()->Page->createElement('i', __('Optional')));
 			$label->appendChild(Widget::Input('description', $this->get('description')));
 			$wrapper->appendChild($label);
 
@@ -193,7 +194,9 @@
 			$label = Widget::Label();
 			$input = Widget::Input('default_state', 'on', 'checkbox');
 			if($this->get('default_state') == 'on') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Checked by default', array($input)));
+			$label->appendChild($input);
+			$label->setValue(__('Checked by default'));
+
 			$options_list->appendChild($label);
 
 			$this->appendShowColumnCheckbox($options_list);

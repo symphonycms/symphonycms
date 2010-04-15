@@ -150,7 +150,7 @@
 			ExtensionManager::instance()->notifyMembers('AppendPageAlert', '/backend/');
 
 			if(($this->Alert instanceof Alert)){
-				$this->Form->prependChild($this->Alert->asXML());
+				$this->insertAlert($this->Alert->asXML());
 			}
 		}
 
