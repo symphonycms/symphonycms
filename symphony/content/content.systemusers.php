@@ -199,16 +199,16 @@
 
 			$label = Widget::Label(__('First Name'));
 			$label->appendChild(Widget::Input('fields[first_name]', $user->get('first_name')));
-			$fieldset->appendChild((isset($this->_errors['first_name']) ? $this->wrapFormElementWithError($label, $this->_errors['first_name']) : $label));
+			$fieldset->appendChild((isset($this->_errors['first_name']) ? Widget::wrapFormElementWithError($label, $this->_errors['first_name']) : $label));
 
 
 			$label = Widget::Label(__('Last Name'));
 			$label->appendChild(Widget::Input('fields[last_name]', $user->get('last_name')));
-			$fieldset->appendChild((isset($this->_errors['last_name']) ? $this->wrapFormElementWithError($label, $this->_errors['last_name']) : $label));
+			$fieldset->appendChild((isset($this->_errors['last_name']) ? Widget::wrapFormElementWithError($label, $this->_errors['last_name']) : $label));
 
 			$label = Widget::Label(__('Email Address'));	
 			$label->appendChild(Widget::Input('fields[email]', $user->get('email')));
-			$fieldset->appendChild((isset($this->_errors['email']) ? $this->wrapFormElementWithError($label, $this->_errors['email']) : $label));
+			$fieldset->appendChild((isset($this->_errors['email']) ? Widget::wrapFormElementWithError($label, $this->_errors['email']) : $label));
 
 			$layout->appendToCol($fieldset, 1);
 			###
@@ -218,7 +218,7 @@
 
 			$label = Widget::Label(__('Username'));
 			$label->appendChild(Widget::Input('fields[username]', $user->get('username'), NULL));
-			$fieldset->appendChild((isset($this->_errors['username']) ? $this->wrapFormElementWithError($label, $this->_errors['username']) : $label));
+			$fieldset->appendChild((isset($this->_errors['username']) ? Widget::wrapFormElementWithError($label, $this->_errors['username']) : $label));
 
 			$label = Widget::Label(__('Default Section'));
 			
@@ -240,7 +240,7 @@
 
 			$label = Widget::Label(($this->_context[0] == 'edit' ? __('New Password') : __('Password')));		
 			$label->appendChild(Widget::Input('fields[password]', NULL, 'password'));
-			$fieldset->appendChild((isset($this->_errors['password']) ? $this->wrapFormElementWithError($label, $this->_errors['password']) : $label));
+			$fieldset->appendChild((isset($this->_errors['password']) ? Widget::wrapFormElementWithError($label, $this->_errors['password']) : $label));
 
 			$label = Widget::Label(($this->_context[0] == 'edit' ? __('Confirm New Password') : __('Confirm Password')));
 			if(isset($this->_errors['password-confirmation'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['password-confirmation']));	

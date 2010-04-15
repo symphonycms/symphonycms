@@ -246,7 +246,7 @@
 			));
 
 			if(isset($this->_errors->template)) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors->template);
+				$label = Widget::wrapFormElementWithError($label, $this->_errors->template);
 			}
 
 			$div->appendChild($label);
@@ -482,7 +482,7 @@
 			));
 
 			if(isset($this->_errors->title)) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors->title);
+				$label = Widget::wrapFormElementWithError($label, $this->_errors->title);
 			}
 
 			$fieldset->appendChild($label);
@@ -495,7 +495,7 @@
 			$label->appendChild(Widget::Input('fields[types]', $fields['types']));
 
 			if(isset($this->_errors->types)) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors->types);
+				$label = Widget::wrapFormElementWithError($label, $this->_errors->types);
 			}
 
 			$tags = $this->createElement('ul');
@@ -547,7 +547,7 @@
 			));
 
 			if(isset($this->_errors->handle)) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors->handle);
+				$label = Widget::wrapFormElementWithError($label, $this->_errors->handle);
 			}
 
 			$fieldset->appendChild($label);

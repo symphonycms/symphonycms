@@ -183,7 +183,7 @@
 				if ($mode == 'formatted') $attributes['mode'] = $mode;
 
 				$wrapper->appendChild(
-					new XMLElement(
+					Symphony::Parent()->Page->createElement(
 						$this->get('element_name'),
 						($encode ? General::sanitize($value) : $value),
 						$attributes
@@ -195,7 +195,7 @@
 			elseif ($mode == 'unformatted') {
 
 				$wrapper->appendChild(
-					new XMLElement(
+					Symphony::Parent()->Page->createElement(
 						$this->get('element_name'),
 						sprintf('<![CDATA[%s]]>', $data['value']),
 						array(

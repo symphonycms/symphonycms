@@ -51,7 +51,7 @@
 			}
 			
 			catch (Exception $error) {
-				$result->appendChild(new XMLElement(
+				$result->appendChild(Symphony::Parent()->Page->createElement(
 					'error', General::sanitize($error->getMessage())
 				));
 			}	
