@@ -79,7 +79,7 @@
 			return $oPage;
 		}
 		
-		public function grab() {
+		public function render(Register &$ParameterOutput){
 			throw new Exception('TODO: Fix navigation datasource template.');
 			
 			$result = new XMLElement($this->getRootElement());

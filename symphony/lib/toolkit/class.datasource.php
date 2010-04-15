@@ -151,8 +151,8 @@
 		protected static $_loaded;
 
 		// Abstract function
-		abstract public function grab();
-
+		abstract public function render(Register &$ParameterOutput);
+		
 		public static function getHandleFromFilename($filename){
 			return preg_replace('/.php$/i', NULL, $filename);
 		}

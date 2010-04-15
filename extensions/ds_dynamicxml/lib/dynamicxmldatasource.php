@@ -54,7 +54,7 @@
 			return parent::save($errors);
 		}
 		
-		public function grab(){
+		public function render(Register &$ParameterOutput){
 			$result = null;
 			
 			if(isset($this->dsParamURL)) $this->dsParamURL = $this->__processParametersInString($this->dsParamURL, $this->_env, true, true);

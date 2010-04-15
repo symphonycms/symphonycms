@@ -2,30 +2,30 @@
 
 	Final Class MessageStack implements Iterator{
 
-	    private $_messages = array();
+	    private $messages = array();
 
 	    public function __construct(array $messages=NULL){
-			$this->_messages = array();
+			$this->messages = array();
 	
 	        if(!is_null($messages)){
-	            $this->_messages = $messages;
+	            $this->messages = $messages;
 	        }
 	    }
 
 	    public function rewind(){
-	        reset($this->_messages);
+	        reset($this->messages);
 	    }
 
 	    public function current(){
-	        return current($this->_messages);
+	        return current($this->messages);
 	    }
 
 	    public function key(){
-	        return key($this->_messages);
+	        return key($this->messages);
 	    }
 
 	    public function next(){
-	        return next($this->_messages);
+	        return next($this->messages);
 	    }
 
 	    public function valid(){
@@ -33,32 +33,39 @@
 	    }
 
 		public function length(){
-			return count($this->_messages);
+			return count($this->messages);
 		}
 	
 		## TODO: This is a bit voodoo. Maybe come up with a better solution
-		private static function __sanitiseElementName($element){
-			return str_replace('_', '-', $element);
+		private static function __sanitiseIdentifier($identifier){
+			return str_replace('_', '-', $identifier);
 		}
 
-		public function append($element, $message){
-			$this->_messages[self::__sanitiseElementName($element)] = $message;
+		public function append($identifier, $message){
+			if($identifier == NULL) $identifier = count($this->messages);
+			$this->messages[self::__sanitiseIdentifier($identifier)] = $message;
+			
+			return $identifier;
 		}
 
-		public function remove($element){
-			$element = self::__sanitiseElementName($element);
+		public function remove($identifier){
+			$element = self::__sanitiseIdentifier($identifier);
 		
-			if(isset($this->_messages[$element])){
-				unset($this->_messages[$element]);
+			if(isset($this->messages[$identifier])){
+				unset($this->messages[$identifier]);
 			}
 		}
 		
-		public function __get($element){
-			return (isset($this->_messages[$element]) ? $this->_messages[$element] : NULL);
+		public function flush(){
+			$this->messages = array();
 		}
 		
-		public function __isset($element){
-			return isset($this->_messages[$element]);
+		public function __get($identifier){
+			return (isset($this->messages[$identifier]) ? $this->messages[$identifier] : NULL);
+		}
+		
+		public function __isset($identifier){
+			return isset($this->messages[$identifier]);
 		}
 
 	}

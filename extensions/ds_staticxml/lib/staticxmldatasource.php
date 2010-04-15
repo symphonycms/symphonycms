@@ -39,7 +39,7 @@
 			return parent::save($errors);
 		}
 		
-		public function grab() {
+		public function render(Register &$ParameterOutput){
 			$result = new XMLElement($this->about()->{'root-element'});
 			
 			try {

@@ -104,9 +104,15 @@
 			return EXTENSIONS . '/ds_sections/templates/datasource.php';
 		}
 
-		public function grab() {
-			throw new Exception('TODO: Fix sections datasource template.');
+		public function render(Register &$ParameterOutput){
+			$doc = new XMLDocument;
+			$doc->appendChild($doc->createElement($this->parameters()->{'root-element'}));
+			
+			$ParameterOutput->{'ds-fred-title'} = "I am the most awesome";
+			
+			return $doc;
 		}
+
 
 		public function prepareSourceColumnValue(){
 			$section = Section::loadFromHandle($this->_parameters->section);

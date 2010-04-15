@@ -17,7 +17,7 @@
 	$renderer = (isset($_GET['mode']) && strtolower($_GET['mode']) == 'administration' 
 		? 'administration' 
 		: 'frontend');
-
+	
 	$output = renderer($renderer)->display(getCurrentPage());
 	
 	header(sprintf('Content-Length: %d', strlen($output)));

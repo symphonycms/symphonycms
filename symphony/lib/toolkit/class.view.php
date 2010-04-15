@@ -1,5 +1,7 @@
 <?php
 
+
+
 	Class ViewException extends Exception {}
 
 	Class ViewFilterIterator extends FilterIterator{
@@ -412,6 +414,99 @@
 			
 			General::rmdirr(VIEWS . '/' . trim($path, '/'));
 			
+		}
+		
+		public function render(Register &$Parameters, XMLDocument &$Document=NULL){
+			
+			$DataSourceParameterOutput = new Register;
+			
+			if(is_null($Document)){
+				$Document = new XMLDocument;
+				$Document->appendChild($Document->createElement('data'));
+			}
+			
+			$root = $Document->documentElement;
+
+			if(is_array($this->about()->{'data-sources'}) && !empty($this->about()->{'data-sources'})){
+				foreach($this->about()->{'data-sources'} as $handle){
+					$ds = Datasource::loadFromName($handle);
+					$fragment = $ds->render($DataSourceParameterOutput);
+
+					if($fragment instanceof DOMDocument){
+						$node = $Document->importNode($fragment->documentElement, true);
+						$root->appendChild($node);
+					}
+					
+				}
+			}
+			
+			
+			$Events = $Document->createElement('events');
+			$root->appendChild($Events);
+			
+			/*
+			$this->processEvents($page['events'], $events);
+			$this->processDatasources($page['data_sources'], $xml);
+			
+			if(is_array($this->_env['pool']) && !empty($this->_env['pool'])){
+				foreach($this->_env['pool'] as $handle => $p){
+
+					if(!is_array($p)) $p = array($p);
+					foreach($p as $key => $value){
+
+						if(is_array($value) && !empty($value)){
+							foreach($value as $kk => $vv){
+								$this->_param[$handle] .= @implode(', ', $vv) . ',';
+							}
+						}
+
+						else{
+							$this->_param[$handle] = @implode(', ', $p);
+						}
+					}
+
+					$this->_param[$handle] = trim($this->_param[$handle], ',');
+				}
+			}
+			*/
+			
+			if($DataSourceParameterOutput->length() > 0){
+				foreach($DataSourceParameterOutput as $p){
+					$Parameters->{$p->key} = $p->value;
+				}
+			}
+			
+			####
+			# Delegate: FrontendParamsPostResolve
+			# Description: Access to the resolved param pool, including additional parameters provided by Data Source outputs
+			# Global: Yes
+			ExtensionManager::instance()->notifyMembers('FrontendParamsPostResolve', '/frontend/', array('params' => $Parameters));
+
+			$element = $Document->createElement('parameters');
+			$root->appendChild($element);
+			
+			foreach($Parameters as $key => $parameter){
+				$element->appendChild($Document->createElement($key, (string)$parameter));
+			}
+
+			// When the XSLT executes, it uses the CWD as set here
+			$cwd = getcwd();
+			chdir(WORKSPACE);
+			$output = XSLProc::transform($Document, $this->template, XSLProc::XML, $Parameters->toArray(), array());
+			chdir($cwd);
+
+			if(XSLProc::hasErrors()){
+				throw new XSLProcException('Transformation Failed');
+			}
+			
+			/*
+			header('Content-Type: text/plain');
+			$Document->formatOutput = true;
+			print $Document->saveXML();
+			die();
+			*/
+			
+			return $output;
 		}
 	}
 

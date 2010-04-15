@@ -178,6 +178,8 @@
 			Cache::setDriver(self::Configuration()->core()->{'cache-driver'});
 
 			Lang::loadAll(true);
+			
+			$this->Profiler->sample('Engine Initialisation');
 
 		}
 
@@ -258,7 +260,11 @@
 		public function isLoggedIn(){
 
 			if ($this->User) return true;
-
+			
+			if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && strlen($_REQUEST['auth-token']) == 8) {
+				return $this->loginFromToken($_REQUEST['auth-token']);
+			}
+			
 			$username = $this->Cookie->get('username');
 			$password = $this->Cookie->get('pass');
 

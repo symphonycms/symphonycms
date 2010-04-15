@@ -37,21 +37,6 @@
 			return self::$_instance;
 		}
 		
-		protected function __construct(){
-			parent::__construct();
-			$this->Profiler->sample('Engine Initialisation');
-
-			$this->_callback = NULL;
-		}
-		
-		public function isLoggedIn(){
-			if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && in_array(strlen($_REQUEST['auth-token']), array(6, 8))){
-				return $this->loginFromToken($_REQUEST['auth-token']);
-			}
-			
-			return parent::isLoggedIn();
-		}
-		
 		private function __buildPage($page){
 	
 			$this->isLoggedIn();

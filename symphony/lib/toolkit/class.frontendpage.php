@@ -1,41 +1,99 @@
 <?php
 
-	require_once(TOOLKIT . '/class.xsltpage.php');
-	require_once(TOOLKIT . '/class.datasourcemanager.php');
+	//require_once(TOOLKIT . '/class.xsltpage.php');
+	//require_once(TOOLKIT . '/class.datasourcemanager.php');
 	require_once(TOOLKIT . '/class.eventmanager.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
+	require_once(TOOLKIT . '/class.xmldocument.php');	
+	require_once(TOOLKIT . '/class.documentheaders.php');
+	/*
+	Class Parameter{
 	
-	Class FrontendPage extends XSLTPage{
-		
-		const FRONTEND_OUTPUT_NORMAL = 0;
-		const FRONTEND_OUTPUT_DEBUG = 1;
-		const FRONTEND_OUTPUT_PROFILE = 2;
-				
-		private $_page;
-		private $_pageData;
-		private $_env;
-		private $_events_xml;
-		public $_param;		
-		public $_Parent;
-		public $DatasourceManager;
-		public $ExtensionManager;		
-				
-		function __construct(){
-			parent::__construct();
+		private $value;
+		private $key;
+	
+		public function __construct($key, $value){
+			$this->value = $value;
+			$this->key = $key;
+		}
+	
+		public function __toString(){
+			if(is_array($this->value)) return implode(',', $this->value);
+			return (!is_null($this->value) ? $this->value : '');
+		}
+	}
 
-			$this->_env = array();
+	Final Class Register implements Iterator{
+
+		private $parameters;
+
+		private $_result;
+		private $_position;
+		private $_current;
+		private $_keys;
+
+		public function register(array $params){
+			foreach($params as $key => $value) $this->$key = $value;
+		}
+
+		public function __construct(){
+			$this->parameters = array();
+			$this->_position = 0;
+		}
+
+		public function __set($name, $value){
+			$this->parameters[$name] = new Parameter($name, $value);
+			$this->_keys = array_keys($this->parameters);
+		}
+
+		public function __get($name){
+			 if(isset($this->parameters[$name])) 
+				return $this->parameters[$name];
+
+			throw new Exception('No such parameter "' . $name . '"');
+		}
+
+		public function __isset($name){
+			return (isset($this->parameters[$name]) && ($this->parameters[$name] instanceof Parameter));
+		}
+
+		public function current(){
+			return current($this->parameters);
+		}
+
+		public function next(){
+			$this->_position++;
+			next($this->parameters);
+		}
+
+		public function position(){
+			return $this->_position;
+		}
+
+		public function rewind(){
+			reset($this->parameters);
+			$this->_position = 0;
+		}
+
+		public function key(){
+			return $this->_keys[$this->_position];
+		}
+
+		public function length(){
+			return count($this->parameters);
+		}
+
+		public function valid(){
+			return $this->_position < $this->length();
+		}
+	}
+*/
+	Class FrontendPage extends XMLDocument{
+		
+		public function __construct(){
+			parent::__construct('1.0', 'utf-8');
+			$this->Headers = new DocumentHeaders;
 			
-			$this->DatasourceManager = new DatasourceManager;
-			$this->EventManager = new EventManager;
-
-		}
-		
-		public function pageData(){
-			return $this->_pageData;
-		}
-		
-		public function Env(){
-			return array('env' => &$this->_env, 'param' => &$this->_param);
 		}
 		
 		public function generate($page) {
@@ -57,7 +115,6 @@
 				);
 			}
 
-			Frontend::instance()->Profiler->sample('Page creation process started');
 			$this->_page = $page;
 			$this->__buildPage();
 			
@@ -75,23 +132,7 @@
 					)
 				);
 				
-				if (is_null($devkit)) {
-					if(@in_array('XML', $this->_pageData['type']) || @in_array('xml', $this->_pageData['type'])) {
-						$this->addHeaderToPage('Content-Type', 'text/xml; charset=utf-8');
-					}
-					
-					else{
-						$this->addHeaderToPage('Content-Type', 'text/html; charset=utf-8');
-					}
-						
-					if(@in_array('404', $this->_pageData['type'])){
-						$this->addHeaderToPage('HTTP/1.0 404 Not Found');
-					}
-					
-					elseif(@in_array('403', $this->_pageData['type'])){
-						$this->addHeaderToPage('HTTP/1.0 403 Forbidden');
-					}
-				}
+				$this->Headers->append('Content-Type', 'text/html; charset=utf-8');
 				
 				####
 				# Delegate: FrontendPreRenderHeaders
@@ -111,13 +152,11 @@
 				# Global: Yes
 				ExtensionManager::instance()->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
 
-				Frontend::instance()->Profiler->sample('XSLT Transformation', PROFILE_LAP);
 				
 				if (is_null($devkit) && !$output) {
 					throw new XSLProcException('Transformation Failed');
 				}
-				
-				Frontend::instance()->Profiler->sample('Page creation complete');
+
 			}
 			
 			if (!is_null($devkit)) {
@@ -127,7 +166,7 @@
 			
 			## EVENT DETAILS IN SOURCE
 			if (Frontend::instance()->isLoggedIn() && Symphony::Configuration()->get('display_event_xml_in_source', 'public') == 'yes') {
-				$output .= self::CRLF . '<!-- ' . self::CRLF . $this->_events_xml->generate(true) . ' -->';
+				$output .= General::CRLF . '<!-- ' . General::CRLF . $this->_events_xml->generate(true) . ' -->';
 			}
 			
 			return $output;
@@ -242,9 +281,6 @@
 
 			$this->processDatasources($page['data_sources'], $xml);
 
-			Frontend::instance()->Profiler->seed($xml_build_start);
-			Frontend::instance()->Profiler->sample('XML Built', PROFILE_LAP);
-
 			if(is_array($this->_env['pool']) && !empty($this->_env['pool'])){
 				foreach($this->_env['pool'] as $handle => $p){
 
@@ -284,19 +320,13 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="' . VIEWS . '/' . $page['filelocation'] . '"/>
 </xsl:stylesheet>';*/
-			
-			Frontend::instance()->Profiler->seed();
-			$this->setXML($xml->generate(true, 0));
-			Frontend::instance()->Profiler->sample('XML Generation', PROFILE_LAP);
 
+			$this->setXML($xml->generate(true, 0));
 			$this->setXSL($xsl, false);
 			$this->setRuntimeParam($this->_param);
-			
-			Frontend::instance()->Profiler->seed($start);
-			Frontend::instance()->Profiler->sample('Page Built', PROFILE_LAP);
 		
 		}
-
+/*
 		public function resolvePage($page=NULL){
 		
 			if($page) $this->_page = $page;
@@ -363,6 +393,7 @@
 			return $row;
 	
 		}
+*/
 		
 		/*private function __fetchPageTypes($page_id){
 			return Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '{$page_id}' ");
@@ -478,7 +509,7 @@
 				if ($xml = $ds->grab($this->_env['pool'])) {
 					if (is_object($xml)) $wrapper->appendChild($xml);
 					else $wrapper->setValue(
-						$wrapper->getValue() . self::CRLF . '	' . trim($xml)
+						$wrapper->getValue() . General::CRLF . '	' . trim($xml)
 					);
 				}
 				
@@ -538,7 +569,7 @@
 					if($xml = $event->load()):
 				
 						if(is_object($xml)) $wrapper->appendChild($xml);
-						else $wrapper->setValue($wrapper->getValue() . self::CRLF . '	' . trim($xml));
+						else $wrapper->setValue($wrapper->getValue() . General::CRLF . '	' . trim($xml));
 										
 					endif;
 				

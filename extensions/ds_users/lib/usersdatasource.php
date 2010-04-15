@@ -43,7 +43,7 @@
 			return (is_array($users) && !empty($users) ? $users : NULL);
 		}
 		
-		public function grab() {
+		public function render(Register &$ParameterOutput){
 			throw new Exception('TODO: Fix users datasource template.');
 			
 			$result = new XMLElement($this->dsParamROOTELEMENT);

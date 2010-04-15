@@ -1,31 +1,10 @@
 <?php
-	
-	Class DocumentHeaders{
-		protected $headers;
-		
-		public function __construct(array $headers=array()){
-			$this->headers = $headers;
-		}
-		
-		public function append($name, $value=NULL){
-			$this->headers[strtolower($name)] = $name . (is_null($value) ? NULL : ":{$value}");
-		}
 
-		public function render(){
-			if(!is_array($this->headers) || empty($this->headers)) return;
-
-			foreach($this->headers as $value){
-				header($value);
-			}
-		}
-		
-		public function headers(){
-			return $this->headers;
-		}
-	}
+	require_once(TOOLKIT . '/class.xmldocument.php');	
+	require_once(TOOLKIT . '/class.documentheaders.php');
 	
-	Class HTMLDocument extends DOMDocument{
-		//protected $Document;
+	Class HTMLDocument extends XMLDocument{
+
 		public $Html;
 		public $Head;
 		public $Body;
@@ -115,11 +94,6 @@
 			$nodes = $this->xpath($xpath);
 			return ($nodes->length > 0 ? true : false);
 	    }
-	
-		public function xpath($query){
-			$xpath = new DOMXPath($this);
-			return $xpath->query($query);
-		}
 
 		public function __toString(){
 			return sprintf("<!DOCTYPE %s>\n%s", $this->dtd, $this->saveHTML());
