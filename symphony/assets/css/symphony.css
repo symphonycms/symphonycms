@@ -642,6 +642,7 @@
 		display: inline;
 		width: auto;
 		margin-right: .4em;
+		cursor: pointer;
 	}
 	form select[multiple] {
 		min-height: 100px;

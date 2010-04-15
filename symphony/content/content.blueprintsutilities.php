@@ -43,25 +43,18 @@
 			}
 
 			else {
-				$bOdd = true;
 				foreach($utilities as $util){
-					$class = array();
-					if($bOdd) $class[] = 'odd';
-
 					$uRow = Widget::TableData(
 						Widget::Anchor(
 							$util,
-							URL . '/symphony/blueprints/utilities/edit/' . str_replace('.xsl', '', $util) . '/', NULL)
+							URL . '/symphony/blueprints/utilities/edit/' . str_replace('.xsl', '', $util) . '/')
 						);
 
 					$uRow->appendChild(Widget::Input("items[{$util}]", null, 'checkbox'));
 
 					$uTableBody[] = Widget::TableRow(
-						array($uRow),
-						implode(' ', $class)
+						array($uRow)
 					);
-
-					$bOdd = !$bOdd;
 				}
 			}
 

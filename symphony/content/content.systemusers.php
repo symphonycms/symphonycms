@@ -60,7 +60,6 @@
 			}
 
 			else{
-				$bOdd = true;
 				foreach($users as $u){
 
 					## Setup each cell
@@ -84,17 +83,14 @@
 						$td3 = Widget::TableData(DateTimeObj::get(__SYM_DATETIME_FORMAT__, strtotime($u->get('last_seen'))));
 					}
 					else{
-						$td3 = Widget::TableData('Unknown', 'inactive');
+						$td3 = Widget::TableData('Unknown', array('class' => 'inactive'));
 					}
 
 					$td3->appendChild(Widget::Input('items['.$u->get('id').']', NULL, 'checkbox'));
 
 					## Add a row to the body array, assigning each cell to the row
 
-					//	TODO: Is the Odd Class here redundant?
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3), ($bOdd) ? array('class' => 'odd') : NULL);
-
-					$bOdd = !$bOdd;
+					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
 				}
 			}
 
@@ -272,9 +268,14 @@
 			$label = Widget::Label();
 			$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
 			if($user->get('auth_token_active') == 'yes') $input->setAttribute('checked', 'checked');
+			$temp = ADMIN_URL . '/login/' . $user->createAuthToken() . '/';
 
 			$label->appendChild($input);
-			$label->setValue(__('Allow remote login via <a href="%1$s">%1$s</a>', array(ADMIN_URL . '/login/' . $user->createAuthToken() . '/')));
+			$label->setValue(__('Allow remote login via '));
+			$label->appendChild(
+				Widget::Anchor($temp, $temp)
+			);
+
 			$fieldset->appendChild($label);
 
 			$layout->appendToCol($fieldset, 2);
