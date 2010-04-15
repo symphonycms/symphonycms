@@ -145,14 +145,14 @@
 		*/
 		public function setValue($value) {
 			//	TODO: Possibly might need to Remove existing Children before adding..
-			if($value instanceof self) {
+			if($value instanceof SymphonyDOMElement || $value instanceof DOMDocumentFragment) {
 				$this->appendChild($value);
 			}
 			elseif(!is_null($value)) {
 				$this->appendChild(
 					new DOMText($value)
 				);
-			}
+			}			
 		}
 
 		public function setAttributeArray(array $attributes) {

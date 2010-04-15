@@ -178,7 +178,6 @@
 			Cache::setDriver(self::Configuration()->core()->{'cache-driver'});
 
 			Lang::loadAll(true);
-
 		}
 
 		public function lang(){

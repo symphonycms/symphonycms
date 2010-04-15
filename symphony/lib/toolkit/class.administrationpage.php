@@ -180,12 +180,11 @@
 			$this->Form->appendChild($ul);
 		}
 
-		public function appendSubheading($string, $link=NULL){
+		public function appendSubheading($string, $link=NULL){		
+			$h2 = $this->createElement('h2', $string);
+			$h2->setValue($link);
 
-			if($link && is_object($link)) $string .= ' ' . $link->generate(false);
-			elseif($link) $string .= ' ' . $link;
-
-			$this->Form->appendChild(new XMLElement('h2', $string));
+			$this->Form->appendChild($h2);
 		}
 
 		public function appendNavigation(){

@@ -9,14 +9,11 @@
 				$this->createElement('h3', 'Hi there')
 			);
 
-			$element = $this->createElement('h4');
-			$element->setValue('testing & setValue');
-			$element->setAttributeArray(array("style" => "color:red", "class" => "new"));
+			$a = Widget::Acronym('URL', array('title' => 'U R L'), ' Parameters');
+			
+			//var_dump($doc);
 
-			$span = $this->createElement('span', 'hello');
-			$element->setValue($span);
-
-			$this->Form->appendChild($element);
+			$this->Form->appendChild($a);
 
 		}
 

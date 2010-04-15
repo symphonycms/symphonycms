@@ -10,6 +10,39 @@
 			self::$ready = true;
 		}
 
+		## Forms
+		## First take at a generic fieldset builder for the new form layout
+		public static function Fieldset($value=null, $help=null, array $attributes = array()){
+			if(!self::$ready) Widget::init();
+
+			$fieldset = Widget::$Symphony->createElement('fieldset', null, $attributes);
+
+			if(!is_null($value)){
+				$fieldset->appendChild(
+					Widget::$Symphony->createElement('h3',$value)
+				);
+			}
+			if(!is_null($help)){
+				$fieldset->appendChild(
+					Widget::$Symphony->createElement('p', $help, array(
+							'class' => 'help'
+					))
+				);
+			}
+
+			return $fieldset;
+		}
+
+		public static function Form($action, $method, array $attributes = array()){
+			if(!Widget::$ready) Widget::init();
+
+			$form = Widget::$Symphony->createElement('form', null, $attributes);
+			$form->setAttribute('action', $action);
+			$form->setAttribute('method', $method);
+
+			return $form;
+		}
+
 		public static function Label($name=null, SymphonyDOMElement $child=null, array $attributes = array()){
 			if(!self::$ready) Widget::init();
 
@@ -44,50 +77,67 @@
 
 			return $obj;
 		}
-
-		public static function Anchor($value, $href, array $attributes = array()){
+		
+		public static function Select($name, $options, array $attributes = array()){
 			if(!self::$ready) Widget::init();
 
-			$a = Widget::$Symphony->createElement('a', $value, $attributes);
-			$a->setAttribute('href', $href);
+			$obj = Widget::$Symphony->createElement('select', null, $attributes);
+			$obj->setAttribute('name', $name);
 
-			return $a;
+			$obj->appendChild(Widget::$Symphony->createTextNode(''));
+
+			if(!is_array($options) || empty($options)){
+				if(!isset($attributes['disabled'])) $obj->setAttribute('disabled', 'disabled');
+
+				return $obj;
+			}
+
+			foreach($options as $o){
+
+				## Opt Group
+				if(isset($o['label'])){
+
+					$optgroup = Widget::$Symphony->createElement('optgroup');
+					$optgroup->setAttribute('label', $o['label']);
+
+					foreach($o['options'] as $opt){
+						$optgroup->appendChild(
+							Widget::__SelectBuildOption($opt)
+						);
+					}
+
+					$obj->appendChild($optgroup);
+				}
+
+				## Non-Opt group
+				else $obj->appendChild(Widget::__SelectBuildOption($o));
+
+			}
+
+			return $obj;
 		}
 
-		public static function Form($action, $method, array $attributes = array()){
-			if(!Widget::$ready) Widget::init();
-
-			$form = Widget::$Symphony->createElement('form', null, $attributes);
-			$form->setAttribute('action', $action);
-			$form->setAttribute('method', $method);
-
-			return $form;
-		}
-
-		## First take at a generic fieldset builder for the new form layout
-		public static function Fieldset($value=null, $help=null, array $attributes = array()){
+		private static function __SelectBuildOption($option){
 			if(!self::$ready) Widget::init();
 
-			$fieldset = Widget::$Symphony->createElement('fieldset', null, $attributes);
+			@list($value, $selected, $desc, $class, $id, $attr) = $option;
+			if(!$desc) $desc = $value;
 
-			if($title){
-				$fieldset->appendChild(
-					Widget::$Symphony->createElement('h3',$value)
-				);
-			}
-			if($help){
-				$fieldset->appendChild(
-					Widget::$Symphony->createElement('p', $help, array(
-							'class' => 'help'
-					))
-				);
-			}
+			$obj = Widget::$Symphony->createElement('option', "$desc");
+			$obj->appendChild(Widget::$Symphony->createTextNode(''));
+			$obj->setAttribute('value', (string)$value);
 
-			return $fieldset;
+			if(!empty($class)) $obj->setAttribute('class', $class);
+			if(!empty($id)) $obj->setAttribute('id', $id);
+			if($selected) $obj->setAttribute('selected', 'selected');
+
+			if(!empty($attr)) $obj->setAttributeArray($attr);
+
+			return $obj;
+
 		}
 
-		###
-		# Simple way to create generic Symphony table wrapper
+		##	Tables
 		public static function Table($head=null, $foot=null, $body=null, array $attributes = array()){
 			if(!self::$ready) Widget::init();
 
@@ -152,7 +202,7 @@
 			return $tr;
 		}
 
-		public static function TableData($value, array $attributes = array()){
+		public static function TableData($value = null, array $attributes = array()){
 			if(!self::$ready) Widget::init();
 
 			$td = Widget::$Symphony->createElement('td');
@@ -161,65 +211,33 @@
 			$td->setAttributeArray($attributes);
 
 			return $td;
-		}
+		}		
 
-		public static function Select($name, $options, array $attributes = array()){
+		## Misc
+		public static function Anchor($value, $href, array $attributes = array()){
 			if(!self::$ready) Widget::init();
 
-			$obj = Widget::$Symphony->createElement('select', null, $attributes);
-			$obj->setAttribute('name', $name);
+			$a = Widget::$Symphony->createElement('a', $value, $attributes);
+			$a->setAttribute('href', $href);
 
-			$obj->appendChild(Widget::$Symphony->createTextNode(''));
-
-			if(!is_array($options) || empty($options)){
-				if(!isset($attributes['disabled'])) $obj->setAttribute('disabled', 'disabled');
-
-				return $obj;
-			}
-
-			foreach($options as $o){
-
-				## Opt Group
-				if(isset($o['label'])){
-
-					$optgroup = Widget::$Symphony->createElement('optgroup');
-					$optgroup->setAttribute('label', $o['label']);
-
-					foreach($o['options'] as $opt){
-						$optgroup->appendChild(
-							Widget::__SelectBuildOption($opt)
-						);
-					}
-
-					$obj->appendChild($optgroup);
-				}
-
-				## Non-Opt group
-				else $obj->appendChild(Widget::__SelectBuildOption($o));
-
-			}
-
-			return $obj;
+			return $a;
 		}
 
-		private static function __SelectBuildOption($option){
+		public static function Acronym($value, array $attributes = array(), $text = null){
 			if(!self::$ready) Widget::init();
 
-			@list($value, $selected, $desc, $class, $id, $attr) = $option;
-			if(!$desc) $desc = $value;
+			$doc = Widget::$Symphony->createDocumentFragment();
+			$doc->appendChild(
+				Widget::$Symphony->createElement('acronym', $value, $attributes)
+			);
+			
+			if(!is_null($text)) {
+				$doc->appendChild(
+					new DOMText($text)
+				);
+			}
 
-			$obj = Widget::$Symphony->createElement('option', "$desc");
-			$obj->appendChild(Widget::$Symphony->createTextNode(''));
-			$obj->setAttribute('value', (string)$value);
-
-			if(!empty($class)) $obj->setAttribute('class', $class);
-			if(!empty($id)) $obj->setAttribute('id', $id);
-			if($selected) $obj->setAttribute('selected', 'selected');
-
-			if(!empty($attr)) $obj->setAttributeArray($attr);
-
-			return $obj;
-
+			return $doc;
 		}
 
 		public static function wrapFormElementWithError($element, $message=null){
