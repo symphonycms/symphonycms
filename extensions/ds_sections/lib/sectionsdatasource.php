@@ -112,11 +112,11 @@
 			$section = Section::loadFromHandle($this->_parameters->section);
 
 			if ($section instanceof Section) {
-				return Widget::TableData(Widget::Anchor(
-					$section->name,
-					URL . '/symphony/blueprints/sections/edit/' . $section->handle . '/',
-					$section->handle
-				));
+				return Widget::TableData(
+					Widget::Anchor($section->name, URL . '/symphony/blueprints/sections/edit/' . $section->handle . '/', array(
+						'title' => $section->handle
+					))
+				);
 			}
 
 			else {

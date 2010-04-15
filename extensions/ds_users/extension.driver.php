@@ -1,7 +1,7 @@
 <?php
-	
+
 	require_once('lib/usersdatasource.php');
-	
+
 	Class Extension_DS_Users extends Extension {
 		public function about() {
 			return array(
@@ -22,33 +22,33 @@
 				'description'	=> 'Create data sources from backend user data.'
 			);
 		}
-		
+
 		public function prepare(array $data=NULL) {
-			
+
 			$datasource = new UsersDataSource;
-			
+
 			if(!is_null($data)){
 				if(isset($data['about']['name'])) $datasource->about()->name = $data['about']['name'];
 				if(isset($data['included-elements'])) $datasource->parameters()->{'included-elements'} = $data['included-elements'];
-				
+
 				if(isset($data['filters']) && is_array($data['filters'])){
 					foreach($data['filters'] as $handle => $value){
 						$datasource->parameters()->filters[$handle] = $value;
 					}
 				}
 			}
-			
+
 			return $datasource;
 		}
 
-		public function view(Datasource $datasource, XMLElement &$wrapper, MessageStack $errors) {
+		public function view(Datasource $datasource, SymphonyDOMElement &$wrapper, MessageStack $errors) {
 
 		//	Essentials --------------------------------------------------------
-			
-			$fieldset = new XMLElement('fieldset');
+
+			$fieldset = Symphony::Parent()->Page->createElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
-			
+			$fieldset->appendChild(Symphony::Parent()->Page->createElement('legend', __('Essentials')));
+
 			// Name:
 			$label = Widget::Label(__('Name'));
 			$input = Widget::Input('fields[about][name]', General::sanitize($datasource->about()->name));
@@ -63,19 +63,19 @@
 
 		//	Filtering ---------------------------------------------------------
 
-			$fieldset = new XMLElement('fieldset');
+			$fieldset = Symphony::Parent()->Page->createElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Filtering')));
-			$p = new XMLElement('p', __('{$param} or Value'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
+			$fieldset->appendChild(Symphony::Parent()->Page->createElement('legend', __('Filtering')));
+			$fieldset->appendChild(
+				Symphony::Parent()->Page->createElement('p', __('{$param} or Value'), array('class' => 'help'))
+			);
 
-			$div = new XMLElement('div');
-			$h3 = new XMLElement('h3', __('Filter Users by'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
+			$div = Symphony::Parent()->Page->createElement('div');
+			$div->appendChild(
+				Symphony::Parent()->Page->createElement('h3', __('Filter Users by'), array('class' => 'label'))
+			);
 
-			$ol = new XMLElement('ol');
+			$ol = Symphony::Parent()->Page->createElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
 
 			$this->appendFilter($ol, __('ID'), 'id', $datasource->parameters()->filters['id']);
@@ -90,54 +90,54 @@
 			$wrapper->appendChild($fieldset);
 
 		//	Output options ----------------------------------------------------
-			
-			$fieldset = new XMLElement('fieldset');
+
+			$fieldset = Symphony::Parent()->Page->createElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
-	
-			$ul = new XMLElement('ul');
+			$fieldset->appendChild(Symphony::Parent()->Page->createElement('legend', __('Output Options')));
+
+			$ul = Symphony::Parent()->Page->createElement('ul');
 			$ul->setAttribute('class', 'group');
-			
-			$li = new XMLElement('li');
-			$li->appendChild(new XMLElement('h3', __('XML Output')));
-			
+
+			$li = Symphony::Parent()->Page->createElement('li');
+			$li->appendChild(Symphony::Parent()->Page->createElement('h3', __('XML Output')));
+
 			$select = Widget::Select('fields[included-elements][]', array(
 				array('username', in_array('username', $datasource->parameters()->{"included-elements"}), 'username'),
 				array('name', in_array('name', $datasource->parameters()->{"included-elements"}), 'name'),
 				array('email-address', in_array('email-address', $datasource->parameters()->{"included-elements"}), 'email-address'),
 				array('authentication-token', in_array('authentication-token', $datasource->parameters()->{"included-elements"}), 'authentication-token'),
-				array('default-section', in_array('default-section', $datasource->parameters()->{"included-elements"}), 'default-section'),	
+				array('default-section', in_array('default-section', $datasource->parameters()->{"included-elements"}), 'default-section'),
 				array('formatting-preference', in_array('formatting-preference', $datasource->parameters()->{"included-elements"}), 'formatting-preference')
 			));
 			$select->setAttribute('class', 'filtered');
 			$select->setAttribute('multiple', 'multiple');
-			
+
 			$label = Widget::Label(__('Included Elements'));
 			$label->appendChild($select);
 			$li->appendChild($label);
 			$ul->appendChild($li);
-			
+
 			$fieldset->appendChild($ul);
 			$wrapper->appendChild($fieldset);
 		}
-		
+
 		protected function appendFilter(&$wrapper, $name, $handle, $value=NULL) {
 			if (!is_null($value)) {
-				$li = new XMLElement('li');
+				$li = Symphony::Parent()->Page->createElement('li');
 				$li->setAttribute('class', 'unique');
-				$li->appendChild(new XMLElement('h4', $name));
+				$li->appendChild(Symphony::Parent()->Page->createElement('h4', $name));
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input(
 					'fields[filters][' . $handle . ']',
 					General::sanitize($value)
 				));
 				$li->appendChild($label);
-			 	$wrapper->appendChild($li);	
+			 	$wrapper->appendChild($li);
 			}
-			
-			$li = new XMLElement('li');
+
+			$li = Symphony::Parent()->Page->createElement('li');
 			$li->setAttribute('class', 'unique template');
-			$li->appendChild(new XMLElement('h4', $name));		
+			$li->appendChild(Symphony::Parent()->Page->createElement('h4', $name));
 			$label = Widget::Label(__('Value'));
 			$label->appendChild(Widget::Input('fields[filters][' . $handle . ']'));
 			$li->appendChild($label);

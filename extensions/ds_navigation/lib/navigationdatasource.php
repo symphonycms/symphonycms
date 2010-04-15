@@ -1,5 +1,7 @@
 <?php
-	
+	/*
+	**	No DOMDocument or DBC integration has been done this class as yet 
+	*/
 	Class NavigationDataSource extends DataSource {
 		
 		public function __construct(){

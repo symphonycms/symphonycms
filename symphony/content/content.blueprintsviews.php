@@ -64,6 +64,8 @@
 				)
 			));
 
+			$iterator = new ViewIterator;
+
 			$aTableHead = array(
 				array(__('Title'), 'col'),
 				array(Widget::Acronym('URL', array('title' => __('Universal Resource Locator'))), 'col'),
@@ -71,7 +73,6 @@
 				array(__('Type'), 'col')
 			);
 
-			$iterator = new ViewIterator;
 			$aTableBody = array();
 			$colspan = count($aTableHead);
 
@@ -88,6 +89,7 @@
 					)
 				));
 			}
+
 			else{
 				foreach ($iterator as $view) {
 					$class = array();
@@ -368,7 +370,7 @@
 			$layout = new Layout(3, '1:1:1');
 
 			$fields = array();
-			
+
 			// Verify view exists:
 			if($this->_context[0] == 'edit') {
 

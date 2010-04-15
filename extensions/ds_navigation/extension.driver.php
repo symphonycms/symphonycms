@@ -84,8 +84,8 @@
 			);
 		}*/
 		
-		public function view(Datasource $datasource, XMLElement &$wrapper, MessageStack $errors) {
-			
+		public function view(Datasource $datasource, SymphonyDOMElement &$wrapper, MessageStack $errors) {
+			throw new Exception('Fix me to work with Views');
 			/*$fields = $context['fields'];
 			$errors = $context['errors'];
 			$wrapper = $context['wrapper'];*/

@@ -119,7 +119,7 @@
 				$optionlist = Symphony::Parent()->Page->createElement('ul');
 				$optionlist->setAttribute('class', 'tags');
 
-				foreach($existing_options as $option) $optionlist->appendChild(new XMLElement('li', $option));
+				foreach($existing_options as $option) $optionlist->appendChild(Symphony::Parent()->Page->createElement('li', $option));
 
 				$wrapper->appendChild($optionlist);
 			}
@@ -145,7 +145,7 @@
 			$wrapper->appendChild($label);
 		}
 
-		function prepareTableValue($data, XMLElement $link=NULL){
+		function prepareTableValue($data, SymphonyDOMElement $link=NULL){
 			return ($data['value'] == 'yes' ? __('Yes') : __('No'));
 		}
 

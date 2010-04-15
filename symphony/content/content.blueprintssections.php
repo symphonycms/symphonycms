@@ -44,6 +44,7 @@
 					)
 				));
 			}
+
 			else {
 				foreach ($sections as $s) {
 					$entry_count = 0;

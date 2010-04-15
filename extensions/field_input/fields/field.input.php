@@ -43,12 +43,13 @@
 			return $groups;
 		}
 
-		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data=NULL, MessageStack $errors=NULL){ //, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-
-			$wrapper->appendChild(
-				Symphony::Parent()->Page->createElement('h4', $this->get('label') . ' <i>' . $this->Name() . '</i>')
+		public function displayDatasourceFilterPanel(SymphonyDOMElement &$wrapper, $data=NULL, MessageStack $errors=NULL){ //, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+			$h4 = Symphony::Parent()->Page->createElement('h4', $this->get('label'));
+			$h4->appendChild(
+				Symphony::Parent()->Page->createElement('i', $this->Name())
 			);
 
+			$wrapper->appendChild($h4);
 
 			$group = Symphony::Parent()->Page->createElement('div');
 			$group->setAttribute('class', 'group');
