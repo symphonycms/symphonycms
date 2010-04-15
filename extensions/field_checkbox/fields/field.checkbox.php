@@ -116,7 +116,7 @@
 			$existing_options = array('yes', 'no');
 
 			if(is_array($existing_options) && !empty($existing_options)){
-				$optionlist = new XMLElement('ul');
+				$optionlist = Symphony::Parent()->Page->createElement('ul');
 				$optionlist->setAttribute('class', 'tags');
 
 				foreach($existing_options as $option) $optionlist->appendChild(new XMLElement('li', $option));
@@ -186,14 +186,14 @@
 			$label->appendChild(Widget::Input('description', $this->get('description')));
 			$wrapper->appendChild($label);
 
-			$options_list = new XMLElement('ul');
+			$options_list = Symphony::Parent()->Page->createElement('ul');
 			$options_list->setAttribute('class', 'options-list');
 
 			## Checkbox Default State
 			$label = Widget::Label();
 			$input = Widget::Input('default_state', 'on', 'checkbox');
 			if($this->get('default_state') == 'on') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Checked by default', array($input->generate())));
+			$label->setValue(__('%s Checked by default', array($input)));
 			$options_list->appendChild($label);
 
 			$this->appendShowColumnCheckbox($options_list);

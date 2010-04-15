@@ -6,7 +6,7 @@
 		protected static $Symphony;
 
 		public function init() {
-			self::$Symphony = Administration::instance()->Page;
+			self::$Symphony = Symphony::Parent()->Page;
 			self::$ready = true;
 		}
 
@@ -77,7 +77,7 @@
 
 			return $obj;
 		}
-		
+
 		public static function Select($name, $options, array $attributes = array()){
 			if(!self::$ready) Widget::init();
 
@@ -211,7 +211,7 @@
 			$td->setAttributeArray($attributes);
 
 			return $td;
-		}		
+		}
 
 		## Misc
 		public static function Anchor($value, $href, array $attributes = array()){
@@ -230,7 +230,7 @@
 			$doc->appendChild(
 				Widget::$Symphony->createElement('acronym', $value, $attributes)
 			);
-			
+
 			if(!is_null($text)) {
 				$doc->appendChild(
 					new DOMText($text)

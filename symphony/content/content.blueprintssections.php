@@ -13,7 +13,12 @@
 		public function __viewIndex(){
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
-			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a section'), 'create button'));
+			$this->appendSubheading(__('Sections'), Widget::Anchor(
+				__('Create New'), Administration::instance()->getCurrentPageURL().'new/', array(
+					'title' => __('Create a new section'),
+					'class' => 'create button'
+				)
+			));
 
 		    $sections = new SectionIterator;
 
@@ -24,11 +29,20 @@
 			);
 
 			$aTableBody = array();
+			$colspan = count($aTableHead);
 
 			if($sections->length() <= 0){
-				$aTableBody = array(
-					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
-				);
+				$aTableBody = array(Widget::TableRow(
+					array(
+						Widget::TableData(__('None found.'), array(
+								'class' => 'inactive',
+								'colspan' => $colspan
+							)
+						)
+					), array(
+						'class' => 'odd'
+					)
+				));
 			}
 			else {
 				foreach ($sections as $s) {
@@ -50,7 +64,11 @@
 					}
 
 					// Setup each cell
-					$td1 = Widget::TableData(Widget::Anchor($s->name, Administration::instance()->getCurrentPageURL() . "edit/{$s->handle}/", NULL, 'content'));
+					$td1 = Widget::TableData(
+						Widget::Anchor($s->name, Administration::instance()->getCurrentPageURL() . "edit/{$s->handle}/", array(
+						'class' => 'content'
+						))
+					);
 					$td2 = Widget::TableData(Widget::Anchor((string)$entry_count, ADMIN_URL . "/publish/{$s->handle}/"));
 					$td3 = Widget::TableData($s->{'navigation-group'});
 					$td3->appendChild(Widget::Input("items[{$s->handle}]", 'on', 'checkbox'));
@@ -67,7 +85,7 @@
 
 			$this->Form->appendChild($table);
 
-			$tableActions = new XMLElement('div');
+			$tableActions = $this->createElement('div');
 			$tableActions->setAttribute('class', 'actions');
 
 			$options = array(
@@ -191,7 +209,7 @@
 */
 				if(!is_null($fieldsets) && !empty($fieldsets)) {
 
-					$doc = new DOMDocument('1.0', 'utf-8');
+					$doc = $this->createDocumentFragment();
 					$doc->formatOutput = true;
 
 					$layout = $doc->createElement('layout');
@@ -251,7 +269,7 @@
 
 			return false;
 		}
-		
+
 		public function __actionIndex() {
 			$checked = array_keys($_POST['items']);
 
@@ -260,7 +278,7 @@
 					case 'delete':
 						$this->__actionDelete($checked, ADMIN_URL . '/blueprints/sections/');
 						break;
-						
+
 					case 'delete-entries':
 						// TODO: Call EntryManager to delete Entrys where Section Handle = this one
 						break;
@@ -407,12 +425,14 @@
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(($existing instanceof Section ? $existing->name : __('Untitled')));
 
-			$fieldset = new XMLElement('fieldset');
+			$fieldset = $this->createElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('h3', __('Essentials')));
+			$fieldset->appendChild(
+				$this->createElement('h3', __('Essentials'))
+			);
 
-			$div = new XMLElement('div', NULL, array('class' => 'group'));
-			$namediv = new XMLElement('div', NULL);
+			$div = $this->createElement('div', NULL, array('class' => 'group'));
+			$namediv = $this->createElement('div');
 
 			$label = Widget::Label('Name');
 			$label->appendChild(Widget::Input('essentials[name]', $this->section->name));
@@ -423,15 +443,19 @@
 					: $label
 			));
 
-			$label = Widget::Label();
-			$input = Widget::Input('essentials[hidden-from-publish-menu]', 'yes', 'checkbox', ($this->section->{'hidden-from-publish-menu'} == 'yes' ? array('checked' => 'checked') : NULL));
-			$label->setValue(__('%s Hide this section from the Publish menu', array($input->generate(false))));
+			$input = Widget::Input('essentials[hidden-from-publish-menu]', 'yes', 'checkbox',
+				($this->section->{'hidden-from-publish-menu'} == 'yes') ? array('checked' => 'checked') : array()
+			);
+
+			$label = Widget::Label(null, $input);
+			$label->setValue(__('%s Hide this section from the Publish menu', array($input)));
 			$namediv->appendChild($label);
 			$div->appendChild($namediv);
 
-			$navgroupdiv = new XMLElement('div', NULL);
+			$navgroupdiv = $this->createElement('div');
 
-			$label = Widget::Label('Navigation Group <i>Created if does not exist</i>');
+			$label = Widget::Label(__('Navigation Group'));
+			$label->setValue($this->createElement('i', __('Created if does not exist')));
 			$label->appendChild(Widget::Input('essentials[navigation-group]', $this->section->{"navigation-group"}));
 
 			$navgroupdiv->appendChild((
@@ -442,9 +466,9 @@
 
 			$navigation_groups = Section::fetchUsedNavigationGroups();
 			if(is_array($navigation_groups) && !empty($navigation_groups)){
-				$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
+				$ul = $this->createElement('ul', NULL, array('class' => 'tags singular'));
 				foreach($navigation_groups as $g){
-					$ul->appendChild(new XMLElement('li', $g));
+					$ul->appendChild($this->createElement('li', $g));
 				}
 				$navgroupdiv->appendChild($ul);
 			}
@@ -457,14 +481,14 @@
 			// Fields
 
 
-			$fieldset = new XMLElement('fieldset');
+			$fieldset = $this->createElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('h3', __('Fields')));
+			$fieldset->appendChild($this->createElement('h3', __('Fields')));
 
-			$layout = new XMLElement('div');
+			$layout = $this->createElement('div');
 			$layout->setAttribute('class', 'layout');
 
-			$templates = new XMLElement('ol');
+			$templates = $this->createElement('ol');
 			$templates->setAttribute('class', 'templates');
 
 			/*
@@ -511,7 +535,7 @@
 				$field->findDefaults($defaults);
 				$field->setArray($defaults);
 
-				$wrapper = new XMLElement('li');
+				$wrapper = $this->createElement('li');
 				$field->displaySettingsPanel($wrapper);
 				$wrapper->appendChild(Widget::Input('type', General::sanitize($type), 'hidden'));
 
@@ -543,32 +567,34 @@
 			}
 
 
-			$content = new XMLElement('div');
+			$content = $this->createElement('div');
 			$content->setAttribute('class', 'content');
 
 			if(!isset($this->section->layout) || !isset($this->section->layout->fieldsets) || empty($this->section->layout->fieldsets)){
 
-				$row = new XMLElement('div');
-				$h3 = new XMLElement('h3');
+				$row = $this->createElement('div');
+				$h3 = $this->createElement('h3');
 				$h3->appendChild(Widget::Input('label', 'Default Fieldset'));
 				$row->appendChild($h3);
 
 				if(is_array($fields) && !empty($fields)){
 					foreach($fields as $element_name => $data){
 
-						$ol = new XMLElement('ol');
+						$ol = $this->createElement('ol');
 
 						$field = $data['field'];
 						$position = $data['position'];
 
-						$li = new XMLElement('li');
+						$li = $this->createElement('li');
 
-						$settings_div = new XMLElement('div');
+						$settings_div = $this->createElement('div');
 						$settings_div->setAttribute('class', 'settings');
 
 						$field->set('sortorder', $position);
 						$field->displaySettingsPanel($settings_div, (isset($this->errors->{"field::{$position}"}) ? $this->errors->{"field::{$position}"} : NULL));
-						$settings_div->appendChild(Widget::Input('type', General::sanitize($field->get('type')), 'hidden'));
+						$settings_div->appendChild(
+							Widget::Input('type', General::sanitize($field->get('type')), 'hidden')
+						);
 						$li->appendChild($settings_div);
 						$ol->appendChild($li);
 
@@ -577,7 +603,7 @@
 				}
 
 				else{
-					$row->appendChild(new XMLElement('ol'));
+					$row->appendChild($this->createElement('ol'));
 
 				}
 
@@ -589,15 +615,15 @@
 
 				foreach($this->section->layout->fieldsets as $f){
 
-					$group = new XMLElement('div');
-					$h3 = new XMLElement('h3');
+					$group = $this->createElement('div');
+					$h3 = $this->createElement('h3');
 					$h3->appendChild(Widget::Input('label', $f->label));
 					$group->appendChild($h3);
 
 					foreach($f->rows as $r){
 						if(isset($r) && !empty($r)){
 
-							$ol = new XMLElement('ol');
+							$ol = $this->createElement('ol');
 
 							foreach($r as $element_name){
 
@@ -606,14 +632,16 @@
 								$field = $fields[$element_name]['field'];
 								$position = $fields[$element_name]['position'];
 
-								$li = new XMLElement('li');
+								$li = $this->createElement('li');
 
-								$settings_div = new XMLElement('div');
+								$settings_div = $this->createElement('div');
 								$settings_div->setAttribute('class', 'settings');
 
 								$field->set('sortorder', $position);
 								$field->displaySettingsPanel($settings_div, (isset($this->errors->{"field::{$position}"}) ? $this->errors->{"field::{$position}"} : NULL));
-								$settings_div->appendChild(Widget::Input('type', General::sanitize($field->get('type')), 'hidden'));
+								$settings_div->appendChild(
+									Widget::Input('type', General::sanitize($field->get('type')), 'hidden')
+								);
 								$li->appendChild($settings_div);
 								$ol->appendChild($li);
 
@@ -818,14 +846,20 @@
 */
 
 
-			$div = new XMLElement('div');
+			$div = $this->createElement('div');
 			$div->setAttribute('class', 'actions');
 			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
 
 			if($this->_context[0] == 'edit'){
-				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this section'), 'type' => 'submit'));
-				$div->appendChild($button);
+				$div->appendChild(
+					$this->createElement('button', __('Delete'), array(
+						'name' => 'action[delete]',
+						'class' => 'confirm delete',
+						'title' => __('Delete this section'),
+						'type' => 'submit'
+						)
+					)
+				);
 			}
 
 			$this->Form->appendChild($div);

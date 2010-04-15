@@ -10,8 +10,8 @@
 
 		public $Alert;
 
-		private $_navigation;
-		private $_context;
+		public $_navigation;
+		public $_context;
 
 		### By CZ: Should be checked and/or rewritten
 		var $_layout;
@@ -33,7 +33,6 @@
 		}
 
 		public function build($context = NULL){
-
 			$this->_context = $context;
 
 			$meta = $this->createElement('meta');
@@ -180,7 +179,7 @@
 			$this->Form->appendChild($ul);
 		}
 
-		public function appendSubheading($string, $link=NULL){		
+		public function appendSubheading($string, $link=NULL){
 			$h2 = $this->createElement('h2', $string);
 			$h2->setValue($link);
 
@@ -507,34 +506,27 @@
 		}
 
 		public function appendViewOptions(array $options) {
-			$div = new XMLElement('div', NULL, array('id' => 'tab'));
+			$div = $this->createElement('div', NULL, array('id' => 'tab'));
 
 			if(array_key_exists('subnav', $options)){
-				$ul = new XMLElement('ul');
+				$ul = $this->createElement('ul');
 				foreach($options['subnav'] as $name => $link){
-					$li = new XMLElement('li');
-					$li->appendChild(Widget::Anchor($name, $link, NULL, (Administration::instance()->getCurrentPageURL() == $link ? 'active' : NULL)));
+					$li = $this->createElement('li');
+					$li->appendChild(
+						Widget::Anchor($name, $link, array(
+							'class' => (Administration::instance()->getCurrentPageURL() == $link ? 'active' : NULL)
+						))
+					);
 					$ul->appendChild($li);
 				}
 				$div->appendChild($ul);
 			}
 
 			foreach($options as $item){
-				if(is_a($item, 'XMLElement')){
-					$div->appendChild($item);
-				}
+				$div->setValue($item);
 			}
 
 			$this->Form->appendChild($div);
-		}
-
-		public function wrapFormElementWithError($element, $error=NULL){
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'invalid');
-			$div->appendChild($element);
-			if($error) $div->appendChild(new XMLElement('p', $error));
-
-			return $div;
 		}
 
 	}

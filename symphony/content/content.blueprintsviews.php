@@ -368,7 +368,7 @@
 			$layout = new Layout(3, '1:1:1');
 
 			$fields = array();
-
+			
 			// Verify view exists:
 			if($this->_context[0] == 'edit') {
 
@@ -622,10 +622,6 @@
 			}
 
 			$this->Form->appendChild($div);
-			
-			var_dump(Administration::instance()->Profiler->retrieveTotalRunningTime());
-			var_dump(Administration::instance()->Profiler->retrieveTotalMemoryUsage());
-			exit;
 
 			//if(isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])){
 			//	$this->Form->appendChild(new XMLElement('input', NULL, array('type' => 'hidden', 'name' => 'parent', 'value' => $_REQUEST['parent'])));

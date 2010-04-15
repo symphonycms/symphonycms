@@ -148,17 +148,26 @@
 			if($value instanceof SymphonyDOMElement || $value instanceof DOMDocumentFragment) {
 				$this->appendChild($value);
 			}
-			elseif(!is_null($value)) {
+			elseif(!is_null($value) && is_string($value)) {
 				$this->appendChild(
 					new DOMText($value)
 				);
-			}			
+			}
 		}
 
 		public function setAttributeArray(array $attributes) {
 			if(is_array($attributes) && !empty($attributes)){
 				foreach($attributes as $key => $val) $this->setAttribute($key, $val);
 			}
+		}
+
+		public function __toString(){
+			$doc = new DOMDocument('1.0', 'UTF-8');
+			$doc->formatOutput = true;
+
+			$doc->importNode($this, true);
+
+			return $doc->saveHTML();
 		}
 
 	}
