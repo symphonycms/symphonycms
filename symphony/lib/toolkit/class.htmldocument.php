@@ -58,6 +58,7 @@
 
 		public function __construct($version='1.0', $encoding='utf-8', $dtd='html'){ //}, DOMDocumentType $dtd=NULL){
 			parent::__construct($version, $encoding);
+			$this->registerNodeClass('DOMElement', 'SymphonyDOMElement');
 
 			$this->appendChild($this->createElement('html'));
 
@@ -126,27 +127,37 @@
 		}
 
 
-		/*
-		**	OVERLOAD METHODS FOR CONVIENENCE
-		*/
+		##	Overloaded Methods for DOMDocument
 		public function createElement($name, $value = null, array $attributes = array()){
-			$element = $this->createElement($name, $value);
-
-			if(is_array($attributes) && !empty($attributes)){
-				foreach($attributes as $key => $val) $element->setAttribute($key, $val);
-			}
+			$element = parent::createElement($name, $value);
+			$element->setAttributeArray($attributes);
 
 			return $element;
 		}
+	}
 
-		public function setValue(DOMElement &$element, $value) {
-			if(is_object($value) {
-				$element->appendChild($value);
+	##	Convienence Methods for DOMElement
+	Class SymphonyDOMElement extends DOMElement {
+
+		/*
+		**	setValue
+		**	@value	mixed	Accepts either an Object or String
+		*/
+		public function setValue($value) {
+			//	TODO: Possibly might need to Remove existing Children before adding..
+			if($value instanceof self) {
+				$this->appendChild($value);
 			}
-			else {
-				$element->appendChild(
-					$this->createTextNode($value)
+			elseif(!is_null($value)) {
+				$this->appendChild(
+					new DOMText($value)
 				);
+			}
+		}
+
+		public function setAttributeArray(array $attributes) {
+			if(is_array($attributes) && !empty($attributes)){
+				foreach($attributes as $key => $val) $this->setAttribute($key, $val);
 			}
 		}
 

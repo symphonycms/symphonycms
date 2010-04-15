@@ -2,19 +2,16 @@
 
 	Class Widget{
 
-		public static function Label($name=NULL, DOMElement $child=NULL, $class=NULL, $id=NULL){
-			$label = $this->createElement('label', ($name ? $name : NULL));
+		public static function Label($name=null, SymphonyDOMElement $child=null, array $attributes = array()){
+			$label = $this->createElement('label', $name, $attributes);
 
-			if($child instanceof DOMElement) $label->appendChild($child);
-
-			if($class) $label->setAttribute('class', $class);
-			if($id) $label->setAttribute('id', $id);
+			if($child instanceof SymphonyDOMElement) $label->appendChild($child);
 
 			return $label;
 		}
 
-		public static function Input($name, $value=NULL, $type='text', $attributes=NULL){
-			$obj = $this->createElement('input', $attributes);
+		public static function Input($name, $value=null, $type='text', array $attributes = array()){
+			$obj = $this->createElement('input', null, $attributes);
 			$obj->setAttribute('name', $name);
 
 			if($type) $obj->setAttribute('type', $type);
@@ -24,10 +21,10 @@
 			return $obj;
 		}
 
-		public static function Textarea($name, $rows, $cols, $value=NULL, $attributes=NULL){
+		public static function Textarea($name, $rows, $cols, $value=null, array $attributes = array()){
 			$obj = $this->createElement('textarea', $value, $attributes);
 
-			$obj->setSelfClosingTag(false);
+			$obj->appendChild($this->createTextNode(''));
 
 			$obj->setAttribute('name', $name);
 			$obj->setAttribute('rows', $rows);
@@ -36,30 +33,23 @@
 			return $obj;
 		}
 
-		public static function Anchor($value, $href, $title=NULL, $class=NULL, $id=NULL){
-			$a = $this->createElement('a', $value);
+		public static function Anchor($value, $href, array $attributes = array()){
+			$a = $this->createElement('a', $value, $attributes);
 			$a->setAttribute('href', $href);
-
-			if($title) $a->setAttribute('title', $title);
-			if($class) $a->setAttribute('class', $class);
-			if($id) $a->setAttribute('id', $id);
 
 			return $a;
 		}
 
-		public static function Form($action, $method, $class=NULL, $id=NULL, $attributes=NULL){
+		public static function Form($action, $method, array $attributes = array()){
 			$form = $this->createElement('form', null, $attributes);
 			$form->setAttribute('action', $action);
 			$form->setAttribute('method', $method);
-
-			if($class) $form->setAttribute('class', $class);
-			if($id) $form->setAttribute('id', $id);
 
 			return $form;
 		}
 
 		## First take at a generic fieldset builder for the new form layout
-		public static function Fieldset($title=NULL, $help=NULL, $attributes=NULL){
+		public static function Fieldset($title=null, $help=null, array $attributes = array()){
 			$fieldset = $this->createElement('fieldset', null, $attributes);
 
 			if($title){
@@ -80,11 +70,10 @@
 
 		###
 		# Simple way to create generic Symphony table wrapper
-		public static function Table($head=NULL, $foot=NULL, $body=NULL, $class=NULL, $id=NULL){
+		public static function Table($head=null, $foot=null, $body=null, array $attributes = array()){
  			$table = $this->createElement('table');
 
-			if($class) $table->setAttribute('class', $class);
-			if($id) $table->setAttribute('id', $id);
+			$table->setAttributeArray($attributes);
 
 			if($head) $table->appendChild($head);
 			if($foot) $table->appendChild($foot);
@@ -103,14 +92,13 @@
 
 				$th = $this->createElement('th');
 
-				$value = $scope = $attr = NULL;
+				$value = $scope = $attr = null;
 
 				$value = $col[0];
 				if(isset($col[1])) $scope = $col[1];
 				if(isset($col[2])) $attr = $col[2];
 
-				if(is_object($value)) $th->appendChild($value);
-				else $th->setValue($value);
+				$th->setValue($value);
 
 				if($scope && $scope != '') $th->setAttribute('scope', $scope);
 
@@ -125,64 +113,42 @@
 
 		}
 
-		public static function TableBody($rows, $class=NULL, $id=NULL){
+		public static function TableBody($rows, array $attributes = array()){
 			$tbody = $this->createElement('tbody');
-
-			if($class) $tbody->setAttribute('class', $class);
-			if($id) $tbody->setAttribute('id', $id);
+			$tbody->setAttributeArray($attributes);
 
 			foreach($rows as $r) $tbody->appendChild($r);
 
 			return $tbody;
 		}
 
-		public static function TableData($value, $class=NULL, $id=NULL, $colspan=NULL, array $attr=NULL){
+		public static function TableData($value, array $attributes = array()){
 
-			if(is_object($value)){
-				$td = $this->createElement('td');
-				$td->appendChild($value);
-			}
+			$td = $this->createElement('td');
+			$td->setValue($value);
 
-			else $td = $this->createElement('td', $value);
-
-			if($class) $td->setAttribute('class', $class);
-			if($id) $td->setAttribute('id', $id);
-			if($colspan) $td->setAttribute('colspan', $colspan);
-
-			if($attr) $td->setAttributeArray($attr);
+			$td->setAttributeArray($attributes);
 
 			return $td;
 		}
 
-		public static function TableRow($data, $class=NULL, $id=NULL, $rowspan=NULL){
+		public static function TableRow($data, array $attributes = array()){
 			$tr = $this->createElement('tr');
-
-			if($class) $tr->setAttribute('class', $class);
-			if($id) $tr->setAttribute('id', $id);
-			if($rowspan) $tr->setAttribute('rowspan', $rowspan);
+			$tr->setAttributeArray($attributes);
 
 			foreach($data as $d) $tr->appendChild($d);
 
 			return $tr;
 		}
 
-		public static function Select($name, $options, $attributes=NULL){
-			$obj = $this->createElement('select');
+		public static function Select($name, $options, array $attributes = array()){
+			$obj = $this->createElement('select', null, $attributes);
 			$obj->setAttribute('name', $name);
 
-			$obj->setSelfClosingTag(false);
-
-			if(is_array($attributes) && !empty($attributes)){
-				foreach($attributes as $key => $value)
-					$obj->setAttribute($key, $value);
-			}
+			$obj->appendChild($this->createTextNode(''));
 
 			if(!is_array($options) || empty($options)){
 				if(!isset($attributes['disabled'])) $obj->setAttribute('disabled', 'disabled');
-
-				//$option = new XMLElement('option', ' ');
-				//$option->setAttribute('value', '');
-				//$obj->appendChild($option);
 
 				return $obj;
 			}
@@ -216,28 +182,29 @@
 			if(!$desc) $desc = $value;
 
 			$obj = $this->createElement('option', "$desc");
-			$obj->setSelfClosingTag(false);
-			$obj->setAttribute('value', "$value");
+			$obj->appendChild($this->createTextNode(''));
+			$obj->setAttribute('value', (string)$value);
 
 			if(!empty($class)) $obj->setAttribute('class', $class);
-
 			if(!empty($id)) $obj->setAttribute('id', $id);
+			if($selected) $obj->setAttribute('selected', 'selected');
 
 			if(!empty($attr)) $obj->setAttributeArray($attr);
-
-			if($selected) $obj->setAttribute('selected', 'selected');
 
 			return $obj;
 
 		}
 
-		public static function wrapFormElementWithError($element, $message=NULL){
+		public static function wrapFormElementWithError($element, $message=null){
 			$div = $this->createElement('div');
 			$div->setAttributeArray(array('id' => 'error', 'class' => 'invalid'));
 
 			$div->appendChild($element);
+
 			if(!is_null($message)){
-				$div->appendChild(new XMLElement('p', $message));
+				$div->appendChild(
+					$this->createElement('p', $message)
+				);
 			}
 
 			return $div;
