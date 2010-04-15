@@ -58,8 +58,10 @@
 			}
 
 			$this->appendSubheading(__('Views') . $heading, Widget::Anchor(
-				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/' . ($nesting == true && isset($parent) ? "?parent={$parent}" : NULL),
-				__('Create a new view'), 'create button'
+				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/' . ($nesting == true && isset($parent) ? "?parent={$parent}" : NULL), array(
+					'title' => __('Create a new view'),
+					'class' => 'create button'
+				)
 			));
 
 			$aTableHead = array(
@@ -71,12 +73,20 @@
 
 			$iterator = new ViewIterator;
 			$aTableBody = array();
+			$colspan = count($aTableHead);
 
 			if($iterator->length() <= 0) {
-				$aTableBody = array(Widget::TableRow(array(
-					Widget::TableData(__('None found.'), 'inactive', null, count($aTableHead))
-				), 'odd'));
-
+				$aTableBody = array(Widget::TableRow(
+					array(
+						Widget::TableData(__('None found.'), array(
+								'class' => 'inactive',
+								'colspan' => $colspan
+							)
+						)
+					), array(
+						'class' => 'odd'
+					)
+				));
 			}
 			else{
 				foreach ($iterator as $view) {
@@ -89,7 +99,7 @@
 
 					$page_types = $view->types;
 
-					$link = Widget::Anchor($page_title, $page_edit_url, $view->handle);
+					$link = Widget::Anchor($page_title, $page_edit_url, array('title' => $view->handle));
 
 					$col_title = Widget::TableData($link);
 					$col_title->appendChild(Widget::Input("items[{$view->path}]", null, 'checkbox'));
