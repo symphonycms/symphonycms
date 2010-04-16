@@ -386,7 +386,9 @@
 			$label = Widget::Label();
 			$input = Widget::Input('pre-populate', 'yes', 'checkbox');
 			if($this->get('pre-populate') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Pre-populate this field with today\'s date', array($input)));
+
+			$label->appendChild($input);
+			$label->setValue(__('Pre-populate this field with today\'s date'));
 			$options_list->appendChild($label);
 
 			$this->appendShowColumnCheckbox($options_list);

@@ -71,33 +71,33 @@
 
 		function fetchAssociatedEntryCount($value){
 			$result = Symphony::Database()->query("
-				SELECT 
+				SELECT
 					`entry_id`
-				FROM 
-					`tbl_entries_data_%d` 
-				WHERE 
+				FROM
+					`tbl_entries_data_%d`
+				WHERE
 					`value` = '%s
 				",
 				$this->get('id'),
 				$value
 			);
-			
+
 			return ($result->valid()) ? $result->current->count : false;
 		}
 
 		function fetchAssociatedEntryIDs($value){
 			$result = Symphony::Database()->query("
-				SELECT 
-					count(*) AS `count` 
-				FROM 
-					`tbl_entries_data_%d` 
-				WHERE 
+				SELECT
+					count(*) AS `count`
+				FROM
+					`tbl_entries_data_%d`
+				WHERE
 					`value` = '%s
 				",
 				$this->get('id'),
 				$value
 			);
-			
+
 			return ($result->valid()) ? $result->resultColumn('entry_id') : false;
 		}
 
@@ -138,7 +138,7 @@
 			if($this->get('allow_multiple_selection') == 'yes') $fieldname .= '[]';
 
 			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Select($fieldname, $options, 
+			$label->appendChild(Widget::Select($fieldname, $options,
 				($this->get('allow_multiple_selection') == 'yes') ? array('multiple' => 'multiple') : array()
 			));
 
@@ -159,7 +159,7 @@
 				$optionlist = Symphony::Parent()->Page->createElement('ul');
 				$optionlist->setAttribute('class', 'tags');
 
-				foreach($existing_options as $option) 
+				foreach($existing_options as $option)
 					$optionlist->appendChild(
 						Symphony::Parent()->Page->createElement('li', $option)
 					);
@@ -172,18 +172,18 @@
 		function findAndAddDynamicOptions(&$values){
 
 			if(!is_array($values)) $values = array();
-			
+
 			$result = Symphony::Database()->query("
-				SELECT 
-					DISTINCT `value` 
-				FROM 
-					`tbl_entries_data_%d` 
-				ORDER BY 
+				SELECT
+					DISTINCT `value`
+				FROM
+					`tbl_entries_data_%d`
+				ORDER BY
 					`value` DESC
 				",
 				$this->get('dynamic_options')
 			);
-			
+
 			if($result->valid()) $values = array_merge($values, $result->resultColumn('value'));
 		}
 
@@ -368,7 +368,9 @@
 			$label = Widget::Label();
 			$input = Widget::Input('allow_multiple_selection', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Allow selection of multiple options', array($input)));
+
+			$label->appendChild($input);
+			$label->setValue(__('Allow selection of multiple options'));
 			$options_list->appendChild($label);
 
 			$this->appendShowColumnCheckbox($options_list);
@@ -432,7 +434,7 @@
 			if($this->get('allow_multiple_selection') == 'yes') $fieldname .= '[]';
 
 			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Select($fieldname, $options, 
+			$label->appendChild(Widget::Select($fieldname, $options,
 				($this->get('allow_multiple_selection') == 'yes') ? array('multiple' => 'multiple') : array()
 			));
 

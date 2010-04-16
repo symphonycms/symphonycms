@@ -54,7 +54,7 @@
 
 			parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
 
-			if($this->get('pre_populate_source') != NULL) $this->prepopulateSource($wrapper);				
+			if($this->get('pre_populate_source') != NULL) $this->prepopulateSource($wrapper);
 		}
 
 		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
@@ -73,9 +73,9 @@
 
 			if($this->get('pre_populate_source') != NULL) $this->prepopulateSource($wrapper);
 		}
-		
+
 		function prepopulateSource(&$wrapper) {
-			
+
 			$existing_tags = $this->findAllTags();
 
 			if(is_array($existing_tags) && !empty($existing_tags)){
@@ -86,7 +86,7 @@
 
 				$wrapper->appendChild($taglist);
 			}
-			
+
 		}
 
 		function findAllTags(){

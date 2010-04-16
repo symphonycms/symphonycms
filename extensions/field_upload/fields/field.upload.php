@@ -188,8 +188,9 @@
 				);
 
 				if ($this->get('serialise') == 'yes') $input->setAttribute('checked', 'checked');
-
-				$label->setValue($input . ' ' . __('Serialise file names'));
+				
+				$label->appendChild($input);
+				$label->setValue(__('Serialise file names'));
 				$options_list->appendChild($label);
 
 
@@ -222,8 +223,6 @@
 	-------------------------------------------------------------------------*/
 
 		public function displayPublishPanel(&$wrapper, $data = null, $error = null, $prefix = null, $postfix = null, $entry_id = null) {
-			$this->Driver->addHeaders($this->Symphony->Page);
-
 			if (!$error and !is_writable(DOCROOT . $this->get('destination') . '/')) {
 				$error = 'Destination folder, <code>'.$this->get('destination').'</code>, is not writable. Please check permissions.';
 			}

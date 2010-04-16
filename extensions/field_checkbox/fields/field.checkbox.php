@@ -138,9 +138,10 @@
 			else $value = ($data['value'] == 'yes' ? 'yes' : 'no');
 
 			$label = Widget::Label();
-			$input = Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, 'yes', 'checkbox', ($value == 'yes' ? array('checked' => 'checked') : NULL));
+			$input = Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, 'yes', 'checkbox', ($value == 'yes' ? array('checked' => 'checked') : array()));
 
-			$label->setValue($input . ' ' . ($this->get('description') != NULL ? $this->get('description') : $this->get('label')));
+			$label->appendChild($input);
+			$label->setValue(($this->get('description') != NULL ? $this->get('description') : $this->get('label')));
 
 			$wrapper->appendChild($label);
 		}
@@ -226,7 +227,7 @@
 
 		public function getExampleFormMarkup(){
 			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Input('fields['.$this->get('element_name').']', NULL, 'checkbox', ($this->get('default_state') == 'on' ? array('checked' => 'checked') : NULL)));
+			$label->appendChild(Widget::Input('fields['.$this->get('element_name').']', NULL, 'checkbox', ($this->get('default_state') == 'on' ? array('checked' => 'checked') : array())));
 
 			return $label;
 		}

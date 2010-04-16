@@ -58,6 +58,7 @@
 
 		public function __construct($version='1.0', $encoding='utf-8', $dtd='html'){ //}, DOMDocumentType $dtd=NULL){
 			parent::__construct($version, $encoding);
+			$this->registerNodeClass('DOMDocument', 'HTMLDocument');
 			$this->registerNodeClass('DOMElement', 'SymphonyDOMElement');
 
 			$this->appendChild($this->createElement('html'));

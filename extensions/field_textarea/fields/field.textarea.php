@@ -25,7 +25,7 @@
 			if($this->get('required') != 'yes') $label->appendChild(Symphony::Parent()->Page->createElement('i', __('Optional')));
 
 			$textarea = Widget::Textarea(
-				'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, 
+				'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix,
 				(strlen($data['value']) != 0 ? General::sanitize($data['value']) : NULL),
 				array(
 					'rows' => $this->get('size'),
@@ -228,6 +228,8 @@
 			$label = Widget::Label();
 			$input = Widget::Input('size', $this->get('size'));
 			$input->setAttribute('size', '3');
+
+			//	TODO: Fix me.
 			$label->setValue(__('Make textarea %s rows tall', array($input)));
 
 			$wrapper->appendChild($label);

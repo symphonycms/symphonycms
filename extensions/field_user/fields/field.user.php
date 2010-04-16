@@ -216,7 +216,7 @@
 	            $user = new User($user_id);
 	            $list->appendChild(
 					Symphony::Parent()->Page->createElement('item', $user->getFullName(), array(
-						'id' => $user->id, 
+						'id' => $user->id,
 						'username' => $user->username
 					))
 				);
@@ -238,14 +238,18 @@
 			$label = Widget::Label();
 			$input = Widget::Input('allow-multiple-selection', 'yes', 'checkbox');
 			if($this->get('allow-multiple-selection') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Allow selection of multiple users', array($input)));
+
+			$label->appendChild($input);
+			$label->setValue(__('Allow selection of multiple users'));
 			$options_list->appendChild($label);
 
 			## Default to current logged in user
 			$label = Widget::Label();
 			$input = Widget::Input('default-to-current-user', 'yes', 'checkbox');
 			if($this->get('default-to-current-user') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Select current user by default', array($input)));
+
+			$label->appendChild($input);
+			$label->setValue(__('Select current user by default'));
 			$options_list->appendChild($label);
 
 			$this->appendShowColumnCheckbox($options_list);
