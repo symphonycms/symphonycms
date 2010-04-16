@@ -125,7 +125,12 @@
 				if($this->_invalidPassword){
 					$div = $this->createElement('div', NULL, array('class' => 'invalid'));
 					$div->appendChild($label);
-					$div->appendChild($this->createElement('p', __('The supplied password was rejected. <a href="%s">Retrieve password?</a>', array(ADMIN_URL . '/login/retrieve-password/'))));
+
+					$p = $this->createElement('p', __('The supplied password was rejected.'));
+					$p->appendChild(
+						Widget::Anchor(__('Retrieve password?'), ADMIN_URL . '/login/retrieve-password/')
+					);
+					$div->appendChild($p);
 					$fieldset->appendChild($div);
 				}
 
