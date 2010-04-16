@@ -39,7 +39,7 @@
 			return parent::save($errors);
 		}
 		
-		public function grab() {
+		public function render(Register &$ParameterOutput){
 			$result = Symphony::Parent()->Page->createElement($this->about()->{'root-element'});
 			
 			try {
