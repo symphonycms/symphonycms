@@ -19,7 +19,7 @@
 			
 			$this->_Parent = $parent;
 			
-			$this->_Result = new XMLElement('result');
+			$this->_Result = $this->createElement('result');
 			$this->_Result->setIncludeHeader(true);
 			
 			$this->_status = self::STATUS_OK;

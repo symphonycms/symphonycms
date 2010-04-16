@@ -43,12 +43,15 @@
 			return $groups;
 		}
 
-		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data=NULL, MessageStack $errors=NULL){ //, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+		public function displayDatasourceFilterPanel(SymphonyDOMElement &$wrapper, $data=NULL, MessageStack $errors=NULL){ //, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+			$h4 = Symphony::Parent()->Page->createElement('h4', $this->get('label'));
+			$h4->appendChild(
+				Symphony::Parent()->Page->createElement('i', $this->Name())
+			);
 
-			$wrapper->appendChild(new XMLElement('h4', $this->get('label') . ' <i>' . $this->Name() . '</i>'));
+			$wrapper->appendChild($h4);
 
-
-			$group = new XMLElement('div');
+			$group = Symphony::Parent()->Page->createElement('div');
 			$group->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('Operation'));
@@ -83,7 +86,7 @@
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			$value = General::sanitize($data['value']);
 			$label = Widget::Label($this->get('label'));
-			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
+			if($this->get('required') != 'yes') $label->appendChild(Symphony::Parent()->Page->createElement('i', __('Optional')));
 			$label->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? $value : NULL)));
 
 			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
@@ -237,7 +240,7 @@
 			}
 
 			$wrapper->appendChild(
-				new XMLElement(
+				Symphony::Parent()->Page->createElement(
 					$this->get('element_name'), $value, array('handle' => $data['handle'])
 				)
 			);
@@ -273,7 +276,7 @@
 
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'validator');
 
-			$options_list = new XMLElement('ul');
+			$options_list = Symphony::Parent()->Page->createElement('ul');
 			$options_list->setAttribute('class', 'options-list');
 
 			$this->appendRequiredCheckbox($options_list);

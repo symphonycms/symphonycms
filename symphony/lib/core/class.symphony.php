@@ -137,7 +137,7 @@
 
 		protected static $_instance;
 
-		const CRLF = "\r\n";
+		const CRLF = PHP_EOL;
 
 		protected function __construct(){
 
@@ -178,9 +178,6 @@
 			Cache::setDriver(self::Configuration()->core()->{'cache-driver'});
 
 			Lang::loadAll(true);
-			
-			$this->Profiler->sample('Engine Initialisation');
-
 		}
 
 		public function lang(){

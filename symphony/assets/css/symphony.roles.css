@@ -121,6 +121,7 @@ table.role-permissions td span.perm-2 {
 .ui-slider-horizontal .ui-slider-handle {
 	top: -6px;
 	margin-left: -5px;
+	cursor: pointer;
 }
 .ui-slider-horizontal .ui-slider-range {
 	top: 0;

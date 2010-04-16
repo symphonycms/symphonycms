@@ -67,18 +67,18 @@
 
 		}
 
-		public function view(Datasource $datasource, XMLElement &$wrapper, MessageStack $errors) {
+		public function view(Datasource $datasource, SymphonyDOMElement &$wrapper, MessageStack $errors) {
 
 			$page = Administration::instance()->Page;
-			$page->addScriptToHead(URL . '/extensions/ds_sections/assets/view.js', 55533140);
+			$page->insertNodeIntoHead($page->createScriptElement(URL . '/extensions/ds_sections/assets/view.js'), 55533140);
 
 		//	Essentials --------------------------------------------------------
 
-			$fieldset = new XMLElement('fieldset');
+			$fieldset = $page->createElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
+			$fieldset->appendChild($page->createElement('legend', __('Essentials')));
 
-			$group = new XMLElement('div');
+			$group = $page->createElement('div');
 			$group->setAttribute('class', 'group');
 
 			// Name:
@@ -117,35 +117,35 @@
 
 		//	Conditions ---------------------------------------------------------
 
-			$fieldset = new XMLElement('fieldset');
+			$fieldset = $page->createElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Conditions')));
+			$fieldset->appendChild($page->createElement('legend', __('Conditions')));
 
-			$help = new XMLElement('p');
+			$help = $page->createElement('p');
 			$help->setAttribute('class', 'help');
 			$help->setValue('<code>$param</code>');
 			$fieldset->appendChild($help);
 
-			$conditionals_container = new XMLElement('div');
-			$ol = new XMLElement('ol');
+			$conditionals_container = $page->createElement('div');
+			$ol = $page->createElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
 
 			if(is_array($datasource->parameters()->conditions) && !empty($datasource->parameters()->conditions)){
 				foreach($datasource->parameters()->conditions as $condition){
-					$li = new XMLElement('li');
+					$li = $page->createElement('li');
 					$li->setAttribute('class', 'unique');
 
-					$li->appendChild(new XMLElement('h4', 'When'));
-					$group = new XMLElement('div');
+					$li->appendChild($page->createElement('h4', 'When'));
+					$group = $page->createElement('div');
 					$group->setAttribute('class', 'group triple');
 
 					// Parameter
-					$label = new XMLElement('label', 'Parameter');
+					$label = $page->createElement('label', 'Parameter');
 					$label->appendChild(Widget::input('fields[conditions][parameter][]', $condition['parameter']));
 					$group->appendChild($label);
 
 					// Logic
-					$label = new XMLElement('label', 'Logic');
+					$label = $page->createElement('label', 'Logic');
 					$label->appendChild(Widget::select('fields[conditions][logic][]', array(
 						array('set', ($condition['logic'] == 'set'), 'is set'),
 						array('not-set', ($condition['logic'] == 'not-set'), 'is not set'),
@@ -153,7 +153,7 @@
 					$group->appendChild($label);
 
 					// Action
-					$label = new XMLElement('label', 'Action');
+					$label = $page->createElement('label', 'Action');
 					$label->appendChild(Widget::select('fields[conditions][action][]', array(
 						//array('label' => 'Execution', 'options' => array(
 							array('execute', ($condition['action'] == 'execute'), 'Execute'),
@@ -172,20 +172,20 @@
 			}
 
 			// Conditionals Template:
-			$li = new XMLElement('li');
+			$li = $page->createElement('li');
 			$li->setAttribute('class', 'unique template');
 
-			$li->appendChild(new XMLElement('h4', 'When'));
-			$group = new XMLElement('div');
+			$li->appendChild($page->createElement('h4', 'When'));
+			$group = $page->createElement('div');
 			$group->setAttribute('class', 'group triple');
 
 			// Parameter
-			$label = new XMLElement('label', 'Parameter');
+			$label = $page->createElement('label', 'Parameter');
 			$label->appendChild(Widget::input('fields[conditions][parameter][]'));
 			$group->appendChild($label);
 
 			// Logic
-			$label = new XMLElement('label', 'Logic');
+			$label = $page->createElement('label', 'Logic');
 			$label->appendChild(Widget::select('fields[conditions][logic][]', array(
 				array('set', false, 'is set'),
 				array('not-set', false, 'is not set'),
@@ -193,7 +193,7 @@
 			$group->appendChild($label);
 
 			// Action
-			$label = new XMLElement('label', 'Action');
+			$label = $page->createElement('label', 'Action');
 			$label->appendChild(Widget::select('fields[conditions][action][]', array(
 				//array('label' => 'Execution', 'options' => array(
 					array('execute', false, 'Execute'),
@@ -216,16 +216,16 @@
 
 		//	Filtering ---------------------------------------------------------
 
-			$fieldset = new XMLElement('fieldset');
+			$fieldset = $page->createElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Filtering')));
+			$fieldset->appendChild($page->createElement('legend', __('Filtering')));
 
-			$help = new XMLElement('p');
+			$help = $page->createElement('p');
 			$help->setAttribute('class', 'help');
 			$help->setValue(__('<code>{$param}</code> or <code>Value</code>'));
 			$fieldset->appendChild($help);
 
-			$container_filter_results = new XMLElement('div');
+			$container_filter_results = $page->createElement('div');
 			$fieldset->appendChild($container_filter_results);
 
 		//	Redirect/404 ------------------------------------------------------
@@ -248,7 +248,8 @@
 				$input->setAttribute('checked', 'checked');
 			}
 
-			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
+			$label->appendChild($input);
+			$label->setValue(__('Redirect to 404 page when no results are found'));
 			$fieldset->appendChild($label);
 
 			$wrapper->appendChild($fieldset);
@@ -256,14 +257,14 @@
 
 		//	Sorting -----------------------------------------------------------
 
-			$fieldset = new XMLElement('fieldset');
+			$fieldset = $page->createElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Sorting')));
+			$fieldset->appendChild($page->createElement('legend', __('Sorting')));
 
-			$group = new XMLElement('div');
+			$group = $page->createElement('div');
 			$group->setAttribute('class', 'group');
 
-			$container_sort_by = new XMLElement('div');
+			$container_sort_by = $page->createElement('div');
 			$group->appendChild($container_sort_by);
 
 			$label = Widget::Label(__('Sort Order'));
@@ -282,21 +283,21 @@
 
 		//	Limiting ----------------------------------------------------------
 
-			$fieldset = new XMLElement('fieldset');
+			$fieldset = $page->createElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Limiting')));
+			$fieldset->appendChild($page->createElement('legend', __('Limiting')));
 
-			$help = new XMLElement('p');
+			$help = $page->createElement('p');
 			$help->setAttribute('class', 'help');
 			$help->setValue(__('<code>{$param}</code> or <code>Value</code>'));
 			$fieldset->appendChild($help);
 
-			$group = new XMLElement('div');
+			$group = $page->createElement('div');
 			$group->setAttribute('class', 'group');
 
 			$label = Widget::Label();
 			$input = Widget::Input('fields[limit]', $datasource->parameters()->limit, NULL, array('size' => '6'));
-			$label->setValue(__('Show a maximum of %s results', array($input->generate(false))));
+			$label->setValue(__('Show a maximum of %s results', array((string)$input)));
 
 			if (isset($errors->limit)) {
 				$label = Widget::wrapFormElementWithError($label, $errors->limit);
@@ -306,7 +307,8 @@
 
 			$label = Widget::Label();
 			$input = Widget::Input('fields[page]', $datasource->parameters()->page, NULL, array('size' => '6'));
-			$label->setValue(__('Show page %s of results', array($input->generate(false))));
+
+			$label->setValue(__('Show page %s of results', array((string)$input)));
 
 			if (isset($errors->page)) {
 				$label = Widget::wrapFormElementWithError($label, $errors->page);
@@ -319,22 +321,22 @@
 
 		//	Output options ----------------------------------------------------
 
-			$fieldset = new XMLElement('fieldset');
+			$fieldset = $page->createElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
+			$fieldset->appendChild($page->createElement('legend', __('Output Options')));
 
-			$group = new XMLElement('div');
+			$group = $page->createElement('div');
 			$group->setAttribute('class', 'group');
 
-			$container_parameter_output = new XMLElement('div');
+			$container_parameter_output = $page->createElement('div');
 			$group->appendChild($container_parameter_output);
 
-			$container_xml_output = new XMLElement('div');
+			$container_xml_output = $page->createElement('div');
 			$group->appendChild($container_xml_output);
 
 			$fieldset->appendChild($group);
 
-			$group = new XMLElement('div');
+			$group = $page->createElement('div');
 			$group->setAttribute('class', 'group');
 
 			$fieldset->appendChild(Widget::Input('fields[append-pagination]', 'no', 'hidden'));
@@ -346,7 +348,8 @@
 				$input->setAttribute('checked', 'checked');
 			}
 
-			$label->setValue(__('%s Append pagination data', array($input->generate(false))));
+			$label->appendChild($input);
+			$label->setValue(__('Append pagination data'));
 			$group->appendChild($label);
 
 			$fieldset->appendChild(Widget::Input('fields[append-associated-entry-count]', 'no', 'hidden'));
@@ -358,7 +361,8 @@
 				$input->setAttribute('checked', 'checked');
 			}
 
-			$label->setValue(__('%s Append entry count', array($input->generate(false))));
+			$label->appendChild($input);
+			$label->setValue(__('Append entry count'));
 			$group->appendChild($label);
 
 			$label = Widget::Label();
@@ -368,7 +372,8 @@
 				$input->setAttribute('checked', 'checked');
 			}
 
-			$label->setValue(__('%s HTML-encode text', array($input->generate(false))));
+			$label->appendChild($input);
+			$label->setValue(__('HTML-encode text'));
 			$group->appendChild($label);
 
 			$fieldset->appendChild($group);
@@ -383,16 +388,17 @@
 				$filter_data = $datasource->parameters()->filter;
 
 				// Filters:
-				$context = new XMLElement('div');
+				$context = $page->createElement('div');
 				$context->setAttribute('class', 'context context-' . $section_handle);
 
-				$ol = new XMLElement('ol');
+				$ol =$page->createElement('ol');
 				$ol->setAttribute('class', 'filters-duplicator');
 
 				if (isset($filter_data['id'])) {
-					$li = new XMLElement('li');
+					$li = $page->createElement('li');
 					$li->setAttribute('class', 'unique');
-					$li->appendChild(new XMLElement('h4', __('System ID')));
+					$li->appendChild($page->createElement('h4', __('System ID')));
+
 					$label = Widget::Label(__('Value'));
 					$label->appendChild(Widget::Input(
 						"fields[filter][id]", General::sanitize($filter_data['id'])
@@ -401,9 +407,10 @@
 					$ol->appendChild($li);
 				}
 
-				$li = new XMLElement('li');
+				$li = $page->createElement('li');
 				$li->setAttribute('class', 'unique template');
-				$li->appendChild(new XMLElement('h4', __('System ID')));
+				$li->appendChild($page->createElement('h4', __('System ID')));
+
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input('fields[filter][id]'));
 				$li->appendChild($label);
@@ -417,7 +424,7 @@
 						$element_name = $input->get('element_name');
 
 						if (isset($filter_data[$element_name])) {
-							$filter = new XMLElement('li');
+							$filter = $page->createElement('li');
 							$filter->setAttribute('class', 'unique');
 							$input->displayDatasourceFilterPanel(
 								$filter, $filter_data[$element_name],
@@ -426,7 +433,7 @@
 							$ol->appendChild($filter);
 						}
 
-						$filter = new XMLElement('li');
+						$filter = $page->createElement('li');
 						$filter->setAttribute('class', 'unique template');
 						$input->displayDatasourceFilterPanel($filter, null, null); //, $section->get('id'));
 						$ol->appendChild($filter);

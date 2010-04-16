@@ -26,13 +26,16 @@
 		}
 
 		public function __viewIndex() {
-			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Data Sources'))));
 
 			$this->appendSubheading(__('Data Sources') . $heading, Widget::Anchor(
-				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/',
-				__('Create a new data source'), 'create button'
+				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/', array(
+					'title' => __('Create a new data source'),
+					'class' => 'create button'
+				)
 			));
+
+			$datasources = new DatasourceIterator;
 
 			$dsTableHead = array(
 				array(__('Name'), 'col'),
@@ -42,13 +45,20 @@
 			);
 
 			$dsTableBody = array();
+			$colspan = count($dsTableHead);
 
-			$datasources = new DatasourceIterator;
-
-			if ($datasources->length() <= 0) {
-				$dsTableBody[] = Widget::TableRow(array(Widget::TableData(
-					__('None found.'), 'inactive', NULL, count($dsTableHead)
-				)));
+			if($datasources->length() <= 0) {
+				$dsTableBody = array(Widget::TableRow(
+					array(
+						Widget::TableData(__('None found.'), array(
+								'class' => 'inactive',
+								'colspan' => $colspan
+							)
+						)
+					), array(
+						'class' => 'odd'
+					)
+				));
 			}
 
 			else {
@@ -59,11 +69,11 @@
 					$handle = preg_replace('/.php$/i', NULL, basename($ds->parameters()->pathname));
 
 					// Name
-					$col_name = Widget::TableData(Widget::Anchor(
-						$ds->about()->name,
-						URL . "/symphony/blueprints/datasources/{$view_mode}/{$handle}/",
-						$handle . '.php'
-					));
+					$col_name = Widget::TableData(
+						Widget::Anchor($ds->about()->name,URL . "/symphony/blueprints/datasources/{$view_mode}/{$handle}/", array(
+							'title' => $handle . '.php'
+						))
+					);
 					$col_name->appendChild(Widget::Input("items[{$handle}]", NULL, 'checkbox'));
 
 
@@ -109,15 +119,14 @@
 				}
 			}
 
-			$table = Widget::Table(
-				Widget::TableHead($dsTableHead), NULL,
-				Widget::TableBody($dsTableBody), NULL
+			$table = Widget::Table(Widget::TableHead($dsTableHead), NULL,Widget::TableBody($dsTableBody), array(
+					'id' => 'datasources-list'
+				)
 			);
-			$table->setAttribute('id', 'datasources-list');
 
 			$this->Form->appendChild($table);
 
-			$tableActions = new XMLElement('div');
+			$tableActions = $this->createElement('div');
 			$tableActions->setAttribute('class', 'actions');
 
 			$options = array(
@@ -341,8 +350,6 @@
 				}
 			}
 
-			$this->setPageType('form');
-
 			// Track type with a hidden field:
 			if($this->editing || ($this->editing && isset($_POST['type']))){
 				$input = Widget::Input('type', $this->type, 'hidden');
@@ -399,7 +406,7 @@
 			);
 			*/
 
-			$actions = new XMLElement('div');
+			$actions = $this->createElement('div');
 			$actions->setAttribute('class', 'actions');
 
 			$save = Widget::Input('action[save]', __('Create Data Source'), 'submit');
@@ -408,20 +415,20 @@
 
 			if ($this->editing == true) {
 				$save->setAttribute('value', __('Save Changes'));
-				$button = new XMLElement('button', __('Delete'));
-				$button->setAttribute('name', 'action[delete]');
-				$button->setAttribute('class', 'confirm delete');
-				$button->setAttribute('type', 'submit');
-				$button->setAttribute('title', __('Delete this data source'));
-				$actions->appendChild($button);
+				$actions->appendChild(
+					$this->createElement('button', __('Delete'), array(
+						'name' => 'action[delete]',
+						'class' => 'confirm delete',
+						'type' => 'submit',
+						'title' => __('Delete this data source')
+					))
+				);
 			}
 
 			$this->Form->appendChild($actions);
 		}
 
 		function __viewInfo(){
-			$this->setPageType('form');
-
 			$datasource = DataSource::loadFromName($this->_context[1], NULL, false);
 			$about = $datasource->about();
 
@@ -445,34 +452,34 @@
 
 				switch($key) {
 					case 'user':
-						$fieldset = new XMLElement('fieldset');
-						$fieldset->appendChild(new XMLElement('legend', 'User'));
-						$fieldset->appendChild(new XMLElement('p', $link->generate(false)));
+						$fieldset = $this->createElement('fieldset');
+						$fieldset->appendChild($this->createElement('legend', 'User'));
+						$fieldset->appendChild($this->createElement('p', $link));
 						break;
 
 					case 'version':
-						$fieldset = new XMLElement('fieldset');
-						$fieldset->appendChild(new XMLElement('legend', 'Version'));
-						$fieldset->appendChild(new XMLElement('p', $value . ', released on ' . DateTimeObj::get(__SYM_DATE_FORMAT__, strtotime($about->{'release-date'}))));
+						$fieldset = $this->createElement('fieldset');
+						$fieldset->appendChild($this->createElement('legend', 'Version'));
+						$fieldset->appendChild($this->createElement('p', $value . ', released on ' . DateTimeObj::get(__SYM_DATE_FORMAT__, strtotime($about->{'release-date'}))));
 						break;
 
 					case 'description':
-						$fieldset = new XMLElement('fieldset');
-						$fieldset->appendChild(new XMLElement('legend', 'Description'));
-						$fieldset->appendChild((is_object($about->description) ? $about->description : new XMLElement('p', $about->description)));
+						$fieldset = $this->createElement('fieldset');
+						$fieldset->appendChild($this->createElement('legend', 'Description'));
+						$fieldset->appendChild((is_object($about->description) ? $about->description : $this->createElement('p', $about->description)));
 
 					case 'example':
 						if (is_callable(array($datasource, 'example'))) {
-							$fieldset = new XMLElement('fieldset');
-							$fieldset->appendChild(new XMLElement('legend', 'Example XML'));
+							$fieldset = $this->createElement('fieldset');
+							$fieldset->appendChild($this->createElement('legend', 'Example XML'));
 
 							$example = $datasource->example();
 
 							if(is_object($example)) {
 								 $fieldset->appendChild($example);
 							} else {
-								$p = new XMLElement('p');
-								$p->appendChild(new XMLElement('pre', '<code>' . str_replace('<', '&lt;', $example) . '</code>'));
+								$p = $this->createElement('p');
+								$p->appendChild($this->createElement('pre', '<code>' . str_replace('<', '&lt;', $example) . '</code>'));
 								$fieldset->appendChild($p);
 							}
 						}
@@ -565,9 +572,9 @@
 
 			if(!$templateOnly){
 
-				$li = new XMLElement('li');
+				$li = $this->createElement('li');
 				$li->setAttribute('class', 'unique');
-				$li->appendChild(new XMLElement('h4', $h4_label));
+				$li->appendChild($this->createElement('h4', $h4_label));
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input('fields[filter][user]['.$name.']', General::sanitize($value)));
 				$li->appendChild($label);
@@ -575,9 +582,9 @@
 			 	$wrapper->appendChild($li);
 			}
 
-			$li = new XMLElement('li');
+			$li = $this->createElement('li');
 			$li->setAttribute('class', 'unique template');
-			$li->appendChild(new XMLElement('h4', $h4_label));
+			$li->appendChild($this->createElement('h4', $h4_label));
 			$label = Widget::Label(__('Value'));
 			$label->appendChild(Widget::Input('fields[filter][user]['.$name.']'));
 			$li->appendChild($label);
@@ -615,7 +622,7 @@
 		}
 
 		public function __actionIndex() {
-			$checked = @array_keys($_POST['items']);
+			$checked = array_keys($_POST['items']);
 
 			if(is_array($checked) && !empty($checked)) {
 				switch ($_POST['with-selected']) {

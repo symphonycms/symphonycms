@@ -46,7 +46,7 @@
 		public function render(Register &$ParameterOutput){
 			throw new Exception('TODO: Fix users datasource template.');
 			
-			$result = new XMLElement($this->dsParamROOTELEMENT);
+			$result = Symphony::Parent()->Page->createElement($this->dsParamROOTELEMENT);
 			
 			try {
 				$user_ids = array();
@@ -83,7 +83,7 @@
 				
 				else{
 				
-					if(!$this->_param_output_only) $result = new XMLElement($this->dsParamROOTELEMENT);
+					if(!$this->_param_output_only) $result = Symphony::Parent()->Page->createElement($this->dsParamROOTELEMENT);
 				
 					foreach($users as $user){
 					
@@ -96,19 +96,19 @@
 					
 						if(!$this->_param_output_only){
 					
-							$xUser = new XMLElement('user');
+							$xUser = Symphony::Parent()->Page->createElement('user');
 							$xUser->setAttribute('id', $user->id);
 				
 							$fields = array(
-								'name' => new XMLElement('name', $user->getFullName()),
-								'username' => new XMLElement('username', $user->username),
-								'email' => new XMLElement('email', $user->email)
+								'name' => Symphony::Parent()->Page->createElement('name', $user->getFullName()),
+								'username' => Symphony::Parent()->Page->createElement('username', $user->username),
+								'email' => Symphony::Parent()->Page->createElement('email', $user->email)
 							);
 				
-							if($user->isTokenActive()) $fields['authentication-token'] = new XMLElement('authentication-token', $user->createAuthToken());
+							if($user->isTokenActive()) $fields['authentication-token'] = Symphony::Parent()->Page->createElement('authentication-token', $user->createAuthToken());
 				
 							if($section = Symphony::Database()->fetchRow(0, "SELECT `id`, `handle`, `name` FROM `tbl_sections` WHERE `id` = '".$user->default_section."' LIMIT 1")){
-								$default_section = new XMLElement('default-section', $section['name']);
+								$default_section = Symphony::Parent()->Page->createElement('default-section', $section['name']);
 								$default_section->setAttributeArray(array('id' => $section['id'], 'handle' => $section['handle']));
 								$fields['default-section'] = $default_section;
 							}
@@ -127,7 +127,7 @@
 			}
 			
 			catch (Exception $error) {
-				$result->appendChild(new XMLElement(
+				$result->appendChild(Symphony::Parent()->Page->createElement(
 					'error', General::sanitize($error->getMessage())
 				));
 				

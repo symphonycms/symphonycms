@@ -1,10 +1,10 @@
 <?php
-	
+
 	class Extension_Field_Upload extends Extension {
 	/*-------------------------------------------------------------------------
 		Definition:
 	-------------------------------------------------------------------------*/
-		
+
 		public function about() {
 			return array(
 				'name'			=> 'Upload',
@@ -21,11 +21,11 @@
 				),
 			);
 		}
-		
+
 		public function uninstall() {
 			Symphony::Database()->query("DROP TABLE `tbl_fields_upload`");
 		}
-		
+
 		public function install() {
 			Symphony::Database()->query("
 				CREATE TABLE IF NOT EXISTS `tbl_fields_upload` (
@@ -38,23 +38,24 @@
 					KEY `field_id` (`field_id`)
 				)
 			");
-			
+
 			// TODO: Upgrade existing table
-			
+
 			return true;
 		}
-		
+
 	/*-------------------------------------------------------------------------
 		Utilites:
 	-------------------------------------------------------------------------*/
-		
+
 		protected $addedHeaders = false;
-		
+
 		public function addHeaders($page) {
 			if (!$this->addedHeaders) {
-				$page->addStylesheetToHead(URL . '/extensions/field_upload/assets/publish.css', 'screen', 9745190);
-				$page->addScriptToHead(URL . '/extensions/field_upload/assets/publish.js', 9745190);
-				
+
+				Symphony::Parent()->Page->insertNodeIntoHead(Symphony::Parent()->Page->createScriptElement(URL . '/extensions/field_upload/assets/publish.css'));
+				Symphony::Parent()->Page->insertNodeIntoHead(Symphony::Parent()->Page->createStylesheetElement(URL . '/extensions/field_upload/assets/publish.js'));
+
 				$this->addedHeaders = true;
 			}
 		}

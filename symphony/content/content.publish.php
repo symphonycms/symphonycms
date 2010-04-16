@@ -33,16 +33,8 @@
 		}
 
 		public function __viewIndex(){
-
-
-			/*if(!$section_id = SectionManager::instance()->fetchIDFromHandle($this->_context['section_handle']))
-				Administration::instance()->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
-
-			$section = SectionManager::instance()->fetch($section_id);*/
-
 			$section = Section::load(sprintf('%s/%s.xml', SECTIONS, $this->_context['section_handle']));
 
-			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->name)));
 			$this->Form->setAttribute("class", $section->handle);
 
@@ -55,15 +47,14 @@
 				$section->name,
 				Widget::Anchor(
 					__('Create New'),
-					sprintf('%snew/%s', Administration::instance()->getCurrentPageURL(), ($filter ? "?prepopulate[{$filter}]={$filter_value}" : NULL)),
-					__('Create a new entry'),
-					'create button'
+					sprintf('%snew/%s', Administration::instance()->getCurrentPageURL(), ($filter ? "?prepopulate[{$filter}]={$filter_value}" : NULL)), array(
+						'title' => __('Create a new entry'),
+						'class' => 'create button'
+					)
 				)
 			);
 
-
 			$aTableHead = array();
-
 
 			foreach($section->fields as $column){
 				if($column->get('show_column') != 'yes') continue;
@@ -90,30 +81,32 @@
 				$aTableHead[] = array($label, 'col');
 			}
 
-
 			## Table Body
 			$aTableBody = array();
+			$colspan = count($aTableHead);
 
 			if(!is_array($entries['records']) || empty($entries['records'])){
 
-				$aTableBody = array(
-					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
-				);
+				$aTableBody = array(Widget::TableRow(
+					array(
+						Widget::TableData(__('None found.'), array(
+								'class' => 'inactive',
+								'colspan' => $colspan
+							)
+						)
+					), array(
+						'class' => 'odd'
+					)
+				));
 			}
 
 			else{
 			}
 
-			$table = Widget::Table(
-				Widget::TableHead($aTableHead),
-				NULL,
-				Widget::TableBody($aTableBody)
-			);
-
+			$table = Widget::Table(Widget::TableHead($aTableHead), NULL, Widget::TableBody($aTableBody));
 			$this->Form->appendChild($table);
 
-
-			$tableActions = new XMLElement('div');
+			$tableActions = $this->createElement('div');
 			$tableActions->setAttribute('class', 'actions');
 
 			$options = array(
@@ -441,7 +434,7 @@
 		}
 
 		function __actionIndex(){
-			$checked = @array_keys($_POST['items']);
+			$checked = array_keys($_POST['items']);
 
 			if(is_array($checked) && !empty($checked)){
 				switch($_POST['with-selected']) {
@@ -487,7 +480,7 @@
 
 		/* TODO: Remove once create/edit form becomes one and the same */
 		private function __wrapFieldWithDiv(Field $field, Entry $entry=NULL){
-			$div = new XMLElement('div', NULL, array(
+			$div = $this->createElement('div', NULL, array(
 					'class' => sprintf('field field-%s %s %s',
 						$field->handle(),
 						($field->get('required') == 'yes' ? 'required' : ''),
@@ -524,7 +517,6 @@
 
 			$section = Section::load(sprintf('%s/%s.xml', SECTIONS, $this->_context['section_handle']));
 
-			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->name)));
 			$this->appendSubheading(__('Untitled'));
@@ -553,22 +545,22 @@
  			foreach($section->layout as $a_layout) {
 				foreach($a_layout as $a_fieldset) {
 
-					$fieldset = new XMLElement('fieldset');
+					$fieldset = $this->createElement('fieldset');
 					$fieldset->appendChild(
-						new XMLElement('h3', $a_fieldset->label, array('class' => 'legend'))
+						$this->createElement('h3', $a_fieldset->label, array('class' => 'legend'))
 					);
 
 					// Got the fieldsets, now lets loop the rows
 					foreach($a_fieldset->rows as $a_row) {
 						$do_grouping = (count($a_row) > 1) ? true : false;
 
-						if($do_grouping) $group = new XMLElement('div', NULL, array('class' => 'group'));
+						if($do_grouping) $group = $this->createElement('div', NULL, array('class' => 'group'));
 
 						foreach($a_row as $a_field) {
 
 							$field = $section_fields[$a_field];
 
-							$div = new XMLElement('div', NULL, array(
+							$div = $this->createElement('div', NULL, array(
 									'class' => trim(sprintf('field field-%s %s %s',
 										$field->handle(),
 										$this->__calculateWidth($field->get('width')),
@@ -631,7 +623,7 @@
 				$entry->set('section_id', $section_id);
 			}
 */
-			$div = new XMLElement('div');
+			$div = $this->createElement('div');
 			$div->setAttribute('class', 'actions');
 			$div->appendChild(Widget::Input('action[save]', __('Create Entry'), 'submit', array('accesskey' => 's')));
 
@@ -642,15 +634,10 @@
 
 			if(array_key_exists('save', $_POST['action']) || array_key_exists("done", $_POST['action'])) {
 
-
-				$section_id = SectionManager::instance()->fetchIDFromHandle($this->_context['section_handle']);
-
-			    if(!$section = SectionManager::instance()->fetch($section_id))
-					Administration::instance()->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', $this->_context['section_handle']), false, true);
-
+				$section = Section::loadFromHandle($this->_context['section_handle']);
 
 				$entry =& EntryManager::instance()->create();
-				$entry->set('section_id', $section_id);
+				$entry->set('section', $section->handle);
 				$entry->set('user_id', Administration::instance()->User->id);
 				$entry->set('creation_date', DateTimeObj::get('Y-m-d H:i:s'));
 				$entry->set('creation_date_gmt', DateTimeObj::getGMT('Y-m-d H:i:s'));
@@ -707,11 +694,7 @@
 
 		function __viewEdit() {
 
-			if(!$section_id = SectionManager::instance()->fetchIDFromHandle($this->_context['section_handle']))
-				Administration::instance()->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
-
-		    $section = SectionManager::instance()->fetch($section_id);
-
+			$section = Section::loadFromHandle($this->_context['section_handle']);
 			$entry_id = intval($this->_context['entry_id']);
 
 			EntryManager::instance()->setFetchSorting('id', 'DESC');
@@ -735,7 +718,7 @@
 				$entry = $existingEntry;
 
 				if (!$section) {
-					$section = SectionManager::instance()->fetch($entry->get('section_id'));
+					$section = Section::loadFromHandle($entry->get('section'));
 				}
 			}
 
@@ -815,7 +798,6 @@
 				));
 			}
 
-			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), $section->get('name'), $title)));
 			$this->appendSubheading($title);

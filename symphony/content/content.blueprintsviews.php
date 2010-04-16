@@ -45,8 +45,6 @@
 		*/
 
 		public function __viewIndex() {
-
-			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Views'))));
 
 			$nesting = (Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes');
@@ -58,26 +56,38 @@
 			}
 
 			$this->appendSubheading(__('Views') . $heading, Widget::Anchor(
-				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/' . ($nesting == true && isset($parent) ? "?parent={$parent}" : NULL),
-				__('Create a new view'), 'create button'
+				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/' . ($nesting == true && isset($parent) ? "?parent={$parent}" : NULL), array(
+					'title' => __('Create a new view'),
+					'class' => 'create button'
+				)
 			));
+
+			$iterator = new ViewIterator;
 
 			$aTableHead = array(
 				array(__('Title'), 'col'),
-				array(__('<acronym title="Universal Resource Locator">URL</acronym>'), 'col'),
-				array(__('<acronym title="Universal Resource Locator">URL</acronym> Parameters'), 'col'),
+				array(Widget::Acronym('URL', array('title' => __('Universal Resource Locator'))), 'col'),
+				array(Widget::Acronym('URL', array('title' => __('Universal Resource Locator')), __(' Parameters')), 'col'),
 				array(__('Type'), 'col')
 			);
 
-			$iterator = new ViewIterator;
 			$aTableBody = array();
+			$colspan = count($aTableHead);
 
 			if($iterator->length() <= 0) {
-				$aTableBody = array(Widget::TableRow(array(
-					Widget::TableData(__('None found.'), 'inactive', null, count($aTableHead))
-				), 'odd'));
-
+				$aTableBody = array(Widget::TableRow(
+					array(
+						Widget::TableData(__('None found.'), array(
+								'class' => 'inactive',
+								'colspan' => $colspan
+							)
+						)
+					), array(
+						'class' => 'odd'
+					)
+				));
 			}
+
 			else{
 				foreach ($iterator as $view) {
 					$class = array();
@@ -89,7 +99,7 @@
 
 					$page_types = $view->types;
 
-					$link = Widget::Anchor($page_title, $page_edit_url, $view->handle);
+					$link = Widget::Anchor($page_title, $page_edit_url, array('title' => $view->handle));
 
 					$col_title = Widget::TableData($link);
 					$col_title->appendChild(Widget::Input("items[{$view->path}]", null, 'checkbox'));
@@ -100,18 +110,17 @@
 						$col_params = Widget::TableData(implode('/', $view->{'url-parameters'}));
 
 					} else {
-						$col_params = Widget::TableData(__('None'), 'inactive');
+						$col_params = Widget::TableData(__('None'), array('class' => 'inactive'));
 					}
 
 					if(!empty($page_types)) {
 						$col_types = Widget::TableData(implode(', ', $page_types));
 
 					} else {
-						$col_types = Widget::TableData(__('None'), 'inactive');
+						$col_types = Widget::TableData(__('None'), array('class' => 'inactive'));
 					}
 
-					$col_toggle = Widget::TableData('');
-					$col_toggle->setAttribute('class', 'toggle');
+					$col_toggle = Widget::TableData('', array('class' => 'toggle'));
 
 					$columns = array($col_title, $col_url, $col_params, $col_types);
 
@@ -139,13 +148,14 @@
 
 			$table = Widget::Table(
 				Widget::TableHead($aTableHead), null,
-				Widget::TableBody($aTableBody)
+				Widget::TableBody($aTableBody), array(
+					'id' => 'views-list'
+				)
 			);
-			$table->setAttribute('id', 'views-list');
 
 			$this->Form->appendChild($table);
 
-			$tableActions = new XMLElement('div');
+			$tableActions = $this->createElement('div');
 			$tableActions->setAttribute('class', 'actions');
 
 			$options = array(
@@ -169,7 +179,6 @@
 
 			$view = View::loadFromPath($view_pathname);
 
-			$this->setPageType('form');
 			$this->Form->setAttribute('action', ADMIN_URL . '/blueprints/views/template/' . $view->path . '/');
 
 			$filename = $view->handle . '.xsl';
@@ -216,24 +225,25 @@
 				$view->template = $_POST['fields']['template'];
 			}
 
-			$fieldset = new XMLElement('fieldset');
+			$fieldset = $this->createElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
 
-			$group = new XMLElement('div');
+			$group = $this->createElement('div');
 			$group->setAttribute('class', 'group');
 
-			$div = new XMLElement('div');
+			$div = $this->createElement('div');
 
 			$label = Widget::Label(__('Template'));
-			$label->appendChild(Widget::Textarea(
-				'fields[template]', 30, 80, General::sanitize($view->template),
-				array(
+			$label->appendChild(
+				Widget::Textarea('fields[template]', General::sanitize($view->template), array(
+					'rows' => 30,
+					'cols' => 80,
 					'class'	=> 'code'
 				)
 			));
 
 			if(isset($this->_errors->template)) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors->template);
+				$label = Widget::wrapFormElementWithError($label, $this->_errors->template);
 			}
 
 			$div->appendChild($label);
@@ -245,20 +255,20 @@
 			$utilities = new UtilityIterator;
 
 			if($utilities->length() > 0){
-				$div = new XMLElement('div');
+				$div = $this->createElement('div');
 				$div->setAttribute('class', 'small');
 
-				$h3 = new XMLElement('h3', __('Utilities'));
-				$h3->setAttribute('class', 'label');
-				$div->appendChild($h3);
+				$div->appendChild(
+					$this->createElement('h3', __('Utilities'), array('class' => 'label'))
+				);
 
-				$ul = new XMLElement('ul');
+				$ul = $this->createElement('ul');
 				$ul->setAttribute('id', 'utilities');
 
 				foreach ($utilities as $u) {
-					$li = new XMLElement('li');
+					$li = $this->createElement('li');
 					$li->appendChild(Widget::Anchor(
-						$u->name, ADMIN_URL . '/blueprints/utilities/edit/' . str_replace('.xsl', NULL, $u->name) . '/', NULL
+						$u->name, ADMIN_URL . '/blueprints/utilities/edit/' . str_replace('.xsl', NULL, $u->name) . '/'
 					));
 					$ul->appendChild($li);
 				}
@@ -267,7 +277,7 @@
 				$group->appendChild($div);
 			}
 
-			$div = new XMLElement('div');
+			$div = $this->createElement('div');
 			$div->setAttribute('class', 'actions');
 			$div->appendChild(Widget::Input(
 				'action[save]', __('Save Changes'),
@@ -469,27 +479,27 @@
 			));
 
 			if(isset($this->_errors->title)) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors->title);
+				$label = Widget::wrapFormElementWithError($label, $this->_errors->title);
 			}
 
 			$fieldset->appendChild($label);
 
 		// Type ---------------------------------------------------------------
 
-			$container = new XMLElement('div');
+			$container = $this->createElement('div');
 
 			$label = Widget::Label(__('View Type'));
 			$label->appendChild(Widget::Input('fields[types]', $fields['types']));
 
 			if(isset($this->_errors->types)) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors->types);
+				$label = Widget::wrapFormElementWithError($label, $this->_errors->types);
 			}
 
-			$tags = new XMLElement('ul');
+			$tags = $this->createElement('ul');
 			$tags->setAttribute('class', 'tags');
 
 			foreach(self::__fetchAvailableViewTypes() as $t){
-				$tags->appendChild(new XMLElement('li', $t));
+				$tags->appendChild($this->createElement('li', $t));
 			}
 
 			$container->appendChild($label);
@@ -534,7 +544,7 @@
 			));
 
 			if(isset($this->_errors->handle)) {
-				$label = $this->wrapFormElementWithError($label, $this->_errors->handle);
+				$label = Widget::wrapFormElementWithError($label, $this->_errors->handle);
 			}
 
 			$fieldset->appendChild($label);
@@ -593,7 +603,7 @@
 
 		// Controls -----------------------------------------------------------
 
-			$div = new XMLElement('div');
+			$div = $this->createElement('div');
 			$div->setAttribute('class', 'actions');
 			$div->appendChild(Widget::Input(
 				'action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create View')),
@@ -601,9 +611,13 @@
 			));
 
 			if($this->_context[0] == 'edit'){
-				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this view')));
-				$div->appendChild($button);
+				$div->appendChild(
+					$this->createElement('button', __('Delete'), array(
+						'name' => 'action[delete]',
+						'class' => 'confirm delete',
+						'title' => __('Delete this view')
+					))
+				);
 			}
 
 			$this->Form->appendChild($div);
@@ -661,11 +675,11 @@
 
 			$view_pathname = implode('/', $context);
 
-			if(@array_key_exists('delete', $_POST['action'])) {
+			if(array_key_exists('delete', $_POST['action'])) {
 				$this->__actionDelete(array($view_pathname), ADMIN_URL . '/blueprints/views/');
 			}
 
-			elseif(@array_key_exists('save', $_POST['action'])) {
+			elseif(array_key_exists('save', $_POST['action'])) {
 
 				$fields = $_POST['fields'];
 
@@ -955,7 +969,7 @@
 		}
 
 		public function __actionIndex() {
-			$checked = @array_keys($_POST['items']);
+			$checked = array_keys($_POST['items']);
 
 			if(is_array($checked) && !empty($checked)) {
 				switch ($_POST['with-selected']) {

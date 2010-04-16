@@ -76,13 +76,13 @@
 		}
 		*/
 		
-		public function view(Datasource $datasource, XMLElement &$wrapper, MessageStack $errors) {
+		public function view(Datasource $datasource, SymphonyDOMElement &$wrapper, MessageStack $errors) {
 			
 			//	Essentials --------------------------------------------------------
 
-				$fieldset = new XMLElement('fieldset');
+				$fieldset = Symphony::Parent()->Page->createElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
-				$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
+				$fieldset->appendChild(Symphony::Parent()->Page->createElement('legend', __('Essentials')));
 
 				// Name:
 				$label = Widget::Label(__('Name'));
@@ -96,11 +96,11 @@
 				$fieldset->appendChild($label);
 			
 				$label = Widget::Label(__('XML'));
-				$input = Widget::Textarea(
-					'fields[xml]', 24, 50,
-					General::sanitize($datasource->parameters()->{'xml'})
-				);
-				$input->setAttribute('class', 'code');
+				$input = Widget::Textarea('fields[xml]', General::sanitize($datasource->parameters()->{'xml'}), array(
+					'rows' => '24',
+					'cols' => '50',
+					'classl' => 'code'
+				));
 				$label->appendChild($input);
 			
 				if (isset($errors->{'xml'})) {

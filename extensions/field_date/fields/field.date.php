@@ -45,9 +45,9 @@
 				$value = DateTimeObj::get(__SYM_DATETIME_FORMAT__, $data['gmt']);
 			}
 
-			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Input("fields{$prefix}[{$name}]", $value));
-			$label->setAttribute('class', 'date');
+			$label = Widget::Label($this->get('label'), Widget::Input("fields{$prefix}[{$name}]", $value), array(
+				'class' => 'date')
+			);
 
 			if (!is_null($error)) {
 				$label = Widget::wrapFormElementWithError($label, $error);
@@ -105,7 +105,7 @@
 			}
 		}
 
-		public function prepareTableValue($data, XMLElement $link=NULL) {
+		public function prepareTableValue($data, SymphonyDOMElement $link=NULL) {
 			$value = null;
 
 			if (isset($data['gmt']) && !is_null($data['gmt'])) {
@@ -380,13 +380,15 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$options_list = new XMLElement('ul');
+			$options_list = Symphony::Parent()->Page->createElement('ul');
 			$options_list->setAttribute('class', 'options-list');
 
 			$label = Widget::Label();
 			$input = Widget::Input('pre-populate', 'yes', 'checkbox');
 			if($this->get('pre-populate') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Pre-populate this field with today\'s date', array($input->generate())));
+
+			$label->appendChild($input);
+			$label->setValue(__('Pre-populate this field with today\'s date'));
 			$options_list->appendChild($label);
 
 			$this->appendShowColumnCheckbox($options_list);

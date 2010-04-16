@@ -30,7 +30,7 @@
 		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
 			if (!is_array($data) or empty($data)) return;
 
-			$list = new XMLElement($this->get('element_name'));
+			$list = Symphony::Parent()->Page->createElement($this->get('element_name'));
 
 			if (!is_array($data['handle']) and !is_array($data['value'])) {
 				$data = array(
@@ -40,7 +40,7 @@
 			}
 
 			foreach ($data['value'] as $index => $value) {
-				$list->appendChild(new XMLElement(
+				$list->appendChild(Symphony::Parent()->Page->createElement(
 					'item', General::sanitize($value), array(
 						'handle'	=> $data['handle'][$index]
 					)
@@ -54,19 +54,7 @@
 
 			parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
 
-			if($this->get('pre_populate_source') != NULL){
-
-				$existing_tags = $this->findAllTags();
-
-				if(is_array($existing_tags) && !empty($existing_tags)){
-					$taglist = new XMLElement('ul');
-					$taglist->setAttribute('class', 'tags');
-
-					foreach($existing_tags as $tag) $taglist->appendChild(new XMLElement('li', $tag));
-
-					$wrapper->appendChild($taglist);
-				}
-			}
+			if($this->get('pre_populate_source') != NULL) $this->prepopulateSource($wrapper);
 		}
 
 		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
@@ -83,19 +71,22 @@
 			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
 			else $wrapper->appendChild($label);
 
-			if($this->get('pre_populate_source') != NULL){
+			if($this->get('pre_populate_source') != NULL) $this->prepopulateSource($wrapper);
+		}
 
-				$existing_tags = $this->findAllTags();
+		function prepopulateSource(&$wrapper) {
 
-				if(is_array($existing_tags) && !empty($existing_tags)){
-					$taglist = new XMLElement('ul');
-					$taglist->setAttribute('class', 'tags');
+			$existing_tags = $this->findAllTags();
 
-					foreach($existing_tags as $tag) $taglist->appendChild(new XMLElement('li', $tag));
+			if(is_array($existing_tags) && !empty($existing_tags)){
+				$taglist = Symphony::Parent()->Page->createElement('ul');
+				$taglist->setAttribute('class', 'tags');
 
-					$wrapper->appendChild($taglist);
-				}
+				foreach($existing_tags as $tag) $taglist->appendChild(Symphony::Parent()->Page->createElement('li', $tag));
+
+				$wrapper->appendChild($taglist);
 			}
+
 		}
 
 		function findAllTags(){
@@ -158,7 +149,7 @@
 
 		}
 
-		function prepareTableValue($data, XMLElement $link=NULL){
+		function prepareTableValue($data, SymphonyDOMElement $link=NULL){
 
 			if(!is_array($data) || empty($data)) return;
 
@@ -199,7 +190,7 @@
 			return true;
 		}
 
-		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
+		public function displaySettingsPanel(SymphonyDOMElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$label = Widget::Label(__('Suggestion List'));
@@ -236,7 +227,7 @@
 
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'validator');
 
-			$options_list = new XMLElement('ul');
+			$options_list = Symphony::Parent()->Page->createElement('ul');
 			$options_list->setAttribute('class', 'options-list');
 			$this->appendShowColumnCheckbox($options_list);
 			$wrapper->appendChild($options_list);

@@ -41,7 +41,7 @@
 		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
 			if (!is_array($data) or empty($data)) return;
 
-			$list = new XMLElement($this->get('element_name'));
+			$list = Symphony::Parent()->Page->createElement($this->get('element_name'));
 
 			if (!is_array($data['handle']) and !is_array($data['value'])) {
 				$data = array(
@@ -51,7 +51,7 @@
 			}
 
 			foreach ($data['value'] as $index => $value) {
-				$list->appendChild(new XMLElement(
+				$list->appendChild(Symphony::Parent()->Page->createElement(
 					'item',
 					General::sanitize($value),
 					array(
@@ -71,33 +71,33 @@
 
 		function fetchAssociatedEntryCount($value){
 			$result = Symphony::Database()->query("
-				SELECT 
+				SELECT
 					`entry_id`
-				FROM 
-					`tbl_entries_data_%d` 
-				WHERE 
+				FROM
+					`tbl_entries_data_%d`
+				WHERE
 					`value` = '%s
 				",
 				$this->get('id'),
 				$value
 			);
-			
+
 			return ($result->valid()) ? $result->current->count : false;
 		}
 
 		function fetchAssociatedEntryIDs($value){
 			$result = Symphony::Database()->query("
-				SELECT 
-					count(*) AS `count` 
-				FROM 
-					`tbl_entries_data_%d` 
-				WHERE 
+				SELECT
+					count(*) AS `count`
+				FROM
+					`tbl_entries_data_%d`
+				WHERE
 					`value` = '%s
 				",
 				$this->get('id'),
 				$value
 			);
-			
+
 			return ($result->valid()) ? $result->resultColumn('entry_id') : false;
 		}
 
@@ -138,7 +138,9 @@
 			if($this->get('allow_multiple_selection') == 'yes') $fieldname .= '[]';
 
 			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : NULL)));
+			$label->appendChild(Widget::Select($fieldname, $options,
+				($this->get('allow_multiple_selection') == 'yes') ? array('multiple' => 'multiple') : array()
+			));
 
 			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
 			else $wrapper->appendChild($label);
@@ -154,10 +156,13 @@
 			$existing_options = $this->getToggleStates();
 
 			if(is_array($existing_options) && !empty($existing_options)){
-				$optionlist = new XMLElement('ul');
+				$optionlist = Symphony::Parent()->Page->createElement('ul');
 				$optionlist->setAttribute('class', 'tags');
 
-				foreach($existing_options as $option) $optionlist->appendChild(new XMLElement('li', $option));
+				foreach($existing_options as $option)
+					$optionlist->appendChild(
+						Symphony::Parent()->Page->createElement('li', $option)
+					);
 
 				$wrapper->appendChild($optionlist);
 			}
@@ -167,22 +172,22 @@
 		function findAndAddDynamicOptions(&$values){
 
 			if(!is_array($values)) $values = array();
-			
+
 			$result = Symphony::Database()->query("
-				SELECT 
-					DISTINCT `value` 
-				FROM 
-					`tbl_entries_data_%d` 
-				ORDER BY 
+				SELECT
+					DISTINCT `value`
+				FROM
+					`tbl_entries_data_%d`
+				ORDER BY
 					`value` DESC
 				",
 				$this->get('dynamic_options')
 			);
-			
+
 			if($result->valid()) $values = array_merge($values, $result->resultColumn('value'));
 		}
 
-		function prepareTableValue($data, XMLElement $link=NULL){
+		function prepareTableValue($data, SymphonyDOMElement $link=NULL){
 			$value = $data['value'];
 
 			if(!is_array($value)) $value = array($value);
@@ -317,7 +322,7 @@
 			//$div = new XMLElement('div', NULL, array('class' => 'group'));
 
 			$label = Widget::Label(__('Static Options'));
-			$label->appendChild(new XMLElement('i', __('Optional')));
+			$label->appendChild(Symphony::Parent()->Page->createElement('i', __('Optional')));
 			$input = Widget::Input('static_options', General::sanitize($this->get('static_options')));
 			$label->appendChild($input);
 			$wrapper->appendChild($label);
@@ -356,14 +361,16 @@
 			if(isset($errors['dynamic_options'])) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $errors['dynamic_options']));
 			else $wrapper->appendChild($label);
 
-			$options_list = new XMLElement('ul');
+			$options_list = Symphony::Parent()->Page->createElement('ul');
 			$options_list->setAttribute('class', 'options-list');
 
 			## Allow selection of multiple items
 			$label = Widget::Label();
 			$input = Widget::Input('allow_multiple_selection', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Allow selection of multiple options', array($input->generate())));
+
+			$label->appendChild($input);
+			$label->setValue(__('Allow selection of multiple options'));
 			$options_list->appendChild($label);
 
 			$this->appendShowColumnCheckbox($options_list);
@@ -427,7 +434,9 @@
 			if($this->get('allow_multiple_selection') == 'yes') $fieldname .= '[]';
 
 			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : NULL)));
+			$label->appendChild(Widget::Select($fieldname, $options,
+				($this->get('allow_multiple_selection') == 'yes') ? array('multiple' => 'multiple') : array()
+			));
 
 			return $label;
 		}

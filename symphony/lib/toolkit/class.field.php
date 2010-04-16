@@ -149,6 +149,8 @@
 			unset($this->_fields[$field]);
 		}
 
+		/*
+		**	TODO: Section Association...
 		public function removeSectionAssociation($child_field_id){
 			Symphony::Database()->delete("tbl_sections_association", array($child_field_id), "`child_section_field_id` = %d");
 		}
@@ -171,6 +173,7 @@
 
 			return true;
 		}
+		*/
 
 		public function flush(){
 			$this->_fields = array();
@@ -184,7 +187,12 @@
 		}
 
 		public function appendFormattedElement(&$wrapper, $data, $encode=false, $mode=NULL, $entry_id=NULL) {
-			$wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($this->prepareTableValue($data)) : $this->prepareTableValue($data))));
+			$wrapper->appendChild(
+				Symphony::Parent()->Page->createElement(
+					$this->get('element_name'),
+					($encode ? General::sanitize($this->prepareTableValue($data)) : $this->prepareTableValue($data))
+				)
+			);
 		}
 
 		public function getParameterPoolValue($data){
@@ -381,8 +389,14 @@
 		function fetchAssociatedEntryIDs($value){
 		}
 
-		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data=NULL, MessageStack $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-			$wrapper->appendChild(new XMLElement('h4', $this->get('label') . ' <i>' . $this->Name() . '</i>'));
+		public function displayDatasourceFilterPanel(SymphonyDOMElement &$wrapper, $data=NULL, MessageStack $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+
+			$h4 = Symphony::Parent()->Page->createElement('h4', $this->get('label'));
+			$h4->appendChild(
+				Symphony::Parent()->Page->createElement('i', $this->Name())
+			);
+
+			$wrapper->appendChild($h4);
 			$label = Widget::Label(__('Value'));
 			$label->appendChild(Widget::Input(
 				'fields[filter]'
@@ -394,12 +408,12 @@
 			$wrapper->appendChild($label);
 		}
 
-		public function displayImportPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null) {
+		public function displayImportPanel(SymphonyDOMElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null) {
 			$this->displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
 		}
 
-		public function displaySettingsPanel(XMLElement &$wrapper, $errors=NULL){
-			$wrapper->appendChild(new XMLElement('h3', ucwords($this->name())));
+		public function displaySettingsPanel(SymphonyDOMElement &$wrapper, $errors=NULL){
+			$wrapper->appendChild(Symphony::Parent()->Page->createElement('h3', ucwords($this->name())));
 			$wrapper->appendChild($this->buildSummaryBlock($errors));
 			$wrapper->appendChild($this->buildWidthSelect());
 		}
@@ -423,12 +437,13 @@
 
 		public function buildSummaryBlock($errors=NULL){
 
-			$div = new XMLElement('div');
+			$div = Symphony::Parent()->Page->createElement('div');
 			$div->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('Label'));
 			$label->setAttribute('class', 'field-label');
 			$label->appendChild(Widget::Input('label', $this->get('label')));
+
 			if(isset($errors['label'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['label']));
 			else $div->appendChild($label);
 
@@ -436,7 +451,7 @@
 
 		}
 
-		public function appendRequiredCheckbox(XMLElement &$wrapper) {
+		public function appendRequiredCheckbox(SymphonyDOMElement &$wrapper) {
 			if (!$this->_required) return;
 
 			$wrapper->appendChild(Widget::Input('required', 'no', 'hidden'));
@@ -445,14 +460,14 @@
 			$input = Widget::Input('required', 'yes', 'checkbox');
 
 			if ($this->get('required') == 'yes') $input->setAttribute('checked', 'checked');
-
-			$label->setValue(__('%s Make this a required field', array($input->generate())));
+			$label->appendChild($input);
+			$label->setValue(__('Make this a required field'));
 
 			$wrapper->appendChild($label);
 		}
 
 
-		public function appendShowColumnCheckbox(XMLElement &$wrapper) {
+		public function appendShowColumnCheckbox(SymphonyDOMElement &$wrapper) {
 			if (!$this->_showcolumn) return;
 
 			$wrapper->appendChild(Widget::Input('show_column', 'no', 'hidden'));
@@ -463,7 +478,8 @@
 
 			if ($this->get('show_column') == 'yes') $input->setAttribute('checked', 'checked');
 
-			$label->setValue(__('%s Show column', array($input->generate())));
+			$label->appendChild($input);
+			$label->setValue(__('Show column'));
 
 			$wrapper->appendChild($label);
 		}
@@ -499,12 +515,15 @@
 			include(TOOLKIT . '/util.validators.php');
 			$rules = ($type == 'upload' ? $upload : $validators);
 
-			$label = Widget::Label(__('Validation Rule <i>Optional</i>'));
+			$label = Widget::Label(__('Validation Rule'));
+			$label->setValue(Symphony::Parent()->Page->createElement('i', __('Optional')));
 			$label->appendChild(Widget::Input($name, $selected));
 			$wrapper->appendChild($label);
 
-			$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
-			foreach($rules as $name => $rule) $ul->appendChild(new XMLElement('li', $name, array('class' => $rule)));
+			$ul = Symphony::Parent()->Page->createElement('ul', NULL, array('class' => 'tags singular'));
+			foreach($rules as $name => $rule) $ul->appendChild(
+				Symphony::Parent()->Page->createElement('li', $name, array('class' => $rule))
+			);
 			$wrapper->appendChild($ul);
 
 		}

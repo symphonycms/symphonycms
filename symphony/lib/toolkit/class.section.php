@@ -161,7 +161,7 @@
 		}*/
 
 		public function appendField($type, array $data=NULL){
-			
+
 			$field = fieldManager::instance()->create($type);
 
 			if(!is_null($data)){
@@ -223,7 +223,7 @@
 							// Couldnt find the field. Ignore it for now
 							// TO DO: Might need to more than just ignore it
 						}
-							
+
 					}
 				}
 
@@ -339,6 +339,43 @@
 			$doc = $section->toDoc($additional_fragments);
 
 			return ($simulate == true ? true : file_put_contents($pathname, $doc->saveXML()));
+		}
+
+		public function rename(array $sections) {
+			/*
+				$sections = array(
+					'old-section-name',
+					'new-section-name'
+				)
+
+			 	TODO:
+				Upon renaming a section, data-sources/events attached to it must update.
+				Views will also need to update to ensure they still have references to the same
+				data-sources/sections
+			*/
+
+			list($old, $new) = $sections;
+
+			self::delete($old);
+		}
+
+		public function delete($handle){
+			/*
+				TODO:
+				Upon deletion it should update all data-sources/events attached to it.
+				Either by deleting them, or making section $unknown.
+
+				I think deletion is best because if the section is renamed, the rename()
+				function will take care of moving the dependancies, so there should be
+				no data-sources/events to delete anyway.
+
+				However, if you delete page accidentally (hm, even though you clicked
+				confirm), do you really want your data-sources/events to just be deleted?
+
+				Verdict?
+			*/
+
+			return General::deleteFile(SECTIONS . '/' . $handle . '.xml');
 		}
 
 		public function toDoc(array $additional_fragments=NULL){
