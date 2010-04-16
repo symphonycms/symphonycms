@@ -131,7 +131,7 @@
 			parent::checkFields($errors, $checkForDuplicates);
 		}
 
-		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
+		public function displaySettingsPanel(SymphonyDOMElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$order = $this->get('sortorder');
@@ -177,7 +177,7 @@
 
 
 
-			$options_list = new XMLElement('ul');
+			$options_list = Symphony::Parent()->Page->createElement('ul');
 			$options_list->setAttribute('class', 'options-list');
 
 			// Serialise ----------------------------------------------------------
@@ -188,8 +188,9 @@
 				);
 
 				if ($this->get('serialise') == 'yes') $input->setAttribute('checked', 'checked');
-
-				$label->setValue($input->generate() . ' ' . __('Serialise file names'));
+				
+				$label->appendChild($input);
+				$label->setValue(__('Serialise file names'));
 				$options_list->appendChild($label);
 
 
@@ -222,8 +223,6 @@
 	-------------------------------------------------------------------------*/
 
 		public function displayPublishPanel(&$wrapper, $data = null, $error = null, $prefix = null, $postfix = null, $entry_id = null) {
-			$this->Driver->addHeaders($this->Symphony->Page);
-
 			if (!$error and !is_writable(DOCROOT . $this->get('destination') . '/')) {
 				$error = 'Destination folder, <code>'.$this->get('destination').'</code>, is not writable. Please check permissions.';
 			}
@@ -235,14 +234,14 @@
 			$label = Widget::Label($this->get('label'));
 
 			if ($this->get('required') != 'yes') {
-				$label->appendChild(new XMLElement('i', 'Optional'));
+				$label->appendChild(Symphony::Parent()->Page->createElement('i', 'Optional'));
 			}
 
 			$wrapper->appendChild($label);
-			$container = new XMLElement('div');
+			$container = Symphony::Parent()->Page->createElement('div');
 
 			if ($error == null and !empty($data['file'])) {
-				$details = new XMLElement('div');
+				$details = Symphony::Parent()->Page->createElement('div');
 				$details->setAttribute('class', 'details');
 
 				###
@@ -262,28 +261,26 @@
 					$error = __('Destination file could not be found.');
 				}
 
-				$list = new XMLElement('dl');
-				$link = new XMLElement('a', __('Clear File'));
-				$item = new XMLElement('dt', $link->generate());
-				$item->setAttribute('class', 'clear');
+				$list = Symphony::Parent()->Page->createElement('dl');
+				$link = Symphony::Parent()->Page->createElement('a', __('Clear File'));
+				$item = Symphony::Parent()->Page->createElement('dt', $link, array('class' => 'clear'));
 				$list->appendChild($item);
 
 				$link = Widget::Anchor($data['name'], URL . '/workspace' . $data['file']);
-				$item = new XMLElement('dt', $link->generate());
-				$item->setAttribute('class', 'popup');
+				$item = Symphony::Parent()->Page->createElement('dt', $link, array('class' => 'popup'));
 				$list->appendChild($item);
 
-				$list->appendChild(new XMLElement('dt', __('Size:')));
-				$list->appendChild(new XMLElement('dd', General::formatFilesize($data['size'])));
-				$list->appendChild(new XMLElement('dt', __('Type:')));
-				$list->appendChild(new XMLElement('dd', General::sanitize($data['mimetype'])));
+				$list->appendChild(Symphony::Parent()->Page->createElement('dt', __('Size:')));
+				$list->appendChild(Symphony::Parent()->Page->createElement('dd', General::formatFilesize($data['size'])));
+				$list->appendChild(Symphony::Parent()->Page->createElement('dt', __('Type:')));
+				$list->appendChild(Symphony::Parent()->Page->createElement('dd', General::sanitize($data['mimetype'])));
 				$details->appendChild($list);
 				$container->appendChild($details);
 			}
 
 		// Upload -------------------------------------------------------------
 
-			$upload = new XMLElement('div');
+			$upload = Symphony::Parent()->Page->createElement('div');
 			$upload->setAttribute('class', 'upload');
 			$upload->appendChild(Widget::Input(
 				"fields{$prefix}[{$handle}]{$postfix}",
@@ -567,20 +564,20 @@
 		public function appendFormattedElement(&$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
 			if (!$this->sanitizeDataArray($data)) return null;
 
-			$item = new XMLElement($this->get('element_name'));
+			$item = Symphony::Parent()->Page->createElement($this->get('element_name'));
 			$item->setAttributeArray(array(
 				'size'	=> General::formatFilesize($data['size']),
 				'type'	=> General::sanitize($data['mimetype']),
 				'name'	=> General::sanitize($data['name'])
 			));
 
-			$item->appendChild(new XMLElement('path', str_replace(WORKSPACE, NULL, dirname(WORKSPACE . $data['file']))));
-			$item->appendChild(new XMLElement('file', General::sanitize(basename($data['file']))));
+			$item->appendChild(Symphony::Parent()->Page->createElement('path', str_replace(WORKSPACE, NULL, dirname(WORKSPACE . $data['file']))));
+			$item->appendChild(Symphony::Parent()->Page->createElement('file', General::sanitize(basename($data['file']))));
 
 			$meta = unserialize($data['meta']);
 
 			if (is_array($meta) and !empty($meta)) {
-				$item->appendChild(new XMLElement('meta', null, $meta));
+				$item->appendChild(Symphony::Parent()->Page->createElement('meta', null, $meta));
 			}
 
 			###
@@ -599,18 +596,18 @@
 			$wrapper->appendChild($item);
 		}
 
-		public function prepareTableValue($data, XMLElement $link = null) {
+		public function prepareTableValue($data, SymphonyDOMElement $link = null) {
 			if (!$this->sanitizeDataArray($data)) return null;
 
 			if ($link) {
 				$link->setValue($data['name']);
 
-				return $link->generate();
+				return $link;
 
 			} else {
 				$link = Widget::Anchor($data['name'], URL . '/workspace' . $data['file']);
 
-				return $link->generate();
+				return $link;
 			}
 		}
 	}

@@ -10,9 +10,13 @@
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Events'))));
 
 			$this->appendSubheading(__('Events') . $heading, Widget::Anchor(
-				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/',
-				__('Create a new event'), 'create button'
+				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/', array(
+					'title' => __('Create a new event'),
+					'class' => 'create button'
+				)
 			));
+
+			$events = eventManager::instance()->listAll();
 
 			$eTableHead = array(
 				array(__('Name'), 'col'),
@@ -21,12 +25,19 @@
 			);
 
 			$eTableBody = array();
-
-			$events = eventManager::instance()->listAll();
+			$colspan = count($eTableHead);
 
 			if(!is_array($events) or empty($events)) {
-				$eTableBody[] = Widget::TableRow(array(
-					Widget::TableData(__('None found.'), 'inactive', null, count($eTableHead))
+				$eTableBody = array(Widget::TableRow(
+					array(
+						Widget::TableData(__('None found.'), array(
+								'class' => 'inactive',
+								'colspan' => $colspan
+							)
+						)
+					), array(
+						'class' => 'odd'
+					)
 				));
 			}
 
@@ -36,9 +47,11 @@
 
 				$view_mode = ($event['can_parse'] ? 'edit' : 'info');
 
-				$col_name = Widget::TableData(Widget::Anchor(
-					$event['name'], URL . '/symphony/blueprints/events/' . $view_mode . '/' . $event['handle'] . '/', 'event.' . $event['handle'] . '.php'
-				));
+				$col_name = Widget::TableData(
+					Widget::Anchor($event['name'], URL . '/symphony/blueprints/events/' . $view_mode . '/' . $event['handle'] . '/', array(
+						'title' => 'event.' . $event['handle'] . '.php'
+					))
+				);
 				$col_name->appendChild(Widget::Input("items[{$event['handle']}]", null, 'checkbox'));
 
 				// Source
@@ -79,14 +92,13 @@
 			}
 
 			$table = Widget::Table(
-				Widget::TableHead($eTableHead), null,
-				Widget::TableBody($eTableBody), null
+				Widget::TableHead($eTableHead), null, Widget::TableBody($eTableBody), array(
+					'id' => 'events-list'
+				)
 			);
-			$table->setAttribute('id', 'events-list');
-
 			$this->Form->appendChild($table);
 
-			$tableActions = new XMLElement('div');
+			$tableActions = $this->createElement('div');
 			$tableActions->setAttribute('class', 'actions');
 
 			$options = array(
@@ -203,11 +215,11 @@
 
 			if(!$readonly):
 
-				$fieldset = new XMLElement('fieldset');
+				$fieldset = $this->createElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
-				$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
+				$fieldset->appendChild($this->createElement('legend', __('Essentials')));
 
-				$div = new XMLElement('div');
+				$div = $this->createElement('div');
 				$div->setAttribute('class', 'group');
 
 				$label = Widget::Label(__('Name'));
@@ -231,9 +243,9 @@
 
 				$this->Form->appendChild($fieldset);
 
-				$fieldset = new XMLElement('fieldset');
+				$fieldset = $this->createElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
-				$fieldset->appendChild(new XMLElement('legend', __('Processing Options')));
+				$fieldset->appendChild($this->createElement('legend', __('Processing Options')));
 
 				$label = Widget::Label(__('Filter Rules'));
 
@@ -259,20 +271,23 @@
 					$input->setAttribute('checked', 'checked');
 				}
 
-				$label->setValue(__('%s Add entry ID to the parameter pool in the format of <code>$event-name-id</code> when saving is successful.', array($input->generate())));
+				$label->appendChild($input);
+				$label->setValue(__('Add entry ID to the parameter pool in the format of <code>$event-name-id</code> when saving is successful.'));
 				$fieldset->appendChild($label);
 
 				$this->Form->appendChild($fieldset);
 			endif;
 
 
-			$fieldset = new XMLElement('fieldset');
+			$fieldset = $this->createElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Overrides &amp; Defaults')));
-			$fieldset->appendChild(new XMLElement('p', __('{$param}'), array('class' => 'help')));
+			$fieldset->appendChild($this->createElement('legend', __('Overrides &amp; Defaults')));
+			$fieldset->appendChild($this->createElement('p', __('{$param}'), array('class' => 'help')));
 
-			$div = new XMLElement('div');
+			$div = $this->createElement('div');
 
+			/*
+			**	TODO: Fix me
 			if(is_array($sections) && !empty($sections)){
 				foreach($sections as $s){
 					$div->appendChild(
@@ -286,29 +301,35 @@
 					);
 				}
 			}
+			*/
 
 			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
 
 			if($isEditing):
-				$fieldset = new XMLElement('fieldset');
+				$fieldset = $this->createElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
 
 				$doc = $existing->documentation();
-				$fieldset->setValue('<legend>' . __('Description') . '</legend>' . self::CRLF . General::tabsToSpaces((is_object($doc) ? $doc->generate(true) : $doc), 2));
+				$fieldset->appendChild($this->createElement('legend', __('Description')));
+				$fieldset->setValue(self::CRLF . General::tabsToSpaces($doc, 2));
 
 				$this->Form->appendChild($fieldset);
 			endif;
 
 
-			$div = new XMLElement('div');
+			$div = $this->createElement('div');
 			$div->setAttribute('class', 'actions');
 			$div->appendChild(Widget::Input('action[save]', ($isEditing ? __('Save Changes') : __('Create Event')), 'submit', array('accesskey' => 's')));
 
 			if($isEditing){
-				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this event'), 'type' => 'submit'));
-				$div->appendChild($button);
+				$div->appendChild(
+					$this->createElement('button', __('Delete'), array(
+						'name' => 'action[delete]',
+						'class' => 'confirm delete',
+						'title' => __('Delete this event')
+					))
+				);
 			}
 
 			if(!$readonly) $this->Form->appendChild($div);
@@ -317,14 +338,14 @@
 
 		private function __buildDefaultsAndOverridesDuplicator(Section $section, array $items=NULL){
 
-			$fields = Symphony::Database()->fetch("SELECT `element_name`, `label` FROM `tbl_fields` WHERE `parent_section` = " . $section->get('id'));
+			//$fields = Symphony::Database()->fetch("SELECT `element_name`, `label` FROM `tbl_fields` WHERE `parent_section` = " . $section->get('id'));
 
-			$duplicator = new XMLElement('div', NULL, array('id' => 'event-context-' . $section->get('id')));
-			$h3 = new XMLElement('h3', __('Fields'));
+			$duplicator = $this->createElement('div', NULL, array('id' => 'event-context-' . $section->get('id')));
+			$h3 = $this->createElement('h3', __('Fields'));
 			$h3->setAttribute('class', 'label');
 			$duplicator->appendChild($h3);
 
-			$ol = new XMLElement('ol');
+			$ol = $this->createElement('ol');
 			$ol->setAttribute('class', 'events-duplicator');
 
 			$options = array(
@@ -339,10 +360,10 @@
 
 				for($ii = 0; $ii < count($field_names); $ii++){
 
-					$li = new XMLElement('li');
-					$li->appendChild(new XMLElement('h4', __('Override')));
+					$li = $this->createElement('li');
+					$li->appendChild($this->createElement('h4', __('Override')));
 
-					$group = new XMLElement('div');
+					$group = $this->createElement('div');
 					$group->setAttribute('class', 'group');
 
 					$label = Widget::Label(__('Element Name'));
@@ -372,10 +393,10 @@
 
 				for($ii = 0; $ii < count($field_names); $ii++){
 
-					$li = new XMLElement('li');
-					$li->appendChild(new XMLElement('h4', __('Default Value')));
+					$li = $this->createElement('li');
+					$li->appendChild($this->createElement('h4', __('Default Value')));
 
-					$group = new XMLElement('div');
+					$group = $this->createElement('div');
 					$group->setAttribute('class', 'group');
 
 					$label = Widget::Label(__('Element Name'));
@@ -399,11 +420,11 @@
 				}
 			}
 
-			$li = new XMLElement('li');
+			$li = $this->createElement('li');
 			$li->setAttribute('class', 'template');
-			$li->appendChild(new XMLElement('h4', __('Override')));
+			$li->appendChild($this->createElement('h4', __('Override')));
 
-			$group = new XMLElement('div');
+			$group = $this->createElement('div');
 			$group->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('Element Name'));
@@ -424,11 +445,11 @@
 			$ol->appendChild($li);
 
 
-			$li = new XMLElement('li');
+			$li = $this->createElement('li');
 			$li->setAttribute('class', 'template');
-			$li->appendChild(new XMLElement('h4', __('Default Value')));
+			$li->appendChild($this->createElement('h4', __('Default Value')));
 
-			$group = new XMLElement('div');
+			$group = $this->createElement('div');
 			$group->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('Element Name'));
@@ -490,10 +511,10 @@
 			$isDuplicate = false;
 			$queueForDeletion = NULL;
 
-			if($this->_context[0] == 'new' && @is_file($file)) $isDuplicate = true;
+			if($this->_context[0] == 'new' && is_file($file)) $isDuplicate = true;
 			elseif($this->_context[0] == 'edit'){
 				$existing_handle = $this->_context[1];
-				if($classname != $existing_handle && @is_file($file)) $isDuplicate = true;
+				if($classname != $existing_handle && is_file($file)) $isDuplicate = true;
 				elseif($classname != $existing_handle) $queueForDeletion = EVENTS . '/event.' . $existing_handle . '.php';
 			}
 
@@ -536,20 +557,20 @@
 				$documentation = NULL;
 				$documentation_parts = array();
 
-				$documentation_parts[] = new XMLElement('h3', __('Success and Failure XML Examples'));
-				$documentation_parts[] = new XMLElement('p', __('When saved successfully, the following XML will be returned:'));
+				$documentation_parts[] = $this->createElement('h3', __('Success and Failure XML Examples'));
+				$documentation_parts[] = $this->createElement('p', __('When saved successfully, the following XML will be returned:'));
 
 				if($multiple){
-					$code = new XMLElement($rootelement);
-					$entry = new XMLElement('entry', NULL, array('index' => '0', 'result' => 'success' , 'type' => 'create | edit'));
-					$entry->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
+					$code = $this->createElement($rootelement);
+					$entry = $this->createElement('entry', NULL, array('index' => '0', 'result' => 'success' , 'type' => 'create | edit'));
+					$entry->appendChild($this->createElement('message', __('Entry [created | edited] successfully.')));
 
 					$code->appendChild($entry);
 				}
 
 				else{
-					$code = new XMLElement($rootelement, NULL, array('result' => 'success' , 'type' => 'create | edit'));
-					$code->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
+					$code = $this->createElement($rootelement, NULL, array('result' => 'success' , 'type' => 'create | edit'));
+					$code->appendChild($this->createElement('message', __('Entry [created | edited] successfully.')));
 				}
 
 
@@ -558,25 +579,25 @@
 				###
 
 
-				$documentation_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? __(' (<b>Notice that it is possible to get mixtures of success and failure messages when using the "Allow Multiple" option</b>)') : NULL) . ':');
+				$documentation_parts[] = $this->createElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? __(' (<b>Notice that it is possible to get mixtures of success and failure messages when using the "Allow Multiple" option</b>)') : NULL) . ':');
 
 				if($multiple){
-					$code = new XMLElement($rootelement);
+					$code = $this->createElement($rootelement);
 
-					$entry = new XMLElement('entry', NULL, array('index' => '0', 'result' => 'error'));
-					$entry->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
-					$entry->appendChild(new XMLElement('field-name', NULL, array('type' => 'invalid | missing')));
+					$entry = $this->createElement('entry', NULL, array('index' => '0', 'result' => 'error'));
+					$entry->appendChild($this->createElement('message', __('Entry encountered errors when saving.')));
+					$entry->appendChild($this->createElement('field-name', NULL, array('type' => 'invalid | missing')));
 					$code->appendChild($entry);
 
-					$entry = new XMLElement('entry', NULL, array('index' => '1', 'result' => 'success' , 'type' => 'create | edit'));
-					$entry->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
+					$entry = $this->createElement('entry', NULL, array('index' => '1', 'result' => 'success' , 'type' => 'create | edit'));
+					$entry->appendChild($this->createElement('message', __('Entry [created | edited] successfully.')));
 					$code->appendChild($entry);
 				}
 
 				else{
-					$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
-					$code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
-					$code->appendChild(new XMLElement('field-name', NULL, array('type' => 'invalid | missing')));
+					$code = $this->createElement($rootelement, NULL, array('result' => 'error'));
+					$code->appendChild($this->createElement('message', __('Entry encountered errors when saving.')));
+					$code->appendChild($this->createElement('field-name', NULL, array('type' => 'invalid | missing')));
 				}
 
 
@@ -587,22 +608,22 @@
 
 
 				if(is_array($fields['filters']) && !empty($fields['filters'])){
-					$documentation_parts[] = new XMLElement('p', __('The following is an example of what is returned if any filters fail:'));
+					$documentation_parts[] = $this->createElement('p', __('The following is an example of what is returned if any filters fail:'));
 
-					$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
-					$code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
-					$code->appendChild(new XMLElement('filter', NULL, array('name' => 'admin-only', 'status' => 'failed')));
-					$code->appendChild(new XMLElement('filter', __('Recipient username was invalid'), array('name' => 'send-email', 'status' => 'failed')));
+					$code = $this->createElement($rootelement, NULL, array('result' => 'error'));
+					$code->appendChild($this->createElement('message', __('Entry encountered errors when saving.')));
+					$code->appendChild($this->createElement('filter', NULL, array('name' => 'admin-only', 'status' => 'failed')));
+					$code->appendChild($this->createElement('filter', __('Recipient username was invalid'), array('name' => 'send-email', 'status' => 'failed')));
 					$code->setValue('...', false);
 					$documentation_parts[] = self::processDocumentationCode($code);
 				}
 
 				###
 
-				$documentation_parts[] = new XMLElement('h3', __('Example Front-end Form Markup'));
+				$documentation_parts[] = $this->createElement('h3', __('Example Front-end Form Markup'));
 
-				$documentation_parts[] = new XMLElement('p', __('This is an example of the form markup you can use on your frontend:'));
-				$container = new XMLElement('form', NULL, array('method' => 'post', 'action' => '', 'enctype' => 'multipart/form-data'));
+				$documentation_parts[] = $this->createElement('p', __('This is an example of the form markup you can use on your frontend:'));
+				$container = $this->createElement('form', NULL, array('method' => 'post', 'action' => '', 'enctype' => 'multipart/form-data'));
 				$container->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 
 				$section = SectionManager::instance()->fetch($fields['source']);
@@ -618,18 +639,18 @@
 				$documentation_parts[] = self::processDocumentationCode(($multiple ? str_replace('fields[', 'fields[0][', $code) : $code));
 
 
-				$documentation_parts[] = new XMLElement('p', __('To edit an existing entry, include the entry ID value of the entry in the form. This is best as a hidden field like so:'));
+				$documentation_parts[] = $this->createElement('p', __('To edit an existing entry, include the entry ID value of the entry in the form. This is best as a hidden field like so:'));
 				$documentation_parts[] = self::processDocumentationCode(Widget::Input('id' . ($multiple ? '[0]' : NULL), 23, 'hidden'));
 
 
-				$documentation_parts[] = new XMLElement('p', __('To redirect to a different location upon a successful save, include the redirect location in the form. This is best as a hidden field like so, where the value is the URL to redirect to:'));
+				$documentation_parts[] = $this->createElement('p', __('To redirect to a different location upon a successful save, include the redirect location in the form. This is best as a hidden field like so, where the value is the URL to redirect to:'));
 				$documentation_parts[] = self::processDocumentationCode(Widget::Input('redirect', URL.'/success/', 'hidden'));
 
 				if(@in_array('send-email', $fields['filters'])){
 
-					$documentation_parts[] = new XMLElement('h3', __('Send Email Filter'));
+					$documentation_parts[] = $this->createElement('h3', __('Send Email Filter'));
 
-					$documentation_parts[] = new XMLElement('p', __('The send email filter, upon the event successfully saving the entry, takes input from the form and send an email to the desired recipient. <b>This filter currently does not work with the "Allow Multiple" option.</b> The following are the recognised fields:'));
+					$documentation_parts[] = $this->createElement('p', __('The send email filter, upon the event successfully saving the entry, takes input from the form and send an email to the desired recipient. <b>This filter currently does not work with the "Allow Multiple" option.</b> The following are the recognised fields:'));
 
 					$documentation_parts[] = self::processDocumentationCode(
 						'send-email[sender-email] // '.__('Optional').self::CRLF.
@@ -638,7 +659,7 @@
 						'send-email[body]'.self::CRLF.
 						'send-email[recipient] // '.__('list of comma separated usernames.'));
 
-					$documentation_parts[] = new XMLElement('p', __('All of these fields can be set dynamically using the exact field name of another field in the form as shown below in the example form:'));
+					$documentation_parts[] = $this->createElement('p', __('All of these fields can be set dynamically using the exact field name of another field in the form as shown below in the example form:'));
 
 			        $documentation_parts[] = self::processDocumentationCode('<form action="" method="post">
 	<fieldset>
@@ -733,7 +754,7 @@
 		}
 
 		public static function processDocumentationCode($code){
-			return new XMLElement('pre', '<code>' . str_replace('<', '&lt;', str_replace('&', '&amp;', trim((is_object($code) ? $code->generate(true) : $code)))) . '</code>', array('class' => 'XML'));
+			return $this->createElement('pre', '<code>' . str_replace('<', '&lt;', str_replace('&', '&amp;', trim((is_object($code) ? $code->generate(true) : $code)))) . '</code>', array('class' => 'XML'));
 		}
 
 
@@ -819,7 +840,7 @@
 		}
 
 		public function __actionIndex() {
-			$checked = @array_keys($_POST['items']);
+			$checked = array_keys($_POST['items']);
 
 			if(is_array($checked) && !empty($checked)) {
 				switch ($_POST['with-selected']) {

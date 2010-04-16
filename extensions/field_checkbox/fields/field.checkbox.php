@@ -116,10 +116,10 @@
 			$existing_options = array('yes', 'no');
 
 			if(is_array($existing_options) && !empty($existing_options)){
-				$optionlist = new XMLElement('ul');
+				$optionlist = Symphony::Parent()->Page->createElement('ul');
 				$optionlist->setAttribute('class', 'tags');
 
-				foreach($existing_options as $option) $optionlist->appendChild(new XMLElement('li', $option));
+				foreach($existing_options as $option) $optionlist->appendChild(Symphony::Parent()->Page->createElement('li', $option));
 
 				$wrapper->appendChild($optionlist);
 			}
@@ -138,14 +138,15 @@
 			else $value = ($data['value'] == 'yes' ? 'yes' : 'no');
 
 			$label = Widget::Label();
-			$input = Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, 'yes', 'checkbox', ($value == 'yes' ? array('checked' => 'checked') : NULL));
+			$input = Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, 'yes', 'checkbox', ($value == 'yes' ? array('checked' => 'checked') : array()));
 
-			$label->setValue($input->generate(false) . ' ' . ($this->get('description') != NULL ? $this->get('description') : $this->get('label')));
+			$label->appendChild($input);
+			$label->setValue(($this->get('description') != NULL ? $this->get('description') : $this->get('label')));
 
 			$wrapper->appendChild($label);
 		}
 
-		function prepareTableValue($data, XMLElement $link=NULL){
+		function prepareTableValue($data, SymphonyDOMElement $link=NULL){
 			return ($data['value'] == 'yes' ? __('Yes') : __('No'));
 		}
 
@@ -182,18 +183,21 @@
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			## Long Description
-			$label = Widget::Label(__('Long Description <i>Optional</i>'));
+			$label = Widget::Label(__('Long Description'));
+			$label->appendChild(Symphony::Parent()->Page->createElement('i', __('Optional')));
 			$label->appendChild(Widget::Input('description', $this->get('description')));
 			$wrapper->appendChild($label);
 
-			$options_list = new XMLElement('ul');
+			$options_list = Symphony::Parent()->Page->createElement('ul');
 			$options_list->setAttribute('class', 'options-list');
 
 			## Checkbox Default State
 			$label = Widget::Label();
 			$input = Widget::Input('default_state', 'on', 'checkbox');
 			if($this->get('default_state') == 'on') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Checked by default', array($input->generate())));
+			$label->appendChild($input);
+			$label->setValue(__('Checked by default'));
+
 			$options_list->appendChild($label);
 
 			$this->appendShowColumnCheckbox($options_list);
@@ -223,7 +227,7 @@
 
 		public function getExampleFormMarkup(){
 			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Input('fields['.$this->get('element_name').']', NULL, 'checkbox', ($this->get('default_state') == 'on' ? array('checked' => 'checked') : NULL)));
+			$label->appendChild(Widget::Input('fields['.$this->get('element_name').']', NULL, 'checkbox', ($this->get('default_state') == 'on' ? array('checked' => 'checked') : array())));
 
 			return $label;
 		}

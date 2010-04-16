@@ -22,9 +22,16 @@
 
 		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			$label = Widget::Label($this->get('label'));
-			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
+			if($this->get('required') != 'yes') $label->appendChild(Symphony::Parent()->Page->createElement('i', __('Optional')));
 
-			$textarea = Widget::Textarea('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, $this->get('size'), '50', (strlen($data['value']) != 0 ? General::sanitize($data['value']) : NULL));
+			$textarea = Widget::Textarea(
+				'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix,
+				(strlen($data['value']) != 0 ? General::sanitize($data['value']) : NULL),
+				array(
+					'rows' => $this->get('size'),
+					'cols' => '50'
+				)
+			);
 
 			if($this->get('formatter') != 'none') $textarea->setAttribute('class', $this->get('formatter'));
 
@@ -176,7 +183,7 @@
 				if ($mode == 'formatted') $attributes['mode'] = $mode;
 
 				$wrapper->appendChild(
-					new XMLElement(
+					Symphony::Parent()->Page->createElement(
 						$this->get('element_name'),
 						($encode ? General::sanitize($value) : $value),
 						$attributes
@@ -188,7 +195,7 @@
 			elseif ($mode == 'unformatted') {
 
 				$wrapper->appendChild(
-					new XMLElement(
+					Symphony::Parent()->Page->createElement(
 						$this->get('element_name'),
 						sprintf('<![CDATA[%s]]>', $data['value']),
 						array(
@@ -212,7 +219,7 @@
 			if(!isset($fields['size'])) $fields['size'] = 15;
 		}
 
-		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
+		public function displaySettingsPanel(SymphonyDOMElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$wrapper->appendChild($this->buildFormatterSelect($this->get('formatter'), 'formatter', __('Text Formatter')));
@@ -221,12 +228,14 @@
 			$label = Widget::Label();
 			$input = Widget::Input('size', $this->get('size'));
 			$input->setAttribute('size', '3');
-			$label->setValue(__('Make textarea %s rows tall', array($input->generate())));
+
+			//	TODO: Fix me.
+			$label->setValue(__('Make textarea %s rows tall', array($input)));
 
 			$wrapper->appendChild($label);
 
 
-			$options_list = new XMLElement('ul');
+			$options_list = Symphony::Parent()->Page->createElement('ul');
 			$options_list->setAttribute('class', 'options-list');
 			$this->appendShowColumnCheckbox($options_list);
 			$this->appendRequiredCheckbox($options_list);
@@ -254,7 +263,12 @@
 
 		public function getExampleFormMarkup(){
 			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Textarea('fields['.$this->get('element_name').']', $this->get('size'), 50));
+			$label->appendChild(
+				Widget::Textarea('fields['.$this->get('element_name').']', null, array(
+					'rows' => $this->get('size'),
+					'cols' => '50'
+				)
+			));
 
 			return $label;
 		}

@@ -1,38 +1,27 @@
 <?php
 
-	require_once(TOOLKIT . '/class.htmlpage.php');
+	require_once(TOOLKIT . '/class.htmldocument.php');
+	//require_once(TOOLKIT . '/class.htmlpage.php');
 	require_once(TOOLKIT . '/class.alert.php');
 	require_once(TOOLKIT . '/class.section.php');
 	require_once(TOOLKIT . '/class.layout.php');
 
-	Class AdministrationPage extends HTMLPage{
+	Class AdministrationPage extends HTMLDocument{
 
 		public $Alert;
 
-		## These are here for Extension backwards compatibility. Will be
-		## removed in a later version.
-		const PAGE_ALERT_NOTICE = 'notice';
-		const PAGE_ALERT_ERROR = 'error';
-
-		var $_navigation;
-		var $_Parent;
-		var $_context;
+		public $_navigation;
+		public $_context;
 
 		### By CZ: Should be checked and/or rewritten
 		var $_layout;
 
 		public function __construct(){
-			parent::__construct();
-
-			$this->Html->setElementStyle('html');
-
-			$this->_navigation = array();
-			$this->Alert = NULL;
-
+			parent::__construct('1.0', 'utf-8', "html");
 		}
 
 		public function setTitle($val, $position=null) {
-			return $this->addElementToHead(new XMLElement('title', $val), $position);
+			return $this->insertNodeIntoHead($this->createElement('title', $val), $position);
 		}
 
 		public function Context(){
@@ -40,25 +29,25 @@
 		}
 
 		public function build($context = NULL){
-
 			$this->_context = $context;
 
-			$this->Html->setDTD('<!DOCTYPE html>');
-			$this->Html->setAttribute('lang', Symphony::lang());
-			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
+			$meta = $this->createElement('meta');
+			$this->insertNodeIntoHead($meta);
+			$meta->setAttribute('http-equiv', 'Content-Type');
+			$meta->setAttribute('content', 'text/html; charset=UTF-8');
 
-			$this->addScriptToHead(ADMIN_URL . '/assets/js/jquery.js', 49);
-			$this->addScriptToHead(ADMIN_URL . '/assets/js/jquery-ui.js', 50);
-			$this->addScriptToHead(ADMIN_URL . '/assets/js/symphony.collapsible.js', 51);
-			$this->addScriptToHead(ADMIN_URL . '/assets/js/symphony.orderable.js', 52);
-			$this->addScriptToHead(ADMIN_URL . '/assets/js/symphony.duplicator.js', 53);
-			$this->addScriptToHead(ADMIN_URL . '/assets/js/admin.js', 54);
-			$this->addScriptToHead(ADMIN_URL . '/assets/js/symphony.js', 55);
-			$this->addScriptToHead(ADMIN_URL . '/assets/js/symphony.layout.js', 56);
+			$this->insertNodeIntoHead($this->createScriptElement(ADMIN_URL . '/assets/js/jquery.js'));
+			$this->insertNodeIntoHead($this->createScriptElement(ADMIN_URL . '/assets/js/jquery-ui.js'));
+			$this->insertNodeIntoHead($this->createScriptElement(ADMIN_URL . '/assets/js/symphony.collapsible.js'));
+			$this->insertNodeIntoHead($this->createScriptElement(ADMIN_URL . '/assets/js/symphony.orderable.js'));
+			$this->insertNodeIntoHead($this->createScriptElement(ADMIN_URL . '/assets/js/symphony.duplicator.js'));
+			$this->insertNodeIntoHead($this->createScriptElement(ADMIN_URL . '/assets/js/admin.js'));
+			$this->insertNodeIntoHead($this->createScriptElement(ADMIN_URL . '/assets/js/symphony.js'));
+			$this->insertNodeIntoHead($this->createScriptElement(ADMIN_URL . '/assets/js/symphony.layout.js'));
 
-			$this->addStylesheetToHead(ADMIN_URL . '/assets/css/symphony.css', 'screen', 60);
-			$this->addStylesheetToHead(ADMIN_URL . '/assets/css/symphony.duplicator.css', 'screen', 70);
-			$this->addStylesheetToHead(ADMIN_URL . '/assets/css/symphony.layout.css', 'screen', 80);
+			$this->insertNodeIntoHead($this->createStylesheetElement(ADMIN_URL . '/assets/css/symphony.css'));
+			$this->insertNodeIntoHead($this->createStylesheetElement(ADMIN_URL . '/assets/css/symphony.duplicator.css'));
+			$this->insertNodeIntoHead($this->createStylesheetElement(ADMIN_URL . '/assets/css/symphony.layout.css'));
 
 			###
 			# Delegate: InitaliseAdminPageHead
@@ -66,7 +55,7 @@
 			#			   for access to the page object
 			ExtensionManager::instance()->notifyMembers('InitaliseAdminPageHead', '/backend/');
 
-			$this->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
+			$this->Headers->append('Content-Type', 'text/html; charset=UTF-8');
 
 			$this->prepare();
 
@@ -76,10 +65,17 @@
 			}
 
 			## Build the form
-			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
-			$h1 = new XMLElement('h1');
-			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'symphony'), rtrim(URL, '/') . '/'));
+			$this->Form = $this->createElement('form');
+			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL());
+			$this->Form->setAttribute('method', 'POST');
+			$this->Body->appendChild($this->Form);
+
+			$h1 = $this->createElement('h1');
+			$anchor = $this->createElement('a', Symphony::Configuration()->get('sitename', 'symphony'));
+			$anchor->setAttribute('href', rtrim(URL, '/') . '/');
+			$h1->appendChild($anchor);
 			$this->Form->appendChild($h1);
+
 			$this->appendSession();
 			$this->appendNavigation();
 			$this->view();
@@ -150,21 +146,25 @@
 			ExtensionManager::instance()->notifyMembers('AppendPageAlert', '/backend/');
 
 			if(($this->Alert instanceof Alert)){
-				$this->Form->prependChild($this->Alert->asXML());
+				$this->insertAlert($this->Alert->asXML());
 			}
 		}
 
 		public function appendSession(){
 
-			$ul = new XMLElement('ul');
+			$ul = $this->createElement('ul');
 			$ul->setAttribute('id', 'session');
 
-			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(Administration::instance()->User->getFullName(), ADMIN_URL . '/system/users/edit/' . Administration::instance()->User->id . '/'));
+			$li = $this->createElement('li');
+			$anchor = $this->createElement('a', Administration::instance()->User->getFullName());
+			$anchor->setAttribute('href', ADMIN_URL . '/system/users/edit/' . Administration::instance()->User->id . '/');
+			$li->appendChild($anchor);
 			$ul->appendChild($li);
 
-			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(__('Logout'), ADMIN_URL . '/logout/'));
+			$li = $this->createElement('li');
+			$anchor = $this->createElement('a', __('Logout'));
+			$anchor->setAttribute('href', ADMIN_URL . '/logout/');
+			$li->appendChild($anchor);
 			$ul->appendChild($li);
 
 			###
@@ -176,11 +176,10 @@
 		}
 
 		public function appendSubheading($string, $link=NULL){
+			$h2 = $this->createElement('h2', $string);
+			$h2->setValue($link);
 
-			if($link && is_object($link)) $string .= ' ' . $link->generate(false);
-			elseif($link) $string .= ' ' . $link;
-
-			$this->Form->appendChild(new XMLElement('h2', $string));
+			$this->Form->appendChild($h2);
 		}
 
 		public function appendNavigation(){
@@ -194,7 +193,7 @@
 			# Global: Yes
 			ExtensionManager::instance()->notifyMembers('NavigationPreRender', '/backend/', array('navigation' => &$nav));
 
-			$xNav = new XMLElement('ul');
+			$xNav = $this->createElement('ul');
 			$xNav->setAttribute('id', 'nav');
 
 			foreach($nav as $n){
@@ -206,12 +205,12 @@
 
 					if($can_access == true) {
 
-						$xGroup = new XMLElement('li', $n['name']);
+						$xGroup = $this->createElement('li', $n['name']);
 						$xGroup->setAttribute('id', 'nav-' . Lang::createHandle($n['name']));
 
 						if(isset($n['class']) && trim($n['name']) != '') $xGroup->setAttribute('class', $n['class']);
 
-						$xChildren = new XMLElement('ul');
+						$xChildren = $this->createElement('ul');
 
 						$hasChildren = false;
 
@@ -243,9 +242,9 @@
 										}
 										##
 
-										$xChild = new XMLElement('li');
-										$xLink = new XMLElement('a', $c['name']);
-										$xLink->setAttribute('href', ADMIN_URL . '' . $c['link']);
+										$xChild = $this->createElement('li');
+										$xLink = $this->createElement('a', $c['name']);
+										$xLink->setAttribute('href', ADMIN_URL . $c['link']);
 										$xChild->appendChild($xLink);
 
 										$xChildren->appendChild($xChild);
@@ -503,34 +502,27 @@
 		}
 
 		public function appendViewOptions(array $options) {
-			$div = new XMLElement('div', NULL, array('id' => 'tab'));
+			$div = $this->createElement('div', NULL, array('id' => 'tab'));
 
 			if(array_key_exists('subnav', $options)){
-				$ul = new XMLElement('ul');
+				$ul = $this->createElement('ul');
 				foreach($options['subnav'] as $name => $link){
-					$li = new XMLElement('li');
-					$li->appendChild(Widget::Anchor($name, $link, NULL, (Administration::instance()->getCurrentPageURL() == $link ? 'active' : NULL)));
+					$li = $this->createElement('li');
+					$li->appendChild(
+						Widget::Anchor($name, $link, array(
+							'class' => (Administration::instance()->getCurrentPageURL() == $link ? 'active' : NULL)
+						))
+					);
 					$ul->appendChild($li);
 				}
 				$div->appendChild($ul);
 			}
 
 			foreach($options as $item){
-				if(is_a($item, 'XMLElement')){
-					$div->appendChild($item);
-				}
+				$div->setValue($item);
 			}
 
 			$this->Form->appendChild($div);
-		}
-
-		public function wrapFormElementWithError($element, $error=NULL){
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'invalid');
-			$div->appendChild($element);
-			if($error) $div->appendChild(new XMLElement('p', $error));
-
-			return $div;
 		}
 
 	}

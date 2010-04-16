@@ -4,7 +4,7 @@
 		
 		protected $_headers;
 		
-		const CRLF = "\r\n";
+		const CRLF = PHP_EOL;
 		
 		public function __construct(){
 			$this->_headers = array();

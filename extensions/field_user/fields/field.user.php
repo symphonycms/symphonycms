@@ -81,7 +81,7 @@
 			else $wrapper->appendChild($label);
 		}
 
-		public function prepareTableValue($data, XMLElement $link=NULL){
+		public function prepareTableValue($data, SymphonyDOMElement $link=NULL){
 
 			if(!is_array($data['user_id'])) $data['user_id'] = array($data['user_id']);
 
@@ -102,7 +102,7 @@
 							General::sanitize($user->getFullName()),
 							ADMIN_URL . '/system/users/edit/' . $user->get('id') . '/'
 						);
-						$value[] = $a->generate();
+						$value[] = $a;
 					}
 
 					else{
@@ -113,7 +113,7 @@
 
 			if(!is_null($link)){
 				$link->setValue(General::sanitize(implode(', ', $value)));
-				return $link->generate();
+				return $link;
 			}
 
 			return (empty($value) ? __('None') : implode(', ', $value));
@@ -211,12 +211,15 @@
 		public function appendFormattedElement(&$wrapper, $data, $encode=false){
 	        if(!is_array($data['user_id'])) $data['user_id'] = array($data['user_id']);
 
-	        $list = new XMLElement($this->get('element_name'));
+	        $list = Symphony::Parent()->Page->createElement($this->get('element_name'));
 	        foreach($data['user_id'] as $user_id){
 	            $user = new User($user_id);
-	            $list->appendChild(new XMLElement('item',
-	                                    $user->getFullName(),
-	                                    array('id' => $user->id, 'username' => $user->username)));
+	            $list->appendChild(
+					Symphony::Parent()->Page->createElement('item', $user->getFullName(), array(
+						'id' => $user->id,
+						'username' => $user->username
+					))
+				);
 	        }
 	        $wrapper->appendChild($list);
 	    }
@@ -228,21 +231,25 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$options_list = new XMLElement('ul');
+			$options_list = Symphony::Parent()->Page->createElement('ul');
 			$options_list->setAttribute('class', 'options-list');
 
 			## Allow multiple selection
 			$label = Widget::Label();
 			$input = Widget::Input('allow-multiple-selection', 'yes', 'checkbox');
 			if($this->get('allow-multiple-selection') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Allow selection of multiple users', array($input->generate())));
+
+			$label->appendChild($input);
+			$label->setValue(__('Allow selection of multiple users'));
 			$options_list->appendChild($label);
 
 			## Default to current logged in user
 			$label = Widget::Label();
 			$input = Widget::Input('default-to-current-user', 'yes', 'checkbox');
 			if($this->get('default-to-current-user') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Select current user by default', array($input->generate())));
+
+			$label->appendChild($input);
+			$label->setValue(__('Select current user by default'));
 			$options_list->appendChild($label);
 
 			$this->appendShowColumnCheckbox($options_list);

@@ -60,17 +60,17 @@
 			if(isset($this->dsParamURL)) $this->dsParamURL = $this->__processParametersInString($this->dsParamURL, $this->_env, true, true);
 			if(isset($this->dsParamXPATH)) $this->dsParamXPATH = $this->__processParametersInString($this->dsParamXPATH, $this->_env);
 		
-			$stylesheet = new XMLElement('xsl:stylesheet');
+			$stylesheet = Symphony::Parent()->Page->createElement('xsl:stylesheet');
 			$stylesheet->setAttributeArray(array('version' => '1.0', 'xmlns:xsl' => 'http://www.w3.org/1999/XSL/Transform'));
 		
-			$output = new XMLElement('xsl:output');
+			$output = Symphony::Parent()->Page->createElement('xsl:output');
 			$output->setAttributeArray(array('method' => 'xml', 'version' => '1.0', 'encoding' => 'utf-8', 'indent' => 'yes', 'omit-xml-declaration' => 'yes'));
 			$stylesheet->appendChild($output);
 		
-			$template = new XMLElement('xsl:template');
+			$template = Symphony::Parent()->Page->createElement('xsl:template');
 			$template->setAttribute('match', '/');
 		
-			$instruction = new XMLElement('xsl:copy-of');
+			$instruction = Symphony::Parent()->Page->createElement('xsl:copy-of');
 		
 			## Namespaces
 			if(isset($this->dsParamFILTERS) && is_array($this->dsParamFILTERS)){
@@ -135,19 +135,19 @@
 						}
 						
 						else{
-							$result = new XMLElement($this->dsParamROOTELEMENT);
+							$result = Symphony::Parent()->Page->createElement($this->dsParamROOTELEMENT);
 							$result->setAttribute('valid', 'false');
 							
 							if($end > $timeout){
 								$result->appendChild(
-									new XMLElement('error', 
+									Symphony::Parent()->Page->createElement('error', 
 										sprintf('Request timed out. %d second limit reached.', $timeout)
 									)
 								);
 							}
 							else{
 								$result->appendChild(
-									new XMLElement('error', 
+									Symphony::Parent()->Page->createElement('error', 
 										sprintf('Status code %d was returned. Content-type: %s', $info['http_code'], $info['content_type'])
 									)
 								);
@@ -168,9 +168,9 @@
 						}
 
 						else{
-							$result = new XMLElement($this->dsParamROOTELEMENT);
+							$result = Symphony::Parent()->Page->createElement($this->dsParamROOTELEMENT);
 							$result->setAttribute('valid', 'false');
-							$result->appendChild(new XMLElement('error', __('XML returned is invalid.')));
+							$result->appendChild(Symphony::Parent()->Page->createElement('error', __('XML returned is invalid.')));
 						}
 						
 					}
@@ -200,21 +200,21 @@
 				
 			if(!$this->_force_empty_result && !is_object($result)):
 			
-				$result = new XMLElement($this->dsParamROOTELEMENT);
+				$result = Symphony::Parent()->Page->createElement($this->dsParamROOTELEMENT);
 		
 				$ret = XSLProc::transform($xml, $xsl);
 		
 				if(XSLProc::hasErrors()){
 					
 					$result->setAttribute('valid', 'false');
-					$error = new XMLElement('error', __('XML returned is invalid.'));
+					$error = Symphony::Parent()->Page->createElement('error', __('XML returned is invalid.'));
 					$result->appendChild($error);
 					
-					$messages = new XMLElement('messages');
+					$messages = Symphony::Parent()->Page->createElement('messages');
 					
 					foreach($proc->getError() as $e){
 						if(strlen(trim($e['message'])) == 0) continue;
-						$messages->appendChild(new XMLElement('item', General::sanitize($e['message'])));
+						$messages->appendChild(Symphony::Parent()->Page->createElement('item', General::sanitize($e['message'])));
 					}
 					$result->appendChild($messages);
 					

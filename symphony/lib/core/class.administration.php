@@ -40,16 +40,14 @@
 		protected function __construct(){
 			parent::__construct();
 			$this->Profiler->sample('Engine Initialisation');
-			
-			// Need this part for backwards compatiblity
-			$this->Database = Symphony::Database();
-			$this->Configuration = Symphony::Configuration();
-						
+
 			$this->_callback = NULL;
 		}
 		
 		public function isLoggedIn(){
-			if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && in_array(strlen($_REQUEST['auth-token']), array(6, 8))) return $this->loginFromToken($_REQUEST['auth-token']);
+			if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && in_array(strlen($_REQUEST['auth-token']), array(6, 8))){
+				return $this->loginFromToken($_REQUEST['auth-token']);
+			}
 			
 			return parent::isLoggedIn();
 		}
@@ -227,7 +225,7 @@
 			# Global: Yes
 			ExtensionManager::instance()->notifyMembers('AdminPagePreGenerate', '/backend/', array('oPage' => &$this->Page));
 			
-			$output = $this->Page->generate();
+			$output = (string)$this->Page;
 
 			####
 			# Delegate: AdminPagePostGenerate
