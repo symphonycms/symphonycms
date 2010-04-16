@@ -4,7 +4,8 @@
 
 	Class XMLDocument extends DOMDocument{
 
-		private $errors;
+		private $error;
+		static private $_errorLog;
 
 		public function __construct($version='1.0', $encoding='utf-8'){
 			parent::__construct($version, $encoding);
@@ -21,8 +22,8 @@
 			return $xpath->query($query);
 		}
 
-		public function flush(){
-			$this->errors->empty();
+		public function flushLog(){
+			$this->errors->flush();
 		}
 
 		public function loadXML($xml){

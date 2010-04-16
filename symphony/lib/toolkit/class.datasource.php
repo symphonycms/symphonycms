@@ -143,10 +143,10 @@
 		protected $_parameters;
 
 		protected $_env;
-		protected $_Parent;
+		protected $_Parent; // DELETE?
 		protected $_param_output_only;
 		protected $_dependencies;
-		protected $_force_empty_result;
+		protected $_force_empty_result; // DELETE?
 
 		protected static $_loaded;
 

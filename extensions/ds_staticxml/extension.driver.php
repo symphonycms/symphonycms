@@ -96,10 +96,10 @@
 				$fieldset->appendChild($label);
 			
 				$label = Widget::Label(__('XML'));
-				$input = Widget::Textarea('fields[xml]', General::sanitize($datasource->parameters()->{'xml'}), array(
+				$input = Widget::Textarea('fields[xml]', $datasource->parameters()->{'xml'}, array(
 					'rows' => '24',
 					'cols' => '50',
-					'classl' => 'code'
+					'class' => 'code'
 				));
 				$label->appendChild($input);
 			

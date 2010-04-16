@@ -235,7 +235,7 @@
 
 			$label = Widget::Label(__('Template'));
 			$label->appendChild(
-				Widget::Textarea('fields[template]', General::sanitize($view->template), array(
+				Widget::Textarea('fields[template]', $view->template, array(
 					'rows' => 30,
 					'cols' => 80,
 					'class'	=> 'code'
