@@ -1,8 +1,8 @@
 <?php
 
-	require_once(TOOLKIT . '/class.xmldocument.php');	
+	require_once(TOOLKIT . '/class.xmldocument.php');
 	require_once(TOOLKIT . '/class.documentheaders.php');
-	
+
 	Class HTMLDocument extends XMLDocument{
 
 		public $Html;
@@ -115,47 +115,12 @@
 
 		##	Overloaded Methods for DOMDocument
 		public function createElement($name, $value = null, array $attributes = array()){
-			$element = parent::createElement($name, $value);
+			$element = parent::createElement($name);
+			if(!is_null($value)) $element->setValue($value);
 			$element->setAttributeArray($attributes);
 
 			return $element;
 		}
-	}
-
-	##	Convienence Methods for DOMElement
-	Class SymphonyDOMElement extends DOMElement {
-
-		/*
-		**	setValue
-		**	@value	mixed	Accepts either an Object or String
-		*/
-		public function setValue($value) {
-			//	TODO: Possibly might need to Remove existing Children before adding..
-			if($value instanceof SymphonyDOMElement || $value instanceof DOMDocumentFragment) {
-				$this->appendChild($value);
-			}
-			elseif(!is_null($value) && is_string($value)) {
-				$this->appendChild(
-					new DOMText($value)
-				);
-			}
-		}
-
-		public function setAttributeArray(array $attributes) {
-			if(is_array($attributes) && !empty($attributes)){
-				foreach($attributes as $key => $val) $this->setAttribute($key, $val);
-			}
-		}
-
-		public function __toString(){
-			$doc = new DOMDocument('1.0', 'UTF-8');
-			$doc->formatOutput = true;
-
-			$doc->importNode($this, true);
-
-			return $doc->saveHTML();
-		}
-
 	}
 
 

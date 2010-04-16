@@ -41,12 +41,12 @@
 			return $form;
 		}
 
-		public static function Label($name=null, SymphonyDOMElement $child=null, array $attributes = array()){
+		public static function Label($name=null, DOMNode $child=null, array $attributes = array()){
 			if(!self::$Symphony) Widget::init();
 
 			$label = Widget::$Symphony->createElement('label', $name, $attributes);
 
-			if($child instanceof SymphonyDOMElement) $label->appendChild($child);
+			if(!is_null($child)) $label->appendChild($child);
 
 			return $label;
 		}

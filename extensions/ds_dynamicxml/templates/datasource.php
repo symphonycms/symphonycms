@@ -19,11 +19,12 @@
 				);
 		
 			$this->_parameters = (object)array(
-				'cache-lifetime' => %8$d,
-				'namespaces' => %9$s,
-				'url' => %10$s,
-				'xpath' => %11$s,
-				'root-element' => %12$s
+				'timeout' => %8$d,
+				'cache-lifetime' => %9$d,
+				'namespaces' => %10$s,
+				'url' => %11$s,
+				'xpath' => %12$s,
+				'root-element' => %13$s
 			);
 			
 		}

@@ -40,6 +40,7 @@
 			$dsTableHead = array(
 				array(__('Name'), 'col'),
 				array(__('Source'), 'col'),
+				// TODO: Implement Pages array(__('Pages'), 'col'),
 				array(__('Type'), 'col'),
 				array(__('Author'), 'col')
 			);
@@ -79,7 +80,7 @@
 
 					// Source
 					if(is_null($ds->parameters()->section)){
-						$col_source = Widget::TableData(__('None'), 'inactive');
+						$col_source = Widget::TableData(__('None'), array('class' => 'inactive'));
 					}
 					else{
 						$col_source = $ds->prepareSourceColumnValue();
@@ -87,7 +88,7 @@
 
 					// Type
 					if(is_null($ds->type())){
-						$col_type = Widget::TableData(__('Unknown'), 'inactive');
+						$col_type = Widget::TableData(__('Unknown'), array('class' => 'inactive'));
 					}
 					else{
 						$extension = ExtensionManager::instance()->about($ds->type());

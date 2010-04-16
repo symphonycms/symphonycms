@@ -1,11 +1,11 @@
 <?php
 
-	require_once CORE . '/class.cache.php';	
+	require_once CORE . '/class.cache.php';
 	require_once TOOLKIT . '/class.xslproc.php';
 	require_once TOOLKIT . '/class.datasource.php';
-	
+
 	require_once 'class.gateway.php';
-	
+
 	Class DynamicXMLDataSource extends DataSource {
 
 		public function __construct(){
@@ -20,224 +20,231 @@
 				'redirect-on-empty' => false
 			);
 		}
-		
+
 		final public function type(){
 			return 'ds_dynamicxml';
 		}
-		
+
 		public function template(){
 			return EXTENSIONS . '/ds_dynamicxml/templates/datasource.php';
 		}
-		
+
 		public function save(MessageStack &$errors){
 
 			if(strlen(trim($this->parameters()->url)) == 0){
 				$errors->append('url', __('This is a required field'));
 			}
-			
+
 			if(strlen(trim($this->parameters()->xpath)) == 0){
 				$errors->append('xpath', __('This is a required field'));
 			}
-			
+
 			if(!is_numeric($this->parameters()->{'cache-lifetime'})){
 				$errors->append('cache-lifetime', __('Must be a valid number'));
 			}
-			
+
 			elseif($this->parameters()->{'cache-lifetime'} <= 0){
 				$errors->append('cache-lifetime', __('Must be greater than zero'));
 			}
-			
+
 			else{
 				$this->parameters()->{'cache-lifetime'} = (int)$this->parameters()->{'cache-lifetime'};
 			}
-			
+
 			return parent::save($errors);
 		}
-		
+
 		public function render(Register &$ParameterOutput){
 			$result = null;
-			
-			if(isset($this->dsParamURL)) $this->dsParamURL = $this->__processParametersInString($this->dsParamURL, $this->_env, true, true);
-			if(isset($this->dsParamXPATH)) $this->dsParamXPATH = $this->__processParametersInString($this->dsParamXPATH, $this->_env);
-		
-			$stylesheet = Symphony::Parent()->Page->createElement('xsl:stylesheet');
-			$stylesheet->setAttributeArray(array('version' => '1.0', 'xmlns:xsl' => 'http://www.w3.org/1999/XSL/Transform'));
-		
-			$output = Symphony::Parent()->Page->createElement('xsl:output');
+
+			$doc = new XMLDocument;
+/*	TODO: FIX!
+			if(isset($this->parameters()->url)) $this->parameters()->url = $this->__processParametersInString($this->parameters()->url, $this->_env, true, true);
+			if(isset($this->parameters()->xpath)) $this->parameters()->xpath = $this->__processParametersInString($this->parameters()->xpath, $this->_env);
+*/
+			$xsl = $doc->createElement('xsl:stylesheet');
+			$xsl->setAttributeArray(array('version' => '1.0', 'xmlns:xsl' => 'http://www.w3.org/1999/XSL/Transform'));
+
+			$output = $doc->createElement('xsl:output');
 			$output->setAttributeArray(array('method' => 'xml', 'version' => '1.0', 'encoding' => 'utf-8', 'indent' => 'yes', 'omit-xml-declaration' => 'yes'));
-			$stylesheet->appendChild($output);
-		
-			$template = Symphony::Parent()->Page->createElement('xsl:template');
+			$xsl->appendChild($output);
+
+			$template = $doc->createElement('xsl:template');
 			$template->setAttribute('match', '/');
-		
-			$instruction = Symphony::Parent()->Page->createElement('xsl:copy-of');
-		
+
+			$instruction = $doc->createElement('xsl:copy-of');
+
 			## Namespaces
-			if(isset($this->dsParamFILTERS) && is_array($this->dsParamFILTERS)){
-				foreach($this->dsParamFILTERS as $name => $uri) $instruction->setAttribute('xmlns' . ($name ? ":$name" : NULL), $uri);
+			if(is_array($this->parameters()->namespaces) && !empty($this->parameters()->namespaces)){
+				foreach($this->parameters()->namespaces as $name => $uri) $instruction->setAttribute('xmlns' . ($name ? ":{$name}" : NULL), $uri);
 			}
-		
+
 			## XPath
-			$instruction->setAttribute('select', $this->dsParamXPATH);
-		
+			$instruction->setAttribute('select', $this->parameters()->xpath);
+
 			$template->appendChild($instruction);
-			$stylesheet->appendChild($template);
-		
-			$stylesheet->setIncludeHeader(true);
-		
-			$xsl = $stylesheet->generate(true);
-		
-			$cache_id = md5($this->dsParamURL . serialize($this->dsParamFILTERS) . $this->dsParamXPATH);
-		
-			$cache = new Cacheable(Symphony::Database());
-			
-			$cachedData = $cache->check($cache_id);
-			
+			$xsl->appendChild($template);
+			$doc->appendChild($xsl);
+
+			$cache_id = md5($this->parameters()->url . serialize($this->parameters()->namespaces) . $this->parameters()->xpath);
+
+			$cache = Cache::instance();
+			$cachedData = $cache->read($cache_id);
+
 			$writeToCache = false;
 			$valid = true;
 			$result = NULL;
 			$creation = DateTimeObj::get('c');
-			
-			$timeout = 6;
-			if(isset($this->dsParamTIMEOUT)){
-				$timeout = (int)max(1, $this->dsParamTIMEOUT);
+
+			if(isset($this->parameters()->timeout)){
+				$timeout = (int)max(1, $this->parameters()->timeout);
 			}
-			
-			if((!is_array($cachedData) || empty($cachedData)) || (time() - $cachedData['creation']) > ($this->dsParamCACHE * 60)){
+
+			if((!is_array($cachedData) || empty($cachedData)) || (time() - $cachedData['creation']) > ($this->parameters()->{'cache-timeout'} * 60)){
 				if(Mutex::acquire($cache_id, $timeout, TMP)){
-					
-					$start = precision_timer();		
-					
+
+					$start = precision_timer();
+
 					$ch = new Gateway;
-		
+
 					$ch->init();
-					$ch->setopt('URL', $this->dsParamURL);
-					$ch->setopt('TIMEOUT', $timeout);
+					$ch->setopt('URL', $this->parameters()->url);
+					$ch->setopt('TIMEOUT', $this->parameters()->timeout);
 					$xml = $ch->exec();
 					$writeToCache = true;
-					
+
 					$end = precision_timer('STOP', $start);
-					
+
 					$info = $ch->getInfoLast();
-								
+
 					Mutex::release($cache_id, TMP);
-					
+
 					$xml = trim($xml);
-		
+
 					if((int)$info['http_code'] != 200 || !preg_match('/(xml|plain|text)/i', $info['content_type'])){
-						
+
 						$writeToCache = false;
-						
-						if(is_array($cachedData) && !empty($cachedData)){ 
+
+						if(is_array($cachedData) && !empty($cachedData)){
 							$xml = trim($cachedData['data']);
 							$valid = false;
 							$creation = DateTimeObj::get('c', $cachedData['creation']);
 						}
-						
+
 						else{
-							$result = Symphony::Parent()->Page->createElement($this->dsParamROOTELEMENT);
+							$result = $doc->createElement($this->parameters()->{'root-element'});
 							$result->setAttribute('valid', 'false');
-							
+
 							if($end > $timeout){
 								$result->appendChild(
-									Symphony::Parent()->Page->createElement('error', 
+									$doc->createElement('error',
 										sprintf('Request timed out. %d second limit reached.', $timeout)
 									)
 								);
 							}
 							else{
 								$result->appendChild(
-									Symphony::Parent()->Page->createElement('error', 
+									$doc->createElement('error',
 										sprintf('Status code %d was returned. Content-type: %s', $info['http_code'], $info['content_type'])
 									)
 								);
 							}
-							
+
 							return $result;
 						}
 					}
-		
+
 					elseif(strlen($xml) > 0 && !General::validateXML($xml, $errors)){
-							
+
 						$writeToCache = false;
-						
-						if(is_array($cachedData) && !empty($cachedData)){ 
+
+						if(is_array($cachedData) && !empty($cachedData)){
 							$xml = trim($cachedData['data']);
 							$valid = false;
 							$creation = DateTimeObj::get('c', $cachedData['creation']);
 						}
 
 						else{
-							$result = Symphony::Parent()->Page->createElement($this->dsParamROOTELEMENT);
-							$result->setAttribute('valid', 'false');
-							$result->appendChild(Symphony::Parent()->Page->createElement('error', __('XML returned is invalid.')));
+							$result = $doc->createElement(
+								$this->parameters()->{'root-element'},
+								$doc->createElement('error', __('XML returned is invalid.')),
+								array('valid' => 'false')
+							);
 						}
-						
+
 					}
 
 					elseif(strlen($xml) == 0){
 						$this->_force_empty_result = true;
 					}
-					
+
 				}
-				
-				elseif(is_array($cachedData) && !empty($cachedData)){ 
+
+				elseif(is_array($cachedData) && !empty($cachedData)){
 					$xml = trim($cachedData['data']);
 					$valid = false;
 					$creation = DateTimeObj::get('c', $cachedData['creation']);
 					if(empty($xml)) $this->_force_empty_result = true;
 				}
-				
+
 				else $this->_force_empty_result = true;
-				
+
 			}
-			
+
 			else{
 				$xml = trim($cachedData['data']);
 				$creation = DateTimeObj::get('c', $cachedData['creation']);
 			}
-			
-				
-			if(!$this->_force_empty_result && !is_object($result)):
-			
-				$result = Symphony::Parent()->Page->createElement($this->dsParamROOTELEMENT);
-		
-				$ret = XSLProc::transform($xml, $xsl);
-		
+
+			if(!$this->_force_empty_result && !is_object($result)) {
+
+				$result = new XMLDocument;
+				$root =	$result->createElement($this->parameters()->{'root-element'});
+
+				$ret = XSLProc::transform($xml, $doc->saveXML());
+
 				if(XSLProc::hasErrors()){
-					
-					$result->setAttribute('valid', 'false');
-					$error = Symphony::Parent()->Page->createElement('error', __('XML returned is invalid.'));
-					$result->appendChild($error);
-					
-					$messages = Symphony::Parent()->Page->createElement('messages');
-					
-					foreach($proc->getError() as $e){
-						if(strlen(trim($e['message'])) == 0) continue;
-						$messages->appendChild(Symphony::Parent()->Page->createElement('item', General::sanitize($e['message'])));
+
+					$root->setAttribute('valid', 'false');
+					$root->appendChild(
+						$result->createElement('error', __('XML returned is invalid.'))
+					);
+
+					$messages = $result->createElement('messages');
+
+					foreach(XSLProc::getErrors() as $e){
+						if(strlen(trim($e->message)) == 0) continue;
+						$messages->appendChild(
+							$result->createElement('item', General::sanitize($e->message))
+						);
 					}
-					$result->appendChild($messages);
-					
+					$root->appendChild($messages);
+
 				}
-				
+
 				elseif(strlen(trim($ret)) == 0){
 					$this->_force_empty_result = true;
 				}
-				
+
 				else{
-					
+
 					if($writeToCache) $cache->write($cache_id, $xml);
-					
-					$result->setValue(self::CRLF . preg_replace('/([\r\n]+)/', '$1	', $ret));
-					$result->setAttribute('status', ($valid === true ? 'fresh' : 'stale'));
-					$result->setAttribute('creation', $creation);
-					
+
+					$fragment = $result->createDocumentFragment();
+					$fragment->appendXML($ret);
+
+					$root->appendChild($fragment);
+					$root->setAttribute('status', ($valid === true ? 'fresh' : 'stale'));
+					$root->setAttribute('creation', $creation);
+
 				}
-				
-			endif;
-			
+
+				$result->appendChild($root);
+
+			}
+
 			if ($this->_force_empty_result) $result = $this->emptyXMLSet();
-			
+
 			return $result;
 		}
 	}

@@ -152,7 +152,7 @@
 
 		// Abstract function
 		abstract public function render(Register &$ParameterOutput);
-		
+
 		public static function getHandleFromFilename($filename){
 			return preg_replace('/.php$/i', NULL, $filename);
 		}
@@ -261,7 +261,7 @@
 					throw new Exception(__("Unable to find Data Source Type template '%s'.", array($this->template())));
 				}
 
-				$handle = Lang::createFilename($this->about()->name);
+				$this->parameters()->{'root-element'} = $handle = Lang::createFilename($this->about()->name);
 				$filename = "{$handle}.php";
 				$classname = Lang::createHandle(ucwords($this->about()->name), '_', false, true, array('/[^a-zA-Z0-9_\x7f-\xff]/' => NULL), true);
 				$pathname = DATASOURCES . "/{$filename}";
@@ -362,8 +362,8 @@
 			throw new FrontendPageNotFoundException;
 		}
 */
-		public function emptyXMLSet(XMLElement $xml=NULL){
-			if(is_null($xml)) $xml = new XMLElement($this->dsParamROOTELEMENT);
+		public function emptyXMLSet(DOMElement $xml=NULL){
+			if(is_null($xml)) $xml = $this->createElement($this->parameters()->{'root-element'});
 			$xml->appendChild($this->__noRecordsFound());
 
 			return $xml;
@@ -387,9 +387,10 @@
 		}
 
 		protected function __noRecordsFound(){
-			return new XMLElement('error', __('No records found.'));
+			return $this->createElement('error', __('No records found.'));
 		}
 
+		//	TODO: Rewrite this.
 		protected function __processParametersInString($value, $env, $includeParenthesis=true, $escape=false){
 			if(trim($value) == '') return NULL;
 

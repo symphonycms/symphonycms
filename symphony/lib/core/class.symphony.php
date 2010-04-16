@@ -10,12 +10,12 @@
 	require_once(CORE . '/interface.singleton.php');
 	require_once(CORE . '/class.cache.php');
 
-	require_once(TOOLKIT . '/class.page.php');
+	require_once(TOOLKIT . '/class.page.php'); // DELETE?
 	require_once(TOOLKIT . '/class.view.php');
-	require_once(TOOLKIT . '/class.xmlelement.php');
+	require_once(TOOLKIT . '/class.xmlelement.php'); // DELETE?
 	require_once(TOOLKIT . '/class.widget.php');
 	require_once(TOOLKIT . '/class.general.php');
-	require_once(TOOLKIT . '/class.profiler.php');
+	require_once(TOOLKIT . '/class.profiler.php'); // REPLACE?
 	require_once(TOOLKIT . '/class.user.php');
 	require_once(TOOLKIT . '/class.xslproc.php');
 

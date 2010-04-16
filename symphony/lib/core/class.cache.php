@@ -9,6 +9,7 @@
 		public function purge();
 	}
 
+	// 	TODO: Test, ensure read returns false on failure
 	Final Class CacheDriverMemcache implements iCacheDriver{
 
 		static $_connection;
@@ -55,7 +56,7 @@
 			$success = NULL;
 			$result = apc_fetch($key, $success);
 
-			if($success === false ? false : $result);
+			return ($success === true) ? $result : false;
 		}
 
 		public function write($key, $data, $ttl=NULL){
@@ -76,7 +77,7 @@
 
 		public function read($key){
 			$cache_file = CACHE . '/' . md5($key) . '.cache';
-			return (file_exists($cache_file) ? self::__decompress(file_get_contents($cache_file)) : NULL);
+			return (file_exists($cache_file) ? self::__decompress(file_get_contents($cache_file)) : false);
 		}
 
 		public function write($key, $data, $ttl=NULL){
