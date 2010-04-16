@@ -46,7 +46,8 @@
 		public function render(Register &$ParameterOutput){
 			throw new Exception('TODO: Fix users datasource template.');
 			
-			$result = Symphony::Parent()->Page->createElement($this->dsParamROOTELEMENT);
+			$doc = new XMLDocument;
+			$root = $doc->createElement($this->parameters()->{'root-element'});
 			
 			try {
 				$user_ids = array();
@@ -127,7 +128,7 @@
 			}
 			
 			catch (Exception $error) {
-				$result->appendChild(Symphony::Parent()->Page->createElement(
+				$result->appendChild($doc->createElement(
 					'error', General::sanitize($error->getMessage())
 				));
 				
@@ -136,6 +137,6 @@
 			
 			if ($this->_force_empty_result) $result = $this->emptyXMLSet();
 			
-			return $result;
+			return $doc;
 		}
 	}

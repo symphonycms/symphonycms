@@ -229,20 +229,15 @@
 							);
 						}
 
-						// TODO: Is this really the best way to get the a Symphony Concierge email
-						// Should Conceirge really be the Admin's name??
-						$from = Symphony::Database()->query("SELECT `email` FROM `tbl_users` ORDER BY `id` ASC LIMIT 1");
-						if($from->valid()) $from = $from->current();
-
 						$this->_email_sent = General::sendEmail($user['email'],
-									$from->email,
+									'noreply@' . HTTP_HOST,
 									__('Symphony Concierge'),
 									__('New Symphony Account Password'),
-									__('Hi %s,', array($user->first_name)) . self::CRLF .
-									__('A new password has been requested for your account. Login using the following link, and change your password via the Users area:') . self::CRLF .
-									self::CRLF . '	' . ADMIN_URL . "/login/$token/" . self::CRLF . self::CRLF .
-									__('It will expire in 2 hours. If you did not ask for a new password, please disregard this email.') . self::CRLF . self::CRLF .
-									__('Best Regards,') . self::CRLF .
+									__('Hi %s,', array($user->first_name)) . PHP_EOL .
+									__('A new password has been requested for your account. Login using the following link, and change your password via the Users area:') . PHP_EOL .
+									PHP_EOL . '	' . ADMIN_URL . "/login/$token/" . PHP_EOL . PHP_EOL .
+									__('It will expire in 2 hours. If you did not ask for a new password, please disregard this email.') . PHP_EOL . PHP_EOL .
+									__('Best Regards,') . PHP_EOL .
 									__('The Symphony Team'));
 
 
@@ -319,12 +314,12 @@
 					$newpass = General::generatePassword();
 
 					General::sendEmail($user->email,
-								'noreply@symphony-cms.com',
+								'noreply@' . HTTP_HOST,
 								'Symphony Concierge',
 								'RE: New Symphony Account Password',
-								'Hi ' . $user['first_name']. ',' . self::CRLF .
-								"As requested, here is your new Symphony User Password for '". URL ."'".self::CRLF ."	{$newpass}" . self::CRLF . self::CRLF .
-								'Best Regards,' . self::CRLF .
+								'Hi ' . $user['first_name']. ',' . PHP_EOL .
+								"As requested, here is your new Symphony User Password for '". URL ."'".PHP_EOL ."	{$newpass}" . PHP_EOL . PHP_EOL .
+								'Best Regards,' . PHP_EOL .
 								'The Symphony Team');
 
 					Symphony::Database()->update('tbl_users', array('password' => md5($newpass)), array($user->id), "`id` = '%d'");

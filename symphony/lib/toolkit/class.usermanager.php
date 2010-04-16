@@ -105,7 +105,7 @@
 
 		}
 
-		/* TODO: Is this needed? It's not called anywhere in Symphony */
+		// TODO: Is this needed? It's not called anywhere in Symphony
 		public static function fetchByUsername($username){
 			$result = Symphony::Database()->query("
 					SELECT

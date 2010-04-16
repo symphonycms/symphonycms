@@ -334,7 +334,7 @@
 				array('', false, __('None')),
 			);
 
-			//TODO: Fix me
+			//TODO: Integrate into new Section class
 
 		    /*$sections = SectionManager::instance()->fetch(NULL, 'ASC', 'name');
 			$field_groups = array();

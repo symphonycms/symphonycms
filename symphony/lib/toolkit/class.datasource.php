@@ -390,7 +390,7 @@
 			return $this->createElement('error', __('No records found.'));
 		}
 
-		//	TODO: Rewrite this.
+		//	TODO: Rewrite __processParametersInString.
 		protected function __processParametersInString($value, $env, $includeParenthesis=true, $escape=false){
 			if(trim($value) == '') return NULL;
 

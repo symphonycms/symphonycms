@@ -11,7 +11,7 @@
 		protected $_errors;
 
 		/*
-		TODO: Remove this?
+		TODO: Remove Children and buildParentBreadcrumb functions?
 
 		private static function __countChildren($id){
 			$children = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_pages` WHERE `parent` = {$id}");

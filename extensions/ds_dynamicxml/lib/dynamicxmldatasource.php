@@ -58,7 +58,7 @@
 			$result = null;
 
 			$doc = new XMLDocument;
-/*	TODO: FIX!
+/*	TODO: Look over __processParametersInString function
 			if(isset($this->parameters()->url)) $this->parameters()->url = $this->__processParametersInString($this->parameters()->url, $this->_env, true, true);
 			if(isset($this->parameters()->xpath)) $this->parameters()->xpath = $this->__processParametersInString($this->parameters()->xpath, $this->_env);
 */
