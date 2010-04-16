@@ -61,53 +61,55 @@
 
 			else foreach($roles as $r){
 
-					/**********
+				/**********
 
-						ASSUMING an $r object with a basic getter method
-						for the following properties:
-							- name
-							- handle
-							- description
+					ASSUMING an $r object with a basic getter method
+					for the following properties:
+						- name
+						- handle
+						- description
 
-						ALSO ASSUMING methods for grabbing user info:
-							- getUserCount()
+					ALSO ASSUMING methods for grabbing user info:
+						- getUserCount()
 
-						NEED TO UPDATE the User filter link in $td3
+					NEED TO UPDATE the User filter link in $td3
 
-					**********/
+				**********/
 
-					$td1 = Widget::TableData(
-						Widget::Anchor(
-							$r->get('name'),
-							Administration::instance()->getCurrentPageURL() . 'edit/' . $r->get('handle') . '/',
-							array('handle' => $r->get('name'))
-						)
-					);
+				$td1 = Widget::TableData(
+					Widget::Anchor(
+						$r->get('name'),
+						Administration::instance()->getCurrentPageURL() . 'edit/' . $r->get('handle') . '/',
+						array('handle' => $r->get('name'))
+					)
+				);
 
-					$td2 = Widget::TableData(
-						$r->get('description')
-					);
+				$td2 = Widget::TableData(
+					$r->get('description')
+				);
 
-					$td3 = Widget::TableData(
-						Widget::Anchor(
-							$r->getUserCount(),
-							URL . '/symphony/system/users?filter=???????????'
-						)
-					);
+				$td3 = Widget::TableData(
+					Widget::Anchor(
+						$r->getUserCount(),
+						URL . '/symphony/system/users?filter=???????????'
+					)
+				);
 
-					$td3->appendChild(
-						Widget::Input(
-							'items[' . $r->get('name') . ']',
-							NULL,
-							'checkbox'
-						)
-					);
+				$td3->appendChild(
+					Widget::Input(
+						'items[' . $r->get('name') . ']',
+						NULL,
+						'checkbox'
+					)
+				);
 
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
-				}
+				$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
+
 			}
 
-			$table = Widget::Table(Widget::TableHead($aTableHead),NULL,Widget::TableBody($aTableBody));
+			$table = Widget::Table(
+				Widget::TableHead($aTableHead),NULL,Widget::TableBody($aTableBody)
+			);
 
 			$this->Form->appendChild($table);
 
@@ -208,7 +210,7 @@
 
 				}
 			}
-			
+
 			/**********
 
 				INSERT logic for determining the current role and

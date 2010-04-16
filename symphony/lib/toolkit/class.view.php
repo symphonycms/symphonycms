@@ -1,7 +1,5 @@
 <?php
 
-
-
 	Class ViewException extends Exception {}
 
 	Class ViewFilterIterator extends FilterIterator{
