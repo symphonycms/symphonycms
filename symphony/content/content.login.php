@@ -1,30 +1,40 @@
 <?php
 
-	Class contentLogin extends HTMLPage{
+	require_once(TOOLKIT . '/class.administrationpage.php');
 
-		private $_context;
+	Class contentLogin extends AdministrationPage{
+
+		public $_context;
 		private $_invalidPassword;
 
-		function __construct(){
-			parent::__construct();
-
+		function build($context=NULL){
 			$this->_invalidPassword = false;
 
-			$this->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
+			$this->Headers->append('Content-Type', 'text/html; charset=UTF-8');
 
-			$this->Html->setElementStyle('html');
-			$this->Html->setDTD('<!DOCTYPE html>'); //PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"
 			$this->Html->setAttribute('lang', Symphony::lang());
-			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
-			$this->addStylesheetToHead(ADMIN_URL . '/assets/css/login.css', 'screen', 40);
 
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Login'))));
+			$meta = $this->createElement('meta');
+			$this->insertNodeIntoHead($meta);
+			$meta->setAttribute('http-equiv', 'Content-Type');
+			$meta->setAttribute('content', 'text/html; charset=UTF-8');
+
+			$this->insertNodeIntoHead($this->createStylesheetElement(ADMIN_URL . '/assets/css/login.css'));
+
+			parent::setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Login'))));
 
 			Administration::instance()->Profiler->sample('Page template created', PROFILE_LAP);
 
-		}
+			## Build the form
+			$this->Form = $this->createElement('form');
+			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL());
+			$this->Form->setAttribute('method', 'POST');
+			$this->Body->appendChild($this->Form);
 
-		function build($context=NULL){
+			$this->Form->appendChild(
+				$this->createElement('h1', __('Symphony'))
+			);
+
 			if($context) $this->_context = $context;
 			if(isset($_REQUEST['action'])) $this->action();
 			$this->view();
@@ -38,22 +48,18 @@
 
 			if(!$emergency && Administration::instance()->isLoggedIn()) redirect(ADMIN_URL . '/');
 
-			$this->Form = Widget::Form('', 'post');
-
-			$this->Form->appendChild(new XMLElement('h1', __('Symphony')));
-
-			$fieldset = new XMLElement('fieldset');
+			$fieldset = $this->createElement('fieldset');
 
 			if($this->_context[0] == 'retrieve-password'):
 
 				if(isset($this->_email_sent) && $this->_email_sent){
-					$fieldset->appendChild(new XMLElement('p', __('An email containing a customised login link has been sent. It will expire in 2 hours.')));
+					$fieldset->appendChild($this->createElement('p', __('An email containing a customised login link has been sent. It will expire in 2 hours.')));
 					$this->Form->appendChild($fieldset);
 				}
 
 				else{
 
-					$fieldset->appendChild(new XMLElement('p', __('Enter your email address to be sent a remote login link with further instructions for logging in.')));
+					$fieldset->appendChild($this->createElement('p', __('Enter your email address to be sent a remote login link with further instructions for logging in.')));
 
 					$label = Widget::Label(__('Email Address'));
 					$label->appendChild(Widget::Input('email', $_POST['email']));
@@ -61,9 +67,8 @@
 					$this->Body->setAttribute('onload', 'document.forms[0].elements.email.focus()');
 
 					if(isset($this->_email_sent) && !$this->_email_sent){
-						$div = new XMLElement('div', NULL, array('class' => 'invalid'));
-						$div->appendChild($label);
-						$div->appendChild(new XMLElement('p', __('There was a problem locating your account. Please check that you are using the correct email address.')));
+						$div = $this->createElement('div', $label, array('class' => 'invalid'));
+						$div->appendChild($this->createElement('p', __('There was a problem locating your account. Please check that you are using the correct email address.')));
 						$fieldset->appendChild($div);
 					}
 
@@ -71,7 +76,7 @@
 
 					$this->Form->appendChild($fieldset);
 
-					$div = new XMLElement('div', NULL, array('class' => 'actions'));
+					$div = $this->createElement('div', NULL, array('class' => 'actions'));
 					$div->appendChild(Widget::Input('action[reset]', __('Send Email'), 'submit'));
 					$this->Form->appendChild($div);
 
@@ -79,7 +84,7 @@
 
 			elseif($emergency):
 
-				$fieldset->appendChild(new XMLElement('legend', __('New Password')));
+				$fieldset->appendChild($this->createElement('legend', __('New Password')));
 
 				$label = Widget::Label(__('New Password'));
 				$label->appendChild(Widget::Input('password', NULL, 'password'));
@@ -89,9 +94,9 @@
 				$label->appendChild(Widget::Input('password-confirmation', NULL, 'password'));
 
 				if($this->_mismatchedPassword){
-					$div = new XMLElement('div', NULL, array('class' => 'invalid'));
+					$div = $this->createElement('div', NULL, array('class' => 'invalid'));
 					$div->appendChild($label);
-					$div->appendChild(new XMLElement('p', __('The supplied password was rejected. Make sure it is not empty and that password matches password confirmation.')));
+					$div->appendChild($this->createElement('p', __('The supplied password was rejected. Make sure it is not empty and that password matches password confirmation.')));
 					$fieldset->appendChild($div);
 				}
 
@@ -99,14 +104,14 @@
 
 				$this->Form->appendChild($fieldset);
 
-				$div = new XMLElement('div', NULL, array('class' => 'actions'));
+				$div = $this->createElement('div', NULL, array('class' => 'actions'));
 				$div->appendChild(Widget::Input('action[change]', __('Save Changes'), 'submit'));
 				if(!preg_match('@\/symphony\/login\/@i', $_SERVER['REQUEST_URI'])) $div->appendChild(Widget::Input('redirect', $_SERVER['REQUEST_URI'], 'hidden'));
 				$this->Form->appendChild($div);
 
 			else:
 
-				$fieldset->appendChild(new XMLElement('legend', __('Login')));
+				$fieldset->appendChild($this->createElement('legend', __('Login')));
 
 				$label = Widget::Label(__('Username'));
 				$label->appendChild(Widget::Input('username'));
@@ -118,9 +123,9 @@
 				$label->appendChild(Widget::Input('password', NULL, 'password'));
 
 				if($this->_invalidPassword){
-					$div = new XMLElement('div', NULL, array('class' => 'invalid'));
+					$div = $this->createElement('div', NULL, array('class' => 'invalid'));
 					$div->appendChild($label);
-					$div->appendChild(new XMLElement('p', __('The supplied password was rejected. <a href="%s">Retrieve password?</a>', array(ADMIN_URL . '/login/retrieve-password/'))));
+					$div->appendChild($this->createElement('p', __('The supplied password was rejected. <a href="%s">Retrieve password?</a>', array(ADMIN_URL . '/login/retrieve-password/'))));
 					$fieldset->appendChild($div);
 				}
 
@@ -128,7 +133,7 @@
 
 				$this->Form->appendChild($fieldset);
 
-				$div = new XMLElement('div', NULL, array('class' => 'actions'));
+				$div = $this->createElement('div', NULL, array('class' => 'actions'));
 				$div->appendChild(Widget::Input('action[login]', __('Login'), 'submit'));
 				if(!preg_match('@\/symphony\/login\/@i', $_SERVER['REQUEST_URI'])) $div->appendChild(Widget::Input('redirect', $_SERVER['REQUEST_URI'], 'hidden'));
 				$this->Form->appendChild($div);
@@ -212,13 +217,13 @@
 							$token = substr(md5(time() . rand(0, 200)), 0, 6);
 							Symphony::Database()->insert('tbl_forgotpass',
 								array(
-									'user_id' => $user->id, 
-									'token' => $token, 
+									'user_id' => $user->id,
+									'token' => $token,
 									'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))
-								)								
+								)
 							);
 						}
-						
+
 						// TODO: Is this really the best way to get the a Symphony Concierge email
 						// Should Conceirge really be the Admin's name??
 						$from = Symphony::Database()->query("SELECT `email` FROM `tbl_users` ORDER BY `id` ASC LIMIT 1");
