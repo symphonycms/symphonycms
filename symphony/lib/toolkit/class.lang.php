@@ -186,7 +186,7 @@
 		public static function createHandle($string, $max_length=255, $delim='-', $uriencode=false, $apply_transliteration=true, $additional_rule_set=NULL) {
 
 			// Use the transliteration table if provided
-			if($apply_transliteration) $string = _t($string);
+			if($apply_transliteration == true) $string = _t($string);
 
 			$max_length = intval($max_length);
 			
@@ -200,7 +200,7 @@
 			if($max_length != NULL && is_numeric($max_length)) $string = General::limitWords($string, $max_length);
 								
 			// Replace spaces (tab, newline etc) with the delimiter
-			$string = preg_replace('/[\s]+/', $delim, $string);					
+			$string = preg_replace('/[\s]+/', $delim, $string);
 
 			// Find all legal characters
 			preg_match_all('/[^<>?@:!-\/\[-`ëí;‘’]+/u', $string, $matches);
@@ -235,21 +235,30 @@
 		 * @param string $delim replacement for invalid characters
 		 * @param boolean $apply_transliteration if true, umlauts and special characters will be substituted
 		 * @return string created filename
-		 */					
-		public static function createFilename($string, $delim = '-', $apply_transliteration = true) {
+		 */
+		public static function createFilename($string, $delim='-', $apply_transliteration=true) {
 
 			// Use the transliteration table if provided
-			if($apply_transliteration) $string = _t($string);
+			if($apply_transliteration == true) $string = _t($string);
 
 			// Strip out any tag
-			$string = strip_tags($string);				
+			$string = strip_tags($string);
 
 			// Find all legal characters
-			preg_match_all('/[\p{L}\w:;.,+=~]+/u', $string, $matches);
+			$count = preg_match_all('/[\p{L}\w:;.,+=~]+/u', $string, $matches);
+			if($count <= 0 || $count == false){
+				preg_match_all('/[\w:;.,+=~]+/', $string, $matches);
+			}
 
 			// Join only legal character with the $delim
 			$string = implode($delim, $matches[0]);
-
+			
+			// Remove leading or trailing delim characters
+			$string = trim($string, $delim);
+			
+			// Make it lowercase
+			$string = strtolower($string);
+			
 			return $string;
 
 		}
@@ -316,7 +325,7 @@
 		public static function getLanguageCodes($path, $languages) {
 			$iterator = new DirectoryIterator($path);
 			foreach($iterator as $file) {
-				if(!$file->isDot() && preg_match('/lang\.(\w+(-\w+)?)\.php$/', $file->getFilename(), $matches)) {
+				if(!$file->isDot() && preg_match('/^lang\.(\w+(-\w+)?)\.php$/', $file->getFilename(), $matches)) {
 					if(!isset($languages[$matches[1]])) {
 						include($file->getPathname());
 						$languages[$matches[1]] = $about['name'];

@@ -2,24 +2,20 @@ var Symphony;
 
 (function($) {
 	Symphony = {
-		WEBSITE: $('script')[0].src.match('(.*)/symphony')[1],
+		WEBSITE: $('script[src]')[0].src.match('(.*)/symphony')[1],
 		Language: {
 			NAME: $('html').attr('lang'),
 			DICTIONARY: {},
 			get: function(string, tokens) {
-				// Return string if it cannot be found in the dictionary
-				if(Symphony.Language.DICTIONARY[string] === false) {
-					if(tokens) {
-						string = Symphony.Language.insert(string, tokens);
-					}
-					return string;
-				}
 				// Get translated string
-				string = Symphony.Language.DICTIONARY[string];
+				translatedString = Symphony.Language.DICTIONARY[string];
+
+				// Return string if it cannot be found in the dictionary
+				if(translatedString !== false) string = translatedString;
+					
 				// Insert tokens
-				if(tokens != undefined) {
-					string = Symphony.Language.insert(string, tokens);
-				}
+				if(tokens !== undefined) string = Symphony.Language.insert(string, tokens);
+				
 				// Return translated string
 				return string;
 			},
@@ -217,12 +213,13 @@ var Symphony;
 			type: 'POST',
 			url: Symphony.WEBSITE + '/symphony/ajax/reorder' + location.href.slice(Symphony.WEBSITE.length + 9),
 			data: $('input', this).map(function(i) { return this.name + '=' + i; }).get().join('&'),
-			complete: function(x) {
-				if (x.status === 200) {
-					Symphony.Message.clear('reorder');
-				} else {
-					Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'reorder error');
-				}
+			success: function() {
+				Symphony.Message.clear('reorder');
+			},
+			error: function() {
+				Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'reorder error');
+			},
+			complete: function() {
 				t.removeClass('busy');
 			}
 		});

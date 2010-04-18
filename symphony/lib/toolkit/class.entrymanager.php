@@ -67,7 +67,7 @@
 				}
 			}
 			
-			$entry_list = @implode("', '", $entries);
+			$entry_list = implode("', '", $entries);
 			Symphony::Database()->delete('tbl_entries', " `id` IN ('$entry_list') ");			
 			
 			return true;

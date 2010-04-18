@@ -46,18 +46,17 @@
 	define('DOCROOT', rtrim(dirname(__FILE__), '/'));
 	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . dirname($_SERVER['PHP_SELF']), '/'));
 	
-	require_once('symphony/lib/boot/func.utilities.php');
-	require_once('symphony/lib/boot/defines.php');
+	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
 	require_once(TOOLKIT . '/class.general.php');
 	
-	if (isset($_GET['action']) && $_GET['action'] == 'remove') {
+	if(isset($_GET['action']) && $_GET['action'] == 'remove'){
 		unlink(DOCROOT . '/update.php');
 		redirect(URL . '/symphony/');
 	}
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.0.7');
+	define('kVERSION', '2.0.8RC1');
 	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/'.kVERSION.'/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -91,6 +90,9 @@
 		
 		## Build is no longer used
 		unset($settings['symphony']['build']);
+		
+		## Remove the old Maintenance Mode setting
+		unset($settings['public']['maintenance_mode']);
 
 		## Set the default language
 		if(!isset($settings['symphony']['lang'])){
@@ -100,8 +102,6 @@
 		if(writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']) === true){
 			
 			// build a Frontend page instance to initialise database
-			require(DOCROOT . '/symphony/lib/boot/bundle.php');
-			require_once(DOCROOT . '/manifest/config.php');
 			require_once(CORE . '/class.frontend.php');
 			$frontend = Frontend::instance();
 			
@@ -192,7 +192,7 @@ Options +FollowSymlinks
 ';
 
 				@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
-				
+
 				// No longer need symphony/.htaccess
 				if(file_exists(DOCROOT . '/symphony/.htaccess') && is_writable(DOCROOT . '/symphony/.htaccess')){
 					unlink(DOCROOT . '/symphony/.htaccess');
@@ -200,14 +200,21 @@ Options +FollowSymlinks
 				
 			}
 			
-			if (version_compare($existing_version, '2.0.6', '<=')){
+			if(version_compare($existing_version, '2.0.6', '<=')){
 				$frontend->Database->query('ALTER TABLE `tbl_extensions` CHANGE `version` `version` VARCHAR(20) NOT NULL');
 			}
 			
 			if(version_compare($existing_version, '2.0.7RC1', '<=')){
 				$frontend->Database->query('ALTER TABLE `tbl_authors` ADD `language` VARCHAR(15) NULL DEFAULT NULL');
+
+				$settings['symphony']['pages_table_nest_children'] = 'no';
+				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 			
+			if(version_compare($existing_version, '2.0.8', '<')){
+				$frontend->Database->query('ALTER TABLE `tbl_fields_date` DROP `calendar`');
+			}
+
 			$sbl_version = $frontend->Database->fetchVar('version', 0, 
 				"SELECT `version` FROM `tbl_extensions` WHERE `name` = 'selectbox_link_field' LIMIT 1"
 			);

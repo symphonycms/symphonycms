@@ -25,6 +25,7 @@
 		const CRLF = "\r\n";
 		
         private $_host;
+        private $_scheme;
         private $_port;
         private $_path;
         private $_url;
@@ -58,9 +59,10 @@
                     $url_parsed = parse_url($value);
                     
                     $this->_host = $url_parsed['host'];
-
+					
+					$this->_scheme = 'http://';
 					if(isset($url_parsed['scheme']) && strlen(trim($url_parsed['scheme'])) > 0){
-						$this->_host = $url_parsed['scheme'] . '://' . $this->_host;
+						$this->_scheme = $url_parsed['scheme'];
 					}
 					
 					$this->_port = 80;
@@ -157,10 +159,12 @@
 
        	public function exec($force_connection_method=GATEWAY_NO_FORCE){
 
-			if($force_connection_method != GATEWAY_FORCE_SOCKET && self::isCurlAvailable()){			
-
+			if($force_connection_method != GATEWAY_FORCE_SOCKET && self::isCurlAvailable()){
 				$ch = curl_init();
-				curl_setopt($ch, CURLOPT_URL, $this->_host . (!is_null($this->_port) ? ':' . $this->_port : NULL) . $this->_path);
+
+				curl_setopt($ch, CURLOPT_URL, 
+					"{$this->_scheme}://{$this->_host}" . (!is_null($this->_port) ? ':' . $this->_port : NULL) . $this->_path
+				);
 				curl_setopt($ch, CURLOPT_HEADER, $this->_returnHeaders);
 				curl_setopt($ch, CURLOPT_USERAGENT, $this->_agent);
 				curl_setopt($ch, CURLOPT_PORT, $this->_port);
@@ -170,6 +174,10 @@
 				@curl_setopt($ch, CURLOPT_COOKIEFILE, TMP . '/cookie.txt');
 				curl_setopt($ch, CURLOPT_TIMEOUT, $this->_timeout);
 				
+                if(is_array($this->_headers) && !empty($this->_headers)) {
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_headers);
+                }
+
 				if($this->_method == 'POST') {
 					curl_setopt($ch, CURLOPT_POST, 1);
 					curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postfields);
@@ -191,9 +199,9 @@
 
 				return $result;
 			}
-			
+
 			##No CURL is available, use attempt to use normal sockets
-			if(!$handle = fsockopen($this->_host, $this->_port, $errno, $errstr, 30)) return false;
+			if(!$handle = fsockopen($this->_host, $this->_port, $errno, $errstr, $this->_timeout)) return false;
 
 			else{
 				

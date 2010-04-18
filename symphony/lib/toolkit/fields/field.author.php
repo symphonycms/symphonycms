@@ -190,10 +190,15 @@
 
 	        $list = new XMLElement($this->get('element_name'));
 	        foreach($data['author_id'] as $author_id){
-	            $author = new Author($this->_engine, $author_id);
-	            $list->appendChild(new XMLElement('item', 
-	                                    $author->getFullName(), 
-	                                    array('id' => $author->get('id'), 'username' => $author->get('username'))));
+	            $author = new Author($author_id);
+	            $list->appendChild(new XMLElement(
+					'item', 
+					$author->getFullName(), 
+					array(
+						'id' => (string)$author->get('id'), 
+						'username' => General::sanitize($author->get('username'))
+					)
+				));
 	        }
 	        $wrapper->appendChild($list);
 	    }
