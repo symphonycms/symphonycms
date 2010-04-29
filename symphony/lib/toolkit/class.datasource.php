@@ -17,7 +17,8 @@
 		function __construct(&$parent, $env=NULL, $process_params=true){
 			$this->_Parent = $parent;
 			$this->_force_empty_result = false;
-
+			$this->_dependencies = array();
+			
 			if($process_params){ 
 				$this->processParameters($env);
 			}
@@ -80,8 +81,8 @@
 			if(!isset($this->dsParamINCLUDEDELEMENTS) || !is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) return;
 			
 			foreach($this->dsParamINCLUDEDELEMENTS as $index) {
-				
-				if(!is_object($fields[$index])){
+				if(!isset($fields[$index])) continue;
+				elseif(!is_object($fields[$index])){
 					trigger_error(__('%s is not a valid object. Failed to append to XML.', array($index)), E_USER_WARNING);
 					continue;
 				}

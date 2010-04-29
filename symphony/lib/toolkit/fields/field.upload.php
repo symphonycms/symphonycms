@@ -177,9 +177,9 @@
 
 		function appendFormattedElement(&$wrapper, $data){
 			$item = new XMLElement($this->get('element_name'));
-			
+			$file = WORKSPACE . $data['file'];
 			$item->setAttributeArray(array(
-				'size' => General::formatFilesize(filesize(WORKSPACE . $data['file'])),
+				'size' => (file_exists($file) && is_readable($file) ? General::formatFilesize(filesize($file)) : 'unknown'),
 			 	'path' => str_replace(WORKSPACE, NULL, dirname(WORKSPACE . $data['file'])),
 				'type' => $data['mimetype'],
 			));
@@ -367,13 +367,13 @@
 			if(!is_array($data)){
 				
 				$status = self::__OK__;
-				
+				$file = WORKSPACE . $data;
 				// Do a simple reconstruction of the file meta information. This is a workaround for
 				// bug which causes all meta information to be dropped
 				return array(
 					'file' => $data,
 					'mimetype' => self::__sniffMIMEType($data),
-					'size' => filesize(WORKSPACE . $data),
+					'size' => (file_exists($file) && is_readable($file) ? filesize($file) : NULL),
 					'meta' => serialize(self::getMetaInfo(WORKSPACE . $data, self::__sniffMIMEType($data)))
 				);
 	

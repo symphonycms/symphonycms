@@ -275,6 +275,7 @@
 
 	$entry_id = $position = $fields = NULL;	
 	$post = General::getPostData();
+	$success = true;
 	
 	if (in_array('expect-multiple', $this->eParamFILTERS)) {
 		if (is_array($post['fields']) && isset($post['fields'][0])) {

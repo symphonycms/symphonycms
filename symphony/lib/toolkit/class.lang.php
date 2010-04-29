@@ -304,7 +304,7 @@
 		public static function getAvailableLanguages($ExtensionManager=false) {
 			$languages = array();
 			// Get core translation files
-			$languages = self::getLanguageCodes('./symphony/lib/lang', $languages);
+			$languages = self::getLanguageCodes(LIBRARY . '/lang', $languages);
 			// Get extension translation files
 			if($ExtensionManager) {
 				foreach ($ExtensionManager->listAll() as $extension => $about) {
