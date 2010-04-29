@@ -17,7 +17,8 @@
 		function __construct(&$parent, $env=NULL, $process_params=true){
 			$this->_Parent = $parent;
 			$this->_force_empty_result = false;
-
+			$this->_dependencies = array();
+			
 			if($process_params){ 
 				$this->processParameters($env);
 			}
