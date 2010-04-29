@@ -281,13 +281,13 @@
 		public function checkPostFieldData($data, &$message, $entry_id=NULL){
 			$message = NULL;
 			
-			if ($this->get('required') == 'yes' && strlen($data) == 0){
+			if ($this->get('required') == 'yes' && empty($data)){
 				$message = __("'%s' is a required field.", array($this->get('label')));
 				
 				return self::__MISSING_FIELDS__;
 			}
 			
-			return self::__OK__;		
+			return self::__OK__;
 		}
 		
 		/*
