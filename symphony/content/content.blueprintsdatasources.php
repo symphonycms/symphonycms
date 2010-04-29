@@ -752,25 +752,25 @@
 				switch($key) {
 					case 'author':
 						$fieldset = new XMLElement('fieldset');
-						$fieldset->appendChild(new XMLElement('legend', 'Author'));
+						$fieldset->appendChild(new XMLElement('legend', __('Author')));
 						$fieldset->appendChild(new XMLElement('p', $link->generate(false)));
 						break;
 					
 					case 'version':
 						$fieldset = new XMLElement('fieldset');
-						$fieldset->appendChild(new XMLElement('legend', 'Version'));
-						$fieldset->appendChild(new XMLElement('p', $value . ', released on ' . DateTimeObj::get(__SYM_DATE_FORMAT__, strtotime($about['release-date']))));
+						$fieldset->appendChild(new XMLElement('legend', __('Version')));
+						$fieldset->appendChild(new XMLElement('p', $value . ', ' . __('released on') . ' ' . DateTimeObj::get(__SYM_DATE_FORMAT__, strtotime($about['release-date']))));
 						break;
 						
 					case 'description':
 						$fieldset = new XMLElement('fieldset');
-						$fieldset->appendChild(new XMLElement('legend', 'Description'));
+						$fieldset->appendChild(new XMLElement('legend', __('Description')));
 						$fieldset->appendChild((is_object($about['description']) ? $about['description'] : new XMLElement('p', $about['description'])));
 					
 					case 'example':
 						if (is_callable(array($datasource, 'example'))) {
 							$fieldset = new XMLElement('fieldset');
-							$fieldset->appendChild(new XMLElement('legend', 'Example XML'));
+							$fieldset->appendChild(new XMLElement('legend', __('Example XML')));
 
 							$example = $datasource->example();
 

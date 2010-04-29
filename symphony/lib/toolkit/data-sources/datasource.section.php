@@ -59,8 +59,8 @@
 								$param_pool[$key][] = $param_pool_values;
 							}
 						}
-						
-						if (!$param_output_only) foreach ($ds->dsParamINCLUDEDELEMENTS as $handle) {
+
+						if (!$param_output_only) if (is_array($ds->dsParamINCLUDEDELEMENTS)) foreach ($ds->dsParamINCLUDEDELEMENTS as $handle) {
 							list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
 							if($fieldPool[$field_id]->get('element_name') == $handle) {
 								$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($ds->dsParamHTMLENCODE ? true : false), $mode, $entry->get('id'));
@@ -69,7 +69,7 @@
 					}
 
 					if(!$param_output_only){ 
-						if(in_array('system:date', $ds->dsParamINCLUDEDELEMENTS)){ 
+						if(is_array($ds->dsParamINCLUDEDELEMENTS) && in_array('system:date', $ds->dsParamINCLUDEDELEMENTS)){ 
 							$xEntry->appendChild(General::createXMLDateObject(strtotime($entry->creationDate), 'system-date'));
 						}
 						$xGroup->appendChild($xEntry);
@@ -139,8 +139,7 @@
 				throw new Exception(
 					__(
 						'Error creating field object with id %1$d, for filtering in data source "%2$s". Check this field exists.', 
-						$field_id, 
-						$this->dsParamROOTELEMENT
+						array($field_id, $this->dsParamROOTELEMENT)
 					)
 				);
 			}

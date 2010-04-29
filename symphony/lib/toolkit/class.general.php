@@ -320,23 +320,8 @@
 		        }
 		    }
 		    return $input;
-		}
+		}		
 		
-		
-		/***
-		
-		Method: repeatStr
-		Description: This will repeat a string XX number of times.
-		Param: $str - string to repeat
-		       $xx - Number of times to repeat the string
-		Return: resultant string
-		
-		***/		
-		public static function repeatStr($str, $xx){
-			$xx = ceil(max(0, $xx));
-			return ($xx == 0 ? NULL : str_pad('', strlen($str) * $xx, $str));
-		}
-
 		/***
 		
 		Method: substrmin

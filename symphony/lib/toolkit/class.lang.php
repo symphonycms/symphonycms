@@ -304,7 +304,7 @@
 		public static function getAvailableLanguages($ExtensionManager=false) {
 			$languages = array();
 			// Get core translation files
-			$languages = self::getLanguageCodes('./symphony/lib/lang', $languages);
+			$languages = self::getLanguageCodes(LIBRARY . '/lang', $languages);
 			// Get extension translation files
 			if($ExtensionManager) {
 				foreach ($ExtensionManager->listAll() as $extension => $about) {
@@ -325,7 +325,7 @@
 		public static function getLanguageCodes($path, $languages) {
 			$iterator = new DirectoryIterator($path);
 			foreach($iterator as $file) {
-				if(!$file->isDot() && preg_match('/lang\.(\w+(-\w+)?)\.php$/', $file->getFilename(), $matches)) {
+				if(!$file->isDot() && preg_match('/^lang\.(\w+(-\w+)?)\.php$/', $file->getFilename(), $matches)) {
 					if(!isset($languages[$matches[1]])) {
 						include($file->getPathname());
 						$languages[$matches[1]] = $about['name'];
