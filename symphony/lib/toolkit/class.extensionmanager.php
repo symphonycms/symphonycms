@@ -78,6 +78,8 @@
 				return false;
 			}
 
+			$this->__canUninstallOrDisable($obj);
+
 			$id = $this->registerService($name, false);
 
 			$obj->disable();
@@ -94,6 +96,8 @@
 				trigger_error(__('Could not %1$s %2$s, there was a problem loading the object. Check the driver class exists.', array(__FUNCTION__, $name)), E_USER_WARNING);
 				return false;
 			}
+			
+			$this->__canUninstallOrDisable($obj);
 
 			$obj->uninstall();
 			unset($obj);
@@ -102,7 +106,62 @@
 
 			return true;
 		}
+		
+		private function __canUninstallOrDisable(Extension $obj){
+			
+			// Make sure, if this extension has provided Fields, Data Sources or Events, that they aren't in use
+			$extension_handle = strtolower(preg_replace('/^extension_/i', NULL, get_class($obj)));
 
+			// Fields:
+			if(is_dir(EXTENSIONS . "/{$extension_handle}/fields")){
+				foreach(glob(EXTENSIONS . "/{$extension_handle}/fields/field.*.php") as $file){
+					$type = preg_replace(array('/^field\./i', '/\.php$/i'), NULL, basename($file));
+					if(Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_fields` WHERE `type` = '{$type}'") > 0){
+						$about = $obj->about();
+						throw new Exception(
+							__(
+								"The field '%s', provided by the Extension '%s', is currently in use. Please remove it from your sections prior to uninstalling or disabling.",
+								array(basename($file), $about['name'])
+							)
+						);
+					}
+				}
+			}
+			
+			// Data Sources:
+			if(is_dir(EXTENSIONS . "/{$extension_handle}/data-sources")){
+				foreach(glob(EXTENSIONS . "/{$extension_handle}/data-sources/data.*.php") as $file){
+				
+					$handle = preg_replace(array('/^data\./i', '/\.php$/i'), NULL, basename($file));
+					if(Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0){
+						$about = $obj->about();
+						throw new Exception(
+							__(
+								"The Data Source '%s', provided by the Extension '%s', is currently in use. Please remove it from your pages prior to uninstalling or disabling.",
+								array(basename($file), $about['name'])
+							)
+						);
+					}
+				}				
+			}
+			
+			// Events
+			if(is_dir(EXTENSIONS . "/{$extension_handle}/events")){
+				foreach(glob(EXTENSIONS . "/{$extension_handle}/events/event.*.php") as $file){
+					$handle = preg_replace(array('/^event\./i', '/\.php$/i'), NULL, basename($file));
+					if(Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `events` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0){
+						$about = $obj->about();
+						throw new Exception(
+							__(
+								"The Event '%s', provided by the Extension '%s', is currently in use. Please remove it from your pages prior to uninstalling or disabling.",
+								array(basename($file), $about['name'])
+							)
+						);
+					}
+				}				
+			}
+		}
+		
 		public function fetchStatus($name){
 			if(!$status = Symphony::Database()->fetchVar('status', 0, "SELECT `status` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1")) return EXTENSION_NOT_INSTALLED;
 

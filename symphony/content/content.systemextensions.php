@@ -27,10 +27,9 @@
 			$aTableBody = array();
 
 			if(!is_array($extensions) || empty($extensions)){
-
 				$aTableBody = array(
-									Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
-								);
+					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
+				);
 			}
 
 			else{
@@ -89,57 +88,60 @@
 			$checked  = @array_keys($_POST['items']);
 
 			if(isset($_POST['with-selected']) && is_array($checked) && !empty($checked)){
+				
+				try{
+					switch($_POST['with-selected']){
 
-				$action = $_POST['with-selected'];
+						case 'enable':		
 
-				switch($action){
+							## TODO: Fix Me
+							###
+							# Delegate: Enable
+							# Description: Notifies of enabling Extension. Array of selected services is provided.
+							#              This can not be modified.
+							//$ExtensionManager->notifyMembers('Enable', getCurrentPage(), array('services' => $checked));
 
-					case 'enable':		
-
-						## TODO: Fix Me
-						###
-						# Delegate: Enable
-						# Description: Notifies of enabling Extension. Array of selected services is provided.
-						#              This can not be modified.
-						//$ExtensionManager->notifyMembers('Enable', getCurrentPage(), array('services' => $checked));
-
-						foreach($checked as $name){
-							if($this->_Parent->ExtensionManager->enable($name) === false) return;
-						}
-						break;
+							foreach($checked as $name){
+								if($this->_Parent->ExtensionManager->enable($name) === false) return;
+							}
+							break;
 
 
-					case 'disable':
+						case 'disable':
 
-						## TODO: Fix Me
-						###
-						# Delegate: Disable
-						# Description: Notifies of disabling Extension. Array of selected services is provided.
-						#              This can be modified.
-						//$ExtensionManager->notifyMembers('Disable', getCurrentPage(), array('services' => &$checked));
+							## TODO: Fix Me
+							###
+							# Delegate: Disable
+							# Description: Notifies of disabling Extension. Array of selected services is provided.
+							#              This can be modified.
+							//$ExtensionManager->notifyMembers('Disable', getCurrentPage(), array('services' => &$checked));
 	
-						foreach($checked as $name){
-							if($this->_Parent->ExtensionManager->disable($name) === false) return;			
-						}
-						break;
+							foreach($checked as $name){
+								$this->_Parent->ExtensionManager->disable($name);
+							}
+							break;
 					
-					case 'uninstall':
+						case 'uninstall':
 
-						## TODO: Fix Me
-						###
-						# Delegate: Uninstall
-						# Description: Notifies of uninstalling Extension. Array of selected services is provided.
-						#              This can be modified.
-						//$ExtensionManager->notifyMembers('Uninstall', getCurrentPage(), array('services' => &$checked));
+							## TODO: Fix Me
+							###
+							# Delegate: Uninstall
+							# Description: Notifies of uninstalling Extension. Array of selected services is provided.
+							#              This can be modified.
+							//$ExtensionManager->notifyMembers('Uninstall', getCurrentPage(), array('services' => &$checked));
 						
-						foreach($checked as $name){
-							if($this->_Parent->ExtensionManager->uninstall($name) === false) return;			
-						}
+							foreach($checked as $name){
+								$this->_Parent->ExtensionManager->uninstall($name);
+							}
 						
-						break;
-				}		
+							break;
+					}		
 
-				redirect($this->_Parent->getCurrentPageURL());
+					redirect($this->_Parent->getCurrentPageURL());
+				}
+				catch(Exception $e){
+					$this->pageAlert($e->getMessage(), Alert::ERROR);
+				}
 			}			
 		}
 		
