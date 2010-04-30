@@ -327,7 +327,11 @@
 
 				## Summary
 				$li = new XMLElement('li', __('Page %1$s of %2$s', array($current_page, max($current_page, $entries['total-pages']))));
-				$li->setAttribute('title', __('Viewing %1$s - %2$s of %3$s entries', array($entries['start'], min($entries['limit'], max(1, $entries['remaining-entries'])), $entries['total-entries'])));
+				$li->setAttribute('title', __('Viewing %1$s - %2$s of %3$s entries', array(
+					$entries['start'],
+					($current_page != $entries['total-pages']) ? $current_page * Symphony::Configuration()->get('pagination_maximum_rows', 'symphony') : $entries['total-entries'],
+					$entries['total-entries']
+				)));
 				$ul->appendChild($li);
 
 				## Next
