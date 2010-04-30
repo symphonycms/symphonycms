@@ -170,10 +170,29 @@
 				# Description: Prior to deleting the event file. Target file path is provided.
 				#$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array("file" => EVENTS . "/event." . $_REQUEST['file'] . ".php"));
 
-		    	if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php'))
+		    	if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php')){
 					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
+				}
+				
+		    	else{
+			
+					$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` WHERE `events` REGEXP '[[:<:]]".$this->_context[1]."[[:>:]]' ");
 
-		    	else redirect(URL . '/symphony/blueprints/components/');
+					if(is_array($pages) && !empty($pages)){
+						foreach($pages as $page){
+							
+							$events = preg_split('/\s*,\s*/', $page['events'], -1, PREG_SPLIT_NO_EMPTY);
+							$events = array_flip($events);
+							unset($events[$this->_context[1]]);
+							
+							$page['events'] = implode(',', array_flip($events));
+							
+							Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
+						}
+					}
+			
+					redirect(URL . '/symphony/blueprints/components/');
+				}
 						
 			}	
 		}
