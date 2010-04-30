@@ -4,12 +4,12 @@
 		
 	Class Log{
 
-		const kNOTICE = E_NOTICE;
-		const kWARNING = E_WARNING;
-		const kERROR = E_ERROR;
+		const NOTICE = E_NOTICE;
+		const WARNING = E_WARNING;
+		const ERROR = E_ERROR;
 
-		const kAPPEND = 10;
-		const kOVERWRITE = 11;
+		const APPEND = 10;
+		const OVERWRITE = 11;
 
 		private static $__errorTypeStrings = array (
 			
@@ -97,19 +97,11 @@
 		
 		public function writeToLog($message, $addbreak=true){
 			
-			if(!$handle = @fopen($this->_log_path, 'a')) {
-				$this->pushToLog("Could Not Open Log File '".$this->_log_path."'", self::kERROR);
+			if(file_exists($this->_log_path) && !is_writable($this->_log_path)){
+				$this->pushToLog('Could Not Write To Log. It is not readable.', self::ERROR);
 				return false;
 			}
-	
-			if(@fwrite($handle, $message . ($addbreak ? "\r\n" : '')) === FALSE) {
-				$this->pushToLog('Could Not Write To Log', self::kERROR);
-				return false;
-			}
-			
-			@fclose($handle);
-			
-			return true;
+			return file_put_contents($this->_log_path, $message . ($addbreak ? "\r\n" : ''), FILE_APPEND);
 	
 		}
 		
@@ -117,28 +109,35 @@
 			return $this->_log;
 		}
 		
-		public function open($mode = self::kAPPEND){			
+		public function open($flag=self::APPEND, $mode=0777){
 			
-			if(!is_file($this->_log_path)) $mode = self::kOVERWRITE;
+			if(!file_exists($this->_log_path)) $flag = self::OVERWRITE;
 			
-			if($mode == self::kAPPEND){
-				if($this->_max_size > 0 && @filesize($this->_log_path) > $this->_max_size){
-					$mode = self::kOVERWRITE;
+			if($flag == self::APPEND && file_exists($this->_log_path) && is_readable($this->_log_path)){
+				if($this->_max_size > 0 && filesize($this->_log_path) > $this->_max_size){
+					$flag = self::OVERWRITE;
 					
 					if($this->_archive){
-						$handle = gzopen(LOGS . '/main.'.DateTimeObj::get('Ymdh').'.gz','w9');
-						gzwrite($handle, @file_get_contents($this->_log_path));
-						gzclose($handle);				
+						$file = LOGS . '/main.'.DateTimeObj::get('Ymdh').'.gz';
+						$handle = gzopen($file,'w9');
+						gzwrite($handle, file_get_contents($this->_log_path));
+						gzclose($handle);
+						chmod($file, intval($mode, 8));
 					}
 				}
 			}
-			
-			if($mode == self::kOVERWRITE){
-				@unlink($this->_log_path);
+
+			if($flag == self::OVERWRITE){
+				if(file_exists($this->_log_path) && is_writable($this->_log_path)){
+					unlink($this->_log_path);
+				}
 			
 				$this->writeToLog('============================================', true);
 				$this->writeToLog('Log Created: ' . DateTimeObj::get('c'), true);
 				$this->writeToLog('============================================', true);
+				
+
+				chmod($this->_log_path, intval($mode, 8));
 			
 				return 1;
 			}
