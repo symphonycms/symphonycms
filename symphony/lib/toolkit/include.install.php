@@ -156,7 +156,7 @@
     }
 
 
-    public function checkRequirement($item, $type, $expected){
+    function checkRequirement($item, $type, $expected){
 
  		switch($type){
 
