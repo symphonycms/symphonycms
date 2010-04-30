@@ -1,16 +1,6 @@
 <?php
 
 	Class DatabaseException extends Exception{
-
-		/*
-			Array
-			(
-			    [query] =>
-			    [msg] => Access denied for user 'rdoot'@'localhost' (using password: YES)
-			    [num] => 1045
-			)
-		*/
-
 		private $_error;
 		public function __construct($message, array $error=NULL){
 			parent::__construct($message);
@@ -42,13 +32,17 @@
 		private $_dumpTables = array();
 		private $_client_info;
 		private $_client_encoding;
-		private $_query_count;
+		private static $_query_count;
 
 		private $_cache;
 		private $_logEverything;
 
 	    function __construct(){
-			$this->_query_count = 0;
+			
+			if(!is_numeric(self::$_query_count)){
+				self::$_query_count = 0;
+			}
+			
 			$this->_cache = NULL;
 			$this->_logEverything = NULL;
 			$this->flushLog();
@@ -267,7 +261,7 @@
 
 			$this->_result = mysql_query($query, $this->_connection['id']);
 
-			$this->_query_count++;
+			self::$_query_count++;
 
 	        if(mysql_error()){
 	            $this->__error();
@@ -303,7 +297,7 @@
 	    }
 
 		public function queryCount(){
-			return $this->_query_count;
+			return self::$_query_count;
 		}
 
 	    public function fetch($query=NULL, $index_by_field=NULL){
