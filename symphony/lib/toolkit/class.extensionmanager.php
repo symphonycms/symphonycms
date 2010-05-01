@@ -12,6 +12,7 @@
 
 		static private $_enabled_extensions = NULL;
 		static private $_subscriptions = NULL;
+		static private $_extensions = NULL;
 
         function __getClassName($name){
 	        return 'extension_' . $name;
@@ -28,6 +29,15 @@
         public function getClassPath($name){
 	        return EXTENSIONS . strtolower("/$name");
         }
+
+		private function __buildExtensionList() {
+			if (self::$_extensions == NULL) {
+				$extensions = Symphony::Database()->fetch("SELECT * FROM `tbl_extensions`");
+				foreach($extensions as $extension) {
+					self::$_extensions[$extension['name']] = $extension;
+				}
+			}
+		}
 
 		public function sortByStatus($s1, $s2){
 
@@ -162,13 +172,15 @@
 			}
 		}
 		
-		public function fetchStatus($name){
-			if(!$status = Symphony::Database()->fetchVar('status', 0, "SELECT `status` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1")) return EXTENSION_NOT_INSTALLED;
-
+		public function fetchStatus($name){	
+			$this->__buildExtensionList();
+			
+			$status = self::$_extensions[$name]['status'];
+			
+			if(!$status) return EXTENSION_NOT_INSTALLED;			
 			if($status == 'enabled') return EXTENSION_ENABLED;
-
+			
 			return EXTENSION_DISABLED;
-
 		}
 
 		public function pruneService($name, $delegates_only=false){
@@ -378,17 +390,20 @@
 		}
 
 		private function __requiresInstallation($name){
-			$id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
+			$this->__buildExtensionList();			
+			$id = self::$_extensions[$name]['id'];
 			return (is_numeric($id) ? false : true);
 		}
 
 
 		public function fetchInstalledVersion($name){
-			return Symphony::Database()->fetchVar('version', 0, "SELECT `version` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
+			$this->__buildExtensionList();
+			return $id = self::$_extensions[$name]['version'];
 		}
 
 		public function fetchExtensionID($name){
-			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_extensions` WHERE `name` = '$name' LIMIT 1");
+			$this->__buildExtensionList();
+			return $id = self::$_extensions[$name]['id'];
 		}
 
 		public function fetchCustomMenu($name){
