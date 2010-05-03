@@ -821,11 +821,27 @@
 				# Description: Prior to deleting the datasource file. Target file path is provided.
 				#$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array("file" => DATASOURCES . "/data." . $_REQUEST['file'] . ".php"));
 
-		    	if(!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php'))
+		    	if(!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php')){
 					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
+				}
+				else{
 
-		    	else redirect(URL . '/symphony/blueprints/components/');
-						
+					$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]".$this->_context[1]."[[:>:]]' ");
+
+					if(is_array($pages) && !empty($pages)){
+						foreach($pages as $page){
+							
+							$data_sources = preg_split('/\s*,\s*/', $page['data_sources'], -1, PREG_SPLIT_NO_EMPTY);
+							$data_sources = array_flip($data_sources);
+							unset($data_sources[$this->_context[1]]);
+							
+							$page['data_sources'] = implode(',', array_flip($data_sources));
+							
+							Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
+						}
+					}
+					redirect(URL . '/symphony/blueprints/components/');
+				}
 			} 
 		}
 		

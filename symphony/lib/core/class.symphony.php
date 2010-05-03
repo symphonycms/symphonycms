@@ -161,7 +161,7 @@
 			self::$Log->setArchive((self::$Configuration->get('archive', 'log') == '1' ? true : false));
 			self::$Log->setMaxSize(intval(self::$Configuration->get('maxsize', 'log')));
 				
-			if(self::$Log->open() == 1){
+			if(self::$Log->open(Log::APPEND, self::$Configuration->get('write_mode', 'file')) == 1){
 				self::$Log->writeToLog('Symphony Log', true);
 				self::$Log->writeToLog('Version: '. self::$Configuration->get('version', 'symphony'), true);
 				self::$Log->writeToLog('--------------------------------------------', true);

@@ -182,10 +182,12 @@
 			if ($this->get('element_name') == '') {
 				$errors['element_name'] = __('This is a required field.');
 				
-			} elseif (!preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $this->get('element_name'))) {
+			}
+			elseif (!preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $this->get('element_name'))) {
 				$errors['element_name'] = __('Invalid element name. Must be valid QName.');
 				
-			} elseif($checkForDuplicates) {
+			}
+			elseif($checkForDuplicates) {
 				$sql_id = ($this->get('id') ? " AND f.id != '".$this->get('id')."' " : '');
 				$sql = "
 					SELECT
