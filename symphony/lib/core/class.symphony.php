@@ -109,6 +109,8 @@
 		}
 
 		public function initialiseDatabase(){
+			if (self::$Database) return true;
+			
 			$error = NULL;
 			
 			$driver_filename = TOOLKIT . '/class.' . self::$Configuration->get('driver', 'database') . '.php';
