@@ -56,7 +56,7 @@
 		$parent_sql = __processNavigationParentFilter($this->dsParamFILTERS['parent']);
 	}
 
-	$sql = "SELECT * FROM `tbl_pages` AS p LEFT JOIN `tbl_pages_types` AS pt ON(p.id = pt.page_id) WHERE 1 = 1";
+	$sql = "SELECT DISTINCT p.* FROM `tbl_pages` AS p LEFT JOIN `tbl_pages_types` AS pt ON(p.id = pt.page_id) WHERE 1 = 1";
 
 	if(!is_null($parent_sql)) $sql .= $parent_sql;
 	if(!is_null($types)) $sql .= " AND pt.type IN ('" . implode("', '", $types) . "')";
@@ -74,4 +74,3 @@
 
 	else foreach($pages as $p) $result->appendChild(__buildPageXML($p, Symphony::Database()));
 
-?>
