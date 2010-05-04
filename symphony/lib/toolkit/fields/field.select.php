@@ -77,6 +77,10 @@
 			return Symphony::Database()->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
 		}	
 			
+		public function getParameterPoolValue($data){
+			return $data['handle'];
+		}	
+			
 		public function getToggleStates() {
 			$values = preg_split('/,\s*/i', $this->get('static_options'), -1, PREG_SPLIT_NO_EMPTY);
 			
