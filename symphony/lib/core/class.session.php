@@ -80,13 +80,8 @@
 					preg_replace('/^www./i', NULL, $_SERVER['HTTP_HOST'])
 				);
 
-				if (!isset($parsed['host'])) return NULL;
+				if(isset($parsed['host'])) return $parsed['host'];
 
-				$domain = $parsed['host'];
-
-				if($domain{0} != '.') $domain = ".{$domain}";
-
-				return $domain; 
 			} 
 
 			return NULL;
