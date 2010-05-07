@@ -232,7 +232,7 @@
 		}
 		
 		function checkPostFieldData($data, &$message, $entry_id=NULL){
-		
+
 			/*
 				UPLOAD_ERR_OK
 				Value: 0; There is no error, the file uploaded with success.
@@ -381,15 +381,34 @@
 
 			if($simulate) return;
 			
-			if($data['error'] == UPLOAD_ERR_NO_FILE || $data['error'] != UPLOAD_ERR_OK) return;
+			## Upload the new file
+			$abs_path = DOCROOT . '/' . trim($this->get('destination'), '/');
+			$rel_path = str_replace('/workspace', '', $this->get('destination'));
+			$existing_file = NULL;
+			
+			if(!is_null($entry_id)){
+				$row = Symphony::Database()->fetchRow(0, sprintf(
+					"SELECT * FROM `tbl_entries_data_%s` WHERE `entry_id` = %d LIMIT 1", 
+					$this->get('id'), 
+					$entry_id
+				));
+				
+				$existing_file = rtrim($rel_path, '/') . '/' . trim(basename($row['file']), '/');
+				
+				// File was removed
+				if($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file) && file_exists(WORKSPACE . $existing_file)){
+					General::deleteFile(WORKSPACE . $existing_file);
+				}
+			}
+				
+			if($data['error'] == UPLOAD_ERR_NO_FILE || $data['error'] != UPLOAD_ERR_OK){
+				return;
+			}
 			
 			## Sanitize the filename
 			$data['name'] = Lang::createFilename($data['name']);
 			
-			## Upload the new file
-			$abs_path = DOCROOT . '/' . trim($this->get('destination'), '/');
-			$rel_path = str_replace('/workspace', '', $this->get('destination'));
-
+			
 			if(!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], Symphony::Configuration()->get('write_mode', 'file'))){
 				
 				$message = __('There was an error while trying to upload the file <code>%1$s</code> to the target directory <code>%2$s</code>.', array($data['name'], 'workspace/'.ltrim($rel_path, '/')));
@@ -400,14 +419,10 @@
 			$status = self::__OK__;
 			
 			$file = rtrim($rel_path, '/') . '/' . trim($data['name'], '/');
-
-			if($entry_id){
-				$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
-				$existing_file = rtrim($rel_path, '/') . '/' . trim(basename($row['file']), '/');
-
-				if((strtolower($existing_file) != strtolower($file)) && file_exists(WORKSPACE . $existing_file)){
-					General::deleteFile(WORKSPACE . $existing_file);
-				}
+			
+			// File has been replaced
+			if(!is_null($existing_file) && (strtolower($existing_file) != strtolower($file)) && file_exists(WORKSPACE . $existing_file)){
+				General::deleteFile(WORKSPACE . $existing_file);
 			}
 
 			## If browser doesn't send MIME type (e.g. .flv in Safari)
