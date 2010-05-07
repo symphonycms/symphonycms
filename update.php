@@ -56,7 +56,7 @@
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.0.8RC1');
+	define('kVERSION', '2.0.8RC2');
 	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/'.kVERSION.'/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -211,7 +211,7 @@ Options +FollowSymlinks
 				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 			
-			if(version_compare($existing_version, '2.0.8', '<')){
+			if(version_compare($existing_version, '2.0.8RC1', '<')){
 				$frontend->Database->query('ALTER TABLE `tbl_fields_date` DROP `calendar`');
 			}
 
