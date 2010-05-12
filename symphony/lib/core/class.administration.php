@@ -223,8 +223,8 @@
 		}
 
 		public function saveConfig(){
-			$string  = "<?php\n\t\$settings = {$this->Configuration};\n";
-			return General::writeFile(CONFIG, $string, $this->Configuration->get('write_mode', 'file'));
+			$string  = "<?php\n\t\$settings = ".(string)self::Configuration().";\n";
+			return General::writeFile(CONFIG, $string, self::Configuration()->get('write_mode', 'file'));
 		}
 		
 		public function errorPageNotFound(){
