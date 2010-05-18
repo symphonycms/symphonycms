@@ -133,7 +133,7 @@
 			Symphony::$Log->pushToLog("Session: Taking out the trash!", E_NOTICE, true);
 			return Symphony::Database()->query(
 				sprintf(
-					"DELETE FROM `tbl_sessions` WHERE `session_expires` <= '%s' OR `session_data` LIKE '%|a:0:{}'",
+					"DELETE FROM `tbl_sessions` WHERE `session_expires` <= '%s' OR `session_data` LIKE '%%|a:0:{}'",
 					Symphony::Database()->cleanValue(time() - $max)
 				)
 			);
