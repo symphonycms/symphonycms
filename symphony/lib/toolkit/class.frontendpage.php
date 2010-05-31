@@ -556,7 +556,7 @@
 					$dbstats = Symphony::Database()->getStatistics();
 					$queries = $dbstats['queries'] - $queries;
 
-					$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Datasource', $queries);
+					$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Event', $queries);
 				
 				}
 			}
