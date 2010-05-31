@@ -17,10 +17,9 @@
 
         
         **/
-  
-		const GATEWAY_NO_FORCE = 0;
-		const GATEWAY_FORCE_CURL = 1;
-		const GATEWAY_FORCE_SOCKET = 2;
+
+		const FORCE_CURL = 'curl';
+		const FORCE_SOCKET = 'socket';
 		
 		const CRLF = "\r\n";
 		
@@ -157,9 +156,9 @@
 			return $this->_info_last;
 		}
 
-       	public function exec($force_connection_method=GATEWAY_NO_FORCE){
+       	public function exec($force_connection_method=NULL){
 
-			if($force_connection_method != GATEWAY_FORCE_SOCKET && self::isCurlAvailable()){
+			if($force_connection_method != self::FORCE_SOCKET && self::isCurlAvailable()){
 				$ch = curl_init();
 
 				curl_setopt($ch, CURLOPT_URL, 
@@ -262,7 +261,7 @@
 	
 						$fp += 2;
 						
-					} while(true);   			
+					} while(true);
 					
 					$response = $dechunked;
 					
@@ -284,9 +283,9 @@
 			
 			return ($this->_returnHeaders ? $header : NULL) . $response;
 		}
-				
+
 		public function flush(){
-	        $this->_postfields = NULL;			
+			$this->_postfields = NULL;
 		}      
     
     }
