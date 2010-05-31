@@ -65,7 +65,7 @@
 						$this->_scheme = $url_parsed['scheme'];
 					}
 					
-					$this->_port = 80;
+					$this->_port = NULL;
 					if(isset($url_parsed['port'])){
                     	$this->_port = $url_parsed['port'];
 					}
@@ -163,7 +163,7 @@
 				$ch = curl_init();
 
 				curl_setopt($ch, CURLOPT_URL, 
-					"{$this->_scheme}://{$this->_host}" . (!is_null($this->_port) ? ':' . $this->_port : NULL) . $this->_path
+					sprintf("%s://%s%s%s", $this->_scheme, $this->_host, (!is_null($this->_port) ? ':' . $this->_port : NULL), $this->_path)
 				);
 				curl_setopt($ch, CURLOPT_HEADER, $this->_returnHeaders);
 				curl_setopt($ch, CURLOPT_USERAGENT, $this->_agent);
