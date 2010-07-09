@@ -350,7 +350,7 @@
 		        $classname = $this->__getClassName($name);
 		        $path = $this->__getDriverPath($name);
 
-		        if(!@is_file($path)){
+		        if(!is_file($path)){
 			        if(!$slient) trigger_error(__('Could not find extension at location %s', array($path)), E_USER_ERROR);
 			        return false;
 		        }

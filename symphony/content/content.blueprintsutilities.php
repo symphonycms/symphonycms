@@ -26,7 +26,7 @@
 				$file_abs = UTILITIES . '/' . $this->_existing_file;
 				$filename = $this->_existing_file;
 
-				if(!@is_file($file_abs)) redirect(URL . '/symphony/blueprints/utilities/new/');
+				if(!is_file($file_abs)) redirect(URL . '/symphony/blueprints/utilities/new/');
 				
 				$fields['name'] = $filename; 
 				$fields['body'] = @file_get_contents($file_abs);
