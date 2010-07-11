@@ -181,7 +181,7 @@
 			foreach($schema as $field){
 				if(isset($this->_data[$field->get('field_id')])) continue;
 				
-				$field->processRawFieldData(NULL, $result, $status, false, $this->get('id'));
+				$result = $field->processRawFieldData(NULL, $status, false, $this->get('id'));
 				$this->setData($field->get('field_id'), $result);
 			}
 			
