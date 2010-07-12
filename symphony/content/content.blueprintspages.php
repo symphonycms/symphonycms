@@ -206,7 +206,7 @@
 					LIMIT 1
 				");
 			
-			if(!@is_file($file_abs)) redirect(URL . '/symphony/blueprints/pages/');
+			if(!is_file($file_abs)) redirect(URL . '/symphony/blueprints/pages/');
 			
 			$fields['body'] = @file_get_contents($file_abs);
 			

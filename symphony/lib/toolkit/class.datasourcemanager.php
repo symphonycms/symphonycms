@@ -9,7 +9,7 @@
 
 	    function __find($name){
 		 
-		    if(@is_file(DATASOURCES . "/data.$name.php")) return DATASOURCES;
+		    if(is_file(DATASOURCES . "/data.$name.php")) return DATASOURCES;
 		    else{	
 			      
 				$extensionManager = new ExtensionManager($this->_Parent);
@@ -17,7 +17,7 @@
 				
 				if(is_array($extensions) && !empty($extensions)){
 					foreach($extensions as $e){
-						if(@is_file(EXTENSIONS . "/$e/data-sources/data.$name.php")) return EXTENSIONS . "/$e/data-sources";
+						if(is_file(EXTENSIONS . "/$e/data-sources/data.$name.php")) return EXTENSIONS . "/$e/data-sources";
 					}	
 				}		    
 	    	}
@@ -114,7 +114,7 @@
 	        $classname = $this->__getClassName($name);	        
 	        $path = $this->__getDriverPath($name);
 	        
-	        if(!@is_file($path)){
+	        if(!is_file($path)){
 		        trigger_error(__('Could not find Data Source <code>%s</code>. If the Data Source was provided by an Extensions, ensure that it is installed, and enabled.', array($name)), E_USER_ERROR);
 		        return false;
 	        }

@@ -212,10 +212,10 @@
 			$isDuplicate = false;
 			$queueForDeletion = NULL;
 			
-			if($this->_context[0] == 'new' && @is_file($file)) $isDuplicate = true;
+			if($this->_context[0] == 'new' && is_file($file)) $isDuplicate = true;
 			elseif($this->_context[0] == 'edit'){
 				$existing_handle = $this->_context[1];
-				if($classname != $existing_handle && @is_file($file)) $isDuplicate = true;
+				if($classname != $existing_handle && is_file($file)) $isDuplicate = true;
 				elseif($classname != $existing_handle) $queueForDeletion = EVENTS . '/event.' . $existing_handle . '.php';
 			}
 			
