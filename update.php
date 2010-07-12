@@ -146,13 +146,13 @@
 			
 			if (version_compare($existing_version, '2.0.5', '<=')) {
 				## Rebuild the .htaccess here
-				
-		        $rewrite_base = trim(dirname($_SERVER['PHP_SELF']), '/'); 
-
-		        if(strlen($rewrite_base) > 0){
+					
+				$rewrite_base = trim(dirname($_SERVER['PHP_SELF']), DIRECTORY_SEPARATOR); 
+			
+				if(strlen($rewrite_base) > 0){
 					$rewrite_base .= '/';
 				}
-
+		
 		        $htaccess = '
 ### Symphony 2.0.x ###
 Options +FollowSymlinks
