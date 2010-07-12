@@ -14,6 +14,14 @@
 	## If its not an update, we need to set a couple of important constants.
 	define('__IN_SYMPHONY__', true);
 	define('DOCROOT', './');
+
+	$rewrite_base = trim(dirname($_SERVER['PHP_SELF']), DIRECTORY_SEPARATOR); 
+
+	if(strlen($rewrite_base) > 0){
+		$rewrite_base .= '/';
+	}
+
+	define('REWRITE_BASE', $rewrite_base);
 	
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
@@ -670,12 +678,6 @@
 		            installResult($Page, $install_log, $start);
 		        }
 
-		        $rewrite_base = trim(dirname($_SERVER['PHP_SELF']), '/'); 
-
-		        if(strlen($rewrite_base) > 0){
-					$rewrite_base .= '/';
-				}
-
 		        $htaccess = '
 ### Symphony 2.0.x ###
 Options +FollowSymlinks
@@ -683,7 +685,7 @@ Options +FollowSymlinks
 <IfModule mod_rewrite.c>
 
 	RewriteEngine on
-	RewriteBase /'.$rewrite_base.'
+	RewriteBase /'.REWRITE_BASE.'
 
 	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
 	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
