@@ -83,7 +83,7 @@
 				
 				$fields['order'] = ($existing->dsParamORDER == 'rand' ? 'random' : $existing->dsParamORDER);
 				$fields['param'] = $existing->dsParamPARAMOUTPUT;
-				$fields['required_url_param'] = $existing->dsParamREQUIREDPARAM;
+				$fields['required_url_param'] = trim($existing->dsParamREQUIREDPARAM);
 				
 				$fields['xml_elements'] = array();
 				if(isset($existing->dsParamINCLUDEDELEMENTS) && is_array($existing->dsParamINCLUDEDELEMENTS)){
@@ -445,7 +445,7 @@
 			$fieldset->appendChild($div);
 			
 			$label = Widget::Label(__('Required URL Parameter <i>Optional</i>'));
-			$label->appendChild(Widget::Input('fields[required_url_param]', $fields['required_url_param']));
+			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param'])));
 			$fieldset->appendChild($label);
 			
 			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value. Do not wrap the parameter with curly-braces.'));
@@ -962,7 +962,7 @@
 						$params['order'] = $fields['order'];
 						$params['limit'] = $fields['max_records'];						
 						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
-						$params['requiredparam'] = $fields['required_url_param'];
+						$params['requiredparam'] = trim($fields['required_url_param']);
 						$params['paramoutput'] = $fields['param'];
 						$params['sort'] = $fields['sort'];
 						$params['startpage'] = $fields['page_number'];
@@ -977,7 +977,7 @@
 					
 						$params['order'] = $fields['order'];
 						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
-						$params['requiredparam'] = $fields['required_url_param'];			
+						$params['requiredparam'] = trim($fields['required_url_param']);			
 						
 						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.navigation.php');", $dsShell);
 						
@@ -1034,7 +1034,7 @@
 						$params['group'] = $fields['group'];
 						$params['limit'] = $fields['max_records'];
 						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
-						$params['requiredparam'] = $fields['required_url_param'];
+						$params['requiredparam'] = trim($fields['required_url_param']);
 						$params['paramoutput'] = $fields['param'];
 						$params['sort'] = $fields['sort'];
 						$params['startpage'] = $fields['page_number'];
