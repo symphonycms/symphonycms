@@ -46,7 +46,7 @@
 				$this->__init();
 			}
 
-			if(isset($_SESSION[$this->_index]) || !is_array($_SESSION[$this->_index])) return;
+			if(!isset($_SESSION[$this->_index]) || !is_array($_SESSION[$this->_index]) || empty($_SESSION[$this->_index])) return;
 
 			unset($_SESSION[$this->_index]);
 

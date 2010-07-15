@@ -26,7 +26,7 @@
 					self::$_cache->write('_session_config', true);
 				}
 
-				if (!session_id()) {
+				if (session_id() != "") {
 					ini_set('session.save_handler', 'user');
 					ini_set('session.gc_maxlifetime', $lifetime);
 					ini_set('session.gc_probability', '1');
@@ -44,7 +44,7 @@
 
 				session_set_cookie_params($lifetime, $path, ($domain ? $domain : self::getDomain()), false, $httpOnly);
 
-				if(strlen(session_id()) == 0){
+				if(session_id() == ""){
 					if(headers_sent()){
 						throw new Exception('Headers already sent. Cannot start session.');
 					}
@@ -79,11 +79,7 @@
 					return NULL; // prevent problems on local setups
 				}
 
-				$parsed = parse_url(
-					preg_replace('/^www./i', NULL, $_SERVER['HTTP_HOST'])
-				);
-
-				if(isset($parsed['host'])) return $parsed['host'];
+				return preg_replace('/^www./i', NULL, $_SERVER['HTTP_HOST']);
 
 			}
 
