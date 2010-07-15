@@ -49,6 +49,9 @@
 						throw new Exception('Headers already sent. Cannot start session.');
 					}
 					session_start();
+					
+					// Prevent a session fixation attack
+					session_regenerate_id();
 				}
 
 				self::$_initialized = true;
@@ -112,7 +115,7 @@
 		}
 
 		public static function write($id, $data) {
-			if($data == "") return;
+			if(strlen(trim($data)) == 0) return;
 
 			$fields = array(
 				'session' => $id,
@@ -132,10 +135,9 @@
 		}
 
 		public static function gc($max) {
-			Symphony::$Log->pushToLog("Session: Taking out the trash!", E_NOTICE, true);
 			return Symphony::Database()->query(
 				sprintf(
-					"DELETE FROM `tbl_sessions` WHERE `session_expires` <= '%s' OR `session_data` LIKE '%%|a:0:{}'",
+					"DELETE FROM `tbl_sessions` WHERE `session_expires` <= '%s' OR `session_data` REGEXP '^[^}]+\\\|a:0:{}$'",
 					Symphony::Database()->cleanValue(time() - $max)
 				)
 			);
