@@ -51,7 +51,7 @@
 					session_start();
 					
 					// Prevent a session fixation attack
-					session_regenerate_id();
+					self::regenerate();
 				}
 
 				self::$_initialized = true;
@@ -59,7 +59,11 @@
 
 			return session_id();
 		}
-
+		
+		public static function regenerate(){
+			session_regenerate_id(true);
+		}
+		
 		public static function createTable() {
 			Symphony::Database()->query(
 				"CREATE TABLE IF NOT EXISTS `tbl_sessions` (
