@@ -49,9 +49,6 @@
 						throw new Exception('Headers already sent. Cannot start session.');
 					}
 					session_start();
-					
-					// Prevent a session fixation attack
-					self::regenerate();
 				}
 
 				self::$_initialized = true;
@@ -59,11 +56,7 @@
 
 			return session_id();
 		}
-		
-		public static function regenerate(){
-			session_regenerate_id(true);
-		}
-		
+
 		public static function createTable() {
 			Symphony::Database()->query(
 				"CREATE TABLE IF NOT EXISTS `tbl_sessions` (
