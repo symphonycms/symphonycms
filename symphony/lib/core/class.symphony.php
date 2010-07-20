@@ -70,7 +70,11 @@
 			$this->initialiseCookie();
 
 			$this->initialiseDatabase();
-
+			
+			if(!self::isLoggedIn()){
+				GenericExceptionHandler::$enabled = false;
+			}
+			
 			if(!$this->initialiseExtensionManager()){
 				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
 			}
