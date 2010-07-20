@@ -375,7 +375,7 @@
 			
 			## Its not an array, so just retain the current data and return
 			if(!is_array($data)){
-				
+	
 				$status = self::__OK__;
 				
 				$file = WORKSPACE . $data;
@@ -387,17 +387,23 @@
 					'meta' => NULL
 				);
 				
+				// Grab the existing entry data to preserve the MIME type and size information
+				if(isset($entry_id) && !is_null($entry_id)){
+					$row = Symphony::Database()->fetchRow(0, sprintf(
+						"SELECT `file`, `mimetype`, `size`, `meta` FROM `tbl_entries_data_%d` WHERE `entry_id` = %d", 
+						$this->get('id'), 
+						$entry_id
+					));
+					if(!empty($row)){
+						$result = $row;
+					}
+				}
+				
 				if(!file_exists($file) || !is_readable($file)){
 					$status = self::__INVALID_FIELDS__;
 					return $result;
 				}
-				
-				// Do a simple reconstruction of the file meta information. This is a workaround for
-				// bug which causes all meta information to be dropped
-				$result['mimetype'] = filesize($file);
-				$result['size'] = serialize(self::getMetaInfo($file, self::__sniffMIMEType($data)));
-				$result['meta'] = self::__sniffMIMEType($data);
-				
+
 				return $result;
 	
 			}
@@ -460,22 +466,6 @@
 				'meta' => serialize(self::getMetaInfo(WORKSPACE . $file, $data['type']))
 			);
 			
-		}
-		
-		private static function __sniffMIMEType($file){
-			
-			$ext = strtolower(General::getExtension($file));
-			
-			$imageMimeTypes = array(
-				'image/gif',
-				'image/jpg',
-				'image/jpeg',
-				'image/png',
-			);
-			
-			if(General::in_iarray("image/{$ext}", $imageMimeTypes)) return "image/{$ext}";
-			
-			return 'unknown';
 		}
 		
 		public static function getMetaInfo($file, $type){
