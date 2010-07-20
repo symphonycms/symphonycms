@@ -281,7 +281,17 @@
 			}
 				
 			## Its not an array, so just retain the current data and return
-			if(!is_array($data)) return self::__OK__;
+			if(!is_array($data)){
+				
+				$file = WORKSPACE . $data;
+				
+				if(!file_exists($file) || !is_readable($file)){
+					$message = __('The file uploaded is no longer available. Please check that it exists, and is readable.');
+					return self::__INVALID_FIELDS__;
+				}
+				
+				return self::__OK__;
+			}
 
 
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
@@ -367,15 +377,28 @@
 			if(!is_array($data)){
 				
 				$status = self::__OK__;
+				
 				$file = WORKSPACE . $data;
+				
+				$result = array(
+					'file' => $data,
+					'mimetype' => NULL,
+					'size' => NULL,
+					'meta' => NULL
+				);
+				
+				if(!file_exists($file) || !is_readable($file)){
+					$status = self::__INVALID_FIELDS__;
+					return $result;
+				}
+				
 				// Do a simple reconstruction of the file meta information. This is a workaround for
 				// bug which causes all meta information to be dropped
-				return array(
-					'file' => $data,
-					'mimetype' => self::__sniffMIMEType($data),
-					'size' => (file_exists($file) && is_readable($file) ? filesize($file) : NULL),
-					'meta' => serialize(self::getMetaInfo(WORKSPACE . $data, self::__sniffMIMEType($data)))
-				);
+				$result['mimetype'] = filesize($file);
+				$result['size'] = serialize(self::getMetaInfo($file, self::__sniffMIMEType($data)));
+				$result['meta'] = self::__sniffMIMEType($data);
+				
+				return $result;
 	
 			}
 
