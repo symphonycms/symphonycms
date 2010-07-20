@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS `tbl_authors`;
 CREATE TABLE `tbl_authors` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `password` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `password` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `first_name` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `last_name` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,

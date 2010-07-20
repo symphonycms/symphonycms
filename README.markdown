@@ -1,15 +1,15 @@
 # Symphony 2 #
 
-- Version: 2.0.8 Release Candidate 3
-- Date: 19th May 2010
+- Version: 2.1.0
+- Date: 20th July 2010
 - Release Notes: Please see commit log on github
-- Github Repository: <http://github.com/symphony/symphony-2/tree/2.0.8RC3>
+- Github Repository: <http://github.com/symphony/symphony-2/tree/2.1.0>
 
 
 ## Synopsis
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as 
-its core technologies. This repository represents version "2.0.8 RC3" and is 
+its core technologies. This repository represents version "2.1.0" and is 
 considered stable.
 
 Visit the forum at <http://symphony-cms.com/community/>
@@ -25,6 +25,13 @@ Visit the forum at <http://symphony-cms.com/community/>
 ## Updating From an Older Version
 
 ### Important Information
+
+As of version `2.1`, the [SHA1](http://php.net/sha1) algorithm is used 
+instead of MD5 for generating password data. After updating, the owner's
+login password will be reset. **Please also note that all other users' 
+passwords will no longer be valid and will require a manual reset through 
+Symphony's forgotten password feature.** Alternatively, as an administrator, 
+you can also change your users' password on their behalf.
 
 Version `2.0.5` introduced multiple includable elements, in the Data Source 
 Editor, for a single field. After updating from `2.0.5` or lower, the DS 
@@ -77,11 +84,11 @@ Follow the instructions below if you are updating from Symphony version 2.0 (not
 
 	The following repositories are included as submodules:
 
-	- [Markdown](http://github.com/pointybeard/markdown)
-	- [Maintenance Mode](http://github.com/pointybeard/maintenance_mode)
-	- [Select Box Link Field](http://github.com/pointybeard/selectbox_link_field)
-	- [JIT Image Manipulation](http://github.com/pointybeard/jit_image_manipulation)
-	- [Export Ensemble](http://github.com/pointybeard/export_ensemble)
+	- [Markdown](http://github.com/symphony/markdown)
+	- [Maintenance Mode](http://github.com/symphony/maintenance_mode)
+	- [Select Box Link Field](http://github.com/symphony/selectbox_link_field)
+	- [JIT Image Manipulation](http://github.com/symphony/jit_image_manipulation)
+	- [Export Ensemble](http://github.com/symphony/export_ensemble)
 	- [Debug DevKit](http://github.com/symphony/debugdevkit/tree/master)
 	- [Profile DevKit](http://github.com/symphony/profiledevkit/tree/master)
 
