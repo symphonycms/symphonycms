@@ -368,7 +368,7 @@ require_once(TOOLKIT . '/class.sectionmanager.php');
 				$this->_Author->set('first_name', General::sanitize($fields['first_name']));
 				$this->_Author->set('last_name', General::sanitize($fields['last_name']));
 				$this->_Author->set('last_seen', NULL);
-				$this->_Author->set('password', (trim($fields['password']) == '' ? '' : md5($fields['password'])));
+				$this->_Author->set('password', (trim($fields['password']) == '' ? '' : General::hash($fields['password'])));
 				$this->_Author->set('default_section', intval($fields['default_section']));
 				$this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
 				$this->_Author->set('language', $fields['language']);
@@ -418,7 +418,7 @@ require_once(TOOLKIT . '/class.sectionmanager.php');
 				if($fields['email'] != $this->_Author->get('email')) $changing_email = true;
 				
 				// Check the old password was correct
-				if(isset($fields['old-password']) && strlen(trim($fields['old-password'])) > 0 && md5(trim($fields['old-password'])) == $this->_Author->get('password')) {
+				if(isset($fields['old-password']) && strlen(trim($fields['old-password'])) > 0 && General::hash(trim($fields['old-password'])) == $this->_Author->get('password')) {
 					$authenticated = true;
 				}
 				
@@ -444,7 +444,7 @@ require_once(TOOLKIT . '/class.sectionmanager.php');
 				$this->_Author->set('language', $fields['language']);
 				
 				if(trim($fields['password']) != ''){
-					$this->_Author->set('password', md5($fields['password']));
+					$this->_Author->set('password', General::hash($fields['password']));
 					$changing_password = true;
 				}
 				$this->_Author->set('default_section', intval($fields['default_section']));

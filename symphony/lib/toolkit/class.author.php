@@ -42,7 +42,7 @@
 		
 			if($this->get('auth_token_active') == 'no') return false;
 
-			$t = General::substrmin(md5($this->get('username') . $this->get('password')), 8);
+			$t = General::substrmin(General::hash($this->get('username') . $this->get('password')), 8);
 		
 			if($t == $token) return true; 
 		
@@ -51,7 +51,7 @@
 		}
 	
 		public function createAuthToken(){
-			return General::substrmin(md5($this->get('username') . $this->get('password')), 8);	
+			return General::substrmin(General::hash($this->get('username') . $this->get('password')), 8);	
 		}
 		
 		public function isTokenActive(){

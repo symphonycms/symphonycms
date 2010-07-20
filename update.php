@@ -223,6 +223,28 @@ Options +FollowSymlinks -Indexes
 					$htaccess = str_replace('Options +FollowSymlinks', 'Options +FollowSymlinks -Indexes', $htaccess);
 					@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 				}
+				
+				## 2.1 uses SHA1 instead of MD5
+					// Change the author table to allow 40 character values
+					$frontend->Database->query(
+						"ALTER TABLE `tbl_authors` CHANGE `password` `password` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL"
+					);
+					
+					// Generate a new password for the primary author account
+					$new_password = General::generatePassword();
+					$username = $frontend->Database->fetchVar('username', 0,
+						"SELECT `username` FROM `tbl_authors` WHERE `primary` = 'yes' LIMIT 1"
+					);
+					
+					$frontend->Database->query(
+						sprintf("UPDATE `tbl_authors` SET `password` = SHA1('%s') WHERE `primary` = 'yes' LIMIT 1", $new_password)
+					);
+					
+					// Purge all sessions, forcing everyone to update their passwords
+					$frontend->Database->query(
+						"TRUNCATE TABLE `tbl_sessions`"
+					);
+				
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
@@ -237,7 +259,12 @@ Options +FollowSymlinks -Indexes
 				<br />
 				<ol>
 				'.
-
+				
+				(version_compare($existing_version, '2.1.0', '<') ? '
+				<li>The password for user "<code>'.$username.'</code>" is now reset. The new temporary password is "<code>'.$new_password.'</code>". Please login and change it now.</li>' : NULL)
+				
+				.
+				
 				(file_exists(DOCROOT . '/symphony/.htaccess') ? '<li><strong>WARNING:</strong> The updater tried, but failed, to remove the file <code>symphony/.htaccess</code>. It is vitally important that this file be removed, otherwise the administration area will not function. If you have customisations to this file, you should be able to just remove the Symphony related block, but there are no guarantees.</li>' : NULL)
 
 				.
@@ -299,11 +326,16 @@ Options +FollowSymlinks -Indexes
 '				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 				<h2>Update Existing Installation</h2>
 				<p>This script will update your existing Symphony '.$settings['symphony']['version'].' installation to version '.kVERSION.'.</p>
-				'.
-				(version_compare($existing_version, '2.0.6', '<') ? '
+				<p><strong>Post-Installation Steps: </strong></p>
 				<br />
-				<p><strong>Pre-Installation Step: </strong> As of <code>2.0.6</code>, the core <code>.htaccess</code> has changed substantially. As a result, there is no fool proof way to automatically update it. Instead, if you have any customisations to your <code>.htaccess</code>, please back up the existing copy before updating. You will then need to manually migrate the customisations to the new <code>.htaccess</code>.</p>' : NULL) .'
-				<br />
+				<ol>
+				'.(version_compare($existing_version, '2.0.6', '<') ? '
+				<li>As of <code>2.0.6</code>, the core <code>.htaccess</code> has changed substantially. As a result, there is no fool proof way to automatically update it. Instead, if you have any customisations to your <code>.htaccess</code>, please back up the existing copy before updating. You will then need to manually migrate the customisations to the new <code>.htaccess</code>.</li>' : NULL) .'
+				
+				'.(version_compare($existing_version, '2.1.0', '<') ? '
+				<li>As of version <code>2.1</code>, the <a href="http://php.net/sha1"><code>SHA1</code></a> algorithm is used instead of MD5 for generating password data. After updating, the owner\'s login password will be reset. Please also note that all other users\' passwords will no longer be valid and will require a manual reset through Symphony\'s forgotten password feature. Alternatively, as an administrator, you can also change your users\' password on their behalf.</li>' : NULL) .'
+				
+				</ol>
 				<div class="submit">
 					<input type="submit" name="action[update]" value="Update Symphony"/>
 				</div>');

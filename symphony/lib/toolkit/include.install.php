@@ -562,7 +562,7 @@
 					VALUES (
 						1,
 						'%s',
-						MD5('%s'),
+						%s('%s'),
 						'%s',  
 						'%s',  
 						'%s', 
@@ -574,6 +574,7 @@
 					);", 
 					
 					$db->cleanValue($config['user']['username']), 
+					'SHA1',
 					$db->cleanValue($config['user']['password']), 
 					$db->cleanValue($config['user']['firstname']), 
 					$db->cleanValue($config['user']['lastname']), 

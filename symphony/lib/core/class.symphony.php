@@ -211,9 +211,9 @@
 			$username = self::$Database->cleanValue($username);
 			$password = self::$Database->cleanValue($password);
 			
-			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){			
+			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
 				
-				if(!$isHash) $password = md5($password);
+				if(!$isHash) $password = General::hash($password);
 
 				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
 
@@ -250,10 +250,14 @@
 			}
 			
 			else{
-				$row = self::$Database->fetchRow(0, "SELECT `id`, `username`, `password` 
-													 FROM `tbl_authors` 
-													 WHERE SUBSTR(MD5(CONCAT(`username`, `password`)), 1, 8) = '$token' AND `auth_token_active` = 'yes' 
-													 LIMIT 1");				
+				$row = self::$Database->fetchRow(0, sprintf(
+					"SELECT `id`, `username`, `password` 
+					FROM `tbl_authors` 
+					WHERE SUBSTR(%s(CONCAT(`username`, `password`)), 1, 8) = '%s' 
+					AND `auth_token_active` = 'yes' 
+					LIMIT 1",
+					'SHA1', $token
+				));
 			}
 
 			if($row){

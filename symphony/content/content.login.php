@@ -198,7 +198,7 @@
 						
 						if(!$token = Symphony::Database()->fetchVar('token', 0, "SELECT `token` FROM `tbl_forgotpass` WHERE `expiry` > '".DateTimeObj::getGMT('c')."' AND `author_id` = ".$author['id'])){
 							
-							$token = substr(md5(time() . rand(0, 200)), 0, 6);
+							$token = substr(General::hash(time() . rand(0, 200)), 0, 6);
 							Symphony::Database()->insert(array('author_id' => $author['id'], 'token' => $token, 'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))), 'tbl_forgotpass');					
 						}
 
@@ -245,7 +245,7 @@
 
 						$author = AuthorManager::fetchByID($author_id);
 
-						$author->set('password', md5(Symphony::Database()->cleanValue($_POST['password'])));
+						$author->set('password', General::hash(Symphony::Database()->cleanValue($_POST['password'])));
 
 						if(!$author->commit() || !$this->_Parent->login($author->get('username'), $_POST['password'])){
 							redirect(URL . "symphony/system/authors/edit/{$author_id}/error/");
@@ -287,7 +287,7 @@
 								'Best Regards,' . self::CRLF . 
 								'The Symphony Team');
 
-					Symphony::Database()->update(array('password' => md5($newpass)), 'tbl_authors', " `id` = '".$author['id']."' LIMIT 1");			
+					Symphony::Database()->update(array('password' => General::hash($newpass)), 'tbl_authors', " `id` = '".$author['id']."' LIMIT 1");			
 					Symphony::Database()->delete('tbl_forgotpass', " `author_id` = '".$author['id']."'");
 
 
