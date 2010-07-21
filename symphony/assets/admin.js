@@ -261,7 +261,7 @@ var Symphony;
 	// Suggestion lists
 	$('.tags > li').live('click', function() {
 		var list = $(this.parentNode);
-		var input = list.prevAll('label').find('input')[0];
+		var input = list.prev().find('input')[0];
 		var tag = this.className || $(this).text();
 		
 		input.focus();
