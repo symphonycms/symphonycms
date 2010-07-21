@@ -1,9 +1,9 @@
 # Symphony 2 #
 
 - Version: 2.1.0
-- Date: 20th July 2010
-- Release Notes: Please see commit log on github
-- Github Repository: <http://github.com/symphony/symphony-2/tree/2.1.0>
+- Date: 21st July 2010
+- Release Notes: <http://symphony-cms.com/download/releases/version/2.1.0/>
+- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.1.0>
 
 
 ## Synopsis
@@ -12,7 +12,7 @@ Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as
 its core technologies. This repository represents version "2.1.0" and is 
 considered stable.
 
-Visit the forum at <http://symphony-cms.com/community/>
+Visit the forum at <http://symphony-cms.com/discuss/>
 
 ### Symphony Server Requirements
 
@@ -27,11 +27,12 @@ Visit the forum at <http://symphony-cms.com/community/>
 ### Important Information
 
 As of version `2.1`, the [SHA1](http://php.net/sha1) algorithm is used 
-instead of MD5 for generating password data. After updating, the owner's
-login password will be reset. **Please also note that all other users' 
-passwords will no longer be valid and will require a manual reset through 
-Symphony's forgotten password feature.** Alternatively, as an administrator, 
-you can also change your users' password on their behalf.
+instead of MD5 for generating password data, since it is more secure. 
+After updating, the owner's login password will be reset. **Please also 
+note that all other users' passwords will no longer be valid and will 
+require a manual reset through Symphony's forgotten password feature.** 
+Alternatively, as an administrator, you can also change your users' 
+password on their behalf.
 
 Version `2.0.5` introduced multiple includable elements, in the Data Source 
 Editor, for a single field. After updating from `2.0.5` or lower, the DS 
@@ -43,14 +44,32 @@ still be included in any front-end XML
 
 ### Via Git
 
-1. Pull from the master branch at `git://github.com/symphony/symphony-2.git`
+### Important Information
+
+From version 2.1, we are now using [GitHub's organisations feature](http://github.com/blog/674-introducing-organizations). As a result
+all submodules, as well as the main Symphony 2 repo, are forks owned by the
+[Symphony CMS organisation](http://github.com/symphonycms/). To fully update your 
+git based installation, please edit your `.git/config` and the `.git/config`
+of all core extensions (`debugdevkit`, `profiledevkit`, `markdown`, `maintenance_mode`, 
+`selectbox_link_field`, `jit_image_manipulation` and `export_ensemble`) and change
+the URL of the remote repo from `symphony` or `pointybeard` to be `symphonycms`.
+
+For example:
+
+	[remote "origin"]
+		fetch = +refs/heads/*:refs/remotes/origin/*
+		url = git://github.com/pointybeard/markdown.git
+
+Change `git://github.com/pointybeard/markdown.git` to `git://github.com/symphonycms/markdown.git`
+
+1. Pull from the master branch at `git://github.com/symphonycms/symphony-2.git`
 
 2. Use the following command to get Extensions up to date:
 
 	git submodule init
 	git submodule update
 
-3. If updating from a version older than `2.0.5`, enable [Debug DevKit](http://github.com/symphony/debugdevkit/tree/master) and [Profile DevKit](http://github.com/symphony/profiledevkit/tree/master) extensions.
+3. If updating from a version older than `2.0.5`, enable [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master) and [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master) extensions.
 
 4. Follow normal updating procedure below from step 2.
 
@@ -64,8 +83,8 @@ Follow the instructions below if you are updating from Symphony version 2.0 (not
 
 2. If you are updating from a version older than 2.0.5, download and install the Debug DevKit and Profile DevKit:
 
-	- [Debug DevKit](http://github.com/symphony/debugdevkit/tree/master)
-	- [Profile DevKit](http://github.com/symphony/profiledevkit/tree/master)
+	- [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)
+	- [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master)
 
 3. Go to `http://yoursite.com/update.php` to complete the update process.
 
@@ -78,28 +97,28 @@ Follow the instructions below if you are updating from Symphony version 2.0 (not
 
 1. Clone the git repository to the location you desire using:
 
-		git clone git://github.com/symphony/symphony-2.git
+		git clone git://github.com/symphonycms/symphony-2.git
 		
 	Should you wish to make contributions back to the project, fork the master tree rather than cloning, and issue pull requests via github.
 
 	The following repositories are included as submodules:
 
-	- [Markdown](http://github.com/symphony/markdown)
-	- [Maintenance Mode](http://github.com/symphony/maintenance_mode)
-	- [Select Box Link Field](http://github.com/symphony/selectbox_link_field)
-	- [JIT Image Manipulation](http://github.com/symphony/jit_image_manipulation)
-	- [Export Ensemble](http://github.com/symphony/export_ensemble)
-	- [Debug DevKit](http://github.com/symphony/debugdevkit/tree/master)
-	- [Profile DevKit](http://github.com/symphony/profiledevkit/tree/master)
+	- [Markdown](http://github.com/symphonycms/markdown)
+	- [Maintenance Mode](http://github.com/symphonycms/maintenance_mode)
+	- [Select Box Link Field](http://github.com/symphonycms/selectbox_link_field)
+	- [JIT Image Manipulation](http://github.com/symphonycms/jit_image_manipulation)
+	- [Export Ensemble](http://github.com/symphonycms/export_ensemble)
+	- [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)
+	- [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master)
 
 3. Run the following command to ensure the submodules are cloned:
 
 		git submodule update --init
 
-4. _(Optional)_ If you would like the [default theme](http://github.com/symphony/workspace/tree) installed as well, 
+4. _(Optional)_ If you would like the [default theme](http://github.com/symphonycms/workspace/tree) installed as well, 
 you will need to use the following command from within the Symphony 2 folder you just created:
 
-		git clone git://github.com/symphony/workspace.git
+		git clone git://github.com/symphonycms/workspace.git
 		
 5. Follow normal installation procedure below from step 2.
 
