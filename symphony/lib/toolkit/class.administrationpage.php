@@ -150,7 +150,7 @@
 		
 		function appendFooter(){
 		
-			$version = new XMLElement('p', 'Symphony v' . Symphony::Configuration()->get('version', 'symphony'), array('id' => 'version'));
+			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array('id' => 'version'));
 			$this->Form->appendChild($version);
 						
 			$ul = new XMLElement('ul');
