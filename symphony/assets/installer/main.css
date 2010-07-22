@@ -72,7 +72,7 @@ label input, select {
 .group {
 	position: relative;
 	left: 1em;
-	margin: 0 0 -1em -2em;
+	margin: 0 -.5em -1em -1.5em;
 	padding: 1.5em 1em 1em 3em;
 	overflow: hidden;
 }
