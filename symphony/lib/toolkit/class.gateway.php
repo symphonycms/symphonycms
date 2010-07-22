@@ -21,7 +21,7 @@
 		const FORCE_CURL = 'curl';
 		const FORCE_SOCKET = 'socket';
 		
-		const CRLF = "\r\n";
+		const CRLF = PHP_EOL;
 		
         private $_host;
         private $_scheme;
