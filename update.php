@@ -42,17 +42,23 @@
 
 		return $settings;
 	}
+	
+	function render($output){
+		header('Expires: Mon, 12 Dec 1982 06:14:00 GMT');
+		header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+		header('Cache-Control: no-cache, must-revalidate, max-age=0');
+		header('Pragma: no-cache');
+		header(sprintf('Content-Length: %d', strlen($output)));
+		
+		echo $output;
+		exit;
+	}
 
 	define('DOCROOT', rtrim(dirname(__FILE__), '/'));
 	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . dirname($_SERVER['PHP_SELF']), '/'));
 
 	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
 	require_once(TOOLKIT . '/class.general.php');
-
-	if(isset($_GET['action']) && $_GET['action'] == 'remove'){
-		unlink(DOCROOT . '/update.php');
-		redirect(URL . '/symphony/');
-	}
 
 	set_error_handler('__errorHandler');
 
@@ -61,24 +67,40 @@
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
 
-	header('Expires: Mon, 12 Dec 1982 06:14:00 GMT');
-	header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-	header('Cache-Control: no-cache, must-revalidate, max-age=0');
-	header('Pragma: no-cache');
+		$shell = '<?xml version="1.0" encoding="utf-8"?>
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+	<title>Update Existing Installation</title>
+	<link rel="stylesheet" type="text/css" href="'.kINSTALL_ASSET_LOCATION.'/main.css"/>
+	</head>
+	<body>
+		<form action="" method="post">
+	%s
+		</form>
+	</body>
+	</html>';
 
-	$shell = '<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-<title>Update Existing Installation</title>
-<link rel="stylesheet" type="text/css" href="'.kINSTALL_ASSET_LOCATION.'/main.css"/>
-</head>
-<body>
-	<form action="" method="post">
-%s
-	</form>
-</body>
-</html>';
+	if(isset($_GET['action']) && $_GET['action'] == 'remove'){
+		
+		if(is_writable(__FILE__)){
+			unlink(__FILE__);
+			redirect(URL . '/symphony/');
+		}
+		
+		render(sprintf($shell,
+			'<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
+			<h2>Deletion Failed!</h2>
+			<p><code>update.php</code> could not be deleted. For security reasons, it is best to remove it however this will need to be done manually.</p>'
+		));
+		
+	}
+
+
+
+
+
+
 
 	$settings = loadOldStyleConfig();
 	$existing_version = $settings['symphony']['version'];
@@ -303,8 +325,8 @@ Options +FollowSymlinks -Indexes
 				');
 
 		}
-
-		die($code);
+		
+		render($code);
 
 	}
 
@@ -318,8 +340,8 @@ Options +FollowSymlinks -Indexes
 			<p>It appears that Symphony has already been installed at this location and is up to date.</p>
 			<br />
 			<p>This script, <code>update.php</code>, should be removed as a safety precaution. <a href="'.URL.'/update.php?action=remove">Click here</a> to remove this file and proceed to your administration area.</p>');
-
-			die($code);
+			
+			render($code);
 		}
 
 		$code = sprintf($shell,
@@ -339,8 +361,8 @@ Options +FollowSymlinks -Indexes
 				<div class="submit">
 					<input type="submit" name="action[update]" value="Update Symphony"/>
 				</div>');
-
-		die($code);
+		
+		render($code);
 
 	}
 
