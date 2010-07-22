@@ -346,7 +346,7 @@
 			foreach($records as $r){
 				$data = $r->getData($this->get('id'));
 				
-				$value = $data['value'];
+				$value = General::sanitize($data['value']);
 				$handle = Lang::createHandle($value);
 				
 				if(!isset($groups[$this->get('element_name')][$handle])){
