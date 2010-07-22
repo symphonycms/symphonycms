@@ -499,7 +499,7 @@
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `file` varchar(255) default NULL,
-				  `size` int(11) unsigned NOT NULL,
+				  `size` int(11) unsigned NULL,
 				  `mimetype` varchar(50) default NULL,
 				  `meta` varchar(255) default NULL,
 				  PRIMARY KEY  (`id`),
