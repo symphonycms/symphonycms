@@ -12,7 +12,7 @@
 		var $_dependencies;
 		var $_force_empty_result;
 		
-		const CRLF = "\r\n";
+		const CRLF = PHP_EOL;
 		
 		function __construct(&$parent, $env=NULL, $process_params=true){
 			$this->_Parent = $parent;

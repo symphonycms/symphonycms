@@ -42,14 +42,14 @@
 
 		return $settings;
 	}
-	
+
 	function render($output){
 		header('Expires: Mon, 12 Dec 1982 06:14:00 GMT');
 		header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 		header('Cache-Control: no-cache, must-revalidate, max-age=0');
 		header('Pragma: no-cache');
 		header(sprintf('Content-Length: %d', strlen($output)));
-		
+
 		echo $output;
 		exit;
 	}
@@ -82,12 +82,12 @@
 	</html>';
 
 	if(isset($_GET['action']) && $_GET['action'] == 'remove'){
-	
+
 		if(is_writable(__FILE__)){
 			unlink(__FILE__);
 			redirect(URL . '/symphony/');
 		}
-		
+
 		render(sprintf($shell,
 			'<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 			<h2>Deletion Failed!</h2>
@@ -95,7 +95,7 @@
 			<br />
 			<p>To continue to the Symphony admin, please <a href="'.URL.'/symphony/">click here</a>.</p>'
 		));
-		
+
 	}
 
 	$settings = loadOldStyleConfig();
@@ -164,9 +164,9 @@
 
 			if (version_compare($existing_version, '2.0.5', '<=')) {
 				## Rebuild the .htaccess here
-					
-				$rewrite_base = trim(dirname($_SERVER['PHP_SELF']), DIRECTORY_SEPARATOR); 
-			
+
+				$rewrite_base = trim(dirname($_SERVER['PHP_SELF']), DIRECTORY_SEPARATOR);
+
 				if(strlen($rewrite_base) > 0){
 					$rewrite_base .= '/';
 				}
@@ -241,28 +241,37 @@ Options +FollowSymlinks -Indexes
 					$htaccess = str_replace('Options +FollowSymlinks', 'Options +FollowSymlinks -Indexes', $htaccess);
 					@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 				}
-				
+
 				## 2.1 uses SHA1 instead of MD5
-					// Change the author table to allow 40 character values
-					$frontend->Database->query(
-						"ALTER TABLE `tbl_authors` CHANGE `password` `password` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL"
-					);
-					
-					// Generate a new password for the primary author account
-					$new_password = General::generatePassword();
-					$username = $frontend->Database->fetchVar('username', 0,
-						"SELECT `username` FROM `tbl_authors` WHERE `primary` = 'yes' LIMIT 1"
-					);
-					
-					$frontend->Database->query(
-						sprintf("UPDATE `tbl_authors` SET `password` = SHA1('%s') WHERE `primary` = 'yes' LIMIT 1", $new_password)
-					);
-					
-					// Purge all sessions, forcing everyone to update their passwords
-					$frontend->Database->query(
-						"TRUNCATE TABLE `tbl_sessions`"
-					);
-				
+				// Change the author table to allow 40 character values
+				$frontend->Database->query(
+					"ALTER TABLE `tbl_authors` CHANGE `password` `password` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL"
+				);
+
+				// Generate a new password for the primary author account
+				$new_password = General::generatePassword();
+				$username = $frontend->Database->fetchVar('username', 0,
+					"SELECT `username` FROM `tbl_authors` WHERE `primary` = 'yes' LIMIT 1"
+				);
+
+				$frontend->Database->query(
+					sprintf("UPDATE `tbl_authors` SET `password` = SHA1('%s') WHERE `primary` = 'yes' LIMIT 1", $new_password)
+				);
+
+				// Purge all sessions, forcing everyone to update their passwords
+				$frontend->Database->query(
+					"TRUNCATE TABLE `tbl_sessions`"
+				);
+
+				## Update Upload field
+				$upload_entry_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` from `tbl_fields_upload`");
+
+				if(is_array($upload_entry_tables) && !empty($upload_entry_tables)) foreach($upload_entry_tables as $field) {
+					$frontend->Database->query(sprintf("
+							ALTER TABLE `tbl_entries_data_%d` MODIFY `size` int(11) unsigned NULL,
+						", $field
+					));
+				}
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
@@ -276,12 +285,12 @@ Options +FollowSymlinks -Indexes
 				<br />
 				<ol>
 				'.
-				
+
 				(version_compare($existing_version, '2.1.0', '<') ? '
 				<li>The password for user "<code>'.$username.'</code>" is now reset. The new temporary password is "<code>'.$new_password.'</code>". Please login and change it now.</li>' : NULL)
-				
+
 				.
-				
+
 				(file_exists(DOCROOT . '/symphony/.htaccess') ? '<li><strong>WARNING:</strong> The updater tried, but failed, to remove the file <code>symphony/.htaccess</code>. It is vitally important that this file be removed, otherwise the administration area will not function. If you have customisations to this file, you should be able to just remove the Symphony related block, but there are no guarantees.</li>' : NULL)
 
 				.
@@ -320,7 +329,7 @@ Options +FollowSymlinks -Indexes
 				');
 
 		}
-		
+
 		render($code);
 
 	}
@@ -335,7 +344,7 @@ Options +FollowSymlinks -Indexes
 			<p>It appears that Symphony has already been installed at this location and is up to date.</p>
 			<br />
 			<p>This script, <code>update.php</code>, should be removed as a safety precaution. <a href="'.URL.'/update.php?action=remove">Click here</a> to remove this file and proceed to your administration area.</p>');
-			
+
 			render($code);
 		}
 
@@ -349,15 +358,15 @@ Options +FollowSymlinks -Indexes
 				<ol>
 				'.(version_compare($existing_version, '2.0.6', '<') ? '
 				<li>As of <code>2.0.6</code>, the core <code>.htaccess</code> has changed substantially. As a result, there is no fool proof way to automatically update it. Instead, if you have any customisations to your <code>.htaccess</code>, please back up the existing copy before updating. You will then need to manually migrate the customisations to the new <code>.htaccess</code>.</li>' : NULL) .'
-				
+
 				'.(version_compare($existing_version, '2.1.0', '<') ? '
 				<li>As of version <code>2.1</code>, the <a href="http://php.net/sha1"><code>SHA1</code></a> algorithm is used instead of MD5 for generating password data. After updating, the owner\'s login password will be reset. Please also note that all other users\' passwords will no longer be valid and will require a manual reset through Symphony\'s forgotten password feature. Alternatively, as an administrator, you can also change your users\' password on their behalf.</li>' : NULL) .'
-				
+
 				</ol>
 				<div class="submit">
 					<input type="submit" name="action[update]" value="Update Symphony"/>
 				</div>');
-		
+
 		render($code);
 
 	}
