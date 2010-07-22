@@ -71,21 +71,18 @@ label input, select {
 }
 .group {
 	position: relative;
-	left: 1em;
-	margin: 0 0 -1em -2em;
-	padding: 1.5em 1em 1em 3em;
-	overflow: hidden;
+	float:left;
+	width:100%;
+	margin: 0;
+	padding: 1.5em 0 1em;
 }
 .group label {
-	margin: 0 0 0 2em;
+	margin: 0;
 	float: left;
-	width: 50%;
+	width: 48%;
 }
 .group label:first-child {
-	margin-left: -2em;
-}
-.group input {
-	float: right;
+	margin-right:4%;
 }
 .option {
 	padding-left: 1.75em;
