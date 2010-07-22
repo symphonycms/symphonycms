@@ -26,13 +26,14 @@ Visit the forum at <http://symphony-cms.com/discuss/>
 
 ### Important Information
 
-As of version `2.1`, the [SHA1](http://php.net/sha1) algorithm is used 
-instead of MD5 for generating password data, since it is more secure. 
-After updating, the owner's login password will be reset. **Please also 
-note that all other users' passwords will no longer be valid and will 
-require a manual reset through Symphony's forgotten password feature.** 
+As of version `2.1`, Symphony stores passwords using the more secure 
+[SHA1](http://php.net/sha1) algorithm (previous versions used MD5). 
+When updating to 2.1, the primary user's login password will be reset
+(the new password will be displayed by the updater—please note it).
+ **Please also note that all other users' passwords will no longer be valid
+and will require a manual reset through Symphony's forgotten password feature.** 
 Alternatively, as an administrator, you can also change your users' 
-password on their behalf.
+passwords on their behalf.
 
 Version `2.0.5` introduced multiple includable elements, in the Data Source 
 Editor, for a single field. After updating from `2.0.5` or lower, the DS 
@@ -46,8 +47,7 @@ still be included in any front-end XML
 
 ### Important Information
 
-From version 2.1, we are now using [GitHub's organisations feature](http://github.com/blog/674-introducing-organizations). As a result
-all submodules, as well as the main Symphony 2 repo, are forks owned by the
+As of version 2.1, we are now using [GitHub's organisations feature](http://github.com/blog/674-introducing-organizations). As a result, all submodules—as well as the main Symphony 2 repo—are forks owned by the
 [Symphony CMS organisation](http://github.com/symphonycms/). To fully update your 
 git based installation, please edit your `.git/config` and the `.git/config`
 of all core extensions (`debugdevkit`, `profiledevkit`, `markdown`, `maintenance_mode`, 
@@ -71,7 +71,9 @@ Change `git://github.com/pointybeard/markdown.git` to `git://github.com/symphony
 
 3. If updating from a version older than `2.0.5`, enable [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master) and [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master) extensions.
 
-4. Follow normal updating procedure below from step 2.
+3. Go to `http://yoursite.com/update.php` to complete the update process.
+
+4. You and your website are now in the future. Buy yourself a silver jumpsuit.
 
 ### Via the old fashioned way
 
@@ -88,7 +90,7 @@ Follow the instructions below if you are updating from Symphony version 2.0 (not
 
 3. Go to `http://yoursite.com/update.php` to complete the update process.
 
-4. Celebrate by shaving your friend's head for charity!
+4. Call a friend and brag that your copy of Symphony is newer than theirs.
 
 
 ## Installing Symphony
@@ -115,12 +117,15 @@ Follow the instructions below if you are updating from Symphony version 2.0 (not
 
 		git submodule update --init
 
-4. _(Optional)_ If you would like the [default theme](http://github.com/symphonycms/workspace/tree) installed as well, 
+4. _(Optional)_ If you would like the [default ensemble](http://github.com/symphonycms/workspace/tree) installed as well, 
 you will need to use the following command from within the Symphony 2 folder you just created:
 
 		git clone git://github.com/symphonycms/workspace.git
 		
-5. Follow normal installation procedure below from step 2.
+5. Point your web browser at <http://yourwebsite.com/install.php> and provide
+details for establishing a database connection and about your server environment.
+
+6. Chuckle villainously and tap your fingertips together (or pet a cat) as your installation completes.
 
 
 ### Via the old fashioned way
@@ -140,7 +145,7 @@ Upload the following files and directories to the root directory of your website
 2. Point your web browser at <http://yourwebsite.com/install.php> and provide
 details for establishing a database connection and about your server environment.
 
-3. Jump with both arms up like you're in a car commercial!
+3. Pose like you're being filmed for a dramatic close-up while your installation completes.
 
 
 ## Security
@@ -160,4 +165,4 @@ details for establishing a database connection and about your server environment
 
 	rm install.php install.sql workspace/install.sql update.php
 
-4. Dance like it's 1999!
+4. Dance like it's 1894!
