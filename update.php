@@ -82,7 +82,7 @@
 	</html>';
 
 	if(isset($_GET['action']) && $_GET['action'] == 'remove'){
-		
+	
 		if(is_writable(__FILE__)){
 			unlink(__FILE__);
 			redirect(URL . '/symphony/');
@@ -91,16 +91,12 @@
 		render(sprintf($shell,
 			'<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 			<h2>Deletion Failed!</h2>
-			<p><code>update.php</code> could not be deleted. For security reasons, it is best to remove it however this will need to be done manually.</p>'
+			<p>Symphony was unable to delete your <code>update.php</code> file. For security reasons, please be sure to delete the file before proceeding.</p>
+			<br />
+			<p>To continue to the Symphony admin, please <a href="'.URL.'/symphony/">click here</a>.</p>'
 		));
 		
 	}
-
-
-
-
-
-
 
 	$settings = loadOldStyleConfig();
 	$existing_version = $settings['symphony']['version'];
@@ -276,7 +272,6 @@ Options +FollowSymlinks -Indexes
 			$code = sprintf($shell,
 '				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 				<h2>Update Complete</h2>
-
 				<p><strong>Post-Installation Steps: </strong></p>
 				<br />
 				<ol>
@@ -303,7 +298,7 @@ Options +FollowSymlinks -Indexes
 
 				.
 
-				(!is_null($sbl_version) && version_compare($sbl_version, '1.14', '<') ? '<li>The "Select Box Link" field extension has been updated to 1.14, however this installation of Symphony appears to be running an older version ('.$sbl_version.'). Versions prior to 1.14 will not work correctly under Symphony 2.0.7. The latest version can be download via the <a href"http://symphony-cms.com/download/extensions/view/20054/">Select Box Link download page</a> on the Symphony site.</li>' : NULL)
+				(!is_null($sbl_version) && version_compare($sbl_version, '1.14', '<') ? '<li>The "Select Box Link" field extension has been updated to 1.14, however this installation of Symphony appears to be running an older version ('.$sbl_version.'). Versions prior to 1.14 will not work correctly under Symphony <code>'.kVERSION.'</code>. The latest version can be download via the <a href"http://symphony-cms.com/download/extensions/view/20054/">Select Box Link download page</a> on the Symphony site.</li>' : NULL)
 
 				.'</ol>
 
@@ -348,7 +343,8 @@ Options +FollowSymlinks -Indexes
 '				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
 				<h2>Update Existing Installation</h2>
 				<p>This script will update your existing Symphony '.$settings['symphony']['version'].' installation to version '.kVERSION.'.</p>
-				<p><strong>Post-Installation Steps: </strong></p>
+				<br />
+				<p><strong>Pre-Installation Notes: </strong></p>
 				<br />
 				<ol>
 				'.(version_compare($existing_version, '2.0.6', '<') ? '
