@@ -1,7 +1,7 @@
 # Symphony 2 #
 
 - Version: 2.1.0
-- Date: 21st July 2010
+- Date: 23rd July 2010
 - Release Notes: <http://symphony-cms.com/download/releases/version/2.1.0/>
 - Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.1.0>
 
