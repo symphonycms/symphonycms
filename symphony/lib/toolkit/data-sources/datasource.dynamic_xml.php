@@ -4,8 +4,38 @@
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 	require_once(CORE . '/class.cacheable.php');
 	
-	if(isset($this->dsParamURL)) $this->dsParamURL = $this->__processParametersInString($this->dsParamURL, $this->_env, true, true);
+	if(!function_exists('findParametersInString')){
+		// This function finds all the params and flags any with :encoded. An array is returned
+		// to be iterated over
+		function findParametersInString($value){
+			$result = array();
+
+			if(preg_match_all('@{([^}]+)}@i', $value, $matches, PREG_SET_ORDER)){
+				foreach($matches as $m){
+					$result[$m[1]] = array(
+						'param' => preg_replace('/:encoded$/', NULL, $m[1]),
+						'encode' => preg_match('/:encoded$/', $m[1])
+					);
+				}
+			}
+			
+			return $result;
+		}
+	}
+
+	if(isset($this->dsParamURL)){
+		$params = findParametersInString($this->dsParamURL);
+		foreach($params as $key => $info){
+			$replacement = $this->__processParametersInString($info['param'], $this->_env, false);
+			if($info['encode'] == true){
+				$replacement = urlencode($replacement);
+			}
+			$this->dsParamURL = str_replace("{{$key}}", $replacement, $this->dsParamURL);
+		}
+	}
+	
 	if(isset($this->dsParamXPATH)) $this->dsParamXPATH = $this->__processParametersInString($this->dsParamXPATH, $this->_env);
+
 
 	$stylesheet = new XMLElement('xsl:stylesheet');
 	$stylesheet->setAttributeArray(array('version' => '1.0', 'xmlns:xsl' => 'http://www.w3.org/1999/XSL/Transform'));
@@ -21,7 +51,7 @@
 
 	## Namespaces
 	if(isset($this->dsParamFILTERS) && is_array($this->dsParamFILTERS)){
-		foreach($this->dsParamFILTERS as $name => $uri) $instruction->setAttribute('xmlns' . ($name ? ":$name" : NULL), $uri);
+		foreach($this->dsParamFILTERS as $name => $uri) $instruction->setAttribute('xmlns' . ($name ? ":{$name}" : NULL), $uri);
 	}
 
 	## XPath

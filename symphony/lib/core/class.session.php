@@ -6,17 +6,17 @@
 	 */
 
 	require_once(CORE . '/class.cacheable.php');
-	
+
 	Class Session{
-		
+
 		private static $_initialized;
 		private static $_registered;
 		private static $_cache;
 
-		public static function start($lifetime = 0, $path = '/', $domain = NULL) {
+		public static function start($lifetime = 0, $path = '/', $domain = NULL, $httpOnly = false) {
 
 			if (!self::$_initialized) {
-				
+
 				if(!is_object(Symphony::Database()) || !Symphony::Database()->isConnected()) return false;
 
 				self::$_cache = new Cacheable(Symphony::Database());
@@ -26,7 +26,7 @@
 					self::$_cache->write('_session_config', true);
 				}
 
-				if (!session_id()) {
+				if (session_id() != "") {
 					ini_set('session.save_handler', 'user');
 					ini_set('session.gc_maxlifetime', $lifetime);
 					ini_set('session.gc_probability', '1');
@@ -42,15 +42,15 @@
 					array('Session', 'gc')
 				);
 
-				session_set_cookie_params($lifetime, $path, ($domain ? $domain : self::getDomain()), false, false);
+				session_set_cookie_params($lifetime, $path, ($domain ? $domain : self::getDomain()), false, $httpOnly);
 
-				if(strlen(session_id()) == 0){
+				if(session_id() == ""){
 					if(headers_sent()){
 						throw new Exception('Headers already sent. Cannot start session.');
 					}
 					session_start();
 				}
-			
+
 				self::$_initialized = true;
 			}
 
@@ -76,23 +76,14 @@
 					return NULL; // prevent problems on local setups
 				}
 
-				$parsed = parse_url(
-					preg_replace('/^www./i', NULL, $_SERVER['HTTP_HOST'])
-				);
+				return preg_replace('/^www./i', NULL, $_SERVER['HTTP_HOST']);
 
-				if (!isset($parsed['host'])) return NULL;
-
-				$domain = $parsed['host'];
-
-				if($domain{0} != '.') $domain = ".{$domain}";
-
-				return $domain; 
-			} 
+			}
 
 			return NULL;
-		    
+
 		}
-		
+
 		public static function open() {
 			if (!self::$_registered) {
 				register_shutdown_function('session_write_close');
@@ -101,25 +92,27 @@
 
 			return self::$_registered;
 		}
-		
+
 		public static function close() {
 			return true;
 		}
-		
+
 		public static function read($id) {
 			return Symphony::Database()->fetchVar(
-				'session_data', 0, 
+				'session_data', 0,
 				sprintf(
-					"SELECT `session_data` FROM `tbl_sessions` WHERE `session` = '%s' LIMIT 1", 
+					"SELECT `session_data` FROM `tbl_sessions` WHERE `session` = '%s' LIMIT 1",
 					Symphony::Database()->cleanValue($id)
 				)
 			);
 		}
 
 		public static function write($id, $data) {
+			if(strlen(trim($data)) == 0) return;
+
 			$fields = array(
-				'session' => $id, 
-				'session_expires' => time(), 
+				'session' => $id,
+				'session_expires' => time(),
 				'session_data' => $data
 			);
 			return Symphony::Database()->insert($fields, 'tbl_sessions', true);
@@ -135,10 +128,9 @@
 		}
 
 		public static function gc($max) {
-			Symphony::$Log->pushToLog("Session: Taking out the trash!", E_NOTICE, true);
 			return Symphony::Database()->query(
 				sprintf(
-					"DELETE FROM `tbl_sessions` WHERE `session_expires` <= '%s'",
+					"DELETE FROM `tbl_sessions` WHERE `session_expires` <= '%s' OR `session_data` REGEXP '^([^}]+\\\|a:0:{})+$'",
 					Symphony::Database()->cleanValue(time() - $max)
 				)
 			);

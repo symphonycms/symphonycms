@@ -318,9 +318,11 @@
 				do{
 					$path = implode('/', $pathArr);
 
-					$sql = "SELECT * FROM `tbl_pages`
-							WHERE `path` ".($path ? " = '$path'" : 'IS NULL')." 
-							AND `handle` = '$handle' LIMIT 1";
+					$sql = sprintf(
+						"SELECT * FROM `tbl_pages` WHERE `path` %s AND `handle` = '%s' LIMIT 1",
+						($path ? " = '".Symphony::Database()->cleanValue($path)."'" : 'IS NULL'), 
+						Symphony::Database()->cleanValue($handle)
+					);
 
 					if($row = Symphony::Database()->fetchRow(0, $sql)){
 
@@ -554,7 +556,7 @@
 					$dbstats = Symphony::Database()->getStatistics();
 					$queries = $dbstats['queries'] - $queries;
 
-					$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Datasource', $queries);
+					$this->_Parent->Profiler->sample($handle, PROFILE_LAP, 'Event', $queries);
 				
 				}
 			}

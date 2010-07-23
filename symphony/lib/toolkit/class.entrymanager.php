@@ -119,7 +119,12 @@
 			foreach ($entry->getData() as $field_id => $field) {
 				if (empty($field_id)) continue;
 				
-				Symphony::Database()->delete('tbl_entries_data_' . $field_id, " `entry_id` = '".$entry->get('id')."'");
+				try{
+					Symphony::Database()->delete('tbl_entries_data_' . $field_id, " `entry_id` = '".$entry->get('id')."'");
+				}
+				catch(Exception $e){
+					// Discard?
+				}
 				
 				if(!is_array($field) || empty($field)) continue;
 				
@@ -356,8 +361,14 @@
 			foreach ($schema as $f) {
 				$field_id = $f['id'];
 				
-				$row = Symphony::Database()->fetch("SELECT * FROM `tbl_entries_data_{$field_id}` WHERE `entry_id` IN ('$id_list_string') ORDER BY `id` ASC");
-				
+				try{
+					$row = Symphony::Database()->fetch("SELECT * FROM `tbl_entries_data_{$field_id}` WHERE `entry_id` IN ('$id_list_string') ORDER BY `id` ASC");
+				}
+				catch(Exception $e){
+					// No data due to error
+					continue;
+				}
+								
 				if (!is_array($row) || empty($row)) continue;
 				
 				$tmp = array();

@@ -23,7 +23,7 @@
 		const __READ_OPERATION__ = 1;
 
 	    private $_connection = array();
-	    private $_log;
+	    private static $_log;
 	    private $_result;
 	    private $_lastResult = array();
 	    private $_lastQuery;
@@ -254,7 +254,7 @@
 
 			$query_hash = md5($query.microtime());
 
-			$this->_log['query'][$query_hash] = array('query' => $query, 'start' => precision_timer());
+			self::$_log['query'][$query_hash] = array('query' => $query, 'start' => precision_timer());
 
 	        $this->flush();
 	        $this->_lastQuery = $query;
@@ -276,8 +276,8 @@
 		        mysql_free_result($this->_result);
 			}
 
-			$this->_log['query'][$query_hash]['time'] = precision_timer('stop', $this->_log['query'][$query_hash]['start']);
-			if($this->_logEverything) $this->_log['query'][$query_hash]['lastResult'] = $this->_lastResult;
+			self::$_log['query'][$query_hash]['time'] = precision_timer('stop', self::$_log['query'][$query_hash]['start']);
+			if($this->_logEverything) self::$_log['query'][$query_hash]['lastResult'] = $this->_lastResult;
 
 	        return true;
 
@@ -365,7 +365,7 @@
 	    }
 
 		public function flushLog(){
-			$this->_log = array('error' => array(), 'query' => array());
+			self::$_log = array('error' => array(), 'query' => array());
 		}
 
 	    private function __error($msg = NULL){
@@ -375,21 +375,21 @@
 	            $errornum = mysql_errno();
 	        }
 
-	        $this->_log['error'][] = array('query' => $this->_lastQuery,
+	        self::$_log['error'][] = array('query' => $this->_lastQuery,
 	                               			'msg' => $msg,
 	                               			'num' => $errornum);
 
-			throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query "%3$s"', array($errornum, $msg, $this->_lastQuery)), end($this->_log['error']));
+			throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query "%3$s"', array($errornum, $msg, $this->_lastQuery)), end(self::$_log['error']));
 	    }
 
 	    public function debug($section=NULL){
-	        if(!$section) return $this->_log;
+	        if(!$section) return self::$_log;
 
-			return ($section == 'error' ? $this->_log['error'] : $this->_log['query']);
+			return ($section == 'error' ? self::$_log['error'] : self::$_log['query']);
 	    }
 
 		public function getLastError(){
-			return current($this->_log['error']);
+			return current(self::$_log['error']);
 		}
 
 		public function getStatistics(){

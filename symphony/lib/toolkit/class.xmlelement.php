@@ -17,7 +17,7 @@
 		private $_placeValueAfterChildElements;
 		private $_no_end_tags;
 		
-		const CRLF = "\r\n";
+		const CRLF = PHP_EOL;
 		
 		function XMLElement($name, $value=NULL, $attributes=array()){
 	

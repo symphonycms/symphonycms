@@ -17,16 +17,15 @@
 
         
         **/
-  
-		const GATEWAY_NO_FORCE = 0;
-		const GATEWAY_FORCE_CURL = 1;
-		const GATEWAY_FORCE_SOCKET = 2;
+
+		const FORCE_CURL = 'curl';
+		const FORCE_SOCKET = 'socket';
 		
-		const CRLF = "\r\n";
+		const CRLF = PHP_EOL;
 		
         private $_host;
         private $_scheme;
-        private $_port;
+        private $_port = NULL;
         private $_path;
         private $_url;
 
@@ -41,6 +40,13 @@
 		private $_timeout = 4;
     	private $_custom_opt = array();
     	
+		// Port cannot be null when calling fsockopen
+		private static $ports = array(
+			'http' => 80,
+			'https' => 443,
+			'ftp' => 21
+		);
+
         public function init(){
         }
         
@@ -65,7 +71,7 @@
 						$this->_scheme = $url_parsed['scheme'];
 					}
 					
-					$this->_port = 80;
+					$this->_port = NULL;
 					if(isset($url_parsed['port'])){
                     	$this->_port = $url_parsed['port'];
 					}
@@ -157,13 +163,13 @@
 			return $this->_info_last;
 		}
 
-       	public function exec($force_connection_method=GATEWAY_NO_FORCE){
+       	public function exec($force_connection_method=NULL){
 
-			if($force_connection_method != GATEWAY_FORCE_SOCKET && self::isCurlAvailable()){
+			if($force_connection_method != self::FORCE_SOCKET && self::isCurlAvailable()){
 				$ch = curl_init();
 
 				curl_setopt($ch, CURLOPT_URL, 
-					"{$this->_scheme}://{$this->_host}" . (!is_null($this->_port) ? ':' . $this->_port : NULL) . $this->_path
+					sprintf("%s://%s%s%s", $this->_scheme, $this->_host, (!is_null($this->_port) ? ':' . $this->_port : NULL), $this->_path)
 				);
 				curl_setopt($ch, CURLOPT_HEADER, $this->_returnHeaders);
 				curl_setopt($ch, CURLOPT_USERAGENT, $this->_agent);
@@ -199,74 +205,78 @@
 
 				return $result;
 			}
+			
+			if(is_null($this->_port)){
+				$this->_port = (!is_null($this->_scheme) ? self::$ports[$this->_scheme] : 80);
+			}
 
 			##No CURL is available, use attempt to use normal sockets
-			if(!$handle = fsockopen($this->_host, $this->_port, $errno, $errstr, $this->_timeout)) return false;
+			$handle = @fsockopen($this->_host, $this->_port, $errno, $errstr, $this->_timeout);
+			if($handle === false){
+				return;
+			}
 
-			else{
-				
-				$query = $this->_method . ' ' . $this->_path . ' HTTP/' . $this->_http_version . self::CRLF;
-				$query .= 'Host: '.$this->_host . self::CRLF;
-				$query .= 'Content-type: '.$this->_content_type . self::CRLF;
-				$query .= 'User-Agent: '.$this->_agent . self::CRLF;
-				$query .= @implode(self::CRLF, $this->_headers);
-				$query .= 'Content-length: ' . strlen($this->_postfields) . self::CRLF;
-				$query .= 'Connection: close' . self::CRLF . self::CRLF;
-				
-				if($this->_method == 'POST') $query .= $this->_postfields;				
-
-				// send request
-				if(!@fwrite($handle, $query)) return false;
-				
-				stream_set_blocking($handle, false);
-				stream_set_timeout($handle, $this->_timeout);
-
-				$status = stream_get_meta_data($handle);
-
-				// get header
-				while (!preg_match('/\\r\\n\\r\\n$/', $header) && !$status['timed_out']) {
-					$header .= @fread($handle, 1); 
-					$status = stream_get_meta_data($handle);
-				}
-	
-				$status = socket_get_status($handle);
-	
-				## Get rest of the page data
-				while (!feof($handle) && !$status['timed_out']){
-					$response .= fread($handle, 4096);
-					$status = stream_get_meta_data($handle);
-				}				
-	
-				@fclose($handle);
+			$query = $this->_method . ' ' . $this->_path . ' HTTP/' . $this->_http_version . self::CRLF;
+			$query .= 'Host: '.$this->_host . self::CRLF;
+			$query .= 'Content-type: '.$this->_content_type . self::CRLF;
+			$query .= 'User-Agent: '.$this->_agent . self::CRLF;
+			$query .= @implode(self::CRLF, $this->_headers);
+			$query .= 'Content-length: ' . strlen($this->_postfields) . self::CRLF;
+			$query .= 'Connection: close' . self::CRLF . self::CRLF;
 			
-				if(preg_match('/Transfer\\-Encoding:\\s+chunked\\r\\n/', $header)){
-					
-					$fp = 0;
+			if($this->_method == 'POST') $query .= $this->_postfields;				
+
+			// send request
+			if(!@fwrite($handle, $query)) return false;
+			
+			stream_set_blocking($handle, false);
+			stream_set_timeout($handle, $this->_timeout);
+
+			$status = stream_get_meta_data($handle);
+
+			// get header
+			while (!preg_match('/\\r\\n\\r\\n$/', $header) && !$status['timed_out']) {
+				$header .= @fread($handle, 1); 
+				$status = stream_get_meta_data($handle);
+			}
+
+			$status = socket_get_status($handle);
+
+			## Get rest of the page data
+			while (!feof($handle) && !$status['timed_out']){
+				$response .= fread($handle, 4096);
+				$status = stream_get_meta_data($handle);
+			}				
+
+			@fclose($handle);
+		
+			if(preg_match('/Transfer\\-Encoding:\\s+chunked\\r\\n/', $header)){
+				
+				$fp = 0;
+				
+				do {
+					$byte = '';
+					$chunk_size = '';
 					
 					do {
-						$byte = '';
-						$chunk_size = '';
-						
-						do {
-							$chunk_size .= $byte;
-							$byte = substr($response, $fp, 1); $fp++;
-						} while ($byte != "\r" && $byte != "\\r"); 
-						
-						$chunk_size = hexdec($chunk_size); // convert to real number
-						
-						if($chunk_size == 0) break(1);
-	
-						$fp++;
-	
-						$dechunked .= substr($response, $fp, $chunk_size); $fp += $chunk_size;
-	
-						$fp += 2;
-						
-					} while(true);   			
+						$chunk_size .= $byte;
+						$byte = substr($response, $fp, 1); $fp++;
+					} while ($byte != "\r" && $byte != "\\r"); 
 					
-					$response = $dechunked;
+					$chunk_size = hexdec($chunk_size); // convert to real number
 					
-				}
+					if($chunk_size == 0) break(1);
+
+					$fp++;
+
+					$dechunked .= substr($response, $fp, $chunk_size); $fp += $chunk_size;
+
+					$fp += 2;
+					
+				} while(true);
+				
+				$response = $dechunked;
+				
 			}
 
 			// Following code emulates part of the function curl_getinfo()
@@ -284,9 +294,9 @@
 			
 			return ($this->_returnHeaders ? $header : NULL) . $response;
 		}
-				
+
 		public function flush(){
-	        $this->_postfields = NULL;			
+			$this->_postfields = NULL;
 		}      
     
     }

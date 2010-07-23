@@ -232,7 +232,7 @@
 		}
 		
 		function checkPostFieldData($data, &$message, $entry_id=NULL){
-		
+
 			/*
 				UPLOAD_ERR_OK
 				Value: 0; There is no error, the file uploaded with success.
@@ -281,7 +281,17 @@
 			}
 				
 			## Its not an array, so just retain the current data and return
-			if(!is_array($data)) return self::__OK__;
+			if(!is_array($data)){
+				
+				$file = WORKSPACE . $data;
+				
+				if(!file_exists($file) || !is_readable($file)){
+					$message = __('The file uploaded is no longer available. Please check that it exists, and is readable.');
+					return self::__INVALID_FIELDS__;
+				}
+				
+				return self::__OK__;
+			}
 
 
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
@@ -365,31 +375,69 @@
 			
 			## Its not an array, so just retain the current data and return
 			if(!is_array($data)){
-				
+	
 				$status = self::__OK__;
+				
 				$file = WORKSPACE . $data;
-				// Do a simple reconstruction of the file meta information. This is a workaround for
-				// bug which causes all meta information to be dropped
-				return array(
+				
+				$result = array(
 					'file' => $data,
-					'mimetype' => self::__sniffMIMEType($data),
-					'size' => (file_exists($file) && is_readable($file) ? filesize($file) : NULL),
-					'meta' => serialize(self::getMetaInfo(WORKSPACE . $data, self::__sniffMIMEType($data)))
+					'mimetype' => NULL,
+					'size' => NULL,
+					'meta' => NULL
 				);
+				
+				// Grab the existing entry data to preserve the MIME type and size information
+				if(isset($entry_id) && !is_null($entry_id)){
+					$row = Symphony::Database()->fetchRow(0, sprintf(
+						"SELECT `file`, `mimetype`, `size`, `meta` FROM `tbl_entries_data_%d` WHERE `entry_id` = %d", 
+						$this->get('id'), 
+						$entry_id
+					));
+					if(!empty($row)){
+						$result = $row;
+					}
+				}
+				
+				if(!file_exists($file) || !is_readable($file)){
+					$status = self::__INVALID_FIELDS__;
+					return $result;
+				}
+
+				return $result;
 	
 			}
 
 			if($simulate) return;
 			
-			if($data['error'] == UPLOAD_ERR_NO_FILE || $data['error'] != UPLOAD_ERR_OK) return;
+			## Upload the new file
+			$abs_path = DOCROOT . '/' . trim($this->get('destination'), '/');
+			$rel_path = str_replace('/workspace', '', $this->get('destination'));
+			$existing_file = NULL;
+			
+			if(!is_null($entry_id)){
+				$row = Symphony::Database()->fetchRow(0, sprintf(
+					"SELECT * FROM `tbl_entries_data_%s` WHERE `entry_id` = %d LIMIT 1", 
+					$this->get('id'), 
+					$entry_id
+				));
+				
+				$existing_file = rtrim($rel_path, '/') . '/' . trim(basename($row['file']), '/');
+				
+				// File was removed
+				if($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file) && file_exists(WORKSPACE . $existing_file)){
+					General::deleteFile(WORKSPACE . $existing_file);
+				}
+			}
+				
+			if($data['error'] == UPLOAD_ERR_NO_FILE || $data['error'] != UPLOAD_ERR_OK){
+				return;
+			}
 			
 			## Sanitize the filename
 			$data['name'] = Lang::createFilename($data['name']);
 			
-			## Upload the new file
-			$abs_path = DOCROOT . '/' . trim($this->get('destination'), '/');
-			$rel_path = str_replace('/workspace', '', $this->get('destination'));
-
+			
 			if(!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], Symphony::Configuration()->get('write_mode', 'file'))){
 				
 				$message = __('There was an error while trying to upload the file <code>%1$s</code> to the target directory <code>%2$s</code>.', array($data['name'], 'workspace/'.ltrim($rel_path, '/')));
@@ -400,14 +448,10 @@
 			$status = self::__OK__;
 			
 			$file = rtrim($rel_path, '/') . '/' . trim($data['name'], '/');
-
-			if($entry_id){
-				$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
-				$existing_file = rtrim($rel_path, '/') . '/' . trim(basename($row['file']), '/');
-
-				if((strtolower($existing_file) != strtolower($file)) && file_exists(WORKSPACE . $existing_file)){
-					General::deleteFile(WORKSPACE . $existing_file);
-				}
+			
+			// File has been replaced
+			if(!is_null($existing_file) && (strtolower($existing_file) != strtolower($file)) && file_exists(WORKSPACE . $existing_file)){
+				General::deleteFile(WORKSPACE . $existing_file);
 			}
 
 			## If browser doesn't send MIME type (e.g. .flv in Safari)
@@ -422,22 +466,6 @@
 				'meta' => serialize(self::getMetaInfo(WORKSPACE . $file, $data['type']))
 			);
 			
-		}
-		
-		private static function __sniffMIMEType($file){
-			
-			$ext = strtolower(General::getExtension($file));
-			
-			$imageMimeTypes = array(
-				'image/gif',
-				'image/jpg',
-				'image/jpeg',
-				'image/png',
-			);
-			
-			if(General::in_iarray("image/{$ext}", $imageMimeTypes)) return "image/{$ext}";
-			
-			return 'unknown';
 		}
 		
 		public static function getMetaInfo($file, $type){
@@ -471,7 +499,7 @@
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `file` varchar(255) default NULL,
-				  `size` int(11) unsigned NOT NULL,
+				  `size` int(11) unsigned NULL,
 				  `mimetype` varchar(50) default NULL,
 				  `meta` varchar(255) default NULL,
 				  PRIMARY KEY  (`id`),

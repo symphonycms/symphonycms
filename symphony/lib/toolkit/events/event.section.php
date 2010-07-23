@@ -263,6 +263,9 @@
 		}
 	}
 	
+	if(!isset($this->eParamFILTERS) || !is_array($this->eParamFILTERS)){
+		$this->eParamFILTERS = array();
+	}
 	
 	$result = new XMLElement(self::ROOTELEMENT);
 	

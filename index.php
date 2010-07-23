@@ -17,6 +17,11 @@
 			? 'administration' 
 			: 'frontend');
 
+	header('Expires: Mon, 12 Dec 1982 06:14:00 GMT');
+	header('Last-Modified: ' . gmdate('r'));
+	header('Cache-Control: no-cache, must-revalidate, max-age=0');
+	header('Pragma: no-cache');	
+
 	$output = renderer($renderer)->display(getCurrentPage());
 	
 	header(sprintf('Content-Length: %d', strlen($output)));

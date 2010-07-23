@@ -1,16 +1,21 @@
 <?php
-
-	abstract Class Event{
+	
+	interface iEvent{
+		public static function about();
+		public function load();
+	}
+	
+	abstract Class Event implements iEvent{
 		
 		protected $_Parent;
 		protected $_env;
 		
-		const CRLF = "\r\n";
+		const CRLF = PHP_EOL;
 		const kHIGH = 3;
 		const kNORMAL = 2;
 		const kLOW = 1;
 				
-		function __construct(&$parent, $env=NULL){
+		public function __construct(&$parent, $env=NULL){
 			$this->_Parent = $parent;
 			$this->_env = $env;
 		}
@@ -32,10 +37,6 @@
 		public function priority(){
 			return self::kNORMAL;
 		}
-						
-		abstract public static function about();
-				
-		abstract public function load();
 		
 		abstract protected function __trigger();
 	}

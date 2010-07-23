@@ -9,6 +9,7 @@
 		list-style: none;
 		overflow: hidden;
 		position: relative;
+		z-index: 1;
 	}
 	.invalid .duplicator {
 		border-color: #aa2211;
