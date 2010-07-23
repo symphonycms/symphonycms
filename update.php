@@ -259,17 +259,15 @@ Options +FollowSymlinks -Indexes
 				);
 
 				// Purge all sessions, forcing everyone to update their passwords
-				$frontend->Database->query(
-					"TRUNCATE TABLE `tbl_sessions`"
-				);
+				$frontend->Database->query( "TRUNCATE TABLE `tbl_sessions`");
 
 				## Update Upload field
-				$upload_entry_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` from `tbl_fields_upload`");
+				$upload_entry_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");
 
 				if(is_array($upload_entry_tables) && !empty($upload_entry_tables)) foreach($upload_entry_tables as $field) {
-					$frontend->Database->query(sprintf("
-							ALTER TABLE `tbl_entries_data_%d` MODIFY `size` int(11) unsigned NULL,
-						", $field
+					$frontend->Database->query(sprintf(
+							"ALTER TABLE `tbl_entries_data_%d` CHANGE `size` `size` INT(11) UNSIGNED NULL DEFAULT NULL", 
+							$field
 					));
 				}
 			}
