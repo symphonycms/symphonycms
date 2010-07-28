@@ -261,8 +261,14 @@
 			
 			if (!is_object($section)) return false;
 
-			## We want to sort if there is a custom entry sort order
-			if ($this->_fetchSortField == 'date') {
+			## SORTING
+			
+			// Check for RAND first, since this works independently of any specific field
+			if($this->_fetchSortDirection == 'RAND'){
+				$sort = 'ORDER BY RAND() ';
+			}
+			
+			elseif ($this->_fetchSortField == 'date') {
 				$sort = 'ORDER BY ' . ($this->_fetchSortDirection != 'RAND' ? "`e`.`creation_date` $this->_fetchSortDirection" : 'RAND() ');
 			}
 			
