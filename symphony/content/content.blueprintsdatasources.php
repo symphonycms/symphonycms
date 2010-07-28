@@ -422,6 +422,11 @@
 				array('random', ('random' == $fields['order']), __('random')),
 			);
 			
+			// Retain custom sort order
+			if(!in_array($fields['order'], array('asc', 'desc', 'random'))){
+				$options[] = array($fields['order'], true, $fields['order']);
+			}
+			
 			$label->appendChild(Widget::Select('fields[order]', $options));
 			$div->appendChild($label);
 			
