@@ -476,9 +476,11 @@
 				'image/jpeg',
 				'image/png',
 			);
-			
+
 			$meta = array();
-			
+
+			if(!file_exists($file) || !is_readable($file)) return $meta; 
+
 			$meta['creation'] = DateTimeObj::get('c', filemtime($file));
 			
 			if(General::in_iarray($type, $imageMimeTypes) && $array = @getimagesize($file)){
