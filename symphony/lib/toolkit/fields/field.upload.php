@@ -176,6 +176,8 @@
 		}
 
 		function appendFormattedElement(&$wrapper, $data){
+			if (!is_array($data) or empty($data)) return;
+
 			$item = new XMLElement($this->get('element_name'));
 			$file = WORKSPACE . $data['file'];
 			$item->setAttributeArray(array(
