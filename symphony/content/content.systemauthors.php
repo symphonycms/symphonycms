@@ -1,7 +1,7 @@
 <?php
 
 	require_once(TOOLKIT . '/class.administrationpage.php');
-require_once(TOOLKIT . '/class.sectionmanager.php');
+	require_once(TOOLKIT . '/class.sectionmanager.php');
 
 	Class contentSystemAuthors extends AdministrationPage{
 
@@ -21,7 +21,7 @@ require_once(TOOLKIT . '/class.sectionmanager.php');
 			if (Administration::instance()->Author->isDeveloper()) $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
 			else $this->appendSubheading(__('Authors'));
 			
-		$authors = AuthorManager::fetch();
+			$authors = AuthorManager::fetch();
 
 			$aTableHead = array(
 
@@ -36,8 +36,8 @@ require_once(TOOLKIT . '/class.sectionmanager.php');
 			if(!is_array($authors) || empty($authors)){
 
 				$aTableBody = array(
-									Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
-								);
+					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
+				);
 			}
 
 			else{
@@ -74,11 +74,11 @@ require_once(TOOLKIT . '/class.sectionmanager.php');
 			}
 
 			$table = Widget::Table(
-								Widget::TableHead($aTableHead),
-								NULL,
-								Widget::TableBody($aTableBody)
-							);
-							
+				Widget::TableHead($aTableHead),
+				NULL,
+				Widget::TableBody($aTableBody)
+			);
+
 			$this->Form->appendChild($table);
 			
 			if(Administration::instance()->Author->isDeveloper()) {
@@ -309,7 +309,7 @@ require_once(TOOLKIT . '/class.sectionmanager.php');
 			
 			### Custom Language Selection ###
 			$languages = Lang::getAvailableLanguages(Administration::instance()->ExtensionManager);
-			if(count($languages > 1)) {
+			if(count($languages) > 1) {
 				
 				// Get language names
 				asort($languages);
