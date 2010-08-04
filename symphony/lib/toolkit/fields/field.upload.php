@@ -373,6 +373,16 @@
 
 			$status = self::__OK__;
 			
+			//fixes bug where files are deleted, but their database entries are not.
+			if($data === NULL){
+				return array(
+					'file' => NULL,
+					'mimetype' => NULL,
+					'size' => NULL,
+					'meta' => NULL
+				);
+			}
+			
 			## Its not an array, so just retain the current data and return
 			if(!is_array($data)){
 	
