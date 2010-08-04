@@ -767,24 +767,26 @@
 					");
 					
 					// Create or move files:
-					if(empty($current)) {
-						$file_created = $this->__updatePageFiles(
-							$fields['path'], $fields['handle']
-						);
+					if(!$duplicate){
+						if(empty($current)) {
+							$file_created = $this->__updatePageFiles(
+								$fields['path'], $fields['handle']
+							);
 						
-					} else {
-						$file_created = $this->__updatePageFiles(
-							$fields['path'], $fields['handle'],
-							$current['path'], $current['handle']
-						);
-					}
+						} else {
+							$file_created = $this->__updatePageFiles(
+								$fields['path'], $fields['handle'],
+								$current['path'], $current['handle']
+							);
+						}
 					
-					if(!$file_created) {
-						$redirect = null;
-						$this->pageAlert(
-							__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'),
-							Alert::ERROR
-						);
+						if(!$file_created) {
+							$redirect = null;
+							$this->pageAlert(
+								__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'),
+								Alert::ERROR
+							);
+						}
 					}
 					
 					if($duplicate) {
