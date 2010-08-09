@@ -159,13 +159,12 @@
 					
 		}		
 		
-		function prepareTableValue($data, XMLElement $link=NULL){
+		public function prepareTableValue($data, XMLElement $link=NULL){
 			if(!$file = $data['file']) return NULL;
 					
 			if($link){
 				$link->setValue(basename($file));
-				//$view_link = Widget::Anchor('(view)', URL . '/workspace' . $file);
-				return $link->generate(); // . ' ' . $view_link->generate();
+				return $link->generate();
 			}
 			
 			else{
@@ -175,7 +174,13 @@
 			
 		}
 
-		function appendFormattedElement(&$wrapper, $data){
+		public function appendFormattedElement(&$wrapper, $data){
+			
+			// It is possible an array of NULL data will be passed in. Check for this.
+			if(!is_array($data) || !isset($data['file']) || is_null($data['file'])){
+				return;
+			}
+			
 			$item = new XMLElement($this->get('element_name'));
 			$file = WORKSPACE . $data['file'];
 			$item->setAttributeArray(array(
