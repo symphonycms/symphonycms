@@ -120,7 +120,9 @@
 		public function entryDataCleanup($entry_id, $data){
 			$file_location = WORKSPACE . '/' . ltrim($data['file'], '/');
 			
-			if(file_exists($file_location)) General::deleteFile($file_location);
+			if(is_file($file_location)){
+				General::deleteFile($file_location);
+			}
 			
 			parent::entryDataCleanup($entry_id);
 			
@@ -440,7 +442,7 @@
 				$existing_file = rtrim($rel_path, '/') . '/' . trim(basename($row['file']), '/');
 				
 				// File was removed
-				if($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file) && file_exists(WORKSPACE . $existing_file)){
+				if($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file) && is_file(WORKSPACE . $existing_file)){
 					General::deleteFile(WORKSPACE . $existing_file);
 				}
 			}
@@ -465,7 +467,7 @@
 			$file = rtrim($rel_path, '/') . '/' . trim($data['name'], '/');
 			
 			// File has been replaced
-			if(!is_null($existing_file) && (strtolower($existing_file) != strtolower($file)) && file_exists(WORKSPACE . $existing_file)){
+			if(!is_null($existing_file) && (strtolower($existing_file) != strtolower($file)) && is_file(WORKSPACE . $existing_file)){
 				General::deleteFile(WORKSPACE . $existing_file);
 			}
 
