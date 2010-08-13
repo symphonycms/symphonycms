@@ -237,7 +237,7 @@ Options +FollowSymlinks -Indexes
 				## Add -Indexes to .htaccess
 				$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
 
-				if($htaccess !== false){
+				if($htaccess !== false && !preg_match('/-Indexes/', $htaccess)){
 					$htaccess = str_replace('Options +FollowSymlinks', 'Options +FollowSymlinks -Indexes', $htaccess);
 					@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 				}
