@@ -62,7 +62,7 @@
 
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.1.0');
+	define('kVERSION', '2.1.1');
 	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/'.kVERSION.'/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -271,7 +271,21 @@ Options +FollowSymlinks -Indexes
 					));
 				}
 			}
+			
+			if(version_compare($existing_version, '2.1.0', '<=')){
+				$frontend->Database->query(
+					'ALTER TABLE  `tbl_fields_input` CHANGE  `validator`  `validator` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;'
+				);
 
+				$frontend->Database->query(
+					'ALTER TABLE  `tbl_fields_upload` CHANGE  `validator`  `validator` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;'
+				);
+
+				$frontend->Database->query(
+					'ALTER TABLE  `tbl_fields_taglist` CHANGE  `validator`  `validator` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;'
+				);
+			}
+			
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
 				"SELECT `version` FROM `tbl_extensions` WHERE `name` = 'selectbox_link_field' LIMIT 1"
 			);
@@ -351,7 +365,7 @@ Options +FollowSymlinks -Indexes
 				<h2>Update Existing Installation</h2>
 				<p>This script will update your existing Symphony '.$settings['symphony']['version'].' installation to version '.kVERSION.'.</p>
 				<br />
-				<p><strong>Pre-Installation Notes: </strong></p>
+				'.(version_compare($existing_version, '2.1.0', '<') ? '<p><strong>Pre-Installation Notes: </strong></p>' : NULL).'
 				<br />
 				<ol>
 				'.(version_compare($existing_version, '2.0.6', '<') ? '
