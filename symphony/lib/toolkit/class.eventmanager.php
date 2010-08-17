@@ -54,17 +54,17 @@
 						$classname = $this->__getClassName($f);   
 						$path = $this->__getDriverPath($f);
 						$can_parse = false;
-						$type = NULL;
+						$source = NULL;
 								
 						if(is_callable(array($classname,'allowEditorToParse')))
 							$can_parse = @call_user_func(array(&$classname, 'allowEditorToParse'));
 		
 						if(is_callable(array($classname,'getSource')))	
-							$type = @call_user_func(array(&$classname, 'getSource'));
+							$source = @call_user_func(array(&$classname, 'getSource'));
 							
 						$about['can_parse'] = $can_parse;
 						$about['source'] = $source;
-						$result[$f] = $about;		
+						$result[$f] = $about;
 		
 					}
 				}
