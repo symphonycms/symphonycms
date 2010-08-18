@@ -385,7 +385,7 @@ var Symphony;
 		$('textarea').blur();
 		
 		// Internal duplicators:
-		$('#fields-duplicator').symphonyDuplicator({ orderable: true });
+		$('#fields-duplicator').symphonyDuplicator({ orderable: true, collapsible: true });
 		$('.filters-duplicator').symphonyDuplicator();
 		
 		// Repeating sections
@@ -447,6 +447,19 @@ var Symphony;
 					});
 				});
 			});
+		});
+
+		// Showing the field label in the section editor (duplicator)
+		$('#fields-duplicator').bind('collapsestop', function (event, item) {
+			var instance = jQuery(item);
+			instance.find('.header > span').append(
+				$('<i />').text(instance.find('label:first input').attr('value'))
+			);
+		});
+
+		$('#fields-duplicator').bind('expandstop', function (event, item) {
+			var instance = jQuery(item);
+			instance.find('.header > span > i').remove();
 		});
 
 		// Data source switcheroo

@@ -35,7 +35,7 @@
 		
 		if (settings.collapsible) objects = objects.symphonyCollapsible({
 			items:			'.instance',
-			handles:		'.header'
+			handles:		'.header span'
 		});
 		
 	/*-------------------------------------------------------------------------

@@ -34,6 +34,9 @@
 	.duplicator.orderable > .instance > .header {
 		cursor: move;
 	}
+	.duplicator.orderable > .instance > .header span {
+		cursor: pointer;
+	}
 	.duplicator > .instance > .header .destructor {
 		font-weight: normal;
 		color: #333322;
