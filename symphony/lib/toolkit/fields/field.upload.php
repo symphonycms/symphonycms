@@ -120,7 +120,9 @@
 		public function entryDataCleanup($entry_id, $data){
 			$file_location = WORKSPACE . '/' . ltrim($data['file'], '/');
 			
-			if(file_exists($file_location)) General::deleteFile($file_location);
+			if(is_file($file_location)){
+				General::deleteFile($file_location);
+			}
 			
 			parent::entryDataCleanup($entry_id);
 			
@@ -159,13 +161,12 @@
 					
 		}		
 		
-		function prepareTableValue($data, XMLElement $link=NULL){
+		public function prepareTableValue($data, XMLElement $link=NULL){
 			if(!$file = $data['file']) return NULL;
 					
 			if($link){
 				$link->setValue(basename($file));
-				//$view_link = Widget::Anchor('(view)', URL . '/workspace' . $file);
-				return $link->generate(); // . ' ' . $view_link->generate();
+				return $link->generate();
 			}
 			
 			else{
@@ -175,7 +176,13 @@
 			
 		}
 
-		function appendFormattedElement(&$wrapper, $data){
+		public function appendFormattedElement(&$wrapper, $data){
+			
+			// It is possible an array of NULL data will be passed in. Check for this.
+			if(!is_array($data) || !isset($data['file']) || is_null($data['file'])){
+				return;
+			}
+			
 			$item = new XMLElement($this->get('element_name'));
 			$file = WORKSPACE . $data['file'];
 			$item->setAttributeArray(array(
@@ -373,6 +380,16 @@
 
 			$status = self::__OK__;
 			
+			//fixes bug where files are deleted, but their database entries are not.
+			if($data === NULL){
+				return array(
+					'file' => NULL,
+					'mimetype' => NULL,
+					'size' => NULL,
+					'meta' => NULL
+				);
+			}
+			
 			## Its not an array, so just retain the current data and return
 			if(!is_array($data)){
 	
@@ -425,7 +442,7 @@
 				$existing_file = rtrim($rel_path, '/') . '/' . trim(basename($row['file']), '/');
 				
 				// File was removed
-				if($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file) && file_exists(WORKSPACE . $existing_file)){
+				if($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file) && is_file(WORKSPACE . $existing_file)){
 					General::deleteFile(WORKSPACE . $existing_file);
 				}
 			}
@@ -450,7 +467,7 @@
 			$file = rtrim($rel_path, '/') . '/' . trim($data['name'], '/');
 			
 			// File has been replaced
-			if(!is_null($existing_file) && (strtolower($existing_file) != strtolower($file)) && file_exists(WORKSPACE . $existing_file)){
+			if(!is_null($existing_file) && (strtolower($existing_file) != strtolower($file)) && is_file(WORKSPACE . $existing_file)){
 				General::deleteFile(WORKSPACE . $existing_file);
 			}
 
@@ -474,6 +491,7 @@
 				'image/gif',
 				'image/jpg',
 				'image/jpeg',
+				'image/pjpeg',
 				'image/png',
 			);
 			
