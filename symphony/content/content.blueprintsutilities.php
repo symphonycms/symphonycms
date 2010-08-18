@@ -4,16 +4,83 @@
 	require_once(TOOLKIT . '/class.xsltprocess.php');	
 
 	Class contentBlueprintsUtilities extends AdministrationPage{
-
-		var $_existing_file;
-
-		function __construct(&$parent){
+		public $_errors;
+		private $_existing_file;
+		
+		public function __construct(&$parent){
 			parent::__construct($parent);
-			$this->setPageType('form');
 		}
 		
-		## Overload the parent 'view' function since we dont need the switchboard logic
-		function view(){
+		public function __viewIndex(){
+			$this->setPageType('table');	
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Utilities'))));
+			$this->appendSubheading(__('Utilities'), Widget::Anchor(__('Create New'), URL . '/symphony/blueprints/utilities/new/', __('Create a new utility'), 'create button'));
+
+			$utilities = General::listStructure(UTILITIES, array('xsl'), false, 'asc', UTILITIES);
+			$utilities = $utilities['filelist'];
+
+			$aTableHead = array(
+
+				array(__('Name'), 'col'),
+			);
+
+			$aTableBody = array();
+
+			if(!is_array($utilities) || empty($utilities)){
+
+				$aTableBody = array(
+					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
+				);
+			}
+
+			else{
+				
+				$bOdd = true;
+
+				foreach($utilities as $u) {
+					$name = Widget::TableData(
+						Widget::Anchor(
+							$u,
+							URL . '/symphony/blueprints/utilities/edit/' . str_replace('.xsl', '', $u) . '/')
+					);
+
+					$name->appendChild(Widget::Input('items[' . $u . ']', null, 'checkbox'));
+
+					$aTableBody[] = Widget::TableRow(array($name), null);
+				}
+			}
+
+			$table = Widget::Table(
+								Widget::TableHead($aTableHead), 
+								NULL, 
+								Widget::TableBody($aTableBody)
+						);
+
+			$this->Form->appendChild($table);
+			
+			$tableActions = new XMLElement('div');
+			$tableActions->setAttribute('class', 'actions');
+			
+			$options = array(
+				array(NULL, false, __('With Selected...')),
+				array('delete', false, __('Delete'), 'confirm'),
+			);
+
+			$tableActions->appendChild(Widget::Select('with-selected', $options));
+			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
+
+			$this->Form->appendChild($tableActions);
+		}
+
+		function __viewNew(){
+			$this->__form();			
+		}
+		
+		function __viewEdit(){
+			$this->__form();
+		}
+		
+		function __form() {
 			
 			$this->_existing_file = (isset($this->_context[1]) ? $this->_context[1] . '.xsl' : NULL);
 			
@@ -62,7 +129,7 @@
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/utilities/new/', 
-									URL . '/symphony/blueprints/components/' 
+									URL . '/symphony/blueprints/utilities/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -75,7 +142,7 @@
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/utilities/new/', 
-									URL . '/symphony/blueprints/components/'
+									URL . '/symphony/blueprints/utilities/'
 								)
 							), 
 							Alert::SUCCESS);
@@ -83,7 +150,8 @@
 					
 				}
 			}
-			
+
+			$this->setPageType('form');
 			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s' : '%1$s &ndash; %2$s &ndash; %3$s'), array(__('Symphony'), __('Utilities'), $filename)));
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $filename));
 
@@ -152,8 +220,50 @@
 				
 			
 		}
+
+		function __actionIndex(){
+
+			$checked = @array_keys($_POST['items']);
+
+			if(is_array($checked) && !empty($checked)){
+				switch($_POST['with-selected']) {
+
+					case 'delete':
+						$canProceed = true;
+						foreach($checked as $name) {
+							if (!General::deleteFile(UTILITIES . '/' . $name)) {
+								$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($name)),Alert::ERROR);
+								$canProceed = false;
+							}
+						}
+
+						if ($canProceed) redirect($this->_Parent->getCurrentPageURL());
+						break;
+				}
+			}
+
+		}
+
+		function __actionNew(){
+			if(array_key_exists('save', $_POST['action']) || array_key_exists('done', $_POST['action'])) return $this->__formAction();
+		}
+
+		function __actionEdit(){
+			if(array_key_exists('save', $_POST['action'])) return $this->__formAction();
+			elseif(array_key_exists('delete', $_POST['action'])){
+
+		    	if(!General::deleteFile(UTILITIES . '/' . $this->_context[1] . '.xsl')){
+					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1] . '.xsl')), Alert::ERROR);
+				}
+				
+		    	else{
+					redirect(URL . '/symphony/blueprints/utilities/');
+				}
+						
+			}	
+		}
 		
-		function action(){
+		function __formAction(){
 			
 			$this->_existing_file = (isset($this->_context[1]) ? $this->_context[1] . '.xsl' : NULL);
 			
@@ -214,7 +324,7 @@
 
 		    	General::deleteFile(UTILITIES . '/' . $this->_existing_file);
 
-		    	redirect(URL . '/symphony/blueprints/components/');	
+		    	redirect(URL . '/symphony/blueprints/utilities/');	
 		  	}	
 		}
 	}

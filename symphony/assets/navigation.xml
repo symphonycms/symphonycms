@@ -5,13 +5,17 @@
 			<item link="/blueprints/pages/new/" name="Pages New" visible="no" />
 			<item link="/blueprints/pages/edit/" name="Pages Edit" visible="no" />
 
-			<item link="/blueprints/components/" name="Components" />
+			<item link="/blueprints/datasources/" name="Data Sources" />
 			
 			<item link="/blueprints/datasources/new/" name="Datasource New" visible="no" />
 			<item link="/blueprints/datasources/edit/" name="Datasource Edit" visible="no" />			
 			<item link="/blueprints/datasources/info/" name="Datasource Info" visible="no" />
-			
+
+			<item link="/blueprints/events/" name="Events" />
+
 			<item link="/blueprints/events/info/" name="Event Info" visible="no" />			
+
+			<item link="/blueprints/utilities/" name="Utilities" />
 
 			<item link="/blueprints/utilities/new/" name="Utility New" visible="no" />
 			<item link="/blueprints/utilities/edit/" name="Utility Edit" visible="no" />
