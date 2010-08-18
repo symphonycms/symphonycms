@@ -76,8 +76,22 @@
 			$options = array(
 				array(NULL, false, __('With Selected...')),
 				array('delete', false, __('Delete'), 'confirm'),
-				array('delete-entries', false, __('Delete Entries'), 'confirm')
+				array('delete-entries', false, __('Delete Entries'), 'confirm'),
+				array('label' => __('Set navigation group'), 'options' => array())
 			);
+
+			if (is_array($sections) && !empty($sections)) {
+				$index = 3;
+
+				$groups = array();
+				foreach($sections as $s){
+					if(in_array($s->get('navigation_group'), $groups)) continue;
+					$groups[] = $s->get('navigation_group');
+#					$value = strtolower(str_replace(' ',  '-', General::sanitize($s->get('navigation_group'))));
+					$value = urlencode($s->get('navigation_group'));
+					$options[$index]['options'][] = array($value, false, $s->get('navigation_group'));
+				}
+			}
 
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
 			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
@@ -438,6 +452,15 @@
 						
 						redirect(URL . '/symphony/blueprints/sections/');
 						break;
+						
+					default:
+
+						$sectionManager = new SectionManager($this->_Parent);
+						foreach($checked as $section_id) $sectionManager->edit($section_id, array('navigation_group' => urldecode($_POST['with-selected'])));
+
+						redirect(URL . '/symphony/blueprints/sections/');
+						break;
+
 				}
 			}
 						
