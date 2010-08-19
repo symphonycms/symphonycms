@@ -50,6 +50,9 @@ var Symphony;
 					dataType: 'json',
 					success: function(result) {
 						Symphony.Language.DICTIONARY = $.extend(Symphony.Language.DICTIONARY, result);
+					},
+					error: function() {
+						Symphony.Language.DICTIONARY = $.extend(Symphony.Language.DICTIONARY, strings);
 					}
 				});
 			}
