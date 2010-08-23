@@ -240,7 +240,10 @@
 		}
 
 		/***
-
+		
+		WARNING: THIS FUNCTION IS NOW DEPRICATED, AND WILL BE REMOVED IN 
+		THE NEXT OFFICAL RELEASE. PLEASE USE 'Email' CLASS INSTEAD.
+		
 		Method: sendEmail
 		Description: Allows you to send emails. It includes some simple injection attack
 		             protection and more comprehensive headers
@@ -253,46 +256,29 @@
 
 		***/		
 		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers = array()) {
-			## Check for injection attacks (http://securephp.damonkohler.com/index.php/Email_Injection)
-			if ((eregi("\r", $from_email) || eregi("\n", $from_email))
-				|| (eregi("\r", $from_name) || eregi("\n", $from_name))){
-					return false;
-		   	}
-			####
+
+			include_once(TOOLKIT . '/class.email.php');
+
+			$driver = Symphony::Configuration()->get('driver', 'email');
 			
-			$subject = self::encodeHeader($subject, 'UTF-8');
-			$from_name = self::encodeHeader($from_name, 'UTF-8');
-			$headers = array();
-			
-			$default_headers = array(
-				'From'			=> "{$from_name} <{$from_email}>",
-		 		'Reply-To'		=> "{$from_name} <{$from_email}>",	
-				'Message-ID'	=> sprintf('<%s@%s>', md5(uniqid(time())), $_SERVER['SERVER_NAME']),
-				'Return-Path'	=> "<{$from_email}>",
-				'Importance'	=> 'normal',
-				'Priority'		=> 'normal',
-				'X-Sender'		=> 'Symphony Email Module <noreply@symphony-cms.com>',
-				'X-Mailer'		=> 'Symphony Email Module',
-				'X-Priority'	=> '3',
-				'MIME-Version'	=> '1.0',
-				'Content-Type'	=> 'text/plain; charset=UTF-8',
-			);
+			$email = Email::create(strlen(trim($driver)) > 0 ? $driver : NULL);
 			
 			if (!empty($additional_headers)) {
 				foreach ($additional_headers as $header => $value) {
 					$header = preg_replace_callback('/\w+/', create_function('$m', 'if(in_array($m[0], array("MIME", "ID"))) return $m[0]; else return ucfirst($m[0]);'), $header);
-					$default_headers[$header] = $value;
+					$email->appendHeader($header, $value);
 				}
 			}
 			
-			foreach ($default_headers as $header => $value) {
-				$headers[] = sprintf('%s: %s', $header, $value);
-			}
-			
-			return mail($to_email, $subject, @wordwrap($message, 70), @implode(self::CRLF, $headers) . self::CRLF, "-f{$from_email}");
-			
-		}
+			$email->recipient = $to_email;
+			$email->sender_name = $from_name;
+			$email->sender_email_address = $from_email;
 
+			$email->message = $message;
+			$email->subject = $subject;
+
+			return $email->send();
+		}
 
 		/***
 
