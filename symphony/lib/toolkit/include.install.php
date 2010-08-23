@@ -680,7 +680,7 @@
 		        }
 
 		        $htaccess = '
-### Symphony 2.0.x ###
+### Symphony 2.x ###
 Options +FollowSymlinks -Indexes
 
 <IfModule mod_rewrite.c>
