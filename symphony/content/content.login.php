@@ -202,17 +202,30 @@
 							Symphony::Database()->insert(array('author_id' => $author['id'], 'token' => $token, 'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))), 'tbl_forgotpass');					
 						}
 
-						$this->_email_sent = General::sendEmail($author['email'], 
-									Symphony::Database()->fetchVar('email', 0, "SELECT `email` FROM `tbl_authors` ORDER BY `id` ASC LIMIT 1"), 
-									__('Symphony Concierge'), 
-									__('New Symphony Account Password'),
-									__('Hi %s,', array($author['first_name'])) . self::CRLF .
+						include_once(TOOLKIT . '/class.email.php');
+
+						$driver = Symphony::Configuration()->get('driver', 'email');
+						try{
+							$email = Email::create(strlen(trim($driver)) > 0 ? $driver : NULL);
+
+							$email->recipient = $author['email'];
+							$email->sender_name = __('Symphony Concierge');
+							$email->sender_email_address = Symphony::Database()->fetchVar('email', 0, "SELECT `email` FROM `tbl_authors` ORDER BY `id` ASC LIMIT 1");
+							$email->subject = __('New Symphony Account Password');
+							$email->message = __('Hi %s,', array($author['first_name'])) . self::CRLF .
 									__('A new password has been requested for your account. Login using the following link, and change your password via the Authors area:') . self::CRLF .
-									self::CRLF . '	' . URL . "/symphony/login/$token/" . self::CRLF . self::CRLF .
+									self::CRLF . '	' . URL . "/symphony/login/{$token}/" . self::CRLF . self::CRLF .
 									__('It will expire in 2 hours. If you did not ask for a new password, please disregard this email.') . self::CRLF . self::CRLF .
 									__('Best Regards,') . self::CRLF . 
-									__('The Symphony Team'));
-										
+									__('The Symphony Team');
+
+							$email->send();
+							$this->_email_sent = true;
+						}
+
+						catch(Exception $e){
+							throw new SymphonyErrorPage('Error sending email. ' . $e->getMessage());
+						}
 						
 						## TODO: Fix Me
 						###
@@ -278,18 +291,31 @@
 
 					$newpass = General::generatePassword();
 
-					General::sendEmail($author['email'], 
-								'noreply@symphony-cms.com', 
-								'Symphony Concierge', 
-								'RE: New Symphony Account Password', 
-								'Hi ' . $author['first_name']. ',' . self::CRLF .
-								"As requested, here is your new Symphony Author Password for '". URL ."'".self::CRLF ."	$newpass" . self::CRLF . self::CRLF .
-								'Best Regards,' . self::CRLF . 
-								'The Symphony Team');
+					include_once(TOOLKIT . '/class.email.php');
 
-					Symphony::Database()->update(array('password' => General::hash($newpass)), 'tbl_authors', " `id` = '".$author['id']."' LIMIT 1");			
-					Symphony::Database()->delete('tbl_forgotpass', " `author_id` = '".$author['id']."'");
+					$driver = Symphony::Configuration()->get('driver', 'email');
+					
+					try{
+						$email = Email::create(strlen(trim($driver)) > 0 ? $driver : NULL);
 
+						$email->recipient = $author['email'];
+						$email->sender_email_address = 'noreply@symphony-cms.com';
+						$email->sender_name = 'Symphony Concierge';
+						$email->subject = 'RE: New Symphony Account Password';
+						$email->message = 'Hi ' . $author['first_name']. ',' . self::CRLF .
+						"As requested, here is your new Symphony Author Password for '" . URL . "'" . self::CRLF . "	{$newpass}" . self::CRLF . self::CRLF .
+						'Best Regards,' . self::CRLF . 
+						'The Symphony Team';
+					
+						$email->send();
+
+						Symphony::Database()->update(array('password' => General::hash($newpass)), 'tbl_authors', " `id` = '".$author['id']."' LIMIT 1");
+						Symphony::Database()->delete('tbl_forgotpass', " `author_id` = '".$author['id']."'");
+					}
+					
+					catch(Exception $e){
+						throw new SymphonyErrorPage('Error sending email. ' . $e->getMessage());
+					}
 
 					## TODO: Fix Me
 					###

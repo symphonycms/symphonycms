@@ -194,23 +194,37 @@
 				}
 
 				else{
+					
+					include_once(TOOLKIT . '/class.email.php');
+
+					$driver = Symphony::Configuration()->get('driver', 'email');
+
+					$email = Email::create(strlen(trim($driver)) > 0 ? $driver : NULL);
+
 					foreach($fields['recipient'] as $r){
 
-						list($email, $name) = array_values($r);
+						list($recipient, $name) = array_values($r);
 
-						if(!General::sendEmail($email, 
-										   $fields['sender-email'], 
-										   $fields['sender-name'], 
-										   $fields['subject'], 
-										   str_replace('<!-- RECIPIENT NAME -->', $name, $body)))
-										       $errors[] = $email;
+						$email->recipient = $recipient;
+						$email->sender_name = $fields['sender-name'];
+						$email->sender_email_address = $fields['sender-email'];
+
+						$email->message = str_replace('<!-- RECIPIENT NAME -->', $name, $body);
+						$email->subject = $fields['subject'];
+
+						try{
+							$email->send();
+						}
+						catch(Exception $e){
+							$errors[] = $recipient;
+						}
 
 					}
 
 					if(!empty($errors)){
 
 						$xml = buildFilterElement('send-email', 'failed');
-						foreach($errors as $address) $xml->appendChild(new XMLElement('recipient', $address));
+						foreach($errors as $recipient) $xml->appendChild(new XMLElement('recipient', $recipient));
 
 						$result->appendChild($xml);
 
