@@ -411,7 +411,7 @@
 		}
 
 		private function __wrapFieldWithDiv(Field $field, Entry $entry){
-			$div = new XMLElement('div', NULL, array('class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
+			$div = new XMLElement('div', NULL, array('id' => 'field-'.$field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
 			$field->displayPublishPanel(
 				$div, $entry->getData($field->get('id')),
 				(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
