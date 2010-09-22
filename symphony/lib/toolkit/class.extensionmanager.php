@@ -372,10 +372,8 @@
 		## Return object instance of a named extension
 		public function getInstance($name){
 
-			$extensions = $this->_pool;
-
-			foreach($extensions as $e){
-				if(get_class($e) == $name) return $e;
+			foreach(self::$_pool as $extension){
+				if(get_class($extension) == 'extension_' . $name) return $extension;
 			}
 
 		}
