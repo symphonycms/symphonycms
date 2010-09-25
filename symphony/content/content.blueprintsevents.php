@@ -320,11 +320,16 @@
 
 				$sectionManager = new SectionManager($this->_Parent);
 				$section = $sectionManager->fetch($fields['source']);
-				$markup = NULL;
-				foreach($section->fetchFields() as $f){
-					if ($f->getExampleFormMarkup() instanceof XMLElement)
-						$container->appendChild($f->getExampleFormMarkup());
+
+				$section_fields = $section->fetchFields();
+				if(is_array($section_fields) && !empty($section_fields)) {
+					foreach($section_fields as $f) {
+						if ($f->getExampleFormMarkup() instanceof XMLElement) {
+							$container->appendChild($f->getExampleFormMarkup());
+						}
+					}
 				}
+
 				$container->appendChild(Widget::Input('action['.$rootelement.']', __('Submit'), 'submit'));
 				
 				$code = $container->generate(true);
