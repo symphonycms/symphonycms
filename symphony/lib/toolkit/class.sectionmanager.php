@@ -8,7 +8,7 @@
 		var $Database;
 	    
         public function __construct(&$parent){
-			$this->_Parent = $parent;						
+			$this->_Parent = $parent;
 	        $this->Database = Symphony::Database();
         }
 		
@@ -31,21 +31,17 @@
 				return self::$_pool[$id];
 			}
 			
-			$sql = "SELECT `s`.*, count(`e`.`id`) as `entry_count`
-			
+			$sql = "
+					SELECT `s`.*
 					FROM `tbl_sections` AS `s`
-					LEFT JOIN `tbl_entries` AS `e` ON `s`.id = `e`.`section_id`
-					
-					".($id ? " WHERE `s`.`id` = '$id' " : '')."
-					GROUP BY `s`.id
-					".(!$id ? " ORDER BY `s`.`$sortfield` $order" : '');
+					" . ($id ? " WHERE `s`.`id` = '$id' " : '') . "
+					" . (!$id ? " ORDER BY `s`.`$sortfield` $order" : '');
 
 			if(!$sections = Symphony::Database()->fetch($sql)) return false;									
 												
 			$ret = array();
 
 			foreach($sections as $s){
-			
 				$obj =& $this->create();
 			
 				foreach($s as $name => $value){

@@ -262,18 +262,21 @@
 			if (!is_object($section)) return false;
 
 			## SORTING
-			
+			// A single $entry_id doesn't need to be sorted on
+			if (!is_array($entry_id) && !is_null($entry_id) && is_int($entry_id)) {
+				$sort = null;
+			}
 			// Check for RAND first, since this works independently of any specific field
-			if($this->_fetchSortDirection == 'RAND'){
+			else if($this->_fetchSortDirection == 'RAND'){
 				$sort = 'ORDER BY RAND() ';
 			}
 			
-			elseif ($this->_fetchSortField == 'date') {
-				$sort = 'ORDER BY ' . ($this->_fetchSortDirection != 'RAND' ? "`e`.`creation_date` $this->_fetchSortDirection" : 'RAND() ');
+			else if ($this->_fetchSortField == 'date') {
+				$sort = 'ORDER BY `e`.`creation_date` ' . $this->_fetchSortDirection;
 			}
 			
 			else if ($this->_fetchSortField == 'id') {
-				$sort = 'ORDER BY ' . ($this->_fetchSortDirection != 'RAND' ? "`e`.`id` $this->_fetchSortDirection" : 'RAND() ');
+				$sort = 'ORDER BY `e`.`id`' . $this->_fetchSortDirection;
 			}
 			
 			else if ($this->_fetchSortField && $field = $this->fieldManager->fetch($this->_fetchSortField)) {
@@ -287,7 +290,7 @@
 			}
 			
 			else {
-				$sort = 'ORDER BY ' . ($this->_fetchSortDirection != 'RAND' ? "`e`.`id` $this->_fetchSortDirection" : 'RAND() ');
+				$sort = 'ORDER BY `e`.`id`' . $this->_fetchSortDirection;
 			}
 			
 			if ($entry_id && !is_array($entry_id)) $entry_id = array($entry_id);
@@ -296,13 +299,11 @@
 				SELECT  ".($group ? 'DISTINCT ' : '')."`e`.id, 
 						`e`.section_id, e.`author_id`, 
 						UNIX_TIMESTAMP(e.`creation_date`) AS `creation_date`, 
-						UNIX_TIMESTAMP(e.`creation_date_gmt`) AS `creation_date_gmt`
-						
 				FROM `tbl_entries` AS `e`
-				$joins		
+				$joins
 				WHERE 1
 				".($entry_id ? "AND `e`.`id` IN ('".@implode("', '", $entry_id)."') " : '')."
-				".($section_id ? "AND `e`.`section_id` = '$section_id' " : '')."
+				".($section_id && !is_null($sort) ? "AND `e`.`section_id` = '$section_id' " : '')."
 				$where
 				$sort
 				".($limit ? 'LIMIT ' . intval($start) . ', ' . intval($limit) : '');
@@ -333,7 +334,7 @@
 				}
 				
 				$schema_sql = sprintf(
-					"SELECT * FROM `tbl_fields` WHERE `parent_section` = %d AND `element_name` IN ('%s')",
+					"SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d AND `element_name` IN ('%s')",
 					$section_id,
 					implode("', '", array_unique($element_names))
 				);
@@ -341,7 +342,7 @@
 			}
 			else{
 				$schema_sql = sprintf(
-					"SELECT * FROM `tbl_fields` WHERE `parent_section` = %d",
+					"SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d",
 					$section_id
 				);
 			}
@@ -356,13 +357,13 @@
 						
 			$raw = array();
 			
-			$id_list_string = @implode("', '", array_keys($id_list));
+			$id_list_string = implode("', '", array_keys($id_list));
 			
 			// Append meta data:
 			foreach ($id_list as $entry_id => $entry) {
 				$raw[$entry_id]['meta'] = $entry;
 			}
-			
+
 			// Append field data:
 			foreach ($schema as $f) {
 				$field_id = $f['id'];
@@ -376,9 +377,7 @@
 				}
 								
 				if (!is_array($row) || empty($row)) continue;
-				
-				$tmp = array();
-				
+
 				foreach ($row as $r) {
 					$entry_id = $r['entry_id'];
 					
