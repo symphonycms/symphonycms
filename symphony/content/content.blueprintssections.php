@@ -127,7 +127,7 @@
 			
 			$label = Widget::Label();
 			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : NULL));
-			$label->setValue(__('%s Hide this section from the Publish menu', array($input->generate(false))));
+			$label->setValue(__('%s Hide this section from the back-end menu', array($input->generate(false))));
 			$namediv->appendChild($label);
 			$div->appendChild($namediv);
 			

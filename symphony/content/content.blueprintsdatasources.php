@@ -422,6 +422,11 @@
 				array('random', ('random' == $fields['order']), __('random')),
 			);
 			
+			// Retain custom sort order
+			if(!in_array($fields['order'], array('asc', 'desc', 'random'))){
+				$options[] = array($fields['order'], true, $fields['order']);
+			}
+			
 			$label->appendChild(Widget::Select('fields[order]', $options));
 			$div->appendChild($label);
 			
@@ -432,7 +437,7 @@
 
 			$label = Widget::Label();
 			$input = Widget::Input('fields[max_records]', $fields['max_records'], NULL, array('size' => '6'));
-			$label->setValue(__('Show a maximum of %s results', array($input->generate(false))));
+			$label->setValue(__('Show a maximum of %s results per page', array($input->generate(false))));
 			if(isset($this->_errors['max_records'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['max_records']));
 			else $div->appendChild($label);
 			

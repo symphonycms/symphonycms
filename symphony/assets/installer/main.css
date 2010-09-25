@@ -53,6 +53,7 @@ fieldset fieldset {
 	padding: 0 1.75em 1.5em;
 	border-top: 3.25em solid #eed;
 	background: #eed;
+	float: left;
 }
 fieldset fieldset legend {
 	padding-top: 1.5em;

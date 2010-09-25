@@ -23,7 +23,7 @@
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.1.0');
+	define('kVERSION', '2.1.1');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
 	define('kINSTALL_FILENAME', basename(__FILE__));
 	
@@ -193,7 +193,7 @@
 		$conf['symphony']['pagination_maximum_rows'] = '17';
 		$conf['symphony']['allow_page_subscription'] = '1';
 		$conf['symphony']['lang'] = 'en';
-		$conf['symphony']['version'] = '2.1.0';
+		$conf['symphony']['version'] = '2.1.1';
 		$conf['symphony']['pages_table_nest_children'] = 'yes';
 		$conf['log']['archive'] = '1';
 		$conf['log']['maxsize'] = '102400';

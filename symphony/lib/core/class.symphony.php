@@ -68,15 +68,11 @@
 			GenericErrorHandler::initialise(self::$Log);
 			
 			$this->initialiseCookie();
-
 			$this->initialiseDatabase();
+			$this->initialiseExtensionManager();
 			
 			if(!self::isLoggedIn()){
 				GenericExceptionHandler::$enabled = false;
-			}
-			
-			if(!$this->initialiseExtensionManager()){
-				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
 			}
 			
 			Lang::loadAll($this->ExtensionManager);
@@ -95,12 +91,15 @@
 			define_safe('__SYM_COOKIE_PATH__', $cookie_path);
 			define_safe('__SYM_COOKIE_PREFIX_', self::$Configuration->get('cookie_prefix', 'symphony'));
 						
-			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX_, TWO_WEEKS, __SYM_COOKIE_PATH__);			
+			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX_, TWO_WEEKS, __SYM_COOKIE_PATH__);
 		}
 		
 		public function initialiseExtensionManager(){
 			$this->ExtensionManager = new ExtensionManager($this);
-			return ($this->ExtensionManager instanceof ExtensionManager);
+			
+			if(!($this->ExtensionManager instanceof ExtensionManager)){
+				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
+			}
 		}
 		
 		
