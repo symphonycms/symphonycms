@@ -15,7 +15,7 @@
 	define('__IN_SYMPHONY__', true);
 	define('DOCROOT', './');
 
-	$rewrite_base = trim(dirname($_SERVER['PHP_SELF']), DIRECTORY_SEPARATOR); 
+	$rewrite_base = trim(dirname($_SERVER['PHP_SELF']), '/\\'); 
 
 	if(strlen($rewrite_base) > 0){
 		$rewrite_base .= '/';

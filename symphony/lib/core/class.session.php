@@ -26,7 +26,7 @@
 					self::$_cache->write('_session_config', true);
 				}
 
-				if (session_id() != "") {
+				if (session_id() == '') {
 					ini_set('session.save_handler', 'user');
 					ini_set('session.gc_maxlifetime', $lifetime);
 					ini_set('session.gc_probability', '1');

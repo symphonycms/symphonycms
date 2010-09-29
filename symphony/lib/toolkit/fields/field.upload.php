@@ -491,6 +491,7 @@
 				'image/gif',
 				'image/jpg',
 				'image/jpeg',
+				'image/pjpeg',
 				'image/png',
 			);
 			
