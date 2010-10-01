@@ -26,7 +26,7 @@
 				return (isset($this->_properties[$index][$name]) ? stripslashes($this->_properties[$index][$name]) : NULL);
 			}
 				
-			return (isset($this->_properties[$name]) ? stripslashes($this->_properties[$name]) : NULL);
+			return (isset($this->_properties[$name]) ? $this->_properties[$name] : NULL);
 		}
 		
 		public function set($name, $val, $index=NULL){
