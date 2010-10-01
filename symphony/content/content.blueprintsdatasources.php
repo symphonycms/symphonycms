@@ -709,7 +709,7 @@
 			$fieldset->setAttribute('class', 'settings contextual static_xml');
 			$fieldset->appendChild(new XMLElement('legend', __('Static XML')));	
 			$label = Widget::Label(__('Body'));
-			$label->appendChild(Widget::Textarea('fields[static_xml]', 12, 50, General::sanitize($fields['static_xml']), array('class' => 'code')));
+			$label->appendChild(Widget::Textarea('fields[static_xml]', 12, 50, General::sanitize(stripslashes($fields['static_xml'])), array('class' => 'code')));
 			
 			if(isset($this->_errors['static_xml'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['static_xml']));
 			else $fieldset->appendChild($label);
