@@ -525,7 +525,7 @@
 				  KEY `entry_id` (`entry_id`),
 				  KEY `file` (`file`),
 				  KEY `mimetype` (`mimetype`)
-				) TYPE=MyISAM ;	"
+				) ENGINE=MyISAM;"
 			
 			);
 		}		

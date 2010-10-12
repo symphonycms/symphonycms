@@ -252,7 +252,7 @@
 				  PRIMARY KEY  (`id`),
 				  KEY `entry_id` (`entry_id`),
 				  FULLTEXT KEY `value` (`value`)
-				) TYPE=MyISAM;"
+				) ENGINE=MyISAM;"
 			
 			);
 		}		

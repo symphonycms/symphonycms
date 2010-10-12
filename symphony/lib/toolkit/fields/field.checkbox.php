@@ -236,7 +236,7 @@
 				  PRIMARY KEY  (`id`),
 				  KEY `entry_id` (`entry_id`),
 				  KEY `value` (`value`)
-				) TYPE=MyISAM;"
+				) ENGINE=MyISAM;"
 			
 			);
 		}		
