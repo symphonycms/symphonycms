@@ -1,15 +1,15 @@
 # Symphony 2 #
 
-- Version: 2.1.1
-- Date: 18th Aug 2010
-- Release Notes: <http://symphony-cms.com/download/releases/version/2.1.1/>
-- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.1.1>
+- Version: 2.1.2
+- Date: 18th Oct 2010
+- Release Notes: <http://symphony-cms.com/download/releases/version/2.1.2/>
+- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.1.2>
 
 
 ## Synopsis
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as 
-its core technologies. This repository represents version "2.1.1" and is 
+its core technologies. This repository represents version "2.1.2" and is 
 considered stable.
 
 Visit the forum at <http://symphony-cms.com/discuss/>
@@ -112,6 +112,7 @@ Follow the instructions below if you are updating from Symphony version 2.0 (not
 	- [Export Ensemble](http://github.com/symphonycms/export_ensemble)
 	- [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)
 	- [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master)
+	- [XSS Filter](http://github.com/symphonycms/xssfilter/tree/master)
 
 3. Run the following command to ensure the submodules are cloned:
 
