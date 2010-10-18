@@ -175,7 +175,11 @@
 		public function fetchStatus($name){	
 			$this->__buildExtensionList();
 			
-			$status = self::$_extensions[$name]['status'];
+			$status = NULL;
+			if(array_key_exists($name, self::$_extensions))
+			{
+				$status = self::$_extensions[$name]['status'];				
+			}
 			
 			if(!$status) return EXTENSION_NOT_INSTALLED;			
 			if($status == 'enabled') return EXTENSION_ENABLED;
