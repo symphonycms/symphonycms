@@ -34,7 +34,9 @@
 		public function get($name) {
 			if (!$this->_session) $this->__init();
 
-			return $_SESSION[$this->_index][$name];
+			if (array_key_exists($name, $_SESSION[$this->_index])) {
+				return $_SESSION[$this->_index][$name];
+			}
 		}
 
 		public function expire() {
