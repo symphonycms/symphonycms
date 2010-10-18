@@ -126,7 +126,7 @@
 				}
 				else {
 					$where .= "
-				        AND (t{$field_id}_{$this->_key}.value IN '{$data}')
+						AND (t{$field_id}_{$this->_key}.value IN ('{$data}'))
 				    ";
 				}
 			}
