@@ -378,7 +378,7 @@ var Symphony;
 		// XSLT utilities
 		$('#utilities a').each(function() {
 			var a = $(this.parentNode),
-			    r = new RegExp('href=["\']?\\.{2}/utilities/' + $(this).text());
+			    r = new RegExp('href=["\']?(?:\\.{2}/utilities/)?' + $(this).text());
 
 			$('textarea').blur(function() {
 				a[r.test(this.value) ? 'addClass' : 'removeClass']('selected');
