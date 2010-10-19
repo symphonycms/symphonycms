@@ -37,6 +37,7 @@
 			if (array_key_exists($name, $_SESSION[$this->_index])) {
 				return $_SESSION[$this->_index][$name];
 			}
+			return NULL;
 		}
 
 		public function expire() {
