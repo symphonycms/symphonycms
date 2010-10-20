@@ -1,12 +1,12 @@
 # Symphony 2 #
 
 - Version: 2.1.2
-- Date: 18th Oct 2010
+- Date: 20th Oct 2010
 - Release Notes: <http://symphony-cms.com/download/releases/version/2.1.2/>
 - Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.1.2>
 
 
-## Synopsis
+## Overview
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as 
 its core technologies. This repository represents version "2.1.2" and is 
@@ -24,7 +24,7 @@ Visit the forum at <http://symphony-cms.com/discuss/>
 
 ## Updating From an Older Version
 
-### Important Information
+#### Versions Prior to 2.1
 
 As of version `2.1`, Symphony stores passwords using the more secure 
 [SHA1](http://php.net/sha1) algorithm (previous versions used MD5). 
@@ -34,6 +34,8 @@ When updating to 2.1, the primary user's login password will be reset
 and will require a manual reset through Symphony's forgotten password feature.** 
 Alternatively, as an administrator, you can also change your users' 
 passwords on their behalf.
+
+#### Versions Prior to 2.0.5
 
 Version `2.0.5` introduced multiple includable elements, in the Data Source 
 Editor, for a single field. After updating from `2.0.5` or lower, the DS 
@@ -45,14 +47,17 @@ still be included in any front-end XML
 
 ### Via Git
 
-### Important Information
+#### Versions Prior to 2.1
 
-As of version 2.1, we are now using [GitHub's organisations feature](http://github.com/blog/674-introducing-organizations). As a result, all submodules—as well as the main Symphony 2 repo—are forks owned by the
-[Symphony CMS organisation](http://github.com/symphonycms/). To fully update your 
-git based installation, please edit your `.git/config` and the `.git/config`
-of all core extensions (`debugdevkit`, `profiledevkit`, `markdown`, `maintenance_mode`, 
-`selectbox_link_field`, `jit_image_manipulation` and `export_ensemble`) and change
-the URL of the remote repo from `symphony` or `pointybeard` to be `symphonycms`.
+As of version 2.1, we are now using [GitHub's organisations feature](http://github.com/blog/674-introducing-organizations).
+ As a result, all submodules—as well as the main Symphony 2 repo—are forks owned by the
+[Symphony CMS organisation](http://github.com/symphonycms/). 
+
+To fully update your git-based installation, please **edit your `.git/config`
+and the `.git/config` of each core extension** (`debugdevkit`, `profiledevkit`,
+`markdown`, `maintenance_mode`, `selectbox_link_field`, `jit_image_manipulation`
+and `export_ensemble`) and change the URL of the remote repo from `symphony` or
+`pointybeard` to be `symphonycms`.
 
 For example:
 
@@ -166,4 +171,4 @@ details for establishing a database connection and about your server environment
 
 	rm install.php install.sql workspace/install.sql update.php
 
-4. Dance like it's 1894!
+4. Dance like it's 2012!
