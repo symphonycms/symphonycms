@@ -490,13 +490,13 @@
 				# Description: Prior to deleting an author. ID is provided.
 				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('author_id' => $author_id));
 
-				if($isOwner) {
+				if(!$isOwner) {
 					AuthorManager::delete($author_id);
 					redirect(URL . '/symphony/system/authors/');
 				}
 
 				else {
-					$this->pageAlert(__('You cannot remove yourself.'), Alert::ERROR);
+					$this->pageAlert(__('You cannot remove yourself as you are the active Author.'), Alert::ERROR);
 				}
 			}
 		}
