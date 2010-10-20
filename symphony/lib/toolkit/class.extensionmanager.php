@@ -12,7 +12,7 @@
 
 		static private $_enabled_extensions = NULL;
 		static private $_subscriptions = NULL;
-		static private $_extensions = NULL;
+		static private $_extensions = array();
 
         function __getClassName($name){
 	        return 'extension_' . $name;
@@ -31,7 +31,7 @@
         }
 
 		private function __buildExtensionList() {
-			if (self::$_extensions == NULL) {
+			if (empty(self::$_extensions)) {
 				$extensions = Symphony::Database()->fetch("SELECT * FROM `tbl_extensions`");
 				foreach($extensions as $extension) {
 					self::$_extensions[$extension['name']] = $extension;
