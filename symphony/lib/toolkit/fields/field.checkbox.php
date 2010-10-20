@@ -72,7 +72,8 @@
 
 		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
-			
+			$default_state = ($this->get('default_state') == "on") ? 'yes' : 'no';
+
 			if ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
@@ -82,12 +83,24 @@
 							`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
 							ON (e.id = t{$field_id}_{$this->_key}.entry_id)
 					";
-					$where .= "
-						AND (t{$field_id}_{$this->_key}.value = '{$value})'
-					";
+
+					if($default_state == $value) {
+						$where .= "
+							AND (
+								t{$field_id}_{$this->_key}.value = '{$value}'
+								OR 
+								t{$field_id}_{$this->_key}.value IS NULL
+							)
+						";
+					}
+					else {
+						$where .= "
+							AND (t{$field_id}_{$this->_key}.value = '{$value}')
+						";
+					}
 				}
-				
-			} else {
+			}
+			else {
 				if (!is_array($data)) $data = array($data);
 				
 				foreach ($data as &$value) {
@@ -101,9 +114,21 @@
 						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
 						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
 				";
-				$where .= "
-					AND (t{$field_id}_{$this->_key}.value IN ('{$data}'))
-				";
+				
+				if(strpos($data, $default_state) !== false) {
+					$where .= "
+				    	AND (
+				    		t{$field_id}_{$this->_key}.value IN ('{$data}')
+				            OR
+				            t{$field_id}_{$this->_key}.value IS NULL
+				    	)
+				    ";
+				}
+				else {
+					$where .= "
+				        AND (t{$field_id}_{$this->_key}.value IN ('{$data}'))
+				    ";
+				}
 			}
 			
 			return true;
@@ -211,7 +236,7 @@
 				  PRIMARY KEY  (`id`),
 				  KEY `entry_id` (`entry_id`),
 				  KEY `value` (`value`)
-				) TYPE=MyISAM;"
+				) ENGINE=MyISAM;"
 			
 			);
 		}		

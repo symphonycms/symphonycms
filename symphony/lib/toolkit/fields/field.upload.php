@@ -177,12 +177,11 @@
 		}
 
 		public function appendFormattedElement(&$wrapper, $data){
-			
 			// It is possible an array of NULL data will be passed in. Check for this.
 			if(!is_array($data) || !isset($data['file']) || is_null($data['file'])){
 				return;
 			}
-			
+
 			$item = new XMLElement($this->get('element_name'));
 			$file = WORKSPACE . $data['file'];
 			$item->setAttributeArray(array(
@@ -494,9 +493,11 @@
 				'image/pjpeg',
 				'image/png',
 			);
-			
+
 			$meta = array();
-			
+
+			if(!file_exists($file) || !is_readable($file)) return $meta; 
+
 			$meta['creation'] = DateTimeObj::get('c', filemtime($file));
 			
 			if(General::in_iarray($type, $imageMimeTypes) && $array = @getimagesize($file)){
@@ -524,7 +525,7 @@
 				  KEY `entry_id` (`entry_id`),
 				  KEY `file` (`file`),
 				  KEY `mimetype` (`mimetype`)
-				) TYPE=MyISAM ;	"
+				) ENGINE=MyISAM;"
 			
 			);
 		}		

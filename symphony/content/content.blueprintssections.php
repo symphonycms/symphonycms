@@ -433,9 +433,16 @@
 							foreach($entries as $entry) {
 								$entry_ids[] = $entry['id'];
 							}
+
+							###
+							# Delegate: Delete
+							# Description: Prior to deletion of entries. Array of Entries is provided.
+							#              The array can be manipulated
+							Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => &$entry_ids));
+
 							$entryManager->delete($entry_ids);
 						}
-						
+
 						redirect(URL . '/symphony/blueprints/sections/');
 						break;
 				}

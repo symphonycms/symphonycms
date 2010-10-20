@@ -5,7 +5,6 @@
 		function __construct(&$parent){
 			$this->_Parent = $parent;
 			$this->_status = self::STATUS_OK;
-			$this->addHeaderToPage('Content-Type', 'application/json');
 			$this->_Parent->Profiler->sample('Page template created', PROFILE_LAP);	
 		}
 		
@@ -26,6 +25,7 @@
 		}
 		
 		public function generate(){
+		  header('Content-Type: application/json');
 			echo $this->_Result;
 			exit;	
 		}

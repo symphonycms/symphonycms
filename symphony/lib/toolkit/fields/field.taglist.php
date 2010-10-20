@@ -240,7 +240,7 @@
 				  KEY `entry_id` (`entry_id`),
 				  KEY `handle` (`handle`),
 				  KEY `value` (`value`)
-				) TYPE=MyISAM;"
+				) ENGINE=MyISAM;"
 			
 			);
 		}

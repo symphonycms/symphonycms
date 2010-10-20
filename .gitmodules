@@ -19,3 +19,6 @@
 [submodule "extensions/debugdevkit"]
 	path = extensions/debugdevkit
 	url = git://github.com/symphonycms/debugdevkit.git
+[submodule "extensions/xssfilter"]
+	path = extensions/xssfilter
+	url = git://github.com/symphonycms/xssfilter.git

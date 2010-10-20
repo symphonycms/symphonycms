@@ -190,7 +190,7 @@
 				##Reset of password requested	
 				elseif($action == 'reset'):
 
-					$author = Symphony::Database()->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_authors` WHERE `email` = '".$_POST['email']."'");	
+					$author = Symphony::Database()->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_authors` WHERE `email` = '".Symphony::Database()->cleanValue($_POST['email'])."'");
 
 					if(!empty($author)){
 						

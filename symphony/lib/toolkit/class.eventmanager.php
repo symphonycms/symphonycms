@@ -85,14 +85,10 @@
 							$f = $f = self::__getHandleFromFilename($f);
 							
 							if($about = $this->about($f)){
-								
 								$classname = $this->__getClassName($f);
-									
-								$can_parse = false;
-								$type = NULL;
-																		
-								$about['can_parse'] = $can_parse;
-								$result[$f] = $about;	
+
+								$about['can_parse'] = false;
+								$result[$f] = $about;
 							}
 						}						
 					}					
@@ -119,7 +115,6 @@
 								
 			return new $classname($this->_Parent, $environment);	
 	        
-        }       
+        }
         
     }
-    

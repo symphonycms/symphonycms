@@ -167,6 +167,7 @@
 				$fields['recipient'] = __sendEmailFindFormValue($fields['recipient'], $_POST['fields'], true);
 				$fields['recipient'] = preg_split('/\,/i', $fields['recipient'], -1, PREG_SPLIT_NO_EMPTY);
 				$fields['recipient'] = array_map('trim', $fields['recipient']);
+				$fields['recipient'] = array_map(array('MySQL','cleanValue'), $fields['recipient']);
 
 				$fields['recipient'] = $obj->Database->fetch("SELECT `email`, `first_name` FROM `tbl_authors` WHERE `username` IN ('".@implode("', '", $fields['recipient'])."') ");
 
