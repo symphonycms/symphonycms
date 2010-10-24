@@ -136,7 +136,8 @@
 				$group->setAttribute('class', 'group');
 
 				$label = Widget::Label(__('Priority'));
-				$label->appendChild(Widget::Input('fields[priority]', General::sanitize($fields['priority'])));
+				$priority = (General::sanitize($fields['priority']))? General::sanitize($fields['priority']) : 2;
+				$label->appendChild(Widget::Input('fields[priority]', $priority));
 				$group->appendChild($label);
 				$fieldset->appendChild($group);
 				$fieldset->appendChild(new XMLElement('p', __('Set the priority of your event, higher numbers have priority. The default is 2.'), array('class' => 'help')));

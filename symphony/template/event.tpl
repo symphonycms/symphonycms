@@ -26,6 +26,10 @@
 			return '<!-- SOURCE -->';
 		}
 
+		public function priority(){
+		    return <!-- PRIORITY -->;
+		}
+
 		public static function allowEditorToParse(){
 			return true;
 		}
@@ -33,10 +37,6 @@
 		public static function documentation(){
 			return '
 <!-- DOCUMENTATION -->';
-		}
-
-		public function priority(){
-		    return <!-- PRIORITY -->;
 		}
 
 		public function load(){
