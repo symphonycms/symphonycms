@@ -364,13 +364,15 @@ var Symphony;
 				    t = (i > 1 ? 'Are you sure you want to {$action} {$count} items?' : 'Are you sure you want to {$action} {$name}?'),
 				    s = document.getElementsByName('with-selected')[0],
 				    o = $(s.options[s.selectedIndex]);
-
+				
+				if (i == 0) return false;
+				
 				t = Symphony.Language.get(t, {
 					'action': o.text().toLowerCase(),
 					'name': $.trim($('table input:checked').parents('tr').find('td').eq(0).text()),
 					'count': i
 				});
-
+				
 				return i > 0 && !o.hasClass('confirm') || confirm(t);
 			});
 		}
