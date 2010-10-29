@@ -71,7 +71,7 @@
 					'FrontendOutputPreGenerate', '/frontend/',
 					array(
 						'page'	=> &$this,
-						'xml'	=> $this->_xml,
+						'xml'	=> &$this->_xml,
 						'xsl'	=> $this->_xsl
 					)
 				);
