@@ -272,6 +272,29 @@
 	<xsl:import href="./workspace/pages/' . basename($page['filelocation']).'"/>
 </xsl:stylesheet>';
 			
+			$params = new XMLElement('params');
+			foreach($this->_param as $key => $value) {
+				$param = new XMLElement($key);
+				
+				// DS output params get flattened to a string, so get the original pre-flattened array
+				if (isset($this->_env['pool'][$key])) $value = $this->_env['pool'][$key];
+				
+				if (is_array($value)) {
+					foreach ($value as $key => $value) {
+						$item = new XMLElement('item', General::sanitize($value));
+						$item->setAttribute('handle', Lang::createHandle($value));
+						$param->appendChild($item);
+					}
+				}
+				else {
+					$param->setValue(General::sanitize($value));
+				}
+								
+				$params->appendChild($param);
+				
+			}			
+			$xml->prependChild($params);
+			
 			$this->_Parent->Profiler->seed();
 			$this->setXML($xml->generate(true, 0));
 			$this->_Parent->Profiler->sample('XML Generation', PROFILE_LAP);
