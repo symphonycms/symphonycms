@@ -324,12 +324,10 @@
 		 *	false otherwise.
 		 */
 		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers = array()) {
-			## Check for injection attacks (http://securephp.damonkohler.com/index.php/Email_Injection)
-			if ((eregi("\r", $from_email) || eregi("\n", $from_email))
-				|| (eregi("\r", $from_name) || eregi("\n", $from_name))){
-					return false;
+			// Check for injection attacks (http://securephp.damonkohler.com/index.php/Email_Injection)
+			if (preg_match("/[\r|\n]/", $from_email) || preg_match("/[\r|\n]/", $from_name)){
+                return false;
 		   	}
-			####
 
 			$subject = self::encodeHeader($subject, 'UTF-8');
 			$from_name = self::encodeHeader($from_name, 'UTF-8');
@@ -360,7 +358,7 @@
 				$headers[] = sprintf('%s: %s', $header, $value);
 			}
 
-			return mail($to_email, $subject, @wordwrap($message, 70), @implode(self::CRLF, $headers) . self::CRLF, "-f{$from_email}");
+			return mail($to_email, $subject, @wordwrap($message, 70), implode(self::CRLF, $headers) . self::CRLF, "-f{$from_email}");
 
 		}
 
@@ -379,22 +377,19 @@
 		 */
 		public static function encodeHeader($input, $charset='ISO-8859-1')
 		{
-		    if(preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches))
-		    {
-		        if(function_exists('mb_internal_encoding'))
-		        {
+		    if(preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches)) {
+		        if(function_exists('mb_internal_encoding')) {
 		            mb_internal_encoding($charset);
 		            $input = mb_encode_mimeheader($input, $charset, 'Q');
 		        }
-		        else
-		        {
-		            foreach ($matches[1] as $value)
-		            {
+		        else {
+		            foreach ($matches[1] as $value) {
 		                $replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
 		                $input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
 		            }
 		        }
 		    }
+
 		    return $input;
 		}
 
