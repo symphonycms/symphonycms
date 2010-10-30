@@ -969,19 +969,36 @@ Options +FollowSymlinks -Indexes
 				}
 				
 				$Fieldset->appendChild(Widget::label(__('Region'), Widget::Select('fields[region][timezone]', $options)));
-								
-				//$Div->appendChild(Widget::label('Date Format', Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
-				//$Div->appendChild(Widget::label('Time Format', Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
 
 				$dateformat = $fields['region']['date_format'];
 				$label = Widget::Label(__('Date Format'));
-				$dateFormats = array( 			
-					array('Y/m/d', $dateformat == 'Y/m/d', DateTimeObj::get('Y/m/d')),
-					array('m/d/Y', $dateformat == 'm/d/Y', DateTimeObj::get('m/d/Y')),
-					array('m/d/y', $dateformat == 'm/d/y', DateTimeObj::get('m/d/y')),
-					array('d F Y', $dateformat == 'd F Y', DateTimeObj::get('d F Y')),
+				$dateFormats = array(
+					'Y/m/d',	// e. g. 2011/01/20
+					'm/d/Y',	// e. g. 01/20/2011
+					'm/d/y',	// e. g. 10/20/11
+					'Y-m-d',	// e. g. 2011-01-20
+					'm-d-Y',	// e. g. 01-20-2011
+					'm-d-y',	// e. g. 01-20-11
+					'd.m.Y',	// e. g. 20.01.2011
+					'j.n.Y',	// e. g. 20.1.2011 - no leading zeros
+					'd.m.y',	// e. g. 20.01.11
+					'j.n.y',	// e. g. 20.1.11 - no leading zeros
+					'd F Y',	// e. g. 20 January 2011
+					'd M Y',	// e. g. 20 Jan 2011
+					'j. F Y',	// e. g. 20. January 2011 - no leading zeros
+					'j. M. Y',	// e. g. 20. Jan. 2011 - no leading zeros
 				);
-				$label->appendChild(Widget::Select('fields[region][date_format]', $dateFormats));
+
+				$dateOptions = array();
+				foreach($dateFormats as $dateOption) {
+					$leadingZero = '';
+					if(strpos($dateOption, 'j') !== false || strpos($dateOption, 'n') !== false) {
+						$leadingZero = ' (' . __('no leading zeros') . ')';
+					}
+					$dateOptions[] = array($dateOption, $dateformat == $dateOption, Lang::localizeDate(DateTimeObj::get($dateOption), true) . $leadingZero);
+				}
+
+				$label->appendChild(Widget::Select('fields[region][date_format]', $dateOptions));
 				$Fieldset->appendChild($label);	
 
 				$timeformat = $fields['region']['time_format'];
