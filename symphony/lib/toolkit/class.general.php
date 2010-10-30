@@ -375,8 +375,7 @@
 		 * @return string
 		 *	the resulting encoded email header.
 		 */
-		public static function encodeHeader($input, $charset='ISO-8859-1')
-		{
+		public static function encodeHeader($input, $charset='ISO-8859-1') {
 		    if(preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches)) {
 		        if(function_exists('mb_internal_encoding')) {
 		            mb_internal_encoding($charset);
@@ -742,18 +741,20 @@
 		 *	the path of the file to write.
 		 * @param mixed $data
 		 *	the data to write to the file.
-		 * @param number $perm (optional)
+		 * @param int|null $perm (optional)
 		 *	the permissions as an octal number to set set on the resulting file.
-		 *	this defaults to 0644.
+		 *	this defaults to 0644 (if omitted or set to null)
+         * @param string $mode (optional)
+         * the mode that the file should be opened with, defaults to 'w'. See modes
+         * at http://php.net/manual/en/function.fopen.php
 		 * @return bool
 		 *	true if the file is successfully opened, written to, closed and has the
 		 *	required permissions set. false, otherwise.
 		 */
-		public static function writeFile($file, $data, $perm = 0644){
+		public static function writeFile($file, $data, $perm = 0644, $mode = 'w'){
+			if(is_null($perm)) $perm = 0644;
 
-			if(empty($perm)) $perm = 0644;
-
-			if(!$handle = @fopen($file, 'w')) {
+			if(!$handle = @fopen($file, $mode)) {
 				return false;
 			}
 
