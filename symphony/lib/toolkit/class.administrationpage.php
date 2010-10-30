@@ -49,7 +49,7 @@
 			}
 			
 			$this->Html->setDTD('<!DOCTYPE html>');
-			$this->Html->setAttribute('lang', Symphony::lang());
+			$this->Html->setAttribute('lang', Lang::get());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
 			$this->addStylesheetToHead(URL . '/symphony/assets/symphony.duplicator.css', 'screen', 70);
 			$this->addScriptToHead(URL . '/symphony/assets/jquery.js', 50);

@@ -24,8 +24,6 @@
 		public static $Configuration;
 		public static $Database;
 		public static $Log;
-		
-		private static $_lang;
 
 		public $Profiler;
 		public $Cookie;
@@ -52,12 +50,7 @@
 			self::$Configuration->setArray($settings);
 			
 			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
-			
-			self::$_lang = (self::$Configuration->get('lang', 'symphony') ? self::$Configuration->get('lang', 'symphony') : 'en');		
-			
-			// Legacy support for __LANG__ constant
-			define_safe('__LANG__', self::lang());
-			
+						
 			define_safe('__SYM_DATE_FORMAT__', self::$Configuration->get('date_format', 'region'));
 			define_safe('__SYM_TIME_FORMAT__', self::$Configuration->get('time_format', 'region'));
 			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . ' ' . __SYM_TIME_FORMAT__);
@@ -75,12 +68,8 @@
 				GenericExceptionHandler::$enabled = false;
 			}
 			
-			Lang::loadAll();
+			Lang::set(self::$Configuration->get('lang', 'symphony'));
 			
-		}
-		
-		public function lang(){
-			return self::$_lang;
 		}
 		
 		public function initialiseCookie(){
@@ -276,19 +265,7 @@
 		}
 		
 		public function reloadLangFromAuthorPreference(){	
-			
-			$lang = $this->Author->get('language');
-			if($lang && $lang != self::lang()){
-				self::$_lang = $lang;
-				if($lang != 'en') {
-					Lang::loadAll();
-				}
-				else {
-					// As there is no English dictionary the default dictionary needs to be cleared
-					Lang::clear();
-				}
-			}
-			
+			Lang::set($this->Author->get('language'));
 		}
 		
 		public function resolvePageTitle($page_id) {

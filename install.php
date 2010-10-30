@@ -41,38 +41,24 @@
 	require_once(TOOLKIT . '/class.lang.php');
 	require_once(TOOLKIT . '/class.general.php');
 
-	/**
-	 * Symphony Installation Class
-	 *
-	 * This is a simple Symphony class used as a placeholder for the main Symphony class 
-	 * which is not yet available during installation. This is needed for a consistent language management.
-	 */	
-
-	Class Symphony {
+	// Initialize system language
+	function setLanguage() {
+		$lang = 'en';
 	
-		private static $_lang;
-
-		public function lang(){
-			return self::$_lang;
+		// Fetch language requests
+		if(!empty($_REQUEST['lang'])){
+			$lang = preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']);
 		}
-
-		public function setLanguage() {
-			self::$_lang = 'en';
-	
-			if(!empty($_REQUEST['lang'])){
-				self::$_lang = preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']);
-			}
-	
-			try{
-				Lang::loadAll();
-			}
-			catch(Exception $s){
-				return NULL;
-			}
-			
-			return self::$_lang;
+		
+		// Set language
+		try{
+			Lang::set($lang);
 		}
-			
+		catch(Exception $s){
+			return NULL;
+		}
+		
+		return true;
 	}
 	
 	/***********************
@@ -80,7 +66,6 @@
 	************************/
 
 	// Check for PHP 5.2+
-
 	if(version_compare(phpversion(), '5.2', '<=')){
 
 		$code = '<?xml version="1.0" encoding="utf-8"?>

@@ -15,7 +15,7 @@
 			
 			$this->Html->setElementStyle('html');
 			$this->Html->setDTD('<!DOCTYPE html>');
-			$this->Html->setAttribute('lang', __LANG__);
+			$this->Html->setAttribute('lang', Lang::get());
 			$this->addElementToHead(new XMLElement(
 				'meta', null,
 				array(

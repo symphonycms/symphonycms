@@ -78,6 +78,7 @@
 	 */
 	Class Lang {
 		
+		private static $_lang;
 		private static $_dictionary;
 		private static $_transliterations;
 		private static $_dates;
@@ -143,6 +144,33 @@
 		}
 		
 		/**
+		 * Set system language
+		 *
+		 * @param string $lang language code
+		 */
+		public static function set($lang) {
+			if($lang && $lang != self::get()){
+				self::$_lang = $lang;
+				
+				// Load  dictionary
+				if($lang != 'en') {
+					self::loadAll();
+				}
+				else {
+					// As the English dictionary is the default, the dictionary just needs to be cleared
+					self::clear();
+				}
+			}
+		}
+		
+		/**
+		 * Get current language
+		 */
+		public static function get() {
+			return self::$_lang;
+		}
+		
+		/**
 		 * Load all language files (core and extensions)
 		 *
 		 * It may be possible that there are only translations for a single extension, 
@@ -151,22 +179,22 @@
 		public static function loadAll() {
 			
 			// Load core localisations
-			$file = self::findLanguagePath(Symphony::lang()) . '/lang.%s.php';
-			$path = sprintf($file, Symphony::lang());
+			$file = self::findLanguagePath(self::get()) . '/lang.%s.php';
+			$path = sprintf($file, self::get());
 			if(file_exists($path)) {
-				self::load($file, Symphony::lang(), true);
+				self::load($file, self::get(), true);
 			}
 
 			// There is no need to load localisations for extensions during installation
 			// so check existence of Extension Manager first
 			if(class_exists(ExtensionManager)) {
-				$ExtensionManager = new ExtensionManager(Administration::instance());
+				$ExtensionManager = new ExtensionManager($this);
 			
 				// Load extension localisations
 				foreach($ExtensionManager->listAll() as $handle => $e){
 					$path = $ExtensionManager->__getClassPath($handle) . '/lang/lang.%s.php';
-					if($e['status'] == EXTENSION_ENABLED && file_exists(sprintf($path, Symphony::lang()))){
-						self::load($path, Symphony::lang());
+					if($e['status'] == EXTENSION_ENABLED && file_exists(sprintf($path, self::get()))){
+						self::load($path, self::get());
 					}			
 				}
 			}
@@ -355,7 +383,7 @@
 		 * @return boolean
 		 */
 		public function isLocalized() {
-			return (Symphony::lang() != 'en');
+			return (self::get() != 'en');
 		}
 		
 		/**
