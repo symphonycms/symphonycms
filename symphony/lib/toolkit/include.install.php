@@ -60,8 +60,6 @@
 
 	define('kFOOTER', $footer);
 
-
-
 	$warnings = array(
 		'no-symphony-dir' => __('No <code>/symphony</code> directory was found at this location. Please upload the contents of Symphony\'s install package here.'),
 		'no-write-permission-workspace' => __('Symphony does not have write permission to the existing <code>/workspace</code> directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive <code>chmod -R</code> command.'),
@@ -69,7 +67,6 @@
 		'no-write-permission-root' => __('Symphony does not have write permission to the root directory. Please modify permission settings on this directory. This is necessary only if you are not including a workspace, and can be reverted once installation is complete.'),
 		'no-write-permission-htaccess' => __('Symphony does not have write permission to the temporary <code>htaccess</code> file. Please modify permission settings on this file so it can be written to, and renamed.'),
 		'no-write-permission-symphony' => __('Symphony does not have write permission to the <code>/symphony</code> directory. Please modify permission settings on this directory. This is necessary only during installation, and can be reverted once installation is complete.'),
-		'existing-htaccess' => __('There appears to be an existing <code>.htaccess</code> file in the Symphony install location. To avoid name clashes, you will need to delete or rename this file.'),
 		'no-database-connection' => __('Symphony was unable to connect to the specified database. You may need to modify host or port settings.'),
 		'database-incorrect-version' => __('Symphony requires <code>MySQL 4.1</code> or greater to work. This requirement must be met before installation can proceed.'),
 		'database-table-clash' => __('The table prefix <code><!-- TABLE-PREFIX --></code> is already in use. Please choose a different prefix to use with Symphony.'),
@@ -89,7 +86,6 @@
 		$languages[] = '<a href="?lang='.$lang.'">'.$lang.'</a>';
 	}
 	$languages = (count($languages) > 1 ? implode(', ', $languages) : '');
-
 
     function installResult(&$Page, &$install_log, $start){
 
@@ -303,7 +299,6 @@
 			);
 		}
 	}
-
 
     Class SymphonyLog extends Log{
 
@@ -711,9 +706,8 @@ Options +FollowSymlinks -Indexes
 				if(@!is_dir($fields['docroot'] . '/workspace')){
 
 					### Create the workspace folder structure
-					#
 
-			        $install_log->pushToLog("WRITING: Creating 'workspace' folder (/workspace)", E_NOTICE, true, true);
+					$install_log->pushToLog("WRITING: Creating 'workspace' folder (/workspace)", E_NOTICE, true, true);
 			        if(!General::realiseDirectory($kDOCROOT . '/workspace', $conf['settings']['directory']['write_mode'])){
 			            define('_INSTALL_ERRORS_', "Could not create 'workspace' directory. Check permission on the root folder.");
 			            $install_log->pushToLog("ERROR: Creation of 'workspace' folder failed.", E_ERROR, true, true);
