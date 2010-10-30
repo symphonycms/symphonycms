@@ -50,7 +50,7 @@
 			self::$Configuration->setArray($settings);
 			
 			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
-						
+				
 			define_safe('__SYM_DATE_FORMAT__', self::$Configuration->get('date_format', 'region'));
 			define_safe('__SYM_TIME_FORMAT__', self::$Configuration->get('time_format', 'region'));
 			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . ' ' . __SYM_TIME_FORMAT__);
@@ -63,12 +63,13 @@
 			$this->initialiseCookie();
 			$this->initialiseDatabase();
 			$this->initialiseExtensionManager();
+
+			Lang::set(self::$Configuration->get('lang', 'symphony'));
 			
 			if(!self::isLoggedIn()){
 				GenericExceptionHandler::$enabled = false;
 			}
 			
-			Lang::set(self::$Configuration->get('lang', 'symphony'));
 			
 		}
 		
@@ -264,7 +265,7 @@
 						
 		}
 		
-		public function reloadLangFromAuthorPreference(){	
+		public function reloadLangFromAuthorPreference(){
 			Lang::set($this->Author->get('language'));
 		}
 		
