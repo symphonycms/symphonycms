@@ -85,10 +85,13 @@
 	);
 
 	$languages = array();
+	$current = $_REQUEST['lang'];
 	foreach(Lang::getAvailableLanguages() as $code => $lang) {
-		$languages[] = '<a href="?lang=' . $code . '">' . $lang . '</a>';
+		$class = '';
+		if($current == $code || ($current == NULL && $code == 'en')) $class = ' class="selected"';
+		$languages[] = '<li' . $class . '><a href="?lang=' . $code . '">' . $lang . '</a></li>';
 	}
-	$languages = (count($languages) > 1 ? implode(', ', $languages) : '');
+	$languages = implode('', $languages);
 	
 
     function installResult(&$Page, &$install_log, $start){
@@ -604,7 +607,7 @@
 					$conf['settings']['admin']['max_upload_size'] = '5242880';
 					$conf['settings']['symphony']['pagination_maximum_rows'] = '17';
 					$conf['settings']['symphony']['allow_page_subscription'] = '1';
-					$conf['settings']['symphony']['lang'] = (defined('__LANG__') ? __LANG__ : 'en');
+					$conf['settings']['symphony']['lang'] = Lang::get();
 					$conf['settings']['symphony']['pages_table_nest_children'] = 'no';
 					$conf['settings']['log']['archive'] = '1';
 					$conf['settings']['log']['maxsize'] = '102400';
@@ -1300,7 +1303,8 @@ Options +FollowSymlinks -Indexes
 	$Page->setFooter(kFOOTER);
 
 	$Contents = new XMLElement('body');
-	$Contents->appendChild(new XMLElement('h1', '<!-- TITLE --> <em><!-- TAGLINE --></em> <em><!-- LANGUAGES --></em>'));
+	$Contents->appendChild(new XMLElement('h1', '<!-- TITLE --> <em><!-- TAGLINE --></em>'));
+	$Contents->appendChild(new XMLElement('ul', '<!-- LANGUAGES --><li class="more"><a href="http://symphony-cms.com/download/extensions/translations/">' . __('Symphony is also available in other languages') . '</a></li>'));
 
 	if(defined('__IS_UPDATE__') && __IS_UPDATE__ == true)
 		$Page->setPage('update');
