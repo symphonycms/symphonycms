@@ -75,7 +75,7 @@
 				GenericExceptionHandler::$enabled = false;
 			}
 			
-			Lang::loadAll($this->ExtensionManager);
+			Lang::loadAll();
 			
 		}
 		
@@ -281,7 +281,7 @@
 			if($lang && $lang != self::lang()){
 				self::$_lang = $lang;
 				if($lang != 'en') {
-					Lang::loadAll($this->ExtensionManager);
+					Lang::loadAll();
 				}
 				else {
 					// As there is no English dictionary the default dictionary needs to be cleared

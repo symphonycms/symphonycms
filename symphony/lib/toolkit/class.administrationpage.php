@@ -266,7 +266,7 @@
 													WHERE `delegate` = 'AddCustomPreferenceFieldsets'"
 											);
 
-											$l = Lang::getAvailableLanguages(new ExtensionManager($this->_Parent));
+											$l = Lang::getAvailableLanguages();
 											if(count($l) == 1 && (!is_array($extensions) || empty($extensions))){
 												continue;
 											}

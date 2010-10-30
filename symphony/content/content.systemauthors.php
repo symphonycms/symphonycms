@@ -308,7 +308,7 @@
 			###
 
 			### Custom Language Selection ###
-			$languages = Lang::getAvailableLanguages(Administration::instance()->ExtensionManager);
+			$languages = Lang::getAvailableLanguages();
 			if(count($languages) > 1) {
 
 				// Get language names
