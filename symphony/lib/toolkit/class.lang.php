@@ -79,7 +79,8 @@
 	Class Lang {
 		
 		private static $_dictionary;
-		private static $_transliterations;		
+		private static $_transliterations;
+		private static $_dates;
 		private static $_instance;
 		
 		/**
@@ -87,53 +88,87 @@
 		 */				
 		public static function load($path, $lang, $clear=false) {
 
+			// Clear dictionary
 			if((bool)$clear === true || !(self::$_dictionary instanceof Dictionary)) {
-				Lang::clear();
+				self::clear();
 			}
 
-			$include = sprintf($path, $lang);
-		
+			// Load dictionary
+			$include = sprintf($path, $lang);	
 			if(file_exists($include)){
 				require($include);
 			}
 
-			if(isset($dictionary) && is_array($dictionary)) self::$_dictionary->merge($dictionary);
-			if(isset($transliterations) && is_array($transliterations)) self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
+			// Define default dates
+			if(empty(self::$_dates)) {
+				$dates = array(
+					'yesterday', 'today', 'tomorrow', 'now',
+					'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
+					'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat',
+					'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',
+					'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+				);
+				foreach($dates as $date) {
+					self::$_dates[$date] = $date;
+				}
+			}
 
+			// Merge dictionaries
+			if(isset($dictionary) && is_array($dictionary)) {
+				self::$_dictionary->merge($dictionary);
+
+				// Add date translations
+				foreach(self::$_dates as $date) {
+					self::$_dates[$date] = __($date);
+				}
+
+			}
+			
+			// Populate transliterations
+			if(isset($transliterations) && is_array($transliterations)) self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
 			if(empty(self::$_transliterations)) {
 				include(TOOLKIT . '/include.transliterations.php');
 				self::$_transliterations = $transliterations;
 			}
+
 		}
 		
 		/**
-		 * Clear the current dictionary and transliteration arrays
+		 * Clear the current dictionary, transliteration and date arrays
 		 */
 		public static function clear() {
 			self::$_dictionary = new Dictionary(array());
 			self::$_transliterations = array();
+			self::$_dates = array();
 		}
 		
 		/**
 		 * Load all language files (core and extensions)
 		 *
-		 * It may be possible that there are only translations for an extension, 
-		 * so don't stop if there is no core translation as Symphony will always display the English strings.
+		 * It may be possible that there are only translations for a single extension, 
+		 * so don't stop if there is no core translation as Symphony will always display the English strings in this case.
 		 */		
-		public static function loadAll($ExtensionManager) {		
-			// Load localisation file for the Symphony core
-			$file = Lang::findLanguagePath(Symphony::lang(), $ExtensionManager) . '/lang.%s.php';
+		public static function loadAll() {
+			
+			// Load core localisations
+			$file = self::findLanguagePath(Symphony::lang()) . '/lang.%s.php';
 			$path = sprintf($file, Symphony::lang());
 			if(file_exists($path)) {
-				Lang::load($file, Symphony::lang(), true);
+				self::load($file, Symphony::lang(), true);
 			}
 
-			// Load localisation files for extensions
-			foreach($ExtensionManager->listAll() as $handle => $e){
-				$path = $ExtensionManager->__getClassPath($handle) . '/lang/lang.%s.php';
-				if($e['status'] == EXTENSION_ENABLED && file_exists(sprintf($path, Symphony::lang()))){
-					Lang::add($path, Symphony::lang());
-				}			
+			// There is no need to load localisations for extensions during installation
+			// so check existence of Extension Manager first
+			if(class_exists(ExtensionManager)) {
+				$ExtensionManager = new ExtensionManager(Administration::instance());
+			
+				// Load extension localisations
+				foreach($ExtensionManager->listAll() as $handle => $e){
+					$path = $ExtensionManager->__getClassPath($handle) . '/lang/lang.%s.php';
+					if($e['status'] == EXTENSION_ENABLED && file_exists(sprintf($path, Symphony::lang()))){
+						self::load($path, Symphony::lang());
+					}			
+				}
 			}
 		}
 		
@@ -143,25 +178,30 @@
 		 * The default English language strings are stored in /symphony/lib/lang whereas
 		 * the localisation files for other languages are stored in the extension folder.
 		 */		
-		public static function findLanguagePath($lang, $ExtensionManager) {
+		public static function findLanguagePath($lang) {
 			$file = sprintf('/lang.%s.php', $lang);
+			
+			// Check language extensions
 			if(!file_exists(LANG . $file)) {
-				foreach($ExtensionManager->listAll() as $extension => $about) {
+				$extensions = General::listStructure(EXTENSIONS, array(), false, 'asc', EXTENSIONS);
+				foreach($extensions['dirlist'] as $name) {
+				
 					// Explicitly match localisation extensions
-					if(strpos($about['handle'], 'lang_') === false) continue;
-					$path = EXTENSIONS . '/' . $about['handle'] . '/lang';
+					if(strpos($name, 'lang_') === false) continue;
+					
+					// Check language availability
+					$path = EXTENSIONS . '/' . $name . '/lang';
 					if(file_exists($path . $file)) {
 						return $path;
 					}
 				}
 			}
+			
+			// Default to Symphony's core language folder
 			else {
 				return LANG;
 			}
-		}
-		
-		public static function add($path, $lang) {
-			self::load($path, $lang);
+
 		}
 
 		public static function Transliterations() {
@@ -262,56 +302,26 @@
 			return $string;
 
 		}
-		
+
 		/**
-		 * Get browser languages
+		 * Get codes of available languages
 		 *
-		 * Return languages accepted by browser as an array sorted by priority
-		 * @return array language codes, e. g. 'en'
-		 */	 
-		public static function getBrowserLanguages() {
-			static $languages;
-			if(is_array($languages)) return $languages;
-
-			$languages = array();
-
-			if(strlen(trim($_SERVER['HTTP_ACCEPT_LANGUAGE'])) < 1) return $languages;
-			if(!preg_match_all('/(\w+(?:-\w+)?,?)+(?:;q=(?:\d+\.\d+))?/', preg_replace('/\s+/', '', $_SERVER['HTTP_ACCEPT_LANGUAGE']), $matches)) return $languages;
-
-			$priority = 1.0;
-			$languages = array();
-			foreach($matches[0] as $def){
-				list($list, $q) = explode(';q=', $def);
-				if(!empty($q)) $priority=floatval($q);
-				$list = explode(',', $list);
-				foreach($list as $lang){
-					$languages[$lang] = $priority;
-					$priority -= 0.000000001;
-				}
-			}
-			arsort($languages);
-			$languages = array_keys($languages);
-			// return list sorted by descending priority, e.g., array('en-gb','en');
-			return $languages;
-		}
-
-		/**
-         * Get codes of available languages
-         *
 		 * Return all available languages (core and extensions)
 		 * @return array language codes, e. g. 'en'
 		 */
-		public static function getAvailableLanguages($ExtensionManager=false) {
+		public static function getAvailableLanguages() {
 			$languages = array();
+			
 			// Get core translation files
 			$languages = self::getLanguageCodes(LIBRARY . '/lang', $languages);
+			
 			// Get extension translation files
-			if($ExtensionManager) {
-				foreach ($ExtensionManager->listAll() as $extension => $about) {
-					$path = EXTENSIONS . '/' . $about['handle'] . '/lang';
-					if(file_exists($path)) $languages = self::getLanguageCodes($path, $languages);
-				}
+			$extensions = General::listStructure(EXTENSIONS, array(), false, 'asc', EXTENSIONS);
+			foreach($extensions['dirlist'] as $name) {
+				$path = EXTENSIONS . '/' . $name . '/lang';
+				if(file_exists($path)) $languages = self::getLanguageCodes($path, $languages);
 			}
+			
 			// Return languages codes	
 			return $languages;
 		}
@@ -325,7 +335,11 @@
 		public static function getLanguageCodes($path, $languages) {
 			$iterator = new DirectoryIterator($path);
 			foreach($iterator as $file) {
+			
+				// Extract language code
 				if(!$file->isDot() && preg_match('/^lang\.(\w+(-\w+)?)\.php$/', $file->getFilename(), $matches)) {
+				
+					// Get language name
 					if(!isset($languages[$matches[1]])) {
 						include($file->getPathname());
 						$languages[$matches[1]] = $about['name'];
@@ -333,6 +347,53 @@
 				}
 			}
 			return $languages;
+		}
+		
+		/**
+		 * Check if Symphony is localised
+		 *
+		 * @return boolean
+		 */
+		public function isLocalized() {
+			return (Symphony::lang() != 'en');
+		}
+		
+		/**
+		 * Localize dates
+		 *
+		 * Return the given date with translated month and day names
+		 * @param string $string standard date that should be localized
+		 * @return string
+		 */
+		public static function localizeDate($string) {
+		
+			// Only translate dates in localized environments
+			if(self::isLocalized()) {
+				foreach(self::$_dates as $english => $locale) {
+					$string = str_replace($english, $locale, $string);
+				}
+			}
+		
+			return $string;
+		}
+		
+		/**
+		 * Standardize dates
+		 *
+		 * Return the given date with English month and day names
+		 * @param string $string localized date that should be standardized
+		 * @return string
+		 */
+		public static function standardizeDate($string) {
+		
+			// Only standardize dates in localized environments
+			if(self::isLocalized()) {
+				foreach(self::$_dates as $english => $locale) {
+					$string = str_replace($locale, $english, $string);
+				}
+			}
+		
+			return $string;
 		}
 		
 	}
