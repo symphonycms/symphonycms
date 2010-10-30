@@ -706,8 +706,7 @@ Options +FollowSymlinks -Indexes
 				if(@!is_dir($fields['docroot'] . '/workspace')){
 
 					### Create the workspace folder structure
-
-					$install_log->pushToLog("WRITING: Creating 'workspace' folder (/workspace)", E_NOTICE, true, true);
+			        $install_log->pushToLog("WRITING: Creating 'workspace' folder (/workspace)", E_NOTICE, true, true);
 			        if(!General::realiseDirectory($kDOCROOT . '/workspace', $conf['settings']['directory']['write_mode'])){
 			            define('_INSTALL_ERRORS_', "Could not create 'workspace' directory. Check permission on the root folder.");
 			            $install_log->pushToLog("ERROR: Creation of 'workspace' folder failed.", E_ERROR, true, true);
