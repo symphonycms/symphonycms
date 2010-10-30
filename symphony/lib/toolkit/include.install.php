@@ -23,9 +23,6 @@
 
 	define('REWRITE_BASE', $rewrite_base);
 	
-	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
-	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
-	
 	## Include some parts of the Symphony engine
 	require_once(CORE . '/class.log.php');
 	require_once(CORE . '/class.datetimeobj.php');	

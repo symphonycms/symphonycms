@@ -23,59 +23,57 @@
 	
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.1.2');
-	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
-	define('kINSTALL_FILENAME', basename(__FILE__));
-	
-	## Show PHP Info
+	// Show PHP Info
 	if(isset($_REQUEST['info'])){
 		phpinfo(); 
 		exit();
 	}
+
+	// Defines
+	define('kVERSION', '2.2.0dev');
+	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
+	define('kINSTALL_FILENAME', basename(__FILE__));
+	define('DOCROOT', rtrim(dirname(__FILE__), '\\/'));
+
+	// Required system components
+	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
+	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
+	require_once(TOOLKIT . '/class.lang.php');
+	require_once(TOOLKIT . '/class.general.php');
+
+	/**
+	 * Symphony Installation Class
+	 *
+	 * This is a simple Symphony class used as a placeholder for the main Symphony class 
+	 * which is not yet available during installation. This is needed for a consistent language management.
+	 */	
+
+	Class Symphony {
 	
-	function setLanguage() {
-		require_once('symphony/lib/toolkit/class.lang.php');
-		$lang = NULL;
+		private static $_lang;
 
-		if(!empty($_REQUEST['lang'])){
-			$l = preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']);
-			if(file_exists("./symphony/lib/lang/lang.{$l}.php")) $lang = $l;
+		public function lang(){
+			return self::$_lang;
 		}
 
-		if($lang === NULL){
-			foreach(Lang::getBrowserLanguages() as $l){
-				if(file_exists("./symphony/lib/lang/lang.{$l}.php")) $lang = $l;
-				break;
+		public function setLanguage() {
+			self::$_lang = 'en';
+	
+			if(!empty($_REQUEST['lang'])){
+				self::$_lang = preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']);
 			}
-		}
-
-		## none of browser accepted languages is available, get first available
-		if(is_null($lang)){
-			
-			## default to English
-			$lang = 'en';
-			
-			if(!file_exists('./symphony/lib/lang/lang.en.php')){
-				$l = Lang::getAvailableLanguages();
-				if(is_array($l) && count($l) > 0) $lang = $l[0];
+	
+			try{
+				Lang::loadAll();
 			}
+			catch(Exception $s){
+				return NULL;
+			}
+			
+			return self::$_lang;
 		}
-
-		if(is_null($lang)){ 
-			return NULL;
-		}
-
-		try{
-			Lang::load('./symphony/lib/lang/lang.%s.php', $lang);
-		}
-		catch(Exception $s){
-			return NULL;
-		}
-
-		define('__LANG__', $lang);
-		return $lang;
+			
 	}
-
 	
 	/***********************
 	         TESTS
