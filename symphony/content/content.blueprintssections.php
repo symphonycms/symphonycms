@@ -375,8 +375,13 @@
 			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $position => $field){
 
+<<<<<<< HEAD
 					$wrapper = new XMLElement('li');
 
+=======
+					$wrapper = new XMLElement('li', NULL, array('class' => 'field-' . $field->handle()));
+					
+>>>>>>> nickdunn/integration
 					$field->set('sortorder', $position);
 					$field->displaySettingsPanel($wrapper, (isset($this->_errors[$position]) ? $this->_errors[$position] : NULL));
 					$ol->appendChild($wrapper);
@@ -399,8 +404,13 @@
 				$type->setArray($defaults);
 
 				$wrapper = new XMLElement('li');
+<<<<<<< HEAD
 				$wrapper->setAttribute('class', 'template');
 
+=======
+				$wrapper->setAttribute('class', 'template field-' . $type->handle());
+				
+>>>>>>> nickdunn/integration
 				$type->set('sortorder', '-1');
 				$type->displaySettingsPanel($wrapper);
 

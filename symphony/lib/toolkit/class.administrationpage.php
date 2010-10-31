@@ -15,6 +15,8 @@
 		var $_navigation;
 		var $_Parent;
 		var $_context;
+		private $_body_id = '';
+		private $_body_class = '';
 		
 		function __construct(&$parent){
 			parent::__construct();
@@ -37,6 +39,14 @@
 	
 		public function Context(){
 			return $this->_context;
+		}
+		
+		public function setBodyId($id) {
+			$this->_body_id = $id;
+		}
+		
+		public function setBodyClass($class) {
+			$this->_body_class .= ' ' . $class;
 		}
 		
 		function build($context = NULL){
@@ -90,6 +100,12 @@
 			$this->appendAlert();
 
 			$this->_Parent->Profiler->sample('Page content created', PROFILE_LAP);
+		}
+		
+		function generate() {
+			$this->__appendBodyId();
+			$this->__appendBodyClass($this->_context);
+			return parent::generate();
 		}
 		
 		function view(){
@@ -600,6 +616,27 @@
 			
 			return (is_array($types) && !empty($types) ? General::array_remove_duplicates(array_merge($system_types, $types)) : $system_types);
 
+		}
+		
+		function __appendBodyId(){
+			// trim "content" from beginning of class name
+			$body_id = preg_replace("/^content/", '', get_class($this));
+			
+			// lowercase any uppercase letters and prefix with a hyphen
+			$body_id = trim(preg_replace("/([A-Z])/e", "'-' . strtolower('\\1')", $body_id), '-');
+			
+			if (!empty($this->_body_id)) $body_id = $this->_body_id;
+			if (!empty($body_id)) $this->Body->setAttribute('id', trim($body_id));
+		}
+		
+		function __appendBodyClass($context){
+			if (!is_array($this->_context)) $context = array($context);
+			foreach($context as $c) {
+				if (is_numeric($c)) $c = 'id-' . $c;
+				$body_class .= trim($c) . ' ';
+			}
+			$body_class = trim($body_class) . ' ' . trim($this->_body_class);
+			if (!empty($body_class)) $this->Body->setAttribute('class', trim($body_class));
 		}
 	}
 

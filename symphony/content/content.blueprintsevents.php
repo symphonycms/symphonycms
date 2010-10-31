@@ -71,6 +71,8 @@
 				
 				$about = $existing->about();
 				
+				if ($this->_context[0] == 'edit' && !$existing->allowEditorToParse()) redirect(URL . '/symphony/blueprints/events/info/' . $handle . '/');
+				
 				$fields['name'] = $about['name'];
 				$fields['source'] = $existing->getSource();
 				$fields['filters'] = $existing->eParamFILTERS;
