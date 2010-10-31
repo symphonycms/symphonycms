@@ -361,7 +361,7 @@
 			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $position => $field){
 
-					$wrapper = new XMLElement('li');
+					$wrapper = new XMLElement('li', NULL, array('class' => 'field-' . $field->handle()));
 					
 					$field->set('sortorder', $position);
 					$field->displaySettingsPanel($wrapper, (isset($this->_errors[$position]) ? $this->_errors[$position] : NULL));
@@ -385,7 +385,7 @@
 				$type->setArray($defaults);
 				
 				$wrapper = new XMLElement('li');
-				$wrapper->setAttribute('class', 'template');
+				$wrapper->setAttribute('class', 'template field-' . $type->handle());
 				
 				$type->set('sortorder', '-1');
 				$type->displaySettingsPanel($wrapper);
