@@ -16,56 +16,73 @@
 
 	if (PHP_VERSION_ID >= 50300){
 	    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
-	} 
+	}
 	else{
 	    error_reporting(E_ALL ^ E_NOTICE);
 	}
-	
+
 	set_error_handler('__errorHandler');
 
-	// Show PHP Info
+	define('kVERSION', '2.1.2');
+	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
+	define('kINSTALL_FILENAME', basename(__FILE__));
+
+	## Show PHP Info
 	if(isset($_REQUEST['info'])){
-		phpinfo(); 
+		phpinfo();
 		exit();
 	}
 
-	// Defines
-	define('kVERSION', '2.2.0dev');
-	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');	
-	define('kINSTALL_FILENAME', basename(__FILE__));
-	define('DOCROOT', rtrim(dirname(__FILE__), '\\/'));
-
-	// Required system components
-	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
-	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
-	require_once(TOOLKIT . '/class.lang.php');
-	require_once(TOOLKIT . '/class.general.php');
-
-	// Initialize system language
 	function setLanguage() {
-		$lang = 'en';
-	
-		// Fetch language requests
+		require_once('symphony/lib/toolkit/class.lang.php');
+		$lang = NULL;
+
 		if(!empty($_REQUEST['lang'])){
-			$lang = preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']);
+			$l = preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']);
+			if(file_exists("./symphony/lib/lang/lang.{$l}.php")) $lang = $l;
 		}
-		
-		// Set language
+
+		if($lang === NULL){
+			foreach(Lang::getBrowserLanguages() as $l){
+				if(file_exists("./symphony/lib/lang/lang.{$l}.php")) $lang = $l;
+				break;
+			}
+		}
+
+		## none of browser accepted languages is available, get first available
+		if(is_null($lang)){
+
+			## default to English
+			$lang = 'en';
+
+			if(!file_exists('./symphony/lib/lang/lang.en.php')){
+				$l = Lang::getAvailableLanguages();
+				if(is_array($l) && count($l) > 0) $lang = $l[0];
+			}
+		}
+
+		if(is_null($lang)){
+			return NULL;
+		}
+
 		try{
-			Lang::set($lang);
+			Lang::load('./symphony/lib/lang/lang.%s.php', $lang);
 		}
 		catch(Exception $s){
 			return NULL;
 		}
-		
-		return true;
+
+		define('__LANG__', $lang);
+		return $lang;
 	}
-	
+
+
 	/***********************
 	         TESTS
 	************************/
 
 	// Check for PHP 5.2+
+
 	if(version_compare(phpversion(), '5.2', '<=')){
 
 		$code = '<?xml version="1.0" encoding="utf-8"?>
@@ -165,13 +182,13 @@
 		die($code);
 
 	}
-		
+
 	/////////////////////////
-	
+
 	function getDynamicConfiguration(){
-	
+
 		$conf = array();
-	
+
 		$conf['admin']['max_upload_size'] = '5242880';
 		$conf['symphony']['pagination_maximum_rows'] = '17';
 		$conf['symphony']['allow_page_subscription'] = '1';
@@ -192,11 +209,11 @@
 		$conf['region']['time_format'] = 'H:i';
 		$conf['region']['date_format'] = 'd F Y';
 		$conf['maintenance_mode']['enabled'] = 'no';
-	
+
 		return $conf;
-	
-	}	
-	
+
+	}
+
 	function getTableSchema(){
 		return file_get_contents('install.sql');
 	}
@@ -204,7 +221,6 @@
 	function getWorkspaceData(){
 		return file_get_contents('workspace/install.sql');
 	}
-		
+
 	define('INSTALL_REQUIREMENTS_PASSED', true);
 	include_once('./symphony/lib/toolkit/include.install.php');
-

@@ -75,7 +75,15 @@
 
 			if (self::isFilterRegex($data[0])) {
 				$this->_key++;
-				$pattern = str_replace('regexp:', '', $this->cleanValue($data[0]));
+
+				if (preg_match('/^regexp:/i', $data[0])) {
+					$pattern = preg_replace('/regexp:/i', null, $this->cleanValue($data[0]));
+					$regex = 'REGEXP';
+				} else {
+					$pattern = preg_replace('/not-?regexp:/i', null, $this->cleanValue($data[0]));
+					$regex = 'NOT REGEXP';
+				}
+
 				$joins .= "
 					LEFT JOIN
 						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
@@ -83,8 +91,8 @@
 				";
 				$where .= "
 					AND (
-						t{$field_id}_{$this->_key}.value REGEXP '{$pattern}'
-						OR t{$field_id}_{$this->_key}.handle REGEXP '{$pattern}'
+						t{$field_id}_{$this->_key}.value {$regex} '{$pattern}'
+						OR t{$field_id}_{$this->_key}.handle {$regex} '{$pattern}'
 					)
 				";
 
