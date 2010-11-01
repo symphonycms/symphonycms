@@ -22,20 +22,12 @@
 	}
 
 	define('REWRITE_BASE', $rewrite_base);
-<<<<<<< HEAD
 	
-=======
-
-	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
-	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
-
->>>>>>> brendo/integration
 	## Include some parts of the Symphony engine
 	require_once(CORE . '/class.log.php');
 	require_once(CORE . '/class.datetimeobj.php');
 	require_once(TOOLKIT . '/class.mysql.php');
 	require_once(TOOLKIT . '/class.xmlelement.php');
-	require_once(TOOLKIT . '/class.general.php');
 	require_once(TOOLKIT . '/class.widget.php');
 
 	define('CRLF', "\r\n");
@@ -92,12 +84,8 @@
 		if($current == $code || ($current == NULL && $code == 'en')) $class = ' class="selected"';
 		$languages[] = '<li' . $class . '><a href="?lang=' . $code . '">' . $lang . '</a></li>';
 	}
-<<<<<<< HEAD
 	$languages = implode('', $languages);
 	
-=======
-	$languages = (count($languages) > 1 ? implode(', ', $languages) : '');
->>>>>>> brendo/integration
 
     function installResult(&$Page, &$install_log, $start){
 
@@ -958,17 +946,10 @@ Options +FollowSymlinks -Indexes
 				}
 
 				$Fieldset->appendChild(Widget::label(__('Region'), Widget::Select('fields[region][timezone]', $options)));
-<<<<<<< HEAD
-=======
-
-				//$Div->appendChild(Widget::label('Date Format', Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
-				//$Div->appendChild(Widget::label('Time Format', Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
->>>>>>> brendo/integration
 
 				$dateformat = $fields['region']['date_format'];
 				$label = Widget::Label(__('Date Format'));
 				$dateFormats = array(
-<<<<<<< HEAD
 					'Y/m/d',	// e. g. 2011/01/20
 					'm/d/Y',	// e. g. 01/20/2011
 					'm/d/y',	// e. g. 10/20/11
@@ -996,15 +977,6 @@ Options +FollowSymlinks -Indexes
 
 				$label->appendChild(Widget::Select('fields[region][date_format]', $dateOptions));
 				$Fieldset->appendChild($label);	
-=======
-					array('Y/m/d', $dateformat == 'Y/m/d', DateTimeObj::get('Y/m/d')),
-					array('m/d/Y', $dateformat == 'm/d/Y', DateTimeObj::get('m/d/Y')),
-					array('m/d/y', $dateformat == 'm/d/y', DateTimeObj::get('m/d/y')),
-					array('d F Y', $dateformat == 'd F Y', DateTimeObj::get('d F Y')),
-				);
-				$label->appendChild(Widget::Select('fields[region][date_format]', $dateFormats));
-				$Fieldset->appendChild($label);
->>>>>>> brendo/integration
 
 				$timeformat = $fields['region']['time_format'];
 				$label = Widget::Label(__('Time Format'));
@@ -1200,13 +1172,8 @@ Options +FollowSymlinks -Indexes
 			**/
 
 				$Form->appendChild(new XMLElement('h2', __('Install Symphony')));
-<<<<<<< HEAD
-				$Form->appendChild(new XMLElement('p', __('Make sure that you delete %s file after Symphony has installed successfully.', array('<code>' . kINSTALL_FILENAME . '</code>'))));
-				 
-=======
 				$Form->appendChild(new XMLElement('p', __('Make sure that you delete <code>%s</code> file after Symphony has installed successfully.', array(kINSTALL_FILENAME))));
 
->>>>>>> brendo/integration
 				$Submit = new XMLElement('div');
 				$Submit->setAttribute('class', 'submit');
 

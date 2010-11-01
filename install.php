@@ -61,17 +61,6 @@
 		return true;
 	}
 
-		try{
-			Lang::load('./symphony/lib/lang/lang.%s.php', $lang);
-		}
-		catch(Exception $s){
-			return NULL;
-		}
-
-		define('__LANG__', $lang);
-		return $lang;
-	}
-
 
 	/***********************
 	         TESTS
