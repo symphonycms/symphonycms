@@ -50,13 +50,11 @@
 					if (item.is('.collapsed')) {
 						item.removeClass('collapsed').addClass('expanded');
 						object.trigger('expandstop', [item]);
-						object.trigger('singleexpandstop', [item]);
 					}
 					
 					else {
 						item.removeClass('expanded').addClass('collapsed');
 						object.trigger('collapsestop', [item]);
-						object.trigger('singlecollapsestop', [item]);
 					}
 					
 					item = null;
