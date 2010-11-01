@@ -817,9 +817,6 @@
 		 * @param bool $recurse (optional)
 		 *	true if sub-directories should be traversed and reflected in the
 		 *	resulting array, false otherwise.
-		 * @param string $sort (deprecated)
-		 *	'asc' if the resulting array should be sorted, anything else otherwise.
-		 *	this defaults to 'asc'.
 		 * @param mixed $strip_root (optional)
 		 *	null if the $dir should be stripped from the entries in the array.
 		 *	anything else if $dir should be retained. this defaults to null.
@@ -832,7 +829,7 @@
 		 *	return the array structure reflecting the input directory or null if
          * the input directory is not actually a directory.
 		 */
-		public static function listDirStructure($dir = '.', $recurse = true, $sort = 'asc', $strip_root = null, $exclude = array(), $ignore_hidden = true) {
+		public static function listDirStructure($dir = '.', $recurse = true, $strip_root = null, $exclude = array(), $ignore_hidden = true) {
 			if (!is_dir($dir)) return null;
 
 			$files = array();
@@ -848,7 +845,7 @@
 				$files[] = str_replace($strip_root, '', $dir) ."/$file/";
 
 				if ($recurse) {
-					$files = @array_merge($files, self::listDirStructure("$dir/$file", $recurse, $sort, $strip_root, $exclude, $ignore_hidden));
+					$files = @array_merge($files, self::listDirStructure("$dir/$file", $recurse, $strip_root, $exclude, $ignore_hidden));
 				}
 			}
 
