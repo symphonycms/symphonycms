@@ -125,14 +125,22 @@
 
 			if (self::isFilterRegex($data[0])) {
 				$this->_key++;
-				$pattern = str_replace('regexp:', '', $this->cleanValue($data[0]));
+
+				if (preg_match('/^regexp:/i', $data[0])) {
+					$pattern = preg_replace('/regexp:/i', null, $this->cleanValue($data[0]));
+					$regex = 'REGEXP';
+				} else {
+					$pattern = preg_replace('/not-?regexp:/i', null, $this->cleanValue($data[0]));
+					$regex = 'NOT REGEXP';
+				}
+
 				$joins .= "
 					LEFT JOIN
 						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
 						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
 				";
 				$where .= "
-					AND t{$field_id}_{$this->_key}.author_id REGEXP '{$pattern}'
+					AND t{$field_id}_{$this->_key}.author_id {$regex} '{$pattern}'
 				";
 
 			} elseif ($andOperation) {
@@ -248,7 +256,7 @@
 				  PRIMARY KEY  (`id`),
 				  KEY `entry_id` (`entry_id`),
 				  KEY `author_id` (`author_id`)
-				) TYPE=MyISAM;"
+				) ENGINE=MyISAM;"
 
 			);
 		}

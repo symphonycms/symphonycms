@@ -38,11 +38,11 @@
 		private $_logEverything;
 
 	    function __construct(){
-			
+
 			if(!is_numeric(self::$_query_count)){
 				self::$_query_count = 0;
 			}
-			
+
 			$this->_cache = NULL;
 			$this->_logEverything = NULL;
 			$this->flushLog();
@@ -251,6 +251,9 @@
 	        if($this->_connection['tbl_prefix'] != 'tbl_'){
 	            $query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', $this->_connection['tbl_prefix'].'\\1\\2', $query);
 	        }
+
+			//	TYPE is deprecated since MySQL 4.0.18, ENGINE is preferred
+	 		$query = preg_replace('/TYPE=(MyISAM|InnoDB)/i', 'ENGINE=$1', $query);
 
 			$query_hash = md5($query.microtime());
 

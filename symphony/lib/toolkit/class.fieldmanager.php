@@ -95,7 +95,7 @@
 		//}
 
 		public function fetchHandleFromElementName($id){
-			return $this->_Parent->Database->fetchVar('element_name', 0, "SELECT `element_name` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
+			return Symphony::Database()->fetchVar('element_name', 0, "SELECT `element_name` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
 		}
 
 		public function fetchTypes(){

@@ -44,7 +44,7 @@
 			$lines = NULL;
 			$odd = true;
 			
-			$markdown .= "\t" . $e->getMessage() . "\n";
+			$markdown = "\t" . $e->getMessage() . "\n";
 			$markdown .= "\t" . $e->getFile() . " line " . $e->getLine() . "\n\n";
 			foreach(self::__nearByLines($e->getLine(), $e->getFile()) as $line => $string) {
 			    $markdown .= "\t" . ($line+1) . $string;

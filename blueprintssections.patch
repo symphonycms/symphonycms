@@ -1,0 +1,139 @@
+diff --cc symphony/content/content.blueprintssections.php
+index 7f7aed7,83a5f6c..0000000
+--- a/symphony/content/content.blueprintssections.php
++++ b/symphony/content/content.blueprintssections.php
+@@@ -76,19 -76,19 +76,30 @@@
+  			$options = array(
+  				array(NULL, false, __('With Selected...')),
+  				array('delete', false, __('Delete'), 'confirm'),
+ -				array('delete-entries', false, __('Delete Entries'), 'confirm')
+ +				array('delete-entries', false, __('Delete Entries'), 'confirm'),
+ +				array('label' => __('Set navigation group'), 'options' => array())
+  			);
+  
+++<<<<<<< HEAD
+ +			if (is_array($sections) && !empty($sections)) {
+ +				$index = 3;
+++=======
++ 			if (is_array($sections) && !empty($sections))  {
++ 				$index = 3;
++ 				$options[$index] = array('label' => __('Set navigation group'), 'options' => array());
+++>>>>>>> symphony-cms/integration
+  
+  				$groups = array();
+  				foreach($sections as $s){
+  					if(in_array($s->get('navigation_group'), $groups)) continue;
+  					$groups[] = $s->get('navigation_group');
+++<<<<<<< HEAD
+ +#					$value = strtolower(str_replace(' ',  '-', General::sanitize($s->get('navigation_group'))));
+ +					$value = urlencode($s->get('navigation_group'));
+++=======
++ 
++ 					$value = 'set-navigation-group-' . urlencode($s->get('navigation_group'));
+++>>>>>>> symphony-cms/integration
+  					$options[$index]['options'][] = array($value, false, $s->get('navigation_group'));
+  				}
+  			}
+@@@ -317,22 -317,22 +328,22 @@@
+  			$fieldset = new XMLElement('fieldset');
+  			$fieldset->setAttribute('class', 'settings');
+  			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
+- 			
++ 
+  			$div = new XMLElement('div', NULL, array('class' => 'group'));
+  			$namediv = new XMLElement('div', NULL);
+- 			
++ 
+  			$label = Widget::Label('Name');
+  			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
+- 			
++ 
+  			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+  			else $namediv->appendChild($label);
+- 			
++ 
+  			$label = Widget::Label();
+  			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : NULL));
+ -			$label->setValue(__('%s Hide this section from the Publish menu', array($input->generate(false))));
+ +			$label->setValue(__('%s Hide this section from the back-end menu', array($input->generate(false))));
+  			$namediv->appendChild($label);
+  			$div->appendChild($namediv);
+- 			
++ 
+  			$navgroupdiv = new XMLElement('div', NULL);
+  			$sectionManager = new SectionManager($this->_Parent);
+  			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+@@@ -447,27 -445,36 +456,49 @@@
+  							foreach($entries as $entry) {
+  								$entry_ids[] = $entry['id'];
+  							}
++ 
++ 							###
++ 							# Delegate: Delete
++ 							# Description: Prior to deletion of entries. Array of Entries is provided.
++ 							#              The array can be manipulated
++ 							Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => &$entry_ids));
++ 
+  							$entryManager->delete($entry_ids);
+  						}
+- 						
++ 
+  						redirect(URL . '/symphony/blueprints/sections/');
++ 				}
++ 
++ 				else if(preg_match('/^set-navigation-group-/', $_POST['with-selected'])) {
++ 						$sectionManager = new SectionManager($this->_Parent);
++ 
++ 						$navigation_group = preg_replace('/^set-navigation-group-/', null, $_POST['with-selected']);
++ 
++ 						foreach($checked as $section_id) {
++ 							$sectionManager->edit($section_id, array('navigation_group' => urldecode($navigation_group)));
++ 						}
++ 
++ 						redirect(URL . '/symphony/blueprints/sections/');
+++<<<<<<< HEAD
+ +						break;
+ +						
+ +					default:
+ +
+ +						$sectionManager = new SectionManager($this->_Parent);
+ +						foreach($checked as $section_id) $sectionManager->edit($section_id, array('navigation_group' => urldecode($_POST['with-selected'])));
+ +
+ +						redirect(URL . '/symphony/blueprints/sections/');
+ +						break;
+ +
+++=======
+++>>>>>>> symphony-cms/integration
+  				}
+  			}
+- 						
++ 
+  		}
+- 		
+- 		public function __actionNew(){		
+- 			
++ 
++ 		public function __actionNew(){
++ 
+  			if(@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
+  
+  				$canProceed = true;
+diff --git a/symphony/assets/forms.css b/symphony/assets/forms.css
+index d2be34b..9d3299a 100755
+--- a/symphony/assets/forms.css
++++ b/symphony/assets/forms.css
+@@ -137,6 +137,7 @@ p.help {
+ 	color: #887;
+ }
+ div.invalid {
++	
+ 	margin-bottom: 1.5em;
+ 	border: 1px solid #c31;
+ 	border-bottom-color: #b21;
+@@ -444,4 +445,4 @@ ul.tags .more:hover {
+ }
+ .code {
+ 	font: 134%/1.3 monospace;
+-}
+\ No newline at end of file
++}

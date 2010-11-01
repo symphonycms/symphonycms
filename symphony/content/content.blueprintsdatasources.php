@@ -288,14 +288,16 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 			
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
 			
+			$div = new XMLElement('div');
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
 			
 			if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
 			else $div->appendChild($label);
+			$group->appendChild($div);
 			
 			$label = Widget::Label(__('Source'));	
 			
@@ -325,9 +327,9 @@
 			}
 			
 			$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
-			$div->appendChild($label);
+			$group->appendChild($label);
 			
-			$fieldset->appendChild($div);
+			$fieldset->appendChild($group);
 			$this->Form->appendChild($fieldset);
 			
 			$fieldset = new XMLElement('fieldset');
@@ -555,22 +557,26 @@
 			
 			$fieldset->appendChild($div);
 				
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group contextual inverse navigation');
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group contextual inverse navigation');
 
+			$div = new XMLElement('div');
 			$label = Widget::Label();
 			$input = Widget::Input('fields[max_records]', $fields['max_records'], NULL, array('size' => '6'));
 			$label->setValue(__('Show a maximum of %s results per page', array($input->generate(false))));
 			if(isset($this->_errors['max_records'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['max_records']));
 			else $div->appendChild($label);
+			$group->appendChild($div);
 			
+			$div = new XMLElement('div');
 			$label = Widget::Label();
 			$input = Widget::Input('fields[page_number]', $fields['page_number'], NULL, array('size' => '6'));		
 			$label->setValue(__('Show page %s of results', array($input->generate(false))));
 			if(isset($this->_errors['page_number'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['page_number']));
 			else $div->appendChild($label);
+			$group->appendChild($div);
 			
-			$fieldset->appendChild($div);
+			$fieldset->appendChild($group);
 			
 			$label = Widget::Label(__('Required URL Parameter <i>Optional</i>'));
 			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param'])));
@@ -832,7 +838,7 @@
 			$fieldset->setAttribute('class', 'settings contextual static_xml');
 			$fieldset->appendChild(new XMLElement('legend', __('Static XML')));	
 			$label = Widget::Label(__('Body'));
-			$label->appendChild(Widget::Textarea('fields[static_xml]', 12, 50, General::sanitize($fields['static_xml']), array('class' => 'code')));
+			$label->appendChild(Widget::Textarea('fields[static_xml]', 12, 50, General::sanitize(stripslashes($fields['static_xml'])), array('class' => 'code')));
 			
 			if(isset($this->_errors['static_xml'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['static_xml']));
 			else $fieldset->appendChild($label);

@@ -12,7 +12,7 @@
 
 		static private $_enabled_extensions = NULL;
 		static private $_subscriptions = NULL;
-		static private $_extensions = NULL;
+		static private $_extensions = array();
 
         function __getClassName($name){
 	        return 'extension_' . $name;
@@ -31,7 +31,7 @@
         }
 
 		private function __buildExtensionList() {
-			if (self::$_extensions == NULL) {
+			if (empty(self::$_extensions)) {
 				$extensions = Symphony::Database()->fetch("SELECT * FROM `tbl_extensions`");
 				foreach($extensions as $extension) {
 					self::$_extensions[$extension['name']] = $extension;
@@ -175,7 +175,11 @@
 		public function fetchStatus($name){	
 			$this->__buildExtensionList();
 			
-			$status = self::$_extensions[$name]['status'];
+			$status = NULL;
+			if(array_key_exists($name, self::$_extensions))
+			{
+				$status = self::$_extensions[$name]['status'];				
+			}
 			
 			if(!$status) return EXTENSION_NOT_INSTALLED;			
 			if($status == 'enabled') return EXTENSION_ENABLED;
@@ -372,10 +376,8 @@
 		## Return object instance of a named extension
 		public function getInstance($name){
 
-			$extensions = $this->_pool;
-
-			foreach($extensions as $e){
-				if(get_class($e) == $name) return $e;
+			foreach(self::$_pool as $extension){
+				if(get_class($extension) == 'extension_' . $name) return $extension;
 			}
 
 		}
