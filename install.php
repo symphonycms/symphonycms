@@ -23,47 +23,43 @@
 
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.1.2');
-	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
-	define('kINSTALL_FILENAME', basename(__FILE__));
-
-	## Show PHP Info
+	// Show PHP Info
 	if(isset($_REQUEST['info'])){
 		phpinfo();
 		exit();
 	}
 
+	// Defines
+	define('kVERSION', '2.2.0dev');
+	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
+	define('kINSTALL_FILENAME', basename(__FILE__));
+	define('DOCROOT', rtrim(dirname(__FILE__), '\\/'));
+
+	// Required system components
+	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
+	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
+	require_once(TOOLKIT . '/class.lang.php');
+	require_once(TOOLKIT . '/class.general.php');
+
+	// Initialize system language
 	function setLanguage() {
-		require_once('symphony/lib/toolkit/class.lang.php');
-		$lang = NULL;
+		$lang = 'en';
 
+		// Fetch language requests
 		if(!empty($_REQUEST['lang'])){
-			$l = preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']);
-			if(file_exists("./symphony/lib/lang/lang.{$l}.php")) $lang = $l;
+			$lang = preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']);
 		}
 
-		if($lang === NULL){
-			foreach(Lang::getBrowserLanguages() as $l){
-				if(file_exists("./symphony/lib/lang/lang.{$l}.php")) $lang = $l;
-				break;
-			}
+		// Set language
+		try{
+			Lang::set($lang);
 		}
-
-		## none of browser accepted languages is available, get first available
-		if(is_null($lang)){
-
-			## default to English
-			$lang = 'en';
-
-			if(!file_exists('./symphony/lib/lang/lang.en.php')){
-				$l = Lang::getAvailableLanguages();
-				if(is_array($l) && count($l) > 0) $lang = $l[0];
-			}
-		}
-
-		if(is_null($lang)){
+		catch(Exception $s){
 			return NULL;
 		}
+
+		return true;
+	}
 
 		try{
 			Lang::load('./symphony/lib/lang/lang.%s.php', $lang);
