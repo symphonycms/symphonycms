@@ -372,7 +372,7 @@ var Symphony;
 					'name': $.trim($('table input:checked').parents('tr').find('td').eq(0).text()),
 					'count': i
 				});
-				
+
 				return i > 0 && !o.hasClass('confirm') || confirm(t);
 			});
 		}
@@ -392,7 +392,20 @@ var Symphony;
 		// Internal duplicators:
 		$('#fields-duplicator').symphonyDuplicator({ orderable: true, collapsible: true });
 		$('.filters-duplicator').symphonyDuplicator();
-		
+
+		// Showing the field label in the section editor (duplicator)
+		$('#fields-duplicator').bind('collapsestop', function (event, item) {
+			var instance = jQuery(item);
+			instance.find('.header > span:not(:has(i))').append(
+				$('<i />').text(instance.find('label:first input').attr('value'))
+			);
+		});
+
+		$('#fields-duplicator').bind('expandstop', function (event, item) {
+			var instance = jQuery(item);
+			instance.find('.header > span > i').remove();
+		});
+
 		// Repeating sections
 		$('div.subsection').each(function() {
 			var m = $(this),
@@ -452,19 +465,6 @@ var Symphony;
 					});
 				});
 			});
-		});
-
-		// Showing the field label in the section editor (duplicator)
-		$('#fields-duplicator').bind('collapsestop', function (event, item) {
-			var instance = jQuery(item);
-			instance.find('.header > span').append(
-				$('<i />').text(instance.find('label:first input').attr('value'))
-			);
-		});
-
-		$('#fields-duplicator').bind('expandstop', function (event, item) {
-			var instance = jQuery(item);
-			instance.find('.header > span > i').remove();
 		});
 
 		// Data source switcheroo
