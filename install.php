@@ -204,6 +204,7 @@
 		$conf['public']['display_event_xml_in_source'] = 'yes';
 		$conf['region']['time_format'] = 'H:i';
 		$conf['region']['date_format'] = 'd F Y';
+		$conf['region']['datetime_separator'] = ' ';
 		$conf['maintenance_mode']['enabled'] = 'no';
 
 		return $conf;

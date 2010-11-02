@@ -286,6 +286,10 @@ Options +FollowSymlinks -Indexes
 				);
 			}
 			
+			if(version_compare($existing_version, '2.2.0', '<')){
+				$setting['region']['datetime_separator'] = ' ';
+			}
+			
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
 				"SELECT `version` FROM `tbl_extensions` WHERE `name` = 'selectbox_link_field' LIMIT 1"
 			);
