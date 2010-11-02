@@ -77,7 +77,7 @@
 		<script type="text/javascript" src="' . kINSTALL_ASSET_LOCATION . '/main.js"></script>
 	</head>
 		<body>
-			<h1>' . __('Install Symphony') .  '<em>' . __('Version') . ' ' . kVERSION)) . '</em></h1>
+			<h1>' . __('Install Symphony') .  '<em>' . __('Version') . ' ' . kVERSION . '</em></h1>
 			<h2>' . __('Outstanding Requirements') . '</h2>
 			<p>' . __('Symphony needs the following requirements satisfied before installation can proceed.') . '</p>
 
@@ -106,7 +106,7 @@
 		<script type="text/javascript" src="' . kINSTALL_ASSET_LOCATION . '/main.js"></script>
 	</head>
 		<body>
-			<h1>' . __('Install Symphony') .  '<em>' . __('Version') . ' ' . kVERSION)) . '</em></h1>
+			<h1>' . __('Install Symphony') .  '<em>' . __('Version') . ' ' . kVERSION . '</em></h1>
 			<h2>' . __('Outstanding Requirements') . '</h2>
 			<p>' . __('Symphony needs at least one language file to be present before installation can proceed.') . '</p>
 
@@ -130,7 +130,7 @@
 		<script type="text/javascript" src="' . kINSTALL_ASSET_LOCATION . '/main.js"></script>
 	</head>
 		<body>
-			<h1>' . __('Install Symphony') .  '<em>' . __('Version') . ' ' . kVERSION)) . '</em></h1>
+			<h1>' . __('Install Symphony') .  '<em>' . __('Version') . ' ' . kVERSION . '</em></h1>
 			<h2>' . __('Missing File') . '</h2>
 			<p>' . __('It appears that <code>install.sql</code> is either missing or not readable. This is required to populate the database and must be uploaded before installation can commence. Ensure that <code>PHP</code> has read permissions.') . '</p>
 
@@ -154,7 +154,7 @@
 		<script type="text/javascript" src="' . kINSTALL_ASSET_LOCATION . '/main.js"></script>
 	</head>
 		<body>
-			<h1>' . __('Install Symphony') .  '<em>' . __('Version') . ' ' . kVERSION)) . '</em></h1>
+			<h1>' . __('Install Symphony') .  '<em>' . __('Version') . ' ' . kVERSION . '</em></h1>
 			<h2>' . __('Existing Installation') . '</h2>
 			<p>' . __('It appears that Symphony has already been installed at this location.') . '</p>
 
