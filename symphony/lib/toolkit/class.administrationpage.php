@@ -173,7 +173,12 @@
 			$ul->setAttribute('id', 'usr');
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor($this->_Parent->Author->getFullName(), URL . '/symphony/system/authors/edit/' . $this->_Parent->Author->get('id') . '/'));
+			$li->appendChild(new XMLElement('a', $this->_Parent->Author->getFullName(), array(
+				'id' => 'user' . $this->_Parent->Author->get('id'),
+				'class' => $this->_Parent->Author->get('user_type'),
+				'name' => $this->_Parent->Author->get('username'),
+				'href' => URL . '/symphony/system/authors/edit/' . $this->_Parent->Author->get('id') . '/'
+			)));
 			$ul->appendChild($li);
 			
 			$li = new XMLElement('li');
