@@ -414,10 +414,21 @@
 		 */
 		public static function standardizeDate($string) {
 		
+			// Get date and time separator
+			$separator = Symphony::$Configuration->get('datetime_separator', 'region');
+
 			// Only standardize dates in localized environments
 			if(self::isLocalized()) {
 				foreach(self::$_dates as $english => $locale) {
+					
+					// Translate names to English
 					$string = str_replace($locale, $english, $string);
+					
+					// Replace custom date and time separator with space:
+					// This is important, otherwise PHP's strtotime() function may break
+					if($separator != ' ') {
+						$string = str_replace($separator, ' ', $string);
+					}
 				}
 			}
 		

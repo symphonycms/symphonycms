@@ -50,10 +50,16 @@
 			self::$Configuration->setArray($settings);
 			
 			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
-				
+			
+			// Fetch date and time separator
+			$separator = self::$Configuration->get('datetime_separator', 'region');
+			if($separator == NULL) {
+				$separator = ' ';
+			}
+			
 			define_safe('__SYM_DATE_FORMAT__', self::$Configuration->get('date_format', 'region'));
 			define_safe('__SYM_TIME_FORMAT__', self::$Configuration->get('time_format', 'region'));
-			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . ' ' . __SYM_TIME_FORMAT__);
+			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . $separator . __SYM_TIME_FORMAT__);
 						
 			$this->initialiseLog();
 
