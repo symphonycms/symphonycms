@@ -1,10 +1,8 @@
 <?php
 	/**
-	 * @package lib
-	 * File containing the General utility class.
+	 * @package toolkit
 	 */
 	/**
-	 * @package toolkit
 	 * General is a utility class that offers a number miscellaneous of
 	 * functions that are used throughout Symphony.
 	 */
