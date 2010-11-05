@@ -22,9 +22,14 @@
 		 *  The class attribute of the resulting <label>
 		 * @param string $id (optional)
 		 *  The id attribute of the resulting <label>
+		 * @param array $attributes (optional)
+		 *  Any additional attributes can be included in an associative array with
+		 *  the key being the name and the value being the value of the attribute.
+		 *  Attributes set from this array will override existing attributes
+		 *  set by previous params.
 		 * @return XMLElement
 		 */
-		public static function Label($name = null, XMLElement $child = null, $class = null, $id = null, Array $attributes = array()){
+		public static function Label($name = null, XMLElement $child = null, $class = null, $id = null, Array $attributes = null){
 			$obj = new XMLElement('label', ($name ? $name : null));
 
 			if(is_object($child)) $obj->appendChild($child);
@@ -36,7 +41,7 @@
 				$obj->setAttributeArray($attributes);
 			}
 
-			return $label;
+			return $obj;
 		}
 
 		/**
@@ -56,7 +61,7 @@
 		 *  set by previous params.
 		 * @return XMLElement
 		 */
-		public static function Input($name, $value = null, $type = 'text', Array $attributes = array()){
+		public static function Input($name, $value = null, $type = 'text', Array $attributes = null){
 			$obj = new XMLElement('input');
 			$obj->setAttribute('name', $name);
 
@@ -90,7 +95,7 @@
 		 *  set by previous params.
 		 * @return XMLElement
 		 */
-		public static function Textarea($name, $rows = 15, $cols = 50, $value = null, Array $attributes = array()){
+		public static function Textarea($name, $rows = 15, $cols = 50, $value = null, Array $attributes = null){
 			$obj = new XMLElement('textarea', $value);
 
 			$obj->setSelfClosingTag(false);
@@ -127,7 +132,7 @@
 		 *  set by previous params.
 		 * @return XMLElement
 		 */
-		public static function Anchor($value, $href, $title = null, $class = null, $id = null, Array $attributes = array()){
+		public static function Anchor($value, $href, $title = null, $class = null, $id = null, Array $attributes = null){
 			$obj = new XMLElement('a', $value);
 			$obj->setAttribute('href', $href);
 
@@ -161,7 +166,7 @@
 		 *  set by previous params.
 		 * @return XMLElement
 		 */
-		public static function Form($action = null, $method = 'post', $class = null, $id = null, Array $attributes = array()){
+		public static function Form($action = null, $method = 'post', $class = null, $id = null, Array $attributes = null){
 			$obj = new XMLElement('form');
 			$obj->setAttribute('action', $action);
 			$obj->setAttribute('method', $method);
@@ -198,7 +203,7 @@
 		 *  set by previous params.
 		 * @return XMLElement
 		 */
-		public static function Table(XMLElement $header = null, XMLElement $footer = null, XMLElement $body = null, $class = null, $id = null, Array $attributes = array()){
+		public static function Table(XMLElement $header = null, XMLElement $footer = null, XMLElement $body = null, $class = null, $id = null, Array $attributes = null){
  			$obj = new XMLElement('table');
 
 			if($class) $obj->setAttribute('class', $class);
@@ -232,34 +237,36 @@
 		 *  </code>
 		 * @return XMLElement
 		 */
-		public static function TableHead(Array $columns = array()){
+		public static function TableHead(Array $columns = null){
 
 			$thead = new XMLElement('thead');
 			$tr = new XMLElement('tr');
 
-			foreach($columns as $col){
-				$th = new XMLElement('th');
+			if(is_array($columns) && !empty($columns)) {
+				foreach($columns as $col) {
+					$th = new XMLElement('th');
 
-				$value = $scope = $attributes = null;
+					$value = $scope = $attributes = null;
 
-				$value = $col[0];
-				if(isset($col[1])) $scope = $col[1];
-				if(isset($col[2])) $attributes = $col[2];
+					$value = $col[0];
+					if(isset($col[1])) $scope = $col[1];
+					if(isset($col[2])) $attributes = $col[2];
 
-				if(is_object($value)) {
-					$th->appendChild($value);
+					if(is_object($value)) {
+						$th->appendChild($value);
+					}
+					else $th->setValue($value);
+
+					if($scope && $scope != '') {
+						$th->setAttribute('scope', $scope);
+					}
+
+					if(is_array($attributes) && !empty($attributes)) {
+						$th->setAttributeArray($attr);
+					}
+
+					$tr->appendChild($th);
 				}
-				else $th->setValue($value);
-
-				if($scope && $scope != '') {
-					$th->setAttribute('scope', $scope);
-				}
-
-				if(is_array($attributes) && !empty($attributes)) {
-					$th->setAttributeArray($attr);
-				}
-
-				$tr->appendChild($th);
 			}
 
 			$thead->appendChild($tr);
@@ -285,7 +292,7 @@
 		 *  set by previous params.
 		 * @return XMLElement
 		 */
-		public static function TableBody(Array $rows, $class = null, $id = null, Array $attributes = array()){
+		public static function TableBody(Array $rows, $class = null, $id = null, Array $attributes = null){
 			$tbody = new XMLElement('tbody');
 
 			if($class) $tbody->setAttribute('class', $class);
@@ -320,7 +327,7 @@
 		 *  set by previous params.
 		 * @return XMLElement
 		 */
-		public static function TableRow(Array $cells, $class = null, $id = null, $rowspan = null, Array $attributes = array()){
+		public static function TableRow(Array $cells, $class = null, $id = null, $rowspan = null, Array $attributes = null){
 			$tr = new XMLElement('tr');
 
 			if($class) $tr->setAttribute('class', $class);
@@ -356,7 +363,7 @@
 		 *  set by previous params.
 		 * @return XMLElement
 		 */
-		public static function TableData($value, $class = null, $id = null, $colspan = null, Array $attributes = array()){
+		public static function TableData($value, $class = null, $id = null, $colspan = null, Array $attributes = null){
 
 			if(is_object($value)){
 				$td = new XMLElement('td');
@@ -409,7 +416,7 @@
 		 *  set by previous params.
 		 * @return XMLElement
 		 */
-		public static function Select($name, Array $options = array(), Array $attributes = array()){
+		public static function Select($name, Array $options = null, Array $attributes = null){
 			$obj = new XMLElement('select');
 			$obj->setAttribute('name', $name);
 
