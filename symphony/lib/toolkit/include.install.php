@@ -701,6 +701,9 @@ Options +FollowSymlinks -Indexes
 	RewriteCond %{REQUEST_URI} !(.*)/$
 	RewriteRule ^(.*)$ $1/ [L,R=301]
 
+	### URL Correction
+	RewriteRule ^(symphony/)?index.php(/.*/?) $1$2 [NC]
+
 	### ADMIN REWRITE
 	RewriteRule ^symphony\/?$ index.php?mode=administration&%{QUERY_STRING} [NC,L]
 
