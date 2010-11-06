@@ -34,6 +34,9 @@
 	.duplicator.orderable > .instance > .header {
 		cursor: move;
 	}
+	.duplicator.orderable > .instance > .header span {
+		cursor: pointer;
+	}
 	.duplicator > .instance > .header .destructor {
 		font-weight: normal;
 		color: #333322;
@@ -43,6 +46,7 @@
 		right: 0;
 		text-decoration: none;
 		top: 0;
+		text-shadow: 1px 1px #DDDDCC;
 	}
 	.duplicator > .instance > .header .destructor:hover {
 		color: #555544;
@@ -96,6 +100,13 @@
 		position: relative;
 		text-align: right;
 		z-index: 3;
+		overflow: hidden;
+	}
+	.duplicator > .controls.top {
+		border-bottom: 1px solid #eeeedd;
+	}
+	.duplicator > .controls.hidden {
+		display: none;
 	}
 	.duplicator > .controls > * {
 		display: inline-block;
@@ -105,16 +116,25 @@
 		min-width: 15em;
 		width: auto;
 	}
-	.duplicator > .controls > .constructor {
-		color: #ffffff;
+	.duplicator > .controls > .constructor,
+	.duplicator > .controls > .collapser {
+		color: #f1f1f1;
 		cursor: pointer;
 		padding: 0.5em 0;
 		text-decoration: none;
+		text-shadow: 1px 1px #8E8E80;
 	}
-	.duplicator > .controls > .constructor:hover {
+	.duplicator > .controls > .collapser {
+		float: left;
+		margin: 0;
+		color: #eeeedd;
+	}
+	.duplicator > .controls > .constructor:hover,
+	.duplicator > .controls > .collapser:hover {
 		color: #ffffee;
 	}
-	.duplicator > .controls > .constructor.disabled {
+	.duplicator > .controls > .constructor.disabled,
+	.duplicator > .controls > .collapser.disabled {
 		color: #eeeedd;
 		cursor: default;
 		opacity: 0.6;

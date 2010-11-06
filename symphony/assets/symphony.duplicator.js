@@ -26,38 +26,42 @@
 		
 		Symphony.Language.add({
 			'Add item': false,
-			'Remove item': false
+			'Remove item': false,
+			'Expand all': false,
+			'Collapse all': false
 		});
 		
 	/*-------------------------------------------------------------------------
 		Collapsible
 	-------------------------------------------------------------------------*/
 		
-		if (settings.collapsible) objects = objects.symphonyCollapsible({
+		if (settings.collapsible) jQuery.extend(objects, objects.symphonyCollapsible({
 			items:			'.instance',
-			handles:		'.header'
-		});
+			handles:		'.header span'
+		}));
 		
 	/*-------------------------------------------------------------------------
 		Orderable
 	-------------------------------------------------------------------------*/
 		
-		if (settings.orderable) objects = objects.symphonyOrderable({
+		if (settings.orderable) jQuery.extend(objects, objects.symphonyOrderable({
 			items:			'.instance',
 			handles:		'.header'
-		});
+		}));
 		
 	/*-------------------------------------------------------------------------
 		Duplicator
 	-------------------------------------------------------------------------*/
 		
-		objects = objects.map(function() {
+		jQuery.extend(objects, objects.map(function() {
 			var object = this;
 			var templates = [];
 			var widgets = {
 				controls:		null,
 				selector:		null,
-				constructor:	null
+				constructor:	null,
+				topcontrols:	null,
+				collapser:		null
 			};
 			var silence = function() {
 				return false;
@@ -67,6 +71,13 @@
 			var construct = function(source) {
 				var template = jQuery(source).clone();
 				var instance = prepare(template);
+				var instances = object.children('.instance');
+				
+				if (settings.collapsible) {
+					if (instances.length < 1) {
+						collapsingEnabled();
+					}
+				}
 				
 				widgets.controls.before(instance);
 				object.trigger('construct', [instance]);
@@ -77,6 +88,14 @@
 			
 			var destruct = function(source) {
 				var instance = jQuery(source).remove();
+				var instances = object.children('.instance');
+				
+				if (settings.collapsible) {
+					if (instances.length < 1) {
+						collapsingDisabled();
+						toCollapseAll();
+					}
+				}
 				
 				object.trigger('destruct', [instance]);
 				refresh();
@@ -170,6 +189,28 @@
 				if (settings.orderable) object.orderable.initialize();
 			};
 			
+			var collapsingEnabled = function() {
+				widgets.topcontrols.removeClass('hidden');
+				widgets.collapser.removeClass('disabled');
+			}
+			
+			var collapsingDisabled = function() {
+				widgets.topcontrols.addClass('hidden');
+				widgets.collapser.addClass('disabled');
+			}
+			
+			var toCollapseAll = function() {
+				widgets.collapser
+					.removeClass('compact')
+					.text(Symphony.Language.get('Collapse all'));
+			};
+			
+			var toExpandAll = function() {
+				widgets.collapser
+					.addClass('compact')
+					.text(Symphony.Language.get('Expand all'));
+			}
+			
 		/*-------------------------------------------------------------------*/
 			
 			if (object instanceof jQuery === false) {
@@ -256,7 +297,54 @@
 						if (position >= 0) construct(templates[position]);
 					});
 					
+					if (settings.collapsible) {
+						widgets.collapser = widgets.controls
+							.prepend('<a class="collapser disabled" />')
+							.find('> a.collapser:first')
+							.text(Symphony.Language.get('Collapse all'));
+						widgets.topcontrols = object
+							.prepend('<div class="controls top hidden" />')
+							.find('> .controls:first')
+							.append(widgets.collapser.clone());
+						widgets.collapser = object
+							.find('.controls > .collapser');
+						
+						if (object.children('.instance').length > 0) {
+							collapsingEnabled();
+						}
+						
+						object.bind('collapsestop', function() {
+							if (object.has('.expanded').length == 0) {
+								toExpandAll();
+							}
+						});
+						
+						object.bind('expandstop', function() {
+							if (object.has('.collapsed').length == 0) {
+								toCollapseAll();
+							}
+						});
+						
+						widgets.collapser.bind('mousedown', function() {
+							var item = jQuery(this);
+							
+							if (item.is('.disabled')) return;
+							
+							object.duplicator[item.is('.compact') ? 'expandAll' : 'collapseAll']();
+						});
+					}
+					
 					refresh();
+				},
+				
+				expandAll: function() {
+					objects.collapsible.expandAll();
+					toCollapseAll();
+				},
+				
+				collapseAll: function() {
+					objects.collapsible.collapseAll();
+					toExpandAll();
 				}
 			};
 			
@@ -265,7 +353,7 @@
 			}
 			
 			return object;
-		});
+		}));
 		
 		return objects;
 	};
