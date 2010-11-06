@@ -35,25 +35,25 @@
 		Collapsible
 	-------------------------------------------------------------------------*/
 		
-		if (settings.collapsible) jQuery.extend(objects, objects.symphonyCollapsible({
+		if (settings.collapsible) objects = objects.symphonyCollapsible({
 			items:			'.instance',
 			handles:		'.header span'
-		}));
+		});
 		
 	/*-------------------------------------------------------------------------
 		Orderable
 	-------------------------------------------------------------------------*/
 		
-		if (settings.orderable) jQuery.extend(objects, objects.symphonyOrderable({
+		if (settings.orderable) objects = objects.symphonyOrderable({
 			items:			'.instance',
 			handles:		'.header'
-		}));
+		});
 		
 	/*-------------------------------------------------------------------------
 		Duplicator
 	-------------------------------------------------------------------------*/
 		
-		jQuery.extend(objects, objects.map(function() {
+		objects = objects.map(function() {
 			var object = this;
 			var templates = [];
 			var widgets = {
@@ -71,13 +71,6 @@
 			var construct = function(source) {
 				var template = jQuery(source).clone();
 				var instance = prepare(template);
-				var instances = object.children('.instance');
-				
-				if (settings.collapsible) {
-					if (instances.length < 1) {
-						collapsingEnabled();
-					}
-				}
 				
 				widgets.controls.before(instance);
 				object.trigger('construct', [instance]);
@@ -88,14 +81,6 @@
 			
 			var destruct = function(source) {
 				var instance = jQuery(source).remove();
-				var instances = object.children('.instance');
-				
-				if (settings.collapsible) {
-					if (instances.length < 1) {
-						collapsingDisabled();
-						toCollapseAll();
-					}
-				}
 				
 				object.trigger('destruct', [instance]);
 				refresh();
@@ -298,14 +283,15 @@
 					});
 					
 					if (settings.collapsible) {
-						widgets.collapser = widgets.controls
-							.prepend('<a class="collapser disabled" />')
-							.find('> a.collapser:first')
-							.text(Symphony.Language.get('Collapse all'));
 						widgets.topcontrols = object
 							.prepend('<div class="controls top hidden" />')
 							.find('> .controls:first')
-							.append(widgets.collapser.clone());
+							.append(widgets.controls
+								.prepend('<a class="collapser disabled" />')
+								.find('> a.collapser:first')
+								.text(Symphony.Language.get('Collapse all'))
+								.clone()
+							);
 						widgets.collapser = object
 							.find('.controls > .collapser');
 						
@@ -313,19 +299,36 @@
 							collapsingEnabled();
 						}
 						
-						object.bind('collapsestop', function() {
+						object.bind('construct', function() {
+							var instances = object.children('.instance');
+							
+							if (instances.length > 0) {
+								collapsingEnabled();
+							}
+						});
+						
+						object.bind('destruct', function() {
+							var instances = object.children('.instance');
+							
+							if (instances.length < 1) {
+								collapsingDisabled();
+								toCollapseAll();
+							}
+						});
+						
+						object.bind('collapsestop destruct', function() {
 							if (object.has('.expanded').length == 0) {
 								toExpandAll();
 							}
 						});
 						
-						object.bind('expandstop', function() {
+						object.bind('expandstop destruct', function() {
 							if (object.has('.collapsed').length == 0) {
 								toCollapseAll();
 							}
 						});
 						
-						widgets.collapser.bind('mousedown', function() {
+						widgets.collapser.bind('click', function() {
 							var item = jQuery(this);
 							
 							if (item.is('.disabled')) return;
@@ -338,12 +341,12 @@
 				},
 				
 				expandAll: function() {
-					objects.collapsible.expandAll();
+					object.collapsible.expandAll();
 					toCollapseAll();
 				},
 				
 				collapseAll: function() {
-					objects.collapsible.collapseAll();
+					object.collapsible.collapseAll();
 					toExpandAll();
 				}
 			};
@@ -353,7 +356,7 @@
 			}
 			
 			return object;
-		}));
+		});
 		
 		return objects;
 	};
