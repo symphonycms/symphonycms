@@ -1069,7 +1069,9 @@
 			$string = substr($string, 0, $maxChars);
 
 			if($truncateToSpace && strpos($string, ' ')){
-				$string = str_replace(strrchr($string, ' '), '', $string);
+				$cut = strrchr($string, ' ');
+				if(strlen(trim($cut)) > 0) 
+					$string = str_replace($cut, '', $string);
 			}
 
 			$array  = explode(' ', $string);
