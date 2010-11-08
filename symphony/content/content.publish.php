@@ -142,20 +142,21 @@
 							$anchor = Widget::Anchor($label, $link, __('Sort by %1$s %2$s', array(__('ascending'), strtolower($column->get('label')))));
 						}
 
-						$aTableHead[] = array($anchor, 'col');
+						$aTableHead[] = array($anchor, 'col', array('id' => 'field-' . $column->get('id'), 'class' => 'field-' . $column->get('type')));
 					}
 
-					else $aTableHead[] = array($label, 'col');
+					else $aTableHead[] = array($label, 'col', array('id' => 'field-' . $column->get('id'), 'class' => 'field-' . $column->get('type')));
 				}
 			}
 
-			else $aTableHead[] = array(__('ID'), 'col');
+			else $aTableHead[] = array(__('ID'), 'col', array('id' => 'field-' . $column->get('id'), 'class' => 'field-' . $column->get('type')));
 
 			$child_sections = NULL;
 
-			$associated_sections = $section->fetchAssociatedSections();
+			$associated_sections = $section->fetchAssociatedSections(true);
 			if(is_array($associated_sections) && !empty($associated_sections)){
 				$child_sections = array();
+
 				foreach($associated_sections as $key => $as){
 					$child_sections[$key] = $sectionManager->fetch($as['child_section_id']);
 					$aTableHead[] = array($child_sections[$key]->get('name'), 'col');
@@ -213,10 +214,10 @@
 							}
 
 							if ($value == 'None') {
-								$tableData[] = Widget::TableData($value, 'inactive');
+								$tableData[] = Widget::TableData($value, 'inactive field-' . $column->get('type') . ' field-' . $column->get('id'));
 
 							} else {
-								$tableData[] = Widget::TableData($value);
+								$tableData[] = Widget::TableData($value, 'field-' . $column->get('type') . ' field-' . $column->get('id'));
 							}
 
 							unset($field);
@@ -263,7 +264,7 @@
 					$tableData[count($tableData) - 1]->appendChild(Widget::Input('items['.$entry->get('id').']', NULL, 'checkbox'));
 
 					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow($tableData, ($bOdd ? 'odd' : NULL));
+					$aTableBody[] = Widget::TableRow($tableData, ($bOdd ? 'odd' : NULL), 'id-' . $entry->get('id'));
 
 					$bOdd = !$bOdd;
 
@@ -411,7 +412,7 @@
 		}
 
 		private function __wrapFieldWithDiv(Field $field, Entry $entry){
-			$div = new XMLElement('div', NULL, array('class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
+			$div = new XMLElement('div', NULL, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
 			$field->displayPublishPanel(
 				$div, $entry->getData($field->get('id')),
 				(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),

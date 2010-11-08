@@ -4,9 +4,11 @@
 		function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Select Box');
+			$this->_showassociation = true;
 
 			// Set default
 			$this->set('show_column', 'no');
+			$this->set('show_association', 'yes');
 		}
 
 		function canToggle(){
@@ -112,7 +114,7 @@
 			$options = array();
 
 			foreach($states as $handle => $v){
-				$options[] = array(General::sanitize($v), in_array($v, $data['value']), $v);
+				$options[] = array(General::sanitize($v), in_array($v, $data['value']), General::sanitize($v));
 			}
 
 			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
@@ -187,7 +189,15 @@
 
 			if (self::isFilterRegex($data[0])) {
 				$this->_key++;
-				$pattern = str_replace('regexp:', '', $this->cleanValue($data[0]));
+
+				if (preg_match('/^regexp:/i', $data[0])) {
+					$pattern = preg_replace('/regexp:/i', null, $this->cleanValue($data[0]));
+					$regex = 'REGEXP';
+				} else {
+					$pattern = preg_replace('/not-?regexp:/i', null, $this->cleanValue($data[0]));
+					$regex = 'NOT REGEXP';
+				}
+
 				$joins .= "
 					LEFT JOIN
 						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
@@ -195,8 +205,8 @@
 				";
 				$where .= "
 					AND (
-						t{$field_id}_{$this->_key}.value REGEXP '{$pattern}'
-						OR t{$field_id}_{$this->_key}.handle REGEXP '{$pattern}'
+						t{$field_id}_{$this->_key}.value {$regex} '{$pattern}'
+						OR t{$field_id}_{$this->_key}.handle {$regex} '{$pattern}'
 					)
 				";
 
@@ -243,7 +253,6 @@
 		}
 
 		function commit(){
-
 			if(!parent::commit()) return false;
 
 			$id = $this->get('id');
@@ -256,16 +265,16 @@
 			if($this->get('static_options') != '') $fields['static_options'] = $this->get('static_options');
 			if($this->get('dynamic_options') != '') $fields['dynamic_options'] = $this->get('dynamic_options');
 			$fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
+			$fields['show_association'] = $this->get('show_association') == 'yes' ? 'yes' : 'no';
 
 			$this->Database->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 
 			if(!$this->Database->insert($fields, 'tbl_fields_' . $this->handle())) return false;
 
 			$this->removeSectionAssociation($id);
-			$this->createSectionAssociation(NULL, $id, $this->get('dynamic_options'));
+			$this->createSectionAssociation(NULL, $id, $this->get('dynamic_options'), $this->get('show_association') == 'yes' ? true : false);
 
 			return true;
-
 		}
 
 		function checkFields(&$errors, $checkForDuplicates=true){
@@ -281,6 +290,7 @@
 
 		function findDefaults(&$fields){
 			if(!isset($fields['allow_multiple_selection'])) $fields['allow_multiple_selection'] = 'no';
+			if(!isset($fields['show_association'])) $fields['show_association'] = 'no';
 		}
 
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
@@ -293,7 +303,6 @@
 			$input = Widget::Input('fields['.$this->get('sortorder').'][static_options]', General::sanitize($this->get('static_options')));
 			$label->appendChild($input);
 			$div->appendChild($label);
-
 
 			$label = Widget::Label(__('Dynamic Options'));
 
@@ -309,7 +318,6 @@
 			);
 
 			foreach($field_groups as $group){
-
 				if(!is_array($group['fields'])) continue;
 
 				$fields = array();
@@ -333,8 +341,8 @@
 			$label->setValue(__('%s Allow selection of multiple options', array($input->generate())));
 			$wrapper->appendChild($label);
 
+			$this->appendShowAssociationCheckbox($wrapper);
 			$this->appendShowColumnCheckbox($wrapper);
-
 		}
 
 		function groupRecords($records){

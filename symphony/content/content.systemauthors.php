@@ -56,7 +56,7 @@
 					$td2 = Widget::TableData(Widget::Anchor($a->get('email'), 'mailto:'.$a->get('email'), 'Email this author'));
 
 					if($a->get('last_seen') != NULL)
-						$td3 = Widget::TableData(DateTimeObj::get(__SYM_DATETIME_FORMAT__, strtotime($a->get('last_seen'))));
+						$td3 = Widget::TableData(Lang::localizeDate(DateTimeObj::get(__SYM_DATETIME_FORMAT__, strtotime(Lang::standardizeDate($a->get('last_seen'))))));
 
 					else
 						$td3 = Widget::TableData('Unknown', 'inactive');
@@ -308,7 +308,7 @@
 			###
 
 			### Custom Language Selection ###
-			$languages = Lang::getAvailableLanguages(Administration::instance()->ExtensionManager);
+			$languages = Lang::getAvailableLanguages();
 			if(count($languages) > 1) {
 
 				// Get language names

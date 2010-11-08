@@ -125,6 +125,34 @@ h1 em {
 	font-style: normal;
 	font-size: 73.33%;
 }
+ul {
+	position: fixed;
+	top: 130px;
+	right: 50%;
+	margin: 0 16.7em 0 0;
+	color: #887;
+	text-align: right;
+	text-shadow: -1px 2px 3px #ddd;
+	font-style: normal;
+	list-style: none;
+	font-size: 90.9%;
+}
+ul li.selected a {
+	color: #000;
+	text-decoration: none;
+}
+ul li.more {
+	margin-top: 12px;
+}
+ul li.more a {
+	width: 150px;
+	color: #887;
+	display: block;
+	text-decoration: none;
+}
+ul li.more a:hover {
+	text-decoration: underline;
+}
 
 /* Requirements */
 dl {

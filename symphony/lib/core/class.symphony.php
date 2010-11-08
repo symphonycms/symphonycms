@@ -24,8 +24,6 @@
 		public static $Configuration;
 		public static $Database;
 		public static $Log;
-		
-		private static $_lang;
 
 		public $Profiler;
 		public $Cookie;
@@ -53,14 +51,15 @@
 			
 			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
 			
-			self::$_lang = (self::$Configuration->get('lang', 'symphony') ? self::$Configuration->get('lang', 'symphony') : 'en');		
-			
-			// Legacy support for __LANG__ constant
-			define_safe('__LANG__', self::lang());
+			// Fetch date and time separator
+			$separator = self::$Configuration->get('datetime_separator', 'region');
+			if($separator == NULL) {
+				$separator = ' ';
+			}
 			
 			define_safe('__SYM_DATE_FORMAT__', self::$Configuration->get('date_format', 'region'));
 			define_safe('__SYM_TIME_FORMAT__', self::$Configuration->get('time_format', 'region'));
-			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . ' ' . __SYM_TIME_FORMAT__);
+			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . $separator . __SYM_TIME_FORMAT__);
 						
 			$this->initialiseLog();
 
@@ -70,17 +69,14 @@
 			$this->initialiseCookie();
 			$this->initialiseDatabase();
 			$this->initialiseExtensionManager();
+
+			Lang::set(self::$Configuration->get('lang', 'symphony'));
 			
 			if(!self::isLoggedIn()){
 				GenericExceptionHandler::$enabled = false;
 			}
 			
-			Lang::loadAll($this->ExtensionManager);
 			
-		}
-		
-		public function lang(){
-			return self::$_lang;
 		}
 		
 		public function initialiseCookie(){
@@ -275,20 +271,8 @@
 						
 		}
 		
-		public function reloadLangFromAuthorPreference(){	
-			
-			$lang = $this->Author->get('language');
-			if($lang && $lang != self::lang()){
-				self::$_lang = $lang;
-				if($lang != 'en') {
-					Lang::loadAll($this->ExtensionManager);
-				}
-				else {
-					// As there is no English dictionary the default dictionary needs to be cleared
-					Lang::clear();
-				}
-			}
-			
+		public function reloadLangFromAuthorPreference(){
+			Lang::set($this->Author->get('language'));
 		}
 		
 		public function resolvePageTitle($page_id) {

@@ -71,6 +71,8 @@
 				
 				$about = $existing->about();
 				
+				if ($this->_context[0] == 'edit' && !$existing->allowEditorToParse()) redirect(URL . '/symphony/blueprints/events/info/' . $handle . '/');
+				
 				$fields['name'] = $about['name'];
 				$fields['source'] = $existing->getSource();
 				$fields['filters'] = $existing->eParamFILTERS;
@@ -117,7 +119,7 @@
 
 				$options = array(
 					array('admin-only', @in_array('admin-only', $fields['filters']), __('Admin Only')),
-					array('send-email', @in_array('send-email', $fields['filters']), __('Send Email')),
+					array('send-email', @in_array('send-email', $fields['filters']), __('Send Notification Email')),
 					array('expect-multiple', @in_array('expect-multiple', $fields['filters']), __('Allow Multiple')),					
 				);
 			
