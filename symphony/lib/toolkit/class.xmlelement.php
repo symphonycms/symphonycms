@@ -11,9 +11,14 @@
 	 * @deprecated Symphony 3 will use PHP's DOM classes.
 	 */
 	Class XMLElement {
+		/**
+		 * @var string The end-of-line constant.
+		 * @deprecated This will no longer exist in Symphony 3
+		 */
+		const CRLF = PHP_EOL;
 
 		/**
-		 * This is an array of all HTML elements that are
+		 * @var array This is an array of all HTML elements that are
 		 * self closing.
 		 */
 		protected static $no_end_tags = array(
@@ -22,84 +27,73 @@
 		);
 
 		/**
-		 * @param string $_name
-		 *  The name of the HTML Element, eg. 'p'
+		 * @var string The name of the HTML Element, eg. 'p'
 		 */
 		private	$_name;
 
 		/**
-		 * @param string|XMLElement $_value
-		 *  The value of this XMLElement, it can be a string
+		 * @var string|XMLElement The value of this XMLElement, it can be a string
 		 *  or another XMLElement object.
 		 */
 		private	$_value;
 
 		/**
-		 * @param array $_attributes
-		 *  Any additional attributes can be included in an associative array with
-		 *  the key being the name and the value being the value of the attribute.
+		 * @var array $_attributes Any additional attributes can be included in
+		 *  an associative array with the key being the name and the value being
+		 *  the value of the attribute.
 		 */
 		private	$_attributes = array();
 
 		/**
-		 * @param array(XMLElement) $_children
-		 *  Any children of this element as XMLElements
+		 * @var array(XMLElement) Any children of this element as XMLElements
 		 */
 		private	$_children = array();
 
 		/**
-		 * @param array $_processingInstructions
-		 *  Any processing instructions that the XSLT should
+		 * @var array Any processing instructions that the XSLT should
 		 *  know about when a XMLElement is generated
 		 */
 		private $_processingInstructions = array();
 
 		/**
-		 * @param string $_dtd
-		 *  The DTD the should be output when a XMLElement is
+		 * @var string The DTD the should be output when a XMLElement is
 		 *  generated, defaults to null.
 		 */
 		private $_dtd = null;
 
 		/**
-		 * @param string $_encoding
-		 *  The encoding of the XMLElement, defaults to 'utf-8'
+		 * @var string The encoding of the XMLElement, defaults to 'utf-8'
 		 */
 		private $_encoding = 'utf-8';
 
 		/**
-		 * @param string $_version
-		 *  The version of the XML that is used for generation,
+		 * @var string The version of the XML that is used for generation,
 		 * 	defaults to '1.0'
 		 */
 		private $_version = '1.0';
 
 		/**
-		 * @param string $_elementStyle
-		 *  The version of the XML that is used for generation,
-		 * 	defaults to '1.0'
+		 * @var string The type of element, defaults to 'xml'. Used when
+		 *  determining the style of end tag for this element when generated
 		 */
 		private $_elementStyle = 'xml';
 
 		/**
-		 * @param boolean $_includeHeader
-		 *  When set to true this will include the XML declaration
+		 * @var boolean When set to true this will include the XML declaration
 		 *  will be output when the XML Element is generated. Defaults
 		 *  to false.
 		 */
 		private $_includeHeader = false;
 
 		/**
-		 * @param boolean $_selfclosing
-		 *  Specifies whether this HTML element has an closing
+		 * @var boolean Specifies whether this HTML element has an closing
 		 *  element, or if it self closing. Defaults to true.
 		 *  eg. <p></p> or <input />
 		 */
 		private $_selfclosing = true;
 
 		/**
-		 * @param boolean $_allowEmptyAttributes
-		 *  Specifies whether attributes need to have a value
+		 * @var boolean Specifies whether attributes need to have a value
 		 *  or if they can be shorthand. Defaults to true.
 		 *  An example of this would be:
 		 *  <option selected>Value</option>
@@ -107,19 +101,12 @@
 		private $_allowEmptyAttributes = true;
 
 		/**
-		 * @param boolean $_placeValueAfterChildElements
-		 *  Defaults to false, which puts the value before any
+		 * @var boolean Defaults to false, which puts the value before any
 		 * 	children elements. Setting to true will append any
 		 *  children first, then add the value to the current
 		 *  XMLElement
 		 */
 		private $_placeValueAfterChildElements = false;
-
-		/**
-		 * A reference to the PHP_EOL constant
-		 * @deprecated
-		 */
-		const CRLF = PHP_EOL;
 
 		/**
 		 * The constructor for the XMLElement
