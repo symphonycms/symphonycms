@@ -220,7 +220,7 @@
 				'/workspace/pages',
 				'/workspace/utilities'
 			);
-			$directories = General::listDirStructure(WORKSPACE, true, 'asc', DOCROOT, $ignore);
+			$directories = General::listDirStructure(WORKSPACE, true, DOCROOT, $ignore);
 
 			$label = Widget::Label(__('Destination Directory'));
 

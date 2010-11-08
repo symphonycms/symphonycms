@@ -7,6 +7,7 @@
 		protected $_engine;
 		protected $_required;
 		protected $_showcolumn;
+		protected $_showassociation;
 		protected $Database;
 
 		const __OK__ = 100;
@@ -29,6 +30,7 @@
 			$this->_fields = array();
 			$this->_required = false;
 			$this->_showcolumn = true;
+			$this->_showassociation = false;
 
 			$this->_handle = (strtolower(get_class($this)) == 'field' ? 'field' : strtolower(substr(get_class($this), 5)));
 
@@ -129,7 +131,7 @@
 			$this->Database->query("DELETE FROM `tbl_sections_association` WHERE `child_section_field_id` = '$child_field_id'");
 		}
 
-		public function createSectionAssociation($parent_section_id, $child_field_id, $parent_field_id=NULL, $cascading_deletion=false){
+		public function createSectionAssociation($parent_section_id, $child_field_id, $parent_field_id=NULL, $show_association=true){
 
 			if($parent_section_id == NULL && !$parent_field_id) return false;
 
@@ -137,11 +139,13 @@
 
 			$child_section_id = $this->Database->fetchVar('parent_section', 0, "SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$child_field_id' LIMIT 1");
 
-			$fields = array('parent_section_id' => $parent_section_id,
-							'parent_section_field_id' => $parent_field_id,
-							'child_section_id' => $child_section_id,
-							'child_section_field_id' => $child_field_id,
-							'cascading_deletion' => ($cascading_deletion ? 'yes' : 'no'));
+			$fields = array(
+				'parent_section_id' => $parent_section_id,
+				'parent_section_field_id' => $parent_field_id,
+				'child_section_id' => $child_section_id,
+				'child_section_field_id' => $child_field_id,
+				'hide_association' => ($show_association ? 'no' : 'yes')
+			);
 
 			if(!$this->Database->insert($fields, 'tbl_sections_association')) return false;
 
@@ -427,6 +431,25 @@
 			if ($this->get('show_column') == 'yes') $input->setAttribute('checked', 'checked');
 
 			$label->setValue(__('%s Show column', array($input->generate())));
+
+			$wrapper->appendChild($label);
+		}
+
+		public function appendShowAssociationCheckbox(&$wrapper) {
+			if(!$this->_showassociation) return;
+
+			$order = $this->get('sortorder');
+			$name = "fields[{$order}][show_association]";
+
+			$wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
+
+			$label = Widget::Label();
+			$label->setAttribute('class', 'meta');
+			$input = Widget::Input($name, 'yes', 'checkbox');
+
+			if ($this->get('show_association') == 'yes') $input->setAttribute('checked', 'checked');
+
+			$label->setValue(__('%s Show column in linked sections', array($input->generate())));
 
 			$wrapper->appendChild($label);
 		}

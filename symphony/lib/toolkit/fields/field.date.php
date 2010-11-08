@@ -37,12 +37,12 @@
 
 			// New entry:
 			if (is_null($data) && $this->get('pre_populate') == 'yes') {
-				$value = DateTimeObj::get(__SYM_DATETIME_FORMAT__, null);
+				$value = Lang::localizeDate(DateTimeObj::get(__SYM_DATETIME_FORMAT__, null));
 			}
 
 			// Empty entry:
 			else if (isset($data['gmt']) && !is_null($data['gmt'])) {
-				$value = DateTimeObj::get(__SYM_DATETIME_FORMAT__, $data['gmt']);
+				$value = Lang::localizeDate(DateTimeObj::get(__SYM_DATETIME_FORMAT__, $data['gmt']));
 			}
 
 			$label = Widget::Label($this->get('label'));
@@ -76,12 +76,12 @@
 
 			if (is_null($data) || $data == '') {
 				if ($this->get('pre_populate') == 'yes') {
-					$timestamp = strtotime(DateTimeObj::get(__SYM_DATETIME_FORMAT__, null));
+					$timestamp = strtotime(Lang::standardizeDate(DateTimeObj::get(__SYM_DATETIME_FORMAT__, null)));
 				}
 			}
 
 			else  {
-				$timestamp = strtotime($data);
+				$timestamp = strtotime(Lang::standardizeDate($data));
 			}
 
 			if (!is_null($timestamp)) {
@@ -109,7 +109,7 @@
 			$value = null;
 
 			if (isset($data['gmt']) && !is_null($data['gmt'])) {
-				$value = DateTimeObj::get(__SYM_DATETIME_FORMAT__, $data['gmt']);
+				$value = Lang::localizeDate(DateTimeObj::get(__SYM_DATETIME_FORMAT__, $data['gmt']));
 			}
 
 			return parent::prepareTableValue(array('value' => $value), $link);

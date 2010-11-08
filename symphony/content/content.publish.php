@@ -153,9 +153,10 @@
 
 			$child_sections = NULL;
 
-			$associated_sections = $section->fetchAssociatedSections();
+			$associated_sections = $section->fetchAssociatedSections(true);
 			if(is_array($associated_sections) && !empty($associated_sections)){
 				$child_sections = array();
+
 				foreach($associated_sections as $key => $as){
 					$child_sections[$key] = $sectionManager->fetch($as['child_section_id']);
 					$aTableHead[] = array($child_sections[$key]->get('name'), 'col');

@@ -4,9 +4,11 @@
 		function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Select Box');
+			$this->_showassociation = true;
 
 			// Set default
 			$this->set('show_column', 'no');
+			$this->set('show_association', 'yes');
 		}
 
 		function canToggle(){
@@ -251,7 +253,6 @@
 		}
 
 		function commit(){
-
 			if(!parent::commit()) return false;
 
 			$id = $this->get('id');
@@ -264,16 +265,16 @@
 			if($this->get('static_options') != '') $fields['static_options'] = $this->get('static_options');
 			if($this->get('dynamic_options') != '') $fields['dynamic_options'] = $this->get('dynamic_options');
 			$fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
+			$fields['show_association'] = $this->get('show_association') == 'yes' ? 'yes' : 'no';
 
 			$this->Database->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 
 			if(!$this->Database->insert($fields, 'tbl_fields_' . $this->handle())) return false;
 
 			$this->removeSectionAssociation($id);
-			$this->createSectionAssociation(NULL, $id, $this->get('dynamic_options'));
+			$this->createSectionAssociation(NULL, $id, $this->get('dynamic_options'), $this->get('show_association') == 'yes' ? true : false);
 
 			return true;
-
 		}
 
 		function checkFields(&$errors, $checkForDuplicates=true){
@@ -289,6 +290,7 @@
 
 		function findDefaults(&$fields){
 			if(!isset($fields['allow_multiple_selection'])) $fields['allow_multiple_selection'] = 'no';
+			if(!isset($fields['show_association'])) $fields['show_association'] = 'no';
 		}
 
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
@@ -301,7 +303,6 @@
 			$input = Widget::Input('fields['.$this->get('sortorder').'][static_options]', General::sanitize($this->get('static_options')));
 			$label->appendChild($input);
 			$div->appendChild($label);
-
 
 			$label = Widget::Label(__('Dynamic Options'));
 
@@ -317,7 +318,6 @@
 			);
 
 			foreach($field_groups as $group){
-
 				if(!is_array($group['fields'])) continue;
 
 				$fields = array();
@@ -341,8 +341,8 @@
 			$label->setValue(__('%s Allow selection of multiple options', array($input->generate())));
 			$wrapper->appendChild($label);
 
+			$this->appendShowAssociationCheckbox($wrapper);
 			$this->appendShowColumnCheckbox($wrapper);
-
 		}
 
 		function groupRecords($records){
