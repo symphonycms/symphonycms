@@ -1,35 +1,73 @@
 <?php
-
+	/**
+	 * @package toolkit
+	 */
+	/**
+	 * Page is an abstract class that holds an object representation
+	 * of a HTML page.
+	 */
 	Abstract Class Page{
-		
-		protected $_headers;
-		
+		/**
+		 * @var string The end-of-line constant.
+		 * @deprecated This will no longer exist in Symphony 3
+		 */
 		const CRLF = PHP_EOL;
-		
+
+		/**
+		 * @var array This stores the headers that will be sent when
+		 *  this page is generated as an associative array of header=>value.
+		 */
+		protected $_headers = array();
+
+		/**
+		 * Initialises the Page object by setting the headers to empty
+		 */
 		public function __construct(){
 			$this->_headers = array();
 		}
-		
-		public function addHeaderToPage($name, $value=NULL){
-			$this->_headers[strtolower($name)] = $name . (is_null($value) ? NULL : ":{$value}");
+
+		/**
+		 * Adds a header to the $_headers array using the $name
+		 * as the key.
+		 *
+		 * @param string $name
+		 *  The header name, eg. Content-Type.
+		 * @param string $value (optional)
+		 *  The value for the header, eg. text/xml. Defaults to null.
+		 */
+		public function addHeaderToPage($name, $value = null){
+			$this->_headers[strtolower($name)] = $name . (is_null($value) ? null : ":{$value}");
 		}
 
-		public function generate(){
-			$this->__renderHeaders();
-		}
-		
+		/**
+		 * Accessor function for $_headers
+		 *
+		 * @return array
+		 */
 		public function headers(){
 			return $this->_headers;
 		}
-		
-		protected function __renderHeaders(){
 
+		/**
+		 * This function calls the __renderHeaders function.
+		 *
+		 * @see __renderHeaders
+		 */
+		public function generate(){
+			$this->__renderHeaders();
+		}
+
+		/**
+		 * Iterates over the $_headers for this page
+		 * and outputs them using PHP's header() function.
+		 *
+		 * @return result of header();
+		 */
+		protected function __renderHeaders(){
 			if(!is_array($this->_headers) || empty($this->_headers)) return;
 
 			foreach($this->_headers as $value){
 				header($value);
 			}
-
-		}		
+		}
 	}
-
