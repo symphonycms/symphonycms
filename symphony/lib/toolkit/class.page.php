@@ -4,7 +4,7 @@
 	 */
 	/**
 	 * Page is an abstract class that holds an object representation
-	 * of a HTML page.
+	 * of a page's headers.
 	 */
 	Abstract Class Page{
 		/**

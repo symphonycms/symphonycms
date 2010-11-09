@@ -1,125 +1,246 @@
 <?php
+	/**
+	 * @package toolkit
+	 */
+	/**
+	 * HTMLPage extends the Page class to provide an object representation
+	 * of a Symphony backend page.
+	 */
 
 	require_once(TOOLKIT . '/class.page.php');
 
 	Class HTMLPage extends Page{
-	
-		public $Head;
-		public $Html;
-		public $Body;
-		public $Form;
-		protected $_title;
-		protected $_head;
-			
+		/**
+		 * @var XMLElement An XMLElement object for the <html> element.
+		 *  This is the parent DOM element for all other elements on the output
+		 *  page.
+		 */
+		public $Html = null;
+
+		/**
+		 * @var XMLElement An XMLElement object for the <head>
+		 */
+		public $Head = null;
+
+		/**
+		 * @var XMLElement An XMLElement object for the <body>
+		 */
+		public $Body = null;
+
+		/**
+		 * @var XMLElement An XMLElement object for the <form>. Most
+		 *  Symphony backend pages are contained within a main form
+		 */
+		public $Form = null;
+
+		/**
+		 * @var array This holds all the elements that will eventually be in the
+		 *  $Head. This allows extensions to add elements at certain indexes so
+		 *  resource dependancies can be met, and duplicates can be removed.
+		 *  Defaults to an empty array.
+		 */
+		protected $_head = array();
+
+		/**
+		 * Constructor for the HTMLPage. Intialises the class variables with
+		 * empty instances of XMLElement
+		 */
 		public function __construct(){
-			
 			parent::__construct();
-			
+
 			$this->Html = new XMLElement('html');
 			$this->Html->setIncludeHeader(false);
-		
+
 			$this->Head = new XMLElement('head');
-		
-			$this->_head = array();
-		
+
 			$this->Body = new XMLElement('body');
-			$this->Form = NULL;
-			
-			
 		}
-	
+
+		/**
+		 * Setter function for the <title> of a backend page. Uses the
+		 * addElementToHead function to place into the $_head array.
+		 *
+		 * @see addElementToHead
+		 * @param string $title
+		 * @return int
+		 *  Returns the position that the title has been set in the $_head
+		 */
+		public function setTitle($title){
+			return $this->addElementToHead(
+				new XMLElement('title', $title)
+			);
+		}
+
+		/**
+		 * The generate function calls the __build function before appending
+		 * all the current page's headers and then finally calling the $Html's
+		 * generate function which generates a HTML Dom from all the
+		 * XMLElement children.
+		 *
+		 * @return string
+		 */
+		public function generate(){
+			$this->__build();
+			parent::generate();
+			return $this->Html->generate(true);
+		}
+
+		/**
+		 * Called when page is generated, this function appends the $Head,
+		 * $Form and $Body elements to the $Html.
+		 *
+		 * @see __generateHead()
+		 */
 		protected function __build(){
 			$this->__generateHead();
 			$this->Html->appendChild($this->Head);
 			if(is_object($this->Form)) $this->Body->appendChild($this->Form);
 			$this->Html->appendChild($this->Body);
 		}
-		
-		public function generate(){
-			$this->__build();	
-			parent::generate();			
-			return $this->Html->generate(true);
-		}
 
-		public function __buildQueryString($exclude=array()){
-			static $q;
-			if (!is_array($q)) {
-				$q = array();
-				foreach($_GET as $k => $v){
-					if (is_array($v)) $q[$k] = self::__flattenQueryArray($v, $k);
-					else $q[$k] = "{$k}={$v}";
-				}
-			}
-			$exclude[] = 'page';
-			return implode('&', array_diff_key($q, array_fill_keys($exclude, true)));
-		}
-
-		private static function __flattenQueryArray(&$array, $parent){
-			$values = array();
-			foreach($array as $k => $v){
-				if(is_array($v)) $values[] = self::__flattenQueryArray($v, $parent."[{$k}]");
-				else $values[] = "{$parent}[{$k}]={$v}";
-			}
-			return implode('&', $values);
-		}
-		
-		public function setTitle($val){
-			return $this->addElementToHead(new XMLElement('title', $val));
-		}
-		
-		public function addElementToHead($obj, $position=NULL){
-			if(($position && isset($this->_head[$position]))) $position = General::array_find_available_index($this->_head, $position);
-			elseif(!$position) $position = max(0, count($this->_head));			
-			$this->_head[$position] = $obj;
-			return $position;
-		}
-		
-		public function addScriptToHead($path, $position=NULL, $duplicate=true){
-	        if($duplicate === true || ($duplicate === false && $this->checkElementsInHead($path, 'src') !== true)){
-	            $script = new XMLElement('script');
-	            $script->setSelfClosingTag(false);
-	            $script->setAttributeArray(array('type' => 'text/javascript', 'src' => $path));
-	            return $this->addElementToHead($script, $position);
-	        }
-	    }
-	
-	    public function addStylesheetToHead($path, $type='screen', $position=NULL, $duplicate=true){
-	        if($duplicate === true || ($duplicate === false && $this->checkElementsInHead($path, 'href') !== true)){
-	            $link = new XMLElement('link');
-	            $link->setAttributeArray(array('rel' => 'stylesheet', 'type' => 'text/css', 'media' => $type, 'href' => $path));
-	            return $this->addElementToHead($link, $position);
-	        }
-	    }
-	
-	    public function checkElementsInHead($path, $attr){
-	        foreach($this->_head as $element) {
-	            if(basename($element->getAttribute($attr)) == basename($path)) return true;
-	        }   
-	    }
-        
-		private function __generateHead(){
-			
+		/**
+		 * Sorts the $_head elements by key, then appends them to the
+		 * Head XMLElement in order.
+		 */
+		protected function __generateHead(){
 			ksort($this->_head);
 
 			foreach($this->_head as $position => $obj){
 				if(is_object($obj)) $this->Head->appendChild($obj);
 			}
-
 		}
 
-		public function removeFromHead($elementName, $attribute=NULL, $attributeValue=NULL){
-			foreach($this->_head as $index => $element){
+		/**
+		 * Adds an XMLElement to the $_head array at a desired position.
+		 * If no position is given, the object will be added to the end
+		 * of the $_head array. If that position is already taken, it will
+		 * add the object at the next available position.
+		 *
+		 * @see toolkit.General#array_find_available_index
+		 * @param XMLElement $object
+		 * @param int $position
+		 *  Defaults to null which will put the $object at the end of the
+		 *  $_head.
+		 * @return int
+		 *  Returns the position that the $object has been set in the $_head
+		 */
+		public function addElementToHead(XMLElement $object, $position = null){
+			if(($position && isset($this->_head[$position]))) {
+				$position = General::array_find_available_index($this->_head, $position);
+			}
+			else if(is_null($position)) {
+				$position = max(0, count($this->_head));
+			}
+
+			$this->_head[$position] = $object;
+
+			return $position;
+		}
+
+		/**
+		 * Given an elementName, this function will remove the corresponding
+		 * XMLElement from the $_head
+		 *
+		 * @param string $elementName
+		 */
+		public function removeFromHead($elementName){
+			foreach($this->_head as $position => $element){
 				if($element->getName() != $elementName) continue;
-				
-				if(!is_null($attribute) && !is_null($attributeValue)){
-					$value = $element->getAttribute($attribute);
-					
-					if(is_null($value) || $attributeValue != $value) continue;
-				}
-				
+
 				unset($this->_head[$index]);
 			}
 		}
 
-	}
+		/**
+		 * Determines if two elements are duplicates based on an attribute
+		 * and value
+		 *
+		 * @param string $value
+		 *  The value of the attribute
+		 * @param string $attribute
+		 *  The attribute to check
+		 * @return boolean
+		 */
+		public function checkElementsInHead($path, $attribute){
+	        foreach($this->_head as $element) {
+	            if(basename($element->getAttribute($attribute)) == basename($path)) return true;
+	        }
+	    }
 
+		/**
+		 * Convenience function to add a <script> element to the $_head. By default
+		 * the function will allow duplicates to be added to the $_head. A duplicate
+		 * is determined by if the $path is unique.
+		 *
+		 * @param string $path
+		 *  The path to the script file
+		 * @param int $position
+		 *  The desired position that the resulting XMLElement will be placed
+		 *  in the $_head. Defaults to null which will append to the end.
+		 * @param boolean $duplicate
+		 *  When set to false the function will only add the script if it doesn't
+		 *  already exist. Defaults to true which allows duplicates.
+		 * @return int
+		 *  Returns the position that the script has been set in the $_head
+		 */
+		public function addScriptToHead($path, $position = null, $duplicate = true){
+	        if($duplicate === true || ($duplicate === false && $this->checkElementsInHead($path, 'src') === false)){
+	            $script = new XMLElement('script');
+	            $script->setSelfClosingTag(false);
+	            $script->setAttributeArray(array('type' => 'text/javascript', 'src' => $path));
+
+	            return $this->addElementToHead($script, $position);
+	        }
+	    }
+
+		/**
+		 * Convenience function to add a stylesheet to the $_head in a <link> element.
+		 * By default the function will allow duplicates to be added to the $_head.
+		 * A duplicate is determined by if the $path is unique.
+		 *
+		 * @param string $path
+		 *  The path to the stylesheet file
+		 * @param string $type
+		 *  The media attribute for this stylesheet, defaults to 'screen'
+		 * @param int $position
+		 *  The desired position that the resulting XMLElement will be placed
+		 *  in the $_head. Defaults to null which will append to the end.
+		 * @param boolean $duplicate
+		 *  When set to false the function will only add the script if it doesn't
+		 *  already exist. Defaults to true which allows duplicates.
+		 * @return int
+		 *  Returns the position that the stylesheet has been set in the $_head
+		 */
+	    public function addStylesheetToHead($path, $type = 'screen', $position = null, $duplicate = true){
+	        if($duplicate === true || ($duplicate === false && $this->checkElementsInHead($path, 'href') === false)){
+	            $link = new XMLElement('link');
+	            $link->setAttributeArray(array('rel' => 'stylesheet', 'type' => 'text/css', 'media' => $type, 'href' => $path));
+
+	            return $this->addElementToHead($link, $position);
+	        }
+	    }
+
+		/**
+		 * This function builds a HTTP query string from $_GET parameters with
+		 * the option to remove parameters with an $exclude array
+		 *
+		 * @param array $exclude
+		 *  A simple array with the keys that should be omitted in the resulting
+		 *  query string.
+		 * @return string
+		 */
+		public function __buildQueryString(Array $exclude=array()){
+			$exclude[] = 'page';
+
+			// Generate the full query string and then parse it back to an array
+			$pre_exclusion = http_build_query($_GET, null, '&');
+			parse_str($pre_exclusion, $query);
+
+			// Remove the excluded keys from query string and then build
+			// the query string again
+			$post_exclusion = array_diff_key($query, array_fill_keys($exclude, true));
+
+			return urldecode(http_build_query($post_exclusion, null, '&'));
+		}
+
+	}
