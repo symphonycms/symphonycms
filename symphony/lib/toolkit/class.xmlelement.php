@@ -407,7 +407,6 @@
 				}
 
 				if($numberOfchildren > 0 ){
-
 					$result .= $newline;
 
 					foreach($this->_children as $child ){
@@ -426,9 +425,10 @@
 					$result .= $this->getValue() . $newline;
 				}
 
-				$result .= sprintf("</%s>%", $this->getName(), $newline);
+				$result .= sprintf("</%s>%s", $this->getName(), $newline);
 
 			}
+
 			// Empty elements:
 			else {
 				if ($this->_elementStyle == 'xml') {
