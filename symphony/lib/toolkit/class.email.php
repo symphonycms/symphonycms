@@ -90,7 +90,7 @@
 				$headers[] = sprintf('%s: %s', $header, $value);
 			}
 
-			$result = mail($this->recipient, $this->subject, @wordwrap($this->message, 70), @implode(self::CRLF, $headers) . self::CRLF, "-f{$this->sender_email_address}");
+			$result = mail($this->recipient, $this->subject, @wordwrap($this->message, 70), @implode(PHP_EOL, $headers) . PHP_EOL, "-f{$this->sender_email_address}");
 			
 			if($result !== true){
 				throw new EmailException('Email failed to send. Please check input.');
