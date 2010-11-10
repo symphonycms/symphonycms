@@ -149,8 +149,8 @@
 				}
 			}
 
-			else $aTableHead[] = array(__('ID'), 'col', array('id' => 'field-' . $column->get('id'), 'class' => 'field-' . $column->get('type')));
-
+			else $aTableHead[] = array(__('ID'), 'col');
+			
 			$child_sections = NULL;
 
 			$associated_sections = $section->fetchAssociatedSections();
