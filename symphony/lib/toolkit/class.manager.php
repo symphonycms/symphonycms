@@ -7,7 +7,8 @@
 	 * to assist the managers in cataloguing their children. This class
 	 * defines a number of abstract methods to enable autodiscovery of
 	 * file based objects such as Datasource, Event, Extension and
-	 * Text Formatter.
+	 * Text Formatter. Manager classes implement CRUD methods to
+	 * apply their objects.
 	 */
     Abstract Class Manager{
 		/**
