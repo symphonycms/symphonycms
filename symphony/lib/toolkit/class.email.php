@@ -65,7 +65,7 @@
 			$default_headers = array(
 				'Return-path'	=> "<{$this->sender_email_address}>",
 				'From'			=> "{$this->sender_name} <{$this->sender_email_address}>",
-		 		'Reply-To'		=> $this->sender_email_address,
+				'Reply-To'		=> $this->sender_email_address,
 				'Message-ID'	=> sprintf('<%s@%s>', md5(uniqid(time())), $_SERVER['SERVER_NAME']),
 				'X-Mailer'		=> 'Symphony Email Module',
 				'MIME-Version'	=> '1.0',
