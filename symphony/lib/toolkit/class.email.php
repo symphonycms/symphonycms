@@ -63,11 +63,10 @@
 			$this->sender_name = self::encodeHeader($this->sender_name, 'UTF-8');
 
 			$default_headers = array(
-				'Return-Path'	=> $this->sender_email_address,
+				'Return-Path'	=> "<{$this->sender_email_address}>",
 				'From'			=> "{$this->sender_name} <{$this->sender_email_address}>",
 		 		'Reply-To'		=> $this->sender_email_address,
 				'Message-ID'	=> sprintf('<%s@%s>', md5(uniqid(time())), $_SERVER['SERVER_NAME']),
-				'Return-Path'	=> "<{$this->sender_email_address}>",
 				'X-Mailer'		=> 'Symphony Email Module',
 				'MIME-Version'	=> '1.0',
 				'Content-Type'	=> 'text/plain; charset=UTF-8',
