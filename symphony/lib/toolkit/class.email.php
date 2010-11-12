@@ -99,14 +99,17 @@
 			return true;
 		}
 
-
-		/***
-
-		Method: encodeHeader
-		Description: Encodes (parts of) an email header if necessary, according to RFC2047 if mbstring is available;
-		Added by: Michael Eichelsdoerfer
-
-		***/
+		/**
+		 * encode email headers
+		 *
+		 * Encodes (parts of) an email header if necessary,
+		 * according to RFC2047 if mbstring is available;
+		 *
+		 * @param string $input
+		 * @param string $charset
+		 * @return string
+		 * @author Michael Eichelsdörfer
+		 */
 		public static function encodeHeader($input, $charset='ISO-8859-1')
 		{
 		    if(preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches))
