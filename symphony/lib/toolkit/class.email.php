@@ -31,7 +31,7 @@
 		}
 
 		public function validate(){
-			if (eregi("(\r|\n)", $this->sender_name) || eregi("(\r|\n)", $this->sender_email_address)){
+			if (preg_match('%[\r\n]%', $this->sender_name . $this->sender_email_address))
 				throw new EmailException("The sender name and/or email address contain invalid data. It cannot include new line or carriage return characters.");
 			}
 
@@ -253,4 +253,3 @@
 		}
 
 	}
-
