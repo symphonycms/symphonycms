@@ -87,7 +87,7 @@
 			}
 
 			// Quoted-printable encoding of the message body (RFC 2045)
-			$this->message = $this->quoted_printable_encode($this->message);
+			$this->message = $this->quotedPrintableEncode($this->message);
 
 			// The PHP mail() function requires 'linefeed only' for the message body;
 			$this->message = str_replace("\r\n", "\n", $this->message);
@@ -148,7 +148,7 @@
 		 * @param string $line_max; maximum line length
 		 * @return string
 		 */
-		public static function quoted_printable_encode($input, $line_max = 76) {
+		public static function quotedPrintableEncode($input, $line_max = 76) {
 			$hex = array('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
 			$lines = preg_split("/(?:\r\n|\r|\n)/", $input);
 			$linebreak = "\r\n";
