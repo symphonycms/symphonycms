@@ -119,18 +119,18 @@
 		        if(function_exists('mb_internal_encoding'))
 		        {
 		            mb_internal_encoding($charset);
-		            $input = mb_encode_mimeheader($input, $charset, 'Q');
+		            $output = mb_encode_mimeheader($input, $charset, 'Q');
 		        }
 		        else
 		        {
 		            foreach ($matches[1] as $value)
 		            {
 		                $replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
-		                $input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
+		                $output = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
 		            }
 		        }
 		    }
-		    return $input;
+		    return $output;
 		}
 
 		/**
