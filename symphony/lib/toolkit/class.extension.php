@@ -116,7 +116,7 @@
 		 * The about method allows an extension to provide
 		 * information about itself as an associative array. eg.
 		 *
-		 *		'name' => 'Name of Formatter',
+		 *		'name' => 'Name of Extension',
 		 *		'version' => '1.8',
 		 *		'release-date' => 'YYYY-MM-DD',
 		 *		'author' => array(
@@ -124,10 +124,10 @@
 		 *			'website' => 'Author Website',
 		 *			'email' => 'Author Email'
 		 *		),
-		 *		'description' => 'A description about this formatter'
+		 *		'description' => 'A description about this extension'
 		 *
 		 * @return array
-		 *  An associative array describing the text formatter.
+		 *  An associative array describing this extension.
 		 */
 		abstract public function about();
 
@@ -152,7 +152,9 @@
 		 *
 		 * @return array
 		 */
-		public function getSubscribedDelegates(){}
+		public function getSubscribedDelegates(){
+			return array();
+		}
 
 		/**
 		 * When the Symphony navigation is being generated, this method will be
