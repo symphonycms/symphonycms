@@ -88,11 +88,11 @@
 			$value = array();
 
 			foreach($data['author_id'] as $author_id){
-				$author = new Author;
-
-				if($author->loadAuthor($author_id)){
+				$author = AuthorManager::fetchByID($author_id);
+				
+				if(!is_null($author)) {
 					$value[] = $author->getFullName();
-				}
+				}				
 			}
 
 			return parent::prepareTableValue(array('value' => General::sanitize(ucwords(implode(', ', $value)))), $link);
@@ -203,7 +203,10 @@
 
 	        $list = new XMLElement($this->get('element_name'));
 	        foreach($data['author_id'] as $author_id){
-	            $author = new Author($author_id);
+				$author = AuthorManager::fetchByID($author_id);
+				
+				if(is_null($author)) continue;
+				
 	            $list->appendChild(new XMLElement(
 					'item',
 					$author->getFullName(),
