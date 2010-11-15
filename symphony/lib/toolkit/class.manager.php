@@ -78,7 +78,19 @@
         }
 
         /**
-		 * Given a name, return the class name of that object
+		 * Given a filename, return the handle. This will remove
+		 * any Symphony conventions such as field.*.php
+		 *
+		 * @return string
+		 */
+		public function __getHandleFromFilename($filename){
+		    return null;
+		}
+
+        /**
+		 * Given a name, return the class name of that object. Symphony objects
+		 * often have conventions tied to an objects class name that prefix the
+		 * class with the type of the object. eg. field{Class}, formatter{Class}
 		 *
 		 * @return string
 		 */
@@ -103,16 +115,6 @@
         public function __getDriverPath($name){
             return null;
         }
-
-        /**
-		 * Given a filename, return the handle. This will remove
-		 * any Symphony conventions such as field.*.php
-		 *
-		 * @return string
-		 */
-		public function __getHandleFromFilename($filename){
-		    return null;
-		}
 
         /**
 		 * Returns an array of all the objects that this manager is responsible for.
