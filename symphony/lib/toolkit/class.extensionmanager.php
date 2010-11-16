@@ -4,8 +4,8 @@
 	 * @package toolkit
 	 */
 	/**
-	 * The ExtensionManage class is responsible for managing all extensions
-	 * in Symphony. Extensions arestored on the file system either in the /extensions
+	 * The ExtensionManager class is responsible for managing all extensions
+	 * in Symphony. Extensions are stored on the file system either in the /extensions
 	 * folder. They are autodiscovered where the Extension class name is the same
 	 * as it's folder name (excluding the extension prefix).
 	 */
@@ -49,9 +49,9 @@
 		static private $_subscriptions =  null;
 
 		/**
-		 * @var array An associative array of all the extensions in the tbl_extensions table
-		 *  whereh the key is the extension name and the value is an array representation
-		 *  of it's accompanying database row.
+		 * @var array An associative array of all the extensions in tbl_extensions
+		 *  where the key is the extension name and the value is an array 
+		 *  representation of it's accompanying database row.
 		 */
 		static private $_extensions = array();
 
@@ -117,7 +117,7 @@
 			}
 		}
 
-				/**
+		/**
 		 * Returns information about an extension by it's name by calling
 		 * it's own about method. This method checks if an extension needs
 		 * to be updated or not.
@@ -178,7 +178,7 @@
 		}
 
 		/**
-		 * A convienence method that returns an extension version from it's name.
+		 * A convenience method that returns an extension version from it's name.
 		 *
 		 * @param string $name
 		 *  The name of the extension as provided by it's about function
@@ -190,7 +190,7 @@
 		}
 
 		/**
-		 * A convienence method that returns an extension ID from it's name.
+		 * A convenience method that returns an extension ID from it's name.
 		 *
 		 * @param string $name
 		 *  The name of the extension as provided by it's about function
@@ -251,6 +251,8 @@
 		 * extensions respective install and update methods. The enable method is
 		 * of the extension object is finally called.
 		 *
+		 * @see registerDelegates
+		 * @see __canUninstallOrDisable
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
@@ -299,6 +301,8 @@
 		 * all delegate subscriptions from the database and calling the extensions
 		 * disable method.
 		 *
+		 * @see removeDelegates
+		 * @see __canUninstallOrDisable
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
@@ -334,6 +338,8 @@
 		 * be uninstalled using the canUninstallorDisable function before calling
 		 * the extensions uninstall method.
 		 *
+		 * @see removeDelegates
+		 * @see __canUninstallOrDisable
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
@@ -428,7 +434,7 @@
 		/**
 		 * This function checks that if this extension has provided Fields,
 		 * Data Sources or Events, that they aren't in use before the extension
-		 * is uninstalled or disabled. This prevents exceptions from occuring when
+		 * is uninstalled or disabled. This prevents exceptions from occurring when
 		 * logic requires the removed Extensions' objects.
 		 *
 		 * @param Extension $obj
@@ -500,7 +506,7 @@
 		 *  The current page namespace that this delegate operates in
 		 * @param array $context
 		 *  The $context param is an associative array that at minimum will contain
-		 *  the current Adminstration class, the current page object and the delegate
+		 *  the current Administration class, the current page object and the delegate
 		 *  name. Other context information may be passed to this function when it is
 		 *  called. eg.
 		 *
