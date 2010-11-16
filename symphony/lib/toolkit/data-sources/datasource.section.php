@@ -161,7 +161,7 @@
 	$datasource_schema = $this->dsParamINCLUDEDELEMENTS;
 	if (!is_array($datasource_schema)) $datasource_schema = array();
 	if ($this->dsParamPARAMOUTPUT) $datasource_schema[] = $this->dsParamPARAMOUTPUT;
-	if ($this->dsParamGROUP) $datasource_schema[] = $entryManager->fieldManager->fetchHandleFromElementName($this->dsParamGROUP);
+	if ($this->dsParamGROUP) $datasource_schema[] = $entryManager->fieldManager->fetchHandleFromID($this->dsParamGROUP);
 	
 	$entries = $entryManager->fetchByPage($this->dsParamSTARTPAGE, 
 										  $this->getSource(), 
