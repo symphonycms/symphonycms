@@ -59,6 +59,8 @@
 		 * Given a name, returns the full class name of an Extension.
 		 * Extension use an 'extension' prefix.
 		 *
+		 * @param string $name
+		 *  The extension handle
 		 * @return string
 		 */
         public function __getClassName($name){

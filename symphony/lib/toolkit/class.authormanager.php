@@ -9,7 +9,10 @@
 	 * allow Authors to be created (add), read (fetch), updated (edit) and
 	 * deleted (delete).
 	 */
-	Class AuthorManager{
+
+	require_once(TOOLKIT . '/class.manager.php');
+
+	Class AuthorManager extends Manager {
 
 		/**
 		 * Given an associative array of fields, insert them into the database

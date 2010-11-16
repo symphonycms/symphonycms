@@ -11,14 +11,16 @@
 	 * string and returns it.
 	 */
 
-	 require_once(TOOLKIT . '/class.textformatter.php');
+	require_once(TOOLKIT . '/class.textformatter.php');
 
     Class TextformatterManager extends Manager{
 
 		/**
-		 * Given a filename of the Text Formatter return the handle. This will remove
-		 * the Symphony conventions such as formatter.*.php
+		 * Given the filename of a Text Formatter return it's handle. This will remove
+		 * the Symphony convention of formatter.*.php
 		 *
+		 * @param string $filename
+		 *  The filename of the Text Formatter
 		 * @return string
 		 */
 		public function __getHandleFromFilename($filename){
@@ -29,10 +31,12 @@
 		 * Given a name, returns the full class name of a Text Formatter.
 		 * Text Formatters use a 'formatter' prefix.
 		 *
+		 * @param string $handle
+		 *  The formatter handle
 		 * @return string
 		 */
-        public function __getClassName($name){
-	        return 'formatter' . $name;
+        public function __getClassName($handle){
+	        return 'formatter' . $handle;
         }
 
 		/**
@@ -40,15 +44,15 @@
 		 * in the workspace and in all installed extension folders and returns the
 		 * path to it's folder.
 		 *
-		 * @param string $name
+		 * @param string $handle
 		 *  The handle of the Text Formatter free from any Symphony conventions
 		 *  such as formatter.*.php
 		 * @return mixed
 		 *  If the Text Formatter is found, the function returns the path it's folder,
 		 *  otherwise false.
 		 */
-        public function __getClassPath($name){
-			if(is_file(TEXTFORMATTERS . "/formatter.$name.php")) return TEXTFORMATTERS;
+        public function __getClassPath($handle){
+			if(is_file(TEXTFORMATTERS . "/formatter.$handle.php")) return TEXTFORMATTERS;
 			else{
 
 				$extensionManager = new ExtensionManager($this->_Parent);
@@ -56,7 +60,7 @@
 
 				if(is_array($extensions) && !empty($extensions)){
 					foreach($extensions as $e){
-						if(is_file(EXTENSIONS . "/$e/text-formatters/formatter.$name.php")) return EXTENSIONS . "/$e/text-formatters";
+						if(is_file(EXTENSIONS . "/$e/text-formatters/formatter.$handle.php")) return EXTENSIONS . "/$e/text-formatters";
 					}
 				}
 	    	}
@@ -68,13 +72,13 @@
 		 * Given a name, return the path to the driver of the Text Formatter.
 		 *
 		 * @see __getClassPath
-		 * @param string $name
+		 * @param string $handle
 		 *  The handle of the Text Formatter free from any Symphony conventions
 		 *  such as formatter.*.php
 		 * @return string
 		 */
-        public function __getDriverPath($name){
-	        return $this->__getClassPath($name) . "/formatter.$name.php";
+        public function __getDriverPath($handle){
+	        return $this->__getClassPath($handle) . "/formatter.$handle.php";
         }
 
 		/**
@@ -122,26 +126,35 @@
         }
 
 		/**
-		 * Creates an instance of a given class and returns it
+		 * Creates an instance of a given class and returns it. Adds the instance
+		 * to the $_pool array with the key being the handle.
 		 *
-		 * @param string $name
+		 * @param string $handle
 		 *  The handle of the Text Formatter to create
 		 * @return TextFormatter
 		 */
-        public function &create($name){
+        public function &create($handle){
 
-			$classname = $this->__getClassName($name);
-	        $path = $this->__getDriverPath($name);
+			if(!isset(self::$_pool[$handle])){
+				$classname = $this->__getClassName($handle);
+		        $path = $this->__getDriverPath($handle);
 
-	        if(!is_file($path)){
-		        trigger_error(__('Could not find Text Formatter <code>%s</code>. If the Text Formatter was provided by an Extensions, ensure that it is installed, and enabled.', array($name)), E_USER_ERROR);
-		        return false;
-	        }
+		        if(!is_file($path)){
+					throw new Exeption(
+						__(
+							'Could not find Text Formatter <code>%s</code>. If the Text Formatter was provided by an Extensions, ensure that it is installed, and enabled.',
+							array($name)
+						)
+					);
+		        }
 
-			if(!@class_exists($classname))
-				require_once($path);
+				if(!@class_exists($classname))
+					require_once($path);
 
-			return new $classname($this->_Parent);
+				self::$_pool[$handle] = new $classname($this->_Parent);
+			}
+
+			return self::$_pool[$handle];
 
         }
 
