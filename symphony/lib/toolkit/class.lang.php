@@ -18,13 +18,6 @@
 	 *  Returns the translated string
 	 */
 	function __($string, $inserts=NULL) {
-		
-		// Fallback in case of errors during system initialisation
-		if(!(Lang::Dictionary() instanceof Dictionary)) {
-			return vsprintf($string, $inserts);
-		}
-		
-		// Translate string
 		return Lang::Dictionary()->translate($string, $inserts);
 	}
 	
@@ -159,6 +152,11 @@
 		 * @var string Code of active language
 		 */
 		private static $_lang;
+		
+		/**
+		 * @var array List of available languages
+		 */
+		private static $_languages;
 
 		/**
 		 * @var Dictionary Instance of the current dictionary
@@ -194,6 +192,44 @@
 		public static function Transliterations() {
 			return self::$_transliterations;
 		}
+
+		/**
+		 * Initialize dictionary, transliterations and dates array
+		 */
+		public static function initialize() {
+			self::$_dictionary = new Dictionary();
+			self::$_transliterations = array();
+			self::$_dates = array();
+		}
+
+		/**
+		 * Set system language. 
+		 *
+		 * @param string $lang 
+		 *  Language code, e. g. 'en' or 'pt-br'
+		 */
+		public static function set($lang) {
+			if($lang && $lang != self::get()) {
+				self::$_lang = $lang;
+				
+				// Load dictionary
+				if($lang != 'en') {
+					self::activate();
+				}
+
+				// Load default dictionary
+				else {
+					self::initialize();
+				}
+			}
+		}
+		
+		/**
+		 * Get current language
+		 */
+		public static function get() {
+			return self::$_lang;
+		}
 		
 		/**
 		 * Activate language, load translations for core and extensions. If the specified language
@@ -202,22 +238,28 @@
 		 * Note: Beginning with Symphony 2.2 translations bundled with extensions will only be loaded
 		 * when the core dictionary of the specific language is available.
 		 */		
-		public static function activate() {			
-			$path = self::getLanguagePath(self::get());
+		public static function activate() {
+		
+			// Fetch all available languages
+			if(empty(self::$_languages)) {
+				self::fetch();
+			}
 			
 			// Language file available
-			if(file_exists($path)) {
+			$current = self::$_languages[self::get()];
+			if(is_array($current)) {
 
 				// Load core translations
-				self::load($file, self::get(), true);
+				self::load($current['path'], true);
 				
 				// Load extension translations
-				$ExtensionManager = new ExtensionManager($this);
-				foreach($ExtensionManager->listAll() as $handle => $extension){
-					$path = $ExtensionManager->__getClassPath($handle) . '/lang/lang.' . self::get() . '.php';
-					if($extension['status'] == EXTENSION_ENABLED && file_exists($path)) {
-						self::load($path, self::get());
-					}			
+				if(class_exists('Administration')) {
+					foreach(Administration::instance()->ExtensionManager->listAll() as $handle => $extension) {
+						$path = Administration::instance()->ExtensionManager->__getClassPath($handle) . '/lang/lang.' . self::get() . '.php';
+						if($extension['status'] == EXTENSION_ENABLED && file_exists($path)) {
+							self::load($path);
+						}			
+					}
 				}
 			
 			}
@@ -226,7 +268,7 @@
 			else {
 			
 				// Use default language
-				self::reset();
+				self::initialize();
 				
 				// Log note
 				if(class_exists('Symphony')) {
@@ -240,6 +282,71 @@
 			}
 		}
 
+		public static function fetch() {
+		
+			self::$_languages = array();
+			
+			// Fetch list of active language extensions
+			$enabled = array();
+			if(class_exists('Symphony')) {
+				$enabled = Symphony::Database()->fetchCol('name',
+					"SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'"
+				);
+			}
+		
+			// Fetch core languages
+			$directory = General::listStructure(LANG);
+			foreach($directory['filelist'] as $file) {
+				self::fetchLanguage('core', LANG, $file, $enabled);
+			}			
+			
+			// Fetch extensions
+			$extensions = new DirectoryIterator(EXTENSIONS);
+			foreach($extensions as $extension) {
+			
+				// Explicitly match language extensions
+				if(strpos($extension->getFilename(), 'lang_') !== false) {
+					$folder = $extension->getPathname() . '/lang';
+					$directory = General::listStructure($folder);
+					foreach($directory['filelist'] as $file) {
+						self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled);
+					}			
+				}
+
+			}
+
+		}
+		
+		private static function fetchLanguage($source, $folder, $file, $enabled) {
+		
+			// Fetch language file
+			$path = $folder . '/' . $file;
+			if(file_exists($path)) {
+				include($path);
+			}
+			
+			// Get language code
+			$lang = explode('.', $file);
+			$lang = $lang[1];
+			
+			// Get status
+			$status = 'disabled';
+			if($source == 'core') {
+				$status = 'enabled';
+			}
+			elseif(!empty($enabled) && in_array($source, $enabled)) {				
+				$status = 'enabled';
+			}
+			
+			// Save language information
+			self::$_languages[$lang] = array(
+				'name' => $about['name'],
+				'source' => $source,
+				'path' => $path,
+				'status' => $status
+			);
+		}
+
 		/**
 		 * Load language file. Each language file contains three arrays:
 		 * about, dictionary and transliterations.
@@ -251,17 +358,16 @@
 		 * @param boolean $clear
 		 *  True, if the current dictionary should be cleared, defaults to false
 		 */				
-		public static function load($path, $lang, $clear=false) {
+		public static function load($path, $clear=false) {
 		
 			// Initialize or clear dictionary
 			if(!(self::$_dictionary instanceof Dictionary) || $clear === true) {
-				self::reset();
+				self::initialize();
 			}
 
 			// Load language file
-			$include = sprintf($path, $lang);	
-			if(file_exists($include)){
-				require($include);
+			if(file_exists($path)) {
+				require($path);
 			}
 
 			// Define default dates
@@ -301,84 +407,6 @@
 			}
 
 		}
-		
-		/**
-		 * Set system language. 
-		 *
-		 * @param string $lang 
-		 *  Language code, e. g. 'en' or 'pt-br'
-		 */
-		public static function set($lang) {
-			if($lang && $lang != self::get()) {
-				self::$_lang = $lang;
-				
-				// Load dictionary
-				if($lang != 'en') {
-					self::activate();
-				}
-
-				// Load default dictionary
-				else {
-					self::reset();
-				}
-			}
-		}
-		
-		/**
-		 * Reset the current dictionary, transliteration and date arrays
-		 */
-		public static function reset() {
-			self::$_dictionary = new Dictionary();
-			self::$_transliterations = array();
-			self::$_dates = array();
-		}
-		
-		/**
-		 * Get current language
-		 */
-		public static function get() {
-			return self::$_lang;
-		}
-		
-		/**
-		 * Find the correct path to the core dictionary based on the language code.
-		 * The default English dictionary is stored in /symphony/lib/lang/ whereas
-		 * the translations for other languages are stored in the extension folder.
-		 *
-		 * Note: Beginning with Symphony 2.2 language files are only available 
-		 * when the language extension is explecitly enabled.
-		 *
-		 * @param string $lang
-		 *  Language code, e. g. 'en' or 'pt-br'
-		 */		
-		public static function getLanguagePath($lang) {
-			$file = sprintf('/lang.%s.php', $lang);
-			
-			// Check core
-			if(file_exists(LANG . $file)) {
-				return LANG . $file;
-			}
-			
-			// Check extensions
-			else {
-				$ExtensionManager = new ExtensionManager($this);
-				foreach($ExtensionManager->listAll() as $handle => $extension) {
-
-					// Explicitly match localisation extensions
-					if(strpos($handle, 'lang_') === false) continue;
-
-					// Check language availability
-					$path = $ExtensionManager->__getClassPath($handle) . '/lang' . $file;
-					if($extension['status'] == EXTENSION_ENABLED && file_exists($path)) {
-						return $path;
-					}
-
-				}
-
-			}
-			
-			return false;
-		}
 
 		/**
 		 * Get an array of the codes and names of all languages that are available system wide.
@@ -394,48 +422,14 @@
 		public static function getAvailableLanguages($enabled=true) {
 			$languages = array();
 			
-			// Get core translation files
-			$languages = self::getLanguageCodes(LIBRARY . '/lang', $languages);
-			
-			// Get extension translation files
-			$ExtensionManager = new ExtensionManager($this);
-			foreach($ExtensionManager->listAll() as $handle => $extension) {
-
-				// Explicitly match localisation extensions
-				if(strpos($handle, 'lang_') === false) continue;
-
-				// Check language availability
-				$path = $ExtensionManager->__getClassPath($handle) . '/lang';
-				if($extension['status'] == EXTENSION_ENABLED && file_exists($path)) {
-					$languages = array_merge($languages, self::getLanguageCodes($path, $languages));
+			// Get available languages
+			foreach(self::$_languages as $key => $language) {
+				if($language['status'] == 'enabled' || $enabled == false) {
+					$languages[$key] = $language['name'];
 				}
-				
 			}
 			
 			// Return languages codes	
-			return $languages;
-		}
-		
-		/**
-		 * Get an array of the codes and names of all languages that are available in a specific folder.
-		 *
-		 * @return array 
-		 *  Returns an associative array of language codes and names, e. g. 'en' => 'English'
-		 */
-		public static function getLanguageCodes($path, $languages) {
-			$iterator = new DirectoryIterator($path);
-			foreach($iterator as $file) {
-			
-				// Extract language code
-				if(!$file->isDot() && preg_match('/^lang\.(\w+(-\w+)?)\.php$/', $file->getFilename(), $matches)) {
-				
-					// Get language name
-					if(!isset($languages[$matches[1]])) {
-						include($file->getPathname());
-						$languages[$matches[1]] = $about['name'];
-					}
-				}
-			}
 			return $languages;
 		}
 		
@@ -543,7 +537,7 @@
 			$string = implode($delim, $matches[0]);
 			
 			// Allow for custom rules
-			if(is_array($additional_rule_set) && !empty($additional_rule_set)){
+			if(is_array($additional_rule_set) && !empty($additional_rule_set)) {
 				foreach($additional_rule_set as $rule => $replacement) $string = preg_replace($rule, $replacement, $string);
 			}
 			
@@ -582,7 +576,7 @@
 
 			// Find all legal characters
 			$count = preg_match_all('/[\p{L}\w:;.,+=~]+/u', $string, $matches);
-			if($count <= 0 || $count == false){
+			if($count <= 0 || $count == false) {
 				preg_match_all('/[\w:;.,+=~]+/', $string, $matches);
 			}
 
