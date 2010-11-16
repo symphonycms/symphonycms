@@ -61,6 +61,9 @@
 			define_safe('__SYM_TIME_FORMAT__', self::$Configuration->get('time_format', 'region'));
 			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . $separator . __SYM_TIME_FORMAT__);
 
+			// Initialize language management
+			Lang::initialize();
+			
 			$this->initialiseLog();
 
 			GenericExceptionHandler::initialise();
@@ -70,13 +73,13 @@
 			$this->initialiseDatabase();
 			$this->initialiseExtensionManager();
 
+			// Set current language:
+			// This has to be done after Extension Manager initialisation
 			Lang::set(self::$Configuration->get('lang', 'symphony'));
 
 			if(!self::isLoggedIn()){
 				GenericExceptionHandler::$enabled = false;
 			}
-
-
 		}
 
 		public function initialiseCookie(){
