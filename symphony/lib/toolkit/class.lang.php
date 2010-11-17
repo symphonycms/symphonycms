@@ -154,7 +154,7 @@
 		private static $_lang;
 		
 		/**
-		 * @var array List of available languages
+		 * @var array Context information of all available languages
 		 */
 		private static $_languages;
 
@@ -295,6 +295,13 @@
 			}
 		}
 
+		/**
+		 * Fetch all languages available in the core language folder and the language extensions.
+		 * The function stores all language information in the public variable $_languages. 
+		 * It contains an array with the name, source, path and status of each language. The language 
+		 * status (enabled/disabled) can only be determinated when the Extension Manager has been 
+		 * initialized before. During installation all extension status are set to disabled.
+		 */
 		public static function fetch() {
 			self::$_languages = array();
 			
@@ -329,6 +336,9 @@
 
 		}
 		
+		/**
+		 * Fetch language information for a single language.
+		 */
 		private static function fetchLanguage($source, $folder, $file, $enabled) {
 		
 			// Fetch language file
@@ -365,8 +375,6 @@
 		 *
 		 * @param string $path
 		 *  Path of the language file that should be loaded
-		 * @param string $lang
-		 *  Language code
 		 * @param boolean $clear
 		 *  True, if the current dictionary should be cleared, defaults to false
 		 */				
@@ -422,8 +430,6 @@
 
 		/**
 		 * Get an array of the codes and names of all languages that are available system wide.
-		 * The default English dictionary is stored in /symphony/lib/lang/ whereas
-		 * the translations for other languages are stored in the extension folder.
 		 *
 		 * Note: Beginning with Symphony 2.2 language files are only available 
 		 * when the language extension is explecitly enabled.
