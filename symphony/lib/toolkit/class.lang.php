@@ -2,8 +2,6 @@
 	/**
 	 * @package toolkit
 	 */
-	require_once(TOOLKIT . '/class.extensionmanager.php');
-
 	/**
 	 * The translation function accepts an English string and returns its translation 
 	 * to the active system language. If the given string is not available in the 
@@ -428,7 +426,7 @@
 
 		}
 
-		/**
+		/** 
 		 * Get an array of the codes and names of all languages that are available system wide.
 		 *
 		 * Note: Beginning with Symphony 2.2 language files are only available 
