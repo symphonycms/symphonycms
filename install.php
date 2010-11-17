@@ -52,7 +52,7 @@
 
 		// Set language
 		try{
-			Lang::set($lang);
+			Lang::set($lang, false);
 		}
 		catch(Exception $s){
 			return NULL;

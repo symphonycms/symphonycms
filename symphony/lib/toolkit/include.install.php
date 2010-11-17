@@ -79,7 +79,7 @@
 
 	$languages = array();
 	$current = $_REQUEST['lang'];
-	foreach(Lang::getAvailableLanguages() as $code => $lang) {
+	foreach(Lang::getAvailableLanguages(false) as $code => $lang) {
 		$class = '';
 		if($current == $code || ($current == NULL && $code == 'en')) $class = ' class="selected"';
 		$languages[] = '<li' . $class . '><a href="?lang=' . $code . '">' . $lang . '</a></li>';

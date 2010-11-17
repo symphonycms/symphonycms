@@ -208,19 +208,15 @@
 		 * @param string $lang 
 		 *  Language code, e. g. 'en' or 'pt-br'
 		 */
-		public static function set($lang) {
+		public static function set($lang, $enabled=true) {
 			if($lang && $lang != self::get()) {
-				self::$_lang = $lang;
-				
-				// Load dictionary
-				if($lang != 'en') {
-					self::activate();
-				}
 
-				// Load default dictionary
-				else {
-					self::initialize();
-				}
+				// Store current language code
+				self::$_lang = $lang;
+								
+				// Activate language
+				self::activate($enabled);
+
 			}
 		}
 		
@@ -233,28 +229,34 @@
 		
 		/**
 		 * Activate language, load translations for core and extensions. If the specified language
-		 * cannot be found, nothing will be loaded and Symphony will default to English.
+		 * cannot be found, Symphony will default to English. If no language is available at all, 
+		 * Symphony will throw an error.
 		 *
 		 * Note: Beginning with Symphony 2.2 translations bundled with extensions will only be loaded
 		 * when the core dictionary of the specific language is available.
 		 */		
-		public static function activate() {
-		
+		public static function activate($enabled=true) {
+					
 			// Fetch all available languages
 			if(empty(self::$_languages)) {
 				self::fetch();
 			}
 			
 			// Language file available
-			$current = self::$_languages[self::get()];
-			if(is_array($current)) {
-
+			$current = self::$_languages[self::get()];			
+			if(is_array($current) && ($current['status'] == 'enabled' || $enabled == false)) {
+			
 				// Load core translations
 				self::load($current['path'], true);
 				
 				// Load extension translations
 				if(class_exists('Administration')) {
 					foreach(Administration::instance()->ExtensionManager->listAll() as $handle => $extension) {
+					
+						// Skip language extensions
+						if(strpos($handle, 'lang_') === false) continue;
+						
+						// Load translations						
 						$path = Administration::instance()->ExtensionManager->__getClassPath($handle) . '/lang/lang.' . self::get() . '.php';
 						if($extension['status'] == EXTENSION_ENABLED && file_exists($path)) {
 							self::load($path);
@@ -266,27 +268,36 @@
 			
 			// Language file unavailable
 			else {
-			
+					
 				// Use default language
-				self::initialize();
-				
-				// Log note
-				if(class_exists('Symphony')) {
-					Symphony::$Log->pushToLog(
-						__('The selected language could not be loaded. Using default English dictionary instead.'), 
-						E_ERROR, 
-						true
-					);
+				self::$_lang = 'en';
+				$default = self::$_languages['en'];
+				if(is_array($default)) {
+					self::load($default['path'], true);
+
+					// Log error
+					if(class_exists('Symphony')) {
+						Symphony::$Log->pushToLog(
+							__('The selected language could not be found. Using default English dictionary instead.'), 
+							E_ERROR, 
+							true
+						);
+					}
+
+				}
+					
+				// No language file available at all
+				else {
+					throw new Exception('Symphony needs at least one language file.');
 				}
 				
 			}
 		}
 
 		public static function fetch() {
-		
 			self::$_languages = array();
 			
-			// Fetch list of active language extensions
+			// Fetch list of active extensions
 			$enabled = array();
 			if(class_exists('Symphony')) {
 				$enabled = Symphony::Database()->fetchCol('name',
