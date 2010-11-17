@@ -73,12 +73,17 @@
 			$this->initialiseDatabase();
 			$this->initialiseExtensionManager();
 
-			// Set current language:
-			// This has to be done after Extension Manager initialisation
-			Lang::set(self::$Configuration->get('lang', 'symphony'));
-
 			if(!self::isLoggedIn()){
 				GenericExceptionHandler::$enabled = false;
+			}
+			
+			// Set system language
+			$user_lang = $this->Author->get('language');
+			if(empty($user_lang)) {
+				Lang::set(self::$Configuration->get('lang', 'symphony'));
+			}
+			else {
+				Lang::set($user_lang);
 			}
 		}
 
@@ -188,8 +193,6 @@
 					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 					$this->Author = AuthorManager::fetchByID($id);
 
-					$this->reloadLangFromAuthorPreference();
-
 					return true;
 				}
 
@@ -220,8 +223,6 @@
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
 					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
-
-					$this->reloadLangFromAuthorPreference();
 
 					return true;
 				}
@@ -264,17 +265,11 @@
 				$this->Cookie->set('pass', $row['password']);
 				self::$Database->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 
-				$this->reloadLangFromAuthorPreference();
-
 				return true;
 			}
 
 			return false;
 
-		}
-
-		public function reloadLangFromAuthorPreference(){
-			Lang::set($this->Author->get('language'));
 		}
 
 		public function resolvePageTitle($page_id) {

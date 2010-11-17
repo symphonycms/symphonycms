@@ -251,6 +251,7 @@
 				
 				// Load extension translations
 				if(class_exists('Administration')) {
+				
 					foreach(Administration::instance()->ExtensionManager->listAll() as $handle => $extension) {
 					
 						// Skip language extensions
@@ -260,8 +261,8 @@
 						$path = Administration::instance()->ExtensionManager->__getClassPath($handle) . '/lang/lang.' . self::get() . '.php';
 						if($extension['status'] == EXTENSION_ENABLED && file_exists($path)) {
 							self::load($path);
-						}			
-					}
+						}		
+					}	
 				}
 			
 			}
