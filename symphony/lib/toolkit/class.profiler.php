@@ -1,90 +1,206 @@
 <?php
 
-	
+	/**
+	 * @package toolkit
+	 */
+	/**
+	 * The Profiler class tracks various performance metrics while a Symphony
+	 * page is being generated. It provides a basic stopwatch functionality and
+	 * memory usage statistics. Profiling occurs in both the Frontend and
+	 * Adminstration execution. The Profiler implements the Singleton interface.
+	 */
 
+	/**
+	 * @var int Defines a constant for when the Profiler should be a complete snapshot of
+	 * the page load, from the very start, to the very end.
+	 */
 	define_safe('PROFILE_RUNNING_TOTAL', 0);
+	/**
+	 * @var int Defines a constant for when a snapshot should be between two points,
+	 * usually when a start time has been given
+	 */
 	define_safe('PROFILE_LAP', 1);
-		
-	Class Profiler{
-	
-		var $_starttime;
-		var $_records;	
-		var $_seed;	
-		
-		function Profiler(){
-			$this->_records = array();
-			$this->_starttime = precision_timer();
-			$this->_seed = NULL;
+
+	Class Profiler implements Singleton {
+
+		/**
+		 * Holds the timestamp from when the profiler was first initialised
+		 */
+		protected static $_starttime  = 0;
+
+		/**
+		 * An array of arrays containing profiling samples. A record contains a
+		 * profile message, the time since $_starttime timestamp, the end timestamp,
+		 * the group for this record, the number of SQL queries and the result of
+		 * memory_get_usage()
+		 */
+		protected static $_samples = array();
+
+		/**
+		 * @var int A seed holds a start time to be used in profiling. If this is not null
+		 * the profiler will use this as the start time instead of $_starttime. This
+		 * is set with the seed function.
+		 *
+		 * @see seed
+		 */
+		protected static $_seed = null;
+
+		/**
+		 * @var Profiler An instance of the Profiler class
+		 */
+		protected static $_instance = null;
+
+		/**
+		 * Returns the Profiler instance, creating one if it does not exist
+		 *
+		 * @return Profiler
+		 */
+		public static function instance(){
+			if(!(Profiler::$_instance instanceof Profiler)) {
+				Profiler::$_instance = new self;
+			}
+
+			return Profiler::$_instance;
 		}
-		
-		function retrieveLast(){
-			return end($this->_records);
+		/**
+		 * The constructor for the profile function sets the start time
+		 */
+		protected function __construct(){
+			Profiler::$_starttime = precision_timer();
 		}
-		
-		function retrieveTotalRunningTime(){
-			$last = $this->retrieveLast();
-			
+
+		/**
+		 * Sets the seed to be a timestamp so that time profiling will use this
+		 * as a starting point
+		 *
+		 * @param int $time
+		 *  The time in seconds
+		 */
+		public static function seed($time = null){
+			Profiler::$_seed = (is_null($time)) ? precision_timer() : $time;
+		}
+
+		/**
+		 * This function creates a new report in the $_samples array where the message
+		 * is the name of this report. By default, all samples are compared to the $_starttime
+		 * but if the PROFILE_LAP constant is passed, it will be compared to specific $_seed
+		 * timestamp. Samples can grouped by type (ie. Datasources, Events), but by default
+		 * are grouped by 'General'. Optionally, the number of SQL queries that have occured
+		 * since either $_starttime or $_seed can be passed. Memory usage is taken with each
+		 * sample which measures the amount of memory allocated to this script by PHP at the
+		 * time of sampling.
+
+		 * @uses memory_get_usage
+		 * @param string $msg
+		 *  A description for this sample
+		 * @param int $type
+		 *  Either PROFILE_RUNNING_TOTAL or PROFILE_LAP
+		 * @param string $group
+		 *  Allows samples to be grouped together, defaults to General.
+		 * @param int $queries
+		 *  The number of MySQL queries that occured since the $_starttime or $_seed
+		 */
+		public function sample($msg, $type=PROFILE_RUNNING_TOTAL, $group='General', $queries=NULL){
+
+			if($type == PROFILE_RUNNING_TOTAL) {
+				Profiler::$_samples[] = array($msg, precision_timer('stop', Profiler::$_starttime), precision_timer(), $group, $queries, memory_get_usage(true));
+			}
+			else{
+				if(!is_null(Profiler::$_seed)){
+					$start = Profiler::$_seed;
+					Profiler::$_seed = null;
+				}
+				else {
+					$start = null;
+				}
+
+				$prev = Profiler::retrieveLast();
+				Profiler::$_samples[] = array($msg, precision_timer('stop', ($start ? $start : $prev[2])), precision_timer(), $group, $queries, memory_get_usage(true));
+			}
+		}
+
+		/**
+		 * Given an index, return the sample at that position otherwise just
+		 * return all samples.
+		 *
+		 * @param int $index
+		 *  The array index to return the sample for
+		 * @return array
+		 *  If no $index is passed an array of all the sample arrays are returned
+		 *  otherwise just the sample at the given $index will be returned.
+		 */
+		public function retrieve($index = null){
+			return !is_null($index) ? Profiler::$_samples[$index] : Profiler::$_samples;
+		}
+
+		/**
+		 * Returns a sample by message, if no sample is found, an empty
+		 * array is returned
+		 *
+		 * @param string $msg
+		 *  The name of the sample to return
+		 * @return array
+		 */
+		public function retrieveByMessage($msg){
+			foreach(Profiler::$_samples as $record){
+				if($record[0] == $msg) return $record;
+			}
+
+			return array();
+		}
+
+		/**
+		 * Returns all the samples that belong to a particular group.
+		 *
+		 * @param string $group
+		 * @return array
+		 */
+		public function retrieveGroup($group){
+			$result = array();
+
+			foreach(Profiler::$_samples as $record){
+				if($record[3] == $group) $result[] = $record;
+			}
+
+			return $result;
+		}
+
+		/**
+		 * Returns the last record from the $_records array
+		 *
+		 * @return array
+		 */
+		public static function retrieveLast(){
+			return end(Profiler::$_samples);
+		}
+
+		/**
+		 * Returns the difference between when the Profiler was initialised
+		 * (aka $_starttime) and the last record the Profiler has.
+		 *
+		 * @return int
+		 */
+		public function retrieveTotalRunningTime(){
+			$last = Profiler::retrieveLast();
+
 			return $last[1];
 		}
 
-		function retrieveTotalMemoryUsage(){
+		/**
+		 * Returns the total memory usage from all samples taken by comparing
+		 * each sample to the base memory sample.
+		 *
+		 * @return int
+		 *  Memory usage in bytes.
+		 */
+		public function retrieveTotalMemoryUsage(){
 			$base = $this->retrieve(0);
 			$total = $last = 0;
 			foreach($this->retrieve() as $item){
 				$total += max(0, (($item[5]-$base[5]) - $last));
 				$last = $item[5]-$base[5];
-			} 
-
+			}
 			return $total;
 		}
-		
-		function sample($msg, $type=PROFILE_RUNNING_TOTAL, $group='General', $queries=NULL){	
-		
-			$start = NULL;
-		
-			if($type == PROFILE_RUNNING_TOTAL)
-				$this->_records[] = array($msg, precision_timer('stop', $this->_starttime), precision_timer(), $group, $queries, memory_get_usage());
-			
-			else{
-				
-				if($this->_seed){ 
-					$start = $this->_seed; 
-					$this->_seed = NULL; 
-				}
-				
-				$prev = end($this->_records);
-				$this->_records[] = array($msg, precision_timer('stop', ($start ? $start : $prev[2])), precision_timer(), $group, $queries, memory_get_usage());
-			}
-		}
-		
-		function retrieve($index=NULL){			
-			return ($index !== NULL ? $this->_records[$index] : $this->_records);				
-		}
-		
-		function retrieveByMessage($msg){
-			if(!is_array($this->_records) || empty($this->_records)) return array();
-			
-			foreach($this->_records as $record){
-				if($record[0] == $msg) return $record; 
-			}
-			
-			return array();
-		}
-		
-		function retrieveGroup($group){
-			if(!is_array($this->_records) || empty($this->_records)) return array();
-			
-			$result = array();
-			
-			foreach($this->_records as $record){
-				if($record[3] == $group) $result[] = $record; 
-			}
-			
-			return $result;
-		}
-		
-		function seed($time=NULL){
-			$this->_seed = ($time ? $time : precision_timer());
-		}			
-	}
 
+	}
