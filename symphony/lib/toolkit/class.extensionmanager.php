@@ -38,22 +38,47 @@
     Class ExtensionManager extends Manager{
 
 		/**
+		 * @var array An array of all the objects that the Manager
+		 *  is responsible for. Defaults to empty.
+		 */
+	    protected static $_pool = array();
+
+		/**
 		 * @var array An array of all extensions whose status is enabled
 		 */
-		static private $_enabled_extensions = null;
+		private static $_enabled_extensions = null;
 
 		/**
 		 * @var array An array of all the subscriptions to Symphony delegates
 		 *  made by extensions.
 		 */
-		static private $_subscriptions =  null;
+		private static $_subscriptions =  null;
 
 		/**
 		 * @var array An associative array of all the extensions in tbl_extensions
-		 *  where the key is the extension name and the value is an array 
+		 *  where the key is the extension name and the value is an array
 		 *  representation of it's accompanying database row.
 		 */
-		static private $_extensions = array();
+		private static $_extensions = array();
+
+		/**
+		 * The constructor for ExtensionManager. This sets the $_Parent to be an
+		 * instance of the Administration class and loads all the extensions into
+		 * memory. This is necessary so that each extension is created to announce
+		 * it's delegates and so that any static calls to extension classes are
+		 * available because they have been loaded into memory with require_once
+		 *
+		 * @see listAll()
+		 * @see create()
+		 *
+		 * @param Administration $parent
+		 *  The Administration object that this manager has been created from
+		 *  passed by reference
+		 */
+        public function __construct(&$parent){
+			parent::__construct($parent);
+			$this->listAll();
+        }
 
 		/**
 		 * Given a name, returns the full class name of an Extension.

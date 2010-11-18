@@ -16,6 +16,12 @@
     Class TextformatterManager extends Manager{
 
 		/**
+		 * @var array An array of all the objects that the Manager
+		 *  is responsible for. Defaults to empty.
+		 */
+	    protected static $_pool = array();
+
+		/**
 		 * Given the filename of a Text Formatter return it's handle. This will remove
 		 * the Symphony convention of formatter.*.php
 		 *

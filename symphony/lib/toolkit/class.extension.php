@@ -12,6 +12,12 @@
 	Abstract Class Extension{
 
 		/**
+		 * @var string The end-of-line constant.
+		 * @deprecated This will no longer exist in Symphony 3
+		 */
+		const CRLF = PHP_EOL;
+
+		/**
 		 * @var integer Determines that a new navigation group is to created
 		 *  in the Symphony backend
 		 */
@@ -22,12 +28,6 @@
 		 *  navigation group in the Symphony backend
 		 */
 		const NAV_CHILD = 0;
-
-		/**
-		 * @var string The end-of-line constant.
-		 * @deprecated This will no longer exist in Symphony 3
-		 */
-		const CRLF = PHP_EOL;
 
 		/**
 		 * @var Administration An instance of the Administration class

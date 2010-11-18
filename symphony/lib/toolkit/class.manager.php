@@ -27,8 +27,8 @@
 		 * The constructor for Manager. This sets the $_Parent to be an
 		 * instance of the Administration class.
 		 *
-		 * @param Adminstration $parent
-		 *  The Adminstration object that this manager has been created from
+		 * @param Administration $parent
+		 *  The Administration object that this manager has been created from
 		 *  passed by reference
 		 */
         public function __construct(&$parent){

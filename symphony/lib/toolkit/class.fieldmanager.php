@@ -14,6 +14,12 @@
 	Class FieldManager extends Manager {
 
 		/**
+		 * @var array An array of all the objects that the Manager
+		 *  is responsible for. Defaults to empty.
+		 */
+	    protected static $_pool = array();
+
+		/**
 		 * @var array An array of all fields whose have been created by ID
 		 */
 		private static $_initialiased_fields = array();
@@ -183,9 +189,9 @@
 			$ret = array();
 
 			if(!is_null($id) && is_numeric($id)){
-				$returnSingle = true;			
+				$returnSingle = true;
 			}
-			
+
 			if(!is_null($id) && is_numeric($id) && isset(self::$_initialiased_fields[$id]) && self::$_initialiased_fields[$id] instanceof Field){
 				$ret[] = $obj = clone self::$_initialiased_fields[$id];
 			}
