@@ -815,6 +815,9 @@
 		 * @param string $dir (optional)
 		 *	the path of the directory to construct the multi-dimensional array
 		 *	for. this defaults to '.'.
+		 * @param string $filter (optional)
+		 *	A regular expression to filter the directories. This is positive filter, ie.
+		 * if the filter matches, the directory is included. Defaults to null.
 		 * @param bool $recurse (optional)
 		 *	true if sub-directories should be traversed and reflected in the
 		 *	resulting array, false otherwise.
@@ -822,15 +825,15 @@
 		 *	null if the $dir should be stripped from the entries in the array.
 		 *	anything else if $dir should be retained. this defaults to null.
 		 * @param array $exclude (optional)
-		 *	ignore files listed in this array. this defaults to an empty array.
+		 *	ignore directories listed in this array. this defaults to an empty array.
 		 * @param bool $ignore_hidden (optional)
-		 *	ignore hidden files (i.e. files that begin with a period). this defaults
+		 *	ignore hidden directory (i.e.directories that begin with a period). this defaults
 		 *	to true.
 		 * @return null|array[]
 		 *	return the array structure reflecting the input directory or null if
          * the input directory is not actually a directory.
 		 */
-		public static function listDirStructure($dir = '.', $recurse = true, $strip_root = null, $exclude = array(), $ignore_hidden = true) {
+		public static function listDirStructure($dir = '.', $filter = null, $recurse = true, $strip_root = null, $exclude = array(), $ignore_hidden = true) {
 			if (!is_dir($dir)) return null;
 
 			$files = array();
@@ -839,14 +842,17 @@
 					($file == '.' or $file == '..')
 					or ($ignore_hidden and $file{0} == '.')
 					or !is_dir("$dir/$file")
-					or in_array($file, $exclude)
-					or in_array("$dir/$file", $exclude)
+					or in_array(array($file, "$dir/$file"), $exclude)
 				) continue;
+
+				if(!is_null($filter)) {
+					if(!preg_match($filter, $file)) continue;
+				}
 
 				$files[] = str_replace($strip_root, '', $dir) ."/$file/";
 
 				if ($recurse) {
-					$files = @array_merge($files, self::listDirStructure("$dir/$file", $recurse, $strip_root, $exclude, $ignore_hidden));
+					$files = @array_merge($files, self::listDirStructure("$dir/$file", $filter, $recurse, $strip_root, $exclude, $ignore_hidden));
 				}
 			}
 
@@ -901,8 +907,7 @@
             	if (
 					($file == '.' or $file == '..')
 					or ($ignore_hidden and $file{0} == '.')
-					or in_array($file, $exclude)
-					or in_array("$dir/$file", $exclude)
+					or in_array(array($file, "$dir/$file"), $exclude)
 				) continue;
 
                 if(is_dir("$dir/$file")) {

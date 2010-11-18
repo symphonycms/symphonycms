@@ -613,22 +613,24 @@
         /**
 		 * Will return an associative array of all extensions and their about information
 		 *
+		 * @param string $filter
+		 *  Allows a regular expression to be passed to return only extensions whose
+		 *  folders match the filter.
 		 * @return array
 		 *  An associative array with the key being the extension folder and the value
 		 *  being the extension's about information
 		 */
-        public function listAll(){
+        public function listAll($filter = null){
 
 			$result = array();
-	        $structure = General::listStructure(EXTENSIONS, array(), false, 'asc', EXTENSIONS);
+			$extensions = General::listDirStructure(EXTENSIONS, $filter, false, EXTENSIONS);
 
-	        $extensions = $structure['dirlist'];
-
-	        if(is_array($extensions) && !empty($extensions)){
-		        foreach($extensions as $e){
+			if(is_array($extensions) && !empty($extensions)){
+				foreach($extensions as $extension){
+					$e = trim($extension, '/');
 					if($about = $this->about($e)) $result[$e] = $about;
-		        }
-	        }
+				}
+			}
 
 			return $result;
         }
