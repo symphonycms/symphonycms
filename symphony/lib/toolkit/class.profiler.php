@@ -87,9 +87,9 @@
 		 * timestamp. Samples can grouped by type (ie. Datasources, Events), but by default
 		 * are grouped by 'General'. Optionally, the number of SQL queries that have occured
 		 * since either $_starttime or $_seed can be passed. Memory usage is taken with each
-		 * sample which measures the amount of memory allocated to this script by PHP at the
+		 * sample which measures the amount of memory used by this script by PHP at the
 		 * time of sampling.
-
+		 *
 		 * @uses memory_get_usage
 		 * @param string $msg
 		 *  A description for this sample
@@ -103,7 +103,7 @@
 		public function sample($msg, $type=PROFILE_RUNNING_TOTAL, $group='General', $queries=NULL){
 
 			if($type == PROFILE_RUNNING_TOTAL) {
-				Profiler::$_samples[] = array($msg, precision_timer('stop', Profiler::$_starttime), precision_timer(), $group, $queries, memory_get_usage(true));
+				Profiler::$_samples[] = array($msg, precision_timer('stop', Profiler::$_starttime), precision_timer(), $group, $queries, memory_get_usage());
 			}
 			else{
 				if(!is_null(Profiler::$_seed)){
@@ -115,7 +115,7 @@
 				}
 
 				$prev = Profiler::retrieveLast();
-				Profiler::$_samples[] = array($msg, precision_timer('stop', ($start ? $start : $prev[2])), precision_timer(), $group, $queries, memory_get_usage(true));
+				Profiler::$_samples[] = array($msg, precision_timer('stop', ($start ? $start : $prev[2])), precision_timer(), $group, $queries, memory_get_usage());
 			}
 		}
 
