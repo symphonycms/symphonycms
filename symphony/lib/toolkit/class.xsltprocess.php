@@ -1,169 +1,250 @@
 <?php
 
-	static $processErrors = array();
-   
-	function trapXMLError($errno, $errstr, $errfile, $errline, $errcontext, $ret=false){
-		
-		global $processErrors;
-		
-		if($ret === true) return $processErrors;
-		
-		$tag = 'DOMDocument::';
-		$processErrors[] = array('type' => 'xml', 'number' => $errno, 'message' => str_replace($tag, NULL, $errstr), 'file' => $errfile, 'line' => $errline);
-	}
-	
-	function trapXSLError($errno, $errstr, $errfile, $errline, $errcontext, $ret=false){
-		
-		global $processErrors;
-		
-		if($ret === true) return $processErrors;
-		
-		$tag = 'DOMDocument::';
-		$processErrors[] = array('type' => 'xsl', 'number' => $errno, 'message' => str_replace($tag, NULL, $errstr), 'file' => $errfile, 'line' => $errline);
-	}	
+	/**
+	 * @package toolkit
+	 */
+	/**
+	 * The XsltProcess class is responsible for taking a chunk of XML
+	 * and applying an XSLT stylesheet to it. Custom error handlers are
+	 * used to capture any errors that occured during this process, and
+	 * are exposed to the ExceptionHandlers for output.
+	 */
 
 	Class XsltProcess{
-	
+
+		/**
+		 * @var string The XML for the transformation to be applied to
+		 */
 		private $_xml;
+
+		/**
+		 * @var string The XSL for the transformation
+		 */
 		private $_xsl;
-		private $_errors;
-		
-		function __construct($xml=null, $xsl=null){
-			
-			if(!self::isXSLTProcessorAvailable()) return false;
-			
+
+		/**
+		 * @var array Any errors that occur during the transformation
+		 *  are stored in this array.
+		 */
+		private $_errors = array();
+
+		/**
+		 * The XsltProcess constructor takes a two parameters for the
+		 * XML and the XSL and initalises the $_xml and $_xsl variables.
+		 * It checks to see if there is an existing XSLTProcessor
+		 *
+		 * @param string $xml
+		 *  The XML for the transformation to be applied to
+		 * @param string $xsl
+		 *  The XSL for the transformation
+		 * @return boolean
+		 *  True if there is an existing XsltProcessor class, false otherwise
+		 */
+		public function __construct($xml=null, $xsl=null){
+
+			if(!XsltProcess::isXSLTProcessorAvailable()) return false;
+
 			$this->_xml = $xml;
 			$this->_xsl = $xsl;
-			
-			$this->_errors = array();
-			
+
 			return true;
-			
 		}
-		
+
+		/**
+		 * Checks if there is an available XSLTProcessor
+		 *
+		 * @return boolean
+		 *  True if there is an existing XsltProcessor class, false otherwise
+		 */
 		public static function isXSLTProcessorAvailable(){
 			return (class_exists('XsltProcessor') || function_exists('xslt_process'));
 		}
-		
-		private function __process($XSLProc, $xml_arg, $xsl_arg, $xslcontainer = null, $args = null, $params = null) {
-		                         
-			// Start with preparing the arguments
-			$xml_arg = str_replace('arg:', '', $xml_arg);
-			$xsl_arg = str_replace('arg:', '', $xsl_arg);
-			
+
+		/**
+		 * This function will take a given XML file, a stylesheet and apply
+		 * the transformation. Any errors will call the error function to log
+		 * them into the $_errors array
+		 *
+		 * @see __error
+		 * @see __process
+		 * @param string $xml
+		 *  The XML for the transformation to be applied to
+		 * @param string $xsl
+		 *  The XSL for the transformation
+		 * @param array $parameters
+		 *  An array of available parameters the XSL will have access to
+		 * @param array $register_functions
+		 *  An array of available PHP functions that the XSL can use
+		 * @return string
+		 *  The string of the resulting transform.
+		 */
+		public function process($xml=null, $xsl=null, Array $parameters=array(), Array $register_functions=array()){
+
+			if($xml) $this->_xml = $xml;
+			if($xsl) $this->_xsl = $xsl;
+
+			// dont let process continue if no xsl functionality exists
+			if(!XsltProcess::isXSLTProcessorAvailable()) return false;
+
+			$XSLProc = new XsltProcessor;
+
+			if(!empty($register_functions)) $XSLProc->registerPHPFunctions($register_functions);
+
+			$result = @$this->__process(
+			   $XSLProc,
+			   $this->_xml,
+			   $this->_xsl,
+			   $parameters
+			);
+
+			unset($XSLProc);
+
+			return $result;
+		}
+
+		/**
+		 * Uses DomDocument to transform the document. Any errors that
+		 * occur are trapped by custom error handlers, trapXMLError or
+		 * trapXSLError.
+		 *
+		 * @param XsltProcessor $XSLProc
+		 *  An instance of XsltProcessor
+		 * @param string $xml
+		 *  The XML for the transformation to be applied to
+		 * @param string $xsl
+		 *  The XSL for the transformation
+		 * @param array $parameters
+		 *  An array of available parameters the XSL will have access to
+		 * @return string
+		 */
+		private function __process(XsltProcessor $XSLProc, $xml, $xsl, Array $parameters = array()) {
+
 			// Create instances of the DomDocument class
-			$xml = new DomDocument;
-			$xsl = new DomDocument;	     
-			 
-			// Set up error handling					
+			$xmlDoc = new DomDocument;
+			$xslDoc= new DomDocument;
+
+			// Set up error handling
 			if(function_exists('ini_set')){
 				$ehOLD = ini_set('html_errors', false);
-			}	
-				
+			}
+
 			// Load the xml document
-			set_error_handler('trapXMLError');	
-			$xml->loadXML($args[$xml_arg]);
-			
+			set_error_handler(array($this, 'trapXMLError'));
+			$xmlDoc->loadXML($xml);
+
 			// Must restore the error handler to avoid problems
 			restore_error_handler();
-			
+
 			// Load the xml document
-			set_error_handler('trapXSLError');	
-			$xsl->loadXML($args[$xsl_arg]);
+			set_error_handler(array($this, 'trapXSLError'));
+			$xslDoc->loadXML($xsl);
 
 			// Load the xsl template
-			$XSLProc->importStyleSheet($xsl);
-			
+			$XSLProc->importStyleSheet($xslDoc);
+
 			// Set parameters when defined
-			if ($params) {
-				General::flattenArray($params);
-				
-				foreach ($params as $param => $value) {
-					$XSLProc->setParameter('', $param, $value);
-				}
+			if (!empty($parameters)) {
+				General::flattenArray($parameters);
+
+				$XSLProc->setParameter('', $parameters);
 			}
-			
+
 			restore_error_handler();
-			
+
 			// Start the transformation
-			set_error_handler('trapXMLError');	
-			$processed = $XSLProc->transformToXML($xml);
+			set_error_handler(array($this, 'trapXMLError'));
+			$processed = $XSLProc->transformToXML($xmlDoc);
 
 			// Restore error handling
 			if(function_exists('ini_set') && isset($ehOLD)){
 				ini_set('html_errors', $ehOLD);
 			}
-			
-			restore_error_handler();	
-				
-			// Put the result in a file when specified
-			if($xslcontainer) return @file_put_contents($xslcontainer, $processed);	
-			else return $processed;
-			
-		}	
-		
-		public function process($xml=null, $xsl=null, array $parameters=array(), array $register_functions=array()){
 
-			global $processErrors;
-			
-			$processErrors = array();
-			
-			if($xml) $this->_xml = $xml;
-			if($xsl) $this->_xsl = $xsl;
-			
-			$xml = trim($xml);
-			$xsl = trim($xsl);
-			
-			if(!self::isXSLTProcessorAvailable()) return false; //dont let process continue if no xsl functionality exists
-			
-			$arguments = array(
-		   		'/_xml' => $this->_xml,
-		   		'/_xsl' => $this->_xsl
-			);
-			
-			$XSLProc = new XsltProcessor;
-			
-			if(!empty($register_functions)) $XSLProc->registerPHPFunctions($register_functions);
-				
-			$result = @$this->__process(
-			   $XSLProc,
-			   'arg:/_xml',
-			   'arg:/_xsl',
-			   null,
-			   $arguments,
-			   $parameters
-			);	
-				
-			while($error = @array_shift($processErrors)) $this->__error($error['number'], $error['message'], $error['type'], $error['line']);
-			
-			unset($XSLProc);
-			
-			return $result;		
+			restore_error_handler();
+
+			return $processed;
 		}
-		
-		private function __error($number, $message, $type=NULL, $line=NULL){
-			
-			$context = NULL;
-			
+
+		/**
+		 * A custom error handler especially for XML errors.
+		 *
+		 * @see http://au.php.net/manual/en/function.set-error-handler.php
+		 * @param int $errno
+		 * @param int $errstr
+		 * @param int $errfile
+		 * @param int $errline
+		 */
+		public function trapXMLError($errno, $errstr, $errfile, $errline){
+			$this->__error($errno, str_replace('DOMDocument::', null, $errstr), $errfile, $errline, 'xml');
+		}
+
+		/**
+		 * A custom error handler especially for XSL errors.
+		 *
+		 * @see http://au.php.net/manual/en/function.set-error-handler.php
+		 * @param int $errno
+		 * @param int $errstr
+		 * @param int $errfile
+		 * @param int $errline
+		 */
+		public function trapXSLError($errno, $errstr, $errfile, $errline){
+			$this->__error($errno, str_replace('DOMDocument::', null, $errstr), $errfile, $errline, 'xsl');
+		}
+
+		/**
+		 * Writes an error to the $_errors array, which contains the error information
+		 * and some basic debugging information.
+		 *
+		 * @see http://au.php.net/manual/en/function.set-error-handler.php
+		 * @param int $number
+		 * @param string $message
+		 * @param string $file
+		 * @param string $line
+		 * @param string $type
+		 *  Where the error occured, can be either 'xml' or 'xsl'
+		 */
+		public function __error($number, $message, $file = null, $line = null, $type = null){
+
+			$context = null;
+
 			if($type == 'xml') $context = $this->_xml;
 			if($type == 'xsl') $context = $this->_xsl;
-			
+
 			$this->_errors[] = array(
-									'number' => $number, 
-									'message' => $message, 
-									'type' => $type, 
-									'line' => $line,
-									'context' => $context);		
+				'number' => $number,
+				'message' => $message,
+				'file' => $file,
+				'line' => $line,
+				'type' => $type,
+				'context' => $context
+			);
 		}
-		
-		public function isErrors(){		
-			return (!empty($this->_errors) ? true : false);				
+
+		/**
+		 * Returns boolean if any errors occured during the transformation.
+		 *
+		 * @see getError
+		 * @return boolean
+		 */
+		public function isErrors(){
+			return (!empty($this->_errors) ? true : false);
 		}
-		
+
+		/**
+		 * Provides an Iterator interface to return an error from the $_errors
+		 * array. Repeat calls to this function to get all errors
+		 *
+		 * @param boolean $all
+		 *  If true, return all errors instead of one by one. Defaults to false
+		 * @rewind boolean $rewind
+		 *  If rewind is true, resets the internal array pointer to the start of
+		 * the $_errors array. Defaults to false.
+		 * @return array
+		 *  Either an array of error array's or just an error array
+		 */
 		public function getError($all=false, $rewind=false){
 			if($rewind) reset($this->_errors);
-			return ($all ? $this->_errors : each($this->_errors));				
+			return ($all ? $this->_errors : each($this->_errors));
 		}
-		
-	}
 
+	}
