@@ -146,15 +146,15 @@
 		        $path = $this->__getDriverPath($handle);
 
 		        if(!is_file($path)){
-					throw new Exeption(
+					throw new Exception(
 						__(
-							'Could not find Text Formatter <code>%s</code>. If the Text Formatter was provided by an Extensions, ensure that it is installed, and enabled.',
+							'Could not find Text Formatter <code>%s</code>. If the Text Formatter was provided by an Extension, ensure that it is installed, and enabled.',
 							array($name)
 						)
 					);
 		        }
 
-				if(!@class_exists($classname))
+				if(!class_exists($classname))
 					require_once($path);
 
 				self::$_pool[$handle] = new $classname($this->_Parent);
