@@ -1,43 +1,146 @@
 <?php
-	
+	/**
+	 * @package toolkit
+	 */
+
+	 /**
+	  * The iEvent interface provides two functions, about and load that
+	  * Events can implement.
+	  */
 	interface iEvent{
+		/**
+		 * Return an associative array of meta information about this event such
+		 * creation date, who created it and the name.
+		 *
+		 * @return array
+		 */
 		public static function about();
+
+		/**
+		 * The load functions determines whether an event will be executed or not
+		 * by comparing the Event's action with the $_POST data. This function will
+		 * be called everytime a page is loaded that an event is attached too. If the
+		 * action does exist, it typically calls the __trigger method, otherwise void.
+		 *
+		 * @return mixed
+		 *  XMLElement with the event result or void if the action did not match
+		 */
 		public function load();
 	}
-	
+
+	/**
+	 * The abstract Event classes defines some base methods that all Events inherit.
+	 * It has one abstract method, __trigger, which Events must implement. Event
+	 * execution is determined based on an action (which maps to a form action
+	 * from the Frontend). A load function determines whether this Event matches
+	 * the action and if so, call the Event's __trigger to run the logic. On every page
+	 * load, all Event's that are attached to the page will have their load function's executed.
+	 * Events are called in order of their priority and if there is more than one event
+	 * with the same priority, in alphabetical order. An event class is saved through the
+	 * Symphony backend, which uses an event template defined in /symphony/template/event.tpl
+	 * Events implement the iEvent interface, which defines the load and about functions.
+	 */
 	abstract Class Event implements iEvent{
-		
-		protected $_Parent;
-		protected $_env;
-		
+		/**
+		 * @var string The end-of-line constant.
+		 * @deprecated This will no longer exist in Symphony 3
+		 */
 		const CRLF = PHP_EOL;
+
+		/**
+		 * @var int Represents High Priority, that this event should run
+		 *  first
+		 */
 		const kHIGH = 3;
+
+		/**
+		 * @var int Represents Normal Priority, that this event should run
+		 *  normally. This is the default Event Priority
+		 */
 		const kNORMAL = 2;
+
+		/**
+		 * @var int Represents High Priority, that this event should run
+		 *  last
+		 */
 		const kLOW = 1;
-				
-		public function __construct(&$parent, $env=NULL){
+
+		/**
+		 * @var Administration An instance of the Administration class
+		 * @see core.Administration
+		 */
+	    protected $_Parent;
+
+		/**
+		 * @var array Holds all the environment variables which include
+		 *  parameters set by other Datasources or Events.
+		 */
+		protected $_env = array();
+
+		/**
+		 * The constructor for an Event sets the parent and env variables
+		 * from their parameters
+		 *
+		 * @param Adminstration $parent
+		 *  The Adminstration object that this page has been created from
+		 *  passed by reference
+		 * @param array $env
+		 *  The environment variables from the Frontend class which includes
+		 *  any params set by Symphony or Datasources or by other Events
+		 */
+		public function __construct(&$parent, Array $env = array()){
 			$this->_Parent = $parent;
 			$this->_env = $env;
 		}
-		
-		## This function is required in order to edit it in the event editor page. 
-		## Do not overload this function if you are creating a custom event. It is only
-		## used by the event editor
+
+		/**
+		 * This function is required in order to edit it in the event editor page.
+		 * Do not overload this function if you are creating a custom event. It is only
+		 * used by the event editor.
+		 *
+		 * @return boolean
+		 *	 True if event can be edited, false otherwise. Defaults to false
+		 */
 		public static function allowEditorToParse(){
 			return false;
 		}
-				
-		## This function is required in order to identify what type of event this is for
-		## use in the event editor. It must remain intact. Do not overload this function in
-		## custom events.
+
+		/**
+		 * This function is required in order to identify what section this event is for. It
+		 * is used in the event editor. It must remain intact. Do not overload this function in
+		 * custom events.
+		 *
+		 * @return int
+		 */
 		public static function getSource(){
 			return NULL;
 		}
-		
+
+		/**
+		 * Priority determines Event importance and when it should be executed.
+		 * The default priority for an event is kNORMAL, with kHIGH and kLOW
+		 * being the other available options. Events execution is kHIGH to
+		 * kNORMAL to kLOW. If there are more than one event at the same priority
+		 * level, they are sorted alphabetically by event handle and executed in that
+		 * order for that priority.
+		 *
+		 * @see toolkit.FrontendPage#__findEventOrder
+		 * @return int
+		 *  The available constants are kLOW, kNORMAL and kHIGH. Defaults to
+		 *  kNORMAL
+		 */
 		public function priority(){
 			return self::kNORMAL;
 		}
-		
+
+		/**
+		 * This function must be included in an event. The purpose of this function
+		 * is to define the logic of this particular event. It assumes that this event
+		 * has already been triggered from the load function
+		 *
+		 * @return mixed
+		 *  Typically returns an XMLElement with the event information (success
+		 *  or failure included
+		 */
 		abstract protected function __trigger();
 	}
-	
