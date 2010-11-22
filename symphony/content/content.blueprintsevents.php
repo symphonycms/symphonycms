@@ -109,12 +109,15 @@
 				if(is_array($sections) && !empty($sections)){
 					foreach($sections as $s) $options[] = array($s->get('id'), ($fields['source'] == $s->get('id')), $s->get('name'));
 				}
-			
+				
 				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
-				$group->appendChild($label);
-			
+				$div = new XMLElement('div');
+				if(isset($this->_errors['source'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['source']));
+				else $div->appendChild($label);
+				$group->appendChild($div);
+				
 				$fieldset->appendChild($group);
-			
+				
 				$label = Widget::Label(__('Filter Rules'));	
 
 				$options = array(
@@ -207,6 +210,7 @@
 			$this->_errors = array();
 			
 			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
+			if(trim($fields['source']) == '') $this->_errors['source'] = __('This is a required field');
 			
 			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
