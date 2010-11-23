@@ -41,22 +41,29 @@ code {
 
 /* Forms */
 fieldset {
+	margin-top: 82px;
+	padding-bottom: 1.5em;
 	border: none;
 }
 legend {
-	padding: 82px 0 1.25em;
+	padding-bottom: 1.25em;
 	color: #887;
 	text-shadow: -1px 2px 3px #ddd;
 }
+legend+label {
+	margin-top: -0.2em;
+}
 fieldset fieldset {
-	margin-top: 1.5em;
+	position: relative;
+	margin-top: 1.75em;
 	padding: 0 1.75em 1.5em;
-	border-top: 3.25em solid #eed;
 	background: #eed;
-	float: left;
 }
 fieldset fieldset legend {
-	padding-top: 1.5em;
+	float: left;
+	width: 100%;
+	padding: 1.5em 0 1.25em;
+	background: #eed;
 	color: #776;
 	text-shadow: -1px 2px 3px #ccc;
 }
@@ -65,25 +72,28 @@ label {
 	margin-top: 1.5em;
 }
 label input, select {
+	position: relative;
 	display: block;
 	margin-top: 0.25em;
 	min-width: 100%;
 	max-width: 100%;
 }
 .group {
-	position: relative;
-	float:left;
-	width:100%;
-	margin: 0;
-	padding: 1.5em 0 1em;
+	padding: 1.5em 0 0;
+}
+.group:after {
+	content: " ";
+	height: 1%;
+	display: block;
+	clear: both;
 }
 .group label {
 	margin: 0;
-	float: left;
+	float: right;
 	width: 48%;
 }
 .group label:first-child {
-	margin-right:4%;
+	float: left;
 }
 .option {
 	padding-left: 1.75em;
@@ -176,28 +186,24 @@ dd {
 /* Messages */
 .note, .warning {
 	margin-top: 1.5em;
-	padding: 1em 1.25em;
-	overflow: hidden;
-	background: #d41;
 	color: #fff;
 }
 .note {
+	padding: 1em 1.25em;
 	background: #57b;
 }
-label.warning {
-	margin-bottom: -2.5em;
+.warning {
+	padding: 1em 1.25em;
+	background: #d41;
 }
-div.warning {
-	left: 0;
-	margin: 1.5em 0 -2.5em;
-	padding: 1em 1.25em 1em 3.25em;
+p.warning {
+	margin-top: 0;
 }
 
 /* Lists */
 ol{
 	margin-left: 1.5em;
 }
-
 ol li{
 	margin-bottom: 1em;
 }

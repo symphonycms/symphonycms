@@ -137,19 +137,21 @@ p.help {
 	color: #887;
 }
 div.invalid {
-	margin-bottom: 1.5em;
-	border: 1px solid #c31;
-	border-bottom-color: #b21;
-	padding: 0.75em 1.25em 1em;
-	background-color: #d42;
 	color: #fff;
 }
-.group > .invalid {
-	padding: 0.75em 1% 1em;
-	width: 48%;
+.invalid > label {
+	margin-bottom: 0;
+	padding: 0.75em 1.25em 1em;
+	background-color: #d42;
+	border: 1px solid #c31;
+	border-bottom-width: 0;
 }
-div.invalid p {
-	margin: -1em 0 0;
+.invalid > p {
+	padding: 0.75em 1.25em 1em;
+	background-color: #d42;
+	border: 1px solid #c31;
+	border-top-width: 0;
+	border-bottom-color: #b21;
 }
 div.invalid a {
 	color: #fb9;
