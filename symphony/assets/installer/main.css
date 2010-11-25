@@ -1,5 +1,3 @@
-/* @override http://symphony.local:8888/2/symphony/assets/installer/main.css */
-
 /* Basic elements */
 body {
 	margin: 0 auto;
@@ -186,18 +184,18 @@ dd {
 /* Messages */
 .note, .warning {
 	margin-top: 1.5em;
+	padding: 1em 1.25em;
 	color: #fff;
 }
 .note {
-	padding: 1em 1.25em;
 	background: #57b;
 }
 .warning {
-	padding: 1em 1.25em;
 	background: #d41;
 }
 p.warning {
 	margin-top: 0;
+	padding-top: 0;
 }
 
 /* Lists */
