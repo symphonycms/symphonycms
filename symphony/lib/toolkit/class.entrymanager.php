@@ -1,17 +1,46 @@
 <?php
 
+	/**
+	 * @package toolkit
+	 */
+	/**
+	 * The EntryManager is responsible for all Entry objects in Symphony.
+	 * Entries are stored in the database in a cluster of tables. There is a
+	 * parent entry row stored in tbl_entries and then each field's data is
+	 * stored in a seperate table, tbl_entries_data_{field_id}. Where Field ID
+	 * is generated when the Section is saved. This Manager provides basic
+	 * add, edit, delete and fetching methods for Entries.
+	 */
+
 	include_once(TOOLKIT . '/class.sectionmanager.php');
 	include_once(TOOLKIT . '/class.textformattermanager.php');
 	include_once(TOOLKIT . '/class.entry.php');
 
 	Class EntryManager{
 
-		var $_Parent;
-		var $formatterManager;
-		var $sectionManager;
-		var $fieldManager;
-		var $_fetchSortField;
-		var $_fetchSortDirection;
+		/**
+		 * @var mixed The class that initialised the EntryManager, usually
+		 *  Administration
+		 */
+		protected $_Parent;
+
+		/**
+		 * @var TextFormatterManager
+		 */
+		public $formatterManager;
+
+		/**
+		 * @var SectionManager
+		 */
+		public $sectionManager;
+
+		/**
+		 * @var FieldManager
+		 */
+		public $fieldManager;
+
+		protected $_fetchSortField = null;
+		protected $_fetchSortDirection = null;
 
 		public function __construct($parent){
 			$this->_Parent = $parent;
@@ -19,39 +48,72 @@
 			$this->formatterManager = new TextformatterManager($this->_Parent);
 			$this->sectionManager = new SectionManager($this->_Parent);
 			$this->fieldManager = new FieldManager($this->_Parent);
-
-			$this->_fetchSortField = NULL;
-			$this->_fetchSortDirection = NULL;
-
 		}
 
-		public function create(){
-			$obj = new Entry($this);
-			return $obj;
+		/**
+		 * Setter function for the default sorting direction of the Fetch
+		 * function. Available options are RAND, ASC or DESC.
+		 *
+		 * @param string $direction
+		 *  The direction that entries should be sorted in, available options
+		 *  are RAND, ASC or DESC.
+		 */
+		public function setFetchSortingDirection($direction){
+			$direction = strtoupper($direction);
+			if($direction == 'RANDOM') $direction = 'RAND';
+			$this->_fetchSortDirection = (in_array($direction, array('RAND', 'ASC', 'DESC')) ? $direction : NULL);
 		}
 
-		public function delete($entries){
-
-			if(!is_array($entries))	$entries = array($entries);
-
-			foreach($entries as $id){
-				$e = $this->fetch($id);
-
-				if(!is_object($e[0])) continue;
-
-				foreach($e[0]->getData() as $field_id => $data){
-					$field = $this->fieldManager->fetch($field_id);
-					$field->entryDataCleanup($id, $data);
-				}
-			}
-
-			$entry_list = implode("', '", $entries);
-			Symphony::Database()->delete('tbl_entries', " `id` IN ('$entry_list') ");
-
-			return true;
+		/**
+		 * Sets the field to applying the sorting direction on when fetching
+		 * entries
+		 *
+		 * @param $field_id
+		 *  The ID of the Field that should be sorted on
+		 */
+		public function setFetchSortingField($field_id){
+			$this->_fetchSortField = $field_id;
 		}
 
-		public function add($entry){
+		/**
+		 * Convienence function that will set sorting field and direction
+		 * by calling setFetchSortingField & setFetchSortingDirection
+		 *
+		 * @see setFetchSortingField
+		 * @see setFetchSortingDirection
+		 * @param $field_id
+		 *  The ID of the Field that should be sorted on
+		 * @param string $direction
+		 *  The direction that entries should be sorted in, available options
+		 *  are RAND, ASC or DESC. Defaults to ASC
+		 */
+		public function setFetchSorting($field_id, $direction='ASC'){
+			$this->setFetchSortingField($field_id);
+			$this->setFetchSortingDirection($direction);
+		}
+
+		/**
+		 * Returns an object representation of the sorting for the
+		 * EntryManager, with the field and direction provided
+		 *
+		 * @return object
+		 */
+		public function getFetchSorting(){
+			return (object)array(
+				'field' => $this->_fetchSortField,
+				'direction' => $this->_fetchSortDirection
+			);
+		}
+
+		/**
+		 * Given an Entry object, iterate over all of the fields in that object
+		 * an insert them into their relevant entry tables.
+		 *
+		 * @param Entry $entry
+		 *  An Entry object to insert into the database
+		 * @return boolean
+		 */
+		public function add(Entry $entry){
 
 			$fields = $entry->get();
 
@@ -93,7 +155,14 @@
 
 		}
 
-		public function edit($entry){
+		/**
+		 * Update an existing Entry object given an Entry object
+		 *
+		 * @param Entry $entry
+		 *  An Entry object
+		 * @return boolean
+		 */
+		public function edit(Entry $entry){
 			foreach ($entry->getData() as $field_id => $field) {
 				if (empty($field_id)) continue;
 
@@ -117,7 +186,6 @@
 					if(is_array($value)){
 						foreach($value as $ii => $v) $fields[$ii][$key] = $v;
 					}
-
 					else{
 						$fields[max(0, count($fields) - 1)][$key] = $value;
 					}
@@ -135,100 +203,70 @@
 
 		}
 
-		public function fetchByPage($page, $section_id, $entriesPerPage, $where=NULL, $joins=NULL, $group=false, $records_only=false, $buildentries=true, $element_names=null){
+		/**
+		 * Given an Entry object, or an array of Entry objects delete all
+		 * data associated with this Entry using Field's entryDataCleanup
+		 * function, and then remove this Entry from tbl_entries.
+		 *
+		 * @param array|Entry $entries
+		 *  An Entry object, or an array of Entry objects to delete
+		 * @param boolean
+		 */
+		public function delete($entries){
 
-			if(!is_string($entriesPerPage) && !is_numeric($entriesPerPage)){
-				trigger_error(__('Entry limit specified was not a valid type. String or Integer expected.'), E_USER_WARNING);
-				return NULL;
+			if(!is_array($entries)) {
+				$entries = array($entries);
 			}
 
-			$start = (max(1, $page) - 1) * $entriesPerPage;
+			foreach($entries as $id){
+				$e = $this->fetch($id);
 
-			$records = ($entriesPerPage == '0' ? NULL : $this->fetch(NULL, $section_id, $entriesPerPage, $start, $where, $joins, $group, $buildentries, $element_names));
+				if(!is_object($e[0])) continue;
 
-			if($records_only) return array('records' => $records);
-
-			$entries = array(
-				'total-entries' => $this->fetchCount($section_id, $where, $joins, $group),
-				'records' => $records,
-				'start' => max(1, $start),
-				'limit' => $entriesPerPage
-			);
-
-			$entries['remaining-entries'] = max(0, $entries['total-entries'] - ($start + $entriesPerPage));
-			$entries['total-pages'] = max(1, ceil($entries['total-entries'] * (1 / $entriesPerPage)));
-			$entries['remaining-pages'] = max(0, $entries['total-pages'] - $page);
-
-			return $entries;
-
-		}
-
-		public function fetchCount($section_id=NULL, $where=NULL, $joins=NULL, $group=false){
-			if(!$section_id) return false;
-
-			$section = $this->sectionManager->fetch($section_id);
-
-			if(!is_object($section)) return false;
-
-			$sort = NULL;
-
-			## We want to sort if thereis a custom entry sort order
-			/*if($this->_fetchSortField && $field = $this->fieldManager->fetch($this->_fetchSortField)){
-				$field->buildSortingSQL($joins, $where, $sort, $this->_fetchSortDirection);
-				if(!$group) $group = $field->requiresSQLGrouping();
+				foreach($e[0]->getData() as $field_id => $data){
+					$field = $this->fieldManager->fetch($field_id);
+					$field->entryDataCleanup($id, $data);
+				}
 			}
 
-			elseif($section->get('entry_order') && $field = $this->fieldManager->fetch($section->get('entry_order'))){
-				$field->buildSortingSQL($joins, $where, $sort, $section->get('entry_order_direction'));
-				if(!$group) $group = $field->requiresSQLGrouping();
-			}
+			$entry_list = implode("', '", $entries);
+			Symphony::Database()->delete('tbl_entries', " `id` IN ('$entry_list') ");
 
-			else{
-				$sort = 'ORDER BY `e`.`id` DESC';
-			}*/
-
-			$sql = "
-
-				SELECT count(".($group ? 'DISTINCT ' : '')."`e`.id) as `count`
-				FROM `tbl_entries` AS `e`
-				$joins
-				WHERE 1
-				".($section_id ? "AND `e`.`section_id` = '$section_id' " : '')."
-				$where
-			";
-
-			return Symphony::Database()->fetchVar('count', 0, $sql);
-
+			return true;
 		}
 
-		public function setFetchSortingField($field_id){
-			$this->_fetchSortField = $field_id;
-		}
-
-		public function setFetchSortingDirection($direction){
-			$direction = strtoupper($direction);
-			if($direction == 'RANDOM') $direction = 'RAND';
-			$this->_fetchSortDirection = (in_array($direction, array('RAND', 'ASC', 'DESC')) ? $direction : NULL);
-		}
-
-		public function setFetchSorting($field_id, $direction='ASC'){
-			$this->setFetchSortingField($field_id);
-			$this->setFetchSortingDirection($direction);
-		}
-
-		public function getFetchSorting(){
-			return (object)array(
-				'field' => $this->_fetchSortField,
-				'direction' => $this->_fetchSortDirection
-			);
-		}
-
-		/***
-
-			Warning: Do not provide $entry_id as an array if not specifiying the $section_id
-
-		***/
-		public function fetch($entry_id=NULL, $section_id=NULL, $limit=NULL, $start=NULL, $where=NULL, $joins=NULL, $group=false, $buildentries=true, $element_names=null){
+		/**
+		 * This function will return an array of Entry objects given an ID or an array of ID's.
+		 * Do not provide $entry_id as an array if not specifiying the $section_id. This function
+		 * is commonly passed custom SQL statements through the $where and $join parameters
+		 * that is generated by the fields of this section
+		 *
+		 * @param integer|array $entry_id
+		 *  An array of Entry ID's or an Entry ID to return
+		 * @pararm integer $section_id
+		 *  The ID of the Section that these entries are contained in
+		 * @param integer $limit
+		 *  The limit of entries to return
+		 * @param integer $start
+		 *  The starting offset of the entries to return
+		 * @param string $where
+		 *  Any custom WHERE clauses
+		 * @param string $joins
+		 *  Any custom JOIN's
+		 * @param boolean $group
+		 *  Whether the entries need to be grouped by Entry ID or not
+		 * @param boolean $records_only
+		 *  If this is set to true, an array of Entry objects will be returned
+		 *  without any basic pagination information. Defaults to false
+		 * @param boolean $buildentries
+		 *  Whether to return an array of entry ID's or Entry objects. Defaults to
+		 *  true, which will return Entry objects
+		 * @param array $elementnames
+		 *  Choose whether to get data from a subset of fields or all fields in a section,
+		 *  by providing an array of field names. Defaults to null, which will load data
+		 *  from all fields in a section.
+		 */
+		public function fetch($entry_id = null, $section_id = null, $limit = null, $start = null, $where = null, $joins = null, $group = false, $buildentries = true, $element_names = null){
 			$sort = null;
 
 			if (!$entry_id && !$section_id) return false;
@@ -292,11 +330,28 @@
 
 		}
 
-		## Do not pass this function ID values from across more than one section.
-		 function __buildEntries(array $id_list, $section_id, $element_names=NULL){
+
+
+		/**
+		 * Given an array of Entry ID's and a section ID, return an array of Entry
+		 * objects. For performance reasons, it's possible to pass an array of field
+		 * names so that only a subset of the section will be queried. Do not pass
+		 * this function ID values from across more than one section.
+		 *
+		 * @param array $id_list
+		 *  An array of ID's
+		 * @param integer $section_id
+		 *  The section ID of the entries in the $id_list
+		 * @param array $elementnames
+		 *  Choose whether to get data from a subset of fields or all fields in a section,
+		 *  by providing an array of field names. Defaults to null, which will load data
+		 *  from all fields in a section.
+		 * @return array
+		 */
+		public function __buildEntries(Array $id_list, $section_id, $element_names = null){
 			$entries = array();
 
-			if (!is_array($id_list) || empty($id_list)) return $entries;
+			if (empty($id_list)) return $entries;
 
 			// choose whether to get data from a subset of fields or all fields in a section
 			if (!is_null($element_names) && is_array($element_names)){
@@ -413,8 +468,121 @@
 			return $entries;
 		}
 
+
+		/**
+		 * Given an Entry ID, return the Section ID that it belongs to
+		 *
+		 * @param integer $entry_id
+		 *  The ID of the Entry to return it's section
+		 * @return integer
+		 *  The Section ID for this Entry's section
+		 */
 		public function fetchEntrySectionID($entry_id){
 			return Symphony::Database()->fetchVar('section_id', 0, "SELECT `section_id` FROM `tbl_entries` WHERE `id` = '$entry_id' LIMIT 1");
+		}
+
+		/**
+		 * Return the count of the number of entries in a particular section.
+		 *
+		 * @param integer $section_id
+		 *  The ID of the Section where the Entries are to be counted
+		 * @param string $where
+		 *  Any custom WHERE clauses
+		 * @param string $joins
+		 *  Any custom JOIN's
+		 * @param boolean $group
+		 *  Whether the entries need to be grouped by Entry ID or not
+		 * @return integer
+		 */
+		public function fetchCount($section_id = null, $where = null, $joins = null, $group = false){
+			if(is_null($section_id)) return false;
+
+			$section = $this->sectionManager->fetch($section_id);
+
+			if(!is_object($section)) return false;
+
+			$sql = "
+				SELECT count(".($group ? 'DISTINCT ' : '')."`e`.id) as `count`
+				FROM `tbl_entries` AS `e`
+				$joins
+				WHERE `e`.`section_id` = '$section_id'
+				$where
+			";
+
+			return Symphony::Database()->fetchVar('count', 0, $sql);
+		}
+
+		/**
+		 * Returns an array of Entry objects, with some basic pagination given
+		 * the number of Entry's to return and the current starting offset. This
+		 * function in turn calls the fetch function that does alot of the heavy
+		 * lifting. For instance, if there are 60 entries in a section and the pagination
+		 * dictates that per page, 15 entries are to be returned, by passing 2 to
+		 * the $page parameter you could return entries 15-30
+		 *
+		 * @param integer $page
+		 *  The page to return, defaults to 1
+		 * @pararm integer $section_id
+		 *  The ID of the Section that these entries are contained in
+		 * @param integer $entriesPerPage
+		 *  The number of entries to return per page.
+		 * @param string $where
+		 *  Any custom WHERE clauses
+		 * @param string $joins
+		 *  Any custom JOIN's
+		 * @param boolean $group
+		 *  Whether the entries need to be grouped by Entry ID or not
+		 * @param boolean $records_only
+		 *  If this is set to true, an array of Entry objects will be returned
+		 *  without any basic pagination information. Defaults to false
+		 * @param boolean $buildentries
+		 *  Whether to return an array of entry ID's or Entry objects. Defaults to
+		 *  true, which will return Entry objects
+		 * @param array $elementnames
+		 *  Choose whether to get data from a subset of fields or all fields in a section,
+		 *  by providing an array of field names. Defaults to null, which will load data
+		 *  from all fields in a section.
+		 * @return array
+		 *  Either an array of Entry objects, or an associative array containing
+		 *  the total entries, the start position, the entries per page and the
+		 *  Entry objects
+		 */
+		public function fetchByPage($page = 1, $section_id, $entriesPerPage, $where = null, $joins = null, $group = false, $records_only = false, $buildentries = true, Array $element_names = null){
+
+			if(!is_string($entriesPerPage) && !is_numeric($entriesPerPage)){
+				throw new Exception(__('Entry limit specified was not a valid type. String or Integer expected.'));
+			}
+
+			$start = (max(1, $page) - 1) * $entriesPerPage;
+
+			$records = ($entriesPerPage == '0' ? NULL : $this->fetch(NULL, $section_id, $entriesPerPage, $start, $where, $joins, $group, $buildentries, $element_names));
+
+			if($records_only) return array('records' => $records);
+
+			$entries = array(
+				'total-entries' => $this->fetchCount($section_id, $where, $joins, $group),
+				'records' => $records,
+				'start' => max(1, $start),
+				'limit' => $entriesPerPage
+			);
+
+			$entries['remaining-entries'] = max(0, $entries['total-entries'] - ($start + $entriesPerPage));
+			$entries['total-pages'] = max(1, ceil($entries['total-entries'] * (1 / $entriesPerPage)));
+			$entries['remaining-pages'] = max(0, $entries['total-pages'] - $page);
+
+			return $entries;
+
+		}
+
+		/**
+		 * Creates a new Entry object using this class as the
+		 * parent.
+		 *
+		 * @return Entry
+		 */
+		public function create(){
+			$obj = new Entry($this);
+			return $obj;
 		}
 
 	}
