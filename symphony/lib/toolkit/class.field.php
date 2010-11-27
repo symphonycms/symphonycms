@@ -90,7 +90,7 @@
 		protected $_fields = array();
 
 		/**
-		 * @var mixed The class that initiliased the Field, usually the FieldManager
+		 * @var mixed The class that initialised the Field, usually the FieldManager
 		 */
 		protected $_Parent;
 
@@ -123,9 +123,9 @@
 		/**
 		 * Construct a new instance of this field.
 		 *
-		 * @param Adminstration $parent
-		 *  The Adminstration object that this page has been created from
-		 *  passed by reference
+		 * @param mixed $parent
+		 *  The class that created this Field object, usually the FieldManager,
+		 *  passed by reference.
 		 */
 		public function __construct(&$parent){
 			$this->_Parent = $parent;
@@ -134,8 +134,6 @@
 			if(class_exists('Administration')) $this->_engine = Administration::instance();
 			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();
 			else throw new Exception(__('No suitable engine object found'));
-
-			$this->creationDate = DateTimeObj::getGMT('c');
 		}
 
 		/**
@@ -312,8 +310,8 @@
 		/**
 		 * Fields have settings that define how that field will act in a section, including
 		 * if it's required, any validators, if it can be shown on the Publish Index etc. This
-		 * function will set a setting to a value.  This will write over any existing values for
-		 * this setting.
+		 * function will set a setting to a value.  This function will set a setting to a value
+		 * overwriting any existing value for this setting
 		 *
 		 * @param string $setting
 		 *	the setting key.
@@ -359,7 +357,7 @@
 
 		/**
 		 * Accessor to the a setting by name. If no setting is provided all the
-		 * settings of this field instance are returned.
+		 * settings of this Field instance are returned.
 		 *
 		 * @param string $setting (optional)
 		 *	the name of the setting to access the value for. This is optional and
