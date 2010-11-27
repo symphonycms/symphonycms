@@ -1,6 +1,5 @@
 /**
- * SYMPHONY
- * Administration
+ * Symphony core JavaScript
  *
  * @version 2.2.0dev
  */
@@ -12,31 +11,30 @@ var Symphony = {};
 
 (function($) {
 
-/*-----------------------------------------------------------------------------
-	Symphony object
------------------------------------------------------------------------------*/
-
+	/**
+	 * The Symphony object provides language, message and context management.
+	 */
 	Symphony = {
 	
-		// Initialize Symphony
+		/**
+		 * Initialize the Symphony object
+		 */
 		init: function() {
 			var html = $('html'),
-				user = $('#usr li:first a'),
-				url = window.location.href.match('(.*)/symphony/(.*)');
+				user = $('#usr li:first a');
 			
 			// Set JavaScript status
 			$(document.documentElement).addClass('active');
 
-			// Set user information
-			Symphony.User.fullname = user.text();
-			Symphony.User.name = user.attr('name');
-			Symphony.User.type = user.attr('class');
-			Symphony.User.id = user.attr('id').substring(4);
-			
-			// Set context
-			Symphony.Context.lang = html.attr('lang');
-			Symphony.Context.root = url[1];
-			Symphony.Context.area = url[2].split('/')[0];
+			// Set basic context information
+			Symphony.Context.add('user', {
+				fullname: user.text(),
+				name: user.attr('name'),
+				type: user.attr('class'),
+				id: user.attr('id').substring(4)
+			});
+			Symphony.Context.add('lang', html.attr('lang'));
+			Symphony.Context.add('root', window.location.href.match('(.*)/symphony')[1]);
 
 			// Initialise language
 			Symphony.Language.add({
@@ -58,14 +56,48 @@ var Symphony = {};
 			});
 			
 			// Ensure backward compatibility
-			Symphony.WEBSITE = Symphony.Context.root;
-			Symphony.Language.NAME = Symphony.Context.lang;
+			Symphony.WEBSITE = Symphony.Context.get('root');
+			Symphony.Language.NAME = Symphony.Context.get('lang');
 		},
 
-		// Language management
+		/**
+		 * The Language object stores the dictionary with all needed translations.
+		 * It offers public functions to add strings and get their translation and 
+		 * it offers private functions to insert tokens and get the translations via
+		 * an synchronous AJAX request.
+		 */
 		Language: {
+		
+			/**
+			 * Dictionary object
+			 *
+			 * This object is private, use Symphony.Language.add() to add and Symphony.Language.get()
+			 * to interact with the dictionary. 
+			 */
 			Dictionary: {},
+			
+			/**
+			 *
+			 */
+			add: function(strings) {
+			
+				// Set key as value
+				$.each(strings, function(key, value) {
+					strings[key] = key;
+				});
+				
+				// Save English strings
+				if(Symphony.Context.get('lang') == 'en') {
+					Symphony.Language.Dictionary = $.extend(Symphony.Language.Dictionary, strings);
+				}
+				
+				// Translate strings
+				else {
+					Symphony.Language.translate(strings);
+				}
+			},
 			get: function(string, tokens) {
+			
 				// Get translated string
 				translatedString = Symphony.Language.Dictionary[string];
 
@@ -79,32 +111,20 @@ var Symphony = {};
 				return string;
 			},
 			insert: function(string, tokens) {
+			
 				// Replace tokens
 				$.each(tokens, function(index, value) { 
 					string = string.replace('{$' + index + '}', value);
 				});
 				return string;
 			},
-			add: function(strings) {
-				// Set key as value
-				$.each(strings, function(key, value) {
-					strings[key] = key;
-				});
-				// Save English strings
-				if(Symphony.Context.lang == 'en') {
-					Symphony.Language.Dictionary = $.extend(Symphony.Language.Dictionary, strings);
-				}
-				// Translate strings
-				else {
-					Symphony.Language.translate(strings);
-				}
-			},
 			translate: function(strings) {
+			
 				// Load translations synchronous
 				$.ajax({
 					async: false,
 					type: 'GET',
-					url: Symphony.Context.root + '/symphony/ajax/translate',
+					url: Symphony.Context.get('root') + '/symphony/ajax/translate',
 					data: strings,
 					dataType: 'json',
 					success: function(result) {
@@ -175,12 +195,62 @@ var Symphony = {};
 			},
 			queue: []
 		},
-
-		// User information
-		User: {},
 		
-		// Context information
-		Context: {},
+		/**
+		 * The Context object contains general information about the system, 
+		 * the backend, the current user. It includes an add and a get function. 
+		 */
+		Context: {
+		
+			/**
+			 * Storage object
+			 *
+			 * This object is private, use Symphony.Context.add() to add and 
+			 * Symphony.Context.get() to interact with the dictionary. 
+			 */
+			Storage: {},
+			
+			/**
+			 * Add data to the Context object
+			 *
+			 * @param string group
+			 *  Name of the data group
+			 * @param mixed values
+			 *  Object or string to be stored
+			 */
+			add: function(group, values) {
+			
+				// Protect Context object and functions
+				if(group == 'Storage' || group == 'add' || group == 'get') {
+					return false;
+				}
+				
+				// Add values
+				Symphony.Context.Storage[group] = values;
+				
+			},
+			
+			/**
+			 * Get data from the Context object
+			 *
+			 * @param string group
+			 *  Name of the group to be returned
+			 */
+			get: function(group) {
+			
+				// Return full context, if no group is set
+				if(!group) {
+					return Symphony.Context.Storage; 
+				}
+				
+				// Return context group
+				else {
+					return Symphony.Context.Storage[group];
+				}
+				
+			}
+				
+		},
 			
 		// Extensions
 		Extensions: {}
@@ -273,7 +343,7 @@ var Symphony = {};
 
 		$.ajax({
 			type: 'POST',
-			url: Symphony.Context.root + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.root.length + 9),
+			url: Symphony.Context.get('root') + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
 			data: $('input', this).map(function(i) { return this.name + '=' + i; }).get().join('&'),
 			success: function() {
 				Symphony.Message.clear('reorder');
@@ -363,6 +433,7 @@ var Symphony = {};
 		}
 	});
 
+	// Document ready
 	$(document).ready(function() {
 
 		// Ugly DOM maintenance
