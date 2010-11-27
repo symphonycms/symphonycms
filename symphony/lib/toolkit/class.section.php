@@ -14,7 +14,7 @@
 
 	Class Section{
 		/**
-		 * @var mixed The parent who intialised this Section, usually SectionManager
+		 * @var mixed The class who initialised this Section, usually SectionManager
 		 */
 		public $_Parent;
 
@@ -34,10 +34,11 @@
 		protected $_fieldManager;
 
 		/**
-		 * The construct function sets the parent variable of this section and
+		 * The construct function sets the parent variable of this Section and
 		 * initialises a new FieldManager object
 		 *
-		 * @param mixed The class that initialised this Section, usually SectionManager
+		 * @param mixed $parent
+		 * The class that initialised this Section, usually SectionManager
 		 */
 		public function __construct(&$parent){
 			$this->_Parent = $parent;
