@@ -67,7 +67,14 @@
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.orderable.js', 61);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.duplicator.js', 62);
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 70);
-			
+			$this->addElementToHead(
+				new XMLElement(
+					'script', 
+					"Symphony.Context.add('env', " . json_encode($this->_context) . ");", 
+					array('type' => 'text/javascript')
+				), 71
+			);
+					
 			###
 			# Delegate: InitaliseAdminPageHead
 			# Description: Allows developers to insert items into the page HEAD. Use $context['parent']->Page
