@@ -249,9 +249,17 @@ var Symphony = {};
 		
 	};
 	
-	// Initialise Symphony
+	/**
+	 * Symphony core functionalities
+	 */
 	$(document).ready(function() {
+	
+		// Initialize Symphony
 		Symphony.init();
+		
+		// Suggestion lists
+		$('.tags').symphonyTags();
+		
 	});
 	
 

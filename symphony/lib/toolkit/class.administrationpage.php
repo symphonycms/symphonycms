@@ -66,6 +66,7 @@
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.collapsible.js', 60);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.orderable.js', 61);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.duplicator.js', 62);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.tags.js', 63);
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 70);
 			$this->addElementToHead(
 				new XMLElement(
