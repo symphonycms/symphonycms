@@ -354,7 +354,7 @@ var Symphony = {};
 			}
 			
 		}
-		
+				
 	};
 	
 	/**
@@ -365,12 +365,17 @@ var Symphony = {};
 		// Initialize Symphony
 		Symphony.init();
 		
-		// Suggestion lists
+		// Tags
 		$('.tags').symphonyTags();
 		
 		// Duplicators
-		$('#fields-duplicator').symphonyDuplicator({ orderable: true });
 		$('.filters-duplicator').symphonyDuplicator();
+		$('#fields-duplicator').symphonyDuplicator({
+			orderable: true
+		});
+		
+		// Pickers
+		$('.picker').symphonyPicker();
 		
 	});
 	
@@ -686,35 +691,6 @@ var Symphony = {};
 			$(this).parent().html(html.replace(Symphony.Language.get('at') + ' ', ''));
 		});
 		Symphony.Message.timer();
-
-		/**
-		 * Selection picker, show and hide elements based on select box values
-		 */
-		var pickers = $('.picker');
-		var selectables = $('.selectable');
-		
-		pickers.each(function() {
-			var picker = $(this);
-			var select = picker.find('select');
-			var options = select.find('option');
-
-			// Multiple items
-			if(options.size() > 1) {
-				options.each(function() {
-					selectables.filter('#' + $(this).val()).hide();
-				});
-				select.click(function() {
-					selectables.hide().filter('#' + $(this).val()).show();
-				}).click();
-			}
-			
-			// Single item
-			else {
-				picker.hide();
-				selectables.filter('#' + select.val()).removeClass('selectable');
-			}
-
-		});
 		
 	});
 	
