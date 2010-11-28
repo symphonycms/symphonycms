@@ -6,7 +6,7 @@
 	/**
 	 * The XsltProcess class is responsible for taking a chunk of XML
 	 * and applying an XSLT stylesheet to it. Custom error handlers are
-	 * used to capture any errors that occured during this process, and
+	 * used to capture any errors that occurred during this process, and
 	 * are exposed to the ExceptionHandlers for output.
 	 */
 
@@ -201,7 +201,7 @@
 		 * @param string $file
 		 * @param string $line
 		 * @param string $type
-		 *  Where the error occured, can be either 'xml' or 'xsl'
+		 *  Where the error occurred, can be either 'xml' or 'xsl'
 		 */
 		public function __error($number, $message, $file = null, $line = null, $type = null){
 
@@ -221,7 +221,7 @@
 		}
 
 		/**
-		 * Returns boolean if any errors occured during the transformation.
+		 * Returns boolean if any errors occurred during the transformation.
 		 *
 		 * @see getError
 		 * @return boolean

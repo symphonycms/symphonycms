@@ -7,7 +7,7 @@
 	 * The Profiler class tracks various performance metrics while a Symphony
 	 * page is being generated. It provides a basic stopwatch functionality and
 	 * memory usage statistics. Profiling occurs in both the Frontend and
-	 * Adminstration execution. The Profiler implements the Singleton interface.
+	 * Administration execution. The Profiler implements the Singleton interface.
 	 */
 
 	/**
@@ -85,7 +85,7 @@
 		 * is the name of this report. By default, all samples are compared to the $_starttime
 		 * but if the PROFILE_LAP constant is passed, it will be compared to specific $_seed
 		 * timestamp. Samples can grouped by type (ie. Datasources, Events), but by default
-		 * are grouped by 'General'. Optionally, the number of SQL queries that have occured
+		 * are grouped by 'General'. Optionally, the number of SQL queries that have occurred
 		 * since either $_starttime or $_seed can be passed. Memory usage is taken with each
 		 * sample which measures the amount of memory used by this script by PHP at the
 		 * time of sampling.
@@ -98,7 +98,7 @@
 		 * @param string $group
 		 *  Allows samples to be grouped together, defaults to General.
 		 * @param int $queries
-		 *  The number of MySQL queries that occured since the $_starttime or $_seed
+		 *  The number of MySQL queries that occurred since the $_starttime or $_seed
 		 */
 		public function sample($msg, $type=PROFILE_RUNNING_TOTAL, $group='General', $queries=NULL){
 

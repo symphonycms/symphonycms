@@ -45,12 +45,12 @@
 		}
 
 		/**
-		 * Any logic that assits this extension in being installed such as
+		 * Any logic that assists this extension in being installed such as
 		 * table creation, checking for dependancies etc.
 		 *
 		 * @see toolkit.ExtensionManager#install
 		 * @return boolean
-		 *  True if the install completly successfully, false otherwise
+		 *  True if the install completely successfully, false otherwise
 		 */
 		public function install(){
 			return true;
@@ -172,7 +172,7 @@
 		 * @see /symphony/assets/navigation.xml
 		 * @return array
 		 *	 Navigation items in Symphony are initially provided from the
-		 *  navigation.xml file which defines some inital groupings by index.
+		 *  navigation.xml file which defines some initial groupings by index.
 		 *  Blueprints are 100, System are 200, but a custom group can be
 		 *  created by an extension by returning a new index number. The URL
 		 *  returned is relative to the Symphony backend (ie. /symphony/).

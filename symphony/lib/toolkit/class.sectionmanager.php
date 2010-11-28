@@ -4,7 +4,7 @@
 	 * @package toolkit
 	 */
 	/**
-	 * The SectionManager is reponsible for managing all Sections in a Symphony
+	 * The SectionManager is responsible for managing all Sections in a Symphony
 	 * installation. The SectionManager contains basic CRUD operations for Sections.
 	 * Sections are stored in the database in tbl_sections.
 	 */

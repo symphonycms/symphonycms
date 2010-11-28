@@ -18,7 +18,7 @@
 		const __OK__ = 100;
 
 		/**
-		 * @var integer If an error occuring when saving a section
+		 * @var integer If an error occurring when saving a section
 		 *  because of this field, this will be returned
 		 */
 		const __ERROR__ = 150;
@@ -41,7 +41,7 @@
 		const __DUPLICATE__ = 300;
 
 		/**
-		 * @var integer Fields can returned this is an error occured when saving
+		 * @var integer Fields can returned this is an error occurred when saving
 		 *  the field's settings that doesn't fit another Field constant
 		 */
 		const __ERROR_CUSTOM__ = 400;
@@ -101,7 +101,7 @@
 		protected $_engine;
 
 		/**
-		 * @var boolean Whether this field is required inheritly, defaults to false.
+		 * @var boolean Whether this field is required inherently, defaults to false.
 		 */
 		protected $_required = false;
 
@@ -272,7 +272,7 @@
 		 * Test whether this field supports data-source parameter output. This
 		 * default implementation prohibits parameter output. Data-source
 		 * parameter output allows this field to be provided as a parameter
-		 * to other data-sources or xslt. Subclasses should override this if
+		 * to other data-sources or XSLT. Subclasses should override this if
 		 * parameter output is supported.
 		 *
 		 * @return boolean
@@ -931,7 +931,7 @@
 		}
 
 		/**
-		 * Function to format this field if it choosen in a data-source to be
+		 * Function to format this field if it chosen in a data-source to be
 		 * output as a parameter in the XML
 		 *
 		 * @param array $data
@@ -1052,7 +1052,7 @@
 		}
 
 		/**
-		 * Create an asscoiation between a section and a field.
+		 * Create an association between a section and a field.
 		 *
 		 * @param number $parent_section_id
 		 *  The linked section id.

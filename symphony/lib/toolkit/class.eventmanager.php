@@ -28,7 +28,7 @@
 
 		/**
 		 * Given a name, returns the full class name of an Event. Events
-		 * use aa 'event' prefix.
+		 * use an 'event' prefix.
 		 *
 		 * @param string $handle
 		 *  The event handle
@@ -86,7 +86,7 @@
 		 * @see toolkit.Manager#about
 		 * @return array
 		 *  Associative array of events with the key being the handle of the event
-		 *  and the value being the events about() informatino.
+		 *  and the value being the events about() information.
 		 */
         public function listAll(){
 
@@ -150,7 +150,7 @@
 		 * @param string $handle
 		 *  The handle of the Event to create
 		 * @param array $env
-		 *  The environment variables from the Frontend class which includesla
+		 *  The environment variables from the Frontend class which includes
 		 *  any params set by Symphony or Datasources or by other Events
 		 * @return Event
 		 */

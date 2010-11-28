@@ -159,7 +159,7 @@
 		 * @see toolkit.AuthorManager#edit
 		 * @return mixed
 		 *  If an new Author was added, an integer of the Author ID will be
-		 *  returned, otherwise boolean to indiciate whether the update was
+		 *  returned, otherwise boolean to indicate whether the update was
 		 *  successful or not.
 		 */
 		public function commit(){

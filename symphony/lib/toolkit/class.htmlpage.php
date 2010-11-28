@@ -74,7 +74,7 @@
 		/**
 		 * The generate function calls the __build function before appending
 		 * all the current page's headers and then finally calling the $Html's
-		 * generate function which generates a HTML Dom from all the
+		 * generate function which generates a HTML DOM from all the
 		 * XMLElement children.
 		 *
 		 * @return string

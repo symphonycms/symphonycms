@@ -101,7 +101,7 @@
 		}
 
 		/**
-		 * Generates a lock filename using an md5 hash of the $id and
+		 * Generates a lock filename using an MD5 hash of the $id and
 		 * $path. Lock files are given a .lock extension
 		 *
 		 * @param string $id

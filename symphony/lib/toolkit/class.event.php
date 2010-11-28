@@ -81,8 +81,8 @@
 		 * The constructor for an Event sets the parent and env variables
 		 * from their parameters
 		 *
-		 * @param Adminstration $parent
-		 *  The Adminstration object that this page has been created from
+		 * @param Administration $parent
+		 *  The Administration object that this page has been created from
 		 *  passed by reference
 		 * @param array $env
 		 *  The environment variables from the Frontend class which includes

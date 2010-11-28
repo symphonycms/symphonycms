@@ -14,7 +14,7 @@
 	Class XSLTPage extends Page{
 
 		/**
-		 * @var XsltProcess An instance of hte XsltProcess class
+		 * @var XsltProcess An instance of the XsltProcess class
 		 */
 		public $Proc;
 
@@ -124,7 +124,7 @@
 		}
 
 		/**
-		 * Allows the registration of PHP functions to be used on the frontend
+		 * Allows the registration of PHP functions to be used on the Frontend
 		 * by passing the function name or an array of function names
 		 *
 		 * @param mixed $function

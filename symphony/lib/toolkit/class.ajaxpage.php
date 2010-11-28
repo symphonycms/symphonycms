@@ -44,7 +44,7 @@
 
 		/**
 		 * @var int The HTTP status code of the page using the AJAXPage
-		 *  contants STATUS_OK, STATUS_BAD, STATUS_ERROR,
+		 *  constants STATUS_OK, STATUS_BAD, STATUS_ERROR,
 		 *  STATUS_UNAUTHORISED
 		 */
 		protected $_status;
@@ -56,8 +56,8 @@
 		 * page template.
 		 *
 		 * @see toolkit.Profiler
-		 * @param Adminstration $parent
-		 *  The Adminstration object that this page has been created from
+		 * @param Administration $parent
+		 *  The Administration object that this page has been created from
 		 *  passed by reference
 		 */
 		public function __construct(&$parent){

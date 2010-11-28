@@ -153,7 +153,7 @@
 		 *  regardless of errors, an Entry will not be saved in the database. Defaults to
 		 *  false
 		 * @param boolean $ignore_missing_fields
-		 *  This paramater allows Entries to be updated, rather than replaced. This is
+		 *  This parameter allows Entries to be updated, rather than replaced. This is
 		 *  useful if the input form only contains a couple of the fields for this Entry.
 		 *  Defaults to false, which will set Fields to their default values if they are not
 		 *  provided in the $data
@@ -204,7 +204,7 @@
 		}
 
 		/**
-		 * Accessor functon to return data from this Entry for a particular
+		 * Accessor function to return data from this Entry for a particular
 		 * field. Optional parameter to return this data as an object instead
 		 * of an array. If a Field is not provided, an associative array of all data
 		 * assigned to this Entry will be returned.
@@ -233,7 +233,7 @@
 		 * @param array $error
 		 *  An array of errors, by reference. Defaults to empty
 		 * @param boolean $ignore_missing_fields
-		 *  This paramater allows Entries to be updated, rather than replaced. This is
+		 *  This parameter allows Entries to be updated, rather than replaced. This is
 		 *  useful if the input form only contains a couple of the fields for this Entry.
 		 *  Defaults to false, which will check all Fields even if they are not
 		 *  provided in the $data
@@ -272,7 +272,7 @@
 		 * Iterates over all the Fields in this Entry calling their processRawFieldData
 		 * function to set default values for this Entry.
 		 *
-		 * @see toolkit.Field#procesRawFieldData
+		 * @see toolkit.Field#processRawFieldData
 		 */
 		public function findDefaultData(){
 

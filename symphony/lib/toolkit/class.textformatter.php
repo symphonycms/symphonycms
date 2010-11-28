@@ -18,8 +18,8 @@
 		 * The text formatter constructor sets the $_Parent variable
 		 * to the $parent provided as a parameter.
 		 *
-		 * @param Adminstration $parent
-		 *  The Adminstration object that this page has been created from
+		 * @param Administration $parent
+		 *  The Administration object that this page has been created from
 		 *  passed by reference
 		 */
 		public function __construct(&$parent){

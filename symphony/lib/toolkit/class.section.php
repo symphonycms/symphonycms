@@ -6,7 +6,7 @@
 	/**
 	 * The Section class represents a Symphony Section object. A section is a model
 	 * of a data structure using one or more Fields. Sections are stored in the database
-	 * and are used as repositries for Entry objects, which are a model for this data
+	 * and are used as repositories for Entry objects, which are a model for this data
 	 * structure. This class contains functions for finding Fields within a Section and
 	 * saving a Section's settings.
 	 */

@@ -281,8 +281,8 @@
 		}
 
 		/**
-		 * A convience method to quickly add multiple
-		 * attributes to an XMLElement
+		 * A convenience method to quickly add multiple attributes to 
+		 * an XMLElement
 		 *
 		 * @param array $attributes
 		 *  Associative array with the key being the name and
@@ -316,7 +316,7 @@
 		}
 
 		/**
-		 * A convience method to add children to an XMLElement
+		 * A convenience method to add children to an XMLElement
 		 * quickly.
 		 *
 		 * @param Array(XMLElement) $children
