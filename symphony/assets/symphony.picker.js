@@ -16,22 +16,22 @@ jQuery.fn.symphonyPicker = function(custom_settings) {
 	jQuery.extend(settings, custom_settings);
 
 	// Elements
-	var pickers = $(this);
-	var selectables = $(settings.selectables);
+	var pickers = jQuery(this);
+	var selectables = jQuery(settings.selectables);
 	
 	// Process pickers
-	return pickers.each(
-		var picker = $(this);
+	return pickers.each(function() {
+		var picker = jQuery(this);
 		var select = picker.find('select');
 		var options = select.find('option');
 
 		// Multiple items
 		if(options.size() > 1) {
 			options.each(function() {
-				selectables.filter('#' + $(this).val()).hide();
+				selectables.filter('#' + jQuery(this).val()).hide();
 			});
 			select.click(function() {
-				selectables.hide().filter('#' + $(this).val()).show();
+				selectables.hide().filter('#' + jQuery(this).val()).show();
 			}).click();
 		}
 		
@@ -40,5 +40,5 @@ jQuery.fn.symphonyPicker = function(custom_settings) {
 			picker.hide();
 			selectables.filter('#' + select.val()).removeClass(settings.handle);
 		}
-	);
+	});
 }
