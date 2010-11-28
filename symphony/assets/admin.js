@@ -205,7 +205,7 @@ var Symphony = {};
 			/**
 			 * Storage object
 			 *
-			 * This object is private, use Symphony.Context.add() to add and 
+			 * This object is private, use Symphony.Context.add() and 
 			 * Symphony.Context.get() to interact with the dictionary. 
 			 */
 			Storage: {},
@@ -219,15 +219,7 @@ var Symphony = {};
 			 *  Object or string to be stored
 			 */
 			add: function(group, values) {
-			
-				// Protect Context object and functions
-				if(group == 'Storage' || group == 'add' || group == 'get') {
-					return false;
-				}
-				
-				// Add values
-				Symphony.Context.Storage[group] = values;
-				
+				Symphony.Context.Storage[group] = values;				
 			},
 			
 			/**
