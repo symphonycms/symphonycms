@@ -1,5 +1,5 @@
 /**
- * Symphony core JavaScript
+ * Symphony Core JavaScript
  *
  * @version 2.2.0dev
  */
@@ -219,7 +219,17 @@ var Symphony = {};
 			 *  Object or string to be stored
 			 */
 			add: function(group, values) {
-				Symphony.Context.Storage[group] = values;				
+			
+				// Add new group
+				if(!Symphony.Context.Storage[group]) {
+					Symphony.Context.Storage[group] = values;
+				}
+				
+				// Extend existing group
+				else {
+					Symphony.Context.Storage[group] = $.extend(Symphony.Context.Storage[group], values);
+				}
+				
 			},
 			
 			/**
