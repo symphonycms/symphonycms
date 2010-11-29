@@ -77,8 +77,12 @@
 				GenericExceptionHandler::$enabled = false;
 			}
 			
+			// Fetch user language
+			else {
+				$user_lang = $this->Author->get('language');
+			}
+			
 			// Set system language
-			$user_lang = $this->Author->get('language');
 			if(empty($user_lang)) {
 				Lang::set(self::$Configuration->get('lang', 'symphony'));
 			}
