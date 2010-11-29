@@ -154,7 +154,7 @@
 			$sql = "SELECT DISTINCT `value` FROM `tbl_entries_data_".$this->get('dynamic_options')."`
 					ORDER BY `value` DESC";
 
-			if($results = $this->Database->fetchCol('value', $sql)) $values = array_merge($values, $results);
+			if($results = Symphony::Database()->fetchCol('value', $sql)) $values = array_merge($values, $results);
 
 		}
 
@@ -267,9 +267,9 @@
 			$fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
 			$fields['show_association'] = $this->get('show_association') == 'yes' ? 'yes' : 'no';
 
-			$this->Database->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 
-			if(!$this->Database->insert($fields, 'tbl_fields_' . $this->handle())) return false;
+			if(!Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle())) return false;
 
 			$this->removeSectionAssociation($id);
 			$this->createSectionAssociation(NULL, $id, $this->get('dynamic_options'), $this->get('show_association') == 'yes' ? true : false);

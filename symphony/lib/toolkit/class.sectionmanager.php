@@ -10,7 +10,7 @@
 	 */
 	include_once(TOOLKIT . '/class.section.php');
 
-	Class SectionManager extends Manager{
+	Class SectionManager {
 
 		/**
 		 * @var array An array of all the objects that the Manager
