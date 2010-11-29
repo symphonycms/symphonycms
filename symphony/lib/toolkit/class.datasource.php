@@ -1,33 +1,223 @@
 <?php
+	/**
+	 * @package toolkit
+	 */
 
+	/**
+	 * @var integer A constant that represents if this filter is an AND filter
+	 *  in which an Entry must match all these filters
+	 */
 	define_safe('DS_FILTER_AND', 1);
+
+	/**
+	 * @var integer A constant that represents if this filter is an OR filter
+	 *  in which an entry can match any or all of these filters
+	 */
 	define_safe('DS_FILTER_OR', 2);
-	
-	##Interface for datasouce objects
+
+	/**
+	 * The Datasource class provides functionality to mainly process any parameters
+	 * that the fields will use in filters find the relevant Entries and return these Entries
+	 * data as XML so that XSLT can be applied on it to create your website. In Symphony,
+	 * there are four Datasource types provided, Section, Author, Navigation and Dynamic
+	 * XML. Section is the mostly commonly used Datasource, which allows the filtering
+	 * and searching for Entries in a Section to be returned as XML. Navigation datasources
+	 * expose the Symphony Navigation structure of the Pages in the installation. Authors
+	 * expose the Symphony Authors that are registered as users of the backend. Finally,
+	 * the Dynamic XML datasource allows XML pages to be retrieved. This is especially
+	 * helpful for working with Restful XML API's. Datasources are saved through the
+	 * Symphony backend, which uses a Datasource template defined in
+	 * /symphony/template/datasource.tpl.
+	 */
 	Class DataSource{
-		
-		var $_env;
-		var $_Parent;
-		var $_param_output_only;
-		var $_dependencies;
-		var $_force_empty_result;
-		
+
+		/**
+		 * @var string The end-of-line constant.
+		 * @deprecated This will no longer exist in Symphony 3
+		 */
 		const CRLF = PHP_EOL;
-		
-		function __construct(&$parent, $env=NULL, $process_params=true){
+
+		/**
+		 * @var Administration An instance of the Administration class
+		 * @see core.Administration
+		 */
+	    protected $_Parent;
+
+		/**
+		 * @var array Holds all the environment variables which include
+		 *  parameters set by other Datasources or Events.
+		 */
+		protected $_env = array();
+
+		/**
+		 * @var boolean If true, this datasource only will be outputting parameters
+		 *  from the Entries, and no actual content.
+		 */
+		protected $_param_output_only;
+
+		/**
+		 * @var array An array of datasource dependancies. These are datasources that must
+		 *  run first for this datasource to be able to execute correctly
+		 */
+		protected $_dependencies = array();
+
+		/**
+		 * @var boolean When there is no entries found by the Datasource, this parameter
+		 *  will be set to true, which will inject the default Symphony 'No records found' message
+		 *  into the datasource's result
+		 */
+		protected $_force_empty_result = false;
+
+		/**
+		 * Constructor for the datasource sets the parent, and if process_params is set,
+		 * the env variables as well. The env
+		 *
+		 * @param Administration $parent
+		 *  The Administration object that this page has been created from
+		 *  passed by reference
+		 * @param array $env
+		 *  The environment variables from the Frontend class which includes
+		 *  any params set by Symphony or Events or by other Datasources
+		 * @param boolean $process_params
+		 *  If set to true, the processParameters function will be called. By default
+		 *  this is true
+		 */
+		public function __construct(&$parent, Array $env = null, $process_params=true){
 			$this->_Parent = $parent;
-			$this->_force_empty_result = false;
-			$this->_dependencies = array();
-			
-			if($process_params){ 
+
+			if($process_params){
 				$this->processParameters($env);
 			}
 		}
-		
-		function processParameters($env=NULL){
-									
+
+		/**
+		 * This function is required in order to edit it in the datasource editor page.
+		 * Do not overload this function if you are creating a custom datasource. It is only
+		 * used by the datasource editor.
+		 *
+		 * @return boolean
+		 *	 True if the Datasouce can be edited, false otherwise. Defaults to false
+		 */
+		public function allowEditorToParse(){
+			return false;
+		}
+
+		/**
+		 * This function is required in order to identify what section this Datasource is for. It
+		 * is used in the datasource editor. It must remain intact. Do not overload this function in
+		 * custom events. Other datasources may return a string here defining their datasource
+		 * type when they do not query a section.
+		 *
+		 * @return mixed
+		 */
+		public function getSource(){
+			return null;
+		}
+
+		/**
+		 * Accessor function to return this Datasource's dependencies
+		 *
+		 * @return array
+		 */
+		public function getDependencies(){
+			return $this->_dependencies;
+		}
+
+		/**
+		 * Returns an associative array of information about a datasource.
+		 */
+		public function about() {}
+
+		/**
+		 * The meat of the Datasource, this function includes the datasource
+		 * type's file that will preform the logic to return the data for this datasource
+		 * It is passed the current parameters
+		 *
+		 * @param array $param
+		 *  The current parameter pool that this Datasource can use when filtering
+		 *  and finding Entries or data.
+		 */
+		public function grab(Array $param=array()) {}
+
+		/**
+		 * By default, all Symphony filters are considering to be AND filters, that is
+		 * they are all used and Entries must match each filter to be included. It is
+		 * possible to use OR filtering in a field, but using an + to seperate the values.
+		 * eg. If the filter is test1 + test2, this will match any entries where this field
+		 * is test1 OR test2. This function is run on each filter (ie. each field) in a
+		 * datasource
+		 *
+		 * @param string $value
+		 *  The filter string for a field.
+		 * @return DS_FILTER_OR or DS_FILTER_AND
+		 */
+		public function __determineFilterType($value){
+			return (strpos($value, '+') === false) ? DS_FILTER_OR : DS_FILTER_AND;
+		}
+
+		/**
+		 * If there is no results to return this function calls __noRecordsFound
+		 * which appends an XMLElement to the current root element.
+		 *
+		 * @param XMLElement $xml
+		 *  The root element XMLElement for this datasource. By default, this will
+		 *  the handle of the datasource, as defined by dsParamROOTELEMENT
+		 * @return XMLElement
+		 */
+		public function emptyXMLSet(XMLElement $xml = null){
+			if(is_null($xml)) $xml = new XMLElement($this->dsParamROOTELEMENT);
+			$xml->appendChild($this->__noRecordsFound());
+
+			return $xml;
+		}
+
+		/**
+		 * Returns an error XMLElement with a No Records Found text
+		 *
+		 * @return XMLElement
+		 */
+		public function __noRecordsFound(){
+			return new XMLElement('error', __('No records found.'));
+		}
+
+		/**
+		 * Given a wrapper and an associative array of fields, this function
+		 * will append all the Included Elements to a wrapper. This function
+		 * is a basic version of Field's appendFormattedElements. It is currently
+		 * only used by the Author Datasource type.
+		 *
+		 * @param XMLElement $wrapper
+		 *  The wrapper that this fields should be added to
+		 * @param array $fields
+		 *  An associative array with the key being the handle of the element,
+		 *  and the value being the XMLElement to append to the wrapper.
+		 */
+		public function __appendIncludedElements(&$wrapper, Array $fields){
+			if(!isset($this->dsParamINCLUDEDELEMENTS) || !is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) return;
+
+			foreach($this->dsParamINCLUDEDELEMENTS as $index) {
+				if(!isset($fields[$index])) continue;
+				else if(!$fields[$index] instanceof XMLElement) {
+					throw new Exception(__('%s is not a valid object. Failed to append to XML.', array($index)));
+				}
+
+				$wrapper->appendChild($fields[$index]);
+			}
+		}
+
+		/**
+		 * This function will iterates over the filters and replace any parameters with their
+		 * actual values. All other Datasource variables such as sorting, ordering and
+		 * pagination variables are also set by this function
+		 *
+		 * @param array $env
+		 *  The environment variables from the Frontend class which includes
+		 *  any params set by Symphony or Events or by other Datasources
+		 */
+		public function processParameters(Array $env = array()){
+
 			if($env) $this->_env = $env;
-			
+
 			if((isset($this->_env) && is_array($this->_env)) && is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
 				foreach($this->dsParamFILTERS as $key => $value){
 					$value = stripslashes($value);
@@ -35,162 +225,153 @@
 
 					if(strlen(trim($new_value)) == 0) unset($this->dsParamFILTERS[$key]);
 					else $this->dsParamFILTERS[$key] = $new_value;
-					
+
 				}
 			}
 
 			if(isset($this->dsParamORDER)) $this->dsParamORDER = $this->__processParametersInString($this->dsParamORDER, $this->_env);
-			
+
 			if(isset($this->dsParamSORT)) $this->dsParamSORT = $this->__processParametersInString($this->dsParamSORT, $this->_env);
 
 			if(isset($this->dsParamSTARTPAGE)) {
 				$this->dsParamSTARTPAGE = $this->__processParametersInString($this->dsParamSTARTPAGE, $this->_env);
 				if ($this->dsParamSTARTPAGE == '') $this->dsParamSTARTPAGE = '1';
 			}
-		
+
 			if(isset($this->dsParamLIMIT)) $this->dsParamLIMIT = $this->__processParametersInString($this->dsParamLIMIT, $this->_env);
-		
+
 			if(
-				isset($this->dsParamREQUIREDPARAM) 
-				&& strlen(trim($this->dsParamREQUIREDPARAM)) > 0 
+				isset($this->dsParamREQUIREDPARAM)
+				&& strlen(trim($this->dsParamREQUIREDPARAM)) > 0
 				&& $this->__processParametersInString(trim($this->dsParamREQUIREDPARAM), $this->_env, false) == ''
 			) {
 				$this->_force_empty_result = true; // don't output any XML
-				$this->dsParamPARAMOUTPUT = NULL; // don't output any parameters
-				$this->dsParamINCLUDEDELEMENTS = NULL; // don't query any fields in this section
+				$this->dsParamPARAMOUTPUT = null; // don't output any parameters
+				$this->dsParamINCLUDEDELEMENTS = null; // don't query any fields in this section
 			}
-			
+
 			$this->_param_output_only = ((!is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) && !isset($this->dsParamGROUP));
-			
+
 			if($this->dsParamREDIRECTONEMPTY == 'yes' && $this->_force_empty_result){
 				throw new FrontendPageNotFoundException;
 			}
-					
-		}
-		
-		// THIS FUNCTION WILL BE REMOVED IN THE NEXT 
-		// VERSION, PLEASE THROW AN EXCEPTION INSTEAD
-		function __redirectToErrorPage(){
-			throw new FrontendPageNotFoundException;
-		}
-		
-		function emptyXMLSet(XMLElement $xml=NULL){
-			if(is_null($xml)) $xml = new XMLElement($this->dsParamROOTELEMENT);
-			$xml->appendChild($this->__noRecordsFound());
-			
-			return $xml;
-		}
-		
-		function __appendIncludedElements(&$wrapper, $fields){
-			if(!isset($this->dsParamINCLUDEDELEMENTS) || !is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) return;
-			
-			foreach($this->dsParamINCLUDEDELEMENTS as $index) {
-				if(!isset($fields[$index])) continue;
-				elseif(!is_object($fields[$index])){
-					trigger_error(__('%s is not a valid object. Failed to append to XML.', array($index)), E_USER_WARNING);
-					continue;
-				}
-				$wrapper->appendChild($fields[$index]);
-			}	
-		}
-		
-		function __determineFilterType($value){
-			return (false === strpos($value, '+') ? DS_FILTER_OR : DS_FILTER_AND);
-		}
-		
-		function __noRecordsFound(){
-			return new XMLElement('error', __('No records found.'));
+
 		}
 
-		function __processParametersInString($value, $env, $includeParenthesis=true, $escape=false){
-			if(trim($value) == '') return NULL;
+		/**
+		 * This function will replace any parameters in a string with their value.
+		 * Parameters are defined by being prefixed by a $ character. In certain
+		 * situations, the parameter will be surrounded by {}, which Symphony
+		 * takes to mean, evaluate this parameter to a value, other times it will be
+		 * omitted which is usually used to indiciate that this parameter exists
+		 *
+		 * @param string $value
+		 *  The string with the parameters that need to be evaluated
+		 * @param array $env
+		 *  The environment variables from the Frontend class which includes
+		 *  any params set by Symphony or Events or by other Datasources
+		 * @param boolean $includeParenthesis
+		 *  Parameters will sometimes not be surrounded by {}. If this is the case
+		 *  setting this parameter to false will maket this function automatically add
+		 *  them to the parameter. By default this is true, which means all parameters
+		 *  in the string already are surrounded by {}
+		 * @param boolean $escape
+		 *  If set to true, the resulting value will be urlencoded before being returned.
+		 *  By default this is false
+		 * @return string
+		 *  The string will all parameters evaluated. If a parameter was not found, it will
+		 *  not be replaced at all.
+		 */
+		public function __processParametersInString($value, Array $env, $includeParenthesis=true, $escape=false){
+			if(trim($value) == '') return null;
 
 			if(!$includeParenthesis) $value = '{'.$value.'}';
 
 			if(preg_match_all('@{([^}]+)}@i', $value, $matches, PREG_SET_ORDER)){
 
 				foreach($matches as $match){
-					
+
 					list($source, $cleaned) = $match;
-					
-					$replacement = NULL;
-					
+
+					$replacement = null;
+
 					$bits = preg_split('/:/', $cleaned, -1, PREG_SPLIT_NO_EMPTY);
-					
+
 					foreach($bits as $param){
-						
+
 						if($param{0} != '$'){
 							$replacement = $param;
 							break;
 						}
-						
+
 						$param = trim($param, '$');
-						
-						$replacement = $this->__findParameterInEnv($param, $env);
-						
+
+						$replacement = Datasource::findParameterInEnv($param, $env);
+
 						if(is_array($replacement)){
-							$replacement = array_map(array('Datasource', 'escapeCommas'), $replacement);							
+							$replacement = array_map(array('Datasource', 'escapeCommas'), $replacement);
 							if(count($replacement) > 1) $replacement = implode(',', $replacement);
 							else $replacement = end($replacement);
 						}
-						
+
 						if(!empty($replacement)) break;
-						
+
 					}
-					
+
 					if($escape == true) $replacement = urlencode($replacement);
 					$value = str_replace($source, $replacement, $value);
-					
+
 				}
 			}
 
 			return $value;
 		}
 
+		/**
+		 * Using regex, this escapes any commas in the given string
+		 *
+		 * @param string $string
+		 *  The string to escape the commas in
+		 * @return string
+		 */
 		public static function escapeCommas($string){
 			return preg_replace('/(?<!\\\\),/', "\\,", $string);
 		}
-		
+
+		/**
+		 * Used in conjuction with escapeCommas, this function will remove
+		 * the escaping pattern applied to the string (and commas)
+		 *
+		 * @param string $string
+		 *  The string with the escaped commas in it to remove
+		 * @return string
+		 */
 		public static function removeEscapedCommas($string){
 			return preg_replace('/(?<!\\\\)\\\\,/', ',', $string);
 		}
-		
-		function __findParameterInEnv($needle, $env){
 
+		/**
+		 * Parameters can exist in three different facets of Symphony; in the URL,
+		 * in the parameter pool or as an Symphony param. This function will attempt
+		 * to find a parameter in those three areas and return the value. If it is not found
+		 * null is returned
+		 *
+		 * @param string $needle
+		 *  The parameter name
+		 * @param array $env
+		 *  The environment variables from the Frontend class which includes
+		 *  any params set by Symphony or Events or by other Datasources
+		 * @return mixed
+		 *  If the value is not found, null, otherwise a string or an array is returned
+		 */
+		public static function __findParameterInEnv($needle, $env){
 			if(isset($env['env']['url'][$needle])) return $env['env']['url'][$needle];
 
 			if(isset($env['env']['pool'][$needle])) return $env['env']['pool'][$needle];
 
 			if(isset($env['param'][$needle])) return $env['param'][$needle];
 
-			return NULL;
-						
+			return null;
 		}
 
-		## This function is required in order to edit it in the data source editor page. 
-		## Do not overload this function if you are creating a custom data source. It is only
-		## used by the data source editor
-		function allowEditorToParse(){
-			return false;
-		}
-				
-		## This function is required in order to identify what type of data source this is for
-		## use in the data source editor. It must remain intact. Do not overload this function into
-		## custom data sources.
-		function getSource(){
-			return NULL;
-		}
-				
-		function getDependencies(){
-			return $this->_dependencies;
-		}
-				
-		##Static function
-		function about(){		
-		}
-
-		function grab($param=array()){
-		}
-	
 	}
-	

@@ -31,7 +31,7 @@
 		 * use an 'event' prefix.
 		 *
 		 * @param string $handle
-		 *  The event handle
+		 *  The Event handle
 		 * @return string
 		 */
         public function __getClassName($handle){
@@ -46,7 +46,7 @@
 		 *  The handle of the Event free from any Symphony conventions
 		 *  such as event.*.php
 		 * @return mixed
-		 *  If the event is found, the function returns the path it's folder, otherwise false.
+		 *  If the Event is found, the function returns the path it's folder, otherwise false.
 		 */
         public function __getClassPath($handle){
 			if(is_file(EVENTS . "/event.$handle.php")) return EVENTS;
@@ -66,7 +66,7 @@
         }
 
 		/**
-		 * Given a name, return the path to the event class
+		 * Given a name, return the path to the Event class
 		 *
 		 * @see __getClassPath
 		 * @param string $handle
@@ -81,12 +81,12 @@
 
 		/**
 		 * Finds all available Events by searching the events folder in the workspace
-		 * and in all installed extension folders. Returns an associative array of events.
+		 * and in all installed extension folders. Returns an associative array of Events.
 		 *
 		 * @see toolkit.Manager#about
 		 * @return array
-		 *  Associative array of events with the key being the handle of the event
-		 *  and the value being the events about() information.
+		 *  Associative array of Events with the key being the handle of the Event
+		 *  and the value being the Events about() information.
 		 */
         public function listAll(){
 
@@ -163,7 +163,7 @@
 		        throw new Exception(
 					__(
 						'Could not find Event <code>%s</code>. If the Event was provided by an Extension, ensure that it is installed, and enabled.',
-						array($name)
+						array($handle)
 					)
 				);
 	        }
