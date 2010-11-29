@@ -275,9 +275,6 @@ ul.tags .more:hover {
 .subsection li.movable {
 	background-color: #887;
 }
-.subsection li.template {
-	display: none;
-}
 .subsection li.selected h4 {
 	border-color: #6783cb;
 }
