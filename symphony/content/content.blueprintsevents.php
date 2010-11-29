@@ -114,9 +114,9 @@
 				$label = Widget::Label(__('Filter Rules'));	
 
 				$options = array(
-					array('admin-only', @in_array('admin-only', $fields['filters']), __('Admin Only')),
-					array('send-email', @in_array('send-email', $fields['filters']), __('Send Email')),
-					array('expect-multiple', @in_array('expect-multiple', $fields['filters']), __('Allow Multiple')),					
+					array('admin-only', @in_array('admin-only', (array) $fields['filters']), __('Admin Only')),
+					array('send-email', @in_array('send-email', (array) $fields['filters']), __('Send Email')),
+					array('expect-multiple', @in_array('expect-multiple', (array) $fields['filters']), __('Allow Multiple')),					
 				);
 			
 				###
