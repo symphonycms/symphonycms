@@ -25,23 +25,40 @@
 		protected $_Parent;
 
 		/**
-		 * @var TextFormatterManager
+		 * @var TextFormatterManager An instance of the TextFormatterManager
 		 */
 		public $formatterManager;
 
 		/**
-		 * @var SectionManager
+		 * @var SectionManager An instance of the SectionManager
 		 */
 		public $sectionManager;
 
 		/**
-		 * @var FieldManager
+		 * @var FieldManager An instance of the FieldManager
 		 */
 		public $fieldManager;
 
+		/**
+		 * @var integer The Field ID that will be used to sort when fetching Entries,
+		 *  defaults to null, which implies the Entry ID (id column in tbl_entries)
+		 */
 		protected $_fetchSortField = null;
+
+		/**
+		 * @var string The direction that entries should be sorted in, available options
+		 *  are RAND, ASC or DESC. Defaults to null, which implies ASC
+		 */
 		protected $_fetchSortDirection = null;
 
+		/**
+		 * The constructor initialises the formatterManager, sectionManager and
+		 * fieldManager variables and sets the _Parent to the param provided.
+		 *
+		 * @param Administration $parent
+		 *  The Administration object that this page has been created from
+		 *  passed by reference
+		 */
 		public function __construct($parent){
 			$this->_Parent = $parent;
 
@@ -61,7 +78,7 @@
 		public function setFetchSortingDirection($direction){
 			$direction = strtoupper($direction);
 			if($direction == 'RANDOM') $direction = 'RAND';
-			$this->_fetchSortDirection = (in_array($direction, array('RAND', 'ASC', 'DESC')) ? $direction : NULL);
+			$this->_fetchSortDirection = (in_array($direction, array('RAND', 'ASC', 'DESC')) ? $direction : null);
 		}
 
 		/**
@@ -584,4 +601,3 @@
 		}
 
 	}
-
