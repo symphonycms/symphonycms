@@ -73,7 +73,7 @@
 		 * Sets the seed to be a timestamp so that time profiling will use this
 		 * as a starting point
 		 *
-		 * @param int $time
+		 * @param integer $time
 		 *  The time in seconds
 		 */
 		public static function seed($time = null){
@@ -93,11 +93,11 @@
 		 * @uses memory_get_usage
 		 * @param string $msg
 		 *  A description for this sample
-		 * @param int $type
+		 * @param integer $type
 		 *  Either PROFILE_RUNNING_TOTAL or PROFILE_LAP
 		 * @param string $group
 		 *  Allows samples to be grouped together, defaults to General.
-		 * @param int $queries
+		 * @param integer $queries
 		 *  The number of MySQL queries that occurred since the $_starttime or $_seed
 		 */
 		public function sample($msg, $type=PROFILE_RUNNING_TOTAL, $group='General', $queries=NULL){
@@ -123,7 +123,7 @@
 		 * Given an index, return the sample at that position otherwise just
 		 * return all samples.
 		 *
-		 * @param int $index
+		 * @param integer $index
 		 *  The array index to return the sample for
 		 * @return array
 		 *  If no $index is passed an array of all the sample arrays are returned

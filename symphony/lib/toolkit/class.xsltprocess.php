@@ -169,10 +169,10 @@
 		 * A custom error handler especially for XML errors.
 		 *
 		 * @see http://au.php.net/manual/en/function.set-error-handler.php
-		 * @param int $errno
-		 * @param int $errstr
-		 * @param int $errfile
-		 * @param int $errline
+		 * @param integer $errno
+		 * @param integer $errstr
+		 * @param integer $errfile
+		 * @param integer $errline
 		 */
 		public function trapXMLError($errno, $errstr, $errfile, $errline){
 			$this->__error($errno, str_replace('DOMDocument::', null, $errstr), $errfile, $errline, 'xml');
@@ -182,10 +182,10 @@
 		 * A custom error handler especially for XSL errors.
 		 *
 		 * @see http://au.php.net/manual/en/function.set-error-handler.php
-		 * @param int $errno
-		 * @param int $errstr
-		 * @param int $errfile
-		 * @param int $errline
+		 * @param integer $errno
+		 * @param integer $errstr
+		 * @param integer $errfile
+		 * @param integer $errline
 		 */
 		public function trapXSLError($errno, $errstr, $errfile, $errline){
 			$this->__error($errno, str_replace('DOMDocument::', null, $errstr), $errfile, $errline, 'xsl');
@@ -196,7 +196,7 @@
 		 * and some basic debugging information.
 		 *
 		 * @see http://au.php.net/manual/en/function.set-error-handler.php
-		 * @param int $number
+		 * @param integer $number
 		 * @param string $message
 		 * @param string $file
 		 * @param string $line

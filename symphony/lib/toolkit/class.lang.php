@@ -245,7 +245,7 @@
 		 *
 		 * Given a string, this will clean it for use as a Symphony handle. Preserves multi-byte characters
 		 * @param string $string
-		 * @param int $max_length the maximum number of characters in the handle
+		 * @param integer $max_length the maximum number of characters in the handle
 		 * @param string $delim all non-valid characters will be replaced with this
 		 * @param boolean $uriencode force the resultant string to be uri encoded making it safe for URL's
 		 * @param boolean $apply_transliteration if true, this will run the string through an array of substitution characters

@@ -354,7 +354,7 @@
 		 *
 		 * @param boolean $indent
 		 *  Defaults to false
-		 * @param int $tab_depth
+		 * @param integer $tab_depth
 		 *  Defaults to 0, indicates the number of tabs (\t) that this
 		 *  element should be indented by in the output string
 		 * @param boolean $hasParent

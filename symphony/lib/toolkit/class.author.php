@@ -202,7 +202,7 @@
 		 * @deprecated This function will be removed in the next major release. The
 		 *  AuthorManager::fetchByID is the preferred way to find Authors by ID.
 		 * @see toolkit.AuthorManager#fetchByID
-		 * @param int $id
+		 * @param integer $id
 		 *  The Author ID to load.
 		 * @return boolean
 		 */

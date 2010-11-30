@@ -68,7 +68,7 @@
 		 * Sets the field to applying the sorting direction on when fetching
 		 * entries
 		 *
-		 * @param $field_id
+		 * @param integer $field_id
 		 *  The ID of the Field that should be sorted on
 		 */
 		public function setFetchSortingField($field_id){
@@ -81,7 +81,7 @@
 		 *
 		 * @see setFetchSortingField
 		 * @see setFetchSortingDirection
-		 * @param $field_id
+		 * @param integer $field_id
 		 *  The ID of the Field that should be sorted on
 		 * @param string $direction
 		 *  The direction that entries should be sorted in, available options

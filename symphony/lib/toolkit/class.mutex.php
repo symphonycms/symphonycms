@@ -18,7 +18,7 @@
 		 * @param string $id
 		 *  The name of the lock file, which gets obfuscated using
 		 *  generateLockFileName.
-		 * @param int $ttl
+		 * @param integer $ttl
 		 *  The length, in seconds, that the lock should exist for. Defaults
 		 *  to 5.
 		 * @param string $path
@@ -64,7 +64,7 @@
 		 * @param string $id
 		 *  The name of the lock file, which gets obfuscated using
 		 *  __generateLockFileName.
-		 * @param int $ttl
+		 * @param integer $ttl
 		 *  The length, in seconds, that the lock should be extended by.
 		 *  Defaults to 5.
 		 * @param string $path

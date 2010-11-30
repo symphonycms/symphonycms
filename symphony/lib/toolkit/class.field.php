@@ -1039,9 +1039,9 @@
 		 *
 		 * @param number $entry_id
 		 *	the id of the entry to delete.
-		 * @param $data (optional)
-		 *	the date to use to select which entry to delete? This is an optional
-		 *	argument and defaults to null.
+		 * @param array $data (optional)
+		 *	The entry data provided for fields to do additional cleanup
+         *  This is an optional argument and defaults to null.
 		 * @return boolean
 		 *	true if the cleanup was successful, false otherwise.
 		 */

@@ -71,7 +71,7 @@
 		 *
 		 * @param string $string
 		 *	the string in which to replace the tabs with spaces.
-		 * @param int $spaces (optional)
+		 * @param integer $spaces (optional)
 		 *	the number of spaces to replace each tab with. This argument is optional
 		 *	with a default of 4.
 		 * @return string
@@ -400,7 +400,7 @@
 		 *
 		 * @param string $str
 		 *	the string to operate on
-		 * @param number $val
+		 * @param integer $val
 		 *	the number to compare lengths with
 		 * @return string|bool
 		 *	the resulting string or false on failure.
@@ -416,7 +416,7 @@
 		 *
 		 * @param string $str
 		 *	the string to operate on
-		 * @param number $val
+		 * @param integer $val
 		 *	the number to compare lengths with
 		 * @return string|bool
 		 *	the resulting string or false on failure.
@@ -430,7 +430,7 @@
 		 *
 		 * @param string $str
 		 *	the string to extract the characters from.
-		 * @param number $num
+		 * @param integer $num
 		 *	the number of characters to extract.
 		 * @return string|bool
 		 *	a string containing the last $num characters of the
@@ -446,7 +446,7 @@
 		 *
 		 * @param string $str
 		 *	the string to extract the characters from.
-		 * @param number $num
+		 * @param integer $num
 		 *	the number of characters to extract.
 		 * @return string|bool
 		 *	a string containing the last $num characters of the
@@ -462,7 +462,7 @@
 		 *
 		 * @param string $path
 		 *	the path containing the directories to create.
-		 * @param number $mode (optional)
+		 * @param integer $mode (optional)
 		 *	the permissions (in octal) of the directories to create. this defaults to 0755
 		 * @return bool
 		 */
@@ -1049,7 +1049,7 @@
 		 *
 		 * @param string $string
 		 *	the string to truncate.
-		 * @param int maxChars (optional)
+		 * @param integer maxChars (optional)
 		 *	the maximum length of the string to truncate the input string to. this
 		 *	defaults to 200 characters.
 		 * @param bool $appendHellip (optional)
@@ -1106,7 +1106,7 @@
 		 *	the file name within the file path to which the source file is to be moved.
 		 * @parm string $tmp_name
 		 *	the full path name of the source file to move.
-		 * @param number $perm (optional)
+		 * @param integer $perm (optional)
 		 *	the permissions to apply to the moved file. this defaults to 0777.
 		 * @return bool
 		 *	true if the file was moved and its permissions set as required. false otherwise.
@@ -1135,7 +1135,7 @@
 		 * appropriate for values greater than 1,024*1,024, KB for values between
 		 * 1,024 and 1,024*1,024-1 and bytes for values between 0 and 1,024.
 		 *
-		 * @param int $file_size
+		 * @param integer $file_size
 		 *	the number to format.
 		 * @return string
 		 *	the formatted number.
@@ -1156,7 +1156,7 @@
 		 *
 		 * @uses DataTimeObj to manipulate the timestamp value.
          * @uses XMLElement
-		 * @param number $timestamp
+		 * @param integer $timestamp
 		 *	the timestamp to construct the XML element from.
 		 * @param string $element (optional)
 		 *	the name of the element to append to the namespace of the constructed XML.
@@ -1187,15 +1187,15 @@
         /**
 		 * Construct an XML fragment that describes a pagination structure.
 		 *
-		 * @param int $total_entries (optional)
+		 * @param integer $total_entries (optional)
 		 *	the total number of entries that this structure is paginating. this
 		 *	defaults to 0.
-		 * @param int $total_pages (optional)
+		 * @param integer $total_pages (optional)
 		 *	the total number of pages within the pagination structure. this defaults
 		 *	to 0.
-		 * @param int $entries_per_page (optional)
+		 * @param integer $entries_per_page (optional)
 		 *	the number of entries per page. this defaults to 1.
-		 * @param int $current_page (optional)
+		 * @param integer $current_page (optional)
 		 *	the current page within the total number of pages within this pagination
 		 *	structure. this defaults to 1.
 		 * @return XMLElement

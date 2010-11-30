@@ -115,7 +115,7 @@
 		 * Given a Author ID and associative array of fields, update an existing Author
 		 * row in the Database's authors table. Returns boolean for success/failure
 		 *
-		 * @param int $id
+		 * @param integer $id
 		 *  The ID of the Field that should be updated
 		 * @param array $fields
 		 *  Associative array of field names => values for the Field object
@@ -134,7 +134,7 @@
 		 * the fields table, all of the data stored in the entries for this field and any
 		 * section associations if they exist.
 		 *
-		 * @param int $id
+		 * @param integer $id
 		 *  The ID of the Field that should be deleted
 		 * @return boolean
 		 */
@@ -157,10 +157,10 @@
 		 * Fields from a Section also. There are several parameters that can be used to fetch
 		 * fields by their Type, Location, by a Field Constant or with a custom WHERE query.
 		 *
-		 * @param int $id
+		 * @param integer $id
 		 *  The ID of the field to retrieve. Defaults to null which will return multiple field
 		 *  objects
-		 * @param int $section_id
+		 * @param integer $section_id
 		 *  The ID of the section to look for the fields in. Defaults to null which will allow
 		 *  all fields in the Symphony installation to be searched on.
 		 * @param string $order
@@ -246,7 +246,7 @@
 		/**
 		 * Given a field ID, return the type of the field by querying tbl_fields
 		 *
-		 * @param int $id
+		 * @param integer $id
 		 * @return string
 		 */
 		public function fetchFieldTypeFromID($id){
@@ -256,7 +256,7 @@
 		/**
 		 * Given a field ID, return the handle of the field by querying tbl_fields
 		 *
-		 * @param int $id
+		 * @param integer $id
 		 * @return string
 		 */
 		public function fetchHandleFromID($id){
@@ -273,7 +273,7 @@
 		 *
 		 * @param string $element_name
 		 *  The handle of the Field label
-		 * @param int $section_id
+		 * @param integer $section_id
 		 *  The section that this field belongs too
 		 * @return int
 		 *  The field ID

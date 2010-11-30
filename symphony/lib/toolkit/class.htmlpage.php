@@ -118,7 +118,7 @@
 		 *
 		 * @see toolkit.General#array_find_available_index
 		 * @param XMLElement $object
-		 * @param int $position
+		 * @param integer $position
 		 *  Defaults to null which will put the $object at the end of the
 		 *  $_head.
 		 * @return int
@@ -174,7 +174,7 @@
 		 *
 		 * @param string $path
 		 *  The path to the script file
-		 * @param int $position
+		 * @param integer $position
 		 *  The desired position that the resulting XMLElement will be placed
 		 *  in the $_head. Defaults to null which will append to the end.
 		 * @param boolean $duplicate
@@ -202,7 +202,7 @@
 		 *  The path to the stylesheet file
 		 * @param string $type
 		 *  The media attribute for this stylesheet, defaults to 'screen'
-		 * @param int $position
+		 * @param integer $position
 		 *  The desired position that the resulting XMLElement will be placed
 		 *  in the $_head. Defaults to null which will append to the end.
 		 * @param boolean $duplicate

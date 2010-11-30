@@ -35,7 +35,7 @@
 		 * Given an Author ID and associative array of fields, update an existing Author
 		 * row in the Database's authors table. Returns boolean for success/failure
 		 *
-		 * @param int $id
+		 * @param integer $id
 		 *  The ID of the Author that should be updated
 		 * @param array $fields
 		 *  Associative array of field names => values for the Author object
@@ -50,7 +50,7 @@
 		/**
 		 * Given an Author ID, delete an Author from Symphony.
 		 *
-		 * @param int $id
+		 * @param integer $id
 		 *  The ID of the Author that should be deleted
 		 * @return boolean
 		 */
@@ -67,9 +67,9 @@
 		 * @param string $sortdirection
 		 *  Available values of ASC (Ascending) or DESC (Descending), which refer to the
 		 *  sort order for the query. Defaults to ASC (Ascending)
-		 * @param int $limit
+		 * @param integer $limit
 		 *  The number of rows to return
-		 * @param int $start
+		 * @param integer $start
 		 *  The offset start point for limiting, maps to the LIMIT {x}, {y} MySQL functionality
 		 * @return array(Author)
 		 *  An array of Author objects.  If no Authors are found, null is returned.
@@ -115,9 +115,9 @@
 		 * @param string $sortdirection
 		 *  Available values of ASC (Ascending) or DESC (Descending), which refer to the
 		 *  sort order for the query. Defaults to ASC (Ascending)
-		 * @param int $limit
+		 * @param integer $limit
 		 *  The number of rows to return
-		 * @param int $start
+		 * @param integer $start
 		 *  The offset start point for limiting, maps to the LIMIT {x}, {y} MySQL functionality
 		 * @return mixed
 		 *  If $id was an integer, the result will be an Author object, otherwise an array of
@@ -195,7 +195,7 @@
 		 * This function will allow an Author to sign into Symphony by using their
 		 * authentication token as well as username/password.
 		 *
-		 * @param int $author_id
+		 * @param integer $author_id
 		 *  The Author ID to allow to use their authentication token.
 		 * @return boolean
 		 */
@@ -208,7 +208,7 @@
 		 * This function will remove the ability for an Author to sign into Symphony
 		 * by using their authentication token
 		 *
-		 * @param int $author_id
+		 * @param integer $author_id
 		 *  The Author ID to allow to use their authentication token.
 		 * @return boolean
 		 */
