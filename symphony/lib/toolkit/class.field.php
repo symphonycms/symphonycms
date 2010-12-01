@@ -432,7 +432,7 @@
 		 *	the input error collection. this defaults to null.
 		 */
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null){
-			$wrapper->appendChild(new XMLElement('h4', ucwords($this->handle())));
+			$wrapper->appendChild(new XMLElement('h4', ucwords($this->name())));
 			$wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][type]', $this->handle(), 'hidden'));
 			if($this->get('id')) $wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][id]', $this->get('id'), 'hidden'));
 
