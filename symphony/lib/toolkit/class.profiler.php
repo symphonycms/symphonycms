@@ -11,13 +11,16 @@
 	 */
 
 	/**
-	 * @var int Defines a constant for when the Profiler should be a complete snapshot of
+	 * Defines a constant for when the Profiler should be a complete snapshot of
 	 * the page load, from the very start, to the very end.
+	 * @var integer
 	 */
 	define_safe('PROFILE_RUNNING_TOTAL', 0);
+
 	/**
-	 * @var int Defines a constant for when a snapshot should be between two points,
+	 * Defines a constant for when a snapshot should be between two points,
 	 * usually when a start time has been given
+	 * @var integer
 	 */
 	define_safe('PROFILE_LAP', 1);
 
@@ -25,6 +28,7 @@
 
 		/**
 		 * Holds the timestamp from when the profiler was first initialised
+		 * @var integer
 		 */
 		protected static $_starttime  = 0;
 
@@ -33,20 +37,22 @@
 		 * profile message, the time since $_starttime timestamp, the end timestamp,
 		 * the group for this record, the number of SQL queries and the result of
 		 * memory_get_usage()
+		 * @var array
 		 */
 		protected static $_samples = array();
 
 		/**
-		 * @var int A seed holds a start time to be used in profiling. If this is not null
+		 * A seed holds a start time to be used in profiling. If this is not null
 		 * the profiler will use this as the start time instead of $_starttime. This
 		 * is set with the seed function.
-		 *
-		 * @see seed
+		 * @var integer
+		 * @see seed()
 		 */
 		protected static $_seed = null;
 
 		/**
-		 * @var Profiler An instance of the Profiler class
+		 * An instance of the Profiler class
+		 * @var Profiler
 		 */
 		protected static $_instance = null;
 
@@ -90,7 +96,6 @@
 		 * sample which measures the amount of memory used by this script by PHP at the
 		 * time of sampling.
 		 *
-		 * @uses memory_get_usage
 		 * @param string $msg
 		 *  A description for this sample
 		 * @param integer $type

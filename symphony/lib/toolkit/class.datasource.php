@@ -4,14 +4,16 @@
 	 */
 
 	/**
-	 * @var integer A constant that represents if this filter is an AND filter
-	 *  in which an Entry must match all these filters
+	 * A constant that represents if this filter is an AND filter in which
+	 * an Entry must match all these filters
+	 * @var integer
 	 */
 	define_safe('DS_FILTER_AND', 1);
 
 	/**
-	 * @var integer A constant that represents if this filter is an OR filter
-	 *  in which an entry can match any or all of these filters
+	 * A constant that represents if this filter is an OR filter in which an
+	 * entry can match any or all of these filters
+	 * @var integer
 	 */
 	define_safe('DS_FILTER_OR', 2);
 
@@ -32,45 +34,51 @@
 	Class DataSource{
 
 		/**
-		 * @var string The end-of-line constant.
+		 * The end-of-line constant.
+		 * @var string
 		 * @deprecated This will no longer exist in Symphony 3
 		 */
 		const CRLF = PHP_EOL;
 
 		/**
-		 * @var Administration An instance of the Administration class
+		 * An instance of the Administration class
+		 * @var Administration
 		 * @see core.Administration
 		 */
-	    protected $_Parent;
+		protected $_Parent;
 
 		/**
-		 * @var array Holds all the environment variables which include
-		 *  parameters set by other Datasources or Events.
+		 * Holds all the environment variables which include parameters set by
+		 * other Datasources or Events.
+		 * @var array
 		 */
 		protected $_env = array();
 
 		/**
-		 * @var boolean If true, this datasource only will be outputting parameters
-		 *  from the Entries, and no actual content.
+		 * If true, this datasource only will be outputting parameters from the
+		 * Entries, and no actual content.
+		 * @var boolean
 		 */
 		protected $_param_output_only;
 
 		/**
-		 * @var array An array of datasource dependancies. These are datasources that must
-		 *  run first for this datasource to be able to execute correctly
+		 * An array of datasource dependancies. These are datasources that must
+		 * run first for this datasource to be able to execute correctly
+		 * @var array
 		 */
 		protected $_dependencies = array();
 
 		/**
-		 * @var boolean When there is no entries found by the Datasource, this parameter
-		 *  will be set to true, which will inject the default Symphony 'No records found' message
-		 *  into the datasource's result
+		 * When there is no entries found by the Datasource, this parameter will
+		 * be set to true, which will inject the default Symphony 'No records found'
+		 * message into the datasource's result
+		 * @var boolean
 		 */
 		protected $_force_empty_result = false;
 
 		/**
 		 * Constructor for the datasource sets the parent, and if process_params is set,
-		 * the env variables as well. The env
+		 * the $env variable as well.
 		 *
 		 * @param Administration $parent
 		 *  The Administration object that this page has been created from
@@ -96,7 +104,7 @@
 		 * used by the datasource editor.
 		 *
 		 * @return boolean
-		 *	 True if the Datasouce can be edited, false otherwise. Defaults to false
+		 *	 True if the Datasource can be edited, false otherwise. Defaults to false
 		 */
 		public function allowEditorToParse(){
 			return false;
@@ -142,7 +150,7 @@
 		/**
 		 * By default, all Symphony filters are considering to be AND filters, that is
 		 * they are all used and Entries must match each filter to be included. It is
-		 * possible to use OR filtering in a field, but using an + to seperate the values.
+		 * possible to use OR filtering in a field, but using an + to separate the values.
 		 * eg. If the filter is test1 + test2, this will match any entries where this field
 		 * is test1 OR test2. This function is run on each filter (ie. each field) in a
 		 * datasource
@@ -263,7 +271,7 @@
 		 * Parameters are defined by being prefixed by a $ character. In certain
 		 * situations, the parameter will be surrounded by {}, which Symphony
 		 * takes to mean, evaluate this parameter to a value, other times it will be
-		 * omitted which is usually used to indiciate that this parameter exists
+		 * omitted which is usually used to indicate that this parameter exists
 		 *
 		 * @param string $value
 		 *  The string with the parameters that need to be evaluated
@@ -339,7 +347,7 @@
 		}
 
 		/**
-		 * Used in conjuction with escapeCommas, this function will remove
+		 * Used in conjunction with escapeCommas, this function will remove
 		 * the escaping pattern applied to the string (and commas)
 		 *
 		 * @param string $string

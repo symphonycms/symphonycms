@@ -105,7 +105,7 @@
 		}
 
 		/**
-		 * The fetchById method returns Author that match the provided ID's with 
+		 * The fetchById method returns Author that match the provided ID's with
 		 * the option to sort or limit the output.
 		 *
 		 * @param int|array $id

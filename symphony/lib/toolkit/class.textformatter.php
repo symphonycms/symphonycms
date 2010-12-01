@@ -9,7 +9,8 @@
 	Abstract Class TextFormatter{
 
 		/**
-		 * @var Administration An instance of the Administration class
+		 * An instance of the Administration class
+		 * @var Administration
 		 * @see core.Administration
 		 */
 		protected $_Parent;

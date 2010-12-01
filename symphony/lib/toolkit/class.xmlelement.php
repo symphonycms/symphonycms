@@ -12,14 +12,15 @@
 	 */
 	Class XMLElement {
 		/**
-		 * @var string The end-of-line constant.
+		 * The end-of-line constant.
+		 * @var string
 		 * @deprecated This will no longer exist in Symphony 3
 		 */
 		const CRLF = PHP_EOL;
 
 		/**
-		 * @var array This is an array of all HTML elements that are
-		 * self closing.
+		 * This is an array of all HTML elements that are self closing.
+		 * @var array
 		 */
 		protected static $no_end_tags = array(
 			'area', 'base', 'basefont', 'br', 'col', 'frame', 'hr', 'img',
@@ -27,84 +28,91 @@
 		);
 
 		/**
-		 * @var string The name of the HTML Element, eg. 'p'
+		 * The name of the HTML Element, eg. 'p'
+		 * @var string
 		 */
 		private	$_name;
 
 		/**
-		 * @var string|XMLElement The value of this XMLElement, it can be a string
-		 *  or another XMLElement object.
+		 * The value of this XMLElement, it can be a string or another XMLElement object.
+		 * @var string|XMLElement
 		 */
 		private	$_value;
 
 		/**
-		 * @var array $_attributes Any additional attributes can be included in
-		 *  an associative array with the key being the name and the value being
-		 *  the value of the attribute.
+		 * Any additional attributes can be included in an associative array
+		 * with the key being the name and the value being the value of the
+		 * attribute.
+		 * @var array
 		 */
 		private	$_attributes = array();
 
 		/**
-		 * @var array(XMLElement) Any children of this element as XMLElements
+		 * Any children of this element as XMLElements
+		 * @var array(XMLElement)
 		 */
 		private	$_children = array();
 
 		/**
-		 * @var array Any processing instructions that the XSLT should
-		 *  know about when a XMLElement is generated
+		 * Any processing instructions that the XSLT should know about when a
+		 * XMLElement is generated
+		 * @var array
 		 */
 		private $_processingInstructions = array();
 
 		/**
-		 * @var string The DTD the should be output when a XMLElement is
-		 *  generated, defaults to null.
+		 * The DTD the should be output when a XMLElement is generated, defaults to null.
+		 * @var string
 		 */
 		private $_dtd = null;
 
 		/**
-		 * @var string The encoding of the XMLElement, defaults to 'utf-8'
+		 * The encoding of the XMLElement, defaults to 'utf-8'
+		 * @var string
 		 */
 		private $_encoding = 'utf-8';
 
 		/**
-		 * @var string The version of the XML that is used for generation,
-		 * 	defaults to '1.0'
+		 * The version of the XML that is used for generation, defaults to '1.0'
+		 * @var string
 		 */
 		private $_version = '1.0';
 
 		/**
-		 * @var string The type of element, defaults to 'xml'. Used when
-		 *  determining the style of end tag for this element when generated
+		 * The type of element, defaults to 'xml'. Used when determining the style
+		 * of end tag for this element when generated
+		 * @var string
 		 */
 		private $_elementStyle = 'xml';
 
 		/**
-		 * @var boolean When set to true this will include the XML declaration
-		 *  will be output when the XML Element is generated. Defaults
-		 *  to false.
+		 * When set to true this will include the XML declaration will be
+		 * output when the XML Element is generated. Defaults to false.
+		 * @var boolean
 		 */
 		private $_includeHeader = false;
 
 		/**
-		 * @var boolean Specifies whether this HTML element has an closing
-		 *  element, or if it self closing. Defaults to true.
+		 * Specifies whether this HTML element has an closing element, or if
+		 * it self closing. Defaults to true.
 		 *  eg. <p></p> or <input />
+		 * @var boolean
 		 */
 		private $_selfclosing = true;
 
 		/**
-		 * @var boolean Specifies whether attributes need to have a value
-		 *  or if they can be shorthand. Defaults to true.
-		 *  An example of this would be:
+		 * Specifies whether attributes need to have a value or if they can
+		 * be shorthand. Defaults to true. An example of this would be:
 		 *  <option selected>Value</option>
+		 * @var boolean
 		 */
 		private $_allowEmptyAttributes = true;
 
 		/**
-		 * @var boolean Defaults to false, which puts the value before any
-		 * 	children elements. Setting to true will append any
-		 *  children first, then add the value to the current
-		 *  XMLElement
+		 * Defaults to false, which puts the value before any children elements.
+		 * Setting to true will append any children first, then add the value
+		 * to the current XMLElement
+		 * @var boolean
 		 */
 		private $_placeValueAfterChildElements = false;
 
@@ -281,7 +289,7 @@
 		}
 
 		/**
-		 * A convenience method to quickly add multiple attributes to 
+		 * A convenience method to quickly add multiple attributes to
 		 * an XMLElement
 		 *
 		 * @param array $attributes

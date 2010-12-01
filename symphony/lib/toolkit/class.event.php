@@ -19,7 +19,7 @@
 		/**
 		 * The load functions determines whether an event will be executed or not
 		 * by comparing the Event's action with the $_POST data. This function will
-		 * be called everytime a page is loaded that an event is attached too. If the
+		 * be called every time a page is loaded that an event is attached too. If the
 		 * action does exist, it typically calls the __trigger method, otherwise void.
 		 *
 		 * @return mixed
@@ -41,39 +41,45 @@
 	 * Events implement the iEvent interface, which defines the load and about functions.
 	 */
 	abstract Class Event implements iEvent{
+		
 		/**
-		 * @var string The end-of-line constant.
+		 * The end-of-line constant.
+		 * @var string
 		 * @deprecated This will no longer exist in Symphony 3
 		 */
 		const CRLF = PHP_EOL;
+		
+		/**
+		 * The class that initialised the Entry, usually the EntryManager
+		 * @var mixed
+		 */
+		protected $_Parent;
 
 		/**
-		 * @var int Represents High Priority, that this event should run
-		 *  first
+		 * Represents High Priority, that this event should run first
+		 * @var integer
 		 */
 		const kHIGH = 3;
 
 		/**
-		 * @var int Represents Normal Priority, that this event should run
-		 *  normally. This is the default Event Priority
+		 * Represents Normal Priority, that this event should run normally. 
+		 * This is the default Event Priority
+		 * @var integer
+
 		 */
 		const kNORMAL = 2;
 
 		/**
-		 * @var int Represents High Priority, that this event should run
-		 *  last
+		 * Represents High Priority, that this event should run last
+		 * @var integer
+
 		 */
 		const kLOW = 1;
 
 		/**
-		 * @var Administration An instance of the Administration class
-		 * @see core.Administration
-		 */
-	    protected $_Parent;
-
-		/**
-		 * @var array Holds all the environment variables which include
-		 *  parameters set by other Datasources or Events.
+		 * Holds all the environment variables which include parameters set 
+		 * by other Datasources or Events.
+		 * @var array 
 		 */
 		protected $_env = array();
 

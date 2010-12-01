@@ -11,15 +11,17 @@
 	 * apply their objects.
 	 */
     Abstract Class Manager{
-		/**
-		 * @var Administration An instance of the Administration class
-		 * @see core.Administration
-		 */
-	    public $_Parent;
 
 		/**
-		 * @var array An array of all the objects that the Manager
-		 *  is responsible for. Defaults to empty.
+		 * The class that initialised the Entry, usually the EntryManager
+		 * @var mixed
+		 */
+		protected $_Parent;
+
+		/**
+		 * An array of all the objects that the Manager is responsible for.
+		 * Defaults to an empty array.
+		 * @var array
 		 */
 	    protected static $_pool = array();
 

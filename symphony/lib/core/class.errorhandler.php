@@ -12,8 +12,8 @@
 	Class GenericExceptionHandler{
 
 		/**
-		 * @var boolean Whether the GenericExceptionHandler should handle exceptions
-		 *  defaults to true
+		 * Whether the GenericExceptionHandler should handle exceptions defaults to true
+		 * @var boolean
 		 */
 		public static $enabled = true;
 
@@ -26,15 +26,15 @@
 		}
 
 		/**
-		 * Retreives a window of lines before and after the line where the error
-		 * occured so that a developer can help debug the exception
+		 * Retrieves a window of lines before and after the line where the error
+		 * occurred so that a developer can help debug the exception
 		 *
 		 * @param integer $line
-		 *  The line where the error occured.
+		 *  The line where the error occurred.
 		 * @param string $file
 		 *  The file that holds the logic that caused the error.
 		 * @param integer $window
-		 *  The number of lines either side of the line where the error occured
+		 *  The number of lines either side of the line where the error occurred
 		 *  to show
 		 * @return array
 		 */
@@ -45,8 +45,8 @@
 		/**
 		 * The handler function is given an Exception and will call it's render
 		 * function to display the Exception to a user. After calling the render
-		 * function, the output is displayed and then exitted to prevent any further
-		 * logic from occuring.
+		 * function, the output is displayed and then exited to prevent any further
+		 * logic from occurring.
 		 *
 		 * @param Exception $e
 		 *  The Exception object
@@ -279,28 +279,31 @@
 	Class GenericErrorHandler{
 
 		/**
-		 * @var boolean Whether the error handler is enabled or not, defaults to true
-		 *  Setting to false will prevent any Symphony error handling from occuring
+		 * Whether the error handler is enabled or not, defaults to true.
+		 * Setting to false will prevent any Symphony error handling from occurring
+		 * @var boolean
 		 */
 		public static $enabled = true;
 
 		/**
-		 * @var Log An instance of the Symphony Log class, used to write errors to the
-		 *  log
+		 * An instance of the Symphony Log class, used to write errors to the log
+		 * @var Log
 		 */
 		private static $_Log = null;
 
 		/**
-		 * @var array An array of all the error constants that Symphony will throw an
-		 *  exception for. These constants map directly to PHP's error constants.
+		 * An array of all the error constants that Symphony will throw an
+		 * exception for. These constants map directly to PHP's error constants.
+		 * @var array
 		 *
-		 * @see http://www.php.net/manual/en/errorfunc.constants.php
+		 * @link http://www.php.net/manual/en/errorfunc.constants.php
 		 */
 		protected static $_enabledErrorTypes = array();
 
 		/**
-		 * @var array An associative array with the PHP error constant as a key, and
-		 *  a string describing that constant as the value
+		 * An associative array with the PHP error constant as a key, and
+		 * a string describing that constant as the value
+		 * @var array
 		 */
 		public static $errorTypeStrings = array (
 			E_NOTICE         				=> 'Notice',
@@ -353,7 +356,7 @@
 		 * Thanks to 'DarkGool' for inspiring this function.
 		 *
 		 * @author DarkGool
-		 * @see http://www.php.net/manual/en/function.error-reporting.php#55985
+		 * @link http://www.php.net/manual/en/function.error-reporting.php#55985
 		 */
 		public static function isErrorsEnabled($type){
 
@@ -385,7 +388,7 @@
 		 * @param string $file
 		 *  The file that holds the logic that caused the error. Defaults to null
 		 * @param integer $line
-		 *  The line where the error occured.
+		 *  The line where the error occurred.
 		 * @return string
 		 *  Usually a string of HTML that will displayed to a user
 		 */

@@ -68,7 +68,7 @@
 		/**
 		 * Given a name, return the path to the Event class
 		 *
-		 * @see __getClassPath
+		 * @see __getClassPath()
 		 * @param string $handle
 		 *  The handle of the Event free from any Symphony conventions
 		 *  such as event.*.php

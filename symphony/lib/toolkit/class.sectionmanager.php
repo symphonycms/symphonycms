@@ -13,14 +13,15 @@
 	Class SectionManager {
 
 		/**
-		 * @var array An array of all the objects that the Manager
-		 *  is responsible for. Defaults to empty.
+		 * An array of all the objects that the Manager is responsible for.
+		 * Defaults to an empty array.
+		 * @var array
 		 */
 	    protected static $_pool = array();
 
 		/**
-		 * @var mixed The parent class who initialised the SectionManager,
-		 *  usually a Symphony instance, either Frontend or Administration
+		 * The parent class who initialised the SectionManager, usually a 
+		 * Symphony instance, either Frontend or Administration
 		 */
 	    public $_Parent;
 

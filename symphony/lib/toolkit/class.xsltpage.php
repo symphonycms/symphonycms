@@ -14,29 +14,33 @@
 	Class XSLTPage extends Page{
 
 		/**
-		 * @var XsltProcess An instance of the XsltProcess class
+		 * An instance of the XsltProcess class
+		 * @var XsltProcess
 		 */
 		public $Proc;
 
 		/**
-		 * @var string The XML to be transformed
+		 * The XML to be transformed
+		 * @var string
 		 */
 		protected $_xml;
 
 		/**
-		 * @var string The XSL to apply to the XML
+		 * The XSL to apply to the XML
+		 * @var string
 		 */
 		protected $_xsl;
 
 		/**
-		 * @var array An array of all the parameters to be made available
-		 *  during the XSLT transform
+		 * An array of all the parameters to be made available during the XSLT
+		 * transform
+		 * @var array
 		 */
 		protected $_param = array();
 
 		/**
-		 * @var array An array of functions to be made available during the
-		 *  XSLT transform
+		 * An array of functions to be made available during the XSLT transform
+		 * @var array
 		 */
 		protected $_registered_php_functions = array();
 

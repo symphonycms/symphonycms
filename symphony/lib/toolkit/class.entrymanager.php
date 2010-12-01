@@ -19,35 +19,40 @@
 	Class EntryManager{
 
 		/**
-		 * @var mixed The class that initialised the EntryManager, usually
-		 *  Administration
+		 * The class that initialised the Entry, usually the EntryManager
+		 * @var mixed
 		 */
 		protected $_Parent;
 
 		/**
-		 * @var TextFormatterManager An instance of the TextFormatterManager
+		 * An instance of the TextFormatterManager
+		 * @var TextFormatterManager
 		 */
 		public $formatterManager;
 
 		/**
-		 * @var SectionManager An instance of the SectionManager
+		 * An instance of the SectionManager
+		 * @var SectionManager
 		 */
 		public $sectionManager;
 
 		/**
-		 * @var FieldManager An instance of the FieldManager
+		 * An instance of the FieldManager
+		 * @var FieldManager
 		 */
 		public $fieldManager;
 
 		/**
-		 * @var integer The Field ID that will be used to sort when fetching Entries,
-		 *  defaults to null, which implies the Entry ID (id column in tbl_entries)
+		 * The Field ID that will be used to sort when fetching Entries, defaults
+		 * to null, which implies the Entry ID (id column in tbl_entries)
+		 * @var integer
 		 */
 		protected $_fetchSortField = null;
 
 		/**
-		 * @var string The direction that entries should be sorted in, available options
-		 *  are RAND, ASC or DESC. Defaults to null, which implies ASC
+		 * The direction that entries should be sorted in, available options are
+		 * RAND, ASC or DESC. Defaults to null, which implies ASC
+		 * @var string
 		 */
 		protected $_fetchSortDirection = null;
 
@@ -96,8 +101,8 @@
 		 * Convenience function that will set sorting field and direction
 		 * by calling setFetchSortingField & setFetchSortingDirection
 		 *
-		 * @see setFetchSortingField
-		 * @see setFetchSortingDirection
+		 * @see setFetchSortingField()
+		 * @see setFetchSortingDirection()
 		 * @param integer $field_id
 		 *  The ID of the Field that should be sorted on
 		 * @param string $direction

@@ -8,14 +8,16 @@
 	 */
 	Abstract Class Page{
 		/**
-		 * @var string The end-of-line constant.
+		 * The end-of-line constant.
+		 * @var string
 		 * @deprecated This will no longer exist in Symphony 3
 		 */
 		const CRLF = PHP_EOL;
 
 		/**
-		 * @var array This stores the headers that will be sent when
-		 *  this page is generated as an associative array of header=>value.
+		 * This stores the headers that will be sent when this page is
+		 * generated as an associative array of header=>value.
+		 * @var array 
 		 */
 		protected $_headers = array();
 
@@ -51,7 +53,7 @@
 		/**
 		 * This function calls the __renderHeaders function.
 		 *
-		 * @see __renderHeaders
+		 * @see __renderHeaders()
 		 */
 		public function generate(){
 			$this->__renderHeaders();

@@ -14,13 +14,15 @@
 	Class FieldManager extends Manager {
 
 		/**
-		 * @var array An array of all the objects that the Manager
-		 *  is responsible for. Defaults to empty.
+		 * An array of all the objects that the Manager is responsible for.
+		 * Defaults to an empty array.
+		 * @var array
 		 */
 	    protected static $_pool = array();
 
 		/**
-		 * @var array An array of all fields whose have been created by ID
+		 * An array of all fields whose have been created by ID
+		 * @var array
 		 */
 		private static $_initialiased_fields = array();
 
@@ -77,7 +79,7 @@
 		/**
 		 * Given a field type, return the path to it's class
 		 *
-		 * @see __getClassPath
+		 * @see __getClassPath()
 		 * @param string $type
 		 *  The handle of the field to load (it's type)
 		 * @return string

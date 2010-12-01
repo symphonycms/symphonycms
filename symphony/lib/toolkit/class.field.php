@@ -12,111 +12,126 @@
 	 */
 	Class Field{
 		/**
-		 * @var integer The desired result when creating a field
-		 *  in the section editor
+		 * The desired result when creating a field in the section editor
+		 * @var integer
 		 */
 		const __OK__ = 100;
 
 		/**
-		 * @var integer If an error occurring when saving a section
-		 *  because of this field, this will be returned
+		 * If an error occurring when saving a section because of this field,
+		 * this will be returned
+		 * @var integer
 		 */
 		const __ERROR__ = 150;
 
 		/**
-		 * @var integer When saving a section, if a value that is required
-		 *  is missing, this will be returned
+		 * When saving a section, if a value that is required is missing,
+		 * this will be returned
+		 * @var integer
 		 */
 		const __MISSING_FIELDS__ = 200;
 
 		/**
-		 * @var integer If a value for a setting is invalid, this will be returned
+		 * If a value for a setting is invalid, this will be returned
+		 * @var integer
 		 */
 		const __INVALID_FIELDS__ = 220;
 
 		/**
-		 * @var integer If there already is an instance of this field in this section
-		 *  and the mustBeUnique function returns true, this will be returned
+		 * If there already is an instance of this field in this section and
+		 * the mustBeUnique function returns true, this will be returned
+		 * @var integer
 		 */
 		const __DUPLICATE__ = 300;
 
 		/**
-		 * @var integer Fields can returned this is an error occurred when saving
-		 *  the field's settings that doesn't fit another Field constant
+		 * Fields can returned this is an error occurred when saving the
+		 * field's settings that doesn't fit another Field constant
+		 * @var integer
 		 */
 		const __ERROR_CUSTOM__ = 400;
 
 		/**
-		 * @var integer If the field name is not a valid QName, this error will be
-		 * returned
+		 * If the field name is not a valid QName, this error will be returned
+		 * @var integer
 		 */
 		const __INVALID_QNAME__ = 500;
 
 		/**
-		 * @var integer Used by the FieldManager to return fields that can be toggled
+		 * Used by the FieldManager to return fields that can be toggled
+		 * @var integer
 		 */
 		const __TOGGLEABLE_ONLY__ = 600;
 
 		/**
-		 * @var integer Used by the FieldManager to return fields that can't be toggled
+		 * Used by the FieldManager to return fields that can't be toggled
+		 * @var integer
 		 */
 		const __UNTOGGLEABLE_ONLY__ = 700;
 
 		/**
-		 * @var integer Used by the FieldManager to return fields that can be filtered
+		 * Used by the FieldManager to return fields that can be filtered
+		 * @var integer
 		 */
 		const __FILTERABLE_ONLY__ = 800;
 
 		/**
-		 * @var integer Used by the FieldManager to return fields that can't be filtered
+		 * Used by the FieldManager to return fields that can't be filtered
+		 * @var integer
 		 */
 		const __UNFILTERABLE_ONLY__ = 900;
 
 		/**
-		 * @var integer Used by the FieldManager to just return all fields
+		 * Used by the FieldManager to just return all fields
+		 * @var integer
 		 */
 		const __FIELD_ALL__ = 1000;
 
 		/**
-		 * @var integer Used to manage the joins when this field used in a datasource
+		 * Used to manage the joins when this field used in a datasource
+		 * @var integer
 		 */
 		protected $_key = 0;
 
 		/**
-		 * @var array An associative array of the settings for this Field instance
+		 * An associative array of the settings for this Field instance
+		 * @var array
 		 * @deprecated This variable will be renamed to $_settings in the next major
 		 *  release.
 		 */
 		protected $_fields = array();
 
 		/**
-		 * @var mixed The class that initialised the Field, usually the FieldManager
+		 * The class that initialised the Field, usually the FieldManager
 		 */
 		protected $_Parent;
 
 		/**
-		 * @var Symphony An instance of the Symphony class, either Frontend or
-		 *  Administration
+		 * An instance of the Symphony class, either Frontend or Administration
+		 * @var Symphony
 		 */
 		protected $_engine;
 
 		/**
-		 * @var boolean Whether this field is required inherently, defaults to false.
+		 * Whether this field is required inherently, defaults to false.
+		 * @var boolean
 		 */
 		protected $_required = false;
 
 		/**
-		 * @var boolean Whether this field can be viewed on the Publish Index
-		 *  table. Note that this is not the same variable as the one set when saving
-		 *  a field in the section editor, rather just the if the field has the ability to be
-		 *  shown. Defaults to true.
+		 * Whether this field can be viewed on the Publish Index table. Note
+		 * that this is not the same variable as the one set when saving
+		 * a field in the section editor, rather just the if the field has
+		 * the ability to be shown. Defaults to true.
+		 * @var boolean
 		 */
 		protected $_showcolumn = true;
 
 		/**
-		 * @var boolean Whether this field has an association that should be shown
-		 *  on the Publish Index. This does not mean that it will be, but just that this
-		 *  field has the ability too. Defaults to false.
+		 * Whether this field has an association that should be shown on
+		 * the Publish Index. This does not mean that it will be, but just
+		 * that this field has the ability too. Defaults to false.
+		 * @var boolean
 		 */
 		protected $_showassociation = false;
 
@@ -397,7 +412,7 @@
 		 * Display the default settings panel, calls the buildSummaryBlock
 		 * function after basic field settings are added to the wrapper.
 		 *
-		 * @see buildSummaryBlock
+		 * @see buildSummaryBlock()
 		 * @param XMLElement $wrapper
 		 *	the input XMLElement to which the display of this will be appended.
 		 * @param mixed errors (optional)
@@ -416,7 +431,7 @@
 		 * generated are appended to the optional input error array. This function calls
 		 * buildLocationSelect once it is completed
 		 *
-		 * @see buildLocationSelect
+		 * @see buildLocationSelect()
 		 * @param array $errors (optional)
 		 *	an array to append html formatted error messages to. this defaults to null.
 		 * @return XMLElement

@@ -14,22 +14,25 @@
 
 	Class Section{
 		/**
-		 * @var mixed The class who initialised this Section, usually SectionManager
+		 * The class who initialised this Section, usually SectionManager
 		 */
 		public $_Parent;
 
 		/**
-		 * @var array An array of the Section's settings
+		 * An array of the Section's settings
+		 * @var array 
 		 */
 		protected $_data = array();
 
 		/**
-		 * @var array An array of Field objects for this Section
+		 * An array of Field objects for this Section
+		 * @var array
 		 */
 		protected $_fields = array();
 
 		/**
-		 * @var FieldManager An instance of the FieldManager class
+		 * An instance of the FieldManager class
+		 * @var FieldManager
 		 */
 		protected $_fieldManager;
 

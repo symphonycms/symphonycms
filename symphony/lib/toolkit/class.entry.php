@@ -12,44 +12,50 @@
 	 */
 
 	 /**
-	  * @var integer The constant for when an Entry is ok, that is, no
-	  *  errors have been raised by any of it's Fields.
+	  * The constant for when an Entry is ok, that is, no errors have 
+	  * been raised by any of it's Fields.
+	  * @var integer
 	  */
 	define_safe('__ENTRY_OK__', 0);
 
 	/**
-	 * @var integer The constant for an Entry if there is an error is raised
-	 *  by any of it's Fields.
+	 * The constant for an Entry if there is an error is raised by any of 
+	 * it's Fields.
+	 * @var integer
 	 */
 	define_safe('__ENTRY_FIELD_ERROR__', 100);
 
 	Class Entry{
 
 		/**
-		 * @var mixed The class that initialised the Entry, usually the EntryManager
+		 * The class that initialised the Entry, usually the EntryManager
+		 * @var mixed
 		 */
 		protected $_Parent;
 
 		/**
-		 * @var Symphony An instance of the Symphony class, either Frontend or
-		 *  Administration
+		 * An instance of the Symphony class, either Frontend or Administration
+		 * @var Symphony 
 		 */
 		protected $_engine;
 
 		/**
-		 * @var array An associative array of basic metadata/settings for this Entry
+		 * An associative array of basic metadata/settings for this Entry
+		 * @var array 
 		 */
 		protected $_fields = array();
 
 		/**
-		 * @var array An associative array of the data for each of the Fields that make
-		 *  up this Entry. The key is the Field ID, and the value is typically an array
+		 * An associative array of the data for each of the Fields that make up 
+		 * this Entry. The key is the Field ID, and the value is typically an array
+		 * @var array 
 		 */
 		protected $_data = array();
 
 		/**
-		 * @var string An ISO 8601 representation of when this Entry was created
-		 *  eg. 2004-02-12T15:19:21+00:00
+		 * An ISO 8601 representation of when this Entry was created 
+		 * eg. 2004-02-12T15:19:21+00:00
+		 * @var string
 		 */
 		public $creationDate = null;
 
@@ -298,7 +304,7 @@
 		 * add/edit functions. The commit function first finds all the default data for this
 		 * before calling it's Manager
 		 *
-		 * @see findDefaultData
+		 * @see findDefaultData()
 		 * @return boolean
 		 *	true if the commit was successful, false otherwise.
 		 */

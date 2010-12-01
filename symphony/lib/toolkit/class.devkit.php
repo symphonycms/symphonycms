@@ -7,7 +7,7 @@
 	 * Devkit extends the HTMLPage class to provide an object representation
 	 * of a Symphony Devkit page. Devkit's are used to aid in debugging by providing
 	 * raw XML representations of data sources and parameters and to help provide
-	 * profiling. There are two Symphony Devkit's currenlty, Debug and Profile. Devkit
+	 * profiling. There are two Symphony Devkit's currently, Debug and Profile. Devkit
 	 * pages are restricted to Symphony Author's and require them to be authenticated
 	 * to view them.
 	 */
@@ -17,36 +17,41 @@
 	class DevKit extends HTMLPage {
 
 		/**
-		 * @var string $_query_string The Devkit's $_GET query string
+		 * The Devkit's $_GET query string
+		 * @var string
 		 */
 		protected $_query_string = '';
 
 		/**
-		 * @param XSLTPage An instance of the XSLTPage, usually FrontendPage
+		 * An instance of the XSLTPage, usually FrontendPage
+		 * @param XSLTPage
 		 */
 		protected $_page = null;
 
 		/**
-		 * @param array An associative array of the details of the Page that is
-		 *  being 'Devkitted'. The majority of this information is from tbl_pages table.
+		 * An associative array of the details of the Page that is being 'Devkitted'.
+		 * The majority of this information is from tbl_pages table.
+		 * @param array
 		 */
 		protected $_pagedata = null;
 
 		/**
-		 * @param string The XML of the page that the XSLT will be applied to, this
-		 *  includes any datasource results.
+		 * The XML of the page that the XSLT will be applied to, this includes any
+		 * datasource results.
+		 * @param string
 		 */
 		protected $_xml = null;
 
 		/**
-		 * @param array An array of the page parameters, including those provided
-		 *  by datasources.
+		 * An array of the page parameters, including those provided by datasources.
+		 * @param array
 		 */
 		protected $_param = array();
 
 		/**
-		 * @param string The resulting Page after it has been transformed, as a string.
-		 *  This is similar to what you would see if you 'view-sourced' a page.
+		 * The resulting Page after it has been transformed, as a string. This is
+		 * similar to what you would see if you 'view-sourced' a page in a web browser
+		 * @param string
 		 */
 		protected $_output = '';
 

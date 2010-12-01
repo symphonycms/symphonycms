@@ -11,33 +11,37 @@
 
 	Class HTMLPage extends Page{
 		/**
-		 * @var XMLElement An XMLElement object for the <html> element.
-		 *  This is the parent DOM element for all other elements on the output
-		 *  page.
+		 * An XMLElement object for the <html> element. This is the parent
+		 * DOM element for all other elements on the output page.
+		 * @var XMLElement
 		 */
 		public $Html = null;
 
 		/**
-		 * @var XMLElement An XMLElement object for the <head>
+		 * An XMLElement object for the <head>
+		 * @var XMLElement
 		 */
 		public $Head = null;
 
 		/**
-		 * @var XMLElement An XMLElement object for the <body>
+		 * An XMLElement object for the <body>
+		 * @var XMLElement
 		 */
 		public $Body = null;
 
 		/**
-		 * @var XMLElement An XMLElement object for the <form>. Most
-		 *  Symphony backend pages are contained within a main form
+		 * An XMLElement object for the <form>. Most Symphony backend pages
+		 * are contained within a main form
+		 * @var XMLElement
 		 */
 		public $Form = null;
 
 		/**
-		 * @var array This holds all the elements that will eventually be in the
-		 *  $Head. This allows extensions to add elements at certain indexes so
-		 *  resource dependancies can be met, and duplicates can be removed.
-		 *  Defaults to an empty array.
+		 * This holds all the elements that will eventually be in the $Head.
+		 * This allows extensions to add elements at certain indexes so
+		 * resource dependancies can be met, and duplicates can be removed.
+		 * Defaults to an empty array.
+		 * @var array
 		 */
 		protected $_head = array();
 
@@ -60,7 +64,7 @@
 		 * Setter function for the <title> of a backend page. Uses the
 		 * addElementToHead function to place into the $_head array.
 		 *
-		 * @see addElementToHead
+		 * @see addElementToHead()
 		 * @param string $title
 		 * @return int
 		 *  Returns the position that the title has been set in the $_head

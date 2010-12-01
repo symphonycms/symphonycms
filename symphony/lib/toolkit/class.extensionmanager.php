@@ -14,50 +14,56 @@
 	include_once(TOOLKIT . '/class.extension.php');
 
 	/**
-	 * @var int Status when an extension is installed and enabled
+	 * Status when an extension is installed and enabled
+	 * @var integer
 	 */
 	define_safe('EXTENSION_ENABLED', 10);
 
 	/**
-	 * @var int Status when an extension is disabled
+	 * Status when an extension is disabled
+	 * @var integer
 	 */
 	define_safe('EXTENSION_DISABLED', 11);
 
 	/**
-	 * @var int Status when an extension is in the file system, but has not
-	 *  been installed.
+	 * Status when an extension is in the file system, but has not been installed.
+	 * @var integer
 	 */
 	define_safe('EXTENSION_NOT_INSTALLED', 12);
 
 	/**
-	 * @var int Status when an extension version in the file system is
-	 *  different to the version stored in the database for the extension
+	 * Status when an extension version in the file system is different to
+	 * the version stored in the database for the extension
+	 * @var integer
 	 */
 	define_safe('EXTENSION_REQUIRES_UPDATE', 13);
 
     Class ExtensionManager extends Manager{
 
 		/**
-		 * @var array An array of all the objects that the Manager
-		 *  is responsible for. Defaults to empty.
+		 * An array of all the objects that the Manager is responsible for.
+		 * Defaults to an empty array.
+		 * @var array
 		 */
 	    protected static $_pool = array();
 
 		/**
-		 * @var array An array of all extensions whose status is enabled
+		 * An array of all extensions whose status is enabled
+		 * @var array
 		 */
 		private static $_enabled_extensions = null;
 
 		/**
-		 * @var array An array of all the subscriptions to Symphony delegates
-		 *  made by extensions.
+		 * An array of all the subscriptions to Symphony delegates made by extensions.
+		 * @var array
 		 */
 		private static $_subscriptions =  null;
 
 		/**
-		 * @var array An associative array of all the extensions in tbl_extensions
-		 *  where the key is the extension name and the value is an array
-		 *  representation of it's accompanying database row.
+		 * An associative array of all the extensions in tbl_extensions where
+		 * the key is the extension name and the value is an array
+		 * representation of it's accompanying database row.
+		 * @var array
 		 */
 		private static $_extensions = array();
 
@@ -107,7 +113,7 @@
 		/**
 		 * Given a name, return the path to the driver of the Extension.
 		 *
-		 * @see __getClassPath
+		 * @see __getClassPath()
 		 * @param string $name
 		 *  The extension folder
 		 * @return string
@@ -159,7 +165,7 @@
 		 *		),
 		 *		'description' => 'A description about this extension'
 		 *
-		 * @see __requiresUpdate
+		 * @see __requiresUpdate()
 		 * @return array
 		 *  An associative array describing this extension
 		 */
@@ -231,7 +237,7 @@
 		/**
 		 * Custom user sorting function to sort extensions by name
 		 *
-		 * @see http://php.net/manual/en/function.strnatcasecmp.php
+		 * @link http://php.net/manual/en/function.strnatcasecmp.php
 		 * @param array $a
 		 * @param array $b
 		 * @return int
@@ -278,8 +284,8 @@
 		 * extensions respective install and update methods. The enable method is
 		 * of the extension object is finally called.
 		 *
-		 * @see registerDelegates
-		 * @see __canUninstallOrDisable
+		 * @see registerDelegates()
+		 * @see __canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
@@ -328,8 +334,8 @@
 		 * all delegate subscriptions from the database and calling the extensions
 		 * disable method.
 		 *
-		 * @see removeDelegates
-		 * @see __canUninstallOrDisable
+		 * @see removeDelegates()
+		 * @see __canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
@@ -365,8 +371,8 @@
 		 * be uninstalled using the canUninstallorDisable function before calling
 		 * the extensions uninstall method.
 		 *
-		 * @see removeDelegates
-		 * @see __canUninstallOrDisable
+		 * @see removeDelegates()
+		 * @see __canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean

@@ -13,18 +13,20 @@
 	Class XsltProcess{
 
 		/**
-		 * @var string The XML for the transformation to be applied to
+		 * The XML for the transformation to be applied to
+		 * @var string
 		 */
 		private $_xml;
 
 		/**
-		 * @var string The XSL for the transformation
+		 * The XSL for the transformation
+		 * @var string
 		 */
 		private $_xsl;
 
 		/**
-		 * @var array Any errors that occur during the transformation
-		 *  are stored in this array.
+		 * Any errors that occur during the transformation are stored in this array.
+		 * @var array
 		 */
 		private $_errors = array();
 
@@ -65,8 +67,8 @@
 		 * the transformation. Any errors will call the error function to log
 		 * them into the $_errors array
 		 *
-		 * @see __error
-		 * @see __process
+		 * @see __error()
+		 * @see __process()
 		 * @param string $xml
 		 *  The XML for the transformation to be applied to
 		 * @param string $xsl
@@ -168,7 +170,7 @@
 		/**
 		 * A custom error handler especially for XML errors.
 		 *
-		 * @see http://au.php.net/manual/en/function.set-error-handler.php
+		 * @link http://au.php.net/manual/en/function.set-error-handler.php
 		 * @param integer $errno
 		 * @param integer $errstr
 		 * @param integer $errfile
@@ -181,7 +183,7 @@
 		/**
 		 * A custom error handler especially for XSL errors.
 		 *
-		 * @see http://au.php.net/manual/en/function.set-error-handler.php
+		 * @link http://au.php.net/manual/en/function.set-error-handler.php
 		 * @param integer $errno
 		 * @param integer $errstr
 		 * @param integer $errfile
@@ -195,7 +197,7 @@
 		 * Writes an error to the $_errors array, which contains the error information
 		 * and some basic debugging information.
 		 *
-		 * @see http://au.php.net/manual/en/function.set-error-handler.php
+		 * @link http://au.php.net/manual/en/function.set-error-handler.php
 		 * @param integer $number
 		 * @param string $message
 		 * @param string $file
