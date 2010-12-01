@@ -61,6 +61,9 @@
 			define_safe('__SYM_TIME_FORMAT__', self::$Configuration->get('time_format', 'region'));
 			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . $separator . __SYM_TIME_FORMAT__);
 
+			// Initialize language management
+			Lang::initialize();
+			
 			$this->initialiseLog();
 
 			GenericExceptionHandler::initialise();
@@ -70,13 +73,22 @@
 			$this->initialiseDatabase();
 			$this->initialiseExtensionManager();
 
-			Lang::set(self::$Configuration->get('lang', 'symphony'));
-
 			if(!self::isLoggedIn()){
 				GenericExceptionHandler::$enabled = false;
 			}
-
-
+			
+			// Fetch user language
+			else {
+				$user_lang = $this->Author->get('language');
+			}
+			
+			// Set system language
+			if(empty($user_lang)) {
+				Lang::set(self::$Configuration->get('lang', 'symphony'));
+			}
+			else {
+				Lang::set($user_lang);
+			}
 		}
 
 		public function initialiseCookie(){
@@ -185,8 +197,6 @@
 					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 					$this->Author = AuthorManager::fetchByID($id);
 
-					$this->reloadLangFromAuthorPreference();
-
 					return true;
 				}
 
@@ -217,8 +227,6 @@
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
 					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
-
-					$this->reloadLangFromAuthorPreference();
 
 					return true;
 				}
@@ -261,17 +269,11 @@
 				$this->Cookie->set('pass', $row['password']);
 				self::$Database->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 
-				$this->reloadLangFromAuthorPreference();
-
 				return true;
 			}
 
 			return false;
 
-		}
-
-		public function reloadLangFromAuthorPreference(){
-			Lang::set($this->Author->get('language'));
 		}
 
 		public function resolvePageTitle($page_id) {

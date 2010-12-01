@@ -47,8 +47,9 @@ h1 a:hover,
 #nav > li {
 	float: left;
 	margin: 0 -19px 0 19px;
-	padding: 15px 1em;
-	height: 0;
+	padding: 0 1em;
+	height: 30px;
+	line-height: 32px;
 	cursor:pointer;
 }
 #nav > li:hover,
