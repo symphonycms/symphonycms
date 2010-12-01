@@ -220,7 +220,7 @@
 				'/workspace/pages',
 				'/workspace/utilities'
 			);
-			$directories = General::listDirStructure(WORKSPACE, true, DOCROOT, $ignore);
+			$directories = General::listDirStructure(WORKSPACE, null, true, DOCROOT, $ignore);
 
 			$label = Widget::Label(__('Destination Directory'));
 
@@ -370,7 +370,7 @@
 			$existing_file = NULL;
 
 			if($entry_id){
-				$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
+				$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
 				$existing_file = $abs_path . '/' . basename($row['file'], '/');
 			}
 

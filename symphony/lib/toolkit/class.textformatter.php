@@ -9,7 +9,8 @@
 	Abstract Class TextFormatter{
 
 		/**
-		 * @var Administration An instance of the Administration class
+		 * An instance of the Administration class
+		 * @var Administration
 		 * @see core.Administration
 		 */
 		protected $_Parent;
@@ -18,8 +19,8 @@
 		 * The text formatter constructor sets the $_Parent variable
 		 * to the $parent provided as a parameter.
 		 *
-		 * @param Adminstration $parent
-		 *  The Adminstration object that this page has been created from
+		 * @param Administration $parent
+		 *  The Administration object that this page has been created from
 		 *  passed by reference
 		 */
 		public function __construct(&$parent){

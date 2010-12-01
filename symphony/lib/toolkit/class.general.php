@@ -8,7 +8,8 @@
 	 */
 	Class General{
 		/**
-		 * @var string The end-of-line constant.
+		 * The end-of-line constant.
+		 * @var string
 		 * @deprecated This will no longer exist in Symphony 3
 		 */
 		const CRLF = PHP_EOL;
@@ -71,7 +72,7 @@
 		 *
 		 * @param string $string
 		 *	the string in which to replace the tabs with spaces.
-		 * @param int $spaces (optional)
+		 * @param integer $spaces (optional)
 		 *	the number of spaces to replace each tab with. This argument is optional
 		 *	with a default of 4.
 		 * @return string
@@ -400,7 +401,7 @@
 		 *
 		 * @param string $str
 		 *	the string to operate on
-		 * @param number $val
+		 * @param integer $val
 		 *	the number to compare lengths with
 		 * @return string|bool
 		 *	the resulting string or false on failure.
@@ -416,7 +417,7 @@
 		 *
 		 * @param string $str
 		 *	the string to operate on
-		 * @param number $val
+		 * @param integer $val
 		 *	the number to compare lengths with
 		 * @return string|bool
 		 *	the resulting string or false on failure.
@@ -430,7 +431,7 @@
 		 *
 		 * @param string $str
 		 *	the string to extract the characters from.
-		 * @param number $num
+		 * @param integer $num
 		 *	the number of characters to extract.
 		 * @return string|bool
 		 *	a string containing the last $num characters of the
@@ -446,7 +447,7 @@
 		 *
 		 * @param string $str
 		 *	the string to extract the characters from.
-		 * @param number $num
+		 * @param integer $num
 		 *	the number of characters to extract.
 		 * @return string|bool
 		 *	a string containing the last $num characters of the
@@ -462,7 +463,7 @@
 		 *
 		 * @param string $path
 		 *	the path containing the directories to create.
-		 * @param number $mode (optional)
+		 * @param integer $mode (optional)
 		 *	the permissions (in octal) of the directories to create. this defaults to 0755
 		 * @return bool
 		 */
@@ -815,6 +816,9 @@
 		 * @param string $dir (optional)
 		 *	the path of the directory to construct the multi-dimensional array
 		 *	for. this defaults to '.'.
+		 * @param string $filter (optional)
+		 *	A regular expression to filter the directories. This is positive filter, ie.
+		 * if the filter matches, the directory is included. Defaults to null.
 		 * @param bool $recurse (optional)
 		 *	true if sub-directories should be traversed and reflected in the
 		 *	resulting array, false otherwise.
@@ -822,15 +826,15 @@
 		 *	null if the $dir should be stripped from the entries in the array.
 		 *	anything else if $dir should be retained. this defaults to null.
 		 * @param array $exclude (optional)
-		 *	ignore files listed in this array. this defaults to an empty array.
+		 *	ignore directories listed in this array. this defaults to an empty array.
 		 * @param bool $ignore_hidden (optional)
-		 *	ignore hidden files (i.e. files that begin with a period). this defaults
+		 *	ignore hidden directory (i.e.directories that begin with a period). this defaults
 		 *	to true.
 		 * @return null|array[]
 		 *	return the array structure reflecting the input directory or null if
          * the input directory is not actually a directory.
 		 */
-		public static function listDirStructure($dir = '.', $recurse = true, $strip_root = null, $exclude = array(), $ignore_hidden = true) {
+		public static function listDirStructure($dir = '.', $filter = null, $recurse = true, $strip_root = null, $exclude = array(), $ignore_hidden = true) {
 			if (!is_dir($dir)) return null;
 
 			$files = array();
@@ -839,14 +843,17 @@
 					($file == '.' or $file == '..')
 					or ($ignore_hidden and $file{0} == '.')
 					or !is_dir("$dir/$file")
-					or in_array($file, $exclude)
-					or in_array("$dir/$file", $exclude)
+					or in_array(array($file, "$dir/$file"), $exclude)
 				) continue;
+
+				if(!is_null($filter)) {
+					if(!preg_match($filter, $file)) continue;
+				}
 
 				$files[] = str_replace($strip_root, '', $dir) ."/$file/";
 
 				if ($recurse) {
-					$files = @array_merge($files, self::listDirStructure("$dir/$file", $recurse, $strip_root, $exclude, $ignore_hidden));
+					$files = @array_merge($files, self::listDirStructure("$dir/$file", $filter, $recurse, $strip_root, $exclude, $ignore_hidden));
 				}
 			}
 
@@ -901,8 +908,7 @@
             	if (
 					($file == '.' or $file == '..')
 					or ($ignore_hidden and $file{0} == '.')
-					or in_array($file, $exclude)
-					or in_array("$dir/$file", $exclude)
+					or in_array(array($file, "$dir/$file"), $exclude)
 				) continue;
 
                 if(is_dir("$dir/$file")) {
@@ -1044,7 +1050,7 @@
 		 *
 		 * @param string $string
 		 *	the string to truncate.
-		 * @param int maxChars (optional)
+		 * @param integer maxChars (optional)
 		 *	the maximum length of the string to truncate the input string to. this
 		 *	defaults to 200 characters.
 		 * @param bool $appendHellip (optional)
@@ -1101,7 +1107,7 @@
 		 *	the file name within the file path to which the source file is to be moved.
 		 * @parm string $tmp_name
 		 *	the full path name of the source file to move.
-		 * @param number $perm (optional)
+		 * @param integer $perm (optional)
 		 *	the permissions to apply to the moved file. this defaults to 0777.
 		 * @return bool
 		 *	true if the file was moved and its permissions set as required. false otherwise.
@@ -1130,7 +1136,7 @@
 		 * appropriate for values greater than 1,024*1,024, KB for values between
 		 * 1,024 and 1,024*1,024-1 and bytes for values between 0 and 1,024.
 		 *
-		 * @param int $file_size
+		 * @param integer $file_size
 		 *	the number to format.
 		 * @return string
 		 *	the formatted number.
@@ -1151,7 +1157,7 @@
 		 *
 		 * @uses DataTimeObj to manipulate the timestamp value.
          * @uses XMLElement
-		 * @param number $timestamp
+		 * @param integer $timestamp
 		 *	the timestamp to construct the XML element from.
 		 * @param string $element (optional)
 		 *	the name of the element to append to the namespace of the constructed XML.
@@ -1182,15 +1188,15 @@
         /**
 		 * Construct an XML fragment that describes a pagination structure.
 		 *
-		 * @param int $total_entries (optional)
+		 * @param integer $total_entries (optional)
 		 *	the total number of entries that this structure is paginating. this
 		 *	defaults to 0.
-		 * @param int $total_pages (optional)
+		 * @param integer $total_pages (optional)
 		 *	the total number of pages within the pagination structure. this defaults
 		 *	to 0.
-		 * @param int $entries_per_page (optional)
+		 * @param integer $entries_per_page (optional)
 		 *	the number of entries per page. this defaults to 1.
-		 * @param int $current_page (optional)
+		 * @param integer $current_page (optional)
 		 *	the current page within the total number of pages within this pagination
 		 *	structure. this defaults to 1.
 		 * @return XMLElement

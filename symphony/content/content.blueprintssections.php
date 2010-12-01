@@ -535,7 +535,7 @@
 						elseif($field->mustBeUnique() && in_array($field->get('type'), $unique)){
 							## Warning. cannot have 2 of this field!
 							$canProceed = false;
-							$this->_errors[$position] = array('label' => __('There is already a field of type <code>%s</code>. There can only be one per section.', array($field->name())));
+							$this->_errors[$position] = array('label' => __('There is already a field of type <code>%s</code>. There can only be one per section.', array($field->handle())));
 						}
 
 						$errors = array();
@@ -681,7 +681,7 @@
 							elseif($field->mustBeUnique() && in_array($field->get('type'), $unique)){
 								## Warning. cannot have 2 of this field!
 								$canProceed = false;
-								$this->_errors[$position] = array('label' => __('There is already a field of type <code>%s</code>. There can only be one per section.', array($field->name())));
+								$this->_errors[$position] = array('label' => __('There is already a field of type <code>%s</code>. There can only be one per section.', array($field->handle())));
 							}
 
 							$errors = array();

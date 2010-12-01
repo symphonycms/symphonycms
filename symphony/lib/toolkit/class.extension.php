@@ -12,45 +12,51 @@
 	Abstract Class Extension{
 
 		/**
-		 * @var integer Determines that a new navigation group is to created
-		 *  in the Symphony backend
+		 * The end-of-line constant.
+		 * @var string
+		 * @deprecated This will no longer exist in Symphony 3
+		 */
+		const CRLF = PHP_EOL;
+		
+		/**
+		 * The class that initialised the Entry, usually the EntryManager
+		 * @var mixed
+		 */
+		protected $_Parent;
+
+		/**
+		 * Determines that a new navigation group is to created in the Symphony backend
+		 * @var integer 
 		 */
 		const NAV_GROUP = 1;
 
 		/**
-		 * @var integer Determines that a new item is to be added to an existing
-		 *  navigation group in the Symphony backend
+		 * Determines that a new item is to be added to an existing navigation 
+		 * group in the Symphony backend
+		 * @var integer 
 		 */
 		const NAV_CHILD = 0;
-
-		/**
-		 * @var string The end-of-line constant.
-		 * @deprecated This will no longer exist in Symphony 3
-		 */
-		const CRLF = PHP_EOL;
-
-		/**
-		 * @var Administration An instance of the Administration class
-		 * @see core.Administration
-		 */
-		protected $_Parent;
 
 		/**
 		 * The extension constructor takes an associative array of arguments
 		 * and sets the $_Parent variable using the 'parent' key. It appears that
 		 * this is the only key set in the $args array by Symphony
+		 * 
+		 * @param array $args
+		 *  An associative array of arguments, but default this will contain one,
+		 *  'parent'.
 		 */
 		public function __construct(Array $args){
 			$this->_Parent =& $args['parent'];
 		}
 
 		/**
-		 * Any logic that assits this extension in being installed such as
+		 * Any logic that assists this extension in being installed such as
 		 * table creation, checking for dependancies etc.
 		 *
 		 * @see toolkit.ExtensionManager#install
 		 * @return boolean
-		 *  True if the install completly successfully, false otherwise
+		 *  True if the install completely successfully, false otherwise
 		 */
 		public function install(){
 			return true;
@@ -172,7 +178,7 @@
 		 * @see /symphony/assets/navigation.xml
 		 * @return array
 		 *	 Navigation items in Symphony are initially provided from the
-		 *  navigation.xml file which defines some inital groupings by index.
+		 *  navigation.xml file which defines some initial groupings by index.
 		 *  Blueprints are 100, System are 200, but a custom group can be
 		 *  created by an extension by returning a new index number. The URL
 		 *  returned is relative to the Symphony backend (ie. /symphony/).

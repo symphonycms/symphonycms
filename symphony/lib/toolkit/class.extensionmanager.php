@@ -4,8 +4,8 @@
 	 * @package toolkit
 	 */
 	/**
-	 * The ExtensionManage class is responsible for managing all extensions
-	 * in Symphony. Extensions arestored on the file system either in the /extensions
+	 * The ExtensionManager class is responsible for managing all extensions
+	 * in Symphony. Extensions are stored on the file system either in the /extensions
 	 * folder. They are autodiscovered where the Extension class name is the same
 	 * as it's folder name (excluding the extension prefix).
 	 */
@@ -14,51 +14,84 @@
 	include_once(TOOLKIT . '/class.extension.php');
 
 	/**
-	 * @var int Status when an extension is installed and enabled
+	 * Status when an extension is installed and enabled
+	 * @var integer
 	 */
 	define_safe('EXTENSION_ENABLED', 10);
 
 	/**
-	 * @var int Status when an extension is disabled
+	 * Status when an extension is disabled
+	 * @var integer
 	 */
 	define_safe('EXTENSION_DISABLED', 11);
 
 	/**
-	 * @var int Status when an extension is in the file system, but has not
-	 *  been installed.
+	 * Status when an extension is in the file system, but has not been installed.
+	 * @var integer
 	 */
 	define_safe('EXTENSION_NOT_INSTALLED', 12);
 
 	/**
-	 * @var int Status when an extension version in the file system is
-	 *  different to the version stored in the database for the extension
+	 * Status when an extension version in the file system is different to
+	 * the version stored in the database for the extension
+	 * @var integer
 	 */
 	define_safe('EXTENSION_REQUIRES_UPDATE', 13);
 
     Class ExtensionManager extends Manager{
 
 		/**
-		 * @var array An array of all extensions whose status is enabled
+		 * An array of all the objects that the Manager is responsible for.
+		 * Defaults to an empty array.
+		 * @var array
 		 */
-		static private $_enabled_extensions = null;
+	    protected static $_pool = array();
 
 		/**
-		 * @var array An array of all the subscriptions to Symphony delegates
-		 *  made by extensions.
+		 * An array of all extensions whose status is enabled
+		 * @var array
 		 */
-		static private $_subscriptions =  null;
+		private static $_enabled_extensions = null;
 
 		/**
-		 * @var array An associative array of all the extensions in the tbl_extensions table
-		 *  whereh the key is the extension name and the value is an array representation
-		 *  of it's accompanying database row.
+		 * An array of all the subscriptions to Symphony delegates made by extensions.
+		 * @var array
 		 */
-		static private $_extensions = array();
+		private static $_subscriptions =  null;
+
+		/**
+		 * An associative array of all the extensions in tbl_extensions where
+		 * the key is the extension name and the value is an array
+		 * representation of it's accompanying database row.
+		 * @var array
+		 */
+		private static $_extensions = array();
+
+		/**
+		 * The constructor for ExtensionManager. This sets the $_Parent to be an
+		 * instance of the Administration class and loads all the extensions into
+		 * memory. This is necessary so that each extension is created to announce
+		 * it's delegates and so that any static calls to extension classes are
+		 * available because they have been loaded into memory with require_once
+		 *
+		 * @see listAll()
+		 * @see create()
+		 *
+		 * @param Administration $parent
+		 *  The Administration object that this manager has been created from
+		 *  passed by reference
+		 */
+        public function __construct(&$parent){
+			parent::__construct($parent);
+			$this->listAll();
+        }
 
 		/**
 		 * Given a name, returns the full class name of an Extension.
 		 * Extension use an 'extension' prefix.
 		 *
+		 * @param string $name
+		 *  The extension handle
 		 * @return string
 		 */
         public function __getClassName($name){
@@ -80,7 +113,7 @@
 		/**
 		 * Given a name, return the path to the driver of the Extension.
 		 *
-		 * @see __getClassPath
+		 * @see __getClassPath()
 		 * @param string $name
 		 *  The extension folder
 		 * @return string
@@ -117,7 +150,7 @@
 			}
 		}
 
-				/**
+		/**
 		 * Returns information about an extension by it's name by calling
 		 * it's own about method. This method checks if an extension needs
 		 * to be updated or not.
@@ -132,7 +165,7 @@
 		 *		),
 		 *		'description' => 'A description about this extension'
 		 *
-		 * @see __requiresUpdate
+		 * @see __requiresUpdate()
 		 * @return array
 		 *  An associative array describing this extension
 		 */
@@ -178,7 +211,7 @@
 		}
 
 		/**
-		 * A convienence method that returns an extension version from it's name.
+		 * A convenience method that returns an extension version from it's name.
 		 *
 		 * @param string $name
 		 *  The name of the extension as provided by it's about function
@@ -190,7 +223,7 @@
 		}
 
 		/**
-		 * A convienence method that returns an extension ID from it's name.
+		 * A convenience method that returns an extension ID from it's name.
 		 *
 		 * @param string $name
 		 *  The name of the extension as provided by it's about function
@@ -204,7 +237,7 @@
 		/**
 		 * Custom user sorting function to sort extensions by name
 		 *
-		 * @see http://php.net/manual/en/function.strnatcasecmp.php
+		 * @link http://php.net/manual/en/function.strnatcasecmp.php
 		 * @param array $a
 		 * @param array $b
 		 * @return int
@@ -251,6 +284,8 @@
 		 * extensions respective install and update methods. The enable method is
 		 * of the extension object is finally called.
 		 *
+		 * @see registerDelegates()
+		 * @see __canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
@@ -299,6 +334,8 @@
 		 * all delegate subscriptions from the database and calling the extensions
 		 * disable method.
 		 *
+		 * @see removeDelegates()
+		 * @see __canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
@@ -334,6 +371,8 @@
 		 * be uninstalled using the canUninstallorDisable function before calling
 		 * the extensions uninstall method.
 		 *
+		 * @see removeDelegates()
+		 * @see __canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
@@ -428,7 +467,7 @@
 		/**
 		 * This function checks that if this extension has provided Fields,
 		 * Data Sources or Events, that they aren't in use before the extension
-		 * is uninstalled or disabled. This prevents exceptions from occuring when
+		 * is uninstalled or disabled. This prevents exceptions from occurring when
 		 * logic requires the removed Extensions' objects.
 		 *
 		 * @param Extension $obj
@@ -500,7 +539,7 @@
 		 *  The current page namespace that this delegate operates in
 		 * @param array $context
 		 *  The $context param is an associative array that at minimum will contain
-		 *  the current Adminstration class, the current page object and the delegate
+		 *  the current Administration class, the current page object and the delegate
 		 *  name. Other context information may be passed to this function when it is
 		 *  called. eg.
 		 *
@@ -580,22 +619,24 @@
         /**
 		 * Will return an associative array of all extensions and their about information
 		 *
+		 * @param string $filter
+		 *  Allows a regular expression to be passed to return only extensions whose
+		 *  folders match the filter.
 		 * @return array
 		 *  An associative array with the key being the extension folder and the value
 		 *  being the extension's about information
 		 */
-        public function listAll(){
+        public function listAll($filter = null){
 
 			$result = array();
-	        $structure = General::listStructure(EXTENSIONS, array(), false, 'asc', EXTENSIONS);
+			$extensions = General::listDirStructure(EXTENSIONS, $filter, false, EXTENSIONS);
 
-	        $extensions = $structure['dirlist'];
-
-	        if(is_array($extensions) && !empty($extensions)){
-		        foreach($extensions as $e){
+			if(is_array($extensions) && !empty($extensions)){
+				foreach($extensions as $extension){
+					$e = trim($extension, '/');
 					if($about = $this->about($e)) $result[$e] = $about;
-		        }
-	        }
+				}
+			}
 
 			return $result;
         }

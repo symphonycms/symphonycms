@@ -82,9 +82,9 @@
 		 *
 		 * @param string $name
 		 *  The name of the resulting <textarea>
-		 * @param int $rows (optional)
+		 * @param integer $rows (optional)
 		 *	The height of the textarea, using the rows attribute. Defaults to 15
-		 * @param int $cols (optional)
+		 * @param integer $cols (optional)
 		 *  The width of the textarea, using the cols attribute. Defaults to 50.
 		 * @param string $value (optional)
 		 *	The content to be displayed inside the <textarea>

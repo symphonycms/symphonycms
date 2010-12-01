@@ -9,14 +9,16 @@
 	Class Author{
 
 		/**
-		 * @var array An associative array of information relating to this author
-		 *  where the keys map directly to the tbl_authors columns.
+		 * An associative array of information relating to this author where
+		 * the keys map directly to the tbl_authors columns.
+		 * @var array
 		 */
 		private $_fields = array();
 
 		/**
-		 * @var array An array of all the sections an author can have access to.
-		 *  Defaults to null. This is currently unused by Symphony.
+		 * An array of all the sections an author can have access to. Defaults
+		 * to null. This is currently unused by Symphony.
+		 * @var array
 		 */
 		private $_accessSections = null;
 
@@ -159,7 +161,7 @@
 		 * @see toolkit.AuthorManager#edit
 		 * @return mixed
 		 *  If an new Author was added, an integer of the Author ID will be
-		 *  returned, otherwise boolean to indiciate whether the update was
+		 *  returned, otherwise boolean to indicate whether the update was
 		 *  successful or not.
 		 */
 		public function commit(){
@@ -202,7 +204,7 @@
 		 * @deprecated This function will be removed in the next major release. The
 		 *  AuthorManager::fetchByID is the preferred way to find Authors by ID.
 		 * @see toolkit.AuthorManager#fetchByID
-		 * @param int $id
+		 * @param integer $id
 		 *  The Author ID to load.
 		 * @return boolean
 		 */

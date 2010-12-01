@@ -36,7 +36,7 @@
 
 		protected function __construct(){
 
-			$this->Profiler = new Profiler;
+			$this->Profiler = Profiler::instance();
 
 			if(get_magic_quotes_gpc()) {
 				General::cleanArray($_SERVER);

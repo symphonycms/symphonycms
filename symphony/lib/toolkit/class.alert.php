@@ -11,34 +11,38 @@
 	Class Alert{
 
 		/**
-		 * @var string Represents a notice, usually used for non
-		 *  blocking alerts, just to inform that user that something
-		 *  has happened and they need to aware of it
+		 * Represents a notice, usually used for non blocking alerts,
+		 * just to inform that user that something has happened and
+		 * they need to aware of it
+		 * @var string
 		 */
 		const NOTICE = 'notice';
 
 		/**
-		 * @var string Represents an error, used when something has
-		 *  gone wrong during the previous action. It is blocking,
-		 *  in that the action has not completed successfully.
+		 * Represents an error, used when something has gone wrong during
+		 * the previous action. It is blocking, in that the action has
+		 * not completed successfully.
+		 * @var string
 		 */
 		const ERROR = 'error';
 
 		/**
-		 * @var string Represents success, used when an action has
-		 *  completed successfully with no errors
+		 * Represents success, used when an action has completed successfully
+		 * with no errors
+		 * @var string
 		 */
 		const SUCCESS = 'success';
 
 		/**
-		 * @var string The message for this Alert, this text will be
-		 *  displayed to the user
+		 * The message for this Alert, this text will be displayed to the user
+		 * @var string
 		 */
 		private $_message;
 
 		/**
-		 * @var string The Alert constant to represent the style that
-		 *  this alert should take on. Defaults to NOTICE.
+		 * The Alert constant to represent the style that this alert should
+		 * take on. Defaults to NOTICE.
+		 * @var string
 		 */
 		private $_type;
 

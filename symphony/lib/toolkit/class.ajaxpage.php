@@ -12,40 +12,46 @@
 	Abstract Class AjaxPage extends Page{
 
 		/**
-		 * @var int refers to the HTTP status code, 200 OK
+		 * Refers to the HTTP status code, 200 OK
+		 * @var integer
 		 */
 		const STATUS_OK = 200;
 
 		/**
-		 * @var int refers to the HTTP status code, 400 Bad Request
+		 * Refers to the HTTP status code, 400 Bad Request
+		 * @var integer
 		 */
 		const STATUS_BAD = 400;
 
 		/**
-		 * @var int refers to the HTTP status code, 400 Bad Request
+		 * Refers to the HTTP status code, 400 Bad Request
+		 * @var integer
 		 */
 		const STATUS_ERROR = 400;
 
 		/**
-		 * @var int refers to the HTTP status code, 401 Unauthorized
+		 * Refers to the HTTP status code, 401 Unauthorized
+		 * @var integer
 		 */
 		const STATUS_UNAUTHORISED = 401;
 
 		/**
-		 * @var Administration An instance of the Administration class
+		 * An instance of the Administration class
+		 * @var Administration
 		 * @see core.Administration
 		 */
 		protected $_Parent;
 
 		/**
-		 * @var XMLElement  The root node for the response of the AJAXPage
+		 * The root node for the response of the AJAXPage
+		 * @var XMLElement
 		 */
 		protected $_Result;
 
 		/**
-		 * @var int The HTTP status code of the page using the AJAXPage
-		 *  contants STATUS_OK, STATUS_BAD, STATUS_ERROR,
-		 *  STATUS_UNAUTHORISED
+		 * The HTTP status code of the page using the AJAXPage constants
+		 * STATUS_OK, STATUS_BAD, STATUS_ERROR or STATUS_UNAUTHORISED
+		 * @var integer
 		 */
 		protected $_status;
 
@@ -56,8 +62,8 @@
 		 * page template.
 		 *
 		 * @see toolkit.Profiler
-		 * @param Adminstration $parent
-		 *  The Adminstration object that this page has been created from
+		 * @param Administration $parent
+		 *  The Administration object that this page has been created from
 		 *  passed by reference
 		 */
 		public function __construct(&$parent){
