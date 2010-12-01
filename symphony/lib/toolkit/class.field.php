@@ -308,6 +308,19 @@
 		public function handle(){
 			return $this->_handle;
 		}
+		
+		/**
+		 * Accessor to the name of this field object. The name may contain characters
+		 * that normally would be stripped in the handle while also allowing the field
+		 * name to be localized. If a name is not set, it will return the handle of the
+		 * the field
+		 *
+		 * @return string
+		 *	The field name
+		 */
+		public function name(){
+			return ($this->_name ? $this->_name : $this->_handle);
+		}
 
 		/**
 		 * Clean the input value using html entity encode and the database specific

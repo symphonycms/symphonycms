@@ -5,7 +5,7 @@
 	/**
 	 * The translation function accepts an English string and returns its translation
 	 * to the active system language. If the given string is not available in the
-	 * current dictionary the orginal English string will be returned. Given an optional
+	 * current dictionary the original English string will be returned. Given an optional
 	 * array of inserts the function will also replace translation placeholders using vsprintf().
 	 *
 	 * @param string $string
@@ -61,7 +61,7 @@
 		/**
 		 * The translation function accepts an English string and returns its translation
 		 * to the active system language. If the given string is not available in the
-		 * current dictionary the orginal English string will be returned. Given an optional
+		 * current dictionary the original English string will be returned. Given an optional
 		 * array of inserts the function will also replace translation placeholders using vsprintf().
 		 *
 		 * Note: If you like to translate strings, please use __() which is the common alias for this function.
@@ -306,7 +306,7 @@
 		 * Fetch all languages available in the core language folder and the language extensions.
 		 * The function stores all language information in the public variable $_languages.
 		 * It contains an array with the name, source, path and status of each language. The language
-		 * status (enabled/disabled) can only be determinated when the Extension Manager has been
+		 * status (enabled/disabled) can only be determined when the Extension Manager has been
 		 * initialized before. During installation all extension status are set to disabled.
 		 */
 		public static function fetch() {
@@ -439,7 +439,7 @@
 		 * Get an array of the codes and names of all languages that are available system wide.
 		 *
 		 * Note: Beginning with Symphony 2.2 language files are only available
-		 * when the language extension is explecitly enabled.
+		 * when the language extension is explicitly enabled.
 		 *
 		 * @return array
 		 *  Returns an associative array of language codes and names, e. g. 'en' => 'English'
