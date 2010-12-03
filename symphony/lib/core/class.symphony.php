@@ -138,8 +138,7 @@
 			$details = self::$Configuration->get('database');
 
 			try{
-				if(!self::$Database->connect($details['host'], $details['user'], $details['password'], $details['port'])) return false;
-				if(!self::$Database->select($details['db'])) return false;
+				if(!self::$Database->connect($details['host'], $details['user'], $details['password'], $details['port'], $details['db'])) return false;
 				if(!self::$Database->isConnected()) return false;
 
 				self::$Database->setPrefix($details['tbl_prefix']);
