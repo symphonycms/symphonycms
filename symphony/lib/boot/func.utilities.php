@@ -1,7 +1,7 @@
 <?php
 
 	/**
-	 * @package core
+	 * @package boot
 	 */
 
 	/**
@@ -38,10 +38,14 @@
 	}
 
 	/**
-	 * Returns the current working directory, replacing any \
-	 *	with /. Used to maintain Windows compatibility.
+	 * Checks that a constant has not been defined before defining
+	 * it. If the constant is already defined, this function will do
+	 * nothing, otherwise, it will set the constant
 	 *
-	 *	@return string
+	 * @param string $name
+	 *  The name of the constant to set
+	 * @param string $value
+	 *  The value of the desired constant
 	 */
 	function define_safe($name, $val){
 		if(!defined($name)) define($name, $val);
@@ -49,7 +53,7 @@
 
 	/**
 	 * Returns the current URL string from within the Administration
-	 *	context. It omits the CMS directory from the result.
+	 *	context. It omits the Symphony directory from the current URL.
 	 *
 	 *	@return string
 	 */
