@@ -100,7 +100,7 @@
 		}
 
 		function __actionIndex(){
-			if($_POST['with-selected'] == 'delete'){
+			if($_POST['with-selected'] == 'delete' && is_array($_POST['items'])){
 
 				$checked = @array_keys($_POST['items']);
 
@@ -110,7 +110,7 @@
 				# Description: Prior to deleting an author. ID is provided.
 				//$ExtensionManager->notifyMembers('Delete', getCurrentPage(), array('author_id' => $author_id));
 
-				if(is_array($checked) && !empty($checked)) foreach($checked as $author_id) {
+				if(!empty($checked)) foreach($checked as $author_id) {
 					$a = AuthorManager::fetchByID($author_id);
 					if(is_object($a) && $a->get('id') != Administration::instance()->Author->get('id')) AuthorManager::delete($author_id);
 				}
