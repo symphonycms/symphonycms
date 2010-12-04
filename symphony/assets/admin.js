@@ -50,6 +50,9 @@ var Symphony;
 					dataType: 'json',
 					success: function(result) {
 						Symphony.Language.DICTIONARY = $.extend(Symphony.Language.DICTIONARY, result);
+					},
+					error: function() {
+						Symphony.Language.DICTIONARY = $.extend(Symphony.Language.DICTIONARY, strings);
 					}
 				});
 			}
@@ -361,7 +364,9 @@ var Symphony;
 				    t = (i > 1 ? 'Are you sure you want to {$action} {$count} items?' : 'Are you sure you want to {$action} {$name}?'),
 				    s = document.getElementsByName('with-selected')[0],
 				    o = $(s.options[s.selectedIndex]);
-
+				
+				if (i == 0) return false;
+				
 				t = Symphony.Language.get(t, {
 					'action': o.text().toLowerCase(),
 					'name': $.trim($('table input:checked').parents('tr').find('td').eq(0).text()),
@@ -375,7 +380,7 @@ var Symphony;
 		// XSLT utilities
 		$('#utilities a').each(function() {
 			var a = $(this.parentNode),
-			    r = new RegExp('href=["\']?\\.{2}/utilities/' + $(this).text());
+			    r = new RegExp('href=["\']?(?:\\.{2}/utilities/)?' + $(this).text());
 
 			$('textarea').blur(function() {
 				a[r.test(this.value) ? 'addClass' : 'removeClass']('selected');
@@ -385,9 +390,22 @@ var Symphony;
 		$('textarea').blur();
 		
 		// Internal duplicators:
-		$('#fields-duplicator').symphonyDuplicator({ orderable: true });
+		$('#fields-duplicator').symphonyDuplicator({ orderable: true, collapsible: true });
 		$('.filters-duplicator').symphonyDuplicator();
-		
+
+		// Showing the field label in the section editor (duplicator)
+		$('#fields-duplicator').bind('collapsestop', function (event, item) {
+			var instance = jQuery(item);
+			instance.find('.header > span:not(:has(i))').append(
+				$('<i />').text(instance.find('label:first input').attr('value'))
+			);
+		});
+
+		$('#fields-duplicator').bind('expandstop', function (event, item) {
+			var instance = jQuery(item);
+			instance.find('.header > span > i').remove();
+		});
+
 		// Repeating sections
 		$('div.subsection').each(function() {
 			var m = $(this),

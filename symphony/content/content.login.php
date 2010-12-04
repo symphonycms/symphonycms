@@ -17,7 +17,7 @@
 			
 			$this->Html->setElementStyle('html');
 			$this->Html->setDTD('<!DOCTYPE html>'); //PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"
-			$this->Html->setAttribute('lang', Symphony::lang());
+			$this->Html->setAttribute('lang', Lang::get());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
 			$this->addStylesheetToHead(URL . '/symphony/assets/login.css', 'screen', 40);
 			
@@ -190,7 +190,7 @@
 				##Reset of password requested	
 				elseif($action == 'reset'):
 
-					$author = Symphony::Database()->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_authors` WHERE `email` = '".$_POST['email']."'");	
+					$author = Symphony::Database()->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_authors` WHERE `email` = '".Symphony::Database()->cleanValue($_POST['email'])."'");
 
 					if(!empty($author)){
 						

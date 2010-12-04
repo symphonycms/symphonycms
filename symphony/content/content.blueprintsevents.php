@@ -71,6 +71,8 @@
 				
 				$about = $existing->about();
 				
+				if ($this->_context[0] == 'edit' && !$existing->allowEditorToParse()) redirect(URL . '/symphony/blueprints/events/info/' . $handle . '/');
+				
 				$fields['name'] = $about['name'];
 				$fields['source'] = $existing->getSource();
 				$fields['filters'] = $existing->eParamFILTERS;
@@ -87,14 +89,16 @@
 				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
-				$div = new XMLElement('div');
-				$div->setAttribute('class', 'group');
+				$group = new XMLElement('div');
+				$group->setAttribute('class', 'group');
 			
 				$label = Widget::Label(__('Name'));
 				$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
 			
+				$div = new XMLElement('div');
 				if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
 				else $div->appendChild($label);
+				$group->appendChild($div);
 			
 				$label = Widget::Label(__('Source'));	
 			
@@ -107,16 +111,16 @@
 				}
 			
 				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
-				$div->appendChild($label);
+				$group->appendChild($label);
 			
-				$fieldset->appendChild($div);
+				$fieldset->appendChild($group);
 			
 				$label = Widget::Label(__('Filter Rules'));	
 
 				$options = array(
-					array('admin-only', @in_array('admin-only', (array) $fields['filters']), __('Admin Only')),
-					array('send-email', @in_array('send-email', (array) $fields['filters']), __('Send Email')),
-					array('expect-multiple', @in_array('expect-multiple', (array) $fields['filters']), __('Allow Multiple')),					
+					array('admin-only', @in_array('admin-only', $fields['filters']), __('Admin Only')),
+					array('send-email', @in_array('send-email', $fields['filters']), __('Send Notification Email')),
+					array('expect-multiple', @in_array('expect-multiple', $fields['filters']), __('Allow Multiple')),					
 				);
 			
 				###
@@ -320,11 +324,16 @@
 
 				$sectionManager = new SectionManager($this->_Parent);
 				$section = $sectionManager->fetch($fields['source']);
-				$markup = NULL;
-				foreach($section->fetchFields() as $f){
-					if ($f->getExampleFormMarkup() instanceof XMLElement)
-						$container->appendChild($f->getExampleFormMarkup());
+
+				$section_fields = $section->fetchFields();
+				if(is_array($section_fields) && !empty($section_fields)) {
+					foreach($section_fields as $f) {
+						if ($f->getExampleFormMarkup() instanceof XMLElement) {
+							$container->appendChild($f->getExampleFormMarkup());
+						}
+					}
 				}
+
 				$container->appendChild(Widget::Input('action['.$rootelement.']', __('Submit'), 'submit'));
 				
 				$code = $container->generate(true);

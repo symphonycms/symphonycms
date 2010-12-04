@@ -62,7 +62,7 @@
 
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.1.0');
+	define('kVERSION', '2.1.2');
 	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/'.kVERSION.'/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -237,7 +237,7 @@ Options +FollowSymlinks -Indexes
 				## Add -Indexes to .htaccess
 				$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
 
-				if($htaccess !== false){
+				if($htaccess !== false && !preg_match('/-Indexes/', $htaccess)){
 					$htaccess = str_replace('Options +FollowSymlinks', 'Options +FollowSymlinks -Indexes', $htaccess);
 					@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 				}
@@ -261,15 +261,49 @@ Options +FollowSymlinks -Indexes
 				// Purge all sessions, forcing everyone to update their passwords
 				$frontend->Database->query( "TRUNCATE TABLE `tbl_sessions`");
 
-				## Update Upload field
+				// Update Upload field
 				$upload_entry_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");
 
 				if(is_array($upload_entry_tables) && !empty($upload_entry_tables)) foreach($upload_entry_tables as $field) {
 					$frontend->Database->query(sprintf(
-							"ALTER TABLE `tbl_entries_data_%d` CHANGE `size` `size` INT(11) UNSIGNED NULL DEFAULT NULL", 
+							"ALTER TABLE `tbl_entries_data_%d` CHANGE `size` `size` INT(11) UNSIGNED NULL DEFAULT NULL",
 							$field
 					));
 				}
+			}
+
+			if(version_compare($existing_version, '2.1.0', '<=')){
+				$frontend->Database->query(
+					'ALTER TABLE  `tbl_fields_input` CHANGE  `validator`  `validator` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;'
+				);
+
+				$frontend->Database->query(
+					'ALTER TABLE  `tbl_fields_upload` CHANGE  `validator`  `validator` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;'
+				);
+
+				$frontend->Database->query(
+					'ALTER TABLE  `tbl_fields_taglist` CHANGE  `validator`  `validator` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;'
+				);
+			}
+
+			if(version_compare($existing_version, '2.2.0dev', '<=')){
+				$frontend->Database->query(
+					'ALTER TABLE `tbl_sections_association` CHANGE  `cascading_deletion` `hide_association` enum("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "no";'
+				);
+
+				// Update Select tables with Hide Association field
+				$select_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_select`");
+
+				if(is_array($select_tables) && !empty($select_tables)) foreach($select_tables as $field) {
+					$frontend->Database->query(sprintf(
+							"ALTER TABLE `tbl_entries_data_%d` ADD `show_association` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no'",
+							$field
+					));
+				}
+			}
+
+			if(version_compare($existing_version, '2.2.0', '<')){
+				$setting['region']['datetime_separator'] = ' ';
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
@@ -305,7 +339,7 @@ Options +FollowSymlinks -Indexes
 
 				.
 
-				(!is_null($sbl_version) && version_compare($sbl_version, '1.14', '<') ? '<li>The "Select Box Link" field extension has been updated to 1.14, however this installation of Symphony appears to be running an older version ('.$sbl_version.'). Versions prior to 1.14 will not work correctly under Symphony <code>'.kVERSION.'</code>. The latest version can be download via the <a href"http://symphony-cms.com/download/extensions/view/20054/">Select Box Link download page</a> on the Symphony site.</li>' : NULL)
+				(!is_null($sbl_version) && version_compare($sbl_version, '1.19dev', '<') ? '<li>The "Select Box Link" field extension has been updated to 1.19, however this installation of Symphony appears to be running an older version ('.$sbl_version.'). Versions prior to 1.19 will not work correctly under Symphony <code>'.kVERSION.'</code>. The latest version can be download via the <a href"http://symphony-cms.com/download/extensions/view/20054/">Select Box Link download page</a> on the Symphony site.</li>' : NULL)
 
 				.'</ol>
 
@@ -351,7 +385,7 @@ Options +FollowSymlinks -Indexes
 				<h2>Update Existing Installation</h2>
 				<p>This script will update your existing Symphony '.$settings['symphony']['version'].' installation to version '.kVERSION.'.</p>
 				<br />
-				<p><strong>Pre-Installation Notes: </strong></p>
+				'.(version_compare($existing_version, '2.1.0', '<') ? '<p><strong>Pre-Installation Notes: </strong></p>' : NULL).'
 				<br />
 				<ol>
 				'.(version_compare($existing_version, '2.0.6', '<') ? '

@@ -103,6 +103,8 @@
 					object.find(settings.items).each(function() {
 						var item = jQuery(this);
 						
+						if (item.is('.collapsed')) return;
+						
 						object.trigger('collapsestart', [item]);
 						item.removeClass('expanded').addClass('collapsed');
 						object.trigger('collapsestop', [item]);
@@ -112,6 +114,8 @@
 				expandAll: function() {
 					object.find(settings.items).each(function() {
 						var item = jQuery(this);
+						
+						if (item.is('.expanded')) return;
 						
 						object.trigger('expandstart', [item]);
 						item.removeClass('collapsed').addClass('expanded');

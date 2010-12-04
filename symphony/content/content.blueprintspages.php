@@ -196,7 +196,7 @@
 			$is_child = strrpos($this->_context[1],'_');
 			$pagename = ($is_child != false ? substr($this->_context[1], $is_child + 1) : $this->_context[1]);
 
-			$pagedata = $this->_Parent->Database->fetchRow(0, "
+			$pagedata = Symphony::Database()->fetchRow(0, "
 					SELECT
 						p.*
 					FROM
@@ -767,24 +767,26 @@
 					");
 					
 					// Create or move files:
-					if(empty($current)) {
-						$file_created = $this->__updatePageFiles(
-							$fields['path'], $fields['handle']
-						);
+					if(!$duplicate){
+						if(empty($current)) {
+							$file_created = $this->__updatePageFiles(
+								$fields['path'], $fields['handle']
+							);
 						
-					} else {
-						$file_created = $this->__updatePageFiles(
-							$fields['path'], $fields['handle'],
-							$current['path'], $current['handle']
-						);
-					}
+						} else {
+							$file_created = $this->__updatePageFiles(
+								$fields['path'], $fields['handle'],
+								$current['path'], $current['handle']
+							);
+						}
 					
-					if(!$file_created) {
-						$redirect = null;
-						$this->pageAlert(
-							__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'),
-							Alert::ERROR
-						);
+						if(!$file_created) {
+							$redirect = null;
+							$this->pageAlert(
+								__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'),
+								Alert::ERROR
+							);
+						}
 					}
 					
 					if($duplicate) {
