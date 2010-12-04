@@ -116,11 +116,13 @@
 				$fieldset->appendChild($group);
 			
 				$label = Widget::Label(__('Filter Rules'));	
+				
+				$filters = is_array($fields['filters']) ? $fields['filters'] : array();
 
 				$options = array(
-					array('admin-only', @in_array('admin-only', $fields['filters']), __('Admin Only')),
-					array('send-email', @in_array('send-email', $fields['filters']), __('Send Notification Email')),
-					array('expect-multiple', @in_array('expect-multiple', $fields['filters']), __('Allow Multiple')),					
+					array('admin-only', @in_array('admin-only', $filters), __('Admin Only')),
+					array('send-email', @in_array('send-email', $filters), __('Send Notification Email')),
+					array('expect-multiple', @in_array('expect-multiple', $filters), __('Allow Multiple')),					
 				);
 			
 				###
