@@ -560,6 +560,8 @@
 		 *  the result by. If this is omitted (and it is by default), an
 		 *  array of assocative arrays is returned, with the key being the
 		 *  column names
+         * @return array
+         *  An associative array with the column names as the keys
 		 */
 	    public function fetch($query = null, $index_by_column = null){
 
