@@ -13,31 +13,6 @@
 	include_once(TOOLKIT . '/class.manager.php');
 	include_once(TOOLKIT . '/class.extension.php');
 
-	/**
-	 * Status when an extension is installed and enabled
-	 * @var integer
-	 */
-	define_safe('EXTENSION_ENABLED', 10);
-
-	/**
-	 * Status when an extension is disabled
-	 * @var integer
-	 */
-	define_safe('EXTENSION_DISABLED', 11);
-
-	/**
-	 * Status when an extension is in the file system, but has not been installed.
-	 * @var integer
-	 */
-	define_safe('EXTENSION_NOT_INSTALLED', 12);
-
-	/**
-	 * Status when an extension version in the file system is different to
-	 * the version stored in the database for the extension
-	 * @var integer
-	 */
-	define_safe('EXTENSION_REQUIRES_UPDATE', 13);
-
     Class ExtensionManager extends Manager{
 
 		/**
@@ -706,3 +681,29 @@
 		}
 
     }
+
+
+	/**
+	 * Status when an extension is installed and enabled
+	 * @var integer
+	 */
+	define_safe('EXTENSION_ENABLED', 10);
+
+	/**
+	 * Status when an extension is disabled
+	 * @var integer
+	 */
+	define_safe('EXTENSION_DISABLED', 11);
+
+	/**
+	 * Status when an extension is in the file system, but has not been installed.
+	 * @var integer
+	 */
+	define_safe('EXTENSION_NOT_INSTALLED', 12);
+
+	/**
+	 * Status when an extension version in the file system is different to
+	 * the version stored in the database for the extension
+	 * @var integer
+	 */
+	define_safe('EXTENSION_REQUIRES_UPDATE', 13);

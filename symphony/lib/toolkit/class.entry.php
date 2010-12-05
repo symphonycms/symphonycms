@@ -1,6 +1,6 @@
 <?php
-
-	/**
+    
+    /**
 	 * @package toolkit
 	 */
 	/**
@@ -10,21 +10,6 @@
 	 * Entries are typically created from the Symphony backend, but
 	 * can also be created using Events from the Frontend.
 	 */
-
-	 /**
-	  * The constant for when an Entry is ok, that is, no errors have 
-	  * been raised by any of it's Fields.
-	  * @var integer
-	  */
-	define_safe('__ENTRY_OK__', 0);
-
-	/**
-	 * The constant for an Entry if there is an error is raised by any of 
-	 * it's Fields.
-	 * @var integer
-	 */
-	define_safe('__ENTRY_FIELD_ERROR__', 100);
-
 	Class Entry{
 
 		/**
@@ -364,4 +349,18 @@
 			return $counts;
 		}
 
-	}
+	}    
+    
+     /**
+	  * The constant for when an Entry is ok, that is, no errors have 
+	  * been raised by any of it's Fields.
+	  * @var integer
+	  */
+	define_safe('__ENTRY_OK__', 0);
+
+	/**
+	 * The constant for an Entry if there is an error is raised by any of 
+	 * it's Fields.
+	 * @var integer
+	 */
+	define_safe('__ENTRY_FIELD_ERROR__', 100);
