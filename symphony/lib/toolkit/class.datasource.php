@@ -358,7 +358,7 @@
 		 * @return mixed
 		 *  If the value is not found, null, otherwise a string or an array is returned
 		 */
-		public static function __findParameterInEnv($needle, $env){
+		public static function findParameterInEnv($needle, $env){
 			if(isset($env['env']['url'][$needle])) return $env['env']['url'][$needle];
 
 			if(isset($env['env']['pool'][$needle])) return $env['env']['pool'][$needle];
