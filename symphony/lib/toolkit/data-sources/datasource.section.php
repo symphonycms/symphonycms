@@ -38,7 +38,7 @@
 
 					if(isset($ds->dsParamPARAMOUTPUT)){
 						if($ds->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
-						elseif($ds->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', strtotime($entry->creationDate));
+						elseif($ds->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', strtotime(Lang::standardizeDate($entry->creationDate)));
 						elseif($ds->dsParamPARAMOUTPUT == 'system:author') $param_pool[$key][] = $entry->get('author_id');
 					}
 
@@ -70,7 +70,7 @@
 
 					if(!$param_output_only){ 
 						if(is_array($ds->dsParamINCLUDEDELEMENTS) && in_array('system:date', $ds->dsParamINCLUDEDELEMENTS)){ 
-							$xEntry->appendChild(General::createXMLDateObject(strtotime($entry->creationDate), 'system-date'));
+							$xEntry->appendChild(General::createXMLDateObject(strtotime(Lang::standardizeDate($entry->creationDate)), 'system-date'));
 						}
 						$xGroup->appendChild($xEntry);
 					}
@@ -161,7 +161,7 @@
 	$datasource_schema = $this->dsParamINCLUDEDELEMENTS;
 	if (!is_array($datasource_schema)) $datasource_schema = array();
 	if ($this->dsParamPARAMOUTPUT) $datasource_schema[] = $this->dsParamPARAMOUTPUT;
-	if ($this->dsParamGROUP) $datasource_schema[] = $entryManager->fieldManager->fetchHandleFromElementName($this->dsParamGROUP);
+	if ($this->dsParamGROUP) $datasource_schema[] = $entryManager->fieldManager->fetchHandleFromID($this->dsParamGROUP);
 	
 	$entries = $entryManager->fetchByPage($this->dsParamSTARTPAGE, 
 										  $this->getSource(), 
@@ -263,7 +263,7 @@
 
 					if(isset($this->dsParamPARAMOUTPUT)){
 						if($this->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
-						elseif($this->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', strtotime($entry->creationDate));
+						elseif($this->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', strtotime(Lang::standardizeDate($entry->creationDate)));
 						elseif($this->dsParamPARAMOUTPUT == 'system:author') $param_pool[$key][] = $entry->get('author_id');
 					}
 					
@@ -296,7 +296,7 @@
 					if($this->_param_output_only) continue;
 					
 					if(in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){ 
-						$xEntry->appendChild(General::createXMLDateObject(strtotime($entry->creationDate), 'system-date'));
+						$xEntry->appendChild(General::createXMLDateObject(Lang::standardizeDate(strtotime($entry->creationDate)), 'system-date'));
 					}
 					
 					$result->appendChild($xEntry);

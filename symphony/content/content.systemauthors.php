@@ -18,6 +18,7 @@
 
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors'))));
+
 			if (Administration::instance()->Author->isDeveloper()) $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
 			else $this->appendSubheading(__('Authors'));
 
@@ -44,11 +45,11 @@
 				$bOdd = true;
 				foreach($authors as $a){
 
-					if(intval($a->get('superuser')) == 1) $group = 'admin'; else $group = 'author';
-
 					## Setup each cell
 					if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->get('id') == $a->get('id')) {
-						$td1 = Widget::TableData(Widget::Anchor($a->getFullName(), $this->_Parent->getCurrentPageURL() . 'edit/' . $a->get('id') . '/', $a->get('username'), $group));
+						$td1 = Widget::TableData(
+							Widget::Anchor($a->getFullName(), $this->_Parent->getCurrentPageURL() . 'edit/' . $a->get('id') . '/', $a->get('username'), 'author')
+						);
 					} else {
 						$td1 = Widget::TableData($a->getFullName(), 'inactive');
 					}
@@ -56,7 +57,7 @@
 					$td2 = Widget::TableData(Widget::Anchor($a->get('email'), 'mailto:'.$a->get('email'), 'Email this author'));
 
 					if($a->get('last_seen') != NULL)
-						$td3 = Widget::TableData(DateTimeObj::get(__SYM_DATETIME_FORMAT__, strtotime($a->get('last_seen'))));
+						$td3 = Widget::TableData(Lang::localizeDate(DateTimeObj::get(__SYM_DATETIME_FORMAT__, strtotime(Lang::standardizeDate($a->get('last_seen'))))));
 
 					else
 						$td3 = Widget::TableData('Unknown', 'inactive');
@@ -286,7 +287,7 @@
 			if(Administration::instance()->Author->isDeveloper()) {
 				$label = Widget::Label();
 				$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
-				if($author->get('auth_token_active') == 'yes') $input->setAttribute('checked', 'checked');
+				if($author->isTokenActive()) $input->setAttribute('checked', 'checked');
 				$temp = URL . '/symphony/login/' . $author->createAuthToken() . '/';
 				$label->setValue(__('%1$s Allow remote login via <a href="%2$s">%2$s</a>', array($input->generate(), $temp)));
 				$group->appendChild($label);
@@ -308,7 +309,7 @@
 			###
 
 			### Custom Language Selection ###
-			$languages = Lang::getAvailableLanguages(Administration::instance()->ExtensionManager);
+			$languages = Lang::getAvailableLanguages();
 			if(count($languages) > 1) {
 
 				// Get language names
@@ -359,7 +360,7 @@
 
 				$fields = $_POST['fields'];
 
-			$this->_Author = new Author;
+				$this->_Author = new Author;
 
 				$this->_Author->set('user_type', $fields['user_type']);
 				$this->_Author->set('primary', 'no');

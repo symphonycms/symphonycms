@@ -770,7 +770,7 @@
 					case 'version':
 						$fieldset = new XMLElement('fieldset');
 						$fieldset->appendChild(new XMLElement('legend', __('Version')));
-						$fieldset->appendChild(new XMLElement('p', $value . ', ' . __('released on') . ' ' . DateTimeObj::get(__SYM_DATE_FORMAT__, strtotime($about['release-date']))));
+						$fieldset->appendChild(new XMLElement('p', $value . ', ' . __('released on') . ' ' . Lang::localizeDate(DateTimeObj::get(__SYM_DATE_FORMAT__, strtotime(Lang::standardizeDate($about['release-date']))))));
 						break;
 						
 					case 'description':

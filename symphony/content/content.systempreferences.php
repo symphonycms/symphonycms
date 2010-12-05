@@ -28,7 +28,7 @@
 		    }
 		    
 		    // Get available languages
-		    $languages = Lang::getAvailableLanguages(new ExtensionManager(Administration::instance()));
+		    $languages = Lang::getAvailableLanguages();
 		
 			if(count($languages) > 1) {
 			    // Create language selection
