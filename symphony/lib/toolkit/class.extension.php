@@ -17,7 +17,7 @@
 		 * @deprecated This will no longer exist in Symphony 3
 		 */
 		const CRLF = PHP_EOL;
-		
+
 		/**
 		 * The class that initialised the Entry, usually the EntryManager
 		 * @var mixed
@@ -26,14 +26,14 @@
 
 		/**
 		 * Determines that a new navigation group is to created in the Symphony backend
-		 * @var integer 
+		 * @var integer
 		 */
 		const NAV_GROUP = 1;
 
 		/**
-		 * Determines that a new item is to be added to an existing navigation 
+		 * Determines that a new item is to be added to an existing navigation
 		 * group in the Symphony backend
-		 * @var integer 
+		 * @var integer
 		 */
 		const NAV_CHILD = 0;
 
@@ -41,7 +41,7 @@
 		 * The extension constructor takes an associative array of arguments
 		 * and sets the $_Parent variable using the 'parent' key. It appears that
 		 * this is the only key set in the $args array by Symphony
-		 * 
+		 *
 		 * @param array $args
 		 *  An associative array of arguments, but default this will contain one,
 		 *  'parent'.
@@ -165,25 +165,34 @@
 		/**
 		 * When the Symphony navigation is being generated, this method will be
 		 * called to allow extension to inject any custom backend pages into the
-		 * navigation. The function returns an array of navigation items that include
-		 * a location (numeric index), navigation item name and the URL to the
-		 * custom page
+		 * navigation. If an extension wants to create a new group in the navigation
+		 * it is possible by returning an array with the group information and then an
+		 * array of links for this group. The extension can also inject link items into existing
+		 * group's of the navigation using the 'location' key, which will accept a numeric
+		 * index of the existing group, or the handle of an existing group.  Navigation items
+		 * in Symphony are initially provided from the symphony/assets/navigation.xml file
+		 * which defines the default Blueprints and System groups. The indexes for these
+		 * groups are 100 and 200 respectively. Groups cannot provide a link, this is done
+		 * by the children. All links are relative to the Extension by default
+		 * (ie. /symphony/extension/extension_handle/. An example of a returned navigation
+		 * array is provided below. Note that if an extension wants to edit the current navigation,
+		 * this is not possible through this function and rather it should be done using the
+		 * NavigationPreRender delegate.
 		 *
 		 * array(
-		 * 	'location' => 200,
-		 *		'name' => 'Bulk Importer',
-		 *		'link' => '/import/'
-		 *	)
+		 * 	'name' => 'New Group',
+		 *		'children' => array(
+		 *			array(
+		 *				'name' => 'Extension Name',
+		 *				'link' => '/link/relative/to/extension/handle/'
+		 *			)
+		 *		)
+		 * )
 		 *
-		 * @see /symphony/assets/navigation.xml
+		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
 		 * @return array
-		 *	 Navigation items in Symphony are initially provided from the
-		 *  navigation.xml file which defines some initial groupings by index.
-		 *  Blueprints are 100, System are 200, but a custom group can be
-		 *  created by an extension by returning a new index number. The URL
-		 *  returned is relative to the Symphony backend (ie. /symphony/).
-		 *  Defaults to returning null, which adds nothing to the Symphony
-		 *  navigation
+		 *  An associative array of navigation items to add to the Navigation. This function
+		 *  defaults to returning null, which adds nothing to the Symphony navigation
 		 */
 		public function fetchNavigation(){
 			return null;
