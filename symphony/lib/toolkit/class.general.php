@@ -326,42 +326,41 @@
 		 *	false otherwise.
 		 */
 		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers = array()) {
-			// Check for injection attacks (http://securephp.damonkohler.com/index.php/Email_Injection)
-			if (preg_match("/[\r|\n]/", $from_email) || preg_match("/[\r|\n]/", $from_name)){
-                return false;
-		   	}
-
+			## Check for injection attacks (http://securephp.damonkohler.com/index.php/Email_Injection)
+			if (preg_match('%[\r\n]%', $from_email . $from_name)) {
+				return false;
+			}
+			####
+			
 			$subject = self::encodeHeader($subject, 'UTF-8');
 			$from_name = self::encodeHeader($from_name, 'UTF-8');
 			$headers = array();
-
+			
 			$default_headers = array(
-				'From'			=> "{$from_name} <{$from_email}>",
-		 		'Reply-To'		=> "{$from_name} <{$from_email}>",
-				'Message-ID'	=> sprintf('<%s@%s>', md5(uniqid(time())), $_SERVER['SERVER_NAME']),
-				'Return-Path'	=> "<{$from_email}>",
-				'Importance'	=> 'normal',
-				'Priority'		=> 'normal',
-				'X-Sender'		=> 'Symphony Email Module <noreply@symphony-cms.com>',
-				'X-Mailer'		=> 'Symphony Email Module',
-				'X-Priority'	=> '3',
-				'MIME-Version'	=> '1.0',
-				'Content-Type'	=> 'text/plain; charset=UTF-8',
+				'from'			=> "{$from_name} <{$from_email}>",
+				'reply-to'		=> "{$from_name} <{$from_email}>",
+				'message-id'	=> sprintf('<%s@%s>', md5(uniqid()), $_SERVER['SERVER_NAME']),
+				'return-path'	=> "<{$from_email}>",
+				'importance'	=> 'normal',
+				'priority'		=> 'normal',
+				'x-sender'		=> 'Symphony Email Module <noreply@symphony-cms.com>',
+				'x-mailer'		=> 'Symphony Email Module',
+				'x-priority'	=> '3',
+				'mime-version'	=> '1.0',
+				'content-type'	=> 'text/plain; charset=UTF-8'
 			);
-
-			if (!empty($additional_headers)) {
-				foreach ($additional_headers as $header => $value) {
-					$header = preg_replace_callback('/\w+/', create_function('$m', 'if(in_array($m[0], array("MIME", "ID"))) return $m[0]; else return ucfirst($m[0]);'), $header);
-					$default_headers[$header] = $value;
-				}
+			
+			foreach ($additional_headers as $header => $value) {
+				$default_headers[strtolower($header)] = $value;
 			}
-
+			
 			foreach ($default_headers as $header => $value) {
+				$header = preg_replace('%\b((mime|id)\b|[a-z])%e', 'strtoupper("\0")', $header);
+				
 				$headers[] = sprintf('%s: %s', $header, $value);
 			}
-
-			return mail($to_email, $subject, @wordwrap($message, 70), implode(self::CRLF, $headers) . self::CRLF, "-f{$from_email}");
-
+			
+			return mail($to_email, $subject, @wordwrap($message, 70), @implode(self::CRLF, $headers) . self::CRLF, "-f{$from_email}");
 		}
 
 		/**
