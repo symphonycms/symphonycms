@@ -172,6 +172,7 @@
 			self::$Log = new Log(ACTIVITY_LOG);
 			self::$Log->setArchive((self::$Configuration->get('archive', 'log') == '1' ? true : false));
 			self::$Log->setMaxSize(intval(self::$Configuration->get('maxsize', 'log')));
+			self::$Log->setDateTimeFormat(self::$Configuration->get('date_format', 'region') . ' ' . self::$Configuration->get('time_format', 'region'));
 
 			if(self::$Log->open(Log::APPEND, self::$Configuration->get('write_mode', 'file')) == 1){
 				self::$Log->writeToLog('Symphony Log', true);
