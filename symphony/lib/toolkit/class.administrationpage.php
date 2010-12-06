@@ -592,6 +592,7 @@
 			$sections = Symphony::Database()->fetch("SELECT * FROM `tbl_sections` ORDER BY `sortorder` ASC");
 			if(is_array($sections) && !empty($sections)){
 				foreach($sections as $s){
+
 					$group_index = self::__navigationFindGroupIndex($nav, $s['navigation_group']);
 
 					if($group_index === false){
@@ -742,7 +743,7 @@
 		 */
 		private static function __navigationFindGroupIndex(Array $nav, $group){
 			foreach($nav as $index => $item){
-				if($item['name'] == $name) return $index;
+				if($item['name'] == $group) return $index;
 			}
 			return false;
 		}
