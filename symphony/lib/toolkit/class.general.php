@@ -360,7 +360,10 @@
 				$headers[] = sprintf('%s: %s', $header, $value);
 			}
 			
-			return mail($to_email, $subject, @wordwrap($message, 70), @implode(self::CRLF, $headers) . self::CRLF, "-f{$from_email}");
+			return mail(
+				$to_email, $subject, wordwrap($message, 70),
+				implode(self::CRLF, $headers) . self::CRLF, "-f{$from_email}"
+			);
 		}
 
 		/**
