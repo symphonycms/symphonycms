@@ -344,12 +344,9 @@
 				");
 				
 				if(!$existing) {
-					$this->_Parent->customError(
-						E_USER_ERROR, __('Page not found'),
-						__('The page you requested to edit does not exist.'),
-						false, true, 'error', array(
-							'header'	=> 'HTTP/1.0 404 Not Found'
-						)
+					Administration::instance()->customError(
+                        __('Page not found'), __('The page you requested to edit does not exist.'),
+                        'error', array('header'	=> 'HTTP/1.0 404 Not Found')
 					);
 				}
 			}

@@ -182,8 +182,7 @@
 			$this->_context = $context;
 
 			if(!$this->canAccessPage()){
-				Administration::instance()->customError(E_USER_ERROR, __('Access Denied'), __('You are not authorised to access this page.'));
-				exit;
+				Administration::instance()->customError(__('Access Denied'), __('You are not authorised to access this page.'));
 			}
 
 			$this->Html->setDTD('<!DOCTYPE html>');
