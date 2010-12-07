@@ -66,8 +66,17 @@
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.collapsible.js', 60);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.orderable.js', 61);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.duplicator.js', 62);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.tags.js', 63);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.picker.js', 63);
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 70);
-			
+			$this->addElementToHead(
+				new XMLElement(
+					'script', 
+					"Symphony.Context.add('env', " . json_encode($this->_context) . ");", 
+					array('type' => 'text/javascript')
+				), 71
+			);
+					
 			###
 			# Delegate: InitaliseAdminPageHead
 			# Description: Allows developers to insert items into the page HEAD. Use $context['parent']->Page
@@ -173,7 +182,12 @@
 			$ul->setAttribute('id', 'usr');
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor($this->_Parent->Author->getFullName(), URL . '/symphony/system/authors/edit/' . $this->_Parent->Author->get('id') . '/'));
+			$li->appendChild(new XMLElement('a', $this->_Parent->Author->getFullName(), array(
+				'id' => 'user' . $this->_Parent->Author->get('id'),
+				'class' => $this->_Parent->Author->get('user_type'),
+				'name' => $this->_Parent->Author->get('username'),
+				'href' => URL . '/symphony/system/authors/edit/' . $this->_Parent->Author->get('id') . '/'
+			)));
 			$ul->appendChild($li);
 			
 			$li = new XMLElement('li');
