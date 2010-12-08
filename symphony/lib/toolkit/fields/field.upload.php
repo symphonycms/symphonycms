@@ -1,5 +1,9 @@
 <?php
 
+	/**
+	 * @package toolkit
+	 */
+
 	Class fieldUpload extends Field {
 		public function __construct(&$parent){
 			parent::__construct($parent);
