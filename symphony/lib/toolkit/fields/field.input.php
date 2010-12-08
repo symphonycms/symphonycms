@@ -1,5 +1,9 @@
 <?php
 
+	/**
+	 * @package toolkit
+	 */
+
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 
 	Class fieldInput extends Field {

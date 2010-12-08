@@ -43,7 +43,7 @@
 			$sectionManager = new SectionManager($this->_Parent);
 
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])), false, true);
+				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])));
 
 			$section = $sectionManager->fetch($section_id);
 
@@ -425,7 +425,7 @@
 			$sectionManager = new SectionManager($this->_Parent);
 
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])), false, true);
+				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])));
 
 		    	$section = $sectionManager->fetch($section_id);
 
@@ -522,8 +522,8 @@
 
 				$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']);
 
-			    	if(!$section = $sectionManager->fetch($section_id))
-					$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', $this->_context['section_handle']), false, true);
+                if(!$section = $sectionManager->fetch($section_id))
+					Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', $this->_context['section_handle']));
 
 				$entryManager = new EntryManager($this->_Parent);
 
@@ -607,7 +607,7 @@
 			$sectionManager = new SectionManager($this->_Parent);
 
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
+				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])));
 
 		    $section = $sectionManager->fetch($section_id);
 
@@ -616,8 +616,10 @@
 			$entryManager = new EntryManager($this->_Parent);
 			$entryManager->setFetchSorting('id', 'DESC');
 
-			if(!$existingEntry = $entryManager->fetch($entry_id)) $this->_Parent->customError(E_USER_ERROR, __('Unknown Entry'), __('The entry you are looking for could not be found.'), false, true);
-			$existingEntry = $existingEntry[0];
+			if(!$existingEntry = $entryManager->fetch($entry_id)) {
+                Administration::instance()->customError(__('Unknown Entry'), __('The entry you are looking for could not be found.'));
+			}
+            $existingEntry = $existingEntry[0];
 
 			// If there is post data floating around, due to errors, create an entry object
 			if (isset($_POST['fields'])) {
@@ -776,8 +778,9 @@
 
 				$entryManager = new EntryManager($this->_Parent);
 
-			    if(!$ret = $entryManager->fetch($entry_id)) $this->_Parent->customError(E_USER_ERROR, __('Unknown Entry'), __('The entry you are looking for could not be found.'), false, true);
-
+			    if(!$ret = $entryManager->fetch($entry_id)) {
+                    Administration::instance()->customError(__('Unknown Entry'), __('The entry you are looking for could not be found.'));
+                }
 				$entry = $ret[0];
 
 				$sectionManager = new SectionManager($this->_Parent);

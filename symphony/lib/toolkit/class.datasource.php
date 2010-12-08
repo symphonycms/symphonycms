@@ -1,22 +1,8 @@
 <?php
+
 	/**
 	 * @package toolkit
 	 */
-
-	/**
-	 * A constant that represents if this filter is an AND filter in which
-	 * an Entry must match all these filters
-	 * @var integer
-	 */
-	define_safe('DS_FILTER_AND', 1);
-
-	/**
-	 * A constant that represents if this filter is an OR filter in which an
-	 * entry can match any or all of these filters
-	 * @var integer
-	 */
-	define_safe('DS_FILTER_OR', 2);
-
 	/**
 	 * The Datasource class provides functionality to mainly process any parameters
 	 * that the fields will use in filters find the relevant Entries and return these Entries
@@ -372,7 +358,7 @@
 		 * @return mixed
 		 *  If the value is not found, null, otherwise a string or an array is returned
 		 */
-		public static function __findParameterInEnv($needle, $env){
+		public static function findParameterInEnv($needle, $env){
 			if(isset($env['env']['url'][$needle])) return $env['env']['url'][$needle];
 
 			if(isset($env['env']['pool'][$needle])) return $env['env']['pool'][$needle];
@@ -383,3 +369,17 @@
 		}
 
 	}
+
+	/**
+	 * A constant that represents if this filter is an AND filter in which
+	 * an Entry must match all these filters
+	 * @var integer
+	 */
+	define_safe('DS_FILTER_AND', 1);
+
+	/**
+	 * A constant that represents if this filter is an OR filter in which an
+	 * entry can match any or all of these filters
+	 * @var integer
+	 */
+	define_safe('DS_FILTER_OR', 2);

@@ -52,6 +52,7 @@
 
 		// Set language
 		try{
+			Lang::initialize();
 			Lang::set($lang, false);
 		}
 		catch(Exception $s){
