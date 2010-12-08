@@ -2,7 +2,7 @@
  * Symphony Picker
  *
  * This plugin shows and hides elements based on the value of a select box. 
- * If only there is only one option, the select box will be hidden and 
+ * If there is only one option, the select box will be hidden and 
  * the single element will be shown.
  */
 
