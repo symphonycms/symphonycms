@@ -380,7 +380,8 @@ var Symphony = {};
 		// Duplicators
 		$('.filters-duplicator').symphonyDuplicator();
 		$('#fields-duplicator').symphonyDuplicator({
-			orderable: true
+			orderable: true,
+			collapsible: true			
 		});
 		
 		// Toggle field labels in section editor
