@@ -40,17 +40,32 @@
 					$td2 = Widget::TableData(($about['status'] == EXTENSION_ENABLED ? __('Yes') : __('No')));
 					$td3 = Widget::TableData($about['version']);
 					
-					$link = $about['author']['name'];
+					if ($about['author'][0] && is_array($about['author'][0])) {
+						for($i = 0; $i < count($about['author']);  ++$i) {
+							$author = $about['author'][$i];
+							$link = $author['name'];
 
-					if(isset($about['author']['website']))
-						$link = Widget::Anchor($about['author']['name'], General::validateURL($about['author']['website']));
+							if(isset($author['website']))
+								$link = Widget::Anchor($author['name'], General::validateURL($author['website']));
 
-					elseif(isset($about['author']['email']))
-						$link = Widget::Anchor($about['author']['name'], 'mailto:' . $about['author']['email']);	
+							elseif(isset($author['email']))
+								$link = Widget::Anchor($author['name'], 'mailto:' . $author['email']);
+
+							$td4->appendChild($link);
+							if ($i != count($about['author']) - 1)$td4->appendChild(new XMLElement("span", ",&nbsp;"));
+						}
+					}
+					else {
+						$link = $about['author']['name'];
+
+						if(isset($about['author']['website']))
+							$link = Widget::Anchor($about['author']['name'], General::validateURL($about['author']['website']));
+
+						elseif(isset($about['author']['email']))
+							$link = Widget::Anchor($about['author']['name'], 'mailto:' . $about['author']['email']);	
 						
-					$td4 = Widget::TableData($link);	
-					
-					$td4->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox'));
+						$td4 = Widget::TableData($link);
+					}
 
 					## Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4), ($about['status'] == EXTENSION_NOT_INSTALLED ? 'inactive' : NULL));		
