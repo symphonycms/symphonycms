@@ -190,10 +190,20 @@
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
 			$this->addStylesheetToHead(URL . '/symphony/assets/symphony.duplicator.css', 'screen', 70);
 			$this->addScriptToHead(URL . '/symphony/assets/jquery.js', 50);
+			$this->addScriptToHead(URL . '/symphony/assets/jquery.color.js', 51);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.collapsible.js', 60);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.orderable.js', 61);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.duplicator.js', 62);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.tags.js', 63);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.picker.js', 63);
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 70);
+			$this->addElementToHead(
+				new XMLElement(
+					'script', 
+					"Symphony.Context.add('env', " . json_encode($this->_context) . ");", 
+					array('type' => 'text/javascript')
+				), 71
+			);
 
 			/**
 			 * Allows developers to insert items into the page HEAD. Use $context['parent']->Page
