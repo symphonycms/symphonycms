@@ -41,6 +41,8 @@
 					$td3 = Widget::TableData($about['version']);
 					
 					if ($about['author'][0] && is_array($about['author'][0])) {
+						$value = "";
+
 						for($i = 0; $i < count($about['author']);  ++$i) {
 							$author = $about['author'][$i];
 							$link = $author['name'];
@@ -51,9 +53,11 @@
 							elseif(isset($author['email']))
 								$link = Widget::Anchor($author['name'], 'mailto:' . $author['email']);
 
-							$td4->appendChild($link);
-							if ($i != count($about['author']) - 1)$td4->appendChild(new XMLElement("span", ",&nbsp;"));
+							$comma = ($i != count($about['author']) - 1) ? ", " : "";
+							$value .= $link->generate() . $comma;
 						}
+
+						$td4->setValue($value);
 					}
 					else {
 						$link = $about['author']['name'];
