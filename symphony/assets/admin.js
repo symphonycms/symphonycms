@@ -289,13 +289,19 @@ var Symphony = {};
 			/**
 			 * Fade message highlight color to grey
 			 */
-			fade: function() {
-				$('#notice.success').animate({
-					backgroundColor: '#e4e4e0',
-					borderTopColor: '#979792',
-					borderBottomColor: '#777',
-					color: '#555'
-				}, 'slow', 'linear', function() {
+			fade: function(newclass, delay) {
+				var notice = $('#notice.success').addClass(newclass),
+					styles = {
+						'color': notice.css('color'),
+						'backgroundColor': notice.css('background-color'),
+						'borderTopColor': notice.css('border-top-color'),
+						'borderRightColor': notice.css('border-right-color'),
+						'borderBottomColor': notice.css('border-bottom-color'),
+						'borderLeftColor': notice.css('border-left-color'),
+					};
+				
+				// Delayed animation to new styles
+				notice.removeClass(newclass).delay(delay).animate(styles, 'slow', 'linear', function() {
 					$(this).removeClass('success');
 				});
 			},
@@ -389,8 +395,10 @@ var Symphony = {};
 			$(item).find('.header > span > i').remove();
 		});		
 
-		// System messages
-		window.setTimeout("Symphony.Message.fade()", 10000);
+		// Fade system messages
+		Symphony.Message.fade('silence', 10000);
+		
+		// Relative times in system messages
 		$('abbr.timeago').each(function() {
 			var time = $(this).parent();
 			time.html(time.html().replace(Symphony.Language.get('at') + ' ', ''));

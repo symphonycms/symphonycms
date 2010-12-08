@@ -154,6 +154,12 @@ p#version {
 	background-color: #ddf6bb;
 	border-top: 3px solid #90c349;
 }
+#notice.silence {
+	background: #e4e4e0;
+	border-top-color: #979792;
+	border-bottom-color: #777;
+	color: #555;
+}
 #notice a,
 #notice button {
 	color: #999;
