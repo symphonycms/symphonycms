@@ -393,7 +393,7 @@ var Symphony = {};
 		window.setTimeout("Symphony.Message.fade()", 10000);
 		$('abbr.timeago').each(function() {
 			var time = $(this).parent();
-			time.html(time.html.replace(Symphony.Language.get('at') + ' ', ''));
+			time.html(time.html().replace(Symphony.Language.get('at') + ' ', ''));
 		});
 		Symphony.Message.timer();
 		
