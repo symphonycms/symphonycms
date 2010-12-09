@@ -107,7 +107,7 @@
 						}
 
 						if(method_exists($classname,'getSource')) {
-							$type = call_user_func(array($classname, 'getSource'));
+							$source = call_user_func(array($classname, 'getSource'));
 						}
 
 						$about['can_parse'] = $can_parse;
