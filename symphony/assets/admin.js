@@ -1,7 +1,8 @@
 /**
+ * @package assets
+ */
+/**
  * Symphony Core JavaScript
- *
- * @version 2.2.0dev
  */
 
 
@@ -382,7 +383,6 @@ var Symphony = {};
 		
 		// Orderable tables
 		var orderable = $('table.orderable');
-			
 		orderable.symphonyOrderable({
 			items: 'tr',
 			handles: 'td'
@@ -405,6 +405,7 @@ var Symphony = {};
 
 		// Process sort order
 		orderable.live('orderstop', function() {
+			orderable.addClass('busy');
 
 			// Get new sort order
 			var new_sorting = orderable.find('input').map(function(e, i) { return this.name + '=' + (e + 1); }).get().join('&');
@@ -412,9 +413,10 @@ var Symphony = {};
 			// Store new sort order
 			if(new_sorting != old_sorting) {
 
-				orderable.trigger('orderchange').addClass('busy');
-				//orderable.find('tr').removeClass().filter(':odd').addClass('odd');
+				// Update items
+				orderable.trigger('orderchange');
 
+				// Send request
 				jQuery.ajax({
 					type: 'POST',
 					url: Symphony.Context.get('root') + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
@@ -426,14 +428,27 @@ var Symphony = {};
 						Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'reorder error');
 					},
 					complete: function() {
-						orderable.find('tr').removeClass('selected');
-						orderable.removeClass('busy');
+						orderable.removeClass('busy').find('tr').removeClass('selected');
 						old_sorting = '';
 					}
 				});
 			}
+			else {
+				orderable.removeClass('busy');
+			}
 			
 		});
+		
+		// Selectable
+		$('table:has(input)').symphonySelectable();
+		
+		// Handle highlighting conflicts between orderable and selectable items
+		$('table:has(input) td').bind('mousedown', function(event) {
+			var table = $(event.target).parents('table').addClass('selecting');
+			window.setTimeout(function() {
+			    table.removeClass('selecting');
+			}, 50);
+		});	
 
 		// Duplicators
 		$('.filters-duplicator').symphonyDuplicator();
@@ -549,7 +564,6 @@ var Symphony = {};
 				return i > 0 && !o.hasClass('confirm') || confirm(t);
 			});
 		}
-		
 
 		// Data source switcheroo
 		$('select.filtered > optgroup').each(function() {

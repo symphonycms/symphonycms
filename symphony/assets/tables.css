@@ -18,6 +18,7 @@ td {
 	border: 1px solid #e6e6e5;
 	border-width: 1px 0;
 	padding: 0.67em 19px 0.67em 0;
+	background-color: transparent;
 }
 th:first-child,
 td:first-child {
@@ -25,36 +26,6 @@ td:first-child {
 }
 tr.odd td {
 	background-color: #f5f5f4;
-}
-tr:nth-child(odd) td {
-	background-color: #f5f5f4;
-}
-tr.selected td {
-	border-color: #617dc5;
-	background-color: #5273c0;
-}
-tr.selected.odd td {
-	background-color: #5677c3;
-}
-tr.selected:nth-child(odd) td {
-	background-color: #5677c3;
-}
-tr.ordering {
-	cursor: move;
-}
-tr.ordering td,
-tr.ordering a,
-tr.selected td,
-tr.selected a {
-	color: #fff;
-}
-tr.ordering td,
-tr.odd.ordering td,
-tr.selected.odd.ordering td,
-table.busy tr.selected td {
-	border-color: #998;
-	background-color: #887;
-	color: #fff;
 }
 tbody a {
 	padding: 0.67em 0;
@@ -67,7 +38,52 @@ table.selectable input {
 	display: none;
 }
 
-/* Sorting */
+/* Ordering rows */
+tr.ordering {
+	cursor: move;
+}
+tr.ordering td,
+tr.ordering a {
+	color: #fff;
+}
+tr.ordering td,
+tr.odd.ordering td {
+	border-color: #998;
+	background-color: #887;
+	color: #fff;
+}
+table.busy td, table.selecting td {
+	border-top: 1px solid #e6e6e5;
+	border-bottom: 1px solid #e6e6e5;
+	background-color: #fff;
+}
+table.busy tr.odd td, table.selecting tr.odd td {
+	border-top: 1px solid #e6e6e5;
+	border-bottom: 1px solid #e6e6e5;
+	background-color: #f5f5f4;
+}
+table.busy a, table.selecting a {
+	color: #5072bf;
+}
+
+/* Selecting rows */
+tr.selected td, table.selecting tr.selected td {
+	border-top: 1px solid #617dc5;
+	border-bottom: 1px solid #617dc5;
+	background-color: #5273c0;
+}
+tr.selected.odd td, table.selecting tr.selected.odd td {
+	border-top: 1px solid #617dc5;
+	border-bottom: 1px solid #617dc5;
+	background-color: #5677c3;
+}
+tr.selected td,
+tr.selected a,
+table.selecting tr.selected a {
+	color: #fff;
+}
+
+/* Columns */
 th a,
 th a:hover,
 th a:hover:after {
