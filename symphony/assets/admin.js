@@ -623,67 +623,6 @@ var Symphony = {};
 
 		$('textarea').blur();
 
-		// Repeating sections
-		$('div.subsection').each(function() {
-			var m = $(this),
-			    t = m.find('.template'),
-			    h = t.map(function() { return $(this).height(); }).get();
-
-			t.remove().css('height', 0);
-			m.append('<div class="actions"><a>' + Symphony.Language.get('Add item') + '</a><a class="inactive">' + Symphony.Language.get('Remove selected items') + '</a></div>')
-			m.bind('select', select).bind('deselect', select);
-
-			var r = m.find('.actions > a.inactive'),
-			    i = 0;
-
-			function select(e) {
-				r.toggleClass('inactive', !(i += e.type === 'select' ? 1 : -1));
-			}
-
-			if (t.length > 1) {
-				var s = document.createElement('select'),
-				    l = t.find('h4');
-
-				for (var i = 0; i < l.length; i++) {
-					s.options[i] = new Option(l[i].firstChild.data, i);
-				}
-
-				$('.actions', this).prepend(s);
-			}
-
-			m.find('.actions > a').click(function() {
-				var a = $(this);
-
-				if (a.hasClass('inactive')) {
-					return;
-				}
-
-				if (a.is(':last-child')) {
-					m.find('li.selected').animate({height: 0}, function() {
-						$(this).remove();
-					});
-
-					i = 0;
-					a.addClass('inactive');
-				} else {
-					var j = s ? s.selectedIndex : 0,
-					    w = m.find('ol');
-
-					t.eq(j).clone(true).appendTo(w).animate({height: h[j]}, function() {
-						$('input:not([type=hidden]), select, textarea', this).eq(0).focus();
-					});
-				}
-			});
-
-			$('form').submit(function() {
-				m.find('ol > li').each(function(i) {
-					$('input,select,textarea', this).each(function() {
-						this.name = this.name.replace(/\[-?\d+(?=])/, '[' + i);
-					});
-				});
-			});
-		});
-
 		// Data source switcheroo
 		$('select.filtered > optgroup').each(function() {
 			var s = this.parentNode,
