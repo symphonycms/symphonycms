@@ -5,8 +5,8 @@
 	 */
 	/**
 	 * The Symphony class is an abstract class that implements the
-	 * Singleton inteface. It provides the glue that forms the Symphony
-	 * CMS and intialises the toolkit classes. Symphony is extended by
+	 * Singleton interface. It provides the glue that forms the Symphony
+	 * CMS and initialises the toolkit classes. Symphony is extended by
 	 * the Frontend and Administration classes
 	 */
 	require_once(CORE . '/class.errorhandler.php');
@@ -87,7 +87,7 @@
 
 		/**
 		 * The Symphony constructor initialises the class variables of Symphony.
-		 * It wil set the DateTime settings, define new date constants and initialise
+		 * It will set the DateTime settings, define new date constants and initialise
 		 * the correct Language for the currently logged in Author. If magic quotes
 		 * are enabled, Symphony will sanitize the $_SERVER, $_COOKIE, $_GET
 		 * and $_POST arrays.
@@ -160,7 +160,7 @@
 
 		/**
 		 * Setter for <code>$Log</code>. This function uses the configuration
-		 * settings in the 'log' group in the Configration to create an instance. Date
+		 * settings in the 'log' group in the Configuration to create an instance. Date
 		 * formatting options are also retrieved from the configuration.
 		 */
 		public function initialiseLog(){
@@ -514,7 +514,7 @@
 		 *  can be the name of any template file in the <code>TEMPLATES</code> directory.
 		 *  A template using the naming convention of <code>tpl.*.php</code>.
 		 * @param array $additional
-		 *  Allows custom information to be passed to the Symhony Error Page
+		 *  Allows custom information to be passed to the Symphony Error Page
 		 *  that the template may want to expose, such as custom Headers etc.
 		 */
 		public function customError($heading, $message, $template='error', array $additional=array()){
@@ -608,7 +608,7 @@
 		 *  can be the name of any template file in the TEMPLATES directory.
 		 *  A template using the naming convention of tpl.*.php.
 		 * @param array $additional
-		 *  Allows custom information to be passed to the Symhony Error Page
+		 *  Allows custom information to be passed to the Symphony Error Page
 		 *  that the template may want to expose, such as custom Headers etc.
 		 */
 		public function __construct($message, $heading='Symphony Fatal Error', $template='error', array $additional=NULL){
@@ -669,7 +669,7 @@
 	}
 
 	/**
-	 * The DatabaseExecptionHandler provides a render function to provide
+	 * The DatabaseExceptionHandler provides a render function to provide
 	 * customised output for Database exceptions. It displays the Exception
 	 * message as provided by the Database.
 	 */

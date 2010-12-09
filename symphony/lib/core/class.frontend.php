@@ -39,7 +39,7 @@
 
 		/**
 		 * The constructor for Frontend calls the parent Symphony
-		 * constructor and in addition, initates the Engine creation
+		 * constructor and in addition, initiates the Engine creation
 		 * in the Profiler. Some backwards compatibility is kept in this
 		 * function, allowing <code>Symphony::Database</code> and
 		 * <code>Symphony::Configuration()</code> to be accessed using
@@ -86,7 +86,7 @@
 		}
 
 		/**
-		 * Called by index.php, this function is repsonsible for rendering the current
+		 * Called by index.php, this function is responsible for rendering the current
 		 * page on the Frontend. One delegate is fired, FrontendInitialised
 		 *
 		 * @uses FrontendInitialised
