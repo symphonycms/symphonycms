@@ -190,10 +190,21 @@
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
 			$this->addStylesheetToHead(URL . '/symphony/assets/symphony.duplicator.css', 'screen', 70);
 			$this->addScriptToHead(URL . '/symphony/assets/jquery.js', 50);
+			$this->addScriptToHead(URL . '/symphony/assets/jquery.color.js', 51);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.collapsible.js', 60);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.orderable.js', 61);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.duplicator.js', 62);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.tags.js', 63);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.picker.js', 63);
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 70);
+
+			$this->addElementToHead(
+				new XMLElement(
+					'script',
+					"Symphony.Context.add('env', " . json_encode($this->_context) . ");",
+					array('type' => 'text/javascript')
+				), 71
+			);
 
 			/**
 			 * Allows developers to insert items into the page HEAD. Use $context['parent']->Page
@@ -414,6 +425,48 @@
 				$this->Form->prependChild($this->Alert->asXML());
 			}
 		}
+<<<<<<< HEAD
+
+		function appendFooter(){
+
+			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array('id' => 'version'));
+			$this->Form->appendChild($version);
+
+			$ul = new XMLElement('ul');
+			$ul->setAttribute('id', 'usr');
+
+			$li = new XMLElement('li');
+			$li->appendChild(new XMLElement('a', $this->_Parent->Author->getFullName(), array(
+				'id' => 'user' . $this->_Parent->Author->get('id'),
+				'class' => $this->_Parent->Author->get('user_type'),
+				'name' => $this->_Parent->Author->get('username'),
+				'href' => URL . '/symphony/system/authors/edit/' . $this->_Parent->Author->get('id') . '/'
+			)));
+			$ul->appendChild($li);
+
+			$li = new XMLElement('li');
+			$li->appendChild(Widget::Anchor(__('Logout'), URL . '/symphony/logout/'));
+			$ul->appendChild($li);
+
+			###
+			# Delegate: AddElementToFooter
+			# Description: Add new list elements to the footer
+			$this->_Parent->ExtensionManager->notifyMembers('AddElementToFooter', '/backend/', array('wrapper' => &$ul));
+
+			$this->Form->appendChild($ul);
+		}
+
+		function appendSubheading($string, $link=NULL){
+
+			if($link && is_object($link)) $string .= ' ' . $link->generate(false);
+			elseif($link) $string .= ' ' . $link;
+
+			$this->Form->appendChild(new XMLElement('h2', $string));
+		}
+
+		function appendNavigation(){
+=======
+>>>>>>> brendo/integration
 
 		/**
 		 * This function will append the Navigation to the AdministrationPage.
