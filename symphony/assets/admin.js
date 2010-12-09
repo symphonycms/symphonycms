@@ -364,7 +364,7 @@ var Symphony = {};
 	};
 
 	/**
-	 * Symphony core functionalities
+	 * Symphony core interactions
 	 */
 	$(document).ready(function() {
 
@@ -381,35 +381,58 @@ var Symphony = {};
 		$('ul.orderable').symphonyOrderable();
 		
 		// Orderable tables
-		$('table.orderable').live('orderchange', function() {
-						
-			// Reset zebra
-			$(this).find('tr').removeClass('odd').filter(':eq(1)').addClass('odd');
+		var orderable = $('table.orderable');
 			
-		}).live('orderstop', function() {
-			var table = $(this).addClass('busy'),
-				data = table.find('input').map(function(i) { 
-					return this.name + '=' + i; 
-				}).get().join('&');
-	
-			// Save new row order
-			$.ajax({
-				type: 'POST',
-				url: Symphony.Context.get('root') + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
-				data: data,
-				success: function() {
-					Symphony.Message.clear('reorder');
-				},
-				error: function() {
-					Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'reorder error');
-				},
-				complete: function() {
-					table.removeClass('busy');
-				}
-			});
-		}).symphonyOrderable({
+		orderable.symphonyOrderable({
 			items: 'tr',
-			handles: '*'
+			handles: 'td'
+		});
+
+		// Don't start ordering while clicking on links
+		orderable.find('a').mousedown(function(event) {
+			event.stopPropagation();
+		});
+
+		// Store current sort order
+		orderable.live('orderstart', function() {
+			old_sorting = orderable.find('input').map(function(e, i) { return this.name + '=' + (e + 1); }).get().join('&');
+		});
+
+		// Restore table zebra while ordering
+		orderable.live('orderchange', function() {
+			orderable.find('tr').removeClass('odd').filter(':odd').addClass('odd');
+		});
+
+		// Process sort order
+		orderable.live('orderstop', function() {
+
+			// Get new sort order
+			var new_sorting = orderable.find('input').map(function(e, i) { return this.name + '=' + (e + 1); }).get().join('&');
+			
+			// Store new sort order
+			if(new_sorting != old_sorting) {
+
+				orderable.trigger('orderchange').addClass('busy');
+				//orderable.find('tr').removeClass().filter(':odd').addClass('odd');
+
+				jQuery.ajax({
+					type: 'POST',
+					url: Symphony.Context.get('root') + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
+					data: new_sorting,
+					success: function() {
+						Symphony.Message.clear('reorder');
+					},
+					error: function() {
+						Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'reorder error');
+					},
+					complete: function() {
+						orderable.find('tr').removeClass('selected');
+						orderable.removeClass('busy');
+						old_sorting = '';
+					}
+				});
+			}
+			
 		});
 
 		// Duplicators
@@ -444,147 +467,21 @@ var Symphony = {};
 /*-----------------------------------------------------------------------------
 	Things to be cleaned up
 -----------------------------------------------------------------------------*/
-/*
-	// Sortable lists
-	var movable = {
-		move: function(e) {
-			var t,
-			    n,
-			    y = e.pageY;
-
-			if (y < movable.min) {
-				t = movable.target.prev();
-				for (;;) {
-					movable.delta--;
-					n = t.prev();
-					if (n.length === 0 || y >= (movable.min -= n.height())) {
-						movable.target.insertBefore(t);
-						break;
-					}
-					t = n;
-				}
-			} else if (y > movable.max) {
-				t = movable.target.next();
-				for (;;) {
-					movable.delta++;
-					n = t.next();
-					if (n.length === 0 || y <= (movable.max += n.height())) {
-						movable.target.insertAfter(t);
-						break;
-					}
-					t = n;
-				}
-			} else {
-				return;
-			}
-
-			movable.update(movable.target);
-			movable.target.parent().children().each(function(i) { $(this).toggleClass('odd', i % 2 === 0); });
-		},
-		drop: function() {
-			$(document).unbind('mousemove', movable.move);
-			$(document).unbind('mouseup', movable.drop);
-
-			movable.target.removeClass('movable');
-
-			if (movable.delta) {
-				movable.target.trigger($.Event('reorder'));
-			}
-		},
-		update: function(target) {
-			var a = target.height(),
-			    b = target.offset().top,
-				prev_offset = (target.prev().length) ? target.prev().offset().top : 0;
-
-			movable.target = target;
-			movable.min    = Math.min(b, a + (prev_offset || -Infinity));
-			movable.max    = Math.max(a + b, b + (target.next().height() ||  Infinity));
-		}
-	};
-
-	$('.orderable tr, .subsection > ol > li').live('mousedown', function(e) {
-		if (!/^(?:h4|td)$/i.test(e.target.nodeName)) {
-			return true;
-		}
-
-		movable.update($(this).addClass('movable'));
-		movable.delta = 0;
-
-		$(document).mousemove(movable.move);
-		$(document).mouseup(movable.drop);
-
-		return false;
-	});
-
-	$('table.orderable').live('orderstop', function() {
-		var t = $(this).addClass('busy');
-
-		$.ajax({
-			type: 'POST',
-			url: Symphony.Context.get('root') + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
-			data: $('input', this).map(function(i) { return this.name + '=' + i; }).get().join('&'),
-			success: function() {
-				Symphony.Message.clear('reorder');
-			},
-			error: function() {
-				Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'reorder error');
-			},
-			complete: function() {
-				t.removeClass('busy');
-			}
-		});
-	}); */
-
-/* SELECTABLES */
-
-/*	$('.selectable td, .subsection h4').live('click', function(e) {
-		if (movable.delta || !/^(?:td|h4)$/i.test(e.target.nodeName)) {
-			return true;
-		}
-
-		var r = $(this.parentNode).toggleClass('selected');
-
-		r.trigger($.Event(r.hasClass('selected') ? 'select' : 'deselect'));
-		r.find('td input').each(function() { this.checked = !this.checked; });
-
-		// when shift held when selecting a row
-		if (e.shiftKey && r.hasClass('selected')) {
-
-			// find first selected row above newly-selected row
-			var selected_above = r.prevAll('.selected');
-			if (selected_above.length) {
-				var from = $('.selectable tr').index(selected_above);
-				var to = $('.selectable tr').index(r);
-				$('.selectable tr').each(function(i) {
-					if (i > from && i < to) {
-						var r = $(this).toggleClass('selected');
-						r.trigger($.Event(r.hasClass('selected') ? 'select' : 'deselect'));
-						r.find('td input').each(function() { this.checked = !this.checked; });
-					}
-				});
-			}
-			// de-select text caused by holding shift
-			if (window.getSelection) window.getSelection().removeAllRanges();
-		}
-
-		return false;
-	}); */
 
 	// Document ready
 	$(document).ready(function() {
 
 		// Ugly DOM maintenance
-		$('table:has(input)').addClass('selectable');
 
 		if (/[?&]debug[&=][^#]*#line-\d+$/.test(location.href)) {
 			$('ol a').eq(parseInt(/\d+$/.exec(location.href)[0], 10) - 1).addClass('active');
 		}
 
-		$('ul.tags > li').mousedown(silence);
-		$('#nav').mouseover(silence);
-		$('.orderable td, .subsection h4').bind('selectstart', silence); // Fix for IE bug
+//		$('ul.tags > li').mousedown(silence);
+//		$('#nav').mouseover(silence);
+//		$('.orderable td, .subsection h4').bind('selectstart', silence); // Fix for IE bug
 
-		function silence() { return false; }
+//		function silence() { return false; }
 
 		// Change user password
 		$('#change-password').each(function() {

@@ -43,12 +43,15 @@ tr.ordering {
 	cursor: move;
 }
 tr.ordering td,
-tr.ordering a {
+tr.ordering a,
+tr.selected td,
+tr.selected a {
 	color: #fff;
 }
 tr.ordering td,
 tr.odd.ordering td,
-tr.selected.odd.ordering td {
+tr.selected.odd.ordering td,
+table.busy tr.selected td {
 	border-color: #998;
 	background-color: #887;
 	color: #fff;
