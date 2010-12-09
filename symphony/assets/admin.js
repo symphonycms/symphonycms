@@ -471,18 +471,6 @@ var Symphony = {};
 	// Document ready
 	$(document).ready(function() {
 
-		// Ugly DOM maintenance
-
-		if (/[?&]debug[&=][^#]*#line-\d+$/.test(location.href)) {
-			$('ol a').eq(parseInt(/\d+$/.exec(location.href)[0], 10) - 1).addClass('active');
-		}
-
-//		$('ul.tags > li').mousedown(silence);
-//		$('#nav').mouseover(silence);
-//		$('.orderable td, .subsection h4').bind('selectstart', silence); // Fix for IE bug
-
-//		function silence() { return false; }
-
 		// Change user password
 		$('#change-password').each(function() {
 
