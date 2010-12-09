@@ -1,5 +1,9 @@
 <?php
 
+	/**
+	 * @package boot
+	 */
+
 	define_safe('__IN_SYMPHONY__', true);
 
 	define_safe('MANIFEST', 	DOCROOT . '/manifest');

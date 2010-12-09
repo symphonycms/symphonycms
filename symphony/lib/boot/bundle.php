@@ -1,5 +1,9 @@
 <?php
 
+	/**
+	 * @package boot
+	 */
+
 	if(!defined('PHP_VERSION_ID')){
     	$version = PHP_VERSION;
     	define('PHP_VERSION_ID', ($version{0} * 10000 + $version{2} * 100 + $version{4}));

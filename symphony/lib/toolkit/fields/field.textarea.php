@@ -1,5 +1,9 @@
 <?php
 
+	/**
+	 * @package toolkit
+	 */
+
 	Class fieldTextarea extends Field {
 		function __construct(&$parent){
 

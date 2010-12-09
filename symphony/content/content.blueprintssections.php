@@ -241,9 +241,9 @@
 
 		    $sectionManager = new SectionManager($this->_Parent);
 
-		    if(!$section = $sectionManager->fetch($section_id))
-				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for could not be found.'), false, true);
-
+		    if(!$section = $sectionManager->fetch($section_id)) {
+				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for could not be found.'));
+            }
 			$meta = $section->get();
 
 			$fieldManager = new FieldManager($this->_Parent);

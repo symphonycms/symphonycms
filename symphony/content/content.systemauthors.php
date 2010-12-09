@@ -132,12 +132,13 @@
 
 			require_once(TOOLKIT . '/class.field.php');
 
-			## Handle unknow context
+			## Handle unknown context
 			if(!in_array($this->_context[0], array('new', 'edit'))) $this->_Parent->errorPageNotFound();
 
-			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper())
-				$this->_Parent->customError(E_USER_ERROR, 'Access Denied', 'You are not authorised to access this page.');
-
+			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper()) {
+				Administration::instance()->customError(__('Access Denied'), __('You are not authorised to access this page.'));
+            }
+            
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 
@@ -186,7 +187,7 @@
 				if(!$author_id = $this->_context[1]) redirect(URL . '/symphony/system/authors/');
 
 				if(!$author = AuthorManager::fetchByID($author_id)){
-					$this->_Parent->customError(E_USER_ERROR, 'Author not found', 'The author profile you requested does not exist.');
+					Administration::instance()->customError(__('Author not found'), __('The author profile you requested does not exist.'));
 				}
 			}
 
@@ -194,10 +195,9 @@
 
 			if($this->_context[0] == 'edit' && $author->get('id') == Administration::instance()->Author->get('id')) $isOwner = true;
 
-			if ($this->_context[0] == 'edit' && !$isOwner && !Administration::instance()->Author->isDeveloper())
-				$this->_Parent->customError(E_USER_ERROR, 'Access Denied', 'You are not authorised to edit other authors.');
-
-
+			if ($this->_context[0] == 'edit' && !$isOwner && !Administration::instance()->Author->isDeveloper()) {
+				Administration::instance()->customError(__('Access Denied'), __('You are not authorised to edit other authors.'));
+            }
 
 			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Authors'), $author->getFullName())));
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $author->getFullName()));

@@ -7,8 +7,6 @@
 	 * class. Each object is a representation of a HTML element
 	 * and can store it's children in an array. When an XMLElement
 	 * is generated, it is output as an XML string.
-	 *
-	 * @deprecated Symphony 3 will use PHP's DOM classes.
 	 */
 	Class XMLElement {
 		/**

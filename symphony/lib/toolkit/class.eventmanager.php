@@ -103,11 +103,11 @@
 						$source = null;
 
 						if(method_exists($classname,'allowEditorToParse')) {
-							$can_parse = $classname::allowEditorToParse();
+							$can_parse = call_user_func(array($classname, 'allowEditorToParse'));
 						}
 
 						if(method_exists($classname,'getSource')) {
-							$source = $classname::getSource();
+							$type = call_user_func(array($classname, 'getSource'));
 						}
 
 						$about['can_parse'] = $can_parse;
