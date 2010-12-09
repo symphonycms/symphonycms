@@ -210,32 +210,15 @@ p#version {
 	border-color: #617dc5;
 	background-color: #5273c0;
 }
-.movable {
-	border-color: #998;
-	background-color: #887;
-}
 .selected,
 .selected a,
-.selected td,
-.movable,
-.movable a,
-.movable td {
+.selected td,{
 	color: #fff;
-}
-.movable,
-.movable *,
-.orderable tbody {
-	cursor: move;
 }
 .selected h4 i,
 .selected label i,
 .selected .inactive {
 	color: #abe;
-}
-.movable h4 i,
-.movable label i,
-.movable .inactive {
-	color: #ccb;
 }
 
 /* Code */

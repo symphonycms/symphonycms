@@ -376,27 +376,59 @@ var Symphony = {};
 
 		// Pickers
 		$('.picker').symphonyPicker();
+		
+		// Orderable list
+		$('ul.orderable').symphonyOrderable();
+		
+		// Orderable tables
+		$('table.orderable').live('orderchange', function() {
+						
+			// Reset zebra
+			$(this).find('tr').removeClass('odd').filter(':eq(1)').addClass('odd');
+			
+		}).live('orderstop', function() {
+			var table = $(this).addClass('busy'),
+				data = table.find('input').map(function(i) { 
+					return this.name + '=' + i; 
+				}).get().join('&');
+	
+			// Save new row order
+			$.ajax({
+				type: 'POST',
+				url: Symphony.Context.get('root') + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
+				data: data,
+				success: function() {
+					Symphony.Message.clear('reorder');
+				},
+				error: function() {
+					Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'reorder error');
+				},
+				complete: function() {
+					table.removeClass('busy');
+				}
+			});
+		}).symphonyOrderable({
+			items: 'tr',
+			handles: '*'
+		});
 
 		// Duplicators
 		$('.filters-duplicator').symphonyDuplicator();
+		
+		// Collapsible duplicators
 		$('#fields-duplicator').symphonyDuplicator({
 			orderable: true,
 			collapsible: true			
-		});
-		
-		// Toggle field labels in section editor
-		$('#fields-duplicator').bind('collapsestop', function(event, item) {
+		}).bind('collapsestop', function(event, item) {
 			var instance = jQuery(item);
 			instance.find('.header > span:not(:has(i))').append(
 				$('<i />').text(instance.find('label:first input').attr('value'))
 			);
-		});
-		
-		$('#fields-duplicator').bind('expandstop', function(event, item) {
+		}).bind('expandstop', function(event, item) {
 			$(item).find('.header > span > i').remove();
 		});		
 
-		// Fade system messages
+		// Dim system messages
 		Symphony.Message.fade('silence', 10000);
 		
 		// Relative times in system messages
@@ -405,14 +437,14 @@ var Symphony = {};
 			time.html(time.html().replace(Symphony.Language.get('at') + ' ', ''));
 		});
 		Symphony.Message.timer();
-		
+				
 	});
 
 
 /*-----------------------------------------------------------------------------
 	Things to be cleaned up
 -----------------------------------------------------------------------------*/
-
+/*
 	// Sortable lists
 	var movable = {
 		move: function(e) {
@@ -484,7 +516,7 @@ var Symphony = {};
 		return false;
 	});
 
-	$('table.orderable').live('reorder', function() {
+	$('table.orderable').live('orderstop', function() {
 		var t = $(this).addClass('busy');
 
 		$.ajax({
@@ -501,9 +533,11 @@ var Symphony = {};
 				t.removeClass('busy');
 			}
 		});
-	});
+	}); */
 
-	$('.selectable td, .subsection h4').live('click', function(e) {
+/* SELECTABLES */
+
+/*	$('.selectable td, .subsection h4').live('click', function(e) {
 		if (movable.delta || !/^(?:td|h4)$/i.test(e.target.nodeName)) {
 			return true;
 		}
@@ -534,7 +568,7 @@ var Symphony = {};
 		}
 
 		return false;
-	});
+	}); */
 
 	// Document ready
 	$(document).ready(function() {

@@ -39,15 +39,19 @@ tr.selected.odd td {
 tr.selected:nth-child(odd) td {
 	background-color: #5677c3;
 }
-tr.movable td,
-tr.odd.movable td,
-tr.selected.odd.movable td {
-	border-color: #998;
-	background-color: #887;
+tr.ordering {
+	cursor: move;
 }
-tr.movable:nth-child(odd) td {
+tr.ordering td,
+tr.ordering a {
+	color: #fff;
+}
+tr.ordering td,
+tr.odd.ordering td,
+tr.selected.odd.ordering td {
 	border-color: #998;
 	background-color: #887;
+	color: #fff;
 }
 tbody a {
 	padding: 0.67em 0;
