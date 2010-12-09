@@ -110,7 +110,7 @@
 			$fieldManager = new FieldManager($this->_Parent);
 			$types = array();
 
-		    $fields = $_POST['fields'];
+		    $fields = is_array($_POST['fields']) ? $_POST['fields'] : array();
 			$meta = $_POST['meta'];
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));

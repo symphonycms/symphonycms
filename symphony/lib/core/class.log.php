@@ -228,7 +228,7 @@
 		/**
 		 * The function handles the rotation of the log files. By default it will open
 		 * the current log file, 'main', which is written to <code>$_log_path</code> and
-		 * check it's filesize doesn't exceed <code>$_max_size</code>. If it does, the log
+		 * check it's file size doesn't exceed <code>$_max_size</code>. If it does, the log
 		 * is appended with a date stamp and if <code>$_archive</code> has been set, it will
 		 * be archived and stored. If a log file has exceeded it's size, or the OVERWRITE
 		 * flag is set, the existing log file is removed and a new one created. Essentially,

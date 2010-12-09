@@ -109,25 +109,12 @@
 						$can_parse = false;
 						$type = null;
 
-						// While not very Symphony like, we'll feature detect PHP5.3 and use late
-						// static binding if we can, otherwise we'll fall back to call_user_func
-						if(function_exists('forward_static_call')) {
-							if(method_exists($classname,'allowEditorToParse')) {
-								$can_parse = $classname::allowEditorToParse();
-							}
-
-							if(method_exists($classname,'getSource')) {
-								$type = $classname::getSource();
-							}
+						if(method_exists($classname,'allowEditorToParse')) {
+							$can_parse = call_user_func(array($classname, 'allowEditorToParse'));
 						}
-						else {
-							if(method_exists($classname,'allowEditorToParse')) {
-								$can_parse = call_user_func(array($classname, 'allowEditorToParse'));
-							}
 
-							if(method_exists($classname,'getSource')) {
-								$type = call_user_func(array($classname, 'getSource'));
-							}
+						if(method_exists($classname,'getSource')) {
+							$type = call_user_func(array($classname, 'getSource'));
 						}
 
 						$about['can_parse'] = $can_parse;

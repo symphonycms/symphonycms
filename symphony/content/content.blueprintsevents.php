@@ -109,18 +109,23 @@
 				if(is_array($sections) && !empty($sections)){
 					foreach($sections as $s) $options[] = array($s->get('id'), ($fields['source'] == $s->get('id')), $s->get('name'));
 				}
-			
+				
 				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
-				$group->appendChild($label);
-			
+				$div = new XMLElement('div');
+				if(isset($this->_errors['source'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['source']));
+				else $div->appendChild($label);
+				$group->appendChild($div);
+				
 				$fieldset->appendChild($group);
-			
+				
 				$label = Widget::Label(__('Filter Rules'));	
+				
+				$filters = is_array($fields['filters']) ? $fields['filters'] : array();
 
 				$options = array(
-					array('admin-only', @in_array('admin-only', $fields['filters']), __('Admin Only')),
-					array('send-email', @in_array('send-email', $fields['filters']), __('Send Notification Email')),
-					array('expect-multiple', @in_array('expect-multiple', $fields['filters']), __('Allow Multiple')),					
+					array('admin-only', @in_array('admin-only', $filters), __('Admin Only')),
+					array('send-email', @in_array('send-email', $filters), __('Send Notification Email')),
+					array('expect-multiple', @in_array('expect-multiple', $filters), __('Allow Multiple')),					
 				);
 			
 				###
@@ -207,6 +212,7 @@
 			$this->_errors = array();
 			
 			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
+			if(trim($fields['source']) == '') $this->_errors['source'] = __('This is a required field');
 			
 			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
