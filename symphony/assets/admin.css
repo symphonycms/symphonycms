@@ -210,9 +210,8 @@ p#version {
 	border-color: #617dc5;
 	background-color: #5273c0;
 }
-.selected,
-.selected a,
-.selected td,{
+ul.selected,
+li.selected a {
 	color: #fff;
 }
 .selected h4 i,
