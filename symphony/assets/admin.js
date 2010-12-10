@@ -376,7 +376,7 @@ var Symphony = {};
 		$('.tags').symphonyTags();
 
 		// Pickers
-		$('.picker').symphonyPicker();
+		$('.picker').symphonyPickable();
 		
 		// Orderable list
 		$('ul.orderable').symphonyOrderable();
