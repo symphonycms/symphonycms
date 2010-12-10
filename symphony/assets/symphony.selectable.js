@@ -22,7 +22,7 @@
 		objects.addClass('selectable');
 		
 		// Process selections
-		objects.delegate(settings.items, 'click', function(event) {
+		objects.delegate(settings.items, 'click.symSelectable', function(event) {
 			var item = $(this),
 				items = item.siblings().andSelf(),
 				selection, first, last;
