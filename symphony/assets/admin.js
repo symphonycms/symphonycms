@@ -441,14 +441,6 @@ var Symphony = {};
 		
 		// Selectable
 		$('table:has(input)').symphonySelectable();
-		
-		// Handle highlighting conflicts between orderable and selectable items
-		$('table:has(input) td').bind('mousedown', function(event) {
-			var table = $(event.target).parents('table').addClass('selecting');
-			window.setTimeout(function() {
-			    table.removeClass('selecting');
-			}, 50);
-		});	
 
 		// Duplicators
 		$('.filters-duplicator').symphonyDuplicator();

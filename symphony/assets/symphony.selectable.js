@@ -10,7 +10,8 @@
  	$.fn.symphonySelectable = function(custom_settings) {
 		var objects = this;
 		var settings = {
-			items: 'tbody tr'
+			items: 'tbody tr',
+			handles: 'td'
 		};
 		
 		$.extend(settings, custom_settings);
@@ -72,6 +73,14 @@
 			}
 
 		});
+				
+		// Handle highlighting conflicts between orderable and selectable items
+		objects.find(settings.handles).bind('mousedown', function(event) {
+			var object = $(this).parents(objects[0].tagName).addClass('selecting');
+			window.setTimeout(function() {
+			    object.removeClass('selecting');
+			}, 50);
+		});	
 		
 		// Remove all selections by doubleclicking the body
 		$('body').bind('dblclick', function() {
