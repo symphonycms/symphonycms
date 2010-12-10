@@ -1,9 +1,6 @@
 /**
  * @package assets
  */
-/**
- * Symphony Core JavaScript
- */
 
 
 // Declare Symphony object globally
@@ -72,19 +69,19 @@ var Symphony = {};
 		Context: {
 
 			/**
-			 * @var object Storage object
-			 *
 			 * This object is private, use Symphony.Context.add() and
 			 * Symphony.Context.get() to interact with the dictionary.
+			 *
+			 * @private
 			 */
 			Storage: {},
 
 			/**
 			 * Add data to the Context object
 			 *
-			 * @param string group
+			 * @param {string} group
 			 *  Name of the data group
-			 * @param mixed values
+			 * @param {string|object} values
 			 *  Object or string to be stored
 			 */
 			add: function(group, values) {
@@ -103,7 +100,7 @@ var Symphony = {};
 			/**
 			 * Get data from the Context object
 			 *
-			 * @param string group
+			 * @param {string} group
 			 *  Name of the group to be returned
 			 */
 			get: function(group) {
@@ -130,17 +127,17 @@ var Symphony = {};
 		Language: {
 
 			/**
-			 * @var object Dictionary object
-			 *
 			 * This object is private, use Symphony.Language.add() to add and Symphony.Language.get()
 			 * to interact with the dictionary.
+			 *
+			 * @private
 			 */
 			Dictionary: {},
 
 			/**
 			 * Add strings to the Dictionary
 			 *
-			 * @param object strings
+			 * @param {object} strings
 			 *  Object with English string as key, value should be false
 			 */
 			add: function(strings) {
@@ -166,11 +163,11 @@ var Symphony = {};
 			 * The function replaces variables like {$name} with the a specified value if
 			 * an object of inserts is passed in the function call.
 			 *
-			 * @param string string
+			 * @param {string} string
 			 *  English string to be translated
-			 * @param object inserts
+			 * @param {object} inserts
 			 *  Object with variable name and value pairs
-			 * @return string
+			 * @return {string}
 			 *  Returns the translated string
 			 */
 			get: function(string, inserts) {
@@ -192,11 +189,11 @@ var Symphony = {};
 			 * This private function replaces variables with a specified value.
 			 * It should not be called directly.
 			 *
-			 * @param string string
+			 * @param {string} string
 			 *  Translated string with variables
-			 * @param object inserts
+			 * @param {object} inserts
 			 *  Object with variable name and value pairs
-			 * @return string
+			 * @return {string}
 			 *  Returns translated strings with all variables replaced by their actual value
 			 */
 			insert: function(string, inserts) {
@@ -212,9 +209,9 @@ var Symphony = {};
 			 * This private function sends a synchronous AJAX request to fetch the translations
 			 * for the English strings in the dictionary. It should not be called directly
 			 *
-			 * @param object strings
+			 * @param {object} strings
 			 *  Object of strings to be translated
-			 * @return object
+			 * @return {object}
 			 *  Object with original string and translation pairs
 			 */
 			translate: function(strings) {
@@ -245,18 +242,18 @@ var Symphony = {};
 		Message: {
 
 			/**
-			 * @var array Message queue
-			 *
 			 * This array is private and should not be accessed directly.
+			 *
+			 * @private
 			 */
 			Queue: [],
 
 			/**
 			 * Post system message
 			 *
-			 * @param string message
+			 * @param {string} message
 			 *  Message to be shown
-			 * @param string type
+			 * @param {string} type
 			 *  Message type to be used as class name
 			 */
 			post: function(message, type) {
@@ -271,7 +268,7 @@ var Symphony = {};
 			/**
 			 * Clear message by type
 			 *
-			 * @param string type
+			 * @param {string} type
 			 *  Message type
 			 */
 			clear: function(type) {
@@ -325,9 +322,9 @@ var Symphony = {};
 			/**
 			 * Calculate relative time.
 			 *
-			 * @param Date from
+			 * @param {Date} from
 			 *  Starting date
-			 * @param Date to
+			 * @param {Date} to
 			 *  Current date
 			 */
   			distance: function(from, to) {
