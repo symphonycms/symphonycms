@@ -484,6 +484,38 @@ var Symphony = {};
 				}
 			});
 		}).blur();
+
+		// Change user password
+		$('#change-password').each(function() {
+			var password = $(this),
+				labels = password.find('label'),
+				help = password.next('p.help'),
+				placeholder = $('<label>' + Symphony.Language.get('Password') + ' <span><button>' + Symphony.Language.get('Change Password') + '</button></span></label>'),
+				invalid = password.has('.invalid');
+		
+			if(invalid.size() == 0) {
+				
+				// Hide password fields
+				password.removeClass();
+				labels.hide();
+				help.hide();
+				
+				// Add placeholder
+				password.append(placeholder).find('button').click(function(event) {
+					event.preventDefault();
+					
+					// Hide placeholder
+					placeholder.hide();
+					
+					// Shwo password fields
+					password.addClass('triple group');
+					labels.show();
+					help.show();
+				});
+
+			}
+
+		});
 						
 	});
 
@@ -494,27 +526,6 @@ var Symphony = {};
 
 	// Document ready
 	$(document).ready(function() {
-
-		// Change user password
-		$('#change-password').each(function() {
-
-			// Do not hide fields if there is some error there.
-			if ($('div.invalid', $(this)).length > 0) return;
-
-			var a = $(this),
-			    b = a.next('p.help').remove();
-
-			if (a.find('label').length !== 3 && a.find('label').length !== 2) {
-				return;
-			}
-
-			a.before('<div class="label">' + Symphony.Language.get('Password') + ' <span><button id="change-password" type="button">' + Symphony.Language.get('Change Password') + '</button></span></div>').remove();
-
-			$('#change-password').click(function() {
-				$(this.parentNode.parentNode).replaceWith(b);
-				a.insertBefore(b).find('input')[0].focus();
-			});
-		});
 
 		// Upload fields
 		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span').click(function() {
