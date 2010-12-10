@@ -5,7 +5,18 @@
 (function($) {
 
 	/**
-	 * Selectable plugin
+	 * This plugin makes items selectable. Clicking an item will select it 
+	 * by adding the class <code>.selected</code>. Holding down the shift key 
+	 * while clicking multiple items creates a selection range. Holding the meta key 
+	 * (which is <code>cmd</code> on a Mac or <code>ctrl</code> on Windows) allows 
+	 * the selection of multiple items or the modification of an already selected 
+	 * range of items. Doubleclicking outside the selection list will 
+	 * remove the selection.
+	 *
+	 * @param {Object} custom_settings
+	 *  An object specifying the items that should be made selectable and 
+	 *  their ordering handles. The latter is needed to properly handle item highlighting 
+	 *  when used in connection with the orderable plugin
 	 */
  	$.fn.symphonySelectable = function(custom_settings) {
 		var objects = this;
