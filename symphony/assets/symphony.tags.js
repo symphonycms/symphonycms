@@ -1,35 +1,48 @@
-/*-----------------------------------------------------------------------------
-	Tags plugin
------------------------------------------------------------------------------*/
+/**
+ * @package assets
+ */
 
-	jQuery.fn.symphonyTags = function(custom_settings) {
+(function($) {
+
+	/**
+	 * This plugin inserts tags from a list into an input field. It offers three modes: 
+	 * singular - allowing only one tag at a time
+	 * multiple - allowing multiple tags, comma separated
+	 * inline - which adds tags at the current cursor position
+	 *
+	 * @param {Object} custom_settings
+	 *  An object specifying the tag list items
+	 */
+	$.fn.symphonyTags = function(custom_settings) {
 		var objects = this;
 		var settings = {
 			items:				'li'
 		};
 
-		jQuery.extend(settings, custom_settings);
+		$.extend(settings, custom_settings);
 
 	/*-----------------------------------------------------------------------*/
 
 		objects = objects.map(function() {
-			var object = jQuery(this);
+			var object = $(this);
 
 			object.find(settings.items).live('click', function() {
 
-				var input = jQuery(this).parent().prevAll('label').find('input')[0];
-				var tag = this.className || jQuery(this).text();
+				var input = $(this).parent().prevAll('label').find('input')[0];
+				var tag = this.className || $(this).text();
 
 				if(input === undefined) {
-					input = jQuery(this).parent().prevAll('#error').find('label input')[0]
+					input = $(this).parent().prevAll('#error').find('label input')[0]
 				}
 
 				input.focus();
 
+				// Singular
 				if (object.hasClass('singular')) {
 					input.value = tag;
 				}
 
+				// Inline
 				else if (object.hasClass('inline')) {
 					var start = input.selectionStart;
 					var end = input.selectionEnd;
@@ -46,6 +59,7 @@
 					input.selectionEnd = start + tag.length;
 				}
 
+				// Multiple
 				else {
 					var exp = new RegExp('^' + tag + '$', 'i');
 					var tags = input.value.split(/,\s*/);
@@ -74,4 +88,4 @@
 		return objects;
 	};
 
-/*---------------------------------------------------------------------------*/
+})(jQuery.noConflict());
