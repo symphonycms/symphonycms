@@ -170,7 +170,7 @@
 			if(!is_file($path)){
 				throw new Exception(
 					__(
-						'Could not find Data Source <code>%s</code>. If the Data Source was provided by an Extensions, ensure that it is installed, and enabled.',
+						'Could not find Data Source <code>%s</code>. If the Data Source was provided by an Extension, ensure that it is installed, and enabled.',
 						array($handle)
 					)
 				);
