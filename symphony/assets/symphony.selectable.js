@@ -36,7 +36,7 @@
 		objects.delegate(settings.items, 'click.symSelectable', function(event) {
 			var item = $(this),
 				items = item.siblings().andSelf(),
-				selection, first, last;
+				selection, deselection, first, last;
 			
 			// Range selection
 			if((event.shiftKey) && items.filter('.selected').size() > 0) {
@@ -57,10 +57,12 @@
 				selection = items.slice(first, last);
 				
 				// Deselect items outside the selection range
-				items.filter('.selected').not(selection).removeClass('selected').trigger('deselect');
+				deselection = items.filter('.selected').not(selection).removeClass('selected').trigger('deselect');
+				deselection.find('input[type=checkbox]').attr('checked', false);
 				
 				// Select range
 				selection.addClass('selected').trigger('select');
+				selection.find('input[type=checkbox]').attr('checked', true);
 			}
 			
 			// Single selection
@@ -68,11 +70,13 @@
 			
 				// Press meta key to adjust current range, otherwise the selection will be removed
 				if(!event.metaKey) {
-					items.not(item).filter('.selected').removeClass('selected').trigger('deselect');
+					deselection = items.not(item).filter('.selected').removeClass('selected').trigger('deselect');
+					deselection.find('input[type=checkbox]').attr('checked', false);
 				}
 				
 				// Toggle selection
 				item.toggleClass('selected');
+				item.find('input[type=checkbox]').attr('checked', true);
 				
 				// Fire event
 				if(item.is('.selected')) {
