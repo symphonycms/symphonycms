@@ -566,8 +566,9 @@ var Symphony = {};
 			var area = $(this);
 
 			$('#context').change(function() {
-				var optgroup = $(this).find('option:selected').parent(),
-				    value = this.value.replace(/\W+/g, '_'),
+				var select = $(this),
+					optgroup = select.find('option:selected').parent(),
+				    value = select.val().replace(/\W+/g, '_'),
 				    group = optgroup.attr('label').replace(/\W+/g, '_');
 
 				// Show only relevant interface components based on context
