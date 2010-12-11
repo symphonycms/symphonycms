@@ -545,54 +545,51 @@ var Symphony = {};
 				}));
 			}
 		});
-								
-	});
 
-
-/*-----------------------------------------------------------------------------
-	Things to be cleaned up
------------------------------------------------------------------------------*/
-
-	// Document ready
-	$(document).ready(function() {
-
-		// Upload fields
-		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span').click(function() {
-			var s = $(this.parentNode),
-			    d = '<input name="' + $(this).siblings('input').attr('name') + '" type="file">';
-
-			setTimeout(function() { s.html(d); }, 50); // Delayed to avoid WebKit clickthrough bug
-		});
-
-		// Data source switcheroo
+		// Data source manager options
 		$('select.filtered > optgroup').each(function() {
-			var s = this.parentNode,
-			    l = this.label,
-			    z = $(this).siblings('option').length,
-			    o = $(this).remove().find('option');
+			var optgroup = $(this), 
+				select = optgroup.parents('select'),
+			    label = optgroup.attr('label'),
+			    options = optgroup.remove().find('option');
 
+			// Show only relevant options based on context
 			$('#context').change(function() {
-				if ($(this.options[this.selectedIndex]).text() === l) {
-					s.options.length = z;
-					o.clone(true).appendTo(s);
+				if($(this).find('option:selected').text() == label) {
+					select.empty().append(options.clone());
 				}
 			});
 		});
-
+		
+		// Data source manager context
 		$('*.contextual').each(function() {
-			var a = $(this);
+			var area = $(this);
 
 			$('#context').change(function() {
-				var o = $(this.options[this.selectedIndex]).parent('optgroup'),
-				    c = this.value.replace(/\W+/g, '_'),
-				    g = o.attr('label').replace(/\W+/g, '_');
+				var optgroup = $(this).find('option:selected').parent(),
+				    value = this.value.replace(/\W+/g, '_'),
+				    group = optgroup.attr('label').replace(/\W+/g, '_');
 
-				a[(a.hasClass(c) || a.hasClass(g)) ^ a.hasClass('inverse') ? 'removeClass' : 'addClass']('irrelevant');
+				// Show only relevant interface components based on context
+				area[(area.hasClass(value) || area.hasClass(group)) ^ area.hasClass('inverse') ? 'removeClass' : 'addClass']('irrelevant');
 			});
 		});
 
+		// Set data source manager context
 		$('#context').change();
 
+		// Upload fields
+		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span').click(function(event) {
+			var span = $(this).parent().empty(),
+				input = span.find('input').attr('name');
+
+			// Prevent clicktrough
+			event.preventDefault();
+
+			// Add new empty file input
+			span.append('<input name="' + name + '" type="file">');
+		});
+										
 	});
 
 })(jQuery.noConflict());
