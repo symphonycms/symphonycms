@@ -516,7 +516,36 @@ var Symphony = {};
 			}
 
 		});
-						
+
+		// Confirm actions
+		$('button.confirm').live('click', function() {
+			var button = $(this),
+				name = document.title.split(/[\u2013]\s*/g)[2],
+			    text = (name ? 'Are you sure you want to {$action} {$name}?' : 'Are you sure you want to {$action}?');
+
+			return confirm(Symphony.Language.get(text, {
+				'action': button.text().toLowerCase(),
+				'name': name
+			}));
+		});		
+
+		// Confirm with selected actions
+		$('form').submit(function(event) {
+			var select = $('select[name=with-selected]'),
+				option = select.find('option:selected'),
+				input = $('table input:checked'),
+				count = input.size(),
+				text = (count > 1 ? 'Are you sure you want to {$action} {$count} items?' : 'Are you sure you want to {$action} {$name}?');
+
+			if(option.is('.confirm')) {
+				return confirm(Symphony.Language.get(text, {
+					'action': option.text().toLowerCase(), // Does this work in all languages?
+					'name': $.trim(input.parents('tr').find('td:first').text()),
+					'count': count
+				}));
+			}
+		});
+								
 	});
 
 
@@ -534,36 +563,6 @@ var Symphony = {};
 
 			setTimeout(function() { s.html(d); }, 50); // Delayed to avoid WebKit clickthrough bug
 		});
-
-		// confirm() dialogs
-		$('button.confirm').live('click', function() {
-			var n = document.title.split(/[\u2013]\s*/g)[2],
-			    t = (n ? 'Are you sure you want to {$action} {$name}?' : 'Are you sure you want to {$action}?');
-
-			return confirm(Symphony.Language.get(t, {
-				'action': this.firstChild.data.toLowerCase(),
-				'name': n
-			}));
-		});
-
-		if ($('[name=with-selected] option.confirm').length > 0) {
-			$('form').submit(function() {
-				var i = $('table input:checked').length,
-				    t = (i > 1 ? 'Are you sure you want to {$action} {$count} items?' : 'Are you sure you want to {$action} {$name}?'),
-				    s = document.getElementsByName('with-selected')[0],
-				    o = $(s.options[s.selectedIndex]);
-
-				if (i == 0) return false;
-
-				t = Symphony.Language.get(t, {
-					'action': o.text().toLowerCase(),
-					'name': $.trim($('table input:checked').parents('tr').find('td').eq(0).text()),
-					'count': i
-				});
-
-				return i > 0 && !o.hasClass('confirm') || confirm(t);
-			});
-		}
 
 		// Data source switcheroo
 		$('select.filtered > optgroup').each(function() {

@@ -177,7 +177,7 @@
 			
 			$options = array(
 				array(null, false, __('With Selected...')),
-				array('delete', false, __('Delete'))							
+				array('delete', false, __('Delete'), 'confirm')							
 			);
 			
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
