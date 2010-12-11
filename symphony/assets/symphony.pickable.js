@@ -36,9 +36,9 @@
 				options.each(function() {
 					pickables.filter('#' + $(this).val()).hide();
 				});
-				select.click(function() {
+				select.change(function() {
 					pickables.hide().filter('#' + $(this).val()).show();
-				}).click();
+				}).change();
 			}
 			
 			// Single item
