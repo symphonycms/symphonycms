@@ -276,7 +276,7 @@
 				MySQL::$_connection['host'] . ":" . MySQL::$_connection['port'], MySQL::$_connection['user'], MySQL::$_connection['pass']
 			);
 
-	        if(!$this->isConnected() || !mysql_select_db(MySQL::$_connection['database'], MySQL::$_connection['id'])) {
+	        if(!$this->isConnected() || (!is_null($database) && !mysql_select_db(MySQL::$_connection['database'], MySQL::$_connection['id']))) {
 	            $this->__error();
 	        }
 
@@ -297,6 +297,27 @@
 		public function setCharacterEncoding($set='utf8'){
 		    mysql_set_charset($set, MySQL::$_connection['id']);
 	    }
+
+		/**
+		 * This function selects a MySQL database. Only used by installation
+		 * and must exists for compatibility reasons. But might be removed 
+		 * in future versions. Not recommended its usage by developers.
+		 *
+		 * @link http://au2.php.net/manual/en/function.mysql-select-db.php
+		 * @param string $db
+		 *  The name of the database that is to be selected, defaults to null.
+		 */
+		public function select($db=NULL){
+			if ($db) MySQL::$_connection['database'] = $db;
+			
+			if (!mysql_select_db(MySQL::$_connection['database'], MySQL::$_connection['id'])) {
+				$this->__error();
+				MySQL::$_connection['database'] = null;
+				return false;
+			}
+			
+			return true;
+		}
 
 		/**
 		 * This function will set the character encoding of the database so that any
