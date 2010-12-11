@@ -85,7 +85,10 @@
 				}
 			}
 			
-			else $this->Page->build($this->_callback['context']);
+			else {
+				if (!is_array($this->_callback['context'])) $this->_callback['context'] = array();
+				$this->Page->build($this->_callback['context']);
+			}
 			
 			return $this->Page;
 		}
