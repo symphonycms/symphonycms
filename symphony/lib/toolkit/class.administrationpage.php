@@ -337,7 +337,7 @@
 		 *
 		 * @param array $context
 		 */
-		private function __appendBodyClass(Array $context = array()){
+		private function __appendBodyClass(array $context = array()){
 			foreach($context as $c) {
 				if (is_numeric($c)) $c = 'id-' . $c;
 				$body_class .= trim($c) . ' ';
