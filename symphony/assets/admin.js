@@ -582,7 +582,7 @@ var Symphony = {};
 		// Upload fields
 		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span').click(function(event) {
 			var span = $(this).parent().empty(),
-				input = span.find('input').attr('name');
+				name = span.find('input').attr('name');
 
 			// Prevent clicktrough
 			event.preventDefault();
