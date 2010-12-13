@@ -129,7 +129,7 @@
 		}
 
 		function __form(){
-			$this->Body->setAttribute('onload', 'document.forms[0].elements[1].focus()');
+
 			require_once(TOOLKIT . '/class.field.php');
 
 			## Handle unknown context
