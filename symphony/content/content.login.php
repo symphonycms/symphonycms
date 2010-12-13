@@ -202,17 +202,21 @@
 							Symphony::Database()->insert(array('author_id' => $author['id'], 'token' => $token, 'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))), 'tbl_forgotpass');					
 						}
 
-						$this->_email_sent = General::sendEmail($author['email'], 
-									Symphony::Database()->fetchVar('email', 0, "SELECT `email` FROM `tbl_authors` ORDER BY `id` ASC LIMIT 1"), 
-									__('Symphony Concierge'), 
-									__('New Symphony Account Password'),
-									__('Hi %s,', array($author['first_name'])) . self::CRLF .
+						try{
+							$email = Email::create();
+							
+							$email->recipients = $author['email'];
+							$email->subject = __('New Symphony Account Password');
+							$email->text_plain = __('Hi %s,', array($author['first_name'])) . self::CRLF .
 									__('A new password has been requested for your account. Login using the following link, and change your password via the Authors area:') . self::CRLF .
-									self::CRLF . '	' . URL . "/symphony/login/$token/" . self::CRLF . self::CRLF .
+									self::CRLF . '	' . URL . "/symphony/login/{$token}/" . self::CRLF . self::CRLF .
 									__('It will expire in 2 hours. If you did not ask for a new password, please disregard this email.') . self::CRLF . self::CRLF .
 									__('Best Regards,') . self::CRLF . 
-									__('The Symphony Team'));
-										
+									__('The Symphony Team');
+
+							$email->send();
+							$this->_email_sent = true;
+						}
 						
 						## TODO: Fix Me
 						###

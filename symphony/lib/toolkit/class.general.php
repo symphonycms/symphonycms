@@ -307,62 +307,45 @@
 		}
 
 		/**
-		 * Send an email. It includes some simple injection attack protection and
-		 * more comprehensive headers.
+		 * Method: sendEmail
 		 *
-		 * @param string $to_email
-		 *	email of the recipiant
-		 * @param string $from_email
-		 *	the from email address. This is usually your email.
-		 * @param string $from_name
-		 *	the name of the sender
-		 * @param string $subject
-		 *	subject of the email
-		 * @param string $message
-		 *	contents of the email
-		 * @param array[] $additional_headers (optional)
-		 *	an array of additional header elements. this defaults to an empty array.
-		 * @return boolean
-		 *	true if the call to mail with the constructed headers returns true,
-		 *	false otherwise.
+		 * Allows you to send emails. It initializes the core email class.
+		 *
+		 * @param string $to_email - email of the recipiant
+		 * @param string $from_email - the from email address. This is usually your email
+		 * @param string $from_name - The name of the sender
+		 * @param string $subject - subject of the email
+		 * @param string $message - contents of the email
+		 * @param array $additional_headers - an array containing additional email headers
+		 * @return true on success
+		 *
+		 * @deprecated deprecated since version 2.2
 		 */
 		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers = array()) {
-			// Check for injection attacks (http://securephp.damonkohler.com/index.php/Email_Injection)
-			if (preg_match("/[\r|\n]/", $from_email . $from_name)){
-                return false;
-		   	}
-
-			$subject = self::encodeHeader($subject, 'UTF-8');
-			$from_name = self::encodeHeader($from_name, 'UTF-8');
-			$headers = array();
-
-			$default_headers = array(
-				'From'			=> "{$from_name} <{$from_email}>",
-		 		'Reply-To'		=> "{$from_name} <{$from_email}>",
-				'Message-ID'	=> sprintf('<%s@%s>', md5(uniqid(time())), $_SERVER['SERVER_NAME']),
-				'Return-Path'	=> "<{$from_email}>",
-				'Importance'	=> 'normal',
-				'Priority'		=> 'normal',
-				'X-Sender'		=> 'Symphony Email Module <noreply@symphony-cms.com>',
-				'X-Mailer'		=> 'Symphony Email Module',
-				'X-Priority'	=> '3',
-				'MIME-Version'	=> '1.0',
-				'Content-Type'	=> 'text/plain; charset=UTF-8',
-			);
-
-			if (!empty($additional_headers)) {
-				foreach ($additional_headers as $header => $value) {
-					$header = preg_replace_callback('/\w+/', create_function('$m', 'if(in_array($m[0], array("MIME", "ID"))) return $m[0]; else return ucfirst($m[0]);'), $header);
-					$default_headers[$header] = $value;
+			
+			try{
+				$email = Email::create();
+				
+				if (!empty($additional_headers)) {
+					foreach ($additional_headers as $name => $body) {
+						$email->appendHeaderField($name, $body);
+					}
 				}
+				$email->sender_name = $from_name;
+				$email->sender_email_address = $from_email;
+				
+				$email->recipients = $to_email;
+				$email->text_plain = $message;
+				$email->subject = $subject;
+
+				return $email->send();
 			}
-
-			foreach ($default_headers as $header => $value) {
-				$headers[] = sprintf('%s: %s', $header, $value);
+			catch(EmailGatewayException $e){
+				throw new SymphonyErrorPage('Error sending email. ' . $e->getMessage());
 			}
-
-			return mail($to_email, $subject, @wordwrap($message, 70), implode(self::CRLF, $headers) . self::CRLF, "-f{$from_email}");
-
+			catch(EmailException $e){
+				throw new SymphonyErrorPage('Error sending email. ' . $e->getMessage());
+			}
 		}
 
 		/**
