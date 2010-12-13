@@ -28,7 +28,9 @@
 	define_safe('TOOLKIT',	LIBRARY . '/toolkit');	
 	define_safe('LANG',		LIBRARY . '/lang');	
 	define_safe('CORE',		LIBRARY . '/core');
-	define_safe('BOOT',		LIBRARY . '/boot');	
+	define_safe('BOOT',		LIBRARY . '/boot');
+	
+	define_safe('EMAILGATEWAYS',	TOOLKIT . '/email-gateways');
 	
 	define_safe('CONTENT', 	SYMPHONY . '/content');
 	

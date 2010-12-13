@@ -362,7 +362,9 @@
 
 					$documentation_parts[] = self::processDocumentationCode(
 						'send-email[sender-email] // '.__('Optional').self::CRLF.
-						'send-email[sender-name] // '.__('Optional').self::CRLF.						
+						'send-email[sender-name] // '.__('Optional').self::CRLF.
+						'send-email[reply-to-name] // '.__('Optional: The name used in the Reply-To header field.').self::CRLF.
+						'send-email[reply-to-email] // '.__('Optional: The email-address used in the Reply-To header field.').self::CRLF.					
 						'send-email[subject] // '.__('Optional').self::CRLF.
 						'send-email[body]'.self::CRLF.
 						'send-email[recipient] // '.__('list of comma author usernames.'));
@@ -375,7 +377,9 @@
 		<label>'.__('Email').' <input type="text" name="fields[email]" value="" /></label>
 		<label>'.__('Message').' <textarea name="fields[message]" rows="5" cols="21"></textarea></label>
 		<input name="send-email[sender-email]" value="fields[email]" type="hidden" />
-		<input name="send-email[sender-name]" value="fields[author]" type="hidden" />		
+		<input name="send-email[sender-name]" value="fields[author]" type="hidden" />
+		<input name="send-email[reply-to-email]" value="fields[email]" type="hidden" />
+		<input name="send-email[reply-to-name]" value="fields[author]" type="hidden" />	
 		<input name="send-email[subject]" value="You are being contacted" type="hidden" />
 		<input name="send-email[body]" value="fields[message]" type="hidden" />
 		<input name="send-email[recipient]" value="fred" type="hidden" />
