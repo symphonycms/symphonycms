@@ -267,15 +267,15 @@ a.create {
 }
 
 /* Picker */
-fieldset.picker {
+.active fieldset.picker {
 	border-bottom: none;
-	margin: 0;
+	margin-bottom: 0;
 }
 
-fieldset.pickable {
+.active fieldset.pickable {
 	padding-top: 0;
 }
 
-fieldset.pickable legend {
+.active fieldset.pickable legend {
 	display: none;
 }
