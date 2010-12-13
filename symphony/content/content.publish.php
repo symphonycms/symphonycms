@@ -422,6 +422,7 @@
 		}
 
 		public function __viewNew() {
+			$this->Body->setAttribute('onload', 'document.forms[0].elements[2].focus()');
 			$sectionManager = new SectionManager($this->_Parent);
 
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
@@ -604,6 +605,7 @@
 		}
 
 		function __viewEdit() {
+			$this->Body->setAttribute('onload', 'document.forms[0].elements[2].focus()');
 			$sectionManager = new SectionManager($this->_Parent);
 
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
