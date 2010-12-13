@@ -19,7 +19,7 @@
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors'))));
 
-			if (Administration::instance()->Author->isDeveloper()) $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
+			if (Administration::instance()->Author->isDeveloper()) $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button', NULL, array('accesskey' => 'c')));
 			else $this->appendSubheading(__('Authors'));
 
 			$authors = AuthorManager::fetch();
@@ -146,7 +146,7 @@
 
 						$this->pageAlert(
 							__(
-								'Author updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>',
+								'Author updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Authors</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									URL . '/symphony/system/authors/new/',
@@ -161,7 +161,7 @@
 
 						$this->pageAlert(
 							__(
-								'Author created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>',
+								'Author created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Authors</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									URL . '/symphony/system/authors/new/',
@@ -346,7 +346,7 @@
 
 			if($this->_context[0] == 'edit' && !$isOwner && !$author->isPrimaryAccount()){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this author'), 'type' => 'submit'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this author'), 'type' => 'submit', 'accesskey' => 'd'));
 				$div->appendChild($button);
 			}
 
