@@ -16,7 +16,7 @@
 		}
 		
 		function __form(){
-			$this->Body->setAttribute('onload', 'document.forms[0].elements[1].focus()');
+
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			
 			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
