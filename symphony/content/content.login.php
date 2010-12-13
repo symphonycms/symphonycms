@@ -132,7 +132,7 @@
 				$this->Form->appendChild($fieldset);
 				
 				$div = new XMLElement('div', NULL, array('class' => 'actions'));
-				$div->appendChild(Widget::Input('action[login]', __('Login'), 'submit'));
+				$div->appendChild(Widget::Input('action[login]', __('Login'), 'submit', array('accesskey' => 's')));
 				if(!preg_match('@\/symphony\/login\/@i', $_SERVER['REQUEST_URI'])) $div->appendChild(Widget::Input('redirect', $_SERVER['REQUEST_URI'], 'hidden'));
 				$this->Form->appendChild($div);
 
