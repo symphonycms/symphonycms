@@ -1,4 +1,7 @@
-<?php
+<?php	
+	/**
+	 * @package email-gateways
+	 */
 
 	require_once(TOOLKIT . '/class.emailgateway.php');
 	require_once(TOOLKIT . '/class.emailhelper.php');
@@ -10,13 +13,10 @@
 	 * Supports AUTH LOGIN, SSL and TLS.
 	 *
 	 * @author Huib Keemink, Michael Eichelsdoerfer
-	 * @todo document, test
 	 */
-
 	Class SMTPGateway extends EmailGateway{
 
 		protected $_SMTP;
-
 		protected $_host;
 		protected $_port;
 		protected $_protocol = 'tcp';
@@ -25,12 +25,22 @@
 		protected $_user;
 		protected $_pass;
 
+		/**
+		 * Returns the name, used in the dropdown menu in the preferences pane.
+		 *
+		 * @return array
+		 */
 		public function about(){
 			return array(
 				'name' => 'SMTP',
 			);
 		}
 
+		/**
+		 * Constructor. Sets basic default values based on preferences.
+		 *
+		 * @return void
+		 */
 		public function __construct(){
 			parent::__construct();
 			$this->setSenderEmailAddress(Symphony::Configuration()->get('from_address', 'email_smtp') ? Symphony::Configuration()->get('from_address', 'email_smtp') : 'noreply@' . HTTP_HOST);
@@ -45,6 +55,11 @@
 			}
 		}
 
+		/**
+		 * Send an email using an SMTP server
+		 *
+		 * @return bool
+		 */
 		public function send(){
 
 			$this->validate();
@@ -121,6 +136,11 @@
 			return true;
 		}
 
+		/**
+		 * Sets the host to connect to.
+		 *
+		 * @return void
+		 */
 		public function setHost($host = null){
 			if($host === null){
 				$host = '127.0.0.1';
@@ -133,6 +153,11 @@
 			$this->_host = $host;
 		}
 
+		/**
+		 * Sets the port, used in the connection.
+		 *
+		 * @return void
+		 */
 		public function setPort($port = null){
 			if($port == null){
 				if($this->_protocol == 'ssl'){
@@ -145,18 +170,42 @@
 			$this->_port = $port;
 		}
 
+		/**
+		 * Sets the username to use with AUTH LOGIN
+		 *
+		 * @param string $user
+		 * @return void
+		 */
 		public function setUser($user = null){
 			$this->_user = $user;
 		}
 
+		/**
+		 * Sets the password to use with AUTH LOGIN
+		 *
+		 * @param string $pass
+		 * @return void
+		 */
 		public function setPass($pass = null){
 			$this->_pass = $pass;
 		}
 
+		/**
+		 * Use AUTH login or no auth.
+		 *
+		 * @param bool $auth
+		 * @return void
+		 */
 		public function setAuth($auth = false){
 			$this->_auth = $auth;
 		}
 
+		/**
+		 * Sets the encryption used.
+		 *
+		 * @param string|null|false $secure The encryption used. Can be 'ssl', 'tls' or false
+		 * @return void
+		 */
 		public function setSecure($secure = null){
 			if($secure == 'tls'){
 				$this->_protocol = 'tcp';
@@ -172,6 +221,11 @@
 			}
 		}
 
+		/**
+		 * Builds the preferences pane, shown in the symphony backend.
+		 *
+		 * @return XMLElement
+		 */
 		public function getPreferencesPane(){
 			parent::getPreferencesPane();
 			$group = new XMLElement('fieldset');

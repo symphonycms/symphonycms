@@ -1,16 +1,34 @@
 <?php
+	/**
+	 * @package email-gateways
+	 */
 
 	require_once(TOOLKIT . '/class.emailgateway.php');
 	require_once(TOOLKIT . '/class.emailhelper.php');
-
+	
+	/**
+	 * The basic gateway sending emails using Sendmail, php's mail function.
+	 *
+	 * @author Michael Eichelsdoerfer, Huib Keemink
+	 */
 	Class SendmailGateway extends EmailGateway {
-
+		
+		/**
+		 * Returns the name, used in the dropdown menu in the preferences pane.
+		 *
+		 * @return array
+		 */
 		public function about() {
 			return array(
 				'name' => 'Sendmail (default)',
 			);
 		}
-
+		
+		/**
+		 * Constructor. Sets basic default values based on preferences.
+		 *
+		 * @return void
+		 */
 		public function __construct() {
 			parent::__construct();
 			$this->setSenderEmailAddress(Symphony::Configuration()->get('from_address', 'email_sendmail') ? Symphony::Configuration()->get('from_address', 'email_sendmail') : 'noreply@' . HTTP_HOST);
@@ -28,6 +46,8 @@
 		 * The parts of a message body should be encoded (quoted-printable
 		 * or base64) to make non-US-ASCII text work with the widest range
 		 * of email transports and clients.
+		 *
+		 * @return bool
 		 */
 		public function send() {
 
@@ -102,7 +122,12 @@
 			}
 			return true;
 		}
-
+		
+		/**
+		 * Builds the preferences pane, shown in the symphony backend.
+		 *
+		 * @return XMLElement
+		 */
 		public function getPreferencesPane() {
 			parent::getPreferencesPane();
 			$group = new XMLElement('fieldset');
