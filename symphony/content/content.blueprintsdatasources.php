@@ -16,7 +16,7 @@
 		}
 		
 		function __form(){
-
+			$this->Body->setAttribute('onload', 'document.forms[0].elements[1].focus()');
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			
 			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
@@ -27,7 +27,7 @@
 					case 'saved':
 						$this->pageAlert(
 							__(
-								'Data source updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Data sources</a>', 
+								'Data source updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Data sources</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/datasources/new/', 
@@ -39,7 +39,7 @@
 					case 'created':
 						$this->pageAlert(
 							__(
-								'Data source created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Data sources</a>', 
+								'Data source created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Data sources</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
 									URL . '/symphony/blueprints/datasources/new/', 
@@ -729,7 +729,7 @@
 			
 			if($isEditing){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this data source'), 'type' => 'submit'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this data source'), 'type' => 'submit', 'accesskey' => 'd'));
 				$div->appendChild($button);
 			}
 			

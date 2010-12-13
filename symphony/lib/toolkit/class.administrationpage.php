@@ -826,7 +826,7 @@
 			$ul->appendChild($li);
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(__('Logout'), URL . '/symphony/logout/'));
+			$li->appendChild(Widget::Anchor(__('Logout'), URL . '/symphony/logout/', NULL, NULL, NULL, array('accesskey' => 'l')));
 			$ul->appendChild($li);
 
 			/**

@@ -16,7 +16,7 @@
 		public function __viewIndex(){
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
-			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), $this->_Parent->getCurrentPageURL().'new/', __('Create a section'), 'create button'));
+			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), $this->_Parent->getCurrentPageURL().'new/', __('Create a section'), 'create button', NULL, array('accesskey' => 'c')));
 
 		    $sectionManager = new SectionManager($this->_Parent);
 		    $sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
@@ -102,7 +102,7 @@
 		}
 
 		public function __viewNew(){
-
+			$this->Body->setAttribute('onload', 'document.forms[0].elements[1].focus()');
 			$this->setPageType('form');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(__('Untitled'));
@@ -236,7 +236,7 @@
 		}
 
 		public function __viewEdit(){
-
+			$this->Body->setAttribute('onload', 'document.forms[0].elements[1].focus()');
 			$section_id = $this->_context[1];
 
 		    $sectionManager = new SectionManager($this->_Parent);
@@ -259,7 +259,7 @@
 					case 'saved':
 						$this->pageAlert(
 							__(
-								'Section updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Sections</a>',
+								'Section updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Sections</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									URL . '/symphony/blueprints/sections/new/',
@@ -272,7 +272,7 @@
 					case 'created':
 						$this->pageAlert(
 							__(
-								'Section created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Sections</a>',
+								'Section created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Sections</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									URL . '/symphony/blueprints/sections/new/',
@@ -418,7 +418,7 @@
 			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
 
 			$button = new XMLElement('button', __('Delete'));
-			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this section'), 'type' => 'submit'));
+			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this section'), 'type' => 'submit', 'accesskey' => 'd'));
 			$div->appendChild($button);
 
 			$this->Form->appendChild($div);
