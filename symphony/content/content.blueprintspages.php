@@ -187,7 +187,6 @@
 		}
 		
 		public function __viewTemplate() {
-			$this->Body->setAttribute('onload', 'document.forms[0].elements[1].focus()');
 			$this->setPageType('form');
 			$this->Form->setAttribute('action', URL . '/symphony/blueprints/pages/template/' . $this->_context[1] . '/');
 			
@@ -326,7 +325,6 @@
 		}
 		
 		public function __viewEdit() {
-			$this->Body->setAttribute('onload', 'document.forms[0].elements[1].focus()');
 			$this->setPageType('form');
 			$fields = array();
 			
