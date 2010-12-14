@@ -531,7 +531,7 @@ var Symphony = {};
 
 		// Confirm with selected actions
 		$('form').submit(function(event) {
-			var select = $('select[name=with-selected]'),
+			var select = $('select[name="with-selected"]'),
 				option = select.find('option:selected'),
 				input = $('table input:checked'),
 				count = input.size(),
