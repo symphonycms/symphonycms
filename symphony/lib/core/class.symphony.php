@@ -1,5 +1,14 @@
 <?php
 
+	/**
+	 * @package core
+	 */
+	/**
+	 * The Symphony class is an abstract class that implements the
+	 * Singleton interface. It provides the glue that forms the Symphony
+	 * CMS and initialises the toolkit classes. Symphony is extended by
+	 * the Frontend and Administration classes
+	 */
 	require_once(CORE . '/class.errorhandler.php');
 
 	require_once(CORE . '/class.configuration.php');
@@ -14,26 +23,77 @@
 	require_once(TOOLKIT . '/class.general.php');
 	require_once(TOOLKIT . '/class.profiler.php');
 	require_once(TOOLKIT . '/class.author.php');
+	require_once(TOOLKIT . '/class.email.php');
 
 	require_once(TOOLKIT . '/class.authormanager.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
+	require_once(TOOLKIT . '/class.emailgatewaymanager.php');
 
 	Abstract Class Symphony implements Singleton{
 
+		/**
+		 * An instance of the Symphony class, either Administration or
+		 * Frontend.
+		 * @var Symphony
+		 */
+		protected static $_instance = null;
 
-		public static $Configuration;
-		public static $Database;
-		public static $Log;
+		/**
+		 * An instance of the Configuration class
+		 * @var Configuration
+		 */
+		public static $Configuration = null;
 
-		public $Profiler;
-		public $Cookie;
-		public $Author;
-		public $ExtensionManager;
+		/**
+		 * An instance of the Database class
+		 * @var MySQL
+		 */
+		public static $Database = null;
 
-		protected static $_instance;
+		/**
+		 * An instance of the Log class
+		 * @var Log
+		 */
+		public static $Log = null;
 
+		/**
+		 * An instance of the Profiler class
+		 * @var Profiler
+		 */
+		public $Profiler = null;
+
+		/**
+		 * An instance of the Cookie class
+		 * @var Cookie
+		 */
+		public $Cookie = null;
+
+		/**
+		 * An instance of the currently logged in Author
+		 * @var Author
+		 */
+		public $Author = null;
+
+		/**
+		 * An instance of the Extension Manager
+		 * @var ExtensionManager
+		 */
+		public $ExtensionManager = null;
+
+		/**
+		 * The end-of-line constant.
+		 * @var string
+		 * @deprecated This will be removed in the next version of Symphony
+		 */
 		const CRLF = PHP_EOL;
 
+		/**
+		 * The Symphony constructor initialises the class variables of Symphony.
+		 * It will set the DateTime settings, define new date constants and initialise
+		 * the correct Language for the currently logged in Author. If magic quotes
+		 * are enabled, Symphony will sanitize the $_SERVER, $_COOKIE, $_GET
+		 * and $_POST arrays.
+		 */
 		protected function __construct(){
 
 			$this->Profiler = Profiler::instance();
@@ -53,7 +113,7 @@
 
 			// Fetch date and time separator
 			$separator = self::$Configuration->get('datetime_separator', 'region');
-			if($separator == NULL) {
+			if(is_null($separator)) {
 				$separator = ' ';
 			}
 
@@ -63,7 +123,7 @@
 
 			// Initialize language management
 			Lang::initialize();
-			
+
 			$this->initialiseLog();
 
 			GenericExceptionHandler::initialise();
@@ -73,15 +133,14 @@
 			$this->initialiseDatabase();
 			$this->initialiseExtensionManager();
 
-			if(!self::isLoggedIn()){
+			if(!self::isLoggedIn() && is_null($this->Author)){
 				GenericExceptionHandler::$enabled = false;
 			}
-			
 			// Fetch user language
 			else {
 				$user_lang = $this->Author->get('language');
 			}
-			
+
 			// Set system language
 			if(empty($user_lang)) {
 				Lang::set(self::$Configuration->get('lang', 'symphony'));
@@ -91,6 +150,40 @@
 			}
 		}
 
+		/**
+		 * Accessor for the current Configuration instance. This contains
+		 * representation of the the Symphony config file.
+		 *
+		 * @return Configuration
+		 */
+		public static function Configuration(){
+			return self::$Configuration;
+		}
+
+		/**
+		 * Setter for <code>$Log</code>. This function uses the configuration
+		 * settings in the 'log' group in the Configuration to create an instance. Date
+		 * formatting options are also retrieved from the configuration.
+		 */
+		public function initialiseLog(){
+			self::$Log = new Log(ACTIVITY_LOG);
+			self::$Log->setArchive((self::$Configuration->get('archive', 'log') == '1' ? true : false));
+			self::$Log->setMaxSize(intval(self::$Configuration->get('maxsize', 'log')));
+			self::$Log->setDateTimeFormat(self::$Configuration->get('date_format', 'region') . ' ' . self::$Configuration->get('time_format', 'region'));
+
+			if(self::$Log->open(Log::APPEND, self::$Configuration->get('write_mode', 'file')) == 1){
+				self::$Log->writeToLog('Symphony Log', true);
+				self::$Log->writeToLog('Version: '. self::$Configuration->get('version', 'symphony'), true);
+				self::$Log->writeToLog('--------------------------------------------', true);
+			}
+		}
+
+		/**
+		 * Setter for <code>$Cookie</code>. This will use PHP's parse_url
+		 * function on the current URL to set a cookie using the cookie_prefix
+		 * defined in the Symphony configuration. The cookie will last two
+		 * weeks.
+		 */
 		public function initialiseCookie(){
 
 			$cookie_path = @parse_url(URL, PHP_URL_PATH);
@@ -102,6 +195,11 @@
 			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX_, TWO_WEEKS, __SYM_COOKIE_PATH__);
 		}
 
+		/**
+		 * Setter for <code>$ExtensionManager</code> using the current
+		 * Symphony instance as the parent. If for some reason this fails,
+		 * a Symphony Error page will be thrown
+		 */
 		public function initialiseExtensionManager(){
 			$this->ExtensionManager = new ExtensionManager($this);
 
@@ -110,36 +208,38 @@
 			}
 		}
 
-
-		public static function Configuration(){
-			return self::$Configuration;
-		}
-
-		public static function Database(){
-			return self::$Database;
-		}
-
+		/**
+		 * Setter for the <code>$Database</code>. This will load the default
+		 * database driver and create a new instance of it from the Symphony
+		 * configuration. Symphony will attempt to create a connection to
+		 * the database using the connection details provided by in the Symphony
+		 * configuration. If any errors occur whilst doing so, a Symphony Error
+		 * Page is returned.
+		 * Note, while it is possible to create your own database driver, Symphony
+		 * officially only supports MySQL.
+		 *
+		 * @return boolean
+		 *  This function will return true if the <code>$Database</code> was
+		 *  initialised successfully.
+		 */
 		public function initialiseDatabase(){
 			if (self::$Database) return true;
 
-			$error = NULL;
-
-			$driver_filename = TOOLKIT . '/class.' . self::$Configuration->get('driver', 'database') . '.php';
+			$error = null;
 			$driver = self::$Configuration->get('driver', 'database');
+			$driver_filename = TOOLKIT . '/class.' . $driver . '.php';
 
 			if(!is_file($driver_filename)){
 				throw new SymphonyErrorPage("Could not find database driver '<code>{$driver}</code>'", 'Symphony Database Error');
 			}
 
 			require_once($driver_filename);
-
 			self::$Database = new $driver;
 
 			$details = self::$Configuration->get('database');
 
 			try{
-				if(!self::$Database->connect($details['host'], $details['user'], $details['password'], $details['port'])) return false;
-				if(!self::$Database->select($details['db'])) return false;
+				if(!self::$Database->connect($details['host'], $details['user'], $details['password'], $details['port'], $details['db'])) return false;
 				if(!self::$Database->isConnected()) return false;
 
 				self::$Database->setPrefix($details['tbl_prefix']);
@@ -168,48 +268,34 @@
 			return true;
 		}
 
-		public function initialiseLog(){
-
-			self::$Log = new Log(ACTIVITY_LOG);
-			self::$Log->setArchive((self::$Configuration->get('archive', 'log') == '1' ? true : false));
-			self::$Log->setMaxSize(intval(self::$Configuration->get('maxsize', 'log')));
-
-			if(self::$Log->open(Log::APPEND, self::$Configuration->get('write_mode', 'file')) == 1){
-				self::$Log->writeToLog('Symphony Log', true);
-				self::$Log->writeToLog('Version: '. self::$Configuration->get('version', 'symphony'), true);
-				self::$Log->writeToLog('--------------------------------------------', true);
-			}
-
+		/**
+		 * Accessor for the current Database instance.
+		 *
+		 * @return MySQL
+		 */
+		public static function Database(){
+			return self::$Database;
 		}
 
-		public function isLoggedIn(){
-			if ($this->Author) return true;
-
-			$username = self::$Database->cleanValue($this->Cookie->get('username'));
-			$password = self::$Database->cleanValue($this->Cookie->get('pass'));
-
-			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
-
-				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
-
-				if($id){
-					$this->_user_id = $id;
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
-					$this->Author = AuthorManager::fetchByID($id);
-
-					return true;
-				}
-
-			}
-
-			$this->Cookie->expire();
-			return false;
-		}
-
-		public function logout(){
-			$this->Cookie->expire();
-		}
-
+		/**
+		 * Attempts to log an Author in given a username and password.
+		 * If the password is not hashed, it will be hashed using the sha1
+		 * algorithm. The username and password will be sanitized before
+		 * being used to query the Database. If an Author is found, they
+		 * will be logged in and the sanitized username and password (also hashed)
+		 * will be saved as values in the <code>$Cookie</code>.
+		 *
+		 * @see toolkit.General#hash()
+		 * @param string $username
+		 *  The Author's username. This will be sanitized before use.
+		 * @param string $password
+		 *  The Author's password. This will be sanitized and then hashed before use
+		 * @param boolean $isHash
+		 *  If the password provided is already hashed, setting this parameter to
+		 *  true will stop it becoming rehashed. By default it is false.
+		 * @return boolean
+		 *  True if the Author was logged in, false otherwise
+		 */
 		public function login($username, $password, $isHash=false){
 
 			$username = self::$Database->cleanValue($username);
@@ -233,24 +319,41 @@
 			}
 
 			return false;
-
 		}
 
+		/**
+		 * Symphony allows Authors to login via the use of tokens instead of
+		 * a username and password. A token is derived from concatenating the
+		 * Author's username and password and applying the sha1 hash to
+		 * it, from this, a portion of the hash is used as the token. This is a useful
+		 * feature often used when setting up other Authors accounts or if an
+		 * Author forgets their password.
+		 *
+		 * @param string $token
+		 *  The Author token, which is a portion of the hashed string concatenation
+		 *  of the Author's username and password
+		 * @return boolean
+		 *  True if the Author is logged in, false otherwise
+		 */
 		public function loginFromToken($token){
-
 			$token = self::$Database->cleanValue($token);
 
 			if(strlen(trim($token)) == 0) return false;
 
 			if(strlen($token) == 6){
-				$row = self::$Database->fetchRow(0, "SELECT `a`.`id`, `a`.`username`, `a`.`password`
-													 FROM `tbl_authors` AS `a`, `tbl_forgotpass` AS `f`
-													 WHERE `a`.`id` = `f`.`author_id` AND `f`.`expiry` > '".DateTimeObj::getGMT('c')."' AND `f`.`token` = '$token'
-													 LIMIT 1");
+				$row = self::$Database->fetchRow(0, sprintf("
+						SELECT `a`.`id`, `a`.`username`, `a`.`password`
+						FROM `tbl_authors` AS `a`, `tbl_forgotpass` AS `f`
+						WHERE `a`.`id` = `f`.`author_id`
+						AND `f`.`expiry` > '%s'
+						AND `f`.`token` = '%s'
+						LIMIT 1
+					",
+					DateTimeObj::getGMT('c'), $token
+				));
 
 				self::$Database->delete('tbl_forgotpass', " `token` = '{$token}' ");
 			}
-
 			else{
 				$row = self::$Database->fetchRow(0, sprintf(
 					"SELECT `id`, `username`, `password`
@@ -273,22 +376,62 @@
 			}
 
 			return false;
-
 		}
 
-		public function resolvePageTitle($page_id) {
-			$path = $this->resolvePage($page_id, 'title');
-
-			return @implode(': ', $path);
+		/**
+		 * This function will destroy the currently logged in <code>$Author</code>
+		 * session, essentially logging them out.
+		 *
+		 * @see core.Cookie#expire()
+		 */
+		public function logout(){
+			$this->Cookie->expire();
 		}
 
-		public function resolvePagePath($page_id) {
-			$path = $this->resolvePage($page_id, 'handle');
+		/**
+		 * This function determines whether an there is a currently logged in
+		 * Author for Symphony by using the <code>$Cookie</code>'s username
+		 * and password. If an Author is found, they will be logged in, otherwise
+		 * the <code>$Cookie</code> will be destroyed.
+		 *
+		 * @see core.Cookie#expire()
+		 */
+		public function isLoggedIn(){
+			if ($this->Author) return true;
 
-			return @implode('/', $path);
+			$username = self::$Database->cleanValue($this->Cookie->get('username'));
+			$password = self::$Database->cleanValue($this->Cookie->get('pass'));
+
+			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
+
+				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
+
+				if($id){
+					$this->_user_id = $id;
+					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+					$this->Author = AuthorManager::fetchByID($id);
+
+					return true;
+				}
+			}
+
+			$this->Cookie->expire();
+			return false;
 		}
 
+		/**
+		 * Given the <code>$page_id</code> and a <code>$column</code>
+		 *
+		 * @param mixed $page_id
+		 * The ID of the Page that currently being viewed, or the handle of the
+		 * current Page
+		 * @return array
+		 * An array of the current Page, containing the <code>$column</code>
+		 * requested. The current page will be the last item the array, as all
+		 * parent pages are prepended to the start of the array
+		 */
 		public function resolvePage($page_id, $column) {
+			$path = array();
 			$page = self::$Database->fetchRow(0, "
 				SELECT
 					p.{$column},
@@ -301,17 +444,16 @@
 				LIMIT 1
 			");
 
-			$path = array(
-				$page[$column]
-			);
+			$path = array($page[$column]);
 
-			if ($page['parent'] != null) {
+			if (!is_null($page['parent'])) {
 				$next_parent = $page['parent'];
 
 				while (
 					$parent = self::$Database->fetchRow(0, "
 						SELECT
-							p.*
+							p.{$column},
+							p.parent
 						FROM
 							`tbl_pages` AS p
 						WHERE
@@ -319,7 +461,6 @@
 					")
 				) {
 					array_unshift($path, $parent[$column]);
-
 					$next_parent = $parent['parent'];
 				}
 			}
@@ -327,37 +468,153 @@
 			return $path;
 		}
 
-		public function customError($code, $heading, $message, $log=true, $forcekill=false, $template='error', array $additional=array()){
-			throw new SymphonyErrorPage($message, $heading, $template, $additional);
+		/**
+		 * Given the <code>$page_id</code>, return the complete title of the
+		 * current page.
+		 *
+		 * @param mixed $page_id
+		 * The ID of the Page that currently being viewed, or the handle of the
+		 * current Page
+		 * @return string
+		 * The title of the current Page. If the page is a child of another
+		 * it will be prepended by the parent and a colon, ie. Articles: Read
+		 */
+		public function resolvePageTitle($page_id) {
+			$path = $this->resolvePage($page_id, 'title');
+
+			return implode(': ', $path);
 		}
 
+		/**
+		 * Given the <code>$page_id</code>, return the complete path to the
+		 * current page.
+		 *
+		 * @param mixed $page_id
+		 * The ID of the Page that currently being viewed, or the handle of the
+		 * current Page
+		 * @return string
+		 *  The complete path to the current Page including any parent
+		 *  Pages, ie. /articles/read
+		 */
+		public function resolvePagePath($page_id) {
+			$path = $this->resolvePage($page_id, 'handle');
+
+			return implode('/', $path);
+		}
+
+		/**
+		 * A wrapper for throwing a new Symphony Error page.
+		 *
+		 * @see core.SymphonyErrorPage
+		 * @param string $heading
+		 *  A heading for the error page
+		 * @param string|XMLElement $message
+		 *  A description for this error, which can be provided as a string
+		 *  or as an XMLElement.
+		 * @param string $template
+		 *  A string for the error page template to use, defaults to 'error'. This
+		 *  can be the name of any template file in the <code>TEMPLATES</code> directory.
+		 *  A template using the naming convention of <code>tpl.*.php</code>.
+		 * @param array $additional
+		 *  Allows custom information to be passed to the Symphony Error Page
+		 *  that the template may want to expose, such as custom Headers etc.
+		 */
+		public function customError($heading, $message, $template='error', array $additional=array()){
+			throw new SymphonyErrorPage($message, $heading, $template, $additional);
+		}
 	}
 
+	/**
+	 * The SymphonyErrorPageHandler extends the GenericExceptionHandler
+	 * to allow the template for the Exception to be provided from the <code>TEMPLATES</code>
+	 * directory
+	 */
+	Class SymphonyErrorPageHandler extends GenericExceptionHandler {
 
-	Class SymphonyErrorPageHandler extends GenericExceptionHandler{
+		/**
+		 * The render function will take a SymphonyErrorPage Exception and
+		 * output a HTML page. This function first checks to see if their is a custom
+		 * template for this Exception otherwise it reverts to using the default
+		 * <code>tpl.error.php</code>
+		 *
+		 * @param SymphonyErrorPage $e
+		 *  The Exception object
+		 * @return string
+		 *  An HTML string
+		 */
 		public static function render($e){
-
 			if($e->getTemplate() === false){
 				echo '<h1>Symphony Fatal Error</h1><p>'.$e->getMessage().'</p>';
 				exit;
 			}
 
 			include($e->getTemplate());
-
 		}
 	}
 
+	/**
+	 * The SymphonyErrorPage extends the default Exception class. All
+	 * of these Exceptions will halt execution immediately and return the
+	 * Exception as a HTML page. By default the HTML template is <code>tpl.error.php</code>
+	 * from the <code>TEMPLATES</code> directory.
+	 */
+
 	Class SymphonyErrorPage extends Exception{
 
+		/**
+		 * A heading for the error page, this will be prepended to
+		 * "Symphony Fatal Error".
+		 * @return string
+		 */
 		private $_heading;
-		private $_message;
-		private $_template;
-		private $_additional;
-		private $_messageObject;
 
+		/**
+		 * A description for this error, which can be provided as a string
+		 * or as an XMLElement.
+		 * @var string|XMLElement
+		 */
+		private $_message;
+
+		/**
+		 * A string for the error page template to use, defaults to 'error'. This
+		 * can be the name of any template file in the <code>TEMPLATES</code> directory.
+		 * A template using the naming convention of <code>tpl.*.php</code>.
+		 * @var string
+		 */
+		private $_template = 'error';
+
+		/**
+		 * If the message as provided as an XMLElement, it will be saved to
+		 * this parameter
+		 * @var XMLElement
+		 */
+		private $_messageObject = null;
+
+		/**
+		 * An object of an additional information for this error page. Note that
+		 * this is provided as an array and then typecast to an object
+		 * @var StdClass
+		 */
+		private $_additional = null;
+
+		/**
+		 * Constructor for SymphonyErrorPage sets it's class variables
+		 *
+		 * @param string|XMLElement $message
+		 *  A description for this error, which can be provided as a string
+		 *  or as an XMLElement.
+		 * @param string $heading
+		 *  A heading for the error page, by default this is "Symphony Fatal Error"
+		 * @param string $template
+		 *  A string for the error page template to use, defaults to 'error'. This
+		 *  can be the name of any template file in the TEMPLATES directory.
+		 *  A template using the naming convention of tpl.*.php.
+		 * @param array $additional
+		 *  Allows custom information to be passed to the Symphony Error Page
+		 *  that the template may want to expose, such as custom Headers etc.
+		 */
 		public function __construct($message, $heading='Symphony Fatal Error', $template='error', array $additional=NULL){
 
-			$this->_messageObject = NULL;
 			if($message instanceof XMLElement){
 				$this->_messageObject = $message;
 				$message = $this->_messageObject->generate();
@@ -366,32 +623,69 @@
 			parent::__construct($message);
 
 			$this->_heading = $heading;
-
 			$this->_template = $template;
 			$this->_additional = (object)$additional;
 		}
 
-		public function getMessageObject(){
-			return $this->_messageObject;
-		}
-
+		/**
+		 * Accessor for the <code>$_heading</code> of the error page
+		 *
+		 * @return string
+		 */
 		public function getHeading(){
 			return $this->_heading;
 		}
 
+		/**
+		 * Accessor for <code>$_messageObject</code>
+		 *
+		 * @return XMLElement
+		 */
+		public function getMessageObject(){
+			return $this->_messageObject;
+		}
+
+		/**
+		 * Accessor for <code>$_additional</code>
+		 *
+		 * @return StdClass
+		 */
+		public function getAdditional(){
+			return $this->_additional;
+		}
+
+		/**
+		 * Returns the path to the current template by looking at the
+		 * <code>TEMPLATES</code> directory for the convention
+		 * <code>tpl.*.php</code>. If the template is not found, false
+		 * is returned
+		 *
+		 * @return mixed
+		 *  String, which is the path to the template if the template is found,
+		 *  false otherwise
+		 */
 		public function getTemplate(){
 			$template = sprintf('%s/tpl.%s.php', TEMPLATE, $this->_template);
 			return (file_exists($template) ? $template : false);
 		}
-
-		public function getAdditional(){
-			return $this->_additional;
-		}
 	}
 
+	/**
+	 * The DatabaseExceptionHandler provides a render function to provide
+	 * customised output for Database exceptions. It displays the Exception
+	 * message as provided by the Database.
+	 */
+	Class DatabaseExceptionHandler extends GenericExceptionHandler {
 
-	Class DatabaseExceptionHandler{
-
+		/**
+		 * The render function will take a DatabaseException and output a
+		 * HTML page.
+		 *
+		 * @param DatabaseException $e
+		 *  The Exception object
+		 * @return string
+		 *  An HTML string
+		 */
 		public static function render($e){
 
 			$trace = NULL;
@@ -414,12 +708,10 @@
 			$odd = true;
 
 			if(is_object(Symphony::Database())){
-
 				$debug = Symphony::Database()->debug();
 
 				if(count($debug['query']) > 0){
 					foreach($debug['query'] as $query){
-
 						$queries .= sprintf(
 							'<li%s><code>%s;</code> <small>[%01.4f]</small></li>',
 							($odd == true ? ' class="odd"' : NULL),
@@ -429,7 +721,6 @@
 						$odd = !$odd;
 					}
 				}
-
 			}
 
 			return sprintf('<html>
@@ -439,7 +730,6 @@
 		*{
 			margin: 0; padding: 0;
 		}
-
 
 		body{
 			margin: 20px auto;
@@ -456,15 +746,7 @@
 
 			-webkit-border-radius: 20px;
 			-moz-border-radius: 20px;
-
-			/*
-			-webkit-border-top-right-radius: 20px;
-			-webkit-border-top-left-radius: 20px;
-
-			-moz-border-radius-topright: 20px;
-			-moz-border-radius-topleft: 20px;
-			*/
-
+			border-radius: 20px;
 
 			border: 2px solid #bbb;
 		}

@@ -1,5 +1,9 @@
 <?php
 
+	/**
+	 * @package boot
+	 */
+
 	define_safe('__IN_SYMPHONY__', true);
 
 	define_safe('MANIFEST', 	DOCROOT . '/manifest');
@@ -24,7 +28,9 @@
 	define_safe('TOOLKIT',	LIBRARY . '/toolkit');	
 	define_safe('LANG',		LIBRARY . '/lang');	
 	define_safe('CORE',		LIBRARY . '/core');
-	define_safe('BOOT',		LIBRARY . '/boot');	
+	define_safe('BOOT',		LIBRARY . '/boot');
+	
+	define_safe('EMAILGATEWAYS',	TOOLKIT . '/email-gateways');
 	
 	define_safe('CONTENT', 	SYMPHONY . '/content');
 	

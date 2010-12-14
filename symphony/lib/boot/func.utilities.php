@@ -1,8 +1,12 @@
 <?php
 
 	/**
-	 * 	Redirects the browser to a specified location. Safer than using a
-	 * 	direct header() call
+	 * @package boot
+	 */
+
+	/**
+	 * Redirects the browser to a specified location. Safer than using a
+	 * direct header() call
 	 *
 	 *	@param string $url
 	 */
@@ -24,7 +28,7 @@
     }
 
 	/**
-	 * 	Returns the current working directory, replacing any \
+	 * Returns the current working directory, replacing any \
 	 *	with /. Use for Windows compatibility.
 	 *
 	 *	@return string
@@ -34,18 +38,22 @@
 	}
 
 	/**
-	 * 	Returns the current working directory, replacing any \
-	 *	with /. Used to maintain Windows compatibility.
+	 * Checks that a constant has not been defined before defining
+	 * it. If the constant is already defined, this function will do
+	 * nothing, otherwise, it will set the constant
 	 *
-	 *	@return string
+	 * @param string $name
+	 *  The name of the constant to set
+	 * @param string $value
+	 *  The value of the desired constant
 	 */
 	function define_safe($name, $val){
 		if(!defined($name)) define($name, $val);
 	}
 
 	/**
-	 * 	Returns the current URL string from within the Administration
-	 *	context. It omits the CMS directory from the result.
+	 * Returns the current URL string from within the Administration
+	 *	context. It omits the Symphony directory from the current URL.
 	 *
 	 *	@return string
 	 */
@@ -54,13 +62,13 @@
 	}
 
 	/**
-	 * 	Used as a basic stopwatch for profiling. The default $action
+	 * Used as a basic stopwatch for profiling. The default $action
 	 *	starts the timer. Setting $action to 'stop' and passing the
 	 *	start time returns the difference between now and that time.
 	 *
 	 *	@param string $action (optional)
-	 *	@param number $start_time (optional)
-	 *	@return number
+	 *	@param integer $start_time (optional)
+	 *	@return integer
 	 */
 	function precision_timer($action = 'start', $start_time = null){
 		$currtime = microtime(true);
@@ -72,17 +80,16 @@
 	}
 
 	/**
-	 * 	Convert php.ini size format to bytes
+	 * Convert php.ini size format to bytes
 	 *
 	 *	@param string $val (optional)
-	 *	@return number
+	 *	@return integer
 	 */
 	function ini_size_to_bytes($val) {
 	    $val = trim($val);
 	    $last = strtolower($val[strlen($val)-1]);
 
 	    switch($last) {
-	        // The 'G' modifier is available since PHP 5.1.0
 	        case 'g':
 	            $val *= 1024;
 	        case 'm':

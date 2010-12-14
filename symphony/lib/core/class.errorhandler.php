@@ -5,7 +5,7 @@
 
 	/**
 	 * GenericExceptionHandler will handle any uncaught exceptions thrown in Symphony.
-	 * Additionally, all errors in Symphony are raised to execptions to be handled by this class.
+	 * Additionally, all errors in Symphony are raised to exceptions to be handled by this class.
 	 * It is possible for Exceptions to be caught by their own ExceptionHandler which can
 	 * override the render function so that it can be displayed to the user appropriately
 	 */
@@ -306,22 +306,22 @@
 		 * @var array
 		 */
 		public static $errorTypeStrings = array (
-			E_NOTICE         				=> 'Notice',
-			E_WARNING        				=> 'Warning',
-			E_ERROR          				=> 'Error',
-			E_PARSE          					=> 'Parsing Error',
+			E_NOTICE				=> 'Notice',
+			E_WARNING				=> 'Warning',
+			E_ERROR					=> 'Error',
+			E_PARSE					=> 'Parsing Error',
 
-			E_CORE_ERROR     			=> 'Core Error',
-			E_CORE_WARNING   			=> 'Core Warning',
-			E_COMPILE_ERROR  			=> 'Compile Error',
-			E_COMPILE_WARNING 		=> 'Compile Warning',
+			E_CORE_ERROR			=> 'Core Error',
+			E_CORE_WARNING			=> 'Core Warning',
+			E_COMPILE_ERROR			=> 'Compile Error',
+			E_COMPILE_WARNING		=> 'Compile Warning',
 
-			E_USER_NOTICE    			=> 'User Notice',
-			E_USER_WARNING   			=> 'User Warning',
-			E_USER_ERROR     			=> 'User Error',
+			E_USER_NOTICE			=> 'User Notice',
+			E_USER_WARNING			=> 'User Warning',
+			E_USER_ERROR			=> 'User Error',
 
-			E_STRICT         					=> 'Strict Notice',
-			E_RECOVERABLE_ERROR  	=> 'Recoverable Error'
+			E_STRICT				=> 'Strict Notice',
+			E_RECOVERABLE_ERROR		=> 'Recoverable Error'
 		);
 
 		/**

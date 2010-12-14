@@ -10,7 +10,7 @@
 		/**
 		 * The end-of-line constant.
 		 * @var string
-		 * @deprecated This will no longer exist in Symphony 3
+		 * @deprecated This will be removed in the next version of Symphony
 		 */
 		const CRLF = PHP_EOL;
 
@@ -47,7 +47,7 @@
 		 *	string to operate on
 		 * @param array[int]string|string $rule
 		 *	a single rule or array of rules
-		 * @return bool
+		 * @return boolean
 		 *	false if any of the rules in $rule do not match any of the strings in
 		 *	$string, return true otherwise.
 		 */
@@ -89,7 +89,7 @@
 		 *	filename, xml document as a string, or arbitary string
 		 * @param pointer &$errors
 		 *	pointer to an array which will contain any validation errors
-		 * @param bool $isFile (optional)
+		 * @param boolean $isFile (optional)
 		 *	if this is true, the method will attempt to read from a file ($data)
 		 *	instead.
 		 * @param mixed $xsltProcessor (optional)
@@ -98,7 +98,7 @@
 		 * @param string $encoding (optional)
 		 *	if no XML header is expected, than this should be set to match the
 		 *	encoding of the XML
-		 * @return bool
+		 * @return boolean
 		 *	true if there are no errors in validating the XML, false otherwise.
 		 */
 		public static function validateXML($data, &$errors, $isFile=true, $xsltProcessor=NULL, $encoding='UTF-8') {
@@ -177,7 +177,7 @@
 		 * Strip any slashes from all array values.
 		 *
 		 * @param array[] &$arr
-		 *	pointer to an array to operate on. Can be multi-dimensional.
+		 *	Pointer to an array to operate on. Can be multi-dimensional.
 		 */
 		public static function cleanArray(&$arr) {
 			foreach($arr as $k => $v){
@@ -206,10 +206,10 @@
 		 * array('1.key' => 'value', '2.key2' => 'value2', '2.key3' => 'value3')
 		 *
 		 * @param array[] &$source
-		 *	a pointer to the array to flatten.
+		 *	The array to flatten, passed by reference
 		 * @param array[] &$output (optional)
-		 *	a pointer to the array in which to store the flattened input. if this
-		 *	is not provided then a new array will be created.
+		 *	The array in which to store the flattened input, passed by reference.
+         *  if this is not provided then a new array will be created.
 		 * @param string $path (optional)
 		 *	the current prefix of the keys to insert into the output array. this
 		 *	defaults to null.
@@ -245,10 +245,11 @@
 		 * will flatten to:
 		 * array('1:key' => 'value', '2:key2' => 'value2', '2:key3' => 'value3')
 		 *
+         *
 		 * @param array[] &$output
-		 *	a pointer to the array in which to store the flattened input.
-		 * @param array[] &$source
-		 *	a pointer to the array to flatten.
+		 *	The array in which to store the flattened input, passed by reference.
+         * @param array[] &$source
+		 *	The array to flatten, passed by reference
 		 * @param string $path
 		 *	the current prefix of the keys to insert into the output array.
 		 */
@@ -306,62 +307,45 @@
 		}
 
 		/**
-		 * Send an email. It includes some simple injection attack protection and
-		 * more comprehensive headers.
+		 * Method: sendEmail
 		 *
-		 * @param string $to_email
-		 *	email of the recipiant
-		 * @param string $from_email
-		 *	the from email address. This is usually your email.
-		 * @param string $from_name
-		 *	the name of the sender
-		 * @param string $subject
-		 *	subject of the email
-		 * @param string $message
-		 *	contents of the email
-		 * @param array[] $additional_headers (optional)
-		 *	an array of additional header elements. this defaults to an empty array.
-		 * @return bool
-		 *	true if the call to mail with the constructed headers returns true,
-		 *	false otherwise.
+		 * Allows you to send emails. It initializes the core email class.
+		 *
+		 * @param string $to_email - email of the recipiant
+		 * @param string $from_email - the from email address. This is usually your email
+		 * @param string $from_name - The name of the sender
+		 * @param string $subject - subject of the email
+		 * @param string $message - contents of the email
+		 * @param array $additional_headers - an array containing additional email headers
+		 * @return true on success
+		 *
+		 * @deprecated deprecated since version 2.2
 		 */
 		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers = array()) {
-			// Check for injection attacks (http://securephp.damonkohler.com/index.php/Email_Injection)
-			if (preg_match("/[\r|\n]/", $from_email) || preg_match("/[\r|\n]/", $from_name)){
-                return false;
-		   	}
-
-			$subject = self::encodeHeader($subject, 'UTF-8');
-			$from_name = self::encodeHeader($from_name, 'UTF-8');
-			$headers = array();
-
-			$default_headers = array(
-				'From'			=> "{$from_name} <{$from_email}>",
-		 		'Reply-To'		=> "{$from_name} <{$from_email}>",
-				'Message-ID'	=> sprintf('<%s@%s>', md5(uniqid(time())), $_SERVER['SERVER_NAME']),
-				'Return-Path'	=> "<{$from_email}>",
-				'Importance'	=> 'normal',
-				'Priority'		=> 'normal',
-				'X-Sender'		=> 'Symphony Email Module <noreply@symphony-cms.com>',
-				'X-Mailer'		=> 'Symphony Email Module',
-				'X-Priority'	=> '3',
-				'MIME-Version'	=> '1.0',
-				'Content-Type'	=> 'text/plain; charset=UTF-8',
-			);
-
-			if (!empty($additional_headers)) {
-				foreach ($additional_headers as $header => $value) {
-					$header = preg_replace_callback('/\w+/', create_function('$m', 'if(in_array($m[0], array("MIME", "ID"))) return $m[0]; else return ucfirst($m[0]);'), $header);
-					$default_headers[$header] = $value;
+			
+			try{
+				$email = Email::create();
+				
+				if (!empty($additional_headers)) {
+					foreach ($additional_headers as $name => $body) {
+						$email->appendHeaderField($name, $body);
+					}
 				}
+				$email->sender_name = $from_name;
+				$email->sender_email_address = $from_email;
+				
+				$email->recipients = $to_email;
+				$email->text_plain = $message;
+				$email->subject = $subject;
+
+				return $email->send();
 			}
-
-			foreach ($default_headers as $header => $value) {
-				$headers[] = sprintf('%s: %s', $header, $value);
+			catch(EmailGatewayException $e){
+				throw new SymphonyErrorPage('Error sending email. ' . $e->getMessage());
 			}
-
-			return mail($to_email, $subject, @wordwrap($message, 70), implode(self::CRLF, $headers) . self::CRLF, "-f{$from_email}");
-
+			catch(EmailException $e){
+				throw new SymphonyErrorPage('Error sending email. ' . $e->getMessage());
+			}
 		}
 
 		/**
@@ -465,7 +449,7 @@
 		 *	the path containing the directories to create.
 		 * @param integer $mode (optional)
 		 *	the permissions (in octal) of the directories to create. this defaults to 0755
-		 * @return bool
+		 * @return boolean
 		 */
 		public static function realiseDirectory($path, $mode=0755){
 			return mkdir($path, intval($mode, 8), true);
@@ -478,7 +462,7 @@
 		 *	the value to search for.
 		 * @param array[] $haystack
 		 *	the multi-dimensional array to search.
-		 * @return bool
+		 * @return boolean
 		 *	true if $needle is found in $haystack.
 		 *	true if $needle == $haystack.
 		 *	true if $needle is found in any of the arrays contained within $haystack.
@@ -511,7 +495,7 @@
 		 *	the values to search the $haystack for.
 		 * @param array[] $haystack
 		 *	the in which to search for the $needles
-		 * @return bool
+		 * @return boolean
 		 *	true if any of the $needles are in $haystack,
 		 *	false otherwise.
 		 */
@@ -616,7 +600,7 @@
 		 * @param mixed $seed (optional)
 		 *	the object with which the search for an empty index is initialized. this
 		 *	defaults to null.
-		 * @return int
+		 * @return integer
 		 *	the minimum empty index into the input array.
 		 */
 		public static function array_find_available_index($array, $seed=NULL){
@@ -644,7 +628,7 @@
 		 *
 		 * @param array[] $array
 		 *	the array to filter.
-		 * @param bool $ignore_case
+		 * @param boolean $ignore_case
 		 *	true if the case of the values in the array should be ignored, false otherwise.
 		 * @return
 		 *	a new array containing only the unique elements of the input array.
@@ -661,7 +645,7 @@
 		 *	the object to search the array for.
 		 * @param array[] $haystack
 		 *	the array to search for the $needle.
-		 * @return bool
+		 * @return boolean
 		 *	true if the $needle is in the $haystack, false otherwise.
 		 */
 		public static function in_iarray($needle, array $haystack){
@@ -671,13 +655,13 @@
 			return false;
 		}
 
-    		/**
+        /**
 		 * Filter the input array for duplicates, treating each element in the array
 		 * as a string and comparing them using a case insensitive comparison function.
 		 *
 		 * @param array[] $array
 		 *	the array to filter.
-		 * @return
+		 * @return array
 		 *	a new array containing only the unique elements of the input array.
 		 */
 		public static function array_iunique(array $array){
@@ -701,7 +685,7 @@
 		 *	the XML element to append the formatted array data to.
 		 * @param array[] $data
 		 *	the array to format and append to the XML fragment.
-		 * @param bool $validate
+		 * @param boolean $validate
 		 *	true if the formatted array data should be validated as it is
 		 *	constructed, false otherwise.
 		 */
@@ -749,7 +733,7 @@
          * @param string $mode (optional)
          * the mode that the file should be opened with, defaults to 'w'. See modes
          * at http://php.net/manual/en/function.fopen.php
-		 * @return bool
+		 * @return boolean
 		 *	true if the file is successfully opened, written to, closed and has the
 		 *	required permissions set. false, otherwise.
 		 */
@@ -776,10 +760,10 @@
 		 *
 		 * @param string $file
 		 *	the path of the file to delete
-		 * @param bool $silent (optional)
+		 * @param boolean $silent (optional)
 		 *	true if an exception should be raised if an error occurs, false
 		 *	otherwise. this defaults to true.
-		 * @return bool
+		 * @return boolean
 		 *	true if the file is successfully unlinked, if the unlink fails and
 		 *	silent is set to true then an exception is thrown. if the unlink
 		 *	fails and silent is set to false then this returns false.
@@ -819,7 +803,7 @@
 		 * @param string $filter (optional)
 		 *	A regular expression to filter the directories. This is positive filter, ie.
 		 * if the filter matches, the directory is included. Defaults to null.
-		 * @param bool $recurse (optional)
+		 * @param boolean $recurse (optional)
 		 *	true if sub-directories should be traversed and reflected in the
 		 *	resulting array, false otherwise.
 		 * @param mixed $strip_root (optional)
@@ -827,7 +811,7 @@
 		 *	anything else if $dir should be retained. this defaults to null.
 		 * @param array $exclude (optional)
 		 *	ignore directories listed in this array. this defaults to an empty array.
-		 * @param bool $ignore_hidden (optional)
+		 * @param boolean $ignore_hidden (optional)
 		 *	ignore hidden directory (i.e.directories that begin with a period). this defaults
 		 *	to true.
 		 * @return null|array[]
@@ -871,7 +855,7 @@
 		 * @param array|string $filters (optional)
 		 *	either a regular expression to filter the files by or an array of
 		 *	files to include.
-		 * @param bool $recurse (optional)
+		 * @param boolean $recurse (optional)
 		 *	true if sub-directories should be traversed and reflected in the
 		 *	resulting array, false otherwise.
 		 * @param string $sort (optional)
@@ -882,7 +866,7 @@
 		 *	anything else if $dir should be retained. this defaults to null.
 		 * @param array $exclude (optional)
 		 *	ignore files listed in this array. this defaults to an empty array.
-		 * @param bool $ignore_hidden (optional)
+		 * @param boolean $ignore_hidden (optional)
 		 *	ignore hidden files (i.e. files that begin with a period). this defaults
 		 *	to true.
 		 * @return null|array[dirlist,filelist]
@@ -951,7 +935,7 @@
 		 *	the first file structure array to compare.
 		 * @param array $f2
 		 *	the second file structure array to compare $f1 to.
-		 * @return int
+		 * @return integer
 		 *	<1, 0, >1 if $f1 is less than, equal to or greater than $f2.
 		 */
 		public static function filemtimeSort($f1, $f2){
@@ -970,7 +954,7 @@
 		 *	the first file structure array to compare.
 		 * @param array $f2
 		 *	the second file structure array to compare $f1 to.
-		 * @return int
+		 * @return integer
 		 *	<1, 0, >1 if $f1 is less than, equal to or greater than $f2.
 		 */
 		public static function fileSort($f1, $f2){
@@ -989,7 +973,7 @@
 		 *	the first file structure array to compare.
 		 * @param array $f2
 		 *	the second file structure array to compare $f1 to.
-		 * @return int
+		 * @return integer
 		 *	<1, 0, >1 if $f2 is less than, equal to or greater than $f1.
 		 */
 		public static function fileSortR($f1, $f2){
@@ -1009,7 +993,7 @@
 		 * @uses strip_tags()
 		 * @param string $string
 		 *	the string from which to count the contained words.
-		 * @return int
+		 * @return integer
 		 *	the number of words contained in the input string.
 		 */
 		public static function countWords($string){
@@ -1030,9 +1014,7 @@
 			$string = str_replace($spaces, ' ', $string);
 			$string = preg_replace('/[^\w\s]/i', '', $string);
 
-			$words = preg_split('/\s+/', $string, -1, PREG_SPLIT_NO_EMPTY);
-
-			return count($words);
+			return str_word_count($words);
 		}
 
 		/**
@@ -1053,11 +1035,11 @@
 		 * @param integer maxChars (optional)
 		 *	the maximum length of the string to truncate the input string to. this
 		 *	defaults to 200 characters.
-		 * @param bool $appendHellip (optional)
+		 * @param boolean $appendHellip (optional)
 		 *	true if the ellipses should be appended to the result in circumstances
 		 *	where the result is shorter than the input string. false otherwise. this
 		 *	defaults to false.
-		 * @param bool $truncateToSpace
+		 * @param boolean $truncateToSpace
 		 *	true if the string is to be truncated to the last space prior to removing
 		 *	any words necessary to satisfy the input length constraint. false otherwise.
 		 *	this defaults to false.
@@ -1109,7 +1091,7 @@
 		 *	the full path name of the source file to move.
 		 * @param integer $perm (optional)
 		 *	the permissions to apply to the moved file. this defaults to 0777.
-		 * @return bool
+		 * @return boolean
 		 *	true if the file was moved and its permissions set as required. false otherwise.
 		 */
 		public static function uploadFile($dest_path, $dest_name, $tmp_name, $perm=0777){
@@ -1165,7 +1147,7 @@
 		 * @param string $namespace (optional)
 		 *	the namespace in which the resulting XML enitity will reside. this defaults
 		 *	to null.
-		 * @return bool|XMLElement
+		 * @return boolean|XMLElement
 		 *	false if there is no XMLElement class on the system, the constructed XML element
 		 *	otherwise.
 		 */

@@ -19,7 +19,7 @@
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors'))));
 
-			if (Administration::instance()->Author->isDeveloper()) $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
+			if (Administration::instance()->Author->isDeveloper()) $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), $this->_Parent->getCurrentPageURL().'new/', __('Add a new author'), 'create button', NULL, array('accesskey' => 'c')));
 			else $this->appendSubheading(__('Authors'));
 
 			$authors = AuthorManager::fetch();
@@ -88,7 +88,7 @@
 
 				$options = array(
 					array(NULL, false, __('With Selected...')),
-					array('delete', false, __('Delete'))
+					array('delete', false, __('Delete'), 'confirm')							
 				);
 
 				$tableActions->appendChild(Widget::Select('with-selected', $options));
@@ -132,12 +132,13 @@
 
 			require_once(TOOLKIT . '/class.field.php');
 
-			## Handle unknow context
+			## Handle unknown context
 			if(!in_array($this->_context[0], array('new', 'edit'))) $this->_Parent->errorPageNotFound();
 
-			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper())
-				$this->_Parent->customError(E_USER_ERROR, 'Access Denied', 'You are not authorised to access this page.');
-
+			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper()) {
+				Administration::instance()->customError(__('Access Denied'), __('You are not authorised to access this page.'));
+            }
+            
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 
@@ -145,7 +146,7 @@
 
 						$this->pageAlert(
 							__(
-								'Author updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>',
+								'Author updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Authors</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									URL . '/symphony/system/authors/new/',
@@ -160,7 +161,7 @@
 
 						$this->pageAlert(
 							__(
-								'Author created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>',
+								'Author created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Authors</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									URL . '/symphony/system/authors/new/',
@@ -186,7 +187,7 @@
 				if(!$author_id = $this->_context[1]) redirect(URL . '/symphony/system/authors/');
 
 				if(!$author = AuthorManager::fetchByID($author_id)){
-					$this->_Parent->customError(E_USER_ERROR, 'Author not found', 'The author profile you requested does not exist.');
+					Administration::instance()->customError(__('Author not found'), __('The author profile you requested does not exist.'));
 				}
 			}
 
@@ -194,10 +195,9 @@
 
 			if($this->_context[0] == 'edit' && $author->get('id') == Administration::instance()->Author->get('id')) $isOwner = true;
 
-			if ($this->_context[0] == 'edit' && !$isOwner && !Administration::instance()->Author->isDeveloper())
-				$this->_Parent->customError(E_USER_ERROR, 'Access Denied', 'You are not authorised to edit other authors.');
-
-
+			if ($this->_context[0] == 'edit' && !$isOwner && !Administration::instance()->Author->isDeveloper()) {
+				Administration::instance()->customError(__('Access Denied'), __('You are not authorised to edit other authors.'));
+            }
 
 			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Authors'), $author->getFullName())));
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $author->getFullName()));
@@ -346,7 +346,7 @@
 
 			if($this->_context[0] == 'edit' && !$isOwner && !$author->isPrimaryAccount()){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this author'), 'type' => 'submit'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this author'), 'type' => 'submit', 'accesskey' => 'd'));
 				$div->appendChild($button);
 			}
 

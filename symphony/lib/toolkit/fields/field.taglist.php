@@ -1,5 +1,8 @@
 <?php
-
+	/**
+	 * @package toolkit
+	 */
+    
 	Class fieldTagList extends Field {
 		public function __construct(&$parent){
 			parent::__construct($parent);

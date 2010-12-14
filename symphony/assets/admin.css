@@ -210,32 +210,14 @@ p#version {
 	border-color: #617dc5;
 	background-color: #5273c0;
 }
-.movable {
-	border-color: #998;
-	background-color: #887;
-}
-.selected,
-.selected a,
-.selected td,
-.movable,
-.movable a,
-.movable td {
+ul.selected,
+li.selected a {
 	color: #fff;
-}
-.movable,
-.movable *,
-.orderable tbody {
-	cursor: move;
 }
 .selected h4 i,
 .selected label i,
 .selected .inactive {
 	color: #abe;
-}
-.movable h4 i,
-.movable label i,
-.movable .inactive {
-	color: #ccb;
 }
 
 /* Code */
@@ -282,4 +264,18 @@ a.button.active {
 }
 a.create {
 	background-color: #81b934;
+}
+
+/* Picker */
+.active fieldset.picker {
+	border-bottom: none;
+	margin-bottom: 0;
+}
+
+.active fieldset.pickable {
+	padding-top: 0;
+}
+
+.active fieldset.pickable legend {
+	display: none;
 }

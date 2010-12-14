@@ -1,8 +1,17 @@
-/*-----------------------------------------------------------------------------
-	Collapsible plugin
------------------------------------------------------------------------------*/
-	
-	jQuery.fn.symphonyCollapsible = function(custom_settings) {
+/**
+ * @package assets
+ */
+
+(function($) {
+
+	/**
+	 * This plugin makes items callapsible.
+	 *
+	 * @param {Object} custom_settings
+	 *  An object specifying the item to be collapsed, their handles and 
+	 *  a initialization delay
+	 */
+	$.fn.symphonyCollapsible = function(custom_settings) {
 		var objects = this;
 		var settings = {
 			items:				'.instance',
@@ -10,20 +19,18 @@
 			delay_initialize:	false
 		};
 		
-		jQuery.extend(settings, custom_settings);
+		$.extend(settings, custom_settings);
 		
-	/*-------------------------------------------------------------------------
-		Collapsible
-	-------------------------------------------------------------------------*/
+	/*-----------------------------------------------------------------------*/
 		
 		objects = objects.map(function() {
 			var object = this;
 			var item = null;
 			
 			var start = function() {
-				item = jQuery(this).parents(settings.items);
+				item = $(this).parents(settings.items);
 				
-				jQuery(document).mouseup(stop);
+				$(document).mouseup(stop);
 				
 				if (item.is('.collapsed')) {
 					object.addClass('expanding');
@@ -41,7 +48,7 @@
 			};
 			
 			var stop = function() {
-				jQuery(document).unbind('mouseup', stop);
+				$(document).unbind('mouseup', stop);
 				
 				if (item != null) {
 					object.removeClass('expanding collapsing');
@@ -65,13 +72,13 @@
 			
 		/*-------------------------------------------------------------------*/
 			
-			if (object instanceof jQuery === false) {
-				object = jQuery(object);
+			if (object instanceof $ === false) {
+				object = $(object);
 			}
 			
 			object.collapsible = {
 				cancel: function() {
-					jQuery(document).unbind('mouseup', stop);
+					$(document).unbind('mouseup', stop);
 					
 					if (item != null) {
 						if (item.is('.collapsed')) {
@@ -91,7 +98,7 @@
 				initialize: function() {
 					object.addClass('collapsible');
 					object.find(settings.items).each(function() {
-						var item = jQuery(this);
+						var item = $(this);
 						var handle = item.find(settings.handles);
 						
 						handle.unbind('mousedown', start);
@@ -101,7 +108,7 @@
 				
 				collapseAll: function() {
 					object.find(settings.items).each(function() {
-						var item = jQuery(this);
+						var item = $(this);
 						
 						if (item.is('.collapsed')) return;
 						
@@ -113,7 +120,7 @@
 				
 				expandAll: function() {
 					object.find(settings.items).each(function() {
-						var item = jQuery(this);
+						var item = $(this);
 						
 						if (item.is('.expanded')) return;
 						
@@ -147,5 +154,5 @@
 		
 		return objects;
 	};
-	
-/*---------------------------------------------------------------------------*/
+
+})(jQuery.noConflict());

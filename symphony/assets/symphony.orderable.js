@@ -1,8 +1,17 @@
-/*-----------------------------------------------------------------------------
-	Orderable plugin
------------------------------------------------------------------------------*/
-	
-	jQuery.fn.symphonyOrderable = function(custom_settings) {
+/**
+ * @package assets
+ */
+
+(function($) {
+
+	/**
+	 * This plugin makes items orderable.
+	 *
+	 * @param {Object} custom_settings
+	 *  An object specifying the item to be ordered, their handles and 
+	 *  a initialization delay
+	 */
+	$.fn.symphonyOrderable = function(custom_settings) {
 		var objects = this;
 		var settings = {
 			items:				'li',
@@ -10,11 +19,9 @@
 			delay_initialize:	false
 		};
 		
-		jQuery.extend(settings, custom_settings);
+		$.extend(settings, custom_settings);
 		
-	/*-------------------------------------------------------------------------
-		Orderable
-	-------------------------------------------------------------------------*/
+	/*-----------------------------------------------------------------------*/
 		
 		objects = objects.map(function() {
 			var object = this;
@@ -22,16 +29,16 @@
 			
 			var start = function() {
 				state = {
-					item:		jQuery(this).parents(settings.items),
+					item:		$(this).parents(settings.items),
 					min:		null,
 					max:		null,
 					delta:		0
 				};
 				
-				jQuery(document).mousemove(change);
-				jQuery(document).mouseup(stop);
+				$(document).mousemove(change);
+				$(document).mouseup(stop);
 				
-				jQuery(document).mousemove();
+				$(document).mousemove();
 				
 				return false;
 			};
@@ -88,8 +95,8 @@
 			};
 			
 			var stop = function() {
-				jQuery(document).unbind('mousemove', change);
-				jQuery(document).unbind('mouseup', stop);
+				$(document).unbind('mousemove', change);
+				$(document).unbind('mouseup', stop);
 				
 				if (state != null) {
 					object.removeClass('ordering');
@@ -103,14 +110,14 @@
 			
 		/*-------------------------------------------------------------------*/
 			
-			if (object instanceof jQuery === false) {
-				object = jQuery(object);
+			if (object instanceof $ === false) {
+				object = $(object);
 			}
 			
 			object.orderable = {
 				cancel: function() {
-					jQuery(document).unbind('mousemove', change);
-					jQuery(document).unbind('mouseup', stop);
+					$(document).unbind('mousemove', change);
+					$(document).unbind('mouseup', stop);
 					
 					if (state != null) {
 						object.removeClass('ordering');
@@ -123,7 +130,7 @@
 				initialize: function() {
 					object.addClass('orderable');
 					object.find(settings.items).each(function() {
-						var item = jQuery(this);
+						var item = $(this);
 						var handle = item.find(settings.handles);
 						
 						handle.unbind('mousedown', start);
@@ -141,5 +148,5 @@
 		
 		return objects;
 	};
-	
-/*---------------------------------------------------------------------------*/
+
+})(jQuery.noConflict());

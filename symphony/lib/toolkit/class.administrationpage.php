@@ -1,63 +1,190 @@
 <?php
-	
+
+	/**
+	 * @package toolkit
+	 */
+	/**
+	 * The AdministrationPage class represents a Symphony backend page.
+	 * It extends the HTMLPage class and unlike the Frontend, is generated
+	 * using a number XMLElement objects. Instances of this class override
+	 * the view, switchboard and action functions to construct the page. These
+	 * functions act as pseudo MVC, with the switchboard being controller,
+	 * and the view/action being the view.
+	 */
+
 	require_once(TOOLKIT . '/class.htmlpage.php');
 	require_once(TOOLKIT . '/class.alert.php');
-	
+
 	Class AdministrationPage extends HTMLPage{
-		
-		public $Alert;
-		
-		## These are here for Extension backwards compatibility. Will be 
-		## removed in a later version.
-		const PAGE_ALERT_NOTICE = 'notice';
-		const PAGE_ALERT_ERROR = 'error';
-		
-		var $_navigation;
-		var $_Parent;
-		var $_context;
-		private $_body_id = '';
+
+		/**
+		 * An instance of the Administration class
+		 * @var Administration
+		 * @see core.Administration
+		 */
+		public $_Parent;
+
+		/**
+		 * An instance of the Alert class. Used to display page level
+		 * messages to Symphony users.
+		 * @var Alert
+		 */
+		public $Alert = null;
+
+		/**
+		 * An associative array of the navigation where the key is the group
+		 * index, and the value is an associative array of 'name', 'index' and
+		 * 'children'. Name is the name of the this group, index is the same as
+		 * the key and children is an associative array of navigation items containing
+		 * the keys 'link', 'name' and 'visible'. In Symphony, all navigation items
+		 * are contained within a group, and the group has no 'default' link, therefore
+		 * it is up to the children to provide the link to pages. This link should be
+		 * relative to the Symphony path, although it is possible to provide an
+		 * absolute link by providing a key, 'relative' with the value false.
+		 * @var array
+		 */
+		public $_navigation = array();
+
+		/**
+		 *  An associative array describing this pages context. This
+		 *  can include the section handle, the current entry_id, the page
+		 *  name and any flags such as 'saved' or 'created'. This variable
+		 * often provided in delegates so extensions can manipulate based
+		 * off the current context or add new keys.
+		 * @var array
+		 */
+		public $_context = null;
+
+		/**
+		 * The class attribute of the <body> element for this page. Defaults
+		 * to an empty string
+		 * @var string
+		 */
 		private $_body_class = '';
-		
-		function __construct(&$parent){
+
+		/**
+		 * Constructor takesthe Administration instance and sets it
+		 * to be the $_Parent. Calls the parent constructor to set up
+		 * the basic HTML, Head and Body XMLElements. This function
+		 * also sets te XMLElement type to be HTML, instead of XML
+		 *
+		 * @param Administration $parent
+		 *  The Administration object that this page has been created from
+		 *  passed by reference
+		 */
+		public function __construct(Administration &$parent){
 			parent::__construct();
-			
+
 			$this->Html->setElementStyle('html');
-			
 			$this->_Parent = $parent;
-			$this->_navigation = array();
-			$this->Alert = NULL;
-			
 		}
-		
-		function setPageType($type){
+
+		/**
+		 * Adds either the tables or forms stylesheet to the page. By default
+		 * this is forms, but can be override by passing 'table' to the function.
+		 * The stylesheets reside in the symphon/assets/ folder
+		 *
+		 * @param string $type
+		 *  Either 'forms' or 'tables'. Defaults to 'forms'
+		 */
+		public function setPageType($type = 'forms'){
 			$this->addStylesheetToHead(URL . '/symphony/assets/' . ($type == 'table' ? 'tables' : 'forms') . '.css', 'screen', 30);
 		}
-		
-		function setTitle($val, $position=null) {
-			return $this->addElementToHead(new XMLElement('title', $val), $position);
+
+		/**
+		 * Given a title, this function will create the <title> element for this
+		 * page.
+		 *
+		 * @param string $title
+		 *  The page title
+		 */
+		public function setTitle($title) {
+			return $this->addElementToHead(new XMLElement('title', $title));
 		}
-	
-		public function Context(){
-			return $this->_context;
-		}
-		
-		public function setBodyId($id) {
-			$this->_body_id = $id;
-		}
-		
+
+		/**
+		 * Setter function to set the class attribute on the <body> element.
+		 * This function will respect any previous classes that have been added
+		 * to this <body>
+		 *
+		 * @param string $class
+		 *  The string of the classname, multiple classes can be specified by
+		 *  uses a space separater
+		 */
 		public function setBodyClass($class) {
 			$this->_body_class .= ' ' . $class;
 		}
-		
-		function build($context = NULL){
-			
-			$this->_context = $context;
-			
-			if(!$this->canAccessPage()){
-				$this->_Parent->customError(E_USER_ERROR, __('Access Denied'), __('You are not authorised to access this page.'));
-				exit();
+
+		/**
+		 * Sets this page's $Alert to an instance of the Alert class of a
+		 * given Alter type. Unless the Alert is an Error, it is required
+		 * the a message be passed to this function.
+		 *
+		 * @param string $message
+		 *  The message to display to users
+		 * @param string $type
+		 *  An Alert constant, being Alert::NOTICE, Alert::ERROR or
+		 *  Alert::SUCCESS. The differing types will show the error
+		 *  in a different style in the backend.
+		 */
+		public function pageAlert($message = null, $type=Alert::NOTICE){
+
+			if(is_null($message) && $type == Alert::ERROR){
+				$message = 'There was a problem rendering this page. Please check the activity log for more details.';
 			}
-			
+
+			$message = __($message);
+
+			if(strlen(trim($message)) == 0) throw new Exception('A message must be supplied unless flagged as Alert::ERROR');
+
+			if(!($this->Alert instanceof Alert) || ($this->Alert->type == Alert::NOTICE && in_array($type, array(Alert::ERROR, Alert::SUCCESS)))){
+				$this->Alert = new Alert($message, $type);
+			}
+		}
+
+		/**
+		 * Appends the heading of this Symphony page to the Form element.
+		 * If a link is provided, it will be added
+		 * to the provided string
+		 *
+		 * @param string $value
+		 *  The heading text
+		 * @param XMLElement|string $html
+		 *  Some HTML to append to the heading, this can be provided as an
+		 *  XMLElement or as a string. traditionally Symphony uses this to append
+		 *  a link to the heading
+		 */
+		public function appendSubheading($value, $html = null){
+
+			if($html && is_object($html)) $value .= ' ' . $html->generate(false);
+			elseif($html) $value .= ' ' . $html;
+
+			$this->Form->appendChild(new XMLElement('h2', $value));
+		}
+
+		/**
+		 * This function initialises a lot of the basic elements that make up a Symphony
+		 * backend page such as the default stylesheets and scripts, the navigation and
+		 * the footer. Any alerts are also appended by this function. view() is called to
+		 * build the actual content of the page. Delegates fire to allow extensions to add
+		 * elements to the <head> and footer.
+		 *
+		 * @see view()
+		 * @uses InitaliseAdminPageHead
+		 * @uses AppendElementBelowView
+		 * @param array $context
+		 *  An associative array describing this pages context. This
+		 *  can include the section handle, the current entry_id, the page
+		 *  name and any flags such as 'saved' or 'created'. This list is not exhaustive
+		 *  and extensions can add their own keys to the array.
+		 */
+		public function build(Array $context = array()){
+			$this->_context = $context;
+
+			if(!$this->canAccessPage()){
+				Administration::instance()->customError(__('Access Denied'), __('You are not authorised to access this page.'));
+			}
+
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Lang::get());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
@@ -66,415 +193,450 @@
 			$this->addScriptToHead(URL . '/symphony/assets/jquery.color.js', 51);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.collapsible.js', 60);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.orderable.js', 61);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.selectable.js', 61);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.duplicator.js', 62);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.tags.js', 63);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.picker.js', 63);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.pickable.js', 63);
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 70);
+
 			$this->addElementToHead(
 				new XMLElement(
-					'script', 
-					"Symphony.Context.add('env', " . json_encode($this->_context) . ");", 
+					'script',
+					"Symphony.Context.add('env', " . json_encode($this->_context) . ");",
 					array('type' => 'text/javascript')
 				), 71
 			);
-					
-			###
-			# Delegate: InitaliseAdminPageHead
-			# Description: Allows developers to insert items into the page HEAD. Use $context['parent']->Page
-			#			   for access to the page object
-			$this->_Parent->ExtensionManager->notifyMembers('InitaliseAdminPageHead', '/backend/');	
-			
+
+			/**
+			 * Allows developers to insert items into the page HEAD. Use $context['parent']->Page
+			 * for access to the page object
+			 *
+			 * @delegate InitaliseAdminPageHead
+			 * @param string $context
+			 *  '/backend/'
+			 */
+			Administration::instance()->ExtensionManager->notifyMembers('InitaliseAdminPageHead', '/backend/');
+
 			$this->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
-				
+
 			if(isset($_REQUEST['action'])){
 				$this->action();
-				$this->_Parent->Profiler->sample('Page action run', PROFILE_LAP);
+				Administration::instance()->Profiler->sample('Page action run', PROFILE_LAP);
 			}
-			
+
 			## Build the form
-			$this->Form = Widget::Form($this->_Parent->getCurrentPageURL(), 'post');
+			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
 			$h1 = new XMLElement('h1');
 			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
 			$this->Form->appendChild($h1);
-			
+
 			$this->appendNavigation();
 			$this->view();
-			
-			###
-			# Delegate: AppendElementBelowView
-			# Description: Allows developers to add items just above the page footer. Use $context['parent']->Page
-			#			   for access to the page object
-			$this->_Parent->ExtensionManager->notifyMembers('AppendElementBelowView', '/backend/');			
-						
+
+			/**
+			 * Allows developers to add items just above the page footer. Use $context['parent']->Page
+			 * for access to the page object
+			 *
+			 * @delegate AppendElementBelowView
+			 * @param string $context
+			 *  '/backend/'
+			 */
+			Administration::instance()->ExtensionManager->notifyMembers('AppendElementBelowView', '/backend/');
+
 			$this->appendFooter();
 			$this->appendAlert();
 
-			$this->_Parent->Profiler->sample('Page content created', PROFILE_LAP);
-		}
-		
-		function generate() {
-			$this->__appendBodyId();
-			$this->__appendBodyClass($this->_context);
-			return parent::generate();
-		}
-		
-		function view(){
-			$this->__switchboard();
-		}
-		
-		function action(){
-			$this->__switchboard('action');
+			Administration::instance()->Profiler->sample('Page content created', PROFILE_LAP);
 		}
 
-		function __switchboard($type='view'){
-			
-			if(!isset($this->_context[0]) || trim($this->_context[0]) == '') $context = 'index';
-			else $context = $this->_context[0];
-			
-			$function = ($type == 'action' ? '__action' : '__view') . ucfirst($context);
-			
-			if(!method_exists($this, $function)) {
-				
-				## If there is no action function, just return without doing anything
-				if($type == 'action') return;
-				
-				$this->_Parent->errorPageNotFound();
-				
-			}
-			
-			$this->$function();
-
-		}
-
-		function pageAlert($message=NULL, $type=Alert::NOTICE){
-			
-			if(is_null($message) && $type == Alert::ERROR){ 
-				$message = 'There was a problem rendering this page. Please check the activity log for more details.';
-			}
-			
-			$message = __($message);
-						
-			if(strlen(trim($message)) == 0) throw new Exception('A message must be supplied unless flagged as Alert::ERROR');				
-						
-			if(!($this->Alert instanceof Alert) || ($this->Alert->type == Alert::NOTICE && in_array($type, array(Alert::ERROR, Alert::SUCCESS)))){
-				$this->Alert = new Alert($message, $type);
-			}
-		}
-		
-		function appendAlert(){
-			
-			###
-			# Delegate: AppendPageAlert
-			# Description: Allows for appending of alerts. Administration::instance()->Page->Alert is way to tell what 
-			# is currently in the system
-			$this->_Parent->ExtensionManager->notifyMembers('AppendPageAlert', '/backend/');
-
-			if(($this->Alert instanceof Alert)){
-				$this->Form->prependChild($this->Alert->asXML());
-			}
-		}
-		
-		function appendFooter(){
-		
-			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array('id' => 'version'));
-			$this->Form->appendChild($version);
-						
-			$ul = new XMLElement('ul');
-			$ul->setAttribute('id', 'usr');
-
-			$li = new XMLElement('li');
-			$li->appendChild(new XMLElement('a', $this->_Parent->Author->getFullName(), array(
-				'id' => 'user' . $this->_Parent->Author->get('id'),
-				'class' => $this->_Parent->Author->get('user_type'),
-				'name' => $this->_Parent->Author->get('username'),
-				'href' => URL . '/symphony/system/authors/edit/' . $this->_Parent->Author->get('id') . '/'
-			)));
-			$ul->appendChild($li);
-			
-			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(__('Logout'), URL . '/symphony/logout/'));
-			$ul->appendChild($li);
-			
-			###
-			# Delegate: AddElementToFooter
-			# Description: Add new list elements to the footer
-			$this->_Parent->ExtensionManager->notifyMembers('AddElementToFooter', '/backend/', array('wrapper' => &$ul));
-						
-			$this->Form->appendChild($ul);
-		}
-		
-		function appendSubheading($string, $link=NULL){
-			
-			if($link && is_object($link)) $string .= ' ' . $link->generate(false);
-			elseif($link) $string .= ' ' . $link;
-			
-			$this->Form->appendChild(new XMLElement('h2', $string));
-		}
-		
-		function appendNavigation(){
+		/**
+		 * Checks the current Symphony Author can access the current page.
+		 * This includes the check to ensure that an Author cannot access a
+		 * hidden section.
+		 *
+		 * @return boolean
+		 *  True if the Author can access the current page, false otherwise
+		 */
+		public function canAccessPage(){
 
 			$nav = $this->getNavigationArray();
-
-			####
-			# Delegate: NavigationPreRender
-			# Description: Immediately before displaying the admin navigation. Provided with the navigation array
-			#              Manipulating it will alter the navigation for all pages.
-			# Global: Yes
-			$this->_Parent->ExtensionManager->notifyMembers('NavigationPreRender', '/backend/', array('navigation' => &$nav));
-
-			$xNav = new XMLElement('ul');
-			$xNav->setAttribute('id', 'nav');
-
-			foreach($nav as $n){
-				$n_bits = explode('/', $n['link'], 3);
-
-				$can_access = false;
-
-				if($n['visible'] != 'no'){
-					
-					if(!isset($n['limit']) || $n['limit'] == 'author')
-						$can_access = true;
-
-					elseif($n['limit'] == 'developer' && $this->_Parent->Author->isDeveloper())
-						$can_access = true;
-
-					elseif($n['limit'] == 'primary' && $this->_Parent->Author->isPrimaryAccount())
-						$can_access = true;
-					
-					if($can_access) {
-
-						$xGroup = new XMLElement('li', $n['name']);
-						if(isset($n['class']) && trim($n['name']) != '') $xGroup->setAttribute('class', $n['class']);
-
-						$xChildren = new XMLElement('ul');
-
-						$hasChildren = false;
-
-						if(is_array($n['children']) && !empty($n['children'])){ 
-							foreach($n['children'] as $c){
-
-								$can_access_child = false;	
-
-								## Check if this is a Section or Extension, and die if the user is not allowed to access it	
-								if(!$this->_Parent->Author->isDeveloper() && $c['visible'] == 'no'){
-									if($c['type'] == 'extension'){
-
-										$bits = preg_split('/\//i', $c['link'], 2, PREG_SPLIT_NO_EMPTY);
-
-										if(!$this->_Parent->Author->isDeveloper() && preg_match('#^/extension/#i'.$bits[2].'/i', $_REQUEST['page'])){
-											$this->_Parent->customError(E_USER_ERROR, __('Access Denied'), __('You are not authorised to access this page.'));
-										}
-
-									}
-
-									elseif($c['type'] == 'section'){
-
-										if($_REQUEST['section'] == $c['section_id'] && preg_match('#^/publish/section/#', $_REQUEST['page'])){
-											$this->_Parent->customError(E_USER_ERROR, __('Access Denied'), __('You are not authorised to access this section.'));
-										}
-
-									}
-								}
-
-								if($c['visible'] != 'no'){
-
-									if(!isset($c['limit']) || $c['limit'] == 'author')
-										$can_access_child = true;
-
-									elseif($c['limit'] == 'developer' && $this->_Parent->Author->isDeveloper())
-										$can_access_child = true;		
-
-									elseif($c['limit'] == 'primary' && $this->_Parent->Author->isPrimaryAccount())
-										$can_access_child = true;
-
-									if($can_access_child) {
-										
-										## Make sure preferences menu only shows if multiple languages or extension preferences are available
-										if($c['name'] == __('Preferences') && $n['name'] == __('System')){
-											$extensions = Symphony::Database()->fetch("
-													SELECT * 
-													FROM `tbl_extensions_delegates` 
-													WHERE `delegate` = 'AddCustomPreferenceFieldsets'"
-											);
-
-											$l = Lang::getAvailableLanguages();
-											if(count($l) == 1 && (!is_array($extensions) || empty($extensions))){
-												continue;
-											}
-											
-										}
-										##
-										
-										$xChild = new XMLElement('li');
-										$xLink = new XMLElement('a', $c['name']);
-										$xLink->setAttribute('href', URL . '/symphony' . $c['link']);
-										$xChild->appendChild($xLink);
-
-										$xChildren->appendChild($xChild);
-										$hasChildren = true;
-
-									}				
-								}
-
-							}			
-
-							if($hasChildren){
-								$xGroup->appendChild($xChildren);
-								$xNav->appendChild($xGroup);
-							}
-						}
-					}
-				}
-			}
-			
-			
-			$this->Form->appendChild($xNav);
-			$this->_Parent->Profiler->sample('Navigation Built', PROFILE_LAP);	
-		}
-		
-		function getNavigationArray(){
-			if(empty($this->_navigation)) $this->__buildNavigation();
-			return $this->_navigation;
-		}
-
-		function canAccessPage(){
-			
-			$nav = $this->getNavigationArray();
-			
 			$page = '/' . trim(getCurrentPage(), '/') . '/';
-			
-			$page_limit = 'author';					
+
+			$page_limit = 'author';
 
 			foreach($nav as $item){
-
 				if(General::in_array_multi($page, $item['children'])){
 
 		            if(is_array($item['children'])){
 		                foreach($item['children'] as $c){
-		                    if($c['link'] == $page && isset($c['limit']))
-		                        $page_limit	= $c['limit'];	          
+							if($c['type'] == 'section' && $c['visible'] == 'no' && preg_match('#^' . $c['link'] . '#', $page)) {
+								$page_limit = 'developer';
+							}
+
+		                    if($c['link'] == $page && isset($c['limit'])) {
+		                        $page_limit	= $c['limit'];
+							}
 		                }
 		            }
-		
-					if(isset($item['limit']) && $page_limit != 'primary'){					
+
+					if(isset($item['limit']) && $page_limit != 'primary'){
 						if($page_limit == 'author' && $item['limit'] == 'developer') $page_limit = 'developer';
 					}
 
 				}
-				
-				elseif(isset($item['link']) && ($page == $item['link']) && isset($item['limit'])){						
-					$page_limit	= $item['limit'];	  	
+
+				elseif(isset($item['link']) && ($page == $item['link']) && isset($item['limit'])){
+					$page_limit	= $item['limit'];
 				}
 			}
 
 			if($page_limit == 'author')
 				return true;
 
-			elseif($page_limit == 'developer' && ($this->_Parent->Author->isDeveloper()))
-				return true;		
-
-			elseif($page_limit == 'primary' && $this->_Parent->Author->isPrimaryAccount())
+			elseif($page_limit == 'developer' && Administration::instance()->Author->isDeveloper())
 				return true;
-				
-			return false;			
-		}
-		
-		private static function __navigationFindGroupIndex($nav, $name){
-			foreach($nav as $index => $item){
-				if($item['name'] == $name) return $index;
-			}
+
+			elseif($page_limit == 'primary' && Administration::instance()->Author->isPrimaryAccount())
+				return true;
+
 			return false;
 		}
-		
-		function __buildNavigation(){
 
+		/**
+		 * Appends the ID and class attributes for the <body> element
+		 * before calling the parent's generate function which will convert
+		 * the XMLElements into strings ready for output
+		 *
+		 * @return string
+		 */
+		public function generate() {
+			$this->__appendBodyId();
+			$this->__appendBodyClass($this->_context);
+			return parent::generate();
+		}
+
+		/**
+		 * Uses this pages PHP classname as the <body> ID attribute.
+		 * This function removes 'content' from the start of the classname
+		 * and converts all uppercase letters to lowercase and prefixes them
+		 * with a hyphen.
+		 */
+		private function __appendBodyId(){
+			// trim "content" from beginning of class name
+			$body_id = preg_replace("/^content/", '', get_class($this));
+
+			// lowercase any uppercase letters and prefix with a hyphen
+			$body_id = trim(preg_replace("/([A-Z])/e", "'-' . strtolower('\\1')", $body_id), '-');
+
+			if (!empty($body_id)) $this->Body->setAttribute('id', trim($body_id));
+		}
+
+		/**
+		 * Given the context of the current page, loop over all the values
+		 * of the array and append them to the page's body class. If an
+		 * context value is numeric it will be prepended by 'id-'.
+		 *
+		 * @param array $context
+		 */
+		private function __appendBodyClass(Array $context = array()){
+			foreach($context as $c) {
+				if (is_numeric($c)) $c = 'id-' . $c;
+				$body_class .= trim($c) . ' ';
+			}
+			$body_class = $body_class . trim($this->_body_class);
+			if (!empty($body_class)) $this->Body->setAttribute('class', $body_class);
+		}
+
+		/**
+		 * Called to build the content for the page. This function immediately calls
+		 * __switchboard() which acts a bit of a controller to show content based on
+		 * off a type, such as 'view' or 'action'. AdminstrationPages can override this
+		 * function to just display content if they do not need the switchboard functionality
+		 *
+		 * @see __switchboard()
+		 */
+		public function view(){
+			$this->__switchboard();
+		}
+
+		/**
+		 * This function is called when $_REQUEST contains a key of 'action'.
+		 * Any logic that needs to occur immediately for the action to complete
+		 * should be contained within this function. By default this calls the
+		 * __switchboard with the type set to 'action'.
+		 *
+		 * @see __switchboard()
+		 */
+		public function action(){
+			$this->__switchboard('action');
+		}
+
+		/**
+		 * The __switchboard function acts as a controller to display content
+		 * based off the $type. By default, the $type is 'view' but it can be set
+		 * also set to 'action'. The type is prepended by __ and the context is
+		 * appened to the $type to create the name of the function that will provide
+		 * that logic. For example, if the $type was action and the context of the
+		 * current page was new, the resulting function to be called would be named
+		 * __actionNew(). If an action function is not provided by the Page, this function
+		 * returns nothing, however if a view function is not provided, a 404 page
+		 * will be returned.
+		 *
+		 * @param string $type
+		 *  Either 'view' or 'action', by default this will be 'view'
+		 */
+		public function __switchboard($type='view'){
+
+			if(!isset($this->_context[0]) || trim($this->_context[0]) == '') $context = 'index';
+			else $context = $this->_context[0];
+
+			$function = ($type == 'action' ? '__action' : '__view') . ucfirst($context);
+
+			if(!method_exists($this, $function)) {
+				// If there is no action function, just return without doing anything
+				if($type == 'action') return;
+
+				Administration::instance()->errorPageNotFound();
+			}
+
+			$this->$function();
+		}
+
+		/**
+		 * If an Alert set, it will be prepended to the Form of this page.
+		 * A delegate is fired here to allow extensions to provide their
+		 * their own Alert messages to the page. Note that only one Alert
+		 * is allowed per page at any one time.
+		 *
+		 * @uses AppendPageAlert
+		 */
+		public function appendAlert(){
+
+			/**
+			 * Allows for appending of alerts. Administration::instance()->Page->Alert is way to tell what
+			 * is currently in the system
+			 *
+			 * @delegate AppendPageAlert
+			 * @param string $context
+			 *  '/backend/'
+			 */
+			Administration::instance()->ExtensionManager->notifyMembers('AppendPageAlert', '/backend/');
+
+			if(($this->Alert instanceof Alert)){
+				$this->Form->prependChild($this->Alert->asXML());
+			}
+		}
+
+		/**
+		 * This function will append the Navigation to the AdministrationPage.
+		 * It fires a delegate, NavigationPreRender, to allow extensions to manipulate
+		 * the navigation. Extensions should not use this to add their own navigation,
+		 * they should provide the navigation through their fetchNavigation function.
+		 * Note with the Section navigation groups, if there is only one section in a group
+		 * and that section is set to visible, the group will not appear in the navigation.
+		 *
+		 * @uses NavigationPreRender
+		 * @see getNavigationArray()
+		 * @see toolkit.Extension#fetchNavigation()
+		 */
+		public function appendNavigation(){
+			$nav = $this->getNavigationArray();
+
+			/**
+			 * Immediately before displaying the admin navigation. Provided with the
+			 * navigation array. Manipulating it will alter the navigation for all pages.
+			 *
+			 * @delegate NavigationPreRender
+			 * @param string $context
+			 *  '/backend/'
+			 * @param array $nav
+			 *  An associative array of the current navigation, passed by reference
+			 */
+			Administration::instance()->ExtensionManager->notifyMembers('NavigationPreRender', '/backend/', array('navigation' => &$nav));
+
+			$xNav = new XMLElement('ul');
+			$xNav->setAttribute('id', 'nav');
+
+			foreach($nav as $n){
+				if($n['visible'] == 'no') continue;
+
+				$can_access = false;
+
+				if(!isset($n['limit']) || $n['limit'] == 'author')
+					$can_access = true;
+
+				elseif($n['limit'] == 'developer' && Administration::instance()->Author->isDeveloper())
+					$can_access = true;
+
+				elseif($n['limit'] == 'primary' && Administration::instance()->Author->isPrimaryAccount())
+					$can_access = true;
+
+				if($can_access) {
+					$xGroup = new XMLElement('li', $n['name']);
+					if(isset($n['class']) && trim($n['name']) != '') $xGroup->setAttribute('class', $n['class']);
+
+					$hasChildren = false;
+					$xChildren = new XMLElement('ul');
+
+					if(is_array($n['children']) && !empty($n['children'])){
+						foreach($n['children'] as $c){
+							if($c['visible'] == 'no') continue;
+
+							$can_access_child = false;
+
+							if(!isset($c['limit']) || $c['limit'] == 'author')
+								$can_access_child = true;
+
+							elseif($c['limit'] == 'developer' && Administration::instance()->Author->isDeveloper())
+								$can_access_child = true;
+
+							elseif($c['limit'] == 'primary' && Administration::instance()->Author->isPrimaryAccount())
+								$can_access_child = true;
+
+							if($can_access_child) {
+								// Make sure preferences menu only shows if multiple languages or extension preferences are available
+								if($c['name'] == __('Preferences') && $n['name'] == __('System')){
+									$extensions = Symphony::Database()->fetch("
+											SELECT *
+											FROM `tbl_extensions_delegates`
+											WHERE `delegate` = 'AddCustomPreferenceFieldsets'"
+									);
+
+									$l = Lang::getAvailableLanguages();
+									if(count($l) == 1 && (!is_array($extensions) || empty($extensions))){
+										continue;
+									}
+								}
+
+								$xChild = new XMLElement('li');
+								$xChild->appendChild(
+									Widget::Anchor($c['name'], URL . '/symphony' . $c['link'])
+								);
+
+								$xChildren->appendChild($xChild);
+								$hasChildren = true;
+							}
+						}
+
+						if($hasChildren){
+							$xGroup->appendChild($xChildren);
+							$xNav->appendChild($xGroup);
+						}
+					}
+				}
+			}
+
+			$this->Form->appendChild($xNav);
+			Administration::instance()->Profiler->sample('Navigation Built', PROFILE_LAP);
+		}
+
+		/**
+		 * Returns the $_navigation variable of this Page. If it is empty,
+		 * it will be built by __buildNavigation
+		 *
+		 * @see __buildNavigation()
+		 * @return array
+		 */
+		public function getNavigationArray(){
+			if(empty($this->_navigation)) $this->__buildNavigation();
+			return $this->_navigation;
+		}
+
+		/**
+		 * This function populates the $_navigation array with an associative array
+		 * of all the navigation groups and their links. Symphony only supports one
+		 * level of navigation, so children links cannot have children links. The default
+		 * Symphony Navigation is found in the /assets/navigation.xml folder. This is
+		 * loaded first, and then the Section navigation is built, followed by the Extension
+		 * navigation. Additionally, this function will set the active group of the navigation
+		 * by checking the current page against the array of links.
+		 *
+		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
+		 */
+		public function __buildNavigation(){
 			$nav = array();
-
 			$xml = simplexml_load_file(ASSETS . '/navigation.xml');
-			
+
+			// Loop over the default Symphony Navigation file, converting
+			// it into an associative array representation
 			foreach($xml->xpath('/navigation/group') as $n){
-				
+
 				$index = (string)$n->attributes()->index;
 				$children = $n->xpath('children/item');
 				$content = $n->attributes();
-				
+
+				// If the index is already set, increment the index and check again.
+				// Rinse and repeat until the index is not set.
 				if(isset($nav[$index])){
 					do{
 						$index++;
 					}while(isset($nav[$index]));
 				}
-				
+
 				$nav[$index] = array(
 					'name' => __(strval($content->name)),
 					'index' => $index,
 					'children' => array()
 				);
-				
+
 				if(strlen(trim((string)$content->limit)) > 0){
 					$nav[$index]['limit'] = (string)$content->limit;
 				}
-					
+
 				if(count($children) > 0){
 					foreach($children as $child){
-						$limit = (string)$child->attributes()->limit;
-						
 						$item = array(
 							'link' => (string)$child->attributes()->link,
 							'name' => __(strval($child->attributes()->name)),
 							'visible' => ((string)$child->attributes()->visible == 'no' ? 'no' : 'yes'),
 						);
-						
+
+						$limit = (string)$child->attributes()->limit;
 						if(strlen(trim($limit)) > 0) $item['limit'] = $limit;
-						
+
 						$nav[$index]['children'][] = $item;
 					}
 				}
 			}
-			
-			$sections = Symphony::Database()->fetch("SELECT * FROM `tbl_sections` ORDER BY `sortorder` ASC");
 
+			// Build the section navigation, grouped by their navigation groups
+			$sections = Symphony::Database()->fetch("SELECT * FROM `tbl_sections` ORDER BY `sortorder` ASC");
 			if(is_array($sections) && !empty($sections)){
 				foreach($sections as $s){
-					
+
 					$group_index = self::__navigationFindGroupIndex($nav, $s['navigation_group']);
-					
+
 					if($group_index === false){
 						$group_index = General::array_find_available_index($nav, 0);
 
 						$nav[$group_index] = array(
 							'name' => $s['navigation_group'],
 							'index' => $group_index,
-							'children' => array(),
-							'limit' => NULL
+							'children' => array()
 						);
-						
 					}
-									
+
 					$nav[$group_index]['children'][] = array(
-						'link' => '/publish/' . $s['handle'] . '/', 
-						'name' => $s['name'], 
+						'link' => '/publish/' . $s['handle'] . '/',
+						'name' => $s['name'],
 						'type' => 'section',
 						'section' => array('id' => $s['id'], 'handle' => $s['handle']),
 						'visible' => ($s['hidden'] == 'no' ? 'yes' : 'no')
 					);
-													
-
 				}
 			}
-			
-			$extensions = Administration::instance()->ExtensionManager->listInstalledHandles();
 
+			// Loop over all the installed extensions to add in other navigation items
+			$extensions = Administration::instance()->ExtensionManager->listInstalledHandles();
 			foreach($extensions as $e){
 				$info = Administration::instance()->ExtensionManager->about($e);
 
 				if(isset($info['navigation']) && is_array($info['navigation']) && !empty($info['navigation'])){
-					
 					foreach($info['navigation'] as $item){
-					
+
 						$type = (isset($item['children']) ? Extension::NAV_GROUP : Extension::NAV_CHILD);
 
 						switch($type){
-							
 							case Extension::NAV_GROUP:
 
 								$index = General::array_find_available_index($nav, $item['location']);
@@ -483,175 +645,238 @@
 									'name' => $item['name'],
 									'index' => $index,
 									'children' => array(),
-									'limit' => (!is_null($item['limit']) ? $item['limit'] : NULL)
+									'limit' => (!is_null($item['limit']) ? $item['limit'] : null)
 								);
-								
+
 								foreach($item['children'] as $child){
-									
 									if(!isset($child['relative']) || $child['relative'] == true){
 										$link = '/extension/' . $e . '/' . ltrim($child['link'], '/');
 									}
 									else{
 										$link = '/' . ltrim($child['link'], '/');
-									}									
-									
-									$nav[$index]['children'][] = array(
+									}
 
+									$nav[$index]['children'][] = array(
 										'link' => $link,
 										'name' => $child['name'],
 										'visible' => ($child['visible'] == 'no' ? 'no' : 'yes'),
-										'limit' => (!is_null($child['limit']) ? $child['limit'] : NULL)
-									);									
+										'limit' => (!is_null($child['limit']) ? $child['limit'] : null)
+									);
 								}
-								
+
 								break;
-								
+
 							case Extension::NAV_CHILD:
-		
+
 								if(!isset($item['relative']) || $item['relative'] == true){
 									$link = '/extension/' . $e . '/' . ltrim($item['link'], '/');
 								}
 								else{
 									$link = '/' . ltrim($item['link'], '/');
 								}
-								
+
 								if(!is_numeric($item['location'])){
 									// is a navigation group
 									$group_name = $item['location'];
-									$group_index = $this->__findLocationIndexFromName($nav, $item['location']);
+									$group_index = self::__navigationFindGroupIndex($nav, $item['location']);
 								} else {
 									// is a legacy numeric index
 									$group_index = $item['location'];
 								}
-								
-								$child = array(									
+
+								$child = array(
 									'link' => $link,
 									'name' => $item['name'],
 									'visible' => ($item['visible'] == 'no' ? 'no' : 'yes'),
-									'limit' => (!is_null($item['limit']) ? $item['limit'] : NULL)									
+									'limit' => (!is_null($item['limit']) ? $item['limit'] : null)
 								);
 
 								if ($group_index === false) {
+									$group_index = General::array_find_available_index($nav, 0);
 									// add new navigation group
-									$nav[] = array(
+									$nav[$group_index] = array(
 										'name' => $group_name,
 										'index' => $group_index,
 										'children' => array($child),
-										'limit' => (!is_null($item['limit']) ? $item['limit'] : NULL)
+										'limit' => (!is_null($item['limit']) ? $item['limit'] : null)
 									);
 								} else {
 									// add new location by index
 									$nav[$group_index]['children'][] = $child;
 								}
 
-						
 								break;
-							
 						}
-						
 					}
-					
 				}
-				
+
 			}
 
 			####
 			# Delegate: ExtensionsAddToNavigation
-			# Description: After building the Navigation properties array. This is specifically 
-			# 			for extentions to add their groups to the navigation or items to groups,
-			# 			already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need 
+			# Description: After building the Navigation properties array. This is specifically
+			# 			for extensions to add their groups to the navigation or items to groups,
+			# 			already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need
 			#			to edit existing navigation elements, use the 'NavigationPreRender' delegate.
 			# Global: Yes
 			Administration::instance()->ExtensionManager->notifyMembers(
 				'ExtensionsAddToNavigation', '/backend/', array('navigation' => &$nav)
 			);
-			
+
 			$pageCallback = Administration::instance()->getPageCallback();
-			
+
 			$pageRoot = $pageCallback['pageroot'] . (isset($pageCallback['context'][0]) ? $pageCallback['context'][0] . '/' : '');
 			$found = $this->__findActiveNavigationGroup($nav, $pageRoot);
 
-			## Normal searches failed. Use a regular expression using the page root. This is less 
-			## efficent and should never really get invoked unless something weird is going on
+			// Normal searches failed. Use a regular expression using the page root. This is less
+			// efficient and should never really get invoked unless something weird is going on
 			if(!$found) $this->__findActiveNavigationGroup($nav, '/^' . str_replace('/', '\/', $pageCallback['pageroot']) . '/i', true);
 
-			ksort($nav);		
+			ksort($nav);
 			$this->_navigation = $nav;
+		}
 
-		}		
-		
-		private function __findLocationIndexFromName($nav, $name){
-			foreach($nav as $index => $group){
-				if($group['name'] == $name){
-					return $index;
-				}
+		/**
+		 * Given an associative array representing the navigation, and a group,
+		 * this function will attempt to return the index of the group in the navigation
+		 * array. If it is found, it will return the index, otherwise it will return false.
+		 *
+		 * @param array $nav
+		 *  An associative array of the navigation where the key is the group
+		 *  index, and the value is an associative array of 'name', 'index' and
+		 *  'children'. Name is the name of the this group, index is the same as
+		 *  the key and children is an associative array of navigation items containing
+		 *  the keys 'link', 'name' and 'visible'. The 'haystack'.
+		 * @param string $group
+		 *  The group name to find, the 'needle'.
+		 * @return integer|boolean
+		 *  If the group is found, the index will be returned, otherwise false.
+		 */
+		private static function __navigationFindGroupIndex(Array $nav, $group){
+			foreach($nav as $index => $item){
+				if($item['name'] == $group) return $index;
 			}
-			
 			return false;
 		}
-		
-		function __findActiveNavigationGroup(&$nav, $pageroot, $pattern=false){
-			
+
+		/**
+		 * Given the navigation array, this function will loop over all the items
+		 * to determine which is the 'active' navigation group, or in other words,
+		 * what group best represents the current page the Author is viewing.
+		 * This is done by checking the current page's link against all the links
+		 * provided in the $nav, and then flagging the group of the found link
+		 * with an 'active' CSS class. The current page's link omits any flags or
+		 * URL parameters and just uses the root page URL.
+		 *
+		 * @param array $nav
+		 *  An associative array of the navigation where the key is the group
+		 *  index, and the value is an associative array of 'name', 'index' and
+		 *  'children'. Name is the name of the this group, index is the same as
+		 *  the key and children is an associative array of navigation items containing
+		 *  the keys 'link', 'name' and 'visible'. The 'haystack'. This parameter is passed
+		 *  by reference to this function.
+		 * @param string $pageroot
+		 *  The current page the Author is the viewing, minus any flags or URL
+		 *  parameters such as a Symphony object ID. eg. Section ID, Entry ID. This
+		 *  parameter is also be a regex, but this is highly unlikely.
+		 * @param boolean $pattern
+		 *  If set to true, the $pageroot represents a regex, and preg_match is
+		 *  invoked to determine the active navigation item. Defaults to false
+		 * @return boolean
+		 *  Returns true if an active link was found, false otherwise. If true, the
+		 *  navigation group of the active link will be given the CSS class 'active'
+		 */
+		private function __findActiveNavigationGroup(Array &$nav, $pageroot, $pattern=false){
 			foreach($nav as $index => $contents){
 				if(is_array($contents['children']) && !empty($contents['children'])){
-					foreach($contents['children'] as $item){
-						
+					foreach($contents['children'] as $item) {
 						if($pattern && preg_match($pageroot, $item['link'])){
 							$nav[$index]['class'] = 'active';
 							return true;
-						}			
-							
+						}
 						elseif($item['link'] == $pageroot){
 							$nav[$index]['class'] = 'active';
 							return true;
 						}
-						
 					}
 				}
 			}
-			
+
 			return false;
-			
-		}
-		
-		function wrapFormElementWithError($element, $error=NULL){
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'invalid');
-			$div->appendChild($element);
-			if($error) $div->appendChild(new XMLElement('p', $error));
-			
-			return $div;
 		}
 
-		function __fetchAvailablePageTypes(){
-			
+		/**
+		 * Creates the Symphony footer for an Administration page. By default
+		 * this includes the installed Symphony version and the currently logged
+		 * in Author. A delegate is provided to allow extensions to manipulate the
+		 * footer HTML, which is an XMLElement of a <ul> element.
+		 *
+		 * @uses AddElementToFooter
+		 */
+		public function appendFooter(){
+
+			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array('id' => 'version'));
+			$this->Form->appendChild($version);
+
+			$ul = new XMLElement('ul');
+			$ul->setAttribute('id', 'usr');
+
+			$li = new XMLElement('li');
+			$li->appendChild(Widget::Anchor(Administration::instance()->Author->getFullName(), URL . '/symphony/system/authors/edit/' . Administration::instance()->Author->get('id') . '/'));
+			$ul->appendChild($li);
+
+			$li = new XMLElement('li');
+			$li->appendChild(Widget::Anchor(__('Logout'), URL . '/symphony/logout/', NULL, NULL, NULL, array('accesskey' => 'l')));
+			$ul->appendChild($li);
+
+			/**
+			 * Add new list elements to the footer
+			 *
+			 * @delegate AddElementToFooter
+			 * @param string $context
+			 *  '/backend/'
+			 * @param XMLElement $wrapper
+			 *  A XMLElement representing the <ul> at in the Symphony footer, passed by reference
+			 */
+			Administration::instance()->ExtensionManager->notifyMembers('AddElementToFooter', '/backend/', array('wrapper' => &$ul));
+
+			$this->Form->appendChild($ul);
+		}
+
+		/**
+		 * Returns all the page types that exist in this Symphony install.
+		 * There are 5 default system page types, and new types can be added
+		 * by Developers via the Page Editor.
+		 *
+		 * @return array
+		 *  An array of strings of the page types used in this Symphony
+		 *  install. At the minimum, this will be an array with the values
+		 * 'index', 'XML', 'admin', '404' and '403'.
+		 */
+		public function __fetchAvailablePageTypes(){
 			$system_types = array('index', 'XML', 'admin', '404', '403');
-			
+
 			if(!$types = Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` ORDER BY `type` ASC")) return $system_types;
-			
+
 			return (is_array($types) && !empty($types) ? General::array_remove_duplicates(array_merge($system_types, $types)) : $system_types);
+		}
 
+		/**
+		 * Will wrap a <div> around a desired element to trigger the default
+		 * Symphony error styling.
+		 *
+		 * @deprecated This function is deprecated and will be removed in the next
+		 *  version of Symphony. This preferred way to wrap an element with an
+		 *  error is using Widget::wrapFormElementWithError		 *
+		 * @see toolkit.widget::wrapFormElementWithError()
+		 * @param XMLElement $element
+		 *	The element that should be wrapped with an error
+		 * @param string $message
+		 *	The text for this error. This will be appended after the $element,
+		 *  but inside the wrapping <div>
+		 */
+		public function wrapFormElementWithError($element, $message = null){
+			return Widget::wrapFormElementWithError($element, $message);
 		}
-		
-		function __appendBodyId(){
-			// trim "content" from beginning of class name
-			$body_id = preg_replace("/^content/", '', get_class($this));
-			
-			// lowercase any uppercase letters and prefix with a hyphen
-			$body_id = trim(preg_replace("/([A-Z])/e", "'-' . strtolower('\\1')", $body_id), '-');
-			
-			if (!empty($this->_body_id)) $body_id = $this->_body_id;
-			if (!empty($body_id)) $this->Body->setAttribute('id', trim($body_id));
-		}
-		
-		function __appendBodyClass($context){
-			if (!is_array($this->_context)) $context = array($context);
-			foreach($context as $c) {
-				if (is_numeric($c)) $c = 'id-' . $c;
-				$body_class .= trim($c) . ' ';
-			}
-			$body_class = trim($body_class) . ' ' . trim($this->_body_class);
-			if (!empty($body_class)) $this->Body->setAttribute('class', trim($body_class));
-		}
+
 	}
-

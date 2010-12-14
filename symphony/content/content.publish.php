@@ -43,7 +43,7 @@
 			$sectionManager = new SectionManager($this->_Parent);
 
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])), false, true);
+				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])));
 
 			$section = $sectionManager->fetch($section_id);
 
@@ -112,7 +112,7 @@
 				$this->appendSubheading($section->get('name'));
 			}
 			else{
-				$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), $this->_Parent->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), __('Create a new entry'), 'create button'));
+				$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), $this->_Parent->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c')));
 			}
 
 			if(is_null($entryManager->getFetchSorting()->field) && is_null($entryManager->getFetchSorting()->direction)){
@@ -285,7 +285,7 @@
 
 			$options = array(
 				array(NULL, false, __('With Selected...')),
-				array('delete', false, __('Delete'))
+				array('delete', false, __('Delete'), 'confirm')							
 			);
 
 			$toggable_fields = $section->fetchToggleableFields();
@@ -425,7 +425,7 @@
 			$sectionManager = new SectionManager($this->_Parent);
 
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])), false, true);
+				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])));
 
 		    	$section = $sectionManager->fetch($section_id);
 
@@ -522,8 +522,8 @@
 
 				$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']);
 
-			    	if(!$section = $sectionManager->fetch($section_id))
-					$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', $this->_context['section_handle']), false, true);
+                if(!$section = $sectionManager->fetch($section_id))
+					Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', $this->_context['section_handle']));
 
 				$entryManager = new EntryManager($this->_Parent);
 
@@ -607,7 +607,7 @@
 			$sectionManager = new SectionManager($this->_Parent);
 
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
-				$this->_Parent->customError(E_USER_ERROR, __('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])), false, true);
+				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])));
 
 		    $section = $sectionManager->fetch($section_id);
 
@@ -616,8 +616,10 @@
 			$entryManager = new EntryManager($this->_Parent);
 			$entryManager->setFetchSorting('id', 'DESC');
 
-			if(!$existingEntry = $entryManager->fetch($entry_id)) $this->_Parent->customError(E_USER_ERROR, __('Unknown Entry'), __('The entry you are looking for could not be found.'), false, true);
-			$existingEntry = $existingEntry[0];
+			if(!$existingEntry = $entryManager->fetch($entry_id)) {
+                Administration::instance()->customError(__('Unknown Entry'), __('The entry you are looking for could not be found.'));
+			}
+            $existingEntry = $existingEntry[0];
 
 			// If there is post data floating around, due to errors, create an entry object
 			if (isset($_POST['fields'])) {
@@ -666,7 +668,7 @@
 
 						$this->pageAlert(
 							__(
-								'Entry updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Entries</a>',
+								'Entry updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Entries</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									URL . "/symphony/$link",
@@ -680,7 +682,7 @@
 					case 'created':
 						$this->pageAlert(
 							__(
-								'Entry created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Entries</a>',
+								'Entry created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Entries</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									URL . "/symphony/$link",
@@ -761,7 +763,7 @@
 			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
 
 			$button = new XMLElement('button', __('Delete'));
-			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this entry'), 'type' => 'submit'));
+			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this entry'), 'type' => 'submit', 'accesskey' => 'd'));
 			$div->appendChild($button);
 
 			$this->Form->appendChild($div);
@@ -776,8 +778,9 @@
 
 				$entryManager = new EntryManager($this->_Parent);
 
-			    if(!$ret = $entryManager->fetch($entry_id)) $this->_Parent->customError(E_USER_ERROR, __('Unknown Entry'), __('The entry you are looking for could not be found.'), false, true);
-
+			    if(!$ret = $entryManager->fetch($entry_id)) {
+                    Administration::instance()->customError(__('Unknown Entry'), __('The entry you are looking for could not be found.'));
+                }
 				$entry = $ret[0];
 
 				$sectionManager = new SectionManager($this->_Parent);

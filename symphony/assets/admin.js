@@ -1,7 +1,5 @@
 /**
- * Symphony Core JavaScript
- *
- * @version 2.2.0dev
+ * @package assets
  */
 
 
@@ -71,19 +69,19 @@ var Symphony = {};
 		Context: {
 
 			/**
-			 * @var object Storage object
-			 *
 			 * This object is private, use Symphony.Context.add() and
 			 * Symphony.Context.get() to interact with the dictionary.
+			 *
+			 * @private
 			 */
 			Storage: {},
 
 			/**
 			 * Add data to the Context object
 			 *
-			 * @param string group
+			 * @param {string} group
 			 *  Name of the data group
-			 * @param mixed values
+			 * @param {string|object} values
 			 *  Object or string to be stored
 			 */
 			add: function(group, values) {
@@ -102,7 +100,7 @@ var Symphony = {};
 			/**
 			 * Get data from the Context object
 			 *
-			 * @param string group
+			 * @param {string} group
 			 *  Name of the group to be returned
 			 */
 			get: function(group) {
@@ -129,17 +127,17 @@ var Symphony = {};
 		Language: {
 
 			/**
-			 * @var object Dictionary object
-			 *
 			 * This object is private, use Symphony.Language.add() to add and Symphony.Language.get()
 			 * to interact with the dictionary.
+			 *
+			 * @private
 			 */
 			Dictionary: {},
 
 			/**
 			 * Add strings to the Dictionary
 			 *
-			 * @param object strings
+			 * @param {object} strings
 			 *  Object with English string as key, value should be false
 			 */
 			add: function(strings) {
@@ -165,11 +163,11 @@ var Symphony = {};
 			 * The function replaces variables like {$name} with the a specified value if
 			 * an object of inserts is passed in the function call.
 			 *
-			 * @param string string
+			 * @param {string} string
 			 *  English string to be translated
-			 * @param object inserts
+			 * @param {object} inserts
 			 *  Object with variable name and value pairs
-			 * @return string
+			 * @return {string}
 			 *  Returns the translated string
 			 */
 			get: function(string, inserts) {
@@ -191,11 +189,11 @@ var Symphony = {};
 			 * This private function replaces variables with a specified value.
 			 * It should not be called directly.
 			 *
-			 * @param string string
+			 * @param {string} string
 			 *  Translated string with variables
-			 * @param object inserts
+			 * @param {object} inserts
 			 *  Object with variable name and value pairs
-			 * @return string
+			 * @return {string}
 			 *  Returns translated strings with all variables replaced by their actual value
 			 */
 			insert: function(string, inserts) {
@@ -211,9 +209,9 @@ var Symphony = {};
 			 * This private function sends a synchronous AJAX request to fetch the translations
 			 * for the English strings in the dictionary. It should not be called directly
 			 *
-			 * @param object strings
+			 * @param {object} strings
 			 *  Object of strings to be translated
-			 * @return object
+			 * @return {object}
 			 *  Object with original string and translation pairs
 			 */
 			translate: function(strings) {
@@ -244,18 +242,18 @@ var Symphony = {};
 		Message: {
 
 			/**
-			 * @var array Message queue
-			 *
 			 * This array is private and should not be accessed directly.
+			 *
+			 * @private
 			 */
 			Queue: [],
 
 			/**
 			 * Post system message
 			 *
-			 * @param string message
+			 * @param {string} message
 			 *  Message to be shown
-			 * @param string type
+			 * @param {string} type
 			 *  Message type to be used as class name
 			 */
 			post: function(message, type) {
@@ -270,7 +268,7 @@ var Symphony = {};
 			/**
 			 * Clear message by type
 			 *
-			 * @param string type
+			 * @param {string} type
 			 *  Message type
 			 */
 			clear: function(type) {
@@ -324,9 +322,9 @@ var Symphony = {};
 			/**
 			 * Calculate relative time.
 			 *
-			 * @param Date from
+			 * @param {Date} from
 			 *  Starting date
-			 * @param Date to
+			 * @param {Date} to
 			 *  Current date
 			 */
   			distance: function(from, to) {
@@ -364,7 +362,7 @@ var Symphony = {};
 	};
 
 	/**
-	 * Symphony core functionalities
+	 * Symphony core interactions
 	 */
 	$(document).ready(function() {
 
@@ -375,28 +373,89 @@ var Symphony = {};
 		$('.tags').symphonyTags();
 
 		// Pickers
-		$('.picker').symphonyPicker();
+		$('.picker').symphonyPickable();
+		
+		// Orderable list
+		$('ul.orderable').symphonyOrderable();
+		
+		// Orderable tables
+		var orderable = $('table.orderable');
+		orderable.symphonyOrderable({
+			items: 'tr',
+			handles: 'td'
+		});
+
+		// Don't start ordering while clicking on links
+		orderable.find('a').mousedown(function(event) {
+			event.stopPropagation();
+		});
+
+		// Store current sort order
+		orderable.live('orderstart', function() {
+			old_sorting = orderable.find('input').map(function(e, i) { return this.name + '=' + (e + 1); }).get().join('&');
+		});
+
+		// Restore table zebra while ordering
+		orderable.live('orderchange', function() {
+			orderable.find('tr').removeClass('odd').filter(':odd').addClass('odd');
+		});
+
+		// Process sort order
+		orderable.live('orderstop', function() {
+			orderable.addClass('busy');
+
+			// Get new sort order
+			var new_sorting = orderable.find('input').map(function(e, i) { return this.name + '=' + (e + 1); }).get().join('&');
+			
+			// Store new sort order
+			if(new_sorting != old_sorting) {
+
+				// Update items
+				orderable.trigger('orderchange');
+
+				// Send request
+				jQuery.ajax({
+					type: 'POST',
+					url: Symphony.Context.get('root') + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
+					data: new_sorting,
+					success: function() {
+						Symphony.Message.clear('reorder');
+					},
+					error: function() {
+						Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'reorder error');
+					},
+					complete: function() {
+						orderable.removeClass('busy').find('tr').removeClass('selected');
+						old_sorting = '';
+					}
+				});
+			}
+			else {
+				orderable.removeClass('busy');
+			}
+			
+		});
+		
+		// Selectable
+		$('table:has(input)').symphonySelectable();
 
 		// Duplicators
 		$('.filters-duplicator').symphonyDuplicator();
+		
+		// Collapsible duplicators
 		$('#fields-duplicator').symphonyDuplicator({
 			orderable: true,
 			collapsible: true			
-		});
-		
-		// Toggle field labels in section editor
-		$('#fields-duplicator').bind('collapsestop', function(event, item) {
+		}).bind('collapsestop', function(event, item) {
 			var instance = jQuery(item);
 			instance.find('.header > span:not(:has(i))').append(
 				$('<i />').text(instance.find('label:first input').attr('value'))
 			);
-		});
-		
-		$('#fields-duplicator').bind('expandstop', function(event, item) {
+		}).bind('expandstop', function(event, item) {
 			$(item).find('.header > span > i').remove();
 		});		
 
-		// Fade system messages
+		// Dim system messages
 		Symphony.Message.fade('silence', 10000);
 		
 		// Relative times in system messages
@@ -405,314 +464,133 @@ var Symphony = {};
 			time.html(time.html().replace(Symphony.Language.get('at') + ' ', ''));
 		});
 		Symphony.Message.timer();
-		
-	});
 
-
-/*-----------------------------------------------------------------------------
-	Things to be cleaned up
------------------------------------------------------------------------------*/
-
-	// Sortable lists
-	var movable = {
-		move: function(e) {
-			var t,
-			    n,
-			    y = e.pageY;
-
-			if (y < movable.min) {
-				t = movable.target.prev();
-				for (;;) {
-					movable.delta--;
-					n = t.prev();
-					if (n.length === 0 || y >= (movable.min -= n.height())) {
-						movable.target.insertBefore(t);
-						break;
-					}
-					t = n;
+		// XSLT utilities
+		$('textarea').blur(function() {
+			var source = $(this).val(),
+				utilities = $('#utilities li');
+				
+			// Remove current selection
+			utilities.removeClass('selected');
+				
+			// Get utitities names
+			utilities.find('a').each(function() {
+				var utility = $(this),
+					expression = new RegExp('href=["\']?(?:\\.{2}/utilities/)?' + utility.text());
+				
+				// Check for utility occurrences
+				if(expression.test(source)) {
+					utility.parent().addClass('selected');
 				}
-			} else if (y > movable.max) {
-				t = movable.target.next();
-				for (;;) {
-					movable.delta++;
-					n = t.next();
-					if (n.length === 0 || y <= (movable.max += n.height())) {
-						movable.target.insertAfter(t);
-						break;
-					}
-					t = n;
-				}
-			} else {
-				return;
-			}
-
-			movable.update(movable.target);
-			movable.target.parent().children().each(function(i) { $(this).toggleClass('odd', i % 2 === 0); });
-		},
-		drop: function() {
-			$(document).unbind('mousemove', movable.move);
-			$(document).unbind('mouseup', movable.drop);
-
-			movable.target.removeClass('movable');
-
-			if (movable.delta) {
-				movable.target.trigger($.Event('reorder'));
-			}
-		},
-		update: function(target) {
-			var a = target.height(),
-			    b = target.offset().top,
-				prev_offset = (target.prev().length) ? target.prev().offset().top : 0;
-
-			movable.target = target;
-			movable.min    = Math.min(b, a + (prev_offset || -Infinity));
-			movable.max    = Math.max(a + b, b + (target.next().height() ||  Infinity));
-		}
-	};
-
-	$('.orderable tr, .subsection > ol > li').live('mousedown', function(e) {
-		if (!/^(?:h4|td)$/i.test(e.target.nodeName)) {
-			return true;
-		}
-
-		movable.update($(this).addClass('movable'));
-		movable.delta = 0;
-
-		$(document).mousemove(movable.move);
-		$(document).mouseup(movable.drop);
-
-		return false;
-	});
-
-	$('table.orderable').live('reorder', function() {
-		var t = $(this).addClass('busy');
-
-		$.ajax({
-			type: 'POST',
-			url: Symphony.Context.get('root') + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
-			data: $('input', this).map(function(i) { return this.name + '=' + i; }).get().join('&'),
-			success: function() {
-				Symphony.Message.clear('reorder');
-			},
-			error: function() {
-				Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'reorder error');
-			},
-			complete: function() {
-				t.removeClass('busy');
-			}
-		});
-	});
-
-	$('.selectable td, .subsection h4').live('click', function(e) {
-		if (movable.delta || !/^(?:td|h4)$/i.test(e.target.nodeName)) {
-			return true;
-		}
-
-		var r = $(this.parentNode).toggleClass('selected');
-
-		r.trigger($.Event(r.hasClass('selected') ? 'select' : 'deselect'));
-		r.find('td input').each(function() { this.checked = !this.checked; });
-
-		// when shift held when selecting a row
-		if (e.shiftKey && r.hasClass('selected')) {
-
-			// find first selected row above newly-selected row
-			var selected_above = r.prevAll('.selected');
-			if (selected_above.length) {
-				var from = $('.selectable tr').index(selected_above);
-				var to = $('.selectable tr').index(r);
-				$('.selectable tr').each(function(i) {
-					if (i > from && i < to) {
-						var r = $(this).toggleClass('selected');
-						r.trigger($.Event(r.hasClass('selected') ? 'select' : 'deselect'));
-						r.find('td input').each(function() { this.checked = !this.checked; });
-					}
-				});
-			}
-			// de-select text caused by holding shift
-			if (window.getSelection) window.getSelection().removeAllRanges();
-		}
-
-		return false;
-	});
-
-	// Document ready
-	$(document).ready(function() {
-
-		// Ugly DOM maintenance
-		$('table:has(input)').addClass('selectable');
-
-		if (/[?&]debug[&=][^#]*#line-\d+$/.test(location.href)) {
-			$('ol a').eq(parseInt(/\d+$/.exec(location.href)[0], 10) - 1).addClass('active');
-		}
-
-		$('ul.tags > li').mousedown(silence);
-		$('#nav').mouseover(silence);
-		$('.orderable td, .subsection h4').bind('selectstart', silence); // Fix for IE bug
-
-		function silence() { return false; }
+			});
+		}).blur();
 
 		// Change user password
 		$('#change-password').each(function() {
+			var password = $(this),
+				labels = password.find('label'),
+				help = password.next('p.help'),
+				placeholder = $('<label>' + Symphony.Language.get('Password') + ' <span><button>' + Symphony.Language.get('Change Password') + '</button></span></label>'),
+				invalid = password.has('.invalid');
+		
+			if(invalid.size() == 0) {
+				
+				// Hide password fields
+				password.removeClass();
+				labels.hide();
+				help.hide();
+				
+				// Add placeholder
+				password.append(placeholder).find('button').click(function(event) {
+					event.preventDefault();
+					
+					// Hide placeholder
+					placeholder.hide();
+					
+					// Shwo password fields
+					password.addClass('triple group');
+					labels.show();
+					help.show();
+				});
 
-			// Do not hide fields if there is some error there.
-			if ($('div.invalid', $(this)).length > 0) return;
-
-			var a = $(this),
-			    b = a.next('p.help').remove();
-
-			if (a.find('label').length !== 3 && a.find('label').length !== 2) {
-				return;
 			}
 
-			a.before('<div class="label">' + Symphony.Language.get('Password') + ' <span><button id="change-password" type="button">' + Symphony.Language.get('Change Password') + '</button></span></div>').remove();
-
-			$('#change-password').click(function() {
-				$(this.parentNode.parentNode).replaceWith(b);
-				a.insertBefore(b).find('input')[0].focus();
-			});
 		});
 
-		// Upload fields
-		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span').click(function() {
-			var s = $(this.parentNode),
-			    d = '<input name="' + $(this).siblings('input').attr('name') + '" type="file">';
-
-			setTimeout(function() { s.html(d); }, 50); // Delayed to avoid WebKit clickthrough bug
-		});
-
-		// confirm() dialogs
+		// Confirm actions
 		$('button.confirm').live('click', function() {
-			var n = document.title.split(/[\u2013]\s*/g)[2],
-			    t = (n ? 'Are you sure you want to {$action} {$name}?' : 'Are you sure you want to {$action}?');
+			var button = $(this),
+				name = document.title.split(/[\u2013]\s*/g)[2],
+			    text = (name ? 'Are you sure you want to {$action} {$name}?' : 'Are you sure you want to {$action}?');
 
-			return confirm(Symphony.Language.get(t, {
-				'action': this.firstChild.data.toLowerCase(),
-				'name': n
+			return confirm(Symphony.Language.get(text, {
+				'action': button.text().toLowerCase(),
+				'name': name
 			}));
-		});
+		});		
 
-		if ($('[name=with-selected] option.confirm').length > 0) {
-			$('form').submit(function() {
-				var i = $('table input:checked').length,
-				    t = (i > 1 ? 'Are you sure you want to {$action} {$count} items?' : 'Are you sure you want to {$action} {$name}?'),
-				    s = document.getElementsByName('with-selected')[0],
-				    o = $(s.options[s.selectedIndex]);
+		// Confirm with selected actions
+		$('form').submit(function(event) {
+			var select = $('select[name=with-selected]'),
+				option = select.find('option:selected'),
+				input = $('table input:checked'),
+				count = input.size(),
+				text = (count > 1 ? 'Are you sure you want to {$action} {$count} items?' : 'Are you sure you want to {$action} {$name}?');
 
-				if (i == 0) return false;
-
-				t = Symphony.Language.get(t, {
-					'action': o.text().toLowerCase(),
-					'name': $.trim($('table input:checked').parents('tr').find('td').eq(0).text()),
-					'count': i
-				});
-
-				return i > 0 && !o.hasClass('confirm') || confirm(t);
-			});
-		}
-
-		// XSLT utilities
-		$('#utilities a').each(function() {
-			var a = $(this.parentNode),
-			    r = new RegExp('href=["\']?(?:\\.{2}/utilities/)?' + $(this).text());
-
-			$('textarea').blur(function() {
-				a[r.test(this.value) ? 'addClass' : 'removeClass']('selected');
-			});
-		});
-
-		$('textarea').blur();
-
-		// Repeating sections
-		$('div.subsection').each(function() {
-			var m = $(this),
-			    t = m.find('.template'),
-			    h = t.map(function() { return $(this).height(); }).get();
-
-			t.remove().css('height', 0);
-			m.append('<div class="actions"><a>' + Symphony.Language.get('Add item') + '</a><a class="inactive">' + Symphony.Language.get('Remove selected items') + '</a></div>')
-			m.bind('select', select).bind('deselect', select);
-
-			var r = m.find('.actions > a.inactive'),
-			    i = 0;
-
-			function select(e) {
-				r.toggleClass('inactive', !(i += e.type === 'select' ? 1 : -1));
+			if(option.is('.confirm')) {
+				return confirm(Symphony.Language.get(text, {
+					'action': option.text().toLowerCase(), // Does this work in all languages?
+					'name': $.trim(input.parents('tr').find('td:first').text()),
+					'count': count
+				}));
 			}
-
-			if (t.length > 1) {
-				var s = document.createElement('select'),
-				    l = t.find('h4');
-
-				for (var i = 0; i < l.length; i++) {
-					s.options[i] = new Option(l[i].firstChild.data, i);
-				}
-
-				$('.actions', this).prepend(s);
-			}
-
-			m.find('.actions > a').click(function() {
-				var a = $(this);
-
-				if (a.hasClass('inactive')) {
-					return;
-				}
-
-				if (a.is(':last-child')) {
-					m.find('li.selected').animate({height: 0}, function() {
-						$(this).remove();
-					});
-
-					i = 0;
-					a.addClass('inactive');
-				} else {
-					var j = s ? s.selectedIndex : 0,
-					    w = m.find('ol');
-
-					t.eq(j).clone(true).appendTo(w).animate({height: h[j]}, function() {
-						$('input:not([type=hidden]), select, textarea', this).eq(0).focus();
-					});
-				}
-			});
-
-			$('form').submit(function() {
-				m.find('ol > li').each(function(i) {
-					$('input,select,textarea', this).each(function() {
-						this.name = this.name.replace(/\[-?\d+(?=])/, '[' + i);
-					});
-				});
-			});
 		});
 
-		// Data source switcheroo
+		// Data source manager options
 		$('select.filtered > optgroup').each(function() {
-			var s = this.parentNode,
-			    l = this.label,
-			    z = $(this).siblings('option').length,
-			    o = $(this).remove().find('option');
+			var optgroup = $(this), 
+				select = optgroup.parents('select'),
+			    label = optgroup.attr('label'),
+			    options = optgroup.remove().find('option');
 
+			// Show only relevant options based on context
 			$('#context').change(function() {
-				if ($(this.options[this.selectedIndex]).text() === l) {
-					s.options.length = z;
-					o.clone(true).appendTo(s);
+				if($(this).find('option:selected').text() == label) {
+					select.empty().append(options.clone());
 				}
 			});
 		});
-
+		
+		// Data source manager context
 		$('*.contextual').each(function() {
-			var a = $(this);
+			var area = $(this);
 
 			$('#context').change(function() {
-				var o = $(this.options[this.selectedIndex]).parent('optgroup'),
-				    c = this.value.replace(/\W+/g, '_'),
-				    g = o.attr('label').replace(/\W+/g, '_');
+				var select = $(this),
+					optgroup = select.find('option:selected').parent(),
+				    value = select.val().replace(/\W+/g, '_'),
+				    group = optgroup.attr('label').replace(/\W+/g, '_');
 
-				a[(a.hasClass(c) || a.hasClass(g)) ^ a.hasClass('inverse') ? 'removeClass' : 'addClass']('irrelevant');
+				// Show only relevant interface components based on context
+				area[(area.hasClass(value) || area.hasClass(group)) ^ area.hasClass('inverse') ? 'removeClass' : 'addClass']('irrelevant');
 			});
 		});
 
+		// Set data source manager context
 		$('#context').change();
 
+		// Upload fields
+		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span').click(function(event) {
+			var span = $(this).parent().empty(),
+				name = span.find('input').attr('name');
+
+			// Prevent clicktrough
+			event.preventDefault();
+
+			// Add new empty file input
+			span.append('<input name="' + name + '" type="file">');
+		});
+										
 	});
 
 })(jQuery.noConflict());

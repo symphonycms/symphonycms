@@ -1,5 +1,9 @@
 <?php
 
+	/**
+	 * @package toolkit
+	 */
+
 	Class fieldSelect extends Field {
 		function __construct(&$parent){
 			parent::__construct($parent);

@@ -1,5 +1,9 @@
 <?php
 
+	/**
+	 * @package toolkit
+	 */
+
 	Class fieldDate extends Field{
 
 		const SIMPLE = 0;

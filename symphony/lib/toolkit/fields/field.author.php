@@ -1,5 +1,14 @@
 <?php
 
+	/**
+	 * @package toolkit
+	 */
+    
+    /**
+     * The Author field allows Symphony Authors to be selected in your entries.
+     * It is a read only field, new Authors cannot be added from the Frontend using
+     * events.
+     */
 	Class fieldAuthor extends Field {
 		function __construct(&$parent){
 			parent::__construct($parent);
@@ -8,6 +17,18 @@
 
 		public function canToggle(){
 			return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
+		}
+         
+        public function isSortable(){
+			return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
+		}
+
+		public function canFilter(){
+			return true;
+		}
+
+		public function canImport(){
+			return true;
 		}
 
 		public function allowDatasourceOutputGrouping(){
@@ -63,7 +84,7 @@
 			$options = array();
 
 			foreach($authors as $a){
-				$options[] = array($a->get('id'), in_array($a->get('id'), $value), $a->get('first_name') . ' ' . $a->get('last_name'));
+				$options[] = array($a->get('id'), in_array($a->get('id'), $value), $a->getFullName());
 			}
 
 			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
@@ -98,17 +119,6 @@
 			return parent::prepareTableValue(array('value' => General::sanitize(ucwords(implode(', ', $value)))), $link);
 		}
 
-		public function isSortable(){
-			return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
-		}
-
-		public function canFilter(){
-			return true;
-		}
-
-		public function canImport(){
-			return true;
-		}
 
 		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
 			$joins .= "
@@ -271,7 +281,7 @@
 			$options = array();
 
 			foreach($authors as $a){
-				$options[] = array($a->get('id'), NULL, $a->get('first_name') . ' ' . $a->get('lastname'));
+				$options[] = array($a->get('id'), NULL, $a->getFullName());
 			}
 
 			$fieldname = 'fields['.$this->get('element_name').']';
@@ -287,6 +297,4 @@
 			return $label;
 		}
 
-
 	}
-

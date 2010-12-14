@@ -1,123 +1,260 @@
 <?php
-	
+
+	/**
+	 * @package core
+	 */
+	/**
+	 * The Log class acts a simple wrapper to write errors to a file so that it can
+	 * be read at a later date. There is one Log file in Symphony, stored in the main
+	 * LOGS directory.
+	 */
 	require_once(CORE . '/class.datetimeobj.php');
-		
+
 	Class Log{
 
-		const NOTICE = E_NOTICE;
-		const WARNING = E_WARNING;
-		const ERROR = E_ERROR;
-
+		/**
+		 * A constant for if this message should add to an existing log file
+		 * @var integer
+		 */
 		const APPEND = 10;
+
+		/**
+		 * A constant for if this message should overwrite the existing log
+		 * @var integer
+		 */
 		const OVERWRITE = 11;
 
-		private static $__errorTypeStrings = array (
-			
-			E_NOTICE         		=> 'NOTICE',
-			E_WARNING        		=> 'WARNING',
-			E_ERROR          		=> 'ERROR',
-			E_PARSE          		=> 'PARSING ERROR',
-                                       
-			E_CORE_ERROR     		=> 'CORE ERROR',
-			E_CORE_WARNING   		=> 'CORE WARNING',
-			E_COMPILE_ERROR  		=> 'COMPILE ERROR',
-			E_COMPILE_WARNING 		=> 'COMPILE WARNING',
-			                           
-			E_USER_NOTICE    		=> 'USER NOTICE',
-			E_USER_WARNING   		=> 'USER WARNING',
-			E_USER_ERROR     		=> 'USER ERROR',
-			                           
-			E_STRICT         		=> 'STRICT NOTICE',
-			E_RECOVERABLE_ERROR  	=> 'RECOVERABLE ERROR'
-			
-		);
+		/**
+		 * The path to this log file
+		 * @var string
+		 */
+		private $_log_path = null;
 
-		private $_log_path;
-		private $_log;
-		private $_max_size;
-		private $_archive;
-	
-		function __construct($logpath){
-			$this->setLogPath($logpath);
-			$this->setArchive(false);
-			$this->setMaxSize(-1);
+		/**
+		 * An array of log messages to write to the log.
+		 * @var array
+		 */
+		private $_log = array();
+
+		/**
+		 * The maximise size of the log can reach before it is rotated and a new
+		 * Log file written started. The units are bytes. Default is -1, which
+		 * means that the log will never be rotated.
+		 * @var integer
+		 */
+		private $_max_size = -1;
+
+		/**
+		 * Whether to archive olds logs or not, by default they will not be archived.
+		 * @var string
+		 */
+		private $_archive = false;
+
+		/**
+		 * The date format that this Log entries will be written as. Defaults to
+		 * Y/m/d H:i:s.
+		 * @var string
+		 */
+		private $_datetime_format = 'Y/m/d H:i:s';
+
+		/**
+		 * The log constructor takes a path to the folder where the Log should be
+		 * written to.
+		 *
+		 * @param string $path
+		 *  The path to the folder where the Log files should be written
+		 */
+		public function __construct($path){
+			$this->setLogPath($path);
 		}
-	
+
+		/**
+		 * Setter for the <code>$_log_path</code>.
+		 *
+		 * @param string $path
+		 *  The path to the folder where the Log files should be written
+		 */
 		public function setLogPath($path){
 			$this->_log_path = $path;
 		}
-	
+
+		/**
+		 * Accessor for the <code>$_log_path</code>.
+		 *
+		 * @return string
+		 */
 		public function getLogPath(){
 			return $this->_log_path;
 		}
-		
-		public function setArchive($bool){
-			$this->_archive = $bool;
+
+		/**
+		 * Accessor for the <code>$_log</code>.
+		 *
+		 * @return array
+		 */
+		public function getLog(){
+			return $this->_log;
 		}
-		
+
+		/**
+		 * Setter for the <code>$_archive</code>.
+		 *
+		 * @param boolean $archive
+		 *  If true, Log files will be archived using gz when they are rotated,
+		 *  otherwise they will just be overwritten when they are due for rotation
+		 */
+		public function setArchive($archive){
+			$this->_archive = $archive;
+		}
+
+		/**
+		 * Setter for the <code>$_max_size</code>.
+		 *
+		 * @param integer $size
+		 *  The size, in bytes, that the Log can reach before it is rotated.
+		 */
 		public function setMaxSize($size){
 			$this->_max_size = $size;
 		}
-		
+
+		/**
+		 * Setter for the <code>$_date_format</code>.
+		 *
+		 * @since Symphony 2.2
+		 * @link http://au.php.net/manual/en/function.date.php
+		 * @param string $format
+		 *  Takes a valid date format using the PHP date tokens
+		 */
+		public function setDateTimeFormat($format){
+			$this->_datetime_format = $format;
+		}
+
+		/**
+		 * Given a PHP error constant, return a human readable name. Uses the
+		 * <code>GenericErrorHandler::$errorTypeStrings</code> array to return
+		 * the name
+		 *
+		 * @see core.GenericErrorHandler::$errorTypeStrings		 *
+		 * @param integer $type
+		 *  A PHP error constant
+		 * @return string
+		 *  A human readable name of the error constant, or if the type is not
+		 *  found, UNKNOWN.
+		 */
 		private function __defineNameString($type){
-		
-			if(isset(self::$__errorTypeStrings[$type])){
-				return self::$__errorTypeStrings[$type];
+			if(isset(GenericErrorHandler::$errorTypeStrings[$type])){
+				return GenericErrorHandler::$errorTypeStrings[$type];
 			}
 
 			return 'UNKNOWN';
-			
 		}
-		
-		public function pushToLog($message, $type=E_NOTICE, $writeToLog=false, $addbreak=true, $append=false){
-			
-			if(empty($this->_log) && !is_array($this->_log))
-				$this->_log = array();
-			
-			if($append){
-				$this->_log[count($this->_log) - 1]['message'] =  $this->_log[count($this->_log) - 1]['message'] . $message;
-			
-			}
-			
-			else{
-				array_push($this->_log, array('type' => $type, 'time' => time(), 'message' => $message));
-				$message = DateTimeObj::get('Y/m/d H:i:s') . ' > ' . $this->__defineNameString($type) . ': ' . $message;
-			}
-			
-			if($writeToLog) $this->writeToLog($message, $addbreak);
-			
-		}
-		
+
+		/**
+		 * Function will return the last message added to <code>$_log</code> and remove
+		 * it from the array.
+		 *
+		 * @return array
+		 *  Returns an associative array of a log message, containing the type of the log
+		 *  message, the actual message and the time at the which it was added to the log
+		 */
 		public function popFromLog(){
-			if(count($this->_log) != 0)
+			if(!empty($this->_log))
 				return array_pop($this->_log);
-				
+
 			return false;
 		}
-		
+
+		/**
+		 * Given a message, this function will add it to the internal <code>$_log</code>
+		 * so that it can be written to the Log. Optional parameters all the message to
+		 * be immediately written, insert line breaks or add to the last log message
+		 *
+		 * @param string $message
+		 *  The message to add to the Log
+		 * @param integer $type
+		 *  A PHP error constant for this message, defaults to E_NOTICE
+		 * @param boolean $writeToLog
+		 *  If set to true, this message will be immediately written to the log. By default
+		 *  this is set to false, which means that it will only be added to the array ready
+		 *  for writing
+		 * @param boolean $addbreak
+		 *  To be used in conjunction with <code>$writeToLog</code>, this will add a line break
+		 *  before writing this message in the log file. Defaults to true.
+		 * @param boolean $append
+		 *  If set to true, the given <code>$message</code> will be append to the previous log
+		 *  message found in the <code>$_log</code> array
+		 * @return mixed
+		 *  If <code>$writeToLog</code> is passed, this function will return boolean, otherwise
+		 *  void
+		 */
+		public function pushToLog($message, $type=E_NOTICE, $writeToLog=false, $addbreak=true, $append=false){
+
+			if($append){
+				$this->_log[count($this->_log) - 1]['message'] =  $this->_log[count($this->_log) - 1]['message'] . $message;
+			}
+			else{
+				array_push($this->_log, array('type' => $type, 'time' => time(), 'message' => $message));
+				$message = DateTimeObj::get($this->_datetime_format) . ' > ' . $this->__defineNameString($type) . ': ' . $message;
+			}
+
+			if($writeToLog) $this->writeToLog($message, $addbreak);
+
+		}
+
+
+		/**
+		 * This function will write the given message to the log file. Messages will be appended
+		 * the existing log file.
+		 *
+		 * @param string $message
+		 *  The message to add to the Log
+		 * @param boolean $addbreak
+		 *  To be used in conjunction with <code>$writeToLog</code>, this will add a line break
+		 *  before writing this message in the log file. Defaults to true.
+		 * @return boolean
+		 *  Returns true if the message was written successfully, false otherwise
+		 */
 		public function writeToLog($message, $addbreak=true){
-			
+
 			if(file_exists($this->_log_path) && !is_writable($this->_log_path)){
 				$this->pushToLog('Could Not Write To Log. It is not readable.', self::ERROR);
 				return false;
 			}
-			return file_put_contents($this->_log_path, $message . ($addbreak ? "\r\n" : ''), FILE_APPEND);
-	
+			return file_put_contents($this->_log_path, $message . ($addbreak ? PHP_EOL : ''), FILE_APPEND);
+
 		}
-		
-		public function getLog(){
-			return $this->_log;
-		}
-		
+
+
+		/**
+		 * The function handles the rotation of the log files. By default it will open
+		 * the current log file, 'main', which is written to <code>$_log_path</code> and
+		 * check it's file size doesn't exceed <code>$_max_size</code>. If it does, the log
+		 * is appended with a date stamp and if <code>$_archive</code> has been set, it will
+		 * be archived and stored. If a log file has exceeded it's size, or the OVERWRITE
+		 * flag is set, the existing log file is removed and a new one created. Essentially,
+		 * if a log file has not reached it's <code>$_max_size</code> and the the flag is not
+		 * set to OVERWRITE, this function does nothing.
+		 *
+		 * @link http://au.php.net/manual/en/function.intval.php
+		 * @param integer $flag
+		 *  One of the Log constants, either <code>Log::APPEND</code> or <code>Log::OVERWRITE</code>
+		 *  By default this is <code>Log::APPEND</code>
+		 * @param integer $mode
+		 *  The file mode used to apply to the archived log, by default this is 0777. Note that this
+		 *  parameter is modified using PHP's intval function with base 8.
+		 * @return integer
+		 *  Returns 1 if the log was overwritten, or 2 otherwise.
+		 */
 		public function open($flag=self::APPEND, $mode=0777){
-			
+
 			if(!file_exists($this->_log_path)) $flag = self::OVERWRITE;
-			
+
 			if($flag == self::APPEND && file_exists($this->_log_path) && is_readable($this->_log_path)){
 				if($this->_max_size > 0 && filesize($this->_log_path) > $this->_max_size){
 					$flag = self::OVERWRITE;
-					
+
 					if($this->_archive){
+						$this->close();
 						$file = LOGS . '/main.'.DateTimeObj::get('Ymdh').'.gz';
 						$handle = gzopen($file,'w9');
 						gzwrite($handle, file_get_contents($this->_log_path));
@@ -131,27 +268,27 @@
 				if(file_exists($this->_log_path) && is_writable($this->_log_path)){
 					unlink($this->_log_path);
 				}
-			
+
 				$this->writeToLog('============================================', true);
 				$this->writeToLog('Log Created: ' . DateTimeObj::get('c'), true);
 				$this->writeToLog('============================================', true);
-				
 
 				chmod($this->_log_path, intval($mode, 8));
-			
+
 				return 1;
 			}
-			
+
 			return 2;
-			
 		}
-		
-		public function close(){
-		
+
+		/**
+		 * Writes a end of file block at the end of the log file with a datetime
+		 * stamp of when the log file was closed.
+		 */
+		public function close() {
 			$this->writeToLog('============================================', true);
 			$this->writeToLog('Log Closed: ' . DateTimeObj::get('c'), true);
-			$this->writeToLog("============================================\r\n\r\n\r\n", true);
-				
+			$this->writeToLog("============================================" . PHP_EOL . PHP_EOL, true);
 		}
 	}
-	
+
