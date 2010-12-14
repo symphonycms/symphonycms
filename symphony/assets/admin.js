@@ -590,6 +590,8 @@ var Symphony = {};
 			// Add new empty file input
 			span.append('<input name="' + name + '" type="file">');
 		});
+		
+		$('input[type=\'text\'], textarea').first().focus();
 										
 	});
 
