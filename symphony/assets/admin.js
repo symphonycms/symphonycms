@@ -591,7 +591,7 @@ var Symphony = {};
 			span.append('<input name="' + name + '" type="file">');
 		});
 		
-		if(Symphony.Context.get('env').page == 'edit' || Symphony.Context.get('env').new) {
+		if(Symphony.Context.get('env').page == 'edit' || Symphony.Context.get('env').page == 'new') {
 			$('input[type=\'text\'], textarea').first().focus();
 		}
 										
