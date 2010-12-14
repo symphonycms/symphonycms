@@ -591,6 +591,7 @@ var Symphony = {};
 			span.append('<input name="' + name + '" type="file">');
 		});
 		
+		// Focus first text-input or textarea when creating or editing entries
 		if(Symphony.Context.get('env').page == 'edit' || Symphony.Context.get('env').page == 'new') {
 			$('input[type=\'text\'], textarea').first().focus();
 		}
