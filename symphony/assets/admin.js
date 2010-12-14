@@ -531,7 +531,7 @@ var Symphony = {};
 
 		// Confirm with selected actions
 		$('form').submit(function(event) {
-			var select = $('select[name=with-selected]'),
+			var select = $('select[name="with-selected"]'),
 				option = select.find('option:selected'),
 				input = $('table input:checked'),
 				count = input.size(),
@@ -593,7 +593,7 @@ var Symphony = {};
 		
 		// Focus first text-input or textarea when creating or editing entries
 		if(Symphony.Context.get('env').page == 'edit' || Symphony.Context.get('env').page == 'new') {
-			$('input[type=\'text\'], textarea').first().focus();
+			$('input[type="text"], textarea').first().focus();
 		}
 										
 	});
