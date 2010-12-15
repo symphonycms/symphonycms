@@ -218,6 +218,10 @@
 							$this->_email_sent = true;
 						}
 						
+						catch(EmailGatewayException $e){
+							throw new SymphonyErrorPage('Error sending email. ' . $e->getMessage());
+						}
+
 						## TODO: Fix Me
 						###
 						# Delegate: PasswordResetSuccess
