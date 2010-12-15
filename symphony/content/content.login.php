@@ -217,6 +217,7 @@
 							$email->send();
 							$this->_email_sent = true;
 						}
+						catch(Exception $e) {}
 						
 						## TODO: Fix Me
 						###
