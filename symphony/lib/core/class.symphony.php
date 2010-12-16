@@ -89,8 +89,9 @@
 		 * The Symphony constructor initialises the class variables of Symphony.
 		 * It will set the DateTime settings, define new date constants and initialise
 		 * the correct Language for the currently logged in Author. If magic quotes
-		 * are enabled, Symphony will sanitize the $_SERVER, $_COOKIE, $_GET
-		 * and $_POST arrays.
+		 * are enabled, Symphony will sanitize the <code>$_SERVER</code>, <code>$_COOKIE</code>, 
+         * <code>$_GET</code> and <code>$_POST</code> arrays. The constructor loads in 
+         * the initial Configuration values from the <code>CONFIG</code> file
 		 */
 		protected function __construct(){
 
@@ -103,7 +104,9 @@
 				General::cleanArray($_GET);
 				General::cleanArray($_POST);
 			}
-
+            
+            // Includes the existing CONFIG file and initialises the Configuration
+            // by setting the values with the setArray function.
 			include(CONFIG);
 			self::$Configuration = new Configuration(true);
 			self::$Configuration->setArray($settings);
