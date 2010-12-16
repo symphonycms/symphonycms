@@ -95,6 +95,7 @@
 		protected function __construct(){
 
 			$this->Profiler = Profiler::instance();
+            $this->Profiler->sample('Engine Initialisation');
 
 			if(get_magic_quotes_gpc()) {
 				General::cleanArray($_SERVER);
