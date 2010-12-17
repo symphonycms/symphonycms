@@ -136,8 +136,6 @@
 				$label->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
 				$fieldset->appendChild($label);		
 			
-#				$fieldset->appendChild(new XMLElement('p', __('This event will not be processed if any of these rules return true.'), array('class' => 'help')));
-			
 				$this->Form->appendChild($fieldset);
 			endif;
 			
