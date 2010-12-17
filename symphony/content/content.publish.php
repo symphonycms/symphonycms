@@ -174,10 +174,6 @@
 			}
 
 			else{
-
-				$bOdd = true;
-
-
 				$field_pool = array();
 				if(is_array($visible_columns) && !empty($visible_columns)){
 					foreach($visible_columns as $column){
@@ -264,9 +260,7 @@
 					$tableData[count($tableData) - 1]->appendChild(Widget::Input('items['.$entry->get('id').']', NULL, 'checkbox'));
 
 					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow($tableData, ($bOdd ? 'odd' : NULL), 'id-' . $entry->get('id'));
-
-					$bOdd = !$bOdd;
+					$aTableBody[] = Widget::TableRow($tableData, NULL, 'id-' . $entry->get('id'));
 
 				}
 			}

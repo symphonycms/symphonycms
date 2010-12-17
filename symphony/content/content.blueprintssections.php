@@ -39,9 +39,6 @@
 			}
 
 			else{
-
-				$bOdd = true;
-
 				foreach($sections as $s){
 
 					$entry_count = intval(Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries` WHERE `section_id` = '".$s->get('id')."' "));
@@ -54,9 +51,7 @@
 					$td3->appendChild(Widget::Input('items['.$s->get('id').']', 'on', 'checkbox'));
 
 					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3), ($bOdd ? 'odd' : NULL));
-
-					$bOdd = !$bOdd;
+					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
 
 				}
 			}

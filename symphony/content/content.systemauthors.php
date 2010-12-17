@@ -42,7 +42,6 @@
 			}
 
 			else{
-				$bOdd = true;
 				foreach($authors as $a){
 
 					## Setup each cell
@@ -67,9 +66,7 @@
 					}
 
 					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3), ($bOdd ? 'odd' : NULL));
-
-					$bOdd = !$bOdd;
+					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
 
 				}
 			}

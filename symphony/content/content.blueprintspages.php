@@ -89,9 +89,6 @@
 				
 			}
 			else{
-				
-				$bOdd = true;
-				
 				foreach ($pages as $page) {
 					$class = array();
 					
@@ -137,7 +134,6 @@
 						$col_types = Widget::TableData(__('None'), 'inactive');
 					}
 					
-					if($bOdd) $class[] = 'odd';
 					if(in_array($page['id'], $this->_hilights)) $class[] = 'failed';
 					
 					$columns = array($col_title, $col_template, $col_url, $col_params, $col_types);
@@ -160,8 +156,6 @@
 						$columns,
 						implode(' ', $class)
 					);
-					
-					$bOdd = !$bOdd;
 				}
 			}
 			
