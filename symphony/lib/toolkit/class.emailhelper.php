@@ -66,6 +66,7 @@
 			for ($i=0; $i < $input_length; $i++) {
 				$char = $input[$i];
 				$ascii = ord($char);
+				$remaining_total_length = $input_length - $i - 1;
 
 				// No encoding for all 62 alphanumeric characters
 				if (   48 <= $ascii && $ascii <= 57
@@ -86,15 +87,18 @@
 					// bit operation is around 10 percent faster than 'strtoupper(dechex($ascii))'
 					$replace_char = '=' . $qpHexDigits[$ascii >> 4] . $qpHexDigits[$ascii & 0x0f];
 				}
-				// Take remaining bytes of multi-byte sequences into account
+				// Take remaining bytes of multi-byte sequences into account.
 				$remaining_char_length = 0;
-				for ($lookahead = 1; $lookahead <= 3; $lookahead++) {
-					$ascii_ff = ord($input[$i+$lookahead]);
-					if (128 <= $ascii_ff && $ascii_ff <= 191) {
-						// those will be encoded, so the length will be '3'
-						$remaining_char_length += 3;
+				// Use existing offset only.
+				if ($remaining_total_length >= 1) {
+					for ($lookahead = 1; $lookahead <= min(3, $remaining_total_length); $lookahead++) {
+						$ascii_ff = ord($input[$i+$lookahead]);
+						if (128 <= $ascii_ff && $ascii_ff <= 191) {
+							// those will be encoded, so the length will be '3'
+							$remaining_char_length += 3;
+						}
+						else break;
 					}
-					else break;
 				}
 				// Would the line become too long?
 				if ($line_length + $replace_length + $remaining_char_length > $line_limit) {
@@ -133,6 +137,7 @@
 		    for ($i=0; $i < $input_length; $i++) {
 				$char = $input[$i];
 				$ascii = ord($char);
+				$remaining_total_length = $input_length - $i - 1;
 
 				// No encoding for spaces and tabs
 				if ($ascii == 9 || $ascii == 32) {
@@ -142,10 +147,13 @@
 				}
 				// CR and LF
 				elseif ($ascii == 13 || $ascii == 10) {
-					if (   $ascii == 13 && ord($input[$i+1]) == 10
-					    || $ascii == 10 && ord($input[$i+1]) == 13 )
-					{
-						$i += 1;
+					// Use existing offset only.
+					if ($remaining_total_length >= 1) {
+						if (   $ascii == 13 && ord($input[$i+1]) == 10
+						    || $ascii == 10 && ord($input[$i+1]) == 13 )
+						{
+							$i += 1;
+						}
 					}
 					if ($blank) {
 						/**
