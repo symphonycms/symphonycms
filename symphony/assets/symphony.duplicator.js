@@ -67,7 +67,7 @@
 			
 			// Construct a new instance:
 			var construct = function(source) {
-				var template = $(source).clone();
+				var template = $(source).clone(true);
 				var instance = prepare(template);
 				
 				widgets.controls.before(instance);
@@ -250,7 +250,7 @@
 					
 					// Store templates:
 					object.find(settings.templates).each(function(position) {
-						var template = $(this).remove();
+						var template = $(this).clone(true);
 						var header = template.find(settings.headers).addClass('header');
 						var option = widgets.selector.append('<option />')
 							.find('option:last');
@@ -267,6 +267,9 @@
 						if (header_text == 'Text Input') option.attr('selected', 'selected');
 						
 						templates.push(template.removeClass('template'));
+						
+						// Remove template source
+						$(this).remove();
 					});
 					
 					// Construct new template:
