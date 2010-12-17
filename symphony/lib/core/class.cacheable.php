@@ -8,7 +8,7 @@
 	  * The Cacheable class is used to store data in the dedicated Symphony
 	  * cache table. It is used by Symphony for Session management and by
 	  * the Dynamic XML datasource, but it can be used by extensions to store
-	  * anything. The cache table is <code>tbl_cache</code>
+	  * anything. The cache table is `tbl_cache`
 	  */
 	require_once(TOOLKIT . '/class.mutex.php');
 
@@ -24,7 +24,7 @@
 
 		/**
 		 * The constructor for the Cacheable takes an instance of the
-		 * MySQL class and assigns it to <code>$this->Database</code>
+		 * MySQL class and assigns it to `$this->Database`
 		 *
 		 * @var MySQL $Database
 		 *  An instance of the MySQL class to store the cached
@@ -35,9 +35,9 @@
 		}
 
 		/**
-		 * This function will compress data for storage in <code>tbl_cache</code>.
+		 * This function will compress data for storage in `tbl_cache`.
 		 * It is left to the user to define a unique hash for this data so that it can be
-		 * retreived in the future. Optionally, a <code>$ttl</code> parameter can
+		 * retreived in the future. Optionally, a `$ttl` parameter can
 		 * be passed for this data. If this is omitted, it data is considered to be valid
 		 * forever. This function utilizes the Mutex class to act as a crude locking
 		 * mechanism.
@@ -81,7 +81,7 @@
 		 * @param string $data
 		 *  The data to compress
 		 * @return string|boolean
-		 *  The compressed data, or false if an error occured
+		 *  The compressed data, or false if an error occurred
 		 */
 		public function compressData($data){
 			if(!$data = base64_encode(gzcompress($data))) return false;
@@ -95,7 +95,7 @@
 		 * @param string $data
 		 *  The data to decompress
 		 * @return string|boolean
-		 *  The decompressed data, or false if an error occured
+		 *  The decompressed data, or false if an error occurred
 		 */
 		public function decompressData($data){
 			if(!$data = gzuncompress(base64_decode($data))) return false;
@@ -104,7 +104,7 @@
 
 		/**
 		 * Given the hash of a some data, check to see whether it exists in
-		 * <code>tbl_cache</code>. If no cached object is found, this
+		 * `tbl_cache`. If no cached object is found, this
 		 * function will return false, otherwise the cached object will be
 		 * returned as an array.
 		 *
@@ -133,7 +133,7 @@
 		}
 
 		/**
-		 * Given the hash of a cachable object, remove it from <code>tbl_cache</code>
+		 * Given the hash of a cacheable object, remove it from `tbl_cache`
 		 * regardless of if it has expired or not.
 		 *
 		 * @param string $hash
@@ -144,7 +144,7 @@
 		}
 
 		/**
-		 * Removes all cache objects from <code>tbl_cache</code> that have expired.
+		 * Removes all cache objects from `tbl_cache` that have expired.
 		 * After removing, the function uses the optimise function
 		 *
 		 * @see core.Cacheable#optimise()
@@ -155,7 +155,7 @@
 		}
 
 		/**
-		 * Runs a MySQL OPTIMIZE query on <code>tbl_cache</code>
+		 * Runs a MySQL OPTIMIZE query on `tbl_cache`
 		 */
 		private function __optimise(){
 			$this->Database->query('OPTIMIZE TABLE `tbl_cache`');

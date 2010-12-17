@@ -9,17 +9,17 @@
 	 * The Cookie class is a wrapper to save Symphony cookies. Typically this
 	 * is used to maintain if an Author is logged into Symphony, or by extensions
 	 * to determine similar things. The Cookie class is tightly integrated with
-	 * PHP's <code>$_SESSION</code> global and it's related functions.
+	 * PHP's `$_SESSION` global and it's related functions.
 	 */
 	require_once(CORE . '/class.session.php');
 
 	Class Cookie{
 
 		/**
-		 * Used to prevent Symphony cookies from completly polluting the
-		 * <code>$_SESSION</code> array. This will act as a key and all
+		 * Used to prevent Symphony cookies from completely polluting the
+		 * `$_SESSION` array. This will act as a key and all
 		 * cookies will live under that key. By default, the index is read from
-		 * the Symphony configuration, and unless changed, is <code>sym-</code>
+		 * the Symphony configuration, and unless changed, is `sym-`
 		 *
 		 * @var string
 		 */
@@ -121,7 +121,7 @@
 
 		/**
 		 * A basic setter, which will set a value to a given property in the
-		 * <code>$_SESSION</code> array, stored in the key of <code>$this->_index</code>
+		 * `$_SESSION` array, stored in the key of `$this->_index`
 		 *
 		 * @param string $name
 		 *  The name of the property
@@ -135,7 +135,7 @@
 		}
 
 		/**
-		 * Accessor function for properties in the <code>$_SESSION</code> array
+		 * Accessor function for properties in the `$_SESSION` array
 		 *
 		 * @param string $name
 		 *  The name of the property to retrieve
@@ -152,9 +152,9 @@
 		}
 
 		/**
-		 * Expires the current <code>$_SESSION</code> by unsetting the Symphony
-		 * namespace (<code>$this->_index</code>). If the <code>$_SESSION</code>
-		 * is empty, the function will destroy the entire <code>$_SESSION</code>
+		 * Expires the current `$_SESSION` by unsetting the Symphony
+		 * namespace (`$this->_index`). If the `$_SESSION`
+		 * is empty, the function will destroy the entire `$_SESSION`
 		 *
 		 * @link http://au2.php.net/manual/en/function.session-destroy.php
 		 */

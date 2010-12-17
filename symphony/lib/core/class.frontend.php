@@ -40,12 +40,12 @@
 		/**
 		 * The constructor for Frontend calls the parent Symphony
 		 * constructor.
-         * 
-         * @see core.Symphony#__construct()		 *
+         *
+         * @see core.Symphony#__construct()
 		 * @deprecated The constructor creates backwards compatible references
-		 *  to <code>$this->Database</code> and <code>$this->Configuration</code>
-		 *  that act as alias for <code>Symphony::Database()</code>
-		 *  or <code>Symphony::Configuration()</code>. This will be removed in the
+		 *  to `$this->Database` and `$this->Configuration`
+		 *  that act as alias for `Symphony::Database()`
+		 *  or `Symphony::Configuration()`. This will be removed in the
 		 *  next Symphony release
 		 */
 		protected function __construct() {
@@ -59,7 +59,7 @@
 		}
 
 		/**
-		 * Accessor for <code>$_page</code>
+		 * Accessor for `$_page`
 		 *
 		 * @return FrontendPage
 		 */
@@ -69,7 +69,7 @@
 
 		/**
 		 * Overrides the Symphony isLoggedIn function to allow Authors
-		 * to become logged into the frontend when <code>$_REQUEST['auth-token']</code>
+		 * to become logged into the frontend when `$_REQUEST['auth-token']`
 		 * is present. This logs an Author in using the loginFromToken function.
 		 * This function allows the use of 'admin' type pages, where a Frontend
 		 * page requires that the viewer be a Symphony Author

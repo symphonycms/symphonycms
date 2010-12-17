@@ -56,17 +56,17 @@
 		public $_context = null;
 
 		/**
-		 * The class attribute of the <body> element for this page. Defaults
+		 * The class attribute of the `<body>` element for this page. Defaults
 		 * to an empty string
 		 * @var string
 		 */
 		private $_body_class = '';
 
 		/**
-		 * Constructor takesthe Administration instance and sets it
-		 * to be the $_Parent. Calls the parent constructor to set up
+		 * Constructor takes the Administration instance and sets it
+		 * to be the `$this->_Parent`. Calls the parent constructor to set up
 		 * the basic HTML, Head and Body XMLElements. This function
-		 * also sets te XMLElement type to be HTML, instead of XML
+		 * also sets the XMLElement type to be HTML, instead of XML
 		 *
 		 * @param Administration $parent
 		 *  The Administration object that this page has been created from
@@ -82,7 +82,7 @@
 		/**
 		 * Adds either the tables or forms stylesheet to the page. By default
 		 * this is forms, but can be override by passing 'table' to the function.
-		 * The stylesheets reside in the symphon/assets/ folder
+		 * The stylesheets reside in the `ASSETS` folder
 		 *
 		 * @param string $type
 		 *  Either 'forms' or 'tables'. Defaults to 'forms'
@@ -92,7 +92,7 @@
 		}
 
 		/**
-		 * Given a title, this function will create the <title> element for this
+		 * Given a title, this function will create the `<title>` element for this
 		 * page.
 		 *
 		 * @param string $title
@@ -103,28 +103,28 @@
 		}
 
 		/**
-		 * Setter function to set the class attribute on the <body> element.
+		 * Setter function to set the class attribute on the `<body>` element.
 		 * This function will respect any previous classes that have been added
-		 * to this <body>
+		 * to this `<body>`
 		 *
 		 * @param string $class
 		 *  The string of the classname, multiple classes can be specified by
-		 *  uses a space separater
+		 *  uses a space separator
 		 */
 		public function setBodyClass($class) {
 			$this->_body_class .= ' ' . $class;
 		}
 
 		/**
-		 * Sets this page's $Alert to an instance of the Alert class of a
+		 * Sets this page's `$Alert` to an instance of the Alert class of a
 		 * given Alter type. Unless the Alert is an Error, it is required
 		 * the a message be passed to this function.
 		 *
 		 * @param string $message
 		 *  The message to display to users
 		 * @param string $type
-		 *  An Alert constant, being Alert::NOTICE, Alert::ERROR or
-		 *  Alert::SUCCESS. The differing types will show the error
+		 *  An Alert constant, being `Alert::NOTICE`, `Alert::ERROR` or
+		 *  `Alert::SUCCESS`. The differing types will show the error
 		 *  in a different style in the backend.
 		 */
 		public function pageAlert($message = null, $type=Alert::NOTICE){
@@ -144,8 +144,7 @@
 
 		/**
 		 * Appends the heading of this Symphony page to the Form element.
-		 * If a link is provided, it will be added
-		 * to the provided string
+		 * If a link is provided, it will be append to `$value`
 		 *
 		 * @param string $value
 		 *  The heading text
@@ -167,7 +166,7 @@
 		 * backend page such as the default stylesheets and scripts, the navigation and
 		 * the footer. Any alerts are also appended by this function. view() is called to
 		 * build the actual content of the page. Delegates fire to allow extensions to add
-		 * elements to the <head> and footer.
+		 * elements to the `<head>` and footer.
 		 *
 		 * @see view()
 		 * @uses InitaliseAdminPageHead
@@ -207,7 +206,7 @@
 			);
 
 			/**
-			 * Allows developers to insert items into the page HEAD. Use $context['parent']->Page
+			 * Allows developers to insert items into the page HEAD. Use `$context['parent']->Page`
 			 * for access to the page object
 			 *
 			 * @delegate InitaliseAdminPageHead
@@ -233,7 +232,7 @@
 			$this->view();
 
 			/**
-			 * Allows developers to add items just above the page footer. Use $context['parent']->Page
+			 * Allows developers to add items just above the page footer. Use `$context['parent']->Page`
 			 * for access to the page object
 			 *
 			 * @delegate AppendElementBelowView
@@ -302,7 +301,7 @@
 		}
 
 		/**
-		 * Appends the ID and class attributes for the <body> element
+		 * Appends the ID and class attributes for the `<body>` element
 		 * before calling the parent's generate function which will convert
 		 * the XMLElements into strings ready for output
 		 *
@@ -315,7 +314,7 @@
 		}
 
 		/**
-		 * Uses this pages PHP classname as the <body> ID attribute.
+		 * Uses this pages PHP classname as the `<body>` ID attribute.
 		 * This function removes 'content' from the start of the classname
 		 * and converts all uppercase letters to lowercase and prefixes them
 		 * with a hyphen.
@@ -348,8 +347,8 @@
 
 		/**
 		 * Called to build the content for the page. This function immediately calls
-		 * __switchboard() which acts a bit of a controller to show content based on
-		 * off a type, such as 'view' or 'action'. AdminstrationPages can override this
+		 * `__switchboard()` which acts a bit of a controller to show content based on
+		 * off a type, such as 'view' or 'action'. `AdministrationPages` can override this
 		 * function to just display content if they do not need the switchboard functionality
 		 *
 		 * @see __switchboard()
@@ -359,10 +358,10 @@
 		}
 
 		/**
-		 * This function is called when $_REQUEST contains a key of 'action'.
+		 * This function is called when `$_REQUEST` contains a key of 'action'.
 		 * Any logic that needs to occur immediately for the action to complete
 		 * should be contained within this function. By default this calls the
-		 * __switchboard with the type set to 'action'.
+		 * `__switchboard` with the type set to 'action'.
 		 *
 		 * @see __switchboard()
 		 */
@@ -371,13 +370,13 @@
 		}
 
 		/**
-		 * The __switchboard function acts as a controller to display content
-		 * based off the $type. By default, the $type is 'view' but it can be set
-		 * also set to 'action'. The type is prepended by __ and the context is
-		 * appened to the $type to create the name of the function that will provide
+		 * The `__switchboard` function acts as a controller to display content
+		 * based off the $type. By default, the `$type` is 'view' but it can be set
+		 * also set to 'action'. The `$type` is prepended by __ and the context is
+		 * append to the $type to create the name of the function that will provide
 		 * that logic. For example, if the $type was action and the context of the
 		 * current page was new, the resulting function to be called would be named
-		 * __actionNew(). If an action function is not provided by the Page, this function
+		 * `__actionNew()`. If an action function is not provided by the Page, this function
 		 * returns nothing, however if a view function is not provided, a 404 page
 		 * will be returned.
 		 *
@@ -402,7 +401,7 @@
 		}
 
 		/**
-		 * If an Alert set, it will be prepended to the Form of this page.
+		 * If `$this->Alert` is set, it will be prepended to the Form of this page.
 		 * A delegate is fired here to allow extensions to provide their
 		 * their own Alert messages to the page. Note that only one Alert
 		 * is allowed per page at any one time.
@@ -530,8 +529,8 @@
 		}
 
 		/**
-		 * Returns the $_navigation variable of this Page. If it is empty,
-		 * it will be built by __buildNavigation
+		 * Returns the `$_navigation` variable of this Page. If it is empty,
+		 * it will be built by `__buildNavigation`
 		 *
 		 * @see __buildNavigation()
 		 * @return array
@@ -542,10 +541,10 @@
 		}
 
 		/**
-		 * This function populates the $_navigation array with an associative array
+		 * This function populates the `$_navigation` array with an associative array
 		 * of all the navigation groups and their links. Symphony only supports one
 		 * level of navigation, so children links cannot have children links. The default
-		 * Symphony Navigation is found in the /assets/navigation.xml folder. This is
+		 * Symphony navigation is found in the `ASSETS/navigation.xml` folder. This is
 		 * loaded first, and then the Section navigation is built, followed by the Extension
 		 * navigation. Additionally, this function will set the active group of the navigation
 		 * by checking the current page against the array of links.
@@ -556,7 +555,7 @@
 			$nav = array();
 			$xml = simplexml_load_file(ASSETS . '/navigation.xml');
 
-			// Loop over the default Symphony Navigation file, converting
+			// Loop over the default Symphony navigation file, converting
 			// it into an associative array representation
 			foreach($xml->xpath('/navigation/group') as $n){
 
@@ -761,9 +760,9 @@
 		/**
 		 * Given the navigation array, this function will loop over all the items
 		 * to determine which is the 'active' navigation group, or in other words,
-		 * what group best represents the current page the Author is viewing.
+		 * what group best represents the current page `$this->Author` is viewing.
 		 * This is done by checking the current page's link against all the links
-		 * provided in the $nav, and then flagging the group of the found link
+		 * provided in the `$nav`, and then flagging the group of the found link
 		 * with an 'active' CSS class. The current page's link omits any flags or
 		 * URL parameters and just uses the root page URL.
 		 *
@@ -779,7 +778,7 @@
 		 *  parameters such as a Symphony object ID. eg. Section ID, Entry ID. This
 		 *  parameter is also be a regex, but this is highly unlikely.
 		 * @param boolean $pattern
-		 *  If set to true, the $pageroot represents a regex, and preg_match is
+		 *  If set to true, the `$pageroot` represents a regex, and preg_match is
 		 *  invoked to determine the active navigation item. Defaults to false
 		 * @return boolean
 		 *  Returns true if an active link was found, false otherwise. If true, the
@@ -808,7 +807,7 @@
 		 * Creates the Symphony footer for an Administration page. By default
 		 * this includes the installed Symphony version and the currently logged
 		 * in Author. A delegate is provided to allow extensions to manipulate the
-		 * footer HTML, which is an XMLElement of a <ul> element.
+		 * footer HTML, which is an XMLElement of a `<ul>` element.
 		 *
 		 * @uses AddElementToFooter
 		 */
@@ -821,11 +820,11 @@
 			$ul->setAttribute('id', 'usr');
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(Administration::instance()->Author->getFullName(), URL . '/symphony/system/authors/edit/' . Administration::instance()->Author->get('id') . '/'));
+			$li->appendChild(Widget::Anchor(Administration::instance()->Author->getFullName(), SYMPHONY . '/system/authors/edit/' . Administration::instance()->Author->get('id') . '/'));
 			$ul->appendChild($li);
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(__('Logout'), URL . '/symphony/logout/'));
+			$li->appendChild(Widget::Anchor(__('Logout'), SYMPHONY . '/logout/'));
 			$ul->appendChild($li);
 
 			/**
@@ -835,7 +834,7 @@
 			 * @param string $context
 			 *  '/backend/'
 			 * @param XMLElement $wrapper
-			 *  A XMLElement representing the <ul> at in the Symphony footer, passed by reference
+			 *  A XMLElement representing the `<ul>` at in the Symphony footer, passed by reference
 			 */
 			Administration::instance()->ExtensionManager->notifyMembers('AddElementToFooter', '/backend/', array('wrapper' => &$ul));
 
@@ -861,18 +860,18 @@
 		}
 
 		/**
-		 * Will wrap a <div> around a desired element to trigger the default
+		 * Will wrap a `<div>` around a desired element to trigger the default
 		 * Symphony error styling.
 		 *
 		 * @deprecated This function is deprecated and will be removed in the next
 		 *  version of Symphony. This preferred way to wrap an element with an
-		 *  error is using Widget::wrapFormElementWithError		 *
-		 * @see toolkit.widget::wrapFormElementWithError()
+		 *  error is using `Widget::wrapFormElementWithError`
+		 * @see toolkit.Widget::wrapFormElementWithError()
 		 * @param XMLElement $element
 		 *	The element that should be wrapped with an error
 		 * @param string $message
 		 *	The text for this error. This will be appended after the $element,
-		 *  but inside the wrapping <div>
+		 *  but inside the wrapping `<div>`
 		 */
 		public function wrapFormElementWithError($element, $message = null){
 			return Widget::wrapFormElementWithError($element, $message);

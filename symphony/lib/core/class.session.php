@@ -7,7 +7,7 @@
 	 /**
 	  * The Session class is a handler for all Session related logic in PHP. The functions
 	  * map directly to all handler functions as defined by session_set_save_handler in
-	  * PHP. In Symphony, this function is used in conjunction with the Cookie class.
+	  * PHP. In Symphony, this function is used in conjunction with the `Cookie` class.
 	  * Based on: http://php.net/manual/en/function.session-set-save-handler.php#81761
 	  * by klose at openriverbed dot de which was based on
 	  * http://php.net/manual/en/function.session-set-save-handler.php#79706 by
@@ -105,7 +105,7 @@
 		}
 
 		/**
-		 * Creates <code>tbl_sessions</code> in the Database
+		 * Creates `tbl_sessions` in the Database
 		 */
 		public static function createTable() {
 			Symphony::Database()->query(
@@ -169,16 +169,16 @@
 		}
 
 		/**
-		 * Given an ID, and some data, save it into <code>tbl_sessions</code>. This uses
+		 * Given an ID, and some data, save it into `tbl_sessions`. This uses
 		 * the ID as a unique key, but will override any existing data.
 		 *
 		 * @param string $id
 		 *  The ID of the Session, usually a hash
 		 * @param string $data
 		 *  The Session information, usually a serialized object of
-		 * <code>$_SESSION[Cookie->_index]</code>
+		 * `$_SESSION[Cookie->_index]`
 		 * @return boolean
-		 *  True if the Session information was saved succesfully, false otherwise
+		 *  True if the Session information was saved successfully, false otherwise
 		 */
 		public static function write($id, $data) {
 			if(strlen(trim($data)) == 0) return false;
@@ -192,7 +192,7 @@
 		}
 
 		/**
-		 * Given a session's ID, return it's row from <code>tbl_sessions</code>
+		 * Given a session's ID, return it's row from `tbl_sessions`
 		 *
 		 * @param string $id
 		 *  The identifier for the Session to fetch
@@ -210,7 +210,7 @@
 		}
 
 		/**
-		 * Given a session's ID, remove it's row from <code>tbl_sessions</code>
+		 * Given a session's ID, remove it's row from `tbl_sessions`
 		 *
 		 * @param string $id
 		 *  The identifier for the Session to destroy

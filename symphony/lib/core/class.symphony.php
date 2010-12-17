@@ -89,9 +89,9 @@
 		 * The Symphony constructor initialises the class variables of Symphony.
 		 * It will set the DateTime settings, define new date constants and initialise
 		 * the correct Language for the currently logged in Author. If magic quotes
-		 * are enabled, Symphony will sanitize the <code>$_SERVER</code>, <code>$_COOKIE</code>, 
-         * <code>$_GET</code> and <code>$_POST</code> arrays. The constructor loads in 
-         * the initial Configuration values from the <code>CONFIG</code> file
+		 * are enabled, Symphony will sanitize the `$_SERVER`, `$_COOKIE`, 
+         * `$_GET` and `$_POST` arrays. The constructor loads in 
+         * the initial Configuration values from the `CONFIG` file
 		 */
 		protected function __construct(){
 
@@ -163,7 +163,7 @@
 		}
 
 		/**
-		 * Setter for <code>$Log</code>. This function uses the configuration
+		 * Setter for `$Log`. This function uses the configuration
 		 * settings in the 'log' group in the Configuration to create an instance. Date
 		 * formatting options are also retrieved from the configuration.
 		 */
@@ -181,7 +181,7 @@
 		}
 
 		/**
-		 * Setter for <code>$Cookie</code>. This will use PHP's parse_url
+		 * Setter for `$Cookie`. This will use PHP's parse_url
 		 * function on the current URL to set a cookie using the cookie_prefix
 		 * defined in the Symphony configuration. The cookie will last two
 		 * weeks.
@@ -198,7 +198,7 @@
 		}
 
 		/**
-		 * Setter for <code>$ExtensionManager</code> using the current
+		 * Setter for `$ExtensionManager` using the current
 		 * Symphony instance as the parent. If for some reason this fails,
 		 * a Symphony Error page will be thrown
 		 */
@@ -211,7 +211,7 @@
 		}
 
 		/**
-		 * Setter for the <code>$Database</code>. This will load the default
+		 * Setter for the `$Database`. This will load the default
 		 * database driver and create a new instance of it from the Symphony
 		 * configuration. Symphony will attempt to create a connection to
 		 * the database using the connection details provided by in the Symphony
@@ -221,7 +221,7 @@
 		 * officially only supports MySQL.
 		 *
 		 * @return boolean
-		 *  This function will return true if the <code>$Database</code> was
+		 *  This function will return true if the `$Database` was
 		 *  initialised successfully.
 		 */
 		public function initialiseDatabase(){
@@ -271,7 +271,7 @@
 		}
 
 		/**
-		 * Accessor for the current Database instance.
+		 * Accessor for the current `$Database` instance.
 		 *
 		 * @return MySQL
 		 */
@@ -285,7 +285,7 @@
 		 * algorithm. The username and password will be sanitized before
 		 * being used to query the Database. If an Author is found, they
 		 * will be logged in and the sanitized username and password (also hashed)
-		 * will be saved as values in the <code>$Cookie</code>.
+		 * will be saved as values in the `$Cookie`.
 		 *
 		 * @see toolkit.General#hash()
 		 * @param string $username
@@ -381,7 +381,7 @@
 		}
 
 		/**
-		 * This function will destroy the currently logged in <code>$Author</code>
+		 * This function will destroy the currently logged in `$Author`
 		 * session, essentially logging them out.
 		 *
 		 * @see core.Cookie#expire()
@@ -392,9 +392,9 @@
 
 		/**
 		 * This function determines whether an there is a currently logged in
-		 * Author for Symphony by using the <code>$Cookie</code>'s username
+		 * Author for Symphony by using the `$Cookie`'s username
 		 * and password. If an Author is found, they will be logged in, otherwise
-		 * the <code>$Cookie</code> will be destroyed.
+		 * the `$Cookie` will be destroyed.
 		 *
 		 * @see core.Cookie#expire()
 		 */
@@ -422,13 +422,13 @@
 		}
 
 		/**
-		 * Given the <code>$page_id</code> and a <code>$column</code>
+		 * Given the `$page_id` and a `$column`
 		 *
 		 * @param mixed $page_id
 		 * The ID of the Page that currently being viewed, or the handle of the
 		 * current Page
 		 * @return array
-		 * An array of the current Page, containing the <code>$column</code>
+		 * An array of the current Page, containing the `$column`
 		 * requested. The current page will be the last item the array, as all
 		 * parent pages are prepended to the start of the array
 		 */
@@ -471,7 +471,7 @@
 		}
 
 		/**
-		 * Given the <code>$page_id</code>, return the complete title of the
+		 * Given the `$page_id`, return the complete title of the
 		 * current page.
 		 *
 		 * @param mixed $page_id
@@ -488,7 +488,7 @@
 		}
 
 		/**
-		 * Given the <code>$page_id</code>, return the complete path to the
+		 * Given the `$page_id`, return the complete path to the
 		 * current page.
 		 *
 		 * @param mixed $page_id
@@ -515,8 +515,8 @@
 		 *  or as an XMLElement.
 		 * @param string $template
 		 *  A string for the error page template to use, defaults to 'error'. This
-		 *  can be the name of any template file in the <code>TEMPLATES</code> directory.
-		 *  A template using the naming convention of <code>tpl.*.php</code>.
+		 *  can be the name of any template file in the `TEMPLATES` directory.
+		 *  A template using the naming convention of `tpl.*.php`.
 		 * @param array $additional
 		 *  Allows custom information to be passed to the Symphony Error Page
 		 *  that the template may want to expose, such as custom Headers etc.
@@ -528,7 +528,7 @@
 
 	/**
 	 * The SymphonyErrorPageHandler extends the GenericExceptionHandler
-	 * to allow the template for the Exception to be provided from the <code>TEMPLATES</code>
+	 * to allow the template for the Exception to be provided from the `TEMPLATES`
 	 * directory
 	 */
 	Class SymphonyErrorPageHandler extends GenericExceptionHandler {
@@ -537,7 +537,7 @@
 		 * The render function will take a SymphonyErrorPage Exception and
 		 * output a HTML page. This function first checks to see if their is a custom
 		 * template for this Exception otherwise it reverts to using the default
-		 * <code>tpl.error.php</code>
+		 * `tpl.error.php`
 		 *
 		 * @param SymphonyErrorPage $e
 		 *  The Exception object
@@ -557,8 +557,8 @@
 	/**
 	 * The SymphonyErrorPage extends the default Exception class. All
 	 * of these Exceptions will halt execution immediately and return the
-	 * Exception as a HTML page. By default the HTML template is <code>tpl.error.php</code>
-	 * from the <code>TEMPLATES</code> directory.
+	 * Exception as a HTML page. By default the HTML template is `tpl.error.php`
+	 * from the `TEMPLATES` directory.
 	 */
 
 	Class SymphonyErrorPage extends Exception{
@@ -579,8 +579,8 @@
 
 		/**
 		 * A string for the error page template to use, defaults to 'error'. This
-		 * can be the name of any template file in the <code>TEMPLATES</code> directory.
-		 * A template using the naming convention of <code>tpl.*.php</code>.
+		 * can be the name of any template file in the `TEMPLATES` directory.
+		 * A template using the naming convention of `tpl.*.php`.
 		 * @var string
 		 */
 		private $_template = 'error';
@@ -609,8 +609,8 @@
 		 *  A heading for the error page, by default this is "Symphony Fatal Error"
 		 * @param string $template
 		 *  A string for the error page template to use, defaults to 'error'. This
-		 *  can be the name of any template file in the TEMPLATES directory.
-		 *  A template using the naming convention of tpl.*.php.
+		 *  can be the name of any template file in the `TEMPLATES` directory.
+		 *  A template using the naming convention of `tpl.*.php`.
 		 * @param array $additional
 		 *  Allows custom information to be passed to the Symphony Error Page
 		 *  that the template may want to expose, such as custom Headers etc.
@@ -630,7 +630,7 @@
 		}
 
 		/**
-		 * Accessor for the <code>$_heading</code> of the error page
+		 * Accessor for the `$_heading` of the error page
 		 *
 		 * @return string
 		 */
@@ -639,7 +639,7 @@
 		}
 
 		/**
-		 * Accessor for <code>$_messageObject</code>
+		 * Accessor for `$_messageObject`
 		 *
 		 * @return XMLElement
 		 */
@@ -648,7 +648,7 @@
 		}
 
 		/**
-		 * Accessor for <code>$_additional</code>
+		 * Accessor for `$_additional`
 		 *
 		 * @return StdClass
 		 */
@@ -658,9 +658,8 @@
 
 		/**
 		 * Returns the path to the current template by looking at the
-		 * <code>TEMPLATES</code> directory for the convention
-		 * <code>tpl.*.php</code>. If the template is not found, false
-		 * is returned
+		 * `TEMPLATES` directory for the convention `tpl.*.php`. If the
+		 * template is not found, false is returned
 		 *
 		 * @return mixed
 		 *  String, which is the path to the template if the template is found,

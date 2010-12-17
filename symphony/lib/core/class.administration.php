@@ -26,7 +26,7 @@
 
 		/**
 		 * An associative array of the page's callback, including the keys
-		 * 'driver', which is a lowercase version of <code>$_currentPage</code>
+		 * 'driver', which is a lowercase version of `$_currentPage`
 		 * with any slashes removed, 'classname', which is the name of the class
 		 * for this page, 'pageroot', which is the root page for the given page, (ie.
 		 * excluding /saved/, /created/ or any sub pages of the current page that are
@@ -65,9 +65,9 @@
 		 *
 		 * @see core.Symphony#__construct()
 		 * @deprecated The constructor creates backwards compatible references
-		 *  to <code>$this->Database</code> and <code>$this->Configuration</code>
-		 *  that act as alias for <code>Symphony::Database()</code>
-		 *  or <code>Symphony::Configuration()</code>. This will be removed in the
+		 *  to `$this->Database` and `$this->Configuration`
+		 *  that act as alias for `Symphony::Database()`
+		 *  or `Symphony::Configuration()`. This will be removed in the
 		 *  next Symphony release
 		 */
 		protected function __construct(){
@@ -90,7 +90,7 @@
 
 		/**
 		 * Overrides the Symphony isLoggedIn function to allow Authors
-		 * to become logged into the backend when <code>$_REQUEST['auth-token']</code>
+		 * to become logged into the backend when `$_REQUEST['auth-token']`
 		 * is present. This logs an Author in using the loginFromToken function.
 		 * A token may be 6 or 8 characters in length in the backend. A 6 character token
 		 * is used for forget password requests, whereas the 8 character token is used to login
@@ -168,12 +168,12 @@
 		 * the slashes and the resulting pieces used to determine if the page
 		 * is provided by an extension, is a section (index or entry creation)
 		 * or finally a standard Symphony content page. If no page driver can
-		 * be found, this functino will return false
+		 * be found, this function will return false
 		 *
 		 * @param string $page
 		 *  The full path (including the domain) of the Symphony backend page
 		 * @return array|boolean
-		 *  If successful, this function will return an assocative array that at the
+		 *  If successful, this function will return an associative array that at the
 		 *  very least will return the page's classname, pageroot, driver and
 		 *  context, otherwise this will return false.
 		 */

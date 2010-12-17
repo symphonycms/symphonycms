@@ -6,7 +6,7 @@
 	/**
 	 * The Log class acts a simple wrapper to write errors to a file so that it can
 	 * be read at a later date. There is one Log file in Symphony, stored in the main
-	 * LOGS directory.
+	 * `LOGS` directory.
 	 */
 	require_once(CORE . '/class.datetimeobj.php');
 
@@ -69,7 +69,7 @@
 		}
 
 		/**
-		 * Setter for the <code>$_log_path</code>.
+		 * Setter for the `$_log_path`.
 		 *
 		 * @param string $path
 		 *  The path to the folder where the Log files should be written
@@ -79,7 +79,7 @@
 		}
 
 		/**
-		 * Accessor for the <code>$_log_path</code>.
+		 * Accessor for the `$_log_path`.
 		 *
 		 * @return string
 		 */
@@ -88,7 +88,7 @@
 		}
 
 		/**
-		 * Accessor for the <code>$_log</code>.
+		 * Accessor for the `$_log`.
 		 *
 		 * @return array
 		 */
@@ -97,7 +97,7 @@
 		}
 
 		/**
-		 * Setter for the <code>$_archive</code>.
+		 * Setter for the `$_archive`.
 		 *
 		 * @param boolean $archive
 		 *  If true, Log files will be archived using gz when they are rotated,
@@ -108,7 +108,7 @@
 		}
 
 		/**
-		 * Setter for the <code>$_max_size</code>.
+		 * Setter for the `$_max_size`.
 		 *
 		 * @param integer $size
 		 *  The size, in bytes, that the Log can reach before it is rotated.
@@ -118,7 +118,7 @@
 		}
 
 		/**
-		 * Setter for the <code>$_date_format</code>.
+		 * Setter for the `$_date_format`.
 		 *
 		 * @since Symphony 2.2
 		 * @link http://au.php.net/manual/en/function.date.php
@@ -131,7 +131,7 @@
 
 		/**
 		 * Given a PHP error constant, return a human readable name. Uses the
-		 * <code>GenericErrorHandler::$errorTypeStrings</code> array to return
+		 * `GenericErrorHandler::$errorTypeStrings` array to return
 		 * the name
 		 *
 		 * @see core.GenericErrorHandler::$errorTypeStrings		 *
@@ -150,7 +150,7 @@
 		}
 
 		/**
-		 * Function will return the last message added to <code>$_log</code> and remove
+		 * Function will return the last message added to `$_log` and remove
 		 * it from the array.
 		 *
 		 * @return array
@@ -165,7 +165,7 @@
 		}
 
 		/**
-		 * Given a message, this function will add it to the internal <code>$_log</code>
+		 * Given a message, this function will add it to the internal `$_log`
 		 * so that it can be written to the Log. Optional parameters all the message to
 		 * be immediately written, insert line breaks or add to the last log message
 		 *
@@ -178,13 +178,13 @@
 		 *  this is set to false, which means that it will only be added to the array ready
 		 *  for writing
 		 * @param boolean $addbreak
-		 *  To be used in conjunction with <code>$writeToLog</code>, this will add a line break
+		 *  To be used in conjunction with `$writeToLog`, this will add a line break
 		 *  before writing this message in the log file. Defaults to true.
 		 * @param boolean $append
-		 *  If set to true, the given <code>$message</code> will be append to the previous log
-		 *  message found in the <code>$_log</code> array
+		 *  If set to true, the given `$message` will be append to the previous log
+		 *  message found in the `$_log` array
 		 * @return mixed
-		 *  If <code>$writeToLog</code> is passed, this function will return boolean, otherwise
+		 *  If `$writeToLog` is passed, this function will return boolean, otherwise
 		 *  void
 		 */
 		public function pushToLog($message, $type=E_NOTICE, $writeToLog=false, $addbreak=true, $append=false){
@@ -201,7 +201,6 @@
 
 		}
 
-
 		/**
 		 * This function will write the given message to the log file. Messages will be appended
 		 * the existing log file.
@@ -209,7 +208,7 @@
 		 * @param string $message
 		 *  The message to add to the Log
 		 * @param boolean $addbreak
-		 *  To be used in conjunction with <code>$writeToLog</code>, this will add a line break
+		 *  To be used in conjunction with `$writeToLog`, this will add a line break
 		 *  before writing this message in the log file. Defaults to true.
 		 * @return boolean
 		 *  Returns true if the message was written successfully, false otherwise
@@ -224,21 +223,20 @@
 
 		}
 
-
 		/**
 		 * The function handles the rotation of the log files. By default it will open
-		 * the current log file, 'main', which is written to <code>$_log_path</code> and
-		 * check it's file size doesn't exceed <code>$_max_size</code>. If it does, the log
-		 * is appended with a date stamp and if <code>$_archive</code> has been set, it will
-		 * be archived and stored. If a log file has exceeded it's size, or the OVERWRITE
+		 * the current log file, 'main', which is written to `$_log_path` and
+		 * check it's file size doesn't exceed `$_max_size`. If it does, the log
+		 * is appended with a date stamp and if `$_archive` has been set, it will
+		 * be archived and stored. If a log file has exceeded it's size, or `Log::OVERWRITE`
 		 * flag is set, the existing log file is removed and a new one created. Essentially,
-		 * if a log file has not reached it's <code>$_max_size</code> and the the flag is not
-		 * set to OVERWRITE, this function does nothing.
+		 * if a log file has not reached it's `$_max_size` and the the flag is not
+		 * set to `Log::OVERWRITE`, this function does nothing.
 		 *
 		 * @link http://au.php.net/manual/en/function.intval.php
 		 * @param integer $flag
-		 *  One of the Log constants, either <code>Log::APPEND</code> or <code>Log::OVERWRITE</code>
-		 *  By default this is <code>Log::APPEND</code>
+		 *  One of the Log constants, either `Log::APPEND` or `Log::OVERWRITE`
+		 *  By default this is `Log::APPEND`
 		 * @param integer $mode
 		 *  The file mode used to apply to the archived log, by default this is 0777. Note that this
 		 *  parameter is modified using PHP's intval function with base 8.
