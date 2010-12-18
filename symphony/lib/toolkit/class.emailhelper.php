@@ -84,25 +84,32 @@
 				// Encode
 				else {
 					$replace_length = 3;
-					// bit operation is around 10 percent faster than 'strtoupper(dechex($ascii))'
-					$replace_char = '=' . $qpHexDigits[$ascii >> 4] . $qpHexDigits[$ascii & 0x0f];
-					// Take remaining bytes of multi-byte sequences into account.
-					$remaining_char_length = 0;
-					$remaining_total_length = $input_length - $i - 1;
-					// Use existing offset only.
-					if ($remaining_total_length >= 1) {
-						for ($lookahead = 1; $lookahead <= min(3, $remaining_total_length); $lookahead++) {
-							$ascii_ff = ord($input[$i+$lookahead]);
-							if (128 <= $ascii_ff && $ascii_ff <= 191) {
-								// those will be encoded, so the length will be '3'
-								$remaining_char_length += 3;
-							}
-							else break;
+					// Bit operation is around 10 percent faster
+					// than 'strtoupper(dechex($ascii))'
+					$replace_char = '='
+					              . $qpHexDigits[$ascii >> 4]
+					              . $qpHexDigits[$ascii & 0x0f];
+
+					// Account for following bytes of UTF8-multi-byte
+					// sequence (max. length is 4 octets, RFC3629)
+					$lookahead_limit = min($i+4, $input_length);
+					for ($lookahead = $i+1;
+					     $lookahead < $lookahead_limit;
+					     $lookahead++)
+					{
+						$ascii_ff = ord($input[$lookahead]);
+						if (128 <= $ascii_ff && $ascii_ff <= 191) {
+							$replace_char .= '='
+							               . $qpHexDigits[$ascii_ff >> 4]
+							               . $qpHexDigits[$ascii_ff & 0x0f];
+							$replace_length += 3;
+							$i++;
 						}
+						else break;
 					}
 				}
 				// Would the line become too long?
-				if ($line_length + $replace_length + $remaining_char_length > $line_limit) {
+				if ($line_length + $replace_length > $line_limit) {
 					$output .= "?= =?UTF-8?Q?";
 					$line_length = 0;
 				}
