@@ -63,7 +63,7 @@
 		 *
 		 * @param string $id
 		 *  The name of the lock file, which gets obfuscated using
-		 *  __generateLockFileName.
+		 *  `__generateLockFileName()`.
 		 * @param integer $ttl
 		 *  The length, in seconds, that the lock should be extended by.
 		 *  Defaults to 5.
@@ -101,8 +101,8 @@
 		}
 
 		/**
-		 * Generates a lock filename using an MD5 hash of the $id and
-		 * $path. Lock files are given a .lock extension
+		 * Generates a lock filename using an MD5 hash of the `$id` and
+		 * `$path`. Lock files are given a .lock extension
 		 *
 		 * @param string $id
 		 *  The name of the lock file to be obfuscated

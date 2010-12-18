@@ -28,7 +28,7 @@
 
 		/**
 		 * Given the filename of a Field, return it's handle. This will remove
-		 * the Symphony conventions of field.*.php
+		 * the Symphony conventions of `field.*.php`
 		 *
 		 * @param string $filename
 		 *  The filename of the Field
@@ -51,12 +51,12 @@
         }
 
 		/**
-		 * Finds a Field by type by searching the toolkit/fields folder and then
+		 * Finds a Field by type by searching the `TOOLKIT . /fields` folder and then
 		 * any fields folders in the installed extensions. The function returns
 		 * the path to the folder where the field class resides.
 		 *
 		 * @param string $name
-		 *  The field handle, that is, field.{$handle}.php
+		 *  The field handle, that is, `field.{$handle}.php`
 		 * @return string
 		 */
         public function __getClassPath($type){
@@ -97,8 +97,8 @@
 		 *
 		 * @param array $fields
 		 *  Associative array of field names => values for the Field object
-		 * @return int|boolean
-		 *  Returns an field_id of the created Field on success, false otherwise.
+		 * @return integer|boolean
+		 *  Returns a Field ID of the created Field on success, false otherwise.
 		 */
 		public function add(Array $fields){
 
@@ -181,9 +181,9 @@
 		 *  is t1
 		 * @param string $restrict
 		 *  Only return fields if they match one of the Field Constants. Available values are
-		 *  __TOGGLEABLE_ONLY__, __UNTOGGLEABLE_ONLY__, __FILTERABLE_ONLY__ ,
-		 *  __UNFILTERABLE_ONLY__ or __FIELD_ALL__. Defaults to __FIELD_ALL__
-		 * @return array(Field)
+		 *  `__TOGGLEABLE_ONLY__`, `__UNTOGGLEABLE_ONLY__`, `__FILTERABLE_ONLY__`,
+		 *  `__UNFILTERABLE_ONLY__` or `__FIELD_ALL__`. Defaults to `__FIELD_ALL__`
+		 * @return array
 		 *  An array of Field objects. If no Field are found, null is returned.
 		 */
 		public function fetch($id = null, $section_id = null, $order = 'ASC', $sortfield = 'sortorder', $type = null, $location = null, $where = null, $restrict=Field::__FIELD_ALL__){
@@ -246,7 +246,7 @@
 		}
 
 		/**
-		 * Given a field ID, return the type of the field by querying tbl_fields
+		 * Given a field ID, return the type of the field by querying `tbl_fields`
 		 *
 		 * @param integer $id
 		 * @return string
@@ -256,7 +256,7 @@
 		}
 
 		/**
-		 * Given a field ID, return the handle of the field by querying tbl_fields
+		 * Given a field ID, return the handle of the field by querying `tbl_fields`
 		 *
 		 * @param integer $id
 		 * @return string
@@ -280,7 +280,7 @@
 		 * @return int
 		 *  The field ID
 		 */
-		public function fetchFieldIDFromElementName($element_name, $section_id=NULL){
+		public function fetchFieldIDFromElementName($element_name, $section_id = null){
 			return Symphony::Database()->fetchVar('id', 0, sprintf("
 					SELECT `id`
 					FROM `tbl_fields`
@@ -293,8 +293,8 @@
 		}
 
 		/**
-		 * Returns an array of all available field handles discovered in the toolkit/fields
-		 * or extensions/{}/fields.
+		 * Returns an array of all available field handles discovered in the 
+         * `TOOLKIT . /fields` or `EXTENSIONS . /{}/fields`.
 		 *
 		 * @return array
 		 *  A single dimensional array of field handles.
@@ -327,7 +327,7 @@
 
 		/**
 		 * Creates an instance of a given class and returns it. Adds the instance
-		 * to the $_pool array with the key being the handle.
+		 * to the `$_pool` array with the key being the handle.
 		 *
 		 * @param string $type
 		 *  The handle of the Field to create (which is it's handle)
@@ -364,7 +364,7 @@
 
 		/**
 		 * @deprecated This function will be removed in the next major release. The
-		 *  FieldManager::fetchHandleFromID is the preferred way to get a field's handle
+		 *  `FieldManager::fetchHandleFromID` is the preferred way to get a field's handle
 		 */
 		public function fetchHandleFromElementName($id){
 			return $this->fetchHandleFromID($id);

@@ -710,13 +710,17 @@
 
 			}
 
-			####
-			# Delegate: ExtensionsAddToNavigation
-			# Description: After building the Navigation properties array. This is specifically
-			# 			for extensions to add their groups to the navigation or items to groups,
-			# 			already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need
-			#			to edit existing navigation elements, use the 'NavigationPreRender' delegate.
-			# Global: Yes
+			/**
+             * After building the Navigation properties array. This is specifically
+			 * for extensions to add their groups to the navigation or items to groups,
+			 * already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need
+             * to edit existing navigation elements, use the `NavigationPreRender` delegate.
+             * 
+             * @delegate ExtensionsAddToNavigation
+             * @param string $context
+             * '/backend/'
+             * @param array $navigation
+             */
 			Administration::instance()->ExtensionManager->notifyMembers(
 				'ExtensionsAddToNavigation', '/backend/', array('navigation' => &$nav)
 			);
@@ -870,7 +874,7 @@
 		 * @param XMLElement $element
 		 *	The element that should be wrapped with an error
 		 * @param string $message
-		 *	The text for this error. This will be appended after the $element,
+		 *	The text for this error. This will be appended after the `$element`,
 		 *  but inside the wrapping `<div>`
 		 */
 		public function wrapFormElementWithError($element, $message = null){

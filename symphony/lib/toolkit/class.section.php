@@ -50,7 +50,7 @@
 
 		/**
 		 * A setter function that will save a section's setting into
-		 * the poorly named $_data variable
+		 * the poorly named `$this->_data` variable
 		 *
 		 * @param string $setting
 		 *  The setting name
@@ -78,7 +78,7 @@
 
 		/**
 		 * A setting function that adds a new instance of the Field
-		 * class to this Section's $_fields array.
+		 * class to this Section's `$this->_fields` array.
 		 */
 		public function addField(){
 			$this->_fields[] = new Field($this->_fieldManager);
@@ -129,7 +129,7 @@
 		 * the field type or it's location within the section.
 		 *
 		 * @param string $type
-		 *  The field type (it's handle as returned by $field->handle())
+		 *  The field type (it's handle as returned by `$field->handle()`)
 		 * @param string $location
 		 *  The location of the fields in the entry creator, whether they are
 		 *  'main' or 'sidebar'
@@ -179,11 +179,11 @@
 
 		/**
 		 * Commit the settings of this section from the section editor to
-		 * create an instance of this section in tbl_sections. This function
+		 * create an instance of this section in `tbl_sections`. This function
 		 * loops of each of the fields in this section and calls their commit
 		 * function.
 		 *
-		 * @see toolkit.Field#commit
+		 * @see toolkit.Field#commit()
 		 * @return boolean
 		 *	true if the commit was successful, false otherwise.
 		 */
@@ -210,4 +210,3 @@
 			}
 		}
 	}
-

@@ -21,8 +21,8 @@
 		 *
 		 * @param array $fields
 		 *  Associative array of field names => values for the Author object
-		 * @return int|boolean
-		 *  Returns an author_id of the created Author on success, false otherwise.
+		 * @return integer|boolean
+		 *  Returns an Author ID of the created Author on success, false otherwise.
 		 */
 		public static function add(Array $fields){
 			if(!Symphony::Database()->insert($fields, 'tbl_authors')) return false;
@@ -33,7 +33,7 @@
 
 		/**
 		 * Given an Author ID and associative array of fields, update an existing Author
-		 * row in the Database's authors table. Returns boolean for success/failure
+		 * row in the `tbl_authors` database table. Returns boolean for success/failure
 		 *
 		 * @param integer $id
 		 *  The ID of the Author that should be updated
@@ -71,7 +71,7 @@
 		 *  The number of rows to return
 		 * @param integer $start
 		 *  The offset start point for limiting, maps to the LIMIT {x}, {y} MySQL functionality
-		 * @return array(Author)
+		 * @return array
 		 *  An array of Author objects.  If no Authors are found, null is returned.
 		 */
 		public static function fetch($sortby = 'id', $sortdirection = 'ASC', $limit = null, $start = null){
@@ -105,10 +105,10 @@
 		}
 
 		/**
-		 * The fetchById method returns Author that match the provided ID's with
+		 * The fetchById function returns Author's that match the provided ID's with
 		 * the option to sort or limit the output.
 		 *
-		 * @param int|array $id
+		 * @param integer|array $id
 		 *  A single ID or an array of ID's
 		 * @param string $sortby
 		 *  The field to sort the authors by, defaults to 'id'
@@ -120,8 +120,8 @@
 		 * @param integer $start
 		 *  The offset start point for limiting, maps to the LIMIT {x}, {y} MySQL functionality
 		 * @return mixed
-		 *  If $id was an integer, the result will be an Author object, otherwise an array of
-		 *  Author objects will be returned. If no Authors are found, or no $id is given null is returned.
+		 *  If `$id` was an integer, the result will be an Author object, otherwise an array of
+		 *  Author objects will be returned. If no Authors are found, or no `$id` is given null is returned.
 		 */
 		public static function fetchByID($id, $sortby = 'id', $sortdirection = 'ASC', $limit = null, $start = null){
 

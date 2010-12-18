@@ -17,41 +17,41 @@
 	class DevKit extends HTMLPage {
 
 		/**
-		 * The Devkit's $_GET query string
+		 * The Devkit's `$_GET` query string
 		 * @var string
 		 */
 		protected $_query_string = '';
 
 		/**
 		 * An instance of the XSLTPage, usually FrontendPage
-		 * @param XSLTPage
+		 * @var XSLTPage
 		 */
 		protected $_page = null;
 
 		/**
 		 * An associative array of the details of the Page that is being 'Devkitted'.
-		 * The majority of this information is from tbl_pages table.
-		 * @param array
+		 * The majority of this information is from `tbl_pages` table.
+		 * @var array
 		 */
 		protected $_pagedata = null;
 
 		/**
 		 * The XML of the page that the XSLT will be applied to, this includes any
 		 * datasource results.
-		 * @param string
+		 * @var string
 		 */
 		protected $_xml = null;
 
 		/**
 		 * An array of the page parameters, including those provided by datasources.
-		 * @param array
+		 * @var array
 		 */
 		protected $_param = array();
 
 		/**
 		 * The resulting Page after it has been transformed, as a string. This is
 		 * similar to what you would see if you 'view-sourced' a page in a web browser
-		 * @param string
+		 * @var string
 		 */
 		protected $_output = '';
 
@@ -77,8 +77,8 @@
 		}
 
 		/**
-		 * This function will build the <title> element and create a default
-		 * <h1> with an anchor to this query string
+		 * This function will build the `<title>` element and create a default
+		 * `<h1>` with an anchor to this query string
 		 */
 		protected function buildHeader($wrapper) {
 			$this->setTitle(__(
@@ -99,12 +99,13 @@
 		}
 
 		/**
-		 * Using DOMDocument, construct the Navigation list using the devkit_navigation.xml
-		 * file in the symphony/assets/ folder. The default navigation file is an empty <navigation>
-		 * element. The <code>ManipulateDevKitNavigation</code> delegate allows extensions
-		 * to inject items into the navigation. The navigation is build by iterating over <item>
+		 * Using DOMDocument, construct the Navigation list using the `devkit_navigation.xml`
+		 * file in the `ASSETS` folder. The default navigation file is an empty `<navigation>`
+		 * element. The `ManipulateDevKitNavigation` delegate allows extensions
+		 * to inject items into the navigation. The navigation is build by iterating over `<item>`
 		 * elements added. The idea is that all Devkit's can be accessed using the Navigation.
 		 *
+         * @uses ManipulateDevKitNavigation
 		 * @param XMLElement $wrapper
 		 *  The parent XMLElement to add the navigation to
 		 */
@@ -133,10 +134,14 @@
 				}
 			}
 
-			####
-			# Delegate: ManipulateDevKitNavigation
-			# Description: Allow navigation XML to be manipulated before it is rendered.
-			# Global: Yes
+            /**
+             * Allow navigation XML to be manipulated before it is rendered.
+             * 
+             * @delegate ManipulateDevKitNavigation
+             * @param string $context
+             *  '/frontend/'
+             * @param DOMDocument $xml
+             */
 			$this->_page->ExtensionManager->notifyMembers(
 				'ManipulateDevKitNavigation', '/frontend/',
 				array(
@@ -172,7 +177,7 @@
 		 * @see buildJumpItem
 		 * @param XMLElement $wrapper
 		 *  The parent XMLElement that the jump menu will be appended
-		 *  to. By default this is <div id='jump'>
+		 *  to. By default this is `<div id='jump'>`
 		 */
 		protected function buildJump(XMLElement $wrapper) { }
 
@@ -206,7 +211,7 @@
 		 *
 		 * @param XMLElement $wrapper
 		 *  The parent XMLElement that the content will be appended
-		 *  to. By default this is <div id='content'>
+		 *  to. By default this is `<div id='content'>`
 		 */
 		protected function buildContent(XMLElement $wrapper) {}
 
@@ -248,7 +253,7 @@
 		 * the Jump menu and finally the content. This function calls it's parent
 		 * generate function
 		 *
-		 * @see toolkit.HTMLPage#generate
+		 * @see toolkit.HTMLPage#generate()
 		 * @return string
 		 */
 		public function build() {

@@ -46,7 +46,7 @@
 
 		/**
 		 * The constructor for the XSLTPage ensures that an XSLTProcessor
-		 * is available, and then sets an instance of it to $Proc, otherwise
+		 * is available, and then sets an instance of it to `$this->Proc`, otherwise
 		 * throws a SymphonyErrorPage.
 		 */
 		public function __construct(){
@@ -59,7 +59,7 @@
 		}
 
 		/**
-		 * Setter for $_xml, can optionally load the XML from a file.
+		 * Setter for `$this->_xml`, can optionally load the XML from a file.
 		 *
 		 * @param string $xml
 		 *  The XML for this XSLT page
@@ -80,7 +80,7 @@
 		}
 
 		/**
-		 * Setter for $_xsl, can optionally load the XSLT from a file.
+		 * Setter for `$this->_xsl`, can optionally load the XSLT from a file.
 		 *
 		 * @param string $xsl
 		 *  The XSLT for this XSLT page
@@ -103,10 +103,10 @@
 		/**
 		 * Sets the parameters that will output with the resulting page
 		 * and be accessible in the XSLT. This function translates all ' into
-		 * &apos; to prevent the issue described on the setParameter page
+		 * `&apos;` to prevent the issue described on the setParameter page
 		 * http://www.php.net/manual/en/xsltprocessor.setparameter.php#81077
 		 * The tradeoff is that a <xsl:value-of select='$param' /> that has a '
-		 * will output &apos;, the benefit is that both ' and " can be in the params
+		 * will output `&apos;`, the benefit is that both ' and " can be in the params
 		 *
 		 * @param array $param
 		 *  An associative array of params for this page

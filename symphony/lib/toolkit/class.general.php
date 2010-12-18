@@ -43,13 +43,13 @@
 		/**
 		 * Validate a string against a set of reqular expressions.
 		 *
-		 * @param array[int]string|string $string
+		 * @param array|string $string
 		 *	string to operate on
-		 * @param array[int]string|string $rule
+		 * @param array|string $rule
 		 *	a single rule or array of rules
 		 * @return boolean
 		 *	false if any of the rules in $rule do not match any of the strings in
-		 *	$string, return true otherwise.
+		 *	`$string`, return true otherwise.
 		 */
 		public static function validateString($string, $rule){
 
@@ -90,7 +90,7 @@
 		 * @param pointer &$errors
 		 *	pointer to an array which will contain any validation errors
 		 * @param boolean $isFile (optional)
-		 *	if this is true, the method will attempt to read from a file ($data)
+		 *	if this is true, the method will attempt to read from a file, `$data`
 		 *	instead.
 		 * @param mixed $xsltProcessor (optional)
 		 *	if set, the validation will be done using this xslt processor rather
@@ -176,10 +176,10 @@
 		/**
 		 * Strip any slashes from all array values.
 		 *
-		 * @param array[] &$arr
+		 * @param array &$arr
 		 *	Pointer to an array to operate on. Can be multi-dimensional.
 		 */
-		public static function cleanArray(&$arr) {
+		public static function cleanArray(Array &$arr) {
 			foreach($arr as $k => $v){
 				if(is_array($v))
 					self::cleanArray($arr[$k]);
@@ -195,26 +195,26 @@
 		 * concatenation of the keys in the original arrays in which it was embedded.
 		 * The elements of the path are separated by periods (.). For example,
 		 * given the following nested array structure:
-		 * <code>
+		 * `
 		 * array(1 =>
 		 *			array('key' => 'value'),
 		 *		2 =>
 		 *			array('key2' => 'value2', 'key3' => 'value3')
 		 *		)
-		 * </code>
+		 * `
 		 * will flatten to:
-		 * array('1.key' => 'value', '2.key2' => 'value2', '2.key3' => 'value3')
+         * `array('1.key' => 'value', '2.key2' => 'value2', '2.key3' => 'value3')`
 		 *
-		 * @param array[] &$source
+		 * @param array &$source
 		 *	The array to flatten, passed by reference
-		 * @param array[] &$output (optional)
+		 * @param array &$output (optional)
 		 *	The array in which to store the flattened input, passed by reference.
          *  if this is not provided then a new array will be created.
 		 * @param string $path (optional)
 		 *	the current prefix of the keys to insert into the output array. this
 		 *	defaults to null.
 		 */
-		public static function flattenArray(&$source, &$output = null, $path = null) {
+		public static function flattenArray(Array &$source, &$output = null, $path = null) {
 			if (is_null($output)) $output = array();
 
 			foreach ($source as $key => $value) {
@@ -235,25 +235,25 @@
 		 * concatenation of the keys in the original arrays in which it was embedded.
 		 * The elements of the path are separated by colons (:). For example, given
 		 * the following nested array structure:
-		 * <code>
+		 * `
 		 * array(1 =>
 		 *			array('key' => 'value'),
 		 *		2 =>
 		 *			array('key2' => 'value2', 'key3' => 'value3')
 		 *		)
-		 * </code>
+		 * `
 		 * will flatten to:
-		 * array('1:key' => 'value', '2:key2' => 'value2', '2:key3' => 'value3')
+		 * `array('1:key' => 'value', '2:key2' => 'value2', '2:key3' => 'value3')`
 		 *
          *
-		 * @param array[] &$output
+		 * @param array &$output
 		 *	The array in which to store the flattened input, passed by reference.
-         * @param array[] &$source
+         * @param array &$source
 		 *	The array to flatten, passed by reference
 		 * @param string $path
 		 *	the current prefix of the keys to insert into the output array.
 		 */
-		protected static function flattenArraySub(&$output, &$source, $path) {
+		protected static function flattenArraySub(Array &$output, Array &$source, $path) {
 			foreach ($source as $key => $value) {
 				$key = $path . ':' . $key;
 
@@ -320,7 +320,7 @@
 		 *	subject of the email
 		 * @param string $message
 		 *	contents of the email
-		 * @param array[] $additional_headers (optional)
+		 * @param array $additional_headers (optional)
 		 *	an array of additional header elements. this defaults to an empty array.
 		 * @return boolean
 		 *	true if the call to mail with the constructed headers returns true,
@@ -396,7 +396,7 @@
 		}
 
 		/**
-		 * Extract the first $val characters of the input string. If $val
+		 * Extract the first `$val` characters of the input string. If `$val`
 		 * is larger than the length of the input string then the original
 		 * input string is returned.
 		 *
@@ -404,7 +404,7 @@
 		 *	the string to operate on
 		 * @param integer $val
 		 *	the number to compare lengths with
-		 * @return string|bool
+		 * @return string|boolean
 		 *	the resulting string or false on failure.
 		 */
 		public static function substrmin($str, $val){
@@ -412,15 +412,15 @@
 		}
 
 		/**
-		 * Extract the first $val characters of the input string. If
-		 * $val is larger than the length of the input string then
-		 * the original input string is returned??
+		 * Extract the first `$val` characters of the input string. If
+		 * `$val` is larger than the length of the input string then
+		 * the original input string is returned
 		 *
 		 * @param string $str
 		 *	the string to operate on
 		 * @param integer $val
 		 *	the number to compare lengths with
-		 * @return string|bool
+		 * @return string|boolean
 		 *	the resulting string or false on failure.
 		 */
 		public static function substrmax($str, $val){
@@ -428,14 +428,14 @@
 		}
 
 		/**
-		 * Extract the last $num characters from a string.
+		 * Extract the last `$num` characters from a string.
 		 *
 		 * @param string $str
 		 *	the string to extract the characters from.
 		 * @param integer $num
 		 *	the number of characters to extract.
-		 * @return string|bool
-		 *	a string containing the last $num characters of the
+		 * @return string|boolean
+		 *	a string containing the last `$num` characters of the
 		 *	input string, or false on failure.
 		 */
 		public static function right($str, $num){
@@ -444,14 +444,14 @@
 		}
 
 		/**
-		 * Extract the first $num characters from a string.
+		 * Extract the first `$num` characters from a string.
 		 *
 		 * @param string $str
 		 *	the string to extract the characters from.
 		 * @param integer $num
 		 *	the number of characters to extract.
-		 * @return string|bool
-		 *	a string containing the last $num characters of the
+		 * @return string|boolean
+		 *	a string containing the last `$num` characters of the
 		 *	input string, or false on failure.
 		 */
 		public static function left($str, $num){
@@ -477,12 +477,12 @@
 		 *
 		 * @param mixed $needle
 		 *	the value to search for.
-		 * @param array[] $haystack
+		 * @param array $haystack
 		 *	the multi-dimensional array to search.
 		 * @return boolean
-		 *	true if $needle is found in $haystack.
-		 *	true if $needle == $haystack.
-		 *	true if $needle is found in any of the arrays contained within $haystack.
+		 *	true if `$needle` is found in `$haystack`.
+		 *	true if `$needle` == `$haystack`.
+		 *	true if `$needle` is found in any of the arrays contained within `$haystack`.
 		 *	false otherwise.
 		 */
 		public static function in_array_multi($needle, $haystack){
@@ -508,12 +508,12 @@
         /**
 		 * Search an array for multiple values.
 		 *
-		 * @param array[] $needles
-		 *	the values to search the $haystack for.
-		 * @param array[] $haystack
-		 *	the in which to search for the $needles
+		 * @param array $needles
+		 *	the values to search the `$haystack` for.
+		 * @param array $haystack
+		 *	the in which to search for the `$needles`
 		 * @return boolean
-		 *	true if any of the $needles are in $haystack,
+		 *	true if any of the `$needles` are in `$haystack`,
 		 *	false otherwise.
 		 */
 		public static function in_array_all($needles, $haystack){
@@ -527,11 +527,11 @@
 
 		/**
 		 * Transform a multi-dimensional array to a flat array. The input array
-		 * is expected to conform to the structure of the $_FILES variable.
+		 * is expected to conform to the structure of the `$_FILES` variable.
 		 *
-		 * @param array[] $filedata
-		 *	the raw $_FILE data structured array
-		 * @return array[]
+		 * @param array $filedata
+		 *	the raw `$_FILES` data structured array
+		 * @return array
 		 *	the flattened array.
 		 */
 		public static function processFilePostData($filedata){
@@ -558,17 +558,15 @@
 		}
 
 		/**
-		 * Merge $_POST with $_FILES to produce a flat array of the contents
+		 * Merge `$_POST` with `$_FILES` to produce a flat array of the contents
 		 * of both. If there is no merge_file_post_data function defined then
 		 * such a function is created. This is necessary to overcome PHP's ability
-		 * to handle forms. This overcomes PHP's convoluted $_FILES structure
+		 * to handle forms. This overcomes PHP's convoluted `$_FILES` structure
 		 * to make it simpler to access multi-part/formdata.
 		 *
-		 * @uses $_POST
-		 * @uses $_FILES
-		 * @return array[]
-		 *	a flat array containing the flattened contents of both $_POST and
-		 *	$_FILES.
+		 * @return array
+		 *	a flat array containing the flattened contents of both `$_POST` and
+		 *	`$_FILES`.
 		 */
 		public static function getPostData() {
 			if (!function_exists('merge_file_post_data')) {
@@ -612,7 +610,7 @@
 		 * not have a mapping for that index. Uses the increment operator on the
 		 * index type of the input array, whatever that may do.
 		 *
-		 * @param array[] $array
+		 * @param array $array
 		 *	the array to find the next index for.
 		 * @param mixed $seed (optional)
 		 *	the object with which the search for an empty index is initialized. this
@@ -643,7 +641,7 @@
 		 * ignoring the case of the values (assuming they are strings?). A new array
 		 * is returned, the input array is left unchanged.
 		 *
-		 * @param array[] $array
+		 * @param array $array
 		 *	the array to filter.
 		 * @param boolean $ignore_case
 		 *	true if the case of the values in the array should be ignored, false otherwise.
@@ -660,10 +658,10 @@
 		 *
 		 * @param mixed $needle
 		 *	the object to search the array for.
-		 * @param array[] $haystack
-		 *	the array to search for the $needle.
+		 * @param array $haystack
+		 *	the array to search for the `$needle`.
 		 * @return boolean
-		 *	true if the $needle is in the $haystack, false otherwise.
+		 *	true if the `$needle` is in the `$haystack`, false otherwise.
 		 */
 		public static function in_iarray($needle, array $haystack){
 			foreach($haystack as $key => $value){
@@ -676,7 +674,7 @@
 		 * Filter the input array for duplicates, treating each element in the array
 		 * as a string and comparing them using a case insensitive comparison function.
 		 *
-		 * @param array[] $array
+		 * @param array $array
 		 *	the array to filter.
 		 * @return array
 		 *	a new array containing only the unique elements of the input array.
@@ -697,10 +695,9 @@
 		 * also be recursively formatted and appended to the input XML fragment.
 		 * The input XML element will be modified as a result of calling this.
 		 *
-         * @uses XMLElement
 		 * @param XMLElement $parent
 		 *	the XML element to append the formatted array data to.
-		 * @param array[] $data
+		 * @param array $data
 		 *	the array to format and append to the XML fragment.
 		 * @param boolean $validate
 		 *	true if the formatted array data should be validated as it is
@@ -744,7 +741,7 @@
 		 *	the path of the file to write.
 		 * @param mixed $data
 		 *	the data to write to the file.
-		 * @param int|null $perm (optional)
+		 * @param integer|null $perm (optional)
 		 *	the permissions as an octal number to set set on the resulting file.
 		 *	this defaults to 0644 (if omitted or set to null)
          * @param string $mode (optional)
@@ -802,7 +799,7 @@
 		 *
 		 * @param string $file
 		 *	the path of the file to extract the extension of.
-		 * @return array[string]string
+		 * @return array
 		 *	an array with a single key 'extension' and a value of the extension
 		 *	of the input path.
 		 */
@@ -824,14 +821,14 @@
 		 *	true if sub-directories should be traversed and reflected in the
 		 *	resulting array, false otherwise.
 		 * @param mixed $strip_root (optional)
-		 *	null if the $dir should be stripped from the entries in the array.
-		 *	anything else if $dir should be retained. this defaults to null.
+		 *	null if the `$dir` should be stripped from the entries in the array.
+		 *	anything else if `$dir` should be retained. this defaults to null.
 		 * @param array $exclude (optional)
 		 *	ignore directories listed in this array. this defaults to an empty array.
 		 * @param boolean $ignore_hidden (optional)
 		 *	ignore hidden directory (i.e.directories that begin with a period). this defaults
 		 *	to true.
-		 * @return null|array[]
+		 * @return null|array
 		 *	return the array structure reflecting the input directory or null if
          * the input directory is not actually a directory.
 		 */
@@ -879,14 +876,14 @@
 		 *	'asc' if the resulting filelist array should be sorted, anything else otherwise.
 		 *	this defaults to 'asc'.
 		 * @param mixed $strip_root (optional)
-		 *	null if the $dir should be stripped from the entries in the array.
-		 *	anything else if $dir should be retained. this defaults to null.
+		 *	null if the `$dir` should be stripped from the entries in the array.
+		 *	anything else if `$dir` should be retained. this defaults to null.
 		 * @param array $exclude (optional)
 		 *	ignore files listed in this array. this defaults to an empty array.
 		 * @param boolean $ignore_hidden (optional)
 		 *	ignore hidden files (i.e. files that begin with a period). this defaults
 		 *	to true.
-		 * @return null|array[dirlist,filelist]
+		 * @return null|array
 		 *	return the array structure reflecting the input directory or null if
          * the input directory is not actually a directory.
 		 */
@@ -944,16 +941,14 @@
 		/**
 		 * Compare two file structures based on their modification time. Should only
 		 * be used in the context of a sort function such as usort. For example:
-		 * <code>
-		 *	usort($files, array('General', 'filemtimeSort'));
-		 * </code>
+		 * `usort($files, array('General', 'filemtimeSort'));`
 		 *
 		 * @param array $f1
 		 *	the first file structure array to compare.
 		 * @param array $f2
-		 *	the second file structure array to compare $f1 to.
+		 *	the second file structure array to compare `$f1` to.
 		 * @return integer
-		 *	<1, 0, >1 if $f1 is less than, equal to or greater than $f2.
+		 *	<1, 0, >1 if `$f1` is less than, equal to or greater than `$f2`.
 		 */
 		public static function filemtimeSort($f1, $f2){
 			return filemtime($f1['path'] . '/' . $f1['name']) - filemtime($f1['path'] . '/' . $f1['name']);
@@ -963,16 +958,14 @@
 		 * Compare two file structure arrays based on their name. Names are
 		 * compared alphabetically. Should only be used in the context of a
 		 * sort function such as usort. For example:
-		 * <code>
-		 *	usort($files, array('General', 'fileSort'));
-		 * </code>
-		 *
+		 * `usort($files, array('General', 'fileSort'));`
+         *
 		 * @param array $f1
 		 *	the first file structure array to compare.
 		 * @param array $f2
-		 *	the second file structure array to compare $f1 to.
+		 *	the second file structure array to compare `$f1` to.
 		 * @return integer
-		 *	<1, 0, >1 if $f1 is less than, equal to or greater than $f2.
+		 *	<1, 0, >1 if `$f1` is less than, equal to or greater than `$f2`.
 		 */
 		public static function fileSort($f1, $f2){
 			return strcmp($f1['name'], $f2['name']);
@@ -982,16 +975,14 @@
 		 * Compare two file structure arrays based on their name. Names are compared
 		 * alphabetically reversed. For example "z" is less than "a". Should only
 		 * be used in the context of a sort function such as usort. For example:
-		 * <code>
-		 *	usort($files, array('General', 'fileSortR'));
-		 * </code>
+		 * `usort($files, array('General', 'fileSortR'));`
 		 *
 		 * @param array $f1
 		 *	the first file structure array to compare.
 		 * @param array $f2
-		 *	the second file structure array to compare $f1 to.
+		 *	the second file structure array to compare `$f1` to.
 		 * @return integer
-		 *	<1, 0, >1 if $f2 is less than, equal to or greater than $f1.
+		 *	<1, 0, >1 if `$f2` is less than, equal to or greater than `$f1`.
 		 */
 		public static function fileSortR($f1, $f2){
 			return strcmp($f2['name'], $f1['name']);
@@ -1007,7 +998,6 @@
 		 * entities are decoded. The resulting string is then split by the above set
 		 * of spaces and the resulting size of the resulting array returned.
 		 *
-		 * @uses strip_tags()
 		 * @param string $string
 		 *	the string from which to count the contained words.
 		 * @return integer
@@ -1154,8 +1144,6 @@
 		/**
 		 * Construct an XML fragment that reflects the structure of the input timestamp.
 		 *
-		 * @uses DataTimeObj to manipulate the timestamp value.
-         * @uses XMLElement
 		 * @param integer $timestamp
 		 *	the timestamp to construct the XML element from.
 		 * @param string $element (optional)

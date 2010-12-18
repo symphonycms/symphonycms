@@ -7,7 +7,7 @@
 	 * blocks for Sections. All fields instances are unique and can only be used once
 	 * in a Symphony install. Fields have their own field table which records where
 	 * instances of this field type have been used in other sections and their settings.
-	 * They also spinoff other tbl_entry_data_{id} tables that actually store data for
+	 * They also spinoff other `tbl_entry_data_{id}` tables that actually store data for
 	 * entries particular to this field.
 	 */
 	Class Field{
@@ -96,7 +96,7 @@
 		/**
 		 * An associative array of the settings for this Field instance
 		 * @var array
-		 * @deprecated This variable will be renamed to $_settings in the next major
+		 * @deprecated This variable will be renamed to `$_settings` in the next major
 		 *  release.
 		 */
 		protected $_fields = array();
@@ -422,7 +422,7 @@
 		public function findDefaults(Array &$settings){}
 
 		/**
-		 * Display the default settings panel, calls the buildSummaryBlock
+		 * Display the default settings panel, calls the `buildSummaryBlock`
 		 * function after basic field settings are added to the wrapper.
 		 *
 		 * @see buildSummaryBlock()
@@ -649,12 +649,12 @@
 		 *
 		 * @param array $errors
 		 *	the array to populate with the errors found.
-		 * @param boolean $checkFoeDuplicates (optional)
+		 * @param boolean $checkForDuplicates (optional)
 		 *	if set to true, duplicate field entries will be flagged as errors.
 		 *	this defaults to true.
-		 * @return number
+		 * @return integer
 		 *	returns the status of the checking. if errors has been populated with
-		 *	any errors self::__ERROR__, self__OK__ otherwise.
+		 *	any errors `self::__ERROR__`, `self::__OK__` otherwise.
 		 */
 		public function checkFields(Array &$errors, $checkForDuplicates = true) {
 			$parent_section = $this->get('parent_section');
@@ -760,8 +760,8 @@
 		 * @param number $entry_id (optional)
 		 *	the optional id of this field entry instance. this defaults to null.
 		 * @return number
-		 *	self::__MISSING_FIELDS__ if there are any missing required fields,
-		 *	self::__OK__ otherwise.
+		 *	`self::__MISSING_FIELDS__` if there are any missing required fields,
+		 *	`self::__OK__` otherwise.
 		 */
 		public function checkPostFieldData($data, &$message, $entry_id = null){
 			$message = NULL;
@@ -789,7 +789,7 @@
 		 *	commit function.
 		 * @param mixed $entry_id (optional)
 		 *	the current entry. defaults to null.
-		 * @return array[string]mixed
+		 * @return array
 		 *	the processed field data.
 		 */
 		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=null) {
@@ -852,7 +852,7 @@
 		 * field when utilized as a data source.
 		 *
 		 * @param array $data
-		 *	the supplied form data to use to construct the query from??
+		 *	the supplied form data to use to construct the query from
 		 * @param string $joins
 		 *	the join sql statement fragment to append the additional join sql to.
 		 * @param string $where
@@ -963,7 +963,7 @@
 		 * output as a parameter in the XML
 		 *
 		 * @param array $data
-		 *	 The data for this field from it's tbl_entry_data_{id} table
+		 *	 The data for this field from it's `tbl_entry_data_{id}` table
 		 * @return string
 		 *	 The formatted value to be used as the parameter
 		 */
@@ -1155,7 +1155,7 @@
 		 *
 		 * @param mixed $value
 		 *	the value to find the associated entry count for.
-		 * @return void|number
+		 * @return void|integer
 		 *	this default implementation returns void. overriding implementations should
 		 *	return a number.
 		 */
@@ -1173,4 +1173,3 @@
 		public function fetchAssociatedEntryIDs($value){}
 
 	}
-

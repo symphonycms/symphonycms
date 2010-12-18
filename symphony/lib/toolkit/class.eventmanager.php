@@ -16,7 +16,7 @@
 
 		/**
 		 * Given the filename of an Event return it's handle. This will remove
-		 * the Symphony convention of event.*.php
+		 * the Symphony convention of `event.*.php`
 		 *
 		 * @param string $filename
 		 *  The filename of the Event
@@ -44,7 +44,7 @@
 		 *
 		 * @param string $handle
 		 *  The handle of the Event free from any Symphony conventions
-		 *  such as event.*.php
+		 *  such as `event.*.php`
 		 * @return mixed
 		 *  If the Event is found, the function returns the path it's folder, otherwise false.
 		 */
@@ -68,7 +68,7 @@
 		/**
 		 * Given a name, return the path to the Event class
 		 *
-		 * @see __getClassPath()
+		 * @see toolkit.EventManager#__getClassPath()
 		 * @param string $handle
 		 *  The handle of the Event free from any Symphony conventions
 		 *  such as event.*.php
@@ -83,10 +83,10 @@
 		 * Finds all available Events by searching the events folder in the workspace
 		 * and in all installed extension folders. Returns an associative array of Events.
 		 *
-		 * @see toolkit.Manager#about
+		 * @see toolkit.Manager#about()
 		 * @return array
 		 *  Associative array of Events with the key being the handle of the Event
-		 *  and the value being the Events about() information.
+		 *  and the value being the Event's `about()` information.
 		 */
         public function listAll(){
 

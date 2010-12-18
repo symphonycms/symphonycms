@@ -10,7 +10,7 @@
 
 		/**
 		 * An associative array of information relating to this author where
-		 * the keys map directly to the tbl_authors columns.
+		 * the keys map directly to the `tbl_authors` columns.
 		 * @var array
 		 */
 		private $_fields = array();
@@ -23,10 +23,10 @@
 		private $_accessSections = null;
 
 		/**
-		 * Stores a key=>value pair into the Author object's $_field array.
+		 * Stores a key=>value pair into the Author object's `$this->_fields` array.
 		 *
 		 * @param string $field
-		 *  Maps directly to a column in the tbl_authors table.
+		 *  Maps directly to a column in the `tbl_authors` table.
 		 * @param string $value
 		 *  The value for the given $field
 		 */
@@ -35,14 +35,14 @@
 		}
 
 		/**
-		 * Retrieves the value from the Author object by field from the $_fields
+		 * Retrieves the value from the Author object by field from `$this->_fields`
 		 * array. If field is omitted, all fields are returned.
 		 *
 		 * @param string $field
-		 *  Maps directly to a column in the tbl_authors table. Defaults to null
+		 *  Maps directly to a column in the `tbl_authors` table. Defaults to null
 		 * @return mixed
 		 *  If the field is not set or is empty, returns null.
-		 *  If the field is not provided, returns the $_fields array
+		 *  If the field is not provided, returns the `$this->_fields` array
 		 *  Otherwise returns a string.
 		 */
 		public function get($field = null){
@@ -91,12 +91,12 @@
 		}
 
 		/**
-		 * Creates an author token using the General::hash function and the
+		 * Creates an author token using the `General::hash` function and the
 		 * current Author's username and password. The default hash function
 		 * is SHA1
 		 *
-		 * @see toolkit.General#hash
-		 * @see toolkit.General#substrmin
+		 * @see toolkit.General#hash()
+		 * @see toolkit.General#substrmin()
 		 *
 		 * @return string
 		 */
@@ -106,7 +106,7 @@
 
 		/**
 		 * Prior to saving an Author object, the validate function ensures that
-		 * the values in the $_fields array are correct. The function returns
+		 * the values in `$this->_fields` array are correct. The function returns
 		 * boolean, but an errors array is provided by reference to the callee
 		 * function.
 		 *
@@ -153,12 +153,12 @@
 
 		/**
 		 * This is the insert method for the Author. This takes the current
-		 * $_fields values and adds them to the database using either the
-		 * AuthorManager::edit or AuthorManager::add functions. An
+		 * `$this->_fields` values and adds them to the database using either the
+		 * `AuthorManager::edit` or `AuthorManager::add` functions. An
 		 * existing user is determined by if an ID is already set.
 		 *
-		 * @see toolkit.AuthorManager#add
-		 * @see toolkit.AuthorManager#edit
+		 * @see toolkit.AuthorManager#add()
+		 * @see toolkit.AuthorManager#edit()
 		 * @return mixed
 		 *  If an new Author was added, an integer of the Author ID will be
 		 *  returned, otherwise boolean to indicate whether the update was
@@ -226,9 +226,9 @@
 		 * This function will load an Author by Username into the current Author object
 		 *
 		 * @deprecated This function will be removed in the next major release. The
-		 *  AuthorManager::fetchByUsername is the preferred way to find Authors by
+		 *  `AuthorManager::fetchByUsername` is the preferred way to find Authors by
 		 *  Username.
-		* @see toolkit.AuthorManager#fetchByUsername
+		* @see toolkit.AuthorManager#fetchByUsername()
 		 * @param string $usernames
 		 *  The Author's username
 		 * @return boolean
@@ -243,4 +243,3 @@
 		}
 
 	}
-

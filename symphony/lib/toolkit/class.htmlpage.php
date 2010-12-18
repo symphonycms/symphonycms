@@ -11,33 +11,33 @@
 
 	Class HTMLPage extends Page{
 		/**
-		 * An XMLElement object for the <html> element. This is the parent
+		 * An XMLElement object for the `<html>` element. This is the parent
 		 * DOM element for all other elements on the output page.
 		 * @var XMLElement
 		 */
 		public $Html = null;
 
 		/**
-		 * An XMLElement object for the <head>
+		 * An XMLElement object for the `<head>`
 		 * @var XMLElement
 		 */
 		public $Head = null;
 
 		/**
-		 * An XMLElement object for the <body>
+		 * An XMLElement object for the `<body>`
 		 * @var XMLElement
 		 */
 		public $Body = null;
 
 		/**
-		 * An XMLElement object for the <form>. Most Symphony backend pages
+		 * An XMLElement object for the `<form>`. Most Symphony backend pages
 		 * are contained within a main form
 		 * @var XMLElement
 		 */
 		public $Form = null;
 
 		/**
-		 * This holds all the elements that will eventually be in the $Head.
+		 * This holds all the elements that will eventually be in the `$Head`.
 		 * This allows extensions to add elements at certain indexes so
 		 * resource dependancies can be met, and duplicates can be removed.
 		 * Defaults to an empty array.
@@ -61,8 +61,8 @@
 		}
 
 		/**
-		 * Setter function for the <title> of a backend page. Uses the
-		 * addElementToHead function to place into the $_head array.
+		 * Setter function for the `<title>` of a backend page. Uses the
+		 * `addElementToHead()` function to place into the `$this->_head` array.
 		 *
 		 * @see addElementToHead()
 		 * @param string $title
@@ -76,8 +76,8 @@
 		}
 
 		/**
-		 * The generate function calls the __build function before appending
-		 * all the current page's headers and then finally calling the $Html's
+		 * The generate function calls the `__build()` function before appending
+		 * all the current page's headers and then finally calling the `$Html's`
 		 * generate function which generates a HTML DOM from all the
 		 * XMLElement children.
 		 *
@@ -90,8 +90,8 @@
 		}
 
 		/**
-		 * Called when page is generated, this function appends the $Head,
-		 * $Form and $Body elements to the $Html.
+		 * Called when page is generated, this function appends the `$Head`,
+		 * `$Form` and `$Body` elements to the `$Html`.
 		 *
 		 * @see __generateHead()
 		 */
@@ -103,8 +103,8 @@
 		}
 
 		/**
-		 * Sorts the $_head elements by key, then appends them to the
-		 * Head XMLElement in order.
+		 * Sorts the `$this->_head` elements by key, then appends them to the
+		 * `$Head` XMLElement in order.
 		 */
 		protected function __generateHead(){
 			ksort($this->_head);
@@ -115,18 +115,18 @@
 		}
 
 		/**
-		 * Adds an XMLElement to the $_head array at a desired position.
+		 * Adds an XMLElement to the `$this->_head` array at a desired position.
 		 * If no position is given, the object will be added to the end
-		 * of the $_head array. If that position is already taken, it will
+		 * of the `$this->_head` array. If that position is already taken, it will
 		 * add the object at the next available position.
 		 *
-		 * @see toolkit.General#array_find_available_index
+		 * @see toolkit.General#array_find_available_index()
 		 * @param XMLElement $object
 		 * @param integer $position
-		 *  Defaults to null which will put the $object at the end of the
-		 *  $_head.
-		 * @return int
-		 *  Returns the position that the $object has been set in the $_head
+		 *  Defaults to null which will put the `$object` at the end of the
+		 *  `$this->_head`.
+		 * @return integer
+		 *  Returns the position that the `$object` has been set in the `$this->_head`
 		 */
 		public function addElementToHead(XMLElement $object, $position = null){
 			if(($position && isset($this->_head[$position]))) {
@@ -143,7 +143,7 @@
 
 		/**
 		 * Given an elementName, this function will remove the corresponding
-		 * XMLElement from the $_head
+		 * XMLElement from the `$this->_head`
 		 *
 		 * @param string $elementName
 		 */
@@ -172,20 +172,20 @@
 	    }
 
 		/**
-		 * Convenience function to add a <script> element to the $_head. By default
-		 * the function will allow duplicates to be added to the $_head. A duplicate
-		 * is determined by if the $path is unique.
+		 * Convenience function to add a `<script>` element to the `$this->_head`. By default
+		 * the function will allow duplicates to be added to the `$this->_head`. A duplicate
+		 * is determined by if the `$path` is unique.
 		 *
 		 * @param string $path
 		 *  The path to the script file
 		 * @param integer $position
 		 *  The desired position that the resulting XMLElement will be placed
-		 *  in the $_head. Defaults to null which will append to the end.
+		 *  in the `$this->_head`. Defaults to null which will append to the end.
 		 * @param boolean $duplicate
 		 *  When set to false the function will only add the script if it doesn't
 		 *  already exist. Defaults to true which allows duplicates.
-		 * @return int
-		 *  Returns the position that the script has been set in the $_head
+		 * @return integer
+		 *  Returns the position that the script has been set in the `$this->_head`
 		 */
 		public function addScriptToHead($path, $position = null, $duplicate = true){
 	        if($duplicate === true || ($duplicate === false && $this->checkElementsInHead($path, 'src') === false)){
@@ -198,9 +198,9 @@
 	    }
 
 		/**
-		 * Convenience function to add a stylesheet to the $_head in a <link> element.
-		 * By default the function will allow duplicates to be added to the $_head.
-		 * A duplicate is determined by if the $path is unique.
+		 * Convenience function to add a stylesheet to the `$this->_head` in a `<link>` element.
+		 * By default the function will allow duplicates to be added to the `$this->_head`.
+		 * A duplicate is determined by if the `$path` is unique.
 		 *
 		 * @param string $path
 		 *  The path to the stylesheet file
@@ -208,12 +208,12 @@
 		 *  The media attribute for this stylesheet, defaults to 'screen'
 		 * @param integer $position
 		 *  The desired position that the resulting XMLElement will be placed
-		 *  in the $_head. Defaults to null which will append to the end.
+		 *  in the `$this->_head`. Defaults to null which will append to the end.
 		 * @param boolean $duplicate
 		 *  When set to false the function will only add the script if it doesn't
 		 *  already exist. Defaults to true which allows duplicates.
-		 * @return int
-		 *  Returns the position that the stylesheet has been set in the $_head
+		 * @return integer
+		 *  Returns the position that the stylesheet has been set in the `$this->_head`
 		 */
 	    public function addStylesheetToHead($path, $type = 'screen', $position = null, $duplicate = true){
 	        if($duplicate === true || ($duplicate === false && $this->checkElementsInHead($path, 'href') === false)){
@@ -225,8 +225,8 @@
 	    }
 
 		/**
-		 * This function builds a HTTP query string from $_GET parameters with
-		 * the option to remove parameters with an $exclude array
+		 * This function builds a HTTP query string from `$_GET` parameters with
+		 * the option to remove parameters with an `$exclude` array
 		 *
 		 * @param array $exclude
 		 *  A simple array with the keys that should be omitted in the resulting

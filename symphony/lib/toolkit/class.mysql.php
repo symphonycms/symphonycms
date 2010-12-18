@@ -21,7 +21,7 @@
 
 		/**
 		 * Constructor takes a message and an associative array to set to
-		 * $_error. The message is passed to the default Exception constructor
+		 * `$_error`. The message is passed to the default Exception constructor
 		 */
 		public function __construct($message, array $error=NULL){
 			parent::__construct($message);
@@ -84,7 +84,7 @@
 		const __READ_OPERATION__ = 1;
 
 		/**
-		 * Sets the current $_log to be an associative array with 'error'
+		 * Sets the current `$_log` to be an associative array with 'error'
 		 * and 'query' keys and empty array values.
 		 *
 		 * @var array
@@ -132,7 +132,7 @@
 
 		/**
 		 * By default, an array of arrays or objects representing the result set
-		 * from the $_lastQuery.
+		 * from the `$this->_lastQuery`
 		 */
 	    private $_lastResult = array();
 
@@ -148,7 +148,7 @@
 	    }
 
 		/**
-		 * Resets the result, lastResult and lastQuery to their empty
+		 * Resets the result, `$this->_lastResult` and `$this->_lastQuery` to their empty
 		 * values. Called on each query and when the class is destroyed.
 		 */
 		public function flush(){
@@ -158,7 +158,7 @@
 	    }
 
 		/**
-		 * Sets the current $_log to be an associative array with 'error'
+		 * Sets the current `$_log` to be an associative array with 'error'
 		 * and 'query' keys and empty array values.
 		 */
 		public static function flushLog(){
@@ -364,7 +364,7 @@
 		 * considered to be a read operation which are subject to query caching.
 		 *
 		 * @return integer
-		 *  MySQL::__WRITE_OPERATION__ or MySQL::__READ_OPERATION__
+		 *  `MySQL::__WRITE_OPERATION__` or `MySQL::__READ_OPERATION__`
 		 */
 		public function determineQueryType($query){
 			return (preg_match('/^(create|insert|replace|delete|update|optimize|truncate)/i', $query) ? MySQL::__WRITE_OPERATION__ : MySQL::__READ_OPERATION__);
@@ -373,10 +373,10 @@
 		/**
 		 * Takes an SQL string and executes it. This function will apply query
 		 * caching if it is a read operation and if query caching is set. Symphony
-		 * will convert the tbl_ prefix of tables to be the one set during installation.
-		 * A type parameter is provided to specify whether _lastResult will be an array
+		 * will convert the `tbl_` prefix of tables to be the one set during installation.
+		 * A type parameter is provided to specify whether `$this->_lastResult` will be an array
 		 * of objects or an array of associative arrays. The default is objects. This
-		 * function will return boolean, but set _lastResult to the result.
+		 * function will return boolean, but set `$this->_lastResult` to the result.
 		 *
 		 * @param string $query
 		 *  The full SQL query to execute.
@@ -538,6 +538,7 @@
 		/**
 		 * Given a table name and a WHERE statement, delete rows from the
 		 * Database.
+         * 
 		 * @param string $table
 		 *  The table name, including the tbl prefix which will be changed
 		 *  to this Symphony's table prefix in the query function
@@ -588,10 +589,10 @@
 
 		/**
 		 * Returns the row at the specified index from the given query. If no
-		 * query is given, it will use the lastResult. If no offset is provided, the
-		 * function will return the first row. This function does not imply any
-		 * LIMIT to the given $query, so for the more efficient use, it is recommended
-		 * that the $query have a LIMIT set.
+		 * query is given, it will use the `$this->_lastResult`. If no offset is provided, 
+         * the function will return the first row. This function does not imply any
+		 * LIMIT to the given `$query`, so for the more efficient use, it is recommended
+		 * that the `$query` have a LIMIT set.
 		 *
 		 * @param integer $offset
 		 *  The row to return from the SQL query. For instance, if the second
@@ -599,9 +600,9 @@
 		 *  is zero based.
 		 * @param string $query
 		 *  The full SQL query to execute. Defaults to null, which will
-		 *  use the _lastResult
+		 *  use the `$this->_lastResult`
 		 * @return array
-		 *  If there is no row at the specified $offset, an empty array will be returned
+		 *  If there is no row at the specified `$offset`, an empty array will be returned
 		 *  otherwise an associative array of that row will be returned.
 		 */
 	    public function fetchRow($offset = 0, $query = null){
@@ -611,16 +612,16 @@
 
 		/**
 		 * Returns an array of values for a specified column in a given query.
-		 * If no query is given, it will use the lastResult.
+		 * If no query is given, it will use the `$this->_lastResult`.
 		 *
 		 * @param string $column
 		 *  The column name in the query to return the values for
 		 * @param string $query
 		 *  The full SQL query to execute. Defaults to null, which will
-		 *  use the _lastResult
+		 *  use the `$this->_lastResult`
 		 * @return array
-		 *  If there is no results for the $query, an empty array will be returned
-		 *  otherwise an array of values for that given $column will be returned
+		 *  If there is no results for the `$query`, an empty array will be returned
+		 *  otherwise an array of values for that given `$column` will be returned
 		 */
 	    public function fetchCol($column, $query = null){
 	        $result = $this->fetch($query);
@@ -637,17 +638,17 @@
 		/**
 		 * Returns the value for a specified column at a specified offset. If no
 		 * offset is provided, it will return the value for column of the first row.
-		 * If no query is given, it will use the lastResult.
+		 * If no query is given, it will use the `$this->_lastResult`.
 		 *
 		 * @param string $column
 		 *  The column name in the query to return the values for
 		 * @param integer $offset
-		 *  The row to use to return the value for the given $column from the SQL
-		 *  query. For instance, if $column form the second row was required, the
+		 *  The row to use to return the value for the given `$column` from the SQL
+		 *  query. For instance, if `$column` form the second row was required, the
 		 *  offset would be 1, because it is zero based.
 		 * @param string $query
 		 *  The full SQL query to execute. Defaults to null, which will
-		 *  use the _lastResult
+		 *  use the `$this->_lastResult`
 		 * @return string
 		 *  Returns the value of the given column, if it doesn't exist, null will be
 		 *  returned
@@ -728,10 +729,10 @@
 
 		/**
 		 * Convenience function to allow you to execute multiple SQL queries at once
-		 * by providing a string with the queries delimited with a <code>;</code>
+		 * by providing a string with the queries delimited with a `;`
 		 *
 		 * @param string $sql
-		 *  A string containing SQL queries delimited by <code>;</code>
+		 *  A string containing SQL queries delimited by `;`
 		 * @return boolean
 		 *  If one of the queries fails, false will be returned and no further queries
 		 *  will be executed, otherwise true will be returned.

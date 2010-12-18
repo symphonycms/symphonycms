@@ -5,7 +5,7 @@
 	 */
 	/**
 	 * The ExtensionManager class is responsible for managing all extensions
-	 * in Symphony. Extensions are stored on the file system either in the /extensions
+	 * in Symphony. Extensions are stored on the file system in the `EXTENSIONS`
 	 * folder. They are autodiscovered where the Extension class name is the same
 	 * as it's folder name (excluding the extension prefix).
 	 */
@@ -43,14 +43,14 @@
 		private static $_extensions = array();
 
 		/**
-		 * The constructor for ExtensionManager. This sets the $_Parent to be an
+		 * The constructor for ExtensionManager. This sets the `$this->_Parent` to be an
 		 * instance of the Administration class and loads all the extensions into
 		 * memory. This is necessary so that each extension is created to announce
 		 * it's delegates and so that any static calls to extension classes are
 		 * available because they have been loaded into memory with require_once
 		 *
-		 * @see listAll()
-		 * @see create()
+		 * @see toolkit.ExtensionManager#listAll()
+		 * @see toolkit.ExtensionManager#create()
 		 *
 		 * @param Administration $parent
 		 *  The Administration object that this manager has been created from
@@ -74,7 +74,7 @@
         }
 
 		/**
-		 * Finds an Extension by name by searching the extensions folder and
+		 * Finds an Extension by name by searching the `EXTENSIONS` folder and
 		 * returns the path to the folder.
 		 *
 		 * @param string $name
@@ -88,7 +88,7 @@
 		/**
 		 * Given a name, return the path to the driver of the Extension.
 		 *
-		 * @see __getClassPath()
+		 * @see toolkit.ExtensionManager#__getClassPath()
 		 * @param string $name
 		 *  The extension folder
 		 * @return string
@@ -113,8 +113,8 @@
 		}
 
 		/**
-		 * Populates the $_extensions array will all the extensions stored in
-		 * tbl_extensions
+		 * Populates the `ExtensionManager::$_extensions` array will all the extensions stored in
+		 * `tbl_extensions`
 		 */
 		private function __buildExtensionList() {
 			if (empty(self::$_extensions)) {
@@ -129,7 +129,7 @@
 		 * Returns information about an extension by it's name by calling
 		 * it's own about method. This method checks if an extension needs
 		 * to be updated or not.
-		 *
+		 * `
 		 *		'name' => 'Name of Extension',
 		 *		'version' => '1.8',
 		 *		'release-date' => 'YYYY-MM-DD',
@@ -139,8 +139,8 @@
 		 *			'email' => 'Author Email'
 		 *		),
 		 *		'description' => 'A description about this extension'
-		 *
-		 * @see __requiresUpdate()
+		 * `
+		 * @see toolkit.ExtensionManager#__requiresUpdate()
 		 * @return array
 		 *  An associative array describing this extension
 		 */
@@ -168,8 +168,8 @@
 		 * @param string $name
 		 *  The name of the extension as provided by it's about function
 		 * @return int
-		 *  An extension status, EXTENSION_ENABLED, EXTENSION_DISABLED
-		 *  EXTENSION_NOT_INSTALLED and EXTENSION_REQUIRES_UPDATE.
+		 *  An extension status, `EXTENSION_ENABLED`, `EXTENSION_DISABLED`
+		 *  `EXTENSION_NOT_INSTALLED` and `EXTENSION_REQUIRES_UPDATE`.
 		 *  If an extension doesn't exist, null will be returned.
 		 */
 		public function fetchStatus($name){
@@ -223,7 +223,7 @@
 
 		/**
 		 * Determines whether the current extension is installed or not by checking
-		 * for an id in tbl_extensions
+		 * for an id in `tbl_extensions`
 		 *
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
@@ -259,8 +259,8 @@
 		 * extensions respective install and update methods. The enable method is
 		 * of the extension object is finally called.
 		 *
-		 * @see registerDelegates()
-		 * @see __canUninstallOrDisable()
+		 * @see toolkit.ExtensionManager#registerDelegates()
+		 * @see toolkit.ExtensionManager#__canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
@@ -305,12 +305,12 @@
 		/**
 		 * Disabling an extension will prevent it from executing but retain all it's
 		 * settings in the relevant tables. Symphony checks that an extension can
-		 * be disabled using the canUninstallorDisable function before removing
-		 * all delegate subscriptions from the database and calling the extensions
-		 * disable method.
+		 * be disabled using the `canUninstallorDisable()` before removing
+		 * all delegate subscriptions from the database and calling the extension's
+		 * `disable()` function.
 		 *
-		 * @see removeDelegates()
-		 * @see __canUninstallOrDisable()
+		 * @see toolkit.ExtensionManager#removeDelegates()
+		 * @see toolkit.ExtensionManager#__canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
@@ -343,11 +343,11 @@
 		/**
 		 * Uninstalling an extension will unregister all delegate subscriptions and
 		 * remove all extension settings. Symphony checks that an extension can
-		 * be uninstalled using the canUninstallorDisable function before calling
-		 * the extensions uninstall method.
+		 * be uninstalled using the `canUninstallorDisable()` before calling
+		 * the extension's `uninstall()` function.
 		 *
-		 * @see removeDelegates()
-		 * @see __canUninstallOrDisable()
+		 * @see toolkit.ExtensionManager#removeDelegates()
+		 * @see toolkit.ExtensionManager#__canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
@@ -368,10 +368,11 @@
 		}
 
 		/**
-		 * This functions registers an extensions delegates in tbl_extensions_delegates.
+		 * This functions registers an extensions delegates in `tbl_extensions_delegates`.
+         * 
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
-		 * @return int
+		 * @return integer
 		 *  The Extension ID
 		 */
 		public function registerDelegates($name){
@@ -408,8 +409,9 @@
 
 		/**
 		 * This function will remove all delegate subscriptions for an extension
-		 * given an extension's name. This triggers the __cleanupDatabase method
-		 *
+		 * given an extension's name. This triggers `__cleanupDatabase()`
+         * 
+         * @see toolkit.ExtensionManager#__cleanupDatabase()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 */
@@ -440,10 +442,11 @@
 		}
 
 		/**
-		 * This function checks that if this extension has provided Fields,
+		 * This function checks that if the given extension has provided Fields,
 		 * Data Sources or Events, that they aren't in use before the extension
 		 * is uninstalled or disabled. This prevents exceptions from occurring when
-		 * logic requires the removed Extensions' objects.
+		 * accessing an object that was using something provided by this Extension
+         * can't anymore because it has been removed.
 		 *
 		 * @param Extension $obj
 		 *  An extension object
@@ -505,7 +508,7 @@
 
 		/**
 		 * Given a delegate name, notify all extensions that have registered to that
-		 * delegate to executing their callbacks with a $context array parameter
+		 * delegate to executing their callbacks with a `$context` array parameter
 		 * that contains information about the current Symphony state.
 		 *
 		 * @param string $delegate
@@ -513,7 +516,7 @@
 		 * @param string $page
 		 *  The current page namespace that this delegate operates in
 		 * @param array $context
-		 *  The $context param is an associative array that at minimum will contain
+		 *  The `$context` param is an associative array that at minimum will contain
 		 *  the current Administration class, the current page object and the delegate
 		 *  name. Other context information may be passed to this function when it is
 		 *  called. eg.
@@ -651,7 +654,7 @@
 
 		/**
 		 * A utility function that is used by the ExtensionManager to ensure
-		 * stray delegates are not in tbl_extensions_delegates. It is called when
+		 * stray delegates are not in `tbl_extensions_delegates`. It is called when
 		 * a new Delegate is added or removed.
 		 */
 		private function __cleanupDatabase(){

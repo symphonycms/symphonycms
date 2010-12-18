@@ -8,7 +8,7 @@
 	 * By default it is essentially a wrapper for CURL, but if that is not available
 	 * it falls back to use sockets.
 	 * @example
-	 *  <code>
+	 *  `
 	 *      require_once(TOOLKIT . '/class.gateway.php');
      *      $ch = new Gateway;
      *
@@ -17,7 +17,7 @@
      *      $ch->setopt('POST', 1);
      *      $ch->setopt('POSTFIELDS', array('fred' => 1, 'happy' => 'yes'));
 	 *		print $ch->exec();
-	 *  </code>
+	 *  `
 	 */
     Class Gateway{
 
@@ -99,8 +99,8 @@
         private $_agent = 'Symphony';
 
 		/**
-		 * A URL encoded string of the $_POST fields, as built by
-		 * http_build_query
+		 * A URL encoded string of the `$_POST` fields, as built by
+		 * http_build_query()
 		 *
 		 * @link http://www.php.net/manual/en/function.http-build-query.php
 		 * @var string
@@ -108,8 +108,7 @@
         private $_postfields = '';
 
 		/**
-		 * Whether to the return the Header with the result
-		 * of the request
+		 * Whether to the return the Header with the result of the request
 		 * @var boolean
 		 */
    		private $_returnHeaders = false;
@@ -178,7 +177,7 @@
 		/**
 		 * A basic wrapper that simulates the curl_setopt function. Any
 		 * options that are not recognised by Symphony will fallback to
-		 * being added to the $custom_opt array. Any options in $custom_opt
+		 * being added to the `$custom_opt` array. Any options in `$custom_opt`
 		 * will be applied on executed using curl_setopt. Custom options are not
 		 * available for Socket requests. The benefit of using this function is for
 		 * convienience as it performs some basic preprocessing for some options
@@ -190,7 +189,7 @@
 		 *  A string representing a CURL constant. Symphony will intercept the
 		 *  following, URL, POST, POSTFIELDS, USERAGENT, HTTPHEADER,
 		 *  RETURNHEADERS, CONTENTTYPE and TIMEOUT. Any other values
-		 *  will be saved in the $custom_opt array.
+		 *  will be saved in the `$custom_opt` array.
 		 * @param mixed $value
 		 *  The value of the option, usually boolean or a string. Consult the
 		 *  setopt documentation for more information.
@@ -278,14 +277,14 @@
 		/**
 		 * Executes the request, using Curl unless it is not available
 		 * or this function has explicitly been told not by providing
-		 * the FORCE_SOCKET constant as a parameter. The function
+		 * the `Gateway::FORCE_SOCKET` constant as a parameter. The function
 		 * will apply all the options set by the setopt function before
 		 * executing the request. Information about the transfer is
-		 * available using the getInfoLast() function.
+		 * available using the `getInfoLast()` function.
 		 *
 		 * @see toolkit.Gateway#getInfoLast()
 		 * @param string $force_connection_method
-		 *  Only one valid parameter, Gateway::FORCE_SOCKET
+		 *  Only one valid parameter, `Gateway::FORCE_SOCKET`
 		 * @return string
 		 *  The result of the transfer as a string. If any errors occur during
 		 *  a socket request, false will be returned.
@@ -422,7 +421,7 @@
 		/**
 		 * Returns some information about the last transfer, this
 		 * the same output array as expected when calling the
-		 * curl_getinfo function. If Sockets were used to complete
+		 * curl_getinfo() function. If Sockets were used to complete
 		 * the request instead of CURL, the resulting array will be
 		 * the HTTP Code, the Content Type and the URL of the resulting
 		 * request
