@@ -159,7 +159,7 @@
 						if (   ($ascii == 13 && ord($input[$i+1]) == 10)
 						    || ($ascii == 10 && ord($input[$i+1]) == 13) )
 						{
-							$i += 1;
+							$i++;
 						}
 					}
 					if ($blank) {
