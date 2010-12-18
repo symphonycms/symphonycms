@@ -137,7 +137,6 @@
 		    for ($i=0; $i < $input_length; $i++) {
 				$char = $input[$i];
 				$ascii = ord($char);
-				$remaining_total_length = $input_length - $i - 1;
 
 				// No encoding for spaces and tabs
 				if ($ascii == 9 || $ascii == 32) {
@@ -148,9 +147,9 @@
 				// CR and LF
 				elseif ($ascii == 13 || $ascii == 10) {
 					// Use existing offset only.
-					if ($remaining_total_length >= 1) {
-						if (   $ascii == 13 && ord($input[$i+1]) == 10
-						    || $ascii == 10 && ord($input[$i+1]) == 13 )
+					if ($i+1 < $input_length) {
+						if (   ($ascii == 13 && ord($input[$i+1]) == 10)
+						    || ($ascii == 10 && ord($input[$i+1]) == 13) )
 						{
 							$i += 1;
 						}
