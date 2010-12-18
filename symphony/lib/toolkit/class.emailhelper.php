@@ -75,7 +75,8 @@
 					$replace_length = 1;
 					$replace_char = $char;
 				}
-				// Encode space as underscore (means better readability for humans)
+				// Encode space as underscore (means better readability
+				// for humans)
 				else if ($ascii == 32) {
 					$replace_length = 1;
 					$replace_char = '_';
@@ -185,8 +186,11 @@
 				// Encode
 				else {
 					$replace_length = 3;
-					// bit operation is around 10 percent faster than 'strtoupper(dechex($ascii))'
-					$replace_char = '=' . $qpHexDigits[$ascii >> 4] . $qpHexDigits[$ascii & 0x0f];
+					// bit operation is around 10 percent faster
+					// than 'strtoupper(dechex($ascii))'
+					$replace_char = '='
+					              . $qpHexDigits[$ascii >> 4]
+					              . $qpHexDigits[$ascii & 0x0f];
 					$blank = false;
 				}
 				// Would the line become too long?
