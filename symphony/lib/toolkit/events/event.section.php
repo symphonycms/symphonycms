@@ -22,12 +22,20 @@
 				General::array_to_xml($post_values, $fields, true);
 			}
 
-			###
-			# Delegate: EventPreSaveFilter
-			# Description: Prior to saving entry from the front-end. This delegate will
-			#			   force the Event to terminate if it populates the error
-			#              array reference. Provided with references to this object, the
-			#			   POST data and also the error array
+			/**
+             * Prior to saving entry from the front-end. This delegate will
+             * force the Event to terminate if it populates the error
+             * array reference. Provided with references to this object, the
+			 * `$_POST` data and also the error array
+             * 
+             * @delegate EventPreSaveFilter
+             * @param string $context
+             * '/frontend/'
+             * @param array $fields
+             * @param string $event
+             * @param array $filter_results
+             * @param XMLElement $post_values
+             */
 			$obj->ExtensionManager->notifyMembers(
 				'EventPreSaveFilter',
 				'/frontend/',
@@ -222,17 +230,29 @@
 			}
 
 			$filter_results = array();
-
-			###
-			# Delegate: EventPostSaveFilter
-			# Description: After saving entry from the front-end. This delegate will not force the Events to terminate if it populates the error
-			#              array reference. Provided with references to this object, the POST data and also the error array
-			$obj->ExtensionManager->notifyMembers('EventPostSaveFilter', '/frontend/', array('entry_id' => $entry->get('id'),
-																							 'fields' => $fields,
-																							 'entry' => $entry,
-																							 'event' => &$event,
-																							 'messages' => &$filter_results));
-
+            
+            /**
+             * After saving entry from the front-end. This delegate will not force
+             * the Events to terminate if it populates the error array reference. 
+             * Provided with references to this object, the `$_POST` data and also
+             * the error array
+             * 
+             * @delegate EventPostSaveFilter
+             * @param string $context
+             * '/frontend/'
+             * @param integer $entry_id
+             * @param array $fields
+             * @param Entry $entry
+             * @param string $event
+             * @param array $messages
+             */
+			$obj->ExtensionManager->notifyMembers('EventPostSaveFilter', '/frontend/', array(
+                'entry_id' => $entry->get('id'),
+                'fields' => $fields,
+                'entry' => $entry,
+                'event' => &$event,
+                'messages' => &$filter_results
+            ));
 
 			if(is_array($filter_results) && !empty($filter_results)){
 				foreach($filter_results as $fr){
@@ -242,9 +262,16 @@
 
 				}
 			}
-
-			###
-			# Delegate: EventFinalSaveFilter
+            
+            /**
+             * @delegate EventFinalSaveFilter
+             * @param string $context
+             * '/frontend/'
+             * @param array $fields
+             * @param string $event
+             * @param array $filter_errors
+             * @param Entry $entry
+             */
 			$obj->ExtensionManager->notifyMembers(
 				'EventFinalSaveFilter', '/frontend/', array(
 					'fields'	=> $fields,
