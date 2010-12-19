@@ -142,6 +142,9 @@ var Symphony = {};
 			 */
 			add: function(strings) {
 
+				// Don't process empty strings	
+				if($.isEmptyObject(strings)) return;
+
 				// Set key as value
 				$.each(strings, function(key, value) {
 					strings[key] = key;
