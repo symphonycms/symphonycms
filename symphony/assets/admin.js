@@ -22,7 +22,7 @@ var Symphony = {};
 				user = $('#usr li:first a');
 
 			// Set JavaScript status
-			$(document.documentElement).addClass('active');
+			$('html').addClass('active');
 
 			// Set basic context information
 			Symphony.Context.add('user', {
@@ -535,7 +535,7 @@ var Symphony = {};
 
 		// Confirm with selected actions
 		$('form').submit(function(event) {
-			var select = $('select[name=with-selected]'),
+			var select = $('select[name="with-selected"]'),
 				option = select.find('option:selected'),
 				input = $('table input:checked'),
 				count = input.size(),
