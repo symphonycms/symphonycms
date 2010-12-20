@@ -124,20 +124,39 @@
 				$page  = "/login";
 			}
 			else if(empty($page)){
+                
+                // Will redirect an Author to their default area of the Backend
+                // Integers are indicative of section's, text is treated as the path
+                // to the page after `SYMPHONY`                
+                $default_area = null;
+                
+                if(is_numeric($this->Author->get('default_area'))) {
+                    $section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '".$this->Author->get('default_section')."' LIMIT 1");
 
-				$section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '".$this->Author->get('default_section')."' LIMIT 1");
-
-				if(!$section_handle){
-					$section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
-				}
-
-				if(!$section_handle){
-					if($this->Author->isDeveloper()) redirect(URL . '/symphony/blueprints/sections/');
-					else redirect(URL . "/symphony/system/authors/edit/".$this->Author->get('id')."/");
-				}
-				else{
-					redirect(URL . "/symphony/publish/{$section_handle}/");
-				}
+                    if(!$section_handle){
+                        $section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
+                    }
+                    
+                    $default_area = "/publish/sections/" . $section_handle . "/";
+                    
+                }
+                else {
+                    if(!is_null($this->Author->get('default_area'))) {
+                        $default_area = $this->Author->get('default_area');
+                    }                    
+                }
+                
+                if(is_null($default_area)) {
+                    if($this->Author->isDeveloper()) {
+                        redirect(SYMPHONY . '/blueprints/sections/');
+                    }
+                    else {
+                        redirect(SYMPHONY . "/system/authors/edit/".$this->Author->get('id')."/");
+                    }
+                }
+                else {
+                    redirect(SYMPHONY . $default_area);
+                }
 			}
 
 			if(!$this->_callback = $this->getPageCallback($page)){

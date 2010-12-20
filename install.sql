@@ -11,7 +11,7 @@ CREATE TABLE `tbl_authors` (
   `last_seen` datetime DEFAULT '0000-00-00 00:00:00',
   `user_type` enum('author','developer') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'author',
   `primary` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
-  `default_section` int(11) NOT NULL,
+  `default_area` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `auth_token_active` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `language` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
