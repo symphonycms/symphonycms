@@ -824,11 +824,11 @@
 			$ul->setAttribute('id', 'usr');
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(Administration::instance()->Author->getFullName(), SYMPHONY . '/system/authors/edit/' . Administration::instance()->Author->get('id') . '/'));
+			$li->appendChild(Widget::Anchor(Administration::instance()->Author->getFullName(), SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id') . '/'));
 			$ul->appendChild($li);
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(__('Logout'), SYMPHONY . '/logout/'));
+			$li->appendChild(Widget::Anchor(__('Logout'), SYMPHONY_URL . '/logout/'));
 			$ul->appendChild($li);
 
 			/**

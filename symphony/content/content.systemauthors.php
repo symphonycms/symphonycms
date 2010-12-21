@@ -1,14 +1,14 @@
 <?php
-    
-    /**
-     * @package content
-     */
-    
-    /**
-     * Controller page for all Symphony Author related activity
-     * including making new Authors, editing Authors or deleting
-     * Authors from Symphony
-     */
+
+	/**
+	 * @package content
+	 */
+
+	/**
+	 * Controller page for all Symphony Author related activity
+	 * including making new Authors, editing Authors or deleting
+	 * Authors from Symphony
+	 */
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.sectionmanager.php');
 
@@ -27,7 +27,7 @@
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors'))));
 
 			if (Administration::instance()->Author->isDeveloper()) {
-                $this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), Administration::instance()->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
+				$this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), Administration::instance()->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
 			} else $this->appendSubheading(__('Authors'));
 
 			$aTableHead = array(
@@ -43,11 +43,10 @@
 					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
 				);
 			}
-
-			else{
+			else {
 				$bOdd = true;
-				foreach($authors as $a){
 
+				foreach($authors as $a){
 					## Setup each cell
 					if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->get('id') == $a->get('id')) {
 						$td1 = Widget::TableData(
@@ -59,15 +58,18 @@
 
 					$td2 = Widget::TableData(Widget::Anchor($a->get('email'), 'mailto:'.$a->get('email'), 'Email this author'));
 
-					if(!is_null($a->get('last_seen')))
+					if(!is_null($a->get('last_seen'))) {
 						$td3 = Widget::TableData(
-                            Lang::localizeDate(DateTimeObj::get(__SYM_DATETIME_FORMAT__, strtotime(Lang::standardizeDate($a->get('last_seen')))))
-                        );
-					else
+							Lang::localizeDate(DateTimeObj::get(__SYM_DATETIME_FORMAT__, strtotime(Lang::standardizeDate($a->get('last_seen')))))
+						);
+					} else {
 						$td3 = Widget::TableData('Unknown', 'inactive');
+					}
 
 					if (Administration::instance()->Author->isDeveloper()) {
-						if ($a->get('id') != Administration::instance()->Author->get('id')) $td3->appendChild(Widget::Input('items['.$a->get('id').']', NULL, 'checkbox'));
+						if ($a->get('id') != Administration::instance()->Author->get('id')) {
+							$td3->appendChild(Widget::Input('items['.$a->get('id').']', NULL, 'checkbox'));
+						}
 					}
 
 					## Add a row to the body array, assigning each cell to the row
@@ -106,29 +108,30 @@
 			if($_POST['with-selected'] == 'delete' && is_array($_POST['items'])){
 
 				$checked = @array_keys($_POST['items']);
-                
-                if(!empty($checked)) {
-                    /**
-                     * Prior to deleting an author, provided with an array of Author ID's.
-                     * 
-                     * @since Symphony 2.2
-                     * @delegate AuthorPreDelete
-                     * @param string $context
-                     * '/system/authors/'
-                     * @param array $author_ids
-                     *  An array of Author ID that are about to be removed
-                     */
-                    Administration::instance()->ExtensionManager->notifyMembers('AuthorPreDelete', '/system/authors/', array('author_ids' => $checked));
 
-                    foreach($checked as $author_id) {
-                        $a = AuthorManager::fetchByID($author_id);
-                        if(is_object($a) && $a->get('id') != Administration::instance()->Author->get('id')) {
-                            AuthorManager::delete($author_id);
-                        }
-                    }
-                }
+				if(!empty($checked)) {
 
-				redirect(SYMPHONY . '/system/authors/');
+				/**
+				* Prior to deleting an author, provided with an array of Author ID's.
+				*
+				* @delegate AuthorPreDelete
+				* @since Symphony 2.2
+				* @param string $context
+				* '/system/authors/'
+				* @param array $author_ids
+				*  An array of Author ID that are about to be removed
+				*/
+				Administration::instance()->ExtensionManager->notifyMembers('AuthorPreDelete', '/system/authors/', array('author_ids' => $checked));
+
+					foreach($checked as $author_id) {
+						$a = AuthorManager::fetchByID($author_id);
+						if(is_object($a) && $a->get('id') != Administration::instance()->Author->get('id')) {
+							AuthorManager::delete($author_id);
+						}
+					}
+				}
+
+				redirect(SYMPHONY_URL . '/system/authors/');
 			}
 		}
 
@@ -141,7 +144,7 @@
 			$this->__form();
 		}
 
-        public function __form(){
+		public function __form(){
 
 			require_once(TOOLKIT . '/class.field.php');
 
@@ -150,41 +153,37 @@
 
 			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper()) {
 				Administration::instance()->customError(__('Access Denied'), __('You are not authorised to access this page.'));
-            }
-            
+			}
+
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
-
 					case 'saved':
-
 						$this->pageAlert(
 							__(
 								'Author updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY . '/system/authors/new/',
-									SYMPHONY . '/system/authors/'
+									SYMPHONY_URL . '/system/authors/new/',
+									SYMPHONY_URL . '/system/authors/'
 								)
 							),
-							Alert::SUCCESS);
-
-						break;
+							Alert::SUCCESS
+						);
+					break;
 
 					case 'created':
-
 						$this->pageAlert(
 							__(
 								'Author created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY . '/system/authors/new/',
-									SYMPHONY . '/system/authors/'
+									SYMPHONY_URL . '/system/authors/new/',
+									SYMPHONY_URL . '/system/authors/'
 								)
 							),
-							Alert::SUCCESS);
-
-						break;
-
+							Alert::SUCCESS
+						);
+					break;
 				}
 			}
 
@@ -192,25 +191,24 @@
 
 			$isOwner = false;
 
-			if(isset($_POST['fields']))
+			if(isset($_POST['fields'])) {
 				$author = $this->_Author;
+			}
+			else if($this->_context[0] == 'edit') {
 
-			elseif($this->_context[0] == 'edit'){
-
-				if(!$author_id = $this->_context[1]) redirect(SYMPHONY . '/system/authors/');
+				if(!$author_id = $this->_context[1]) redirect(SYMPHONY_URL . '/system/authors/');
 
 				if(!$author = AuthorManager::fetchByID($author_id)){
 					Administration::instance()->customError(__('Author not found'), __('The author profile you requested does not exist.'));
 				}
 			}
-
 			else $author = new Author;
 
 			if($this->_context[0] == 'edit' && $author->get('id') == Administration::instance()->Author->get('id')) $isOwner = true;
 
 			if ($this->_context[0] == 'edit' && !$isOwner && !Administration::instance()->Author->isDeveloper()) {
 				Administration::instance()->customError(__('Access Denied'), __('You are not authorised to edit other authors.'));
-            }
+			}
 
 			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Authors'), $author->getFullName())));
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $author->getFullName()));
@@ -277,7 +275,10 @@
 					$div->setAttribute('class', 'triple group');
 
 					$label = Widget::Label(__('Old Password'));
-					if(isset($this->_errors['old-password'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['old-password']));
+					if(isset($this->_errors['old-password'])) {
+						$label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['old-password']));
+					}
+
 					$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password'));
 					$div->appendChild((isset($this->_errors['old-password']) ? Widget::wrapFormElementWithError($label, $this->_errors['old-password']) : $label));
 				}
@@ -288,7 +289,9 @@
 			$div->appendChild((isset($this->_errors['password']) ? Widget::wrapFormElementWithError($label, $this->_errors['password']) : $label));
 
 			$label = Widget::Label(($this->_context[0] == 'edit' ? __('Confirm New Password') : __('Confirm Password')));
-			if(isset($this->_errors['password-confirmation'])) $label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['password-confirmation']));
+			if(isset($this->_errors['password-confirmation'])) {
+				$label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['password-confirmation']));
+			}
 			$label->appendChild(Widget::Input('fields[password-confirmation]', NULL, 'password'));
 			$div->appendChild($label);
 			$group->appendChild($div);
@@ -300,89 +303,96 @@
 			if(Administration::instance()->Author->isDeveloper()) {
 				$label = Widget::Label();
 				$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
-				if($author->isTokenActive()) $input->setAttribute('checked', 'checked');
-				$temp = SYMPHONY . '/login/' . $author->createAuthToken() . '/';
+
+				if($author->isTokenActive()) {
+					$input->setAttribute('checked', 'checked');
+				}
+
+				$temp = SYMPHONY_URL . '/login/' . $author->createAuthToken() . '/';
 				$label->setValue(__('%1$s Allow remote login via <a href="%2$s">%2$s</a>', array($input->generate(), $temp)));
 				$group->appendChild($label);
-			}
-			$label = Widget::Label(__('Default Area'));
 
-			$sectionManager = new SectionManager($this->_Parent);
-			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+				$label = Widget::Label(__('Default Area'));
 
-			$options = array();
+				$sectionManager = new SectionManager($this->_Parent);
+				$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 
-			if(is_array($sections) && !empty($sections)) {
-				foreach($sections as $s) $options[] = array($s->get('id'), $author->get('default_area') == $s->get('id'), $s->get('name'));
-            }
-            
-            /**
-             * Allows injection or manipulation of the Default Area dropdown for an Author. 
-             * Take care with adding in options that are only valid for Developers, as if a
-             * normal Author is set to that option, they will be redirected to their own 
-             * Author record.
-             * 
-             * @delegate AddDefaultAuthorAreas
-             * @param string $context
-             * '/system/authors/
-             * @param array $options
-             * An associative array of options, suitable for use for the Widget::Select
-             * function. By default this will be an array of the Sections in the current
-             * installation. New options should be the path to the page after the `SYMPHONY`
-             * constant.
-             */
-            Administration::instance()->ExtensionManager->notifyMembers('AddDefaultAuthorAreas', '/system/authors/', array('options' => $options));
+				$options = array();
 
-			$label->appendChild(Widget::Select('fields[default_area]', $options));
-			$group->appendChild($label);
-
-			$this->Form->appendChild($group);
-			###
-
-			### Custom Language Selection ###
-			$languages = Lang::getAvailableLanguages();
-			if(count($languages) > 1) {
-
-				// Get language names
-				asort($languages);
-
-				$group = new XMLElement('fieldset');
-				$group->setAttribute('class', 'settings');
-				$group->appendChild(new XMLElement('legend', __('Custom Preferences')));
-
-				$div = new XMLElement('div');
-				$div->setAttribute('class', 'group');
-
-				$label = Widget::Label(__('Language'));
-
-				$options = array(
-					array(NULL, is_null($author->get('language')), __('System Default'))
-				);
-
-				foreach($languages as $code => $name) {
-					$options[] = array($code, $code == $author->get('language'), $name);
+				if(is_array($sections) && !empty($sections)) {
+					foreach($sections as $s) {
+						$options[] = array($s->get('id'), $author->get('default_area') == $s->get('id'), $s->get('name'));
+					}
 				}
-				$select = Widget::Select('fields[language]', $options);
-				$label->appendChild($select);
+
+				/**
+				* Allows injection or manipulation of the Default Area dropdown for an Author.
+				* Take care with adding in options that are only valid for Developers, as if a
+				* normal Author is set to that option, they will be redirected to their own
+				* Author record.
+				*
+				*
+				* @delegate AddDefaultAuthorAreas
+				* @since Symphony 2.2
+				* @param string $context
+				* '/system/authors/
+				* @param array $options
+				* An associative array of options, suitable for use for the Widget::Select
+				* function. By default this will be an array of the Sections in the current
+				* installation. New options should be the path to the page after the `SYMPHONY_URL`
+				* constant.
+				*/
+				Administration::instance()->ExtensionManager->notifyMembers('AddDefaultAuthorAreas', '/system/authors/', array('options' => $options));
+
+				$label->appendChild(Widget::Select('fields[default_area]', $options));
 				$group->appendChild($label);
 
 				$this->Form->appendChild($group);
+				###
+
+				### Custom Language Selection ###
+				$languages = Lang::getAvailableLanguages();
+				if(count($languages) > 1) {
+
+					// Get language names
+					asort($languages);
+
+					$group = new XMLElement('fieldset');
+					$group->setAttribute('class', 'settings');
+					$group->appendChild(new XMLElement('legend', __('Custom Preferences')));
+
+					$div = new XMLElement('div');
+					$div->setAttribute('class', 'group');
+
+					$label = Widget::Label(__('Language'));
+
+					$options = array(
+						array(NULL, is_null($author->get('language')), __('System Default'))
+					);
+
+					foreach($languages as $code => $name) {
+						$options[] = array($code, $code == $author->get('language'), $name);
+					}
+					$select = Widget::Select('fields[language]', $options);
+					$label->appendChild($select);
+					$group->appendChild($label);
+
+					$this->Form->appendChild($group);
+				}
+
+				$div = new XMLElement('div');
+				$div->setAttribute('class', 'actions');
+
+				$div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Author')), 'submit', array('accesskey' => 's')));
+
+				if($this->_context[0] == 'edit' && !$isOwner && !$author->isPrimaryAccount()){
+					$button = new XMLElement('button', __('Delete'));
+					$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this author'), 'type' => 'submit'));
+					$div->appendChild($button);
+				}
+
+				$this->Form->appendChild($div);
 			}
-			###
-            
-            $div = new XMLElement('div');
-			$div->setAttribute('class', 'actions');
-
-			$div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Author')), 'submit', array('accesskey' => 's')));
-
-			if($this->_context[0] == 'edit' && !$isOwner && !$author->isPrimaryAccount()){
-				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this author'), 'type' => 'submit'));
-				$div->appendChild($button);
-			}
-
-			$this->Form->appendChild($div);
-
 		}
 
 		public function __actionNew(){
@@ -392,7 +402,6 @@
 				$fields = $_POST['fields'];
 
 				$this->_Author = new Author;
-
 				$this->_Author->set('user_type', $fields['user_type']);
 				$this->_Author->set('primary', 'no');
 				$this->_Author->set('email', $fields['email']);
@@ -404,46 +413,42 @@
 				$this->_Author->set('default_area', $fields['default_area']);
 				$this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
 				$this->_Author->set('language', $fields['language']);
-                
-                if($this->_Author->validate($this->_errors)):
 
+				if($this->_Author->validate($this->_errors)) {
 					if($fields['password'] != $fields['password-confirmation']){
 						$this->_errors['password'] = $this->_errors['password-confirmation'] = __('Passwords did not match');
 					}
-
-					elseif($author_id = $this->_Author->commit()){
+					else if($author_id = $this->_Author->commit()) {
 
 						/**
-                         * Creation of a new Author. The Author object is provided as read 
-                         * only through this delegate.
-                         * 
-                         * @since Symhony 2.2
-                         * @delegate AuthorPostCreate
-                         * @param string $context
-                         * '/system/authors/'
-                         * @param Author $author
-                         *  The Author object that has just been created
-                         */
+						 * Creation of a new Author. The Author object is provided as read
+						 * only through this delegate.
+						 *
+						 * @delegate AuthorPostCreate
+						 * @since Symphony 2.2
+						 * @param string $context
+						 * '/system/authors/'
+						 * @param Author $author
+						 *  The Author object that has just been created
+						 */
 						Administration::instance()->ExtensionManager->notifyMembers('AuthorPostCreate', '/system/authors/', array('author' => $this->_Author));
 
-						redirect(SYMPHONY . "/system/authors/edit/$author_id/created/");
-
+						redirect(SYMPHONY_URL . "/system/authors/edit/$author_id/created/");
 					}
+				}
 
-				endif;
-
-				if(is_array($this->_errors) && !empty($this->_errors))
+				if(is_array($this->_errors) && !empty($this->_errors)) {
 					$this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), Alert::ERROR);
-
-				else
-					$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(SYMPHONY . '/system/log/')), Alert::ERROR);
-
+				}
+				else {
+					$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(SYMPHONY_URL . '/system/log/')), Alert::ERROR);
+				}
 			}
 		}
 
 		public function __actionEdit(){
 
-			if(!$author_id = $this->_context[1]) redirect(SYMPHONY . '/system/authors/');
+			if(!$author_id = $this->_context[1]) redirect(SYMPHONY_URL . '/system/authors/');
 
 			$isOwner = ($author_id == Administration::instance()->Author->get('id'));
 
@@ -459,9 +464,8 @@
 				if(isset($fields['old-password']) && strlen(trim($fields['old-password'])) > 0 && General::hash(trim($fields['old-password'])) == $this->_Author->get('password')) {
 					$authenticated = true;
 				}
-
 				// Developers don't need to specify the old password, unless it's their own account
-				elseif(Administration::instance()->Author->isDeveloper() && $isOwner === false){
+				else if(Administration::instance()->Author->isDeveloper() && $isOwner === false){
 					$authenticated = true;
 				}
 
@@ -470,7 +474,6 @@
 				if ($this->_Author->isPrimaryAccount() || ($isOwner && Administration::instance()->Author->isDeveloper())){
 					$this->_Author->set('user_type', 'developer'); // Primary accounts are always developer, Developers can't lower their level
 				}
-
 				elseif (Administration::instance()->Author->isDeveloper() && isset($fields['user_type'])){
 					$this->_Author->set('user_type', $fields['user_type']); // Only developer can change user type
 				}
@@ -485,12 +488,11 @@
 					$this->_Author->set('password', General::hash($fields['password']));
 					$changing_password = true;
 				}
-                
-                $this->_Author->set('default_area', $fields['default_area']);
+
+				$this->_Author->set('default_area', $fields['default_area']);
 				$this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
 
-				if($this->_Author->validate($this->_errors)):
-
+				if($this->_Author->validate($this->_errors)) {
 					if(!$authenticated && ($changing_password || $changing_email)){
 						if($changing_password) $this->_errors['old-password'] = __('Wrong password. Enter old password to change it.');
 						elseif($changing_email) $this->_errors['old-password'] = __('Wrong password. Enter old one to change email address.');
@@ -499,7 +501,6 @@
 					elseif(($fields['password'] != '' || $fields['password-confirmation'] != '') && $fields['password'] != $fields['password-confirmation']){
 						$this->_errors['password'] = $this->_errors['password-confirmation'] = __('Passwords did not match');
 					}
-
 					elseif($this->_Author->commit()){
 
 						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' OR `author_id` = '".$author_id."' ");
@@ -507,49 +508,46 @@
 						if($isOwner) Administration::instance()->login($this->_Author->get('username'), $this->_Author->get('password'), true);
 
 						/**
-                         * After editing an author, provided with the Author object
-                         * 
-                         * @since Symhony 2.2
-                         * @delegate AuthorPostEdit
-                         * @param string $context
-                         * '/system/authors/'
-                         * @param Author $author
-                         * An Author object
-                         */
+						 * After editing an author, provided with the Author object
+						 *
+						 * @delegate AuthorPostEdit
+						 * @since Symphony 2.2
+						 * @param string $context
+						 * '/system/authors/'
+						 * @param Author $author
+						 * An Author object
+						 */
 						Administration::instance()->ExtensionManager->notifyMembers('AuthorPostEdit', '/system/authors/', array('author' => $this->_Author));
 
-						redirect(SYMPHONY . '/system/authors/edit/' . $author_id . '/saved/');
+						redirect(SYMPHONY_URL . '/system/authors/edit/' . $author_id . '/saved/');
 					}
 
-					else $this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(SYMPHONY . '/system/log/')), Alert::ERROR);
-
-				endif;
-
+					else {
+						$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(SYMPHONY_URL . '/system/log/')), Alert::ERROR);
+					}
+				}
 			}
+			else if(@array_key_exists('delete', $_POST['action'])) {
 
-			elseif(@array_key_exists('delete', $_POST['action'])){
-
-                /**
-                 * Prior to deleting an author, provided with the Author ID.
-                 * 
-                 * @since Symphony 2.2
-                 * @delegate AuthorPreDelete
-                 * @param string $context
-                 * '/system/authors/'
-                 * @param integer $author_id
-                 *  The ID of Author ID that is about to be deleted
-                 */
-                Administration::instance()->ExtensionManager->notifyMembers('AuthorPreDelete', '/system/authors/', array('author_id' => $author_id));
+				/**
+				 * Prior to deleting an author, provided with the Author ID.
+				 *
+				 * @delegate AuthorPreDelete
+				 * @since Symphony 2.2
+				 * @param string $context
+				 * '/system/authors/'
+				 * @param integer $author_id
+				 *  The ID of Author ID that is about to be deleted
+				 */
+				Administration::instance()->ExtensionManager->notifyMembers('AuthorPreDelete', '/system/authors/', array('author_id' => $author_id));
 
 				if(!$isOwner) {
 					AuthorManager::delete($author_id);
-					redirect(SYMPHONY . '/system/authors/');
+					redirect(SYMPHONY_URL . '/system/authors/');
 				}
-
 				else {
 					$this->pageAlert(__('You cannot remove yourself as you are the active Author.'), Alert::ERROR);
 				}
 			}
 		}
-
 	}
