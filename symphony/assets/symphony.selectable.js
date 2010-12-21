@@ -37,6 +37,11 @@
 			var item = $(this),
 				items = item.siblings().andSelf(),
 				selection, deselection, first, last;
+				
+			// Remove text ranges
+			if(window.getSelection) {
+				window.getSelection().removeAllRanges();
+			}
 			
 			// Range selection
 			if((event.shiftKey) && items.filter('.selected').size() > 0) {

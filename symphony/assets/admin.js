@@ -22,7 +22,7 @@ var Symphony = {};
 				user = $('#usr li:first a');
 
 			// Set JavaScript status
-			$(document.documentElement).addClass('active');
+			$('html').addClass('active');
 
 			// Set basic context information
 			Symphony.Context.add('user', {
