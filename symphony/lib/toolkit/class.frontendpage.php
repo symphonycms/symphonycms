@@ -113,7 +113,7 @@
 		}
 
 		/**
-		 * Accessor function for the environment variables
+		 * Accessor function for the environment variables, aka `$this->_env`
 		 *
 		 * @return array
 		 */
@@ -122,12 +122,22 @@
 		}
 
 		/**
-		 * Accessor function for the resolved page's data as it lies in `tbl_pages`
+		 * Accessor function for the resolved page's data (`$this->_pageData`)
+		 * as it lies in `tbl_pages`
 		 *
 		 * @return array
 		 */
 		public function pageData(){
 			return $this->_pageData;
+		}
+
+		/**
+		 * Accessor function for this current page URL, `$this->_page`
+		 *
+		 * @return string
+		 */
+		public function Page(){
+			return $this->_page;
 		}
 
 		/**
@@ -155,18 +165,18 @@
 
 			if (Frontend::instance()->isLoggedIn()) {
 				/**
-                 * Allows a devkit object to be specified, and stop continued execution:
-                 *
-                 * @delegate FrontendDevKitResolve
-                 * @param string $context
-                 * '/frontend/'
-                 * @param boolean $full_generate
-                 *  Whether this page will be completely generated (ie, invoke the XSLT transform)
-                 *  or not, by default this is true. Passed by reference
-                 * @param mixed $devkit
-                 *  Allows a devkit to register to this page
-                 */
-                 $this->ExtensionManager->notifyMembers(
+				 * Allows a devkit object to be specified, and stop continued execution:
+				 *
+				 * @delegate FrontendDevKitResolve
+				 * @param string $context
+				 * '/frontend/'
+				 * @param boolean $full_generate
+				 *  Whether this page will be completely generated (ie, invoke the XSLT transform)
+				 *  or not, by default this is true. Passed by reference
+				 * @param mixed $devkit
+				 *  Allows a devkit to register to this page
+				 */
+				$this->ExtensionManager->notifyMembers(
 					'FrontendDevKitResolve', '/frontend/',
 					array(
 						'full_generate'	=> &$full_generate,
@@ -181,17 +191,17 @@
 
 			if ($full_generate) {
 				/**
-                 * Immediately before generating the page. Provided with the page object, XML and XSLT
-                 * @delegate FrontendOutputPreGenerate
-                 * @param string $context
-                 * '/frontend/'
-                 * @param FrontendPage $page
-                 *  This FrontendPage object, by reference
-                 * @param string $xml
-                 *  This pages XML, including the Parameters, Datasource and Event XML, by reference
-                 * @param string $xsl
-                 *  This pages XSLT
-                 */
+				 * Immediately before generating the page. Provided with the page object, XML and XSLT
+				 * @delegate FrontendOutputPreGenerate
+				 * @param string $context
+				 * '/frontend/'
+				 * @param FrontendPage $page
+				 *  This FrontendPage object, by reference
+				 * @param string $xml
+				 *  This pages XML, including the Parameters, Datasource and Event XML, by reference
+				 * @param string $xsl
+				 *  This pages XSLT
+				 */
 				$this->ExtensionManager->notifyMembers(
 					'FrontendOutputPreGenerate', '/frontend/',
 					array(
@@ -217,24 +227,24 @@
 					}
 				}
 
-                /**
-                 * This is just prior to the page headers being rendered, and is suitable for changing them
-                 * @delegate FrontendPreRenderHeaders
-                 * @param string $context
-                 * '/frontend/'
-                 */
+				/**
+				 * This is just prior to the page headers being rendered, and is suitable for changing them
+				 * @delegate FrontendPreRenderHeaders
+				 * @param string $context
+				 * '/frontend/'
+				 */
 				$this->ExtensionManager->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
 
 				$output = parent::generate();
 
-                /**
-                 * Immediately after generating the page. Provided with string containing page source
-                 * @delegate FrontendOutputPostGenerate
-                 * @param string $context
-                 * '/frontend/'
-                 * @param string $output
-                 *  The generated output of this page, ie. a string of HTML, passed by reference
-                 */
+				/**
+				 * Immediately after generating the page. Provided with string containing page source
+				 * @delegate FrontendOutputPostGenerate
+				 * @param string $context
+				 * '/frontend/'
+				 * @param string $output
+				 *  The generated output of this page, ie. a string of HTML, passed by reference
+				 */
 				$this->ExtensionManager->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
 
 				Frontend::instance()->Profiler->sample('XSLT Transformation', PROFILE_LAP);
@@ -312,17 +322,17 @@
 				$page['type'] = $this->__fetchPageTypes($page['id']);
 			}
 
-            /**
-             * Just after having resolved the page, but prior to any commencement of output creation
-             * @delegate FrontendPageResolved
-             * @param string $context
-             * '/frontend/'
-             * @param FrontendPage $page
-             *  An instance of this class, passed by reference
-             * @param array $page_data
-             *  An associative array of page data, which is a combination from `tbl_pages` and
-             *  the path of the page on the filesystem. Passed by reference
-             */
+			/**
+			 * Just after having resolved the page, but prior to any commencement of output creation
+			 * @delegate FrontendPageResolved
+			 * @param string $context
+			 * '/frontend/'
+			 * @param FrontendPage $page
+			 *  An instance of this class, passed by reference
+			 * @param array $page_data
+			 *  An associative array of page data, which is a combination from `tbl_pages` and
+			 *  the path of the page on the filesystem. Passed by reference
+			 */
 			$this->ExtensionManager->notifyMembers('FrontendPageResolved', '/frontend/', array('page' => &$this, 'page_data' => &$page));
 
 			$this->_pageData = $page;
@@ -374,14 +384,14 @@
 			// Flatten parameters:
 			General::flattenArray($this->_param);
 
-            /**
-             * Just after having resolved the page params, but prior to any commencement of output creation
-             * @delegate FrontendParamsResolve
-             * @param string $context
-             * '/frontend/'
-             * @param array $params
-             *  An associative array of this page's parameters
-             */
+			/**
+			 * Just after having resolved the page params, but prior to any commencement of output creation
+			 * @delegate FrontendParamsResolve
+			 * @param string $context
+			 * '/frontend/'
+			 * @param array $params
+			 *  An associative array of this page's parameters
+			 */
 			$this->ExtensionManager->notifyMembers('FrontendParamsResolve', '/frontend/', array('params' => &$this->_param));
 
 			$xml_build_start = precision_timer();
@@ -421,14 +431,14 @@
 				}
 			}
 
-            /**
-             * Access to the resolved param pool, including additional parameters provided by Data Source outputs
-             * @delegate FrontendParamsPostResolve
-             * @param string $context
-             * '/frontend/'
-             * @param array $params
-             *  An associative array of this page's parameters
-             */
+			/**
+			 * Access to the resolved param pool, including additional parameters provided by Data Source outputs
+			 * @delegate FrontendParamsPostResolve
+			 * @param string $context
+			 * '/frontend/'
+			 * @param array $params
+			 *  An associative array of this page's parameters
+			 */
 			$this->ExtensionManager->notifyMembers('FrontendParamsPostResolve', '/frontend/', array('params' => &$this->_param));
 
 			$params = new XMLElement('params');
@@ -495,15 +505,15 @@
 
 			$row = null;
 
-            /**
-             * Before page resolve. Allows manipulation of page without redirection
-             * @delegate FrontendPrePageResolve
-             * @param string $context
-             * '/frontend/'
-             * @param mixed $row
-             * @param FrontendPage $page
-             *  An instance of this FrontendPage
-             */
+			/**
+			 * Before page resolve. Allows manipulation of page without redirection
+			 * @delegate FrontendPrePageResolve
+			 * @param string $context
+			 * '/frontend/'
+			 * @param mixed $row
+			 * @param FrontendPage $page
+			 *  An instance of this FrontendPage
+			 */
 			$this->ExtensionManager->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => &$this->_page));
 
 			## Default to the index page if no page has been specified
@@ -660,21 +670,21 @@
 		 */
 		private function processEvents($events, XMLElement &$wrapper){
 
-            /**
-             * Manipulate the events array and event element wrapper
-             * @delegate FrontendProcessEvents
-             * @param string $context
-             * '/frontend/'
-             * @param array $env
-             * @param string $events
-             *  A string of all the Events attached to this page, comma separated.
-             * @param XMLElement $wrapper
-             *  The XMLElement to append the Events results to. Event results are
-             *  contained in a root XMLElement that is the handlised version of
-             *  their name.
-             * @param array $page_data
-             *  An associative array of page meta data
-             */
+			/**
+			 * Manipulate the events array and event element wrapper
+			 * @delegate FrontendProcessEvents
+			 * @param string $context
+			 * '/frontend/'
+			 * @param array $env
+			 * @param string $events
+			 *  A string of all the Events attached to this page, comma separated.
+			 * @param XMLElement $wrapper
+			 *  The XMLElement to append the Events results to. Event results are
+			 *  contained in a root XMLElement that is the handlised version of
+			 *  their name.
+			 * @param array $page_data
+			 *  An associative array of page meta data
+			 */
 			$this->ExtensionManager->notifyMembers('FrontendProcessEvents',	'/frontend/', array(
 					'env' => $this->_env,
 					'events' => &$events,
@@ -718,16 +728,16 @@
 				}
 			}
 
-            /**
-             * Just after the page events have triggered. Provided with the XML object
-             * @delegate FrontendEventPostProcess
-             * @param string $context
-             * '/frontend/'
-             * @param XMLElement $xml
-             *  The XMLElement to append the Events results to. Event results are
-             *  contained in a root XMLElement that is the handlised version of
-             *  their name.
-             */
+			/**
+			 * Just after the page events have triggered. Provided with the XML object
+			 * @delegate FrontendEventPostProcess
+			 * @param string $context
+			 * '/frontend/'
+			 * @param XMLElement $xml
+			 *  The XMLElement to append the Events results to. Event results are
+			 *  contained in a root XMLElement that is the handlised version of
+			 *  their name.
+			 */
 			$this->ExtensionManager->notifyMembers('FrontendEventPostProcess', '/frontend/', array('xml' => &$wrapper));
 
 		}
