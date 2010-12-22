@@ -95,7 +95,7 @@
 
 		/**
 		 * Constructor function sets `$this->_Parent` and initialises the Managers
-		 * used on the FrontendPage, which are DatasourceManager, EventManager and 
+		 * used on the FrontendPage, which are DatasourceManager, EventManager and
          * ExtensionManager
 		 *
 		 * @param Frontend $parent
@@ -156,7 +156,7 @@
 			if (Frontend::instance()->isLoggedIn()) {
 				/**
                  * Allows a devkit object to be specified, and stop continued execution:
-                 * 
+                 *
                  * @delegate FrontendDevKitResolve
                  * @param string $context
                  * '/frontend/'
@@ -216,21 +216,21 @@
 						$this->addHeaderToPage('HTTP/1.0 403 Forbidden');
 					}
 				}
-                
+
                 /**
                  * This is just prior to the page headers being rendered, and is suitable for changing them
                  * @delegate FrontendPreRenderHeaders
-                 * @param string $context 
+                 * @param string $context
                  * '/frontend/'
                  */
 				$this->ExtensionManager->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
 
 				$output = parent::generate();
-                
+
                 /**
                  * Immediately after generating the page. Provided with string containing page source
                  * @delegate FrontendOutputPostGenerate
-                 * @param string $context 
+                 * @param string $context
                  * '/frontend/'
                  * @param string $output
                  *  The generated output of this page, ie. a string of HTML, passed by reference
@@ -244,8 +244,9 @@
 
 					while (list($key, $val) = $this->Proc->getError()) {
 						$errstr .= 'Line: ' . $val['line'] . ' - ' . $val['message'] . self::CRLF;
-					};
+					}
 
+					GenericExceptionHandler::$enabled = true;
 					throw new SymphonyErrorPage(trim($errstr), NULL, 'xslt-error', array('proc' => clone $this->Proc));
 				}
 
@@ -298,6 +299,7 @@
 				");
 
 				if(empty($page)){
+                    GenericExceptionHandler::$enabled = true;
 					throw new SymphonyErrorPage(
 						__('The page you requested does not exist.'),
 						__('Page Not Found'),
@@ -313,7 +315,7 @@
             /**
              * Just after having resolved the page, but prior to any commencement of output creation
              * @delegate FrontendPageResolved
-             * @param string $context 
+             * @param string $context
              * '/frontend/'
              * @param FrontendPage $page
              *  An instance of this class, passed by reference
@@ -371,11 +373,11 @@
 
 			// Flatten parameters:
 			General::flattenArray($this->_param);
-            
+
             /**
              * Just after having resolved the page params, but prior to any commencement of output creation
              * @delegate FrontendParamsResolve
-             * @param string $context 
+             * @param string $context
              * '/frontend/'
              * @param array $params
              *  An associative array of this page's parameters
@@ -422,7 +424,7 @@
             /**
              * Access to the resolved param pool, including additional parameters provided by Data Source outputs
              * @delegate FrontendParamsPostResolve
-             * @param string $context 
+             * @param string $context
              * '/frontend/'
              * @param array $params
              *  An associative array of this page's parameters
@@ -572,6 +574,7 @@
 															  LIMIT 1");
 
 				if(empty($row)){
+					GenericExceptionHandler::$enabled = true;
 					throw new SymphonyErrorPage(
 						__('Please <a href="%s">login</a> to view this page.', array(URL.'/symphony/login/')),
 						__('Forbidden'),
@@ -656,7 +659,7 @@
 		 *  their name.
 		 */
 		private function processEvents($events, XMLElement &$wrapper){
-            
+
             /**
              * Manipulate the events array and event element wrapper
              * @delegate FrontendProcessEvents
@@ -731,8 +734,8 @@
 
 		/**
 		 * This function determines the correct order that events should be executed in.
-		 * Events are executed based off priority, with `Event::kHIGH` priority executing 
-         * first. If there is more than one Event of the same priority, they are then 
+		 * Events are executed based off priority, with `Event::kHIGH` priority executing
+         * first. If there is more than one Event of the same priority, they are then
          * executed in alphabetical order. This function is designed to be used with
          * PHP's uasort function.
 		 *

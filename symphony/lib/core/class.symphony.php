@@ -206,6 +206,7 @@
 			$this->ExtensionManager = new ExtensionManager($this);
 
 			if(!($this->ExtensionManager instanceof ExtensionManager)){
+                GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
 			}
 		}
@@ -232,6 +233,7 @@
 			$driver_filename = TOOLKIT . '/class.' . $driver . '.php';
 
 			if(!is_file($driver_filename)){
+                GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage("Could not find database driver '<code>{$driver}</code>'", 'Symphony Database Error');
 			}
 
@@ -256,6 +258,7 @@
 			}
 			catch(DatabaseException $e){
 				$error = self::$Database->getlastError();
+                GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage(
 					$error['num'] . ': ' . $error['msg'],
 					'Symphony Database Error',
@@ -524,6 +527,7 @@
 		 *  that the template may want to expose, such as custom Headers etc.
 		 */
 		public function customError($heading, $message, $template='error', array $additional=array()){
+            GenericExceptionHandler::$enabled = true;
 			throw new SymphonyErrorPage($message, $heading, $template, $additional);
 		}
 	}

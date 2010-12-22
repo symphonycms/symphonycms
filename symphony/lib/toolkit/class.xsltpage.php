@@ -52,6 +52,7 @@
 		public function __construct(){
 
 			if(!XsltProcess::isXSLTProcessorAvailable()) {
+                GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage(__('No suitable XSLT processor was found.'));
 			}
 

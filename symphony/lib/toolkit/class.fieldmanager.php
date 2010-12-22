@@ -333,7 +333,7 @@
 		 *  The handle of the Field to create (which is it's handle)
 		 * @return Field
 		 */
-		public function create($type){
+		public function &create($type){
 
 			if(!isset(self::$_pool[$type])){
 		        $classname = $this->__getClassName($type);
