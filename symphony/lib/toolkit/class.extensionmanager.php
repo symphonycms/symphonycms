@@ -113,11 +113,16 @@
 		}
 
 		/**
-		 * Populates the `ExtensionManager::$_extensions` array will all the extensions stored in
-		 * `tbl_extensions`
+		 * Populates the `ExtensionManager::$_extensions` array with all the
+         * extensions stored in `tbl_extensions`. If `ExtensionManager::$_extensions`
+         * isn't empty, passing true as a parameter will force the array to update
+		 *
+		 * @param boolean $update
+		 *  Updates the `ExtensionManager::$_extensions` array even if it was
+         *  populated, defaults to false.
 		 */
-		private function __buildExtensionList() {
-			if (empty(self::$_extensions)) {
+		private function __buildExtensionList($update=false) {
+			if (empty(self::$_extensions) || $update) {
 				$extensions = Symphony::Database()->fetch("SELECT * FROM `tbl_extensions`");
 				foreach($extensions as $extension) {
 					self::$_extensions[$extension['name']] = $extension;
@@ -245,7 +250,6 @@
 		 * @return boolean
 		 */
 		private function __requiresUpdate(Array $info){
-
 			if($info['status'] == EXTENSION_NOT_INSTALLED) return false;
 
 			$current_version = $this->fetchInstalledVersion($info['handle']);
@@ -289,10 +293,11 @@
 
 			if(is_null($id)) {
 				Symphony::Database()->insert($fields, 'tbl_extensions');
+				$this->__buildExtensionList(true);
 			}
 			else {
 				Symphony::Database()->update($fields, 'tbl_extensions', " `id` = '$id '");
-			};
+			}
 
 			$this->registerDelegates($name);
 
@@ -316,7 +321,6 @@
 		 * @return boolean
 		 */
 		public function disable($name){
-
 			$obj = $this->getInstance($name);
 
 			$this->__canUninstallOrDisable($obj);
@@ -353,7 +357,6 @@
 		 * @return boolean
 		 */
 		public function uninstall($name){
-
 			$obj = $this->getInstance($name);
 
 			$this->__canUninstallOrDisable($obj);
@@ -376,15 +379,15 @@
 		 *  The Extension ID
 		 */
 		public function registerDelegates($name){
-
-			$obj  = $this->getInstance ($name);
+			$obj = $this->getInstance($name);
 			$id = $this->fetchExtensionID($name);
 
-			if(!$id ) return false;
+			if(!$id) return false;
 
 			Symphony::Database()->delete('tbl_extensions_delegates', " `extension_id` = '$id ' ");
 
 			$delegates = $obj->getSubscribedDelegates();
+			
 			if(is_array($delegates) && !empty($delegates)){
 				foreach($delegates as $delegate){
 
@@ -416,7 +419,6 @@
 		 *  The name of the Extension Class minus the extension prefix.
 		 */
 		public function removeDelegates($name){
-
 	        $classname = $this->__getClassName($name);
 	        $path = $this->__getDriverPath($name);
 
@@ -453,7 +455,6 @@
 		 * @return boolean
 		 */
 		private function __canUninstallOrDisable(Extension $obj){
-
 			$extension_handle = strtolower(preg_replace('/^extension_/i', NULL, get_class($obj)));
 
 			// Fields:
@@ -471,11 +472,10 @@
 					}
 				}
 			}
-
+			
 			// Data Sources:
 			if(is_dir(EXTENSIONS . "/{$extension_handle}/data-sources")){
 				foreach(glob(EXTENSIONS . "/{$extension_handle}/data-sources/data.*.php") as $file){
-
 					$handle = preg_replace(array('/^data\./i', '/\.php$/i'), NULL, basename($file));
 					if(Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0){
 						$about = $obj->about();
@@ -528,8 +528,7 @@
 		 *	);
 		 *
 		 */
-        public function notifyMembers($delegate, $page, Array $context=array()){
-
+        public function notifyMembers($delegate, $page, array $context=array()){
 	        if((int)Symphony::Configuration()->get('allow_page_subscription', 'symphony') != 1) return;
 
 			if (is_null(self::$_subscriptions)) {
@@ -559,6 +558,7 @@
 			}
 
 			$services = array();
+			
 			foreach(self::$_subscriptions as $subscription) {
 				foreach($page as $p) {
 					if ($p == $subscription['page'] && $delegate == $subscription['delegate']) {
@@ -604,8 +604,7 @@
 		 *  An associative array with the key being the extension folder and the value
 		 *  being the extension's about information
 		 */
-        public function listAll($filter = null){
-
+        public function listAll($filter=null){
 			$result = array();
 			$extensions = General::listDirStructure(EXTENSIONS, $filter, false, EXTENSIONS);
 
@@ -627,7 +626,6 @@
 		 * @return Extension
 		 */
         public function create($name){
-
 			if(!is_array(self::$_pool)) $this->flush();
 
 			if(!isset(self::$_pool[$name])){
@@ -649,7 +647,6 @@
 			}
 
 			return self::$_pool[$name];
-
         }
 
 		/**
@@ -658,7 +655,6 @@
 		 * a new Delegate is added or removed.
 		 */
 		private function __cleanupDatabase(){
-
 			## Grab any extensions sitting in the database
 			$rows = Symphony::Database()->fetch("SELECT `name` FROM `tbl_extensions`");
 
@@ -682,9 +678,7 @@
 				}
 			}
 		}
-
     }
-
 
 	/**
 	 * Status when an extension is installed and enabled

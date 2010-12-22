@@ -4,12 +4,12 @@
 	 * @package core
 	 */
 
-	 /**
-	  * The Administration class is an instance of Symphony that controls
-	  * all backend pages. These pages are HTMLPages are usually generated
-	  * using XMLElement before being rendered as HTML. These pages do not
-	  * use XSLT. The Administration is only accessible by logged in Authors
-	  */
+	/**
+	 * The Administration class is an instance of Symphony that controls
+	 * all backend pages. These pages are HTMLPages are usually generated
+	 * using XMLElement before being rendered as HTML. These pages do not
+	 * use XSLT. The Administration is only accessible by logged in Authors
+	 */
 	require_once(CORE . '/class.symphony.php');
 	require_once(TOOLKIT . '/class.lang.php');
 	require_once(TOOLKIT . '/class.manager.php');
@@ -26,7 +26,7 @@
 
 		/**
 		 * An associative array of the page's callback, including the keys
-		 * 'driver', which is a lowercase version of `$_currentPage`
+		 * 'driver', which is a lowercase version of `$this->_currentPage`
 		 * with any slashes removed, 'classname', which is the name of the class
 		 * for this page, 'pageroot', which is the root page for the given page, (ie.
 		 * excluding /saved/, /created/ or any sub pages of the current page that are
@@ -67,7 +67,7 @@
 		 * @deprecated The constructor creates backwards compatible references
 		 *  to `$this->Database` and `$this->Configuration`
 		 *  that act as alias for `Symphony::Database()`
-		 *  or `Symphony::Configuration()`. This will be removed in the
+		 *  or `Symphony::Configuration()`. These will be removed in the
 		 *  next Symphony release
 		 */
 		protected function __construct(){
@@ -175,9 +175,12 @@
 					$this->Page->build();
 				}
 			}
-
-			else $this->Page->build($this->_callback['context']);
-
+			
+			else {
+				if (!is_array($this->_callback['context'])) $this->_callback['context'] = array();
+				$this->Page->build($this->_callback['context']);
+			}
+			
 			return $this->Page;
 		}
 
@@ -303,7 +306,7 @@
 		 * @uses AdminPagePreGenerate
 		 * @uses AdminPagePostGenerate
 		 * @see core.Symphony#__buildPage()
-		 * @see boot.getCurrentPage()		 *
+		 * @see boot.getCurrentPage()
 		 * @param string $page
 		 *  The result of getCurrentPage, which returns the $_GET['symphony-page']
 		 *  variable.
