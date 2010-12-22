@@ -689,6 +689,29 @@
 			return $tmp;
 		}
 
+        /**
+         * Function recursively apply a function to an array's values.
+         * This will not touch the keys, just the values.
+         *
+         * @since Symphony 2.2
+         * @param string $function
+         * @param array $array
+         * @return array
+         *  a new array with all the values passed through the given `$function`
+         */
+        public static function array_map_recursive($function, array $array) {
+            $tmp = array();
+            foreach($array as $key => $value) {
+                if(is_array($value)) {
+                    $tmp[$key] = self::array_map_recursive($function, $value);
+                }
+                else {
+                    $tmp[$key] = call_user_func($function, $value);
+                }
+            }
+            return $tmp;
+        }
+
 		/**
 		 * Convert an array into an XML fragment amd append it to an existing
 		 * XML element. Any arrays contained as elements in the input array will
@@ -1136,7 +1159,7 @@
 
 			if($file_size >= (1024 * 1024)) 	$file_size = number_format($file_size * (1 / (1024 * 1024)), 2) . ' MB';
 			elseif($file_size >= 1024) 			$file_size = intval($file_size * (1/1024)) . ' KB';
-			else 								            $file_size = intval($file_size) . ' bytes';
+			else 								$file_size = intval($file_size) . ' bytes';
 
 			return $file_size;
 		}

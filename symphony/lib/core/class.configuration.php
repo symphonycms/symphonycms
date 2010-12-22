@@ -58,8 +58,10 @@
 				$name = strtolower($name); $group = strtolower($group);
 			}
 
-			if($group) $this->_properties[$group][$name] = $val;
-			else $this->_properties[$name] = $val;
+			$value = stripslashes($value);
+
+			if($group) $this->_properties[$group][$name] = $value;
+			else $this->_properties[$name] = $value;
 		}
 
 		/**
@@ -72,6 +74,7 @@
 		 *  'property' => 'value'
 		 */
 		public function setArray(array $array){
+			$array = General::array_map_recursive('stripslashes', $array);
 			$this->_properties = array_merge($this->_properties, $array);
 		}
 
@@ -99,7 +102,7 @@
 			}
 
 			if($group){
-				return (isset($this->_properties[$group][$name]) ? stripslashes($this->_properties[$group][$name]) : null);
+				return (isset($this->_properties[$group][$name]) ? $this->_properties[$group][$name] : null);
 			}
 
 			return (isset($this->_properties[$name]) ? $this->_properties[$name] : null);
