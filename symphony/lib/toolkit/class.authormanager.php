@@ -185,8 +185,9 @@
 
 			$author = new Author;
 
-			foreach($rec as $field => $val)
+			foreach($records as $field => $val) {
 				$author->set($field, $val);
+			}
 
 			return $author;
 		}
