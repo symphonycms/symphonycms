@@ -123,7 +123,7 @@
 			if(!$this->isLoggedIn()) {
 				$page  = "/login";
 			}
-			else if(empty($page)){
+			else if(empty($page) || is_null($page)){
 
 				// Will redirect an Author to their default area of the Backend
 				// Integers are indicative of section's, text is treated as the path
@@ -140,10 +140,8 @@
 					$default_area = "/sections/" . $section_handle . "/";
 
 				}
-				else {
-					if(!is_null($this->Author->get('default_area'))) {
-						$default_area = $this->Author->get('default_area');
-					}
+				else if(!is_null($this->Author->get('default_area'))) {
+					$default_area = preg_replace('/^' . preg_quote(SYMPHONY_URL, '/') . '/i', '', $this->Author->get('default_area'));
 				}
 
 				if(is_null($default_area)) {

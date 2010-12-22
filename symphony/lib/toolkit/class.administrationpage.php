@@ -728,11 +728,11 @@
 			$pageCallback = Administration::instance()->getPageCallback();
 
 			$pageRoot = $pageCallback['pageroot'] . (isset($pageCallback['context'][0]) ? $pageCallback['context'][0] . '/' : '');
-			$found = $this->__findActiveNavigationGroup($nav, $pageRoot);
+			$found = self::__findActiveNavigationGroup($nav, $pageRoot);
 
 			// Normal searches failed. Use a regular expression using the page root. This is less
 			// efficient and should never really get invoked unless something weird is going on
-			if(!$found) $this->__findActiveNavigationGroup($nav, '/^' . str_replace('/', '\/', $pageCallback['pageroot']) . '/i', true);
+			if(!$found) self::__findActiveNavigationGroup($nav, '/^' . str_replace('/', '\/', $pageCallback['pageroot']) . '/i', true);
 
 			ksort($nav);
 			$this->_navigation = $nav;
@@ -788,7 +788,7 @@
 		 *  Returns true if an active link was found, false otherwise. If true, the
 		 *  navigation group of the active link will be given the CSS class 'active'
 		 */
-		private function __findActiveNavigationGroup(Array &$nav, $pageroot, $pattern=false){
+		private static function __findActiveNavigationGroup(Array &$nav, $pageroot, $pattern=false){
 			foreach($nav as $index => $contents){
 				if(is_array($contents['children']) && !empty($contents['children'])){
 					foreach($contents['children'] as $item) {

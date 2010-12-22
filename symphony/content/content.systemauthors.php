@@ -342,7 +342,7 @@
 				* installation. New options should be the path to the page after the `SYMPHONY_URL`
 				* constant.
 				*/
-				Administration::instance()->ExtensionManager->notifyMembers('AddDefaultAuthorAreas', '/system/authors/', array('options' => $options));
+				Administration::instance()->ExtensionManager->notifyMembers('AddDefaultAuthorAreas', '/system/authors/', array('options' => &$options));
 
 				$label->appendChild(Widget::Select('fields[default_area]', $options));
 				$group->appendChild($label);
