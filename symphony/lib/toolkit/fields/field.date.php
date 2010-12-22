@@ -137,16 +137,25 @@
 				$year = $info['year'];
 				$month = ($info['mon'] < 10 ? '0' . $info['mon'] : $info['mon']);
 
-				if(!isset($groups['year'][$year])) $groups['year'][$year] = array('attr' => array('value' => $year),
-																				  'records' => array(),
-																				  'groups' => array());
+				if(!isset($groups['year'][$year])) {
+					$groups['year'][$year] = array(
+						'attr' => array('value' => $year),
+						'records' => array(),
+						'groups' => array()
+					);
+				}
 
-				if(!isset($groups['year'][$year]['groups']['month'])) $groups['year'][$year]['groups']['month'] = array();
+				if(!isset($groups['year'][$year]['groups']['month'])) {
+					$groups['year'][$year]['groups']['month'] = array();
+				}
 
-				if(!isset($groups['year'][$year]['groups']['month'][$month])) $groups['year'][$year]['groups']['month'][$month] = array('attr' => array('value' => $month),
-																				  					  'records' => array(),
-																				  					  'groups' => array());
-
+				if(!isset($groups['year'][$year]['groups']['month'][$month])) {
+					$groups['year'][$year]['groups']['month'][$month] = array(
+						'attr' => array('value' => $month),
+						'records' => array(),
+						'groups' => array()
+					);
+				}
 
 				$groups['year'][$year]['groups']['month'][$month]['records'][] = $r;
 
@@ -204,20 +213,23 @@
 
 				foreach($data as $date){
 					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-					$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d') = '".DateTimeObj::get('Y-m-d', strtotime($date))."' ";
+					$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') = '".DateTimeObj::get('Y-m-d H:i:s', strtotime($date))."' ";
 
 					$this->key++;
 				}
 
 			else:
 
+				$tmp = array();
+				foreach($data as $date) {
+					$tmp[] = DateTimeObj::get('Y-m-d H:i:s', strtotime($date));
+				}
+
 				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-				$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') IN ('".@implode("', '", $data)."') ";
+				$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') IN ('".implode("', '", $tmp)."') ";
 				$this->key++;
 
 			endif;
-
-
 		}
 
 		protected function __buildRangeFilterSQL($data, &$joins, &$where, $andOperation=false){
@@ -230,8 +242,8 @@
 
 				foreach($data as $date){
 					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-					$where .= " AND (DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d') >= '".DateTimeObj::get('Y-m-d', strtotime($date['start']))."'
-								     AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d') <= '".DateTimeObj::get('Y-m-d', strtotime($date['end']))."') ";
+					$where .= " AND (DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') >= '".DateTimeObj::get('Y-m-d H:i:s', strtotime($date['start']))."'
+								AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') <= '".DateTimeObj::get('Y-m-d H:i:s', strtotime($date['end']))."') ";
 
 					$this->key++;
 				}
@@ -241,13 +253,12 @@
 				$tmp = array();
 
 				foreach($data as $date){
-
-					$tmp[] = "(DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d') >= '".DateTimeObj::get('Y-m-d', strtotime($date['start']))."'
-								     AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d') <= '".DateTimeObj::get('Y-m-d', strtotime($date['end']))."') ";
+					$tmp[] = "(DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') >= '".DateTimeObj::get('Y-m-d H:i:s', strtotime($date['start']))."'
+								AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') <= '".DateTimeObj::get('Y-m-d H:i:s', strtotime($date['end']))."') ";
 				}
 
 				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-				$where .= " AND (".@implode(' OR ', $tmp).") ";
+				$where .= " AND (".implode(' OR ', $tmp).") ";
 
 				$this->key++;
 
@@ -259,7 +270,7 @@
 			$string = trim($string);
 			$string = trim($string, '-/');
 
-			return $string;
+			return urldecode($string);
 		}
 
 		protected static function __parseFilter(&$string){
@@ -300,7 +311,7 @@
 				}
 				switch($match[2]){
 					case 'later': $string = $later . ' to 2038-01-01'; break;
-					case 'earlier': $string = '1970-01-03 to ' . $earlier; break;
+					case 'earlier': $string = '1970-01-01 to ' . $earlier; break;
 				}
 
 			}
@@ -316,7 +327,7 @@
 			}
 
 			## Match for a simple date (Y-m-d), check its ok using checkdate() and go no further
-			elseif(!preg_match('/to/i', $string)){
+			elseif(!preg_match('/\s+to\s+/i', $string)){
 
 				if(preg_match('/^(1|2)\d{3}[-\/]\d{1,2}[-\/]\d{1,2}$/i', $string)){
 					$string = "{$string} to {$string}";
@@ -329,10 +340,22 @@
 					return self::SIMPLE;
 				}
 			}
+			//	A date range, check it's ok!
+			elseif(preg_match('/\s+to\s+/i', $string)) {
+
+				if(!$parts = preg_split('/\s+to\s+/', $string, 2, PREG_SPLIT_NO_EMPTY)) return self::ERROR;
+
+				foreach($parts as $i => &$part) {
+					if(!self::__isValidDateString($part)) return self::ERROR;
+
+					$part = DateTimeObj::get('Y-m-d H:i:s', strtotime($part));
+				}
+
+				$string = "$parts[0] to $parts[1]";
+			}
 
 			## Parse the full date range and return an array
-
-			if(!$parts = preg_split('/to/', $string, 2, PREG_SPLIT_NO_EMPTY)) return self::ERROR;
+			if(!$parts = preg_split('/\s+to\s+/i', $string, 2, PREG_SPLIT_NO_EMPTY)) return self::ERROR;
 
 			$parts = array_map(array('self', '__cleanFilterString'), $parts);
 
@@ -416,4 +439,3 @@
 		}
 
 	}
-
