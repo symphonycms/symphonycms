@@ -105,8 +105,8 @@
 				General::cleanArray($_POST);
 			}
             
-            // Includes the existing CONFIG file and initialises the Configuration
-            // by setting the values with the setArray function.
+			// Includes the existing CONFIG file and initialises the Configuration
+			// by setting the values with the setArray function.
 			include(CONFIG);
 			self::$Configuration = new Configuration(true);
 			self::$Configuration->setArray($settings);
@@ -399,9 +399,6 @@
 		 * @see core.Cookie#expire()
 		 */
 		public function isLoggedIn(){
-			// Ensures that we're in the real world.. Also reduces three queries from database
-			if (is_null(self::$_instance)) return;   
-			
 			if ($this->Author) return true;
 
 			$username = self::$Database->cleanValue($this->Cookie->get('username'));

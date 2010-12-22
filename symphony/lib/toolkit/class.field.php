@@ -693,10 +693,13 @@
 		}
 
 		/**
-		 * Format this field value for display in the administration pages summary tables.
+		 * Format this field value for display in the publish index tables. By default,
+		 * Symphony will truncate the value to the configuration setting `cell_truncation_length`.
+		 * This function will attempt to use PHP's mbstring functions if they are available.
 		 *
 		 * @param array $data
-		 *	the data to use to generate the summary string.
+		 *	an associative array of data for this string. At minimum this requires a
+		 *  key of 'value'.
 		 * @param XMLElement $link (optional)
 		 *	an xml link structure to append the content of this to provided it is not
 		 *	null. it defaults to null.
@@ -708,7 +711,13 @@
 			$max_length = ($max_length ? $max_length : 75);
 
 			$value = strip_tags($data['value']);
-			$value = (strlen($value) <= $max_length ? $value : substr($value, 0, $max_length) . '...');
+
+			if(function_exists('mb_substr')) {
+				$value = (strlen($value) <= $max_length ? $value : mb_substr($value, 0, $max_length, 'utf-8') . '...');
+			}
+			else {
+				$value = (strlen($value) <= $max_length ? $value : substr($value, 0, $max_length) . '...');
+			}
 
 			if (strlen($value) == 0) $value = __('None');
 

@@ -284,21 +284,6 @@
 	    }
 
 		/**
-		 * This will set the character encoding of the connection for sending and
-		 * receiving data. This function will only run if 'runtime_character_set_alter'
-		 * is set to 'true' in the Sympony config. This is set to true by default during
-		 * the Symphony installation. If no character encoding is provided, UTF-8
-		 * is assumed.
-		 *
-		 * @link http://au2.php.net/manual/en/function.mysql-set-charset.php
-		 * @param string $set
-		 *  The character encoding to use, by default this 'utf8'
-		 */
-		public function setCharacterEncoding($set='utf8'){
-		    mysql_set_charset($set, MySQL::$_connection['id']);
-	    }
-
-		/**
 		 * This function selects a MySQL database. Only used by installation
 		 * and must exists for compatibility reasons. But might be removed 
 		 * in future versions. Not recommended its usage by developers.
@@ -320,6 +305,21 @@
 		}
 
 		/**
+		 * This will set the character encoding of the connection for sending and
+		 * receiving data. This function will only run if 'runtime_character_set_alter'
+		 * is set to 'true' in the Sympony config. This is set to true by default during
+		 * the Symphony installation. If no character encoding is provided, UTF-8
+		 * is assumed.
+		 *
+		 * @link http://au2.php.net/manual/en/function.mysql-set-charset.php
+		 * @param string $set
+		 *  The character encoding to use, by default this 'utf8'
+		 */
+		public function setCharacterEncoding($set='utf8'){
+			mysql_set_charset($set, MySQL::$_connection['id']);
+		}
+
+		/**
 		 * This function will set the character encoding of the database so that any
 		 * new tables that are created by Symphony use this character encoding
 		 *
@@ -327,9 +327,10 @@
 		 * @param string $set
 		 *  The character encoding to use, by default this 'utf8'
 		 */
-	    public function setCharacterSet($set='utf8'){
-		    $this->query("SET CHARACTER SET '$set'");
-	    }
+		public function setCharacterSet($set='utf8'){
+			$this->query("SET character_set_connection = '$set', character_set_database = '$set', character_set_server = '$set'");
+			$this->query("SET CHARACTER SET '$set'");
+		}
 
 		/**
 		 * This function will clean a string using the mysql_real_escape_string function
