@@ -921,7 +921,7 @@
 			/**
 			 * Prior to deleting Pages
 			 *
-			 * @delegate PagesPreDelete
+			 * @delegate PagePreDelete
 			 * @since Symphony 2.2
 			 * @param string $context
 			 * '/blueprints/pages/
@@ -932,7 +932,7 @@
 			 *  The absolute path that the Developer will be redirected to
 			 *  after the Pages are deleted
 			 */
-			Administration::instance()->ExtensionManager->notifyMembers('PagesPreDelete', '/blueprints/pages/', array('page_ids' => &$pages, 'redirect' => &$redirect));
+			Administration::instance()->ExtensionManager->notifyMembers('PagePreDelete', '/blueprints/pages/', array('page_ids' => &$pages, 'redirect' => &$redirect));
 
 			foreach ($pages as $page_id) {
 				$page = Symphony::Database()->fetchRow(0, "
