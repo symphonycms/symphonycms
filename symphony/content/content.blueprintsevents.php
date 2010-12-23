@@ -363,11 +363,11 @@
 					$documentation_parts[] = self::processDocumentationCode(
 						'send-email[sender-email] // '.__('Optional').self::CRLF.
 						'send-email[sender-name] // '.__('Optional').self::CRLF.
-						'send-email[reply-to-name] // '.__('Optional: The name used in the Reply-To header field.').self::CRLF.
-						'send-email[reply-to-email] // '.__('Optional: The email-address used in the Reply-To header field.').self::CRLF.					
-						'send-email[subject] // '.__('Optional').self::CRLF.
+						'send-email[reply-to-email] // '.__('Optional').self::CRLF.
+						'send-email[reply-to-name] // '.__('Optional').self::CRLF.
+						'send-email[subject]'.self::CRLF.
 						'send-email[body]'.self::CRLF.
-						'send-email[recipient] // '.__('list of comma author usernames.'));
+						'send-email[recipient] // '.__('list of comma-separated author usernames.'));
 
 					$documentation_parts[] = new XMLElement('p', __('All of these fields can be set dynamically using the exact field name of another field in the form as shown below in the example form:'));
 									
