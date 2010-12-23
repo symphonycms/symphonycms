@@ -1,5 +1,13 @@
 <?php
 
+	/**
+	 * @package content
+	 */
+	/**
+	 * The Datasource Editor page allows a developer to create new datasources
+	 * from the four Symphony types, Section, Authors, Navigation, Dynamic XML,
+	 * and Static XML
+	 */
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.datasourcemanager.php');	
 	require_once(TOOLKIT . '/class.sectionmanager.php');
@@ -30,8 +38,8 @@
 								'Data source updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Data sources</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/blueprints/datasources/new/', 
-									URL . '/symphony/blueprints/components/'								)
+									SYMPHONY_URL . '/blueprints/datasources/new/', 
+									SYMPHONY_URL . '/blueprints/components/'								)
 							), 
 							Alert::SUCCESS);
 						break;
@@ -42,8 +50,8 @@
 								'Data source created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Data sources</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
-									URL . '/symphony/blueprints/datasources/new/', 
-									URL . '/symphony/blueprints/components/' 
+									SYMPHONY_URL . '/blueprints/datasources/new/', 
+									SYMPHONY_URL . '/blueprints/components/' 
 								)
 							), 
 							Alert::SUCCESS);
@@ -76,7 +84,7 @@
 				$datasourceManager = new DatasourceManager($this->_Parent);
 				$existing =& $datasourceManager->create($handle, NULL, false);
 				
-				if (!$existing->allowEditorToParse()) redirect(URL . '/symphony/blueprints/datasources/info/' . $handle . '/');
+				if (!$existing->allowEditorToParse()) redirect(SYMPHONY_URL . '/blueprints/datasources/info/' . $handle . '/');
 				
 				$about = $existing->about();
 				$fields['name'] = $about['name'];
@@ -851,7 +859,7 @@
 							Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
 						}
 					}
-					redirect(URL . '/symphony/blueprints/components/');
+					redirect(SYMPHONY_URL . '/blueprints/components/');
 				}
 			} 
 		}
@@ -1023,7 +1031,7 @@
 						}
 						
 						$value = sprintf(
-							'$result = "%s";',
+							'$result = \'%s\';',
 							addslashes(trim($fields['static_xml']))
 						);
 						$dsShell = str_replace('<!-- GRAB -->', $value, $dsShell);
@@ -1109,7 +1117,7 @@
 					#              of variables set by the editor
 					#$ExtensionManager->notifyMembers('Create', getCurrentPage(), array('file' => $file, 'defines' => $defines, 'var' => $var));
 
-	                redirect(URL . '/symphony/blueprints/datasources/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
+	                redirect(SYMPHONY_URL . '/blueprints/datasources/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
 
 				}
 			}
