@@ -813,7 +813,7 @@
 			elseif(array_key_exists('delete', $_POST['action'])){
 
 				/**
-				 * Prior to deleting the datasource file. Target file path is provided.
+				 * Prior to deleting the Datasource file. Target file path is provided.
 				 *
 				 * @delegate DatasourcePreDelete
 				 * @since Symphony 2.2
@@ -822,7 +822,7 @@
 				 * @param string $file
 				 *  The path to the Datasource file
 				 */
-				Administration::instance()->ExtensionManager->notifyMembers('Delete', '/blueprints/datasources/', array('file' => DATASOURCES . "/data." . $this->_context[1] . ".php"));
+				Administration::instance()->ExtensionManager->notifyMembers('DatasourcePreDelete', '/blueprints/datasources/', array('file' => DATASOURCES . "/data." . $this->_context[1] . ".php"));
 
 				if(!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php')){
 					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
@@ -1063,7 +1063,7 @@
 
 				if($this->_context[0] == 'new') {
 					/**
-					 * Prior to creating the datasource, the file path where it will be written to 
+					 * Prior to creating the Datasource, the file path where it will be written to 
 					 * is provided and well as the contents of that file.
 					 *
 					 * @delegate DatasourcePreCreate
@@ -1077,9 +1077,9 @@
 					 */
 					Administration::instance()->ExtensionManager->notifyMembers('DatasourcePreCreate', '/blueprints/datasources/', array('file' => $file, 'contents' => &$dsShell));
 				}
-				else if($this->_context[0] == 'saved') {
+				else {
 					/**
-					 * Prior to editing a datasource, the file path where it will be written to 
+					 * Prior to editing a Datasource, the file path where it will be written to 
 					 * is provided and well as the contents of that file.
 					 *
 					 * @delegate DatasourcePreEdit
@@ -1093,7 +1093,6 @@
 					 */
 					Administration::instance()->ExtensionManager->notifyMembers('DatasourcePreEdit', '/blueprints/datasources/', array('file' => $file, 'contents' => &$dsShell));
 				}
-
 
 				##Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file')))
@@ -1122,7 +1121,7 @@
 
 					if($this->_context[0] == 'new') {
 						/**
-						 * After creating the datasource, the path to the datasource file is provided
+						 * After creating the Datasource, the path to the Datasource file is provided
 						 *
 						 * @delegate DatasourcePostCreate
 						 * @since Symphony 2.2
@@ -1133,9 +1132,9 @@
 						 */
 						Administration::instance()->ExtensionManager->notifyMembers('DatasourcePostCreate', '/blueprints/datasources/', array('file' => $file));
 					}
-					else if($this->_context[0] == 'saved') {
+					else {
 						/**
-						 * After editing the datasource, the path to the datasource file is provided
+						 * After editing the Datasource, the path to the Datasource file is provided
 						 *
 						 * @delegate DatasourcePostEdit
 						 * @since Symphony 2.2
