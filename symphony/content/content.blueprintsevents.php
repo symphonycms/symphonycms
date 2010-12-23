@@ -118,7 +118,7 @@
 				
 				$fieldset->appendChild($group);
 				
-				$label = Widget::Label(__('Filter Rules'));	
+				$label = Widget::Label(__('Filter Options'));	
 				
 				$filters = is_array($fields['filters']) ? $fields['filters'] : array();
 
@@ -135,8 +135,6 @@
 			
 				$label->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
 				$fieldset->appendChild($label);		
-			
-				$fieldset->appendChild(new XMLElement('p', __('This event will not be processed if any of these rules return true.'), array('class' => 'help')));
 			
 				$this->Form->appendChild($fieldset);
 			endif;
@@ -310,7 +308,7 @@
 				
 
 				if(is_array($fields['filters']) && !empty($fields['filters'])){
-					$documentation_parts[] = new XMLElement('p', __('The following is an example of what is returned if any filters fail:'));
+					$documentation_parts[] = new XMLElement('p', __('The following is an example of what is returned if any options return an error:'));
 
 					$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
 					$code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
@@ -356,9 +354,9 @@
 
 				if(@in_array('send-email', $fields['filters'])){
 					
-					$documentation_parts[] = new XMLElement('h3', __('Send Email Filter'));
+					$documentation_parts[] = new XMLElement('h3', __('Send Notification Email'));
 					
-					$documentation_parts[] = new XMLElement('p', __('The send email filter, upon the event successfully saving the entry, takes input from the form and send an email to the desired recipient. <b>This filter currently does not work with the "Allow Multiple" option.</b> The following are the recognised fields:'));
+					$documentation_parts[] = new XMLElement('p', __('Upon the event successfully saving the entry, this option takes input from the form and send an email to the desired recipient. <b>It currently does not work with "Allow Multiple".</b> The following are the recognised fields:'));
 
 					$documentation_parts[] = self::processDocumentationCode(
 						'send-email[sender-email] // '.__('Optional').self::CRLF.
