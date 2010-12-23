@@ -25,8 +25,8 @@
 
 		objects = objects.map(function() {
 			var object = $(this);
-
-			object.find(settings.items).live('click', function() {
+			
+			object.find(settings.items).bind('click', function() {
 
 				var input = $(this).parent().prevAll('label').find('input')[0];
 				var tag = this.className || $(this).text();
