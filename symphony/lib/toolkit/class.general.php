@@ -67,7 +67,7 @@
 			return true;
 		}
 
-        /**
+		/**
 		 * Replace the tabs with spaces in the input string.
 		 *
 		 * @param string $string
@@ -159,16 +159,16 @@
 		 *	a blank string or a valid URL
 		 */
 		public static function validateURL($url = null){
-            if(is_null($url) || $url == '') return $url;
+			if(is_null($url) || $url == '') return $url;
 
-            if(!preg_match('#^http[s]?:\/\/#i', $url)){
-                $url = 'http://' . $url;
-            }
+			if(!preg_match('#^http[s]?:\/\/#i', $url)){
+				$url = 'http://' . $url;
+			}
 
-            include(TOOLKIT . '/util.validators.php');
-            if(!preg_match($validators['URI'], $url)){
-                $url = '';
-            }
+			include(TOOLKIT . '/util.validators.php');
+			if(!preg_match($validators['URI'], $url)){
+				$url = '';
+			}
 
 			return $url;
 		}
@@ -203,13 +203,13 @@
 		 *		)
 		 * `
 		 * will flatten to:
-         * `array('1.key' => 'value', '2.key2' => 'value2', '2.key3' => 'value3')`
+		 * `array('1.key' => 'value', '2.key2' => 'value2', '2.key3' => 'value3')`
 		 *
 		 * @param array &$source
 		 *	The array to flatten, passed by reference
 		 * @param array &$output (optional)
 		 *	The array in which to store the flattened input, passed by reference.
-         *  if this is not provided then a new array will be created.
+		 *  if this is not provided then a new array will be created.
 		 * @param string $path (optional)
 		 *	the current prefix of the keys to insert into the output array. this
 		 *	defaults to null.
@@ -228,7 +228,7 @@
 			$source = $output;
 		}
 
-        /**
+		/**
 		 * Flatten the input array. Any elements of the input array that are
 		 * themselves arrays will be removed and the contents of the removed array
 		 * inserted in its place. The keys for the inserted values will be the
@@ -245,10 +245,10 @@
 		 * will flatten to:
 		 * `array('1:key' => 'value', '2:key2' => 'value2', '2:key3' => 'value3')`
 		 *
-         *
+		 *
 		 * @param array &$output
 		 *	The array in which to store the flattened input, passed by reference.
-         * @param array &$source
+		 * @param array &$source
 		 *	The array to flatten, passed by reference
 		 * @param string $path
 		 *	the current prefix of the keys to insert into the output array.
@@ -329,7 +329,7 @@
 		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers = array()) {
 			// Check for injection attacks (http://securephp.damonkohler.com/index.php/Email_Injection)
 			if (preg_match("/[\r|\n]/", $from_email . $from_name)){
-                return false;
+				return false;
 		   	}
 
 			$subject = self::encodeHeader($subject, 'UTF-8');
@@ -379,20 +379,20 @@
 		 *	the resulting encoded email header.
 		 */
 		public static function encodeHeader($input, $charset='ISO-8859-1') {
-		    if(preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches)) {
-		        if(function_exists('mb_internal_encoding')) {
-		            mb_internal_encoding($charset);
-		            $input = mb_encode_mimeheader($input, $charset, 'Q');
-		        }
-		        else {
-		            foreach ($matches[1] as $value) {
-		                $replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
-		                $input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
-		            }
-		        }
-		    }
+			if(preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches)) {
+				if(function_exists('mb_internal_encoding')) {
+					mb_internal_encoding($charset);
+					$input = mb_encode_mimeheader($input, $charset, 'Q');
+				}
+				else {
+					foreach ($matches[1] as $value) {
+						$replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
+						$input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
+					}
+				}
+			}
 
-		    return $input;
+			return $input;
 		}
 
 		/**
@@ -505,7 +505,7 @@
 			return false;
 		}
 
-        /**
+		/**
 		 * Search an array for multiple values.
 		 *
 		 * @param array $needles
@@ -670,7 +670,7 @@
 			return false;
 		}
 
-        /**
+		/**
 		 * Filter the input array for duplicates, treating each element in the array
 		 * as a string and comparing them using a case insensitive comparison function.
 		 *
@@ -689,28 +689,28 @@
 			return $tmp;
 		}
 
-        /**
-         * Function recursively apply a function to an array's values.
-         * This will not touch the keys, just the values.
-         *
-         * @since Symphony 2.2
-         * @param string $function
-         * @param array $array
-         * @return array
-         *  a new array with all the values passed through the given `$function`
-         */
-        public static function array_map_recursive($function, array $array) {
-            $tmp = array();
-            foreach($array as $key => $value) {
-                if(is_array($value)) {
-                    $tmp[$key] = self::array_map_recursive($function, $value);
-                }
-                else {
-                    $tmp[$key] = call_user_func($function, $value);
-                }
-            }
-            return $tmp;
-        }
+		/**
+		 * Function recursively apply a function to an array's values.
+		 * This will not touch the keys, just the values.
+		 *
+		 * @since Symphony 2.2
+		 * @param string $function
+		 * @param array $array
+		 * @return array
+		 *  a new array with all the values passed through the given `$function`
+		 */
+		public static function array_map_recursive($function, array $array) {
+			$tmp = array();
+			foreach($array as $key => $value) {
+				if(is_array($value)) {
+					$tmp[$key] = self::array_map_recursive($function, $value);
+				}
+				else {
+					$tmp[$key] = call_user_func($function, $value);
+				}
+			}
+			return $tmp;
+		}
 
 		/**
 		 * Convert an array into an XML fragment amd append it to an existing
@@ -767,9 +767,9 @@
 		 * @param integer|null $perm (optional)
 		 *	the permissions as an octal number to set set on the resulting file.
 		 *	this defaults to 0644 (if omitted or set to null)
-         * @param string $mode (optional)
-         * the mode that the file should be opened with, defaults to 'w'. See modes
-         * at http://php.net/manual/en/function.fopen.php
+		 * @param string $mode (optional)
+		 * the mode that the file should be opened with, defaults to 'w'. See modes
+		 * at http://php.net/manual/en/function.fopen.php
 		 * @return boolean
 		 *	true if the file is successfully opened, written to, closed and has the
 		 *	required permissions set. false, otherwise.
@@ -853,7 +853,7 @@
 		 *	to true.
 		 * @return null|array
 		 *	return the array structure reflecting the input directory or null if
-         * the input directory is not actually a directory.
+		 * the input directory is not actually a directory.
 		 */
 		public static function listDirStructure($dir = '.', $filter = null, $recurse = true, $strip_root = null, $exclude = array(), $ignore_hidden = true) {
 			if (!is_dir($dir)) return null;
@@ -884,7 +884,7 @@
 		/**
 		 * Construct a multi-dimensional array that reflects the directory
 		 * structure of a given path grouped into directory and file keys
-         * matching any input constraints.
+		 * matching any input constraints.
 		 *
 		 * @param string $dir (optional)
 		 *	the path of the directory to construct the multi-dimensional array
@@ -908,55 +908,55 @@
 		 *	to true.
 		 * @return null|array
 		 *	return the array structure reflecting the input directory or null if
-         * the input directory is not actually a directory.
+		 * the input directory is not actually a directory.
 		 */
-	    public static function listStructure($dir=".", $filters=array(), $recurse=true, $sort="asc", $strip_root=NULL, $exclude=array(), $ignore_hidden=true){
+		public static function listStructure($dir=".", $filters=array(), $recurse=true, $sort="asc", $strip_root=NULL, $exclude=array(), $ignore_hidden=true){
 			if(!is_dir($dir)) return null;
 
-            // Check to see if $filters is a string containing a regex, or an array of file types
-            if(is_array($filters) && !empty($filters)) {
-                $filter_type = 'file';
-            }
-            else if(is_string($filters)) {
-                $filter_type = 'regex';
-            }
-            else {
-                $filter_type = null;
-            }
-		    $files = array();
+			// Check to see if $filters is a string containing a regex, or an array of file types
+			if(is_array($filters) && !empty($filters)) {
+				$filter_type = 'file';
+			}
+			else if(is_string($filters)) {
+				$filter_type = 'regex';
+			}
+			else {
+				$filter_type = null;
+			}
+			$files = array();
 
 			foreach(scandir($dir) as $file) {
-            	if (
+				if (
 					($file == '.' or $file == '..')
 					or ($ignore_hidden and $file{0} == '.')
 					or in_array(array($file, "$dir/$file"), $exclude)
 				) continue;
 
-                if(is_dir("$dir/$file")) {
-                    if($recurse) {
-                        $files[str_replace($strip_root, '', $dir) . "/$file/"] = self::listStructure("$dir/$file", $filters, $recurse, $sort, $strip_root, $exclude, $ignore_hidden);
-                    }
+				if(is_dir("$dir/$file")) {
+					if($recurse) {
+						$files[str_replace($strip_root, '', $dir) . "/$file/"] = self::listStructure("$dir/$file", $filters, $recurse, $sort, $strip_root, $exclude, $ignore_hidden);
+					}
 
-                    $files['dirlist'][] = $file;
-                }
-                else if($filter_type == 'regex') {
-                    if(preg_match($filters, $file)){
-                        $files['filelist'][] = $file;
-                    }
-                }
-                else if($filter_type == 'file') {
-                    if(in_array(self::getExtension($file), $filters)) {
-                        $files['filelist'][] = $file;
-                    }
-                }
-                else if(is_null($filter_type)){
-                    $files['filelist'][] = $file;
-                }
-            }
+					$files['dirlist'][] = $file;
+				}
+				else if($filter_type == 'regex') {
+					if(preg_match($filters, $file)){
+						$files['filelist'][] = $file;
+					}
+				}
+				else if($filter_type == 'file') {
+					if(in_array(self::getExtension($file), $filters)) {
+						$files['filelist'][] = $file;
+					}
+				}
+				else if(is_null($filter_type)){
+					$files['filelist'][] = $file;
+				}
+			}
 
-            if(is_array($files['filelist'])) {
-                ($sort == 'desc') ? rsort($files['filelist']) : sort($files['filelist']);
-            }
+			if(is_array($files['filelist'])) {
+				($sort == 'desc') ? rsort($files['filelist']) : sort($files['filelist']);
+			}
 
 			return $files;
 		}
@@ -982,7 +982,7 @@
 		 * compared alphabetically. Should only be used in the context of a
 		 * sort function such as usort. For example:
 		 * `usort($files, array('General', 'fileSort'));`
-         *
+		 *
 		 * @param array $f1
 		 *	the first file structure array to compare.
 		 * @param array $f2
@@ -1069,41 +1069,34 @@
 		 *	true if the ellipses should be appended to the result in circumstances
 		 *	where the result is shorter than the input string. false otherwise. this
 		 *	defaults to false.
-		 * @param boolean $truncateToSpace
-		 *	true if the string is to be truncated to the last space prior to removing
-		 *	any words necessary to satisfy the input length constraint. false otherwise.
-		 *	this defaults to false.
 		 * @return null|string
 		 *	if the resulting string contains only spaces then null is returned. otherwise
 		 *	a string that satisfies the input constraints.
 		 */
-		public static function limitWords($string, $maxChars=200, $appendHellip=false, $truncateToSpace=false) {
+		public static function limitWords($string, $maxChars=200, $appendHellip=false) {
 
-			if($appendHellip) $maxChars -= 3;
+			if($appendHellip) $maxChars -= 1;
 
 			$string = trim(strip_tags(nl2br($string)));
 			$original_length = strlen($string);
 
-			if(trim($string) == '') return NULL;
+			if($string == '') return null;
 			elseif(strlen($string) < $maxChars) return $string;
 
-			$string = substr($string, 0, $maxChars);
+			$string = trim(substr($string, 0, $maxChars));
 
-			if($truncateToSpace && strpos($string, ' ')){
-				$string = str_replace(strrchr($string, ' '), '', $string);
-			}
-
-			$array  = explode(' ', $string);
+			$array = explode(' ', $string);
 			$result =  '';
+			$length = 0;
 
-			while(is_array($array) && !empty($array) && strlen(@implode(' ', $array)) > $maxChars){
-				array_pop($array);
+			while(is_array($array) && !empty($array) && $length > $maxChars){
+				$length += strlen(array_pop($array)) + 1;
 			}
 
-			$result = trim(@implode(' ', $array));
+			$result = implode(' ', $array);
 
 			if($appendHellip && strlen($result) < $original_length)
-				$result .= '...';
+				$result .= "&#8230;";
 
 			return($result);
 		}
@@ -1183,19 +1176,19 @@
 			if(!class_exists('XMLElement')) return false;
 
 			$xDate = new XMLElement(
-                (!is_null($namespace) ? $namespace . ':' : '') . $element,
+				(!is_null($namespace) ? $namespace . ':' : '') . $element,
 				DateTimeObj::get('Y-m-d', $timestamp),
 				array(
-                        'time' => DateTimeObj::get('H:i', $timestamp),
-                        'weekday' => DateTimeObj::get('N', $timestamp)
+						'time' => DateTimeObj::get('H:i', $timestamp),
+						'weekday' => DateTimeObj::get('N', $timestamp)
 				)
-            );
+			);
 
 			return $xDate;
 
 		}
 
-        /**
+		/**
 		 * Construct an XML fragment that describes a pagination structure.
 		 *
 		 * @param integer $total_entries (optional)
@@ -1225,18 +1218,18 @@
 
 		}
 
-        /**
-         * Uses SHA1 or MD5 to create a hash based on some input
+		/**
+		 * Uses SHA1 or MD5 to create a hash based on some input
 		 * This function is currently very basic, but would allow
 		 * future expansion. Salting the hash comes to mind.
-         *
-         * @param string $input
-         * the string to be hashed
-         * @param string $algorithm
-         * a valid PHP function handle
-         * @return string
-         * the hashed string
-         */
+		 *
+		 * @param string $input
+		 * the string to be hashed
+		 * @param string $algorithm
+		 * a valid PHP function handle
+		 * @return string
+		 * the hashed string
+		 */
 		public static function hash($input, $algorithm='sha1'){
 			return call_user_func($algorithm, $input);
 		}
