@@ -157,17 +157,30 @@
 
 			else $aTableHead[] = array(__('ID'), 'col');
 
-			$child_sections = NULL;
-
+			$child_sections = array();
 			$associated_sections = $section->fetchAssociatedSections(true);
 			if(is_array($associated_sections) && !empty($associated_sections)){
-				$child_sections = array();
-
 				foreach($associated_sections as $key => $as){
 					$child_sections[$key] = $sectionManager->fetch($as['child_section_id']);
 					$aTableHead[] = array($child_sections[$key]->get('name'), 'col');
 				}
 			}
+
+			/**
+			 * Allows the creation of custom Publish Index columns. Called
+			 * after all the Section Visible columns have been added  as well
+			 * as the Section Associations
+			 *
+			 * @delegate AddCustomPublishColumn
+			 * @since Symphony 2.2
+			 * @param string $context
+			 * '/publish/'
+			 * @param array $tableHead
+			 * An array of the current columns, passed by reference
+			 * @param integer $section_id
+			 * The current Section ID
+			 */
+			Administration::instance()->ExtensionManager->notifyMembers('AddCustomPublishColumn', '/publish/', array('tableHead' => &$aTableHead, 'section_id' => $section->get('id')));
 
 			## Table Body
 			$aTableBody = array();
@@ -266,13 +279,29 @@
 						}
 					}
 
+					/**
+					 * Allows Extensions to inject custom table data for each Entry
+					 * into the Publish Index
+					 *
+					 * @delegate AddCustomPublishColumnData
+					 * @since Symphony 2.2
+					 * @param string $context
+					 * '/publish/'
+					 * @param array $tableData
+					 *  An array of `Widget::TableData`, passed by reference
+					 * @param integer $section_id
+					 *  The current Section ID
+					 * @param integer $entry_id
+					 *  The Entry ID for this row
+					 */
+					Administration::instance()->ExtensionManager->notifyMembers('AddCustomPublishColumnData', '/publish/', array('tableData' => &$tableData, 'section_id' => $section->get('id'), 'entry_id' => $entry));
+
 					$tableData[count($tableData) - 1]->appendChild(Widget::Input('items['.$entry->get('id').']', NULL, 'checkbox'));
 
 					## Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow($tableData, ($bOdd ? 'odd' : NULL), 'id-' . $entry->get('id'));
 
 					$bOdd = !$bOdd;
-
 				}
 			}
 
@@ -283,7 +312,6 @@
 			);
 
 			$this->Form->appendChild($table);
-
 
 			$tableActions = new XMLElement('div');
 			$tableActions->setAttribute('class', 'actions');
