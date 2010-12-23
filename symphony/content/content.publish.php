@@ -765,7 +765,7 @@
 			$main_fields = $section->fetchFields(NULL, 'main');
 
 			if((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))){
-				$primary->appendChild(new XMLElement('p', __('It looks like your trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>', array(URL . '/symphony/blueprints/sections/edit/'. $section->get('id') . '/'))));
+				$primary->appendChild(new XMLElement('p', __('It looks like your trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>', array(SYMPHONY_URL . '/blueprints/sections/edit/'. $section->get('id') . '/'))));
 			}
 
 			else{
