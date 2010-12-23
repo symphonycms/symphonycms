@@ -85,16 +85,17 @@ var Symphony = {};
 			 *  Object or string to be stored
 			 */
 			add: function(group, values) {
+			
+				// Extend existing group
+				if(Symphony.Context.Storage[group] && $.type(values) !== 'string') {
+					Symphony.Context.Storage[group] = $.extend(Symphony.Context.Storage[group], values);
+				}
 
 				// Add new group
-				if(!Symphony.Context.Storage[group]) {
+				else {
 					Symphony.Context.Storage[group] = values;
 				}
 
-				// Extend existing group
-				else {
-					Symphony.Context.Storage[group] = $.extend(Symphony.Context.Storage[group], values);
-				}
 			},
 
 			/**
@@ -141,6 +142,9 @@ var Symphony = {};
 			 *  Object with English string as key, value should be false
 			 */
 			add: function(strings) {
+
+				// Don't process empty strings	
+				if($.isEmptyObject(strings)) return;
 
 				// Set key as value
 				$.each(strings, function(key, value) {
