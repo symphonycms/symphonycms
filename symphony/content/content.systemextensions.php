@@ -44,41 +44,38 @@
 				foreach($extensions as $name => $about){
 
 					## Setup each cell
-					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], Administration::instance()->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));
+
+					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], $this->_Parent->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));
 					$td2 = Widget::TableData(($about['status'] == EXTENSION_ENABLED ? __('Yes') : __('No')));
 					$td3 = Widget::TableData($about['version']);
+					$td4 = Widget::TableData();
 
-					if ($about['author'][0] && is_array($about['author'][0])) {
-						$value = "";
-
-						for($i = 0; $i < count($about['author']);  ++$i) {
-							$author = $about['author'][$i];
-							$link = $author['name'];
+					if($about['author'][0] && is_array($about['author'][0])) {
+						foreach($about['author'] as $i => $author) {
 
 							if(isset($author['website']))
 								$link = Widget::Anchor($author['name'], General::validateURL($author['website']));
-
-							elseif(isset($author['email']))
+							else if(isset($author['email']))
 								$link = Widget::Anchor($author['name'], 'mailto:' . $author['email']);
+							else
+								$link = $author['name'];
 
-							$comma = ($i != count($about['author']) - 1) ? ", " : "";
-							$value .= $link->generate() . $comma;
+							$value .= ($link instanceof XMLElement ? $link->generate() : $link)
+							        . ($i != count($about['author']) - 1 ? ", " : "");
 						}
 
 						$td4->setValue($value);
 					}
-					else {
-						$link = $about['author']['name'];
+					else{
 
 						if(isset($about['author']['website']))
 							$link = Widget::Anchor($about['author']['name'], General::validateURL($about['author']['website']));
-
-						elseif(isset($about['author']['email']))
+						else if(isset($about['author']['email']))
 							$link = Widget::Anchor($about['author']['name'], 'mailto:' . $about['author']['email']);
+						else
+							$link = $about['author']['name'];
 
-						$td4 = Widget::TableData($link);
-						
-						$td4->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox'));
+						$td4->setValue($link instanceof XMLElement ? $link->generate() : $link);
 					}
 
 					$td4->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox'));
