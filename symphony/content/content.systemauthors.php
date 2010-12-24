@@ -27,7 +27,7 @@
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors'))));
 
 			if (Administration::instance()->Author->isDeveloper()) {
-				$this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), Administration::instance()->getCurrentPageURL().'new/', __('Add a new author'), 'create button'));
+				$this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), Administration::instance()->getCurrentPageURL().'new/', __('Add a new author'), 'create button', NULL, array('accesskey' => 'c')));
 			} else $this->appendSubheading(__('Authors'));
 
 			$aTableHead = array(
@@ -43,9 +43,7 @@
 					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
 				);
 			}
-			else {
-				$bOdd = true;
-
+			else{
 				foreach($authors as $a){
 					## Setup each cell
 					if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->get('id') == $a->get('id')) {
@@ -73,9 +71,7 @@
 					}
 
 					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3), ($bOdd ? 'odd' : NULL));
-
-					$bOdd = !$bOdd;
+					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
 				}
 			}
 
@@ -93,7 +89,7 @@
 
 				$options = array(
 					array(NULL, false, __('With Selected...')),
-					array('delete', false, __('Delete'))
+					array('delete', false, __('Delete'), 'confirm')
 				);
 
 				$tableActions->appendChild(Widget::Select('with-selected', $options));
@@ -160,7 +156,7 @@
 					case 'saved':
 						$this->pageAlert(
 							__(
-								'Author updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>',
+								'Author updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Authors</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/system/authors/new/',
@@ -174,7 +170,7 @@
 					case 'created':
 						$this->pageAlert(
 							__(
-								'Author created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Authors</a>',
+								'Author created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Authors</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/system/authors/new/',
@@ -387,7 +383,7 @@
 
 				if($this->_context[0] == 'edit' && !$isOwner && !$author->isPrimaryAccount()){
 					$button = new XMLElement('button', __('Delete'));
-					$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this author'), 'type' => 'submit'));
+					$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this author'), 'type' => 'submit', 'accesskey' => 'd'));
 					$div->appendChild($button);
 				}
 

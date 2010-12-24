@@ -19,7 +19,7 @@
 		public function __viewIndex(){
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
-			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a section'), 'create button'));
+			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a section'), 'create button', NULL, array('accesskey' => 'c')));
 
 			$sectionManager = new SectionManager($this->_Parent);
 			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
@@ -39,9 +39,6 @@
 			}
 
 			else{
-
-				$bOdd = true;
-
 				foreach($sections as $s){
 
 					$entry_count = intval(Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries` WHERE `section_id` = '".$s->get('id')."' "));
@@ -54,9 +51,7 @@
 					$td3->appendChild(Widget::Input('items['.$s->get('id').']', 'on', 'checkbox'));
 
 					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3), ($bOdd ? 'odd' : NULL));
-
-					$bOdd = !$bOdd;
+					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
 
 				}
 			}
@@ -256,7 +251,7 @@
 					case 'saved':
 						$this->pageAlert(
 							__(
-								'Section updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Sections</a>',
+								'Section updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Sections</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/sections/new/',
@@ -269,7 +264,7 @@
 					case 'created':
 						$this->pageAlert(
 							__(
-								'Section created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Sections</a>',
+								'Section created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Sections</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/sections/new/',
@@ -415,7 +410,7 @@
 			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
 
 			$button = new XMLElement('button', __('Delete'));
-			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this section'), 'type' => 'submit'));
+			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this section'), 'type' => 'submit', 'accesskey' => 'd'));
 			$div->appendChild($button);
 
 			$this->Form->appendChild($div);

@@ -23,9 +23,11 @@
 	require_once(TOOLKIT . '/class.general.php');
 	require_once(TOOLKIT . '/class.profiler.php');
 	require_once(TOOLKIT . '/class.author.php');
+	require_once(TOOLKIT . '/class.email.php');
 
 	require_once(TOOLKIT . '/class.authormanager.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
+	require_once(TOOLKIT . '/class.emailgatewaymanager.php');
 
 	Abstract Class Symphony implements Singleton{
 
@@ -90,13 +92,13 @@
 		 * It will set the DateTime settings, define new date constants and initialise
 		 * the correct Language for the currently logged in Author. If magic quotes
 		 * are enabled, Symphony will sanitize the `$_SERVER`, `$_COOKIE`, 
-         * `$_GET` and `$_POST` arrays. The constructor loads in 
-         * the initial Configuration values from the `CONFIG` file
+		 * `$_GET` and `$_POST` arrays. The constructor loads in 
+		 * the initial Configuration values from the `CONFIG` file
 		 */
 		protected function __construct(){
 
 			$this->Profiler = Profiler::instance();
-            $this->Profiler->sample('Engine Initialisation');
+			$this->Profiler->sample('Engine Initialisation');
 
 			if(get_magic_quotes_gpc()) {
 				General::cleanArray($_SERVER);
@@ -104,7 +106,7 @@
 				General::cleanArray($_GET);
 				General::cleanArray($_POST);
 			}
-            
+			
 			// Includes the existing CONFIG file and initialises the Configuration
 			// by setting the values with the setArray function.
 			include(CONFIG);
@@ -206,7 +208,7 @@
 			$this->ExtensionManager = new ExtensionManager($this);
 
 			if(!($this->ExtensionManager instanceof ExtensionManager)){
-                GenericExceptionHandler::$enabled = true;
+				GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
 			}
 		}
@@ -233,7 +235,7 @@
 			$driver_filename = TOOLKIT . '/class.' . $driver . '.php';
 
 			if(!is_file($driver_filename)){
-                GenericExceptionHandler::$enabled = true;
+				GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage("Could not find database driver '<code>{$driver}</code>'", 'Symphony Database Error');
 			}
 
@@ -258,7 +260,7 @@
 			}
 			catch(DatabaseException $e){
 				$error = self::$Database->getlastError();
-                GenericExceptionHandler::$enabled = true;
+				GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage(
 					$error['num'] . ': ' . $error['msg'],
 					'Symphony Database Error',
@@ -403,7 +405,7 @@
 		 */
 		public function isLoggedIn(){
 			// Ensures that we're in the real world.. Also reduces three queries from database
-			if (is_null(self::$_instance)) return false;  
+			if (is_null(self::$_instance)) return false;
 			if ($this->Author) return true;
 
 			$username = self::$Database->cleanValue($this->Cookie->get('username'));
@@ -527,7 +529,7 @@
 		 *  that the template may want to expose, such as custom Headers etc.
 		 */
 		public function customError($heading, $message, $template='error', array $additional=array()){
-            GenericExceptionHandler::$enabled = true;
+			GenericExceptionHandler::$enabled = true;
 			throw new SymphonyErrorPage($message, $heading, $template, $additional);
 		}
 	}
@@ -830,4 +832,3 @@
 
 		}
 	}
-

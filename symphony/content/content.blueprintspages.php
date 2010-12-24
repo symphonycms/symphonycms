@@ -32,7 +32,7 @@
 
 			$this->appendSubheading(__('Pages') . $heading, Widget::Anchor(
 				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/' . ($nesting == true && isset($parent) ? "?parent={$parent}" : NULL),
-				__('Create a new page'), 'create button'
+				__('Create a new page'), 'create button', NULL, array('accesskey' => 'c')
 			));
 
 			$aTableHead = array(
@@ -68,9 +68,6 @@
 
 			}
 			else{
-
-				$bOdd = true;
-
 				foreach ($pages as $page) {
 					$class = array();
 
@@ -116,7 +113,6 @@
 						$col_types = Widget::TableData(__('None'), 'inactive');
 					}
 
-					if($bOdd) $class[] = 'odd';
 					if(in_array($page['id'], $this->_hilights)) $class[] = 'failed';
 
 					$columns = array($col_title, $col_template, $col_url, $col_params, $col_types);
@@ -139,8 +135,6 @@
 						$columns,
 						implode(' ', $class)
 					);
-
-					$bOdd = !$bOdd;
 				}
 			}
 
@@ -156,7 +150,7 @@
 
 			$options = array(
 				array(null, false, __('With Selected...')),
-				array('delete', false, __('Delete'))
+				array('delete', false, __('Delete'), 'confirm')
 			);
 
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
@@ -196,10 +190,11 @@
 			if(isset($this->_context[2])) {
 				$this->pageAlert(
 					__(
-						'Page updated at %s. <a href="%s">View all Pages</a>',
+						'Page updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Pages</a>', 
 						array(
-							DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-							SYMPHONY_URL . '/blueprints/pages/'
+							DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
+							SYMPHONY_URL . '/blueprints/pages/new/' . $link_suffix,
+							SYMPHONY_URL . '/blueprints/pages/' . $link_suffix,
 						)
 					),
 					Alert::SUCCESS
@@ -214,7 +209,8 @@
 					$filename
 				)
 			));
-			$this->appendSubheading(__($filename ? $filename : __('Untitled')), Widget::Anchor(__('Edit Configuration'), SYMPHONY_URL . '/blueprints/pages/edit/' . $pagedata['id'], __('Edit Page Confguration'), 'button'));
+
+			$this->appendSubheading(__($filename ? $filename : __('Untitled')), Widget::Anchor(__('Edit Configuration'), SYMPHONY_URL . '/blueprints/pages/edit/' . $pagedata['id'], __('Edit Page Confguration'), 'button', NULL, array('accesskey' => 't')));
 
 			if(!empty($_POST)) $fields = $_POST['fields'];
 
@@ -322,7 +318,7 @@
 
 						$this->pageAlert(
 							__(
-								'Page updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Pages</a>',
+								'Page updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Pages</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/pages/new/' . $link_suffix,
@@ -337,7 +333,7 @@
 
 						$this->pageAlert(
 							__(
-								'Page created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Pages</a>',
+								'Page created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Pages</a>', 
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/pages/new/' . $link_suffix,
@@ -395,7 +391,7 @@
 					$parents = $this->__getParent($existing['parent']);
 					$template_name = $parents . '_' . $fields['handle'];
 				}
-				$this->appendSubheading(__($title ? $title : __('Untitled')), Widget::Anchor(__('Edit Template'), SYMPHONY_URL . '/blueprints/pages/template/' . $template_name, __('Edit Page Template'), 'button'));
+				$this->appendSubheading(__($title ? $title : __('Untitled')), Widget::Anchor(__('Edit Template'), SYMPHONY_URL . '/blueprints/pages/template/' . $template_name, __('Edit Page Template'), 'button', NULL, array('accesskey' => 't')));
 			}
 			else {
 				$this->appendSubheading(($title ? $title : __('Untitled')));
@@ -564,7 +560,7 @@
 
 			if($this->_context[0] == 'edit'){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this page')));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this page'), 'accesskey' => 'd'));
 				$div->appendChild($button);
 			}
 

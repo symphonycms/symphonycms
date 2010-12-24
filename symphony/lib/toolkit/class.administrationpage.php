@@ -192,9 +192,10 @@
 			$this->addScriptToHead(URL . '/symphony/assets/jquery.color.js', 51);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.collapsible.js', 60);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.orderable.js', 61);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.selectable.js', 61);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.duplicator.js', 62);
 			$this->addScriptToHead(URL . '/symphony/assets/symphony.tags.js', 63);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.picker.js', 63);
+			$this->addScriptToHead(URL . '/symphony/assets/symphony.pickable.js', 63);
 			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 70);
 
 			$this->addElementToHead(
@@ -265,17 +266,17 @@
 			foreach($nav as $item){
 				if(General::in_array_multi($page, $item['children'])){
 
-		            if(is_array($item['children'])){
-		                foreach($item['children'] as $c){
+					if(is_array($item['children'])){
+						foreach($item['children'] as $c){
 							if($c['type'] == 'section' && $c['visible'] == 'no' && preg_match('#^' . $c['link'] . '#', $page)) {
 								$page_limit = 'developer';
 							}
 
-		                    if($c['link'] == $page && isset($c['limit'])) {
-		                        $page_limit	= $c['limit'];
+							if($c['link'] == $page && isset($c['limit'])) {
+								$page_limit	= $c['limit'];
 							}
-		                }
-		            }
+						}
+					}
 
 					if(isset($item['limit']) && $page_limit != 'primary'){
 						if($page_limit == 'author' && $item['limit'] == 'developer') $page_limit = 'developer';
@@ -711,16 +712,16 @@
 			}
 
 			/**
-             * After building the Navigation properties array. This is specifically
+			 * After building the Navigation properties array. This is specifically
 			 * for extensions to add their groups to the navigation or items to groups,
 			 * already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need
-             * to edit existing navigation elements, use the `NavigationPreRender` delegate.
-             * 
-             * @delegate ExtensionsAddToNavigation
-             * @param string $context
-             * '/backend/'
-             * @param array $navigation
-             */
+			 * to edit existing navigation elements, use the `NavigationPreRender` delegate.
+			 *
+			 * @delegate ExtensionsAddToNavigation
+			 * @param string $context
+			 * '/backend/'
+			 * @param array $navigation
+			 */
 			Administration::instance()->ExtensionManager->notifyMembers(
 				'ExtensionsAddToNavigation', '/backend/', array('navigation' => &$nav)
 			);
@@ -828,7 +829,8 @@
 			$ul->appendChild($li);
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(__('Logout'), SYMPHONY_URL . '/logout/'));
+			$li->appendChild(Widget::Anchor(__('Logout'), SYMPHONY_URL . '/logout/', NULL, NULL, NULL, array('accesskey' => 'l')));
+
 			$ul->appendChild($li);
 
 			/**

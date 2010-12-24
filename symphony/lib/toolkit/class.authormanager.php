@@ -19,7 +19,7 @@
 		 * Defaults to an empty array.
 		 * @var array
 		 */
-	    protected static $_pool = array();
+		protected static $_pool = array();
 
 		/**
 		 * Given an associative array of fields, insert them into the database
@@ -105,7 +105,7 @@
 					$author->set($field, $val);
 				}
 
-                self::$_pool[$author->get('id')] = $author;
+				self::$_pool[$author->get('id')] = $author;
 				$authors[] = $author;
 			}
 
@@ -114,8 +114,8 @@
 
 		/**
 		 * Returns Author's that match the provided ID's with the option to sort or limit the
-         * output. This function will search the `AuthorManager::$_pool` for Authors first before
-         * querying `tbl_authors`
+		 * output. This function will search the `AuthorManager::$_pool` for Authors first before
+		 * querying `tbl_authors`
 		 *
 		 * @param integer|array $id
 		 *  A single ID or an array of ID's
@@ -144,19 +144,19 @@
 			if(empty($id)) return null;
 
 			$authors = array();
-            $pooled_authors = array();
-            
-            // Get all the Author ID's that are already in `self::$_pool`
-            $pooled_authors = array_intersect($id, array_keys(self::$_pool));
-            foreach($pooled_authors as $pool_author) {
-                $authors[] = self::$_pool[$pool_author];
-            }
+			$pooled_authors = array();
 
-            // Get all the Author ID's that are not already stored in `self::$_pool`
-            $id = array_diff($id, array_keys(self::$_pool));
-            
-            if(empty($id)) return ($return_single ? $authors[0] : $authors);
-            
+			// Get all the Author ID's that are already in `self::$_pool`
+			$pooled_authors = array_intersect($id, array_keys(self::$_pool));
+			foreach($pooled_authors as $pool_author) {
+				$authors[] = self::$_pool[$pool_author];
+			}
+
+			// Get all the Author ID's that are not already stored in `self::$_pool`
+			$id = array_diff($id, array_keys(self::$_pool));
+
+			if(empty($id)) return ($return_single ? $authors[0] : $authors);
+
 			$records = Symphony::Database()->fetch(sprintf("
 					SELECT *
 					FROM `tbl_authors`
@@ -178,7 +178,7 @@
 				foreach($row as $field => $val) {
 					$author->set($field, $val);
 				}
-                self::$_pool[$author->get('id')] = $author;
+				self::$_pool[$author->get('id')] = $author;
 				$authors[] = $author;
 			}
 
@@ -187,7 +187,7 @@
 
 		/**
 		 * Returns an Author by Username. This function will search the
-         * `AuthorManager::$_pool` for Authors first before querying `tbl_authors`
+		 * `AuthorManager::$_pool` for Authors first before querying `tbl_authors`
 		 *
 		 * @param string $username
 		 *  The Author's username
@@ -196,26 +196,26 @@
 		 */
 		public static function fetchByUsername($username){
 
-            if(!$isset(self::$_pool[$username])) {
-            
-                $records = Symphony::Database()->fetchRow(0, sprintf("
-                        SELECT *
-                        FROM `tbl_authors`
-                        WHERE `username` = '%s'
-                        LIMIT 1
-                    ",	Symphony::Database()->cleanValue($username)
-                ));
+			if(!$isset(self::$_pool[$username])) {
 
-                if(!is_array($records) || empty($records)) return null;
+				$records = Symphony::Database()->fetchRow(0, sprintf("
+						SELECT *
+						FROM `tbl_authors`
+						WHERE `username` = '%s'
+						LIMIT 1
+					",	Symphony::Database()->cleanValue($username)
+				));
 
-                $author = new Author;
+				if(!is_array($records) || empty($records)) return null;
 
-                foreach($records as $field => $val) {
-                    $author->set($field, $val);
-                }
+				$author = new Author;
 
-                self::$_pool[$username] = $author;
-            }
+				foreach($records as $field => $val) {
+					$author->set($field, $val);
+				}
+
+				self::$_pool[$username] = $author;
+			}
 
 			return self::$_pool[$username];
 		}

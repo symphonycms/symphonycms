@@ -1,8 +1,16 @@
-/*-----------------------------------------------------------------------------
-	Duplicator plugin
------------------------------------------------------------------------------*/
-	
-	jQuery.fn.symphonyDuplicator = function(custom_settings) {
+/**
+ * @package assets
+ */
+
+(function($) {
+
+	/**
+	 * This plugin creates a Symphony duplicator.
+	 *
+	 * @param {Object} custom_settings
+	 *  An object with custom duplicator settings
+	 */
+	$.fn.symphonyDuplicator = function(custom_settings) {
 		var objects = this;
 		var settings = {
 			instances:			'> li:not(.template)',	// What children do we use as instances?
@@ -18,12 +26,11 @@
 			delay_initialize:	false
 		};
 		
-		jQuery.extend(settings, custom_settings);
+		$.extend(settings, custom_settings);
 		
-	/*-------------------------------------------------------------------------
-		Language strings
-	-------------------------------------------------------------------------*/
+	/*-----------------------------------------------------------------------*/
 		
+		// Language strings
 		Symphony.Language.add({
 			'Add item': false,
 			'Remove item': false,
@@ -31,28 +38,19 @@
 			'Collapse all': false
 		});
 		
-	/*-------------------------------------------------------------------------
-		Collapsible
-	-------------------------------------------------------------------------*/
-		
+		// Collapsible
 		if (settings.collapsible) objects = objects.symphonyCollapsible({
 			items:			'.instance',
 			handles:		'.header span'
 		});
 		
-	/*-------------------------------------------------------------------------
-		Orderable
-	-------------------------------------------------------------------------*/
-		
+		// Orderable
 		if (settings.orderable) objects = objects.symphonyOrderable({
 			items:			'.instance',
 			handles:		'.header'
 		});
 		
-	/*-------------------------------------------------------------------------
-		Duplicator
-	-------------------------------------------------------------------------*/
-		
+		// Duplicator
 		objects = objects.map(function() {
 			var object = this;
 			var templates = [];
@@ -69,7 +67,7 @@
 			
 			// Construct a new instance:
 			var construct = function(source) {
-				var template = jQuery(source).clone();
+				var template = $(source).clone(true);
 				var instance = prepare(template);
 				
 				widgets.controls.before(instance);
@@ -80,7 +78,7 @@
 			};
 			
 			var destruct = function(source) {
-				var instance = jQuery(source).remove();
+				var instance = $(source).remove();
 				
 				object.trigger('destruct', [instance]);
 				refresh();
@@ -90,7 +88,7 @@
 			
 			// Prepare an instance:
 			var prepare = function(source) {
-				var instance = jQuery(source)
+				var instance = $(source)
 					.addClass('instance expanded');
 				var header = instance.find(settings.headers)
 					.addClass('header')
@@ -103,7 +101,7 @@
 				header.nextAll().wrapAll('<div class="content" />');
 				
 				destructor.click(function() {
-					if (jQuery(this).hasClass('disabled')) return;
+					if ($(this).hasClass('disabled')) return;
 					
 					destruct(source);
 				});
@@ -124,12 +122,12 @@
 				
 				// Update field names:
 				instances.each(function(position) {
-					jQuery(this).find('*[name]').each(function() {
+					$(this).find('*[name]').each(function() {
 						var exp = /\[\-?[0-9]+\]/;
-						var name = jQuery(this).attr('name');
+						var name = $(this).attr('name');
 						
 						if (exp.test(name)) {
-							jQuery(this).attr('name', name.replace(exp, '[' + position + ']'));
+							$(this).attr('name', name.replace(exp, '[' + position + ']'));
 						}
 					});
 				});
@@ -198,8 +196,8 @@
 			
 		/*-------------------------------------------------------------------*/
 			
-			if (object instanceof jQuery === false) {
-				object = jQuery(object);
+			if (object instanceof $ === false) {
+				object = $(object);
 			}
 			
 			object.duplicator = {
@@ -252,7 +250,7 @@
 					
 					// Store templates:
 					object.find(settings.templates).each(function(position) {
-						var template = jQuery(this).remove();
+						var template = $(this).clone(true);
 						var header = template.find(settings.headers).addClass('header');
 						var option = widgets.selector.append('<option />')
 							.find('option:last');
@@ -269,13 +267,16 @@
 						if (header_text == 'Text Input') option.attr('selected', 'selected');
 						
 						templates.push(template.removeClass('template'));
+						
+						// Remove template source
+						$(this).remove();
 					});
 					
 					// Construct new template:
 					widgets.constructor.bind('selectstart', silence);
 					widgets.constructor.bind('mousedown', silence);
 					widgets.constructor.bind('click', function() {
-						if (jQuery(this).hasClass('disabled')) return;
+						if ($(this).hasClass('disabled')) return;
 						
 						var position = widgets.selector.val();
 						
@@ -329,7 +330,7 @@
 						});
 						
 						widgets.collapser.bind('click', function() {
-							var item = jQuery(this);
+							var item = $(this);
 							
 							if (item.is('.disabled')) return;
 							
@@ -360,13 +361,16 @@
 		
 		return objects;
 	};
-	
-/*-----------------------------------------------------------------------------
-	Duplicator With Name plugin
------------------------------------------------------------------------------*/
-	
-	jQuery.fn.symphonyDuplicatorWithName = function(custom_settings) {
-		var objects = jQuery(this).symphonyDuplicator(jQuery.extend(
+
+
+	/**
+	 * This plugin creates a Symphony duplicator with name.
+	 *
+	 * @param {Object} custom_settings
+	 *  An object with custom duplicator settings
+	 */
+	$.fn.symphonyDuplicatorWithName = function(custom_settings) {
+		var objects = $(this).symphonyDuplicator($.extend(
 			custom_settings, {
 				delay_initialize:		true
 			}
@@ -395,5 +399,5 @@
 		
 		return objects;
 	};
-	
-/*---------------------------------------------------------------------------*/
+
+})(jQuery.noConflict());

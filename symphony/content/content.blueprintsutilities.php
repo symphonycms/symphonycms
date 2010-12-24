@@ -64,7 +64,7 @@
 					case 'saved':
 						$this->pageAlert(
 							__(
-								'Utility updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Utilities</a>',
+								'Utility updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Utilities</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/utilities/new/',
@@ -77,7 +77,7 @@
 					case 'created':
 						$this->pageAlert(
 							__(
-								'Utility created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Utilities</a>',
+								'Utility created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Utilities</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/utilities/new/',
@@ -149,7 +149,7 @@
 
 			if($this->_context[0] == 'edit'){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this utility'), 'type' => 'submit'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this utility'), 'type' => 'submit', 'accesskey' => 'd'));
 				$div->appendChild($button);
 			}
 

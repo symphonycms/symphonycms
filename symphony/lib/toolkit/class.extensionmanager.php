@@ -13,14 +13,14 @@
 	include_once(TOOLKIT . '/class.manager.php');
 	include_once(TOOLKIT . '/class.extension.php');
 
-    Class ExtensionManager extends Manager{
+	Class ExtensionManager extends Manager{
 
 		/**
 		 * An array of all the objects that the Manager is responsible for.
 		 * Defaults to an empty array.
 		 * @var array
 		 */
-	    protected static $_pool = array();
+		protected static $_pool = array();
 
 		/**
 		 * An array of all extensions whose status is enabled
@@ -56,10 +56,10 @@
 		 *  The Administration object that this manager has been created from
 		 *  passed by reference
 		 */
-        public function __construct(&$parent){
+		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->listAll();
-        }
+		}
 
 		/**
 		 * Given a name, returns the full class name of an Extension.
@@ -69,9 +69,9 @@
 		 *  The extension handle
 		 * @return string
 		 */
-        public function __getClassName($name){
-	        return 'extension_' . $name;
-        }
+		public function __getClassName($name){
+			return 'extension_' . $name;
+		}
 
 		/**
 		 * Finds an Extension by name by searching the `EXTENSIONS` folder and
@@ -81,9 +81,9 @@
 		 *  The extension folder
 		 * @return string
 		 */
-        public function __getClassPath($name){
-	        return EXTENSIONS . strtolower("/$name");
-        }
+		public function __getClassPath($name){
+			return EXTENSIONS . strtolower("/$name");
+		}
 
 		/**
 		 * Given a name, return the path to the driver of the Extension.
@@ -93,9 +93,9 @@
 		 *  The extension folder
 		 * @return string
 		 */
-        public function __getDriverPath($name){
-	        return $this->__getClassPath($name) . '/extension.driver.php';
-        }
+		public function __getDriverPath($name){
+			return $this->__getClassPath($name) . '/extension.driver.php';
+		}
 
 		/**
 		 * This function returns an instance of an extension from it's name
@@ -114,12 +114,12 @@
 
 		/**
 		 * Populates the `ExtensionManager::$_extensions` array with all the
-         * extensions stored in `tbl_extensions`. If `ExtensionManager::$_extensions`
-         * isn't empty, passing true as a parameter will force the array to update
+		 * extensions stored in `tbl_extensions`. If `ExtensionManager::$_extensions`
+		 * isn't empty, passing true as a parameter will force the array to update
 		 *
 		 * @param boolean $update
 		 *  Updates the `ExtensionManager::$_extensions` array even if it was
-         *  populated, defaults to false.
+		 *  populated, defaults to false.
 		 */
 		private function __buildExtensionList($update=false) {
 			if (empty(self::$_extensions) || $update) {
@@ -149,7 +149,7 @@
 		 * @return array
 		 *  An associative array describing this extension
 		 */
-        public function about($name){
+		public function about($name){
 
 			$obj = $this->getInstance($name);
 
@@ -165,7 +165,7 @@
 			if($this->__requiresUpdate($about)) $about['status'] = EXTENSION_REQUIRES_UPDATE;
 
 			return $about;
-        }
+		}
 
 		/**
 		 * Returns the status of an Extension by name
@@ -372,7 +372,7 @@
 
 		/**
 		 * This functions registers an extensions delegates in `tbl_extensions_delegates`.
-         * 
+		 *
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return integer
@@ -387,7 +387,7 @@
 			Symphony::Database()->delete('tbl_extensions_delegates', " `extension_id` = '$id ' ");
 
 			$delegates = $obj->getSubscribedDelegates();
-			
+
 			if(is_array($delegates) && !empty($delegates)){
 				foreach($delegates as $delegate){
 
@@ -413,14 +413,14 @@
 		/**
 		 * This function will remove all delegate subscriptions for an extension
 		 * given an extension's name. This triggers `__cleanupDatabase()`
-         * 
-         * @see toolkit.ExtensionManager#__cleanupDatabase()
+		 *
+		 * @see toolkit.ExtensionManager#__cleanupDatabase()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 */
 		public function removeDelegates($name){
-	        $classname = $this->__getClassName($name);
-	        $path = $this->__getDriverPath($name);
+			$classname = $this->__getClassName($name);
+			$path = $this->__getDriverPath($name);
 
 			if(!@file_exists($path)) return false;
 
@@ -448,7 +448,7 @@
 		 * Data Sources or Events, that they aren't in use before the extension
 		 * is uninstalled or disabled. This prevents exceptions from occurring when
 		 * accessing an object that was using something provided by this Extension
-         * can't anymore because it has been removed.
+		 * can't anymore because it has been removed.
 		 *
 		 * @param Extension $obj
 		 *  An extension object
@@ -472,7 +472,7 @@
 					}
 				}
 			}
-			
+
 			// Data Sources:
 			if(is_dir(EXTENSIONS . "/{$extension_handle}/data-sources")){
 				foreach(glob(EXTENSIONS . "/{$extension_handle}/data-sources/data.*.php") as $file){
@@ -528,8 +528,8 @@
 		 *	);
 		 *
 		 */
-        public function notifyMembers($delegate, $page, array $context=array()){
-	        if((int)Symphony::Configuration()->get('allow_page_subscription', 'symphony') != 1) return;
+		public function notifyMembers($delegate, $page, array $context=array()){
+			if((int)Symphony::Configuration()->get('allow_page_subscription', 'symphony') != 1) return;
 
 			if (is_null(self::$_subscriptions)) {
 				self::$_subscriptions = Symphony::Database()->fetch("
@@ -558,7 +558,7 @@
 			}
 
 			$services = array();
-			
+
 			foreach(self::$_subscriptions as $subscription) {
 				foreach($page as $p) {
 					if ($p == $subscription['page'] && $delegate == $subscription['delegate']) {
@@ -569,7 +569,7 @@
 
 			if(empty($services)) return null;
 
-	        $context += array('parent' => &$this->_Parent, 'page' => $page, 'delegate' => $delegate);
+			$context += array('parent' => &$this->_Parent, 'page' => $page, 'delegate' => $delegate);
 
 			foreach($services as $s){
 				$obj = $this->getInstance($s['name']);
@@ -578,7 +578,7 @@
 					$obj->{$s['callback']}($context);
 				}
 			}
-        }
+		}
 
 		/**
 		 * Returns an array of all the enabled extensions available
@@ -594,7 +594,7 @@
 			return self::$_enabled_extensions;
 		}
 
-        /**
+		/**
 		 * Will return an associative array of all extensions and their about information
 		 *
 		 * @param string $filter
@@ -604,7 +604,7 @@
 		 *  An associative array with the key being the extension folder and the value
 		 *  being the extension's about information
 		 */
-        public function listAll($filter=null){
+		public function listAll($filter=null){
 			$result = array();
 			$extensions = General::listDirStructure(EXTENSIONS, $filter, false, EXTENSIONS);
 
@@ -616,7 +616,7 @@
 			}
 
 			return $result;
-        }
+		}
 
 		/**
 		 * Creates an instance of a given class and returns it
@@ -625,18 +625,18 @@
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return Extension
 		 */
-        public function create($name){
+		public function create($name){
 			if(!is_array(self::$_pool)) $this->flush();
 
 			if(!isset(self::$_pool[$name])){
-		        $classname = $this->__getClassName($name);
-		        $path = $this->__getDriverPath($name);
+				$classname = $this->__getClassName($name);
+				$path = $this->__getDriverPath($name);
 
-		        if(!is_file($path)){
+				if(!is_file($path)){
 					throw new Exception(
 						__('Could not find extension at location %s', array($path))
 					);
-		        }
+				}
 
 				if(!class_exists($classname)) require_once($path);
 
@@ -647,7 +647,7 @@
 			}
 
 			return self::$_pool[$name];
-        }
+		}
 
 		/**
 		 * A utility function that is used by the ExtensionManager to ensure
@@ -678,7 +678,7 @@
 				}
 			}
 		}
-    }
+	}
 
 	/**
 	 * Status when an extension is installed and enabled

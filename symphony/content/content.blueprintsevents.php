@@ -37,7 +37,7 @@
 					case 'saved':
 						$this->pageAlert(
 							__(
-								'Event updated at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Events</a>',
+								'Event updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Events</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/events/new/',
@@ -50,7 +50,7 @@
 					case 'created':
 						$this->pageAlert(
 							__(
-								'Event created at %1$s. <a href="%2$s">Create another?</a> <a href="%3$s">View all Events</a>',
+								'Event created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Events</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/events/new/',
@@ -125,7 +125,7 @@
 
 				$fieldset->appendChild($group);
 
-				$label = Widget::Label(__('Filter Rules'));
+				$label = Widget::Label(__('Filter Options'));
 
 				$filters = is_array($fields['filters']) ? $fields['filters'] : array();
 
@@ -149,9 +149,8 @@
 				Administration::instance()->ExtensionManager->notifyMembers('AppendEventFilter', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $fields['filters'], 'options' => &$options));
 
 				$label->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
-				$fieldset->appendChild($label);
 
-				$fieldset->appendChild(new XMLElement('p', __('This event will not be processed if any of these rules return true.'), array('class' => 'help')));
+				$fieldset->appendChild($label);
 
 				$this->Form->appendChild($fieldset);
 			endif;
@@ -172,7 +171,7 @@
 
 			if($isEditing){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this event'), 'type' => 'submit'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this event'), 'type' => 'submit', 'accesskey' => 'd'));
 				$div->appendChild($button);
 			}
 
@@ -326,7 +325,7 @@
 				###
 
 				if(is_array($fields['filters']) && !empty($fields['filters'])){
-					$documentation_parts[] = new XMLElement('p', __('The following is an example of what is returned if any filters fail:'));
+					$documentation_parts[] = new XMLElement('p', __('The following is an example of what is returned if any options return an error:'));
 
 					$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
 					$code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
@@ -369,17 +368,18 @@
 				$documentation_parts[] = self::processDocumentationCode(Widget::Input('redirect', URL.'/success/', 'hidden'));
 
 				if(@in_array('send-email', $fields['filters'])){
+					$documentation_parts[] = new XMLElement('h3', __('Send Notification Email'));
 
-					$documentation_parts[] = new XMLElement('h3', __('Send Email Filter'));
-
-					$documentation_parts[] = new XMLElement('p', __('The send email filter, upon the event successfully saving the entry, takes input from the form and send an email to the desired recipient. <b>This filter currently does not work with the "Allow Multiple" option.</b> The following are the recognised fields:'));
+					$documentation_parts[] = new XMLElement('p', __('Upon the event successfully saving the entry, this option takes input from the form and send an email to the desired recipient. <b>It currently does not work with "Allow Multiple".</b> The following are the recognised fields:'));
 
 					$documentation_parts[] = self::processDocumentationCode(
 						'send-email[sender-email] // '.__('Optional').self::CRLF.
 						'send-email[sender-name] // '.__('Optional').self::CRLF.
-						'send-email[subject] // '.__('Optional').self::CRLF.
+						'send-email[reply-to-email] // '.__('Optional').self::CRLF.
+						'send-email[reply-to-name] // '.__('Optional').self::CRLF.
+						'send-email[subject]'.self::CRLF.
 						'send-email[body]'.self::CRLF.
-						'send-email[recipient] // '.__('list of comma author usernames.'));
+						'send-email[recipient] // '.__('list of comma-separated author usernames.'));
 
 					$documentation_parts[] = new XMLElement('p', __('All of these fields can be set dynamically using the exact field name of another field in the form as shown below in the example form:'));
 
@@ -390,6 +390,8 @@
 		<label>'.__('Message').' <textarea name="fields[message]" rows="5" cols="21"></textarea></label>
 		<input name="send-email[sender-email]" value="fields[email]" type="hidden" />
 		<input name="send-email[sender-name]" value="fields[author]" type="hidden" />
+		<input name="send-email[reply-to-email]" value="fields[email]" type="hidden" />
+		<input name="send-email[reply-to-name]" value="fields[author]" type="hidden" />
 		<input name="send-email[subject]" value="You are being contacted" type="hidden" />
 		<input name="send-email[body]" value="fields[message]" type="hidden" />
 		<input name="send-email[recipient]" value="fred" type="hidden" />

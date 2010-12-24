@@ -38,7 +38,7 @@
 
 			$li = new XMLElement('li');
 			$h3 = new XMLElement('h3', __('Events'));
-			$h3->appendChild(Widget::Anchor(__('Create New'), SYMPHONY_URL . '/blueprints/events/new/', __('Create a new event'), 'create button'));
+			$h3->appendChild(Widget::Anchor(__('Create New'), SYMPHONY_URL . '/blueprints/events/new/', __('Create a new event'), 'create button', NULL, array('accesskey' => 'e')));
 			$li->appendChild($h3);
 
 			$list = new XMLElement('ul');
@@ -65,7 +65,7 @@
 			$li = new XMLElement('li');
 
 			$h3 = new XMLElement('h3', __('Data Sources'));
-			$h3->appendChild(Widget::Anchor(__('Create New'), SYMPHONY_URL . '/blueprints/datasources/new/', __('Create a new data source'), 'create button'));
+			$h3->appendChild(Widget::Anchor(__('Create New'), SYMPHONY_URL . '/blueprints/datasources/new/', __('Create a new data source'), 'create button', NULL, array('accesskey' => 'd')));
 			$li->appendChild($h3);
 
 			$list = new XMLElement('ul');
@@ -97,7 +97,7 @@
 			$li = new XMLElement('li');
 
 			$h3 = new XMLElement('h3', __('Utilities'));
-			$h3->appendChild(Widget::Anchor(__('Create New'), SYMPHONY_URL . '/blueprints/utilities/new/', __('Create a new utility'), 'create button'));
+			$h3->appendChild(Widget::Anchor(__('Create New'), SYMPHONY_URL . '/blueprints/utilities/new/', __('Create a new utility'), 'create button', NULL, array('accesskey' => 'u')));
 			$li->appendChild($h3);
 
 			$list = new XMLElement('ul');
@@ -121,5 +121,3 @@
 		}
 
 	}
-
-?>
