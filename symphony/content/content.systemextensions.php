@@ -69,6 +69,8 @@
 							$link = Widget::Anchor($about['author']['name'], 'mailto:' . $about['author']['email']);	
 						
 						$td4 = Widget::TableData($link);
+						
+						$td4->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox'));
 					}
 
 					## Add a row to the body array, assigning each cell to the row
