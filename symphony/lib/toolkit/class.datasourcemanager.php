@@ -5,7 +5,7 @@
 	/**
 	 * The DatasourceManager class is responsible for managing all Datasource objects
 	 * in Symphony. Datasources's are stored on the file system either in the
-	 * /workspace/data-sources folder or provided by an extension in a /data-sources folder.
+	 * `WORKSPACE . /data-sources` folder or provided by an extension in `EXTENSIONS . /./data-sources` folder.
 	 * Datasources are run from the Frontend to commonly output Entries and parameters,
 	 * however there any different types of Datasource that query external sources for data.
 	 * Typically, a Datasource returns XML.
@@ -18,7 +18,7 @@
 
 		/**
 		 * Given the filename of a Datasource return it's handle. This will remove
-		 * the Symphony convention of data.*.php
+		 * the Symphony convention of `data.*.php`
 		 *
 		 * @param string $filename
 		 *  The filename of the Datasource
@@ -48,7 +48,7 @@
 		 *
 		 * @param string $handle
 		 *  The handle of the Datasource free from any Symphony conventions
-		 *  such as data.*.php
+		 *  such as `data.*.php`
 		 * @return mixed
 		 *  If the datasource is found, the function returns the path it's folder, otherwise false.
 		 */
@@ -71,10 +71,10 @@
 		/**
 		 * Given a name, return the path to the Datasource class
 		 *
-		 * @see __getClassPath
+		 * @see DatasourceManager::__getClassPath()
 		 * @param string $handle
 		 *  The handle of the Datasource free from any Symphony conventions
-		 *  such as data.*.php
+		 *  such as `data.*.php`
 		 * @return string
 		 */
 		public function __getDriverPath($handle){
@@ -86,10 +86,10 @@
 		 * the workspace and in all installed extension folders. Returns an
 		 * associative array of data-sources.
 		 *
-		 * @see toolkit.Manager#about
+		 * @see toolkit.Manager#about()
 		 * @return array
 		 *  Associative array of Datasources with the key being the handle of the
-		 *  Datasource and the value being the Datasource's about() information.
+		 *  Datasource and the value being the Datasource's `about()` information.
 		 */
 		public function listAll(){
 
@@ -183,4 +183,3 @@
 		}
 
     }
-

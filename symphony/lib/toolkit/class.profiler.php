@@ -20,7 +20,7 @@
 
 		/**
 		 * An array of arrays containing profiling samples. A record contains a
-		 * profile message, the time since $_starttime timestamp, the end timestamp,
+		 * profile message, the time since `$_starttime` timestamp, the end timestamp,
 		 * the group for this record, the number of SQL queries and the result of
 		 * memory_get_usage()
 		 * @var array
@@ -29,7 +29,7 @@
 
 		/**
 		 * A seed holds a start time to be used in profiling. If this is not null
-		 * the profiler will use this as the start time instead of $_starttime. This
+		 * the profiler will use this as the start time instead of `$_starttime`. This
 		 * is set with the seed function.
 		 * @var integer
 		 * @see seed()
@@ -73,23 +73,23 @@
 		}
 
 		/**
-		 * This function creates a new report in the $_samples array where the message
-		 * is the name of this report. By default, all samples are compared to the $_starttime
-		 * but if the PROFILE_LAP constant is passed, it will be compared to specific $_seed
+		 * This function creates a new report in the `$_samples` array where the message
+		 * is the name of this report. By default, all samples are compared to the `$_starttime`
+		 * but if the `PROFILE_LAP` constant is passed, it will be compared to specific `$_seed`
 		 * timestamp. Samples can grouped by type (ie. Datasources, Events), but by default
 		 * are grouped by 'General'. Optionally, the number of SQL queries that have occurred
-		 * since either $_starttime or $_seed can be passed. Memory usage is taken with each
+		 * since either `$_starttime` or `$_seed` can be passed. Memory usage is taken with each
 		 * sample which measures the amount of memory used by this script by PHP at the
 		 * time of sampling.
 		 *
 		 * @param string $msg
 		 *  A description for this sample
 		 * @param integer $type
-		 *  Either PROFILE_RUNNING_TOTAL or PROFILE_LAP
+		 *  Either `PROFILE_RUNNING_TOTAL` or `PROFILE_LAP`
 		 * @param string $group
 		 *  Allows samples to be grouped together, defaults to General.
 		 * @param integer $queries
-		 *  The number of MySQL queries that occurred since the $_starttime or $_seed
+		 *  The number of MySQL queries that occurred since the `$_starttime` or `$_seed`
 		 */
 		public function sample($msg, $type=PROFILE_RUNNING_TOTAL, $group='General', $queries=NULL){
 
@@ -117,8 +117,8 @@
 		 * @param integer $index
 		 *  The array index to return the sample for
 		 * @return array
-		 *  If no $index is passed an array of all the sample arrays are returned
-		 *  otherwise just the sample at the given $index will be returned.
+		 *  If no `$index` is passed an array of all the sample arrays are returned
+		 *  otherwise just the sample at the given `$index` will be returned.
 		 */
 		public function retrieve($index = null){
 			return !is_null($index) ? Profiler::$_samples[$index] : Profiler::$_samples;
@@ -157,7 +157,7 @@
 		}
 
 		/**
-		 * Returns the last record from the $_records array
+		 * Returns the last record from the `$_records` array
 		 *
 		 * @return array
 		 */
@@ -167,9 +167,9 @@
 
 		/**
 		 * Returns the difference between when the Profiler was initialised
-		 * (aka $_starttime) and the last record the Profiler has.
+		 * (aka `$_starttime`) and the last record the Profiler has.
 		 *
-		 * @return int
+		 * @return integer
 		 */
 		public function retrieveTotalRunningTime(){
 			$last = Profiler::retrieveLast();
@@ -181,7 +181,7 @@
 		 * Returns the total memory usage from all samples taken by comparing
 		 * each sample to the base memory sample.
 		 *
-		 * @return int
+		 * @return integer
 		 *  Memory usage in bytes.
 		 */
 		public function retrieveTotalMemoryUsage(){

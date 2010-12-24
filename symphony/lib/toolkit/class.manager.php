@@ -26,7 +26,7 @@
 	    protected static $_pool = array();
 
 	    /**
-		 * The constructor for Manager. This sets the $_Parent to be an
+		 * The constructor for Manager. This sets the `$this->_Parent` to be an
 		 * instance of the Administration class.
 		 *
 		 * @param Administration $parent
@@ -48,16 +48,16 @@
 		 * The about function returns information about a particular object
 		 * in this manager's pool. It is limited for use on file based objects
 		 * such as Datasource, Event, Extension and Text Formatter. The function
-		 * uses the getClassName, getDriverPath and getHandleFromFilename functions
-		 * to autodiscover the object. There is no confusion between names (ie.
+		 * uses the `getClassName()`, `getDriverPath()` and `getHandleFromFilename()`
+         * functions to autodiscover the object. There is no confusion between names (ie.
 		 * does author refer to a Datasource or Field) because the Manager subclass
 		 * will override the autodiscovery functions to only look for objects of
 		 * that type.
 		 *
 		 * @param string $name
 		 *  The name of the object that has the about information. This should be
-		 *  lowercase and free from any Symphony conventions. eg. author,
-		 *  not field.author.php.
+		 *  lowercase and free from any Symphony conventions. eg. `author`,
+		 *  not `field.author.php`.
 		 * @return boolean|array
 		 *  False is object doesn't exist or an associative array of information
 		 */
@@ -81,7 +81,7 @@
 
         /**
 		 * Given a filename, return the handle. This will remove
-		 * any Symphony conventions such as field.*.php
+		 * any Symphony conventions such as `field.*.php`
 		 *
 		 * @return string
 		 */
@@ -121,7 +121,7 @@
         /**
 		 * Returns an array of all the objects that this manager is responsible for.
 		 * This function is only use on the file based Managers in Symphony
-		 * such DatasourceManager,EventManager, ExtensionManager, FieldManager
+		 * such DatasourceManager, EventManager, ExtensionManager, FieldManager
 		 * and TextformatterManager.
 		 *
 		 * @return array

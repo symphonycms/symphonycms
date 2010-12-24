@@ -21,7 +21,7 @@
 
 		/**
 		 * Constructor takes a message and an associative array to set to
-		 * $_error. The message is passed to the default Exception constructor
+		 * `$_error`. The message is passed to the default Exception constructor
 		 */
 		public function __construct($message, array $error=NULL){
 			parent::__construct($message);
@@ -84,7 +84,7 @@
 		const __READ_OPERATION__ = 1;
 
 		/**
-		 * Sets the current $_log to be an associative array with 'error'
+		 * Sets the current `$_log` to be an associative array with 'error'
 		 * and 'query' keys and empty array values.
 		 *
 		 * @var array
@@ -116,14 +116,14 @@
 		 *
 		 * @var array
 		 */
-	    private static $_connection = array();
+		private static $_connection = array();
 
 		/**
 		 * The resource of the last result returned from mysql_query
 		 *
 		 * @var resource
 		 */
-	    private $_result = null;
+		private $_result = null;
 
 		/**
 		 * The last query that was executed by the class
@@ -132,9 +132,9 @@
 
 		/**
 		 * By default, an array of arrays or objects representing the result set
-		 * from the $_lastQuery.
+		 * from the `$this->_lastQuery`
 		 */
-	    private $_lastResult = array();
+		private $_lastResult = array();
 
 		/**
 		 * Magic function that will flush the MySQL log and close the MySQL
@@ -142,23 +142,23 @@
 		 *
 		 * @link http://php.net/manual/en/language.oop5.decon.php
 		 */
-	    public function __destruct(){
-	        $this->flush();
-	        $this->close();
-	    }
+		public function __destruct(){
+			$this->flush();
+			$this->close();
+		}
 
 		/**
-		 * Resets the result, lastResult and lastQuery to their empty
+		 * Resets the result, `$this->_lastResult` and `$this->_lastQuery` to their empty
 		 * values. Called on each query and when the class is destroyed.
 		 */
 		public function flush(){
-	        $this->_result = null;
-	        $this->_lastResult = array();
-	        $this->_lastQuery = null;
-	    }
+			$this->_result = null;
+			$this->_lastResult = array();
+			$this->_lastQuery = null;
+		}
 
 		/**
-		 * Sets the current $_log to be an associative array with 'error'
+		 * Sets the current `$_log` to be an associative array with 'error'
 		 * and 'query' keys and empty array values.
 		 */
 		public static function flushLog(){
@@ -226,8 +226,8 @@
 		 *  The table prefix for Symphony, by default this is sym_
 		 */
 		public function setPrefix($prefix){
-	        MySQL::$_connection['tbl_prefix'] = $prefix;
-	    }
+			MySQL::$_connection['tbl_prefix'] = $prefix;
+		}
 
 		/**
 		 * Determines if a connection has been made to the MySQL server
@@ -235,8 +235,8 @@
 		 * @return boolean
 		 */
 		public function isConnected(){
-	        return (isset(MySQL::$_connection['id']) && is_resource(MySQL::$_connection['id']));
-	    }
+			return (isset(MySQL::$_connection['id']) && is_resource(MySQL::$_connection['id']));
+		}
 
 		/**
 		 * Called when the script has finishd executing, this closes the MySQL
@@ -244,9 +244,9 @@
 		 *
 		 * @return boolean
 		 */
-	    public function close(){
-	        if($this->isConnected()) return mysql_close(MySQL::$_connection['id']);
-	    }
+		public function close(){
+			if($this->isConnected()) return mysql_close(MySQL::$_connection['id']);
+		}
 
 		/**
 		 * Creates a connect to the database server given the credentials. If an
@@ -272,16 +272,49 @@
 				'database' => $database
 			);
 
-	        MySQL::$_connection['id'] = mysql_connect(
+			MySQL::$_connection['id'] = mysql_connect(
 				MySQL::$_connection['host'] . ":" . MySQL::$_connection['port'], MySQL::$_connection['user'], MySQL::$_connection['pass']
 			);
 
-	        if(!$this->isConnected() || (!is_null($database) && !mysql_select_db(MySQL::$_connection['database'], MySQL::$_connection['id']))) {
-	            $this->__error();
-	        }
+			if(!$this->isConnected() || (!is_null($database) && !mysql_select_db(MySQL::$_connection['database'], MySQL::$_connection['id']))) {
+				$this->__error();
+			}
 
-	        return true;
-	    }
+			return true;
+		}
+
+		/**
+		 * Accessor for the current mysql resource from PHP. May be
+		 * useful for developers who want complete control over their
+		 * database queries and don't want anything abstract by the MySQL
+		 * class.
+		 *
+		 * @return resource
+		 */
+		public static function getConnectionResource() {
+			return MySQL::$_connection['id'];
+		}
+
+		/**
+		 * This function selects a MySQL database. Only used by installation
+		 * and must exists for compatibility reasons. But might be removed
+		 * in future versions. Not recommended its usage by developers.
+		 *
+		 * @link http://au2.php.net/manual/en/function.mysql-select-db.php
+		 * @param string $db
+		 *  The name of the database that is to be selected, defaults to null.
+		 */
+		public function select($db=NULL){
+			if ($db) MySQL::$_connection['database'] = $db;
+
+			if (!mysql_select_db(MySQL::$_connection['database'], MySQL::$_connection['id'])) {
+				$this->__error();
+				MySQL::$_connection['database'] = null;
+				return false;
+			}
+
+			return true;
+		}
 
 		/**
 		 * This will set the character encoding of the connection for sending and
@@ -295,28 +328,7 @@
 		 *  The character encoding to use, by default this 'utf8'
 		 */
 		public function setCharacterEncoding($set='utf8'){
-		    mysql_set_charset($set, MySQL::$_connection['id']);
-	    }
-
-		/**
-		 * This function selects a MySQL database. Only used by installation
-		 * and must exists for compatibility reasons. But might be removed 
-		 * in future versions. Not recommended its usage by developers.
-		 *
-		 * @link http://au2.php.net/manual/en/function.mysql-select-db.php
-		 * @param string $db
-		 *  The name of the database that is to be selected, defaults to null.
-		 */
-		public function select($db=NULL){
-			if ($db) MySQL::$_connection['database'] = $db;
-			
-			if (!mysql_select_db(MySQL::$_connection['database'], MySQL::$_connection['id'])) {
-				$this->__error();
-				MySQL::$_connection['database'] = null;
-				return false;
-			}
-			
-			return true;
+			mysql_set_charset($set, MySQL::$_connection['id']);
 		}
 
 		/**
@@ -327,9 +339,10 @@
 		 * @param string $set
 		 *  The character encoding to use, by default this 'utf8'
 		 */
-	    public function setCharacterSet($set='utf8'){
-		    $this->query("SET CHARACTER SET '$set'");
-	    }
+		public function setCharacterSet($set='utf8'){
+			$this->query("SET character_set_connection = '$set', character_set_database = '$set', character_set_server = '$set'");
+			$this->query("SET CHARACTER SET '$set'");
+		}
 
 		/**
 		 * This function will clean a string using the mysql_real_escape_string function
@@ -385,7 +398,7 @@
 		 * considered to be a read operation which are subject to query caching.
 		 *
 		 * @return integer
-		 *  MySQL::__WRITE_OPERATION__ or MySQL::__READ_OPERATION__
+		 *  `MySQL::__WRITE_OPERATION__` or `MySQL::__READ_OPERATION__`
 		 */
 		public function determineQueryType($query){
 			return (preg_match('/^(create|insert|replace|delete|update|optimize|truncate)/i', $query) ? MySQL::__WRITE_OPERATION__ : MySQL::__READ_OPERATION__);
@@ -394,10 +407,10 @@
 		/**
 		 * Takes an SQL string and executes it. This function will apply query
 		 * caching if it is a read operation and if query caching is set. Symphony
-		 * will convert the tbl_ prefix of tables to be the one set during installation.
-		 * A type parameter is provided to specify whether _lastResult will be an array
+		 * will convert the `tbl_` prefix of tables to be the one set during installation.
+		 * A type parameter is provided to specify whether `$this->_lastResult` will be an array
 		 * of objects or an array of associative arrays. The default is objects. This
-		 * function will return boolean, but set _lastResult to the result.
+		 * function will return boolean, but set `$this->_lastResult` to the result.
 		 *
 		 * @param string $query
 		 *  The full SQL query to execute.
@@ -408,9 +421,9 @@
 		 * @return boolean
 		 *  True if the query executed without errors, false otherwise
 		 */
-	    public function query($query, $type = "OBJECT"){
+		public function query($query, $type = "OBJECT"){
 
-		    if(empty($query)) return false;
+			if(empty($query)) return false;
 
 			$query = trim($query);
 			$query_type = $this->determineQueryType($query);
@@ -420,9 +433,9 @@
 				elseif($this->isCachingEnabled() === true) $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_CACHE ', $query);
 			}
 
-	        if(MySQL::$_connection['tbl_prefix'] != 'tbl_'){
-	            $query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', MySQL::$_connection['tbl_prefix'].'\\1\\2', $query);
-	        }
+			if(MySQL::$_connection['tbl_prefix'] != 'tbl_'){
+				$query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', MySQL::$_connection['tbl_prefix'].'\\1\\2', $query);
+			}
 
 			//	TYPE is deprecated since MySQL 4.0.18, ENGINE is preferred
 			if($query_type == MySQL::__WRITE_OPERATION__) {
@@ -433,16 +446,16 @@
 
 			self::$_log['query'][$query_hash] = array('query' => $query, 'start' => precision_timer());
 
-	        $this->flush();
-	        $this->_lastQuery = $query;
+			$this->flush();
+			$this->_lastQuery = $query;
 
 			$this->_result = mysql_query($query, MySQL::$_connection['id']);
 
 			self::$_query_count++;
 
-	        if(mysql_error()){
-	            $this->__error();
-	        }
+			if(mysql_error()){
+				$this->__error();
+			}
 			else if(is_resource($this->_result)){
 				if($type == "ASSOC") {
 					while ($row = mysql_fetch_assoc($this->_result)){
@@ -460,8 +473,8 @@
 
 			self::$_log['query'][$query_hash]['time'] = precision_timer('stop', self::$_log['query'][$query_hash]['start']);
 
-	        return true;
-	    }
+			return true;
+		}
 
 		/**
 		 * Returns the last insert ID from the previous query. This is
@@ -470,9 +483,9 @@
 		 * @return integer
 		 *  The last interested row's ID
 		 */
-	    public function getInsertID(){
-	        return mysql_insert_id(MySQL::$_connection['id']);
-	    }
+		public function getInsertID(){
+			return mysql_insert_id(MySQL::$_connection['id']);
+		}
 
 		/**
 		 * A convienence method to insert data into the Database. This function
@@ -559,6 +572,7 @@
 		/**
 		 * Given a table name and a WHERE statement, delete rows from the
 		 * Database.
+		 *
 		 * @param string $table
 		 *  The table name, including the tbl prefix which will be changed
 		 *  to this Symphony's table prefix in the query function
@@ -581,16 +595,16 @@
 		 *  the result by. If this is omitted (and it is by default), an
 		 *  array of assocative arrays is returned, with the key being the
 		 *  column names
-         * @return array
-         *  An associative array with the column names as the keys
+		 * @return array
+		 *  An associative array with the column names as the keys
 		 */
-	    public function fetch($query = null, $index_by_column = null){
+		public function fetch($query = null, $index_by_column = null){
 
-	        if(!is_null($query))$this->query($query, "ASSOC");
+			if(!is_null($query))$this->query($query, "ASSOC");
 
-	        elseif(is_null($this->_lastResult)) {
-	            return array();
-	        }
+			elseif(is_null($this->_lastResult)) {
+				return array();
+			}
 
 			$result = $this->_lastResult;
 
@@ -604,15 +618,15 @@
 				$result = $n;
 			}
 
-	        return $result;
-	    }
+			return $result;
+		}
 
 		/**
 		 * Returns the row at the specified index from the given query. If no
-		 * query is given, it will use the lastResult. If no offset is provided, the
-		 * function will return the first row. This function does not imply any
-		 * LIMIT to the given $query, so for the more efficient use, it is recommended
-		 * that the $query have a LIMIT set.
+		 * query is given, it will use the `$this->_lastResult`. If no offset is provided,
+		 * the function will return the first row. This function does not imply any
+		 * LIMIT to the given `$query`, so for the more efficient use, it is recommended
+		 * that the `$query` have a LIMIT set.
 		 *
 		 * @param integer $offset
 		 *  The row to return from the SQL query. For instance, if the second
@@ -620,65 +634,65 @@
 		 *  is zero based.
 		 * @param string $query
 		 *  The full SQL query to execute. Defaults to null, which will
-		 *  use the _lastResult
+		 *  use the `$this->_lastResult`
 		 * @return array
-		 *  If there is no row at the specified $offset, an empty array will be returned
+		 *  If there is no row at the specified `$offset`, an empty array will be returned
 		 *  otherwise an associative array of that row will be returned.
 		 */
-	    public function fetchRow($offset = 0, $query = null){
-	        $result = $this->fetch($query);
-	        return (empty($result) ? array() : $result[$offset]);
-	    }
+		public function fetchRow($offset = 0, $query = null){
+			$result = $this->fetch($query);
+			return (empty($result) ? array() : $result[$offset]);
+		}
 
 		/**
 		 * Returns an array of values for a specified column in a given query.
-		 * If no query is given, it will use the lastResult.
+		 * If no query is given, it will use the `$this->_lastResult`.
 		 *
 		 * @param string $column
 		 *  The column name in the query to return the values for
 		 * @param string $query
 		 *  The full SQL query to execute. Defaults to null, which will
-		 *  use the _lastResult
+		 *  use the `$this->_lastResult`
 		 * @return array
-		 *  If there is no results for the $query, an empty array will be returned
-		 *  otherwise an array of values for that given $column will be returned
+		 *  If there is no results for the `$query`, an empty array will be returned
+		 *  otherwise an array of values for that given `$column` will be returned
 		 */
-	    public function fetchCol($column, $query = null){
-	        $result = $this->fetch($query);
+		public function fetchCol($column, $query = null){
+			$result = $this->fetch($query);
 
-		    if(empty($result)) return array();
+			if(empty($result)) return array();
 
-	        foreach ($result as $row){
-	            $return[] = $row[$column];
-	        }
+			foreach ($result as $row){
+				$return[] = $row[$column];
+			}
 
-	        return $return;
+			return $return;
 		}
 
 		/**
 		 * Returns the value for a specified column at a specified offset. If no
 		 * offset is provided, it will return the value for column of the first row.
-		 * If no query is given, it will use the lastResult.
+		 * If no query is given, it will use the `$this->_lastResult`.
 		 *
 		 * @param string $column
 		 *  The column name in the query to return the values for
 		 * @param integer $offset
-		 *  The row to use to return the value for the given $column from the SQL
-		 *  query. For instance, if $column form the second row was required, the
+		 *  The row to use to return the value for the given `$column` from the SQL
+		 *  query. For instance, if `$column` form the second row was required, the
 		 *  offset would be 1, because it is zero based.
 		 * @param string $query
 		 *  The full SQL query to execute. Defaults to null, which will
-		 *  use the _lastResult
+		 *  use the `$this->_lastResult`
 		 * @return string
 		 *  Returns the value of the given column, if it doesn't exist, null will be
 		 *  returned
 		 */
-	    public function fetchVar ($column, $offset = 0, $query = null){
+		public function fetchVar ($column, $offset = 0, $query = null){
 
-	        $result = $this->fetch($query);
-	        return (empty($result) ? null : $result[$offset][$column]);
+			$result = $this->fetch($query);
+			return (empty($result) ? null : $result[$offset][$column]);
 
-	    }
+		}
 
 		/**
 		 * If an error occurs in a query, this function is called which logs
@@ -687,18 +701,18 @@
 		 *
 		 * @return DatabaseException
 		 */
-	    private function __error() {
+		private function __error() {
 			$msg = mysql_error();
 			$errornum = mysql_errno();
 
-	        self::$_log['error'][] = array(
+			self::$_log['error'][] = array(
 				'query' => $this->_lastQuery,
 				'msg' => $msg,
 				'num' => $errornum
 			);
 
 			throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query "%3$s"', array($errornum, $msg, $this->_lastQuery)), end(self::$_log['error']));
-	    }
+		}
 
 		/**
 		 * Returns all the log entries by type. There are two valid types,
@@ -712,11 +726,11 @@
 		 *  the query and the start/stop time to indicate how long it took
 		 *  to run
 		 */
-	    public function debug($type = null){
-	        if(!$type) return self::$_log;
+		public function debug($type = null){
+			if(!$type) return self::$_log;
 
 			return ($type == 'error' ? self::$_log['error'] : self::$_log['query']);
-	    }
+		}
 
 		/**
 		 * Returns some basic statistics from the MySQL class about the
@@ -749,26 +763,26 @@
 
 		/**
 		 * Convenience function to allow you to execute multiple SQL queries at once
-		 * by providing a string with the queries delimited with a <code>;</code>
+		 * by providing a string with the queries delimited with a `;`
 		 *
 		 * @param string $sql
-		 *  A string containing SQL queries delimited by <code>;</code>
+		 *  A string containing SQL queries delimited by `;`
 		 * @return boolean
 		 *  If one of the queries fails, false will be returned and no further queries
 		 *  will be executed, otherwise true will be returned.
 		 */
-	    public function import($sql){
+		public function import($sql){
 
 			$queries = preg_split('/;[\\r\\n]+/', $sql, -1, PREG_SPLIT_NO_EMPTY);
 
 			if(is_array($queries) && !empty($queries)){
-			    foreach($queries as $sql){
-			        if(trim($sql) != '') $result = $this->query($sql);
-			        if(!$result) return false;
-			    }
+				foreach($queries as $sql){
+					if(trim($sql) != '') $result = $this->query($sql);
+					if(!$result) return false;
+				}
 			}
 
 			return true;
-	    }
+		}
 
 	}

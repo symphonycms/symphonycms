@@ -42,7 +42,7 @@
 		}
 
 		/**
-		 * Accessor function for $_headers
+		 * Accessor function for `$_headers`
 		 *
 		 * @return array
 		 */
@@ -51,7 +51,7 @@
 		}
 
 		/**
-		 * This function calls the __renderHeaders function.
+		 * This function calls `__renderHeaders()`.
 		 *
 		 * @see __renderHeaders()
 		 */
@@ -60,7 +60,7 @@
 		}
 
 		/**
-		 * Iterates over the $_headers for this page
+		 * Iterates over the `$_headers` for this page
 		 * and outputs them using PHP's header() function.
 		 *
 		 * @return result of header();

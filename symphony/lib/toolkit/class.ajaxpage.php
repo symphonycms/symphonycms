@@ -50,14 +50,14 @@
 
 		/**
 		 * The HTTP status code of the page using the AJAXPage constants
-		 * STATUS_OK, STATUS_BAD, STATUS_ERROR or STATUS_UNAUTHORISED
+		 * `STATUS_OK`, `STATUS_BAD`, `STATUS_ERROR` or `STATUS_UNAUTHORISED`
 		 * @var integer
 		 */
 		protected $_status;
 
 		/**
-		 * The constructor for AJAXPage. This sets the page status to STATUS_OK,
-		 * the default content type to text/xml and initialises the $_Result var
+		 * The constructor for AJAXPage. This sets the page status to `STATUS_OK`,
+		 * the default content type to text/xml and initialises `$this->_Result`
 		 * with an XMLElement. The constructor also starts the Profiler for this
 		 * page template.
 		 *
@@ -82,7 +82,7 @@
 
 		/**
 		 * This function is called when a user is not authenticated to the Symphony
-		 * backend. It sets the status of this page to STATUS_UNAUTHORISED and
+		 * backend. It sets the status of this page to `STATUS_UNAUTHORISED` and
 		 * appends a message for generation
 		 */
 		public function handleFailedAuthorisation(){
@@ -105,9 +105,9 @@
 
 		/**
 		 * The generate functions outputs the correct headers for
-		 * this AJAXPage, adds the $_status code to the root attribute
+		 * this AJAXPage, adds `$this->_status` code to the root attribute
 		 * before calling the parent generate function and generating
-		 * the $Result XMLElement
+		 * the `$this->_Result` XMLElement
 		 *
 		 * @return string
 		 */
@@ -140,7 +140,7 @@
 		/**
 		 * All classes that extend the AJAXPage class must define a view method
 		 * which contains the logic for the content of this page. The resulting HTML
-		 * is append to $_Result where it is generated on build
+		 * is append to `$this->_Result` where it is generated on build
 		 *
 		 * @see build()
 		 */

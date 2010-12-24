@@ -32,10 +32,21 @@
 
 			if($this->get('formatter') != 'none') $textarea->setAttribute('class', $this->get('formatter'));
 
-			###
-			# Delegate: ModifyTextareaFieldPublishWidget
-			# Description: Allows developers modify the textarea before it is rendered in the publish forms
-			$this->_engine->ExtensionManager->notifyMembers('ModifyTextareaFieldPublishWidget', '/backend/', array('field' => &$this, 'label' => &$label, 'textarea' => &$textarea));
+			/**
+             * Allows developers modify the textarea before it is rendered in the publish forms
+             * 
+             * @delegate ModifyTextareaFieldPublishWidget
+             * @param string $context
+             * '/backend/'
+             * @param Field $field
+             * @param Widget $label
+             * @param Widget $textarea
+             */
+			$this->_engine->ExtensionManager->notifyMembers('ModifyTextareaFieldPublishWidget', '/backend/', array(
+                'field' => &$this, 
+                'label' => &$label, 
+                'textarea' => &$textarea
+            ));
 
 			$label->appendChild($textarea);
 

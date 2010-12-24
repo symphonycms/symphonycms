@@ -39,8 +39,8 @@
 
 		/**
 		 * The extension constructor takes an associative array of arguments
-		 * and sets the $_Parent variable using the 'parent' key. It appears that
-		 * this is the only key set in the $args array by Symphony
+		 * and sets the `$this->_Parent` variable using the 'parent' key. It appears that
+		 * this is the only key set in the `$args` array by Symphony
 		 *
 		 * @param array $args
 		 *  An associative array of arguments, but default this will contain one,
@@ -54,7 +54,7 @@
 		 * Any logic that assists this extension in being installed such as
 		 * table creation, checking for dependancies etc.
 		 *
-		 * @see toolkit.ExtensionManager#install
+		 * @see toolkit.ExtensionManager#install()
 		 * @return boolean
 		 *  True if the install completely successfully, false otherwise
 		 */
@@ -71,10 +71,10 @@
 		 * logic done by this method is to update differences between extension
 		 * tables.
 		 *
-		 * @see toolkit.ExtensionManager#update
+		 * @see toolkit.ExtensionManager#update()
 		 * @param string $previousVersion
 		 *  The currently installed version of this extension from the
-		 *  tbl_extensions table. The current version of this extension is
+		 *  `tbl_extensions` table. The current version of this extension is
 		 *  provided by the about() method.
 		 * @return boolean
 		 */
@@ -86,7 +86,7 @@
 		 * Any logic that should be run when an extension is to be uninstalled
 		 * such as the removal of database tables.
 		 *
-		 * @see toolkit.ExtensionManager#uninstall
+		 * @see toolkit.ExtensionManager#uninstall()
 		 * @return boolean
 		 */
 		public function uninstall(){
@@ -100,7 +100,7 @@
 		 * This method runs when a user selects Enable from the Symphony
 		 * backend.
 		 *
-		 * @see toolkit.ExtensionManager#enable
+		 * @see toolkit.ExtensionManager#enable()
 		 * @return boolean
 		 */
 		public function enable(){
@@ -111,7 +111,7 @@
 		 * This method runs when a user selects Disable from the Symphony
 		 * backend.
 		 *
-		 * @see toolkit.ExtensionManager#enable
+		 * @see toolkit.ExtensionManager#enable()
 		 * @return boolean
 		 */
 		public function disable(){
@@ -121,7 +121,7 @@
 		/**
 		 * The about method allows an extension to provide
 		 * information about itself as an associative array. eg.
-		 *
+		 * `
 		 *		'name' => 'Name of Extension',
 		 *		'version' => '1.8',
 		 *		'release-date' => 'YYYY-MM-DD',
@@ -131,7 +131,7 @@
 		 *			'email' => 'Author Email'
 		 *		),
 		 *		'description' => 'A description about this extension'
-		 *
+		 * `
 		 * @return array
 		 *  An associative array describing this extension.
 		 */
@@ -145,16 +145,16 @@
 		 * This method returns an array with the delegate name, delegate
 		 * namespace, and then name of the method that should be called.
 		 * The method that is called is passed an associative array containing
-		 * the current context which is the $_Parent, current page object
+		 * the current context which is the `$this->_Parent`, current page object
 		 * and any other variables that is passed via this delegate. eg.
 		 *
-		 * array(
+		 * `array(
 		 *		array(
 		 *			'page' => '/current/path/',
 		 *			'delegate' => 'DelegateName',
 		 *			'callback' => 'funtionToCall'
 		 *		)
-		 *	)
+		 *	)`
 		 *
 		 * @return array
 		 */
@@ -170,16 +170,16 @@
 		 * array of links for this group. The extension can also inject link items into existing
 		 * group's of the navigation using the 'location' key, which will accept a numeric
 		 * index of the existing group, or the handle of an existing group.  Navigation items
-		 * in Symphony are initially provided from the symphony/assets/navigation.xml file
+		 * in Symphony are initially provided from the `ASSETS . /navigation.xml` file
 		 * which defines the default Blueprints and System groups. The indexes for these
 		 * groups are 100 and 200 respectively. Groups cannot provide a link, this is done
 		 * by the children. All links are relative to the Extension by default
-		 * (ie. /symphony/extension/extension_handle/. An example of a returned navigation
+		 * (ie. `EXTENSIONS . /extension_handle/`. An example of a returned navigation
 		 * array is provided below. Note that if an extension wants to edit the current navigation,
 		 * this is not possible through this function and rather it should be done using the
-		 * NavigationPreRender delegate.
+		 * `NavigationPreRender` delegate.
 		 *
-		 * array(
+		 * `array(
 		 * 	'name' => 'New Group',
 		 *		'children' => array(
 		 *			array(
@@ -187,7 +187,7 @@
 		 *				'link' => '/link/relative/to/extension/handle/'
 		 *			)
 		 *		)
-		 * )
+		 * )`
 		 *
 		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
 		 * @return array

@@ -171,14 +171,20 @@
 										  true,
 										  $datasource_schema);
 	
-	####
-	# Delegate: DataSourceEntriesBuilt
-	# Description: Immediately after building entries allow modification of the Data Source entry list
-	# Global: Yes
+	/**
+     * Immediately after building entries allow modification of the Data Source entry list
+     * 
+     * @delegate DataSourceEntriesBuilt
+     * @param string $context
+     * '/frontend/'
+     * @param Datasource $datasource
+     * @param array $entries
+     * @param array $filters
+     */
 	$this->_Parent->ExtensionManager->notifyMembers('DataSourceEntriesBuilt', '/frontend/', array(
-	'datasource' => &$this,
-	'entries' => &$entries,
-	'filters' => $this->dsParamFILTERS
+        'datasource' => &$this,
+        'entries' => &$entries,
+        'filters' => $this->dsParamFILTERS
 	));
 	
 	if(($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records'])) || !ctype_digit($this->dsParamSTARTPAGE) || $this->dsParamSTARTPAGE == '0'){		

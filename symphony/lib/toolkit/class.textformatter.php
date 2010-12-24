@@ -16,8 +16,8 @@
 		protected $_Parent;
 
 		/**
-		 * The text formatter constructor sets the $_Parent variable
-		 * to the $parent provided as a parameter.
+		 * The Text Formatter constructor sets the `$this->_Parent` variable
+		 * to the `$parent` provided as a parameter.
 		 *
 		 * @param Administration $parent
 		 *  The Administration object that this page has been created from
@@ -30,7 +30,7 @@
 		/**
 		 * The about method allows a text formatter to provide
 		 * information about itself as an associative array. eg.
-		 *
+		 * `array(
 		 *		'name' => 'Name of Formatter',
 		 *		'version' => '1.8',
 		 *		'release-date' => 'YYYY-MM-DD',
@@ -40,7 +40,7 @@
 		 *			'email' => 'Author Email'
 		 *		),
 		 *		'description' => 'A description about this formatter'
-		 *
+		 * )`
 		 * @return array
 		 *  An associative array describing the text formatter.
 		 */

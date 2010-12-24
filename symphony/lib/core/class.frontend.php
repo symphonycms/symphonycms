@@ -39,19 +39,18 @@
 
 		/**
 		 * The constructor for Frontend calls the parent Symphony
-		 * constructor and in addition, initiates the Engine creation
-		 * in the Profiler. Some backwards compatibility is kept in this
-		 * function, allowing <code>Symphony::Database</code> and
-		 * <code>Symphony::Configuration()</code> to be accessed using
-		 * <code>$this->Database()</code> or <code>$this->Configuration</code>
-		 *
-		 * @deprecated The use of  <code>$this->Database()</code> or
-		 *  <code>$this->Configuration</code> will be removed in the next version
+		 * constructor.
+         *
+         * @see core.Symphony#__construct()
+		 * @deprecated The constructor creates backwards compatible references
+		 *  to `$this->Database` and `$this->Configuration`
+		 *  that act as alias for `Symphony::Database()`
+		 *  or `Symphony::Configuration()`. This will be removed in the
+		 *  next Symphony release
 		 */
 		protected function __construct() {
 			parent::__construct();
 
-			$this->Profiler->sample('Engine Initialisation');
 			$this->_env = array();
 
 			// Need this part for backwards compatiblity
@@ -60,7 +59,7 @@
 		}
 
 		/**
-		 * Accessor for <code>$_page</code>
+		 * Accessor for `$_page`
 		 *
 		 * @return FrontendPage
 		 */
@@ -70,11 +69,12 @@
 
 		/**
 		 * Overrides the Symphony isLoggedIn function to allow Authors
-		 * to become logged into the frontend when <code>$_REQUEST['auth-token']</code>
+		 * to become logged into the frontend when `$_REQUEST['auth-token']`
 		 * is present. This logs an Author in using the loginFromToken function.
 		 * This function allows the use of 'admin' type pages, where a Frontend
 		 * page requires that the viewer be a Symphony Author
 		 *
+         * @see core.Symphony#loginFromToken()
 		 * @return boolean
 		 */
 		public function isLoggedIn() {

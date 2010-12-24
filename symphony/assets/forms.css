@@ -124,12 +124,11 @@ ul.group {
 	margin-bottom: -1.75em;
 }
 .group > div > label > i {
-	width:45%;
+	max-width:45%;
 	height:16px;
 	white-space:nowrap;
 	overflow:hidden;
 	text-overflow:ellipsis;
-	text-align:right;
 	cursor:help;
 	float:right;
 }

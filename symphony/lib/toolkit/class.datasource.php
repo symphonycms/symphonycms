@@ -15,7 +15,7 @@
 	 * the Dynamic XML datasource allows XML pages to be retrieved. This is especially
 	 * helpful for working with Restful XML API's. Datasources are saved through the
 	 * Symphony backend, which uses a Datasource template defined in
-	 * /symphony/template/datasource.tpl.
+	 * `TEMPLATE . /datasource.tpl`.
 	 */
 	Class DataSource{
 
@@ -63,9 +63,10 @@
 		protected $_force_empty_result = false;
 
 		/**
-		 * Constructor for the datasource sets the parent, and if process_params is set,
-		 * the $env variable as well.
+		 * Constructor for the datasource sets the parent, and if `$process_params` is set,
+		 * the `$env` variable will be run through `Datasource::processParameters`.
 		 *
+         * @see toolkit.Datasource#processParameters()
 		 * @param Administration $parent
 		 *  The Administration object that this page has been created from
 		 *  passed by reference
@@ -73,7 +74,7 @@
 		 *  The environment variables from the Frontend class which includes
 		 *  any params set by Symphony or Events or by other Datasources
 		 * @param boolean $process_params
-		 *  If set to true, the processParameters function will be called. By default
+		 *  If set to true, `Datasource::processParameters` will be called. By default
 		 *  this is true
 		 */
 		public function __construct(&$parent, Array $env = null, $process_params=true){
@@ -150,12 +151,12 @@
 		}
 
 		/**
-		 * If there is no results to return this function calls __noRecordsFound
+		 * If there is no results to return this function calls `Datasource::__noRecordsFound`
 		 * which appends an XMLElement to the current root element.
 		 *
 		 * @param XMLElement $xml
 		 *  The root element XMLElement for this datasource. By default, this will
-		 *  the handle of the datasource, as defined by dsParamROOTELEMENT
+		 *  the handle of the datasource, as defined by `$this->dsParamROOTELEMENT`
 		 * @return XMLElement
 		 */
 		public function emptyXMLSet(XMLElement $xml = null){
@@ -166,7 +167,7 @@
 		}
 
 		/**
-		 * Returns an error XMLElement with a No Records Found text
+		 * Returns an error XMLElement with a 'No records found' text
 		 *
 		 * @return XMLElement
 		 */
@@ -176,8 +177,8 @@
 
 		/**
 		 * Given a wrapper and an associative array of fields, this function
-		 * will append all the Included Elements to a wrapper. This function
-		 * is a basic version of Field's appendFormattedElements. It is currently
+		 * will append all `$this->dsParamINCLUDEDELEMENTS` to a wrapper. This function
+		 * is a basic version of `Field::appendFormattedElements`. It is currently
 		 * only used by the Author Datasource type.
 		 *
 		 * @param XMLElement $wrapper

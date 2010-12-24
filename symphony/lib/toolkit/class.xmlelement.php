@@ -47,7 +47,7 @@
 
 		/**
 		 * Any children of this element as XMLElements
-		 * @var array(XMLElement)
+		 * @var array
 		 */
 		private	$_children = array();
 
@@ -93,7 +93,7 @@
 		/**
 		 * Specifies whether this HTML element has an closing element, or if
 		 * it self closing. Defaults to true.
-		 *  eg. <p></p> or <input />
+		 *  eg. `<p></p>` or `<input />`
 		 * @var boolean
 		 */
 		private $_selfclosing = true;
@@ -101,7 +101,7 @@
 		/**
 		 * Specifies whether attributes need to have a value or if they can
 		 * be shorthand. Defaults to true. An example of this would be:
-		 *  <option selected>Value</option>
+		 *  `<option selected>Value</option>`
 		 * @var boolean
 		 */
 		private $_allowEmptyAttributes = true;
@@ -140,7 +140,7 @@
 		}
 
 		/**
-		 * Accessor for $_name
+		 * Accessor for `$_name`
 		 *
 		 * @return string
 		 */
@@ -149,7 +149,7 @@
 		}
 
 		/**
-		 * Accessor for $_value
+		 * Accessor for `$_value`
 		 *
 		 * @return string|XMLElement
 		 */
@@ -158,7 +158,7 @@
 		}
 
 		/**
-		 * Accessor for $_attributes
+		 * Accessor for `$_attributes`
 		 *
 		 * @return array
 		 */
@@ -167,7 +167,7 @@
 		}
 
 		/**
-		 * Accessor for $_children
+		 * Accessor for `$_children`
 		 *
 		 * @return array
 		 */
@@ -221,7 +221,7 @@
 		 * @param string $style (optional)
 		 *  Defaults to 'xml', any other value will trigger the
 		 *  XMLElement to be closed by itself or left standalone
-		 *  if it is in the XMLElement::no_end_tags.
+		 *  if it is in the `XMLElement::no_end_tags`.
 		 */
 		public function setElementStyle($style='xml'){
 			$this->_elementStyle = $style;
@@ -325,7 +325,7 @@
 		 * A convenience method to add children to an XMLElement
 		 * quickly.
 		 *
-		 * @param Array(XMLElement) $children
+		 * @param array $children
 		 */
 		public function appendChildArray(Array $children = null){
 			if(is_array($children) && !empty($children)) {
@@ -347,7 +347,7 @@
 
 		/**
 		 * Returns the number of children this XMLElement has.
-		 * @return int
+		 * @return integer
 		 */
 		public function getNumberOfChildren(){
 			return count($this->_children);
@@ -366,7 +366,7 @@
 		 * @param boolean $hasParent
 		 *  Defaults to false, set to true when the children are being
 		 *  generated. Only the parent will output an XML declaration
-		 *  if _includeHeader is set to true.
+		 *  if `$this->_includeHeader` is set to true.
 		 * @return string
 		 */
 		public function generate($indent = false, $tab_depth = 0, $hasParent = false){

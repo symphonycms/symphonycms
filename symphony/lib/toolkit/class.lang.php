@@ -44,7 +44,8 @@
 	Class Dictionary {
 
 		/**
-		 * @var array An associative array mapping English strings and their translations
+         * An associative array mapping English strings and their translations
+		 * @var array 
 		 */
  		private $_strings;
 
@@ -70,7 +71,7 @@
 		 *  The string that should be translated
 		 * @param array $inserts
 		 *  Optional array used to replace translation placeholders, defaults to NULL
-		 * @return
+		 * @return string
 		 *  Returns the translated string
 		 */
  		public function translate($string, $inserts=NULL) {
@@ -94,7 +95,7 @@
 		 *
 		 * @param string $string
 		 *  The string to look for
-		 * @return
+		 * @return string|boolean
 		 *  Returns either the translation of the string or false if it could not be found
 		 */
 		public function find($string) {
@@ -147,34 +148,39 @@
 	Class Lang {
 
 		/**
-		 * @var string Code of active language
+         * Code of active language
+		 * @var string
 		 */
 		private static $_lang;
 
 		/**
-		 * @var array Context information of all available languages
+         * Context information of all available languages
+		 * @var array 
 		 */
 		private static $_languages;
 
 		/**
-		 * @var Dictionary Instance of the current dictionary
+         * Instance of the current Dictionary
+		 * @var Dictionary
 		 */
 		private static $_dictionary;
 
 		/**
-		 * @var array Array of transliterations
+         * Array of transliterations
+		 * @var array 
 		 */
 		private static $_transliterations;
 
 		/**
-		 * @var array Array of months and weekday for localized date output
+         * Array of months and weekday for localized date output
+		 * @var array 
 		 */
 		private static $_dates;
 
 		/**
 		 * Get dictionary
 		 *
-		 * @return
+		 * @return Dictionary
 		 *  Return the current dictionary
 		 */
 		public static function Dictionary() {
@@ -184,7 +190,7 @@
 		/**
 		 * Get transliterations
 		 *
-		 * @return
+		 * @return array
 		 *  Returns the array of transliterations
 		 */
 		public static function Transliterations() {
@@ -205,6 +211,7 @@
 		 *
 		 * @param string $lang
 		 *  Language code, e. g. 'en' or 'pt-br'
+         * @param boolean $enabled
 		 */
 		public static function set($lang, $enabled=true) {
 			if($lang && $lang != self::get()) {
@@ -220,6 +227,8 @@
 
 		/**
 		 * Get current language
+         * 
+         * @return string
 		 */
 		public static function get() {
 			return self::$_lang;
@@ -232,6 +241,8 @@
 		 *
 		 * Note: Beginning with Symphony 2.2 translations bundled with extensions will only be loaded
 		 * when the core dictionary of the specific language is available.
+         * 
+         * @param boolean $enabled
 		 */
 		public static function activate($enabled=true) {
 
@@ -304,7 +315,7 @@
 
 		/**
 		 * Fetch all languages available in the core language folder and the language extensions.
-		 * The function stores all language information in the public variable $_languages.
+		 * The function stores all language information in the public variable `$_languages`.
 		 * It contains an array with the name, source, path and status of each language. The language
 		 * status (enabled/disabled) can only be determined when the Extension Manager has been
 		 * initialized before. During installation all extension status are set to disabled.
@@ -345,7 +356,17 @@
 
 		/**
 		 * Fetch language information for a single language.
-		 */
+         * 
+         * @param string $source
+         *  The filename of the extension driver where this language
+         *  file was found
+         * @param string $folder
+         *  The folder where this language file exists
+         * @param string $file
+         *  The filename of the language
+         * @param array $enabled
+		 *  An associative array of enabled extensions from `tbl_extensions`
+         */
 		private static function fetchLanguage($source, $folder, $file, $enabled) {
 
 			// Fetch language file
@@ -441,6 +462,7 @@
 		 * Note: Beginning with Symphony 2.2 language files are only available
 		 * when the language extension is explicitly enabled.
 		 *
+         * @param boolean $enabled
 		 * @return array
 		 *  Returns an associative array of language codes and names, e. g. 'en' => 'English'
 		 */

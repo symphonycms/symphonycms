@@ -53,7 +53,7 @@
 
 	/**
 	 * Returns the current URL string from within the Administration
-	 *	context. It omits the Symphony directory from the current URL.
+	 * context. It omits the Symphony directory from the current URL.
 	 *
 	 *	@return string
 	 */
@@ -62,9 +62,9 @@
 	}
 
 	/**
-	 * Used as a basic stopwatch for profiling. The default $action
-	 *	starts the timer. Setting $action to 'stop' and passing the
-	 *	start time returns the difference between now and that time.
+	 * Used as a basic stopwatch for profiling. The default `$action`
+	 * starts the timer. Setting `$action` to 'stop' and passing the
+	 * start time returns the difference between now and that time.
 	 *
 	 *	@param string $action (optional)
 	 *	@param integer $start_time (optional)

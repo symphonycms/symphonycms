@@ -32,7 +32,7 @@
 
 		/**
 		 * The XsltProcess constructor takes a two parameters for the
-		 * XML and the XSL and initalises the $_xml and $_xsl variables.
+		 * XML and the XSL and initalises the `$this->_xml` and `$this->_xsl`.
 		 * It checks to see if there is an existing XSLTProcessor
 		 *
 		 * @param string $xml
@@ -65,10 +65,10 @@
 		/**
 		 * This function will take a given XML file, a stylesheet and apply
 		 * the transformation. Any errors will call the error function to log
-		 * them into the $_errors array
+		 * them into the `$_errors` array
 		 *
-		 * @see __error()
-		 * @see __process()
+		 * @see toolkit.XSLTProcess#__error()
+		 * @see toolkit.XSLTProcess#__process()
 		 * @param string $xml
 		 *  The XML for the transformation to be applied to
 		 * @param string $xsl
@@ -194,7 +194,7 @@
 		}
 
 		/**
-		 * Writes an error to the $_errors array, which contains the error information
+		 * Writes an error to the `$_errors` array, which contains the error information
 		 * and some basic debugging information.
 		 *
 		 * @link http://au.php.net/manual/en/function.set-error-handler.php
@@ -233,7 +233,7 @@
 		}
 
 		/**
-		 * Provides an Iterator interface to return an error from the $_errors
+		 * Provides an Iterator interface to return an error from the `$_errors`
 		 * array. Repeat calls to this function to get all errors
 		 *
 		 * @param boolean $all
