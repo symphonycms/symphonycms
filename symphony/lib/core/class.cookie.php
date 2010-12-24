@@ -145,7 +145,7 @@
 		public function get($name) {
 			if (!$this->_session) $this->__init();
 
-			if (array_key_exists($name, $_SESSION[$this->_index])) {
+			if (is_array($_SESSION) && array_key_exists($name, $_SESSION[$this->_index])) {
 				return $_SESSION[$this->_index][$name];
 			}
 			return null;
