@@ -550,12 +550,13 @@ var Symphony = {};
 			var optgroup = $(this), 
 				select = optgroup.parents('select'),
 			    label = optgroup.attr('label'),
-			    options = optgroup.remove().find('option');
+			    options = optgroup.remove().find('option').addClass('group');
 
 			// Show only relevant options based on context
 			$('#context').change(function() {
 				if($(this).find('option:selected').text() == label) {
-					select.empty().append(options.clone());
+					select.find('otpions.group').remove();
+					select.append(options.clone(true));
 				}
 			});
 		});
