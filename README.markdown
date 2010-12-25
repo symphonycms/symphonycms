@@ -71,8 +71,8 @@ Change `git://github.com/pointybeard/markdown.git` to `git://github.com/symphony
 
 2. Use the following command to get Extensions up to date:
 
-	git submodule init
-	git submodule update
+		git submodule init
+		git submodule update
 
 3. If updating from a version older than `2.0.5`, enable [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master) and [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master) extensions.
 
