@@ -536,7 +536,7 @@
 						`last_seen` ,
 						`user_type` ,
 						`primary` ,
-						`default_section` ,
+						`default_area` ,
 						`auth_token_active`
 					)
 					VALUES (
@@ -549,7 +549,7 @@
 						NULL ,
 						'developer',
 						'yes',
-						'6',
+						NULL,
 						'no'
 					);",
 

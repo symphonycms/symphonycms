@@ -104,7 +104,7 @@
 	
 				if($author->isTokenActive()) $fields['author-token'] = new XMLElement('author-token', $author->createAuthToken());
 	
-				if($section = Symphony::Database()->fetchRow(0, "SELECT `id`, `handle`, `name` FROM `tbl_sections` WHERE `id` = '".$author->get('default_section')."' LIMIT 1")){
+				if($section = Symphony::Database()->fetchRow(0, "SELECT `id`, `handle`, `name` FROM `tbl_sections` WHERE `id` = '".$author->get('default_area')."' LIMIT 1")){
 					$default_section = new XMLElement('default-section', $section['name']);
 					$default_section->setAttributeArray(array('id' => $section['id'], 'handle' => $section['handle']));
 					$fields['default-section'] = $default_section;
