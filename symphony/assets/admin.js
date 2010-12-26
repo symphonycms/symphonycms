@@ -555,7 +555,7 @@ var Symphony = {};
 			// Show only relevant options based on context
 			$('#context').change(function() {
 				if($(this).find('option:selected').text() == label) {
-					select.find('otpions.group').remove();
+					select.find('options.group').remove();
 					select.append(options.clone(true));
 				}
 			});
