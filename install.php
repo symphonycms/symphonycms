@@ -175,7 +175,7 @@
 		$conf['admin']['max_upload_size'] = '5242880';
 		$conf['symphony']['pagination_maximum_rows'] = '17';
 		$conf['symphony']['allow_page_subscription'] = '1';
-		$conf['symphony']['lang'] = 'en';
+		$conf['symphony']['lang'] = Lang::get();
 		$conf['symphony']['version'] = '2.1.1';
 		$conf['symphony']['pages_table_nest_children'] = 'yes';
 		$conf['log']['archive'] = '1';
