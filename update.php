@@ -290,18 +290,28 @@ Options +FollowSymlinks -Indexes
 			}
 
 			if(version_compare($existing_version, '2.2.0dev', '<=')){
-				$frontend->Database->query(
-					'ALTER TABLE `tbl_sections_association` CHANGE  `cascading_deletion` `hide_association` enum("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "no";'
-				);
 
-				// Update Select tables with Hide Association field
-				$select_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_select`");
+				if(tableContainsField('tbl_sections_association', 'cascading_deletion')) {
+					$frontend->Database->query(
+						'ALTER TABLE `tbl_sections_association` CHANGE  `cascading_deletion` `hide_association` enum("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "no";'
+					);
 
-				if(is_array($select_tables) && !empty($select_tables)) foreach($select_tables as $field) {
-					$frontend->Database->query(sprintf(
+					// Update Select tables with Hide Association field
+					$select_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_select`");
+
+					if(is_array($select_tables) && !empty($select_tables)) foreach($select_tables as $field) {
+						$frontend->Database->query(sprintf(
 							"ALTER TABLE `tbl_entries_data_%d` ADD `show_association` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no'",
-							$field
-					));
+						$field
+						));
+					}
+				}
+
+				if(tableContainsField('tbl_authors', 'default_section')) {
+					// Allow Authors to be set to any area in the backend.
+					$frontend->Database->query(
+						'ALTER TABLE `tbl_authors` CHANGE `default_section` `default_area` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL;'
+					);
 				}
 			}
 

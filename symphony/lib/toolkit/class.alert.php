@@ -41,7 +41,7 @@
 
 		/**
 		 * The Alert constant to represent the style that this alert should
-		 * take on. Defaults to NOTICE.
+		 * take on. Defaults to `Alert::NOTICE`.
 		 * @var string
 		 */
 		private $_type;
@@ -54,7 +54,7 @@
 		 *  This text will be displayed to the user
 		 * @param string $type
 		 *  The type of alert this is. Defaults to NOTICE, available
-		 *  values are Alert::NOTICE, Alert::ERROR, Alert::SUCCESS
+		 *  values are `Alert::NOTICE`, `Alert::ERROR`, `Alert::SUCCESS`
 		 */
 		public function __construct($message, $type = self::NOTICE){
 			$this->message = $message;

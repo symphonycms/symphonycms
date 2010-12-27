@@ -155,8 +155,6 @@
 
 			$message = NULL;
 
-			$handle = Lang::createHandle($data);
-
 			if($this->get('required') == 'yes' && strlen($data) == 0){
 				$message = __("'%s' is a required field.", array($this->get('label')));
 				return self::__MISSING_FIELDS__;
@@ -191,7 +189,6 @@
 		}
 
 		public function appendFormattedElement(&$wrapper, $data, $encode=false){
-
 			$value = $data['value'];
 
 			if($encode === true){

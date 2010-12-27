@@ -6,13 +6,13 @@
 	/**
 	 * GenericExceptionHandler will handle any uncaught exceptions thrown in Symphony.
 	 * Additionally, all errors in Symphony are raised to exceptions to be handled by this class.
-	 * It is possible for Exceptions to be caught by their own ExceptionHandler which can
+	 * It is possible for Exceptions to be caught by their own `ExceptionHandler` which can
 	 * override the render function so that it can be displayed to the user appropriately
 	 */
 	Class GenericExceptionHandler{
 
 		/**
-		 * Whether the GenericExceptionHandler should handle exceptions defaults to true
+		 * Whether the `GenericExceptionHandler` should handle exceptions defaults to true
 		 * @var boolean
 		 */
 		public static $enabled = true;
@@ -270,9 +270,9 @@
 	}
 
 	/**
-	 * GenericErrorHandler will catch any warnings or notices thrown by PHP and
+	 * `GenericErrorHandler` will catch any warnings or notices thrown by PHP and
 	 * raise the errors to Exceptions so they can be dealt with by the
-	 * GenericExceptionHandler. If the error raised is not a E_NOTICE or E_STRICT,
+	 * `GenericExceptionHandler`. If the error raised is not a `E_NOTICE` or `E_STRICT`,
 	 * it will be written to the Symphony log. Symphony will raise Exceptions for errors
 	 * thrown based on the error_reporting level set in PHP
 	 */
@@ -325,8 +325,8 @@
 		);
 
 		/**
-		 * Initialise will set the error handler to be the __CLASS__ handler
-		 * function and will set this $_Log variable to a Log instance
+		 * Initialise will set the error handler to be the `__CLASS__` handler
+		 * function and will set this `$_Log` variable to a Log instance
 		 *
 		 * @param Log $Log (optional)
 		 *  An instance of a Symphony Log object to write errors to
@@ -376,8 +376,8 @@
 		}
 
 		/**
-		 * The handler function will write the error to the Log if it is not E_NOTICE
-		 * or E_STRICT before checking that the error handler is enabled and if the
+		 * The handler function will write the error to the `$Log` if it is not `E_NOTICE`
+		 * or `E_STRICT` before checking that the error handler is enabled and if the
 		 * error should be raised as an Exception
 		 *
 		 * @param integer $code

@@ -5,7 +5,7 @@
 	 */
 	/**
 	 * The ExtensionManager class is responsible for managing all extensions
-	 * in Symphony. Extensions are stored on the file system either in the /extensions
+	 * in Symphony. Extensions are stored on the file system in the `EXTENSIONS`
 	 * folder. They are autodiscovered where the Extension class name is the same
 	 * as it's folder name (excluding the extension prefix).
 	 */
@@ -13,14 +13,14 @@
 	include_once(TOOLKIT . '/class.manager.php');
 	include_once(TOOLKIT . '/class.extension.php');
 
-    Class ExtensionManager extends Manager{
+	Class ExtensionManager extends Manager{
 
 		/**
 		 * An array of all the objects that the Manager is responsible for.
 		 * Defaults to an empty array.
 		 * @var array
 		 */
-	    protected static $_pool = array();
+		protected static $_pool = array();
 
 		/**
 		 * An array of all extensions whose status is enabled
@@ -43,23 +43,23 @@
 		private static $_extensions = array();
 
 		/**
-		 * The constructor for ExtensionManager. This sets the $_Parent to be an
+		 * The constructor for ExtensionManager. This sets the `$this->_Parent` to be an
 		 * instance of the Administration class and loads all the extensions into
 		 * memory. This is necessary so that each extension is created to announce
 		 * it's delegates and so that any static calls to extension classes are
 		 * available because they have been loaded into memory with require_once
 		 *
-		 * @see listAll()
-		 * @see create()
+		 * @see toolkit.ExtensionManager#listAll()
+		 * @see toolkit.ExtensionManager#create()
 		 *
 		 * @param Administration $parent
 		 *  The Administration object that this manager has been created from
 		 *  passed by reference
 		 */
-        public function __construct(&$parent){
+		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->listAll();
-        }
+		}
 
 		/**
 		 * Given a name, returns the full class name of an Extension.
@@ -69,33 +69,33 @@
 		 *  The extension handle
 		 * @return string
 		 */
-        public function __getClassName($name){
-	        return 'extension_' . $name;
-        }
+		public function __getClassName($name){
+			return 'extension_' . $name;
+		}
 
 		/**
-		 * Finds an Extension by name by searching the extensions folder and
+		 * Finds an Extension by name by searching the `EXTENSIONS` folder and
 		 * returns the path to the folder.
 		 *
 		 * @param string $name
 		 *  The extension folder
 		 * @return string
 		 */
-        public function __getClassPath($name){
-	        return EXTENSIONS . strtolower("/$name");
-        }
+		public function __getClassPath($name){
+			return EXTENSIONS . strtolower("/$name");
+		}
 
 		/**
 		 * Given a name, return the path to the driver of the Extension.
 		 *
-		 * @see __getClassPath()
+		 * @see toolkit.ExtensionManager#__getClassPath()
 		 * @param string $name
 		 *  The extension folder
 		 * @return string
 		 */
-        public function __getDriverPath($name){
-	        return $this->__getClassPath($name) . '/extension.driver.php';
-        }
+		public function __getDriverPath($name){
+			return $this->__getClassPath($name) . '/extension.driver.php';
+		}
 
 		/**
 		 * This function returns an instance of an extension from it's name
@@ -113,11 +113,16 @@
 		}
 
 		/**
-		 * Populates the $_extensions array will all the extensions stored in
-		 * tbl_extensions
+		 * Populates the `ExtensionManager::$_extensions` array with all the
+		 * extensions stored in `tbl_extensions`. If `ExtensionManager::$_extensions`
+		 * isn't empty, passing true as a parameter will force the array to update
+		 *
+		 * @param boolean $update
+		 *  Updates the `ExtensionManager::$_extensions` array even if it was
+		 *  populated, defaults to false.
 		 */
-		private function __buildExtensionList() {
-			if (empty(self::$_extensions)) {
+		private function __buildExtensionList($update=false) {
+			if (empty(self::$_extensions) || $update) {
 				$extensions = Symphony::Database()->fetch("SELECT * FROM `tbl_extensions`");
 				foreach($extensions as $extension) {
 					self::$_extensions[$extension['name']] = $extension;
@@ -129,7 +134,7 @@
 		 * Returns information about an extension by it's name by calling
 		 * it's own about method. This method checks if an extension needs
 		 * to be updated or not.
-		 *
+		 * `
 		 *		'name' => 'Name of Extension',
 		 *		'version' => '1.8',
 		 *		'release-date' => 'YYYY-MM-DD',
@@ -139,12 +144,12 @@
 		 *			'email' => 'Author Email'
 		 *		),
 		 *		'description' => 'A description about this extension'
-		 *
-		 * @see __requiresUpdate()
+		 * `
+		 * @see toolkit.ExtensionManager#__requiresUpdate()
 		 * @return array
 		 *  An associative array describing this extension
 		 */
-        public function about($name){
+		public function about($name){
 
 			$obj = $this->getInstance($name);
 
@@ -160,7 +165,7 @@
 			if($this->__requiresUpdate($about)) $about['status'] = EXTENSION_REQUIRES_UPDATE;
 
 			return $about;
-        }
+		}
 
 		/**
 		 * Returns the status of an Extension by name
@@ -168,8 +173,8 @@
 		 * @param string $name
 		 *  The name of the extension as provided by it's about function
 		 * @return int
-		 *  An extension status, EXTENSION_ENABLED, EXTENSION_DISABLED
-		 *  EXTENSION_NOT_INSTALLED and EXTENSION_REQUIRES_UPDATE.
+		 *  An extension status, `EXTENSION_ENABLED`, `EXTENSION_DISABLED`
+		 *  `EXTENSION_NOT_INSTALLED` and `EXTENSION_REQUIRES_UPDATE`.
 		 *  If an extension doesn't exist, null will be returned.
 		 */
 		public function fetchStatus($name){
@@ -223,7 +228,7 @@
 
 		/**
 		 * Determines whether the current extension is installed or not by checking
-		 * for an id in tbl_extensions
+		 * for an id in `tbl_extensions`
 		 *
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
@@ -245,7 +250,6 @@
 		 * @return boolean
 		 */
 		private function __requiresUpdate(Array $info){
-
 			if($info['status'] == EXTENSION_NOT_INSTALLED) return false;
 
 			$current_version = $this->fetchInstalledVersion($info['handle']);
@@ -259,8 +263,8 @@
 		 * extensions respective install and update methods. The enable method is
 		 * of the extension object is finally called.
 		 *
-		 * @see registerDelegates()
-		 * @see __canUninstallOrDisable()
+		 * @see toolkit.ExtensionManager#registerDelegates()
+		 * @see toolkit.ExtensionManager#__canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
@@ -289,10 +293,11 @@
 
 			if(is_null($id)) {
 				Symphony::Database()->insert($fields, 'tbl_extensions');
+				$this->__buildExtensionList(true);
 			}
 			else {
 				Symphony::Database()->update($fields, 'tbl_extensions', " `id` = '$id '");
-			};
+			}
 
 			$this->registerDelegates($name);
 
@@ -305,18 +310,17 @@
 		/**
 		 * Disabling an extension will prevent it from executing but retain all it's
 		 * settings in the relevant tables. Symphony checks that an extension can
-		 * be disabled using the canUninstallorDisable function before removing
-		 * all delegate subscriptions from the database and calling the extensions
-		 * disable method.
+		 * be disabled using the `canUninstallorDisable()` before removing
+		 * all delegate subscriptions from the database and calling the extension's
+		 * `disable()` function.
 		 *
-		 * @see removeDelegates()
-		 * @see __canUninstallOrDisable()
+		 * @see toolkit.ExtensionManager#removeDelegates()
+		 * @see toolkit.ExtensionManager#__canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
 		 */
 		public function disable($name){
-
 			$obj = $this->getInstance($name);
 
 			$this->__canUninstallOrDisable($obj);
@@ -343,17 +347,16 @@
 		/**
 		 * Uninstalling an extension will unregister all delegate subscriptions and
 		 * remove all extension settings. Symphony checks that an extension can
-		 * be uninstalled using the canUninstallorDisable function before calling
-		 * the extensions uninstall method.
+		 * be uninstalled using the `canUninstallorDisable()` before calling
+		 * the extension's `uninstall()` function.
 		 *
-		 * @see removeDelegates()
-		 * @see __canUninstallOrDisable()
+		 * @see toolkit.ExtensionManager#removeDelegates()
+		 * @see toolkit.ExtensionManager#__canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
 		 */
 		public function uninstall($name){
-
 			$obj = $this->getInstance($name);
 
 			$this->__canUninstallOrDisable($obj);
@@ -368,22 +371,23 @@
 		}
 
 		/**
-		 * This functions registers an extensions delegates in tbl_extensions_delegates.
+		 * This functions registers an extensions delegates in `tbl_extensions_delegates`.
+		 *
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
-		 * @return int
+		 * @return integer
 		 *  The Extension ID
 		 */
 		public function registerDelegates($name){
-
-			$obj  = $this->getInstance ($name);
+			$obj = $this->getInstance($name);
 			$id = $this->fetchExtensionID($name);
 
-			if(!$id ) return false;
+			if(!$id) return false;
 
 			Symphony::Database()->delete('tbl_extensions_delegates', " `extension_id` = '$id ' ");
 
 			$delegates = $obj->getSubscribedDelegates();
+
 			if(is_array($delegates) && !empty($delegates)){
 				foreach($delegates as $delegate){
 
@@ -408,15 +412,15 @@
 
 		/**
 		 * This function will remove all delegate subscriptions for an extension
-		 * given an extension's name. This triggers the __cleanupDatabase method
+		 * given an extension's name. This triggers `__cleanupDatabase()`
 		 *
+		 * @see toolkit.ExtensionManager#__cleanupDatabase()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 */
 		public function removeDelegates($name){
-
-	        $classname = $this->__getClassName($name);
-	        $path = $this->__getDriverPath($name);
+			$classname = $this->__getClassName($name);
+			$path = $this->__getDriverPath($name);
 
 			if(!@file_exists($path)) return false;
 
@@ -440,17 +444,17 @@
 		}
 
 		/**
-		 * This function checks that if this extension has provided Fields,
+		 * This function checks that if the given extension has provided Fields,
 		 * Data Sources or Events, that they aren't in use before the extension
 		 * is uninstalled or disabled. This prevents exceptions from occurring when
-		 * logic requires the removed Extensions' objects.
+		 * accessing an object that was using something provided by this Extension
+		 * can't anymore because it has been removed.
 		 *
 		 * @param Extension $obj
 		 *  An extension object
 		 * @return boolean
 		 */
 		private function __canUninstallOrDisable(Extension $obj){
-
 			$extension_handle = strtolower(preg_replace('/^extension_/i', NULL, get_class($obj)));
 
 			// Fields:
@@ -472,7 +476,6 @@
 			// Data Sources:
 			if(is_dir(EXTENSIONS . "/{$extension_handle}/data-sources")){
 				foreach(glob(EXTENSIONS . "/{$extension_handle}/data-sources/data.*.php") as $file){
-
 					$handle = preg_replace(array('/^data\./i', '/\.php$/i'), NULL, basename($file));
 					if(Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0){
 						$about = $obj->about();
@@ -505,7 +508,7 @@
 
 		/**
 		 * Given a delegate name, notify all extensions that have registered to that
-		 * delegate to executing their callbacks with a $context array parameter
+		 * delegate to executing their callbacks with a `$context` array parameter
 		 * that contains information about the current Symphony state.
 		 *
 		 * @param string $delegate
@@ -513,7 +516,7 @@
 		 * @param string $page
 		 *  The current page namespace that this delegate operates in
 		 * @param array $context
-		 *  The $context param is an associative array that at minimum will contain
+		 *  The `$context` param is an associative array that at minimum will contain
 		 *  the current Administration class, the current page object and the delegate
 		 *  name. Other context information may be passed to this function when it is
 		 *  called. eg.
@@ -525,9 +528,8 @@
 		 *	);
 		 *
 		 */
-        public function notifyMembers($delegate, $page, Array $context=array()){
-
-	        if((int)Symphony::Configuration()->get('allow_page_subscription', 'symphony') != 1) return;
+		public function notifyMembers($delegate, $page, array $context=array()){
+			if((int)Symphony::Configuration()->get('allow_page_subscription', 'symphony') != 1) return;
 
 			if (is_null(self::$_subscriptions)) {
 				self::$_subscriptions = Symphony::Database()->fetch("
@@ -556,6 +558,7 @@
 			}
 
 			$services = array();
+
 			foreach(self::$_subscriptions as $subscription) {
 				foreach($page as $p) {
 					if ($p == $subscription['page'] && $delegate == $subscription['delegate']) {
@@ -566,7 +569,7 @@
 
 			if(empty($services)) return null;
 
-	        $context += array('parent' => &$this->_Parent, 'page' => $page, 'delegate' => $delegate);
+			$context += array('parent' => &$this->_Parent, 'page' => $page, 'delegate' => $delegate);
 
 			foreach($services as $s){
 				$obj = $this->getInstance($s['name']);
@@ -575,7 +578,7 @@
 					$obj->{$s['callback']}($context);
 				}
 			}
-        }
+		}
 
 		/**
 		 * Returns an array of all the enabled extensions available
@@ -591,7 +594,7 @@
 			return self::$_enabled_extensions;
 		}
 
-        /**
+		/**
 		 * Will return an associative array of all extensions and their about information
 		 *
 		 * @param string $filter
@@ -601,8 +604,7 @@
 		 *  An associative array with the key being the extension folder and the value
 		 *  being the extension's about information
 		 */
-        public function listAll($filter = null){
-
+		public function listAll($filter=null){
 			$result = array();
 			$extensions = General::listDirStructure(EXTENSIONS, $filter, false, EXTENSIONS);
 
@@ -614,7 +616,7 @@
 			}
 
 			return $result;
-        }
+		}
 
 		/**
 		 * Creates an instance of a given class and returns it
@@ -623,19 +625,18 @@
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return Extension
 		 */
-        public function create($name){
-
+		public function create($name){
 			if(!is_array(self::$_pool)) $this->flush();
 
 			if(!isset(self::$_pool[$name])){
-		        $classname = $this->__getClassName($name);
-		        $path = $this->__getDriverPath($name);
+				$classname = $this->__getClassName($name);
+				$path = $this->__getDriverPath($name);
 
-		        if(!is_file($path)){
+				if(!is_file($path)){
 					throw new Exception(
 						__('Could not find extension at location %s', array($path))
 					);
-		        }
+				}
 
 				if(!class_exists($classname)) require_once($path);
 
@@ -646,16 +647,14 @@
 			}
 
 			return self::$_pool[$name];
-
-        }
+		}
 
 		/**
 		 * A utility function that is used by the ExtensionManager to ensure
-		 * stray delegates are not in tbl_extensions_delegates. It is called when
+		 * stray delegates are not in `tbl_extensions_delegates`. It is called when
 		 * a new Delegate is added or removed.
 		 */
 		private function __cleanupDatabase(){
-
 			## Grab any extensions sitting in the database
 			$rows = Symphony::Database()->fetch("SELECT `name` FROM `tbl_extensions`");
 
@@ -679,9 +678,7 @@
 				}
 			}
 		}
-
-    }
-
+	}
 
 	/**
 	 * Status when an extension is installed and enabled

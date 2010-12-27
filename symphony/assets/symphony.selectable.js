@@ -36,6 +36,7 @@
 		objects.delegate(settings.items, 'click.symSelectable', function(event) {
 			var item = $(this),
 				items = item.siblings().andSelf(),
+				object = $(event.liveFired),
 				selection, deselection, first, last;
 				
 			// Remove text ranges
@@ -44,7 +45,7 @@
 			}
 			
 			// Range selection
-			if((event.shiftKey) && items.filter('.selected').size() > 0) {
+			if((event.shiftKey) && items.filter('.selected').size() > 0 && !object.is('.single')) {
 				
 				// Select upwards
 				if(item.prevAll().filter('.selected').size() > 0) {
@@ -74,7 +75,7 @@
 			else {
 			
 				// Press meta key to adjust current range, otherwise the selection will be removed
-				if(!event.metaKey) {
+				if(!event.metaKey || object.is('.single')) {
 					deselection = items.not(item).filter('.selected').removeClass('selected').trigger('deselect');
 					deselection.find('input[type=checkbox]').attr('checked', false);
 				}

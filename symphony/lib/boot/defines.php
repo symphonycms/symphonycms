@@ -49,4 +49,12 @@
 	define_safe('__SECURE__', (HTTPS == 'on'));
 	define_safe('URL', 'http' . (defined('__SECURE__') && __SECURE__ ? 's' : '') . '://' . DOMAIN);
 	
+	/**
+	 * Returns the URL + /symphony. This should be used whenever the a developer
+	 * wants to link to the Symphony root
+	 * @var string
+	 * @since Symphony 2.2
+	 */
+	define_safe('SYMPHONY_URL', URL . '/symphony');
+	
 	define_safe('ACTIVITY_LOG', LOGS . '/main');

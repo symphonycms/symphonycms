@@ -5,7 +5,7 @@
 	/**
 	 * The TextformatterManager class is responsible for managing all Text
 	 * Formatter objects in Symphony. Text Formatter's are stored on the file
-	 * system either in the /workspace/text-formatters folder or provided by
+	 * system either in the `TEXTFORMATTERS` folder or provided by
 	 * an extension in an /text-formatters/ folder. All formatters provide one
 	 * simple method, run, which applies the formatting to an unformatted
 	 * string and returns it.
@@ -24,7 +24,7 @@
 
 		/**
 		 * Given the filename of a Text Formatter return it's handle. This will remove
-		 * the Symphony convention of formatter.*.php
+		 * the Symphony convention of `formatter.*.php`
 		 *
 		 * @param string $filename
 		 *  The filename of the Text Formatter
@@ -47,13 +47,12 @@
         }
 
 		/**
-		 * Finds a Text Formatter by name by searching the text-formatters folder
-		 * in the workspace and in all installed extension folders and returns the
-		 * path to it's folder.
+		 * Finds a Text Formatter by name by searching the `TEXTFORMATTERS` folder
+		 * and in all installed extension folders and returns the path to it's folder.
 		 *
 		 * @param string $handle
 		 *  The handle of the Text Formatter free from any Symphony conventions
-		 *  such as formatter.*.php
+		 *  such as `formatter.*.php`
 		 * @return mixed
 		 *  If the Text Formatter is found, the function returns the path it's folder,
 		 *  otherwise false.
@@ -78,10 +77,10 @@
 		/**
 		 * Given a name, return the path to the driver of the Text Formatter.
 		 *
-		 * @see __getClassPath
+		 * @see __getClassPath()
 		 * @param string $handle
 		 *  The handle of the Text Formatter free from any Symphony conventions
-		 *  such as formatter.*.php
+		 *  such as `formatter.*.php`
 		 * @return string
 		 */
         public function __getDriverPath($handle){
@@ -89,11 +88,10 @@
         }
 
 		/**
-		 * Finds all available Text Formatter's by searching the text-formatters folder
-		 * in the workspace and in all installed extension folders. Returns an associative
-		 * array of formatters.
+		 * Finds all available Text Formatter's by searching the `TEXTFORMATTERS` folder
+		 * and in all installed extension folders. Returns an associative array of formatters.
 		 *
-		 * @see toolkit.Manager#about
+		 * @see toolkit.Manager#about()
 		 * @return array
 		 *  Associative array of formatters with the key being the handle of the formatter
 		 *  and the value being the text formatter's description.
@@ -134,7 +132,7 @@
 
 		/**
 		 * Creates an instance of a given class and returns it. Adds the instance
-		 * to the $_pool array with the key being the handle.
+		 * to the `$_pool` array with the key being the handle.
 		 *
 		 * @param string $handle
 		 *  The handle of the Text Formatter to create

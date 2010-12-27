@@ -18,9 +18,9 @@
 
 		/**
 		 * The load functions determines whether an event will be executed or not
-		 * by comparing the Event's action with the $_POST data. This function will
+		 * by comparing the Event's action with the `$_POST` data. This function will
 		 * be called every time a page is loaded that an event is attached too. If the
-		 * action does exist, it typically calls the __trigger method, otherwise void.
+		 * action does exist, it typically calls the `__trigger()` method, otherwise void.
 		 *
 		 * @return mixed
 		 *  XMLElement with the event result or void if the action did not match
@@ -30,14 +30,14 @@
 
 	/**
 	 * The abstract Event classes defines some base methods that all Events inherit.
-	 * It has one abstract method, __trigger, which Events must implement. Event
+	 * It has one abstract method, `__trigger()`, which Events must implement. Event
 	 * execution is determined based on an action (which maps to a form action
 	 * from the Frontend). A load function determines whether this Event matches
-	 * the action and if so, call the Event's __trigger to run the logic. On every page
+	 * the action and if so, call the Event's `__trigger()` to run the logic. On every page
 	 * load, all Event's that are attached to the page will have their load function's executed.
 	 * Events are called in order of their priority and if there is more than one event
 	 * with the same priority, in alphabetical order. An event class is saved through the
-	 * Symphony backend, which uses an event template defined in /symphony/template/event.tpl
+	 * Symphony backend, which uses an event template defined in `TEMPLATE . /event.tpl`
 	 * Events implement the iEvent interface, which defines the load and about functions.
 	 */
 	abstract Class Event implements iEvent{
@@ -124,16 +124,16 @@
 
 		/**
 		 * Priority determines Event importance and when it should be executed.
-		 * The default priority for an event is kNORMAL, with kHIGH and kLOW
-		 * being the other available options. Events execution is kHIGH to
-		 * kNORMAL to kLOW. If there are more than one event at the same priority
-		 * level, they are sorted alphabetically by event handle and executed in that
-		 * order for that priority.
+		 * The default priority for an event is `Event::kNORMAL`, with `Event::kHIGH` and 
+         * `Event::kLOW` being the other available options. Events execution is `Event::HIGH`
+         * to `Event::kNORMAL` to `Event::kLOW`. If there are more than one event at the 
+         * same priority level, they are sorted alphabetically by event handle and executed
+         * in that order for that priority.
 		 *
-		 * @see toolkit.FrontendPage#__findEventOrder
-		 * @return int
-		 *  The available constants are kLOW, kNORMAL and kHIGH. Defaults to
-		 *  kNORMAL
+		 * @see toolkit.FrontendPage#__findEventOrder()
+		 * @return integer
+		 *  The available constants are `Event::kLOW`, `Event::kNORMAL` and `Event::kHIGH`. 
+         *  Defaults to `Event::kNORMAL`
 		 */
 		public function priority(){
 			return self::kNORMAL;

@@ -399,11 +399,6 @@ var Symphony = {};
 			old_sorting = orderable.find('input').map(function(e, i) { return this.name + '=' + (e + 1); }).get().join('&');
 		});
 
-		// Restore table zebra while ordering
-		orderable.live('orderchange', function() {
-			orderable.find('tr').removeClass('odd').filter(':odd').addClass('odd');
-		});
-
 		// Process sort order
 		orderable.live('orderstop', function() {
 			orderable.addClass('busy');
@@ -594,6 +589,12 @@ var Symphony = {};
 			// Add new empty file input
 			span.append('<input name="' + name + '" type="file">');
 		});
+		
+		// Focus first text-input or textarea when creating or editing entries
+		if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'edit' || Symphony.Context.get('env')[0] == 'new'
+			|| Symphony.Context.get('env').page == 'edit' || Symphony.Context.get('env').page == 'new')) {
+			$('input[type="text"], textarea').first().focus();
+		}
 										
 	});
 

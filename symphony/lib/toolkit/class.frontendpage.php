@@ -65,7 +65,7 @@
 		private $_page;
 
 		/**
-		 * An associative array of the resolved pages's data as returned from tbl_pages
+		 * An associative array of the resolved pages's data as returned from `tbl_pages`
 		 * with the keys mapping to the columns in that table. Additionally, 'file-location'
 		 * and 'type' are also added to this array
 		 *
@@ -75,11 +75,11 @@
 
 		/**
 		 * When events are processed, the results of them often can't be reproduced
-		 * when debugging the page as they happen during $_POST. There is a Symphony
+		 * when debugging the page as they happen during `$_POST`. There is a Symphony
 		 * configuration setting that allows the event results to be appended as a HTML
 		 * comment at the bottom of the page source, so logged in Authors can view-source
 		 * page to see te result of an event. This variable holds the event XML so that it
-		 * can be appended to the page source if display_event_xml_in_source is set to 'yes'.
+		 * can be appended to the page source if `display_event_xml_in_source` is set to 'yes'.
 		 * By default this is set to no.
 		 *
 		 * @var XMLElement
@@ -94,8 +94,9 @@
 		private $_env = array();
 
 		/**
-		 * Constructor function sets the Parent variable and initialises the Managers
-		 * used on the FrontendPage.
+		 * Constructor function sets `$this->_Parent` and initialises the Managers
+		 * used on the FrontendPage, which are DatasourceManager, EventManager and
+         * ExtensionManager
 		 *
 		 * @param Frontend $parent
 		 *  The Frontend object that this page has been created from
@@ -112,7 +113,7 @@
 		}
 
 		/**
-		 * Accessor function for the environment variables
+		 * Accessor function for the environment variables, aka `$this->_env`
 		 *
 		 * @return array
 		 */
@@ -121,12 +122,22 @@
 		}
 
 		/**
-		 * Accessor function for the resolved page's data as it lies in tbl_pages
+		 * Accessor function for the resolved page's data (`$this->_pageData`)
+		 * as it lies in `tbl_pages`
 		 *
 		 * @return array
 		 */
 		public function pageData(){
 			return $this->_pageData;
+		}
+
+		/**
+		 * Accessor function for this current page URL, `$this->_page`
+		 *
+		 * @return string
+		 */
+		public function Page(){
+			return $this->_page;
 		}
 
 		/**
@@ -153,10 +164,18 @@
 			$output = null;
 
 			if (Frontend::instance()->isLoggedIn()) {
-				####
-				# Delegate: FrontendDevKitResolve
-				# Description: Allows a devkit object to be specified, and stop continued execution:
-				# Global: Yes
+				/**
+				 * Allows a devkit object to be specified, and stop continued execution:
+				 *
+				 * @delegate FrontendDevKitResolve
+				 * @param string $context
+				 * '/frontend/'
+				 * @param boolean $full_generate
+				 *  Whether this page will be completely generated (ie, invoke the XSLT transform)
+				 *  or not, by default this is true. Passed by reference
+				 * @param mixed $devkit
+				 *  Allows a devkit to register to this page
+				 */
 				$this->ExtensionManager->notifyMembers(
 					'FrontendDevKitResolve', '/frontend/',
 					array(
@@ -171,10 +190,18 @@
 			$this->__buildPage();
 
 			if ($full_generate) {
-				####
-				# Delegate: FrontendOutputPreGenerate
-				# Description: Immediately before generating the page. Provided with the page object, XML and XSLT
-				# Global: Yes
+				/**
+				 * Immediately before generating the page. Provided with the page object, XML and XSLT
+				 * @delegate FrontendOutputPreGenerate
+				 * @param string $context
+				 * '/frontend/'
+				 * @param FrontendPage $page
+				 *  This FrontendPage object, by reference
+				 * @param string $xml
+				 *  This pages XML, including the Parameters, Datasource and Event XML, by reference
+				 * @param string $xsl
+				 *  This pages XSLT
+				 */
 				$this->ExtensionManager->notifyMembers(
 					'FrontendOutputPreGenerate', '/frontend/',
 					array(
@@ -200,18 +227,24 @@
 					}
 				}
 
-				####
-				# Delegate: FrontendPreRenderHeaders
-				# Description: This is just prior to the page headers being rendered, and is suitable for changing them
-				# Global: Yes
+				/**
+				 * This is just prior to the page headers being rendered, and is suitable for changing them
+				 * @delegate FrontendPreRenderHeaders
+				 * @param string $context
+				 * '/frontend/'
+				 */
 				$this->ExtensionManager->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
 
 				$output = parent::generate();
 
-				####
-				# Delegate: FrontendOutputPostGenerate
-				# Description: Immediately after generating the page. Provided with string containing page source
-				# Global: Yes
+				/**
+				 * Immediately after generating the page. Provided with string containing page source
+				 * @delegate FrontendOutputPostGenerate
+				 * @param string $context
+				 * '/frontend/'
+				 * @param string $output
+				 *  The generated output of this page, ie. a string of HTML, passed by reference
+				 */
 				$this->ExtensionManager->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
 
 				Frontend::instance()->Profiler->sample('XSLT Transformation', PROFILE_LAP);
@@ -221,8 +254,9 @@
 
 					while (list($key, $val) = $this->Proc->getError()) {
 						$errstr .= 'Line: ' . $val['line'] . ' - ' . $val['message'] . self::CRLF;
-					};
+					}
 
+					GenericExceptionHandler::$enabled = true;
 					throw new SymphonyErrorPage(trim($errstr), NULL, 'xslt-error', array('proc' => clone $this->Proc));
 				}
 
@@ -245,8 +279,8 @@
 
 		/**
 		 * This function sets the page's parameters, processes the Datasources and
-		 * Events and sets the $xml and $xsl variables. This functions resolves the $page
-		 * by calling the resolvePage() function. If a page is not found, it attempts
+		 * Events and sets the `$xml` and `$xsl` variables. This functions resolves the `$page`
+		 * by calling the `resolvePage()` function. If a page is not found, it attempts
 		 * to locate the Symphony 404 page set in the backend otherwise it throws
 		 * the default Symphony 404 page. If the page is found, the page's XSL utility
 		 * is found, and the system parameters are set, including any URL parameters,
@@ -275,6 +309,7 @@
 				");
 
 				if(empty($page)){
+                    GenericExceptionHandler::$enabled = true;
 					throw new SymphonyErrorPage(
 						__('The page you requested does not exist.'),
 						__('Page Not Found'),
@@ -287,10 +322,17 @@
 				$page['type'] = $this->__fetchPageTypes($page['id']);
 			}
 
-			####
-			# Delegate: FrontendPageResolved
-			# Description: Just after having resolved the page, but prior to any commencement of output creation
-			# Global: Yes
+			/**
+			 * Just after having resolved the page, but prior to any commencement of output creation
+			 * @delegate FrontendPageResolved
+			 * @param string $context
+			 * '/frontend/'
+			 * @param FrontendPage $page
+			 *  An instance of this class, passed by reference
+			 * @param array $page_data
+			 *  An associative array of page data, which is a combination from `tbl_pages` and
+			 *  the path of the page on the filesystem. Passed by reference
+			 */
 			$this->ExtensionManager->notifyMembers('FrontendPageResolved', '/frontend/', array('page' => &$this, 'page_data' => &$page));
 
 			$this->_pageData = $page;
@@ -342,10 +384,14 @@
 			// Flatten parameters:
 			General::flattenArray($this->_param);
 
-			####
-			# Delegate: FrontendParamsResolve
-			# Description: Just after having resolved the page params, but prior to any commencement of output creation
-			# Global: Yes
+			/**
+			 * Just after having resolved the page params, but prior to any commencement of output creation
+			 * @delegate FrontendParamsResolve
+			 * @param string $context
+			 * '/frontend/'
+			 * @param array $params
+			 *  An associative array of this page's parameters
+			 */
 			$this->ExtensionManager->notifyMembers('FrontendParamsResolve', '/frontend/', array('params' => &$this->_param));
 
 			$xml_build_start = precision_timer();
@@ -385,10 +431,14 @@
 				}
 			}
 
-			####
-			# Delegate: FrontendParamsPostResolve
-			# Description: Access to the resolved param pool, including additional parameters provided by Data Source outputs
-			# Global: Yes
+			/**
+			 * Access to the resolved param pool, including additional parameters provided by Data Source outputs
+			 * @delegate FrontendParamsPostResolve
+			 * @param string $context
+			 * '/frontend/'
+			 * @param array $params
+			 *  An associative array of this page's parameters
+			 */
 			$this->ExtensionManager->notifyMembers('FrontendParamsPostResolve', '/frontend/', array('params' => &$this->_param));
 
 			$params = new XMLElement('params');
@@ -437,13 +487,13 @@
 		 * user is authenticated as a Symphony author. If they are not, the Symphony 403
 		 * page is returned (whether that be set as a user defined page using the page type
 		 * of 403, or just returning the Default Symphony 403 error page). Any URL parameters
-		 * set on the page are added to the $env variable before the function returns an
+		 * set on the page are added to the `$env` variable before the function returns an
 		 * associative array of page details such as Title, Content Type etc.
 		 *
 		 * @uses FrontendPrePageResolve
 		 * @see __isSchemaValid()
 		 * @param string $page
-		 * The URL of the current page that is being Rendered as returned by getCurrentPage.
+		 * The URL of the current page that is being Rendered as returned by `getCurrentPage()`.
 		 * If no URL is provided, Symphony assumes the Page with the type 'index' is being
 		 * requested.
 		 * @return array
@@ -455,10 +505,15 @@
 
 			$row = null;
 
-			####
-			# Delegate: FrontendPrePageResolve
-			# Description: Before page resolve. Allows manipulation of page without redirection
-			# Global: Yes
+			/**
+			 * Before page resolve. Allows manipulation of page without redirection
+			 * @delegate FrontendPrePageResolve
+			 * @param string $context
+			 * '/frontend/'
+			 * @param mixed $row
+			 * @param FrontendPage $page
+			 *  An instance of this FrontendPage
+			 */
 			$this->ExtensionManager->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => &$this->_page));
 
 			## Default to the index page if no page has been specified
@@ -529,6 +584,7 @@
 															  LIMIT 1");
 
 				if(empty($row)){
+					GenericExceptionHandler::$enabled = true;
 					throw new SymphonyErrorPage(
 						__('Please <a href="%s">login</a> to view this page.', array(URL.'/symphony/login/')),
 						__('Forbidden'),
@@ -546,7 +602,7 @@
 		}
 
 		/**
-		 * Given a page ID, return it's type from tbl_pages
+		 * Given a page ID, return it's type from `tbl_pages`
 		 *
 		 * @param integer $page_id
 		 *  The page ID to find it's type
@@ -568,7 +624,7 @@
 		 *  The URL schema for a page, ie. article/read
 		 * @param array $bits
 		 *  The URL parameters provided from parsing the current URL. This
-		 *  does not include any $_GET or $_POST variables.
+		 *  does not include any `$_GET` or `$_POST` variables.
 		 * @return boolean
 		 *  True if the number of $schema (split by /) is less than the size
 		 *  of the $bits array.
@@ -581,13 +637,13 @@
 
 		/**
 		 * Resolves the path to this page's XSLT file. The Symphony convention
-		 * is that they are stored in the PAGES folder. If this page has a parent
+		 * is that they are stored in the `PAGES` folder. If this page has a parent
 		 * is will be as if all the / in the URL have been replaced with _. ie.
 		 * /articles/read/ will produce a file articles_read.xsl
 		 *
 		 * @param string $path
 		 *  The URL path to this page, excluding the current page. ie, /articles/read
-		 *  would make $path become articles/
+		 *  would make `$path` become articles/
 		 * @param string $handle
 		 *  The handle of the resolved page.
 		 * @return string
@@ -597,10 +653,9 @@
 			return (PAGES . '/' . trim(str_replace('/', '_', $path . '_' . $handle), '_') . '.xsl');
 		}
 
-
 		/**
 		 * The processEvents function executes all Events attached to the resolved
-		 * page in the correct order determined by __findEventOrder(). The results
+		 * page in the correct order determined by `__findEventOrder()`. The results
 		 * from the Events are appended to the page's XML. Events execute first,
 		 * before Datasources.
 		 *
@@ -615,10 +670,21 @@
 		 */
 		private function processEvents($events, XMLElement &$wrapper){
 
-			####
-			# Delegate: FrontendProcessEvents
-			# Description: Manipulate the events array and event element wrapper
-			# Global: Yes
+			/**
+			 * Manipulate the events array and event element wrapper
+			 * @delegate FrontendProcessEvents
+			 * @param string $context
+			 * '/frontend/'
+			 * @param array $env
+			 * @param string $events
+			 *  A string of all the Events attached to this page, comma separated.
+			 * @param XMLElement $wrapper
+			 *  The XMLElement to append the Events results to. Event results are
+			 *  contained in a root XMLElement that is the handlised version of
+			 *  their name.
+			 * @param array $page_data
+			 *  An associative array of page meta data
+			 */
 			$this->ExtensionManager->notifyMembers('FrontendProcessEvents',	'/frontend/', array(
 					'env' => $this->_env,
 					'events' => &$events,
@@ -662,19 +728,26 @@
 				}
 			}
 
-			####
-			# Delegate: FrontendEventPostProcess
-			# Description: Just after the page events have triggered. Provided with the XML object
-			# Global: Yes
+			/**
+			 * Just after the page events have triggered. Provided with the XML object
+			 * @delegate FrontendEventPostProcess
+			 * @param string $context
+			 * '/frontend/'
+			 * @param XMLElement $xml
+			 *  The XMLElement to append the Events results to. Event results are
+			 *  contained in a root XMLElement that is the handlised version of
+			 *  their name.
+			 */
 			$this->ExtensionManager->notifyMembers('FrontendEventPostProcess', '/frontend/', array('xml' => &$wrapper));
 
 		}
 
 		/**
 		 * This function determines the correct order that events should be executed in.
-		 * Events are executed based off priority, with HIGH priority executing first. If there
-		 * is more than one Event of the same priority, they are then executed in alphabetical
-		 * order. This function is designed to be used with PHP's uasort function.
+		 * Events are executed based off priority, with `Event::kHIGH` priority executing
+         * first. If there is more than one Event of the same priority, they are then
+         * executed in alphabetical order. This function is designed to be used with
+         * PHP's uasort function.
 		 *
 		 * @link http://php.net/manual/en/function.uasort.php
 		 * @param Event $a
@@ -698,7 +771,7 @@
 		 * Given an array of all the Datasources for this page, sort them into the
 		 * correct execution order and append the Datasource results to the
 		 * page XML. If the Datasource provides any parameters, they will be
-		 * added to the $env pool for use by other Datasources and eventual
+		 * added to the `$env` pool for use by other Datasources and eventual
 		 * inclusion into the page parameters.
 		 *
 		 * @param string $datasources
@@ -708,7 +781,7 @@
 		 *  results are contained in a root XMLElement that is the handlised
 		 *  version of their name.
 		 * @param array $params
-		 *  Any params to automatically add to the $env pool, by default this
+		 *  Any params to automatically add to the `$env` pool, by default this
 		 *  is an empty array. It looks like Symphony does not utilise this parameter
 		 *  at all
 		 */

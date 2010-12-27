@@ -40,6 +40,7 @@
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
 	require_once(TOOLKIT . '/class.lang.php');
 	require_once(TOOLKIT . '/class.general.php');
+	require_once(CORE . '/class.errorhandler.php');
 
 	// Initialize system language
 	function setLanguage() {
@@ -191,7 +192,6 @@
 		$conf['region']['time_format'] = 'H:i';
 		$conf['region']['date_format'] = 'd F Y';
 		$conf['region']['datetime_separator'] = ' ';
-		$conf['maintenance_mode']['enabled'] = 'no';
 
 		return $conf;
 

@@ -37,7 +37,6 @@
 			}
 
 			return self::__createLock($lockFile);
-
 		}
 
 		/**
@@ -63,7 +62,7 @@
 		 *
 		 * @param string $id
 		 *  The name of the lock file, which gets obfuscated using
-		 *  __generateLockFileName.
+		 *  `__generateLockFileName()`.
 		 * @param integer $ttl
 		 *  The length, in seconds, that the lock should be extended by.
 		 *  Defaults to 5.
@@ -90,6 +89,25 @@
 		}
 
 		/**
+		 * Checks if a lock exists, purely on the presence on the lock file.
+		 * This function takes the unobfuscated lock name
+		 *
+		 * @since Symphony 2.2
+		 * @param string $id
+		 *  The name of the lock file, which gets obfuscated using
+		 *  generateLockFileName.
+		 * @param string $path
+		 *  The path the lock should be written, defaults to the current
+		 *  working directory
+		 * @return boolean
+		 */
+		public static function lockExists($id, $path){
+			$lockFile = self::__generateLockFileName($id, $path);
+
+			return file_exists($lockFile);
+		}
+
+		/**
 		 * Checks if a lock exists, purely on the presence on the lock file
 		 *
 		 * @param string $lockFile
@@ -101,8 +119,8 @@
 		}
 
 		/**
-		 * Generates a lock filename using an MD5 hash of the $id and
-		 * $path. Lock files are given a .lock extension
+		 * Generates a lock filename using an MD5 hash of the `$id` and
+		 * `$path`. Lock files are given a .lock extension
 		 *
 		 * @param string $id
 		 *  The name of the lock file to be obfuscated

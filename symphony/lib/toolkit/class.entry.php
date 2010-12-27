@@ -39,7 +39,7 @@
 
 		/**
 		 * An ISO 8601 representation of when this Entry was created 
-		 * eg. 2004-02-12T15:19:21+00:00
+		 * eg. `2004-02-12T15:19:21+00:00`
 		 * @var string
 		 */
 		public $creationDate = null;
@@ -95,9 +95,9 @@
 
 		/**
 		 * Creates the initial entry row in tbl_entries and returns the resulting
-		 * Entry ID using the getInsertID function.
+		 * Entry ID using `getInsertID()`.
 		 *
-		 * @see toolkit.MySQL#getInsertID
+		 * @see toolkit.MySQL#getInsertID()
 		 * @return integer
 		 */
 		public function assignEntryId() {
@@ -131,7 +131,7 @@
 		 * When an entry is saved from a form (either Frontend/Backend) this
 		 * function will find all the fields in this set and loop over them, setting
 		 * the data to each of the fields for processing. If any errors occur during
-		 * this, _ENTRY_FIELD_ERROR_ is returned, and an array is available with
+		 * this, `_ENTRY_FIELD_ERROR_` is returned, and an array is available with
 		 * the errors.
 		 *
 		 * @param array $data
@@ -149,7 +149,7 @@
 		 *  Defaults to false, which will set Fields to their default values if they are not
 		 *  provided in the $data
 		 * @return integer
-		 *  Either __ENTRY_OK__ or __ENTRY_FIELD_ERROR__
+		 *  Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
 		 */
 		public function setDataFromPost($data, &$error = null, $simulate = false, $ignore_missing_fields = false){
 			$status = __ENTRY_OK__;
@@ -206,7 +206,7 @@
 		 *  If true, the data will be returned as an object instead of an
 		 *  array. Defaults to false.
 		 * @return array|object
-		 *  Depending on the value of $asObject, return the field's data
+		 *  Depending on the value of `$asObject`, return the field's data
 		 *  as either an array or an object
 		 */
 		public function getData($field_id=null, $asObject=false){
@@ -216,7 +216,7 @@
 
 		/**
 		 * Given a array of data from a form, this function will iterate over all the fields
-		 * in this Entry's Section and call their checkPostFieldData function.
+		 * in this Entry's Section and call their `checkPostFieldData()` function.
 		 *
 		 * @param array $data
 		 *  An associative array of the data for this entry where they key is the
@@ -229,7 +229,7 @@
 		 *  Defaults to false, which will check all Fields even if they are not
 		 *  provided in the $data
 		 * @return integer
-		 *  Either __ENTRY_OK__ or __ENTRY_FIELD_ERROR__
+		 *  Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
 		 */
 		public function checkPostData($data, &$errors = null, $ignore_missing_fields=false){
 			$status = __ENTRY_OK__;
@@ -260,10 +260,10 @@
 		}
 
 		/**
-		 * Iterates over all the Fields in this Entry calling their processRawFieldData
+		 * Iterates over all the Fields in this Entry calling their `processRawFieldData()`
 		 * function to set default values for this Entry.
 		 *
-		 * @see toolkit.Field#processRawFieldData
+		 * @see toolkit.Field#processRawFieldData()
 		 */
 		public function findDefaultData(){
 
@@ -289,7 +289,7 @@
 		 * add/edit functions. The commit function first finds all the default data for this
 		 * before calling it's Manager
 		 *
-		 * @see findDefaultData()
+		 * @see toolkit.Entry#findDefaultData()
 		 * @return boolean
 		 *	true if the commit was successful, false otherwise.
 		 */

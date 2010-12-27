@@ -4,8 +4,6 @@
 	 * @package toolkit
 	 */
 
-
-
 	/**
 	 * The standard exception to be thrown by all email gateways.
 	 */
@@ -248,7 +246,7 @@
 		/**
 		 * Check to see if all required data is set.
 		 *
-		 * @return bool
+		 * @return boolean
 		 */
 		public function validate(){
 
@@ -282,7 +280,7 @@
 		 *
 		 * The result of this building is an updated body variable in the gateway itself.
 		 *
-		 * @return bool
+		 * @return boolean
 		 */
 		protected function prepareMessageBody(){
 			if (!empty($this->_attachments)) {
@@ -477,7 +475,7 @@
 		 * @param string $name
 		 * The property value;
 		 * @param string $value
-		 * @return void|bool
+		 * @return void|boolean
 		 */
 		public function __set($name, $value){
 			if(method_exists(get_class($this), 'set'.$this->__toCamel($name, true))){
@@ -506,7 +504,7 @@
 		 * @param string $string
 		 * If this is true, the first character will be uppercased. Useful for method names (setName).
 		 * If set to false, the first character will be lowercased. This is default behaviour.
-		 * @param bool $caseFirst
+		 * @param boolean $caseFirst
 		 * @return string
 		 */
 		private function __toCamel($string, $caseFirst = false){
@@ -531,7 +529,5 @@
 			$func = create_function('$c', 'return "_" . strtolower($c[1]);');
 			return preg_replace_callback('/([A-Z])/', $func, $str);
 		}
-
-
 
 	}

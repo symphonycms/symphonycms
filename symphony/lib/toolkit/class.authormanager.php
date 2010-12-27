@@ -15,14 +15,21 @@
 	Class AuthorManager extends Manager {
 
 		/**
+		 * An array of all the objects that the Manager is responsible for.
+		 * Defaults to an empty array.
+		 * @var array
+		 */
+		protected static $_pool = array();
+
+		/**
 		 * Given an associative array of fields, insert them into the database
 		 * returning the resulting AuthorID if successful, or false if there
 		 * was an error
 		 *
 		 * @param array $fields
 		 *  Associative array of field names => values for the Author object
-		 * @return int|boolean
-		 *  Returns an author_id of the created Author on success, false otherwise.
+		 * @return integer|boolean
+		 *  Returns an Author ID of the created Author on success, false otherwise.
 		 */
 		public static function add(Array $fields){
 			if(!Symphony::Database()->insert($fields, 'tbl_authors')) return false;
@@ -33,7 +40,7 @@
 
 		/**
 		 * Given an Author ID and associative array of fields, update an existing Author
-		 * row in the Database's authors table. Returns boolean for success/failure
+		 * row in the `tbl_authors` database table. Returns boolean for success/failure
 		 *
 		 * @param integer $id
 		 *  The ID of the Author that should be updated
@@ -71,7 +78,7 @@
 		 *  The number of rows to return
 		 * @param integer $start
 		 *  The offset start point for limiting, maps to the LIMIT {x}, {y} MySQL functionality
-		 * @return array(Author)
+		 * @return array
 		 *  An array of Author objects.  If no Authors are found, null is returned.
 		 */
 		public static function fetch($sortby = 'id', $sortdirection = 'ASC', $limit = null, $start = null){
@@ -98,6 +105,7 @@
 					$author->set($field, $val);
 				}
 
+				self::$_pool[$author->get('id')] = $author;
 				$authors[] = $author;
 			}
 
@@ -105,10 +113,11 @@
 		}
 
 		/**
-		 * The fetchById method returns Author that match the provided ID's with
-		 * the option to sort or limit the output.
+		 * Returns Author's that match the provided ID's with the option to sort or limit the
+		 * output. This function will search the `AuthorManager::$_pool` for Authors first before
+		 * querying `tbl_authors`
 		 *
-		 * @param int|array $id
+		 * @param integer|array $id
 		 *  A single ID or an array of ID's
 		 * @param string $sortby
 		 *  The field to sort the authors by, defaults to 'id'
@@ -120,8 +129,8 @@
 		 * @param integer $start
 		 *  The offset start point for limiting, maps to the LIMIT {x}, {y} MySQL functionality
 		 * @return mixed
-		 *  If $id was an integer, the result will be an Author object, otherwise an array of
-		 *  Author objects will be returned. If no Authors are found, or no $id is given null is returned.
+		 *  If `$id` was an integer, the result will be an Author object, otherwise an array of
+		 *  Author objects will be returned. If no Authors are found, or no `$id` is given null is returned.
 		 */
 		public static function fetchByID($id, $sortby = 'id', $sortdirection = 'ASC', $limit = null, $start = null){
 
@@ -133,6 +142,20 @@
 			}
 
 			if(empty($id)) return null;
+
+			$authors = array();
+			$pooled_authors = array();
+
+			// Get all the Author ID's that are already in `self::$_pool`
+			$pooled_authors = array_intersect($id, array_keys(self::$_pool));
+			foreach($pooled_authors as $pool_author) {
+				$authors[] = self::$_pool[$pool_author];
+			}
+
+			// Get all the Author ID's that are not already stored in `self::$_pool`
+			$id = array_diff($id, array_keys(self::$_pool));
+
+			if(empty($id)) return ($return_single ? $authors[0] : $authors);
 
 			$records = Symphony::Database()->fetch(sprintf("
 					SELECT *
@@ -147,9 +170,7 @@
 				($start && $limit) ? ', ' . $start : ''
 			));
 
-			if(!is_array($records) || empty($records)) return null;
-
-			$authors = array();
+			if(!is_array($records) || empty($records)) return ($return_single ? $authors[0] : $authors);
 
 			foreach($records as $row){
 				$author = new Author;
@@ -157,15 +178,16 @@
 				foreach($row as $field => $val) {
 					$author->set($field, $val);
 				}
-
+				self::$_pool[$author->get('id')] = $author;
 				$authors[] = $author;
 			}
 
-			return ($return_single ? $authors[0] : $author);
+			return ($return_single ? $authors[0] : $authors);
 		}
 
 		/**
-		 * The fetchByUsername method returns an Author by Username.
+		 * Returns an Author by Username. This function will search the
+		 * `AuthorManager::$_pool` for Authors first before querying `tbl_authors`
 		 *
 		 * @param string $username
 		 *  The Author's username
@@ -173,22 +195,29 @@
 		 *  If an Author is found, an Author object is returned, otherwise null.
 		 */
 		public static function fetchByUsername($username){
-			$records = Symphony::Database()->fetchRow(0, sprintf("
-					SELECT *
-					FROM `tbl_authors`
-					WHERE `username` = '%s'
-					LIMIT 1
-				",	Symphony::Database()->cleanValue($username)
-			));
 
-			if(!is_array($records) || empty($records)) return null;
+			if(!$isset(self::$_pool[$username])) {
 
-			$author = new Author;
+				$records = Symphony::Database()->fetchRow(0, sprintf("
+						SELECT *
+						FROM `tbl_authors`
+						WHERE `username` = '%s'
+						LIMIT 1
+					",	Symphony::Database()->cleanValue($username)
+				));
 
-			foreach($rec as $field => $val)
-				$author->set($field, $val);
+				if(!is_array($records) || empty($records)) return null;
 
-			return $author;
+				$author = new Author;
+
+				foreach($records as $field => $val) {
+					$author->set($field, $val);
+				}
+
+				self::$_pool[$username] = $author;
+			}
+
+			return self::$_pool[$username];
 		}
 
 		/**
