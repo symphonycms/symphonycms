@@ -22,7 +22,7 @@
 	}
 
 	define('REWRITE_BASE', $rewrite_base);
-	
+
 	## Include some parts of the Symphony engine
 	require_once(CORE . '/class.log.php');
 	require_once(CORE . '/class.datetimeobj.php');
@@ -85,7 +85,7 @@
 		$languages[] = '<li' . $class . '><a href="?lang=' . $code . '">' . $lang . '</a></li>';
 	}
 	$languages = implode('', $languages);
-	
+
 
     function installResult(&$Page, &$install_log, $start){
 
@@ -536,7 +536,7 @@
 						`last_seen` ,
 						`user_type` ,
 						`primary` ,
-						`default_section` ,
+						`default_area` ,
 						`auth_token_active`
 					)
 					VALUES (
@@ -976,7 +976,7 @@ Options +FollowSymlinks -Indexes
 				}
 
 				$label->appendChild(Widget::Select('fields[region][date_format]', $dateOptions));
-				$Fieldset->appendChild($label);	
+				$Fieldset->appendChild($label);
 
 				$timeformat = $fields['region']['time_format'];
 				$label = Widget::Label(__('Time Format'));
