@@ -137,7 +137,7 @@
 						$section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
 					}
 
-					$default_area = "/sections/" . $section_handle . "/";
+					$default_area = "/publish/" . $section_handle . "/";
 
 				}
 				else if(!is_null($this->Author->get('default_area'))) {
@@ -173,12 +173,12 @@
 					$this->Page->build();
 				}
 			}
-			
+
 			else {
 				if (!is_array($this->_callback['context'])) $this->_callback['context'] = array();
 				$this->Page->build($this->_callback['context']);
 			}
-			
+
 			return $this->Page;
 		}
 
