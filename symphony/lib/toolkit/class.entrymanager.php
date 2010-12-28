@@ -570,27 +570,30 @@
 		public function fetchByPage($page = 1, $section_id, $entriesPerPage, $where = null, $joins = null, $group = false, $records_only = false, $buildentries = true, Array $element_names = null){
 
 			if(!is_string($entriesPerPage) && !is_numeric($entriesPerPage)){
-				throw new Exception(__('Entry limit specified was not a valid type. String or Integer expected.'));
+				$records = $this->fetch(NULL, $section_id, NULL, NULL, $where, $joins, $group, $buildentries, $element_names);
+
+				return array('records' => $records);
 			}
+			else {
+				$start = (max(1, $page) - 1) * $entriesPerPage;
 
-			$start = (max(1, $page) - 1) * $entriesPerPage;
+				$records = ($entriesPerPage == '0' ? NULL : $this->fetch(NULL, $section_id, $entriesPerPage, $start, $where, $joins, $group, $buildentries, $element_names));
 
-			$records = ($entriesPerPage == '0' ? NULL : $this->fetch(NULL, $section_id, $entriesPerPage, $start, $where, $joins, $group, $buildentries, $element_names));
+				if($records_only) return array('records' => $records);
 
-			if($records_only) return array('records' => $records);
+				$entries = array(
+					'total-entries' => $this->fetchCount($section_id, $where, $joins, $group),
+					'records' => $records,
+					'start' => max(1, $start),
+					'limit' => $entriesPerPage
+				);
 
-			$entries = array(
-				'total-entries' => $this->fetchCount($section_id, $where, $joins, $group),
-				'records' => $records,
-				'start' => max(1, $start),
-				'limit' => $entriesPerPage
-			);
+				$entries['remaining-entries'] = max(0, $entries['total-entries'] - ($start + $entriesPerPage));
+				$entries['total-pages'] = max(1, ceil($entries['total-entries'] * (1 / $entriesPerPage)));
+				$entries['remaining-pages'] = max(0, $entries['total-pages'] - $page);
 
-			$entries['remaining-entries'] = max(0, $entries['total-entries'] - ($start + $entriesPerPage));
-			$entries['total-pages'] = max(1, ceil($entries['total-entries'] * (1 / $entriesPerPage)));
-			$entries['remaining-pages'] = max(0, $entries['total-pages'] - $page);
-
-			return $entries;
+				return $entries;
+			}
 
 		}
 

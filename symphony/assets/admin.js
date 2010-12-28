@@ -547,19 +547,20 @@ var Symphony = {};
 
 		// Data source manager options
 		$('select.filtered > optgroup').each(function() {
-			var optgroup = $(this), 
+			var optgroup = $(this),
 				select = optgroup.parents('select'),
-			    label = optgroup.attr('label'),
-			    options = optgroup.remove().find('option');
+				label = optgroup.attr('label'),
+				options = optgroup.remove().find('option').addClass('group');
 
 			// Show only relevant options based on context
 			$('#context').change(function() {
 				if($(this).find('option:selected').text() == label) {
-					select.empty().append(options.clone());
+				    select.find('options.group').remove();
+				    select.append(options.clone(true));
 				}
 			});
 		});
-		
+
 		// Data source manager context
 		$('*.contextual').each(function() {
 			var area = $(this);
@@ -577,6 +578,11 @@ var Symphony = {};
 
 		// Set data source manager context
 		$('#context').change();
+
+		// Disable checkbox checking/unchecking when clicking on the following text inputs
+		$('input[name=fields[max_records]], input[name=fields[page_number]]').click(function(event) {
+			event.preventDefault();
+		});
 
 		// Upload fields
 		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span').click(function(event) {
