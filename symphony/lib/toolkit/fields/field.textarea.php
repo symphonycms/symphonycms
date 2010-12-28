@@ -217,7 +217,7 @@
 				$wrapper->appendChild(
 					new XMLElement(
 						$this->get('element_name'),
-						sprintf('<![CDATA[%s]]>', $data['value']),
+						sprintf('<![CDATA[%s]]>', str_replace(']]>',']]]]><![CDATA[>',$data['value'])),
 						array(
 							'mode' => $mode
 						)
