@@ -37,7 +37,13 @@
 			var item = $(this),
 				items = item.siblings().andSelf(),
 				object = $(event.liveFired),
+				target = $(event.target),
 				selection, deselection, first, last;
+			
+			// Ignore clicks on links
+			if(target.is('a')) {
+				return true;
+			}
 				
 			// Remove text ranges
 			if(window.getSelection) {
