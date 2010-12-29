@@ -35,8 +35,8 @@
 					delta:		0
 				};
 				
-				$(document).mousemove(change);
-				$(document).mouseup(stop);
+				$(document).bind('mousemove.orderable', change);
+				$(document).bind('mouseup.orderable', stop);
 				
 				$(document).mousemove();
 				
@@ -95,8 +95,8 @@
 			};
 			
 			var stop = function() {
-				$(document).unbind('mousemove', change);
-				$(document).unbind('mouseup', stop);
+				$(document).unbind('mousemove.orderable', change);
+				$(document).unbind('mouseup.orderable', stop);
 				
 				if (state != null) {
 					object.removeClass('ordering');
@@ -116,8 +116,8 @@
 			
 			object.orderable = {
 				cancel: function() {
-					$(document).unbind('mousemove', change);
-					$(document).unbind('mouseup', stop);
+					$(document).unbind('mousemove.orderable', change);
+					$(document).unbind('mouseup.orderable', stop);
 					
 					if (state != null) {
 						object.removeClass('ordering');
@@ -133,8 +133,8 @@
 						var item = $(this);
 						var handle = item.find(settings.handles);
 						
-						handle.unbind('mousedown', start);
-						handle.bind('mousedown', start);
+						handle.unbind('mousedown.orderable', start);
+						handle.bind('mousedown.orderable', start);
 					});
 				}
 			};

@@ -33,7 +33,7 @@
 		objects.addClass('selectable');
 		
 		// Process selections
-		objects.delegate(settings.items, 'click.symSelectable', function(event) {
+		objects.delegate(settings.items, 'click.selectable', function(event) {
 			var item = $(this),
 				items = item.siblings().andSelf(),
 				object = $(event.liveFired),
@@ -96,7 +96,7 @@
 		});
 				
 		// Handle highlighting conflicts between orderable and selectable items
-		objects.find(settings.handles).bind('mousedown', function(event) {
+		objects.find(settings.handles).bind('mousedown.selectable', function(event) {
 			var object = $(this).parents(objects[0].tagName).addClass('selecting');
 			window.setTimeout(function() {
 			    object.removeClass('selecting');
@@ -104,7 +104,7 @@
 		});	
 		
 		// Remove all selections by doubleclicking the body
-		$('body').bind('dblclick', function() {
+		$('body').bind('dblclick.selectable', function() {
 			objects.find(settings.items).removeClass('selected');
 		});
 		

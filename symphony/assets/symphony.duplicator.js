@@ -100,14 +100,14 @@
 				
 				header.nextAll().wrapAll('<div class="content" />');
 				
-				destructor.click(function() {
+				destructor.bind('click.duplicator', function() {
 					if ($(this).hasClass('disabled')) return;
 					
 					destruct(source);
 				});
 				
-				header.bind('selectstart', silence);
-				header.mousedown(silence);
+				header.bind('selectstart.duplicator', silence);
+				header.bind('mousedown.duplicator', silence);
 				
 				return instance;
 			};
@@ -209,24 +209,24 @@
 					object.addClass('duplicator');
 					
 					// Prevent collapsing when ordering stops:
-					object.bind('orderstart', function() {
+					object.bind('orderstart.duplicator', function() {
 						if (settings.collapsible) {
 							object.collapsible.cancel();
 						}
 					});
 					
 					// Refresh on reorder:
-					object.bind('orderstop', function() {
+					object.bind('orderstop.duplicator', function() {
 						refresh();
 					});
 					
 					// Slide up on collapse:
-					object.bind('collapsestop', function(event, item) {
+					object.bind('collapsestop.duplicator', function(event, item) {
 						item.find('> .content').show().slideUp(settings.speed);
 					});
 					
 					// Slide down on expand:
-					object.bind('expandstop', function(event, item) {
+					object.bind('expandstop.duplicator', function(event, item) {
 						item.find('> .content').hide().slideDown(settings.speed);
 					});
 					
@@ -273,9 +273,9 @@
 					});
 					
 					// Construct new template:
-					widgets.constructor.bind('selectstart', silence);
-					widgets.constructor.bind('mousedown', silence);
-					widgets.constructor.bind('click', function() {
+					widgets.constructor.bind('selectstart.duplicator', silence);
+					widgets.constructor.bind('mousedown.duplicator', silence);
+					widgets.constructor.bind('click.duplicator', function() {
 						if ($(this).hasClass('disabled')) return;
 						
 						var position = widgets.selector.val();
@@ -300,7 +300,7 @@
 							collapsingEnabled();
 						}
 						
-						object.bind('construct', function() {
+						object.bind('construct.duplicator', function() {
 							var instances = object.children('.instance');
 							
 							if (instances.length > 0) {
@@ -308,7 +308,7 @@
 							}
 						});
 						
-						object.bind('destruct', function() {
+						object.bind('destruct.duplicator', function() {
 							var instances = object.children('.instance');
 							
 							if (instances.length < 1) {
@@ -317,19 +317,19 @@
 							}
 						});
 						
-						object.bind('collapsestop destruct', function() {
+						object.bind('collapsestop.duplicator destruct.duplicator', function() {
 							if (object.has('.expanded').length == 0) {
 								toExpandAll();
 							}
 						});
 						
-						object.bind('expandstop destruct', function() {
+						object.bind('expandstop.duplicator destruct.duplicator', function() {
 							if (object.has('.collapsed').length == 0) {
 								toCollapseAll();
 							}
 						});
 						
-						widgets.collapser.bind('click', function() {
+						widgets.collapser.bind('click.duplicator', function() {
 							var item = $(this);
 							
 							if (item.is('.disabled')) return;
@@ -379,7 +379,7 @@
 		objects = objects.map(function() {
 			var object = this;
 			
-			object.bind('construct', function(event, instance) {
+			object.bind('construct.duplicator', function(event, instance) {
 				var input = instance.find('input:visible:first');
 				var header = instance.find('.header:first > span:first');
 				var fallback = header.text();
@@ -389,7 +389,7 @@
 					header.text(value ? value : fallback);
 				};
 				
-				input.bind('change', refresh).bind('keyup', refresh);
+				input.bind('change.duplicator', refresh).bind('keyup', refresh);
 				
 				refresh();
 			});
