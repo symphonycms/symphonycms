@@ -80,7 +80,7 @@
 				}
 
 				// Add new tag
-				if(!removed) {
+				if(removed === false) {
 					tags.push(tag);
 				}
 
