@@ -100,6 +100,7 @@
 				}
 
 				$fields['sort'] = $existing->dsParamSORT;
+				$fields['paginate_results'] = $existing->dsParamPAGINATERESULTS;
 				$fields['page_number'] = $existing->dsParamSTARTPAGE;
 				$fields['limit_type'] = $existing->dsParamLIMITTYPE;
 				$fields['group'] = $existing->dsParamGROUP;
@@ -438,26 +439,25 @@
 
 			$fieldset->appendChild($div);
 
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group contextual inverse navigation');
-
-			$div = new XMLElement('div');
 			$label = Widget::Label();
-			$input = Widget::Input('fields[max_records]', $fields['max_records'], NULL, array('size' => '6'));
-			$label->setValue(__('Show a maximum of %s results per page', array($input->generate(false))));
-			if(isset($this->_errors['max_records'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['max_records']));
-			else $div->appendChild($label);
-			$group->appendChild($div);
+			$input = array(
+				Widget::Input('fields[paginate_results]', NULL, 'checkbox', (!isset($fields['paginate_results']) || $fields['paginate_results'] == 'yes' ? array('checked' => 'checked') : NULL)),
+				Widget::Input('fields[max_records]', $fields['max_records'], NULL, array('size' => '6')),
+				Widget::Input('fields[page_number]', $fields['page_number'], NULL, array('size' => '6'))
+			);
+			$label->setValue(__('%s Paginate results, limiting to %s entries per page. Return page %s', array($input[0]->generate(false), $input[1]->generate(false), $input[2]->generate(false))));
+			if(isset($this->_errors['max_records'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['max_records']));
+			else if(isset($this->_errors['page_number'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['page_number']));
+			else $fieldset->appendChild($label);
 
-			$div = new XMLElement('div');
-			$label = Widget::Label();
-			$input = Widget::Input('fields[page_number]', $fields['page_number'], NULL, array('size' => '6'));
-			$label->setValue(__('Show page %s of results', array($input->generate(false))));
-			if(isset($this->_errors['page_number'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['page_number']));
-			else $div->appendChild($label);
-			$group->appendChild($div);
+			$p = new XMLElement('p', __('Failing to paginate may degrade performance if the number of entries returned is very high.'), array('class' => 'help'));
+			$fieldset->appendChild($p);
 
-			$fieldset->appendChild($group);
+			$this->Form->appendChild($fieldset);
+
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml');
+			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
 
 			$label = Widget::Label(__('Required URL Parameter <i>Optional</i>'));
 			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param'])));
@@ -471,12 +471,6 @@
 			$input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
 			$fieldset->appendChild($label);
-
-			$this->Form->appendChild($fieldset);
-
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml');
-			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
 
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'group');
@@ -956,6 +950,7 @@
 						$elements = $fields['xml_elements'];
 
 						$params['order'] = $fields['order'];
+						$params['paginateresults'] = (isset($fields['paginate_results']) ? 'yes' : 'no');
 						$params['limit'] = $fields['max_records'];
 						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
 						$params['requiredparam'] = trim($fields['required_url_param']);
@@ -1028,6 +1023,7 @@
 
 						$params['order'] = $fields['order'];
 						$params['group'] = $fields['group'];
+						$params['paginateresults'] = (isset($fields['paginate_results']) ? 'yes' : 'no');
 						$params['limit'] = $fields['max_records'];
 						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
 						$params['requiredparam'] = trim($fields['required_url_param']);

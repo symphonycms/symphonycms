@@ -11,6 +11,9 @@
 		position: relative;
 		z-index: 1;
 	}
+	.duplicator i {
+		color: #887;
+	}
 	.invalid .duplicator {
 		border-color: #aa2211;
 	}
@@ -30,6 +33,11 @@
 		margin: 0;
 		padding: 0.5em 1.75em;
 		position: relative;
+	}
+	.duplicator > .instance > .header > span > i {
+		position: relative;
+		margin: 0 0 0 0.5em;
+		font-weight: normal;
 	}
 	.duplicator.orderable > .instance > .header {
 		cursor: move;

@@ -331,12 +331,12 @@ var Symphony = {};
 			 * @param {Date} to
 			 *  Current date
 			 */
-  			distance: function(from, to) {
+			distance: function(from, to) {
 
-  				// Calculate time difference
-  				var distance = to - from;
+				// Calculate time difference
+				var distance = to - from;
 
-  				// Convert time to minutes
+				// Convert time to minutes
 				var time = Math.floor(distance / 60000);
 
 				// Return relative date based on passed time
@@ -432,7 +432,7 @@ var Symphony = {};
 			else {
 				orderable.removeClass('busy');
 			}
-			
+
 		});
 		
 		// Selectable
@@ -440,23 +440,26 @@ var Symphony = {};
 
 		// Duplicators
 		$('.filters-duplicator').symphonyDuplicator();
-		
+
 		// Collapsible duplicators
-		$('#fields-duplicator').symphonyDuplicator({
+		var duplicator = $('#fields-duplicator');
+		duplicator.symphonyDuplicator({
 			orderable: true,
-			collapsible: true			
-		}).bind('collapsestop', function(event, item) {
+			collapsible: true           
+		});
+		duplicator.bind('collapsestop', function(event, item) {
 			var instance = jQuery(item);
 			instance.find('.header > span:not(:has(i))').append(
 				$('<i />').text(instance.find('label:first input').attr('value'))
 			);
-		}).bind('expandstop', function(event, item) {
+		});
+		duplicator.bind('expandstop', function(event, item) {
 			$(item).find('.header > span > i').remove();
-		});		
+		});
 
 		// Dim system messages
 		Symphony.Message.fade('silence', 10000);
-		
+
 		// Relative times in system messages
 		$('abbr.timeago').each(function() {
 			var time = $(this).parent();
@@ -468,15 +471,15 @@ var Symphony = {};
 		$('textarea').blur(function() {
 			var source = $(this).val(),
 				utilities = $('#utilities li');
-				
+
 			// Remove current selection
 			utilities.removeClass('selected');
-				
+
 			// Get utitities names
 			utilities.find('a').each(function() {
 				var utility = $(this),
 					expression = new RegExp('href=["\']?(?:\\.{2}/utilities/)?' + utility.text());
-				
+
 				// Check for utility occurrences
 				if(expression.test(source)) {
 					utility.parent().addClass('selected');
@@ -491,21 +494,21 @@ var Symphony = {};
 				help = password.next('p.help'),
 				placeholder = $('<label>' + Symphony.Language.get('Password') + ' <span><button>' + Symphony.Language.get('Change Password') + '</button></span></label>'),
 				invalid = password.has('.invalid');
-		
+
 			if(invalid.size() == 0) {
-				
+
 				// Hide password fields
 				password.removeClass();
 				labels.hide();
 				help.hide();
-				
+
 				// Add placeholder
 				password.append(placeholder).find('button').click(function(event) {
 					event.preventDefault();
-					
+
 					// Hide placeholder
 					placeholder.hide();
-					
+
 					// Shwo password fields
 					password.addClass('triple group');
 					labels.show();
@@ -520,13 +523,13 @@ var Symphony = {};
 		$('button.confirm').live('click', function() {
 			var button = $(this),
 				name = document.title.split(/[\u2013]\s*/g)[2],
-			    text = (name ? 'Are you sure you want to {$action} {$name}?' : 'Are you sure you want to {$action}?');
+				text = (name ? 'Are you sure you want to {$action} {$name}?' : 'Are you sure you want to {$action}?');
 
 			return confirm(Symphony.Language.get(text, {
 				'action': button.text().toLowerCase(),
 				'name': name
 			}));
-		});		
+		});
 
 		// Confirm with selected actions
 		$('form').submit(function(event) {
@@ -547,19 +550,20 @@ var Symphony = {};
 
 		// Data source manager options
 		$('select.filtered > optgroup').each(function() {
-			var optgroup = $(this), 
+			var optgroup = $(this),
 				select = optgroup.parents('select'),
-			    label = optgroup.attr('label'),
-			    options = optgroup.remove().find('option');
+				label = optgroup.attr('label'),
+				options = optgroup.remove().find('option').addClass('group');
 
 			// Show only relevant options based on context
 			$('#context').change(function() {
 				if($(this).find('option:selected').text() == label) {
-					select.empty().append(options.clone());
+					select.find('options.group').remove();
+					select.append(options.clone(true));
 				}
 			});
 		});
-		
+
 		// Data source manager context
 		$('*.contextual').each(function() {
 			var area = $(this);
@@ -567,8 +571,8 @@ var Symphony = {};
 			$('#context').change(function() {
 				var select = $(this),
 					optgroup = select.find('option:selected').parent(),
-				    value = select.val().replace(/\W+/g, '_'),
-				    group = optgroup.attr('label').replace(/\W+/g, '_');
+					value = select.val().replace(/\W+/g, '_'),
+					group = optgroup.attr('label').replace(/\W+/g, '_');
 
 				// Show only relevant interface components based on context
 				area[(area.hasClass(value) || area.hasClass(group)) ^ area.hasClass('inverse') ? 'removeClass' : 'addClass']('irrelevant');
@@ -577,6 +581,11 @@ var Symphony = {};
 
 		// Set data source manager context
 		$('#context').change();
+
+		// Disable checkbox checking/unchecking when clicking on the following text inputs
+		$('input[name=fields[max_records]], input[name=fields[page_number]]').click(function(event) {
+			event.preventDefault();
+		});
 
 		// Upload fields
 		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span').click(function(event) {
@@ -595,7 +604,7 @@ var Symphony = {};
 			|| Symphony.Context.get('env').page == 'edit' || Symphony.Context.get('env').page == 'new')) {
 			$('input[type="text"], textarea').first().focus();
 		}
-										
+
 	});
 
 })(jQuery.noConflict());
