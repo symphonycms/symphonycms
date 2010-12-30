@@ -549,7 +549,7 @@
 						NULL ,
 						'developer',
 						'yes',
-						'6',
+						NULL,
 						'no'
 					);",
 

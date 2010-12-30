@@ -553,12 +553,12 @@ var Symphony = {};
 			var optgroup = $(this),
 				select = optgroup.parents('select'),
 				label = optgroup.attr('label'),
-				options = optgroup.remove().find('option').addClass('group');
+				options = optgroup.remove().find('option').addClass('optgroup');
 
 			// Show only relevant options based on context
 			$('#context').change(function() {
 				if($(this).find('option:selected').text() == label) {
-					select.find('options.group').remove();
+					select.find('option.optgroup').remove();
 					select.append(options.clone(true));
 				}
 			});
