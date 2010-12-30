@@ -776,6 +776,13 @@ Options +FollowSymlinks -Indexes
 
 		        installResult($Page, $install_log, $start);
 
+				// Install extensions
+				require_once(CORE . '/class.administration.php');
+				foreach(Administration::instance()->ExtensionManager->listAll() as $name => $about) {
+				    if(Administration::instance()->ExtensionManager->enable($name) === false) continue;
+				}
+				
+				// Redirect to backend
 				redirect('http://' . rtrim(str_replace('http://', '', _INSTALL_DOMAIN_), '/') . '/symphony/');
 
 		    }
