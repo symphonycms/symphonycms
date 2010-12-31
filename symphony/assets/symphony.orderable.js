@@ -27,9 +27,9 @@
 			var object = this;
 			var state = null;
 			
-			var start = function() {
+			var start = function(item) {		
 				state = {
-					item:		$(this).parents(settings.items),
+					item:		item,
 					min:		null,
 					max:		null,
 					delta:		0
@@ -39,8 +39,6 @@
 				$(document).bind('mouseup.orderable', stop);
 				
 				$(document).mousemove();
-				
-				return false;
 			};
 			
 			var change = function(event) {
@@ -95,8 +93,7 @@
 			};
 			
 			var stop = function() {
-				$(document).unbind('mousemove.orderable', change);
-				$(document).unbind('mouseup.orderable', stop);
+				$(document).unbind('.orderable');
 				
 				if (state != null) {
 					object.removeClass('ordering');
@@ -116,8 +113,7 @@
 			
 			object.orderable = {
 				cancel: function() {
-					$(document).unbind('mousemove.orderable', change);
-					$(document).unbind('mouseup.orderable', stop);
+					$(document).unbind('.orderable');
 					
 					if (state != null) {
 						object.removeClass('ordering');
@@ -129,7 +125,16 @@
 				
 				initialize: function() {
 					object.addClass('orderable');
-					object.delegate(settings.items + ' ' + settings.handles, 'mousedown.orderable', start);
+					object.delegate(settings.items + ' ' + settings.handles, 'mousedown.orderable', function(event) {
+						var target = $(event.target),
+							item = $(this).parents(settings.items);
+
+						// Keep fields accessible inside orderable list
+						if(!target.is('input, textarea, select')) {
+							start(item);
+							return false;
+						}
+					});
 				}
 			};
 			
