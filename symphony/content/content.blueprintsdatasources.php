@@ -65,6 +65,7 @@
 
 			if(isset($_POST['fields'])){
 				$fields = $_POST['fields'];
+				$fields['paginate_results'] = ($fields['paginate_results'] == 'on') ? 'yes' : 'no';
 
 				if(!in_array($fields['source'], array('authors', 'navigation', 'dynamic_xml', 'static_xml')) && is_array($fields['filter']) && !empty($fields['filter'])){
 					$filters = array();
@@ -77,8 +78,7 @@
 
 			}
 
-			elseif($this->_context[0] == 'edit'){
-
+			else if($this->_context[0] == 'edit'){
 				$isEditing = true;
 				$handle = $this->_context[1];
 
@@ -155,6 +155,7 @@
 				$fields['dynamic_xml']['xpath'] = '/';
 				$fields['dynamic_xml']['timeout'] = '6';
 
+				$fields['paginate_results'] = 'yes';
 				$fields['max_records'] = '20';
 				$fields['page_number'] = '1';
 
@@ -441,11 +442,12 @@
 
 			$label = Widget::Label();
 			$input = array(
-				Widget::Input('fields[paginate_results]', NULL, 'checkbox', (!isset($fields['paginate_results']) || $fields['paginate_results'] == 'yes' ? array('checked' => 'checked') : NULL)),
+				Widget::Input('fields[paginate_results]', NULL, 'checkbox', ($fields['paginate_results'] == 'yes' ? array('checked' => 'checked') : NULL)),
 				Widget::Input('fields[max_records]', $fields['max_records'], NULL, array('size' => '6')),
 				Widget::Input('fields[page_number]', $fields['page_number'], NULL, array('size' => '6'))
 			);
 			$label->setValue(__('%s Paginate results, limiting to %s entries per page. Return page %s', array($input[0]->generate(false), $input[1]->generate(false), $input[2]->generate(false))));
+
 			if(isset($this->_errors['max_records'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['max_records']));
 			else if(isset($this->_errors['page_number'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['page_number']));
 			else $fieldset->appendChild($label);
@@ -884,7 +886,7 @@
 				if($fields['source'] != 'navigation'){
 
 					if(strlen(trim($fields['max_records'])) == 0 || (is_numeric($fields['max_records']) && $fields['max_records'] < 1)){
-						$this->_errors['max_records'] = __('A result limit must be set');
+						if (isset($fields['paginate_results'])) $this->_errors['max_records'] = __('A result limit must be set');
 					}
 					elseif(!self::__isValidPageString($fields['max_records'])){
 						$this->_errors['max_records'] = __('Must be a valid number or parameter');
@@ -892,7 +894,7 @@
 
 
 					if(strlen(trim($fields['page_number'])) == 0 || (is_numeric($fields['page_number']) && $fields['page_number'] < 1)){
-						$this->_errors['page_number'] = __('A page number must be set');
+						if (isset($fields['paginate_results'])) $this->_errors['page_number'] = __('A page number must be set');
 					}
 					elseif(!self::__isValidPageString($fields['page_number'])){
 						$this->_errors['page_number'] = __('Must be a valid number or parameter');
@@ -1141,6 +1143,8 @@
 						 */
 						Administration::instance()->ExtensionManager->notifyMembers('DatasourcePostEdit', '/blueprints/datasources/', array('file' => $file));
 					}
+
+					print_r($fields['page_number']);
 
 					redirect(SYMPHONY_URL . '/blueprints/datasources/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
 

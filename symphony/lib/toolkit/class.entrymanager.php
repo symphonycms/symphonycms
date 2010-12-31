@@ -569,10 +569,25 @@
 		 */
 		public function fetchByPage($page = 1, $section_id, $entriesPerPage, $where = null, $joins = null, $group = false, $records_only = false, $buildentries = true, Array $element_names = null){
 
-			if(!is_string($entriesPerPage) && !is_numeric($entriesPerPage)){
+			if($entriesPerPage != NULL && !is_string($entriesPerPage) && !is_numeric($entriesPerPage)){
+				throw new Exception(__('Entry limit specified was not a valid type. String or Integer expected.'));
+			}
+			else if($entriesPerPage == NULL) {
 				$records = $this->fetch(NULL, $section_id, NULL, NULL, $where, $joins, $group, $buildentries, $element_names);
 
-				return array('records' => $records);
+				$count = $this->fetchCount($section_id, $where, $joins, $group);
+
+				$entries = array(
+					'total-entries' => $count,
+					'total-pages' => 1,
+					'remaining-pages' => 0,
+					'remaining-entries' => 0,
+					'start' => 1,
+					'limit' => $count,
+					'records' => $records
+				);
+
+				return $entries;
 			}
 			else {
 				$start = (max(1, $page) - 1) * $entriesPerPage;
