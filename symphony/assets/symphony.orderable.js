@@ -129,13 +129,7 @@
 				
 				initialize: function() {
 					object.addClass('orderable');
-					object.find(settings.items).each(function() {
-						var item = $(this);
-						var handle = item.find(settings.handles);
-						
-						handle.unbind('mousedown.orderable', start);
-						handle.bind('mousedown.orderable', start);
-					});
+					object.delegate(settings.items + ' ' + settings.handles, 'mousedown.orderable', start);
 				}
 			};
 			
