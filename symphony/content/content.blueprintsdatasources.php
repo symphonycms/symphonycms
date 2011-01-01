@@ -1144,8 +1144,6 @@
 						Administration::instance()->ExtensionManager->notifyMembers('DatasourcePostEdit', '/blueprints/datasources/', array('file' => $file));
 					}
 
-					print_r($fields['page_number']);
-
 					redirect(SYMPHONY_URL . '/blueprints/datasources/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
 
 				}
