@@ -133,7 +133,7 @@
 				});
 
 				// Give focus to the first input in the first instance
-				if (input_focus) instances.filter(':last').find('input[type!=hidden]:first').focus();
+				if (input_focus) instances.filter(':last').find('input[type!="hidden"]:first').focus();
 				
 				// No templates to add:
 				if (templates.length < 1) {
