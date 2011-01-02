@@ -582,58 +582,35 @@ var Symphony = {};
 		// Set data source manager context
 		$('#context').change();
 
-		// Prevent 'paginate_results' checking/unchecking when 'max_records' or 'page_number' are clicked
-		$('input[name=fields[max_records]], input[name=fields[page_number]]').click(function(event) {
+		// Once pagination is disabled, max_records and page_number are disabled too
+		var max_record = $('input[name*=max_records]'),
+			page_number = $('input[name*=page_number]');
+
+		$('input[name*=paginate_results]').change(function(event) {
+
+			// Turn on pagination
+			if($(this).is(':checked')) {
+				max_record.attr('disabled', false);
+				page_number.attr('disabled', false);
+			}
+
+			// Turn off pagination
+			else {
+				max_record.attr('disabled', true);
+				page_number.attr('disabled', true);
+			}
+		}).change();
+
+		// Disable paginate_results checking/unchecking when clicking on either max_records or page_number
+		max_record.add(page_number).click(function(event) {
 			event.preventDefault();
 		});
 
-		// Once pagination is disabled, 'max_records' and 'page_number' are disabled too
-		$('input[name=fields[paginate_results]]').bind('click keydown', function(event, pageLoad) {
-			if (pageLoad) event.preventDefault();
-
-			if (!event.keyCode || event.keyCode == '13') {
-
-				if ($(this).is(':checked')) { // Pagination turns off
-					var hidden = $('input[name=fields[max_records]], input[name=fields[page_number]]'),
-						orig = $('input[name=disabled[max_records]], input[name=disabled[page_number]]');
-
-					if (orig.length == 2) {
-						orig.attr('disabled', false);
-						orig.each(function() {
-							$(this).attr('name', $(this).attr('name').replace('disabled', 'fields'));
-						});
-						hidden.remove();
-					}
-					else {
-						hidden.attr('disabled', false);
-					}
-				}
-				else { // Pagination turns on
-					var orig = $('input[name=fields[max_records]], input[name=fields[page_number]]');
-
-					orig.attr('disabled', true);
-
-					$(this).parents('label').append(
-						$('<input />').attr({
-							'name' : orig.eq(0).attr('name'),
-							'type' : 'hidden',
-							'value': orig.eq(0).attr('value')
-						})
-					);
-					$(this).parents('label').append(
-						$('<input />').attr({
-							'name' : orig.eq(1).attr('name'),
-							'type' : 'hidden',
-							'value': orig.eq(1).attr('value')
-						})
-					);
-
-					orig.each(function() {
-						$(this).attr('name', $(this).attr('name').replace('fields', 'disabled'));
-					});
-				}
-			}
-		}).trigger('click', [true]);
+		// Enabled fields on submit
+		$('form').bind('submit', function() {
+			max_record.attr('disabled', false);
+			page_number.attr('disabled', false);
+		});
 
 		// Upload fields
 		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span').click(function(event) {
