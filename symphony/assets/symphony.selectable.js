@@ -70,11 +70,11 @@
 				
 				// Deselect items outside the selection range
 				deselection = items.filter('.selected').not(selection).removeClass('selected').trigger('deselect');
-				deselection.find('input[type=checkbox]').attr('checked', false);
+				deselection.find('input[type="checkbox"]').attr('checked', false);
 				
 				// Select range
 				selection.addClass('selected').trigger('select');
-				selection.find('input[type=checkbox]').attr('checked', true);
+				selection.find('input[type="checkbox"]').attr('checked', true);
 			}
 			
 			// Single selection
@@ -83,12 +83,12 @@
 				// Press meta key to adjust current range, otherwise the selection will be removed
 				if(!event.metaKey || object.is('.single')) {
 					deselection = items.not(item).filter('.selected').removeClass('selected').trigger('deselect');
-					deselection.find('input[type=checkbox]').attr('checked', false);
+					deselection.find('input[type="checkbox"]').attr('checked', false);
 				}
 				
 				// Toggle selection
 				item.toggleClass('selected');
-				item.find('input[type=checkbox]').attr('checked', true);
+				item.find('input[type="checkbox"]').attr('checked', true);
 				
 				// Fire event
 				if(item.is('.selected')) {
