@@ -781,7 +781,7 @@ Options +FollowSymlinks -Indexes
 				foreach(Administration::instance()->ExtensionManager->listAll() as $name => $about) {
 				    if(Administration::instance()->ExtensionManager->enable($name) === false) continue;
 				}
-				
+
 				// Redirect to backend
 				redirect('http://' . rtrim(str_replace('http://', '', _INSTALL_DOMAIN_), '/') . '/symphony/');
 
@@ -791,7 +791,7 @@ Options +FollowSymlinks -Indexes
 
 	}
 
-	Class Page{
+	Class InstallPage{
 
 		var $_header;
 		var $_footer;
@@ -802,7 +802,7 @@ Options +FollowSymlinks -Indexes
 		var $missing;
 		var $_page;
 
-		function Page(&$log){
+		function __construct(&$log){
 			$this->_header = $this->_footer = $this->_content = NULL;
 			$this->_result = NULL;
 			$this->_vars = $this->missing = array();
@@ -1277,7 +1277,7 @@ Options +FollowSymlinks -Indexes
 
 	$Log = new SymphonyLog('install-log.txt');
 
-	$Page = new Page($Log);
+	$Page = new InstallPage($Log);
 
 	$Page->setHeader(kHEADER);
 	$Page->setFooter(kFOOTER);
@@ -1314,4 +1314,3 @@ Options +FollowSymlinks -Indexes
 	header('Content-Type: text/html; charset=UTF-8');
 	header(sprintf('Content-Length: %d', strlen($output)));
 	echo $output;
-
