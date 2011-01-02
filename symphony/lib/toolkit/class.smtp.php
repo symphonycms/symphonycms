@@ -56,11 +56,12 @@
 		 *	When ssl is used, defaults to 465
 		 * 	When no ssl is used, and ini_get returns no value, defaults to 25.
 		 * @param int $port
-		 * @param array $options
 		 *	Currenly supports 3 values:
 		 *		$options['secure'] can be ssl, tls or null.
 		 * 		$options['username'] the username used to login to the server. Leave empty for no authentication.
 		 * 		$options['password'] the password used to login to the server. Leave empty for no authentication.
+		 * 		$options['local_ip'] the ip address used in the ehlo/helo commands. Only ip's are accepted.
+		 * @param array $options
 		 * @return void
 		 */
 		public function __construct($host = '127.0.0.1', $port = null, $options = array()){
@@ -85,6 +86,12 @@
 						throw new SMTPException('Unsupported SSL type');
 						break;
 				}
+			}
+			if (is_null($options['local_ip'])) {
+				$this->_ip = gethostbyname(php_uname('n'));
+			}
+			else{
+				$this->_ip = $options['local_ip'];
 			}
 			if ($port == null) {
 				$port = 25;
@@ -340,7 +347,7 @@
 			if(!is_resource($this->_connection)){
 				throw new SMTPException('No connection to a server present');
 			}
-			$this->_send('EHLO ' . $this->_ip);
+			$this->_send('EHLO [' . $this->_ip . ']');
 			$this->_expect(array(250, 220), 300);
 		}
 		
@@ -354,7 +361,7 @@
 			if(!is_resource($this->_connection)){
 				throw new SMTPException('No connection to a server present');
 			}
-			$this->_send('HELO ' . $this->_ip);
+			$this->_send('HELO [' . $this->_ip . ']');
 			$this->_expect(array(250, 220), 300);
 		}
 		
