@@ -582,9 +582,34 @@ var Symphony = {};
 		// Set data source manager context
 		$('#context').change();
 
-		// Disable checkbox checking/unchecking when clicking on the following text inputs
-		$('input[name=fields[max_records]], input[name=fields[page_number]]').click(function(event) {
+		// Once pagination is disabled, max_records and page_number are disabled too
+		var max_record = $('input[name*=max_records]'),
+			page_number = $('input[name*=page_number]');
+
+		$('input[name*=paginate_results]').change(function(event) {
+
+			// Turn on pagination
+			if($(this).is(':checked')) {
+				max_record.attr('disabled', false);
+				page_number.attr('disabled', false);
+			}
+
+			// Turn off pagination
+			else {
+				max_record.attr('disabled', true);
+				page_number.attr('disabled', true);
+			}
+		}).change();
+
+		// Disable paginate_results checking/unchecking when clicking on either max_records or page_number
+		max_record.add(page_number).click(function(event) {
 			event.preventDefault();
+		});
+
+		// Enabled fields on submit
+		$('form').bind('submit', function() {
+			max_record.attr('disabled', false);
+			page_number.attr('disabled', false);
 		});
 
 		// Upload fields
