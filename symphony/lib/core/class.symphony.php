@@ -140,18 +140,9 @@
 			if(!self::isLoggedIn() && is_null($this->Author)){
 				GenericExceptionHandler::$enabled = false;
 			}
-			// Fetch user language
-			else {
-				$user_lang = $this->Author->get('language');
-			}
 
 			// Set system language
-			if(empty($user_lang)) {
-				Lang::set(self::$Configuration->get('lang', 'symphony'));
-			}
-			else {
-				Lang::set($user_lang);
-			}
+			Lang::set(self::$Configuration->get('lang', 'symphony'));
 		}
 
 		/**
@@ -419,7 +410,8 @@
 					$this->_user_id = $id;
 					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 					$this->Author = AuthorManager::fetchByID($id);
-
+					Lang::set($this->Author->get('language'));
+					
 					return true;
 				}
 			}
