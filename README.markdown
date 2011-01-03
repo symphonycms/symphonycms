@@ -1,16 +1,16 @@
 # Symphony 2 #
 
-- Version: 2.1.2
-- Date: 20th Oct 2010
-- Release Notes: <http://symphony-cms.com/download/releases/version/2.1.2/>
-- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.1.2>
+- Version: 2.2 beta
+- Date: 2nd Jan 2011
+- Release Notes: <http://symphony-cms.com/download/releases/version/2.2/>
+- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.2>
 
 
 ## Overview
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as 
-its core technologies. This repository represents version "2.1.2" and is 
-considered stable.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as
+its core technologies. This repository represents version "2.2 beta" and is
+considered _un_stable.
 
 Visit the forum at <http://symphony-cms.com/discuss/>
 
@@ -26,23 +26,23 @@ Visit the forum at <http://symphony-cms.com/discuss/>
 
 #### Versions Prior to 2.1
 
-As of version `2.1`, Symphony stores passwords using the more secure 
-[SHA1](http://php.net/sha1) algorithm (previous versions used MD5). 
+As of version `2.1`, Symphony stores passwords using the more secure
+[SHA1](http://php.net/sha1) algorithm (previous versions used MD5).
 When updating to 2.1, the primary user's login password will be reset
 (the new password will be displayed by the updater—please note it).
  **Please also note that all other users' passwords will no longer be valid
-and will require a manual reset through Symphony's forgotten password feature.** 
-Alternatively, as an administrator, you can also change your users' 
+and will require a manual reset through Symphony's forgotten password feature.**
+Alternatively, as an administrator, you can also change your users'
 passwords on their behalf.
 
 #### Versions Prior to 2.0.5
 
-Version `2.0.5` introduced multiple includable elements, in the Data Source 
-Editor, for a single field. After updating from `2.0.5` or lower, the DS 
-editor will seem to "forget" about any `Textarea` fields selected when you 
-are editing existing Data Sources. After updating, you must ensure you 
-re-select them before saving. Note, this will only effect Data Sources that 
-you edit and were created prior to `2.0.5`. Until that point, the field will 
+Version `2.0.5` introduced multiple includable elements, in the Data Source
+Editor, for a single field. After updating from `2.0.5` or lower, the DS
+editor will seem to "forget" about any `Textarea` fields selected when you
+are editing existing Data Sources. After updating, you must ensure you
+re-select them before saving. Note, this will only effect Data Sources that
+you edit and were created prior to `2.0.5`. Until that point, the field will
 still be included in any front-end XML
 
 ### Via Git
@@ -51,7 +51,7 @@ still be included in any front-end XML
 
 As of version 2.1, we are now using [GitHub's organisations feature](http://github.com/blog/674-introducing-organizations).
  As a result, all submodules—as well as the main Symphony 2 repo—are forks owned by the
-[Symphony CMS organisation](http://github.com/symphonycms/). 
+[Symphony CMS organisation](http://github.com/symphonycms/).
 
 To fully update your git-based installation, please **edit your `.git/config`
 and the `.git/config` of each core extension** (`debugdevkit`, `profiledevkit`,
@@ -105,7 +105,7 @@ Follow the instructions below if you are updating from Symphony version 2.0 (not
 1. Clone the git repository to the location you desire using:
 
 		git clone git://github.com/symphonycms/symphony-2.git
-		
+
 	Should you wish to make contributions back to the project, fork the master tree rather than cloning, and issue pull requests via github.
 
 	The following repositories are included as submodules:
@@ -123,11 +123,11 @@ Follow the instructions below if you are updating from Symphony version 2.0 (not
 
 		git submodule update --init
 
-4. _(Optional)_ If you would like the [default ensemble](http://github.com/symphonycms/workspace/tree) installed as well, 
+4. _(Optional)_ If you would like the [default ensemble](http://github.com/symphonycms/workspace/tree) installed as well,
 you will need to use the following command from within the Symphony 2 folder you just created:
 
 		git clone git://github.com/symphonycms/workspace.git
-		
+
 5. Point your web browser at <http://yourwebsite.com/install.php> and provide
 details for establishing a database connection and about your server environment.
 
@@ -138,7 +138,7 @@ details for establishing a database connection and about your server environment
 
 **Note: You can leave `/workspace` out if you do not want the default theme.**
 
-1. This step assumes you downloaded a zip archive from the [Symphony website](http://symphony-cms.com). 
+1. This step assumes you downloaded a zip archive from the [Symphony website](http://symphony-cms.com).
 Upload the following files and directories to the root directory of your website:
 
 	- index.php

@@ -33,11 +33,17 @@
 		objects.addClass('selectable');
 		
 		// Process selections
-		objects.delegate(settings.items, 'click.symSelectable', function(event) {
+		objects.delegate(settings.items, 'click.selectable', function(event) {
 			var item = $(this),
 				items = item.siblings().andSelf(),
 				object = $(event.liveFired),
+				target = $(event.target),
 				selection, deselection, first, last;
+			
+			// Ignore clicks on links
+			if(target.is('a')) {
+				return true;
+			}
 				
 			// Remove text ranges
 			if(window.getSelection) {
@@ -64,11 +70,11 @@
 				
 				// Deselect items outside the selection range
 				deselection = items.filter('.selected').not(selection).removeClass('selected').trigger('deselect');
-				deselection.find('input[type=checkbox]').attr('checked', false);
+				deselection.find('input[type="checkbox"]').attr('checked', false);
 				
 				// Select range
 				selection.addClass('selected').trigger('select');
-				selection.find('input[type=checkbox]').attr('checked', true);
+				selection.find('input[type="checkbox"]').attr('checked', true);
 			}
 			
 			// Single selection
@@ -77,12 +83,12 @@
 				// Press meta key to adjust current range, otherwise the selection will be removed
 				if(!event.metaKey || object.is('.single')) {
 					deselection = items.not(item).filter('.selected').removeClass('selected').trigger('deselect');
-					deselection.find('input[type=checkbox]').attr('checked', false);
+					deselection.find('input[type="checkbox"]').attr('checked', false);
 				}
 				
 				// Toggle selection
 				item.toggleClass('selected');
-				item.find('input[type=checkbox]').attr('checked', true);
+				item.find('input[type="checkbox"]').attr('checked', true);
 				
 				// Fire event
 				if(item.is('.selected')) {
@@ -96,7 +102,7 @@
 		});
 				
 		// Handle highlighting conflicts between orderable and selectable items
-		objects.find(settings.handles).bind('mousedown', function(event) {
+		objects.find(settings.handles).bind('mousedown.selectable', function(event) {
 			var object = $(this).parents(objects[0].tagName).addClass('selecting');
 			window.setTimeout(function() {
 			    object.removeClass('selecting');
@@ -104,7 +110,7 @@
 		});	
 		
 		// Remove all selections by doubleclicking the body
-		$('body').bind('dblclick', function() {
+		$('body').bind('dblclick.selectable', function() {
 			objects.find(settings.items).removeClass('selected');
 		});
 		

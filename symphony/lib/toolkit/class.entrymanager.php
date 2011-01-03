@@ -569,28 +569,46 @@
 		 */
 		public function fetchByPage($page = 1, $section_id, $entriesPerPage, $where = null, $joins = null, $group = false, $records_only = false, $buildentries = true, Array $element_names = null){
 
-			if(!is_string($entriesPerPage) && !is_numeric($entriesPerPage)){
+			if($entriesPerPage != NULL && !is_string($entriesPerPage) && !is_numeric($entriesPerPage)){
 				throw new Exception(__('Entry limit specified was not a valid type. String or Integer expected.'));
 			}
+			else if($entriesPerPage == NULL) {
+				$records = $this->fetch(NULL, $section_id, NULL, NULL, $where, $joins, $group, $buildentries, $element_names);
 
-			$start = (max(1, $page) - 1) * $entriesPerPage;
+				$count = $this->fetchCount($section_id, $where, $joins, $group);
 
-			$records = ($entriesPerPage == '0' ? NULL : $this->fetch(NULL, $section_id, $entriesPerPage, $start, $where, $joins, $group, $buildentries, $element_names));
+				$entries = array(
+					'total-entries' => $count,
+					'total-pages' => 1,
+					'remaining-pages' => 0,
+					'remaining-entries' => 0,
+					'start' => 1,
+					'limit' => $count,
+					'records' => $records
+				);
 
-			if($records_only) return array('records' => $records);
+				return $entries;
+			}
+			else {
+				$start = (max(1, $page) - 1) * $entriesPerPage;
 
-			$entries = array(
-				'total-entries' => $this->fetchCount($section_id, $where, $joins, $group),
-				'records' => $records,
-				'start' => max(1, $start),
-				'limit' => $entriesPerPage
-			);
+				$records = ($entriesPerPage == '0' ? NULL : $this->fetch(NULL, $section_id, $entriesPerPage, $start, $where, $joins, $group, $buildentries, $element_names));
 
-			$entries['remaining-entries'] = max(0, $entries['total-entries'] - ($start + $entriesPerPage));
-			$entries['total-pages'] = max(1, ceil($entries['total-entries'] * (1 / $entriesPerPage)));
-			$entries['remaining-pages'] = max(0, $entries['total-pages'] - $page);
+				if($records_only) return array('records' => $records);
 
-			return $entries;
+				$entries = array(
+					'total-entries' => $this->fetchCount($section_id, $where, $joins, $group),
+					'records' => $records,
+					'start' => max(1, $start),
+					'limit' => $entriesPerPage
+				);
+
+				$entries['remaining-entries'] = max(0, $entries['total-entries'] - ($start + $entriesPerPage));
+				$entries['total-pages'] = max(1, ceil($entries['total-entries'] * (1 / $entriesPerPage)));
+				$entries['remaining-pages'] = max(0, $entries['total-pages'] - $page);
+
+				return $entries;
+			}
 
 		}
 

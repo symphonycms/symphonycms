@@ -30,7 +30,7 @@
 			var start = function() {
 				item = $(this).parents(settings.items);
 				
-				$(document).mouseup(stop);
+				$(document).bind('mouseup.collapsible', stop);
 				
 				if (item.is('.collapsed')) {
 					object.addClass('expanding');
@@ -48,7 +48,7 @@
 			};
 			
 			var stop = function() {
-				$(document).unbind('mouseup', stop);
+				$(document).unbind('mouseup.collapsible', stop);
 				
 				if (item != null) {
 					object.removeClass('expanding collapsing');
@@ -101,8 +101,8 @@
 						var item = $(this);
 						var handle = item.find(settings.handles);
 						
-						handle.unbind('mousedown', start);
-						handle.bind('mousedown', start);
+						handle.unbind('mousedown.collapsible', start);
+						handle.bind('mousedown.collapsible', start);
 					});
 				},
 				

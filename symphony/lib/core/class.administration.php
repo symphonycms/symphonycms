@@ -137,7 +137,7 @@
 						$section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
 					}
 
-					$default_area = "/publish/" . $section_handle . "/";
+					$default_area = "/publish/{$section_handle}/";
 
 				}
 				else if(!is_null($this->Author->get('default_area'))) {

@@ -16,76 +16,78 @@
 	$.fn.symphonyTags = function(custom_settings) {
 		var objects = this;
 		var settings = {
-			items:				'li'
+			items: 'li'
 		};
 
 		$.extend(settings, custom_settings);
 
 	/*-----------------------------------------------------------------------*/
 
-		objects = objects.map(function() {
-			var object = $(this);
-			
-			object.find(settings.items).bind('click', function() {
+		return objects.delegate(settings.items, 'click.tags', function(event) {
+			var item = $(this),
+				object = item.parent(),
+				input = object.parent().find('label input'),
+				value = input.val(),
+				tag = item.attr('class') || item.text();
 
-				var input = $(this).parent().prevAll('label').find('input')[0];
-				var tag = this.className || $(this).text();
+			// Singular
+			if(object.is('.singular')) {
+				input.val(tag);
+			}
 
-				if(input === undefined) {
-					input = $(this).parent().prevAll('#error').find('label input')[0]
+			// Inline
+			else if(object.is('.inline')) {
+				var start = input[0].selectionStart,
+					end = input[0].selectionEnd,
+					position = 0;
+
+				// Insert tag
+				if(start > 0) {
+					input.val(value.substring(0, start) + tag + value.substring(end, value.length));
+					position = start + tag.length;
 				}
 
-				input.focus();
-
-				// Singular
-				if (object.hasClass('singular')) {
-					input.value = tag;
-				}
-
-				// Inline
-				else if (object.hasClass('inline')) {
-					var start = input.selectionStart;
-					var end = input.selectionEnd;
-
-					if (start >= 0) {
-						input.value = input.value.substring(0, start) + tag + input.value.substring(end, input.value.length);
-					}
-
-					else {
-						input.value += tag;
-					}
-
-					input.selectionStart = start + tag.length;
-					input.selectionEnd = start + tag.length;
-				}
-
-				// Multiple
+				// Append tag
 				else {
-					var exp = new RegExp('^' + tag + '$', 'i');
-					var tags = input.value.split(/,\s*/);
-					var removed = false;
+					input.val(value + tag);
+					position = value.length + tag.length;
+				}
 
-					for (var index in tags) {
-						if (tags[index].match(exp)) {
-							tags.splice(index, 1);
-							removed = true;
-						}
+				// Reset cursor position
+				input[0].selectionStart = position;
+				input[0].selectionEnd = position;
+			}
 
-						else if (tags[index] == '') {
-							tags.splice(index, 1);
-						}
+			// Multiple
+			else {
+				var exp = new RegExp('^' + tag + '$', 'i'),
+					tags = value.split(/,\s*/),
+					removed = false;
+
+				// Check existing tags
+				for(var index in tags) {
+				
+					// Remove existing tag
+					if(tags[index].match(exp)) {
+						tags.splice(index, 1);
+						removed = true;
 					}
 
-					if (!removed) tags.push(tag);
-
-					input.value = tags.join(', ');
+					// Remove empty tags
+					else if(tags[index] == '') {
+						tags.splice(index, 1);
+					}
 				}
-			});
 
-			return object;
+				// Add new tag
+				if(removed === false) {
+					tags.push(tag);
+				}
+
+				// Save tags
+				input.val(tags.join(', '));
+			}
 		});
-
-		return objects;
 	};
 
 })(jQuery.noConflict());

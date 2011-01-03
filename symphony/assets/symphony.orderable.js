@@ -27,20 +27,18 @@
 			var object = this;
 			var state = null;
 			
-			var start = function() {
+			var start = function(item) {		
 				state = {
-					item:		$(this).parents(settings.items),
+					item:		item,
 					min:		null,
 					max:		null,
 					delta:		0
 				};
 				
-				$(document).mousemove(change);
-				$(document).mouseup(stop);
+				$(document).bind('mousemove.orderable', change);
+				$(document).bind('mouseup.orderable', stop);
 				
 				$(document).mousemove();
-				
-				return false;
 			};
 			
 			var change = function(event) {
@@ -95,8 +93,7 @@
 			};
 			
 			var stop = function() {
-				$(document).unbind('mousemove', change);
-				$(document).unbind('mouseup', stop);
+				$(document).unbind('.orderable');
 				
 				if (state != null) {
 					object.removeClass('ordering');
@@ -116,8 +113,7 @@
 			
 			object.orderable = {
 				cancel: function() {
-					$(document).unbind('mousemove', change);
-					$(document).unbind('mouseup', stop);
+					$(document).unbind('.orderable');
 					
 					if (state != null) {
 						object.removeClass('ordering');
@@ -129,12 +125,15 @@
 				
 				initialize: function() {
 					object.addClass('orderable');
-					object.find(settings.items).each(function() {
-						var item = $(this);
-						var handle = item.find(settings.handles);
-						
-						handle.unbind('mousedown', start);
-						handle.bind('mousedown', start);
+					object.delegate(settings.items + ' ' + settings.handles, 'mousedown.orderable', function(event) {
+						var target = $(event.target),
+							item = $(this).parents(settings.items);
+
+						// Keep fields accessible inside orderable list
+						if(!target.is('input, textarea, select')) {
+							start(item);
+							return false;
+						}
 					});
 				}
 			};

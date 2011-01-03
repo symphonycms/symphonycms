@@ -163,9 +163,9 @@
 	if ($this->dsParamPARAMOUTPUT) $datasource_schema[] = $this->dsParamPARAMOUTPUT;
 	if ($this->dsParamGROUP) $datasource_schema[] = $entryManager->fieldManager->fetchHandleFromID($this->dsParamGROUP);
 	
-	$entries = $entryManager->fetchByPage($this->dsParamSTARTPAGE, 
+	$entries = $entryManager->fetchByPage(($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1), 
 										  $this->getSource(), 
-										  ($this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : NULL), 
+										  ($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : NULL), 
 										  $where, $joins, $group, 
 										  (!$include_pagination_element ? true : false), 
 										  true,
@@ -187,7 +187,7 @@
         'filters' => $this->dsParamFILTERS
 	));
 	
-	if(($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records'])) || !ctype_digit($this->dsParamSTARTPAGE) || $this->dsParamSTARTPAGE == '0'){		
+	if(($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records'])) || $this->dsParamSTARTPAGE == '0'){		
 		if($this->dsParamREDIRECTONEMPTY == 'yes'){
 			throw new FrontendPageNotFoundException;
 		}
@@ -217,13 +217,13 @@
 			
 			if($include_pagination_element){
 				
-				$t = ($this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : $entries['total-entries']);
+				$t = ($this->dsParamPAGINATERESULTS == 'yes' && isset($this->dsParamLIMIT) && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : $entries['total-entries']);
 				
 				$pagination_element = General::buildPaginationElement(
 					$entries['total-entries'], 
 					$entries['total-pages'], 
 					$t, 
-					$this->dsParamSTARTPAGE);
+					($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1));
 
 				if($pagination_element instanceof XMLElement && $result instanceof XMLElement){
 					$result->prependChild($pagination_element); 
@@ -234,7 +234,7 @@
 		
 		if(isset($this->dsParamPARAMOUTPUT) && !is_array($param_pool[$key])) $param_pool[$key] = array();
 		
-		if($this->dsParamLIMIT > 0){
+		if(!isset($this->dsParamLIMIT) || $this->dsParamLIMIT > 0){
 		
 			if(isset($this->dsParamGROUP)):
 				$fieldPool[$this->dsParamGROUP] =& $entryManager->fieldManager->fetch($this->dsParamGROUP);		
