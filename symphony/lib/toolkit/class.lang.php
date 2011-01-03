@@ -261,13 +261,7 @@
 				// Load extension translations
 				if(class_exists('Symphony')) {
 
-					// Fetch Extension Manager
-					if(class_exists('Administration')) {
-						$ExtensionManager = Administration::instance()->ExtensionManager;
-					}
-					else {
-						$ExtensionManager = Frontend::instance()->ExtensionManager;
-					}
+					$ExtensionManager = new ExtensionManager();
 
 					// Loop through extensions
 					foreach($ExtensionManager->listAll() as $handle => $extension) {
