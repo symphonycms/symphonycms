@@ -56,8 +56,8 @@
 		 *  The Administration object that this manager has been created from
 		 *  passed by reference
 		 */
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function __construct(&$parent=StdClass){
+			parent::__construct(&$parent);
 			$this->listAll();
 		}
 
