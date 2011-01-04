@@ -458,11 +458,7 @@
 					if ($hasDelegate) {
 						$entryManager = new EntryManager($this->_Parent);
 						foreach($checked as $section_id) {
-							$entries = $entryManager->fetch(NULL, $section_id, NULL, NULL, NULL, NULL, false, false);
-							$entry_ids = array();
-							foreach($entries as $entry) {
-								$entry_ids[] = $entry['id'];
-							}
+							$entries = Symphony::Database()->fetchCol('id', "SELECT id FROM `tbl_entries` WHERE `section_id` = '{$section_id}'");
 
 							/**
 							 * Prior to deletion of entries.
@@ -473,9 +469,9 @@
 							 * @param array $entry_id
 							 *  An array of Entry ID's that are about to be deleted, passed by reference
 							 */
-							Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => &$entry_ids));
+							Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => &$entries));
 
-							$entryManager->delete($entry_ids);
+							$entryManager->delete($entries);
 						}
 					}
 					
