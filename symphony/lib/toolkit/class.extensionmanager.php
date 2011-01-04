@@ -113,6 +113,15 @@
 		}
 
 		/**
+		 * This function returns all subscribed delegates.
+		 *
+		 * @return array
+		 */
+		public function getSubscriptions(){
+			return self::$_subscriptions;
+		}
+
+		/**
 		 * Populates the `ExtensionManager::$_extensions` array with all the
 		 * extensions stored in `tbl_extensions`. If `ExtensionManager::$_extensions`
 		 * isn't empty, passing true as a parameter will force the array to update
