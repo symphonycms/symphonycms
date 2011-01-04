@@ -442,26 +442,55 @@
 				}
 
 				else if($_POST['with-selected'] == 'delete-entries') {
-					$entryManager = new EntryManager($this->_Parent);
-					foreach($checked as $section_id) {
-						$entries = $entryManager->fetch(NULL, $section_id, NULL, NULL, NULL, NULL, false, false);
-						$entry_ids = array();
-						foreach($entries as $entry) {
-							$entry_ids[] = $entry['id'];
+					$subscriptions = Administration::instance()->ExtensionManager->getSubscriptions();
+					$hasDelegate = false;
+					
+					// Checks if there are subscribed delegates
+					foreach($subscriptions as $subscription) {
+						if ($subscription['delegate'] == 'Delete' && $subscription['page'] == '/publish/'){
+							$hasDelegate = true;
+							break;
 						}
+					}
+					
+					// D'oh! We have an extension that is subscribed to this delegate
+					// As it fetches all entries from database, execution might be slower
+					if ($hasDelegate) {
+						$entryManager = new EntryManager($this->_Parent);
+						foreach($checked as $section_id) {
+							$entries = $entryManager->fetch(NULL, $section_id, NULL, NULL, NULL, NULL, false, false);
+							$entry_ids = array();
+							foreach($entries as $entry) {
+								$entry_ids[] = $entry['id'];
+							}
 
-						/**
-						 * Prior to deletion of entries.
-						 *
-						 * @delegate Delete
-						 * @param string $context
-						 * '/publish/'
-						 * @param array $entry_id
-						 *  An array of Entry ID's that are about to be deleted, passed by reference
-						 */
-						Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => &$entry_ids));
+							/**
+							 * Prior to deletion of entries.
+							 *
+							 * @delegate Delete
+							 * @param string $context
+							 * '/publish/'
+							 * @param array $entry_id
+							 *  An array of Entry ID's that are about to be deleted, passed by reference
+							 */
+							Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => &$entry_ids));
 
-						$entryManager->delete($entry_ids);
+							$entryManager->delete($entry_ids);
+						}
+					}
+					
+					// Optimized way to delete entries from sections
+					else {
+						foreach($checked as $section_id) {
+							$query = "SELECT id FROM `tbl_fields` WHERE `parent_section` = '{$section_id}'";
+							$fields = Symphony::Database()->fetchCol('id', $query);
+
+							foreach($fields as $id){
+								Symphony::Database()->query("TRUNCATE TABLE tbl_entries_data_{$id}");
+							}
+
+							Symphony::Database()->delete('tbl_entries', " `section_id` = '{$section_id}'");
+						}
 					}
 
 					redirect(SYMPHONY_URL . '/blueprints/sections/');

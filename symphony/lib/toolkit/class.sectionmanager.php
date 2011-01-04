@@ -79,15 +79,11 @@
 		 *  The ID of the Section to delete
 		 */
 		public function delete($section_id){
-
 			$query = "SELECT `sortorder` FROM tbl_sections WHERE `id` = '$section_id'";
 			$details = Symphony::Database()->fetchRow(0, $query);
 
 			## Delete all the entries
-			include_once(TOOLKIT . '/class.entrymanager.php');
-			$entryManager = new EntryManager($this->_Parent);
-			$entries = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_entries` WHERE `section_id` = '$section_id'");
-			$entryManager->delete($entries);
+			Symphony::Database()->delete('tbl_entries', " `section_id` = '$section_id'");
 
 			## Delete all the fields
 			$fieldManager = new FieldManager($this->_Parent);

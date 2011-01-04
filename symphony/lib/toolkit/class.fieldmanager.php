@@ -141,7 +141,6 @@
 		 * @return boolean
 		 */
 		public function delete($id){
-
 			$existing = $this->fetch($id);
 
 			Symphony::Database()->delete('tbl_fields', " `id` = '$id'");
