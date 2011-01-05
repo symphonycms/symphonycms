@@ -308,7 +308,7 @@
 		public function handle(){
 			return $this->_handle;
 		}
-		
+
 		/**
 		 * Accessor to the name of this field object. The name may contain characters
 		 * that normally would be stripped in the handle while also allowing the field
@@ -1105,7 +1105,7 @@
 		 */
 		public function createSectionAssociation($parent_section_id = null, $child_field_id = null, $parent_field_id = null, $show_association = true){
 
-			if(is_null($parent_section_id) && $parent_field_id === false) return false;
+			if(is_null($parent_section_id) && (is_null($parent_field_id) || !$parent_field_id)) return false;
 
 			if(is_null($parent_section_id )) {
 				$parent_section_id = Symphony::Database()->fetchVar('parent_section', 0,
