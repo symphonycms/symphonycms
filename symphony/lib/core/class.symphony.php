@@ -130,7 +130,7 @@
 
 			$this->initialiseLog();
 
-			GenericExceptionHandler::initialise();
+			GenericExceptionHandler::initialise(self::$Log);
 			GenericErrorHandler::initialise(self::$Log);
 
 			$this->initialiseCookie();
