@@ -448,7 +448,7 @@
 				// DS output params get flattened to a string, so get the original pre-flattened array
 				if (isset($this->_env['pool'][$key])) $value = $this->_env['pool'][$key];
 
-				if (is_array($value)) {
+				if (is_array($value) && !(count($value) == 1 && empty($value[0]))) {
 					foreach ($value as $key => $value) {
 						$item = new XMLElement('item', General::sanitize($value));
 						$item->setAttribute('handle', Lang::createHandle($value));

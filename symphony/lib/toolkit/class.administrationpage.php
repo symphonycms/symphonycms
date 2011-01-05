@@ -493,20 +493,6 @@
 								$can_access_child = true;
 
 							if($can_access_child) {
-								// Make sure preferences menu only shows if multiple languages or extension preferences are available
-								if($c['name'] == __('Preferences') && $n['name'] == __('System')){
-									$extensions = Symphony::Database()->fetch("
-											SELECT *
-											FROM `tbl_extensions_delegates`
-											WHERE `delegate` = 'AddCustomPreferenceFieldsets'"
-									);
-
-									$l = Lang::getAvailableLanguages();
-									if(count($l) == 1 && (!is_array($extensions) || empty($extensions))){
-										continue;
-									}
-								}
-
 								$xChild = new XMLElement('li');
 								$xChild->appendChild(
 									Widget::Anchor($c['name'], URL . '/symphony' . $c['link'])

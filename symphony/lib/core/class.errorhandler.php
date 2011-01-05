@@ -2,7 +2,9 @@
 	/**
 	 * @package core
 	 */
-
+	
+	require_once(CORE . '/class.log.php');
+	
 	/**
 	 * GenericExceptionHandler will handle any uncaught exceptions thrown in Symphony.
 	 * Additionally, all errors in Symphony are raised to exceptions to be handled by this class.
@@ -18,12 +20,23 @@
 		public static $enabled = true;
 
 		/**
+		 * An instance of the Symphony Log class, used to write errors to the log
+		 * @var Log
+		 */
+		private static $_Log = null;
+
+		/**
 		 * The initialise function will set the exception_handler to the this class's
 		 * handler function
 		 */
-		public static function initialise(){
+		public static function initialise($Log = null){
+			if(!is_null($Log)){
+				self::$_Log = $Log;
+			}
 			set_exception_handler(array(__CLASS__, 'handler'));
 		}
+		
+		
 
 		/**
 		 * Retrieves a window of lines before and after the line where the error
@@ -56,7 +69,19 @@
 		public static function handler($e){
 			try{
 
-				if(self::$enabled !== true) return;
+				// Exceptions should be logged if they are not caught.
+				if(self::$_Log instanceof Log){
+					self::$_Log->pushToLog(
+						sprintf(
+							'%s%s%s', $e->getMessage(), ($e->getFile ? " in file " .  $e->getFile() : null), ($e->getLine() ? " on line " . $e->getLine() : null)
+						), get_class($e), true
+					);
+				}
+				// Instead of just throwing an empty page, return a 404 page.
+				if(self::$enabled !== true){
+					require_once(CORE . '/class.frontend.php');
+					$e = new FrontendPageNotFoundException();
+				};
 
 				$exception_type = get_class($e);
 				if(class_exists("{$exception_type}Handler") && method_exists("{$exception_type}Handler", 'render')){

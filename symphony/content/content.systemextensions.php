@@ -48,7 +48,7 @@
 					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], Administration::instance()->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));
 					$td2 = Widget::TableData(($about['status'] == EXTENSION_ENABLED ? __('Yes') : __('No')));
 					$td3 = Widget::TableData($about['version']);
-					$td4 = Widget::TableData();
+					$td4 = Widget::TableData(NULL);
 
 					if($about['author'][0] && is_array($about['author'][0])) {
 						foreach($about['author'] as $i => $author) {

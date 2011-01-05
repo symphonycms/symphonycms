@@ -276,7 +276,10 @@
 			if(!Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle())) return false;
 
 			$this->removeSectionAssociation($id);
-			$this->createSectionAssociation(NULL, $id, $this->get('dynamic_options'), $this->get('show_association') == 'yes' ? true : false);
+
+			foreach($this->get('dynamic_options') as $field_id){
+				$this->createSectionAssociation(NULL, $id, $field_id, $this->get('show_association') == 'yes' ? true : false);
+			}
 
 			return true;
 		}
@@ -333,10 +336,11 @@
 			}
 
 			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][dynamic_options]', $options));
-			$div->appendChild($label);
 
-			if(isset($errors['dynamic_options'])) $wrapper->appendChild(Widget::wrapFormElementWithError($div, $errors['dynamic_options']));
-			else $wrapper->appendChild($div);
+			if(isset($errors['dynamic_options'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['dynamic_options']));
+			else $div->appendChild($label);
+
+			$wrapper->appendChild($div);
 
 			## Allow selection of multiple items
 			$label = Widget::Label();
