@@ -17,20 +17,20 @@
 		var settings = {
 			pickables: '.pickable'
 		};
-		
+
 		$.extend(settings, custom_settings);
-		
+
 	/*-----------------------------------------------------------------------*/
-		
+
 		// Pickables
 		var pickables = $(settings.pickables).addClass('.pickable');
-		
+
 		// Process pickers
 		return objects.each(function() {
 			var picker = $(this);
 			var select = picker.find('select');
 			var options = select.find('option');
-	
+
 			// Multiple items
 			if(options.size() > 1) {
 				options.each(function() {
@@ -40,7 +40,7 @@
 					pickables.hide().filter('#' + $(this).val()).show();
 				}).change();
 			}
-			
+
 			// Single item
 			else {
 				picker.hide();

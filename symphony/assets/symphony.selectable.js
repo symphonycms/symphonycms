@@ -18,20 +18,20 @@
 	 *  their ordering handles. The latter is needed to properly handle item highlighting 
 	 *  when used in connection with the orderable plugin
 	 */
- 	$.fn.symphonySelectable = function(custom_settings) {
+	$.fn.symphonySelectable = function(custom_settings) {
 		var objects = this;
 		var settings = {
 			items: 'tbody tr',
 			handles: 'td'
 		};
-		
+
 		$.extend(settings, custom_settings);
-		
+
 	/*-----------------------------------------------------------------------*/
-		
+
 		// Make selectable
 		objects.addClass('selectable');
-		
+
 		// Process selections
 		objects.delegate(settings.items, 'click.selectable', function(event) {
 			var item = $(this),
@@ -39,81 +39,81 @@
 				object = $(event.liveFired),
 				target = $(event.target),
 				selection, deselection, first, last;
-			
+
 			// Ignore clicks on links
 			if(target.is('a')) {
 				return true;
 			}
-				
+
 			// Remove text ranges
 			if(window.getSelection) {
 				window.getSelection().removeAllRanges();
 			}
-			
+
 			// Range selection
 			if((event.shiftKey) && items.filter('.selected').size() > 0 && !object.is('.single')) {
-				
+
 				// Select upwards
 				if(item.prevAll().filter('.selected').size() > 0) {
 					first = items.filter('.selected:first').index();
 					last = item.index() + 1;
 				}
-				
+
 				// Select downwards
 				else {
 					first = item.index();
 					last = items.filter('.selected:last').index() + 1;
 				}
-				
+
 				// Get selection
 				selection = items.slice(first, last);
-				
+
 				// Deselect items outside the selection range
 				deselection = items.filter('.selected').not(selection).removeClass('selected').trigger('deselect');
 				deselection.find('input[type="checkbox"]').attr('checked', false);
-				
+
 				// Select range
 				selection.addClass('selected').trigger('select');
 				selection.find('input[type="checkbox"]').attr('checked', true);
 			}
-			
+
 			// Single selection
 			else {
-			
+
 				// Press meta key to adjust current range, otherwise the selection will be removed
 				if(!event.metaKey || object.is('.single')) {
 					deselection = items.not(item).filter('.selected').removeClass('selected').trigger('deselect');
 					deselection.find('input[type="checkbox"]').attr('checked', false);
 				}
-				
+
 				// Toggle selection
 				item.toggleClass('selected');
 				item.find('input[type="checkbox"]').attr('checked', true);
-				
+
 				// Fire event
 				if(item.is('.selected')) {
 					item.trigger('select');
 				}
 				else {
 					item.trigger('deselect');
-				}		
+				}
 			}
 
 		});
-				
+
 		// Handle highlighting conflicts between orderable and selectable items
-		objects.find(settings.handles).bind('mousedown.selectable', function(event) {
-			var object = $(this).parents(objects[0].tagName).addClass('selecting');
-			window.setTimeout(function() {
-			    object.removeClass('selecting');
-			}, 50);
-		});	
-		
+		objects.find(settings.items).bind('mousedown.selectable', function(event) {
+			$(this).addClass('selecting');
+		});
+		objects.find(settings.items).bind('mouseup.selectable mousemove.selectable', function(event) {
+			$(this).removeClass('selecting');
+		});
+
 		// Remove all selections by doubleclicking the body
 		$('body').bind('dblclick.selectable', function() {
 			objects.find(settings.items).removeClass('selected');
 		});
-		
+
 		// Return objects
 		return objects;
 
