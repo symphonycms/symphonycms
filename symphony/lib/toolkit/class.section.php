@@ -194,12 +194,12 @@
 			if(isset($settings['id'])){
 				$id = $settings['id'];
 				unset($settings['id']);
-				$section_id = $this->_Parent->edit($id, $settings);
+				$section_id = SectionManager::edit($id, $settings);
 
 				if($section_id) $section_id = $id;
 
 			}else{
-				$section_id = $this->_Parent->add($settings);
+				$section_id = SectionManager::add($settings);
 			}
 
 			if(is_numeric($section_id) && $section_id !== false){

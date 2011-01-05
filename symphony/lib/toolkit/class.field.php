@@ -1041,9 +1041,9 @@
 			$fields['sortorder'] = (string)$this->get('sortorder');
 
 			if($id = $this->get('id')){
-				return $this->_Parent->edit($id, $fields);
+				return FieldManager::edit($id, $fields);
 			}
-			else if($id = $this->_Parent->add($fields)){
+			else if($id = FieldManager::add($fields)){
 				$this->set('id', $id);
 				$this->createTable();
 				return true;
