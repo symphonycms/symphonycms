@@ -261,20 +261,14 @@
 				// Load extension translations
 				if(class_exists('Symphony')) {
 
-					// Fetch Extension Manager
-					if(class_exists('Administration')) {
-						$ExtensionManager = Administration::instance()->ExtensionManager;
-					}
-					else {
-						$ExtensionManager = Frontend::instance()->ExtensionManager;
-					}
+					$ExtensionManager = new ExtensionManager;
 
 					// Loop through extensions
 					foreach($ExtensionManager->listAll() as $handle => $extension) {
 
 						// Skip language extensions
-						if(strpos($handle, 'lang_') === false) continue;
-
+						if(strpos($handle, 'lang_') !== false) continue;
+						
 						// Load translations
 						$path = $ExtensionManager->__getClassPath($handle) . '/lang/lang.' . self::get() . '.php';
 						if($extension['status'] == EXTENSION_ENABLED && file_exists($path)) {

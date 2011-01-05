@@ -100,7 +100,7 @@
 				}
 
 				$fields['sort'] = $existing->dsParamSORT;
-				$fields['paginate_results'] = $existing->dsParamPAGINATERESULTS;
+				$fields['paginate_results'] = (isset($existing->dsParamPAGINATERESULTS) ? $existing->dsParamPAGINATERESULTS : 'yes');
 				$fields['page_number'] = $existing->dsParamSTARTPAGE;
 				$fields['limit_type'] = $existing->dsParamLIMITTYPE;
 				$fields['group'] = $existing->dsParamGROUP;

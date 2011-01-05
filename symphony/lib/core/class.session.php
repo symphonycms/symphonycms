@@ -65,7 +65,7 @@
 			if (!self::$_initialized) {
 
 				if(!is_object(Symphony::Database()) || !Symphony::Database()->isConnected()) return false;
-
+				
 				self::$_cache = new Cacheable(Symphony::Database());
 
 				if (self::$_cache->check('_session_config') === false) {

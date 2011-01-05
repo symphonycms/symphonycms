@@ -333,10 +333,11 @@
 			}
 
 			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][dynamic_options]', $options));
-			$div->appendChild($label);
 
-			if(isset($errors['dynamic_options'])) $wrapper->appendChild(Widget::wrapFormElementWithError($div, $errors['dynamic_options']));
-			else $wrapper->appendChild($div);
+			if(isset($errors['dynamic_options'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['dynamic_options']));
+			else $div->appendChild($label);
+
+			$wrapper->appendChild($div);
 
 			## Allow selection of multiple items
 			$label = Widget::Label();

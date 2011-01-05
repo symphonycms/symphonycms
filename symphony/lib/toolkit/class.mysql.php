@@ -303,6 +303,7 @@
 		 * @link http://au2.php.net/manual/en/function.mysql-select-db.php
 		 * @param string $db
 		 *  The name of the database that is to be selected, defaults to null.
+		 * @return boolean
 		 */
 		public function select($db=NULL){
 			if ($db) MySQL::$_connection['database'] = $db;
@@ -536,7 +537,7 @@
 					$sql = trim($sql, ',');
 				}
 			}
-
+			
 			return $this->query($sql);
 		}
 
