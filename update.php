@@ -296,6 +296,8 @@ Options +FollowSymlinks -Indexes
 						'ALTER TABLE `tbl_sections_association` CHANGE  `cascading_deletion` `hide_association` enum("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "no";'
 					);
 
+					// Update Select table to include the new association field
+					$frontend->Database->query('ALTER TABLE `tbl_fields_select` ADD `show_association` ENUM( "yes", "no" ) COLLATE utf8_unicode_ci NOT NULL DEFAULT "yes"');
 					// Update Select tables with Hide Association field
 					$select_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_select`");
 
