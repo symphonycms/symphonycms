@@ -261,7 +261,7 @@
 				// Load extension translations
 				if(class_exists('Symphony')) {
 
-					$ExtensionManager = new ExtensionManager();
+					$ExtensionManager = new ExtensionManager;
 
 					// Loop through extensions
 					foreach($ExtensionManager->listAll() as $handle => $extension) {

@@ -396,7 +396,9 @@
 		 */
 		public function isLoggedIn(){
 			// Ensures that we're in the real world.. Also reduces three queries from database
-			if (is_null(self::$_instance)) return false;
+			// We must return true otherwise exceptions are not shown
+			if (is_null(self::$_instance)) return true;
+			
 			if ($this->Author) return true;
 
 			$username = self::$Database->cleanValue($this->Cookie->get('username'));

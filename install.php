@@ -22,6 +22,7 @@
 	}
 
 	set_error_handler('__errorHandler');
+	ini_set('display_errors', 1);
 
 	// Show PHP Info
 	if(isset($_REQUEST['info'])){
