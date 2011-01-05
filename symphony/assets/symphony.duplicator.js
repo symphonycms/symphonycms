@@ -107,7 +107,6 @@
 				});
 				
 				header.bind('selectstart.duplicator', silence);
-				header.bind('mousedown.duplicator', silence);
 				
 				return instance;
 			};
