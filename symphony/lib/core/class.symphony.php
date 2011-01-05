@@ -91,8 +91,8 @@
 		 * The Symphony constructor initialises the class variables of Symphony.
 		 * It will set the DateTime settings, define new date constants and initialise
 		 * the correct Language for the currently logged in Author. If magic quotes
-		 * are enabled, Symphony will sanitize the `$_SERVER`, `$_COOKIE`, 
-		 * `$_GET` and `$_POST` arrays. The constructor loads in 
+		 * are enabled, Symphony will sanitize the `$_SERVER`, `$_COOKIE`,
+		 * `$_GET` and `$_POST` arrays. The constructor loads in
 		 * the initial Configuration values from the `CONFIG` file
 		 */
 		protected function __construct(){
@@ -106,7 +106,7 @@
 				General::cleanArray($_GET);
 				General::cleanArray($_POST);
 			}
-			
+
 			// Includes the existing CONFIG file and initialises the Configuration
 			// by setting the values with the setArray function.
 			include(CONFIG);
@@ -130,7 +130,7 @@
 
 			$this->initialiseLog();
 
-			GenericExceptionHandler::initialise();
+			GenericExceptionHandler::initialise(self::$Log);
 			GenericErrorHandler::initialise(self::$Log);
 
 			$this->initialiseCookie();
@@ -395,31 +395,36 @@
 		 * @see core.Cookie#expire()
 		 */
 		public function isLoggedIn(){
+
 			// Ensures that we're in the real world.. Also reduces three queries from database
 			// We must return true otherwise exceptions are not shown
 			if (is_null(self::$_instance)) return true;
-			
-			if ($this->Author) return true;
 
-			$username = self::$Database->cleanValue($this->Cookie->get('username'));
-			$password = self::$Database->cleanValue($this->Cookie->get('pass'));
-
-			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
-
-				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
-
-				if($id){
-					$this->_user_id = $id;
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
-					$this->Author = AuthorManager::fetchByID($id);
-					Lang::set($this->Author->get('language'));
-					
-					return true;
-				}
+			if ($this->Author){
+				return true;
 			}
+			else{
 
-			$this->Cookie->expire();
-			return false;
+				$username = self::$Database->cleanValue($this->Cookie->get('username'));
+				$password = self::$Database->cleanValue($this->Cookie->get('pass'));
+
+				if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
+
+					$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
+
+					if($id){
+						$this->_user_id = $id;
+						self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+						$this->Author = AuthorManager::fetchByID($id);
+						Lang::set($this->Author->get('language'));
+
+						return true;
+					}
+				}
+
+				$this->Cookie->expire();
+				return false;
+			}
 		}
 
 		/**
