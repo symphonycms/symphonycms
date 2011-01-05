@@ -395,29 +395,31 @@
 		 * @see core.Cookie#expire()
 		 */
 		public function isLoggedIn(){
-			// Ensures that we're in the real world.. Also reduces three queries from database
-			if (is_null(self::$_instance)) return false;
-			if ($this->Author) return true;
-
-			$username = self::$Database->cleanValue($this->Cookie->get('username'));
-			$password = self::$Database->cleanValue($this->Cookie->get('pass'));
-
-			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
-
-				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
-
-				if($id){
-					$this->_user_id = $id;
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
-					$this->Author = AuthorManager::fetchByID($id);
-					Lang::set($this->Author->get('language'));
-					
-					return true;
-				}
+			if ($this->Author){
+				return true;
 			}
+			else{
 
-			$this->Cookie->expire();
-			return false;
+				$username = self::$Database->cleanValue($this->Cookie->get('username'));
+				$password = self::$Database->cleanValue($this->Cookie->get('pass'));
+
+				if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
+
+					$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
+
+					if($id){
+						$this->_user_id = $id;
+						self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+						$this->Author = AuthorManager::fetchByID($id);
+						Lang::set($this->Author->get('language'));
+						
+						return true;
+					}
+				}
+
+				$this->Cookie->expire();
+				return false;
+			}
 		}
 
 		/**
