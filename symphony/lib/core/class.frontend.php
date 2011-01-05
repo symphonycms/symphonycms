@@ -40,12 +40,12 @@
 		/**
 		 * The constructor for Frontend calls the parent Symphony
 		 * constructor.
-         *
-         * @see core.Symphony#__construct()
+		 *
+		 * @see core.Symphony#__construct()
 		 * @deprecated The constructor creates backwards compatible references
-		 *  to `$this->Database` and `$this->Configuration`
-		 *  that act as alias for `Symphony::Database()`
-		 *  or `Symphony::Configuration()`. This will be removed in the
+		 *  to `$this->Database`, `$this->ExtensionManager` and `$this->Configuration`
+		 *  that act as alias for `Symphony::Database()`, `Symphony::ExtensionManager()`
+		 *  and `Symphony::Configuration()`. These will be removed in the
 		 *  next Symphony release
 		 */
 		protected function __construct() {
@@ -56,6 +56,7 @@
 			// Need this part for backwards compatiblity
 			$this->Database = Symphony::Database();
 			$this->Configuration = Symphony::Configuration();
+			$this->ExtensionManager = Symphony::ExtensionManager();
 		}
 
 		/**
@@ -74,7 +75,7 @@
 		 * This function allows the use of 'admin' type pages, where a Frontend
 		 * page requires that the viewer be a Symphony Author
 		 *
-         * @see core.Symphony#loginFromToken()
+		 * @see core.Symphony#loginFromToken()
 		 * @return boolean
 		 */
 		public function isLoggedIn() {

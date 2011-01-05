@@ -65,9 +65,9 @@
 		 *
 		 * @see core.Symphony#__construct()
 		 * @deprecated The constructor creates backwards compatible references
-		 *  to `$this->Database` and `$this->Configuration`
-		 *  that act as alias for `Symphony::Database()`
-		 *  or `Symphony::Configuration()`. These will be removed in the
+		 *  to `$this->Database`, `$this->ExtensionManager` and `$this->Configuration`
+		 *  that act as alias for `Symphony::Database()`, `Symphony::ExtensionManager()`
+		 *  and `Symphony::Configuration()`. These will be removed in the
 		 *  next Symphony release
 		 */
 		protected function __construct(){
@@ -76,6 +76,7 @@
 			// Need this part for backwards compatiblity
 			$this->Database = Symphony::Database();
 			$this->Configuration = Symphony::Configuration();
+			$this->ExtensionManager = Symphony::ExtensionManager();
 		}
 
 		/**

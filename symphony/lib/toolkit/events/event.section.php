@@ -23,20 +23,20 @@
 			}
 
 			/**
-             * Prior to saving entry from the front-end. This delegate will
-             * force the Event to terminate if it populates the error
-             * array reference. Provided with references to this object, the
+			 * Prior to saving entry from the front-end. This delegate will
+			 * force the Event to terminate if it populates the error
+			 * array reference. Provided with references to this object, the
 			 * `$_POST` data and also the error array
-             * 
-             * @delegate EventPreSaveFilter
-             * @param string $context
-             * '/frontend/'
-             * @param array $fields
-             * @param string $event
-             * @param array $filter_results
-             * @param XMLElement $post_values
-             */
-			$obj->ExtensionManager->notifyMembers(
+			 *
+			 * @delegate EventPreSaveFilter
+			 * @param string $context
+			 * '/frontend/'
+			 * @param array $fields
+			 * @param string $event
+			 * @param array $filter_results
+			 * @param XMLElement $post_values
+			 */
+			Symphony::ExtensionManager()->notifyMembers(
 				'EventPreSaveFilter',
 				'/frontend/',
 				array(
@@ -141,7 +141,7 @@
 
 			endif;
 
-			## PASSIVE FILTERS ONLY AT THIS STAGE. ENTRY HAS ALREADY BEEN CREATED. 
+			## PASSIVE FILTERS ONLY AT THIS STAGE. ENTRY HAS ALREADY BEEN CREATED.
 
 			if(@in_array('send-email', $filters) && !@in_array('expect-multiple', $filters)){
 
@@ -153,7 +153,7 @@
 							$parts = array_map('trim', $parts);
 
 							$stack = array();
-							foreach($parts as $p){ 
+							foreach($parts as $p){
 								$field = str_replace(array('fields[', ']'), '', $p);
 								($discard_field_name ? $stack[] = $haystack[$field] : $stack[$field] = $haystack[$field]);
 							}
@@ -175,13 +175,13 @@
 				$fields['recipient']		= __sendEmailFindFormValue($fields['recipient'], $_POST['fields'], true);
 				$fields['recipient']		= preg_split('/\,/i', $fields['recipient'], -1, PREG_SPLIT_NO_EMPTY);
 				$fields['recipient']		= array_map('trim', $fields['recipient']);
-				$fields['recipient']		= $obj->Database->fetch("SELECT `email`, `first_name` FROM `tbl_authors` WHERE `username` IN ('".@implode("', '", $fields['recipient'])."') ");
+				$fields['recipient']		= Symphony::Database()->fetch("SELECT `email`, `first_name` FROM `tbl_authors` WHERE `username` IN ('".@implode("', '", $fields['recipient'])."') ");
 
-				$fields['subject']			= __sendEmailFindFormValue($fields['subject'], $_POST['fields'], true, __('[Symphony] A new entry was created on %s', array($obj->Configuration->get('sitename', 'general'))));
+				$fields['subject']			= __sendEmailFindFormValue($fields['subject'], $_POST['fields'], true, __('[Symphony] A new entry was created on %s', array(Symphony::Configuration()->get('sitename', 'general'))));
 				$fields['body']				= __sendEmailFindFormValue($fields['body'], $_POST['fields'], false, NULL, false);
 				$fields['sender-email']		= __sendEmailFindFormValue($fields['sender-email'], $_POST['fields'], true, NULL);
 				$fields['sender-name']		= __sendEmailFindFormValue($fields['sender-name'], $_POST['fields'], true, NULL);
-				
+
 				$fields['reply-to-name']	= __sendEmailFindFormValue($fields['reply-to-name'], $_POST['fields'], true, NULL);
 				$fields['reply-to-email']	= __sendEmailFindFormValue($fields['reply-to-email'], $_POST['fields'], true, NULL);
 
@@ -206,14 +206,14 @@
 				else{
 
 					foreach($fields['recipient'] as $r){
-						
+
 						$email = Email::create();
 
 						// Huib: Exceptions are also thrown in the settings functions, not only in the send function.
 						// Those Exceptions should be caught too.
 						try{
 							list($recipient, $name) = array_values($r);
-							
+
 							$email->recipients = Array($name => $recipient);
 							if($fields['sender-name'] != null){
 								$email->sender_name = $fields['sender-name'];
@@ -230,7 +230,7 @@
 
 							$email->text_plain = str_replace('<!-- RECIPIENT NAME -->', $name, $body);
 							$email->subject = $fields['subject'];
-							
+
 							$email->send();
 						}
 						catch(EmailValidationException $e){
@@ -257,7 +257,7 @@
 						$xml = buildFilterElement('send-email', 'failed');
 						$keys = array_keys($errors);
 						$xml->setAttribute('error-type', $keys[0]);
-							
+
 						foreach($errors as $recipient) $xml->appendChild(new XMLElement('recipient', $recipient));
 
 						$result->appendChild($xml);
@@ -269,29 +269,29 @@
 			}
 
 			$filter_results = array();
-            
-            /**
-             * After saving entry from the front-end. This delegate will not force
-             * the Events to terminate if it populates the error array reference. 
-             * Provided with references to this object, the `$_POST` data and also
-             * the error array
-             * 
-             * @delegate EventPostSaveFilter
-             * @param string $context
-             * '/frontend/'
-             * @param integer $entry_id
-             * @param array $fields
-             * @param Entry $entry
-             * @param string $event
-             * @param array $messages
-             */
-			$obj->ExtensionManager->notifyMembers('EventPostSaveFilter', '/frontend/', array(
-                'entry_id' => $entry->get('id'),
-                'fields' => $fields,
-                'entry' => $entry,
-                'event' => &$event,
-                'messages' => &$filter_results
-            ));
+
+			/**
+			 * After saving entry from the front-end. This delegate will not force
+			 * the Events to terminate if it populates the error array reference.
+			 * Provided with references to this object, the `$_POST` data and also
+			 * the error array
+			 *
+			 * @delegate EventPostSaveFilter
+			 * @param string $context
+			 * '/frontend/'
+			 * @param integer $entry_id
+			 * @param array $fields
+			 * @param Entry $entry
+			 * @param string $event
+			 * @param array $messages
+			 */
+			Symphony::ExtensionManager()->notifyMembers('EventPostSaveFilter', '/frontend/', array(
+				'entry_id' => $entry->get('id'),
+				'fields' => $fields,
+				'entry' => $entry,
+				'event' => &$event,
+				'messages' => &$filter_results
+			));
 
 			if(is_array($filter_results) && !empty($filter_results)){
 				foreach($filter_results as $fr){
@@ -301,17 +301,17 @@
 
 				}
 			}
-            
-            /**
-             * @delegate EventFinalSaveFilter
-             * @param string $context
-             * '/frontend/'
-             * @param array $fields
-             * @param string $event
-             * @param array $filter_errors
-             * @param Entry $entry
-             */
-			$obj->ExtensionManager->notifyMembers(
+
+			/**
+			 * @delegate EventFinalSaveFilter
+			 * @param string $context
+			 * '/frontend/'
+			 * @param array $fields
+			 * @param string $event
+			 * @param array $filter_errors
+			 * @param Entry $entry
+			 */
+			Symphony::ExtensionManager()->notifyMembers(
 				'EventFinalSaveFilter', '/frontend/', array(
 					'fields'	=> $fields,
 					'event'		=> &$event,

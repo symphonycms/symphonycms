@@ -51,6 +51,12 @@
 		public static $Database = null;
 
 		/**
+		 * An instance of the ExtensionManager class
+		 * @var ExtensionManager
+		 */
+		public static $ExtensionManager = null;
+
+		/**
 		 * An instance of the Log class
 		 * @var Log
 		 */
@@ -73,12 +79,6 @@
 		 * @var Author
 		 */
 		public $Author = null;
-
-		/**
-		 * An instance of the Extension Manager
-		 * @var ExtensionManager
-		 */
-		public $ExtensionManager = null;
 
 		/**
 		 * The end-of-line constant.
@@ -205,12 +205,22 @@
 		 * a Symphony Error page will be thrown
 		 */
 		public function initialiseExtensionManager(){
-			$this->ExtensionManager = new ExtensionManager($this);
+			self::$ExtensionManager = new ExtensionManager($this);
 
-			if(!($this->ExtensionManager instanceof ExtensionManager)){
+			if(!(self::$ExtensionManager instanceof ExtensionManager)){
 				GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
 			}
+		}
+
+		/**
+		 * Accessor for the current `$ExtensionManager` instance.
+		 *
+		 * @since Symphony 2.2
+		 * @return ExtensionManager
+		 */
+		public function ExtensionManager() {
+			return self::$ExtensionManager;
 		}
 
 		/**
