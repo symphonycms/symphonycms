@@ -433,7 +433,7 @@
 					 * @param array $section_ids
 					 *  An array of Section ID's passed by reference
 					 */
-					Administration::instance()->ExtensionManager->notifyMembers('SectionPreDelete', '/blueprints/sections/', array('section_ids' => &$checked));
+					Symphony::ExtensionManager()->notifyMembers('SectionPreDelete', '/blueprints/sections/', array('section_ids' => &$checked));
 
 					$sectionManager = new SectionManager($this->_Parent);
 					foreach($checked as $section_id) $sectionManager->delete($section_id);
@@ -459,7 +459,7 @@
 						 * @param array $entry_id
 						 *  An array of Entry ID's that are about to be deleted, passed by reference
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => &$entry_ids));
+						Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => &$entry_ids));
 
 						$entryManager->delete($entry_ids);
 					}
@@ -604,7 +604,7 @@
 						 *  section with the key being the position in the Section Editor
 						 *  and the value being a Field object, passed by reference
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('SectionPreCreate', '/blueprints/sections/', array('meta' => &$meta, 'fields' => &$fields));
+						Symphony::ExtensionManager()->notifyMembers('SectionPreCreate', '/blueprints/sections/', array('meta' => &$meta, 'fields' => &$fields));
 
 						if(!$section_id = $sectionManager->add($meta)){
 							$this->pageAlert(__('An unknown database occurred while attempting to create the section.'), Alert::ERROR);
@@ -633,7 +633,7 @@
 						 *  section with the key being the position in the Section Editor
 						 *  and the value being a Field object, passed by reference
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('SectionPreEdit', '/blueprints/sections/', array('section_id' => $section_id, 'meta' => &$meta, 'fields' => &$fields));
+						Symphony::ExtensionManager()->notifyMembers('SectionPreEdit', '/blueprints/sections/', array('section_id' => $section_id, 'meta' => &$meta, 'fields' => &$fields));
 
 						if(!$sectionManager->edit($section_id, $meta)){
 							$canProceed = false;
@@ -688,7 +688,7 @@
 										 * @param array $data
 										 *  The settings for ths `$field`, passed by reference
 										 */
-										Administration::instance()->ExtensionManager->notifyMembers('FieldPostCreate', '/blueprints/sections/', array('field' => &$field, 'data' => &$data));
+										Symphony::ExtensionManager()->notifyMembers('FieldPostCreate', '/blueprints/sections/', array('field' => &$field, 'data' => &$data));
 									}
 									else {
 										/**
@@ -702,7 +702,7 @@
 										 * @param array $data
 										 *  The settings for ths `$field`, passed by reference
 										 */
-										Administration::instance()->ExtensionManager->notifyMembers('FieldPostEdit', '/blueprints/sections/', array('field' => &$field, 'data' => &$data));
+										Symphony::ExtensionManager()->notifyMembers('FieldPostEdit', '/blueprints/sections/', array('field' => &$field, 'data' => &$data));
 									}
 								}
 							}
@@ -720,7 +720,7 @@
 							 * @param integer $section_id
 							 *  The newly created Section ID.
 							 */
-							Administration::instance()->ExtensionManager->notifyMembers('SectionPostCreate', '/blueprints/sections/', array('section_id' => $section_id));
+							Symphony::ExtensionManager()->notifyMembers('SectionPostCreate', '/blueprints/sections/', array('section_id' => $section_id));
 
 							redirect(SYMPHONY_URL . "/blueprints/sections/edit/$section_id/created/");
 						}
@@ -736,7 +736,7 @@
 							 * @param integer $section_id
 							 *  The edited Section ID.
 							 */
-							Administration::instance()->ExtensionManager->notifyMembers('SectionPostEdit', '/blueprints/sections/', array('section_id' => $section_id));
+							Symphony::ExtensionManager()->notifyMembers('SectionPostEdit', '/blueprints/sections/', array('section_id' => $section_id));
 
 							redirect(SYMPHONY_URL . "/blueprints/sections/edit/$section_id/saved/");
 
@@ -759,7 +759,7 @@
 				 * @param array $section_ids
 				 *  An array of Section ID's passed by reference
 				 */
-				Administration::instance()->ExtensionManager->notifyMembers('SectionPreDelete', '/blueprints/sections/', array('section_ids' => &$section_id));
+				Symphony::ExtensionManager()->notifyMembers('SectionPreDelete', '/blueprints/sections/', array('section_ids' => &$section_id));
 
 				foreach($section_id as $section) $sectionManager->delete($section);
 				redirect(SYMPHONY_URL . '/blueprints/sections/');

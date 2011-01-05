@@ -197,7 +197,7 @@
 						 * @param string $contents
 						 *  The contents of the `$fields['body']`, passed by reference
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('UtilityPreCreate', '/blueprints/utilities/', array('file' => $file, 'contents' => &$fields['body']));
+						Symphony::ExtensionManager()->notifyMembers('UtilityPreCreate', '/blueprints/utilities/', array('file' => $file, 'contents' => &$fields['body']));
 					}
 					else {
 						/**
@@ -212,7 +212,7 @@
 						 * @param string $contents
 						 *  The contents of the `$fields['body']`, passed by reference
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('UtilityPreEdit', '/blueprints/utilities/', array('file' => $file, 'contents' => &$fields['body']));
+						Symphony::ExtensionManager()->notifyMembers('UtilityPreEdit', '/blueprints/utilities/', array('file' => $file, 'contents' => &$fields['body']));
 					}
 
 					##Write the file
@@ -238,7 +238,7 @@
 							 * @param string $file
 							 *  The path to the Utility file
 							 */
-							Administration::instance()->ExtensionManager->notifyMembers('UtilityPostCreate', '/blueprints/utilities/', array('file' => $file));
+							Symphony::ExtensionManager()->notifyMembers('UtilityPostCreate', '/blueprints/utilities/', array('file' => $file));
 						}
 						else {
 							/**
@@ -251,7 +251,7 @@
 							 * @param string $file
 							 *  The path to the Utility file
 							 */
-							Administration::instance()->ExtensionManager->notifyMembers('UtilityPostEdit', '/blueprints/utilities/', array('file' => $file));
+							Symphony::ExtensionManager()->notifyMembers('UtilityPostEdit', '/blueprints/utilities/', array('file' => $file));
 						}
 
 						redirect(SYMPHONY_URL . '/blueprints/utilities/edit/'.str_replace('.xsl', '', $fields['name']) . '/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
@@ -272,7 +272,7 @@
 				 * @param string $file
 				 *  The path to the Utility file
 				 */
-				Administration::instance()->ExtensionManager->notifyMembers('UtilityPreDelete', '/blueprints/utilities/', array('file' => $this->_existing_file));
+				Symphony::ExtensionManager()->notifyMembers('UtilityPreDelete', '/blueprints/utilities/', array('file' => $this->_existing_file));
 
 				General::deleteFile(UTILITIES . '/' . $this->_existing_file);
 

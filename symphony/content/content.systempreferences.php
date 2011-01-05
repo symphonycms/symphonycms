@@ -104,7 +104,7 @@
 			 * @param XMLElement $wrapper
 			 *  An XMLElement of the current page
 			 */
-			Administration::instance()->ExtensionManager->notifyMembers('AddCustomPreferenceFieldsets', '/system/preferences/', array('wrapper' => &$this->Form));
+			Symphony::ExtensionManager()->notifyMembers('AddCustomPreferenceFieldsets', '/system/preferences/', array('wrapper' => &$this->Form));
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
@@ -129,7 +129,7 @@
 			 * @param string $context
 			 * '/system/preferences/'
 			 */
-			Administration::instance()->ExtensionManager->notifyMembers('CustomActions', '/system/preferences/');
+			Symphony::ExtensionManager()->notifyMembers('CustomActions', '/system/preferences/');
 
 			if (isset($_POST['action']['save'])) {
 				$settings = $_POST['settings'];
@@ -146,7 +146,7 @@
 				 * @param array $errors
 				 *  An array of errors passed by reference
 				 */
-				Administration::instance()->ExtensionManager->notifyMembers('Save', '/system/preferences/', array('settings' => &$settings, 'errors' => &$this->_errors));
+				Symphony::ExtensionManager()->notifyMembers('Save', '/system/preferences/', array('settings' => &$settings, 'errors' => &$this->_errors));
 
 				if (!is_array($this->_errors) || empty($this->_errors)) {
 

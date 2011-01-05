@@ -818,7 +818,7 @@
 				 * @param string $file
 				 *  The path to the Datasource file
 				 */
-				Administration::instance()->ExtensionManager->notifyMembers('DatasourcePreDelete', '/blueprints/datasources/', array('file' => DATASOURCES . "/data." . $this->_context[1] . ".php"));
+				Symphony::ExtensionManager()->notifyMembers('DatasourcePreDelete', '/blueprints/datasources/', array('file' => DATASOURCES . "/data." . $this->_context[1] . ".php"));
 
 				if(!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php')){
 					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
@@ -1073,7 +1073,7 @@
 					 * @param string $contents
 					 *  The contents for this Datasource as a string passed by reference
 					 */
-					Administration::instance()->ExtensionManager->notifyMembers('DatasourcePreCreate', '/blueprints/datasources/', array('file' => $file, 'contents' => &$dsShell));
+					Symphony::ExtensionManager()->notifyMembers('DatasourcePreCreate', '/blueprints/datasources/', array('file' => $file, 'contents' => &$dsShell));
 				}
 				else {
 					/**
@@ -1089,7 +1089,7 @@
 					 * @param string $contents
 					 *  The contents for this Datasource as a string passed by reference
 					 */
-					Administration::instance()->ExtensionManager->notifyMembers('DatasourcePreEdit', '/blueprints/datasources/', array('file' => $file, 'contents' => &$dsShell));
+					Symphony::ExtensionManager()->notifyMembers('DatasourcePreEdit', '/blueprints/datasources/', array('file' => $file, 'contents' => &$dsShell));
 				}
 
 				##Write the file
@@ -1128,7 +1128,7 @@
 						 * @param string $file
 						 *  The path to the Datasource file
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('DatasourcePostCreate', '/blueprints/datasources/', array('file' => $file));
+						Symphony::ExtensionManager()->notifyMembers('DatasourcePostCreate', '/blueprints/datasources/', array('file' => $file));
 					}
 					else {
 						/**
@@ -1141,7 +1141,7 @@
 						 * @param string $file
 						 *  The path to the Datasource file
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('DatasourcePostEdit', '/blueprints/datasources/', array('file' => $file));
+						Symphony::ExtensionManager()->notifyMembers('DatasourcePostEdit', '/blueprints/datasources/', array('file' => $file));
 					}
 
 					redirect(SYMPHONY_URL . '/blueprints/datasources/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');

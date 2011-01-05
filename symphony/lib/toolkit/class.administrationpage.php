@@ -214,7 +214,7 @@
 			 * @param string $context
 			 *  '/backend/'
 			 */
-			Administration::instance()->ExtensionManager->notifyMembers('InitaliseAdminPageHead', '/backend/');
+			Symphony::ExtensionManager()->notifyMembers('InitaliseAdminPageHead', '/backend/');
 
 			$this->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
 
@@ -240,7 +240,7 @@
 			 * @param string $context
 			 *  '/backend/'
 			 */
-			Administration::instance()->ExtensionManager->notifyMembers('AppendElementBelowView', '/backend/');
+			Symphony::ExtensionManager()->notifyMembers('AppendElementBelowView', '/backend/');
 
 			$this->appendFooter();
 			$this->appendAlert();
@@ -419,7 +419,7 @@
 			 * @param string $context
 			 *  '/backend/'
 			 */
-			Administration::instance()->ExtensionManager->notifyMembers('AppendPageAlert', '/backend/');
+			Symphony::ExtensionManager()->notifyMembers('AppendPageAlert', '/backend/');
 
 			if(($this->Alert instanceof Alert)){
 				$this->Form->prependChild($this->Alert->asXML());
@@ -451,7 +451,7 @@
 			 * @param array $nav
 			 *  An associative array of the current navigation, passed by reference
 			 */
-			Administration::instance()->ExtensionManager->notifyMembers('NavigationPreRender', '/backend/', array('navigation' => &$nav));
+			Symphony::ExtensionManager()->notifyMembers('NavigationPreRender', '/backend/', array('navigation' => &$nav));
 
 			$xNav = new XMLElement('ul');
 			$xNav->setAttribute('id', 'nav');
@@ -612,9 +612,9 @@
 			}
 
 			// Loop over all the installed extensions to add in other navigation items
-			$extensions = Administration::instance()->ExtensionManager->listInstalledHandles();
+			$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 			foreach($extensions as $e){
-				$info = Administration::instance()->ExtensionManager->about($e);
+				$info = Symphony::ExtensionManager()->about($e);
 
 				if(isset($info['navigation']) && is_array($info['navigation']) && !empty($info['navigation'])){
 					foreach($info['navigation'] as $item){
@@ -708,7 +708,7 @@
 			 * '/backend/'
 			 * @param array $navigation
 			 */
-			Administration::instance()->ExtensionManager->notifyMembers(
+			Symphony::ExtensionManager()->notifyMembers(
 				'ExtensionsAddToNavigation', '/backend/', array('navigation' => &$nav)
 			);
 
@@ -828,7 +828,7 @@
 			 * @param XMLElement $wrapper
 			 *  A XMLElement representing the `<ul>` at in the Symphony footer, passed by reference
 			 */
-			Administration::instance()->ExtensionManager->notifyMembers('AddElementToFooter', '/backend/', array('wrapper' => &$ul));
+			Symphony::ExtensionManager()->notifyMembers('AddElementToFooter', '/backend/', array('wrapper' => &$ul));
 
 			$this->Form->appendChild($ul);
 		}

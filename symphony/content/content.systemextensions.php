@@ -19,7 +19,7 @@
 
 			$this->Form->setAttribute('action', SYMPHONY_URL . '/system/extensions/');
 
-			$ExtensionManager = Administration::instance()->ExtensionManager;
+			$ExtensionManager = Symphony::ExtensionManager();
 			$extensions = $ExtensionManager->listAll();
 
 			## Sort by extensions name:
@@ -131,10 +131,10 @@
 							 * @param array $extensions
 							 *  An array of all the extension name's to be enabled, passed by reference
 							 */
-							Administration::instance()->ExtensionManager->notifyMembers('ExtensionPreEnable', '/system/extensions/', array('extensions' => &$checked));
+							Symphony::ExtensionManager()->notifyMembers('ExtensionPreEnable', '/system/extensions/', array('extensions' => &$checked));
 
 							foreach($checked as $name){
-								if(Administration::instance()->ExtensionManager->enable($name) === false) return;
+								if(Symphony::ExtensionManager()->enable($name) === false) return;
 							}
 
 							break;
@@ -151,10 +151,10 @@
 							 * @param array $extensions
 							 *  An array of all the extension name's to be disabled, passed by reference
 							 */
-							Administration::instance()->ExtensionManager->notifyMembers('ExtensionPreDisable', '/system/extensions/', array('extensions' => &$checked));
+							Symphony::ExtensionManager()->notifyMembers('ExtensionPreDisable', '/system/extensions/', array('extensions' => &$checked));
 
 							foreach($checked as $name){
-								Administration::instance()->ExtensionManager->disable($name);
+								Symphony::ExtensionManager()->disable($name);
 							}
 							break;
 
@@ -170,10 +170,10 @@
 							 * @param array $extensions
 							 *  An array of all the extension name's to be uninstalled, passed by reference
 							 */
-							Administration::instance()->ExtensionManager->notifyMembers('ExtensionPreUninstall', '/system/extensions/', array('extensions' => &$checked));
+							Symphony::ExtensionManager()->notifyMembers('ExtensionPreUninstall', '/system/extensions/', array('extensions' => &$checked));
 
 							foreach($checked as $name){
-								Administration::instance()->ExtensionManager->uninstall($name);
+								Symphony::ExtensionManager()->uninstall($name);
 							}
 
 							break;
