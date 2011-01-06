@@ -120,40 +120,42 @@
 		 */
 		private function __buildPage($page){
 
-			if(!$this->isLoggedIn()) {
-				$page  = "/login";
-			}
-			else if(empty($page) || is_null($page)){
-
-				// Will redirect an Author to their default area of the Backend
-				// Integers are indicative of section's, text is treated as the path
-				// to the page after `SYMPHONY_URL`
-				$default_area = null;
-
-				if(is_numeric($this->Author->get('default_area'))) {
-					$section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '".$this->Author->get('default_area')."' LIMIT 1");
-
-					if(!$section_handle){
-						$section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
-					}
-
-					$default_area = "/publish/{$section_handle}/";
-
-				}
-				else if(!is_null($this->Author->get('default_area'))) {
-					$default_area = preg_replace('/^' . preg_quote(SYMPHONY_URL, '/') . '/i', '', $this->Author->get('default_area'));
-				}
-
-				if(is_null($default_area)) {
-					if($this->Author->isDeveloper()) {
-						redirect(SYMPHONY_URL . '/blueprints/sections/');
-					}
-					else {
-						redirect(SYMPHONY_URL . "/system/authors/edit/".$this->Author->get('id')."/");
-					}
+			if(empty($page) || is_null($page)){
+				if(!$this->isLoggedIn()) {
+					$page  = "/login";
 				}
 				else {
-					redirect(SYMPHONY_URL . $default_area);
+
+					// Will redirect an Author to their default area of the Backend
+					// Integers are indicative of section's, text is treated as the path
+					// to the page after `SYMPHONY_URL`
+					$default_area = null;
+
+					if(is_numeric($this->Author->get('default_area'))) {
+						$section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '".$this->Author->get('default_area')."' LIMIT 1");
+
+						if(!$section_handle){
+							$section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
+						}
+
+						$default_area = "/publish/{$section_handle}/";
+
+					}
+					else if(!is_null($this->Author->get('default_area'))) {
+						$default_area = preg_replace('/^' . preg_quote(SYMPHONY_URL, '/') . '/i', '', $this->Author->get('default_area'));
+					}
+
+					if(is_null($default_area)) {
+						if($this->Author->isDeveloper()) {
+							redirect(SYMPHONY_URL . '/blueprints/sections/');
+						}
+						else {
+							redirect(SYMPHONY_URL . "/system/authors/edit/".$this->Author->get('id')."/");
+						}
+					}
+					else {
+						redirect(SYMPHONY_URL . $default_area);
+					}
 				}
 			}
 
