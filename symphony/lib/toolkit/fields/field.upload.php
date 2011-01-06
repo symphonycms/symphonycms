@@ -3,6 +3,9 @@
 	/**
 	 * @package toolkit
 	 */
+	/**
+	 * A simple Upload field that essentially maps to HTML's `<input type='file '/>`.
+	 */
 
 	Class fieldUpload extends Field {
 		public function __construct(&$parent){

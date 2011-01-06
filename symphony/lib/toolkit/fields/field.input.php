@@ -3,6 +3,10 @@
 	/**
 	 * @package toolkit
 	 */
+	
+	/**
+	 * A simple Input field that essentially maps to HTML's `<input type='text'/>`.
+	 */
 
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 
