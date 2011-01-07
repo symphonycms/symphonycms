@@ -50,11 +50,12 @@
 		 * class. It is the only way to create a new Administration, as
 		 * it implements the Singleton interface
 		 *
-		 * @return Frontend
+		 * @return Administration
 		 */
 		public static function instance(){
-			if(!(self::$_instance instanceof Administration))
-				self::$_instance = new self;
+			if(!(self::$_instance instanceof Administration)) {
+				self::$_instance = new Administration;
+			}
 
 			return self::$_instance;
 		}
@@ -313,7 +314,6 @@
 		 *  The HTML of the page to return
 		 */
 		public function display($page){
-
 			$this->Profiler->sample('Page build process started');
 			$this->__buildPage($page);
 

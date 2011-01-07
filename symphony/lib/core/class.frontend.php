@@ -16,6 +16,13 @@
 	require_once(TOOLKIT . '/class.frontendpage.php');
 
 	Class Frontend extends Symphony {
+
+		/**
+		 * An instance of the Frontend class
+		 * @var Frontend
+		 */
+		protected static $_instance = null;
+		
 		/**
 		 * An instance of the FrontendPage class
 		 * @var FrontendPage
@@ -31,7 +38,7 @@
 		 */
 		public static function instance() {
 			if (!(self::$_instance instanceof Frontend)) {
-				self::$_instance = new self;
+				self::$_instance = new Frontend;
 			}
 
 			return self::$_instance;

@@ -96,7 +96,6 @@
 		 * the initial Configuration values from the `CONFIG` file
 		 */
 		protected function __construct(){
-
 			$this->Profiler = Profiler::instance();
 			$this->Profiler->sample('Engine Initialisation');
 
@@ -161,6 +160,8 @@
 		 * formatting options are also retrieved from the configuration.
 		 */
 		public function initialiseLog(){
+			if(self::$Log instanceof Log) return true;
+			
 			self::$Log = new Log(ACTIVITY_LOG);
 			self::$Log->setArchive((self::$Configuration->get('archive', 'log') == '1' ? true : false));
 			self::$Log->setMaxSize(intval(self::$Configuration->get('maxsize', 'log')));
@@ -196,9 +197,9 @@
 		 * a Symphony Error page will be thrown
 		 */
 		public function initialiseExtensionManager(){
-            if(!(self::$ExtensionManager instanceof ExtensionManager)){
-                self::$ExtensionManager = new ExtensionManager($this);
-            }
+			if(self::$ExtensionManager instanceof ExtensionManager) return true;
+			
+			self::$ExtensionManager = new ExtensionManager($this);
 
 			if(!(self::$ExtensionManager instanceof ExtensionManager)){
 				GenericExceptionHandler::$enabled = true;
