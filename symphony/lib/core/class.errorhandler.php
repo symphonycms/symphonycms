@@ -2,9 +2,9 @@
 	/**
 	 * @package core
 	 */
-	
+
 	require_once(CORE . '/class.log.php');
-	
+
 	/**
 	 * GenericExceptionHandler will handle any uncaught exceptions thrown in Symphony.
 	 * Additionally, all errors in Symphony are raised to exceptions to be handled by this class.
@@ -28,15 +28,15 @@
 		/**
 		 * The initialise function will set the exception_handler to the this class's
 		 * handler function
+		 * @param Log|null $log
+		 *  An instance of a Symphony Log object to write errors to
 		 */
-		public static function initialise($Log = null){
+		public static function initialise(Log $Log = null){
 			if(!is_null($Log)){
 				self::$_Log = $Log;
 			}
 			set_exception_handler(array(__CLASS__, 'handler'));
 		}
-		
-		
 
 		/**
 		 * Retrieves a window of lines before and after the line where the error
@@ -319,8 +319,8 @@
 		/**
 		 * An array of all the error constants that Symphony will throw an
 		 * exception for. These constants map directly to PHP's error constants.
-		 * @var array
 		 *
+		 * @var array
 		 * @link http://www.php.net/manual/en/errorfunc.constants.php
 		 */
 		protected static $_enabledErrorTypes = array();
@@ -353,7 +353,7 @@
 		 * Initialise will set the error handler to be the `__CLASS__` handler
 		 * function and will set this `$_Log` variable to a Log instance
 		 *
-		 * @param Log $Log (optional)
+		 * @param Log|null $Log (optional)
 		 *  An instance of a Symphony Log object to write errors to
 		 */
 		public static function initialise(Log $Log = null){
