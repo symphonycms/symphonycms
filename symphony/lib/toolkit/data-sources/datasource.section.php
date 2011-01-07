@@ -114,7 +114,9 @@
 		return;
 	}
 
-	$include_pagination_element = @in_array('system:pagination', $this->dsParamINCLUDEDELEMENTS);
+	if(is_array($this->dsParamINCLUDEDELEMENTS)) {
+		$include_pagination_element = in_array('system:pagination', $this->dsParamINCLUDEDELEMENTS);
+	}
 
 	if(is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
 		foreach($this->dsParamFILTERS as $field_id => $filter){
@@ -144,7 +146,7 @@
 				);
 			}
 
-			if($field_id == 'id') $where = " AND `e`.id IN ('".@implode("', '", $value)."') ";
+			if($field_id == 'id') $where = " AND `e`.id IN ('".implode("', '", $value)."') ";
 			else{
 				if(!$fieldPool[$field_id]->buildDSRetrivalSQL($value, $joins, $where, ($filter_type == DS_FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
 				if(!$group) $group = $fieldPool[$field_id]->requiresSQLGrouping();

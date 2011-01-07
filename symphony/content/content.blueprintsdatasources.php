@@ -35,7 +35,7 @@
 					case 'saved':
 						$this->pageAlert(
 							__(
-								'Data source updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Data sources</a>', 
+								'Data source updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Data sources</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/datasources/new/',
@@ -48,7 +48,7 @@
 					case 'created':
 						$this->pageAlert(
 							__(
-								'Data source created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Data sources</a>', 
+								'Data source created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Data sources</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/datasources/new/',
@@ -102,7 +102,6 @@
 				$fields['sort'] = $existing->dsParamSORT;
 				$fields['paginate_results'] = (isset($existing->dsParamPAGINATERESULTS) ? $existing->dsParamPAGINATERESULTS : 'yes');
 				$fields['page_number'] = $existing->dsParamSTARTPAGE;
-				$fields['limit_type'] = $existing->dsParamLIMITTYPE;
 				$fields['group'] = $existing->dsParamGROUP;
 				$fields['html_encode'] = $existing->dsParamHTMLENCODE;
 				$fields['associated_entry_counts'] = $existing->dsParamASSOCIATEDENTRYCOUNTS;
@@ -116,7 +115,6 @@
 				switch($fields['source']){
 					case 'authors':
 						$fields['filter']['author'] = $existing->dsParamFILTERS;
-						$fields['max_records'] = $existing->dsParamLIMIT;
 						break;
 
 					case 'navigation':
@@ -160,8 +158,6 @@
 				$fields['page_number'] = '1';
 
 				$fields['order'] = 'desc';
-				$fields['limit_type'] = 'entries';
-
 				$fields['associated_entry_counts'] = NULL;
 
 			}
@@ -187,7 +183,7 @@
 
 			$label = Widget::Label(__('Source'));
 
-		    $sections = $sectionManager->fetch(NULL, 'ASC', 'name');
+			$sections = $sectionManager->fetch(NULL, 'ASC', 'name');
 
 			if (!is_array($sections)) $sections = array();
 			$field_groups = array();
@@ -369,7 +365,7 @@
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse static_xml dynamic_xml');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml');
 			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));
 
 			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to limit by page parameters.'));
@@ -565,8 +561,7 @@
 						array('name', ($fields['source'] == 'authors' && in_array('name', $fields['xml_elements'])), 'name'),
 						array('email', ($fields['source'] == 'authors' && in_array('email', $fields['xml_elements'])), 'email'),
 						array('author-token', ($fields['source'] == 'authors' && in_array('author-token', $fields['xml_elements'])), 'author-token'),
-						array('default-section', ($fields['source'] == 'authors' && in_array('default-section', $fields['xml_elements'])), 'default-section'),
-						array('formatting-preference', ($fields['source'] == 'authors' && in_array('formatting-preference', $fields['xml_elements'])), 'formatting-preference'),
+						array('default-area', ($fields['source'] == 'authors' && in_array('default-area', $fields['xml_elements'])), 'default-area'),
 				)),
 			);
 
@@ -881,24 +876,20 @@
 
 			}
 
-			else{
+			elseif($fields['source'] == 'authors') {
 
-				if($fields['source'] != 'navigation'){
+				if(strlen(trim($fields['max_records'])) == 0 || (is_numeric($fields['max_records']) && $fields['max_records'] < 1)){
+					if (isset($fields['paginate_results'])) $this->_errors['max_records'] = __('A result limit must be set');
+				}
+				elseif(!self::__isValidPageString($fields['max_records'])){
+					$this->_errors['max_records'] = __('Must be a valid number or parameter');
+				}
 
-					if(strlen(trim($fields['max_records'])) == 0 || (is_numeric($fields['max_records']) && $fields['max_records'] < 1)){
-						if (isset($fields['paginate_results'])) $this->_errors['max_records'] = __('A result limit must be set');
-					}
-					elseif(!self::__isValidPageString($fields['max_records'])){
-						$this->_errors['max_records'] = __('Must be a valid number or parameter');
-					}
-
-
-					if(strlen(trim($fields['page_number'])) == 0 || (is_numeric($fields['page_number']) && $fields['page_number'] < 1)){
-						if (isset($fields['paginate_results'])) $this->_errors['page_number'] = __('A page number must be set');
-					}
-					elseif(!self::__isValidPageString($fields['page_number'])){
-						$this->_errors['page_number'] = __('Must be a valid number or parameter');
-					}
+				if(strlen(trim($fields['page_number'])) == 0 || (is_numeric($fields['page_number']) && $fields['page_number'] < 1)){
+					if (isset($fields['paginate_results'])) $this->_errors['page_number'] = __('A page number must be set');
+				}
+				elseif(!self::__isValidPageString($fields['page_number'])){
+					$this->_errors['page_number'] = __('Must be a valid number or parameter');
 				}
 
 			}
@@ -952,13 +943,10 @@
 						$elements = $fields['xml_elements'];
 
 						$params['order'] = $fields['order'];
-						$params['paginateresults'] = (isset($fields['paginate_results']) ? 'yes' : 'no');
-						$params['limit'] = $fields['max_records'];
 						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
 						$params['requiredparam'] = trim($fields['required_url_param']);
 						$params['paramoutput'] = $fields['param'];
 						$params['sort'] = $fields['sort'];
-						$params['startpage'] = $fields['page_number'];
 
 						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.author.php');", $dsShell);
 
@@ -1027,11 +1015,11 @@
 						$params['group'] = $fields['group'];
 						$params['paginateresults'] = (isset($fields['paginate_results']) ? 'yes' : 'no');
 						$params['limit'] = $fields['max_records'];
+						$params['startpage'] = $fields['page_number'];
 						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
 						$params['requiredparam'] = trim($fields['required_url_param']);
 						$params['paramoutput'] = $fields['param'];
 						$params['sort'] = $fields['sort'];
-						$params['startpage'] = $fields['page_number'];
 						$params['htmlencode'] = $fields['html_encode'];
 						$params['associatedentrycounts'] = $fields['associated_entry_counts'];
 
@@ -1061,7 +1049,7 @@
 
 				if($this->_context[0] == 'new') {
 					/**
-					 * Prior to creating the Datasource, the file path where it will be written to 
+					 * Prior to creating the Datasource, the file path where it will be written to
 					 * is provided and well as the contents of that file.
 					 *
 					 * @delegate DatasourcePreCreate
@@ -1077,7 +1065,7 @@
 				}
 				else {
 					/**
-					 * Prior to editing a Datasource, the file path where it will be written to 
+					 * Prior to editing a Datasource, the file path where it will be written to
 					 * is provided and well as the contents of that file.
 					 *
 					 * @delegate DatasourcePreEdit
