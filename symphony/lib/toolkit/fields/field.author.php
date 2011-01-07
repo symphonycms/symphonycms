@@ -3,14 +3,17 @@
 	/**
 	 * @package toolkit
 	 */
-    
-    /**
-     * The Author field allows Symphony Authors to be selected in your entries.
-     * It is a read only field, new Authors cannot be added from the Frontend using
-     * events.
-     */
+
+	/**
+	 * The Author field allows Symphony Authors to be selected in your entries.
+	 * It is a read only field, new Authors cannot be added from the Frontend using
+	 * events.
+	 *
+	 * The Author field allows filtering by Author ID or Username.
+	 * Sorting is done based on the Author's first name and last name.
+	 */
 	Class fieldAuthor extends Field {
-		function __construct(&$parent){
+		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Author');
 		}
@@ -18,8 +21,8 @@
 		public function canToggle(){
 			return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
 		}
-         
-        public function isSortable(){
+
+		public function isSortable(){
 			return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
 		}
 
@@ -38,10 +41,10 @@
 
 		public function getToggleStates(){
 
-		    $authors = AuthorManager::fetch();
+			$authors = AuthorManager::fetch();
 
 			$states = array();
-			foreach($authors as $a) $states[$a->get('id')] = $a->get('first_name') . ' ' . $a->get('lastname');
+			foreach($authors as $a) $states[$a->get('id')] = $a->getFullName();
 
 			return $states;
 		}
@@ -79,7 +82,7 @@
 				$value = array($value);
 			}
 
-		    $authors = AuthorManager::fetch();
+			$authors = AuthorManager::fetch();
 
 			$options = array();
 
@@ -110,15 +113,14 @@
 
 			foreach($data['author_id'] as $author_id){
 				$author = AuthorManager::fetchByID($author_id);
-				
+
 				if(!is_null($author)) {
 					$value[] = $author->getFullName();
-				}				
+				}
 			}
 
 			return parent::prepareTableValue(array('value' => General::sanitize(ucwords(implode(', ', $value)))), $link);
 		}
-
 
 		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
 			$joins .= "
@@ -148,23 +150,46 @@
 					LEFT JOIN
 						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
 						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+					JOIN
+						`tbl_authors` AS t{$field_id}_{$this->_key}_authors
+						ON (t{$field_id}_{$this->_key}.author_id = t{$field_id}_{$this->_key}_authors.id)
 				";
 				$where .= "
-					AND t{$field_id}_{$this->_key}.author_id {$regex} '{$pattern}'
+					AND (
+						 t{$field_id}_{$this->_key}.author_id {$regex} '{$pattern}'
+						 OR
+						 t{$field_id}_{$this->_key}_authors.username {$regex} '{$pattern}'
+						)
 				";
 
 			} elseif ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
 					$value = $this->cleanValue($value);
-					$joins .= "
-						LEFT JOIN
-							`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-							ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-					";
-					$where .= "
-						AND t{$field_id}_{$this->_key}.author_id = '{$value}'
-					";
+
+					if(fieldAuthor::__parseFilter($value) == "author_id") {
+						$where .= "
+							AND t{$field_id}_{$this->_key}.author_id = '{$value}'
+						";
+						$joins .= "
+							LEFT JOIN
+								`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+								ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+						";
+					}
+					else {
+						$joins .= "
+							LEFT JOIN
+								`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+								ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+							JOIN
+								`tbl_authors` AS t{$field_id}_{$this->_key}_authors
+								ON (t{$field_id}_{$this->_key}.author_id = t{$field_id}_{$this->_key}_authors.id)
+						";
+						$where .= "
+							AND t{$field_id}_{$this->_key}_authors.username = '{$value}'
+						";
+					}
 				}
 
 			} else {
@@ -180,13 +205,33 @@
 					LEFT JOIN
 						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
 						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+					JOIN
+						`tbl_authors` AS t{$field_id}_{$this->_key}_authors
+						ON (t{$field_id}_{$this->_key}.author_id = t{$field_id}_{$this->_key}_authors.id)
 				";
 				$where .= "
-					AND t{$field_id}_{$this->_key}.author_id IN ('{$data}')
+					AND (
+						t{$field_id}_{$this->_key}.author_id IN ('{$data}')
+						OR
+						t{$field_id}_{$this->_key}_authors.username IN ('{$data}')
+						)
 				";
 			}
 
 			return true;
+		}
+
+		/**
+		 * Determines based on the input value whether we want to filter the Author
+		 * field by ID or by the Author's Username
+		 *
+		 * @since Symphony 2.2
+		 * @param string $value
+		 * @return string
+		 *  Either `author_id` or `username`
+		 */
+		private static function __parseFilter($value) {
+			return is_numeric($value) ? 'author_id' : 'username';
 		}
 
 		public function commit(){
@@ -209,15 +254,15 @@
 		}
 
 		public function appendFormattedElement(&$wrapper, $data, $encode=false){
-	        if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
+			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
 
-	        $list = new XMLElement($this->get('element_name'));
-	        foreach($data['author_id'] as $author_id){
+			$list = new XMLElement($this->get('element_name'));
+			foreach($data['author_id'] as $author_id){
 				$author = AuthorManager::fetchByID($author_id);
-				
+
 				if(is_null($author)) continue;
-				
-	            $list->appendChild(new XMLElement(
+
+				$list->appendChild(new XMLElement(
 					'item',
 					$author->getFullName(),
 					array(
@@ -225,9 +270,9 @@
 						'username' => General::sanitize($author->get('username'))
 					)
 				));
-	        }
-	        $wrapper->appendChild($list);
-	    }
+			}
+			$wrapper->appendChild($list);
+		}
 
 		public function findDefaults(&$fields){
 			if(!isset($fields['allow_multiple_selection'])) $fields['allow_multiple_selection'] = 'no';
@@ -276,7 +321,7 @@
 
 		public function getExampleFormMarkup(){
 
-		    $authors = AuthorManager::fetch();
+			$authors = AuthorManager::fetch();
 
 			$options = array();
 
