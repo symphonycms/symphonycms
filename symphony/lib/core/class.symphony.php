@@ -196,7 +196,9 @@
 		 * a Symphony Error page will be thrown
 		 */
 		public function initialiseExtensionManager(){
-			self::$ExtensionManager = new ExtensionManager($this);
+            if(!(self::$ExtensionManager instanceof ExtensionManager)){
+                self::$ExtensionManager = new ExtensionManager($this);
+            }
 
 			if(!(self::$ExtensionManager instanceof ExtensionManager)){
 				GenericExceptionHandler::$enabled = true;

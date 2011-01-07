@@ -109,7 +109,7 @@
 
 			$this->DatasourceManager = new DatasourceManager($this->_Parent);
 			$this->EventManager = new EventManager($this->_Parent);
-			$this->ExtensionManager = new ExtensionManager($this->_Parent);
+			$this->ExtensionManager = Symphony::ExtensionManager();
 		}
 
 		/**

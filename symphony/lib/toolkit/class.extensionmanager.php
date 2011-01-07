@@ -58,7 +58,6 @@
 		 */
 		public function __construct(&$parent=NULL){
 			parent::__construct($parent);
-			$this->listAll();
 		}
 
 		/**
@@ -106,7 +105,7 @@
 		 */
 		public function getInstance($name){
 			foreach(self::$_pool as $extension){
-				if(get_class($extension) ==$this->__getClassName($name)) return $extension;
+				if(get_class($extension) == $this->__getClassName($name)) return $extension;
 			}
 
 			return $this->create($name);

@@ -45,7 +45,7 @@
 
 		/**
 		 * An associative array mapping English strings and their translations
-		 * @var array 
+		 * @var array
 		 */
  		private $_strings;
 
@@ -155,7 +155,7 @@
 
 		/**
 		 * Context information of all available languages
-		 * @var array 
+		 * @var array
 		 */
 		private static $_languages;
 
@@ -167,13 +167,13 @@
 
 		/**
 		 * Array of transliterations
-		 * @var array 
+		 * @var array
 		 */
 		private static $_transliterations;
 
 		/**
 		 * Array of months and weekday for localized date output
-		 * @var array 
+		 * @var array
 		 */
 		private static $_dates;
 
@@ -227,7 +227,7 @@
 
 		/**
 		 * Get current language
-		 * 
+		 *
 		 * @return string
 		 */
 		public static function get() {
@@ -241,7 +241,7 @@
 		 *
 		 * Note: Beginning with Symphony 2.2 translations bundled with extensions will only be loaded
 		 * when the core dictionary of the specific language is available.
-		 * 
+		 *
 		 * @param boolean $enabled
 		 */
 		public static function activate($enabled=true) {
@@ -260,19 +260,19 @@
 
 				// Load extension translations
 				if(class_exists('Symphony')) {
+
 					// Fetch Extension Manager
-					$ExtensionManager = Symphony::ExtensionManager();
+					$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 
-					// Loop through extensions
-					foreach($ExtensionManager->listAll() as $handle => $extension) {
+					if(is_array($extensions) && !empty($extensions)){
+						foreach($extensions as $e){
 
-						// Skip language extensions
-						if(strpos($handle, 'lang_') !== false) continue;
-						
-						// Load translations
-						$path = $ExtensionManager->__getClassPath($handle) . '/lang/lang.' . self::get() . '.php';
-						if($extension['status'] == EXTENSION_ENABLED && file_exists($path)) {
-							self::load($path);
+							// Skip language extensions
+							if(strpos($e, 'lang_') !== false) continue;
+
+							// Load translations
+							$path = EXTENSIONS . "/{$e}/lang/lang." . self::get() . ".php";
+							if(is_file($path)) self::load($path);
 						}
 					}
 				}
@@ -350,7 +350,7 @@
 
 		/**
 		 * Fetch language information for a single language.
-		 * 
+		 *
 		 * @param string $source
 		 *  The filename of the extension driver where this language
 		 *  file was found
