@@ -45,8 +45,6 @@ tr.selected td {
 	background-color: #5273c0;
 }
 tr:nth-child(odd).selected td {
-	border-top: 1px solid #617dc5;
-	border-bottom: 1px solid #617dc5;
 	background-color: #5677c3;
 }
 tr.selected td,
@@ -59,13 +57,12 @@ tr.ordering {
 	cursor: move;
 }
 tr.ordering td,
-tr.ordering a {
-	color: #fff;
-}
-tr.ordering td,
 tr:nth-child(odd).ordering td {
 	border-color: #998;
 	background-color: #887;
+}
+tr.ordering td,
+tr.ordering a {
 	color: #fff;
 }
 table.busy td {
@@ -85,6 +82,10 @@ tr.selecting td, tr:nth-child(odd).selecting td {
 	border-top: 1px solid #617dc5;
 	border-bottom: 1px solid #617dc5;
 	background-color: #5273c0;
+}
+tr.selecting td,
+tr.selecting a {
+	color: #fff;
 }
 
 /* Columns */
