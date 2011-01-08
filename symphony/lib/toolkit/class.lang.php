@@ -157,7 +157,7 @@
          * Context information of all available languages
 		 * @var array 
 		 */
-		private static $_languages;
+		public static $_languages;
 
 		/**
          * Instance of the current Dictionary
@@ -259,24 +259,9 @@
 				self::load($current['path'], true);
 
 				// Load extension translations
-				if(class_exists('Symphony')) {
-
-					$ExtensionManager = new ExtensionManager;
-
-					// Loop through extensions
-					foreach($ExtensionManager->listAll() as $handle => $extension) {
-
-						// Skip language extensions
-						if(strpos($handle, 'lang_') !== false) continue;
-						
-						// Load translations
-						$path = $ExtensionManager->__getClassPath($handle) . '/lang/lang.' . self::get() . '.php';
-						if($extension['status'] == EXTENSION_ENABLED && file_exists($path)) {
-							self::load($path);
-						}
-					}
+				foreach($current['extensions'] as $handle => $path) {
+					self::load($path);
 				}
-
 			}
 
 			// Language file unavailable
@@ -310,7 +295,8 @@
 		/**
 		 * Fetch all languages available in the core language folder and the language extensions.
 		 * The function stores all language information in the public variable `$_languages`.
-		 * It contains an array with the name, source, path and status of each language. The language
+		 * It contains an array with the name, source, path and status of each language. 
+		 * Furthermore it add an array of all extensions available in a specific language. The language
 		 * status (enabled/disabled) can only be determined when the Extension Manager has been
 		 * initialized before. During installation all extension status are set to disabled.
 		 */
@@ -328,24 +314,51 @@
 			// Fetch core languages
 			$directory = General::listStructure(LANG);
 			foreach($directory['filelist'] as $file) {
-				self::fetchLanguage('core', LANG, $file, $enabled);
+				self::$_languages = array_merge(self::$_languages, self::fetchLanguage('core', LANG, $file, $enabled));
 			}
 
 			// Fetch extensions
 			$extensions = new DirectoryIterator(EXTENSIONS);
+
+			// Language extensions
 			foreach($extensions as $extension) {
-
-				// Explicitly match language extensions
-				if(strpos($extension->getFilename(), 'lang_') !== false) {
-					$folder = $extension->getPathname() . '/lang';
-					$directory = General::listStructure($folder);
-					foreach($directory['filelist'] as $file) {
-						self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled);
+				$folder = $extension->getPathname() . '/lang';
+				$directory = General::listStructure($folder);
+				foreach($directory['filelist'] as $file) {
+					if(strpos($extension->getFilename(), 'lang_') !== false) {
+						self::$_languages = array_merge(self::$_languages, self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled));
 					}
-				}
-
+				}		
 			}
 
+			// Other extensions
+			foreach($extensions as $extension) {
+				$folder = $extension->getPathname() . '/lang';
+				$directory = General::listStructure($folder);
+				foreach($directory['filelist'] as $file) {
+					if(strpos($extension->getFilename(), 'lang_') === false) {
+						$temp = self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled);
+						$lang = key($temp);
+						
+						// Create language if not exists
+						if(!array_key_exists($lang, self::$_languages)) {
+							$language = array(
+								$lang => array(
+									'name' => $temp[$lang]['name'],
+									'status' => 'disabled',
+									'extensions' => array()
+								)
+							);
+							self::$_languages = array_merge(self::$_languages, $language);
+						}
+						
+						// Merge extensions
+						self::$_languages[$lang]['extensions'] = array_merge(self::$_languages[$lang]['extensions'], array(
+							$temp[$lang]['source'] => $temp[$lang]['path']
+						));																		
+					}
+				}		
+			}
 		}
 
 		/**
@@ -360,6 +373,8 @@
          *  The filename of the language
          * @param array $enabled
 		 *  An associative array of enabled extensions from `tbl_extensions`
+		 * @return array
+		 *  Returns a multidimensional array of language information
          */
 		private static function fetchLanguage($source, $folder, $file, $enabled) {
 
@@ -383,11 +398,14 @@
 			}
 
 			// Save language information
-			self::$_languages[$lang] = array(
-				'name' => $about['name'],
-				'source' => $source,
-				'path' => $path,
-				'status' => $status
+			return array(
+				$lang => array(
+					'name' => $about['name'],
+					'source' => $source,
+					'path' => $path,
+					'status' => $status,
+					'extensions' => array()
+				)
 			);
 		}
 
