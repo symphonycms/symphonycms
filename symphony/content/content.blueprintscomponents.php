@@ -33,7 +33,7 @@
 
 			### EVENTS ###
 
-			$EventManager = new EventManager($this->_Parent);
+			$EventManager = new EventManager;
 			$events = $EventManager->listAll();
 
 			$li = new XMLElement('li');
@@ -59,7 +59,7 @@
 
 			### DATASOURCES ###
 
-			$DSManager = new DatasourceManager($this->_Parent);
+			$DSManager = new DatasourceManager;
 			$datasources = $DSManager->listAll();
 
 			$li = new XMLElement('li');

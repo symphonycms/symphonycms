@@ -145,6 +145,23 @@
 		}
 
 		/**
+		 * Accessor for the Symphony instance, whether it be Frontend
+		 * or Administration
+		 *
+		 * @since Symphony 2.2
+		 * @return Symphony
+		 */
+		public static function Engine() {
+			if(class_exists('Frontend')) {
+				return Frontend::instance();
+			}
+			else if(class_exists('Administration')) {
+				return Administration::instance();
+			}
+			else throw new Exception(__('No suitable engine object found'));
+		}
+
+		/**
 		 * Accessor for the current Configuration instance. This contains
 		 * representation of the the Symphony config file.
 		 *
@@ -199,7 +216,7 @@
 		public function initialiseExtensionManager(){
 			if(self::$ExtensionManager instanceof ExtensionManager) return true;
 			
-			self::$ExtensionManager = new ExtensionManager($this);
+			self::$ExtensionManager = new ExtensionManager;
 
 			if(!(self::$ExtensionManager instanceof ExtensionManager)){
 				GenericExceptionHandler::$enabled = true;

@@ -310,7 +310,7 @@
 
 				$label = Widget::Label(__('Default Area'));
 
-				$sectionManager = new SectionManager($this->_Parent);
+				$sectionManager = new SectionManager(Administration::instance());
 				$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 
 				$options = array();

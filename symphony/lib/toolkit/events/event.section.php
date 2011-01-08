@@ -12,7 +12,7 @@
 	}
 
 	if (!function_exists('__doit')) {
-		function __doit($source, $fields, &$result, &$obj, &$event, $filters, $position=NULL, $entry_id=NULL){
+		function __doit($source, $fields, &$result, &$event, $filters, $position=NULL, $entry_id=NULL){
 
 			$post_values = new XMLElement('post-values');
 			$filter_results = array();
@@ -69,7 +69,7 @@
 			include_once(TOOLKIT . '/class.sectionmanager.php');
 			include_once(TOOLKIT . '/class.entrymanager.php');
 
-			$sectionManager = new SectionManager($obj);
+			$sectionManager = new SectionManager(Symphony::Engine());
 
 			if(!$section = $sectionManager->fetch($source)){
 				$result->setAttribute('result', 'error');
@@ -77,7 +77,7 @@
 				return false;
 			}
 
-			$entryManager = new EntryManager($obj);
+			$entryManager = new EntryManager(Symphony::Engine());
 
 			if(isset($entry_id) && $entry_id != NULL){
 				$entry =& $entryManager->fetch($entry_id);
@@ -325,8 +325,6 @@
 			if(isset($post_values) && is_object($post_values)) $result->appendChild($post_values);
 
 			return true;
-
-			## End Function
 		}
 	}
 
@@ -336,7 +334,7 @@
 
 	$result = new XMLElement(self::ROOTELEMENT);
 
-	if(@in_array('admin-only', $this->eParamFILTERS) && !$this->_Parent->isLoggedIn()){
+	if(@in_array('admin-only', $this->eParamFILTERS) && !Symphony::Engine()->isLoggedIn()){
 		$result->setAttribute('result', 'error');
 		$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 		$result->appendChild(buildFilterElement('admin-only', 'failed'));
@@ -357,8 +355,7 @@
 				$entry = new XMLElement('entry', NULL, array('position' => $position));
 
 				$ret = __doit(
-					self::getSource(), $fields, $entry, $this->_Parent,
-					$this, $this->eParamFILTERS, $position, $entry_id
+					self::getSource(), $fields, $entry, $this, $this->eParamFILTERS, $position, $entry_id
 				);
 
 				if (!$ret) $success = false;
@@ -374,7 +371,7 @@
 
 		if (isset($post['id']) && is_numeric($post['id'])) $entry_id = $post['id'];
 
-		$success = __doit(self::getSource(), $fields, $result, $this->_Parent, $this, $this->eParamFILTERS, NULL, $entry_id);
+		$success = __doit(self::getSource(), $fields, $result, $this, $this->eParamFILTERS, NULL, $entry_id);
 	}
 
 	if($success && isset($_REQUEST['redirect'])) redirect($_REQUEST['redirect']);

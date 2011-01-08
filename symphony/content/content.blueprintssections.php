@@ -21,7 +21,7 @@
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a section'), 'create button', NULL, array('accesskey' => 'c')));
 
-			$sectionManager = new SectionManager($this->_Parent);
+			$sectionManager = new SectionManager(Administration::instance());
 			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 
 			$aTableHead = array(
@@ -100,7 +100,7 @@
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(__('Untitled'));
 
-			$fieldManager = new FieldManager($this->_Parent);
+			$fieldManager = new FieldManager(Administration::instance());
 			$types = array();
 
 			$fields = is_array($_POST['fields']) ? $_POST['fields'] : array();
@@ -139,7 +139,7 @@
 			$div->appendChild($namediv);
 
 			$navgroupdiv = new XMLElement('div', NULL);
-			$sectionManager = new SectionManager($this->_Parent);
+			$sectionManager = new SectionManager(Administration::instance());
 			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Created if does not exist') . '</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
@@ -232,14 +232,14 @@
 
 			$section_id = $this->_context[1];
 
-			$sectionManager = new SectionManager($this->_Parent);
+			$sectionManager = new SectionManager(Administration::instance());
 
 			if(!$section = $sectionManager->fetch($section_id)) {
 				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for could not be found.'));
 			}
 			$meta = $section->get();
 
-			$fieldManager = new FieldManager($this->_Parent);
+			$fieldManager = new FieldManager(Administration::instance());
 			$types = array();
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
@@ -326,7 +326,7 @@
 			$div->appendChild($namediv);
 
 			$navgroupdiv = new XMLElement('div', NULL);
-			$sectionManager = new SectionManager($this->_Parent);
+			$sectionManager = new SectionManager(Administration::instance());
 			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Choose only one. Created if does not exist') . '</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
@@ -435,14 +435,14 @@
 					 */
 					Symphony::ExtensionManager()->notifyMembers('SectionPreDelete', '/blueprints/sections/', array('section_ids' => &$checked));
 
-					$sectionManager = new SectionManager($this->_Parent);
+					$sectionManager = new SectionManager(Administration::instance());
 					foreach($checked as $section_id) $sectionManager->delete($section_id);
 
 					redirect(SYMPHONY_URL . '/blueprints/sections/');
 				}
 
 				else if($_POST['with-selected'] == 'delete-entries') {
-					$entryManager = new EntryManager($this->_Parent);
+					$entryManager = new EntryManager(Administration::instance());
 					foreach($checked as $section_id) {
 						$entries = $entryManager->fetch(NULL, $section_id, NULL, NULL, NULL, NULL, false, false);
 						$entry_ids = array();
@@ -468,7 +468,7 @@
 				}
 
 				else if(preg_match('/^set-navigation-group-/', $_POST['with-selected'])) {
-					$sectionManager = new SectionManager($this->_Parent);
+					$sectionManager = new SectionManager(Administration::instance());
 
 					$navigation_group = preg_replace('/^set-navigation-group-/', null, $_POST['with-selected']);
 
@@ -494,7 +494,7 @@
 
 				if($edit) {
 					$section_id = $this->_context[1];
-					$sectionManager = new SectionManager($this->_Parent);
+					$sectionManager = new SectionManager(Administration::instance());
 					$existing_section = $sectionManager->fetch($section_id);
 				}
 
@@ -586,7 +586,7 @@
 
 						$meta['sortorder'] = ($next ? $next : '1');
 
-						$sectionManager = new SectionManager($this->_Parent);
+						$sectionManager = new SectionManager(Administration::instance());
 
 						/**
 						 * Just prior to saving the Section settings. Use with caution as
@@ -747,7 +747,7 @@
 
 			if(@array_key_exists("delete", $_POST['action'])){
 				$section_id = array($this->_context[1]);
-				$sectionManager = new SectionManager($this->_Parent);
+				$sectionManager = new SectionManager(Administration::instance());
 
 				/**
 				 * Just prior to calling the Section Manager's delete function

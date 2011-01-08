@@ -109,6 +109,8 @@
 		/**
 		 * An instance of the Symphony class, either Frontend or Administration
 		 * @var Symphony
+		 * @deprecated This will be removed in the next major version of Symphony.
+		 * The preferred way to access the Symphony instance is via `Symphony::Engine()`
 		 */
 		protected $_engine;
 
@@ -144,11 +146,8 @@
 		 */
 		public function __construct(&$parent){
 			$this->_Parent = $parent;
+			$this->_engine = Symphony::Engine();
 			$this->_handle = (strtolower(get_class($this)) == 'field' ? 'field' : strtolower(substr(get_class($this), 5)));
-
-			if(class_exists('Administration')) $this->_engine = Administration::instance();
-			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();
-			else throw new Exception(__('No suitable engine object found'));
 		}
 
 		/**
@@ -1078,7 +1077,7 @@
 		 *	the id of the entry to delete.
 		 * @param array $data (optional)
 		 *	The entry data provided for fields to do additional cleanup
-         *  This is an optional argument and defaults to null.
+		 *  This is an optional argument and defaults to null.
 		 * @return boolean
 		 *	true if the cleanup was successful, false otherwise.
 		 */

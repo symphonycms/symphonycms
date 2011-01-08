@@ -515,7 +515,7 @@
 
 			$label = Widget::Label(__('Events'));
 
-			$manager = new EventManager($this->_Parent);
+			$manager = new EventManager;
 			$events = $manager->listAll();
 
 			$options = array();
@@ -533,7 +533,7 @@
 
 			$label = Widget::Label(__('Data Sources'));
 
-			$manager = new DatasourceManager($this->_Parent);
+			$manager = new DatasourceManager;
 			$datasources = $manager->listAll();
 
 			$options = array();
