@@ -253,7 +253,7 @@
 
 			// Language file available
 			$current = self::$_languages[self::get()];
-			if(is_array($current) && ($current['status'] == 'enabled' || $enabled == false)) {
+			if(is_array($current) && ($current['status'] == LANGUAGE_ENABLED || $enabled == false)) {
 
 				// Load core translations
 				self::load($current['path'], true);
@@ -345,7 +345,7 @@
 							$language = array(
 								$lang => array(
 									'name' => $temp[$lang]['name'],
-									'status' => 'disabled',
+									'status' => LANGUAGE_DISABLED,
 									'extensions' => array()
 								)
 							);
@@ -389,12 +389,9 @@
 			$lang = $lang[1];
 
 			// Get status
-			$status = 'disabled';
-			if($source == 'core') {
-				$status = 'enabled';
-			}
-			elseif(!empty($enabled) && in_array($source, $enabled)) {
-				$status = 'enabled';
+			$status = LANGUAGE_DISABLED;
+			if($source == 'core' || (!empty($enabled) && in_array($source, $enabled))) {
+				$status = LANGUAGE_ENABLED;
 			}
 
 			// Save language information
@@ -483,7 +480,7 @@
 
 			// Get available languages
 			foreach(self::$_languages as $key => $language) {
-				if($language['status'] == 'enabled' || $enabled == false) {
+				if($language['status'] == LANGUAGE_ENABLED || $enabled == false) {
 					$languages[$key] = $language['name'];
 				}
 			}
@@ -653,3 +650,15 @@
 		}
 
 	}
+
+	/**
+	 * Status when a language is installed and enabled
+	 * @var integer
+	 */
+	define_safe('LANGUAGE_ENABLED', 10);
+
+	/**
+	 * Status when a language is disabled
+	 * @var integer
+	 */
+	define_safe('LANGUAGE_DISABLED', 11);
