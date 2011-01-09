@@ -301,7 +301,7 @@
 		public function fetchTypes(){
 			$structure = General::listStructure(TOOLKIT . '/fields', '/field.[a-z0-9_-]+.php/i', false, 'asc', TOOLKIT . '/fields');
 
-			$extensions = $this->_Parent->ExtensionManager->listInstalledHandles();
+			$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 
 			if(is_array($extensions) && !empty($extensions)){
 				foreach($extensions as $handle) {
