@@ -44,8 +44,8 @@
 	Class Dictionary {
 
 		/**
-		 * An associative array mapping English strings and their translations
-		 * @var array
+         * An associative array mapping English strings and their translations
+		 * @var array 
 		 */
  		private $_strings;
 
@@ -148,32 +148,32 @@
 	Class Lang {
 
 		/**
-		 * Code of active language
+         * Code of active language
 		 * @var string
 		 */
 		private static $_lang;
 
 		/**
-		 * Context information of all available languages
-		 * @var array
+         * Context information of all available languages
+		 * @var array 
 		 */
-		private static $_languages;
+		public static $_languages;
 
 		/**
-		 * Instance of the current Dictionary
+         * Instance of the current Dictionary
 		 * @var Dictionary
 		 */
 		private static $_dictionary;
 
 		/**
-		 * Array of transliterations
-		 * @var array
+         * Array of transliterations
+		 * @var array 
 		 */
 		private static $_transliterations;
 
 		/**
-		 * Array of months and weekday for localized date output
-		 * @var array
+         * Array of months and weekday for localized date output
+		 * @var array 
 		 */
 		private static $_dates;
 
@@ -211,7 +211,7 @@
 		 *
 		 * @param string $lang
 		 *  Language code, e. g. 'en' or 'pt-br'
-		 * @param boolean $enabled
+         * @param boolean $enabled
 		 */
 		public static function set($lang, $enabled=true) {
 			if($lang && $lang != self::get()) {
@@ -227,8 +227,8 @@
 
 		/**
 		 * Get current language
-		 *
-		 * @return string
+         * 
+         * @return string
 		 */
 		public static function get() {
 			return self::$_lang;
@@ -241,8 +241,8 @@
 		 *
 		 * Note: Beginning with Symphony 2.2 translations bundled with extensions will only be loaded
 		 * when the core dictionary of the specific language is available.
-		 *
-		 * @param boolean $enabled
+         * 
+         * @param boolean $enabled
 		 */
 		public static function activate($enabled=true) {
 
@@ -253,30 +253,15 @@
 
 			// Language file available
 			$current = self::$_languages[self::get()];
-			if(is_array($current) && ($current['status'] == 'enabled' || $enabled == false)) {
+			if(is_array($current) && ($current['status'] == LANGUAGE_ENABLED || $enabled == false)) {
 
 				// Load core translations
 				self::load($current['path'], true);
 
 				// Load extension translations
-				if(class_exists('Symphony')) {
-
-					// Fetch Extension Manager
-					$extensions = Symphony::ExtensionManager()->listInstalledHandles();
-
-					if(is_array($extensions) && !empty($extensions)){
-						foreach($extensions as $e){
-
-							// Skip language extensions
-							if(strpos($e, 'lang_') !== false) continue;
-
-							// Load translations
-							$path = EXTENSIONS . "/{$e}/lang/lang." . self::get() . ".php";
-							if(is_file($path)) self::load($path);
-						}
-					}
+				foreach($current['extensions'] as $handle => $path) {
+					self::load($path);
 				}
-
 			}
 
 			// Language file unavailable
@@ -310,7 +295,8 @@
 		/**
 		 * Fetch all languages available in the core language folder and the language extensions.
 		 * The function stores all language information in the public variable `$_languages`.
-		 * It contains an array with the name, source, path and status of each language. The language
+		 * It contains an array with the name, source, path and status of each language. 
+		 * Furthermore it add an array of all extensions available in a specific language. The language
 		 * status (enabled/disabled) can only be determined when the Extension Manager has been
 		 * initialized before. During installation all extension status are set to disabled.
 		 */
@@ -326,39 +312,68 @@
 			// Fetch core languages
 			$directory = General::listStructure(LANG);
 			foreach($directory['filelist'] as $file) {
-				self::fetchLanguage('core', LANG, $file, $enabled);
+				self::$_languages = array_merge(self::$_languages, self::fetchLanguage('core', LANG, $file, $enabled));
 			}
 
 			// Fetch extensions
 			$extensions = new DirectoryIterator(EXTENSIONS);
+
+			// Language extensions
 			foreach($extensions as $extension) {
-
-				// Explicitly match language extensions
-				if(strpos($extension->getFilename(), 'lang_') !== false) {
-					$folder = $extension->getPathname() . '/lang';
-					$directory = General::listStructure($folder);
-					foreach($directory['filelist'] as $file) {
-						self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled);
+				$folder = $extension->getPathname() . '/lang';
+				$directory = General::listStructure($folder);
+				foreach($directory['filelist'] as $file) {
+					if(strpos($extension->getFilename(), 'lang_') !== false) {
+						self::$_languages = array_merge(self::$_languages, self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled));
 					}
-				}
-
+				}		
 			}
 
+			// Other extensions
+			foreach($extensions as $extension) {
+				$folder = $extension->getPathname() . '/lang';
+				$directory = General::listStructure($folder);
+				foreach($directory['filelist'] as $file) {
+					if(strpos($extension->getFilename(), 'lang_') === false) {
+						$temp = self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled);
+						$lang = key($temp);
+						
+						// Create language if not exists
+						if(!array_key_exists($lang, self::$_languages)) {
+							$language = array(
+								$lang => array(
+									'name' => $temp[$lang]['name'],
+									'status' => LANGUAGE_DISABLED,
+									'extensions' => array()
+								)
+							);
+							self::$_languages = array_merge(self::$_languages, $language);
+						}
+						
+						// Merge extensions
+						self::$_languages[$lang]['extensions'] = array_merge(self::$_languages[$lang]['extensions'], array(
+							$temp[$lang]['source'] => $temp[$lang]['path']
+						));																		
+					}
+				}		
+			}
 		}
 
 		/**
 		 * Fetch language information for a single language.
-		 *
-		 * @param string $source
-		 *  The filename of the extension driver where this language
-		 *  file was found
-		 * @param string $folder
-		 *  The folder where this language file exists
-		 * @param string $file
-		 *  The filename of the language
-		 * @param array $enabled
+         * 
+         * @param string $source
+         *  The filename of the extension driver where this language
+         *  file was found
+         * @param string $folder
+         *  The folder where this language file exists
+         * @param string $file
+         *  The filename of the language
+         * @param array $enabled
 		 *  An associative array of enabled extensions from `tbl_extensions`
-		 */
+		 * @return array
+		 *  Returns a multidimensional array of language information
+         */
 		private static function fetchLanguage($source, $folder, $file, $enabled) {
 
 			// Fetch language file
@@ -372,20 +387,20 @@
 			$lang = $lang[1];
 
 			// Get status
-			$status = 'disabled';
-			if($source == 'core') {
-				$status = 'enabled';
-			}
-			elseif(!empty($enabled) && in_array($source, $enabled)) {
-				$status = 'enabled';
+			$status = LANGUAGE_DISABLED;
+			if($source == 'core' || (!empty($enabled) && in_array($source, $enabled))) {
+				$status = LANGUAGE_ENABLED;
 			}
 
 			// Save language information
-			self::$_languages[$lang] = array(
-				'name' => $about['name'],
-				'source' => $source,
-				'path' => $path,
-				'status' => $status
+			return array(
+				$lang => array(
+					'name' => $about['name'],
+					'source' => $source,
+					'path' => $path,
+					'status' => $status,
+					'extensions' => array()
+				)
 			);
 		}
 
@@ -454,7 +469,7 @@
 		 * Note: Beginning with Symphony 2.2 language files are only available
 		 * when the language extension is explicitly enabled.
 		 *
-		 * @param boolean $enabled
+         * @param boolean $enabled
 		 * @return array
 		 *  Returns an associative array of language codes and names, e. g. 'en' => 'English'
 		 */
@@ -463,7 +478,7 @@
 
 			// Get available languages
 			foreach(self::$_languages as $key => $language) {
-				if($language['status'] == 'enabled' || $enabled == false) {
+				if($language['status'] == LANGUAGE_ENABLED || $enabled == false) {
 					$languages[$key] = $language['name'];
 				}
 			}
@@ -633,3 +648,15 @@
 		}
 
 	}
+
+	/**
+	 * Status when a language is installed and enabled
+	 * @var integer
+	 */
+	define_safe('LANGUAGE_ENABLED', 10);
+
+	/**
+	 * Status when a language is disabled
+	 * @var integer
+	 */
+	define_safe('LANGUAGE_DISABLED', 11);
