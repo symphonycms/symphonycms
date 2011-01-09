@@ -43,6 +43,24 @@
 		private static $_extensions = array();
 
 		/**
+		 * The constructor for ExtensionManager. This sets the `$this->_Parent` to be an
+		 * instance of the Administration class and loads all the extensions into
+		 * memory. This is necessary so that each extension is created to announce
+		 * it's delegates and so that any static calls to extension classes are
+		 * available because they have been loaded into memory with require_once
+		 *
+		 * @see toolkit.ExtensionManager#listAll()
+		 * @see toolkit.ExtensionManager#create()
+		 *
+		 * @param Administration $parent
+		 *  The Administration object that this manager has been created from
+		 *  passed by reference
+		 */
+		public function __construct(&$parent=NULL){
+			parent::__construct($parent);
+		}
+
+		/**
 		 * Given a name, returns the full class name of an Extension.
 		 * Extension use an 'extension' prefix.
 		 *
@@ -550,9 +568,7 @@
 
 			if(empty($services)) return null;
 
-            $parent = Symphony::Engine();
-
-			$context += array('parent' => &$parent, 'page' => $page, 'delegate' => $delegate);
+			$context += array('parent' => &$this->_Parent, 'page' => $page, 'delegate' => $delegate);
 
 			foreach($services as $s){
 				$obj = $this->getInstance($s['name']);
@@ -623,7 +639,7 @@
 
 				if(!class_exists($classname)) require_once($path);
 
-				$param['parent'] =& Symphony::Engine();
+				$param['parent'] =& $this->_Parent;
 
 				##Create the object
 				self::$_pool[$name] = new $classname($param);

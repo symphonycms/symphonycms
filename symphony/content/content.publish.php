@@ -46,7 +46,7 @@
 
 		public function __viewIndex(){
 
-			$sectionManager = new SectionManager(Administration::instance());
+			$sectionManager = new SectionManager($this->_Parent);
 
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
 				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])));
@@ -57,7 +57,7 @@
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
 			$this->Form->setAttribute("class", $this->_context['section_handle']);
 
-			$entryManager = new EntryManager(Administration::instance());
+			$entryManager = new EntryManager($this->_Parent);
 
 			$filter = $filter_value = $where = $joins = NULL;
 			$current_page = (isset($_REQUEST['pg']) && is_numeric($_REQUEST['pg']) ? max(1, intval($_REQUEST['pg'])) : 1);
@@ -412,11 +412,11 @@
 
 						if($option == 'toggle'){
 
-							$entryManager = new EntryManager(Administration::instance());
+							$entryManager = new EntryManager($this->_Parent);
 							$field = $entryManager->fieldManager->fetch($field_id);
 							$fields = array($field->get('element_name') => $value);
 
-							$sectionManager = new SectionManager(Administration::instance());
+							$sectionManager = new SectionManager($this->_Parent);
 							$section = $sectionManager->fetch($field->get('parent_section'));
 
 							foreach($checked as $entry_id){
@@ -460,7 +460,7 @@
 		}
 
 		public function __viewNew() {
-			$sectionManager = new SectionManager(Administration::instance());
+			$sectionManager = new SectionManager($this->_Parent);
 
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
 				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])));
@@ -473,7 +473,7 @@
 			$this->appendSubheading(__('Untitled'));
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 
-			$entryManager = new EntryManager(Administration::instance());
+			$entryManager = new EntryManager($this->_Parent);
 
 			// If there is post data floating around, due to errors, create an entry object
 			if (isset($_POST['fields'])) {
@@ -556,14 +556,14 @@
 
 			if(array_key_exists('save', $_POST['action']) || array_key_exists("done", $_POST['action'])) {
 
-				$sectionManager = new SectionManager(Administration::instance());
+				$sectionManager = new SectionManager($this->_Parent);
 
 				$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']);
 
 				if(!$section = $sectionManager->fetch($section_id))
 					Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', $this->_context['section_handle']));
 
-				$entryManager = new EntryManager(Administration::instance());
+				$entryManager = new EntryManager($this->_Parent);
 
 				$entry =& $entryManager->create();
 				$entry->set('section_id', $section_id);
@@ -654,7 +654,7 @@
 		}
 
 		public function __viewEdit() {
-			$sectionManager = new SectionManager(Administration::instance());
+			$sectionManager = new SectionManager($this->_Parent);
 
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
 				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])));
@@ -663,7 +663,7 @@
 
 			$entry_id = intval($this->_context['entry_id']);
 
-			$entryManager = new EntryManager(Administration::instance());
+			$entryManager = new EntryManager($this->_Parent);
 			$entryManager->setFetchSorting('id', 'DESC');
 
 			if(!$existingEntry = $entryManager->fetch($entry_id)) {
@@ -833,14 +833,14 @@
 
 			if(@array_key_exists('save', $_POST['action']) || @array_key_exists("done", $_POST['action'])){
 
-				$entryManager = new EntryManager(Administration::instance());
+				$entryManager = new EntryManager($this->_Parent);
 
 				if(!$ret = $entryManager->fetch($entry_id)) {
 					Administration::instance()->customError(__('Unknown Entry'), __('The entry you are looking for could not be found.'));
 				}
 				$entry = $ret[0];
 
-				$sectionManager = new SectionManager(Administration::instance());
+				$sectionManager = new SectionManager($this->_Parent);
 				$section = $sectionManager->fetch($entry->get('section_id'));
 
 				$post = General::getPostData();
@@ -917,7 +917,7 @@
 				 */
 				Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => $entry_id));
 
-				$entryManager = new EntryManager(Administration::instance());
+				$entryManager = new EntryManager($this->_Parent);
 				$entryManager->delete($entry_id);
 
 				redirect(SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/');

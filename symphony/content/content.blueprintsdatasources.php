@@ -61,7 +61,7 @@
 				}
 			}
 
-			$sectionManager = new SectionManager(Administration::instance());
+			$sectionManager = new SectionManager($this->_Parent);
 
 			if(isset($_POST['fields'])){
 				$fields = $_POST['fields'];
@@ -82,7 +82,7 @@
 				$isEditing = true;
 				$handle = $this->_context[1];
 
-				$datasourceManager = new DatasourceManager;
+				$datasourceManager = new DatasourceManager($this->_Parent);
 				$existing =& $datasourceManager->create($handle, NULL, false);
 
 				if (!$existing->allowEditorToParse()) redirect(SYMPHONY_URL . '/blueprints/datasources/info/' . $handle . '/');
@@ -734,7 +734,7 @@
 		public function __viewInfo(){
 			$this->setPageType('form');
 
-			$DSManager = new DatasourceManager;
+			$DSManager = new DatasourceManager($this->_Parent);
 			$datasource = $DSManager->create($this->_context[1], NULL, false);
 			$about = $datasource->about();
 

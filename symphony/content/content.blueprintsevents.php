@@ -66,14 +66,14 @@
 			$isEditing = ($readonly ? true : false);
 			$fields = array();
 
-			$sectionManager = new SectionManager(Administration::instance());
+			$sectionManager = new SectionManager($this->_Parent);
 
 			if($this->_context[0] == 'edit' || $this->_context[0] == 'info'){
 				$isEditing = true;
 
 				$handle = $this->_context[1];
 
-				$EventManager = new EventManager;
+				$EventManager = new EventManager($this->_Parent);
 				$existing =& $EventManager->create($handle);
 
 				$about = $existing->about();
@@ -343,7 +343,7 @@
 				$container = new XMLElement('form', NULL, array('method' => 'post', 'action' => '', 'enctype' => 'multipart/form-data'));
 				$container->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 
-				$sectionManager = new SectionManager(Administration::instance());
+				$sectionManager = new SectionManager($this->_Parent);
 				$section = $sectionManager->fetch($fields['source']);
 
 				$section_fields = $section->fetchFields();

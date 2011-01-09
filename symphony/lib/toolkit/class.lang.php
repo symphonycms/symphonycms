@@ -320,7 +320,9 @@
 			// Fetch list of active extensions
 			$enabled = array();
 			if(class_exists('Symphony')) {
-				$enabled = Symphony::ExtensionManager()->listInstalledHandles();
+				$enabled = Symphony::Database()->fetchCol('name',
+					"SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'"
+				);
 			}
 
 			// Fetch core languages

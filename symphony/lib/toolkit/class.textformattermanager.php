@@ -154,7 +154,7 @@
 				if(!class_exists($classname))
 					require_once($path);
 
-				self::$_pool[$handle] = new $classname(Symphony::Engine());
+				self::$_pool[$handle] = new $classname($this->_Parent);
 			}
 
 			return self::$_pool[$handle];

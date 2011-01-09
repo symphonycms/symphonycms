@@ -1,7 +1,7 @@
 <?php
 
 	if(!function_exists('processRecordGroup')){
-		function processRecordGroup(&$wrapper, $element, $group, $ds, &$entryManager, &$fieldPool, &$param_pool, $param_output_only=false){
+		function processRecordGroup(&$wrapper, $element, $group, $ds, &$Parent, &$entryManager, &$fieldPool, &$param_pool, $param_output_only=false){
 			$associated_sections = NULL;
 
 			$xGroup = new XMLElement($element, NULL, $group['attr']);
@@ -80,7 +80,7 @@
 
 			if(is_array($group['groups']) && !empty($group['groups'])){
 				foreach($group['groups'] as $element => $group){
-					foreach($group as $g) processRecordGroup($xGroup, $element, $g, $ds, $entryManager, $fieldPool, $param_pool, $param_output_only);
+					foreach($group as $g) processRecordGroup($xGroup, $element, $g, $ds, $Parent, $entryManager, $fieldPool, $param_pool, $param_output_only);
 				}
 			}
 
@@ -98,7 +98,7 @@
 	$key = 'ds-' . $this->dsParamROOTELEMENT;
 
 	include_once(TOOLKIT . '/class.entrymanager.php');
-	$entryManager = new EntryManager(Symphony::Engine());
+	$entryManager = new EntryManager($this->_Parent);
 
 	if(!$section = $entryManager->sectionManager->fetch($this->getSource())){
 		$about = $this->about();
@@ -243,7 +243,7 @@
 				$groups = $fieldPool[$this->dsParamGROUP]->groupRecords($entries['records']);
 
 				foreach($groups as $element => $group){
-					foreach($group as $g) processRecordGroup($result, $element, $g, $this, $entryManager, $fieldPool, $param_pool, $this->_param_output_only);
+					foreach($group as $g) processRecordGroup($result, $element, $g, $this, $this->_Parent, $entryManager, $fieldPool, $param_pool, $this->_param_output_only);
 				}
 
 			else:
