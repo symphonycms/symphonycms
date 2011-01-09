@@ -25,7 +25,7 @@
 		public function setDefaultGateway($name){
 			if($this->__find($name)){
 				Symphony::Configuration()->set('default_gateway', $name, 'Email');
-				$this->_Parent->saveConfig();
+				Administration::instance()->saveConfig();
 			}
 			else{
 				throw new EmailGatewayException('This gateway can not be found. Can not save as default.');
