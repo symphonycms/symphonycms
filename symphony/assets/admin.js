@@ -85,7 +85,7 @@ var Symphony = {};
 			 *  Object or string to be stored
 			 */
 			add: function(group, values) {
-			
+
 				// Extend existing group
 				if(Symphony.Context.Storage[group] && $.type(values) !== 'string') {
 					Symphony.Context.Storage[group] = $.extend(Symphony.Context.Storage[group], values);
@@ -143,7 +143,7 @@ var Symphony = {};
 			 */
 			add: function(strings) {
 
-				// Don't process empty strings	
+				// Don't process empty strings
 				if($.isEmptyObject(strings)) return;
 
 				// Set key as value
@@ -301,7 +301,7 @@ var Symphony = {};
 						'borderBottomColor': notice.css('border-bottom-color'),
 						'borderLeftColor': notice.css('border-left-color'),
 					};
-				
+
 				// Delayed animation to new styles
 				notice.removeClass(newclass).delay(delay).animate(styles, 'slow', 'linear', function() {
 					$(this).removeClass('success');
@@ -378,10 +378,10 @@ var Symphony = {};
 
 		// Pickers
 		$('.picker').symphonyPickable();
-		
+
 		// Orderable list
 		$('ul.orderable').symphonyOrderable();
-		
+
 		// Orderable tables
 		var orderable = $('table.orderable');
 		orderable.symphonyOrderable({
@@ -405,7 +405,7 @@ var Symphony = {};
 
 			// Get new sort order
 			var new_sorting = orderable.find('input').map(function(e, i) { return this.name + '=' + (e + 1); }).get().join('&');
-			
+
 			// Store new sort order
 			if(new_sorting != old_sorting) {
 
@@ -434,7 +434,7 @@ var Symphony = {};
 			}
 
 		});
-		
+
 		// Selectable
 		$('table:has(input)').symphonySelectable();
 
@@ -445,7 +445,7 @@ var Symphony = {};
 		var duplicator = $('#fields-duplicator');
 		duplicator.symphonyDuplicator({
 			orderable: true,
-			collapsible: true           
+			collapsible: true
 		});
 		duplicator.bind('collapsestop', function(event, item) {
 			var instance = jQuery(item);
@@ -614,16 +614,16 @@ var Symphony = {};
 
 		// Upload fields
 		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span').click(function(event) {
-			var span = $(this).parent().empty(),
+			var span = $(this).parent(),
 				name = span.find('input').attr('name');
 
 			// Prevent clicktrough
 			event.preventDefault();
 
 			// Add new empty file input
-			span.append('<input name="' + name + '" type="file">');
+			span.empty().append('<input name="' + name + '" type="file">');
 		});
-		
+
 		// Focus first text-input or textarea when creating or editing entries
 		if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'edit' || Symphony.Context.get('env')[0] == 'new'
 			|| Symphony.Context.get('env').page == 'edit' || Symphony.Context.get('env').page == 'new')) {

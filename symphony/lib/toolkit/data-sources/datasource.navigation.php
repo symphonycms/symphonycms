@@ -57,11 +57,8 @@
 	}
 
 	$sql = "SELECT DISTINCT p.* FROM `tbl_pages` AS p LEFT JOIN `tbl_pages_types` AS pt ON(p.id = pt.page_id) WHERE 1 = 1";
+	$sql .= !is_null($parent_sql) ? $parent_sql : " AND p.parent IS NULL ";
 
-	if(!is_null($parent_sql)) $sql .= $parent_sql;
-	else{
-		$sql .= " AND p.parent IS NULL ";
-	}
 	if(!is_null($types)) $sql .= " AND pt.type IN ('" . implode("', '", $types) . "')";
 
 	$sql .= " ORDER BY p.`sortorder` ASC";
@@ -75,5 +72,6 @@
 		$result->appendChild($this->__noRecordsFound());
 	}
 
-	else foreach($pages as $p) $result->appendChild(__buildPageXML($p, Symphony::Database()));
-
+	else {
+        foreach($pages as $p) $result->appendChild(__buildPageXML($p, Symphony::Database()));
+	}

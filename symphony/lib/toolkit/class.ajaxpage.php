@@ -77,7 +77,7 @@
 
 			$this->addHeaderToPage('Content-Type', 'text/xml');
 
-			$this->_Parent->Profiler->sample('Page template created', PROFILE_LAP);
+			Administration::instance()->Profiler->sample('Page template created', PROFILE_LAP);
 		}
 
 		/**

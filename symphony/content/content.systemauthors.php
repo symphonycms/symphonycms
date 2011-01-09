@@ -117,7 +117,7 @@
 				* @param array $author_ids
 				*  An array of Author ID that are about to be removed
 				*/
-				Administration::instance()->ExtensionManager->notifyMembers('AuthorPreDelete', '/system/authors/', array('author_ids' => $checked));
+				Symphony::ExtensionManager()->notifyMembers('AuthorPreDelete', '/system/authors/', array('author_ids' => $checked));
 
 					foreach($checked as $author_id) {
 						$a = AuthorManager::fetchByID($author_id);
@@ -338,7 +338,7 @@
 				* installation. New options should be the path to the page after the `SYMPHONY_URL`
 				* constant.
 				*/
-				Administration::instance()->ExtensionManager->notifyMembers('AddDefaultAuthorAreas', '/system/authors/', array('options' => &$options));
+				Symphony::ExtensionManager()->notifyMembers('AddDefaultAuthorAreas', '/system/authors/', array('options' => &$options));
 
 				$label->appendChild(Widget::Select('fields[default_area]', $options));
 				$group->appendChild($label);
@@ -427,7 +427,7 @@
 						 * @param Author $author
 						 *  The Author object that has just been created
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('AuthorPostCreate', '/system/authors/', array('author' => $this->_Author));
+						Symphony::ExtensionManager()->notifyMembers('AuthorPostCreate', '/system/authors/', array('author' => $this->_Author));
 
 						redirect(SYMPHONY_URL . "/system/authors/edit/$author_id/created/");
 					}
@@ -513,7 +513,7 @@
 						 * @param Author $author
 						 * An Author object
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('AuthorPostEdit', '/system/authors/', array('author' => $this->_Author));
+						Symphony::ExtensionManager()->notifyMembers('AuthorPostEdit', '/system/authors/', array('author' => $this->_Author));
 
 						redirect(SYMPHONY_URL . '/system/authors/edit/' . $author_id . '/saved/');
 					}
@@ -535,7 +535,7 @@
 				 * @param integer $author_id
 				 *  The ID of Author ID that is about to be deleted
 				 */
-				Administration::instance()->ExtensionManager->notifyMembers('AuthorPreDelete', '/system/authors/', array('author_id' => $author_id));
+				Symphony::ExtensionManager()->notifyMembers('AuthorPreDelete', '/system/authors/', array('author_id' => $author_id));
 
 				if(!$isOwner) {
 					AuthorManager::delete($author_id);

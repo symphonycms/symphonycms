@@ -18,7 +18,7 @@
 		 * Defaults to an empty array.
 		 * @var array
 		 */
-	    protected static $_pool = array();
+		protected static $_pool = array();
 
 		/**
 		 * An array of all fields whose have been created by ID
@@ -46,9 +46,9 @@
 		 *  A field handle
 		 * @return string
 		 */
-        public function __getClassName($type){
-	        return 'field' . $type;
-        }
+		public function __getClassName($type){
+			return 'field' . $type;
+		}
 
 		/**
 		 * Finds a Field by type by searching the `TOOLKIT . /fields` folder and then
@@ -59,22 +59,21 @@
 		 *  The field handle, that is, `field.{$handle}.php`
 		 * @return string
 		 */
-        public function __getClassPath($type){
-	        if(is_file(TOOLKIT . "/fields/field.{$type}.php")) return TOOLKIT . '/fields';
+		public function __getClassPath($type){
+			if(is_file(TOOLKIT . "/fields/field.{$type}.php")) return TOOLKIT . '/fields';
 			else{
 
-				$extensionManager = new ExtensionManager($this->_Parent);
-				$extensions = $extensionManager->listInstalledHandles();
+				$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 
 				if(is_array($extensions) && !empty($extensions)){
 					foreach($extensions as $e){
 						if(is_file(EXTENSIONS . "/{$e}/fields/field.{$type}.php")) return EXTENSIONS . "/{$e}/fields";
 					}
 				}
-	    	}
+			}
 
-		    return false;
-        }
+			return false;
+		}
 
 		/**
 		 * Given a field type, return the path to it's class
@@ -84,9 +83,9 @@
 		 *  The handle of the field to load (it's type)
 		 * @return string
 		 */
-        public function __getDriverPath($type){
-	        return $this->__getClassPath($type) . "/field.{$type}.php";
-        }
+		public function __getDriverPath($type){
+			return $this->__getClassPath($type) . "/field.{$type}.php";
+		}
 
 		/**
 		 * Given an associative array of fields, insert them into the database
@@ -103,7 +102,7 @@
 		public function add(Array $fields){
 
 			if(!isset($fields['sortorder'])){
-		        $next = Symphony::Database()->fetchVar("next", 0, 'SELECT MAX(`sortorder`) + 1 AS `next` FROM tbl_fields LIMIT 1');
+				$next = Symphony::Database()->fetchVar("next", 0, 'SELECT MAX(`sortorder`) + 1 AS `next` FROM tbl_fields LIMIT 1');
 				$fields['sortorder'] = ($next ? $next : '1');
 			}
 
@@ -294,7 +293,7 @@
 
 		/**
 		 * Returns an array of all available field handles discovered in the 
-         * `TOOLKIT . /fields` or `EXTENSIONS . /{}/fields`.
+		 * `TOOLKIT . /fields` or `EXTENSIONS . /{}/fields`.
 		 *
 		 * @return array
 		 *  A single dimensional array of field handles.
@@ -302,7 +301,7 @@
 		public function fetchTypes(){
 			$structure = General::listStructure(TOOLKIT . '/fields', '/field.[a-z0-9_-]+.php/i', false, 'asc', TOOLKIT . '/fields');
 
-			$extensions = $this->_Parent->ExtensionManager->listInstalledHandles();
+			$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 
 			if(is_array($extensions) && !empty($extensions)){
 				foreach($extensions as $handle) {
@@ -336,17 +335,17 @@
 		public function &create($type){
 
 			if(!isset(self::$_pool[$type])){
-		        $classname = $this->__getClassName($type);
-		        $path = $this->__getDriverPath($type);
+				$classname = $this->__getClassName($type);
+				$path = $this->__getDriverPath($type);
 
-		        if(!file_exists($path)){
-			        throw new Exception(
+				if(!file_exists($path)){
+					throw new Exception(
 						__(
 							'Could not find Field <code>%1$s</code> at <code>%2$s</code>. If the Field was provided by an Extension, ensure that it is installed, and enabled.',
 							array($type, $path)
 						)
 					);
-		        }
+				}
 
 				if(!class_exists($classname)){
 					require_once($path);

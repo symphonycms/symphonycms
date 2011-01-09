@@ -3,7 +3,10 @@
 	/**
 	 * @package toolkit
 	 */
-
+	/**
+	 * A simple Textarea field that essentially maps to HTML's `<textarea/>`.
+	 */
+	
 	Class fieldTextarea extends Field {
 		function __construct(&$parent){
 
@@ -33,20 +36,20 @@
 			if($this->get('formatter') != 'none') $textarea->setAttribute('class', $this->get('formatter'));
 
 			/**
-             * Allows developers modify the textarea before it is rendered in the publish forms
-             * 
-             * @delegate ModifyTextareaFieldPublishWidget
-             * @param string $context
-             * '/backend/'
-             * @param Field $field
-             * @param Widget $label
-             * @param Widget $textarea
-             */
-			$this->_engine->ExtensionManager->notifyMembers('ModifyTextareaFieldPublishWidget', '/backend/', array(
-                'field' => &$this, 
-                'label' => &$label, 
-                'textarea' => &$textarea
-            ));
+			 * Allows developers modify the textarea before it is rendered in the publish forms
+			 * 
+			 * @delegate ModifyTextareaFieldPublishWidget
+			 * @param string $context
+			 * '/backend/'
+			 * @param Field $field
+			 * @param Widget $label
+			 * @param Widget $textarea
+			 */
+			Symphony::ExtensionManager()->notifyMembers('ModifyTextareaFieldPublishWidget', '/backend/', array(
+			    'field' => &$this, 
+			    'label' => &$label, 
+			    'textarea' => &$textarea
+			));
 
 			$label->appendChild($textarea);
 
@@ -151,13 +154,10 @@
 		protected function __applyFormatting($data, $validate=false, &$errors=NULL){
 
 			if($this->get('formatter')){
-
 				$tfm = new TextformatterManager($this->_engine);
-
 				$formatter = $tfm->create($this->get('formatter'));
 
 				$result = $formatter->run($data);
-
 			}
 
 			if($validate === true){

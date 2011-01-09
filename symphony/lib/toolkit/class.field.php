@@ -108,6 +108,9 @@
 
 		/**
 		 * An instance of the Symphony class, either Frontend or Administration
+		 * 
+		 * @deprecated This will be removed in the next major version of Symphony.
+		 * The preferred way to access the Symphony instance is via `Symphony::Engine()`
 		 * @var Symphony
 		 */
 		protected $_engine;
@@ -144,11 +147,8 @@
 		 */
 		public function __construct(&$parent){
 			$this->_Parent = $parent;
+			$this->_engine = Symphony::Engine();
 			$this->_handle = (strtolower(get_class($this)) == 'field' ? 'field' : strtolower(substr(get_class($this), 5)));
-
-			if(class_exists('Administration')) $this->_engine = Administration::instance();
-			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();
-			else throw new Exception(__('No suitable engine object found'));
 		}
 
 		/**
@@ -308,7 +308,7 @@
 		public function handle(){
 			return $this->_handle;
 		}
-		
+
 		/**
 		 * Accessor to the name of this field object. The name may contain characters
 		 * that normally would be stripped in the handle while also allowing the field
@@ -1041,9 +1041,9 @@
 			$fields['sortorder'] = (string)$this->get('sortorder');
 
 			if($id = $this->get('id')){
-				return $this->_Parent->edit($id, $fields);
+				return FieldManager::edit($id, $fields);
 			}
-			else if($id = $this->_Parent->add($fields)){
+			else if($id = FieldManager::add($fields)){
 				$this->set('id', $id);
 				$this->createTable();
 				return true;
@@ -1078,7 +1078,7 @@
 		 *	the id of the entry to delete.
 		 * @param array $data (optional)
 		 *	The entry data provided for fields to do additional cleanup
-         *  This is an optional argument and defaults to null.
+		 *  This is an optional argument and defaults to null.
 		 * @return boolean
 		 *	true if the cleanup was successful, false otherwise.
 		 */
@@ -1105,7 +1105,7 @@
 		 */
 		public function createSectionAssociation($parent_section_id = null, $child_field_id = null, $parent_field_id = null, $show_association = true){
 
-			if(is_null($parent_section_id) && $parent_field_id === false) return false;
+			if(is_null($parent_section_id) && (is_null($parent_field_id) || !$parent_field_id)) return false;
 
 			if(is_null($parent_section_id )) {
 				$parent_section_id = Symphony::Database()->fetchVar('parent_section', 0,
