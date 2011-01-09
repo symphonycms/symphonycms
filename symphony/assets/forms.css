@@ -41,6 +41,7 @@ select {
 }
 select[multiple] {
 	height: 10em;
+	background-color: #ffffff;
 }
 textarea,
 label input {

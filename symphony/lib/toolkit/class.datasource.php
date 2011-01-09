@@ -22,7 +22,7 @@
 		/**
 		 * The end-of-line constant.
 		 * @var string
-		 * @deprecated This will no longer exist in Symphony 3
+		 * @deprecated This will be removed in the next version of Symphony
 		 */
 		const CRLF = PHP_EOL;
 
@@ -173,31 +173,6 @@
 		 */
 		public function __noRecordsFound(){
 			return new XMLElement('error', __('No records found.'));
-		}
-
-		/**
-		 * Given a wrapper and an associative array of fields, this function
-		 * will append all `$this->dsParamINCLUDEDELEMENTS` to a wrapper. This function
-		 * is a basic version of `Field::appendFormattedElements`. It is currently
-		 * only used by the Author Datasource type.
-		 *
-		 * @param XMLElement $wrapper
-		 *  The wrapper that this fields should be added to
-		 * @param array $fields
-		 *  An associative array with the key being the handle of the element,
-		 *  and the value being the XMLElement to append to the wrapper.
-		 */
-		public function __appendIncludedElements(&$wrapper, Array $fields){
-			if(!isset($this->dsParamINCLUDEDELEMENTS) || !is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) return;
-
-			foreach($this->dsParamINCLUDEDELEMENTS as $index) {
-				if(!isset($fields[$index])) continue;
-				else if(!$fields[$index] instanceof XMLElement) {
-					throw new Exception(__('%s is not a valid object. Failed to append to XML.', array($index)));
-				}
-
-				$wrapper->appendChild($fields[$index]);
-			}
 		}
 
 		/**

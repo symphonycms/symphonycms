@@ -3,7 +3,12 @@
 	/**
 	 * @package toolkit
 	 */
-
+	/**
+	 * Checkbox field simulates a HTML checkbox field, in that it represents a
+	 * simple yes/no field. Optionally a Developer can give a Checkbox field a
+	 * long description for the Publish page, as well as referencing the Checkbox
+	 * field with it's short name.
+	 */
 	Class fieldCheckbox extends Field {
 		function __construct(&$parent){
 			parent::__construct($parent);

@@ -174,7 +174,7 @@
 						 * @param string $username
 						 *  The username of the Author who attempted to login.
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('AuthorLoginFailure', '/login/', array('username' => $_POST['username']));
+						Symphony::ExtensionManager()->notifyMembers('AuthorLoginFailure', '/login/', array('username' => $_POST['username']));
 						$this->_invalidPassword = true;
 					}
 
@@ -189,7 +189,7 @@
 						 * @param string $username
 						 *  The username of the Author who logged in.
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => $_POST['username']));
+						Symphony::ExtensionManager()->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => $_POST['username']));
 
 						if(isset($_POST['redirect'])) redirect(URL . str_replace(parse_url(URL, PHP_URL_PATH), '', $_POST['redirect']));
 
@@ -242,7 +242,7 @@
 						 * @param integer $author_id
 						 *  The ID of the Author who requested the password reset
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('AuthorPostPasswordResetSuccess', '/login/', array('author_id' => $author['id']));
+						Symphony::ExtensionManager()->notifyMembers('AuthorPostPasswordResetSuccess', '/login/', array('author_id' => $author['id']));
 					}
 
 					else{
@@ -258,7 +258,7 @@
 						 * @param string $email
 						 *  The santizied Email of the Author who tried to request the password reset
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('AuthorPostPasswordResetFailure', '/login/', array('email' => Symphony::Database()->cleanValue($_POST['email'])));
+						Symphony::ExtensionManager()->notifyMembers('AuthorPostPasswordResetFailure', '/login/', array('email' => Symphony::Database()->cleanValue($_POST['email'])));
 
 						$this->_email_sent = false;
 					}
@@ -292,7 +292,7 @@
 						 * @param integer $author_id
 						 *  The ID of the Author who has just changed their password
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('AuthorPostPasswordChange', '/login/', array('author_id' => $author_id));
+						Symphony::ExtensionManager()->notifyMembers('AuthorPostPasswordChange', '/login/', array('author_id' => $author_id));
 
 						redirect(SYMPHONY_URL);
 					}
@@ -336,7 +336,7 @@
 					 * @param integer $author_id
 					 *  The ID of the Author who has requested their password be reset
 					 */
-					Administration::instance()->ExtensionManager->notifyMembers('AuthorPostPasswordResetRequest', '/login/', array('author_id' => $author['id']));
+					Symphony::ExtensionManager()->notifyMembers('AuthorPostPasswordResetRequest', '/login/', array('author_id' => $author['id']));
 
 					$this->_alert = __('Password reset. Check your email');
 

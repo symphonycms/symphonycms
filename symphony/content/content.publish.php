@@ -180,7 +180,7 @@
 			 * @param integer $section_id
 			 * The current Section ID
 			 */
-			Administration::instance()->ExtensionManager->notifyMembers('AddCustomPublishColumn', '/publish/', array('tableHead' => &$aTableHead, 'section_id' => $section->get('id')));
+			Symphony::ExtensionManager()->notifyMembers('AddCustomPublishColumn', '/publish/', array('tableHead' => &$aTableHead, 'section_id' => $section->get('id')));
 
 			## Table Body
 			$aTableBody = array();
@@ -292,7 +292,7 @@
 					 * @param integer $entry_id
 					 *  The Entry ID for this row
 					 */
-					Administration::instance()->ExtensionManager->notifyMembers('AddCustomPublishColumnData', '/publish/', array('tableData' => &$tableData, 'section_id' => $section->get('id'), 'entry_id' => $entry));
+					Symphony::ExtensionManager()->notifyMembers('AddCustomPublishColumnData', '/publish/', array('tableData' => &$tableData, 'section_id' => $section->get('id'), 'entry_id' => $entry));
 
 					$tableData[count($tableData) - 1]->appendChild(Widget::Input('items['.$entry->get('id').']', NULL, 'checkbox'));
 
@@ -399,7 +399,7 @@
 						 * @param array $checked
 						 *  An array of Entry ID's passed by reference
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
+						Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
 
 						$entryManager = new EntryManager($this->_Parent);
 						$entryManager->delete($checked);
@@ -432,7 +432,7 @@
 								 * @param Entry $entry
 								 * @param array $fields
 								 */
-								Administration::instance()->ExtensionManager->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$entry[0], 'fields' => $fields));
+								Symphony::ExtensionManager()->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$entry[0], 'fields' => $fields));
 
 								$entry[0]->setData($field_id, $field->toggleFieldData($entry[0]->getData($field_id), $value));
 								$entry[0]->commit();
@@ -447,7 +447,7 @@
 								 * @param Entry $entry
 								 * @param array $fields
 								 */
-								Administration::instance()->ExtensionManager->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $entry[0], 'fields' => $fields));
+								Symphony::ExtensionManager()->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $entry[0], 'fields' => $fields));
 							}
 
 							redirect($_SERVER['REQUEST_URI']);
@@ -567,7 +567,7 @@
 
 				$entry =& $entryManager->create();
 				$entry->set('section_id', $section_id);
-				$entry->set('author_id', $this->_Parent->Author->get('id'));
+				$entry->set('author_id', Administration::instance()->Author->get('id'));
 				$entry->set('creation_date', DateTimeObj::get('Y-m-d H:i:s'));
 				$entry->set('creation_date_gmt', DateTimeObj::getGMT('Y-m-d H:i:s'));
 
@@ -611,7 +611,7 @@
 					 * @param Entry $entry
 					 * @param array $fields
 					 */
-					Administration::instance()->ExtensionManager->notifyMembers('EntryPreCreate', '/publish/new/', array('section' => $section, 'entry' => &$entry, 'fields' => &$fields));
+					Symphony::ExtensionManager()->notifyMembers('EntryPreCreate', '/publish/new/', array('section' => $section, 'entry' => &$entry, 'fields' => &$fields));
 
 					if(!$entry->commit()){
 						define_safe('__SYM_DB_INSERT_FAILED__', true);
@@ -630,7 +630,7 @@
 						 * @param Entry $entry
 						 * @param array $fields
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('EntryPostCreate', '/publish/new/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
+						Symphony::ExtensionManager()->notifyMembers('EntryPostCreate', '/publish/new/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
 
 						$prepopulate_field_id = $prepopulate_value = NULL;
 						if(isset($_POST['prepopulate'])){
@@ -701,7 +701,7 @@
 			 * @param Entry $entry
 			 * @param array $fields
 			 */
-			Administration::instance()->ExtensionManager->notifyMembers('EntryPreRender', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
+			Symphony::ExtensionManager()->notifyMembers('EntryPreRender', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
 
 			if(isset($this->_context['flag'])){
 
@@ -864,7 +864,7 @@
 					 * @param Entry $entry
 					 * @param array $fields
 					 */
-					Administration::instance()->ExtensionManager->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
+					Symphony::ExtensionManager()->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
 
 					if(!$entry->commit()){
 						define_safe('__SYM_DB_INSERT_FAILED__', true);
@@ -884,7 +884,7 @@
 						 * @param Entry $entry
 						 * @param array $fields
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
+						Symphony::ExtensionManager()->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
 
 						$prepopulate_field_id = $prepopulate_value = NULL;
 						if(isset($_POST['prepopulate'])){
@@ -915,7 +915,7 @@
 				 * @param array $checked
 				 *  An array of Entry ID's passed by reference
 				 */
-				Administration::instance()->ExtensionManager->notifyMembers('Delete', '/publish/', array('entry_id' => $entry_id));
+				Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => $entry_id));
 
 				$entryManager = new EntryManager($this->_Parent);
 				$entryManager->delete($entry_id);

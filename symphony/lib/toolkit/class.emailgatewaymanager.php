@@ -25,7 +25,7 @@
 		public function setDefaultGateway($name){
 			if($this->__find($name)){
 				Symphony::Configuration()->set('default_gateway', $name, 'Email');
-				$this->_Parent->saveConfig();
+				Administration::instance()->saveConfig();
 			}
 			else{
 				throw new EmailGatewayException('This gateway can not be found. Can not save as default.');
@@ -62,8 +62,7 @@
 			if(is_file(EMAILGATEWAYS . "/email.$name.php")) return EMAILGATEWAYS;
 			else{
 
-				$extensionManager = new ExtensionManager($this->_Parent);
-				$extensions = $extensionManager->listInstalledHandles();
+				$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 
 				if(is_array($extensions) && !empty($extensions)){
 					foreach($extensions as $e){
@@ -139,8 +138,7 @@
 				}
 			}
 
-			$extensionManager = new ExtensionManager($this->_Parent);
-			$extensions = $extensionManager->listInstalledHandles();
+			$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 
 			if(is_array($extensions) && !empty($extensions)){
 				foreach($extensions as $e){

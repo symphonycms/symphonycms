@@ -778,8 +778,8 @@ Options +FollowSymlinks -Indexes
 
 				// Install extensions
 				require_once(CORE . '/class.administration.php');
-				foreach(Administration::instance()->ExtensionManager->listAll() as $name => $about) {
-				    if(Administration::instance()->ExtensionManager->enable($name) === false) continue;
+				foreach(Symphony::ExtensionManager()->listAll() as $name => $about) {
+				    if(Symphony::ExtensionManager()->enable($name) === false) continue;
 				}
 
 				// Redirect to backend

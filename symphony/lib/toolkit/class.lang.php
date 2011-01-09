@@ -44,8 +44,8 @@
 	Class Dictionary {
 
 		/**
-         * An associative array mapping English strings and their translations
-		 * @var array 
+		 * An associative array mapping English strings and their translations
+		 * @var array
 		 */
  		private $_strings;
 
@@ -55,7 +55,7 @@
 		 * @param array $strings
 		 *  Associative array mapping English strings and their translations, defaults to an empty array
 		 */
-		public function __construct($strings=array()) {
+		public function __construct(Array $strings=array()) {
 			$this->_strings = $strings;
 		}
 
@@ -74,7 +74,7 @@
 		 * @return string
 		 *  Returns the translated string
 		 */
- 		public function translate($string, $inserts=NULL) {
+ 		public function translate($string, Array $inserts=NULL) {
 			$translated = $this->find($string);
 
 			// Default to English if no translation available
@@ -124,7 +124,7 @@
 		 * @param array $string
 		 *  Associative array containing English strings and their translations
 		 */
-		public function merge($strings) {
+		public function merge(Array $strings) {
 			if(is_array($strings)) {
 				$this->_strings = array_merge($this->_strings, $strings);
 			}
@@ -148,32 +148,32 @@
 	Class Lang {
 
 		/**
-         * Code of active language
+		 * Code of active language
 		 * @var string
 		 */
 		private static $_lang;
 
 		/**
-         * Context information of all available languages
-		 * @var array 
+		 * Context information of all available languages
+		 * @var array
 		 */
 		private static $_languages;
 
 		/**
-         * Instance of the current Dictionary
+		 * Instance of the current Dictionary
 		 * @var Dictionary
 		 */
 		private static $_dictionary;
 
 		/**
-         * Array of transliterations
-		 * @var array 
+		 * Array of transliterations
+		 * @var array
 		 */
 		private static $_transliterations;
 
 		/**
-         * Array of months and weekday for localized date output
-		 * @var array 
+		 * Array of months and weekday for localized date output
+		 * @var array
 		 */
 		private static $_dates;
 
@@ -211,7 +211,7 @@
 		 *
 		 * @param string $lang
 		 *  Language code, e. g. 'en' or 'pt-br'
-         * @param boolean $enabled
+		 * @param boolean $enabled
 		 */
 		public static function set($lang, $enabled=true) {
 			if($lang && $lang != self::get()) {
@@ -227,8 +227,8 @@
 
 		/**
 		 * Get current language
-         * 
-         * @return string
+		 *
+		 * @return string
 		 */
 		public static function get() {
 			return self::$_lang;
@@ -241,8 +241,8 @@
 		 *
 		 * Note: Beginning with Symphony 2.2 translations bundled with extensions will only be loaded
 		 * when the core dictionary of the specific language is available.
-         * 
-         * @param boolean $enabled
+		 *
+		 * @param boolean $enabled
 		 */
 		public static function activate($enabled=true) {
 
@@ -261,18 +261,18 @@
 				// Load extension translations
 				if(class_exists('Symphony')) {
 
-					$ExtensionManager = new ExtensionManager;
+					// Fetch Extension Manager
+					$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 
-					// Loop through extensions
-					foreach($ExtensionManager->listAll() as $handle => $extension) {
+					if(is_array($extensions) && !empty($extensions)){
+						foreach($extensions as $e){
 
-						// Skip language extensions
-						if(strpos($handle, 'lang_') !== false) continue;
-						
-						// Load translations
-						$path = $ExtensionManager->__getClassPath($handle) . '/lang/lang.' . self::get() . '.php';
-						if($extension['status'] == EXTENSION_ENABLED && file_exists($path)) {
-							self::load($path);
+							// Skip language extensions
+							if(strpos($e, 'lang_') !== false) continue;
+
+							// Load translations
+							$path = EXTENSIONS . "/{$e}/lang/lang." . self::get() . ".php";
+							if(is_file($path)) self::load($path);
 						}
 					}
 				}
@@ -320,9 +320,7 @@
 			// Fetch list of active extensions
 			$enabled = array();
 			if(class_exists('Symphony')) {
-				$enabled = Symphony::Database()->fetchCol('name',
-					"SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'"
-				);
+				$enabled = Symphony::ExtensionManager()->listInstalledHandles();
 			}
 
 			// Fetch core languages
@@ -350,17 +348,17 @@
 
 		/**
 		 * Fetch language information for a single language.
-         * 
-         * @param string $source
-         *  The filename of the extension driver where this language
-         *  file was found
-         * @param string $folder
-         *  The folder where this language file exists
-         * @param string $file
-         *  The filename of the language
-         * @param array $enabled
+		 *
+		 * @param string $source
+		 *  The filename of the extension driver where this language
+		 *  file was found
+		 * @param string $folder
+		 *  The folder where this language file exists
+		 * @param string $file
+		 *  The filename of the language
+		 * @param array $enabled
 		 *  An associative array of enabled extensions from `tbl_extensions`
-         */
+		 */
 		private static function fetchLanguage($source, $folder, $file, $enabled) {
 
 			// Fetch language file
@@ -456,7 +454,7 @@
 		 * Note: Beginning with Symphony 2.2 language files are only available
 		 * when the language extension is explicitly enabled.
 		 *
-         * @param boolean $enabled
+		 * @param boolean $enabled
 		 * @return array
 		 *  Returns an associative array of language codes and names, e. g. 'en' => 'English'
 		 */

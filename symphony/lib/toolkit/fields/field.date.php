@@ -3,6 +3,12 @@
 	/**
 	 * @package toolkit
 	 */
+	/**
+	 * A simple Date field that stores a full ISO date. Symphony will attempt
+	 * to localize the date on a per Author basis. The field essentially maps to
+	 * PHP's `strtotime`, so it is very flexible in terms of what an Author can
+	 * input into it.
+	 */
 
 	Class fieldDate extends Field{
 

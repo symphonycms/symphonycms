@@ -96,7 +96,7 @@
 		/**
 		 * Constructor function sets `$this->_Parent` and initialises the Managers
 		 * used on the FrontendPage, which are DatasourceManager, EventManager and
-         * ExtensionManager
+		 * ExtensionManager
 		 *
 		 * @param Frontend $parent
 		 *  The Frontend object that this page has been created from
@@ -109,7 +109,7 @@
 
 			$this->DatasourceManager = new DatasourceManager($this->_Parent);
 			$this->EventManager = new EventManager($this->_Parent);
-			$this->ExtensionManager = new ExtensionManager($this->_Parent);
+			$this->ExtensionManager = Symphony::ExtensionManager();
 		}
 
 		/**
@@ -309,7 +309,7 @@
 				");
 
 				if(empty($page)){
-                    GenericExceptionHandler::$enabled = true;
+					GenericExceptionHandler::$enabled = true;
 					throw new SymphonyErrorPage(
 						__('The page you requested does not exist.'),
 						__('Page Not Found'),
@@ -370,9 +370,9 @@
 			}
 
 			if(is_array($_GET) && !empty($_GET)){
-			    foreach($_GET as $key => $val){
-			        if(!in_array($key, array('symphony-page', 'debug', 'profile'))) $this->_param['url-' . $key] = $val;
-			    }
+				foreach($_GET as $key => $val){
+					if(!in_array($key, array('symphony-page', 'debug', 'profile'))) $this->_param['url-' . $key] = $val;
+				}
 			}
 
 			if(is_array($_COOKIE[__SYM_COOKIE_PREFIX_]) && !empty($_COOKIE[__SYM_COOKIE_PREFIX_])){
@@ -745,9 +745,9 @@
 		/**
 		 * This function determines the correct order that events should be executed in.
 		 * Events are executed based off priority, with `Event::kHIGH` priority executing
-         * first. If there is more than one Event of the same priority, they are then
-         * executed in alphabetical order. This function is designed to be used with
-         * PHP's uasort function.
+		 * first. If there is more than one Event of the same priority, they are then
+		 * executed in alphabetical order. This function is designed to be used with
+		 * PHP's uasort function.
 		 *
 		 * @link http://php.net/manual/en/function.uasort.php
 		 * @param Event $a
@@ -763,8 +763,8 @@
 				asort($handles);
 
 				return (key($handles) == 0) ? -1 : 1;
-		    }
-		    return(($a->priority() > $b->priority()) ? -1 : 1);
+			}
+			return(($a->priority() > $b->priority()) ? -1 : 1);
 		}
 
 		/**
@@ -851,7 +851,7 @@
 			$dsKeyArray = $this->__buildDatasourcePooledParamList(array_keys($dependenciesList));
 
 			## 1. First do a cleanup of each dependency list, removing non-existant DS's and find
-			##    the ones that have no dependencies, removing them from the list
+			##	the ones that have no dependencies, removing them from the list
 			foreach($dependenciesList as $handle => $dependencies){
 
 				$dependenciesList[$handle] = @array_intersect($dsKeyArray, $dependencies);
@@ -863,7 +863,7 @@
 			}
 
 			## 2. Iterate over the remaining DS's. Find if all their dependencies are
-			##    in the $orderedList array. Keep iterating until all DS's are in that list
+			##	in the $orderedList array. Keep iterating until all DS's are in that list
 			##	  or there are circular dependencies (list doesn't change between iterations of the while loop)
 			do{
 

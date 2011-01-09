@@ -51,6 +51,12 @@
 		public static $Database = null;
 
 		/**
+		 * An instance of the ExtensionManager class
+		 * @var ExtensionManager
+		 */
+		public static $ExtensionManager = null;
+
+		/**
 		 * An instance of the Log class
 		 * @var Log
 		 */
@@ -75,12 +81,6 @@
 		public $Author = null;
 
 		/**
-		 * An instance of the Extension Manager
-		 * @var ExtensionManager
-		 */
-		public $ExtensionManager = null;
-
-		/**
 		 * The end-of-line constant.
 		 * @var string
 		 * @deprecated This will be removed in the next version of Symphony
@@ -96,7 +96,6 @@
 		 * the initial Configuration values from the `CONFIG` file
 		 */
 		protected function __construct(){
-
 			$this->Profiler = Profiler::instance();
 			$this->Profiler->sample('Engine Initialisation');
 
@@ -146,6 +145,23 @@
 		}
 
 		/**
+		* Accessor for the Symphony instance, whether it be Frontend
+		* or Administration
+		*
+		* @since Symphony 2.2
+		* @return Symphony
+		*/
+		public static function Engine() {
+			if(class_exists('Administration')) {
+				return Administration::instance();
+			}
+			else if(class_exists('Frontend')) {
+				return Frontend::instance();
+			}
+			else throw new Exception(__('No suitable engine object found'));
+		}
+
+		/**
 		 * Accessor for the current Configuration instance. This contains
 		 * representation of the the Symphony config file.
 		 *
@@ -161,6 +177,8 @@
 		 * formatting options are also retrieved from the configuration.
 		 */
 		public function initialiseLog(){
+			if(self::$Log instanceof Log) return true;
+
 			self::$Log = new Log(ACTIVITY_LOG);
 			self::$Log->setArchive((self::$Configuration->get('archive', 'log') == '1' ? true : false));
 			self::$Log->setMaxSize(intval(self::$Configuration->get('maxsize', 'log')));
@@ -196,12 +214,24 @@
 		 * a Symphony Error page will be thrown
 		 */
 		public function initialiseExtensionManager(){
-			$this->ExtensionManager = new ExtensionManager($this);
+			if(self::$ExtensionManager instanceof ExtensionManager) return true;
 
-			if(!($this->ExtensionManager instanceof ExtensionManager)){
+			self::$ExtensionManager = new ExtensionManager;
+
+			if(!(self::$ExtensionManager instanceof ExtensionManager)){
 				GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
 			}
+		}
+
+		/**
+		 * Accessor for the current `$ExtensionManager` instance.
+		 *
+		 * @since Symphony 2.2
+		 * @return ExtensionManager
+		 */
+		public function ExtensionManager() {
+			return self::$ExtensionManager;
 		}
 
 		/**

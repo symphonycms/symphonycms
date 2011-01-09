@@ -26,7 +26,7 @@
 		 * The constructor for the Cacheable takes an instance of the
 		 * MySQL class and assigns it to `$this->Database`
 		 *
-		 * @var MySQL $Database
+		 * @param MySQL $Database
 		 *  An instance of the MySQL class to store the cached
 		 *  data in.
 		 */
@@ -37,7 +37,7 @@
 		/**
 		 * This function will compress data for storage in `tbl_cache`.
 		 * It is left to the user to define a unique hash for this data so that it can be
-		 * retreived in the future. Optionally, a `$ttl` parameter can
+		 * retrieved in the future. Optionally, a `$ttl` parameter can
 		 * be passed for this data. If this is omitted, it data is considered to be valid
 		 * forever. This function utilizes the Mutex class to act as a crude locking
 		 * mechanism.

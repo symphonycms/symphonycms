@@ -134,7 +134,7 @@
 		 * `GenericErrorHandler::$errorTypeStrings` array to return
 		 * the name
 		 *
-		 * @see core.GenericErrorHandler::$errorTypeStrings		 *
+		 * @see core.GenericErrorHandler::$errorTypeStrings
 		 * @param integer $type
 		 *  A PHP error constant
 		 * @return string
@@ -216,7 +216,7 @@
 		public function writeToLog($message, $addbreak=true){
 
 			if(file_exists($this->_log_path) && !is_writable($this->_log_path)){
-				$this->pushToLog('Could Not Write To Log. It is not readable.', self::ERROR);
+				$this->pushToLog('Could Not Write To Log. It is not readable.');
 				return false;
 			}
 			return file_put_contents($this->_log_path, $message . ($addbreak ? PHP_EOL : ''), FILE_APPEND);
@@ -289,4 +289,3 @@
 			$this->writeToLog("============================================" . PHP_EOL . PHP_EOL, true);
 		}
 	}
-

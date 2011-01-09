@@ -45,7 +45,7 @@
 		/**
 		 * The end-of-line constant.
 		 * @var string
-		 * @deprecated This will no longer exist in Symphony 3
+		 * @deprecated This will be removed in the next version of Symphony
 		 */
 		const CRLF = PHP_EOL;
 		

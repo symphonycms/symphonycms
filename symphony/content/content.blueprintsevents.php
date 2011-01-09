@@ -146,7 +146,7 @@
 				 * @param array $options
 				 *  An array of all the filters that are available, passed by reference
 				 */
-				Administration::instance()->ExtensionManager->notifyMembers('AppendEventFilter', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $fields['filters'], 'options' => &$options));
+				Symphony::ExtensionManager()->notifyMembers('AppendEventFilter', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $fields['filters'], 'options' => &$options));
 
 				$label->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
 
@@ -197,7 +197,7 @@
 				 * @param string $file
 				 *  The path to the Event file
 				 */
-				Administration::instance()->ExtensionManager->notifyMembers('EventPreDelete', '/blueprints/events/', array('file' => EVENTS . "/event." . $this->_context[1] . ".php"));
+				Symphony::ExtensionManager()->notifyMembers('EventPreDelete', '/blueprints/events/', array('file' => EVENTS . "/event." . $this->_context[1] . ".php"));
 
 				if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php')){
 					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
@@ -412,7 +412,7 @@
 				 * @param array $documentation
 				 *  An array of all the documentation XMLElements, passed by reference
 				 */
-				Administration::instance()->ExtensionManager->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $fields['filters'], 'documentation' => &$documentation_parts));
+				Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $fields['filters'], 'documentation' => &$documentation_parts));
 
 				$documentation = join(self::CRLF, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $documentation_parts));
 				$documentation = str_replace('\'', '\\\'', $documentation);
@@ -439,7 +439,7 @@
 					 * @param string $contents
 					 *  The contents for this Event as a string passed by reference
 					 */
-					Administration::instance()->ExtensionManager->notifyMembers('EventPreCreate', '/blueprints/events/', array('file' => $file, 'contents' => &$eventShell));
+					Symphony::ExtensionManager()->notifyMembers('EventPreCreate', '/blueprints/events/', array('file' => $file, 'contents' => &$eventShell));
 				}
 				else {
 					/**
@@ -455,7 +455,7 @@
 					 * @param string $contents
 					 *  The contents for this Event as a string passed by reference
 					 */
-					Administration::instance()->ExtensionManager->notifyMembers('DatasourcePreEdit', '/blueprints/events/', array('file' => $file, 'contents' => &$eventShell));
+					Symphony::ExtensionManager()->notifyMembers('DatasourcePreEdit', '/blueprints/events/', array('file' => $file, 'contents' => &$eventShell));
 				}
 
 				##Write the file
@@ -493,7 +493,7 @@
 						 * @param string $file
 						 *  The path to the Event file
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('EventPostCreate', '/blueprints/events/', array('file' => $file));
+						Symphony::ExtensionManager()->notifyMembers('EventPostCreate', '/blueprints/events/', array('file' => $file));
 					}
 					else {
 						/**
@@ -506,7 +506,7 @@
 						 * @param string $file
 						 *  The path to the Event file
 						 */
-						Administration::instance()->ExtensionManager->notifyMembers('EventPostEdit', '/blueprints/events/', array('file' => $file));
+						Symphony::ExtensionManager()->notifyMembers('EventPostEdit', '/blueprints/events/', array('file' => $file));
 					}
 
 					redirect(SYMPHONY_URL . '/blueprints/events/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');

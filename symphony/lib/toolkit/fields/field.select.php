@@ -3,7 +3,12 @@
 	/**
 	 * @package toolkit
 	 */
-
+	
+	/**
+	 * A simple Select field that essentially maps to HTML's `<select/>`. The 
+	 * options for this field can be static, or feed from another field.
+	 */
+	
 	Class fieldSelect extends Field {
 		function __construct(&$parent){
 			parent::__construct($parent);

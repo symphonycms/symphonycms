@@ -55,8 +55,7 @@
 		public function __getClassPath($handle){
 			if(is_file(DATASOURCES . "/data.$handle.php")) return DATASOURCES;
 			else{
-				$extensionManager = new ExtensionManager($this->_Parent);
-				$extensions = $extensionManager->listInstalledHandles();
+				$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 
 				if(is_array($extensions) && !empty($extensions)){
 					foreach($extensions as $e){
@@ -124,8 +123,7 @@
 				}
 			}
 
-			$extensionManager = new ExtensionManager($this->_Parent);
-			$extensions = $extensionManager->listInstalledHandles();
+			$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 
 			if(is_array($extensions) && !empty($extensions)){
 				foreach($extensions as $e){
