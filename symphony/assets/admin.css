@@ -1,42 +1,121 @@
-/* Framework */
+/*-----------------------------------------------------------------------------
+	Reset
+-----------------------------------------------------------------------------*/
+
+* {
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+}
+
+body {
+	background: #fff;
+	color: #222;
+	font: 68.75%/1.5 Lucida Grande, Meiryo, Tahoma, Verdana, sans-serif;
+}
+a {
+	color: #5072bf;
+	text-decoration: underline;
+	cursor: pointer;
+}
+a:hover {
+	color: #000;
+}
+a:active {
+	color: #d42;
+}
+p {
+	margin-bottom: 1.5em;
+}
+h1,
+h2 {
+	position: relative;
+	clear: both;
+	margin-bottom: 1em;
+	text-shadow: -1px 2px 3px #ddd;
+	font: 127.28% Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
+}
+h3,
+h4 {
+	position: relative;
+	clear: both;
+	margin-bottom: 0.75em;
+	text-shadow: -1px 2px 2px #ddd;
+	font-weight: bold;
+}
+ul,
+ol {
+	margin: 0 0 1.5em 2.25em;
+}
+code {
+	font: 110%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
+	font-size-adjust: 0.5;
+}
+/* Code */
+code {
+	font: 110%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
+}
+pre {
+	position: relative;
+	left: 275px;
+	margin: 0 0 1.75em -275px;
+	width: 100%;
+	color: #474742;
+	white-space: normal;
+	font: inherit;
+}
+pre code {
+	display: block;
+	border: 1px dashed #a1a19a;
+	padding: 5px 7px;
+	overflow: auto;
+	white-space: pre;
+}
+i,
+var {
+	color: #aa9;
+	text-shadow: none;
+	font-style: normal;
+}
+
+/*-----------------------------------------------------------------------------
+	Header
+-----------------------------------------------------------------------------*/
+
 html,
 body {
 	height: 100%;
 }
-form {
+.wrapper {
 	position: relative;
-	margin-top: -5em;
-	padding: 0 19px 5em;
 	min-height: 100%;
-	overflow: hidden;
 }
-h1 {
-	margin: 0 -19px;
-	padding: 5.64em 19px 1.71em;
+
+.header {
+	margin: 0 0 1.8em;
 	background: #353530;
 	color: #fff;
+}
+.header h1 {
+	padding: 1.64em 19px 0.74em;
+	margin: 0;
 	text-shadow: -1px 2px 3px #111;
 	font-weight: bold;
-	line-height: 1ex;
+	line-height: 1;
 }
-h1 a {
+.header h1 a {
 	color: #fff;
 	text-decoration: none;
 }
-h1 a:hover,
-#usr a:hover {
+.header h1 a:hover {
 	color: #ccb;
 }
-
-/* Navigation */
 #nav {
 	z-index: 3;
 	position: relative;
-	top: -5px;
-	float: left;
-	margin: 0 0 7px -19px;
-	padding: 5px 38px 5px 0;
-	width: 100%;
+	bottom: -5px;
+	margin: 0;
+	padding: 5px 19px;
 	background: url("images/navigation.png") 0 -60px repeat-x;
 	color: #646464;
 	white-space: nowrap;
@@ -44,9 +123,14 @@ h1 a:hover,
 	text-transform: uppercase;
 	font: bold 90.91%/0 Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
 }
+#nav:after {
+	content: " ";
+	display: block;
+	clear: left;
+	height: 1%;
+}
 #nav > li {
 	float: left;
-	margin: 0 -19px 0 19px;
 	padding: 0 1em;
 	height: 30px;
 	line-height: 32px;
@@ -91,40 +175,41 @@ h1 a:hover,
 	color: #444;
 	text-decoration: none;
 }
-*:first-child+html #nav a {
-	background-color:#fff;
-	color: #444;
-}
-*:first-child+html #nav a:hover,
 #nav a:hover {
 	background-color: #7e7e70;
 	color: #fff;
 }
 
-/* User */
-p#version {
-	position:absolute;
-	bottom:1.75em;
-	left:1.75em;
-	color:#a5a5a0;
-	z-index:2;
-	margin:0;
-}
-#usr {
+/*-----------------------------------------------------------------------------
+	Footer
+-----------------------------------------------------------------------------*/
+
+.footer {
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	width: 100%;
+	right: 0;
 	margin: 0;
-	padding: 1.75em 0;
+	padding: 1.75em 19px;
 	background: #353530 url("images/navigation.png") 0 -95px repeat-x;
 	text-align: right;
 	text-shadow: -1px 2px 3px #111;
 	color: #fff;
 }
+
+#version,
+#usr,
+#usr li {
+	margin: 0;
+	padding: 0
+}
+#version {
+	color: #A5A5A0;
+	float: left;
+}
 #usr li {
 	display: inline;
-	margin-right: 12px;
+	padding-left: 12px;
 }
 #usr a {
 	padding: 5px;
@@ -132,12 +217,32 @@ p#version {
 	text-decoration: none;
 	color: #fff;
 }
+#usr a:hover {
+	color: #ccb;
+}
 
-/* System Messages */
+/*-----------------------------------------------------------------------------
+	Contents
+-----------------------------------------------------------------------------*/
+
+.contents {
+	padding: 0 19px 10em;
+}
+
+.contents h2 {
+	margin: 0;
+	padding: 0 0 1em;
+	border-bottom: 1px solid #ddc;
+}
+
+/*-----------------------------------------------------------------------------
+	System Messages
+-----------------------------------------------------------------------------*/
+
 #notice {
 	position: relative;
 	z-index: 2;
-	margin: 5.5em -19px -5.5em;
+	margin: 0;
 	border-top: 3px solid #979792;
 	border-bottom: 2px solid #777;
 	padding: 0 0.83em 0;
@@ -188,7 +293,677 @@ p#version {
 	cursor: pointer;
 }
 
-/* Common Vocabulary */
+/*-----------------------------------------------------------------------------
+	Forms elements
+-----------------------------------------------------------------------------*/
+
+fieldset {
+	position: relative;
+	border: none;
+	padding-top: 1em;
+}
+legend {
+	float: left;
+	margin-bottom: -3em;
+	padding: 0;
+	color: #665;
+	text-indent: -275px;
+	text-shadow: -1px 2px 3px #ddd;
+	font-weight: bold;
+	line-height: 1;
+}
+label {
+	display: block;
+	position: relative;
+/*	margin-bottom: 1.75em;*/
+}
+label[title] {
+	cursor: help;
+}
+label > i {
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+select {
+	display: block;
+	margin-top: 2px;
+	box-sizing: border-box;
+	-khtml-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+select[multiple] {
+	width: 100%;
+	height: 10em;
+	background-color: #ddd;
+}
+textarea,
+label input {
+	margin-top: 2px;
+	width: 100%;
+	font-size: 109.09%;
+	font-family: inherit;
+	box-sizing: border-box;
+	-khtml-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+label input {
+	padding: 2px;
+}
+input[size],
+input[type=radio],
+input[type=checkbox] {
+	display: inline;
+	margin: 0 0.25em 0 0;
+	width: auto;
+}
+input[size],
+label + select {
+	margin-left: 0.25em;
+}
+button {
+	padding: 3.5px 6px 4px;
+}
+
+/*-----------------------------------------------------------------------------
+	Tables
+-----------------------------------------------------------------------------*/
+
+table {
+	margin: 0;
+	border-collapse: collapse;
+	width: 100%;
+}
+th {
+	padding-right: 19px;
+	color: #665;
+	text-align: left;
+	font-weight: normal;
+	line-height: 2;
+}
+td {
+	border: 1px solid #e6e6e5;
+	border-width: 1px 0;
+	padding: 0.67em 19px 0.67em 0;
+	background-color: #f5f5f4;
+}
+th:first-child,
+td:first-child {
+	padding-left: 19px;
+}
+tr:nth-child(even) td {
+	background-color: transparent;
+}
+tbody a {
+	padding: 0.67em 0;
+}
+table input {
+	float: right;
+	margin-right: 19px;
+}
+th a,
+th a:hover,
+th a:hover:after {
+	color: #665;
+	text-decoration: none;
+}
+th a:after {
+	color: #ccb;
+}
+th a:active,
+th a.active,
+th a.active:after {
+	color: #554;
+}
+th a:after,
+th a.active:hover:after,
+th a.active[href$=asc]:after {
+	margin-left: 3px;
+	content: "\2193"
+}
+th a.active:after,
+th a[href$=asc]:after,
+th a.active[href$=asc]:hover:after {
+	content: "\2191";
+}
+
+/* Selectable */
+table.selectable input {
+	display: none;
+}
+tr.selected td {
+	border-top: 1px solid #617dc5;
+	border-bottom: 1px solid #617dc5;
+	background-color: #5273c0;
+}
+tr:nth-child(odd).selected td {
+	background-color: #5677c3;
+}
+tr.selected td,
+tr.selected a {
+	color: #fff;
+}
+
+/* Orderable */
+tr.ordering {
+	cursor: move;
+}
+tr.ordering td,
+tr:nth-child(odd).ordering td {
+	border-color: #998;
+	background-color: #887;
+}
+tr.ordering td,
+tr.ordering a {
+	color: #fff;
+}
+tr.selecting td, tr:nth-child(odd).selecting td {
+	border-top: 1px solid #617dc5;
+	border-bottom: 1px solid #617dc5;
+	background-color: #5273c0;
+}
+tr.selecting td,
+tr.selecting a {
+	color: #fff;
+}
+
+table.busy td {
+	border-top: 1px solid #e6e6e5;
+	border-bottom: 1px solid #e6e6e5;
+	background-color: #fff;
+}
+table.busy tr:nth-child(odd) td {
+	border-top: 1px solid #e6e6e5;
+	border-bottom: 1px solid #e6e6e5;
+	background-color: #f5f5f4;
+}
+table.busy a {
+	color: #5072bf;
+}
+
+/*-----------------------------------------------------------------------------
+	List page
+-----------------------------------------------------------------------------*/
+
+.list h2 {
+	border: none;
+}
+
+.list form {
+	margin: 0 -19px;
+	padding: 0;
+}
+
+.list div.actions {
+	padding: 18px 19px 0 0;
+	text-align: right;
+	height: 38px;
+}
+.list div.actions select {
+	display: inline-block;
+	margin: 0 8px 0 11px;
+}
+.list div.actions input {
+/*	padding: 3.5px 6px 4px;*/
+}
+.list div.actions + ul.page {
+	margin-top: -58px;
+}
+
+ul.page {
+	margin: 0;
+	padding: 20px 50px 0 19px;
+	height: 36px;
+	color: #887;
+}
+ul.page li {
+	display: inline;
+	margin-right: 0.75em;
+}
+ul.page li[title] {
+	color: #222;
+}
+ul.page a {
+	margin: 0 -0.67em;
+	padding: 0.67em;
+	text-decoration: none;
+}
+
+/*-----------------------------------------------------------------------------
+	Single page - Preferences
+-----------------------------------------------------------------------------*/
+
+.single form {
+	margin: 0;
+}
+
+/* Generic Controls */
+
+.settings {
+	position: relative;
+	padding: 1em 0 0 275px;
+	margin: 0 0 1em;
+	border-top: 1px solid #ddc;
+	padding-bottom: 1em;
+}
+
+.settings label {
+	margin-bottom: 1.5em;
+}
+
+.settings label > input[type=checkbox] {
+	vertical-align: top;
+}
+
+.settings > label {
+	clear: left;
+}
+.settings select {
+	width: 100%;
+}
+.settings p {
+	margin: 0 0 1.5em;
+}
+
+.group {
+	position: relative;
+	right: -8px;
+	margin: 0 0 0 -16px;
+	padding: 0 8px 0 40px;
+	list-style: none;
+}
+.group:after {
+	content: "";
+	display: block;
+	clear: left;
+	height: 1%;
+}
+.group > * {
+	float: left;
+	margin-left: 32px;
+	width: 50%;
+}
+.group > *:first-child {
+	margin-left: -32px;
+}
+.group > div > label > i {
+	max-width:45%;
+	height:16px;
+	white-space:nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	cursor:help;
+	float:right;
+}
+.group > div > label > i:hover {
+	white-space:normal;
+	height:auto;
+	background: rgba(255, 255, 255, 0.8);
+}
+.group h3 {
+	margin: 0 0 1.5em;
+}
+/*.group + label {*/
+/*	margin-top: 0.5em;*/
+/*}*/
+.settings p.help {
+	margin: -0.5em 0 1.5em;
+	color: #887;
+}
+label span,
+.label span {
+	display: block;
+	margin-bottom: 1.5em;
+	border: 1px solid #e4e4de;
+	padding: 12px;
+	background-color: #f5f5f3;
+	text-align: center;
+}
+
+ul.tags {
+	margin: -0.75em 0 1.5em -6px;
+	padding: 0;
+	color: #887;
+	list-style: none;
+}
+ul.tags li {
+	display: inline;
+	padding: 0 0 0 6px;
+	border-top: none;
+	word-spacing: -1px;
+	cursor: pointer;
+	font-size: 90.91%;
+}
+ul.tags li:hover {
+	color: #554;
+}
+ul.tags li.more {
+	color: #5072bf;
+	text-decoration: underline;
+}
+ul.tags .more:hover {
+	color: #222;
+}
+.selected ul.tags li {
+	color: #abe;
+}
+.movable ul.tags li {
+	color: #ccb;
+}
+
+.settings:first-child {
+	border-top: none;
+}
+
+/*.settings > legend + label,*/
+/*.settings > .contextual > .label:first-child,*/
+/*.settings > legend + .group label:first-child,*/
+/*.settings > legend + .group > div + label,*/
+/*.settings > p.help + .group label:first-child,*/
+/*.settings > p.help + .group > div + label {*/
+/*	margin-top: 0;*/
+/*}*/
+
+.settings > legend + p.help {
+	float: left;
+	margin:1.5em 0 0  -275px;
+	width: 22em;
+}
+
+.settings > *:first-child {
+	margin-top: 0;
+}
+
+/* Pickable */
+.active fieldset.picker {
+	border-bottom: none;
+	margin-bottom: 0;
+}
+
+.active fieldset.pickable {
+	border-top: 0;
+	padding-top: 0;
+}
+
+.active fieldset.pickable legend {
+	display: none;
+}
+
+/* Duplicator */
+.settings .duplicator {
+	margin-bottom: 1.5em;
+}
+
+.settings .duplicator fieldset {
+	border-top: 1px solid #eed;
+	border-bottom: none;
+	clear: both;
+	margin: 0 -1.75em 2.75em -2.5em;
+	padding: 0 2.75em 0 1.75em;
+	right: -8px;
+}
+
+.settings .duplicator fieldset.group {
+	padding: 0 0 0 1.75em;
+}
+
+.settings .duplicator fieldset legend {
+	color: #665;
+	float: none;
+	font-weight: normal;
+	line-height: 1;
+	text-indent: 0;
+	background: #DDC;
+	padding: 0;
+	margin: 0 0 0 -0.5em !important;
+	padding: 0 0.75em 0 0.5em;
+	display: block;
+	width: auto;
+}
+
+.settings .duplicator fieldset label {
+	margin: 1.75em 0 0 0em;
+	padding: 0;
+	min-width: 350px;
+}
+
+.settings .duplicator fieldset.group label, 
+.settings .duplicator fieldset.group div {
+	float: left;
+	width: 50%;
+	margin-left: 0;
+}
+
+.settings .duplicator fieldset.group div label {
+	float: none;
+	width: auto;
+	padding: 0 32px 0 0;
+}
+
+.settings .duplicator fieldset.group div ul.tags {
+	margin-top: 1em;
+}
+
+.settings .duplicator fieldset.group div ul.tags li {
+	overflow: visible;
+}
+
+.settings .duplicator fieldset.group div.invalid {
+	width: auto;
+	float: none;	
+	margin: 1.75em 32px 0 0;
+	padding: 1.25em 1.25em 2.5em;
+}
+
+.settings .duplicator fieldset.group div.invalid label {
+	padding: 0;
+	margin: 0;
+}
+
+.settings .duplicator fieldset.group div.invalid p {
+	margin: 1em 0 0;
+}
+
+.settings .duplicator fieldset.compact i {
+	color: #887;
+	display: block;
+	position: relative;
+	right: auto;
+	padding-left: 1.7em;
+}
+
+/*Fix code font size */
+
+.settings .duplicator i code {
+	font-size: 1em;
+}
+
+/*.duplicator label span,*/
+/*.duplicator div.label span {*/
+/*	background-color: #fffff0;*/
+/*	border-color: #bbbbb0;*/
+/*}*/
+
+/*-----------------------------------------------------------------------------
+	Single page - Create/Edit
+-----------------------------------------------------------------------------*/
+
+.primary {
+	float: left;
+	width: 60%;
+}
+.secondary {
+	float: right;
+	width: 35%;
+}
+.primary,
+.secondary {
+	padding: 0 0 2em;
+}
+.primary label,
+.secondary label {
+	margin-top: 1.5em;
+}
+.file input {
+	margin: -3px 0;
+	font: inherit;
+}
+.file span {
+	padding-right: 7.5em;
+	overflow: hidden;
+	text-align: left;
+}
+.file a {
+	float: left;
+}
+.file em {
+	float: right;
+	margin-right: -7.5em;
+	width: 7.5em;
+	color: #998;
+	text-decoration: underline;
+	font-style: normal;
+	cursor: pointer;
+}
+.file em:hover {
+	color: #d43;
+}
+
+/*-----------------------------------------------------------------------------
+	Single page - General
+-----------------------------------------------------------------------------*/
+
+h3.label {
+	clear: none;
+	margin: 0 0 2px;
+	text-shadow: none;
+	font-weight: normal;
+}
+div.invalid {
+	color: #fff;
+	margin-bottom: 1.5em;
+}
+.invalid > label {
+	margin-bottom: 0;
+	padding: 0.75em 1em 0.75em;
+	background-color: #d42;
+	border: 1px solid #c31;
+	border-bottom-width: 0;
+}
+.invalid > p {
+	margin: 0;
+	padding: 0 1em 0.75em;
+	background-color: #d42;
+	border: 1px solid #c31;
+	border-top-width: 0;
+	border-bottom-color: #b21;
+}
+div.invalid a {
+	color: #fb9;
+}
+div.invalid a:hover {
+	color: #721;
+}
+
+.single div.actions {
+	clear: both;
+	border-top: 1px solid #ddc;
+	padding: 14px 0 0;
+}
+.single div.actions input {
+	float: right;
+	margin-left: 1em;
+	padding: 3.5px 6px 4px;
+}
+div.actions button {
+	float: left;
+	margin-right: 1em;
+	border: none;
+	background-color: #887;
+	color: #fff;
+	cursor: pointer;
+	padding: 0 1em .2em 1em;
+	line-height: 2em;
+	font-size: 0.95em;
+	height: 2em;
+	border-radius: 1em;
+	-moz-border-radius: 1em;
+	-webkit-border-radius: 1em;
+}
+
+/*-----------------------------------------------------------------------------
+	Specific overwrites & elements
+-----------------------------------------------------------------------------*/
+
+#blueprints-components form {
+	margin: 0;
+}
+#blueprints-components .triple {
+	padding-top: 5px;
+}
+#components {
+	padding-bottom: 5px;
+	background-color: #fff;
+}
+#components h3 {
+	margin-bottom: 0.75em;
+}
+#components ul {
+	margin: 0;
+	border-top: 1px solid #ddc;
+	padding-top: 0.75em;
+	list-style: none;
+}
+#components li {
+	margin-bottom: 0.75em;
+}
+#components .button {
+	font-size: 0.9em;
+	font-weight: normal;
+}
+
+#utilities {
+	margin: 0 0 1.5em 0;
+	border: 1px solid #bba;
+	max-height: 510px;
+	overflow: auto;
+	list-style: none;
+}
+#utilities li {
+	border-top: 1px solid #ddc;
+	padding: 0.63em 1.25em 0.67em;
+}
+#utilities li:first-child {
+	border-top: none;
+}
+#utilities .odd {
+	background-color: #f5f5f4;
+}
+#utilities > :nth-child(odd) {
+	background-color: #f5f5f4;
+}
+#utilities .selected {
+	border-color: #617dc5;
+	background-color: #5273c0;
+}
+#utilities .selected.odd {
+	background-color: #5677c3;
+}
+#utilities .selected:nth-child(odd) {
+	background-color: #5677c3;
+}
+
+/*-----------------------------------------------------------------------------
+	Common vocabulary
+-----------------------------------------------------------------------------*/
+
+.code {
+	font: 134%/1.3 monospace;
+}
 .busy,
 .busy * {
 	cursor: wait;
@@ -200,43 +975,15 @@ p#version {
 .irrelevant {
 	display: none;
 }
-.wrapper {
-	margin: 0 -19px;
-	padding: 0 19px;
-	height: 0;
-	overflow: hidden;
+.triple {
+	padding: 0 0 0 72px;
 }
-li.selected {
-	border-color: #617dc5;
-	background-color: #5273c0;
+.triple > * {
+	width: 33.33%;
 }
-ul.selected,
-li.selected a {
-	color: #fff;
+.triple > *:first-child {
+	margin-left: -64px;
 }
-
-/* Code */
-code {
-	font: 110%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
-}
-pre {
-	position: relative;
-	left: 275px;
-	margin: 0 0 1.75em -275px;
-	width: 100%;
-	color: #474742;
-	white-space: normal;
-	font: inherit;
-}
-pre code {
-	display: block;
-	border: 1px dashed #a1a19a;
-	padding: 5px 7px;
-	overflow: auto;
-	white-space: pre;
-}
-
-/* Buttons */
 a.button {
 	background-color: #597bc6;
 	color: #fff;
@@ -260,17 +1007,7 @@ a.button.active {
 a.create {
 	background-color: #81b934;
 }
-
-/* Picker */
-.active fieldset.picker {
-	border-bottom: none;
-	margin-bottom: 0;
+button.delete:hover {
+	background-color: #d43;
 }
 
-.active fieldset.pickable {
-	padding-top: 0;
-}
-
-.active fieldset.pickable legend {
-	display: none;
-}

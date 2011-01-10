@@ -98,7 +98,7 @@
 		protected function __build(){
 			$this->__generateHead();
 			$this->Html->appendChild($this->Head);
-			if(is_object($this->Form)) $this->Body->appendChild($this->Form);
+#			if(is_object($this->Form)) $this->Body->appendChild($this->Form);
 			$this->Html->appendChild($this->Body);
 		}
 

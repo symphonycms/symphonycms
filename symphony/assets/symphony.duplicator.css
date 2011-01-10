@@ -1,11 +1,11 @@
 /*-----------------------------------------------------------------------------
 	Duplicator plugin
 -----------------------------------------------------------------------------*/
-	
+
 	.duplicator {
 		background: #444433;
 		border: 1px solid #999988;
-		margin: 0 0 1.75em 0;
+		margin: 0;
 		list-style: none;
 		overflow: hidden;
 		position: relative;
@@ -18,11 +18,9 @@
 		border-color: #aa2211;
 	}
 	.duplicator > .instance {
+		clear: left;
 		background: #ddddcc;
 		border-bottom: 1px solid #eeeedd;
-		overflow: hidden;
-		margin: 0 -2em;
-		padding: 0 2em;
 		position: relative;
 		z-index: 1;
 	}
@@ -65,15 +63,14 @@
 		opacity: 0.4;
 	}
 	.duplicator > .instance > .content {
-		overflow: hidden;
 		padding: 1em 1.75em 0 1.75em;
 		position: relative;
 	}
-	
+
 /*-----------------------------------------------------------------------------
 	States
 -----------------------------------------------------------------------------*/
-	
+
 	.duplicator.ordering > .instance {
 		opacity: 0.8;
 	}
@@ -89,18 +86,17 @@
 	.duplicator > .instance.ordering * {
 		cursor: move;
 	}
-	
 	.duplicator > .instance.collapsed {
 		border-bottom: none;
 	}
 	.duplicator > .instance.collapsed > .content {
 		display: none;
 	}
-	
+
 /*-----------------------------------------------------------------------------
 	Controls
 -----------------------------------------------------------------------------*/
-	
+
 	.duplicator > .controls {
 		background: #aaaa99;
 		cursor: default;
@@ -108,9 +104,9 @@
 		position: relative;
 		text-align: right;
 		z-index: 3;
-		overflow: hidden;
 	}
 	.duplicator > .controls.top {
+		overflow: hidden;
 		border-bottom: 1px solid #eeeedd;
 	}
 	.duplicator > .controls.hidden {
@@ -147,5 +143,5 @@
 		cursor: default;
 		opacity: 0.6;
 	}
-	
+
 /*---------------------------------------------------------------------------*/
