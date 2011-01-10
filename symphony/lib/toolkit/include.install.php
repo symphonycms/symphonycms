@@ -87,29 +87,29 @@
 	$languages = implode('', $languages);
 
 
-    function installResult(&$Page, &$install_log, $start){
+	function installResult(&$Page, &$install_log, $start){
 
-        if(!defined('_INSTALL_ERRORS_')){
+		if(!defined('_INSTALL_ERRORS_')){
 
-            $install_log->writeToLog("============================================", true);
-            $install_log->writeToLog("INSTALLATION COMPLETED: Execution Time - ".max(1, time() - $start)." sec (" . date("d.m.y H:i:s") . ")", true);
-            $install_log->writeToLog("============================================" . CRLF . CRLF . CRLF, true);
+			$install_log->writeToLog("============================================", true);
+			$install_log->writeToLog("INSTALLATION COMPLETED: Execution Time - ".max(1, time() - $start)." sec (" . date("d.m.y H:i:s") . ")", true);
+			$install_log->writeToLog("============================================" . CRLF . CRLF . CRLF, true);
 
-        }else{
+		}else{
 
-            $install_log->pushToLog(_INSTALL_ERRORS_, E_ERROR, true);
-            $install_log->writeToLog("============================================", true);
-            $install_log->writeToLog("INSTALLATION ABORTED: Execution Time - ".max(1, time() - $start)." sec (" . date("d.m.y H:i:s") . ")", true);
-            $install_log->writeToLog("============================================" . CRLF . CRLF . CRLF, true);
+			$install_log->pushToLog(_INSTALL_ERRORS_, E_ERROR, true);
+			$install_log->writeToLog("============================================", true);
+			$install_log->writeToLog("INSTALLATION ABORTED: Execution Time - ".max(1, time() - $start)." sec (" . date("d.m.y H:i:s") . ")", true);
+			$install_log->writeToLog("============================================" . CRLF . CRLF . CRLF, true);
 
 			$Page->setPage('failure');
-        }
+		}
 
-    }
+	}
 
-    function writeConfig($dest, $conf, $mode){
+	function writeConfig($dest, $conf, $mode){
 
-        $string  = "<?php\n";
+		$string	 = "<?php\n";
 
 		$string .= "\n\t\$settings = array(";
 		foreach($conf['settings'] as $group => $data){
@@ -123,80 +123,80 @@
 		}
 		$string .= "\r\n\t);\n\n";
 
-        return General::writeFile($dest . '/config.php', $string, $mode);
+		return General::writeFile($dest . '/config.php', $string, $mode);
 
-    }
+	}
 
-    function fireSql(&$db, $data, &$error, $compatibility='NORMAL'){
+	function fireSql(&$db, $data, &$error, $compatibility='NORMAL'){
 
-        $compatibility = strtoupper($compatibility);
+		$compatibility = strtoupper($compatibility);
 
-        if($compatibility == 'HIGH'){
-            $data = str_replace('ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci', NULL, $data);
-            $data = str_replace('collate utf8_unicode_ci', NULL, $data);
-        }
+		if($compatibility == 'HIGH'){
+			$data = str_replace('ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci', NULL, $data);
+			$data = str_replace('collate utf8_unicode_ci', NULL, $data);
+		}
 
-        ## Silently attempt to change the storage engine. This prevents INNOdb errors.
-        $db->query('SET storage_engine=MYISAM', $e);
+		## Silently attempt to change the storage engine. This prevents INNOdb errors.
+		$db->query('SET storage_engine=MYISAM', $e);
 
-        $queries = preg_split('/;[\\r\\n]+/', $data, -1, PREG_SPLIT_NO_EMPTY);
+		$queries = preg_split('/;[\\r\\n]+/', $data, -1, PREG_SPLIT_NO_EMPTY);
 
-        if (is_array($queries) && !empty($queries)) foreach($queries as $sql) {
-            if (strlen(trim($sql)) > 0) $result = $db->query($sql);
-            if (!$result){
-                $err = $db->getLastError();
-                $error = $err['num'] . ': ' . $err['msg'];
-                return false;
-            }
-        }
+		if (is_array($queries) && !empty($queries)) foreach($queries as $sql) {
+			if (strlen(trim($sql)) > 0) $result = $db->query($sql);
+			if (!$result){
+				$err = $db->getLastError();
+				$error = $err['num'] . ': ' . $err['msg'];
+				return false;
+			}
+		}
 
-        return true;
+		return true;
 
-    }
+	}
 
 
-    function checkRequirement($item, $type, $expected){
+	function checkRequirement($item, $type, $expected){
 
- 		switch($type){
+		switch($type){
 
-		    case 'func':
+			case 'func':
 
-		        $test = function_exists($item);
-		        if($test != $expected) return false;
-		        break;
+				$test = function_exists($item);
+				if($test != $expected) return false;
+				break;
 
-		    case 'setting':
-		        $test = ini_get($item);
-		        if(strtolower($test) != strtolower($expected)) return false;
-		        break;
+			case 'setting':
+				$test = ini_get($item);
+				if(strtolower($test) != strtolower($expected)) return false;
+				break;
 
-		    case 'ext':
-		        foreach(explode(':', $item) as $ext){
-		            $test = extension_loaded($ext);
-		            if($test == $expected) return true;
-		        }
+			case 'ext':
+				foreach(explode(':', $item) as $ext){
+					$test = extension_loaded($ext);
+					if($test == $expected) return true;
+				}
 
 				return false;
-		        break;
+				break;
 
-		     case 'version':
-		        if(version_compare($item, $expected, '>=') != 1) return false;
-		        break;
+			 case 'version':
+				if(version_compare($item, $expected, '>=') != 1) return false;
+				break;
 
-		     case 'permission':
-		        if(!is_writable($item)) return false;
-		        break;
+			 case 'permission':
+				if(!is_writable($item)) return false;
+				break;
 
-		     case 'remote':
-		        $result = curler($item);
-		        if(strpos(strtolower($result), 'error') !== false) return false;
-		        break;
+			 case 'remote':
+				$result = curler($item);
+				if(strpos(strtolower($result), 'error') !== false) return false;
+				break;
 
 		}
 
 		return true;
 
-    }
+	}
 
 	if(!function_exists('timezone_identifiers_list')){
 		function timezone_identifiers_list(){
@@ -210,7 +210,7 @@
 				'Africa/Libreville', 'Africa/Lome', 'Africa/Luanda', 'Africa/Lubumbashi', 'Africa/Lusaka',
 				'Africa/Malabo', 'Africa/Maputo', 'Africa/Maseru', 'Africa/Mbabane', 'Africa/Mogadishu',
 				'Africa/Monrovia', 'Africa/Nairobi', 'Africa/Ndjamena', 'Africa/Niamey', 'Africa/Nouakchott',
-			 	'Africa/Ouagadougou', 'Africa/Porto-Novo', 'Africa/Sao_Tome', 'Africa/Timbuktu', 'Africa/Tripoli',
+				'Africa/Ouagadougou', 'Africa/Porto-Novo', 'Africa/Sao_Tome', 'Africa/Timbuktu', 'Africa/Tripoli',
 				'Africa/Tunis', 'Africa/Windhoek', 'America/Adak', 'America/Anchorage', 'America/Anguilla',
 				'America/Antigua', 'America/Araguaina', 'America/Argentina/Buenos_Aires', 'America/Argentina/Catamarca',
 				'America/Argentina/ComodRivadavia', 'America/Argentina/Cordoba', 'America/Argentina/Jujuy',
@@ -300,7 +300,7 @@
 		}
 	}
 
-    Class SymphonyLog extends Log{
+	Class SymphonyLog extends Log{
 
 		function SymphonyLog($path){
 			$this->setLogPath($path);
@@ -345,7 +345,7 @@
 				$missing[] = MISSING_XML;
 			}
 
-			if(!checkRequirement('xsl:xslt', 'ext', true) && !checkRequirement('domxml_xslt_stylesheet', 'func', true))	{
+			if(!checkRequirement('xsl:xslt', 'ext', true) && !checkRequirement('domxml_xslt_stylesheet', 'func', true)) {
 				$Page->log->pushToLog('Requirement - No XSL extension present' , E_ERROR, true);
 				$missing[] = MISSING_XSL;
 			}
@@ -472,40 +472,40 @@
 
 				$kDOCROOT = rtrim($config['docroot'], '/');
 
-                $database = array_map("trim", $fields['database']);
+				$database = array_map("trim", $fields['database']);
 
-		        if(!isset($database['host']) || $database['host'] == "") $database['host'] = "localhost";
-		        if(!isset($database['port']) || $database['port'] == "") $database['port'] = "3306";
-		        if(!isset($database['prefix']) || $database['prefix'] == "") $database['prefix'] = "sym_";
+				if(!isset($database['host']) || $database['host'] == "") $database['host'] = "localhost";
+				if(!isset($database['port']) || $database['port'] == "") $database['port'] = "3306";
+				if(!isset($database['prefix']) || $database['prefix'] == "") $database['prefix'] = "sym_";
 
-		        $install_log = $Page->log;
+				$install_log = $Page->log;
 
-		        $start = time();
+				$start = time();
 
-	            $install_log->writeToLog(CRLF . '============================================', true);
-	            $install_log->writeToLog('INSTALLATION PROCESS STARTED (' . DateTimeObj::get('c') . ')', true);
-	            $install_log->writeToLog('============================================', true);
+				$install_log->writeToLog(CRLF . '============================================', true);
+				$install_log->writeToLog('INSTALLATION PROCESS STARTED (' . DateTimeObj::get('c') . ')', true);
+				$install_log->writeToLog('============================================', true);
 
-		        $install_log->pushToLog("MYSQL: Establishing Connection...", E_NOTICE, true, false);
-		        $db = new MySQL;
+				$install_log->pushToLog("MYSQL: Establishing Connection...", E_NOTICE, true, false);
+				$db = new MySQL;
 
-		        if(!$db->connect($database['host'], $database['username'], $database['password'], $database['port'])){
-		            define('_INSTALL_ERRORS_', "There was a problem while trying to establish a connection to the MySQL server. Please check your settings.");
-		            $install_log->pushToLog("Failed", E_NOTICE,true, true, true);
-		            installResult($Page, $install_log, $start);
-		        }else{
-		            $install_log->pushToLog("Done", E_NOTICE,true, true, true);
-		        }
+				if(!$db->connect($database['host'], $database['username'], $database['password'], $database['port'])){
+					define('_INSTALL_ERRORS_', "There was a problem while trying to establish a connection to the MySQL server. Please check your settings.");
+					$install_log->pushToLog("Failed", E_NOTICE,true, true, true);
+					installResult($Page, $install_log, $start);
+				}else{
+					$install_log->pushToLog("Done", E_NOTICE,true, true, true);
+				}
 
-		        $install_log->pushToLog("MYSQL: Selecting Database '".$database['name']."'...", E_NOTICE, true, false);
+				$install_log->pushToLog("MYSQL: Selecting Database '".$database['name']."'...", E_NOTICE, true, false);
 
-		        if(!$db->select($database['name'])){
-		            define('_INSTALL_ERRORS_', "Could not connect to specified database. Please check your settings.");
-		            $install_log->pushToLog("Failed", E_NOTICE,true, true, true);
-		            installResult($Page, $install_log, $start);
-		        }else{
-		            $install_log->pushToLog("Done", E_NOTICE,true, true, true);
-		        }
+				if(!$db->select($database['name'])){
+					define('_INSTALL_ERRORS_', "Could not connect to specified database. Please check your settings.");
+					$install_log->pushToLog("Failed", E_NOTICE,true, true, true);
+					installResult($Page, $install_log, $start);
+				}else{
+					$install_log->pushToLog("Done", E_NOTICE,true, true, true);
+				}
 
 				$db->setPrefix($database['prefix']);
 
@@ -515,15 +515,15 @@
 					$db->setCharacterSet($conf['database']['character_set']);
 				}
 
-		        $install_log->pushToLog("MYSQL: Importing Table Schema...", E_NOTICE, true, false);
-		        $error = NULL;
-		        if(!fireSql($db, getTableSchema(), $error, ($config['database']['high-compatibility'] == 'yes' ? 'high' : 'normal'))){
-		            define('_INSTALL_ERRORS_', "There was an error while trying to import data to the database. MySQL returned: $error");
-		            $install_log->pushToLog("Failed", E_ERROR,true, true, true);
-		            installResult($Page, $install_log, $start);
-		        }else{
-		            $install_log->pushToLog("Done", E_NOTICE,true, true, true);
-		        }
+				$install_log->pushToLog("MYSQL: Importing Table Schema...", E_NOTICE, true, false);
+				$error = NULL;
+				if(!fireSql($db, getTableSchema(), $error, ($config['database']['high-compatibility'] == 'yes' ? 'high' : 'normal'))){
+					define('_INSTALL_ERRORS_', "There was an error while trying to import data to the database. MySQL returned: $error");
+					$install_log->pushToLog("Failed", E_ERROR,true, true, true);
+					installResult($Page, $install_log, $start);
+				}else{
+					$install_log->pushToLog("Done", E_NOTICE,true, true, true);
+				}
 
 				$author_sql = sprintf(
 					"INSERT INTO  `tbl_authors` (
@@ -562,13 +562,13 @@
 				);
 
 				$install_log->pushToLog("MYSQL: Creating Default Author...", E_NOTICE, true, false);
-		        if(!$db->query($author_sql)){
+				if(!$db->query($author_sql)){
 					$error = $db->getLastError();
-		            define('_INSTALL_ERRORS_', "There was an error while trying create the default author. MySQL returned: " . $error['num'] . ': ' . $error['msg']);
-		            $install_log->pushToLog("Failed", E_ERROR, true, true, true);
-		            installResult($Page, $install_log, $start);
+					define('_INSTALL_ERRORS_', "There was an error while trying create the default author. MySQL returned: " . $error['num'] . ': ' . $error['msg']);
+					$install_log->pushToLog("Failed", E_ERROR, true, true, true);
+					installResult($Page, $install_log, $start);
 
-		        }else{
+				}else{
 					$install_log->pushToLog("Done", E_NOTICE, true, true, true);
 				}
 
@@ -600,65 +600,63 @@
 					$conf['settings']['public']['display_event_xml_in_source'] = 'no';
 				}
 
-		        $conf['settings']['symphony']['version'] = kVERSION;
+				$conf['settings']['symphony']['version'] = kVERSION;
 				$conf['settings']['symphony']['cookie_prefix'] = 'sym-';
-		        $conf['settings']['general']['useragent'] = 'Symphony/' . kVERSION;
+				$conf['settings']['general']['useragent'] = 'Symphony/' . kVERSION;
 				$conf['settings']['general']['sitename'] = (strlen(trim($config['general']['sitename'])) > 0 ? $config['general']['sitename'] : __('Website Name'));
-		        $conf['settings']['file']['write_mode'] = $config['permission']['file'];
-		        $conf['settings']['directory']['write_mode'] = $config['permission']['directory'];
-		        $conf['settings']['database']['host'] = $database['host'];
-		        $conf['settings']['database']['port'] = $database['port'];
-		        $conf['settings']['database']['user'] = $database['username'];
-		        $conf['settings']['database']['password'] = $database['password'];
-		        $conf['settings']['database']['db'] = $database['name'];
-		        $conf['settings']['database']['tbl_prefix'] = $database['prefix'];
+				$conf['settings']['file']['write_mode'] = $config['permission']['file'];
+				$conf['settings']['directory']['write_mode'] = $config['permission']['directory'];
+				$conf['settings']['database']['host'] = $database['host'];
+				$conf['settings']['database']['port'] = $database['port'];
+				$conf['settings']['database']['user'] = $database['username'];
+				$conf['settings']['database']['password'] = $database['password'];
+				$conf['settings']['database']['db'] = $database['name'];
+				$conf['settings']['database']['tbl_prefix'] = $database['prefix'];
 				$conf['settings']['region']['time_format'] = $config['region']['time_format'];
 				$conf['settings']['region']['date_format'] = $config['region']['date_format'];
 				$conf['settings']['region']['timezone'] = $config['region']['timezone'];
 
-				## Create Manifest directory structure
-				#
-
-		        $install_log->pushToLog("WRITING: Creating 'manifest' folder (/manifest)", E_NOTICE, true, true);
-		        if(!General::realiseDirectory($kDOCROOT . '/manifest', $conf['settings']['directory']['write_mode'])){
-		            define('_INSTALL_ERRORS_', "Could not create 'manifest' directory. Check permission on the root folder.");
-		            $install_log->pushToLog("ERROR: Creation of 'manifest' folder failed.", E_ERROR, true, true);
-		            installResult($Page, $install_log, $start);
+				## Create Manifest Directory structure
+				$install_log->pushToLog("WRITING: Creating 'manifest' folder (/manifest)", E_NOTICE, true, true);
+				if(!General::realiseDirectory($kDOCROOT . '/manifest', $conf['settings']['directory']['write_mode'])){
+					define('_INSTALL_ERRORS_', "Could not create 'manifest' directory. Check permission on the root folder.");
+					$install_log->pushToLog("ERROR: Creation of 'manifest' folder failed.", E_ERROR, true, true);
+					installResult($Page, $install_log, $start);
 					return;
-		        }
+				}
 
-		        $install_log->pushToLog("WRITING: Creating 'logs' folder (/manifest/logs)", E_NOTICE, true, true);
-		        if(!General::realiseDirectory($kDOCROOT . '/manifest/logs', $conf['settings']['directory']['write_mode'])){
-		            define('_INSTALL_ERRORS_', "Could not create 'logs' directory. Check permission on /manifest.");
-		            $install_log->pushToLog("ERROR: Creation of 'logs' folder failed.", E_ERROR, true, true);
-		            installResult($Page, $install_log, $start);
+				$install_log->pushToLog("WRITING: Creating 'logs' folder (/manifest/logs)", E_NOTICE, true, true);
+				if(!General::realiseDirectory($kDOCROOT . '/manifest/logs', $conf['settings']['directory']['write_mode'])){
+					define('_INSTALL_ERRORS_', "Could not create 'logs' directory. Check permission on /manifest.");
+					$install_log->pushToLog("ERROR: Creation of 'logs' folder failed.", E_ERROR, true, true);
+					installResult($Page, $install_log, $start);
 					return;
-		        }
+				}
 
-		        $install_log->pushToLog("WRITING: Creating 'cache' folder (/manifest/cache)", E_NOTICE, true, true);
-		        if(!General::realiseDirectory($kDOCROOT . '/manifest/cache', $conf['settings']['directory']['write_mode'])){
-		            define('_INSTALL_ERRORS_', "Could not create 'cache' directory. Check permission on /manifest.");
-		            $install_log->pushToLog("ERROR: Creation of 'cache' folder failed.", E_ERROR, true, true);
-		            installResult($Page, $install_log, $start);
+				$install_log->pushToLog("WRITING: Creating 'cache' folder (/manifest/cache)", E_NOTICE, true, true);
+				if(!General::realiseDirectory($kDOCROOT . '/manifest/cache', $conf['settings']['directory']['write_mode'])){
+					define('_INSTALL_ERRORS_', "Could not create 'cache' directory. Check permission on /manifest.");
+					$install_log->pushToLog("ERROR: Creation of 'cache' folder failed.", E_ERROR, true, true);
+					installResult($Page, $install_log, $start);
 					return;
-		        }
+				}
 
-		        $install_log->pushToLog("WRITING: Creating 'tmp' folder (/manifest/tmp)", E_NOTICE, true, true);
-		        if(!General::realiseDirectory($kDOCROOT . '/manifest/tmp', $conf['settings']['directory']['write_mode'])){
-		            define('_INSTALL_ERRORS_', "Could not create 'tmp' directory. Check permission on /manifest.");
-		            $install_log->pushToLog("ERROR: Creation of 'tmp' folder failed.", E_ERROR, true, true);
-		            installResult($Page, $install_log, $start);
+				$install_log->pushToLog("WRITING: Creating 'tmp' folder (/manifest/tmp)", E_NOTICE, true, true);
+				if(!General::realiseDirectory($kDOCROOT . '/manifest/tmp', $conf['settings']['directory']['write_mode'])){
+					define('_INSTALL_ERRORS_', "Could not create 'tmp' directory. Check permission on /manifest.");
+					$install_log->pushToLog("ERROR: Creation of 'tmp' folder failed.", E_ERROR, true, true);
+					installResult($Page, $install_log, $start);
 					return;
-		        }
+				}
 
-		        $install_log->pushToLog("WRITING: Configuration File", E_NOTICE, true, true);
-		        if(!writeConfig($kDOCROOT . '/manifest/', $conf, $conf['settings']['file']['write_mode'])){
-		            define('_INSTALL_ERRORS_', "Could not write config file. Check permission on /manifest.");
-		            $install_log->pushToLog("ERROR: Writing Configuration File Failed", E_ERROR, true, true);
-		            installResult($Page, $install_log, $start);
-		        }
+				$install_log->pushToLog("WRITING: Configuration File", E_NOTICE, true, true);
+				if(!writeConfig($kDOCROOT . '/manifest/', $conf, $conf['settings']['file']['write_mode'])){
+					define('_INSTALL_ERRORS_', "Could not write config file. Check permission on /manifest.");
+					$install_log->pushToLog("ERROR: Writing Configuration File Failed", E_ERROR, true, true);
+					installResult($Page, $install_log, $start);
+				}
 
-		        $htaccess = '
+				$htaccess = '
 ### Symphony 2.1.x ###
 Options +FollowSymlinks -Indexes
 
@@ -696,96 +694,90 @@ Options +FollowSymlinks -Indexes
 ######
 ';
 
-		        $install_log->pushToLog("CONFIGURING: Frontend", E_NOTICE, true, true);
-		        if(!General::writeFile($kDOCROOT . "/.htaccess", $htaccess, $conf['settings']['file']['write_mode'], 'a')){
-		            define('_INSTALL_ERRORS_', "Could not write .htaccess file. Check permission on " . $kDOCROOT);
-		            $install_log->pushToLog("ERROR: Writing .htaccess File Failed", E_ERROR, true, true);
-		            installResult($Page, $install_log, $start);
-		        }
+				$install_log->pushToLog("CONFIGURING: Frontend", E_NOTICE, true, true);
+				if(!General::writeFile($kDOCROOT . "/.htaccess", $htaccess, $conf['settings']['file']['write_mode'], 'a')){
+					define('_INSTALL_ERRORS_', "Could not write .htaccess file. Check permission on " . $kDOCROOT);
+					$install_log->pushToLog("ERROR: Writing .htaccess File Failed", E_ERROR, true, true);
+					installResult($Page, $install_log, $start);
+				}
 
 				if(@!is_dir($fields['docroot'] . '/workspace')){
 
 					### Create the workspace folder structure
-			        $install_log->pushToLog("WRITING: Creating 'workspace' folder (/workspace)", E_NOTICE, true, true);
-			        if(!General::realiseDirectory($kDOCROOT . '/workspace', $conf['settings']['directory']['write_mode'])){
-			            define('_INSTALL_ERRORS_', "Could not create 'workspace' directory. Check permission on the root folder.");
-			            $install_log->pushToLog("ERROR: Creation of 'workspace' folder failed.", E_ERROR, true, true);
-			            installResult($Page, $install_log, $start);
+					$install_log->pushToLog("WRITING: Creating 'workspace' folder (/workspace)", E_NOTICE, true, true);
+					if(!General::realiseDirectory($kDOCROOT . '/workspace', $conf['settings']['directory']['write_mode'])){
+						define('_INSTALL_ERRORS_', "Could not create 'workspace' directory. Check permission on the root folder.");
+						$install_log->pushToLog("ERROR: Creation of 'workspace' folder failed.", E_ERROR, true, true);
+						installResult($Page, $install_log, $start);
 						return;
-			        }
+					}
 
-			        $install_log->pushToLog("WRITING: Creating 'data-sources' folder (/workspace/data-sources)", E_NOTICE, true, true);
-			        if(!General::realiseDirectory($kDOCROOT . '/workspace/data-sources', $conf['settings']['directory']['write_mode'])){
-			            define('_INSTALL_ERRORS_', "Could not create 'workspace/data-sources' directory. Check permission on the root folder.");
-			            $install_log->pushToLog("ERROR: Creation of 'workspace/data-sources' folder failed.", E_ERROR, true, true);
-			            installResult($Page, $install_log, $start);
+					$install_log->pushToLog("WRITING: Creating 'data-sources' folder (/workspace/data-sources)", E_NOTICE, true, true);
+					if(!General::realiseDirectory($kDOCROOT . '/workspace/data-sources', $conf['settings']['directory']['write_mode'])){
+						define('_INSTALL_ERRORS_', "Could not create 'workspace/data-sources' directory. Check permission on the root folder.");
+						$install_log->pushToLog("ERROR: Creation of 'workspace/data-sources' folder failed.", E_ERROR, true, true);
+						installResult($Page, $install_log, $start);
 						return;
-			        }
+					}
 
-			        $install_log->pushToLog("WRITING: Creating 'events' folder (/workspace/events)", E_NOTICE, true, true);
-			        if(!General::realiseDirectory($kDOCROOT . '/workspace/events', $conf['settings']['directory']['write_mode'])){
-			            define('_INSTALL_ERRORS_', "Could not create 'workspace/events' directory. Check permission on the root folder.");
-			            $install_log->pushToLog("ERROR: Creation of 'workspace/events' folder failed.", E_ERROR, true, true);
-			            installResult($Page, $install_log, $start);
+					$install_log->pushToLog("WRITING: Creating 'events' folder (/workspace/events)", E_NOTICE, true, true);
+					if(!General::realiseDirectory($kDOCROOT . '/workspace/events', $conf['settings']['directory']['write_mode'])){
+						define('_INSTALL_ERRORS_', "Could not create 'workspace/events' directory. Check permission on the root folder.");
+						$install_log->pushToLog("ERROR: Creation of 'workspace/events' folder failed.", E_ERROR, true, true);
+						installResult($Page, $install_log, $start);
 						return;
-			        }
+					}
 
-			        $install_log->pushToLog("WRITING: Creating 'pages' folder (/workspace/pages)", E_NOTICE, true, true);
-			        if(!General::realiseDirectory($kDOCROOT . '/workspace/pages', $conf['settings']['directory']['write_mode'])){
-			            define('_INSTALL_ERRORS_', "Could not create 'workspace/pages' directory. Check permission on the root folder.");
-			            $install_log->pushToLog("ERROR: Creation of 'workspace/pages' folder failed.", E_ERROR, true, true);
-			            installResult($Page, $install_log, $start);
+					$install_log->pushToLog("WRITING: Creating 'pages' folder (/workspace/pages)", E_NOTICE, true, true);
+					if(!General::realiseDirectory($kDOCROOT . '/workspace/pages', $conf['settings']['directory']['write_mode'])){
+						define('_INSTALL_ERRORS_', "Could not create 'workspace/pages' directory. Check permission on the root folder.");
+						$install_log->pushToLog("ERROR: Creation of 'workspace/pages' folder failed.", E_ERROR, true, true);
+						installResult($Page, $install_log, $start);
 						return;
-			        }
+					}
 
-			        $install_log->pushToLog("WRITING: Creating 'utilities' folder (/workspace/utilities)", E_NOTICE, true, true);
-			        if(!General::realiseDirectory($kDOCROOT . '/workspace/utilities', $conf['settings']['directory']['write_mode'])){
-			            define('_INSTALL_ERRORS_', "Could not create 'workspace/utilities' directory. Check permission on the root folder.");
-			            $install_log->pushToLog("ERROR: Creation of 'workspace/utilities' folder failed.", E_ERROR, true, true);
-			            installResult($Page, $install_log, $start);
+					$install_log->pushToLog("WRITING: Creating 'utilities' folder (/workspace/utilities)", E_NOTICE, true, true);
+					if(!General::realiseDirectory($kDOCROOT . '/workspace/utilities', $conf['settings']['directory']['write_mode'])){
+						define('_INSTALL_ERRORS_', "Could not create 'workspace/utilities' directory. Check permission on the root folder.");
+						$install_log->pushToLog("ERROR: Creation of 'workspace/utilities' folder failed.", E_ERROR, true, true);
+						installResult($Page, $install_log, $start);
 						return;
-			        }
+					}
 
 				}
 
 				else {
 
 					$install_log->pushToLog("MYSQL: Importing Workspace Data...", E_NOTICE, true, false);
-			        $error = NULL;
-			        if(!fireSql($db, getWorkspaceData(), $error, ($config['database']['high-compatibility'] == 'yes' ? 'high' : 'normal'))){
-			            define('_INSTALL_ERRORS_', "There was an error while trying to import data to the database. MySQL returned: $error");
-			            $install_log->pushToLog("Failed", E_ERROR,true, true, true);
-			            installResult($Page, $install_log, $start);
-			        }else{
-			            $install_log->pushToLog("Done", E_NOTICE,true, true, true);
-			        }
+					$error = NULL;
+					if(!fireSql($db, getWorkspaceData(), $error, ($config['database']['high-compatibility'] == 'yes' ? 'high' : 'normal'))){
+						define('_INSTALL_ERRORS_', "There was an error while trying to import data to the database. MySQL returned: $error");
+						$install_log->pushToLog("Failed", E_ERROR,true, true, true);
+						installResult($Page, $install_log, $start);
+					}else{
+						$install_log->pushToLog("Done", E_NOTICE,true, true, true);
+					}
 
 				}
 
 				if(@!is_dir($fields['docroot'] . '/extensions')){
-			        $install_log->pushToLog("WRITING: Creating 'campfire' folder (/extensions)", E_NOTICE, true, true);
-			        if(!General::realiseDirectory($kDOCROOT . '/extensions', $conf['settings']['directory']['write_mode'])){
-			            define('_INSTALL_ERRORS_', "Could not create 'extensions' directory. Check permission on the root folder.");
-			            $install_log->pushToLog("ERROR: Creation of 'extensions' folder failed.", E_ERROR, true, true);
-			            installResult($Page, $install_log, $start);
+					$install_log->pushToLog("WRITING: Creating 'extensions' folder (/extensions)", E_NOTICE, true, true);
+					if(!General::realiseDirectory($kDOCROOT . '/extensions', $conf['settings']['directory']['write_mode'])){
+						define('_INSTALL_ERRORS_', "Could not create 'extensions' directory. Check permission on the root folder.");
+						$install_log->pushToLog("ERROR: Creation of 'extensions' folder failed.", E_ERROR, true, true);
+						installResult($Page, $install_log, $start);
 						return;
-			        }
+					}
 				}
 
-		        $install_log->pushToLog("Installation Process Completed In ".max(1, time() - $start)." sec", E_NOTICE, true);
+				$install_log->pushToLog("Installation Process Completed In ".max(1, time() - $start)." sec", E_NOTICE, true);
 
-		        installResult($Page, $install_log, $start);
-
-				// Install extensions
-				require_once(CORE . '/class.administration.php');
-				foreach(Symphony::ExtensionManager()->listAll() as $name => $about) {
-				    if(Symphony::ExtensionManager()->enable($name) === false) continue;
-				}
+				installResult($Page, $install_log, $start);
 
 				// Redirect to backend
 				redirect('http://' . rtrim(str_replace('http://', '', _INSTALL_DOMAIN_), '/') . '/symphony/');
 
-		    }
+			}
 
 		}
 
@@ -883,318 +875,267 @@ Options +FollowSymlinks -Indexes
 			$Form->setAttribute('action', kINSTALL_FILENAME.($_GET['lang'] ? '?lang='.$_GET['lang'] : ''));
 			$Form->setAttribute('method', 'post');
 
-			/**
-			 *
-			 * START ENVIRONMENT SETTINGS
-			 *
-			**/
+		// START ENVIRONMENT SETTINGS
+			$Environment = new XMLElement('fieldset');
+			$Environment->appendChild(new XMLElement('legend', __('Environment Settings')));
+			$Environment->appendChild(new XMLElement('p', __('Symphony is ready to be installed at the following location.')));
 
-				$Environment = new XMLElement('fieldset');
-				$Environment->appendChild(new XMLElement('legend', __('Environment Settings')));
-				$Environment->appendChild(new XMLElement('p', __('Symphony is ready to be installed at the following location.')));
+			$class = NULL;
+			if(defined('kENVIRONMENT_WARNING') && kENVIRONMENT_WARNING == true) $class = 'warning';
 
-				$class = NULL;
-				if(defined('kENVIRONMENT_WARNING') && kENVIRONMENT_WARNING == true) $class = 'warning';
+			$Environment->appendChild(Widget::label(__('Root Path'), Widget::input('fields[docroot]', $fields['docroot']), $class));
 
-				$Environment->appendChild(Widget::label(__('Root Path'), Widget::input('fields[docroot]', $fields['docroot']), $class));
+			if(defined('ERROR') && defined('kENVIRONMENT_WARNING')) $Environment->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
 
-				if(defined('ERROR') && defined('kENVIRONMENT_WARNING')) $Environment->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
+			$Form->appendChild($Environment);
 
-				$Form->appendChild($Environment);
-
-
-			/** END ENVIRONMENT SETTINGS **/
-
-			/**
-			 *
-			 * START LOCALE SETTINGS
-			 *
-			**/
-
-				$Environment = new XMLElement('fieldset');
-				$Environment->appendChild(new XMLElement('legend', __('Website Preferences')));
-//				$Environment->appendChild(new XMLElement('p', '.'));
-
-				$Environment->appendChild(Widget::label(__('Name'), Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
-
-
+		// START LOCALE SETTINGS
+			$Environment = new XMLElement('fieldset');
+			$Environment->appendChild(new XMLElement('legend', __('Website Preferences')));
+			$Environment->appendChild(Widget::label(__('Name'), Widget::input('fields[general][sitename]', $fields['general']['sitename'])));
 
 				$Fieldset = new XMLElement('fieldset');
-				$Fieldset->appendChild(new XMLElement('legend', __('Date and Time')));
-				$Fieldset->appendChild(new XMLElement('p', __('Customise how Date and Time values are displayed throughout the Administration interface.')));
+			$Fieldset->appendChild(new XMLElement('legend', __('Date and Time')));
+			$Fieldset->appendChild(new XMLElement('p', __('Customise how Date and Time values are displayed throughout the Administration interface.')));
 
 
-				$options = array();
-				$groups = array();
+			$options = array();
+			$groups = array();
 
-				$system_tz = (isset($fields['region']['timezone']) ? $fields['region']['timezone'] : date_default_timezone_get());
+			$system_tz = (isset($fields['region']['timezone']) ? $fields['region']['timezone'] : date_default_timezone_get());
 
-				foreach(timezone_identifiers_list() as $tz){
+			foreach(timezone_identifiers_list() as $tz){
 
-					if(preg_match('/\//', $tz)){
-						$parts = preg_split('/\//', $tz, 2, PREG_SPLIT_NO_EMPTY);
+				if(preg_match('/\//', $tz)){
+					$parts = preg_split('/\//', $tz, 2, PREG_SPLIT_NO_EMPTY);
 
-						$groups[$parts[0]][] = $parts[1];
-					}
-
-					else $groups[$tz] = $tz;
-
+					$groups[$parts[0]][] = $parts[1];
 				}
 
-				foreach($groups as $key => $val){
-					if(is_array($val)){
-						$tmp = array('label' => $key, 'options' => array());
-						foreach($val as $zone){
-							$tmp['options'][] = array("$key/$zone", "$key/$zone" == $system_tz, str_replace('_', ' ', $zone));
-						}
-						$options[] = $tmp;
+				else $groups[$tz] = $tz;
+
+			}
+
+			foreach($groups as $key => $val){
+				if(is_array($val)){
+					$tmp = array('label' => $key, 'options' => array());
+					foreach($val as $zone){
+						$tmp['options'][] = array("$key/$zone", "$key/$zone" == $system_tz, str_replace('_', ' ', $zone));
 					}
-					else $options[] = array($key, $key == $system_tz, str_replace('_', ' ', $key));
+					$options[] = $tmp;
 				}
+				else $options[] = array($key, $key == $system_tz, str_replace('_', ' ', $key));
+			}
 
-				$Fieldset->appendChild(Widget::label(__('Region'), Widget::Select('fields[region][timezone]', $options)));
+			$Fieldset->appendChild(Widget::label(__('Region'), Widget::Select('fields[region][timezone]', $options)));
 
-				$dateformat = $fields['region']['date_format'];
-				$label = Widget::Label(__('Date Format'));
-				$dateFormats = array(
-					'Y/m/d',	// e. g. 2011/01/20
-					'm/d/Y',	// e. g. 01/20/2011
-					'm/d/y',	// e. g. 10/20/11
-					'Y-m-d',	// e. g. 2011-01-20
-					'm-d-Y',	// e. g. 01-20-2011
-					'm-d-y',	// e. g. 01-20-11
-					'd.m.Y',	// e. g. 20.01.2011
-					'j.n.Y',	// e. g. 20.1.2011 - no leading zeros
-					'd.m.y',	// e. g. 20.01.11
-					'j.n.y',	// e. g. 20.1.11 - no leading zeros
-					'd F Y',	// e. g. 20 January 2011
-					'd M Y',	// e. g. 20 Jan 2011
-					'j. F Y',	// e. g. 20. January 2011 - no leading zeros
-					'j. M. Y',	// e. g. 20. Jan. 2011 - no leading zeros
-				);
+			$dateformat = $fields['region']['date_format'];
+			$label = Widget::Label(__('Date Format'));
+			$dateFormats = array(
+				'Y/m/d',	// e. g. 2011/01/20
+				'm/d/Y',	// e. g. 01/20/2011
+				'm/d/y',	// e. g. 10/20/11
+				'Y-m-d',	// e. g. 2011-01-20
+				'm-d-Y',	// e. g. 01-20-2011
+				'm-d-y',	// e. g. 01-20-11
+				'd.m.Y',	// e. g. 20.01.2011
+				'j.n.Y',	// e. g. 20.1.2011 - no leading zeros
+				'd.m.y',	// e. g. 20.01.11
+				'j.n.y',	// e. g. 20.1.11 - no leading zeros
+				'd F Y',	// e. g. 20 January 2011
+				'd M Y',	// e. g. 20 Jan 2011
+				'j. F Y',	// e. g. 20. January 2011 - no leading zeros
+				'j. M. Y',	// e. g. 20. Jan. 2011 - no leading zeros
+			);
 
-				$dateOptions = array();
-				foreach($dateFormats as $dateOption) {
-					$leadingZero = '';
-					if(strpos($dateOption, 'j') !== false || strpos($dateOption, 'n') !== false) {
-						$leadingZero = ' (' . __('no leading zeros') . ')';
-					}
-					$dateOptions[] = array($dateOption, $dateformat == $dateOption, Lang::localizeDate(DateTimeObj::get($dateOption), true) . $leadingZero);
+			$dateOptions = array();
+			foreach($dateFormats as $dateOption) {
+				$leadingZero = '';
+				if(strpos($dateOption, 'j') !== false || strpos($dateOption, 'n') !== false) {
+					$leadingZero = ' (' . __('no leading zeros') . ')';
 				}
+				$dateOptions[] = array($dateOption, $dateformat == $dateOption, Lang::localizeDate(DateTimeObj::get($dateOption), true) . $leadingZero);
+			}
 
-				$label->appendChild(Widget::Select('fields[region][date_format]', $dateOptions));
-				$Fieldset->appendChild($label);
+			$label->appendChild(Widget::Select('fields[region][date_format]', $dateOptions));
+			$Fieldset->appendChild($label);
 
-				$timeformat = $fields['region']['time_format'];
-				$label = Widget::Label(__('Time Format'));
+			$timeformat = $fields['region']['time_format'];
+			$label = Widget::Label(__('Time Format'));
 
-				//$label->setAttribute('title', __('Local') . (date('I') == 1 ? ' daylight savings' : '') . ' time for ' . date_default_timezone_get());
-				//if(date('I') == 1) $label->appendChild(new XMLElement('i', __('Daylight savings time')));
+			$timeformats = array(
+				array('H:i:s', $timeformat == 'H:i:s', DateTimeObj::get('H:i:s')),
+				array('H:i', $timeformat == 'H:i', DateTimeObj::get('H:i')),
+				array('g:i:s a', $timeformat == 'g:i:s a', DateTimeObj::get('g:i:s a')),
+				array('g:i a', $timeformat == 'g:i a', DateTimeObj::get('g:i a')),
+			);
+			$label->appendChild(Widget::Select('fields[region][time_format]', $timeformats));
+			$Fieldset->appendChild($label);
 
-				$timeformats = array(
-					array('H:i:s', $timeformat == 'H:i:s', DateTimeObj::get('H:i:s')),
-					array('H:i', $timeformat == 'H:i', DateTimeObj::get('H:i')),
-					array('g:i:s a', $timeformat == 'g:i:s a', DateTimeObj::get('g:i:s a')),
-					array('g:i a', $timeformat == 'g:i a', DateTimeObj::get('g:i a')),
-				);
-				$label->appendChild(Widget::Select('fields[region][time_format]', $timeformats));
-				$Fieldset->appendChild($label);
 
+			$Environment->appendChild($Fieldset);
 
-				$Environment->appendChild($Fieldset);
+			$Form->appendChild($Environment);
 
-				$Form->appendChild($Environment);
+		 // START DATABASE SETTINGS
 
-			/** END LOCALE SETTINGS **/
+			$Database = new XMLElement('fieldset');
+			$Database->appendChild(new XMLElement('legend', __('Database Connection')));
+			$Database->appendChild(new XMLElement('p', __('Please provide Symphony with access to a database.')));
 
-			/**
-			 *
-			 * START DATABASE SETTINGS
-			 *
-			**/
+			$class = NULL;
+			if(defined('kDATABASE_VERSION_WARNING') && kDATABASE_VERSION_WARNING == true) $class = ' warning';
 
-				$Database = new XMLElement('fieldset');
-				$Database->appendChild(new XMLElement('legend', __('Database Connection')));
-				$Database->appendChild(new XMLElement('p', __('Please provide Symphony with access to a database.')));
+			## fields[database][name]
+			$label = Widget::label(__('Database'), Widget::input('fields[database][name]', $fields['database']['name']), $class);
+			$Database->appendChild($label);
 
-				$class = NULL;
-				if(defined('kDATABASE_VERSION_WARNING') && kDATABASE_VERSION_WARNING == true) $class = ' warning';
+			if(defined('ERROR') && defined('kDATABASE_VERSION_WARNING'))
+				$Database->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
 
-				## fields[database][name]
-				$label = Widget::label(__('Database'), Widget::input('fields[database][name]', $fields['database']['name']), $class);
-				$Database->appendChild($label);
+			$class = NULL;
+			if(defined('kDATABASE_CONNECTION_WARNING') && kDATABASE_CONNECTION_WARNING == true) $class = ' warning';
 
-				if(defined('ERROR') && defined('kDATABASE_VERSION_WARNING'))
-					$Database->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
+			$Div = new XMLElement('div');
+			$Div->setAttribute('class', 'group' . $class);
 
-				$class = NULL;
-				if(defined('kDATABASE_CONNECTION_WARNING') && kDATABASE_CONNECTION_WARNING == true) $class = ' warning';
+			## fields[database][username]
+			$Div->appendChild(Widget::label(__('Username'), Widget::input('fields[database][username]', $fields['database']['username'])));
 
-				$Div = new XMLElement('div');
-				$Div->setAttribute('class', 'group' . $class);
+			## fields[database][password]
+			$Div->appendChild(Widget::label(__('Password'), Widget::input('fields[database][password]', $fields['database']['password'], 'password')));
 
-				## fields[database][username]
-				$Div->appendChild(Widget::label(__('Username'), Widget::input('fields[database][username]', $fields['database']['username'])));
+			$Database->appendChild($Div);
 
-				## fields[database][password]
-				$Div->appendChild(Widget::label(__('Password'), Widget::input('fields[database][password]', $fields['database']['password'], 'password')));
+			if(defined('ERROR') && defined('kDATABASE_CONNECTION_WARNING'))
+				$Database->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
 
-				$Database->appendChild($Div);
+			$Fieldset = new XMLElement('fieldset');
+			$Fieldset->appendChild(new XMLElement('legend', __('Advanced Configuration')));
+			$Fieldset->appendChild(new XMLElement('p', __('Leave these fields unless you are sure they need to be changed.')));
 
-				if(defined('ERROR') && defined('kDATABASE_CONNECTION_WARNING'))
-					$Database->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
+			$Div = new XMLElement('div');
+			$Div->setAttribute('class', 'group');
 
-				$Fieldset = new XMLElement('fieldset');
-				$Fieldset->appendChild(new XMLElement('legend', __('Advanced Configuration')));
-				$Fieldset->appendChild(new XMLElement('p', __('Leave these fields unless you are sure they need to be changed.')));
+			## fields[database][host]
+			$Div->appendChild(Widget::label(__('Host'), Widget::input('fields[database][host]', $fields['database']['host'])));
 
-				$Div = new XMLElement('div');
-				$Div->setAttribute('class', 'group');
+			## fields[database][port]
+			$Div->appendChild(Widget::label(__('Port'), Widget::input('fields[database][port]', $fields['database']['port'])));
 
-				## fields[database][host]
-				$Div->appendChild(Widget::label(__('Host'), Widget::input('fields[database][host]', $fields['database']['host'])));
+			$Fieldset->appendChild($Div);
 
-				## fields[database][port]
-				$Div->appendChild(Widget::label(__('Port'), Widget::input('fields[database][port]', $fields['database']['port'])));
+			$class = NULL;
+			if(defined('kDATABASE_PREFIX_WARNING') && kDATABASE_PREFIX_WARNING == true) $class = 'warning';
 
-				$Fieldset->appendChild($Div);
+			## fields[database][prefix]
+			$Fieldset->appendChild(Widget::label(__('Table Prefix'), Widget::input('fields[database][prefix]', $fields['database']['prefix']), $class));
 
-				$class = NULL;
-				if(defined('kDATABASE_PREFIX_WARNING') && kDATABASE_PREFIX_WARNING == true) $class = 'warning';
+			if(defined('ERROR') && defined('kDATABASE_PREFIX_WARNING'))
+				$Fieldset->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
 
-				## fields[database][prefix]
-				$Fieldset->appendChild(Widget::label(__('Table Prefix'), Widget::input('fields[database][prefix]', $fields['database']['prefix']), $class));
+			$Page->setTemplateVar('TABLE-PREFIX', $fields['database']['prefix']);
 
-				if(defined('ERROR') && defined('kDATABASE_PREFIX_WARNING'))
-					$Fieldset->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
+			## fields[database][high-compatibility]
+			$Fieldset->appendChild(Widget::label(__('Use compatibility mode'), Widget::input('fields[database][high-compatibility]', 'yes', 'checkbox'), 'option'));
 
-				$Page->setTemplateVar('TABLE-PREFIX', $fields['database']['prefix']);
+			$Fieldset->appendChild(new XMLElement('p', __('Symphony normally specifies UTF-8 character encoding for database entries. With compatibility mode enabled, Symphony will instead use the default character encoding of your database.')));
 
-				## fields[database][high-compatibility]
-				$Fieldset->appendChild(Widget::label(__('Use compatibility mode'), Widget::input('fields[database][high-compatibility]', 'yes', 'checkbox'), 'option'));
+			$Database->appendChild($Fieldset);
 
-				$Fieldset->appendChild(new XMLElement('p', __('Symphony normally specifies UTF-8 character encoding for database entries. With compatibility mode enabled, Symphony will instead use the default character encoding of your database.')));
+			$Form->appendChild($Database);
 
-				$Database->appendChild($Fieldset);
+		// START PERMISSION SETTINGS
+			$Permissions = new XMLElement('fieldset');
+			$Permissions->appendChild(new XMLElement('legend', __('Permission Settings')));
+			$Permissions->appendChild(new XMLElement('p', __('Symphony needs permission to read and write both files and directories.')));
 
-				$Form->appendChild($Database);
+			$Div = new XMLElement('div');
+			$Div->setAttribute('class', 'group');
 
-			/** END DATABASE SETTINGS **/
+			$Div->appendChild(Widget::label(__('Files'), Widget::input('fields[permission][file]', $fields['permission']['file'])));
+			$Div->appendChild(Widget::label(__('Directories'), Widget::input('fields[permission][directory]', $fields['permission']['directory'])));
 
-			/**
-			 *
-			 * START PERMISSION SETTINGS
-			 *
-			**/
+			$Permissions->appendChild($Div);
+			$Form->appendChild($Permissions);
 
-				$Permissions = new XMLElement('fieldset');
-				$Permissions->appendChild(new XMLElement('legend', __('Permission Settings')));
-				$Permissions->appendChild(new XMLElement('p', __('Symphony needs permission to read and write both files and directories.')));
+		// START USER SETTINGS
+			$User = new XMLElement('fieldset');
+			$User->appendChild(new XMLElement('legend', __('User Information')));
+			$User->appendChild(new XMLElement('p', __('Once installed, you will be able to login to the Symphony admin with these user details.')));
 
-				$Div = new XMLElement('div');
-				$Div->setAttribute('class', 'group');
+			$class = NULL;
+			if(defined('kUSER_USERNAME_WARNING') && kUSER_PASSWORD_WARNING == true) $class = 'warning';
 
-				$Div->appendChild(Widget::label(__('Files'), Widget::input('fields[permission][file]', $fields['permission']['file'])));
-				$Div->appendChild(Widget::label(__('Directories'), Widget::input('fields[permission][directory]', $fields['permission']['directory'])));
+			## fields[user][username]
+			$User->appendChild(Widget::label(__('Username'), Widget::input('fields[user][username]', $fields['user']['username']), $class));
 
-				$Permissions->appendChild($Div);
-				$Form->appendChild($Permissions);
+			if(defined('ERROR') && defined('kUSER_USERNAME_WARNING'))
+				$User->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
 
-			/** END PERMISSION SETTINGS **/
+			$class = NULL;
+			if(defined('kUSER_PASSWORD_WARNING') && kUSER_PASSWORD_WARNING == true) $class = ' warning';
 
-			/**
-			 *
-			 * START USER SETTINGS
-			 *
-			**/
+			$Div = new XMLElement('div');
+			$Div->setAttribute('class', 'group' . $class);
 
-				$User = new XMLElement('fieldset');
-				$User->appendChild(new XMLElement('legend', __('User Information')));
-				$User->appendChild(new XMLElement('p', __('Once installed, you will be able to login to the Symphony admin with these user details.')));
+			## fields[user][password]
+			$Div->appendChild(Widget::label(__('Password'), Widget::input('fields[user][password]', $fields['user']['password'], 'password')));
 
-				$class = NULL;
-				if(defined('kUSER_USERNAME_WARNING') && kUSER_PASSWORD_WARNING == true) $class = 'warning';
+			## fields[user][confirm-password]
+			$Div->appendChild(Widget::label(__('Confirm Password'), Widget::input('fields[user][confirm-password]', $fields['user']['confirm-password'], 'password')));
 
-				## fields[user][username]
-				$User->appendChild(Widget::label(__('Username'), Widget::input('fields[user][username]', $fields['user']['username']), $class));
+			$User->appendChild($Div);
 
-				if(defined('ERROR') && defined('kUSER_USERNAME_WARNING'))
-					$User->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
+			if(defined('ERROR') && defined('kUSER_PASSWORD_WARNING'))
+				$User->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
 
-				$class = NULL;
-				if(defined('kUSER_PASSWORD_WARNING') && kUSER_PASSWORD_WARNING == true) $class = ' warning';
+			$Fieldset = new XMLElement('fieldset');
+			$Fieldset->appendChild(new XMLElement('legend', __('Personal Information')));
+			$Fieldset->appendChild(new XMLElement('p', __('Please add the following personal details for this user.')));
 
-				$Div = new XMLElement('div');
-				$Div->setAttribute('class', 'group' . $class);
+			$class = NULL;
+			if(defined('kUSER_NAME_WARNING') && kUSER_EMAIL_WARNING == true) $class = ' warning';
 
-				## fields[user][password]
-				$Div->appendChild(Widget::label(__('Password'), Widget::input('fields[user][password]', $fields['user']['password'], 'password')));
+			$Div = new XMLElement('div');
+			$Div->setAttribute('class', 'group' . $class);
 
-				## fields[user][confirm-password]
-				$Div->appendChild(Widget::label(__('Confirm Password'), Widget::input('fields[user][confirm-password]', $fields['user']['confirm-password'], 'password')));
+			$Div->appendChild(Widget::label(__('First Name'), Widget::input('fields[user][firstname]', $fields['user']['firstname'])));
+			$Div->appendChild(Widget::label(__('Last Name'), Widget::input('fields[user][lastname]', $fields['user']['lastname'])));
 
-				$User->appendChild($Div);
+			$Fieldset->appendChild($Div);
 
-				if(defined('ERROR') && defined('kUSER_PASSWORD_WARNING'))
-					$User->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
+			if(defined('ERROR') && defined('kUSER_NAME_WARNING'))
+				$Fieldset->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
 
-				$Fieldset = new XMLElement('fieldset');
-				$Fieldset->appendChild(new XMLElement('legend', __('Personal Information')));
-				$Fieldset->appendChild(new XMLElement('p', __('Please add the following personal details for this user.')));
+			$class = NULL;
+			if(defined('kUSER_EMAIL_WARNING') && kUSER_EMAIL_WARNING == true) $class = 'warning';
 
-				$class = NULL;
-				if(defined('kUSER_NAME_WARNING') && kUSER_EMAIL_WARNING == true) $class = ' warning';
+			## fields[user][email]
+			$Fieldset->appendChild(Widget::label(__('Email Address'), Widget::input('fields[user][email]', $fields['user']['email']), $class));
 
-				$Div = new XMLElement('div');
-				$Div->setAttribute('class', 'group' . $class);
+			if(defined('ERROR') && defined('kUSER_EMAIL_WARNING'))
+				$Fieldset->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
 
-				$Div->appendChild(Widget::label(__('First Name'), Widget::input('fields[user][firstname]', $fields['user']['firstname'])));
-				$Div->appendChild(Widget::label(__('Last Name'), Widget::input('fields[user][lastname]', $fields['user']['lastname'])));
+			$User->appendChild($Fieldset);
 
-				$Fieldset->appendChild($Div);
+			$Form->appendChild($User);
 
-				if(defined('ERROR') && defined('kUSER_NAME_WARNING'))
-					$Fieldset->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
+		// START FORM SUBMIT AREA
+			$Form->appendChild(new XMLElement('h2', __('Install Symphony')));
+			$Form->appendChild(new XMLElement('p', __('Make sure that you delete <code>%s</code> file after Symphony has installed successfully.', array(kINSTALL_FILENAME))));
 
-				$class = NULL;
-				if(defined('kUSER_EMAIL_WARNING') && kUSER_EMAIL_WARNING == true) $class = 'warning';
+			$Submit = new XMLElement('div');
+			$Submit->setAttribute('class', 'submit');
 
-				## fields[user][email]
-				$Fieldset->appendChild(Widget::label(__('Email Address'), Widget::input('fields[user][email]', $fields['user']['email']), $class));
+			### submit
+			$Submit->appendChild(Widget::input('submit', __('Install Symphony'), 'submit'));
 
-				if(defined('ERROR') && defined('kUSER_EMAIL_WARNING'))
-					$Fieldset->appendChild(new XMLElement('p', $warnings[ERROR], array('class' => 'warning')));
+			### action[install]
+			$Submit->appendChild(Widget::input('action[install]', 'true', 'hidden'));
 
-				$User->appendChild($Fieldset);
-
-				$Form->appendChild($User);
-
-			/** END USER SETTINGS **/
-
-
-			/**
-			 *
-			 * START FORM SUBMIT AREA
-			 *
-			**/
-
-				$Form->appendChild(new XMLElement('h2', __('Install Symphony')));
-				$Form->appendChild(new XMLElement('p', __('Make sure that you delete <code>%s</code> file after Symphony has installed successfully.', array(kINSTALL_FILENAME))));
-
-				$Submit = new XMLElement('div');
-				$Submit->setAttribute('class', 'submit');
-
-				### submit
-				$Submit->appendChild(Widget::input('submit', __('Install Symphony'), 'submit'));
-
-				### action[install]
-				$Submit->appendChild(Widget::input('action[install]', 'true', 'hidden'));
-
-				$Form->appendChild($Submit);
-				$Contents->appendChild($Form);
-
-			/** END FORM SUBMIT AREA **/
-
+			$Form->appendChild($Submit);
+			$Contents->appendChild($Form);
 
 			$Page->setTemplateVar('title', __('Install Symphony'));
 			$Page->setTemplateVar('tagline', __('Version %s', array(kVERSION)));
@@ -1210,19 +1151,19 @@ Options +FollowSymlinks -Indexes
 
 			if(in_array(MISSING_PHP, $Page->missing))
 				$messages[] = array(__('<abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.1 or above'),
-							  		__('Symphony needs a recent version of <abbr title="PHP: Hypertext Pre-processor">PHP</abbr>.'));
+									__('Symphony needs a recent version of <abbr title="PHP: Hypertext Pre-processor">PHP</abbr>.'));
 
 			if(in_array(MISSING_MYSQL, $Page->missing))
 				$messages[] = array(__('My<abbr title="Structured Query Language">SQL</abbr> 4.1 or above'),
-							  	__('Symphony needs a recent version of My<abbr title="Structured Query Language">SQL</abbr>.'));
+								__('Symphony needs a recent version of My<abbr title="Structured Query Language">SQL</abbr>.'));
 
 			if(in_array(MISSING_ZLIB, $Page->missing))
 				$messages[] = array(__('ZLib Compression Library'),
-							  		__('Data retrieved from the Symphony support server is decompressed with the ZLib compression library.'));
+									__('Data retrieved from the Symphony support server is decompressed with the ZLib compression library.'));
 
 			if(in_array(MISSING_XSL, $Page->missing) || in_array(MISSING_XML, $Page->missing))
 				$messages[] = array(__('<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr> Processor'),
-							  		__('Symphony needs an XSLT processor such as Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr> or Sablotron to build pages.'));
+									__('Symphony needs an XSLT processor such as Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr> or Sablotron to build pages.'));
 
 			$dl = new XMLElement('dl');
 			foreach($messages as $m){
@@ -1272,7 +1213,6 @@ Options +FollowSymlinks -Indexes
 			global $languages;
 			$Page->setTemplateVar('languages', $languages);
 		}
-
 	}
 
 	$Log = new SymphonyLog('install-log.txt');
