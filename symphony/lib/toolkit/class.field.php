@@ -116,6 +116,16 @@
 		protected $_engine;
 
 		/**
+		 * A pointer to the `Symphony::Database()`.
+		 *
+		 * @deprecated This is deprecated and will be removed in the next major version
+		 * of Symphony. The preferred way to access the Database object is via
+		 * `Symphony::Database()`
+		 * @var MySQL
+		 */
+        protected $Database;
+
+		/**
 		 * Whether this field is required inherently, defaults to false.
 		 * @var boolean
 		 */
@@ -149,6 +159,7 @@
 			$this->_Parent = $parent;
 			$this->_engine = Symphony::Engine();
 			$this->_handle = (strtolower(get_class($this)) == 'field' ? 'field' : strtolower(substr(get_class($this), 5)));
+			$this->Database = Symphony::Database();
 		}
 
 		/**

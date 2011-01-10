@@ -33,6 +33,10 @@
 			return true;
 		}
 
+		public function canPrePopulate(){
+			return true;
+		}
+
 		function canFilter(){
 			return true;
 		}
@@ -103,9 +107,9 @@
 			}
 
 			return array(
-				'value'		=> null,
-				'local'		=> null,
-				'gmt'		=> null
+				'value'	 => null,
+				'local'	 => null,
+				'gmt'	   => null
 			);
 		}
 
@@ -126,7 +130,7 @@
 		}
 
 		public function getParameterPoolValue($data){
-     		return DateTimeObj::get('Y-m-d H:i:s', $data['local']);
+			return DateTimeObj::get('Y-m-d H:i:s', $data['local']);
 		}
 
 		function groupRecords($records){
@@ -346,7 +350,7 @@
 					return self::SIMPLE;
 				}
 			}
-			//	A date range, check it's ok!
+			//  A date range, check it's ok!
 			elseif(preg_match('/\s+to\s+/i', $string)) {
 
 				if(!$parts = preg_split('/\s+to\s+/', $string, 2, PREG_SPLIT_NO_EMPTY)) return self::ERROR;
