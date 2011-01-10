@@ -11,7 +11,7 @@
 body {
 	background: #fff;
 	color: #222;
-	font: 68.75%/1.5 Lucida Grande, Meiryo, Tahoma, Verdana, sans-serif;
+	font: 68.75%/1.5 Lucida Grande, Tahoma, Verdana, sans-serif;
 }
 a {
 	color: #5072bf;
@@ -315,7 +315,6 @@ legend {
 label {
 	display: block;
 	position: relative;
-/*	margin-bottom: 1.75em;*/
 }
 label[title] {
 	cursor: help;
@@ -337,7 +336,6 @@ select {
 select[multiple] {
 	width: 100%;
 	height: 10em;
-	background-color: #ddd;
 }
 textarea,
 label input {
@@ -659,15 +657,6 @@ ul.tags .more:hover {
 	border-top: none;
 }
 
-/*.settings > legend + label,*/
-/*.settings > .contextual > .label:first-child,*/
-/*.settings > legend + .group label:first-child,*/
-/*.settings > legend + .group > div + label,*/
-/*.settings > p.help + .group label:first-child,*/
-/*.settings > p.help + .group > div + label {*/
-/*	margin-top: 0;*/
-/*}*/
-
 .settings > legend + p.help {
 	float: left;
 	margin:1.5em 0 0  -275px;
@@ -813,17 +802,17 @@ ul.tags .more:hover {
 	font: inherit;
 }
 .file span {
-	padding-right: 7.5em;
 	overflow: hidden;
 	text-align: left;
 }
 .file a {
 	float: left;
+	max-width: 50%;
+	overflow: hidden;
+	text-overflow :ellipsis;
 }
 .file em {
 	float: right;
-	margin-right: -7.5em;
-	width: 7.5em;
 	color: #998;
 	text-decoration: underline;
 	font-style: normal;
