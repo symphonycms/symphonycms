@@ -382,6 +382,14 @@ var Symphony = {};
 		// Orderable list
 		$('ul.orderable').symphonyOrderable();
 
+		// Selectable
+		var selectable = $('table:has(input)');
+		selectable.symphonySelectable();
+
+		selectable.find('a').mousedown(function(event) {
+			event.stopPropagation();
+		});
+
 		// Orderable tables
 		var orderable = $('table.orderable');
 		orderable.symphonyOrderable({
@@ -434,9 +442,6 @@ var Symphony = {};
 			}
 
 		});
-
-		// Selectable
-		$('table:has(input)').symphonySelectable();
 
 		// Duplicators
 		$('.filters-duplicator').symphonyDuplicator();

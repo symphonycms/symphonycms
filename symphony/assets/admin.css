@@ -206,18 +206,13 @@ p#version {
 	height: 0;
 	overflow: hidden;
 }
-.selected {
+li.selected {
 	border-color: #617dc5;
 	background-color: #5273c0;
 }
 ul.selected,
 li.selected a {
 	color: #fff;
-}
-.selected h4 i,
-.selected label i,
-.selected .inactive {
-	color: #abe;
 }
 
 /* Code */
