@@ -18,12 +18,6 @@
 	Class Frontend extends Symphony {
 
 		/**
-		 * An instance of the Frontend class
-		 * @var Frontend
-		 */
-		protected static $_instance = null;
-		
-		/**
 		 * An instance of the FrontendPage class
 		 * @var FrontendPage
 		 */

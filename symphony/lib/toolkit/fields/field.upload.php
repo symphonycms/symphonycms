@@ -17,6 +17,10 @@
 			$this->set('required', 'yes');
 		}
 
+		public function canPrePopulate(){
+			return true;
+		}
+
 		public function canFilter() {
 			return true;
 		}
@@ -26,8 +30,8 @@
 		}
 
 		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
-		    $joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
-		    $sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`file` $order");
+			$joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
+			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`file` $order");
 		}
 
 		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
@@ -282,11 +286,11 @@
 
 		//	Array
 		//	(
-		//	    [name] => filename.pdf
-		//	    [type] => application/pdf
-		//	    [tmp_name] => /tmp/php/phpYtdlCl
-		//	    [error] => 0
-		//	    [size] => 16214
+		//		[name] => filename.pdf
+		//		[type] => application/pdf
+		//		[tmp_name] => /tmp/php/phpYtdlCl
+		//		[error] => 0
+		//		[size] => 16214
 		//	)
 
 			$message = NULL;
@@ -516,7 +520,7 @@
 			$meta['creation'] = DateTimeObj::get('c', filemtime($file));
 
 			if(General::in_iarray($type, $imageMimeTypes) && $array = @getimagesize($file)){
-				$meta['width']    = $array[0];
+				$meta['width']	= $array[0];
 				$meta['height']   = $array[1];
 			}
 
@@ -553,4 +557,3 @@
 		}
 
 	}
-
