@@ -232,10 +232,7 @@
 		 * @param string $arr input array
 		 * @return string
 		 */
-		public static function arrayToList($arr){
-			if(!is_array($arr)){
-				throw new Exception('Parameter should be an array.');
-			}
+		public static function arrayToList(array $arr = array()){
 			foreach($arr as $name => $email){
 				if(is_numeric($name)){
 					$return[] = $email;

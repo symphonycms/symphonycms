@@ -29,7 +29,7 @@
 		 * @return EmailGateway
 		 */
 		function create($gateway = null){
-			$email_gateway_manager = new EmailGatewayManager($this);
+			$email_gateway_manager = new EmailGatewayManager;
 			if($gateway){
 				return $email_gateway_manager->create($gateway);
 			}

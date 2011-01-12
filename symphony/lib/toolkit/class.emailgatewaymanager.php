@@ -15,6 +15,8 @@
 
 		protected $_default_gateway = 'sendmail';
 
+		public function __construct() {}
+
 		/**
 		 * Sets the default gateway.
 		 * Will throw an exception if the gateway can not be found.
@@ -182,7 +184,7 @@
 			if(!@class_exists($classname))
 				require_once($path);
 
-			return new $classname($this->_Parent);
+			return new $classname;
 
 		}
 
