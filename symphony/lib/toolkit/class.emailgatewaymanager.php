@@ -28,7 +28,7 @@
 				Administration::instance()->saveConfig();
 			}
 			else{
-				throw new EmailGatewayException('This gateway can not be found. Can not save as default.');
+				throw new EmailGatewayException(__('This gateway can not be found. Can not save as default.'));
 			}
 		}
 
