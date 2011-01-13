@@ -443,6 +443,15 @@ var Symphony = {};
 
 		});
 
+		// "Show column in linked sections" should be invisible by default (Select Box)
+		$("#fields-duplicator").find("li.template").each(function() {
+			var template = $(this);
+			
+			if (template.find("input:first").val() == "select") {
+				template.find("input[name*=show_association]").parent("label").hide();
+			}
+		});
+
 		// Duplicators
 		$('.filters-duplicator').symphonyDuplicator();
 
@@ -461,7 +470,7 @@ var Symphony = {};
 		duplicator.bind('expandstop', function(event, item) {
 			$(item).find('.header > span > i').remove();
 		});
-
+		
 		// Dim system messages
 		Symphony.Message.fade('silence', 10000);
 
@@ -635,6 +644,24 @@ var Symphony = {};
 			$('input[type="text"], textarea').first().focus();
 		}
 
+		// Select Box field (checkbox toggling)
+		$("select[name*=dynamic_options]").live("change", function(event) {
+			var select = $(this), 
+				field = select.parents("div.content"), 
+				show_association = field.find("input[name*=show_association]").parent("label");
+			
+			if (field.find("input:first").val() == "select") {
+				if (select.val() == "") {
+					show_association.find("input").removeAttr("checked");
+					show_association.hide();
+				} else {
+					show_association.show();
+				}
+			}
+		}).change();
+
+		
+	
 	});
 
 })(jQuery.noConflict());
