@@ -215,13 +215,11 @@
 		 */
 		public static function set($lang, $enabled=true) {
 			if($lang && $lang != self::get()) {
-
 				// Store current language code
 				self::$_lang = $lang;
 
 				// Activate language
 				self::activate($enabled);
-
 			}
 		}
 
@@ -245,7 +243,6 @@
          * @param boolean $enabled
 		 */
 		public static function activate($enabled=true) {
-
 			// Fetch all available languages
 			if(empty(self::$_languages)) {
 				self::fetch();
@@ -266,7 +263,6 @@
 
 			// Language file unavailable
 			else {
-
 				// Use default language
 				self::$_lang = 'en';
 				$default = self::$_languages['en'];
@@ -288,7 +284,6 @@
 				else {
 					throw new Exception('Symphony needs at least one language file.');
 				}
-
 			}
 		}
 
@@ -322,40 +317,44 @@
 			foreach($extensions as $extension) {
 				$folder = $extension->getPathname() . '/lang';
 				$directory = General::listStructure($folder);
-				foreach($directory['filelist'] as $file) {
-					if(strpos($extension->getFilename(), 'lang_') !== false) {
-						self::$_languages = array_merge(self::$_languages, self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled));
+				if (is_array($directory['filelist']) && !empty($directory['filelist'])) {
+					foreach($directory['filelist'] as $file) {
+						if(strpos($extension->getFilename(), 'lang_') !== false) {
+							self::$_languages = array_merge(self::$_languages, self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled));
+						}
 					}
-				}		
+				}
 			}
 
 			// Other extensions
 			foreach($extensions as $extension) {
 				$folder = $extension->getPathname() . '/lang';
 				$directory = General::listStructure($folder);
-				foreach($directory['filelist'] as $file) {
-					if(strpos($extension->getFilename(), 'lang_') === false) {
-						$temp = self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled);
-						$lang = key($temp);
-						
-						// Create language if not exists
-						if(!array_key_exists($lang, self::$_languages)) {
-							$language = array(
-								$lang => array(
-									'name' => $temp[$lang]['name'],
-									'status' => LANGUAGE_DISABLED,
-									'extensions' => array()
-								)
-							);
-							self::$_languages = array_merge(self::$_languages, $language);
+				if (is_array($directory['filelist']) && !empty($directory['filelist'])) {
+					foreach($directory['filelist'] as $file) {
+						if(strpos($extension->getFilename(), 'lang_') === false) {
+							$temp = self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled);
+							$lang = key($temp);
+
+							// Create language if not exists
+							if(!array_key_exists($lang, self::$_languages)) {
+								$language = array(
+									$lang => array(
+										'name' => $temp[$lang]['name'],
+										'status' => LANGUAGE_DISABLED,
+										'extensions' => array()
+									)
+								);
+								self::$_languages = array_merge(self::$_languages, $language);
+							}
+
+							// Merge extensions
+							self::$_languages[$lang]['extensions'] = array_merge(self::$_languages[$lang]['extensions'], array(
+								$temp[$lang]['source'] => $temp[$lang]['path']
+							));
 						}
-						
-						// Merge extensions
-						self::$_languages[$lang]['extensions'] = array_merge(self::$_languages[$lang]['extensions'], array(
-							$temp[$lang]['source'] => $temp[$lang]['path']
-						));																		
 					}
-				}		
+				}
 			}
 		}
 
@@ -375,7 +374,6 @@
 		 *  Returns a multidimensional array of language information
          */
 		private static function fetchLanguage($source, $folder, $file, $enabled) {
-
 			// Fetch language file
 			$path = $folder . '/' . $file;
 			if(file_exists($path)) {
@@ -414,7 +412,6 @@
 		 *  True, if the current dictionary should be cleared, defaults to false
 		 */
 		public static function load($path, $clear=false) {
-
 			// Initialize or clear dictionary
 			if(!(self::$_dictionary instanceof Dictionary) || $clear === true) {
 				self::initialize();
@@ -506,7 +503,6 @@
 		 *  Return the given date with translated month and day names
 		 */
 		public static function localizeDate($string) {
-
 			// Only translate dates in localized environments
 			if(self::isLocalized()) {
 				foreach(self::$_dates as $english => $locale) {
@@ -526,7 +522,6 @@
 		 *  Returns the given date with English month and day names
 		 */
 		public static function standardizeDate($string) {
-
 			// Get date and time separator
 			$separator = Symphony::$Configuration->get('datetime_separator', 'region');
 
@@ -566,7 +561,6 @@
 		 *  Returns resultant handle
 		 */
 		public static function createHandle($string, $max_length=255, $delim='-', $uriencode=false, $apply_transliteration=true, $additional_rule_set=NULL) {
-
 			// Use the transliteration table if provided
 			if($apply_transliteration == true) $string = _t($string);
 
@@ -605,7 +599,6 @@
 			$string = strtolower($string);
 
 			return $string;
-
 		}
 
 		/**
@@ -621,7 +614,6 @@
 		 *  Returns created filename
 		 */
 		public static function createFilename($string, $delim='-', $apply_transliteration=true) {
-
 			// Use the transliteration table if provided
 			if($apply_transliteration == true) $string = _t($string);
 
@@ -644,7 +636,6 @@
 			$string = strtolower($string);
 
 			return $string;
-
 		}
 
 	}
