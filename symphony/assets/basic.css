@@ -1,0 +1,121 @@
+/*-----------------------------------------------------------------------------
+	Reset
+-----------------------------------------------------------------------------*/
+
+/* Based on Eric Meyer's reset
+ * http://meyerweb.com/eric/tools/css/reset/
+ * v1.0 | 20080212
+ */
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 1em;
+	vertical-align: baseline;
+	background: transparent;
+	text-decoration: none;
+}
+input, select, textarea, button {
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+}
+ol, ul {
+	list-style: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/*-----------------------------------------------------------------------------
+	Shared styles
+-----------------------------------------------------------------------------*/
+
+body {
+	font: 68.75%/1.5 Lucida Grande, Tahoma, Verdana, sans-serif;
+}
+h1, h2 {
+	font: 127.28% Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
+}
+p {
+	margin-bottom: 1.5em;
+}
+ul, ol {
+	margin: 0 0 1.5em 2.25em;
+}
+code {
+	font: 110%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
+	font-size-adjust: 0.5;
+}
+pre {
+	margin-bottom: 1.75em;
+}
+pre code {
+	display: block;
+	white-space: pre;
+}
+
+fieldset {
+	position: relative;
+	padding: 1em 0;
+}
+legend {
+	line-height: 1;
+}
+label {
+	display: block;
+	margin-bottom: 1.5em;
+}
+label input {
+	padding: 2px;
+}
+textarea,
+label input {
+	margin-top: 2px;
+	width: 100%;
+	font-size: 109.09%;
+	font-family: inherit;
+	box-sizing: border-box;
+	-khtml-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+input[size],
+input[type=radio],
+input[type=checkbox] {
+	display: inline;
+	margin: 0 0.25em 0 0;
+	width: auto;
+}
+input[size],
+label + select {
+	margin-left: 0.25em;
+}
+select {
+	display: block;
+	margin-top: 2px;
+	box-sizing: border-box;
+	-khtml-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+select[multiple] {
+	width: 100%;
+	height: 10em;
+}
+button {
+	padding: 3.5px 6px 4px;
+}
+

@@ -23,8 +23,6 @@
 			$this->Html->setAttribute('lang', Lang::get());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 40);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/admin.css', 'screen', 40);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/forms.css', 'screen', 40);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/login.css', 'screen', 40);
 
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Login'))));
@@ -137,7 +135,7 @@
 				$this->Form->appendChild($fieldset);
 
 				$div = new XMLElement('div', NULL, array('class' => 'actions'));
-				$div->appendChild(Widget::Input('action[login]', __('Login'), 'submit', array('accesskey' => 's')));
+				$div->appendChild(new XMLElement('button', __('Login'), array('name' => 'action[login]', 'type' => 'submit', 'accesskey' => 's')));
 				if(!preg_match('@\/symphony\/login\/@i', $_SERVER['REQUEST_URI'])) $div->appendChild(Widget::Input('redirect', $_SERVER['REQUEST_URI'], 'hidden'));
 				$this->Form->appendChild($div);
 

@@ -2,16 +2,9 @@
 	Reset
 -----------------------------------------------------------------------------*/
 
-* {
-	margin: 0;
-	padding: 0;
-	font-size: 1em;
-}
-
 body {
 	background: #fff;
 	color: #222;
-	font: 68.75%/1.5 Lucida Grande, Tahoma, Verdana, sans-serif;
 }
 a {
 	color: #5072bf;
@@ -24,55 +17,31 @@ a:hover {
 a:active {
 	color: #d42;
 }
-p {
-	margin-bottom: 1.5em;
-}
-h1,
-h2 {
+h1, h2 {
 	position: relative;
 	clear: both;
-	margin-bottom: 1em;
-	text-shadow: -1px 2px 3px #ddd;
-	font: 127.28% Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
 }
-h3,
-h4 {
+h3, h4 {
 	position: relative;
 	clear: both;
-	margin-bottom: 0.75em;
 	text-shadow: -1px 2px 2px #ddd;
 	font-weight: bold;
-}
-ul,
-ol {
-	margin: 0 0 1.5em 2.25em;
-}
-code {
-	font: 110%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
-	font-size-adjust: 0.5;
-}
-/* Code */
-code {
-	font: 110%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
 }
 pre {
 	position: relative;
 	left: 275px;
-	margin: 0 0 1.75em -275px;
+	margin-left: -275px;
 	width: 100%;
 	color: #474742;
 	white-space: normal;
 	font: inherit;
 }
 pre code {
-	display: block;
 	border: 1px dashed #a1a19a;
 	padding: 5px 7px;
 	overflow: auto;
-	white-space: pre;
 }
-i,
-var {
+i, var {
 	color: #aa9;
 	text-shadow: none;
 	font-style: normal;
@@ -82,15 +51,13 @@ var {
 	Header
 -----------------------------------------------------------------------------*/
 
-html,
-body {
+body, html {
 	height: 100%;
 }
 .wrapper {
 	position: relative;
 	min-height: 100%;
 }
-
 .header {
 	margin: 0 0 1.8em;
 	background: #353530;
@@ -98,7 +65,6 @@ body {
 }
 .header h1 {
 	padding: 1.64em 19px 0.74em;
-	margin: 0;
 	text-shadow: -1px 2px 3px #111;
 	font-weight: bold;
 	line-height: 1;
@@ -195,6 +161,12 @@ body {
 	text-align: right;
 	text-shadow: -1px 2px 3px #111;
 	color: #fff;
+}
+.footer:after {
+	content: " ";
+	display: block;
+	clear: left;
+	height: 1%;
 }
 
 #version,
@@ -297,11 +269,6 @@ body {
 	Forms elements
 -----------------------------------------------------------------------------*/
 
-fieldset {
-	position: relative;
-	border: none;
-	padding-top: 1em;
-}
 legend {
 	float: left;
 	margin-bottom: -3em;
@@ -310,7 +277,6 @@ legend {
 	text-indent: -275px;
 	text-shadow: -1px 2px 3px #ddd;
 	font-weight: bold;
-	line-height: 1;
 }
 label {
 	display: block;
@@ -323,48 +289,6 @@ label > i {
 	position: absolute;
 	right: 0;
 	top: 0;
-}
-select {
-	display: block;
-	margin-top: 2px;
-	box-sizing: border-box;
-	-khtml-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	-ms-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-}
-select[multiple] {
-	width: 100%;
-	height: 10em;
-}
-textarea,
-label input {
-	margin-top: 2px;
-	width: 100%;
-	font-size: 109.09%;
-	font-family: inherit;
-	box-sizing: border-box;
-	-khtml-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	-ms-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-}
-label input {
-	padding: 2px;
-}
-input[size],
-input[type=radio],
-input[type=checkbox] {
-	display: inline;
-	margin: 0 0.25em 0 0;
-	width: auto;
-}
-input[size],
-label + select {
-	margin-left: 0.25em;
-}
-button {
-	padding: 3.5px 6px 4px;
 }
 
 /*-----------------------------------------------------------------------------
@@ -546,12 +470,11 @@ ul.page a {
 	padding: 1em 0 0 275px;
 	margin: 0 0 1em;
 	border-top: 1px solid #ddc;
-	padding-bottom: 1em;
 }
 
-.settings label {
-	margin-bottom: 1.5em;
-}
+/*.settings label {*/
+/*	margin-bottom: 1.5em;*/
+/*}*/
 
 .settings label > input[type=checkbox] {
 	vertical-align: top;
@@ -563,9 +486,9 @@ ul.page a {
 .settings select {
 	width: 100%;
 }
-.settings p {
-	margin: 0 0 1.5em;
-}
+/*.settings p {*/
+/*	margin: 0 0 1.5em;*/
+/*}*/
 
 .group {
 	position: relative;
