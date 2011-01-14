@@ -298,7 +298,7 @@ var Symphony = {};
 						'borderTopColor': notice.css('border-top-color'),
 						'borderRightColor': notice.css('border-right-color'),
 						'borderBottomColor': notice.css('border-bottom-color'),
-						'borderLeftColor': notice.css('border-left-color'),
+						'borderLeftColor': notice.css('border-left-color')
 					};
 
 				// Delayed animation to new styles
