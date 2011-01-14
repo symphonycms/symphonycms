@@ -364,78 +364,33 @@ fieldset.settings > *:first-child {
 .settings .duplicator fieldset {
 	border-top: 1px solid #eed;
 	border-bottom: none;
-	clear: both;
-	margin: 0 -1.75em 2.75em -2.5em;
-	padding: 0 2.75em 0 1.75em;
-	right: -8px;
 }
-.settings .duplicator fieldset.group {
-	padding: 0 0 0 1.75em;
-}
-.settings .duplicator fieldset legend {
-	color: #665;
+.settings .duplicator legend {
+	display: inline;
 	float: none;
+	margin: 0 0 0 -0.5em;
+	padding: 0 0.75em 0 0.5em;
 	font-weight: normal;
 	line-height: 1;
 	text-indent: 0;
 	background: #DDC;
-	padding: 0;
-	margin: 0 0 0 -0.5em !important;
-	padding: 0 0.75em 0 0.5em;
-	display: block;
-	width: auto;
+	color: #665;
 }
-.settings .duplicator fieldset label {
-	margin: 1.75em 0 0 0em;
-	padding: 0;
-	min-width: 350px;
-}
-.settings .duplicator fieldset.group label, 
-.settings .duplicator fieldset.group div {
+.settings .duplicator fieldset.compact label { 
 	float: left;
 	width: 50%;
-	margin-left: 0;
+	min-width: 300px;
+	margin-right: 16px;
 }
-.settings .duplicator fieldset.group div label {
-	float: none;
+.settings .duplicator fieldset.compact label:nth-child(odd) {
 	width: auto;
-	padding: 0 32px 0 0;
-}
-.settings .duplicator fieldset.group div ul.tags {
-	margin-top: 1em;
-}
-.settings .duplicator fieldset.group div ul.tags li {
-	overflow: visible;
-}
-.settings .duplicator fieldset.group div.invalid {
-	width: auto;
-	float: none;	
-	margin: 1.75em 32px 0 0;
-	padding: 1.25em 1.25em 2.5em;
-}
-.settings .duplicator fieldset.group div.invalid label {
-	padding: 0;
-	margin: 0;
-}
-.settings .duplicator fieldset.group div.invalid p {
-	margin: 1em 0 0;
 }
 .settings .duplicator fieldset.compact i {
 	color: #887;
 	display: block;
-	position: relative;
-	right: auto;
+	position: static;
 	padding-left: 1.7em;
 }
-.settings .duplicator i code {
-	font-size: 1em;
-}
-
-/*.duplicator label span,*/
-/*.duplicator div.label span {*/
-/*	background-color: #fffff0;*/
-/*	border-color: #bbbbb0;*/
-/*}*/
 
 /*--- Buttons ---*/
 
