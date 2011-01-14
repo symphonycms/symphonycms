@@ -497,7 +497,7 @@ var Symphony = {};
 			var password = $(this),
 				labels = password.find('label'),
 				help = password.next('p.help'),
-				placeholder = $('<label>' + Symphony.Language.get('Password') + ' <span><button>' + Symphony.Language.get('Change Password') + '</button></span></label>'),
+				placeholder = $('<label>' + Symphony.Language.get('Password') + ' <span class="frame"><button>' + Symphony.Language.get('Change Password') + '</button></span></label>'),
 				invalid = password.has('.invalid');
 
 			if(invalid.size() == 0) {
@@ -637,13 +637,11 @@ var Symphony = {};
 
 		// Accessible navigation
 		$('#nav a').focus(function() {
-			$(this).parents('li').eq(1).addClass('hover');
-			$(this).parents('ul').eq(0).addClass('visible');
+			$(this).parents('li').eq(1).addClass('current');
 		});
 
 		$('#nav a').blur(function() {
-			$(this).parents('li').eq(1).removeClass('hover');
-			$(this).parents('ul').eq(0).removeClass('visible');
+			$(this).parents('li').eq(1).removeClass('current');
 		});
 
 	});

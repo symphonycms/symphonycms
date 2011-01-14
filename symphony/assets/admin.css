@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
-	Reset
+	Globals - Miscellaneous
 -----------------------------------------------------------------------------*/
 
 body {
@@ -27,10 +27,6 @@ h3 {
 	font-weight: bold;
 }
 pre {
-	position: relative;
-	left: 275px;
-	margin-left: -275px;
-	width: 100%;
 	color: #474742;
 	white-space: normal;
 	font: inherit;
@@ -47,7 +43,7 @@ i, var {
 }
 
 /*-----------------------------------------------------------------------------
-	Forms elements
+	Globals - Forms elements
 -----------------------------------------------------------------------------*/
 
 legend {
@@ -73,7 +69,7 @@ label > i {
 }
 
 /*-----------------------------------------------------------------------------
-	Tables
+	Globals - Tables
 -----------------------------------------------------------------------------*/
 
 table {
@@ -133,8 +129,22 @@ th a[href$=asc]:after,
 th a.active[href$=asc]:hover:after {
 	content: "\2191";
 }
+table.busy td {
+	border-top: 1px solid #e6e6e5;
+	border-bottom: 1px solid #e6e6e5;
+	background-color: #fff;
+}
+table.busy tr:nth-child(odd) td {
+	border-top: 1px solid #e6e6e5;
+	border-bottom: 1px solid #e6e6e5;
+	background-color: #f5f5f4;
+}
+table.busy a {
+	color: #5072bf;
+}
 
-/* Selectable */
+/*--- Selectable ---*/
+
 table.selectable input {
 	display: none;
 }
@@ -151,7 +161,8 @@ tr.selected a {
 	color: #fff;
 }
 
-/* Orderable */
+/*--- Orderable ---*/
+
 tr.ordering {
 	cursor: move;
 }
@@ -174,23 +185,11 @@ tr.selecting a {
 	color: #fff;
 }
 
-table.busy td {
-	border-top: 1px solid #e6e6e5;
-	border-bottom: 1px solid #e6e6e5;
-	background-color: #fff;
-}
-table.busy tr:nth-child(odd) td {
-	border-top: 1px solid #e6e6e5;
-	border-bottom: 1px solid #e6e6e5;
-	background-color: #f5f5f4;
-}
-table.busy a {
-	color: #5072bf;
-}
-
 /*-----------------------------------------------------------------------------
-	Common vocabulary & UI components
+	Globals - Classes & UI components
 -----------------------------------------------------------------------------*/
+
+/*--- Common ---*/
 
 .code {
 	font: 134%/1.3 monospace;
@@ -206,21 +205,23 @@ table.busy a {
 .irrelevant {
 	display: none;
 }
-.help {
-	color: #887;
-}
 .selected, .selected a {
 	color: #fff;
 }
 .selected a:hover {
 	color: #f2f2f2;
 }
-.label {
-	font-weight: bold;
-	text-shadow: -1px 2px 2px #ddd;
+p.help {
+	color: #887;
+}
+p.label {
 	margin: 0 0 2px;
 }
-
+p.subsection {
+	font-weight: bold;
+	text-shadow: -1px 2px 2px #ddd;
+	margin: 0 0 1.25em;
+}
 span.frame {
 	display: block;
 	margin-bottom: 1.5em;
@@ -230,13 +231,15 @@ span.frame {
 	text-align: center;
 }
 
-.tags {
+/*--- Tags/suggestion list ---*/
+
+ul.tags {
 	margin: -0.75em 0 1.5em -6px;
 	padding: 0;
 	color: #887;
 	list-style: none;
 }
-.tags li {
+ul.tags li {
 	display: inline;
 	padding: 0 0 0 6px;
 	border-top: none;
@@ -244,16 +247,18 @@ span.frame {
 	cursor: pointer;
 	font-size: 90.91%;
 }
-.tags li:hover {
+ul.tags li:hover {
 	color: #554;
 }
-.tags li.more {
+ul.tags li.more {
 	color: #5072bf;
 	text-decoration: underline;
 }
-.tags .more:hover {
+ul.tags .more:hover {
 	color: #222;
 }
+
+/*--- Group ---*/
 
 .group {
 	position: relative;
@@ -290,6 +295,9 @@ span.frame {
 	height:auto;
 	background: rgba(255, 255, 255, 0.8);
 }
+
+/*--- Triple ---*/
+
 .triple {
 	padding: 0 0 0 72px;
 }
@@ -300,64 +308,147 @@ span.frame {
 	margin-left: -64px;
 }
 
-.settings {
+/*--- Settings ---*/
+
+fieldset.settings {
 	position: relative;
 	padding: 1em 0 1em 275px;
 	margin: 0 0 1em;
 	border-top: 1px solid #ddc;
 }
-.settings label > input[type=checkbox] {
-	vertical-align: top;
-}
-.settings > label {
+fieldset.settings > label {
 	clear: left;
 }
-.settings select {
+fieldset.settings select {
 	width: 100%;
 }
-.settings p.help {
+fieldset.settings p.help {
 	margin: -0.5em 0 1.5em;
 	color: #887;
 }
-.settings li .label {
+fieldset.settings li .label {
 	margin: 1em 0 1.25em;
 }
-.settings:first-child {
+fieldset.settings:first-child {
 	border-top: none;
 }
-.settings > legend + p.help {
+fieldset.settings > legend + p.help {
 	float: left;
 	margin: 1.5em 0 0  -275px;
 	width: 22em;
 }
-.settings > *:first-child {
+fieldset.settings > *:first-child {
 	margin-top: 0;
 }
 
-/* Pickable */
-.active fieldset.picker {
+/*--- Settings: Pickable ---*/
+
+.active .settings.picker {
 	border-bottom: none;
 	margin-bottom: 0;
+	padding-bottom: 0;
 }
-
-.active fieldset.pickable {
+.active .settings.pickable {
 	border-top: 0;
 	padding-top: 0;
 }
-
-.active fieldset.pickable legend {
+.active .settings.pickable legend {
 	display: none;
 }
 
-a.button {
+/*--- Settings: Duplicator ---*/
+
+.settings .duplicator {
+	margin-bottom: 1.5em;
+}
+.settings .duplicator fieldset {
+	border-top: 1px solid #eed;
+	border-bottom: none;
+	clear: both;
+	margin: 0 -1.75em 2.75em -2.5em;
+	padding: 0 2.75em 0 1.75em;
+	right: -8px;
+}
+.settings .duplicator fieldset.group {
+	padding: 0 0 0 1.75em;
+}
+.settings .duplicator fieldset legend {
+	color: #665;
+	float: none;
+	font-weight: normal;
+	line-height: 1;
+	text-indent: 0;
+	background: #DDC;
+	padding: 0;
+	margin: 0 0 0 -0.5em !important;
+	padding: 0 0.75em 0 0.5em;
+	display: block;
+	width: auto;
+}
+.settings .duplicator fieldset label {
+	margin: 1.75em 0 0 0em;
+	padding: 0;
+	min-width: 350px;
+}
+.settings .duplicator fieldset.group label, 
+.settings .duplicator fieldset.group div {
+	float: left;
+	width: 50%;
+	margin-left: 0;
+}
+.settings .duplicator fieldset.group div label {
+	float: none;
+	width: auto;
+	padding: 0 32px 0 0;
+}
+.settings .duplicator fieldset.group div ul.tags {
+	margin-top: 1em;
+}
+.settings .duplicator fieldset.group div ul.tags li {
+	overflow: visible;
+}
+.settings .duplicator fieldset.group div.invalid {
+	width: auto;
+	float: none;	
+	margin: 1.75em 32px 0 0;
+	padding: 1.25em 1.25em 2.5em;
+}
+.settings .duplicator fieldset.group div.invalid label {
+	padding: 0;
+	margin: 0;
+}
+.settings .duplicator fieldset.group div.invalid p {
+	margin: 1em 0 0;
+}
+.settings .duplicator fieldset.compact i {
+	color: #887;
+	display: block;
+	position: relative;
+	right: auto;
+	padding-left: 1.7em;
+}
+.settings .duplicator i code {
+	font-size: 1em;
+}
+
+/*.duplicator label span,*/
+/*.duplicator div.label span {*/
+/*	background-color: #fffff0;*/
+/*	border-color: #bbbbb0;*/
+/*}*/
+
+/*--- Buttons ---*/
+
+a.button,
+button.button {
 	background-color: #597bc6;
+	border: 0;
 	color: #fff;
 	float:right;
-	padding: 0 1em .1em 1em;
+	padding: .5em 1em;
 	margin: 0;
-	line-height: 2em;
-	height: 2em;
-	font-size: .7em;
+	font-size: 10px;
+	line-height: 11px;
 	text-decoration: none;
 	text-shadow: none;
 	cursor: pointer;
@@ -365,19 +456,28 @@ a.button {
 	-moz-border-radius: 1em;
 	-webkit-border-radius: 1em;
 }
-a.button:hover,
-a.button.active {
-	background-color: #222;
-}
-a.create {
+a.button.create,
+button.button.create {
 	background-color: #81b934;
 }
-button.delete:hover {
+a.button.delete,
+button.button.delete {
+	background-color: #887;
+}
+a.button:hover,
+a.button.active,
+button.button:hover,
+button.button.active {
+	background-color: #222;
+	color: #fff;
+}
+a.button.delete:hover,
+button.button.delete:hover {
 	background-color: #d43;
 }
 
 /*-----------------------------------------------------------------------------
-	System Messages
+	Globals - System Messages
 -----------------------------------------------------------------------------*/
 
 #notice {
@@ -432,6 +532,36 @@ button.delete:hover {
 	background: none;
 	text-decoration: underline;
 	cursor: pointer;
+}
+
+/*-----------------------------------------------------------------------------
+	Globals - Errors
+-----------------------------------------------------------------------------*/
+
+.invalid {
+	color: #fff;
+	margin-bottom: 1.5em;
+}
+.invalid > label {
+	margin-bottom: 0;
+	padding: 0.75em 1em 0.75em;
+	background-color: #d42;
+	border: 1px solid #c31;
+	border-bottom-width: 0;
+}
+.invalid > p {
+	margin: 0;
+	padding: 0 1em 0.75em;
+	background-color: #d42;
+	border: 1px solid #c31;
+	border-top-width: 0;
+	border-bottom-color: #b21;
+}
+.invalid a {
+	color: #fb9;
+}
+.invalid a:hover {
+	color: #721;
 }
 
 /*-----------------------------------------------------------------------------
@@ -495,7 +625,7 @@ body, html {
 	color: #fff;
 }
 #nav > li:hover,
-#nav > li.hover {
+#nav > li.current {
 	background: #7e7e70 url("images/navigation.png") 0 -30px repeat-x;
 	color: #fff;
 }
@@ -520,7 +650,7 @@ body, html {
 	-webkit-box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
 }
 #nav li:hover ul,
-#nav ul.visible {
+#nav li.current ul {
 	left: 5px;
 }
 #nav a {
@@ -561,7 +691,6 @@ body, html {
 	clear: left;
 	height: 1%;
 }
-
 #version,
 #usr,
 #usr li {
@@ -597,23 +726,22 @@ body, html {
 	margin: 0 -19px;
 	padding: 0;
 }
-.list div.actions {
+.list .actions {
 	padding: 18px 19px 0 0;
 	text-align: right;
 	height: 38px;
 }
-.list div.actions select {
+.list .actions select {
 	width: auto;
 	display: inline-block;
 	margin: 0 8px 0 11px;
 }
-.list div.actions input {
+.list .actions input {
 /*	padding: 3.5px 6px 4px;*/
 }
-.list div.actions + ul.page {
+.list .actions + ul.page {
 	margin-top: -58px;
 }
-
 ul.page {
 	margin: 0;
 	padding: 20px 50px 0 19px;
@@ -640,102 +768,6 @@ ul.page a {
 .single form {
 	margin: 0;
 }
-
-/* Duplicator */
-.settings .duplicator {
-	margin-bottom: 1.5em;
-}
-
-.settings .duplicator fieldset {
-	border-top: 1px solid #eed;
-	border-bottom: none;
-	clear: both;
-	margin: 0 -1.75em 2.75em -2.5em;
-	padding: 0 2.75em 0 1.75em;
-	right: -8px;
-}
-
-.settings .duplicator fieldset.group {
-	padding: 0 0 0 1.75em;
-}
-
-.settings .duplicator fieldset legend {
-	color: #665;
-	float: none;
-	font-weight: normal;
-	line-height: 1;
-	text-indent: 0;
-	background: #DDC;
-	padding: 0;
-	margin: 0 0 0 -0.5em !important;
-	padding: 0 0.75em 0 0.5em;
-	display: block;
-	width: auto;
-}
-
-.settings .duplicator fieldset label {
-	margin: 1.75em 0 0 0em;
-	padding: 0;
-	min-width: 350px;
-}
-
-.settings .duplicator fieldset.group label, 
-.settings .duplicator fieldset.group div {
-	float: left;
-	width: 50%;
-	margin-left: 0;
-}
-
-.settings .duplicator fieldset.group div label {
-	float: none;
-	width: auto;
-	padding: 0 32px 0 0;
-}
-
-.settings .duplicator fieldset.group div ul.tags {
-	margin-top: 1em;
-}
-
-.settings .duplicator fieldset.group div ul.tags li {
-	overflow: visible;
-}
-
-.settings .duplicator fieldset.group div.invalid {
-	width: auto;
-	float: none;	
-	margin: 1.75em 32px 0 0;
-	padding: 1.25em 1.25em 2.5em;
-}
-
-.settings .duplicator fieldset.group div.invalid label {
-	padding: 0;
-	margin: 0;
-}
-
-.settings .duplicator fieldset.group div.invalid p {
-	margin: 1em 0 0;
-}
-
-.settings .duplicator fieldset.compact i {
-	color: #887;
-	display: block;
-	position: relative;
-	right: auto;
-	padding-left: 1.7em;
-}
-
-/*Fix code font size */
-
-.settings .duplicator i code {
-	font-size: 1em;
-}
-
-/*.duplicator label span,*/
-/*.duplicator div.label span {*/
-/*	background-color: #fffff0;*/
-/*	border-color: #bbbbb0;*/
-/*}*/
-
 .primary {
 	float: left;
 	width: 60%;
@@ -777,57 +809,18 @@ ul.page a {
 .file em:hover {
 	color: #d43;
 }
-
-div.invalid {
-	color: #fff;
-	margin-bottom: 1.5em;
-}
-.invalid > label {
-	margin-bottom: 0;
-	padding: 0.75em 1em 0.75em;
-	background-color: #d42;
-	border: 1px solid #c31;
-	border-bottom-width: 0;
-}
-.invalid > p {
-	margin: 0;
-	padding: 0 1em 0.75em;
-	background-color: #d42;
-	border: 1px solid #c31;
-	border-top-width: 0;
-	border-bottom-color: #b21;
-}
-div.invalid a {
-	color: #fb9;
-}
-div.invalid a:hover {
-	color: #721;
-}
-
-.single div.actions {
+.single .actions {
 	clear: both;
 	border-top: 1px solid #ddc;
 	padding: 14px 0 0;
 }
-.single div.actions input {
+.single .actions input {
 	float: right;
 	margin-left: 1em;
 	padding: 3.5px 6px 4px;
 }
-div.actions button {
+.single .actions button {
 	float: left;
-	margin-right: 1em;
-	border: none;
-	background-color: #887;
-	color: #fff;
-	cursor: pointer;
-	padding: 0 1em .2em 1em;
-	line-height: 2em;
-	font-size: 0.95em;
-	height: 2em;
-	border-radius: 1em;
-	-moz-border-radius: 1em;
-	-webkit-border-radius: 1em;
 }
 
 /*-----------------------------------------------------------------------------
@@ -860,7 +853,6 @@ div.actions button {
 	font-size: 0.9em;
 	font-weight: normal;
 }
-
 #utilities {
 	margin: 0 0 1.5em 0;
 	border: 1px solid #bba;

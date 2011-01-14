@@ -474,7 +474,7 @@
 			$ul->setAttribute('class', 'group');
 
 			$li = new XMLElement('li');
-			$li->appendChild(new XMLElement('p', __('Parameter Output'), array('class' => 'label')));
+			$li->appendChild(new XMLElement('p', __('Parameter Output'), array('class' => 'subsection')));
 
 			$label = Widget::Label(__('Use Field'));
 			$options = array(
@@ -521,7 +521,7 @@
 			$ul->appendChild($li);
 
 			$li = new XMLElement('li');
-			$li->appendChild(new XMLElement('p', __('XML Output'), array('class' => 'label')));
+			$li->appendChild(new XMLElement('p', __('XML Output'), array('class' => 'subsection')));
 
 			$label = Widget::Label(__('Group By'));
 			$options = array(
@@ -723,7 +723,7 @@
 
 			if($isEditing){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this data source'), 'type' => 'submit', 'accesskey' => 'd'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this data source'), 'type' => 'submit', 'accesskey' => 'd'));
 				$div->appendChild($button);
 			}
 

@@ -91,6 +91,9 @@ label input {
 	-ms-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 }
+label > input[type=checkbox] {
+	vertical-align: top;
+}
 input[size],
 input[type=radio],
 input[type=checkbox] {
