@@ -47,6 +47,6 @@
 				pickables.filter('#' + select.val()).removeClass('.pickable');
 			}
 		});
-	}
+	};
 
 })(jQuery.noConflict());

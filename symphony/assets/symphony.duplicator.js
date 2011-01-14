@@ -174,12 +174,12 @@
 			var collapsingEnabled = function() {
 				widgets.topcontrols.removeClass('hidden');
 				widgets.collapser.removeClass('disabled');
-			}
+			};
 
 			var collapsingDisabled = function() {
 				widgets.topcontrols.addClass('hidden');
 				widgets.collapser.addClass('disabled');
-			}
+			};
 
 			var toCollapseAll = function() {
 				widgets.collapser
@@ -191,7 +191,7 @@
 				widgets.collapser
 					.addClass('compact')
 					.text(Symphony.Language.get('Expand all'));
-			}
+			};
 
 		/*-------------------------------------------------------------------*/
 
