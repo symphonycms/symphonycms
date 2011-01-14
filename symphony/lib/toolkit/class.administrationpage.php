@@ -201,7 +201,7 @@
 			$this->addElementToHead(
 				new XMLElement(
 					'script',
-					"Symphony.Context.add('env', " . json_encode($this->_context) . ");",
+					"Symphony.Context.add('env', " . json_encode($this->_context) . "); Symphony.Context.add('root', '" . URL . "');",
 					array('type' => 'text/javascript')
 				), 71
 			);

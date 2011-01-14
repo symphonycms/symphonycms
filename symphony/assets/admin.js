@@ -32,7 +32,6 @@ var Symphony = {};
 				id: user.attr('id').substring(4)
 			});
 			Symphony.Context.add('lang', html.attr('lang'));
-			Symphony.Context.add('root', window.location.href.match('(.*)/symphony')[1]);
 
 			// Initialise language
 			Symphony.Language.add({
