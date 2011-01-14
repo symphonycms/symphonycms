@@ -225,9 +225,9 @@
 
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'contextual ' . $section_data['section']->get('id'));
-				$h3 = new XMLElement('h3', __('Filter %s by', array($section_data['section']->get('name'))));
-				$h3->setAttribute('class', 'label');
-				$div->appendChild($h3);
+				$p = new XMLElement('p', __('Filter %s by', array($section_data['section']->get('name'))));
+				$p->setAttribute('class', 'label');
+				$div->appendChild($p);
 
 				$ol = new XMLElement('ol');
 				$ol->setAttribute('class', 'filters-duplicator');
@@ -278,9 +278,9 @@
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'contextual authors');
-			$h3 = new XMLElement('h3', __('Filter Authors by'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
+			$p = new XMLElement('p', __('Filter Authors by'));
+			$p->setAttribute('class', 'label');
+			$div->appendChild($p);
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
@@ -299,9 +299,9 @@
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'contextual navigation');
-			$h3 = new XMLElement('h3', __('Filter Navigation by'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
+			$p = new XMLElement('p', __('Filter Navigation by'));
+			$p->setAttribute('class', 'label');
+			$div->appendChild($p);
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
@@ -474,7 +474,7 @@
 			$ul->setAttribute('class', 'group');
 
 			$li = new XMLElement('li');
-			$li->appendChild(new XMLElement('h3', __('Parameter Output')));
+			$li->appendChild(new XMLElement('p', __('Parameter Output'), array('class' => 'label')));
 
 			$label = Widget::Label(__('Use Field'));
 			$options = array(
@@ -521,7 +521,7 @@
 			$ul->appendChild($li);
 
 			$li = new XMLElement('li');
-			$li->appendChild(new XMLElement('h3', __('XML Output')));
+			$li->appendChild(new XMLElement('p', __('XML Output'), array('class' => 'label')));
 
 			$label = Widget::Label(__('Group By'));
 			$options = array(
@@ -630,9 +630,9 @@
 			$fieldset->appendChild($p);
 
 			$div = new XMLElement('div');
-			$h3 = new XMLElement('h3', __('Namespace Declarations <i>Optional</i>'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
+			$p = new XMLElement('p', __('Namespace Declarations <i>Optional</i>'));
+			$p->setAttribute('class', 'label');
+			$div->appendChild($p);
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');

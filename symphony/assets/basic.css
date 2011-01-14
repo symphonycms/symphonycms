@@ -103,6 +103,7 @@ label + select {
 	margin-left: 0.25em;
 }
 select {
+	width: 100%;
 	display: block;
 	margin-top: 2px;
 	box-sizing: border-box;
