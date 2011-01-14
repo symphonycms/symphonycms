@@ -78,7 +78,7 @@
 					$this->Form->appendChild($fieldset);
 
 					$div = new XMLElement('div', NULL, array('class' => 'actions'));
-					$div->appendChild(Widget::Input('action[reset]', __('Send Email'), 'submit'));
+					$div->appendChild(new XMLElement('button', __('Send Email'), array('name' => 'action[reset]', 'type' => 'submit')));
 					$this->Form->appendChild($div);
 
 				}
@@ -106,7 +106,7 @@
 				$this->Form->appendChild($fieldset);
 
 				$div = new XMLElement('div', NULL, array('class' => 'actions'));
-				$div->appendChild(Widget::Input('action[change]', __('Save Changes'), 'submit'));
+				$div->appendChild(new XMLElement('button', __('Save Changes'), array('name' => 'action[change]', 'type' => 'submit')));
 				if(!preg_match('@\/symphony\/login\/@i', $_SERVER['REQUEST_URI'])) $div->appendChild(Widget::Input('redirect', $_SERVER['REQUEST_URI'], 'hidden'));
 				$this->Form->appendChild($div);
 
