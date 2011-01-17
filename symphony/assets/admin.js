@@ -32,7 +32,6 @@ var Symphony = {};
 				id: user.attr('id').substring(4)
 			});
 			Symphony.Context.add('lang', html.attr('lang'));
-			Symphony.Context.add('root', window.location.href.match('(.*)/symphony')[1]);
 
 			// Initialise language
 			Symphony.Language.add({
@@ -299,7 +298,7 @@ var Symphony = {};
 						'borderTopColor': notice.css('border-top-color'),
 						'borderRightColor': notice.css('border-right-color'),
 						'borderBottomColor': notice.css('border-bottom-color'),
-						'borderLeftColor': notice.css('border-left-color'),
+						'borderLeftColor': notice.css('border-left-color')
 					};
 
 				// Delayed animation to new styles
