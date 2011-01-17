@@ -7,7 +7,6 @@
 		border: 1px solid #999988;
 		margin: 0;
 		list-style: none;
-		overflow: hidden;
 		position: relative;
 		z-index: 1;
 	}
@@ -98,12 +97,19 @@
 -----------------------------------------------------------------------------*/
 
 	.duplicator > .controls {
+		clear: left;
 		background: #aaaa99;
 		cursor: default;
 		padding: 0 1.75em;
 		position: relative;
 		text-align: right;
 		z-index: 3;
+	}
+	.duplicator > .controls:after {
+		content: " ";
+		display: block;
+		clear: left;
+		height: 1%;
 	}
 	.duplicator > .controls.top {
 		overflow: hidden;
@@ -113,6 +119,8 @@
 		display: none;
 	}
 	.duplicator > .controls > * {
+		vertical-align: middle;
+		display: -moz-inline-stack;
 		display: inline-block;
 		margin: 0 0 0 0.75em;
 	}

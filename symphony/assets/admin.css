@@ -19,8 +19,17 @@ a:active, a:focus {
 }
 h2 {
 	margin: 0;
-	padding: 0 0 1em;
+	padding: 0 0 0.75em;
 	border-bottom: 1px solid #ddc;
+}
+h2:after {
+	content: " ";
+	display: block;
+	clear: both;
+	height: 1%;
+}
+h2 .button {
+
 }
 h3 {
 	text-shadow: -1px 2px 2px #ddd;
@@ -396,10 +405,11 @@ fieldset.settings > *:first-child {
 
 a.button,
 button.button {
+	display: inline-block;
 	background-color: #597bc6;
 	border: 0;
 	color: #fff;
-	float:right;
+	float: right;
 	padding: .5em 1em;
 	margin: 0;
 	font-size: 10px;
@@ -652,16 +662,20 @@ body, html {
 	padding: 0;
 }
 .list .actions {
-	padding: 18px 19px 0 0;
+	/* position: relative;
+	white-space: nowrap; */
 	text-align: right;
+	padding: 18px 19px 0 0;
 	height: 38px;
 }
 .list .actions select {
 	width: auto;
+	display: -moz-inline-stack;
 	display: inline-block;
-	margin: 0 8px 0 11px;
+	margin: 0;
 }
 .list .actions input {
+	margin: 0 0 0 5px;
 /*	padding: 3.5px 6px 4px;*/
 }
 .list .actions + ul.page {

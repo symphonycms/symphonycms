@@ -170,9 +170,9 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
 
 			$div = new XMLElement('div');
-			$h3 = new XMLElement('h3', __('Fields'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
+			$p = new XMLElement('p', __('Fields'));
+			$p->setAttribute('class', 'label');
+			$div->appendChild($p);
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');
