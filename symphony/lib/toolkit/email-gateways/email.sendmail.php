@@ -5,14 +5,14 @@
 
 	require_once(TOOLKIT . '/class.emailgateway.php');
 	require_once(TOOLKIT . '/class.emailhelper.php');
-	
+
 	/**
 	 * The basic gateway sending emails using Sendmail, php's mail function.
 	 *
 	 * @author Michael Eichelsdoerfer, Huib Keemink
 	 */
 	Class SendmailGateway extends EmailGateway {
-		
+
 		/**
 		 * Returns the name, used in the dropdown menu in the preferences pane.
 		 *
@@ -23,7 +23,7 @@
 				'name' => 'Sendmail (default)',
 			);
 		}
-		
+
 		/**
 		 * Constructor. Sets basic default values based on preferences.
 		 *
@@ -122,7 +122,7 @@
 			}
 			return true;
 		}
-		
+
 		/**
 		 * Builds the preferences pane, shown in the symphony backend.
 		 *
@@ -134,7 +134,6 @@
 			$group->setAttribute('class', 'settings pickable');
 			$group->setAttribute('id', 'sendmail');
 			$group->appendChild(new XMLElement('legend', __('Email: Sendmail')));
-
 
 			$div = new XMLElement('div');
 			$div->appendChild(new XMLElement('p', __('The following default settings will be used to send emails unless they are overwritten.')));

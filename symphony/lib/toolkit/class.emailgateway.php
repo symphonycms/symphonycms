@@ -23,7 +23,7 @@
 			// Best-guess to retrieve classname of email-gateway.
 			// Might fail in non-standard uses, will then return an empty string.
 			$gateway_class = $trace[1]['class']?' (' . $trace[1]['class'] . ')':'';
-			Symphony::$Log->pushToLog('Email Gateway Error' . $gateway_class  . ': ' . $message, 'Email', true);
+			Symphony::$Log->pushToLog(__('Email Gateway Error') . $gateway_class  . ': ' . $message, $code, true);
 			parent::__construct($message);
 		}
 	}
@@ -57,7 +57,6 @@
 		protected $_boundary_mixed;
 		protected $_boundary_alter;
 		protected $_text_encoding = 'quoted-printable';
-
 
 		/**
 		 * @return void
@@ -100,7 +99,7 @@
 		 */
 		public function setSenderEmailAddress($email){
 			if(preg_match('%[\r\n]%', $email)){
-				throw new EmailValidationException('Sender Email Address can not contain cariage return or newlines.');
+				throw new EmailValidationException(__('Sender Email Address can not contain carriage return or newlines.'));
 			}
 			$this->_sender_email_address = $email;
 		}
@@ -114,7 +113,7 @@
 		 */
 		public function setSenderName($name){
 			if(preg_match('%[\r\n]%', $name)){
-				throw new EmailValidationException('Sender Name can not contain cariage return or newlines.');
+				throw new EmailValidationException(('Sender Name can not contain carriage return or newlines.'));
 			}
 			$this->_sender_name = $name;
 		}
@@ -166,7 +165,7 @@
 				$this->_text_encoding = false;
 			}
 			else{
-				throw new EmailGatewayException($encoding . ' is not a supported encoding type. Please use "quoted-printable" or "base64". You can also use false for no encoding.');
+				throw new EmailGatewayException(__('%s is not a supported encoding type. Please use "quoted-printable" or "base64". You can also use false for no encoding.', array($encoding)));
 			}
 		}
 
@@ -191,7 +190,7 @@
 		 */
 		public function setReplyToEmailAddress($email){
 			if(preg_match('%[\r\n]%', $email)){
-				throw new EmailValidationException('Reply-To Email Address can not contain cariage return or newlines.');
+				throw new EmailValidationException(__('Reply-To Email Address can not contain carriage return or newlines.'));
 			}
 			$this->_reply_to_email_address = $email;
 		}
@@ -205,7 +204,7 @@
 		 */
 		public function setReplyToName($name){
 			if(preg_match('%[\r\n]%', $name)){
-				throw new EmailValidationException('Reply-To Name can not contain cariage return or newlines.');
+				throw new EmailValidationException(__('Reply-To Name can not contain carriage return or newlines.'));
 			}
 			$this->_reply_to_name = $name;
 		}
@@ -222,7 +221,7 @@
 		 */
 		public function appendHeaderField($name, $body){
 			if(is_array($body)){
-				throw new EmailGatewayException('appendHeaderField accepts strings only; arrays are not allowed.');
+				throw new EmailGatewayException(__('appendHeaderField accepts strings only; arrays are not allowed.'));
 			}
 			$this->_header_fields[$name] = $body;
 		}
@@ -235,10 +234,7 @@
 		 * @param array $header_array
 		 * @return void
 		 */
-		public function appendHeaderFields($header_array){
-			if(!is_array($header_array)){
-				throw new EmailGatewayException('appendHeaderFields accepts an array only.');
-			}
+		public function appendHeaderFields(array $header_array = array()){
 			foreach($header_array as $name => $body){
 				$this->appendHeaderField($name, $body);
 			}
@@ -249,26 +245,25 @@
 		 * @return boolean
 		 */
 		public function validate(){
-
 			/*
 			 * Make sure the Recipient, Sender Name and Sender Email values are set.
 			 * The message body will be checked in the prepareMessage function.
 			 */
 			if(strlen(trim($this->_subject)) <= 0){
-				throw new EmailValidationException('Email subject cannot be empty.');
+				throw new EmailValidationException(__('Email subject cannot be empty.'));
 			}
 
 			elseif(strlen(trim($this->_sender_email_address)) <= 0){
-				throw new EmailValidationException('Sender email address cannot be empty.');
+				throw new EmailValidationException(__('Sender email address cannot be empty.'));
 			}
 
 			else{
 				foreach($this->_recipients as $address){
 					if(strlen(trim($address)) <= 0){
-						throw new EmailValidationException('Recipient email address cannot be empty.');
+						throw new EmailValidationException(__('Recipient email address cannot be empty.'));
 					}
 					elseif(!filter_var($address, FILTER_VALIDATE_EMAIL)) {
-						throw new EmailValidationException('The email address \'' . $address . '\' is invalid.');
+						throw new EmailValidationException(__('The email address "%s" is invalid.', array($address)));
 					}
 				}
 			}
@@ -287,44 +282,44 @@
 				$this->appendHeaderFields($this->contentInfoArray('multipart/mixed'));
 				if (!empty($this->_text_plain) && !empty($this->_text_html)) {
 					$this->_body = $this->boundaryDelimiterLine('multipart/mixed')
-					            . $this->contentInfoString('multipart/alternative')
-					            . $this->getSectionMultipartAlternative()
-					            . $this->getSectionAttachments()
+								. $this->contentInfoString('multipart/alternative')
+								. $this->getSectionMultipartAlternative()
+								. $this->getSectionAttachments()
 					;
 				}
 				else if (!empty($this->_text_plain)) {
 					$this->_body = $this->boundaryDelimiterLine('multipart/mixed')
-					            . $this->contentInfoString('text/plain')
-					            . $this->getSectionTextPlain()
-					            . $this->getSectionAttachments()
+								. $this->contentInfoString('text/plain')
+								. $this->getSectionTextPlain()
+								. $this->getSectionAttachments()
 					;
 				}
 				else if (!empty($this->_text_html)) {
 					$this->_body = $this->boundaryDelimiterLine('multipart/mixed')
-					            . $this->contentInfoString('text/html')
-					            . $this->getSectionTextHtml()
-					            . $this->getSectionAttachments()
+								. $this->contentInfoString('text/html')
+								. $this->getSectionTextHtml()
+								. $this->getSectionAttachments()
 					;
 				}
 				else {
 					$this->_body = $this->getSectionAttachments();
 				}
-				$this->_body    .= $this->finalBoundaryDelimiterLine('multipart/mixed');
+				$this->_body	.= $this->finalBoundaryDelimiterLine('multipart/mixed');
 			}
 			else if (!empty($this->_text_plain) && !empty($this->_text_html)) {
 				$this->appendHeaderFields($this->contentInfoArray('multipart/alternative'));
-				$this->_body     = $this->getSectionMultipartAlternative();
+				$this->_body	 = $this->getSectionMultipartAlternative();
 			}
 			else if (!empty($this->_text_plain)) {
 				$this->appendHeaderFields($this->contentInfoArray('text/plain'));
-				$this->_body     = $this->getSectionTextPlain();
+				$this->_body	 = $this->getSectionTextPlain();
 			}
 			else if (!empty($this->_text_html)) {
 				$this->appendHeaderFields($this->contentInfoArray('text/html'));
-				$this->_body     = $this->getSectionTextHtml();
+				$this->_body	 = $this->getSectionTextHtml();
 			}
 			else{
-				throw new EmailGatewayException('No attachments or body text was set. Can not send empty email.');
+				throw new EmailGatewayException(__('No attachments or body text was set. Can not send empty email.'));
 			}
 		}
 
@@ -336,12 +331,12 @@
 		 */
 		protected function getSectionMultipartAlternative() {
 			$output = $this->boundaryDelimiterLine('multipart/alternative')
-			        . $this->contentInfoString('text/plain')
-			        . $this->getSectionTextPlain()
-			        . $this->boundaryDelimiterLine('multipart/alternative')
-			        . $this->contentInfoString('text/html')
-			        . $this->getSectionTextHtml()
-			        . $this->finalBoundaryDelimiterLine('multipart/alternative')
+					. $this->contentInfoString('text/plain')
+					. $this->getSectionTextPlain()
+					. $this->boundaryDelimiterLine('multipart/alternative')
+					. $this->contentInfoString('text/html')
+					. $this->getSectionTextHtml()
+					. $this->finalBoundaryDelimiterLine('multipart/alternative')
 			;
 			return $output;
 		}
@@ -356,8 +351,8 @@
 			$output = '';
 			foreach ($this->_attachments as $file) {
 				$output .= $this->boundaryDelimiterLine('multipart/mixed')
-				         . $this->contentInfoString(NULL, $file)
-				         . EmailHelper::base64ContentTransferEncode(file_get_contents($file))
+						 . $this->contentInfoString(NULL, $file)
+						 . EmailHelper::base64ContentTransferEncode(file_get_contents($file))
 				;
 			}
 			return $output;
@@ -407,25 +402,25 @@
 			$description = array(
 				'multipart/mixed' => array(
 					"Content-Type" => 'multipart/mixed; boundary="'
-					                  .$this->getBoundary('multipart/mixed').'"',
+									  .$this->getBoundary('multipart/mixed').'"',
 				),
 				'multipart/alternative' => array(
 					'Content-Type' => 'multipart/alternative; boundary="'
-					                  .$this->getBoundary('multipart/alternative').'"',
+									  .$this->getBoundary('multipart/alternative').'"',
 				),
 				'text/plain' => array(
-					'Content-Type'              => 'text/plain; charset=UTF-8',
+					'Content-Type'				=> 'text/plain; charset=UTF-8',
 					'Content-Transfer-Encoding' => $this->_text_encoding ? $this->_text_encoding : '8bit',
 				),
 				'text/html' => array(
-					'Content-Type'              => 'text/html; charset=UTF-8',
+					'Content-Type'				=> 'text/html; charset=UTF-8',
 					'Content-Transfer-Encoding' => $this->_text_encoding ? $this->_text_encoding : '8bit',
 				),
 			);
 			$binary = array(
-				'Content-Type'              => EmailHelper::getMimeType($file).'; name="'.basename($file).'"',
+				'Content-Type'				=> EmailHelper::getMimeType($file).'; name="'.basename($file).'"',
 				'Content-Transfer-Encoding' => 'base64',
-				'Content-Disposition'       => 'attachment; filename="'.basename($file).'"',
+				'Content-Disposition'		=> 'attachment; filename="'.basename($file).'"',
 			);
 			return !empty($description[$type]) ? $description[$type] : ($file ? $binary : array());
 		}
@@ -482,7 +477,7 @@
 				return $this->{'set'.$this->__toCamel($name, true)}($value);
 			}
 			else{
-				throw new EmailGatewayException('The ' . get_class($this) . ' gateway does not support the use of '.$name);
+				throw new EmailGatewayException(__('The %s gateway does not support the use of %s', array(get_class($this), $name)));
 			}
 		}
 

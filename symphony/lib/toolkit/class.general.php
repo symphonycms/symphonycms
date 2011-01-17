@@ -41,7 +41,7 @@
 		}
 
 		/**
-		 * Validate a string against a set of reqular expressions.
+		 * Validate a string against a set of regular expressions.
 		 *
 		 * @param array|string $string
 		 *	string to operate on
@@ -86,14 +86,14 @@
 		 * Checks an xml document for well-formedness.
 		 *
 		 * @param string $data
-		 *	filename, xml document as a string, or arbitary string
+		 *	filename, xml document as a string, or arbitrary string
 		 * @param pointer &$errors
 		 *	pointer to an array which will contain any validation errors
 		 * @param boolean $isFile (optional)
 		 *	if this is true, the method will attempt to read from a file, `$data`
 		 *	instead.
 		 * @param mixed $xsltProcessor (optional)
-		 *	if set, the validation will be done using this xslt processor rather
+		 *	if set, the validation will be done using this XSLT processor rather
 		 *	than the built in XML parser. the default is null.
 		 * @param string $encoding (optional)
 		 *	if no XML header is expected, than this should be set to match the
@@ -313,7 +313,7 @@
 		 *
          * @deprecated Since Symphony 2.2
 		 * @param string $to_email
-         *  email of the recipiant
+         *  email of the recipient
 		 * @param string $from_email
          *  the from email address. This is usually your email
 		 * @param string $from_name
@@ -328,10 +328,10 @@
          *  true on success
 		 */
 		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers = array()) {
-			
+
 			try{
 				$email = Email::create();
-				
+
 				if (!empty($additional_headers)) {
 					foreach ($additional_headers as $name => $body) {
 						$email->appendHeaderField($name, $body);
@@ -339,7 +339,7 @@
 				}
 				$email->sender_name = $from_name;
 				$email->sender_email_address = $from_email;
-				
+
 				$email->recipients = $to_email;
 				$email->text_plain = $message;
 				$email->subject = $subject;
@@ -702,7 +702,7 @@
 		}
 
 		/**
-		 * Convert an array into an XML fragment amd append it to an existing
+		 * Convert an array into an XML fragment and append it to an existing
 		 * XML element. Any arrays contained as elements in the input array will
 		 * also be recursively formatted and appended to the input XML fragment.
 		 * The input XML element will be modified as a result of calling this.
@@ -1155,7 +1155,7 @@
 		 *	the name of the element to append to the namespace of the constructed XML.
 		 *	this defaults to "date".
 		 * @param string $namespace (optional)
-		 *	the namespace in which the resulting XML enitity will reside. this defaults
+		 *	the namespace in which the resulting XML entity will reside. this defaults
 		 *	to null.
 		 * @return boolean|XMLElement
 		 *	false if there is no XMLElement class on the system, the constructed XML element
