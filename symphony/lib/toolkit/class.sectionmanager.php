@@ -175,6 +175,13 @@
 		}
 
 		/**
+		 * This function will empty the $_pool array.
+		 */
+		public function flush(){
+			self::$_pool = array();
+		}
+
+		/**
 		 * Returns a new Section object, using the SectionManager
 		 * as the Section's $parent.
 		 *
