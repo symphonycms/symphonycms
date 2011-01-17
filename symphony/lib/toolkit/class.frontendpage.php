@@ -269,7 +269,7 @@
 				return $devkit->build();
 			}
 
-			## EVENT DETAILS IN SOURCE
+			// EVENT DETAILS IN SOURCE
 			if (Frontend::instance()->isLoggedIn() && Symphony::Configuration()->get('display_event_xml_in_source', 'public') == 'yes') {
 				$output .= self::CRLF . '<!-- ' . self::CRLF . $this->_events_xml->generate(true) . ' -->';
 			}
@@ -516,7 +516,7 @@
 			 */
 			$this->ExtensionManager->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => &$this->_page));
 
-			## Default to the index page if no page has been specified
+			// Default to the index page if no page has been specified
 			if(!$this->_page && is_null($row)){
 				$row = Symphony::Database()->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types`
 															  WHERE `tbl_pages_types`.page_id = `tbl_pages`.id
@@ -560,7 +560,7 @@
 				if(!$this->__isSchemaValid($row['params'], $page_extra_bits)) return false;
 			}
 
-			##Process the extra URL params
+			// Process the extra URL params
 			$url_params = preg_split('/\//', $row['params'], -1, PREG_SPLIT_NO_EMPTY);
 
 			foreach($url_params as $var){
@@ -577,7 +577,7 @@
 
 			$row['type'] = $this->__fetchPageTypes($row['id']);
 
-			## Make sure the user has permission to access this page
+			// Make sure the user has permission to access this page
 			if(!Frontend::instance()->isLoggedIn() && in_array('admin', $row['type'])){
 				$row = Symphony::Database()->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types`
 															  WHERE `tbl_pages_types`.page_id = `tbl_pages`.id AND tbl_pages_types.`type` = '403'
@@ -692,7 +692,6 @@
 					'page_data' => $this->_pageData
 				)
 			);
-			#####
 
 			if(strlen(trim($events)) > 0){
 				$events = preg_split('/,\s*/i', $events, -1, PREG_SPLIT_NO_EMPTY);
@@ -850,8 +849,8 @@
 			$orderedList = array();
 			$dsKeyArray = $this->__buildDatasourcePooledParamList(array_keys($dependenciesList));
 
-			## 1. First do a cleanup of each dependency list, removing non-existant DS's and find
-			##	the ones that have no dependencies, removing them from the list
+			// 1. First do a cleanup of each dependency list, removing non-existant DS's 
+			// and find the ones that have no dependencies, removing them from the list
 			foreach($dependenciesList as $handle => $dependencies){
 
 				$dependenciesList[$handle] = @array_intersect($dsKeyArray, $dependencies);
@@ -862,9 +861,9 @@
 				}
 			}
 
-			## 2. Iterate over the remaining DS's. Find if all their dependencies are
-			##	in the $orderedList array. Keep iterating until all DS's are in that list
-			##	  or there are circular dependencies (list doesn't change between iterations of the while loop)
+			// 2. Iterate over the remaining DS's. Find if all their dependencies are
+			// in the $orderedList array. Keep iterating until all DS's are in that list
+			// or there are circular dependencies (list doesn't change between iterations of the while loop)
 			do{
 
 				$last_count = count($dependenciesList);

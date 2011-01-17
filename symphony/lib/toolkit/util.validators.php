@@ -1,7 +1,7 @@
 <?php
 
-	## DO NOT ALTER THIS FILE!
-	## Instead, create /manifest/validators.php and add/edit pairs there.
+	// DO NOT ALTER THIS FILE!
+	// Instead, create /manifest/validators.php and add/edit pairs there.
 	
 	$validators = array(
 		'number' => '/^-?(?:\d+(?:\.\d+)?|\.\d+)$/i',
@@ -15,4 +15,3 @@
 	);
 
 	if(file_exists(MANIFEST . '/validators.php') && is_readable(MANIFEST . '/validators.php')) include(MANIFEST . '/validators.php');
-

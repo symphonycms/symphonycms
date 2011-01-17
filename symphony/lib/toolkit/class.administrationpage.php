@@ -223,7 +223,7 @@
 				Administration::instance()->Profiler->sample('Page action run', PROFILE_LAP);
 			}
 
-			## Build the form
+			// Build the form
 			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
 			$h1 = new XMLElement('h1');
 			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));

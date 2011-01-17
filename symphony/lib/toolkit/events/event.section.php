@@ -17,7 +17,7 @@
 			$post_values = new XMLElement('post-values');
 			$filter_results = array();
 
-			## Create the post data cookie element
+			// Create the post data cookie element
 			if (is_array($fields) && !empty($fields)) {
 				General::array_to_xml($post_values, $fields, true);
 			}
@@ -141,7 +141,7 @@
 
 			endif;
 
-			## PASSIVE FILTERS ONLY AT THIS STAGE. ENTRY HAS ALREADY BEEN CREATED.
+			// PASSIVE FILTERS ONLY AT THIS STAGE. ENTRY HAS ALREADY BEEN CREATED.
 
 			if(@in_array('send-email', $filters) && !@in_array('expect-multiple', $filters)){
 
@@ -326,7 +326,7 @@
 
 			return true;
 
-			## End Function
+			// End Function
 		}
 	}
 

@@ -299,11 +299,12 @@
 
 			if (!is_object($section)) return false;
 
-			## SORTING
+			// SORTING
 			// A single $entry_id doesn't need to be sorted on
 			if (!is_array($entry_id) && !is_null($entry_id) && is_int($entry_id)) {
 				$sort = null;
 			}
+			
 			// Check for RAND first, since this works independently of any specific field
 			else if($this->_fetchSortDirection == 'RAND'){
 				$sort = 'ORDER BY RAND() ';
@@ -349,7 +350,6 @@
 			$rows = Symphony::Database()->fetch($sql);
 
 			return ($buildentries && (is_array($rows) && !empty($rows)) ? $this->__buildEntries($rows, $section_id, $element_names) : $rows);
-
 		}
 
 		/**

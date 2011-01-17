@@ -13,13 +13,14 @@
 	require_once(TOOLKIT . '/class.administrationpage.php');
 
 	class contentSystemPreferences extends AdministrationPage {
+
 		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->setPageType('form');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Preferences'))));
 		}
 
-		## Overload the parent 'view' function since we dont need the switchboard logic
+		// Overload the parent 'view' function since we dont need the switchboard logic
 		public function view() {
 			$this->appendSubheading(__('Preferences'));
 
@@ -117,7 +118,7 @@
 		}
 
 		public function action() {
-			##Do not proceed if the config file is read only
+			// Do not proceed if the config file is read only
 			if (!is_writable(CONFIG)) redirect(SYMPHONY_URL . '/system/preferences/');
 
 			/**
@@ -164,4 +165,5 @@
 				}
 			}
 		}
+
 	}

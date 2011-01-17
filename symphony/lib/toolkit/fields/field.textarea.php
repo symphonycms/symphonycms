@@ -8,8 +8,8 @@
 	 */
 	
 	Class fieldTextarea extends Field {
-		function __construct(&$parent){
 
+		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Textarea');
 			$this->_required = true;
@@ -19,7 +19,7 @@
 			$this->set('required', 'yes');
 		}
 
-		function canFilter(){
+		public function canFilter(){
 			return true;
 		}
 
@@ -27,7 +27,7 @@
 			return true;
 		}
 
-		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			$label = Widget::Label($this->get('label'));
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 
@@ -57,8 +57,7 @@
 			else $wrapper->appendChild($label);
 		}
 
-		function commit(){
-
+		public function commit(){
 			if(!parent::commit()) return false;
 
 			$id = $this->get('id');
@@ -73,7 +72,6 @@
 
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
-
 		}
 
 		public function buildDSRetrivalSQL($data, &$joins, &$where) {
@@ -117,8 +115,7 @@
 			return true;
 		}
 
-		function checkPostFieldData($data, &$message, $entry_id=NULL){
-
+		public function checkPostFieldData($data, &$message, $entry_id=NULL){
 			$message = NULL;
 
 			if($this->get('required') == 'yes' && strlen($data) == 0){
@@ -132,7 +129,6 @@
 			}
 
 			return self::__OK__;
-
 		}
 
 		public function processRawFieldData($data, &$status, $simulate = false, $entry_id = null) {
@@ -152,7 +148,6 @@
 		}
 
 		protected function __applyFormatting($data, $validate=false, &$errors=NULL){
-
 			if($this->get('formatter')){
 				$tfm = new TextformatterManager($this->_engine);
 				$formatter = $tfm->create($this->get('formatter'));
@@ -161,7 +156,6 @@
 			}
 
 			if($validate === true){
-
 				include_once(TOOLKIT . '/class.xsltprocess.php');
 
 				if(!General::validateXML($result, $errors, false, new XsltProcess)){
@@ -187,7 +181,6 @@
 		}
 
 		public function appendFormattedElement(&$wrapper, $data, $encode = false, $mode = null) {
-
 			if ($mode == null || $mode == 'formatted') {
 
 				if ($this->get('formatter') && isset($data['value_formatted'])) {
@@ -209,11 +202,9 @@
 						$attributes
 					)
 				);
-
 			}
 
 			elseif ($mode == 'unformatted') {
-
 				$wrapper->appendChild(
 					new XMLElement(
 						$this->get('element_name'),
@@ -223,19 +214,16 @@
 						)
 					)
 				);
-
 			}
-
 		}
 
-		function checkFields(&$required, $checkForDuplicates=true, $checkForParentSection=true){
+		public function checkFields(&$required, $checkForDuplicates=true, $checkForParentSection=true){
 			$required = array();
 			if($this->get('size') == '' || !is_numeric($this->get('size'))) $required[] = 'size';
 			return parent::checkFields($required, $checkForDuplicates, $checkForParentSection);
-
 		}
 
-		function findDefaults(&$fields){
+		public function findDefaults(&$fields){
 			if(!isset($fields['size'])) $fields['size'] = 15;
 		}
 
@@ -243,10 +231,9 @@
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$group = new XMLElement('div', NULL, array('class' => 'group'));
-
 			$div = new XMLElement('div');
 
-			## Textarea Size
+			// Textarea Size
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][size]', $this->get('size'));
 			$input->setAttribute('size', '3');
@@ -263,10 +250,8 @@
 			$this->appendShowColumnCheckbox($wrapper);
 		}
 
-		function createTable(){
-
+		public function createTable(){
 			return Symphony::Database()->query(
-
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
@@ -276,19 +261,16 @@
 				  KEY `entry_id` (`entry_id`),
 				  FULLTEXT KEY `value` (`value`)
 				) ENGINE=MyISAM;"
-
 			);
 		}
 
 		public function getExampleFormMarkup(){
 			$label = Widget::Label($this->get('label'));
 			$label->appendChild(Widget::Textarea('fields['.$this->get('element_name').']', $this->get('size'), 50));
-
 			return $label;
 		}
 
 		public function fetchIncludableElements() {
-
 			if ($this->get('formatter')) {
 				return array(
 					$this->get('element_name') . ': formatted',
@@ -302,4 +284,3 @@
 		}
 
 	}
-

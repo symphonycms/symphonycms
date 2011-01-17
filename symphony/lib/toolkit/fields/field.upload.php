@@ -8,6 +8,7 @@
 	 */
 
 	Class fieldUpload extends Field {
+		
 		public function __construct(&$parent){
 			parent::__construct($parent);
 
@@ -106,7 +107,6 @@
 		}
 
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
 				$flagWithError = __('The destination directory, <code>%s</code>, does not exist.', array($this->get('destination')));
 			}
@@ -129,10 +129,9 @@
 
 			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
 			else $wrapper->appendChild($label);
-
 		}
 
-		function isSortable(){
+		public function isSortable(){
 			return true;
 		}
 
@@ -161,8 +160,7 @@
 			parent::checkFields($errors, $checkForDuplicates);
 		}
 
-		function commit(){
-
+		public function commit(){
 			if(!parent::commit()) return false;
 
 			$id = $this->get('id');
@@ -170,14 +168,13 @@
 			if($id === false) return false;
 
 			$fields = array();
-
 			$fields['field_id'] = $id;
 			$fields['destination'] = $this->get('destination');
 			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
 
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
-			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 
+			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL){
@@ -192,7 +189,6 @@
 				$link = Widget::Anchor(basename($file), URL . '/workspace' . $file);
 				return $link->generate();
 			}
-
 		}
 
 		public function appendFormattedElement(&$wrapper, $data){
@@ -223,7 +219,7 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			## Destination Folder
+			// Destination Folder
 			$ignore = array(
 				'/workspace/events',
 				'/workspace/data-sources',
@@ -253,10 +249,9 @@
 
 			$this->appendRequiredCheckbox($wrapper);
 			$this->appendShowColumnCheckbox($wrapper);
-
 		}
 
-		function checkPostFieldData($data, &$message, $entry_id=NULL){
+		public function checkPostFieldData($data, &$message, $entry_id=NULL){
 
 			/*
 				UPLOAD_ERR_OK
@@ -305,7 +300,7 @@
 				return self::__OK__;
 			}
 
-			## Its not an array, so just retain the current data and return
+			// Its not an array, so just retain the current data and return
 			if(!is_array($data)){
 
 				$file = WORKSPACE . $data;
@@ -363,7 +358,7 @@
 
 			}
 
-			## Sanitize the filename
+			// Sanitize the filename
 			$data['name'] = Lang::createFilename($data['name']);
 
 			if($this->get('validator') != NULL){
@@ -395,10 +390,9 @@
 		}
 
 		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
-
 			$status = self::__OK__;
 
-			//fixes bug where files are deleted, but their database entries are not.
+			// Fixes bug where files are deleted, but their database entries are not.
 			if($data === NULL){
 				return array(
 					'file' => NULL,
@@ -408,7 +402,7 @@
 				);
 			}
 
-			## Its not an array, so just retain the current data and return
+			// Its not an array, so just retain the current data and return
 			if(!is_array($data)){
 
 				$status = self::__OK__;
@@ -440,12 +434,11 @@
 				}
 
 				return $result;
-
 			}
 
 			if($simulate) return;
 
-			## Upload the new file
+			// Upload the new file
 			$abs_path = DOCROOT . '/' . trim($this->get('destination'), '/');
 			$rel_path = str_replace('/workspace', '', $this->get('destination'));
 			$existing_file = NULL;
@@ -469,12 +462,10 @@
 				return;
 			}
 
-			## Sanitize the filename
+			// Sanitize the filename
 			$data['name'] = Lang::createFilename($data['name']);
 
-
 			if(!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], Symphony::Configuration()->get('write_mode', 'file'))){
-
 				$message = __('There was an error while trying to upload the file <code>%1$s</code> to the target directory <code>%2$s</code>.', array($data['name'], 'workspace/'.ltrim($rel_path, '/')));
 				$status = self::__ERROR_CUSTOM__;
 				return;
@@ -489,7 +480,7 @@
 				General::deleteFile(WORKSPACE . $existing_file);
 			}
 
-			## If browser doesn't send MIME type (e.g. .flv in Safari)
+			// If browser doesn't send MIME type (e.g. .flv in Safari)
 			if (strlen(trim($data['type'])) == 0){
 				$data['type'] = 'unknown';
 			}
@@ -500,11 +491,9 @@
 				'mimetype' => $data['type'],
 				'meta' => serialize(self::getMetaInfo(WORKSPACE . $file, $data['type']))
 			);
-
 		}
 
 		public static function getMetaInfo($file, $type){
-
 			$imageMimeTypes = array(
 				'image/gif',
 				'image/jpg',
@@ -525,14 +514,10 @@
 			}
 
 			return $meta;
-
 		}
 
-
-		function createTable(){
-
+		public function createTable(){
 			return Symphony::Database()->query(
-
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
@@ -545,14 +530,12 @@
 				  KEY `file` (`file`),
 				  KEY `mimetype` (`mimetype`)
 				) ENGINE=MyISAM;"
-
 			);
 		}
 
 		public function getExampleFormMarkup(){
 			$label = Widget::Label($this->get('label'));
 			$label->appendChild(Widget::Input('fields['.$this->get('element_name').']', NULL, 'file'));
-
 			return $label;
 		}
 

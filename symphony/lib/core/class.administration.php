@@ -294,7 +294,7 @@
 
 			}
 
-			## TODO: Add delegate for custom callback creation
+			// TODO: Add delegate for custom callback creation
 
 			return $callback;
 		}

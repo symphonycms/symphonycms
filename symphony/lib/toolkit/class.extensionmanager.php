@@ -259,12 +259,12 @@
 		public function enable($name){
 			$obj = $this->getInstance($name);
 
-			## If not installed, install it
+			// If not installed, install it
 			if($this->__requiresInstallation($name) && $obj->install() === false){
 				return false;
 			}
 
-			## If requires and upate before enabling, than update it first
+			// If requires and upate before enabling, than update it first
 			elseif(($about = $this->about($name)) && ($previousVersion = $this->__requiresUpdate($about)) !== false) {
 				$obj->update($previousVersion);
 			}
@@ -288,7 +288,7 @@
 
 			$this->registerDelegates($name);
 
-			## Now enable the extension
+			// Now enable the extension
 			$obj->enable();
 
 			return true;
@@ -391,7 +391,7 @@
 				}
 			}
 
-			## Remove the unused DB records
+			// Remove the unused DB records
 			$this->__cleanupDatabase();
 
 			return $id;
@@ -424,7 +424,7 @@
 				Symphony::Database()->delete('tbl_extensions_delegates', " `id` IN ('". implode("', '", $delegates). "') ");
 			}
 
-			## Remove the unused DB records
+			// Remove the unused DB records
 			$this->__cleanupDatabase();
 
 			return true;
@@ -630,7 +630,7 @@
 
 				$param['parent'] =& Symphony::Engine();
 
-				##Create the object
+				// Create the object
 				self::$_pool[$name] = new $classname($param);
 			}
 
@@ -643,19 +643,19 @@
 		 * a new Delegate is added or removed.
 		 */
 		private function __cleanupDatabase(){
-			## Grab any extensions sitting in the database
+			// Grab any extensions sitting in the database
 			$rows = Symphony::Database()->fetch("SELECT `name` FROM `tbl_extensions`");
 
-			## Iterate over each row
+			// Iterate over each row
 			if(is_array($rows) && !empty($rows)){
 				foreach($rows as $r){
 					$name = $r['name'];
 
-					## Grab the install location
+					// Grab the install location
 					$path = $this->__getClassPath($name);
 					$existing_id = $this->fetchExtensionID($name);
 
-					## If it doesnt exist, remove the DB rows
+					// If it doesnt exist, remove the DB rows
 					if(!@is_dir($path)){
 						Symphony::Database()->delete("tbl_extensions_delegates", " `extension_id` = $existing_id ");
 						Symphony::Database()->delete('tbl_extensions', " `id` = '$existing_id' LIMIT 1");

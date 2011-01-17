@@ -27,11 +27,10 @@
 		}
 
 		public function __switchboard($type='view'){
-
 			$function = ($type == 'action' ? '__action' : '__view') . ucfirst($this->_context['page']);
 
 			if(!method_exists($this, $function)) {
-				## If there is no action function, just return without doing anything
+				// If there is no action function, just return without doing anything
 				if($type == 'action') return;
 
 				Administration::instance()->errorPageNotFound();
@@ -45,7 +44,6 @@
 		}
 
 		public function __viewIndex(){
-
 			$sectionManager = new SectionManager($this->_Parent);
 
 			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
@@ -111,7 +109,7 @@
 
 			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter ? "&amp;filter=$field_handle:$filter_value" : ''));
 
-			## Remove the create button if there is a section link field, and no filtering set for it
+			// Remove the create button if there is a section link field, and no filtering set for it
 			$section_links = $section->fetchFields('sectionlink');
 
 			if(count($section_links) > 1 || (!$filter && $section_links) || (is_object($section_links[0]) && $filter != $section_links[0]->get('id'))){
@@ -182,7 +180,7 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AddCustomPublishColumn', '/publish/', array('tableHead' => &$aTableHead, 'section_id' => $section->get('id')));
 
-			## Table Body
+			// Table Body
 			$aTableBody = array();
 
 			if(!is_array($entries['records']) || empty($entries['records'])){
@@ -205,7 +203,7 @@
 
 					$tableData = array();
 
-					## Setup each cell
+					// Setup each cell
 					if(!is_array($visible_columns) || empty($visible_columns)){
 						$tableData[] = Widget::TableData(Widget::Anchor($entry->get('id'), Administration::instance()->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/'));
 					}
@@ -296,7 +294,7 @@
 
 					$tableData[count($tableData) - 1]->appendChild(Widget::Input('items['.$entry->get('id').']', NULL, 'checkbox'));
 
-					## Add a row to the body array, assigning each cell to the row
+					// Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow($tableData, NULL, 'id-' . $entry->get('id'));
 				}
 			}
@@ -343,19 +341,19 @@
 				$ul = new XMLElement('ul');
 				$ul->setAttribute('class', 'page');
 
-				## First
+				// First
 				$li = new XMLElement('li');
 				if($current_page > 1) $li->appendChild(Widget::Anchor(__('First'), Administration::instance()->getCurrentPageURL(). '?pg=1'.($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
 				else $li->setValue(__('First'));
 				$ul->appendChild($li);
 
-				## Previous
+				// Previous
 				$li = new XMLElement('li');
 				if($current_page > 1) $li->appendChild(Widget::Anchor(__('&larr; Previous'), Administration::instance()->getCurrentPageURL(). '?pg=' . ($current_page - 1).($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
 				else $li->setValue(__('&larr; Previous'));
 				$ul->appendChild($li);
 
-				## Summary
+				// Summary
 				$li = new XMLElement('li', __('Page %1$s of %2$s', array($current_page, max($current_page, $entries['total-pages']))));
 				$li->setAttribute('title', __('Viewing %1$s - %2$s of %3$s entries', array(
 					$entries['start'],
@@ -364,13 +362,13 @@
 				)));
 				$ul->appendChild($li);
 
-				## Next
+				// Next
 				$li = new XMLElement('li');
 				if($current_page < $entries['total-pages']) $li->appendChild(Widget::Anchor(__('Next &rarr;'), Administration::instance()->getCurrentPageURL(). '?pg=' . ($current_page + 1).($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
 				else $li->setValue(__('Next &rarr;'));
 				$ul->appendChild($li);
 
-				## Last
+				// Last
 				$li = new XMLElement('li');
 				if($current_page < $entries['total-pages']) $li->appendChild(Widget::Anchor(__('Last'), Administration::instance()->getCurrentPageURL(). '?pg=' . $entries['total-pages'].($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
 				else $li->setValue(__('Last'));
@@ -573,7 +571,7 @@
 
 				$fields = $_POST['fields'];
 
-				## Combine FILES and POST arrays, indexed by their custom field handles
+				// Combine FILES and POST arrays, indexed by their custom field handles
 				if(isset($_FILES['fields'])){
 					$filedata = General::processFilePostData($_FILES['fields']);
 
@@ -752,7 +750,7 @@
 				}
 			}
 
-			### Determine the page title
+			// Determine the page title
 			$field_id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
 			$field = $entryManager->fieldManager->fetch($field_id);
 
@@ -779,8 +777,6 @@
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), $section->get('name'), $title)));
 			$this->appendSubheading($title);
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
-
-			###
 
 			$primary = new XMLElement('fieldset');
 			$primary->setAttribute('class', 'primary');

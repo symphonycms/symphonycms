@@ -11,6 +11,7 @@
 	 */
     
 	Class fieldTagList extends Field {
+		
 		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Tag List');
@@ -60,8 +61,7 @@
 			$wrapper->appendChild($list);
 		}
 
-		function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-
+		public function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
 
 			if($this->get('pre_populate_source') != NULL){
@@ -79,9 +79,9 @@
 			}
 		}
 
-		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-
+		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			$value = NULL;
+
 			if(isset($data['value'])){
 				$value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
 			}
@@ -108,8 +108,7 @@
 			}
 		}
 
-		function findAllTags(){
-
+		public function findAllTags(){
 			$sql = "SELECT DISTINCT `value` FROM tbl_entries_data_%d ORDER BY `value` ASC";
 
 			if(!is_array($this->get('pre_populate_source'))) return;
@@ -127,7 +126,6 @@
 		}
 
 		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
-
 			$status = self::__OK__;
 
 			$data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
@@ -149,21 +147,19 @@
 			return $result;
 		}
 
-		static private function __tagArrayToString(array $tags){
-
+		private static function __tagArrayToString(array $tags){
 			if(empty($tags)) return NULL;
 
 			sort($tags);
 
 			return implode(', ', $tags);
-
 		}
 
-		function prepareTableValue($data, XMLElement $link=NULL){
-
+		public function prepareTableValue($data, XMLElement $link=NULL){
 			if(!is_array($data) || empty($data)) return;
 
 			$value = NULL;
+			
 			if(isset($data['value'])){
 				$value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
 			}
@@ -171,8 +167,7 @@
 			return parent::prepareTableValue(array('value' => General::sanitize($value)), $link);
 		}
 
-		function commit(){
-
+		public function commit(){
 			if(!parent::commit()) return false;
 
 			$id = $this->get('id');
@@ -188,14 +183,13 @@
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 
 			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
-
 		}
 
-		function findDefaults(&$fields){
+		public function findDefaults(&$fields){
 			if(!isset($fields['pre_populate_source'])) $fields['pre_populate_source'] = array('existing');
 		}
 
-		function canPrePopulate(){
+		public function canPrePopulate(){
 			return true;
 		}
 
@@ -234,13 +228,10 @@
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');
 
 			$this->appendShowColumnCheckbox($wrapper);
-
 		}
 
-		function createTable(){
-
+		public function createTable(){
 			return Symphony::Database()->query(
-
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
@@ -251,7 +242,6 @@
 				  KEY `handle` (`handle`),
 				  KEY `value` (`value`)
 				) ENGINE=MyISAM;"
-
 			);
 		}
 
@@ -322,5 +312,5 @@
 
 			return true;
 		}
-	}
 
+	}

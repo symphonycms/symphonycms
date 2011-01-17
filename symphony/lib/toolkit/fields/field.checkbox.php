@@ -10,28 +10,27 @@
 	 * field with it's short name.
 	 */
 	Class fieldCheckbox extends Field {
-		function __construct(&$parent){
+
+		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Checkbox');
 		}
 
-		function canToggle(){
+		public function canToggle(){
 			return true;
 		}
 
-		function allowDatasourceOutputGrouping(){
+		public function allowDatasourceOutputGrouping(){
 			return true;
 		}
 
-		function groupRecords($records){
-
+		public function groupRecords($records){
 			if(!is_array($records) || empty($records)) return;
 
 			$groups = array($this->get('element_name') => array());
 
 			foreach($records as $r){
 				$data = $r->getData($this->get('id'));
-
 				$value = $data['value'];
 
 				if(!isset($groups[$this->get('element_name')][$handle])){
@@ -40,13 +39,12 @@
 				}
 
 				$groups[$this->get('element_name')][$value]['records'][] = $r;
-
 			}
 
 			return $groups;
 		}
 
-		function canFilter(){
+		public function canFilter(){
 			return true;
 		}
 
@@ -54,26 +52,24 @@
 			return true;
 		}
 
-		function getToggleStates(){
+		public function getToggleStates(){
 			return array('yes' => __('Yes'), 'no' => __('No'));
 		}
 
-		function toggleFieldData($data, $newState){
+		public function toggleFieldData($data, $newState){
 			$data['value'] = $newState;
 			return $data;
 		}
 
 		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
-
 			$status = self::__OK__;
 
 			return array(
 				'value' => (strtolower($data) == 'yes' || strtolower($data) == 'on' ? 'yes' : 'no')
 			);
-
 		}
 
-		function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
+		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
 			$joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
 			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`value` $order");
 		}
@@ -142,8 +138,7 @@
 			return true;
 		}
 
-		function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-
+		public function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
 
 			$existing_options = array('yes', 'no');
@@ -156,13 +151,11 @@
 
 				$wrapper->appendChild($optionlist);
 			}
-
 		}
 
-		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-
+		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			if(!$data){
-				## TODO: Don't rely on $_POST
+				// TODO: Don't rely on $_POST
 				if(isset($_POST) && !empty($_POST)) $value = 'no';
 				elseif($this->get('default_state') == 'on') $value = 'yes';
 				else $value = 'no';
@@ -188,12 +181,11 @@
 			return ($data['value'] == 'yes' ? __('Yes') : __('No'));
 		}
 
-		function isSortable(){
+		public function isSortable(){
 			return true;
 		}
 
-		function commit(){
-
+		public function commit(){
 			if(!parent::commit()) return false;
 
 			$id = $this->get('id');
@@ -208,35 +200,34 @@
 
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
-
 		}
 
-		function findDefaults(&$fields){
+		public function findDefaults(&$fields){
 			if(!isset($fields['default_state'])) $fields['default_state'] = 'off';
 		}
 
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			## Long Description
+			// Long Description
 			$label = Widget::Label(__('Long Description <i>Optional</i>'));
 			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][description]', $this->get('description')));
 			$wrapper->appendChild($label);
 
-			## Checkbox Default State
+			// Checkbox Default State
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][default_state]', 'on', 'checkbox');
+			
 			if($this->get('default_state') == 'on') $input->setAttribute('checked', 'checked');
+			
 			$label->setValue(__('%s Checked by default', array($input->generate())));
 			$wrapper->appendChild($label);
 
 			$this->appendShowColumnCheckbox($wrapper);
 		}
 
-		function createTable(){
-
+		public function createTable(){
 			return Symphony::Database()->query(
-
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
@@ -245,16 +236,13 @@
 				  KEY `entry_id` (`entry_id`),
 				  KEY `value` (`value`)
 				) ENGINE=MyISAM;"
-
 			);
 		}
 
 		public function getExampleFormMarkup(){
 			$label = Widget::Label($this->get('label'));
 			$label->appendChild(Widget::Input('fields['.$this->get('element_name').']', NULL, 'checkbox', ($this->get('default_state') == 'on' ? array('checked' => 'checked') : NULL)));
-
 			return $label;
 		}
 
 	}
-

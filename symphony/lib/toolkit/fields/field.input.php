@@ -11,6 +11,7 @@
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 
 	Class fieldInput extends Field {
+
 		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Text Input');
@@ -28,7 +29,6 @@
 		}
 
 		public function groupRecords($records){
-
 			if(!is_array($records) || empty($records)) return;
 
 			$groups = array($this->get('element_name') => array());
@@ -156,7 +156,6 @@
 		}
 
 		public function checkPostFieldData($data, &$message, $entry_id=NULL){
-
 			$message = NULL;
 
 			if($this->get('required') == 'yes' && strlen($data) == 0){
@@ -170,11 +169,9 @@
 			}
 
 			return self::__OK__;
-
 		}
 
 		public function processRawFieldData($data, &$status, $simulate = false, $entry_id = null) {
-
 			$status = self::__OK__;
 
 			if (strlen(trim($data)) == 0) return array();
@@ -220,7 +217,6 @@
 		}
 
 		public function commit(){
-
 			if(!parent::commit()) return false;
 
 			$id = $this->get('id');
@@ -235,7 +231,6 @@
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 
 			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
-
 		}
 
 		public function setFromPOST($postdata){
@@ -250,13 +245,10 @@
 
 			$this->appendRequiredCheckbox($wrapper);
 			$this->appendShowColumnCheckbox($wrapper);
-
 		}
 
 		public function createTable(){
-
 			return Symphony::Database()->query(
-
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
@@ -267,9 +259,7 @@
 				  KEY `handle` (`handle`),
 				  KEY `value` (`value`)
 				) ENGINE=MyISAM;"
-
 			);
 		}
 
 	}
-

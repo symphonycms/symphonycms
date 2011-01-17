@@ -22,7 +22,7 @@
 			$ExtensionManager = Symphony::ExtensionManager();
 			$extensions = $ExtensionManager->listAll();
 
-			## Sort by extensions name:
+			// Sort by extensions name:
 			uasort($extensions, array('ExtensionManager', 'sortByName'));
 
 			$aTableHead = array(
@@ -43,8 +43,7 @@
 			else{
 				foreach($extensions as $name => $about){
 
-					## Setup each cell
-
+					// Setup each cell
 					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], Administration::instance()->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));
 					$td2 = Widget::TableData(($about['status'] == EXTENSION_ENABLED ? __('Yes') : __('No')));
 					$td3 = Widget::TableData($about['version']);
@@ -80,7 +79,7 @@
 
 					$td4->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox'));
 
-					## Add a row to the body array, assigning each cell to the row
+					// Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4), ($about['status'] == EXTENSION_NOT_INSTALLED ? 'inactive' : NULL));
 
 				}
@@ -186,4 +185,5 @@
 				}
 			}
 		}
+
 	}

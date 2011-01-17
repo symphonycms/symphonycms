@@ -14,7 +14,7 @@
 
 	Class contentBlueprintsDatasources extends AdministrationPage{
 
-		## Both the Edit and New pages need the same form
+		// Both the Edit and New pages need the same form
 		public function __viewNew(){
 			$this->__form();
 		}
@@ -24,7 +24,6 @@
 		}
 
 		public function __form(){
-
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
 			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
@@ -909,7 +908,7 @@
 				elseif($classname != $existing_handle) $queueForDeletion = DATASOURCES . '/data.' . $existing_handle . '.php';
 			}
 
-			##Duplicate
+			// Duplicate
 			if($isDuplicate) $this->_errors['name'] = __('A Data source with the name <code>%s</code> name already exists', array($classname));
 
 			if(empty($this->_errors)){
@@ -1044,7 +1043,7 @@
 					$dsShell = str_replace('<!-- DS DEPENDANCY LIST -->', "'" . implode("', '", $dependancies) . "'", $dsShell);
 				}
 
-				## Remove left over placeholders
+				// Remove left over placeholders
 				$dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\r\n){2,}/', '/(\t+[\r\n]){2,}/'), '', $dsShell);
 
 				if($this->_context[0] == 'new') {
@@ -1080,18 +1079,18 @@
 					Symphony::ExtensionManager()->notifyMembers('DatasourcePreEdit', '/blueprints/datasources/', array('file' => $file, 'contents' => &$dsShell));
 				}
 
-				##Write the file
+				// Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file')))
 					$this->pageAlert(__('Failed to write Data source to <code>%s</code>. Please check permissions.', array(DATASOURCES)), Alert::ERROR);
 
-				##Write Successful, add record to the database
+				// Write Successful, add record to the database
 				else{
 
 					if($queueForDeletion){
 
 						General::deleteFile($queueForDeletion);
 
-						## Update pages that use this DS
+						// Update pages that use this DS
 						$sql = "SELECT * FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]".$existing_handle."[[:>:]]' ";
 						$pages = Symphony::Database()->fetch($sql);
 
@@ -1178,9 +1177,7 @@
 		}
 
 		public function __appendAuthorFilter(&$wrapper, $h4_label, $name, $value=NULL, $templateOnly=true){
-
 			if(!$templateOnly){
-
 				$li = new XMLElement('li');
 				$li->setAttribute('class', 'unique');
 				$li->appendChild(new XMLElement('h4', $h4_label));
@@ -1199,7 +1196,6 @@
 			$li->appendChild($label);
 
 		 	$wrapper->appendChild($li);
-
 		}
 
 		private static function __isValidPageString($string){

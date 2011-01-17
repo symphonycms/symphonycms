@@ -21,7 +21,6 @@
 		}
 
 		public function view(){
-
 			$this->appendSubheading(__('Components'));
 
 			$utilities = General::listStructure(UTILITIES, array('xsl'), false, 'asc', UTILITIES);
@@ -31,8 +30,7 @@
 			$ul->setAttribute('id', 'components');
 			$ul->setAttribute('class', 'triple group');
 
-			### EVENTS ###
-
+			// Events
 			$EventManager = new EventManager($this->_Parent);
 			$events = $EventManager->listAll();
 
@@ -55,10 +53,7 @@
 			$li->appendChild($list);
 			$ul->appendChild($li);
 
-			######
-
-			### DATASOURCES ###
-
+			// Datasources
 			$DSManager = new DatasourceManager($this->_Parent);
 			$datasources = $DSManager->listAll();
 
@@ -91,9 +86,7 @@
 			$li->appendChild($list);
 			$ul->appendChild($li);
 
-			######
-
-			### UTILITIES ###
+			// Utilities
 			$li = new XMLElement('li');
 
 			$h3 = new XMLElement('h3', __('Utilities'));
@@ -114,10 +107,7 @@
 			$li->appendChild($list);
 			$ul->appendChild($li);
 
-			######
-
 			$this->Form->appendChild($ul);
-
 		}
 
 	}

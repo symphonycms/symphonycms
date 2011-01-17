@@ -26,7 +26,6 @@
 		}
 
 		public function __form($readonly=false){
-
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
 			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
@@ -249,7 +248,7 @@
 				elseif($classname != $existing_handle) $queueForDeletion = EVENTS . '/event.' . $existing_handle . '.php';
 			}
 
-			##Duplicate
+			// Duplicate
 			if($isDuplicate) $this->_errors['name'] = __('An Event with the name <code>%s</code> name already exists', array($classname));
 
 			if(empty($this->_errors)){
@@ -296,8 +295,6 @@
 
 				$documentation_parts[] = self::processDocumentationCode($code);
 
-				###
-
 				$documentation_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? __(' (<b>Notice that it is possible to get mixtures of success and failure messages when using the "Allow Multiple" option</b>)') : NULL) . ':');
 
 				if($multiple){
@@ -322,8 +319,6 @@
 				$code->setValue('...', false);
 				$documentation_parts[] = self::processDocumentationCode($code);
 
-				###
-
 				if(is_array($fields['filters']) && !empty($fields['filters'])){
 					$documentation_parts[] = new XMLElement('p', __('The following is an example of what is returned if any options return an error:'));
 
@@ -334,8 +329,6 @@
 					$code->setValue('...', false);
 					$documentation_parts[] = self::processDocumentationCode($code);
 				}
-
-				###
 
 				$documentation_parts[] = new XMLElement('h3', __('Example Front-end Form Markup'));
 
@@ -422,7 +415,7 @@
 				$eventShell = str_replace('<!-- DOCUMENTATION -->', General::tabsToSpaces($documentation, 2), $eventShell);
 				$eventShell = str_replace('<!-- ROOT ELEMENT -->', $rootelement, $eventShell);
 
-				## Remove left over placeholders
+				// Remove left over placeholders
 				$eventShell = preg_replace(array('/<!--[\w ]++-->/'), '', $eventShell);
 
 				if($this->_context[0] == 'new') {
@@ -458,11 +451,11 @@
 					Symphony::ExtensionManager()->notifyMembers('DatasourcePreEdit', '/blueprints/events/', array('file' => $file, 'contents' => &$eventShell));
 				}
 
-				##Write the file
+				// Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file')))
 					$this->pageAlert(__('Failed to write Event to <code>%s</code>. Please check permissions.', array(EVENTS)), Alert::ERROR);
 
-				##Write Successful, add record to the database
+				// Write Successful, add record to the database
 				else{
 
 					if($queueForDeletion){
@@ -531,5 +524,3 @@
 			foreach($details as $key => $val) $shell = str_replace('<!-- ' . strtoupper($key) . ' -->', addslashes($val), $shell);
 		}
 	}
-
-?>

@@ -13,6 +13,7 @@
 	 * Sorting is done based on the Author's first name and last name.
 	 */
 	Class fieldAuthor extends Field {
+
 		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Author');
@@ -35,7 +36,7 @@
 		}
 
 		public function allowDatasourceOutputGrouping(){
-			## Grouping follows the same rule as toggling.
+			// Grouping follows the same rule as toggling.
 			return $this->canToggle();
 		}
 
@@ -55,7 +56,6 @@
 		}
 
 		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
-
 			$status = self::__OK__;
 
 			if(!is_array($data) && !is_null($data)) return array('author_id' => $data);
@@ -69,7 +69,6 @@
 		}
 
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-
 			$value = (isset($data['author_id']) ? $data['author_id'] : NULL);
 
 			$callback = Administration::instance()->getPageCallback();
@@ -104,7 +103,6 @@
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL){
-
 			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
 
 			if(empty($data['author_id'])) return NULL;
@@ -235,7 +233,6 @@
 		}
 
 		public function commit(){
-
 			if(!parent::commit()) return false;
 
 			$id = $this->get('id');
@@ -243,14 +240,13 @@
 			if($id === false) return false;
 
 			$fields = array();
-
 			$fields['field_id'] = $id;
 			$fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
 			$fields['default_to_current_user'] = ($this->get('default_to_current_user') ? $this->get('default_to_current_user') : 'no');
 
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
-			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 
+			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 		}
 
 		public function appendFormattedElement(&$wrapper, $data, $encode=false){
@@ -271,6 +267,7 @@
 					)
 				));
 			}
+
 			$wrapper->appendChild($list);
 		}
 
@@ -284,14 +281,14 @@
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'related');
 
-			## Allow multiple selection
+			// Allow multiple selection
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Allow selection of multiple authors', array($input->generate())));
 			$div->appendChild($label);
 
-			## Default to current logged in user
+			// Default to current logged in user
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][default_to_current_user]', 'yes', 'checkbox');
 			if($this->get('default_to_current_user') == 'yes') $input->setAttribute('checked', 'checked');
@@ -301,12 +298,10 @@
 			$wrapper->appendChild($div);
 
 			$this->appendShowColumnCheckbox($wrapper);
-
 		}
 
 		public function createTable(){
 			return Symphony::Database()->query(
-
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') ."` (
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
@@ -315,12 +310,10 @@
 				  KEY `entry_id` (`entry_id`),
 				  KEY `author_id` (`author_id`)
 				) ENGINE=MyISAM;"
-
 			);
 		}
 
 		public function getExampleFormMarkup(){
-
 			$authors = AuthorManager::fetch();
 
 			$options = array();

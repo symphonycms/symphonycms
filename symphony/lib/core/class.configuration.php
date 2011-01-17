@@ -94,7 +94,7 @@
 		 */
 		public function get($name=null, $group=null){
 
-			## Return the whole array if no name or index is requested
+			// Return the whole array if no name or index is requested
 			if(!$name && !$group) return $this->_properties;
 
 			if($this->_forceLowerCase){
@@ -148,7 +148,6 @@
 		 *  This is used by Symphony to write as a file that is then read at a later date.
 		 */
 		public function __toString(){
-
 			$string = 'array(';
 			foreach($this->_properties as $group => $data){
 				$string .= "\r\n\r\n\r\n\t\t###### ".strtoupper($group)." ######";

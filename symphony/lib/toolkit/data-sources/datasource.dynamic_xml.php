@@ -49,12 +49,12 @@
 
 	$instruction = new XMLElement('xsl:copy-of');
 
-	## Namespaces
+	// Namespaces
 	if(isset($this->dsParamFILTERS) && is_array($this->dsParamFILTERS)){
 		foreach($this->dsParamFILTERS as $name => $uri) $instruction->setAttribute('xmlns' . ($name ? ":{$name}" : NULL), $uri);
 	}
 
-	## XPath
+	// XPath
 	$instruction->setAttribute('select', $this->dsParamXPATH);
 
 	$template->appendChild($instruction);

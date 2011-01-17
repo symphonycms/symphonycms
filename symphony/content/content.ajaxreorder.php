@@ -14,7 +14,6 @@
 		const kREORDER_UNKNOWN = 3;
 
 		public function view(){
-
 			$destination = self::kREORDER_UNKNOWN;
 
 			if($this->_context[0] == 'blueprints' && $this->_context[1] == 'pages') $destination = self::kREORDER_PAGES;
@@ -48,16 +47,14 @@
 					break;
 
 				case self::kREORDER_EXTENSION:
-					## TODO
+					// TODO
 					break;
 
 				case self::kREORDER_UNKNOWN:
 				default:
 					$this->_status = self::STATUS_BAD;
 					break;
-
 			}
-
 		}
 
 	}
