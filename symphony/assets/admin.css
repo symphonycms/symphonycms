@@ -45,6 +45,7 @@ h1 a:hover,
 	font: bold 90.91%/0 Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
 }
 #nav > li {
+	position: relative;
 	float: left;
 	margin: 0 -19px 0 19px;
 	padding: 0 1em;
@@ -57,16 +58,16 @@ h1 a:hover,
 	background: #517ca6 url("images/navigation.png") repeat-x;
 	color: #fff;
 }
-#nav > li:hover {
-	position: relative;
-	background-color: #7e7e70;
-	background-position: 0 -30px;
+#nav > li:hover,
+#nav > li.current {
+	background: #7e7e70 url("images/navigation.png") 0 -30px repeat-x;
+	color: #fff;
 }
 #nav ul {
-	display: none;
 	position: absolute;
+	z-index: 3;
 	top: 25px;
-	left: 5px;
+	left: -9999px;
 	margin: 0;
 	min-width: 120px;
 	border: 1px solid;
@@ -82,8 +83,9 @@ h1 a:hover,
 	-moz-box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
 	-webkit-box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
 }
-#nav li:hover ul {
-	display: block;
+#nav li:hover ul,
+#nav li.current ul {
+	left: 5px;
 }
 #nav a {
 	display: block;

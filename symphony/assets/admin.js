@@ -635,6 +635,15 @@ var Symphony = {};
 			$('input[type="text"], textarea').first().focus();
 		}
 
+		// Accessible navigation
+		$('#nav a').focus(function() {
+			$(this).parents('li').eq(1).addClass('current');
+		});
+
+		$('#nav a').blur(function() {
+			$(this).parents('li').eq(1).removeClass('current');
+		});
+
 	});
 
 })(jQuery.noConflict());
