@@ -179,7 +179,7 @@
 			else {
 				if (!is_array($this->_callback['context'])) $this->_callback['context'] = array();
 
-				if(file_exists(DOCROOT . '/update.php')) {
+				if(file_exists(DOCROOT . '/update.php') && $this->Page instanceOf AdministrationPage) {
 					$this->Page->pageAlert(__('There is an update available for Symphony. <a href="' . URL . '/update.php">View Update</a>'), Alert::NOTICE);
 				}
 
