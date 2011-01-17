@@ -3,14 +3,14 @@
 	/**
 	 * @package toolkit
 	 */
-	
+
 	/**
-	 * A simple Select field that essentially maps to HTML's `<select/>`. The 
+	 * A simple Select field that essentially maps to HTML's `<select/>`. The
 	 * options for this field can be static, or feed from another field.
 	 */
-	
+
 	Class fieldSelect extends Field {
-		
+
 		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Select Box');
@@ -125,7 +125,7 @@
 
 			$options = array();
 
-			if ($this->get('required') != 'yes') $options[] = array(NULL, false, NULL);
+			if ($this->get('required') == 'yes') $options[] = array(NULL, false, NULL);
 
 			foreach($states as $handle => $v){
 				$options[] = array(General::sanitize($v), in_array($v, $data['value']), General::sanitize($v));

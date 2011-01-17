@@ -58,7 +58,7 @@
 			$qpHexDigits  = '0123456789ABCDEF';
 			$input_length = strlen($input);
 			// Substract delimiters, character set and encoding
-			$line_limit   = $max_length - 12;
+			$line_limit	  = $max_length - 12;
 			$line_length  = 0;
 
 			$output = '=?UTF-8?Q?';
@@ -69,8 +69,8 @@
 
 				// No encoding for all 62 alphanumeric characters
 				if (   48 <= $ascii && $ascii <= 57
-				    || 65 <= $ascii && $ascii <= 90
-				    || 97 <= $ascii && $ascii <= 122 )
+					|| 65 <= $ascii && $ascii <= 90
+					|| 97 <= $ascii && $ascii <= 122 )
 				{
 					$replace_length = 1;
 					$replace_char = $char;
@@ -87,21 +87,21 @@
 					// Bit operation is around 10 percent faster
 					// than 'strtoupper(dechex($ascii))'
 					$replace_char = '='
-					              . $qpHexDigits[$ascii >> 4]
-					              . $qpHexDigits[$ascii & 0x0f];
+								  . $qpHexDigits[$ascii >> 4]
+								  . $qpHexDigits[$ascii & 0x0f];
 
 					// Account for following bytes of UTF8-multi-byte
 					// sequence (max. length is 4 octets, RFC3629)
 					$lookahead_limit = min($i+4, $input_length);
 					for ($lookahead = $i+1;
-					     $lookahead < $lookahead_limit;
-					     $lookahead++)
+						 $lookahead < $lookahead_limit;
+						 $lookahead++)
 					{
 						$ascii_ff = ord($input[$lookahead]);
 						if (128 <= $ascii_ff && $ascii_ff <= 191) {
 							$replace_char .= '='
-							               . $qpHexDigits[$ascii_ff >> 4]
-							               . $qpHexDigits[$ascii_ff & 0x0f];
+										   . $qpHexDigits[$ascii_ff >> 4]
+										   . $qpHexDigits[$ascii_ff & 0x0f];
 							$replace_length += 3;
 							$i++;
 						}
@@ -137,12 +137,12 @@
 		public static function qpContentTransferEncode($input, $max_length=76) {
 			$qpHexDigits  = '0123456789ABCDEF';
 			$input_length = strlen($input);
-			$line_limit   = $max_length;
+			$line_limit	  = $max_length;
 			$line_length  = 0;
-			$output       = '';
-			$blank        = false;
+			$output		  = '';
+			$blank		  = false;
 
-		    for ($i=0; $i < $input_length; $i++) {
+			for ($i=0; $i < $input_length; $i++) {
 				$char = $input[$i];
 				$ascii = ord($char);
 
@@ -157,7 +157,7 @@
 					// Use existing offset only.
 					if ($i+1 < $input_length) {
 						if (   ($ascii == 13 && ord($input[$i+1]) == 10)
-						    || ($ascii == 10 && ord($input[$i+1]) == 13) )
+							|| ($ascii == 10 && ord($input[$i+1]) == 13) )
 						{
 							$i++;
 						}
@@ -196,8 +196,8 @@
 					// bit operation is around 10 percent faster
 					// than 'strtoupper(dechex($ascii))'
 					$replace_char = '='
-					              . $qpHexDigits[$ascii >> 4]
-					              . $qpHexDigits[$ascii & 0x0f];
+								  . $qpHexDigits[$ascii >> 4]
+								  . $qpHexDigits[$ascii & 0x0f];
 					$blank = false;
 				}
 				// Would the line become too long?
@@ -232,10 +232,7 @@
 		 * @param string $arr input array
 		 * @return string
 		 */
-		public static function arrayToList($arr){
-			if(!is_array($arr)){
-				throw new Exception('Parameter should be an array.');
-			}
+		public static function arrayToList(array $arr = array()){
 			foreach($arr as $name => $email){
 				if(is_numeric($name)){
 					$return[] = $email;
@@ -273,7 +270,7 @@
 				 */
 				else{
 					// A few mimetypes to "guess" using the file extension.
-					$mimetypes = Array(
+					$mimetypes = array(
 						'txt'	=> 'text/plain',
 						'csv'	=> 'text/csv',
 						'pdf'	=> 'application/pdf',

@@ -470,7 +470,7 @@ var Symphony = {};
 		duplicator.bind('expandstop', function(event, item) {
 			$(item).find('.header > span > i').remove();
 		});
-		
+
 		// Dim system messages
 		Symphony.Message.fade('silence', 10000);
 
@@ -648,20 +648,27 @@ var Symphony = {};
 		$("select[name*=dynamic_options]").live("change", function(event) {
 			var select = $(this), 
 				field = select.parents("div.content"), 
-				show_association = field.find("input[name*=show_association]").parent("label");
+				label = field.find("input[name*=show_association]").parent("label");
 			
 			if (field.find("input:first").val() == "select") {
 				if (select.val() == "") {
-					show_association.find("input").removeAttr("checked");
-					show_association.hide();
+					label.find("input").removeAttr("checked");
+					label.hide();
 				} else {
-					show_association.show();
+					label.show();
 				}
 			}
 		}).change();
 
-		
-	
+		// Accessible navigation
+		$('#nav a').focus(function() {
+			$(this).parents('li').eq(1).addClass('current');
+		});
+
+		$('#nav a').blur(function() {
+			$(this).parents('li').eq(1).removeClass('current');
+		});
+
 	});
 
 })(jQuery.noConflict());

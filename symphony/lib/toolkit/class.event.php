@@ -41,14 +41,14 @@
 	 * Events implement the iEvent interface, which defines the load and about functions.
 	 */
 	abstract Class Event implements iEvent{
-		
+
 		/**
 		 * The end-of-line constant.
 		 * @var string
 		 * @deprecated This will be removed in the next version of Symphony
 		 */
 		const CRLF = PHP_EOL;
-		
+
 		/**
 		 * The class that initialised the Entry, usually the EntryManager
 		 * @var mixed
@@ -62,30 +62,28 @@
 		const kHIGH = 3;
 
 		/**
-		 * Represents Normal Priority, that this event should run normally. 
+		 * Represents Normal Priority, that this event should run normally.
 		 * This is the default Event Priority
 		 * @var integer
-
 		 */
 		const kNORMAL = 2;
 
 		/**
 		 * Represents High Priority, that this event should run last
 		 * @var integer
-
 		 */
 		const kLOW = 1;
 
 		/**
-		 * Holds all the environment variables which include parameters set 
+		 * Holds all the environment variables which include parameters set
 		 * by other Datasources or Events.
-		 * @var array 
+		 * @var array
 		 */
 		protected $_env = array();
 
 		/**
-		 * The constructor for an Event sets the parent and env variables
-		 * from their parameters
+		 * The constructor for an Event sets `$this->_Parent` and `$this->_env`
+		 * from the given parameters
 		 *
 		 * @param Administration $parent
 		 *  The Administration object that this page has been created from
@@ -123,16 +121,30 @@
 		}
 
 		/**
+		 * Returns a HTML string of documentation for the current event. By default this will be
+		 * an example of a HTML form that can populate the chosen section. Documentation is shown
+		 * in the Symphony backend when a user tries to edit an event but it's `allowEditorToParse()`
+		 * returns `false`. If this is not implemented by the event, a default Symphony message will
+		 * appear
+		 *
+		 * @since Symphony 2.2
+		 * @return string
+		 */
+		public function documentation() {
+			return __('This event has been customised and cannot be viewed from Symphony.');
+		}
+
+		/**
 		 * Priority determines Event importance and when it should be executed.
-		 * The default priority for an event is `Event::kNORMAL`, with `Event::kHIGH` and 
+		 * The default priority for an event is `Event::kNORMAL`, with `Event::kHIGH` and
          * `Event::kLOW` being the other available options. Events execution is `Event::HIGH`
-         * to `Event::kNORMAL` to `Event::kLOW`. If there are more than one event at the 
+         * to `Event::kNORMAL` to `Event::kLOW`. If there are more than one event at the
          * same priority level, they are sorted alphabetically by event handle and executed
          * in that order for that priority.
 		 *
 		 * @see toolkit.FrontendPage#__findEventOrder()
 		 * @return integer
-		 *  The available constants are `Event::kLOW`, `Event::kNORMAL` and `Event::kHIGH`. 
+		 *  The available constants are `Event::kLOW`, `Event::kNORMAL` and `Event::kHIGH`.
          *  Defaults to `Event::kNORMAL`
 		 */
 		public function priority(){

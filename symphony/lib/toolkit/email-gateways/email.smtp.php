@@ -1,4 +1,4 @@
-<?php	
+<?php
 	/**
 	 * @package email-gateways
 	 */
@@ -83,15 +83,15 @@
 				$recipient_list = EmailHelper::arrayToList($recipients);
 
 				// Encode the subject
-				$this->_subject  = EmailHelper::qEncode($this->_subject);
+				$this->_subject	 = EmailHelper::qEncode($this->_subject);
 
 				// Encode the sender name if it's not empty
 				$this->_sender_name = empty($this->_sender_name) ? NULL : EmailHelper::qEncode($this->_sender_name);
 
 				// Build the 'From' header field body
 				$from = empty($this->_sender_name)
-				        ? $this->_sender_email_address
-				        : $this->_sender_name . ' <' . $this->_sender_email_address . '>';
+						? $this->_sender_email_address
+						: $this->_sender_name . ' <' . $this->_sender_email_address . '>';
 
 				// Build the 'Reply-To' header field body
 				if(!empty($this->_reply_to_email_address)){
@@ -114,11 +114,11 @@
 				// Build the header fields
 				$this->_header_fields = array_merge(Array(
 					'Message-ID'   => sprintf('<%s@%s>', md5(uniqid()) , HTTP_HOST),
-					'Date'         => date('r'),
-					'From'         => $from,
-					'Subject'      => $this->_subject,
-					'To'           => $recipient_list,
-					'X-Mailer'     => 'Symphony Email Module',
+					'Date'		   => date('r'),
+					'From'		   => $from,
+					'Subject'	   => $this->_subject,
+					'To'		   => $recipient_list,
+					'X-Mailer'	   => 'Symphony Email Module',
 					'MIME-Version' => '1.0'
 				),$this->_header_fields);
 
@@ -254,7 +254,7 @@
 			$div->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('Host'));
-			$label->appendChild(Widget::Input('settings[email_smtp][host]',  $this->_host));
+			$label->appendChild(Widget::Input('settings[email_smtp][host]',	 $this->_host));
 			$div->appendChild($label);
 
 			$label = Widget::Label(__('Port'));

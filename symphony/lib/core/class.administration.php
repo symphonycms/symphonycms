@@ -171,15 +171,18 @@
 			if(!$this->isLoggedIn() && $this->_callback['driver'] != 'login'){
 				if(is_callable(array($this->Page, 'handleFailedAuthorisation'))) $this->Page->handleFailedAuthorisation();
 				else{
-
 					include_once(CONTENT . '/content.login.php');
 					$this->Page = new contentLogin($this);
 					$this->Page->build();
 				}
 			}
-
 			else {
 				if (!is_array($this->_callback['context'])) $this->_callback['context'] = array();
+
+				if(file_exists(DOCROOT . '/update.php')) {
+					$this->Page->pageAlert(__('There is an update available for Symphony. <a href="' . URL . '/update.php">View Update</a>'), Alert::NOTICE);
+				}
+
 				$this->Page->build($this->_callback['context']);
 			}
 

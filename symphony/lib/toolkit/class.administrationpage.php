@@ -410,7 +410,6 @@
 		 * @uses AppendPageAlert
 		 */
 		public function appendAlert(){
-
 			/**
 			 * Allows for appending of alerts. Administration::instance()->Page->Alert is way to tell what
 			 * is currently in the system
@@ -421,7 +420,7 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AppendPageAlert', '/backend/');
 
-			if(($this->Alert instanceof Alert)){
+			if($this->Alert instanceof Alert){
 				$this->Form->prependChild($this->Alert->asXML());
 			}
 		}
