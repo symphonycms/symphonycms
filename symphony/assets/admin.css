@@ -28,9 +28,6 @@ h2:after {
 	clear: both;
 	height: 1%;
 }
-h2 .button {
-
-}
 h3 {
 	text-shadow: -1px 2px 2px #ddd;
 	font-weight: bold;
@@ -50,26 +47,16 @@ i, var {
 	text-shadow: none;
 	font-style: normal;
 }
-
-/*-----------------------------------------------------------------------------
-	Globals - Forms elements
------------------------------------------------------------------------------*/
-
 legend {
-	float: left;
 	margin-bottom: -3em;
 	padding: 0;
 	color: #665;
-	text-indent: -275px;
 	text-shadow: -1px 2px 3px #ddd;
 	font-weight: bold;
 }
 label {
 	display: block;
 	position: relative;
-}
-label[title] {
-	cursor: help;
 }
 label > i {
 	position: absolute;
@@ -220,16 +207,11 @@ tr.selecting a {
 .selected a:hover {
 	color: #f2f2f2;
 }
-p.help {
+.help {
 	color: #887;
 }
 p.label {
 	margin: 0 0 2px;
-}
-p.subsection {
-	font-weight: bold;
-	text-shadow: -1px 2px 2px #ddd;
-	margin: 0 0 1.25em;
 }
 span.frame {
 	display: block;
@@ -317,6 +299,31 @@ ul.tags .more:hover {
 	margin-left: -64px;
 }
 
+/*--- Compact ---*/
+
+div.compact:after {
+	content: "";
+	display: block;
+	clear: left;
+	height: 1%;
+}
+
+div.compact label { 
+	float: left;
+	width: 50%;
+	min-width: 300px;
+	margin-right: 16px;
+}
+div.compact label:nth-child(even) {
+	width: auto;
+}
+div.compact i {
+	color: #887;
+	display: block;
+	position: static;
+	padding-left: 1.7em;
+}
+
 /*--- Settings ---*/
 
 fieldset.settings {
@@ -324,6 +331,13 @@ fieldset.settings {
 	padding: 1em 0 1em 275px;
 	margin: 0 0 1em;
 	border-top: 1px solid #ddc;
+}
+fieldset.settings > legend {
+	float: left;
+	margin-bottom: -3em;
+	padding: 0;
+	color: #665;
+	text-indent: -275px;
 }
 fieldset.settings > label {
 	clear: left;
@@ -341,13 +355,32 @@ fieldset.settings li .label {
 fieldset.settings:first-child {
 	border-top: none;
 }
-fieldset.settings > legend + p.help {
-	float: left;
-	margin: 1.5em 0 0  -275px;
+fieldset.settings > legend + .help {
+	position: absolute;
+	left: 0;
+	top: 3em;
 	width: 22em;
+}
+fieldset.settings > legend + .help p {
+	margin: 0 0 1.5em;
 }
 fieldset.settings > *:first-child {
 	margin-top: 0;
+}
+fieldset.settings fieldset {
+	margin-top: 0.5em;
+	padding-bottom: 0;
+	border-top: 1px solid #ddc;
+}
+fieldset.settings fieldset legend {
+	display: inline;
+	margin: 0 0 0 -0.5em;
+	padding: 0 0.75em 0 0.5em;
+	font-weight: normal;
+	line-height: 1.5;
+	text-indent: 0;
+	background: #fff;
+	color: #665;
 }
 
 /*--- Settings: Pickable ---*/
@@ -372,33 +405,10 @@ fieldset.settings > *:first-child {
 }
 .settings .duplicator fieldset {
 	border-top: 1px solid #eed;
-	border-bottom: none;
 }
 .settings .duplicator legend {
-	display: inline;
-	float: none;
-	margin: 0 0 0 -0.5em;
-	padding: 0 0.75em 0 0.5em;
-	font-weight: normal;
-	line-height: 1;
-	text-indent: 0;
 	background: #DDC;
 	color: #665;
-}
-.settings .duplicator fieldset.compact label { 
-	float: left;
-	width: 50%;
-	min-width: 300px;
-	margin-right: 16px;
-}
-.settings .duplicator fieldset.compact label:nth-child(odd) {
-	width: auto;
-}
-.settings .duplicator fieldset.compact i {
-	color: #887;
-	display: block;
-	position: static;
-	padding-left: 1.7em;
 }
 
 /*--- Buttons ---*/
@@ -599,7 +609,6 @@ body, html {
 	background-color: #7e7e70;
 	color: #fff;
 }
-
 .contents {
 	padding: 0 19px 10em;
 }
@@ -662,15 +671,13 @@ body, html {
 	padding: 0;
 }
 .list .actions {
-	/* position: relative;
-	white-space: nowrap; */
 	text-align: right;
 	padding: 18px 19px 0 0;
 	height: 38px;
 }
 .list .actions select {
 	width: auto;
-	display: -moz-inline-stack;
+	display: -moz-inline-stack; /* Firefox 2 */
 	display: inline-block;
 	margin: 0;
 }

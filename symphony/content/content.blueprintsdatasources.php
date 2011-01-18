@@ -470,11 +470,10 @@
 			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
 			$fieldset->appendChild($label);
 
-			$ul = new XMLElement('ul');
-			$ul->setAttribute('class', 'group');
+			$div = new XMLElement('div', NULL, array('class' => 'group'));
 
-			$li = new XMLElement('li');
-			$li->appendChild(new XMLElement('p', __('Parameter Output'), array('class' => 'subsection')));
+			$subfieldset = new XMLElement('fieldset', NULL);
+			$subfieldset->appendChild(new XMLElement('legend', __('Parameter Output')));
 
 			$label = Widget::Label(__('Use Field'));
 			$options = array(
@@ -512,16 +511,16 @@
 			}
 
 			$label->appendChild(Widget::Select('fields[param]', $options, array('class' => 'filtered')));
-			$li->appendChild($label);
+			$subfieldset->appendChild($label);
 
 			$p = new XMLElement('p', __('The parameter <code id="output-param-name">$ds-%s</code> will be created with this field\'s value for XSLT or other data sources to use.', array(($this->_context[0] == 'edit' ? $existing->dsParamROOTELEMENT : __('Untitled')))));
 			$p->setAttribute('class', 'help');
-			$li->appendChild($p);
+			$subfieldset->appendChild($p);
 
-			$ul->appendChild($li);
+			$div->appendChild($subfieldset);
 
-			$li = new XMLElement('li');
-			$li->appendChild(new XMLElement('p', __('XML Output'), array('class' => 'subsection')));
+			$subfieldset = new XMLElement('fieldset', NULL);
+			$subfieldset->appendChild(new XMLElement('legend', __('XML Output')));
 
 			$label = Widget::Label(__('Group By'));
 			$options = array(
@@ -551,7 +550,7 @@
 			}
 
 			$label->appendChild(Widget::Select('fields[group]', $options, array('class' => 'filtered')));
-			$li->appendChild($label);
+			$subfieldset->appendChild($label);
 
 			$label = Widget::Label(__('Included Elements'));
 
@@ -598,23 +597,23 @@
 			}
 
 			$label->appendChild(Widget::Select('fields[xml_elements][]', $options, array('multiple' => 'multiple', 'class' => 'filtered')));
-			$li->appendChild($label);
+			$subfieldset->appendChild($label);
 
 			$label = Widget::Label();
 			$label->setAttribute('class', 'contextual inverse authors');
 			$input = Widget::Input('fields[associated_entry_counts]', 'yes', 'checkbox', ((isset($fields['associated_entry_counts']) && $fields['associated_entry_counts'] == 'yes') ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s Include a count of entries in associated sections', array($input->generate(false))));
-			$li->appendChild($label);
+			$subfieldset->appendChild($label);
 
 			$label = Widget::Label();
 			$label->setAttribute('class', 'contextual inverse authors');
 			$input = Widget::Input('fields[html_encode]', 'yes', 'checkbox', (isset($fields['html_encode']) ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s HTML-encode text', array($input->generate(false))));
-			$li->appendChild($label);
+			$subfieldset->appendChild($label);
 
-			$ul->appendChild($li);
+			$div->appendChild($subfieldset);
 
-			$fieldset->appendChild($ul);
+			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
