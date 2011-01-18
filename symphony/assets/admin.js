@@ -143,7 +143,9 @@ var Symphony = {};
 			add: function(strings) {
 
 				// Don't process empty strings
-				if($.isEmptyObject(strings)) return;
+				if($.isEmptyObject(strings)) {
+					return true;
+				}
 
 				// Set key as value
 				$.each(strings, function(key, value) {
@@ -176,13 +178,17 @@ var Symphony = {};
 			get: function(string, inserts) {
 
 				// Get translated string
-				translatedString = Symphony.Language.Dictionary[string];
+				var translatedString = Symphony.Language.Dictionary[string];
 
 				// Return string if it cannot be found in the dictionary
-				if(translatedString !== false) string = translatedString;
+				if(translatedString !== false) {
+					string = translatedString;
+				}
 
 				// Insert variables
-				if(inserts !== undefined) string = Symphony.Language.insert(string, inserts);
+				if(inserts !== undefined) {
+					string = Symphony.Language.insert(string, inserts);
+				}
 
 				// Return translated string
 				return string;
@@ -311,12 +317,15 @@ var Symphony = {};
 			 * Convert absolute message time to relative time and update continuously
 			 */
 			timer: function() {
-				var time = Date.parse($('abbr.timeago').attr('title'));
-				var from = new Date;
+				var time = Date.parse($('abbr.timeago').attr('title')),
+					to = new Date(),
+					from = new Date();
+				
+				// Set time
 				from.setTime(time);
 
 				// Set relative time
-				$('abbr.timeago').text(this.distance(from, new Date));
+				$('abbr.timeago').text(this.distance(from, to));
 
 				// Update continuously
 				window.setTimeout("Symphony.Message.timer()", 60000);
@@ -390,7 +399,7 @@ var Symphony = {};
 		});
 
 		// Orderable tables
-		var orderable = $('table.orderable');
+		var old_sorting, orderable = $('table.orderable');
 		orderable.symphonyOrderable({
 			items: 'tr',
 			handles: 'td'
@@ -420,7 +429,7 @@ var Symphony = {};
 				orderable.trigger('orderchange');
 
 				// Send request
-				jQuery.ajax({
+				$.ajax({
 					type: 'POST',
 					url: Symphony.Context.get('root') + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
 					data: new_sorting,
@@ -452,7 +461,7 @@ var Symphony = {};
 			collapsible: true
 		});
 		duplicator.bind('collapsestop', function(event, item) {
-			var instance = jQuery(item);
+			var instance = $(item);
 			instance.find('.header > span:not(:has(i))').append(
 				$('<i />').text(instance.find('label:first input').attr('value'))
 			);
@@ -629,17 +638,14 @@ var Symphony = {};
 		});
 
 		// Focus first text-input or textarea when creating or editing entries
-		if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'edit' || Symphony.Context.get('env')[0] == 'new'
-			|| Symphony.Context.get('env').page == 'edit' || Symphony.Context.get('env').page == 'new')) {
+		if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'edit' || Symphony.Context.get('env')[0] == 'new' || Symphony.Context.get('env').page == 'edit' || Symphony.Context.get('env').page == 'new')) {
 			$('input[type="text"], textarea').first().focus();
 		}
 
 		// Accessible navigation
 		$('#nav a').focus(function() {
 			$(this).parents('li').eq(1).addClass('current');
-		});
-
-		$('#nav a').blur(function() {
+		}).blur(function() {
 			$(this).parents('li').eq(1).removeClass('current');
 		});
 
