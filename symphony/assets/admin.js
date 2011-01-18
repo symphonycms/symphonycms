@@ -22,7 +22,7 @@ var Symphony = {};
 				user = $('#usr li:first a');
 
 			// Set JavaScript status
-			$('html').addClass('active');
+			html.addClass('active');
 
 			// Set basic context information
 			Symphony.Context.add('user', {
@@ -385,7 +385,7 @@ var Symphony = {};
 		var selectable = $('table:has(input)');
 		selectable.symphonySelectable();
 
-		selectable.find('a').mousedown(function(event) {
+		selectable.delegate('a', 'mousedown', function(event) {
 			event.stopPropagation();
 		});
 
@@ -397,7 +397,7 @@ var Symphony = {};
 		});
 
 		// Don't start ordering while clicking on links
-		orderable.find('a').mousedown(function(event) {
+		orderable.delegate('a', 'mousedown', function(event) {
 			event.stopPropagation();
 		});
 
@@ -635,14 +635,13 @@ var Symphony = {};
 		}
 
 		// Accessible navigation
-		$('#nav a').focus(function() {
-			$(this).parents('li').eq(1).addClass('current');
-		});
-
-		$('#nav a').blur(function() {
-			$(this).parents('li').eq(1).removeClass('current');
-		});
-
+		$('#nav a')
+			.live('focus', function() {
+				$(this).parents('li').eq(1).addClass('current');
+			})
+			.live('blur',function() {
+				$(this).parents('li').eq(1).removeClass('current');
+			});
 	});
 
 })(jQuery.noConflict());
