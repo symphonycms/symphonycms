@@ -322,40 +322,38 @@
 			foreach($extensions as $extension) {
 				$folder = $extension->getPathname() . '/lang';
 				$directory = General::listStructure($folder);
-				foreach($directory['filelist'] as $file) {
-					if(strpos($extension->getFilename(), 'lang_') !== false) {
-						self::$_languages = array_merge(self::$_languages, self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled));
-					}
-				}		
-			}
-
-			// Other extensions
-			foreach($extensions as $extension) {
-				$folder = $extension->getPathname() . '/lang';
-				$directory = General::listStructure($folder);
-				foreach($directory['filelist'] as $file) {
-					if(strpos($extension->getFilename(), 'lang_') === false) {
+				if(is_array($directory['filelist'])) {
+					foreach($directory['filelist'] as $file) {
 						$temp = self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled);
-						$lang = key($temp);
-						
-						// Create language if not exists
-						if(!array_key_exists($lang, self::$_languages)) {
-							$language = array(
-								$lang => array(
-									'name' => $temp[$lang]['name'],
-									'status' => LANGUAGE_DISABLED,
-									'extensions' => array()
-								)
-							);
-							self::$_languages = array_merge(self::$_languages, $language);
+					
+						// Core translations
+						if(strpos($extension->getFilename(), 'lang_') !== false) {
+							self::$_languages = array_merge(self::$_languages, $temp);
 						}
-						
-						// Merge extensions
-						self::$_languages[$lang]['extensions'] = array_merge(self::$_languages[$lang]['extensions'], array(
-							$temp[$lang]['source'] => $temp[$lang]['path']
-						));																		
+	
+						// Extension translations
+						else {
+							$lang = key($temp);
+	
+							// Create language if not exists
+							if(!array_key_exists($lang, self::$_languages)) {
+								$language = array(
+									$lang => array(
+										'name' => $temp[$lang]['name'],
+										'status' => LANGUAGE_DISABLED,
+										'extensions' => array()
+									)
+								);
+								self::$_languages = array_merge(self::$_languages, $language);
+							}
+	
+							// Merge extensions
+							self::$_languages[$lang]['extensions'] = array_merge(self::$_languages[$lang]['extensions'], array(
+								$temp[$lang]['source'] => $temp[$lang]['path']
+							));
+						}
 					}
-				}		
+				}
 			}
 		}
 
@@ -478,11 +476,11 @@
 
 			// Get available languages
 			foreach(self::$_languages as $key => $language) {
-				if($language['status'] == LANGUAGE_ENABLED || $enabled == false) {
+				if(($language['status'] == LANGUAGE_ENABLED || $enabled == false) && array_key_exists('path', $language)) {
 					$languages[$key] = $language['name'];
 				}
 			}
-
+			
 			// Return languages codes
 			return $languages;
 		}
