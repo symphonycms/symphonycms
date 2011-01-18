@@ -322,7 +322,7 @@
 			foreach($extensions as $extension) {
 				$folder = $extension->getPathname() . '/lang';
 				$directory = General::listStructure($folder);
-				if(is_array($directory['filelist'])) {
+				if(is_array($directory['filelist']) && !empty($directory['filelist'])) {
 					foreach($directory['filelist'] as $file) {
 						$temp = self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled);
 					
