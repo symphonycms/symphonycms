@@ -654,7 +654,6 @@
 
 							if(is_array($missing_cfs) && !empty($missing_cfs)){
 								foreach($missing_cfs as $id){
-									var_dump($fieldManager, $id);
 									$fieldManager->delete($id);
 								}
 							}

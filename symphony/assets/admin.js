@@ -635,13 +635,9 @@ var Symphony = {};
 		}
 
 		// Accessible navigation
-		$('#nav a')
-			.live('focus', function() {
-				$(this).parents('li').eq(1).addClass('current');
-			})
-			.live('blur',function() {
-				$(this).parents('li').eq(1).removeClass('current');
-			});
+		$('#nav').delegate('a', 'focus blur', function() {
+			$(this).parents('li').eq(1).toggleClass('current');
+		});
 	});
 
 })(jQuery.noConflict());
