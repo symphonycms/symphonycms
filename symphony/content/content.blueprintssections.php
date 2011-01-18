@@ -492,6 +492,8 @@
 				$fields = $_POST['fields'];
 				$meta = $_POST['meta'];
 
+				$fieldManager = new FieldManager($this->_Parent);
+
 				if($edit) {
 					$section_id = $this->_context[1];
 					$sectionManager = new SectionManager($this->_Parent);
@@ -548,9 +550,6 @@
 					}
 
 					if($canProceed) {
-
-						$fieldManager = new FieldManager($this->_Parent);
-
 						$unique = array();
 
 						foreach($fields as $position => $data){
@@ -655,6 +654,7 @@
 
 							if(is_array($missing_cfs) && !empty($missing_cfs)){
 								foreach($missing_cfs as $id){
+									var_dump($fieldManager, $id);
 									$fieldManager->delete($id);
 								}
 							}
