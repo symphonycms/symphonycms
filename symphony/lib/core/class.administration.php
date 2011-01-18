@@ -180,7 +180,27 @@
 				if (!is_array($this->_callback['context'])) $this->_callback['context'] = array();
 
 				if(file_exists(DOCROOT . '/update.php') && $this->Page instanceOf AdministrationPage) {
-					$this->Page->pageAlert(__('There is an update available for Symphony. <a href="' . URL . '/update.php">View Update</a>'), Alert::NOTICE);
+					if(file_exists(DOCROOT . '/README.markdown') && is_readable(DOCROOT . '/README.markdown')) {
+						$readme = file(DOCROOT . '/README.markdown', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+						$readme = trim(str_replace('- Version:', '', $readme[1]));
+
+						$current_version = Symphony::Configuration()->get('version', 'symphony');
+						// The updater contains a version higher than the current Symphony version.
+						if(version_compare($current_version, $readme, '<')) {
+							$message = __('Run the updater to update Symphony to %s. <a href="%s/update.php">View Update</a>', array($readme, URL));
+						}
+						// The updater contains a version lower than the current Symphony version.
+						// The updater is the same version as the current Symphony install.
+						else {
+							$message = __('Your Symphony installation is up to date, but an updater script was still detected. For security reasons, it should be removed. <a href="%s/update.php?action=remove">Remove Update Script</a>', array(URL));
+						}
+					}
+					// Can't detect update Symphony version
+					else {
+						$message = __('An updater script has been found in your installation. <a href="%s/update.php">View Update</a>', array(URL));
+					}
+
+					$this->Page->pageAlert($message, Alert::NOTICE);
 				}
 
 				$this->Page->build($this->_callback['context']);
