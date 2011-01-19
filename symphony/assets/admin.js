@@ -384,8 +384,7 @@ var Symphony = {};
 		// Selectable
 		var selectable = $('table:has(input)');
 		selectable.symphonySelectable();
-
-		selectable.delegate('a', 'mousedown', function(event) {
+		selectable.find('a').mousedown(function(event) {
 			event.stopPropagation();
 		});
 
@@ -397,8 +396,8 @@ var Symphony = {};
 		});
 
 		// Don't start ordering while clicking on links
-		orderable.delegate('a', 'mousedown', function(event) {
-			event.stopPropagation();
+		orderable.find('a').mousedown(function(event) {
+			revent.stopPropagation();
 		});
 
 		// Store current sort order
