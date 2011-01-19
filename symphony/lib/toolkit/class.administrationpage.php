@@ -17,8 +17,6 @@
 
 	Class AdministrationPage extends HTMLPage{
 
-#		public $Form = null;
-
 		public $Wrapper = null;
 
 		public $Header = null;
@@ -98,7 +96,7 @@
 		 *  Either 'forms' or 'tables'. Defaults to 'forms'
 		 */
 		public function setPageType($type = 'form'){
-			$this->setBodyClass($type == 'form' ? 'single' : 'list');
+			$this->setBodyClass($type == 'form' || $type == 'single' ? 'single' : 'index');
 		}
 
 		/**
@@ -448,13 +446,8 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AppendPageAlert', '/backend/');
 
-<<<<<<< HEAD
-			if($this->Alert instanceof Alert){
-				$this->Form->prependChild($this->Alert->asXML());
-=======
 			if(($this->Alert instanceof Alert)){
 				$this->Header->prependChild($this->Alert->asXML());
->>>>>>> origin/css-cleanup
 			}
 		}
 

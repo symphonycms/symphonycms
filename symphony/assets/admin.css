@@ -668,32 +668,32 @@ body, html {
 }
 
 /*-----------------------------------------------------------------------------
-	List page
+	Index page
 -----------------------------------------------------------------------------*/
 
-.list h2 {
+.index h2 {
 	border: none;
 }
-.list form {
+.index form {
 	margin: 0 -19px;
 	padding: 0;
 }
-.list .actions {
+.index .actions {
 	text-align: right;
 	padding: 18px 19px 0 0;
 	height: 38px;
 }
-.list .actions select {
+.index .actions select {
 	width: auto;
 	display: -moz-inline-stack; /* Firefox 2 */
 	display: inline-block;
 	margin: 0;
 }
-.list .actions input {
+.index .actions input {
 	margin: 0 0 0 5px;
 /*	padding: 3.5px 6px 4px;*/
 }
-.list .actions + ul.page {
+.index .actions + ul.page {
 	margin-top: -58px;
 }
 ul.page {
