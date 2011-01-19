@@ -397,7 +397,7 @@ var Symphony = {};
 
 		// Don't start ordering while clicking on links
 		orderable.find('a').mousedown(function(event) {
-			revent.stopPropagation();
+			event.stopPropagation();
 		});
 
 		// Store current sort order
