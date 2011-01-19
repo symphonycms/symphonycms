@@ -165,8 +165,8 @@
 		 */
 		public function appendSubheading($value, $html = null){
 
-			if($html && is_object($html)) $value .= ' ' . $html->generate(false);
-			elseif($html) $value .= ' ' . $html;
+			if($html && is_object($html)) $value = '<span>' . $value . '</span> ' . $html->generate(false);
+			elseif($html) $value = '<span>' . $value . '</span> ' . $html;
 
 			$this->Contents->prependChild(new XMLElement('h2', $value));
 		}

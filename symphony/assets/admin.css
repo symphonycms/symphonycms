@@ -19,14 +19,8 @@ a:active, a:focus {
 }
 h2 {
 	margin: 0;
-	padding: 0 0 0.75em;
+	padding: 0 0 0.5em;
 	border-bottom: 1px solid #ddc;
-}
-h2:after {
-	content: " ";
-	display: block;
-	clear: both;
-	height: 1%;
 }
 h3 {
 	text-shadow: -1px 2px 2px #ddd;
@@ -262,7 +256,7 @@ ul.tags .more:hover {
 	content: "";
 	display: block;
 	clear: left;
-	height: 1%;
+	height: 0;
 }
 .group > * {
 	float: left;
@@ -305,7 +299,7 @@ div.compact:after {
 	content: "";
 	display: block;
 	clear: left;
-	height: 1%;
+	height: 0;
 }
 
 div.compact label { 
@@ -357,8 +351,7 @@ fieldset.settings:first-child {
 }
 fieldset.settings > legend + .help {
 	position: absolute;
-	left: 0;
-	top: 3em;
+	margin: 1.75em 0 0 -275px;
 	width: 22em;
 }
 fieldset.settings > legend + .help p {
@@ -415,11 +408,12 @@ fieldset.settings fieldset legend {
 
 a.button,
 button.button {
+	display: -moz-inline-stack; /* Firefox 2 */
 	display: inline-block;
 	background-color: #597bc6;
 	border: 0;
 	color: #fff;
-	float: right;
+/*	float: right;*/
 	padding: .5em 1em;
 	margin: 0;
 	font-size: 10px;
@@ -552,10 +546,10 @@ body, html {
 	font: bold 90.91%/0 Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
 }
 #nav:after {
-	content: " ";
+	content: "";
 	display: block;
 	clear: left;
-	height: 1%;
+	height: 0;
 }
 #nav > li {
 	float: left;
@@ -612,6 +606,19 @@ body, html {
 .contents {
 	padding: 0 19px 10em;
 }
+.contents h2 span {
+	float: left;
+}
+.contents h2:after {
+	content: "";
+	display: block;
+	clear: both;
+	height: 0;
+}
+.contents h2 .button {
+	float: right;
+	margin-left: 10px;
+}
 
 /*-----------------------------------------------------------------------------
 	Footer
@@ -630,10 +637,10 @@ body, html {
 	color: #fff;
 }
 .footer:after {
-	content: " ";
+	content: "";
 	display: block;
 	clear: left;
-	height: 1%;
+	height: 0;
 }
 #version,
 #usr,
@@ -784,7 +791,20 @@ ul.page a {
 	background-color: #fff;
 }
 #components h3 {
+	margin-top: 0.5em;
 	margin-bottom: 0.75em;
+}
+#components h3:after {
+	content: "";
+	display: block;
+	clear: left;
+	height: 0;
+}
+#components h3 span {
+	float: left;
+}
+#components h3 .button {
+	float: right;
 }
 #components ul {
 	margin: 0;

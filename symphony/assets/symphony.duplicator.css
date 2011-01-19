@@ -7,8 +7,6 @@
 	border: 1px solid #999988;
 	margin: 0;
 	list-style: none;
-/*	position: relative;*/
-/*	z-index: 1;*/
 }
 .duplicator i {
 	color: #887;
@@ -20,8 +18,6 @@
 	clear: left;
 	background: #ddddcc;
 	border-bottom: 1px solid #eeeedd;
-/*	position: relative;*/
-/*	z-index: 1;*/
 }
 .duplicator > .instance > .header {
 	background: #ccccbb;
@@ -32,7 +28,6 @@
 	position: relative;
 }
 .duplicator > .instance > .header > span > i {
-/*	position: relative;*/
 	margin: 0 0 0 0.5em;
 	font-weight: normal;
 }
@@ -69,10 +64,10 @@
 /*	z-index: 3;*/
 }
 .duplicator > .controls:after {
-	content: " ";
+	content: "";
 	display: block;
 	clear: left;
-	height: 1%;
+	height: 0;
 }
 .duplicator > .controls.top {
 	overflow: hidden;
