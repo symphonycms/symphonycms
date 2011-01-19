@@ -495,7 +495,7 @@ var Symphony = {};
 			var password = $(this),
 				labels = password.find('label'),
 				help = password.next('p.help'),
-				placeholder = $('<label>' + Symphony.Language.get('Password') + ' <span><button>' + Symphony.Language.get('Change Password') + '</button></span></label>'),
+				placeholder = $('<label>' + Symphony.Language.get('Password') + ' <span class="frame"><button>' + Symphony.Language.get('Change Password') + '</button></span></label>'),
 				invalid = password.has('.invalid');
 
 			if(invalid.size() == 0) {

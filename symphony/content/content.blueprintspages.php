@@ -241,9 +241,9 @@
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'secondary');
 
-				$h3 = new XMLElement('h3', __('Utilities'));
-				$h3->setAttribute('class', 'label');
-				$div->appendChild($h3);
+				$p = new XMLElement('p', __('Utilities'));
+				$p->setAttribute('class', 'label');
+				$div->appendChild($p);
 
 				$ul = new XMLElement('ul');
 				$ul->setAttribute('id', 'utilities');
@@ -581,7 +581,7 @@
 
 			if($this->_context[0] == 'edit'){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this page'), 'accesskey' => 'd'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this page'), 'accesskey' => 'd'));
 				$div->appendChild($button);
 			}
 

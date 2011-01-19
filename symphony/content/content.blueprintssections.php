@@ -170,9 +170,9 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
 
 			$div = new XMLElement('div');
-			$h3 = new XMLElement('h3', __('Fields'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
+			$p = new XMLElement('p', __('Fields'));
+			$p->setAttribute('class', 'label');
+			$div->appendChild($p);
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');
@@ -410,7 +410,7 @@
 			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
 
 			$button = new XMLElement('button', __('Delete'));
-			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this section'), 'type' => 'submit', 'accesskey' => 'd'));
+			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this section'), 'type' => 'submit', 'accesskey' => 'd'));
 			$div->appendChild($button);
 
 			$this->Form->appendChild($div);

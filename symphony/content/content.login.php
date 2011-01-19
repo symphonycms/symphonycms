@@ -22,6 +22,7 @@
 			$this->Html->setDTD('<!DOCTYPE html>'); //PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"
 			$this->Html->setAttribute('lang', Lang::get());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 40);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/login.css', 'screen', 40);
 
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Login'))));
@@ -77,7 +78,7 @@
 					$this->Form->appendChild($fieldset);
 
 					$div = new XMLElement('div', NULL, array('class' => 'actions'));
-					$div->appendChild(Widget::Input('action[reset]', __('Send Email'), 'submit'));
+					$div->appendChild(new XMLElement('button', __('Send Email'), array('name' => 'action[reset]', 'type' => 'submit')));
 					$this->Form->appendChild($div);
 
 				}
@@ -105,7 +106,7 @@
 				$this->Form->appendChild($fieldset);
 
 				$div = new XMLElement('div', NULL, array('class' => 'actions'));
-				$div->appendChild(Widget::Input('action[change]', __('Save Changes'), 'submit'));
+				$div->appendChild(new XMLElement('button', __('Save Changes'), array('name' => 'action[change]', 'type' => 'submit')));
 				if(!preg_match('@\/symphony\/login\/@i', $_SERVER['REQUEST_URI'])) $div->appendChild(Widget::Input('redirect', $_SERVER['REQUEST_URI'], 'hidden'));
 				$this->Form->appendChild($div);
 
@@ -134,11 +135,13 @@
 				$this->Form->appendChild($fieldset);
 
 				$div = new XMLElement('div', NULL, array('class' => 'actions'));
-				$div->appendChild(Widget::Input('action[login]', __('Login'), 'submit', array('accesskey' => 's')));
+				$div->appendChild(new XMLElement('button', __('Login'), array('name' => 'action[login]', 'type' => 'submit', 'accesskey' => 's')));
 				if(!preg_match('@\/symphony\/login\/@i', $_SERVER['REQUEST_URI'])) $div->appendChild(Widget::Input('redirect', $_SERVER['REQUEST_URI'], 'hidden'));
 				$this->Form->appendChild($div);
 
 			endif;
+
+			$this->Body->appendChild($this->Form);
 
 		}
 

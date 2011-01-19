@@ -383,7 +383,7 @@
 
 				if($this->_context[0] == 'edit' && !$isOwner && !$author->isPrimaryAccount()){
 					$button = new XMLElement('button', __('Delete'));
-					$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this author'), 'type' => 'submit', 'accesskey' => 'd'));
+					$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this author'), 'type' => 'submit', 'accesskey' => 'd'));
 					$div->appendChild($button);
 				}
 

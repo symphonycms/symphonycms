@@ -1,57 +1,155 @@
-/* Basic Styles */
+/*-----------------------------------------------------------------------------
+	Reset
+-----------------------------------------------------------------------------*/
+
+/* Based on Eric Meyer's reset
+ * http://meyerweb.com/eric/tools/css/reset/
+ * v1.0 | 20080212
+ */
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 1em;
+	vertical-align: baseline;
+	background: transparent;
+	text-decoration: none;
+}
+input, select, textarea, button {
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+}
+ol, ul {
+	list-style: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/*-----------------------------------------------------------------------------
+	Shared styles
+-----------------------------------------------------------------------------*/
+
 body {
-	background: #fff;
-	color: #222;
 	font: 68.75%/1.5 Lucida Grande, Tahoma, Verdana, sans-serif;
 }
-a {
-	color: #5072bf;
-	text-decoration: underline;
-	cursor: pointer;
-}
-a:hover {
-	color: #000;
-}
-a:active {
-	color: #d42;
+h1, h2 {
+	font: 127.28% Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
 }
 p {
 	margin-bottom: 1.5em;
 }
-h1,
-h2 {
-	position: relative;
-	clear: both;
-	margin-bottom: 1em;
-	text-shadow: -1px 2px 3px #ddd;
-	font: 127.28% Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
-}
-h3,
-h4 {
-	position: relative;
-	clear: both;
-	margin-bottom: 0.75em;
-	text-shadow: -1px 2px 2px #ddd;
-	font-weight: bold;
-}
-ul,
-ol {
+ul, ol {
 	margin: 0 0 1.5em 2.25em;
 }
 code {
 	font: 110%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
 	font-size-adjust: 0.5;
 }
-i,
-var {
-	position: absolute;
-	right: 0;
-	color: #aa9;
-	text-shadow: none;
-	font-style: normal;
+pre {
+	margin-bottom: 1.75em;
 }
-* {
+pre code {
+	display: block;
+	white-space: pre;
+}
+
+fieldset {
+	position: relative;
+	padding: 1em 0;
+}
+legend {
+	line-height: 1;
+}
+label {
+	display: block;
+	margin-bottom: 1.5em;
+}
+label input {
+	padding: 2px;
+}
+textarea,
+label input {
+	margin-top: 2px;
+	width: 100%;
+	font-size: 109.09%;
+	font-family: inherit;
+	box-sizing: border-box;
+	-khtml-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+label > input[type=checkbox] {
+	vertical-align: top;
+}
+input[size],
+input[type=radio],
+input[type=checkbox] {
+	display: inline;
+	margin: 0 0.25em 0 0;
+	width: auto;
+}
+input[size],
+label + select {
+	margin-left: 0.25em;
+}
+select {
+	width: 100%;
+	display: block;
+	margin-top: 2px;
+	box-sizing: border-box;
+	-khtml-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+select[multiple] {
+	width: 100%;
+	height: 10em;
+}
+button {
+	padding: 3.5px 6px 4px;
+}
+
+/*-----------------------------------------------------------------------------
+	Globals - Errors
+-----------------------------------------------------------------------------*/
+
+.invalid {
+	color: #fff;
+	margin-bottom: 1.5em;
+}
+.invalid > label {
+	margin-bottom: 0;
+	padding: 0.75em 1em 0.75em;
+	background-color: #d42;
+	border: 1px solid #c31;
+	border-bottom-width: 0;
+}
+.invalid > p {
 	margin: 0;
-	padding: 0;
-	font-size: 1em;
+	padding: 0 1em 0.75em;
+	background-color: #d42;
+	border: 1px solid #c31;
+	border-top-width: 0;
+	border-bottom-color: #b21;
+}
+.invalid a {
+	color: #fb9;
+	text-decoration: underline;
+}
+.invalid a:hover {
+	color: #721;
 }
