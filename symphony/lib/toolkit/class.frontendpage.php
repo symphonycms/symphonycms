@@ -455,6 +455,9 @@
 						$param->appendChild($item);
 					}
 				}
+				else if(is_array($value)) {
+					$param->setValue(General::sanitize($value[0]));
+				}
 				else {
 					$param->setValue(General::sanitize($value));
 				}
