@@ -614,7 +614,7 @@
 				$conf['settings']['database']['tbl_prefix'] = $database['prefix'];
 				$conf['settings']['region']['time_format'] = $config['region']['time_format'];
 				$conf['settings']['region']['date_format'] = $config['region']['date_format'];
-				$conf['settings']['region']['datetime_separator'] = $conf['region']['datetime_separator'];
+				$conf['settings']['region']['datetime_separator'] = $config['region']['datetime_separator'];
 				$conf['settings']['region']['timezone'] = $config['region']['timezone'];
 
 				## Create Manifest Directory structure
