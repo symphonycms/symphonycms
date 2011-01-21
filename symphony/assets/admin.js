@@ -379,7 +379,7 @@ var Symphony = {};
 		$('.picker').symphonyPickable();
 
 		// Selectable
-		var selectable = $('.selectable');
+		var selectable = $('table.selectable');
 		selectable.symphonySelectable();
 		selectable.find('a').mousedown(function(event) {
 			event.stopPropagation();
