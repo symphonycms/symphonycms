@@ -507,7 +507,6 @@
 			if($page) $this->_page = $page;
 
 			$row = null;
-
 			/**
 			 * Before page resolve. Allows manipulation of page without redirection
 			 * @delegate FrontendPrePageResolve
@@ -520,11 +519,13 @@
 			$this->ExtensionManager->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => &$this->_page));
 
 			## Default to the index page if no page has been specified
-			if(!$this->_page && is_null($row)){
-				$row = Symphony::Database()->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types`
-															  WHERE `tbl_pages_types`.page_id = `tbl_pages`.id
-															  AND tbl_pages_types.`type` = 'index'
-															  LIMIT 1");
+			if((!$this->_page || $this->_page == '//') && is_null($row) ){
+				$row = Symphony::Database()->fetchRow(0, "
+					SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types`
+					WHERE `tbl_pages_types`.page_id = `tbl_pages`.id
+					AND tbl_pages_types.`type` = 'index'
+					 LIMIT 1
+				");
 			}
 
 			elseif(is_null($row)){
@@ -556,7 +557,7 @@
 					}else
 						$page_extra_bits[] = $handle;
 
-				}while($handle = array_pop($pathArr));
+				} while($handle = array_pop($pathArr));
 
 				if(empty($valid_page_path)) return false;
 
