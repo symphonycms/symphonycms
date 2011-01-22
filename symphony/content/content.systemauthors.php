@@ -78,7 +78,8 @@
 			$table = Widget::Table(
 				Widget::TableHead($aTableHead),
 				NULL,
-				Widget::TableBody($aTableBody)
+				Widget::TableBody($aTableBody),
+				'selectable'
 			);
 
 			$this->Form->appendChild($table);

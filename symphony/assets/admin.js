@@ -378,15 +378,15 @@ var Symphony = {};
 		// Pickers
 		$('.picker').symphonyPickable();
 
-		// Orderable list
-		$('ul.orderable').symphonyOrderable();
-
 		// Selectable
-		var selectable = $('table:has(input)');
+		var selectable = $('table.selectable');
 		selectable.symphonySelectable();
 		selectable.find('a').mousedown(function(event) {
 			event.stopPropagation();
 		});
+
+		// Orderable list
+		$('ul.orderable').symphonyOrderable();
 
 		// Orderable tables
 		var orderable = $('table.orderable');

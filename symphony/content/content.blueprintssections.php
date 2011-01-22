@@ -60,7 +60,7 @@
 				Widget::TableHead($aTableHead),
 				NULL,
 				Widget::TableBody($aTableBody),
-				'orderable'
+				'orderable selectable'
 			);
 
 			$this->Form->appendChild($table);
