@@ -120,7 +120,7 @@
 			$label->setAttribute('class', $class);
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 
-			$span = new XMLElement('span');
+			$span = new XMLElement('span', NULL, array('class' => 'frame'));
 			if($data['file']) $span->appendChild(Widget::Anchor('/workspace' . $data['file'], URL . '/workspace' . $data['file']));
 
 			$span->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, $data['file'], ($data['file'] ? 'hidden' : 'file')));

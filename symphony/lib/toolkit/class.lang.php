@@ -319,7 +319,7 @@
 			$extensions = new DirectoryIterator(EXTENSIONS);
 
 			// Language extensions
-			if(is_array($extensions) && !empty($extensions)) foreach($extensions as $extension) {
+			foreach($extensions as $extension) {
 				$folder = $extension->getPathname() . '/lang';
 				$directory = General::listStructure($folder);
 				if(is_array($directory['filelist']) && !empty($directory['filelist'])) {
