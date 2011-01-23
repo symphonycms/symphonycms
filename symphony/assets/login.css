@@ -1,14 +1,9 @@
-@import url("forms.css");
-
-/* Login */
 form {
-	position: absolute;
-	top: 96px;
+	position: relative;
+	top: 40px;
 	left: 50%;
 	margin-left: -12.5em;
 	border: 1px solid #eee;
-	padding: 0;
-	min-height: 0;
 	width: 25em;
 }
 h1 {
@@ -16,28 +11,32 @@ h1 {
 	border: 1px solid #665;
 	border-top-color: #887;
 	border-bottom: none;
-	padding: 19px;
+	padding: 17px 19px;
 	background-color: #353530;
+	color: #fff;
+	text-shadow: -1px 2px 3px #111;
+	font-weight: bold;
+	line-height: 1;
 }
 fieldset,
-div.actions {
-	padding: 1em 2em;
-	border: 1px solid #bba;
-	border-top-color: #ddc;
+.actions {
+	padding-left: 2em;
+	padding-right: 2em;
+	border-left: 1px solid #bba;
+	border-right: 1px solid #bba;
 	background-color: #ccb;
 }
-div.actions {
-	float: none;
-	margin-top: -1.25em;
-	border-top: none;
-	border-bottom: 1px solid #998;
-	padding-top: 0;
-	width: auto;
-	overflow: hidden;
+fieldset {
+	padding-bottom: 0.5em;
+	border-top: 1px solid #ddc;
 }
-button {
-	display: block;
-	margin: 0 0 0 auto;
+.actions {
+	overflow: hidden;
+	padding-bottom: 1em;
+	border-bottom: 1px solid #998;
+}
+.actions button {
+	float: right;
 }
 legend {
 	display: none;
