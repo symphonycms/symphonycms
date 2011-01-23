@@ -230,7 +230,7 @@
 		 * @since Symphony 2.2
 		 * @return ExtensionManager
 		 */
-		public function ExtensionManager() {
+		public static function ExtensionManager() {
 			return self::$ExtensionManager;
 		}
 
