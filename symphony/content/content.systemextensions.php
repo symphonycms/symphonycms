@@ -19,16 +19,15 @@
 
 			$this->Form->setAttribute('action', SYMPHONY_URL . '/system/extensions/');
 
-			$ExtensionManager = Symphony::ExtensionManager();
-			$extensions = $ExtensionManager->listAll();
+			$extensions = Symphony::ExtensionManager()->listAll();
 
 			## Sort by extensions name:
 			uasort($extensions, array('ExtensionManager', 'sortByName'));
 
 			$aTableHead = array(
 				array(__('Name'), 'col'),
+				array(__('Installed Version'), 'col'),
 				array(__('Enabled'), 'col'),
-				array(__('Version'), 'col'),
 				array(__('Author'), 'col'),
 			);
 
@@ -43,13 +42,21 @@
 			else{
 				foreach($extensions as $name => $about){
 
-					## Setup each cell
-
 					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], Administration::instance()->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));
-					$td2 = Widget::TableData(($about['status'] == EXTENSION_ENABLED ? __('Yes') : __('No')));
-					$td3 = Widget::TableData($about['version']);
-					$td4 = Widget::TableData(NULL);
+					$installed_version = Symphony::ExtensionManager()->fetchInstalledVersion($name);
+					$td2 = Widget::TableData(empty($installed_version) ? __('Not Installed') : $installed_version);
 
+					if($about['status'] == EXTENSION_ENABLED) {
+						$td3 = Widget::TableData(__('Yes'));
+					}
+					elseif(empty($installed_version)) {
+						$td3 = Widget::TableData(__('Enable to install %s', array($about['version'])));
+					}
+                    else {
+						$td3 = Widget::TableData(__('Enable to update to %s', array($about['version'])));
+					}
+
+					$td4 = Widget::TableData(NULL);
 					if($about['author'][0] && is_array($about['author'][0])) {
 						foreach($about['author'] as $i => $author) {
 
@@ -61,7 +68,7 @@
 								$link = $author['name'];
 
 							$value .= ($link instanceof XMLElement ? $link->generate() : $link)
-							        . ($i != count($about['author']) - 1 ? ", " : "");
+									. ($i != count($about['author']) - 1 ? ", " : "");
 						}
 
 						$td4->setValue($value);
