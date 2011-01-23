@@ -177,7 +177,7 @@
 		$conf['symphony']['pagination_maximum_rows'] = '17';
 		$conf['symphony']['allow_page_subscription'] = '1';
 		$conf['symphony']['lang'] = Lang::get();
-		$conf['symphony']['version'] = kVersion;
+		$conf['symphony']['version'] = kVERSION;
 		$conf['symphony']['pages_table_nest_children'] = 'yes';
 		$conf['symphony']['strict_error_handling'] = 'yes';
 		$conf['log']['archive'] = '1';
