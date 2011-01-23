@@ -179,6 +179,7 @@
 			else {
 				if (!is_array($this->_callback['context'])) $this->_callback['context'] = array();
 
+				// Check for update Alert
 				if(file_exists(DOCROOT . '/update.php') && $this->Page instanceOf AdministrationPage) {
 					if(file_exists(DOCROOT . '/README.markdown') && is_readable(DOCROOT . '/README.markdown')) {
 						$readme = file(DOCROOT . '/README.markdown', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -201,6 +202,19 @@
 					}
 
 					$this->Page->pageAlert($message, Alert::NOTICE);
+				}
+
+				// Do any extensions need updating?
+				$extensions = Symphony::ExtensionManager()->listAll();
+				if(is_array($extensions) && !empty($extensions)) {
+					foreach($extensions as $handle => $about) {
+						if($about['status'] == EXTENSION_REQUIRES_UPDATE) {
+							$this->Page->pageAlert(
+								__('An extension requires updating. <a href="' . SYMPHONY_URL . '/system/extensions/">View Extensions</a>')
+							);
+							break;
+						}
+					}
 				}
 
 				$this->Page->build($this->_callback['context']);
