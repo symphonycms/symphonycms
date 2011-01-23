@@ -17,6 +17,14 @@
 
 	Class AdministrationPage extends HTMLPage{
 
+		public $Wrapper = null;
+
+		public $Header = null;
+
+		public $Footer = null;
+
+		public $Contents = null;
+
 		/**
 		 * An instance of the Administration class
 		 * @var Administration
@@ -87,8 +95,8 @@
 		 * @param string $type
 		 *  Either 'forms' or 'tables'. Defaults to 'forms'
 		 */
-		public function setPageType($type = 'forms'){
-			$this->addStylesheetToHead(URL . '/symphony/assets/' . ($type == 'table' ? 'tables' : 'forms') . '.css', 'screen', 30);
+		public function setPageType($type = 'form'){
+			$this->setBodyClass($type == 'form' || $type == 'single' ? 'single' : 'index');
 		}
 
 		/**
@@ -155,10 +163,10 @@
 		 */
 		public function appendSubheading($value, $html = null){
 
-			if($html && is_object($html)) $value .= ' ' . $html->generate(false);
-			elseif($html) $value .= ' ' . $html;
+			if($html && is_object($html)) $value = '<span>' . $value . '</span> ' . $html->generate(false);
+			elseif($html) $value = '<span>' . $value . '</span> ' . $html;
 
-			$this->Form->appendChild(new XMLElement('h2', $value));
+			$this->Contents->prependChild(new XMLElement('h2', $value));
 		}
 
 		/**
@@ -187,6 +195,8 @@
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Lang::get());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
+			$this->addStylesheetToHead(URL . '/symphony/assets/basic.css', 'screen', 40);
+			$this->addStylesheetToHead(URL . '/symphony/assets/admin.css', 'screen', 40);
 			$this->addStylesheetToHead(URL . '/symphony/assets/symphony.duplicator.css', 'screen', 70);
 			$this->addScriptToHead(URL . '/symphony/assets/jquery.js', 50);
 			$this->addScriptToHead(URL . '/symphony/assets/jquery.color.js', 51);
@@ -223,13 +233,21 @@
 				Administration::instance()->Profiler->sample('Page action run', PROFILE_LAP);
 			}
 
-			## Build the form
-			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
+			$this->Wrapper = new XMLElement('div', NULL, array('class' => 'wrapper'));
+			$this->Header = new XMLElement('div', NULL, array('class' => 'header'));
+
 			$h1 = new XMLElement('h1');
 			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
-			$this->Form->appendChild($h1);
+			$this->Header->appendChild($h1);
 
 			$this->appendNavigation();
+
+			$this->Contents = new XMLElement('div', NULL, array('class' => 'contents'));
+
+			## Build the form
+			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
+
+			$this->Contents->appendChild($this->Form);
 			$this->view();
 
 			/**
@@ -242,8 +260,16 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AppendElementBelowView', '/backend/');
 
+			$this->Footer = new XMLElement('div', NULL, array('class' => 'footer'));
+
 			$this->appendFooter();
 			$this->appendAlert();
+
+			$this->Wrapper->appendChild($this->Header);
+			$this->Wrapper->appendChild($this->Contents);
+			$this->Wrapper->appendChild($this->Footer);
+
+			$this->Body->appendChild($this->Wrapper);
 
 			Administration::instance()->Profiler->sample('Page content created', PROFILE_LAP);
 		}
@@ -343,7 +369,7 @@
 				$body_class .= trim($c) . ' ';
 			}
 			$body_class = $body_class . trim($this->_body_class);
-			if (!empty($body_class)) $this->Body->setAttribute('class', $body_class);
+			if (!empty($body_class)) $this->Body->setAttribute('class', trim($body_class));
 		}
 
 		/**
@@ -420,8 +446,8 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AppendPageAlert', '/backend/');
 
-			if($this->Alert instanceof Alert){
-				$this->Form->prependChild($this->Alert->asXML());
+			if(($this->Alert instanceof Alert)){
+				$this->Header->prependChild($this->Alert->asXML());
 			}
 		}
 
@@ -510,7 +536,7 @@
 				}
 			}
 
-			$this->Form->appendChild($xNav);
+			$this->Header->appendChild($xNav);
 			Administration::instance()->Profiler->sample('Navigation Built', PROFILE_LAP);
 		}
 
@@ -804,7 +830,7 @@
 		public function appendFooter(){
 
 			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array('id' => 'version'));
-			$this->Form->appendChild($version);
+			$this->Footer->appendChild($version);
 
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('id', 'usr');
@@ -829,7 +855,7 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AddElementToFooter', '/backend/', array('wrapper' => &$ul));
 
-			$this->Form->appendChild($ul);
+			$this->Footer->appendChild($ul);
 		}
 
 		/**

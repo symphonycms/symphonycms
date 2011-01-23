@@ -22,7 +22,7 @@ var Symphony = {};
 				user = $('#usr li:first a');
 
 			// Set JavaScript status
-			$('html').addClass('active');
+			html.addClass('active');
 
 			// Set basic context information
 			Symphony.Context.add('user', {
@@ -387,16 +387,15 @@ var Symphony = {};
 		// Pickers
 		$('.picker').symphonyPickable();
 
-		// Orderable list
-		$('ul.orderable').symphonyOrderable();
-
 		// Selectable
-		var selectable = $('table:has(input)');
+		var selectable = $('table.selectable');
 		selectable.symphonySelectable();
-
 		selectable.find('a').mousedown(function(event) {
 			event.stopPropagation();
 		});
+
+		// Orderable list
+		$('ul.orderable').symphonyOrderable();
 
 		// Orderable tables
 		var old_sorting, orderable = $('table.orderable');
@@ -505,7 +504,7 @@ var Symphony = {};
 			var password = $(this),
 				labels = password.find('label'),
 				help = password.next('p.help'),
-				placeholder = $('<label>' + Symphony.Language.get('Password') + ' <span><button>' + Symphony.Language.get('Change Password') + '</button></span></label>'),
+				placeholder = $('<label>' + Symphony.Language.get('Password') + ' <span class="frame"><button>' + Symphony.Language.get('Change Password') + '</button></span></label>'),
 				invalid = password.has('.invalid');
 
 			if(invalid.size() == 0) {
@@ -643,12 +642,9 @@ var Symphony = {};
 		}
 
 		// Accessible navigation
-		$('#nav a').focus(function() {
-			$(this).parents('li').eq(1).addClass('current');
-		}).blur(function() {
-			$(this).parents('li').eq(1).removeClass('current');
+		$('#nav').delegate('a', 'focus blur', function() {
+			$(this).parents('li').eq(1).toggleClass('current');
 		});
-
 	});
 
 })(jQuery.noConflict());

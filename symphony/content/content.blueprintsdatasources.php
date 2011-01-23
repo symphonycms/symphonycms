@@ -225,9 +225,9 @@
 
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'contextual ' . $section_data['section']->get('id'));
-				$h3 = new XMLElement('h3', __('Filter %s by', array($section_data['section']->get('name'))));
-				$h3->setAttribute('class', 'label');
-				$div->appendChild($h3);
+				$p = new XMLElement('p', __('Filter %s by', array($section_data['section']->get('name'))));
+				$p->setAttribute('class', 'label');
+				$div->appendChild($p);
 
 				$ol = new XMLElement('ol');
 				$ol->setAttribute('class', 'filters-duplicator');
@@ -278,9 +278,9 @@
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'contextual authors');
-			$h3 = new XMLElement('h3', __('Filter Authors by'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
+			$p = new XMLElement('p', __('Filter Authors by'));
+			$p->setAttribute('class', 'label');
+			$div->appendChild($p);
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
@@ -299,9 +299,9 @@
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'contextual navigation');
-			$h3 = new XMLElement('h3', __('Filter Navigation by'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
+			$p = new XMLElement('p', __('Filter Navigation by'));
+			$p->setAttribute('class', 'label');
+			$div->appendChild($p);
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
@@ -470,11 +470,10 @@
 			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
 			$fieldset->appendChild($label);
 
-			$ul = new XMLElement('ul');
-			$ul->setAttribute('class', 'group');
+			$div = new XMLElement('div', NULL, array('class' => 'group'));
 
-			$li = new XMLElement('li');
-			$li->appendChild(new XMLElement('h3', __('Parameter Output')));
+			$subfieldset = new XMLElement('fieldset', NULL);
+			$subfieldset->appendChild(new XMLElement('legend', __('Parameter Output')));
 
 			$label = Widget::Label(__('Use Field'));
 			$options = array(
@@ -512,16 +511,16 @@
 			}
 
 			$label->appendChild(Widget::Select('fields[param]', $options, array('class' => 'filtered')));
-			$li->appendChild($label);
+			$subfieldset->appendChild($label);
 
 			$p = new XMLElement('p', __('The parameter <code id="output-param-name">$ds-%s</code> will be created with this field\'s value for XSLT or other data sources to use.', array(($this->_context[0] == 'edit' ? $existing->dsParamROOTELEMENT : __('Untitled')))));
 			$p->setAttribute('class', 'help');
-			$li->appendChild($p);
+			$subfieldset->appendChild($p);
 
-			$ul->appendChild($li);
+			$div->appendChild($subfieldset);
 
-			$li = new XMLElement('li');
-			$li->appendChild(new XMLElement('h3', __('XML Output')));
+			$subfieldset = new XMLElement('fieldset', NULL);
+			$subfieldset->appendChild(new XMLElement('legend', __('XML Output')));
 
 			$label = Widget::Label(__('Group By'));
 			$options = array(
@@ -551,7 +550,7 @@
 			}
 
 			$label->appendChild(Widget::Select('fields[group]', $options, array('class' => 'filtered')));
-			$li->appendChild($label);
+			$subfieldset->appendChild($label);
 
 			$label = Widget::Label(__('Included Elements'));
 
@@ -598,23 +597,23 @@
 			}
 
 			$label->appendChild(Widget::Select('fields[xml_elements][]', $options, array('multiple' => 'multiple', 'class' => 'filtered')));
-			$li->appendChild($label);
+			$subfieldset->appendChild($label);
 
 			$label = Widget::Label();
 			$label->setAttribute('class', 'contextual inverse authors');
 			$input = Widget::Input('fields[associated_entry_counts]', 'yes', 'checkbox', ((isset($fields['associated_entry_counts']) && $fields['associated_entry_counts'] == 'yes') ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s Include a count of entries in associated sections', array($input->generate(false))));
-			$li->appendChild($label);
+			$subfieldset->appendChild($label);
 
 			$label = Widget::Label();
 			$label->setAttribute('class', 'contextual inverse authors');
 			$input = Widget::Input('fields[html_encode]', 'yes', 'checkbox', (isset($fields['html_encode']) ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s HTML-encode text', array($input->generate(false))));
-			$li->appendChild($label);
+			$subfieldset->appendChild($label);
 
-			$ul->appendChild($li);
+			$div->appendChild($subfieldset);
 
-			$fieldset->appendChild($ul);
+			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
@@ -630,9 +629,9 @@
 			$fieldset->appendChild($p);
 
 			$div = new XMLElement('div');
-			$h3 = new XMLElement('h3', __('Namespace Declarations <i>Optional</i>'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
+			$p = new XMLElement('p', __('Namespace Declarations <i>Optional</i>'));
+			$p->setAttribute('class', 'label');
+			$div->appendChild($p);
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
@@ -723,7 +722,7 @@
 
 			if($isEditing){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this data source'), 'type' => 'submit', 'accesskey' => 'd'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this data source'), 'type' => 'submit', 'accesskey' => 'd'));
 				$div->appendChild($button);
 			}
 

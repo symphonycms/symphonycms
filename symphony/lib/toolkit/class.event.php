@@ -23,7 +23,7 @@
 		 * action does exist, it typically calls the `__trigger()` method, otherwise void.
 		 *
 		 * @return mixed
-		 *  XMLElement with the event result or void if the action did not match
+		 *	XMLElement with the event result or void if the action did not match
 		 */
 		public function load();
 	}
@@ -86,11 +86,11 @@
 		 * from the given parameters
 		 *
 		 * @param Administration $parent
-		 *  The Administration object that this page has been created from
-		 *  passed by reference
+		 *	The Administration object that this page has been created from
+		 *	passed by reference
 		 * @param array $env
-		 *  The environment variables from the Frontend class which includes
-		 *  any params set by Symphony or Datasources or by other Events
+		 *	The environment variables from the Frontend class which includes
+		 *	any params set by Symphony or Datasources or by other Events
 		 */
 		public function __construct(&$parent, Array $env = array()){
 			$this->_Parent = $parent;
@@ -127,25 +127,24 @@
 		 * returns `false`. If this is not implemented by the event, a default Symphony message will
 		 * appear
 		 *
-		 * @since Symphony 2.2
 		 * @return string
 		 */
-		public function documentation() {
+		public static function documentation() {
 			return __('This event has been customised and cannot be viewed from Symphony.');
 		}
 
 		/**
 		 * Priority determines Event importance and when it should be executed.
 		 * The default priority for an event is `Event::kNORMAL`, with `Event::kHIGH` and
-         * `Event::kLOW` being the other available options. Events execution is `Event::HIGH`
-         * to `Event::kNORMAL` to `Event::kLOW`. If there are more than one event at the
-         * same priority level, they are sorted alphabetically by event handle and executed
-         * in that order for that priority.
+		 * `Event::kLOW` being the other available options. Events execution is `Event::HIGH`
+		 * to `Event::kNORMAL` to `Event::kLOW`. If there are more than one event at the
+		 * same priority level, they are sorted alphabetically by event handle and executed
+		 * in that order for that priority.
 		 *
 		 * @see toolkit.FrontendPage#__findEventOrder()
 		 * @return integer
-		 *  The available constants are `Event::kLOW`, `Event::kNORMAL` and `Event::kHIGH`.
-         *  Defaults to `Event::kNORMAL`
+		 *	The available constants are `Event::kLOW`, `Event::kNORMAL` and `Event::kHIGH`.
+		 *	Defaults to `Event::kNORMAL`
 		 */
 		public function priority(){
 			return self::kNORMAL;
@@ -157,8 +156,8 @@
 		 * has already been triggered from the load function
 		 *
 		 * @return mixed
-		 *  Typically returns an XMLElement with the event information (success
-		 *  or failure included
+		 *	Typically returns an XMLElement with the event information (success
+		 *	or failure included
 		 */
 		abstract protected function __trigger();
 	}

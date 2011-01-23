@@ -9,11 +9,11 @@
 	 * array of inserts the function will also replace translation placeholders using vsprintf().
 	 *
 	 * @param string $string
-	 *  The string that should be translated
+	 *	The string that should be translated
 	 * @param array $inserts
-	 *  Optional array used to replace translation placeholders, defaults to NULL
+	 *	Optional array used to replace translation placeholders, defaults to NULL
 	 * @return
-	 *  Returns the translated string
+	 *	Returns the translated string
 	 */
 	function __($string, $inserts=NULL) {
 		return Lang::Dictionary()->translate($string, $inserts);
@@ -23,9 +23,9 @@
 	 * The transliteration function replaces special characters.
 	 *
 	 * @param string $string
-	 *  The string that should be cleaned-up
+	 *	The string that should be cleaned-up
 	 * @return
-	 *  Returns the transliterated string
+	 *	Returns the transliterated string
 	 */
 	function _t($string) {
 		$patterns = array_keys(Lang::Transliterations());
@@ -44,16 +44,16 @@
 	Class Dictionary {
 
 		/**
-         * An associative array mapping English strings and their translations
-		 * @var array 
+		 * An associative array mapping English strings and their translations
+		 * @var array
 		 */
- 		private $_strings;
+		private $_strings;
 
 		/**
 		 * The constructor for Dictionary.
 		 *
 		 * @param array $strings
-		 *  Associative array mapping English strings and their translations, defaults to an empty array
+		 *	Associative array mapping English strings and their translations, defaults to an empty array
 		 */
 		public function __construct(Array $strings=array()) {
 			$this->_strings = $strings;
@@ -68,13 +68,13 @@
 		 * Note: If you like to translate strings, please use __() which is the common alias for this function.
 		 *
 		 * @param string $string
-		 *  The string that should be translated
+		 *	The string that should be translated
 		 * @param array $inserts
-		 *  Optional array used to replace translation placeholders, defaults to NULL
+		 *	Optional array used to replace translation placeholders, defaults to NULL
 		 * @return string
-		 *  Returns the translated string
+		 *	Returns the translated string
 		 */
- 		public function translate($string, Array $inserts=NULL) {
+		public function translate($string, Array $inserts=NULL) {
 			$translated = $this->find($string);
 
 			// Default to English if no translation available
@@ -94,9 +94,9 @@
 		 * Given a string, return its translation.
 		 *
 		 * @param string $string
-		 *  The string to look for
+		 *	The string to look for
 		 * @return string|boolean
-		 *  Returns either the translation of the string or false if it could not be found
+		 *	Returns either the translation of the string or false if it could not be found
 		 */
 		public function find($string) {
 			if(isset($this->_strings[$string])) {
@@ -110,9 +110,9 @@
 		 * Given a source string an its translation, add both to the current dictionary.
 		 *
 		 * @param string $source
-		 *  English string
+		 *	English string
 		 * @param string $translation
-		 *  Translation
+		 *	Translation
 		 */
 		public function add($source, $translation) {
 			$this->_strings[$source] = $translation;
@@ -122,7 +122,7 @@
 		 * Given an associative array of strings, merge it with the current dictionary.
 		 *
 		 * @param array $string
-		 *  Associative array containing English strings and their translations
+		 *	Associative array containing English strings and their translations
 		 */
 		public function merge(Array $strings) {
 			if(is_array($strings)) {
@@ -134,7 +134,7 @@
 		 * Given an English string, remove it from the current dictionary.
 		 *
 		 * @param string $string
-		 *  String to be removed from the dictionary.
+		 *	String to be removed from the dictionary.
 		 */
 		public function remove($string) {
 			unset($this->_strings[$string]);
@@ -148,32 +148,32 @@
 	Class Lang {
 
 		/**
-         * Code of active language
+		 * Code of active language
 		 * @var string
 		 */
 		private static $_lang;
 
 		/**
-         * Context information of all available languages
-		 * @var array 
+		 * Context information of all available languages
+		 * @var array
 		 */
 		public static $_languages;
 
 		/**
-         * Instance of the current Dictionary
+		 * Instance of the current Dictionary
 		 * @var Dictionary
 		 */
 		private static $_dictionary;
 
 		/**
-         * Array of transliterations
-		 * @var array 
+		 * Array of transliterations
+		 * @var array
 		 */
 		private static $_transliterations;
 
 		/**
-         * Array of months and weekday for localized date output
-		 * @var array 
+		 * Array of months and weekday for localized date output
+		 * @var array
 		 */
 		private static $_dates;
 
@@ -181,7 +181,7 @@
 		 * Get dictionary
 		 *
 		 * @return Dictionary
-		 *  Return the current dictionary
+		 *	Return the current dictionary
 		 */
 		public static function Dictionary() {
 			return self::$_dictionary;
@@ -191,7 +191,7 @@
 		 * Get transliterations
 		 *
 		 * @return array
-		 *  Returns the array of transliterations
+		 *	Returns the array of transliterations
 		 */
 		public static function Transliterations() {
 			return self::$_transliterations;
@@ -210,8 +210,8 @@
 		 * Set system language.
 		 *
 		 * @param string $lang
-		 *  Language code, e. g. 'en' or 'pt-br'
-         * @param boolean $enabled
+		 *	Language code, e. g. 'en' or 'pt-br'
+		 * @param boolean $enabled
 		 */
 		public static function set($lang, $enabled=true) {
 			if($lang && $lang != self::get()) {
@@ -227,8 +227,8 @@
 
 		/**
 		 * Get current language
-         * 
-         * @return string
+		 *
+		 * @return string
 		 */
 		public static function get() {
 			return self::$_lang;
@@ -241,8 +241,8 @@
 		 *
 		 * Note: Beginning with Symphony 2.2 translations bundled with extensions will only be loaded
 		 * when the core dictionary of the specific language is available.
-         * 
-         * @param boolean $enabled
+		 *
+		 * @param boolean $enabled
 		 */
 		public static function activate($enabled=true) {
 
@@ -295,7 +295,7 @@
 		/**
 		 * Fetch all languages available in the core language folder and the language extensions.
 		 * The function stores all language information in the public variable `$_languages`.
-		 * It contains an array with the name, source, path and status of each language. 
+		 * It contains an array with the name, source, path and status of each language.
 		 * Furthermore it add an array of all extensions available in a specific language. The language
 		 * status (enabled/disabled) can only be determined when the Extension Manager has been
 		 * initialized before. During installation all extension status are set to disabled.
@@ -359,19 +359,19 @@
 
 		/**
 		 * Fetch language information for a single language.
-         * 
-         * @param string $source
-         *  The filename of the extension driver where this language
-         *  file was found
-         * @param string $folder
-         *  The folder where this language file exists
-         * @param string $file
-         *  The filename of the language
-         * @param array $enabled
-		 *  An associative array of enabled extensions from `tbl_extensions`
+		 *
+		 * @param string $source
+		 *	The filename of the extension driver where this language
+		 *	file was found
+		 * @param string $folder
+		 *	The folder where this language file exists
+		 * @param string $file
+		 *	The filename of the language
+		 * @param array $enabled
+		 *	An associative array of enabled extensions from `tbl_extensions`
 		 * @return array
-		 *  Returns a multidimensional array of language information
-         */
+		 *	Returns a multidimensional array of language information
+		 */
 		private static function fetchLanguage($source, $folder, $file, $enabled) {
 
 			// Fetch language file
@@ -407,9 +407,9 @@
 		 * about, dictionary and transliterations.
 		 *
 		 * @param string $path
-		 *  Path of the language file that should be loaded
+		 *	Path of the language file that should be loaded
 		 * @param boolean $clear
-		 *  True, if the current dictionary should be cleared, defaults to false
+		 *	True, if the current dictionary should be cleared, defaults to false
 		 */
 		public static function load($path, $clear=false) {
 
@@ -467,9 +467,9 @@
 		 * Note: Beginning with Symphony 2.2 language files are only available
 		 * when the language extension is explicitly enabled.
 		 *
-         * @param boolean $enabled
+		 * @param boolean $enabled
 		 * @return array
-		 *  Returns an associative array of language codes and names, e. g. 'en' => 'English'
+		 *	Returns an associative array of language codes and names, e. g. 'en' => 'English'
 		 */
 		public static function getAvailableLanguages($enabled=true) {
 			$languages = array();
@@ -489,7 +489,7 @@
 		 * Check if Symphony is localised.
 		 *
 		 * @return boolean
-		 *  Returns true for localized system, false for English system
+		 *	Returns true for localized system, false for English system
 		 */
 		public function isLocalized() {
 			return (self::get() != 'en');
@@ -499,9 +499,9 @@
 		 * Localize dates.
 		 *
 		 * @param string $string
-		 *  Standard date that should be localized
+		 *	Standard date that should be localized
 		 * @return string
-		 *  Return the given date with translated month and day names
+		 *	Return the given date with translated month and day names
 		 */
 		public static function localizeDate($string) {
 
@@ -519,9 +519,9 @@
 		 * Standardize dates.
 		 *
 		 * @param string $string
-		 *  Localized date that should be standardized
+		 *	Localized date that should be standardized
 		 * @return string
-		 *  Returns the given date with English month and day names
+		 *	Returns the given date with English month and day names
 		 */
 		public static function standardizeDate($string) {
 
@@ -553,15 +553,15 @@
 		 * @param string $string
 		 *	String to be cleaned up
 		 * @param int $max_length
-		 *  The maximum number of characters in the handle
+		 *	The maximum number of characters in the handle
 		 * @param string $delim
-		 *  All non-valid characters will be replaced with this
+		 *	All non-valid characters will be replaced with this
 		 * @param boolean $uriencode
-		 *  Force the resultant string to be uri encoded making it safe for URLs
+		 *	Force the resultant string to be uri encoded making it safe for URLs
 		 * @param boolean $apply_transliteration
-		 *  If true, this will run the string through an array of substitution characters
+		 *	If true, this will run the string through an array of substitution characters
 		 * @return string
-		 *  Returns resultant handle
+		 *	Returns resultant handle
 		 */
 		public static function createHandle($string, $max_length=255, $delim='-', $uriencode=false, $apply_transliteration=true, $additional_rule_set=NULL) {
 
@@ -610,13 +610,13 @@
 		 * Given a string, this will clean it for use as a filename. Preserves multi-byte characters.
 		 *
 		 * @param string $string
-		 *  String to be cleaned up
+		 *	String to be cleaned up
 		 * @param string $delim
-		 *  Replacement for invalid characters
+		 *	Replacement for invalid characters
 		 * @param boolean $apply_transliteration
-		 *  If true, umlauts and special characters will be substituted
+		 *	If true, umlauts and special characters will be substituted
 		 * @return string
-		 *  Returns created filename
+		 *	Returns created filename
 		 */
 		public static function createFilename($string, $delim='-', $apply_transliteration=true) {
 
