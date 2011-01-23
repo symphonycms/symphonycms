@@ -628,8 +628,7 @@ var Symphony = {};
 		});
 
 		// Focus first text-input or textarea when creating or editing entries
-		if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'edit' || Symphony.Context.get('env')[0] == 'new'
-			|| Symphony.Context.get('env').page == 'edit' || Symphony.Context.get('env').page == 'new')) {
+		if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'new' || Symphony.Context.get('env').page == 'new')) {
 			$('input[type="text"], textarea').first().focus();
 		}
 
