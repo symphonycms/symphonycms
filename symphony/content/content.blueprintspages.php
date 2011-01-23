@@ -522,7 +522,7 @@
 
 			if(is_array($events) && !empty($events)) {
 				foreach ($events as $name => $about) $options[] = array(
-					$name, @in_array($name, $fields['events']), $about['name']
+					$name, is_array($fields['events']) ? in_array($name, $fields['events']) : false, $about['name']
 				);
 			}
 
@@ -540,7 +540,7 @@
 
 			if(is_array($datasources) && !empty($datasources)) {
 				foreach ($datasources as $name => $about) $options[] = array(
-					$name, @in_array($name, $fields['data_sources']), $about['name']
+					$name, is_array($fields['data_sources']) ? in_array($name, $fields['data_sources']) : false, $about['name']
 				);
 			}
 
