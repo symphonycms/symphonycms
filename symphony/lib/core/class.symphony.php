@@ -130,7 +130,7 @@
 			$this->initialiseLog();
 
 			GenericExceptionHandler::initialise(self::$Log);
-			GenericErrorHandler::initialise(self::$Log);
+			GenericErrorHandler::initialise(self::$Log, self::$Configuration->get('strict_error_handling', 'symphony'));
 
 			$this->initialiseCookie();
 			$this->initialiseDatabase();

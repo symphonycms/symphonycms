@@ -13,9 +13,9 @@
 		return (is_array($results) && !empty($results));
 	}
 
-    function writeConfig($dest, $conf, $mode){
+	function writeConfig($dest, $conf, $mode){
 
-        $string  = "<?php\n";
+		$string  = "<?php\n";
 
 		$string .= "\n\t\$settings = array(";
 		foreach($conf as $group => $data){
@@ -29,9 +29,9 @@
 		}
 		$string .= "\r\n\t);\n\n";
 
-        return General::writeFile($dest . '/config.php', $string, $mode);
+		return General::writeFile($dest . '/config.php', $string, $mode);
 
-    }
+	}
 
 	function loadOldStyleConfig(){
 		$config = preg_replace(array('/^<\?php/i', '/\?>$/i', '/if\(\!defined\([^\r\n]+/i', '/require_once[^\r\n]+/i'), NULL, file_get_contents('manifest/config.php'));
@@ -171,7 +171,7 @@
 					$rewrite_base .= '/';
 				}
 
-		        $htaccess = '
+				$htaccess = '
 ### Symphony 2.0.x ###
 Options +FollowSymlinks -Indexes
 
@@ -319,6 +319,7 @@ Options +FollowSymlinks -Indexes
 
 			if(version_compare($existing_version, '2.2.0', '<')){
 				$setting['region']['datetime_separator'] = ' ';
+				$setting['symphony']['strict_error_handling'] = 'yes';
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
@@ -417,4 +418,3 @@ Options +FollowSymlinks -Indexes
 		render($code);
 
 	}
-
