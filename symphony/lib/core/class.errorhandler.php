@@ -66,7 +66,7 @@
 		 * @return string
 		 *  The result of the Exception's render function
 		 */
-		public static function handler($e){
+		public static function handler(Exception $e){
 			try{
 
 				// Exceptions should be logged if they are not caught.
@@ -114,7 +114,7 @@
 		 * @return string
 		 *  An HTML string
 		 */
-		public static function render($e){
+		public static function render(Exception $e){
 
 			$lines = NULL;
 			$odd = true;
@@ -122,7 +122,7 @@
 			$markdown = "\t" . $e->getMessage() . "\n";
 			$markdown .= "\t" . $e->getFile() . " line " . $e->getLine() . "\n\n";
 			foreach(self::__nearByLines($e->getLine(), $e->getFile()) as $line => $string) {
-			    $markdown .= "\t" . ($line+1) . $string;
+				$markdown .= "\t" . ($line+1) . $string;
 			}
 
 			foreach(self::__nearByLines($e->getLine(), $e->getFile()) as $line => $string){
@@ -317,15 +317,6 @@
 		private static $_Log = null;
 
 		/**
-		 * An array of all the error constants that Symphony will throw an
-		 * exception for. These constants map directly to PHP's error constants.
-		 *
-		 * @var array
-		 * @link http://www.php.net/manual/en/errorfunc.constants.php
-		 */
-		protected static $_enabledErrorTypes = array();
-
-		/**
 		 * An associative array with the PHP error constant as a key, and
 		 * a string describing that constant as the value
 		 * @var array
@@ -361,7 +352,7 @@
 				self::$_Log = $Log;
 			}
 
-			set_error_handler(array(__CLASS__, 'handler'));
+			set_error_handler(array(__CLASS__, 'handler'), error_reporting());
 		}
 
 		/**
@@ -371,40 +362,14 @@
 		 * @return boolean
 		 */
 		public static function isEnabled(){
-			return (bool)ini_get('error_reporting') AND self::$enabled;
-		}
-
-		/**
-		 * Parses the error_reporting variable and builds an array of the PHP error
-		 * constants that the variable decodes to. This is because error_reporting can
-		 * be set using bitwise operators to combine/exclude different error levels.
-		 * Thanks to 'DarkGool' for inspiring this function.
-		 *
-		 * @author DarkGool
-		 * @link http://www.php.net/manual/en/function.error-reporting.php#55985
-		 */
-		public static function isErrorsEnabled($type){
-
-			if(is_null(self::$_enabledErrorTypes)){
-				self::$_enabledErrorTypes = array();
-				$bit = ini_get('error_reporting');
-				while ($bit > 0) {
-				    for($i = 0, $n = 0; $i <= $bit; $i = 1 * pow(2, $n), $n++) {
-				        $end = $i;
-				    }
-				    self::$_enabledErrorTypes[] = $end;
-				    $bit = $bit - $end;
-				}
-			}
-
-			return in_array($type, self::$_enabledErrorTypes);
+			return (bool)error_reporting() AND self::$enabled;
 		}
 
 		/**
 		 * The handler function will write the error to the `$Log` if it is not `E_NOTICE`
-		 * or `E_STRICT` before checking that the error handler is enabled and if the
-		 * error should be raised as an Exception
-		 *
+		 * or `E_STRICT` before raising the error as an Exception. This allows all `E_WARNING`
+		 * to actually be captured by an Exception handler.
+		 * 
 		 * @param integer $code
 		 *  The error code, one of the PHP error constants
 		 * @param string $message
@@ -426,9 +391,8 @@
 					), $code, true
 				);
 			}
-
-			if(self::isEnabled() !== true || self::isErrorsEnabled($code) !== true) return;
-			GenericExceptionHandler::handler(new ErrorException($message, 0, $code, $file, $line));
+			
+			throw new ErrorException($message, 0, $code, $file, $line);
 		}
 
 	}
