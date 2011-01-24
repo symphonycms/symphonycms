@@ -9,17 +9,15 @@
 	 * it falls back to use sockets.
 	 * @example
 	 *  `
-	 *      require_once(TOOLKIT . '/class.gateway.php');
-     *      $ch = new Gateway;
-     *
-     *      $ch->init();
-	 *		$ch->setopt('URL', 'http://www.yoursite.com/');
-     *      $ch->setopt('POST', 1);
-     *      $ch->setopt('POSTFIELDS', array('fred' => 1, 'happy' => 'yes'));
-	 *		print $ch->exec();
-	 *  `
+	 * require_once(TOOLKIT . '/class.gateway.php');
+	 * $ch = new Gateway;
+	 * $ch->init('http://www.example.com/');
+	 * $ch->setopt('POST', 1);
+	 * $ch->setopt('POSTFIELDS', array('fred' => 1, 'happy' => 'yes'));
+	 * print $ch->exec();
+	 * `
 	 */
-    Class Gateway{
+	Class Gateway{
 
 		/**
 		 * Constant used to explicitly bypass CURL and use Sockets to
@@ -62,7 +60,7 @@
 		 * @link http://php.net/manual/en/function.parse-url.php
 		 * @var string
 		 */
-        private $_scheme = 'http://';
+		private $_scheme = 'http://';
 
 		/**
 		 * The port of the URL in the request, as parsed by parse_url
@@ -70,7 +68,7 @@
 		 * @link http://php.net/manual/en/function.parse-url.php
 		 * @var integer
 		 */
-        private $_port = null;
+		private $_port = null;
 
 		/**
 		 * The path of the URL in the request, as parsed by parse_url
@@ -78,13 +76,13 @@
 		 * @link http://php.net/manual/en/function.parse-url.php
 		 * @var string
 		 */
-        private $_path = null;
+		private $_path = null;
 
 		/**
 		 * The method to request the URL. By default, this is GET
 		 * @var string
 		 */
-        private $_method = 'GET';
+		private $_method = 'GET';
 
 		/**
 		 * The content-type of the request, defaults to form-urlencoded
@@ -96,7 +94,7 @@
 		 * The user agent for the request, defaults to Symphony.
 		 * @var string
 		 */
-        private $_agent = 'Symphony';
+		private $_agent = 'Symphony';
 
 		/**
 		 * A URL encoded string of the `$_POST` fields, as built by
@@ -105,7 +103,7 @@
 		 * @link http://www.php.net/manual/en/function.http-build-query.php
 		 * @var string
 		 */
-        private $_postfields = '';
+		private $_postfields = '';
 
 		/**
 		 * Whether to the return the Header with the result of the request
@@ -155,7 +153,7 @@
 			if(!is_null($url)) {
 				$this->setopt('URL', $url);
 			}
-        }
+		}
 
 		/**
 		 * Checks to the see if CURL is available, if it isn't, false will
@@ -194,31 +192,31 @@
 		 *  The value of the option, usually boolean or a string. Consult the
 		 *  setopt documentation for more information.
 		 */
-        public function setopt($opt, $value){
+		public function setopt($opt, $value){
 
-            switch($opt){
+			switch($opt){
 
-                case 'URL':
+				case 'URL':
 
-                	$this->_url = $value;
+					$this->_url = $value;
 
-                    $url_parsed = parse_url($value);
+					$url_parsed = parse_url($value);
 
-                    $this->_host = $url_parsed['host'];
+					$this->_host = $url_parsed['host'];
 
 					if(isset($url_parsed['scheme']) && strlen(trim($url_parsed['scheme'])) > 0){
 						$this->_scheme = $url_parsed['scheme'];
 					}
 
 					if(isset($url_parsed['port'])){
-                    	$this->_port = $url_parsed['port'];
+						$this->_port = $url_parsed['port'];
 					}
 
 					if(isset($url_parsed['path'])){
-                    	$this->_path = $url_parsed['path'];
+						$this->_path = $url_parsed['path'];
 					}
 
-                    if(isset($url_parsed['query'])){
+					if(isset($url_parsed['query'])){
 						$this->_path .= '?' . $url_parsed['query'];
 					}
 
@@ -233,46 +231,46 @@
 						$this->setopt(CURLOPT_SSL_VERIFYPEER, false);
 					}
 
-                    break;
+					break;
 
-                case 'POST':
-                    $this->_method = ($value == 1 ? 'POST' : 'GET');
-                    break;
+				case 'POST':
+					$this->_method = ($value == 1 ? 'POST' : 'GET');
+					break;
 
-                case 'POSTFIELDS':
-                    if(is_array($value) && !empty($value)){
+				case 'POSTFIELDS':
+					if(is_array($value) && !empty($value)){
 						$this->_postfields = http_build_query($value);
-                    }else
-                        $this->_postfields = $value;
+					}else
+						$this->_postfields = $value;
 
-                    break;
+					break;
 
-                case 'USERAGENT':
-                    $this->_agent = $value;
-                    break;
+				case 'USERAGENT':
+					$this->_agent = $value;
+					break;
 
-                case 'HTTPHEADER':
-                    $this->_headers = $value;
-                    break;
+				case 'HTTPHEADER':
+					$this->_headers = $value;
+					break;
 
-                case 'RETURNHEADERS':
-                    $this->_returnHeaders = (intval($value) == 1 ? true : false);
-                    break;
+				case 'RETURNHEADERS':
+					$this->_returnHeaders = (intval($value) == 1 ? true : false);
+					break;
 
-                case 'CONTENTTYPE':
-                	$this->_content_type = $value;
-                    break;
+				case 'CONTENTTYPE':
+					$this->_content_type = $value;
+					break;
 
 				case 'TIMEOUT':
 					$this->_timeout = max(1, intval($value));
-            		break;
+					break;
 
 				default:
 					$this->_custom_opt[$opt] = $value;
 					break;
 
-            }
-        }
+			}
+		}
 
 		/**
 		 * Executes the request, using Curl unless it is not available
@@ -289,7 +287,7 @@
 		 *  The result of the transfer as a string. If any errors occur during
 		 *  a socket request, false will be returned.
 		 */
-       	public function exec($force_connection_method = null){
+	   	public function exec($force_connection_method = null){
 
 			if($force_connection_method != self::FORCE_SOCKET && self::isCurlAvailable()){
 				$ch = curl_init();
@@ -304,9 +302,9 @@
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 				curl_setopt($ch, CURLOPT_TIMEOUT, $this->_timeout);
 
-                if(is_array($this->_headers) && !empty($this->_headers)) {
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_headers);
-                }
+				if(is_array($this->_headers) && !empty($this->_headers)) {
+					curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_headers);
+				}
 
 				if($this->_method == 'POST') {
 					curl_setopt($ch, CURLOPT_POST, 1);
@@ -433,4 +431,4 @@
 			return $this->_info_last;
 		}
 
-    }
+	}
