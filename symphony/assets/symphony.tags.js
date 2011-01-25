@@ -14,10 +14,10 @@
 	 *  An object specifying the tag list items
 	 */
 	$.fn.symphonyTags = function(custom_settings) {
-		var objects = this;
-		var settings = {
-			items: 'li'
-		};
+		var objects = this,
+			settings = {
+				items: 'li'
+			};
 
 		$.extend(settings, custom_settings);
 
