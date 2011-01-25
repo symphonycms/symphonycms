@@ -8,6 +8,5 @@ manifest/
 *.esproj
 *~
 *.geany
-extensions/
 install-log.txt
 .gitignore

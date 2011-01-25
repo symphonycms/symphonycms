@@ -130,7 +130,7 @@
 			$this->initialiseLog();
 
 			GenericExceptionHandler::initialise(self::$Log);
-			GenericErrorHandler::initialise(self::$Log);
+			GenericErrorHandler::initialise(self::$Log, self::$Configuration->get('strict_error_handling', 'symphony'));
 
 			$this->initialiseCookie();
 			$this->initialiseDatabase();
@@ -230,7 +230,7 @@
 		 * @since Symphony 2.2
 		 * @return ExtensionManager
 		 */
-		public function ExtensionManager() {
+		public static function ExtensionManager() {
 			return self::$ExtensionManager;
 		}
 

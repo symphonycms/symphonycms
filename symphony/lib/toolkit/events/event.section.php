@@ -12,10 +12,11 @@
 	}
 
 	if (!function_exists('__doit')) {
-		function __doit($source, $fields, &$result, &$event, $filters, $position=NULL, $entry_id=NULL){
+		function __doit($source, $fields, &$result, &$event, $filters = array(), $position=NULL, $entry_id=NULL){
 
 			$post_values = new XMLElement('post-values');
 			$filter_results = array();
+			if(!is_array($filters)) $filters = array();
 
 			## Create the post data cookie element
 			if (is_array($fields) && !empty($fields)) {
@@ -143,7 +144,7 @@
 
 			## PASSIVE FILTERS ONLY AT THIS STAGE. ENTRY HAS ALREADY BEEN CREATED.
 
-			if(@in_array('send-email', $filters) && !@in_array('expect-multiple', $filters)){
+			if(in_array('send-email', $filters) && !in_array('expect-multiple', $filters)){
 
 				if(!function_exists('__sendEmailFindFormValue')){
 					function __sendEmailFindFormValue($needle, $haystack, $discard_field_name=true, $default=NULL, $collapse=true){
@@ -298,7 +299,6 @@
 					list($type, $status, $message) = $fr;
 
 					$result->appendChild(buildFilterElement($type, ($status ? 'passed' : 'failed'), $message));
-
 				}
 			}
 
@@ -336,7 +336,7 @@
 
 	$result = new XMLElement(self::ROOTELEMENT);
 
-	if(@in_array('admin-only', $this->eParamFILTERS) && !Symphony::Engine()->isLoggedIn()){
+	if(in_array('admin-only', $this->eParamFILTERS) && !Symphony::Engine()->isLoggedIn()){
 		$result->setAttribute('result', 'error');
 		$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 		$result->appendChild(buildFilterElement('admin-only', 'failed'));

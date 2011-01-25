@@ -311,6 +311,12 @@
 		public static $enabled = true;
 
 		/**
+		 * Whether to raise all Warnings to Exceptions or not.
+		 * @var boolean
+		 */
+		public static $raise = false;
+
+		/**
 		 * An instance of the Symphony Log class, used to write errors to the log
 		 * @var Log
 		 */
@@ -346,11 +352,14 @@
 		 *
 		 * @param Log|null $Log (optional)
 		 *  An instance of a Symphony Log object to write errors to
+		 * @param string $raise
+		 *  Whether to raise E_WARNING as an Exception
 		 */
-		public static function initialise(Log $Log = null){
+		public static function initialise(Log $Log = null, $raise = false){
 			if(!is_null($Log)){
 				self::$_Log = $Log;
 			}
+			self::$raise = ($raise == 'yes') ? true : false;
 
 			set_error_handler(array(__CLASS__, 'handler'), error_reporting());
 		}
@@ -391,8 +400,10 @@
 					), $code, true
 				);
 			}
-			
-			throw new ErrorException($message, 0, $code, $file, $line);
+
+			if(self::$raise || $code != E_WARNING) {
+				throw new ErrorException($message, 0, $code, $file, $line);
+			}
 		}
 
 	}
