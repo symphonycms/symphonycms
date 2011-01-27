@@ -666,6 +666,12 @@ Options +FollowSymlinks -Indexes
 	RewriteEngine on
 	RewriteBase /'.REWRITE_BASE.'
 
+	### SECURITY - Protect crucial files
+	RewriteRule ^manifest/(.*)$ - [F]
+	RewriteRule ^workspace/utilities/(.*).xsl$ - [F]
+	RewriteRule ^workspace/pages/(.*).xsl$ - [F]
+	RewriteRule ^(.*).sql$ - [F]
+
 	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
 	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
 	RewriteRule .* - [S=14]
