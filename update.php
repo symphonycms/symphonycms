@@ -320,6 +320,7 @@ Options +FollowSymlinks -Indexes
 			if(version_compare($existing_version, '2.2.0', '<')){
 				$settings['region']['datetime_separator'] = ' ';
 				$settings['symphony']['strict_error_handling'] = 'yes';
+				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
