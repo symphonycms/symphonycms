@@ -318,8 +318,8 @@ Options +FollowSymlinks -Indexes
 			}
 
 			if(version_compare($existing_version, '2.2.0', '<')){
-				$setting['region']['datetime_separator'] = ' ';
-				$setting['symphony']['strict_error_handling'] = 'yes';
+				$settings['region']['datetime_separator'] = ' ';
+				$settings['symphony']['strict_error_handling'] = 'yes';
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
