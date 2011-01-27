@@ -658,7 +658,7 @@
 				}
 
 				$htaccess = '
-### Symphony 2.1.x ###
+### Symphony 2.2.x ###
 Options +FollowSymlinks -Indexes
 
 <IfModule mod_rewrite.c>
