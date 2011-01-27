@@ -100,17 +100,6 @@
 		}
 
 		/**
-		 * Given a title, this function will create the `<title>` element for this
-		 * page.
-		 *
-		 * @param string $title
-		 *  The page title
-		 */
-		public function setTitle($title) {
-			return $this->addElementToHead(new XMLElement('title', $title));
-		}
-
-		/**
 		 * Setter function to set the class attribute on the `<body>` element.
 		 * This function will respect any previous classes that have been added
 		 * to this `<body>`
