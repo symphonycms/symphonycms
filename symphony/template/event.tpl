@@ -2,7 +2,7 @@
 
 	require_once(TOOLKIT . '/class.event.php');
 
-	Class event<!-- CLASS NAME --> extends Event{
+	Class event<!-- CLASS NAME --> extends Event {
 
 		const ROOTELEMENT = '<!-- ROOT ELEMENT -->';
 
@@ -12,14 +12,15 @@
 
 		public static function about(){
 			return array(
-					 'name' => '<!-- NAME -->',
-					 'author' => array(
-							'name' => '<!-- AUTHOR NAME -->',
-							'website' => '<!-- AUTHOR WEBSITE -->',
-							'email' => '<!-- AUTHOR EMAIL -->'),
-					 'version' => '<!-- VERSION -->',
-					 'release-date' => '<!-- RELEASE DATE -->',
-					 'trigger-condition' => 'action[<!-- TRIGGER CONDITION -->]');
+				'name' => '<!-- NAME -->',
+				'author' => array(
+					'name' => '<!-- AUTHOR NAME -->',
+					'website' => '<!-- AUTHOR WEBSITE -->',
+					'email' => '<!-- AUTHOR EMAIL -->'),
+				'version' => '<!-- VERSION -->',
+				'release-date' => '<!-- RELEASE DATE -->',
+				'trigger-condition' => 'action[<!-- TRIGGER CONDITION -->]'
+			);
 		}
 
 		public static function getSource(){

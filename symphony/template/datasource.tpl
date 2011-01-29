@@ -2,7 +2,7 @@
 
 	require_once(TOOLKIT . '/class.datasource.php');
 
-	Class datasource<!-- CLASS NAME --> extends Datasource{
+	Class datasource<!-- CLASS NAME --> extends Datasource {
 
 		<!-- VAR LIST -->
 
@@ -17,13 +17,14 @@
 
 		public function about(){
 			return array(
-					 'name' => '<!-- NAME -->',
-					 'author' => array(
-							'name' => '<!-- AUTHOR NAME -->',
-							'website' => '<!-- AUTHOR WEBSITE -->',
-							'email' => '<!-- AUTHOR EMAIL -->'),
-					 'version' => '<!-- VERSION -->',
-					 'release-date' => '<!-- RELEASE DATE -->');
+				'name' => '<!-- NAME -->',
+				'author' => array(
+					'name' => '<!-- AUTHOR NAME -->',
+					'website' => '<!-- AUTHOR WEBSITE -->',
+					'email' => '<!-- AUTHOR EMAIL -->'),
+				'version' => '<!-- VERSION -->',
+				'release-date' => '<!-- RELEASE DATE -->'
+			);
 		}
 
 		public function getSource(){
@@ -56,4 +57,5 @@
 
 			return $result;
 		}
+
 	}
