@@ -180,7 +180,7 @@
 				if (!is_array($this->_callback['context'])) $this->_callback['context'] = array();
 
 				// Check for update Alert
-				if(file_exists(DOCROOT . '/update.php') && $this->Page instanceOf AdministrationPage) {
+				if(file_exists(DOCROOT . '/update.php') && $this->__canAccessAlerts()) {
 					if(file_exists(DOCROOT . '/README.markdown') && is_readable(DOCROOT . '/README.markdown')) {
 						$readme = file(DOCROOT . '/README.markdown', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 						$readme = trim(str_replace('- Version:', '', $readme[1]));
@@ -206,7 +206,7 @@
 
 				// Do any extensions need updating?
 				$extensions = Symphony::ExtensionManager()->listAll();
-				if(is_array($extensions) && !empty($extensions)) {
+				if(is_array($extensions) && !empty($extensions) && $this->__canAccessAlerts()) {
 					foreach($extensions as $handle => $about) {
 						if($about['status'] == EXTENSION_REQUIRES_UPDATE) {
 							$this->Page->pageAlert(
@@ -221,6 +221,24 @@
 			}
 
 			return $this->Page;
+		}
+
+
+		/**
+		 * This function determines whether an administrative alert can be
+		 * displayed on the current page. It ensures that the page exists,
+		 * and the user is logged in and a developer
+		 *
+		 * @since Symphony 2.2
+		 * @return boolean
+		 */
+		private function __canAccessAlerts() {
+			if($this->Page instanceof AdministrationPage && $this->isLoggedIn() && Administration::instance()->Author->isDeveloper()) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 
 		/**
