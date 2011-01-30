@@ -658,7 +658,7 @@
 				}
 
 				$htaccess = '
-### Symphony 2.1.x ###
+### Symphony 2.2.x ###
 Options +FollowSymlinks -Indexes
 
 <IfModule mod_rewrite.c>
@@ -666,9 +666,18 @@ Options +FollowSymlinks -Indexes
 	RewriteEngine on
 	RewriteBase /'.REWRITE_BASE.'
 
+	### SECURITY - Protect crucial files
+	RewriteRule ^manifest/(.*)$ - [F]
+	RewriteRule ^workspace/utilities/(.*).xsl$ - [F]
+	RewriteRule ^workspace/pages/(.*).xsl$ - [F]
+	RewriteRule ^(.*).sql$ - [F]
+
 	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
 	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
 	RewriteRule .* - [S=14]
+
+	### IMAGE RULES
+	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
 
 	### CHECK FOR TRAILING SLASH - Will ignore files
 	RewriteCond %{REQUEST_FILENAME} !-f

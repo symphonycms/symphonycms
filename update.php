@@ -62,7 +62,7 @@
 
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.2beta4');
+	define('kVERSION', '2.2RC1');
 	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/'.kVERSION.'/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -172,13 +172,19 @@
 				}
 
 				$htaccess = '
-### Symphony 2.0.x ###
+### Symphony 2.2.x ###
 Options +FollowSymlinks -Indexes
 
 <IfModule mod_rewrite.c>
 
 	RewriteEngine on
 	RewriteBase /'.$rewrite_base.'
+
+	### SECURITY - Protect crucial files
+	RewriteRule ^manifest/(.*)$ - [F]
+	RewriteRule ^workspace/utilities/(.*).xsl$ - [F]
+	RewriteRule ^workspace/pages/(.*).xsl$ - [F]
+	RewriteRule ^(.*).sql$ - [F]
 
 	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
 	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
