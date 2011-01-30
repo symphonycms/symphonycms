@@ -16,15 +16,7 @@
 	require_once(TOOLKIT . '/class.alert.php');
 
 	Class AdministrationPage extends HTMLPage{
-
-		public $Wrapper = null;
-
-		public $Header = null;
-
-		public $Footer = null;
-
-		public $Contents = null;
-
+		
 		/**
 		 * An instance of the Administration class
 		 * @var Administration
@@ -38,6 +30,33 @@
 		 * @var Alert
 		 */
 		public $Alert = null;
+		
+		/**
+		 * As the name suggests, a `<div>` that holds the following `$Header`,
+		 * `$Contents` and `$Footer`.
+		 * @var XMLElement
+		 */
+		public $Wrapper = null;
+		
+		/**
+		 * A `<div>` that contains the header of a Symphony backend page, which
+		 * typically contains the Site title and the navigation.
+		 * @var XMLElement
+		 */
+		public $Header = null;
+		
+		/**
+		 * A `<div>` that contains the content of a Symphony backend page.
+		 * @var XMLElement
+		 */
+		public $Contents = null;
+		
+		/**
+		 * A `<div>` that contains the Symphony footer, typically the version and
+		 * the current Author's details.
+		 * @var XMLElement
+		 */
+		public $Footer = null;
 
 		/**
 		 * An associative array of the navigation where the key is the group
@@ -124,7 +143,7 @@
 		 *  `Alert::SUCCESS`. The differing types will show the error
 		 *  in a different style in the backend.
 		 */
-		public function pageAlert($message = null, $type=Alert::NOTICE){
+		public function pageAlert($message = null, $type = Alert::NOTICE){
 
 			if(is_null($message) && $type == Alert::ERROR){
 				$message = 'There was a problem rendering this page. Please check the activity log for more details.';
@@ -184,25 +203,25 @@
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Lang::get());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
-			$this->addStylesheetToHead(URL . '/symphony/assets/basic.css', 'screen', 40);
-			$this->addStylesheetToHead(URL . '/symphony/assets/admin.css', 'screen', 40);
-			$this->addStylesheetToHead(URL . '/symphony/assets/symphony.duplicator.css', 'screen', 70);
-			$this->addScriptToHead(URL . '/symphony/assets/jquery.js', 50);
-			$this->addScriptToHead(URL . '/symphony/assets/jquery.color.js', 51);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.collapsible.js', 60);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.orderable.js', 61);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.selectable.js', 62);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.duplicator.js', 63);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.tags.js', 64);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.pickable.js', 65);
-			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 71);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 40);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/admin.css', 'screen', 41);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.duplicator.css', 'screen', 70);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.js', 50);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.color.js', 51);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.collapsible.js', 60);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.orderable.js', 61);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.selectable.js', 62);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.duplicator.js', 63);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.tags.js', 64);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.pickable.js', 65);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/admin.js', 71);
 
 			$this->addElementToHead(
 				new XMLElement(
 					'script',
 					"Symphony.Context.add('env', " . json_encode($this->_context) . "); Symphony.Context.add('root', '" . URL . "');",
 					array('type' => 'text/javascript')
-				), 71
+				), 72
 			);
 
 			/**
