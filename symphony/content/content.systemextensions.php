@@ -44,15 +44,18 @@
 
 					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], Administration::instance()->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));
 					$installed_version = Symphony::ExtensionManager()->fetchInstalledVersion($name);
-					$td2 = Widget::TableData(empty($installed_version) ? __('Not Installed') : $installed_version);
+					$td2 = Widget::TableData(is_null($installed_version) ? __('Not Installed') : $installed_version);
 
 					if($about['status'] == EXTENSION_ENABLED) {
 						$td3 = Widget::TableData(__('Yes'));
 					}
-					elseif(empty($installed_version)) {
+					else if($about['status'] == EXTENSION_DISABLED) {
+						$td3 = Widget::TableData(__('Disabled'));
+					}
+					else if($about['status'] == EXTENSION_NOT_INSTALLED) {
 						$td3 = Widget::TableData(__('Enable to install %s', array($about['version'])));
 					}
-                    else {
+                    else if($about['status'] == EXTENSION_REQUIRES_UPDATE) {
 						$td3 = Widget::TableData(__('Enable to update to %s', array($about['version'])));
 					}
 
