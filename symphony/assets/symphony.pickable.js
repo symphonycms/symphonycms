@@ -13,10 +13,10 @@
 	 *  An object specifying the elements that are pickable
 	 */
 	$.fn.symphonyPickable = function(custom_settings) {
-		var objects = $(this);
-		var settings = {
-			pickables: '.pickable'
-		};
+		var objects = $(this),
+			settings = {
+				pickables: '.pickable'
+			};
 
 		$.extend(settings, custom_settings);
 
@@ -27,9 +27,9 @@
 
 		// Process pickers
 		return objects.each(function() {
-			var picker = $(this);
-			var select = picker.find('select');
-			var options = select.find('option');
+			var picker = $(this),
+				select = picker.find('select'),
+				options = select.find('option');
 
 			// Multiple items
 			if(options.size() > 1) {

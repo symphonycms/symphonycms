@@ -107,8 +107,14 @@
 				$fields['associated_entry_counts'] = $existing->dsParamASSOCIATEDENTRYCOUNTS;
 				if ($fields['associated_entry_counts'] == NULL) $fields['associated_entry_counts'] = 'yes';
 				if($existing->dsParamREDIRECTONEMPTY == 'yes') $fields['redirect_on_empty'] = 'yes';
-
-				$existing->dsParamFILTERS = @array_map('stripslashes', $existing->dsParamFILTERS);
+				
+				if(!is_array($existing->dsParamFILTERS)) {
+					$existing->dsParamFILTERS = array();
+				}
+				
+				if(!empty($existing->dsParamFILTERS)) {
+					$existing->dsParamFILTERS = array_map('stripslashes', $existing->dsParamFILTERS);
+				}
 
 				$fields['source'] = $existing->getSource();
 

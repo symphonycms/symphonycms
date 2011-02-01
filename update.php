@@ -13,9 +13,9 @@
 		return (is_array($results) && !empty($results));
 	}
 
-    function writeConfig($dest, $conf, $mode){
+	function writeConfig($dest, $conf, $mode){
 
-        $string  = "<?php\n";
+		$string  = "<?php\n";
 
 		$string .= "\n\t\$settings = array(";
 		foreach($conf as $group => $data){
@@ -29,9 +29,9 @@
 		}
 		$string .= "\r\n\t);\n\n";
 
-        return General::writeFile($dest . '/config.php', $string, $mode);
+		return General::writeFile($dest . '/config.php', $string, $mode);
 
-    }
+	}
 
 	function loadOldStyleConfig(){
 		$config = preg_replace(array('/^<\?php/i', '/\?>$/i', '/if\(\!defined\([^\r\n]+/i', '/require_once[^\r\n]+/i'), NULL, file_get_contents('manifest/config.php'));
@@ -62,7 +62,7 @@
 
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.2beta3');
+	define('kVERSION', '2.2RC1');
 	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/'.kVERSION.'/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -171,14 +171,20 @@
 					$rewrite_base .= '/';
 				}
 
-		        $htaccess = '
-### Symphony 2.0.x ###
+				$htaccess = '
+### Symphony 2.2.x ###
 Options +FollowSymlinks -Indexes
 
 <IfModule mod_rewrite.c>
 
 	RewriteEngine on
 	RewriteBase /'.$rewrite_base.'
+
+	### SECURITY - Protect crucial files
+	RewriteRule ^manifest/(.*)$ - [F]
+	RewriteRule ^workspace/utilities/(.*).xsl$ - [F]
+	RewriteRule ^workspace/pages/(.*).xsl$ - [F]
+	RewriteRule ^(.*).sql$ - [F]
 
 	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
 	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
@@ -318,7 +324,9 @@ Options +FollowSymlinks -Indexes
 			}
 
 			if(version_compare($existing_version, '2.2.0', '<')){
-				$setting['region']['datetime_separator'] = ' ';
+				$settings['region']['datetime_separator'] = ' ';
+				$settings['symphony']['strict_error_handling'] = 'yes';
+				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
@@ -417,4 +425,3 @@ Options +FollowSymlinks -Indexes
 		render($code);
 
 	}
-
