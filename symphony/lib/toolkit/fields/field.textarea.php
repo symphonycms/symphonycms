@@ -200,6 +200,7 @@
 
 				$value = $this->__replaceAmpersands($value);
 
+				$attributes = array();
 				if ($mode == 'formatted') $attributes['mode'] = $mode;
 
 				$wrapper->appendChild(
