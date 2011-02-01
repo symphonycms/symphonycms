@@ -19,11 +19,11 @@
 	 *  when used in connection with the orderable plugin
 	 */
 	$.fn.symphonySelectable = function(custom_settings) {
-		var objects = this;
-		var settings = {
-			items: 'tbody tr',
-			handles: 'td'
-		};
+		var objects = this,
+			settings = {
+				items: 'tbody tr',
+				handles: 'td'
+			};
 
 		$.extend(settings, custom_settings);
 

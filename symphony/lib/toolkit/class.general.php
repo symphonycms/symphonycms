@@ -775,7 +775,20 @@
 			}
 
 			fclose($handle);
-			chmod($file, intval($perm, 8));
+
+			try {
+				chmod($file, intval($perm, 8));
+			}
+			catch(Exception $ex) {
+				// If we can't chmod the file, this is probably because our host is
+				// running PHP with a different user to that of the file. Although we
+				// can delete the file, create a new one and then chmod it, we run the
+				// risk of losing the file as we aren't saving it anywhere. For the immediate
+				// future, atomic saving isn't needed by Symphony and it's recommended that
+				// if your extension require this logic, it uses it's own function rather
+				// than this 'General' one.
+				return true;
+			}
 
 			return true;
 		}
@@ -1037,7 +1050,7 @@
 		}
 
 		/**
-		 * Truncate a string to a given length. Newlines are replaced with br
+		 * Truncate a string to a given length. Newlines are replaced with `<br />`
 		 * html elements and html tags are removed from the string. If the resulting
 		 * string contains only spaces then null is returned. If the resulting string
 		 * is less than the input length then it is returned. If the option to
@@ -1099,7 +1112,7 @@
 		 *	the file path to which the source file is to be moved.
 		 * @param string #dest_name
 		 *	the file name within the file path to which the source file is to be moved.
-		 * @parm string $tmp_name
+		 * @param string $tmp_name
 		 *	the full path name of the source file to move.
 		 * @param integer $perm (optional)
 		 *	the permissions to apply to the moved file. this defaults to 0777.

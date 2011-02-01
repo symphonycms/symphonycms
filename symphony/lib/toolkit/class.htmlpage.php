@@ -132,7 +132,10 @@
 				$position = General::array_find_available_index($this->_head, $position);
 			}
 			else if(is_null($position)) {
-				$position = max(0, count($this->_head));
+				if(count($this->_head) > 0)
+					$position = max(array_keys($this->_head))+1;
+				else
+					$position = 0;
 			}
 
 			$this->_head[$position] = $object;

@@ -10,15 +10,15 @@
 	}
 
 	if(!defined('PHP_VERSION_ID')){
-    	$version = PHP_VERSION;
-    	define('PHP_VERSION_ID', ($version{0} * 10000 + $version{2} * 100 + $version{4}));
+		$version = PHP_VERSION;
+		define('PHP_VERSION_ID', ($version{0} * 10000 + $version{2} * 100 + $version{4}));
 	}
 
 	if (PHP_VERSION_ID >= 50300){
-	    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+		error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 	}
 	else{
-	    error_reporting(E_ALL ^ E_NOTICE);
+		error_reporting(E_ALL ^ E_NOTICE);
 	}
 
 	set_error_handler('__errorHandler');
@@ -31,7 +31,7 @@
 	}
 
 	// Defines
-	define('kVERSION', '2.2.0beta3');
+	define('kVERSION', '2.2RC1');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
 	define('DOCROOT', rtrim(dirname(__FILE__), '\\/'));
@@ -65,7 +65,7 @@
 	}
 
 	/***********************
-	         TESTS
+			 TESTS
 	************************/
 
 	// Check and set language
@@ -177,8 +177,9 @@
 		$conf['symphony']['pagination_maximum_rows'] = '17';
 		$conf['symphony']['allow_page_subscription'] = '1';
 		$conf['symphony']['lang'] = Lang::get();
-		$conf['symphony']['version'] = '2.1.1';
+		$conf['symphony']['version'] = kVERSION;
 		$conf['symphony']['pages_table_nest_children'] = 'yes';
+		$conf['symphony']['strict_error_handling'] = 'yes';
 		$conf['log']['archive'] = '1';
 		$conf['log']['maxsize'] = '102400';
 		$conf['general']['sitename'] = 'Symphony CMS';
