@@ -9,4 +9,3 @@ manifest/
 *~
 *.geany
 install-log.txt
-.gitignore
