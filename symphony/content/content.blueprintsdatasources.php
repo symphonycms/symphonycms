@@ -26,7 +26,6 @@
 		public function __form(){
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-
 			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
 
 			if(isset($this->_context[2])){
@@ -107,11 +106,11 @@
 				$fields['associated_entry_counts'] = $existing->dsParamASSOCIATEDENTRYCOUNTS;
 				if ($fields['associated_entry_counts'] == NULL) $fields['associated_entry_counts'] = 'yes';
 				if($existing->dsParamREDIRECTONEMPTY == 'yes') $fields['redirect_on_empty'] = 'yes';
-				
+
 				if(!is_array($existing->dsParamFILTERS)) {
 					$existing->dsParamFILTERS = array();
 				}
-				
+
 				if(!empty($existing->dsParamFILTERS)) {
 					$existing->dsParamFILTERS = array_map('stripslashes', $existing->dsParamFILTERS);
 				}
@@ -878,24 +877,6 @@
 
 				if(!is_numeric($fields['dynamic_xml']['cache'])) $this->_errors['dynamic_xml']['cache'] = __('Must be a valid number');
 				elseif($fields['dynamic_xml']['cache'] < 1) $this->_errors['dynamic_xml']['cache'] = __('Must be greater than zero');
-
-			}
-
-			elseif($fields['source'] == 'authors') {
-
-				if(strlen(trim($fields['max_records'])) == 0 || (is_numeric($fields['max_records']) && $fields['max_records'] < 1)){
-					if (isset($fields['paginate_results'])) $this->_errors['max_records'] = __('A result limit must be set');
-				}
-				elseif(!self::__isValidPageString($fields['max_records'])){
-					$this->_errors['max_records'] = __('Must be a valid number or parameter');
-				}
-
-				if(strlen(trim($fields['page_number'])) == 0 || (is_numeric($fields['page_number']) && $fields['page_number'] < 1)){
-					if (isset($fields['paginate_results'])) $this->_errors['page_number'] = __('A page number must be set');
-				}
-				elseif(!self::__isValidPageString($fields['page_number'])){
-					$this->_errors['page_number'] = __('Must be a valid number or parameter');
-				}
 
 			}
 
