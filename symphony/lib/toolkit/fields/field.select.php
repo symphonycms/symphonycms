@@ -125,7 +125,7 @@
 
 			$options = array();
 
-			if ($this->get('required') == 'yes') $options[] = array(NULL, false, NULL);
+			if ($this->get('required') != 'yes') $options[] = array(NULL, false, NULL);
 
 			foreach($states as $handle => $v){
 				$options[] = array(General::sanitize($v), in_array($v, $data['value']), General::sanitize($v));
