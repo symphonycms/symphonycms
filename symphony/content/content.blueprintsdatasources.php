@@ -75,6 +75,9 @@
 					$fields['filter'][$fields['source']] = $filters;
 				}
 
+				if(!isset($fields['xml_elements']) || !is_array($fields['xml_elements'])) {
+					$fields['xml_elements'] = array();
+				}
 			}
 
 			else if($this->_context[0] == 'edit'){
@@ -300,7 +303,6 @@
 			$div->appendChild($ol);
 
 			$fieldset->appendChild($div);
-
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'contextual navigation');
@@ -878,6 +880,23 @@
 				if(!is_numeric($fields['dynamic_xml']['cache'])) $this->_errors['dynamic_xml']['cache'] = __('Must be a valid number');
 				elseif($fields['dynamic_xml']['cache'] < 1) $this->_errors['dynamic_xml']['cache'] = __('Must be greater than zero');
 
+			}
+
+			elseif(is_numeric($fields['source'])) {
+
+				if(strlen(trim($fields['max_records'])) == 0 || (is_numeric($fields['max_records']) && $fields['max_records'] < 1)){
+					if (isset($fields['paginate_results'])) $this->_errors['max_records'] = __('A result limit must be set');
+				}
+				else if(!self::__isValidPageString($fields['max_records'])){
+					$this->_errors['max_records'] = __('Must be a valid number or parameter');
+				}
+
+				if(strlen(trim($fields['page_number'])) == 0 || (is_numeric($fields['page_number']) && $fields['page_number'] < 1)){
+					if (isset($fields['paginate_results'])) $this->_errors['page_number'] = __('A page number must be set');
+				}
+				else if(!self::__isValidPageString($fields['page_number'])){
+					$this->_errors['page_number'] = __('Must be a valid number or parameter');
+				}
 			}
 
 			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z]+@i' => '', '/[^\w-\.]/i' => ''));
