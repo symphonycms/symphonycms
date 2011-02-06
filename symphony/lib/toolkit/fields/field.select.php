@@ -311,16 +311,19 @@
 
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 
-			$label = Widget::Label(__('Static Options'));
+			# Predefined Values
+			$label = Widget::Label(__('Predefined Values'));
 			$label->appendChild(new XMLElement('i', __('Optional')));
 			$input = Widget::Input('fields['.$this->get('sortorder').'][static_options]', General::sanitize($this->get('static_options')));
 			$label->appendChild($input);
 			$div->appendChild($label);
 
-			$label = Widget::Label(__('Dynamic Options'));
+			# Dynamic Values
+			$label = Widget::Label(__('Dynamic Values'));
+			$label->appendChild(new XMLElement('i', 'Optional'));
 
 			$sectionManager = new SectionManager($this->_engine);
-		    $sections = $sectionManager->fetch(NULL, 'ASC', 'name');
+			$sections = $sectionManager->fetch(NULL, 'ASC', 'name');
 			$field_groups = array();
 
 			if(is_array($sections) && !empty($sections))
@@ -346,6 +349,8 @@
 			if(isset($errors['dynamic_options'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['dynamic_options']));
 			else $div->appendChild($label);
 
+
+
 			$wrapper->appendChild($div);
 
 			## Allow selection of multiple items
@@ -353,11 +358,13 @@
 			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Allow selection of multiple options', array($input->generate())));
-			$wrapper->appendChild($label);
 
-			$this->appendShowAssociationCheckbox($wrapper);
-			$this->appendShowColumnCheckbox($wrapper);
-			$this->appendRequiredCheckbox($wrapper);
+			$div = new XMLElement('div', NULL, array('class' => 'compact'));
+			$div->appendChild($label);
+			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Options'));
+			$this->appendRequiredCheckbox($div);
+			$this->appendShowColumnCheckbox($div);
+			$wrapper->appendChild($div);
 		}
 
 		public function groupRecords($records){

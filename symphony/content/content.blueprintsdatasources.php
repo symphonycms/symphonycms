@@ -463,7 +463,8 @@
 			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml');
 			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
 
-			$label = Widget::Label(__('Required URL Parameter <i>Optional</i>'));
+			$label = Widget::Label(__('Required URL Parameter'));
+			$label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param'])));
 			$fieldset->appendChild($label);
 
@@ -635,7 +636,8 @@
 			$fieldset->appendChild($p);
 
 			$div = new XMLElement('div');
-			$p = new XMLElement('p', __('Namespace Declarations <i>Optional</i>'));
+			$p = new XMLElement('p', __('Namespace Declarations'));
+			$p->appendChild(new XMLElement('i', __('Optional')));
 			$p->setAttribute('class', 'label');
 			$div->appendChild($p);
 

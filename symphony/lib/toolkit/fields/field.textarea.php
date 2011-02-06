@@ -242,25 +242,19 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$group = new XMLElement('div', NULL, array('class' => 'group'));
-
-			$div = new XMLElement('div');
+			$wrapper->appendChild($this->buildFormatterSelect($this->get('formatter'), 'fields['.$this->get('sortorder').'][formatter]', __('Text Formatter')));
 
 			## Textarea Size
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][size]', $this->get('size'));
 			$input->setAttribute('size', '3');
 			$label->setValue(__('Make textarea %s rows tall', array($input->generate())));
-			$div->appendChild($label);
+			$wrapper->appendChild($label);
 
+			$div =  new XMLElement('div', NULL, array('class' => 'compact'));
 			$this->appendRequiredCheckbox($div);
-			$group->appendChild($div);
-
-			$group->appendChild($this->buildFormatterSelect($this->get('formatter'), 'fields['.$this->get('sortorder').'][formatter]', __('Text Formatter')));
-
-			$wrapper->appendChild($group);
-
-			$this->appendShowColumnCheckbox($wrapper);
+			$this->appendShowColumnCheckbox($div);
+			$wrapper->appendChild($div);
 		}
 
 		function createTable(){

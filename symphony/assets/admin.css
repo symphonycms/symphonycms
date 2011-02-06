@@ -247,10 +247,9 @@ ul.tags .more:hover {
 
 .group {
 	position: relative;
-	right: -8px;
-	margin: 0 0 0 -16px;
-	padding: 0 8px 0 40px;
-	list-style: none;
+	right: -0.75em;
+	margin: 0 0 0 -1.5em;
+	padding: 0 0.75em 0 3.65em;
 }
 .group:after {
 	content: "";
@@ -260,22 +259,25 @@ ul.tags .more:hover {
 }
 .group > * {
 	float: left;
-	margin-left: 32px;
+	margin-left: 2.95em;
 	width: 50%;
 }
 .group > *:first-child {
-	margin-left: -32px;
+	margin-left: -2.95em;
 }
-.group > div > label > i {
-	max-width:45%;
-	height:16px;
-	white-space:nowrap;
-	overflow:hidden;
-	text-overflow:ellipsis;
-	cursor:help;
-	float:right;
+.group > input[type=hidden]:first-child + * {
+	margin-left: -2.95em;
 }
-.group > div > label > i:hover {
+.group label > i {
+	max-width: 45%;
+	height: 16px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	cursor: help;
+	float: right;
+}
+.group label > i:hover {
 	white-space:normal;
 	height:auto;
 	background: rgba(255, 255, 255, 0.8);
@@ -301,21 +303,26 @@ div.compact:after {
 	clear: left;
 	height: 0;
 }
-
 div.compact label { 
 	float: left;
 	width: 50%;
 	min-width: 300px;
-	margin-right: 16px;
+	margin-right: 1.5em;
 }
-div.compact label:nth-child(even) {
-	width: auto;
+div.compact label:nth-of-type(even) {
+	width: 45%;
 }
-div.compact i {
+div.compact label i {
+	max-width: 100%;
+	height: auto;
+	white-space: normal;
+	overflow: none;
+	text-overflow: auto;
+	float: none;
 	color: #887;
 	display: block;
 	position: static;
-	padding-left: 1.7em;
+	padding-left: 1.75em;
 }
 
 /*--- Settings ---*/
@@ -402,6 +409,11 @@ fieldset.settings fieldset legend {
 .settings .duplicator legend {
 	background: #DDC;
 	color: #665;
+}
+.settings .duplicator .group label > i:hover {
+	white-space:normal;
+	height:auto;
+	background: rgba(221, 221, 204, 0.8);
 }
 
 /*--- Buttons ---*/
@@ -510,26 +522,26 @@ button.button.delete:hover {
 body, html {
 	height: 100%;
 }
-.wrapper {
+#wrapper {
 	position: relative;
 	min-height: 100%;
 }
-.header {
+#header {
 	margin: 0 0 1.8em;
 	background: #353530;
 	color: #fff;
 }
-.header h1 {
+#header h1 {
 	padding: 1.64em 19px 0.74em;
 	text-shadow: -1px 2px 3px #111;
 	font-weight: bold;
 	line-height: 1;
 }
-.header h1 a {
+#header h1 a {
 	color: #fff;
 	text-decoration: none;
 }
-.header h1 a:hover {
+#header h1 a:hover {
 	color: #ccb;
 }
 #nav {
@@ -604,19 +616,19 @@ body, html {
 	background-color: #7e7e70;
 	color: #fff;
 }
-.contents {
+#contents {
 	padding: 0 19px 10em;
 }
-.contents h2 span {
+#contents h2 span {
 	float: left;
 }
-.contents h2:after {
+#contents h2:after {
 	content: "";
 	display: block;
 	clear: both;
 	height: 0;
 }
-.contents h2 .button {
+#contents h2 .button {
 	float: right;
 	margin-left: 10px;
 }
@@ -625,7 +637,7 @@ body, html {
 	Footer
 -----------------------------------------------------------------------------*/
 
-.footer {
+#footer {
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -637,7 +649,7 @@ body, html {
 	text-shadow: -1px 2px 3px #111;
 	color: #fff;
 }
-.footer:after {
+#footer:after {
 	content: "";
 	display: block;
 	clear: left;

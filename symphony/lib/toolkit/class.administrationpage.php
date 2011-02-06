@@ -128,7 +128,7 @@
 		 *  uses a space separator
 		 */
 		public function setBodyClass($class) {
-			$this->_body_class .= ' ' . $class;
+			$this->_body_class .= $class;
 		}
 
 		/**
@@ -241,8 +241,8 @@
 				Administration::instance()->Profiler->sample('Page action run', PROFILE_LAP);
 			}
 
-			$this->Wrapper = new XMLElement('div', NULL, array('class' => 'wrapper'));
-			$this->Header = new XMLElement('div', NULL, array('class' => 'header'));
+			$this->Wrapper = new XMLElement('div', NULL, array('id' => 'wrapper'));
+			$this->Header = new XMLElement('div', NULL, array('id' => 'header'));
 
 			$h1 = new XMLElement('h1');
 			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
@@ -250,7 +250,7 @@
 
 			$this->appendNavigation();
 
-			$this->Contents = new XMLElement('div', NULL, array('class' => 'contents'));
+			$this->Contents = new XMLElement('div', NULL, array('id' => 'contents'));
 
 			## Build the form
 			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
@@ -268,7 +268,7 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AppendElementBelowView', '/backend/');
 
-			$this->Footer = new XMLElement('div', NULL, array('class' => 'footer'));
+			$this->Footer = new XMLElement('div', NULL, array('id' => 'footer'));
 
 			$this->appendFooter();
 			$this->appendAlert();
@@ -374,10 +374,11 @@
 		private function __appendBodyClass(array $context = array()){
 			foreach($context as $c) {
 				if (is_numeric($c)) $c = 'id-' . $c;
-				$body_class .= trim($c) . ' ';
+				if ($c != 'index') $body_class .= trim($c) . ' ';
 			}
-			$body_class = $body_class . trim($this->_body_class);
-			if (!empty($body_class)) $this->Body->setAttribute('class', trim($body_class));
+			$classes = array_merge(explode(' ', trim($body_class)), explode(' ', trim($this->_body_class)));
+			$body_class = trim(implode(' ', $classes));
+			if (!empty($body_class)) $this->Body->setAttribute('class', $body_class);
 		}
 
 		/**
