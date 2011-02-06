@@ -349,8 +349,6 @@
 			if(isset($errors['dynamic_options'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['dynamic_options']));
 			else $div->appendChild($label);
 
-
-
 			$wrapper->appendChild($div);
 
 			## Allow selection of multiple items
