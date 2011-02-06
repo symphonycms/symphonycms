@@ -128,7 +128,9 @@
 		 *  uses a space separator
 		 */
 		public function setBodyClass($class) {
-			$this->_body_class .= $class;
+			# Prevents duplicate "index" classes
+			if ($this->_context['page'] != 'index' || $class != 'index')
+				$this->_body_class .= $class;
 		}
 
 		/**
@@ -374,7 +376,7 @@
 		private function __appendBodyClass(array $context = array()){
 			foreach($context as $c) {
 				if (is_numeric($c)) $c = 'id-' . $c;
-				if ($c != 'index') $body_class .= trim($c) . ' ';
+				$body_class .= trim($c) . ' ';
 			}
 			$classes = array_merge(explode(' ', trim($body_class)), explode(' ', trim($this->_body_class)));
 			$body_class = trim(implode(' ', $classes));
