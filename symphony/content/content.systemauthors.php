@@ -338,8 +338,13 @@
 				* function. By default this will be an array of the Sections in the current
 				* installation. New options should be the path to the page after the `SYMPHONY_URL`
 				* constant.
+				* @param string $default_area
+				* The current `default_area` for this Author.
 				*/
-				Symphony::ExtensionManager()->notifyMembers('AddDefaultAuthorAreas', '/system/authors/', array('options' => &$options));
+				Symphony::ExtensionManager()->notifyMembers('AddDefaultAuthorAreas', '/system/authors/', array(
+					'options' => &$options,
+					'default_area' => $author->get('default_area')
+				));
 
 				$label->appendChild(Widget::Select('fields[default_area]', $options));
 				$group->appendChild($label);

@@ -10,7 +10,7 @@
 	 *
 	 *	@param string $url
 	 */
-   	function redirect ($url){
+	function redirect ($url){
 		// Just make sure.
 		$url = str_replace('Location:', null, $url);
 
@@ -23,9 +23,9 @@
 		header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 		header('Cache-Control: no-cache, must-revalidate, max-age=0');
 		header('Pragma: no-cache');
-        header("Location: $url");
-        exit;
-    }
+		header("Location: $url");
+		exit;
+	}
 
 	/**
 	 * Returns the current working directory, replacing any \
@@ -43,9 +43,9 @@
 	 * nothing, otherwise, it will set the constant
 	 *
 	 * @param string $name
-	 *  The name of the constant to set
+	 *	The name of the constant to set
 	 * @param string $value
-	 *  The value of the desired constant
+	 *	The value of the desired constant
 	 */
 	function define_safe($name, $val){
 		if(!defined($name)) define($name, $val);
@@ -86,17 +86,17 @@
 	 *	@return integer
 	 */
 	function ini_size_to_bytes($val) {
-	    $val = trim($val);
-	    $last = strtolower($val[strlen($val)-1]);
+		$val = trim($val);
+		$last = strtolower($val[strlen($val)-1]);
 
-	    switch($last) {
-	        case 'g':
-	            $val *= 1024;
-	        case 'm':
-	            $val *= 1024;
-	        case 'k':
-	            $val *= 1024;
-	    }
+		switch($last) {
+			case 'g':
+				$val *= 1024;
+			case 'm':
+				$val *= 1024;
+			case 'k':
+				$val *= 1024;
+		}
 
-	    return $val;
+		return $val;
 	}
