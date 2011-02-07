@@ -467,11 +467,11 @@ button.button.delete:hover {
 	margin: 0;
 	border-top: 3px solid #979792;
 	border-bottom: 2px solid #777;
-	padding: 0 0.83em 0;
+	padding: 0.5em 0.83em;
 	background-color: #e4e4e0;
 	color: #555;
 	font-size: 90.91%;
-	line-height: 2.5;
+	line-height: 1.6;
 }
 #notice.error {
 	background-color: #ffb;
