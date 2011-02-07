@@ -294,10 +294,7 @@
 				");
 
 				if(!$existing) {
-					Administration::instance()->customError(
-						__('Page not found'), __('The page you requested to edit does not exist.'),
-						'error', array('header'	=> 'HTTP/1.0 404 Not Found')
-					);
+					Administration::instance()->errorPageNotFound();
 				}
 			}
 
