@@ -61,6 +61,7 @@
 
 					$td4 = Widget::TableData(NULL);
 					if($about['author'][0] && is_array($about['author'][0])) {
+						$authors = '';
 						foreach($about['author'] as $i => $author) {
 
 							if(isset($author['website']))
@@ -70,14 +71,13 @@
 							else
 								$link = $author['name'];
 
-							$value .= ($link instanceof XMLElement ? $link->generate() : $link)
+							$authors .= ($link instanceof XMLElement ? $link->generate() : $link)
 									. ($i != count($about['author']) - 1 ? ", " : "");
 						}
 
-						$td4->setValue($value);
+						$td4->setValue($authors);
 					}
-					else{
-
+					else {
 						if(isset($about['author']['website']))
 							$link = Widget::Anchor($about['author']['name'], General::validateURL($about['author']['website']));
 						else if(isset($about['author']['email']))
