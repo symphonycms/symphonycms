@@ -306,11 +306,11 @@ div.compact:after {
 div.compact label { 
 	float: left;
 	width: 50%;
-	min-width: 300px;
+	min-width: 250px;
 	margin-right: 1.5em;
 }
 div.compact label:nth-of-type(even) {
-	width: 45%;
+	max-width: 45%;
 }
 div.compact label i {
 	max-width: 100%;
@@ -425,7 +425,6 @@ button.button {
 	background-color: #597bc6;
 	border: 0;
 	color: #fff;
-/*	float: right;*/
 	padding: .5em 1em;
 	margin: 0;
 	font-size: 10px;
@@ -862,4 +861,3 @@ ul.page a {
 #utilities .selected:nth-child(odd) {
 	background-color: #5677c3;
 }
-

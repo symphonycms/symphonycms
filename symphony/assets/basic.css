@@ -64,6 +64,10 @@ pre code {
 	display: block;
 	white-space: pre;
 }
+i code {
+	font-size: 1em;
+	font-size-adjust: 0;
+}
 
 fieldset {
 	position: relative;
