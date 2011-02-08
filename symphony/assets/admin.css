@@ -289,7 +289,7 @@ ul.tags .more:hover {
 	padding: 0 0 0 72px;
 }
 .triple > * {
-	width: 33.33%;
+	width: 33%;
 }
 .triple > *:first-child {
 	margin-left: -64px;
