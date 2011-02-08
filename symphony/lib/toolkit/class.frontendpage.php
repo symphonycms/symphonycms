@@ -300,26 +300,7 @@
 			$start = precision_timer();
 
 			if(!$page = $this->resolvePage()){
-				$page = Symphony::Database()->fetchRow(0, "
-					SELECT `tbl_pages`.*
-					FROM `tbl_pages`, `tbl_pages_types`
-					WHERE `tbl_pages_types`.page_id = `tbl_pages`.id
-					AND tbl_pages_types.`type` = '404'
-					LIMIT 1
-				");
-
-				if(empty($page)){
-					GenericExceptionHandler::$enabled = true;
-					throw new SymphonyErrorPage(
-						__('The page you requested does not exist.'),
-						__('Page Not Found'),
-						'error',
-						array('header' => 'HTTP/1.0 404 Not Found')
-					);
-				}
-
-				$page['filelocation'] = $this->resolvePageFileLocation($page['path'], $page['handle']);
-				$page['type'] = $this->__fetchPageTypes($page['id']);
+				throw new FrontendPageNotFoundException(__('The page you requested does not exist'));
 			}
 
 			/**

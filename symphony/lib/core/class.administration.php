@@ -188,7 +188,7 @@
 						$current_version = Symphony::Configuration()->get('version', 'symphony');
 						// The updater contains a version higher than the current Symphony version.
 						if(version_compare($current_version, $readme, '<')) {
-							$message = __('Run the updater to update Symphony to %s. <a href="%s/update.php">View Update</a>', array($readme, URL));
+							$message = __('Run the updater to update Symphony to %s. <a href="%s">View Update</a>', array($readme, URL . "/update.php"));
 						}
 						// The updater contains a version lower than the current Symphony version.
 						// The updater is the same version as the current Symphony install.
@@ -198,7 +198,7 @@
 					}
 					// Can't detect update Symphony version
 					else {
-						$message = __('An updater script has been found in your installation. <a href="%s/update.php">View Update</a>', array(URL));
+						$message = __('An updater script has been found in your installation. <a href="%s">View Update</a>', array(URL . "/update.php"));
 					}
 
 					$this->Page->pageAlert($message, Alert::NOTICE);
@@ -210,7 +210,7 @@
 					foreach($extensions as $handle => $about) {
 						if($about['status'] == EXTENSION_REQUIRES_UPDATE) {
 							$this->Page->pageAlert(
-								__('An extension requires updating. <a href="' . SYMPHONY_URL . '/system/extensions/">View Extensions</a>')
+								__('An extension requires updating. <a href="%s">View Extensions</a>', array(SYMPHONY_URL . '/system/extensions/'))
 							);
 							break;
 						}
@@ -222,7 +222,6 @@
 
 			return $this->Page;
 		}
-
 
 		/**
 		 * This function determines whether an administrative alert can be
