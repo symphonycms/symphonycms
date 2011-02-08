@@ -281,8 +281,7 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'related');
+			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 
 			## Allow multiple selection
 			$label = Widget::Label();
@@ -298,9 +297,8 @@
 			$label->setValue(__('%s Select current user by default', array($input->generate())));
 			$div->appendChild($label);
 
+			$this->appendShowColumnCheckbox($div);
 			$wrapper->appendChild($div);
-
-			$this->appendShowColumnCheckbox($wrapper);
 
 		}
 

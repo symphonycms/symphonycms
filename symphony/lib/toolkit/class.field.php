@@ -564,7 +564,8 @@
 			include(TOOLKIT . '/util.validators.php');
 			$rules = ($type == 'upload' ? $upload : $validators);
 
-			$label = Widget::Label(__('Validation Rule <i>Optional</i>'));
+			$label = Widget::Label(__('Validation Rule'));
+			$label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input($name, $selected));
 			$wrapper->appendChild($label);
 
@@ -621,7 +622,7 @@
 
 			if ($this->get('show_column') == 'yes') $input->setAttribute('checked', 'checked');
 
-			$label->setValue(__('%s Show column', array($input->generate())));
+			$label->setValue(__('%s Display field’s value in entries table', array($input->generate())));
 
 			$wrapper->appendChild($label);
 		}
@@ -634,8 +635,10 @@
 		 *
 		 * @param XMLElement $wrapper
 		 *	the parent xml element to append the checkbox to.
+		 * @param string $help (optional)
+		 *	a help message to show below the checkbox.
 		 */
-		public function appendShowAssociationCheckbox(XMLElement &$wrapper) {
+		public function appendShowAssociationCheckbox(XMLElement &$wrapper, $help = null) {
 			if(!$this->_showassociation) return;
 
 			$order = $this->get('sortorder');
@@ -649,7 +652,9 @@
 
 			if ($this->get('show_association') == 'yes') $input->setAttribute('checked', 'checked');
 
-			$label->setValue(__('%s Show column in linked sections', array($input->generate())));
+			$label->setValue(__('%s Display relationship in linked sections', array($input->generate())));
+
+			if ($help) $label->appendChild(new XMLElement('i', $help));
 
 			$wrapper->appendChild($label);
 		}
