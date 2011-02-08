@@ -313,7 +313,7 @@
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 			$namediv = new XMLElement('div', NULL);
 
-			$label = Widget::Label('Name');
+			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
 
 			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
