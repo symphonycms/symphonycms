@@ -29,6 +29,10 @@ input, select, textarea, button {
 	padding: 0;
 	font-size: 1em;
 }
+button::-moz-focus-inner {
+    border:0;
+    padding:0;
+}
 ol, ul {
 	list-style: none;
 }
