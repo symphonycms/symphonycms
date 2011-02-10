@@ -19,7 +19,7 @@
 
 			// Set default
 			$this->set('show_column', 'yes');
-			$this->set('show_association', 'yes');
+			$this->set('location', 'sidebar');
 			$this->set('required', 'no');
 		}
 

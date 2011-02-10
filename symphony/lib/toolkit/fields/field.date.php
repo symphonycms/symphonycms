@@ -23,6 +23,8 @@
 			parent::__construct($parent);
 			$this->_name = __('Date');
 			$this->key = 1;
+			
+			$this->set('location', 'sidebar');
 		}
 
 		function allowDatasourceOutputGrouping(){

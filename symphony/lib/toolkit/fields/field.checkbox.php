@@ -13,6 +13,8 @@
 		function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Checkbox');
+
+			$this->set('location', 'sidebar');
 		}
 
 		function canToggle(){

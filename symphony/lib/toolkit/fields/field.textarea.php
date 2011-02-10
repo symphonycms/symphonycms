@@ -16,7 +16,7 @@
 
 			// Set default
 			$this->set('show_column', 'no');
-			$this->set('required', 'yes');
+			$this->set('required', 'no');
 		}
 
 		function canFilter(){

@@ -13,8 +13,9 @@
 
 			$this->_name = __('File Upload');
 			$this->_required = true;
-
-			$this->set('required', 'yes');
+			
+			$this->set('location', 'sidebar');
+			$this->set('required', 'no');
 		}
 
 		public function canPrePopulate(){

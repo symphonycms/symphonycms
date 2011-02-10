@@ -23,7 +23,7 @@
 		}
 
 		public function isSortable(){
-			return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
+			return $this->canToggle();
 		}
 
 		public function canFilter(){
@@ -235,7 +235,6 @@
 		}
 
 		public function commit(){
-
 			if(!parent::commit()) return false;
 
 			$id = $this->get('id');
@@ -250,7 +249,6 @@
 
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
-
 		}
 
 		public function appendFormattedElement(&$wrapper, $data, $encode=false){
@@ -304,16 +302,14 @@
 
 		public function createTable(){
 			return Symphony::Database()->query(
-
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') ."` (
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `author_id` int(11) unsigned NOT NULL,
 				  PRIMARY KEY  (`id`),
-				  KEY `entry_id` (`entry_id`),
+				  UNIQUE KEY `entry_id` (`entry_id`),
 				  KEY `author_id` (`author_id`)
 				) ENGINE=MyISAM;"
-
 			);
 		}
 
