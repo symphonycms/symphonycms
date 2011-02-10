@@ -14,13 +14,9 @@
 
 	Class contentBlueprintsComponents extends AdministrationPage{
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function view(){
 			$this->setPageType('forms');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Components'))));
-		}
-
-		public function view(){
 
 			$this->appendSubheading(__('Components'));
 
