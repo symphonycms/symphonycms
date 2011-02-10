@@ -107,16 +107,16 @@ label input {
 	-ms-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 }
+label input[type=checkbox] {
+	position: relative;
+	top: 2px;
+}
 input[size],
 input[type=radio],
 input[type=checkbox] {
 	display: inline;
 	margin: 0 0.25em 0 0;
 	width: auto;
-}
-label input[type=checkbox] {
-	position: relative;
-	top: 2px;
 }
 input[size],
 label + select {
