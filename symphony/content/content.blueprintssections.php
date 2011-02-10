@@ -127,7 +127,7 @@
 			$namediv = new XMLElement('div', NULL);
 
 			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
+			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
 
 			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
@@ -314,7 +314,7 @@
 			$namediv = new XMLElement('div', NULL);
 
 			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
+			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
 
 			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
 			else $namediv->appendChild($label);

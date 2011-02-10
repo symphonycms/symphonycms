@@ -114,7 +114,7 @@
 				$options = array();
 
 				if(is_array($sections) && !empty($sections)){
-					foreach($sections as $s) $options[] = array($s->get('id'), ($fields['source'] == $s->get('id')), $s->get('name'));
+					foreach($sections as $s) $options[] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
 				}
 
 				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
