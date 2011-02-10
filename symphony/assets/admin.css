@@ -6,17 +6,6 @@ body {
 	background: #fff;
 	color: #222;
 }
-a {
-	color: #5072bf;
-	text-decoration: underline;
-	cursor: pointer;
-}
-a:hover {
-	color: #000;
-}
-a:active, a:focus {
-	color: #d42;
-}
 h2 {
 	margin: 0;
 	padding: 0 0 0.5em;
@@ -828,7 +817,7 @@ ul.page a {
 	margin-bottom: 0.75em;
 }
 #components .button {
-	font-size: 0.9em;
+	margin-top: -0.25em;
 	font-weight: normal;
 }
 #utilities {

@@ -1,5 +1,3 @@
-@import url("basic.css");
-
 /* System Errors */
 #details h2 {
 	text-shadow: none;
@@ -11,7 +9,7 @@
 	margin: 0 auto;
 	border: 1px solid #eee;
 	background-color: #ccb;
-	width: 40em;
+	max-width: 60em;
 }
 #description {
 	margin-top: 96px;
