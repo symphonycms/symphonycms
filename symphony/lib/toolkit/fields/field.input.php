@@ -265,7 +265,7 @@
 				  `handle` varchar(255) default NULL,
 				  `value` varchar(255) default NULL,
 				  PRIMARY KEY  (`id`),
-				  KEY `entry_id` (`entry_id`),
+				  UNIQUE KEY `entry_id` (`entry_id`),
 				  KEY `handle` (`handle`),
 				  KEY `value` (`value`)
 				) ENGINE=MyISAM;"

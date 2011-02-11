@@ -268,7 +268,7 @@
 				  `value` text,
 				  `value_formatted` text,
 				  PRIMARY KEY  (`id`),
-				  KEY `entry_id` (`entry_id`),
+				  UNIQUE KEY `entry_id` (`entry_id`),
 				  FULLTEXT KEY `value` (`value`)
 				) ENGINE=MyISAM;"
 

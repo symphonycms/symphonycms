@@ -248,7 +248,7 @@
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `value` enum('yes','no') NOT NULL default '".($this->get('default_state') == 'on' ? 'yes' : 'no')."',
 				  PRIMARY KEY  (`id`),
-				  KEY `entry_id` (`entry_id`),
+				  UNIQUE KEY `entry_id` (`entry_id`),
 				  KEY `value` (`value`)
 				) ENGINE=MyISAM;"
 

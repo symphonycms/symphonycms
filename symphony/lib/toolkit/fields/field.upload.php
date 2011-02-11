@@ -544,7 +544,7 @@
 				  `mimetype` varchar(50) default NULL,
 				  `meta` varchar(255) default NULL,
 				  PRIMARY KEY  (`id`),
-				  KEY `entry_id` (`entry_id`),
+				  UNIQUE KEY `entry_id` (`entry_id`),
 				  KEY `file` (`file`),
 				  KEY `mimetype` (`mimetype`)
 				) ENGINE=MyISAM;"

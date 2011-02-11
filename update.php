@@ -327,6 +327,32 @@ Options +FollowSymlinks -Indexes
 				$settings['region']['datetime_separator'] = ' ';
 				$settings['symphony']['strict_error_handling'] = 'yes';
 				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
+
+				// We've added UNIQUE KEY indexes to the Author, Checkbox, Date, Input, Textarea and Upload Fields
+				// Time to go through the entry tables and make this change as well.
+				$author = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_author`");
+				$checkbox = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_checkbox`");
+				$date = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_date`");
+				$input = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_input`");
+				$textarea = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_textarea`");
+				$upload = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");
+
+				$field_ids = array_merge($author, $checkbox, $date, $input, $textarea, $upload);
+
+				foreach($field_ids as $id) {
+					$table = '`tbl_entries_data_' . $id . '`';
+
+					try {
+						$frontend->Database->query("ALTER TABLE " . $table . " DROP INDEX `entry_id`");
+					}
+					catch (Exception $ex) {}
+
+					try {
+						$frontend->Database->query("CREATE UNIQUE INDEX `entry_id` ON " . $table . " (`entry_id`)");
+						$frontend->Database->query("OPTIMIZE TABLE " . $table);
+					}
+					catch (Exception $ex) {}
+				}
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,

@@ -445,7 +445,7 @@
 				  `local` int(11) default NULL,
 				  `gmt` int(11) default NULL,
 				  PRIMARY KEY  (`id`),
-				  KEY `entry_id` (`entry_id`),
+				  UNIQUE KEY `entry_id` (`entry_id`),
 				  KEY `value` (`value`)
 				) ENGINE=MyISAM;"
 
