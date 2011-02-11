@@ -28,6 +28,7 @@ input, select, textarea, button {
 	margin: 0;
 	padding: 0;
 	font-size: 1em;
+	vertical-align: baseline;
 }
 button::-moz-focus-inner {
     border:0;
@@ -47,6 +48,17 @@ table {
 
 body {
 	font: 68.75%/1.5 Lucida Grande, Tahoma, Verdana, sans-serif;
+}
+a {
+	color: #5072bf;
+	text-decoration: underline;
+	cursor: pointer;
+}
+a:hover {
+	color: #000;
+}
+a:active, a:focus {
+	color: #d42;
 }
 h1, h2 {
 	font: 127.28% Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
@@ -99,8 +111,9 @@ label input {
 	-ms-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 }
-label > input[type=checkbox] {
-	vertical-align: top;
+label input[type=checkbox] {
+	position: relative;
+	top: 2px;
 }
 input[size],
 input[type=radio],
