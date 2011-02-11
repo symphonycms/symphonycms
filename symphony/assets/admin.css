@@ -605,7 +605,7 @@ body, html {
 	color: #fff;
 }
 #contents {
-	padding: 0 19px 10em;
+	padding: 0 19px 5em;
 }
 #contents h2 span {
 	float: left;
@@ -680,7 +680,7 @@ body, html {
 }
 .index .actions {
 	text-align: right;
-	padding: 18px 19px 0 0;
+	padding: 1.75em 1.75em 0 0;
 	height: 38px;
 }
 .index .actions select {
@@ -719,6 +719,9 @@ ul.page a {
 	Single page
 -----------------------------------------------------------------------------*/
 
+.single #contents {
+	padding-bottom: 9em;
+}
 .single form {
 	margin: 0;
 }
@@ -766,7 +769,7 @@ ul.page a {
 .single .actions {
 	clear: both;
 	border-top: 1px solid #ddc;
-	padding: 14px 0 0;
+	padding: 1.75em 0 0;
 }
 .single .actions input {
 	float: right;
