@@ -395,6 +395,25 @@
 
 				$this->Form->appendChild($div);
 			}
+
+			/**
+			* Allows the injection of custom form fields given the current `$this->Form`
+			* object. Please note that this custom data should be saved in own extension
+			* tables and that modifying `tbl_authors` to house your data is highly discouraged.
+			*
+			* @delegate AddElementstoAuthorForm
+			* @since Symphony 2.2
+			* @param string $context
+			* '/system/authors/
+			* @param XMLElement $form
+			* The contents of `$this->Form` after all the default form elements have been appended.
+			* @param Author $author
+			* The current Author object that is being edited
+			*/
+			Symphony::ExtensionManager()->notifyMembers('AddElementstoAuthorForm', '/system/authors/', array(
+				'form' => &$this->Form,
+				'author' => $author
+			));
 		}
 
 		public function __actionNew(){
