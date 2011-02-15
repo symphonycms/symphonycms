@@ -257,8 +257,10 @@
 			## Build the form
 			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
 
-			$this->Contents->appendChild($this->Form);
 			$this->view();
+			$this->Contents->appendChild($this->Form);
+
+			$this->Footer = new XMLElement('div', NULL, array('id' => 'footer'));
 
 			/**
 			 * Allows developers to add items just above the page footer. Use `$context['parent']->Page`
@@ -269,8 +271,6 @@
 			 *  '/backend/'
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AppendElementBelowView', '/backend/');
-
-			$this->Footer = new XMLElement('div', NULL, array('id' => 'footer'));
 
 			$this->appendFooter();
 			$this->appendAlert();
