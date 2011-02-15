@@ -23,7 +23,7 @@
 			parent::__construct($parent);
 			$this->_name = __('Date');
 			$this->key = 1;
-			
+
 			$this->set('location', 'sidebar');
 		}
 
@@ -52,8 +52,13 @@
 			$value = null;
 
 			// New entry:
-			if (is_null($data) && $this->get('pre_populate') == 'yes') {
+			if (is_null($data) && is_null($error) && $this->get('pre_populate') == 'yes') {
 				$value = Lang::localizeDate(DateTimeObj::get(__SYM_DATETIME_FORMAT__, null));
+			}
+
+			// Error entry, display original data:
+			else if (!is_null($error)) {
+				$value = $_POST['fields'][$name];
 			}
 
 			// Empty entry:
@@ -73,9 +78,7 @@
 		}
 
 		function checkPostFieldData($data, &$message, $entry_id=NULL){
-
 			if(empty($data)) return self::__OK__;
-
 			$message = NULL;
 
 			if(!self::__isValidDateString($data)){
@@ -95,8 +98,7 @@
 					$timestamp = strtotime(Lang::standardizeDate(DateTimeObj::get(__SYM_DATETIME_FORMAT__, null)));
 				}
 			}
-
-			else  {
+			else if ($status == self::__OK__) {
 				$timestamp = strtotime(Lang::standardizeDate($data));
 			}
 
@@ -109,9 +111,9 @@
 			}
 
 			return array(
-				'value'	 => null,
-				'local'	 => null,
-				'gmt'	   => null
+				'value' => null,
+				'local' => null,
+				'gmt' => null
 			);
 		}
 
@@ -352,7 +354,7 @@
 					return self::SIMPLE;
 				}
 			}
-			//  A date range, check it's ok!
+			//	A date range, check it's ok!
 			elseif(preg_match('/\s+to\s+/i', $string)) {
 
 				if(!$parts = preg_split('/\s+to\s+/', $string, 2, PREG_SPLIT_NO_EMPTY)) return self::ERROR;
@@ -381,14 +383,11 @@
 		}
 
 		protected static function __isValidDateString($string){
-
 			$string = trim($string);
 
 			if(empty($string)) return false;
 
-			## Its not a valid date, so just return it as is
-			if(!$info = getdate(strtotime($string))) return false;
-			elseif(!checkdate($info['mon'], $info['mday'], $info['year'])) return false;
+			if(!strtotime($string)) return false;
 
 			return true;
 		}

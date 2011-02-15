@@ -1,6 +1,6 @@
 <?php
-    
-    /**
+
+	/**
 	 * @package toolkit
 	 */
 	/**
@@ -20,25 +20,25 @@
 
 		/**
 		 * An instance of the Symphony class, either Frontend or Administration
-		 * @var Symphony 
+		 * @var Symphony
 		 */
 		protected $_engine;
 
 		/**
 		 * An associative array of basic metadata/settings for this Entry
-		 * @var array 
+		 * @var array
 		 */
 		protected $_fields = array();
 
 		/**
-		 * An associative array of the data for each of the Fields that make up 
+		 * An associative array of the data for each of the Fields that make up
 		 * this Entry. The key is the Field ID, and the value is typically an array
-		 * @var array 
+		 * @var array
 		 */
 		protected $_data = array();
 
 		/**
-		 * An ISO 8601 representation of when this Entry was created 
+		 * An ISO 8601 representation of when this Entry was created
 		 * eg. `2004-02-12T15:19:21+00:00`
 		 * @var string
 		 */
@@ -48,8 +48,8 @@
 		 * Construct a new instance of an Entry.
 		 *
 		 * @param mixed $parent
-		 *  The class that created this Entry object, usually the EntryManager,
-		 *  passed by reference.
+		 *	The class that created this Entry object, usually the EntryManager,
+		 *	passed by reference.
 		 */
 		public function __construct(&$parent){
 			$this->_Parent =& $parent;
@@ -119,9 +119,9 @@
 		 * Set the data for a Field in this Entry, given the Field ID and it's data
 		 *
 		 * @param integer $field_id
-		 *  The ID of the Field this data is for
+		 *	The ID of the Field this data is for
 		 * @param mixed $data
-		 *  Often an array
+		 *	Often an array
 		 */
 		public function setData($field_id, $data){
 			$this->_data[$field_id] = $data;
@@ -135,21 +135,21 @@
 		 * the errors.
 		 *
 		 * @param array $data
-		 *  An associative array of the data for this entry where they key is the
-		 *  Field's handle for this Section and the value is the data from the form
+		 *	An associative array of the data for this entry where they key is the
+		 *	Field's handle for this Section and the value is the data from the form
 		 * @param array $error
-		 *  An array of errors, by reference. Defaults to empty
+		 *	An array of errors, by reference. Defaults to empty
 		 * @param boolean $simulate
-		 *  If $simulate is given as true, a dry run of this function will occur, where
-		 *  regardless of errors, an Entry will not be saved in the database. Defaults to
-		 *  false
+		 *	If $simulate is given as true, a dry run of this function will occur, where
+		 *	regardless of errors, an Entry will not be saved in the database. Defaults to
+		 *	false
 		 * @param boolean $ignore_missing_fields
-		 *  This parameter allows Entries to be updated, rather than replaced. This is
-		 *  useful if the input form only contains a couple of the fields for this Entry.
-		 *  Defaults to false, which will set Fields to their default values if they are not
-		 *  provided in the $data
+		 *	This parameter allows Entries to be updated, rather than replaced. This is
+		 *	useful if the input form only contains a couple of the fields for this Entry.
+		 *	Defaults to false, which will set Fields to their default values if they are not
+		 *	provided in the $data
 		 * @return integer
-		 *  Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
+		 *	Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
 		 */
 		public function setDataFromPost($data, &$error = null, $simulate = false, $ignore_missing_fields = false){
 			$status = __ENTRY_OK__;
@@ -201,13 +201,13 @@
 		 * assigned to this Entry will be returned.
 		 *
 		 * @param integer $field_id
-		 *  The ID of the Field whose data you want
+		 *	The ID of the Field whose data you want
 		 * @param boolean $asObject
-		 *  If true, the data will be returned as an object instead of an
-		 *  array. Defaults to false.
+		 *	If true, the data will be returned as an object instead of an
+		 *	array. Defaults to false.
 		 * @return array|object
-		 *  Depending on the value of `$asObject`, return the field's data
-		 *  as either an array or an object
+		 *	Depending on the value of `$asObject`, return the field's data
+		 *	as either an array or an object
 		 */
 		public function getData($field_id=null, $asObject=false){
 			if(!$field_id) return $this->_data;
@@ -219,21 +219,20 @@
 		 * in this Entry's Section and call their `checkPostFieldData()` function.
 		 *
 		 * @param array $data
-		 *  An associative array of the data for this entry where they key is the
-		 *  Field's handle for this Section and the value is the data from the form
+		 *	An associative array of the data for this entry where they key is the
+		 *	Field's handle for this Section and the value is the data from the form
 		 * @param array $error
-		 *  An array of errors, by reference. Defaults to empty
+		 *	An array of errors, by reference. Defaults to empty
 		 * @param boolean $ignore_missing_fields
-		 *  This parameter allows Entries to be updated, rather than replaced. This is
-		 *  useful if the input form only contains a couple of the fields for this Entry.
-		 *  Defaults to false, which will check all Fields even if they are not
-		 *  provided in the $data
+		 *	This parameter allows Entries to be updated, rather than replaced. This is
+		 *	useful if the input form only contains a couple of the fields for this Entry.
+		 *	Defaults to false, which will check all Fields even if they are not
+		 *	provided in the $data
 		 * @return integer
-		 *  Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
+		 *	Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
 		 */
 		public function checkPostData($data, &$errors = null, $ignore_missing_fields=false){
 			$status = __ENTRY_OK__;
-
 			$SectionManager = new SectionManager($this->_engine);
 			$EntryManager = new EntryManager($this->_engine);
 
@@ -248,12 +247,9 @@
 				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
 
 				if(Field::__OK__ != $field->checkPostFieldData((isset($data[$info['element_name']]) ? $data[$info['element_name']] : null), $message, $this->get('id'))){
-					$strict = false;
 					$status = __ENTRY_FIELD_ERROR__;
-
 					$errors[$info['id']] = $message;
 				}
-
 			}
 
 			return $status;
@@ -305,11 +301,11 @@
 		 * array. If there are no associated entries, null will be returned.
 		 *
 		 * @param array $associated_sections
-		 *  An associative array of sections to return the Entry counts from. Defaults to
-		 *  null, which will fetch all the associations of this Entry.
+		 *	An associative array of sections to return the Entry counts from. Defaults to
+		 *	null, which will fetch all the associations of this Entry.
 		 * @return array
-		 *  An associative array with the key being the associated Section's ID and the
-		 *  value being the number of entries associated with this Entry.
+		 *	An associative array with the key being the associated Section's ID and the
+		 *	value being the number of entries associated with this Entry.
 		 */
 		public function fetchAllAssociatedEntryCounts($associated_sections = null) {
 			if(is_null($this->get('section_id'))) return null;
@@ -349,17 +345,17 @@
 			return $counts;
 		}
 
-	}    
-    
-     /**
-	  * The constant for when an Entry is ok, that is, no errors have 
+	}
+
+	 /**
+	  * The constant for when an Entry is ok, that is, no errors have
 	  * been raised by any of it's Fields.
 	  * @var integer
 	  */
 	define_safe('__ENTRY_OK__', 0);
 
 	/**
-	 * The constant for an Entry if there is an error is raised by any of 
+	 * The constant for an Entry if there is an error is raised by any of
 	 * it's Fields.
 	 * @var integer
 	 */
