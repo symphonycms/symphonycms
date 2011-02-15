@@ -20,7 +20,7 @@
 		 */
 		public function about() {
 			return array(
-				'name' => 'Sendmail (default)',
+				'name' => __('Sendmail (default)'),
 			);
 		}
 

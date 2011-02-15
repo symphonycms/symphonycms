@@ -32,7 +32,7 @@
 		 */
 		public function about(){
 			return array(
-				'name' => 'SMTP',
+				'name' => __('SMTP'),
 			);
 		}
 
@@ -264,26 +264,26 @@
 
 			$label = Widget::Label();
 			// To fix the issue with checkboxes that do not send a value when unchecked.
-			$options = Array(
-				Array('no',$this->_secure == 'no', 'No encryption'),
-				Array('ssl',$this->_secure == 'ssl', 'SSL encryption'),
-				Array('tls',$this->_secure == 'tls', 'TLS encryption'),
+			$options = array(
+				array('no',$this->_secure == 'no', __('No encryption')),
+				array('ssl',$this->_secure == 'ssl', __('SSL encryption')),
+				array('tls',$this->_secure == 'tls', __('TLS encryption')),
 			);
 			$select = Widget::Select('settings[email_smtp][secure]', $options);
 			$label->appendChild($select);
 			$group->appendChild($label);
 
-			$group->appendChild(new XMLElement('p', 'For a secure connection, SSL and TLS are supported. Please check the manual of your email provider for more details.', array('class' => 'help')));
+			$group->appendChild(new XMLElement('p', __('For a secure connection, SSL and TLS are supported. Please check the manual of your email provider for more details.'), array('class' => 'help')));
 
 			$label = Widget::Label();
 			// To fix the issue with checkboxes that do not send a value when unchecked.
 			$group->appendChild(Widget::Input('settings[email_smtp][auth]', '0', 'hidden'));
 			$input = Widget::Input('settings[email_smtp][auth]', '1', 'checkbox');
 			if($this->_auth == true) $input->setAttribute('checked', 'checked');
-			$label->setValue($input->generate() . ' Requires authentication');
+			$label->setValue(__('%s Requires authentication', array($input->generate())));
 			$group->appendChild($label);
 
-			$group->appendChild(new XMLElement('p', 'Some SMTP connections require authentication. If that is the case, enter the username/password combination below.', array('class' => 'help')));
+			$group->appendChild(new XMLElement('p', __('Some SMTP connections require authentication. If that is the case, enter the username/password combination below.'), array('class' => 'help')));
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'group');
