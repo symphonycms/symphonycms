@@ -16,7 +16,7 @@
 	require_once(TOOLKIT . '/class.alert.php');
 
 	Class AdministrationPage extends HTMLPage{
-		
+
 		/**
 		 * An instance of the Administration class
 		 * @var Administration
@@ -30,27 +30,27 @@
 		 * @var Alert
 		 */
 		public $Alert = null;
-		
+
 		/**
 		 * As the name suggests, a `<div>` that holds the following `$Header`,
 		 * `$Contents` and `$Footer`.
 		 * @var XMLElement
 		 */
 		public $Wrapper = null;
-		
+
 		/**
 		 * A `<div>` that contains the header of a Symphony backend page, which
 		 * typically contains the Site title and the navigation.
 		 * @var XMLElement
 		 */
 		public $Header = null;
-		
+
 		/**
 		 * A `<div>` that contains the content of a Symphony backend page.
 		 * @var XMLElement
 		 */
 		public $Contents = null;
-		
+
 		/**
 		 * A `<div>` that contains the Symphony footer, typically the version and
 		 * the current Author's details.
@@ -275,12 +275,6 @@
 			$this->appendFooter();
 			$this->appendAlert();
 
-			$this->Wrapper->appendChild($this->Header);
-			$this->Wrapper->appendChild($this->Contents);
-			$this->Wrapper->appendChild($this->Footer);
-
-			$this->Body->appendChild($this->Wrapper);
-
 			Administration::instance()->Profiler->sample('Page content created', PROFILE_LAP);
 		}
 
@@ -338,13 +332,21 @@
 		}
 
 		/**
-		 * Appends the ID and class attributes for the `<body>` element
-		 * before calling the parent's generate function which will convert
-		 * the XMLElements into strings ready for output
+		 * Appends the `$this->Header`, `$this->Contents` and `$this->Footer`
+		 * to `$this->Wrapper` before adding the ID and class attributes for
+		 * the `<body>` element. After this has completed the parent's generate
+		 * function is called which will convert the `XMLElement`'s into strings
+		 * ready for output
 		 *
 		 * @return string
 		 */
 		public function generate() {
+			$this->Wrapper->appendChild($this->Header);
+			$this->Wrapper->appendChild($this->Contents);
+			$this->Wrapper->appendChild($this->Footer);
+
+			$this->Body->appendChild($this->Wrapper);
+
 			$this->__appendBodyId();
 			$this->__appendBodyClass($this->_context);
 			return parent::generate();
