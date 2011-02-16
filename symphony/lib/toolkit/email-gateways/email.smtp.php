@@ -240,11 +240,11 @@
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'group');
 
-			$label = Widget::Label('From Name');
+			$label = Widget::Label(__('From Name'));
 			$label->appendChild(Widget::Input('settings[email_smtp][from_name]', $this->_sender_name));
 			$div->appendChild($label);
 
-			$label = Widget::Label('From Email Address');
+			$label = Widget::Label(__('From Email Address'));
 			$label->appendChild(Widget::Input('settings[email_smtp][from_address]', $this->_sender_email_address));
 			$div->appendChild($label);
 
