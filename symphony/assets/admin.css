@@ -136,7 +136,8 @@ tr:nth-child(odd).selected td {
 	background-color: #5677c3;
 }
 tr.selected td,
-tr.selected a {
+tr.selected a,
+tr.selected .inactive {
 	color: #fff;
 }
 
@@ -151,7 +152,8 @@ tr:nth-child(odd).ordering td {
 	background-color: #887;
 }
 tr.ordering td,
-tr.ordering a {
+tr.ordering a,
+tr.ordering .inactive {
 	color: #fff;
 }
 tr.selecting td, tr:nth-child(odd).selecting td {
@@ -160,7 +162,8 @@ tr.selecting td, tr:nth-child(odd).selecting td {
 	background-color: #5273c0;
 }
 tr.selecting td,
-tr.selecting a {
+tr.selecting a,
+tr.selecting .inactive {
 	color: #fff;
 }
 
@@ -184,7 +187,7 @@ tr.selecting a {
 .irrelevant {
 	display: none;
 }
-.selected, .selected a {
+.selected, .selected a, .selected .inactive {
 	color: #fff;
 }
 .selected a:hover {
