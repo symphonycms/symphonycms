@@ -19,11 +19,11 @@
 	 *  when used in connection with the orderable plugin
 	 */
 	$.fn.symphonySelectable = function(custom_settings) {
-		var objects = this;
-		var settings = {
-			items: 'tbody tr',
-			handles: 'td'
-		};
+		var objects = this,
+			settings = {
+				items: 'tbody tr',
+				handles: 'td'
+			};
 
 		$.extend(settings, custom_settings);
 
@@ -87,31 +87,31 @@
 				}
 
 				// Toggle selection
-				item.toggleClass('selected');
-				item.find('input[type="checkbox"]').attr('checked', true);
-
-				// Fire event
 				if(item.is('.selected')) {
-					item.trigger('select');
+					item.removeClass('selected').trigger('deselect');
+					item.find('input[type="checkbox"]').attr('checked', false);		
 				}
 				else {
-					item.trigger('deselect');
+					item.addClass('selected').trigger('select');
+					item.find('input[type="checkbox"]').attr('checked', true);		
 				}
 			}
 
 		});
 
 		// Handle highlighting conflicts between orderable and selectable items
-		objects.find(settings.items).bind('mousedown.selectable', function(event) {
-			$(this).addClass('selecting');
-		});
-		objects.find(settings.items).bind('mouseup.selectable mousemove.selectable', function(event) {
-			$(this).removeClass('selecting');
-		});
+		if(objects.is('.orderable')) {
+			objects.find(settings.items).bind('mousedown.selectable', function(event) {
+				$(this).addClass('selecting');
+			});
+			objects.find(settings.items).bind('mouseup.selectable mousemove.selectable', function(event) {
+				$(this).removeClass('selecting');
+			});
+		}
 
 		// Remove all selections by doubleclicking the body
 		$('body').bind('dblclick.selectable', function() {
-			objects.find(settings.items).removeClass('selected');
+			objects.find(settings.items).removeClass('selected').trigger('deselect');
 		});
 
 		// Return objects

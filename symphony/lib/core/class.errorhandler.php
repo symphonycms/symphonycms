@@ -73,10 +73,11 @@
 				if(self::$_Log instanceof Log){
 					self::$_Log->pushToLog(
 						sprintf(
-							'%s%s%s', $e->getMessage(), ($e->getFile ? " in file " .  $e->getFile() : null), ($e->getLine() ? " on line " . $e->getLine() : null)
+							'%s%s%s', $e->getMessage(), ($e->getFile() ? " in file " .  $e->getFile() : null), ($e->getLine() ? " on line " . $e->getLine() : null)
 						), get_class($e), true
 					);
 				}
+
 				// Instead of just throwing an empty page, return a 404 page.
 				if(self::$enabled !== true){
 					require_once(CORE . '/class.frontend.php');
@@ -93,11 +94,13 @@
 
 				$output = call_user_func(array($class, 'render'), $e);
 
-				header('Content-Type: text/html; charset=utf-8');
-				header(sprintf('Content-Length: %d', strlen($output)));
+				if(!headers_sent()) {
+					header('Content-Type: text/html; charset=utf-8');
+					header(sprintf('Content-Length: %d', strlen($output)));
+				}
+
 				echo $output;
 				exit;
-
 			}
 			catch(Exception $e){
 				print "Looks like the Exception handler crapped out";
@@ -311,6 +314,12 @@
 		public static $enabled = true;
 
 		/**
+		 * Whether to raise all Warnings to Exceptions or not.
+		 * @var boolean
+		 */
+		public static $raise = false;
+
+		/**
 		 * An instance of the Symphony Log class, used to write errors to the log
 		 * @var Log
 		 */
@@ -346,11 +355,14 @@
 		 *
 		 * @param Log|null $Log (optional)
 		 *  An instance of a Symphony Log object to write errors to
+		 * @param string $raise
+		 *  Whether to raise E_WARNING as an Exception
 		 */
-		public static function initialise(Log $Log = null){
+		public static function initialise(Log $Log = null, $raise = false){
 			if(!is_null($Log)){
 				self::$_Log = $Log;
 			}
+			self::$raise = ($raise == 'yes') ? true : false;
 
 			set_error_handler(array(__CLASS__, 'handler'), error_reporting());
 		}
@@ -369,7 +381,7 @@
 		 * The handler function will write the error to the `$Log` if it is not `E_NOTICE`
 		 * or `E_STRICT` before raising the error as an Exception. This allows all `E_WARNING`
 		 * to actually be captured by an Exception handler.
-		 * 
+		 *
 		 * @param integer $code
 		 *  The error code, one of the PHP error constants
 		 * @param string $message
@@ -391,8 +403,10 @@
 					), $code, true
 				);
 			}
-			
-			throw new ErrorException($message, 0, $code, $file, $line);
+
+			if(self::$raise || $code != E_WARNING) {
+				throw new ErrorException($message, 0, $code, $file, $line);
+			}
 		}
 
 	}

@@ -13,8 +13,9 @@
 
 			$this->_name = __('File Upload');
 			$this->_required = true;
-
-			$this->set('required', 'yes');
+			
+			$this->set('location', 'sidebar');
+			$this->set('required', 'no');
 		}
 
 		public function canPrePopulate(){
@@ -251,8 +252,10 @@
 
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload');
 
-			$this->appendRequiredCheckbox($wrapper);
-			$this->appendShowColumnCheckbox($wrapper);
+			$div = new XMLElement('div', NULL, array('class' => 'compact'));
+			$this->appendRequiredCheckbox($div);
+			$this->appendShowColumnCheckbox($div);
+			$wrapper->appendChild($div);
 
 		}
 
@@ -541,7 +544,7 @@
 				  `mimetype` varchar(50) default NULL,
 				  `meta` varchar(255) default NULL,
 				  PRIMARY KEY  (`id`),
-				  KEY `entry_id` (`entry_id`),
+				  UNIQUE KEY `entry_id` (`entry_id`),
 				  KEY `file` (`file`),
 				  KEY `mimetype` (`mimetype`)
 				) ENGINE=MyISAM;"

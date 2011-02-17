@@ -26,7 +26,6 @@
 		public function __form(){
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-
 			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
 
 			if(isset($this->_context[2])){
@@ -76,6 +75,9 @@
 					$fields['filter'][$fields['source']] = $filters;
 				}
 
+				if(!isset($fields['xml_elements']) || !is_array($fields['xml_elements'])) {
+					$fields['xml_elements'] = array();
+				}
 			}
 
 			else if($this->_context[0] == 'edit'){
@@ -94,9 +96,11 @@
 				$fields['param'] = $existing->dsParamPARAMOUTPUT;
 				$fields['required_url_param'] = trim($existing->dsParamREQUIREDPARAM);
 
-				$fields['xml_elements'] = array();
 				if(isset($existing->dsParamINCLUDEDELEMENTS) && is_array($existing->dsParamINCLUDEDELEMENTS)){
 					$fields['xml_elements'] = $existing->dsParamINCLUDEDELEMENTS;
+				}
+				else {
+					$fields['xml_elements'] = array();
 				}
 
 				$fields['sort'] = $existing->dsParamSORT;
@@ -108,7 +112,13 @@
 				if ($fields['associated_entry_counts'] == NULL) $fields['associated_entry_counts'] = 'yes';
 				if($existing->dsParamREDIRECTONEMPTY == 'yes') $fields['redirect_on_empty'] = 'yes';
 
-				$existing->dsParamFILTERS = @array_map('stripslashes', $existing->dsParamFILTERS);
+				if(!is_array($existing->dsParamFILTERS)) {
+					$existing->dsParamFILTERS = array();
+				}
+
+				if(!empty($existing->dsParamFILTERS)) {
+					$existing->dsParamFILTERS = array_map('stripslashes', $existing->dsParamFILTERS);
+				}
 
 				$fields['source'] = $existing->getSource();
 
@@ -205,7 +215,7 @@
 
 			if(is_array($sections) && !empty($sections)){
 				array_unshift($options, array('label' => __('Sections'), 'options' => array()));
-				foreach($sections as $s) $options[0]['options'][] = array($s->get('id'), ($fields['source'] == $s->get('id')), $s->get('name'));
+				foreach($sections as $s) $options[0]['options'][] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
 			}
 
 			$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
@@ -222,7 +232,6 @@
 			$fieldset->appendChild($p);
 
 			foreach($field_groups as $section_id => $section_data){
-
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'contextual ' . $section_data['section']->get('id'));
 				$p = new XMLElement('p', __('Filter %s by', array($section_data['section']->get('name'))));
@@ -295,7 +304,6 @@
 			$div->appendChild($ol);
 
 			$fieldset->appendChild($div);
-
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'contextual navigation');
@@ -397,7 +405,6 @@
 			);
 
 			foreach($field_groups as $section_id => $section_data){
-
 				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array(
 					array('system:id', ($fields['source'] == $section_data['section']->get('id') && $fields['sort'] == 'system:id'), __('System ID')),
 					array('system:date', ($fields['source'] == $section_data['section']->get('id') && $fields['sort'] == 'system:date'), __('System Date')),
@@ -457,7 +464,8 @@
 			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml');
 			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
 
-			$label = Widget::Label(__('Required URL Parameter <i>Optional</i>'));
+			$label = Widget::Label(__('Required URL Parameter'));
+			$label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param'])));
 			$fieldset->appendChild($label);
 
@@ -489,7 +497,6 @@
 			);
 
 			foreach($field_groups as $section_id => $section_data){
-
 				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array(
 					array('system:id', ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == 'system:id'), __('System ID')),
 					array('system:date', ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == 'system:date'), __('System Date')),
@@ -528,7 +535,6 @@
 			);
 
 			foreach($field_groups as $section_id => $section_data){
-
 				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array());
 
 				$authorOverride = false;
@@ -565,31 +571,32 @@
 			);
 
 			foreach($field_groups as $section_id => $section_data){
-
-				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array());
-
-				$optgroup['options'][] = array(
-					'system:pagination',
-					($fields['source'] == $section_data['section']->get('id') && @in_array('system:pagination', $fields['xml_elements'])),
-					'pagination'
+				$optgroup = array(
+					'label' => General::sanitize($section_data['section']->get('name')),
+					'options' => array(
+						array(
+							'system:pagination',
+							($fields['source'] == $section_data['section']->get('id') && in_array('system:pagination', $fields['xml_elements'])),
+							'pagination'
+						)
+					)
 				);
 
 				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
-					foreach($section_data['fields'] as $input){
-						$elements = $input->fetchIncludableElements();
+					foreach($section_data['fields'] as $field){
+						$elements = $field->fetchIncludableElements();
 
 						if(is_array($elements) && !empty($elements)){
 							foreach($elements as $name){
 								$selected = false;
 
-								if($fields['source'] == $section_data['section']->get('id') && @in_array($name, $fields['xml_elements'])){
+								if($fields['source'] == $section_data['section']->get('id') && in_array($name, $fields['xml_elements'])){
 									$selected = true;
 								}
 
 								$optgroup['options'][] = array($name, $selected, $name);
 							}
 						}
-
 					}
 				}
 
@@ -629,7 +636,8 @@
 			$fieldset->appendChild($p);
 
 			$div = new XMLElement('div');
-			$p = new XMLElement('p', __('Namespace Declarations <i>Optional</i>'));
+			$p = new XMLElement('p', __('Namespace Declarations'));
+			$p->appendChild(new XMLElement('i', __('Optional')));
 			$p->setAttribute('class', 'label');
 			$div->appendChild($p);
 
@@ -875,22 +883,21 @@
 
 			}
 
-			elseif($fields['source'] == 'authors') {
+			elseif(is_numeric($fields['source'])) {
 
 				if(strlen(trim($fields['max_records'])) == 0 || (is_numeric($fields['max_records']) && $fields['max_records'] < 1)){
 					if (isset($fields['paginate_results'])) $this->_errors['max_records'] = __('A result limit must be set');
 				}
-				elseif(!self::__isValidPageString($fields['max_records'])){
+				else if(!self::__isValidPageString($fields['max_records'])){
 					$this->_errors['max_records'] = __('Must be a valid number or parameter');
 				}
 
 				if(strlen(trim($fields['page_number'])) == 0 || (is_numeric($fields['page_number']) && $fields['page_number'] < 1)){
 					if (isset($fields['paginate_results'])) $this->_errors['page_number'] = __('A page number must be set');
 				}
-				elseif(!self::__isValidPageString($fields['page_number'])){
+				else if(!self::__isValidPageString($fields['page_number'])){
 					$this->_errors['page_number'] = __('Must be a valid number or parameter');
 				}
-
 			}
 
 			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z]+@i' => '', '/[^\w-\.]/i' => ''));

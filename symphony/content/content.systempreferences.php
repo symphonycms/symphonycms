@@ -13,14 +13,12 @@
 	require_once(TOOLKIT . '/class.administrationpage.php');
 
 	class contentSystemPreferences extends AdministrationPage {
-		public function __construct(&$parent){
-			parent::__construct($parent);
-			$this->setPageType('form');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Preferences'))));
-		}
 
 		## Overload the parent 'view' function since we dont need the switchboard logic
 		public function view() {
+			$this->setPageType('form');
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Preferences'))));
+			
 			$this->appendSubheading(__('Preferences'));
 
 			$bIsWritable = true;

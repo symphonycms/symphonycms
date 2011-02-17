@@ -11,20 +11,20 @@
 	 *  An object with custom duplicator settings
 	 */
 	$.fn.symphonyDuplicator = function(custom_settings) {
-		var objects = this;
-		var settings = {
-			instances:			'> li:not(.template)',	// What children do we use as instances?
-			templates:			'> li.template',		// What children do we use as templates?
-			headers:			'> :first-child',		// What part of an instance is the header?
-			orderable:			false,					// Can instances be ordered?
-			collapsible:		false,					// Can instances be collapsed?
-			constructable:		true,					// Allow construction of new instances?
-			destructable:		true,					// Allow destruction of instances?
-			minimum:			0,						// Do not allow instances to be removed below this limit.
-			maximum:			1000,					// Do not allow instances to be added above this limit.
-			speed:				'fast',					// Control the speed of any animations
-			delay_initialize:	false
-		};
+		var objects = this,
+			settings = {
+				instances:			'> li:not(.template)',	// What children do we use as instances?
+				templates:			'> li.template',		// What children do we use as templates?
+				headers:			'> :first-child',		// What part of an instance is the header?
+				orderable:			false,					// Can instances be ordered?
+				collapsible:		false,					// Can instances be collapsed?
+				constructable:		true,					// Allow construction of new instances?
+				destructable:		true,					// Allow destruction of instances?
+				minimum:			0,						// Do not allow instances to be removed below this limit.
+				maximum:			1000,					// Do not allow instances to be added above this limit.
+				speed:				'fast',					// Control the speed of any animations
+				delay_initialize:	false
+			};
 
 		$.extend(settings, custom_settings);
 
@@ -39,36 +39,40 @@
 		});
 
 		// Collapsible
-		if (settings.collapsible) objects = objects.symphonyCollapsible({
-			items:			'.instance',
-			handles:		'.header span'
-		});
+		if(settings.collapsible) {
+			objects = objects.symphonyCollapsible({
+				items:			'.instance',
+				handles:		'.header span'
+			});
+		}
 
 		// Orderable
-		if (settings.orderable) objects = objects.symphonyOrderable({
-			items:			'.instance',
-			handles:		'.header'
-		});
+		if(settings.orderable) {
+			objects = objects.symphonyOrderable({
+				items:			'.instance',
+				handles:		'.header'
+			});
+		}
 
 		// Duplicator
 		objects = objects.map(function() {
-			var object = this;
-			var templates = [];
-			var widgets = {
-				controls:		null,
-				selector:		null,
-				constructor:	null,
-				topcontrols:	null,
-				collapser:		null
-			};
-			var silence = function() {
-				return false;
-			};
+			var object = this,
+				templates = [],
+				widgets = {
+					controls:		null,
+					selector:		null,
+					constructor:	null,
+					topcontrols:	null,
+					collapser:		null
+				},
+				silence = function() {
+					return false;
+				};
 
-			// Construct a new instance:
+			// Construct a new instance
 			var construct = function(source) {
-				var template = $(source).clone(true);
-				var instance = prepare(template);
+				var template = $(source).clone(true),
+					instance = prepare(template);
 
 				widgets.controls.before(instance);
 				object.trigger('construct', [instance]);
@@ -86,23 +90,18 @@
 				return instance;
 			};
 			
-			// Prepare an instance:
+			// Prepare an instance
 			var prepare = function(source) {
-				var instance = $(source)
-					.addClass('instance expanded');
-				var header = instance.find(settings.headers)
-					.addClass('header')
-					.wrapInner('<span />');
-				var destructor = header
-					.append('<a class="destructor" />')
-					.find('a.destructor:first')
-					.text(Symphony.Language.get('Remove item'));
+				var instance = $(source).addClass('instance expanded'),
+					header = instance.find(settings.headers).addClass('header').wrapInner('<span />'),
+					destructor = header.append('<a class="destructor" />').find('a.destructor:first').text(Symphony.Language.get('Remove item'));
 
 				header.nextAll().wrapAll('<div class="content" />');
 
 				destructor.bind('click.duplicator', function() {
-					if ($(this).hasClass('disabled')) return;
-
+					if($(this).hasClass('disabled')) {
+						return;
+					}
 					destruct(source);
 				});
 
@@ -111,19 +110,19 @@
 				return instance;
 			};
 
-			// Refresh disabled states:
+			// Refresh disabled states
 			var refresh = function(input_focus) {
-				var constructor = settings.constructable;
-				var selector = settings.constructable;
-				var destructor = settings.destructable;
-				var instances = object.children('.instance');
-				var empty = false;
+				var constructor = settings.constructable,
+					selector = settings.constructable,
+					destructor = settings.destructable,
+					instances = object.children('.instance'),
+					empty = false;
 
-				// Update field names:
+				// Update field names
 				instances.each(function(position) {
 					$(this).find('*[name]').each(function() {
-						var exp = /\[\-?[0-9]+\]/;
-						var name = $(this).attr('name');
+						var exp = /\[\-?[0-9]+\]/,
+							name = $(this).attr('name');
 
 						if (exp.test(name)) {
 							$(this).attr('name', name.replace(exp, '[' + position + ']'));
@@ -132,43 +131,72 @@
 				});
 
 				// Give focus to the first input in the first instance
-				if (input_focus) instances.filter(':last').find('input[type!="hidden"]:first').focus();
+				if(input_focus) {
+					instances.filter(':last').find('input[type!="hidden"]:first').focus();
+				}
 
-				// No templates to add:
-				if (templates.length < 1) {
+				// No templates to add
+				if(templates.length < 1) {
 					constructor = false;
 				}
 
-				// Only one template:
-				if (templates.length <= 1) {
+				// Only one template
+				if(templates.length <= 1) {
 					selector = false;
 				}
 
 				// Maximum reached?
-				if (settings.maximum <= instances.length) {
+				if(settings.maximum <= instances.length) {
 					constructor = false;
 					selector = false;
 				}
 
 				// Minimum reached?
-				if (settings.minimum >= instances.length) {
+				if(settings.minimum >= instances.length) {
 					destructor = false;
 				}
 
-				if (constructor) widgets.constructor.removeClass('disabled');
-				else widgets.constructor.addClass('disabled');
+				// Constructor?
+				if(constructor) {
+					widgets.constructor.removeClass('disabled');
+				}
+				else {
+					widgets.constructor.addClass('disabled');
+				}
 
-				if (selector) widgets.selector.removeClass('disabled');
-				else widgets.selector.addClass('disabled');
+				// Selector?
+				if(selector) {
+					widgets.selector.removeClass('disabled');
+				}
+				else {
+					widgets.selector.addClass('disabled');
+				}
 
-				if (destructor) instances.find(settings.headers).find('.destructor').removeClass('disabled');
-				else instances.find(settings.headers).find('.destructor').addClass('disabled');
+				// Destructor?
+				if(destructor) {
+					instances.find(settings.headers).find('.destructor').removeClass('disabled');
+				}
+				else {
+					instances.find(settings.headers).find('.destructor').addClass('disabled');
+				}
 
-				if (!empty) object.removeClass('empty');
-				else object.addClass('empty');
+				// Empty?
+				if(!empty) {
+					object.removeClass('empty');
+				}
+				else {
+					object.addClass('empty');
+				}
 
-				if (settings.collapsible) object.collapsible.initialize();
-				if (settings.orderable) object.orderable.initialize();
+				// Collapsible?
+				if(settings.collapsible) {
+					object.collapsible.initialize();
+				}
+				
+				// Orderable?
+				if(settings.orderable) {
+					object.orderable.initialize();
+				}
 			};
 
 			var collapsingEnabled = function() {
@@ -182,15 +210,11 @@
 			};
 
 			var toCollapseAll = function() {
-				widgets.collapser
-					.removeClass('compact')
-					.text(Symphony.Language.get('Collapse all'));
+				widgets.collapser.removeClass('compact').text(Symphony.Language.get('Collapse all'));
 			};
 
 			var toExpandAll = function() {
-				widgets.collapser
-					.addClass('compact')
-					.text(Symphony.Language.get('Expand all'));
+				widgets.collapser.addClass('compact').text(Symphony.Language.get('Expand all'));
 			};
 
 		/*-------------------------------------------------------------------*/
@@ -229,16 +253,9 @@
 						item.find('> .content').hide().slideDown(settings.speed);
 					});
 
-					widgets.controls = object
-						.append('<div class="controls" />')
-						.find('> .controls:last');
-					widgets.selector = widgets.controls
-						.prepend('<select />')
-						.find('> select:first');
-					widgets.constructor = widgets.controls
-						.append('<a class="constructor" />')
-						.find('> a.constructor:first')
-						.text(Symphony.Language.get('Add item'));
+					widgets.controls = object.append('<div class="controls" />').find('> .controls:last');
+					widgets.selector = widgets.controls.prepend('<select />').find('> select:first');
+					widgets.constructor = widgets.controls.append('<a class="constructor" />').find('> a.constructor:first').text(Symphony.Language.get('Add item'));
 
 					// Prepare instances:
 					object.find(settings.instances).each(function() {
@@ -249,21 +266,23 @@
 
 					// Store templates:
 					object.find(settings.templates).each(function(position) {
-						var template = $(this).clone(true);
-						var header = template.find(settings.headers).addClass('header');
-						var option = widgets.selector.append('<option />')
-							.find('option:last');
-
-						var header_children = header.children();
-						if (header_children.length) {
+						var template = $(this).clone(true),
+							header = template.find(settings.headers).addClass('header'),
+							option = widgets.selector.append('<option />').find('option:last'),
+							header_children = header.children();
+							
+						if(header_children.length) {
 							header_text = header.get(0).childNodes[0].nodeValue + ' (' + header_children.filter(':eq(0)').text() + ')';
-						} else {
+						} 
+						else {
 							header_text = header.text();
 						}
 						option.text(header_text).val(position);
 
 						// HACK: preselect Text Input for Section editor
-						if (header_text == 'Text Input') option.attr('selected', 'selected');
+						if (header_text == 'Text Input') {
+							option.attr('selected', 'selected');
+						}
 
 						templates.push(template.removeClass('template'));
 
@@ -275,14 +294,18 @@
 					widgets.constructor.bind('selectstart.duplicator', silence);
 					widgets.constructor.bind('mousedown.duplicator', silence);
 					widgets.constructor.bind('click.duplicator', function() {
-						if ($(this).hasClass('disabled')) return;
+						if($(this).hasClass('disabled')) {
+							return;
+						}
 
 						var position = widgets.selector.val();
 
-						if (position >= 0) construct(templates[position]);
+						if(position >= 0) {
+							construct(templates[position]);
+						}
 					});
 
-					if (settings.collapsible) {
+					if(settings.collapsible) {
 						widgets.topcontrols = object
 							.prepend('<div class="controls top hidden" />')
 							.find('> .controls:first')
@@ -292,17 +315,16 @@
 								.text(Symphony.Language.get('Collapse all'))
 								.clone()
 							);
-						widgets.collapser = object
-							.find('.controls > .collapser');
+						widgets.collapser = object.find('.controls > .collapser');
 
-						if (object.children('.instance').length > 0) {
+						if(object.children('.instance').length > 0) {
 							collapsingEnabled();
 						}
 
 						object.bind('construct.duplicator', function() {
 							var instances = object.children('.instance');
 
-							if (instances.length > 0) {
+							if(instances.length > 0) {
 								collapsingEnabled();
 							}
 						});
@@ -310,20 +332,20 @@
 						object.bind('destruct.duplicator', function() {
 							var instances = object.children('.instance');
 
-							if (instances.length < 1) {
+							if(instances.length < 1) {
 								collapsingDisabled();
 								toCollapseAll();
 							}
 						});
 
 						object.bind('collapsestop.duplicator destruct.duplicator', function() {
-							if (object.has('.expanded').length == 0) {
+							if(object.has('.expanded').length == 0) {
 								toExpandAll();
 							}
 						});
 
 						object.bind('expandstop.duplicator destruct.duplicator', function() {
-							if (object.has('.collapsed').length == 0) {
+							if(object.has('.collapsed').length == 0) {
 								toCollapseAll();
 							}
 						});
@@ -331,7 +353,7 @@
 						widgets.collapser.bind('click.duplicator', function() {
 							var item = $(this);
 
-							if (item.is('.disabled')) return;
+							if(item.is('.disabled')) return;
 
 							object.duplicator[item.is('.compact') ? 'expandAll' : 'collapseAll']();
 						});
@@ -379,14 +401,13 @@
 			var object = this;
 
 			object.bind('construct.duplicator', function(event, instance) {
-				var input = instance.find('input:visible:first');
-				var header = instance.find('.header:first > span:first');
-				var fallback = header.text();
-				var refresh = function() {
-					var value = input.val();
-
-					header.text(value ? value : fallback);
-				};
+				var input = instance.find('input:visible:first'),
+					header = instance.find('.header:first > span:first'),
+					fallback = header.text(),
+					refresh = function() {
+						var value = input.val();
+						header.text(value ? value : fallback);
+					};
 
 				input.bind('change.duplicator', refresh).bind('keyup', refresh);
 

@@ -164,6 +164,7 @@
 	if (!is_array($datasource_schema)) $datasource_schema = array();
 	if ($this->dsParamPARAMOUTPUT) $datasource_schema[] = $this->dsParamPARAMOUTPUT;
 	if ($this->dsParamGROUP) $datasource_schema[] = $entryManager->fieldManager->fetchHandleFromID($this->dsParamGROUP);
+	if(!isset($this->dsParamPAGINATERESULTS)) $this->dsParamPAGINATERESULTS = 'yes';
 
 	$entries = $entryManager->fetchByPage(($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1),
 										  $this->getSource(),

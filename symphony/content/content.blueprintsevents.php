@@ -114,7 +114,7 @@
 				$options = array();
 
 				if(is_array($sections) && !empty($sections)){
-					foreach($sections as $s) $options[] = array($s->get('id'), ($fields['source'] == $s->get('id')), $s->get('name'));
+					foreach($sections as $s) $options[] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
 				}
 
 				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
@@ -128,11 +128,10 @@
 				$label = Widget::Label(__('Filter Options'));
 
 				$filters = is_array($fields['filters']) ? $fields['filters'] : array();
-
 				$options = array(
-					array('admin-only', @in_array('admin-only', $filters), __('Admin Only')),
-					array('send-email', @in_array('send-email', $filters), __('Send Notification Email')),
-					array('expect-multiple', @in_array('expect-multiple', $filters), __('Allow Multiple')),
+					array('admin-only', in_array('admin-only', $filters), __('Admin Only')),
+					array('send-email', in_array('send-email', $filters), __('Send Notification Email')),
+					array('expect-multiple', in_array('expect-multiple', $filters), __('Allow Multiple')),
 				);
 
 				/**
@@ -146,7 +145,7 @@
 				 * @param array $options
 				 *  An array of all the filters that are available, passed by reference
 				 */
-				Symphony::ExtensionManager()->notifyMembers('AppendEventFilter', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $fields['filters'], 'options' => &$options));
+				Symphony::ExtensionManager()->notifyMembers('AppendEventFilter', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $filters, 'options' => &$options));
 
 				$label->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
 
@@ -233,6 +232,7 @@
 
 			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
 			if(trim($fields['source']) == '') $this->_errors['source'] = __('This is a required field');
+            $filters = (is_array($fields['filters'])) ? $fields['filters'] : array();
 
 			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
@@ -254,7 +254,7 @@
 
 			if(empty($this->_errors)){
 
-				$multiple = @in_array('expect-multiple', $fields['filters']);
+				$multiple = in_array('expect-multiple', $filters);
 
 				$eventShell = file_get_contents(TEMPLATE . '/event.tpl');
 
@@ -324,7 +324,7 @@
 
 				###
 
-				if(is_array($fields['filters']) && !empty($fields['filters'])){
+				if(is_array($filters) && !empty($filters)){
 					$documentation_parts[] = new XMLElement('p', __('The following is an example of what is returned if any options return an error:'));
 
 					$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
@@ -367,7 +367,7 @@
 				$documentation_parts[] = new XMLElement('p', __('To redirect to a different location upon a successful save, include the redirect location in the form. This is best as a hidden field like so, where the value is the URL to redirect to:'));
 				$documentation_parts[] = self::processDocumentationCode(Widget::Input('redirect', URL.'/success/', 'hidden'));
 
-				if(@in_array('send-email', $fields['filters'])){
+				if(in_array('send-email', $filters)){
 					$documentation_parts[] = new XMLElement('h3', __('Send Notification Email'));
 
 					$documentation_parts[] = new XMLElement('p', __('Upon the event successfully saving the entry, this option takes input from the form and send an email to the desired recipient. <b>It currently does not work with "Allow Multiple".</b> The following are the recognised fields:'));
@@ -412,7 +412,7 @@
 				 * @param array $documentation
 				 *  An array of all the documentation XMLElements, passed by reference
 				 */
-				Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $fields['filters'], 'documentation' => &$documentation_parts));
+				Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $filters, 'documentation' => &$documentation_parts));
 
 				$documentation = join(self::CRLF, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $documentation_parts));
 				$documentation = str_replace('\'', '\\\'', $documentation);
@@ -531,5 +531,3 @@
 			foreach($details as $key => $val) $shell = str_replace('<!-- ' . strtoupper($key) . ' -->', addslashes($val), $shell);
 		}
 	}
-
-?>

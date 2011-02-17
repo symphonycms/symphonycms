@@ -132,7 +132,10 @@
 				$position = General::array_find_available_index($this->_head, $position);
 			}
 			else if(is_null($position)) {
-				$position = max(0, count($this->_head));
+				if(count($this->_head) > 0)
+					$position = max(array_keys($this->_head))+1;
+				else
+					$position = 0;
 			}
 
 			$this->_head[$position] = $object;
@@ -165,11 +168,11 @@
 		 * @return boolean
 		 */
 		public function checkElementsInHead($path, $attribute){
-	        foreach($this->_head as $element) {
-	            if(basename($element->getAttribute($attribute)) == basename($path)) return true;
-	        }
-	        return false;
-	    }
+			foreach($this->_head as $element) {
+				if(basename($element->getAttribute($attribute)) == basename($path)) return true;
+			}
+			return false;
+		}
 
 		/**
 		 * Convenience function to add a `<script>` element to the `$this->_head`. By default
@@ -188,14 +191,14 @@
 		 *  Returns the position that the script has been set in the `$this->_head`
 		 */
 		public function addScriptToHead($path, $position = null, $duplicate = true){
-	        if($duplicate === true || ($duplicate === false && $this->checkElementsInHead($path, 'src') === false)){
-	            $script = new XMLElement('script');
-	            $script->setSelfClosingTag(false);
-	            $script->setAttributeArray(array('type' => 'text/javascript', 'src' => $path));
+			if($duplicate === true || ($duplicate === false && $this->checkElementsInHead($path, 'src') === false)){
+				$script = new XMLElement('script');
+				$script->setSelfClosingTag(false);
+				$script->setAttributeArray(array('type' => 'text/javascript', 'src' => $path));
 
-	            return $this->addElementToHead($script, $position);
-	        }
-	    }
+				return $this->addElementToHead($script, $position);
+			}
+		}
 
 		/**
 		 * Convenience function to add a stylesheet to the `$this->_head` in a `<link>` element.
@@ -215,14 +218,14 @@
 		 * @return integer
 		 *  Returns the position that the stylesheet has been set in the `$this->_head`
 		 */
-	    public function addStylesheetToHead($path, $type = 'screen', $position = null, $duplicate = true){
-	        if($duplicate === true || ($duplicate === false && $this->checkElementsInHead($path, 'href') === false)){
-	            $link = new XMLElement('link');
-	            $link->setAttributeArray(array('rel' => 'stylesheet', 'type' => 'text/css', 'media' => $type, 'href' => $path));
+		public function addStylesheetToHead($path, $type = 'screen', $position = null, $duplicate = true){
+			if($duplicate === true || ($duplicate === false && $this->checkElementsInHead($path, 'href') === false)){
+				$link = new XMLElement('link');
+				$link->setAttributeArray(array('rel' => 'stylesheet', 'type' => 'text/css', 'media' => $type, 'href' => $path));
 
-	            return $this->addElementToHead($link, $position);
-	        }
-	    }
+				return $this->addElementToHead($link, $position);
+			}
+		}
 
 		/**
 		 * This function builds a HTTP query string from `$_GET` parameters with

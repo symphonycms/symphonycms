@@ -127,7 +127,7 @@
 			$namediv = new XMLElement('div', NULL);
 
 			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
+			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
 
 			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
@@ -313,8 +313,8 @@
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 			$namediv = new XMLElement('div', NULL);
 
-			$label = Widget::Label('Name');
-			$label->appendChild(Widget::Input('meta[name]', $meta['name']));
+			$label = Widget::Label(__('Name'));
+			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
 
 			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
@@ -357,9 +357,9 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
 
 			$div = new XMLElement('div');
-			$h3 = new XMLElement('h3', __('Fields'));
-			$h3->setAttribute('class', 'label');
-			$div->appendChild($h3);
+			$p = new XMLElement('p', __('Fields'));
+			$p->setAttribute('class', 'label');
+			$div->appendChild($p);
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');
@@ -511,13 +511,13 @@
 				elseif($edit) {
 					if(
 						$meta['name'] != $existing_section->get('name')
-						&& Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . Symphony::Database()->cleanValue($meta['name']) . "' AND `id` != {$section_id} LIMIT 1")
+						&& Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `handle` = '" . Lang::createHandle($meta['name']) . "' AND `id` != {$section_id} LIMIT 1")
 					){
 						$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
 						$canProceed = false;
 					}
 				}
-				elseif(Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . Symphony::Database()->cleanValue($meta['name']) . "' LIMIT 1")){
+				elseif(Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `handle` = '" . Lang::createHandle($meta['name']). "' LIMIT 1")){
 					$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
 					$canProceed = false;
 				}

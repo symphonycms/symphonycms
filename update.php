@@ -13,9 +13,9 @@
 		return (is_array($results) && !empty($results));
 	}
 
-    function writeConfig($dest, $conf, $mode){
+	function writeConfig($dest, $conf, $mode){
 
-        $string  = "<?php\n";
+		$string  = "<?php\n";
 
 		$string .= "\n\t\$settings = array(";
 		foreach($conf as $group => $data){
@@ -29,9 +29,9 @@
 		}
 		$string .= "\r\n\t);\n\n";
 
-        return General::writeFile($dest . '/config.php', $string, $mode);
+		return General::writeFile($dest . '/config.php', $string, $mode);
 
-    }
+	}
 
 	function loadOldStyleConfig(){
 		$config = preg_replace(array('/^<\?php/i', '/\?>$/i', '/if\(\!defined\([^\r\n]+/i', '/require_once[^\r\n]+/i'), NULL, file_get_contents('manifest/config.php'));
@@ -62,7 +62,7 @@
 
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.2beta3');
+	define('kVERSION', '2.2RC3');
 	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/'.kVERSION.'/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -171,14 +171,20 @@
 					$rewrite_base .= '/';
 				}
 
-		        $htaccess = '
-### Symphony 2.0.x ###
+				$htaccess = '
+### Symphony 2.2.x ###
 Options +FollowSymlinks -Indexes
 
 <IfModule mod_rewrite.c>
 
 	RewriteEngine on
 	RewriteBase /'.$rewrite_base.'
+
+	### SECURITY - Protect crucial files
+	RewriteRule ^manifest/(.*)$ - [F]
+	RewriteRule ^workspace/utilities/(.*).xsl$ - [F]
+	RewriteRule ^workspace/pages/(.*).xsl$ - [F]
+	RewriteRule ^(.*).sql$ - [F]
 
 	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
 	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
@@ -318,7 +324,35 @@ Options +FollowSymlinks -Indexes
 			}
 
 			if(version_compare($existing_version, '2.2.0', '<')){
-				$setting['region']['datetime_separator'] = ' ';
+				$settings['region']['datetime_separator'] = ' ';
+				$settings['symphony']['strict_error_handling'] = 'yes';
+				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
+
+				// We've added UNIQUE KEY indexes to the Author, Checkbox, Date, Input, Textarea and Upload Fields
+				// Time to go through the entry tables and make this change as well.
+				$author = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_author`");
+				$checkbox = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_checkbox`");
+				$date = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_date`");
+				$input = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_input`");
+				$textarea = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_textarea`");
+				$upload = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");
+
+				$field_ids = array_merge($author, $checkbox, $date, $input, $textarea, $upload);
+
+				foreach($field_ids as $id) {
+					$table = '`tbl_entries_data_' . $id . '`';
+
+					try {
+						$frontend->Database->query("ALTER TABLE " . $table . " DROP INDEX `entry_id`");
+					}
+					catch (Exception $ex) {}
+
+					try {
+						$frontend->Database->query("CREATE UNIQUE INDEX `entry_id` ON " . $table . " (`entry_id`)");
+						$frontend->Database->query("OPTIMIZE TABLE " . $table);
+					}
+					catch (Exception $ex) {}
+				}
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
@@ -417,4 +451,3 @@ Options +FollowSymlinks -Indexes
 		render($code);
 
 	}
-

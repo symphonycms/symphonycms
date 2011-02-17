@@ -6,17 +6,6 @@ body {
 	background: #fff;
 	color: #222;
 }
-a {
-	color: #5072bf;
-	text-decoration: underline;
-	cursor: pointer;
-}
-a:hover {
-	color: #000;
-}
-a:active, a:focus {
-	color: #d42;
-}
 h2 {
 	margin: 0;
 	padding: 0 0 0.5em;
@@ -147,7 +136,8 @@ tr:nth-child(odd).selected td {
 	background-color: #5677c3;
 }
 tr.selected td,
-tr.selected a {
+tr.selected a,
+tr.selected .inactive {
 	color: #fff;
 }
 
@@ -162,7 +152,8 @@ tr:nth-child(odd).ordering td {
 	background-color: #887;
 }
 tr.ordering td,
-tr.ordering a {
+tr.ordering a,
+tr.ordering .inactive {
 	color: #fff;
 }
 tr.selecting td, tr:nth-child(odd).selecting td {
@@ -171,7 +162,8 @@ tr.selecting td, tr:nth-child(odd).selecting td {
 	background-color: #5273c0;
 }
 tr.selecting td,
-tr.selecting a {
+tr.selecting a,
+tr.selecting .inactive {
 	color: #fff;
 }
 
@@ -195,7 +187,7 @@ tr.selecting a {
 .irrelevant {
 	display: none;
 }
-.selected, .selected a {
+.selected, .selected a, .selected .inactive {
 	color: #fff;
 }
 .selected a:hover {
@@ -247,10 +239,9 @@ ul.tags .more:hover {
 
 .group {
 	position: relative;
-	right: -8px;
-	margin: 0 0 0 -16px;
-	padding: 0 8px 0 40px;
-	list-style: none;
+	right: -0.75em;
+	margin: 0 0 0 -1.5em;
+	padding: 0 0.75em 0 3.65em;
 }
 .group:after {
 	content: "";
@@ -260,22 +251,25 @@ ul.tags .more:hover {
 }
 .group > * {
 	float: left;
-	margin-left: 32px;
+	margin-left: 2.95em;
 	width: 50%;
 }
 .group > *:first-child {
-	margin-left: -32px;
+	margin-left: -2.95em;
 }
-.group > div > label > i {
-	max-width:45%;
-	height:16px;
-	white-space:nowrap;
-	overflow:hidden;
-	text-overflow:ellipsis;
-	cursor:help;
-	float:right;
+.group > input[type=hidden]:first-child + * {
+	margin-left: -2.95em;
 }
-.group > div > label > i:hover {
+.group label > i {
+	max-width: 45%;
+	height: 16px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	cursor: help;
+	float: right;
+}
+.group label > i:hover {
 	white-space:normal;
 	height:auto;
 	background: rgba(255, 255, 255, 0.8);
@@ -287,7 +281,7 @@ ul.tags .more:hover {
 	padding: 0 0 0 72px;
 }
 .triple > * {
-	width: 33.33%;
+	width: 33%;
 }
 .triple > *:first-child {
 	margin-left: -64px;
@@ -301,21 +295,26 @@ div.compact:after {
 	clear: left;
 	height: 0;
 }
-
 div.compact label { 
 	float: left;
 	width: 50%;
-	min-width: 300px;
-	margin-right: 16px;
+	min-width: 250px;
+	margin-right: 1.5em;
 }
-div.compact label:nth-child(even) {
-	width: auto;
+div.compact label:nth-of-type(even) {
+	max-width: 45%;
 }
-div.compact i {
+div.compact label i {
+	max-width: 100%;
+	height: auto;
+	white-space: normal;
+	overflow: none;
+	text-overflow: auto;
+	float: none;
 	color: #887;
 	display: block;
 	position: static;
-	padding-left: 1.7em;
+	padding-left: 1.75em;
 }
 
 /*--- Settings ---*/
@@ -403,6 +402,11 @@ fieldset.settings fieldset legend {
 	background: #DDC;
 	color: #665;
 }
+.settings .duplicator .group label > i:hover {
+	white-space:normal;
+	height:auto;
+	background: rgba(221, 221, 204, 0.8);
+}
 
 /*--- Buttons ---*/
 
@@ -413,7 +417,6 @@ button.button {
 	background-color: #597bc6;
 	border: 0;
 	color: #fff;
-/*	float: right;*/
 	padding: .5em 1em;
 	margin: 0;
 	font-size: 10px;
@@ -455,11 +458,11 @@ button.button.delete:hover {
 	margin: 0;
 	border-top: 3px solid #979792;
 	border-bottom: 2px solid #777;
-	padding: 0 0.83em 0;
+	padding: 0.5em 0.83em;
 	background-color: #e4e4e0;
 	color: #555;
 	font-size: 90.91%;
-	line-height: 2.5;
+	line-height: 1.6;
 }
 #notice.error {
 	background-color: #ffb;
@@ -510,26 +513,26 @@ button.button.delete:hover {
 body, html {
 	height: 100%;
 }
-.wrapper {
+#wrapper {
 	position: relative;
 	min-height: 100%;
 }
-.header {
+#header {
 	margin: 0 0 1.8em;
 	background: #353530;
 	color: #fff;
 }
-.header h1 {
+#header h1 {
 	padding: 1.64em 19px 0.74em;
 	text-shadow: -1px 2px 3px #111;
 	font-weight: bold;
 	line-height: 1;
 }
-.header h1 a {
+#header h1 a {
 	color: #fff;
 	text-decoration: none;
 }
-.header h1 a:hover {
+#header h1 a:hover {
 	color: #ccb;
 }
 #nav {
@@ -604,19 +607,19 @@ body, html {
 	background-color: #7e7e70;
 	color: #fff;
 }
-.contents {
-	padding: 0 19px 10em;
+#contents {
+	padding: 0 19px 5em;
 }
-.contents h2 span {
+#contents h2 span {
 	float: left;
 }
-.contents h2:after {
+#contents h2:after {
 	content: "";
 	display: block;
 	clear: both;
 	height: 0;
 }
-.contents h2 .button {
+#contents h2 .button {
 	float: right;
 	margin-left: 10px;
 }
@@ -625,7 +628,7 @@ body, html {
 	Footer
 -----------------------------------------------------------------------------*/
 
-.footer {
+#footer {
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -637,7 +640,7 @@ body, html {
 	text-shadow: -1px 2px 3px #111;
 	color: #fff;
 }
-.footer:after {
+#footer:after {
 	content: "";
 	display: block;
 	clear: left;
@@ -680,7 +683,7 @@ body, html {
 }
 .index .actions {
 	text-align: right;
-	padding: 18px 19px 0 0;
+	padding: 1.75em 1.75em 0 0;
 	height: 38px;
 }
 .index .actions select {
@@ -719,6 +722,9 @@ ul.page a {
 	Single page
 -----------------------------------------------------------------------------*/
 
+.single #contents {
+	padding-bottom: 9em;
+}
 .single form {
 	margin: 0;
 }
@@ -766,7 +772,7 @@ ul.page a {
 .single .actions {
 	clear: both;
 	border-top: 1px solid #ddc;
-	padding: 14px 0 0;
+	padding: 1.75em 0 0;
 }
 .single .actions input {
 	float: right;
@@ -817,7 +823,7 @@ ul.page a {
 	margin-bottom: 0.75em;
 }
 #components .button {
-	font-size: 0.9em;
+	margin-top: -0.25em;
 	font-weight: normal;
 }
 #utilities {
@@ -850,4 +856,3 @@ ul.page a {
 #utilities .selected:nth-child(odd) {
 	background-color: #5677c3;
 }
-

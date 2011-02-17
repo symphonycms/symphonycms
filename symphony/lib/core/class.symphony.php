@@ -114,15 +114,9 @@
 
 			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
 
-			// Fetch date and time separator
-			$separator = self::$Configuration->get('datetime_separator', 'region');
-			if(is_null($separator)) {
-				$separator = ' ';
-			}
-
 			define_safe('__SYM_DATE_FORMAT__', self::$Configuration->get('date_format', 'region'));
 			define_safe('__SYM_TIME_FORMAT__', self::$Configuration->get('time_format', 'region'));
-			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . $separator . __SYM_TIME_FORMAT__);
+			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::$Configuration->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
 
 			// Initialize language management
 			Lang::initialize();
@@ -130,7 +124,7 @@
 			$this->initialiseLog();
 
 			GenericExceptionHandler::initialise(self::$Log);
-			GenericErrorHandler::initialise(self::$Log);
+			GenericErrorHandler::initialise(self::$Log, self::$Configuration->get('strict_error_handling', 'symphony'));
 
 			$this->initialiseCookie();
 			$this->initialiseDatabase();
@@ -230,7 +224,7 @@
 		 * @since Symphony 2.2
 		 * @return ExtensionManager
 		 */
-		public function ExtensionManager() {
+		public static function ExtensionManager() {
 			return self::$ExtensionManager;
 		}
 

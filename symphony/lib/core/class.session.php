@@ -135,7 +135,7 @@
 					return null; // prevent problems on local setups
 				}
 
-				return preg_replace('/^www./i', NULL, $_SERVER['HTTP_HOST']);
+				return preg_replace('/(^www.|:\d+$)/i', NULL, $_SERVER['HTTP_HOST']);
 
 			}
 

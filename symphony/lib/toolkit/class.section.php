@@ -25,12 +25,6 @@
 		protected $_data = array();
 
 		/**
-		 * An array of Field objects for this Section
-		 * @var array
-		 */
-		protected $_fields = array();
-
-		/**
 		 * An instance of the FieldManager class
 		 * @var FieldManager
 		 */
@@ -74,14 +68,6 @@
 		public function get($setting = null){
 			if(is_null($setting)) return $this->_data;
 			return $this->_data[$setting];
-		}
-
-		/**
-		 * A setting function that adds a new instance of the Field
-		 * class to this Section's `$this->_fields` array.
-		 */
-		public function addField(){
-			$this->_fields[] = new Field($this->_fieldManager);
 		}
 
 		/**

@@ -325,15 +325,23 @@
 				if(is_array($directory['filelist']) && !empty($directory['filelist'])) {
 					foreach($directory['filelist'] as $file) {
 						$temp = self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled);
+						$lang = key($temp);
 					
 						// Core translations
 						if(strpos($extension->getFilename(), 'lang_') !== false) {
-							self::$_languages = array_merge(self::$_languages, $temp);
+						
+							// Prepare merging
+							if(array_key_exists($lang, self::$_languages)) {
+								unset($temp[$lang]['name']);
+								unset(self::$_languages[$lang]['status']);
+							}
+
+							// Merge
+							self::$_languages = array_merge_recursive(self::$_languages, $temp);
 						}
 	
 						// Extension translations
 						else {
-							$lang = key($temp);
 	
 							// Create language if not exists
 							if(!array_key_exists($lang, self::$_languages)) {
@@ -347,10 +355,8 @@
 								self::$_languages = array_merge(self::$_languages, $language);
 							}
 	
-							// Merge extensions
-							self::$_languages[$lang]['extensions'] = array_merge(self::$_languages[$lang]['extensions'], array(
-								$temp[$lang]['source'] => $temp[$lang]['path']
-							));
+							// Merge
+							self::$_languages[$lang]['extensions'][$temp[$lang]['source']] = $temp[$lang]['path'];
 						}
 					}
 				}

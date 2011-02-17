@@ -255,7 +255,7 @@
 					}
 
 					if(is_array($attributes) && !empty($attributes)) {
-						$th->setAttributeArray($attr);
+						$th->setAttributeArray($attributes);
 					}
 
 					$tr->appendChild($th);

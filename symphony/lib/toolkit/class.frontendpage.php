@@ -300,26 +300,7 @@
 			$start = precision_timer();
 
 			if(!$page = $this->resolvePage()){
-				$page = Symphony::Database()->fetchRow(0, "
-					SELECT `tbl_pages`.*
-					FROM `tbl_pages`, `tbl_pages_types`
-					WHERE `tbl_pages_types`.page_id = `tbl_pages`.id
-					AND tbl_pages_types.`type` = '404'
-					LIMIT 1
-				");
-
-				if(empty($page)){
-					GenericExceptionHandler::$enabled = true;
-					throw new SymphonyErrorPage(
-						__('The page you requested does not exist.'),
-						__('Page Not Found'),
-						'error',
-						array('header' => 'HTTP/1.0 404 Not Found')
-					);
-				}
-
-				$page['filelocation'] = $this->resolvePageFileLocation($page['path'], $page['handle']);
-				$page['type'] = $this->__fetchPageTypes($page['id']);
+				throw new FrontendPageNotFoundException(__('The page you requested does not exist'));
 			}
 
 			/**
@@ -538,7 +519,7 @@
 
 				$handle = array_pop($pathArr);
 
-				do{
+				do {
 					$path = implode('/', $pathArr);
 
 					$sql = sprintf(
@@ -548,14 +529,14 @@
 					);
 
 					if($row = Symphony::Database()->fetchRow(0, $sql)){
-
 						array_push($pathArr, $handle);
 						$valid_page_path = $pathArr;
 
 						break 1;
-
-					}else
+					}
+					else {
 						$page_extra_bits[] = $handle;
+					}
 
 				} while($handle = array_pop($pathArr));
 
@@ -571,10 +552,12 @@
 				$this->_env['url'][$var] = NULL;
 			}
 
-			if(is_array($page_extra_bits) && !empty($page_extra_bits)) $page_extra_bits = array_reverse($page_extra_bits);
+			if(isset($page_extra_bits)) {
+				if(is_array($page_extra_bits) && !empty($page_extra_bits)) $page_extra_bits = array_reverse($page_extra_bits);
 
-			for($ii = 0; $ii < count($page_extra_bits); $ii++){
-				$this->_env['url'][$url_params[$ii]] = str_replace(' ', '+', $page_extra_bits[$ii]);
+				for($ii = 0; $ii < count($page_extra_bits); $ii++){
+					$this->_env['url'][$url_params[$ii]] = str_replace(' ', '+', $page_extra_bits[$ii]);
+				}
 			}
 
 			if(!is_array($row) || empty($row)) return false;
@@ -583,14 +566,18 @@
 
 			## Make sure the user has permission to access this page
 			if(!Frontend::instance()->isLoggedIn() && in_array('admin', $row['type'])){
-				$row = Symphony::Database()->fetchRow(0, "SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types`
-															  WHERE `tbl_pages_types`.page_id = `tbl_pages`.id AND tbl_pages_types.`type` = '403'
-															  LIMIT 1");
+				$row = Symphony::Database()->fetchRow(0, "
+					SELECT `tbl_pages`.*
+					FROM `tbl_pages`, `tbl_pages_types`
+					WHERE `tbl_pages_types`.page_id = `tbl_pages`.id
+					AND tbl_pages_types.`type` = '403'
+					LIMIT 1
+				");
 
 				if(empty($row)){
 					GenericExceptionHandler::$enabled = true;
 					throw new SymphonyErrorPage(
-						__('Please <a href="%s">login</a> to view this page.', array(URL.'/symphony/login/')),
+						__('Please <a href="%s">login</a> to view this page.', array(SYMPHONY_URL . '/login/')),
 						__('Forbidden'),
 						'error',
 						array('header' => 'HTTP/1.0 403 Forbidden')
@@ -673,7 +660,6 @@
 		 *  their name.
 		 */
 		private function processEvents($events, XMLElement &$wrapper){
-
 			/**
 			 * Manipulate the events array and event element wrapper
 			 * @delegate FrontendProcessEvents
@@ -696,7 +682,6 @@
 					'page_data' => $this->_pageData
 				)
 			);
-			#####
 
 			if(strlen(trim($events)) > 0){
 				$events = preg_split('/,\s*/i', $events, -1, PREG_SPLIT_NO_EMPTY);

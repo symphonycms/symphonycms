@@ -179,7 +179,8 @@
 			else {
 				if (!is_array($this->_callback['context'])) $this->_callback['context'] = array();
 
-				if(file_exists(DOCROOT . '/update.php') && $this->Page instanceOf AdministrationPage) {
+				// Check for update Alert
+				if(file_exists(DOCROOT . '/update.php') && $this->__canAccessAlerts()) {
 					if(file_exists(DOCROOT . '/README.markdown') && is_readable(DOCROOT . '/README.markdown')) {
 						$readme = file(DOCROOT . '/README.markdown', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 						$readme = trim(str_replace('- Version:', '', $readme[1]));
@@ -187,7 +188,7 @@
 						$current_version = Symphony::Configuration()->get('version', 'symphony');
 						// The updater contains a version higher than the current Symphony version.
 						if(version_compare($current_version, $readme, '<')) {
-							$message = __('Run the updater to update Symphony to %s. <a href="%s/update.php">View Update</a>', array($readme, URL));
+							$message = __('Run the updater to update Symphony to %s. <a href="%s">View Update</a>', array($readme, URL . "/update.php"));
 						}
 						// The updater contains a version lower than the current Symphony version.
 						// The updater is the same version as the current Symphony install.
@@ -197,16 +198,46 @@
 					}
 					// Can't detect update Symphony version
 					else {
-						$message = __('An updater script has been found in your installation. <a href="%s/update.php">View Update</a>', array(URL));
+						$message = __('An updater script has been found in your installation. <a href="%s">View Update</a>', array(URL . "/update.php"));
 					}
 
 					$this->Page->pageAlert($message, Alert::NOTICE);
+				}
+
+				// Do any extensions need updating?
+				$extensions = Symphony::ExtensionManager()->listAll();
+				if(is_array($extensions) && !empty($extensions) && $this->__canAccessAlerts()) {
+					foreach($extensions as $handle => $about) {
+						if($about['status'] == EXTENSION_REQUIRES_UPDATE) {
+							$this->Page->pageAlert(
+								__('An extension requires updating. <a href="%s">View Extensions</a>', array(SYMPHONY_URL . '/system/extensions/'))
+							);
+							break;
+						}
+					}
 				}
 
 				$this->Page->build($this->_callback['context']);
 			}
 
 			return $this->Page;
+		}
+
+		/**
+		 * This function determines whether an administrative alert can be
+		 * displayed on the current page. It ensures that the page exists,
+		 * and the user is logged in and a developer
+		 *
+		 * @since Symphony 2.2
+		 * @return boolean
+		 */
+		private function __canAccessAlerts() {
+			if($this->Page instanceof AdministrationPage && $this->isLoggedIn() && Administration::instance()->Author->isDeveloper()) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 
 		/**

@@ -17,14 +17,6 @@
 
 	Class AdministrationPage extends HTMLPage{
 
-		public $Wrapper = null;
-
-		public $Header = null;
-
-		public $Footer = null;
-
-		public $Contents = null;
-
 		/**
 		 * An instance of the Administration class
 		 * @var Administration
@@ -38,6 +30,33 @@
 		 * @var Alert
 		 */
 		public $Alert = null;
+
+		/**
+		 * As the name suggests, a `<div>` that holds the following `$Header`,
+		 * `$Contents` and `$Footer`.
+		 * @var XMLElement
+		 */
+		public $Wrapper = null;
+
+		/**
+		 * A `<div>` that contains the header of a Symphony backend page, which
+		 * typically contains the Site title and the navigation.
+		 * @var XMLElement
+		 */
+		public $Header = null;
+
+		/**
+		 * A `<div>` that contains the content of a Symphony backend page.
+		 * @var XMLElement
+		 */
+		public $Contents = null;
+
+		/**
+		 * A `<div>` that contains the Symphony footer, typically the version and
+		 * the current Author's details.
+		 * @var XMLElement
+		 */
+		public $Footer = null;
 
 		/**
 		 * An associative array of the navigation where the key is the group
@@ -100,17 +119,6 @@
 		}
 
 		/**
-		 * Given a title, this function will create the `<title>` element for this
-		 * page.
-		 *
-		 * @param string $title
-		 *  The page title
-		 */
-		public function setTitle($title) {
-			return $this->addElementToHead(new XMLElement('title', $title));
-		}
-
-		/**
 		 * Setter function to set the class attribute on the `<body>` element.
 		 * This function will respect any previous classes that have been added
 		 * to this `<body>`
@@ -120,7 +128,9 @@
 		 *  uses a space separator
 		 */
 		public function setBodyClass($class) {
-			$this->_body_class .= ' ' . $class;
+			# Prevents duplicate "index" classes
+			if ($this->_context['page'] != 'index' || $class != 'index')
+				$this->_body_class .= $class;
 		}
 
 		/**
@@ -135,7 +145,7 @@
 		 *  `Alert::SUCCESS`. The differing types will show the error
 		 *  in a different style in the backend.
 		 */
-		public function pageAlert($message = null, $type=Alert::NOTICE){
+		public function pageAlert($message = null, $type = Alert::NOTICE){
 
 			if(is_null($message) && $type == Alert::ERROR){
 				$message = 'There was a problem rendering this page. Please check the activity log for more details.';
@@ -195,25 +205,25 @@
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Lang::get());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
-			$this->addStylesheetToHead(URL . '/symphony/assets/basic.css', 'screen', 40);
-			$this->addStylesheetToHead(URL . '/symphony/assets/admin.css', 'screen', 40);
-			$this->addStylesheetToHead(URL . '/symphony/assets/symphony.duplicator.css', 'screen', 70);
-			$this->addScriptToHead(URL . '/symphony/assets/jquery.js', 50);
-			$this->addScriptToHead(URL . '/symphony/assets/jquery.color.js', 51);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.collapsible.js', 60);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.orderable.js', 61);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.selectable.js', 62);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.duplicator.js', 63);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.tags.js', 64);
-			$this->addScriptToHead(URL . '/symphony/assets/symphony.pickable.js', 65);
-			$this->addScriptToHead(URL . '/symphony/assets/admin.js', 71);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 40);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/admin.css', 'screen', 41);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.duplicator.css', 'screen', 70);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.js', 50);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.color.js', 51);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.collapsible.js', 60);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.orderable.js', 61);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.selectable.js', 62);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.duplicator.js', 63);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.tags.js', 64);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.pickable.js', 65);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/admin.js', 71);
 
 			$this->addElementToHead(
 				new XMLElement(
 					'script',
 					"Symphony.Context.add('env', " . json_encode($this->_context) . "); Symphony.Context.add('root', '" . URL . "');",
 					array('type' => 'text/javascript')
-				), 71
+				), 72
 			);
 
 			/**
@@ -233,8 +243,8 @@
 				Administration::instance()->Profiler->sample('Page action run', PROFILE_LAP);
 			}
 
-			$this->Wrapper = new XMLElement('div', NULL, array('class' => 'wrapper'));
-			$this->Header = new XMLElement('div', NULL, array('class' => 'header'));
+			$this->Wrapper = new XMLElement('div', NULL, array('id' => 'wrapper'));
+			$this->Header = new XMLElement('div', NULL, array('id' => 'header'));
 
 			$h1 = new XMLElement('h1');
 			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
@@ -242,13 +252,15 @@
 
 			$this->appendNavigation();
 
-			$this->Contents = new XMLElement('div', NULL, array('class' => 'contents'));
+			$this->Contents = new XMLElement('div', NULL, array('id' => 'contents'));
 
 			## Build the form
 			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
 
-			$this->Contents->appendChild($this->Form);
 			$this->view();
+			$this->Contents->appendChild($this->Form);
+
+			$this->Footer = new XMLElement('div', NULL, array('id' => 'footer'));
 
 			/**
 			 * Allows developers to add items just above the page footer. Use `$context['parent']->Page`
@@ -260,16 +272,8 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AppendElementBelowView', '/backend/');
 
-			$this->Footer = new XMLElement('div', NULL, array('class' => 'footer'));
-
 			$this->appendFooter();
 			$this->appendAlert();
-
-			$this->Wrapper->appendChild($this->Header);
-			$this->Wrapper->appendChild($this->Contents);
-			$this->Wrapper->appendChild($this->Footer);
-
-			$this->Body->appendChild($this->Wrapper);
 
 			Administration::instance()->Profiler->sample('Page content created', PROFILE_LAP);
 		}
@@ -328,13 +332,21 @@
 		}
 
 		/**
-		 * Appends the ID and class attributes for the `<body>` element
-		 * before calling the parent's generate function which will convert
-		 * the XMLElements into strings ready for output
+		 * Appends the `$this->Header`, `$this->Contents` and `$this->Footer`
+		 * to `$this->Wrapper` before adding the ID and class attributes for
+		 * the `<body>` element. After this has completed the parent's generate
+		 * function is called which will convert the `XMLElement`'s into strings
+		 * ready for output
 		 *
 		 * @return string
 		 */
 		public function generate() {
+			$this->Wrapper->appendChild($this->Header);
+			$this->Wrapper->appendChild($this->Contents);
+			$this->Wrapper->appendChild($this->Footer);
+
+			$this->Body->appendChild($this->Wrapper);
+
 			$this->__appendBodyId();
 			$this->__appendBodyClass($this->_context);
 			return parent::generate();
@@ -368,8 +380,9 @@
 				if (is_numeric($c)) $c = 'id-' . $c;
 				$body_class .= trim($c) . ' ';
 			}
-			$body_class = $body_class . trim($this->_body_class);
-			if (!empty($body_class)) $this->Body->setAttribute('class', trim($body_class));
+			$classes = array_merge(explode(' ', trim($body_class)), explode(' ', trim($this->_body_class)));
+			$body_class = trim(implode(' ', $classes));
+			if (!empty($body_class)) $this->Body->setAttribute('class', $body_class);
 		}
 
 		/**

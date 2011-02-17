@@ -259,21 +259,23 @@
 								$search_value = $entry->get('id');
 							}
 
-							$associated_entry_count = $field->fetchAssociatedEntryCount($search_value);
+							if(!is_array($search_value)) {
+								$associated_entry_count = $field->fetchAssociatedEntryCount($search_value);
 
-							$tableData[] = Widget::TableData(
-								Widget::Anchor(
-									sprintf('%d &rarr;', max(0, intval($associated_entry_count))),
-									sprintf(
-										'%s/publish/%s/?filter=%s:%s',
-										SYMPHONY_URL,
-										$as->get('handle'),
-										$field->get('element_name'),
-										rawurlencode($search_value)
-									),
-									$entry->get('id'),
-									'content')
-							);
+								$tableData[] = Widget::TableData(
+									Widget::Anchor(
+										sprintf('%d &rarr;', max(0, intval($associated_entry_count))),
+										sprintf(
+											'%s/publish/%s/?filter=%s:%s',
+											SYMPHONY_URL,
+											$as->get('handle'),
+											$field->get('element_name'),
+											rawurlencode($search_value)
+										),
+										$entry->get('id'),
+										'content')
+								);
+							}
 						}
 					}
 
