@@ -308,93 +308,93 @@
 				$temp = SYMPHONY_URL . '/login/' . $author->createAuthToken() . '/';
 				$label->setValue(__('%1$s Allow remote login via <a href="%2$s">%2$s</a>', array($input->generate(), $temp)));
 				$group->appendChild($label);
+			}
+			
+			$label = Widget::Label(__('Default Area'));
 
-				$label = Widget::Label(__('Default Area'));
+			$sectionManager = new SectionManager($this->_Parent);
+			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 
-				$sectionManager = new SectionManager($this->_Parent);
-				$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+			$options = array();
 
-				$options = array();
-
-				if(is_array($sections) && !empty($sections)) {
-					foreach($sections as $s) {
-						$options[] = array($s->get('id'), $author->get('default_area') == $s->get('id'), $s->get('name'));
-					}
+			if(is_array($sections) && !empty($sections)) {
+				foreach($sections as $s) {
+					$options[] = array($s->get('id'), $author->get('default_area') == $s->get('id'), $s->get('name'));
 				}
+			}
 
-				/**
-				* Allows injection or manipulation of the Default Area dropdown for an Author.
-				* Take care with adding in options that are only valid for Developers, as if a
-				* normal Author is set to that option, they will be redirected to their own
-				* Author record.
-				*
-				*
-				* @delegate AddDefaultAuthorAreas
-				* @since Symphony 2.2
-				* @param string $context
-				* '/system/authors/
-				* @param array $options
-				* An associative array of options, suitable for use for the Widget::Select
-				* function. By default this will be an array of the Sections in the current
-				* installation. New options should be the path to the page after the `SYMPHONY_URL`
-				* constant.
-				* @param string $default_area
-				* The current `default_area` for this Author.
-				*/
-				Symphony::ExtensionManager()->notifyMembers('AddDefaultAuthorAreas', '/system/authors/', array(
-					'options' => &$options,
-					'default_area' => $author->get('default_area')
-				));
+			/**
+			* Allows injection or manipulation of the Default Area dropdown for an Author.
+			* Take care with adding in options that are only valid for Developers, as if a
+			* normal Author is set to that option, they will be redirected to their own
+			* Author record.
+			*
+			*
+			* @delegate AddDefaultAuthorAreas
+			* @since Symphony 2.2
+			* @param string $context
+			* '/system/authors/
+			* @param array $options
+			* An associative array of options, suitable for use for the Widget::Select
+			* function. By default this will be an array of the Sections in the current
+			* installation. New options should be the path to the page after the `SYMPHONY_URL`
+			* constant.
+			* @param string $default_area
+			* The current `default_area` for this Author.
+			*/
+			Symphony::ExtensionManager()->notifyMembers('AddDefaultAuthorAreas', '/system/authors/', array(
+				'options' => &$options,
+				'default_area' => $author->get('default_area')
+			));
 
-				$label->appendChild(Widget::Select('fields[default_area]', $options));
+			$label->appendChild(Widget::Select('fields[default_area]', $options));
+			$group->appendChild($label);
+
+			$this->Form->appendChild($group);
+			###
+
+			### Custom Language Selection ###
+			$languages = Lang::getAvailableLanguages();
+			if(count($languages) > 1) {
+
+				// Get language names
+				asort($languages);
+
+				$group = new XMLElement('fieldset');
+				$group->setAttribute('class', 'settings');
+				$group->appendChild(new XMLElement('legend', __('Custom Preferences')));
+
+				$div = new XMLElement('div');
+				$div->setAttribute('class', 'group');
+
+				$label = Widget::Label(__('Language'));
+
+				$options = array(
+					array(NULL, is_null($author->get('language')), __('System Default'))
+				);
+
+				foreach($languages as $code => $name) {
+					$options[] = array($code, $code == $author->get('language'), $name);
+				}
+				$select = Widget::Select('fields[language]', $options);
+				$label->appendChild($select);
 				$group->appendChild($label);
 
 				$this->Form->appendChild($group);
-				###
-
-				### Custom Language Selection ###
-				$languages = Lang::getAvailableLanguages();
-				if(count($languages) > 1) {
-
-					// Get language names
-					asort($languages);
-
-					$group = new XMLElement('fieldset');
-					$group->setAttribute('class', 'settings');
-					$group->appendChild(new XMLElement('legend', __('Custom Preferences')));
-
-					$div = new XMLElement('div');
-					$div->setAttribute('class', 'group');
-
-					$label = Widget::Label(__('Language'));
-
-					$options = array(
-						array(NULL, is_null($author->get('language')), __('System Default'))
-					);
-
-					foreach($languages as $code => $name) {
-						$options[] = array($code, $code == $author->get('language'), $name);
-					}
-					$select = Widget::Select('fields[language]', $options);
-					$label->appendChild($select);
-					$group->appendChild($label);
-
-					$this->Form->appendChild($group);
-				}
-
-				$div = new XMLElement('div');
-				$div->setAttribute('class', 'actions');
-
-				$div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Author')), 'submit', array('accesskey' => 's')));
-
-				if($this->_context[0] == 'edit' && !$isOwner && !$author->isPrimaryAccount()){
-					$button = new XMLElement('button', __('Delete'));
-					$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this author'), 'type' => 'submit', 'accesskey' => 'd'));
-					$div->appendChild($button);
-				}
-
-				$this->Form->appendChild($div);
 			}
+
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'actions');
+
+			$div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Author')), 'submit', array('accesskey' => 's')));
+
+			if($this->_context[0] == 'edit' && !$isOwner && !$author->isPrimaryAccount()){
+				$button = new XMLElement('button', __('Delete'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this author'), 'type' => 'submit', 'accesskey' => 'd'));
+				$div->appendChild($button);
+			}
+
+			$this->Form->appendChild($div);
 
 			/**
 			* Allows the injection of custom form fields given the current `$this->Form`
