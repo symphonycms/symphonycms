@@ -1,7 +1,7 @@
 # Symphony 2 #
 
-- Version: 2.2RC2
-- Date: 7th Feb 2011
+- Version: 2.2RC3
+- Date: 17th Feb 2011
 - Release Notes: <http://symphony-cms.com/download/releases/version/2.2/>
 - Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.2>
 
