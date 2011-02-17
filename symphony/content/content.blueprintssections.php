@@ -511,13 +511,13 @@
 				elseif($edit) {
 					if(
 						$meta['name'] != $existing_section->get('name')
-						&& Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . Symphony::Database()->cleanValue($meta['name']) . "' AND `id` != {$section_id} LIMIT 1")
+						&& Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `handle` = '" . Lang::createHandle($meta['name']) . "' AND `id` != {$section_id} LIMIT 1")
 					){
 						$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
 						$canProceed = false;
 					}
 				}
-				elseif(Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `name` = '" . Symphony::Database()->cleanValue($meta['name']) . "' LIMIT 1")){
+				elseif(Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `handle` = '" . Lang::createHandle($meta['name']). "' LIMIT 1")){
 					$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
 					$canProceed = false;
 				}
