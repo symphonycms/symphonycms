@@ -21,7 +21,7 @@
 	$.fn.symphonySelectable = function(custom_settings) {
 		var objects = this,
 			settings = {
-				items: 'tbody tr',
+				items: 'tbody tr:has(input)',
 				handles: 'td'
 			};
 
