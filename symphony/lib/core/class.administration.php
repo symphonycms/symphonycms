@@ -140,8 +140,9 @@
 							$section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
 						}
 
-						$default_area = "/publish/{$section_handle}/";
-
+						if(!is_null($section_handle)) {
+							$default_area = "/publish/{$section_handle}/";
+						}
 					}
 					else if(!is_null($this->Author->get('default_area'))) {
 						$default_area = preg_replace('/^' . preg_quote(SYMPHONY_URL, '/') . '/i', '', $this->Author->get('default_area'));
@@ -302,7 +303,6 @@
 			}
 
 			elseif($bits[0] == 'publish'){
-
 				if(!isset($bits[1])) return false;
 
 				$callback = array(
