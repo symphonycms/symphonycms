@@ -160,7 +160,7 @@
 		 *  True if the Session information was saved successfully, false otherwise
 		 */
 		public static function write($id, $data) {
-			if(preg_match('/^([^}]+\|a:0:{})+$/i', $data)) $data = null;
+			if(preg_match('/^([^}]+\|a:0:{})+$/i', $data)) return true;
 
 			$fields = array(
 				'session' => $id,
@@ -218,7 +218,7 @@
 		public static function gc($max) {
 			return Symphony::Database()->query(
 				sprintf(
-					"DELETE FROM `tbl_sessions` WHERE `session_expires` <= '%s' OR `session_data` IS NULL",
+					"DELETE FROM `tbl_sessions` WHERE `session_expires` <= '%s'",
 					Symphony::Database()->cleanValue(time() - $max)
 				)
 			);
