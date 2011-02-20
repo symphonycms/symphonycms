@@ -105,8 +105,6 @@
 			if($_POST['with-selected'] == 'delete' && is_array($_POST['items'])){
 
 				$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
-			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
-
 
 				if(!empty($checked)) {
 
