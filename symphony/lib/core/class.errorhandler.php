@@ -68,7 +68,6 @@
 		 */
 		public static function handler(Exception $e){
 			try{
-
 				// Exceptions should be logged if they are not caught.
 				if(self::$_Log instanceof Log){
 					self::$_Log->pushToLog(
@@ -103,9 +102,23 @@
 				exit;
 			}
 			catch(Exception $e){
-				print "Looks like the Exception handler crapped out";
-				print_r($e);
-				exit;
+				try {
+					$output = call_user_func(array('GenericExceptionHandler', 'render'), $e);
+
+					if(!headers_sent()) {
+						header('Content-Type: text/html; charset=utf-8');
+						header(sprintf('Content-Length: %d', strlen($output)));
+					}
+
+					echo $output;
+					exit;
+				}
+				catch(Exception $e) {
+					echo "<pre>";
+					echo 'A severe error occurred whilst trying to handle an exception:' . PHP_EOL;
+					echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile();
+					exit;
+				}
 			}
 		}
 
