@@ -183,7 +183,7 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AddSectionElements', '/blueprints/sections/', array(
 				'form' => &$this->Form,
-				'meta' => $meta,
+				'meta' => &$meta,
 				'errors' => &$this->_errors
 			));
 
@@ -392,7 +392,7 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AddSectionElements', '/blueprints/sections/', array(
 				'form' => &$this->Form,
-				'meta' => $meta,
+				'meta' => &$meta,
 				'errors' => &$this->_errors
 			));
 
