@@ -123,7 +123,7 @@
 		}
 
 		public function __actionIndex(){
-			$checked  = @array_keys($_POST['items']);
+			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
 
 			if(isset($_POST['with-selected']) && is_array($checked) && !empty($checked)){
 

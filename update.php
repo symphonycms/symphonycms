@@ -62,7 +62,7 @@
 
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.2RC3');
+	define('kVERSION', '2.2');
 	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/'.kVERSION.'/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -388,7 +388,7 @@ Options +FollowSymlinks -Indexes
 
 				.
 
-				(!is_null($sbl_version) && version_compare($sbl_version, '1.19dev', '<') ? '<li>The "Select Box Link" field extension has been updated to 1.19, however this installation of Symphony appears to be running an older version ('.$sbl_version.'). Versions prior to 1.19 will not work correctly under Symphony <code>'.kVERSION.'</code>. The latest version can be download via the <a href"http://symphony-cms.com/download/extensions/view/20054/">Select Box Link download page</a> on the Symphony site.</li>' : NULL)
+				(!is_null($sbl_version) && version_compare($sbl_version, '1.19dev', '<') ? '<li>The "Select Box Link" field extension has been updated to 1.19, however this installation of Symphony appears to be running an older version ('.$sbl_version.'). Versions prior to 1.19 will not work correctly under Symphony <code>'.kVERSION.'</code>. The latest version can be download via the <a href="http://symphony-cms.com/download/extensions/view/20054/">Select Box Link download page</a> on the Symphony site.</li>' : NULL)
 
 				.'</ol>
 

@@ -104,7 +104,7 @@
 		public function __actionIndex(){
 			if($_POST['with-selected'] == 'delete' && is_array($_POST['items'])){
 
-				$checked = @array_keys($_POST['items']);
+				$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
 
 				if(!empty($checked)) {
 

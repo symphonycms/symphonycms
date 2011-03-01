@@ -229,7 +229,7 @@ var Symphony = {};
 				$.ajax({
 					async: false,
 					type: 'GET',
-					url: Symphony.Context.get('root') + '/symphony/ajax/translate',
+					url: Symphony.Context.get('root') + '/symphony/ajax/translate/',
 					data: strings,
 					dataType: 'json',
 					success: function(result) {
