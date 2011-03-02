@@ -48,7 +48,7 @@
 		public $EventManager;
 
 		/**
-		 * An assocative array of all the parameters for this page including
+		 * An associative array of all the parameters for this page including
 		 * Symphony parameters, URL Parameters, DS Parameters and Page
 		 * parameters
 		 * @var array
@@ -78,7 +78,7 @@
 		 * when debugging the page as they happen during `$_POST`. There is a Symphony
 		 * configuration setting that allows the event results to be appended as a HTML
 		 * comment at the bottom of the page source, so logged in Authors can view-source
-		 * page to see te result of an event. This variable holds the event XML so that it
+		 * page to see the result of an event. This variable holds the event XML so that it
 		 * can be appended to the page source if `display_event_xml_in_source` is set to 'yes'.
 		 * By default this is set to no.
 		 *
@@ -171,7 +171,7 @@
 				 * @param string $context
 				 * '/frontend/'
 				 * @param boolean $full_generate
-				 *  Whether this page will be completely generated (ie, invoke the XSLT transform)
+				 *  Whether this page will be completely generated (ie. invoke the XSLT transform)
 				 *  or not, by default this is true. Passed by reference
 				 * @param mixed $devkit
 				 *  Allows a devkit to register to this page
@@ -562,7 +562,7 @@
 
 			if(!is_array($row) || empty($row)) return false;
 
-			$row['type'] = $this->__fetchPageTypes($row['id']);
+			$row['type'] = FrontendPage::fetchPageTypes($row['id']);
 
 			## Make sure the user has permission to access this page
 			if(!Frontend::instance()->isLoggedIn() && in_array('admin', $row['type'])){
@@ -584,10 +584,10 @@
 					);
 				}
 
-				$row['type'] = $this->__fetchPageTypes($row['id']);
+				$row['type'] = FrontendPage::fetchPageTypes($row['id']);
  			}
 
-			$row['filelocation'] = $this->resolvePageFileLocation($row['path'], $row['handle']);
+			$row['filelocation'] = FrontendPage::resolvePageFileLocation($row['path'], $row['handle']);
 
 			return $row;
 		}
@@ -600,7 +600,7 @@
 		 * @return array
 		 *  An array of types that this page is set as
 		 */
-		private function __fetchPageTypes($page_id){
+		public static function fetchPageTypes($page_id){
 			return Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '{$page_id}' ");
 		}
 
@@ -630,7 +630,7 @@
 		 * Resolves the path to this page's XSLT file. The Symphony convention
 		 * is that they are stored in the `PAGES` folder. If this page has a parent
 		 * is will be as if all the / in the URL have been replaced with _. ie.
-		 * /articles/read/ will produce a file articles_read.xsl
+		 * /articles/read/ will produce a file `articles_read.xsl`
 		 *
 		 * @param string $path
 		 *  The URL path to this page, excluding the current page. ie, /articles/read
@@ -640,7 +640,7 @@
 		 * @return string
 		 *  The path to the XSLT of this page
 		 */
-		private static function resolvePageFileLocation($path, $handle){
+		public static function resolvePageFileLocation($path, $handle){
 			return (PAGES . '/' . trim(str_replace('/', '_', $path . '_' . $handle), '_') . '.xsl');
 		}
 
