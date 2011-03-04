@@ -86,7 +86,14 @@
 		public function generate(){
 			$this->__build();
 			parent::generate();
-			return $this->Html->generate(true);
+			
+			$dtd = DOMImplementation::createDocumentType('html');
+			$dom = DOMImplementation::createDocument(null, null, $dtd);
+			
+			$html = $dom->importNode($this->Html->getElement(), true);
+			$dom->appendChild($html);
+			
+			return $dom->saveHTML();
 		}
 
 		/**
