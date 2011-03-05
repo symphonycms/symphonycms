@@ -12,6 +12,7 @@
 	class XMLElement {
 		static protected $document;
 		static protected $reflection;
+		static public $useUnstableSetValue;
 		
 		protected $element;
 		protected $documentType;
@@ -263,24 +264,25 @@
 			/**
 			* @todo Method 1: Determine if the following code causes segfaults.
 			*/
-			/*
-			$fragment = self::$document->createDocumentFragment();
-			$fragment->appendXML($value);
-			$this->appendChild($fragment);
-			*/
-			
+			if (self::$useUnstableSetValue === true) {
+				$fragment = self::$document->createDocumentFragment();
+				$fragment->appendXML($value);
+				$this->appendChild($fragment);
+			}
 			
 			/**
 			* @todo Method 2: Slower than method 1, but more stable.
 			*/
-			$document = clone self::$document;
-			$document->loadXML('<!DOCTYPE data SYSTEM "symphony/assets/entities.dtd"><data>' . $value . '</data>', LIBXML_DTDLOAD);
-			
-			$this->nodeValue = '';
-			
-			foreach ($document->documentElement->childNodes as $node) {
-				$node = self::$document->importNode($node, true);
-				$this->appendChild($node);
+			else {
+				$document = clone self::$document;
+				$document->loadXML('<!DOCTYPE data SYSTEM "symphony/assets/entities.dtd"><data>' . $value . '</data>', LIBXML_DTDLOAD);
+				
+				$this->nodeValue = '';
+				
+				foreach ($document->documentElement->childNodes as $node) {
+					$node = self::$document->importNode($node, true);
+					$this->appendChild($node);
+				}
 			}
 		}
 	}
