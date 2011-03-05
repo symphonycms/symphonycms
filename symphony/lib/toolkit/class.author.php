@@ -52,6 +52,19 @@
 		}
 
 		/**
+		 * Given a field, remove it from `$this->_fields`
+		 *
+		 * @since Symphony 2.2.1
+		 * @param string $field
+		 *  Maps directly to a column in the `tbl_authors` table. Defaults to null
+		 */
+		public function remove($field = null) {
+			if(!is_null($field)) return;
+
+			unset($this->_fields[$field]);
+		}
+
+		/**
 		 * Returns boolean if the current Author is of the developer
 		 * user type.
 		 *
@@ -159,24 +172,24 @@
 		 *
 		 * @see toolkit.AuthorManager#add()
 		 * @see toolkit.AuthorManager#edit()
-		 * @return mixed
-		 *  If an new Author was added, an integer of the Author ID will be
-		 *  returned, otherwise boolean to indicate whether the update was
-		 *  successful or not.
+		 * @return integer|boolean
+		 *  When a new Author is added or updated, an integer of the Author ID
+		 *  will be returned, otherwise false will be returned for a failed update.
 		 */
 		public function commit(){
+			if(!is_null($this->get('id'))) {
+				$id = $this->get('id');
+				unset($this->remove('id'));
 
-			$fields = $this->_fields;
-
-			if(isset($fields['id'])){
-				$id = $fields['id'];
-				unset($fields['id']);
-				return AuthorManager::edit($id, $fields);
+				if(AuthorManager::edit($id, $this->get())) {
+					$this->set('id', $id);
+					return $id;
+				}
+				else return false;
 			}
 			else {
-				return AuthorManager::add($fields);
+				return AuthorManager::add($this->get());
 			}
-
 		}
 
 		/**
@@ -210,7 +223,7 @@
 		 */
 		public function loadAuthor($id){
 			if(!is_object(Symphony::Database()) || !is_numeric($id)) return false;
-			
+
 			$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_authors` WHERE `id` = '$id' LIMIT 1");
 
 			if(!is_array($row) || empty($row)) return false;
