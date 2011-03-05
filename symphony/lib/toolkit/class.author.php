@@ -179,7 +179,7 @@
 		public function commit(){
 			if(!is_null($this->get('id'))) {
 				$id = $this->get('id');
-				unset($this->remove('id'));
+				$this->remove('id');
 
 				if(AuthorManager::edit($id, $this->get())) {
 					$this->set('id', $id);
