@@ -133,15 +133,16 @@
 		/**
 		 * Given a Field ID, delete a Field from Symphony. This will remove the field from
 		 * the fields table, all of the data stored in the entries for this field and any
-		 * section associations if they exist.
+		 * section associations if they exist. This function additionally calls the Field's
+		 * teardown method so that it can cleanup any additional settings it may of created.
 		 *
 		 * @param integer $id
 		 *  The ID of the Field that should be deleted
 		 * @return boolean
 		 */
-		public function delete($id){
-
+		public function delete($id) {
 			$existing = $this->fetch($id);
+			$existing->teardown();
 
 			Symphony::Database()->delete('tbl_fields', " `id` = '$id'");
 			Symphony::Database()->delete('tbl_fields_'.$existing->handle(), " `field_id` = '$id'");
@@ -292,7 +293,7 @@
 		}
 
 		/**
-		 * Returns an array of all available field handles discovered in the 
+		 * Returns an array of all available field handles discovered in the
 		 * `TOOLKIT . /fields` or `EXTENSIONS . /{}/fields`.
 		 *
 		 * @return array

@@ -423,6 +423,16 @@
 		public function remove($setting){
 			unset($this->_fields[$setting]);
 		}
+		
+		/**
+		 * Just prior to the field being deleted, this function allows
+		 * Fields to cleanup any additional things before it is removed
+		 * from the section. This may be useful to remove data from any
+		 * custom field tables or the configuration.
+		 */
+		public function teardown(){
+			return true;
+		}
 
 		/**
 		 * Allows a field to set default settings.
