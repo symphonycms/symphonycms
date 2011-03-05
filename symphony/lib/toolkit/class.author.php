@@ -46,9 +46,11 @@
 		 *  Otherwise returns a string.
 		 */
 		public function get($field = null){
+			if(is_null($field)) return $this->_fields;
+
 			if(!isset($this->_fields[$field]) || $this->_fields[$field] == '') return null;
 
-			return is_null($field) ? $this->_fields : $this->_fields[$field];
+			return $this->_fields[$field];
 		}
 
 		/**
