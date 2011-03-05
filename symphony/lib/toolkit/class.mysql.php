@@ -169,7 +169,7 @@
 		}
 
 		/**
-		 * Returns the last error that occured while querying MySQL
+		 * Returns the last error that occurred while querying MySQL
 		 *
 		 * @return array
 		 *  An associative array with the last query, error number and
@@ -239,7 +239,7 @@
 		}
 
 		/**
-		 * Called when the script has finishd executing, this closes the MySQL
+		 * Called when the script has finished executing, this closes the MySQL
 		 * connection
 		 *
 		 * @return boolean
@@ -284,7 +284,7 @@
 		}
 
 		/**
-		 * Accessor for the current mysql resource from PHP. May be
+		 * Accessor for the current MySQL resource from PHP. May be
 		 * useful for developers who want complete control over their
 		 * database queries and don't want anything abstract by the MySQL
 		 * class.
@@ -320,7 +320,7 @@
 		/**
 		 * This will set the character encoding of the connection for sending and
 		 * receiving data. This function will only run if 'runtime_character_set_alter'
-		 * is set to 'true' in the Sympony config. This is set to true by default during
+		 * is set to 'true' in the Symphony config. This is set to true by default during
 		 * the Symphony installation. If no character encoding is provided, UTF-8
 		 * is assumed.
 		 *
@@ -489,7 +489,7 @@
 		}
 
 		/**
-		 * A convienence method to insert data into the Database. This function
+		 * A convenience method to insert data into the Database. This function
 		 * takes an associative array of data to input, with the keys being the column
 		 * names and the table. An optional parameter exposes MySQL's ON DUPLICATE
 		 * KEY UPDATE functionality, which will update the values if a duplicate key
@@ -537,12 +537,12 @@
 					$sql = trim($sql, ',');
 				}
 			}
-			
+
 			return $this->query($sql);
 		}
 
 		/**
-		 * A convienence method to update data that exists in the Database. This function
+		 * A convenience method to update data that exists in the Database. This function
 		 * takes an associative array of data to input, with the keys being the column
 		 * names and the table. A WHERE statement can be provided to select the rows
 		 * to update
@@ -594,7 +594,7 @@
 		 * @param string $index_by_column
 		 *  The name of a column in the table to use it's value to index
 		 *  the result by. If this is omitted (and it is by default), an
-		 *  array of assocative arrays is returned, with the key being the
+		 *  array of associative arrays is returned, with the key being the
 		 *  column names
 		 * @return array
 		 *  An associative array with the column names as the keys
@@ -722,7 +722,7 @@
 		 *
 		 * @return array
 		 *  An array of associative array's. Log entries of the error type
-		 *  return the query the error occured on and the error number and
+		 *  return the query the error occurred on and the error number and
 		 *  message from MySQL. Log entries of the debug type return the
 		 *  the query and the start/stop time to indicate how long it took
 		 *  to run
