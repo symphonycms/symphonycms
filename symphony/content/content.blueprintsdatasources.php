@@ -1066,8 +1066,24 @@
 					 *  The path to the Datasource file
 					 * @param string $contents
 					 *  The contents for this Datasource as a string passed by reference
+					 * @param array $params
+					 *  An array of all the `$dsParam*` values
+					 * @param array $elements
+					 *  An array of all the elements included in this datasource
+					 * @param array $filters
+					 *  An associative array of all the filters for this datasource with the key
+					 *  being the `field_id` and the value the filter.
+					 * @param array $dependancies
+					 *  An array of dependencies that this datasource has
 					 */
-					Symphony::ExtensionManager()->notifyMembers('DatasourcePreCreate', '/blueprints/datasources/', array('file' => $file, 'contents' => &$dsShell));
+					Symphony::ExtensionManager()->notifyMembers('DatasourcePreCreate', '/blueprints/datasources/', array(
+						'file' => $file,
+						'contents' => &$dsShell,
+						'params' => $params,
+						'elements' => $elements,
+						'filters' => $filters,
+						'dependancies' => $dependancies
+					));
 				}
 				else {
 					/**
@@ -1082,15 +1098,31 @@
 					 *  The path to the Datasource file
 					 * @param string $contents
 					 *  The contents for this Datasource as a string passed by reference
+					 * @param array $params
+					 *  An array of all the `$dsParam*` values
+					 * @param array $elements
+					 *  An array of all the elements included in this datasource
+					 * @param array $filters
+					 *  An associative array of all the filters for this datasource with the key
+					 *  being the `field_id` and the value the filter.
+					 * @param array $dependancies
+					 *  An array of dependencies that this datasource has
 					 */
-					Symphony::ExtensionManager()->notifyMembers('DatasourcePreEdit', '/blueprints/datasources/', array('file' => $file, 'contents' => &$dsShell));
+					Symphony::ExtensionManager()->notifyMembers('DatasourcePreEdit', '/blueprints/datasources/', array(
+						'file' => $file,
+						'contents' => &$dsShell,
+						'params' => $params,
+						'elements' => $elements,
+						'filters' => $filters,
+						'dependancies' => $dependancies
+					));
 				}
 
-				##Write the file
+				// Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file')))
 					$this->pageAlert(__('Failed to write Data source to <code>%s</code>. Please check permissions.', array(DATASOURCES)), Alert::ERROR);
 
-				##Write Successful, add record to the database
+				// Write Successful, add record to the database
 				else{
 
 					if($queueForDeletion){
