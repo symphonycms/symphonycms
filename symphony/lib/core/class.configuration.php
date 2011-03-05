@@ -122,16 +122,16 @@
 		 * @param string $group
 		 *  The group of the property to unset
 		 */
-		public function remove($name, $group = null){
-			if($this->_forceLowerCase) {
-				$name = strtolower($name);
-				$group = strtolower($group);
+		public function remove($name, $group = null) {
+			if ($this->_forceLowerCase) {
+				$name = strtolower($name); $group = strtolower($group);
 			}
 
-			if($group && isset($this->_properties[$group][$name])) {
+			if ($group && isset($this->_properties[$group][$name])) {
 				unset($this->_properties[$group][$name]);
 			}
-			else if($this->_properties[$name]) {
+
+			else if ($this->_properties[$name]) {
 				unset($this->_properties[$name]);
 			}
 		}

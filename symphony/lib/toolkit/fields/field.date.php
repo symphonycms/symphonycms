@@ -117,9 +117,15 @@
 			);
 		}
 
-		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
+		public function appendFormattedElement($wrapper, $data, $encode = false) {
 			if (isset($data['gmt']) && !is_null($data['gmt'])) {
-				$wrapper->appendChild(General::createXMLDateObject($data['local'], $this->get('element_name')));
+				$value = (
+					is_array($data['local'])
+						? current($data['local'])
+						: $data['local']
+				);
+				
+				$wrapper->appendChild(General::createXMLDateObject($value, $this->get('element_name')));
 			}
 		}
 
