@@ -12,7 +12,7 @@
 	class XMLElement {
 		static protected $document;
 		static protected $reflection;
-		static public $useUnstableSetValue;
+		static public $useUnstableSetValue = true;
 		
 		protected $element;
 		protected $documentType;
@@ -21,14 +21,24 @@
 		
 		public function __construct($name, $value = null, array $attributes = null) {
 			if (!isset(self::$document)) {
-				self::$document = new DOMDocument();
-				self::$document->recover = true;
-				self::$document->resolveExternals = true;
-				self::$document->strictErrorChecking = false;
-				self::$document->formatOutput = false;
-				self::$document->substituteEntities = true;
+				$imp = new DOMImplementation;
+				$dtd = $imp->createDocumentType(
+					'data', null, 'symphony/assets/entities.dtd'
+				);
+				$document = $imp->createDocument(null, null, $dtd);
+				$document->recover = true;
+				$document->resolveExternals = true;
+				$document->strictErrorChecking = false;
+				$document->formatOutput = false;
+				$document->substituteEntities = true;
 				
-				self::$document->loadXML('<!DOCTYPE body SYSTEM "symphony/assets/entities.dtd"><data/>', LIBXML_DTDLOAD | LIBXML_NOBLANKS);
+				// Force entities to be loaded:
+				$document->appendChild(
+					$document->createElement('data')
+				);
+				$document->validate();
+				
+				self::$document = $document;
 				self::$reflection = new ReflectionClass('DOMElement');
 			}
 			
@@ -255,11 +265,7 @@
 		public function setValue($value) {
 			if (is_null($value) || $value == '') return;
 			
-			foreach ($this->childNodes as $node) {
-				if ($node instanceof DOMText || $node instanceof DOMElement) {
-					$this->removeChild($node);
-				}
-			}
+			$this->nodeValue = '';
 			
 			/**
 			* @todo Method 1: Determine if the following code causes segfaults.
@@ -267,7 +273,10 @@
 			if (self::$useUnstableSetValue === true) {
 				$fragment = self::$document->createDocumentFragment();
 				$fragment->appendXML($value);
-				$this->appendChild($fragment);
+				
+				if ($fragment->hasChildNodes()) {
+					$this->appendChild($fragment);
+				}
 			}
 			
 			/**
@@ -276,8 +285,6 @@
 			else {
 				$document = clone self::$document;
 				$document->loadXML('<!DOCTYPE data SYSTEM "symphony/assets/entities.dtd"><data>' . $value . '</data>', LIBXML_DTDLOAD);
-				
-				$this->nodeValue = '';
 				
 				foreach ($document->documentElement->childNodes as $node) {
 					$node = self::$document->importNode($node, true);
