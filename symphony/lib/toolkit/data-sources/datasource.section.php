@@ -137,7 +137,7 @@
 			if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id]))
 				$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 
-			if($field_id != 'id' && !($fieldPool[$field_id] instanceof Field)){
+			if($field_id != 'id' && $field_id != 'system:date' && !($fieldPool[$field_id] instanceof Field)){
 				throw new Exception(
 					__(
 						'Error creating field object with id %1$d, for filtering in data source "%2$s". Check this field exists.',
@@ -146,7 +146,19 @@
 				);
 			}
 
-			if($field_id == 'id') $where = " AND `e`.id IN ('".implode("', '", $value)."') ";
+			if($field_id == 'id') {
+				$where = " AND `e`.id IN ('".implode("', '", $value)."') ";
+			}
+			else if($field_id == 'system:date') {
+				require_once(TOOLKIT . '/fields/field.date.php');
+				$date = new fieldDate(Frontend::instance());
+
+				// Create an empty string, we don't care about the Joins, we just want the WHERE clause.
+				$empty = "";
+				$date->buildDSRetrivalSQL($value, $empty, $where, ($filter_type == DS_FILTER_AND ? true : false));
+
+				$where = preg_replace('/`t\d+`.value/', '`e`.creation_date', $where);
+			}
 			else{
 				if(!$fieldPool[$field_id]->buildDSRetrivalSQL($value, $joins, $where, ($filter_type == DS_FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
 				if(!$group) $group = $fieldPool[$field_id]->requiresSQLGrouping();

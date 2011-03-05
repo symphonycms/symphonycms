@@ -241,6 +241,7 @@
 				$ol = new XMLElement('ol');
 				$ol->setAttribute('class', 'filters-duplicator');
 
+				// Add system:id filter
 				if(isset($fields['filter'][$section_data['section']->get('id')]['id'])){
 					$li = new XMLElement('li');
 					$li->setAttribute('class', 'unique');
@@ -256,6 +257,25 @@
 				$li->appendChild(new XMLElement('h4', __('System ID')));
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][id]'));
+				$li->appendChild($label);
+				$ol->appendChild($li);
+
+				// Add system:date filter
+				if(isset($fields['filter'][$section_data['section']->get('id')]['system:date'])){
+					$li = new XMLElement('li');
+					$li->setAttribute('class', 'unique');
+					$li->appendChild(new XMLElement('h4', __('System Date')));
+					$label = Widget::Label(__('Value'));
+					$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][system:date]', General::sanitize($fields['filter'][$section_data['section']->get('id')]['system:date'])));
+					$li->appendChild($label);
+					$ol->appendChild($li);
+				}
+
+				$li = new XMLElement('li');
+				$li->setAttribute('class', 'unique template');
+				$li->appendChild(new XMLElement('h4', __('System Date')));
+				$label = Widget::Label(__('Value'));
+				$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][system:date]'));
 				$li->appendChild($label);
 				$ol->appendChild($li);
 
