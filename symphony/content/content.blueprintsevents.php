@@ -455,7 +455,7 @@
 					 * @param string $contents
 					 *  The contents for this Event as a string passed by reference
 					 */
-					Symphony::ExtensionManager()->notifyMembers('DatasourcePreEdit', '/blueprints/events/', array('file' => $file, 'contents' => &$eventShell));
+					Symphony::ExtensionManager()->notifyMembers('EventPreEdit', '/blueprints/events/', array('file' => $file, 'contents' => &$eventShell));
 				}
 
 				##Write the file
