@@ -196,7 +196,7 @@
 		 */
 		public static function fetchByUsername($username){
 
-			if(!$isset(self::$_pool[$username])) {
+			if(!isset(self::$_pool[$username])) {
 
 				$records = Symphony::Database()->fetchRow(0, sprintf("
 						SELECT *
