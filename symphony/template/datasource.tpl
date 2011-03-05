@@ -17,13 +17,14 @@
 
 		public function about(){
 			return array(
-					 'name' => '<!-- NAME -->',
-					 'author' => array(
-							'name' => '<!-- AUTHOR NAME -->',
-							'website' => '<!-- AUTHOR WEBSITE -->',
-							'email' => '<!-- AUTHOR EMAIL -->'),
-					 'version' => '<!-- VERSION -->',
-					 'release-date' => '<!-- RELEASE DATE -->');
+				'name' => '<!-- NAME -->',
+				'author' => array(
+					'name' => '<!-- AUTHOR NAME -->',
+					'website' => '<!-- AUTHOR WEBSITE -->',
+					'email' => '<!-- AUTHOR EMAIL -->'),
+				'version' => '<!-- VERSION -->',
+				'release-date' => '<!-- RELEASE DATE -->'
+			);
 		}
 
 		public function getSource(){
@@ -56,4 +57,5 @@
 
 			return $result;
 		}
+
 	}
