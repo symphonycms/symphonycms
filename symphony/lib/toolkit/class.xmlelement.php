@@ -27,7 +27,7 @@
 				self::$document->formatOutput = false;
 				self::$document->substituteEntities = true;
 				
-				self::$document->loadXML('<!DOCTYPE body SYSTEM "symphony/assets/entities.dtd"><data/>', LIBXML_DTDLOAD);
+				self::$document->loadXML('<!DOCTYPE body SYSTEM "symphony/assets/entities.dtd"><data/>', LIBXML_DTDLOAD | LIBXML_NOBLANKS);
 				self::$reflection = new ReflectionClass('DOMElement');
 			}
 			
@@ -261,21 +261,27 @@
 			}
 			
 			/**
-			* @todo Determine if the following code causes segfaults.
+			* @todo Method 1: Determine if the following code causes segfaults.
 			*/
+			/*
 			$fragment = self::$document->createDocumentFragment();
 			$fragment->appendXML($value);
 			$this->appendChild($fragment);
+			*/
 			
-			/*
+			
+			/**
+			* @todo Method 2: Slower than method 1, but more stable.
+			*/
 			$document = clone self::$document;
 			$document->loadXML('<!DOCTYPE data SYSTEM "symphony/assets/entities.dtd"><data>' . $value . '</data>', LIBXML_DTDLOAD);
+			
+			$this->nodeValue = '';
 			
 			foreach ($document->documentElement->childNodes as $node) {
 				$node = self::$document->importNode($node, true);
 				$this->appendChild($node);
 			}
-			*/
 		}
 	}
 	
