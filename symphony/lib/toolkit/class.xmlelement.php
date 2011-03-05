@@ -265,7 +265,11 @@
 		public function setValue($value) {
 			if (is_null($value) || $value == '') return;
 			
+			// Remove current children:
 			$this->nodeValue = '';
+			
+			// Repair broken entities:
+			$value = preg_replace('%&(?!(#x?)?[0-9a-z]+;)%i', '&amp;', $value);
 			
 			/**
 			* @todo Method 1: Determine if the following code causes segfaults.
