@@ -26,8 +26,7 @@
 			/**
 			 * Prior to saving entry from the front-end. This delegate will
 			 * force the Event to terminate if it populates the error
-			 * array reference. Provided with references to this object, the
-			 * `$_POST` data and also the error array
+			 * array reference. All parameters are passed by reference.
 			 *
 			 * @delegate EventPreSaveFilter
 			 * @param string $context
@@ -41,7 +40,7 @@
 				'EventPreSaveFilter',
 				'/frontend/',
 				array(
-					'fields' => $fields,
+					'fields' => &$fields,
 					'event' => &$event,
 					'messages' => &$filter_results,
 					'post_values' => &$post_values
@@ -89,7 +88,6 @@
 					$result->appendChild(new XMLElement('message', __('Invalid Entry ID specified. Could not create Entry object.')));
 					return false;
 				}
-
 			}
 
 			else{
