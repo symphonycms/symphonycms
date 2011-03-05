@@ -12,7 +12,6 @@
 	class XMLElement {
 		static protected $document;
 		static protected $reflection;
-		static public $useUnstableSetValue = true;
 		
 		protected $element;
 		protected $documentType;
@@ -271,29 +270,11 @@
 			// Repair broken entities:
 			$value = preg_replace('%&(?!(#x?)?[0-9a-z]+;)%i', '&amp;', $value);
 			
-			/**
-			* @todo Method 1: Determine if the following code causes segfaults.
-			*/
-			if (self::$useUnstableSetValue === true) {
-				$fragment = self::$document->createDocumentFragment();
-				$fragment->appendXML($value);
-				
-				if ($fragment->hasChildNodes()) {
-					$this->appendChild($fragment);
-				}
-			}
+			$fragment = self::$document->createDocumentFragment();
+			$fragment->appendXML($value);
 			
-			/**
-			* @todo Method 2: Slower than method 1, but more stable.
-			*/
-			else {
-				$document = clone self::$document;
-				$document->loadXML('<!DOCTYPE data SYSTEM "symphony/assets/entities.dtd"><data>' . $value . '</data>', LIBXML_DTDLOAD);
-				
-				foreach ($document->documentElement->childNodes as $node) {
-					$node = self::$document->importNode($node, true);
-					$this->appendChild($node);
-				}
+			if ($fragment->hasChildNodes()) {
+				$this->appendChild($fragment);
 			}
 		}
 	}
