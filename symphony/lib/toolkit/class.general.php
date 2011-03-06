@@ -808,15 +808,16 @@
 		 *	fails and silent is set to false then this returns false.
 		 */
 		public static function deleteFile($file, $slient=true){
-			if(!@unlink($file)){
+			try {
+				return unlink($file);
+			}
+			catch(Exception $ex) {
 				if($slient == false){
 					throw new Exception(__('Unable to remove file - %s', array($file)));
 				}
-
+				
 				return false;
 			}
-
-			return true;
 		}
 
 		/**

@@ -115,7 +115,6 @@
 			if(!$showEmptyTemplate) ksort($fields);
 
 			$meta['entry_order'] = (isset($meta['entry_order']) ? $meta['entry_order'] : 'date');
-			$meta['subsection'] = (isset($meta['subsection']) ? 1 : 0);
 			$meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
 			$meta['navigation_group'] = (isset($meta['navigation_group']) ? $meta['navigation_group'] : 'Content');
 
@@ -164,6 +163,29 @@
 			$fieldset->appendChild($div);
 
 			$this->Form->appendChild($fieldset);
+			
+			/**
+			 * Allows extensions to add elements to the header of the Section Editor
+			 * form. Usually for section settings, this delegate is passed the current
+			 * `$meta` array and the `$this->_errors` array.
+			 *
+			 * @delegate AddSectionElements
+			 * @since Symphony 2.2
+			 * @param string $context
+			 * '/blueprints/sections/'
+			 * @param XMLElement $form
+			 *  An XMLElement of the current `$this->Form`, just after the Section
+			 *  settings have been appended, but before the Fields duplicator
+			 * @param array $meta
+			 *  The current $_POST['meta'] array
+			 * @param array $errors
+			 *  The current errors array
+			 */
+			Symphony::ExtensionManager()->notifyMembers('AddSectionElements', '/blueprints/sections/', array(
+				'form' => &$this->Form,
+				'meta' => &$meta,
+				'errors' => &$this->_errors
+			));
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
@@ -292,7 +314,6 @@
 
 			else $fields = $fieldManager->fetch(NULL, $section_id);
 
-			$meta['subsection'] = ($meta['subsection'] == 'yes' ? 1 : 0);
 			$meta['entry_order'] = (isset($meta['entry_order']) ? $meta['entry_order'] : 'date');
 
 			if(isset($_POST['meta'])){
@@ -351,6 +372,29 @@
 			$fieldset->appendChild($div);
 
 			$this->Form->appendChild($fieldset);
+			
+			/**
+			 * Allows extensions to add elements to the header of the Section Editor
+			 * form. Usually for section settings, this delegate is passed the current
+			 * `$meta` array and the `$this->_errors` array.
+			 *
+			 * @delegate AddSectionElements
+			 * @since Symphony 2.2
+			 * @param string $context
+			 * '/blueprints/sections/'
+			 * @param XMLElement $form
+			 *  An XMLElement of the current `$this->Form`, just after the Section
+			 *  settings have been appended, but before the Fields duplicator
+			 * @param array $meta
+			 *  The current $_POST['meta'] array
+			 * @param array $errors
+			 *  The current errors array
+			 */
+			Symphony::ExtensionManager()->notifyMembers('AddSectionElements', '/blueprints/sections/', array(
+				'form' => &$this->Form,
+				'meta' => &$meta,
+				'errors' => &$this->_errors
+			));
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');

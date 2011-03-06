@@ -4,15 +4,42 @@
 	 * @package toolkit
 	 */
 	/**
-	 * XMLElement is a class used to simulate PHP's DOMElement
-	 * class. Each object is a representation of a HTML element
-	 * and can store it's children in an array. When an XMLElement
-	 * is generated, it is output as an XML string.
+	 * The XMLElement class is a wrapper for PHPs DOMDocument
+	 * and DOMElement classes. Each instance of the XMLElement uses
+	 * an internal DOMElement class to store and build XML.
+	 * 
+	 * Originally this class build and stored the XML on its own,
+	 * but was not very memory efficient.
 	 */
 	class XMLElement {
+		/**
+		 * Used to set the document to output as XML valid.
+		 * @var string
+		 */
+		const STYLE_XML = 'xml';
+		
+		/**
+		 * Used to set the document to output as HTML valid.
+		 * @var string
+		 */
+		const STYLE_HTML = 'html';
+		
+		/**
+		 * A instance of DOMDocument as returned by DOMImplementation.
+		 * @var DOMDocument
+		 */
 		static protected $document;
+		
+		/**
+		 * An instance of the ReflectionClass on the DOMElement class.
+		 * @var Reflection
+		 */
 		static protected $reflection;
 		
+		/**
+		 * Prepare the XMLElement class by creating a DOMDocument.
+		 * that can handle HTML entities.
+		 */
 		static public function initializeDocument() {
 			$imp = new DOMImplementation;
 			$dtd = $imp->createDocumentType(
@@ -39,14 +66,47 @@
 			self::$reflection = new ReflectionClass('DOMElement');
 		}
 		
-		const STYLE_XML = 'xml';
-		const STYLE_HTML = 'html';
-		
-		protected $element;
+		/**
+		 * The DTD that should be output when a XMLElement is generated, defaults to null.
+		 * @var string
+		 */
 		protected $documentType;
+		
+		/**
+		 * An instance of DOMElement for this XMLElement.
+		 * @var DOMElement
+		 */
+		protected $element;
+		
+		/**
+		 * When set to true this will include the XML declaration will be
+		 * output when the XML Element is generated. Defaults to false.
+		 * @var boolean
+		 */
 		protected $includeHeader;
+		
+		/**
+		 * Whether the XMLElement should be returned as a string of XML or HTML.
+		 * @var string
+		 */
 		protected $outputStyle;
 		
+		/**
+		 * The constructor for the XMLElement class takes params to either create
+		 * a new XMLElement, or to set `$this->element` as a instance of DOMElement
+		 *
+		 * @param string|DOMElement $name
+		 *	The name of the XMLElement, 'p', or a DOMElement object which makes the
+		 *	other parameters optional.
+		 * @param string|XMLElement $value (optional)
+		 *	The value of this XMLElement, it can be a string or another XMLElement object.
+		 * @param array $attributes (optional)
+		 * 	Any additional attributes can be included in an associative array with
+		 *	the key being the name and the value being the value of the attribute.
+		 *	Attributes set from this array will override existing attributes
+		 *	set by previous params.
+		 * @return XMLElement
+		 */
 		public function __construct($name, $value = null, array $attributes = null) {
 			if ($name instanceof DOMElement) {
 				$this->element = $name;
@@ -69,7 +129,19 @@
 			$this->outputStyle = self::STYLE_XML;
 		}
 		
-		public function __call($name, $args) {
+		/**
+		 * Magic method exposes DOMElement functions to XMLElement
+		 * allowing developers to interact with XMLElement as they
+		 * would with DOMElement.
+		 *
+		 * @param string $name
+		 *	The function name of DOMElement.
+		 * @param array $args
+		 *	The arguments to pass to the desired function.
+		 * @return mixed
+		 *	The result of the called method.
+		 */
+		 public function __call($name, $args) {
 			$method = self::$reflection->getMethod($name);
 			
 			foreach ($args as $index => $value) {
@@ -81,21 +153,37 @@
 			return $method->invokeArgs($this->element, $args);
 		}
 		
+		/**
+		 * Magic method for cloning of the XMLElement object,
+		 * makes sure the inner DOMElement is also cloned.
+		 */
 		public function __clone() {
 			$this->element = clone $this->element;
 		}
 		
+		/**
+		 * Magic method to return variables set via `__set`.
+		 *
+		 * @param string $name
+		 * @return mixed
+		 */
 		public function __get($name) {
 			return $this->element->{$name};
 		}
 		
+		/**
+		 * Magic method to set variables on `$this->element`. Keep in mind
+		 * that `$this->element` is an instance of the DOMElement class.
+		 *
+		 * @param string $name
+		 * @param string $value
+		 */
 		public function __set($name, $value) {
 			$this->element->{$name} = $value;
 		}
 		
 		/**
-		 * A convenience method to add children to an XMLElement
-		 * quickly.
+		 * A convenience method to add children to an XMLElement quickly.
 		 *
 		 * @param array $children
 		 */
@@ -163,8 +251,8 @@
 		 * It is valid XML.
 		 *
 		 * @param boolean $format
-		 *  Defaults to false. Will fully indent XML, but only
-		 *  wraps HTML onto new lines.
+		 *	Defaults to false. Will fully indent XML, but only
+		 *	wraps HTML onto new lines.
 		 * @return string
 		 */
 		public function generate($format = false) {
@@ -242,8 +330,8 @@
 		 * an XMLElement
 		 *
 		 * @param array $attributes
-		 *  Associative array with the key being the name and
-		 *  the value being the value of the attribute.
+		 *	Associative array with the key being the name and
+		 *	the value being the value of the attribute.
 		 */
 		public function setAttributeArray(array $attributes) {
 			foreach ($attributes as $name => $value) {
@@ -252,7 +340,7 @@
 		}
 		
 		/**
-		 * Sets the DTD for this XMLElement
+		 * Sets the DTD for this XMLElement.
 		 *
 		 * @param string $dtd
 		 */
@@ -261,7 +349,11 @@
 		}
 		
 		/**
-		 * Deprecated.
+		 * Change the output style of the XMLElement from am
+		 * XML string to a HTML string.
+		 *
+		 * @param string $style (optional)
+		 *	Either `XMLElement::STYLE_XML` or `STYLE_HTML`.
 		 */
 		public function setElementStyle($style = 'xml') {
 			$this->outputStyle = $style;
@@ -273,19 +365,31 @@
 		 * true for the parent XMLElement, eg. 'html'.
 		 *
 		 * @param string $value (optional)
-		 *  Defaults to false
+		 *	Defaults to false.
 		 */
 		public function setIncludeHeader($value = false){
 			$this->includeHeader = $value;
 		}
 		
 		/**
-		 * Deprecated.
+		 * @deprecated. Due to moving to DOMDocument internally, there is no
+		 * need to have to explicitly set open/close values.
+		 * 
+		 * Originially this function was used to prevent special HTML elements
+		 * like the textarea element from using the self closing `<a />` tag
+		 * format. Outputting as HTML now solves this automatically.
 		 */
 		public function setSelfClosingTag($value = true) {
 			
 		}
 		
+		/**
+		 * Sets the value of the XMLElement. Checks to see
+		 * whether the value should be prepended or appended
+		 * to the children.
+		 *
+		 * @param string|XMLElement $value
+		 */
 		public function setValue($value) {
 			if (is_null($value) || $value == '') return;
 			
