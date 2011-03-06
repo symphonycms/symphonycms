@@ -418,10 +418,22 @@
 		 * Unset the value of a setting by the key
 		 *
 		 * @param string $setting
-		 *	the key of the setting to unset.
+		 *  the key of the setting to unset.
 		 */
 		public function remove($setting){
 			unset($this->_fields[$setting]);
+		}
+		
+		/**
+		 * Just prior to the field being deleted, this function allows
+		 * Fields to cleanup any additional things before it is removed
+		 * from the section. This may be useful to remove data from any
+		 * custom field tables or the configuration.
+		 *
+		 * @return boolean
+		 */
+		public function tearDown(){
+			return true;
 		}
 
 		/**

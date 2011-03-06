@@ -269,7 +269,9 @@
 			));
 
 			$this->Form->appendChild($div);
-		}		public function __viewNew() {
+		}		
+		
+		public function __viewNew() {
 			$this->__viewEdit();
 		}
 
