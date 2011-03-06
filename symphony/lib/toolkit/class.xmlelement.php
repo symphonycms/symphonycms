@@ -194,58 +194,6 @@
 		}
 		
 		/**
-		 * Return all child elements
-		 *
-		 * @return array
-		 */
-		public function getChildren() {
-			$children = array();
-			
-			foreach ($this->childNodes as $node) {
-				if (!$node instanceof DOMElement) continue;
-				
-				$children[] = new self($node);
-			}
-			
-			return $children;
-		}
-		
-		/**
-		 * Return the inner element
-		 *
-		 * @return DOMElement
-		 */
-		public function getElement() {
-			return $this->element;
-		}
-		
-		/**
-		 * Return the element name
-		 *
-		 * @return string
-		 */
-		public function getName() {
-			return $this->nodeName;
-		}
-		
-		/**
-		 * Return the element value
-		 *
-		 * @return string
-		 */
-		public function getValue() {
-			if (!$this->hasChildNodes()) return null;
-			
-			$value = null;
-			
-			foreach ($this->childNodes as $node) {
-				$value .= self::$document->saveXML($node);
-			}
-			
-			return $value;
-		}
-		
-		/**
 		 * This function will turn the XMLElement into a string
 		 * representing the element as it would appear in the markup.
 		 * It is valid XML.
@@ -295,6 +243,58 @@
 			}
 			
 			return $output;
+		}
+		
+		/**
+		 * Return all child elements
+		 *
+		 * @return array
+		 */
+		public function getChildren() {
+			$children = array();
+			
+			foreach ($this->childNodes as $node) {
+				if (!$node instanceof DOMElement) continue;
+				
+				$children[] = new self($node);
+			}
+			
+			return $children;
+		}
+		
+		/**
+		 * Return the inner element
+		 *
+		 * @return DOMElement
+		 */
+		public function getElement() {
+			return $this->element;
+		}
+		
+		/**
+		 * Return the element name
+		 *
+		 * @return string
+		 */
+		public function getName() {
+			return $this->nodeName;
+		}
+		
+		/**
+		 * Return the element value
+		 *
+		 * @return string
+		 */
+		public function getValue() {
+			if (!$this->hasChildNodes()) return null;
+			
+			$value = null;
+			
+			foreach ($this->childNodes as $node) {
+				$value .= self::$document->saveXML($node);
+			}
+			
+			return $value;
 		}
 		
 		/**
