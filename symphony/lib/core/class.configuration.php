@@ -23,6 +23,7 @@
 		/**
 		 * Whether all properties and group keys will be forced to be lowercase.
 		 * By default this is false, which makes all properties case sensitive
+		 * @var boolean
 		 */
 		private $_forceLowerCase = false;
 
