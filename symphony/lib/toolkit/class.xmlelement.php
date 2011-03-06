@@ -13,34 +13,41 @@
 		static protected $document;
 		static protected $reflection;
 		
+		static public function initializeDocument() {
+			$imp = new DOMImplementation;
+			$dtd = $imp->createDocumentType(
+				'data', null, 'symphony/assets/entities.dtd'
+			);
+			$document = $imp->createDocument(null, null, $dtd);
+			$document->recover = true;
+			$document->resolveExternals = true;
+			$document->strictErrorChecking = false;
+			$document->formatOutput = false;
+			$document->substituteEntities = true;
+			
+			// Set encoding and XML version:
+			$document->encoding = 'UTF-8';
+			$document->xmlVersion = '1.0';
+			
+			// Force entities to be loaded:
+			$document->appendChild(
+				$document->createElement('data')
+			);
+			$document->validate();
+			
+			self::$document = $document;
+			self::$reflection = new ReflectionClass('DOMElement');
+		}
+		
+		const STYLE_XML = 'xml';
+		const STYLE_HTML = 'html';
+		
 		protected $element;
 		protected $documentType;
 		protected $includeHeader;
-		protected $outputAsHTML;
+		protected $outputStyle;
 		
 		public function __construct($name, $value = null, array $attributes = null) {
-			if (!isset(self::$document)) {
-				$imp = new DOMImplementation;
-				$dtd = $imp->createDocumentType(
-					'data', null, 'symphony/assets/entities.dtd'
-				);
-				$document = $imp->createDocument(null, null, $dtd);
-				$document->recover = true;
-				$document->resolveExternals = true;
-				$document->strictErrorChecking = false;
-				$document->formatOutput = false;
-				$document->substituteEntities = true;
-				
-				// Force entities to be loaded:
-				$document->appendChild(
-					$document->createElement('data')
-				);
-				$document->validate();
-				
-				self::$document = $document;
-				self::$reflection = new ReflectionClass('DOMElement');
-			}
-			
 			if ($name instanceof DOMElement) {
 				$this->element = $name;
 			}
@@ -59,7 +66,7 @@
 			}
 			
 			$this->includeHeader = false;
-			$this->outputAsHTML = false;
+			$this->outputStyle = self::STYLE_XML;
 		}
 		
 		public function __call($name, $args) {
@@ -155,30 +162,48 @@
 		 * representing the element as it would appear in the markup.
 		 * It is valid XML.
 		 *
-		 * @param boolean $indent
-		 *  Defaults to false. Not fully implemented.
+		 * @param boolean $format
+		 *  Defaults to false. Will fully indent XML, but only
+		 *  wraps HTML onto new lines.
 		 * @return string
 		 */
-		public function generate($indent = false) {
-			self::$document->formatOutput = $indent;
-			$output = $this->element->ownerDocument->saveXML($this->element);
-			self::$document->formatOutput = false;
+		public function generate($format = false) {
+			if ($this->outputStyle == self::STYLE_XML) {
+				self::$document->formatOutput = $format;
+				$output = self::$document->saveXML($this->element);
+				self::$document->formatOutput = false;
+			}
 			
-			/**
-			* @todo find a better way of handling this error:
-			* "Couldn't fetch DOMElement. Node no longer exists"
-			*/
+			else if ($this->outputStyle = self::STYLE_HTML) {
+				$document = new DOMDocument(
+					self::$document->xmlVersion,
+					self::$document->encoding
+				);
+				
+				$element = $document->importNode($this->element, true);
+				$document->appendChild($element);
+				
+				$document->formatOutput = $format;
+				$output = $document->saveHTML();
+				$document->formatOutput = false;
+			}
+			
+			else {
+				throw new Exception('Unknown output style.');
+			}
 			
 			if ($this->documentType) {
 				$output = $this->documentType
-					. ($indent ? PHP_EOL : null)
-					. $output;
+					. PHP_EOL . $output;
 			}
 			
 			if ($this->includeHeader) {
-				$output = '<?xml version="1.0" encoding="utf-8" ?>'
-					. ($indent ? PHP_EOL : null)
-					. $output;
+				$output = sprintf(
+					'<?xml version="%s" encoding="%s" ?>%s',
+					self::$document->xmlVersion,
+					self::$document->encoding,
+					PHP_EOL . $output
+				);
 			}
 			
 			return $output;
@@ -239,7 +264,7 @@
 		 * Deprecated.
 		 */
 		public function setElementStyle($style = 'xml') {
-			$this->outputAsHTML = ($style == 'html');
+			$this->outputStyle = $style;
 		}
 		
 		/**
@@ -278,5 +303,7 @@
 			}
 		}
 	}
+	
+	XMLElement::initializeDocument();
 	
 ?>
