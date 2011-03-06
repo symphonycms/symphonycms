@@ -499,6 +499,45 @@ var Symphony = {};
 			});
 		}).blur();
 
+		// Clickable utilities in the XSLT editor
+		$('#utilities li').click(function(event) {
+			if ($(event.target).is('a')) return;
+
+			var editor = $('textarea.code'),
+				lines = editor.val().split('\n'),
+				statement = '<xsl:import href="../utilities/' + $(this).find('a').text() + '"/>',
+				regexp = '^' + statement.replace('/>', '').replace('../utilities/', '(?:\.\./utilities/)?');
+
+			if ($(this).hasClass('selected')) {
+				for (var i = 0; i < lines.length; ++i) {
+					if ($.trim(lines[i]).match(regexp) != null) {
+						lines.splice(i, 1);
+						break;
+					}
+				}
+
+				editor.val(lines.join('\n'));
+				$(this).removeClass('selected');
+			}
+			else {
+				for (var i = 0; i < lines.length; ++i) {
+					if ($.trim(lines[i]).substring(0, 4) === '<!--' || $.trim(lines[i]).match('^<xsl:(?:import|variable|output|comment|template)')) {
+						if (($('form:first').attr('action').indexOf('blueprints/pages') == -1)) {
+							// we are inside the page template editor
+							lines[i] = statement.replace('../utilities/', '') + '\n' + lines[i];
+						}
+						else {
+							lines[i] = statement + '\n' + lines[i];
+						}
+						break;
+					}
+				}
+
+				editor.val(lines.join('\n'));
+				$(this).addClass('selected');
+			}
+		});
+
 		// Change user password
 		$('#change-password').each(function() {
 			var password = $(this),
