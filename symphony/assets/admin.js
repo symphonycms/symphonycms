@@ -506,34 +506,39 @@ var Symphony = {};
 			var editor = $('textarea.code'),
 				lines = editor.val().split('\n'),
 				statement = '<xsl:import href="../utilities/' + $(this).find('a').text() + '"/>',
-				regexp = '^' + statement.replace('/>', '').replace('../utilities/', '(?:\.\./utilities/)?');
+				regexp = '^' + statement.replace('/>', '').replace('../utilities/', '(?:\.\./utilities/)?'),
+				newLine = '\n',
+				numberOfNewLines = 1;
 
 			if ($(this).hasClass('selected')) {
-				for (var i = 0; i < lines.length; ++i) {
+				for (var i = 0; i < lines.length; i++) {
 					if ($.trim(lines[i]).match(regexp) != null) {
-						lines.splice(i, 1);
+						(lines[i + 1] === '' && $.trim(lines[i - 1]).substring(0, 11) !== '<xsl:import') ? lines.splice(i, 2) : lines.splice(i, 1);
 						break;
 					}
 				}
 
-				editor.val(lines.join('\n'));
+				editor.val(lines.join(newLine));
 				$(this).removeClass('selected');
 			}
 			else {
-				for (var i = 0; i < lines.length; ++i) {
+				for (var i = 0; i < lines.length; i++) {
 					if ($.trim(lines[i]).substring(0, 4) === '<!--' || $.trim(lines[i]).match('^<xsl:(?:import|variable|output|comment|template)')) {
+
+						numberOfNewLines = $.trim(lines[i]).substring(0, 11) === '<xsl:import' ? 1 : 2;
+
 						if (($('form:first').attr('action').indexOf('blueprints/pages') == -1)) {
-							// we are inside the page template editor
-							lines[i] = statement.replace('../utilities/', '') + '\n' + lines[i];
+							lines[i] = statement.replace('../utilities/', '') + Array(numberOfNewLines + 1).join(newLine) + lines[i];
 						}
 						else {
-							lines[i] = statement + '\n' + lines[i];
+							// we are inside the page template editor
+							lines[i] = statement + Array(numberOfNewLines + 1).join(newLine) + lines[i];
 						}
 						break;
 					}
 				}
 
-				editor.val(lines.join('\n'));
+				editor.val(lines.join(newLine));
 				$(this).addClass('selected');
 			}
 		});
