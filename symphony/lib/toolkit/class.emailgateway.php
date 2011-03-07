@@ -133,27 +133,45 @@
 			$this->_recipients = $email;
 		}
 
-		/*
-			TODO comment the following 4 functions
-		*/
-
+		/**
+		 * This functions takes a string to be used as the plaintext
+		 * content for the Email
+		 *
+		 * @todo sanitizing and security checking
+		 * @param string $text_plain
+		 */
 		public function setTextPlain($text_plain){
-			//TODO: sanitizing and security checking
+			//TODO: 
 			$this->_text_plain = $text_plain;
 		}
 
+		/**
+		 * This functions takes a string to be used as the HTML
+		 * content for the Email
+		 *
+		 * @todo sanitizing and security checking
+		 * @param string $text_html
+		 */
 		public function setTextHtml($text_html){
-			//TODO: sanitizing and security checking
 			$this->_text_html = $text_html;
 		}
-
+		
+		/**
+		 * @todo Document this function
+		 * @param string|array $file
+		 */
 		public function setAttachments($file){
 			if(!is_array($file)){
-				$file = Array($file);
+				$file = array($file);
 			}
 			$this->_attachments = $file;
 		}
 
+		/**
+		 * @todo Document this function
+		 * @param string $encoding
+		 *  Must be either `quoted-printable` or `base64`
+		 */
 		public function setTextEncoding($encoding = null){
 			if($encoding == 'quoted-printable'){
 				$this->_text_encoding = 'quoted-printable';
