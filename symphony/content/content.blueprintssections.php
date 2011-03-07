@@ -411,7 +411,7 @@
 			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $position => $field){
 
-					$wrapper = new XMLElement('li', NULL, array('class' => 'field-' . $field->handle()));
+					$wrapper = new XMLElement('li', NULL, array('class' => 'field-' . $field->handle() . $field->mustBeUnique() ? 'unique' : NULL));
 
 					$field->set('sortorder', $position);
 					$field->displaySettingsPanel($wrapper, (isset($this->_errors[$position]) ? $this->_errors[$position] : NULL));
