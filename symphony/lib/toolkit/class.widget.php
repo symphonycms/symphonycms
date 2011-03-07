@@ -80,9 +80,9 @@
 		 * @param string $name
 		 *  The name of the resulting `<textarea>`
 		 * @param integer $rows (optional)
-		 *	The height of the textarea, using the rows attribute. Defaults to 15
+		 *	The height of the `<textarea>`, using the rows attribute. Defaults to 15
 		 * @param integer $cols (optional)
-		 *  The width of the textarea, using the cols attribute. Defaults to 50.
+		 *  The width of the `<textarea>`, using the cols attribute. Defaults to 50.
 		 * @param string $value (optional)
 		 *	The content to be displayed inside the `<textarea>`
 		 * @param array $attributes (optional)
@@ -386,7 +386,7 @@
 		 * @param Array $options (optional)
 		 *	An array containing the data for each `<option>` for this
 		 *  `<select>`. If the array is associative, it is assumed that
-		 *  `<optgroups>` are to be created, otherwise it's an array of the
+		 *  `<optgroup>` are to be created, otherwise it's an array of the
 		 *  containing the option data. If no options are provided an empty
 		 *  `<select>` XMLElement is returned.
 		 *  `

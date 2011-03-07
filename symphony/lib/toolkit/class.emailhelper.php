@@ -25,8 +25,8 @@
 		 * within a 'phrase', according to RFC2047. The output is called
 		 * an 'encoded-word'; it must not be longer than 75 characters.
 		 *
-		 * This might be achieved with PHP's 'mbstring' functions, but
-		 * 'mbstring' is a non-default extension.
+		 * This might be achieved with PHP's `mbstring` functions, but
+		 * `mbstring` is a non-default extension.
 		 *
 		 * For simplicity reasons this function encodes every character
 		 * except upper and lower case letters and decimal digits.
@@ -48,7 +48,8 @@
 		 * @param string $max_length maximum line length (default: 75 chars)
 		 * @return string $output encoded string
 		 *
-		 * @author Elmar Bartel, Michael Eichelsdoerfer
+		 * @author Elmar Bartel
+		 * @author Michael Eichelsdoerfer
 		 */
 		public static function qEncode($input, $max_length=75) {
 
@@ -132,7 +133,8 @@
 		 * @param string $max_length maximum line length (default: 76 chars)
 		 * @return string $output encoded string
 		 *
-		 * @author Elmar Bartel, Michael Eichelsdoerfer
+		 * @author Elmar Bartel
+		 * @author Michael Eichelsdoerfer
 		 */
 		public static function qpContentTransferEncode($input, $max_length=76) {
 			$qpHexDigits  = '0123456789ABCDEF';
@@ -254,7 +256,8 @@
 		 *
 		 * @param string $file
 		 * @return string MIMEtype
-		 * @author Michael Eichelsdoerfer and Huib Keemink
+		 * @author Michael Eichelsdoerfer
+		 * @author Huib Keemink
 		 */
 		public function getMimeType($file) {
 			if (!empty($file)) {

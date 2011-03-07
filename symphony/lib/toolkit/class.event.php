@@ -114,7 +114,7 @@
 		 * is used in the event editor. It must remain intact. Do not overload this function in
 		 * custom events.
 		 *
-		 * @return int
+		 * @return integer
 		 */
 		public static function getSource(){
 			return NULL;
