@@ -245,6 +245,7 @@
 				if(isset($fields['filter'][$section_data['section']->get('id')]['id'])){
 					$li = new XMLElement('li');
 					$li->setAttribute('class', 'unique');
+					$li->setAttribute('data-type', 'id');
 					$li->appendChild(new XMLElement('h4', __('System ID')));
 					$label = Widget::Label(__('Value'));
 					$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][id]', General::sanitize($fields['filter'][$section_data['section']->get('id')]['id'])));
@@ -254,6 +255,7 @@
 
 				$li = new XMLElement('li');
 				$li->setAttribute('class', 'unique template');
+				$li->setAttribute('data-type', 'id');
 				$li->appendChild(new XMLElement('h4', __('System ID')));
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][id]'));
@@ -264,6 +266,7 @@
 				if(isset($fields['filter'][$section_data['section']->get('id')]['system:date'])){
 					$li = new XMLElement('li');
 					$li->setAttribute('class', 'unique');
+					$li->setAttribute('data-type', 'system:date');
 					$li->appendChild(new XMLElement('h4', __('System Date')));
 					$label = Widget::Label(__('Value'));
 					$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][system:date]', General::sanitize($fields['filter'][$section_data['section']->get('id')]['system:date'])));
@@ -273,6 +276,7 @@
 
 				$li = new XMLElement('li');
 				$li->setAttribute('class', 'unique template');
+				$li->setAttribute('data-type', 'system:date');
 				$li->appendChild(new XMLElement('h4', __('System Date')));
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][system:date]'));
@@ -287,12 +291,14 @@
 						if(isset($fields['filter'][$section_data['section']->get('id')][$input->get('id')])){
 							$wrapper = new XMLElement('li');
 							$wrapper->setAttribute('class', 'unique');
+							$wrapper->setAttribute('data-type', $input->get('element_name'));
 							$input->displayDatasourceFilterPanel($wrapper, $fields['filter'][$section_data['section']->get('id')][$input->get('id')], $this->_errors[$input->get('id')], $section_data['section']->get('id'));
 							$ol->appendChild($wrapper);
 						}
 
 						$wrapper = new XMLElement('li');
 						$wrapper->setAttribute('class', 'unique template');
+						$wrapper->setAttribute('data-type', $input->get('element_name'));
 						$input->displayDatasourceFilterPanel($wrapper, NULL, NULL, $section_data['section']->get('id'));
 						$ol->appendChild($wrapper);
 
@@ -346,6 +352,7 @@
 			if(isset($fields['filter']['navigation']['parent'])){
 				$li = new XMLElement('li');
 				$li->setAttribute('class', 'unique');
+				$li->setAttribute('data-type', 'parent');
 				$li->appendChild(new XMLElement('h4', __('Parent Page')));
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input('fields[filter][navigation][parent]', General::sanitize($fields['filter']['navigation']['parent'])));
@@ -356,6 +363,7 @@
 
 			$li = new XMLElement('li');
 			$li->setAttribute('class', 'unique template');
+			$li->setAttribute('data-type', 'parent');
 			$li->appendChild(new XMLElement('h4', __('Parent Page')));
 			$label = Widget::Label(__('Value'));
 			$label->appendChild(Widget::Input('fields[filter][navigation][parent]'));
@@ -370,6 +378,7 @@
 			if(isset($fields['filter']['navigation']['type'])){
 				$li = new XMLElement('li');
 				$li->setAttribute('class', 'unique');
+				$li->setAttribute('data-type', 'type');
 				$li->appendChild(new XMLElement('h4', __('Page Type')));
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input('fields[filter][navigation][type]', General::sanitize($fields['filter']['navigation']['type'])));
@@ -381,6 +390,7 @@
 			$li = new XMLElement('li');
 			$li->setAttribute('class', 'unique template');
 			$li->appendChild(new XMLElement('h4', __('Page Type')));
+			$li->setAttribute('data-type', 'type');
 			$label = Widget::Label(__('Value'));
 			$label->appendChild(Widget::Input('fields[filter][navigation][type]'));
 			$li->appendChild($label);
@@ -1241,6 +1251,7 @@
 
 				$li = new XMLElement('li');
 				$li->setAttribute('class', 'unique');
+				$li->setAttribute('data-type', $name);
 				$li->appendChild(new XMLElement('h4', $h4_label));
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input('fields[filter][author]['.$name.']', General::sanitize($value)));
@@ -1251,6 +1262,7 @@
 
 			$li = new XMLElement('li');
 			$li->setAttribute('class', 'unique template');
+			$li->setAttribute('data-type', $name);
 			$li->appendChild(new XMLElement('h4', $h4_label));
 			$label = Widget::Label(__('Value'));
 			$label->appendChild(Widget::Input('fields[filter][author]['.$name.']'));
