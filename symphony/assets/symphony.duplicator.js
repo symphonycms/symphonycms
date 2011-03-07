@@ -35,7 +35,9 @@
 			'Add item': false,
 			'Remove item': false,
 			'Expand all': false,
-			'Collapse all': false
+			'Collapse all': false,
+			'Used': false,
+			'All selected': false
 		});
 
 		// Collapsible
@@ -77,7 +79,7 @@
 				widgets.controls.before(instance);
 				object.trigger('construct', [instance]);
 				refresh(true);
-				updateUniqness();
+				updateUniqueness();
 
 				return instance;
 			};
@@ -87,7 +89,7 @@
 
 				object.trigger('destruct', [instance]);
 				refresh();
-				updateUniqness();
+				updateUniqueness();
 
 				return instance;
 			};
@@ -97,8 +99,6 @@
 				var instance = $(source).addClass('instance expanded'),
 					header = instance.find(settings.headers).addClass('header').wrapInner('<span />'),
 					destructor = header.append('<a class="destructor" />').find('a.destructor:first').text(Symphony.Language.get('Remove item'));
-
-				instance.attr('data-type', header.find('span').get(0).childNodes[0].nodeValue + header.find('span').children().first().text());
 
 				header.nextAll().wrapAll('<div class="content" />');
 
@@ -204,7 +204,7 @@
 			};
 
 			// Update uniqueness
-			var updateUniqness = function() {
+			var updateUniqueness = function() {
 				var instances = object.children('.instance'),
 					options = widgets.selector.find('option');
 				
@@ -216,11 +216,17 @@
 					if (instance.hasClass('unique')) {
 						options.filter('[data-type=' + instance.attr('data-type') + ']').attr('disabled', 'disabled');
 						
+						if (!instance.find(settings.headers).find('.used').length) {
+							instance.find(settings.headers).append(' <i class="used">(' + Symphony.Language.get('Used') + ')</i>');
+						};
+						
 						if (options.not(':disabled').length === 0) {
-							widgets.selector.prepend('<option class="empty"/>');
+							widgets.selector.prepend('<option class="all-selected">' + Symphony.Language.get('All selected') + '</option>');
+							widgets.selector.attr('disabled', 'disabled');
 							widgets.constructor.addClass('disabled');
 						} else {
-							options.filter('.empty').remove();
+							widgets.selector.attr('disabled', false);
+							options.filter('.all-selected').remove();
 						};
 						
 						widgets.selector.find('option').not(':disabled').first().attr('selected', 'selected');
@@ -306,12 +312,7 @@
 						else {
 							header_text = header.text();
 						}
-						option.text(header_text).val(position).attr('data-type', header.get(0).childNodes[0].nodeValue + header_children.filter(':eq(0)').text());
-						template.attr('data-type', header.get(0).childNodes[0].nodeValue + header_children.filter(':eq(0)').text());
-// console.log(template);
-						if (template.hasClass('unique')) {
-							option.attr('data-unique', 'true');
-						};
+						option.text(header_text).val(position).attr('data-type', template.attr('data-type'));
 
 						// HACK: preselect Text Input for Section editor
 						if (header_text == 'Text Input') {
@@ -394,7 +395,7 @@
 					}
 
 					refresh();
-					updateUniqness();
+					updateUniqueness();
 				},
 
 				expandAll: function() {
