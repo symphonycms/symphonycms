@@ -51,6 +51,7 @@
 			$document->strictErrorChecking = false;
 			$document->formatOutput = false;
 			$document->substituteEntities = true;
+			$document->createElementNS('http://www.w3.org/1999/XSL/Transform', 'xsl');
 
 			// Set encoding and XML version:
 			$document->encoding = 'UTF-8';
@@ -263,11 +264,11 @@
 		}
 
 		/**
-		 * Returns the number of children this XMLElement has.
-		 * @return int
+		 * Returns the DOMDocument instance
+		 * @var DOMDocument
 		 */
-		public function getNumberOfChildren(){
-			return count($this->childNodes);
+		public static function getDocument() {
+			return self::$document;
 		}
 
 		/**
@@ -286,6 +287,14 @@
 		 */
 		public function getName() {
 			return $this->nodeName;
+		}
+
+		/**
+		 * Returns the number of children this XMLElement has.
+		 * @return int
+		 */
+		public function getNumberOfChildren(){
+			return count($this->childNodes);
 		}
 
 		/**
