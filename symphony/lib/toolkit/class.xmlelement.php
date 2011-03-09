@@ -263,14 +263,6 @@
 		}
 
 		/**
-		 * Returns the DOMDocument instance
-		 * @var DOMDocument
-		 */
-		public static function getDocument() {
-			return self::$document;
-		}
-
-		/**
 		 * Return the inner element
 		 *
 		 * @return DOMElement
@@ -292,8 +284,8 @@
 		 * Returns the number of children this XMLElement has.
 		 * @return integer
 		 */
-		public function getNumberOfChildren(){
-			return count($this->childNodes);
+		public function getNumberOfChildren() {
+			return $this->childNodes->length;
 		}
 
 		/**

@@ -57,8 +57,8 @@
 				// Use the DOMDocument to create CDATA section so that the offending code won't
 				// be treated as proper XML, just as a string
 				foreach($data as $e) {
-					$dd = XMLElement::getDocument()->createElement('dd');
-					$dd->appendChild(XMLElement::getDocument()->createCDATASection($e['message']));
+					$dd = new XMLElement('dd');
+					$dd->appendChild($dd->ownerDocument->createCDATASection($e['message']));
 					$dl->appendChild($dd);
 				}
 
@@ -76,8 +76,8 @@
 
 					foreach($errors as $e){
 						$dt = new XMLElement('dt', __('<a href="%1$s" title="Show debug view for %2$s">Line %3$d</a>', array("?debug={$filename}{$query_string}#line-".$e['line'], $filename, $e['line'])));
-						$dd = XMLElement::getDocument()->createElement('dd');
-						$dd->appendChild(XMLElement::getDocument()->createCDATASection($e['raw']['message']));
+						$dd = new XMLElement('dd');
+						$dd->appendChild($dd->ownerDocument->createCDATASection($e['raw']['message']));
 						$dl->appendChild($dt);
 						$dl->appendChild($dd);
 					}
@@ -98,8 +98,8 @@
 
 					foreach($errors as $e){
 						$dt = new XMLElement('dt', __('<a href="%1$s" title="Show debug view for %2$s">Line %3$d</a>', array("?debug=u-{$filename}{$query_string}#line-".$e['line'], $filename, $e['line'])));
-						$dd = XMLElement::getDocument()->createElement('dd');
-						$dd->appendChild(XMLElement::getDocument()->createCDATASection($e['raw']['message']));
+						$dd = new XMLElement('dd');
+						$dd->appendChild($dd->ownerDocument->createCDATASection($e['raw']['message']));
 						$dl->appendChild($dt);
 						$dl->appendChild($dd);
 					}
@@ -118,8 +118,8 @@
 
 				foreach($data as $e){
 					$dt = new XMLElement('dt', __('<a href="%1$s" title="Show debug view for %2$s">Line %3$d</a>', array('?debug=xml'.$query_string.'#line-'.$e['line'], 'XML', $e['line'])));
-					$dd = XMLElement::getDocument()->createElement('dd');
-					$dd->appendChild(XMLElement::getDocument()->createCDATASection($e['raw']['message']));
+					$dd = new XMLElement('dd');
+					$dd->appendChild($dd->ownerDocument->createCDATASection($e['raw']['message']));
 					$dl->appendChild($dt);
 					$dl->appendChild($dd);
 				}
