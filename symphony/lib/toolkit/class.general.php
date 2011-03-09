@@ -1048,7 +1048,7 @@
 			$string = str_replace($spaces, ' ', $string);
 			$string = preg_replace('/[^\w\s]/i', '', $string);
 
-			return str_word_count($words);
+			return str_word_count($string);
 		}
 
 		/**
