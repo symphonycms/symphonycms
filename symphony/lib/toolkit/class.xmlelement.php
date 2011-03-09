@@ -263,14 +263,6 @@
 		}
 
 		/**
-		 * Returns the DOMDocument instance
-		 * @var DOMDocument
-		 */
-		public static function getDocument() {
-			return self::$document;
-		}
-
-		/**
 		 * Return the inner element
 		 *
 		 * @return DOMElement
@@ -292,8 +284,8 @@
 		 * Returns the number of children this XMLElement has.
 		 * @return integer
 		 */
-		public function getNumberOfChildren(){
-			return count($this->childNodes);
+		public function getNumberOfChildren() {
+			return $this->childNodes->length;
 		}
 
 		/**
@@ -411,10 +403,13 @@
 
 			// Remove current children:
 			$this->nodeValue = '';
+			
+			// Remove non-printable characters:
+			$value = preg_replace('/[\x00-\x08\x0b-\x0c\x0e-\x1f]+/', null, $value);
 
 			// Repair broken entities:
 			$value = preg_replace('%&(?!(#x?)?[0-9a-z]+;)%i', '&amp;', $value);
-
+			
 			$fragment = self::$document->createDocumentFragment();
 			$fragment->appendXML($value);
 
