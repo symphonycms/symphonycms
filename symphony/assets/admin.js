@@ -505,8 +505,9 @@ var Symphony = {};
 
 			var editor = $('textarea.code'),
 				lines = editor.val().split('\n'),
-				statement = '<xsl:import href="../utilities/' + $(this).find('a').text() + '"/>',
-				regexp = '^' + statement.replace('/>', '').replace('../utilities/', '(?:\.\./utilities/)?'),
+				link = $(this).find('a').text(),
+				statement = '<xsl:import href="../utilities/' + link + '"/>',
+				regexp = '^<xsl:import href="(?:\.\./utilities/)?' + link + '"',
 				newLine = '\n',
 				numberOfNewLines = 1;
 
@@ -527,7 +528,7 @@ var Symphony = {};
 
 						numberOfNewLines = $.trim(lines[i]).substring(0, 11) === '<xsl:import' ? 1 : 2;
 
-						if (($('form:first').attr('action').indexOf('blueprints/pages') == -1)) {
+						if (Symphony.Context.get('env')[0] != 'template') {
 							lines[i] = statement.replace('../utilities/', '') + Array(numberOfNewLines + 1).join(newLine) + lines[i];
 						}
 						else {
