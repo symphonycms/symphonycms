@@ -230,6 +230,8 @@
 
 				$wrapper = new XMLElement('li');
 				$wrapper->setAttribute('class', 'template');
+				$wrapper->setAttribute('class', 'template field-' . $type->handle() . ($type->mustBeUnique() ? ' unique' : NULL));
+				$wrapper->setAttribute('data-type', $type->handle());
 
 				$type->set('sortorder', '-1');
 				$type->displaySettingsPanel($wrapper);
