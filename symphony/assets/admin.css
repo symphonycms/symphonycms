@@ -836,6 +836,7 @@ ul.page a {
 #utilities li {
 	border-top: 1px solid #ddc;
 	padding: 0.63em 1.25em 0.67em;
+	cursor: pointer;
 }
 #utilities li:first-child {
 	border-top: none;
