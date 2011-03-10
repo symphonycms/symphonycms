@@ -163,7 +163,7 @@
 			$fieldset->appendChild($div);
 
 			$this->Form->appendChild($fieldset);
-			
+
 			/**
 			 * Allows extensions to add elements to the header of the Section Editor
 			 * form. Usually for section settings, this delegate is passed the current
@@ -229,7 +229,6 @@
 				$type->setArray($defaults);
 
 				$wrapper = new XMLElement('li');
-				$wrapper->setAttribute('class', 'template');
 				$wrapper->setAttribute('class', 'template field-' . $type->handle() . ($type->mustBeUnique() ? ' unique' : NULL));
 				$wrapper->setAttribute('data-type', $type->handle());
 
@@ -374,7 +373,7 @@
 			$fieldset->appendChild($div);
 
 			$this->Form->appendChild($fieldset);
-			
+
 			/**
 			 * Allows extensions to add elements to the header of the Section Editor
 			 * form. Usually for section settings, this delegate is passed the current
