@@ -35,7 +35,9 @@
 			'Add item': false,
 			'Remove item': false,
 			'Expand all': false,
-			'Collapse all': false
+			'Collapse all': false,
+			'Used': false,
+			'All selected': false
 		});
 
 		// Collapsible
@@ -77,6 +79,7 @@
 				widgets.controls.before(instance);
 				object.trigger('construct', [instance]);
 				refresh(true);
+				updateUniqueness();
 
 				return instance;
 			};
@@ -86,6 +89,7 @@
 
 				object.trigger('destruct', [instance]);
 				refresh();
+				updateUniqueness();
 
 				return instance;
 			};
@@ -199,6 +203,37 @@
 				}
 			};
 
+			// Update uniqueness
+			var updateUniqueness = function() {
+				var instances = object.children('.instance'),
+					options = widgets.selector.find('option');
+				
+				options.attr('disabled', false);
+
+				instances.each(function(position) {
+					var instance = $(this);
+
+					if (instance.hasClass('unique')) {
+						options.filter('[data-type=' + instance.attr('data-type') + ']').attr('disabled', 'disabled');
+						
+						if (!instance.find(settings.headers).find('.used').length) {
+							instance.find(settings.headers).append(' <i class="used">(' + Symphony.Language.get('Used') + ')</i>');
+						};
+						
+						if (options.not(':disabled').length === 0) {
+							widgets.selector.prepend('<option class="all-selected">' + Symphony.Language.get('All selected') + '</option>');
+							widgets.selector.attr('disabled', 'disabled');
+							widgets.constructor.addClass('disabled');
+						} else {
+							widgets.selector.attr('disabled', false);
+							options.filter('.all-selected').remove();
+						};
+						
+						widgets.selector.find('option').not(':disabled').first().attr('selected', 'selected');
+					};
+				});
+			};
+
 			var collapsingEnabled = function() {
 				widgets.topcontrols.removeClass('hidden');
 				widgets.collapser.removeClass('disabled');
@@ -277,7 +312,7 @@
 						else {
 							header_text = header.text();
 						}
-						option.text(header_text).val(position);
+						option.text(header_text).val(position).attr('data-type', template.attr('data-type'));
 
 						// HACK: preselect Text Input for Section editor
 						if (header_text == 'Text Input') {
@@ -360,6 +395,7 @@
 					}
 
 					refresh();
+					updateUniqueness();
 				},
 
 				expandAll: function() {
