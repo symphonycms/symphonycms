@@ -36,7 +36,6 @@
 			'Remove item': false,
 			'Expand all': false,
 			'Collapse all': false,
-			'Used': false,
 			'All selected': false
 		});
 
@@ -215,10 +214,6 @@
 
 					if (instance.hasClass('unique')) {
 						options.filter('[data-type=' + instance.attr('data-type') + ']').attr('disabled', 'disabled');
-						
-						if (!instance.find(settings.headers).find('.used').length) {
-							instance.find(settings.headers).append(' <i class="used">(' + Symphony.Language.get('Used') + ')</i>');
-						};
 						
 						if (options.not(':disabled').length === 0) {
 							widgets.selector.prepend('<option class="all-selected">' + Symphony.Language.get('All selected') + '</option>');
