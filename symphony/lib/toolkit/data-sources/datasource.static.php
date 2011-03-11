@@ -7,12 +7,12 @@
 			new XMLElement('error', __('XML is invalid.'))
 		);
 
-		$messages = new XMLElement('messages');
+		$element = new XMLElement('errors');
 		foreach($errors as $e) {
 			if(strlen(trim($e['message'])) == 0) continue;
-			$messages->appendChild(new XMLElement('item', General::sanitize($e['message'])));
+			$element->appendChild(new XMLElement('item', General::sanitize($e['message'])));
 		}
-		$result->appendChild($messages);
+		$result->appendChild($element);
 	}
 	else {
 		$result->setValue($this->dsSTATIC);

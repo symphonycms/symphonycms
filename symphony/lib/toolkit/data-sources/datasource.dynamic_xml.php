@@ -101,8 +101,8 @@
 
 			$xml = trim($xml);
 
+			// Handle any response that is not a 200, or the content type does not include xml, plain or text
 			if((int)$info['http_code'] != 200 || !preg_match('/(xml|plain|text)/i', $info['content_type'])){
-
 				$writeToCache = false;
 
 				if(is_array($cachedData) && !empty($cachedData)){
@@ -110,7 +110,6 @@
 					$valid = false;
 					$creation = DateTimeObj::get('c', $cachedData['creation']);
 				}
-
 				else{
 					$result = new XMLElement($this->dsParamROOTELEMENT);
 					$result->setAttribute('valid', 'false');
@@ -133,9 +132,8 @@
 					return $result;
 				}
 			}
-
-			elseif(strlen($xml) > 0 && !General::validateXML($xml, $errors, false, new XsltProcess)){
-
+			// Handle where there is `$xml` and the XML is valid
+			else if(strlen($xml) > 0 && !General::validateXML($xml, $errors, false, new XsltProcess)){
 				$writeToCache = false;
 
 				if(is_array($cachedData) && !empty($cachedData)){
@@ -143,22 +141,25 @@
 					$valid = false;
 					$creation = DateTimeObj::get('c', $cachedData['creation']);
 				}
-
 				else{
 					$result = new XMLElement($this->dsParamROOTELEMENT);
 					$result->setAttribute('valid', 'false');
 					$result->appendChild(new XMLElement('error', __('XML returned is invalid.')));
+					$element = new XMLElement('errors');
+					foreach($errors as $e) {
+						if(strlen(trim($e['message'])) == 0) continue;
+						$element->appendChild(new XMLElement('item', General::sanitize($e['message'])));
+					}
+					$result->appendChild($element);
 				}
-
 			}
-
+			// If `$xml` is empty, set the `force_empty_result` to true.
 			elseif(strlen($xml) == 0){
 				$this->_force_empty_result = true;
 			}
-
 		}
 
-		elseif(is_array($cachedData) && !empty($cachedData)){
+		else if(is_array($cachedData) && !empty($cachedData)){
 			$xml = trim($cachedData['data']);
 			$valid = false;
 			$creation = DateTimeObj::get('c', $cachedData['creation']);
@@ -174,8 +175,9 @@
 		$creation = DateTimeObj::get('c', $cachedData['creation']);
 	}
 
-
-	if(!$this->_force_empty_result && !is_object($result)):
+	// If `force_empty_result` is false and `$result` is not an instance of
+	// XMLElement, build the `$result`.
+	if(!$this->_force_empty_result && !is_object($result)) {
 
 		$result = new XMLElement($this->dsParamROOTELEMENT);
 
@@ -183,33 +185,27 @@
 		$ret = $proc->process($xml, $xsl);
 
 		if($proc->isErrors()){
-
 			$result->setAttribute('valid', 'false');
 			$error = new XMLElement('error', __('XML returned is invalid.'));
 			$result->appendChild($error);
-
-			$messages = new XMLElement('messages');
-
-			foreach($proc->getError() as $e){
+			$element = new XMLElement('errors');
+			foreach($errors as $e) {
 				if(strlen(trim($e['message'])) == 0) continue;
-				$messages->appendChild(new XMLElement('item', General::sanitize($e['message'])));
+				$element->appendChild(new XMLElement('item', General::sanitize($e['message'])));
 			}
-			$result->appendChild($messages);
-
+			$result->appendChild($element);
 		}
 
-		elseif(strlen(trim($ret)) == 0){
+		else if(strlen(trim($ret)) == 0){
 			$this->_force_empty_result = true;
 		}
 
 		else{
-
 			if($writeToCache) $cache->write($cache_id, $xml);
 
 			$result->setValue(self::CRLF . preg_replace('/([\r\n]+)/', '$1	', $ret));
 			$result->setAttribute('status', ($valid === true ? 'fresh' : 'stale'));
 			$result->setAttribute('creation', $creation);
-
 		}
 
-	endif;
+	}
