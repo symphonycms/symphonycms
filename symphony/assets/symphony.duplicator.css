@@ -5,12 +5,11 @@
 .duplicator {
 	background: #444433;
 	border: 1px solid #999988;
-	list-style: none;
 	margin: 0;
-	overflow: hidden;
+	list-style: none;
 }
 .duplicator i {
-	color: #888877;
+	color: #887;
 }
 .invalid .duplicator {
 	border-color: #aa2211;
@@ -41,7 +40,7 @@
 	right: 0;
 	text-decoration: none;
 	top: 0;
-	text-shadow: 1px 1px #ddddcc;
+	text-shadow: 1px 1px #DDDDCC;
 }
 .duplicator > .instance > .header .destructor:hover {
 	color: #555544;
@@ -115,10 +114,6 @@
 }
 .duplicator.ordering > .instance {
 	opacity: 0.8;
-	z-index: 1;
-}
-.duplicator.ordering > .controls {
-	border-bottom-color: #c5c5b5;
 }
 .duplicator > .instance.ordering {
 	border-top: 1px solid #eeeedd;
@@ -126,7 +121,6 @@
 	-webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 	margin-top: -1px;
 	opacity: 1;
-	position: relative;
 	z-index: 2;
 }
 .duplicator > .instance.ordering,
