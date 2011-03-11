@@ -5,7 +5,7 @@
 			$ret = new XMLElement('filter', (!$message || is_object($message) ? NULL : $message), array('name' => $name, 'status' => $status));
 			if(is_object($message)) $ret->appendChild($message);
 
-			if($attr) $ret->setAttributeArray($attr);
+			if(is_array($attr)) $ret->setAttributeArray($attr);
 
 			return $ret;
 		}
@@ -25,8 +25,8 @@
 
 			/**
 			 * Prior to saving entry from the front-end. This delegate will
-			 * force the Event to terminate if it populates the error
-			 * array reference. All parameters are passed by reference.
+			 * force the Event to terminate if it populates the `$filter_results`
+			 * array. All parameters are passed by reference.
 			 *
 			 * @delegate EventPreSaveFilter
 			 * @param string $context
@@ -34,6 +34,10 @@
 			 * @param array $fields
 			 * @param string $event
 			 * @param array $filter_results
+			 *  An associative array of array's which contain 4 values,
+			 *  the name of the filter (string), the status (boolean),
+			 *  the message (string) an optionally an associative array
+			 *  of additional attributes to add to the filter element.
 			 * @param XMLElement $post_values
 			 */
 			Symphony::ExtensionManager()->notifyMembers(
@@ -51,9 +55,9 @@
 				$can_proceed = true;
 
 				foreach ($filter_results as $fr) {
-					list($type, $status, $message) = $fr;
+					list($name, $status, $message, $attributes) = $fr;
 
-					$result->appendChild(buildFilterElement($type, ($status ? 'passed' : 'failed'), $message));
+					$result->appendChild(buildFilterElement($name, ($status ? 'passed' : 'failed'), $message, $attributes));
 
 					if($status === false) $can_proceed = false;
 				}
@@ -271,7 +275,7 @@
 
 			/**
 			 * After saving entry from the front-end. This delegate will not force
-			 * the Events to terminate if it populates the error array reference.
+			 * the Events to terminate if it populates the `$filter_results` array.
 			 * Provided with references to this object, the `$_POST` data and also
 			 * the error array
 			 *
@@ -282,7 +286,11 @@
 			 * @param array $fields
 			 * @param Entry $entry
 			 * @param string $event
-			 * @param array $messages
+			 * @param array $filter_results
+			 *  An associative array of array's which contain 4 values,
+			 *  the name of the filter (string), the status (boolean),
+			 *  the message (string) an optionally an associative array
+			 *  of additional attributes to add to the filter element.
 			 */
 			Symphony::ExtensionManager()->notifyMembers('EventPostSaveFilter', '/frontend/', array(
 				'entry_id' => $entry->get('id'),
@@ -294,26 +302,34 @@
 
 			if(is_array($filter_results) && !empty($filter_results)){
 				foreach($filter_results as $fr){
-					list($type, $status, $message) = $fr;
+					list($name, $status, $message, $attributes) = $fr;
 
-					$result->appendChild(buildFilterElement($type, ($status ? 'passed' : 'failed'), $message));
+					$result->appendChild(buildFilterElement($name, ($status ? 'passed' : 'failed'), $message, $attributes));
 				}
 			}
 
 			/**
+			 * This is a readonly delegate that lets extensions know the final
+			 * status of the current Event. It is triggered when everything has
+			 * processed correctly
+			 *
 			 * @delegate EventFinalSaveFilter
 			 * @param string $context
 			 * '/frontend/'
 			 * @param array $fields
 			 * @param string $event
-			 * @param array $filter_errors
+			 * @param array $filter_results
+			 *  An associative array of array's which contain 4 values,
+			 *  the name of the filter (string), the status (boolean),
+			 *  the message (string) an optionally an associative array
+			 *  of additional attributes to add to the filter element.
 			 * @param Entry $entry
 			 */
 			Symphony::ExtensionManager()->notifyMembers(
 				'EventFinalSaveFilter', '/frontend/', array(
 					'fields'	=> $fields,
-					'event'		=> &$event,
-					'errors'	=> &$filter_errors,
+					'event'		=> $event,
+					'errors'	=> $filter_errors,
 					'entry'		=> $entry
 				)
 			);
@@ -323,8 +339,6 @@
 			if(isset($post_values) && is_object($post_values)) $result->appendChild($post_values);
 
 			return true;
-
-			## End Function
 		}
 	}
 
@@ -375,5 +389,3 @@
 	}
 
 	if($success && isset($_REQUEST['redirect'])) redirect($_REQUEST['redirect']);
-
-	## return $result;
