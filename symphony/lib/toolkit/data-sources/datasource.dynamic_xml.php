@@ -80,15 +80,30 @@
 		$timeout = (int)max(1, $this->dsParamTIMEOUT);
 	}
 
-	if((!is_array($cachedData) || empty($cachedData)) || (time() - $cachedData['creation']) > ($this->dsParamCACHE * 60)){
-		if(Mutex::acquire($cache_id, $timeout, TMP)){
-
+	if ((!is_array($cachedData) || empty($cachedData)) || (time() - $cachedData['creation']) > ($this->dsParamCACHE * 60)) {
+		if (Mutex::acquire($cache_id, $timeout, TMP)) {
 			$start = precision_timer();
-
-			$ch = new Gateway;
-
+			$ch = new Gateway();
 			$ch->init();
-			$ch->setopt('URL', $this->dsParamURL);
+			
+			// Prepare URL and extract UN/PW:
+			$url_bits = parse_url($this->dsParamURL);
+			
+			if (isset($url_bits['user']) && isset($url_bits['pass'])) {
+				$ch->setopt(CURLOPT_USERPWD, sprintf(
+					'%s:%s', $url_bits['user'], $url_bits['pass']
+				));
+				
+				unset($url_bits['user'], $url_bits['pass']);
+			}
+			
+			else if (isset($url_bits['user'])) {
+				$ch->setopt('CURLOPT_USERPWD', $url_bits['user']);
+				
+				unset($url_bits['user']);
+			}
+			
+			$ch->setopt('URL', http_build_url(null, $url_bits));
 			$ch->setopt('TIMEOUT', $timeout);
 			$xml = $ch->exec();
 			$writeToCache = true;

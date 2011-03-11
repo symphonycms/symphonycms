@@ -27,6 +27,7 @@
 
 	set_magic_quotes_runtime(0);
 
+	require_once(DOCROOT . '/symphony/lib/boot/func.fallbacks.php');
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
 
