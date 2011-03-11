@@ -499,6 +499,51 @@ var Symphony = {};
 			});
 		}).blur();
 
+		// Clickable utilities in the XSLT editor
+		$('#utilities li').click(function(event) {
+			if ($(event.target).is('a')) return;
+
+			var editor = $('textarea.code'),
+				lines = editor.val().split('\n'),
+				link = $(this).find('a').text(),
+				statement = '<xsl:import href="../utilities/' + link + '"/>',
+				regexp = '^<xsl:import href="(?:\.\./utilities/)?' + link + '"',
+				newLine = '\n',
+				numberOfNewLines = 1;
+
+			if ($(this).hasClass('selected')) {
+				for (var i = 0; i < lines.length; i++) {
+					if ($.trim(lines[i]).match(regexp) != null) {
+						(lines[i + 1] === '' && $.trim(lines[i - 1]).substring(0, 11) !== '<xsl:import') ? lines.splice(i, 2) : lines.splice(i, 1);
+						break;
+					}
+				}
+
+				editor.val(lines.join(newLine));
+				$(this).removeClass('selected');
+			}
+			else {
+				for (var i = 0; i < lines.length; i++) {
+					if ($.trim(lines[i]).substring(0, 4) === '<!--' || $.trim(lines[i]).match('^<xsl:(?:import|variable|output|comment|template)')) {
+
+						numberOfNewLines = $.trim(lines[i]).substring(0, 11) === '<xsl:import' ? 1 : 2;
+
+						if (Symphony.Context.get('env')[0] != 'template') {
+							lines[i] = statement.replace('../utilities/', '') + Array(numberOfNewLines + 1).join(newLine) + lines[i];
+						}
+						else {
+							// we are inside the page template editor
+							lines[i] = statement + Array(numberOfNewLines + 1).join(newLine) + lines[i];
+						}
+						break;
+					}
+				}
+
+				editor.val(lines.join(newLine));
+				$(this).addClass('selected');
+			}
+		});
+
 		// Change user password
 		$('#change-password').each(function() {
 			var password = $(this),
