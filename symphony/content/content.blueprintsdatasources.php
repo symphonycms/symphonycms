@@ -145,7 +145,8 @@
 						break;
 
 					case 'static_xml':
-						$fields['static_xml'] = trim($existing->grab());
+						$existing->grab();
+						$fields['static_xml'] = trim($existing->dsSTATIC);
 						break;
 
 					default:
@@ -1029,10 +1030,10 @@
 						}
 
 						$value = sprintf(
-							'$result = \'%s\';',
+							'$this->dsSTATIC = \'%s\';',
 							addslashes(trim($fields['static_xml']))
 						);
-						$dsShell = str_replace('<!-- GRAB -->', $value, $dsShell);
+						$dsShell = str_replace('<!-- GRAB -->', $value . PHP_EOL . "include(TOOLKIT . '/data-sources/datasource.static.php');", $dsShell);
 						break;
 
 					default:
