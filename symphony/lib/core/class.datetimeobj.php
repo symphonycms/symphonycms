@@ -72,12 +72,17 @@
 		 */		
 		public static function format($string = 'now', $format = 'c', $localize = false, $timezone = null) {
 			
+			// Current date and time
+			if($string == 'now' || empty($string)) {
+				$date = new DateTime();
+			}
+
 			// Timestamp
-			if(ctype_digit($string)) {
+			elseif(ctype_digit($string)) {
 				$date = DateTime::createFromFormat('U', $string);
 			}
 		
-			// Date string
+			// Custom date string
 			else {
 		
 				// Standardize date
