@@ -58,7 +58,7 @@
 
 					if(!is_null($a->get('last_seen'))) {
 						$td3 = Widget::TableData(
-							Lang::localizeDate(DateTimeObj::get(__SYM_DATETIME_FORMAT__, strtotime(Lang::standardizeDate($a->get('last_seen')))))
+							DateTimeObj::format(__SYM_DATETIME_FORMAT__, $a->get('last_seen'), true)
 						);
 					} else {
 						$td3 = Widget::TableData('Unknown', 'inactive');

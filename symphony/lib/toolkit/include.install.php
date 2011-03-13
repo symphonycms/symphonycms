@@ -965,7 +965,7 @@ Options +FollowSymlinks -Indexes
 				if(strpos($dateOption, 'j') !== false || strpos($dateOption, 'n') !== false) {
 					$leadingZero = ' (' . __('no leading zeros') . ')';
 				}
-				$dateOptions[] = array($dateOption, $dateformat == $dateOption, Lang::localizeDate(DateTimeObj::get($dateOption), true) . $leadingZero);
+				$dateOptions[] = array($dateOption, $dateformat == $dateOption, DateTimeObj::format('now', $dateOption, true) . $leadingZero);
 			}
 
 			$label->appendChild(Widget::Select('fields[region][date_format]', $dateOptions));
