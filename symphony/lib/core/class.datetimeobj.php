@@ -49,19 +49,8 @@
 		 */
 		public static function get($format, $timestamp = 'now', $timezone = null) {
 			
-			// Parse date
-			if(ctype_digit($timestamp)) {
-				$timestamp = '@' . $timestamp;
-			}
-			$date = new DateTime($timestamp);
-			
-			// Timezone
-			if($timezone !== null) {
-				$date->setTimezone(new DateTimeZone($timezone));
-			}
-			
 			// Format date
-			return $date->format($format);
+			return DateTimeObj::format($timestamp, $format, false, $timezone);
 		}
 		
 		/**
@@ -106,6 +95,11 @@
 				if($date === false) {
 				    $date = new DateTime($string);
 				}
+			}
+			
+			// Timezone
+			if($timezone !== null) {
+				$date->setTimezone(new DateTimeZone($timezone));
 			}
 			
 			// Format date
