@@ -38,7 +38,7 @@
 
 					if(isset($ds->dsParamPARAMOUTPUT)){
 						if($ds->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
-						elseif($ds->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::format($entry->creationDate);
+						elseif($ds->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', $entry->creationDate);
 						elseif($ds->dsParamPARAMOUTPUT == 'system:author') $param_pool[$key][] = $entry->get('author_id');
 					}
 
@@ -72,7 +72,7 @@
 						if(is_array($ds->dsParamINCLUDEDELEMENTS) && in_array('system:date', $ds->dsParamINCLUDEDELEMENTS)){
 							$xEntry->appendChild(
 								General::createXMLDateObject(
-									DateTimeObj::format($entry->creationDate, 'U'), 
+									DateTimeObj::g('U', $entry->creationDate), 
 									'system-date'
 								)
 							);
@@ -289,7 +289,7 @@
 
 					if(isset($this->dsParamPARAMOUTPUT)){
 						if($this->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
-						elseif($this->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::format($entry->creationDate);
+						elseif($this->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = e($entry->creationDate);
 						elseif($this->dsParamPARAMOUTPUT == 'system:author') $param_pool[$key][] = $entry->get('author_id');
 					}
 
@@ -324,7 +324,7 @@
 					if(in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){
 						$xEntry->appendChild(
 							General::createXMLDateObject(
-								DateTimeObj::format($entry->creationDate, 'U'), 
+								DateTimeObj::get('U', $entry->creationDate), 
 								'system-date'
 							)
 						);

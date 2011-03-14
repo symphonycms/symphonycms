@@ -48,9 +48,7 @@
 		 *  The formatted date
 		 */
 		public static function get($format, $timestamp = 'now', $timezone = null) {
-			
-			// Format date
-			return DateTimeObj::format($timestamp, $format, false, $timezone);
+			return self::format($timestamp, $format, false, $timezone);
 		}
 		
 		/**
@@ -70,7 +68,7 @@
 		 * @return string
 		 *	The formatted date	 
 		 */		
-		public static function format($string = 'now', $format = 'c', $localize = false, $timezone = null) {
+		public static function format($string = 'now', $format = 'c', $localize = true, $timezone = null) {
 			
 			// Current date and time
 			if($string == 'now' || empty($string)) {
@@ -131,7 +129,7 @@
 		 *  The formatted date in GMT
 		 */
 		public static function getGMT($format, $timestamp = 'now'){
-			return self::get($format, $timestamp, 'GMT');
+			return self::format($timestamp, $format, false, 'GMT');
 		}
 
 		/**
