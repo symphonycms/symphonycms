@@ -27,12 +27,16 @@
 
 		/**
 		 * Given a `$format`, and a `$timestamp`,
-		 * return the date in the format provided. This function is a basic wrapper
-		 * for PHP's date function. If the `$timestamp` is omitted,
+		 * return the date in the format provided. This function is a basic 
+		 * wrapper for PHP's DateTime object. If the `$timestamp` is omitted,
 		 * the current timestamp will be used. Optionally, you pass a
 		 * timezone identifier with this function to localise the output
 		 *
-		 * @link http://www.php.net/manual/en/function.date.php
+		 * If you like to display a date in the backend, please make use 
+		 * of `DateTimeObj::format()` which allows date and time localization
+		 *
+		 * @see class.datetimeobj.php#format()
+		 * @link http://www.php.net/manual/en/book.datetime.php
 		 * @param string $format
 		 *  A valid PHP date format
 		 * @param integer $timestamp (optional)
@@ -41,21 +45,78 @@
 		 * @param string $timezone (optional)
 		 *  The timezone associated with the timestamp
 		 * @return string
-		 *  The formatted date.
+		 *  The formatted date
 		 */
-		public static function get($format, $timestamp = null, $timezone = null){
-			if(is_null($timestamp) || $timestamp == 'now') $timestamp = time();
-			if(is_null($timezone)) $timezone = date_default_timezone_get();
+		public static function get($format, $timestamp = 'now', $timezone = null) {
+			
+			// Format date
+			return DateTimeObj::format($timestamp, $format, false, $timezone);
+		}
+		
+		/**
+		 * Formats the given date and time `$string` based on the given `$format`.
+		 * Optionally the result will be localized and respect a timezone differing 
+		 * from the system default. The default output is ISO 8601.
+		 *
+		 * @since Symphony 2.2.1
+		 * @param string $string (optional)
+		 *	A string containing date and time, defaults to the current date and time
+		 * @param string $format (optional)
+		 *	A valid PHP date format, defaults to ISO 8601
+		 * @param boolean $localize (optional)
+		 *	Localizes the output, if true, defaults to false
+		 * @param string $timezone (optional)
+		 *	The timezone associated with the timestamp
+		 * @return string
+		 *	The formatted date	 
+		 */		
+		public static function format($string = 'now', $format = 'c', $localize = false, $timezone = null) {
+			
+			// Current date and time
+			if($string == 'now' || empty($string)) {
+				$date = new DateTime();
+			}
 
-			$current_timezone = date_default_timezone_get();
+			// Timestamp
+			elseif(ctype_digit($string)) {
+				$date = DateTime::createFromFormat('U', $string);
+			}
+		
+			// Custom date string
+			else {
+		
+				// Standardize date
+				$string = Lang::standardizeDate($string);
+			
+				// Apply system date format
+				$date = DateTime::createFromFormat(
+				    Symphony::$Configuration->get('date_format', 'region') . 
+				    Symphony::$Configuration->get('datetime_separator', 'region') . 
+				    Symphony::$Configuration->get('time_format', 'region'), 
+				    $string
+				);
+				
+				// Handle non-standard dates
+				if($date === false) {
+				    $date = new DateTime($string);
+				}
+			}
+			
+			// Timezone
+			if($timezone !== null) {
+				$date->setTimezone(new DateTimeZone($timezone));
+			}
+			
+			// Format date
+			$date = $date->format($format);
 
-			if($current_timezone != $timezone) self::setDefaultTimezone($timezone);
-
-			$ret = date($format, $timestamp);
-
-			if($current_timezone != $timezone) self::setDefaultTimezone($current_timezone);
-
-			return $ret;
+			// Localize date
+			if($localize === true) {
+				$date = Lang::localizeDate($date);
+			}
+			
+			// Return custom formatted date, use ISO 8601 date by default
+			return $date;
 		}
 
 		/**
@@ -64,12 +125,12 @@
 		 * @param string $format
 		 *  A valid PHP date format
 		 * @param integer $timestamp (optional)
-		 *  A unix timestamp to format. 'now' or omitting this parameter will
+		 *  A unix timestamp to format. Omitting this parameter will
 		 *  result in the current time being used
 		 * @return string
 		 *  The formatted date in GMT
 		 */
-		public static function getGMT($format, $timestamp=NULL){
+		public static function getGMT($format, $timestamp = 'now'){
 			return self::get($format, $timestamp, 'GMT');
 		}
 
@@ -88,7 +149,7 @@
 		 * specified by the `$format`.
 		 */
 		public static function getTimeAgo($format){
-			return '<abbr class="timeago" title="'.self::get('r').'">'.self::get($format).'</abbr>';
+			return '<abbr class="timeago" title="' . self::get('r') . '">' . self::get($format) . '</abbr>';
 		}
 
 	}
