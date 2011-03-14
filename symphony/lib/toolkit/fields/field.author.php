@@ -119,7 +119,7 @@
 				}
 			}
 
-			return parent::prepareTableValue(array('value' => General::sanitize(ucwords(implode(', ', $value)))), $link);
+			return parent::prepareTableValue(array('value' => General::sanitize(implode(', ', $value))), $link);
 		}
 
 		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){

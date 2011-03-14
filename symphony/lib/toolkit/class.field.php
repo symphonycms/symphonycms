@@ -108,7 +108,7 @@
 
 		/**
 		 * An instance of the Symphony class, either Frontend or Administration
-		 * 
+		 *
 		 * @deprecated This will be removed in the next major version of Symphony.
 		 * The preferred way to access the Symphony instance is via `Symphony::Engine()`
 		 * @var Symphony
@@ -423,7 +423,7 @@
 		public function remove($setting){
 			unset($this->_fields[$setting]);
 		}
-		
+
 		/**
 		 * Just prior to the field being deleted, this function allows
 		 * Fields to cleanup any additional things before it is removed
@@ -455,7 +455,7 @@
 		 *	the input error collection. this defaults to null.
 		 */
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null){
-			$wrapper->appendChild(new XMLElement('h4', ucwords($this->name())));
+			$wrapper->appendChild(new XMLElement('h4', $this->name()));
 			$wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][type]', $this->handle(), 'hidden'));
 			if($this->get('id')) $wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][id]', $this->get('id'), 'hidden'));
 
