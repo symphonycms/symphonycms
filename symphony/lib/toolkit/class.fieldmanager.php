@@ -5,8 +5,8 @@
 	 */
 	/**
 	 * The FieldManager class is responsible for managing all fields types in Symphony.
-	 * Fields are stored on the file system either in the /fields folder of toolkit or
-	 * in a fields folder in an extension path.
+	 * Fields are stored on the file system either in the `/fields` folder of `TOOLKIT` or
+	 * in a `fields` folder in an extension directory.
 	 */
 
 	require_once(TOOLKIT . '/class.field.php');
@@ -113,8 +113,8 @@
 		}
 
 		/**
-		 * Given a Author ID and associative array of fields, update an existing Author
-		 * row in the Database's authors table. Returns boolean for success/failure
+		 * Given a Field ID and associative array of fields, update an existing Field
+		 * row in the `tbl_fields`table. Returns boolean for success/failure
 		 *
 		 * @param integer $id
 		 *  The ID of the Field that should be updated
@@ -277,7 +277,7 @@
 		 *  The handle of the Field label
 		 * @param integer $section_id
 		 *  The section that this field belongs too
-		 * @return int
+		 * @return integer
 		 *  The field ID
 		 */
 		public function fetchFieldIDFromElementName($element_name, $section_id = null){
