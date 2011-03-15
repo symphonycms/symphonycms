@@ -449,15 +449,18 @@
 		}
 
 		/**
-		 * Create all the directories as specified by the input path.
+		 * Create all the directories as specified by the input path. If the current
+		 * directory already exists, this function will return true.
 		 *
 		 * @param string $path
-		 *	the path containing the directories to create.
+		 *  the path containing the directories to create.
 		 * @param integer $mode (optional)
-		 *	the permissions (in octal) of the directories to create. this defaults to 0755
+		 *  the permissions (in octal) of the directories to create. Defaults to 0755
 		 * @return boolean
 		 */
 		public static function realiseDirectory($path, $mode=0755){
+			if(is_dir($path)) return true;
+
 			return mkdir($path, intval($mode, 8), true);
 		}
 
@@ -815,7 +818,7 @@
 				if($slient == false){
 					throw new Exception(__('Unable to remove file - %s', array($file)));
 				}
-				
+
 				return false;
 			}
 		}
