@@ -745,9 +745,8 @@ ul.page a {
 .secondary .label {
 	margin-top: 1.5em;
 }
-.primary .group {
-	margin-top: -1.5em;
-	margin-bottom: -1.5em;
+.primary .group label {
+	margin-top: 0;
 }
 .primary .help {
 	margin-top: 1.5em;

@@ -152,15 +152,9 @@ button {
 	color: #fff;
 	margin-bottom: 1.5em;
 }
-.invalid > label {
-	margin-bottom: 0;
-	padding: 0.75em 1em 0.75em;
-	background-color: #d42;
-	border: 1px solid #c31;
-	border-bottom-width: 0;
-}
 .invalid > .group > label {
-	margin: 0;
+	margin-left: 0;
+	margin-bottom: 0;
 	padding: 0.75em 1em 0.75em 0.75em;
 	background-color: #d42;
 	border: 1px solid #c31;
@@ -173,7 +167,15 @@ button {
 	border-left-color: #c31;
 	border-right-width: 0;
 }
+.invalid > label {
+	margin-bottom: 0;
+	padding: 0.75em 1em 0.75em;
+	background-color: #d42;
+	border: 1px solid #c31;
+	border-bottom-width: 0;
+}
 .invalid > p {
+	clear: left;
 	margin: 0;
 	padding: 0 1em 0.75em;
 	background-color: #d42;
