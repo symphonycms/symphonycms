@@ -90,7 +90,7 @@
 
 				// Apply Symphony date format using `createFromFormat`
 				// if it exists, or fallbacking back to `strptime`
-				if(!method_exists('DateTime', 'createFromFormat')) {
+				if(method_exists('DateTime', 'createFromFormat')) {
 					$date = DateTime::createFromFormat(__SYM_DATETIME_FORMAT__, $string);
 				}
 				else {
