@@ -58,7 +58,7 @@
 
 					if(!is_null($a->get('last_seen'))) {
 						$td3 = Widget::TableData(
-							DateTimeObj::format($a->get('last_seen'), __SYM_DATETIME_FORMAT__, true)
+							DateTimeObj::format($a->get('last_seen'), __SYM_DATETIME_FORMAT__)
 						);
 					} else {
 						$td3 = Widget::TableData('Unknown', 'inactive');

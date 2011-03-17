@@ -53,7 +53,7 @@
 
 			// New entry:
 			if (is_null($data) && is_null($error) && $this->get('pre_populate') == 'yes') {
-				$value = DateTimeObj::format('now', __SYM_DATETIME_FORMAT__, true);
+				$value = DateTimeObj::format('now', __SYM_DATETIME_FORMAT__);
 			}
 
 			// Error entry, display original data:
@@ -63,7 +63,7 @@
 
 			// Empty entry:
 			else if (isset($data['gmt']) && !is_null($data['gmt'])) {
-				$value = DateTimeObj::format($data['gmt'], __SYM_DATETIME_FORMAT__, true);
+				$value = DateTimeObj::format($data['gmt'], __SYM_DATETIME_FORMAT__);
 			}
 
 			$label = Widget::Label($this->get('label'));
@@ -99,7 +99,7 @@
 				}
 			}
 			else if ($status == self::__OK__) {
-				$timestamp = DateTimeObj::format($data, 'U');
+				$timestamp = DateTimeObj::get('U', $data);
 			}
 
 			if(!is_null($timestamp)) {
