@@ -8,7 +8,7 @@
 	 * By default it is essentially a wrapper for CURL, but if that is not available
 	 * it falls back to use sockets.
 	 * @example
-	 *  `
+	 *	`
 	 * require_once(TOOLKIT . '/class.gateway.php');
 	 * $ch = new Gateway;
 	 * $ch->init('http://www.example.com/');
@@ -85,7 +85,7 @@
 		private $_method = 'GET';
 
 		/**
-		 * The content-type of the request, defaults to form-urlencoded
+		 * The content-type of the request, defaults to application/x-www-form-urlencoded
 		 * @var string
 		 */
 		private $_content_type = 'application/x-www-form-urlencoded; charset=utf-8';
@@ -109,7 +109,7 @@
 		 * Whether to the return the Header with the result of the request
 		 * @var boolean
 		 */
-   		private $_returnHeaders = false;
+		private $_returnHeaders = false;
 
 		/**
 		 * The timeout in seconds for the request, defaults to 4
@@ -166,7 +166,7 @@
 		}
 
 		/**
-		 * Resets the postfields variable to an empty string
+		 * Resets `$this->_postfields` variable to an empty string
 		 */
 		public function flush(){
 			$this->_postfields = '';
@@ -184,13 +184,13 @@
 		 *
 		 * @link http://au2.php.net/manual/en/function.curl-setopt.php
 		 * @param string $opt
-		 *  A string representing a CURL constant. Symphony will intercept the
-		 *  following, URL, POST, POSTFIELDS, USERAGENT, HTTPHEADER,
-		 *  RETURNHEADERS, CONTENTTYPE and TIMEOUT. Any other values
-		 *  will be saved in the `$custom_opt` array.
+		 *	A string representing a CURL constant. Symphony will intercept the
+		 *	following, URL, POST, POSTFIELDS, USERAGENT, HTTPHEADER,
+		 *	RETURNHEADERS, CONTENTTYPE and TIMEOUT. Any other values
+		 *	will be saved in the `$custom_opt` array.
 		 * @param mixed $value
-		 *  The value of the option, usually boolean or a string. Consult the
-		 *  setopt documentation for more information.
+		 *	The value of the option, usually boolean or a string. Consult the
+		 *	setopt documentation for more information.
 		 */
 		public function setopt($opt, $value){
 
@@ -273,21 +273,22 @@
 		}
 
 		/**
-		 * Executes the request, using Curl unless it is not available
+		 * Executes the request using Curl unless it is not available
 		 * or this function has explicitly been told not by providing
 		 * the `Gateway::FORCE_SOCKET` constant as a parameter. The function
-		 * will apply all the options set by the setopt function before
+		 * will apply all the options set using `curl_setopt` before
 		 * executing the request. Information about the transfer is
-		 * available using the `getInfoLast()` function.
+		 * available using the `getInfoLast()` function. Should Curl not be
+		 * available, this function will fallback to using Sockets with `fsockopen`
 		 *
 		 * @see toolkit.Gateway#getInfoLast()
 		 * @param string $force_connection_method
-		 *  Only one valid parameter, `Gateway::FORCE_SOCKET`
+		 *	Only one valid parameter, `Gateway::FORCE_SOCKET`
 		 * @return string
-		 *  The result of the transfer as a string. If any errors occur during
-		 *  a socket request, false will be returned.
+		 *	The result of the transfer as a string. If any errors occur during
+		 *	a socket request, false will be returned.
 		 */
-	   	public function exec($force_connection_method = null){
+		public function exec($force_connection_method = null){
 
 			if($force_connection_method != self::FORCE_SOCKET && self::isCurlAvailable()){
 				$ch = curl_init();
@@ -298,9 +299,12 @@
 				curl_setopt($ch, CURLOPT_HEADER, $this->_returnHeaders);
 				curl_setopt($ch, CURLOPT_USERAGENT, $this->_agent);
 				curl_setopt($ch, CURLOPT_PORT, $this->_port);
-				@curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 				curl_setopt($ch, CURLOPT_TIMEOUT, $this->_timeout);
+
+				if(ini_get('safe_mode') == 0 || ini_get('open_basedir') == '') {
+					curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+				}
 
 				if(is_array($this->_headers) && !empty($this->_headers)) {
 					curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_headers);
@@ -419,7 +423,7 @@
 		/**
 		 * Returns some information about the last transfer, this
 		 * the same output array as expected when calling the
-		 * curl_getinfo() function. If Sockets were used to complete
+		 * `curl_getinfo()` function. If Sockets were used to complete
 		 * the request instead of CURL, the resulting array will be
 		 * the HTTP Code, the Content Type and the URL of the resulting
 		 * request

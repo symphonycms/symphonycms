@@ -69,16 +69,10 @@
 	$cache = new Cacheable(Symphony::Database());
 
 	$cachedData = $cache->check($cache_id);
-
 	$writeToCache = false;
 	$valid = true;
-	$result = NULL;
 	$creation = DateTimeObj::get('c');
-
-	$timeout = 6;
-	if(isset($this->dsParamTIMEOUT)){
-		$timeout = (int)max(1, $this->dsParamTIMEOUT);
-	}
+	$timeout = (isset($this->dsParamTIMEOUT)) ? (int)max(1, $this->dsParamTIMEOUT) : 6;
 
 	if((!is_array($cachedData) || empty($cachedData)) || (time() - $cachedData['creation']) > ($this->dsParamCACHE * 60)){
 		if(Mutex::acquire($cache_id, $timeout, TMP)){
@@ -111,7 +105,6 @@
 					$creation = DateTimeObj::get('c', $cachedData['creation']);
 				}
 				else{
-					$result = new XMLElement($this->dsParamROOTELEMENT);
 					$result->setAttribute('valid', 'false');
 
 					if($end > $timeout){
@@ -142,7 +135,6 @@
 					$creation = DateTimeObj::get('c', $cachedData['creation']);
 				}
 				else{
-					$result = new XMLElement($this->dsParamROOTELEMENT);
 					$result->setAttribute('valid', 'false');
 					$result->appendChild(new XMLElement('error', __('XML returned is invalid.')));
 					$element = new XMLElement('errors');
@@ -178,8 +170,6 @@
 	// If `force_empty_result` is false and `$result` is not an instance of
 	// XMLElement, build the `$result`.
 	if(!$this->_force_empty_result && !is_object($result)) {
-
-		$result = new XMLElement($this->dsParamROOTELEMENT);
 
 		$proc = new XsltProcess;
 		$ret = $proc->process($xml, $xsl);
