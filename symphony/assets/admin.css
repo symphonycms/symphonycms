@@ -745,6 +745,12 @@ ul.page a {
 .secondary .label {
 	margin-top: 1.5em;
 }
+.primary .group label {
+	margin-top: 0;
+}
+.primary .help {
+	margin-top: 1.5em;
+}
 .file input {
 	margin: -3px 0;
 	font: inherit;
