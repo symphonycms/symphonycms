@@ -93,7 +93,7 @@
 				}
 				else {
 					$time = strtotime($string);
-					$date = new Datetime(date('c', $string));
+					$date = new Datetime(date('c', $time));
 				}
 
 				// Handle non-standard dates
