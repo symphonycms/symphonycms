@@ -86,14 +86,10 @@
 				// Standardize date
 				$string = Lang::standardizeDate($string);
 
-				// Apply Symphony date format using `createFromFormat`
-				// if it exists, or fallbacking back to `strtotime`
+				// Apply Symphony date format using `createFromFormat` if it exists
+				$date = false;
 				if(method_exists('DateTime', 'createFromFormat')) {
 					$date = DateTime::createFromFormat(__SYM_DATETIME_FORMAT__, $string);
-				}
-				else {
-					$time = strtotime($string);
-					$date = new Datetime(date('c', $time));
 				}
 
 				// Handle non-standard dates
