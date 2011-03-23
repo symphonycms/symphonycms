@@ -802,7 +802,7 @@
 					case 'version':
 						$fieldset = new XMLElement('fieldset');
 						$fieldset->appendChild(new XMLElement('legend', __('Version')));
-						$fieldset->appendChild(new XMLElement('p', $value . ', ' . __('released on') . ' ' . DateTimeObj::format(__SYM_DATE_FORMAT__, $about['release-date'])));
+						$fieldset->appendChild(new XMLElement('p', $value . ', ' . __('released on') . ' ' . DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)));
 						break;
 
 					case 'description':

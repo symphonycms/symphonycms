@@ -19,7 +19,7 @@
 		 * @link http://php.net/manual/en/function.date-default-timezone-set.php
 		 * @link http://www.php.net/manual/en/timezones.php
 		 * @param string $timezone
-		 *	A valid timezone identifier, such as UTC or Europe/Lisbon
+		 *  A valid timezone identifier, such as UTC or Europe/Lisbon
 		 */
 		public static function setDefaultTimezone($timezone){
 			if(!@date_default_timezone_set($timezone)) trigger_error(__("Invalid timezone '{$timezone}'"), E_USER_WARNING);
@@ -38,14 +38,14 @@
 		 * @see class.datetimeobj.php#format()
 		 * @link http://www.php.net/manual/en/book.datetime.php
 		 * @param string $format
-		 *	A valid PHP date format
+		 *  A valid PHP date format
 		 * @param integer $timestamp (optional)
-		 *	A unix timestamp to format. 'now' or omitting this parameter will
-		 *	result in the current time being used
+		 *  A unix timestamp to format. 'now' or omitting this parameter will
+		 *  result in the current time being used
 		 * @param string $timezone (optional)
-		 *	The timezone associated with the timestamp
+		 *  The timezone associated with the timestamp
 		 * @return string
-		 *	The formatted date
+		 *  The formatted date
 		 */
 		public static function get($format, $timestamp = 'now', $timezone = null) {
 			return self::format($timestamp, $format, false, $timezone);
@@ -58,17 +58,17 @@
 		 *
 		 * @since Symphony 2.2.1
 		 * @param string $string (optional)
-		 *	A string containing date and time, defaults to the current date and time
+		 *  A string containing date and time, defaults to the current date and time
 		 * @param string $format (optional)
-		 *	A valid PHP date format, defaults to ISO 8601
+		 *  A valid PHP date format, defaults to ISO 8601
 		 * @param boolean $localize (optional)
-		 *	Localizes the output, if true, defaults to true
+		 *  Localizes the output, if true, defaults to true
 		 * @param string $timezone (optional)
-		 *	The timezone associated with the timestamp
+		 *  The timezone associated with the timestamp
 		 * @return string
-		 *	The formatted date
+		 *  The formatted date
 		 */
-		public static function format($string = 'now', $format = 'c', $localize = true, $timezone = null) {
+		public static function format($string = 'now', $format = DateTime::ISO8601, $localize = true, $timezone = null) {
 
 			// Current date and time
 			if($string == 'now' || empty($string)) {
@@ -77,28 +77,40 @@
 
 			// Timestamp
 			elseif(ctype_digit($string)) {
-				$date = new Datetime(date(DateTime::RFC822, $string));
+				$date = new Datetime(date(DateTime::ISO8601, $string));
 			}
 
-			// Custom date string
+			// Attempt to parse the date provided against the Symphony configuration setting
+			// in an effort to better support multilingual date formats. Should this fail
+			// this block will fallback to using `strtotime`, which will parse the date assuming
+			// it's in an English format
 			else {
-
 				// Standardize date
+				// Convert date string to English
 				$string = Lang::standardizeDate($string);
 
-				// Apply Symphony date format using `createFromFormat`
-				// if it exists, or fallbacking back to `strptime`
+				// PHP 5.3: Apply Symphony date format using `createFromFormat`
 				if(method_exists('DateTime', 'createFromFormat')) {
 					$date = DateTime::createFromFormat(__SYM_DATETIME_FORMAT__, $string);
 				}
+
+				// PHP 5.2: Fallback to `strptime`
 				else {
 					$date = strptime($string, DateTimeObj::dateFormatToStrftime(__SYM_DATETIME_FORMAT__));
-					$date = new DateTime($string);
+					if(is_array($date)) {
+						$date = date(DateTime::ISO8601, mktime(
+							// Time
+							$date['tm_hour'], $date['tm_min'], $date['tm_sec'],
+							// Date (Months since Jan / Years since 1900)
+							$date['tm_mon'] + 1, $date['tm_mday'], 1900 + $date['tm_year']
+						));
+						$date = new DateTime($date);
+					}
 				}
 
-				// Handle non-standard dates
+				// Handle non-standard dates (ie. relative dates, tomorrow etc.)
 				if($date === false) {
-					$date = new DateTime($string);
+					$date = new DateTime(date(DateTime::ISO8601, strtotime($string)));
 				}
 			}
 
@@ -111,6 +123,7 @@
 			$date = $date->format($format);
 
 			// Localize date
+			// Convert date string from English back to the activated Language
 			if($localize === true) {
 				$date = Lang::localizeDate($date);
 			}
@@ -120,7 +133,7 @@
 		}
 
 		/**
-		 * Convert a date format to a strftime format
+		 * Convert a date format to a `strftime` format
 		 *
 		 * Timezone conversion is done for unix. Windows users must exchange %z and %Z.
 		 *
@@ -158,12 +171,12 @@
 		 * A wrapper for get, this function will force the GMT timezone.
 		 *
 		 * @param string $format
-		 *	A valid PHP date format
+		 *  A valid PHP date format
 		 * @param integer $timestamp (optional)
-		 *	A unix timestamp to format. Omitting this parameter will
-		 *	result in the current time being used
+		 *  A unix timestamp to format. Omitting this parameter will
+		 *  result in the current time being used
 		 * @return string
-		 *	The formatted date in GMT
+		 *  The formatted date in GMT
 		 */
 		public static function getGMT($format, $timestamp = 'now'){
 			return self::format($timestamp, $format, false, 'GMT');
@@ -177,14 +190,14 @@
 		 * dynamically update how long ago the action took place using Javascript.
 		 *
 		 * @param string $format
-		 *	A valid PHP date format
+		 *  A valid PHP date format
 		 * @return string
-		 *	A HTML string of an `<abbr>` element with a class of 'timeago' and the current
-		 * date (RFC 2822) as the title element. The value is the current time as
-		 * specified by the `$format`.
+		 *  A HTML string of an `<abbr>` element with a class of 'timeago' and the current
+		 *  date (RFC 2822) as the title element. The value is the current time as
+		 *  specified by the `$format`.
 		 */
 		public static function getTimeAgo($format){
-			return '<abbr class="timeago" title="' . self::get('r') . '">' . self::get($format) . '</abbr>';
+			return '<abbr class="timeago" title="' . self::get(DateTime::RFC2822) . '">' . self::get($format) . '</abbr>';
 		}
 
 	}
