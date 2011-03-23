@@ -149,7 +149,9 @@
 
 		/**
 		 * Given an ID, and some data, save it into `tbl_sessions`. This uses
-		 * the ID as a unique key, but will override any existing data.
+		 * the ID as a unique key, and will override any existing data. If the
+		 * `$data` is deemed to be empty, no row will be saved in the database
+		 * unless there is an existing row.
 		 *
 		 * @param string $id
 		 *  The ID of the Session, usually a hash
@@ -160,7 +162,12 @@
 		 *  True if the Session information was saved successfully, false otherwise
 		 */
 		public static function write($id, $data) {
-			if(preg_match('/^([^}]+\|a:0:{})+$/i', $data)) return true;
+			// Only prevent this record from saving if there isn't already a record
+			// in the database. This prevents empty Sessions from being created, but
+			// allows them to be nulled.
+			if(is_null(Session::read($id))) {
+				if(preg_match('/^([^}]+\|a:0:{})+$/i', $data)) return true;
+			}
 
 			$fields = array(
 				'session' => $id,
