@@ -145,7 +145,7 @@
 		public function get($name) {
 			if (!$this->_session) $this->__init();
 
-			if (is_array($_SESSION) && array_key_exists($name, $_SESSION[$this->_index])) {
+			if (is_array($_SESSION[$this->_index]) && array_key_exists($name, $_SESSION[$this->_index])) {
 				return $_SESSION[$this->_index][$name];
 			}
 			return null;
@@ -165,9 +165,9 @@
 
 			unset($_SESSION[$this->_index]);
 
-			//	Calling session_destroy triggers the Session::destroy function which removes the entire session
-			//	from the database. To prevent logout issues between functionality that relies on $_SESSION, such
-			//	as Symphony authentication or the Members extension, only delete the $_SESSION if it empty!
+			// Calling session_destroy triggers the Session::destroy function which removes the entire session
+			// from the database. To prevent logout issues between functionality that relies on $_SESSION, such
+			// as Symphony authentication or the Members extension, only delete the $_SESSION if it empty!
 			if(empty($_SESSION)) session_destroy();
 		}
 
