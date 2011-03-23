@@ -116,7 +116,11 @@
 
 			$meta['entry_order'] = (isset($meta['entry_order']) ? $meta['entry_order'] : 'date');
 			$meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
-			$meta['navigation_group'] = (isset($meta['navigation_group']) ? $meta['navigation_group'] : 'Content');
+			
+			// Set navigation group, if not already set 
+			if(!isset($meta['navigation_group'])) {
+				$meta['navigation_group'] = (isset($this->_navigation[0]['name']) ? $this->_navigation[0]['name'] : __('Content'));
+			}
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
