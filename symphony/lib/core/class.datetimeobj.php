@@ -110,7 +110,7 @@
 
 				// Handle non-standard dates (ie. relative dates, tomorrow etc.)
 				if($date === false) {
-					$date = new DateTime(date(DateTime::ISO8601, strtotime($string)));
+					$date = new DateTime($string);
 				}
 			}
 
