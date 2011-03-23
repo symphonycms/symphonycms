@@ -124,7 +124,7 @@
 						? current($data['local'])
 						: $data['local']
 				);
-				
+
 				$wrapper->appendChild(General::createXMLDateObject($value, $this->get('element_name')));
 			}
 		}
@@ -310,7 +310,7 @@
 
 			## Look to see if its a shorthand date (year only), and convert to full date
 			elseif(preg_match('/^(1|2)\d{3}$/i', $string)){
-				$string = "$string-01-01 to $string-12-31";
+				$string = "$string-01-01 to $string-12-31 23:59:59";
 			}
 
 			## Human friendly terms
@@ -350,7 +350,7 @@
 			elseif(!preg_match('/\s+to\s+/i', $string)){
 
 				if(preg_match('/^(1|2)\d{3}[-\/]\d{1,2}[-\/]\d{1,2}$/i', $string)){
-					$string = "{$string} to {$string}";
+					$string = "{$string} to {$string} 23:59:59";
 				}
 
 				else{
