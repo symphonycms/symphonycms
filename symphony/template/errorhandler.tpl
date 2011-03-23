@@ -87,7 +87,7 @@
 <body>
 	<h1>Symphony %s</h1>
 	<div class="bubble">
-		<a class="markdown" href="#markdown" onclick="javascript:document.getElementById(\'markdown\').style.display = ((document.getElementById(\'markdown\').style.display == \'none\') ? \'block\' : \'none\'); return false;">Show Markdown for copy/paste</a>
+		<a class="markdown" href="#markdown" onclick="javascript:document.getElementById('markdown').style.display = ((document.getElementById('markdown').style.display == 'none') ? 'block' : 'none'); return false;">Show Markdown for copy/paste</a>
 
 		<h2>%s</h2>
 		<p>An error occurred in <code>%s</code> around line <code>%d</code></p>
