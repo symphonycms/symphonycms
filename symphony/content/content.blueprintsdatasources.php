@@ -1077,8 +1077,8 @@
 				$dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
 
 				if(preg_match_all('@(\$ds-[-_0-9a-z]+)@i', $dsShell, $matches)){
-					$dependancies = General::array_remove_duplicates($matches[1]);
-					$dsShell = str_replace('<!-- DS DEPENDANCY LIST -->', "'" . implode("', '", $dependancies) . "'", $dsShell);
+					$dependencies = General::array_remove_duplicates($matches[1]);
+					$dsShell = str_replace('<!-- DS DEPENDENCY LIST -->', "'" . implode("', '", $dependencies) . "'", $dsShell);
 				}
 
 				## Remove left over placeholders
@@ -1104,7 +1104,7 @@
 					 * @param array $filters
 					 *  An associative array of all the filters for this datasource with the key
 					 *  being the `field_id` and the value the filter.
-					 * @param array $dependancies
+					 * @param array $dependencies
 					 *  An array of dependencies that this datasource has
 					 */
 					Symphony::ExtensionManager()->notifyMembers('DatasourcePreCreate', '/blueprints/datasources/', array(
@@ -1113,7 +1113,7 @@
 						'params' => $params,
 						'elements' => $elements,
 						'filters' => $filters,
-						'dependancies' => $dependancies
+						'dependencies' => $dependencies
 					));
 				}
 				else {
@@ -1136,7 +1136,7 @@
 					 * @param array $filters
 					 *  An associative array of all the filters for this datasource with the key
 					 *  being the `field_id` and the value the filter.
-					 * @param array $dependancies
+					 * @param array $dependencies
 					 *  An array of dependencies that this datasource has
 					 */
 					Symphony::ExtensionManager()->notifyMembers('DatasourcePreEdit', '/blueprints/datasources/', array(
@@ -1145,7 +1145,7 @@
 						'params' => $params,
 						'elements' => $elements,
 						'filters' => $filters,
-						'dependancies' => $dependancies
+						'dependencies' => $dependencies
 					));
 				}
 
