@@ -98,7 +98,7 @@
 					$timestamp = time();
 				}
 			}
-			else if ($status == self::__OK__) {
+			else if ($status == self::__OK__ && self::__isValidDateString($data)) {
 				$timestamp = DateTimeObj::get('U', $data);
 			}
 
@@ -206,7 +206,7 @@
 
 				$parsed[$type][] = $string;
 			}
-
+			
 			foreach($parsed as $type => $value){
 
 				switch($type){
@@ -221,7 +221,7 @@
 
 				}
 			}
-
+			
 			return true;
 		}
 
@@ -233,7 +233,7 @@
 
 				foreach($data as $date){
 					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-					$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') = '".DateTimeObj::get('Y-m-d H:i:s', strtotime($date))."' ";
+					$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') = '".DateTimeObj::get('Y-m-d H:i:s', $date)."' ";
 
 					$this->key++;
 				}
@@ -242,7 +242,7 @@
 
 				$tmp = array();
 				foreach($data as $date) {
-					$tmp[] = DateTimeObj::get('Y-m-d H:i:s', strtotime($date));
+					$tmp[] = DateTimeObj::get('Y-m-d H:i:s', $date);
 				}
 
 				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
@@ -262,8 +262,8 @@
 
 				foreach($data as $date){
 					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-					$where .= " AND (DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') >= '".DateTimeObj::get('Y-m-d H:i:s', strtotime($date['start']))."'
-								AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') <= '".DateTimeObj::get('Y-m-d H:i:s', strtotime($date['end']))."') ";
+					$where .= " AND (DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') >= '".DateTimeObj::get('Y-m-d H:i:s', $date['start'])."'
+								AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') <= '".DateTimeObj::get('Y-m-d H:i:s', $date['end'])."') ";
 
 					$this->key++;
 				}
@@ -273,8 +273,8 @@
 				$tmp = array();
 
 				foreach($data as $date){
-					$tmp[] = "(DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') >= '".DateTimeObj::get('Y-m-d H:i:s', strtotime($date['start']))."'
-								AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') <= '".DateTimeObj::get('Y-m-d H:i:s', strtotime($date['end']))."') ";
+					$tmp[] = "(DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') >= '".DateTimeObj::get('Y-m-d H:i:s', $date['start'])."'
+								AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') <= '".DateTimeObj::get('Y-m-d H:i:s', $date['end'])."') ";
 				}
 
 				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
@@ -320,20 +320,18 @@
 
 				if(!self::__isValidDateString($string)) return self::ERROR;
 
-				$time = strtotime($string);
 				if($match[1] == "equal to or "){
-					$later = DateTimeObj::get('Y-m-d H:i:s', $time);
-					$earlier = $later;
+					$later = DateTimeObj::get('Y-m-d H:i:s', strtotime($string . ' 12:00am'));
+					$earlier = DateTimeObj::get('Y-m-d H:i:s', strtotime($string . ' 11:59pm'));
 				}
 				else {
-					$later = DateTimeObj::get('Y-m-d H:i:s', $time+1);
-					$earlier = DateTimeObj::get('Y-m-d H:i:s', $time-1);
+					$later = DateTimeObj::get('Y-m-d H:i:s', strtotime($string . ' + 1 day'));
+					$earlier = DateTimeObj::get('Y-m-d H:i:s', strtotime($string . ' - 1 day'));
 				}
 				switch($match[2]){
-					case 'later': $string = $later . ' to 2038-01-01'; break;
+					case 'later': $string = $later . ' to 2038-01-01 23:59:59'; break;
 					case 'earlier': $string = '1970-01-01 to ' . $earlier; break;
 				}
-
 			}
 
 			## Look to see if its a shorthand date (year and month), and convert to full date
@@ -356,8 +354,9 @@
 				else{
 					if(!self::__isValidDateString($string)) return self::ERROR;
 
-					$string = DateTimeObj::get('Y-m-d H:i:s', strtotime($string));
-					return self::SIMPLE;
+					$date = DateTimeObj::get('Y-m-d', strtotime($string));
+
+					$string = $date . ' 00:00:00 to ' . $date . ' 23:59:59';
 				}
 			}
 			//	A date range, check it's ok!
