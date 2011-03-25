@@ -72,7 +72,7 @@
 						if(is_array($ds->dsParamINCLUDEDELEMENTS) && in_array('system:date', $ds->dsParamINCLUDEDELEMENTS)){
 							$xEntry->appendChild(
 								General::createXMLDateObject(
-									DateTimeObj::get('U', $entry->creationDate), 
+									DateTimeObj::get('U', $entry->creationDate),
 									'system-date'
 								)
 							);
@@ -319,18 +319,16 @@
 						}
 					}
 
-					if($this->_param_output_only) continue;
+					$result->appendChild($xEntry);
 
-					if(in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){
+					if(!$this->_param_output_only && in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){
 						$xEntry->appendChild(
 							General::createXMLDateObject(
-								DateTimeObj::get('U', $entry->creationDate), 
+								DateTimeObj::get('U', $entry->creationDate),
 								'system-date'
 							)
 						);
 					}
-
-					$result->appendChild($xEntry);
 				}
 
 			endif;
