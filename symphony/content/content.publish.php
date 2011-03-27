@@ -79,14 +79,16 @@
 										  AND `s`.`handle` = '".$section->get('handle')."' LIMIT 1");
 					$field =& $entryManager->fieldManager->fetch($filter);
 
-					if(is_object($field)){
-						$field->buildDSRetrievalSQL(array($filter_value), $joins, $where, false);
+					if($field instanceof Field) {
+						// For deprecated reasons, call the old, typo'd function name until the switch to the
+						// properly named buildDSRetrievalSQL function.
+						$field->buildDSRetrivalSQL(array($filter_value), $joins, $where, false);
 						$filter_value = rawurlencode($filter_value);
 					}
 
 				}
 
-				if ($where != null) {
+				if (!is_null($where)) {
 					$where = str_replace('AND', 'OR', $where); // multiple fields need to be OR
 					$where = trim($where);
 					$where = ' AND (' . substr($where, 2, strlen($where)) . ')'; // replace leading OR with AND
