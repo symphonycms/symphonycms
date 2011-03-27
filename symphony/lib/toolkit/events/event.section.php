@@ -357,7 +357,7 @@
 
 			return true;
 		}
-	}inconsi
+	}
 
 	if(!isset($this->eParamFILTERS) || !is_array($this->eParamFILTERS)){
 		$this->eParamFILTERS = array();
