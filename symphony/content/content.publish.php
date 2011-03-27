@@ -80,7 +80,7 @@
 					$field =& $entryManager->fieldManager->fetch($filter);
 
 					if(is_object($field)){
-						$field->buildDSRetrivalSQL(array($filter_value), $joins, $where, false);
+						$field->buildDSRetrievalSQL(array($filter_value), $joins, $where, false);
 						$filter_value = rawurlencode($filter_value);
 					}
 
