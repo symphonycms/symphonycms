@@ -47,6 +47,10 @@
 			return true;
 		}
 
+		public function isSortable(){
+			return true;
+		}
+
 		function displayPublishPanel(&$wrapper, $data = null, $error = null, $prefix = null, $postfix = null) {
 			$name = $this->get('element_name');
 			$value = null;
@@ -206,7 +210,7 @@
 
 				$parsed[$type][] = $string;
 			}
-			
+
 			foreach($parsed as $type => $value){
 
 				switch($type){
@@ -221,35 +225,8 @@
 
 				}
 			}
-			
+
 			return true;
-		}
-
-		protected function __buildSimpleFilterSQL($data, &$joins, &$where, $andOperation=false){
-
-			$field_id = $this->get('id');
-
-			if($andOperation):
-
-				foreach($data as $date){
-					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-					$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') = '".DateTimeObj::get('Y-m-d H:i:s', $date)."' ";
-
-					$this->key++;
-				}
-
-			else:
-
-				$tmp = array();
-				foreach($data as $date) {
-					$tmp[] = DateTimeObj::get('Y-m-d H:i:s', $date);
-				}
-
-				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-				$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') IN ('".implode("', '", $tmp)."') ";
-				$this->key++;
-
-			endif;
 		}
 
 		protected function __buildRangeFilterSQL($data, &$joins, &$where, $andOperation=false){
@@ -297,19 +274,8 @@
 
 			$string = self::__cleanFilterString($string);
 
-			## Check its not a regexp
-			if(preg_match('/^regexp:/i', $string)) {
-				$string = preg_match('/^regexp:/i', null, $string);
-				return self::REGEXP;
-			}
-
-			if(preg_match('/^not-?regexp:/i', $string)) {
-				$string = preg_match('/^not-?regexp:/i', null, $string);
-				return self::REGEXP;
-			}
-
 			## Look to see if its a shorthand date (year only), and convert to full date
-			elseif(preg_match('/^(1|2)\d{3}$/i', $string)){
+			if(preg_match('/^(1|2)\d{3}$/i', $string)){
 				$string = "$string-01-01 to $string-12-31 23:59:59";
 			}
 
@@ -320,14 +286,20 @@
 
 				if(!self::__isValidDateString($string)) return self::ERROR;
 
-				if($match[1] == "equal to or "){
-					$later = DateTimeObj::get('Y-m-d H:i:s', strtotime($string . ' 12:00am'));
-					$earlier = DateTimeObj::get('Y-m-d H:i:s', strtotime($string . ' 11:59pm'));
+				if($match[1] == "equal to or ") {
+					$earlier = DateTimeObj::get('Y-m-d H:i:s', strtotime($string));
+					$later = DateTimeObj::get('Y-m-d H:i:s', strtotime($string));
 				}
 				else {
 					$later = DateTimeObj::get('Y-m-d H:i:s', strtotime($string . ' + 1 day'));
 					$earlier = DateTimeObj::get('Y-m-d H:i:s', strtotime($string . ' - 1 day'));
 				}
+
+				// Check to see if a time has been provided, otherwise default to 23:59:59
+				if(preg_match('/00:00:00$/', $earlier)) {
+					$earlier = preg_replace('/00:00:00$/', "23:59:59", $earlier);
+				}
+
 				switch($match[2]){
 					case 'later': $string = $later . ' to 2038-01-01 23:59:59'; break;
 					case 'earlier': $string = '1970-01-01 to ' . $earlier; break;
@@ -370,6 +342,14 @@
 					$part = DateTimeObj::get('Y-m-d H:i:s', strtotime($part));
 				}
 
+				// If no time provided (hence 00:00:00), make it 23:59:59
+				// This handles the case where you expect a date to be inclusive
+				// when no time is provided, but instead it will default to 00:00:00,
+				// which essentially removes the day from the range.
+				if(preg_match('/00:00:00$/', $parts[1])) {
+					$parts[1] = preg_replace('/00:00:00$/', "23:59:59", $parts[1]);
+				}
+
 				$string = "$parts[0] to $parts[1]";
 			}
 
@@ -394,10 +374,6 @@
 
 			if(!strtotime($string)) return false;
 
-			return true;
-		}
-
-		function isSortable(){
 			return true;
 		}
 
@@ -438,10 +414,8 @@
 
 		}
 
-		function createTable(){
-
+		public function createTable(){
 			return Symphony::Database()->query(
-
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
@@ -452,8 +426,38 @@
 				  UNIQUE KEY `entry_id` (`entry_id`),
 				  KEY `value` (`value`)
 				) ENGINE=MyISAM;"
-
 			);
+		}
+
+		/**
+		 * @deprecated This function is never called by Symphony as all filtering is a range
+		 * now that time is taken into consideration. This will be removed in the next major version
+		 */
+		protected function __buildSimpleFilterSQL($data, &$joins, &$where, $andOperation=false){
+
+			$field_id = $this->get('id');
+
+			if($andOperation):
+
+				foreach($data as $date){
+					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
+					$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') = '".DateTimeObj::get('Y-m-d H:i:s', $date)."' ";
+
+					$this->key++;
+				}
+
+			else:
+
+				$tmp = array();
+				foreach($data as $date) {
+					$tmp[] = DateTimeObj::get('Y-m-d H:i:s', $date);
+				}
+
+				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
+				$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') IN ('".implode("', '", $tmp)."') ";
+				$this->key++;
+
+			endif;
 		}
 
 	}
