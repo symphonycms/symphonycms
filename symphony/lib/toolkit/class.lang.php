@@ -436,7 +436,11 @@
 					'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
 					'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat',
 					'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',
-					'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+					'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+					'sec', 'second', 'min', 'minute', 'hour', 'day', 'fortnight', 'forthnight', 'month', 'year',
+					'secs', 'seconds', 'mins', 'minutes', 'hours', 'days', 'fortnights', 'forthnights', 'months', 'years',
+					'weekday', 'weekdays', 'week', 'weeks',
+					'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eight', 'ninth', 'tenth', 'eleventh', 'twelfth', 'next', 'last', 'previous', 'this'
 				);
 				foreach($dates as $date) {
 					self::$_dates[$date] = $date;
@@ -514,7 +518,7 @@
 			// Only translate dates in localized environments
 			if(self::isLocalized()) {
 				foreach(self::$_dates as $english => $locale) {
-					$string = str_replace($english, $locale, $string);
+					$string = preg_replace('/\b' . $english . '\b/', $locale, $string);
 				}
 			}
 
@@ -536,7 +540,7 @@
 	
 				// Translate names to English
 				foreach(self::$_dates as $english => $locale) {
-					$string = str_replace($locale, $english, $string);
+					$string = preg_replace('/\b' . $locale . '\b/', $english, $string);
 				}
 
 				// Replace custom date and time separator with space:
@@ -549,7 +553,6 @@
 
 			return $string;
 		}
-
 
 		/**
 		 * Given a string, this will clean it for use as a Symphony handle. Preserves multi-byte characters.
