@@ -19,7 +19,7 @@
 
 		private $key;
 
-		function __construct(&$parent) {
+		public function __construct(&$parent) {
 			parent::__construct($parent);
 			$this->_name = __('Date');
 			$this->key = 1;
@@ -27,11 +27,11 @@
 			$this->set('location', 'sidebar');
 		}
 
-		function allowDatasourceOutputGrouping() {
+		public function allowDatasourceOutputGrouping() {
 			return true;
 		}
 
-		function allowDatasourceParamOutput() {
+		public function allowDatasourceParamOutput() {
 			return true;
 		}
 
@@ -39,7 +39,7 @@
 			return true;
 		}
 
-		function canFilter() {
+		public function canFilter() {
 			return true;
 		}
 
@@ -51,7 +51,7 @@
 			return true;
 		}
 
-		function displayPublishPanel(&$wrapper, $data = null, $error = null, $prefix = null, $postfix = null) {
+		public function displayPublishPanel(&$wrapper, $data = null, $error = null, $prefix = null, $postfix = null) {
 			$name = $this->get('element_name');
 			$value = null;
 
@@ -81,7 +81,7 @@
 			$wrapper->appendChild($label);
 		}
 
-		function checkPostFieldData($data, &$message, $entry_id=NULL) {
+		public function checkPostFieldData($data, &$message, $entry_id=NULL) {
 			if(empty($data)) return self::__OK__;
 			$message = NULL;
 
@@ -104,7 +104,7 @@
 					$timestamp = time();
 				}
 			}
-			
+
 			// Convert given date to timestamp
 			else if($status == self::__OK__ && DateTimeObj::validate($data)) {
 				$timestamp = DateTimeObj::get('U', $data);
@@ -131,7 +131,7 @@
 
 		public function appendFormattedElement($wrapper, $data, $encode = false) {
 			if(isset($data['gmt']) && !is_null($data['gmt'])) {
-			
+
 				// Get date
 				if(is_array($data['local'])) {
 					$date = current($data['local']);
@@ -159,7 +159,7 @@
 			return DateTimeObj::get('Y-m-d H:i:s', $data['local']);
 		}
 
-		function groupRecords($records) {
+		public function groupRecords($records) {
 			if(!is_array($records) || empty($records)) return;
 
 			$groups = array('year' => array());
@@ -199,18 +199,18 @@
 			return $groups;
 		}
 
-		function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC') {
+		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC') {
 			$joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
 			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`gmt` $order");
 		}
 
-		function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation=false) {
+		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation=false) {
 			if(self::isFilterRegex($data[0])) return parent::buildDSRetrievalSQL($data, $joins, $where, $andOperation);
 
 			$parsed = array();
 
 			foreach($data as $string) {
-				$type = self::__parseFilter($string);
+				$type = self::parseFilter($string);
 
 				if($type == self::ERROR) return false;
 
@@ -224,11 +224,11 @@
 				switch($type) {
 
 					case self::RANGE:
-						$this->__buildRangeFilterSQL($value, $joins, $where, $andOperation);
+						$this->buildRangeFilterSQL($value, $joins, $where, $andOperation);
 						break;
 
 					case self::SIMPLE:
-						$this->__buildSimpleFilterSQL($value, $joins, $where, $andOperation);
+						$this->buildSimpleFilterSQL($value, $joins, $where, $andOperation);
 						break;
 
 				}
@@ -237,7 +237,7 @@
 			return true;
 		}
 
-		protected function __buildRangeFilterSQL($data, &$joins, &$where, $andOperation=false) {
+		public function buildRangeFilterSQL($data, &$joins, &$where, $andOperation=false) {
 			$field_id = $this->get('id');
 
 			if(empty($data)) return;
@@ -267,15 +267,15 @@
 			}
 		}
 
-		protected static function __cleanFilterString($string) {
+		public static function cleanFilterString($string) {
 			$string = trim($string);
 			$string = trim($string, '-/');
 
 			return urldecode($string);
 		}
 
-		protected static function __parseFilter(&$string) {
-			$string = self::__cleanFilterString($string);
+		public static function parseFilter(&$string) {
+			$string = self::cleanFilterString($string);
 
 			// Look to see if its a shorthand date (year only), and convert to full date
 			if(preg_match('/^(1|2)\d{3}$/i', $string)) {
@@ -294,7 +294,7 @@
 					$earlier = DateTimeObj::get('Y-m-d H:i:s', $string);
 					$later = DateTimeObj::get('Y-m-d H:i:s', $string);
 				}
-				
+
 				// Date is earlier/later than
 				else {
 					$later = DateTimeObj::get('Y-m-d H:i:s', $string . ' + 1 day');
@@ -308,13 +308,13 @@
 
 				// Switch between ealier than and later than logic
 				switch($match[2]) {
-				
-					case 'later': 
-						$string = $later . ' to 2038-01-01 23:59:59'; 
+
+					case 'later':
+						$string = $later . ' to 2038-01-01 23:59:59';
 						break;
-						
-					case 'earlier': 
-						$string = '1970-01-01 to ' . $earlier; 
+
+					case 'earlier':
+						$string = '1970-01-01 to ' . $earlier;
 						break;
 				}
 			}
@@ -339,7 +339,7 @@
 
 				// Different format
 				else {
-				
+
 					// Validate
 					if(!DateTimeObj::validate($string)) return self::ERROR;
 
@@ -347,13 +347,13 @@
 					$string = $date . ' 00:00:00 to ' . $date . ' 23:59:59';
 				}
 			}
-			
+
 			// Match date ranges
 			elseif(preg_match('/\s+to\s+/i', $string)) {
 				if(!$parts = preg_split('/\s+to\s+/', $string, 2, PREG_SPLIT_NO_EMPTY)) return self::ERROR;
 
 				foreach($parts as $i => &$part) {
-				
+
 					// Validate
 					if(!DateTimeObj::validate($part)) return self::ERROR;
 
@@ -374,7 +374,7 @@
 			// Parse the full date range and return an array
 			if(!$parts = preg_split('/\s+to\s+/i', $string, 2, PREG_SPLIT_NO_EMPTY)) return self::ERROR;
 
-			$parts = array_map(array('self', '__cleanFilterString'), $parts);
+			$parts = array_map(array('self', 'cleanFilterString'), $parts);
 
 			list($start, $end) = $parts;
 
@@ -386,7 +386,7 @@
 			return self::RANGE;
 		}
 
-		function commit() {
+		public function commit() {
 			if(!parent::commit()) return false;
 
 			$id = $this->get('id');
@@ -402,7 +402,7 @@
 			Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 		}
 
-		function findDefaults(&$fields) {
+		public function findDefaults(&$fields) {
 			if(!isset($fields['pre_populate'])) $fields['pre_populate'] = 'yes';
 		}
 
@@ -439,7 +439,7 @@
 		 * @deprecated This function is never called by Symphony as all filtering is a range
 		 * now that time is taken into consideration. This will be removed in the next major version
 		 */
-		protected function __buildSimpleFilterSQL($data, &$joins, &$where, $andOperation=false) {
+		public function buildSimpleFilterSQL($data, &$joins, &$where, $andOperation=false) {
 			$field_id = $this->get('id');
 
 			if($andOperation) {
@@ -450,7 +450,7 @@
 					$this->key++;
 				}
 			}
-			
+
 			else {
 				$tmp = array();
 				foreach($data as $date) {
