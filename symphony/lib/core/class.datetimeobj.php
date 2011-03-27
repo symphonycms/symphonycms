@@ -24,6 +24,28 @@
 		public static function setDefaultTimezone($timezone){
 			if(!@date_default_timezone_set($timezone)) trigger_error(__("Invalid timezone '{$timezone}'"), E_USER_WARNING);
 		}
+		
+		/**
+		 * Validate a given date and time string
+		 *
+		 * @param string $string
+		 *	A date and time string to validate
+		 * @return boolean
+		 *	Returns true for valid dates, otherwise false
+		 */
+		public static function validate($string) {
+			$string = trim($string);
+
+			// String is empty or not a valid date string
+			if(empty($string) || !strtotime(Lang::standardizeDate($string))) {
+				return false;
+			}
+			
+			// String is a valid date
+			else {
+				return true;
+			}
+		}
 
 		/**
 		 * Given a `$format`, and a `$timestamp`,
