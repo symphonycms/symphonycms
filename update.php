@@ -62,8 +62,8 @@
 
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.2');
-	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/'.kVERSION.'/');
+	define('kVERSION', '2.2.1 Beta 1');
+	define('kCHANGELOG', 'https://gist.github.com/884691');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
 
@@ -355,6 +355,14 @@ Options +FollowSymlinks -Indexes
 				}
 			}
 
+			if(version_compare($existing_version, '2.2.1 Beta 1', '<')) {
+				try {
+					$frontend->Database->query('CREATE INDEX `session_expires` ON `tbl_sessions` (`session_expires`)');
+					$frontend->Database->query('OPTIMIZE TABLE `tbl_sessions`');
+				}
+				catch (Exception $ex) {}
+			}
+
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
 				"SELECT `version` FROM `tbl_extensions` WHERE `name` = 'selectbox_link_field' LIMIT 1"
 			);
@@ -366,6 +374,11 @@ Options +FollowSymlinks -Indexes
 				<br />
 				<ol>
 				'.
+
+				(version_compare($existing_version, '2.2.1', '<') ? '
+				<li>Version <code>2.2.1</code> introduces some improvements and fixes to Static XML Datasources. If you have any Static XML Datasources in your installation, please be sure to re-save them through the Data Source Editor to prevent unexpected results.</li>' : NULL)
+
+				.
 
 				(version_compare($existing_version, '2.1.0', '<') ? '
 				<li>The password for user "<code>'.$username.'</code>" is now reset. The new temporary password is "<code>'.$new_password.'</code>". Please login and change it now.</li>' : NULL)

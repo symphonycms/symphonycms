@@ -21,10 +21,11 @@ CREATE TABLE `tbl_authors` (
 -- *** STRUCTURE: `tbl_sessions` ***
 DROP TABLE IF EXISTS `tbl_sessions`;
 CREATE TABLE IF NOT EXISTS `tbl_sessions` (
-  `session` varchar(255) NOT NULL,
+  `session` varchar(100) NOT NULL,
   `session_expires` int(10) unsigned NOT NULL default '0',
   `session_data` text default null,
-  PRIMARY KEY  (`session`)
+  PRIMARY KEY  (`session`),
+  KEY `session_expires` (`session_expires`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- *** STRUCTURE: `tbl_cache` ***
