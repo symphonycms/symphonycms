@@ -35,7 +35,7 @@
 			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`file` $order");
 		}
 
-		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
+		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
 
 			if (preg_match('/^mimetype:/', $data[0])) {

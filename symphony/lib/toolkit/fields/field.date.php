@@ -195,9 +195,9 @@
 			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`gmt` $order");
 		}
 
-		function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation=false){
+		function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation=false){
 
-			if(self::isFilterRegex($data[0])) return parent::buildDSRetrivalSQL($data, $joins, $where, $andOperation);
+			if(self::isFilterRegex($data[0])) return parent::buildDSRetrievalSQL($data, $joins, $where, $andOperation);
 
 			$parsed = array();
 

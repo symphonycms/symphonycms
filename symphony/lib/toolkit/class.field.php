@@ -901,7 +901,7 @@
 		 * @return boolean
 		 *	true if the construction of the sql was successful, false otherwise.
 		 */
-		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
+		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
 
 			if (self::isFilterRegex($data[0])) {
@@ -924,7 +924,8 @@
 					AND t{$field_id}_{$this->_key}.value {$regex} '{$pattern}'
 				";
 
-			} elseif ($andOperation) {
+			}
+			else if ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
 					$value = $this->cleanValue($value);
@@ -938,7 +939,8 @@
 					";
 				}
 
-			} else {
+			}
+			else {
 				if (!is_array($data)) $data = array($data);
 
 				foreach ($data as &$value) {
@@ -1209,4 +1211,11 @@
 		 */
 		public function fetchAssociatedEntryIDs($value){}
 
+		/**
+		 * @deprecated This function name has a typo that has withstood many versions of
+		 *  Symphony. The correct function is `$this->buildDSRetrievalSQL`.
+		 */
+		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
+			return $this->buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false);
+		}
 	}

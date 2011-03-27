@@ -76,7 +76,7 @@
 
 		}
 
-		public function buildDSRetrivalSQL($data, &$joins, &$where) {
+		public function buildDSRetrievalSQL($data, &$joins, &$where) {
 			$field_id = $this->get('id');
 
 			if (self::isFilterRegex($data[0])) {
