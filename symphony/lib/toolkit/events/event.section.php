@@ -33,7 +33,7 @@
 			 * '/frontend/'
 			 * @param array $fields
 			 * @param string $event
-			 * @param array $filter_results
+			 * @param array $messages
 			 *  An associative array of array's which contain 4 values,
 			 *  the name of the filter (string), the status (boolean),
 			 *  the message (string) an optionally an associative array
@@ -98,8 +98,6 @@
 				$entry =& $entryManager->create();
 				$entry->set('section_id', $source);
 			}
-
-			$filter_errors = array();
 
 			if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))):
 				$result->setAttribute('result', 'error');
@@ -286,7 +284,7 @@
 			 * @param array $fields
 			 * @param Entry $entry
 			 * @param string $event
-			 * @param array $filter_results
+			 * @param array $messages
 			 *  An associative array of array's which contain 4 values,
 			 *  the name of the filter (string), the status (boolean),
 			 *  the message (string) an optionally an associative array
@@ -308,17 +306,27 @@
 				}
 			}
 
+			$filter_errors = array();
 			/**
-			 * This is a readonly delegate that lets extensions know the final
-			 * status of the current Event. It is triggered when everything has
-			 * processed correctly
+			 * This delegate that lets extensions know the final status of the
+			 * current Event. It is triggered when everything has processed correctly.
+			 * The `$messages` array contains the results of the previous filters that
+			 * have executed, and the `$errors` array contains any errors that have
+			 * occurred as a result of this delegate. These errors cannot stop the
+			 * processing of the Event, as that has already been done.
+			 *
 			 *
 			 * @delegate EventFinalSaveFilter
 			 * @param string $context
 			 * '/frontend/'
 			 * @param array $fields
 			 * @param string $event
-			 * @param array $filter_results
+			 * @param array $messages
+			 *  An associative array of array's which contain 4 values,
+			 *  the name of the filter (string), the status (boolean),
+			 *  the message (string) an optionally an associative array
+			 *  of additional attributes to add to the filter element.
+			 * @param array $errors
 			 *  An associative array of array's which contain 4 values,
 			 *  the name of the filter (string), the status (boolean),
 			 *  the message (string) an optionally an associative array
@@ -329,10 +337,19 @@
 				'EventFinalSaveFilter', '/frontend/', array(
 					'fields'	=> $fields,
 					'event'		=> $event,
-					'errors'	=> $filter_errors,
+					'messages'	=> $filter_results,
+					'errors'	=> &$filter_errors,
 					'entry'		=> $entry
 				)
 			);
+
+			if(is_array($filter_errors) && !empty($filter_errors)){
+				foreach($filter_errors as $fr){
+					list($name, $status, $message, $attributes) = $fr;
+
+					$result->appendChild(buildFilterElement($name, ($status ? 'passed' : 'failed'), $message, $attributes));
+				}
+			}
 
 			$result->setAttributeArray(array('result' => 'success', 'type' => (isset($entry_id) ? 'edited' : 'created')));
 			$result->appendChild(new XMLElement('message', (isset($entry_id) ? __('Entry edited successfully.') : __('Entry created successfully.'))));
@@ -340,7 +357,7 @@
 
 			return true;
 		}
-	}
+	}inconsi
 
 	if(!isset($this->eParamFILTERS) || !is_array($this->eParamFILTERS)){
 		$this->eParamFILTERS = array();
