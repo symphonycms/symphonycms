@@ -175,7 +175,7 @@
 		 * Array of months and weekday for localized date output
 		 * @var array
 		 */
-		private static $_dates;
+		public static $_dates;
 
 		/**
 		 * Get dictionary
@@ -440,7 +440,7 @@
 					'sec', 'second', 'min', 'minute', 'hour', 'day', 'fortnight', 'forthnight', 'month', 'year',
 					'secs', 'seconds', 'mins', 'minutes', 'hours', 'days', 'fortnights', 'forthnights', 'months', 'years',
 					'weekday', 'weekdays', 'week', 'weeks',
-					'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eight', 'ninth', 'tenth', 'eleventh', 'twelfth', 'next', 'last', 'previous', 'this'
+					'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth', 'next', 'last', 'previous', 'this'
 				);
 				foreach($dates as $date) {
 					self::$_dates[$date] = $date;
@@ -452,8 +452,8 @@
 				self::$_dictionary->merge($dictionary);
 
 				// Add date translations
-				foreach(self::$_dates as $date) {
-					self::$_dates[$date] = __($date);
+				foreach(self::$_dates as $key => $value) {
+					self::$_dates[$key] = __($key);
 				}
 
 			}
@@ -518,7 +518,7 @@
 			// Only translate dates in localized environments
 			if(self::isLocalized()) {
 				foreach(self::$_dates as $english => $locale) {
-					$string = preg_replace('/\b' . $english . '\b/', $locale, $string);
+					$string = preg_replace('/\b' . $english . '\b/i', $locale, $string);
 				}
 			}
 
@@ -540,7 +540,7 @@
 	
 				// Translate names to English
 				foreach(self::$_dates as $english => $locale) {
-					$string = preg_replace('/\b' . $locale . '\b/', $english, $string);
+					$string = preg_replace('/\b' . $locale . '\b/i', $english, $string);
 				}
 
 				// Replace custom date and time separator with space:
