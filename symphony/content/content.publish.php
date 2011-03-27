@@ -113,15 +113,7 @@
 
 			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter ? "&amp;filter=$field_handle:$filter_value" : ''));
 
-			## Remove the create button if there is a section link field, and no filtering set for it
-			$section_links = $section->fetchFields('sectionlink');
-
-			if(count($section_links) > 1 || (!$filter && $section_links) || (is_object($section_links[0]) && $filter != $section_links[0]->get('id'))){
-				$this->appendSubheading($section->get('name'));
-			}
-			else{
-				$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c')));
-			}
+			$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c')));
 
 			if(is_null($entryManager->getFetchSorting()->field) && is_null($entryManager->getFetchSorting()->direction)){
 				$entryManager->setFetchSortingDirection('DESC');
