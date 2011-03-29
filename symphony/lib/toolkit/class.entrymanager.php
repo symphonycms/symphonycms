@@ -362,7 +362,7 @@
 		 *  An array of ID's
 		 * @param integer $section_id
 		 *  The section ID of the entries in the `$id_list`
-		 * @param array $elementnames
+		 * @param array $element_names
 		 *  Choose whether to get data from a subset of fields or all fields in a section,
 		 *  by providing an array of field names. Defaults to null, which will load data
 		 *  from all fields in a section.

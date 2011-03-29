@@ -128,6 +128,7 @@
 			// Handle where there is `$xml` and the XML is valid
 			else if(strlen($xml) > 0 && !General::validateXML($xml, $errors, false, new XsltProcess)){
 				$writeToCache = false;
+				var_dump($cachedData);
 
 				if(is_array($cachedData) && !empty($cachedData)){
 					$xml = trim($cachedData['data']);
@@ -169,7 +170,7 @@
 
 	// If `force_empty_result` is false and `$result` is not an instance of
 	// XMLElement, build the `$result`.
-	if(!$this->_force_empty_result && !is_object($result)) {
+	if(!$this->_force_empty_result && is_object($result)) {
 
 		$proc = new XsltProcess;
 		$ret = $proc->process($xml, $xsl);
