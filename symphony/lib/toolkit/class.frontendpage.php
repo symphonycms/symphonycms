@@ -300,7 +300,7 @@
 			$start = precision_timer();
 
 			if(!$page = $this->resolvePage()){
-				throw new FrontendPageNotFoundException(__('The page you requested does not exist'));
+				throw new FrontendPageNotFoundException;
 			}
 
 			/**

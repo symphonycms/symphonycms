@@ -143,7 +143,7 @@
 			$page_id = Symphony::Database()->fetchVar('page_id', 0, "SELECT `page_id` FROM `tbl_pages_types` WHERE `type` = '404' LIMIT 1");
 
 			if(is_null($page_id)){
-				parent::render(new SymphonyErrorPage(__('The page you requested does not exist.'), __('Page Not Found'), 'error', array('header' => 'HTTP/1.0 404 Not Found')));
+				parent::render(new SymphonyErrorPage(__('The page you requested, %s, does not exist.', array('<code>' . getCurrentPage() . '</code>')), __('Page Not Found'), 'error', array('header' => 'HTTP/1.0 404 Not Found')));
 			}
 			else{
 				$url = '/' . Frontend::instance()->resolvePagePath($page_id) . '/';
