@@ -128,7 +128,6 @@
 			// Handle where there is `$xml` and the XML is valid
 			else if(strlen($xml) > 0 && !General::validateXML($xml, $errors, false, new XsltProcess)){
 				$writeToCache = false;
-				var_dump($cachedData);
 
 				if(is_array($cachedData) && !empty($cachedData)){
 					$xml = trim($cachedData['data']);
