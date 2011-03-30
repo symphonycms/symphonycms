@@ -383,10 +383,11 @@
 
 			return $input;
 		}
-		
+
 		/**
 		 * Given a string, this will clean it for use as a Symphony handle. Preserves multi-byte characters.
 		 *
+		 * @since Symphony 2.2.1
 		 * @param string $string
 		 *	String to be cleaned up
 		 * @param int $max_length
@@ -820,17 +821,18 @@
 				}
 
 				else {
-					$child = new XMLElement($element_name);
+					$child = new XMLElement($element_name, null, array(), true);
 				}
 
-				if(is_array($value)){
+				if(is_array($value)) {
 					self::array_to_xml($child, $value);
 				}
 
-				elseif($validate == true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)){
+				else if($validate == true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)) {
 					return;
 				}
-				else{
+
+				else {
 					$child->setValue(self::sanitize($value));
 				}
 

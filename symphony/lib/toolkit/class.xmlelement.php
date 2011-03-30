@@ -122,8 +122,7 @@
 		 * The constructor for the XMLElement
 		 *
 		 * @param string $name
-		 *  The name of the XMLElement, 'p'. This will apply `Lang::createHandle`
-		 *  to the `$name` so that it can be guarantee that it is handle.
+		 *  The name of the XMLElement, 'p'.
 		 * @param string|XMLElement $value (optional)
 		 *  The value of this XMLElement, it can be a string
 		 *  or another XMLElement object.
@@ -132,11 +131,14 @@
 		 *  the key being the name and the value being the value of the attribute.
 		 *  Attributes set from this array will override existing attributes
 		 *  set by previous params.
+		 * @param boolean $createHandle
+		 *  Whether this function should convert the `$name` to a handle. Defaults to 
+		 *  false.
 		 * @return XMLElement
 		 */
-		public function __construct($name, $value = null, Array $attributes = array()){
+		public function __construct($name, $value = null, Array $attributes = array(), $createHandle = false){
 
-			$this->_name = Lang::createHandle($name);
+			$this->_name = ($createHandle) ? Lang::createHandle($name) : $name;
 			$this->setValue($value);
 
 			if(is_array($attributes) && !empty($attributes)) {
