@@ -383,6 +383,98 @@
 
 			return $input;
 		}
+		
+		/**
+		 * Given a string, this will clean it for use as a Symphony handle. Preserves multi-byte characters.
+		 *
+		 * @param string $string
+		 *	String to be cleaned up
+		 * @param int $max_length
+		 *	The maximum number of characters in the handle
+		 * @param string $delim
+		 *	All non-valid characters will be replaced with this
+		 * @param boolean $uriencode
+		 *	Force the resultant string to be uri encoded making it safe for URLs
+		 * @param array $additional_rule_set
+		 *	An array of REGEX patterns that should be applied to the `$string`. This
+		 *	occurs after the string has been trimmed and joined with the `$delim`
+		 * @return string
+		 *	Returns resultant handle
+		 */
+		public static function createHandle($string, $max_length=255, $delim='-', $uriencode=false, $additional_rule_set=NULL) {
+
+			$max_length = intval($max_length);
+
+			// Strip out any tag
+			$string = strip_tags($string);
+
+			// Remove punctuation
+			$string = preg_replace('/[\\.\'"]+/', NULL, $string);
+
+			// Trim it
+			if($max_length != NULL && is_numeric($max_length)) $string = General::limitWords($string, $max_length);
+
+			// Replace spaces (tab, newline etc) with the delimiter
+			$string = preg_replace('/[\s]+/', $delim, $string);
+
+			// Find all legal characters
+			preg_match_all('/[^<>?@:!-\/\[-`ëí;‘’…]+/u', $string, $matches);
+
+			// Join only legal character with the $delim
+			$string = implode($delim, $matches[0]);
+
+			// Allow for custom rules
+			if(is_array($additional_rule_set) && !empty($additional_rule_set)) {
+				foreach($additional_rule_set as $rule => $replacement) $string = preg_replace($rule, $replacement, $string);
+			}
+
+			// Remove leading or trailing delim characters
+			$string = trim($string, $delim);
+
+			// Encode it for URI use
+			if($uriencode) $string = urlencode($string);
+
+			// Make it lowercase
+			$string = strtolower($string);
+
+			return $string;
+
+		}
+
+		/**
+		 * Given a string, this will clean it for use as a filename. Preserves multi-byte characters.
+		 *
+		 * @since Symphony 2.2.1
+		 * @param string $string
+		 *	String to be cleaned up
+		 * @param string $delim
+		 *	Replacement for invalid characters
+		 * @return string
+		 *	Returns created filename
+		 */
+		public static function createFilename($string, $delim='-') {
+
+			// Strip out any tag
+			$string = strip_tags($string);
+
+			// Find all legal characters
+			$count = preg_match_all('/[\p{L}\w:;.,+=~]+/u', $string, $matches);
+			if($count <= 0 || $count == false) {
+				preg_match_all('/[\w:;.,+=~]+/', $string, $matches);
+			}
+
+			// Join only legal character with the $delim
+			$string = implode($delim, $matches[0]);
+
+			// Remove leading or trailing delim characters
+			$string = trim($string, $delim);
+
+			// Make it lowercase
+			$string = strtolower($string);
+
+			return $string;
+
+		}
 
 		/**
 		 * Extract the first `$val` characters of the input string. If `$val`

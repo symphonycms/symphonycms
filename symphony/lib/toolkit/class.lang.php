@@ -567,50 +567,17 @@
 		 *	Force the resultant string to be uri encoded making it safe for URLs
 		 * @param boolean $apply_transliteration
 		 *	If true, this will run the string through an array of substitution characters
+		 * @param array $additional_rule_set
+		 *	An array of REGEX patterns that should be applied to the `$string`. This
+		 *	occurs after the string has been trimmed and joined with the `$delim`
 		 * @return string
 		 *	Returns resultant handle
 		 */
 		public static function createHandle($string, $max_length=255, $delim='-', $uriencode=false, $apply_transliteration=true, $additional_rule_set=NULL) {
-
 			// Use the transliteration table if provided
 			if($apply_transliteration == true) $string = _t($string);
 
-			$max_length = intval($max_length);
-
-			// Strip out any tag
-			$string = strip_tags($string);
-
-			// Remove punctuation
-			$string = preg_replace('/[\\.\'"]+/', NULL, $string);
-
-			// Trim it
-			if($max_length != NULL && is_numeric($max_length)) $string = General::limitWords($string, $max_length);
-
-			// Replace spaces (tab, newline etc) with the delimiter
-			$string = preg_replace('/[\s]+/', $delim, $string);
-
-			// Find all legal characters
-			preg_match_all('/[^<>?@:!-\/\[-`ëí;‘’…]+/u', $string, $matches);
-
-			// Join only legal character with the $delim
-			$string = implode($delim, $matches[0]);
-
-			// Allow for custom rules
-			if(is_array($additional_rule_set) && !empty($additional_rule_set)) {
-				foreach($additional_rule_set as $rule => $replacement) $string = preg_replace($rule, $replacement, $string);
-			}
-
-			// Remove leading or trailing delim characters
-			$string = trim($string, $delim);
-
-			// Encode it for URI use
-			if($uriencode) $string = urlencode($string);
-
-			// Make it lowercase
-			$string = strtolower($string);
-
-			return $string;
-
+			return General::createHandle($string, $max_length, $delim, $uriencode, $additional_rule_set);
 		}
 
 		/**
@@ -626,30 +593,10 @@
 		 *	Returns created filename
 		 */
 		public static function createFilename($string, $delim='-', $apply_transliteration=true) {
-
 			// Use the transliteration table if provided
 			if($apply_transliteration == true) $string = _t($string);
 
-			// Strip out any tag
-			$string = strip_tags($string);
-
-			// Find all legal characters
-			$count = preg_match_all('/[\p{L}\w:;.,+=~]+/u', $string, $matches);
-			if($count <= 0 || $count == false) {
-				preg_match_all('/[\w:;.,+=~]+/', $string, $matches);
-			}
-
-			// Join only legal character with the $delim
-			$string = implode($delim, $matches[0]);
-
-			// Remove leading or trailing delim characters
-			$string = trim($string, $delim);
-
-			// Make it lowercase
-			$string = strtolower($string);
-
-			return $string;
-
+			return General::createFilename($string, $delim);
 		}
 
 	}
