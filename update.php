@@ -363,6 +363,29 @@ Options +FollowSymlinks -Indexes
 				catch (Exception $ex) {}
 			}
 
+			if(version_compare($existing_version, '2.2.1 Beta 2', '<')) {
+				try {
+					## Add Security Rules from 2.2 to .htaccess
+					$htaccess = file_get_contents(DOCROOT . '/.htaccess');
+
+					if($htaccess !== false && !preg_match('/### SECURITY - Protect crucial files/', $htaccess)){
+						$security = '
+		### SECURITY - Protect crucial files
+		RewriteRule ^manifest/(.*)$ - [F]
+		RewriteRule ^workspace/utilities/(.*).xsl$ - [F]
+		RewriteRule ^workspace/pages/(.*).xsl$ - [F]
+		RewriteRule ^(.*).sql$ - [F]
+		RewriteRule (^|/)\. - [F]
+
+		### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"';
+
+						$htaccess = str_replace('### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"', $security, $htaccess);
+						file_put_contents(DOCROOT . '/.htaccess', $htaccess);
+					}
+				}
+				catch (Exception $ex) {}
+			}
+
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
 				"SELECT `version` FROM `tbl_extensions` WHERE `name` = 'selectbox_link_field' LIMIT 1"
 			);

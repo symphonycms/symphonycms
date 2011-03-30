@@ -671,6 +671,7 @@ Options +FollowSymlinks -Indexes
 	RewriteRule ^workspace/utilities/(.*).xsl$ - [F]
 	RewriteRule ^workspace/pages/(.*).xsl$ - [F]
 	RewriteRule ^(.*).sql$ - [F]
+	RewriteRule (^|/)\. - [F]
 
 	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
 	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
