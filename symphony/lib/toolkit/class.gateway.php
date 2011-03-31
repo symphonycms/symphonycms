@@ -302,7 +302,7 @@
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 				curl_setopt($ch, CURLOPT_TIMEOUT, $this->_timeout);
 
-				if(ini_get('safe_mode') == 0 || ini_get('open_basedir') == '') {
+				if(ini_get('safe_mode') == 0 && ini_get('open_basedir') == '') {
 					curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 				}
 
