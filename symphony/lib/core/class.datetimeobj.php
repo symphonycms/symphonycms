@@ -24,7 +24,7 @@
 		public static function setDefaultTimezone($timezone){
 			if(!@date_default_timezone_set($timezone)) trigger_error(__("Invalid timezone '{$timezone}'"), E_USER_WARNING);
 		}
-		
+
 		/**
 		 * Validate a given date and time string
 		 *
@@ -40,7 +40,7 @@
 			if(empty($string) || !strtotime(Lang::standardizeDate($string))) {
 				return false;
 			}
-			
+
 			// String is a valid date
 			else {
 				return true;
@@ -98,7 +98,7 @@
 			}
 
 			// Timestamp
-			elseif(ctype_digit($string)) {
+			elseif(is_numeric($string)) {
 				$date = new Datetime(date(DateTime::ISO8601, $string));
 			}
 
