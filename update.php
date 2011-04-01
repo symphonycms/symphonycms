@@ -364,8 +364,8 @@ Options +FollowSymlinks -Indexes
 			}
 
 			if(version_compare($existing_version, '2.2.1 Beta 2', '<')) {
+				// Add Security Rules from 2.2 to .htaccess
 				try {
-					## Add Security Rules from 2.2 to .htaccess
 					$htaccess = file_get_contents(DOCROOT . '/.htaccess');
 
 					if($htaccess !== false && !preg_match('/### SECURITY - Protect crucial files/', $htaccess)){
@@ -382,6 +382,14 @@ Options +FollowSymlinks -Indexes
 						$htaccess = str_replace('### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"', $security, $htaccess);
 						file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 					}
+				}
+				catch (Exception $ex) {}
+
+				// Add correct index to the `tbl_cache`
+				try {
+					$frontend->Database->query('ALTER TABLE `tbl_cache` DROP INDEX `creation`');
+					$frontend->Database->query('CREATE INDEX `expiry` ON `tbl_cache` (`expiry`)');
+					$frontend->Database->query('OPTIMIZE TABLE `tbl_cache`');
 				}
 				catch (Exception $ex) {}
 			}
