@@ -119,7 +119,19 @@
 	 *
 	 * @see core.FrontendPageNotFoundExceptionHandler
 	 */
-	Class FrontendPageNotFoundException extends Exception{}
+	Class FrontendPageNotFoundException extends Exception{
+
+		/**
+		 * The constructor for FrontendPageNotFoundException sets the default
+		 * error message and code for Logging purposes
+		 */
+		public function __construct() {
+			parent::__construct();
+			$this->message = __('The page you requested, %s, does not exist.', array('<code>' . getCurrentPage() . '</code>'));
+			$this->code = E_USER_NOTICE;
+		}
+
+	}
 
 	/**
 	 * The FrontendPageNotFoundExceptionHandler attempts to find a Symphony
@@ -143,7 +155,7 @@
 			$page_id = Symphony::Database()->fetchVar('page_id', 0, "SELECT `page_id` FROM `tbl_pages_types` WHERE `type` = '404' LIMIT 1");
 
 			if(is_null($page_id)){
-				parent::render(new SymphonyErrorPage(__('The page you requested, %s, does not exist.', array('<code>' . getCurrentPage() . '</code>')), __('Page Not Found'), 'error', array('header' => 'HTTP/1.0 404 Not Found')));
+				parent::render(new SymphonyErrorPage($e->getMessage(), __('Page Not Found'), 'error', array('header' => 'HTTP/1.0 404 Not Found')));
 			}
 			else{
 				$url = '/' . Frontend::instance()->resolvePagePath($page_id) . '/';

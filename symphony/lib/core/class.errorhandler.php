@@ -73,7 +73,7 @@
 					self::$_Log->pushToLog(
 						sprintf(
 							'%s%s%s', $e->getMessage(), ($e->getFile() ? " in file " .  $e->getFile() : null), ($e->getLine() ? " on line " . $e->getLine() : null)
-						), get_class($e), true
+						), $e->getCode(), true
 					);
 				}
 
@@ -303,10 +303,12 @@
 		 */
 		public static function handler($code, $message, $file = null, $line = null){
 
-			if(!in_array($code, array(E_NOTICE, E_STRICT)) && self::$_Log instanceof Log){
+			// Only log if the error won't be raised to an exception and the error is not `E_STRICT`
+			if(!self::$raise && !in_array($code, array(E_STRICT)) && self::$_Log instanceof Log){
 				self::$_Log->pushToLog(
 					sprintf(
-						'%s - %s%s%s', $code, $message, ($file ? " in file $file" : null), ($line ? " on line $line" : null)
+						'%s %s - %s%s%s',
+						__CLASS__, $code, $message, ($file ? " in file $file" : null), ($line ? " on line $line" : null)
 					), $code, true
 				);
 			}
