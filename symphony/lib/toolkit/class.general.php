@@ -1182,13 +1182,13 @@
 			$string = trim(strip_tags(nl2br($string)));
 			$original_length = strlen($string);
 
-			if($string == '') return null;
-			elseif(strlen($string) < $maxChars) return $string;
+			if($original_length == 0) return null;
+			elseif($original_length < $maxChars) return $string;
 
 			$string = trim(substr($string, 0, $maxChars));
 
 			$array = explode(' ', $string);
-			$result =  '';
+			$result = '';
 			$length = 0;
 
 			while(is_array($array) && !empty($array) && $length > $maxChars){
