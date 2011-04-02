@@ -6,7 +6,7 @@
 	/**
 	 * The Publish page is where the majority of an Authors time will
 	 * be spent in Symphony with adding, editing and removing entries
-	 * from Sections. This Page controls the Publish Index as well as
+	 * from Sections. This Page controls the entries tableas well as
 	 * the Entry creation screens.
 	 */
 	require_once(TOOLKIT . '/class.administrationpage.php');
@@ -161,7 +161,7 @@
 			}
 
 			/**
-			 * Allows the creation of custom Publish Index columns. Called
+			 * Allows the creation of custom entries tablecolumns. Called
 			 * after all the Section Visible columns have been added  as well
 			 * as the Section Associations
 			 *

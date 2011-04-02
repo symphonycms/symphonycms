@@ -132,7 +132,7 @@
 		protected $_required = false;
 
 		/**
-		 * Whether this field can be viewed on the Publish Index table. Note
+		 * Whether this field can be viewed on the entries tabletable. Note
 		 * that this is not the same variable as the one set when saving
 		 * a field in the section editor, rather just the if the field has
 		 * the ability to be shown. Defaults to true.
@@ -348,7 +348,7 @@
 
 		/**
 		 * Fields have settings that define how that field will act in a section, including
-		 * if it's required, any validators, if it can be shown on the Publish Index etc. This
+		 * if it's required, any validators, if it can be shown on the entries tableetc. This
 		 * function will set a setting to a value.  This function will set a setting to a value
 		 * overwriting any existing value for this setting
 		 *
@@ -430,6 +430,7 @@
 		 * from the section. This may be useful to remove data from any
 		 * custom field tables or the configuration.
 		 *
+		 * @since Symphony 2.2.1
 		 * @return boolean
 		 */
 		public function tearDown(){
@@ -463,9 +464,10 @@
 		}
 
 		/**
-		 * Construct the html block to display a summary of this field. Any error messages
-		 * generated are appended to the optional input error array. This function calls
-		 * buildLocationSelect once it is completed
+		 * Construct the html block to display a summary of this field, which is the field
+		 * Label and it's location within the section. Any error messages generated are 
+		 * appended to the optional input error array. This function calls
+		 * `buildLocationSelect` once it is completed
 		 *
 		 * @see buildLocationSelect()
 		 * @param array $errors (optional)
@@ -489,17 +491,18 @@
 
 		/**
 		 * Build the location select widget. This widget allows users to select
-		 * whether this field will appear as main content or in the sidebar.
+		 * whether this field will appear in the main content column or in the sidebar
+		 * when creating a new entry.
 		 *
 		 * @param string $selection (optional)
 		 *	the currently selected location, if there is one. this defaults to null.
 		 * @param string $name (optional)
-		 *	the name of this field. this is optional and defaults to "fields[location]".
+		 *	the name of this field. this is optional and defaults to `fields[location]`.
 		 * @param string $label_value (optional)
 		 *	any predefined label for this widget. this is an optional argument that defaults
 		 *	to null.
-		 * @return Widget
-		 *	the constructed location select html.
+		 * @return XMLElement
+		 *	An XMLElement representing a `<select>` field containing the options.
 		 */
 		public function buildLocationSelect($selected = null, $name = 'fields[location]', $label_value = null) {
 			if (!$label_value) $label_value = __('Placement');
@@ -526,8 +529,8 @@
 		 * @param string $label_value
 		 *	the default label for the widget to construct. if null is passed in then
 		 *	this defaults to the localization of "Formatting".
-		 * @return Widget
-		 *	the constructed html representation of the text formatter selector.
+		 * @return XMLElement
+		 *	An XMLElement representing a `<select>` field containing the options.
 		 */
 		public function buildFormatterSelect($selected = null, $name='fields[format]', $label_value){
 
@@ -555,13 +558,14 @@
 		}
 
 		/**
-		 * Append a constructed html representation of a validator selection form
-		 * fragment to a given XMLElement. Note that this function differs from the
-		 * other two similarly named build functions in that it takes an XMLElement
-		 * to append the Validator to as a parameter, and does not return anything.
+		 * Append a validator selector to a given XMLElement. Note that this 
+		 * function differs from the other two similarly named build functions in 
+		 * that it takes an XMLElement to append the Validator to as a parameter,
+		 * and does not return anything.
 		 *
 		 * @param XMLElement $wrapper
-		 *	the parent element to append the constructed validator selector to.
+		 *	the parent element to append the XMLElement of the Validation select to,
+		 *  passed by reference.
 		 * @param string $selection (optional)
 		 *	the current validator selection if there is one. defaults to null if there
 		 *	isn't.
@@ -615,7 +619,7 @@
 
 		/**
 		 * Append the show column html widget to the input parent xml element. This
-		 * displays a column in the Publish Index table or not.
+		 * displays a column in the entries table or not.
 		 *
 		 * @param XMLElement $wrapper
 		 *	the parent xml element to append the checkbox to.
@@ -678,8 +682,8 @@
 		 * @param array $errors
 		 *	the array to populate with the errors found.
 		 * @param boolean $checkForDuplicates (optional)
-		 *	if set to true, duplicate field entries will be flagged as errors.
-		 *	this defaults to true.
+		 *	if set to true, duplicate Field name's in the same section will be flagged 
+		 *  as errors. Defaults to true.
 		 * @return integer
 		 *	returns the status of the checking. if errors has been populated with
 		 *	any errors `self::__ERROR__`, `self::__OK__` otherwise.
@@ -723,7 +727,7 @@
 		/**
 		 * Format this field value for display in the publish index tables. By default,
 		 * Symphony will truncate the value to the configuration setting `cell_truncation_length`.
-		 * This function will attempt to use PHP's mbstring functions if they are available.
+		 * This function will attempt to use PHP's `mbstring` functions if they are available.
 		 *
 		 * @param array $data
 		 *	an associative array of data for this string. At minimum this requires a
@@ -740,8 +744,8 @@
 
 			$value = strip_tags($data['value']);
 
-			if(function_exists('mb_substr')) {
-				$value = (strlen($value) <= $max_length ? $value : mb_substr($value, 0, $max_length, 'utf-8') . '...');
+			if(function_exists('mb_substr') && function_exists('mb_strlen')) {
+				$value = (mb_strlen($value, 'utf-8') <= $max_length ? $value : mb_substr($value, 0, $max_length, 'utf-8') . '...');
 			}
 			else {
 				$value = (strlen($value) <= $max_length ? $value : substr($value, 0, $max_length) . '...');
@@ -760,8 +764,8 @@
 
 		/**
 		 * Display the publish panel for this field. The display panel is the
-		 * interface to create the data in instances of this field once added
-		 * to a section.
+		 * interface shown to Authors that allow them to input data into this 
+		 * field for an Entry.
 		 *
 		 * @param XMLElement $wrapper
 		 *	the xml element to append the html defined user interface to this
@@ -779,7 +783,7 @@
 		 * @param string $fieldnameSuffix (optional)
 		 *	the string to be appended to the display of the name of this field.
 		 *	this defaults to null.
-		 * @param number $entry_id (optional)
+		 * @param integer $entry_id (optional)
 		 *	the entry id of this field. this defaults to null.
 		 */
 		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null){}
@@ -794,9 +798,9 @@
 		 * @param string $message
 		 *	the place to set any generated error message. any previous value for
 		 *	this variable will be overwritten.
-		 * @param number $entry_id (optional)
+		 * @param integer $entry_id (optional)
 		 *	the optional id of this field entry instance. this defaults to null.
-		 * @return number
+		 * @return integer
 		 *	`self::__MISSING_FIELDS__` if there are any missing required fields,
 		 *	`self::__OK__` otherwise.
 		 */
@@ -817,7 +821,7 @@
 		 *
 		 * @param mixed $data
 		 *	post data from the entry form
-		 * @param reference $status
+		 * @param integer $status
 		 *	the status code resultant from processing the data.
 		 * @param boolean $simulate (optional)
 		 *	true if this will tell the CF's to simulate data creation, false
@@ -863,7 +867,8 @@
 		 * Default accessor for the includable elements of this field. This array
 		 * will populate the Datasource included elements. Fields that have
 		 * different modes will override this and add new items to the array.
-		 * The Symphony convention is element_name : mode.
+		 * The Symphony convention is element_name : mode. Modes allow Fields to
+		 * output different XML in datasources.
 		 *
 		 * @return array
 		 *	the array of includable elements from this field.
@@ -873,7 +878,7 @@
 		}
 
 		/**
-		 * Test whether the input string is a regex filter.
+		 * Test whether the input string is a regular expression.
 		 *
 		 * @param string $string
 		 *	the string to test.
@@ -1026,7 +1031,7 @@
 		 *  could be 'items' or 'full' and then the function would display the data
 		 *  in a different way depending on what was selected in the datasource
 		 *  included elements.
-		 * @param number $entry_id (optional)
+		 * @param integer $entry_id (optional)
 		 *	the identifier of this field entry instance. defaults to null.
 		 */
 		public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
@@ -1087,6 +1092,8 @@
 		 * minimum set of columns for a valid field table. Subclasses are expected
 		 * to overload this method to create a table structure that contains
 		 * additional columns to store the specific data created by the field.
+		 *
+		 * @return boolean
 		 */
 		public function createTable(){
 			return Symphony::Database()->query(
@@ -1104,7 +1111,7 @@
 		/**
 		 * Remove the entry data of this field from the database.
 		 *
-		 * @param number $entry_id
+		 * @param integer $entry_id
 		 *	the id of the entry to delete.
 		 * @param array $data (optional)
 		 *	The entry data provided for fields to do additional cleanup
@@ -1121,14 +1128,14 @@
 		/**
 		 * Create an association between a section and a field.
 		 *
-		 * @param number $parent_section_id
+		 * @param integer $parent_section_id
 		 *  The linked section id.
-		 * @param number $child_field_id
+		 * @param integer $child_field_id
 		 *  The field ID of the field that is creating the association
-		 * @param number $parent_field_id (optional)
+		 * @param integer $parent_field_id (optional)
 		 *  The field ID of the linked field in the linked section
 		 * @param boolean $show_association (optional)
-		 *	Whether of not the link should be shown on the Publish Index of the
+		 *	Whether of not the link should be shown on the entries tableof the
 		 * linked section. This defaults to true.
 		 * @return boolean
 		 *	true if the association was successfully made, false otherwise.
@@ -1161,7 +1168,7 @@
 		/**
 		 * Permanently remove a section association for this field in the database.
 		 *
-		 * @param number $child_field_id
+		 * @param integer $child_field_id
 		 *	the field ID of the linked section's linked field.
 		 */
 		public function removeSectionAssociation($child_field_id){
@@ -1175,9 +1182,9 @@
 		 *
 		 * @param array $data
 		 *	the data from which to construct the associated search entry value.
-		 * @param number $field_id (optional)
+		 * @param integer $field_id (optional)
 		 *	an optional id of the associated field? this defaults to null.
-		 * @param number $parent_entry_id (optional)
+		 * @param integer $parent_entry_id (optional)
 		 *	an optional parent identifier of the associated field entry? this defaults
 		 *	to null.
 		 * @return array
