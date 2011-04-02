@@ -30,6 +30,12 @@
 		exit();
 	}
 
+	// Set the current timezone, should that not be available
+	// default to GMT.
+	if(!date_default_timezone_set(@date_default_timezone_get())) {
+		date_default_timezone_set('GMT');
+	}
+
 	// Defines
 	define('kVERSION', '2.2.1 Beta 1');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
