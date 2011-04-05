@@ -108,6 +108,10 @@
 				$states[$value] = $value;
 			}
 
+			if($this->get('sort_options') == 'yes') {
+				natsort($states);
+			}
+
 			return $states;
 		}
 
@@ -119,7 +123,6 @@
 
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			$states = $this->getToggleStates();
-			natsort($states);
 
 			if(!is_array($data['value'])) $data['value'] = array($data['value']);
 
@@ -162,8 +165,7 @@
 		public function findAndAddDynamicOptions(&$values){
 			if(!is_array($values)) $values = array();
 
-			$sql = "SELECT DISTINCT `value` FROM `tbl_entries_data_".$this->get('dynamic_options')."`
-					ORDER BY `value` DESC";
+			$sql = "SELECT DISTINCT `value` FROM `tbl_entries_data_".$this->get('dynamic_options')."` ORDER BY `value` ASC";
 
 			if($results = Symphony::Database()->fetchCol('value', $sql)) $values = array_merge($values, $results);
 		}
@@ -274,6 +276,7 @@
 			if($this->get('static_options') != '') $fields['static_options'] = $this->get('static_options');
 			if($this->get('dynamic_options') != '') $fields['dynamic_options'] = $this->get('dynamic_options');
 			$fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
+			$fields['sort_options'] = $this->get('sort_options') == 'yes' ? 'yes' : 'no';
 			$fields['show_association'] = $this->get('show_association') == 'yes' ? 'yes' : 'no';
 
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
@@ -304,6 +307,7 @@
 		public function findDefaults(&$fields){
 			if(!isset($fields['allow_multiple_selection'])) $fields['allow_multiple_selection'] = 'no';
 			if(!isset($fields['show_association'])) $fields['show_association'] = 'no';
+			if(!isset($fields['show_association'])) $fields['sort_options'] = 'no';
 		}
 
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
@@ -351,15 +355,24 @@
 
 			$wrapper->appendChild($div);
 
+			$div = new XMLElement('div', NULL, array('class' => 'compact'));
+
 			## Allow selection of multiple items
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Allow selection of multiple options', array($input->generate())));
-
-			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 			$div->appendChild($label);
+
 			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Options'));
+
+			## Sort options?
+			$label = Widget::Label();
+			$input = Widget::Input('fields['.$this->get('sortorder').'][sort_options]', 'yes', 'checkbox');
+			if($this->get('sort_options') == 'yes') $input->setAttribute('checked', 'checked');
+			$label->setValue(__('%s Sort all options alphabetically', array($input->generate())));
+			$div->appendChild($label);
+
 			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
 			$wrapper->appendChild($div);

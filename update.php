@@ -388,13 +388,17 @@ Options +FollowSymlinks -Indexes
 				$select_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_select`");
 
 				if(is_array($select_tables) && !empty($select_tables)) foreach($select_tables as $field) {
-					try {
+					if(tableContainsField('tbl_entries_data_' . $field, 'show_association')) {
 						$frontend->Database->query(sprintf(
 							"ALTER TABLE `tbl_entries_data_%d` DROP `show_association`",
 							$field
 						));
 					}
-					catch (Exception $ex) {}
+				}
+
+				// Update Select table to include the sorting option
+				if(!tableContainsField('tbl_fields_select', 'sort_options')) {
+					$frontend->Database->query('ALTER TABLE `tbl_fields_select` ADD `sort_options` ENUM( "yes", "no" ) COLLATE utf8_unicode_ci NOT NULL DEFAULT "no"');
 				}
 			}
 
