@@ -37,9 +37,7 @@ var Symphony = {};
 			Symphony.Language.add({
 				'Add item': false,
 				'Remove selected items': false,
-				'Are you sure you want to {$action} {$name}?': false,
-				'Are you sure you want to {$action} {$count} items?': false,
-				'Are you sure you want to {$action}?': false,
+				'Are you sure you want to proceed?': false,
 				'Reordering was unsuccessful.': false,
 				'Password': false,
 				'Change Password': false,
@@ -580,12 +578,14 @@ var Symphony = {};
 		$('button.confirm').live('click', function() {
 			var button = $(this),
 				name = document.title.split(/[\u2013]\s*/g)[2],
-				text = (name ? 'Are you sure you want to {$action} {$name}?' : 'Are you sure you want to {$action}?');
+				message = button.attr('data-message');
+				
+			// Set default message
+			if(!message) {
+				message = Symphony.Language.get('Are you sure you want to proceed?');
+			}
 
-			return confirm(Symphony.Language.get(text, {
-				'action': button.text().toLowerCase(),
-				'name': name
-			}));
+			return confirm(message);
 		});
 
 		// Confirm with selected actions
@@ -594,14 +594,17 @@ var Symphony = {};
 				option = select.find('option:selected'),
 				input = $('table input:checked'),
 				count = input.size(),
-				text = (count > 1 ? 'Are you sure you want to {$action} {$count} items?' : 'Are you sure you want to {$action} {$name}?');
-
+				message = option.attr('data-message');
+				
+			// Needs confirmation
 			if(option.is('.confirm')) {
-				return confirm(Symphony.Language.get(text, {
-					'action': option.text().toLowerCase(), // Does this work in all languages?
-					'name': $.trim(input.parents('tr').find('td:first').text()),
-					'count': count
-				}));
+			
+				// Set default message
+				if(!message) {
+					message = Symphony.Language.get('Are you sure you want to proceed?');
+				}
+
+				return confirm(message);
 			}
 		});
 

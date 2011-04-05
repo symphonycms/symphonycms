@@ -311,7 +311,9 @@
 
 			$options = array(
 				array(NULL, false, __('With Selected...')),
-				array('delete', false, __('Delete'), 'confirm')
+				array('delete', false, __('Delete'), 'confirm', null, array(
+					'data-message' => __('Are you sure you want to delete the selected entries?')
+				))
 			);
 
 			$toggable_fields = $section->fetchToggleableFields();
@@ -817,7 +819,7 @@
 			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
 
 			$button = new XMLElement('button', __('Delete'));
-			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this entry'), 'type' => 'submit', 'accesskey' => 'd'));
+			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this entry'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this entry?')));
 			$div->appendChild($button);
 
 			$this->Form->appendChild($div);
