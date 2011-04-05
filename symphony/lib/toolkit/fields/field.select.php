@@ -165,9 +165,18 @@
 		public function findAndAddDynamicOptions(&$values){
 			if(!is_array($values)) $values = array();
 
-			$sql = "SELECT DISTINCT `value` FROM `tbl_entries_data_".$this->get('dynamic_options')."` ORDER BY `value` ASC";
+			if($results = Symphony::Database()->fetchCol('value', sprintf("
+					SELECT DISTINCT `value`
+					FROM `tbl_entries_data_%d`
+					ORDER BY `value` ASC
+				", $this->get('dynamic_options')
+			))) {
+				if($this->get('sort_options') == 'no') {
+					natsort($results);
+				}
 
-			if($results = Symphony::Database()->fetchCol('value', $sql)) $values = array_merge($values, $results);
+				$values = array_merge($values, $results);
+			}
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL){
