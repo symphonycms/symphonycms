@@ -304,15 +304,6 @@ Options +FollowSymlinks -Indexes
 
 					// Update Select table to include the new association field
 					$frontend->Database->query('ALTER TABLE `tbl_fields_select` ADD `show_association` ENUM( "yes", "no" ) COLLATE utf8_unicode_ci NOT NULL DEFAULT "yes"');
-					// Update Select tables with Hide Association field
-					$select_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_select`");
-
-					if(is_array($select_tables) && !empty($select_tables)) foreach($select_tables as $field) {
-						$frontend->Database->query(sprintf(
-							"ALTER TABLE `tbl_entries_data_%d` ADD `show_association` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no'",
-						$field
-						));
-					}
 				}
 
 				if(tableContainsField('tbl_authors', 'default_section')) {
@@ -392,6 +383,19 @@ Options +FollowSymlinks -Indexes
 					$frontend->Database->query('OPTIMIZE TABLE `tbl_cache`');
 				}
 				catch (Exception $ex) {}
+
+				// Remove Hide Association field from Select Data tables
+				$select_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_select`");
+
+				if(is_array($select_tables) && !empty($select_tables)) foreach($select_tables as $field) {
+					try {
+						$frontend->Database->query(sprintf(
+							"ALTER TABLE `tbl_entries_data_%d` DROP `show_association`",
+							$field
+						));
+					}
+					catch (Exception $ex) {}
+				}
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
