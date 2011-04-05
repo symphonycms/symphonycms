@@ -306,9 +306,11 @@ var Symphony = {};
 					};
 
 				// Delayed animation to new styles
-				notice.removeClass(newclass).delay(delay).animate(styles, 'slow', 'linear', function() {
-					$(this).removeClass('success');
-				});
+				if(notice.is(':visible')) {
+					notice.removeClass(newclass).delay(delay).animate(styles, 'slow', 'linear', function() {
+						$(this).removeClass('success');
+					});
+				}
 			},
 
 			/**
