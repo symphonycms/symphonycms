@@ -113,7 +113,7 @@
 		 */
 		public function setSenderName($name){
 			if(preg_match('%[\r\n]%', $name)){
-				throw new EmailValidationException(('Sender Name can not contain carriage return or newlines.'));
+				throw new EmailValidationException(__('Sender Name can not contain carriage return or newlines.'));
 			}
 			$this->_sender_name = $name;
 		}
