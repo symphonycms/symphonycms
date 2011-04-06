@@ -330,7 +330,6 @@
 				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
 
 				if($id){
-					$this->_user_id = $id;
 					$this->Author = AuthorManager::fetchByID($id);
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
@@ -388,7 +387,6 @@
 			}
 
 			if($row){
-				$this->_user_id = $row['id'];
 				$this->Author = AuthorManager::fetchByID($row['id']);
 				$this->Cookie->set('username', $row['username']);
 				$this->Cookie->set('pass', $row['password']);
@@ -437,7 +435,6 @@
 					$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
 
 					if($id){
-						$this->_user_id = $id;
 						self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 						$this->Author = AuthorManager::fetchByID($id);
 						Lang::set($this->Author->get('language'));
