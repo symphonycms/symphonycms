@@ -121,9 +121,10 @@
 		 * @return HTMLPage
 		 */
 		private function __buildPage($page){
+			$is_logged_in = $this->isLoggedIn();
 
 			if(empty($page) || is_null($page)){
-				if(!$this->isLoggedIn()) {
+				if(!$is_logged_in) {
 					$page  = "/login";
 				}
 				else {
@@ -169,7 +170,7 @@
 			include_once((isset($this->_callback['driverlocation']) ? $this->_callback['driverlocation'] : CONTENT) . '/content.' . $this->_callback['driver'] . '.php');
 			$this->Page = new $this->_callback['classname']($this);
 
-			if(!$this->isLoggedIn() && $this->_callback['driver'] != 'login'){
+			if(!$is_logged_in && $this->_callback['driver'] != 'login'){
 				if(is_callable(array($this->Page, 'handleFailedAuthorisation'))) $this->Page->handleFailedAuthorisation();
 				else{
 					include_once(CONTENT . '/content.login.php');
