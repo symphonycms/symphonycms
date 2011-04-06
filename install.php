@@ -191,7 +191,6 @@
 		$conf['general']['sitename'] = 'Symphony CMS';
 		$conf['image']['cache'] = '1';
 		$conf['image']['quality'] = '90';
-		$conf['database']['driver'] = 'mysql';
 		$conf['database']['character_set'] = 'utf8';
 		$conf['database']['character_encoding'] = 'utf8';
 		$conf['database']['runtime_character_set_alter'] = '1';

@@ -400,6 +400,10 @@ Options +FollowSymlinks -Indexes
 				if(!tableContainsField('tbl_fields_select', 'sort_options')) {
 					$frontend->Database->query('ALTER TABLE `tbl_fields_select` ADD `sort_options` ENUM( "yes", "no" ) COLLATE utf8_unicode_ci NOT NULL DEFAULT "no"');
 				}
+
+				// Remove the 'driver' from the Config
+				unset($settings['database']['driver']);
+				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,

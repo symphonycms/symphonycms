@@ -24,6 +24,7 @@
 	require_once(TOOLKIT . '/class.profiler.php');
 	require_once(TOOLKIT . '/class.author.php');
 	require_once(TOOLKIT . '/class.email.php');
+	require_once(TOOLKIT . '/class.mysql.php');
 
 	require_once(TOOLKIT . '/class.authormanager.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
@@ -230,14 +231,10 @@
 		}
 
 		/**
-		 * Setter for the `$Database`. This will load the default
-		 * database driver and create a new instance of it from the Symphony
-		 * configuration. Symphony will attempt to create a connection to
-		 * the database using the connection details provided by in the Symphony
-		 * configuration. If any errors occur whilst doing so, a Symphony Error
-		 * Page is returned.
-		 * Note, while it is possible to create your own database driver, Symphony
-		 * officially only supports MySQL.
+		 * Setter for the `$Database`. This will create a new Database driver
+		 * and then attempt to create a connection to the database using the
+		 * connection details provided in the Symphony configuration. If any
+		 * errors occur whilst doing so, a Symphony Error Page is displayed.
 		 *
 		 * @return boolean
 		 *  This function will return true if the `$Database` was
@@ -246,16 +243,7 @@
 		public function initialiseDatabase(){
 			if (self::$Database) return true;
 
-			$error = null;
-			$driver = self::$Configuration->get('driver', 'database');
-			$driver_filename = TOOLKIT . '/class.' . $driver . '.php';
-
-			if(!is_file($driver_filename)) {
-				throw new SymphonyErrorPage("Could not find database driver '<code>{$driver}</code>'", 'Symphony Database Error');
-			}
-
-			require_once($driver_filename);
-			self::$Database = new $driver;
+			self::$Database = new MySQL;
 
 			$details = self::$Configuration->get('database');
 
