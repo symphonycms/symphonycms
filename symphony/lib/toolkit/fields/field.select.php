@@ -316,7 +316,7 @@
 		public function findDefaults(&$fields){
 			if(!isset($fields['allow_multiple_selection'])) $fields['allow_multiple_selection'] = 'no';
 			if(!isset($fields['show_association'])) $fields['show_association'] = 'no';
-			if(!isset($fields['show_association'])) $fields['sort_options'] = 'no';
+			if(!isset($fields['sort_options'])) $fields['sort_options'] = 'no';
 		}
 
 		public function displaySettingsPanel(&$wrapper, $errors = null) {

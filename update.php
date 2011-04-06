@@ -404,6 +404,20 @@ Options +FollowSymlinks -Indexes
 				// Remove the 'driver' from the Config
 				unset($settings['database']['driver']);
 				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
+
+				// Remove the NOT NULL from the Author tables
+				try {
+					$author = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_author`");
+
+					foreach($author as $id) {
+						$table = '`tbl_entries_data_' . $id . '`';
+
+						$frontend->Database->query(
+							'ALTER TABLE ' . $table . ' CHANGE `author_id` `author_id` int(11) unsigned NULL'
+						);
+					}
+				}
+				catch(Exception $ex) {}
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
