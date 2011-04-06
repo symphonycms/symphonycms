@@ -126,10 +126,12 @@
 			GenericExceptionHandler::initialise(self::$Log);
 			GenericErrorHandler::initialise(self::$Log, self::$Configuration->get('strict_error_handling', 'symphony'));
 
-			$this->initialiseCookie();
 			$this->initialiseDatabase();
 			$this->initialiseExtensionManager();
+			$this->initialiseCookie();
 
+			// If the user is not a logged in Author, turn off the verbose error
+			// messages.
 			if(!self::isLoggedIn() && is_null($this->Author)){
 				GenericExceptionHandler::$enabled = false;
 			}
@@ -213,7 +215,6 @@
 			self::$ExtensionManager = new ExtensionManager;
 
 			if(!(self::$ExtensionManager instanceof ExtensionManager)){
-				GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
 			}
 		}
@@ -249,8 +250,7 @@
 			$driver = self::$Configuration->get('driver', 'database');
 			$driver_filename = TOOLKIT . '/class.' . $driver . '.php';
 
-			if(!is_file($driver_filename)){
-				GenericExceptionHandler::$enabled = true;
+			if(!is_file($driver_filename)) {
 				throw new SymphonyErrorPage("Could not find database driver '<code>{$driver}</code>'", 'Symphony Database Error');
 			}
 
@@ -275,7 +275,6 @@
 			}
 			catch(DatabaseException $e){
 				$error = self::$Database->getlastError();
-				GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage(
 					$error['num'] . ': ' . $error['msg'],
 					'Symphony Database Error',
