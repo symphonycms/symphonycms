@@ -178,3 +178,7 @@ details for establishing a database connection and about your server environment
 	rm install.php install.sql workspace/install.sql update.php
 
 4. Dance like it's 2012!
+
+## License
+
+Symphony is released under the MIT License.
