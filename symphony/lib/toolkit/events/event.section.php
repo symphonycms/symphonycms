@@ -11,6 +11,12 @@
 		}
 	}
 
+	if(!function_exists('__reduceType')) {
+		function __reduceType($a, $b) {
+			return (empty($b)) ? 'missing' : 'invalid';
+		}
+	}
+
 	if (!function_exists('__doit')) {
 		function __doit($source, $fields, &$result, &$event, $filters = array(), $position=NULL, $entry_id=NULL){
 
@@ -105,7 +111,19 @@
 
 				foreach($errors as $field_id => $message){
 					$field = $entryManager->fieldManager->fetch($field_id);
-					$result->appendChild(new XMLElement($field->get('element_name'), NULL, array('label' => General::sanitize($field->get('label')), 'type' => ($fields[$field->get('element_name')] == '' ? 'missing' : 'invalid'), 'message' => General::sanitize($message))));
+
+					if(is_array($fields[$field->get('element_name')])) {
+						$type = array_reduce($fields[$field->get('element_name')], '__reduceType');
+					}
+					else {
+						$type = ($fields[$field->get('element_name')] == '') ? 'missing' : 'invalid';
+					}
+
+					$result->appendChild(new XMLElement($field->get('element_name'), NULL, array(
+						'label' => General::sanitize($field->get('label')),
+						'type' => $type,
+						'message' => General::sanitize($message)
+					)));
 				}
 
 				if(isset($post_values) && is_object($post_values)) $result->appendChild($post_values);
