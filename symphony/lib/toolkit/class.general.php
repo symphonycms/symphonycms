@@ -826,6 +826,7 @@
 
 				if(is_array($value)) {
 					self::array_to_xml($child, $value);
+					if($child->getNumberOfChildren() == 0) return;
 				}
 
 				else if($validate == true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)) {
