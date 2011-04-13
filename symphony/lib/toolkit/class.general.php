@@ -357,36 +357,6 @@
 		}
 
 		/**
-		 * Encode (parts of) an email header if necessary, according to RFC2047. if
-		 * mb_internal_encoding is an available function then this is used to encode
-		 * the header, otherwise the encoding is done manually.
-		 *
-		 * @author Michael Eichelsdoerfer
-		 * @param string $input
-		 *	the elements of the header to encode.
-		 * @param string charset (optional)
-		 *	the character set in which to encode the header. this defaults to 'ISO-8859-1'.
-		 * @return string
-		 *	the resulting encoded email header.
-		 */
-		public static function encodeHeader($input, $charset='ISO-8859-1') {
-			if(preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches)) {
-				if(function_exists('mb_internal_encoding')) {
-					mb_internal_encoding($charset);
-					$input = mb_encode_mimeheader($input, $charset, 'Q');
-				}
-				else {
-					foreach ($matches[1] as $value) {
-						$replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
-						$input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
-					}
-				}
-			}
-
-			return $input;
-		}
-
-		/**
 		 * Given a string, this will clean it for use as a Symphony handle. Preserves multi-byte characters.
 		 *
 		 * @since Symphony 2.2.1
