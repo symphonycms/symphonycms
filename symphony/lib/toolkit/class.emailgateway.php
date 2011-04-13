@@ -141,7 +141,7 @@
 		 * @param string $text_plain
 		 */
 		public function setTextPlain($text_plain){
-			//TODO: 
+			//TODO:
 			$this->_text_plain = $text_plain;
 		}
 
@@ -155,7 +155,7 @@
 		public function setTextHtml($text_html){
 			$this->_text_html = $text_html;
 		}
-		
+
 		/**
 		 * @todo Document this function
 		 * @param string|array $file
