@@ -56,7 +56,8 @@
 		 * @param string $name
 		 * 	The gateway to look for
 		 * @return string|boolean
-		 *	If the gateway is found, the path to the folder containing the gateway is returned.
+		 *	If the gateway is found, the path to the folder containing the 
+		 *  gateway is returned.
 		 *	If the gateway is not found, false is returned.
 		 */
 		public function __find($name){
@@ -122,7 +123,8 @@
 
 		/**
 		 * Returns an array of all gateways.
-		 * Each item in the array will contain the return value of the about() function of each gateway.
+		 * Each item in the array will contain the return value of the about() 
+		 * function of each gateway.
 		 *
 		 * @return array
 		 */
