@@ -311,21 +311,21 @@
 		 *
 		 * Allows you to send emails. It initializes the core email class.
 		 *
-         * @deprecated Since Symphony 2.2
+		 * @deprecated Since Symphony 2.2
 		 * @param string $to_email
-         *  email of the recipient
+		 *  email of the recipient
 		 * @param string $from_email
-         *  the from email address. This is usually your email
+		 *  the from email address. This is usually your email
 		 * @param string $from_name
-         *  the name of the sender
+		 *  the name of the sender
 		 * @param string $subject
-         *  subject of the email
+		 *  subject of the email
 		 * @param string $message
-         *  contents of the email
+		 *  contents of the email
 		 * @param array $additional_headers
-         *  an array containing additional email headers
+		 *  an array containing additional email headers.
 		 * @return boolean
-         *  true on success
+		 *  true on success
 		 */
 		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers = array()) {
 
