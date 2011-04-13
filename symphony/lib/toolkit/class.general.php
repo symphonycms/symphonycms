@@ -323,7 +323,9 @@
 		 * @param string $message
 		 *  contents of the email
 		 * @param array $additional_headers
-		 *  an array containing additional email headers.
+		 *  an array containing additional email headers. This will NOT work
+		 *  for Content-Type header fields which will be added/overwritten by
+		 *  the email gateways.)
 		 * @return boolean
 		 *  true on success
 		 */
