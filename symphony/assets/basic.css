@@ -158,7 +158,7 @@ button {
 	border: 1px solid #c31;
 	border-bottom-width: 0;
 }
-.invalid label > i {
+body .invalid label > i {
 	top: 0.75em; right: 1em;
 	background-color: #d42;
 	color: #EAC9C2;
