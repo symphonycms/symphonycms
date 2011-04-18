@@ -112,7 +112,7 @@
 		 * The stylesheets reside in the `ASSETS` folder
 		 *
 		 * @param string $type
-		 *  Either 'forms' or 'tables'. Defaults to 'forms'
+		 *  Either 'form' or 'table'. Defaults to 'form'
 		 */
 		public function setPageType($type = 'form'){
 			$this->setBodyClass($type == 'form' || $type == 'single' ? 'single' : 'index');

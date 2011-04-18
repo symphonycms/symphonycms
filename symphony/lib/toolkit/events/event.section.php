@@ -172,12 +172,13 @@
 				}
 
 				$fields = $_POST['send-email'];
-				Symphony::Database()->cleanFields($fields);
+				$db = Symphony::Database();
 
 				$fields['recipient']		= __sendEmailFindFormValue($fields['recipient'], $_POST['fields'], true);
 				$fields['recipient']		= preg_split('/\,/i', $fields['recipient'], -1, PREG_SPLIT_NO_EMPTY);
 				$fields['recipient']		= array_map('trim', $fields['recipient']);
-				$fields['recipient']		= Symphony::Database()->fetch("SELECT `email`, `first_name` FROM `tbl_authors` WHERE `username` IN (" . implode("','", $fields['recipient']) . ")");
+				$fields['recipient']		= array_map(array($db, 'cleanValue'), $fields['recipient']);
+				$fields['recipient']		= Symphony::Database()->fetch("SELECT `email`, `first_name` FROM `tbl_authors` WHERE `username` IN ('" . implode("','", $fields['recipient']) . "')");
 
 				$fields['subject']			= __sendEmailFindFormValue($fields['subject'], $_POST['fields'], true, __('[Symphony] A new entry was created on %s', array(Symphony::Configuration()->get('sitename', 'general'))));
 				$fields['body']				= __sendEmailFindFormValue($fields['body'], $_POST['fields'], false, NULL, false);
