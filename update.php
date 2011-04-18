@@ -62,7 +62,7 @@
 
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.2.1 Beta 1');
+	define('kVERSION', '2.2.1RC1');
 	define('kCHANGELOG', 'https://gist.github.com/884691');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -304,15 +304,6 @@ Options +FollowSymlinks -Indexes
 
 					// Update Select table to include the new association field
 					$frontend->Database->query('ALTER TABLE `tbl_fields_select` ADD `show_association` ENUM( "yes", "no" ) COLLATE utf8_unicode_ci NOT NULL DEFAULT "yes"');
-					// Update Select tables with Hide Association field
-					$select_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_select`");
-
-					if(is_array($select_tables) && !empty($select_tables)) foreach($select_tables as $field) {
-						$frontend->Database->query(sprintf(
-							"ALTER TABLE `tbl_entries_data_%d` ADD `show_association` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no'",
-						$field
-						));
-					}
 				}
 
 				if(tableContainsField('tbl_authors', 'default_section')) {
@@ -392,6 +383,41 @@ Options +FollowSymlinks -Indexes
 					$frontend->Database->query('OPTIMIZE TABLE `tbl_cache`');
 				}
 				catch (Exception $ex) {}
+
+				// Remove Hide Association field from Select Data tables
+				$select_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_select`");
+
+				if(is_array($select_tables) && !empty($select_tables)) foreach($select_tables as $field) {
+					if(tableContainsField('tbl_entries_data_' . $field, 'show_association')) {
+						$frontend->Database->query(sprintf(
+							"ALTER TABLE `tbl_entries_data_%d` DROP `show_association`",
+							$field
+						));
+					}
+				}
+
+				// Update Select table to include the sorting option
+				if(!tableContainsField('tbl_fields_select', 'sort_options')) {
+					$frontend->Database->query('ALTER TABLE `tbl_fields_select` ADD `sort_options` ENUM( "yes", "no" ) COLLATE utf8_unicode_ci NOT NULL DEFAULT "no"');
+				}
+
+				// Remove the 'driver' from the Config
+				unset($settings['database']['driver']);
+				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
+
+				// Remove the NOT NULL from the Author tables
+				try {
+					$author = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_author`");
+
+					foreach($author as $id) {
+						$table = '`tbl_entries_data_' . $id . '`';
+
+						$frontend->Database->query(
+							'ALTER TABLE ' . $table . ' CHANGE `author_id` `author_id` int(11) unsigned NULL'
+						);
+					}
+				}
+				catch(Exception $ex) {}
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,

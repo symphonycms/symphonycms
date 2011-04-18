@@ -170,7 +170,7 @@
 
 			if($isEditing){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this event'), 'type' => 'submit', 'accesskey' => 'd'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this event'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this event?')));
 				$div->appendChild($button);
 			}
 
@@ -330,7 +330,7 @@
 					$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
 					$code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 					$code->appendChild(new XMLElement('filter', NULL, array('name' => 'admin-only', 'status' => 'failed')));
-					$code->appendChild(new XMLElement('filter', __('Recipient username was invalid'), array('name' => 'send-email', 'status' => 'failed')));
+					$code->appendChild(new XMLElement('filter', __('Recipient not found'), array('name' => 'send-email', 'status' => 'failed')));
 					$code->setValue('...', false);
 					$documentation_parts[] = self::processDocumentationCode($code);
 				}

@@ -24,6 +24,7 @@
 	require_once(TOOLKIT . '/class.profiler.php');
 	require_once(TOOLKIT . '/class.author.php');
 	require_once(TOOLKIT . '/class.email.php');
+	require_once(TOOLKIT . '/class.mysql.php');
 
 	require_once(TOOLKIT . '/class.authormanager.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
@@ -126,10 +127,12 @@
 			GenericExceptionHandler::initialise(self::$Log);
 			GenericErrorHandler::initialise(self::$Log, self::$Configuration->get('strict_error_handling', 'symphony'));
 
-			$this->initialiseCookie();
 			$this->initialiseDatabase();
 			$this->initialiseExtensionManager();
+			$this->initialiseCookie();
 
+			// If the user is not a logged in Author, turn off the verbose error
+			// messages.
 			if(!self::isLoggedIn() && is_null($this->Author)){
 				GenericExceptionHandler::$enabled = false;
 			}
@@ -213,7 +216,6 @@
 			self::$ExtensionManager = new ExtensionManager;
 
 			if(!(self::$ExtensionManager instanceof ExtensionManager)){
-				GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
 			}
 		}
@@ -229,14 +231,10 @@
 		}
 
 		/**
-		 * Setter for the `$Database`. This will load the default
-		 * database driver and create a new instance of it from the Symphony
-		 * configuration. Symphony will attempt to create a connection to
-		 * the database using the connection details provided by in the Symphony
-		 * configuration. If any errors occur whilst doing so, a Symphony Error
-		 * Page is returned.
-		 * Note, while it is possible to create your own database driver, Symphony
-		 * officially only supports MySQL.
+		 * Setter for the `$Database`. This will create a new Database driver
+		 * and then attempt to create a connection to the database using the
+		 * connection details provided in the Symphony configuration. If any
+		 * errors occur whilst doing so, a Symphony Error Page is displayed.
 		 *
 		 * @return boolean
 		 *  This function will return true if the `$Database` was
@@ -245,17 +243,7 @@
 		public function initialiseDatabase(){
 			if (self::$Database) return true;
 
-			$error = null;
-			$driver = self::$Configuration->get('driver', 'database');
-			$driver_filename = TOOLKIT . '/class.' . $driver . '.php';
-
-			if(!is_file($driver_filename)){
-				GenericExceptionHandler::$enabled = true;
-				throw new SymphonyErrorPage("Could not find database driver '<code>{$driver}</code>'", 'Symphony Database Error');
-			}
-
-			require_once($driver_filename);
-			self::$Database = new $driver;
+			self::$Database = new MySQL;
 
 			$details = self::$Configuration->get('database');
 
@@ -275,7 +263,6 @@
 			}
 			catch(DatabaseException $e){
 				$error = self::$Database->getlastError();
-				GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage(
 					$error['num'] . ': ' . $error['msg'],
 					'Symphony Database Error',
@@ -330,7 +317,6 @@
 				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
 
 				if($id){
-					$this->_user_id = $id;
 					$this->Author = AuthorManager::fetchByID($id);
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
@@ -388,7 +374,6 @@
 			}
 
 			if($row){
-				$this->_user_id = $row['id'];
 				$this->Author = AuthorManager::fetchByID($row['id']);
 				$this->Cookie->set('username', $row['username']);
 				$this->Cookie->set('pass', $row['password']);
@@ -437,7 +422,6 @@
 					$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
 
 					if($id){
-						$this->_user_id = $id;
 						self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 						$this->Author = AuthorManager::fetchByID($id);
 						Lang::set($this->Author->get('language'));

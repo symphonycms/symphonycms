@@ -37,7 +37,7 @@
 	}
 
 	// Defines
-	define('kVERSION', '2.2.1 Beta 1');
+	define('kVERSION', '2.2.1RC1');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
 	define('DOCROOT', rtrim(dirname(__FILE__), '\\/'));
@@ -191,7 +191,6 @@
 		$conf['general']['sitename'] = 'Symphony CMS';
 		$conf['image']['cache'] = '1';
 		$conf['image']['quality'] = '90';
-		$conf['database']['driver'] = 'mysql';
 		$conf['database']['character_set'] = 'utf8';
 		$conf['database']['character_encoding'] = 'utf8';
 		$conf['database']['runtime_character_set_alter'] = '1';

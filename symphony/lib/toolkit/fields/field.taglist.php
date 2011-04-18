@@ -2,14 +2,14 @@
 	/**
 	 * @package toolkit
 	 */
-	
+
 	/**
 	 * The Tag List field is really a different interface for the Select Box
-	 * field, offering a tag interface that can have static suggestions, 
+	 * field, offering a tag interface that can have static suggestions,
 	 * suggestions from another field or a dynamic list based on what an Author
 	 * has previously used for this field.
 	 */
-    
+
 	Class fieldTagList extends Field {
 		public function __construct(&$parent){
 			parent::__construct($parent);
@@ -72,7 +72,11 @@
 					$taglist = new XMLElement('ul');
 					$taglist->setAttribute('class', 'tags');
 
-					foreach($existing_tags as $tag) $taglist->appendChild(new XMLElement('li', $tag));
+					foreach($existing_tags as $tag) {
+						$taglist->appendChild(
+							new XMLElement('li', General::sanitize($tag))
+						);
+					}
 
 					$wrapper->appendChild($taglist);
 				}
@@ -101,7 +105,11 @@
 					$taglist = new XMLElement('ul');
 					$taglist->setAttribute('class', 'tags');
 
-					foreach($existing_tags as $tag) $taglist->appendChild(new XMLElement('li', $tag));
+					foreach($existing_tags as $tag) {
+						$taglist->appendChild(
+							new XMLElement('li', General::sanitize($tag))
+						);
+					}
 
 					$wrapper->appendChild($taglist);
 				}

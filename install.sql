@@ -147,6 +147,7 @@ CREATE TABLE `tbl_fields_select` (
   `field_id` int(11) unsigned NOT NULL,
   `allow_multiple_selection` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `show_association` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
+  `sort_options` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `static_options` text COLLATE utf8_unicode_ci,
   `dynamic_options` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),

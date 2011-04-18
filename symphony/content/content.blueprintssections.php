@@ -70,8 +70,12 @@
 
 			$options = array(
 				array(NULL, false, __('With Selected...')),
-				array('delete', false, __('Delete'), 'confirm'),
-				array('delete-entries', false, __('Delete Entries'), 'confirm')
+				array('delete', false, __('Delete'), 'confirm', null, array(
+					'data-message' => __('Are you sure you want to delete the selected sections?')
+				)),
+				array('delete-entries', false, __('Delete Entries'), 'confirm', null, array(
+					'data-message' => __('Are you sure you want to delete all entries in the selected sections?')
+				))
 			);
 
 			if (is_array($sections) && !empty($sections))  {
@@ -461,7 +465,7 @@
 			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
 
 			$button = new XMLElement('button', __('Delete'));
-			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this section'), 'type' => 'submit', 'accesskey' => 'd'));
+			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this section'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this section?')));
 			$div->appendChild($button);
 
 			$this->Form->appendChild($div);

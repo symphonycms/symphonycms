@@ -761,7 +761,7 @@
 
 			if($isEditing){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this data source'), 'type' => 'submit', 'accesskey' => 'd'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this data source'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this data source?')));
 				$div->appendChild($button);
 			}
 

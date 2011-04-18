@@ -2,6 +2,8 @@
 
 	include_once(TOOLKIT . '/class.xsltprocess.php');
 
+	$this->dsSTATIC = stripslashes($this->dsSTATIC);
+
 	if(!General::validateXML($this->dsSTATIC, $errors, false, new XsltProcess)) {
 		$result->appendChild(
 			new XMLElement('error', __('XML is invalid.'))

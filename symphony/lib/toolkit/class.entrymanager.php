@@ -353,10 +353,10 @@
 		}
 
 		/**
-		 * Given an array of Entry data from `tbl_entries` and a section ID, return an 
-		 * array of Entry objects. For performance reasons, it's possible to pass an array 
+		 * Given an array of Entry data from `tbl_entries` and a section ID, return an
+		 * array of Entry objects. For performance reasons, it's possible to pass an array
 		 * of field handles via `$element_names`, so that only a subset of the section schema
-		 * will be queried. This function currently only supports Entry from one section at a 
+		 * will be queried. This function currently only supports Entry from one section at a
 		 * time.
 		 *
 		 * @param array $rows
@@ -404,27 +404,22 @@
 
 			$schema = Symphony::Database()->fetch($schema_sql);
 
-			$tmp = array();
-			foreach ($rows as $r) {
-				$tmp[$r['id']] = $r;
-			}
-			$rows = $tmp;
-
 			$raw = array();
-
-			$rows_string = implode("', '", array_keys($rows));
+			$rows_string = '';
 
 			// Append meta data:
-			foreach ($rows as $entry_id => $entry) {
-				$raw[$entry_id]['meta'] = $entry;
+			foreach ($rows as $entry) {
+				$raw[$entry['id']]['meta'] = $entry;
+				$rows_string .= $entry['id'] . ',';
 			}
+			$rows_string = trim($rows_string, ',');
 
 			// Append field data:
 			foreach ($schema as $f) {
 				$field_id = $f['id'];
 
 				try{
-					$row = Symphony::Database()->fetch("SELECT * FROM `tbl_entries_data_{$field_id}` WHERE `entry_id` IN ('$rows_string') ORDER BY `id` ASC");
+					$row = Symphony::Database()->fetch("SELECT * FROM `tbl_entries_data_{$field_id}` WHERE `entry_id` IN ($rows_string) ORDER BY `id` ASC");
 				}
 				catch(Exception $e){
 					// No data due to error
@@ -461,17 +456,7 @@
 				}
 			}
 
-			// Need to restore the correct ID ordering
-			$tmp = array();
-
-			foreach (array_keys($rows) as $entry_id) {
-				$tmp[$entry_id] = $raw[$entry_id];
-			}
-
-			$raw = $tmp;
-
-			$fieldPool = array();
-
+			// Loop over the array of entry data and convert it to an array of Entry objects
 			foreach ($raw as $entry) {
 				$obj = $this->create();
 

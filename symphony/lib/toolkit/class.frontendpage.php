@@ -74,6 +74,15 @@
 		private $_pageData;
 
 		/**
+		 * Returns whether the user accessing this page is logged in as a Symphony
+		 * Author
+		 *
+		 * @since Symphony 2.2.1
+		 * @var boolean
+		 */
+		 private $is_logged_in = false;
+
+		/**
 		 * When events are processed, the results of them often can't be reproduced
 		 * when debugging the page as they happen during `$_POST`. There is a Symphony
 		 * configuration setting that allows the event results to be appended as a HTML
@@ -110,6 +119,8 @@
 			$this->DatasourceManager = new DatasourceManager($this->_Parent);
 			$this->EventManager = new EventManager($this->_Parent);
 			$this->ExtensionManager = Symphony::ExtensionManager();
+
+			$this->is_logged_in = Frontend::instance()->isLoggedIn();
 		}
 
 		/**
@@ -163,7 +174,7 @@
 			$devkit = null;
 			$output = null;
 
-			if (Frontend::instance()->isLoggedIn()) {
+			if ($this->is_logged_in) {
 				/**
 				 * Allows a devkit object to be specified, and stop continued execution:
 				 *
@@ -270,7 +281,7 @@
 			}
 
 			## EVENT DETAILS IN SOURCE
-			if (Frontend::instance()->isLoggedIn() && Symphony::Configuration()->get('display_event_xml_in_source', 'public') == 'yes') {
+			if ($this->is_logged_in && Symphony::Configuration()->get('display_event_xml_in_source', 'public') == 'yes') {
 				$output .= self::CRLF . '<!-- ' . self::CRLF . $this->_events_xml->generate(true) . ' -->';
 			}
 
@@ -352,7 +363,14 @@
 
 			if(is_array($_GET) && !empty($_GET)){
 				foreach($_GET as $key => $val){
-					if(!in_array($key, array('symphony-page', 'debug', 'profile'))) $this->_param['url-' . $key] = $val;
+					if(in_array($key, array('symphony-page', 'debug', 'profile'))) continue;
+
+					// If the browser sends encoded entities for &, ie. a=1&amp;b=2
+					// this causes the $_GET to output they key as amp;b, which results in
+					// $url-amp;b. This pattern will remove amp; allow the correct param
+					// to be used, $url-b
+					$key = preg_replace('/^amp;/', null, $key);
+					$this->_param['url-' . $key] = $val;
 				}
 			}
 
@@ -391,7 +409,7 @@
 			Frontend::instance()->Profiler->seed($xml_build_start);
 			Frontend::instance()->Profiler->sample('XML Built', PROFILE_LAP);
 
-			if(is_array($this->_env['pool']) && !empty($this->_env['pool'])){
+			if(is_array($this->_env['pool']) && !empty($this->_env['pool'])) {
 				foreach($this->_env['pool'] as $handle => $p){
 
 					if(!is_array($p)) $p = array($p);
@@ -565,7 +583,7 @@
 			$row['type'] = FrontendPage::fetchPageTypes($row['id']);
 
 			## Make sure the user has permission to access this page
-			if(!Frontend::instance()->isLoggedIn() && in_array('admin', $row['type'])){
+			if(!$this->is_logged_in && in_array('admin', $row['type'])){
 				$row = Symphony::Database()->fetchRow(0, "
 					SELECT `tbl_pages`.*
 					FROM `tbl_pages`, `tbl_pages_types`

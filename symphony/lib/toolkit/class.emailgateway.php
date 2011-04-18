@@ -14,14 +14,16 @@
 		 *
 		 * @param string $message
 		 * @param int $code
-		 * The previous exception, if nested. see http://www.php.net/manual/en/language.exceptions.extending.php
 		 * @param Exception $previous
+		 *  The previous exception, if nested. See
+		 *  http://www.php.net/manual/en/language.exceptions.extending.php
 		 * @return void
 		 */
 		public function __construct($message, $code = 0, $previous = null){
 			$trace = parent::getTrace();
 			// Best-guess to retrieve classname of email-gateway.
-			// Might fail in non-standard uses, will then return an empty string.
+			// Might fail in non-standard uses, will then return an
+			// empty string.
 			$gateway_class = $trace[1]['class']?' (' . $trace[1]['class'] . ')':'';
 			Symphony::$Log->pushToLog(__('Email Gateway Error') . $gateway_class  . ': ' . $message, $code, true);
 			parent::__construct($message);
@@ -79,10 +81,10 @@
 		/**
 		 * Sets the sender-email and sender-name.
 		 *
-		 * The email-address emails will be sent from
 		 * @param string $email
-		 * The name the emails will be sent from.
+		 *  The email-address emails will be sent from.
 		 * @param string $name
+		 *  The name the emails will be sent from.
 		 * @return void
 		 */
 		public function setFrom($email, $name){
@@ -93,8 +95,8 @@
 		/**
 		 * Sets the sender-email.
 		 *
-		 * The email-address emails will be sent from
 		 * @param string $email
+		 *  The email-address emails will be sent from.
 		 * @return void
 		 */
 		public function setSenderEmailAddress($email){
@@ -107,13 +109,13 @@
 		/**
 		 * Sets the sender-name.
 		 *
-		 * The name emails will be sent from
 		 * @param string $name
+		 *  The name emails will be sent from.
 		 * @return void
 		 */
 		public function setSenderName($name){
 			if(preg_match('%[\r\n]%', $name)){
-				throw new EmailValidationException(('Sender Name can not contain carriage return or newlines.'));
+				throw new EmailValidationException(__('Sender Name can not contain carriage return or newlines.'));
 			}
 			$this->_sender_name = $name;
 		}
@@ -121,8 +123,8 @@
 		/**
 		 * Sets the recipients.
 		 *
-		 * The email-address(es) to send the email to.
 		 * @param string|array $email
+		 *  The email-address(es) to send the email to.
 		 * @return void
 		 */
 		public function setRecipients($email){
@@ -141,7 +143,7 @@
 		 * @param string $text_plain
 		 */
 		public function setTextPlain($text_plain){
-			//TODO: 
+			//TODO:
 			$this->_text_plain = $text_plain;
 		}
 
@@ -155,7 +157,7 @@
 		public function setTextHtml($text_html){
 			$this->_text_html = $text_html;
 		}
-		
+
 		/**
 		 * @todo Document this function
 		 * @param string|array $file
@@ -170,7 +172,7 @@
 		/**
 		 * @todo Document this function
 		 * @param string $encoding
-		 *  Must be either `quoted-printable` or `base64`
+		 *  Must be either `quoted-printable` or `base64`.
 		 */
 		public function setTextEncoding($encoding = null){
 			if($encoding == 'quoted-printable'){
@@ -190,8 +192,8 @@
 		/**
 		 * Sets the subject.
 		 *
-		 * The subject that the email will have.
 		 * @param string $subject
+		 *  The subject that the email will have.
 		 * @return void
 		 */
 		public function setSubject($subject){
@@ -202,8 +204,8 @@
 		/**
 		 * Sets the reply-to-email.
 		 *
-		 * The email-address emails should be replied to
 		 * @param string $email
+		 *  The email-address emails should be replied to.
 		 * @return void
 		 */
 		public function setReplyToEmailAddress($email){
@@ -216,8 +218,8 @@
 		/**
 		 * Sets the reply-to-name.
 		 *
-		 * The name emails should be replied to
 		 * @param string $name
+		 *  The name emails should be replied to.
 		 * @return void
 		 */
 		public function setReplyToName($name){
@@ -231,10 +233,10 @@
 		 * Appends a single header field to the header fields array.
 		 * The header field should be presented as a name/body pair.
 		 *
-		 * The header name. Examples are From, X-Sender and Reply-to
 		 * @param string $name
-		 * The header body.
+		 *  The header field name. Examples are From, X-Sender and Reply-to.
 		 * @param string $body
+		 *  The header field body.
 		 * @return void
 		 */
 		public function appendHeaderField($name, $body){
@@ -248,8 +250,8 @@
 		 * Appends one or more header fields to the header fields array.
 		 * Header fields should be presented as an array with name/body pairs.
 		 *
-		 * The header name. Examples are From, X-Sender and Reply-to
 		 * @param array $header_array
+		 *  The header fields. Examples are From, X-Sender and Reply-to.
 		 * @return void
 		 */
 		public function appendHeaderFields(array $header_array = array()){
@@ -264,8 +266,10 @@
 		 */
 		public function validate(){
 			/*
-			 * Make sure the Recipient, Sender Name and Sender Email values are set.
-			 * The message body will be checked in the prepareMessage function.
+			 * Make sure the Recipient, Sender Name and Sender Email values
+			 * are set.
+			 * The message body will be checked in the prepareMessage
+			 * function.
 			 */
 			if(strlen(trim($this->_subject)) <= 0){
 				throw new EmailValidationException(__('Email subject cannot be empty.'));
@@ -291,7 +295,8 @@
 		/**
 		 * Build the message body and the content-describing header fields
 		 *
-		 * The result of this building is an updated body variable in the gateway itself.
+		 * The result of this building is an updated body variable in the
+		 * gateway itself.
 		 *
 		 * @return boolean
 		 */
@@ -342,9 +347,11 @@
 		}
 
 		/**
-		 * Build multipart email section. Used by sendmail and smtp classes to send multipart email.
+		 * Build multipart email section. Used by sendmail and smtp classes to
+		 * send multipart email.
 		 *
-		 * Will return a string containing the section. Can be used to send to an email server directly.
+		 * Will return a string containing the section. Can be used to send to
+		 * an email server directly.
 		 * @return string
 		 */
 		protected function getSectionMultipartAlternative() {
@@ -362,7 +369,8 @@
 		/**
 		 * Builds the attachment section of a multipart email.
 		 *
-		 * Will return a string containing the section. Can be used to send to an email server directly.
+		 * Will return a string containing the section. Can be used to send to
+		 * an email server directly.
 		 * @return string
 		 */
 		protected function getSectionAttachments() {
@@ -379,7 +387,8 @@
 		/**
 		 * Builds the text section of a text/plain email.
 		 *
-		 * Will return a string containing the section. Can be used to send to an email server directly.
+		 * Will return a string containing the section. Can be used to send to
+		 * an email server directly.
 		 * @return string
 		 */
 		protected function getSectionTextPlain() {
@@ -387,7 +396,8 @@
 				return EmailHelper::qpContentTransferEncode($this->_text_plain)."\r\n";
 			}
 			elseif ($this->_text_encoding == 'base64') {
-				// don't add CRLF if using base64 - spam filters don't like this
+				// don't add CRLF if using base64 - spam filters don't
+				// like this
 				return EmailHelper::base64ContentTransferEncode($this->_text_plain);
 			}
 			return $this->_text_plain."\r\n";
@@ -396,7 +406,8 @@
 		/**
 		 * Builds the html section of a text/html email.
 		 *
-		 * Will return a string containing the section. Can be used to send to an email server directly.
+		 * Will return a string containing the section. Can be used to send to
+		 * an email server directly.
 		 * @return string
 		 */
 		protected function getSectionTextHtml() {
@@ -404,16 +415,19 @@
 				return EmailHelper::qpContentTransferEncode($this->_text_html)."\r\n";
 			}
 			elseif ($this->_text_encoding == 'base64') {
-				// don't add CRLF if using base64 - spam filters don't like this
+				// don't add CRLF if using base64 - spam filters don't
+				// like this
 				return EmailHelper::base64ContentTransferEncode($this->_text_html);
 			}
 			return $this->_text_html."\r\n";
 		}
 
 		/**
-		 * Builds the right content-type/encoding types based on file and content-type.
+		 * Builds the right content-type/encoding types based on file and
+		 * content-type.
 		 *
-		 * Will return a string containing the section, or an empty array on failure. Can be used to send to an email server directly.
+		 * Will return a string containing the section, or an empty array on
+		 * failure. Can be used to send to an email server directly.
 		 * @return string
 		 */
 		public function contentInfoArray($type = NULL, $file = NULL) {
@@ -481,13 +495,14 @@
 		 * Sets a property.
 		 *
 		 * Magic function, supplied by php.
-		 * This function will try and find a method of this class, by camelcasing the name, and appending it with set.
+		 * This function will try and find a method of this class, by
+		 * camelcasing the name, and appending it with set.
 		 * If the function can not be found, an exception will be thrown.
 		 *
-		 * The property name.
 		 * @param string $name
-		 * The property value;
+		 *  The property name.
 		 * @param string $value
+		 *  The property value;
 		 * @return void|boolean
 		 */
 		public function __set($name, $value){
@@ -509,15 +524,20 @@
 		}
 
 		/**
-		 * Internal function to turn underscored variables into camelcase, for use in methods.
-		 * Because Symphony has a difference in naming between properties and methods (underscored vs camelcased)
-		 * and the Email class uses the magic __set function to find property-setting-methods, this conversion is needed.
+		 * Internal function to turn underscored variables into camelcase, for
+		 * use in methods.
+		 * Because Symphony has a difference in naming between properties and
+		 * methods (underscored vs camelcased) and the Email class uses the
+		 * magic __set function to find property-setting-methods, this
+		 * conversion is needed.
 		 *
-		 * The string to convert
 		 * @param string $string
-		 * If this is true, the first character will be uppercased. Useful for method names (setName).
-		 * If set to false, the first character will be lowercased. This is default behaviour.
+		 *  The string to convert
 		 * @param boolean $caseFirst
+		 *  If this is true, the first character will be uppercased. Useful
+		 *  for method names (setName).
+		 *  If set to false, the first character will be lowercased. This is
+		 *  default behaviour.
 		 * @return string
 		 */
 		private function __toCamel($string, $caseFirst = false){
@@ -533,8 +553,8 @@
 		/**
 		 * The reverse of the __toCamel function.
 		 *
-		 * The string to convert
 		 * @param string $string
+		 *  The string to convert
 		 * @return string
 		 */
 		private function __fromCamel($string){

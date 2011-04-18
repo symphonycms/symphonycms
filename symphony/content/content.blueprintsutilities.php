@@ -149,7 +149,7 @@
 
 			if($this->_context[0] == 'edit'){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this utility'), 'type' => 'submit', 'accesskey' => 'd'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this utility'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this Utility?')));
 				$div->appendChild($button);
 			}
 
