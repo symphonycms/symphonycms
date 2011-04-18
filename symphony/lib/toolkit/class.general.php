@@ -307,8 +307,6 @@
 		}
 
 		/**
-		 * Method: sendEmail
-		 *
 		 * Allows you to send emails. It initializes the core email class.
 		 *
 		 * @deprecated Since Symphony 2.2
@@ -798,11 +796,11 @@
 
 				if(is_array($value)) {
 					self::array_to_xml($child, $value);
-					if($child->getNumberOfChildren() == 0) return;
+					if($child->getNumberOfChildren() == 0) continue;
 				}
 
 				else if($validate == true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)) {
-					return;
+					continue;
 				}
 
 				else {
