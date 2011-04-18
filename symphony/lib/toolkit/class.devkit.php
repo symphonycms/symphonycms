@@ -142,7 +142,7 @@
              *  '/frontend/'
              * @param DOMDocument $xml
              */
-			$this->_page->ExtensionManager->notifyMembers(
+			Symphony::ExtensionManager()->notifyMembers(
 				'ManipulateDevKitNavigation', '/frontend/',
 				array(
 					'xml'	=> $xml
