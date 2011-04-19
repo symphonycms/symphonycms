@@ -18,6 +18,24 @@
 			$filter_results = array();
 			if(!is_array($filters)) $filters = array();
 
+			/**
+			* Prior to building the $post_values from the passed
+			* form fields, create an opertunity for a developer to
+			* make changes to the $fields array. This must be passed as
+			* a reference so the changes are made in this file.
+			*
+			* @delegate EventPreBuild
+			* @param string $context
+			* '/frontend/'
+			* @param array $fields 
+			*/
+
+			Symphony::ExtensionManager()->notifyMembers(
+				'EventPreBuild',
+				'/frontend/', 
+				array('fields' => &$fields)
+			);
+
 			## Create the post data cookie element
 			if (is_array($fields) && !empty($fields)) {
 				General::array_to_xml($post_values, $fields, true);
