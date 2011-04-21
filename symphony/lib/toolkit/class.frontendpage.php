@@ -363,7 +363,14 @@
 
 			if(is_array($_GET) && !empty($_GET)){
 				foreach($_GET as $key => $val){
-					if(!in_array($key, array('symphony-page', 'debug', 'profile'))) $this->_param['url-' . $key] = $val;
+					if(in_array($key, array('symphony-page', 'debug', 'profile'))) continue;
+
+					// If the browser sends encoded entities for &, ie. a=1&amp;b=2
+					// this causes the $_GET to output they key as amp;b, which results in
+					// $url-amp;b. This pattern will remove amp; allow the correct param
+					// to be used, $url-b
+					$key = preg_replace('/^amp;/', null, $key);
+					$this->_param['url-' . $key] = $val;
 				}
 			}
 
@@ -402,7 +409,7 @@
 			Frontend::instance()->Profiler->seed($xml_build_start);
 			Frontend::instance()->Profiler->sample('XML Built', PROFILE_LAP);
 
-			if(is_array($this->_env['pool']) && !empty($this->_env['pool'])){
+			if(is_array($this->_env['pool']) && !empty($this->_env['pool'])) {
 				foreach($this->_env['pool'] as $handle => $p){
 
 					if(!is_array($p)) $p = array($p);

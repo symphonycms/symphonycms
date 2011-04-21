@@ -165,12 +165,41 @@
 		public function findAndAddDynamicOptions(&$values){
 			if(!is_array($values)) $values = array();
 
-			if($results = Symphony::Database()->fetchCol('value', sprintf("
-					SELECT DISTINCT `value`
-					FROM `tbl_entries_data_%d`
-					ORDER BY `value` ASC
-				", $this->get('dynamic_options')
+			$results = false;
+
+			// Ensure that the table has a 'value' column
+			if((boolean)Symphony::Database()->fetchVar('Field', 0, sprintf("
+					SHOW COLUMNS FROM
+						`tbl_entries_data_%d`
+					WHERE
+						Field = '%s'
+				", $this->get('dynamic_options'), 'value'
 			))) {
+				$results = Symphony::Database()->fetchCol('value', sprintf("
+						SELECT DISTINCT `value`
+						FROM `tbl_entries_data_%d`
+						ORDER BY `value` ASC
+					", $this->get('dynamic_options')
+				));
+			}
+
+			// In the case of a Upload field, use 'file' instead of 'value'
+			if((boolean)Symphony::Database()->fetchVar('Field', 0, sprintf("
+					SHOW COLUMNS FROM
+						`tbl_entries_data_%d`
+					WHERE
+						Field = '%s'
+				", $this->get('dynamic_options'), 'file'
+			))) {
+				$results = Symphony::Database()->fetchCol('file', sprintf("
+						SELECT DISTINCT `file`
+						FROM `tbl_entries_data_%d`
+						ORDER BY `file` ASC
+					", $this->get('dynamic_options')
+				));
+			}
+
+			if($results) {
 				if($this->get('sort_options') == 'no') {
 					natsort($results);
 				}
@@ -184,7 +213,7 @@
 
 			if(!is_array($value)) $value = array($value);
 
-			return parent::prepareTableValue(array('value' => @implode(', ', $value)), $link);
+			return parent::prepareTableValue(array('value' => implode(', ', $value)), $link);
 		}
 
 		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){

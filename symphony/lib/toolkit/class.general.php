@@ -307,25 +307,25 @@
 		}
 
 		/**
-		 * Method: sendEmail
-		 *
 		 * Allows you to send emails. It initializes the core email class.
 		 *
-         * @deprecated Since Symphony 2.2
+		 * @deprecated Since Symphony 2.2
 		 * @param string $to_email
-         *  email of the recipient
+		 *  email of the recipient
 		 * @param string $from_email
-         *  the from email address. This is usually your email
+		 *  the from email address. This is usually your email
 		 * @param string $from_name
-         *  the name of the sender
+		 *  the name of the sender
 		 * @param string $subject
-         *  subject of the email
+		 *  subject of the email
 		 * @param string $message
-         *  contents of the email
+		 *  contents of the email
 		 * @param array $additional_headers
-         *  an array containing additional email headers
+		 *  an array containing additional email headers. This will NOT work
+		 *  for Content-Type header fields which will be added/overwritten by
+		 *  the email gateways.)
 		 * @return boolean
-         *  true on success
+		 *  true on success
 		 */
 		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers = array()) {
 
@@ -352,36 +352,6 @@
 			catch(EmailException $e){
 				throw new SymphonyErrorPage('Error sending email. ' . $e->getMessage());
 			}
-		}
-
-		/**
-		 * Encode (parts of) an email header if necessary, according to RFC2047. if
-		 * mb_internal_encoding is an available function then this is used to encode
-		 * the header, otherwise the encoding is done manually.
-		 *
-		 * @author Michael Eichelsdoerfer
-		 * @param string $input
-		 *	the elements of the header to encode.
-		 * @param string charset (optional)
-		 *	the character set in which to encode the header. this defaults to 'ISO-8859-1'.
-		 * @return string
-		 *	the resulting encoded email header.
-		 */
-		public static function encodeHeader($input, $charset='ISO-8859-1') {
-			if(preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches)) {
-				if(function_exists('mb_internal_encoding')) {
-					mb_internal_encoding($charset);
-					$input = mb_encode_mimeheader($input, $charset, 'Q');
-				}
-				else {
-					foreach ($matches[1] as $value) {
-						$replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
-						$input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
-					}
-				}
-			}
-
-			return $input;
 		}
 
 		/**
@@ -826,11 +796,11 @@
 
 				if(is_array($value)) {
 					self::array_to_xml($child, $value);
-					if($child->getNumberOfChildren() == 0) return;
+					if($child->getNumberOfChildren() == 0) continue;
 				}
 
 				else if($validate == true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)) {
-					return;
+					continue;
 				}
 
 				else {
