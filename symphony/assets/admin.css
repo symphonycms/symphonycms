@@ -214,14 +214,14 @@ span.frame code {
 /*--- Tags/suggestion list ---*/
 
 ul.tags {
-	margin: -0.75em 0 1.5em -6px;
+	margin: -0.75em 0 1.5em 0;
 	padding: 0;
 	color: #887;
 	list-style: none;
 }
 ul.tags li {
 	display: inline;
-	padding: 0 0 0 6px;
+	padding: 0 6px 0 0;
 	border-top: none;
 	word-spacing: -1px;
 	cursor: pointer;
