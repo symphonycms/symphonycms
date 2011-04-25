@@ -16,6 +16,7 @@
 		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Author');
+			$this->_required = true;
 		}
 
 		public function canToggle(){
@@ -70,22 +71,19 @@
 
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 
-			$value = (isset($data['author_id']) ? $data['author_id'] : NULL);
-
-			$callback = Administration::instance()->getPageCallback();
+			$value = isset($data['author_id']) ? $data['author_id'] : NULL;
 
 			if ($this->get('default_to_current_user') == 'yes' && empty($data) && empty($_POST)) {
 				$value = array(Administration::instance()->Author->get('id'));
 			}
 
-			if (!is_array($value)) {
-				$value = array($value);
-			}
-
-			$authors = AuthorManager::fetch();
+			if(!is_array($value)) $value = array($value);
 
 			$options = array();
 
+			if ($this->get('required') != 'yes') $options[] = array(NULL, false, NULL);
+
+			$authors = AuthorManager::fetch();
 			foreach($authors as $a){
 				$options[] = array($a->get('id'), in_array($a->get('id'), $value), $a->getFullName());
 			}
@@ -93,12 +91,9 @@
 			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
 			if($this->get('allow_multiple_selection') == 'yes') $fieldname .= '[]';
 
-			$attr = array();
-
-			if($this->get('allow_multiple_selection') == 'yes') $attr['multiple'] = 'multiple';
-
 			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Select($fieldname, $options, $attr));
+			$label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : NULL)));
+
 			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
 			else $wrapper->appendChild($label);
 		}
@@ -119,7 +114,7 @@
 				}
 			}
 
-			return parent::prepareTableValue(array('value' => General::sanitize(ucwords(implode(', ', $value)))), $link);
+			return parent::prepareTableValue(array('value' => General::sanitize(implode(', ', $value))), $link);
 		}
 
 		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
@@ -132,7 +127,7 @@
 					: "`a`.`first_name` " . $order . ", `a`.`last_name` " . $order);
 		}
 
-		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
+		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
 
 			if (self::isFilterRegex($data[0])) {
@@ -295,9 +290,9 @@
 			$label->setValue(__('%s Select current user by default', array($input->generate())));
 			$div->appendChild($label);
 
+			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
 			$wrapper->appendChild($div);
-
 		}
 
 		public function createTable(){
@@ -305,7 +300,7 @@
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') ."` (
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
-				  `author_id` int(11) unsigned NOT NULL,
+				  `author_id` int(11) unsigned NULL,
 				  PRIMARY KEY  (`id`),
 				  UNIQUE KEY `entry_id` (`entry_id`),
 				  KEY `author_id` (`author_id`)

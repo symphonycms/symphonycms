@@ -58,7 +58,7 @@
 
 					if(!is_null($a->get('last_seen'))) {
 						$td3 = Widget::TableData(
-							Lang::localizeDate(DateTimeObj::get(__SYM_DATETIME_FORMAT__, strtotime(Lang::standardizeDate($a->get('last_seen')))))
+							DateTimeObj::format($a->get('last_seen'), __SYM_DATETIME_FORMAT__)
 						);
 					} else {
 						$td3 = Widget::TableData('Unknown', 'inactive');
@@ -90,7 +90,9 @@
 
 				$options = array(
 					array(NULL, false, __('With Selected...')),
-					array('delete', false, __('Delete'), 'confirm')
+					array('delete', false, __('Delete'), 'confirm', null, array(
+					'data-message' => __('Are you sure you want to delete the selected authors?')
+				))
 				);
 
 				$tableActions->appendChild(Widget::Select('with-selected', $options));
@@ -390,7 +392,7 @@
 
 			if($this->_context[0] == 'edit' && !$isOwner && !$author->isPrimaryAccount()){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this author'), 'type' => 'submit', 'accesskey' => 'd'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this author'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this author?')));
 				$div->appendChild($button);
 			}
 

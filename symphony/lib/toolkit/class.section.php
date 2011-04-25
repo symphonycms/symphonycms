@@ -101,7 +101,7 @@
 
 		/**
 		 * Returns an array of all the fields in this section that are to be displayed
-		 * on the Publish Index page ordered by the order in which they appear
+		 * on the entries tablepage ordered by the order in which they appear
 		 * in the Section Editor interface
 		 *
 		 * @return array

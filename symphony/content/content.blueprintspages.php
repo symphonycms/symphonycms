@@ -150,7 +150,9 @@
 
 			$options = array(
 				array(null, false, __('With Selected...')),
-				array('delete', false, __('Delete'), 'confirm')
+				array('delete', false, __('Delete'), 'confirm', null, array(
+					'data-message' => __('Are you sure you want to delete the selected pages?')
+				))
 			);
 
 			$tableActions->appendChild(Widget::Select('with-selected', $options));
@@ -269,7 +271,9 @@
 			));
 
 			$this->Form->appendChild($div);
-		}		public function __viewNew() {
+		}		
+		
+		public function __viewNew() {
 			$this->__viewEdit();
 		}
 
@@ -580,7 +584,7 @@
 
 			if($this->_context[0] == 'edit'){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this page'), 'accesskey' => 'd'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this page'), 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this page?')));
 				$div->appendChild($button);
 			}
 

@@ -72,8 +72,9 @@
 		/**
 		 * Constructor for the Cookie class intialises all class variables with the
 		 * given parameters. Most of the parameters map to PHP's setcookie
-		 * function.
+		 * function. It creates a new Session object via the `$this->__init()`
 		 *
+		 * @see __init()
 		 * @link http://php.net/manual/en/function.setcookie.php
 		 * @param string $index
 		 *  The prefix to used to namespace all Symphony cookies
@@ -94,10 +95,7 @@
 			$this->_path = $path;
 			$this->_domain = $domain;
 			$this->_httpOnly = $httpOnly;
-
-			// Symphony->__construct() creates Cookie before Database is created.
-			// So we need to start session AFTER Cookie is created.
-			$this->_session = false;
+			$this->_session = $this->__init();
 		}
 
 		/**
@@ -106,8 +104,6 @@
 		 * @return Session
 		 */
 		private function __init() {
-			if ($this->_session) return $this->_session;
-
 			$this->_session = Session::start($this->_timeout, $this->_path, $this->_domain, $this->_httpOnly);
 			if (!$this->_session) return false;
 
@@ -129,8 +125,6 @@
 		 *  The value of the property
 		 */
 		public function set($name, $value) {
-			if (!$this->_session) $this->__init();
-
 			$_SESSION[$this->_index][$name] = $value;
 		}
 
@@ -143,9 +137,7 @@
 		 *  The value of the property, or null if it does not exist
 		 */
 		public function get($name) {
-			if (!$this->_session) $this->__init();
-
-			if (is_array($_SESSION) && array_key_exists($name, $_SESSION[$this->_index])) {
+			if (is_array($_SESSION[$this->_index]) && array_key_exists($name, $_SESSION[$this->_index])) {
 				return $_SESSION[$this->_index][$name];
 			}
 			return null;
@@ -159,15 +151,13 @@
 		 * @link http://au2.php.net/manual/en/function.session-destroy.php
 		 */
 		public function expire() {
-			if (!$this->_session) $this->__init();
-
 			if(!isset($_SESSION[$this->_index]) || !is_array($_SESSION[$this->_index]) || empty($_SESSION[$this->_index])) return;
 
 			unset($_SESSION[$this->_index]);
 
-			//	Calling session_destroy triggers the Session::destroy function which removes the entire session
-			//	from the database. To prevent logout issues between functionality that relies on $_SESSION, such
-			//	as Symphony authentication or the Members extension, only delete the $_SESSION if it empty!
+			// Calling session_destroy triggers the Session::destroy function which removes the entire session
+			// from the database. To prevent logout issues between functionality that relies on $_SESSION, such
+			// as Symphony authentication or the Members extension, only delete the $_SESSION if it empty!
 			if(empty($_SESSION)) session_destroy();
 		}
 

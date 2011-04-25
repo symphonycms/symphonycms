@@ -23,6 +23,7 @@
 		/**
 		 * Whether all properties and group keys will be forced to be lowercase.
 		 * By default this is false, which makes all properties case sensitive
+		 * @var boolean
 		 */
 		private $_forceLowerCase = false;
 
@@ -60,8 +61,12 @@
 
 			$value = stripslashes($value);
 
-			if($group) $this->_properties[$group][$name] = $value;
-			else $this->_properties[$name] = $value;
+			if($group) {
+				$this->_properties[$group][$name] = $value;
+			}
+			else {
+				$this->_properties[$name] = $value;
+			}
 		}
 
 		/**
@@ -118,16 +123,18 @@
 		 * @param string $group
 		 *  The group of the property to unset
 		 */
-		public function remove($name, $group = null){
-			if($this->_forceLowerCase){
+		public function remove($name, $group = null) {
+			if ($this->_forceLowerCase) {
 				$name = strtolower($name); $group = strtolower($group);
 			}
 
-			if($index && isset($this->_properties[$group][$name]))
+			if ($group && isset($this->_properties[$group][$name])) {
 				unset($this->_properties[$group][$name]);
+			}
 
-			elseif($this->_properties[$name])
+			else if ($this->_properties[$name]) {
 				unset($this->_properties[$name]);
+			}
 		}
 
 		/**

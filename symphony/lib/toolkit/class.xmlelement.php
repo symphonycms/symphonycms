@@ -8,7 +8,11 @@
 	 * and can store it's children in an array. When an XMLElement
 	 * is generated, it is output as an XML string.
 	 */
+
+	require_once(TOOLKIT . '/class.lang.php');
+
 	Class XMLElement {
+
 		/**
 		 * The end-of-line constant.
 		 * @var string
@@ -29,13 +33,13 @@
 		 * The name of the HTML Element, eg. 'p'
 		 * @var string
 		 */
-		private	$_name;
+		private $_name;
 
 		/**
 		 * The value of this XMLElement, it can be a string or another XMLElement object.
 		 * @var string|XMLElement
 		 */
-		private	$_value;
+		private $_value;
 
 		/**
 		 * Any additional attributes can be included in an associative array
@@ -43,13 +47,13 @@
 		 * attribute.
 		 * @var array
 		 */
-		private	$_attributes = array();
+		private $_attributes = array();
 
 		/**
 		 * Any children of this element as XMLElements
 		 * @var array
 		 */
-		private	$_children = array();
+		private $_children = array();
 
 		/**
 		 * Any processing instructions that the XSLT should know about when a
@@ -118,7 +122,7 @@
 		 * The constructor for the XMLElement
 		 *
 		 * @param string $name
-		 *  The name of the XMLElement, 'p'
+		 *  The name of the XMLElement, 'p'.
 		 * @param string|XMLElement $value (optional)
 		 *  The value of this XMLElement, it can be a string
 		 *  or another XMLElement object.
@@ -127,11 +131,14 @@
 		 *  the key being the name and the value being the value of the attribute.
 		 *  Attributes set from this array will override existing attributes
 		 *  set by previous params.
+		 * @param boolean $createHandle
+		 *  Whether this function should convert the `$name` to a handle. Defaults to 
+		 *  false.
 		 * @return XMLElement
 		 */
-		public function __construct($name, $value = null, Array $attributes = array()){
+		public function __construct($name, $value = null, Array $attributes = array(), $createHandle = false){
 
-			$this->_name = $name;
+			$this->_name = ($createHandle) ? Lang::createHandle($name) : $name;
 			$this->setValue($value);
 
 			if(is_array($attributes) && !empty($attributes)) {

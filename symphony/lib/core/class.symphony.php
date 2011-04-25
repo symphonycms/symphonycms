@@ -24,6 +24,7 @@
 	require_once(TOOLKIT . '/class.profiler.php');
 	require_once(TOOLKIT . '/class.author.php');
 	require_once(TOOLKIT . '/class.email.php');
+	require_once(TOOLKIT . '/class.mysql.php');
 
 	require_once(TOOLKIT . '/class.authormanager.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
@@ -126,10 +127,12 @@
 			GenericExceptionHandler::initialise(self::$Log);
 			GenericErrorHandler::initialise(self::$Log, self::$Configuration->get('strict_error_handling', 'symphony'));
 
-			$this->initialiseCookie();
 			$this->initialiseDatabase();
 			$this->initialiseExtensionManager();
+			$this->initialiseCookie();
 
+			// If the user is not a logged in Author, turn off the verbose error
+			// messages.
 			if(!self::isLoggedIn() && is_null($this->Author)){
 				GenericExceptionHandler::$enabled = false;
 			}
@@ -213,7 +216,6 @@
 			self::$ExtensionManager = new ExtensionManager;
 
 			if(!(self::$ExtensionManager instanceof ExtensionManager)){
-				GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
 			}
 		}
@@ -229,14 +231,10 @@
 		}
 
 		/**
-		 * Setter for the `$Database`. This will load the default
-		 * database driver and create a new instance of it from the Symphony
-		 * configuration. Symphony will attempt to create a connection to
-		 * the database using the connection details provided by in the Symphony
-		 * configuration. If any errors occur whilst doing so, a Symphony Error
-		 * Page is returned.
-		 * Note, while it is possible to create your own database driver, Symphony
-		 * officially only supports MySQL.
+		 * Setter for the `$Database`. This will create a new Database driver
+		 * and then attempt to create a connection to the database using the
+		 * connection details provided in the Symphony configuration. If any
+		 * errors occur whilst doing so, a Symphony Error Page is displayed.
 		 *
 		 * @return boolean
 		 *  This function will return true if the `$Database` was
@@ -245,17 +243,7 @@
 		public function initialiseDatabase(){
 			if (self::$Database) return true;
 
-			$error = null;
-			$driver = self::$Configuration->get('driver', 'database');
-			$driver_filename = TOOLKIT . '/class.' . $driver . '.php';
-
-			if(!is_file($driver_filename)){
-				GenericExceptionHandler::$enabled = true;
-				throw new SymphonyErrorPage("Could not find database driver '<code>{$driver}</code>'", 'Symphony Database Error');
-			}
-
-			require_once($driver_filename);
-			self::$Database = new $driver;
+			self::$Database = new MySQL;
 
 			$details = self::$Configuration->get('database');
 
@@ -275,7 +263,6 @@
 			}
 			catch(DatabaseException $e){
 				$error = self::$Database->getlastError();
-				GenericExceptionHandler::$enabled = true;
 				throw new SymphonyErrorPage(
 					$error['num'] . ': ' . $error['msg'],
 					'Symphony Database Error',
@@ -752,98 +739,7 @@
 				}
 			}
 
-			return sprintf('<html>
-<head>
-	<title>Symphony Fatal Error</title>
-	<style type="text/css" media="all">
-		*{
-			margin: 0; padding: 0;
-		}
-
-		body{
-			margin: 20px auto;
-			width: 95%%;
-			min-width: 950px;
-			font-family: Helvetica, "MS Trebuchet", Arial, sans-serif;
-			background-color: #ccc;
-			font-size: 12px;
-		}
-
-		.bubble{
-			background-color: white;
-			padding: 22px;
-
-			-webkit-border-radius: 20px;
-			-moz-border-radius: 20px;
-			border-radius: 20px;
-
-			border: 2px solid #bbb;
-		}
-
-		h1{
-			font-size: 34px;
-			text-shadow: 2px 2px 2px #999;
-			margin-bottom: 10px;
-		}
-
-		h2, h3{
-			text-shadow: 2px 2px 2px #ccc;
-		}
-
-		code{
-			font-size: 11px;
-			font-family: Monaco, "Courier New", Courier;
-		}
-
-		ul{
-			list-style: none;
-			color: #111;
-			margin: 20px;
-			border-left: 5px solid #bbb;
-		}
-
-		li{
-			background-color: #dedede;
-			padding: 1px 5px;
-
-			border-left: 1px solid #ddd;
-		}
-
-		li.odd{
-			background-color: #efefef;
-		}
-
-		li#error{
-			background-color: #E8CACA;
-			color: #B9191A;
-		}
-
-		li small{
-			font-size: 10px;
-			color: #666;
-		}
-
-	</style>
-</head>
-<body>
-	<h1>Symphony Fatal Database Error</h1>
-	<div class="bubble">
-		<h2>%s</h2>
-		<p>An error occurred while attempting to execute the following query</p>
-		<ul>
-			<li>%s</li>
-		</ul>
-
-		<h3>Backtrace:</h3>
-		<ul>%s</ul>
-
-		<h3>Database Query Log:</h3>
-		<ul>%s</ul>
-
-	</div>
-</body>
-<html>',
-
+			return sprintf(file_get_contents(TEMPLATE . '/fatalerror.tpl'),
 				$e->getDatabaseErrorMessage(),
 				$e->getQuery(),
 				$trace,

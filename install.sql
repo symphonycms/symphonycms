@@ -18,6 +18,16 @@ CREATE TABLE `tbl_authors` (
   UNIQUE KEY `username` (`username`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- *** STRUCTURE: `tbl_sessions` ***
+DROP TABLE IF EXISTS `tbl_sessions`;
+CREATE TABLE IF NOT EXISTS `tbl_sessions` (
+  `session` varchar(100) NOT NULL,
+  `session_expires` int(10) unsigned NOT NULL default '0',
+  `session_data` text default null,
+  PRIMARY KEY  (`session`),
+  KEY `session_expires` (`session_expires`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 -- *** STRUCTURE: `tbl_cache` ***
 DROP TABLE IF EXISTS `tbl_cache`;
 CREATE TABLE `tbl_cache` (
@@ -27,7 +37,7 @@ CREATE TABLE `tbl_cache` (
   `expiry` int(14) unsigned DEFAULT NULL,
   `data` longtext COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `creation` (`creation`),
+  KEY `expiry` (`expiry`),
   KEY `hash` (`hash`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -137,6 +147,7 @@ CREATE TABLE `tbl_fields_select` (
   `field_id` int(11) unsigned NOT NULL,
   `allow_multiple_selection` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `show_association` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
+  `sort_options` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `static_options` text COLLATE utf8_unicode_ci,
   `dynamic_options` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),

@@ -80,7 +80,8 @@
 		 * @since Symphony 2.2.1
 		 * @var boolean
 		 */
-		private $is_logged_in = false;
+
+		 private $is_logged_in = false;
 
 		/**
 		 * When events are processed, the results of them often can't be reproduced
@@ -182,7 +183,7 @@
 				 * @param string $context
 				 * '/frontend/'
 				 * @param boolean $full_generate
-				 *  Whether this page will be completely generated (ie, invoke the XSLT transform)
+				 *  Whether this page will be completely generated (ie. invoke the XSLT transform)
 				 *  or not, by default this is true. Passed by reference
 				 * @param mixed $devkit
 				 *  Allows a devkit to register to this page
@@ -311,7 +312,7 @@
 			$start = precision_timer();
 
 			if(!$page = $this->resolvePage()){
-				throw new FrontendPageNotFoundException(__('The page you requested does not exist'));
+				throw new FrontendPageNotFoundException;
 			}
 
 			/**
@@ -363,7 +364,14 @@
 
 			if(is_array($_GET) && !empty($_GET)){
 				foreach($_GET as $key => $val){
-					if(!in_array($key, array('symphony-page', 'debug', 'profile'))) $this->_param['url-' . $key] = $val;
+					if(in_array($key, array('symphony-page', 'debug', 'profile'))) continue;
+
+					// If the browser sends encoded entities for &, ie. a=1&amp;b=2
+					// this causes the $_GET to output they key as amp;b, which results in
+					// $url-amp;b. This pattern will remove amp; allow the correct param
+					// to be used, $url-b
+					$key = preg_replace('/^amp;/', null, $key);
+					$this->_param['url-' . $key] = $val;
 				}
 			}
 
@@ -402,7 +410,7 @@
 			Frontend::instance()->Profiler->seed($xml_build_start);
 			Frontend::instance()->Profiler->sample('XML Built', PROFILE_LAP);
 
-			if(is_array($this->_env['pool']) && !empty($this->_env['pool'])){
+			if(is_array($this->_env['pool']) && !empty($this->_env['pool'])) {
 				foreach($this->_env['pool'] as $handle => $p){
 
 					if(!is_array($p)) $p = array($p);
@@ -573,7 +581,7 @@
 
 			if(!is_array($row) || empty($row)) return false;
 
-			$row['type'] = $this->__fetchPageTypes($row['id']);
+			$row['type'] = FrontendPage::fetchPageTypes($row['id']);
 
 			## Make sure the user has permission to access this page
 			if(!$this->is_logged_in && in_array('admin', $row['type'])){
@@ -595,10 +603,10 @@
 					);
 				}
 
-				$row['type'] = $this->__fetchPageTypes($row['id']);
+				$row['type'] = FrontendPage::fetchPageTypes($row['id']);
  			}
 
-			$row['filelocation'] = $this->resolvePageFileLocation($row['path'], $row['handle']);
+			$row['filelocation'] = FrontendPage::resolvePageFileLocation($row['path'], $row['handle']);
 
 			return $row;
 		}
@@ -611,7 +619,7 @@
 		 * @return array
 		 *  An array of types that this page is set as
 		 */
-		private function __fetchPageTypes($page_id){
+		public static function fetchPageTypes($page_id){
 			return Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '{$page_id}' ");
 		}
 
@@ -640,8 +648,8 @@
 		/**
 		 * Resolves the path to this page's XSLT file. The Symphony convention
 		 * is that they are stored in the `PAGES` folder. If this page has a parent
-		 * is will be as if all the forward slashes in the URL have been replaced
-		 * with underscores. ie. `/articles/read/` will produce a file `articles_read.xsl`
+		 * it will be as if all the / in the URL have been replaced with _. ie.
+		 * /articles/read/ will produce a file `articles_read.xsl`
 		 *
 		 * @param string $path
 		 *  The URL path to this page, excluding the current page. ie, /articles/read
@@ -651,7 +659,7 @@
 		 * @return string
 		 *  The path to the XSLT of this page
 		 */
-		private static function resolvePageFileLocation($path, $handle){
+		public static function resolvePageFileLocation($path, $handle){
 			return (PAGES . '/' . trim(str_replace('/', '_', $path . '_' . $handle), '_') . '.xsl');
 		}
 

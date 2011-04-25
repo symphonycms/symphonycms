@@ -70,8 +70,12 @@
 
 			$options = array(
 				array(NULL, false, __('With Selected...')),
-				array('delete', false, __('Delete'), 'confirm'),
-				array('delete-entries', false, __('Delete Entries'), 'confirm')
+				array('delete', false, __('Delete'), 'confirm', null, array(
+					'data-message' => __('Are you sure you want to delete the selected sections?')
+				)),
+				array('delete-entries', false, __('Delete Entries'), 'confirm', null, array(
+					'data-message' => __('Are you sure you want to delete all entries in the selected sections?')
+				))
 			);
 
 			if (is_array($sections) && !empty($sections))  {
@@ -115,9 +119,12 @@
 			if(!$showEmptyTemplate) ksort($fields);
 
 			$meta['entry_order'] = (isset($meta['entry_order']) ? $meta['entry_order'] : 'date');
-			$meta['subsection'] = (isset($meta['subsection']) ? 1 : 0);
 			$meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
-			$meta['navigation_group'] = (isset($meta['navigation_group']) ? $meta['navigation_group'] : 'Content');
+			
+			// Set navigation group, if not already set 
+			if(!isset($meta['navigation_group'])) {
+				$meta['navigation_group'] = (isset($this->_navigation[0]['name']) ? $this->_navigation[0]['name'] : __('Content'));
+			}
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
@@ -165,6 +172,29 @@
 
 			$this->Form->appendChild($fieldset);
 
+			/**
+			 * Allows extensions to add elements to the header of the Section Editor
+			 * form. Usually for section settings, this delegate is passed the current
+			 * `$meta` array and the `$this->_errors` array.
+			 *
+			 * @delegate AddSectionElements
+			 * @since Symphony 2.2
+			 * @param string $context
+			 * '/blueprints/sections/'
+			 * @param XMLElement $form
+			 *  An XMLElement of the current `$this->Form`, just after the Section
+			 *  settings have been appended, but before the Fields duplicator
+			 * @param array $meta
+			 *  The current $_POST['meta'] array
+			 * @param array $errors
+			 *  The current errors array
+			 */
+			Symphony::ExtensionManager()->notifyMembers('AddSectionElements', '/blueprints/sections/', array(
+				'form' => &$this->Form,
+				'meta' => &$meta,
+				'errors' => &$this->_errors
+			));
+
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
@@ -207,7 +237,8 @@
 				$type->setArray($defaults);
 
 				$wrapper = new XMLElement('li');
-				$wrapper->setAttribute('class', 'template');
+				$wrapper->setAttribute('class', 'template field-' . $type->handle() . ($type->mustBeUnique() ? ' unique' : NULL));
+				$wrapper->setAttribute('data-type', $type->handle());
 
 				$type->set('sortorder', '-1');
 				$type->displaySettingsPanel($wrapper);
@@ -292,7 +323,6 @@
 
 			else $fields = $fieldManager->fetch(NULL, $section_id);
 
-			$meta['subsection'] = ($meta['subsection'] == 'yes' ? 1 : 0);
 			$meta['entry_order'] = (isset($meta['entry_order']) ? $meta['entry_order'] : 'date');
 
 			if(isset($_POST['meta'])){
@@ -352,6 +382,29 @@
 
 			$this->Form->appendChild($fieldset);
 
+			/**
+			 * Allows extensions to add elements to the header of the Section Editor
+			 * form. Usually for section settings, this delegate is passed the current
+			 * `$meta` array and the `$this->_errors` array.
+			 *
+			 * @delegate AddSectionElements
+			 * @since Symphony 2.2
+			 * @param string $context
+			 * '/blueprints/sections/'
+			 * @param XMLElement $form
+			 *  An XMLElement of the current `$this->Form`, just after the Section
+			 *  settings have been appended, but before the Fields duplicator
+			 * @param array $meta
+			 *  The current $_POST['meta'] array
+			 * @param array $errors
+			 *  The current errors array
+			 */
+			Symphony::ExtensionManager()->notifyMembers('AddSectionElements', '/blueprints/sections/', array(
+				'form' => &$this->Form,
+				'meta' => &$meta,
+				'errors' => &$this->_errors
+			));
+
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
@@ -367,7 +420,8 @@
 			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $position => $field){
 
-					$wrapper = new XMLElement('li', NULL, array('class' => 'field-' . $field->handle()));
+					$wrapper = new XMLElement('li', NULL, array('class' => 'field-' . $field->handle() . ($field->mustBeUnique() ? ' unique' : NULL)));
+					$wrapper->setAttribute('data-type', $field->handle());
 
 					$field->set('sortorder', $position);
 					$field->displaySettingsPanel($wrapper, (isset($this->_errors[$position]) ? $this->_errors[$position] : NULL));
@@ -392,7 +446,8 @@
 
 				$wrapper = new XMLElement('li');
 
-				$wrapper->setAttribute('class', 'template field-' . $type->handle());
+				$wrapper->setAttribute('class', 'template field-' . $type->handle() . ($type->mustBeUnique() ? ' unique' : NULL));
+				$wrapper->setAttribute('data-type', $type->handle());
 
 				$type->set('sortorder', '-1');
 				$type->displaySettingsPanel($wrapper);
@@ -410,7 +465,7 @@
 			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
 
 			$button = new XMLElement('button', __('Delete'));
-			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this section'), 'type' => 'submit', 'accesskey' => 'd'));
+			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this section'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this section?')));
 			$div->appendChild($button);
 
 			$this->Form->appendChild($div);

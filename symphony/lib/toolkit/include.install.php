@@ -671,6 +671,7 @@ Options +FollowSymlinks -Indexes
 	RewriteRule ^workspace/utilities/(.*).xsl$ - [F]
 	RewriteRule ^workspace/pages/(.*).xsl$ - [F]
 	RewriteRule ^(.*).sql$ - [F]
+	RewriteRule (^|/)\. - [F]
 
 	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
 	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
@@ -965,7 +966,7 @@ Options +FollowSymlinks -Indexes
 				if(strpos($dateOption, 'j') !== false || strpos($dateOption, 'n') !== false) {
 					$leadingZero = ' (' . __('no leading zeros') . ')';
 				}
-				$dateOptions[] = array($dateOption, $dateformat == $dateOption, Lang::localizeDate(DateTimeObj::get($dateOption), true) . $leadingZero);
+				$dateOptions[] = array($dateOption, $dateformat == $dateOption, DateTimeObj::format('now', $dateOption) . $leadingZero);
 			}
 
 			$label->appendChild(Widget::Select('fields[region][date_format]', $dateOptions));

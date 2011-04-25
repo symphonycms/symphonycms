@@ -6,7 +6,7 @@
 	/**
 	 * The Publish page is where the majority of an Authors time will
 	 * be spent in Symphony with adding, editing and removing entries
-	 * from Sections. This Page controls the Publish Index as well as
+	 * from Sections. This Page controls the entries tableas well as
 	 * the Entry creation screens.
 	 */
 	require_once(TOOLKIT . '/class.administrationpage.php');
@@ -79,14 +79,16 @@
 										  AND `s`.`handle` = '".$section->get('handle')."' LIMIT 1");
 					$field =& $entryManager->fieldManager->fetch($filter);
 
-					if(is_object($field)){
+					if($field instanceof Field) {
+						// For deprecated reasons, call the old, typo'd function name until the switch to the
+						// properly named buildDSRetrievalSQL function.
 						$field->buildDSRetrivalSQL(array($filter_value), $joins, $where, false);
 						$filter_value = rawurlencode($filter_value);
 					}
 
 				}
 
-				if ($where != null) {
+				if (!is_null($where)) {
 					$where = str_replace('AND', 'OR', $where); // multiple fields need to be OR
 					$where = trim($where);
 					$where = ' AND (' . substr($where, 2, strlen($where)) . ')'; // replace leading OR with AND
@@ -111,15 +113,7 @@
 
 			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter ? "&amp;filter=$field_handle:$filter_value" : ''));
 
-			## Remove the create button if there is a section link field, and no filtering set for it
-			$section_links = $section->fetchFields('sectionlink');
-
-			if(count($section_links) > 1 || (!$filter && $section_links) || (is_object($section_links[0]) && $filter != $section_links[0]->get('id'))){
-				$this->appendSubheading($section->get('name'));
-			}
-			else{
-				$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c')));
-			}
+			$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c')));
 
 			if(is_null($entryManager->getFetchSorting()->field) && is_null($entryManager->getFetchSorting()->direction)){
 				$entryManager->setFetchSortingDirection('DESC');
@@ -167,7 +161,7 @@
 			}
 
 			/**
-			 * Allows the creation of custom Publish Index columns. Called
+			 * Allows the creation of custom entries tablecolumns. Called
 			 * after all the Section Visible columns have been added  as well
 			 * as the Section Associations
 			 *
@@ -317,7 +311,9 @@
 
 			$options = array(
 				array(NULL, false, __('With Selected...')),
-				array('delete', false, __('Delete'), 'confirm')
+				array('delete', false, __('Delete'), 'confirm', null, array(
+					'data-message' => __('Are you sure you want to delete the selected entries?')
+				))
 			);
 
 			$toggable_fields = $section->fetchToggleableFields();
@@ -792,7 +788,7 @@
 			$main_fields = $section->fetchFields(NULL, 'main');
 
 			if((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))){
-				$primary->appendChild(new XMLElement('p', __('It looks like your trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>', array(SYMPHONY_URL . '/blueprints/sections/edit/'. $section->get('id') . '/'))));
+				$primary->appendChild(new XMLElement('p', __('It looks like you\'re trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>', array(SYMPHONY_URL . '/blueprints/sections/edit/'. $section->get('id') . '/'))));
 			}
 
 			else{
@@ -823,7 +819,7 @@
 			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
 
 			$button = new XMLElement('button', __('Delete'));
-			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this entry'), 'type' => 'submit', 'accesskey' => 'd'));
+			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this entry'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this entry?')));
 			$div->appendChild($button);
 
 			$this->Form->appendChild($div);

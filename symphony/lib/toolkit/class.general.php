@@ -307,25 +307,25 @@
 		}
 
 		/**
-		 * Method: sendEmail
-		 *
 		 * Allows you to send emails. It initializes the core email class.
 		 *
-         * @deprecated Since Symphony 2.2
+		 * @deprecated Since Symphony 2.2
 		 * @param string $to_email
-         *  email of the recipient
+		 *  email of the recipient
 		 * @param string $from_email
-         *  the from email address. This is usually your email
+		 *  the from email address. This is usually your email
 		 * @param string $from_name
-         *  the name of the sender
+		 *  the name of the sender
 		 * @param string $subject
-         *  subject of the email
+		 *  subject of the email
 		 * @param string $message
-         *  contents of the email
+		 *  contents of the email
 		 * @param array $additional_headers
-         *  an array containing additional email headers
+		 *  an array containing additional email headers. This will NOT work
+		 *  for Content-Type header fields which will be added/overwritten by
+		 *  the email gateways.)
 		 * @return boolean
-         *  true on success
+		 *  true on success
 		 */
 		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers = array()) {
 
@@ -355,33 +355,96 @@
 		}
 
 		/**
-		 * Encode (parts of) an email header if necessary, according to RFC2047. if
-		 * mb_internal_encoding is an available function then this is used to encode
-		 * the header, otherwise the encoding is done manually.
+		 * Given a string, this will clean it for use as a Symphony handle. Preserves multi-byte characters.
 		 *
-		 * @author Michael Eichelsdoerfer
-		 * @param string $input
-		 *	the elements of the header to encode.
-		 * @param string charset (optional)
-		 *	the character set in which to encode the header. this defaults to 'ISO-8859-1'.
+		 * @since Symphony 2.2.1
+		 * @param string $string
+		 *	String to be cleaned up
+		 * @param int $max_length
+		 *	The maximum number of characters in the handle
+		 * @param string $delim
+		 *	All non-valid characters will be replaced with this
+		 * @param boolean $uriencode
+		 *	Force the resultant string to be uri encoded making it safe for URLs
+		 * @param array $additional_rule_set
+		 *	An array of REGEX patterns that should be applied to the `$string`. This
+		 *	occurs after the string has been trimmed and joined with the `$delim`
 		 * @return string
-		 *	the resulting encoded email header.
+		 *	Returns resultant handle
 		 */
-		public static function encodeHeader($input, $charset='ISO-8859-1') {
-			if(preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches)) {
-				if(function_exists('mb_internal_encoding')) {
-					mb_internal_encoding($charset);
-					$input = mb_encode_mimeheader($input, $charset, 'Q');
-				}
-				else {
-					foreach ($matches[1] as $value) {
-						$replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
-						$input = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
-					}
-				}
+		public static function createHandle($string, $max_length=255, $delim='-', $uriencode=false, $additional_rule_set=NULL) {
+
+			$max_length = intval($max_length);
+
+			// Strip out any tag
+			$string = strip_tags($string);
+
+			// Remove punctuation
+			$string = preg_replace('/[\\.\'"]+/', NULL, $string);
+
+			// Trim it
+			if($max_length != NULL && is_numeric($max_length)) $string = General::limitWords($string, $max_length);
+
+			// Replace spaces (tab, newline etc) with the delimiter
+			$string = preg_replace('/[\s]+/', $delim, $string);
+
+			// Find all legal characters
+			preg_match_all('/[^<>?@:!-\/\[-`ëí;‘’…]+/u', $string, $matches);
+
+			// Join only legal character with the $delim
+			$string = implode($delim, $matches[0]);
+
+			// Allow for custom rules
+			if(is_array($additional_rule_set) && !empty($additional_rule_set)) {
+				foreach($additional_rule_set as $rule => $replacement) $string = preg_replace($rule, $replacement, $string);
 			}
 
-			return $input;
+			// Remove leading or trailing delim characters
+			$string = trim($string, $delim);
+
+			// Encode it for URI use
+			if($uriencode) $string = urlencode($string);
+
+			// Make it lowercase
+			$string = strtolower($string);
+
+			return $string;
+
+		}
+
+		/**
+		 * Given a string, this will clean it for use as a filename. Preserves multi-byte characters.
+		 *
+		 * @since Symphony 2.2.1
+		 * @param string $string
+		 *	String to be cleaned up
+		 * @param string $delim
+		 *	Replacement for invalid characters
+		 * @return string
+		 *	Returns created filename
+		 */
+		public static function createFilename($string, $delim='-') {
+
+			// Strip out any tag
+			$string = strip_tags($string);
+
+			// Find all legal characters
+			$count = preg_match_all('/[\p{L}\w:;.,+=~]+/u', $string, $matches);
+			if($count <= 0 || $count == false) {
+				preg_match_all('/[\w:;.,+=~]+/', $string, $matches);
+			}
+
+			// Join only legal character with the $delim
+			$string = implode($delim, $matches[0]);
+
+			// Remove leading or trailing delim characters
+			$string = trim($string, $delim);
+
+			// Make it lowercase
+			$string = strtolower($string);
+
+			return $string;
+
 		}
 
 		/**
@@ -449,15 +512,18 @@
 		}
 
 		/**
-		 * Create all the directories as specified by the input path.
+		 * Create all the directories as specified by the input path. If the current
+		 * directory already exists, this function will return true.
 		 *
 		 * @param string $path
-		 *	the path containing the directories to create.
+		 *  the path containing the directories to create.
 		 * @param integer $mode (optional)
-		 *	the permissions (in octal) of the directories to create. this defaults to 0755
+		 *  the permissions (in octal) of the directories to create. Defaults to 0755
 		 * @return boolean
 		 */
 		public static function realiseDirectory($path, $mode=0755){
+			if(is_dir($path)) return true;
+
 			return mkdir($path, intval($mode, 8), true);
 		}
 
@@ -725,17 +791,19 @@
 				}
 
 				else {
-					$child = new XMLElement($element_name);
+					$child = new XMLElement($element_name, null, array(), true);
 				}
 
-				if(is_array($value)){
+				if(is_array($value)) {
 					self::array_to_xml($child, $value);
+					if($child->getNumberOfChildren() == 0) continue;
 				}
 
-				elseif($validate == true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)){
-					return;
+				else if($validate == true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)) {
+					continue;
 				}
-				else{
+
+				else {
 					$child->setValue(self::sanitize($value));
 				}
 
@@ -808,15 +876,16 @@
 		 *	fails and silent is set to false then this returns false.
 		 */
 		public static function deleteFile($file, $slient=true){
-			if(!@unlink($file)){
+			try {
+				return unlink($file);
+			}
+			catch(Exception $ex) {
 				if($slient == false){
 					throw new Exception(__('Unable to remove file - %s', array($file)));
 				}
 
 				return false;
 			}
-
-			return true;
 		}
 
 		/**
@@ -1048,7 +1117,7 @@
 			$string = str_replace($spaces, ' ', $string);
 			$string = preg_replace('/[^\w\s]/i', '', $string);
 
-			return str_word_count($words);
+			return str_word_count($string);
 		}
 
 		/**
@@ -1084,13 +1153,13 @@
 			$string = trim(strip_tags(nl2br($string)));
 			$original_length = strlen($string);
 
-			if($string == '') return null;
-			elseif(strlen($string) < $maxChars) return $string;
+			if($original_length == 0) return null;
+			elseif($original_length < $maxChars) return $string;
 
 			$string = trim(substr($string, 0, $maxChars));
 
 			$array = explode(' ', $string);
-			$result =  '';
+			$result = '';
 			$length = 0;
 
 			while(is_array($array) && !empty($array) && $length > $maxChars){

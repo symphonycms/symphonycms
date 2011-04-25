@@ -65,19 +65,12 @@
 			if (!self::$_initialized) {
 
 				if(!is_object(Symphony::Database()) || !Symphony::Database()->isConnected()) return false;
-				
-				self::$_cache = new Cacheable(Symphony::Database());
-
-				if (self::$_cache->check('_session_config') === false) {
-					self::createTable();
-					self::$_cache->write('_session_config', true);
-				}
 
 				if (session_id() == '') {
 					ini_set('session.save_handler', 'user');
 					ini_set('session.gc_maxlifetime', $lifetime);
 					ini_set('session.gc_probability', '1');
-					ini_set('session.gc_divisor', '3');
+					ini_set('session.gc_divisor', '10');
 				}
 
 				session_set_save_handler(
@@ -102,20 +95,6 @@
 			}
 
 			return session_id();
-		}
-
-		/**
-		 * Creates `tbl_sessions` in the Database
-		 */
-		public static function createTable() {
-			Symphony::Database()->query(
-				"CREATE TABLE IF NOT EXISTS `tbl_sessions` (
-				  `session` varchar(255) NOT NULL,
-				  `session_expires` int(10) unsigned NOT NULL default '0',
-				  `session_data` text,
-				  PRIMARY KEY  (`session`)
-				) ENGINE=MyISAM;"
-			);
 		}
 
 		/**
@@ -170,7 +149,9 @@
 
 		/**
 		 * Given an ID, and some data, save it into `tbl_sessions`. This uses
-		 * the ID as a unique key, but will override any existing data.
+		 * the ID as a unique key, and will override any existing data. If the
+		 * `$data` is deemed to be empty, no row will be saved in the database
+		 * unless there is an existing row.
 		 *
 		 * @param string $id
 		 *  The ID of the Session, usually a hash
@@ -181,7 +162,12 @@
 		 *  True if the Session information was saved successfully, false otherwise
 		 */
 		public static function write($id, $data) {
-			if(strlen(trim($data)) == 0) return false;
+			// Only prevent this record from saving if there isn't already a record
+			// in the database. This prevents empty Sessions from being created, but
+			// allows them to be nulled.
+			if(is_null(Session::read($id))) {
+				if(preg_match('/^([^}]+\|a:0:{})+$/i', $data)) return true;
+			}
 
 			$fields = array(
 				'session' => $id,
@@ -228,7 +214,8 @@
 
 		/**
 		 * The garbage collector, which removes all empty Sessions, or any
-		 * Sessions that have expired.
+		 * Sessions that have expired. This has a 10% chance of firing based
+		 * off the `gc_probability`/`gc_divisor`.
 		 *
 		 * @param integer $max
 		 *  The max session lifetime.
@@ -238,7 +225,7 @@
 		public static function gc($max) {
 			return Symphony::Database()->query(
 				sprintf(
-					"DELETE FROM `tbl_sessions` WHERE `session_expires` <= '%s' OR `session_data` REGEXP '^([^}]+\\\|a:0:{})+$'",
+					"DELETE FROM `tbl_sessions` WHERE `session_expires` <= '%s'",
 					Symphony::Database()->cleanValue(time() - $max)
 				)
 			);

@@ -37,9 +37,7 @@ var Symphony = {};
 			Symphony.Language.add({
 				'Add item': false,
 				'Remove selected items': false,
-				'Are you sure you want to {$action} {$name}?': false,
-				'Are you sure you want to {$action} {$count} items?': false,
-				'Are you sure you want to {$action}?': false,
+				'Are you sure you want to proceed?': false,
 				'Reordering was unsuccessful.': false,
 				'Password': false,
 				'Change Password': false,
@@ -308,9 +306,11 @@ var Symphony = {};
 					};
 
 				// Delayed animation to new styles
-				notice.removeClass(newclass).delay(delay).animate(styles, 'slow', 'linear', function() {
-					$(this).removeClass('success');
-				});
+				if(notice.is(':visible')) {
+					notice.removeClass(newclass).delay(delay).animate(styles, 'slow', 'linear', function() {
+						$(this).removeClass('success');
+					});
+				}
 			},
 
 			/**
@@ -499,6 +499,51 @@ var Symphony = {};
 			});
 		}).blur();
 
+		// Clickable utilities in the XSLT editor
+		$('#utilities li').click(function(event) {
+			if ($(event.target).is('a')) return;
+
+			var editor = $('textarea.code'),
+				lines = editor.val().split('\n'),
+				link = $(this).find('a').text(),
+				statement = '<xsl:import href="../utilities/' + link + '"/>',
+				regexp = '^<xsl:import href="(?:\.\./utilities/)?' + link + '"',
+				newLine = '\n',
+				numberOfNewLines = 1;
+
+			if ($(this).hasClass('selected')) {
+				for (var i = 0; i < lines.length; i++) {
+					if ($.trim(lines[i]).match(regexp) != null) {
+						(lines[i + 1] === '' && $.trim(lines[i - 1]).substring(0, 11) !== '<xsl:import') ? lines.splice(i, 2) : lines.splice(i, 1);
+						break;
+					}
+				}
+
+				editor.val(lines.join(newLine));
+				$(this).removeClass('selected');
+			}
+			else {
+				for (var i = 0; i < lines.length; i++) {
+					if ($.trim(lines[i]).substring(0, 4) === '<!--' || $.trim(lines[i]).match('^<xsl:(?:import|variable|output|comment|template)')) {
+
+						numberOfNewLines = $.trim(lines[i]).substring(0, 11) === '<xsl:import' ? 1 : 2;
+
+						if (Symphony.Context.get('env')[0] != 'template') {
+							lines[i] = statement.replace('../utilities/', '') + Array(numberOfNewLines + 1).join(newLine) + lines[i];
+						}
+						else {
+							// we are inside the page template editor
+							lines[i] = statement + Array(numberOfNewLines + 1).join(newLine) + lines[i];
+						}
+						break;
+					}
+				}
+
+				editor.val(lines.join(newLine));
+				$(this).addClass('selected');
+			}
+		});
+
 		// Change user password
 		$('#change-password').each(function() {
 			var password = $(this),
@@ -535,12 +580,14 @@ var Symphony = {};
 		$('button.confirm').live('click', function() {
 			var button = $(this),
 				name = document.title.split(/[\u2013]\s*/g)[2],
-				text = (name ? 'Are you sure you want to {$action} {$name}?' : 'Are you sure you want to {$action}?');
+				message = button.attr('data-message');
+				
+			// Set default message
+			if(!message) {
+				message = Symphony.Language.get('Are you sure you want to proceed?');
+			}
 
-			return confirm(Symphony.Language.get(text, {
-				'action': button.text().toLowerCase(),
-				'name': name
-			}));
+			return confirm(message);
 		});
 
 		// Confirm with selected actions
@@ -549,14 +596,17 @@ var Symphony = {};
 				option = select.find('option:selected'),
 				input = $('table input:checked'),
 				count = input.size(),
-				text = (count > 1 ? 'Are you sure you want to {$action} {$count} items?' : 'Are you sure you want to {$action} {$name}?');
-
+				message = option.attr('data-message');
+				
+			// Needs confirmation
 			if(option.is('.confirm')) {
-				return confirm(Symphony.Language.get(text, {
-					'action': option.text().toLowerCase(), // Does this work in all languages?
-					'name': $.trim(input.parents('tr').find('td:first').text()),
-					'count': count
-				}));
+			
+				// Set default message
+				if(!message) {
+					message = Symphony.Language.get('Are you sure you want to proceed?');
+				}
+
+				return confirm(message);
 			}
 		});
 

@@ -175,7 +175,7 @@
 		 * Array of months and weekday for localized date output
 		 * @var array
 		 */
-		private static $_dates;
+		public static $_dates;
 
 		/**
 		 * Get dictionary
@@ -436,7 +436,11 @@
 					'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
 					'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat',
 					'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',
-					'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+					'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+					'sec', 'second', 'min', 'minute', 'hour', 'day', 'fortnight', 'forthnight', 'month', 'year',
+					'secs', 'seconds', 'mins', 'minutes', 'hours', 'days', 'fortnights', 'forthnights', 'months', 'years',
+					'weekday', 'weekdays', 'week', 'weeks',
+					'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth', 'next', 'last', 'previous', 'this'
 				);
 				foreach($dates as $date) {
 					self::$_dates[$date] = $date;
@@ -448,8 +452,8 @@
 				self::$_dictionary->merge($dictionary);
 
 				// Add date translations
-				foreach(self::$_dates as $date) {
-					self::$_dates[$date] = __($date);
+				foreach(self::$_dates as $key => $value) {
+					self::$_dates[$key] = __($key);
 				}
 
 			}
@@ -514,7 +518,7 @@
 			// Only translate dates in localized environments
 			if(self::isLocalized()) {
 				foreach(self::$_dates as $english => $locale) {
-					$string = str_replace($english, $locale, $string);
+					$string = preg_replace('/\b' . $english . '\b/i', $locale, $string);
 				}
 			}
 
@@ -531,27 +535,24 @@
 		 */
 		public static function standardizeDate($string) {
 
-			// Get date and time separator
-			$separator = Symphony::$Configuration->get('datetime_separator', 'region');
-
 			// Only standardize dates in localized environments
 			if(self::isLocalized()) {
+	
+				// Translate names to English
 				foreach(self::$_dates as $english => $locale) {
+					$string = preg_replace('/\b' . $locale . '\b/i', $english, $string);
+				}
 
-					// Translate names to English
-					$string = str_replace($locale, $english, $string);
-
-					// Replace custom date and time separator with space:
-					// This is important, otherwise PHP's strtotime() function may break
-					if($separator != ' ') {
-						$string = str_replace($separator, ' ', $string);
-					}
+				// Replace custom date and time separator with space:
+				// This is important, otherwise PHP's strtotime() function may break
+				$separator = Symphony::$Configuration->get('datetime_separator', 'region');
+				if($separator != ' ') {
+					$string = str_replace($separator, ' ', $string);
 				}
 			}
 
 			return $string;
 		}
-
 
 		/**
 		 * Given a string, this will clean it for use as a Symphony handle. Preserves multi-byte characters.
@@ -566,50 +567,17 @@
 		 *	Force the resultant string to be uri encoded making it safe for URLs
 		 * @param boolean $apply_transliteration
 		 *	If true, this will run the string through an array of substitution characters
+		 * @param array $additional_rule_set
+		 *	An array of REGEX patterns that should be applied to the `$string`. This
+		 *	occurs after the string has been trimmed and joined with the `$delim`
 		 * @return string
 		 *	Returns resultant handle
 		 */
 		public static function createHandle($string, $max_length=255, $delim='-', $uriencode=false, $apply_transliteration=true, $additional_rule_set=NULL) {
-
 			// Use the transliteration table if provided
 			if($apply_transliteration == true) $string = _t($string);
 
-			$max_length = intval($max_length);
-
-			// Strip out any tag
-			$string = strip_tags($string);
-
-			// Remove punctuation
-			$string = preg_replace('/[\\.\'"]+/', NULL, $string);
-
-			// Trim it
-			if($max_length != NULL && is_numeric($max_length)) $string = General::limitWords($string, $max_length);
-
-			// Replace spaces (tab, newline etc) with the delimiter
-			$string = preg_replace('/[\s]+/', $delim, $string);
-
-			// Find all legal characters
-			preg_match_all('/[^<>?@:!-\/\[-`ëí;‘’…]+/u', $string, $matches);
-
-			// Join only legal character with the $delim
-			$string = implode($delim, $matches[0]);
-
-			// Allow for custom rules
-			if(is_array($additional_rule_set) && !empty($additional_rule_set)) {
-				foreach($additional_rule_set as $rule => $replacement) $string = preg_replace($rule, $replacement, $string);
-			}
-
-			// Remove leading or trailing delim characters
-			$string = trim($string, $delim);
-
-			// Encode it for URI use
-			if($uriencode) $string = urlencode($string);
-
-			// Make it lowercase
-			$string = strtolower($string);
-
-			return $string;
-
+			return General::createHandle($string, $max_length, $delim, $uriencode, $additional_rule_set);
 		}
 
 		/**
@@ -625,30 +593,10 @@
 		 *	Returns created filename
 		 */
 		public static function createFilename($string, $delim='-', $apply_transliteration=true) {
-
 			// Use the transliteration table if provided
 			if($apply_transliteration == true) $string = _t($string);
 
-			// Strip out any tag
-			$string = strip_tags($string);
-
-			// Find all legal characters
-			$count = preg_match_all('/[\p{L}\w:;.,+=~]+/u', $string, $matches);
-			if($count <= 0 || $count == false) {
-				preg_match_all('/[\w:;.,+=~]+/', $string, $matches);
-			}
-
-			// Join only legal character with the $delim
-			$string = implode($delim, $matches[0]);
-
-			// Remove leading or trailing delim characters
-			$string = trim($string, $delim);
-
-			// Make it lowercase
-			$string = strtolower($string);
-
-			return $string;
-
+			return General::createFilename($string, $delim);
 		}
 
 	}

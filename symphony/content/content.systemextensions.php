@@ -112,7 +112,9 @@
 				array(NULL, false, __('With Selected...')),
 				array('enable', false, __('Enable')),
 				array('disable', false, __('Disable')),
-				array('uninstall', false, __('Uninstall'), 'confirm'),
+				array('uninstall', false, __('Uninstall'), 'confirm', null, array(
+					'data-message' => __('Are you sure you want to uninstall the selected extensions?')
+				))
 			);
 
 			$tableActions->appendChild(Widget::Select('with-selected', $options));

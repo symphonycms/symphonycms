@@ -23,7 +23,7 @@
 	/*-----------------------------------------------------------------------*/
 
 		// Pickables
-		var pickables = $(settings.pickables).addClass('.pickable');
+		var pickables = $(settings.pickables).addClass('pickable');
 
 		// Process pickers
 		return objects.each(function() {
@@ -44,7 +44,7 @@
 			// Single item
 			else {
 				picker.hide();
-				pickables.filter('#' + select.val()).removeClass('.pickable');
+				pickables.filter('#' + select.val()).removeClass('pickable');
 			}
 		});
 	};

@@ -12,18 +12,19 @@
 
 		public function __construct(&$parent, $env=NULL, $process_params=true){
 			parent::__construct($parent, $env, $process_params);
-			$this->_dependencies = array(<!-- DS DEPENDANCY LIST -->);
+			$this->_dependencies = array(<!-- DS DEPENDENCY LIST -->);
 		}
 
 		public function about(){
 			return array(
-					 'name' => '<!-- NAME -->',
-					 'author' => array(
-							'name' => '<!-- AUTHOR NAME -->',
-							'website' => '<!-- AUTHOR WEBSITE -->',
-							'email' => '<!-- AUTHOR EMAIL -->'),
-					 'version' => '<!-- VERSION -->',
-					 'release-date' => '<!-- RELEASE DATE -->');
+				'name' => '<!-- NAME -->',
+				'author' => array(
+					'name' => '<!-- AUTHOR NAME -->',
+					'website' => '<!-- AUTHOR WEBSITE -->',
+					'email' => '<!-- AUTHOR EMAIL -->'),
+				'version' => '<!-- VERSION -->',
+				'release-date' => '<!-- RELEASE DATE -->'
+			);
 		}
 
 		public function getSource(){
@@ -56,4 +57,5 @@
 
 			return $result;
 		}
+
 	}

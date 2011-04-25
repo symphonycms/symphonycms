@@ -170,7 +170,7 @@
 
 			if($isEditing){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'confirm delete', 'title' => __('Delete this event'), 'type' => 'submit', 'accesskey' => 'd'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this event'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this event?')));
 				$div->appendChild($button);
 			}
 
@@ -273,7 +273,7 @@
 				$filter = NULL;
 				$elements = NULL;
 				$this->__injectAboutInformation($eventShell, $about);
-				$this->__injectFilters($eventShell, $fields['filters']);
+				$this->__injectFilters($eventShell, $filters);
 
 				$documentation = NULL;
 				$documentation_parts = array();
@@ -330,7 +330,7 @@
 					$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
 					$code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 					$code->appendChild(new XMLElement('filter', NULL, array('name' => 'admin-only', 'status' => 'failed')));
-					$code->appendChild(new XMLElement('filter', __('Recipient username was invalid'), array('name' => 'send-email', 'status' => 'failed')));
+					$code->appendChild(new XMLElement('filter', __('Recipient not found'), array('name' => 'send-email', 'status' => 'failed')));
 					$code->setValue('...', false);
 					$documentation_parts[] = self::processDocumentationCode($code);
 				}
@@ -438,8 +438,14 @@
 					 *  The path to the Event file
 					 * @param string $contents
 					 *  The contents for this Event as a string passed by reference
+					 * @param array $filters
+					 *  An array of the filters attached to this event
 					 */
-					Symphony::ExtensionManager()->notifyMembers('EventPreCreate', '/blueprints/events/', array('file' => $file, 'contents' => &$eventShell));
+					Symphony::ExtensionManager()->notifyMembers('EventPreCreate', '/blueprints/events/', array(
+						'file' => $file,
+						'contents' => &$eventShell,
+						'filters' => $filters
+					));
 				}
 				else {
 					/**
@@ -454,15 +460,21 @@
 					 *  The path to the Event file
 					 * @param string $contents
 					 *  The contents for this Event as a string passed by reference
+					 * @param array $filters
+					 *  An array of the filters attached to this event
 					 */
-					Symphony::ExtensionManager()->notifyMembers('DatasourcePreEdit', '/blueprints/events/', array('file' => $file, 'contents' => &$eventShell));
+					Symphony::ExtensionManager()->notifyMembers('EventPreEdit', '/blueprints/events/', array(
+						'file' => $file,
+						'contents' => &$eventShell,
+						'filters' => $filters
+					));
 				}
 
-				##Write the file
+				// Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file')))
 					$this->pageAlert(__('Failed to write Event to <code>%s</code>. Please check permissions.', array(EVENTS)), Alert::ERROR);
 
-				##Write Successful, add record to the database
+				// Write Successful, add record to the database
 				else{
 
 					if($queueForDeletion){

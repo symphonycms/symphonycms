@@ -5,8 +5,8 @@
 	 */
 	/**
 	 * The FieldManager class is responsible for managing all fields types in Symphony.
-	 * Fields are stored on the file system either in the /fields folder of toolkit or
-	 * in a fields folder in an extension path.
+	 * Fields are stored on the file system either in the `/fields` folder of `TOOLKIT` or
+	 * in a `fields` folder in an extension directory.
 	 */
 
 	require_once(TOOLKIT . '/class.field.php');
@@ -113,8 +113,8 @@
 		}
 
 		/**
-		 * Given a Author ID and associative array of fields, update an existing Author
-		 * row in the Database's authors table. Returns boolean for success/failure
+		 * Given a Field ID and associative array of fields, update an existing Field
+		 * row in the `tbl_fields`table. Returns boolean for success/failure
 		 *
 		 * @param integer $id
 		 *  The ID of the Field that should be updated
@@ -132,16 +132,17 @@
 
 		/**
 		 * Given a Field ID, delete a Field from Symphony. This will remove the field from
-		 * the fields table, all of the data stored in the entries for this field and any
-		 * section associations if they exist.
+		 * the fields table, all of the data stored in this field's `tbl_entries_data_$id` any
+		 * existing section associations. This function additionally call the Field's `tearDown`
+		 * method so that it can cleanup any additional settings or entry tables it may of created.
 		 *
 		 * @param integer $id
 		 *  The ID of the Field that should be deleted
 		 * @return boolean
 		 */
-		public function delete($id){
-
+		public function delete($id) {
 			$existing = $this->fetch($id);
+			$existing->tearDown();
 
 			Symphony::Database()->delete('tbl_fields', " `id` = '$id'");
 			Symphony::Database()->delete('tbl_fields_'.$existing->handle(), " `field_id` = '$id'");
@@ -276,7 +277,7 @@
 		 *  The handle of the Field label
 		 * @param integer $section_id
 		 *  The section that this field belongs too
-		 * @return int
+		 * @return integer
 		 *  The field ID
 		 */
 		public function fetchFieldIDFromElementName($element_name, $section_id = null){
@@ -292,7 +293,7 @@
 		}
 
 		/**
-		 * Returns an array of all available field handles discovered in the 
+		 * Returns an array of all available field handles discovered in the
 		 * `TOOLKIT . /fields` or `EXTENSIONS . /{}/fields`.
 		 *
 		 * @return array

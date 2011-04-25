@@ -145,7 +145,8 @@
 						break;
 
 					case 'static_xml':
-						$fields['static_xml'] = trim($existing->grab());
+						$existing->grab();
+						$fields['static_xml'] = trim($existing->dsSTATIC);
 						break;
 
 					default:
@@ -241,9 +242,11 @@
 				$ol = new XMLElement('ol');
 				$ol->setAttribute('class', 'filters-duplicator');
 
+				// Add system:id filter
 				if(isset($fields['filter'][$section_data['section']->get('id')]['id'])){
 					$li = new XMLElement('li');
 					$li->setAttribute('class', 'unique');
+					$li->setAttribute('data-type', 'id');
 					$li->appendChild(new XMLElement('h4', __('System ID')));
 					$label = Widget::Label(__('Value'));
 					$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][id]', General::sanitize($fields['filter'][$section_data['section']->get('id')]['id'])));
@@ -253,9 +256,31 @@
 
 				$li = new XMLElement('li');
 				$li->setAttribute('class', 'unique template');
+				$li->setAttribute('data-type', 'id');
 				$li->appendChild(new XMLElement('h4', __('System ID')));
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][id]'));
+				$li->appendChild($label);
+				$ol->appendChild($li);
+
+				// Add system:date filter
+				if(isset($fields['filter'][$section_data['section']->get('id')]['system:date'])){
+					$li = new XMLElement('li');
+					$li->setAttribute('class', 'unique');
+					$li->setAttribute('data-type', 'system:date');
+					$li->appendChild(new XMLElement('h4', __('System Date')));
+					$label = Widget::Label(__('Value'));
+					$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][system:date]', General::sanitize($fields['filter'][$section_data['section']->get('id')]['system:date'])));
+					$li->appendChild($label);
+					$ol->appendChild($li);
+				}
+
+				$li = new XMLElement('li');
+				$li->setAttribute('class', 'unique template');
+				$li->setAttribute('data-type', 'system:date');
+				$li->appendChild(new XMLElement('h4', __('System Date')));
+				$label = Widget::Label(__('Value'));
+				$label->appendChild(Widget::Input('fields[filter]['.$section_data['section']->get('id').'][system:date]'));
 				$li->appendChild($label);
 				$ol->appendChild($li);
 
@@ -267,12 +292,14 @@
 						if(isset($fields['filter'][$section_data['section']->get('id')][$input->get('id')])){
 							$wrapper = new XMLElement('li');
 							$wrapper->setAttribute('class', 'unique');
+							$wrapper->setAttribute('data-type', $input->get('element_name'));
 							$input->displayDatasourceFilterPanel($wrapper, $fields['filter'][$section_data['section']->get('id')][$input->get('id')], $this->_errors[$input->get('id')], $section_data['section']->get('id'));
 							$ol->appendChild($wrapper);
 						}
 
 						$wrapper = new XMLElement('li');
 						$wrapper->setAttribute('class', 'unique template');
+						$wrapper->setAttribute('data-type', $input->get('element_name'));
 						$input->displayDatasourceFilterPanel($wrapper, NULL, NULL, $section_data['section']->get('id'));
 						$ol->appendChild($wrapper);
 
@@ -326,6 +353,7 @@
 			if(isset($fields['filter']['navigation']['parent'])){
 				$li = new XMLElement('li');
 				$li->setAttribute('class', 'unique');
+				$li->setAttribute('data-type', 'parent');
 				$li->appendChild(new XMLElement('h4', __('Parent Page')));
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input('fields[filter][navigation][parent]', General::sanitize($fields['filter']['navigation']['parent'])));
@@ -336,6 +364,7 @@
 
 			$li = new XMLElement('li');
 			$li->setAttribute('class', 'unique template');
+			$li->setAttribute('data-type', 'parent');
 			$li->appendChild(new XMLElement('h4', __('Parent Page')));
 			$label = Widget::Label(__('Value'));
 			$label->appendChild(Widget::Input('fields[filter][navigation][parent]'));
@@ -350,6 +379,7 @@
 			if(isset($fields['filter']['navigation']['type'])){
 				$li = new XMLElement('li');
 				$li->setAttribute('class', 'unique');
+				$li->setAttribute('data-type', 'type');
 				$li->appendChild(new XMLElement('h4', __('Page Type')));
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input('fields[filter][navigation][type]', General::sanitize($fields['filter']['navigation']['type'])));
@@ -361,6 +391,7 @@
 			$li = new XMLElement('li');
 			$li->setAttribute('class', 'unique template');
 			$li->appendChild(new XMLElement('h4', __('Page Type')));
+			$li->setAttribute('data-type', 'type');
 			$label = Widget::Label(__('Value'));
 			$label->appendChild(Widget::Input('fields[filter][navigation][type]'));
 			$li->appendChild($label);
@@ -730,7 +761,7 @@
 
 			if($isEditing){
 				$button = new XMLElement('button', __('Delete'));
-				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this data source'), 'type' => 'submit', 'accesskey' => 'd'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this data source'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this data source?')));
 				$div->appendChild($button);
 			}
 
@@ -771,7 +802,7 @@
 					case 'version':
 						$fieldset = new XMLElement('fieldset');
 						$fieldset->appendChild(new XMLElement('legend', __('Version')));
-						$fieldset->appendChild(new XMLElement('p', $value . ', ' . __('released on') . ' ' . Lang::localizeDate(DateTimeObj::get(__SYM_DATE_FORMAT__, strtotime(Lang::standardizeDate($about['release-date']))))));
+						$fieldset->appendChild(new XMLElement('p', $value . ', ' . __('released on') . ' ' . DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)));
 						break;
 
 					case 'description':
@@ -999,10 +1030,10 @@
 						}
 
 						$value = sprintf(
-							'$result = \'%s\';',
+							'$this->dsSTATIC = \'%s\';',
 							addslashes(trim($fields['static_xml']))
 						);
-						$dsShell = str_replace('<!-- GRAB -->', $value, $dsShell);
+						$dsShell = str_replace('<!-- GRAB -->', $value . PHP_EOL . "include(TOOLKIT . '/data-sources/datasource.static.php');", $dsShell);
 						break;
 
 					default:
@@ -1046,8 +1077,8 @@
 				$dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
 
 				if(preg_match_all('@(\$ds-[-_0-9a-z]+)@i', $dsShell, $matches)){
-					$dependancies = General::array_remove_duplicates($matches[1]);
-					$dsShell = str_replace('<!-- DS DEPENDANCY LIST -->', "'" . implode("', '", $dependancies) . "'", $dsShell);
+					$dependencies = General::array_remove_duplicates($matches[1]);
+					$dsShell = str_replace('<!-- DS DEPENDENCY LIST -->', "'" . implode("', '", $dependencies) . "'", $dsShell);
 				}
 
 				## Remove left over placeholders
@@ -1066,8 +1097,24 @@
 					 *  The path to the Datasource file
 					 * @param string $contents
 					 *  The contents for this Datasource as a string passed by reference
+					 * @param array $params
+					 *  An array of all the `$dsParam*` values
+					 * @param array $elements
+					 *  An array of all the elements included in this datasource
+					 * @param array $filters
+					 *  An associative array of all the filters for this datasource with the key
+					 *  being the `field_id` and the value the filter.
+					 * @param array $dependencies
+					 *  An array of dependencies that this datasource has
 					 */
-					Symphony::ExtensionManager()->notifyMembers('DatasourcePreCreate', '/blueprints/datasources/', array('file' => $file, 'contents' => &$dsShell));
+					Symphony::ExtensionManager()->notifyMembers('DatasourcePreCreate', '/blueprints/datasources/', array(
+						'file' => $file,
+						'contents' => &$dsShell,
+						'params' => $params,
+						'elements' => $elements,
+						'filters' => $filters,
+						'dependencies' => $dependencies
+					));
 				}
 				else {
 					/**
@@ -1082,15 +1129,31 @@
 					 *  The path to the Datasource file
 					 * @param string $contents
 					 *  The contents for this Datasource as a string passed by reference
+					 * @param array $params
+					 *  An array of all the `$dsParam*` values
+					 * @param array $elements
+					 *  An array of all the elements included in this datasource
+					 * @param array $filters
+					 *  An associative array of all the filters for this datasource with the key
+					 *  being the `field_id` and the value the filter.
+					 * @param array $dependencies
+					 *  An array of dependencies that this datasource has
 					 */
-					Symphony::ExtensionManager()->notifyMembers('DatasourcePreEdit', '/blueprints/datasources/', array('file' => $file, 'contents' => &$dsShell));
+					Symphony::ExtensionManager()->notifyMembers('DatasourcePreEdit', '/blueprints/datasources/', array(
+						'file' => $file,
+						'contents' => &$dsShell,
+						'params' => $params,
+						'elements' => $elements,
+						'filters' => $filters,
+						'dependencies' => $dependencies
+					));
 				}
 
-				##Write the file
+				// Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file')))
 					$this->pageAlert(__('Failed to write Data source to <code>%s</code>. Please check permissions.', array(DATASOURCES)), Alert::ERROR);
 
-				##Write Successful, add record to the database
+				// Write Successful, add record to the database
 				else{
 
 					if($queueForDeletion){
@@ -1189,6 +1252,7 @@
 
 				$li = new XMLElement('li');
 				$li->setAttribute('class', 'unique');
+				$li->setAttribute('data-type', $name);
 				$li->appendChild(new XMLElement('h4', $h4_label));
 				$label = Widget::Label(__('Value'));
 				$label->appendChild(Widget::Input('fields[filter][author]['.$name.']', General::sanitize($value)));
@@ -1199,6 +1263,7 @@
 
 			$li = new XMLElement('li');
 			$li->setAttribute('class', 'unique template');
+			$li->setAttribute('data-type', $name);
 			$li->appendChild(new XMLElement('h4', $h4_label));
 			$label = Widget::Label(__('Value'));
 			$label->appendChild(Widget::Input('fields[filter][author]['.$name.']'));

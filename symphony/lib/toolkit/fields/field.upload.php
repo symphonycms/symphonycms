@@ -8,12 +8,21 @@
 	 */
 
 	Class fieldUpload extends Field {
+
+		protected static $imageMimeTypes = array(
+			'image/gif',
+			'image/jpg',
+			'image/jpeg',
+			'image/pjpeg',
+			'image/png',
+		);
+
 		public function __construct(&$parent){
 			parent::__construct($parent);
 
 			$this->_name = __('File Upload');
 			$this->_required = true;
-			
+
 			$this->set('location', 'sidebar');
 			$this->set('required', 'no');
 		}
@@ -35,7 +44,7 @@
 			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`file` $order");
 		}
 
-		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
+		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
 
 			if (preg_match('/^mimetype:/', $data[0])) {
@@ -285,17 +294,16 @@
 
 				UPLOAD_ERR_EXTENSION
 				Value: 8; File upload stopped by extension. Introduced in PHP 5.2.0.
+
+				Array
+				(
+					[name] => filename.pdf
+					[type] => application/pdf
+					[tmp_name] => /tmp/php/phpYtdlCl
+					[error] => 0
+					[size] => 16214
+				)
 			*/
-
-		//	Array
-		//	(
-		//		[name] => filename.pdf
-		//		[type] => application/pdf
-		//		[tmp_name] => /tmp/php/phpYtdlCl
-		//		[error] => 0
-		//		[size] => 16214
-		//	)
-
 			$message = NULL;
 
 			if(empty($data) || $data['error'] == UPLOAD_ERR_NO_FILE) {
@@ -308,19 +316,30 @@
 				return self::__OK__;
 			}
 
-			## Its not an array, so just retain the current data and return
+			// Its not an array, so just retain the current data and return
 			if(!is_array($data)){
-
-				$file = WORKSPACE . $data;
+				// Ensure the file exists in the `WORKSPACE` directory
+				// @link http://symphony-cms.com/discuss/issues/view/610/
+				$file = WORKSPACE . preg_replace(array('%/+%', '%(^|/)../%'), '/', $data);
 
 				if(!file_exists($file) || !is_readable($file)){
 					$message = __('The file uploaded is no longer available. Please check that it exists, and is readable.');
 					return self::__INVALID_FIELDS__;
 				}
 
+				// Ensure that the file still matches the validator and hasn't
+				// changed since it was uploaded.
+				if($this->get('validator') != NULL){
+					$rule = $this->get('validator');
+
+					if(!General::validateString($file, $rule)){
+						$message = __("File chosen in '%s' does not match allowable file types for that field.", array($this->get('label')));
+						return self::__INVALID_FIELDS__;
+					}
+				}
+
 				return self::__OK__;
 			}
-
 
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
 				$message = __('The destination directory, <code>%s</code>, does not exist.', array($this->get('destination')));
@@ -335,7 +354,6 @@
 			if($data['error'] != UPLOAD_ERR_NO_FILE && $data['error'] != UPLOAD_ERR_OK){
 
 				switch($data['error']){
-
 					case UPLOAD_ERR_INI_SIZE:
 						$message = __('File chosen in "%1$s" exceeds the maximum allowed upload size of %2$s specified by your host.', array($this->get('label'), (is_numeric(ini_get('upload_max_filesize')) ? General::formatFilesize(ini_get('upload_max_filesize')) : ini_get('upload_max_filesize'))));
 						break;
@@ -345,9 +363,6 @@
 						break;
 
 					case UPLOAD_ERR_PARTIAL:
-						$message = __("File chosen in '%s' was only partially uploaded due to an error.", array($this->get('label')));
-						break;
-
 					case UPLOAD_ERR_NO_TMP_DIR:
 						$message = __("File chosen in '%s' was only partially uploaded due to an error.", array($this->get('label')));
 						break;
@@ -359,14 +374,12 @@
 					case UPLOAD_ERR_EXTENSION:
 						$message = __("Uploading '%s' failed. File upload stopped by extension.", array($this->get('label')));
 						break;
-
 				}
 
 				return self::__ERROR_CUSTOM__;
-
 			}
 
-			## Sanitize the filename
+			// Sanitize the filename
 			$data['name'] = Lang::createFilename($data['name']);
 
 			if($this->get('validator') != NULL){
@@ -411,12 +424,14 @@
 				);
 			}
 
-			## Its not an array, so just retain the current data and return
+			// Its not an array, so just retain the current data and return
 			if(!is_array($data)){
 
 				$status = self::__OK__;
 
-				$file = WORKSPACE . $data;
+				// Ensure the file exists in the `WORKSPACE` directory
+				// @link http://symphony-cms.com/discuss/issues/view/610/
+				$file = WORKSPACE . preg_replace(array('%/+%', '%(^|/)../%'), '/', $data);
 
 				$result = array(
 					'file' => $data,
@@ -443,12 +458,11 @@
 				}
 
 				return $result;
-
 			}
 
 			if($simulate) return;
 
-			## Upload the new file
+			// Upload the new file
 			$abs_path = DOCROOT . '/' . trim($this->get('destination'), '/');
 			$rel_path = str_replace('/workspace', '', $this->get('destination'));
 			$existing_file = NULL;
@@ -472,9 +486,8 @@
 				return;
 			}
 
-			## Sanitize the filename
+			// Sanitize the filename
 			$data['name'] = Lang::createFilename($data['name']);
-
 
 			if(!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], Symphony::Configuration()->get('write_mode', 'file'))){
 
@@ -492,7 +505,7 @@
 				General::deleteFile(WORKSPACE . $existing_file);
 			}
 
-			## If browser doesn't send MIME type (e.g. .flv in Safari)
+			// If browser doesn't send MIME type (e.g. .flv in Safari)
 			if (strlen(trim($data['type'])) == 0){
 				$data['type'] = 'unknown';
 			}
@@ -503,39 +516,25 @@
 				'mimetype' => $data['type'],
 				'meta' => serialize(self::getMetaInfo(WORKSPACE . $file, $data['type']))
 			);
-
 		}
 
 		public static function getMetaInfo($file, $type){
-
-			$imageMimeTypes = array(
-				'image/gif',
-				'image/jpg',
-				'image/jpeg',
-				'image/pjpeg',
-				'image/png',
-			);
-
 			$meta = array();
 
 			if(!file_exists($file) || !is_readable($file)) return $meta;
 
 			$meta['creation'] = DateTimeObj::get('c', filemtime($file));
 
-			if(General::in_iarray($type, $imageMimeTypes) && $array = @getimagesize($file)){
-				$meta['width']	= $array[0];
-				$meta['height']   = $array[1];
+			if(General::in_iarray($type, fieldUpload::$imageMimeTypes) && $array = @getimagesize($file)){
+				$meta['width'] = $array[0];
+				$meta['height'] = $array[1];
 			}
 
 			return $meta;
-
 		}
 
-
 		function createTable(){
-
 			return Symphony::Database()->query(
-
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
@@ -548,7 +547,6 @@
 				  KEY `file` (`file`),
 				  KEY `mimetype` (`mimetype`)
 				) ENGINE=MyISAM;"
-
 			);
 		}
 

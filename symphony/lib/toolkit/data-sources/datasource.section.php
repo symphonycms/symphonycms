@@ -38,7 +38,7 @@
 
 					if(isset($ds->dsParamPARAMOUTPUT)){
 						if($ds->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
-						elseif($ds->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', strtotime(Lang::standardizeDate($entry->creationDate)));
+						elseif($ds->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', $entry->creationDate);
 						elseif($ds->dsParamPARAMOUTPUT == 'system:author') $param_pool[$key][] = $entry->get('author_id');
 					}
 
@@ -70,7 +70,12 @@
 
 					if(!$param_output_only){
 						if(is_array($ds->dsParamINCLUDEDELEMENTS) && in_array('system:date', $ds->dsParamINCLUDEDELEMENTS)){
-							$xEntry->appendChild(General::createXMLDateObject(strtotime(Lang::standardizeDate($entry->creationDate)), 'system-date'));
+							$xEntry->appendChild(
+								General::createXMLDateObject(
+									DateTimeObj::get('U', $entry->creationDate),
+									'system-date'
+								)
+							);
 						}
 						$xGroup->appendChild($xEntry);
 					}
@@ -137,7 +142,7 @@
 			if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id]))
 				$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 
-			if($field_id != 'id' && !($fieldPool[$field_id] instanceof Field)){
+			if($field_id != 'id' && $field_id != 'system:date' && !($fieldPool[$field_id] instanceof Field)){
 				throw new Exception(
 					__(
 						'Error creating field object with id %1$d, for filtering in data source "%2$s". Check this field exists.',
@@ -146,8 +151,22 @@
 				);
 			}
 
-			if($field_id == 'id') $where = " AND `e`.id IN ('".implode("', '", $value)."') ";
+			if($field_id == 'id') {
+				$where = " AND `e`.id IN ('".implode("', '", $value)."') ";
+			}
+			else if($field_id == 'system:date') {
+				require_once(TOOLKIT . '/fields/field.date.php');
+				$date = new fieldDate(Frontend::instance());
+
+				// Create an empty string, we don't care about the Joins, we just want the WHERE clause.
+				$empty = "";
+				$date->buildDSRetrievalSQL($value, $empty, $where, ($filter_type == DS_FILTER_AND ? true : false));
+
+				$where = preg_replace('/`t\d+`.value/', '`e`.creation_date', $where);
+			}
 			else{
+				// For deprecated reasons, call the old, typo'd function name until the switch to the
+				// properly named buildDSRetrievalSQL function.
 				if(!$fieldPool[$field_id]->buildDSRetrivalSQL($value, $joins, $where, ($filter_type == DS_FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
 				if(!$group) $group = $fieldPool[$field_id]->requiresSQLGrouping();
 			}
@@ -272,7 +291,7 @@
 
 					if(isset($this->dsParamPARAMOUTPUT)){
 						if($this->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
-						elseif($this->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', strtotime(Lang::standardizeDate($entry->creationDate)));
+						elseif($this->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', $entry->creationDate);
 						elseif($this->dsParamPARAMOUTPUT == 'system:author') $param_pool[$key][] = $entry->get('author_id');
 					}
 
@@ -302,13 +321,16 @@
 						}
 					}
 
-					if($this->_param_output_only) continue;
-
-					if(in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){
-						$xEntry->appendChild(General::createXMLDateObject(Lang::standardizeDate(strtotime($entry->creationDate)), 'system-date'));
-					}
-
 					$result->appendChild($xEntry);
+
+					if(!$this->_param_output_only && in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){
+						$xEntry->appendChild(
+							General::createXMLDateObject(
+								DateTimeObj::get('U', $entry->creationDate),
+								'system-date'
+							)
+						);
+					}
 				}
 
 			endif;

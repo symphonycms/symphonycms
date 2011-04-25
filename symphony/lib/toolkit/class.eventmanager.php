@@ -12,14 +12,14 @@
 
 	require_once(TOOLKIT . '/class.event.php');
 
-    Class EventManager extends Manager{
+	Class EventManager extends Manager{
 
 		/**
 		 * Given the filename of an Event return it's handle. This will remove
 		 * the Symphony convention of `event.*.php`
 		 *
 		 * @param string $filename
-		 *  The filename of the Event
+		 *	The filename of the Event
 		 * @return string
 		 */
 		public function __getHandleFromFilename($filename){
@@ -31,24 +31,24 @@
 		 * use an 'event' prefix.
 		 *
 		 * @param string $handle
-		 *  The Event handle
+		 *	The Event handle
 		 * @return string
 		 */
-        public function __getClassName($handle){
-	        return 'event' . $handle;
-        }
+		public function __getClassName($handle){
+			return 'event' . $handle;
+		}
 
 		/**
 		 * Finds an Event by name by searching the events folder in the workspace
 		 * and in all installed extension folders and returns the path to it's folder.
 		 *
 		 * @param string $handle
-		 *  The handle of the Event free from any Symphony conventions
-		 *  such as `event.*.php`
+		 *	The handle of the Event free from any Symphony conventions
+		 *	such as `event.*.php`
 		 * @return mixed
-		 *  If the Event is found, the function returns the path it's folder, otherwise false.
+		 *	If the Event is found, the function returns the path it's folder, otherwise false.
 		 */
-        public function __getClassPath($handle){
+		public function __getClassPath($handle){
 			if(is_file(EVENTS . "/event.$handle.php")) return EVENTS;
 			else{
 
@@ -59,23 +59,23 @@
 						if(is_file(EXTENSIONS . "/$e/events/event.$handle.php")) return EXTENSIONS . "/$e/events";
 					}
 				}
-	    	}
+			}
 
-		    return false;
-        }
+			return false;
+		}
 
 		/**
 		 * Given a name, return the path to the Event class
 		 *
 		 * @see toolkit.EventManager#__getClassPath()
 		 * @param string $handle
-		 *  The handle of the Event free from any Symphony conventions
-		 *  such as event.*.php
+		 *	The handle of the Event free from any Symphony conventions
+		 *	such as event.*.php
 		 * @return string
 		 */
-        public function __getDriverPath($handle){
-	        return $this->__getClassPath($handle) . "/event.$handle.php";
-        }
+		public function __getDriverPath($handle){
+			return $this->__getClassPath($handle) . "/event.$handle.php";
+		}
 
 
 		/**
@@ -84,17 +84,17 @@
 		 *
 		 * @see toolkit.Manager#about()
 		 * @return array
-		 *  Associative array of Events with the key being the handle of the Event
-		 *  and the value being the Event's `about()` information.
+		 *	Associative array of Events with the key being the handle of the Event
+		 *	and the value being the Event's `about()` information.
 		 */
-        public function listAll(){
+		public function listAll(){
 
 			$result = array();
-	        $structure = General::listStructure(EVENTS, '/event.[\\w-]+.php/', false, 'ASC', EVENTS);
+			$structure = General::listStructure(EVENTS, '/event.[\\w-]+.php/', false, 'ASC', EVENTS);
 
-	        if(is_array($structure['filelist']) && !empty($structure['filelist'])){
-	        	foreach($structure['filelist'] as $f){
-		        	$f = $this->__getHandleFromFilename($f);
+			if(is_array($structure['filelist']) && !empty($structure['filelist'])){
+				foreach($structure['filelist'] as $f){
+					$f = $this->__getHandleFromFilename($f);
 
 					if($about = $this->about($f)){
 						$classname = $this->__getClassName($f);
@@ -125,8 +125,8 @@
 
 					$tmp = General::listStructure(EXTENSIONS . "/$e/events", '/event.[\\w-]+.php/', false, 'ASC', EXTENSIONS . "/$e/events");
 
-		        	if(is_array($tmp['filelist']) && !empty($tmp['filelist'])){
-		        		foreach($tmp['filelist'] as $f){
+					if(is_array($tmp['filelist']) && !empty($tmp['filelist'])){
+						foreach($tmp['filelist'] as $f){
 							$f = $this->__getHandleFromFilename($f);
 
 							if($about = $this->about($f)){
@@ -140,37 +140,37 @@
 
 			ksort($result);
 			return $result;
-        }
+		}
 
 		/**
 		 * Creates an instance of a given class and returns it.
 		 *
 		 * @param string $handle
-		 *  The handle of the Event to create
+		 *	The handle of the Event to create
 		 * @param array $env
-		 *  The environment variables from the Frontend class which includes
-		 *  any params set by Symphony or Datasources or by other Events
+		 *	The environment variables from the Frontend class which includes
+		 *	any params set by Symphony or Datasources or by other Events
 		 * @return Event
 		 */
-        public function &create($handle, Array $env = array()){
+		public function &create($handle, Array $env = array()){
 
-	        $classname = $this->__getClassName($handle);
-	        $path = $this->__getDriverPath($handle);
+			$classname = $this->__getClassName($handle);
+			$path = $this->__getDriverPath($handle);
 
-	        if(!is_file($path)){
-		        throw new Exception(
+			if(!is_file($path)){
+				throw new Exception(
 					__(
 						'Could not find Event <code>%s</code>. If the Event was provided by an Extension, ensure that it is installed, and enabled.',
 						array($handle)
 					)
 				);
-	        }
+			}
 
 			if(!class_exists($classname))
 				require_once($path);
 
 			return new $classname($this->_Parent, $env);
 
-        }
+		}
 
-    }
+	}

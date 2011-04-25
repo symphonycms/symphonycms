@@ -6,7 +6,7 @@
 	/**
 	 * The EntryManager is responsible for all Entry objects in Symphony.
 	 * Entries are stored in the database in a cluster of tables. There is a
-	 * parent entry row stored in tbl_entries and then each field's data is
+	 * parent entry row stored in `tbl_entries` and then each field's data is
 	 * stored in a separate table, `tbl_entries_data_{field_id}`. Where Field ID
 	 * is generated when the Section is saved. This Manager provides basic
 	 * add, edit, delete and fetching methods for Entries.
@@ -283,7 +283,7 @@
 		 * @param boolean $buildentries
 		 *  Whether to return an array of entry ID's or Entry objects. Defaults to
 		 *  true, which will return Entry objects
-		 * @param array $elementnames
+		 * @param array $element_names
 		 *  Choose whether to get data from a subset of fields or all fields in a section,
 		 *  by providing an array of field names. Defaults to null, which will load data
 		 *  from all fields in a section.
@@ -353,25 +353,27 @@
 		}
 
 		/**
-		 * Given an array of Entry ID's and a section ID, return an array of Entry
-		 * objects. For performance reasons, it's possible to pass an array of field
-		 * names so that only a subset of the section will be queried. Do not pass
-		 * this function ID values from across more than one section.
+		 * Given an array of Entry data from `tbl_entries` and a section ID, return an
+		 * array of Entry objects. For performance reasons, it's possible to pass an array
+		 * of field handles via `$element_names`, so that only a subset of the section schema
+		 * will be queried. This function currently only supports Entry from one section at a
+		 * time.
 		 *
-		 * @param array $id_list
-		 *  An array of ID's
+		 * @param array $rows
+		 *  An array of Entry data from `tbl_entries` including the Entry ID, Entry section,
+		 *  the ID of the Author who created the Entry, and a Unix timestamp of creation
 		 * @param integer $section_id
-		 *  The section ID of the entries in the `$id_list`
-		 * @param array $elementnames
+		 *  The section ID of the entries in the `$rows`
+		 * @param array $element_names
 		 *  Choose whether to get data from a subset of fields or all fields in a section,
 		 *  by providing an array of field names. Defaults to null, which will load data
 		 *  from all fields in a section.
 		 * @return array
 		 */
-		public function __buildEntries(Array $id_list, $section_id, $element_names = null){
+		public function __buildEntries(Array $rows, $section_id, $element_names = null){
 			$entries = array();
 
-			if (empty($id_list)) return $entries;
+			if (empty($rows)) return $entries;
 
 			// choose whether to get data from a subset of fields or all fields in a section
 			if (!is_null($element_names) && is_array($element_names)){
@@ -402,27 +404,22 @@
 
 			$schema = Symphony::Database()->fetch($schema_sql);
 
-			$tmp = array();
-			foreach ($id_list as $r) {
-				$tmp[$r['id']] = $r;
-			}
-			$id_list = $tmp;
-
 			$raw = array();
-
-			$id_list_string = implode("', '", array_keys($id_list));
+			$rows_string = '';
 
 			// Append meta data:
-			foreach ($id_list as $entry_id => $entry) {
-				$raw[$entry_id]['meta'] = $entry;
+			foreach ($rows as $entry) {
+				$raw[$entry['id']]['meta'] = $entry;
+				$rows_string .= $entry['id'] . ',';
 			}
+			$rows_string = trim($rows_string, ',');
 
 			// Append field data:
 			foreach ($schema as $f) {
 				$field_id = $f['id'];
 
 				try{
-					$row = Symphony::Database()->fetch("SELECT * FROM `tbl_entries_data_{$field_id}` WHERE `entry_id` IN ('$id_list_string') ORDER BY `id` ASC");
+					$row = Symphony::Database()->fetch("SELECT * FROM `tbl_entries_data_{$field_id}` WHERE `entry_id` IN ($rows_string) ORDER BY `id` ASC");
 				}
 				catch(Exception $e){
 					// No data due to error
@@ -459,17 +456,7 @@
 				}
 			}
 
-			// Need to restore the correct ID ordering
-			$tmp = array();
-
-			foreach (array_keys($id_list) as $entry_id) {
-				$tmp[$entry_id] = $raw[$entry_id];
-			}
-
-			$raw = $tmp;
-
-			$fieldPool = array();
-
+			// Loop over the array of entry data and convert it to an array of Entry objects
 			foreach ($raw as $entry) {
 				$obj = $this->create();
 
@@ -558,7 +545,7 @@
 		 * @param boolean $buildentries
 		 *  Whether to return an array of entry ID's or Entry objects. Defaults to
 		 *  true, which will return Entry objects
-		 * @param array $elementnames
+		 * @param array $element_names
 		 *  Choose whether to get data from a subset of fields or all fields in a section,
 		 *  by providing an array of field names. Defaults to null, which will load data
 		 *  from all fields in a section.
