@@ -190,6 +190,7 @@
 				}
 
 				$fields = $_POST['send-email'];
+				$db = Symphony::Database();
 
 				$fields['recipient']		= __sendEmailFindFormValue($fields['recipient'], $_POST['fields'], true);
 				$fields['recipient']		= preg_split('/\,/i', $fields['recipient'], -1, PREG_SPLIT_NO_EMPTY);
