@@ -269,7 +269,7 @@
 
 				$sql = "SELECT t1.`id`, t1.`email`, t1.`first_name` 
 					    FROM `tbl_authors` as t1, `tbl_forgotpass` as t2
-					 	WHERE t2.`token` = '".$_REQUEST['token']."' AND t1.`id` = t2.`author_id`
+					 	WHERE t2.`token` = '".Symphony::Database()->cleanValue($_REQUEST['token'])."' AND t1.`id` = t2.`author_id`
 					 	LIMIT 1";
 
 				$author = Symphony::Database()->fetchRow(0, $sql);	
