@@ -1223,6 +1223,6 @@
 		 *  Symphony. The correct function is `$this->buildDSRetrievalSQL`.
 		 */
 		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
-			return $this->buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false);
+			return $this->buildDSRetrievalSQL($data, $joins, $where, $andOperation = false);
 		}
 	}
