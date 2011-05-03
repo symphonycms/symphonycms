@@ -425,10 +425,10 @@
 						self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 						$this->Author = AuthorManager::fetchByID($id);
 
-		                // Only set custom author language in the backend
-		                if(class_exists('Administration')) {
-		                    Lang::set($this->Author->get('language'));
-		                }
+						// Only set custom author language in the backend
+						if(class_exists('Administration')) {
+							Lang::set($this->Author->get('language'));
+						}
 
 						return true;
 					}
