@@ -292,7 +292,7 @@
 				// Date is equal to or earlier/later than
 				if($match[1] == "equal to or ") {
 					$earlier = DateTimeObj::get('Y-m-d H:i:s', $string);
-					$later = DateTimeObj::get('Y-m-d H:i:s', $string);
+					$later = $earlier;
 				}
 
 				// Date is earlier/later than
@@ -326,7 +326,7 @@
 				// Validate
 				if(!DateTimeObj::validate($start)) return self::ERROR;
 
-				$string = "{$start} to {$string}-" . DateTimeObj::get('t', $start);
+				$string = "{$start} to {$string}-" . DateTimeObj::get('t', $start) . " 23:59:59";
 			}
 
 			// Match single dates
