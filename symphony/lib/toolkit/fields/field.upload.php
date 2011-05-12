@@ -398,7 +398,7 @@
 
 			if($entry_id){
 				$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
-				$existing_file = $abs_path . '/' . basename($row['file'], '/');
+				$existing_file = $abs_path . '/' . trim($row['file'], '/');
 			}
 
 			if((strtolower($existing_file) != strtolower($new_file)) && file_exists($new_file)){
@@ -456,6 +456,11 @@
 					$status = self::__INVALID_FIELDS__;
 					return $result;
 				}
+				else{
+					if(empty($result['mimetype'])) $result['mimetype'] = (function_exists('mime_content_type') ? mime_content_type($file) : 'application/octet-stream');
+					if(empty($result['size'])) $result['size'] = filesize($file);
+					if(empty($result['meta'])) $result['meta'] = serialize(self::getMetaInfo($file, $result['mimetype']));
+				}
 
 				return $result;
 			}
@@ -474,7 +479,7 @@
 					$entry_id
 				));
 
-				$existing_file = rtrim($rel_path, '/') . '/' . trim(basename($row['file']), '/');
+				$existing_file = rtrim($rel_path, '/') . '/' . trim($row['file'], '/');
 
 				// File was removed
 				if($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file) && is_file(WORKSPACE . $existing_file)){
@@ -507,7 +512,7 @@
 
 			// If browser doesn't send MIME type (e.g. .flv in Safari)
 			if (strlen(trim($data['type'])) == 0){
-				$data['type'] = 'unknown';
+				$data['type'] = (function_exists('mime_content_type') ? mime_content_type($file) : 'application/octet-stream');
 			}
 
 			return array(
