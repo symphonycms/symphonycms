@@ -18,10 +18,18 @@ Visit the forum at <http://symphony-cms.com/discuss/>
 
 - PHP 5.2 or above
 - PHP's LibXML module, with the XSLT extension enabled (--with-xsl)
-- MySQL 4.1 or above
+- MySQL 5.0 or above
 - An Apache or Litespeed webserver
 - Apache's mod_rewrite module or equivalent
 
+### A note for Windows developers
+
+While Windows is not officially supported for production, we understand many 
+developers use WAMP for Symphony development before deploying to a production
+server. The Symphony team recommends that while using WAMP, developers use 
+the latest PHP 5.3.x version during development to minimise any potential issues.
+PHP5.3 provides numerous fixes and improvements to help minimise and standardise 
+the result of several functions that behave slightly differently depending on the OS
 
 ## Updating From an Older Version
 
