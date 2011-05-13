@@ -127,13 +127,11 @@
 
 	}
 
-	function fireSql(&$db, $data, &$error, $compatibility='NORMAL'){
+	function fireSql(&$db, $data, &$error, $use_server_encoding = false){
 
-		$compatibility = strtoupper($compatibility);
-
-		if($compatibility == 'HIGH'){
-			$data = str_replace('ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci', NULL, $data);
-			$data = str_replace('collate utf8_unicode_ci', NULL, $data);
+		if($use_server_encoding) {
+			$data = str_replace('DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci', NULL, $data);
+			$data = str_replace('COLLATE utf8_unicode_ci', NULL, $data);
 		}
 
 		## Silently attempt to change the storage engine. This prevents INNOdb errors.
@@ -517,7 +515,7 @@
 
 				$install_log->pushToLog("MYSQL: Importing Table Schema...", E_NOTICE, true, false);
 				$error = NULL;
-				if(!fireSql($db, getTableSchema(), $error, ($config['database']['high-compatibility'] == 'yes' ? 'high' : 'normal'))){
+				if(!fireSql($db, getTableSchema(), $error, ($config['database']['use-server-encoding'] != 'yes' ? true : false))){
 					define('_INSTALL_ERRORS_', "There was an error while trying to import data to the database. MySQL returned: $error");
 					$install_log->pushToLog("Failed", E_ERROR,true, true, true);
 					installResult($Page, $install_log, $start);
@@ -593,7 +591,6 @@
 					$conf['settings']['log']['maxsize'] = '102400';
 					$conf['settings']['image']['cache'] = '1';
 					$conf['settings']['image']['quality'] = '90';
-					$conf['settings']['database']['driver'] = 'mysql';
 					$conf['settings']['database']['character_set'] = 'utf8';
 					$conf['settings']['database']['character_encoding'] = 'utf8';
 					$conf['settings']['database']['runtime_character_set_alter'] = '1';
@@ -761,7 +758,7 @@ Options +FollowSymlinks -Indexes
 
 					$install_log->pushToLog("MYSQL: Importing Workspace Data...", E_NOTICE, true, false);
 					$error = NULL;
-					if(!fireSql($db, getWorkspaceData(), $error, ($config['database']['high-compatibility'] == 'yes' ? 'high' : 'normal'))){
+					if(!fireSql($db, getWorkspaceData(), $error, ($config['database']['use-server-encoding'] != 'yes' ? true : false))){
 						define('_INSTALL_ERRORS_', "There was an error while trying to import data to the database. MySQL returned: $error");
 						$install_log->pushToLog("Failed", E_ERROR,true, true, true);
 						installResult($Page, $install_log, $start);
@@ -864,6 +861,7 @@ Options +FollowSymlinks -Indexes
 		$fields['database']['host'] = 'localhost';
 		$fields['database']['port'] = '3306';
 		$fields['database']['prefix'] = 'sym_';
+		$fields['database']['use-server-encoding'] = 'no';
 		$fields['permission']['file'] = '0775';
 		$fields['permission']['directory'] = '0775';
 
@@ -1048,10 +1046,10 @@ Options +FollowSymlinks -Indexes
 
 			$Page->setTemplateVar('TABLE-PREFIX', $fields['database']['prefix']);
 
-			## fields[database][high-compatibility]
-			$Fieldset->appendChild(Widget::label(__('Use compatibility mode'), Widget::input('fields[database][high-compatibility]', 'yes', 'checkbox'), 'option'));
+			## Use UTF-8 at all times unless otherwise specified
+			$Fieldset->appendChild(Widget::label(__('Always use <code>UTF-8</code> encoding'), Widget::input('fields[database][use-server-encoding]', 'no', 'checkbox', !isset($fields['database']['use-server-encoding']) ? array() : array('checked' => 'checked')), 'option'));
 
-			$Fieldset->appendChild(new XMLElement('p', __('Symphony normally specifies UTF-8 character encoding for database entries. With compatibility mode enabled, Symphony will instead use the default character encoding of your database.')));
+			$Fieldset->appendChild(new XMLElement('p', __("If unchecked, Symphony will use your database's default encoding instead of <code>UTF-8</code>.")));
 
 			$Database->appendChild($Fieldset);
 
