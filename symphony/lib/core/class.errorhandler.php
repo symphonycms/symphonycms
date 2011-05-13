@@ -280,7 +280,9 @@
 				);
 			}
 			
-			if(self::isEnabled() !== true || self::isErrorsEnabled($code) !== true) return;
+			// Error reporting will return 0 (zero) if the '@' error surpressing is used.
+			// If the error is surpressed, the error handler should respect that.
+			if(self::isEnabled() !== true || self::isErrorsEnabled($code) !== true || error_reporting() == 0) return;
 			GenericExceptionHandler::handler(new ErrorException($message, 0, $code, $file, $line));
 		}
 		
