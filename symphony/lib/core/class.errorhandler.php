@@ -313,7 +313,7 @@
 				);
 			}
 
-			if(self::$raise || $code != E_WARNING) {
+			if((self::$raise || $code != E_WARNING) && error_reporting() !== 0) {
 				throw new ErrorException($message, 0, $code, $file, $line);
 			}
 		}
