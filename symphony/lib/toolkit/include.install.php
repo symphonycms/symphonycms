@@ -406,12 +406,12 @@
 			}
 
 			## Incorrect MySQL version
-			elseif(version_compare($db->fetchVar('version', 0, "SELECT VERSION() AS `version`;"), '4.1', '<')){
+			elseif(version_compare($db->fetchVar('version', 0, "SELECT VERSION() AS `version`;"), '5.0', '<')){
 				$version = $db->fetchVar('version', 0, "SELECT VERSION() AS `version`;");
 				$Page->log->pushToLog('Configuration - MySQL Version is not correct. '.$version.' detected.', E_NOTICE, true);
 				define("kDATABASE_VERSION_WARNING", true);
 
-				$warnings['database-incorrect-version'] = __('Symphony requires <code>MySQL 4.1</code> or greater to work, however version <code>%s</code> was detected. This requirement must be met before installation can proceed.', array($version));
+				$warnings['database-incorrect-version'] = __('Symphony requires <code>MySQL 5.0</code> or greater to work, however version <code>%s</code> was detected. This requirement must be met before installation can proceed.', array($version));
 
 				if(!defined("ERROR")) define("ERROR", 'database-incorrect-version');
 			}

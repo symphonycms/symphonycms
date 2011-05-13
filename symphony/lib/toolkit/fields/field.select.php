@@ -169,10 +169,7 @@
 
 			// Ensure that the table has a 'value' column
 			if((boolean)Symphony::Database()->fetchVar('Field', 0, sprintf("
-					SHOW COLUMNS FROM
-						`tbl_entries_data_%d`
-					WHERE
-						Field = '%s'
+					SHOW COLUMNS FROM `tbl_entries_data_%d` LIKE '%s'
 				", $this->get('dynamic_options'), 'value'
 			))) {
 				$results = Symphony::Database()->fetchCol('value', sprintf("
@@ -185,10 +182,7 @@
 
 			// In the case of a Upload field, use 'file' instead of 'value'
 			if((boolean)Symphony::Database()->fetchVar('Field', 0, sprintf("
-					SHOW COLUMNS FROM
-						`tbl_entries_data_%d`
-					WHERE
-						Field = '%s'
+					SHOW COLUMNS FROM `tbl_entries_data_%d` LIKE '%s'
 				", $this->get('dynamic_options'), 'file'
 			))) {
 				$results = Symphony::Database()->fetchCol('file', sprintf("
