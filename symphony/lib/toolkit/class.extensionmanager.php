@@ -528,7 +528,7 @@
 			// Make sure $page is an array
 			if(!is_array($page)){
 				// Support for pseudo-global delegates (including legacy support for /administration/)
-				if(preg_match('/\/?(administration|backend)\/?/', $page)){
+				if(preg_match('/\/?(administration|backend)\/?/i', $page)){
 					$page = array(
 						'backend', '/backend/',
 						'administration', '/administration/'
@@ -547,11 +547,11 @@
 			$services = array();
 
 			foreach(self::$_subscriptions as $subscription) {
-				foreach($page as $p) {
-					if ($p == $subscription['page'] && $delegate == $subscription['delegate']) {
-						$services[] = $subscription;
-					}
-				}
+				if($subscription['delegate'] != $delegate) continue;
+
+				if(!in_array($subscription['page'], $page)) continue;
+
+				$services[] = $subscription;
 			}
 
 			if(empty($services)) return null;
