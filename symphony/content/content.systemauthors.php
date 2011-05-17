@@ -488,7 +488,7 @@
 					$authenticated = true;
 				}
 				// Developers don't need to specify the old password, unless it's their own account
-				else if(Administration::instance()->Author->isDeveloper() && $isOwner === false){
+				else if(Administration::instance()->Author->isDeveloper()){
 					$authenticated = true;
 				}
 
