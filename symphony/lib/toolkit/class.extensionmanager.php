@@ -527,16 +527,7 @@
 
 			// Make sure $page is an array
 			if(!is_array($page)){
-				// Support for pseudo-global delegates (including legacy support for /administration/)
-				if(preg_match('/\/?(administration|backend)\/?/i', $page)){
-					$page = array(
-						'backend', '/backend/',
-						'administration', '/administration/'
-					);
-				}
-				else{
-					$page = array($page);
-				}
+				$page = array($page);
 			}
 
 			// Support for global delegate subscription
