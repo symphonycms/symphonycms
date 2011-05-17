@@ -27,9 +27,9 @@ var Symphony = {};
 			// Set basic context information
 			Symphony.Context.add('user', {
 				fullname: user.text(),
-				name: user.attr('name'),
-				type: user.attr('class'),
-				id: user.attr('id').substring(4)
+				name: user.data('name'),
+				type: user.data('type'),
+				id: user.data('id')
 			});
 			Symphony.Context.add('lang', html.attr('lang'));
 
