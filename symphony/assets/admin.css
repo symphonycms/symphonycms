@@ -300,7 +300,7 @@ div.compact:after {
 	clear: left;
 	height: 0;
 }
-div.compact label { 
+div.compact label {
 	float: left;
 	width: 50%;
 	min-width: 250px;
@@ -470,7 +470,7 @@ button.button.delete:hover {
 }
 #notice.error {
 	background-color: #ffb;
-	border-top: 3px solid #cc8;	
+	border-top: 3px solid #cc8;
 }
 #notice.success {
 	background-color: #ddf6bb;
@@ -754,7 +754,8 @@ ul.page a {
 	margin-top: 0;
 	margin-bottom: 0;
 }
-.primary .help {
+.primary .help,
+.secondary .help {
 	margin-top: 1.5em;
 }
 .primary label > * + span.frame,
