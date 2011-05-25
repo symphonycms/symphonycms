@@ -543,7 +543,7 @@
 		private function __toCamel($string, $caseFirst = false){
 			$string = strtolower($string);
 			$a = explode('_', $string);
-			$a = array_map(ucfirst, $a);
+			$a = array_map('ucfirst', $a);
 			if(!$caseFirst){
 				$a[0] = lcfirst($a[0]);
 			}

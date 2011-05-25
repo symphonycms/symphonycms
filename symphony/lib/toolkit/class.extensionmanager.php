@@ -35,7 +35,7 @@
 		private static $_subscriptions =  null;
 
 		/**
-		 * An associative array of all the extensions in tbl_extensions where
+		 * An associative array of all the extensions in `tbl_extensions` where
 		 * the key is the extension name and the value is an array
 		 * representation of it's accompanying database row.
 		 * @var array
