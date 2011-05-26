@@ -31,22 +31,22 @@
 	}
 
 	if(!function_exists('__buildPageXML')){
-		function __buildPageXML($page){
-
+		function __buildPageXML($page, $page_types) {
 			$oPage = new XMLElement('page');
 			$oPage->setAttribute('handle', $page['handle']);
 			$oPage->setAttribute('id', $page['id']);
 			$oPage->appendChild(new XMLElement('name', General::sanitize($page['title'])));
 
-			$types = Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '".$page['id']."'");
-			if(is_array($types) && !empty($types)){
+			if(in_array($page['id'], array_keys($page_types))) {
 				$xTypes = new XMLElement('types');
-				foreach($types as $type) $xTypes->appendChild(new XMLElement('type', $type));
+				foreach($page_types[$page['id']] as $type) {
+					$xTypes->appendChild(new XMLElement('type', $type));
+				}
 				$oPage->appendChild($xTypes);
 			}
 
 			if($children = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` WHERE `parent` = '".$page['id']."' ORDER BY `sortorder` ASC")){
-				foreach($children as $c) $oPage->appendChild(__buildPageXML($c));
+				foreach($children as $c) $oPage->appendChild(__buildPageXML($c, $page_types));
 			}
 
 			return $oPage;
@@ -90,5 +90,17 @@
 	}
 
 	else {
-		foreach($pages as $page) $result->appendChild(__buildPageXML($page));
+		// Build an array of all the types so that the page's don't have to do
+		// individual lookups.
+		$types = Symphony::Database()->fetch("SELECT `page_id`,`type` FROM `tbl_pages_types`");
+		$page_types = array();
+		if(is_array($types)) {
+			foreach($types as $type) {
+				$page_types[$type['page_id']][] = $type['type'];
+			}
+		}
+
+		foreach($pages as $page) {
+			$result->appendChild(__buildPageXML($page, $page_types));
+		}
 	}
