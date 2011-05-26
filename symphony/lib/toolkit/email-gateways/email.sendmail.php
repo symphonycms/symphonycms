@@ -136,10 +136,6 @@
 			$group->appendChild(new XMLElement('legend', __('Email: Sendmail')));
 
 			$div = new XMLElement('div');
-			$div->appendChild(new XMLElement('p', __('The following default settings will be used to send emails unless they are overwritten.')));
-			$group->appendChild($div);
-
-			$div = new XMLElement('div');
 			$div->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('From Name'));
