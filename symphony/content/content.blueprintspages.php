@@ -192,9 +192,9 @@
 			if(isset($this->_context[2])) {
 				$this->pageAlert(
 					__(
-						'Page updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Pages</a>', 
+						'Page updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Pages</a>',
 						array(
-							DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__), 
+							DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 							SYMPHONY_URL . '/blueprints/pages/new/' . $link_suffix,
 							SYMPHONY_URL . '/blueprints/pages/' . $link_suffix,
 						)
@@ -271,8 +271,8 @@
 			));
 
 			$this->Form->appendChild($div);
-		}		
-		
+		}
+
 		public function __viewNew() {
 			$this->__viewEdit();
 		}
@@ -319,7 +319,7 @@
 
 						$this->pageAlert(
 							__(
-								'Page updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Pages</a>', 
+								'Page updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Pages</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/pages/new/' . $link_suffix,
@@ -334,7 +334,7 @@
 
 						$this->pageAlert(
 							__(
-								'Page created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Pages</a>', 
+								'Page created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Pages</a>',
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/pages/new/' . $link_suffix,
@@ -621,10 +621,37 @@
 			}
 
 			if(empty($this->_errors)) {
-				if(!$write = General::writeFile($file_abs, $fields['body'], Symphony::Configuration()->get('write_mode', 'file'))) {
-					$this->pageAlert(__('Utility could not be written to disk. Please check permissions on <code>/workspace/utilities</code>.'), Alert::ERROR);
+				/**
+				 * Just before a Page Template is about to written to disk
+				 *
+				 * @delegate PageTemplatePreEdit
+				 * @since Symphony 2.2.2
+				 * @param string $context
+				 * '/blueprints/pages/template/'
+				 * @param string $file
+				 *  The path to the Page Template file
+				 * @param string $contents
+				 *  The contents of the `$fields['body']`, passed by reference
+				 */
+				Symphony::ExtensionManager()->notifyMembers('PageTemplatePreEdit', '/blueprints/pages/template/', array('file' => $file_abs, 'contents' => &$fields['body']));
 
-				} else {
+				if(!$write = General::writeFile($file_abs, $fields['body'], Symphony::Configuration()->get('write_mode', 'file'))) {
+					$this->pageAlert(__('Page Template could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'), Alert::ERROR);
+
+				}
+				else {
+					/**
+					 * Just after a Page Template has been edited and written to disk
+					 *
+					 * @delegate PageTemplatePostEdit
+					 * @since Symphony 2.2.2
+					 * @param string $context
+					 * '/blueprints/pages/template/'
+					 * @param string $file
+					 *  The path to the Page Template file
+					 */
+					Symphony::ExtensionManager()->notifyMembers('PageTemplatePostEdit', '/blueprints/pages/template/', array('file' => $file_abs));
+
 					redirect(SYMPHONY_URL . '/blueprints/pages/template/' . $this->_context[1] . '/saved/');
 				}
 			}
