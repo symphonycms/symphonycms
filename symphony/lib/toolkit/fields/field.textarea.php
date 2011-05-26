@@ -6,7 +6,7 @@
 	/**
 	 * A simple Textarea field that essentially maps to HTML's `<textarea/>`.
 	 */
-	
+
 	Class fieldTextarea extends Field {
 		function __construct(&$parent){
 
@@ -37,7 +37,7 @@
 
 			/**
 			 * Allows developers modify the textarea before it is rendered in the publish forms
-			 * 
+			 *
 			 * @delegate ModifyTextareaFieldPublishWidget
 			 * @param string $context
 			 * '/backend/'
@@ -46,8 +46,8 @@
 			 * @param Widget $textarea
 			 */
 			Symphony::ExtensionManager()->notifyMembers('ModifyTextareaFieldPublishWidget', '/backend/', array(
-			    'field' => &$this, 
-			    'label' => &$label, 
+			    'field' => &$this,
+			    'label' => &$label,
 			    'textarea' => &$textarea
 			));
 
@@ -153,29 +153,21 @@
 
 		protected function __applyFormatting($data, $validate=false, &$errors=NULL){
 
-			if($this->get('formatter')){
+			if($this->get('formatter')) {
 				$tfm = new TextformatterManager($this->_engine);
 				$formatter = $tfm->create($this->get('formatter'));
 
-				$result = $formatter->run($data);
+				$result = $formatter->run(General::sanitize($data));
 			}
 
-			if($validate === true){
-
+			if($validate === true) {
 				include_once(TOOLKIT . '/class.xsltprocess.php');
 
+				$result = html_entity_decode($result, ENT_QUOTES, 'UTF-8');
+				$result = $this->__replaceAmpersands($result);
+
 				if(!General::validateXML($result, $errors, false, new XsltProcess)){
-					$result = html_entity_decode($result, ENT_QUOTES, 'UTF-8');
-					$result = $this->__replaceAmpersands($result);
-
-					if(!General::validateXML($result, $errors, false, new XsltProcess)){
-
-						$result = $formatter->run(General::sanitize($data));
-
-						if(!General::validateXML($result, $errors, false, new XsltProcess)){
-							return false;
-						}
-					}
+					return false;
 				}
 			}
 
