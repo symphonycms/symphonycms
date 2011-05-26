@@ -1162,10 +1162,41 @@
 
 			}
 			else{
-				$data = file_get_contents($old); @unlink($old);
+				$data = file_get_contents($old);
+				@unlink($old);
 			}
 
-			return General::writeFile($new, $data, Symphony::Configuration()->get('write_mode', 'file'));
+			/**
+			 * Just before a Page Template is about to be created & written to disk
+			 *
+			 * @delegate PageTemplatePreCreate
+			 * @since Symphony 2.2.2
+			 * @param string $context
+			 * '/blueprints/pages/'
+			 * @param string $file
+			 *  The path to the Page Template file
+			 * @param string $contents
+			 *  The contents of the `$data`, passed by reference
+			 */
+			Symphony::ExtensionManager()->notifyMembers('PageTemplatePreCreate', '/blueprints/pages/', array('file' => $new, 'contents' => &$data));
+
+			if(General::writeFile($new, $data, Symphony::Configuration()->get('write_mode', 'file'))) {
+				/**
+				 * Just after a Page Template is saved after been created.
+				 *
+				 * @delegate PageTemplatePostCreate
+				 * @since Symphony 2.2.2
+				 * @param string $context
+				 * '/blueprints/pages/'
+				 * @param string $file
+				 *  The path to the Page Template file
+				 */
+				Symphony::ExtensionManager()->notifyMembers('PageTemplatePostCreate', '/blueprints/pages/', array('file' => $new));
+
+				return true;
+			}
+
+			return false;
 		}
 
 		protected function __deletePageFiles($path, $handle) {
