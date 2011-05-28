@@ -199,6 +199,9 @@
 				// Orderable?
 				if(settings.orderable) {
 					object.orderable.initialize();
+					object.bind('orderstop', function(event) {
+						object.trigger('savestate');
+					});
 				}
 			};
 

@@ -468,6 +468,7 @@ var Symphony = {};
 		duplicator.bind('expandstop', function(event, item) {
 			$(item).find('.header > span > i').remove();
 		});
+		duplicator.trigger('restorestate');
 
 		// Dim system messages
 		Symphony.Message.fade('silence', 10000);
