@@ -157,7 +157,7 @@
 				$tfm = new TextformatterManager($this->_engine);
 				$formatter = $tfm->create($this->get('formatter'));
 
-				$result = $formatter->run(General::sanitize($data));
+				$result = $formatter->run($data);
 			}
 
 			if($validate === true) {
