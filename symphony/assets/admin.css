@@ -274,7 +274,7 @@ ul.tags .more:hover {
 	float: right;
 }
 .group label > i:hover,
-.secondary label > i {
+.secondary label > i:hover {
 	white-space:normal;
 	height:auto;
 	background: rgba(255, 255, 255, 0.8);
