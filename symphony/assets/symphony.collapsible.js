@@ -17,9 +17,10 @@
 				items:				'.instance',
 				handles:			'.header:first',
 				delay_initialize:	false,
-				safe_state:			true,
+				save_state:			true,
 				storage: 'symphony.collapsible.' + $('body').attr('id') + (Symphony.Context.get('env')[1] ? '.' + Symphony.Context.get('env')[1] : '')
-			};
+			},
+			has_localstorage = ('localStorage' in window && window['localStorage'] !== null) ? true : false;
 		
 		$.extend(settings, custom_settings);
 		
@@ -69,7 +70,7 @@
 					item = null;
 				}
 				
-				if (settings.safe_state) {
+				if (settings.save_state) {
 					object.collapsible.saveState();
 				}
 				
@@ -111,12 +112,12 @@
 						handle.bind('mousedown.collapsible', start);
 					});
 					object.bind('restorestate.collapsible', function(event) {
-						if (settings.safe_state) {
+						if (settings.save_state) {
 							object.collapsible.restoreState();
 						}
 					});
 					object.bind('savestate.collapsible', function(event) {
-						if (settings.safe_state) {
+						if (settings.save_state) {
 							object.collapsible.saveState();
 						}
 					});
@@ -132,8 +133,8 @@
 						item.removeClass('expanded').addClass('collapsed');
 						object.trigger('collapsestop', [item]);
 					});
-					if (settings.safe_state) {
-						this.saveState('all');
+					if (settings.save_state) {
+						this.saveState();
 					}
 				},
 				
@@ -147,59 +148,41 @@
 						item.removeClass('collapsed').addClass('expanded');
 						object.trigger('expandstop', [item]);
 					});
-					if (settings.safe_state) {
-						this.saveState('expanded');
+					if (settings.save_state) {
+						this.saveState();
 					}
 				},
 				
-				saveState: function(collapsed) {
-					collapsed = collapsed || [];
+				saveState: function() {
+					var collapsed = [];
 					// check for localStorage support
-					if (!('localStorage' in window && window['localStorage'] !== null)) { return false; }
-					// save fully collapsed or expanded state
-					if (!$.isArray(collapsed)) {
-						localStorage[storage] = collapsed;
-					}
-					// save each item state separatly
-					else {
-						object.find(settings.items).each(function(index) {
-							var item = $(this);
-							
-							if(item.is('.collapsed')) {
-								collapsed.push(index);
-							};
-						});
-						localStorage[storage] = collapsed;
-					};
+					if (!has_localstorage) { return false; }
+					object.find(settings.items).each(function(index) {
+						var item = $(this);
+						
+						if(item.is('.collapsed')) {
+							collapsed.push(index);
+						};
+					});
+					localStorage[storage] = collapsed;
 					return true;
 				},
 				
 				restoreState: function() {
 					var collapsed;
 					// check for localStorage support
-					if (!('localStorage' in window && window['localStorage'] !== null)) { return false; }
+					if (!has_localstorage) { return false; }
 					collapsed = localStorage[storage];
-					// restore fully collapsed state
-					if (collapsed === 'all') {
-						this.collapseAll();
-					}
-					// restore fully expanded state
-					else if (collapsed === 'none') {
-						this.expandAll();
-					}
-					// restore each item state separatly
-					else if (collapsed) {
-						collapsed = collapsed.split(',');
-						$.each(collapsed, function(index, val) {
-							var item = object.find(settings.items).eq(val);
-							
-							if(item.is('.collapsed')) return;
-							
-							object.trigger('collapsestart', [item]);
-							item.removeClass('expanded').addClass('collapsed');
-							object.trigger('collapsestop', [item]);
-						});
-					}
+					collapsed = collapsed.split(',');
+					$.each(collapsed, function(index, val) {
+						var item = object.find(settings.items).eq(val);
+						
+						if(item.is('.collapsed')) return;
+						
+						object.trigger('collapsestart', [item]);
+						item.removeClass('expanded').addClass('collapsed');
+						object.trigger('collapsestop', [item, true]);
+					});
 					return true;
 				}
 			};
