@@ -20,7 +20,7 @@
 				save_state:			true,
 				storage: 'symphony.collapsible.' + $('body').attr('id') + (Symphony.Context.get('env')[1] ? '.' + Symphony.Context.get('env')[1] : '')
 			},
-			has_localstorage = ('localStorage' in window && window['localStorage'] !== null) ? true : false;
+			has_localstorage = Symphony.Context.get('support')['localstorage'];
 		
 		$.extend(settings, custom_settings);
 		
@@ -187,7 +187,7 @@
 				}
 			};
 			
-			if (settings.delay_initialize === true) {
+			if (settings.delay_initialize !== true) {
 				object.collapsible.initialize();
 			}
 			

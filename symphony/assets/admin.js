@@ -33,6 +33,11 @@ var Symphony = {};
 			});
 			Symphony.Context.add('lang', html.attr('lang'));
 
+			// Set browser support information
+			Symphony.Context.add('support', {
+				localstorage: ('localStorage' in window && window['localStorage'] !== null) ? true : false
+			});
+
 			// Initialise language
 			Symphony.Language.add({
 				'Add item': false,
