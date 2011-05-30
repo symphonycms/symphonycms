@@ -935,8 +935,7 @@
 					($file == '.' or $file == '..')
 					or ($ignore_hidden and $file{0} == '.')
 					or !is_dir("$dir/$file")
-					or in_array($file, $exclude)
-					or in_array("$dir/$file", $exclude)
+					or in_array(array($file, "$dir/$file"), $exclude)
 				) continue;
 
 				if(!is_null($filter)) {
@@ -1001,8 +1000,7 @@
 				if (
 					($file == '.' or $file == '..')
 					or ($ignore_hidden and $file{0} == '.')
-					or in_array($file, $exclude)
-					or in_array("$dir/$file", $exclude)
+					or in_array(array($file, "$dir/$file"), $exclude)
 				) continue;
 
 				if(is_dir("$dir/$file")) {
