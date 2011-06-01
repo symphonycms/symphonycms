@@ -304,6 +304,7 @@
 		 *
 		 * @uses FrontendPageResolved
 		 * @uses FrontendParamsResolve
+		 * @uses FrontendParamsPreResolve
 		 * @uses FrontendParamsPostResolve
 		 * @see resolvePage()
 		 */
@@ -404,7 +405,18 @@
 			$xml->appendChild($events);
 
 			$this->_events_xml = clone $events;
-
+			
+			/**
+			 * Access to the resolved param pool, excluding additional parameters provided by Data Source outputs
+			 * Enables Data Source filtering by params that where added AFTER an event
+			 * @delegate FrontendParamsPostResolve
+			 * @param string $context
+			 * '/frontend/'
+			 * @param array $params
+			 *  An associative array of this page's parameters
+			 */
+			$this->ExtensionManager->notifyMembers('FrontendParamsPreResolve', '/frontend/', array('params' => &$this->_param));
+			
 			$this->processDatasources($page['data_sources'], $xml);
 
 			Frontend::instance()->Profiler->seed($xml_build_start);
