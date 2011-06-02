@@ -27,9 +27,9 @@
 			$this->set('required', 'no');
 		}
 
-		public function canPrePopulate(){
-			return true;
-		}
+	/*-------------------------------------------------------------------------
+		Definition:
+	-------------------------------------------------------------------------*/
 
 		public function canFilter() {
 			return true;
@@ -39,112 +39,38 @@
 			return true;
 		}
 
-		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
-			$joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
-			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`file` $order");
-		}
-
-		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
-			$field_id = $this->get('id');
-
-			if (preg_match('/^mimetype:/', $data[0])) {
-				$data[0] = str_replace('mimetype:', '', $data[0]);
-				$column = 'mimetype';
-
-			} else if (preg_match('/^size:/', $data[0])) {
-				$data[0] = str_replace('size:', '', $data[0]);
-				$column = 'size';
-
-			} else {
-				$column = 'file';
-			}
-
-			if (self::isFilterRegex($data[0])) {
-				$this->_key++;
-
-				if (preg_match('/^regexp:/i', $data[0])) {
-					$pattern = preg_replace('/regexp:/i', null, $this->cleanValue($data[0]));
-					$regex = 'REGEXP';
-				} else {
-					$pattern = preg_replace('/not-?regexp:/i', null, $this->cleanValue($data[0]));
-					$regex = 'NOT REGEXP';
-				}
-
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND t{$field_id}_{$this->_key}.{$column} {$regex} '{$pattern}'
-				";
-
-			} elseif ($andOperation) {
-				foreach ($data as $value) {
-					$this->_key++;
-					$value = $this->cleanValue($value);
-					$joins .= "
-						LEFT JOIN
-							`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-							ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-					";
-					$where .= "
-						AND t{$field_id}_{$this->_key}.{$column} = '{$value}'
-					";
-				}
-
-			} else {
-				if (!is_array($data)) $data = array($data);
-
-				foreach ($data as &$value) {
-					$value = $this->cleanValue($value);
-				}
-
-				$this->_key++;
-				$data = implode("', '", $data);
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND t{$field_id}_{$this->_key}.{$column} IN ('{$data}')
-				";
-			}
-
+		public function canPrePopulate(){
 			return true;
 		}
 
-		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-
-			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$flagWithError = __('The destination directory, <code>%s</code>, does not exist.', array($this->get('destination')));
-			}
-
-			elseif(!$flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/')){
-				$flagWithError = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
-			}
-
-			$label = Widget::Label($this->get('label'));
-			$class = 'file';
-			$label->setAttribute('class', $class);
-			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
-
-			$span = new XMLElement('span', NULL, array('class' => 'frame'));
-			if($data['file']) $span->appendChild(Widget::Anchor('/workspace' . $data['file'], URL . '/workspace' . $data['file']));
-
-			$span->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, $data['file'], ($data['file'] ? 'hidden' : 'file')));
-
-			$label->appendChild($span);
-
-			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
-			else $wrapper->appendChild($label);
-
-		}
-
-		function isSortable(){
+		public function isSortable(){
 			return true;
 		}
+
+	/*-------------------------------------------------------------------------
+		Setup:
+	-------------------------------------------------------------------------*/
+
+		public function createTable(){
+			return Symphony::Database()->query("
+				CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
+				  `id` int(11) unsigned NOT NULL auto_increment,
+				  `entry_id` int(11) unsigned NOT NULL,
+				  `file` varchar(255) default NULL,
+				  `size` int(11) unsigned NULL,
+				  `mimetype` varchar(50) default NULL,
+				  `meta` varchar(255) default NULL,
+				  PRIMARY KEY  (`id`),
+				  UNIQUE KEY `entry_id` (`entry_id`),
+				  KEY `file` (`file`),
+				  KEY `mimetype` (`mimetype`)
+				) ENGINE=MyISAM;
+			");
+		}
+
+	/*-------------------------------------------------------------------------
+		Utilities:
+	-------------------------------------------------------------------------*/
 
 		public function entryDataCleanup($entry_id, $data){
 			$file_location = WORKSPACE . '/' . ltrim($data['file'], '/');
@@ -158,77 +84,24 @@
 			return true;
 		}
 
-		public function checkFields(&$errors, $checkForDuplicates=true){
+		public static function getMetaInfo($file, $type){
+			$meta = array();
 
-			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$errors['destination'] = __('Directory <code>%s</code> does not exist.', array($this->get('destination')));
+			if(!file_exists($file) || !is_readable($file)) return $meta;
+
+			$meta['creation'] = DateTimeObj::get('c', filemtime($file));
+
+			if(General::in_iarray($type, fieldUpload::$imageMimeTypes) && $array = @getimagesize($file)){
+				$meta['width'] = $array[0];
+				$meta['height'] = $array[1];
 			}
 
-			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
-				$errors['destination'] = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
-			}
-
-			parent::checkFields($errors, $checkForDuplicates);
+			return $meta;
 		}
 
-		function commit(){
-
-			if(!parent::commit()) return false;
-
-			$id = $this->get('id');
-
-			if($id === false) return false;
-
-			$fields = array();
-
-			$fields['field_id'] = $id;
-			$fields['destination'] = $this->get('destination');
-			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
-
-			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
-			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
-
-		}
-
-		public function prepareTableValue($data, XMLElement $link=NULL){
-			if(!$file = $data['file']) return NULL;
-
-			if($link){
-				$link->setValue(basename($file));
-				return $link->generate();
-			}
-
-			else{
-				$link = Widget::Anchor(basename($file), URL . '/workspace' . $file);
-				return $link->generate();
-			}
-
-		}
-
-		public function appendFormattedElement(&$wrapper, $data){
-			// It is possible an array of NULL data will be passed in. Check for this.
-			if(!is_array($data) || !isset($data['file']) || is_null($data['file'])){
-				return;
-			}
-
-			$item = new XMLElement($this->get('element_name'));
-			$file = WORKSPACE . $data['file'];
-			$item->setAttributeArray(array(
-				'size' => (file_exists($file) && is_readable($file) ? General::formatFilesize(filesize($file)) : 'unknown'),
-			 	'path' => str_replace(WORKSPACE, NULL, dirname(WORKSPACE . $data['file'])),
-				'type' => $data['mimetype'],
-			));
-
-			$item->appendChild(new XMLElement('filename', General::sanitize(basename($data['file']))));
-
-			$m = unserialize($data['meta']);
-
-			if(is_array($m) && !empty($m)){
-				$item->appendChild(new XMLElement('meta', NULL, $m));
-			}
-
-			$wrapper->appendChild($item);
-		}
+	/*-------------------------------------------------------------------------
+		Settings:
+	-------------------------------------------------------------------------*/
 
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
@@ -265,10 +138,67 @@
 			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
 			$wrapper->appendChild($div);
-
 		}
 
-		function checkPostFieldData($data, &$message, $entry_id=NULL){
+		public function checkFields(&$errors, $checkForDuplicates=true){
+			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
+				$errors['destination'] = __('Directory <code>%s</code> does not exist.', array($this->get('destination')));
+			}
+
+			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
+				$errors['destination'] = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
+			}
+
+			parent::checkFields($errors, $checkForDuplicates);
+		}
+
+		public function commit(){
+			if(!parent::commit()) return false;
+
+			$id = $this->get('id');
+
+			if($id === false) return false;
+
+			$fields = array();
+
+			$fields['field_id'] = $id;
+			$fields['destination'] = $this->get('destination');
+			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
+
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
+			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
+		}
+
+	/*-------------------------------------------------------------------------
+		Publish:
+	-------------------------------------------------------------------------*/
+
+		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
+				$flagWithError = __('The destination directory, <code>%s</code>, does not exist.', array($this->get('destination')));
+			}
+
+			elseif(!$flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/')){
+				$flagWithError = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
+			}
+
+			$label = Widget::Label($this->get('label'));
+			$class = 'file';
+			$label->setAttribute('class', $class);
+			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
+
+			$span = new XMLElement('span', NULL, array('class' => 'frame'));
+			if($data['file']) $span->appendChild(Widget::Anchor('/workspace' . $data['file'], URL . '/workspace' . $data['file']));
+
+			$span->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, $data['file'], ($data['file'] ? 'hidden' : 'file')));
+
+			$label->appendChild($span);
+
+			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
+			else $wrapper->appendChild($label);
+		}
+
+		public function checkPostFieldData($data, &$message, $entry_id=NULL){
 
 			/*
 				UPLOAD_ERR_OK
@@ -407,7 +337,6 @@
 			}
 
 			return self::__OK__;
-
 		}
 
 		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
@@ -523,37 +452,136 @@
 			);
 		}
 
-		public static function getMetaInfo($file, $type){
-			$meta = array();
+	/*-------------------------------------------------------------------------
+		Output:
+	-------------------------------------------------------------------------*/
 
-			if(!file_exists($file) || !is_readable($file)) return $meta;
-
-			$meta['creation'] = DateTimeObj::get('c', filemtime($file));
-
-			if(General::in_iarray($type, fieldUpload::$imageMimeTypes) && $array = @getimagesize($file)){
-				$meta['width'] = $array[0];
-				$meta['height'] = $array[1];
+		public function appendFormattedElement(&$wrapper, $data){
+			// It is possible an array of NULL data will be passed in. Check for this.
+			if(!is_array($data) || !isset($data['file']) || is_null($data['file'])){
+				return;
 			}
 
-			return $meta;
+			$item = new XMLElement($this->get('element_name'));
+			$file = WORKSPACE . $data['file'];
+			$item->setAttributeArray(array(
+				'size' => (file_exists($file) && is_readable($file) ? General::formatFilesize(filesize($file)) : 'unknown'),
+			 	'path' => str_replace(WORKSPACE, NULL, dirname(WORKSPACE . $data['file'])),
+				'type' => $data['mimetype'],
+			));
+
+			$item->appendChild(new XMLElement('filename', General::sanitize(basename($data['file']))));
+
+			$m = unserialize($data['meta']);
+
+			if(is_array($m) && !empty($m)){
+				$item->appendChild(new XMLElement('meta', NULL, $m));
+			}
+
+			$wrapper->appendChild($item);
 		}
 
-		function createTable(){
-			return Symphony::Database()->query(
-				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
-				  `id` int(11) unsigned NOT NULL auto_increment,
-				  `entry_id` int(11) unsigned NOT NULL,
-				  `file` varchar(255) default NULL,
-				  `size` int(11) unsigned NULL,
-				  `mimetype` varchar(50) default NULL,
-				  `meta` varchar(255) default NULL,
-				  PRIMARY KEY  (`id`),
-				  UNIQUE KEY `entry_id` (`entry_id`),
-				  KEY `file` (`file`),
-				  KEY `mimetype` (`mimetype`)
-				) ENGINE=MyISAM;"
-			);
+		public function prepareTableValue($data, XMLElement $link=NULL){
+			if(!$file = $data['file']) return NULL;
+
+			if($link){
+				$link->setValue(basename($file));
+				return $link->generate();
+			}
+
+			else{
+				$link = Widget::Anchor(basename($file), URL . '/workspace' . $file);
+				return $link->generate();
+			}
 		}
+
+	/*-------------------------------------------------------------------------
+		Filtering:
+	-------------------------------------------------------------------------*/
+
+		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
+			$field_id = $this->get('id');
+
+			if (preg_match('/^mimetype:/', $data[0])) {
+				$data[0] = str_replace('mimetype:', '', $data[0]);
+				$column = 'mimetype';
+
+			} else if (preg_match('/^size:/', $data[0])) {
+				$data[0] = str_replace('size:', '', $data[0]);
+				$column = 'size';
+
+			} else {
+				$column = 'file';
+			}
+
+			if (self::isFilterRegex($data[0])) {
+				$this->_key++;
+
+				if (preg_match('/^regexp:/i', $data[0])) {
+					$pattern = preg_replace('/regexp:/i', null, $this->cleanValue($data[0]));
+					$regex = 'REGEXP';
+				} else {
+					$pattern = preg_replace('/not-?regexp:/i', null, $this->cleanValue($data[0]));
+					$regex = 'NOT REGEXP';
+				}
+
+				$joins .= "
+					LEFT JOIN
+						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+				";
+				$where .= "
+					AND t{$field_id}_{$this->_key}.{$column} {$regex} '{$pattern}'
+				";
+
+			} elseif ($andOperation) {
+				foreach ($data as $value) {
+					$this->_key++;
+					$value = $this->cleanValue($value);
+					$joins .= "
+						LEFT JOIN
+							`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+							ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+					";
+					$where .= "
+						AND t{$field_id}_{$this->_key}.{$column} = '{$value}'
+					";
+				}
+
+			} else {
+				if (!is_array($data)) $data = array($data);
+
+				foreach ($data as &$value) {
+					$value = $this->cleanValue($value);
+				}
+
+				$this->_key++;
+				$data = implode("', '", $data);
+				$joins .= "
+					LEFT JOIN
+						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+				";
+				$where .= "
+					AND t{$field_id}_{$this->_key}.{$column} IN ('{$data}')
+				";
+			}
+
+			return true;
+		}
+
+	/*-------------------------------------------------------------------------
+		Sorting:
+	-------------------------------------------------------------------------*/
+
+		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
+			$joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
+			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`file` $order");
+		}
+
+	/*-------------------------------------------------------------------------
+		Events:
+	-------------------------------------------------------------------------*/
 
 		public function getExampleFormMarkup(){
 			$label = Widget::Label($this->get('label'));

@@ -23,76 +23,12 @@
 			$this->set('required', 'no');
 		}
 
+	/*-------------------------------------------------------------------------
+		Definition:
+	-------------------------------------------------------------------------*/
+
 		public function canToggle(){
 			return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
-		}
-
-		public function allowDatasourceOutputGrouping(){
-			## Grouping follows the same rule as toggling.
-			return $this->canToggle();
-		}
-
-		public function allowDatasourceParamOutput(){
-			return true;
-		}
-
-		public function canFilter(){
-			return true;
-		}
-
-		public function canImport(){
-			return true;
-		}
-
-		public function canPrePopulate(){
-			return true;
-		}
-
-		public function isSortable(){
-			return true;
-		}
-
-		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
-			if (!is_array($data) or is_null($data['value'])) return;
-
-			$list = new XMLElement($this->get('element_name'));
-
-			if (!is_array($data['handle']) and !is_array($data['value'])) {
-				$data = array(
-					'handle'	=> array($data['handle']),
-					'value'		=> array($data['value'])
-				);
-			}
-
-			foreach ($data['value'] as $index => $value) {
-				$list->appendChild(new XMLElement(
-					'item',
-					General::sanitize($value),
-					array(
-						'handle'	=> $data['handle'][$index]
-					)
-				));
-			}
-
-			$wrapper->appendChild($list);
-		}
-
-		public function fetchAssociatedEntrySearchValue($data){
-			if(!is_array($data)) return $data;
-
-			return $data['value'];
-		}
-
-		public function fetchAssociatedEntryCount($value){
-			return Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
-		}
-
-		public function fetchAssociatedEntryIDs($value){
-			return Symphony::Database()->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
-		}
-
-		public function getParameterPoolValue($data){
-			return $data['handle'];
 		}
 
 		public function getToggleStates() {
@@ -121,45 +57,66 @@
 			return $data;
 		}
 
-		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-			$states = $this->getToggleStates();
-
-			if(!is_array($data['value'])) $data['value'] = array($data['value']);
-
-			$options = array();
-
-			if ($this->get('required') != 'yes') $options[] = array(NULL, false, NULL);
-
-			foreach($states as $handle => $v){
-				$options[] = array(General::sanitize($v), in_array($v, $data['value']), General::sanitize($v));
-			}
-
-			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
-			if($this->get('allow_multiple_selection') == 'yes') $fieldname .= '[]';
-
-			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : NULL)));
-
-			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
-			else $wrapper->appendChild($label);
+		public function canFilter(){
+			return true;
 		}
 
-		public function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-			parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
+		public function canImport(){
+			return true;
+		}
 
-			$data = preg_split('/,\s*/i', $data);
-			$data = array_map('trim', $data);
+		public function canPrePopulate(){
+			return true;
+		}
 
-			$existing_options = $this->getToggleStates();
+		public function isSortable(){
+			return true;
+		}
 
-			if(is_array($existing_options) && !empty($existing_options)){
-				$optionlist = new XMLElement('ul');
-				$optionlist->setAttribute('class', 'tags');
+		public function allowDatasourceOutputGrouping(){
+			## Grouping follows the same rule as toggling.
+			return $this->canToggle();
+		}
 
-				foreach($existing_options as $option) $optionlist->appendChild(new XMLElement('li', $option));
+		public function allowDatasourceParamOutput(){
+			return true;
+		}
 
-				$wrapper->appendChild($optionlist);
-			}
+	/*-------------------------------------------------------------------------
+		Setup:
+	-------------------------------------------------------------------------*/
+
+		public function createTable(){
+			return Symphony::Database()->query("
+				CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
+				  `id` int(11) unsigned NOT NULL auto_increment,
+				  `entry_id` int(11) unsigned NOT NULL,
+				  `handle` varchar(255) default NULL,
+				  `value` varchar(255) default NULL,
+				  PRIMARY KEY  (`id`),
+				  KEY `entry_id` (`entry_id`),
+				  KEY `handle` (`handle`),
+				  KEY `value` (`value`)
+				) ENGINE=MyISAM;
+			");
+		}
+
+	/*-------------------------------------------------------------------------
+		Utilities:
+	-------------------------------------------------------------------------*/
+
+		public function fetchAssociatedEntryCount($value){
+			return Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
+		}
+
+		public function fetchAssociatedEntryIDs($value){
+			return Symphony::Database()->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
+		}
+
+		public function fetchAssociatedEntrySearchValue($data){
+			if(!is_array($data)) return $data;
+
+			return $data['value'];
 		}
 
 		public function findAndAddDynamicOptions(&$values){
@@ -181,7 +138,7 @@
 			}
 
 			// In the case of a Upload field, use 'file' instead of 'value'
-			if((boolean)Symphony::Database()->fetchVar('Field', 0, sprintf("
+			if(($results == false) && (boolean)Symphony::Database()->fetchVar('Field', 0, sprintf("
 					SHOW COLUMNS FROM `tbl_entries_data_%d` LIKE '%s'
 				", $this->get('dynamic_options'), 'file'
 			))) {
@@ -202,139 +159,9 @@
 			}
 		}
 
-		public function prepareTableValue($data, XMLElement $link=NULL){
-			$value = $data['value'];
-
-			if(!is_array($value)) $value = array($value);
-
-			return parent::prepareTableValue(array('value' => implode(', ', $value)), $link);
-		}
-
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
-			$status = self::__OK__;
-
-			if(!is_array($data)) return array('value' => $data, 'handle' => Lang::createHandle($data));
-
-			if(empty($data)) return NULL;
-
-			$result = array('value' => array(), 'handle' => array());
-
-			foreach($data as $value){
-				$result['value'][] = $value;
-				$result['handle'][] = Lang::createHandle($value);
-			}
-
-			return $result;
-		}
-
-		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
-			$field_id = $this->get('id');
-
-			if (self::isFilterRegex($data[0])) {
-				$this->_key++;
-
-				if (preg_match('/^regexp:/i', $data[0])) {
-					$pattern = preg_replace('/regexp:/i', null, $this->cleanValue($data[0]));
-					$regex = 'REGEXP';
-				} else {
-					$pattern = preg_replace('/not-?regexp:/i', null, $this->cleanValue($data[0]));
-					$regex = 'NOT REGEXP';
-				}
-
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND (
-						t{$field_id}_{$this->_key}.value {$regex} '{$pattern}'
-						OR t{$field_id}_{$this->_key}.handle {$regex} '{$pattern}'
-					)
-				";
-
-			} elseif ($andOperation) {
-				foreach ($data as $value) {
-					$this->_key++;
-					$value = $this->cleanValue($value);
-					$joins .= "
-						LEFT JOIN
-							`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-							ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-					";
-					$where .= "
-						AND (
-							t{$field_id}_{$this->_key}.value = '{$value}'
-							OR t{$field_id}_{$this->_key}.handle = '{$value}'
-						)
-					";
-				}
-
-			} else {
-				if (!is_array($data)) $data = array($data);
-
-				foreach ($data as &$value) {
-					$value = $this->cleanValue($value);
-				}
-
-				$this->_key++;
-				$data = implode("', '", $data);
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND (
-						t{$field_id}_{$this->_key}.value IN ('{$data}')
-						OR t{$field_id}_{$this->_key}.handle IN ('{$data}')
-					)
-				";
-			}
-
-			return true;
-		}
-
-		public function commit(){
-			if(!parent::commit()) return false;
-
-			$id = $this->get('id');
-
-			if($id === false) return false;
-
-			$fields = array();
-
-			$fields['field_id'] = $id;
-			if($this->get('static_options') != '') $fields['static_options'] = $this->get('static_options');
-			if($this->get('dynamic_options') != '') $fields['dynamic_options'] = $this->get('dynamic_options');
-			$fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
-			$fields['sort_options'] = $this->get('sort_options') == 'yes' ? 'yes' : 'no';
-			$fields['show_association'] = $this->get('show_association') == 'yes' ? 'yes' : 'no';
-
-			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
-
-			if(!Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle())) return false;
-
-			$this->removeSectionAssociation($id);
-
-			// dynamic options isn't an array like in Select Box Link
-			$field_id = $this->get('dynamic_options');
-
-			if (!is_null($field_id)) {
-				$this->createSectionAssociation(NULL, $id, $field_id, $this->get('show_association') == 'yes' ? true : false);
-			}
-
-			return true;
-		}
-
-		public function checkFields(&$errors, $checkForDuplicates=true){
-			if(!is_array($errors)) $errors = array();
-
-			if($this->get('static_options') == '' && ($this->get('dynamic_options') == '' || $this->get('dynamic_options') == 'none'))
-				$errors['dynamic_options'] = __('At least one source must be specified, dynamic or static.');
-
-			parent::checkFields($errors, $checkForDuplicates);
-		}
+	/*-------------------------------------------------------------------------
+		Settings:
+	-------------------------------------------------------------------------*/
 
 		public function findDefaults(&$fields){
 			if(!isset($fields['allow_multiple_selection'])) $fields['allow_multiple_selection'] = 'no';
@@ -410,6 +237,226 @@
 			$wrapper->appendChild($div);
 		}
 
+		public function checkFields(&$errors, $checkForDuplicates=true){
+			if(!is_array($errors)) $errors = array();
+
+			if($this->get('static_options') == '' && ($this->get('dynamic_options') == '' || $this->get('dynamic_options') == 'none'))
+				$errors['dynamic_options'] = __('At least one source must be specified, dynamic or static.');
+
+			parent::checkFields($errors, $checkForDuplicates);
+		}
+
+		public function commit(){
+			if(!parent::commit()) return false;
+
+			$id = $this->get('id');
+
+			if($id === false) return false;
+
+			$fields = array();
+
+			$fields['field_id'] = $id;
+			if($this->get('static_options') != '') $fields['static_options'] = $this->get('static_options');
+			if($this->get('dynamic_options') != '') $fields['dynamic_options'] = $this->get('dynamic_options');
+			$fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
+			$fields['sort_options'] = $this->get('sort_options') == 'yes' ? 'yes' : 'no';
+			$fields['show_association'] = $this->get('show_association') == 'yes' ? 'yes' : 'no';
+
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
+
+			if(!Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle())) return false;
+
+			$this->removeSectionAssociation($id);
+
+			// dynamic options isn't an array like in Select Box Link
+			$field_id = $this->get('dynamic_options');
+
+			if (!is_null($field_id)) {
+				$this->createSectionAssociation(NULL, $id, $field_id, $this->get('show_association') == 'yes' ? true : false);
+			}
+
+			return true;
+		}
+
+	/*-------------------------------------------------------------------------
+		Publish:
+	-------------------------------------------------------------------------*/
+
+		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+			$states = $this->getToggleStates();
+
+			if(!is_array($data['value'])) $data['value'] = array($data['value']);
+
+			$options = array();
+
+			if ($this->get('required') != 'yes') $options[] = array(NULL, false, NULL);
+
+			foreach($states as $handle => $v){
+				$options[] = array(General::sanitize($v), in_array($v, $data['value']), General::sanitize($v));
+			}
+
+			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
+			if($this->get('allow_multiple_selection') == 'yes') $fieldname .= '[]';
+
+			$label = Widget::Label($this->get('label'));
+			$label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : NULL)));
+
+			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
+			else $wrapper->appendChild($label);
+		}
+
+		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+			$status = self::__OK__;
+
+			if(!is_array($data)) return array('value' => $data, 'handle' => Lang::createHandle($data));
+
+			if(empty($data)) return NULL;
+
+			$result = array('value' => array(), 'handle' => array());
+
+			foreach($data as $value){
+				$result['value'][] = $value;
+				$result['handle'][] = Lang::createHandle($value);
+			}
+
+			return $result;
+		}
+
+	/*-------------------------------------------------------------------------
+		Output:
+	-------------------------------------------------------------------------*/
+
+		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
+			if (!is_array($data) or is_null($data['value'])) return;
+
+			$list = new XMLElement($this->get('element_name'));
+
+			if (!is_array($data['handle']) and !is_array($data['value'])) {
+				$data = array(
+					'handle'	=> array($data['handle']),
+					'value'		=> array($data['value'])
+				);
+			}
+
+			foreach ($data['value'] as $index => $value) {
+				$list->appendChild(new XMLElement(
+					'item',
+					General::sanitize($value),
+					array(
+						'handle'	=> $data['handle'][$index]
+					)
+				));
+			}
+
+			$wrapper->appendChild($list);
+		}
+
+		public function prepareTableValue($data, XMLElement $link=NULL){
+			$value = $data['value'];
+
+			if(!is_array($value)) $value = array($value);
+
+			return parent::prepareTableValue(array('value' => implode(', ', $value)), $link);
+		}
+
+		public function getParameterPoolValue($data){
+			return $data['handle'];
+		}
+
+	/*-------------------------------------------------------------------------
+		Filtering:
+	-------------------------------------------------------------------------*/
+
+		public function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+			parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
+
+			$data = preg_split('/,\s*/i', $data);
+			$data = array_map('trim', $data);
+
+			$existing_options = $this->getToggleStates();
+
+			if(is_array($existing_options) && !empty($existing_options)){
+				$optionlist = new XMLElement('ul');
+				$optionlist->setAttribute('class', 'tags');
+
+				foreach($existing_options as $option) $optionlist->appendChild(new XMLElement('li', $option));
+
+				$wrapper->appendChild($optionlist);
+			}
+		}
+
+		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
+			$field_id = $this->get('id');
+
+			if (self::isFilterRegex($data[0])) {
+				$this->_key++;
+
+				if (preg_match('/^regexp:/i', $data[0])) {
+					$pattern = preg_replace('/regexp:/i', null, $this->cleanValue($data[0]));
+					$regex = 'REGEXP';
+				} else {
+					$pattern = preg_replace('/not-?regexp:/i', null, $this->cleanValue($data[0]));
+					$regex = 'NOT REGEXP';
+				}
+
+				$joins .= "
+					LEFT JOIN
+						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+				";
+				$where .= "
+					AND (
+						t{$field_id}_{$this->_key}.value {$regex} '{$pattern}'
+						OR t{$field_id}_{$this->_key}.handle {$regex} '{$pattern}'
+					)
+				";
+
+			} elseif ($andOperation) {
+				foreach ($data as $value) {
+					$this->_key++;
+					$value = $this->cleanValue($value);
+					$joins .= "
+						LEFT JOIN
+							`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+							ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+					";
+					$where .= "
+						AND (
+							t{$field_id}_{$this->_key}.value = '{$value}'
+							OR t{$field_id}_{$this->_key}.handle = '{$value}'
+						)
+					";
+				}
+
+			} else {
+				if (!is_array($data)) $data = array($data);
+
+				foreach ($data as &$value) {
+					$value = $this->cleanValue($value);
+				}
+
+				$this->_key++;
+				$data = implode("', '", $data);
+				$joins .= "
+					LEFT JOIN
+						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+				";
+				$where .= "
+					AND (
+						t{$field_id}_{$this->_key}.value IN ('{$data}')
+						OR t{$field_id}_{$this->_key}.handle IN ('{$data}')
+					)
+				";
+			}
+
+			return true;
+		}
+
+	/*-------------------------------------------------------------------------
+		Grouping:
+	-------------------------------------------------------------------------*/
+
 		public function groupRecords($records){
 			if(!is_array($records) || empty($records)) return;
 
@@ -432,20 +479,9 @@
 			return $groups;
 		}
 
-		public function createTable(){
-			return Symphony::Database()->query(
-				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
-				  `id` int(11) unsigned NOT NULL auto_increment,
-				  `entry_id` int(11) unsigned NOT NULL,
-				  `handle` varchar(255) default NULL,
-				  `value` varchar(255) default NULL,
-				  PRIMARY KEY  (`id`),
-				  KEY `entry_id` (`entry_id`),
-				  KEY `handle` (`handle`),
-				  KEY `value` (`value`)
-				) ENGINE=MyISAM;"
-			);
-		}
+	/*-------------------------------------------------------------------------
+		Events:
+	-------------------------------------------------------------------------*/
 
 		public function getExampleFormMarkup(){
 			$states = $this->getToggleStates();
