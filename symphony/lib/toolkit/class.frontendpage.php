@@ -718,7 +718,7 @@
 				foreach($pool as $handle => $event){
 					Frontend::instance()->Profiler->seed();
 
-					$queries = Symphony::Database()->getStatistics(true);
+					$queries = Symphony::Database()->queryCount();
 
 					if($xml = $event->load()) {
 						if(is_object($xml)) $wrapper->appendChild($xml);
@@ -727,7 +727,7 @@
 						);
 					}
 
-					$queries = Symphony::Database()->getStatistics(true) - $queries;
+					$queries = Symphony::Database()->queryCount() - $queries;
 
 					Frontend::instance()->Profiler->sample($handle, PROFILE_LAP, 'Event', $queries);
 
@@ -815,7 +815,7 @@
 			foreach ($dsOrder as $handle) {
 				Frontend::instance()->Profiler->seed();
 
-				$queries = Symphony::Database()->getStatistics(true);
+				$queries = Symphony::Database()->queryCount();
 
 				$ds = $pool[$handle];
 				$ds->processParameters(array('env' => $this->_env, 'param' => $this->_param));
@@ -827,7 +827,7 @@
 					);
 				}
 
-				$queries = Symphony::Database()->getStatistics(true) - $queries;
+				$queries = Symphony::Database()->queryCount() - $queries;
 
 				Frontend::instance()->Profiler->sample($handle, PROFILE_LAP, 'Datasource', $queries);
 

@@ -743,17 +743,11 @@
 		 * A slow query is defined as one that took longer than 0.0999 seconds
 		 * This function is used by the Profile devkit
 		 *
-		 * @param boolean $only_queries
-		 *  If true, this function will return the number of queries made by
-		 *  Symphony at the time of calling. Default's to false, which returns
-		 *  array of information
 		 * @return array
 		 *  An associative array with the number of queries, an array of slow
 		 *  queries and the total query time.
 		 */
-		public function getStatistics($only_queries = false) {
-			if($only_queries) return MySQL::queryCount();
-
+		public function getStatistics() {
 			$stats = array();
 			$query_timer = 0.0;
 			$slow_queries = array();
