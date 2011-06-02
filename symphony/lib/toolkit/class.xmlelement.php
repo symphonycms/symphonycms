@@ -132,7 +132,7 @@
 		 *  Attributes set from this array will override existing attributes
 		 *  set by previous params.
 		 * @param boolean $createHandle
-		 *  Whether this function should convert the `$name` to a handle. Defaults to 
+		 *  Whether this function should convert the `$name` to a handle. Defaults to
 		 *  false.
 		 * @return XMLElement
 		 */
@@ -165,7 +165,18 @@
 		}
 
 		/**
-		 * Accessor for `$_attributes`
+		 * Retrieves the value of an attribute by name
+		 *
+		 * @param string $name
+		 * @return string
+		 */
+		public function getAttribute($name){
+			if(!isset($this->_attributes[$name])) return null;
+			return $this->_attributes[$name];
+		}
+
+		/**
+		 * Accessor for `$this->_attributes`
 		 *
 		 * @return array
 		 */
@@ -174,12 +185,34 @@
 		}
 
 		/**
-		 * Accessor for `$_children`
+		 * Accessor for `$this->_children`
 		 *
 		 * @return array
 		 */
 		public function getChildren(){
 			return $this->_children;
+		}
+
+		/**
+		 * Accessor to return an associative array of all `$this->_children`
+		 * whose's name matches the given `$name`. If no children are found,
+		 * an empty array will be returned
+		 *
+		 * @since Symphony 2.2.2
+		 * @param string $name
+		 * @return array
+		 *  An associative array where the key is the `$index` of the child
+		 *  in `$this->_children`
+		 */
+		public function getChildrenByName($name) {
+			$result = array();
+			foreach($this->_children as $i => $child) {
+				if($child->getName() != $name) continue;
+
+				$result[$i] = $child;
+			}
+
+			return $result;
 		}
 
 		/**
@@ -309,14 +342,19 @@
 		}
 
 		/**
-		 * Retrieves the value of an attribute by name
+		 * This function expects an array of `XMLElement` that will completely
+		 * replace the contents of `$this->_children`. Take care when using
+		 * this function.
 		 *
-		 * @param string $name
-		 * @return string
+		 * @since Symphony 2.2.2
+		 * @param array $children
+		 *  An array of XMLElement's to act as the children for the current
+		 *  XMLElement instance
 		 */
-		public function getAttribute($name){
-			if(!isset($this->_attributes[$name])) return null;
-			return $this->_attributes[$name];
+		public function setChildren(Array $children = null) {
+			if(is_array($children) && !empty($children)) {
+				$this->_children = $children;
+			}
 		}
 
 		/**
@@ -361,9 +399,74 @@
 		}
 
 		/**
+		 * Given the position of the child in the `$this->_children`,
+		 * this function will unset the child at that position. This function
+		 * is not reversible.
+		 *
+		 * @since Symphony 2.2.2
+		 * @param integer $index
+		 *  The index of the child to be removed
+		 */
+		public function removeChildAt($index) {
+			if(!is_numeric($index) || $index < 0) return;
+
+			unset($this->_children[$index]);
+		}
+
+		/**
+		 * Given a desired index, and an XMLElement, this function will insert
+		 * the child at that index in `$this->_children` shuffling all children
+		 * greater than `$index` down one. If the `$index` given is greater then
+		 * the number of children for this XMLElement, the `$child` will be
+		 * appended to the current `$this->_children` array.
+		 *
+		 * @since Symphony 2.2.2
+		 * @param integer $index
+		 *  The index where the `$child` should be inserted
+		 * @param XMLElement $child
+		 *  The XMLElement to insert at the desired `$index`
+		 */
+		public function insertChildAt($index, XMLElement $child = null) {
+			if(!is_numeric($index) || $index < 0) return;
+
+			if($index >= $this->getNumberOfChildren()) {
+				return $this->appendChild($child);
+			}
+
+			$start = array_slice($this->_children, 0, $index);
+			$end = array_slice($this->_children, $index);
+
+			$merge = array_merge(
+				$start, array(
+					$index => $child
+				),
+				$end
+			);
+
+			return $this->setChildren($merge);
+		}
+
+		/**
+		 * Given the position of the child to replace, and an XMLElement
+		 * of the replacement child, this function will replace one child
+		 * with another
+		 *
+		 * @since Symphony 2.2.2
+		 * @param integer $index
+		 *  The index of the child to be replaced
+		 * @param XMLElement $child
+		 *  An XMLElement of the new child
+		 */
+		public function replaceChildAt($index, XMLElement $child = null) {
+			if(!is_numeric($index) || $index < 0) return;
+
+			$this->_children[$index] = $child;
+		}
+
+		/**
 		 * This function will turn the XMLElement into a string
 		 * representing the element as it would appear in the markup.
-		 * It is valid XML.
+		 * The result is valid XML.
 		 *
 		 * @param boolean $indent
 		 *  Defaults to false
@@ -377,7 +480,6 @@
 		 * @return string
 		 */
 		public function generate($indent = false, $tab_depth = 0, $hasParent = false){
-
 			$result = null;
 			$newline = ($indent ? self::CRLF : null);
 
