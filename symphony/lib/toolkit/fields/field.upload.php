@@ -408,7 +408,7 @@
 					$entry_id
 				));
 
-				$existing_file = rtrim($rel_path, '/') . '/' . trim($row['file'], '/');
+				$existing_file = '/' . trim($row['file'], '/');
 
 				// File was removed
 				if($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file) && is_file(WORKSPACE . $existing_file)){
