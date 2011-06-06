@@ -34,9 +34,9 @@ var Symphony = {};
 			Symphony.Context.add('lang', html.attr('lang'));
 
 			// Set browser support information
-			Symphony.Context.add('support', {
-				localstorage: ('localStorage' in window && window['localStorage'] !== null) ? true : false
-			});
+			Symphony.Support.localStorage = ('localStorage' in window && window['localStorage'] !== null) ? true : false;
+			// Deep copy jQuery.support
+			$.extend(true, Symphony.Support, $.support);
 
 			// Initialise language
 			Symphony.Language.add({
@@ -374,8 +374,14 @@ var Symphony = {};
 				}
 			}
 
-		}
+		},
 
+		/**
+		 * The support object is a collection of properties that represent
+		 * the presence of different browser features and also contains
+		 * the test results from jQuery.support.
+		 */
+		Support: {}
 	};
 
 	/**

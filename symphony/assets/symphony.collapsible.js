@@ -19,8 +19,7 @@
 				delay_initialize:	false,
 				save_state:			true,
 				storage: 'symphony.collapsible.' + $('body').attr('id') + (Symphony.Context.get('env')[1] ? '.' + Symphony.Context.get('env')[1] : '')
-			},
-			has_localstorage = Symphony.Context.get('support')['localstorage'];
+			};
 		
 		$.extend(settings, custom_settings);
 		
@@ -155,8 +154,7 @@
 				
 				saveState: function() {
 					var collapsed = [];
-					// check for localStorage support
-					if (!has_localstorage) { return false; }
+					if (!Symphony.Support.localStorage) { return false; }
 					object.find(settings.items).each(function(index) {
 						var item = $(this);
 						
@@ -170,8 +168,7 @@
 				
 				restoreState: function() {
 					var collapsed;
-					// check for localStorage support
-					if (!has_localstorage) { return false; }
+					if (!Symphony.Support.localStorage || !localStorage[storage]) { return false; }
 					collapsed = localStorage[storage];
 					collapsed = collapsed.split(',');
 					$.each(collapsed, function(index, val) {
