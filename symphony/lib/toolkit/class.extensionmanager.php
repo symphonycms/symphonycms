@@ -35,7 +35,7 @@
 		private static $_subscriptions =  null;
 
 		/**
-		 * An associative array of all the extensions in tbl_extensions where
+		 * An associative array of all the extensions in `tbl_extensions` where
 		 * the key is the extension name and the value is an array
 		 * representation of it's accompanying database row.
 		 * @var array
@@ -527,16 +527,7 @@
 
 			// Make sure $page is an array
 			if(!is_array($page)){
-				// Support for pseudo-global delegates (including legacy support for /administration/)
-				if(preg_match('/\/?(administration|backend)\/?/', $page)){
-					$page = array(
-						'backend', '/backend/',
-						'administration', '/administration/'
-					);
-				}
-				else{
-					$page = array($page);
-				}
+				$page = array($page);
 			}
 
 			// Support for global delegate subscription
@@ -547,11 +538,11 @@
 			$services = array();
 
 			foreach(self::$_subscriptions as $subscription) {
-				foreach($page as $p) {
-					if ($p == $subscription['page'] && $delegate == $subscription['delegate']) {
-						$services[] = $subscription;
-					}
-				}
+				if($subscription['delegate'] != $delegate) continue;
+
+				if(!in_array($subscription['page'], $page)) continue;
+
+				$services[] = $subscription;
 			}
 
 			if(empty($services)) return null;

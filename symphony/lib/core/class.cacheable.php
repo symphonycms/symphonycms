@@ -15,8 +15,8 @@
 	Class Cacheable{
 
 		/**
-		 * An instance of the MySQL class to store the cached
-		 * data in.
+		 * An instance of the MySQL class to communicate with `tbl_cache`
+		 * which is where the cached data is stored.
 		 *
 		 * @var MySQL
 		 */
@@ -48,7 +48,7 @@
 		 * @param string $data
 		 *  The data to be cached, this will be compressed prior to saving.
 		 * @param integer $ttl
-		 *  A integer representing how long the data should be valid for in seconds.
+		 *  A integer representing how long the data should be valid for in minutes.
 		 *  By default this is null, meaning the data is valid forever
 		 * @return boolean
 		 *  If an error occurs, this function will return false otherwise true
@@ -74,9 +74,9 @@
 		}
 
 		/**
-		 * Given some data, this function will compress it using gzcompress
-		 * and then base64_encodes the output. If this fails, false is returned
-		 * otherwise the compressed data
+		 * Given some data, this function will compress it using `gzcompress`
+		 * and then the result is run through `base64_encode` If this fails,
+		 * false is returned otherwise the compressed data
 		 *
 		 * @param string $data
 		 *  The data to compress
@@ -104,9 +104,8 @@
 
 		/**
 		 * Given the hash of a some data, check to see whether it exists in
-		 * `tbl_cache`. If no cached object is found, this
-		 * function will return false, otherwise the cached object will be
-		 * returned as an array.
+		 * `tbl_cache`. If no cached object is found, this function will return
+		 * false, otherwise the cached object will be returned as an array.
 		 *
 		 * @param string $hash
 		 *  The hash of the Cached object, as defined by the user
@@ -118,7 +117,6 @@
 		public function check($hash){
 
 			if($c = $this->Database->fetchRow(0, "SELECT SQL_NO_CACHE * FROM `tbl_cache` WHERE `hash` = '$hash' AND (`expiry` IS NULL OR UNIX_TIMESTAMP() <= `expiry`) LIMIT 1")){
-
 				if(!$c['data'] = $this->decompressData($c['data'])){
 					$this->forceExpiry($hash);
 					return false;

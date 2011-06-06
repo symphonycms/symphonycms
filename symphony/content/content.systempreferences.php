@@ -64,8 +64,8 @@
 			$email_gateways = $email_gateway_manager->listAll();
 			if(count($email_gateways) >= 1){
 				$group = new XMLElement('fieldset', NULL, array('class' => 'settings picker'));
-				$group->appendChild(new XMLElement('legend', __('Email Gateway')));
-				$label = Widget::Label();
+				$group->appendChild(new XMLElement('legend', __('Default Email Settings')));
+				$label = Widget::Label(__('Gateway'));
 
 				// Get gateway names
 				ksort($email_gateways);
@@ -80,7 +80,6 @@
 				$select = Widget::Select('settings[Email][default_gateway]', $options);
 				$label->appendChild($select);
 				$group->appendChild($label);
-				$group->appendChild(new XMLElement('p', __('The Symphony core will use the selected gateway to send emails. More gateways can be installed using extensions, and any gateway may be used by custom events or extensions.'), array('class' => 'help')));
 				// Append email gateway selection
 				$this->Form->appendChild($group);
 			}

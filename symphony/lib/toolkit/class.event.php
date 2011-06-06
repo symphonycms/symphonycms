@@ -121,13 +121,13 @@
 		}
 
 		/**
-		 * Returns a HTML string of documentation for the current event. By default this will be
-		 * an example of a HTML form that can populate the chosen section. Documentation is shown
-		 * in the Symphony backend when a user tries to edit an event but it's `allowEditorToParse()`
-		 * returns `false`. If this is not implemented by the event, a default Symphony message will
-		 * appear
+		 * Returns a string of HTML or an XMLElement of documentation for the current event. 
+		 * By default this will be an example of a HTML form that can populate the chosen section and 
+		 * any filter information. Documentation is shown in the Symphony backend when a user tries to
+		 * edit an event but it's `allowEditorToParse()` returns `false`. If this is not implemented by
+		 * the event, a default Symphony message will appear.
 		 *
-		 * @return string
+		 * @return string|XMLElement
 		 */
 		public static function documentation() {
 			return __('This event has been customised and cannot be viewed from Symphony.');

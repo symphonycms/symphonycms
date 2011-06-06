@@ -232,7 +232,7 @@
 		 *
 		 * @param array|Entry $entries
 		 *  An Entry object, or an array of Entry objects to delete
-		 * @param boolean
+		 * @return boolean
 		 */
 		public function delete($entries){
 
@@ -287,6 +287,9 @@
 		 *  Choose whether to get data from a subset of fields or all fields in a section,
 		 *  by providing an array of field names. Defaults to null, which will load data
 		 *  from all fields in a section.
+		 * @return array
+		 *  If `$buildentries` is true, this function will return an array of Entry objects,
+		 *  otherwise it will return an associative array of Entry data from `tbl_entries`
 		 */
 		public function fetch($entry_id = null, $section_id = null, $limit = null, $start = null, $where = null, $joins = null, $group = false, $buildentries = true, $element_names = null){
 			$sort = null;
@@ -369,6 +372,7 @@
 		 *  by providing an array of field names. Defaults to null, which will load data
 		 *  from all fields in a section.
 		 * @return array
+		 *  An array of Entry objects
 		 */
 		public function __buildEntries(Array $rows, $section_id, $element_names = null){
 			$entries = array();

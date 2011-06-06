@@ -1,16 +1,16 @@
 # Symphony 2 #
 
-- Version: 2.2.1
-- Date: 25th April 2011
-- Release Notes: <http://symphony-cms.com/download/releases/version/2.2.1/>
-- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.2.1>
+- Version: 2.2.2pre
+- Date: unreleased
+- Release Notes: <https://gist.github.com/968362>
+- Github Repository: <https://github.com/symphonycms/symphony-2/commits/integration>
 
 
 ## Overview
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as
-its core technologies. This repository represents version "2.2.1" and is
-considered stable.
+its core technologies. This repository represents version "2.2.2pre" and is
+considered unstable.
 
 Visit the forum at <http://symphony-cms.com/discuss/>
 
@@ -18,9 +18,18 @@ Visit the forum at <http://symphony-cms.com/discuss/>
 
 - PHP 5.2 or above
 - PHP's LibXML module, with the XSLT extension enabled (--with-xsl)
-- MySQL 4.1 or above
+- MySQL 5.0 or above
 - An Apache or Litespeed webserver
 - Apache's mod_rewrite module or equivalent
+
+### A note for Windows developers
+
+While Windows is not officially supported for production, we understand many 
+developers use WAMP for Symphony development before deploying to a production
+server. The Symphony team recommends that while using WAMP, developers use 
+the latest PHP 5.3.x version during development to minimise any potential issues.
+PHP5.3 provides numerous fixes and improvements to help minimise and standardise 
+the result of several functions that behave slightly differently depending on the OS
 
 ## Updating From an Older Version
 

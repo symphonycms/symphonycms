@@ -110,7 +110,7 @@
 
 			$options = array(
 				array(NULL, false, __('With Selected...')),
-				array('enable', false, __('Enable')),
+				array('enable', false, __('Enable/Install')),
 				array('disable', false, __('Disable')),
 				array('uninstall', false, __('Uninstall'), 'confirm', null, array(
 					'data-message' => __('Are you sure you want to uninstall the selected extensions?')

@@ -465,7 +465,7 @@
 
 		/**
 		 * Construct the html block to display a summary of this field, which is the field
-		 * Label and it's location within the section. Any error messages generated are 
+		 * Label and it's location within the section. Any error messages generated are
 		 * appended to the optional input error array. This function calls
 		 * `buildLocationSelect` once it is completed
 		 *
@@ -558,8 +558,8 @@
 		}
 
 		/**
-		 * Append a validator selector to a given XMLElement. Note that this 
-		 * function differs from the other two similarly named build functions in 
+		 * Append a validator selector to a given XMLElement. Note that this
+		 * function differs from the other two similarly named build functions in
 		 * that it takes an XMLElement to append the Validator to as a parameter,
 		 * and does not return anything.
 		 *
@@ -682,7 +682,7 @@
 		 * @param array $errors
 		 *	the array to populate with the errors found.
 		 * @param boolean $checkForDuplicates (optional)
-		 *	if set to true, duplicate Field name's in the same section will be flagged 
+		 *	if set to true, duplicate Field name's in the same section will be flagged
 		 *  as errors. Defaults to true.
 		 * @return integer
 		 *	returns the status of the checking. if errors has been populated with
@@ -764,7 +764,7 @@
 
 		/**
 		 * Display the publish panel for this field. The display panel is the
-		 * interface shown to Authors that allow them to input data into this 
+		 * interface shown to Authors that allow them to input data into this
 		 * field for an Entry.
 		 *
 		 * @param XMLElement $wrapper
@@ -1223,6 +1223,6 @@
 		 *  Symphony. The correct function is `$this->buildDSRetrievalSQL`.
 		 */
 		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
-			return $this->buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false);
+			return $this->buildDSRetrievalSQL($data, $joins, $where, $andOperation);
 		}
 	}

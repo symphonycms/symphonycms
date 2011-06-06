@@ -420,6 +420,15 @@ Options +FollowSymlinks -Indexes
 				catch(Exception $ex) {}
 			}
 
+			if(version_compare($existing_version, '2.2.2 Beta 1', '<')) {
+				// Rename old variations of the query_caching configuration setting
+				if(isset($settings['database']['disable_query_caching'])) {
+					$settings['database']['query_caching'] = ($settings['database']['disable_query_caching'] == "no") ? "on" : "off";
+					unset($settings['database']['disable_query_caching']);
+					writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
+				}
+			}
+
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
 				"SELECT `version` FROM `tbl_extensions` WHERE `name` = 'selectbox_link_field' LIMIT 1"
 			);

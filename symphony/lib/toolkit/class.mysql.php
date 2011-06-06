@@ -429,9 +429,13 @@
 			$query = trim($query);
 			$query_type = $this->determineQueryType($query);
 
-			if($query_type == MySQL::__READ_OPERATION__ && !is_null($this->isCachingEnabled()) && !preg_match('/^SELECT\s+SQL(_NO)?_CACHE/i', $query)){
-				if($this->isCachingEnabled() === false) $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_NO_CACHE ', $query);
-				elseif($this->isCachingEnabled() === true) $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_CACHE ', $query);
+			if($query_type == MySQL::__READ_OPERATION__ && !preg_match('/^SELECT\s+SQL(_NO)?_CACHE/i', $query)){
+				if($this->isCachingEnabled()) {
+					$query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_CACHE ', $query);
+				}
+				else {
+					$query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_NO_CACHE ', $query);
+				}
 			}
 
 			if(MySQL::$_connection['tbl_prefix'] != 'tbl_'){
@@ -743,7 +747,7 @@
 		 *  An associative array with the number of queries, an array of slow
 		 *  queries and the total query time.
 		 */
-		public function getStatistics(){
+		public function getStatistics() {
 			$stats = array();
 			$query_timer = 0.0;
 			$slow_queries = array();

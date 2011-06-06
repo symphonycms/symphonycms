@@ -92,7 +92,7 @@
 
 				return instance;
 			};
-			
+
 			// Prepare an instance
 			var prepare = function(source) {
 				var instance = $(source).addClass('instance expanded'),
@@ -195,7 +195,7 @@
 				if(settings.collapsible) {
 					object.collapsible.initialize();
 				}
-				
+
 				// Orderable?
 				if(settings.orderable) {
 					object.orderable.initialize();
@@ -206,7 +206,7 @@
 			var updateUniqueness = function() {
 				var instances = object.children('.instance'),
 					options = widgets.selector.find('option');
-				
+
 				options.attr('disabled', false);
 
 				instances.each(function(position) {
@@ -214,7 +214,7 @@
 
 					if (instance.hasClass('unique')) {
 						options.filter('[data-type=' + instance.attr('data-type') + ']').attr('disabled', 'disabled');
-						
+
 						if (options.not(':disabled').length === 0) {
 							widgets.selector.prepend('<option class="all-selected">' + Symphony.Language.get('All selected') + '</option>');
 							widgets.selector.attr('disabled', 'disabled');
@@ -223,7 +223,7 @@
 							widgets.selector.attr('disabled', false);
 							options.filter('.all-selected').remove();
 						};
-						
+
 						widgets.selector.find('option').not(':disabled').first().attr('selected', 'selected');
 					};
 				});
@@ -299,13 +299,11 @@
 						var template = $(this).clone(true),
 							header = template.find(settings.headers).addClass('header'),
 							option = widgets.selector.append('<option />').find('option:last'),
-							header_children = header.children();
-							
+							header_children = header.children(),
+							header_text = header.text();
+
 						if(header_children.length) {
 							header_text = header.get(0).childNodes[0].nodeValue + ' (' + header_children.filter(':eq(0)').text() + ')';
-						} 
-						else {
-							header_text = header.text();
 						}
 						option.text(header_text).val(position).attr('data-type', template.attr('data-type'));
 
