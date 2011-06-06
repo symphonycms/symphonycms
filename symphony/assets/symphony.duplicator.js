@@ -199,6 +199,9 @@
 				// Orderable?
 				if(settings.orderable) {
 					object.orderable.initialize();
+					object.bind('orderstop', function(event) {
+						object.trigger('savestate');
+					});
 				}
 			};
 
@@ -274,13 +277,21 @@
 					});
 
 					// Slide up on collapse:
-					object.bind('collapsestop.duplicator', function(event, item) {
-						item.find('> .content').show().slideUp(settings.speed);
+					object.bind('collapsestop.duplicator', function(event, item, instantly) {
+						if (instantly) {
+							item.find('> .content').hide();
+						} else {
+							item.find('> .content').show().slideUp(settings.speed);
+						}
 					});
 
 					// Slide down on expand:
-					object.bind('expandstop.duplicator', function(event, item) {
-						item.find('> .content').hide().slideDown(settings.speed);
+					object.bind('expandstop.duplicator', function(event, item, instantly) {
+						if (instantly) {
+							item.find('> .content').show();
+						} else {
+							item.find('> .content').hide().slideDown(settings.speed);
+						};
 					});
 
 					widgets.controls = object.append('<div class="controls" />').find('> .controls:last');
