@@ -12,7 +12,6 @@
 	require_once(CORE . '/class.errorhandler.php');
 
 	require_once(CORE . '/class.configuration.php');
-	require_once(CORE . '/class.datetimeobj.php');
 	require_once(CORE . '/class.log.php');
 	require_once(CORE . '/class.cookie.php');
 	require_once(CORE . '/interface.singleton.php');
