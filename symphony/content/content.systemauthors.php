@@ -54,7 +54,7 @@
 						$td1 = Widget::TableData($a->getFullName(), 'inactive');
 					}
 
-					$td2 = Widget::TableData(Widget::Anchor($a->get('email'), 'mailto:'.$a->get('email'), 'Email this author'));
+					$td2 = Widget::TableData(Widget::Anchor($a->get('email'), 'mailto:'.$a->get('email'), __('Email this author')));
 
 					if(!is_null($a->get('last_seen'))) {
 						$td3 = Widget::TableData(

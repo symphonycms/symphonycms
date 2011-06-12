@@ -65,7 +65,9 @@
 						next = target.prev(settings.items);
 
 						if(next.length === 0 || top >= (state.min -= next.height())) {
-							item.insertBefore(target); break;
+							item.insertBefore(target);
+							object.trigger('orderchange', [state.item]);
+							break;
 						}
 
 						target = next;
@@ -81,14 +83,13 @@
 
 						if(next.length === 0 || top <= (state.max += next.height())) {
 							item.insertAfter(target); 
+							object.trigger('orderchange', [state.item]);
 							break;
 						}
 
 						target = next;
 					}
 				}
-
-				object.trigger('orderchange', [state.item]);
 
 				return false;
 			};

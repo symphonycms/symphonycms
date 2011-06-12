@@ -33,6 +33,11 @@ var Symphony = {};
 			});
 			Symphony.Context.add('lang', html.attr('lang'));
 
+			// Set browser support information
+			Symphony.Support.localStorage = ('localStorage' in window && window['localStorage'] !== null) ? true : false;
+			// Deep copy jQuery.support
+			$.extend(true, Symphony.Support, $.support);
+
 			// Initialise language
 			Symphony.Language.add({
 				'Add item': false,
@@ -369,8 +374,14 @@ var Symphony = {};
 				}
 			}
 
-		}
+		},
 
+		/**
+		 * The support object is a collection of properties that represent
+		 * the presence of different browser features and also contains
+		 * the test results from jQuery.support.
+		 */
+		Support: {}
 	};
 
 	/**
@@ -468,6 +479,7 @@ var Symphony = {};
 		duplicator.bind('expandstop', function(event, item) {
 			$(item).find('.header > span > i').remove();
 		});
+		duplicator.trigger('restorestate');
 
 		// Dim system messages
 		Symphony.Message.fade('silence', 10000);

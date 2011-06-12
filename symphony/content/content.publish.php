@@ -907,10 +907,11 @@
 				 * @param array $checked
 				 *  An array of Entry ID's passed by reference
 				 */
-				Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => &$entry_id));
+				$checked = array($entry_id);
+				Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
 
 				$entryManager = new EntryManager($this->_Parent);
-				$entryManager->delete($entry_id);
+				$entryManager->delete($checked);
 
 				redirect(SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/');
 			}
