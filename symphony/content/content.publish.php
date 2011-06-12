@@ -87,13 +87,6 @@
 					}
 
 				}
-
-				if (!is_null($where)) {
-					$where = str_replace('AND', 'OR', $where); // multiple fields need to be OR
-					$where = trim($where);
-					$where = ' AND (' . substr($where, 2, strlen($where)) . ')'; // replace leading OR with AND
-				}
-
 			}
 
 			if(isset($_REQUEST['sort']) && is_numeric($_REQUEST['sort'])){
