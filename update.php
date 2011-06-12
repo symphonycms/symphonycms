@@ -425,8 +425,13 @@ Options +FollowSymlinks -Indexes
 				if(isset($settings['database']['disable_query_caching'])) {
 					$settings['database']['query_caching'] = ($settings['database']['disable_query_caching'] == "no") ? "on" : "off";
 					unset($settings['database']['disable_query_caching']);
-					writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 				}
+
+				// Add Session GC collection as a configuration parameter
+				$settings['symphony']['session_gc_divisor'] = '10';
+
+				// Save the manifest changes
+				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
