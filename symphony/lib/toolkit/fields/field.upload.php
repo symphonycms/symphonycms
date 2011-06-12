@@ -289,7 +289,7 @@
 						break;
 
 					case UPLOAD_ERR_FORM_SIZE:
-						$message = __('File chosen in "%1$s" exceeds the maximum allowed upload size of %2$s, specified by Symphony.', array($this->get('label'), General::formatFilesize(Symphony::Configuration()->get('max_upload_size', 'admin'))));
+						$message = __('File chosen in "%1$s" exceeds the maximum allowed upload size of %2$s, specified by Symphony.', array($this->get('label'), General::formatFilesize($_POST['MAX_FILE_SIZE'])));
 						break;
 
 					case UPLOAD_ERR_PARTIAL:
