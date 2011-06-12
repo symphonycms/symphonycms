@@ -64,11 +64,13 @@
 			if($validate === true) {
 				include_once(TOOLKIT . '/class.xsltprocess.php');
 
-				$result = html_entity_decode($result, ENT_QUOTES, 'UTF-8');
-				$result = $this->__replaceAmpersands($result);
-
 				if(!General::validateXML($result, $errors, false, new XsltProcess)){
-					return false;
+					$result = html_entity_decode($result, ENT_QUOTES, 'UTF-8');
+					$result = $this->__replaceAmpersands($result);
+
+					if(!General::validateXML($result, $errors, false, new XsltProcess)){
+						return false;
+					}
 				}
 			}
 
@@ -218,10 +220,8 @@
 				}
 
 				else {
-					$value = $data['value'];
+					$value = $this->__replaceAmpersands($data['value']);
 				}
-
-				$value = $this->__replaceAmpersands($value);
 
 				$attributes = array();
 				if ($mode == 'formatted') $attributes['mode'] = $mode;
