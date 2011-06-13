@@ -59,34 +59,51 @@
 
 			$entryManager = new EntryManager($this->_Parent);
 
-			$filter = $filter_value = $where = $joins = NULL;
+			$filters = array();
+			$filter_querystring = $prepopulate_querystring = $where = $joins = NULL;
 			$current_page = (isset($_REQUEST['pg']) && is_numeric($_REQUEST['pg']) ? max(1, intval($_REQUEST['pg'])) : 1);
-
-			if(isset($_REQUEST['filter'])){
-
-				list($field_handle, $filter_value) = explode(':', $_REQUEST['filter'], 2);
-
-				$field_names = explode(',', $field_handle);
-
-				foreach($field_names as $field_name) {
-
-					$filter_value = rawurldecode($filter_value);
-
-					$filter = Symphony::Database()->fetchVar('id', 0, "SELECT `f`.`id`
-										  FROM `tbl_fields` AS `f`, `tbl_sections` AS `s`
-										  WHERE `s`.`id` = `f`.`parent_section`
-										  AND f.`element_name` = '$field_name'
-										  AND `s`.`handle` = '".$section->get('handle')."' LIMIT 1");
-					$field =& $entryManager->fieldManager->fetch($filter);
+			
+			if(isset($_REQUEST['filter'])) {
+				
+				// legacy implementation, convert single filter to an array
+				// split string in the form ?filter=handle:value
+				if(!is_array($_REQUEST['filter'])) {
+					list($field_handle, $filter_value) = explode(':', $_REQUEST['filter'], 2);
+					$filters[$field_handle] = rawurldecode($filter_value);
+				} else {
+					$filters = $_REQUEST['filter'];
+				}
+				
+				foreach($filters as $handle => $value) {
+					
+					$field_id = Symphony::Database()->fetchVar('id', 0, sprintf(
+						"SELECT `f`.`id`
+						FROM `tbl_fields` AS `f`, `tbl_sections` AS `s`
+						WHERE `s`.`id` = `f`.`parent_section`
+						AND f.`element_name` = '%s'
+						AND `s`.`handle` = '%s'
+						LIMIT 1",
+						$handle,
+						$section->get('handle'))
+					);
+					
+					$field = $entryManager->fieldManager->fetch($field_id);
 
 					if($field instanceof Field) {
 						// For deprecated reasons, call the old, typo'd function name until the switch to the
 						// properly named buildDSRetrievalSQL function.
-						$field->buildDSRetrivalSQL(array($filter_value), $joins, $where, false);
-						$filter_value = rawurlencode($filter_value);
+						$field->buildDSRetrivalSQL(array($value), $joins, $where, false);
+						$filter_querystring .= sprintf("filter[%s]=%s&amp;", $field_name, rawurlencode($value));
+						$prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, rawurlencode($value));	
+					} else {
+						unset($filters[$i]);
 					}
 
 				}
+				
+				$filter_querystring = preg_replace("/&amp;$/", '', $filter_querystring);
+				$prepopulate_querystring = preg_replace("/&amp;$/", '', $prepopulate_querystring);
+
 			}
 
 			if(isset($_REQUEST['sort']) && is_numeric($_REQUEST['sort'])){
@@ -95,7 +112,7 @@
 
 				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
 					$sectionManager->edit($section->get('id'), array('entry_order' => $sort, 'entry_order_direction' => $order));
-					redirect(Administration::instance()->getCurrentPageURL().($filter ? "?filter=$field_handle:$filter_value" : ''));
+					redirect(Administration::instance()->getCurrentPageURL().($filter_querystring ? "?" . $filter_querystring : ''));
 				}
 			}
 
@@ -104,9 +121,9 @@
 				redirect(Administration::instance()->getCurrentPageURL());
 			}
 
-			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter ? "&amp;filter=$field_handle:$filter_value" : ''));
+			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter_querystring ? "&amp;" . $filter_querystring : ''));
 
-			$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($filter ? '?prepopulate['.$filter.']=' . $filter_value : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c')));
+			$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($filter_querystring ? '?' . $prepopulate_querystring : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c')));
 
 			if(is_null($entryManager->getFetchSorting()->field) && is_null($entryManager->getFetchSorting()->direction)){
 				$entryManager->setFetchSortingDirection('DESC');
@@ -126,12 +143,12 @@
 					if($column->isSortable()) {
 
 						if($column->get('id') == $section->get('entry_order')){
-							$link = Administration::instance()->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order='. ($section->get('entry_order_direction') == 'desc' ? 'asc' : 'desc').($filter ? "&amp;filter=$field_handle:$filter_value" : '');
+							$link = Administration::instance()->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order='. ($section->get('entry_order_direction') == 'desc' ? 'asc' : 'desc').($filter_querystring ? "&amp;" . $filter_querystring : '');
 							$anchor = Widget::Anchor($label, $link, __('Sort by %1$s %2$s', array(($section->get('entry_order_direction') == 'desc' ? __('ascending') : __('descending')), strtolower($column->get('label')))), 'active');
 						}
 
 						else{
-							$link = Administration::instance()->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order=asc'.($filter ? "&amp;filter=$field_handle:$filter_value" : '');
+							$link = Administration::instance()->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order=asc'.($filter_querystring ? "&amp;" . $filter_querystring : '');
 							$anchor = Widget::Anchor($label, $link, __('Sort by %1$s %2$s', array(__('ascending'), strtolower($column->get('label')))));
 						}
 
@@ -337,13 +354,13 @@
 
 				## First
 				$li = new XMLElement('li');
-				if($current_page > 1) $li->appendChild(Widget::Anchor(__('First'), Administration::instance()->getCurrentPageURL(). '?pg=1'.($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
+				if($current_page > 1) $li->appendChild(Widget::Anchor(__('First'), Administration::instance()->getCurrentPageURL(). '?pg=1'.($filter_querystring ? "&amp;" . $filter_querystring : '')));
 				else $li->setValue(__('First'));
 				$ul->appendChild($li);
 
 				## Previous
 				$li = new XMLElement('li');
-				if($current_page > 1) $li->appendChild(Widget::Anchor(__('&larr; Previous'), Administration::instance()->getCurrentPageURL(). '?pg=' . ($current_page - 1).($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
+				if($current_page > 1) $li->appendChild(Widget::Anchor(__('&larr; Previous'), Administration::instance()->getCurrentPageURL(). '?pg=' . ($current_page - 1).($filter_querystring ? "&amp;" . $filter_querystring : '')));
 				else $li->setValue(__('&larr; Previous'));
 				$ul->appendChild($li);
 
@@ -358,13 +375,13 @@
 
 				## Next
 				$li = new XMLElement('li');
-				if($current_page < $entries['total-pages']) $li->appendChild(Widget::Anchor(__('Next &rarr;'), Administration::instance()->getCurrentPageURL(). '?pg=' . ($current_page + 1).($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
+				if($current_page < $entries['total-pages']) $li->appendChild(Widget::Anchor(__('Next &rarr;'), Administration::instance()->getCurrentPageURL(). '?pg=' . ($current_page + 1).($filter_querystring ? "&amp;" . $filter_querystring : '')));
 				else $li->setValue(__('Next &rarr;'));
 				$ul->appendChild($li);
 
 				## Last
 				$li = new XMLElement('li');
-				if($current_page < $entries['total-pages']) $li->appendChild(Widget::Anchor(__('Last'), Administration::instance()->getCurrentPageURL(). '?pg=' . $entries['total-pages'].($filter ? "&amp;filter=$field_handle:$filter_value" : '')));
+				if($current_page < $entries['total-pages']) $li->appendChild(Widget::Anchor(__('Last'), Administration::instance()->getCurrentPageURL(). '?pg=' . $entries['total-pages'].($filter_querystring ? "&amp;" . $filter_querystring : '')));
 				else $li->setValue(__('Last'));
 				$ul->appendChild($li);
 
@@ -482,22 +499,25 @@
 
 			// Check if there is a field to prepopulate
 			if (isset($_REQUEST['prepopulate'])) {
-				$field_id = array_shift(array_keys($_REQUEST['prepopulate']));
-				$value = stripslashes(rawurldecode(array_shift($_REQUEST['prepopulate'])));
+				
+				foreach($_REQUEST['prepopulate'] as $field_id => $value) {
 
-				$this->Form->prependChild(Widget::Input(
-					"prepopulate[{$field_id}]",
-					rawurlencode($value),
-					'hidden'
-				));
+					$this->Form->prependChild(Widget::Input(
+						"prepopulate[{$field_id}]",
+						rawurlencode($value),
+						'hidden'
+					));
 
-				// The actual pre-populating should only happen if there is not existing fields post data
-				if(!isset($_POST['fields']) && $field = $entryManager->fieldManager->fetch($field_id)) {
-					$entry->setData(
-						$field->get('id'),
-						$field->processRawFieldData($value, $error, true)
-					);
+					// The actual pre-populating should only happen if there is not existing fields post data
+					if(!isset($_POST['fields']) && $field = $entryManager->fieldManager->fetch($field_id)) {
+						$entry->setData(
+							$field->get('id'),
+							$field->processRawFieldData($value, $error, true)
+						);
+					}
+					
 				}
+
 			}
 
 			$primary = new XMLElement('fieldset');
@@ -624,18 +644,20 @@
 						 */
 						Symphony::ExtensionManager()->notifyMembers('EntryPostCreate', '/publish/new/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
 
-						$prepopulate_field_id = $prepopulate_value = NULL;
+						$prepopulate_querystring = '';
 						if(isset($_POST['prepopulate'])){
-							$prepopulate_field_id = array_shift(array_keys($_POST['prepopulate']));
-							$prepopulate_value = stripslashes(rawurldecode(array_shift($_POST['prepopulate'])));
+							foreach($_POST['prepopulate'] as $field_id => $value) {
+								$prepopulate_querystring .= sprintf("prepopulate[%s]=%s&", $field_id, rawurldecode($value));
+							}
+							$prepopulate_querystring = trim($prepopulate_querystring, '&');
 						}
 
 			  		   	redirect(sprintf(
-							'%s/publish/%s/edit/%d/created%s/',
+							'%s/publish/%s/edit/%d/created/%s',
 							SYMPHONY_URL,
 							$this->_context['section_handle'],
 							$entry->get('id'),
-							(!is_null($prepopulate_field_id) ? ":{$prepopulate_field_id}:{$prepopulate_value}" : NULL)
+							(!empty($prepopulate_querystring) ? "?" . $prepopulate_querystring : NULL)
 						));
 
 					}
@@ -701,14 +723,12 @@
 
 				list($flag, $field_id, $value) = preg_split('/:/i', $this->_context['flag'], 3);
 
-				if(is_numeric($field_id) && $value){
-					$link .= "?prepopulate[$field_id]=$value";
-
-					$this->Form->prependChild(Widget::Input(
-						"prepopulate[{$field_id}]",
-						rawurlencode($value),
-						'hidden'
-					));
+				if(isset($_REQUEST['prepopulate'])){
+					$link .= '?';
+					foreach($_REQUEST['prepopulate'] as $field_id => $value) {						
+						$link .= "prepopulate[$field_id]=$value&amp;";
+					}
+					$link = preg_replace("/&amp;$/", '', $link);
 				}
 
 				switch($flag){
@@ -751,19 +771,18 @@
 			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')), NULL, $entry_id)));
 
 			if (trim($title) == '') {
-				$title = 'Untitled';
+				$title = __('Untitled');
 			}
 
 			// Check if there is a field to prepopulate
 			if (isset($_REQUEST['prepopulate'])) {
-				$field_id = array_shift(array_keys($_REQUEST['prepopulate']));
-				$value = stripslashes(rawurldecode(array_shift($_REQUEST['prepopulate'])));
-
-				$this->Form->prependChild(Widget::Input(
-					"prepopulate[{$field_id}]",
-					rawurlencode($value),
-					'hidden'
-				));
+				foreach($_REQUEST['prepopulate'] as $field_id => $value) {
+					$this->Form->prependChild(Widget::Input(
+						"prepopulate[{$field_id}]",
+						rawurlencode($value),
+						'hidden'
+					));	
+				}
 			}
 
 			$this->setPageType('form');
@@ -878,18 +897,20 @@
 						 */
 						Symphony::ExtensionManager()->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
 
-						$prepopulate_field_id = $prepopulate_value = NULL;
+						$prepopulate_querystring = '';
 						if(isset($_POST['prepopulate'])){
-							$prepopulate_field_id = array_shift(array_keys($_POST['prepopulate']));
-							$prepopulate_value = stripslashes(rawurldecode(array_shift($_POST['prepopulate'])));
+							foreach($_POST['prepopulate'] as $field_id => $value) {
+								$prepopulate_querystring .= sprintf("prepopulate[%s]=%s&", $field_id, $value);
+							}
+							$prepopulate_querystring = trim($prepopulate_querystring, '&');
 						}
 
 						redirect(sprintf(
-							'%s/publish/%s/edit/%d/saved%s/',
+							'%s/publish/%s/edit/%d/saved/%s',
 							SYMPHONY_URL,
 							$this->_context['section_handle'],
 							$entry->get('id'),
-							(!is_null($prepopulate_field_id) ? ":{$prepopulate_field_id}:{$prepopulate_value}" : NULL)
+							(!empty($prepopulate_querystring) ? "?" . $prepopulate_querystring : NULL)
 						));
 					}
 
