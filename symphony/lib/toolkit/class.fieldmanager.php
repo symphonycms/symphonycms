@@ -209,7 +209,7 @@
 					 . $where
 					 . ($id ? " AND t1.`id` = '{$id}' LIMIT 1" : " ORDER BY t1.`{$sortfield}` {$order}");
 
-				if(!$fields = Symphony::Database()->fetch($sql)) return null;
+				if(!$fields = Symphony::Database()->fetch($sql)) return ($returnSingle ? null : array());
 
 				foreach($fields as $f){
 

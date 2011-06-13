@@ -143,7 +143,7 @@
 					" . ($section_id? " WHERE `s`.`id` = '$section_id' " : '') . "
 					" . (is_null($section_id) ? " ORDER BY `s`.`$sortfield` $order" : '');
 
-			if(!$sections = Symphony::Database()->fetch($sql)) return false;
+			if(!$sections = Symphony::Database()->fetch($sql)) return ($returnSingle ? false : array());
 
 			$ret = array();
 
