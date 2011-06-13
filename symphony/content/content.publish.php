@@ -771,7 +771,7 @@
 			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')), NULL, $entry_id)));
 
 			if (trim($title) == '') {
-				$title = 'Untitled';
+				$title = __('Untitled');
 			}
 
 			// Check if there is a field to prepopulate
