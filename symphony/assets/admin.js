@@ -579,7 +579,8 @@ var Symphony = {};
 					placeholder.hide();
 
 					// Shwo password fields
-					password.addClass('triple group');
+					password.addClass('group');
+					if(password.find('input[name="fields[old-password]"]').length) password.addClass('triple');
 					labels.show();
 					help.show();
 				});
