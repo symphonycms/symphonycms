@@ -1,7 +1,7 @@
 # Symphony 2 #
 
-- Version: 2.2.2pre
-- Date: unreleased
+- Version: 2.2.2 Beta 1
+- Date: June 15th, 2011
 - Release Notes: <https://gist.github.com/968362>
 - Github Repository: <https://github.com/symphonycms/symphony-2/commits/integration>
 

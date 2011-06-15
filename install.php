@@ -37,7 +37,7 @@
 	}
 
 	// Defines
-	define('kVERSION', '2.2.1');
+	define('kVERSION', '2.2.2 Beta 1');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
 	define('DOCROOT', rtrim(dirname(__FILE__), '\\/'));
