@@ -3,7 +3,7 @@
 - Version: 2.2.2 Beta 1
 - Date: June 15th, 2011
 - Release Notes: <https://gist.github.com/968362>
-- Github Repository: <https://github.com/symphonycms/symphony-2/commits/integration>
+- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.2.2beta1>
 
 
 ## Overview
