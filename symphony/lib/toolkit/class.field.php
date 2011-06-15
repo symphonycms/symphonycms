@@ -1007,9 +1007,9 @@
 		 * output as a parameter in the XML
 		 *
 		 * @param array $data
-		 *	 The data for this field from it's `tbl_entry_data_{id}` table
+		 *  The data for this field from it's `tbl_entry_data_{id}` table
 		 * @return string
-		 *	 The formatted value to be used as the parameter
+		 *  The formatted value to be used as the parameter
 		 */
 		public function getParameterPoolValue(Array $data){
 			return $this->prepareTableValue($data);
@@ -1045,7 +1045,7 @@
 		 * Frontend to save this field
 		 *
 		 * @return XMLElement
-		 *	a label widget containing the formatted field element name of this.
+		 *  a label widget containing the formatted field element name of this.
 		 */
 		public function getExampleFormMarkup(){
 			$label = Widget::Label($this->get('label'));
@@ -1059,7 +1059,7 @@
 		 * create an instance of this field in a section.
 		 *
 		 * @return boolean
-		 *	true if the commit was successful, false otherwise.
+		 *  true if the commit was successful, false otherwise.
 		 */
 		public function commit(){
 			$fields = array();
@@ -1135,10 +1135,10 @@
 		 * @param integer $parent_field_id (optional)
 		 *  The field ID of the linked field in the linked section
 		 * @param boolean $show_association (optional)
-		 *	Whether of not the link should be shown on the entries tableof the
-		 * linked section. This defaults to true.
+		 *  Whether of not the link should be shown on the entries table of the
+		 *  linked section. This defaults to true.
 		 * @return boolean
-		 *	true if the association was successfully made, false otherwise.
+		 *  true if the association was successfully made, false otherwise.
 		 */
 		public function createSectionAssociation($parent_section_id = null, $child_field_id = null, $parent_field_id = null, $show_association = true){
 
@@ -1169,7 +1169,7 @@
 		 * Permanently remove a section association for this field in the database.
 		 *
 		 * @param integer $child_field_id
-		 *	the field ID of the linked section's linked field.
+		 *  the field ID of the linked section's linked field.
 		 */
 		public function removeSectionAssociation($child_field_id){
 			Symphony::Database()->delete('tbl_sections_association', " `child_section_field_id` = '$child_field_id' ");
@@ -1177,44 +1177,46 @@
 
 		/**
 		 * Accessor to the associated entry search value for this field
-		 * instance. This default implementation simply returns the input
-		 * data argument.
+		 * instance. This default implementation simply returns `$data`
 		 *
 		 * @param array $data
-		 *	the data from which to construct the associated search entry value.
+		 *  the data from which to construct the associated search entry value, this is usually
+		 *  Entry with the `$parent_entry_id` value's data.
 		 * @param integer $field_id (optional)
-		 *	an optional id of the associated field? this defaults to null.
+		 *  the ID of the field that is the parent in the relationship
 		 * @param integer $parent_entry_id (optional)
-		 *	an optional parent identifier of the associated field entry? this defaults
-		 *	to null.
-		 * @return array
-		 *	the associated entry search value. this implementation returns the input
-		 *	data argument.
+		 *  the ID of the entry from the parent section in the relationship
+		 * @return array|string
+		 *  Defaults to returning `$data`, but overriding implementation should return
+		 *  a string
 		 */
 		public function fetchAssociatedEntrySearchValue($data, $field_id = null, $parent_entry_id = null){
 			return $data;
 		}
 
 		/**
-		 * Fetch the count of the associate entries for the input value. This default
-		 * implementation does nothing.
+		 * Fetch the count of the associated entries given a `$value`.
 		 *
+		 * @see toolkit.Field#fetchAssociatedEntrySearchValue()
 		 * @param mixed $value
-		 *	the value to find the associated entry count for.
+		 *  the value to find the associated entry count for, this usually comes from
+		 *  the `fetchAssociatedEntrySearchValue` function.
 		 * @return void|integer
-		 *	this default implementation returns void. overriding implementations should
-		 *	return a number.
+		 *  this default implementation returns void. overriding implementations should
+		 *  return an integer.
 		 */
 		public function fetchAssociatedEntryCount($value){}
 
 		/**
-		 * Accessor to the ids associated with this field instance.
+		 * Fetch the Entry ID's associated with this field instance given a `$value`,
+		 * where the `$value` can be anything. This function is unused by Symphony core
+		 * but should be implemented by Fields that maintain relationships.
 		 *
 		 * @param mixed $value
-		 *	the value to find the associated entry ids for.
+		 *  the value to find the associated entry ID's for.
 		 * @return void|array
-		 *	this default implementation returns void. overriding implementations should
-		 *	return an array of the associated entry ids.
+		 *  this default implementation returns void. overriding implementations should
+		 *  return an array of the associated entry ids.
 		 */
 		public function fetchAssociatedEntryIDs($value){}
 
