@@ -50,7 +50,7 @@
 						if(isset($ds->dsParamPARAMOUTPUT) && $ds->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
 							if(!isset($param_pool[$key]) || !is_array($param_pool[$key])) $param_pool[$key] = array();
 
-							$param_pool_values = $fieldPool[$field_id]->getParameterPoolValue($values);
+							$param_pool_values = $fieldPool[$field_id]->getParameterPoolValue($values, $entry->get('id'));
 
 							if(is_array($param_pool_values)){
 								$param_pool[$key] = array_merge($param_pool_values, $param_pool[$key]);
@@ -303,7 +303,7 @@
 						if(isset($this->dsParamPARAMOUTPUT) && $this->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
 							if(!isset($param_pool[$key]) || !is_array($param_pool[$key])) $param_pool[$key] = array();
 
-							$param_pool_values = $fieldPool[$field_id]->getParameterPoolValue($values);
+							$param_pool_values = $fieldPool[$field_id]->getParameterPoolValue($values, $entry->get('id'));
 
 							if(is_array($param_pool_values)){
 								$param_pool[$key] = array_merge($param_pool_values, $param_pool[$key]);
