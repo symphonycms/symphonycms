@@ -1008,10 +1008,12 @@
 		 *
 		 * @param array $data
 		 *	 The data for this field from it's `tbl_entry_data_{id}` table
+		 * @param integer $entry_id
+		 *	 The optional id of this field entry instance
 		 * @return string
 		 *	 The formatted value to be used as the parameter
 		 */
-		public function getParameterPoolValue(Array $data){
+		public function getParameterPoolValue(Array $data, $entry_id=NULL){
 			return $this->prepareTableValue($data);
 		}
 
