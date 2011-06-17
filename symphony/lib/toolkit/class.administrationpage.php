@@ -741,6 +741,9 @@
 			 * already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need
 			 * to edit existing navigation elements, use the `NavigationPreRender` delegate.
 			 *
+			 * @deprecated This delegate is deprecated and will be removed in the next
+			 *  major release of Symphony. Extensions are encouraged to use provide the
+			 *  `fetchNavigation` method instead.
 			 * @delegate ExtensionsAddToNavigation
 			 * @param string $context
 			 * '/backend/'
