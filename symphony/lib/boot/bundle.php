@@ -25,7 +25,7 @@
 		error_reporting(E_ALL & ~E_NOTICE);
 	}
 
-	set_magic_quotes_runtime(0);
+	ini_set('magic_quotes_runtime', 0);
 
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
