@@ -429,7 +429,15 @@
 			$query = trim($query);
 			$query_type = $this->determineQueryType($query);
 
-			if($query_type == MySQL::__READ_OPERATION__ && !preg_match('/^SELECT\s+SQL(_NO)?_CACHE/i', $query)){
+			if(MySQL::$_connection['tbl_prefix'] != 'tbl_'){
+				$query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', MySQL::$_connection['tbl_prefix'].'\\1\\2', $query);
+			}
+
+			// TYPE is deprecated since MySQL 4.0.18, ENGINE is preferred
+			if($query_type == MySQL::__WRITE_OPERATION__) {
+				$query = preg_replace('/TYPE=(MyISAM|InnoDB)/i', 'ENGINE=$1', $query);
+			}
+			else if($query_type == MySQL::__READ_OPERATION__ && !preg_match('/^SELECT\s+SQL(_NO)?_CACHE/i', $query)){
 				if($this->isCachingEnabled()) {
 					$query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_CACHE ', $query);
 				}
@@ -438,22 +446,11 @@
 				}
 			}
 
-			if(MySQL::$_connection['tbl_prefix'] != 'tbl_'){
-				$query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', MySQL::$_connection['tbl_prefix'].'\\1\\2', $query);
-			}
-
-			//	TYPE is deprecated since MySQL 4.0.18, ENGINE is preferred
-			if($query_type == MySQL::__WRITE_OPERATION__) {
-				$query = preg_replace('/TYPE=(MyISAM|InnoDB)/i', 'ENGINE=$1', $query);
-			}
-
 			$query_hash = md5($query.microtime());
-
 			self::$_log['query'][$query_hash] = array('query' => $query, 'start' => precision_timer());
 
 			$this->flush();
 			$this->_lastQuery = $query;
-
 			$this->_result = mysql_query($query, MySQL::$_connection['id']);
 
 			self::$_query_count++;
@@ -604,10 +601,10 @@
 		 *  An associative array with the column names as the keys
 		 */
 		public function fetch($query = null, $index_by_column = null){
-
-			if(!is_null($query))$this->query($query, "ASSOC");
-
-			elseif(is_null($this->_lastResult)) {
+			if(!is_null($query)) {
+				$this->query($query, "ASSOC");
+			}
+			else if(is_null($this->_lastResult)) {
 				return array();
 			}
 
@@ -693,10 +690,8 @@
 		 *  returned
 		 */
 		public function fetchVar ($column, $offset = 0, $query = null){
-
 			$result = $this->fetch($query);
 			return (empty($result) ? null : $result[$offset][$column]);
-
 		}
 
 		/**
@@ -777,7 +772,6 @@
 		 *  will be executed, otherwise true will be returned.
 		 */
 		public function import($sql){
-
 			$queries = preg_split('/;[\\r\\n]+/', $sql, -1, PREG_SPLIT_NO_EMPTY);
 
 			if(is_array($queries) && !empty($queries)){
