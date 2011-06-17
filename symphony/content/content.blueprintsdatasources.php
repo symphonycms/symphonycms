@@ -802,7 +802,7 @@
 					case 'version':
 						$fieldset = new XMLElement('fieldset');
 						$fieldset->appendChild(new XMLElement('legend', __('Version')));
-						$fieldset->appendChild(new XMLElement('p', $value . ', ' . __('released on') . ' ' . DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)));
+						$fieldset->appendChild(new XMLElement('p', __('Created by %s at %s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
 						break;
 
 					case 'description':
@@ -959,7 +959,7 @@
 
 				$about = array(
 					'name' => $fields['name'],
-					'version' => '1.0',
+					'version' => 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'),
 					'release date' => DateTimeObj::getGMT('c'),
 					'author name' => Administration::instance()->Author->getFullName(),
 					'author website' => URL,
