@@ -350,11 +350,12 @@
 		 * @param array $children
 		 *  An array of XMLElement's to act as the children for the current
 		 *  XMLElement instance
+		 * @return boolean
 		 */
 		public function setChildren(Array $children = null) {
-			if(is_array($children) && !empty($children)) {
-				$this->_children = $children;
-			}
+			$this->_children = $children;
+
+			return true;
 		}
 
 		/**
@@ -364,6 +365,8 @@
 		 */
 		public function appendChild(XMLElement $child){
 			$this->_children[] = $child;
+
+			return true;
 		}
 
 		/**
@@ -401,16 +404,26 @@
 		/**
 		 * Given the position of the child in the `$this->_children`,
 		 * this function will unset the child at that position. This function
-		 * is not reversible.
+		 * is not reversible. This function does not alter the key's of `$this->_children`
+		 * after removing a child
 		 *
 		 * @since Symphony 2.2.2
 		 * @param integer $index
-		 *  The index of the child to be removed
+		 *  The index of the child to be removed. If the index given is negative
+		 *  it will be calculated from the end of `$this->_children`.
+		 * @return boolean
+		 *  True if child was successfully removed, false otherwise.
 		 */
 		public function removeChildAt($index) {
-			if(!is_numeric($index) || $index < 0) return;
+			if(!is_numeric($index)) return false;
+
+			$index = $this->getRealIndex($index);
+
+			if(!isset($this->_children[$index])) return false;
 
 			unset($this->_children[$index]);
+
+			return true;
 		}
 
 		/**
@@ -422,12 +435,14 @@
 		 *
 		 * @since Symphony 2.2.2
 		 * @param integer $index
-		 *  The index where the `$child` should be inserted
+		 *  The index where the `$child` should be inserted. If this is negative
+		 *  the index will be calculated from the end of `$this->_children`.
 		 * @param XMLElement $child
 		 *  The XMLElement to insert at the desired `$index`
+		 * @return boolean
 		 */
 		public function insertChildAt($index, XMLElement $child = null) {
-			if(!is_numeric($index) || $index < 0) return;
+			if(!is_numeric($index)) return false;
 
 			if($index >= $this->getNumberOfChildren()) {
 				return $this->appendChild($child);
@@ -453,14 +468,39 @@
 		 *
 		 * @since Symphony 2.2.2
 		 * @param integer $index
-		 *  The index of the child to be replaced
+		 *  The index of the child to be replaced. If the index given is negative
+		 *  it will be calculated from the end of `$this->_children`.
 		 * @param XMLElement $child
 		 *  An XMLElement of the new child
+		 * @return boolean
 		 */
 		public function replaceChildAt($index, XMLElement $child = null) {
-			if(!is_numeric($index) || $index < 0) return;
+			if(!is_numeric($index)) return false;
+
+			$index = $this->getRealIndex($index);
+
+			if(!isset($this->_children[$index])) return false;
 
 			$this->_children[$index] = $child;
+
+			return true;
+		}
+
+		/**
+		 * Given an `$index`, return the real index in `$this->_children`
+		 * depending on if the value is negative or not. Negative values
+		 * will work from the end of an array.
+		 *
+		 * @since Symphony 2.2.2
+		 * @param integer $index
+		 *  Positive indexes are returned as is, negative indexes are deducted
+		 *  from the end of `$this->_children`
+		 * @return integer
+		 */
+		private function getRealIndex($index) {
+			if($index >= 0) return $index;
+
+			return $this->getNumberOfChildren() + $index;
 		}
 
 		/**
