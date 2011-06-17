@@ -394,6 +394,42 @@
 		}
 
 		/**
+		 * A convenience method to quickly add a CSS class to this `XMLElement`'s
+		 * existing class attribute. If the attribute does not exist, it will
+		 * be created.
+		 *
+		 * @since Symphony 2.2.2
+		 * @param string $class
+		 *  The CSS classname to add to this `XMLElement`
+		 */
+		public function addClass($class) {
+			$current = preg_split('%\s+%', $this->getAttribute('class'), 0, PREG_SPLIT_NO_EMPTY);
+			$added = preg_split('%\s+%', $class, 0, PREG_SPLIT_NO_EMPTY);
+			$current = array_merge($current, $added);
+			$classes = implode(' ', $current);
+
+			$this->setAttribute('class', $classes);
+		}
+
+		/**
+		 * A convenience method to quickly remove a CSS class from an
+		 * `XMLElement`'s existing class attribute. If the attribute does not
+		 * exist, this method will do nothing.
+		 *
+		 * @since Symphony 2.2.2
+		 * @param string $class
+		 *  The CSS classname to remove from this `XMLElement`
+		 */
+		public function removeClass($class) {
+			$classes = preg_split('%\s+%', $this->getAttribute('class'), 0, PREG_SPLIT_NO_EMPTY);
+			$removed = preg_split('%\s+%', $class, 0, PREG_SPLIT_NO_EMPTY);
+			$classes = array_diff($classes, $removed);
+			$classes = implode(' ', $classes);
+
+			$this->setAttribute('class', $classes);
+		}
+
+		/**
 		 * Returns the number of children this XMLElement has.
 		 * @return integer
 		 */
