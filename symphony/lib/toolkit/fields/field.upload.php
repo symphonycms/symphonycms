@@ -575,8 +575,21 @@
 	-------------------------------------------------------------------------*/
 
 		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
-			$joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
-			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`file` $order");
+			if(in_array(strtolower($order), array('random', 'rand'))) {
+				$sort = 'ORDER BY RAND()';
+			}
+			else {
+				$sort = sprintf(
+					'ORDER BY (
+						SELECT %s 
+						FROM tbl_entries_data_%d AS `ed`
+						WHERE entry_id = e.id
+					) %s',
+					'`ed`.file',
+					$this->get('id'),
+					$order
+				);
+			}
 		}
 
 	/*-------------------------------------------------------------------------

@@ -333,13 +333,16 @@
 	-------------------------------------------------------------------------*/
 
 		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
-			$joins .= "
-				LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`)
-				JOIN `tbl_authors` AS `a` ON (ed.author_id = a.id)
-			";
-			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand'))
-					? 'RAND()'
-					: "`a`.`first_name` " . $order . ", `a`.`last_name` " . $order);
+			if(in_array(strtolower($order), array('random', 'rand'))) {
+				$sort = 'ORDER BY RAND()';
+			}
+			else {
+				$joins .= "
+					LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`)
+					JOIN `tbl_authors` AS `a` ON (ed.author_id = a.id)
+				";
+				$sort = "ORDER BY `a`.`first_name` " . $order . ", `a`.`last_name` " . $order;
+			}
 		}
 
 	/*-------------------------------------------------------------------------
