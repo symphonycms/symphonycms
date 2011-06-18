@@ -311,13 +311,19 @@
 				$label->setValue(__('%1$s Allow remote login via <a href="%2$s">%2$s</a>', array($input->generate(), $temp)));
 				$group->appendChild($label);
 			}
-			
+
 			$label = Widget::Label(__('Default Area'));
 
 			$sectionManager = new SectionManager($this->_Parent);
 			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
 
 			$options = array();
+
+			// If the Author is the Developer, allow them to set the Default Area to
+			// be the Sections Index.
+			if($author->isDeveloper()) {
+				$options[] = array('/blueprints/sections/', $author->get('default_area') == '/blueprints/sections/', __('Sections Index'));
+			}
 
 			if(is_array($sections) && !empty($sections)) {
 				foreach($sections as $s) {
@@ -512,7 +518,19 @@
 					$changing_password = true;
 				}
 
-				$this->_Author->set('default_area', $fields['default_area']);
+				// Don't allow authors to set the Section Index as a default area
+				// If they had it previously set, just save `null` which will redirect
+				// the Author (when logging in) to their own Author record
+				if(
+					$this->_Author->get('user_type') == 'author'
+					&& $fields['default_area'] == '/blueprints/sections/'
+				) {
+					$this->_Author->set('default_area', null);
+				}
+				else {
+					$this->_Author->set('default_area', $fields['default_area']);
+				}
+
 				$this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
 
 				if($this->_Author->validate($this->_errors)) {

@@ -149,7 +149,16 @@
 
 					if(is_null($default_area)) {
 						if($this->Author->isDeveloper()) {
-							redirect(SYMPHONY_URL . '/blueprints/sections/');
+							$section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
+
+							if(!is_null($section_handle)) {
+								// If there are sections created, redirect to the first one (sortorder)
+								redirect(SYMPHONY_URL . "/publish/{$section_handle}/");
+							}
+							else {
+								// If there are no sections created, default to the Section page
+								redirect(SYMPHONY_URL . '/blueprints/sections/');
+							}
 						}
 						else {
 							redirect(SYMPHONY_URL . "/system/authors/edit/".$this->Author->get('id')."/");
