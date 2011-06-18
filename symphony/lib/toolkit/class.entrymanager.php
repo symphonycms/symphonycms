@@ -444,14 +444,28 @@
 
 					else {
 						foreach (array_keys($r) as $key) {
-							if (isset($raw[$entry_id]['fields'][$field_id][$key]) && !is_array($raw[$entry_id]['fields'][$field_id][$key])) {
-								$raw[$entry_id]['fields'][$field_id][$key] = array($raw[$entry_id]['fields'][$field_id][$key], $r[$key]);
+							// If this field already has been set, we need to take the existing
+							// value and make it array, adding the current value to it as well
+							// There is a special check incase the the field's value has been
+							// purposely set to NULL in the database.
+							if(
+								(
+									isset($raw[$entry_id]['fields'][$field_id][$key])
+									|| is_null($raw[$entry_id]['fields'][$field_id][$key])
+								)
+								&& !is_array($raw[$entry_id]['fields'][$field_id][$key])
+							) {
+								$raw[$entry_id]['fields'][$field_id][$key] = array(
+									$raw[$entry_id]['fields'][$field_id][$key],
+									$r[$key]
+								);
 							}
-
+							// This key/value hasn't been set previously, so set it
 							else if (!isset($raw[$entry_id]['fields'][$field_id][$key])) {
 								$raw[$entry_id]['fields'][$field_id] = array($r[$key]);
 							}
-
+							// This key has been set and it's an array, so just append
+							// this value onto the array
 							else {
 								$raw[$entry_id]['fields'][$field_id][$key][] = $r[$key];
 							}
