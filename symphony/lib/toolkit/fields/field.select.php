@@ -351,15 +351,15 @@
 			$wrapper->appendChild($list);
 		}
 
-		public function prepareTableValue($data, XMLElement $link=NULL){
+		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
 			$value = $data['value'];
 
 			if(!is_array($value)) $value = array($value);
 
-			return parent::prepareTableValue(array('value' => implode(', ', $value)), $link);
+			return parent::prepareTableValue(array('value' => implode(', ', $value)), $link, $entry_id = null);
 		}
 
-		public function getParameterPoolValue($data){
+		public function getParameterPoolValue($data, $entry_id = null) {
 			return $data['handle'];
 		}
 

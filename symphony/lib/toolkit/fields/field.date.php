@@ -395,17 +395,17 @@
 			}
 		}
 
-		public function prepareTableValue($data, XMLElement $link=NULL) {
+		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null) {
 			$value = null;
 
 			if(isset($data['gmt']) && !is_null($data['gmt'])) {
 				$value = DateTimeObj::format($data['gmt'], __SYM_DATETIME_FORMAT__, true);
 			}
 
-			return parent::prepareTableValue(array('value' => $value), $link);
+			return parent::prepareTableValue(array('value' => $value), $link, $entry_id = null);
 		}
 
-		public function getParameterPoolValue($data) {
+		public function getParameterPoolValue($data, $entry_id = null) {
 			return DateTimeObj::get('Y-m-d H:i:s', $data['local']);
 		}
 
