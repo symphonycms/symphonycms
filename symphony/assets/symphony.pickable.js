@@ -9,8 +9,15 @@
 	 * If there is only one option, the select box will be hidden and 
 	 * the single element will be shown.
 	 *
-	 * @param {Object} custom_settings
-	 *  An object specifying the elements that are pickable
+	 * @name $.symphonyPickable
+	 * @class
+	 *
+	 * @param {Object} custom_settings An object specifying containing the attributes specified below
+	 * @param {String} [custom_settings.pickables='.pickable'] Selector to find items to be pickable
+	 *
+	 *	@example
+
+			$('.picker').symphonyPickable();
 	 */
 	$.fn.symphonyPickable = function(custom_settings) {
 		var objects = $(this),
