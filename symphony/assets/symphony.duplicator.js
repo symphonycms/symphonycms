@@ -7,8 +7,28 @@
 	/**
 	 * This plugin creates a Symphony duplicator.
 	 *
-	 * @param {Object} custom_settings
-	 *  An object with custom duplicator settings
+	 * @name $.symphonyDuplicator
+	 * @class
+	 *
+	 * @param {Object} custom_settings An object specifying containing the attributes specified below
+	 * @param {String} [custom_settings.instances='> li:not(.template)'] Selector to find children to use as instances
+	 * @param {String} [custom_settings.templates='> li.template'] Selector to find children to use as templates
+	 * @param {String} [custom_settings.headers='> :first-child'] Selector to find the header part of each instance
+	 * @param {Boolean} [custom_settings.orderable=false] Can instances be ordered
+	 * @param {Boolean} [custom_settings.collapsible=false] Can instances be collapsed
+	 * @param {Boolean} [custom_settings.constructable=true] Allow construction of new instances
+	 * @param {Boolean} [custom_settings.destructable=true] Allow destruction of instances
+	 * @param {Integer} [custom_settings.minimum=0] Do not allow instances to be removed below this limit
+	 * @param {Integer} [custom_settings.maximum=1000] Do not allow instances to be added above this limit
+	 * @param {String} [custom_settings.speed='fast'] Animation speed
+	 * @param {Boolean} [custom_settings.delay_initialize=false] Todo: complete description
+	 *
+	 *	@example
+
+			$('.duplicator').symphonyDuplicator({
+				orderable: true,
+				collapsible: true
+			});
 	 */
 	$.fn.symphonyDuplicator = function(custom_settings) {
 		var objects = this,
@@ -401,12 +421,30 @@
 					refresh();
 					updateUniqueness();
 				},
-
+				
+				/**
+				 * Expand all closed items
+				 *
+				 * @name $.symphonyDuplicator#expandAll
+				 * @function
+				 * @requires $.symphonyCollapsible plugin
+				 * @requires constructor { collapsible: true }
+				 * @see $.symphonyCollapsible#expandAll
+				 */
 				expandAll: function() {
 					object.collapsible.expandAll();
 					toCollapseAll();
 				},
-
+				
+				/**
+				 * Collapse all open items
+				 *
+				 * @name $.symphonyDuplicator#collapseAll
+				 * @function
+				 * @requires $.symphonyCollapsible plugin
+				 * @requires constructor { collapsible: true }
+				 * @see $.symphonyCollapsible#collapseAll
+				 */
 				collapseAll: function() {
 					object.collapsible.collapseAll();
 					toExpandAll();
