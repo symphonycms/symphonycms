@@ -692,6 +692,13 @@
 			$parent_section = $this->get('parent_section');
 			$element_name = $this->get('element_name');
 
+			try {
+				$valid_name = preg_match('/^[\p{L}]([0-9\p{L}\.\-\_]+)?$/u', $this->get('element_name'));
+			}
+			catch (Exception $e) {
+				$valid_name = preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $this->get('element_name'));
+			}
+
 			if ($this->get('label') == '') {
 				$errors['label'] = __('This is a required field.');
 			}
@@ -699,7 +706,7 @@
 			if ($this->get('element_name') == '') {
 				$errors['element_name'] = __('This is a required field.');
 			}
-			elseif (!preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $this->get('element_name'))) {
+			elseif (!$valid_name) {
 				$errors['element_name'] = __('Invalid element name. Must be valid QName.');
 			}
 			elseif($checkForDuplicates) {
