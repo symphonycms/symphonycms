@@ -3,15 +3,16 @@
  */
 
 
-// Declare Symphony object globally
+/**
+ * The Symphony object provides language, message and context management.
+ *
+ * @class
+ */
 var Symphony = {};
 
 
 (function($) {
 
-	/**
-	 * The Symphony object provides language, message and context management.
-	 */
 	Symphony = {
 
 		/**
@@ -56,17 +57,21 @@ var Symphony = {};
 			});
 
 			/**
-			 * Ensure backwards compatibility
-			 *
-			 * @deprecated The following variables will be removed in future Symphony versions
+			 * @deprecated You should now use Symphony.Context.get('root')
 			 */
 			Symphony.WEBSITE = Symphony.Context.get('root');
+			
+			/**
+			 * @deprecated You should now use Symphony.Context.get('lang')
+			 */
 			Symphony.Language.NAME = Symphony.Context.get('lang');
 		},
 
 		/**
 		 * The Context object contains general information about the system,
 		 * the backend, the current user. It includes an add and a get function.
+		 * 
+		 * @class
 		 */
 		Context: {
 
@@ -126,6 +131,8 @@ var Symphony = {};
 		 * It offers public functions to add strings and get their translation and
 		 * it offers private functions to handle variables and get the translations via
 		 * an synchronous AJAX request.
+		 * 
+		 * @class
 		 */
 		Language: {
 
@@ -250,6 +257,8 @@ var Symphony = {};
 		 * The message object handles system messages that should be displayed on the fly.
 		 * It offers a post and a clear function to set and remove messages. Absolute dates
 		 * and times will be replaced by a representation relative to the user's system time.
+		 * 
+		 * @class
 		 */
 		Message: {
 

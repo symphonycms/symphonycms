@@ -6,12 +6,19 @@
 
 	/**
 	 * This plugin inserts tags from a list into an input field. It offers three modes:
-	 * singular - allowing only one tag at a time
+	 * singular - allowing only one tag at a time (add a class of .singular)
 	 * multiple - allowing multiple tags, comma separated
-	 * inline - which adds tags at the current cursor position
+	 * inline - which adds tags at the current cursor position (add a class of .inline)
 	 *
-	 * @param {Object} custom_settings
-	 *  An object specifying the tag list items
+	 * @name $.symphonyTags
+	 * @class
+	 *
+	 * @param {Object} custom_settings An object specifying containing the attributes specified below
+	 * @param {String} [custom_settings.items='li'] Selector to find collapsible items within the container
+	 *
+	 *	@example
+
+			$('.tags').symphonyTags();
 	 */
 	$.fn.symphonyTags = function(custom_settings) {
 		var objects = this,
