@@ -754,10 +754,10 @@
 			$value = strip_tags($data['value']);
 
 			if(function_exists('mb_substr') && function_exists('mb_strlen')) {
-				$value = (mb_strlen($value, 'utf-8') <= $max_length ? $value : mb_substr($value, 0, $max_length, 'utf-8') . '...');
+				$value = (mb_strlen($value, 'utf-8') <= $max_length ? $value : mb_substr($value, 0, $max_length, 'utf-8') . '&hellip;');
 			}
 			else {
-				$value = (strlen($value) <= $max_length ? $value : substr($value, 0, $max_length) . '...');
+				$value = (strlen($value) <= $max_length ? $value : substr($value, 0, $max_length) . '&hellip;');
 			}
 
 			if (strlen($value) == 0) $value = __('None');
