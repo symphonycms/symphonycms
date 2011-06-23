@@ -146,7 +146,7 @@
 		/**
 		 * Releases all locks.
 		 */
-		private static function __shutdownCleanup(){
+		public static function __shutdownCleanup(){
 			$now = time();
 			if(is_array(self::$lockFiles)){
 				foreach(self::$lockFiles as $lockFile => $meta){
