@@ -136,8 +136,10 @@
 				register_shutdown_function(array(__CLASS__, '__shutdownCleanup'));
 			}
 
-			if(empty($path)) $path = realpath(sys_get_temp_dir());
+			if(empty($path)) $path = sys_get_temp_dir();
 
+			// Use realpath, because shutdown function may operate in different working directory.
+			// So we need to be sure that path is absolute.
 			return rtrim(realpath($path), '/') . '/' . md5($id) . '.lock';
 		}
 
