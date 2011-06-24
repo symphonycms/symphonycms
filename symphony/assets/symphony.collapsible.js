@@ -13,7 +13,7 @@
 	 * @param {Object} custom_settings An object specifying containing the attributes specified below
 	 * @param {String} [custom_settings.items='.instance'] Selector to find collapsible items within the container
 	 * @param {String} [custom_settings.handles='.header:first'] Selector to find clickable handles to trigger interaction
-	 * @param {Boolean} [custom_settings.delay_initialize=false] Todo: complete description
+	 * @param {Boolean} [custom_settings.delay_initialize=false] Initialise plugin extensions before the collapsible itself is initialised
 	 *
 	 *	@example
 
@@ -97,7 +97,7 @@
 			object.collapsible = {
 				
 				/**
-				 * Cancel collapsing (todo: complete description)
+				 * Cancel collapsing
 				 *
 				 * @name $.symphonyCollapsible#cancel
 				 * @function
@@ -121,7 +121,7 @@
 				},
 				
 				/**
-				 * Initialize (todo: complete description)
+				 * Set up the collapsible items and bind event handlers
 				 *
 				 * @name $.symphonyCollapsible#initialize
 				 * @function
@@ -189,6 +189,12 @@
 					}
 				},
 				
+				/**
+				 * Remember collapsed/expanded state between page refreshes.
+				 *
+				 * @name $.symphonyCollapsible#expandAll
+				 * @function
+				 */
 				saveState: function() {
 					var collapsed = [];
 					if (!Symphony.Support.localStorage) { return false; }
