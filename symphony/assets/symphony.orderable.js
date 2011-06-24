@@ -13,7 +13,7 @@
 	 * @param {Object} custom_settings An object specifying containing the attributes specified below
 	 * @param {String} [custom_settings.items='li'] Selector to find items to be orderable
 	 * @param {String} [custom_settings.handles='*'] Selector to find children that can be grabbed to re-order
-	 * @param {Boolean} [custom_settings.delay_initialize=false] Todo: complete description
+	 * @param {Boolean} [custom_settings.delay_initialize=false] Initialise plugin extensions before the orderable itself is initialised
 	 *
 	 *	@example
 

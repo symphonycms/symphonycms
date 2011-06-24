@@ -22,7 +22,7 @@
 	 * item. Needed to properly handle item highlighting when used in connection with the orderable plugin
 	 *
 	 *	@example
-			
+
 			var selectable = $('table').symphonySelectable();
 			selectable.find('a').mousedown(function(event) {
 				event.stopPropagation();
