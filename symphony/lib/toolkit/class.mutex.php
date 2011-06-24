@@ -77,6 +77,7 @@
 			if(!empty(self::$lockFiles[$lockFile])){
 				unset(self::$lockFiles[$lockFile]);
 				if(file_exists($lockFile)) return unlink($lockFile);
+				else return true;
 			}
 
 			return false;
