@@ -32,13 +32,15 @@
 			$lockFile = self::__generateLockFileName($id, $path);
 
 			// If this thread already has acquired the lock, return true.
-			if(!empty(self::$lockFiles[$lockFile])){
+			if(isset(self::$lockFiles[$lockFile])){
 				$age = time() - self::$lockFiles[$lockFile]['time'];
 				return ($age < $ttl ? false : true);
 			}
 
-			// Use '@' because we actually depend on errors here
-			// and do not want Symphony to throw errors or spam logfiles.
+			// Use '@' because we actually depend on fopen() failing here
+			// and we do not want Symphony to throw errors or spam logfiles.
+			// try..catch will not help much, because we will get warning,
+			// not exception or error.
 			$lock = @fopen($lockFile, 'xb');
 			if(!$lock){
 				// If, for some reason, lock file was not unlinked before,
@@ -129,7 +131,7 @@
 		 *  The path the lock should be written
 		 * @return string
 		 */
-		private static function __generateLockFileName($id, $path){
+		private static function __generateLockFileName($id, $path = null){
 			// This function is called from all others, so it is a good point to initialize Mutex handling.
 			if(!is_array(self::$lockFiles)) {
 				self::$lockFiles = array();
