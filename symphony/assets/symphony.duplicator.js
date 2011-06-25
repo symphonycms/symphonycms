@@ -21,7 +21,7 @@
 	 * @param {Integer} [custom_settings.minimum=0] Do not allow instances to be removed below this limit
 	 * @param {Integer} [custom_settings.maximum=1000] Do not allow instances to be added above this limit
 	 * @param {String} [custom_settings.speed='fast'] Animation speed
-	 * @param {Boolean} [custom_settings.delay_initialize=false] Todo: complete description
+	 * @param {Boolean} [custom_settings.delay_initialize=false] Initialise plugin extensions before the duplicator itself is initialised
 	 *
 	 *	@example
 
