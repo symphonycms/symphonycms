@@ -639,9 +639,9 @@ var Symphony = {};
 				label = optgroup.attr('label'),
 				options = optgroup.remove().find('option').addClass('optgroup');
 
-			// set size attribute to multi select boxes to show its options in Webkit browsers
+			// Fix for Webkit browsers to initially show the options
 			if (select.attr('multiple')) {
-				select.attr('size', 9);
+				select.scrollTop(0);
 			}
 
 			// Show only relevant options based on context
