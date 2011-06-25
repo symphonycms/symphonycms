@@ -37,11 +37,13 @@
 				return ($age < $ttl ? false : true);
 			}
 
-			// Use '@' because we actually depend on fopen() failing here
-			// and we do not want Symphony to throw errors or spam logfiles.
-			// try..catch will not help much, because we will get warning,
-			// not exception or error.
-			$lock = @fopen($lockFile, 'xb');
+			// Disable log temporarily because we actually depend on fopen()
+			// failing with E_WARNING here and we do not want Symphony to throw
+			// errors or spam logfiles.
+			GenericErrorHandler::$logDisabled = true;
+			$lock = fopen($lockFile, 'xb');
+			GenericErrorHandler::$logDisabled = false;
+
 			if(!$lock){
 				// If, for some reason, lock file was not unlinked before,
 				// remove it if it is old enough.
