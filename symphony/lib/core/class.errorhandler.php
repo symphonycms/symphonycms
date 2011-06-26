@@ -236,15 +236,14 @@
 		 * Whether to log errors or not.
 		 * This one is to be used temporarily, e.g., when PHP function is
 		 * supposed to error out and throw warning and log should be kept clean.
+		 * @since Symphony 2.2.2
 		 * @var boolean
 		 * @example
-		 *
-		 *    GenericErrorHandler::$logDisabled = true;
-		 *    DoSomethingThatEndsWithWarningsYouDoNotWantInLogs();
-		 *    GenericErrorHandler::$logDisabled = false;
-		 *
+		 *  GenericErrorHandler::$logDisabled = true;
+		 *  DoSomethingThatEndsWithWarningsYouDoNotWantInLogs();
+		 *  GenericErrorHandler::$logDisabled = false;
 		 */
-		public static $logIgnored = false;
+		public static $logDisabled = false;
 
 		/**
 		 * An associative array with the PHP error constant as a key, and
@@ -318,7 +317,7 @@
 		public static function handler($code, $message, $file = null, $line = null){
 
 			// Only log if the error won't be raised to an exception and the error is not `E_STRICT`
-			if(!self::$raise && !self::$logIgnored && !in_array($code, array(E_STRICT)) && self::$_Log instanceof Log){
+			if(!self::$raise && !self::$logDisabled && !in_array($code, array(E_STRICT)) && self::$_Log instanceof Log){
 				self::$_Log->pushToLog(
 					sprintf(
 						'%s %s - %s%s%s',

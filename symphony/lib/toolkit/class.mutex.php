@@ -9,6 +9,12 @@
 	 */
 	Class Mutex{
 
+		/**
+		 * An associative array of files that have been locked by the Mutex
+		 * class, with the key the filename, and the values an associative array
+		 * with `time` and `ttl` values.
+		 * @var array
+		 */
 		private static $lockFiles;
 
 		/**
@@ -141,7 +147,7 @@
 				register_shutdown_function(array(__CLASS__, '__shutdownCleanup'));
 			}
 
-			if(empty($path)) $path = sys_get_temp_dir();
+			if(is_null($path)) $path = sys_get_temp_dir();
 
 			// Use realpath, because shutdown function may operate in different working directory.
 			// So we need to be sure that path is absolute.
@@ -149,7 +155,9 @@
 		}
 
 		/**
-		 * Releases all locks.
+		 * Releases all locks on expired files.
+		 *
+		 * @since Symphony 2.2.2
 		 */
 		public static function __shutdownCleanup(){
 			$now = time();
