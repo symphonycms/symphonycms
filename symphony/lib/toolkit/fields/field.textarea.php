@@ -40,8 +40,8 @@
 				CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
-				  `value` text,
-				  `value_formatted` text,
+				  `value` MEDIUMTEXT,
+				  `value_formatted` MEDIUMTEXT,
 				  PRIMARY KEY  (`id`),
 				  UNIQUE KEY `entry_id` (`entry_id`),
 				  FULLTEXT KEY `value` (`value`)
