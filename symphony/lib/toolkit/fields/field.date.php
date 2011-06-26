@@ -374,8 +374,8 @@
 			}
 
 			// Empty entry
-			else if(isset($data['gmt']) && !is_null($data['gmt'])) {
-				$value = DateTimeObj::format($data['gmt'], __SYM_DATETIME_FORMAT__);
+			else if(isset($data['value']) && !is_null($data['value'])) {
+				$value = DateTimeObj::format($data['value'], __SYM_DATETIME_FORMAT__);
 			}
 
 			$label = Widget::Label($this->get('label'));
@@ -442,14 +442,14 @@
 	-------------------------------------------------------------------------*/
 
 		public function appendFormattedElement($wrapper, $data, $encode = false) {
-			if(isset($data['gmt']) && !is_null($data['gmt'])) {
+			if(isset($data['value']) && !is_null($data['value'])) {
 
 				// Get date
-				if(is_array($data['local'])) {
-					$date = current($data['local']);
+				if(is_array($data['value'])) {
+					$date = current($data['value']);
 				}
 				else {
-					$date = $data['local'];
+					$date = $data['value'];
 				}
 
 				// Append date
@@ -460,15 +460,15 @@
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null) {
 			$value = null;
 
-			if(isset($data['gmt']) && !is_null($data['gmt'])) {
-				$value = DateTimeObj::format($data['gmt'], __SYM_DATETIME_FORMAT__, true);
+			if(isset($data['value']) && !is_null($data['value'])) {
+				$value = DateTimeObj::format($data['value'], __SYM_DATETIME_FORMAT__, true);
 			}
 
 			return parent::prepareTableValue(array('value' => $value), $link, $entry_id = null);
 		}
 
 		public function getParameterPoolValue($data, $entry_id = null) {
-			return DateTimeObj::get('Y-m-d H:i:s', $data['local']);
+			return DateTimeObj::get('Y-m-d H:i:s', $data['value']);
 		}
 
 	/*-------------------------------------------------------------------------
@@ -513,7 +513,7 @@
 						FROM tbl_entries_data_%d AS `ed`
 						WHERE entry_id = e.id
 					) %s',
-					'`ed`.gmt',
+					'`ed`.value',
 					$this->get('id'),
 					$order
 				);
@@ -532,7 +532,8 @@
 			foreach($records as $r) {
 				$data = $r->getData($this->get('id'));
 
-				$info = getdate($data['local']);
+				$timestamp = DateTimeObj::get('U', $data['value']);
+				$info = getdate($timestamp);
 
 				$year = $info['year'];
 				$month = ($info['mon'] < 10 ? '0' . $info['mon'] : $info['mon']);
@@ -558,7 +559,6 @@
 				}
 
 				$groups['year'][$year]['groups']['month'][$month]['records'][] = $r;
-
 			}
 
 			return $groups;
