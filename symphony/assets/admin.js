@@ -653,6 +653,11 @@ var Symphony = {};
 				label = optgroup.attr('label'),
 				options = optgroup.remove().find('option').addClass('optgroup');
 
+			// Fix for Webkit browsers to initially show the options
+			if (select.attr('multiple')) {
+				select.scrollTop(0);
+			}
+
 			// Show only relevant options based on context
 			$('#context').change(function() {
 				if($(this).find('option:selected').text() == label) {
