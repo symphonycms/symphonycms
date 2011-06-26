@@ -432,16 +432,19 @@ Options +FollowSymlinks -Indexes
 
 				// Save the manifest changes
 				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
-				
+			}
+
+			if(version_compare($existing_version, '2.2.2 Beta 2', '<')) {
 				try {
 					// Change Textareas to be MEDIUMTEXT columns
 					$textarea_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_textarea`");
-					
+
 					foreach($textarea_tables as $field) {
 						$frontend->Database->query(sprintf(
 							"ALTER TABLE `tbl_entries_data_%d` CHANGE `value` `value` MEDIUMTEXT, CHANGE `value_formatted` `value_formatted` MEDIUMTEXT",
 							$field
 						));
+						$frontend->Database->query(sprintf('OPTIMIZE TABLE `tbl_entries_data_%d`', $field));
 					}
 				}
 				catch(Exception $ex) {}
