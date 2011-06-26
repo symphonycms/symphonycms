@@ -78,78 +78,150 @@
 		Utilities:
 	-------------------------------------------------------------------------*/
 
+		/**
+		 * Given a string, this function builds the range of dates that match it.
+		 * The strings should be in ISO8601 style format, or a natural date, such
+		 * as 'last week' etc.
+		 *
+		 * @since Symphony 2.2.2
+		 * @param array $parts
+		 *  An associative array containing a date in ISO8601 format (or natural)
+		 *  with two keys, start and end.
+		 * @param string $direction
+		 *  Either later or earlier, defaults to null.
+		 * @param boolean $equal_to
+		 *  If the filter is equal_to or not, defaults to false.
+		 * @return array
+		 */
+		public static function parseDate($string, $direction = null, $equal_to = false) {
+			$parts = array(
+				'start' => null,
+				'end' => null
+			);
+
+			// Year
+			if(preg_match('/^\d{1,4}$/', $string, $matches)) {
+				$year = current($matches);
+
+				$parts['start'] = "$year-01-01 00:00:00";
+				$parts['end'] = "$year-12-31 23:59:59";
+
+				$parts = self::isEqualTo($parts, $direction, $equal_to);
+			}
+			// Year/Month/Day/Time
+			else if(preg_match('/^\d{1,4}[-\/]\d{1,2}[-\/]\d{1,2}\s\d{1,2}:\d{1,2}/', $string, $matches)) {
+				// Handles the case of `to` filters
+				if($equal_to || is_null($direction)) {
+					$parts['start'] = $parts['end'] = DateTimeObj::get('Y-m-d H:i:s', $string);
+				}
+				else {
+					$parts['start'] = DateTimeObj::get('Y-m-d H:i:s', $string . ' - 1 second');
+					$parts['end'] = DateTimeObj::get('Y-m-d H:i:s', $string . ' + 1 second');
+				}
+			}
+			// Year/Month/Day
+			else if(preg_match('/^\d{1,4}[-\/]\d{1,2}[-\/]\d{1,2}$/', $string, $matches)) {
+				$year_month_day = current($matches);
+
+				$parts['start'] = "$year_month_day 00:00:00";
+				$parts['end'] = "$year_month_day 23:59:59";
+
+				$parts = self::isEqualTo($parts, $direction, $equal_to);
+			}
+			// Year/Month
+			else if(preg_match('/^\d{1,4}[-\/]\d{1,2}$/', $string, $matches)) {
+				$year_month = current($matches);
+
+				$parts['start'] = "$year_month-01 00:00:00";
+				$parts['end'] = DateTimeObj::get('Y-m-d', 'last day of ' . $year_month) . " 23:59:59";
+
+				$parts = self::isEqualTo($parts, $direction, $equal_to);
+			}
+			// Relative date, aka '+ 3 weeks'
+			else {
+				// Handles the case of `to` filters
+				if($equal_to || is_null($direction)) {
+					$parts['start'] = $parts['end'] = DateTimeObj::get('Y-m-d H:i:s', $string);
+				}
+				else {
+					$parts['start'] = DateTimeObj::get('Y-m-d H:i:s', $string . ' - 1 second');
+					$parts['end'] = DateTimeObj::get('Y-m-d H:i:s', $string . ' + 1 second');
+				}
+			}
+
+			return $parts;
+		}
+
+		/**
+		 * Builds the correct date array depending if the filter should include
+		 * the filter as well, ie. later than 2011, is effectively the same as
+		 * equal to or later than 2012.
+		 *
+		 * @since Symphony 2.2.2
+		 * @param array $parts
+		 *  An associative array containing a date in ISO8601 format (or natural)
+		 *  with two keys, start and end.
+		 * @param string $direction
+		 *  Either later or earlier, defaults to null.
+		 * @param boolean $equal_to
+		 *  If the filter is equal_to or not, defaults to false.
+		 * @return array
+		 */
+		public static function isEqualTo(array $parts, $direction, $equal_to = false) {
+			if(!$equal_to) return $parts;
+
+			if($direction == 'later') {
+				$parts['end'] = $parts['start'];
+			}
+			else {
+				$parts['start'] = $parts['end'];
+			}
+
+			return $parts;
+		}
+
 		public static function parseFilter(&$string) {
 			$string = self::cleanFilterString($string);
 
-			// Look to see if its a shorthand date (year only), and convert to full date
-			if(preg_match('/^(1|2)\d{3}$/i', $string)) {
-				$string = "$string-01-01 to $string-12-31 23:59:59";
-			}
-
-			// Relative check
-			elseif(preg_match('/^(equal to or )?(earlier|later) than (.*)$/i', $string, $match)) {
+			// Relative check, earlier or later
+			if(preg_match('/^(equal to or )?(earlier|later) than (.*)$/i', $string, $match)) {
 				$string = $match[3];
 
 				// Validate date
 				if(!DateTimeObj::validate($string)) return self::ERROR;
 
 				// Date is equal to or earlier/later than
-				if($match[1] == "equal to or ") {
-					$earlier = DateTimeObj::get('Y-m-d H:i:s', $string);
-					$later = $earlier;
-				}
-
 				// Date is earlier/later than
-				else {
-					$later = DateTimeObj::get('Y-m-d H:i:s', $string . ' + 1 day');
-					$earlier = DateTimeObj::get('Y-m-d H:i:s', $string . ' - 1 day');
-				}
+				$parts = self::parseDate($string, $match[2], $match[1] == "equal to or ");
 
-				// Check to see if a time has been provided, otherwise default to 23:59:59
-				if(preg_match('/00:00:00$/', $earlier)) {
-					$earlier = preg_replace('/00:00:00$/', "23:59:59", $earlier);
-				}
+				$earlier = $parts['start'];
+				$later = $parts['end'];
 
-				// Switch between ealier than and later than logic
+				// Switch between earlier than and later than logic
 				switch($match[2]) {
-
 					case 'later':
 						$string = $later . ' to 2038-01-01 23:59:59';
 						break;
 
 					case 'earlier':
-						$string = '1970-01-01 to ' . $earlier;
+						$string = '0000-01-01 to ' . $earlier;
 						break;
 				}
 			}
 
+			// Look to see if its a shorthand date (year only), and convert to full date
 			// Look to see if the give date is a shorthand date (year and month) and convert it to full date
-			elseif(preg_match('/^(1|2)\d{3}[-\/]\d{1,2}$/i', $string)) {
-				$start = "{$string}-01";
-
-				// Validate
-				if(!DateTimeObj::validate($start)) return self::ERROR;
-
-				$string = "{$start} to {$string}-" . DateTimeObj::get('t', $start) . " 23:59:59";
-			}
-
 			// Match single dates
-			elseif(!preg_match('/\s+to\s+/i', $string)) {
+			else if(
+				preg_match('/^(1|2)\d{3}$/i', $string)
+				|| preg_match('/^(1|2)\d{3}[-\/]\d{1,2}$/i', $string)
+				|| !preg_match('/\s+to\s+/i', $string)
+			) {
+				// Validate
+				if(!DateTimeObj::validate($string)) return self::ERROR;
 
-				// Y-m-d format
-				if(preg_match('/^(1|2)\d{3}[-\/]\d{1,2}[-\/]\d{1,2}$/i', $string)) {
-					$string = "{$string} to {$string} 23:59:59";
-				}
-
-				// Different format
-				else {
-
-					// Validate
-					if(!DateTimeObj::validate($string)) return self::ERROR;
-
-					$date = DateTimeObj::get('Y-m-d', $string);
-					$string = $date . ' 00:00:00 to ' . $date . ' 23:59:59';
-				}
+				$parts = self::parseDate($string);
+				$string = $parts['start'] . ' to ' . $parts['end'];
 			}
 
 			// Match date ranges
@@ -157,22 +229,13 @@
 				if(!$parts = preg_split('/\s+to\s+/', $string, 2, PREG_SPLIT_NO_EMPTY)) return self::ERROR;
 
 				foreach($parts as $i => &$part) {
-
 					// Validate
 					if(!DateTimeObj::validate($part)) return self::ERROR;
 
-					$part = DateTimeObj::get('Y-m-d H:i:s', strtotime($part));
+					$part = self::parseDate($part);
 				}
 
-				// If no time provided (hence 00:00:00), make it 23:59:59
-				// This handles the case where you expect a date to be inclusive
-				// when no time is provided, but instead it will default to 00:00:00,
-				// which essentially removes the day from the range.
-				if(preg_match('/00:00:00$/', $parts[1])) {
-					$parts[1] = preg_replace('/00:00:00$/', "23:59:59", $parts[1]);
-				}
-
-				$string = "$parts[0] to $parts[1]";
+				$string = $parts[0]['start'] . " to " . $parts[1]['end'];
 			}
 
 			// Parse the full date range and return an array
@@ -191,8 +254,7 @@
 		}
 
 		public static function cleanFilterString($string) {
-			$string = trim($string);
-			$string = trim($string, '-/');
+			$string = trim($string, ' -/');
 
 			return urldecode($string);
 		}
@@ -418,6 +480,7 @@
 
 			$parsed = array();
 
+			// For the filter provided, loop over each piece
 			foreach($data as $string) {
 				$type = self::parseFilter($string);
 
@@ -457,7 +520,7 @@
 			else {
 				$sort = sprintf(
 					'ORDER BY (
-						SELECT %s 
+						SELECT %s
 						FROM tbl_entries_data_%d AS `ed`
 						WHERE entry_id = e.id
 					) %s',
