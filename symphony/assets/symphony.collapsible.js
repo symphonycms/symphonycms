@@ -5,7 +5,7 @@
 (function($) {
 
 	/**
-	 * This plugin makes items callapsible.
+	 * This plugin makes items collapsible.
 	 *
 	 * @name $.symphonyCollapsible
 	 * @class
