@@ -109,7 +109,7 @@
 				$parts = self::isEqualTo($parts, $direction, $equal_to);
 			}
 			// Year/Month/Day/Time
-			else if(preg_match('/^\d{1,4}[-\/]\d{1,2}[-\/]\d{1,2}\s\d{1,2}:\d{1,2}/', $string, $matches)) {
+			else if(preg_match('/^\d{1,4}[-\/]\d{1,2}[-\/]\d{1,2}\s\d{1,2}:\d{2}/', $string, $matches)) {
 				// Handles the case of `to` filters
 				if($equal_to || is_null($direction)) {
 					$parts['start'] = $parts['end'] = DateTimeObj::get('Y-m-d H:i:s', $string);
@@ -491,19 +491,8 @@
 				$parsed[$type][] = $string;
 			}
 
-			foreach($parsed as $type => $value) {
-
-				switch($type) {
-
-					case self::RANGE:
-						$this->buildRangeFilterSQL($value, $joins, $where, $andOperation);
-						break;
-
-					case self::SIMPLE:
-						$this->buildSimpleFilterSQL($value, $joins, $where, $andOperation);
-						break;
-
-				}
+			foreach($parsed as $value) {
+				$this->buildRangeFilterSQL($value, $joins, $where, $andOperation);
 			}
 
 			return true;
