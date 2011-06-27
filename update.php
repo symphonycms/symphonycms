@@ -448,21 +448,6 @@ Options +FollowSymlinks -Indexes
 					}
 				}
 				catch(Exception $ex) {}
-
-				try {
-					// Remove the local and gmt columns from the Date field
-					$date_tables = $frontend->Database->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_date`");
-
-					foreach($date_tables as $field) {
-						$frontend->Database->query(sprintf(
-							"ALTER TABLE `tbl_entries_data_%d` DROP `gmt`, DROP `local`",
-							$field
-						));
-						$frontend->Database->query(sprintf('OPTIMIZE TABLE `tbl_entries_data_%d`', $field));
-					}
-				}
-				catch(Exception $ex) {}
-
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
