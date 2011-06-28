@@ -742,20 +742,22 @@
 		 * @param XMLElement $link (optional)
 		 *	an xml link structure to append the content of this to provided it is not
 		 *	null. it defaults to null.
+		 * @param integer $entry_id (optional)
+		 *  An option entry ID for more intelligent processing. defaults to null
 		 * @return string
 		 *	the formatted string summary of the values of this field instance.
 		 */
-		public function prepareTableValue($data, XMLElement $link = null) {
+		public function prepareTableValue($data, XMLElement $link = null, $entry_id = null) {
 			$max_length = Symphony::Configuration()->get('cell_truncation_length', 'symphony');
 			$max_length = ($max_length ? $max_length : 75);
 
 			$value = strip_tags($data['value']);
 
 			if(function_exists('mb_substr') && function_exists('mb_strlen')) {
-				$value = (mb_strlen($value, 'utf-8') <= $max_length ? $value : mb_substr($value, 0, $max_length, 'utf-8') . '...');
+				$value = (mb_strlen($value, 'utf-8') <= $max_length ? $value : mb_substr($value, 0, $max_length, 'utf-8') . '&hellip;');
 			}
 			else {
-				$value = (strlen($value) <= $max_length ? $value : substr($value, 0, $max_length) . '...');
+				$value = (strlen($value) <= $max_length ? $value : substr($value, 0, $max_length) . '&hellip;');
 			}
 
 			if (strlen($value) == 0) $value = __('None');
@@ -1025,8 +1027,8 @@
 		 * @return string
 		 *  The formatted value to be used as the parameter
 		 */
-		public function getParameterPoolValue(Array $data, $entry_id=NULL){
-			return $this->prepareTableValue($data);
+		public function getParameterPoolValue(array $data, $entry_id=NULL){
+			return $this->prepareTableValue($data, null, $entry_id);
 		}
 
 		/**
@@ -1049,7 +1051,7 @@
 		 *	the identifier of this field entry instance. defaults to null.
 		 */
 		public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
-			$wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($this->prepareTableValue($data)) : $this->prepareTableValue($data))));
+			$wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($this->prepareTableValue($data, null, $entry_id)) : $this->prepareTableValue($data, null, $entry_id))));
 		}
 
 		/**

@@ -481,7 +481,7 @@
 			$wrapper->appendChild($item);
 		}
 
-		public function prepareTableValue($data, XMLElement $link=NULL){
+		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
 			if(!$file = $data['file']) return NULL;
 
 			if($link){

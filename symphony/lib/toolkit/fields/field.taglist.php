@@ -243,7 +243,7 @@
 			$wrapper->appendChild($list);
 		}
 
-		public function prepareTableValue($data, XMLElement $link=NULL){
+		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
 			if(!is_array($data) || empty($data)) return;
 
 			$value = NULL;
@@ -251,7 +251,7 @@
 				$value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
 			}
 
-			return parent::prepareTableValue(array('value' => General::sanitize($value)), $link);
+			return parent::prepareTableValue(array('value' => General::sanitize($value)), $link, $entry_id = null);
 		}
 
 	/*-------------------------------------------------------------------------

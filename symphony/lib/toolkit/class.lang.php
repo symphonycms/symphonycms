@@ -326,10 +326,10 @@
 					foreach($directory['filelist'] as $file) {
 						$temp = self::fetchLanguage($extension->getFilename(), $folder, $file, $enabled);
 						$lang = key($temp);
-					
+
 						// Core translations
 						if(strpos($extension->getFilename(), 'lang_') !== false) {
-						
+
 							// Prepare merging
 							if(array_key_exists($lang, self::$_languages)) {
 								unset($temp[$lang]['name']);
@@ -339,10 +339,10 @@
 							// Merge
 							self::$_languages = array_merge_recursive(self::$_languages, $temp);
 						}
-	
+
 						// Extension translations
 						else {
-	
+
 							// Create language if not exists
 							if(!array_key_exists($lang, self::$_languages)) {
 								$language = array(
@@ -354,7 +354,7 @@
 								);
 								self::$_languages = array_merge(self::$_languages, $language);
 							}
-	
+
 							// Merge
 							self::$_languages[$lang]['extensions'][$temp[$lang]['source']] = $temp[$lang]['path'];
 						}
@@ -490,7 +490,7 @@
 					$languages[$key] = $language['name'];
 				}
 			}
-			
+
 			// Return languages codes
 			return $languages;
 		}
@@ -537,7 +537,7 @@
 
 			// Only standardize dates in localized environments
 			if(self::isLocalized()) {
-	
+
 				// Translate names to English
 				foreach(self::$_dates as $english => $locale) {
 					$string = preg_replace('/\b' . $locale . '\b/i', $english, $string);
@@ -597,6 +597,18 @@
 			if($apply_transliteration == true) $string = _t($string);
 
 			return General::createFilename($string, $delim);
+		}
+
+		/**
+		 * Returns boolean if PHP has been compiled with unicode support. This is
+		 * useful to determine if unicode modifier's can be used in regular expression's
+		 *
+		 * @link http://stackoverflow.com/questions/4509576/detect-if-pcre-was-built-without-the-enable-unicode-properties-or-enable-utf8
+		 * @since Symphony 2.2.2
+		 * @return boolean
+		 */
+		public static function isUnicodeCompiled() {
+			return defined('PREG_BAD_UTF8_OFFSET');
 		}
 
 	}

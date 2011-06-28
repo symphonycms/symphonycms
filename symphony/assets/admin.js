@@ -3,15 +3,16 @@
  */
 
 
-// Declare Symphony object globally
+/**
+ * The Symphony object provides language, message and context management.
+ *
+ * @class
+ */
 var Symphony = {};
 
 
 (function($) {
 
-	/**
-	 * The Symphony object provides language, message and context management.
-	 */
 	Symphony = {
 
 		/**
@@ -56,17 +57,21 @@ var Symphony = {};
 			});
 
 			/**
-			 * Ensure backwards compatibility
-			 *
-			 * @deprecated The following variables will be removed in future Symphony versions
+			 * @deprecated You should now use Symphony.Context.get('root')
 			 */
 			Symphony.WEBSITE = Symphony.Context.get('root');
+			
+			/**
+			 * @deprecated You should now use Symphony.Context.get('lang')
+			 */
 			Symphony.Language.NAME = Symphony.Context.get('lang');
 		},
 
 		/**
 		 * The Context object contains general information about the system,
 		 * the backend, the current user. It includes an add and a get function.
+		 * 
+		 * @class
 		 */
 		Context: {
 
@@ -81,9 +86,9 @@ var Symphony = {};
 			/**
 			 * Add data to the Context object
 			 *
-			 * @param {string} group
+			 * @param {String} group
 			 *  Name of the data group
-			 * @param {string|object} values
+			 * @param {String|Object} values
 			 *  Object or string to be stored
 			 */
 			add: function(group, values) {
@@ -103,7 +108,7 @@ var Symphony = {};
 			/**
 			 * Get data from the Context object
 			 *
-			 * @param {string} group
+			 * @param {String} group
 			 *  Name of the group to be returned
 			 */
 			get: function(group) {
@@ -126,6 +131,8 @@ var Symphony = {};
 		 * It offers public functions to add strings and get their translation and
 		 * it offers private functions to handle variables and get the translations via
 		 * an synchronous AJAX request.
+		 * 
+		 * @class
 		 */
 		Language: {
 
@@ -140,7 +147,7 @@ var Symphony = {};
 			/**
 			 * Add strings to the Dictionary
 			 *
-			 * @param {object} strings
+			 * @param {Object} strings
 			 *  Object with English string as key, value should be false
 			 */
 			add: function(strings) {
@@ -171,11 +178,11 @@ var Symphony = {};
 			 * The function replaces variables like {$name} with the a specified value if
 			 * an object of inserts is passed in the function call.
 			 *
-			 * @param {string} string
+			 * @param {String} string
 			 *  English string to be translated
-			 * @param {object} inserts
+			 * @param {Object} inserts
 			 *  Object with variable name and value pairs
-			 * @return {string}
+			 * @return {String}
 			 *  Returns the translated string
 			 */
 			get: function(string, inserts) {
@@ -201,11 +208,11 @@ var Symphony = {};
 			 * This private function replaces variables with a specified value.
 			 * It should not be called directly.
 			 *
-			 * @param {string} string
+			 * @param {String} string
 			 *  Translated string with variables
-			 * @param {object} inserts
+			 * @param {Object} inserts
 			 *  Object with variable name and value pairs
-			 * @return {string}
+			 * @return {String}
 			 *  Returns translated strings with all variables replaced by their actual value
 			 */
 			insert: function(string, inserts) {
@@ -221,9 +228,9 @@ var Symphony = {};
 			 * This private function sends a synchronous AJAX request to fetch the translations
 			 * for the English strings in the dictionary. It should not be called directly
 			 *
-			 * @param {object} strings
+			 * @param {Object} strings
 			 *  Object of strings to be translated
-			 * @return {object}
+			 * @return {Object}
 			 *  Object with original string and translation pairs
 			 */
 			translate: function(strings) {
@@ -250,6 +257,8 @@ var Symphony = {};
 		 * The message object handles system messages that should be displayed on the fly.
 		 * It offers a post and a clear function to set and remove messages. Absolute dates
 		 * and times will be replaced by a representation relative to the user's system time.
+		 * 
+		 * @class
 		 */
 		Message: {
 
@@ -263,9 +272,9 @@ var Symphony = {};
 			/**
 			 * Post system message
 			 *
-			 * @param {string} message
+			 * @param {String} message
 			 *  Message to be shown
-			 * @param {string} type
+			 * @param {String} type
 			 *  Message type to be used as class name
 			 */
 			post: function(message, type) {
@@ -280,7 +289,7 @@ var Symphony = {};
 			/**
 			 * Clear message by type
 			 *
-			 * @param {string} type
+			 * @param {String} type
 			 *  Message type
 			 */
 			clear: function(type) {
@@ -377,11 +386,25 @@ var Symphony = {};
 		},
 
 		/**
-		 * The support object is a collection of properties that represent
-		 * the presence of different browser features and also contains
-		 * the test results from jQuery.support.
+		 * A collection of properties that represent the presence of
+ 		 * different browser features and also contains the test results
+		 * from jQuery.support.
+		 *
+		 * @class
 		 */
-		Support: {}
+		Support: {
+			
+			/**
+			 * Does the browser have support for the HTML5 localStorage API
+			 * @type Boolean
+			 * @default false*
+			 * @example
+
+				if(Symphony.Support.localStorage) { ... }
+				
+			 */
+			localStorage: false
+		}
 	};
 
 	/**
@@ -629,6 +652,11 @@ var Symphony = {};
 				select = optgroup.parents('select'),
 				label = optgroup.attr('label'),
 				options = optgroup.remove().find('option').addClass('optgroup');
+
+			// Fix for Webkit browsers to initially show the options
+			if (select.attr('multiple')) {
+				select.scrollTop(0);
+			}
 
 			// Show only relevant options based on context
 			$('#context').change(function() {

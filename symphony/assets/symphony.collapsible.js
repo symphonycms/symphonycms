@@ -5,11 +5,23 @@
 (function($) {
 
 	/**
-	 * This plugin makes items callapsible.
+	 * This plugin makes items collapsible.
 	 *
-	 * @param {Object} custom_settings
-	 *  An object specifying the item to be collapsed, their handles, 
-	 *  an initialization delay and an option to safe the state of collapsed items
+	 * @name $.symphonyCollapsible
+	 * @class
+	 *
+	 * @param {Object} custom_settings An object specifying containing the attributes specified below
+	 * @param {String} [custom_settings.items='.instance'] Selector to find collapsible items within the container
+	 * @param {String} [custom_settings.handles='.header:first'] Selector to find clickable handles to trigger interaction
+	 * @param {Boolean} [custom_settings.delay_initialize=false] Initialise plugin extensions before the collapsible itself is initialised
+	 *
+	 *	@example
+
+			var collapsible = $('#duplicator').symphonyCollapsible({
+				items:		'.instance',
+				handles:	'.header span'
+			});
+			collapsible.collapseAll();
 	 */
 	$.fn.symphonyCollapsible = function(custom_settings) {
 		var objects = this,
@@ -83,6 +95,13 @@
 			}
 			
 			object.collapsible = {
+				
+				/**
+				 * Cancel collapsing
+				 *
+				 * @name $.symphonyCollapsible#cancel
+				 * @function
+				 */
 				cancel: function() {
 					$(document).unbind('mouseup', stop);
 					
@@ -101,6 +120,12 @@
 					}
 				},
 				
+				/**
+				 * Set up the collapsible items and bind event handlers
+				 *
+				 * @name $.symphonyCollapsible#initialize
+				 * @function
+				 */
 				initialize: function() {
 					object.addClass('collapsible');
 					object.find(settings.items).each(function() {
@@ -122,6 +147,12 @@
 					});
 				},
 				
+				/**
+				 * Collapse all open items
+				 *
+				 * @name $.symphonyCollapsible#collapseAll
+				 * @function
+				 */
 				collapseAll: function() {
 					object.find(settings.items).each(function() {
 						var item = $(this);
@@ -137,6 +168,12 @@
 					}
 				},
 				
+				/**
+				 * Expand all closed items
+				 *
+				 * @name $.symphonyCollapsible#expandAll
+				 * @function
+				 */
 				expandAll: function() {
 					object.find(settings.items).each(function() {
 						var item = $(this);
@@ -152,6 +189,12 @@
 					}
 				},
 				
+				/**
+				 * Remember collapsed/expanded state between page refreshes.
+				 *
+				 * @name $.symphonyCollapsible#expandAll
+				 * @function
+				 */
 				saveState: function() {
 					var collapsed = [];
 					if (!Symphony.Support.localStorage) { return false; }

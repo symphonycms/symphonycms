@@ -216,7 +216,7 @@
 			$wrapper->appendChild($list);
 		}
 
-		public function prepareTableValue($data, XMLElement $link=NULL){
+		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
 
 			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
 
@@ -232,7 +232,7 @@
 				}
 			}
 
-			return parent::prepareTableValue(array('value' => General::sanitize(implode(', ', $value))), $link);
+			return parent::prepareTableValue(array('value' => General::sanitize(implode(', ', $value))), $link, $entry_id);
 		}
 
 	/*-------------------------------------------------------------------------

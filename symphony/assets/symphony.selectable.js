@@ -13,10 +13,20 @@
 	 * range of items. Doubleclicking outside the selection list will 
 	 * remove the selection.
 	 *
-	 * @param {Object} custom_settings
-	 *  An object specifying the items that should be made selectable and 
-	 *  their ordering handles. The latter is needed to properly handle item highlighting 
-	 *  when used in connection with the orderable plugin
+	 * @name $.symphonySelectable
+	 * @class
+	 *
+	 * @param {Object} custom_settings An object specifying containing the attributes specified below
+	 * @param {String} [custom_settings.items='tbody tr:has(input)'] Selector to find items that are selectable
+	 * @param {String} [custom_settings.handles='td'] Selector to find children that can be clicked to select the
+	 * item. Needed to properly handle item highlighting when used in connection with the orderable plugin
+	 *
+	 *	@example
+
+			var selectable = $('table').symphonySelectable();
+			selectable.find('a').mousedown(function(event) {
+				event.stopPropagation();
+			});
 	 */
 	$.fn.symphonySelectable = function(custom_settings) {
 		var objects = this,

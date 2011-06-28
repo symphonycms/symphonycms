@@ -55,6 +55,8 @@ table {
 	margin: 0;
 	border-collapse: collapse;
 	width: 100%;
+	table-layout: fixed;
+	word-wrap: break-word;
 }
 th {
 	padding-right: 19px;
