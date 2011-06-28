@@ -608,7 +608,7 @@
 		 * @return boolean
 		 */
 		public static function isUnicodeCompiled() {
-			return defined('PREG_BAD_UTF8_OFFSET');
+			return (@preg_match('/\pL/u', 'a') == 1 ? true : false);
 		}
 
 	}
