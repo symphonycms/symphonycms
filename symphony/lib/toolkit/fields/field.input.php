@@ -3,7 +3,7 @@
 	/**
 	 * @package toolkit
 	 */
-	
+
 	/**
 	 * A simple Input field that essentially maps to HTML's `<input type='text'/>`.
 	 */
@@ -11,12 +11,33 @@
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 
 	Class fieldInput extends Field {
+
 		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Text Input');
 			$this->_required = true;
 
 			$this->set('required', 'no');
+		}
+
+	/*-------------------------------------------------------------------------
+		Definition:
+	-------------------------------------------------------------------------*/
+
+		public function canFilter(){
+			return true;
+		}
+
+		public function canImport(){
+			return true;
+		}
+
+		public function canPrePopulate(){
+			return true;
+		}
+
+		public function isSortable(){
+			return true;
 		}
 
 		public function allowDatasourceOutputGrouping(){
@@ -27,31 +48,80 @@
 			return true;
 		}
 
-		public function groupRecords($records){
+	/*-------------------------------------------------------------------------
+		Setup:
+	-------------------------------------------------------------------------*/
 
-			if(!is_array($records) || empty($records)) return;
-
-			$groups = array($this->get('element_name') => array());
-
-			foreach($records as $r){
-				$data = $r->getData($this->get('id'));
-
-				$value = General::sanitize($data['value']);
-				$handle = Lang::createHandle($value);
-
-				if(!isset($groups[$this->get('element_name')][$handle])){
-					$groups[$this->get('element_name')][$handle] = array('attr' => array('handle' => $handle, 'value' => $value),
-																		 'records' => array(), 'groups' => array());
-				}
-
-				$groups[$this->get('element_name')][$handle]['records'][] = $r;
-
-			}
-
-			return $groups;
+		public function createTable(){
+			return Symphony::Database()->query("
+				CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
+				  `id` int(11) unsigned NOT NULL auto_increment,
+				  `entry_id` int(11) unsigned NOT NULL,
+				  `handle` varchar(255) default NULL,
+				  `value` varchar(255) default NULL,
+				  PRIMARY KEY  (`id`),
+				  UNIQUE KEY `entry_id` (`entry_id`),
+				  KEY `handle` (`handle`),
+				  KEY `value` (`value`)
+				) ENGINE=MyISAM;
+			");
 		}
 
-		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+	/*-------------------------------------------------------------------------
+		Utilities:
+	-------------------------------------------------------------------------*/
+
+		private function __applyValidationRules($data){
+			$rule = $this->get('validator');
+			return ($rule ? General::validateString($data, $rule) : true);
+		}
+
+		private function __replaceAmpersands($value) {
+			return preg_replace('/&(?!(#[0-9]+|#x[0-9a-f]+|amp|lt|gt);)/i', '&amp;', trim($value));
+		}
+
+	/*-------------------------------------------------------------------------
+		Settings:
+	-------------------------------------------------------------------------*/
+
+		public function setFromPOST($postdata){
+			parent::setFromPOST($postdata);
+			if($this->get('validator') == '') $this->remove('validator');
+		}
+
+		public function displaySettingsPanel(&$wrapper, $errors = null) {
+			parent::displaySettingsPanel($wrapper, $errors);
+
+			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');
+
+			$div = new XMLElement('div', NULL, array('class' => 'compact'));
+			$this->appendRequiredCheckbox($div);
+			$this->appendShowColumnCheckbox($div);
+			$wrapper->appendChild($div);
+		}
+
+		public function commit(){
+			if(!parent::commit()) return false;
+
+			$id = $this->get('id');
+
+			if($id === false) return false;
+
+			$fields = array();
+
+			$fields['field_id'] = $id;
+			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
+
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
+
+			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
+		}
+
+	/*-------------------------------------------------------------------------
+		Publish:
+	-------------------------------------------------------------------------*/
+
+		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL, $entry_id = null){
 			$value = General::sanitize($data['value']);
 			$label = Widget::Label($this->get('label'));
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
@@ -61,22 +131,70 @@
 			else $wrapper->appendChild($label);
 		}
 
-		public function isSortable(){
-			return true;
+		public function checkPostFieldData($data, &$message, $entry_id=NULL){
+			$message = NULL;
+
+			if($this->get('required') == 'yes' && strlen($data) == 0){
+				$message = __("'%s' is a required field.", array($this->get('label')));
+				return self::__MISSING_FIELDS__;
+			}
+
+			if(!$this->__applyValidationRules($data)){
+				$message = __("'%s' contains invalid data. Please check the contents.", array($this->get('label')));
+				return self::__INVALID_FIELDS__;
+			}
+
+			return self::__OK__;
 		}
 
-		public function canFilter(){
-			return true;
+		public function processRawFieldData($data, &$status, $simulate = false, $entry_id = null) {
+			$status = self::__OK__;
+
+			if (strlen(trim($data)) == 0) return array();
+
+			$result = array(
+				'value' => $data
+			);
+
+			$result['handle'] = Lang::createHandle($result['value']);
+
+			return $result;
 		}
 
-		public function canImport(){
-			return true;
+	/*-------------------------------------------------------------------------
+		Output:
+	-------------------------------------------------------------------------*/
+
+		public function appendFormattedElement(&$wrapper, $data, $encode=false){
+			$value = $data['value'];
+
+			if($encode === true){
+				$value = General::sanitize($value);
+			}
+
+			else{
+				include_once(TOOLKIT . '/class.xsltprocess.php');
+
+				if(!General::validateXML($data['value'], $errors, false, new XsltProcess)){
+					$value = html_entity_decode($data['value'], ENT_QUOTES, 'UTF-8');
+					$value = $this->__replaceAmpersands($value);
+
+					if(!General::validateXML($value, $errors, false, new XsltProcess)){
+						$value = General::sanitize($data['value']);
+					}
+				}
+			}
+
+			$wrapper->appendChild(
+				new XMLElement(
+					$this->get('element_name'), $value, array('handle' => $data['handle'])
+				)
+			);
 		}
 
-		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
-			$joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
-			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand')) ? 'RAND()' : "`ed`.`value` $order");
-		}
+	/*-------------------------------------------------------------------------
+		Filtering:
+	-------------------------------------------------------------------------*/
 
 		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
@@ -146,132 +264,56 @@
 			return true;
 		}
 
-		private function __applyValidationRules($data){
-			$rule = $this->get('validator');
-			return ($rule ? General::validateString($data, $rule) : true);
-		}
+	/*-------------------------------------------------------------------------
+		Sorting:
+	-------------------------------------------------------------------------*/
 
-		private function __replaceAmpersands($value) {
-			return preg_replace('/&(?!(#[0-9]+|#x[0-9a-f]+|amp|lt|gt);)/i', '&amp;', trim($value));
-		}
-
-		public function checkPostFieldData($data, &$message, $entry_id=NULL){
-
-			$message = NULL;
-
-			if($this->get('required') == 'yes' && strlen($data) == 0){
-				$message = __("'%s' is a required field.", array($this->get('label')));
-				return self::__MISSING_FIELDS__;
+		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
+			if(in_array(strtolower($order), array('random', 'rand'))) {
+				$sort = 'ORDER BY RAND()';
 			}
-
-			if(!$this->__applyValidationRules($data)){
-				$message = __("'%s' contains invalid data. Please check the contents.", array($this->get('label')));
-				return self::__INVALID_FIELDS__;
+			else {
+				$sort = sprintf(
+					'ORDER BY (
+						SELECT %s 
+						FROM tbl_entries_data_%d AS `ed`
+						WHERE entry_id = e.id
+					) %s',
+					'`ed`.value',
+					$this->get('id'),
+					$order
+				);
 			}
-
-			return self::__OK__;
-
 		}
 
-		public function processRawFieldData($data, &$status, $simulate = false, $entry_id = null) {
+	/*-------------------------------------------------------------------------
+		Grouping:
+	-------------------------------------------------------------------------*/
 
-			$status = self::__OK__;
+		public function groupRecords($records){
+			if(!is_array($records) || empty($records)) return;
 
-			if (strlen(trim($data)) == 0) return array();
+			$groups = array($this->get('element_name') => array());
 
-			$result = array(
-				'value' => $data
-			);
+			foreach($records as $r){
+				$data = $r->getData($this->get('id'));
 
-			$result['handle'] = Lang::createHandle($result['value']);
+				$value = General::sanitize($data['value']);
+				$handle = Lang::createHandle($value);
 
-			return $result;
-		}
-
-		public function canPrePopulate(){
-			return true;
-		}
-
-		public function appendFormattedElement(&$wrapper, $data, $encode=false){
-			$value = $data['value'];
-
-			if($encode === true){
-				$value = General::sanitize($value);
-			}
-
-			else{
-				include_once(TOOLKIT . '/class.xsltprocess.php');
-
-				if(!General::validateXML($data['value'], $errors, false, new XsltProcess)){
-					$value = html_entity_decode($data['value'], ENT_QUOTES, 'UTF-8');
-					$value = $this->__replaceAmpersands($value);
-
-					if(!General::validateXML($value, $errors, false, new XsltProcess)){
-						$value = General::sanitize($data['value']);
-					}
+				if(!isset($groups[$this->get('element_name')][$handle])){
+					$groups[$this->get('element_name')][$handle] = array(
+						'attr' => array('handle' => $handle, 'value' => $value),
+						'records' => array(),
+						'groups' => array()
+					);
 				}
+
+				$groups[$this->get('element_name')][$handle]['records'][] = $r;
+
 			}
 
-			$wrapper->appendChild(
-				new XMLElement(
-					$this->get('element_name'), $value, array('handle' => $data['handle'])
-				)
-			);
-		}
-
-		public function commit(){
-
-			if(!parent::commit()) return false;
-
-			$id = $this->get('id');
-
-			if($id === false) return false;
-
-			$fields = array();
-
-			$fields['field_id'] = $id;
-			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
-
-			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
-
-			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
-
-		}
-
-		public function setFromPOST($postdata){
-			parent::setFromPOST($postdata);
-			if($this->get('validator') == '') $this->remove('validator');
-		}
-
-		public function displaySettingsPanel(&$wrapper, $errors = null) {
-			parent::displaySettingsPanel($wrapper, $errors);
-
-			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');
-
-			$div = new XMLElement('div', NULL, array('class' => 'compact'));
-			$this->appendRequiredCheckbox($div);
-			$this->appendShowColumnCheckbox($div);
-			$wrapper->appendChild($div);
-
-		}
-
-		public function createTable(){
-
-			return Symphony::Database()->query(
-
-				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
-				  `id` int(11) unsigned NOT NULL auto_increment,
-				  `entry_id` int(11) unsigned NOT NULL,
-				  `handle` varchar(255) default NULL,
-				  `value` varchar(255) default NULL,
-				  PRIMARY KEY  (`id`),
-				  UNIQUE KEY `entry_id` (`entry_id`),
-				  KEY `handle` (`handle`),
-				  KEY `value` (`value`)
-				) ENGINE=MyISAM;"
-
-			);
+			return $groups;
 		}
 
 	}
-

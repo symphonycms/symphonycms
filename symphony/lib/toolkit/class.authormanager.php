@@ -27,9 +27,9 @@
 		 * was an error
 		 *
 		 * @param array $fields
-		 *  Associative array of field names => values for the Author object
+		 *	Associative array of field names => values for the Author object
 		 * @return integer|boolean
-		 *  Returns an Author ID of the created Author on success, false otherwise.
+		 *	Returns an Author ID of the created Author on success, false otherwise.
 		 */
 		public static function add(Array $fields){
 			if(!Symphony::Database()->insert($fields, 'tbl_authors')) return false;
@@ -43,11 +43,11 @@
 		 * row in the `tbl_authors` database table. Returns boolean for success/failure
 		 *
 		 * @param integer $id
-		 *  The ID of the Author that should be updated
+		 *	The ID of the Author that should be updated
 		 * @param array $fields
-		 *  Associative array of field names => values for the Author object
-		 *  This array does need to contain every value for the author object, it
-		 *  can just be the changed values.
+		 *	Associative array of field names => values for the Author object
+		 *	This array does need to contain every value for the author object, it
+		 *	can just be the changed values.
 		 * @return boolean
 		 */
 		public static function edit($id, Array $fields){
@@ -58,7 +58,7 @@
 		 * Given an Author ID, delete an Author from Symphony.
 		 *
 		 * @param integer $id
-		 *  The ID of the Author that should be deleted
+		 *	The ID of the Author that should be deleted
 		 * @return boolean
 		 */
 		public static function delete($id){
@@ -70,23 +70,23 @@
 		 * or limit the output. This method returns an array of Author objects.
 		 *
 		 * @param string $sortby
-		 *  The field to sort the authors by, defaults to 'id'
+		 *	The field to sort the authors by, defaults to 'id'
 		 * @param string $sortdirection
-		 *  Available values of ASC (Ascending) or DESC (Descending), which refer to the
-		 *  sort order for the query. Defaults to ASC (Ascending)
+		 *	Available values of ASC (Ascending) or DESC (Descending), which refer to the
+		 *	sort order for the query. Defaults to ASC (Ascending)
 		 * @param integer $limit
-		 *  The number of rows to return
+		 *	The number of rows to return
 		 * @param integer $start
-		 *  The offset start point for limiting, maps to the LIMIT {x}, {y} MySQL functionality
+		 *	The offset start point for limiting, maps to the LIMIT {x}, {y} MySQL functionality
 		 * @return array
-		 *  An array of Author objects.  If no Authors are found, null is returned.
+		 *	An array of Author objects.	 If no Authors are found, null is returned.
 		 */
 		public static function fetch($sortby = 'id', $sortdirection = 'ASC', $limit = null, $start = null){
 
 			$records = Symphony::Database()->fetch(sprintf("
 					SELECT *
 					FROM `tbl_authors`
-				 	ORDER BY %s %s
+					ORDER BY %s %s
 					%s %s
 				",
 				$sortby, $sortdirection,
@@ -94,7 +94,7 @@
 				($start && $limit) ? ', ' . $start : ''
 			));
 
-			if(!is_array($records) || empty($records)) return null;
+			if(!is_array($records) || empty($records)) return array();
 
 			$authors = array();
 
@@ -118,19 +118,19 @@
 		 * querying `tbl_authors`
 		 *
 		 * @param integer|array $id
-		 *  A single ID or an array of ID's
+		 *	A single ID or an array of ID's
 		 * @param string $sortby
-		 *  The field to sort the authors by, defaults to 'id'
+		 *	The field to sort the authors by, defaults to 'id'
 		 * @param string $sortdirection
-		 *  Available values of ASC (Ascending) or DESC (Descending), which refer to the
-		 *  sort order for the query. Defaults to ASC (Ascending)
+		 *	Available values of ASC (Ascending) or DESC (Descending), which refer to the
+		 *	sort order for the query. Defaults to ASC (Ascending)
 		 * @param integer $limit
-		 *  The number of rows to return
+		 *	The number of rows to return
 		 * @param integer $start
-		 *  The offset start point for limiting, maps to the LIMIT {x}, {y} MySQL functionality
+		 *	The offset start point for limiting, maps to the LIMIT {x}, {y} MySQL functionality
 		 * @return mixed
-		 *  If `$id` was an integer, the result will be an Author object, otherwise an array of
-		 *  Author objects will be returned. If no Authors are found, or no `$id` is given null is returned.
+		 *	If `$id` was an integer, the result will be an Author object, otherwise an array of
+		 *	Author objects will be returned. If no Authors are found, or no `$id` is given null is returned.
 		 */
 		public static function fetchByID($id, $sortby = 'id', $sortdirection = 'ASC', $limit = null, $start = null){
 
@@ -190,14 +190,13 @@
 		 * `AuthorManager::$_pool` for Authors first before querying `tbl_authors`
 		 *
 		 * @param string $username
-		 *  The Author's username
+		 *	The Author's username
 		 * @return Author|null
-		 *  If an Author is found, an Author object is returned, otherwise null.
+		 *	If an Author is found, an Author object is returned, otherwise null.
 		 */
 		public static function fetchByUsername($username){
 
 			if(!isset(self::$_pool[$username])) {
-
 				$records = Symphony::Database()->fetchRow(0, sprintf("
 						SELECT *
 						FROM `tbl_authors`
@@ -206,7 +205,7 @@
 					",	Symphony::Database()->cleanValue($username)
 				));
 
-				if(!is_array($records) || empty($records)) return null;
+				if(!is_array($records) || empty($records)) return array();
 
 				$author = new Author;
 
@@ -225,7 +224,7 @@
 		 * authentication token as well as username/password.
 		 *
 		 * @param integer $author_id
-		 *  The Author ID to allow to use their authentication token.
+		 *	The Author ID to allow to use their authentication token.
 		 * @return boolean
 		 */
 		public static function activateAuthToken($author_id){
@@ -238,7 +237,7 @@
 		 * by using their authentication token
 		 *
 		 * @param integer $author_id
-		 *  The Author ID to allow to use their authentication token.
+		 *	The Author ID to allow to use their authentication token.
 		 * @return boolean
 		 */
 		public static function deactivateAuthToken($author_id){

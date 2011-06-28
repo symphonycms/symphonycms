@@ -13,18 +13,35 @@
 	 * Sorting is done based on the Author's first name and last name.
 	 */
 	Class fieldAuthor extends Field {
+
 		public function __construct(&$parent){
 			parent::__construct($parent);
 			$this->_name = __('Author');
 			$this->_required = true;
 		}
 
+	/*-------------------------------------------------------------------------
+		Definition:
+	-------------------------------------------------------------------------*/
+
 		public function canToggle(){
 			return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
 		}
 
-		public function isSortable(){
-			return $this->canToggle();
+		public function getToggleStates(){
+			$authors = AuthorManager::fetch();
+
+			$states = array();
+			foreach($authors as $a) {
+				$states[$a->get('id')] = $a->getFullName();
+			}
+
+			return $states;
+		}
+
+		public function toggleFieldData($data, $newState){
+			$data['author_id'] = $newState;
+			return $data;
 		}
 
 		public function canFilter(){
@@ -35,41 +52,103 @@
 			return true;
 		}
 
+		public function isSortable(){
+			return $this->canToggle();
+		}
+
 		public function allowDatasourceOutputGrouping(){
 			## Grouping follows the same rule as toggling.
 			return $this->canToggle();
 		}
 
-		public function getToggleStates(){
+	/*-------------------------------------------------------------------------
+		Setup:
+	-------------------------------------------------------------------------*/
 
-			$authors = AuthorManager::fetch();
-
-			$states = array();
-			foreach($authors as $a) $states[$a->get('id')] = $a->getFullName();
-
-			return $states;
+		public function createTable(){
+			return Symphony::Database()->query(
+				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') ."` (
+				  `id` int(11) unsigned NOT NULL auto_increment,
+				  `entry_id` int(11) unsigned NOT NULL,
+				  `author_id` int(11) unsigned NULL,
+				  PRIMARY KEY  (`id`),
+				  UNIQUE KEY `entry_id` (`entry_id`),
+				  KEY `author_id` (`author_id`)
+				) ENGINE=MyISAM;"
+			);
 		}
 
-		public function toggleFieldData($data, $newState){
-			$data['author_id'] = $newState;
-			return $data;
+	/*-------------------------------------------------------------------------
+		Utilities:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Determines based on the input value whether we want to filter the Author
+		 * field by ID or by the Author's Username
+		 *
+		 * @since Symphony 2.2
+		 * @param string $value
+		 * @return string
+		 *  Either `author_id` or `username`
+		 */
+		private static function __parseFilter($value) {
+			return is_numeric($value) ? 'author_id' : 'username';
 		}
 
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+	/*-------------------------------------------------------------------------
+		Settings:
+	-------------------------------------------------------------------------*/
 
-			$status = self::__OK__;
-
-			if(!is_array($data) && !is_null($data)) return array('author_id' => $data);
-
-			if(empty($data)) return NULL;
-
-			$result = array();
-			foreach($data as $id) $result['author_id'][] = $id;
-
-			return $result;
+		public function findDefaults(&$fields){
+			if(!isset($fields['allow_multiple_selection'])) $fields['allow_multiple_selection'] = 'no';
 		}
 
-		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+		public function displaySettingsPanel(&$wrapper, $errors = null) {
+			parent::displaySettingsPanel($wrapper, $errors);
+
+			$div = new XMLElement('div', NULL, array('class' => 'compact'));
+
+			## Allow multiple selection
+			$label = Widget::Label();
+			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
+			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
+			$label->setValue(__('%s Allow selection of multiple authors', array($input->generate())));
+			$div->appendChild($label);
+
+			## Default to current logged in user
+			$label = Widget::Label();
+			$input = Widget::Input('fields['.$this->get('sortorder').'][default_to_current_user]', 'yes', 'checkbox');
+			if($this->get('default_to_current_user') == 'yes') $input->setAttribute('checked', 'checked');
+			$label->setValue(__('%s Select current user by default', array($input->generate())));
+			$div->appendChild($label);
+
+			$this->appendRequiredCheckbox($div);
+			$this->appendShowColumnCheckbox($div);
+			$wrapper->appendChild($div);
+		}
+
+		public function commit(){
+			if(!parent::commit()) return false;
+
+			$id = $this->get('id');
+
+			if($id === false) return false;
+
+			$fields = array();
+
+			$fields['field_id'] = $id;
+			$fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
+			$fields['default_to_current_user'] = ($this->get('default_to_current_user') ? $this->get('default_to_current_user') : 'no');
+
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
+			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
+		}
+
+	/*-------------------------------------------------------------------------
+		Publish:
+	-------------------------------------------------------------------------*/
+
+		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL, $entry_id = null){
 
 			$value = isset($data['author_id']) ? $data['author_id'] : NULL;
 
@@ -98,6 +177,45 @@
 			else $wrapper->appendChild($label);
 		}
 
+		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+
+			$status = self::__OK__;
+
+			if(!is_array($data) && !is_null($data)) return array('author_id' => $data);
+
+			if(empty($data)) return NULL;
+
+			$result = array();
+			foreach($data as $id) $result['author_id'][] = $id;
+
+			return $result;
+		}
+
+	/*-------------------------------------------------------------------------
+		Output:
+	-------------------------------------------------------------------------*/
+
+		public function appendFormattedElement(&$wrapper, $data, $encode=false){
+			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
+
+			$list = new XMLElement($this->get('element_name'));
+			foreach($data['author_id'] as $author_id){
+				$author = AuthorManager::fetchByID($author_id);
+
+				if(is_null($author)) continue;
+
+				$list->appendChild(new XMLElement(
+					'item',
+					$author->getFullName(),
+					array(
+						'id' => (string)$author->get('id'),
+						'username' => General::sanitize($author->get('username'))
+					)
+				));
+			}
+			$wrapper->appendChild($list);
+		}
+
 		public function prepareTableValue($data, XMLElement $link=NULL){
 
 			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
@@ -117,15 +235,9 @@
 			return parent::prepareTableValue(array('value' => General::sanitize(implode(', ', $value))), $link);
 		}
 
-		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
-			$joins .= "
-				LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`)
-				JOIN `tbl_authors` AS `a` ON (ed.author_id = a.id)
-			";
-			$sort = 'ORDER BY ' . (in_array(strtolower($order), array('random', 'rand'))
-					? 'RAND()'
-					: "`a`.`first_name` " . $order . ", `a`.`last_name` " . $order);
-		}
+	/*-------------------------------------------------------------------------
+		Filtering:
+	-------------------------------------------------------------------------*/
 
 		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
@@ -216,97 +328,26 @@
 			return true;
 		}
 
-		/**
-		 * Determines based on the input value whether we want to filter the Author
-		 * field by ID or by the Author's Username
-		 *
-		 * @since Symphony 2.2
-		 * @param string $value
-		 * @return string
-		 *  Either `author_id` or `username`
-		 */
-		private static function __parseFilter($value) {
-			return is_numeric($value) ? 'author_id' : 'username';
-		}
+	/*-------------------------------------------------------------------------
+		Sorting:
+	-------------------------------------------------------------------------*/
 
-		public function commit(){
-			if(!parent::commit()) return false;
-
-			$id = $this->get('id');
-
-			if($id === false) return false;
-
-			$fields = array();
-
-			$fields['field_id'] = $id;
-			$fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
-			$fields['default_to_current_user'] = ($this->get('default_to_current_user') ? $this->get('default_to_current_user') : 'no');
-
-			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
-			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
-		}
-
-		public function appendFormattedElement(&$wrapper, $data, $encode=false){
-			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
-
-			$list = new XMLElement($this->get('element_name'));
-			foreach($data['author_id'] as $author_id){
-				$author = AuthorManager::fetchByID($author_id);
-
-				if(is_null($author)) continue;
-
-				$list->appendChild(new XMLElement(
-					'item',
-					$author->getFullName(),
-					array(
-						'id' => (string)$author->get('id'),
-						'username' => General::sanitize($author->get('username'))
-					)
-				));
+		public function buildSortingSQL(&$joins, &$where, &$sort, $order='ASC'){
+			if(in_array(strtolower($order), array('random', 'rand'))) {
+				$sort = 'ORDER BY RAND()';
 			}
-			$wrapper->appendChild($list);
+			else {
+				$joins .= "
+					LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`)
+					JOIN `tbl_authors` AS `a` ON (ed.author_id = a.id)
+				";
+				$sort = "ORDER BY `a`.`first_name` " . $order . ", `a`.`last_name` " . $order;
+			}
 		}
 
-		public function findDefaults(&$fields){
-			if(!isset($fields['allow_multiple_selection'])) $fields['allow_multiple_selection'] = 'no';
-		}
-
-		public function displaySettingsPanel(&$wrapper, $errors = null) {
-			parent::displaySettingsPanel($wrapper, $errors);
-
-			$div = new XMLElement('div', NULL, array('class' => 'compact'));
-
-			## Allow multiple selection
-			$label = Widget::Label();
-			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
-			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Allow selection of multiple authors', array($input->generate())));
-			$div->appendChild($label);
-
-			## Default to current logged in user
-			$label = Widget::Label();
-			$input = Widget::Input('fields['.$this->get('sortorder').'][default_to_current_user]', 'yes', 'checkbox');
-			if($this->get('default_to_current_user') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Select current user by default', array($input->generate())));
-			$div->appendChild($label);
-
-			$this->appendRequiredCheckbox($div);
-			$this->appendShowColumnCheckbox($div);
-			$wrapper->appendChild($div);
-		}
-
-		public function createTable(){
-			return Symphony::Database()->query(
-				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') ."` (
-				  `id` int(11) unsigned NOT NULL auto_increment,
-				  `entry_id` int(11) unsigned NOT NULL,
-				  `author_id` int(11) unsigned NULL,
-				  PRIMARY KEY  (`id`),
-				  UNIQUE KEY `entry_id` (`entry_id`),
-				  KEY `author_id` (`author_id`)
-				) ENGINE=MyISAM;"
-			);
-		}
+	/*-------------------------------------------------------------------------
+		Events:
+	-------------------------------------------------------------------------*/
 
 		public function getExampleFormMarkup(){
 

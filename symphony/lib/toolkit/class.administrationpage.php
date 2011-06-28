@@ -741,6 +741,9 @@
 			 * already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need
 			 * to edit existing navigation elements, use the `NavigationPreRender` delegate.
 			 *
+			 * @deprecated This delegate is deprecated and will be removed in the next
+			 *  major release of Symphony. Extensions are encouraged to use provide the
+			 *  `fetchNavigation` method instead.
 			 * @delegate ExtensionsAddToNavigation
 			 * @param string $context
 			 * '/backend/'
@@ -849,7 +852,20 @@
 			$ul->setAttribute('id', 'usr');
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(Administration::instance()->Author->getFullName(), SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id') . '/'));
+			$li->appendChild(
+				Widget::Anchor(
+					Administration::instance()->Author->getFullName(),
+					SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id') . '/',
+					null,
+					null,
+					null,
+					array(
+						'data-id' => Administration::instance()->Author->get('id'),
+						'data-name' => Administration::instance()->Author->get('first_name'),
+						'data-type' => Administration::instance()->Author->get('user_type')
+					)
+				)
+			);
 			$ul->appendChild($li);
 
 			$li = new XMLElement('li');

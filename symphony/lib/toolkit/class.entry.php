@@ -204,7 +204,8 @@
 		 *	The ID of the Field whose data you want
 		 * @param boolean $asObject
 		 *	If true, the data will be returned as an object instead of an
-		 *	array. Defaults to false.
+		 *	array. Defaults to false. Note that if a `$field_id` is not provided
+		 *	the result will always be an array.
 		 * @return array|object
 		 *	Depending on the value of `$asObject`, return the field's data
 		 *	as either an array or an object

@@ -105,9 +105,9 @@
 		 * to inject items into the navigation. The navigation is build by iterating over `<item>`
 		 * elements added. The idea is that all Devkit's can be accessed using the Navigation.
 		 *
-         * @uses ManipulateDevKitNavigation
+		 * @uses ManipulateDevKitNavigation
 		 * @param XMLElement $wrapper
-		 *  The parent XMLElement to add the navigation to
+		 *	The parent XMLElement to add the navigation to
 		 */
 		protected function buildNavigation(XMLElement $wrapper) {
 			$xml = new DOMDocument();
@@ -134,14 +134,14 @@
 				}
 			}
 
-            /**
-             * Allow navigation XML to be manipulated before it is rendered.
-             * 
-             * @delegate ManipulateDevKitNavigation
-             * @param string $context
-             *  '/frontend/'
-             * @param DOMDocument $xml
-             */
+			/**
+			 * Allow navigation XML to be manipulated before it is rendered.
+			 * 
+			 * @delegate ManipulateDevKitNavigation
+			 * @param string $context
+			 *	'/frontend/'
+			 * @param DOMDocument $xml
+			 */
 			Symphony::ExtensionManager()->notifyMembers(
 				'ManipulateDevKitNavigation', '/frontend/',
 				array(
@@ -176,25 +176,25 @@
 		 *
 		 * @see buildJumpItem
 		 * @param XMLElement $wrapper
-		 *  The parent XMLElement that the jump menu will be appended
-		 *  to. By default this is `<div id='jump'>`
+		 *	The parent XMLElement that the jump menu will be appended
+		 *	to. By default this is `<div id='jump'>`
 		 */
 		protected function buildJump(XMLElement $wrapper) { }
 
 		/**
 		 *
 		 * @param string $name
-		 *  The name of the jump
+		 *	The name of the jump
 		 * @param string $link
-		 *  The link for this jump item
+		 *	The link for this jump item
 		 * @param boolean $active
-		 *  Whether this is the active link, if true, this will add an
-		 *  active class to the link built. By default this is false
+		 *	Whether this is the active link, if true, this will add an
+		 *	active class to the link built. By default this is false
 		 * @return XMLElement
 		 */
 		protected function buildJumpItem($name, $link, $active = false) {
 			$item = new XMLElement('li');
-			$anchor = Widget::Anchor($name,  $link);
+			$anchor = Widget::Anchor($name,	 $link);
 			$anchor->setAttribute('class', 'inactive');
 
 			if ($active == true) {
@@ -210,8 +210,8 @@
 		 * The content of the Devkit, defaults to empty.
 		 *
 		 * @param XMLElement $wrapper
-		 *  The parent XMLElement that the content will be appended
-		 *  to. By default this is `<div id='content'>`
+		 *	The parent XMLElement that the content will be appended
+		 *	to. By default this is `<div id='content'>`
 		 */
 		protected function buildContent(XMLElement $wrapper) {}
 
@@ -220,20 +220,20 @@
 		 * setting some base variables with the given parameters
 		 *
 		 * @param XSLTPage $page
-		 *  An instance of the XSLTPage, usually FrontendPage
+		 *	An instance of the XSLTPage, usually FrontendPage
 		 * @param array $pagedata
-		 *  An associative array of the details of the Page that is
-		 *  being 'Devkitted'. The majority of this information is from
-		 *  tbl_pages table.
+		 *	An associative array of the details of the Page that is
+		 *	being 'Devkitted'. The majority of this information is from
+		 *	tbl_pages table.
 		 * @param string $xml
-		 *  The XML of the page that the XSLT will be applied to, this includes
-		 *  any datasource results.
+		 *	The XML of the page that the XSLT will be applied to, this includes
+		 *	any datasource results.
 		 * @param array $param
-		 *  An array of the page parameters, including those provided by
-		 *  datasources.
+		 *	An array of the page parameters, including those provided by
+		 *	datasources.
 		 * @param string $output
-		 *  The resulting Page after it has been transformed, as a string. This is
-		 *  similar to what you would see if you 'view-sourced' a page.
+		 *	The resulting Page after it has been transformed, as a string. This is
+		 *	similar to what you would see if you 'view-sourced' a page.
 		 */
 		public function prepare(XSLTPage $page, Array $pagedata, $xml, Array $param, $output) {
 			$this->_page = $page;

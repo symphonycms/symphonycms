@@ -62,7 +62,7 @@
 
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.2.1');
+	define('kVERSION', '2.2.2 Beta 1');
 	define('kCHANGELOG', 'https://gist.github.com/884691');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
@@ -418,6 +418,20 @@ Options +FollowSymlinks -Indexes
 					}
 				}
 				catch(Exception $ex) {}
+			}
+
+			if(version_compare($existing_version, '2.2.2 Beta 1', '<')) {
+				// Rename old variations of the query_caching configuration setting
+				if(isset($settings['database']['disable_query_caching'])) {
+					$settings['database']['query_caching'] = ($settings['database']['disable_query_caching'] == "no") ? "on" : "off";
+					unset($settings['database']['disable_query_caching']);
+				}
+
+				// Add Session GC collection as a configuration parameter
+				$settings['symphony']['session_gc_divisor'] = '10';
+
+				// Save the manifest changes
+				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,

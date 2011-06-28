@@ -152,7 +152,7 @@
 		 *		array(
 		 *			'page' => '/current/path/',
 		 *			'delegate' => 'DelegateName',
-		 *			'callback' => 'funtionToCall'
+		 *			'callback' => 'functionToCall'
 		 *		)
 		 *	)`
 		 *

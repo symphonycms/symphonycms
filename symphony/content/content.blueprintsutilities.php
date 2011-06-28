@@ -242,7 +242,7 @@
 						}
 						else {
 							/**
-							 * Prior to deleting the Utility
+							 * Just after a Utility has been edited and written to disk
 							 *
 							 * @delegate UtilityPostEdit
 							 * @since Symphony 2.2

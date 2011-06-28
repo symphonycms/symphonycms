@@ -832,19 +832,22 @@
 		 *	required permissions set. false, otherwise.
 		 */
 		public static function writeFile($file, $data, $perm = 0644, $mode = 'w'){
-			if(is_null($perm)) $perm = 0644;
-
-			if(!$handle = @fopen($file, $mode)) {
+			if(!is_writable(dirname($file)) && (!is_readable($file) || !is_writable($file))) {
 				return false;
 			}
 
-			if(@fwrite($handle, $data, strlen($data)) === false) {
+			if(!$handle = fopen($file, $mode)) {
+				return false;
+			}
+
+			if(fwrite($handle, $data, strlen($data)) === false) {
 				return false;
 			}
 
 			fclose($handle);
 
 			try {
+				if(is_null($perm)) $perm = 0644;
 				chmod($file, intval($perm, 8));
 			}
 			catch(Exception $ex) {
@@ -935,8 +938,7 @@
 					($file == '.' or $file == '..')
 					or ($ignore_hidden and $file{0} == '.')
 					or !is_dir("$dir/$file")
-					or in_array($file, $exclude)
-					or in_array("$dir/$file", $exclude)
+					or in_array(array($file, "$dir/$file"), $exclude)
 				) continue;
 
 				if(!is_null($filter)) {
@@ -1001,8 +1003,7 @@
 				if (
 					($file == '.' or $file == '..')
 					or ($ignore_hidden and $file{0} == '.')
-					or in_array($file, $exclude)
-					or in_array("$dir/$file", $exclude)
+					or in_array(array($file, "$dir/$file"), $exclude)
 				) continue;
 
 				if(is_dir("$dir/$file")) {

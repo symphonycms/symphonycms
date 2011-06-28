@@ -232,7 +232,7 @@
 		 *
 		 * @param array|Entry $entries
 		 *  An Entry object, or an array of Entry objects to delete
-		 * @param boolean
+		 * @return boolean
 		 */
 		public function delete($entries){
 
@@ -287,6 +287,9 @@
 		 *  Choose whether to get data from a subset of fields or all fields in a section,
 		 *  by providing an array of field names. Defaults to null, which will load data
 		 *  from all fields in a section.
+		 * @return array
+		 *  If `$buildentries` is true, this function will return an array of Entry objects,
+		 *  otherwise it will return an associative array of Entry data from `tbl_entries`
 		 */
 		public function fetch($entry_id = null, $section_id = null, $limit = null, $start = null, $where = null, $joins = null, $group = false, $buildentries = true, $element_names = null){
 			$sort = null;
@@ -369,6 +372,7 @@
 		 *  by providing an array of field names. Defaults to null, which will load data
 		 *  from all fields in a section.
 		 * @return array
+		 *  An array of Entry objects
 		 */
 		public function __buildEntries(Array $rows, $section_id, $element_names = null){
 			$entries = array();
@@ -440,14 +444,28 @@
 
 					else {
 						foreach (array_keys($r) as $key) {
-							if (isset($raw[$entry_id]['fields'][$field_id][$key]) && !is_array($raw[$entry_id]['fields'][$field_id][$key])) {
-								$raw[$entry_id]['fields'][$field_id][$key] = array($raw[$entry_id]['fields'][$field_id][$key], $r[$key]);
+							// If this field already has been set, we need to take the existing
+							// value and make it array, adding the current value to it as well
+							// There is a special check incase the the field's value has been
+							// purposely set to NULL in the database.
+							if(
+								(
+									isset($raw[$entry_id]['fields'][$field_id][$key])
+									|| is_null($raw[$entry_id]['fields'][$field_id][$key])
+								)
+								&& !is_array($raw[$entry_id]['fields'][$field_id][$key])
+							) {
+								$raw[$entry_id]['fields'][$field_id][$key] = array(
+									$raw[$entry_id]['fields'][$field_id][$key],
+									$r[$key]
+								);
 							}
-
+							// This key/value hasn't been set previously, so set it
 							else if (!isset($raw[$entry_id]['fields'][$field_id][$key])) {
 								$raw[$entry_id]['fields'][$field_id] = array($r[$key]);
 							}
-
+							// This key has been set and it's an array, so just append
+							// this value onto the array
 							else {
 								$raw[$entry_id]['fields'][$field_id][$key][] = $r[$key];
 							}

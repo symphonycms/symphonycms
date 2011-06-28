@@ -70,7 +70,7 @@
 					ini_set('session.save_handler', 'user');
 					ini_set('session.gc_maxlifetime', $lifetime);
 					ini_set('session.gc_probability', '1');
-					ini_set('session.gc_divisor', '10');
+					ini_set('session.gc_divisor', Symphony::Configuration()->get('session_gc_divisor', 'symphony'));
 				}
 
 				session_set_save_handler(

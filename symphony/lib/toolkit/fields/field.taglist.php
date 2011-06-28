@@ -16,9 +16,20 @@
 			$this->_name = __('Tag List');
 		}
 
-		public function set($field, $value){
-			if($field == 'pre_populate_source' && !is_array($value)) $value = preg_split('/\s*,\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
-			$this->_fields[$field] = $value;
+	/*-------------------------------------------------------------------------
+		Definition:
+	-------------------------------------------------------------------------*/
+
+		public function canFilter() {
+			return true;
+		}
+
+		public function canImport(){
+			return true;
+		}
+
+		public function canPrePopulate(){
+			return true;
 		}
 
 		public function requiresSQLGrouping() {
@@ -29,103 +40,45 @@
 			return true;
 		}
 
-		public function canFilter() {
-			return true;
+	/*-------------------------------------------------------------------------
+		Setup:
+	-------------------------------------------------------------------------*/
+
+		public function createTable(){
+			return Symphony::Database()->query("
+				CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
+				  `id` int(11) unsigned NOT NULL auto_increment,
+				  `entry_id` int(11) unsigned NOT NULL,
+				  `handle` varchar(255) default NULL,
+				  `value` varchar(255) default NULL,
+				  PRIMARY KEY  (`id`),
+				  KEY `entry_id` (`entry_id`),
+				  KEY `handle` (`handle`),
+				  KEY `value` (`value`)
+				) ENGINE=MyISAM;
+			");
 		}
 
-		public function canImport(){
-			return true;
+	/*-------------------------------------------------------------------------
+		Utilities:
+	-------------------------------------------------------------------------*/
+
+		public function set($field, $value){
+			if($field == 'pre_populate_source' && !is_array($value)) $value = preg_split('/\s*,\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
+			$this->_fields[$field] = $value;
 		}
 
-		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
-			if (!is_array($data) or empty($data)) return;
-
-			$list = new XMLElement($this->get('element_name'));
-
-			if (!is_array($data['handle']) and !is_array($data['value'])) {
-				$data = array(
-					'handle'	=> array($data['handle']),
-					'value'		=> array($data['value'])
-				);
-			}
-
-			foreach ($data['value'] as $index => $value) {
-				$list->appendChild(new XMLElement(
-					'item', General::sanitize($value), array(
-						'handle'	=> $data['handle'][$index]
-					)
-				));
-			}
-
-			$wrapper->appendChild($list);
-		}
-
-		function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-
-			parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
-
-			if($this->get('pre_populate_source') != NULL){
-
-				$existing_tags = $this->findAllTags();
-
-				if(is_array($existing_tags) && !empty($existing_tags)){
-					$taglist = new XMLElement('ul');
-					$taglist->setAttribute('class', 'tags');
-
-					foreach($existing_tags as $tag) {
-						$taglist->appendChild(
-							new XMLElement('li', General::sanitize($tag))
-						);
-					}
-
-					$wrapper->appendChild($taglist);
-				}
-			}
-		}
-
-		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-
-			$value = NULL;
-			if(isset($data['value'])){
-				$value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
-			}
-
-			$label = Widget::Label($this->get('label'));
-
-			$label->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? $value : NULL)));
-
-			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
-			else $wrapper->appendChild($label);
-
-			if($this->get('pre_populate_source') != NULL){
-
-				$existing_tags = $this->findAllTags();
-
-				if(is_array($existing_tags) && !empty($existing_tags)){
-					$taglist = new XMLElement('ul');
-					$taglist->setAttribute('class', 'tags');
-
-					foreach($existing_tags as $tag) {
-						$taglist->appendChild(
-							new XMLElement('li', General::sanitize($tag))
-						);
-					}
-
-					$wrapper->appendChild($taglist);
-				}
-			}
-		}
-
-		function findAllTags(){
-
-			$sql = "SELECT DISTINCT `value` FROM tbl_entries_data_%d ORDER BY `value` ASC";
-
+		public function findAllTags(){
 			if(!is_array($this->get('pre_populate_source'))) return;
 
 			$values = array();
 
 			foreach($this->get('pre_populate_source') as $item){
-				$result = Symphony::Database()->fetchCol('value', sprintf($sql, ($item == 'existing' ? $this->get('id') : $item)));
+				$result = Symphony::Database()->fetchCol('value', sprintf(
+					"SELECT DISTINCT `value` FROM tbl_entries_data_%d ORDER BY `value` ASC",
+					($item == 'existing' ? $this->get('id') : $item)
+				));
+
 				if(!is_array($result) || empty($result)) continue;
 
 				$values = array_merge($values, $result);
@@ -134,77 +87,20 @@
 			return array_unique($values);
 		}
 
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
-
-			$status = self::__OK__;
-
-			$data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
-			$data = array_map('trim', $data);
-
-			if(empty($data)) return;
-
-			// Do a case insensitive removal of duplicates
-			$data = General::array_remove_duplicates($data, true);
-
-			sort($data);
-
-			$result = array();
-			foreach($data as $value){
-				$result['value'][] = $value;
-				$result['handle'][] = Lang::createHandle($value);
-			}
-
-			return $result;
-		}
-
-		static private function __tagArrayToString(array $tags){
-
+		private static function __tagArrayToString(array $tags){
 			if(empty($tags)) return NULL;
 
 			sort($tags);
 
 			return implode(', ', $tags);
-
 		}
 
-		function prepareTableValue($data, XMLElement $link=NULL){
+	/*-------------------------------------------------------------------------
+		Settings:
+	-------------------------------------------------------------------------*/
 
-			if(!is_array($data) || empty($data)) return;
-
-			$value = NULL;
-			if(isset($data['value'])){
-				$value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
-			}
-
-			return parent::prepareTableValue(array('value' => General::sanitize($value)), $link);
-		}
-
-		function commit(){
-
-			if(!parent::commit()) return false;
-
-			$id = $this->get('id');
-
-			if($id === false) return false;
-
-			$fields = array();
-
-			$fields['field_id'] = $id;
-			$fields['pre_populate_source'] = (is_null($this->get('pre_populate_source')) ? NULL : implode(',', $this->get('pre_populate_source')));
-			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
-
-			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
-
-			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
-
-		}
-
-		function findDefaults(&$fields){
+		public function findDefaults(&$fields){
 			if(!isset($fields['pre_populate_source'])) $fields['pre_populate_source'] = array('existing');
-		}
-
-		function canPrePopulate(){
-			return true;
 		}
 
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
@@ -242,25 +138,146 @@
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');
 
 			$this->appendShowColumnCheckbox($wrapper);
-
 		}
 
-		function createTable(){
+		public function commit(){
+			if(!parent::commit()) return false;
 
-			return Symphony::Database()->query(
+			$id = $this->get('id');
 
-				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
-				  `id` int(11) unsigned NOT NULL auto_increment,
-				  `entry_id` int(11) unsigned NOT NULL,
-				  `handle` varchar(255) default NULL,
-				  `value` varchar(255) default NULL,
-				  PRIMARY KEY  (`id`),
-				  KEY `entry_id` (`entry_id`),
-				  KEY `handle` (`handle`),
-				  KEY `value` (`value`)
-				) ENGINE=MyISAM;"
+			if($id === false) return false;
 
-			);
+			$fields = array();
+
+			$fields['field_id'] = $id;
+			$fields['pre_populate_source'] = (is_null($this->get('pre_populate_source')) ? NULL : implode(',', $this->get('pre_populate_source')));
+			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
+
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
+
+			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
+		}
+
+	/*-------------------------------------------------------------------------
+		Publish:
+	-------------------------------------------------------------------------*/
+
+		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+			$value = NULL;
+			if(isset($data['value'])){
+				$value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
+			}
+
+			$label = Widget::Label($this->get('label'));
+
+			$label->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? $value : NULL)));
+
+			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
+			else $wrapper->appendChild($label);
+
+			if($this->get('pre_populate_source') != NULL){
+
+				$existing_tags = $this->findAllTags();
+
+				if(is_array($existing_tags) && !empty($existing_tags)){
+					$taglist = new XMLElement('ul');
+					$taglist->setAttribute('class', 'tags');
+
+					foreach($existing_tags as $tag) {
+						$taglist->appendChild(
+							new XMLElement('li', General::sanitize($tag))
+						);
+					}
+
+					$wrapper->appendChild($taglist);
+				}
+			}
+		}
+
+		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+			$status = self::__OK__;
+
+			$data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
+			$data = array_map('trim', $data);
+
+			if(empty($data)) return;
+
+			// Do a case insensitive removal of duplicates
+			$data = General::array_remove_duplicates($data, true);
+
+			sort($data);
+
+			$result = array();
+			foreach($data as $value){
+				$result['value'][] = $value;
+				$result['handle'][] = Lang::createHandle($value);
+			}
+
+			return $result;
+		}
+
+	/*-------------------------------------------------------------------------
+		Output:
+	-------------------------------------------------------------------------*/
+
+		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
+			if (!is_array($data) or empty($data)) return;
+
+			$list = new XMLElement($this->get('element_name'));
+
+			if (!is_array($data['handle']) and !is_array($data['value'])) {
+				$data = array(
+					'handle'	=> array($data['handle']),
+					'value'		=> array($data['value'])
+				);
+			}
+
+			foreach ($data['value'] as $index => $value) {
+				$list->appendChild(new XMLElement(
+					'item', General::sanitize($value), array(
+						'handle'	=> $data['handle'][$index]
+					)
+				));
+			}
+
+			$wrapper->appendChild($list);
+		}
+
+		public function prepareTableValue($data, XMLElement $link=NULL){
+			if(!is_array($data) || empty($data)) return;
+
+			$value = NULL;
+			if(isset($data['value'])){
+				$value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
+			}
+
+			return parent::prepareTableValue(array('value' => General::sanitize($value)), $link);
+		}
+
+	/*-------------------------------------------------------------------------
+		Filtering:
+	-------------------------------------------------------------------------*/
+
+		public function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+			parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
+
+			if($this->get('pre_populate_source') != NULL){
+
+				$existing_tags = $this->findAllTags();
+
+				if(is_array($existing_tags) && !empty($existing_tags)){
+					$taglist = new XMLElement('ul');
+					$taglist->setAttribute('class', 'tags');
+
+					foreach($existing_tags as $tag) {
+						$taglist->appendChild(
+							new XMLElement('li', General::sanitize($tag))
+						);
+					}
+
+					$wrapper->appendChild($taglist);
+				}
+			}
 		}
 
 		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
@@ -330,5 +347,5 @@
 
 			return true;
 		}
-	}
 
+	}
