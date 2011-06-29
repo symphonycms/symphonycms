@@ -583,7 +583,7 @@
 		 *  An associative array with the key being the extension folder and the value
 		 *  being the extension's about information
 		 */
-		public function listAll($filter=null){
+		public function listAll($filter='/^((?![-^?%:*|"<>]).)*$/') {
 			$result = array();
 			$extensions = General::listDirStructure(EXTENSIONS, $filter, false, EXTENSIONS);
 
