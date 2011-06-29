@@ -176,7 +176,8 @@
 				$fieldset = new XMLElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Version')));
-				$fieldset->appendChild(new XMLElement('p', __('Created by %s at %s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+				if(preg_match('/^\d+(\.\d+)*$/', $about['version'])) $fieldset->appendChild(new XMLElement('p', __('%s released on %s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+				else $fieldset->appendChild(new XMLElement('p', __('Created by %s at %s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
 				$this->Form->appendChild($fieldset);
 			}
 
