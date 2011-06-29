@@ -692,10 +692,10 @@
 			$parent_section = $this->get('parent_section');
 			$element_name = $this->get('element_name');
 
-			try {
+			if(Lang::isUnicodeCompiled()) {
 				$valid_name = preg_match('/^[\p{L}]([0-9\p{L}\.\-\_]+)?$/u', $this->get('element_name'));
 			}
-			catch (Exception $e) {
+			else {
 				$valid_name = preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $this->get('element_name'));
 			}
 
