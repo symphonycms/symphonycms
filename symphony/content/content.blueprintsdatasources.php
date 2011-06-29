@@ -934,8 +934,11 @@
 			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
 
-			$file = DATASOURCES . '/data.' . $classname . '.php';
+			##Check to make sure the classname is not empty after handlisation.
+			if(empty($classname)) $this->_errors['name'] = __('Please ensure name contains at least one Latin-based alphabet.', array($classname));
 
+			$file = DATASOURCES . '/data.' . $classname . '.php';
+			
 			$isDuplicate = false;
 			$queueForDeletion = NULL;
 
