@@ -802,7 +802,8 @@
 					case 'version':
 						$fieldset = new XMLElement('fieldset');
 						$fieldset->appendChild(new XMLElement('legend', __('Version')));
-						$fieldset->appendChild(new XMLElement('p', __('%s released on %s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+						if (!is_numeric($value)) $fieldset->appendChild(new XMLElement('p', __('Created by %s at %s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+						else $fieldset->appendChild(new XMLElement('p', __('%s released on %s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
 						break;
 
 					case 'description':
