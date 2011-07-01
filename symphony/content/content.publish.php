@@ -62,9 +62,9 @@
 			$filters = array();
 			$filter_querystring = $prepopulate_querystring = $where = $joins = NULL;
 			$current_page = (isset($_REQUEST['pg']) && is_numeric($_REQUEST['pg']) ? max(1, intval($_REQUEST['pg'])) : 1);
-			
+
 			if(isset($_REQUEST['filter'])) {
-				
+
 				// legacy implementation, convert single filter to an array
 				// split string in the form ?filter=handle:value
 				if(!is_array($_REQUEST['filter'])) {
@@ -73,9 +73,9 @@
 				} else {
 					$filters = $_REQUEST['filter'];
 				}
-				
+
 				foreach($filters as $handle => $value) {
-					
+
 					$field_id = Symphony::Database()->fetchVar('id', 0, sprintf(
 						"SELECT `f`.`id`
 						FROM `tbl_fields` AS `f`, `tbl_sections` AS `s`
@@ -86,7 +86,7 @@
 						$handle,
 						$section->get('handle'))
 					);
-					
+
 					$field = $entryManager->fieldManager->fetch($field_id);
 
 					if($field instanceof Field) {
@@ -94,13 +94,13 @@
 						// properly named buildDSRetrievalSQL function.
 						$field->buildDSRetrivalSQL(array($value), $joins, $where, false);
 						$filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, rawurlencode($value));
-						$prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, rawurlencode($value));	
+						$prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, rawurlencode($value));
 					} else {
 						unset($filters[$i]);
 					}
 
 				}
-				
+
 				$filter_querystring = preg_replace("/&amp;$/", '', $filter_querystring);
 				$prepopulate_querystring = preg_replace("/&amp;$/", '', $prepopulate_querystring);
 
@@ -292,11 +292,11 @@
 					 * @param string $context
 					 * '/publish/'
 					 * @param array $tableData
-					 *  An array of `Widget::TableData`, passed by reference
+					 *	An array of `Widget::TableData`, passed by reference
 					 * @param integer $section_id
-					 *  The current Section ID
+					 *	The current Section ID
 					 * @param integer $entry_id
-					 *  The Entry ID for this row
+					 *	The Entry ID for this row
 					 */
 					Symphony::ExtensionManager()->notifyMembers('AddCustomPublishColumnData', '/publish/', array('tableData' => &$tableData, 'section_id' => $section->get('id'), 'entry_id' => $entry));
 
@@ -406,14 +406,14 @@
 						 * @param string $context
 						 * '/publish/'
 						 * @param array $checked
-						 *  An array of Entry ID's passed by reference
+						 *	An array of Entry ID's passed by reference
 						 */
 						Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
 
 						$entryManager = new EntryManager($this->_Parent);
 						$entryManager->delete($checked);
 
-					 	redirect($_SERVER['REQUEST_URI']);
+						redirect($_SERVER['REQUEST_URI']);
 
 					default:
 
@@ -499,7 +499,7 @@
 
 			// Check if there is a field to prepopulate
 			if (isset($_REQUEST['prepopulate'])) {
-				
+
 				foreach($_REQUEST['prepopulate'] as $field_id => $value) {
 
 					$this->Form->prependChild(Widget::Input(
@@ -515,7 +515,7 @@
 							$field->processRawFieldData($value, $error, true)
 						);
 					}
-					
+
 				}
 
 			}
@@ -652,7 +652,7 @@
 							$prepopulate_querystring = trim($prepopulate_querystring, '&');
 						}
 
-			  		   	redirect(sprintf(
+						redirect(sprintf(
 							'%s/publish/%s/edit/%d/created/%s',
 							SYMPHONY_URL,
 							$this->_context['section_handle'],
@@ -725,7 +725,7 @@
 
 				if(isset($_REQUEST['prepopulate'])){
 					$link .= '?';
-					foreach($_REQUEST['prepopulate'] as $field_id => $value) {						
+					foreach($_REQUEST['prepopulate'] as $field_id => $value) {
 						$link .= "prepopulate[$field_id]=$value&amp;";
 					}
 					$link = preg_replace("/&amp;$/", '', $link);
@@ -781,7 +781,7 @@
 						"prepopulate[{$field_id}]",
 						rawurlencode($value),
 						'hidden'
-					));	
+					));
 				}
 			}
 
@@ -860,7 +860,7 @@
 				if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)):
 					$this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
-				elseif(__ENTRY_OK__ != $entry->setDataFromPost($fields, $error)):
+				elseif(__ENTRY_OK__ != $entry->setDataFromPost($fields, $error, true)):
 					$this->pageAlert($error['message'], Alert::ERROR);
 
 				else:
@@ -883,7 +883,7 @@
 
 					}
 
-					else{
+					else {
 
 						/**
 						 * Just after the editing of an Entry
@@ -926,7 +926,7 @@
 				 * @param string $context
 				 * '/publish/'
 				 * @param array $checked
-				 *  An array of Entry ID's passed by reference
+				 *	An array of Entry ID's passed by reference
 				 */
 				$checked = array($entry_id);
 				Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
