@@ -34,13 +34,6 @@
 		private static $_registered = false;
 
 		/**
-		 * An instance of the Cacheable class
-		 *
-		 * @var Cacheable
-		 */
-		private static $_cache = null;
-
-		/**
 		 * Starts a Session object, only if one doesn't already exist. This function maps
 		 * the Session Handler functions to this classes methods by reading the default
 		 * information from the PHP ini file.
