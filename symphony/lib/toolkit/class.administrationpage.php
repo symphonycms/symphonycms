@@ -533,7 +533,7 @@
 							if($can_access_child) {
 								$xChild = new XMLElement('li');
 								$xChild->appendChild(
-									Widget::Anchor($c['name'], URL . '/symphony' . $c['link'])
+									Widget::Anchor($c['name'], SYMPHONY_URL . $c['link'])
 								);
 
 								$xChildren->appendChild($xChild);

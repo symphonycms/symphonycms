@@ -9,8 +9,8 @@
 	$Page->Html->setDTD('<!DOCTYPE html>');
 	$Page->Html->setAttribute('xml:lang', 'en');
 	$Page->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
-	$Page->addStylesheetToHead(URL . '/symphony/assets/basic.css', 'screen', 30);
-	$Page->addStylesheetToHead(URL . '/symphony/assets/error.css', 'screen', 30);
+	$Page->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 30);
+	$Page->addStylesheetToHead(SYMPHONY_URL . '/assets/error.css', 'screen', 30);
 
 	$Page->addHeaderToPage('HTTP/1.0 500 Server Error');
 	$Page->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
