@@ -24,7 +24,7 @@
 			$filter_results = array();
 			if(!is_array($filters)) $filters = array();
 
-			## Create the post data cookie element
+			// Create the post data cookie element
 			if (is_array($fields) && !empty($fields)) {
 				General::array_to_xml($post_values, $fields, true);
 			}
@@ -160,7 +160,7 @@
 
 			endif;
 
-			## PASSIVE FILTERS ONLY AT THIS STAGE. ENTRY HAS ALREADY BEEN CREATED.
+			// PASSIVE FILTERS ONLY AT THIS STAGE. ENTRY HAS ALREADY BEEN CREATED.
 
 			if(in_array('send-email', $filters) && !in_array('expect-multiple', $filters)){
 
@@ -206,15 +206,22 @@
 
 				$edit_link = SYMPHONY_URL.'/publish/'.$section->get('handle').'/edit/'.$entry->get('id').'/';
 
-				$body = __('Dear <!-- RECIPIENT NAME -->,') . General::CRLF . __('This is a courtesy email to notify you that an entry was created on the %1$s section. You can edit the entry by going to: %2$s', array($section->get('name'), $edit_link)). General::CRLF . General::CRLF;
+				$language = Symphony::Configuration()->get('lang', 'symphony');
+
+				$template_path = (file_exists(TEMPLATE . "/notification.{$language}.tpl") 
+					? TEMPLATE . "/notification.{$language}.tpl"
+					: TEMPLATE . "/notification.tpl");
+				
+				$body = sprintf(file_get_contents($template_path), $section->get('name'), $edit_link);
 
 				if(is_array($fields['body'])){
 					foreach($fields['body'] as $field_handle => $value){
 						$body .= "// $field_handle" . General::CRLF . $value . General::CRLF . General::CRLF;
 					}
 				}
-
-				else $body .= $fields['body'];
+				else {
+					$body .= $fields['body'];
+				}
 
 				// Loop over all the recipients and attempt to send them an email
 				// Errors will be appended to the Event XML
