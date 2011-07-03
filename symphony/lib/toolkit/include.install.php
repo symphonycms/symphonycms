@@ -862,7 +862,7 @@ Options +FollowSymlinks -Indexes
 		$fields['database']['port'] = '3306';
 		$fields['database']['prefix'] = 'sym_';
 		$fields['database']['use-server-encoding'] = 'no';
-		$fields['permission']['file'] = '0775';
+		$fields['permission']['file'] = '0644';
 		$fields['permission']['directory'] = '0775';
 
 		$conf = getDynamicConfiguration();
