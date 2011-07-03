@@ -114,11 +114,18 @@
 				// PHP 5.3: Apply Symphony date format using `createFromFormat`
 				if(method_exists('DateTime', 'createFromFormat')) {
 					$date = DateTime::createFromFormat(__SYM_DATETIME_FORMAT__, $string);
+					if($date === false) {
+						$date = DateTime::createFromFormat(__SYM_DATE_FORMAT__, $string);
+					}
 				}
 
 				// PHP 5.2: Fallback to `strptime`
 				else {
 					$date = strptime($string, DateTimeObj::dateFormatToStrftime(__SYM_DATETIME_FORMAT__));
+					if($date === false) {
+						$date = DateTime::dateFormatToStrftime(__SYM_DATE_FORMAT__, $string);
+					}
+
 					if(is_array($date)) {
 						$date = date(DateTime::ISO8601, mktime(
 							// Time
@@ -156,11 +163,10 @@
 
 		/**
 		 * Convert a date format to a `strftime` format
-		 *
 		 * Timezone conversion is done for unix. Windows users must exchange %z and %Z.
 		 *
-		 * Unsupported date formats : S, n, t, L, B, G, u, e, I, P, Z, c, r
-		 * Unsupported strftime formats : %U, %W, %C, %g, %r, %R, %T, %X, %c, %D, %F, %x
+		 * Unsupported `date` formats : S, n, t, L, B, G, u, e, I, P, Z, c, r
+		 * Unsupported `strftime` formats : %U, %W, %C, %g, %r, %R, %T, %X, %c, %D, %F, %x
 		 *
 		 * @since Symphony 2.2.1
 		 * @link http://www.php.net/manual/en/function.strftime.php#96424
@@ -168,7 +174,6 @@
 		 * @return string
 		 */
 		public static function dateFormatToStrftime($dateFormat) {
-
 			$caracs = array(
 				// Day - no strf eq : S
 				'd' => '%d', 'D' => '%a', 'j' => '%e', 'l' => '%A', 'N' => '%u', 'w' => '%w', 'z' => '%j',
