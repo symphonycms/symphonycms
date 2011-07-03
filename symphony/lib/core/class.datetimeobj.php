@@ -123,7 +123,7 @@
 				else {
 					$date = strptime($string, DateTimeObj::dateFormatToStrftime(__SYM_DATETIME_FORMAT__));
 					if($date === false) {
-						$date = DateTime::dateFormatToStrftime(__SYM_DATE_FORMAT__, $string);
+						$date = DateTimeObj::dateFormatToStrftime(__SYM_DATE_FORMAT__, $string);
 					}
 
 					if(is_array($date)) {
