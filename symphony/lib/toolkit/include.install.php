@@ -863,7 +863,7 @@ Options +FollowSymlinks -Indexes
 		$fields['database']['prefix'] = 'sym_';
 		$fields['database']['use-server-encoding'] = 'no';
 		$fields['permission']['file'] = '0644';
-		$fields['permission']['directory'] = '0775';
+		$fields['permission']['directory'] = '0755';
 
 		$conf = getDynamicConfiguration();
 		$fields['general']['sitename'] = $conf['general']['sitename'];
