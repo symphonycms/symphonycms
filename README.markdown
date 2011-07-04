@@ -173,17 +173,24 @@ details for establishing a database connection and about your server environment
 
 **Secure Production Sites: Change permissions and remove installer files.**
 
-1. For a smooth install process, change permissions for the `root` and `workspace` directories.
+1. For a smooth install process, change permissions for your site root to `777`.
 
-	cd /your/site/root
-	chmod -R 777 workspace
+	`cd /your/site/root`
+	`chmod -R 777 .`
 
-2. Once successfully installed, change permissions as per your server preferences, E.G.
-
-	chmod 755 .
+2. Once successfully installed, you should change permissions to something tighter for security. Symphony recommends `755` for directories and `644` for files by default, but this might need to be changed depending on your server setup or workflow, eg. `775`/`664` or some alternative mixture
 
 3. Remove installer files (unless you're fine with revealing all your trade secrets):
 
-	rm install.php install.sql workspace/install.sql update.php
+	`rm install.php install.sql workspace/install.sql update.php`
 
 4. Dance like it's 2012!
+
+### Notes
+
+Thanks to @DavidOliver for these quick scripts.
+
+To recursively chmod directories only:
+	`find /your/site/root -type d -exec chmod 755 {} \;`
+To recursively chmod files only:
+ 	`find /your/site/root -type f -exec chmod 644 {} \;`. 
