@@ -240,25 +240,42 @@
 		 *  multiple sections.
 		 * @return boolean
 		 */
-		public function delete($entries, $section_id = null) {
+		public function delete($entries, $section_id = null){
 
 			if(!is_array($entries)) {
 				$entries = array($entries);
 			}
 
-			foreach($entries as $id){
-				$e = $this->fetch($id, $section_id);
+			// We'll split $entries into blocks of 2500 (random number)
+			// and process the deletion in chunks.
+			$chunks = array_chunk($entries, 2500);
+			foreach($chunks as $chunk) {
+				$entry_list = implode("', '", $chunk);
+				$entries = !is_null($section_id) ? $this->fetch($chunk, $section_id) : $chunk;
 
-				if(!is_object($e[0])) continue;
+				foreach($entries as $id) {
+					if(!$id instanceof Entry) {
+						$e = $this->fetch($id, $section_id);
+						$e = current($e);
+						if(!$e instanceof Entry) continue;
+					}
+					else {
+						$e = $id;
+						$id = $e->get('id');
+					}
 
-				foreach($e[0]->getData() as $field_id => $data){
-					$field = $this->fieldManager->fetch($field_id);
-					$field->entryDataCleanup($id, $data);
+					$entry_data = $e->getData();
+					foreach($entry_data as $field_id => $data){
+						$field = $this->fieldManager->fetch($field_id);
+						$field->entryDataCleanup($id, $data);
+					}
+
+					unset($e);
 				}
+				unset($entries);
+
+				Symphony::Database()->delete('tbl_entries', " `id` IN ('$entry_list') ");
 			}
-			
-			$entry_list = implode("', '", $entries);
-			Symphony::Database()->delete('tbl_entries', " `id` IN ('$entry_list') ");
 
 			return true;
 		}
