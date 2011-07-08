@@ -516,7 +516,7 @@
 						 */
 						Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => &$entry_ids));
 
-						$entryManager->delete($entry_ids);
+						$entryManager->delete($entry_ids, $section_id);
 					}
 
 					redirect(SYMPHONY_URL . '/blueprints/sections/');

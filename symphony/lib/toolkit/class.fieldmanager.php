@@ -187,7 +187,6 @@
 		 *  An array of Field objects. If no Field are found, null is returned.
 		 */
 		public function fetch($id = null, $section_id = null, $order = 'ASC', $sortfield = 'sortorder', $type = null, $location = null, $where = null, $restrict=Field::__FIELD_ALL__){
-
 			$ret = array();
 
 			if(!is_null($id) && is_numeric($id)){
@@ -195,7 +194,7 @@
 			}
 
 			if(!is_null($id) && is_numeric($id) && isset(self::$_initialiased_fields[$id]) && self::$_initialiased_fields[$id] instanceof Field){
-				$ret[] = $obj = clone self::$_initialiased_fields[$id];
+				$ret[] = clone self::$_initialiased_fields[$id];
 			}
 
 			else {

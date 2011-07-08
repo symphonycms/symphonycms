@@ -226,22 +226,28 @@
 		}
 
 		/**
-		 * Given an Entry object, or an array of Entry objects delete all
+		 * Given an Entry ID, or an array of Entry ID's, delete all
 		 * data associated with this Entry using a Field's `entryDataCleanup()`
-		 * function, and then remove this Entry from `tbl_entries`.
-		 *
-		 * @param array|Entry $entries
-		 *  An Entry object, or an array of Entry objects to delete
+		 * function, and then remove this Entry from `tbl_entries`. If the `$entries`
+		 * all belong to the same section, passing `$section_id` will improve
+		 * performance
+		 * 
+		 * @param array|integer $entries
+		 *  An entry_id, or an array of entry id's to delete
+		 * @param integer $section_id (optional)
+		 *  If possible, the `$section_id` of the the `$entries`. This parameter
+		 *  should be left as null if the `$entries` array contains entry_id's for
+		 *  multiple sections.
 		 * @return boolean
 		 */
-		public function delete($entries){
+		public function delete($entries, $section_id = null) {
 
 			if(!is_array($entries)) {
 				$entries = array($entries);
 			}
 
 			foreach($entries as $id){
-				$e = $this->fetch($id);
+				$e = $this->fetch($id, $section_id);
 
 				if(!is_object($e[0])) continue;
 
@@ -250,7 +256,7 @@
 					$field->entryDataCleanup($id, $data);
 				}
 			}
-
+			
 			$entry_list = implode("', '", $entries);
 			Symphony::Database()->delete('tbl_entries', " `id` IN ('$entry_list') ");
 
