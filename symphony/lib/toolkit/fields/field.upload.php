@@ -518,12 +518,14 @@
 				$this->_key++;
 
 				if (preg_match('/^regexp:/i', $data[0])) {
-					$pattern = preg_replace('/regexp:/i', null, $this->cleanValue($data[0]));
+					$pattern = preg_replace('/^regexp:\s*/i', null, $this->cleanValue($data[0]));
 					$regex = 'REGEXP';
 				} else {
-					$pattern = preg_replace('/not-?regexp:/i', null, $this->cleanValue($data[0]));
+					$pattern = preg_replace('/^not-?regexp:\s*/i', null, $this->cleanValue($data[0]));
 					$regex = 'NOT REGEXP';
 				}
+
+				if(strlen($pattern) == 0) return;
 
 				$joins .= "
 					LEFT JOIN
@@ -581,7 +583,7 @@
 			else {
 				$sort = sprintf(
 					'ORDER BY (
-						SELECT %s 
+						SELECT %s
 						FROM tbl_entries_data_%d AS `ed`
 						WHERE entry_id = e.id
 					) %s',
