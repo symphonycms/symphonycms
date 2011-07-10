@@ -332,6 +332,8 @@
 				return $result;
 			}
 
+			$start = precision_timer();
+
 			if(is_null($this->_port)){
 				$this->_port = (!is_null($this->_scheme) ? self::$ports[$this->_scheme] : 80);
 			}
@@ -374,6 +376,8 @@
 
 			@fclose($handle);
 
+			$end = precision_timer('stop', $start);
+
 			if(preg_match('/Transfer\\-Encoding:\\s+chunked\\r\\n/', $header)){
 
 				$fp = 0;
@@ -413,7 +417,8 @@
 			$this->_info_last = array(
 				'url' => $this->_url,
 				'content_type' => $content_type,
-				'http_code' => $status
+				'http_code' => $status,
+				'total_time' => $end
 			);
 
 			return ($this->_returnHeaders ? $header : NULL) . $response;
@@ -425,7 +430,7 @@
 		 * the same output array as expected when calling the
 		 * `curl_getinfo()` function. If Sockets were used to complete
 		 * the request instead of CURL, the resulting array will be
-		 * the HTTP Code, the Content Type and the URL of the resulting
+		 * the HTTP Code, Content Type, URL and Total Time of the resulting
 		 * request
 		 *
 		 * @link http://au2.php.net/manual/en/function.curl-getinfo.php
