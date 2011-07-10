@@ -238,9 +238,9 @@
 		 *
 		 * @param boolean $all
 		 *  If true, return all errors instead of one by one. Defaults to false
-		 * @rewind boolean $rewind
+		 * @param boolean $rewind
 		 *  If rewind is true, resets the internal array pointer to the start of
-		 * the $_errors array. Defaults to false.
+		 *  the `$_errors` array. Defaults to false.
 		 * @return array
 		 *  Either an array of error array's or just an error array
 		 */
