@@ -63,7 +63,7 @@
 		protected $_force_empty_result = false;
 
 		/**
-		 * Constructor for the datasource sets the parent, and if `$process_params` is set,
+		 * Constructor for the datasource sets the parent, if `$process_params` is set,
 		 * the `$env` variable will be run through `Datasource::processParameters`.
 		 *
          * @see toolkit.Datasource#processParameters()
@@ -88,7 +88,8 @@
 		/**
 		 * This function is required in order to edit it in the datasource editor page.
 		 * Do not overload this function if you are creating a custom datasource. It is only
-		 * used by the datasource editor.
+		 * used by the datasource editor. If this is set to false, which is default, the
+		 * Datasource's `about()` information will be displayed.
 		 *
 		 * @return boolean
 		 *	 True if the Datasource can be edited, false otherwise. Defaults to false
@@ -120,24 +121,28 @@
 
 		/**
 		 * Returns an associative array of information about a datasource.
+		 *
+		 * @return array
 		 */
-		public function about() {}
+		public function about() {
+			return array();
+		}
 
 		/**
 		 * The meat of the Datasource, this function includes the datasource
 		 * type's file that will preform the logic to return the data for this datasource
-		 * It is passed the current parameters
+		 * It is passed the current parameters.
 		 *
 		 * @param array $param
 		 *  The current parameter pool that this Datasource can use when filtering
 		 *  and finding Entries or data.
 		 */
-		public function grab(Array $param=array()) {}
+		public function grab(array $param = array()) {}
 
 		/**
 		 * By default, all Symphony filters are considering to be AND filters, that is
 		 * they are all used and Entries must match each filter to be included. It is
-		 * possible to use OR filtering in a field, but using an + to separate the values.
+		 * possible to use OR filtering in a field by using an + to separate the values.
 		 * eg. If the filter is test1 + test2, this will match any entries where this field
 		 * is test1 OR test2. This function is run on each filter (ie. each field) in a
 		 * datasource
@@ -167,7 +172,7 @@
 		}
 
 		/**
-		 * Returns an error XMLElement with a 'No records found' text
+		 * Returns an error XMLElement with 'No records found' text
 		 *
 		 * @return XMLElement
 		 */
@@ -242,7 +247,7 @@
 		 *  any params set by Symphony or Events or by other Datasources
 		 * @param boolean $includeParenthesis
 		 *  Parameters will sometimes not be surrounded by {}. If this is the case
-		 *  setting this parameter to false will maket this function automatically add
+		 *  setting this parameter to false will make this function automatically add
 		 *  them to the parameter. By default this is true, which means all parameters
 		 *  in the string already are surrounded by {}
 		 * @param boolean $escape
@@ -298,7 +303,7 @@
 		}
 
 		/**
-		 * Using regex, this escapes any commas in the given string
+		 * Using regexp, this escapes any commas in the given string
 		 *
 		 * @param string $string
 		 *  The string to escape the commas in
