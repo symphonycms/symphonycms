@@ -179,7 +179,7 @@
 			$error = new XMLElement('error', __('XML returned is invalid.'));
 			$result->appendChild($error);
 			$element = new XMLElement('errors');
-			foreach($errors as $e) {
+			foreach($proc->getError() as $e) {
 				if(strlen(trim($e['message'])) == 0) continue;
 				$element->appendChild(new XMLElement('item', General::sanitize($e['message'])));
 			}
