@@ -214,9 +214,10 @@
 				}
 
 				// Do any extensions need updating?
-				$extensions = Symphony::ExtensionManager()->listAll();
+				$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 				if(is_array($extensions) && !empty($extensions) && $this->__canAccessAlerts()) {
-					foreach($extensions as $handle => $about) {
+					foreach($extensions as $name) {
+						$about = Symphony::ExtensionManager()->about($name);
 						if($about['status'] == EXTENSION_REQUIRES_UPDATE) {
 							$this->Page->pageAlert(
 								__('An extension requires updating. <a href="%s">View Extensions</a>', array(SYMPHONY_URL . '/system/extensions/'))
