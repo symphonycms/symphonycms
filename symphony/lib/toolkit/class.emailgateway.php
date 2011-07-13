@@ -515,6 +515,22 @@
 		}
 
 		/**
+		 * Gets a property.
+		 *
+		 * Magic function, supplied by php.
+		 * This function will attempt to find a variable set with `$name` and
+		 * returns it. If the variable is not set, it will return false.
+		 *
+		 * @since Symphony 2.2.2
+		 * @param string $name
+		 *  The property name.
+		 * @return boolean|mixed
+		 */
+		public function __get($name) {
+			return isset($this->{'_'.$name}) ? $this->{'_'.$name} : false;
+		}
+
+		/**
 		 * The preferences to add to the preferences pane in the admin area.
 		 *
 		 * @return XMLElement
