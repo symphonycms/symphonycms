@@ -1129,16 +1129,20 @@
 		/**
 		 * Remove the entry data of this field from the database.
 		 *
-		 * @param integer $entry_id
-		 *	the id of the entry to delete.
+		 * @param integer|array $entry_id
+		 *	the ID of the entry, or an array of entry ID's to delete.
 		 * @param array $data (optional)
 		 *	The entry data provided for fields to do additional cleanup
 		 *  This is an optional argument and defaults to null.
 		 * @return boolean
-		 *	true if the cleanup was successful, false otherwise.
+		 *	Returns true after the cleanup has been completed
 		 */
 		public function entryDataCleanup($entry_id, $data=NULL){
-			Symphony::Database()->delete('tbl_entries_data_' . $this->get('id'), " `entry_id` = '$entry_id' ");
+			$where = is_array($entry_id)
+				? " `entry_id` IN (" . implode(',', $entry_id) . ") "
+				: " `entry_id` = '$entry_id' ";
+
+			Symphony::Database()->delete('tbl_entries_data_' . $this->get('id'), $where);
 
 			return true;
 		}

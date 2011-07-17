@@ -349,11 +349,13 @@
 		 *  Choose whether to get data from a subset of fields or all fields in a section,
 		 *  by providing an array of field names. Defaults to null, which will load data
 		 *  from all fields in a section.
+		 * @param boolean $enable_sort
+		 *  Defaults to true, if false this function will not apply any sorting
 		 * @return array
 		 *  If `$buildentries` is true, this function will return an array of Entry objects,
 		 *  otherwise it will return an associative array of Entry data from `tbl_entries`
 		 */
-		public function fetch($entry_id = null, $section_id = null, $limit = null, $start = null, $where = null, $joins = null, $group = false, $buildentries = true, $element_names = null){
+		public function fetch($entry_id = null, $section_id = null, $limit = null, $start = null, $where = null, $joins = null, $group = false, $buildentries = true, $element_names = null, $enable_sort = true){
 			$sort = null;
 
 			if (!$entry_id && !$section_id) return false;
@@ -365,8 +367,8 @@
 			if (!is_object($section)) return false;
 
 			## SORTING
-			// A single $entry_id doesn't need to be sorted on
-			if (!is_array($entry_id) && !is_null($entry_id) && is_int($entry_id)) {
+			// A single $entry_id doesn't need to be sorted on, or if it's explicitly disabled
+			if ((!is_array($entry_id) && !is_null($entry_id) && is_int($entry_id)) || !$enable_sort) {
 				$sort = null;
 			}
 			// Check for RAND first, since this works independently of any specific field
@@ -406,7 +408,7 @@
 				$joins
 				WHERE 1
 				".($entry_id ? "AND `e`.`id` IN ('".implode("', '", $entry_id)."') " : '')."
-				".($section_id && !is_null($sort) ? "AND `e`.`section_id` = '$section_id' " : '')."
+				".($section_id ? "AND `e`.`section_id` = '$section_id' " : '')."
 				$where
 				$sort
 				".($limit ? 'LIMIT ' . intval($start) . ', ' . intval($limit) : '');
@@ -414,7 +416,6 @@
 			$rows = Symphony::Database()->fetch($sql);
 
 			return ($buildentries && (is_array($rows) && !empty($rows)) ? $this->__buildEntries($rows, $section_id, $element_names) : $rows);
-
 		}
 
 		/**
