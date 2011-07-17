@@ -231,7 +231,7 @@
 		 * function, and then remove this Entry from `tbl_entries`. If the `$entries`
 		 * all belong to the same section, passing `$section_id` will improve
 		 * performance
-		 *
+		 * 
 		 * @param array|integer $entries
 		 *  An entry_id, or an array of entry id's to delete
 		 * @param integer $section_id (optional)
@@ -241,28 +241,9 @@
 		 * @return boolean
 		 */
 		public function delete($entries, $section_id = null){
-			$needs_data = true;
 
 			if(!is_array($entries)) {
 				$entries = array($entries);
-			}
-
-			// Get the section's schema
-			if(!is_null($section_id)) {
-				$section = $this->sectionManager->fetch($section_id);
-				if($section instanceof Section) {
-					$fields = $section->fetchFields();
-					$data = array();
-					foreach($fields as $field) {
-						$reflection = new ReflectionClass($field);
-						// This field overrides the default implementation, so pass it data.
-						$data[$field->get('element_name')] = $reflection->getMethod('entryDataCleanup')->class == 'Field' ? false : true;
-					}
-					$data = array_filter($data);
-					if(empty($data)) {
-						$needs_data = false;
-					}
-				}
 			}
 
 			// We'll split $entries into blocks of 2500 (random number)
@@ -270,22 +251,11 @@
 			$chunks = array_chunk($entries, 2500);
 			foreach($chunks as $chunk) {
 				$entry_list = implode("', '", $chunk);
+				$entries = !is_null($section_id) ? $this->fetch($chunk, $section_id) : $chunk;
 
-				// If we weren't given a `section_id` we'll have to process individually
-				if(is_null($section_id)) {
-					$entries = $chunk;
-				}
-				// If we don't need data for any field, we can process the whole chunk
-				// without building Entry objects, otherwise we'll need to build
-				// Entry objects with data for the required fields
-				else if($needs_data) {
-					$entries = $this->fetch($chunk, $section_id, null, null, null, null, false, true, array_keys($data));
-				}
-
-				if($needs_data) foreach($entries as $id) {
-					// Handles the case where `section_id` was not provided
-					if(is_null($section_id)) {
-						$e = $this->fetch($id);
+				foreach($entries as $id) {
+					if(!$id instanceof Entry) {
+						$e = $this->fetch($id, $section_id);
 						$e = current($e);
 						if(!$e instanceof Entry) continue;
 					}
@@ -299,7 +269,10 @@
 						$field = $this->fieldManager->fetch($field_id);
 						$field->entryDataCleanup($id, $data);
 					}
+
+					unset($e);
 				}
+				unset($entries);
 
 				Symphony::Database()->delete('tbl_entries', " `id` IN ('$entry_list') ");
 			}
