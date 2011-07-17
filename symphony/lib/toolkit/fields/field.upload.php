@@ -394,7 +394,7 @@
 				return $result;
 			}
 
-			if($simulate) return;
+			if($simulate && is_null($entry_id)) return $data;
 
 			// Upload the new file
 			$abs_path = DOCROOT . '/' . trim($this->get('destination'), '/');
@@ -424,7 +424,6 @@
 			$data['name'] = Lang::createFilename($data['name']);
 
 			if(!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], Symphony::Configuration()->get('write_mode', 'file'))){
-
 				$message = __('There was an error while trying to upload the file <code>%1$s</code> to the target directory <code>%2$s</code>.', array($data['name'], 'workspace/'.ltrim($rel_path, '/')));
 				$status = self::__ERROR_CUSTOM__;
 				return;
