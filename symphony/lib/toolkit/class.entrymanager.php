@@ -282,34 +282,34 @@
 					$entries = $this->fetch($chunk, $section_id);
 				}
 
-				foreach($entries as $id) {
-					// Handles the case where `section_id` was not provided
-					if(is_null($section_id)) {
-						$e = $this->fetch($id);
-						$e = current($e);
-						if(!$e instanceof Entry) continue;
-					}
-					// If we needed data, whole Entry objects will exist
-					else if($needs_data) {
-						$e = $id;
-						$id = $e->get('id');
-					}
-					
-					// Again, if we need data, time to loop over it and send
-					// it to the fields. Note we can't rely on the `$fields`
-					// array as we may also be dealing with the case where
-					// a `section_id` hasn't been provided
-					if($needs_data) {
+				if($needs_data) {
+					foreach($entries as $id) {
+						// Handles the case where `section_id` was not provided
+						if(is_null($section_id)) {
+							$e = $this->fetch($id);
+							$e = current($e);
+							if(!$e instanceof Entry) continue;
+						}
+						// If we needed data, whole Entry objects will exist
+						else if($needs_data) {
+							$e = $id;
+							$id = $e->get('id');
+						}
+
+						// Time to loop over it and send it to the fields.
+						// Note we can't rely on the `$fields` array as we may
+						// also be dealing with the case where `section_id` hasn't
+						// been provided
 						$entry_data = $e->getData();
 						foreach($entry_data as $field_id => $data){
 							$field = $this->fieldManager->fetch($field_id);
 							$field->entryDataCleanup($id, $data);
 						}
 					}
-					else {
-						foreach($fields as $field) {
-							$field->entryDataCleanup($id);
-						}
+				}
+				else {
+					foreach($fields as $field) {
+						$field->entryDataCleanup($chunk);
 					}
 				}
 
