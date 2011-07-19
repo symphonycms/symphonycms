@@ -99,7 +99,7 @@
 		 * @return integer|boolean
 		 *  Returns a Field ID of the created Field on success, false otherwise.
 		 */
-		public function add(Array $fields){
+		public function add(array $fields){
 
 			if(!isset($fields['sortorder'])){
 				$next = Symphony::Database()->fetchVar("next", 0, 'SELECT MAX(`sortorder`) + 1 AS `next` FROM tbl_fields LIMIT 1');
@@ -124,7 +124,7 @@
 		 *  can just be the changed values.
 		 * @return boolean
 		 */
-		public function edit($id, Array $fields){
+		public function edit($id, array $fields){
 			if(!Symphony::Database()->update($fields, "tbl_fields", " `id` = '$id'")) return false;
 
 			return true;
@@ -187,61 +187,105 @@
 		 *  An array of Field objects. If no Field are found, null is returned.
 		 */
 		public function fetch($id = null, $section_id = null, $order = 'ASC', $sortfield = 'sortorder', $type = null, $location = null, $where = null, $restrict=Field::__FIELD_ALL__){
-			$ret = array();
+			$fields = array();
+			$returnSingle = false;
+			$ids = array();
+			$field_contexts = array();
 
-			if(!is_null($id) && is_numeric($id)){
-				$returnSingle = true;
-			}
+			if(!is_null($id)) {
+				if(is_numeric($id)) {
+					$returnSingle = true;
+				}
 
-			if(!is_null($id) && is_numeric($id) && isset(self::$_initialiased_fields[$id]) && self::$_initialiased_fields[$id] instanceof Field){
-				$ret[] = clone self::$_initialiased_fields[$id];
-			}
+				if(!is_array($id)) {
+					$field_ids = array((int)$id);
+				}
+				else {
+					$field_ids = $id;
+				}
 
-			else {
-
-				$sql = "SELECT t1.* "
-					 . "FROM tbl_fields as t1 "
-					 . "WHERE 1 "
-					 . ($type ? " AND t1.`type` = '{$type}' " : NULL)
-					 . ($location ? " AND t1.`location` = '{$location}' " : NULL)
-					 . ($section_id ? " AND t1.`parent_section` = '{$section_id}' " : NULL)
-					 . $where
-					 . ($id ? " AND t1.`id` = '{$id}' LIMIT 1" : " ORDER BY t1.`{$sortfield}` {$order}");
-
-				if(!$fields = Symphony::Database()->fetch($sql)) return ($returnSingle ? null : array());
-
-				foreach($fields as $f){
-
-					if(isset(self::$_initialiased_fields[$f['id']]) && self::$_initialiased_fields[$f['id']] instanceof Field){
-						$obj = clone self::$_initialiased_fields[$f['id']];
-					}
-					else{
-						$obj = $this->create($f['type']);
-
-						$obj->setArray($f);
-
-						$context = Symphony::Database()->fetchRow(0, sprintf(
-							"SELECT * FROM `tbl_fields_%s` WHERE `field_id` = '%s' LIMIT 1", $obj->handle(), $obj->get('id')
-						));
-
-						unset($context['id']);
-						$obj->setArray($context);
-
-						self::$_initialiased_fields[$obj->get('id')] = clone $obj;
-					}
-
-					if($restrict == Field::__FIELD_ALL__
-							|| ($restrict == Field::__TOGGLEABLE_ONLY__ && $obj->canToggle())
-							|| ($restrict == Field::__UNTOGGLEABLE_ONLY__ && !$obj->canToggle())
-							|| ($restrict == Field::__FILTERABLE_ONLY__ && $obj->canFilter())
-							|| ($restrict == Field::__UNFILTERABLE_ONLY__ && !$obj->canFilter())
+				// Loop over the `$field_ids` and check to see we have
+				// instances of the request fields
+				foreach($field_ids as $key => $field_id) {
+					if(
+						isset(self::$_initialiased_fields[$field_id])
+						&& self::$_initialiased_fields[$field_id] instanceof Field
 					) {
-						$ret[] = $obj;
+						$fields[$field_id] = self::$_initialiased_fields[$field_id];
+						unset($field_ids[$key]);
 					}
 				}
 			}
 
-			return (count($ret) <= 1 && $returnSingle ? $ret[0] : $ret);
+			// If there is any `$field_ids` left to be resolved lets do that, otherwise
+			// if `$id` wasn't provided in the first place, we'll also continue
+			if(!empty($field_ids) || is_null($id)) {
+				$sql = sprintf("
+						SELECT t1.*
+						FROM tbl_fields AS `t1`
+						WHERE 1
+						%s %s %s %s 
+						%s
+					",
+					($type) ? " AND t1.`type` = '{$type}' " : NULL,
+					($location) ? " AND t1.`location` = '{$location}' " : NULL,
+					($section_id) ? " AND t1.`parent_section` = '{$section_id}' " : NULL,
+					$where,
+					($field_ids) ? " AND t1.`id` IN(" . implode(',', $field_ids) . ") " : " ORDER BY t1.`{$sortfield}` {$order}"
+				);
+
+				if(!$result = Symphony::Database()->fetch($sql)) return ($returnSingle ? null : array());
+
+				// Loop over the resultset building an array of type, field_id
+				foreach($result as $f) {
+					$ids[$f['type']][] = $f['id'];
+				}
+
+				// Loop over the `ids` array, which is grouped by field type
+				// and get the field context.
+				foreach($ids as $type => $field_id) {
+					$field_contexts[$type] = Symphony::Database()->fetch(sprintf(
+						"SELECT * FROM `tbl_fields_%s` WHERE `field_id` IN (%s)",
+						$type, implode(',', $field_id)
+					), 'field_id');
+				}
+
+				foreach($result as $f) {
+					// We already have this field in our static store
+					if(
+						isset(self::$_initialiased_fields[$f['id']])
+						&& self::$_initialiased_fields[$f['id']] instanceof Field
+					) {
+						$field = self::$_initialiased_fields[$f['id']];
+					}
+					// We don't have an instance of this field, so let's set one up
+					else {
+						$field = $this->create($f['type']);
+						$field->setArray($f);
+
+						// Get the context for this field from our previous
+						// queries.
+						$context = $field_contexts[$f['type']][$f['id']];
+
+						unset($context['id']);
+						$field->setArray($context);
+
+						self::$_initialiased_fields[$f['id']] = $field;
+					}
+
+					// Check to see if there was any restricts imposed on the fields
+					if($restrict == Field::__FIELD_ALL__
+						|| ($restrict == Field::__TOGGLEABLE_ONLY__ && $field->canToggle())
+						|| ($restrict == Field::__UNTOGGLEABLE_ONLY__ && !$field->canToggle())
+						|| ($restrict == Field::__FILTERABLE_ONLY__ && $field->canFilter())
+						|| ($restrict == Field::__UNFILTERABLE_ONLY__ && !$field->canFilter())
+					) {
+						$fields[$f['id']] = $field;
+					}
+				}
+			}
+
+			return count($fields) <= 1 && $returnSingle ? current($fields) : $fields;
 		}
 
 		/**

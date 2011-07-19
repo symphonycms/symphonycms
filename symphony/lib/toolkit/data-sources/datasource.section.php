@@ -98,6 +98,9 @@
 
 					processSystemParameters($ds, $entry, $param_pool);
 
+					$pool = $entryManager->fieldManager->fetch(array_keys($data));
+					$fieldPool += $pool;
+
 					foreach($data as $field_id => $values){
 
 						if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id])) {
@@ -168,6 +171,9 @@
 	}
 
 	if(is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
+		$pool = $entryManager->fieldManager->fetch(array_keys($this->dsParamFILTERS));
+		$fieldPool += $pool;
+
 		foreach($this->dsParamFILTERS as $field_id => $filter){
 
 			if((is_array($filter) && empty($filter)) || trim($filter) == '') continue;
@@ -182,9 +188,6 @@
 			}
 
 			else $value = $filter;
-
-			if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id]))
-				$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
 
 			if($field_id != 'id' && $field_id != 'system:date' && !($fieldPool[$field_id] instanceof Field)){
 				throw new Exception(
@@ -335,6 +338,9 @@
 					}
 
 					processSystemParameters($this, $entry, $param_pool);
+
+					$pool = $entryManager->fieldManager->fetch(array_keys($data));
+					$fieldPool += $pool;
 
 					foreach($data as $field_id => $values){
 
