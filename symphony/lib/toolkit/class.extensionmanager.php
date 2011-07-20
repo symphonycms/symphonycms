@@ -133,6 +133,8 @@
 		 *		'description' => 'A description about this extension'
 		 * `
 		 * @see toolkit.ExtensionManager#__requiresUpdate()
+		 * @param string $name
+		 *  The name of the Extension Class minus the extension prefix.
 		 * @return array
 		 *  An associative array describing this extension
 		 */
@@ -158,8 +160,8 @@
 		 * Returns the status of an Extension by name
 		 *
 		 * @param string $name
-		 *  The name of the extension as provided by it's about function
-		 * @return int
+		 *  The name of the Extension Class minus the extension prefix.
+		 * @return integer
 		 *  An extension status, `EXTENSION_ENABLED`, `EXTENSION_DISABLED`
 		 *  `EXTENSION_NOT_INSTALLED` and `EXTENSION_REQUIRES_UPDATE`.
 		 *  If an extension doesn't exist, null will be returned.
@@ -181,7 +183,7 @@
 		 * A convenience method that returns an extension version from it's name.
 		 *
 		 * @param string $name
-		 *  The name of the extension as provided by it's about function
+		 *  The name of the Extension Class minus the extension prefix.
 		 * @return string
 		 */
 		public function fetchInstalledVersion($name){
@@ -193,8 +195,8 @@
 		 * A convenience method that returns an extension ID from it's name.
 		 *
 		 * @param string $name
-		 *  The name of the extension as provided by it's about function
-		 * @return int
+		 *  The name of the Extension Class minus the extension prefix.
+		 * @return integer
 		 */
 		public function fetchExtensionID($name){
 			$this->__buildExtensionList();
@@ -207,9 +209,9 @@
 		 * @link http://php.net/manual/en/function.strnatcasecmp.php
 		 * @param array $a
 		 * @param array $b
-		 * @return int
+		 * @return integer
 		 */
-		public function sortByName(Array $a, Array $b) {
+		public function sortByName(array $a, array $b) {
 			return strnatcasecmp($a['name'], $b['name']);
 		}
 
@@ -236,7 +238,7 @@
 		 *  The about array from the extension
 		 * @return boolean
 		 */
-		private function __requiresUpdate(Array $info){
+		private function __requiresUpdate(array $info){
 			if($info['status'] == EXTENSION_NOT_INSTALLED) return false;
 
 			$current_version = $this->fetchInstalledVersion($info['handle']);
