@@ -160,14 +160,13 @@
 			$records = Symphony::Database()->fetch(sprintf("
 					SELECT *
 					FROM `tbl_authors`
-					WHERE `id` IN (%d)
+					WHERE `id` IN (%s)
 					ORDER BY %s %s
-					%s %s
+					%s
 				",
 				implode(",", $id),
 				$sortby, $sortdirection,
-				($limit) ? "LIMIT " . $limit : '',
-				($start && $limit) ? ', ' . $start : ''
+				($limit) ? "LIMIT " . (($start) ? $start . ',':'') . $limit : ''
 			));
 
 			if(!is_array($records) || empty($records)) return ($return_single ? $authors[0] : $authors);
