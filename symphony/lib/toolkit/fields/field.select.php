@@ -223,7 +223,7 @@
 			$label->setValue(__('%s Allow selection of multiple options', array($input->generate())));
 			$div->appendChild($label);
 
-			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Options'));
+			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Values'));
 
 			## Sort options?
 			$label = Widget::Label();
