@@ -45,6 +45,9 @@
 			 *  the message (string) an optionally an associative array
 			 *  of additional attributes to add to the filter element.
 			 * @param XMLElement $post_values
+			 * @param integer $entry_id
+			 *  If editing an entry, this parameter will be an integer,
+			 *  otherwise null.
 			 */
 			Symphony::ExtensionManager()->notifyMembers(
 				'EventPreSaveFilter',
@@ -53,7 +56,8 @@
 					'fields' => &$fields,
 					'event' => &$event,
 					'messages' => &$filter_results,
-					'post_values' => &$post_values
+					'post_values' => &$post_values,
+					'entry_id' => &$entry_id
 				)
 			);
 
@@ -208,10 +212,10 @@
 
 				$language = Symphony::Configuration()->get('lang', 'symphony');
 
-				$template_path = (file_exists(TEMPLATE . "/notification.{$language}.tpl") 
+				$template_path = (file_exists(TEMPLATE . "/notification.{$language}.tpl")
 					? TEMPLATE . "/notification.{$language}.tpl"
 					: TEMPLATE . "/notification.tpl");
-				
+
 				$body = sprintf(file_get_contents($template_path), $section->get('name'), $edit_link);
 
 				if(is_array($fields['body'])){
