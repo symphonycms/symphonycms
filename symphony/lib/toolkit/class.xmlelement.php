@@ -305,7 +305,7 @@
 		 * whether the value should be prepended or appended
 		 * to the children.
 		 *
-		 * @param string|XMLElement $value
+		 * @param string $value
 		 * @param boolean $prepend (optional)
 		 *  Defaults to true.
 		 */
