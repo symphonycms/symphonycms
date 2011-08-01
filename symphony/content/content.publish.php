@@ -443,7 +443,7 @@
 								 */
 								Symphony::ExtensionManager()->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$entry[0], 'fields' => $fields));
 
-								$entry[0]->setData($field_id, $field->toggleFieldData($entry[0]->getData($field_id), $value));
+								$entry[0]->setData($field_id, $field->toggleFieldData($entry[0]->getData($field_id), $value, $entry_id));
 								$entry[0]->commit();
 
 								/**
