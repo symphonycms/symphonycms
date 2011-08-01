@@ -202,10 +202,12 @@
 		 *	 the data to toggle.
 		 * @param string $newState
 		 *	 the new value to set
+         * @param integer $entry_id (optional)
+		 *   an optional entry ID for more intelligent processing. defaults to null
 		 * @return array
 		 *	 the toggled data.
 		 */
-		public function toggleFieldData(Array $data, $newState){
+		public function toggleFieldData(Array $data, $newState, $entry_id=null){
 			return $data;
 		}
 
