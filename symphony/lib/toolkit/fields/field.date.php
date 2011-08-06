@@ -133,7 +133,7 @@
 				$year_month = current($matches);
 
 				$parts['start'] = "$year_month-01 00:00:00";
-				$parts['end'] = DateTimeObj::get('Y-m-d', 'last day of ' . $year_month) . " 23:59:59";
+				$parts['end'] = DateTimeObj::get('Y-m-t', $parts['start']) . " 23:59:59";
 
 				$parts = self::isEqualTo($parts, $direction, $equal_to);
 			}
