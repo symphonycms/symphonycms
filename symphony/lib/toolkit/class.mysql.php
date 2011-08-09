@@ -263,7 +263,6 @@
 		 * @return boolean
 		 */
 		public function connect($host = null, $user = null, $password = null, $port ='3306', $database = null){
-
 			MySQL::$_connection = array(
 				'host' => $host,
 				'user' => $user,
@@ -272,11 +271,16 @@
 				'database' => $database
 			);
 
-			MySQL::$_connection['id'] = mysql_connect(
-				MySQL::$_connection['host'] . ":" . MySQL::$_connection['port'], MySQL::$_connection['user'], MySQL::$_connection['pass']
-			);
+			try {
+				MySQL::$_connection['id'] = mysql_connect(
+					MySQL::$_connection['host'] . ":" . MySQL::$_connection['port'], MySQL::$_connection['user'], MySQL::$_connection['pass']
+				);
 
-			if(!$this->isConnected() || (!is_null($database) && !mysql_select_db(MySQL::$_connection['database'], MySQL::$_connection['id']))) {
+				if(!$this->isConnected() || (!is_null($database) && !mysql_select_db(MySQL::$_connection['database'], MySQL::$_connection['id']))) {
+					$this->__error();
+				}
+			}
+			catch (Exception $ex) {
 				$this->__error();
 			}
 
