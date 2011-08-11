@@ -73,7 +73,7 @@
 					'content'		=> 'text/html; charset=UTF-8'
 				)
 			));
-			$this->addStylesheetToHead(URL . '/symphony/assets/devkit.css', 'screen');
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/devkit.css', 'screen');
 		}
 
 		/**
@@ -123,7 +123,7 @@
 			// Add edit link:
 			$item = new XMLElement('li');
 			$item->appendChild(Widget::Anchor(
-				__('Edit'), URL . '/symphony/blueprints/pages/edit/' . $this->_pagedata['id'] . '/'
+				__('Edit'), SYMPHONY_URL . '/blueprints/pages/edit/' . $this->_pagedata['id'] . '/'
 			));
 			$list->appendChild($item);
 
