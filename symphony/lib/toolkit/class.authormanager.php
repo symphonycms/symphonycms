@@ -136,6 +136,8 @@
 
 			$return_single = false;
 
+			if(is_null($id)) return null;
+
 			if(!is_array($id)){
 				$return_single = true;
 				$id = array($id);
