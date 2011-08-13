@@ -514,24 +514,26 @@
 			$subfieldset = new XMLElement('fieldset', NULL);
 			$subfieldset->appendChild(new XMLElement('legend', __('Parameter Output')));
 
+			// Support multiple parameters
+			if(!is_array($fields['param'])) $fields['param'] = array($fields['param']);
+
 			$label = Widget::Label(__('Use Field'));
 			$options = array(
-				array('', false, __('None')),
 				array('label' => __('Authors'), 'options' => array(
-						array('id', ($fields['source'] == 'authors' && $fields['param'] == 'id'), __('Author ID')),
-						array('username', ($fields['source'] == 'authors' && $fields['param'] == 'username'), __('Username')),
-						array('name', ($fields['source'] == 'authors' && $fields['param'] == 'name'), __('Name')),
-						array('email', ($fields['source'] == 'authors' && $fields['param'] == 'email'), __('Email')),
-						array('user_type', ($fields['source'] == 'authors' && $fields['param'] == 'user_type'), __('User type')),
+						array('id', ($fields['source'] == 'authors' && in_array('id', $fields['param'])), __('Author ID')),
+						array('username', ($fields['source'] == 'authors' && in_array('username', $fields['param'])), __('Username')),
+						array('name', ($fields['source'] == 'authors' && in_array('name', $fields['param'])), __('Name')),
+						array('email', ($fields['source'] == 'authors' && in_array('email', $fields['param'])), __('Email')),
+						array('user_type', ($fields['source'] == 'authors' && in_array('user_type', $fields['param'])), __('User type')),
 						)
 					),
 			);
 
 			foreach($field_groups as $section_id => $section_data){
 				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array(
-					array('system:id', ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == 'system:id'), __('System ID')),
-					array('system:date', ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == 'system:date'), __('System Date')),
-					array('system:author', ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == 'system:author'), __('System Author'))
+					array('system:id', ($fields['source'] == $section_data['section']->get('id') && in_array('system:id', $fields['param'])), __('System ID')),
+					array('system:date', ($fields['source'] == $section_data['section']->get('id') && in_array('system:date',  $fields['param'])), __('System Date')),
+					array('system:author', ($fields['source'] == $section_data['section']->get('id') && in_array('system:author', $fields['param'])), __('System Author'))
 				));
 
 				$authorOverride = false;
@@ -541,17 +543,32 @@
 
 						if(!$input->allowDatasourceParamOutput()) continue;
 
-						$optgroup['options'][] = array($input->get('element_name'), ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == $input->get('element_name')), $input->get('label'));
+						$optgroup['options'][] = array(
+							$input->get('element_name'),
+							($fields['source'] == $section_data['section']->get('id') && in_array($input->get('element_name'), $fields['param'])),
+							$input->get('label')
+						);
 					}
 				}
 
 				$options[] = $optgroup;
 			}
 
-			$label->appendChild(Widget::Select('fields[param]', $options, array('class' => 'filtered')));
+			$label->appendChild(Widget::Select('fields[param][]', $options, array('class' => 'filtered', 'multiple' => 'multiple')));
 			$subfieldset->appendChild($label);
 
-			$p = new XMLElement('p', __('The parameter <code id="output-param-name">$ds-%s</code> will be created with this field\'s value for XSLT or other data sources to use.', array(($this->_context[0] == 'edit' ? $existing->dsParamROOTELEMENT : __('Untitled')))));
+			$param_names = '';
+			if($this->_context[0] == 'edit') {
+				foreach($fields['param'] as $param) {
+					$param_names .= '<code id="output-param-name">$ds-' . $existing->dsParamROOTELEMENT . '.' . (is_null($param) ? '?' : str_replace(':', '-', $param)) .'</code>, ';
+				}
+				$param_names = trim($param_names, ', ');
+			}
+			else {
+				$param_names = '<code id="output-param-name">$ds-' . __('Untitled') . '</code>';
+			}
+
+			$p = new XMLElement('p', __('The parameters %s will be created with this field\'s value for XSLT or other data sources to use.', array($param_names)));
 			$p->setAttribute('class', 'help');
 			$subfieldset->appendChild($p);
 
@@ -772,7 +789,7 @@
 		public function __viewInfo(){
 			$this->setPageType('form');
 
-			$DSManager = new DatasourceManager($this->_Parent);
+			$DSManager = new DatasourceManager(Administration::instance());
 			$datasource = $DSManager->create($this->_context[1], NULL, false);
 			$about = $datasource->about();
 
@@ -939,7 +956,7 @@
 			if(empty($classname)) $this->_errors['name'] = __('Please ensure name contains at least one Latin-based alphabet.', array($classname));
 
 			$file = DATASOURCES . '/data.' . $classname . '.php';
-			
+
 			$isDuplicate = false;
 			$queueForDeletion = NULL;
 
@@ -1243,8 +1260,13 @@
 
 			$var_list = NULL;
 			foreach($vars as $key => $val){
-				if(trim($val) == '') continue;
-				$var_list .= '		public $dsParam' . strtoupper($key) . " = '" . addslashes($val) . "';" . PHP_EOL;
+				if(is_array($val)) {
+					$val = "array(" . self::CRLF . "\t\t\t\t'" . implode("'," . self::CRLF . "\t\t\t\t'", $val) . "'" . self::CRLF . '		);';
+					$var_list .= '		public $dsParam' . strtoupper($key) . ' = ' . $val . PHP_EOL;
+				}
+				else if(trim($val) !== '') {
+					$var_list .= '		public $dsParam' . strtoupper($key) . " = '" . addslashes($val) . "';" . PHP_EOL;
+				}
 			}
 
 			$shell = str_replace('<!-- VAR LIST -->', trim($var_list), $shell);
