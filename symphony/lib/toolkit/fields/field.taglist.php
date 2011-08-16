@@ -105,6 +105,8 @@
 
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
+			
+			$wrapper->appendChild($this->buildPublishLabel());
 
 			$label = Widget::Label(__('Suggestion List'));
 
@@ -167,7 +169,7 @@
 				$value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
 			}
 
-			$label = Widget::Label($this->get('label'));
+			$label = Widget::Label($this->label());
 
 			$label->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? $value : NULL)));
 

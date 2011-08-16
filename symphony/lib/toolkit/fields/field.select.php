@@ -172,6 +172,8 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
+			$wrapper->appendChild($this->buildPublishLabel());
+
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 
 			# Predefined Values
@@ -297,7 +299,7 @@
 			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
 			if($this->get('allow_multiple_selection') == 'yes') $fieldname .= '[]';
 
-			$label = Widget::Label($this->get('label'));
+			$label = Widget::Label($this->label());
 			$label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : NULL)));
 
 			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
@@ -397,7 +399,7 @@
 					$pattern = preg_replace('/^not-?regexp:\s*/i', null, $this->cleanValue($data[0]));
 					$regex = 'NOT REGEXP';
 				}
-				
+
 				if(strlen($pattern) == 0) return;
 
 				$joins .= "
