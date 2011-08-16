@@ -62,8 +62,8 @@
 
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.2.3RC1');
-	define('kCHANGELOG', 'https://gist.github.com/1141419');
+	define('kVERSION', '2.2.3');
+	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/2.2.3/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
 
