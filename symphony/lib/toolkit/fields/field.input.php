@@ -301,7 +301,7 @@
 				$data = $r->getData($this->get('id'));
 
 				$value = General::sanitize($data['value']);
-				$handle = Lang::createHandle($value);
+				$handle = Lang::createHandle($data['value']);
 
 				if(!isset($groups[$this->get('element_name')][$handle])){
 					$groups[$this->get('element_name')][$handle] = array(
