@@ -129,7 +129,7 @@
 		 */
 		public function setBodyClass($class) {
 			// Prevents duplicate "index" classes
-			if ((isset($this->_context['page']) && $this->_context['page'] != 'index') || $class != 'index') {
+			if (!isset($this->_context['page']) || $this->_context['page'] != 'index' || $class != 'index') {
 				$this->_body_class .= $class;
 			}
 		}
