@@ -41,7 +41,7 @@
 		/**
 		 * This function will empty the $_pool array.
 		 */
-		public function flush(){
+		public static function flush(){
 			self::$_pool = array();
 		}
 
@@ -62,22 +62,8 @@
 		 * @return boolean|array
 		 *	False is object doesn't exist or an associative array of information
 		 */
-		public function about($name){
-
-			$classname = $this->__getClassName($name);
-			$path = $this->__getDriverPath($name);
-
-			if(!@file_exists($path)) return false;
-
-			require_once($path);
-
-			$handle = $this->__getHandleFromFilename(basename($path));
-
-			if(is_callable(array($classname, 'about'))){
-				$about = call_user_func(array($classname, 'about'));
-				return array_merge($about, array('handle' => $handle));
-			}
-
+		public static function about($name) {
+			return false;
 		}
 
 		/**
@@ -87,8 +73,8 @@
 		 * @param string $filename
 		 * @return string
 		 */
-		public function __getHandleFromFilename($filename){
-			return null;
+		public static function __getHandleFromFilename($filename) {
+			return false;
 		}
 
 		/**
@@ -99,8 +85,8 @@
 		 * @param string $name
 		 * @return string
 		 */
-		public function __getClassName($name){
-			return null;
+		public static function __getClassName($name) {
+			return false;
 		}
 
 		/**
@@ -109,8 +95,8 @@
 		 * @param string $name
 		 * @return string
 		 */
-		public function __getClassPath($name){
-			return null;
+		public static function __getClassPath($name) {
+			return false;
 		}
 
 		/**
@@ -119,8 +105,8 @@
 		 * @param string $name
 		 * @return string
 		 */
-		public function __getDriverPath($name){
-			return null;
+		public static function __getDriverPath($name) {
+			return false;
 		}
 
 		/**
@@ -131,7 +117,7 @@
 		 *
 		 * @return array
 		 */
-		public function listAll(){
+		public static function listAll() {
 			return array();
 		}
 
@@ -144,6 +130,8 @@
 		 * @return object
 		 *	by reference
 		 */
-		public function create($name){}
+		public static function create($name) {
+			return null;
+		}
 
 	}

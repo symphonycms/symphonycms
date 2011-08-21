@@ -10,9 +10,7 @@
 	 * deleted (delete).
 	 */
 
-	require_once(TOOLKIT . '/class.manager.php');
-
-	Class AuthorManager extends Manager {
+	Class AuthorManager {
 
 		/**
 		 * An array of all the objects that the Manager is responsible for.
@@ -31,7 +29,7 @@
 		 * @return integer|boolean
 		 *	Returns an Author ID of the created Author on success, false otherwise.
 		 */
-		public static function add(Array $fields){
+		public static function add(array $fields){
 			if(!Symphony::Database()->insert($fields, 'tbl_authors')) return false;
 			$author_id = Symphony::Database()->getInsertID();
 
@@ -50,7 +48,7 @@
 		 *	can just be the changed values.
 		 * @return boolean
 		 */
-		public static function edit($id, Array $fields){
+		public static function edit($id, array $fields){
 			return Symphony::Database()->update($fields, 'tbl_authors', " `id` = '$id'");
 		}
 

@@ -18,7 +18,7 @@
 		public function view() {
 			$this->setPageType('form');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Preferences'))));
-			
+
 			$this->appendSubheading(__('Preferences'));
 
 			$bIsWritable = true;
@@ -71,7 +71,7 @@
 				ksort($email_gateways);
 
 				$default_gateway = $email_gateway_manager->getDefaultGateway();
-				$selected_is_installed = $email_gateway_manager->__find($default_gateway);
+				$selected_is_installed = $email_gateway_manager->__getClassPath($default_gateway);
 
 				$options = array();
 				foreach($email_gateways as $handle => $details) {

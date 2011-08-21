@@ -34,7 +34,7 @@
 		 *  The filename of the Field
 		 * @return string
 		 */
-		public function __getHandleFromFilename($filename){
+		public static function __getHandleFromFilename($filename){
 			return preg_replace(array('/^field./i', '/.php$/i'), '', $filename);
 		}
 
@@ -46,7 +46,7 @@
 		 *  A field handle
 		 * @return string
 		 */
-		public function __getClassName($type){
+		public static function __getClassName($type){
 			return 'field' . $type;
 		}
 
@@ -59,7 +59,7 @@
 		 *  The field handle, that is, `field.{$handle}.php`
 		 * @return string
 		 */
-		public function __getClassPath($type){
+		public static function __getClassPath($type){
 			if(is_file(TOOLKIT . "/fields/field.{$type}.php")) return TOOLKIT . '/fields';
 			else{
 
@@ -83,8 +83,8 @@
 		 *  The handle of the field to load (it's type)
 		 * @return string
 		 */
-		public function __getDriverPath($type){
-			return $this->__getClassPath($type) . "/field.{$type}.php";
+		public static function __getDriverPath($type){
+			return self::__getClassPath($type) . "/field.{$type}.php";
 		}
 
 		/**
@@ -99,7 +99,7 @@
 		 * @return integer|boolean
 		 *  Returns a Field ID of the created Field on success, false otherwise.
 		 */
-		public function add(array $fields){
+		public static function add(array $fields){
 
 			if(!isset($fields['sortorder'])){
 				$next = Symphony::Database()->fetchVar("next", 0, 'SELECT MAX(`sortorder`) + 1 AS `next` FROM tbl_fields LIMIT 1');
@@ -124,7 +124,7 @@
 		 *  can just be the changed values.
 		 * @return boolean
 		 */
-		public function edit($id, array $fields){
+		public static function edit($id, array $fields){
 			if(!Symphony::Database()->update($fields, "tbl_fields", " `id` = '$id'")) return false;
 
 			return true;
@@ -140,8 +140,8 @@
 		 *  The ID of the Field that should be deleted
 		 * @return boolean
 		 */
-		public function delete($id) {
-			$existing = $this->fetch($id);
+		public static function delete($id) {
+			$existing = self::fetch($id);
 			$existing->tearDown();
 
 			Symphony::Database()->delete('tbl_fields', " `id` = '$id'");
@@ -186,7 +186,7 @@
 		 * @return array
 		 *  An array of Field objects. If no Field are found, null is returned.
 		 */
-		public function fetch($id = null, $section_id = null, $order = 'ASC', $sortfield = 'sortorder', $type = null, $location = null, $where = null, $restrict=Field::__FIELD_ALL__){
+		public static function fetch($id = null, $section_id = null, $order = 'ASC', $sortfield = 'sortorder', $type = null, $location = null, $where = null, $restrict=Field::__FIELD_ALL__){
 			$fields = array();
 			$returnSingle = false;
 			$ids = array();
@@ -224,7 +224,7 @@
 						SELECT t1.*
 						FROM tbl_fields AS `t1`
 						WHERE 1
-						%s %s %s %s 
+						%s %s %s %s
 						%s
 					",
 					($type) ? " AND t1.`type` = '{$type}' " : NULL,
@@ -260,7 +260,7 @@
 					}
 					// We don't have an instance of this field, so let's set one up
 					else {
-						$field = $this->create($f['type']);
+						$field = self::create($f['type']);
 						$field->setArray($f);
 
 						// Get the context for this field from our previous
@@ -294,7 +294,7 @@
 		 * @param integer $id
 		 * @return string
 		 */
-		public function fetchFieldTypeFromID($id){
+		public static function fetchFieldTypeFromID($id){
 			return Symphony::Database()->fetchVar('type', 0, "SELECT `type` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
 		}
 
@@ -304,7 +304,7 @@
 		 * @param integer $id
 		 * @return string
 		 */
-		public function fetchHandleFromID($id){
+		public static function fetchHandleFromID($id){
 			return Symphony::Database()->fetchVar('element_name', 0, "SELECT `element_name` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
 		}
 
@@ -323,7 +323,7 @@
 		 * @return integer
 		 *  The field ID
 		 */
-		public function fetchFieldIDFromElementName($element_name, $section_id = null){
+		public static function fetchFieldIDFromElementName($element_name, $section_id = null){
 			return Symphony::Database()->fetchVar('id', 0, sprintf("
 					SELECT `id`
 					FROM `tbl_fields`
@@ -342,7 +342,7 @@
 		 * @return array
 		 *  A single dimensional array of field handles.
 		 */
-		public function fetchTypes(){
+		public static function fetchTypes(){
 			$structure = General::listStructure(TOOLKIT . '/fields', '/field.[a-z0-9_-]+.php/i', false, 'asc', TOOLKIT . '/fields');
 
 			$extensions = Symphony::ExtensionManager()->listInstalledHandles();
@@ -363,7 +363,7 @@
 			$types = array();
 
 			foreach($structure['filelist'] as $filename) {
-				$types[] = FieldManager::__getHandleFromFilename($filename);
+				$types[] = self::__getHandleFromFilename($filename);
 			}
 			return $types;
 		}
@@ -376,11 +376,10 @@
 		 *  The handle of the Field to create (which is it's handle)
 		 * @return Field
 		 */
-		public function create($type){
-
+		public static function create($type){
 			if(!isset(self::$_pool[$type])){
-				$classname = $this->__getClassName($type);
-				$path = $this->__getDriverPath($type);
+				$classname = self::__getClassName($type);
+				$path = self::__getDriverPath($type);
 
 				if(!file_exists($path)){
 					throw new Exception(
@@ -403,13 +402,5 @@
 			}
 
 			return clone self::$_pool[$type];
-		}
-
-		/**
-		 * @deprecated This function will be removed in the next major release. The
-		 *  `FieldManager::fetchHandleFromID` is the preferred way to get a field's handle
-		 */
-		public function fetchHandleFromElementName($id){
-			return $this->fetchHandleFromID($id);
 		}
 	}

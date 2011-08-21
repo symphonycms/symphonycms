@@ -30,7 +30,7 @@
 		 *	The filename of the Text Formatter
 		 * @return string
 		 */
-		public function __getHandleFromFilename($filename){
+		public static function __getHandleFromFilename($filename){
 			return preg_replace(array('/^formatter./i', '/.php$/i'), '', $filename);
 		}
 
@@ -42,7 +42,7 @@
 		 *	The formatter handle
 		 * @return string
 		 */
-		public function __getClassName($handle){
+		public static function __getClassName($handle){
 			return 'formatter' . $handle;
 		}
 
@@ -57,7 +57,7 @@
 		 *	If the Text Formatter is found, the function returns the path it's folder,
 		 *	otherwise false.
 		 */
-		public function __getClassPath($handle){
+		public static function __getClassPath($handle){
 			if(is_file(TEXTFORMATTERS . "/formatter.$handle.php")) return TEXTFORMATTERS;
 			else{
 
@@ -82,8 +82,8 @@
 		 *	such as `formatter.*.php`
 		 * @return string
 		 */
-		public function __getDriverPath($handle){
-			return $this->__getClassPath($handle) . "/formatter.$handle.php";
+		public static function __getDriverPath($handle){
+			return self::__getClassPath($handle) . "/formatter.$handle.php";
 		}
 
 		/**
@@ -95,15 +95,14 @@
 		 *	Associative array of formatters with the key being the handle of the formatter
 		 *	and the value being the text formatter's description.
 		 */
-		public function listAll(){
-
+		public static function listAll(){
 			$result = array();
 			$structure = General::listStructure(TEXTFORMATTERS, '/formatter.[\\w-]+.php/', false, 'ASC', TEXTFORMATTERS);
 
 			if(is_array($structure['filelist']) && !empty($structure['filelist'])){
 				foreach($structure['filelist'] as $f){
-					$f = $this->__getHandleFromFilename($f);
-					$result[$f] = $this->about($f);
+					$f = self::__getHandleFromFilename($f);
+					$result[$f] = self::about($f);
 				}
 			}
 
@@ -117,8 +116,8 @@
 
 					if(is_array($tmp['filelist']) && !empty($tmp['filelist'])){
 						foreach($tmp['filelist'] as $f){
-							$f = $this->__getHandleFromFilename($f);
-							$result[$f] = $this->about($f);
+							$f = self::__getHandleFromFilename($f);
+							$result[$f] = self::about($f);
 						}
 					}
 				}
@@ -126,6 +125,22 @@
 
 			ksort($result);
 			return $result;
+		}
+
+		public static function about($name) {
+			$classname = self::__getClassName($name);
+			$path = self::__getDriverPath($name);
+
+			if(!@file_exists($path)) return false;
+
+			require_once($path);
+
+			$handle = self::__getHandleFromFilename(basename($path));
+
+			if(is_callable(array($classname, 'about'))){
+				$about = call_user_func(array($classname, 'about'));
+				return array_merge($about, array('handle' => $handle));
+			}
 		}
 
 		/**
@@ -136,11 +151,10 @@
 		 *	The handle of the Text Formatter to create
 		 * @return TextFormatter
 		 */
-		public function create($handle){
-
+		public static function create($handle){
 			if(!isset(self::$_pool[$handle])){
-				$classname = $this->__getClassName($handle);
-				$path = $this->__getDriverPath($handle);
+				$classname = self::__getClassName($handle);
+				$path = self::__getDriverPath($handle);
 
 				if(!is_file($path)){
 					throw new Exception(

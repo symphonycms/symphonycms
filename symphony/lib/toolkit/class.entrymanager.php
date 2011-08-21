@@ -136,7 +136,6 @@
 		 * @return boolean
 		 */
 		public function add(Entry $entry){
-
 			$fields = $entry->get();
 
 			Symphony::Database()->insert($fields, 'tbl_entries');
@@ -155,7 +154,6 @@
 				$fields = array();
 
 				foreach($field as $key => $value){
-
 					if(is_array($value)){
 						foreach($value as $ii => $v) $fields[$ii][$key] = $v;
 					}
@@ -174,7 +172,6 @@
 			$entry->set('id', $entry_id);
 
 			return true;
-
 		}
 
 		/**
@@ -222,7 +219,6 @@
 			}
 
 			return true;
-
 		}
 
 		/**
@@ -437,7 +433,7 @@
 		 * @return array
 		 *  An array of Entry objects
 		 */
-		public function __buildEntries(Array $rows, $section_id, $element_names = null){
+		public function __buildEntries(array $rows, $section_id, $element_names = null){
 			$entries = array();
 
 			if (empty($rows)) return $entries;
@@ -539,7 +535,7 @@
 
 			// Loop over the array of entry data and convert it to an array of Entry objects
 			foreach ($raw as $entry) {
-				$obj = $this->create();
+				$obj = self::create();
 
 				$obj->creationDate = DateTimeObj::get('c', $entry['meta']['creation_date']);
 				$obj->set('id', $entry['meta']['id']);
@@ -685,7 +681,7 @@
 		 *
 		 * @return Entry
 		 */
-		public function create(){
+		public static function create(){
 			$obj = new Entry($this);
 			return $obj;
 		}

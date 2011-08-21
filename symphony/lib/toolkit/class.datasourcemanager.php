@@ -24,9 +24,8 @@
 		 *  The filename of the Datasource
 		 * @return string
 		 */
-		public function __getHandleFromFilename($filename){
-			$filename = preg_replace(array('/^data./i', '/.php$/i'), '', $filename);
-			return $filename;
+		public static function __getHandleFromFilename($filename){
+			return preg_replace(array('/^data./i', '/.php$/i'), '', $filename);
 		}
 
 		/**
@@ -37,7 +36,7 @@
 		 *  The Datasource handle
 		 * @return string
 		 */
-		public function __getClassName($handle){
+		public static function __getClassName($handle){
 			return 'datasource' . $handle;
 		}
 
@@ -52,7 +51,7 @@
 		 * @return mixed
 		 *  If the datasource is found, the function returns the path it's folder, otherwise false.
 		 */
-		public function __getClassPath($handle){
+		public static function __getClassPath($handle){
 			if(is_file(DATASOURCES . "/data.$handle.php")) return DATASOURCES;
 			else{
 				$extensions = Symphony::ExtensionManager()->listInstalledHandles();
@@ -76,8 +75,8 @@
 		 *  such as `data.*.php`
 		 * @return string
 		 */
-		public function __getDriverPath($handle){
-			return $this->__getClassPath($handle) . "/data.$handle.php";
+		public static function __getDriverPath($handle){
+			return self::__getClassPath($handle) . "/data.$handle.php";
 		}
 
 		/**
@@ -90,20 +89,18 @@
 		 *  Associative array of Datasources with the key being the handle of the
 		 *  Datasource and the value being the Datasource's `about()` information.
 		 */
-		public function listAll(){
-
+		public static function listAll(){
 			$result = array();
-
 			$structure = General::listStructure(DATASOURCES, '/data.[\\w-]+.php/', false, 'ASC', DATASOURCES);
 
 			if(is_array($structure['filelist']) && !empty($structure['filelist'])){
 				foreach($structure['filelist'] as $f){
 					$f = self::__getHandleFromFilename($f);
 
-					if($about = $this->about($f)){
+					if($about = self::about($f)){
 
-						$classname = $this->__getClassName($f);
-						$path = $this->__getDriverPath($f);
+						$classname = self::__getClassName($f);
+						$path = self::__getDriverPath($f);
 
 						$can_parse = false;
 						$type = null;
@@ -135,7 +132,7 @@
 						foreach($tmp['filelist'] as $f){
 							$f = self::__getHandleFromFilename($f);
 
-							if($about = $this->about($f)){
+							if($about = self::about($f)){
 								$about['can_parse'] = false;
 								$about['type'] = null;
 								$result[$f] = $about;
@@ -149,6 +146,22 @@
 			return $result;
 		}
 
+		public static function about($name) {
+			$classname = self::__getClassName($name);
+			$path = self::__getDriverPath($name);
+
+			if(!@file_exists($path)) return false;
+
+			require_once($path);
+
+			$handle = self::__getHandleFromFilename(basename($path));
+
+			if(is_callable(array($classname, 'about'))){
+				$about = call_user_func(array($classname, 'about'));
+				return array_merge($about, array('handle' => $handle));
+			}
+		}
+
 		/**
 		 * Creates an instance of a given class and returns it.
 		 *
@@ -160,10 +173,10 @@
 		 * @param boolean $process_params
 		 * @return Datasource
 		 */
-		public function create($handle, Array $env = null, $process_params=true){
+		public static function create($handle, array $env = null, $process_params=true){
 
-			$classname = $this->__getClassName($handle);
-			$path = $this->__getDriverPath($handle);
+			$classname = self::__getClassName($handle);
+			$path = self::__getDriverPath($handle);
 
 			if(!is_file($path)){
 				throw new Exception(
@@ -176,7 +189,7 @@
 
 			if(!class_exists($classname)) require_once($path);
 
-			return new $classname($this->_Parent, $env, $process_params);
+			return new $classname(Symphony::Engine(), $env, $process_params);
 
 		}
 

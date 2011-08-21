@@ -47,7 +47,7 @@
 		 *  a column name from `tbl_sections`
 		 * @return integer
 		 */
-		public function add($settings){
+		public static function add($settings){
 			if(!Symphony::Database()->insert($settings, 'tbl_sections')) return false;
 			$section_id = Symphony::Database()->getInsertID();
 
@@ -67,7 +67,7 @@
 		 *  a column name from `tbl_sections`
 		 * @return boolean
 		 */
-		public function edit($section_id, $settings){
+		public static function edit($section_id, $settings){
 			if(!Symphony::Database()->update($settings, 'tbl_sections', " `id` = $section_id")) return false;
 
 			return true;
@@ -80,23 +80,19 @@
 		 * @param integer $section_id
 		 *  The ID of the Section to delete
 		 */
-		public function delete($section_id){
-
-			$query = "SELECT `sortorder` FROM tbl_sections WHERE `id` = '$section_id'";
-			$details = Symphony::Database()->fetchRow(0, $query);
+		public static function delete($section_id){
+			$details = Symphony::Database()->fetchRow(0, "SELECT `sortorder` FROM tbl_sections WHERE `id` = '$section_id'");
 
 			## Delete all the entries
 			include_once(TOOLKIT . '/class.entrymanager.php');
-			$entryManager = new EntryManager($this->_Parent);
 			$entries = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_entries` WHERE `section_id` = '$section_id'");
-			$entryManager->delete($entries);
+			EntryManager::delete($entries);
 
 			## Delete all the fields
-			$fieldManager = new FieldManager($this->_Parent);
 			$fields = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '$section_id'");
 
 			if(is_array($fields) && !empty($fields)){
-				foreach($fields as $field_id) $fieldManager->delete($field_id);
+				foreach($fields as $field_id) FieldManager::delete($field_id);
 			}
 
 			## Delete the section
@@ -129,7 +125,7 @@
 		 * @return Section|array
 		 *  A Section object or an array of Section objects
 		 */
-		public function fetch($section_id = null, $order = 'ASC', $sortfield = 'name'){
+		public static function fetch($section_id = null, $order = 'ASC', $sortfield = 'name'){
 			$returnSingle = false;
 			$section_ids = array();
 
@@ -165,7 +161,7 @@
 			$ret = array();
 
 			foreach($sections as $s){
-				$obj =& $this->create();
+				$obj =& self::create();
 
 				foreach($s as $name => $value){
 					$obj->set($name, $value);
@@ -187,7 +183,7 @@
 		 * @return integer
 		 *  The Section ID
 		 */
-		public function fetchIDFromHandle($handle){
+		public static function fetchIDFromHandle($handle){
 			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_sections` WHERE `handle` = '$handle' LIMIT 1");
 		}
 
@@ -197,7 +193,7 @@
 		 *
 		 * @return Section
 		 */
-		public function create(){
+		public static function create(){
 			$obj = new Section($this);
 			return $obj;
 		}

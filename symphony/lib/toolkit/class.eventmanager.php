@@ -22,7 +22,7 @@
 		 *	The filename of the Event
 		 * @return string
 		 */
-		public function __getHandleFromFilename($filename){
+		public static function __getHandleFromFilename($filename){
 			return preg_replace(array('/^event./i', '/.php$/i'), '', $filename);
 		}
 
@@ -34,7 +34,7 @@
 		 *	The Event handle
 		 * @return string
 		 */
-		public function __getClassName($handle){
+		public static function __getClassName($handle){
 			return 'event' . $handle;
 		}
 
@@ -48,7 +48,7 @@
 		 * @return mixed
 		 *	If the Event is found, the function returns the path it's folder, otherwise false.
 		 */
-		public function __getClassPath($handle){
+		public static function __getClassPath($handle){
 			if(is_file(EVENTS . "/event.$handle.php")) return EVENTS;
 			else{
 
@@ -73,8 +73,8 @@
 		 *	such as event.*.php
 		 * @return string
 		 */
-		public function __getDriverPath($handle){
-			return $this->__getClassPath($handle) . "/event.$handle.php";
+		public static function __getDriverPath($handle){
+			return self::__getClassPath($handle) . "/event.$handle.php";
 		}
 
 
@@ -87,17 +87,16 @@
 		 *	Associative array of Events with the key being the handle of the Event
 		 *	and the value being the Event's `about()` information.
 		 */
-		public function listAll(){
-
+		public static function listAll(){
 			$result = array();
 			$structure = General::listStructure(EVENTS, '/event.[\\w-]+.php/', false, 'ASC', EVENTS);
 
 			if(is_array($structure['filelist']) && !empty($structure['filelist'])){
 				foreach($structure['filelist'] as $f){
-					$f = $this->__getHandleFromFilename($f);
+					$f = self::__getHandleFromFilename($f);
 
-					if($about = $this->about($f)){
-						$classname = $this->__getClassName($f);
+					if($about = self::about($f)){
+						$classname = self::__getClassName($f);
 						$can_parse = false;
 						$source = null;
 
@@ -127,9 +126,9 @@
 
 					if(is_array($tmp['filelist']) && !empty($tmp['filelist'])){
 						foreach($tmp['filelist'] as $f){
-							$f = $this->__getHandleFromFilename($f);
+							$f = self::__getHandleFromFilename($f);
 
-							if($about = $this->about($f)){
+							if($about = self::about($f)){
 								$about['can_parse'] = false;
 								$result[$f] = $about;
 							}
@@ -140,6 +139,22 @@
 
 			ksort($result);
 			return $result;
+		}
+		
+		public static function about($name) {
+			$classname = self::__getClassName($name);
+			$path = self::__getDriverPath($name);
+
+			if(!@file_exists($path)) return false;
+
+			require_once($path);
+
+			$handle = self::__getHandleFromFilename(basename($path));
+
+			if(is_callable(array($classname, 'about'))){
+				$about = call_user_func(array($classname, 'about'));
+				return array_merge($about, array('handle' => $handle));
+			}
 		}
 
 		/**
@@ -152,10 +167,9 @@
 		 *	any params set by Symphony or Datasources or by other Events
 		 * @return Event
 		 */
-		public function create($handle, array $env = array()){
-
-			$classname = $this->__getClassName($handle);
-			$path = $this->__getDriverPath($handle);
+		public static function create($handle, array $env = array()){
+			$classname = self::__getClassName($handle);
+			$path = self::__getDriverPath($handle);
 
 			if(!is_file($path)){
 				throw new Exception(
@@ -169,8 +183,7 @@
 			if(!class_exists($classname))
 				require_once($path);
 
-			return new $classname($this->_Parent, $env);
-
+			return new $classname(Symphony::Engine(), $env);
 		}
 
 	}
