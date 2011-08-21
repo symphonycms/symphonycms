@@ -20,7 +20,7 @@
 	    protected static $_pool = array();
 
 		/**
-		 * The parent class who initialised the SectionManager, usually a 
+		 * The parent class who initialised the SectionManager, usually a
 		 * Symphony instance, either Frontend or Administration
 		 */
 	    public $_Parent;
@@ -33,6 +33,8 @@
 		 */
         public function __construct(&$parent){
 			$this->_Parent = $parent;
+
+			if(!is_array(self::$_pool)) $this->flush();
         }
 
 		/**
@@ -116,8 +118,8 @@
 		 * field. By default, Sections will be order in ascending order by
 		 * their name
 		 *
-		 * @param integer $section_id
-		 *  The ID of the section to return. Defaults to null
+		 * @param integer|array $section_id
+		 *  The ID of the section to return, or an array of ID's. Defaults to null
 		 * @param string $order
 		 *  If `$section_id` is omitted, this is the sortorder of the returned
 		 *  objects. Defaults to ASC, other options id DESC
@@ -128,20 +130,35 @@
 		 *  A Section object or an array of Section objects
 		 */
 		public function fetch($section_id = null, $order = 'ASC', $sortfield = 'name'){
+			$returnSingle = false;
+			$section_ids = array();
 
-			if(!is_null($section_id) && is_numeric($section_id)) $returnSingle = true;
+			if(!is_null($section_id)) {
+				if(is_numeric($section_id)) {
+					$returnSingle = true;
+				}
 
-			if(!is_array(self::$_pool)) $this->flush();
+				if(!is_array($section_id)) {
+					$section_ids = array((int)$section_id);
+				}
+				else {
+					$section_ids = $section_id;
+				}
+			}
 
 			if($returnSingle && isset(self::$_pool[$section_id])){
 				return self::$_pool[$section_id];
 			}
 
-			$sql = "
+			$sql = sprintf("
 					SELECT `s`.*
 					FROM `tbl_sections` AS `s`
-					" . ($section_id? " WHERE `s`.`id` = '$section_id' " : '') . "
-					" . (is_null($section_id) ? " ORDER BY `s`.`$sortfield` $order" : '');
+					%s
+					%s
+				",
+				!empty($section_id) ? " WHERE `s`.`id` IN (" . implode(',', $section_ids) . ") " : "",
+				empty($section_id) ? " ORDER BY `s`.`$sortfield` $order" : ""
+			);
 
 			if(!$sections = Symphony::Database()->fetch($sql)) return ($returnSingle ? false : array());
 
@@ -175,13 +192,6 @@
 		}
 
 		/**
-		 * This function will empty the $_pool array.
-		 */
-		public function flush(){
-			self::$_pool = array();
-		}
-
-		/**
 		 * Returns a new Section object, using the SectionManager
 		 * as the Section's $parent.
 		 *
@@ -191,5 +201,4 @@
 			$obj = new Section($this);
 			return $obj;
 		}
-
 	}
