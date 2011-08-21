@@ -152,7 +152,7 @@
 		 *	any params set by Symphony or Datasources or by other Events
 		 * @return Event
 		 */
-		public function &create($handle, Array $env = array()){
+		public function create($handle, array $env = array()){
 
 			$classname = $this->__getClassName($handle);
 			$path = $this->__getDriverPath($handle);

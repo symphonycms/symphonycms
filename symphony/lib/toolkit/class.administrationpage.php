@@ -128,9 +128,10 @@
 		 *  uses a space separator
 		 */
 		public function setBodyClass($class) {
-			# Prevents duplicate "index" classes
-			if ($this->_context['page'] != 'index' || $class != 'index')
+			// Prevents duplicate "index" classes
+			if ((isset($this->_context['page']) && $this->_context['page'] != 'index') || $class != 'index') {
 				$this->_body_class .= $class;
+			}
 		}
 
 		/**
@@ -298,7 +299,7 @@
 
 					if(is_array($item['children'])){
 						foreach($item['children'] as $c){
-							if($c['type'] == 'section' && $c['visible'] == 'no' && preg_match('#^' . $c['link'] . '#', $page)) {
+							if(isset($c['type']) && $c['type'] == 'section' && $c['visible'] == 'no' && preg_match('#^' . $c['link'] . '#', $page)) {
 								$page_limit = 'developer';
 							}
 
@@ -495,7 +496,7 @@
 			$xNav->setAttribute('id', 'nav');
 
 			foreach($nav as $n){
-				if($n['visible'] == 'no') continue;
+				if(isset($n['visible']) && $n['visible'] == 'no') continue;
 
 				$can_access = false;
 
@@ -668,7 +669,7 @@
 									'name' => $item['name'],
 									'index' => $index,
 									'children' => array(),
-									'limit' => (!is_null($item['limit']) ? $item['limit'] : null)
+									'limit' => (isset($item['limit']) && !is_null($item['limit'])) ? $item['limit'] : null
 								);
 
 								foreach($item['children'] as $child){
@@ -682,8 +683,8 @@
 									$nav[$index]['children'][] = array(
 										'link' => $link,
 										'name' => $child['name'],
-										'visible' => ($child['visible'] == 'no' ? 'no' : 'yes'),
-										'limit' => (!is_null($child['limit']) ? $child['limit'] : null)
+										'visible' => (isset($child['visible']) && $child['visible'] == 'no') ? 'no' : 'yes',
+										'limit' => (isset($child['limit']) &&  !is_null($child['limit'])) ? $child['limit'] : null
 									);
 								}
 
@@ -710,8 +711,8 @@
 								$child = array(
 									'link' => $link,
 									'name' => $item['name'],
-									'visible' => ($item['visible'] == 'no' ? 'no' : 'yes'),
-									'limit' => (!is_null($item['limit']) ? $item['limit'] : null)
+									'visible' => (isset($item['visible']) && $item['visible'] == 'no') ? 'no' : 'yes',
+									'limit' => (isset($item['limit']) && !is_null($item['limit'])) ? $item['limit'] : null
 								);
 
 								if ($group_index === false) {

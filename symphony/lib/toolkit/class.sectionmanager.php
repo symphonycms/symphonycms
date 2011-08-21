@@ -197,7 +197,7 @@
 		 *
 		 * @return Section
 		 */
-		public function &create(){
+		public function create(){
 			$obj = new Section($this);
 			return $obj;
 		}

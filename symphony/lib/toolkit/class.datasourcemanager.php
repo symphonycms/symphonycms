@@ -160,7 +160,7 @@
 		 * @param boolean $process_params
 		 * @return Datasource
 		 */
-		public function &create($handle, Array $env = null, $process_params=true){
+		public function create($handle, Array $env = null, $process_params=true){
 
 			$classname = $this->__getClassName($handle);
 			$path = $this->__getDriverPath($handle);

@@ -173,7 +173,7 @@
 		 *	If the gateway is found, an instantiated object is returned.
 		 *	If the gateway is not found, an error is triggered.
 		 */
-		public function &create($name){
+		public function create($name){
 
 			$classname = $this->__getClassName($name);
 			$path = $this->__getDriverPath($name);

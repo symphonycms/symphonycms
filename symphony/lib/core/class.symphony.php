@@ -562,7 +562,7 @@
 		 * @return string
 		 *  An HTML string
 		 */
-		public static function render($e){
+		public static function render(Exception $e){
 			if($e->getTemplate() === false){
 				echo '<h1>Symphony Fatal Error</h1><p>'.$e->getMessage().'</p>';
 				exit;
@@ -705,7 +705,7 @@
 		 * @return string
 		 *  An HTML string
 		 */
-		public static function render($e){
+		public static function render(Exception $e){
 
 			$trace = NULL;
 			$odd = true;

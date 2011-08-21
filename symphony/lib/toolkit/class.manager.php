@@ -144,6 +144,6 @@
 		 * @return object
 		 *	by reference
 		 */
-		public function &create($name){}
+		public function create($name){}
 
 	}
