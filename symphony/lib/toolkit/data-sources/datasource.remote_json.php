@@ -117,10 +117,10 @@
 				}
 				else {
 					$xKey = self::$dom->createElement('key');
-					$xKey->setAttribute('value', General::sanitize($name));
 				}
 
 				$xKey->setAttribute('handle', Lang::createHandle($name));
+				$xKey->setAttribute('value', General::sanitize($name));
 
 				return $xKey;
 			}
