@@ -4,80 +4,133 @@
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 	require_once(CORE . '/class.cacheable.php');
 
+	if(!class_exists('RemoteJSONException')) {
+		class RemoteJSONException extends Exception {
+			public function __construct($message, $code = null, Exception $ex = null) {
+				switch ($code) {
+					case JSON_ERROR_NONE:
+						$message = __('No errors');
+					break;
+					case JSON_ERROR_DEPTH:
+						$message = __('Maximum stack depth exceeded');
+					break;
+					case JSON_ERROR_STATE_MISMATCH:
+						$message = __('Underflow or the modes mismatch');
+					break;
+					case JSON_ERROR_CTRL_CHAR:
+						$message = __('Unexpected control character found');
+					break;
+					case JSON_ERROR_SYNTAX:
+						$message = __('Syntax error, malformed JSON');
+					break;
+					case JSON_ERROR_UTF8:
+						$message = __('Malformed UTF-8 characters, possibly incorrectly encoded');
+					break;
+				}
+
+				parent::__construct($message, $code, $ex);
+			}
+		}
+	}
+
 	/**
-	 * Takes a JSON formatted string and outputs it as XML
+	 * Takes a JSON formatted string and outputs it as XML.
 	 *
 	 * @author Brent Burgoyne
 	 * @link http://brentburgoyne.com
 	 */
-	class JSON_to_XML {
-		private static $dom;
+	if(!class_exists('JSONToXML')) {
+		class JSONToXML {
+			private static $dom;
 
-		public static function convert($json, $asXML = true) {
-			self::$dom = new DomDocument('1.0', 'utf-8');
-			self::$dom->formatOutput = TRUE;
+			public static function convert($json, $asXML = true) {
+				self::$dom = new DomDocument('1.0', 'utf-8');
+				self::$dom->formatOutput = TRUE;
 
-			// remove callback functions from JSONP
-			if (preg_match('/(\{|\[).*(\}|\])/s', $json, $matches)) {
-				$json = $matches[0];
-			}
-			else {
-				throw new JSONException("JSON not formatted correctly");
-			}
+				// remove callback functions from JSONP
+				if (preg_match('/(\{|\[).*(\}|\])/s', $json, $matches)) {
+					$json = $matches[0];
+				}
+				else {
+					throw new RemoteJSONException(__("JSON not formatted correctly"));
+				}
 
-			$data = json_decode($json);
-			if(json_last_error() !== JSON_ERROR_NONE) {
-				throw new JSONException("JSON not formatted correctly", json_last_error());
-			}
+				$data = json_decode($json);
+				if(json_last_error() !== JSON_ERROR_NONE) {
+					throw new RemoteJSONException(__("JSON not formatted correctly"), json_last_error());
+				}
 
-			$data_element = self::_process($data, self::$dom->createElement('data'));
-			self::$dom->appendChild($data_element);
+				$data_element = self::_process($data, self::$dom->createElement('data'));
+				self::$dom->appendChild($data_element);
 
-			if($asXML) {
-				return self::$dom->saveXML();
-			}
-			else {
-				return self::$dom->saveXML(self::$dom->documentElement);
-			}
-
-		}
-
-		private static function _process($data, $element) {
-			if (is_array($data)) {
-				foreach ($data as $item) {
-					$item_element = self::_process($item, self::$dom->createElement('item'));
-					$element->appendChild($item_element);
+				if($asXML) {
+					return self::$dom->saveXML();
+				}
+				else {
+					return self::$dom->saveXML(self::$dom->documentElement);
 				}
 			}
-			else if (is_object($data)) {
-				$vars = get_object_vars($data);
-				foreach ($vars as $key => $value) {
-					$key = self::_valid_element_name($key);
-					$var_element = self::_process($value, self::$dom->createElement($key));
-					$element->appendChild($var_element);
+
+			private static function _process($data, $element) {
+				if (is_array($data)) {
+					foreach ($data as $item) {
+						$item_element = self::_process($item, self::$dom->createElement('item'));
+						$element->appendChild($item_element);
+					}
 				}
-			}
-			else {
-				$element->appendChild(self::$dom->createTextNode($data));
+				else if (is_object($data)) {
+					$vars = get_object_vars($data);
+					foreach ($vars as $key => $value) {
+						$key = self::_valid_element_name($key);
+
+						$var_element = self::_process($value, $key);
+						$element->appendChild($var_element);
+					}
+				}
+				else {
+					$element->appendChild(self::$dom->createTextNode($data));
+				}
+
+				return $element;
 			}
 
-			return $element;
-		}
+			/**
+			 * If the $name is not a valid QName it will be ignored in favour
+			 * of using 'key'. In that scenario, the $name will be set as the
+			 * value attribute of that element.
+			 *
+			 * @param $name
+			 * @return DOMElement
+			 */
+			private static function _valid_element_name($name) {
+				if(Lang::isUnicodeCompiled()) {
+					$valid_name = preg_match('/^[\p{L}]([0-9\p{L}\.\-\_]+)?$/u', $name);
+				}
+				else {
+					$valid_name = preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $name);
+				}
 
-		private static function _valid_element_name($name) {
-			$name = preg_replace('/^(.*?)(xml)([a-z])/i', '$3', $name);
-			$name = preg_replace('/[^a-z0-9_\-]/i', '', $name);
-			return $name;
+				if($valid_name) {
+					$xKey = self::$dom->createElement(
+						Lang::createHandle($name)
+					);
+				}
+				else {
+					$xKey = self::$dom->createElement('key');
+					$xKey->setAttribute('value', General::sanitize($name));
+				}
+
+				$xKey->setAttribute('handle', Lang::createHandle($name));
+
+				return $xKey;
+			}
 		}
 	}
 
-	// @todo Implement the JSON_ERROR constants from json_last_error
-	class JSONException extends Exception {}
-
-	if(!function_exists('findParametersInString')){
+	if(!function_exists('findParametersInString')) {
 		// This function finds all the params and flags any with :encoded. An array is returned
 		// to be iterated over
-		function findParametersInString($value){
+		function findParametersInString($value) {
 			$result = array();
 
 			if(preg_match_all('@{([^}]+)}@i', $value, $matches, PREG_SET_ORDER)){
@@ -93,7 +146,7 @@
 		}
 	}
 
-	if(isset($this->dsParamURL)){
+	if(isset($this->dsParamURL)) {
 		$params = findParametersInString($this->dsParamURL);
 		foreach($params as $key => $info){
 			$replacement = $this->__processParametersInString($info['param'], $this->_env, false);
@@ -105,7 +158,6 @@
 	}
 
 	// Check the Cache to see if there is already an existing result
-	// @todo look at see if this can be done earlier?
 	$cache_id = md5($this->dsParamURL . serialize($this->dsParamFILTERS) . $this->dsParamXPATH);
 
 	$cache = new Cacheable(Symphony::Database());
@@ -121,6 +173,7 @@
 			$ch->init();
 			$ch->setopt('URL', $this->dsParamURL);
 			$ch->setopt('TIMEOUT', $timeout);
+			$ch->setopt('HTTPHEADER', array('Accept: application/json, */*'));
 			$data = $ch->exec();
 			$writeToCache = true;
 
@@ -173,23 +226,24 @@
 				// XML so that we can use XPath and just generally work with it in a standard
 				// way.
 				try {
-					$data = JSON_to_XML::convert($data);
-
 					if(is_array($cachedData) && !empty($cachedData)){
 						$data = $cachedData['data'];
 						$valid = false;
 						$creation = DateTimeObj::get('c', $cachedData['creation']);
 					}
+					else {
+						$data = JSONToXML::convert($data);
+					}
 				}
-				catch (JSONException $ex) {
+				catch (Exception $ex) {
 					$result->setAttribute('valid', 'false');
 					$result->appendChild(
-						new XMLElement('error', __('JSON returned is invalid.'))
+						new XMLElement('error', $ex->getMessage())
 					);
 				}
 			}
 			// If `$data` is empty, set the `force_empty_result` to true.
-			else if(strlen($data) == 0){
+			else if(strlen($data) == 0) {
 				$this->_force_empty_result = true;
 			}
 		}
@@ -227,8 +281,13 @@
 		$template = new XMLElement('xsl:template');
 		$template->setAttribute('match', '/');
 
+		if(isset($this->dsParamXPATH) && $this->dsParamXPATH !== '/') {
+			$this->dsParamXPATH = '/data' . $this->__processParametersInString($this->dsParamXPATH, $this->_env);
+		}
+		else {
+			$this->dsParamXPATH = '/data/*';
+		}
 		$instruction = new XMLElement('xsl:copy-of');
-		if(isset($this->dsParamXPATH)) $this->dsParamXPATH = '/data' . $this->__processParametersInString($this->dsParamXPATH, $this->_env);
 		$instruction->setAttribute('select', $this->dsParamXPATH);
 
 		$template->appendChild($instruction);
