@@ -30,12 +30,6 @@
 		public $_Parent;
 
 		/**
-		  * An instance of the ExtensionManager
-		  * @var ExtensionManager
-		  */
-		public $ExtensionManager;
-
-		/**
 		 * An instance of the DatasourceManager
 		 * @var DatasourceManager
 		 */
@@ -119,7 +113,6 @@
 
 			$this->DatasourceManager = new DatasourceManager($this->_Parent);
 			$this->EventManager = new EventManager($this->_Parent);
-			$this->ExtensionManager = Symphony::ExtensionManager();
 
 			$this->is_logged_in = Frontend::instance()->isLoggedIn();
 		}
@@ -188,13 +181,10 @@
 				 * @param mixed $devkit
 				 *  Allows a devkit to register to this page
 				 */
-				$this->ExtensionManager->notifyMembers(
-					'FrontendDevKitResolve', '/frontend/',
-					array(
-						'full_generate'	=> &$full_generate,
-						'devkit'		=> &$devkit
-					)
-				);
+				Symphony::ExtensionManager()->notifyMembers('FrontendDevKitResolve', '/frontend/', array(
+					'full_generate'	=> &$full_generate,
+					'devkit'		=> &$devkit
+				));
 			}
 
 			Frontend::instance()->Profiler->sample('Page creation process started');
@@ -214,14 +204,11 @@
 				 * @param string $xsl
 				 *  This pages XSLT
 				 */
-				$this->ExtensionManager->notifyMembers(
-					'FrontendOutputPreGenerate', '/frontend/',
-					array(
-						'page'	=> &$this,
-						'xml'	=> &$this->_xml,
-						'xsl'	=> $this->_xsl
-					)
-				);
+				Symphony::ExtensionManager()->notifyMembers('FrontendOutputPreGenerate', '/frontend/', array(
+					'page'	=> &$this,
+					'xml'	=> &$this->_xml,
+					'xsl'	=> $this->_xsl
+				));
 
 				if (is_null($devkit)) {
 					if(in_array('XML', $this->_pageData['type']) || in_array('xml', $this->_pageData['type'])) {
@@ -245,7 +232,7 @@
 				 * @param string $context
 				 * '/frontend/'
 				 */
-				$this->ExtensionManager->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
+				Symphony::ExtensionManager()->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
 
 				$output = parent::generate();
 
@@ -257,7 +244,7 @@
 				 * @param string $output
 				 *  The generated output of this page, ie. a string of HTML, passed by reference
 				 */
-				$this->ExtensionManager->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
+				Symphony::ExtensionManager()->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
 
 				Frontend::instance()->Profiler->sample('XSLT Transformation', PROFILE_LAP);
 
@@ -326,7 +313,7 @@
 			 *  An associative array of page data, which is a combination from `tbl_pages` and
 			 *  the path of the page on the filesystem. Passed by reference
 			 */
-			$this->ExtensionManager->notifyMembers('FrontendPageResolved', '/frontend/', array('page' => &$this, 'page_data' => &$page));
+			Symphony::ExtensionManager()->notifyMembers('FrontendPageResolved', '/frontend/', array('page' => &$this, 'page_data' => &$page));
 
 			$this->_pageData = $page;
 			$root_page = @array_shift(explode('/', $page['path']));
@@ -392,7 +379,7 @@
 			 * @param array $params
 			 *  An associative array of this page's parameters
 			 */
-			$this->ExtensionManager->notifyMembers('FrontendParamsResolve', '/frontend/', array('params' => &$this->_param));
+			Symphony::ExtensionManager()->notifyMembers('FrontendParamsResolve', '/frontend/', array('params' => &$this->_param));
 
 			$xml_build_start = precision_timer();
 
@@ -439,7 +426,7 @@
 			 * @param array $params
 			 *  An associative array of this page's parameters
 			 */
-			$this->ExtensionManager->notifyMembers('FrontendParamsPostResolve', '/frontend/', array('params' => &$this->_param));
+			Symphony::ExtensionManager()->notifyMembers('FrontendParamsPostResolve', '/frontend/', array('params' => &$this->_param));
 
 			$params = new XMLElement('params');
 			foreach($this->_param as $key => $value) {
@@ -516,7 +503,7 @@
 			 * @param FrontendPage $page
 			 *  An instance of this FrontendPage
 			 */
-			$this->ExtensionManager->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => &$this->_page));
+			Symphony::ExtensionManager()->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => &$this->_page));
 
 			## Default to the index page if no page has been specified
 			if((!$this->_page || $this->_page == '//') && is_null($row) ){
@@ -694,7 +681,7 @@
 			 * @param array $page_data
 			 *  An associative array of page meta data
 			 */
-			$this->ExtensionManager->notifyMembers('FrontendProcessEvents',	'/frontend/', array(
+			Symphony::ExtensionManager()->notifyMembers('FrontendProcessEvents',	'/frontend/', array(
 					'env' => $this->_env,
 					'events' => &$events,
 					'wrapper' => &$wrapper,
@@ -744,7 +731,7 @@
 			 *  contained in a root XMLElement that is the handlised version of
 			 *  their name.
 			 */
-			$this->ExtensionManager->notifyMembers('FrontendEventPostProcess', '/frontend/', array('xml' => &$wrapper));
+			Symphony::ExtensionManager()->notifyMembers('FrontendEventPostProcess', '/frontend/', array('xml' => &$wrapper));
 
 		}
 
