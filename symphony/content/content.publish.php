@@ -201,6 +201,8 @@
 						$field_pool[$column->get('id')] = $column;
 					}
 				}
+				$link_column = end(array_reverse($visible_columns));
+				reset($visible_columns);
 
 				foreach($entries['records'] as $entry) {
 					$tableData = array();
@@ -221,10 +223,10 @@
 							$data = $entry->getData($column->get('id'));
 							$field = $field_pool[$column->get('id')];
 
-							$value = $field->prepareTableValue($data, ($position == 0 ? $link : null), $entry->get('id'));
+							$value = $field->prepareTableValue($data, ($column == $link_column) ? $link : null, $entry->get('id'));
 
 							if (!is_object($value) && strlen(trim($value)) == 0) {
-								$value = ($position == 0 ? $link->generate() : __('None'));
+								$value = ($column == $link_column) ? $link->generate() : __('None');
 							}
 
 							if ($value == __('None')) {
