@@ -32,7 +32,7 @@
 		 * An array of all the subscriptions to Symphony delegates made by extensions.
 		 * @var array
 		 */
-		private static $_subscriptions =  null;
+		private static $_subscriptions = array();
 
 		/**
 		 * An associative array of all the extensions in `tbl_extensions` where
@@ -44,9 +44,19 @@
 
 		/**
 		 * The constructor for ExtensionManager overrides the default Manager
-		 * constructor to prevent `$this->_Parent` from being set.
+		 * constructor to prevent `$this->_Parent` from being set. The constructor
+		 * will populate the `$_subscriptions` variable from the `tbl_extension` and
+		 * `tbl_extensions_delegates` tables.
 		 */
-		public function __construct(){}
+		public function __construct() {
+			if (empty(self::$_subscriptions)) {
+				self::$_subscriptions = Symphony::Database()->fetch("
+					SELECT t1.name, t2.page, t2.delegate, t2.callback
+					FROM `tbl_extensions` as t1 INNER JOIN `tbl_extensions_delegates` as t2 ON t1.id = t2.extension_id
+					WHERE t1.status = 'enabled'
+				");
+			}
+		}
 
 		/**
 		 * Given a name, returns the full class name of an Extension.
@@ -480,13 +490,6 @@
 		 */
 		public static function notifyMembers($delegate, $page, array $context=array()){
 			if((int)Symphony::Configuration()->get('allow_page_subscription', 'symphony') != 1) return;
-
-			if (is_null(self::$_subscriptions)) {
-				self::$_subscriptions = Symphony::Database()->fetch("
-					SELECT t1.name, t2.page, t2.delegate, t2.callback
-					FROM `tbl_extensions` as t1 INNER JOIN `tbl_extensions_delegates` as t2 ON t1.id = t2.extension_id
-					WHERE t1.status = 'enabled'");
-			}
 
 			// Make sure $page is an array
 			if(!is_array($page)){
