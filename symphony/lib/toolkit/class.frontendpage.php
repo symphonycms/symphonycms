@@ -111,8 +111,8 @@
 
 			$this->_Parent = $parent;
 
-			$this->DatasourceManager = new DatasourceManager($this->_Parent);
-			$this->EventManager = new EventManager($this->_Parent);
+			$this->DatasourceManager = new DatasourceManager(Frontend::instance());
+			$this->EventManager = new EventManager(Frontend::instance());
 
 			$this->is_logged_in = Frontend::instance()->isLoggedIn();
 		}
@@ -697,7 +697,7 @@
 
 				$pool = array();
 				foreach($events as $handle){
-					$pool[$handle] = $this->EventManager->create($handle, array('env' => $this->_env, 'param' => $this->_param));
+					$pool[$handle] = EventManager::create($handle, array('env' => $this->_env, 'param' => $this->_param));
 				}
 
 				uasort($pool, array($this, '__findEventOrder'));
@@ -793,7 +793,7 @@
 			foreach ($datasources as $handle) {
 				Frontend::instance()->Profiler->seed();
 
-				$pool[$handle] =& $this->DatasourceManager->create($handle, NULL, false);
+				$pool[$handle] =& DatasourceManager::create($handle, NULL, false);
 				$dependencies[$handle] = $pool[$handle]->getDependencies();
 			}
 

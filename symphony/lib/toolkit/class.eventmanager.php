@@ -12,7 +12,7 @@
 
 	require_once(TOOLKIT . '/class.event.php');
 
-	Class EventManager extends Manager{
+	Class EventManager extends Manager {
 
 		/**
 		 * Given the filename of an Event return it's handle. This will remove

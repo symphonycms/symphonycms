@@ -70,10 +70,7 @@
 				$isEditing = true;
 
 				$handle = $this->_context[1];
-
-				$EventManager = new EventManager($this->_Parent);
-				$existing =& $EventManager->create($handle);
-
+				$existing =& EventManager::create($handle);
 				$about = $existing->about();
 
 				if ($this->_context[0] == 'edit' && !$existing->allowEditorToParse()) redirect(SYMPHONY_URL . '/blueprints/events/info/' . $handle . '/');

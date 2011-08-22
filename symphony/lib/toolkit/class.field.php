@@ -207,7 +207,7 @@
 		 * @return array
 		 *	 the toggled data.
 		 */
-		public function toggleFieldData(Array $data, $newState, $entry_id=null){
+		public function toggleFieldData(array $data, $newState, $entry_id=null){
 			return $data;
 		}
 
@@ -371,7 +371,7 @@
 		 * @param array $array
 		 *	the associative array of settings for this field
 		 */
-		public function setArray(Array $array = array()){
+		public function setArray(array $array = array()){
 			if(empty($array)) return;
 
 			foreach($array as $setting => $value) {
@@ -388,7 +388,7 @@
 		 * @param array $settings
 		 *	the data array to initialize if necessary.
 		 */
-		public function setFromPOST(Array $settings = array()) {
+		public function setFromPOST(array $settings = array()) {
 			$settings['location'] = (isset($settings['location']) ? $settings['location'] : 'main');
 			$settings['required'] = (isset($settings['required']) && $settings['required'] == 'yes' ? 'yes' : 'no');
 			$settings['show_column'] = (isset($settings['show_column']) && $settings['show_column'] == 'yes' ? 'yes' : 'no');
@@ -445,7 +445,7 @@
 		 * @param array $settings
 		 *	the array of settings to populate with their defaults.
 		 */
-		public function findDefaults(Array &$settings){}
+		public function findDefaults(array &$settings){}
 
 		/**
 		 * Display the default settings panel, calls the `buildSummaryBlock`
@@ -690,7 +690,7 @@
 		 *	returns the status of the checking. if errors has been populated with
 		 *	any errors `self::__ERROR__`, `self::__OK__` otherwise.
 		 */
-		public function checkFields(Array &$errors, $checkForDuplicates = true) {
+		public function checkFields(array &$errors, $checkForDuplicates = true) {
 			$parent_section = $this->get('parent_section');
 			$element_name = $this->get('element_name');
 
@@ -1126,7 +1126,7 @@
 				  PRIMARY KEY  (`id`),
 				  KEY `entry_id` (`entry_id`),
 				  KEY `value` (`value`)
-				) ENGINE=MyISAM;"
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
 			);
 		}
 

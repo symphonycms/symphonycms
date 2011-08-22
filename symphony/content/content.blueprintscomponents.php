@@ -28,9 +28,7 @@
 			$ul->setAttribute('class', 'triple group');
 
 			### EVENTS ###
-
-			$EventManager = new EventManager($this->_Parent);
-			$events = $EventManager->listAll();
+			$events = EventManager::listAll();
 
 			$li = new XMLElement('li');
 			$h3 = new XMLElement('h3', '<span>' . __('Events') . '</span>');
@@ -54,9 +52,7 @@
 			######
 
 			### DATASOURCES ###
-
-			$DSManager = new DatasourceManager($this->_Parent);
-			$datasources = $DSManager->listAll();
+			$datasources = DatasourceManager::listAll();
 
 			$li = new XMLElement('li');
 

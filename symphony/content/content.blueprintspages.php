@@ -516,9 +516,7 @@
 
 			$label = Widget::Label(__('Events'));
 
-			$manager = new EventManager($this->_Parent);
-			$events = $manager->listAll();
-
+			$events = EventManager::listAll();
 			$options = array();
 
 			if(is_array($events) && !empty($events)) {
@@ -535,9 +533,7 @@
 
 			$label = Widget::Label(__('Data Sources'));
 
-			$manager = new DatasourceManager($this->_Parent);
-			$datasources = $manager->listAll();
-
+			$datasources = DatasourceManager::listAll();
 			$options = array();
 
 			if(is_array($datasources) && !empty($datasources)) {

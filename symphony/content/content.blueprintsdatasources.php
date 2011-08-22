@@ -81,9 +81,7 @@
 			else if($this->_context[0] == 'edit'){
 				$isEditing = true;
 				$handle = $this->_context[1];
-
-				$datasourceManager = new DatasourceManager($this->_Parent);
-				$existing =& $datasourceManager->create($handle, NULL, false);
+				$existing =& DatasourceManager::create($handle, NULL, false);
 
 				if (!$existing->allowEditorToParse()) redirect(SYMPHONY_URL . '/blueprints/datasources/info/' . $handle . '/');
 
@@ -836,8 +834,7 @@
 		public function __viewInfo(){
 			$this->setPageType('form');
 
-			$DSManager = new DatasourceManager(Administration::instance());
-			$datasource = $DSManager->create($this->_context[1], NULL, false);
+			$datasource = DatasourceManager::create($this->_context[1], NULL, false);
 			$about = $datasource->about();
 
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Data Source'), $about['name'])));
