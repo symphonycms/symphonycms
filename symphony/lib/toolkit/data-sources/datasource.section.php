@@ -67,7 +67,7 @@
 
 			$xGroup = new XMLElement($element, NULL, $group['attr']);
 
-			if(!$section = $entryManager->sectionManager->fetch($ds->getSource())){
+			if(!$section = SectionManager::fetch($ds->getSource())){
 				$about = $ds->about();
 				throw new Exception(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])));
 			}
@@ -152,7 +152,7 @@
 	include_once(TOOLKIT . '/class.entrymanager.php');
 	$entryManager = new EntryManager(Symphony::Engine());
 
-	if(!$section = $entryManager->sectionManager->fetch($this->getSource())){
+	if(!$section = SectionManager::fetch($this->getSource())){
 		$about = $this->about();
 		trigger_error(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])), E_USER_ERROR);
 	}

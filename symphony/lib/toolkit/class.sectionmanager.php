@@ -17,25 +17,7 @@
 		 * Defaults to an empty array.
 		 * @var array
 		 */
-	    protected static $_pool = array();
-
-		/**
-		 * The parent class who initialised the SectionManager, usually a
-		 * Symphony instance, either Frontend or Administration
-		 */
-	    public $_Parent;
-
-		/**
-		 * The construct function sets the parent variable of the SectionManager
-		 *
-		 * @param mixed $parent
-		 *  The class that initialised this Section, usually SectionManager
-		 */
-        public function __construct(&$parent){
-			$this->_Parent = $parent;
-
-			if(!is_array(self::$_pool)) $this->flush();
-        }
+		protected static $_pool = array();
 
 		/**
 		 * Takes an associative array of Section settings and creates a new
@@ -43,8 +25,8 @@
 		 * The ID of the section is generated using auto_increment
 		 *
 		 * @param array $settings
-		 *  An associative of settings for a section with the key being
-		 *  a column name from `tbl_sections`
+		 *	An associative of settings for a section with the key being
+		 *	a column name from `tbl_sections`
 		 * @return integer
 		 */
 		public static function add($settings){
@@ -61,10 +43,10 @@
 		 * prior to updating the Section
 		 *
 		 * @param integer $section_id
-		 *  The ID of the Section to update
+		 *	The ID of the Section to update
 		 * @param array $settings
-		 *  An associative of settings for a section with the key being
-		 *  a column name from `tbl_sections`
+		 *	An associative of settings for a section with the key being
+		 *	a column name from `tbl_sections`
 		 * @return boolean
 		 */
 		public static function edit($section_id, $settings){
@@ -78,7 +60,7 @@
 		 * Section and then any Section Associations in that order
 		 *
 		 * @param integer $section_id
-		 *  The ID of the Section to delete
+		 *	The ID of the Section to delete
 		 */
 		public static function delete($section_id){
 			$details = Symphony::Database()->fetchRow(0, "SELECT `sortorder` FROM tbl_sections WHERE `id` = '$section_id'");
@@ -115,15 +97,15 @@
 		 * their name
 		 *
 		 * @param integer|array $section_id
-		 *  The ID of the section to return, or an array of ID's. Defaults to null
+		 *	The ID of the section to return, or an array of ID's. Defaults to null
 		 * @param string $order
-		 *  If `$section_id` is omitted, this is the sortorder of the returned
-		 *  objects. Defaults to ASC, other options id DESC
+		 *	If `$section_id` is omitted, this is the sortorder of the returned
+		 *	objects. Defaults to ASC, other options id DESC
 		 * @param string $sortfield
-		 *  The name of the column in the `tbl_sections` table to sort
-		 *  on. Defaults to name
+		 *	The name of the column in the `tbl_sections` table to sort
+		 *	on. Defaults to name
 		 * @return Section|array
-		 *  A Section object or an array of Section objects
+		 *	A Section object or an array of Section objects
 		 */
 		public static function fetch($section_id = null, $order = 'ASC', $sortfield = 'name'){
 			$returnSingle = false;
@@ -179,9 +161,9 @@
 		 * Return a Section ID by the handle
 		 *
 		 * @param string $handle
-		 *  The handle of the section
+		 *	The handle of the section
 		 * @return integer
-		 *  The Section ID
+		 *	The Section ID
 		 */
 		public static function fetchIDFromHandle($handle){
 			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_sections` WHERE `handle` = '$handle' LIMIT 1");
@@ -194,7 +176,7 @@
 		 * @return Section
 		 */
 		public static function create(){
-			$obj = new Section($this);
+			$obj = new Section;
 			return $obj;
 		}
 	}

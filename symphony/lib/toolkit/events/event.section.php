@@ -83,9 +83,7 @@
 			include_once(TOOLKIT . '/class.sectionmanager.php');
 			include_once(TOOLKIT . '/class.entrymanager.php');
 
-			$sectionManager = new SectionManager(Symphony::Engine());
-
-			if(!$section = $sectionManager->fetch($source)){
+			if(!$section = SectionManager::fetch($source)){
 				$result->setAttribute('result', 'error');
 				$result->appendChild(new XMLElement('message', __('Section is invalid')));
 				return false;

@@ -21,8 +21,7 @@
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a section'), 'create button', NULL, array('accesskey' => 'c')));
 
-			$sectionManager = new SectionManager($this->_Parent);
-			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
 
 			$aTableHead = array(
 				array(__('Name'), 'col'),
@@ -146,8 +145,7 @@
 			$div->appendChild($namediv);
 
 			$navgroupdiv = new XMLElement('div', NULL);
-			$sectionManager = new SectionManager($this->_Parent);
-			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Created if does not exist') . '</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
@@ -263,9 +261,7 @@
 
 			$section_id = $this->_context[1];
 
-			$sectionManager = new SectionManager($this->_Parent);
-
-			if(!$section = $sectionManager->fetch($section_id)) {
+			if(!$section = SectionManager::fetch($section_id)) {
 				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for could not be found.'));
 			}
 			$meta = $section->get();
@@ -356,8 +352,7 @@
 			$div->appendChild($namediv);
 
 			$navgroupdiv = new XMLElement('div', NULL);
-			$sectionManager = new SectionManager($this->_Parent);
-			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Choose only one. Created if does not exist') . '</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
@@ -490,8 +485,7 @@
 					 */
 					Symphony::ExtensionManager()->notifyMembers('SectionPreDelete', '/blueprints/sections/', array('section_ids' => &$checked));
 
-					$sectionManager = new SectionManager($this->_Parent);
-					foreach($checked as $section_id) $sectionManager->delete($section_id);
+					foreach($checked as $section_id) SectionManager::delete($section_id);
 
 					redirect(SYMPHONY_URL . '/blueprints/sections/');
 				}
@@ -523,12 +517,10 @@
 				}
 
 				else if(preg_match('/^set-navigation-group-/', $_POST['with-selected'])) {
-					$sectionManager = new SectionManager($this->_Parent);
-
 					$navigation_group = preg_replace('/^set-navigation-group-/', null, $_POST['with-selected']);
 
 					foreach($checked as $section_id) {
-						$sectionManager->edit($section_id, array('navigation_group' => urldecode($navigation_group)));
+						SectionManager::edit($section_id, array('navigation_group' => urldecode($navigation_group)));
 					}
 
 					redirect(SYMPHONY_URL . '/blueprints/sections/');
@@ -551,8 +543,7 @@
 
 				if($edit) {
 					$section_id = $this->_context[1];
-					$sectionManager = new SectionManager($this->_Parent);
-					$existing_section = $sectionManager->fetch($section_id);
+					$existing_section = SectionManager::fetch($section_id);
 				}
 
 				## Check to ensure all the required section fields are filled
@@ -640,8 +631,6 @@
 
 						$meta['sortorder'] = ($next ? $next : '1');
 
-						$sectionManager = new SectionManager($this->_Parent);
-
 						/**
 						 * Just prior to saving the Section settings. Use with caution as
 						 * there is no additional processing to ensure that Field's or Section's
@@ -660,7 +649,7 @@
 						 */
 						Symphony::ExtensionManager()->notifyMembers('SectionPreCreate', '/blueprints/sections/', array('meta' => &$meta, 'fields' => &$fields));
 
-						if(!$section_id = $sectionManager->add($meta)){
+						if(!$section_id = SectionManager::add($meta)){
 							$this->pageAlert(__('An unknown database occurred while attempting to create the section.'), Alert::ERROR);
 						}
 					}
@@ -689,7 +678,7 @@
 						 */
 						Symphony::ExtensionManager()->notifyMembers('SectionPreEdit', '/blueprints/sections/', array('section_id' => $section_id, 'meta' => &$meta, 'fields' => &$fields));
 
-						if(!$sectionManager->edit($section_id, $meta)){
+						if(!SectionManager::edit($section_id, $meta)){
 							$canProceed = false;
 							$this->pageAlert(__('An unknown database occurred while attempting to create the section.'), Alert::ERROR);
 						}
@@ -801,7 +790,6 @@
 
 			if(@array_key_exists("delete", $_POST['action'])){
 				$section_id = array($this->_context[1]);
-				$sectionManager = new SectionManager($this->_Parent);
 
 				/**
 				 * Just prior to calling the Section Manager's delete function
@@ -815,7 +803,7 @@
 				 */
 				Symphony::ExtensionManager()->notifyMembers('SectionPreDelete', '/blueprints/sections/', array('section_ids' => &$section_id));
 
-				foreach($section_id as $section) $sectionManager->delete($section);
+				foreach($section_id as $section) SectionManager::delete($section);
 				redirect(SYMPHONY_URL . '/blueprints/sections/');
 			}
 		}

@@ -45,13 +45,11 @@
 		}
 
 		public function __viewIndex(){
-
-			$sectionManager = new SectionManager($this->_Parent);
-
-			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
+			if(!$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle'])) {
 				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])));
+			}
 
-			$section = $sectionManager->fetch($section_id);
+			$section = SectionManager::fetch($section_id);
 
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
@@ -111,13 +109,13 @@
 				$order = ($_REQUEST['order'] ? strtolower($_REQUEST['order']) : 'asc');
 
 				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
-					$sectionManager->edit($section->get('id'), array('entry_order' => $sort, 'entry_order_direction' => $order));
+					SectionManager::edit($section->get('id'), array('entry_order' => $sort, 'entry_order_direction' => $order));
 					redirect(Administration::instance()->getCurrentPageURL().($filter_querystring ? "?" . $filter_querystring : ''));
 				}
 			}
 
 			elseif(isset($_REQUEST['unsort'])){
-				$sectionManager->edit($section->get('id'), array('entry_order' => NULL, 'entry_order_direction' => NULL));
+				SectionManager::edit($section->get('id'), array('entry_order' => NULL, 'entry_order_direction' => NULL));
 				redirect(Administration::instance()->getCurrentPageURL());
 			}
 
@@ -165,7 +163,7 @@
 			$associated_sections = $section->fetchAssociatedSections(true);
 			if(is_array($associated_sections) && !empty($associated_sections)){
 				foreach($associated_sections as $key => $as){
-					$child_sections[$key] = $sectionManager->fetch($as['child_section_id']);
+					$child_sections[$key] = SectionManager::fetch($as['child_section_id']);
 					$aTableHead[] = array($child_sections[$key]->get('name'), 'col');
 				}
 			}
@@ -195,8 +193,7 @@
 					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
 				);
 			}
-
-			else{
+			else {
 
 				$field_pool = array();
 				if(is_array($visible_columns) && !empty($visible_columns)){
@@ -205,19 +202,16 @@
 					}
 				}
 
-				foreach($entries['records'] as $entry){
-
+				foreach($entries['records'] as $entry) {
 					$tableData = array();
 
 					## Setup each cell
-					if(!is_array($visible_columns) || empty($visible_columns)){
+					if(!is_array($visible_columns) || empty($visible_columns)) {
 						$tableData[] = Widget::TableData(Widget::Anchor($entry->get('id'), Administration::instance()->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/'));
 					}
-
-					else{
-
+					else {
 						$link = Widget::Anchor(
-							'None',
+							__('None'),
 							Administration::instance()->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/',
 							$entry->get('id'),
 							'content'
@@ -233,10 +227,10 @@
 								$value = ($position == 0 ? $link->generate() : __('None'));
 							}
 
-							if ($value == 'None') {
+							if ($value == __('None')) {
 								$tableData[] = Widget::TableData($value, 'inactive field-' . $column->get('type') . ' field-' . $column->get('id'));
-
-							} else {
+							}
+							else {
 								$tableData[] = Widget::TableData($value, 'field-' . $column->get('type') . ' field-' . $column->get('id'));
 							}
 
@@ -258,8 +252,7 @@
 									$entry->get('id')
 								);
 							}
-
-							else{
+							else {
 								$search_value = $entry->get('id');
 							}
 
@@ -348,7 +341,6 @@
 			$this->Form->appendChild($tableActions);
 
 			if($entries['total-pages'] > 1){
-
 				$ul = new XMLElement('ul');
 				$ul->setAttribute('class', 'page');
 
@@ -386,7 +378,6 @@
 				$ul->appendChild($li);
 
 				$this->Form->appendChild($ul);
-
 			}
 		}
 
@@ -425,8 +416,7 @@
 							$field = $entryManager->fieldManager->fetch($field_id);
 							$fields = array($field->get('element_name') => $value);
 
-							$sectionManager = new SectionManager($this->_Parent);
-							$section = $sectionManager->fetch($field->get('parent_section'));
+							$section = SectionManager::fetch($field->get('parent_section'));
 
 							foreach($checked as $entry_id){
 								$entry = $entryManager->fetch($entry_id);
@@ -469,12 +459,11 @@
 		}
 
 		public function __viewNew() {
-			$sectionManager = new SectionManager($this->_Parent);
-
-			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
+			if(!$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle'])) {
 				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])));
+			}
 
-			$section = $sectionManager->fetch($section_id);
+			$section = SectionManager::fetch($section_id);
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
@@ -568,12 +557,11 @@
 
 			if(array_key_exists('save', $_POST['action']) || array_key_exists("done", $_POST['action'])) {
 
-				$sectionManager = new SectionManager($this->_Parent);
+				$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle']);
 
-				$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']);
-
-				if(!$section = $sectionManager->fetch($section_id))
+				if(!$section = SectionManager::fetch($section_id)) {
 					Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', $this->_context['section_handle']));
+				}
 
 				$entryManager = new EntryManager($this->_Parent);
 

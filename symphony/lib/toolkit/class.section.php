@@ -12,15 +12,11 @@
 	 */
 	require_once(TOOLKIT . '/class.fieldmanager.php');
 
-	Class Section{
-		/**
-		 * The class who initialised this Section, usually SectionManager
-		 */
-		public $_Parent;
+	Class Section {
 
 		/**
 		 * An array of the Section's settings
-		 * @var array 
+		 * @var array
 		 */
 		protected $_data = array();
 
@@ -37,9 +33,8 @@
 		 * @param mixed $parent
 		 * The class that initialised this Section, usually SectionManager
 		 */
-		public function __construct(&$parent){
-			$this->_Parent = $parent;
-			$this->_fieldManager = new FieldManager($this->_Parent);
+		public function __construct() {
+			$this->_fieldManager = new FieldManager(Symphony::Engine());
 		}
 
 		/**
@@ -184,7 +179,7 @@
 
 				if($section_id) $section_id = $id;
 
-			}else{
+			} else{
 				$section_id = SectionManager::add($settings);
 			}
 

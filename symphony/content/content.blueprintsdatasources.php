@@ -60,8 +60,6 @@
 				}
 			}
 
-			$sectionManager = new SectionManager($this->_Parent);
-
 			if(isset($_POST['fields'])){
 				$fields = $_POST['fields'];
 				$fields['paginate_results'] = ($fields['paginate_results'] == 'on') ? 'yes' : 'no';
@@ -202,7 +200,7 @@
 
 			$label = Widget::Label(__('Source'));
 
-			$sections = $sectionManager->fetch(NULL, 'ASC', 'name');
+			$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 
 			if (!is_array($sections)) $sections = array();
 			$field_groups = array();

@@ -66,8 +66,6 @@
 			$isEditing = ($readonly ? true : false);
 			$fields = array();
 
-			$sectionManager = new SectionManager($this->_Parent);
-
 			if($this->_context[0] == 'edit' || $this->_context[0] == 'info'){
 				$isEditing = true;
 
@@ -109,7 +107,7 @@
 
 				$label = Widget::Label(__('Source'));
 
-				$sections = $sectionManager->fetch(NULL, 'ASC', 'name');
+				$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 
 				$options = array();
 
@@ -373,8 +371,7 @@
 				$container = new XMLElement('form', NULL, array('method' => 'post', 'action' => '', 'enctype' => 'multipart/form-data'));
 				$container->appendChild(Widget::Input('MAX_FILE_SIZE', min(ini_size_to_bytes(ini_get('upload_max_filesize')), Symphony::Configuration()->get('max_upload_size', 'admin')), 'hidden'));
 
-				$sectionManager = new SectionManager($this->_Parent);
-				$section = $sectionManager->fetch($fields['source']);
+				$section = SectionManager::fetch($fields['source']);
 
 				$section_fields = $section->fetchFields();
 				if(is_array($section_fields) && !empty($section_fields)) {

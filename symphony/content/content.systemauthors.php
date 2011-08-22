@@ -314,8 +314,7 @@
 
 			$label = Widget::Label(__('Default Area'));
 
-			$sectionManager = new SectionManager($this->_Parent);
-			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
 
 			$options = array();
 

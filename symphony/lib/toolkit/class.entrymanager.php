@@ -57,8 +57,8 @@
 		protected $_fetchSortDirection = null;
 
 		/**
-		 * The constructor initialises the formatterManager, sectionManager and
-		 * fieldManager variables and sets the `$this->_Parent` to the param provided.
+		 * The constructor initialises the `$formatterManager`, `$sectionManager` and
+		 * `$fieldManager` variables and sets the `$this->_Parent` to the param provided.
 		 *
 		 * @param Administration $parent
 		 *  The Administration object that this page has been created from
@@ -135,7 +135,7 @@
 		 *  An Entry object to insert into the database
 		 * @return boolean
 		 */
-		public function add(Entry $entry){
+		public static function add(Entry $entry){
 			$fields = $entry->get();
 
 			Symphony::Database()->insert($fields, 'tbl_entries');
@@ -181,7 +181,7 @@
 		 *  An Entry object
 		 * @return boolean
 		 */
-		public function edit(Entry $entry){
+		public static function edit(Entry $entry){
 			foreach ($entry->getData() as $field_id => $field) {
 				if (empty($field_id)) continue;
 
@@ -245,7 +245,7 @@
 
 			// Get the section's schema
 			if(!is_null($section_id)) {
-				$section = $this->sectionManager->fetch($section_id);
+				$section = SectionManager::fetch($section_id);
 				if($section instanceof Section) {
 					$fields = $section->fetchFields();
 					$data = array();
@@ -358,7 +358,7 @@
 
 			if (!$section_id) $section_id = $this->fetchEntrySectionID($entry_id);
 
-			$section = $this->sectionManager->fetch($section_id);
+			$section = SectionManager::fetch($section_id);
 
 			if (!is_object($section)) return false;
 
@@ -561,7 +561,7 @@
 		 * @return integer
 		 *  The Section ID for this Entry's section
 		 */
-		public function fetchEntrySectionID($entry_id){
+		public static function fetchEntrySectionID($entry_id){
 			return Symphony::Database()->fetchVar('section_id', 0, "SELECT `section_id` FROM `tbl_entries` WHERE `id` = '$entry_id' LIMIT 1");
 		}
 
@@ -581,7 +581,7 @@
 		public function fetchCount($section_id = null, $where = null, $joins = null, $group = false){
 			if(is_null($section_id)) return false;
 
-			$section = $this->sectionManager->fetch($section_id);
+			$section = SectionManager::fetch($section_id);
 
 			if(!is_object($section)) return false;
 

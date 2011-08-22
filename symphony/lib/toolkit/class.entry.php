@@ -161,10 +161,9 @@
 				if (is_null($entry_id)) return __ENTRY_FIELD_ERROR__;
 			}
 
-			$SectionManager = new SectionManager($this->_engine);
 			$EntryManager = new EntryManager($this->_engine);
 
-			$section = $SectionManager->fetch($this->get('section_id'));
+			$section = SectionManager::fetch($this->get('section_id'));
 			$schema = $section->fetchFieldsSchema();
 
 			foreach($schema as $info){
@@ -234,10 +233,9 @@
 		 */
 		public function checkPostData($data, &$errors = null, $ignore_missing_fields=false){
 			$status = __ENTRY_OK__;
-			$SectionManager = new SectionManager($this->_engine);
 			$EntryManager = new EntryManager($this->_engine);
 
-			$section = $SectionManager->fetch($this->get('section_id'));
+			$section = SectionManager::fetch($this->get('section_id'));
 			$schema = $section->fetchFieldsSchema();
 
 			foreach($schema as $info){
@@ -263,10 +261,7 @@
 		 * @see toolkit.Field#processRawFieldData()
 		 */
 		public function findDefaultData(){
-
-			$SectionManager = new SectionManager($this->_engine);
-
-			$section = $SectionManager->fetch($this->get('section_id'));
+			$section = SectionManager::fetch($this->get('section_id'));
 			$schema = $section->fetchFields();
 
 			foreach($schema as $field){
@@ -278,7 +273,6 @@
 
 			if(!$this->get('creation_date')) $this->set('creation_date', DateTimeObj::get('c'));
 			if(!$this->get('creation_date_gmt')) $this->set('creation_date_gmt', DateTimeObj::getGMT('c'));
-
 		}
 
 		/**
@@ -312,7 +306,7 @@
 			if(is_null($this->get('section_id'))) return null;
 
 			if(is_null($associated_sections)) {
-				$section = $this->_Parent->sectionManager->fetch($this->get('section_id'));
+				$section = SectionManager::fetch($this->get('section_id'));
 				$associated_sections = $section->fetchAssociatedSections();
 			}
 
