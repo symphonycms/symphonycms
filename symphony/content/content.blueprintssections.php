@@ -98,12 +98,10 @@
 		}
 
 		public function __viewNew(){
-
 			$this->setPageType('form');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
 			$this->appendSubheading(__('Untitled'));
 
-			$fieldManager = new FieldManager($this->_Parent);
 			$types = array();
 
 			$fields = is_array($_POST['fields']) ? $_POST['fields'] : array();
@@ -207,7 +205,7 @@
 
 			if(!$showEmptyTemplate){
 				foreach($fields as $position => $data){
-					if($input = $fieldManager->create($data['type'])){
+					if($input = FieldManager::create($data['type'])){
 						$input->setArray($data);
 
 						$wrapper = new XMLElement('li');
@@ -220,8 +218,8 @@
 				}
 			}
 
-			foreach ($fieldManager->fetchTypes() as $type) {
-				if ($type = $fieldManager->create($type)) {
+			foreach (FieldManager::fetchTypes() as $type) {
+				if ($type = FieldManager::create($type)) {
 					$types[] = $type;
 				}
 			}
@@ -265,8 +263,6 @@
 				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for could not be found.'));
 			}
 			$meta = $section->get();
-
-			$fieldManager = new FieldManager($this->_Parent);
 			$types = array();
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
@@ -309,7 +305,7 @@
 
 				if(is_array($_POST['fields']) && !empty($_POST['fields'])){
 					foreach($_POST['fields'] as $position => $data){
-						if($fields[$position] = $fieldManager->create($data['type'])){
+						if($fields[$position] = FieldManager::create($data['type'])){
 							$fields[$position]->setArray($data);
 							$fields[$position]->set('sortorder', $position);
 						}
@@ -317,7 +313,7 @@
 				}
 			}
 
-			else $fields = $fieldManager->fetch(NULL, $section_id);
+			else $fields = FieldManager::fetch(NULL, $section_id);
 
 			$meta['entry_order'] = (isset($meta['entry_order']) ? $meta['entry_order'] : 'date');
 
@@ -425,8 +421,8 @@
 				}
 			}
 
-			foreach ($fieldManager->fetchTypes() as $type) {
-				if ($type = $fieldManager->create($type)) {
+			foreach (FieldManager::fetchTypes() as $type) {
+				if ($type = FieldManager::create($type)) {
 					array_push($types, $type);
 				}
 			}
@@ -539,8 +535,6 @@
 				$fields = $_POST['fields'];
 				$meta = $_POST['meta'];
 
-				$fieldManager = new FieldManager($this->_Parent);
-
 				if($edit) {
 					$section_id = $this->_context[1];
 					$existing_section = SectionManager::fetch($section_id);
@@ -601,7 +595,7 @@
 						foreach($fields as $position => $data){
 							$required = NULL;
 
-							$field = $fieldManager->create($data['type']);
+							$field = FieldManager::create($data['type']);
 							$field->setFromPOST($data);
 
 							if($field->mustBeUnique() && !in_array($field->get('type'), $unique)) $unique[] = $field->get('type');
@@ -698,7 +692,7 @@
 
 							if(is_array($missing_cfs) && !empty($missing_cfs)){
 								foreach($missing_cfs as $id){
-									$fieldManager->delete($id);
+									FieldManager::delete($id);
 								}
 							}
 						}
@@ -706,7 +700,7 @@
 						## Save each custom field
 						if(is_array($fields) && !empty($fields)){
 							foreach($fields as $position => $data){
-								$field = $fieldManager->create($data['type']);
+								$field = FieldManager::create($data['type']);
 								$field->setFromPOST($data);
 								$field->set('sortorder', (string)$position);
 								$field->set('parent_section', $section_id);
@@ -714,11 +708,9 @@
 								$newField = !(boolean)$field->get('id');
 
 								$field->commit();
-
 								$field_id = $field->get('id');
 
-								if($field_id){
-
+								if($field_id) {
 									if($newField) {
 										/**
 										 * After creation of a Field.

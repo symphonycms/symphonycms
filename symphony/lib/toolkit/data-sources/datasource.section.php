@@ -98,13 +98,13 @@
 
 					processSystemParameters($ds, $entry, $param_pool);
 
-					$pool = $entryManager->fieldManager->fetch(array_keys($data));
+					$pool = FieldManager::fetch(array_keys($data));
 					$fieldPool += $pool;
 
 					foreach($data as $field_id => $values){
 
 						if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id])) {
-							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
+							$fieldPool[$field_id] =& FieldManager::fetch($field_id);
 						}
 
 						processParameters($ds, $entry, $fieldPool, $field_id, $values, $param_pool);
@@ -171,7 +171,7 @@
 	}
 
 	if(is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
-		$pool = $entryManager->fieldManager->fetch(array_keys($this->dsParamFILTERS));
+		$pool = FieldManager::fetch(array_keys($this->dsParamFILTERS));
 		$fieldPool += $pool;
 
 		foreach($this->dsParamFILTERS as $field_id => $filter){
@@ -223,7 +223,7 @@
 
 	if($this->dsParamSORT == 'system:id') $entryManager->setFetchSorting('id', $this->dsParamORDER);
 	elseif($this->dsParamSORT == 'system:date') $entryManager->setFetchSorting('date', $this->dsParamORDER);
-	else $entryManager->setFetchSorting($entryManager->fieldManager->fetchFieldIDFromElementName($this->dsParamSORT, $this->getSource()), $this->dsParamORDER);
+	else $entryManager->setFetchSorting(FieldManager::fetchFieldIDFromElementName($this->dsParamSORT, $this->getSource()), $this->dsParamORDER);
 
 	if(isset($this->dsParamPARAMOUTPUT) && !is_array($this->dsParamPARAMOUTPUT)) {
 		$this->dsParamPARAMOUTPUT = array($this->dsParamPARAMOUTPUT);
@@ -237,7 +237,7 @@
 			$datasource_schema[] = $p;
 		}
 	}
-	if ($this->dsParamGROUP) $datasource_schema[] = $entryManager->fieldManager->fetchHandleFromID($this->dsParamGROUP);
+	if ($this->dsParamGROUP) $datasource_schema[] = FieldManager::fetchHandleFromID($this->dsParamGROUP);
 	if(!isset($this->dsParamPAGINATERESULTS)) $this->dsParamPAGINATERESULTS = 'yes';
 
 	$entries = $entryManager->fetchByPage(
@@ -307,7 +307,7 @@
 		if(!isset($this->dsParamLIMIT) || $this->dsParamLIMIT > 0){
 
 			if(isset($this->dsParamGROUP)):
-				$fieldPool[$this->dsParamGROUP] =& $entryManager->fieldManager->fetch($this->dsParamGROUP);
+				$fieldPool[$this->dsParamGROUP] =& FieldManager::fetch($this->dsParamGROUP);
 				$groups = $fieldPool[$this->dsParamGROUP]->groupRecords($entries['records']);
 
 				foreach($groups as $element => $group){
@@ -339,13 +339,13 @@
 
 					processSystemParameters($this, $entry, $param_pool);
 
-					$pool = $entryManager->fieldManager->fetch(array_keys($data));
+					$pool = FieldManager::fetch(array_keys($data));
 					$fieldPool += $pool;
 
 					foreach($data as $field_id => $values){
 
 						if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id])) {
-							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
+							$fieldPool[$field_id] =& FieldManager::fetch($field_id);
 						}
 
 						processParameters($this, $entry, $fieldPool, $field_id, $values, $param_pool);

@@ -112,7 +112,7 @@
 				$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 
 				foreach($errors as $field_id => $message){
-					$field = $entryManager->fieldManager->fetch($field_id);
+					$field = FieldManager::fetch($field_id);
 
 					if(is_array($fields[$field->get('element_name')])) {
 						$type = array_reduce($fields[$field->get('element_name')], '__reduceType');
@@ -141,7 +141,7 @@
 				}
 
 				foreach($errors as $err){
-					$field = $entryManager->fieldManager->fetch($err['field_id']);
+					$field = FieldManager::fetch($err['field_id']);
 					$result->appendChild(new XMLElement($field->get('element_name'), NULL, array('type' => 'invalid')));
 				}
 

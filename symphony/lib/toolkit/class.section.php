@@ -102,7 +102,7 @@
 		 * @return array
 		 */
 		public function fetchVisibleColumns(){
-			return $this->_fieldManager->fetch(null, $this->get('id'), 'ASC', 'sortorder', null, null, " AND t1.show_column = 'yes' ");
+			return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', null, null, " AND t1.show_column = 'yes' ");
 		}
 
 		/**
@@ -117,7 +117,7 @@
 		 * @return array
 		 */
 		public function fetchFields($type = null, $location = null){
-			return $this->_fieldManager->fetch(null, $this->get('id'), 'ASC', 'sortorder', $type, $location);
+			return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', $type, $location);
 		}
 
 		/**
@@ -131,7 +131,7 @@
 		 * @return array
 		 */
 		public function fetchFilterableFields($location = null){
-			return $this->_fieldManager->fetch(null, $this->get('id'), 'ASC', 'sortorder', null, $location, null, Field::__FILTERABLE_ONLY__);
+			return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', null, $location, null, Field::__FILTERABLE_ONLY__);
 		}
 
 		/**
@@ -145,7 +145,7 @@
 		 * @return array
 		 */
 		public function fetchToggleableFields($location = null){
-			return $this->_fieldManager->fetch(null, $this->get('id'), 'ASC', 'sortorder', null, $location,null, Field::__TOGGLEABLE_ONLY__);
+			return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', null, $location,null, Field::__TOGGLEABLE_ONLY__);
 		}
 
 		/**

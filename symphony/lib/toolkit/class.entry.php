@@ -161,15 +161,13 @@
 				if (is_null($entry_id)) return __ENTRY_FIELD_ERROR__;
 			}
 
-			$EntryManager = new EntryManager($this->_engine);
-
 			$section = SectionManager::fetch($this->get('section_id'));
 			$schema = $section->fetchFieldsSchema();
 
 			foreach($schema as $info){
 				$result = null;
 
-				$field = $EntryManager->fieldManager->fetch($info['id']);
+				$field = FieldManager::fetch($info['id']);
 
 				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
 
@@ -233,15 +231,12 @@
 		 */
 		public function checkPostData($data, &$errors = null, $ignore_missing_fields=false){
 			$status = __ENTRY_OK__;
-			$EntryManager = new EntryManager($this->_engine);
-
 			$section = SectionManager::fetch($this->get('section_id'));
 			$schema = $section->fetchFieldsSchema();
 
 			foreach($schema as $info){
 				$result = null;
-
-				$field = $EntryManager->fieldManager->fetch($info['id']);
+				$field = FieldManager::fetch($info['id']);
 
 				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
 
@@ -316,7 +311,7 @@
 
 			foreach($associated_sections as $as){
 
-				$field = $this->_Parent->fieldManager->fetch($as['child_section_field_id']);
+				$field = FieldManager::fetch($as['child_section_field_id']);
 
 				$parent_section_field_id = $as['parent_section_field_id'];
 				$search_value = null;

@@ -85,7 +85,7 @@
 						$section->get('handle'))
 					);
 
-					$field = $entryManager->fieldManager->fetch($field_id);
+					$field = FieldManager::fetch($field_id);
 
 					if($field instanceof Field) {
 						// For deprecated reasons, call the old, typo'd function name until the switch to the
@@ -241,7 +241,7 @@
 					if(is_array($child_sections) && !empty($child_sections)){
 						foreach($child_sections as $key => $as){
 
-							$field = $entryManager->fieldManager->fetch((int)$associated_sections[$key]['child_section_field_id']);
+							$field = FieldManager::fetch((int)$associated_sections[$key]['child_section_field_id']);
 
 							$parent_section_field_id = (int)$associated_sections[$key]['parent_section_field_id'];
 
@@ -413,7 +413,7 @@
 						if($option == 'toggle'){
 
 							$entryManager = new EntryManager($this->_Parent);
-							$field = $entryManager->fieldManager->fetch($field_id);
+							$field = FieldManager::fetch($field_id);
 							$fields = array($field->get('element_name') => $value);
 
 							$section = SectionManager::fetch($field->get('parent_section'));
@@ -498,7 +498,7 @@
 					));
 
 					// The actual pre-populating should only happen if there is not existing fields post data
-					if(!isset($_POST['fields']) && $field = $entryManager->fieldManager->fetch($field_id)) {
+					if(!isset($_POST['fields']) && $field = FieldManager::fetch($field_id)) {
 						$entry->setData(
 							$field->get('id'),
 							$field->processRawFieldData($value, $error, true)
@@ -656,12 +656,11 @@
 		}
 
 		public function __viewEdit() {
-			$sectionManager = new SectionManager($this->_Parent);
-
-			if(!$section_id = $sectionManager->fetchIDFromHandle($this->_context['section_handle']))
+			if(!$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle'])) {
 				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])));
+			}
 
-			$section = $sectionManager->fetch($section_id);
+			$section = SectionManager::fetch($section_id);
 
 			$entry_id = intval($this->_context['entry_id']);
 
@@ -689,7 +688,7 @@
 				$entry = $existingEntry;
 
 				if (!$section) {
-					$section = $sectionManager->fetch($entry->get('section_id'));
+					$section = SectionManager::fetch($entry->get('section_id'));
 				}
 			}
 
@@ -722,7 +721,6 @@
 				switch($flag){
 
 					case 'saved':
-
 						$this->pageAlert(
 							__(
 								'Entry updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Entries</a>',
@@ -754,7 +752,7 @@
 
 			### Determine the page title
 			$field_id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
-			$field = $entryManager->fieldManager->fetch($field_id);
+			$field = FieldManager::fetch($field_id);
 
 			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')), NULL, $entry_id)));
 
@@ -839,8 +837,7 @@
 				}
 				$entry = $ret[0];
 
-				$sectionManager = new SectionManager($this->_Parent);
-				$section = $sectionManager->fetch($entry->get('section_id'));
+				$section = SectionManager::fetch($entry->get('section_id'));
 
 				$post = General::getPostData();
 				$fields = $post['fields'];

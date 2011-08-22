@@ -298,7 +298,7 @@
 						// been provided
 						$entry_data = $e->getData();
 						foreach($entry_data as $field_id => $data){
-							$field = $this->fieldManager->fetch($field_id);
+							$field = FieldManager::fetch($field_id);
 							$field->entryDataCleanup($id, $data);
 						}
 					}
@@ -380,12 +380,12 @@
 				$sort = 'ORDER BY `e`.`id`' . $this->_fetchSortDirection;
 			}
 
-			else if ($this->_fetchSortField && $field = $this->fieldManager->fetch($this->_fetchSortField)) {
+			else if ($this->_fetchSortField && $field = FieldManager::fetch($this->_fetchSortField)) {
 				$field->buildSortingSQL($joins, $where, $sort, $this->_fetchSortDirection);
 				if (!$group) $group = $field->requiresSQLGrouping();
 			}
 
-			else if ($section->get('entry_order') && $field = $this->fieldManager->fetch($section->get('entry_order'))) {
+			else if ($section->get('entry_order') && $field = FieldManager::fetch($section->get('entry_order'))) {
 				$field->buildSortingSQL($joins, $where, $sort, $section->get('entry_order_direction'));
 				if (!$group) $group = $field->requiresSQLGrouping();
 			}
