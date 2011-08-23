@@ -140,7 +140,7 @@
 			ksort($result);
 			return $result;
 		}
-		
+
 		public static function about($name) {
 			$classname = self::__getClassName($name);
 			$path = self::__getDriverPath($name);
@@ -183,7 +183,7 @@
 			if(!class_exists($classname))
 				require_once($path);
 
-			return new $classname($env);
+			return new $classname($dummy, $env);
 		}
 
 	}

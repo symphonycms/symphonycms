@@ -78,11 +78,12 @@
 		/**
 		 * The constructor for an Event sets `$this->_env` from the given parameters
 		 *
+		 * @todo Write the updater that removes the need for `$dummy`.
 		 * @param array $env
 		 *  The environment variables from the Frontend class which includes
 		 *  any params set by Symphony or Datasources or by other Events
 		 */
-		public function __construct(array $env = array()){
+		public function __construct($dummy, array $env = array()){
 			$this->_env = $env;
 		}
 
