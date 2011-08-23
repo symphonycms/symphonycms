@@ -11,8 +11,8 @@
 	 */
 
 	Class fieldTagList extends Field {
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function __construct(){
+			parent::__construct();
 			$this->_name = __('Tag List');
 		}
 

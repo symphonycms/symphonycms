@@ -17,8 +17,8 @@
 			'image/png',
 		);
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function __construct(){
+			parent::__construct();
 
 			$this->_name = __('File Upload');
 			$this->_required = true;

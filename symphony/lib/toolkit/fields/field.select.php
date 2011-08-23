@@ -11,8 +11,8 @@
 
 	Class fieldSelect extends Field {
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function __construct(){
+			parent::__construct();
 			$this->_name = __('Select Box');
 			$this->_required = true;
 			$this->_showassociation = true;
