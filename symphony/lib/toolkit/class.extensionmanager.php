@@ -511,8 +511,7 @@
 
 			if(empty($services)) return null;
 
-			$parent = Symphony::Engine();
-			$context += array('parent' => &$parent, 'page' => $page, 'delegate' => $delegate);
+			$context += array('page' => $page, 'delegate' => $delegate);
 
 			foreach($services as $s){
 				$obj = self::getInstance($s['name']);

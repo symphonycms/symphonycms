@@ -14,6 +14,7 @@
 		public $_invalidPassword = false;
 
 		public function __construct(){
+			parent::__construct();
 			$this->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
 
 			$this->Html->setElementStyle('html');
