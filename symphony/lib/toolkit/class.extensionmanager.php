@@ -100,8 +100,8 @@
 		 * @return Extension
 		 */
 		public static function getInstance($name){
-			foreach(self::$_pool as $extension){
-				if(get_class($extension) == self::__getClassName($name)) return $extension;
+			foreach(self::$_pool as $key => $extension){
+				if($key == $name) return $extension;
 			}
 
 			return self::create($name);
