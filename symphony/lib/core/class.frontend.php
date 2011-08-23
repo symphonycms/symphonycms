@@ -98,7 +98,7 @@
 		 *  The HTML of the page to return
 		 */
 		public function display($page) {
-			self::$_page = new FrontendPage($this);
+			self::$_page = new FrontendPage;
 
 			/**
 			 * `FrontendInitialised` is fired just after the `$_page` variable has been

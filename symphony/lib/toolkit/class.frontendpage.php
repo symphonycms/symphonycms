@@ -20,26 +20,7 @@
 	require_once(TOOLKIT . '/class.eventmanager.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
 
-	Class FrontendPage extends XSLTPage{
-
-		/**
-		 * An instance of the Frontend class
-		 * @var Frontend
-		 * @see core.Frontend
-		 */
-		public $_Parent;
-
-		/**
-		 * An instance of the DatasourceManager
-		 * @var DatasourceManager
-		 */
-		public $DatasourceManager;
-
-		/**
-		 * An instance of the EventManager
-		 * @var EventManager
-		 */
-		public $EventManager;
+	Class FrontendPage extends XSLTPage {
 
 		/**
 		 * An associative array of all the parameters for this page including
@@ -98,23 +79,12 @@
 		private $_env = array();
 
 		/**
-		 * Constructor function sets `$this->_Parent` and initialises the Managers
-		 * used on the FrontendPage, which are DatasourceManager, EventManager and
-		 * ExtensionManager
-		 *
-		 * @param Frontend $parent
-		 *  The Frontend object that this page has been created from
-		 *  passed by reference
+		 * Constructor function sets the `$is_logged_in` variable.
 		 */
-		public function __construct(&$parent){
+		public function __construct() {
 			parent::__construct();
-			
-			$this->is_logged_in = Frontend::instance()->isLoggedIn();
 
-			// @todo Remove this for 2.3
-			$this->_Parent = $parent;
-			$this->DatasourceManager = new DatasourceManager(Frontend::instance());
-			$this->EventManager = new EventManager(Frontend::instance());
+			$this->is_logged_in = Frontend::instance()->isLoggedIn();
 		}
 
 		/**
