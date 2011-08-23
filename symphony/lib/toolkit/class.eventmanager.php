@@ -183,7 +183,7 @@
 			if(!class_exists($classname))
 				require_once($path);
 
-			return new $classname(Symphony::Engine(), $env);
+			return new $classname($env);
 		}
 
 	}

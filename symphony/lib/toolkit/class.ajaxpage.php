@@ -36,13 +36,6 @@
 		const STATUS_UNAUTHORISED = 401;
 
 		/**
-		 * An instance of the Administration class
-		 * @var Administration
-		 * @see core.Administration
-		 */
-		protected $_Parent;
-
-		/**
 		 * The root node for the response of the AJAXPage
 		 * @var XMLElement
 		 */
@@ -62,14 +55,8 @@
 		 * page template.
 		 *
 		 * @see toolkit.Profiler
-		 * @param Administration $parent
-		 *  The Administration object that this page has been created from
-		 *  passed by reference
 		 */
-		public function __construct(&$parent){
-			// @todo Remove this for 2.3
-			$this->_Parent = $parent;
-
+		public function __construct() {
 			$this->_Result = new XMLElement('result');
 			$this->_Result->setIncludeHeader(true);
 
@@ -112,9 +99,7 @@
 		 * @return string
 		 */
 		public function generate(){
-
 			switch($this->_status){
-
 				case self::STATUS_OK:
 					$status_message = '200 OK';
 					break;
@@ -127,7 +112,6 @@
 				case self::STATUS_UNAUTHORISED:
 					$status_message = '401 Unauthorized';
 					break;
-
 			}
 
 			$this->addHeaderToPage('HTTP/1.0 ' . $status_message);

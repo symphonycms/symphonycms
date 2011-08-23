@@ -14,30 +14,11 @@
 	Abstract Class Manager{
 
 		/**
-		 * The class that initialised the Entry, usually the EntryManager
-		 * @var mixed
-		 */
-		protected $_Parent;
-
-		/**
 		 * An array of all the objects that the Manager is responsible for.
 		 * Defaults to an empty array.
 		 * @var array
 		 */
 		protected static $_pool = array();
-
-		/**
-		 * The constructor for Manager. This sets the `$this->_Parent` to be an
-		 * instance of the Administration class.
-		 *
-		 * @param Administration $parent
-		 *	The Administration object that this manager has been created from
-		 *	passed by reference
-		 */
-		public function __construct(&$parent){
-			// @todo Remove this for 2.3
-			$this->_Parent = $parent;
-		}
 
 		/**
 		 * This function will empty the $_pool array.

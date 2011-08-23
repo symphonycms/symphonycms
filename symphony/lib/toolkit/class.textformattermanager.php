@@ -168,7 +168,7 @@
 				if(!class_exists($classname))
 					require_once($path);
 
-				self::$_pool[$handle] = new $classname($this->_Parent);
+				self::$_pool[$handle] = new $classname;
 			}
 
 			return self::$_pool[$handle];

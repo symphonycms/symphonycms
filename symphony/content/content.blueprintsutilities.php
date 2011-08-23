@@ -14,8 +14,8 @@
 
 		public $_existing_file;
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function __construct(){
+			parent::__construct();
 			$this->setPageType('form');
 		}
 

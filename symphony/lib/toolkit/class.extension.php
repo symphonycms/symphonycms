@@ -19,12 +19,6 @@
 		const CRLF = PHP_EOL;
 
 		/**
-		 * The class that initialised the Entry, usually the EntryManager
-		 * @var mixed
-		 */
-		protected $_Parent;
-
-		/**
 		 * Determines that a new navigation group is to created in the Symphony backend
 		 * @var integer
 		 */
@@ -38,17 +32,9 @@
 		const NAV_CHILD = 0;
 
 		/**
-		 * The extension constructor takes an associative array of arguments
-		 * and sets the `$this->_Parent` variable using the 'parent' key. It appears that
-		 * this is the only key set in the `$args` array by Symphony
-		 *
-		 * @param array $args
-		 *  An associative array of arguments, but default this will contain one,
-		 *  'parent'.
+		 * Default constructor for an Extension, at this time it does nothing
 		 */
-		public function __construct(Array $args){
-			$this->_Parent =& $args['parent'];
-		}
+		public function __construct() {}
 
 		/**
 		 * Any logic that assists this extension in being installed such as
@@ -145,7 +131,7 @@
 		 * This method returns an array with the delegate name, delegate
 		 * namespace, and then name of the method that should be called.
 		 * The method that is called is passed an associative array containing
-		 * the current context which is the `$this->_Parent`, current page object
+		 * the current context which is the current page object
 		 * and any other variables that is passed via this delegate. eg.
 		 *
 		 * `array(

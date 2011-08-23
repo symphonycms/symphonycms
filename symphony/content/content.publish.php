@@ -15,12 +15,7 @@
 
 	Class contentPublish extends AdministrationPage{
 
-		public $_errors;
-
-		public function __construct(&$parent){
-			parent::__construct($parent);
-			$this->_errors = array();
-		}
+		public $_errors = array();
 
 		public function action(){
 			$this->__switchboard('action');

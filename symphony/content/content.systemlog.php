@@ -9,15 +9,15 @@
      * to a 404 page
      */
 	Class contentSystemLog{
-		
+
 		public function build(){
-			
+
 			if(!is_file(ACTIVITY_LOG) || !$log = @file_get_contents(ACTIVITY_LOG)) Administration::instance()->errorPageNotFound();
-			
+
 			header('Content-Type: text/plain');
-			
+
 			print $log;
 			exit;
 		}
-		
+
 	}

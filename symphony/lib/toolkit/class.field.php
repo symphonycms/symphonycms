@@ -131,7 +131,6 @@
 			$this->_handle = (strtolower(get_class($this)) == 'field' ? 'field' : strtolower(substr(get_class($this), 5)));
 
 			// @todo Remove these for 2.3
-			$this->_Parent = Symphony::Engine();
 			$this->_engine = Symphony::Engine();
 			$this->Database = Symphony::Database();
 		}

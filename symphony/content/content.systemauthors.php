@@ -17,10 +17,6 @@
 		public $_Author;
 		public $_errors = array();
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
-		}
-
 		public function __viewIndex(){
 
 			$this->setPageType('table');

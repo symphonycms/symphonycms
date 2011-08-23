@@ -43,10 +43,8 @@
 		private static $_extensions = array();
 
 		/**
-		 * The constructor for ExtensionManager overrides the default Manager
-		 * constructor to prevent `$this->_Parent` from being set. The constructor
-		 * will populate the `$_subscriptions` variable from the `tbl_extension` and
-		 * `tbl_extensions_delegates` tables.
+		 * The constructor will populate the `$_subscriptions` variable from
+		 * the `tbl_extension` and `tbl_extensions_delegates` tables.
 		 */
 		public function __construct() {
 			if (empty(self::$_subscriptions)) {
@@ -622,10 +620,8 @@
 
 				if(!class_exists($classname)) require_once($path);
 
-				$param['parent'] =& Symphony::Engine();
-
-				##Create the object
-				self::$_pool[$name] = new $classname($param);
+				// Create the extension object
+				self::$_pool[$name] = new $classname(array());
 			}
 
 			return self::$_pool[$name];

@@ -67,9 +67,6 @@
 		 * the `$env` variable will be run through `Datasource::processParameters`.
 		 *
          * @see toolkit.Datasource#processParameters()
-		 * @param Administration $parent
-		 *  The Administration object that this page has been created from
-		 *  passed by reference
 		 * @param array $env
 		 *  The environment variables from the Frontend class which includes
 		 *  any params set by Symphony or Events or by other Datasources
@@ -77,13 +74,10 @@
 		 *  If set to true, `Datasource::processParameters` will be called. By default
 		 *  this is true
 		 */
-		public function __construct(&$parent, Array $env = null, $process_params=true){
+		public function __construct(array $env = null, $process_params=true){
 			if($process_params){
 				$this->processParameters($env);
 			}
-
-			// @todo Remove this for 2.3
-			$this->_Parent = $parent;
 		}
 
 		/**

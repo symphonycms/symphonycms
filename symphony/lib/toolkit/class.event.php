@@ -50,12 +50,6 @@
 		const CRLF = PHP_EOL;
 
 		/**
-		 * The class that initialised the Entry, usually the EntryManager
-		 * @var mixed
-		 */
-		protected $_Parent;
-
-		/**
 		 * Represents High Priority, that this event should run first
 		 * @var integer
 		 */
@@ -82,21 +76,14 @@
 		protected $_env = array();
 
 		/**
-		 * The constructor for an Event sets `$this->_Parent` and `$this->_env`
-		 * from the given parameters
+		 * The constructor for an Event sets `$this->_env` from the given parameters
 		 *
-		 * @param Administration $parent
-		 *	The Administration object that this page has been created from
-		 *	passed by reference
 		 * @param array $env
-		 *	The environment variables from the Frontend class which includes
-		 *	any params set by Symphony or Datasources or by other Events
+		 *  The environment variables from the Frontend class which includes
+		 *  any params set by Symphony or Datasources or by other Events
 		 */
-		public function __construct(&$parent, Array $env = array()){
+		public function __construct(array $env = array()){
 			$this->_env = $env;
-			
-			// @todo Remove this for 2.3
-			$this->_Parent = $parent;
 		}
 
 		/**
@@ -123,8 +110,8 @@
 		}
 
 		/**
-		 * Returns a string of HTML or an XMLElement of documentation for the current event. 
-		 * By default this will be an example of a HTML form that can populate the chosen section and 
+		 * Returns a string of HTML or an XMLElement of documentation for the current event.
+		 * By default this will be an example of a HTML form that can populate the chosen section and
 		 * any filter information. Documentation is shown in the Symphony backend when a user tries to
 		 * edit an event but it's `allowEditorToParse()` returns `false`. If this is not implemented by
 		 * the event, a default Symphony message will appear.

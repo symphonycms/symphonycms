@@ -16,13 +16,7 @@
 	include_once(TOOLKIT . '/class.textformattermanager.php');
 	include_once(TOOLKIT . '/class.entry.php');
 
-	Class EntryManager{
-
-		/**
-		 * The class that initialised the Entry, usually the EntryManager
-		 * @var mixed
-		 */
-		protected $_Parent;
+	Class EntryManager {
 
 		/**
 		 * An instance of the TextFormatterManager
@@ -58,19 +52,14 @@
 
 		/**
 		 * The constructor initialises the `$formatterManager`, `$sectionManager` and
-		 * `$fieldManager` variables and sets the `$this->_Parent` to the param provided.
+		 * `$fieldManager` variables.
 		 *
-		 * @param Administration $parent
-		 *  The Administration object that this page has been created from
-		 *  passed by reference
 		 */
-		public function __construct($parent){
+		public function __construct(){
 			// @todo Remove this for 2.3
-			$this->_Parent = $parent;
-
-			$this->formatterManager = new TextformatterManager($this->_Parent);
-			$this->sectionManager = new SectionManager($this->_Parent);
-			$this->fieldManager = new FieldManager($this->_Parent);
+			$this->formatterManager = new TextformatterManager(Symphony::Engine());
+			$this->sectionManager = new SectionManager(Symphony::Engine());
+			$this->fieldManager = new FieldManager(Symphony::Engine());
 		}
 
 		/**

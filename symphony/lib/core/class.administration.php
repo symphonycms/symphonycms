@@ -59,27 +59,6 @@
 		}
 
 		/**
-		 * The constructor for Administration calls the parent Symphony
-		 * constructor.
-		 *
-		 * @see core.Symphony#__construct()
-		 * @deprecated The constructor creates backwards compatible references
-		 *  to `$this->Database`, `$this->ExtensionManager` and `$this->Configuration`
-		 *  that act as alias for `Symphony::Database()`, `Symphony::ExtensionManager()`
-		 *  and `Symphony::Configuration()`. These will be removed in the
-		 *  next Symphony release
-		 */
-		protected function __construct(){
-			parent::__construct();
-
-			// Need this part for backwards compatiblity
-			// @todo Remove this for 2.3
-			$this->Database = Symphony::Database();
-			$this->Configuration = Symphony::Configuration();
-			$this->ExtensionManager = Symphony::ExtensionManager();
-		}
-
-		/**
 		 * Returns the current Page path, excluding the domain and Symphony path.
 		 *
 		 * @return string
@@ -176,13 +155,13 @@
 			}
 
 			include_once((isset($this->_callback['driverlocation']) ? $this->_callback['driverlocation'] : CONTENT) . '/content.' . $this->_callback['driver'] . '.php');
-			$this->Page = new $this->_callback['classname']($this);
+			$this->Page = new $this->_callback['classname'];
 
 			if(!$is_logged_in && $this->_callback['driver'] != 'login'){
 				if(is_callable(array($this->Page, 'handleFailedAuthorisation'))) $this->Page->handleFailedAuthorisation();
 				else{
 					include_once(CONTENT . '/content.login.php');
-					$this->Page = new contentLogin($this);
+					$this->Page = new contentLogin;
 					$this->Page->build();
 				}
 			}

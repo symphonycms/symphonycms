@@ -15,14 +15,7 @@
 	require_once(TOOLKIT . '/class.htmlpage.php');
 	require_once(TOOLKIT . '/class.alert.php');
 
-	Class AdministrationPage extends HTMLPage{
-
-		/**
-		 * An instance of the Administration class
-		 * @var Administration
-		 * @see core.Administration
-		 */
-		public $_Parent;
+	Class AdministrationPage extends HTMLPage {
 
 		/**
 		 * An instance of the Alert class. Used to display page level
@@ -90,22 +83,14 @@
 		private $_body_class = '';
 
 		/**
-		 * Constructor takes the Administration instance and sets it
-		 * to be the `$this->_Parent`. Calls the parent constructor to set up
-		 * the basic HTML, Head and Body XMLElements. This function
-		 * also sets the XMLElement type to be HTML, instead of XML
-		 *
-		 * @param Administration $parent
-		 *  The Administration object that this page has been created from
-		 *  passed by reference
+		 * Constructor calls the parent constructor to set up
+		 * the basic HTML, Head and Body `XMLElement`'ss. This function
+		 * also sets the `XMLElement` element style to be HTML, instead of XML
 		 */
-		public function __construct(Administration &$parent){
+		public function __construct(){
 			parent::__construct();
 
 			$this->Html->setElementStyle('html');
-			
-			// @todo Remove this for 2.3
-			$this->_Parent = $parent;
 		}
 
 		/**

@@ -189,7 +189,7 @@
 
 			if(!class_exists($classname)) require_once($path);
 
-			return new $classname(Symphony::Engine(), $env, $process_params);
+			return new $classname($env, $process_params);
 
 		}
 
