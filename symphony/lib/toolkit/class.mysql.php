@@ -450,8 +450,7 @@
 				}
 			}
 
-			$query_hash = md5($query.microtime());
-			self::$_log['query'][$query_hash] = array('query' => $query, 'start' => precision_timer());
+			$start = precision_timer();
 
 			$this->flush();
 			$this->_lastQuery = $query;
@@ -477,7 +476,7 @@
 				mysql_free_result($this->_result);
 			}
 
-			self::$_log['query'][$query_hash]['time'] = precision_timer('stop', self::$_log['query'][$query_hash]['start']);
+			$query_hash = md5($query.$start);
 
 			/**
 			 * After a query has successfully executed, that is it was considered
@@ -491,7 +490,7 @@
 			 * @since Symphony 2.3
 			 * @delegate LogQuery
 			 * @param string $context
-			 * '*'
+			 * '/frontend/' or '/backend/'
 			 * @param string $query
 			 *  The query that has just been executed
 			 * @param string $query_hash
@@ -500,11 +499,19 @@
 			 *  The time that it took to run `$query`
 			 */
 			if(Symphony::ExtensionManager() instanceof ExtensionManager) {
-				Symphony::ExtensionManager()->notifyMembers('LogQuery', '*', array(
+				Symphony::ExtensionManager()->notifyMembers('LogQuery', class_exists('Administration') ? '/backend/' : '/frontend/', array(
 					'query' => $query,
 					'query_hash' => $query_hash,
-					'execution_time' => self::$_log['query'][$query_hash]['time']
+					'execution_time' => precision_timer('stop', $start)
 				));
+			}
+			else {
+				// @todo Need to keep a running log of queries for possible debug backtrace, last 5 should do it..
+				self::$_log['query'][$query_hash] = array(
+					'query' => $query,
+					'query_hash' => $query_hash,
+					'execution_time' => precision_timer('stop', $start)
+				);
 			}
 
 			return true;
