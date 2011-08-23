@@ -48,11 +48,15 @@
 		 */
 		public function __construct() {
 			if (empty(self::$_subscriptions)) {
-				self::$_subscriptions = Symphony::Database()->fetch("
+				$subscriptions = Symphony::Database()->fetch("
 					SELECT t1.name, t2.page, t2.delegate, t2.callback
 					FROM `tbl_extensions` as t1 INNER JOIN `tbl_extensions_delegates` as t2 ON t1.id = t2.extension_id
 					WHERE t1.status = 'enabled'
 				");
+
+				foreach($subscriptions as $subscription) {
+					self::$_subscriptions[$subscription['delegate']][] = $subscription;
+				}
 			}
 		}
 
@@ -118,10 +122,7 @@
 		 */
 		private static function __buildExtensionList($update=false) {
 			if (empty(self::$_extensions) || $update) {
-				$extensions = Symphony::Database()->fetch("SELECT * FROM `tbl_extensions`");
-				foreach($extensions as $extension) {
-					self::$_extensions[$extension['name']] = $extension;
-				}
+				self::$_extensions = Symphony::Database()->fetch("SELECT * FROM `tbl_extensions`", 'name');
 			}
 		}
 
@@ -501,9 +502,7 @@
 
 			$services = array();
 
-			foreach(self::$_subscriptions as $subscription) {
-				if($subscription['delegate'] != $delegate) continue;
-
+			if(isset(self::$_subscriptions[$delegate])) foreach(self::$_subscriptions[$delegate] as $subscription) {
 				if(!in_array($subscription['page'], $page)) continue;
 
 				$services[] = $subscription;
