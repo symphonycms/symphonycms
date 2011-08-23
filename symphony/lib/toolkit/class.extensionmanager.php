@@ -240,7 +240,7 @@
 				self::update($previousVersion);
 			}
 
-			$info = self::about();
+			$info = $obj->about();
 			$id = self::fetchExtensionID($name);
 
 			$fields = array(
