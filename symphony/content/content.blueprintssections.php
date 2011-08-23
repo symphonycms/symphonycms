@@ -487,9 +487,8 @@
 				}
 
 				else if($_POST['with-selected'] == 'delete-entries') {
-					$entryManager = new EntryManager($this->_Parent);
 					foreach($checked as $section_id) {
-						$entries = $entryManager->fetch(NULL, $section_id, NULL, NULL, NULL, NULL, false, false, null, false);
+						$entries = EntryManager::fetch(NULL, $section_id, NULL, NULL, NULL, NULL, false, false, null, false);
 						$entry_ids = array();
 						foreach($entries as $entry) {
 							$entry_ids[] = $entry['id'];
@@ -506,7 +505,7 @@
 						 */
 						Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => &$entry_ids));
 
-						$entryManager->delete($entry_ids, $section_id);
+						EntryManager::delete($entry_ids, $section_id);
 					}
 
 					redirect(SYMPHONY_URL . '/blueprints/sections/');

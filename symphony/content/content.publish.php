@@ -55,8 +55,6 @@
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
 			$this->Form->setAttribute("class", $this->_context['section_handle']);
 
-			$entryManager = new EntryManager($this->_Parent);
-
 			$filters = array();
 			$filter_querystring = $prepopulate_querystring = $where = $joins = NULL;
 			$current_page = (isset($_REQUEST['pg']) && is_numeric($_REQUEST['pg']) ? max(1, intval($_REQUEST['pg'])) : 1);
@@ -123,11 +121,11 @@
 
 			$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($filter_querystring ? '?' . $prepopulate_querystring : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c')));
 
-			if(is_null($entryManager->getFetchSorting()->field) && is_null($entryManager->getFetchSorting()->direction)){
-				$entryManager->setFetchSortingDirection('DESC');
+			if(is_null(EntryManager::getFetchSorting()->field) && is_null(EntryManager::getFetchSorting()->direction)){
+				EntryManager::setFetchSortingDirection('DESC');
 			}
 
-			$entries = $entryManager->fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins);
+			$entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins);
 
 			$aTableHead = array();
 
@@ -403,8 +401,7 @@
 						 */
 						Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
 
-						$entryManager = new EntryManager($this->_Parent);
-						$entryManager->delete($checked);
+						EntryManager::delete($checked);
 
 						redirect($_SERVER['REQUEST_URI']);
 
@@ -414,14 +411,13 @@
 
 						if($option == 'toggle'){
 
-							$entryManager = new EntryManager($this->_Parent);
 							$field = FieldManager::fetch($field_id);
 							$fields = array($field->get('element_name') => $value);
 
 							$section = SectionManager::fetch($field->get('parent_section'));
 
 							foreach($checked as $entry_id){
-								$entry = $entryManager->fetch($entry_id);
+								$entry = EntryManager::fetch($entry_id);
 
 								/**
 								 * Just prior to editing of an Entry
@@ -473,26 +469,22 @@
 			$this->appendSubheading(__('Untitled'));
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 
-			$entryManager = new EntryManager($this->_Parent);
-
 			// If there is post data floating around, due to errors, create an entry object
 			if (isset($_POST['fields'])) {
-				$entry = $entryManager->create();
+				$entry = EntryManager::create();
 				$entry->set('section_id', $section_id);
 				$entry->setDataFromPost($_POST['fields'], $error, true);
 			}
 
 			// Brand new entry, so need to create some various objects
 			else {
-				$entry = $entryManager->create();
+				$entry = EntryManager::create();
 				$entry->set('section_id', $section_id);
 			}
 
 			// Check if there is a field to prepopulate
 			if (isset($_REQUEST['prepopulate'])) {
-
 				foreach($_REQUEST['prepopulate'] as $field_id => $value) {
-
 					$this->Form->prependChild(Widget::Input(
 						"prepopulate[{$field_id}]",
 						rawurlencode($value),
@@ -506,9 +498,7 @@
 							$field->processRawFieldData($value, $error, true)
 						);
 					}
-
 				}
-
 			}
 
 			$primary = new XMLElement('fieldset');
@@ -565,9 +555,7 @@
 					Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', $this->_context['section_handle']));
 				}
 
-				$entryManager = new EntryManager($this->_Parent);
-
-				$entry =& $entryManager->create();
+				$entry =& EntryManager::create();
 				$entry->set('section_id', $section_id);
 				$entry->set('author_id', Administration::instance()->Author->get('id'));
 				$entry->set('creation_date', DateTimeObj::get('Y-m-d H:i:s'));
@@ -666,10 +654,9 @@
 
 			$entry_id = intval($this->_context['entry_id']);
 
-			$entryManager = new EntryManager($this->_Parent);
-			$entryManager->setFetchSorting('id', 'DESC');
+			EntryManager::setFetchSorting('id', 'DESC');
 
-			if(!$existingEntry = $entryManager->fetch($entry_id)) {
+			if(!$existingEntry = EntryManager::fetch($entry_id)) {
 				Administration::instance()->customError(__('Unknown Entry'), __('The entry you are looking for could not be found.'));
 			}
 			$existingEntry = $existingEntry[0];
@@ -678,7 +665,7 @@
 			if (isset($_POST['fields'])) {
 				$fields = $_POST['fields'];
 
-				$entry =& $entryManager->create();
+				$entry =& EntryManager::create();
 				$entry->set('section_id', $existingEntry->get('section_id'));
 				$entry->set('id', $entry_id);
 
@@ -831,10 +818,7 @@
 			$entry_id = intval($this->_context['entry_id']);
 
 			if(@array_key_exists('save', $_POST['action']) || @array_key_exists("done", $_POST['action'])){
-
-				$entryManager = new EntryManager($this->_Parent);
-
-				if(!$ret = $entryManager->fetch($entry_id)) {
+				if(!$ret = EntryManager::fetch($entry_id)) {
 					Administration::instance()->customError(__('Unknown Entry'), __('The entry you are looking for could not be found.'));
 				}
 				$entry = $ret[0];
@@ -918,8 +902,7 @@
 				$checked = array($entry_id);
 				Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
 
-				$entryManager = new EntryManager($this->_Parent);
-				$entryManager->delete($checked);
+				EntryManager::delete($checked);
 
 				redirect(SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/');
 			}

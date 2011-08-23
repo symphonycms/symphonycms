@@ -62,7 +62,7 @@
 	}
 
 	if(!function_exists('processRecordGroup')){
-		function processRecordGroup(&$wrapper, $element, $group, $ds, &$entryManager, &$fieldPool, &$param_pool, $param_output_only=false){
+		function processRecordGroup(&$wrapper, $element, $group, $ds, &$fieldPool, &$param_pool, $param_output_only=false){
 			$associated_sections = NULL;
 
 			$xGroup = new XMLElement($element, NULL, $group['attr']);
@@ -134,7 +134,7 @@
 
 			if(is_array($group['groups']) && !empty($group['groups'])){
 				foreach($group['groups'] as $element => $group){
-					foreach($group as $g) processRecordGroup($xGroup, $element, $g, $ds, $entryManager, $fieldPool, $param_pool, $param_output_only);
+					foreach($group as $g) processRecordGroup($xGroup, $element, $g, $ds, $fieldPool, $param_pool, $param_output_only);
 				}
 			}
 
@@ -150,7 +150,6 @@
 	$group = false;
 
 	include_once(TOOLKIT . '/class.entrymanager.php');
-	$entryManager = new EntryManager(Symphony::Engine());
 
 	if(!$section = SectionManager::fetch($this->getSource())){
 		$about = $this->about();
@@ -221,9 +220,9 @@
 		}
 	}
 
-	if($this->dsParamSORT == 'system:id') $entryManager->setFetchSorting('id', $this->dsParamORDER);
-	elseif($this->dsParamSORT == 'system:date') $entryManager->setFetchSorting('date', $this->dsParamORDER);
-	else $entryManager->setFetchSorting(FieldManager::fetchFieldIDFromElementName($this->dsParamSORT, $this->getSource()), $this->dsParamORDER);
+	if($this->dsParamSORT == 'system:id') EntryManager::setFetchSorting('id', $this->dsParamORDER);
+	elseif($this->dsParamSORT == 'system:date') EntryManager::setFetchSorting('date', $this->dsParamORDER);
+	else EntryManager::setFetchSorting(FieldManager::fetchFieldIDFromElementName($this->dsParamSORT, $this->getSource()), $this->dsParamORDER);
 
 	if(isset($this->dsParamPARAMOUTPUT) && !is_array($this->dsParamPARAMOUTPUT)) {
 		$this->dsParamPARAMOUTPUT = array($this->dsParamPARAMOUTPUT);
@@ -240,7 +239,7 @@
 	if ($this->dsParamGROUP) $datasource_schema[] = FieldManager::fetchHandleFromID($this->dsParamGROUP);
 	if(!isset($this->dsParamPAGINATERESULTS)) $this->dsParamPAGINATERESULTS = 'yes';
 
-	$entries = $entryManager->fetchByPage(
+	$entries = EntryManager::fetchByPage(
 		($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1),
 		$this->getSource(),
 		($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : NULL),
@@ -311,7 +310,7 @@
 				$groups = $fieldPool[$this->dsParamGROUP]->groupRecords($entries['records']);
 
 				foreach($groups as $element => $group){
-					foreach($group as $g) processRecordGroup($result, $element, $g, $this, $entryManager, $fieldPool, $param_pool, $this->_param_output_only);
+					foreach($group as $g) processRecordGroup($result, $element, $g, $this, $fieldPool, $param_pool, $this->_param_output_only);
 				}
 
 			else:

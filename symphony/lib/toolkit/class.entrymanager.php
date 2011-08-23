@@ -47,14 +47,14 @@
 		 * to null, which implies the Entry ID (id column in `tbl_entries`)
 		 * @var integer
 		 */
-		protected $_fetchSortField = null;
+		protected static $_fetchSortField = null;
 
 		/**
 		 * The direction that entries should be sorted in, available options are
 		 * RAND, ASC or DESC. Defaults to null, which implies ASC
 		 * @var string
 		 */
-		protected $_fetchSortDirection = null;
+		protected static $_fetchSortDirection = null;
 
 		/**
 		 * The constructor initialises the `$formatterManager`, `$sectionManager` and
@@ -81,10 +81,10 @@
 		 *  The direction that entries should be sorted in, available options
 		 *  are RAND, ASC or DESC.
 		 */
-		public function setFetchSortingDirection($direction){
+		public static function setFetchSortingDirection($direction){
 			$direction = strtoupper($direction);
 			if($direction == 'RANDOM') $direction = 'RAND';
-			$this->_fetchSortDirection = (in_array($direction, array('RAND', 'ASC', 'DESC')) ? $direction : null);
+			self::$_fetchSortDirection = (in_array($direction, array('RAND', 'ASC', 'DESC')) ? $direction : null);
 		}
 
 		/**
@@ -94,8 +94,8 @@
 		 * @param integer $field_id
 		 *  The ID of the Field that should be sorted on
 		 */
-		public function setFetchSortingField($field_id){
-			$this->_fetchSortField = $field_id;
+		public static function setFetchSortingField($field_id){
+			self::$_fetchSortField = $field_id;
 		}
 
 		/**
@@ -110,9 +110,9 @@
 		 *  The direction that entries should be sorted in, available options
 		 *  are RAND, ASC or DESC. Defaults to ASC
 		 */
-		public function setFetchSorting($field_id, $direction='ASC'){
-			$this->setFetchSortingField($field_id);
-			$this->setFetchSortingDirection($direction);
+		public static function setFetchSorting($field_id, $direction='ASC'){
+			self::setFetchSortingField($field_id);
+			self::setFetchSortingDirection($direction);
 		}
 
 		/**
@@ -121,10 +121,10 @@
 		 *
 		 * @return StdClass
 		 */
-		public function getFetchSorting(){
+		public static function getFetchSorting(){
 			return (object)array(
-				'field' => $this->_fetchSortField,
-				'direction' => $this->_fetchSortDirection
+				'field' => self::$_fetchSortField,
+				'direction' => self::$_fetchSortDirection
 			);
 		}
 
@@ -237,7 +237,7 @@
 		 *  multiple sections.
 		 * @return boolean
 		 */
-		public function delete($entries, $section_id = null){
+		public static function delete($entries, $section_id = null){
 			$needs_data = true;
 
 			if(!is_array($entries)) {
@@ -276,7 +276,7 @@
 					$entries = $chunk;
 				}
 				else if($needs_data) {
-					$entries = $this->fetch($chunk, $section_id);
+					$entries = self::fetch($chunk, $section_id);
 				}
 
 				if($needs_data) {
@@ -352,12 +352,12 @@
 		 *  If `$buildentries` is true, this function will return an array of Entry objects,
 		 *  otherwise it will return an associative array of Entry data from `tbl_entries`
 		 */
-		public function fetch($entry_id = null, $section_id = null, $limit = null, $start = null, $where = null, $joins = null, $group = false, $buildentries = true, $element_names = null, $enable_sort = true){
+		public static function fetch($entry_id = null, $section_id = null, $limit = null, $start = null, $where = null, $joins = null, $group = false, $buildentries = true, $element_names = null, $enable_sort = true){
 			$sort = null;
 
 			if (!$entry_id && !$section_id) return false;
 
-			if (!$section_id) $section_id = $this->fetchEntrySectionID($entry_id);
+			if (!$section_id) $section_id = self::fetchEntrySectionID($entry_id);
 
 			$section = SectionManager::fetch($section_id);
 
@@ -369,20 +369,20 @@
 				$sort = null;
 			}
 			// Check for RAND first, since this works independently of any specific field
-			else if($this->_fetchSortDirection == 'RAND'){
+			else if(self::$_fetchSortDirection == 'RAND'){
 				$sort = 'ORDER BY RAND() ';
 			}
 
-			else if ($this->_fetchSortField == 'date') {
-				$sort = 'ORDER BY `e`.`creation_date` ' . $this->_fetchSortDirection;
+			else if (self::$_fetchSortField == 'date') {
+				$sort = 'ORDER BY `e`.`creation_date` ' . self::$_fetchSortDirection;
 			}
 
-			else if ($this->_fetchSortField == 'id') {
-				$sort = 'ORDER BY `e`.`id`' . $this->_fetchSortDirection;
+			else if (self::$_fetchSortField == 'id') {
+				$sort = 'ORDER BY `e`.`id`' . self::$_fetchSortDirection;
 			}
 
-			else if ($this->_fetchSortField && $field = FieldManager::fetch($this->_fetchSortField)) {
-				$field->buildSortingSQL($joins, $where, $sort, $this->_fetchSortDirection);
+			else if (self::$_fetchSortField && $field = FieldManager::fetch(self::$_fetchSortField)) {
+				$field->buildSortingSQL($joins, $where, $sort, self::$_fetchSortDirection);
 				if (!$group) $group = $field->requiresSQLGrouping();
 			}
 
@@ -392,7 +392,7 @@
 			}
 
 			else {
-				$sort = 'ORDER BY `e`.`id`' . $this->_fetchSortDirection;
+				$sort = 'ORDER BY `e`.`id`' . self::$_fetchSortDirection;
 			}
 
 			if ($entry_id && !is_array($entry_id)) $entry_id = array($entry_id);
@@ -412,7 +412,7 @@
 
 			$rows = Symphony::Database()->fetch($sql);
 
-			return ($buildentries && (is_array($rows) && !empty($rows)) ? $this->__buildEntries($rows, $section_id, $element_names) : $rows);
+			return ($buildentries && (is_array($rows) && !empty($rows)) ? self::__buildEntries($rows, $section_id, $element_names) : $rows);
 		}
 
 		/**
@@ -434,7 +434,7 @@
 		 * @return array
 		 *  An array of Entry objects
 		 */
-		public function __buildEntries(array $rows, $section_id, $element_names = null){
+		public static function __buildEntries(array $rows, $section_id, $element_names = null){
 			$entries = array();
 
 			if (empty($rows)) return $entries;
@@ -579,22 +579,20 @@
 		 *  Whether the entries need to be grouped by Entry ID or not
 		 * @return integer
 		 */
-		public function fetchCount($section_id = null, $where = null, $joins = null, $group = false){
+		public static function fetchCount($section_id = null, $where = null, $joins = null, $group = false){
 			if(is_null($section_id)) return false;
 
 			$section = SectionManager::fetch($section_id);
 
 			if(!is_object($section)) return false;
 
-			$sql = "
+			return Symphony::Database()->fetchVar('count', 0, "
 				SELECT count(".($group ? 'DISTINCT ' : '')."`e`.id) as `count`
 				FROM `tbl_entries` AS `e`
 				$joins
 				WHERE `e`.`section_id` = '$section_id'
 				$where
-			";
-
-			return Symphony::Database()->fetchVar('count', 0, $sql);
+			");
 		}
 
 		/**
@@ -632,15 +630,14 @@
 		 *  the total entries, the start position, the entries per page and the
 		 *  Entry objects
 		 */
-		public function fetchByPage($page = 1, $section_id, $entriesPerPage, $where = null, $joins = null, $group = false, $records_only = false, $buildentries = true, Array $element_names = null){
-
+		public static function fetchByPage($page = 1, $section_id, $entriesPerPage, $where = null, $joins = null, $group = false, $records_only = false, $buildentries = true, array $element_names = null){
 			if($entriesPerPage != NULL && !is_string($entriesPerPage) && !is_numeric($entriesPerPage)){
 				throw new Exception(__('Entry limit specified was not a valid type. String or Integer expected.'));
 			}
 			else if($entriesPerPage == NULL) {
-				$records = $this->fetch(NULL, $section_id, NULL, NULL, $where, $joins, $group, $buildentries, $element_names);
+				$records = self::fetch(NULL, $section_id, NULL, NULL, $where, $joins, $group, $buildentries, $element_names);
 
-				$count = $this->fetchCount($section_id, $where, $joins, $group);
+				$count = self::fetchCount($section_id, $where, $joins, $group);
 
 				$entries = array(
 					'total-entries' => $count,
@@ -657,12 +654,12 @@
 			else {
 				$start = (max(1, $page) - 1) * $entriesPerPage;
 
-				$records = ($entriesPerPage == '0' ? NULL : $this->fetch(NULL, $section_id, $entriesPerPage, $start, $where, $joins, $group, $buildentries, $element_names));
+				$records = ($entriesPerPage == '0' ? NULL : self::fetch(NULL, $section_id, $entriesPerPage, $start, $where, $joins, $group, $buildentries, $element_names));
 
 				if($records_only) return array('records' => $records);
 
 				$entries = array(
-					'total-entries' => $this->fetchCount($section_id, $where, $joins, $group),
+					'total-entries' => self::fetchCount($section_id, $where, $joins, $group),
 					'records' => $records,
 					'start' => max(1, $start),
 					'limit' => $entriesPerPage
@@ -674,7 +671,6 @@
 
 				return $entries;
 			}
-
 		}
 
 		/**
@@ -683,8 +679,7 @@
 		 * @return Entry
 		 */
 		public static function create(){
-			$obj = new Entry($this);
-			return $obj;
+			return new Entry;
 		}
 
 	}

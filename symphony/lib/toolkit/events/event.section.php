@@ -89,10 +89,8 @@
 				return false;
 			}
 
-			$entryManager = new EntryManager(Symphony::Engine());
-
 			if(isset($entry_id) && $entry_id != NULL){
-				$entry =& $entryManager->fetch($entry_id);
+				$entry =& EntryManager::fetch($entry_id);
 				$entry = $entry[0];
 
 				if(!is_object($entry)){
@@ -103,7 +101,7 @@
 			}
 
 			else{
-				$entry =& $entryManager->create();
+				$entry =& EntryManager::create();
 				$entry->set('section_id', $source);
 			}
 

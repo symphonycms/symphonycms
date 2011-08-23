@@ -13,12 +13,6 @@
 	Class Entry{
 
 		/**
-		 * The class that initialised the Entry, usually the EntryManager
-		 * @var mixed
-		 */
-		protected $_Parent;
-
-		/**
 		 * An instance of the Symphony class, either Frontend or Administration
 		 * @var Symphony
 		 */
@@ -46,15 +40,9 @@
 
 		/**
 		 * Construct a new instance of an Entry.
-		 *
-		 * @param mixed $parent
-		 *	The class that created this Entry object, usually the EntryManager,
-		 *	passed by reference.
 		 */
-		public function __construct(&$parent){
+		public function __construct(){
 			// @todo Remove this for 2.3
-			$this->_Parent =& $parent;
-
 			if(class_exists('Administration')) $this->_engine = Administration::instance();
 			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();
 			else throw new Exception(__('No suitable engine object found'));
@@ -282,8 +270,7 @@
 		 */
 		public function commit(){
 			$this->findDefaultData();
-			$EntryManager = new EntryManager($this->_engine);
-			return ($this->get('id') ? $EntryManager->edit($this) : $EntryManager->add($this));
+			return ($this->get('id') ? EntryManager::edit($this) : EntryManager::add($this));
 		}
 
 		/**
@@ -310,8 +297,7 @@
 
 			$counts = array();
 
-			foreach($associated_sections as $as){
-
+			foreach($associated_sections as $as) {
 				$field = FieldManager::fetch($as['child_section_field_id']);
 
 				$parent_section_field_id = $as['parent_section_field_id'];
@@ -325,12 +311,11 @@
 					);
 				}
 
-				else{
+				else {
 					$search_value = $this->get('id');
 				}
 
 				$counts[$as['child_section_id']] = $field->fetchAssociatedEntryCount($search_value);
-
 			}
 
 			return $counts;
