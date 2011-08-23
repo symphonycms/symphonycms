@@ -67,7 +67,7 @@
 		 *  passed by reference
 		 */
 		public function __construct(&$parent){
-
+			// @todo Remove this for 2.3
 			$this->_Parent = $parent;
 
 			$this->_Result = new XMLElement('result');

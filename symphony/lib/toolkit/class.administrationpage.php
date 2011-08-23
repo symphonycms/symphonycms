@@ -103,6 +103,8 @@
 			parent::__construct();
 
 			$this->Html->setElementStyle('html');
+			
+			// @todo Remove this for 2.3
 			$this->_Parent = $parent;
 		}
 

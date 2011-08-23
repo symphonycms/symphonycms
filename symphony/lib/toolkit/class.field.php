@@ -102,30 +102,6 @@
 		protected $_fields = array();
 
 		/**
-		 * The class that initialised the Field, usually the FieldManager
-		 */
-		protected $_Parent;
-
-		/**
-		 * An instance of the Symphony class, either Frontend or Administration
-		 *
-		 * @deprecated This will be removed in the next major version of Symphony.
-		 * The preferred way to access the Symphony instance is via `Symphony::Engine()`
-		 * @var Symphony
-		 */
-		protected $_engine;
-
-		/**
-		 * A pointer to the `Symphony::Database()`.
-		 *
-		 * @deprecated This is deprecated and will be removed in the next major version
-		 * of Symphony. The preferred way to access the Database object is via
-		 * `Symphony::Database()`
-		 * @var MySQL
-		 */
-        protected $Database;
-
-		/**
 		 * Whether this field is required inherently, defaults to false.
 		 * @var boolean
 		 */
@@ -150,15 +126,13 @@
 
 		/**
 		 * Construct a new instance of this field.
-		 *
-		 * @param mixed $parent
-		 *  The class that created this Field object, usually the FieldManager,
-		 *  passed by reference.
 		 */
-		public function __construct(&$parent){
-			$this->_Parent = $parent;
-			$this->_engine = Symphony::Engine();
+		public function __construct(){
 			$this->_handle = (strtolower(get_class($this)) == 'field' ? 'field' : strtolower(substr(get_class($this), 5)));
+
+			// @todo Remove these for 2.3
+			$this->_Parent = Symphony::Engine();
+			$this->_engine = Symphony::Engine();
 			$this->Database = Symphony::Database();
 		}
 

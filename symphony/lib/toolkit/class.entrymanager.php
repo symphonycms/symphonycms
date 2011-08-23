@@ -65,6 +65,7 @@
 		 *  passed by reference
 		 */
 		public function __construct($parent){
+			// @todo Remove this for 2.3
 			$this->_Parent = $parent;
 
 			$this->formatterManager = new TextformatterManager($this->_Parent);

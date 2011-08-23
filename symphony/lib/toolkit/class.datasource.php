@@ -78,11 +78,12 @@
 		 *  this is true
 		 */
 		public function __construct(&$parent, Array $env = null, $process_params=true){
-			$this->_Parent = $parent;
-
 			if($process_params){
 				$this->processParameters($env);
 			}
+
+			// @todo Remove this for 2.3
+			$this->_Parent = $parent;
 		}
 
 		/**

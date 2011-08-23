@@ -93,8 +93,10 @@
 		 *	any params set by Symphony or Datasources or by other Events
 		 */
 		public function __construct(&$parent, Array $env = array()){
-			$this->_Parent = $parent;
 			$this->_env = $env;
+			
+			// @todo Remove this for 2.3
+			$this->_Parent = $parent;
 		}
 
 		/**

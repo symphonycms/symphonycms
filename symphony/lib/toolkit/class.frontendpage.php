@@ -108,13 +108,13 @@
 		 */
 		public function __construct(&$parent){
 			parent::__construct();
+			
+			$this->is_logged_in = Frontend::instance()->isLoggedIn();
 
+			// @todo Remove this for 2.3
 			$this->_Parent = $parent;
-
 			$this->DatasourceManager = new DatasourceManager(Frontend::instance());
 			$this->EventManager = new EventManager(Frontend::instance());
-
-			$this->is_logged_in = Frontend::instance()->isLoggedIn();
 		}
 
 		/**

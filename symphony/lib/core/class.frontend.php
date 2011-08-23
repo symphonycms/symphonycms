@@ -52,6 +52,7 @@
 			$this->_env = array();
 
 			// Need this part for backwards compatiblity
+			// @todo Remove this for 2.3
 			$this->Database = Symphony::Database();
 			$this->Configuration = Symphony::Configuration();
 			$this->ExtensionManager = Symphony::ExtensionManager();
