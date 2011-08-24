@@ -130,6 +130,12 @@
 		 */
 		private $_lastQuery  = null;
 
+        /**
+         * The auto increment value returned by the last query that was executed
+         * by the class
+         */
+        private $_lastInsertID = null;
+        
 		/**
 		 * By default, an array of arrays or objects representing the result set
 		 * from the `$this->_lastQuery`
@@ -454,7 +460,8 @@
 			$this->flush();
 			$this->_lastQuery = $query;
 			$this->_result = mysql_query($query, MySQL::$_connection['id']);
-
+            $this->_lastInsertID = mysql_insert_id(MySQL::$_connection['id']);
+            
 			self::$_query_count++;
 
 			if(mysql_error()){
@@ -493,7 +500,7 @@
 		 *  The last interested row's ID
 		 */
 		public function getInsertID(){
-			return mysql_insert_id(MySQL::$_connection['id']);
+			return $this->_lastInsertID;
 		}
 
 		/**
