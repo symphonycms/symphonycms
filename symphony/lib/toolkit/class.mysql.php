@@ -477,42 +477,11 @@
 			}
 
 			$query_hash = md5($query.$start);
-
-			/**
-			 * After a query has successfully executed, that is it was considered
-			 * valid SQL, this delegate will provide the query, the query_hash and
-			 * the execution time of the query.
-			 *
-			 * Note that this function only starts logging once the ExtensionManager
-			 * is available, which means it will not fire for the first couple of
-			 * queries that set the character set.
-			 *
-			 * @since Symphony 2.3
-			 * @delegate LogQuery
-			 * @param string $context
-			 * '/frontend/' or '/backend/'
-			 * @param string $query
-			 *  The query that has just been executed
-			 * @param string $query_hash
-			 *  The hash used by Symphony to uniquely identify this query
-			 * @param float $execution_time
-			 *  The time that it took to run `$query`
-			 */
-			if(Symphony::ExtensionManager() instanceof ExtensionManager) {
-				Symphony::ExtensionManager()->notifyMembers('LogQuery', class_exists('Administration') ? '/backend/' : '/frontend/', array(
-					'query' => $query,
-					'query_hash' => $query_hash,
-					'execution_time' => precision_timer('stop', $start)
-				));
-			}
-			else {
-				// @todo Need to keep a running log of queries for possible debug backtrace, last 5 should do it..
-				self::$_log['query'][$query_hash] = array(
-					'query' => $query,
-					'query_hash' => $query_hash,
-					'execution_time' => precision_timer('stop', $start)
-				);
-			}
+			self::$_log['query'][$query_hash] = array(
+				'query' => $query,
+				'query_hash' => $query_hash,
+				'time' => precision_timer('stop', $start)
+			);
 
 			return true;
 		}
