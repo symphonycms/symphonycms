@@ -55,7 +55,6 @@
 		 * @since Symphony 2.2.1
 		 * @var boolean
 		 */
-
 		 private $is_logged_in = false;
 
 		/**
@@ -94,6 +93,18 @@
 		 */
 		public function Env(){
 			return $this->_env;
+		}
+
+		/**
+		 * Setter function for `$this->_env`, which takes an associative array
+		 * of environment information and replaces the existing `$this->_env`.
+		 *
+		 * @since Symphony 2.3
+		 * @param array $env
+		 *  An associative array of new environment values
+		 */
+		public function setEnv(array $env = array()) {
+			$this->_env = $env;
 		}
 
 		/**
