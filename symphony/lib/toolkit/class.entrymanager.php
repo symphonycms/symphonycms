@@ -272,7 +272,7 @@
 					foreach($entries as $id) {
 						// Handles the case where `section_id` was not provided
 						if(is_null($section_id)) {
-							$e = $this->fetch($id);
+							$e = self::fetch($id);
 							$e = current($e);
 							if(!$e instanceof Entry) continue;
 						}
