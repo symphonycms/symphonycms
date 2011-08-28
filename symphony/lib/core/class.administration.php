@@ -359,7 +359,7 @@
 		 *  The HTML of the page to return
 		 */
 		public function display($page){
-			$this->Profiler->sample('Page build process started');
+			Symphony::Profiler()->sample('Page build process started');
 			$this->__buildPage($page);
 
 			/**
@@ -386,7 +386,7 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AdminPagePostGenerate', '/backend/', array('output' => &$output));
 
-			$this->Profiler->sample('Page built');
+			Symphony::Profiler()->sample('Page built');
 
 			return $output;
 		}

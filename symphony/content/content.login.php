@@ -26,7 +26,7 @@
 
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Login'))));
 
-			Administration::instance()->Profiler->sample('Page template created', PROFILE_LAP);
+			Symphony::Profiler()->sample('Page template created', PROFILE_LAP);
 		}
 
 		public function build($context=NULL){

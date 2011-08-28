@@ -228,7 +228,7 @@
 
 			if(isset($_REQUEST['action'])){
 				$this->action();
-				Administration::instance()->Profiler->sample('Page action run', PROFILE_LAP);
+				Symphony::Profiler()->sample('Page action run', PROFILE_LAP);
 			}
 
 			$this->Wrapper = new XMLElement('div', NULL, array('id' => 'wrapper'));
@@ -263,7 +263,7 @@
 			$this->appendFooter();
 			$this->appendAlert();
 
-			Administration::instance()->Profiler->sample('Page content created', PROFILE_LAP);
+			Symphony::Profiler()->sample('Page content created', PROFILE_LAP);
 		}
 
 		/**
@@ -538,7 +538,7 @@
 			}
 
 			$this->Header->appendChild($xNav);
-			Administration::instance()->Profiler->sample('Navigation Built', PROFILE_LAP);
+			Symphony::Profiler()->sample('Navigation Built', PROFILE_LAP);
 		}
 
 		/**

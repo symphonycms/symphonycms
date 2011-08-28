@@ -6,15 +6,16 @@
 	require_once(CORE . '/class.log.php');
 
 	/**
-	 * GenericExceptionHandler will handle any uncaught exceptions thrown in Symphony.
-	 * Additionally, all errors in Symphony are raised to exceptions to be handled by this class.
+	 * GenericExceptionHandler will handle any uncaught exceptions thrown in
+	 * Symphony. Additionally, all errors in Symphony that are raised to Exceptions
+	 * will be handled by this class.
 	 * It is possible for Exceptions to be caught by their own `ExceptionHandler` which can
-	 * override the render function so that it can be displayed to the user appropriately
+	 * override the `render` function so that it can be displayed to the user appropriately.
 	 */
-	Class GenericExceptionHandler{
+	Class GenericExceptionHandler {
 
 		/**
-		 * Whether the `GenericExceptionHandler` should handle exceptions defaults to true
+		 * Whether the `GenericExceptionHandler` should handle exceptions. Defaults to true
 		 * @var boolean
 		 */
 		public static $enabled = true;
@@ -26,8 +27,8 @@
 		private static $_Log = null;
 
 		/**
-		 * The initialise function will set the exception_handler to the this class's
-		 * handler function
+		 * Initialise will set the error handler to be the `__CLASS__::handler` function.
+		 *
 		 * @param Log|null $log
 		 *  An instance of a Symphony Log object to write errors to
 		 */
@@ -207,11 +208,11 @@
 	/**
 	 * `GenericErrorHandler` will catch any warnings or notices thrown by PHP and
 	 * raise the errors to Exceptions so they can be dealt with by the
-	 * `GenericExceptionHandler`. If the error raised is not a `E_NOTICE` or `E_STRICT`,
-	 * it will be written to the Symphony log. Symphony will raise Exceptions for errors
-	 * thrown based on the error_reporting level set in PHP
+	 * `GenericExceptionHandler`. The type of errors that are raised to Exceptions
+	 * depends on the `$raise` parameter and the `error_reporting` level. All errors
+	 * raised, except `E_NOTICE` and `E_STRICT` are written to the Symphony log.
 	 */
-	Class GenericErrorHandler{
+	Class GenericErrorHandler {
 
 		/**
 		 * Whether the error handler is enabled or not, defaults to true.
@@ -227,7 +228,7 @@
 		public static $raise = false;
 
 		/**
-		 * An instance of the Symphony Log class, used to write errors to the log
+		 * An instance of the Log class, used to write errors to the log
 		 * @var Log
 		 */
 		private static $_Log = null;
@@ -236,6 +237,7 @@
 		 * Whether to log errors or not.
 		 * This one is to be used temporarily, e.g., when PHP function is
 		 * supposed to error out and throw warning and log should be kept clean.
+		 *
 		 * @since Symphony 2.2.2
 		 * @var boolean
 		 * @example
@@ -270,13 +272,14 @@
 		);
 
 		/**
-		 * Initialise will set the error handler to be the `__CLASS__` handler
-		 * function and will set this `$_Log` variable to a Log instance
+		 * Initialise will set the error handler to be the `__CLASS__::handler`
+		 * function. This function also accepts a `$raise` parameter that when
+		 * true, all `E_WARNING` will be raised and thrown as Exceptions.
 		 *
 		 * @param Log|null $Log (optional)
 		 *  An instance of a Symphony Log object to write errors to
 		 * @param string $raise
-		 *  Whether to raise E_WARNING as an Exception
+		 *  Whether to raise `E_WARNING` errors to an Exception
 		 */
 		public static function initialise(Log $Log = null, $raise = false){
 			if(!is_null($Log)){

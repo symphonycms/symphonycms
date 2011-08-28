@@ -32,41 +32,40 @@
 	Abstract Class Symphony implements Singleton{
 
 		/**
-		 * An instance of the Symphony class, either Administration or
-		 * Frontend.
+		 * An instance of the Symphony class, either `Administration` or `Frontend`.
 		 * @var Symphony
 		 */
 		protected static $_instance = null;
 
 		/**
-		 * An instance of the Configuration class
+		 * An instance of the `Configuration` class
 		 * @var Configuration
 		 */
-		public static $Configuration = null;
+		private static $Configuration = null;
 
 		/**
-		 * An instance of the Database class
+		 * An instance of the `Database` class
 		 * @var MySQL
 		 */
-		public static $Database = null;
+		private static $Database = null;
 
 		/**
-		 * An instance of the ExtensionManager class
+		 * An instance of the `ExtensionManager` class
 		 * @var ExtensionManager
 		 */
-		public static $ExtensionManager = null;
+		private static $ExtensionManager = null;
 
 		/**
-		 * An instance of the Log class
+		 * An instance of the `Log` class
 		 * @var Log
 		 */
-		public static $Log = null;
+		private static $Log = null;
 
 		/**
 		 * An instance of the Profiler class
 		 * @var Profiler
 		 */
-		public $Profiler = null;
+		private static $Profiler = null;
 
 		/**
 		 * An instance of the Cookie class
@@ -96,8 +95,8 @@
 		 * the initial Configuration values from the `CONFIG` file
 		 */
 		protected function __construct(){
-			$this->Profiler = Profiler::instance();
-			$this->Profiler->sample('Engine Initialisation');
+			self::$Profiler = Profiler::instance();
+			self::$Profiler->sample('Engine Initialisation');
 
 			if(get_magic_quotes_gpc()) {
 				General::cleanArray($_SERVER);
@@ -158,13 +157,23 @@
 		}
 
 		/**
-		 * Accessor for the current Configuration instance. This contains
+		 * Accessor for the current `Configuration` instance. This contains
 		 * representation of the the Symphony config file.
 		 *
 		 * @return Configuration
 		 */
 		public static function Configuration(){
 			return self::$Configuration;
+		}
+
+		/**
+		 * Accessor for the current `Profiler` instance.
+		 *
+		 * @since Symphony 2.3
+		 * @return Profiler
+		 */
+		public static function Profiler(){
+			return self::$Profiler;
 		}
 
 		/**
@@ -185,6 +194,16 @@
 				self::$Log->writeToLog('Version: '. self::$Configuration->get('version', 'symphony'), true);
 				self::$Log->writeToLog('--------------------------------------------', true);
 			}
+		}
+
+		/**
+		 * Accessor for the current `Log` instance
+		 *
+		 * @since Symphony 2.3
+		 * @return Log
+		 */
+		public static function Log() {
+			return self::$Log;
 		}
 
 		/**

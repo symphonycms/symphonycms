@@ -168,7 +168,7 @@
 				));
 			}
 
-			Frontend::instance()->Profiler->sample('Page creation process started');
+			Symphony::Profiler()->sample('Page creation process started');
 			$this->_page = $page;
 			$this->__buildPage();
 
@@ -227,7 +227,7 @@
 				 */
 				Symphony::ExtensionManager()->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
 
-				Frontend::instance()->Profiler->sample('XSLT Transformation', PROFILE_LAP);
+				Symphony::Profiler()->sample('XSLT Transformation', PROFILE_LAP);
 
 				if (is_null($devkit) && !$output) {
 					$errstr = NULL;
@@ -240,7 +240,7 @@
 					throw new SymphonyErrorPage(trim($errstr), NULL, 'xslt-error', array('proc' => clone $this->Proc));
 				}
 
-				Frontend::instance()->Profiler->sample('Page creation complete');
+				Symphony::Profiler()->sample('Page creation complete');
 			}
 
 			if (!is_null($devkit)) {
@@ -375,8 +375,8 @@
 
 			$this->processDatasources($page['data_sources'], $xml);
 
-			Frontend::instance()->Profiler->seed($xml_build_start);
-			Frontend::instance()->Profiler->sample('XML Built', PROFILE_LAP);
+			Symphony::Profiler()->seed($xml_build_start);
+			Symphony::Profiler()->sample('XML Built', PROFILE_LAP);
 
 			if(is_array($this->_env['pool']) && !empty($this->_env['pool'])) {
 				foreach($this->_env['pool'] as $handle => $p){
@@ -435,9 +435,9 @@
 			}
 			$xml->prependChild($params);
 
-			Frontend::instance()->Profiler->seed();
+			Symphony::Profiler()->seed();
 			$this->setXML($xml->generate(true, 0));
-			Frontend::instance()->Profiler->sample('XML Generation', PROFILE_LAP);
+			Symphony::Profiler()->sample('XML Generation', PROFILE_LAP);
 
 			$xsl = '<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -447,8 +447,8 @@
 			$this->setXSL($xsl, false);
 			$this->setRuntimeParam($this->_param);
 
-			Frontend::instance()->Profiler->seed($start);
-			Frontend::instance()->Profiler->sample('Page Built', PROFILE_LAP);
+			Symphony::Profiler()->seed($start);
+			Symphony::Profiler()->sample('Page Built', PROFILE_LAP);
 		}
 
 		/**
@@ -684,7 +684,7 @@
 				uasort($pool, array($this, '__findEventOrder'));
 
 				foreach($pool as $handle => $event){
-					Frontend::instance()->Profiler->seed();
+					Symphony::Profiler()->seed();
 
 					$queries = Symphony::Database()->queryCount();
 
@@ -697,7 +697,7 @@
 
 					$queries = Symphony::Database()->queryCount() - $queries;
 
-					Frontend::instance()->Profiler->sample($handle, PROFILE_LAP, 'Event', $queries);
+					Symphony::Profiler()->sample($handle, PROFILE_LAP, 'Event', $queries);
 
 				}
 			}
@@ -772,7 +772,7 @@
 			$dependencies = array();
 
 			foreach ($datasources as $handle) {
-				Frontend::instance()->Profiler->seed();
+				Symphony::Profiler()->seed();
 
 				$pool[$handle] =& DatasourceManager::create($handle, NULL, false);
 				$dependencies[$handle] = $pool[$handle]->getDependencies();
@@ -781,7 +781,7 @@
 			$dsOrder = $this->__findDatasourceOrder($dependencies);
 
 			foreach ($dsOrder as $handle) {
-				Frontend::instance()->Profiler->seed();
+				Symphony::Profiler()->seed();
 
 				$queries = Symphony::Database()->queryCount();
 
@@ -797,7 +797,7 @@
 
 				$queries = Symphony::Database()->queryCount() - $queries;
 
-				Frontend::instance()->Profiler->sample($handle, PROFILE_LAP, 'Datasource', $queries);
+				Symphony::Profiler()->sample($handle, PROFILE_LAP, 'Datasource', $queries);
 
 				unset($ds);
 			}

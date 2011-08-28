@@ -275,7 +275,7 @@
 
 					// Log error
 					if(class_exists('Symphony')) {
-						Symphony::$Log->pushToLog(
+						Symphony::Log()->pushToLog(
 							__('The selected language could not be found. Using default English dictionary instead.'),
 							E_ERROR,
 							true

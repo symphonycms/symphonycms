@@ -64,7 +64,7 @@
 
 			$this->addHeaderToPage('Content-Type', 'text/xml');
 
-			Administration::instance()->Profiler->sample('Page template created', PROFILE_LAP);
+			Symphony::Profiler()->sample('Page template created', PROFILE_LAP);
 		}
 
 		/**
