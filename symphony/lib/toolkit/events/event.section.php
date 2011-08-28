@@ -1,8 +1,8 @@
 <?php
 
 	if(!function_exists('buildFilterElement')){
-		function buildFilterElement($name, $status, $message=NULL, array $attr=NULL){
-			$ret = new XMLElement('filter', (!$message || is_object($message) ? NULL : $message), array('name' => $name, 'status' => $status));
+		function buildFilterElement($name, $status, $message=null, array $attr=null){
+			$ret = new XMLElement('filter', (!$message || is_object($message) ? null : $message), array('name' => $name, 'status' => $status));
 			if(is_object($message)) $ret->appendChild($message);
 
 			if(is_array($attr)) $ret->setAttributeArray($attr);
@@ -18,7 +18,7 @@
 	}
 
 	if (!function_exists('__doit')) {
-		function __doit($source, $fields, &$result, &$event, $filters = array(), $position=NULL, $entry_id=NULL){
+		function __doit($source, $fields, &$result, &$event, $filters = array(), $position=null, $entry_id=null){
 
 			$post_values = new XMLElement('post-values');
 			$filter_results = array();
@@ -89,7 +89,7 @@
 				return false;
 			}
 
-			if(isset($entry_id) && $entry_id != NULL){
+			if(isset($entry_id) && $entry_id != null){
 				$entry =& EntryManager::fetch($entry_id);
 				$entry = $entry[0];
 
@@ -119,7 +119,7 @@
 						$type = ($fields[$field->get('element_name')] == '') ? 'missing' : 'invalid';
 					}
 
-					$result->appendChild(new XMLElement($field->get('element_name'), NULL, array(
+					$result->appendChild(new XMLElement($field->get('element_name'), null, array(
 						'label' => General::sanitize($field->get('label')),
 						'type' => $type,
 						'message' => General::sanitize($message)
@@ -140,7 +140,7 @@
 
 				foreach($errors as $err){
 					$field = FieldManager::fetch($err['field_id']);
-					$result->appendChild(new XMLElement($field->get('element_name'), NULL, array('type' => 'invalid')));
+					$result->appendChild(new XMLElement($field->get('element_name'), null, array('type' => 'invalid')));
 				}
 
 				if(isset($post_values) && is_object($post_values)) $result->appendChild($post_values);
@@ -165,7 +165,7 @@
 			if(in_array('send-email', $filters) && !in_array('expect-multiple', $filters)){
 
 				if(!function_exists('__sendEmailFindFormValue')){
-					function __sendEmailFindFormValue($needle, $haystack, $discard_field_name=true, $default=NULL, $collapse=true){
+					function __sendEmailFindFormValue($needle, $haystack, $discard_field_name=true, $default=null, $collapse=true){
 
 						if(preg_match('/^(fields\[[^\]]+\],?)+$/i', $needle)){
 							$parts = preg_split('/\,/i', $needle, -1, PREG_SPLIT_NO_EMPTY);
@@ -178,7 +178,7 @@
 							}
 
 							if(is_array($stack) && !empty($stack)) return ($collapse ? implode(' ', $stack) : $stack);
-							else $needle = NULL;
+							else $needle = null;
 						}
 
 						$needle = trim($needle);
@@ -197,12 +197,12 @@
 				$fields['recipient']		= array_map('trim', $fields['recipient']);
 
 				$fields['subject']			= __sendEmailFindFormValue($fields['subject'], $_POST['fields'], true, __('[Symphony] A new entry was created on %s', array(Symphony::Configuration()->get('sitename', 'general'))));
-				$fields['body']				= __sendEmailFindFormValue($fields['body'], $_POST['fields'], false, NULL, false);
-				$fields['sender-email']		= __sendEmailFindFormValue($fields['sender-email'], $_POST['fields'], true, NULL);
-				$fields['sender-name']		= __sendEmailFindFormValue($fields['sender-name'], $_POST['fields'], true, NULL);
+				$fields['body']				= __sendEmailFindFormValue($fields['body'], $_POST['fields'], false, null, false);
+				$fields['sender-email']		= __sendEmailFindFormValue($fields['sender-email'], $_POST['fields'], true, null);
+				$fields['sender-name']		= __sendEmailFindFormValue($fields['sender-name'], $_POST['fields'], true, null);
 
-				$fields['reply-to-name']	= __sendEmailFindFormValue($fields['reply-to-name'], $_POST['fields'], true, NULL);
-				$fields['reply-to-email']	= __sendEmailFindFormValue($fields['reply-to-email'], $_POST['fields'], true, NULL);
+				$fields['reply-to-name']	= __sendEmailFindFormValue($fields['reply-to-name'], $_POST['fields'], true, null);
+				$fields['reply-to-email']	= __sendEmailFindFormValue($fields['reply-to-email'], $_POST['fields'], true, null);
 
 				$edit_link = SYMPHONY_URL.'/publish/'.$section->get('handle').'/edit/'.$entry->get('id').'/';
 
@@ -410,7 +410,7 @@
 		return $result;
 	}
 
-	$entry_id = $position = $fields = NULL;
+	$entry_id = $position = $fields = null;
 	$post = General::getPostData();
 	$success = true;
 
@@ -420,8 +420,11 @@
 				if (isset($post['id'][$position]) && is_numeric($post['id'][$position])) {
 					$entry_id = $post['id'][$position];
 				}
+				else {
+					$entry_id = null;
+				}
 
-				$entry = new XMLElement('entry', NULL, array('position' => $position));
+				$entry = new XMLElement('entry', null, array('position' => $position));
 
 				$ret = __doit(
 					self::getSource(), $fields, $entry, $this, $this->eParamFILTERS, $position, $entry_id
@@ -436,11 +439,11 @@
 
 	else {
 		$fields = $post['fields'];
-		$entry_id = NULL;
+		$entry_id = null;
 
 		if (isset($post['id']) && is_numeric($post['id'])) $entry_id = $post['id'];
 
-		$success = __doit(self::getSource(), $fields, $result, $this, $this->eParamFILTERS, NULL, $entry_id);
+		$success = __doit(self::getSource(), $fields, $result, $this, $this->eParamFILTERS, null, $entry_id);
 	}
 
 	if($success && isset($_REQUEST['redirect'])) redirect($_REQUEST['redirect']);
