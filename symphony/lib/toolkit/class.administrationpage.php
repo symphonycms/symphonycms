@@ -364,6 +364,8 @@
 		 * @param array $context
 		 */
 		private function __appendBodyClass(array $context = array()){
+			$body_class = '';
+
 			foreach($context as $c) {
 				if (is_numeric($c)) $c = 'id-' . $c;
 				$body_class .= trim($c) . ' ';
@@ -645,7 +647,7 @@
 				if(isset($info['navigation']) && is_array($info['navigation']) && !empty($info['navigation'])){
 					foreach($info['navigation'] as $item){
 
-						$type = (isset($item['children']) ? Extension::NAV_GROUP : Extension::NAV_CHILD);
+						$type = isset($item['children']) ? Extension::NAV_GROUP : Extension::NAV_CHILD;
 
 						switch($type){
 							case Extension::NAV_GROUP:
@@ -656,7 +658,7 @@
 									'name' => $item['name'],
 									'index' => $index,
 									'children' => array(),
-									'limit' => (isset($item['limit']) && !is_null($item['limit'])) ? $item['limit'] : null
+									'limit' => isset($item['limit']) ? $item['limit'] : null
 								);
 
 								foreach($item['children'] as $child){
@@ -671,7 +673,7 @@
 										'link' => $link,
 										'name' => $child['name'],
 										'visible' => (isset($child['visible']) && $child['visible'] == 'no') ? 'no' : 'yes',
-										'limit' => (isset($child['limit']) &&  !is_null($child['limit'])) ? $child['limit'] : null
+										'limit' => isset($child['limit']) ? $child['limit'] : null
 									);
 								}
 
@@ -699,7 +701,7 @@
 									'link' => $link,
 									'name' => $item['name'],
 									'visible' => (isset($item['visible']) && $item['visible'] == 'no') ? 'no' : 'yes',
-									'limit' => (isset($item['limit']) && !is_null($item['limit'])) ? $item['limit'] : null
+									'limit' => isset($item['limit']) ? $item['limit'] : null
 								);
 
 								if ($group_index === false) {
@@ -709,7 +711,7 @@
 										'name' => $group_name,
 										'index' => $group_index,
 										'children' => array($child),
-										'limit' => (!is_null($item['limit']) ? $item['limit'] : null)
+										'limit' => isset($item['limit']) ? $item['limit'] : null
 									);
 								} else {
 									// add new location by index

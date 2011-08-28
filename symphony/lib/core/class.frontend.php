@@ -153,7 +153,7 @@
 		 * @return string
 		 *  An HTML string
 		 */
-		public static function render($e){
+		public static function render(Exception $e){
 			$page_id = Symphony::Database()->fetchVar('page_id', 0, "SELECT `page_id` FROM `tbl_pages_types` WHERE `type` = '404' LIMIT 1");
 
 			if(is_null($page_id)){

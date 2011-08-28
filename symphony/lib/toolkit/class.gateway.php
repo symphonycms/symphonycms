@@ -221,7 +221,7 @@
 					}
 
 					// Allow basic HTTP authentiction
-					if(isset($url_parsed['user']) && isset($url_parsed['pass'])){
+					if(isset($url_parsed['user'], $url_parsed['pass'])){
 						$this->setopt(CURLOPT_USERPWD, sprintf('%s:%s', $url_parsed['user'], $url_parsed['pass']));
 						$this->setopt(CURLOPT_HTTPAUTH, CURLAUTH_ANY);
 					}

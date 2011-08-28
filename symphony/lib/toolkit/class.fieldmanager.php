@@ -227,11 +227,11 @@
 						%s %s %s %s
 						%s
 					",
-					($type) ? " AND t1.`type` = '{$type}' " : NULL,
-					($location) ? " AND t1.`location` = '{$location}' " : NULL,
-					($section_id) ? " AND t1.`parent_section` = '{$section_id}' " : NULL,
+					isset($type) ? " AND t1.`type` = '{$type}' " : NULL,
+					isset($location) ? " AND t1.`location` = '{$location}' " : NULL,
+					isset($section_id) ? " AND t1.`parent_section` = '{$section_id}' " : NULL,
 					$where,
-					($field_ids) ? " AND t1.`id` IN(" . implode(',', $field_ids) . ") " : " ORDER BY t1.`{$sortfield}` {$order}"
+					isset($field_ids) ? " AND t1.`id` IN(" . implode(',', $field_ids) . ") " : " ORDER BY t1.`{$sortfield}` {$order}"
 				);
 
 				if(!$result = Symphony::Database()->fetch($sql)) return ($returnSingle ? null : array());

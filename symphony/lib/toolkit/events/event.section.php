@@ -89,7 +89,7 @@
 				return false;
 			}
 
-			if(isset($entry_id) && $entry_id != null){
+			if(isset($entry_id)) {
 				$entry =& EntryManager::fetch($entry_id);
 				$entry = $entry[0];
 

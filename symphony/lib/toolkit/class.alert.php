@@ -98,7 +98,7 @@
 		 *  True when set, false when not set.
 		 */
 		public function __isset($name){
-			return (isset($this->{"_$name"}) && !is_null($this->{"_$name"}));
+			return isset($this->{"_$name"});
 		}
 
 		/**

@@ -374,7 +374,7 @@
 			}
 
 			// Empty entry
-			else if(isset($data['value']) && !is_null($data['value'])) {
+			else if(isset($data['value'])) {
 				$value = DateTimeObj::format($data['value'], __SYM_DATETIME_FORMAT__);
 			}
 
@@ -442,7 +442,7 @@
 	-------------------------------------------------------------------------*/
 
 		public function appendFormattedElement($wrapper, $data, $encode = false) {
-			if(isset($data['value']) && !is_null($data['value'])) {
+			if(isset($data['value'])) {
 
 				// Get date
 				if(is_array($data['value'])) {
@@ -460,7 +460,7 @@
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null) {
 			$value = null;
 
-			if(isset($data['value']) && !is_null($data['value'])) {
+			if(isset($data['value'])) {
 				$value = DateTimeObj::format($data['value'], __SYM_DATETIME_FORMAT__, true);
 			}
 

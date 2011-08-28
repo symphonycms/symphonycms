@@ -143,7 +143,7 @@
 			$ret = array();
 
 			foreach($sections as $s){
-				$obj =& self::create();
+				$obj = self::create();
 
 				foreach($s as $name => $value){
 					$obj->set($name, $value);
