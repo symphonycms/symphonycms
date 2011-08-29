@@ -158,8 +158,7 @@
 	}
 
 	// Check the Cache to see if there is already an existing result
-	$cache_id = md5($this->dsParamURL . serialize($this->dsParamFILTERS) . $this->dsParamXPATH);
-
+	$cache_id = md5($this->dsParamURL . $this->dsParamXPATH);
 	$cache = new Cacheable(Symphony::Database());
 	$cachedData = $cache->check($cache_id);
 	$writeToCache = false;
@@ -167,6 +166,7 @@
 	$creation = DateTimeObj::get('c');
 	$timeout = (isset($this->dsParamTIMEOUT)) ? (int)max(1, $this->dsParamTIMEOUT) : 6;
 
+	// If there is no cache, or the cache has expired
 	if((!is_array($cachedData) || empty($cachedData)) || (time() - $cachedData['creation']) > ($this->dsParamCACHE * 60)) {
 		if(Mutex::acquire($cache_id, $timeout, TMP)){
 			$ch = new Gateway;
@@ -220,8 +220,6 @@
 
 			// Handle where there is `$data`
 			else if(strlen($data) > 0) {
-				$writeToCache = false;
-
 				// We have data, and we were expecting JSON but we are going to make it into
 				// XML so that we can use XPath and just generally work with it in a standard
 				// way.
@@ -315,7 +313,7 @@
 		}
 
 		else{
-			if($writeToCache) $cache->write($cache_id, trim($data));
+			if($writeToCache) $cache->write($cache_id, trim($data), $this->dsParamCACHE);
 
 			$result->setValue(self::CRLF . preg_replace('/([\r\n]+)/', '$1	', $ret));
 			$result->setAttribute('status', ($valid === true ? 'fresh' : 'stale'));

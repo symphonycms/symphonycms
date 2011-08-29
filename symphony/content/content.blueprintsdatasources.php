@@ -24,7 +24,6 @@
 		}
 
 		public function __form(){
-
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
 
@@ -82,10 +81,12 @@
 				$isEditing = true;
 				$handle = $this->_context[1];
 				$existing =& DatasourceManager::create($handle, NULL, false);
+				$cache_id = null;
 
 				if (!$existing->allowEditorToParse()) redirect(SYMPHONY_URL . '/blueprints/datasources/info/' . $handle . '/');
 
 				$about = $existing->about();
+				$cache = new Cacheable(Symphony::Database());
 				$fields['name'] = $about['name'];
 
 				$fields['order'] = ($existing->dsParamORDER == 'rand' ? 'random' : $existing->dsParamORDER);
@@ -136,7 +137,8 @@
 						$fields['dynamic_xml']['url'] = $existing->dsParamURL;
 						$fields['dynamic_xml']['xpath'] = $existing->dsParamXPATH;
 						$fields['dynamic_xml']['cache'] = $existing->dsParamCACHE;
-						$fields['dynamic_xml']['timeout'] =	(isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6);
+						$fields['dynamic_xml']['timeout'] = (isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6);
+						$cache_id = md5($existing->dsParamURL . serialize($existing->dsParamFILTERS) . $existing->dsParamXPATH);
 
 						break;
 
@@ -144,7 +146,8 @@
 						$fields['remote_json']['url'] = $existing->dsParamURL;
 						$fields['remote_json']['xpath'] = $existing->dsParamXPATH;
 						$fields['remote_json']['cache'] = $existing->dsParamCACHE;
-						$fields['remote_json']['timeout'] =	(isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6);
+						$fields['remote_json']['timeout'] = (isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6);
+						$cache_id = md5($existing->dsParamURL . $existing->dsParamXPATH);
 
 						break;
 
@@ -159,6 +162,19 @@
 						break;
 				}
 
+				// If `clear_cache` is set, clear it..
+				if(isset($cache_id) && in_array('clear_cache', $this->_context)) {
+					$cache->forceExpiry($cache_id);
+					$this->pageAlert(
+						__(
+							'Data source cache cleared <a href="%s" accesskey="a">View all Data sources</a>',
+							array(
+								SYMPHONY_URL . '/blueprints/components/'
+							)
+						),
+						Alert::SUCCESS
+					);
+				}
 			}
 
 			else{
@@ -678,6 +694,8 @@
 			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
 
+		// Dynamic XML
+
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual dynamic_xml');
 			$fieldset->appendChild(new XMLElement('legend', __('Dynamic XML')));
@@ -761,6 +779,11 @@
 			if(isset($this->_errors['dynamic_xml']['cache'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['cache']));
 			else $fieldset->appendChild($label);
 
+			// Check for existing Cache objects
+			if(isset($cache_id)) {
+				$this->appendCacheInformation($fieldset, $cache, $cache_id);
+			}
+
 			$label = Widget::Label();
 			$input = Widget::Input('fields[dynamic_xml][timeout]', max(1, intval($fields['dynamic_xml']['timeout'])), NULL, array('type' => 'hidden'));
 			$label->appendChild($input);
@@ -796,6 +819,11 @@
 			$label->setValue(__('Update cached result every %s minutes', array($input->generate(false))));
 			if(isset($this->_errors['remote_json']['cache'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['remote_json']['cache']));
 			else $fieldset->appendChild($label);
+
+			// Check for existing Cache objects
+			if(isset($cache_id)) {
+				$this->appendCacheInformation($fieldset, $cache, $cache_id);
+			}
 
 			$label = Widget::Label();
 			$input = Widget::Input('fields[remote_json][timeout]', max(1, intval($fields['remote_json']['timeout'])), NULL, array('type' => 'hidden'));
@@ -1367,6 +1395,24 @@
 
 		private static function __isValidPageString($string){
 			return (bool)preg_match('/^(?:\{\$[\w-]+(?::\$[\w-]+)*(?::\d+)?}|\d+)$/', $string);
+		}
+
+		public function appendCacheInformation(XMLElement $wrapper, Cacheable $cache, $cache_id) {
+			$cachedData = $cache->check($cache_id);
+			if(is_array($cachedData) && !empty($cachedData) && (time() < $cachedData['expiry'])) {
+				$a = Widget::Anchor(__('Clear now'), SYMPHONY_URL . getCurrentPage() . 'clear_cache/');
+				$wrapper->appendChild(
+					new XMLElement('p', __('Cache expires in %d minutes. %s', array(
+						($cachedData['expiry'] - time()) / 60,
+						$a->generate(false)
+					)), array('class' => 'help'))
+				);
+			}
+			else {
+				$wrapper->appendChild(
+					new XMLElement('p', __('Cache has expired or does not exist.'), array('class' => 'help'))
+				);
+			}
 		}
 
 	}

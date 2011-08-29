@@ -191,7 +191,7 @@
 		}
 
 		else{
-			if($writeToCache) $cache->write($cache_id, $xml);
+			if($writeToCache) $cache->write($cache_id, $xml, $this->dsParamCACHE);
 
 			$result->setValue(self::CRLF . preg_replace('/([\r\n]+)/', '$1	', $ret));
 			$result->setAttribute('status', ($valid === true ? 'fresh' : 'stale'));
