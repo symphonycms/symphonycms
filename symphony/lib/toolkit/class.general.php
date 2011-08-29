@@ -524,7 +524,11 @@
 		public static function realiseDirectory($path, $mode=0755){
 			if(is_dir($path)) return true;
 
-			return mkdir($path, intval($mode, 8), true);
+			$current_umask = umask(0);
+			$success = mkdir($path, intval($mode, 8), true);
+			umask($current_umask);
+
+			return $success;
 		}
 
 		/**
