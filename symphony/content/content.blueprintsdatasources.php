@@ -764,7 +764,7 @@
 
 			$div->appendChild($ol);
 			$div->appendChild(
-				new XMLElement('p', __('Namespaces will automatically be discovered when saving this datasource.'), array('class' => 'help'))
+				new XMLElement('p', __('Namespaces will automatically be discovered when saving this datasource if it does not include any dynamic portions.'), array('class' => 'help'))
 			);
 
 			$fieldset->appendChild($div);
@@ -1002,8 +1002,16 @@
 				// Use the TIMEOUT that was specified by the user for a real world indication
 				$timeout = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : 6);
 
-				if($valid_url = self::__isValidURL($fields['dynamic_xml']['url'], $timeout)) {
-					if($valid_url !== true) {
+				// If there is a parameter in the URL, we can't validate the existence of the URL
+				// as we don't have the environment details of where this datasource is going
+				// to be executed.
+				$fetch_URL = !preg_match('@{([^}]+)}@i', $fields['dynamic_xml']['url']);
+
+				if($valid_url = self::__isValidURL($fields['dynamic_xml']['url'], $timeout, $fetch_URL)) {
+					if(is_array($valid_url)) {
+						$data = $valid_url['data'];
+					}
+					else {
 						$this->_errors['dynamic_xml']['url'] = $valid_url;
 					}
 				}
@@ -1019,8 +1027,16 @@
 				// Use the TIMEOUT that was specified by the user for a real world indication
 				$timeout = (isset($fields['remote_json']['timeout']) ? (int)$fields['remote_json']['timeout'] : 6);
 
-				if($valid_url = self::__isValidURL($fields['remote_json']['url'], $timeout)) {
-					if($valid_url !== true) {
+				// If there is a parameter in the URL, we can't validate the existence of the URL
+				// as we don't have the environment details of where this datasource is going
+				// to be executed.
+				$fetch_URL = !preg_match('@{([^}]+)}@i', $fields['remote_json']['url']);
+
+				if($valid_url = self::__isValidURL($fields['remote_json']['url'], $timeout, $fetch_URL)) {
+					if(is_array($valid_url)) {
+						$data = $valid_url['data'];
+					}
+					else {
 						$this->_errors['remote_json']['url'] = $valid_url;
 					}
 				}
@@ -1127,6 +1143,10 @@
 						if(isset($data)) {
 							preg_match_all('/xmlns:([a-z][a-z-0-9\-]*)="([^\"]+)"/i', $data, $matches);
 
+							if(!is_array($fields['dynamic_xml']['namespace'])) {
+								$fields['dynamic_xml']['namespace'] = array();
+							}
+
 							if (isset($matches[2][0])) {
 								$detected_namespaces = array();
 
@@ -1152,7 +1172,7 @@
 						}
 
 						$filters = array();
-						if(is_array($fields['dynamic_xml']['namespace']) foreach($fields['dynamic_xml']['namespace'] as $index => $data) {
+						if(is_array($fields['dynamic_xml']['namespace'])) foreach($fields['dynamic_xml']['namespace'] as $index => $data) {
 							$filters[$data['name']] = $data['uri'];
 						}
 
@@ -1448,16 +1468,21 @@
 		 * @param string $url
 		 * @param integer $timeout
 		 *  If not provided, this will default to 6 seconds
-		 * @return string|boolean
-		 *  Returns `true` if it is a valid URL, otherwise string
+		 * @param boolean $fetch_URL
+		 *  Defaults to false, but when set to true, this function will use the
+		 *  `Gateway` class to attempt to validate the URL's existence and it
+		 *  returns before the `$timeout`
+		 * @return string|array
+		 *  Returns an array with the 'data' if it is a valid URL, otherwise a string
+		 *  containing an error message.
 		 */
-		public static function __isValidURL($url, $timeout = 6) {
+		public static function __isValidURL($url, $timeout = 6, $fetch_URL = false) {
 			// Check that URL was provided
 			if(trim($url) == '') {
 				return __('This is a required field');
 			}
 			// Check to see the URL works.
-			else {
+			else if ($fetch_URL === true) {
 				$gateway = new Gateway;
 				$gateway->init($url);
 				$gateway->setopt('TIMEOUT', $timeout);
@@ -1474,7 +1499,7 @@
 				}
 			}
 
-			return true;
+			return array('data' => $data);
 		}
 
 		public function appendCacheInformation(XMLElement $wrapper, Cacheable $cache, $cache_id) {
