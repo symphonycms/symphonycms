@@ -199,7 +199,8 @@
 				else {
 					$result->setAttribute('valid', 'false');
 
-					if($info['total_time'] > $timeout){
+					// 28 is CURLE_OPERATION_TIMEOUTED
+					if($info['curl_error'] == 28) {
 						$result->appendChild(
 							new XMLElement('error',
 								sprintf('Request timed out. %d second limit reached.', $timeout)

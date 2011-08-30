@@ -76,9 +76,6 @@
 
 	if((!is_array($cachedData) || empty($cachedData)) || (time() - $cachedData['creation']) > ($this->dsParamCACHE * 60)){
 		if(Mutex::acquire($cache_id, $timeout, TMP)){
-
-			$start = precision_timer();
-
 			$ch = new Gateway;
 
 			$ch->init();
@@ -86,8 +83,6 @@
 			$ch->setopt('TIMEOUT', $timeout);
 			$xml = $ch->exec();
 			$writeToCache = true;
-
-			$end = precision_timer('stop', $start);
 
 			$info = $ch->getInfoLast();
 
@@ -107,7 +102,8 @@
 				else{
 					$result->setAttribute('valid', 'false');
 
-					if($end > $timeout){
+					// 28 is CURLE_OPERATION_TIMEOUTED
+					if($info['curl_error'] == 28) {
 						$result->appendChild(
 							new XMLElement('error',
 								sprintf('Request timed out. %d second limit reached.', $timeout)

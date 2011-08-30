@@ -129,11 +129,7 @@
 						break;
 
 					case 'dynamic_xml':
-						$namespaces = $existing->dsParamFILTERS;
-
-						$fields['dynamic_xml'] = array('namespace' => array());
-						$fields['dynamic_xml']['namespace']['name'] = @array_keys($namespaces);
-						$fields['dynamic_xml']['namespace']['uri'] = @array_values($namespaces);
+						$fields['dynamic_xml']['namespace'] = $existing->dsParamFILTERS;
 						$fields['dynamic_xml']['url'] = $existing->dsParamURL;
 						$fields['dynamic_xml']['xpath'] = $existing->dsParamXPATH;
 						$fields['dynamic_xml']['cache'] = $existing->dsParamCACHE;
@@ -717,12 +713,16 @@
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
 
-			if(is_array($fields['dynamic_xml']['namespace']['name'])){
-
-				$namespaces = $fields['dynamic_xml']['namespace']['name'];
-				$uri = $fields['dynamic_xml']['namespace']['uri'];
-
-				for($ii = 0; $ii < count($namespaces); $ii++){
+			if(is_array($fields['dynamic_xml']['namespace']) && !empty($fields['dynamic_xml']['namespace'])){
+				$ii = 0;
+				foreach($fields['dynamic_xml']['namespace'] as $name => $uri) {
+					// Namespaces get saved to the file as $name => $uri, however in
+					// the $_POST they are represented as $index => array. This loop
+					// patches the difference.
+					if(is_array($uri)) {
+						$name = $uri['name'];
+						$uri = $uri['uri'];
+					}
 
 					$li = new XMLElement('li');
 					$li->appendChild(new XMLElement('h4', 'Namespace'));
@@ -731,15 +731,16 @@
 					$group->setAttribute('class', 'group');
 
 					$label = Widget::Label(__('Name'));
-					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]', General::sanitize($namespaces[$ii])));
+					$label->appendChild(Widget::Input("fields[dynamic_xml][namespace][$ii][name]", General::sanitize($name)));
 					$group->appendChild($label);
 
 					$label = Widget::Label(__('URI'));
-					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]', General::sanitize($uri[$ii])));
+					$label->appendChild(Widget::Input("fields[dynamic_xml][namespace][$ii][uri]", General::sanitize($uri)));
 					$group->appendChild($label);
 
 					$li->appendChild($group);
 					$ol->appendChild($li);
+					$ii++;
 				}
 			}
 
@@ -751,17 +752,21 @@
 			$group->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][-1][name]'));
 			$group->appendChild($label);
 
 			$label = Widget::Label(__('URI'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][-1][uri]'));
 			$group->appendChild($label);
 
 			$li->appendChild($group);
 			$ol->appendChild($li);
 
 			$div->appendChild($ol);
+			$div->appendChild(
+				new XMLElement('p', __('Namespaces will automatically be discovered when saving this datasource.'), array('class' => 'help'))
+			);
+
 			$fieldset->appendChild($div);
 
 			$label = Widget::Label(__('Included Elements'));
@@ -994,8 +999,14 @@
 			}
 
 			elseif($fields['source'] == 'dynamic_xml'){
+				// Use the TIMEOUT that was specified by the user for a real world indication
+				$timeout = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : 6);
 
-				if(trim($fields['dynamic_xml']['url']) == '') $this->_errors['dynamic_xml']['url'] = __('This is a required field');
+				if($valid_url = self::__isValidURL($fields['dynamic_xml']['url'], $timeout)) {
+					if($valid_url !== true) {
+						$this->_errors['dynamic_xml']['url'] = $valid_url;
+					}
+				}
 
 				if(trim($fields['dynamic_xml']['xpath']) == '') $this->_errors['dynamic_xml']['xpath'] = __('This is a required field');
 
@@ -1005,8 +1016,14 @@
 			}
 
 			elseif($fields['source'] == 'remote_json'){
+				// Use the TIMEOUT that was specified by the user for a real world indication
+				$timeout = (isset($fields['remote_json']['timeout']) ? (int)$fields['remote_json']['timeout'] : 6);
 
-				if(trim($fields['remote_json']['url']) == '') $this->_errors['remote_json']['url'] = __('This is a required field');
+				if($valid_url = self::__isValidURL($fields['remote_json']['url'], $timeout)) {
+					if($valid_url !== true) {
+						$this->_errors['remote_json']['url'] = $valid_url;
+					}
+				}
 
 				if(trim($fields['remote_json']['xpath']) == '') $this->_errors['remote_json']['xpath'] = __('This is a required field');
 
@@ -1106,13 +1123,37 @@
 						break;
 
 					case 'dynamic_xml':
+						// Automatically detect namespaces
+						if(isset($data)) {
+							preg_match_all('/xmlns:([a-z][a-z-0-9\-]*)="([^\"]+)"/i', $data, $matches);
 
-						$namespaces = $fields['dynamic_xml']['namespace'];
+							if (isset($matches[2][0])) {
+								$detected_namespaces = array();
+
+								foreach ($fields['dynamic_xml']['namespace'] as $index => $namespace) {
+									$detected_namespaces[] = $namespace['name'];
+									$detected_namespaces[] = $namespace['uri'];
+								}
+
+								foreach ($matches[2] as $index => $uri) {
+									$name = $matches[1][$index];
+
+									if (in_array($name, $detected_namespaces) or in_array($uri, $detected_namespaces)) continue;
+
+									$detected_namespaces[] = $name;
+									$detected_namespaces[] = $uri;
+
+									$fields['dynamic_xml']['namespace'][] = array(
+										'name' => $name,
+										'uri' => $uri
+									);
+								}
+							}
+						}
 
 						$filters = array();
-
-						for($ii = 0; $ii < count($namespaces['name']); $ii++){
-							$filters[$namespaces['name'][$ii]] = $namespaces['uri'][$ii];
+						if(is_array($fields['dynamic_xml']['namespace']) foreach($fields['dynamic_xml']['namespace'] as $index => $data) {
+							$filters[$data['name']] = $data['uri'];
 						}
 
 						$params['url'] = $fields['dynamic_xml']['url'];
@@ -1338,7 +1379,7 @@
 				$string .= "\t\t\t\t'$key' => '" . addslashes($val) . "'," . self::CRLF;
 			}
 
-			$string .= '		);' . self::CRLF;
+			$string .= "\t\t);" . self::CRLF;
 
 			$shell = str_replace('<!-- FILTERS -->', trim($string), $shell);
 		}
@@ -1395,6 +1436,45 @@
 
 		private static function __isValidPageString($string){
 			return (bool)preg_match('/^(?:\{\$[\w-]+(?::\$[\w-]+)*(?::\d+)?}|\d+)$/', $string);
+		}
+
+		/**
+		 * Given a `$url` and `$timeout`, this function will use the `Gateway`
+		 * class to determine that it is a valid URL and returns successfully
+		 * before the `$timeout`. If it does not, an error message will be
+		 * returned, otherwise true.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $url
+		 * @param integer $timeout
+		 *  If not provided, this will default to 6 seconds
+		 * @return string|boolean
+		 *  Returns `true` if it is a valid URL, otherwise string
+		 */
+		public static function __isValidURL($url, $timeout = 6) {
+			// Check that URL was provided
+			if(trim($url) == '') {
+				return __('This is a required field');
+			}
+			// Check to see the URL works.
+			else {
+				$gateway = new Gateway;
+				$gateway->init($url);
+				$gateway->setopt('TIMEOUT', $timeout);
+				$data = $gateway->exec();
+
+				$info = $gateway->getInfoLast();
+
+				// 28 is CURLE_OPERATION_TIMEOUTED
+				if($info['curl_error'] == 28) {
+					return __('Request timed out. %d second limit reached.', array($timeout));
+				}
+				else if($data === false || $info['http_code'] != 200) {
+					return __('Failed to load URL, status code %d was returned.', array($info['http_code']));
+				}
+			}
+
+			return true;
 		}
 
 		public function appendCacheInformation(XMLElement $wrapper, Cacheable $cache, $cache_id) {

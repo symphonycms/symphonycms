@@ -325,6 +325,7 @@
 				$result = curl_exec($ch);
 
 				$this->_info_last = curl_getinfo($ch);
+				$this->_info_last['curl_error'] = curl_errno($ch);
 
 				##Close the connection
 				curl_close ($ch);
@@ -418,7 +419,10 @@
 				'url' => $this->_url,
 				'content_type' => $content_type,
 				'http_code' => $status,
-				'total_time' => $end
+				'total_time' => $end,
+				// Fake the curl error for sockets..
+				// 28 is CURLE_OPERATION_TIMEOUTED, 0 is CURLE_OK
+				'curl_error' => ($status['timed_out']) ? 28 : 0
 			);
 
 			return ($this->_returnHeaders ? $header : NULL) . $response;
@@ -430,8 +434,8 @@
 		 * the same output array as expected when calling the
 		 * `curl_getinfo()` function. If Sockets were used to complete
 		 * the request instead of CURL, the resulting array will be
-		 * the HTTP Code, Content Type, URL and Total Time of the resulting
-		 * request
+		 * the HTTP Code, Content Type, URL, Total Time and Curl Error of the
+		 * resulting request
 		 *
 		 * @link http://au2.php.net/manual/en/function.curl-getinfo.php
 		 * @return array
