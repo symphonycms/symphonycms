@@ -462,8 +462,8 @@ button.button.delete:hover {
 	position: relative;
 	z-index: 2;
 	margin: 0;
-	border-top: 3px solid #979792;
-	border-bottom: 2px solid #777;
+	border-top: 1px solid #979792;
+	border-bottom: 0px solid #777;
 	padding: 0.5em 0.83em;
 	background-color: #e4e4e0;
 	color: #555;
@@ -472,11 +472,11 @@ button.button.delete:hover {
 }
 .notice.error {
 	background-color: #ffb;
-	border-top: 3px solid #cc8;
+	border-top: 1px solid #cc8;
 }
 .notice.success {
 	background-color: #ddf6bb;
-	border-top: 3px solid #90c349;
+	border-top: 1px solid #90c349;
 }
 .notice.silence {
 	background: #e4e4e0;
@@ -510,6 +510,12 @@ button.button.delete:hover {
 	background: none;
 	text-decoration: underline;
 	cursor: pointer;
+}
+.notice:nth-of-type(1) {
+	border-top-width: 3px;
+}
+.notice:nth-last-of-type(1) {
+	border-bottom-width: 2px;
 }
 
 /*-----------------------------------------------------------------------------
