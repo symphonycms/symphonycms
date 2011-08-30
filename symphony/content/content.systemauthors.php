@@ -336,7 +336,7 @@
 			* @delegate AddDefaultAuthorAreas
 			* @since Symphony 2.2
 			* @param string $context
-			* '/system/authors/
+			* '/system/authors/'
 			* @param array $options
 			* An associative array of options, suitable for use for the Widget::Select
 			* function. By default this will be an array of the Sections in the current
@@ -407,7 +407,7 @@
 			* @delegate AddElementstoAuthorForm
 			* @since Symphony 2.2
 			* @param string $context
-			* '/system/authors/
+			* '/system/authors/'
 			* @param XMLElement $form
 			* The contents of `$this->Form` after all the default form elements have been appended.
 			* @param Author $author
