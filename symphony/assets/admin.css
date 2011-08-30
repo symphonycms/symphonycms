@@ -458,7 +458,7 @@ button.button.delete:hover {
 	Globals - System Messages
 -----------------------------------------------------------------------------*/
 
-#notice {
+.notice {
 	position: relative;
 	z-index: 2;
 	margin: 0;
@@ -470,42 +470,42 @@ button.button.delete:hover {
 	font-size: 90.91%;
 	line-height: 1.6;
 }
-#notice.error {
+.notice.error {
 	background-color: #ffb;
 	border-top: 3px solid #cc8;
 }
-#notice.success {
+.notice.success {
 	background-color: #ddf6bb;
 	border-top: 3px solid #90c349;
 }
-#notice.silence {
+.notice.silence {
 	background: #e4e4e0;
 	border-top-color: #979792;
 	border-bottom-color: #777;
 	color: #555;
 }
-#notice a,
-#notice button {
+.notice a,
+.notice button {
 	color: #999;
 	margin-left: 0.5em;
 }
-#notice a:hover,
-#notice button:hover {
+.notice a:hover,
+.notice button:hover {
 	color: #332;
 }
-#notice.error a,
-#notice.error button {
+.notice.error a,
+.notice.error button {
 	color: #d55;
 }
-#notice.error a:hover,
-#notice.error button:hover {
+.notice.error a:hover,
+.notice.error button:hover {
 	color: #912712;
 }
-#notice.success a:hover,
-#notice.success button:hover {
+.notice.success a:hover,
+.notice.success button:hover {
 	color: #111;
 }
-#notice button {
+.notice button {
 	border: none;
 	background: none;
 	text-decoration: underline;
