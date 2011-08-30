@@ -127,35 +127,7 @@
 		}
 	}
 
-	if(!function_exists('findParametersInString')) {
-		// This function finds all the params and flags any with :encoded. An array is returned
-		// to be iterated over
-		function findParametersInString($value) {
-			$result = array();
-
-			if(preg_match_all('@{([^}]+)}@i', $value, $matches, PREG_SET_ORDER)){
-				foreach($matches as $m){
-					$result[$m[1]] = array(
-						'param' => preg_replace('/:encoded$/', NULL, $m[1]),
-						'encode' => preg_match('/:encoded$/', $m[1])
-					);
-				}
-			}
-
-			return $result;
-		}
-	}
-
-	if(isset($this->dsParamURL)) {
-		$params = findParametersInString($this->dsParamURL);
-		foreach($params as $key => $info){
-			$replacement = $this->__processParametersInString($info['param'], $this->_env, false);
-			if($info['encode'] == true){
-				$replacement = urlencode($replacement);
-			}
-			$this->dsParamURL = str_replace("{{$key}}", $replacement, $this->dsParamURL);
-		}
-	}
+	$this->dsParamURL = $this->parseParamURL($this->dsParamURL);
 
 	// Check the Cache to see if there is already an existing result
 	$cache_id = md5($this->dsParamURL . $this->dsParamXPATH);

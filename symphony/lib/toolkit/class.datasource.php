@@ -223,6 +223,43 @@
 		}
 
 		/**
+		 * This function will parse a string (usually a URL) and fully evaluate any
+		 * parameters (defined by {$param}) to return the absolute string value
+		 *
+		 * @since Symphony 2.3
+		 * @todo This belongs in the Dynamic XML/Remote JSON class, probably not here..
+		 * @param string $url
+		 *  The string (usually a URL) that contains the parameters (or doesn't)
+		 * @return string
+		 *  The parsed URL
+		 */
+		public function parseParamURL($url = null) {
+			if(!isset($url)) return null;
+
+			// urlencode parameters
+			$params = array();
+
+			if(preg_match_all('@{([^}]+)}@i', $url, $matches, PREG_SET_ORDER)){
+				foreach($matches as $m){
+					$params[$m[1]] = array(
+						'param' => preg_replace('/:encoded$/', NULL, $m[1]),
+						'encode' => preg_match('/:encoded$/', $m[1])
+					);
+				}
+			}
+
+			foreach($params as $key => $info){
+				$replacement = $this->__processParametersInString($info['param'], $this->_env, false);
+				if($info['encode'] == true){
+					$replacement = urlencode($replacement);
+				}
+				$url = str_replace("{{$key}}", $replacement, $url);
+			}
+
+			return $url;
+		}
+
+		/**
 		 * This function will replace any parameters in a string with their value.
 		 * Parameters are defined by being prefixed by a $ character. In certain
 		 * situations, the parameter will be surrounded by {}, which Symphony
