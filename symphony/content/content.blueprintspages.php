@@ -968,7 +968,7 @@
 			 * @delegate PagePreDelete
 			 * @since Symphony 2.2
 			 * @param string $context
-			 * '/blueprints/pages/
+			 * '/blueprints/pages/'
 			 * @param array $page_ids
 			 *  An array of Page ID's that are about to be deleted, passed
 			 *  by reference
