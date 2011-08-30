@@ -106,6 +106,8 @@
 			 * fired just before the `FrontendPage->generate()`.
 			 *
 			 * @delegate FrontendInitialised
+			 * @param string $context
+			 *  '/frontend/'
 			 */
 			Frontend::instance()->ExtensionManager->notifyMembers('FrontendInitialised', '/frontend/');
 
