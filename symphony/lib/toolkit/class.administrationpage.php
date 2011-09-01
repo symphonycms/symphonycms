@@ -22,7 +22,7 @@
 		 * messages to Symphony users.
 		 * @var Alert
 		 */
-		public $Alert = null;
+		public $Alert = array();
 
 		/**
 		 * As the name suggests, a `<div>` that holds the following `$Header`,
@@ -143,9 +143,7 @@
 
 			if(strlen(trim($message)) == 0) throw new Exception('A message must be supplied unless flagged as Alert::ERROR');
 
-			if(!($this->Alert instanceof Alert) || ($this->Alert->type == Alert::NOTICE && in_array($type, array(Alert::ERROR, Alert::SUCCESS)))){
-				$this->Alert = new Alert($message, $type);
-			}
+			$this->Alert[] = new Alert($message, $type);
 		}
 
 		/**
@@ -449,8 +447,8 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AppendPageAlert', '/backend/');
 
-			if(($this->Alert instanceof Alert)){
-				$this->Header->prependChild($this->Alert->asXML());
+			foreach($this->Alert AS $alert){
+				$this->Header->prependChild($alert->asXML());
 			}
 		}
 
