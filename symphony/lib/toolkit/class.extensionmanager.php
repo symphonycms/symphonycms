@@ -238,7 +238,7 @@
 
 			## If requires and upate before enabling, than update it first
 			elseif(($about = self::about($name)) && ($previousVersion = self::__requiresUpdate($about)) !== false) {
-				self::update($previousVersion);
+				$obj->update($previousVersion);
 			}
 
 			$info = $obj->about();
@@ -349,7 +349,6 @@
 
 			if(is_array($delegates) && !empty($delegates)){
 				foreach($delegates as $delegate){
-
 					Symphony::Database()->insert(
 						array(
 							'extension_id' => $id  ,
@@ -359,7 +358,6 @@
 						),
 						'tbl_extensions_delegates'
 					);
-
 				}
 			}
 
@@ -460,6 +458,39 @@
 								array(basename($file), $about['name'])
 							)
 						);
+					}
+				}
+			}
+
+			// Text Formatters
+			if(is_dir(EXTENSIONS . "/{$extension_handle}/text-formatters")){
+				foreach(glob(EXTENSIONS . "/{$extension_handle}/text-formatters/formatter.*.php") as $file){
+					$handle = preg_replace(array('/^formatter\./i', '/\.php$/i'), NULL, basename($file));
+					$fields = Symphony::Database()->fetchCol('type', "SELECT DISTINCT `type` FROM `tbl_fields` WHERE `type` NOT IN ('author', 'checkbox', 'date', 'input', 'select', 'taglist', 'upload')");
+					if(!empty($fields)) foreach($fields as $field) {
+						try {
+							$table = Symphony::Database()->fetchVar('count', 0, sprintf("
+								SELECT COUNT(*) AS `count`
+								FROM `tbl_fields_%s`
+								WHERE `formatter` = '%s'
+							",
+								Symphony::Database()->cleanValue($field),
+								$handle
+							));
+						}
+						catch (DatabaseException $ex) {
+							// Table probably didn't have that column
+						}
+
+						if($table > 0) {
+							$about = $obj->about();
+							throw new Exception(
+								__(
+									"The Text Formatter '%s', provided by the Extension '%s', is currently in use. Please remove it from your fields prior to uninstalling or disabling.",
+									array(basename($file), $about['name'])
+								)
+							);
+						}
 					}
 				}
 			}
