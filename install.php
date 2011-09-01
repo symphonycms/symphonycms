@@ -184,7 +184,6 @@
 		$conf['symphony']['lang'] = Lang::get();
 		$conf['symphony']['version'] = kVERSION;
 		$conf['symphony']['pages_table_nest_children'] = 'yes';
-		$conf['symphony']['strict_error_handling'] = 'yes';
 		$conf['symphony']['session_gc_divisor'] = '10';
 		$conf['log']['archive'] = '1';
 		$conf['log']['maxsize'] = '102400';
