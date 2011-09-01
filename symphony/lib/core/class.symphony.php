@@ -270,11 +270,8 @@
 				if(!self::$Database->isConnected()) return false;
 
 				self::$Database->setPrefix($details['tbl_prefix']);
-
-				if(self::$Configuration->get('runtime_character_set_alter', 'database') == '1'){
-					self::$Database->setCharacterEncoding(self::$Configuration->get('character_encoding', 'database'));
-					self::$Database->setCharacterSet(self::$Configuration->get('character_set', 'database'));
-				}
+				self::$Database->setCharacterEncoding();
+				self::$Database->setCharacterSet();
 
 				if(self::$Configuration->get('query_caching', 'database') == 'off') self::$Database->disableCaching();
 				elseif(self::$Configuration->get('query_caching', 'database') == 'on') self::$Database->enableCaching();
