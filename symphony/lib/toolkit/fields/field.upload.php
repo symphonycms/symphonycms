@@ -185,8 +185,7 @@
 			}
 
 			$label = Widget::Label($this->label());
-			$class = 'file';
-			$label->setAttribute('class', $class);
+			$label->setAttribute('class', 'file');
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 
 			$span = new XMLElement('span', NULL, array('class' => 'frame'));

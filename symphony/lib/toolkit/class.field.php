@@ -484,6 +484,7 @@
 		 * allows a field's 'Label' to be changed without a developer having to update
 		 * references in the Datasources or XSLT.
 		 *
+		 * @since Symphony 2.3
 		 * @return XMLElement
 		 *  the `XMLElement` of this widget.
 		 */
@@ -708,7 +709,7 @@
 				$valid_name = preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $this->get('element_name'));
 			}
 
-			if ($this->get('label', true) == '') {
+			if ($this->get('label') == '') {
 				$errors['label'] = __('This is a required field.');
 			}
 
@@ -1097,6 +1098,7 @@
 			if(is_numeric($fields['element_name']{0})) $fields['element_name'] = 'field-' . $fields['element_name'];
 
 			$fields['label'] = $this->get('label');
+			$fields['publish_label'] = $this->get('publish_label');
 			$fields['parent_section'] = $this->get('parent_section');
 			$fields['location'] = $this->get('location');
 			$fields['required'] = $this->get('required');

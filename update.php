@@ -295,6 +295,8 @@ Options +FollowSymlinks -Indexes
 				);
 			}
 
+		// Symphony 2.2
+
 			if(version_compare($existing_version, '2.2.0dev', '<=')){
 
 				if(tableContainsField('tbl_sections_association', 'cascading_deletion')) {
@@ -448,6 +450,16 @@ Options +FollowSymlinks -Indexes
 					}
 				}
 				catch(Exception $ex) {}
+			}
+
+
+		// Symphony 2.3
+
+			if(version_compare($existing_version, '2.3dev', '<')) {
+				// Add Publish Label to `tbl_fields`
+				if(!tableContainsField('tbl_fields', 'publish_label')) {
+					$frontend->Database->query('ALTER TABLE `tbl_fields` ADD `publish_label` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL');
+				}
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
