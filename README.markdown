@@ -1,6 +1,6 @@
 # Symphony 2 #
 
-- Version: 2.3pre
+- Version: 2.3dev
 - Date: unreleased
 - Release Notes: <https://gist.github.com/1162216>
 - Github Repository: <http://github.com/symphonycms/symphony-2/tree/integration>
