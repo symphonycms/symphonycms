@@ -10,13 +10,7 @@
 	 * Entries are typically created from the Symphony backend, but
 	 * can also be created using Events from the Frontend.
 	 */
-	Class Entry{
-
-		/**
-		 * An instance of the Symphony class, either Frontend or Administration
-		 * @var Symphony
-		 */
-		protected $_engine;
+	Class Entry {
 
 		/**
 		 * An associative array of basic metadata/settings for this Entry
@@ -37,16 +31,6 @@
 		 * @var string
 		 */
 		public $creationDate = null;
-
-		/**
-		 * Construct a new instance of an Entry.
-		 */
-		public function __construct(){
-			// @todo Remove this for 2.3
-			if(class_exists('Administration')) $this->_engine = Administration::instance();
-			elseif(class_exists('Frontend')) $this->_engine = Frontend::instance();
-			else throw new Exception(__('No suitable engine object found'));
-		}
 
 		/**
 		 * Entries have some basic metadata settings such as the Entry ID, the Author ID

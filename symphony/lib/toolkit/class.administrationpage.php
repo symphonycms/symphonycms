@@ -893,22 +893,4 @@
 			return (is_array($types) && !empty($types) ? General::array_remove_duplicates(array_merge($system_types, $types)) : $system_types);
 		}
 
-		/**
-		 * Will wrap a `<div>` around a desired element to trigger the default
-		 * Symphony error styling.
-		 *
-		 * @deprecated This function is deprecated and will be removed in the next
-		 *  version of Symphony. This preferred way to wrap an element with an
-		 *  error is using `Widget::wrapFormElementWithError`
-		 * @see toolkit.Widget::wrapFormElementWithError()
-		 * @param XMLElement $element
-		 *	The element that should be wrapped with an error
-		 * @param string $message
-		 *	The text for this error. This will be appended after the `$element`,
-		 *  but inside the wrapping `<div>`
-		 */
-		public function wrapFormElementWithError($element, $message = null){
-			return Widget::wrapFormElementWithError($element, $message);
-		}
-
 	}

@@ -19,24 +19,6 @@
 	Class EntryManager {
 
 		/**
-		 * An instance of the TextFormatterManager
-		 * @var TextFormatterManager
-		 */
-		public $formatterManager;
-
-		/**
-		 * An instance of the SectionManager
-		 * @var SectionManager
-		 */
-		public $sectionManager;
-
-		/**
-		 * An instance of the FieldManager
-		 * @var FieldManager
-		 */
-		public $fieldManager;
-
-		/**
 		 * The Field ID that will be used to sort when fetching Entries, defaults
 		 * to null, which implies the Entry ID (id column in `tbl_entries`)
 		 * @var integer
@@ -49,18 +31,6 @@
 		 * @var string
 		 */
 		protected static $_fetchSortDirection = null;
-
-		/**
-		 * The constructor initialises the `$formatterManager`, `$sectionManager` and
-		 * `$fieldManager` variables.
-		 *
-		 */
-		public function __construct(){
-			// @todo Remove this for 2.3
-			$this->formatterManager = new TextformatterManager(Symphony::Engine());
-			$this->sectionManager = new SectionManager(Symphony::Engine());
-			$this->fieldManager = new FieldManager(Symphony::Engine());
-		}
 
 		/**
 		 * Setter function for the default sorting direction of the Fetch

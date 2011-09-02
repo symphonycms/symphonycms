@@ -108,7 +108,7 @@
 		protected $_required = false;
 
 		/**
-		 * Whether this field can be viewed on the entries tabletable. Note
+		 * Whether this field can be viewed on the entries table. Note
 		 * that this is not the same variable as the one set when saving
 		 * a field in the section editor, rather just the if the field has
 		 * the ability to be shown. Defaults to true.
@@ -129,10 +129,6 @@
 		 */
 		public function __construct(){
 			$this->_handle = (strtolower(get_class($this)) == 'field' ? 'field' : strtolower(substr(get_class($this), 5)));
-
-			// @todo Remove these for 2.3
-			$this->_engine = Symphony::Engine();
-			$this->Database = Symphony::Database();
 		}
 
 		/**

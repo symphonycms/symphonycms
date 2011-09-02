@@ -289,34 +289,6 @@
 			}
 		}
 
-		/**
-		 * @deprecated This function is never called by Symphony as all filtering is a range
-		 * now that time is taken into consideration. This will be removed in the next major version
-		 */
-		public function buildSimpleFilterSQL($data, &$joins, &$where, $andOperation=false) {
-			$field_id = $this->get('id');
-
-			if($andOperation) {
-				foreach($data as $date) {
-					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-					$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') = '".DateTimeObj::get('Y-m-d H:i:s', $date)."' ";
-
-					$this->key++;
-				}
-			}
-
-			else {
-				$tmp = array();
-				foreach($data as $date) {
-					$tmp[] = DateTimeObj::get('Y-m-d H:i:s', $date);
-				}
-
-				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-				$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') IN ('".implode("', '", $tmp)."') ";
-				$this->key++;
-			}
-		}
-
 	/*-------------------------------------------------------------------------
 		Settings:
 	-------------------------------------------------------------------------*/

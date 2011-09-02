@@ -40,22 +40,11 @@
 		 * The constructor for Frontend calls the parent Symphony constructor.
 		 *
 		 * @see core.Symphony#__construct()
-		 * @deprecated The constructor creates backwards compatible references
-		 *  to `$this->Database`, `$this->ExtensionManager` and `$this->Configuration`
-		 *  that act as alias for `Symphony::Database()`, `Symphony::ExtensionManager()`
-		 *  and `Symphony::Configuration()`. These will be removed in the
-		 *  next Symphony release
 		 */
 		protected function __construct() {
 			parent::__construct();
 
 			$this->_env = array();
-
-			// Need this part for backwards compatiblity
-			// @todo Remove this for 2.3
-			$this->Database = Symphony::Database();
-			$this->Configuration = Symphony::Configuration();
-			$this->ExtensionManager = Symphony::ExtensionManager();
 		}
 
 		/**
