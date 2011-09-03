@@ -21,23 +21,6 @@
 		protected $_data = array();
 
 		/**
-		 * An instance of the FieldManager class
-		 * @var FieldManager
-		 */
-		protected $_fieldManager;
-
-		/**
-		 * The construct function sets the parent variable of this Section and
-		 * initialises a new FieldManager object
-		 *
-		 * @param mixed $parent
-		 * The class that initialised this Section, usually SectionManager
-		 */
-		public function __construct() {
-			$this->_fieldManager = new FieldManager(Symphony::Engine());
-		}
-
-		/**
 		 * A setter function that will save a section's setting into
 		 * the poorly named `$this->_data` variable
 		 *
