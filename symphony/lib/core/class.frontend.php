@@ -98,7 +98,7 @@
 			 * @param string $context
 			 *  '/frontend/'
 			 */
-			Frontend::instance()->ExtensionManager->notifyMembers('FrontendInitialised', '/frontend/');
+			Symphony::ExtensionManager()->notifyMembers('FrontendInitialised', '/frontend/');
 
 			$output = self::$_page->generate($page);
 

@@ -286,13 +286,9 @@
 				if(General::in_array_multi($page, $item['children'])){
 
 					if(is_array($item['children'])){
-						foreach($item['children'] as $c){
-							if(isset($c['type']) && $c['type'] == 'section' && $c['visible'] == 'no' && preg_match('#^' . $c['link'] . '#', $page)) {
-								$page_limit = 'developer';
-							}
-
+						foreach($item['children'] as $c) {
 							if($c['link'] == $page && isset($c['limit'])) {
-								$page_limit	= $c['limit'];
+								$page_limit = $c['limit'];
 							}
 						}
 					}
