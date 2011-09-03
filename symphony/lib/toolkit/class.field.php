@@ -540,10 +540,9 @@
 		 */
 		public function buildFormatterSelect($selected = null, $name='fields[format]', $label_value){
 
-			include_once(TOOLKIT . '/class.textformattermanager.php');
+			require_once(TOOLKIT . '/class.textformattermanager.php');
 
-			$TFM = new TextformatterManager(Administration::instance());
-			$formatters = $TFM->listAll();
+			$formatters = TextformatterManager::listAll();
 
 			if(!$label_value) $label_value = __('Formatting');
 			$label = Widget::Label($label_value);

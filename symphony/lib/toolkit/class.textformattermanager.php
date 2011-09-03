@@ -6,8 +6,8 @@
 	 * The TextformatterManager class is responsible for managing all Text
 	 * Formatter objects in Symphony. Text Formatter's are stored on the file
 	 * system either in the `TEXTFORMATTERS` folder or provided by
-	 * an extension in an /text-formatters/ folder. All formatters provide one
-	 * simple method, run, which applies the formatting to an unformatted
+	 * an extension in the `/text-formatters/` folder. All formatters provide one
+	 * simple method, `run`, which applies the formatting to an unformatted
 	 * string and returns it.
 	 */
 

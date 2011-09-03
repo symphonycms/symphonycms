@@ -18,7 +18,7 @@
 	Class AdministrationPage extends HTMLPage {
 
 		/**
-		 * An instance of the Alert class. Used to display page level
+		 * An instance of the `Alert` class. Used to display page level
 		 * messages to Symphony users.
 		 * @var Alert
 		 */
@@ -122,16 +122,19 @@
 		}
 
 		/**
-		 * Sets this page's `$Alert` to an instance of the Alert class of a
-		 * given Alter type. Unless the Alert is an Error, it is required
-		 * the a message be passed to this function.
+		 * Given a `$message` and an optional `$type`, this function will
+		 * add an Alert instance into this page's `$this->Alert` property.
+		 * Since Symphony 2.3, there may be more than one `Alert` per page.
+ 		 * Unless the Alert is an Error, it is required the `$message` be
+		 * passed to this function.
 		 *
 		 * @param string $message
 		 *  The message to display to users
 		 * @param string $type
 		 *  An Alert constant, being `Alert::NOTICE`, `Alert::ERROR` or
 		 *  `Alert::SUCCESS`. The differing types will show the error
-		 *  in a different style in the backend.
+		 *  in a different style in the backend. If omitted, this defaults
+		 *  to `Alert::NOTICE`.
 		 */
 		public function pageAlert($message = null, $type = Alert::NOTICE){
 
@@ -168,9 +171,9 @@
 		/**
 		 * This function initialises a lot of the basic elements that make up a Symphony
 		 * backend page such as the default stylesheets and scripts, the navigation and
-		 * the footer. Any alerts are also appended by this function. view() is called to
-		 * build the actual content of the page. Delegates fire to allow extensions to add
-		 * elements to the `<head>` and footer.
+		 * the footer. Any alerts are also appended by this function. `view()` is called to
+		 * build the actual content of the page. Two delegates fire, `InitaliseAdminPageHead`
+		 * and `AppendElementBelowView` to allow extensions to add elements to the `<head>` and footer.
 		 *
 		 * @see view()
 		 * @uses InitaliseAdminPageHead
@@ -213,7 +216,7 @@
 			);
 
 			/**
-			 * Allows developers to insert items into the page HEAD. Use `$context['parent']->Page`
+			 * Allows developers to insert items into the page HEAD. Use `Administration::instance()->Page`
 			 * for access to the page object
 			 *
 			 * @delegate InitaliseAdminPageHead
@@ -249,7 +252,7 @@
 			$this->Footer = new XMLElement('div', NULL, array('id' => 'footer'));
 
 			/**
-			 * Allows developers to add items just above the page footer. Use `$context['parent']->Page`
+			 * Allows developers to add items just above the page footer. Use `Administration::instance()->Page`
 			 * for access to the page object
 			 *
 			 * @delegate AppendElementBelowView
@@ -431,8 +434,10 @@
 		/**
 		 * If `$this->Alert` is set, it will be prepended to the Form of this page.
 		 * A delegate is fired here to allow extensions to provide their
-		 * their own Alert messages to the page. Note that only one Alert
-		 * is allowed per page at any one time.
+		 * their own Alert messages to the page. Since Symphony 2.3, there may be
+		 * more than one `Alert` for a particular page. Alerts are displayed in
+		 * reverse order to what they were added, ie. the last Alert to be added will
+		 * be shown first, second will the be the second last Alert and so on.
 		 *
 		 * @uses AppendPageAlert
 		 */
@@ -447,7 +452,7 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AppendPageAlert', '/backend/');
 
-			foreach($this->Alert AS $alert){
+			foreach($this->Alert as $alert){
 				$this->Header->prependChild($alert->asXML());
 			}
 		}

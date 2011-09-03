@@ -94,8 +94,8 @@
 		/**
 		 * Returns an array of all the objects that this manager is responsible for.
 		 * This function is only use on the file based Managers in Symphony
-		 * such DatasourceManager, EventManager, ExtensionManager, FieldManager
-		 * and TextformatterManager.
+		 * such `DatasourceManager`, `EventManager`, `ExtensionManager`, `FieldManager`
+		 * and `TextformatterManager`.
 		 *
 		 * @return array
 		 */

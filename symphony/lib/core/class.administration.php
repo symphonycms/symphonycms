@@ -37,7 +37,7 @@
 
 		/**
 		 * The class representation of the current Symphony backend page,
-		 * which is a subclass of the HTMLPage class. Symphony uses a convention
+		 * which is a subclass of the `HTMLPage` class. Symphony uses a convention
 		 * of prefixing backend page classes with 'content'. ie. 'contentBlueprintsSections'
 		 * @var HTMLPage
 		 */
