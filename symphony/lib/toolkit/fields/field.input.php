@@ -92,7 +92,16 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'group');
+
+			$div->appendChild($this->buildPublishLabel());
+
+			$d = new XMLElement('div');
+			$this->buildValidationSelect($d, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');
+			$div->appendChild($d);
+
+			$wrapper->appendChild($div);
 
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 			$this->appendRequiredCheckbox($div);
@@ -123,7 +132,7 @@
 
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL, $entry_id = null){
 			$value = General::sanitize($data['value']);
-			$label = Widget::Label($this->get('label'));
+			$label = Widget::Label($this->label());
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? $value : NULL)));
 
@@ -209,7 +218,7 @@
 					$pattern = preg_replace('/^not-?regexp:\s*/i', null, $this->cleanValue($data[0]));
 					$regex = 'NOT REGEXP';
 				}
-				
+
 				if(strlen($pattern) == 0) return;
 
 				$joins .= "
@@ -277,7 +286,7 @@
 			else {
 				$sort = sprintf(
 					'ORDER BY (
-						SELECT %s 
+						SELECT %s
 						FROM tbl_entries_data_%d AS `ed`
 						WHERE entry_id = e.id
 					) %s',

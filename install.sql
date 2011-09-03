@@ -86,6 +86,7 @@ DROP TABLE IF EXISTS `tbl_fields`;
 CREATE TABLE `tbl_fields` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `publish_label` varchar(255) COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `element_name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `type` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `parent_section` int(11) NOT NULL DEFAULT '0',

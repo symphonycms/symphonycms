@@ -81,11 +81,7 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			## Long Description
-			$label = Widget::Label(__('Long Description'));
-			$label->appendChild(new XMLElement('i', __('Optional')));
-			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][description]', $this->get('description')));
-			$wrapper->appendChild($label);
+			$wrapper->appendChild($this->buildPublishLabel());
 
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 
@@ -111,7 +107,6 @@
 
 			$fields['field_id'] = $id;
 			$fields['default_state'] = ($this->get('default_state') ? $this->get('default_state') : 'off');
-			if(trim($this->get('description')) != '') $fields['description'] = $this->get('description');
 
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
@@ -135,7 +130,7 @@
 			$label = Widget::Label();
 			$input = Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, 'yes', 'checkbox', ($value == 'yes' ? array('checked' => 'checked') : NULL));
 
-			$label->setValue($input->generate(false) . ' ' . ($this->get('description') != NULL ? $this->get('description') : $this->get('label')));
+			$label->setValue($input->generate(false) . ' ' . $this->label());
 
 			$wrapper->appendChild($label);
 		}
@@ -256,7 +251,7 @@
 			else {
 				$sort = sprintf(
 					'ORDER BY (
-						SELECT %s 
+						SELECT %s
 						FROM tbl_entries_data_%d AS `ed`
 						WHERE entry_id = e.id
 					) %s',

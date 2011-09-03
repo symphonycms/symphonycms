@@ -295,6 +295,8 @@ Options +FollowSymlinks -Indexes
 				);
 			}
 
+		// Symphony 2.2
+
 			if(version_compare($existing_version, '2.2.0dev', '<=')){
 
 				if(tableContainsField('tbl_sections_association', 'cascading_deletion')) {
@@ -448,6 +450,38 @@ Options +FollowSymlinks -Indexes
 					}
 				}
 				catch(Exception $ex) {}
+			}
+
+
+		// Symphony 2.3
+
+			if(version_compare($existing_version, '2.3dev', '<')) {
+				// Add Publish Label to `tbl_fields`
+				if(!tableContainsField('tbl_fields', 'publish_label')) {
+					$frontend->Database->query('ALTER TABLE `tbl_fields` ADD `publish_label` VARCHAR(255) COLLATE utf8_unicode_ci NULL DEFAULT NULL');
+				}
+
+				// Migrate any Checkbox's Long Description to Publish Label
+				try {
+					$checkboxes = $frontend->Database->fetch("SELECT `field_id`, `description` FROM `tbl_fields_checkbox`");
+
+					foreach($checkboxes as $field) {
+						if(!isset($field['description'])) continue;
+
+						$frontend->Database->query(sprintf("
+							UPDATE `tbl_fields`
+							SET `publish_label` = '%s'
+							WHERE `id` = %d
+							LIMIT 1;
+							",
+							$field['description'],
+							$field['field_id']
+						));
+					}
+
+					$frontend->Database->query("ALTER TABLE `tbl_fields_checkbox` DROP `description`");
+				} catch(Exception $ex) {}
+
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,

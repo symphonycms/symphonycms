@@ -305,6 +305,20 @@
 		}
 
 		/**
+		 * Returns the Publish Label of the field, if it that has not been set,
+		 * then this function will return the Label (or null)
+		 *
+		 * @since Symphony 2.3
+		 * @return string|null
+		 *  The field's Publish Label
+		 */
+		public function label(){
+			if(isset($this->_fields['publish_label'])) return $this->_fields['publish_label'];
+
+			return $this->_fields['label'];
+		}
+
+		/**
 		 * Clean the input value using html entity encode and the database specific
 		 * clean methods.
 		 *
@@ -370,17 +384,17 @@
 		 * settings of this Field instance are returned.
 		 *
 		 * @param string $setting (optional)
-		 *	the name of the setting to access the value for. This is optional and
-		 *	defaults to null in which case all settings are returned.
+		 *  the name of the setting to access the value for. This is optional and
+		 *  defaults to null in which case all settings are returned.
 		 * @return null|mixed|array
-		 *	the value of the setting if there is one, all settings if the input setting
-		 * was omitted or null if the setting was supplied but there is no value
-		 * for that setting.
+		 *  the value of the setting if there is one, all settings if the input setting
+		 *  was omitted or null if the setting was supplied but there is no value
+		 *  for that setting.
 		 */
 		public function get($setting = null){
 			if(is_null($setting)) return $this->_fields;
 
-			if (!isset($this->_fields[$setting])) return null;
+			if(!isset($this->_fields[$setting])) return null;
 
 			return $this->_fields[$setting];
 		}
@@ -458,6 +472,27 @@
 			$div->appendChild($this->buildLocationSelect($this->get('location'), 'fields['.$this->get('sortorder').'][location]'));
 
 			return $div;
+		}
+
+		/**
+		 * Add the Publish Label widget to add to the settings panel. This holds
+		 * the Label that will be displayed in the backend of Symphony. This setting
+		 * allows a field's 'Label' to be changed without a developer having to update
+		 * references in the Datasources or XSLT.
+		 *
+		 * @since Symphony 2.3
+		 * @return XMLElement
+		 *  the `XMLElement` of this widget.
+		 */
+		public function buildPublishLabel() {
+			// Publish label
+			$label = Widget::Label(__('Publish Label'));
+			$label->appendChild(new XMLElement('i', __('Optional')));
+			$label->appendChild(
+				Widget::Input('fields['.$this->get('sortorder').'][publish_label]', $this->get('publish_label'))
+			);
+
+			return $label;
 		}
 
 		/**
@@ -1059,6 +1094,7 @@
 			if(is_numeric($fields['element_name']{0})) $fields['element_name'] = 'field-' . $fields['element_name'];
 
 			$fields['label'] = $this->get('label');
+			$fields['publish_label'] = $this->get('publish_label');
 			$fields['parent_section'] = $this->get('parent_section');
 			$fields['location'] = $this->get('location');
 			$fields['required'] = $this->get('required');

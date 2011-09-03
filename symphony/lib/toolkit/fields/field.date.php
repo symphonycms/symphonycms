@@ -300,6 +300,8 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
+			$wrapper->appendChild($this->buildPublishLabel());
+
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][pre_populate]', 'yes', 'checkbox');
@@ -350,7 +352,7 @@
 				$value = DateTimeObj::format($data['value'], __SYM_DATETIME_FORMAT__);
 			}
 
-			$label = Widget::Label($this->get('label'));
+			$label = Widget::Label($this->label());
 			$label->appendChild(Widget::Input("fields{$prefix}[{$name}]", $value));
 			$label->setAttribute('class', 'date');
 

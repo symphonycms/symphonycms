@@ -106,6 +106,8 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
+			$wrapper->appendChild($this->buildPublishLabel());
+
 			## Destination Folder
 			$ignore = array(
 				'/workspace/events',
@@ -182,9 +184,8 @@
 				$flagWithError = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
 			}
 
-			$label = Widget::Label($this->get('label'));
-			$class = 'file';
-			$label->setAttribute('class', $class);
+			$label = Widget::Label($this->label());
+			$label->setAttribute('class', 'file');
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 
 			$span = new XMLElement('span', NULL, array('class' => 'frame'));

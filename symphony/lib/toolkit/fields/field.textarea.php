@@ -55,9 +55,7 @@
 
 		protected function __applyFormatting($data, $validate=false, &$errors=NULL){
 			if($this->get('formatter')) {
-				$tfm = new TextformatterManager($this->_engine);
-				$formatter = $tfm->create($this->get('formatter'));
-
+				$formatter = TextformatterManager::create($this->get('formatter'));
 				$result = $formatter->run($data);
 			}
 
@@ -92,7 +90,13 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$wrapper->appendChild($this->buildFormatterSelect($this->get('formatter'), 'fields['.$this->get('sortorder').'][formatter]', __('Text Formatter')));
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'group');
+
+			$div->appendChild($this->buildPublishLabel());
+			$div->appendChild($this->buildFormatterSelect($this->get('formatter'), 'fields['.$this->get('sortorder').'][formatter]', __('Text Formatter')));
+
+			$wrapper->appendChild($div);
 
 			## Textarea Size
 			$label = Widget::Label();
@@ -135,7 +139,7 @@
 	-------------------------------------------------------------------------*/
 
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-			$label = Widget::Label($this->get('label'));
+			$label = Widget::Label($this->label());
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 
 			$textarea = Widget::Textarea('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, $this->get('size'), '50', (strlen($data['value']) != 0 ? General::sanitize($data['value']) : NULL));
