@@ -55,9 +55,7 @@
 
 		protected function __applyFormatting($data, $validate=false, &$errors=NULL){
 			if($this->get('formatter')) {
-				$tfm = new TextformatterManager($this->_engine);
-				$formatter = $tfm->create($this->get('formatter'));
-
+				$formatter = TextformatterManager::create($this->get('formatter'));
 				$result = $formatter->run($data);
 			}
 
@@ -91,10 +89,14 @@
 
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
-			
-			$wrapper->appendChild($this->buildPublishLabel());
 
-			$wrapper->appendChild($this->buildFormatterSelect($this->get('formatter'), 'fields['.$this->get('sortorder').'][formatter]', __('Text Formatter')));
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'group');
+
+			$div->appendChild($this->buildPublishLabel());
+			$div->appendChild($this->buildFormatterSelect($this->get('formatter'), 'fields['.$this->get('sortorder').'][formatter]', __('Text Formatter')));
+
+			$wrapper->appendChild($div);
 
 			## Textarea Size
 			$label = Widget::Label();

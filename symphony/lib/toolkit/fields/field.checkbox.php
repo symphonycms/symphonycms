@@ -83,15 +83,6 @@
 
 			$wrapper->appendChild($this->buildPublishLabel());
 
-			// Update script will need to port description to the publish label
-			// as essentially they are the same thing ^BA
-
-			## Long Description
-			// $label = Widget::Label(__('Long Description'));
-			// $label->appendChild(new XMLElement('i', __('Optional')));
-			// $label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][description]', $this->get('description')));
-			// $wrapper->appendChild($label);
-
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 
 			## Checkbox Default State
@@ -116,7 +107,6 @@
 
 			$fields['field_id'] = $id;
 			$fields['default_state'] = ($this->get('default_state') ? $this->get('default_state') : 'off');
-			//if(trim($this->get('description')) != '') $fields['description'] = $this->get('description');
 
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
