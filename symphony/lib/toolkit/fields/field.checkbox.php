@@ -5,9 +5,7 @@
 	 */
 	/**
 	 * Checkbox field simulates a HTML checkbox field, in that it represents a
-	 * simple yes/no field. Optionally a Developer can give a Checkbox field a
-	 * long description for the Publish page, as well as referencing the Checkbox
-	 * field with it's short name.
+	 * simple yes/no field.
 	 */
 	Class fieldCheckbox extends Field {
 
@@ -50,6 +48,10 @@
 		}
 
 		public function allowDatasourceOutputGrouping(){
+			return true;
+		}
+
+		public function allowDatasourceParamOutput(){
 			return true;
 		}
 
@@ -154,7 +156,11 @@
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
-			return ($data['value'] == 'yes' ? __('Yes') : __('No'));
+			return ($data['value'] == 'yes') ? __('Yes') : __('No');
+		}
+
+		public function getParameterPoolValue(array $data, $entry_id = null){
+			return ($data['value'] == 'yes') ? 'yes' : 'no';
 		}
 
 	/*-------------------------------------------------------------------------
