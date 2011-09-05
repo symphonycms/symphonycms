@@ -84,14 +84,15 @@
 		 * as 'last week' etc.
 		 *
 		 * @since Symphony 2.2.2
-		 * @param array $parts
-		 *  An associative array containing a date in ISO8601 format (or natural)
-		 *  with two keys, start and end.
+		 * @param array string
+		 *  The date string to be parsed
 		 * @param string $direction
 		 *  Either later or earlier, defaults to null.
 		 * @param boolean $equal_to
 		 *  If the filter is equal_to or not, defaults to false.
 		 * @return array
+		 *  An associative array containing a date in ISO8601 format (or natural)
+		 *  with two keys, start and end.
 		 */
 		public static function parseDate($string, $direction = null, $equal_to = false) {
 			$parts = array(
