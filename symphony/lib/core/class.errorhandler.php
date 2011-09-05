@@ -209,8 +209,8 @@
 	 * `GenericErrorHandler` will catch any warnings or notices thrown by PHP and
 	 * raise the errors to Exceptions so they can be dealt with by the
 	 * `GenericExceptionHandler`. The type of errors that are raised to Exceptions
-	 * depends on the `$raise` parameter and the `error_reporting` level. All errors
-	 * raised, except `E_NOTICE` and `E_STRICT` are written to the Symphony log.
+	 * depends on the `error_reporting` level. All errors raised, except
+	 * `E_NOTICE` and `E_STRICT` are written to the Symphony log.
 	 */
 	Class GenericErrorHandler {
 
@@ -220,12 +220,6 @@
 		 * @var boolean
 		 */
 		public static $enabled = true;
-
-		/**
-		 * Whether to raise all Warnings to Exceptions or not.
-		 * @var boolean
-		 */
-		public static $raise = false;
 
 		/**
 		 * An instance of the Log class, used to write errors to the log
@@ -273,19 +267,15 @@
 
 		/**
 		 * Initialise will set the error handler to be the `__CLASS__::handler`
-		 * function. This function also accepts a `$raise` parameter that when
-		 * true, all `E_WARNING` will be raised and thrown as Exceptions.
+		 * function.
 		 *
 		 * @param Log|null $Log (optional)
 		 *  An instance of a Symphony Log object to write errors to
-		 * @param string $raise
-		 *  Whether to raise `E_WARNING` errors to an Exception
 		 */
-		public static function initialise(Log $Log = null, $raise = false){
+		public static function initialise(Log $Log = null){
 			if(!is_null($Log)){
 				self::$_Log = $Log;
 			}
-			self::$raise = ($raise == 'yes') ? true : false;
 
 			set_error_handler(array(__CLASS__, 'handler'), error_reporting());
 		}
@@ -320,7 +310,7 @@
 		public static function handler($code, $message, $file = null, $line = null){
 
 			// Only log if the error won't be raised to an exception and the error is not `E_STRICT`
-			if(!self::$raise && !self::$logDisabled && !in_array($code, array(E_STRICT)) && self::$_Log instanceof Log){
+			if(!self::$logDisabled && !in_array($code, array(E_STRICT)) && self::$_Log instanceof Log){
 				self::$_Log->pushToLog(
 					sprintf(
 						'%s %s - %s%s%s',
@@ -329,7 +319,7 @@
 				);
 			}
 
-			if((self::$raise || $code != E_WARNING) && (error_reporting() !== 0)) {
+			if(error_reporting() !== 0) {
 				throw new ErrorException($message, 0, $code, $file, $line);
 			}
 		}

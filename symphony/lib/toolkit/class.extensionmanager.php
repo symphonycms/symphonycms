@@ -519,8 +519,6 @@
 		 *
 		 */
 		public static function notifyMembers($delegate, $page, array $context=array()){
-			if((int)Symphony::Configuration()->get('allow_page_subscription', 'symphony') != 1) return;
-
 			// Make sure $page is an array
 			if(!is_array($page)){
 				$page = array($page);

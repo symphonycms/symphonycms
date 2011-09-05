@@ -323,9 +323,8 @@
 
 		/**
 		 * This will set the character encoding of the connection for sending and
-		 * receiving data. This function will only run if 'runtime_character_set_alter'
-		 * is set to 'true' in the Symphony config. This is set to true by default during
-		 * the Symphony installation. If no character encoding is provided, UTF-8
+		 * receiving data. This function will run every time the database class
+		 * is being initialized. If no character encoding is provided, UTF-8
 		 * is assumed.
 		 *
 		 * @link http://au2.php.net/manual/en/function.mysql-set-charset.php

@@ -452,7 +452,6 @@ Options +FollowSymlinks -Indexes
 				catch(Exception $ex) {}
 			}
 
-
 		// Symphony 2.3
 
 			if(version_compare($existing_version, '2.3dev', '<')) {
@@ -482,6 +481,12 @@ Options +FollowSymlinks -Indexes
 					$frontend->Database->query("ALTER TABLE `tbl_fields_checkbox` DROP `description`");
 				} catch(Exception $ex) {}
 
+				unset($settings['symphony']['allow_page_subscription']);
+				unset($settings['database']['character_set']);
+				unset($settings['database']['character_encoding']);
+				unset($settings['database']['runtime_character_set_alter']);
+				unset($settings['symphony']['strict_error_handling']);
+				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 
 			$sbl_version = $frontend->Database->fetchVar('version', 0,
