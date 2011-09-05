@@ -508,10 +508,8 @@
 				$db->setPrefix($database['prefix']);
 
 				$conf = getDynamicConfiguration();
-				if($conf['database']['runtime_character_set_alter'] == '1'){
-					$db->setCharacterEncoding($conf['database']['character_encoding']);
-					$db->setCharacterSet($conf['database']['character_set']);
-				}
+				$db->setCharacterEncoding();
+				$db->setCharacterSet();
 
 				$install_log->pushToLog("MYSQL: Importing Table Schema...", E_NOTICE, true, false);
 				$error = NULL;
@@ -584,16 +582,12 @@
 
 					$conf['settings']['admin']['max_upload_size'] = '5242880';
 					$conf['settings']['symphony']['pagination_maximum_rows'] = '17';
-					$conf['settings']['symphony']['allow_page_subscription'] = '1';
 					$conf['settings']['symphony']['lang'] = Lang::get();
 					$conf['settings']['symphony']['pages_table_nest_children'] = 'no';
 					$conf['settings']['log']['archive'] = '1';
 					$conf['settings']['log']['maxsize'] = '102400';
 					$conf['settings']['image']['cache'] = '1';
 					$conf['settings']['image']['quality'] = '90';
-					$conf['settings']['database']['character_set'] = 'utf8';
-					$conf['settings']['database']['character_encoding'] = 'utf8';
-					$conf['settings']['database']['runtime_character_set_alter'] = '1';
 					$conf['settings']['public']['display_event_xml_in_source'] = 'no';
 				}
 
