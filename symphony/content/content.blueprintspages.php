@@ -16,7 +16,7 @@
 
 	class contentBlueprintsPages extends AdministrationPage {
 
-		protected $_errors = array();
+		public $_errors = array();
 		protected $_hilights = array();
 
 		public function __viewIndex() {

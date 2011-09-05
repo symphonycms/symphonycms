@@ -14,7 +14,7 @@
 
 	class contentSystemPreferences extends AdministrationPage {
 
-		protected $_errors = array();
+		public $_errors = array();
 
 		## Overload the parent 'view' function since we dont need the switchboard logic
 		public function view() {

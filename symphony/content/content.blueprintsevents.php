@@ -13,7 +13,7 @@
 
 	Class contentBlueprintsEvents extends AdministrationPage {
 
-		protected $_errors = array();
+		public $_errors = array();
 
 		public function __viewNew(){
 			$this->__form();

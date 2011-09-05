@@ -14,7 +14,7 @@
 
 	Class contentBlueprintsComponents extends AdministrationPage{
 
-		protected $_errors = array();
+		public $_errors = array();
 
 		public function view(){
 			$this->setPageType('forms');

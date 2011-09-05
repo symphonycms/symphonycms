@@ -14,7 +14,7 @@
 
 	Class contentBlueprintsSections extends AdministrationPage{
 
-		protected $_errors = array();
+		public $_errors = array();
 
 		public function __viewIndex(){
 			$this->setPageType('table');
