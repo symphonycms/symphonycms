@@ -14,6 +14,8 @@
 
 	Class contentBlueprintsComponents extends AdministrationPage{
 
+		protected $_errors = array();
+
 		public function view(){
 			$this->setPageType('forms');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Components'))));

@@ -394,7 +394,7 @@
 					require_once($path);
 				}
 
-				self::$_pool[$type] = new $classname($this);
+				self::$_pool[$type] = new $classname;
 
 				if(self::$_pool[$type]->canShowTableColumn() && !self::$_pool[$type]->get('show_column')){
 					self::$_pool[$type]->set('show_column', 'yes');

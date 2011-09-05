@@ -158,7 +158,7 @@
 		 */
 		public static function fetchInstalledVersion($name){
 			self::__buildExtensionList();
-			return self::$_extensions[$name]['version'];
+			return isset(self::$_extensions[$name]) ? self::$_extensions[$name]['version'] : null;
 		}
 
 		/**

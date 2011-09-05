@@ -11,7 +11,9 @@
 	require_once(TOOLKIT . '/class.eventmanager.php');
 	require_once(TOOLKIT . '/class.sectionmanager.php');
 
-	Class contentBlueprintsEvents extends AdministrationPage{
+	Class contentBlueprintsEvents extends AdministrationPage {
+
+		protected $_errors = array();
 
 		public function __viewNew(){
 			$this->__form();

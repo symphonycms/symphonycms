@@ -14,6 +14,8 @@
 
 	Class contentBlueprintsDatasources extends AdministrationPage{
 
+		protected $_errors = array();
+
 		## Both the Edit and New pages need the same form
 		public function __viewNew(){
 			$this->__form();

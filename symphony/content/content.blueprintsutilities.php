@@ -12,6 +12,7 @@
 
 	Class contentBlueprintsUtilities extends AdministrationPage{
 
+		protected $_errors = array();
 		public $_existing_file;
 
 		public function __construct(){

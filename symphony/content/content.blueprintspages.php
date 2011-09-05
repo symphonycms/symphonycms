@@ -15,7 +15,8 @@
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 
 	class contentBlueprintsPages extends AdministrationPage {
-		protected $_errors;
+
+		protected $_errors = array();
 		protected $_hilights = array();
 
 		public function __viewIndex() {
@@ -303,20 +304,21 @@
 			}
 
 			// Status message:
-			$flag = $this->_context[2];
-			if(isset($flag)){
+			if(isset($this->_context[2])){
+				$flag = $this->_context[2];
+				$link_suffix = '';
+
 				if(isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])){
 					$link_suffix = "?parent=" . $_REQUEST['parent'];
 				}
 
-				elseif($nesting == true && isset($existing) && !is_null($existing['parent'])){
+				else if($nesting == true && isset($existing) && !is_null($existing['parent'])){
 					$link_suffix = '?parent=' . $existing['parent'];
 				}
 
 				switch($flag){
 
 					case 'saved':
-
 						$this->pageAlert(
 							__(
 								'Page updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Pages</a>',
@@ -331,7 +333,6 @@
 						break;
 
 					case 'created':
-
 						$this->pageAlert(
 							__(
 								'Page created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Pages</a>',
@@ -366,7 +367,7 @@
 						p.type ASC
 				");
 
-				$fields['type'] = @implode(', ', $types);
+				$fields['type'] = implode(', ', $types);
 				$fields['data_sources'] = preg_split('/,/i', $fields['data_sources'], -1, PREG_SPLIT_NO_EMPTY);
 				$fields['events'] = preg_split('/,/i', $fields['events'], -1, PREG_SPLIT_NO_EMPTY);
 			}

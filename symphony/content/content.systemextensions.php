@@ -60,7 +60,7 @@
 					}
 
 					$td4 = Widget::TableData(NULL);
-					if($about['author'][0] && is_array($about['author'][0])) {
+					if(isset($about['author'][0]) && is_array($about['author'][0])) {
 						$authors = '';
 						foreach($about['author'] as $i => $author) {
 
