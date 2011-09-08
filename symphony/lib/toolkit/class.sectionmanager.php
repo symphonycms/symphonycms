@@ -4,9 +4,9 @@
 	 * @package toolkit
 	 */
 	/**
-	 * The SectionManager is responsible for managing all Sections in a Symphony
-	 * installation. The SectionManager contains basic CRUD operations for Sections.
-	 * Sections are stored in the database in `tbl_sections`.
+	 * The `SectionManager` is responsible for managing all Sections in a Symphony
+	 * installation by exposing basic CRUD operations. Sections are stored in the
+	 * database in `tbl_sections`.
 	 */
 	include_once(TOOLKIT . '/class.section.php');
 
@@ -14,26 +14,28 @@
 
 		/**
 		 * An array of all the objects that the Manager is responsible for.
-		 * Defaults to an empty array.
+		 *
 		 * @var array
+		 *   Defaults to an empty array.
 		 */
 		protected static $_pool = array();
 
 		/**
 		 * Takes an associative array of Section settings and creates a new
 		 * entry in the `tbl_sections` table, returning the ID of the Section.
-		 * The ID of the section is generated using auto_increment
+		 * The ID of the section is generated using auto_increment and returned
+		 * as the Section ID.
 		 *
 		 * @param array $settings
-		 *	An associative of settings for a section with the key being
-		 *	a column name from `tbl_sections`
+		 *  An associative of settings for a section with the key being
+		 *  a column name from `tbl_sections`
 		 * @return integer
+		 *  The newly created Section's ID
 		 */
 		public static function add($settings){
 			if(!Symphony::Database()->insert($settings, 'tbl_sections')) return false;
-			$section_id = Symphony::Database()->getInsertID();
 
-			return $section_id;
+			return Symphony::Database()->getInsertID();
 		}
 
 		/**
@@ -43,10 +45,10 @@
 		 * prior to updating the Section
 		 *
 		 * @param integer $section_id
-		 *	The ID of the Section to update
+		 *  The ID of the Section to edit
 		 * @param array $settings
-		 *	An associative of settings for a section with the key being
-		 *	a column name from `tbl_sections`
+		 *  An associative of settings for a section with the key being
+		 *  a column name from `tbl_sections`
 		 * @return boolean
 		 */
 		public static function edit($section_id, $settings){
@@ -57,10 +59,12 @@
 
 		/**
 		 * Deletes a Section by Section ID, removing all entries, fields, the
-		 * Section and then any Section Associations in that order
+		 * Section and any Section Associations in that order
 		 *
 		 * @param integer $section_id
-		 *	The ID of the Section to delete
+		 *  The ID of the Section to delete
+		 * @param boolean
+		 *  Returns true when completed
 		 */
 		public static function delete($section_id){
 			$details = Symphony::Database()->fetchRow(0, "SELECT `sortorder` FROM tbl_sections WHERE `id` = '$section_id'");
@@ -97,15 +101,15 @@
 		 * their name
 		 *
 		 * @param integer|array $section_id
-		 *	The ID of the section to return, or an array of ID's. Defaults to null
+		 *  The ID of the section to return, or an array of ID's. Defaults to null
 		 * @param string $order
-		 *	If `$section_id` is omitted, this is the sortorder of the returned
-		 *	objects. Defaults to ASC, other options id DESC
+		 *  If `$section_id` is omitted, this is the sortorder of the returned
+		 *  objects. Defaults to ASC, other options id DESC
 		 * @param string $sortfield
-		 *	The name of the column in the `tbl_sections` table to sort
-		 *	on. Defaults to name
+		 *  The name of the column in the `tbl_sections` table to sort
+		 *  on. Defaults to name
 		 * @return Section|array
-		 *	A Section object or an array of Section objects
+		 *  A Section object or an array of Section objects
 		 */
 		public static function fetch($section_id = null, $order = 'ASC', $sortfield = 'name'){
 			$returnSingle = false;
@@ -161,9 +165,9 @@
 		 * Return a Section ID by the handle
 		 *
 		 * @param string $handle
-		 *	The handle of the section
+		 *  The handle of the section
 		 * @return integer
-		 *	The Section ID
+		 *  The Section ID
 		 */
 		public static function fetchIDFromHandle($handle){
 			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_sections` WHERE `handle` = '$handle' LIMIT 1");

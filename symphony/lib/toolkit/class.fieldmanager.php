@@ -159,9 +159,9 @@
 		 * Fields from a Section also. There are several parameters that can be used to fetch
 		 * fields by their Type, Location, by a Field Constant or with a custom WHERE query.
 		 *
-		 * @param integer $id
+		 * @param integer|array $id
 		 *  The ID of the field to retrieve. Defaults to null which will return multiple field
-		 *  objects
+		 *  objects. Since Symphony 2.3, `$id` will accept an array of Field ID's
 		 * @param integer $section_id
 		 *  The ID of the section to look for the fields in. Defaults to null which will allow
 		 *  all fields in the Symphony installation to be searched on.
