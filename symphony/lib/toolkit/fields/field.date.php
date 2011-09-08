@@ -451,23 +451,27 @@
 	-------------------------------------------------------------------------*/
 
 		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation=false) {
-			if(self::isFilterRegex($data[0])) return parent::buildDSRetrievalSQL($data, $joins, $where, $andOperation);
-
-			$parsed = array();
-
-			// For the filter provided, loop over each piece
-			foreach($data as $string) {
-				$type = self::parseFilter($string);
-
-				if($type == self::ERROR) return false;
-
-				if(!is_array($parsed[$type])) $parsed[$type] = array();
-
-				$parsed[$type][] = $string;
+			if(self::isFilterRegex($data[0])) {
+				$this->buildRegexSQL($data[0], array('value'), $joins, $where);
 			}
 
-			foreach($parsed as $value) {
-				$this->buildRangeFilterSQL($value, $joins, $where, $andOperation);
+			else {
+				$parsed = array();
+
+				// For the filter provided, loop over each piece
+				foreach($data as $string) {
+					$type = self::parseFilter($string);
+
+					if($type == self::ERROR) return false;
+
+					if(!is_array($parsed[$type])) $parsed[$type] = array();
+
+					$parsed[$type][] = $string;
+				}
+
+				foreach($parsed as $value) {
+					$this->buildRangeFilterSQL($value, $joins, $where, $andOperation);
+				}
 			}
 
 			return true;

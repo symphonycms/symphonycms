@@ -283,9 +283,7 @@
 	}
 
 	else {
-
 		if(!$this->_param_output_only){
-			$result = new XMLElement($this->dsParamROOTELEMENT);
 			$result->appendChild($sectioninfo);
 
 			if($include_pagination_element){

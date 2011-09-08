@@ -267,10 +267,9 @@
 				";
 				$where .= "
 					AND (
-						 t{$field_id}_{$this->_key}.author_id {$regex} '{$pattern}'
-						 OR
-						 t{$field_id}_{$this->_key}_authors.username {$regex} '{$pattern}'
-						)
+						t{$field_id}_{$this->_key}.author_id {$regex} '{$pattern}'
+						OR t{$field_id}_{$this->_key}_authors.username {$regex} '{$pattern}'
+					)
 				";
 
 			} elseif ($andOperation) {

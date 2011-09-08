@@ -894,60 +894,108 @@
 		}
 
 		/**
-		 * Test whether the input string is a regular expression.
+		 * Test whether the input string is a regular expression, by searching
+		 * for the prefix of `regexp:` or `not-regexp:` in the given `$string`.
 		 *
 		 * @param string $string
-		 *	the string to test.
+		 *  The string to test.
 		 * @return boolean
-		 *	true if the string is prefixed with 'regexp:', false otherwise.
+		 *  True if the string is prefixed with `regexp:` or `not-regexp:`, false otherwise.
 		 */
 		protected static function isFilterRegex($string){
 			if(preg_match('/^regexp:/i', $string) || preg_match('/^not-?regexp:/i', $string)) return true;
 		}
 
 		/**
+		 * Builds a basic REGEX statement given a FILTER. This function supports
+		 * `regexp:` or `not-regexp`. Users should keep in mind this function
+		 * uses MySQL patterns, not the usual PHP patterns, the syntax between these
+		 * flavours differs at times.
+		 *
+		 * @since Symphony 2.3
+		 * @link http://dev.mysql.com/doc/refman/5.5/en/regexp.html
+		 * @param string $filter
+		 *  The full filter, eg. `regexp: ^[a-d]`
+		 * @param array $columns
+		 *  The array of columns that need the given `$filter` applied to. The conditions
+		 *  will be added using `OR`.
+		 * @param string $joins
+		 *  A string containing any table joins for the current SQL fragment. By default
+		 *  Datasources will always join to the `tbl_entries` table, which has an alias of
+		 *  `e`. This parameter is passed by reference.
+		 * @param string $where
+		 *  A string containing the WHERE conditions for the current SQL fragment. This
+		 *  is passed by reference and is expected to be used to add additional conditions
+		 *  specifc to this field
+		 */
+		public function buildRegexSQL($filter, array $columns, &$joins, &$where) {
+			$this->_key++;
+			$field_id = $this->get('id');
+			$filter = $this->cleanValue($filter);
+
+			if (preg_match('/^regexp:/i', $filter)) {
+				$pattern = preg_replace('/^regexp:\s*/i', null, $filter);
+				$regex = 'REGEXP';
+			}
+			else {
+				$pattern = preg_replace('/^not-?regexp:\s*/i', null, $filter);
+				$regex = 'NOT REGEXP';
+			}
+
+			if(strlen($pattern) == 0) return;
+
+			$joins .= "
+				LEFT JOIN
+					`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+					ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+			";
+
+			$where .= "AND ( ";
+			foreach($columns as $key => $col) {
+				$modifier = ($key === 0) ? '' : 'OR';
+
+				$where .= "
+					{$modifier} t{$field_id}_{$this->_key}.{$col} {$regex} '{$pattern}'
+				";
+			}
+			$where .= ")";
+		}
+
+		/**
 		 * Construct the SQL statement fragments to use to retrieve the data of this
 		 * field when utilized as a data source.
 		 *
+		 * @see toolkit.Datasource#__determineFilterType
 		 * @param array $data
-		 *	the supplied form data to use to construct the query from
+		 *  An array of the data that contains the values for the filter as specified
+		 *  in the datasource editor. The value that is entered in the datasource editor
+		 *  is made into an array by using + or , to separate the filter.
 		 * @param string $joins
-		 *	the join sql statement fragment to append the additional join sql to.
+		 *  A string containing any table joins for the current SQL fragment. By default
+		 *  Datasources will always join to the `tbl_entries` table, which has an alias of
+		 *  `e`. This parameter is passed by reference.
 		 * @param string $where
-		 *	the where condition sql statement fragment to which the additional
-		 *	where conditions will be appended.
+		 *  A string containing the WHERE conditions for the current SQL fragment. This
+		 *  is passed by reference and is expected to be used to add additional conditions
+		 *  specifc to this field
 		 * @param boolean $andOperation (optional)
-		 *	true if the values of the input data should be appended as part of
-		 *	the where condition. this defaults to false.
+		 *  This parameter defines whether the `$data` provided should be treated as
+		 *  AND or OR conditions. This parameter will be set to true if $data used a
+		 *  + to separate the values, otherwise it will be false. It is false by default.
 		 * @return boolean
-		 *	true if the construction of the sql was successful, false otherwise.
+		 *  True if the construction of the SQL was successful, false otherwise.
 		 */
 		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
 
+			// REGEX filtering is a special case, and will only work on the first item
+			// in the array. You cannot specify multiple filters when REGEX is involved.
 			if (self::isFilterRegex($data[0])) {
-				$this->_key++;
-
-				if (preg_match('/^regexp:/i', $data[0])) {
-					$pattern = preg_replace('/^regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'REGEXP';
-				} else {
-					$pattern = preg_replace('/^not-?regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'NOT REGEXP';
-				}
-
-				if(strlen($pattern) == 0) return;
-
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND t{$field_id}_{$this->_key}.value {$regex} '{$pattern}'
-				";
-
+				$this->buildRegexSQL($data[0], array('value'), $joins, $where);
 			}
+
+			// AND operation, iterates over `$data` and uses a new JOIN for
+			// every item.
 			else if ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
@@ -961,11 +1009,11 @@
 						AND t{$field_id}_{$this->_key}.value = '{$value}'
 					";
 				}
-
 			}
-			else {
-				if (!is_array($data)) $data = array($data);
 
+			// Default logic, this will use a single JOIN statement and collapse
+			// `$data` into a string to be used inconjuction with IN
+			else {
 				foreach ($data as &$value) {
 					$value = $this->cleanValue($value);
 				}

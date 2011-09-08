@@ -255,36 +255,17 @@
 		Filtering:
 	-------------------------------------------------------------------------*/
 
-		public function buildDSRetrievalSQL($data, &$joins, &$where) {
+		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
 
 			if (self::isFilterRegex($data[0])) {
-				$this->_key++;
-
-				if (preg_match('/^regexp:/i', $data[0])) {
-					$pattern = preg_replace('/^regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'REGEXP';
-				} else {
-					$pattern = preg_replace('/^not-?regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'NOT REGEXP';
-				}
-
-				if(strlen($pattern) == 0) return;
-
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND t{$field_id}_{$this->_key}.value {$regex} '{$pattern}'
-				";
-
-			} else {
+				$this->buildRegexSQL($data[0], array('value'), $joins, $where);
+			}
+			else {
 				if (is_array($data)) $data = $data[0];
 
-				$data = $this->cleanValue($data);
 				$this->_key++;
+				$data = $this->cleanValue($data);
 				$joins .= "
 					LEFT JOIN
 						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
@@ -310,4 +291,3 @@
 		}
 
 	}
-
