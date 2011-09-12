@@ -1042,56 +1042,6 @@
 		}
 
 		/**
-		 * Compare two file structures based on their modification time. Should only
-		 * be used in the context of a sort function such as usort. For example:
-		 * `usort($files, array('General', 'filemtimeSort'));`
-		 *
-		 * @param array $f1
-		 *	the first file structure array to compare.
-		 * @param array $f2
-		 *	the second file structure array to compare `$f1` to.
-		 * @return integer
-		 *	<1, 0, >1 if `$f1` is less than, equal to or greater than `$f2`.
-		 */
-		public static function filemtimeSort($f1, $f2){
-			return filemtime($f1['path'] . '/' . $f1['name']) - filemtime($f1['path'] . '/' . $f1['name']);
-		}
-
-		/**
-		 * Compare two file structure arrays based on their name. Names are
-		 * compared alphabetically. Should only be used in the context of a
-		 * sort function such as usort. For example:
-		 * `usort($files, array('General', 'fileSort'));`
-		 *
-		 * @param array $f1
-		 *	the first file structure array to compare.
-		 * @param array $f2
-		 *	the second file structure array to compare `$f1` to.
-		 * @return integer
-		 *	<1, 0, >1 if `$f1` is less than, equal to or greater than `$f2`.
-		 */
-		public static function fileSort($f1, $f2){
-			return strcmp($f1['name'], $f2['name']);
-		}
-
-		/**
-		 * Compare two file structure arrays based on their name. Names are compared
-		 * alphabetically reversed. For example "z" is less than "a". Should only
-		 * be used in the context of a sort function such as usort. For example:
-		 * `usort($files, array('General', 'fileSortR'));`
-		 *
-		 * @param array $f1
-		 *	the first file structure array to compare.
-		 * @param array $f2
-		 *	the second file structure array to compare `$f1` to.
-		 * @return integer
-		 *	<1, 0, >1 if `$f2` is less than, equal to or greater than `$f1`.
-		 */
-		public static function fileSortR($f1, $f2){
-			return strcmp($f2['name'], $f1['name']);
-		}
-
-		/**
 		 * Count the number of words in a string. Words are delimited by "spaces".
 		 * The characters included in the set of "spaces" are:
 		 *	'&#x2002;', '&#x2003;', '&#x2004;', '&#x2005;',
