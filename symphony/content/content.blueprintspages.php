@@ -796,7 +796,7 @@
 
 						if(!$file_created) {
 							$redirect = null;
-							$this->pageAlert(
+							return $this->pageAlert(
 								__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'),
 								Alert::ERROR
 							);
@@ -810,10 +810,12 @@
 						} else {
 							$this->_errors['handle'] = __('A page with that handle already exists');
 						}
-					} elseif(empty($fields['handle'])) {
+					}
+					else if(empty($fields['handle'])) {
 						$this->_errors['handle'] = __('Please ensure handle contains at least one Latin-based alphabet.');
+					}
 					// Insert the new data:
-					} elseif(empty($current)) {
+					else if(empty($current)) {
 
 						/**
 						 * Just prior to creating a new Page record in `tbl_pages`, provided
@@ -880,7 +882,7 @@
 						Symphony::ExtensionManager()->notifyMembers('PagePreEdit', '/blueprints/pages/', array('page_id' => $page_id, 'fields' => &$fields));
 
 						if(!Symphony::Database()->update($fields, 'tbl_pages', "`id` = '$page_id'")) {
-							$this->pageAlert(
+							return $this->pageAlert(
 								__(
 									'Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.',
 									array(
@@ -1161,7 +1163,7 @@
 			}
 			else{
 				$data = file_get_contents($old);
-				@unlink($old);
+				General::deleteFile($old);
 			}
 
 			/**
@@ -1204,7 +1206,7 @@
 			if(!file_exists($file)) return true;
 
 			// Delete it:
-			if(@unlink($file)) return true;
+			if(General::deleteFile($file)) return true;
 
 			return false;
 		}

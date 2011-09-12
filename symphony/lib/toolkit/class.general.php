@@ -836,7 +836,7 @@
 		 *	required permissions set. false, otherwise.
 		 */
 		public static function writeFile($file, $data, $perm = 0644, $mode = 'w'){
-			if(!is_writable(dirname($file)) && (!is_readable($file) || !is_writable($file))) {
+			if((!is_writable(dirname($file)) || !is_readable(dirname($file))) && (!is_readable($file) || !is_writable($file))) {
 				return false;
 			}
 
