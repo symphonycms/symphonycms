@@ -1110,6 +1110,8 @@
 				$filter = NULL;
 				$elements = NULL;
 
+				$placeholder = '<!-- GRAB -->';
+
 				switch($source){
 
 					case 'authors':
@@ -1124,7 +1126,7 @@
 						$params['paramoutput'] = $fields['param'];
 						$params['sort'] = $fields['sort'];
 
-						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.author.php');", $dsShell);
+						$dsShell = str_replace($placeholder, $placeholder . self::CRLF . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.author.php');", $dsShell);
 
 						break;
 
@@ -1136,7 +1138,7 @@
 						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
 						$params['requiredparam'] = trim($fields['required_url_param']);
 
-						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.navigation.php');", $dsShell);
+						$dsShell = str_replace($placeholder, $placeholder . self::CRLF . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.navigation.php');", $dsShell);
 
 						break;
 
@@ -1183,7 +1185,7 @@
 						$params['cache'] = $fields['dynamic_xml']['cache'];
 						$params['timeout'] = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : '6');
 
-						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.dynamic_xml.php');", $dsShell);
+						$dsShell = str_replace($placeholder, $placeholder . self::CRLF . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.dynamic_xml.php');", $dsShell);
 
 						break;
 
@@ -1194,7 +1196,7 @@
 						$params['cache'] = $fields['remote_json']['cache'];
 						$params['timeout'] = (isset($fields['remote_json']['timeout']) ? (int)$fields['remote_json']['timeout'] : '6');
 
-						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.remote_json.php');", $dsShell);
+						$dsShell = str_replace($placeholder, $placeholder . self::CRLF . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.remote_json.php');", $dsShell);
 
 						break;
 
@@ -1211,7 +1213,7 @@
 							'$this->dsSTATIC = \'%s\';',
 							addslashes(trim($fields['static_xml']))
 						);
-						$dsShell = str_replace('<!-- GRAB -->', $value . PHP_EOL . "include(TOOLKIT . '/data-sources/datasource.static.php');", $dsShell);
+						$dsShell = str_replace($placeholder, $placeholder . self::CRLF . "\t\t\t\t" . $value . PHP_EOL . "include(TOOLKIT . '/data-sources/datasource.static.php');", $dsShell);
 						break;
 
 					default:
@@ -1240,7 +1242,7 @@
 
 						if ($params['associatedentrycounts'] == NULL) $params['associatedentrycounts'] = 'no';
 
-						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.section.php');", $dsShell);
+						$dsShell = str_replace($placeholder, $placeholder . self::CRLF . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.section.php');", $dsShell);
 
 						break;
 
@@ -1258,9 +1260,6 @@
 					$dependencies = General::array_remove_duplicates($matches[1]);
 					$dsShell = str_replace('<!-- DS DEPENDENCY LIST -->', "'" . implode("', '", $dependencies) . "'", $dsShell);
 				}
-
-				## Remove left over placeholders
-				$dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\r\n){2,}/', '/(\t+[\r\n]){2,}/'), '', $dsShell);
 
 				if($this->_context[0] == 'new') {
 					/**
@@ -1327,6 +1326,9 @@
 					));
 				}
 
+				## Remove left over placeholders
+				$dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\r\n){2,}/', '/(\t+[\r\n]){2,}/'), '', $dsShell);
+
 				// Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file')))
 					$this->pageAlert(__('Failed to write Data source to <code>%s</code>. Please check permissions.', array(DATASOURCES)), Alert::ERROR);
@@ -1388,12 +1390,14 @@
 		public function __injectIncludedElements(&$shell, $elements){
 			if(!is_array($elements) || empty($elements)) return;
 
-			$shell = str_replace('<!-- INCLUDED ELEMENTS -->', "public \$dsParamINCLUDEDELEMENTS = array(" . self::CRLF . "\t\t\t\t'" . implode("'," . self::CRLF . "\t\t\t\t'", $elements) . "'" . self::CRLF . '		);' . self::CRLF, $shell);
+			$placeholder = '<!-- INCLUDED ELEMENTS -->';
+			$shell = str_replace($placeholder, "public \$dsParamINCLUDEDELEMENTS = array(" . self::CRLF . "\t\t\t\t'" . implode("'," . self::CRLF . "\t\t\t\t'", $elements) . "'" . self::CRLF . '		);' . self::CRLF . "\t\t" . $placeholder, $shell);
 		}
 
 		public function __injectFilters(&$shell, $filters){
 			if(!is_array($filters) || empty($filters)) return;
 
+			$placeholder = '<!-- FILTERS -->';
 			$string = 'public $dsParamFILTERS = array(' . self::CRLF;
 
 			foreach($filters as $key => $val){
@@ -1401,9 +1405,9 @@
 				$string .= "\t\t\t\t'$key' => '" . addslashes($val) . "'," . self::CRLF;
 			}
 
-			$string .= "\t\t);" . self::CRLF;
+			$string .= "\t\t);" . self::CRLF . "\t\t" . $placeholder;
 
-			$shell = str_replace('<!-- FILTERS -->', trim($string), $shell);
+			$shell = str_replace($placeholder, trim($string), $shell);
 		}
 
 		public function __injectAboutInformation(&$shell, $details){
@@ -1426,7 +1430,8 @@
 				}
 			}
 
-			$shell = str_replace('<!-- VAR LIST -->', trim($var_list), $shell);
+			$placeholder = '<!-- VAR LIST -->';
+			$shell = str_replace($placeholder, trim($var_list) . self::CRLF . "\t\t" . $placeholder, $shell);
 		}
 
 		public function __appendAuthorFilter(&$wrapper, $h4_label, $name, $value=NULL, $templateOnly=true){
