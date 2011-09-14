@@ -340,7 +340,7 @@
 
 			// New entry
 			if(is_null($data) && is_null($error) && $this->get('pre_populate') == 'yes') {
-				$value = DateTimeObj::format('now', __SYM_DATETIME_FORMAT__);
+				$value = DateTimeObj::format('now', DateTimeObj::getSetting('datetime_format'));
 			}
 
 			// Error entry, display original data
@@ -350,7 +350,7 @@
 
 			// Empty entry
 			else if(isset($data['value'])) {
-				$value = DateTimeObj::format($data['value'], __SYM_DATETIME_FORMAT__);
+				$value = DateTimeObj::format($data['value'], DateTimeObj::getSetting('datetime_format'));
 			}
 
 			$label = Widget::Label($this->label());
@@ -436,7 +436,7 @@
 			$value = null;
 
 			if(isset($data['value'])) {
-				$value = DateTimeObj::format($data['value'], __SYM_DATETIME_FORMAT__, true);
+				$value = DateTimeObj::format($data['value'], DateTimeObj::getSetting('datetime_format'), true);
 			}
 
 			return parent::prepareTableValue(array('value' => $value), $link, $entry_id = null);

@@ -6,10 +6,94 @@
 
 	 /**
 	  * The DateTimeObj provides static functions regarding dates in Symphony.
-	  * Symphony will set the default timezone of the system using it's configuration
-	  * values.
+	  * Symphony will set the default timezone of the system using the value from
+	  * the Configuration values. Alternatively a new settings can be set using the
+	  * `setSettings` function. Symphony parses all input dates against the Configuration
+	  * date formats by default for better support with non English dates.
 	  */
 	Class DateTimeObj {
+
+		/**
+		 * Holds the various settings for the formats that the `DateTimeObj` should
+		 * use when parsing input dates.
+		 *
+		 * @since Symphony 2.3
+		 * @var array
+		 */
+		private static $settings = array();
+
+		/**
+		 * This function takes an array of settings for `DateTimeObj` to use when parsing
+		 * input dates. The following settings are supported, `time_format`, `date_format`,
+		 * `datetime_separator` and `timezone`. This equates to Symphony's default `region`
+		 * group set in the `Configuration` class. If any of these values are not provided
+		 * the class will fallback to existing `self::$settings` values or finally
+		 * the Symphony `__*_FORMAT__` constants
+		 *
+		 * @since Symphony 2.3
+		 * @param array $settings
+		 *  An associative array of formats for this class to use to format
+		 *  dates
+		 */
+		public static function setSettings(array $settings = array()) {
+			// Date format
+			if(isset($settings['date_format'])) {
+				self::$settings['date_format'] = $settings['date_format'];
+			}
+			else if (!isset(self::$settings['date_format'])) {
+				self::$settings['date_format'] = __SYM_DATE_FORMAT__;
+			}
+
+			// Time format
+			if(isset($settings['time_format'])) {
+				self::$settings['time_format'] = $settings['time_format'];
+			}
+			else if (!isset(self::$settings['time_format'])) {
+				self::$settings['time_format'] = __SYM_TIME_FORMAT__;
+			}
+
+			// Datetime separator
+			if(isset($settings['datetime_separator'])) {
+				self::$settings['datetime_separator'] = $settings['datetime_separator'];
+			}
+			else if (!isset(self::$settings['datetime_separator'])) {
+				self::$settings['datetime_separator'] = ' ';
+			}
+
+			// Datetime format
+			if(isset($settings['datetime_format'])) {
+				self::$settings['datetime_format'] = $settings['datetime_format'];
+			}
+			else {
+				self::$settings['datetime_format'] = self::$settings['date_format'] . self::$settings['datetime_separator'] . self::$settings['time_format'];
+			}
+
+			// Timezone
+			if(isset($settings['timezone'])) {
+				self::setDefaultTimezone($settings['timezone']);
+			}
+		}
+
+		/**
+		 * Accessor function for the settings of the DateTimeObj. Currently
+		 * the available settings are `time_format`, `date_format`,
+		 * `datetime_format` and `datetime_separator`. If `$name` is not
+		 * provided, the entire `$settings` array is returned.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $name
+		 * @return array|string|null
+		 *  If `$name` is omitted this function returns array.
+		 *  If `$name` is not set, this fucntion returns `null`
+		 *  If `$name` is set, this function returns string
+		 */
+		public static function getSetting($name = null) {
+			if(is_null($name)) return self::$settings;
+
+			if(isset(self::$settings[$name])) return self::$settings[$name];
+
+			return null;
+		}
 
 		/**
 		 * Uses PHP's date_default_timezone_set function to set the system
@@ -113,17 +197,17 @@
 
 				// PHP 5.3: Apply Symphony date format using `createFromFormat`
 				if(method_exists('DateTime', 'createFromFormat')) {
-					$date = DateTime::createFromFormat(__SYM_DATETIME_FORMAT__, $string);
+					$date = DateTime::createFromFormat(self::$settings['datetime_format'], $string);
 					if($date === false) {
-						$date = DateTime::createFromFormat(__SYM_DATE_FORMAT__, $string);
+						$date = DateTime::createFromFormat(self::$settings['date_format'], $string);
 					}
 				}
 
 				// PHP 5.2: Fallback to `strptime`
 				else {
-					$date = strptime($string, DateTimeObj::dateFormatToStrftime(__SYM_DATETIME_FORMAT__));
+					$date = strptime($string, DateTimeObj::dateFormatToStrftime(self::$settings['datetime_format']));
 					if($date === false) {
-						$date = strptime($string, DateTimeObj::dateFormatToStrftime(__SYM_DATE_FORMAT__));
+						$date = strptime($string, DateTimeObj::dateFormatToStrftime(self::$settings['date_format']));
 					}
 
 					if(is_array($date)) {
