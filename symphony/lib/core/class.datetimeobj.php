@@ -183,7 +183,7 @@
 
 			// Timestamp
 			elseif(is_numeric($string)) {
-				$date = new DateTime(date(DateTime::ISO8601, $string));
+				$date = new DateTime('@' . $string);
 			}
 
 			// Attempt to parse the date provided against the Symphony configuration setting
