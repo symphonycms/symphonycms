@@ -118,10 +118,10 @@
 		 *	Returns true for valid dates, otherwise false
 		 */
 		public static function validate($string) {
-			$string = trim($string);
+			$date = new DateTime(Lang::standardizeDate($string));
 
-			// String is empty or not a valid date string
-			if(empty($string) || !strtotime(Lang::standardizeDate($string))) {
+			// String is empty or not a valid date
+			if(empty($string) || $date === false) {
 				return false;
 			}
 
