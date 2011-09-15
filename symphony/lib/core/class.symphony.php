@@ -112,11 +112,10 @@
 			self::$Configuration = new Configuration(true);
 			self::$Configuration->setArray($settings);
 
-			DateTimeObj::setDefaultTimezone(self::$Configuration->get('timezone', 'region'));
-
 			define_safe('__SYM_DATE_FORMAT__', self::$Configuration->get('date_format', 'region'));
 			define_safe('__SYM_TIME_FORMAT__', self::$Configuration->get('time_format', 'region'));
 			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::$Configuration->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
+			DateTimeObj::setSettings(self::$Configuration->get('region'));
 
 			// Initialize language management
 			Lang::initialize();

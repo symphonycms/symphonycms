@@ -84,14 +84,15 @@
 		 * as 'last week' etc.
 		 *
 		 * @since Symphony 2.2.2
-		 * @param array $parts
-		 *  An associative array containing a date in ISO8601 format (or natural)
-		 *  with two keys, start and end.
+		 * @param array $string
+		 *  The date string to be parsed
 		 * @param string $direction
 		 *  Either later or earlier, defaults to null.
 		 * @param boolean $equal_to
 		 *  If the filter is equal_to or not, defaults to false.
 		 * @return array
+		 *  An associative array containing a date in ISO8601 format (or natural)
+		 *  with two keys, start and end.
 		 */
 		public static function parseDate($string, $direction = null, $equal_to = false) {
 			$parts = array(
@@ -365,7 +366,7 @@
 
 			// New entry
 			if(is_null($data) && is_null($error) && $this->get('pre_populate') == 'yes') {
-				$value = DateTimeObj::format('now', __SYM_DATETIME_FORMAT__);
+				$value = DateTimeObj::format('now', DateTimeObj::getSetting('datetime_format'));
 			}
 
 			// Error entry, display original data
@@ -374,8 +375,8 @@
 			}
 
 			// Empty entry
-			else if(isset($data['value']) && !is_null($data['value'])) {
-				$value = DateTimeObj::format($data['value'], __SYM_DATETIME_FORMAT__);
+			else if(isset($data['value'])) {
+				$value = DateTimeObj::format($data['value'], DateTimeObj::getSetting('datetime_format'));
 			}
 
 			$label = Widget::Label($this->get('label'));
@@ -422,8 +423,8 @@
 			if(!is_null($timestamp)) {
 				return array(
 					'value' => DateTimeObj::get('c', $timestamp),
-					'local' => strtotime(DateTimeObj::get('c', $timestamp)),
-					'gmt' => strtotime(DateTimeObj::getGMT('c', $timestamp))
+					'local' => DateTimeObj::get('U', $timestamp),
+					'gmt' => DateTimeObj::getGMT('U', $timestamp)
 				);
 			}
 
@@ -460,8 +461,8 @@
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null) {
 			$value = null;
 
-			if(isset($data['value']) && !is_null($data['value'])) {
-				$value = DateTimeObj::format($data['value'], __SYM_DATETIME_FORMAT__, true);
+			if(isset($data['value'])) {
+				$value = DateTimeObj::format($data['value'], DateTimeObj::getSetting('datetime_format'), true);
 			}
 
 			return parent::prepareTableValue(array('value' => $value), $link, $entry_id = null);
