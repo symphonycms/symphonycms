@@ -118,7 +118,12 @@
 		 *	Returns true for valid dates, otherwise false
 		 */
 		public static function validate($string) {
-			$date = new DateTime(Lang::standardizeDate($string));
+			try {
+				$date = new DateTime(Lang::standardizeDate($string));
+			}
+			catch(Exception $ex) {
+				return false;
+			}
 
 			// String is empty or not a valid date
 			if(empty($string) || $date === false) {
@@ -188,8 +193,8 @@
 
 			// Attempt to parse the date provided against the Symphony configuration setting
 			// in an effort to better support multilingual date formats. Should this fail
-			// this block will fallback to using `strtotime`, which will parse the date assuming
-			// it's in an English format
+			// this block will fallback to just passing the date to DateTime constructor,
+			// which will parse the date assuming it's in an English format
 			else {
 				// Standardize date
 				// Convert date string to English

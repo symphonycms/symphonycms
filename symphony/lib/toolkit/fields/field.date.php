@@ -397,8 +397,8 @@
 			if(!is_null($timestamp)) {
 				return array(
 					'value' => DateTimeObj::get('c', $timestamp),
-					'local' => strtotime(DateTimeObj::get('c', $timestamp)),
-					'gmt' => strtotime(DateTimeObj::getGMT('c', $timestamp))
+					'local' => DateTimeObj::get('U', $timestamp),
+					'gmt' => DateTimeObj::getGMT('U', $timestamp)
 				);
 			}
 

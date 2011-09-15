@@ -544,7 +544,7 @@
 				}
 
 				// Replace custom date and time separator with space:
-				// This is important, otherwise PHP's strtotime() function may break
+				// This is important, otherwise the `DateTime` constructor may break
 				$separator = Symphony::$Configuration->get('datetime_separator', 'region');
 				if($separator != ' ') {
 					$string = str_replace($separator, ' ', $string);
