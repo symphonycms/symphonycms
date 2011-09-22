@@ -27,8 +27,7 @@
 		 * input dates. The following settings are supported, `time_format`, `date_format`,
 		 * `datetime_separator` and `timezone`. This equates to Symphony's default `region`
 		 * group set in the `Configuration` class. If any of these values are not provided
-		 * the class will fallback to existing `self::$settings` values or finally
-		 * the Symphony `__*_FORMAT__` constants
+		 * the class will fallback to existing `self::$settings` values
 		 *
 		 * @since Symphony 2.2.4
 		 * @param array $settings
@@ -40,16 +39,10 @@
 			if(isset($settings['date_format'])) {
 				self::$settings['date_format'] = $settings['date_format'];
 			}
-			else if (!isset(self::$settings['date_format'])) {
-				self::$settings['date_format'] = __SYM_DATE_FORMAT__;
-			}
 
 			// Time format
 			if(isset($settings['time_format'])) {
 				self::$settings['time_format'] = $settings['time_format'];
-			}
-			else if (!isset(self::$settings['time_format'])) {
-				self::$settings['time_format'] = __SYM_TIME_FORMAT__;
 			}
 
 			// Datetime separator
