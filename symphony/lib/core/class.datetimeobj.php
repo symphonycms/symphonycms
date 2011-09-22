@@ -216,6 +216,12 @@
 					}
 
 					if(is_array($date)) {
+						// Check if there was pm, in which tm_hour needs to be fast forwarded
+						// (as long as it's not already 12pm)
+						if(isset($date['unparsed']) && trim($date['unparsed']) == 'pm' && $date['tm_hour'] != 12) {
+							$date['tm_hour'] = $date['tm_hour'] + 12;
+						}
+
 						$date = date(DateTime::ISO8601, mktime(
 							// Time
 							$date['tm_hour'], $date['tm_min'], $date['tm_sec'],
