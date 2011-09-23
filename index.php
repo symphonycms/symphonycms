@@ -24,7 +24,6 @@
 
 	$output = renderer($renderer)->display(getCurrentPage());
 
-	header(sprintf('Content-Length: %d', strlen($output)));
 	echo $output;
 
 	exit;
