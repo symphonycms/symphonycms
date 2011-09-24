@@ -218,8 +218,8 @@
 
 							$value = $field->prepareTableValue($data, ($column == $link_column) ? $link : null, $entry->get('id'));
 
-							if (!is_object($value) && strlen(trim($value)) == 0) {
-								$value = ($column == $link_column) ? $link->generate() : __('None');
+							if (!is_object($value) && (strlen(trim($value)) == 0 || $value == __('None'))) {
+								$value = ($position == 0 ? $link->generate() : __('None'));
 							}
 
 							if ($value == __('None')) {

@@ -27,8 +27,7 @@
 		 * input dates. The following settings are supported, `time_format`, `date_format`,
 		 * `datetime_separator` and `timezone`. This equates to Symphony's default `region`
 		 * group set in the `Configuration` class. If any of these values are not provided
-		 * the class will fallback to existing `self::$settings` values or finally
-		 * the Symphony `__*_FORMAT__` constants
+		 * the class will fallback to existing `self::$settings` values
 		 *
 		 * @since Symphony 2.3
 		 * @param array $settings
@@ -40,16 +39,10 @@
 			if(isset($settings['date_format'])) {
 				self::$settings['date_format'] = $settings['date_format'];
 			}
-			else if (!isset(self::$settings['date_format'])) {
-				self::$settings['date_format'] = __SYM_DATE_FORMAT__;
-			}
 
 			// Time format
 			if(isset($settings['time_format'])) {
 				self::$settings['time_format'] = $settings['time_format'];
-			}
-			else if (!isset(self::$settings['time_format'])) {
-				self::$settings['time_format'] = __SYM_TIME_FORMAT__;
 			}
 
 			// Datetime separator
@@ -216,6 +209,12 @@
 					}
 
 					if(is_array($date)) {
+						// Check if there was pm, in which tm_hour needs to be fast forwarded
+						// (as long as it's not already 12pm)
+						if(isset($date['unparsed']) && trim($date['unparsed']) == 'pm' && $date['tm_hour'] != 12) {
+							$date['tm_hour'] = $date['tm_hour'] + 12;
+						}
+
 						$date = date(DateTime::ISO8601, mktime(
 							// Time
 							$date['tm_hour'], $date['tm_min'], $date['tm_sec'],
