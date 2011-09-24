@@ -148,8 +148,8 @@
 		 *  result in the current time being used
 		 * @param string $timezone (optional)
 		 *  The timezone associated with the timestamp
-		 * @return string
-		 *  The formatted date
+		 * @return string|boolean
+		 *  The formatted date, of if the date could not be parsed, false.
 		 */
 		public static function get($format, $timestamp = 'now', $timezone = null) {
 			return self::format($timestamp, $format, false, $timezone);
@@ -169,8 +169,8 @@
 		 *  Localizes the output, if true, defaults to true
 		 * @param string $timezone (optional)
 		 *  The timezone associated with the timestamp
-		 * @return string
-		 *  The formatted date
+		 * @return string|boolean
+		 *  The formatted date, of if the date could not be parsed, false.
 		 */
 		public static function format($string = 'now', $format = DateTime::ISO8601, $localize = true, $timezone = null) {
 
@@ -227,7 +227,13 @@
 
 				// Handle non-standard dates (ie. relative dates, tomorrow etc.)
 				if($date === false) {
-					$date = new DateTime($string);
+					try {
+						$date = new DateTime($string);
+					}
+					catch(Exception $ex) {
+						// Invalid date, it can't be parsed
+						return false;
+					}
 				}
 			}
 
