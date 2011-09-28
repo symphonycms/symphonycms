@@ -234,7 +234,10 @@
 					break;
 
 				case 'POST':
-					$this->_method = ($value == 1 ? 'POST' : 'GET');
+				case 'GET':
+				case 'PUT':
+				case 'DELETE':
+					$this->_method = ($value == 1 ? $opt : 'GET');
 					break;
 
 				case 'POSTFIELDS':
@@ -306,13 +309,24 @@
 					curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 				}
 
-				if(is_array($this->_headers) && !empty($this->_headers)) {
-					curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_headers);
+				switch($this->_method) {
+					case 'POST':
+						curl_setopt($ch, CURLOPT_POST, 1);
+						curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postfields);
+						break;
+					case 'PUT':
+						curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+						curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postfields);
+						$this->setopt('HTTPHEADER', array('Content-Length:' => strlen($this->_postfields)));
+						break;
+					case 'DELETE':
+						curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+						curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postfields);
+						break;
 				}
 
-				if($this->_method == 'POST') {
-					curl_setopt($ch, CURLOPT_POST, 1);
-					curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postfields);
+				if(is_array($this->_headers) && !empty($this->_headers)) {
+					curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_headers);
 				}
 
 				if(is_array($this->_custom_opt) && !empty($this->_custom_opt)){
@@ -350,7 +364,7 @@
 			$query .= 'Content-length: ' . strlen($this->_postfields) . PHP_EOL;
 			$query .= 'Connection: close' . PHP_EOL . PHP_EOL;
 
-			if($this->_method == 'POST') $query .= $this->_postfields;
+			if(in_array($this->_method, array('PUT', 'POST', 'DELETE'))) $query .= $this->_postfields;
 
 			// send request
 			if(!@fwrite($handle, $query)) return false;
