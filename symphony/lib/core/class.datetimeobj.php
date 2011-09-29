@@ -17,7 +17,7 @@
 		 * Holds the various settings for the formats that the `DateTimeObj` should
 		 * use when parsing input dates.
 		 *
-		 * @since Symphony 2.3
+		 * @since Symphony 2.2.4
 		 * @var array
 		 */
 		private static $settings = array();
@@ -29,7 +29,7 @@
 		 * group set in the `Configuration` class. If any of these values are not provided
 		 * the class will fallback to existing `self::$settings` values
 		 *
-		 * @since Symphony 2.3
+		 * @since Symphony 2.2.4
 		 * @param array $settings
 		 *  An associative array of formats for this class to use to format
 		 *  dates
@@ -73,7 +73,7 @@
 		 * `datetime_format` and `datetime_separator`. If `$name` is not
 		 * provided, the entire `$settings` array is returned.
 		 *
-		 * @since Symphony 2.3
+		 * @since Symphony 2.2.4
 		 * @param string $name
 		 * @return array|string|null
 		 *  If `$name` is omitted this function returns array.
@@ -148,8 +148,8 @@
 		 *  result in the current time being used
 		 * @param string $timezone (optional)
 		 *  The timezone associated with the timestamp
-		 * @return string
-		 *  The formatted date
+		 * @return string|boolean
+		 *  The formatted date, of if the date could not be parsed, false.
 		 */
 		public static function get($format, $timestamp = 'now', $timezone = null) {
 			return self::format($timestamp, $format, false, $timezone);
@@ -171,8 +171,8 @@
 		 *  Localizes the output, if true, defaults to true
 		 * @param string $timezone (optional)
 		 *  The timezone associated with the timestamp
-		 * @return string
-		 *  The formatted date
+		 * @return string|boolean
+		 *  The formatted date, of if the date could not be parsed, false.
 		 */
 		public static function format($string = 'now', $format = DateTime::ISO8601, $localize = true, $timezone = null) {
 
@@ -206,14 +206,26 @@
 					// DateTime is much the same as `strtotime` and will handle relative
 					// dates.
 					if($date === false) {
-						$date = new DateTime($string);
+						try {
+							$date = new DateTime($string);
+						}
+						catch(Exception $ex) {
+							// Invalid date, it can't be parsed
+							return false;
+						}
 					}
 				}
 
 				// PHP 5.2: Fallback to DateTime parsing.
 				// Note that this parsing will not respect European dates.
 				else {
-					$date = new DateTime($string);
+					try {
+						$date = new DateTime($string);
+					}
+					catch(Exception $ex) {
+						// Invalid date, it can't be parsed
+						return false;
+					}
 				}
 
 				// If the date is still invalid, just return false.
