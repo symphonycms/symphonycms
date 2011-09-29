@@ -159,6 +159,8 @@
 		 * Formats the given date and time `$string` based on the given `$format`.
 		 * Optionally the result will be localized and respect a timezone differing
 		 * from the system default. The default output is ISO 8601.
+		 * Please note that for best compatibility with European dates it is recommended
+		 * that your site be in a PHP5.3 environment.
 		 *
 		 * @since Symphony 2.2.1
 		 * @param string $string (optional)
@@ -187,7 +189,7 @@
 			// Attempt to parse the date provided against the Symphony configuration setting
 			// in an effort to better support multilingual date formats. Should this fail
 			// this block will fallback to just passing the date to DateTime constructor,
-			// which will parse the date assuming it's in an English format
+			// which will parse the date assuming it's in an English format.
 			else {
 				// Standardize date
 				// Convert date string to English
@@ -199,35 +201,24 @@
 					if($date === false) {
 						$date = DateTime::createFromFormat(self::$settings['date_format'], $string);
 					}
-				}
 
-				// PHP 5.2: Fallback to `strptime`
-				else {
-					$date = strptime($string, DateTimeObj::dateFormatToStrftime(self::$settings['datetime_format']));
+					// Handle dates that are in a different format to Symphony's config
+					// DateTime is much the same as `strtotime` and will handle relative
+					// dates.
 					if($date === false) {
-						$date = strptime($string, DateTimeObj::dateFormatToStrftime(self::$settings['date_format']));
-					}
-
-					if(is_array($date)) {
-						// Check if there was pm, in which tm_hour needs to be fast forwarded
-						// (as long as it's not already 12pm)
-						if(isset($date['unparsed']) && trim($date['unparsed']) == 'pm' && $date['tm_hour'] != 12) {
-							$date['tm_hour'] = $date['tm_hour'] + 12;
-						}
-
-						$date = date(DateTime::ISO8601, mktime(
-							// Time
-							$date['tm_hour'], $date['tm_min'], $date['tm_sec'],
-							// Date (Months since Jan / Years since 1900)
-							$date['tm_mon'] + 1, $date['tm_mday'], 1900 + $date['tm_year']
-						));
-						$date = new DateTime($date);
+						$date = new DateTime($string);
 					}
 				}
 
-				// Handle non-standard dates (ie. relative dates, tomorrow etc.)
-				if($date === false) {
+				// PHP 5.2: Fallback to DateTime parsing.
+				// Note that this parsing will not respect European dates.
+				else {
 					$date = new DateTime($string);
+				}
+
+				// If the date is still invalid, just return false.
+				if($date === false) {
+					return false;
 				}
 			}
 
@@ -247,39 +238,6 @@
 
 			// Return custom formatted date, use ISO 8601 date by default
 			return $date;
-		}
-
-		/**
-		 * Convert a date format to a `strftime` format
-		 * Timezone conversion is done for unix. Windows users must exchange %z and %Z.
-		 *
-		 * Unsupported `date` formats : S, n, t, L, B, G, u, e, I, P, Z, c, r
-		 * Unsupported `strftime` formats : %U, %W, %C, %g, %r, %R, %T, %X, %c, %D, %F, %x
-		 *
-		 * @since Symphony 2.2.1
-		 * @link http://www.php.net/manual/en/function.strftime.php#96424
-		 * @param string $dateFormat a date format
-		 * @return string
-		 */
-		public static function dateFormatToStrftime($dateFormat) {
-			$caracs = array(
-				// Day - no strf eq : S
-				'd' => '%d', 'D' => '%a', 'j' => '%e', 'l' => '%A', 'N' => '%u', 'w' => '%w', 'z' => '%j',
-				// Week - no date eq : %U, %W
-				'W' => '%V',
-				// Month - no strf eq : n, t
-				'F' => '%B', 'm' => '%m', 'M' => '%b',
-				// Year - no strf eq : L; no date eq : %C, %g
-				'o' => '%G', 'Y' => '%Y', 'y' => '%y',
-				// Time - no strf eq : B, G, u; no date eq : %r, %R, %T, %X
-				'a' => '%P', 'A' => '%p', 'g' => '%l', 'h' => '%I', 'H' => '%H', 'i' => '%M', 's' => '%S',
-				// Timezone - no strf eq : e, I, P, Z
-				'O' => '%z', 'T' => '%Z',
-				// Full Date / Time - no strf eq : c, r; no date eq : %c, %D, %F, %x
-				'U' => '%s'
-			);
-
-			return strtr((string)$dateFormat, $caracs);
 		}
 
 		/**
