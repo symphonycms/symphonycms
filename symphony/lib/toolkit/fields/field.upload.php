@@ -250,7 +250,7 @@
 			if(!is_array($data)){
 				// Ensure the file exists in the `WORKSPACE` directory
 				// @link http://symphony-cms.com/discuss/issues/view/610/
-				$file = WORKSPACE . preg_replace(array('%/+%', '%(^|/)../%'), '/', $data);
+				$file = WORKSPACE . preg_replace(array('%/+%', '%(^|/)\.\./%'), '/', $data);
 
 				if(!file_exists($file) || !is_readable($file)){
 					$message = __('The file uploaded is no longer available. Please check that it exists, and is readable.');
@@ -360,7 +360,7 @@
 
 				// Ensure the file exists in the `WORKSPACE` directory
 				// @link http://symphony-cms.com/discuss/issues/view/610/
-				$file = WORKSPACE . preg_replace(array('%/+%', '%(^|/)../%'), '/', $data);
+				$file = WORKSPACE . preg_replace(array('%/+%', '%(^|/)\.\./%'), '/', $data);
 
 				$result = array(
 					'file' => $data,
