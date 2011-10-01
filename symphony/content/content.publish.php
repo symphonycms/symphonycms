@@ -75,15 +75,15 @@
 				}
 
 				foreach($filters as $handle => $value) {
-
-					$field_id = Symphony::Database()->fetchVar('id', 0, sprintf(
-						"SELECT `f`.`id`
-						FROM `tbl_fields` AS `f`, `tbl_sections` AS `s`
-						WHERE `s`.`id` = `f`.`parent_section`
-						AND f.`element_name` = '%s'
+					$field_id = Symphony::Database()->fetchVar('id', 0, sprintf("
+						SELECT `f`.`id`
+						FROM `tbl_fields` AS `f`
+						LEFT JOIN `tbl_sections` AS `s` ON (`s`.`id` = `f`.`parent_section`)
+						WHERE f.`element_name` = '%s'
 						AND `s`.`handle` = '%s'
-						LIMIT 1",
-						$handle,
+						LIMIT 1
+					",
+						Symphony::Database()->cleanValue($handle),
 						$section->get('handle'))
 					);
 
@@ -98,7 +98,6 @@
 					} else {
 						unset($filters[$i]);
 					}
-
 				}
 
 				$filter_querystring = preg_replace("/&amp;$/", '', $filter_querystring);
