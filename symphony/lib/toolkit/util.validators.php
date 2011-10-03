@@ -11,7 +11,7 @@
 
 	$upload = array(
 		'image' => '/\.(?:bmp|gif|jpe?g|png)$/i',
-		'document' => '/\.(?:doc|pdf|rtf|txt)$/i',	
+		'document' => '/\.(?:docx?|pdf|rtf|txt)$/i',	
 	);
 
 	if(file_exists(MANIFEST . '/validators.php') && is_readable(MANIFEST . '/validators.php')) include(MANIFEST . '/validators.php');
