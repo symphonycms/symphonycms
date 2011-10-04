@@ -759,6 +759,11 @@ var Symphony = {};
 		$('#nav').delegate('a', 'focus blur', function() {
 			$(this).parents('li').eq(1).toggleClass('current');
 		});
+		
+		// Auto-highlight content in pagination input
+		$('.page input').focus(function() {
+			$(this).select();
+		});
 	});
 
 })(jQuery.noConflict());
