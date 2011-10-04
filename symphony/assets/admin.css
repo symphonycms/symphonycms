@@ -941,6 +941,7 @@ ul.page {
 	padding: 20px 50px 0 19px;
 	height: 36px;
 	color: #887;
+	cursor: default;
 }
 ul.page li {
 	display: inline;
@@ -957,13 +958,19 @@ ul.page a {
 ul.page input {
 	color: #222 !important;
 	text-align: center;
-	width: 20px;
+	width: 15px;
 	border: 1px solid transparent;
-	border-bottom: 1px dotted #cacaca;
+	border-bottom: 1px dotted #aaa;
+	padding-bottom: 2px;
+	outline: none;
+}
+ul.page input:hover {
+	background: #eee;
 }
 ul.page input:focus {
 	border: 1px solid #cacaca;
 }
+
 
 /*-----------------------------------------------------------------------------
 	Single page
