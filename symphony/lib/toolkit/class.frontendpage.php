@@ -787,8 +787,37 @@
 
 				$ds = $pool[$handle];
 				$ds->processParameters(array('env' => $this->_env, 'param' => $this->_param));
-
-				if ($xml = $ds->grab($this->_env['pool'])) {
+				
+				// default to no XML
+				$xml = NULL;
+				
+				
+				/**
+				 * Allows extensions to execute the data source themselves (e.g. for caching)
+				 * and providing their own output XML instead
+				 *
+				 * @delegate DataSourcePreExecute
+				 * @param string $context
+				 * '/frontend/'
+				 * @param boolean $datasource
+				 *  The Datasource object
+				 * @param mixed $xml
+				 *  The XML output of the data source. Can be an XMLElement or string.
+				 * @param mixed $paral_pool
+				 *  The existing param pool including output parameters of any previous data sources
+				 */
+				Symphony::ExtensionManager()->notifyMembers('DataSourcePreExecute', '/frontend/', array(
+					'datasource' => &$ds,
+					'xml' => &$xml,
+					'param_pool' => &$this->_env['pool']
+				));
+				
+				// if the XML is still null, an extension has not run the data source, so run normally
+				if(is_null($xml)) {
+					$xml = $ds->grab($this->_env['pool']);
+				}
+				
+				if ($xml) {
 					if (is_object($xml)) $wrapper->appendChild($xml);
 					else $wrapper->setValue(
 						$wrapper->getValue() . self::CRLF . '	' . trim($xml)
