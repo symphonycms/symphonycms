@@ -954,6 +954,16 @@ ul.page a {
 	padding: 0.67em;
 	text-decoration: none;
 }
+ul.page input {
+	color: #222 !important;
+	text-align: center;
+	width: 20px;
+	border: 1px solid transparent;
+	border-bottom: 1px dotted #cacaca;
+}
+ul.page input:focus {
+	border: 1px solid #cacaca;
+}
 
 /*-----------------------------------------------------------------------------
 	Single page
