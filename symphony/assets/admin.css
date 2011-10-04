@@ -960,14 +960,16 @@ ul.page input {
 	text-align: center;
 	width: 15px;
 	border: 1px solid transparent;
-	border-bottom: 1px dotted #aaa;
-	padding-bottom: 2px;
+	border-bottom: 1px dashed #aaa;
+	padding-bottom: 1px;
 	outline: none;
 }
 ul.page input:hover {
+	border-radius: 2px 2px 2px 2px;
 	background: #eee;
 }
 ul.page input:focus {
+	border-radius: 2px 2px 2px 2px;
 	border: 1px solid #cacaca;
 }
 
