@@ -113,7 +113,7 @@
 		 *	Returns either the translation of the string or false if it could not be found
 		 */
 		public function find($string, $namespace=NULL) {
-			if(isset($namespace) && isset($this->_strings[$namespace][$string])) {
+			if(isset($namespace) && trim($namespace) !== '' && isset($this->_strings[$namespace][$string])) {
 				return $this->_strings[$namespace][$string];
 			}
 			else if(isset($this->_strings[$string])) {
@@ -134,7 +134,7 @@
 		 *	Translation
 		 */
 		public function add($source, $translation, $namespace=NULL) {
-			if(isset($namespace)) {
+			if(isset($namespace) && trim($namespace) !== '') {
 				$this->_strings[$namespace][$source] = $translation;
 			} else {
 				$this->_strings[$source] = $translation;
@@ -162,7 +162,7 @@
 		 *	Optional namespace you want to remove the translation from, defaults to NULL
 		 */
 		public function remove($string, $namespace=NULL) {
-			if(isset($namespace)) {
+			if(isset($namespace) && trim($namespace) !== '') {
 				unset($this->_strings[$namespace][$string]);
 			} else {
 				unset($this->_strings[$string]);
