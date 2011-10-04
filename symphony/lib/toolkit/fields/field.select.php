@@ -233,8 +233,8 @@
 			$label->setValue(__('%s Sort all options alphabetically', array($input->generate())));
 			$div->appendChild($label);
 
-			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
+			$this->appendRequiredCheckbox($div);
 			$wrapper->appendChild($div);
 		}
 
