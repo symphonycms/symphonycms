@@ -47,7 +47,7 @@
 			$section = SectionManager::fetch($section_id);
 
 			$this->setPageType('table');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array($section->get('name'), __('Symphony'))));
 			$this->Form->setAttribute("class", $this->_context['section_handle']);
 
 			$filters = array();
@@ -459,7 +459,7 @@
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array($section->get('name'), __('Symphony'))));
 			$this->appendSubheading(__('Untitled'));
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 
@@ -756,7 +756,7 @@
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
-			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), $section->get('name'), $title)));
+			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($title, $section->get('name'), __('Symphony'))));
 			$this->appendSubheading($title);
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 
