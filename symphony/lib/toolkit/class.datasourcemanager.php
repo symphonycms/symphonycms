@@ -114,7 +114,7 @@
 						}
 
 						$about['can_parse'] = $can_parse;
-						$about['type'] = $type;
+						$about['source'] = $type;
 						$result[$f] = $about;
 					}
 				}
@@ -134,7 +134,7 @@
 
 							if($about = self::about($f)){
 								$about['can_parse'] = false;
-								$about['type'] = null;
+								$about['source'] = null;
 								$result[$f] = $about;
 							}
 						}
