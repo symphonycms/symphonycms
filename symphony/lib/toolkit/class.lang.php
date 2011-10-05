@@ -7,16 +7,22 @@
 	 * to the active system language. If the given string is not available in the
 	 * current dictionary the original English string will be returned. Given an optional
 	 * array of inserts the function will also replace translation placeholders using vsprintf().
+	 * Since Symphony 2.3, it is also possible to have multiple translation of the same string
+	 * according to the provided namespace. In your lang file, simply add a subarray to the
+	 * $dictionary array, with the key being the namespace itself and the value being a set of
+	 * translations for the strings beloning to that namespace.
 	 *
 	 * @param string $string
 	 *	The string that should be translated
 	 * @param array $inserts
 	 *	Optional array used to replace translation placeholders, defaults to NULL
+	 * @param string $namespace
+	 *	Optional string used to define the proper namespace, defaults to NULL
 	 * @return
 	 *	Returns the translated string
 	 */
-	function __($string, $inserts=NULL) {
-		return Lang::Dictionary()->translate($string, $inserts);
+	function __($string, $inserts=NULL, $namespace=NULL) {
+		return Lang::Dictionary()->translate($string, $inserts, $namespace);
 	}
 
 	/**
@@ -64,6 +70,10 @@
 		 * to the active system language. If the given string is not available in the
 		 * current dictionary the original English string will be returned. Given an optional
 		 * array of inserts the function will also replace translation placeholders using vsprintf().
+		 * Since Symphony 2.3, it is also possible to have multiple translation of the same string
+		 * according to the provided namespace. In your lang file, simply add a subarray to the
+		 * $dictionary array, with the key being the namespace itself and the value being a set of
+		 * translations for the strings beloning to that namespace.
 		 *
 		 * Note: If you like to translate strings, please use __() which is the common alias for this function.
 		 *
@@ -71,11 +81,13 @@
 		 *	The string that should be translated
 		 * @param array $inserts
 		 *	Optional array used to replace translation placeholders, defaults to NULL
+		 * @param string $namespace
+		 *	Optional string used to define the proper namespace, defaults to NULL
 		 * @return string
 		 *	Returns the translated string
 		 */
-		public function translate($string, Array $inserts=NULL) {
-			$translated = $this->find($string);
+		public function translate($string, Array $inserts=NULL, $namespace=NULL) {
+			$translated = $this->find($string, $namespace);
 
 			// Default to English if no translation available
 			if($translated === false) {
@@ -95,11 +107,16 @@
 		 *
 		 * @param string $string
 		 *	The string to look for
+		 * @param string $namespace
+		 *	Optional namespace you want to search inside, defaults to NULL
 		 * @return string|boolean
 		 *	Returns either the translation of the string or false if it could not be found
 		 */
-		public function find($string) {
-			if(isset($this->_strings[$string])) {
+		public function find($string, $namespace=NULL) {
+			if(isset($namespace) && trim($namespace) !== '' && isset($this->_strings[$namespace][$string])) {
+				return $this->_strings[$namespace][$string];
+			}
+			else if(isset($this->_strings[$string])) {
 				return $this->_strings[$string];
 			}
 
@@ -111,11 +128,17 @@
 		 *
 		 * @param string $source
 		 *	English string
+		 * @param string $namespace
+		 *	Optional namespace you want to add the translation to, defaults to NULL
 		 * @param string $translation
 		 *	Translation
 		 */
-		public function add($source, $translation) {
-			$this->_strings[$source] = $translation;
+		public function add($source, $translation, $namespace=NULL) {
+			if(isset($namespace) && trim($namespace) !== '') {
+				$this->_strings[$namespace][$source] = $translation;
+			} else {
+				$this->_strings[$source] = $translation;
+			}
 		}
 
 		/**
@@ -135,9 +158,15 @@
 		 *
 		 * @param string $string
 		 *	String to be removed from the dictionary.
+		 * @param string $namespace
+		 *	Optional namespace you want to remove the translation from, defaults to NULL
 		 */
-		public function remove($string) {
-			unset($this->_strings[$string]);
+		public function remove($string, $namespace=NULL) {
+			if(isset($namespace) && trim($namespace) !== '') {
+				unset($this->_strings[$namespace][$string]);
+			} else {
+				unset($this->_strings[$string]);
+			}
 		}
 
 	}
@@ -545,7 +574,7 @@
 
 				// Replace custom date and time separator with space:
 				// This is important, otherwise the `DateTime` constructor may break
-				$separator = Symphony::$Configuration->get('datetime_separator', 'region');
+				$separator = Symphony::Configuration()->get('datetime_separator', 'region');
 				if($separator != ' ') {
 					$string = str_replace($separator, ' ', $string);
 				}
