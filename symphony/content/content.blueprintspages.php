@@ -21,7 +21,7 @@
 
 		public function __viewIndex() {
 			$this->setPageType('table');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Pages'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Pages'), __('Symphony'))));
 
 			$nesting = (Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes');
 
@@ -205,11 +205,11 @@
 			}
 
 			$this->setTitle(__(
-				($filename ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'),
+				($filename ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'),
 				array(
-					__('Symphony'),
+					$filename,
 					__('Pages'),
-					$filename
+					__('Symphony')
 				)
 			));
 
@@ -380,11 +380,11 @@
 			if(trim($title) == '') $title = $existing['title'];
 
 			$this->setTitle(__(
-				($title ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'),
+				($title ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'),
 				array(
-					__('Symphony'),
+					$title,
 					__('Pages'),
-					$title
+					__('Symphony')
 				)
 			));
 			if($existing) {

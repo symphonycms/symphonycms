@@ -18,7 +18,7 @@
 
 		public function __viewIndex(){
 			$this->setPageType('table');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Sections'), __('Symphony'))));
 			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a section'), 'create button', NULL, array('accesskey' => 'c')));
 
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
@@ -99,7 +99,7 @@
 
 		public function __viewNew(){
 			$this->setPageType('form');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Sections'), __('Symphony'))));
 			$this->appendSubheading(__('Untitled'));
 
 			$types = array();
@@ -325,7 +325,7 @@
 			}
 
 			$this->setPageType('form');
-			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Sections'), $meta['name'])));
+			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($meta['name'], __('Sections'), __('Symphony'))));
 			$this->appendSubheading($meta['name']);
 
 			$fieldset = new XMLElement('fieldset');

@@ -14,7 +14,7 @@
 
 		public function __viewIndex(){
 			$this->setPageType('table');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Extensions'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Extensions'), __('Symphony'))));
 			$this->appendSubheading(__('Extensions'));
 
 			$this->Form->setAttribute('action', SYMPHONY_URL . '/system/extensions/');
