@@ -192,7 +192,7 @@
 			}
 
 			$this->setPageType('form');
-			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Data Sources'), $about['name'])));
+			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($about['name'], __('Data Sources'), __('Symphony'))));
 			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
 
 			$fieldset = new XMLElement('fieldset');
@@ -872,7 +872,7 @@
 			$datasource = DatasourceManager::create($this->_context[1], NULL, false);
 			$about = $datasource->about();
 
-			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Data Source'), $about['name'])));
+			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($about['name'], __('Data Source'), __('Symphony'))));
 			$this->appendSubheading($about['name']);
 			$this->Form->setAttribute('id', 'controller');
 
