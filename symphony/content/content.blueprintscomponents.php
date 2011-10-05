@@ -18,7 +18,7 @@
 
 		public function view(){
 			$this->setPageType('forms');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Components'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Components'), __('Symphony'))));
 
 			$this->appendSubheading(__('Components'));
 

@@ -19,7 +19,7 @@
 		## Overload the parent 'view' function since we dont need the switchboard logic
 		public function view() {
 			$this->setPageType('form');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Preferences'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Preferences'), __('Symphony'))));
 
 			$this->appendSubheading(__('Preferences'));
 
