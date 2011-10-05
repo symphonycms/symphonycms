@@ -127,8 +127,8 @@
 
 			if(is_array($visible_columns) && !empty($visible_columns)){
 				foreach($visible_columns as $column){
-					$label = new XMLElement('span', $column->label());
-					$label = $label->generate();
+
+					$label = $column->label();
 
 					if($column->isSortable()) {
 
