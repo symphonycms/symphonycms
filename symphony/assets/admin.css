@@ -85,6 +85,13 @@ table input {
 	float: right;
 	margin-right: 19px;
 }
+th span {
+	float: left;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	max-width: 90%;
+}
 th a,
 th a:hover,
 th a:hover:after {
