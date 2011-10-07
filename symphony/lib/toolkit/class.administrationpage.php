@@ -162,9 +162,6 @@
 		 *  a "Create new" link to the Context div.
 		 */
 		public function appendSubheading($value, $actions = null){
-			$breadcrumbs = $this->Context->getChildren();
-			$breadcrumbs = $breadcrumbs[0];
-
 			if(!is_array($actions) && $actions){ // Backward compatibility
 				$actions = array($actions);
 			}
@@ -175,10 +172,12 @@
 				foreach($actions as $a){
 					$ul->appendChild(new XMLElement('li', $a));
 				}
+				$this->Context->appendChild($ul);
 			}
 
+			$breadcrumbs = $this->Context->getChildren();
+			$breadcrumbs = $breadcrumbs[0];
 			$breadcrumbs->appendChild(new XMLElement('h2', $value));
-			$this->Context->appendChild($ul);
 		}
 
 		/**
@@ -308,7 +307,7 @@
 			$this->appendUserLinks();
 			$this->appendNavigation();
 
-			// Context + Contens
+			// Context + Contents
 			$this->Context = new XMLElement('div', NULL, array('id' => 'context'));
 			$this->Context->appendChild(new XMLElement('div', NULL, array('id' => 'breadcrumbs')));
 
@@ -381,7 +380,7 @@
 		}
 
 		/**
-		 * Appends the `$this->Header`, `$this->Contents` and `$this->Footer`
+		 * Appends the `$this->Header`, `$this->Context` and `$this->Contents`
 		 * to `$this->Wrapper` before adding the ID and class attributes for
 		 * the `<body>` element. After this has completed the parent's generate
 		 * function is called which will convert the `XMLElement`'s into strings

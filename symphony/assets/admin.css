@@ -623,10 +623,10 @@ button.delete:focus,
 body, html {
 	height: 100%;
 }
-#wrapper {
-	position: relative;
-	min-height: 100%;
-}
+/*#wrapper {*/
+/*	position: relative;*/
+/*	min-height: 100%;*/
+/*}*/
 #header {
 	margin: 0 0 1.8em;
 	color: #fff;
@@ -638,7 +638,7 @@ body, html {
 	text-shadow: -1px 2px 3px #111;
 	font-weight: normal;
 	line-height: 1;
-	z-index: 10;
+/*	z-index: 10;*/
 	position: relative;
 }
 #header h1 a {
@@ -647,6 +647,26 @@ body, html {
 }
 #header h1 a:hover {
 	color: #fff;
+}
+#session {
+	margin: -30px 0 0;
+	padding: 0 19px 0 0;
+	float: right;
+	position: relative;
+/*	z-index: 11;*/
+}
+#session li {
+	display: inline;
+	padding-left: 12px;
+}
+#session a {
+/*	padding: 5px;*/
+	border: none;
+	text-decoration: none;
+	color: #fff;
+}
+#session a:hover {
+	color: #ccb;
 }
 
 /*-----------------------------------------------------------------------------
@@ -673,13 +693,28 @@ body, html {
 	-webkit-box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
 	height: 30px;
 	list-style: none;
-	padding: 0 0 0 8px;
+	padding: 0 8px 0;
 	white-space: nowrap;
 	font-size: 12px;
 	display: block;
 }
-
-#nav > li {
+#nav:after{
+	content: " ";
+	display: block;
+	visibility: hidden;
+	clear: both;
+}
+#nav ul, #nav li {
+	margin: 0;
+	padding: 0;
+}
+#nav .content {
+	float: left;
+}
+#nav .structure {
+	float: right;
+}
+#nav > ul > li {
 	border-top: 1px solid transparent;
 	color: #555;
 	color: hsla(0, 0%, 0%, 0.65);
@@ -693,7 +728,7 @@ body, html {
 	z-index: 3;
 	cursor: pointer;
 }
-#nav > li.active {
+#nav > ul > li.active {
 	background-color: #5c83ba;
 	background: -moz-linear-gradient(
 		top,
@@ -707,6 +742,7 @@ body, html {
 		color-stop(0, #6f92c2),
 		color-stop(1, #4d78b4)
 	);
+	height: 30px;
 	border-bottom: 1px solid #808080;
 	color: #fff;
 	text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.2);
@@ -714,7 +750,7 @@ body, html {
 	z-index: 2;
 	height: 29px;
 }
-#nav > li:hover {
+#nav > ul > li:hover {
 	border-bottom: 1px solid #808080;
 	color: #fff;
 	text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.2);
@@ -735,9 +771,9 @@ body, html {
 	color: #fff;
 	text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.5);
 	z-index: 5;
-	height: 30px;
+	height: 29px;
 }
-#nav ul {
+#nav li ul {
 	margin: 0;
 	padding: 0;
 	display: none;
@@ -750,9 +786,13 @@ body, html {
 	left: 0;
 	min-width: 120px;
 	position: absolute;
-	top: 31px;
+	top: 30px;
 	font-size: 12px;
 	text-shadow: 1px 1px 0 #fff;
+}
+#nav .structure li ul {
+	left: auto;
+	right: 0;
 }
 #nav li:hover ul {
 	display: block;
@@ -781,17 +821,38 @@ body, html {
 	border-bottom-right-radius: 3px;
 	border-bottom-left-radius: 3px;
 }
-#contents {
-	padding: 0;
-}
-#contents h2 {
+#context {
+	clear: both;
+	margin: -19px 0 19px;
 	background: #F4F4F4;
 	color: #000;
 	border-bottom: 1px solid #d5d6d2;
-	margin: -19px 0 19px;
-	padding: 18px 18px 17px;
 	-moz-box-shadow: inset 0 -1px 7px rgba(0, 0, 0, 0.2);
 	-webkit-box-shadow: inset 0 -1px 7px rgba(0, 0, 0, 0.2);
+}
+#context:after {
+	content: " ";
+	display: block;
+	visibility: hidden;
+	clear: both;
+}
+#context h2 {
+	float: left;
+}
+#context .actions {
+	margin: 14px 18px 0;
+	padding: 0;
+	float: right;
+}
+#context .actions li {
+	float: right;
+}
+#contents {
+	padding: 0;
+}
+#contents h2,
+#context h2 {
+	padding: 20px 18px 17px;
 }
 #contents h2 span {
 	float: left;
@@ -802,7 +863,6 @@ body, html {
 	clear: both;
 	height: 0;
 }
-
 #contents h2 .button {
 	margin-top: -3px;
 	margin-bottom: -2px;
@@ -855,19 +915,7 @@ body, html {
 	color: #A5A5A0;
 	float: left;
 }
-#usr li {
-	display: inline;
-	padding-left: 12px;
-}
-#usr a {
-	padding: 5px;
-	border: none;
-	text-decoration: none;
-	color: #fff;
-}
-#usr a:hover {
-	color: #ccb;
-}
+
 
 /*-----------------------------------------------------------------------------
 	Index page

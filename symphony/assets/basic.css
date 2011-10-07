@@ -31,8 +31,8 @@ input, select, textarea, button {
 	vertical-align: baseline;
 }
 button::-moz-focus-inner {
-    border:0;
-    padding:0;
+	border:0;
+	padding:0;
 }
 ol, ul {
 	list-style: none;
