@@ -40,17 +40,17 @@
 		public $Header = null;
 
 		/**
+		 * A `<div>` that contains the breadcrumbs, the page title and some contextual
+		 * actions (e.g. "Create new").
+		 * @var XMLElement
+		 */
+		public $Context = null;
+
+		/**
 		 * A `<div>` that contains the content of a Symphony backend page.
 		 * @var XMLElement
 		 */
 		public $Contents = null;
-
-		/**
-		 * A `<div>` that contains the Symphony footer, typically the version and
-		 * the current Author's details.
-		 * @var XMLElement
-		 */
-		public $Footer = null;
 
 		/**
 		 * An associative array of the navigation where the key is the group
@@ -151,22 +151,83 @@
 		}
 
 		/**
-		 * Appends the heading of this Symphony page to the Form element.
-		 * If a link is provided, it will be append to `$value`
+		 * Appends the heading of this Symphony page to the Context element.
+		 * Action buttons can be provided (e.g. "Create new") as second parameter.
 		 *
 		 * @param string $value
 		 *  The heading text
-		 * @param XMLElement|string $html
-		 *  Some HTML to append to the heading, this can be provided as an
-		 *  XMLElement or as a string. traditionally Symphony uses this to append
-		 *  a link to the heading
+		 * @param Array|XMLElement|string $actions
+		 *  Some contextual actions to append to the heading, they can be provided as
+		 *  an array of XMLElements or strings. Traditionally Symphony uses this to append
+		 *  a "Create new" link to the Context div.
 		 */
-		public function appendSubheading($value, $html = null){
+		public function appendSubheading($value, $actions = null){
+			$breadcrumbs = $this->Context->getChildren();
+			$breadcrumbs = $breadcrumbs[0];
 
-			if($html && is_object($html)) $value = '<span>' . $value . '</span> ' . $html->generate(false);
-			elseif($html) $value = '<span>' . $value . '</span> ' . $html;
+			if(!is_array($actions) && $actions){ // Backward compatibility
+				$actions = array($actions);
+			}
 
-			$this->Contents->prependChild(new XMLElement('h2', $value));
+			if(!empty($actions)){
+				$ul = new XMLElement('ul', NULL, array('class' => 'actions'));
+
+				foreach($actions as $a){
+					$ul->appendChild(new XMLElement('li', $a));
+				}
+			}
+
+			$breadcrumbs->appendChild(new XMLElement('h2', $value));
+			$this->Context->appendChild($ul);
+		}
+
+		/**
+		 * Allows developers to specify a list of nav items that build the path to the
+		 * current page or, in jargon, "breadcrumbs".
+		 * 
+		 * @param array $values
+		 *  An array of XMLElements or strings that compose the path. If breadcrumbs
+		 *  already exist, any new item will be appended to the rightmost part of the
+		 *  path.
+		 */
+		public function insertBreadcrumbs(array $values) {
+			if(empty($values)) return;
+
+			$breadcrumbs = $this->Context->getChildren();
+			$breadcrumbs = $breadcrumbs[0];
+
+			if(count($breadcrumbs->getChildrenByName('nav')) === 1){
+				$nav = $breadcrumbs->getChildrenByName('nav');
+				$nav = $nav[0];
+
+				$p = $nav->getChildren();
+				$p = $p[0];
+			} else {
+				$p = new XMLElement('p');
+				$nav = new XMLElement('nav');
+				$nav->appendChild($p);
+
+				$breadcrumbs->prependChild($nav);
+			}
+
+			foreach($values as $v){
+				$p->appendChild($v);
+			}
+		}
+
+		public function minify(array $files, $output_pathname, $unlink_existing=true){
+
+			if(file_exists($output_pathname) && $unlink_existing === true) unlink($output_pathname);
+
+			foreach($files as $pathname){
+				if(!file_exists($pathname) || !is_readable($pathname)) throw new Exception("File '{$pathname}' could not be found, or is not readable.");
+
+				$contents = file_get_contents($pathname);
+
+				if(file_put_contents($output_pathname, $contents . "\n", FILE_APPEND) === false){
+					throw new Exception("Could not write to '{$output_pathname}.");
+				}
+			}
 		}
 
 		/**
@@ -194,10 +255,12 @@
 
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Lang::get());
-			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
+			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 0);
+
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 40);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/admin.css', 'screen', 41);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.duplicator.css', 'screen', 70);
+
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.js', 50);
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.color.js', 51);
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.collapsible.js', 60);
@@ -233,24 +296,27 @@
 				Symphony::Profiler()->sample('Page action run', PROFILE_LAP);
 			}
 
+			// Wrapper + Header
 			$this->Wrapper = new XMLElement('div', NULL, array('id' => 'wrapper'));
-			$this->Header = new XMLElement('div', NULL, array('id' => 'header'));
+			$this->Header = new XMLElement('header', NULL, array('id' => 'header'));
 
 			$h1 = new XMLElement('h1');
 			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
 			$this->Header->appendChild($h1);
 
+			$this->appendAlert();
+			$this->appendUserLinks();
 			$this->appendNavigation();
 
+			// Context + Contens
+			$this->Context = new XMLElement('div', NULL, array('id' => 'context'));
+			$this->Context->appendChild(new XMLElement('div', NULL, array('id' => 'breadcrumbs')));
+
 			$this->Contents = new XMLElement('div', NULL, array('id' => 'contents'));
-
-			## Build the form
 			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
-
-			$this->view();
 			$this->Contents->appendChild($this->Form);
 
-			$this->Footer = new XMLElement('div', NULL, array('id' => 'footer'));
+			$this->view();
 
 			/**
 			 * Allows developers to add items just above the page footer. Use `Administration::instance()->Page`
@@ -261,9 +327,6 @@
 			 *  '/backend/'
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AppendElementBelowView', '/backend/');
-
-			$this->appendFooter();
-			$this->appendAlert();
 
 			Symphony::Profiler()->sample('Page content created', PROFILE_LAP);
 		}
@@ -328,8 +391,8 @@
 		 */
 		public function generate() {
 			$this->Wrapper->appendChild($this->Header);
+			$this->Wrapper->appendChild($this->Context);
 			$this->Wrapper->appendChild($this->Contents);
-			$this->Wrapper->appendChild($this->Footer);
 
 			$this->Body->appendChild($this->Wrapper);
 
@@ -481,8 +544,9 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('NavigationPreRender', '/backend/', array('navigation' => &$nav));
 
-			$xNav = new XMLElement('ul');
-			$xNav->setAttribute('id', 'nav');
+			$navElement = new XMLElement('nav', NULL, array('id' => 'nav'));
+			$contentNav = new XMLElement('ul', NULL, array('class' => 'content'));
+			$structureNav = new XMLElement('ul', NULL, array('class' => 'structure'));
 
 			foreach($nav as $n){
 				if(isset($n['visible']) && $n['visible'] == 'no') continue;
@@ -533,13 +597,19 @@
 
 						if($hasChildren){
 							$xGroup->appendChild($xChildren);
-							$xNav->appendChild($xGroup);
+
+							if ($n['type'] === 'content')
+								$contentNav->appendChild($xGroup);
+							else if ($n['type'] === 'structure')
+								$structureNav->appendChild($xGroup);
 						}
 					}
 				}
 			}
 
-			$this->Header->appendChild($xNav);
+			$navElement->appendChild($contentNav);
+			$navElement->appendChild($structureNav);
+			$this->Header->appendChild($navElement);
 			Symphony::Profiler()->sample('Navigation Built', PROFILE_LAP);
 		}
 
@@ -588,6 +658,7 @@
 
 				$nav[$index] = array(
 					'name' => __(strval($content->name)),
+					'type' => 'structure',
 					'index' => $index,
 					'children' => array()
 				);
@@ -624,6 +695,7 @@
 
 						$nav[$group_index] = array(
 							'name' => $s['navigation_group'],
+							'type' => 'content',
 							'index' => $group_index,
 							'children' => array()
 						);
@@ -656,6 +728,7 @@
 
 								$nav[$index] = array(
 									'name' => $item['name'],
+									'type' => 'structure',
 									'index' => $index,
 									'children' => array(),
 									'limit' => isset($item['limit']) ? $item['limit'] : null
@@ -833,13 +906,8 @@
 		 *
 		 * @uses AddElementToFooter
 		 */
-		public function appendFooter(){
-
-			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array('id' => 'version'));
-			$this->Footer->appendChild($version);
-
-			$ul = new XMLElement('ul');
-			$ul->setAttribute('id', 'usr');
+		public function appendUserLinks(){
+			$ul = new XMLElement('ul', NULL, array('id' => 'session'));
 
 			$li = new XMLElement('li');
 			$li->appendChild(
@@ -874,7 +942,7 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AddElementToFooter', '/backend/', array('wrapper' => &$ul));
 
-			$this->Footer->appendChild($ul);
+			$this->Header->appendChild($ul);
 		}
 
 		/**
