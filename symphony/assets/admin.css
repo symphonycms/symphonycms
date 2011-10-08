@@ -836,7 +836,33 @@ body, html {
 	visibility: hidden;
 	clear: both;
 }
+#breadcrumbs nav,
+#breadcrumbs p {
+	margin: 0;
+	padding: 0;
+	float: left;
+}
+#breadcrumbs {
+	float: left;
+	padding: 20px 0 17px 18px;
+}
+#breadcrumbs a {
+	padding: 0;
+	font: 127.28% Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
+}
+/*#breadcrumbs a:link:after,*/
+/*#breadcrumbs a:hover:after {*/
+/*	color: #000;*/
+/*	text-decoration: none;*/
+/*	cursor: auto;*/
+/*	content: " > ";*/
+/*}*/
+#breadcrumbs span:last-of-type {
+	padding: 0 3px 0 0;
+}
 #context h2 {
+	border-bottom: 0;
+	padding: 0;
 	float: left;
 }
 #context .actions {
@@ -848,10 +874,9 @@ body, html {
 	float: right;
 }
 #contents {
-	padding: 0;
+	padding: 0 0 5em;
 }
-#contents h2,
-#context h2 {
+#contents h2 {
 	padding: 20px 18px 17px;
 }
 #contents h2 span {
@@ -866,54 +891,6 @@ body, html {
 #contents h2 .button {
 	margin-top: -3px;
 	margin-bottom: -2px;
-}
-
-/*-----------------------------------------------------------------------------
-	Footer
------------------------------------------------------------------------------*/
-
-#footer {
-	position: absolute;
-	bottom: 0;
-	height: 34px;
-	left: 0;
-	right: 0;
-	margin: 0;
-	padding: 16px 19px 0;
-	border-top: 1px solid #000;
-	text-align: right;
-	text-shadow: -1px 2px 3px #111;
-	color: #fff;
-	background: -webkit-gradient(
-	    linear,
-	    left top,
-	    left bottom,
-	    from(rgba(0, 0, 0, 0.9)),
-	    color-stop(0.05, #282828),
-	    to(#282828)
-	);
-	background: -moz-linear-gradient(
-	    center top,
-	    rgba(0, 0, 0, 0.9),
-	    #282828 5%,
-	    #282828
-	);
-}
-#footer:after {
-	content: "";
-	display: block;
-	clear: left;
-	height: 0;
-}
-#version,
-#usr,
-#usr li {
-	margin: 0;
-	padding: 0
-}
-#version {
-	color: #A5A5A0;
-	float: left;
 }
 
 
@@ -968,9 +945,6 @@ ul.page a {
 	Single page
 -----------------------------------------------------------------------------*/
 
-.single #contents {
-	padding-bottom: 9em;
-}
 .single form {
 	margin: 0 19px;
 }
@@ -1034,16 +1008,16 @@ ul.page a {
 .file em:hover {
 	color: #d43;
 }
-.single .actions {
+.single #contents .actions {
 	clear: both;
 	border-top: 1px solid #ddc;
 	padding: 1.75em 0 0;
 }
-.single .actions input {
+.single #contents .actions input {
 	float: right;
 	margin-left: 1em;
 }
-.single .actions button {
+.single #contents .actions button {
 	float: left;
 }
 

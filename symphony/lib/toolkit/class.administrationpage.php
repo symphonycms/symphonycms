@@ -211,6 +211,7 @@
 
 			foreach($values as $v){
 				$p->appendChild($v);
+				$p->appendChild(new XMLElement('span', '&nbsp;>&nbsp;'));
 			}
 		}
 

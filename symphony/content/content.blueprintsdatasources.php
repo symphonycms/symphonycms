@@ -194,6 +194,9 @@
 			$this->setPageType('form');
 			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($about['name'], __('Data Sources'), __('Symphony'))));
 			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Data Sources'), SYMPHONY_URL . '/blueprints/datasources/'),
+			));
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
@@ -240,7 +243,7 @@
 				foreach($sections as $s) $options[0]['options'][] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
 			}
 
-			$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
+			$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'ds-context')));
 			$group->appendChild($label);
 
 			$fieldset->appendChild($group);
