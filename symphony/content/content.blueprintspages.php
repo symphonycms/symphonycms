@@ -777,7 +777,7 @@
 						FROM
 							`tbl_pages` AS p
 						WHERE
-							p.id != '{$page_id}'
+							" . (empty($current) ? "1" : "p.id != '{$page_id}'") . "
 							AND p.handle = '" . $fields['handle'] . "'
 							AND p.path " . ($fields['path'] ? " = '" . $fields['path'] . "'" : ' IS NULL') .  "
 						LIMIT 1
@@ -914,42 +914,45 @@
 						}
 					}
 
-					/**
-					 * Just before the page's types are saved into `tbl_pages_types`.
-					 * Use with caution as no further processing is done on the `$types`
-					 * array to prevent duplicate `$types` from occurring (ie. two index
-					 * page types). Your logic can use the contentBlueprintsPages::typeUsed
-					 * function to perform this logic.
-					 *
-					 * @delegate PageTypePreCreate
-					 * @since Symphony 2.2
-					 * @see content.contentBlueprintsPages#typeUsed()
-					 * @param string $context
-					 * '/blueprints/pages/'
-					 * @param integer $page_id
-					 *  The ID of the Page that was just created or updated
-					 * @param array $types
-					 *  An associative array of the types for this page passed by reference.
-					 */
-					Symphony::ExtensionManager()->notifyMembers('PageTypePreCreate', '/blueprints/pages/', array('page_id' => $page_id, 'types' => &$types));
+					// Only proceed if there was no errors saving/creating the page
+					if(empty($this->_errors)) {
+						/**
+						 * Just before the page's types are saved into `tbl_pages_types`.
+						 * Use with caution as no further processing is done on the `$types`
+						 * array to prevent duplicate `$types` from occurring (ie. two index
+						 * page types). Your logic can use the contentBlueprintsPages::typeUsed
+						 * function to perform this logic.
+						 *
+						 * @delegate PageTypePreCreate
+						 * @since Symphony 2.2
+						 * @see content.contentBlueprintsPages#typeUsed()
+						 * @param string $context
+						 * '/blueprints/pages/'
+						 * @param integer $page_id
+						 *  The ID of the Page that was just created or updated
+						 * @param array $types
+						 *  An associative array of the types for this page passed by reference.
+						 */
+						Symphony::ExtensionManager()->notifyMembers('PageTypePreCreate', '/blueprints/pages/', array('page_id' => $page_id, 'types' => &$types));
 
-					// Assign page types:
-					if(is_array($types) && !empty($types)) {
-						foreach ($types as $type) Symphony::Database()->insert(
-							array(
-								'page_id' => $page_id,
-								'type' => $type
-							),
-							'tbl_pages_types'
-						);
+						// Assign page types:
+						if(is_array($types) && !empty($types)) {
+							foreach ($types as $type) Symphony::Database()->insert(
+								array(
+									'page_id' => $page_id,
+									'type' => $type
+								),
+								'tbl_pages_types'
+							);
+						}
+
+						// Find and update children:
+						if($this->_context[0] == 'edit') {
+							$this->__updatePageChildren($page_id, $fields['path'] . '/' . $fields['handle']);
+						}
+
+						if($redirect) redirect(SYMPHONY_URL . $redirect);
 					}
-
-					// Find and update children:
-					if($this->_context[0] == 'edit') {
-						$this->__updatePageChildren($page_id, $fields['path'] . '/' . $fields['handle']);
-					}
-
-					if($redirect) redirect(SYMPHONY_URL . $redirect);
 				}
 
 				if(is_array($this->_errors) && !empty($this->_errors)) {
