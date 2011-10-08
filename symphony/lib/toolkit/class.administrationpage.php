@@ -214,21 +214,6 @@
 			}
 		}
 
-		public function minify(array $files, $output_pathname, $unlink_existing=true){
-
-			if(file_exists($output_pathname) && $unlink_existing === true) unlink($output_pathname);
-
-			foreach($files as $pathname){
-				if(!file_exists($pathname) || !is_readable($pathname)) throw new Exception("File '{$pathname}' could not be found, or is not readable.");
-
-				$contents = file_get_contents($pathname);
-
-				if(file_put_contents($output_pathname, $contents . "\n", FILE_APPEND) === false){
-					throw new Exception("Could not write to '{$output_pathname}.");
-				}
-			}
-		}
-
 		/**
 		 * This function initialises a lot of the basic elements that make up a Symphony
 		 * backend page such as the default stylesheets and scripts, the navigation and
@@ -727,7 +712,7 @@
 
 								$nav[$index] = array(
 									'name' => $item['name'],
-									'type' => 'structure',
+									'type' => isset($item['type']) ? $item['type'] : 'structure',
 									'index' => $index,
 									'children' => array(),
 									'limit' => isset($item['limit']) ? $item['limit'] : null
@@ -902,8 +887,7 @@
 		 * this includes the installed Symphony version and the currently logged
 		 * in Author. A delegate is provided to allow extensions to manipulate the
 		 * footer HTML, which is an XMLElement of a `<ul>` element.
-		 *
-		 * @uses AddElementToFooter
+		 * Since Symphony 2.3, it no longer uses the `AddElementToFooter` delegate.
 		 */
 		public function appendUserLinks(){
 			$ul = new XMLElement('ul', NULL, array('id' => 'session'));
@@ -927,19 +911,7 @@
 
 			$li = new XMLElement('li');
 			$li->appendChild(Widget::Anchor(__('Logout'), SYMPHONY_URL . '/logout/', NULL, NULL, NULL, array('accesskey' => 'l')));
-
 			$ul->appendChild($li);
-
-			/**
-			 * Add new list elements to the footer
-			 *
-			 * @delegate AddElementToFooter
-			 * @param string $context
-			 *  '/backend/'
-			 * @param XMLElement $wrapper
-			 *  A XMLElement representing the `<ul>` at in the Symphony footer, passed by reference
-			 */
-			Symphony::ExtensionManager()->notifyMembers('AddElementToFooter', '/backend/', array('wrapper' => &$ul));
 
 			$this->Header->appendChild($ul);
 		}
