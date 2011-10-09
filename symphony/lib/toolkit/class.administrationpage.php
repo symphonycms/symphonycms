@@ -303,16 +303,6 @@
 
 			$this->view();
 
-			/**
-			 * Allows developers to add items just above the page footer. Use `Administration::instance()->Page`
-			 * for access to the page object
-			 *
-			 * @delegate AppendElementBelowView
-			 * @param string $context
-			 *  '/backend/'
-			 */
-			Symphony::ExtensionManager()->notifyMembers('AppendElementBelowView', '/backend/');
-
 			Symphony::Profiler()->sample('Page content created', PROFILE_LAP);
 		}
 
