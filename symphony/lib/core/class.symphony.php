@@ -28,6 +28,7 @@
 	require_once(TOOLKIT . '/class.authormanager.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
 	require_once(TOOLKIT . '/class.emailgatewaymanager.php');
+	require_once(TOOLKIT . '/class.pagemanager.php');
 
 	Abstract Class Symphony implements Singleton{
 
@@ -454,89 +455,6 @@
 		}
 
 		/**
-		 * Given the `$page_id` and a `$column`
-		 *
-		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
-		 * @return array
-		 * An array of the current Page, containing the `$column`
-		 * requested. The current page will be the last item the array, as all
-		 * parent pages are prepended to the start of the array
-		 */
-		public function resolvePage($page_id, $column) {
-			$path = array();
-			$page = self::$Database->fetchRow(0, "
-				SELECT
-					p.{$column},
-					p.parent
-				FROM
-					`tbl_pages` AS p
-				WHERE
-					p.id = '{$page_id}'
-					OR p.handle = '{$page_id}'
-				LIMIT 1
-			");
-
-			$path = array($page[$column]);
-
-			if (!is_null($page['parent'])) {
-				$next_parent = $page['parent'];
-
-				while (
-					$parent = self::$Database->fetchRow(0, "
-						SELECT
-							p.{$column},
-							p.parent
-						FROM
-							`tbl_pages` AS p
-						WHERE
-							p.id = '{$next_parent}'
-					")
-				) {
-					array_unshift($path, $parent[$column]);
-					$next_parent = $parent['parent'];
-				}
-			}
-
-			return $path;
-		}
-
-		/**
-		 * Given the `$page_id`, return the complete title of the
-		 * current page.
-		 *
-		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
-		 * @return string
-		 * The title of the current Page. If the page is a child of another
-		 * it will be prepended by the parent and a colon, ie. Articles: Read
-		 */
-		public function resolvePageTitle($page_id) {
-			$path = $this->resolvePage($page_id, 'title');
-
-			return implode(': ', $path);
-		}
-
-		/**
-		 * Given the `$page_id`, return the complete path to the
-		 * current page.
-		 *
-		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
-		 * @return string
-		 *  The complete path to the current Page including any parent
-		 *  Pages, ie. /articles/read
-		 */
-		public function resolvePagePath($page_id) {
-			$path = $this->resolvePage($page_id, 'handle');
-
-			return implode('/', $path);
-		}
-
-		/**
 		 * A wrapper for throwing a new Symphony Error page.
 		 *
 		 * @see core.SymphonyErrorPage
@@ -556,6 +474,58 @@
 		public function customError($heading, $message, $template='error', array $additional=array()){
 			GenericExceptionHandler::$enabled = true;
 			throw new SymphonyErrorPage($message, $heading, $template, $additional);
+		}
+
+		/**
+		 * Given the `$page_id` and a `$column`, this function will return an
+		 * array of the given `$column` for the Page, including all parents.
+		 *
+		 * @deprecated This function will be removed in Symphony 2.4. Use
+		 * `PageManager::resolvePage` instead.
+		 * @param mixed $page_id
+		 * The ID of the Page that currently being viewed, or the handle of the
+		 * current Page
+		 * @return array
+		 * An array of the current Page, containing the `$column`
+		 * requested. The current page will be the last item the array, as all
+		 * parent pages are prepended to the start of the array
+		 */
+		public function resolvePage($page_id, $column) {
+			return PageManager::resolvePage($page_id, $column);
+		}
+
+		/**
+		 * Given the `$page_id`, return the complete title of the
+		 * current page.
+		 *
+		 * @deprecated This function will be removed in Symphony 2.4. Use
+		 * `PageManager::resolvePageTitle` instead.
+		 * @param mixed $page_id
+		 * The ID of the Page that currently being viewed, or the handle of the
+		 * current Page
+		 * @return string
+		 * The title of the current Page. If the page is a child of another
+		 * it will be prepended by the parent and a colon, ie. Articles: Read
+		 */
+		public function resolvePageTitle($page_id) {
+			return PageManager::resolvePage($page_id, 'title');
+		}
+
+		/**
+		 * Given the `$page_id`, return the complete path to the
+		 * current page.
+		 *
+		 * @deprecated This function will be removed in Symphony 2.4. Use
+		 * `PageManager::resolvePagePath` instead.
+		 * @param mixed $page_id
+		 * The ID of the Page that currently being viewed, or the handle of the
+		 * current Page
+		 * @return string
+		 *  The complete path to the current Page including any parent
+		 *  Pages, ie. /articles/read
+		 */
+		public function resolvePagePath($page_id) {
+			return PageManager::resolvePage($page_id, 'handle');
 		}
 	}
 

@@ -45,7 +45,7 @@
 				$oPage->appendChild($xTypes);
 			}
 
-			if($children = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` WHERE `parent` = '".$page['id']."' ORDER BY `sortorder` ASC")){
+			if($children = PageManager::fetch(false, array('*'), array(sprintf('`parent` = %d', $page['id'])))) {
 				foreach($children as $c) $oPage->appendChild(__buildPageXML($c, $page_types));
 			}
 

@@ -4,7 +4,8 @@
 	 */
 	/**
 	 * The AjaxReorder page is used for reordering objects in the Symphony
-	 * backend through Javascript.
+	 * backend through Javascript. At the moment this is only supported for
+	 * Pages and Sections.
 	 */
 	Class contentAjaxReorder extends AjaxPage{
 
@@ -28,7 +29,7 @@
 			switch($destination){
 				case self::kREORDER_PAGES:
 					foreach($items as $id => $position) {
-						if(!Symphony::Database()->query("UPDATE `tbl_pages` SET `sortorder` = '$position' WHERE `id` = '$id' LIMIT 1")){
+						if(!PageManager::update($id, array('sortorder' => $position))) {
 							$this->_status = self::STATUS_ERROR;
 							$this->_Result->setValue(__('A database error occurred while attempting to reorder.'));
 							break;
@@ -39,7 +40,7 @@
 
 				case self::kREORDER_SECTIONS:
 					foreach($items as $id => $position) {
-						if(!Symphony::Database()->query("UPDATE `tbl_sections` SET `sortorder` = '$position' WHERE `id` = '$id' LIMIT 1")){
+						if(!SectionManager::update($id, array('sortorder' => $position))) {
 							$this->_status = self::STATUS_ERROR;
 							$this->_Result->setValue(__('A database error occurred while attempting to reorder.'));
 							break;
