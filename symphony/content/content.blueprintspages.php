@@ -193,7 +193,11 @@
 				)
 			));
 
-			$this->appendSubheading(__($filename ? $filename : __('Untitled')), Widget::Anchor(__('Edit Configuration'), SYMPHONY_URL . '/blueprints/pages/edit/' . $pagedata['id'] . '/', __('Edit Page Confguration'), 'button', NULL, array('accesskey' => 't')));
+			$this->appendSubheading(__($filename ? $filename : __('Untitled')), Widget::Anchor(__('Edit Configuration'), SYMPHONY_URL . '/blueprints/pages/edit/' . $pagedata['id'] . '/', __('Edit Page Configuration'), 'button', NULL, array('accesskey' => 't')));
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Pages'), SYMPHONY_URL . '/blueprints/pages/'),
+				Widget::Anchor($pagename, SYMPHONY_URL . '/blueprints/pages/edit/' . $pagedata['id']),
+			));
 
 			if(!empty($_POST)) $fields = $_POST['fields'];
 
@@ -365,6 +369,9 @@
 			else {
 				$this->appendSubheading(($title ? $title : __('Untitled')));
 			}
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Pages'), SYMPHONY_URL . '/blueprints/pages/'),
+			));
 
 		// Title --------------------------------------------------------------
 
