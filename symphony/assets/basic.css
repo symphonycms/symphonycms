@@ -43,7 +43,7 @@ table {
 	border-spacing: 0;
 }
 header, nav, section, aside, footer {
-	display: 
+	display: block;
 }
 
 /*-----------------------------------------------------------------------------
