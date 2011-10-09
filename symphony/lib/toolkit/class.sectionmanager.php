@@ -32,7 +32,7 @@
 		 * @return integer
 		 *  The newly created Section's ID
 		 */
-		public static function add($settings){
+		public static function add(array $settings){
 			if(!Symphony::Database()->insert($settings, 'tbl_sections')) return false;
 
 			return Symphony::Database()->getInsertID();
@@ -51,7 +51,7 @@
 		 *  a column name from `tbl_sections`
 		 * @return boolean
 		 */
-		public static function edit($section_id, $settings){
+		public static function edit($section_id, array $settings){
 			if(!Symphony::Database()->update($settings, 'tbl_sections', " `id` = $section_id")) return false;
 
 			return true;

@@ -10,10 +10,10 @@
 	 * as it's folder name (excluding the extension prefix).
 	 */
 
-	include_once(TOOLKIT . '/class.manager.php');
+	include_once(TOOLKIT . '/interface.fileresource.php');
 	include_once(TOOLKIT . '/class.extension.php');
 
-	Class ExtensionManager extends Manager{
+	Class ExtensionManager implements FileResource {
 
 		/**
 		 * An array of all the objects that the Manager is responsible for.
@@ -58,6 +58,10 @@
 					self::$_subscriptions[$subscription['delegate']][] = $subscription;
 				}
 			}
+		}
+
+		public static function __getHandleFromFilename($filename) {
+			return false;
 		}
 
 		/**
@@ -633,8 +637,6 @@
 		 * @return Extension
 		 */
 		public static function create($name){
-			if(!is_array(self::$_pool)) self::flush();
-
 			if(!isset(self::$_pool[$name])){
 				$classname = self::__getClassName($name);
 				$path = self::__getDriverPath($name);

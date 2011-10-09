@@ -12,6 +12,7 @@
 	 * and the view/action being the view.
 	 */
 
+	require_once(TOOLKIT . '/class.pagemanager.php');
 	require_once(TOOLKIT . '/class.htmlpage.php');
 	require_once(TOOLKIT . '/class.alert.php');
 
@@ -881,17 +882,17 @@
 		 * There are 5 default system page types, and new types can be added
 		 * by Developers via the Page Editor.
 		 *
+		 * @deprecated This function will be removed in Symphony 2.4.
+		 *  The preferred way to access the page types is via
+		 *  `PageManager::fetchAvailablePageTypes()`
+		 * @see toolkit.PageManager#fetchAvailablePageTypes
 		 * @return array
 		 *  An array of strings of the page types used in this Symphony
 		 *  install. At the minimum, this will be an array with the values
 		 * 'index', 'XML', 'admin', '404' and '403'.
 		 */
 		public function __fetchAvailablePageTypes(){
-			$system_types = array('index', 'XML', 'admin', '404', '403');
-
-			if(!$types = Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` ORDER BY `type` ASC")) return $system_types;
-
-			return (is_array($types) && !empty($types) ? General::array_remove_duplicates(array_merge($system_types, $types)) : $system_types);
+			return PageManager::fetchAvailablePageTypes();
 		}
 
 	}

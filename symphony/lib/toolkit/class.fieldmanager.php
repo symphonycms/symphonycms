@@ -11,7 +11,7 @@
 
 	require_once(TOOLKIT . '/class.field.php');
 
-	Class FieldManager extends Manager {
+	Class FieldManager implements FileResource {
 
 		/**
 		 * An array of all the objects that the Manager is responsible for.
@@ -85,6 +85,13 @@
 		 */
 		public static function __getDriverPath($type){
 			return self::__getClassPath($type) . "/field.{$type}.php";
+		}
+
+		/**
+		 * This function is not implemented by the `FieldManager` class
+		 */
+		public static function about($name) {
+			return false;
 		}
 
 		/**
@@ -342,7 +349,7 @@
 		 * @return array
 		 *  A single dimensional array of field handles.
 		 */
-		public static function fetchTypes(){
+		public static function listAll() {
 			$structure = General::listStructure(TOOLKIT . '/fields', '/field.[a-z0-9_-]+.php/i', false, 'asc', TOOLKIT . '/fields');
 
 			$extensions = Symphony::ExtensionManager()->listInstalledHandles();
@@ -402,5 +409,19 @@
 			}
 
 			return clone self::$_pool[$type];
+		}
+
+		/**
+		 * Returns an array of all available field handles discovered in the
+		 * `TOOLKIT . /fields` or `EXTENSIONS . /{}/fields`.
+		 *
+		 * @deprecated This function will be removed in Symphony 2.4. Use
+		 * `FieldManager::listAll` instead.
+		 * @return array
+		 *  A single dimensional array of field handles.
+		 */
+		public static function fetchTypes() {
+			return FieldManager::listAll();
+
 		}
 	}

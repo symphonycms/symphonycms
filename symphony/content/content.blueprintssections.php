@@ -218,7 +218,7 @@
 				}
 			}
 
-			foreach (FieldManager::fetchTypes() as $type) {
+			foreach (FieldManager::listAll() as $type) {
 				if ($type = FieldManager::create($type)) {
 					$types[] = $type;
 				}
@@ -421,7 +421,7 @@
 				}
 			}
 
-			foreach (FieldManager::fetchTypes() as $type) {
+			foreach (FieldManager::listAll() as $type) {
 				if ($type = FieldManager::create($type)) {
 					array_push($types, $type);
 				}
