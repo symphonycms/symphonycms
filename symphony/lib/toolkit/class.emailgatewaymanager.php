@@ -9,13 +9,11 @@
 	 */
 
 	require_once(TOOLKIT . '/class.emailgateway.php');
-	require_once(TOOLKIT . '/class.manager.php');
+	require_once(TOOLKIT . '/interface.fileresource.php');
 
-	Class EmailGatewayManager extends Manager{
+	Class EmailGatewayManager implements FileResource {
 
 		protected static $_default_gateway = 'sendmail';
-
-		public function __construct() {}
 
 		/**
 		 * Sets the default gateway.
