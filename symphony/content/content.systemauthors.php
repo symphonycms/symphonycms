@@ -207,6 +207,9 @@
 
 			$this->setTitle(__(($this->_context[0] == 'new' ? '%2$s &ndash; %3$s' : '%1$s &ndash; %2$s &ndash; %3$s'), array($author->getFullName(), __('Authors'), __('Symphony'))));
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $author->getFullName()));
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Authors'), SYMPHONY_URL . '/system/authors/'),
+			));
 
 			### Essentials ###
 			$group = new XMLElement('fieldset');

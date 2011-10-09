@@ -682,7 +682,7 @@ var Symphony = {};
 			}
 
 			// Show only relevant options based on context
-			$('#context').change(function() {
+			$('#ds-context').change(function() {
 				if($(this).find('option:selected').text() == label) {
 					select.find('option.optgroup').remove();
 					select.append(options.clone(true));
@@ -694,7 +694,7 @@ var Symphony = {};
 		$('*.contextual').each(function() {
 			var area = $(this);
 
-			$('#context').change(function() {
+			$('#ds-context').change(function() {
 				var select = $(this),
 					optgroup = select.find('option:selected').parent(),
 					value = select.val().replace(/\W+/g, '_'),
@@ -706,7 +706,7 @@ var Symphony = {};
 		});
 
 		// Set data source manager context
-		$('#context').change();
+		$('#ds-context').change();
 
 		// Once pagination is disabled, max_records and page_number are disabled too
 		var max_record = $('input[name*=max_records]'),

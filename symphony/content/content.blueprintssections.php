@@ -101,6 +101,9 @@
 			$this->setPageType('form');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Sections'), __('Symphony'))));
 			$this->appendSubheading(__('Untitled'));
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Sections'), SYMPHONY_URL . '/blueprints/sections/'),
+			));
 
 			$types = array();
 
@@ -326,7 +329,12 @@
 
 			$this->setPageType('form');
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($meta['name'], __('Sections'), __('Symphony'))));
-			$this->appendSubheading($meta['name']);
+			$this->appendSubheading($meta['name'],
+				Widget::Anchor(__('View Entries'), SYMPHONY_URL . '/publish/' . $section->get('handle'), __('View Section Entries'), 'button')
+			);
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Sections'), SYMPHONY_URL . '/blueprints/sections/'),
+			));
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');

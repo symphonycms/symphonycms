@@ -139,7 +139,7 @@
 		public function __construct($name, $value = null, Array $attributes = array(), $createHandle = false){
 
 			$this->_name = ($createHandle) ? Lang::createHandle($name) : $name;
-			$this->setValue($value);
+			$this->setValue(($value instanceof XMLElement) ? $value->generate(false) : $value);
 
 			if(is_array($attributes) && !empty($attributes)) {
 				$this->setAttributeArray($attributes);

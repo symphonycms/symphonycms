@@ -93,6 +93,9 @@
 
 			$this->setTitle(__(($this->_context[0] == 'new' ? '%2$s &ndash; %3$s' : '%1$s &ndash; %2$s &ndash; %3$s'), array($filename, __('Utilities'), __('Symphony'))));
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $filename));
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Utilities'), SYMPHONY_URL . '/blueprints/utilities/'),
+			));
 
 			if(!empty($_POST)) $fields = $_POST['fields'];
 
