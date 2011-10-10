@@ -301,7 +301,6 @@ ul.tags .more:hover {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	cursor: help;
 	float: right;
 }
 .group label > i:hover,
