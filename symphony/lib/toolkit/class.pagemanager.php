@@ -42,6 +42,30 @@
 		}
 
 		/**
+		 * Return a Page title by the handle
+		 *
+		 * @param string $handle
+		 *  The handle of the page
+		 * @return integer
+		 *  The Page title
+		 */
+		public static function fetchTitleFromHandle($handle){
+			return Symphony::Database()->fetchVar('title', 0, "SELECT `title` FROM `tbl_pages` WHERE `handle` = '$handle' LIMIT 1");
+		}
+
+		/**
+		 * Return a Page ID by the handle
+		 *
+		 * @param string $handle
+		 *  The handle of the page
+		 * @return integer
+		 *  The Page ID
+		 */
+		public static function fetchIDFromHandle($handle){
+			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_pages` WHERE `handle` = '$handle' LIMIT 1");
+		}
+
+		/**
 		 * Given a Page ID and an array of types, this function will add Page types
 		 * to that Page. If a Page types are stored in `tbl_pages_types`.
 		 *

@@ -20,6 +20,24 @@
 		public $_errors = array();
 		protected $_hilights = array();
 
+		public function insertBreadcrumbs($page_id, $preserve_last = true) {
+			$pages = PageManager::resolvePage($page_id, 'handle');
+
+			foreach($pages as &$page){
+				$page = Widget::Anchor(
+					PageManager::fetchTitleFromHandle($page),
+					SYMPHONY_URL . '/blueprints/pages/edit/' . PageManager::fetchIDFromHandle($page)
+				);
+			}
+
+			if(!$preserve_last) array_pop($pages);
+
+			parent::insertBreadcrumbs(array_merge(
+				array(Widget::Anchor(__('Pages'), SYMPHONY_URL . '/blueprints/pages/')),
+				$pages
+			));
+		}
+
 		public function __viewIndex() {
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Pages'), __('Symphony'))));
@@ -194,10 +212,7 @@
 			));
 
 			$this->appendSubheading(__($filename ? $filename : __('Untitled')), Widget::Anchor(__('Edit Configuration'), SYMPHONY_URL . '/blueprints/pages/edit/' . $pagedata['id'] . '/', __('Edit Page Configuration'), 'button', NULL, array('accesskey' => 't')));
-			$this->insertBreadcrumbs(array(
-				Widget::Anchor(__('Pages'), SYMPHONY_URL . '/blueprints/pages/'),
-				Widget::Anchor($pagename, SYMPHONY_URL . '/blueprints/pages/edit/' . $pagedata['id']),
-			));
+			$this->insertBreadcrumbs($pagedata['id']);
 
 			if(!empty($_POST)) $fields = $_POST['fields'];
 
@@ -369,9 +384,8 @@
 			else {
 				$this->appendSubheading(($title ? $title : __('Untitled')));
 			}
-			$this->insertBreadcrumbs(array(
-				Widget::Anchor(__('Pages'), SYMPHONY_URL . '/blueprints/pages/'),
-			));
+			$this->insertBreadcrumbs($this->_context[1], false);
+
 
 		// Title --------------------------------------------------------------
 
