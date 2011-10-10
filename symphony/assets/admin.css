@@ -870,16 +870,6 @@ body, html {
 #breadcrumbs span {
 	padding: 0 0.4em 0 0.25em;
 }
-/*#breadcrumbs a:link:after,*/
-/*#breadcrumbs a:hover:after {*/
-/*	color: #000;*/
-/*	text-decoration: none;*/
-/*	cursor: auto;*/
-/*	content: " > ";*/
-/*}*/
-#breadcrumbs span:last-of-type {
-/*	padding: 0 3px 0 0;*/
-}
 #context h2 {
 	border-bottom: 0;
 	padding: 0;
