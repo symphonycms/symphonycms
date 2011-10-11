@@ -857,6 +857,7 @@ body, html {
 	font: 127.28% Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
 	color: rgba(0, 0, 0, 0.6);
 	text-shadow: 0 0 1px #fff;
+	float: left;
 }
 #breadcrumbs a {
 	text-decoration: none;
@@ -867,7 +868,7 @@ body, html {
 	color: rgba(0, 0, 0, 0.8);
 }
 #breadcrumbs span {
-	padding: 0 0.4em 0 0.25em;
+	padding: 0 0.4em;
 }
 #context h2 {
 	border-bottom: 0;
