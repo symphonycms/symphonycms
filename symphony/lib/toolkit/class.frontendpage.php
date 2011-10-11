@@ -297,7 +297,7 @@
 			Symphony::ExtensionManager()->notifyMembers('FrontendPageResolved', '/frontend/', array('page' => &$this, 'page_data' => &$page));
 
 			$this->_pageData = $page;
-			$root_page = @array_shift(explode('/', $page['path']));
+			$root_page = strpos('/', $page['path']) !== false ? array_shift(explode('/', $page['path'])) : '';
 			$current_path = explode(dirname($_SERVER['SCRIPT_NAME']), $_SERVER['REQUEST_URI'], 2);
 			$current_path = '/' . ltrim(end($current_path), '/');
 
@@ -487,23 +487,13 @@
 			Symphony::ExtensionManager()->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => &$this->_page));
 
 			## Default to the index page if no page has been specified
-			if((!$this->_page || $this->_page == '//') && is_null($row) ){
-				$row = Symphony::Database()->fetchRow(0, "
-					SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types`
-					WHERE `tbl_pages_types`.page_id = `tbl_pages`.id
-					AND tbl_pages_types.`type` = 'index'
-					 LIMIT 1
-				");
+			if((!$this->_page || $this->_page == '//') && is_null($row)) {
+				$row = PageManager::fetchPageByType('index');
 			}
 
-			elseif(is_null($row)){
-
-				$pathArr = preg_split('/\//', trim($this->_page, '/'), -1, PREG_SPLIT_NO_EMPTY);
-				$prevPage = NULL;
-
-				$valid_page_path = array();
+			else if(is_null($row)) {
 				$page_extra_bits = array();
-
+				$pathArr = preg_split('/\//', trim($this->_page, '/'), -1, PREG_SPLIT_NO_EMPTY);
 				$handle = array_pop($pathArr);
 
 				do {
@@ -516,8 +506,7 @@
 					);
 
 					if($row = Symphony::Database()->fetchRow(0, $sql)){
-						array_push($pathArr, $handle);
-						$valid_page_path = $pathArr;
+						$pathArr[] = $handle;
 
 						break 1;
 					}
@@ -527,7 +516,7 @@
 
 				} while($handle = array_pop($pathArr));
 
-				if(empty($valid_page_path)) return false;
+				if(empty($pathArr)) return false;
 
 				if(!$this->__isSchemaValid($row['params'], $page_extra_bits)) return false;
 			}
@@ -540,26 +529,20 @@
 			}
 
 			if(isset($page_extra_bits)) {
-				if(is_array($page_extra_bits) && !empty($page_extra_bits)) $page_extra_bits = array_reverse($page_extra_bits);
+				if(!empty($page_extra_bits)) $page_extra_bits = array_reverse($page_extra_bits);
 
-				for($ii = 0; $ii < count($page_extra_bits); $ii++){
-					$this->_env['url'][$url_params[$ii]] = str_replace(' ', '+', $page_extra_bits[$ii]);
+				for($i = 0, $ii = count($page_extra_bits); $i < $ii; $i++){
+					$this->_env['url'][$url_params[$i]] = str_replace(' ', '+', $page_extra_bits[$i]);
 				}
 			}
 
 			if(!is_array($row) || empty($row)) return false;
 
-			$row['type'] = FrontendPage::fetchPageTypes($row['id']);
+			$row['type'] = PageManager::fetchPageTypes($row['id']);
 
 			## Make sure the user has permission to access this page
 			if(!$this->is_logged_in && in_array('admin', $row['type'])){
-				$row = Symphony::Database()->fetchRow(0, "
-					SELECT `tbl_pages`.*
-					FROM `tbl_pages`, `tbl_pages_types`
-					WHERE `tbl_pages_types`.page_id = `tbl_pages`.id
-					AND tbl_pages_types.`type` = '403'
-					LIMIT 1
-				");
+				$row = PageManager::fetchPageByType('403');
 
 				if(empty($row)){
 					GenericExceptionHandler::$enabled = true;
@@ -571,24 +554,12 @@
 					);
 				}
 
-				$row['type'] = FrontendPage::fetchPageTypes($row['id']);
+				$row['type'] = PageManager::fetchPageTypes($row['id']);
  			}
 
-			$row['filelocation'] = FrontendPage::resolvePageFileLocation($row['path'], $row['handle']);
+			$row['filelocation'] = PageManager::resolvePageFileLocation($row['path'], $row['handle']);
 
 			return $row;
-		}
-
-		/**
-		 * Given a page ID, return it's type from `tbl_pages`
-		 *
-		 * @param integer $page_id
-		 *  The page ID to find it's type
-		 * @return array
-		 *  An array of types that this page is set as
-		 */
-		public static function fetchPageTypes($page_id){
-			return Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '{$page_id}' ");
 		}
 
 		/**
@@ -611,24 +582,6 @@
 			$schema_arr = preg_split('/\//', $schema, -1, PREG_SPLIT_NO_EMPTY);
 
 			return (count($schema_arr) >= count($bits));
-		}
-
-		/**
-		 * Resolves the path to this page's XSLT file. The Symphony convention
-		 * is that they are stored in the `PAGES` folder. If this page has a parent
-		 * it will be as if all the / in the URL have been replaced with _. ie.
-		 * /articles/read/ will produce a file `articles_read.xsl`
-		 *
-		 * @param string $path
-		 *  The URL path to this page, excluding the current page. ie, /articles/read
-		 *  would make `$path` become articles/
-		 * @param string $handle
-		 *  The handle of the resolved page.
-		 * @return string
-		 *  The path to the XSLT of this page
-		 */
-		public static function resolvePageFileLocation($path, $handle){
-			return (PAGES . '/' . trim(str_replace('/', '_', $path . '_' . $handle), '_') . '.xsl');
 		}
 
 		/**
@@ -787,11 +740,11 @@
 
 				$ds = $pool[$handle];
 				$ds->processParameters(array('env' => $this->_env, 'param' => $this->_param));
-				
+
 				// default to no XML
 				$xml = NULL;
-				
-				
+
+
 				/**
 				 * Allows extensions to execute the data source themselves (e.g. for caching)
 				 * and providing their own output XML instead
@@ -811,12 +764,12 @@
 					'xml' => &$xml,
 					'param_pool' => &$this->_env['pool']
 				));
-				
+
 				// if the XML is still null, an extension has not run the data source, so run normally
 				if(is_null($xml)) {
 					$xml = $ds->grab($this->_env['pool']);
 				}
-				
+
 				if ($xml) {
 					if (is_object($xml)) $wrapper->appendChild($xml);
 					else $wrapper->setValue(
@@ -902,6 +855,40 @@
 			}
 
 			return $list;
+		}
+
+		/**
+		 * Given a page ID, return it's type from `tbl_pages`
+		 *
+		 * @deprecated This function will be removed in Symphony 2.4. Use
+		 * `PageManager::fetchPageTypes` instead.
+		 * @param integer $page_id
+		 *  The page ID to find it's type
+		 * @return array
+		 *  An array of types that this page is set as
+		 */
+		public static function fetchPageTypes($page_id) {
+			return PageManager::fetchPageTypes($page_id);
+		}
+
+		/**
+		 * Resolves the path to this page's XSLT file. The Symphony convention
+		 * is that they are stored in the `PAGES` folder. If this page has a parent
+		 * it will be as if all the / in the URL have been replaced with _. ie.
+		 * /articles/read/ will produce a file `articles_read.xsl`
+		 *
+		 * @deprecated This function will be removed in Symphony 2.4. Use
+		 *  `PageManager::resolvePageFileLocation`
+		 * @param string $path
+		 *  The URL path to this page, excluding the current page. ie, /articles/read
+		 *  would make `$path` become articles/
+		 * @param string $handle
+		 *  The handle of the resolved page.
+		 * @return string
+		 *  The path to the XSLT of this page
+		 */
+		public static function resolvePageFileLocation($path, $handle) {
+			return PageManager::resolvePageFileLocation($path, $handle);
 		}
 
 	}

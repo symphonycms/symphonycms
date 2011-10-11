@@ -198,8 +198,11 @@
 			}
 
 			$this->setPageType('form');
-			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Data Sources'), $about['name'])));
+			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($about['name'], __('Data Sources'), __('Symphony'))));
 			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Data Sources'), SYMPHONY_URL . '/blueprints/datasources/'),
+			));
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
@@ -246,7 +249,7 @@
 				foreach($sections as $s) $options[0]['options'][] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
 			}
 
-			$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
+			$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'ds-context')));
 			$group->appendChild($label);
 
 			$fieldset->appendChild($group);
@@ -368,10 +371,10 @@
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
 
-			$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` ORDER BY `title` ASC");
-
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tags');
+
+			$pages = PageManager::fetch(false, array('*'), array(), 'title ASC');
 
 			foreach($pages as $page){
 				$ul->appendChild(new XMLElement('li', preg_replace('/\/{2,}/i', '/', '/' . $page['path'] . '/' . $page['handle'])));
@@ -401,7 +404,11 @@
 
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tags');
-			if($types = $this->__fetchAvailablePageTypes()) foreach($types as $type) $ul->appendChild(new XMLElement('li', $type));
+			if($types = PageManager::fetchAvailablePageTypes()) {
+				foreach($types as $type) {
+					$ul->appendChild(new XMLElement('li', $type));
+				}
+			}
 
 			if(isset($fields['filter']['navigation']['type'])){
 				$li = new XMLElement('li');
@@ -878,7 +885,7 @@
 			$datasource = DatasourceManager::create($this->_context[1], NULL, false);
 			$about = $datasource->about();
 
-			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Data Source'), $about['name'])));
+			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($about['name'], __('Data Source'), __('Symphony'))));
 			$this->appendSubheading($about['name']);
 			$this->Form->setAttribute('id', 'controller');
 
@@ -959,20 +966,20 @@
 				if(!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php')){
 					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
 				}
-				else{
-
-					$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]".$this->_context[1]."[[:>:]]' ");
+				else {
+					$pages = PageManager::fetch(false, array('data_sources', 'id'), array("
+						`data_sources` REGEXP '[[:<:]]" . $this->_context[1] . "[[:>:]]'
+					"));
 
 					if(is_array($pages) && !empty($pages)){
 						foreach($pages as $page){
-
 							$data_sources = preg_split('/\s*,\s*/', $page['data_sources'], -1, PREG_SPLIT_NO_EMPTY);
 							$data_sources = array_flip($data_sources);
 							unset($data_sources[$this->_context[1]]);
 
 							$page['data_sources'] = implode(',', array_flip($data_sources));
 
-							Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
+							PageManager::update($page['id'], $page);
 						}
 					}
 					redirect(SYMPHONY_URL . '/blueprints/components/');
@@ -1343,19 +1350,18 @@
 				else{
 
 					if($queueForDeletion){
-
 						General::deleteFile($queueForDeletion);
 
 						## Update pages that use this DS
-						$sql = "SELECT * FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]".$existing_handle."[[:>:]]' ";
-						$pages = Symphony::Database()->fetch($sql);
+						$pages = PageManager::fetch(false, array('data_sources', 'id'), array("
+							`data_sources` REGEXP '[[:<:]]" . $existing_handle . "[[:>:]]'
+						"));
 
 						if(is_array($pages) && !empty($pages)){
-							foreach($pages as $page){
-
+							foreach($pages as $page) {
 								$page['data_sources'] = preg_replace('/\b'.$existing_handle.'\b/i', $classname, $page['data_sources']);
 
-								Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
+								PageManager::update($page['id'], $page);
 							}
 						}
 					}
@@ -1388,7 +1394,6 @@
 					}
 
 					redirect(SYMPHONY_URL . '/blueprints/datasources/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
-
 				}
 			}
 		}

@@ -85,8 +85,11 @@
 			if(isset($_POST['fields'])) $fields = $_POST['fields'];
 
 			$this->setPageType('form');
-			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Events'), $about['name'])));
+			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($about['name'], __('Events'), __('Symphony'))));
 			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Events'), SYMPHONY_URL . '/blueprints/events/'),
+			));
 
 			if(!$readonly):
 				$fieldset = new XMLElement('fieldset');
@@ -226,20 +229,19 @@
 					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
 				}
 
-				else{
-
-					$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` WHERE `events` REGEXP '[[:<:]]".$this->_context[1]."[[:>:]]' ");
-
+				else {
+					$pages = PageManager::fetch(false, array('events', 'id'), array("
+						`events` REGEXP '[[:<:]]" . $this->_context[1] . "[[:>:]]'
+					"));
 					if(is_array($pages) && !empty($pages)){
 						foreach($pages as $page){
-
 							$events = preg_split('/\s*,\s*/', $page['events'], -1, PREG_SPLIT_NO_EMPTY);
 							$events = array_flip($events);
 							unset($events[$this->_context[1]]);
 
 							$page['events'] = implode(',', array_flip($events));
 
-							Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
+							PageManager::update($page['id'], $page);
 						}
 					}
 
@@ -506,15 +508,16 @@
 					if($queueForDeletion){
 						General::deleteFile($queueForDeletion);
 
-						$sql = "SELECT * FROM `tbl_pages` WHERE `events` REGEXP '[[:<:]]".$existing_handle."[[:>:]]' ";
-						$pages = Symphony::Database()->fetch($sql);
+						$pages = PageManager::fetch(false, array('events', 'id'), array("
+							`events` REGEXP '[[:<:]]" . $existing_handle . "[[:>:]]'
+						"));
 
 						if(is_array($pages) && !empty($pages)){
 							foreach($pages as $page){
 
 								$page['events'] = preg_replace('/\b'.$existing_handle.'\b/i', $classname, $page['events']);
 
-								Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
+								PageManager::update($page['id'], $page);
 							}
 						}
 

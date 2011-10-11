@@ -12,9 +12,9 @@
 	 */
 
 	require_once(TOOLKIT . '/class.datasource.php');
-	require_once(TOOLKIT . '/class.manager.php');
+	require_once(TOOLKIT . '/interface.fileresource.php');
 
-    Class DatasourceManager extends Manager{
+    Class DatasourceManager implements FileResource {
 
 		/**
 		 * Given the filename of a Datasource return it's handle. This will remove
@@ -174,7 +174,6 @@
 		 * @return Datasource
 		 */
 		public static function create($handle, array $env = null, $process_params=true){
-
 			$classname = self::__getClassName($handle);
 			$path = self::__getDriverPath($handle);
 
@@ -192,7 +191,6 @@
 			$dummy = array();
 
 			return new $classname($dummy, $env, $process_params);
-
 		}
 
     }

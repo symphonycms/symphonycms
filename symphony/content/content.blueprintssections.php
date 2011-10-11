@@ -18,7 +18,7 @@
 
 		public function __viewIndex(){
 			$this->setPageType('table');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Sections'), __('Symphony'))));
 			$this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a section'), 'create button', NULL, array('accesskey' => 'c')));
 
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
@@ -99,8 +99,11 @@
 
 		public function __viewNew(){
 			$this->setPageType('form');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Sections'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Sections'), __('Symphony'))));
 			$this->appendSubheading(__('Untitled'));
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Sections'), SYMPHONY_URL . '/blueprints/sections/'),
+			));
 
 			$types = array();
 
@@ -218,7 +221,7 @@
 				}
 			}
 
-			foreach (FieldManager::fetchTypes() as $type) {
+			foreach (FieldManager::listAll() as $type) {
 				if ($type = FieldManager::create($type)) {
 					$types[] = $type;
 				}
@@ -325,8 +328,13 @@
 			}
 
 			$this->setPageType('form');
-			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Sections'), $meta['name'])));
-			$this->appendSubheading($meta['name']);
+			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($meta['name'], __('Sections'), __('Symphony'))));
+			$this->appendSubheading($meta['name'],
+				Widget::Anchor(__('View Entries'), SYMPHONY_URL . '/publish/' . $section->get('handle'), __('View Section Entries'), 'button')
+			);
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Sections'), SYMPHONY_URL . '/blueprints/sections/'),
+			));
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
@@ -421,7 +429,7 @@
 				}
 			}
 
-			foreach (FieldManager::fetchTypes() as $type) {
+			foreach (FieldManager::listAll() as $type) {
 				if ($type = FieldManager::create($type)) {
 					array_push($types, $type);
 				}

@@ -126,7 +126,7 @@
 		/**
 		 * Priority determines Event importance and when it should be executed.
 		 * The default priority for an event is `Event::kNORMAL`, with `Event::kHIGH` and
-		 * `Event::kLOW` being the other available options. Events execution is `Event::HIGH`
+		 * `Event::kLOW` being the other available options. Events execution is `Event::kHIGH`
 		 * to `Event::kNORMAL` to `Event::kLOW`. If there are more than one event at the
 		 * same priority level, they are sorted alphabetically by event handle and executed
 		 * in that order for that priority.

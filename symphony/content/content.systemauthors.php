@@ -20,7 +20,7 @@
 		public function __viewIndex(){
 
 			$this->setPageType('table');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Authors'), __('Symphony'))));
 
 			if (Administration::instance()->Author->isDeveloper()) {
 				$this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), Administration::instance()->getCurrentPageURL().'new/', __('Add a new author'), 'create button', NULL, array('accesskey' => 'c')));
@@ -205,8 +205,11 @@
 				Administration::instance()->customError(__('Access Denied'), __('You are not authorised to edit other authors.'));
 			}
 
-			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Authors'), $author->getFullName())));
+			$this->setTitle(__(($this->_context[0] == 'new' ? '%2$s &ndash; %3$s' : '%1$s &ndash; %2$s &ndash; %3$s'), array($author->getFullName(), __('Authors'), __('Symphony'))));
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $author->getFullName()));
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Authors'), SYMPHONY_URL . '/system/authors/'),
+			));
 
 			### Essentials ###
 			$group = new XMLElement('fieldset');

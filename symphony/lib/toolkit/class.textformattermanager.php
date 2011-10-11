@@ -13,7 +13,7 @@
 
 	require_once(TOOLKIT . '/class.textformatter.php');
 
-	Class TextformatterManager extends Manager{
+	Class TextformatterManager implements FileResource {
 
 		/**
 		 * An array of all the objects that the Manager is responsible for.

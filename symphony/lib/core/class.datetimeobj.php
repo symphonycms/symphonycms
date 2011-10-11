@@ -172,10 +172,44 @@
 		 * @param string $timezone (optional)
 		 *  The timezone associated with the timestamp
 		 * @return string|boolean
-		 *  The formatted date, of if the date could not be parsed, false.
+		 *  The formatted date, or if the date could not be parsed, false.
 		 */
 		public static function format($string = 'now', $format = DateTime::ISO8601, $localize = true, $timezone = null) {
 
+			// Parse date
+			$date = self::parse($string);
+
+			// Timezone
+			if($timezone !== null) {
+				$date->setTimezone(new DateTimeZone($timezone));
+			}
+			
+			// Format date
+			$date = $date->format($format);
+
+			// Localize date
+			// Convert date string from English back to the activated Language
+			if($localize === true) {
+				$date = Lang::localizeDate($date);
+			}
+
+			// Return custom formatted date, use ISO 8601 date by default
+			return $date;
+		}
+
+		/**
+		 * Parses the given string and returns a DateTime object.
+		 * Please note that for best compatibility with European dates it is recommended
+		 * that your site be in a PHP5.3 environment.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $string (optional)
+		 *  A string containing date and time, defaults to the current date and time
+		 * @return DateTime|boolean
+		 *  The DateTime object, or if the date could not be parsed, false.
+		 */
+		public static function parse($string) {
+		
 			// Current date and time
 			if($string == 'now' || empty($string)) {
 				$date = new DateTime();
@@ -189,7 +223,7 @@
 			// Attempt to parse the date provided against the Symphony configuration setting
 			// in an effort to better support multilingual date formats. Should this fail
 			// this block will fallback to just passing the date to DateTime constructor,
-			// which will parse the date assuming it's in an English format.
+			// which will parse the date assuming it's in an American format.
 			else {
 				// Standardize date
 				// Convert date string to English
@@ -234,22 +268,8 @@
 				}
 			}
 
-			// Timezone
-			if($timezone !== null) {
-				$date->setTimezone(new DateTimeZone($timezone));
-			}
-
-			// Format date
-			$date = $date->format($format);
-
-			// Localize date
-			// Convert date string from English back to the activated Language
-			if($localize === true) {
-				$date = Lang::localizeDate($date);
-			}
-
-			// Return custom formatted date, use ISO 8601 date by default
-			return $date;
+			// Return date object
+			return $date;		
 		}
 
 		/**
@@ -274,6 +294,7 @@
 		 * attribute. Symphony uses this in it's status messages so that it can
 		 * dynamically update how long ago the action took place using Javascript.
 		 *
+		 * @deprecated This will be removed in the next version of Symphony
 		 * @param string $format
 		 *  A valid PHP date format
 		 * @return string

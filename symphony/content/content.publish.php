@@ -47,7 +47,7 @@
 			$section = SectionManager::fetch($section_id);
 
 			$this->setPageType('table');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array($section->get('name'), __('Symphony'))));
 			$this->Form->setAttribute("class", $this->_context['section_handle']);
 
 			$filters = array();
@@ -113,7 +113,10 @@
 
 			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter_querystring ? "&amp;" . $filter_querystring : ''));
 
-			$this->appendSubheading($section->get('name'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($filter_querystring ? '?' . $prepopulate_querystring : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c')));
+			$this->appendSubheading($section->get('name'), array(
+				Widget::Anchor(__('Edit Configuration'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id, __('Edit Section Configuration'), 'button'),
+				Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($filter_querystring ? '?' . $prepopulate_querystring : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c'))
+			));
 
 			if(is_null(EntryManager::getFetchSorting()->field) && is_null(EntryManager::getFetchSorting()->direction)){
 				EntryManager::setFetchSortingDirection('DESC');
@@ -127,8 +130,8 @@
 
 			if(is_array($visible_columns) && !empty($visible_columns)){
 				foreach($visible_columns as $column){
-
-					$label = $column->label();
+					$label = new XMLElement('span', $column->label());
+					$label = $label->generate();
 
 					if($column->isSortable()) {
 
@@ -459,8 +462,14 @@
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), $section->get('name'))));
-			$this->appendSubheading(__('Untitled'));
+			$this->setTitle(__('%1$s &ndash; %2$s', array($section->get('name'), __('Symphony'))));
+			$this->appendSubheading(__('Untitled'),
+				Widget::Anchor(__('Edit Configuration'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id, __('Edit Section Configuration'), 'button')
+			);
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor($section->get('name'), SYMPHONY_URL . '/publish/' . $this->_context['section_handle']),
+			));
+
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 
 			// If there is post data floating around, due to errors, create an entry object
@@ -756,8 +765,14 @@
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
-			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), $section->get('name'), $title)));
-			$this->appendSubheading($title);
+			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($title, $section->get('name'), __('Symphony'))));
+			$this->appendSubheading($title,
+				Widget::Anchor(__('Edit Configuration'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id, __('Edit Section Configuration'), 'button')
+			);
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor($section->get('name'), SYMPHONY_URL . '/publish/' . $this->_context['section_handle']),
+			));
+
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 
 			###

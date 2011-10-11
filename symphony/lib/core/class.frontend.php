@@ -145,13 +145,13 @@
 		 *  An HTML string
 		 */
 		public static function render(Exception $e){
-			$page_id = Symphony::Database()->fetchVar('page_id', 0, "SELECT `page_id` FROM `tbl_pages_types` WHERE `type` = '404' LIMIT 1");
+			$page = PageManager::fetchPageByType('404');
 
-			if(is_null($page_id)){
+			if(is_null($page['id'])){
 				parent::render(new SymphonyErrorPage($e->getMessage(), __('Page Not Found'), 'error', array('header' => 'HTTP/1.0 404 Not Found')));
 			}
 			else{
-				$url = '/' . Frontend::instance()->resolvePagePath($page_id) . '/';
+				$url = '/' . PageManager::resolvePagePath($page['id']) . '/';
 
 				$output = Frontend::instance()->display($url);
 				header(sprintf('Content-Length: %d', strlen($output)));

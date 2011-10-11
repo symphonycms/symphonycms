@@ -24,7 +24,7 @@
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 40);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/login.css', 'screen', 40);
 
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Login'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Login'), __('Symphony'))));
 
 			Symphony::Profiler()->sample('Page template created', PROFILE_LAP);
 		}
