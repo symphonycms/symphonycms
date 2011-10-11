@@ -38,6 +38,23 @@
 			));
 		}
 
+		public function listAllPages($separator = '/') {
+			$pages = PageManager::fetch(false, array('id', 'handle', 'title', 'path'));
+
+			foreach($pages as &$page){
+				$parents = explode('/', $page['path']);
+
+				foreach($parents as &$parent){
+					$parent = PageManager::fetchTitleFromHandle($parent);
+				}
+
+				$parents = implode($separator, $parents);
+				$page['title'] = ($parents ? $parents . $separator . $page['title'] : $page['title']);
+			}
+
+			return $pages;
+		}
+
 		public function __viewIndex() {
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Pages'), __('Symphony'))));

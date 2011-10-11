@@ -356,7 +356,7 @@
 		 *
 		 * @param boolean $include_types
 		 *  Whether to include the resulting Page's Page Types in the return array,
-		 *  under the key `page_types`. Defaults to true.
+		 *  under the key `type`. Defaults to true.
 		 * @param array $select (optional)
 		 *  Accepts an array of columns to return from `tbl_pages`. If omitted,
 		 *  all columns from the table will be returned.
@@ -367,12 +367,17 @@
 		 *  Allows a developer to return the Pages in a particular order. The string
 		 *  passed will be appended to `ORDER BY`. If omitted this will return
 		 *  Pages ordered by `sortorder`.
+		 * @param boolean $hierarchical (optional)
+		 *  If true, builds a multidimensional array representing the pages hierarchy.
+		 *  Defaults to false.
 		 * @return array|null
 		 *  An associative array of Page information with the key being the column
-		 *  name from `tbl_pages` and the value being the data. If no Pages are found
-		 *  null is returned.
+		 *  name from `tbl_pages` and the value being the data. If requested, the array
+		 *  can be multidimensional and reflect the pages hierarchy. If no Pages are
+		 *  found, null is returned.
 		 */
-		public static function fetch($include_types = true, array $select = array(), array $where = array(), $order_by = null) {
+		public static function fetch($include_types = true, array $select = array(), array $where = array(), $order_by = null, $hierarchical = false) {
+			if($hierarchical) $select = array_merge($select, array('id', 'parent'));
 			if(empty($select)) $select = array('*');
 
 			if(is_null($order_by)) $order_by = 'sortorder ASC';
@@ -392,15 +397,33 @@
 				$order_by
 			));
 
-			// If the Page Types aren't included, return the pages information
-			if(!$include_types) return $pages;
+			// Fetch the Page Types for each page, if required
+			if($include_types){
+				foreach($pages as &$page) {
+					$page['type'] = PageManager::fetchPageTypes($page['id']);
+				}
+			}
 
-			// Fetch the Page Types for each page.
-			foreach($pages as &$page) {
-				$page['type'] = PageManager::fetchPageTypes($page['id']);
+			if($hierarchical){
+				$output = array();
+
+				self::__buildTreeView(null, $pages, $output);
+				$pages = $output;
 			}
 
 			return !empty($pages) ? $pages : null;
+		}
+
+		private function __buildTreeView($parent_id, $pages, &$results) {
+			if (!is_array($pages)) return;
+
+			foreach($pages as $page) {
+				if ($page['parent'] == $parent_id) {
+					$results[] = $page;
+
+					self::__buildTreeView($page['id'], $pages, $results[count($results) - 1]['children']);
+				}
+			}
 		}
 
 		/**
@@ -746,72 +769,6 @@
 			$path = PageManager::resolvePage($page_id, 'handle');
 
 			return implode('/', $path);
-		}
-
-		public function listAll(){
-			if (Multilanguage::isMultiLangual()) {
-				$lang = Multilanguage::getLanguage();
-				$cols = "`id`, `parent`, `title`, `handle`, `page_lhandles_t_$lang` as `title_t`, `page_lhandles_h_$lang` as `handle_t`";
-			} else {
-				$cols = "`id`, `parent`, `title`, `handle`";
-			}
-			
-			$query = "SELECT $cols
-			          FROM `tbl_pages`
-			          ORDER BY `title` ASC";
-			
-			if (Symphony::Database()->query($query)) {
-				$pages = Symphony::Database()->fetch();
-			}
-
-			$results = array();
-			$this->pageWalkRecursive(NULL, $pages, $results);
-
-			return $results;
-		}
-
-		private function pageWalkRecursive($parent_id, $pages, &$results) {
-			if (!is_array($pages)) return;
-
-			foreach($pages as $page) {
-				if ($page->parent == $parent_id) {
-					$results[] = array(
-						'id' => $page->id,
-						'title' => (empty($page->title_t) ? $page->title : $page->title_t),
-						'handle' => (empty($page->handle_t) ? $page->handle : $page->handle_t),
-						'children' => NULL
-					);
-
-					$this->pageWalkRecursive($page->id, $pages,
-						$results[count($results) - 1]['children']);
-				}
-			}
-		}
-
-		public function flatView() {
-			$pages = $this->listAll();
-
-			$results = array();
-			$this->buildFlatView(NULL, $pages, $results);
-			
-			return $results;
-		}
-		
-		private function buildFlatView($path, $pages, &$results) {
-			if (!is_array($pages)) return;
-
-			foreach($pages as $page) {
-				$label = ($path == NULL) ? $page['title'] : $path . ' / ' . $page['title'];
-
-				$results[] = array(
-					'id' => $page['id'],
-					'title' => $label,
-					'handle' => $page['handle'],
-				);
-
-				$this->buildFlatView($label, $page['children'], $results);
-				$label = $path;
-			}
 		}
 
 	}
