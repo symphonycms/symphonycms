@@ -47,6 +47,13 @@
 		public $Context = null;
 
 		/**
+		 * An object that stores the markup for the breadcrumbs and is only used
+		 * internally.
+		 * @var XMLElement
+		 */
+		private $Breadcrumbs = null;
+
+		/**
 		 * A `<div>` that contains the content of a Symphony backend page.
 		 * @var XMLElement
 		 */
@@ -175,9 +182,7 @@
 				$this->Context->appendChild($ul);
 			}
 
-			$breadcrumbs = $this->Context->getChildren();
-			$breadcrumbs = $breadcrumbs[0];
-			$breadcrumbs->appendChild(new XMLElement('h2', $value));
+			$this->Breadcrumbs->appendChild(new XMLElement('h2', $value));
 		}
 
 		/**
@@ -192,11 +197,8 @@
 		public function insertBreadcrumbs(array $values) {
 			if(empty($values)) return;
 
-			$breadcrumbs = $this->Context->getChildren();
-			$breadcrumbs = $breadcrumbs[0];
-
 			if(count($breadcrumbs->getChildrenByName('nav')) === 1){
-				$nav = $breadcrumbs->getChildrenByName('nav');
+				$nav = $this->Breadcrumbs->getChildrenByName('nav');
 				$nav = $nav[0];
 
 				$p = $nav->getChildren();
@@ -206,7 +208,7 @@
 				$nav = new XMLElement('nav');
 				$nav->appendChild($p);
 
-				$breadcrumbs->prependChild($nav);
+				$this->Breadcrumbs->prependChild($nav);
 			}
 
 			foreach($values as $v){
@@ -295,7 +297,8 @@
 
 			// Context + Contents
 			$this->Context = new XMLElement('div', NULL, array('id' => 'context'));
-			$this->Context->appendChild(new XMLElement('div', NULL, array('id' => 'breadcrumbs')));
+			$this->Breadcrumbs = new XMLElement('div', NULL, array('id' => 'breadcrumbs'));
+			$this->Context->appendChild($this->Breadcrumbs);
 
 			$this->Contents = new XMLElement('div', NULL, array('id' => 'contents'));
 			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
