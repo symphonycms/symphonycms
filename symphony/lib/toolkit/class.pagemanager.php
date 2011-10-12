@@ -373,7 +373,7 @@
 		 * @return array|null
 		 *  An associative array of Page information with the key being the column
 		 *  name from `tbl_pages` and the value being the data. If requested, the array
-		 *  can be multidimensional and reflect the pages hierarchy. If no Pages are
+		 *  can be made multidimensional to reflect the pages hierarchy. If no Pages are
 		 *  found, null is returned.
 		 */
 		public static function fetch($include_types = true, array $select = array(), array $where = array(), $order_by = null, $hierarchical = false) {

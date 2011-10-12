@@ -14,7 +14,7 @@
 	require_once(TOOLKIT . '/class.datasource.php');
 	require_once(TOOLKIT . '/interface.fileresource.php');
 
-    Class DatasourceManager implements FileResource {
+	Class DatasourceManager implements FileResource {
 
 		/**
 		 * Given the filename of a Datasource return it's handle. This will remove
@@ -193,4 +193,57 @@
 			return new $classname($dummy, $env, $process_params);
 		}
 
-    }
+		public static function sortByName($order, array $data = array()){
+			if(empty($data)) $data = self::listAll();
+
+			if($order == 'asc') krsort($data);
+
+			return $data;
+		}
+
+		public static function sortBySource($order, array $data = array()){
+			if(empty($data)) $data = self::listAll();
+
+			foreach($data as $key => $about){
+				$source[$key] = $about['source'];
+				$label[$key] = $key;
+			}
+
+			$sort = ($order == 'desc') ? SORT_DESC : SORT_ASC;
+
+			array_multisort($source, $sort, $label, SORT_ASC, $data);
+
+			return $data;
+		}
+
+		public static function sortByDate($order, array $data = array()){
+			if(empty($data)) $data = self::listAll();
+
+			foreach($data as $key => $about){
+				$author[$key] = $about['release-date'];
+				$label[$key] = $key;
+			}
+
+			$sort = ($order == 'desc') ? SORT_DESC : SORT_ASC;
+
+			array_multisort($author, $sort, $label, SORT_ASC, $data);
+
+			return $data;
+		}
+
+		public static function sortByAuthor($order, array $data = array()){
+			if(empty($data)) $data = self::listAll();
+
+			foreach($data as $key => $about){
+				$author[$key] = $about['author']['name'];
+				$label[$key] = $key;
+			}
+
+			$sort = ($order == 'desc') ? SORT_DESC : SORT_ASC;
+
+			array_multisort($author, $sort, $label, SORT_ASC, $data);
+
+			return $data;
+		}
+
+	}

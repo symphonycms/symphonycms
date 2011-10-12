@@ -11,6 +11,7 @@
 	 */
 
 	require_once(TOOLKIT . '/class.event.php');
+	require_once(TOOLKIT . '/class.datasourcemanager.php');
 
 	Class EventManager implements FileResource {
 
@@ -184,6 +185,22 @@
 				require_once($path);
 
 			return new $classname($dummy, $env);
+		}
+
+		public static function sortByName($order, array $data = array()){
+			return DatasourceManager::sortByName($order, $data);
+		}
+
+		public static function sortBySource($order, array $data = array()){
+			return DatasourceManager::sortBySource($order, $data);
+		}
+
+		public static function sortByDate($order, array $data = array()){
+			return DatasourceManager::sortByDate($order, $data);
+		}
+
+		public static function sortByAuthor($order, array $data = array()){
+			return DatasourceManager::sortByAuthor($order, $data);
 		}
 
 	}
