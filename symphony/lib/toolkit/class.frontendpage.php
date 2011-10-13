@@ -300,6 +300,8 @@
 			$root_page = strpos('/', $page['path']) !== false ? array_shift(explode('/', $page['path'])) : '';
 			$current_path = explode(dirname($_SERVER['SCRIPT_NAME']), $_SERVER['REQUEST_URI'], 2);
 			$current_path = '/' . ltrim(end($current_path), '/');
+			$current_path = explode('?', $current_path, 2);
+			$current_path = current($current_path);
 
 			// Get max upload size from php and symphony config then choose the smallest
 			$upload_size_php = ini_size_to_bytes(ini_get('upload_max_filesize'));
