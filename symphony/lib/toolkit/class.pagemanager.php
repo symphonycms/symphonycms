@@ -545,7 +545,7 @@
 		 */
 		public static function createHandle($name) {
 			return Lang::createHandle($name, 255, '-', false, true, array(
-				'@^[^a-z]+@i' => '',
+				'@^[^a-z\d]+@i' => '',
 				'/[^\w-\.]/i' => ''
 			));
 		}

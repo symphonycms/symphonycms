@@ -1074,7 +1074,7 @@
 				}
 			}
 
-			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z]+@i' => '', '/[^\w-\.]/i' => ''));
+			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
 
 			##Check to make sure the classname is not empty after handlisation.
