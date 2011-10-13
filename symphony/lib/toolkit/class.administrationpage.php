@@ -49,6 +49,7 @@
 		/**
 		 * An object that stores the markup for the breadcrumbs and is only used
 		 * internally.
+		 * @since Symphony 2.3
 		 * @var XMLElement
 		 */
 		private $Breadcrumbs = null;
@@ -145,7 +146,6 @@
 		 *  to `Alert::NOTICE`.
 		 */
 		public function pageAlert($message = null, $type = Alert::NOTICE){
-
 			if(is_null($message) && $type == Alert::ERROR){
 				$message = 'There was a problem rendering this page. Please check the activity log for more details.';
 			}
@@ -161,9 +161,10 @@
 		 * Appends the heading of this Symphony page to the Context element.
 		 * Action buttons can be provided (e.g. "Create new") as second parameter.
 		 *
+		 * @since Symphony 2.3
 		 * @param string $value
 		 *  The heading text
-		 * @param Array|XMLElement|string $actions
+		 * @param array|XMLElement|string $actions
 		 *  Some contextual actions to append to the heading, they can be provided as
 		 *  an array of XMLElements or strings. Traditionally Symphony uses this to append
 		 *  a "Create new" link to the Context div.
@@ -188,7 +189,8 @@
 		/**
 		 * Allows developers to specify a list of nav items that build the path to the
 		 * current page or, in jargon, "breadcrumbs".
-		 * 
+		 *
+		 * @since Symphony 2.3
 		 * @param array $values
 		 *  An array of XMLElements or strings that compose the path. If breadcrumbs
 		 *  already exist, any new item will be appended to the rightmost part of the
@@ -197,13 +199,15 @@
 		public function insertBreadcrumbs(array $values) {
 			if(empty($values)) return;
 
-			if(count($breadcrumbs->getChildrenByName('nav')) === 1){
+			if($this->Breadcrumbs instanceof XMLELement
+				&& count($this->Breadcrumbs->getChildrenByName('nav')) === 1) {
 				$nav = $this->Breadcrumbs->getChildrenByName('nav');
 				$nav = $nav[0];
 
 				$p = $nav->getChildren();
 				$p = $p[0];
-			} else {
+			}
+			else {
 				$p = new XMLElement('p');
 				$nav = new XMLElement('nav');
 				$nav->appendChild($p);
