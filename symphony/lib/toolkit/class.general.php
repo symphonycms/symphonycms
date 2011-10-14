@@ -419,7 +419,7 @@
 		 * @param string $string
 		 *	String to be cleaned up
 		 * @param string $delim
-		 *	Replacement for invalid characters
+		 *	All non-valid characters will be replaced with this
 		 * @return string
 		 *	Returns created filename
 		 */
