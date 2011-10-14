@@ -193,8 +193,8 @@
 			return new $classname($dummy, $env, $process_params);
 		}
 
-		public static function fetch(array $select = array(), array $where = array(), $order_by = null) {
-			$resources = self::listAll();
+		public static function fetch(array $select = array(), array $where = array(), $order_by = null, array $data = array()) {
+			$resources = (empty($data)) ? self::listAll() : $data;
 
 			if(empty($select) && is_null($order_by)) return $resources;
 

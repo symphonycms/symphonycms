@@ -188,7 +188,7 @@
 		}
 
 		public static function fetch(array $select = array(), array $where = array(), $order_by = null) {
-			return DatasourceManager::fetch($select, $where, $order_by);
+			return DatasourceManager::fetch($select, $where, $order_by, self::listAll());
 		}
 
 	}
