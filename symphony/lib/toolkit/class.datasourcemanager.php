@@ -193,55 +193,55 @@
 			return new $classname($dummy, $env, $process_params);
 		}
 
-		public static function sortByName($order, array $data = array()){
-			if(empty($data)) $data = self::listAll();
+		public static function fetch(array $select = array(), array $where = array(), $order_by = null) {
+			$resources = self::listAll();
 
-			if($order == 'asc') krsort($data);
+			if(empty($select) && is_null($order_by)) return $resources;
 
-			return $data;
-		}
+			if(!is_null($order_by)){
 
-		public static function sortBySource($order, array $data = array()){
-			if(empty($data)) $data = self::listAll();
+				$order_by = array_map('strtolower', explode(' ', $order_by));
+				$sort = ($order_by[1] == 'desc') ? SORT_DESC : SORT_ASC;
+				$order = $order_by[0];
 
-			foreach($data as $key => $about){
-				$source[$key] = $about['source'];
-				$label[$key] = $key;
+				if($order == 'author'){
+					foreach($resources as $key => $about){
+						$author[$key] = $about['author']['name'];
+						$label[$key] = $key;
+					}
+
+					array_multisort($author, $sort, $label, SORT_ASC, $resources);
+				}
+				else if($order == 'release-date'){
+					foreach($resources as $key => $about){
+						$author[$key] = $about['release-date'];
+						$label[$key] = $key;
+					}
+
+					array_multisort($author, $sort, $label, SORT_ASC, $resources);
+				}
+				else if($order == 'source'){
+					foreach($resources as $key => $about){
+						$source[$key] = $about['source'];
+						$label[$key] = $key;
+					}
+
+					array_multisort($source, $sort, $label, SORT_ASC, $resources);
+				}
+				else if($order == 'name'){
+					if($sort == SORT_ASC) krsort($resources);
+				}
+
 			}
 
-			$sort = ($order == 'desc') ? SORT_DESC : SORT_ASC;
+			$data = array();
 
-			array_multisort($source, $sort, $label, SORT_ASC, $data);
-
-			return $data;
-		}
-
-		public static function sortByDate($order, array $data = array()){
-			if(empty($data)) $data = self::listAll();
-
-			foreach($data as $key => $about){
-				$author[$key] = $about['release-date'];
-				$label[$key] = $key;
+			foreach($resources as $i => $r) {
+				$data[$i] = array();
+				foreach($r as $key => $value) {
+					if(in_array($key, $select)) $data[$i][$key] = $value;
+				}
 			}
-
-			$sort = ($order == 'desc') ? SORT_DESC : SORT_ASC;
-
-			array_multisort($author, $sort, $label, SORT_ASC, $data);
-
-			return $data;
-		}
-
-		public static function sortByAuthor($order, array $data = array()){
-			if(empty($data)) $data = self::listAll();
-
-			foreach($data as $key => $about){
-				$author[$key] = $about['author']['name'];
-				$label[$key] = $key;
-			}
-
-			$sort = ($order == 'desc') ? SORT_DESC : SORT_ASC;
-
-			array_multisort($author, $sort, $label, SORT_ASC, $data);
 
 			return $data;
 		}

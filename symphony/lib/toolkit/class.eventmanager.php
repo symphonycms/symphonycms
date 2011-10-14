@@ -187,20 +187,8 @@
 			return new $classname($dummy, $env);
 		}
 
-		public static function sortByName($order, array $data = array()){
-			return DatasourceManager::sortByName($order, $data);
-		}
-
-		public static function sortBySource($order, array $data = array()){
-			return DatasourceManager::sortBySource($order, $data);
-		}
-
-		public static function sortByDate($order, array $data = array()){
-			return DatasourceManager::sortByDate($order, $data);
-		}
-
-		public static function sortByAuthor($order, array $data = array()){
-			return DatasourceManager::sortByAuthor($order, $data);
+		public static function fetch(array $select = array(), array $where = array(), $order_by = null) {
+			return DatasourceManager::fetch($select, $where, $order_by);
 		}
 
 	}
