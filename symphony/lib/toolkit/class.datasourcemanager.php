@@ -196,40 +196,41 @@
 		public static function fetch(array $select = array(), array $where = array(), $order_by = null, array $data = array()) {
 			$resources = (empty($data)) ? self::listAll() : $data;
 
+			// For future reference: we'll need to check if $where is empty too
 			if(empty($select) && is_null($order_by)) return $resources;
 
 			if(!is_null($order_by)){
 
 				$order_by = array_map('strtolower', explode(' ', $order_by));
-				$sort = ($order_by[1] == 'desc') ? SORT_DESC : SORT_ASC;
-				$order = $order_by[0];
+				$order = ($order_by[1] == 'desc') ? SORT_DESC : SORT_ASC;
+				$sort = $order_by[0];
 
-				if($order == 'author'){
+				if($sort == 'author'){
 					foreach($resources as $key => $about){
 						$author[$key] = $about['author']['name'];
 						$label[$key] = $key;
 					}
 
-					array_multisort($author, $sort, $label, SORT_ASC, $resources);
+					array_multisort($author, $order, $label, SORT_ASC, $resources);
 				}
-				else if($order == 'release-date'){
+				else if($sort == 'release-date'){
 					foreach($resources as $key => $about){
 						$author[$key] = $about['release-date'];
 						$label[$key] = $key;
 					}
 
-					array_multisort($author, $sort, $label, SORT_ASC, $resources);
+					array_multisort($author, $order, $label, SORT_ASC, $resources);
 				}
-				else if($order == 'source'){
+				else if($sort == 'source'){
 					foreach($resources as $key => $about){
 						$source[$key] = $about['source'];
 						$label[$key] = $key;
 					}
 
-					array_multisort($source, $sort, $label, SORT_ASC, $resources);
+					array_multisort($source, $order, $label, SORT_ASC, $resources);
 				}
-				else if($order == 'name'){
-					if($sort == SORT_ASC) krsort($resources);
+				else if($sort == 'name'){
+					if($order == SORT_ASC) krsort($resources);
 				}
 
 			}
@@ -239,7 +240,8 @@
 			foreach($resources as $i => $r) {
 				$data[$i] = array();
 				foreach($r as $key => $value) {
-					if(in_array($key, $select)) $data[$i][$key] = $value;
+					// If $select is empty, we assume every field is requested
+					if(in_array($key, $select) || empty($select)) $data[$i][$key] = $value;
 				}
 			}
 

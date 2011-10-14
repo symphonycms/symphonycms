@@ -42,6 +42,7 @@
 		/**
 		 * A `<div>` that contains the breadcrumbs, the page title and some contextual
 		 * actions (e.g. "Create new").
+		 * @since Symphony 2.3
 		 * @var XMLElement
 		 */
 		public $Context = null;

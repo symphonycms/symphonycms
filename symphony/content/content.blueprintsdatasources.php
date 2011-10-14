@@ -8,19 +8,28 @@
 	 * from the four Symphony types, Section, Authors, Navigation, Dynamic XML,
 	 * and Static XML
 	 */
-	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.datasourcemanager.php');
-	require_once(TOOLKIT . '/class.sectionmanager.php');
+	require_once(CONTENT . '/class.resourcespage.php');
 
-	Class contentBlueprintsDatasources extends AdministrationPage{
+	Class contentBlueprintsDatasources extends ResourcesPage{
 
 		public $_errors = array();
 
+		public function getRelatedPages($handle) {
+			return parent::getRelatedPages($handle, 'data_sources');
+		}
+
+		public function fetchExtensionData($handle) {
+			preg_match('/extensions\/(.*)\/data-sources/', DatasourceManager::__getClassPath($handle), $data);
+
+			return $data;
+		}
+
 		public function __viewIndex(){
-			$this->setPageType('table');
+			parent::__viewIndex();
+
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Datasources'))));
 			$this->appendSubheading(__('Datasources'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a datasource'), 'create button', NULL, array('accesskey' => 'c')));
-
 		}
 
 		## Both the Edit and New pages need the same form
