@@ -15,14 +15,28 @@
 
 		public $_errors = array();
 
-		public function getRelatedPages($handle) {
-			return parent::getRelatedPages($handle, 'data_sources');
-		}
-
 		public function fetchExtensionData($handle) {
 			preg_match('/extensions\/(.*)\/data-sources/', DatasourceManager::__getClassPath($handle), $data);
 
 			return $data;
+		}
+
+		public function getResourceFile($handle, $fullpath = true) {
+			$path = DatasourceManager::__getDriverPath($handle);
+
+			return ($fullpath ? $path : basename($path));
+		}
+
+		public function attachToPage($handle, $page_id) {
+			parent::attachToPage('data_sources', $handle, $page_id);
+		}
+
+		public function detachFromPage($handle, $page_id) {
+			parent::detachFromPage('data_sources', $handle, $page_id);
+		}
+
+		public function getRelatedPages($handle) {
+			return parent::getRelatedPages($handle, 'data_sources');
 		}
 
 		public function __viewIndex(){
@@ -55,7 +69,7 @@
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/datasources/new/',
-									SYMPHONY_URL . '/blueprints/components/'
+									SYMPHONY_URL . '/blueprints/datasources/'
 								)
 							),
 							Alert::SUCCESS);
@@ -68,7 +82,7 @@
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/datasources/new/',
-									SYMPHONY_URL . '/blueprints/components/'
+									SYMPHONY_URL . '/blueprints/datasources/'
 								)
 							),
 							Alert::SUCCESS);
@@ -183,7 +197,7 @@
 						__(
 							'Data source cache cleared <a href="%s" accesskey="a">View all Data sources</a>',
 							array(
-								SYMPHONY_URL . '/blueprints/components/'
+								SYMPHONY_URL . '/blueprints/datasources/'
 							)
 						),
 						Alert::SUCCESS
@@ -992,7 +1006,7 @@
 							PageManager::update($page['id'], $page);
 						}
 					}
-					redirect(SYMPHONY_URL . '/blueprints/components/');
+					redirect(SYMPHONY_URL . '/blueprints/datasources/');
 				}
 			}
 		}

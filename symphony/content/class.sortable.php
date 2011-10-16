@@ -21,7 +21,7 @@
 			$sort = (isset($_REQUEST['sort']) && is_numeric($_REQUEST['sort'])) ? intval($_REQUEST['sort']) : 0;
 			$order = ($_REQUEST['order'] == 'desc' ? 'desc' : 'asc');
 
-			$function = str_replace('/', '_', substr($context, 1, strlen($context) - 2));
+			$function = str_replace('/', '_', trim($context, '/'));
 
 			if(!method_exists($this, $function)) {
 				throw new Exception('Unable to find handler. Please make sure a handler exists for this context.');

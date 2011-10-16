@@ -14,14 +14,28 @@
 
 		public $_errors = array();
 
-		public function getRelatedPages($handle) {
-			return parent::getRelatedPages($handle, 'events');
-		}
-
 		public function fetchExtensionData($handle) {
 			preg_match('/extensions\/(.*)\/events/', EventManager::__getClassPath($handle), $data);
 
 			return $data;
+		}
+
+		public function getResourceFile($handle, $fullpath = true) {
+			$path = EventManager::__getDriverPath($handle);
+
+			return ($fullpath ? $path : basename($path));
+		}
+
+		public function attachToPage($handle, $page_id) {
+			parent::attachToPage('events', $handle, $page_id);
+		}
+
+		public function detachFromPage($handle, $page_id) {
+			parent::detachFromPage('events', $handle, $page_id);
+		}
+
+		public function getRelatedPages($handle) {
+			return parent::getRelatedPages($handle, 'events');
 		}
 
 		public function __viewIndex(){
@@ -59,7 +73,7 @@
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/events/new/',
-									SYMPHONY_URL . '/blueprints/components/'
+									SYMPHONY_URL . '/blueprints/events/'
 								)
 							),
 							Alert::SUCCESS);
@@ -72,7 +86,7 @@
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/events/new/',
-									SYMPHONY_URL . '/blueprints/components/'
+									SYMPHONY_URL . '/blueprints/events/'
 								)
 							),
 							Alert::SUCCESS);
@@ -261,7 +275,7 @@
 						}
 					}
 
-					redirect(SYMPHONY_URL . '/blueprints/components/');
+					redirect(SYMPHONY_URL . '/blueprints/events/');
 				}
 
 			}

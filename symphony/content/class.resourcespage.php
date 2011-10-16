@@ -13,24 +13,68 @@
 	require_once(TOOLKIT . '/class.pagemanager.php');
 	require_once(CONTENT . '/class.sortable.php');
 
-	Class ResourcesPage extends AdministrationPage{
+	Abstract Class ResourcesPage extends AdministrationPage{
 
 		public $_errors = array();
 
+		public abstract function fetchExtensionData($handle);
+
+		public abstract function getResourceFile($handle, $fullpath = true);
+
+		public function attachToPage($resource, $handle, $page_id) {
+			$pages = PageManager::fetch(false, array($resource), array(sprintf(
+				'`id` = %d', $page_id
+			)));
+
+			if (is_array($pages) && count($pages) == 1) {
+				$result = $pages[0][$resource];
+
+				if (!in_array($handle, explode(',', $result))) {
+
+					if (strlen($result) > 0) $result .= ',';
+					$result .= $handle;
+
+					Symphony::Database()->update(
+						array($resource => MySQL::cleanValue($result)),
+						'tbl_pages', 
+						sprintf('`id` = %d', $page_id)
+					);
+				}
+			}
+		}
+
+		public function detachFromPage($resource, $handle, $page_id) {
+			$pages = PageManager::fetch(false, array($resource), array(sprintf(
+				'`id` = %d', $page_id
+			)));
+
+			if (is_array($pages) && count($pages) == 1) {
+				$result = $pages[0][$resource];
+
+				$values = explode(',', $result);
+				$idx = array_search($handle, $values, false);
+
+				if ($idx !== false) {
+					array_splice($values, $idx, 1);
+					$result = implode(',', $values);
+
+					Symphony::Database()->update(
+						array($resource => MySQL::cleanValue($result)),
+						'tbl_pages', 
+						sprintf('`id` = %d', $page_id)
+					);
+				}
+			}
+		}
+
 		public function getRelatedPages($handle, $resource){
-			$pages = Symphony::Database()->fetch(sprintf('
-				SELECT
-					`id`, `title`
-				FROM
-					tbl_pages
-				WHERE
-					`%s` = "%s" OR `%s` REGEXP "%s"
-				',
+			$pages = PageManager::fetch(false, array('id', 'title'), array(sprintf(
+				'`%s` = "%s" OR `%s` REGEXP "%s"',
 				$resource, $handle,
 				$resource, '^' . $handle . ',|,' . $handle . ',|,' . $handle . '$'
-			));
+			)));
 
-			return $pages;
+			return (is_null($pages) ? array() : $pages);
 		}
 
 		public function pagesFlatView(){
@@ -247,6 +291,70 @@
 
 			$this->Form->appendChild($tableActions);
 
+		}
+
+		public function __actionIndex(){
+			if (isset($_POST['action']) && is_array($_POST['action'])) {
+				$checked = ($_POST['items']) ? @array_keys($_POST['items']) : NULL;
+
+				if (is_array($checked) && !empty($checked)) {
+
+					if ($_POST['with-selected'] == 'delete') {
+						$canProceed = true;
+
+						foreach($checked as $handle) {
+							if (!General::deleteFile($this->getResourceFile($handle))) {
+								$this->pageAlert(
+									__('Failed to delete <code>%s</code>. Please check permissions.', array($this->getResourceFile($handle), false)),
+									Alert::ERROR);
+								$canProceed = false;
+							}
+						}
+
+						if ($canProceed) redirect(Administration::instance()->getCurrentPageURL());
+					}
+					else if(preg_match('/^(?:at|de)?tach-page-/', $_POST['with-selected'])) {
+
+						if (substr($_POST['with-selected'], 0, 6) == 'detach') {
+							$page = str_replace('detach-page-', '', $_POST['with-selected']);
+
+							foreach($checked as $handle) {
+								$this->detachFromPage($handle, $page);
+							}
+						}
+						else {
+							$page = str_replace('attach-page-', '', $_POST['with-selected']);
+
+							foreach($checked as $handle) {
+								$this->attachToPage($handle, $page);
+							}
+						}
+
+						redirect(Administration::instance()->getCurrentPageURL());
+					}
+					else if(preg_match('/^(?:at|de)?tach-all-pages$/', $_POST['with-selected'])) {
+						$pages = PageManager::fetch(false, array('id'));
+
+						if (substr($_POST['with-selected'], 0, 6) == 'detach') {
+							foreach($checked as $handle) {
+								foreach($pages as $page) {
+									$this->detachFromPage($handle, $page['id']);
+								}
+							}
+						}
+						else {
+							foreach($checked as $handle) {
+								foreach($pages as $page) {
+									$this->attachToPage($handle, $page['id']);
+								}
+							}
+						}
+
+						redirect(Administration::instance()->getCurrentPageURL());
+					}
+
+				}
+			}
 		}
 
 	}

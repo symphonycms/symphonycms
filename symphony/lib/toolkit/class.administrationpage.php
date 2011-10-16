@@ -296,7 +296,6 @@
 			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
 			$this->Header->appendChild($h1);
 
-			$this->appendAlert();
 			$this->appendUserLinks();
 			$this->appendNavigation();
 
@@ -310,6 +309,8 @@
 			$this->Contents->appendChild($this->Form);
 
 			$this->view();
+
+			$this->appendAlert();
 
 			Symphony::Profiler()->sample('Page content created', PROFILE_LAP);
 		}
