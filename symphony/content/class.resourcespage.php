@@ -63,10 +63,14 @@
 			$aTableHead = array();
 
 			foreach($columns as $i => $c) {
-				if ($c['sortable']) {
+				if($c['sortable']) {
 
-					if ($i == $sort) {
-						$link = '?sort='.$i.'&amp;order='. ($order == 'desc' ? 'asc' : 'desc') . (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '');
+					if($i == $sort) {
+						$link = sprintf(
+							'?sort=%d&amp;order=%s%s',
+							$i, ($order == 'desc' ? 'asc' : 'desc'),
+							(isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
+						);
 						$label = Widget::Anchor(
 							$c['label'], $link,
 							__('Sort by %1$s %2$s', array(($order == 'desc' ? __('ascending') : __('descending')), strtolower($c['label']))),
@@ -74,7 +78,10 @@
 						);
 					}
 					else {
-						$link = '?sort='.$i.'&amp;order=asc' . (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '');
+						$link = sprintf(
+							'?sort=%d&amp;order=asc%s',
+							$i, (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
+						);
 						$label = Widget::Anchor(
 							$c['label'], $link,
 							__('Sort by %1$s %2$s', array(__('ascending'), strtolower($c['label'])))
@@ -91,7 +98,7 @@
 
 			$aTableBody = array();
 
-			if (!is_array($resources) || empty($resources)) {
+			if(!is_array($resources) || empty($resources)) {
 				$aTableBody = array(
 					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
 				);
@@ -128,13 +135,13 @@
 					}
 					else {
 						// Resource provided by extension?
-						/* $extension = ResourceManager::__getExtensionFromHandle($resource_type, $r['handle']);
+						$extension = ResourceManager::__getExtensionFromHandle($resource_type, $r['handle']);
 
 						if(!empty($extension)) {
 							$extension = Symphony::ExtensionManager()->about($extension);
 							$section = Widget::TableData(__('Extension') . ': ' . $extension['name']);
 						}
-						else */ if(isset($r['source'])) {
+						else if(isset($r['source'])) {
 							$section = Widget::TableData($r['source']);
 						}
 						else {

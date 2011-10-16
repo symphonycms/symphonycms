@@ -24,9 +24,9 @@
 		private static function getManagerFromType($type) {
 			switch($type) {
 				case RESOURCE_TYPE_EVENT:
-					return 'EventManager';
+					return EventManager;
 				case RESOURCE_TYPE_DS:
-					return 'DatasourceManager';
+					return DatasourceManager;
 			}
 		}
 
@@ -53,10 +53,11 @@
 		 */
 		public static function fetch($type, array $select = array(), array $where = array(), $order_by = null) {
 			$manager = self::getManagerFromType($type);
+			if(!isset($manager)) throw new Exception(__('Unable to find a Manager class for this resource.'));
+
 			$resources = $manager::listAll();
 
-			// For future reference: we'll need to check if $where is empty too
-			if(empty($select) && is_null($order_by)) return $resources;
+			if(empty($select) && empty($where) && is_null($order_by)) return $resources;
 
 			if(!is_null($order_by)){
 
@@ -118,9 +119,10 @@
 		 *  The extension handle.
 		 */
 		public static function __getExtensionFromHandle($type, $r_handle) {
-			$type = str_replace('_', '-', self::getColumnFromType($type));
 			$manager = self::getManagerFromType($type);
+			if(!isset($manager)) throw new Exception(__('Unable to find a Manager class for this resource.'));
 
+			$type = str_replace('_', '-', self::getColumnFromType($type));
 			preg_match('/extensions\/(.*)\/' . $type . '/', $manager::__getClassPath($r_handle), $data);
 
 			$data = array_splice($data, 1);
