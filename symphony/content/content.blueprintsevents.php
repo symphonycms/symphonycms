@@ -14,32 +14,12 @@
 
 		public $_errors = array();
 
-		public function fetchExtensionData($handle) {
-			preg_match('/extensions\/(.*)\/events/', EventManager::__getClassPath($handle), $data);
-
-			return $data;
-		}
-
-		public function getResourceFile($handle, $fullpath = true) {
-			$path = EventManager::__getDriverPath($handle);
-
-			return ($fullpath ? $path : basename($path));
-		}
-
-		public function attachToPage($handle, $page_id) {
-			parent::attachToPage('events', $handle, $page_id);
-		}
-
-		public function detachFromPage($handle, $page_id) {
-			parent::detachFromPage('events', $handle, $page_id);
-		}
-
-		public function getRelatedPages($handle) {
-			return parent::getRelatedPages($handle, 'events');
+		public function getResourceFile($handle) {
+			return EventManager::__getDriverPath($handle);
 		}
 
 		public function __viewIndex(){
-			parent::__viewIndex();
+			parent::__viewIndex(RESOURCE_TYPE_EVENT);
 
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Events'))));
 			$this->appendSubheading(__('Events'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create an event'), 'create button', NULL, array('accesskey' => 'c')));

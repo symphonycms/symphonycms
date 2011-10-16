@@ -15,32 +15,12 @@
 
 		public $_errors = array();
 
-		public function fetchExtensionData($handle) {
-			preg_match('/extensions\/(.*)\/data-sources/', DatasourceManager::__getClassPath($handle), $data);
-
-			return $data;
-		}
-
-		public function getResourceFile($handle, $fullpath = true) {
-			$path = DatasourceManager::__getDriverPath($handle);
-
-			return ($fullpath ? $path : basename($path));
-		}
-
-		public function attachToPage($handle, $page_id) {
-			parent::attachToPage('data_sources', $handle, $page_id);
-		}
-
-		public function detachFromPage($handle, $page_id) {
-			parent::detachFromPage('data_sources', $handle, $page_id);
-		}
-
-		public function getRelatedPages($handle) {
-			return parent::getRelatedPages($handle, 'data_sources');
+		public function getResourceFile($handle) {
+			return DatasourceManager::__getDriverPath($handle);
 		}
 
 		public function __viewIndex(){
-			parent::__viewIndex();
+			parent::__viewIndex(RESOURCE_TYPE_DS);
 
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Datasources'))));
 			$this->appendSubheading(__('Datasources'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a datasource'), 'create button', NULL, array('accesskey' => 'c')));

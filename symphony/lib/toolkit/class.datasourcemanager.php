@@ -17,7 +17,7 @@
 	Class DatasourceManager implements FileResource {
 
 		/**
-		 * Given the filename of a Datasource return it's handle. This will remove
+		 * Given the filename of a Datasource, return its handle. This will remove
 		 * the Symphony convention of `data.*.php`
 		 *
 		 * @param string $filename
@@ -191,61 +191,6 @@
 			$dummy = array();
 
 			return new $classname($dummy, $env, $process_params);
-		}
-
-		public static function fetch(array $select = array(), array $where = array(), $order_by = null, array $data = array()) {
-			$resources = (empty($data)) ? self::listAll() : $data;
-
-			// For future reference: we'll need to check if $where is empty too
-			if(empty($select) && is_null($order_by)) return $resources;
-
-			if(!is_null($order_by)){
-
-				$order_by = array_map('strtolower', explode(' ', $order_by));
-				$order = ($order_by[1] == 'desc') ? SORT_DESC : SORT_ASC;
-				$sort = $order_by[0];
-
-				if($sort == 'author'){
-					foreach($resources as $key => $about){
-						$author[$key] = $about['author']['name'];
-						$label[$key] = $key;
-					}
-
-					array_multisort($author, $order, $label, SORT_ASC, $resources);
-				}
-				else if($sort == 'release-date'){
-					foreach($resources as $key => $about){
-						$author[$key] = $about['release-date'];
-						$label[$key] = $key;
-					}
-
-					array_multisort($author, $order, $label, SORT_ASC, $resources);
-				}
-				else if($sort == 'source'){
-					foreach($resources as $key => $about){
-						$source[$key] = $about['source'];
-						$label[$key] = $key;
-					}
-
-					array_multisort($source, $order, $label, SORT_ASC, $resources);
-				}
-				else if($sort == 'name'){
-					if($order == SORT_ASC) krsort($resources);
-				}
-
-			}
-
-			$data = array();
-
-			foreach($resources as $i => $r) {
-				$data[$i] = array();
-				foreach($r as $key => $value) {
-					// If $select is empty, we assume every field is requested
-					if(in_array($key, $select) || empty($select)) $data[$i][$key] = $value;
-				}
-			}
-
-			return $data;
 		}
 
 	}
