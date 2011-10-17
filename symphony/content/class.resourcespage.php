@@ -111,12 +111,13 @@
 					$name = Widget::TableData(
 						Widget::Anchor(
 							$r['name'],
-							URL . '/symphony' . $_REQUEST['symphony-page'] .  $action . '/' . $r['handle'] . '/',
+							SYMPHONY_URL . $_REQUEST['symphony-page'] .  $action . '/' . $r['handle'] . '/',
 							$r['handle']
 						)
 					);
 
 					// Resource type/source
+					// If source is numeric, it's considered to be a Symphony Section
 					if($r['source'] > 0) {
 						$sectionData = SectionManager::fetch($r['source']);
 
@@ -124,15 +125,16 @@
 							$section = Widget::TableData(
 								Widget::Anchor(
 									$sectionData->get('name'),
-									URL . '/symphony' . $_REQUEST['symphony-page'] .  'edit/' . $sectionData->get('id') . '/',
+									SYMPHONY_URL . $_REQUEST['symphony-page'] .  'edit/' . $sectionData->get('id') . '/',
 									$sectionData->get('handle')
 								)
 							);
 						}
 						else {
-							$section = Widget::TableData(__('Not found'), 'inactive');
+							$section = Widget::TableData(__('Unknown'), 'inactive');
 						}
 					}
+					// Source will be a class type
 					else {
 						// Resource provided by extension?
 						$extension = ResourceManager::__getExtensionFromHandle($resource_type, $r['handle']);
@@ -142,10 +144,10 @@
 							$section = Widget::TableData(__('Extension') . ': ' . $extension['name']);
 						}
 						else if(isset($r['source'])) {
-							$section = Widget::TableData($r['source']);
+							$section = Widget::TableData(ucwords($r['source']));
 						}
 						else {
-							$section = Widget::TableData(__('None'), 'inactive');
+							$section = Widget::TableData(__('Unknown'), 'inactive');
 						}
 					}
 
@@ -159,7 +161,7 @@
 						++$i;
 						$pagelinks[] = Widget::Anchor(
 							$p['title'],
-							URL . '/symphony/blueprints/pages/edit/' . $p['id']
+							SYMPHONY_URL . '/blueprints/pages/edit/' . $p['id'] . '/'
 						)->generate() . (count($pages) > $i ? (($i % 10) == 0 ? '<br />' : ', ') : '');
 					}
 
@@ -192,14 +194,13 @@
 					$author = Widget::TableData($author);
 					$author->appendChild(Widget::Input('items[' . $r['handle'] . ']', null, 'checkbox'));
 
-
 					$aTableBody[] = Widget::TableRow(array($name, $section, $pagelinks, $releasedate, $author), null);
 				}
 			}
 
 			$table = Widget::Table(
-				Widget::TableHead($aTableHead), 
-				NULL, 
+				Widget::TableHead($aTableHead),
+				NULL,
 				Widget::TableBody($aTableBody),
 				'selectable'
 			);
@@ -216,15 +217,15 @@
 
 			$pages = $this->pagesFlatView();
 
-			$group_attach = array('label' => __('Attach Page'), 'options' => array());
-			$group_detach = array('label' => __('Detach Page'), 'options' => array());
+			$group_attach = array('label' => __('Attach to Page'), 'options' => array());
+			$group_detach = array('label' => __('Detach from Page'), 'options' => array());
 
 			$group_attach['options'][] = array('attach-all-pages', false, __('All'));
 			$group_detach['options'][] = array('detach-all-pages', false, __('All'));
 
 			foreach($pages as $p) {
-				$group_attach['options'][] = array('attach-page-' . $p['id'], false, $p['title']);
-				$group_detach['options'][] = array('detach-page-' . $p['id'], false, $p['title']);
+				$group_attach['options'][] = array('attach-to-page-' . $p['id'], false, $p['title']);
+				$group_detach['options'][] = array('detach-from-page-' . $p['id'], false, $p['title']);
 			}
 
 			$options[] = $group_attach;
@@ -237,7 +238,7 @@
 
 		}
 
-		public function __actionIndex(){
+		public function __actionIndex($resource_type){
 			if (isset($_POST['action']) && is_array($_POST['action'])) {
 				$checked = ($_POST['items']) ? @array_keys($_POST['items']) : NULL;
 
@@ -250,31 +251,32 @@
 							if (!General::deleteFile($this->getResourceFile($handle))) {
 								$this->pageAlert(
 									__('Failed to delete <code>%s</code>. Please check permissions.', array(basename($this->getResourceFile($handle)))),
-									Alert::ERROR);
+									Alert::ERROR
+								);
 								$canProceed = false;
 							}
 						}
 
 						if ($canProceed) redirect(Administration::instance()->getCurrentPageURL());
 					}
-					else if(preg_match('/^(?:at|de)?tach-page-/', $_POST['with-selected'])) {
+					else if(preg_match('/^(?:at|de)?tach-(to|from)-page-/', $_POST['with-selected'])) {
 
 						if (substr($_POST['with-selected'], 0, 6) == 'detach') {
-							$page = str_replace('detach-page-', '', $_POST['with-selected']);
+							$page = str_replace('detach-from-page-', '', $_POST['with-selected']);
 
 							foreach($checked as $handle) {
-								ResourceManager::__detach($resource_type, $handle, $page);
+								ResourceManager::detach($resource_type, $handle, $page);
 							}
 						}
 						else {
-							$page = str_replace('attach-page-', '', $_POST['with-selected']);
+							$page = str_replace('attach-to-page-', '', $_POST['with-selected']);
 
 							foreach($checked as $handle) {
-								ResourceManager::__attach($resource_type, $handle, $page);
+								ResourceManager::attach($resource_type, $handle, $page);
 							}
 						}
 
-						redirect(Administration::instance()->getCurrentPageURL());
+						if($canProceed) redirect(Administration::instance()->getCurrentPageURL());
 					}
 					else if(preg_match('/^(?:at|de)?tach-all-pages$/', $_POST['with-selected'])) {
 						$pages = PageManager::fetch(false, array('id'));
@@ -282,14 +284,14 @@
 						if (substr($_POST['with-selected'], 0, 6) == 'detach') {
 							foreach($checked as $handle) {
 								foreach($pages as $page) {
-									ResourceManager::__detach($handle, $page['id']);
+									ResourceManager::detach($handle, $page['id']);
 								}
 							}
 						}
 						else {
 							foreach($checked as $handle) {
 								foreach($pages as $page) {
-									ResourceManager::__attach($handle, $page['id']);
+									ResourceManager::attach($handle, $page['id']);
 								}
 							}
 						}

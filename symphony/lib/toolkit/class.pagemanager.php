@@ -206,7 +206,7 @@
 		 * @return boolean
 		 */
 		public static function edit($page_id, array $fields, $delete_types = false){
-			if(!is_int($page_id)) return false;
+			if(!is_numeric($page_id)) return false;
 
 			if(isset($fields['id'])) unset($fields['id']);
 

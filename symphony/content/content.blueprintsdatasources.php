@@ -9,6 +9,7 @@
 	 * and Static XML
 	 */
 	require_once(TOOLKIT . '/class.datasourcemanager.php');
+	require_once(TOOLKIT . '/class.gateway.php');
 	require_once(CONTENT . '/class.resourcespage.php');
 
 	Class contentBlueprintsDatasources extends ResourcesPage{
@@ -949,6 +950,10 @@
 
 			}
 
+		}
+
+		public function __actionIndex(){
+			return parent::__actionIndex(RESOURCE_TYPE_DS);
 		}
 
 		public function __actionEdit(){

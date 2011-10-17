@@ -170,20 +170,20 @@
 			)));
 
 			if (is_array($pages) && count($pages) == 1) {
-				$result = $pages[0][$resource];
+				$result = $pages[0][$col];
 
 				if (!in_array($r_handle, explode(',', $result))) {
 
 					if (strlen($result) > 0) $result .= ',';
 					$result .= $r_handle;
 
-					Symphony::Database()->update(
-						array($col => MySQL::cleanValue($result)),
-						'tbl_pages', 
-						sprintf('`id` = %d', $page_id)
-					);
+					return PageManager::edit($page_id, array(
+						$col => MySQL::cleanValue($result)
+					));
 				}
 			}
+
+			return false;
 		}
 
 		/**
@@ -204,7 +204,7 @@
 			)));
 
 			if (is_array($pages) && count($pages) == 1) {
-				$result = $pages[0][$resource];
+				$result = $pages[0][$col];
 
 				$values = explode(',', $result);
 				$idx = array_search($r_handle, $values, false);
@@ -213,13 +213,13 @@
 					array_splice($values, $idx, 1);
 					$result = implode(',', $values);
 
-					Symphony::Database()->update(
-						array($col => MySQL::cleanValue($result)),
-						'tbl_pages', 
-						sprintf('`id` = %d', $page_id)
-					);
+					return PageManager::edit($page_id, array(
+						$col => MySQL::cleanValue($result)
+					));
 				}
 			}
+
+			return false;
 		}
 
 	}

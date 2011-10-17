@@ -261,6 +261,10 @@
 			}
 		}
 
+		public function __actionIndex(){
+			return parent::__actionIndex(RESOURCE_TYPE_EVENT);
+		}
+
 		public function __formAction(){
 			$fields = $_POST['fields'];
 
