@@ -356,7 +356,7 @@
 		 *
 		 * @param boolean $include_types
 		 *  Whether to include the resulting Page's Page Types in the return array,
-		 *  under the key `page_types`. Defaults to true.
+		 *  under the key `type`. Defaults to true.
 		 * @param array $select (optional)
 		 *  Accepts an array of columns to return from `tbl_pages`. If omitted,
 		 *  all columns from the table will be returned.
@@ -367,12 +367,17 @@
 		 *  Allows a developer to return the Pages in a particular order. The string
 		 *  passed will be appended to `ORDER BY`. If omitted this will return
 		 *  Pages ordered by `sortorder`.
+		 * @param boolean $hierarchical (optional)
+		 *  If true, builds a multidimensional array representing the pages hierarchy.
+		 *  Defaults to false.
 		 * @return array|null
 		 *  An associative array of Page information with the key being the column
-		 *  name from `tbl_pages` and the value being the data. If no Pages are found
-		 *  null is returned.
+		 *  name from `tbl_pages` and the value being the data. If requested, the array
+		 *  can be made multidimensional to reflect the pages hierarchy. If no Pages are
+		 *  found, null is returned.
 		 */
-		public static function fetch($include_types = true, array $select = array(), array $where = array(), $order_by = null) {
+		public static function fetch($include_types = true, array $select = array(), array $where = array(), $order_by = null, $hierarchical = false) {
+			if($hierarchical) $select = array_merge($select, array('id', 'parent'));
 			if(empty($select)) $select = array('*');
 
 			if(is_null($order_by)) $order_by = 'sortorder ASC';
@@ -392,15 +397,33 @@
 				$order_by
 			));
 
-			// If the Page Types aren't included, return the pages information
-			if(!$include_types) return $pages;
+			// Fetch the Page Types for each page, if required
+			if($include_types){
+				foreach($pages as &$page) {
+					$page['type'] = PageManager::fetchPageTypes($page['id']);
+				}
+			}
 
-			// Fetch the Page Types for each page.
-			foreach($pages as &$page) {
-				$page['type'] = PageManager::fetchPageTypes($page['id']);
+			if($hierarchical){
+				$output = array();
+
+				self::__buildTreeView(null, $pages, $output);
+				$pages = $output;
 			}
 
 			return !empty($pages) ? $pages : null;
+		}
+
+		private function __buildTreeView($parent_id, $pages, &$results) {
+			if (!is_array($pages)) return;
+
+			foreach($pages as $page) {
+				if ($page['parent'] == $parent_id) {
+					$results[] = $page;
+
+					self::__buildTreeView($page['id'], $pages, $results[count($results) - 1]['children']);
+				}
+			}
 		}
 
 		/**

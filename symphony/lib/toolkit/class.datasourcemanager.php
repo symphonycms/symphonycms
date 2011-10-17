@@ -14,10 +14,10 @@
 	require_once(TOOLKIT . '/class.datasource.php');
 	require_once(TOOLKIT . '/interface.fileresource.php');
 
-    Class DatasourceManager implements FileResource {
+	Class DatasourceManager implements FileResource {
 
 		/**
-		 * Given the filename of a Datasource return it's handle. This will remove
+		 * Given the filename of a Datasource, return its handle. This will remove
 		 * the Symphony convention of `data.*.php`
 		 *
 		 * @param string $filename
@@ -114,7 +114,7 @@
 						}
 
 						$about['can_parse'] = $can_parse;
-						$about['type'] = $type;
+						$about['source'] = $type;
 						$result[$f] = $about;
 					}
 				}
@@ -134,7 +134,7 @@
 
 							if($about = self::about($f)){
 								$about['can_parse'] = false;
-								$about['type'] = null;
+								$about['source'] = null;
 								$result[$f] = $about;
 							}
 						}
@@ -193,4 +193,4 @@
 			return new $classname($dummy, $env, $process_params);
 		}
 
-    }
+	}
