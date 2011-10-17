@@ -130,7 +130,7 @@
 		public function setRecipients($email){
 			//TODO: sanitizing and security checking
 			if(!is_array($email)){
-				$email = Array($email);
+				$email = array_unique(preg_split('/\s*[,]\s*/',$email));
 			}
 			$this->_recipients = $email;
 		}
