@@ -8,13 +8,23 @@
 	 * from the four Symphony types, Section, Authors, Navigation, Dynamic XML,
 	 * and Static XML
 	 */
-	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.datasourcemanager.php');
-	require_once(TOOLKIT . '/class.sectionmanager.php');
+	require_once(CONTENT . '/class.resourcespage.php');
 
-	Class contentBlueprintsDatasources extends AdministrationPage{
+	Class contentBlueprintsDatasources extends ResourcesPage{
 
 		public $_errors = array();
+
+		public function getResourceFile($handle) {
+			return DatasourceManager::__getDriverPath($handle);
+		}
+
+		public function __viewIndex(){
+			parent::__viewIndex(RESOURCE_TYPE_DS);
+
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Datasources'))));
+			$this->appendSubheading(__('Datasources'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a datasource'), 'create button', NULL, array('accesskey' => 'c')));
+		}
 
 		## Both the Edit and New pages need the same form
 		public function __viewNew(){
@@ -39,7 +49,7 @@
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/datasources/new/',
-									SYMPHONY_URL . '/blueprints/components/'
+									SYMPHONY_URL . '/blueprints/datasources/'
 								)
 							),
 							Alert::SUCCESS);
@@ -52,7 +62,7 @@
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/datasources/new/',
-									SYMPHONY_URL . '/blueprints/components/'
+									SYMPHONY_URL . '/blueprints/datasources/'
 								)
 							),
 							Alert::SUCCESS);
@@ -167,7 +177,7 @@
 						__(
 							'Data source cache cleared <a href="%s" accesskey="a">View all Data sources</a>',
 							array(
-								SYMPHONY_URL . '/blueprints/components/'
+								SYMPHONY_URL . '/blueprints/datasources/'
 							)
 						),
 						Alert::SUCCESS
@@ -976,7 +986,7 @@
 							PageManager::update($page['id'], $page);
 						}
 					}
-					redirect(SYMPHONY_URL . '/blueprints/components/');
+					redirect(SYMPHONY_URL . '/blueprints/datasources/');
 				}
 			}
 		}

@@ -7,13 +7,23 @@
 	 * The Event Editor allows a developer to create events that typically
 	 * allow Frontend forms to populate Sections or edit Entries.
 	 */
-	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.eventmanager.php');
-	require_once(TOOLKIT . '/class.sectionmanager.php');
+	require_once(CONTENT . '/class.resourcespage.php');
 
-	Class contentBlueprintsEvents extends AdministrationPage {
+	Class contentBlueprintsEvents extends ResourcesPage {
 
 		public $_errors = array();
+
+		public function getResourceFile($handle) {
+			return EventManager::__getDriverPath($handle);
+		}
+
+		public function __viewIndex(){
+			parent::__viewIndex(RESOURCE_TYPE_EVENT);
+
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Events'))));
+			$this->appendSubheading(__('Events'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create an event'), 'create button', NULL, array('accesskey' => 'c')));
+		}
 
 		public function __viewNew(){
 			$this->__form();
@@ -43,7 +53,7 @@
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/events/new/',
-									SYMPHONY_URL . '/blueprints/components/'
+									SYMPHONY_URL . '/blueprints/events/'
 								)
 							),
 							Alert::SUCCESS);
@@ -56,7 +66,7 @@
 								array(
 									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
 									SYMPHONY_URL . '/blueprints/events/new/',
-									SYMPHONY_URL . '/blueprints/components/'
+									SYMPHONY_URL . '/blueprints/events/'
 								)
 							),
 							Alert::SUCCESS);
@@ -245,7 +255,7 @@
 						}
 					}
 
-					redirect(SYMPHONY_URL . '/blueprints/components/');
+					redirect(SYMPHONY_URL . '/blueprints/events/');
 				}
 
 			}

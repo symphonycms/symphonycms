@@ -11,6 +11,7 @@
 	 */
 
 	require_once(TOOLKIT . '/class.event.php');
+	require_once(TOOLKIT . '/class.datasourcemanager.php');
 
 	Class EventManager implements FileResource {
 
