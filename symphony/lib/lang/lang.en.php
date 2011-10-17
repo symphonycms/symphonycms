@@ -79,4 +79,11 @@
 		'/&(?!&)&/'		=> '-and',
 		'/&(?!&)/'		=> '-and-'
 	);
-	
+
+	// Special characters
+	$transliterations += array(
+		'/Nº/'	=> 'number',
+		'/№/'	=> 'number',
+		'/°/'	=> 'deg',
+		'/º/'	=> null
+	);
