@@ -824,7 +824,7 @@ body, html {
 	border-color: rgba(255, 255, 255, 0.8);
 }
 #nav ul,
-#nav ul li:last-child a {
+#nav ul ul li:last-child a {
 	-moz-border-radius-bottomright: 3px;
 	-moz-border-radius-bottomleft: 3px;
 	-webkit-border-bottom-right-radius: 3px;
