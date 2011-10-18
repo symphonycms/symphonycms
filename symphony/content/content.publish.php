@@ -380,7 +380,7 @@
 				else $li->setValue(__('Last'));
 				$ul->appendChild($li);
 
-				$this->Form->appendChild($ul);
+				$this->Contents->appendChild($ul);
 			}
 		}
 
