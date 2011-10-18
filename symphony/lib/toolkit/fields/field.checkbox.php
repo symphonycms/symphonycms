@@ -256,7 +256,7 @@
 			else {
 				$sort = sprintf(
 					'ORDER BY (
-						SELECT %s 
+						SELECT %s
 						FROM tbl_entries_data_%d AS `ed`
 						WHERE entry_id = e.id
 					) %s',
@@ -282,8 +282,8 @@
 
 				$value = $data['value'];
 
-				if(!isset($groups[$this->get('element_name')][$handle])){
-					$groups[$this->get('element_name')][$handle] = array(
+				if(!isset($groups[$this->get('element_name')][$value])){
+					$groups[$this->get('element_name')][$value] = array(
 						'attr' => array('value' => $value),
 						'records' => array(),
 						'groups' => array()
