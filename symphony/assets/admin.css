@@ -939,9 +939,11 @@ body, html {
 }
 ul.page {
 	margin: 0;
+	margin-top: -58px;
 	padding: 20px 50px 0 19px;
 	height: 36px;
 	color: #887;
+	cursor: default;
 }
 ul.page li {
 	display: inline;
@@ -955,6 +957,32 @@ ul.page a {
 	padding: 0.67em;
 	text-decoration: none;
 }
+ul.page form {
+	display: inline;
+}
+ul.page input {
+	color: #222 !important;
+	text-align: center;
+	width: 20px;
+	border: 1px solid transparent;
+	border-bottom: 1px dashed #ccc;
+	padding-bottom: 1px;
+	outline: none;
+}
+ul.page input:hover {
+	background: #F5F5F5;
+}
+ul.page input:focus {
+	border-radius: 2px 2px 2px 2px;
+	background: #F5F5F5;
+	border: 1px solid #cacaca;
+}
+ul.page input.error, ul.page input.error:focus {
+	border-radius: 2px 2px 2px 2px;
+	background: #FF9292;
+	border: 1px solid #BD3636;
+}
+
 
 /*-----------------------------------------------------------------------------
 	Single page

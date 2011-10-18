@@ -354,12 +354,18 @@
 				$ul->appendChild($li);
 
 				## Summary
-				$li = new XMLElement('li', __('Page %1$s of %2$s', array($current_page, max($current_page, $entries['total-pages']))));
+				$li = new XMLElement('li');
+				
 				$li->setAttribute('title', __('Viewing %1$s - %2$s of %3$s entries', array(
 					$entries['start'],
 					($current_page != $entries['total-pages']) ? $current_page * Symphony::Configuration()->get('pagination_maximum_rows', 'symphony') : $entries['total-entries'],
 					$entries['total-entries']
 				)));
+				
+				$pgform = Widget::Form(Administration::instance()->getCurrentPageURL(),'get','paginationform');
+				$pgform->setValue(__('Page %1$s of <span>%2$s</span>', array(Widget::Input('pg',$current_page)->generate(), max($current_page, $entries['total-pages']))));
+				
+				$li->appendChild($pgform);
 				$ul->appendChild($li);
 
 				## Next
@@ -374,7 +380,7 @@
 				else $li->setValue(__('Last'));
 				$ul->appendChild($li);
 
-				$this->Form->appendChild($ul);
+				$this->Contents->appendChild($ul);
 			}
 		}
 
