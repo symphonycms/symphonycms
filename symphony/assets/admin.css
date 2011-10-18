@@ -835,6 +835,7 @@ body, html {
 #context {
 	clear: both;
 	margin: -19px 0 19px;
+	padding-top: 10px;
 	background: #F4F4F4;
 	color: #000;
 	border-bottom: 1px solid #d5d6d2;
