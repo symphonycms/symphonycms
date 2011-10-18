@@ -217,16 +217,16 @@ class Session
      */
     public static function read($id)
     {
-        return Symphony::Database()->fetchVar(
-            'session_data',
-            0,
-            sprintf(
-                "SELECT `session_data`
-                FROM `tbl_sessions`
-                WHERE `session` = '%s'
-                LIMIT 1",
-                Symphony::Database()->cleanValue($id)
-            )
+        if (is_null($id)) {
+            return null;
+        }
+
+        return Symphony::Database()->fetchVar('session_data', 0, "
+            SELECT `session_data`
+            FROM `tbl_sessions`
+            WHERE `session` = ?
+            LIMIT 1",
+            array($id)
         );
     }
 
@@ -241,14 +241,11 @@ class Session
      */
     public static function destroy($id)
     {
-        return Symphony::Database()->query(
-            sprintf(
-                "DELETE
-                FROM `tbl_sessions`
-                WHERE `session` = '%s'",
-                Symphony::Database()->cleanValue($id)
-            )
-        );
+        if (is_null($id)) {
+            return true;
+        }
+
+        return Symphony::Database()->delete("`tbl_sessions`", "`session` = ?", array($id));
     }
 
     /**
@@ -264,13 +261,6 @@ class Session
      */
     public static function gc($max)
     {
-        return Symphony::Database()->query(
-            sprintf(
-                "DELETE
-                FROM `tbl_sessions`
-                WHERE `session_expires` <= %d",
-                Symphony::Database()->cleanValue(time() - $max)
-            )
-        );
+        return Symphony::Database()->delete("`tbl_sessions`", "`session_expires` <= ?", array(time() - $max));
     }
 }

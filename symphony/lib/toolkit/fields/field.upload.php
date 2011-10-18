@@ -429,10 +429,11 @@ class FieldUpload extends Field implements ExportableField, ImportableField
             // Grab the existing entry data to preserve the MIME type and size information
             if (isset($entry_id)) {
                 $row = Symphony::Database()->fetchRow(0, sprintf(
-                    "SELECT `file`, `mimetype`, `size`, `meta` FROM `tbl_entries_data_%d` WHERE `entry_id` = %d",
-                    $this->get('id'),
-                    $entry_id
-                ));
+                        "SELECT `file`, `mimetype`, `size`, `meta` FROM `tbl_entries_data_%d` WHERE `entry_id` = ?",
+                        $this->get('id')
+                    ),
+                    array($entry_id)
+                );
 
                 if (empty($row) === false) {
                     $result = $row;
@@ -469,13 +470,11 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         // Check to see if the entry already has a file associated with it:
         if (is_null($entry_id) === false) {
             $row = Symphony::Database()->fetchRow(0, sprintf(
-                "SELECT *
-                FROM `tbl_entries_data_%s`
-                WHERE `entry_id` = %d
-                LIMIT 1",
-                $this->get('id'),
-                $entry_id
-            ));
+                    "SELECT * FROM `tbl_entries_data_%s` WHERE `entry_id` = ? LIMIT 1",
+                    $this->get('id')
+                ),
+                array($entry_id)
+            );
 
             $existing_file = isset($row['file']) ? $this->getFilePath($row['file']) : null;
 
