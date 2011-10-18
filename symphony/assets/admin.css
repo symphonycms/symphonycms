@@ -820,7 +820,7 @@ body, html {
 	margin-right: -1px;
 	background: #888;
 	color: #fff;
-	text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
 	border-color: rgba(255, 255, 255, 0.8);
 }
 #nav ul,
