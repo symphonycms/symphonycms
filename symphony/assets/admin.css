@@ -966,10 +966,11 @@ ul.page input {
 }
 ul.page input:hover {
 	border-radius: 2px 2px 2px 2px;
-	background: #eee;
+	background: #F5F5F5;
 }
 ul.page input:focus {
 	border-radius: 2px 2px 2px 2px;
+	background: #F5F5F5;
 	border: 1px solid #cacaca;
 }
 
