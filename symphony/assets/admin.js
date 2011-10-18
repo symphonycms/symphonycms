@@ -764,6 +764,15 @@ var Symphony = {};
 		$('.page input').focus(function() {
 			$(this).select();
 		});
+		
+		// Validate pagination input on submit
+		$('.page form').submit(function() {
+			if(!$(this).find('input').val().match('^[0-9]+$') || $(this).find('input').val() > parseInt($(this).find('span').html())) {
+				$(this).find('input').addClass("error");
+				window.setTimeout(function() { $('.page form input').removeClass("error"); }, 500);
+				return false;
+			}
+		});
 	});
 
 })(jQuery.noConflict());

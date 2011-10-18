@@ -363,7 +363,7 @@
 				)));
 				
 				$pgform = Widget::Form(Administration::instance()->getCurrentPageURL(),'get','paginationform');
-				$pgform->setValue(__('Page %1$s of %2$s', array(Widget::Input('pg',$current_page)->generate(), max($current_page, $entries['total-pages']))));
+				$pgform->setValue(__('Page %1$s of <span>%2$s</span>', array(Widget::Input('pg',$current_page)->generate(), max($current_page, $entries['total-pages']))));
 				
 				$li->appendChild($pgform);
 				$ul->appendChild($li);

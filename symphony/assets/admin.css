@@ -962,20 +962,24 @@ ul.page form {
 ul.page input {
 	color: #222 !important;
 	text-align: center;
-	width: 15px;
+	width: 20px;
 	border: 1px solid transparent;
-	border-bottom: 1px dashed #aaa;
+	border-bottom: 1px dashed #ccc;
 	padding-bottom: 1px;
 	outline: none;
 }
 ul.page input:hover {
-	border-radius: 2px 2px 2px 2px;
 	background: #F5F5F5;
 }
 ul.page input:focus {
 	border-radius: 2px 2px 2px 2px;
 	background: #F5F5F5;
 	border: 1px solid #cacaca;
+}
+ul.page input.error, ul.page input.error:focus {
+	border-radius: 2px 2px 2px 2px;
+	background: #FF9292;
+	border: 1px solid #BD3636;
 }
 
 
