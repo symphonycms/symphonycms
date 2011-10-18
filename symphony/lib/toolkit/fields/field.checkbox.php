@@ -283,8 +283,8 @@
 
 				$value = $data['value'];
 
-				if(!isset($groups[$this->get('element_name')][$handle])){
-					$groups[$this->get('element_name')][$handle] = array(
+				if(!isset($groups[$this->get('element_name')][$value])){
+					$groups[$this->get('element_name')][$value] = array(
 						'attr' => array('value' => $value),
 						'records' => array(),
 						'groups' => array()
