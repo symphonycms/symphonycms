@@ -114,9 +114,7 @@ class EntryManager
                 continue;
             }
 
-            Symphony::Database()->delete('tbl_entries_data_' . $field_id, sprintf("
-                `entry_id` = %d", $entry_id
-            ));
+            Symphony::Database()->delete('tbl_entries_data_' . $field_id, " `entry_id` = ?", array($entry_id));
 
             $data = array(
                 'entry_id' => $entry_id
@@ -165,7 +163,10 @@ class EntryManager
                 'modification_date_gmt' => $entry->get('modification_date_gmt')
             ),
             'tbl_entries',
-            sprintf(' `id` = %d', $entry->get('id'))
+            ' `id` = ?',
+            array(
+                $entry->get('id')
+            )
         );
 
         // Iterate over all data for this entry, deleting existing data first
@@ -176,9 +177,7 @@ class EntryManager
             }
 
             try {
-                Symphony::Database()->delete('tbl_entries_data_' . $field_id, sprintf("
-                    `entry_id` = %d", $entry->get('id')
-                ));
+                Symphony::Database()->delete('tbl_entries_data_' . $field_id, '`entry_id` = ?', array($entry->get('id')));
             } catch (Exception $e) {
                 // Discard?
             }
@@ -316,7 +315,8 @@ class EntryManager
                 }
             }
 
-            Symphony::Database()->delete('tbl_entries', " `id` IN ('$entry_list') ");
+            $placeholders = Database::addPlaceholders($chunk);
+            Symphony::Database()->delete('tbl_entries', " `id` IN ($placeholders) ", $chunk);
         }
 
         return true;
@@ -406,7 +406,12 @@ class EntryManager
                 $field->buildSortingSQL($joins, $where, $sort, $section->getSortingOrder());
             }
 
-        // No sort specified, so just sort on system id
+            if (!$group) {
+                $group = $field->requiresSQLGrouping();
+            }
+        } else if (self::$_fetchSortField == 'system:id' || self::$_fetchSortField == 'id') {
+            $sort = 'ORDER BY `e`.`id` ' . self::$_fetchSortDirection;
+
         } else {
             $sort = sprintf('ORDER BY `e`.`id` %s', self::$_fetchSortDirection);
         }
@@ -420,9 +425,9 @@ class EntryManager
         }
 
         $sql = sprintf("
-            SELECT %s`e`.id, `e`.section_id, e.`author_id`,
-                UNIX_TIMESTAMP(e.`creation_date`) AS `creation_date`,
-                UNIX_TIMESTAMP(e.`modification_date`) AS `modification_date`
+            SELECT  %s`e`.id, `e`.section_id, e.`author_id`,
+            UNIX_TIMESTAMP(e.`creation_date`) AS `creation_date`,
+            UNIX_TIMESTAMP(e.`modification_date`) AS `modification_date`
             FROM `tbl_entries` AS `e`
             %s
             WHERE 1
@@ -442,7 +447,7 @@ class EntryManager
         );
 
         $rows = Symphony::Database()->fetch($sql);
-
+    
         return ($buildentries && (is_array($rows) && !empty($rows)) ? self::__buildEntries($rows, $section_id, $element_names) : $rows);
     }
 
@@ -586,10 +591,9 @@ class EntryManager
      */
     public static function fetchEntrySectionID($entry_id)
     {
-        return Symphony::Database()->fetchVar('section_id', 0, sprintf("
-            SELECT `section_id` FROM `tbl_entries` WHERE `id` = %d LIMIT 1",
-            $entry_id
-        ));
+        return Symphony::Database()->fetchVar('section_id', 0, "SELECT `section_id` FROM `tbl_entries` WHERE `id` = ? LIMIT 1", 
+            array($entry_id)
+        );
     }
 
     /**
