@@ -180,7 +180,7 @@
 		$conf = array();
 
 		$conf['admin']['max_upload_size'] = '5242880';
-		$conf['symphony']['pagination_maximum_rows'] = '17';
+		$conf['symphony']['pagination_maximum_rows'] = '20';
 		$conf['symphony']['lang'] = Lang::get();
 		$conf['symphony']['version'] = kVERSION;
 		$conf['symphony']['pages_table_nest_children'] = 'yes';
