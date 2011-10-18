@@ -181,45 +181,48 @@ class Author
         }
 
         if ($this->get('id')) {
-            $current_author = Symphony::Database()->fetchRow(0, sprintf(
-                "SELECT `email`, `username`
+            $current_author = Symphony::Database()->fetchRow(0, "
+                SELECT `email`, `username`
                 FROM `tbl_authors`
-                WHERE `id` = %d",
-                $this->get('id')
-            ));
+                WHERE `id` = ?",
+                array($this->get('id'))
+            );
         }
 
         // Check that Email is provided
         if (is_null($this->get('email'))) {
             $errors['email'] = __('E-mail address is required');
 
-            // Check Email is valid
+        // Check Email is valid
         } elseif (!General::validateString($this->get('email'), $validators['email'])) {
             $errors['email'] = __('E-mail address entered is invalid');
 
-            // Check that if an existing Author changes their email address that
-            // it is not already used by another Author
+        // Check that if an existing Author changes their email address that
+        // it is not already used by another Author
         } elseif ($this->get('id')) {
             if (
                 $current_author['email'] !== $this->get('email') &&
-                Symphony::Database()->fetchVar('count', 0, sprintf(
-                    "SELECT COUNT(`id`) as `count`
-                    FROM `tbl_authors`
-                    WHERE `email` = '%s'",
-                    General::sanitize($this->get('email'))
-                )) !== 0
+                Symphony::Database()->fetchVar('count', 0, "
+                        SELECT COUNT(`id`) as `count`
+                        FROM `tbl_authors`
+                        WHERE `email` = ?
+                        LIMIT 1
+                    ",
+                    array($this->get('email'))
+                ) != 0
             ) {
                 $errors['email'] = __('E-mail address is already taken');
             }
 
-            // Check that Email is not in use by another Author
-        } elseif (Symphony::Database()->fetchVar('id', 0, sprintf(
-            "SELECT `id`
-            FROM `tbl_authors`
-            WHERE `email` = '%s'
-            LIMIT 1",
-            General::sanitize($this->get('email'))
-        ))) {
+        // Check that Email is not in use by another Author
+        } else if (Symphony::Database()->fetchVar('id', 0, "
+                SELECT `id`
+                FROM `tbl_authors`
+                WHERE `email` = ?
+                LIMIT 1
+            ",
+            array($this->get('email'))
+        )) {
             $errors['email'] = __('E-mail address is already taken');
         }
 
@@ -227,29 +230,31 @@ class Author
         if (is_null($this->get('username'))) {
             $errors['username'] = __('Username is required');
 
-            // Check that if it's an existing Author that the username is not already
-            // in use by another Author if they are trying to change it.
-        } elseif ($this->get('id')) {
+        // Check that if it's an existing Author that the username is not already
+        // in use by another Author if they are trying to change it.
+        } else if ($this->get('id')) {
             if (
-                $current_author['username'] !== $this->get('username') &&
-                Symphony::Database()->fetchVar('count', 0, sprintf(
-                    "SELECT COUNT(`id`) as `count`
-                    FROM `tbl_authors`
-                    WHERE `username` = '%s'",
-                    General::sanitize($this->get('username'))
-                )) !== 0
+                $current_author['username'] != $this->get('username') &&
+                Symphony::Database()->fetchVar('count', 0, "
+                        SELECT COUNT(`id`) as `count`
+                        FROM `tbl_authors`
+                        WHERE `username` = ?
+                    ",
+                    array($this->get('username'))
+                ) != 0
             ) {
                 $errors['username'] = __('Username is already taken');
             }
 
-            // Check that the username is unique
-        } elseif (Symphony::Database()->fetchVar('id', 0, sprintf(
-            "SELECT `id`
-            FROM `tbl_authors`
-            WHERE `username` = '%s'
-            LIMIT 1",
-            General::sanitize($this->get('username'))
-        ))) {
+        // Check that the username is unique
+        } else if (Symphony::Database()->fetchVar('id', 0, "
+                SELECT `id`
+                FROM `tbl_authors`
+                WHERE `username` = ?
+                LIMIT 1
+            ",
+            array($this->get('username'))
+        )) {
             $errors['username'] = __('Username is already taken');
         }
 

@@ -74,10 +74,11 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         return Symphony::Database()->fetchVar('count', 0, sprintf("
             SELECT count(*) AS `count`
             FROM `tbl_entries_data_%d`
-            WHERE `value` = '%s'",
-            $this->get('id'),
-            Symphony::Database()->cleanValue($value)
-        ));
+            WHERE `value` = ?",
+            $this->get('id')
+            ),
+            array(Symphony::Database()->cleanValue($value))
+        );
     }
 
     public function fetchAssociatedEntryIDs($value)
@@ -85,10 +86,11 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         return Symphony::Database()->fetchCol('entry_id', sprintf("
             SELECT `entry_id`
             FROM `tbl_entries_data_%d`
-            WHERE `value` = '%s'",
-            $this->get('id'),
-            Symphony::Database()->cleanValue($value)
-        ));
+            WHERE `value` = ?",
+            $this->get('id')
+            ),
+            array(Symphony::Database()->cleanValue($value))
+        );
     }
 
     public function fetchAssociatedEntrySearchValue($data, $field_id = null, $parent_entry_id = null)
