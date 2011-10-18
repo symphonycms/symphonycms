@@ -815,6 +815,7 @@ body, html {
 	text-decoration: none;
 }
 #nav ul a:hover {
+	padding-left: 11px;
 	margin-left: -1px;
 	margin-right: -1px;
 	background: #bababa;
