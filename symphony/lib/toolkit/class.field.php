@@ -926,7 +926,7 @@
 		 * @param string $where
 		 *  A string containing the WHERE conditions for the current SQL fragment. This
 		 *  is passed by reference and is expected to be used to add additional conditions
-		 *  specifc to this field
+		 *  specific to this field
 		 */
 		public function buildRegexSQL($filter, array $columns, &$joins, &$where) {
 			$this->_key++;

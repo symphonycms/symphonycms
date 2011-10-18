@@ -284,14 +284,14 @@
 						if (substr($_POST['with-selected'], 0, 6) == 'detach') {
 							foreach($checked as $handle) {
 								foreach($pages as $page) {
-									ResourceManager::detach($handle, $page['id']);
+									ResourceManager::detach($resource_type, $handle, $page['id']);
 								}
 							}
 						}
 						else {
 							foreach($checked as $handle) {
 								foreach($pages as $page) {
-									ResourceManager::attach($handle, $page['id']);
+									ResourceManager::attach($resource_type, $handle, $page['id']);
 								}
 							}
 						}
