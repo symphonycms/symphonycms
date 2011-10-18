@@ -20,11 +20,12 @@ class AuthorDatasource extends Datasource
             $bits = $filter;
         }
 
+        $q = Database::addPlaceholders($bits);
         $authors = Symphony::Database()->fetchCol('id', sprintf("
                 SELECT `id` FROM `tbl_authors`
-                WHERE `%s` IN ('%s')",
+                WHERE `%s` IN (%s)",
                 $field,
-                implode("', '", $bits)
+                $q
         ));
 
         return (is_array($authors) && !empty($authors) ? $authors : null);

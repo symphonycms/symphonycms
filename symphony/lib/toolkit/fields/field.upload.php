@@ -465,7 +465,6 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         // Check to see if the entry already has a file associated with it:
         if (is_null($entry_id) === false) {
             $row = $this->getCurrentValues($entry_id);
-
             $existing_file = isset($row['file']) ? $this->getFilePath($row['file']) : null;
 
             // File was removed:
@@ -553,15 +552,14 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
     protected function getCurrentValues($entry_id)
     {
-        return Symphony::Database()->fetchRow(0, sprintf(
-            "SELECT `file`, `mimetype`, `size`, `meta`
+        return Symphony::Database()->fetchRow(0, sprintf("
+                SELECT `file`, `mimetype`, `size`, `meta`
                 FROM `tbl_entries_data_%d`
-                WHERE `entry_id` = %d
-                LIMIT 1
-            ",
-            $this->get('id'),
-            $entry_id
-        ));
+                WHERE `entry_id` = ?",
+                $this->get('id')
+            ),
+            array($entry_id)
+        );
     }
 
     /*-------------------------------------------------------------------------
@@ -616,7 +614,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
             return $link->generate();
         }
     }
-    
+
     public function prepareTextValue($data, $entry_id = null)
     {
         if (isset($data['file'])) {

@@ -209,29 +209,33 @@ class contentLogin extends HTMLPage
 
                 // Reset of password requested
             } elseif ($action == 'reset') {
-                $author = Symphony::Database()->fetchRow(0, sprintf("
+                $author = Symphony::Database()->fetchRow(0, "
                         SELECT `id`, `email`, `first_name`
                         FROM `tbl_authors`
-                        WHERE `email` = '%1\$s' OR `username` = '%1\$s'
-                    ", Symphony::Database()->cleanValue($_POST['email'])
-                ));
+                        WHERE `email` = ? OR `username` = ?
+                    ", 
+                    array(
+                        $_POST['email'], 
+                        $_POST['email']
+                    )
+                );
 
                 if (!empty($author)) {
                     // Delete all expired tokens
-                    Symphony::Database()->delete('tbl_forgotpass', sprintf("
-                        `expiry` < '%s'", DateTimeObj::getGMT('c')
-                    ));
+                    Symphony::Database()->delete('tbl_forgotpass', "
+                        `expiry` < ?", DateTimeObj::getGMT('c')
+                    );
 
                     // Attempt to retrieve the token that is not expired for this Author ID,
                     // otherwise generate one.
-                    if (!$token = Symphony::Database()->fetchVar('token', 0, sprintf("
+                    if (!$token = Symphony::Database()->fetchVar('token', 0, "
                             SELECT `token`
                             FROM `tbl_forgotpass`
-                            WHERE `expiry` > '%s' AND `author_id` = %d
+                            WHERE `expiry` > ? AND `author_id` = ?
                         ",
                         DateTimeObj::getGMT('c'),
                         $author['id']
-                    ))) {
+                    )) {
                         // More secure password token generation
                         if (function_exists('openssl_random_pseudo_bytes')) {
                             $seed = openssl_random_pseudo_bytes(16);
