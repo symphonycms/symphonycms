@@ -701,7 +701,7 @@ body, html {
 	);
 	border-bottom: 1px solid #bfbfb7;
 	-webkit-box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
-	height: 30px;
+	height: 32px;
 	list-style: none;
 	padding: 0 8px 0;
 	white-space: nowrap;
@@ -730,7 +730,7 @@ body, html {
 	color: hsla(0, 0%, 0%, 0.65);
 	display: block;
 	float: left;
-	height: 29px;
+	height: 31px;
 	line-height: 30px;
 	padding: 0 10px;
 	position: relative;
@@ -752,13 +752,13 @@ body, html {
 		color-stop(0, #6f92c2),
 		color-stop(1, #4d78b4)
 	);
-	height: 30px;
+	height: 32px;
 	border-bottom: 1px solid #808080;
 	color: #fff;
 	text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.2);
 
 	z-index: 2;
-	height: 29px;
+	height: 31px;
 }
 #nav > ul > li:hover {
 	border-bottom: 1px solid #808080;
@@ -781,7 +781,7 @@ body, html {
 	color: #fff;
 	text-shadow: 1px 1px 0 hsla(0, 0%, 0%, 0.5);
 	z-index: 5;
-	height: 29px;
+	height: 31px;
 }
 #nav li ul {
 	margin: 0;
@@ -796,7 +796,7 @@ body, html {
 	left: 0;
 	min-width: 120px;
 	position: absolute;
-	top: 30px;
+	top: 32px;
 	font-size: 12px;
 	text-shadow: 1px 1px 0 #fff;
 }
