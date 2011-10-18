@@ -411,7 +411,7 @@
 				$pages = $output;
 			}
 
-			return !empty($pages) ? $pages : null;
+			return !empty($pages) ? $pages : array();
 		}
 
 		private function __buildTreeView($parent_id, $pages, &$results) {
