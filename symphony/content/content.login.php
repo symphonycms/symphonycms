@@ -200,7 +200,7 @@ class contentLogin extends HTMLPage
                      * @param string $username
                      *  The username of the Author who attempted to login.
                      */
-                    Symphony::ExtensionManager()->notifyMembers('AuthorLoginFailure', '/login/', array('username' => Symphony::Database()->cleanValue($_POST['username'])));
+                    Symphony::ExtensionManager()->notifyMembers('AuthorLoginFailure', '/login/', array('username' => $_POST['username']));
                     $this->failedLoginAttempt = true;
                 } else {
                     /**
@@ -213,36 +213,41 @@ class contentLogin extends HTMLPage
                      * @param string $username
                      *  The username of the Author who logged in.
                      */
-                    Symphony::ExtensionManager()->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => Symphony::Database()->cleanValue($_POST['username'])));
+                    Symphony::ExtensionManager()->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => $_POST['username']));
 
                     isset($_POST['redirect']) ? redirect($_POST['redirect']) : redirect(SYMPHONY_URL . '/');
                 }
 
                 // Reset of password requested
             } elseif ($action == 'reset') {
-                $author = Symphony::Database()->fetchRow(0, sprintf("
-                        SELECT `id`, `email`, `first_name`
-                        FROM `tbl_authors`
-                        WHERE `email` = '%1\$s' OR `username` = '%1\$s'
-                    ", Symphony::Database()->cleanValue($_POST['email'])
-                ));
+                $author = Symphony::Database()
+                    ->select(['id', 'email', 'first_name'])
+                    ->from('tbl_authors')
+                    ->where(['or' => [
+                        'email' => $_POST['email'],
+                        'username' => $_POST['email'],
+                    ]])
+                    ->execute()
+                    ->next();
 
                 if (!empty($author)) {
                     // Delete all expired tokens
-                    Symphony::Database()->delete('tbl_forgotpass', sprintf("
-                        `expiry` < '%s'", DateTimeObj::getGMT('c')
-                    ));
+                    Symphony::Database()
+                        ->delete('tbl_forgotpass')
+                        ->where(['expiry' => ['<' => DateTimeObj::getGMT('c')]])
+                        ->execute();
 
                     // Attempt to retrieve the token that is not expired for this Author ID,
                     // otherwise generate one.
-                    if (!$token = Symphony::Database()->fetchVar('token', 0, sprintf("
-                            SELECT `token`
-                            FROM `tbl_forgotpass`
-                            WHERE `expiry` > '%s' AND `author_id` = %d
-                        ",
-                        DateTimeObj::getGMT('c'),
-                        $author['id']
-                    ))) {
+                    $token = Symphony::Database()
+                        ->select(['token'])
+                        ->from('tbl_forgotpass')
+                        ->where(['expiry' => ['>' => DateTimeObj::getGMT('c')]])
+                        ->where(['author_id' => $author['id']])
+                        ->execute()
+                        ->variable('token');
+
+                    if (!$token) {
                         // More secure password token generation
                         if (function_exists('openssl_random_pseudo_bytes')) {
                             $seed = openssl_random_pseudo_bytes(16);
@@ -252,11 +257,13 @@ class contentLogin extends HTMLPage
 
                         $token = substr(SHA1::hash($seed), 0, 16);
 
-                        Symphony::Database()->insert(array(
-                            'author_id' => $author['id'],
-                            'token' => $token,
-                            'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))
-                        ), 'tbl_forgotpass');
+                        Symphony::Database()
+                            ->insert('tbl_forgotpass')->values([
+                                'author_id' => $author['id'],
+                                'token' => $token,
+                                'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))
+                            ])
+                            ->execute();
                     }
 
                     try {
@@ -304,7 +311,7 @@ class contentLogin extends HTMLPage
                      * @param string $email
                      *  The sanitised Email of the Author who tried to request the password reset
                      */
-                    Symphony::ExtensionManager()->notifyMembers('AuthorPostPasswordResetFailure', '/login/', array('email' => Symphony::Database()->cleanValue($_POST['email'])));
+                    Symphony::ExtensionManager()->notifyMembers('AuthorPostPasswordResetFailure', '/login/', array('email' => $_POST['email']));
 
                     $this->_email_sent = false;
                 }

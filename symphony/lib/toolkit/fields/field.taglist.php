@@ -56,18 +56,31 @@ class FieldTagList extends Field implements ExportableField, ImportableField
 
     public function createTable()
     {
-        return Symphony::Database()->query(
-            "CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
-              `id` int(11) unsigned NOT null auto_increment,
-              `entry_id` int(11) unsigned NOT null,
-              `handle` varchar(255) default null,
-              `value` varchar(255) default null,
-              PRIMARY KEY  (`id`),
-              KEY `entry_id` (`entry_id`),
-              KEY `handle` (`handle`),
-              KEY `value` (`value`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
-        );
+        return Symphony::Database()
+            ->createIfNotExists('tbl_entries_data_' . General::intval($this->get('id')))
+            ->fields([
+                'id' => [
+                    'type' => 'int(11)',
+                    'auto' => true,
+                ],
+                'entry_id' => 'int(11)',
+                'handle' => [
+                    'type' => 'varchar(255)',
+                    'null' => true,
+                ],
+                'value' => [
+                    'type' => 'varchar(255)',
+                    'null' => true,
+                ],
+            ])
+            ->keys([
+                'id' => 'primary',
+                'entry_id' => 'unique',
+                'handle' => 'key',
+                'value' => 'key',
+            ])
+            ->execute()
+            ->success();
     }
 
     /*-------------------------------------------------------------------------
@@ -76,28 +89,26 @@ class FieldTagList extends Field implements ExportableField, ImportableField
 
     public function fetchAssociatedEntryCount($value)
     {
-        $value = array_map(array($this, 'cleanValue'), explode(',', $value));
-        $value = implode("','", $value);
-        $count = (int)Symphony::Database()->fetchVar('count', 0, sprintf("
-            SELECT COUNT(handle) AS `count`
-            FROM `tbl_entries_data_%d`
-            WHERE `handle` IN ('%s')",
-            $this->get('id'),
-            $value
-        ));
+        $value = array_map(trim, array_map([$this, 'cleanValue'], explode(',', $value)));
 
-        return $count;
+        return (int)Symphony::Database()
+            ->selectCount('handle')
+            ->from('tbl_entries_data_' . $this->get('id'))
+            ->where(['handle' => ['in' => $value]])
+            ->execute()
+            ->variable(0);
     }
 
     public function fetchAssociatedEntryIDs($value)
     {
-        return Symphony::Database()->fetchCol('entry_id', sprintf("
-            SELECT `entry_id`
-            FROM `tbl_entries_data_%d`
-            WHERE `value` = '%s'",
-            $this->get('id'),
-            Symphony::Database()->cleanValue($value)
-        ));
+        $value = array_map(trim, array_map([$this, 'cleanValue'], explode(',', $value)));
+
+        return Symphony::Database()
+            ->select(['entry_id'])
+            ->from('tbl_entries_data_' . $this->get('id'))
+            ->where(['handle' => ['in' => $value]])
+            ->execute()
+            ->column('entry_id');
     }
 
     public function fetchAssociatedEntrySearchValue($data, $field_id = null, $parent_entry_id = null)
@@ -126,17 +137,19 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         // We have the entry_id of the entry that has the referenced tag values
         // Lets find out what those handles are so we can then referenced the
         // child section looking for them.
-        $handles = Symphony::Database()->fetchCol('handle', sprintf("
-            SELECT `handle`
-            FROM `tbl_entries_data_%d`
-            WHERE `entry_id` = %d
-        ", $parent_field_id, $entry_id));
+        $handles = Symphony::Database()
+            ->select(['handle'])
+            ->from("tbl_entries_data_$parent_field_id")
+            ->where(['entry_id' => $entry_id])
+            ->execute()
+            ->column('handle');
 
-        $ids = Symphony::Database()->fetchCol('entry_id', sprintf("
-            SELECT `entry_id`
-            FROM `tbl_entries_data_%d`
-            WHERE `handle` IN ('%s')
-        ", $this->get('id'), implode("','", $handles)));
+        $ids = Symphony::Database()
+            ->select(['entry_id'])
+            ->from('tbl_entries_data_' . $this->get('id'))
+            ->where(['handle' => ['in' => $handles]])
+            ->execute()
+            ->column('entry_id');
 
         return $ids;
     }
@@ -153,19 +166,21 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     {
         // Get all the `handles` that have been referenced from the
         // child association.
-        $handles = Symphony::Database()->fetchCol('handle', sprintf("
-            SELECT `handle`
-            FROM `tbl_entries_data_%d`
-            WHERE `entry_id` = %d
-        ", $this->get('id'), $entry_id));
+        $handles = Symphony::Database()
+            ->select(['handle'])
+            ->from('tbl_entries_data_' . $this->get('id'))
+            ->where(['entry_id' => $entry_id])
+            ->execute()
+            ->column('handle');
 
         // Now find the associated entry ids for those `handles` in
         // the parent section.
-        $ids = Symphony::Database()->fetchCol('entry_id', sprintf("
-            SELECT `entry_id`
-            FROM `tbl_entries_data_%d`
-            WHERE `handle` IN ('%s')
-        ", $field_id, implode("','", $handles)));
+        $ids = Symphony::Database()
+            ->select(['entry_id'])
+            ->from("tbl_entries_data_$field_id")
+            ->where(['handle' => ['in' => $handles]])
+            ->execute()
+            ->column('entry_id');
 
         return $ids;
     }
@@ -203,10 +218,13 @@ class FieldTagList extends Field implements ExportableField, ImportableField
                 break;
             }
 
-            $result = Symphony::Database()->fetchCol('value', sprintf(
-                "SELECT DISTINCT `value` FROM tbl_entries_data_%d ORDER BY `value` ASC",
-                ($item == 'existing' ? $this->get('id') : $item)
-            ));
+            $result = Symphony::Database()
+                ->select(['value'])
+                ->distinct()
+                ->from('tbl_entries_data_' . ($item == 'existing' ? $this->get('id') : $item))
+                ->orderBy(['value' => 'ASC'])
+                ->execute()
+                ->column('value');
 
             if (!is_array($result) || empty($result)) {
                 continue;

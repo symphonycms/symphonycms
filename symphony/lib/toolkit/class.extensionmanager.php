@@ -56,14 +56,16 @@ class ExtensionManager implements FileResource
     public function __construct()
     {
         if (empty(self::$_subscriptions) && Symphony::Database()->isConnected()) {
-            $subscriptions = Symphony::Database()->fetch(
-                "SELECT t1.name, t2.page, t2.delegate, t2.callback
-                FROM `tbl_extensions` as t1 INNER JOIN `tbl_extensions_delegates` as t2 ON t1.id = t2.extension_id
-                WHERE t1.status = 'enabled'
-                ORDER BY t2.delegate, t1.name"
-            );
+            $subscriptions = Symphony::Database()
+                ->select(['t1.name', 't2.page', 't2.delegate', 't2.callback'])
+                ->from('tbl_extensions', 't1')
+                ->innerJoin('tbl_extensions_delegates', 't2')
+                ->on(['t1.id' => '$t2.extension_id'])
+                ->where(['t1.status' => 'enabled'])
+                ->orderBy(['t2.delegate', 't1.name'], 'ASC')
+                ->execute();
 
-            foreach ($subscriptions as $subscription) {
+            while($subscription = $subscriptions->next()) {
                 self::$_subscriptions[$subscription['delegate']][] = $subscription;
             }
         }
@@ -140,7 +142,11 @@ class ExtensionManager implements FileResource
     private static function __buildExtensionList($update = false)
     {
         if (empty(self::$_extensions) || $update) {
-            self::$_extensions = Symphony::Database()->fetch("SELECT * FROM `tbl_extensions`", 'name');
+            self::$_extensions = Symphony::Database()
+                ->select()
+                ->from('tbl_extensions')
+                ->execute()
+                ->rowsIndexedByColumn('name');
         }
     }
 
@@ -381,12 +387,19 @@ class ExtensionManager implements FileResource
 
         // If there's no $id, the extension needs to be installed
         if (is_null($id)) {
-            Symphony::Database()->insert($fields, 'tbl_extensions');
+            Symphony::Database()
+                ->insert('tbl_extensions')
+                ->values($fields)
+                ->execute();
             self::__buildExtensionList(true);
 
-            // Extension is installed, so update!
+        // Extension is installed, so update!
         } else {
-            Symphony::Database()->update($fields, 'tbl_extensions', sprintf(" `id` = %d ", $id));
+            Symphony::Database()
+                ->update('tbl_extensions')
+                ->set($fields)
+                ->where(['id' => $id])
+                ->execute();
         }
 
         self::registerDelegates($name);
@@ -422,21 +435,22 @@ class ExtensionManager implements FileResource
         $info = self::about($name);
         $id = self::fetchExtensionID($name);
 
-        Symphony::Database()->update(
-            array(
+        $disabled = Symphony::Database()
+            ->update('tbl_extensions')
+            ->set([
                 'name' => $name,
                 'status' => 'disabled',
                 'version' => $info['version']
-            ),
-            'tbl_extensions',
-            sprintf(" `id` = %d ", $id)
-        );
+            ])
+            ->where(['id' => $id])
+            ->execute()
+            ->success();
 
         $obj->disable();
 
         self::removeDelegates($name);
 
-        return true;
+        return $disabled;
     }
 
     /**
@@ -478,9 +492,11 @@ class ExtensionManager implements FileResource
         }
 
         self::removeDelegates($name);
-        Symphony::Database()->delete('tbl_extensions', sprintf(" `name` = '%s' ", $name));
-
-        return true;
+        return Symphony::Database()
+            ->delete('tbl_extensions')
+            ->where(['name' => $name])
+            ->execute()
+            ->success();
     }
 
     /**
@@ -502,23 +518,24 @@ class ExtensionManager implements FileResource
             return false;
         }
 
-        Symphony::Database()->delete('tbl_extensions_delegates', sprintf("
-            `extension_id` = %d ", $id
-        ));
+        Symphony::Database()
+            ->delete('tbl_extensions_delegates')
+            ->where(['extension_id' => $id])
+            ->execute();
 
         $delegates = $obj->getSubscribedDelegates();
 
         if (is_array($delegates) && !empty($delegates)) {
             foreach ($delegates as $delegate) {
-                Symphony::Database()->insert(
-                    array(
+                Symphony::Database()
+                    ->insert('tbl_extensions_delegates')
+                    ->values([
                         'extension_id' => $id,
                         'page' => $delegate['page'],
                         'delegate' => $delegate['delegate'],
                         'callback' => $delegate['callback']
-                    ),
-                    'tbl_extensions_delegates'
-                );
+                    ])
+                    ->execute();
             }
         }
 
@@ -539,17 +556,20 @@ class ExtensionManager implements FileResource
      */
     public static function removeDelegates($name)
     {
-        $delegates = Symphony::Database()->fetchCol('id', sprintf("
-            SELECT tbl_extensions_delegates.`id`
-            FROM `tbl_extensions_delegates`
-            LEFT JOIN `tbl_extensions`
-            ON (`tbl_extensions`.id = `tbl_extensions_delegates`.extension_id)
-            WHERE `tbl_extensions`.name = '%s'",
-            $name
-        ));
+        $delegates = Symphony::Database()
+            ->select(['ted.id'])
+            ->from('tbl_extensions_delegates', 'ted')
+            ->leftJoin('tbl_extensions')
+            ->on(['tbl_extensions.id' => '$ted.extension_id'])
+            ->where(['tbl_extensions.name' => $name])
+            ->execute()
+            ->column('id');
 
         if (!empty($delegates)) {
-            Symphony::Database()->delete('tbl_extensions_delegates', " `id` IN ('". implode("', '", $delegates). "') ");
+            Symphony::Database()
+                ->delete('tbl_extensions_delegates')
+                ->where(['id' => ['in' => $delegates]])
+                ->execute();
         }
 
         // Remove the unused DB records
@@ -718,10 +738,12 @@ class ExtensionManager implements FileResource
     public static function listInstalledHandles()
     {
         if (empty(self::$_enabled_extensions) && Symphony::Database()->isConnected()) {
-            self::$_enabled_extensions = Symphony::Database()->fetchCol(
-                'name',
-                "SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'"
-            );
+            self::$_enabled_extensions = Symphony::Database()
+                ->select(['name'])
+                ->from('tbl_extensions')
+                ->where(['status' => 'enabled'])
+                ->execute()
+                ->column('name');
         }
         return self::$_enabled_extensions;
     }
@@ -1059,24 +1081,36 @@ class ExtensionManager implements FileResource
     public static function cleanupDatabase()
     {
         // Grab any extensions sitting in the database
-        $rows = Symphony::Database()->fetch("SELECT `name` FROM `tbl_extensions`");
+        $rows = Symphony::Database()
+            ->select(['name', 'status'])
+            ->from('tbl_extensions')
+            ->execute()
+            ->rows();
 
         // Iterate over each row
-        if (is_array($rows) && !empty($rows)) {
+        if (!empty($rows)) {
             foreach ($rows as $r) {
                 $name = $r['name'];
-                $status = isset($r['status']) ? $r['status'] : null;
+                $status = $r['status'];
 
                 // Grab the install location
                 $path = self::__getClassPath($name);
                 $existing_id = self::fetchExtensionID($name);
 
-                // If it doesnt exist, remove the DB rows
+                $removeDelegatesSQL = Symphony::Database()
+                    ->delete('tbl_extensions_delegates')
+                    ->where(['extension_id' => $existing_id]);
+
+                // If it doesn't exist, remove the DB rows
                 if (!@is_dir($path)) {
-                    Symphony::Database()->delete("tbl_extensions_delegates", sprintf(" `extension_id` = %d ", $existing_id));
-                    Symphony::Database()->delete('tbl_extensions', sprintf(" `id` = %d LIMIT 1", $existing_id));
+                    $removeDelegatesSQL->execute();
+                    Symphony::Database()
+                        ->delete('tbl_extensions')
+                        ->wehere(['id' => $existing_id])
+                        ->limit(1)
+                        ->execute();
                 } elseif ($status == 'disabled') {
-                    Symphony::Database()->delete("tbl_extensions_delegates", sprintf(" `extension_id` = %d ", $existing_id));
+                    $removeDelegatesSQL->execute();
                 }
             }
         }

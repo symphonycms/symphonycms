@@ -80,20 +80,28 @@ class NavigationDatasource extends Datasource
         }
 
         // Build the Query appending the Parent and/or Type WHERE clauses
-        $pages = Symphony::Database()->fetch(sprintf(
-            "SELECT DISTINCT `p`.`id`, `p`.`title`, `p`.`handle`, `p`.`sortorder`,
-                (SELECT COUNT(id) FROM `tbl_pages` WHERE `parent` = `p`.`id`) AS children
-            FROM `tbl_pages` AS `p`
-            LEFT JOIN `tbl_pages_types` AS `pt` ON (`p`.`id` = `pt`.`page_id`)
-            WHERE 1 = 1
-            %s
-            %s
-            ORDER BY p.`sortorder` ASC",
-            // Add Parent SQL
-            !is_null($parent_sql) ? $parent_sql : " AND p.parent IS null ",
-            // Add Types SQL
-            !is_null($type_sql) ? $type_sql : ""
-        ));
+        $childrenStm = Symphony::Database()
+            ->selectCount('id')
+            ->from('tbl_pages', 'c')
+            ->where(['c.parent' => '$p.id']);
+        $stm = Symphony::Database()
+            ->select(['p.id', 'p.title', 'p.handle', 'p.sortorder', 'children' => $childrenStm])
+            ->distinct()
+            ->from('tbl_pages', 'p')
+            ->leftJoin('tbl_pages_types', 'pt')
+            ->on(['p.id' => '$pt.page_id'])
+            ->orderBy('p.sortorder');
+
+        if ($parent_sql) {
+            $parent_sql = $stm->replaceTablePrefix($parent_sql);
+            $stm->unsafe()->unsafeAppendSQLPart('where', "1 = 1 $parent_sql");
+        } else {
+            $stm->where(['p.parent' => null]);
+        }
+        if ($type_sql) {
+            $type_sql = $stm->replaceTablePrefix($type_sql);
+            $stm->unsafe()->unsafeAppendSQLPart('where', "1 = 1 $type_sql");
+        }
 
         if ((!is_array($pages) || empty($pages))) {
             if ($this->dsParamREDIRECTONEMPTY === 'yes') {

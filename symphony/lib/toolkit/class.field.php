@@ -334,8 +334,7 @@ class Field
     }
 
     /**
-     * Clean the input value using html entity encode and the database specific
-     * clean methods.
+     * Clean the input value using html entity encode.
      *
      * @param mixed $value
      *  the value to clean.
@@ -344,7 +343,7 @@ class Field
      */
     public function cleanValue($value)
     {
-        return html_entity_decode(Symphony::Database()->cleanValue($value));
+        return html_entity_decode($value);
     }
 
     /**
@@ -1758,16 +1757,26 @@ class Field
      */
     public function createTable()
     {
-        return Symphony::Database()->query(
-            "CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
-              `id` int(11) unsigned NOT null auto_increment,
-              `entry_id` int(11) unsigned NOT null,
-              `value` varchar(255) default null,
-              PRIMARY KEY  (`id`),
-              KEY `entry_id` (`entry_id`),
-              KEY `value` (`value`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
-        );
+        return Symphony::Database()
+            ->createIfNotExists('tbl_entries_data_' . General::intval($this->get('id')))
+            ->fields([
+                'id' => [
+                    'type' => 'int(11)',
+                    'auto' => true,
+                ],
+                'entry_id' => 'int(11)',
+                'value' => [
+                    'type' => 'varchar(255)',
+                    'null' => true,
+                ],
+            ])
+            ->keys([
+                'id' => 'primary',
+                'entry_id' => 'key',
+                'value' => 'key',
+            ])
+            ->execute()
+            ->success();
     }
 
     /**
@@ -1824,11 +1833,13 @@ class Field
         if (!$this->get('id') || !$this->_handle) {
             return false;
         }
-        $row = Symphony::Database()->fetch(sprintf(
-            'SELECT `id` FROM `tbl_fields_%s` WHERE `field_id` = %d',
-            $this->_handle,
-            General::intval($this->get('id'))
-        ));
+        $row = Symphony::Database()
+            ->select(['id'])
+            ->from('tbl_fields_' . $this->_handle)
+            ->where(['field_id' => $this->get('id')])
+            ->execute()
+            ->rows();
+
         if (empty($row)) {
             // Some fields do not create any records in their settings table because they do not
             // implement a proper `Field::commit()` method.
@@ -1841,10 +1852,11 @@ class Field
             // But current version of Symphony assume that the `tbl_fields_$handle` table exists
             // with at least a `id` and `field_id` column, so field are required to at least create
             // the table to make their field work without SQL errors from the core.
-            $columns = Symphony::Database()->fetchCol('Field', sprintf(
-                'DESC `tbl_fields_%s`',
-                $this->_handle
-            ));
+            $columns = Symphony::Database()
+                ->describe('tbl_fields_' . $this->_handle)
+                ->execute()
+                ->column('Field');
+
             // The table only has the two required columns, tolerate the missing record
             $isDefault = count($columns) === 2 &&
                 in_array('id', $columns) &&
@@ -1876,13 +1888,14 @@ class Field
      */
     public function entryDataCleanup($entry_id, $data = null)
     {
-        $where = is_array($entry_id)
-            ? " `entry_id` IN (" . implode(',', $entry_id) . ") "
-            : " `entry_id` = '$entry_id' ";
-
-        Symphony::Database()->delete('tbl_entries_data_' . $this->get('id'), $where);
-
-        return true;
+        if (!is_array($entry_id)) {
+            $entry_id = [$entry_id];
+        }
+        return Symphony::Database()
+            ->delete('tbl_entries_data_' . $this->get('id'))
+            ->where(['entry_id' => ['in' => $entry_id]])
+            ->execute()
+            ->success();
     }
 
     /**
@@ -1954,14 +1967,15 @@ class Field
     public function findRelatedEntries($entry_id, $parent_field_id)
     {
         try {
-            $ids = Symphony::Database()->fetchCol('entry_id', sprintf("
-                SELECT `entry_id`
-                FROM `tbl_entries_data_%d`
-                WHERE `relation_id` = %d
-                AND `entry_id` IS NOT NULL
-            ", $this->get('id'), $entry_id));
+            $ids = Symphony::Database()
+                ->select(['entry_id'])
+                ->from('tbl_entries_data_' . $this->get('id'))
+                ->where(['relation_id' => General::intval($entry_id)])
+                ->where(['entry_id' => ['!=' => null]])
+                ->execute()
+                ->column('entry_id');
         } catch (Exception $e) {
-            return array();
+            return [];
         }
 
         return $ids;
@@ -1980,14 +1994,15 @@ class Field
     public function findParentRelatedEntries($parent_field_id, $entry_id)
     {
         try {
-            $ids = Symphony::Database()->fetchCol('relation_id', sprintf("
-                SELECT `relation_id`
-                FROM `tbl_entries_data_%d`
-                WHERE `entry_id` = %d
-                AND `relation_id` IS NOT NULL
-            ", $this->get('id') , $entry_id));
+            $ids = Symphony::Database()
+                ->select(['relation_id'])
+                ->from('tbl_entries_data_' . $this->get('id'))
+                ->where(['entry_id' => General::intval($entry_id)])
+                ->where(['relation_id' => ['!=' => null]])
+                ->execute()
+                ->column('relation_id');
         } catch (Exception $e) {
-            return array();
+            return [];
         }
 
         return $ids;

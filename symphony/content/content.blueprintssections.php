@@ -646,14 +646,14 @@ class contentBlueprintsSections extends AdministrationPage
 
                 if (
                     $meta['handle'] !== $existing_section->get('handle')
-                    && !is_null($s) && $s !== $section_id
+                    && $s !== 0 && $s !== $section_id
                 ) {
                     $this->_errors['handle'] = __('A Section with the handle %s already exists', array('<code>' . $meta['handle'] . '</code>'));
                     $canProceed = false;
                 }
 
                 // Existing section during creation
-            } elseif (!is_null(SectionManager::fetchIDFromHandle(Lang::createHandle($meta['handle'])))) {
+            } elseif (SectionManager::fetchIDFromHandle(Lang::createHandle($meta['handle'])) !== 0) {
                 $this->_errors['handle'] = __('A Section with the handle %s already exists', array('<code>' . $meta['handle'] . '</code>'));
                 $canProceed = false;
             }
@@ -783,12 +783,22 @@ class contentBlueprintsSections extends AdministrationPage
                         if (is_array($fields) && !empty($fields)) {
                             foreach ($fields as $position => $data) {
                                 if (isset($data['id'])) {
-                                    $id_list[] = $data['id'];
+                                    $id_list[] = (int)$data['id'];
                                 }
                             }
                         }
 
-                        $missing_cfs = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '$section_id' AND `id` NOT IN ('".@implode("', '", $id_list)."')");
+                        $missing_cfs = Symphony::Database()
+                            ->select(['id'])
+                            ->from('tbl_fields')
+                            ->usePlaceholders()
+                            ->where(['parent_section' => $section_id]);
+
+                        if (!empty($id_list)) {
+                            $missing_cfs->where(['id' => ['notin' => $id_list]]);
+                        }
+
+                        $missing_cfs = $missing_cfs->execute()->column('id');
 
                         if (is_array($missing_cfs) && !empty($missing_cfs)) {
                             foreach ($missing_cfs as $id) {

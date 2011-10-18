@@ -57,16 +57,16 @@ trait DatabaseColumnDefinition
      *  Defaults to false.
      * @return string
      *  The SQL part containing the column definition.
-     * @throws DatabaseException
+     * @throws DatabaseSatementException
      */
     public function buildColumnDefinitionFromArray($k, $options)
     {
         if (is_string($options)) {
             $options = ['type' => $options];
         } elseif (!is_array($options)) {
-            throw new DatabaseException('Field value can only be a string or an array');
+            throw new DatabaseSatementException('Field value can only be a string or an array');
         } elseif (!isset($options['type'])) {
-            throw new DatabaseException('Field type must be defined.');
+            throw new DatabaseSatementException('Field type must be defined.');
         }
         $type = strtolower($options['type']);
         $collate = $this->getOption($options, 'collate');
@@ -76,8 +76,11 @@ trait DatabaseColumnDefinition
         $notNull = !isset($options['null']) || $options['null'] === false;
         $null = $notNull ? ' NOT NULL' : ' DEFAULT NULL';
         $default = $notNull && isset($options['default']) ?
-            " DEFAULT " . $this->getDb()->quote($options['default']) :
+            " DEFAULT " . ($this->asPlaceholderString($k, $options['default']) .  '_default') :
             '';
+        if ($default) {
+            $this->appendValues(["{$k}_default" => $options['default']]);
+        }
         $unsigned = !isset($options['signed']) || $options['signed'] === false;
         $stringOptions = $collate . $null . $default;
 
@@ -87,7 +90,11 @@ trait DatabaseColumnDefinition
             if (isset($options['values']) && is_array($options['values'])) {
                 $type .= "(" . implode(
                     self::LIST_DELIMITER,
-                    array_map([$this->getDb(), 'quote'], $options['values'])
+                    General::array_map(function ($key, $value) use ($k) {
+                        $key = $k . ($key + 1);
+                        $this->appendValues([$key => $value]);
+                        return $this->asPlaceholderString($key, $value);
+                    }, $options['values'])
                 ) . ")";
             }
             $type .= $stringOptions;

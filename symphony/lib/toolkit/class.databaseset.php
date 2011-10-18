@@ -46,7 +46,7 @@ final class DatabaseSet extends DatabaseStatement
      * Set the value of the variable to this value.
      * Can only be called once in the lifetime of the object.
      *
-     * @throws DatabaseException
+     * @throws DatabaseSatementException
      * @param string $value
      *  The new value of the variable
      * @return DatabaseSet
@@ -55,7 +55,7 @@ final class DatabaseSet extends DatabaseStatement
     public function value($value)
     {
         if ($this->containsSQLParts('value')) {
-            throw new DatabaseException('DatabaseSet can not hold more than one value clause');
+            throw new DatabaseSatementException('DatabaseSet can not hold more than one value clause');
         }
         General::ensureType([
             'value' => ['var' => $value, 'type' => 'string'],

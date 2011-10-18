@@ -51,10 +51,17 @@ final class DatabaseCreateTest extends TestCase
                   ])
                   ->finalize(); // this would by called by execute()
         $this->assertEquals(
-            "CREATE TABLE `create` ( `x` varchar(100) COLLATE utf8 NOT NULL DEFAULT 'TATA', `y` datetime NOT NULL DEFAULT '2012-01-01 12:12:12', `z` enum('yes', 'no') COLLATE utf8 NOT NULL DEFAULT 'yes', `id` int(11) unsigned NOT NULL AUTO_INCREMENT ) COLLATE=utf8",
+            "CREATE TABLE `create` ( `x` varchar(100) COLLATE utf8 NOT NULL DEFAULT :x_default, `y` datetime NOT NULL DEFAULT :y_default, `z` enum(:z1, :z2) COLLATE utf8 NOT NULL DEFAULT :z_default, `id` int(11) unsigned NOT NULL AUTO_INCREMENT ) COLLATE=utf8",
             $sql->generateSQL(),
             'CREATE clause with multiple fields'
         );
+        $values = $sql->getValues();
+        $this->assertEquals('yes', $values['z1'], 'z1 is "yes"');
+        $this->assertEquals('no', $values['z2'], 'z2 is "no"');
+        $this->assertEquals('TATA', $values['x_default'], 'z_default is "TATA"');
+        $this->assertEquals('2012-01-01 12:12:12', $values['y_default'], 'z_default is "2012-01-01 12:12:12"');
+        $this->assertEquals('yes', $values['z_default'], 'z_default is "yes"');
+        $this->assertEquals(5, count($values), '5 values');
     }
 
     public function testCREATEMULTIPLECALLS()
@@ -71,10 +78,13 @@ final class DatabaseCreateTest extends TestCase
                     ]
                   ]);
         $this->assertEquals(
-            "CREATE TABLE `create` ( `x` varchar(100) NOT NULL , `y` datetime NOT NULL DEFAULT '2012-01-01 12:12:12' )",
+            "CREATE TABLE `create` ( `x` varchar(100) NOT NULL , `y` datetime NOT NULL DEFAULT :y_default )",
             $sql->generateSQL(),
             'CREATE clause'
         );
+        $values = $sql->getValues();
+        $this->assertEquals('2012-01-01 12:12:12', $values['y_default'], 'z_default is "2012-01-01 12:12:12"');
+        $this->assertEquals(1, count($values), '1 value');
     }
 
     public function testCREATEKEYS()

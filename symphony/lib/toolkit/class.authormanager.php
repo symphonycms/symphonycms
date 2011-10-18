@@ -27,18 +27,18 @@ class AuthorManager
      * @param array $fields
      *  Associative array of field names => values for the Author object
      * @throws DatabaseException
-     * @return integer|boolean
-     *  Returns an Author ID of the created Author on success, false otherwise.
+     * @return integer
+     *  Returns an Author ID of the created Author on success, 0 otherwise.
      */
     public static function add(array $fields)
     {
-        if (!Symphony::Database()->insert($fields, 'tbl_authors')) {
-            return false;
-        }
+        $inserted = Symphony::Database()
+            ->insert('tbl_authors')
+            ->values($fields)
+            ->execute()
+            ->success();
 
-        $author_id = Symphony::Database()->getInsertID();
-
-        return $author_id;
+        return $inserted ? Symphony::Database()->getInsertID() : 0;
     }
 
     /**
@@ -56,10 +56,12 @@ class AuthorManager
      */
     public static function edit($id, array $fields)
     {
-        return Symphony::Database()->update($fields, 'tbl_authors', sprintf(
-            " `id` = %d",
-            $id
-        ));
+        return Symphony::Database()
+            ->update('tbl_authors')
+            ->set($fields)
+            ->where(['id' => (int)$id])
+            ->execute()
+            ->success();
     }
 
     /**
@@ -72,10 +74,11 @@ class AuthorManager
      */
     public static function delete($id)
     {
-        return Symphony::Database()->delete('tbl_authors', sprintf(
-            " `id` = %d",
-            $id
-        ));
+        return Symphony::Database()
+            ->delete('tbl_authors')
+            ->where(['id' => (int)$id])
+            ->execute()
+            ->success();
     }
 
     /**
@@ -101,31 +104,43 @@ class AuthorManager
      */
     public static function fetch($sortby = 'id', $sortdirection = 'ASC', $limit = null, $start = null, $where = null, $joins = null)
     {
-        $sortby = is_null($sortby) ? 'id' : Symphony::Database()->cleanValue($sortby);
-        $sortdirection = $sortdirection === 'ASC' ? 'ASC' : 'DESC';
+        $sortby = $sortby ?: 'id';
+        $sortdirection = strtoupper($sortdirection) === 'ASC' ? 'ASC' : 'DESC';
 
-        $records = Symphony::Database()->fetch(sprintf(
-            "SELECT a.*
-            FROM `tbl_authors` AS `a`
-            %s
-            WHERE %s
-            ORDER BY %s %s
-            %s %s",
-            $joins,
-            ($where) ? $where : 1,
-            'a.'. $sortby,
-            $sortdirection,
-            ($limit) ? sprintf("LIMIT %d", $limit) : '',
-            ($start && $limit) ? ', ' . $start : ''
-        ));
+        $sql = Symphony::Database()
+            ->select(['a.*'])
+            ->from('tbl_authors', 'a');
 
-        if (!is_array($records) || empty($records)) {
-            return array();
+        $orderBy = [];
+        foreach (explode(',', $sortby) as $sortby) {
+            $sortby = trim($sortby);
+            $orderBy["a.$sortby"] = $sortdirection;
+        }
+        $sql->orderBy($orderBy);
+
+        if ($joins) {
+            $joins = $sql->replaceTablePrefix($joins);
+            $sql->unsafeAppendSQLPart('join', $joins);
+        }
+        if ($where) {
+            $where = $sql->replaceTablePrefix($where);
+            $sql->unsafe()->unsafeAppendSQLPart('where', "WHERE $where");
+        }
+        if ($limit) {
+            $sql->limit($limit);
+        }
+        if ($start) {
+            $sql->offset($start);
         }
 
-        $authors = array();
+        $records = $sql->execute();
+        $authors = [];
 
-        foreach ($records as $row) {
+        if ($records->rowCount() === 0) {
+            return $authors;
+        }
+
+        while ($row = $records->next()) {
             $author = new Author;
 
             foreach ($row as $field => $val) {
@@ -185,18 +200,17 @@ class AuthorManager
             return ($return_single ? $authors[0] : $authors);
         }
 
-        $records = Symphony::Database()->fetch(sprintf(
-            "SELECT *
-            FROM `tbl_authors`
-            WHERE `id` IN (%s)",
-            implode(",", $id)
-        ));
+        $records = Symphony::Database()
+            ->select()
+            ->from('tbl_authors')
+            ->where(['id' => ['in' => $id]])
+            ->execute();
 
-        if (!is_array($records) || empty($records)) {
+        if ($records->rowCount() === 0) {
             return ($return_single ? $authors[0] : $authors);
         }
 
-        foreach ($records as $row) {
+        while ($row = $records->next()) {
             $author = new Author;
 
             foreach ($row as $field => $val) {
@@ -221,19 +235,19 @@ class AuthorManager
      */
     public static function fetchByUsername($username)
     {
-        if (!isset(self::$_pool[$username])) {
-            $records = Symphony::Database()->fetchRow(0, sprintf(
-                "SELECT *
-                FROM `tbl_authors`
-                WHERE `username` = '%s'
-                LIMIT 1",
-                Symphony::Database()->cleanValue($username)
-            ));
+        if(!isset(self::$_pool[$username])) {
+            $records = Symphony::Database()
+                ->select()
+                ->from('tbl_authors')
+                ->where(['username' => $username])
+                ->limit(1)
+                ->execute();
 
-            if (!is_array($records) || empty($records)) {
+            if ($records->rowCount() === 0) {
                 return null;
             }
 
+            $records = $records->next();
             $author = new Author;
 
             foreach ($records as $field => $val) {
@@ -261,12 +275,12 @@ class AuthorManager
             return false;
         }
 
-        return Symphony::Database()->query(sprintf(
-            "UPDATE `tbl_authors`
-            SET `auth_token_active` = 'yes'
-            WHERE `id` = %d",
-            $author_id
-        ));
+        return Symphony::Database()
+            ->update('tbl_authors')
+            ->set(['auth_token_active' => 'yes'])
+            ->where(['id' => $author_id])
+            ->execute()
+            ->success();
     }
 
     /**
@@ -284,11 +298,11 @@ class AuthorManager
             return false;
         }
 
-        return Symphony::Database()->query(sprintf(
-            "UPDATE `tbl_authors`
-            SET `auth_token_active` = 'no'
-            WHERE `id` = %d",
-            $author_id
-        ));
+        return Symphony::Database()
+            ->update('tbl_authors')
+            ->set(['auth_token_active' => 'no'])
+            ->where(['id' => $author_id])
+            ->execute()
+            ->success();
     }
 }

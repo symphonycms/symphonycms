@@ -592,7 +592,7 @@ class contentSystemAuthors extends AdministrationPage
             $this->_Author->set('first_name', General::sanitize($fields['first_name']));
             $this->_Author->set('last_name', General::sanitize($fields['last_name']));
             $this->_Author->set('last_seen', null);
-            $this->_Author->set('password', (trim($fields['password']) == '' ? '' : Cryptography::hash(Symphony::Database()->cleanValue($fields['password']))));
+            $this->_Author->set('password', (trim($fields['password']) == '' ? '' : Cryptography::hash($fields['password'])));
             $this->_Author->set('default_area', $fields['default_area']);
             $this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
             $this->_Author->set('language', isset($fields['language']) ? $fields['language'] : null);
@@ -704,7 +704,7 @@ class contentSystemAuthors extends AdministrationPage
             }
 
             // Check the old password was correct
-            if (isset($fields['old-password']) && strlen(trim($fields['old-password'])) > 0 && Cryptography::compare(Symphony::Database()->cleanValue(trim($fields['old-password'])), $this->_Author->get('password'))) {
+            if (isset($fields['old-password']) && strlen(trim($fields['old-password'])) > 0 && Cryptography::compare(trim($fields['old-password']), $this->_Author->get('password'))) {
                 $authenticated = true;
 
                 // Developers don't need to specify the old password, unless it's their own account
@@ -738,7 +738,7 @@ class contentSystemAuthors extends AdministrationPage
             $this->_Author->set('language', isset($fields['language']) ? $fields['language'] : null);
 
             if (trim($fields['password']) != '') {
-                $this->_Author->set('password', Cryptography::hash(Symphony::Database()->cleanValue($fields['password'])));
+                $this->_Author->set('password', Cryptography::hash($fields['password']));
                 $changing_password = true;
             }
 
@@ -788,7 +788,7 @@ class contentSystemAuthors extends AdministrationPage
             if (empty($this->_errors) && $this->_Author->validate($this->_errors)) {
                 // Admin changing another profile
                 if (!$isOwner) {
-                    $entered_password = Symphony::Database()->cleanValue($fields['confirm-change-password']);
+                    $entered_password = $fields['confirm-change-password'];
 
                     if (!isset($fields['confirm-change-password']) || empty($fields['confirm-change-password'])) {
                         $this->_errors['confirm-change-password'] = __('Please provide your own password to make changes to this author.');
@@ -812,11 +812,13 @@ class contentSystemAuthors extends AdministrationPage
 
                 // All good, let's save the Author
                 if (is_array($this->_errors) && empty($this->_errors) && $this->_Author->commit()) {
-                    Symphony::Database()->delete('tbl_forgotpass', sprintf("
-                        `expiry` < '%s' OR `author_id` = %d",
-                        DateTimeObj::getGMT('c'),
-                        $author_id
-                    ));
+                    Symphony::Database()
+                        ->delete('tbl_forgotpass')
+                        ->where(['or' => [
+                            'expiry' => ['<' => DateTimeObj::getGMT('c')],
+                            'author_id' => $author_id,
+                        ]])
+                        ->execute();
 
                     if ($isOwner) {
                         Administration::instance()->login($this->_Author->get('username'), $this->_Author->get('password'), true);
@@ -881,7 +883,7 @@ class contentSystemAuthors extends AdministrationPage
             }
             // Admin changing another profile
             if (!$isOwner) {
-                $entered_password = Symphony::Database()->cleanValue($fields['confirm-change-password']);
+                $entered_password = $fields['confirm-change-password'];
 
                 if (!isset($fields['confirm-change-password']) || empty($fields['confirm-change-password'])) {
                     $this->_errors['confirm-change-password'] = __('Please provide your own password to make changes to this author.');

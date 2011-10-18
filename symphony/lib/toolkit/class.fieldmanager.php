@@ -111,8 +111,8 @@ class FieldManager implements FileResource
      * @throws DatabaseException
      * @param array $fields
      *  Associative array of field names => values for the Field object
-     * @return integer|boolean
-     *  Returns a Field ID of the created Field on success, false otherwise.
+     * @return integer
+     *  Returns a Field ID of the created Field on success, 0 otherwise.
      */
     public static function add(array $fields)
     {
@@ -120,11 +120,13 @@ class FieldManager implements FileResource
             $fields['sortorder'] = self::fetchNextSortOrder();
         }
 
-        if (!Symphony::Database()->insert($fields, 'tbl_fields')) {
-            return false;
-        }
+        $inserted = Symphony::Database()
+            ->insert('tbl_fields')
+            ->values($fields)
+            ->execute()
+            ->success();
 
-        return Symphony::Database()->getInsertID();
+        return $inserted ? Symphony::Database()->getInsertID() : 0;
     }
 
     /**
@@ -146,15 +148,27 @@ class FieldManager implements FileResource
         // Get the type of this field:
         $type = self::fetchFieldTypeFromID($field_id);
 
+        if (!$type) {
+            throw new Exception("Field id `$field_id` does not map to a field");
+        }
+
         // Delete the original settings:
-        Symphony::Database()->delete("tbl_fields_$type", sprintf("`field_id` = %d LIMIT 1", $field_id));
+        Symphony::Database()
+            ->delete("tbl_fields_$type")
+            ->where(['field_id' => $field_id])
+            ->limit(1)
+            ->execute();
 
         // Insert the new settings into the type table:
         if (!isset($settings['field_id'])) {
             $settings['field_id'] = $field_id;
         }
 
-        return Symphony::Database()->insert($settings, 'tbl_fields_'.$type);
+        return Symphony::Database()
+            ->insert("tbl_fields_$type")
+            ->values($settings)
+            ->execute()
+            ->success();
     }
 
     /**
@@ -172,11 +186,12 @@ class FieldManager implements FileResource
      */
     public static function edit($id, array $fields)
     {
-        if (!Symphony::Database()->update($fields, "tbl_fields", sprintf(" `id` = %d", $id))) {
-            return false;
-        }
-
-        return true;
+        return Symphony::Database()
+            ->update('tbl_fields')
+            ->set($fields)
+            ->where(['id' => (int)$id])
+            ->execute()
+            ->success();
     }
 
     /**
@@ -199,12 +214,21 @@ class FieldManager implements FileResource
         $existing = self::fetch($id);
         $existing->tearDown();
 
-        Symphony::Database()->delete('tbl_fields', sprintf(" `id` = %d", $id));
-        Symphony::Database()->delete('tbl_fields_'.$existing->handle(), sprintf(" `field_id` = %d", $id));
+        Symphony::Database()
+            ->delete('tbl_fields')
+            ->where(['id' => (int)$id])
+            ->execute();
+        Symphony::Database()
+            ->delete('tbl_fields_' . $existing->handle())
+            ->where(['field_id' => (int)$id])
+            ->execute();
         SectionManager::removeSectionAssociation($id);
 
         if ($existing->requiresTable()) {
-            Symphony::Database()->query('DROP TABLE IF EXISTS `tbl_entries_data_'.$id.'`');
+            return Symphony::Database()
+                ->dropIfExists("tbl_entries_data_$id")
+                ->execute()
+                ->success();
         }
 
         return true;
@@ -247,10 +271,10 @@ class FieldManager implements FileResource
      */
     public static function fetch($id = null, $section_id = null, $order = 'ASC', $sortfield = 'sortorder', $type = null, $location = null, $where = null, $restrict = Field::__FIELD_ALL__)
     {
-        $fields = array();
+        $fields = [];
         $returnSingle = false;
-        $ids = array();
-        $field_contexts = array();
+        $ids = [];
+        $field_contexts = [];
 
         if (!is_null($id)) {
             if (is_numeric($id)) {
@@ -279,22 +303,38 @@ class FieldManager implements FileResource
         // If there is any `$field_ids` left to be resolved lets do that, otherwise
         // if `$id` wasn't provided in the first place, we'll also continue
         if (!empty($field_ids) || is_null($id)) {
-            $sql = sprintf(
-                "SELECT t1.*
-                FROM tbl_fields AS `t1`
-                WHERE 1
-                %s %s %s %s
-                %s",
-                (isset($type) ? " AND t1.`type` = '{$type}' " : null),
-                (isset($location) ? " AND t1.`location` = '{$location}' " : null),
-                (isset($section_id) ? " AND t1.`parent_section` = '{$section_id}' " : null),
-                $where,
-                isset($field_ids) ? " AND t1.`id` IN(" . implode(',', $field_ids) . ") " : " ORDER BY t1.`{$sortfield}` {$order}"
-            );
+            $sql = Symphony::Database()
+                ->select(['t1.*'])
+                ->from('tbl_fields', 't1')
+                ->unsafeAppendSQLPart('where', 'WHERE 1 = 1')
+                ->orderBy(["t1.$sortfield" => $order]);
 
-            if (!$result = Symphony::Database()->fetch($sql)) {
-                return ($returnSingle ? null : array());
+            if ($type) {
+                $sql->where(['t1.type' => $type]);
             }
+            if ($location) {
+                $sql->where(['t1.location' => $location]);
+            }
+            if ($section_id) {
+                $sql->where(['t1.parent_section' => $section_id]);
+            }
+            if ($field_ids) {
+                $sql->where(['t1.id' => ['in' => $field_ids]]);
+            }
+            if ($where) {
+                $where = $sql->replaceTablePrefix($where);
+                // Ugly hack: mysqli allowed this....
+                $where = str_replace('IN ()', 'IN (0)', $where);
+                $sql->unsafe()->unsafeAppendSQLPart('where', $where);
+            }
+
+            $result = $sql->execute();
+
+            if (!$result->rowCount()) {
+                return ($returnSingle ? null : []);
+            }
+
+            $result = $result->rows();
 
             // Loop over the resultset building an array of type, field_id
             foreach ($result as $f) {
@@ -304,11 +344,12 @@ class FieldManager implements FileResource
             // Loop over the `ids` array, which is grouped by field type
             // and get the field context.
             foreach ($ids as $type => $field_id) {
-                $field_contexts[$type] = Symphony::Database()->fetch(sprintf(
-                    "SELECT * FROM `tbl_fields_%s` WHERE `field_id` IN (%s)",
-                    $type,
-                    implode(',', $field_id)
-                ), 'field_id');
+                $field_contexts[$type] = Symphony::Database()
+                    ->select()
+                    ->from("tbl_fields_$type")
+                    ->where(['field_id' => ['in' => array_map(['General', 'intval'], $field_id)]])
+                    ->execute()
+                    ->rowsIndexedByColumn('field_id');
             }
 
             foreach ($result as $f) {
@@ -372,10 +413,13 @@ class FieldManager implements FileResource
      */
     public static function fetchFieldTypeFromID($id)
     {
-        return Symphony::Database()->fetchVar('type', 0, sprintf("
-            SELECT `type` FROM `tbl_fields` WHERE `id` = %d LIMIT 1",
-            $id
-        ));
+        return Symphony::Database()
+            ->select(['type'])
+            ->from('tbl_fields')
+            ->where(['id' => (int)$id])
+            ->limit(1)
+            ->execute()
+            ->variable('type');
     }
 
     /**
@@ -386,10 +430,13 @@ class FieldManager implements FileResource
      */
     public static function fetchHandleFromID($id)
     {
-        return Symphony::Database()->fetchVar('element_name', 0, sprintf("
-            SELECT `element_name` FROM `tbl_fields` WHERE `id` = %d LIMIT 1",
-            $id
-        ));
+        return Symphony::Database()
+            ->select(['element_name'])
+            ->from('tbl_fields')
+            ->where(['id' => (int)$id])
+            ->limit(1)
+            ->execute()
+            ->variable('element_name');
     }
 
     /**
@@ -414,14 +461,14 @@ class FieldManager implements FileResource
      */
     public static function fetchFieldIDFromElementName($element_name, $section_id = null)
     {
-        if (is_null($element_name)) {
-            $schema_sql = sprintf("
-                SELECT `id`
-                FROM `tbl_fields`
-                WHERE `parent_section` = %d
-                ORDER BY `sortorder` ASC",
-                $section_id
-            );
+        $schema_sql = Symphony::Database()
+            ->select(['id'])
+            ->from('tbl_fields')
+            ->orderBy(['sortorder' => 'ASC'])
+            ->usePlaceholders();
+
+        if (!$element_name) {
+            $schema_sql->where(['parent_section' => $section_id]);
         } else {
             $element_names = !is_array($element_name) ? array($element_name) : $element_name;
 
@@ -441,38 +488,26 @@ class FieldManager implements FileResource
                     continue;
                 }
 
-                $element_names[] = Symphony::Database()->cleanValue(trim($parts[0]));
+                $element_names[] = trim($parts[0]);
             }
 
-            $schema_sql = empty($element_names) ? null : sprintf("
-                SELECT `id`
-                FROM `tbl_fields`
-                WHERE 1
-                %s
-                AND `element_name` IN ('%s')
-                ORDER BY `sortorder` ASC",
-                (!is_null($section_id) ? sprintf("AND `parent_section` = %d", $section_id) : ""),
-                implode("', '", array_map(array('MySQL', 'cleanValue'), array_unique($element_names)))
-            );
-        }
-
-        if (is_null($schema_sql)) {
-            return false;
-        }
-
-        $result = Symphony::Database()->fetch($schema_sql);
-
-        if (count($result) == 1) {
-            return (int)$result[0]['id'];
-        } elseif (empty($result)) {
-            return false;
-        } else {
-            foreach ($result as &$r) {
-                $r = (int)$r['id'];
+            if ($section_id) {
+                $schema_sql->where(['parent_section' => $section_id]);
             }
 
-            return $result;
+            if (!empty($element_names)) {
+                $schema_sql->where(['element_name' => ['in' => array_unique($element_names)]]);
+            }
         }
+
+        $result = $schema_sql->execute();
+
+        if (!$result->rowCount()) {
+            return false;
+        } elseif ($result->rowCount() === 1) {
+            return (int)$result->variable('id');
+        }
+        return array_map('intval', $result->column('id'));
     }
 
     /**
@@ -483,16 +518,13 @@ class FieldManager implements FileResource
      */
     public static function fetchNextSortOrder()
     {
-        $next = Symphony::Database()->fetchVar(
-            "next",
-            0,
-            "SELECT
-                MAX(p.sortorder) + 1 AS `next`
-            FROM
-                `tbl_fields` AS p
-            LIMIT 1"
-        );
-        return ($next ? (int)$next : 1);
+        $next = (int)Symphony::Database()
+            ->select(['MAX(sortorder)'])
+            ->from('tbl_fields')
+            ->execute()
+            ->variable(0);
+
+        return $next + 1;
     }
 
     /**
@@ -504,18 +536,18 @@ class FieldManager implements FileResource
      * @since Symphony 2.3
      * @param integer $section_id
      * @return array
-     *  An associative array that contains four keys, `id`, `element_name`,
+     *  An array of associative arrays that contains four keys, `id`, `element_name`,
      * `type` and `location`
      */
     public static function fetchFieldsSchema($section_id)
     {
-        return Symphony::Database()->fetch(sprintf(
-            "SELECT `id`, `element_name`, `type`, `location`
-            FROM `tbl_fields`
-            WHERE `parent_section` = %d
-            ORDER BY `sortorder` ASC",
-            $section_id
-        ));
+        return Symphony::Database()
+            ->select(['id', 'element_name', 'type', 'location'])
+            ->from('tbl_fields')
+            ->where(['parent_section' => $section_id])
+            ->orderBy(['sortorder' => 'ASC'])
+            ->execute()
+            ->rows();
     }
 
     /**
@@ -599,10 +631,12 @@ class FieldManager implements FileResource
      */
     public static function isFieldUsed($field_type)
     {
-        return Symphony::Database()->fetchVar('count', 0, sprintf(
-            "SELECT COUNT(*) AS `count` FROM `tbl_fields` WHERE `type` = '%s'",
-            $field_type
-        )) > 0;
+        return (int)Symphony::Database()
+            ->selectCount()
+            ->from('tbl_fields')
+            ->where(['type' => $field_type])
+            ->execute()
+            ->variable(0) > 0;
     }
 
     /**
@@ -616,18 +650,26 @@ class FieldManager implements FileResource
      */
     public static function isTextFormatterUsed($text_formatter_handle)
     {
-        $fields = Symphony::Database()->fetchCol('type', "SELECT DISTINCT `type` FROM `tbl_fields` WHERE `type` NOT IN ('author', 'checkbox', 'date', 'input', 'select', 'taglist', 'upload')");
+        $fields = Symphony::Database()
+            ->select(['type'])
+            ->distinct()
+            ->from('tbl_fields')
+            ->where(['type' => ['notin' => [
+                'author', 'checkbox', 'date', 'input', 'select', 'taglist', 'upload'
+            ]]])
+            ->execute()
+            ->column('type');
 
         if (!empty($fields)) {
             foreach ($fields as $field) {
+                $table = 0;
                 try {
-                    $table = Symphony::Database()->fetchVar('count', 0, sprintf(
-                        "SELECT COUNT(*) AS `count`
-                        FROM `tbl_fields_%s`
-                        WHERE `formatter` = '%s'",
-                        Symphony::Database()->cleanValue($field),
-                        $text_formatter_handle
-                    ));
+                    $table = (int)Symphony::Database()
+                        ->selectCount()
+                        ->from("tbl_fields_$field")
+                        ->where(['formatter' => $text_formatter_handle])
+                        ->execute()
+                        ->variable(0);
                 } catch (DatabaseException $ex) {
                     // Table probably didn't have that column
                 }

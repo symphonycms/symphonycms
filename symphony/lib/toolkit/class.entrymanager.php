@@ -131,12 +131,19 @@ class EntryManager
             }
 
             // Lock the table for write
-            $did_lock = Symphony::Database()->query("LOCK TABLES `$table_name` WRITE");
+            $lockStatement = new DatabaseStatement(
+                Symphony::Database(),
+                'LOCK TABLES'
+            );
+            $table_name = $lockStatement->replaceTablePrefix($table_name);
+            $lockStatement->unsafeAppendSQLPart('statement', "`$table_name` WRITE");
+            $did_lock = $lockStatement->execute()->success();
 
             // Delete old data
-            Symphony::Database()->delete($table_name, sprintf("
-                `entry_id` = %d", $entry_id
-            ));
+            Symphony::Database()
+                ->delete($table_name)
+                ->where(['entry_id' => $entry_id])
+                ->execute();
 
             // Insert new data
             $data = array(
@@ -161,7 +168,12 @@ class EntryManager
 
             // Insert only if we have field data
             if (!empty($fields)) {
-                Symphony::Database()->insert($fields, $table_name);
+                foreach ($fields as $f) {
+                    Symphony::Database()
+                        ->insert($table_name)
+                        ->values($f)
+                        ->execute();
+                }
             }
         } catch (Exception $ex) {
             $exception = $ex;
@@ -169,7 +181,11 @@ class EntryManager
         }
 
         if ($did_lock) {
-            Symphony::Database()->query('UNLOCK TABLES');
+            $unlockStatement = new DatabaseStatement(
+                Symphony::Database(),
+                "UNLOCK TABLES"
+            );
+            $unlockStatement->execute();
         }
 
         if ($exception) {
@@ -190,9 +206,13 @@ class EntryManager
     public static function add(Entry $entry)
     {
         $fields = $entry->get();
-        Symphony::Database()->insert($fields, 'tbl_entries');
+        $inserted = Symphony::Database()
+            ->insert('tbl_entries')
+            ->values($fields)
+            ->execute()
+            ->success();
 
-        if (!$entry_id = Symphony::Database()->getInsertID()) {
+        if (!$inserted || !$entry_id = Symphony::Database()->getInsertID()) {
             return false;
         }
 
@@ -219,15 +239,20 @@ class EntryManager
     public static function edit(Entry $entry)
     {
         // Update modification date and modification author.
-        Symphony::Database()->update(
-            array(
+        $updated = Symphony::Database()
+            ->update('tbl_entries')
+            ->set([
                 'modification_author_id' => $entry->get('modification_author_id'),
                 'modification_date' => $entry->get('modification_date'),
                 'modification_date_gmt' => $entry->get('modification_date_gmt')
-            ),
-            'tbl_entries',
-            sprintf(' `id` = %d', (int)$entry->get('id'))
-        );
+            ])
+            ->where(['id' => $entry->get('id')])
+            ->execute()
+            ->success();
+
+        if (!$updated) {
+            return false;
+        }
 
         // Iterate over all data for this entry
         foreach ($entry->getData() as $field_id => $field) {
@@ -341,7 +366,10 @@ class EntryManager
                 }
             }
 
-            Symphony::Database()->delete('tbl_entries', " `id` IN ('$entry_list') ");
+            Symphony::Database()
+                ->delete('tbl_entries')
+                ->where(['id' => ['in' => $chunk]])
+                ->execute();
         }
 
         return true;
@@ -410,19 +438,19 @@ class EntryManager
 
         // Check for RAND first, since this works independently of any specific field
         } elseif (self::$_fetchSortDirection == 'RAND') {
-            $sort = 'ORDER BY RAND() ';
+            $sort = ['e.id' => 'RAND()'];
 
         // Handle Creation Date or the old Date sorting
         } elseif (self::$_fetchSortField === 'system:creation-date' || self::$_fetchSortField === 'date') {
-            $sort = sprintf('ORDER BY `e`.`creation_date_gmt` %s', self::$_fetchSortDirection);
+            $sort = ['e.creation_date_gmt' => self::$_fetchSortDirection];
 
         // Handle Modification Date sorting
         } elseif (self::$_fetchSortField === 'system:modification-date') {
-            $sort = sprintf('ORDER BY `e`.`modification_date_gmt` %s', self::$_fetchSortDirection);
+            $sort = ['e.modification_date_gmt' => self::$_fetchSortDirection];
 
         // Handle sorting for System ID
         } elseif (self::$_fetchSortField == 'system:id' || self::$_fetchSortField == 'id') {
-            $sort = sprintf('ORDER BY `e`.`id` %s', self::$_fetchSortDirection);
+            $sort = ['e.id' => self::$_fetchSortDirection];
 
         // Handle when the sort field is an actual Field
         } elseif (self::$_fetchSortField && $field = FieldManager::fetch(self::$_fetchSortField)) {
@@ -440,7 +468,7 @@ class EntryManager
 
         // No sort specified, so just sort on system id
         } else {
-            $sort = sprintf('ORDER BY `e`.`id` %s', self::$_fetchSortDirection);
+            $sort = ['e.id' => self::$_fetchSortDirection];
         }
 
         if ($field && !$group) {
@@ -451,32 +479,52 @@ class EntryManager
             $entry_id = array($entry_id);
         }
 
-        $sql = sprintf("
-            SELECT %s`e`.`id`, `e`.section_id,
-                `e`.`author_id`, `e`.`modification_author_id`,
-                `e`.`creation_date` AS `creation_date`,
-                `e`.`modification_date` AS `modification_date`
-                %s
-            FROM `tbl_entries` AS `e`
-            %s
-            WHERE 1
-            %s
-            %s
-            %s
-            %s
-            %s
-            ",
-            $group ? 'DISTINCT ' : '',
-            $sortSelectClause ? ', ' . $sortSelectClause : '',
-            $joins,
-            $entry_id ? "AND `e`.`id` IN ('".implode("', '", $entry_id)."') " : '',
-            $section_id ? sprintf("AND `e`.`section_id` = %d", $section_id) : '',
-            $where,
-            $sort,
-            $limit ? sprintf('LIMIT %d, %d', $start, $limit) : ''
-        );
+        $projection = [
+            'e.id',
+            'e.section_id',
+            'e.author_id',
+            'e.modification_author_id',
+            'e.creation_date' => 'creation_date',
+            'e.modification_date' => 'modification_date'
+        ];
+        $sql = Symphony::Database()
+                ->select($projection)
+                ->from('tbl_entries')->alias('e');
 
-        $rows = Symphony::Database()->fetch($sql);
+        if ($group) {
+            $sql->distinct();
+        }
+        if ($sortSelectClause) {
+            $sql->projection(array_map('trim', explode(',', $sortSelectClause)));
+        }
+        if ($joins) {
+            $joins = $sql->replaceTablePrefix($joins);
+            $sql->unsafeAppendSQLPart('join', $joins);
+        }
+        if ($where) {
+            $where = $sql->replaceTablePrefix($where);
+            $sql->unsafe()->unsafeAppendSQLPart('where', "WHERE 1=1 $where");
+        }
+        if ($entry_id) {
+            $sql->where(['e.id' => ['in' => $entry_id]]);
+        }
+        if ($section_id) {
+            $sql->where(['e.section_id' => $section_id]);
+        }
+        if ($limit) {
+            $sql->limit($limit);
+        }
+        if ($start) {
+            $sql->offset($start);
+        }
+        if (is_array($sort)) {
+            $sql->orderBy($sort);
+        } elseif (is_string($sort)) {
+            $sort = $sql->replaceTablePrefix($sort);
+            $sql->unsafe()->unsafeAppendSQLPart('order by', $sort);
+        }
+
+        $rows = $sql->execute()->rows();
 
         // Create UNIX timestamps, as it has always been (Re: #2501)
         foreach ($rows as &$entry) {
@@ -485,7 +533,7 @@ class EntryManager
         }
         unset($entry);
 
-        return ($buildentries && (is_array($rows) && !empty($rows)) ? self::__buildEntries($rows, $section_id, $element_names) : $rows);
+        return ($buildentries && !empty($rows)) ? self::__buildEntries($rows, $section_id, $element_names) : $rows;
     }
 
     /**
@@ -522,13 +570,13 @@ class EntryManager
             $schema = array($schema);
         }
 
-        $raw = array();
-        $rows_string = '';
+        $raw = [];
+        $entry_ids = [];
 
         // Append meta data:
         foreach ($rows as $entry) {
             $raw[$entry['id']]['meta'] = $entry;
-            $rows_string .= $entry['id'] . ',';
+            $entry_ids[] = $entry['id'];
         }
 
         $rows_string = trim($rows_string, ',');
@@ -537,13 +585,24 @@ class EntryManager
         if (is_array($schema)) {
             foreach ($schema as $field_id) {
                 try {
-                    $row = Symphony::Database()->fetch("SELECT * FROM `tbl_entries_data_{$field_id}` WHERE `entry_id` IN ($rows_string) ORDER BY `id` ASC");
-                } catch (Exception $e) {
+                    $field_id = General::intval($field_id);
+                    if ($field_id < 1 || !Symphony::Database()->tableExists("tbl_entries_data_$field_id")) {
+                        continue;
+                    }
+                    $row = Symphony::Database()
+                        ->select()
+                        ->from("tbl_entries_data_$field_id")
+                        ->where(['entry_id' => ['in' => $entry_ids]])
+                        ->orderBy(['id' => 'ASC'])
+                        ->execute()
+                        ->rows();
+
+                } catch (DatabaseException $e) {
                     // No data due to error
                     continue;
                 }
 
-                if (!is_array($row) || empty($row)) {
+                if (empty($row)) {
                     continue;
                 }
 
@@ -629,10 +688,13 @@ class EntryManager
      */
     public static function fetchEntrySectionID($entry_id)
     {
-        return Symphony::Database()->fetchVar('section_id', 0, sprintf("
-            SELECT `section_id` FROM `tbl_entries` WHERE `id` = %d LIMIT 1",
-            $entry_id
-        ));
+        return Symphony::Database()
+            ->select(['section_id'])
+            ->from('tbl_entries')
+            ->where(['id' => $entry_id])
+            ->limit(1)
+            ->execute()
+            ->variable('section_id');
     }
 
     /**
@@ -660,18 +722,24 @@ class EntryManager
             return false;
         }
 
-        return Symphony::Database()->fetchVar('count', 0, sprintf("
-                SELECT COUNT(%s`e`.id) as `count`
-                FROM `tbl_entries` AS `e`
-                %s
-                WHERE `e`.`section_id` = %d
-                %s
-            ",
-            $group ? 'DISTINCT ' : '',
-            $joins,
-            $section_id,
-            $where
-        ));
+        $sql = Symphony::Database()
+                ->selectCount()
+                ->from('tbl_entries', 'e')
+                ->where(['e.section_id' => $section_id]);
+
+        if ($group) {
+            $sql->distinct();
+        }
+        if ($joins) {
+            $joins = $sql->replaceTablePrefix($joins);
+            $sql->unsafeAppendSQLPart('join', $joins);
+        }
+        if ($where) {
+            $where = $sql->replaceTablePrefix($where);
+            $sql->unsafe()->unsafeAppendSQLPart('where', $where);
+        }
+
+        return (int)$sql->execute()->variable(0);
     }
 
     /**

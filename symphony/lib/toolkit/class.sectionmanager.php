@@ -30,7 +30,7 @@ class SectionManager
      *    a column name from `tbl_sections`
      * @throws DatabaseException
      * @return integer
-     *    The newly created Section's ID
+     *    The newly created Section's ID on success, 0 otherwise
      */
     public static function add(array $settings)
     {
@@ -40,11 +40,13 @@ class SectionManager
         $defaults['author_id'] = 1;
         $defaults['modification_author_id'] = 1;
         $settings = array_replace($defaults, $settings);
-        if (!Symphony::Database()->insert($settings, 'tbl_sections')) {
-            return false;
-        }
+        $inserted = Symphony::Database()
+            ->insert('tbl_sections')
+            ->values($settings)
+            ->execute()
+            ->success();
 
-        return Symphony::Database()->getInsertID();
+        return $inserted ? Symphony::Database()->getInsertID() : 0;
     }
 
     /**
@@ -69,11 +71,12 @@ class SectionManager
         $defaults['author_id'] = 1;
         $defaults['modification_author_id'] = 1;
         $settings = array_replace($defaults, $settings);
-        if (!Symphony::Database()->update($settings, 'tbl_sections', sprintf(" `id` = %d", $section_id))) {
-            return false;
-        }
-
-        return true;
+        return Symphony::Database()
+            ->update('tbl_sections')
+            ->set($settings)
+            ->where(['id' => $section_id])
+            ->execute()
+            ->success();
     }
 
     /**
@@ -89,13 +92,20 @@ class SectionManager
      */
     public static function delete($section_id)
     {
-        $details = Symphony::Database()->fetchRow(0, sprintf("
-            SELECT `sortorder` FROM tbl_sections WHERE `id` = %d",
-            $section_id
-        ));
+        $details = Symphony::Database()
+            ->select(['sortorder'])
+            ->from('tbl_sections')
+            ->where(['id' => $section_id])
+            ->execute()
+            ->next();
 
         // Delete all the entries
-        $entries = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_entries` WHERE `section_id` = '$section_id'");
+        $entries = Symphony::Database()
+            ->select(['id'])
+            ->from('tbl_entries')
+            ->where(['section_id' => $section_id])
+            ->execute()
+            ->column('id');
         EntryManager::delete($entries);
 
         // Delete all the fields
@@ -108,22 +118,27 @@ class SectionManager
         }
 
         // Delete the section
-        Symphony::Database()->delete('tbl_sections', sprintf("
-            `id` = %d", $section_id
-        ));
+        Symphony::Database()
+            ->delete('tbl_sections')
+            ->where(['id' => $section_id])
+            ->execute()
+            ->success();
 
         // Update the sort orders
-        Symphony::Database()->query(sprintf("
-            UPDATE tbl_sections
-            SET `sortorder` = (`sortorder` - 1)
-            WHERE `sortorder` > %d",
-            $details['sortorder']
-        ));
+        Symphony::Database()
+            ->update('tbl_sections')
+            ->set(['sortorder' => '$sortorder - 1'])
+            ->where(['sortorder' => ['>' => $details['sortorder']]])
+            ->execute();
 
         // Delete the section associations
-        Symphony::Database()->delete('tbl_sections_association', sprintf("
-            `parent_section_id` = %d", $section_id
-        ));
+        Symphony::Database()
+            ->delete('tbl_sections_association')
+            ->where(['or' => [
+                'parent_section_id' => $section_id,
+                'child_section_id' => $section_id,
+            ]])
+            ->execute();
 
         return true;
     }
@@ -165,24 +180,29 @@ class SectionManager
             return self::$_pool[$section_id];
         }
 
+        $sql = Symphony::Database()
+            ->select()
+            ->from('tbl_sections', 's');
+
         // Ensure they are always an ID
         $section_ids = array_map('intval', $section_ids);
-        $sql = sprintf(
-            "SELECT `s`.*
-            FROM `tbl_sections` AS `s`
-            %s
-            %s",
-            !empty($section_id) ? " WHERE `s`.`id` IN (" . implode(',', $section_ids) . ") " : "",
-            empty($section_id) ? " ORDER BY `s`.`$sortfield` $order" : ""
-        );
 
-        if (!$sections = Symphony::Database()->fetch($sql)) {
+        if (!empty($section_id)) {
+            $sql->where(['s.id' => ['in' => $section_ids]]);
+        }
+        else {
+            $sql->orderBy([$sortfield => $order]);
+        }
+
+        $result = $sql->execute();
+
+        if (!$result->rowCount()) {
             return ($returnSingle ? false : array());
         }
 
         $ret = array();
 
-        foreach ($sections as $s) {
+        while ($s = $result->next()) {
             $obj = self::create();
 
             foreach ($s as $name => $value) {
@@ -216,8 +236,13 @@ class SectionManager
      */
     public static function fetchIDFromHandle($handle)
     {
-        $handle = Symphony::Database()->cleanValue($handle);
-        return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_sections` WHERE `handle` = '$handle' LIMIT 1");
+        return (int)Symphony::Database()
+            ->select(['id'])
+            ->from('tbl_sections')
+            ->where(['handle' => $handle])
+            ->limit(1)
+            ->execute()
+            ->variable('id');
     }
 
     /**
@@ -228,17 +253,13 @@ class SectionManager
      */
     public static function fetchNextSortOrder()
     {
-        $next = Symphony::Database()->fetchVar(
-            "next",
-            0,
-            "SELECT
-                MAX(p.sortorder) + 1 AS `next`
-            FROM
-                `tbl_sections` AS p
-            LIMIT 1"
-        );
+        $next = (int)Symphony::Database()
+            ->select(['MAX(sortorder)'])
+            ->from('tbl_sections')
+            ->execute()
+            ->variable(0);
 
-        return ($next ? (int)$next : 1);
+        return $next + 1;
     }
 
     /**
@@ -295,7 +316,11 @@ class SectionManager
             'editor' => $editor
         );
 
-        return Symphony::Database()->insert($fields, 'tbl_sections_association');
+        return Symphony::Database()
+            ->insert('tbl_sections_association')
+            ->values($fields)
+            ->execute()
+            ->success();
     }
 
     /**
@@ -309,10 +334,14 @@ class SectionManager
      */
     public static function removeSectionAssociation($field_id)
     {
-        return Symphony::Database()->delete('tbl_sections_association', sprintf(
-            '`child_section_field_id` = %1$d OR `parent_section_field_id` = %1$d',
-            $field_id
-        ));
+        return Symphony::Database()
+            ->delete('tbl_sections_association')
+            ->where(['or' => [
+                'child_section_field_id' => $field_id,
+                'parent_section_field_id' => $field_id
+            ]])
+            ->execute()
+            ->success();
     }
 
     /**
@@ -323,19 +352,22 @@ class SectionManager
      * @since Symphony 2.6.0
      * @param integer $field_id
      * @return string
+     *  Either 'yes' or 'no', 'yes' meaning display the section.
      */
     public static function getSectionAssociationSetting($field_id)
     {
+        $value = Symphony::Database()
+            ->select(['hide_association'])
+            ->from('tbl_sections_association')
+            ->where(['child_section_field_id' => $field_id])
+            ->execute()
+            ->variable('hide_association');
+
         // We must inverse the setting. The database stores 'hide', whereas the UI
         // refers to 'show'. Hence if the database says 'yes', it really means, hide
         // the association. In the UI, this needs to be flipped to 'no' so the checkbox
         // won't be checked.
-        return Symphony::Database()->fetchVar('show_association', 0, sprintf('
-            SELECT
-            CASE hide_association WHEN "no" THEN "yes" ELSE "no" END as show_association
-            FROM `tbl_sections_association`
-            WHERE `child_section_field_id` = %d
-        ', $field_id));
+        return $value == 'no' ? 'yes' : 'no';
     }
 
     /**
@@ -385,16 +417,19 @@ class SectionManager
      */
     public static function fetchChildAssociations($section_id, $respect_visibility = false)
     {
-        return Symphony::Database()->fetch(sprintf("
-            SELECT *
-            FROM `tbl_sections_association` AS `sa`, `tbl_sections` AS `s`
-            WHERE `sa`.`parent_section_id` = %d
-            AND `s`.`id` = `sa`.`child_section_id`
-            %s
-            ORDER BY `s`.`sortorder` ASC",
-            $section_id,
-            ($respect_visibility) ? "AND `sa`.`hide_association` = 'no'" : ""
-        ));
+        $sql = Symphony::Database()
+            ->select()
+            ->from('tbl_sections_association', 'sa')
+            ->join('tbl_sections', 's')
+            ->on(['s.id' => '$sa.child_section_id'])
+            ->where(['sa.parent_section_id' => $section_id])
+            ->orderBy(['s.sortorder' => 'ASC']);
+
+        if ($respect_visibility) {
+            $sql->where(['sa.hide_association' => 'no']);
+        }
+
+        return $sql->execute()->rows();
     }
 
     /**
@@ -418,15 +453,18 @@ class SectionManager
      */
     public static function fetchParentAssociations($section_id, $respect_visibility = false)
     {
-        return Symphony::Database()->fetch(sprintf(
-            "SELECT *
-            FROM `tbl_sections_association` AS `sa`, `tbl_sections` AS `s`
-            WHERE `sa`.`child_section_id` = %d
-            AND `s`.`id` = `sa`.`parent_section_id`
-            %s
-            ORDER BY `s`.`sortorder` ASC",
-            $section_id,
-            ($respect_visibility) ? "AND `sa`.`hide_association` = 'no'" : ""
-        ));
+        $sql = Symphony::Database()
+            ->select()
+            ->from('tbl_sections_association', 'sa')
+            ->join('tbl_sections', 's')
+            ->on(['s.id' => '$sa.parent_section_id'])
+            ->where(['sa.child_section_id' => $section_id])
+            ->orderBy(['s.sortorder' => 'ASC']);
+
+        if ($respect_visibility) {
+            $sql->where(['sa.hide_association' => 'no']);
+        }
+
+        return $sql->execute()->rows();
     }
 }

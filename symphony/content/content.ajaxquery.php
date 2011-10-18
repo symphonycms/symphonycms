@@ -17,19 +17,10 @@ class contentAjaxQuery extends JSONPage
         $types = array_map(array('MySQL','cleanValue'), explode(',', General::sanitize($_GET['types'])));
         $limit = General::intval(General::sanitize($_GET['limit']));
 
-        // Set limit
-        if ($limit === 0) {
-            $max = '';
-        } elseif ($limit < 0) {
-            $max = ' LIMIT 100';
-        } else {
-            $max = sprintf(' LIMIT %d', $limit);
-        }
-
         // Entries
         if (in_array('entry', $types)) {
             foreach ($field_ids as $field_id) {
-                $this->get($database, intval($field_id), $search, $max);
+                $this->get($database, intval($field_id), $search, $limit);
             }
         }
 
@@ -39,7 +30,7 @@ class contentAjaxQuery extends JSONPage
                 $association_id = $this->getAssociationId($field_id);
 
                 if ($association_id) {
-                    $this->get($database, $association_id, $search, $max);
+                    $this->get($database, $association_id, $search, $limit);
                 }
             }
         }
@@ -60,14 +51,14 @@ class contentAjaxQuery extends JSONPage
         $field = FieldManager::fetch($field_id);
         $parent_section = SectionManager::fetch($field->get('parent_section'));
 
-        $association_id = Symphony::Database()->fetchCol('parent_section_field_id',
-            sprintf(
-                "SELECT `parent_section_field_id` FROM tbl_sections_association WHERE `child_section_field_id` = %d AND `child_section_id` = %d LIMIT 1;",
-                $field_id, $parent_section->get('id')
-            )
-        );
-
-        return $association_id[0];
+        return Symphony::Database()
+            ->select(['parent_section_field_id'])
+            ->from('tbl_sections_association')
+            ->where(['child_section_field_id' => $field_id])
+            ->where(['child_section_id' => $parent_section->get('id')])
+            ->limit(1)
+            ->execute()
+            ->variable('parent_section_field_id');
     }
 
     private function getStatic($field_id, $search = null)
@@ -95,46 +86,45 @@ class contentAjaxQuery extends JSONPage
 
     private function get($database, $field_id, $search, $max)
     {
+        // Build query
+        $query = Symphony::Database()
+            ->select()
+            ->from("tbl_entries_data_$field_id");
+
+        // Set limit
+        if ($limit === 0) {
+            // no limit
+        } elseif ($limit < 0) {
+            $query->limit(100);
+        } else {
+            $query->limit($limit);
+        }
+
         // Get entries
         if (!empty($search)) {
+            $field_id = General::intval($field_id);
 
             // Get columns
-            $columns = Symphony::Database()->fetchCol('column_name',
-                sprintf(
-                    "SELECT column_name
-                    FROM information_schema.columns
-                    WHERE table_schema = '%s'
-                    AND table_name = 'tbl_entries_data_%d'
-                    AND column_name != 'id'
-                    AND column_name != 'entry_id';",
-                    $database,
-                    $field_id
-                )
-            );
+            $columns = Symphony::Database()
+                ->select('column_name')
+                ->from('information_schema.columns')
+                ->where(['table_schema' => $database])
+                ->where(['table_name' => "tbl_entries_data_$field_id"])
+                ->where(['column_name' => ['!=' => 'id']])
+                ->where(['column_name' => ['!=' => 'entry_id']])
+                ->execute()
+                ->column('column_name');
 
             // Build where clauses
             $where = array();
             foreach ($columns as $column) {
-                $where[] = "`$column` LIKE '%$search%'";
+                $where[] = [$column => ['like' => "%$search%"]];
             }
-
-            // Build query
-            $query = sprintf(
-                "SELECT * from tbl_entries_data_%d WHERE %s%s;",
-                $field_id,
-                implode($where, " OR "),
-                $max
-            );
-        } else {
-            $query = sprintf(
-                "SELECT * from tbl_entries_data_%d%s;",
-                $field_id,
-                $max
-            );
+            $query->where(['or' => $where]);
         }
 
         // Fetch field values
-        $data = Symphony::Database()->fetch($query);
+        $data = $query->execute()->rows();
 
         if (!empty($data)) {
             $field = FieldManager::fetch($field_id);

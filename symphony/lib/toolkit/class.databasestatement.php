@@ -66,9 +66,18 @@ class DatabaseStatement
     /**
      * SQL values array
      *
+     * @see appendValues()
      * @var array
      */
     private $values = [];
+
+    /**
+     * SQL parameters cache
+     *
+     * @see convertToParameterName()
+     * @var array
+     */
+    private $parameters = [];
 
     /**
      * Placeholder flag: Developer should check if the statement supports name
@@ -77,6 +86,13 @@ class DatabaseStatement
      * @var bool
      */
     private $usePlaceholders = false;
+
+    /**
+     * Safe flag: Allows old code to still inject illegal characters in their SQL.
+     * @see Database::validateSQLQuery()
+     * @var boolean
+     */
+    private $safe = true;
 
     /**
      * Creates a new DatabaseStatement object, linked to the $db parameter
@@ -229,7 +245,7 @@ class DatabaseStatement
      *  The actual SQL code part
      * @return DatabaseStatement
      *  The current instance
-     * @throws DatabaseException
+     * @throws DatabaseSatementException
      */
     final public function unsafeAppendSQLPart($type, $part)
     {
@@ -239,7 +255,7 @@ class DatabaseStatement
         ]);
         if (!General::in_array_multi($type, $this->getStatementStructure(), true)) {
             $class = get_class($this);
-            throw new DatabaseException("SQL Part type `$type` is not valid for class `$class`");
+            throw new DatabaseSatementException("SQL Part type `$type` is not valid for class `$class`");
         }
         $this->sql[] = [$type => $part];
         return $this;
@@ -275,12 +291,16 @@ class DatabaseStatement
      */
     final protected function appendValues(array $values)
     {
-        foreach ($values as $key => $value) {
-            if (is_string($key)) {
-                $safeKey = $this->convertToParameterName($key);
-                if ($key !== $safeKey) {
-                    unset($values[$key]);
-                    $values[$safeKey] = $value;
+        if ($this->isUsingPlaceholders()) {
+            $values = array_values($values);
+        } else {
+            foreach ($values as $key => $value) {
+                if (is_string($key)) {
+                    $safeKey = $this->convertToParameterName($key, $value);
+                    if ($key !== $safeKey) {
+                        unset($values[$key]);
+                        $values[$safeKey] = $value;
+                    }
                 }
             }
         }
@@ -309,6 +329,31 @@ class DatabaseStatement
     final public function isUsingPlaceholders()
     {
         return $this->usePlaceholders;
+    }
+
+    /**
+     * Marks the statement as not safe.
+     * This disables strict validation
+     *
+     * @return DatabaseStatement
+     *  The current instance
+     */
+    final public function unsafe()
+    {
+        $this->safe = false;
+        return $this;
+    }
+
+    /**
+     * If the current statement is deem safe.
+     * Safe statements are validated more strictly
+     *
+     * @return bool
+     *  true is the statement uses placeholders
+     */
+    final public function isSafe()
+    {
+        return $this->safe;
     }
 
     /**
@@ -391,14 +436,17 @@ class DatabaseStatement
      * @see usePlaceholders()
      * @see convertToParameterName()
      * @param string $key
+     *  The key from which to derive the parameter name from
+     * @param mixed $value
+     *  The associated value for this key
      * @return string
      *  The parameter expression
      */
-    final public function asPlaceholderString($key)
+    final public function asPlaceholderString($key, $value)
     {
-        if (!$this->isUsingPlaceholders() || General::intval($key) === -1) {
+        if (!$this->isUsingPlaceholders() && General::intval($key) === -1) {
             $this->validateFieldName($key);
-            $key = $this->convertToParameterName($key);
+            $key = $this->convertToParameterName($key, $value);
             return ":$key";
         }
         return '?';
@@ -415,7 +463,7 @@ class DatabaseStatement
      */
     final public function asPlaceholdersList(array $values)
     {
-        return implode(self::LIST_DELIMITER, array_map([$this, 'asPlaceholderString'], array_keys($values)));
+        return implode(self::LIST_DELIMITER, General::array_map([$this, 'asPlaceholderString'], $values));
     }
 
     /**
@@ -423,42 +471,63 @@ class DatabaseStatement
      * Given some value, it will create a ticked string, i.e. "`string`".
      * If the $value parameter is:
      *  1. an array: it will call asPlaceholdersList()
-     *  2. a string with comma in it: it will explode that string and call
+     *  2. the string '*': it will keep it as is
+     *  3. a string with comma in it: it will explode that string and call
      *     asTickedList() with the resulting array
-     *  3. the string '*': it will keep it as is
-     *  4. a string: it will surround all words with ticks
+     *  4. a string matching a function call
+     *  5. a string with a mathematical operator (+, -, *, /)
+     *  6. a plain string: it will surround all words with ticks
      *
      * For other type of variable, it will throw an Exception.
      *
      * @see asTickedList()
      * @param string|array $value
+     *  The value or list of values to surround with ticks.
+     * @param string $alias
+     *  Used as an alias, create `x` AS `y` expressions.
      * @return string
      *  The resulting ticked string or list
      * @throws Exception
      */
-    final public function asTickedString($value)
+    final public function asTickedString($value, $alias = null)
     {
         if (!$value) {
             return '';
         }
         if (is_array($value)) {
             return $this->asTickedList($value);
-        } elseif (strpos($value, ',') !== false) {
-            return $this->asTickedList(explode(',', $value));
         }
         General::ensureType([
             'value' => ['var' => $value, 'type' => 'string'],
         ]);
+
         $fctMatches = [];
+        $value = trim($value);
+
         if ($value === '*') {
             return $value;
+        } elseif (strpos($value, ',') !== false) {
+            return $this->asTickedList(explode(',', $value));
         } elseif (preg_match(self::FCT_PATTERN, $value, $fctMatches) === 1) {
             return $fctMatches[1] . '(' . $this->asTickedString($fctMatches[2]) . ')';
+        } elseif (($op = strpbrk($value, '+-*/')) !== false && preg_match("/\s{$op{0}}\s/", $value) === 1) {
+            $op = $op{0};
+            $parts = array_map('trim', explode($op, $value, 2));
+            $parts = array_map(function ($p)  {
+                $ip = General::intval($p);
+                return $ip === -1 ? $this->asTickedString($p) : "$ip";
+            }, $parts);
+            return implode(" $op ", $parts);
         }
+
         $this->validateFieldName($value);
         $value = str_replace('`', '', $value);
         if (strpos($value, '.') !== false) {
             return implode('.', array_map([$this, 'asTickedString'], explode('.', $value)));
+        }
+        if ($alias) {
+            $this->validateFieldName($alias);
+            return "`$value` AS `$alias`";
         }
         return "`$value`";
     }
@@ -467,6 +536,8 @@ class DatabaseStatement
      * @internal
      * Given an array, this method will call asTickedString() on each values and
      * then implode the results with LIST_DELIMITER.
+     * If the array contains named keys, they become the value and the value in the array
+     * is used as an alias, create `x` AS `y` expressions.
      *
      * @see asTickedString()
      * @param array $values
@@ -475,17 +546,45 @@ class DatabaseStatement
      */
     final public function asTickedList(array $values)
     {
-        return implode(self::LIST_DELIMITER, array_map([$this, 'asTickedString'], $values));
+        return implode(self::LIST_DELIMITER, General::array_map(function ($key, $value) {
+            if (!is_int($key)) {
+                return $this->asTickedString($key, $value);
+            }
+            return $this->asTickedString($value);
+        }, $values));
+    }
+
+    /**
+     * @internal
+     * Given an array, this method will call asTickedList() on each values and
+     * then implode the results with LIST_DELIMITER.
+     * If the value is a DatabaseQuery object, the key is used as the alias.
+     *
+     * @see asTickedList()
+     * @param array $values
+     * @return string
+     *  The resulting list of ticked strings
+     */
+    final public function asProjectionList(array $values)
+    {
+        return implode(self::LIST_DELIMITER, General::array_map(function ($key, $value) {
+            if ($value instanceof DatabaseSubQuery) {
+                $sql = $value->generateSQL();
+                $key = $this->asTickedString($key);
+                return "($sql) AS $key";
+            }
+            return $this->asTickedList([$key => $value]);
+        }, $values));
     }
 
     /**
      * @internal
      * This method validates that the string $field is a valid field name
-     * in SQL. If it is not, it throws DatabaseException
+     * in SQL. If it is not, it throws DatabaseSatementException
      *
      * @param string $field
      * @return void
-     * @throws DatabaseException
+     * @throws DatabaseSatementException
      * @throws Exception
      */
     final protected function validateFieldName($field)
@@ -494,7 +593,7 @@ class DatabaseStatement
             'field' => ['var' => $field, 'type' => 'string'],
         ]);
         if (preg_match('/^[0-9a-zA-Z_]+$/', $field) === false) {
-            throw new DatabaseException(
+            throw new DatabaseSatementException(
                 "Field name '$field' is not valid since it contains illegal characters"
             );
         }
@@ -504,23 +603,44 @@ class DatabaseStatement
      * @internal
      * This function converts a valid field name into a suitable value
      * to use as a SQL parameter name.
+     * It also makes sure that the returned parameter name is not currently used
+     * for the specified $field, $value pair.
      *
      * @see formatParameterName()
      * @see validateFieldName()
      * @see appendValues()
      * @param string $field
      *  The field name, as passed in the public API of the statement
+     * @param mixed $value
+     *  The associated value for this field
      * @return string
      *  The sanitized parameter name
      */
-    final public function convertToParameterName($field)
+    final public function convertToParameterName($field, $value)
     {
         General::ensureType([
             'value' => ['var' => $field, 'type' => 'string'],
         ]);
         $field = str_replace(['-', '.'], '_', $field);
         $field = preg_replace('/[^0-9a-zA-Z_]+/', '', $field);
-        return $this->formatParameterName($field);
+        $field = $this->formatParameterName($field);
+
+        $uniqueParameterKey = sha1(serialize($field) . serialize($value));
+        // Have we seen this (field, value) pair ?
+        if (isset($this->parameters[$uniqueParameterKey])) {
+            return $this->parameters[$uniqueParameterKey];
+        }
+        // Have we seen this field ?
+        $fieldLookup = $field;
+        $fieldCount = 1;
+        while (isset($this->parameters[$fieldLookup])) {
+            $fieldCount++;
+            $fieldLookup = "$field$fieldCount";
+        }
+        // Saved both for later
+        $this->parameters[$uniqueParameterKey] = $this->parameters[$fieldLookup] = $fieldLookup;
+
+        return $fieldLookup;
     }
 
     /**
@@ -535,5 +655,24 @@ class DatabaseStatement
     protected function formatParameterName($parameter)
     {
         return $parameter;
+    }
+}
+
+
+/**
+ * The DatabaseSatementException class extends a normal Exception to add in
+ * debugging information when a DatabaseSatement is about to enter an invalid state
+ */
+class DatabaseSatementException extends Exception
+{
+
+    /**
+     * Constructor takes a message.
+     * Before the message is passed to the default Exception constructor,
+     * it tries to translate the message.
+     */
+    public function __construct($message)
+    {
+        parent::__construct(__($message));
     }
 }

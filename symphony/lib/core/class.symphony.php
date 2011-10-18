@@ -412,8 +412,8 @@ abstract class Symphony implements Singleton
      */
     public static function login($username, $password, $isHash = false)
     {
-        $username = trim(self::Database()->cleanValue($username));
-        $password = trim(self::Database()->cleanValue($password));
+        $username = trim($username);
+        $password = trim($password);
 
         if (strlen($username) > 0 && strlen($password) > 0) {
             $author = AuthorManager::fetch('id', 'ASC', 1, null, sprintf(
@@ -428,19 +428,21 @@ abstract class Symphony implements Singleton
                 if (self::isUpgradeAvailable() === false && Cryptography::requiresMigration(self::$Author->get('password'))) {
                     self::$Author->set('password', Cryptography::hash($password));
 
-                    self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors', sprintf(
-                        " `id` = %d", self::$Author->get('id')
-                    ));
+                    self::Database()
+                        ->update('tbl_authors')
+                        ->set(['password' => self::$Author->get('password')])
+                        ->where(['id' => self::$Author->get('id')])
+                        ->execute();
                 }
 
                 self::$Cookie->set('username', $username);
                 self::$Cookie->set('pass', self::$Author->get('password'));
 
-                self::Database()->update(array(
-                    'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
-                    'tbl_authors',
-                    sprintf(" `id` = %d", self::$Author->get('id'))
-                );
+                self::Database()
+                    ->update('tbl_authors')
+                    ->set(['last_seen' => DateTimeObj::get('Y-m-d H:i:s')])
+                    ->where(['id' => self::$Author->get('id')])
+                    ->execute();
 
                 // Only set custom author language in the backend
                 if (class_exists('Administration', false)) {
@@ -471,46 +473,49 @@ abstract class Symphony implements Singleton
      */
     public static function loginFromToken($token)
     {
-        $token = self::Database()->cleanValue($token);
+        $token = trim($token);
 
-        if (strlen(trim($token)) == 0) {
+        if (strlen($token) === 0) {
             return false;
         }
 
-        if (strlen($token) == 6 || strlen($token) == 16) {
-            $row = self::Database()->fetchRow(0, sprintf(
-                "SELECT `a`.`id`, `a`.`username`, `a`.`password`
-                FROM `tbl_authors` AS `a`, `tbl_forgotpass` AS `f`
-                WHERE `a`.`id` = `f`.`author_id`
-                AND `f`.`expiry` > '%s'
-                AND `f`.`token` = '%s'
-                LIMIT 1",
-                DateTimeObj::getGMT('c'),
-                $token
-            ));
+        $row = null;
+        if (strlen($token) === 6 || strlen($token) === 16) {
+            $row = self::Database()
+                ->select(['a.id', 'a.username', 'a.password'])
+                ->from('tbl_authors')->alias('a')
+                ->join('tbl_forgotpass')->alias('f')
+                ->on(['a.id' => '$f.author_id'])
+                ->where(['f.expiry' => ['>' => DateTimeObj::getGMT('c')]])
+                ->where(['f.token' => $token])
+                ->execute()
+                ->next();
 
-            self::Database()->delete('tbl_forgotpass', sprintf(" `token` = '%s' ", $token));
+            self::Database()
+                ->delete('tbl_forgotpass')
+                ->where(['token' => $token])
+                ->execute();
         } else {
-            $row = self::Database()->fetchRow(0, sprintf(
-                "SELECT `id`, `username`, `password`
-                FROM `tbl_authors`
-                WHERE SUBSTR(%s(CONCAT(`username`, `password`)), 1, 8) = '%s'
-                AND `auth_token_active` = 'yes'
-                LIMIT 1",
-                'SHA1',
-                $token
-            ));
+            $row = self::Database()
+                ->select(['a.id', 'a.username', 'a.password'])
+                ->from('tbl_authors')->alias('a')
+                ->where(['SUBSTR(SHA1(CONCAT(username, password)), 1, 8)' => $token])
+                ->where(['auth_token_active' => 'yes'])
+                ->limit(1)
+                ->execute()
+                ->next();
         }
 
         if ($row) {
             self::$Author = AuthorManager::fetchByID($row['id']);
             self::$Cookie->set('username', $row['username']);
             self::$Cookie->set('pass', $row['password']);
-            self::Database()->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', sprintf("
-                `id` = %d", $row['id']
-            ));
-
-            return true;
+            return self::Database()
+                ->update('tbl_authors')
+                ->set(['last_seen' => DateTimeObj::get('Y-m-d H:i:s')])
+                ->where(['id' => $row['id']])
+                ->execute()
+                ->success();
         }
 
         return false;
