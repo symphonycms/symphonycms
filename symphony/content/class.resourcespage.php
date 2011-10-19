@@ -125,7 +125,7 @@
 						$section = Widget::TableData(
 							Widget::Anchor(
 								$r['source']['name'],
-								SYMPHONY_URL . $_REQUEST['symphony-page'] .  'edit/' . $r['source']['id'] . '/',
+								SYMPHONY_URL . '/blueprints/sections/edit/' . $r['source']['id'] . '/',
 								$r['source']['handle']
 							)
 						);

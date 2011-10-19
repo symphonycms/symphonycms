@@ -20,7 +20,7 @@
 		/**
 		 * The Constructor initializes the `$sort` and `$order` variables by looking at
 		 * `$_REQUEST`. Then, based on the `driver` key of the page callback, it calls
-		 * a private, context-based helper method that returns the sorted set of objects.
+		 * a private, context-based handler method that returns the sorted set of objects.
 		 *
 		 * @see core.Administration#getPageCallback()
 		 * @param string $sort
@@ -58,7 +58,7 @@
 		}
 
 		/**
-		 * Helper method for the `publish` driver.
+		 * Handler method for the `publish` driver.
 		 *
 		 * @param string $sort
 		 *	This variable stores the field (or axis) the entries are sorted by. Once set,
@@ -99,7 +99,7 @@
 		}
 
 		/**
-		 * Helper method for the `blueprintsdatasources` driver.
+		 * Handler method for the `blueprintsdatasources` driver.
 		 *
 		 * @param string $sort
 		 *	This variable stores the field (or axis) the datasources are sorted by. Once set,
@@ -119,7 +119,7 @@
 		}
 
 		/**
-		 * Helper method for the `blueprintsevents` driver.
+		 * Handler method for the `blueprintsevents` driver.
 		 *
 		 * @param string $sort
 		 *	This variable stores the field (or axis) the events are sorted by. Once set,
