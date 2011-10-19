@@ -33,7 +33,7 @@ i, var {
 legend {
 	margin-bottom: -3em;
 	padding: 0;
-	color: #665;
+	color: #666;
 	text-shadow: -1px 2px 3px #ddd;
 	font-weight: bold;
 }
@@ -60,7 +60,7 @@ table {
 }
 th {
 	padding-right: 19px;
-	color: #665;
+	color: #666;
 	text-align: left;
 	font-weight: normal;
 	line-height: 2;
@@ -95,7 +95,7 @@ th span {
 th a,
 th a:hover,
 th a:hover:after {
-	color: #665;
+	color: #666;
 	text-decoration: none;
 }
 th a:after {
@@ -251,7 +251,7 @@ span.frame .button {
 ul.tags {
 	margin: -0.75em 0 1.5em 0;
 	padding: 0;
-	color: #887;
+	color: #888;
 	list-style: none;
 }
 ul.tags li {
@@ -263,7 +263,7 @@ ul.tags li {
 	font-size: 90.91%;
 }
 ul.tags li:hover {
-	color: #554;
+	color: #555;
 }
 ul.tags li.more {
 	color: #5072bf;
@@ -350,7 +350,7 @@ div.compact label i {
 	overflow: none;
 	text-overflow: auto;
 	float: none;
-	color: #887;
+	color: #888;
 	display: block;
 	position: static;
 	padding-left: 1.75em;
@@ -368,7 +368,7 @@ fieldset.settings > legend {
 	float: left;
 	margin-bottom: -3em;
 	padding: 0;
-	color: #665;
+	color: #666;
 	text-indent: -275px;
 }
 fieldset.settings > label {
@@ -379,7 +379,7 @@ fieldset.settings select {
 }
 fieldset.settings p.help {
 	margin: -0.5em 0 1.5em;
-	color: #887;
+	color: #888;
 }
 fieldset.settings li .label {
 	margin: 1em 0 1.25em;
@@ -401,7 +401,7 @@ fieldset.settings > *:first-child {
 fieldset.settings fieldset {
 	margin-top: 0.5em;
 	padding-bottom: 0;
-	border-top: 1px solid #ddc;
+	border-top: 1px solid #ddd;
 }
 fieldset.settings fieldset legend {
 	display: inline;
@@ -411,7 +411,7 @@ fieldset.settings fieldset legend {
 	line-height: 1.5;
 	text-indent: 0;
 	background: #fff;
-	color: #665;
+	color: #666;
 }
 
 /*--- Settings: Pickable ---*/
@@ -435,11 +435,11 @@ fieldset.settings fieldset legend {
 	margin-bottom: 1.5em;
 }
 .settings .duplicator fieldset {
-	border-top: 1px solid #eed;
+	border-top: 1px solid #eee;
 }
 .settings .duplicator legend {
-	background: #DDC;
-	color: #665;
+	background: #DDD;
+	color: #666;
 }
 .settings .duplicator .group label > i:hover {
 	white-space:normal;
@@ -468,7 +468,7 @@ button,
 	border-radius: 15px;
 	cursor: pointer;
 	display: inline-block;
-	border: 1px solid #bfbfb7;
+	border: 1px solid #bfbfbf;
 	background: -moz-linear-gradient(
 		bottom,
 		#d7d7d2,
@@ -492,7 +492,7 @@ button:focus,
 .button:active,
 .button:focus {
 	color: #56594f;
-	border: 1px solid #a7a79c;
+	border: 1px solid #a7a7a7;
 	background: -moz-linear-gradient(
 		bottom,
 		#cbcbc5,
@@ -601,7 +601,7 @@ button.delete:focus,
 	border-color: #90c349;
 }
 .notice.silence {
-	background: #e4e4e0;
+	background: #e4e4e4;
 	border-top-color: #979792;
 	border-bottom-color: #777;
 	color: #555;
@@ -686,7 +686,7 @@ body, html {
 #nav {
 	z-index: 3;
 	margin: 0;
-	background-color: #d7d7d2;
+	background-color: #d7d7d7;
 	background: -webkit-gradient(
 		linear,
 		left top,
@@ -699,7 +699,7 @@ body, html {
 		#DBDBD9,
 		#C2C2BD
 	);
-	border-bottom: 1px solid #bfbfb7;
+	border-bottom: 1px solid #bfbfbf;
 	-webkit-box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
 	height: 32px;
 	list-style: none;
@@ -1044,7 +1044,7 @@ ul.page input.error, ul.page input.error:focus {
 }
 .file em {
 	float: right;
-	color: #998;
+	color: #999;
 	text-decoration: underline;
 	font-style: normal;
 	cursor: pointer;
@@ -1054,7 +1054,7 @@ ul.page input.error, ul.page input.error:focus {
 }
 .single #contents .actions {
 	clear: both;
-	border-top: 1px solid #ddc;
+	border-top: 1px solid #ddd;
 	padding: 1.75em 0 0;
 }
 .single #contents .actions input {
@@ -1097,7 +1097,7 @@ ul.page input.error, ul.page input.error:focus {
 }
 #components ul {
 	margin: 0;
-	border-top: 1px solid #ddc;
+	border-top: 1px solid #ddd;
 	padding-top: 0.75em;
 	list-style: none;
 }
@@ -1110,13 +1110,13 @@ ul.page input.error, ul.page input.error:focus {
 }
 #utilities {
 	margin: 0 0 1.5em 0;
-	border: 1px solid #bba;
+	border: 1px solid #bbb;
 	max-height: 510px;
 	overflow: auto;
 	list-style: none;
 }
 #utilities li {
-	border-top: 1px solid #ddc;
+	border-top: 1px solid #ddd;
 	padding: 0.63em 1.25em 0.67em;
 	cursor: pointer;
 }
