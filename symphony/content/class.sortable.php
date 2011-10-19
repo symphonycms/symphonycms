@@ -18,6 +18,9 @@
 		 *
 		 * @param object $object
 		 *	The object responsible for sorting the items. It must implement a `sort()` method.
+		 * @param object $object
+		 *	This variable stores the set of sorted objects. Once set, its value is available
+		 *	to the client class of Sortable.
 		 * @param string $sort
 		 *	This variable stores the field (or axis) the objects are sorted by. Once set,
 		 *	its value is available to the client class of Sortable.
