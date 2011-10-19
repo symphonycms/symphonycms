@@ -30,14 +30,14 @@
 		}
 
 		/**
-		 * A private method used to return the Symphony Manager for the given type.
+		 * A method used to return the Symphony Manager for the given type.
 		 *
 		 * @param integer $type
 		 *  The type of the resource
 		 * @return object
 		 *  An object representing the Symphony Manager class that handles the resource.
 		 */
-		private static function getManagerFromType($type) {
+		public static function getManagerFromType($type) {
 			switch($type) {
 				case RESOURCE_TYPE_EVENT:
 					return EventManager;

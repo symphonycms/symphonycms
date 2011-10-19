@@ -34,8 +34,8 @@
 		public function __viewIndex($resource_type){
 			$this->setPageType('table');
 
-			$resources = new Sortable($sort, $order);
-			$resources = $resources->sort();
+			$sortable = new Sortable($sort, $order);
+			$resources = $sortable->sort();
 
 			$columns = array(
 				array(
@@ -162,10 +162,9 @@
 
 					// Release date
 					$datetimeobj = new DateTimeObj();
-					$releasedate = Widget::TableData($datetimeobj->get(
-						__SYM_DATETIME_FORMAT__,
-						strtotime($r['release-date']))
-					);
+					$releasedate = Widget::TableData(Lang::localizeDate(
+						$datetimeobj->get(__SYM_DATETIME_FORMAT__, strtotime($r['release-date']))
+					));
 
 					// Authors
 					$author = $r['author']['name'];
@@ -225,6 +224,8 @@
 		}
 
 		public function __actionIndex($resource_type){
+			$manager = ResourceManager::getManagerFromType($resource_type);
+
 			if (isset($_POST['action']) && is_array($_POST['action'])) {
 				$checked = ($_POST['items']) ? @array_keys($_POST['items']) : NULL;
 
@@ -234,9 +235,11 @@
 						$canProceed = true;
 
 						foreach($checked as $handle) {
-							if (!General::deleteFile($this->getResourceFile($handle))) {
+							$path = $manager::__getDriverPath($handle);
+
+							if (!General::deleteFile($path)) {
 								$this->pageAlert(
-									__('Failed to delete <code>%s</code>. Please check permissions.', array(basename($this->getResourceFile($handle)))),
+									__('Failed to delete <code>%s</code>. Please check permissions.', array(basename($path))),
 									Alert::ERROR
 								);
 								$canProceed = false;
@@ -245,7 +248,7 @@
 
 						if ($canProceed) redirect(Administration::instance()->getCurrentPageURL());
 					}
-					else if(preg_match('/^(?:at|de)?tach-(to|from)-page-/', $_POST['with-selected'])) {
+					else if(preg_match('/^(at|de)?tach-(to|from)-page-/', $_POST['with-selected'])) {
 
 						if (substr($_POST['with-selected'], 0, 6) == 'detach') {
 							$page = str_replace('detach-from-page-', '', $_POST['with-selected']);
@@ -264,20 +267,20 @@
 
 						if($canProceed) redirect(Administration::instance()->getCurrentPageURL());
 					}
-					else if(preg_match('/^(?:at|de)?tach-all-pages$/', $_POST['with-selected'])) {
+					else if(preg_match('/^(at|de)?tach-all-pages$/', $_POST['with-selected'])) {
 						$pages = PageManager::fetch(false, array('id'));
 
 						if (substr($_POST['with-selected'], 0, 6) == 'detach') {
 							foreach($checked as $handle) {
 								foreach($pages as $page) {
-									ResourceManager::detach($handle, $page['id']);
+									ResourceManager::detach($resource_type, $handle, $page['id']);
 								}
 							}
 						}
 						else {
 							foreach($checked as $handle) {
 								foreach($pages as $page) {
-									ResourceManager::attach($handle, $page['id']);
+									ResourceManager::attach($resource_type, $handle, $page['id']);
 								}
 							}
 						}
