@@ -178,18 +178,6 @@
 		}
 
 		/**
-		 * Custom user sorting function to sort extensions by name
-		 *
-		 * @link http://php.net/manual/en/function.strnatcasecmp.php
-		 * @param array $a
-		 * @param array $b
-		 * @return integer
-		 */
-		public function sortByName(array $a, array $b) {
-			return strnatcasecmp($a['name'], $b['name']);
-		}
-
-		/**
 		 * Determines whether the current extension is installed or not by checking
 		 * for an id in `tbl_extensions`
 		 *
