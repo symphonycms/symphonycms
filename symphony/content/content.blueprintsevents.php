@@ -8,11 +8,17 @@
 	 * allow Frontend forms to populate Sections or edit Entries.
 	 */
 	require_once(TOOLKIT . '/class.eventmanager.php');
-	require_once(CONTENT . '/class.resourcespage.php');
+	require_once(CONTENT . '/content.resourcespage.php');
 
 	Class contentBlueprintsEvents extends ResourcesPage {
 
 		public $_errors = array();
+
+		public function sort(&$sort, &$order, $params) {
+			if(is_null($sort)) $sort = 'name';
+
+			return ResourceManager::fetch(RESOURCE_TYPE_EVENT, array(), array(), $sort . ' ' . $order);
+		}
 
 		public function __viewIndex(){
 			parent::__viewIndex(RESOURCE_TYPE_EVENT);

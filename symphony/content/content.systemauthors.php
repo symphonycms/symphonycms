@@ -11,14 +11,23 @@
 	 */
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.sectionmanager.php');
+	require_once(CONTENT . '/class.sortable.php');
 
 	Class contentSystemAuthors extends AdministrationPage{
 
 		public $_Author;
 		public $_errors = array();
 
-		public function __viewIndex(){
+		public function sort(&$sort, &$order, $params){
+			if(is_null($sort) || $sort == 'name'){
+				$sort = 'name';
+				return AuthorManager::fetch("first_name $order,  last_name", $order);
+			}
 
+			return AuthorManager::fetch($sort, $order);
+		}
+
+		public function __viewIndex(){
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Authors'), __('Symphony'))));
 
@@ -26,14 +35,32 @@
 				$this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), Administration::instance()->getCurrentPageURL().'new/', __('Add a new author'), 'create button', NULL, array('accesskey' => 'c')));
 			} else $this->appendSubheading(__('Authors'));
 
-			$aTableHead = array(
-				array(__('Name'), 'col'),
-				array(__('Email Address'), 'col'),
-				array(__('Last Seen'), 'col'),
+			Sortable::init($this, $authors, $sort, $order);
+
+			$columns = array(
+				array(
+					'label' => __('Name'),
+					'sortable' => true,
+					'handle' => 'name'
+				),
+				array(
+					'label' => __('Email Address'),
+					'sortable' => true,
+					'handle' => 'email'
+				),
+				array(
+					'label' => __('Last Seen'),
+					'sortable' => true,
+					'handle' => 'last_seen'
+				)
+			);
+
+			$aTableHead = Sortable::buildTableHeaders(
+				$columns, $sort, $order, (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
 			);
 
 			$aTableBody = array();
-			$authors = AuthorManager::fetch();
+
 			if(!is_array($authors) || empty($authors)){
 				$aTableBody = array(
 					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
@@ -57,7 +84,7 @@
 							DateTimeObj::format($a->get('last_seen'), __SYM_DATETIME_FORMAT__)
 						);
 					} else {
-						$td3 = Widget::TableData('Unknown', 'inactive');
+						$td3 = Widget::TableData(__('Unknown'), 'inactive');
 					}
 
 					if (Administration::instance()->Author->isDeveloper()) {

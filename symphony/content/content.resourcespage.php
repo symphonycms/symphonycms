@@ -32,8 +32,7 @@
 		public function __viewIndex($resource_type){
 			$this->setPageType('table');
 
-			$sortable = new Sortable($sort, $order);
-			$resources = $sortable->sort();
+			Sortable::init($this, $resources, $sort, $order);
 
 			$columns = array(
 				array(
@@ -62,41 +61,9 @@
 				)
 			);
 
-			$aTableHead = array();
-
-			foreach($columns as $c) {
-				if($c['sortable']) {
-
-					if($c['handle'] == $sort) {
-						$link = sprintf(
-							'?sort=%s&amp;order=%s%s',
-							$c['handle'], ($order == 'desc' ? 'asc' : 'desc'),
-							(isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
-						);
-						$label = Widget::Anchor(
-							$c['label'], $link,
-							__('Sort by %1$s %2$s', array(($order == 'desc' ? __('ascending') : __('descending')), strtolower($c['label']))),
-							'active'
-						);
-					}
-					else {
-						$link = sprintf(
-							'?sort=%s&amp;order=asc%s',
-							$c['handle'], (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
-						);
-						$label = Widget::Anchor(
-							$c['label'], $link,
-							__('Sort by %1$s %2$s', array(__('ascending'), strtolower($c['label'])))
-						);
-					}
-
-				}
-				else {
-					$label = $c['label'];
-				}
-
-				$aTableHead[] = array($label, 'col');
-			}
+			$aTableHead = Sortable::buildTableHeaders(
+				$columns, $sort, $order, (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
+			);
 
 			$aTableBody = array();
 

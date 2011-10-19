@@ -9,8 +9,15 @@
 	 * that are available in this Symphony installation.
 	 */
 	require_once(TOOLKIT . '/class.administrationpage.php');
+	require_once(CONTENT . '/class.sortable.php');
 
 	Class contentSystemExtensions extends AdministrationPage{
+
+		public function sort(&$sort, &$order, $params){
+			if(is_null($sort)) $sort = 'name';
+
+			return ExtensionManager::fetch(array(), array(), $sort . ' ' . $order);
+		}
 
 		public function __viewIndex(){
 			$this->setPageType('table');
@@ -19,16 +26,31 @@
 
 			$this->Form->setAttribute('action', SYMPHONY_URL . '/system/extensions/');
 
-			$extensions = Symphony::ExtensionManager()->listAll();
+			Sortable::init($this, $extensions, $sort, $order);
 
-			## Sort by extensions name:
-			uasort($extensions, array('ExtensionManager', 'sortByName'));
+			$columns = array(
+				array(
+					'label' => __('Name'),
+					'sortable' => true,
+					'handle' => 'name'
+				),
+				array(
+					'label' => __('Installed Version'),
+					'sortable' => false,
+				),
+				array(
+					'label' => __('Enabled'),
+					'sortable' => false,
+				),
+				array(
+					'label' => __('Authors'),
+					'sortable' => true,
+					'handle' => 'author'
+				)
+			);
 
-			$aTableHead = array(
-				array(__('Name'), 'col'),
-				array(__('Installed Version'), 'col'),
-				array(__('Enabled'), 'col'),
-				array(__('Author'), 'col'),
+			$aTableHead = Sortable::buildTableHeaders(
+				$columns, $sort, $order, (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
 			);
 
 			$aTableBody = array();
@@ -55,7 +77,7 @@
 					else if($about['status'] == EXTENSION_NOT_INSTALLED) {
 						$td3 = Widget::TableData(__('Enable to install %s', array($about['version'])));
 					}
-                    else if($about['status'] == EXTENSION_REQUIRES_UPDATE) {
+					else if($about['status'] == EXTENSION_REQUIRES_UPDATE) {
 						$td3 = Widget::TableData(__('Enable to update to %s', array($about['version'])));
 					}
 

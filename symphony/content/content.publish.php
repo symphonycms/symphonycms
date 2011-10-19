@@ -18,6 +18,31 @@
 
 		public $_errors = array();
 
+		public function sort(&$sort, &$order, $params) {
+			$section = $params['current-section'];
+
+			if(is_null($sort)){
+				$sort = $section->getDefaultSortingField();
+			}
+
+			if(is_numeric($sort)){
+				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
+					SectionManager::edit(
+						$section->get('id'),
+						array('entry_order' => $sort, 'entry_order_direction' => $order)
+					);
+
+					$query = '?sort=' . $sort . '&order=' . $order;
+
+					redirect(Administration::instance()->getCurrentPageURL() . $query . $params['filters']);
+				}
+			}
+			else if($sort == 'id'){
+				EntryManager::setFetchSortingField('id');
+				EntryManager::setFetchSortingDirection($order);
+			}
+		}
+
 		public function action(){
 			$this->__switchboard('action');
 		}
@@ -97,12 +122,10 @@
 
 			}
 
-			$sortable = new Sortable($sort, $order, array(
+			Sortable::init($this, $entries, $sort, $order, array(
 				'current-section' => $section,
 				'filters' => ($filter_querystring ? "&amp;" . $filter_querystring : '')
 			));
-
-			$sortable->sort();
 
 			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter_querystring ? "&amp;" . $filter_querystring : ''));
 
@@ -113,35 +136,35 @@
 
 			$entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins);
 
-			$aTableHead = array();
-
 			$visible_columns = $section->fetchVisibleColumns();
+			$columns = array();
 
 			if(is_array($visible_columns) && !empty($visible_columns)){
+
 				foreach($visible_columns as $column){
-					$label = new XMLElement('span', $column->label());
-					$label = $label->generate();
-
-					if($column->isSortable()) {
-
-						if($column->get('id') == $section->get('entry_order')){
-							$link = Administration::instance()->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order='. ($section->get('entry_order_direction') == 'desc' ? 'asc' : 'desc').($filter_querystring ? "&amp;" . $filter_querystring : '');
-							$anchor = Widget::Anchor($label, $link, __('Sort by %1$s %2$s', array(($section->get('entry_order_direction') == 'desc' ? __('ascending') : __('descending')), strtolower($column->get('label')))), 'active');
-						}
-
-						else{
-							$link = Administration::instance()->getCurrentPageURL() . '?pg='.$current_page.'&amp;sort='.$column->get('id').'&amp;order=asc'.($filter_querystring ? "&amp;" . $filter_querystring : '');
-							$anchor = Widget::Anchor($label, $link, __('Sort by %1$s %2$s', array(__('ascending'), strtolower($column->get('label')))));
-						}
-
-						$aTableHead[] = array($anchor, 'col', array('id' => 'field-' . $column->get('id'), 'class' => 'field-' . $column->get('type')));
-					}
-
-					else $aTableHead[] = array($label, 'col', array('id' => 'field-' . $column->get('id'), 'class' => 'field-' . $column->get('type')));
+					$columns[] = array(
+						'label' => $column->label(),
+						'sortable' => $column->isSortable(),
+						'handle' => $column->get('id'),
+						'attrs' => array(
+							'id' => 'field-' . $column->get('id'),
+							'class' => 'field-' . $column->get('type')
+						)
+					);
 				}
 			}
+			else {
+				$columns[] = array(
+					'label' => __('ID'),
+					'sortable' => true,
+					'handle' => 'id'
+				);
+			}
 
-			else $aTableHead[] = array(__('ID'), 'col');
+			$aTableHead = Sortable::buildTableHeaders(
+				$columns, $sort, $order,
+				/* '&amp;pg='. $current_page . */ ($filter_querystring ? "&amp;" . $filter_querystring : '')
+			);
 
 			$child_sections = array();
 			$associated_sections = $section->fetchAssociatedSections(true);

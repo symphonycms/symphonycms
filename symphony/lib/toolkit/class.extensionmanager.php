@@ -593,6 +593,69 @@
 		}
 
 		/**
+		 * This function will return an associative array of Extension information. The
+		 * information returned is defined by the `$select` parameter, which will allow
+		 * a developer to restrict what information is returned about the Extension.
+		 * Optionally, `$where` (not implemented) and `$order_by` parameters allow a developer to
+		 * further refine their query.
+		 *
+		 * @param array $select (optional)
+		 *  Accepts an array of keys to return from the listAll() method. If omitted, all keys
+		 *  will be returned.
+		 * @param array $where (optional)
+		 *  Not implemented.
+		 * @param string $order_by (optional)
+		 *  Allows a developer to return the extensions in a particular order. The syntax is the
+		 *  same as other `fetch` methods. If omitted this will return resources ordered by `name`.
+		 * @return array
+		 *  An associative array of Extension information, formatted in the same way as the 
+		 *  listAll() method.
+		 */
+		public static function fetch(array $select = array(), array $where = array(), $order_by = null){
+			$extensions = self::listAll();
+
+			if(empty($select) && empty($where) && is_null($order_by)) return $extensions;
+
+			if(!is_null($order_by)){
+
+				$order_by = array_map('strtolower', explode(' ', $order_by));
+				$order = ($order_by[1] == 'desc') ? SORT_DESC : SORT_ASC;
+				$sort = $order_by[0];
+
+				if($sort == 'author'){
+					foreach($extensions as $key => $about){
+						$author[$key] = $about['author']['name'];
+						$label[$key] = $key;
+					}
+
+					array_multisort($author, $order, $label, SORT_ASC, $extensions);
+				}
+				else if($sort == 'name'){
+					foreach($extensions as $key => $about){
+						$name[$key] = $about['name'];
+						$label[$key] = $key;
+					}
+
+					array_multisort($name, $order, $label, SORT_ASC, $extensions);
+				}
+
+			}
+
+			$data = array();
+
+			foreach($extensions as $i => $e){
+				$data[$i] = array();
+				foreach($e as $key => $value) {
+					// If $select is empty, we assume every field is requested
+					if(in_array($key, $select) || empty($select)) $data[$i][$key] = $value;
+				}
+			}
+
+			return $data;
+
+		}
+
+		/**
 		 * Returns information about an extension by it's name by calling
 		 * it's own about method. This method checks if an extension needs
 		 * to be updated or not.
