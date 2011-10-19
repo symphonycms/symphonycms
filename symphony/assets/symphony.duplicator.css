@@ -3,26 +3,26 @@
 -----------------------------------------------------------------------------*/
 
 .duplicator {
-	background: #444433;
-	border: 1px solid #999988;
+	background: #444444;
+	border: 1px solid #999999;
 	margin: 0;
 	list-style: none;
 }
 .duplicator i {
-	color: #887;
+	color: #888;
 }
 .invalid .duplicator {
 	border-color: #aa2211;
 }
 .duplicator > .instance {
 	clear: left;
-	background: #ddddcc;
-	border-bottom: 1px solid #eeeedd;
+	background: #dddddd;
+	border-bottom: 1px solid #eeeeee;
 }
 .duplicator > .instance > .header {
 	background: #ccccbb;
-	border-bottom: 1px solid #eeeedd;
-	color: #666655;
+	border-bottom: 1px solid #eeeeee;
+	color: #666666;
 	margin: 0;
 	padding: 0.5em 1.75em;
 	position: relative;
@@ -33,20 +33,20 @@
 }
 .duplicator > .instance > .header .destructor {
 	font-weight: normal;
-	color: #333322;
+	color: #333333;
 	margin: 0 1.75em;
 	padding: 0.5em 0;
 	position: absolute;
 	right: 0;
 	text-decoration: none;
 	top: 0;
-	text-shadow: 1px 1px #DDDDCC;
+	text-shadow: 1px 1px #dddddd;
 }
 .duplicator > .instance > .header .destructor:hover {
-	color: #555544;
+	color: #555555;
 }
 .duplicator > .instance > .header .destructor.disabled {
-	color: #333322;
+	color: #333333;
 	cursor: default;
 	opacity: 0.4;
 }
@@ -56,7 +56,7 @@
 }
 .duplicator > .controls {
 	clear: left;
-	background: #aaaa99;
+	background: #aaaaaa;
 	cursor: default;
 	padding: 0 1.75em;
 /*	position: relative;*/
@@ -71,7 +71,7 @@
 }
 .duplicator > .controls.top {
 	overflow: hidden;
-	border-bottom: 1px solid #eeeedd;
+	border-bottom: 1px solid #eeeeee;
 }
 .duplicator > .controls.hidden {
 	display: none;
@@ -94,10 +94,10 @@
 	text-shadow: 1px 1px #8E8E80;
 }
 .duplicator > .controls > .constructor:hover {
-	color: #ffffee;
+	color: #ffffff;
 }
 .duplicator > .controls > .constructor.disabled {
-	color: #eeeedd;
+	color: #eeeeee;
 	cursor: default;
 	opacity: 0.6;
 }
@@ -116,7 +116,7 @@
 	opacity: 0.8;
 }
 .duplicator > .instance.ordering {
-	border-top: 1px solid #eeeedd;
+	border-top: 1px solid #eeeeee;
 	-moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 	-webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 	margin-top: -1px;
@@ -143,15 +143,15 @@
 	float: left;
 	margin: 0;
 	padding: 0.5em 0;
-	color: #eeeedd;
+	color: #eeeeee;
 	text-decoration: none;
 	text-shadow: 1px 1px #8E8E80;
 }
 .duplicator.collapsible > .controls > .collapser:hover {
-	color: #ffffee;
+	color: #ffffff;
 }
 .duplicator.collapsible > .controls > .collapser.disabled {
-	color: #eeeedd;
+	color: #eeeeee;
 	cursor: default;
 	opacity: 0.6;
 }
