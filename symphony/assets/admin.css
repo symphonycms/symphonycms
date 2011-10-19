@@ -965,7 +965,7 @@ ul.page input {
 	text-align: center;
 	width: 20px;
 	border: 1px solid transparent;
-	border-bottom: 1px dashed #ccc;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 	padding-bottom: 1px;
 	outline: none;
 }
