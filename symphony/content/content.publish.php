@@ -6,12 +6,13 @@
 	/**
 	 * The Publish page is where the majority of an Authors time will
 	 * be spent in Symphony with adding, editing and removing entries
-	 * from Sections. This Page controls the entries tableas well as
+	 * from Sections. This Page controls the entries table as well as
 	 * the Entry creation screens.
 	 */
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.entrymanager.php');
 	require_once(TOOLKIT . '/class.sectionmanager.php');
+	require_once(CONTENT . '/class.sortable.php');
 
 	Class contentPublish extends AdministrationPage{
 
@@ -96,20 +97,12 @@
 
 			}
 
-			if(isset($_REQUEST['sort']) && is_numeric($_REQUEST['sort'])){
-				$sort = intval($_REQUEST['sort']);
-				$order = ($_REQUEST['order'] ? strtolower($_REQUEST['order']) : 'asc');
+			$sortable = new Sortable($sort, $order, array(
+				'current-section' => $section,
+				'filters' => ($filter_querystring ? "&amp;" . $filter_querystring : '')
+			));
 
-				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
-					SectionManager::edit($section->get('id'), array('entry_order' => $sort, 'entry_order_direction' => $order));
-					redirect(Administration::instance()->getCurrentPageURL().($filter_querystring ? "?" . $filter_querystring : ''));
-				}
-			}
-
-			elseif(isset($_REQUEST['unsort'])){
-				SectionManager::edit($section->get('id'), array('entry_order' => NULL, 'entry_order_direction' => NULL));
-				redirect(Administration::instance()->getCurrentPageURL());
-			}
+			$sortable->sort();
 
 			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter_querystring ? "&amp;" . $filter_querystring : ''));
 
@@ -117,10 +110,6 @@
 				Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id, __('Edit Section Configuration'), 'button'),
 				Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($filter_querystring ? '?' . $prepopulate_querystring : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c'))
 			));
-
-			if(is_null(EntryManager::getFetchSorting()->field) && is_null(EntryManager::getFetchSorting()->direction)){
-				EntryManager::setFetchSortingDirection('DESC');
-			}
 
 			$entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins);
 

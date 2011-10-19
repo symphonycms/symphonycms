@@ -34,41 +34,45 @@
 		public function __viewIndex($resource_type){
 			$this->setPageType('table');
 
-			$resources = new Sortable($sort, $order, array('type' => $resource_type));
+			$resources = new Sortable($sort, $order);
 			$resources = $resources->sort();
 
 			$columns = array(
 				array(
 					'label' => __('Name'),
-					'sortable' => true
+					'sortable' => true,
+					'handle' => 'name'
 				),
 				array(
 					'label' => __('Source'),
-					'sortable' => true
+					'sortable' => true,
+					'handle' => 'source'
 				),
 				array(
 					'label' => __('Pages'),
-					'sortable' => false
+					'sortable' => false,
 				),
 				array(
 					'label' => __('Release Date'),
-					'sortable' => true
+					'sortable' => true,
+					'handle' => 'release-date'
 				),
 				array(
 					'label' => __('Author'),
-					'sortable' => true
+					'sortable' => true,
+					'handle' => 'author'
 				)
 			);
 
 			$aTableHead = array();
 
-			foreach($columns as $i => $c) {
+			foreach($columns as $c) {
 				if($c['sortable']) {
 
-					if($i == $sort) {
+					if($c['handle'] == $sort) {
 						$link = sprintf(
-							'?sort=%d&amp;order=%s%s',
-							$i, ($order == 'desc' ? 'asc' : 'desc'),
+							'?sort=%s&amp;order=%s%s',
+							$c['handle'], ($order == 'desc' ? 'asc' : 'desc'),
 							(isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
 						);
 						$label = Widget::Anchor(
@@ -79,8 +83,8 @@
 					}
 					else {
 						$link = sprintf(
-							'?sort=%d&amp;order=asc%s',
-							$i, (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
+							'?sort=%s&amp;order=asc%s',
+							$c['handle'], (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
 						);
 						$label = Widget::Anchor(
 							$c['label'], $link,
@@ -117,38 +121,20 @@
 					);
 
 					// Resource type/source
-					// If source is numeric, it's considered to be a Symphony Section
-					if($r['source'] > 0) {
-						$sectionData = SectionManager::fetch($r['source']);
-
-						if($sectionData !== false) {
-							$section = Widget::TableData(
-								Widget::Anchor(
-									$sectionData->get('name'),
-									SYMPHONY_URL . $_REQUEST['symphony-page'] .  'edit/' . $sectionData->get('id') . '/',
-									$sectionData->get('handle')
-								)
-							);
-						}
-						else {
-							$section = Widget::TableData(__('Unknown'), 'inactive');
-						}
+					if(isset($r['source']['id'])) {
+						$section = Widget::TableData(
+							Widget::Anchor(
+								$r['source']['name'],
+								SYMPHONY_URL . $_REQUEST['symphony-page'] .  'edit/' . $r['source']['id'] . '/',
+								$r['source']['handle']
+							)
+						);
 					}
-					// Source will be a class type
+					else if(isset($r['source']['name'])){
+						$section = Widget::TableData($r['source']['name']);
+					}
 					else {
-						// Resource provided by extension?
-						$extension = ResourceManager::__getExtensionFromHandle($resource_type, $r['handle']);
-
-						if(!empty($extension)) {
-							$extension = Symphony::ExtensionManager()->about($extension);
-							$section = Widget::TableData(__('Extension') . ': ' . $extension['name']);
-						}
-						else if(isset($r['source'])) {
-							$section = Widget::TableData(ucwords($r['source']));
-						}
-						else {
-							$section = Widget::TableData(__('Unknown'), 'inactive');
-						}
+						$section = Widget::TableData(__('Unknown'), 'inactive');
 					}
 
 					// Attached pages
