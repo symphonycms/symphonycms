@@ -19,8 +19,6 @@
 
 		public $_errors = array();
 
-		public abstract function getResourceFile($handle);
-
 		public function pagesFlatView(){
 			$pages = PageManager::fetch(false, array('id'));
 

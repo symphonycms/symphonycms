@@ -16,10 +16,6 @@
 
 		public $_errors = array();
 
-		public function getResourceFile($handle) {
-			return DatasourceManager::__getDriverPath($handle);
-		}
-
 		public function __viewIndex(){
 			parent::__viewIndex(RESOURCE_TYPE_DS);
 
