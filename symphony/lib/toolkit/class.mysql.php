@@ -504,7 +504,7 @@
 			 *  The time that it took to run `$query`
 			 */
 			if(Symphony::ExtensionManager() instanceof ExtensionManager) {
-				Symphony::ExtensionManager()->notifyMembers('LogQuery', class_exists('Administration') ? '/backend/' : '/frontend/', array(
+				Symphony::ExtensionManager()->notifyMembers('PostQueryExecution', class_exists('Administration') ? '/backend/' : '/frontend/', array(
 					'query' => $query,
 					'query_hash' => $query_hash,
 					'execution_time' => precision_timer('stop', $start)
