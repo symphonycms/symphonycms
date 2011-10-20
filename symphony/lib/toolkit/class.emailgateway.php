@@ -130,7 +130,8 @@
 		public function setRecipients($email){
 			//TODO: sanitizing and security checking
 			if(!is_array($email)){
-				$email = Array($email);
+				$email = explode(',',$email);
+				array_walk($email, create_function('&$val', '$val = trim($val);'));
 			}
 			$this->_recipients = $email;
 		}
