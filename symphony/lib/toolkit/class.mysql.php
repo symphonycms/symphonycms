@@ -130,6 +130,11 @@
 		 */
 		private $_lastQuery  = null;
 
+		/**
+		 * The hash value of the last query that was executed by the class
+		 */
+		private $_lastQueryHash  = null;
+		
         /**
          * The auto increment value returned by the last query that was executed
          * by the class
@@ -161,6 +166,7 @@
 			$this->_result = null;
 			$this->_lastResult = array();
 			$this->_lastQuery = null;
+			$this->_lastQueryHash = null;
 		}
 
 		/**
@@ -459,6 +465,7 @@
 
 			$this->flush();
 			$this->_lastQuery = $query;
+			$this->_lastQueryHash = $query_hash;
 			$this->_result = mysql_query($query, MySQL::$_connection['id']);
             $this->_lastInsertID = mysql_insert_id(MySQL::$_connection['id']);
             
@@ -767,11 +774,38 @@
 			$msg = mysql_error();
 			$errornum = mysql_errno();
 
-			self::$_log['error'][] = array(
-				'query' => $this->_lastQuery,
-				'msg' => $msg,
-				'num' => $errornum
-			);
+			/**
+			 * After a query has successfully executed, that is it was considered
+			 * valid SQL, this delegate will provide the query, the query_hash and
+			 * the execution time of the query.
+			 *
+			 * Note that this function only starts logging once the ExtensionManager
+			 * is available, which means it will not fire for the first couple of
+			 * queries that set the character set.
+			 *
+			 * @since Symphony 2.3
+			 * @delegate LogQuery
+			 * @param string $context
+			 * '/frontend/' or '/backend/'
+			 * @param string $query
+			 *  The query that has just been executed
+			 * @param string $query_hash
+			 *  The hash used by Symphony to uniquely identify this query
+			 * @param float $execution_time
+			 *  The time that it took to run `$query`
+			 */
+			if(Symphony::ExtensionManager() instanceof ExtensionManager) {
+				Symphony::ExtensionManager()->notifyMembers('QueryExectionError', class_exists('Administration') ? '/backend/' : '/frontend/', array(
+					'query' => $this->_lastQuery,
+					'query_hash' => $this->_lastQueryHash,
+				));
+			} else {
+				self::$_log['error'][] = array(
+					'query' => $this->_lastQuery,
+					'msg' => $msg,
+					'num' => $errornum
+				);
+			}
 
 			throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query: %3$s', array($errornum, $msg, $this->_lastQuery)), end(self::$_log['error']));
 		}
