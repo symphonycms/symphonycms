@@ -581,6 +581,28 @@
 		}
 
 		/**
+		 * Custom user sorting function used inside `fetch` to recursively sort authors
+		 * by their names.
+		 *
+		 * @param array $a
+		 * @param array $b
+		 * @return integer
+		 */
+		private static function sortByAuthor($a, $b, $i = 0) {
+			$first = $a; $second = $b;
+
+			if(isset($a[$i]))$first = $a[$i];
+			if(isset($b[$i])) $second = $b[$i];
+
+			if ($first == $a && $second == $b && $first['name'] == $second['name'])
+				return 1;
+			else if ($first['name'] == $second['name'])
+				return self::sortByAuthor($a, $b, $i + 1);
+			else
+				return ($first['name'] < $second['name']) ? -1 : 1;
+		}
+
+		/**
 		 * This function will return an associative array of Extension information. The
 		 * information returned is defined by the `$select` parameter, which will allow
 		 * a developer to restrict what information is returned about the Extension.
@@ -612,11 +634,22 @@
 
 				if($sort == 'author'){
 					foreach($extensions as $key => $about){
-						$author[$key] = $about['author']['name'];
-						$label[$key] = $key;
+						$author[$key] = $about['author'];
 					}
 
-					array_multisort($author, $order, $label, SORT_ASC, $extensions);
+					$data = array();
+
+					uasort($author, array('self', 'sortByAuthor'));
+
+					if($order == SORT_DESC){
+						$author = array_reverse($author);
+					}
+
+					foreach($author as $key => $value){
+						$data[$key] = $extensions[$key];
+					}
+
+					$extensions = $data;
 				}
 				else if($sort == 'name'){
 					foreach($extensions as $key => $about){
@@ -642,6 +675,8 @@
 			return $data;
 
 		}
+
+
 
 		/**
 		 * Returns information about an extension by it's name by calling
