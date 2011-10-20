@@ -26,7 +26,7 @@
 			foreach($pages as &$page){
 				$page = Widget::Anchor(
 					PageManager::fetchTitleFromHandle($page),
-					SYMPHONY_URL . '/blueprints/pages/edit/' . PageManager::fetchIDFromHandle($page)
+					SYMPHONY_URL . '/blueprints/pages/?parent=' . PageManager::fetchIDFromHandle($page)
 				);
 			}
 
@@ -61,16 +61,18 @@
 
 			$nesting = (Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes');
 
-			$heading = NULL;
-			if($nesting == true && isset($_GET['parent']) && is_numeric($_GET['parent'])){
-				$parent = (int)$_GET['parent'];
-				$heading = ' &mdash; ' . self::__buildParentBreadcrumb($parent);
+			if($nesting == true && isset($_GET['parent']) && is_numeric($_GET['parent'])) {
+				$parent = PageManager::fetchPageByID((int)$_GET['parent'], array('title', 'id'));
 			}
 
-			$this->appendSubheading(__('Pages') . $heading, Widget::Anchor(
-				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/' . ($nesting == true && isset($parent) ? "?parent={$parent}" : NULL),
+			$this->appendSubheading(isset($parent) ? $parent['title'] : __('Pages'), Widget::Anchor(
+				__('Create New'), Administration::instance()->getCurrentPageURL() . 'new/' . ($nesting == true && isset($parent) ? "?parent={$parent['id']}" : NULL),
 				__('Create a new page'), 'create button', NULL, array('accesskey' => 'c')
 			));
+
+			if(isset($parent)) {
+				$this->insertBreadcrumbs($parent['id'], false);
+			}
 
 			$aTableHead = array(
 				array(__('Title'), 'col'),
@@ -84,7 +86,7 @@
 			if($nesting == true){
 				$aTableHead[] = array(__('Children'), 'col');
 				$where = array(
-					'parent ' . (isset($parent) ? " = {$parent} " : ' IS NULL ')
+					'parent ' . (isset($parent) ? " = {$parent['id']} " : ' IS NULL ')
 				);
 			}
 			else {
@@ -401,7 +403,13 @@
 			else {
 				$this->appendSubheading(($title ? $title : __('Untitled')));
 			}
-			$this->insertBreadcrumbs($this->_context[1], false);
+
+			if(isset($this->_context[1])) {
+				$this->insertBreadcrumbs($this->_context[1], false);
+			}
+			else {
+				$this->insertBreadcrumbs((int)$_GET['parent'], true);
+			}
 
 
 		// Title --------------------------------------------------------------
@@ -996,21 +1004,6 @@
 			}
 
 			if($success) redirect($redirect);
-		}
-
-		private static function __buildParentBreadcrumb($page_id, $last=true){
-			$page = PageManager::fetchPageByID($page_id, array('title', 'id'));
-			if(empty($page)) return null;
-
-			if($last != true){
-				$anchor = Widget::Anchor(
-					$page['title'], Administration::instance()->getCurrentPageURL() . '?parent=' . $page['id']
-				);
-			}
-
-			$result = (!is_null($page['parent']) ? self::__buildParentBreadcrumb($page['parent'], false) . ' &gt; ' : NULL) . ($anchor instanceof XMLElement ? $anchor->generate() : $page['title']);
-
-			return $result;
 		}
 
 		/**
