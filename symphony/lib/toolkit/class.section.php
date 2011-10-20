@@ -49,6 +49,26 @@
 		}
 
 		/**
+		 * This function returns the default field this Section will
+		 * be sorted by (if visibile). If no fields exist or none of them
+		 * is visible in the entries list, 'id' is returned instead.
+		 *
+		 * @return string
+		 *  Either the field ID or the string 'id'.
+		 */
+		public function getDefaultSortingField(){
+			$fields = $this->fetchFields();
+
+			if(!empty($fields)){
+				foreach($fields as $f) {
+					if($f->get('show_column') == 'yes') return $f->get('id');
+				}
+			}
+
+			return 'id';
+		}
+
+		/**
 		 * Returns any section associations this section has with other sections
 		 * linked using fields. Has an optional parameter, respect_visibility that
 		 * will only return associations that are deemed visible by a field that
