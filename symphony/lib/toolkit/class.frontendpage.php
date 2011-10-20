@@ -233,7 +233,7 @@
 					$errstr = NULL;
 
 					while (list($key, $val) = $this->Proc->getError()) {
-						$errstr .= 'Line: ' . $val['line'] . ' - ' . $val['message'] . self::CRLF;
+						$errstr .= 'Line: ' . $val['line'] . ' - ' . $val['message'] . PHP_EOL;
 					}
 
 					GenericExceptionHandler::$enabled = true;
@@ -251,7 +251,7 @@
 
 			## EVENT DETAILS IN SOURCE
 			if ($this->is_logged_in && Symphony::Configuration()->get('display_event_xml_in_source', 'public') == 'yes') {
-				$output .= self::CRLF . '<!-- ' . self::CRLF . $this->_events_xml->generate(true) . ' -->';
+				$output .= PHP_EOL . '<!-- ' . PHP_EOL . $this->_events_xml->generate(true) . ' -->';
 			}
 
 			return $output;
@@ -646,7 +646,7 @@
 					if($xml = $event->load()) {
 						if(is_object($xml)) $wrapper->appendChild($xml);
 						else $wrapper->setValue(
-							$wrapper->getValue() . self::CRLF . '	' . trim($xml)
+							$wrapper->getValue() . PHP_EOL . '    ' . trim($xml)
 						);
 					}
 
@@ -775,7 +775,7 @@
 				if ($xml) {
 					if (is_object($xml)) $wrapper->appendChild($xml);
 					else $wrapper->setValue(
-						$wrapper->getValue() . self::CRLF . '	' . trim($xml)
+						$wrapper->getValue() . PHP_EOL . '    ' . trim($xml)
 					);
 				}
 

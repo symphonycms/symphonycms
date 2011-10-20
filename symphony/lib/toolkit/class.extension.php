@@ -12,13 +12,6 @@
 	Abstract Class Extension{
 
 		/**
-		 * The end-of-line constant.
-		 * @var string
-		 * @deprecated This will be removed in the next version of Symphony
-		 */
-		const CRLF = PHP_EOL;
-
-		/**
 		 * Determines that a new navigation group is to created in the Symphony backend
 		 * @var integer
 		 */

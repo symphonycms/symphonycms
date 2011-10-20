@@ -30,8 +30,6 @@
 	require_once(TOOLKIT . '/class.xmlelement.php');
 	require_once(TOOLKIT . '/class.widget.php');
 
-	define('CRLF', "\r\n");
-
 	define('BAD_BROWSER', 0);
 	define('MISSING_MYSQL', 3);
 	define('MISSING_ZLIB', 5);
@@ -47,7 +45,7 @@
 		<title><!-- TITLE --></title>
 		<link rel="stylesheet" type="text/css" href="'.kINSTALL_ASSET_LOCATION.'/main.css"/>
 		<script type="text/javascript" src="'.kINSTALL_ASSET_LOCATION.'/main.js"></script>
-	</head>' . CRLF;
+	</head>' . PHP_EOL;
 
 	define('kHEADER', $header);
 
@@ -93,14 +91,14 @@
 
 			$install_log->writeToLog("============================================", true);
 			$install_log->writeToLog("INSTALLATION COMPLETED: Execution Time - ".max(1, time() - $start)." sec (" . date("d.m.y H:i:s") . ")", true);
-			$install_log->writeToLog("============================================" . CRLF . CRLF . CRLF, true);
+			$install_log->writeToLog("============================================" . PHP_EOL . PHP_EOL . PHP_EOL, true);
 
 		}else{
 
 			$install_log->pushToLog(_INSTALL_ERRORS_, E_ERROR, true);
 			$install_log->writeToLog("============================================", true);
 			$install_log->writeToLog("INSTALLATION ABORTED: Execution Time - ".max(1, time() - $start)." sec (" . date("d.m.y H:i:s") . ")", true);
-			$install_log->writeToLog("============================================" . CRLF . CRLF . CRLF, true);
+			$install_log->writeToLog("============================================" . PHP_EOL . PHP_EOL . PHP_EOL, true);
 
 			$Page->setPage('failure');
 		}
@@ -480,7 +478,7 @@
 
 				$start = time();
 
-				$install_log->writeToLog(CRLF . '============================================', true);
+				$install_log->writeToLog(PHP_EOL . '============================================', true);
 				$install_log->writeToLog('INSTALLATION PROCESS STARTED (' . DateTimeObj::get('c') . ')', true);
 				$install_log->writeToLog('============================================', true);
 

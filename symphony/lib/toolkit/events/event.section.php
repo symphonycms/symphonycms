@@ -216,7 +216,7 @@
 
 				if(is_array($fields['body'])){
 					foreach($fields['body'] as $field_handle => $value){
-						$body .= "// $field_handle" . General::CRLF . $value . General::CRLF . General::CRLF;
+						$body .= "// $field_handle" . PHP_EOL . $value . PHP_EOL . PHP_EOL;
 					}
 				}
 				else {

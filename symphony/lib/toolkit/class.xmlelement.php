@@ -14,13 +14,6 @@
 	Class XMLElement {
 
 		/**
-		 * The end-of-line constant.
-		 * @var string
-		 * @deprecated This will be removed in the next version of Symphony
-		 */
-		const CRLF = PHP_EOL;
-
-		/**
 		 * This is an array of all HTML elements that are self closing.
 		 * @var array
 		 */
@@ -557,7 +550,7 @@
 		 */
 		public function generate($indent = false, $tab_depth = 0, $hasParent = false){
 			$result = null;
-			$newline = ($indent ? self::CRLF : null);
+			$newline = ($indent ? PHP_EOL : null);
 
 			if(!$hasParent){
 				if($this->_includeHeader){
@@ -572,7 +565,7 @@
 				}
 
 				if(is_array($this->_processingInstructions) && !empty($this->_processingInstructions)){
-					$result .= implode(self::CRLF, $this->_processingInstructions);
+					$result .= implode(PHP_EOL, $this->_processingInstructions);
 				}
 			}
 

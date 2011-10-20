@@ -20,13 +20,6 @@
 	Class DataSource{
 
 		/**
-		 * The end-of-line constant.
-		 * @var string
-		 * @deprecated This will be removed in the next version of Symphony
-		 */
-		const CRLF = PHP_EOL;
-
-		/**
 		 * Holds all the environment variables which include parameters set by
 		 * other Datasources or Events.
 		 * @var array

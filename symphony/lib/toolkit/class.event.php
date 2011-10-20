@@ -43,13 +43,6 @@
 	abstract Class Event implements iEvent{
 
 		/**
-		 * The end-of-line constant.
-		 * @var string
-		 * @deprecated This will be removed in the next version of Symphony
-		 */
-		const CRLF = PHP_EOL;
-
-		/**
 		 * Represents High Priority, that this event should run first
 		 * @var integer
 		 */

@@ -217,11 +217,11 @@
 
 							$email->recipients = $author['email'];
 							$email->subject = __('New Symphony Account Password');
-							$email->text_plain = __('Hi %s,', array($author['first_name'])) . self::CRLF .
-									__('A new password has been requested for your account. Login using the following link, and change your password via the Authors area:') . self::CRLF .
-									self::CRLF . '	' . SYMPHONY_URL . "/login/{$token}/" . self::CRLF . self::CRLF .
-									__('It will expire in 2 hours. If you did not ask for a new password, please disregard this email.') . self::CRLF . self::CRLF .
-									__('Best Regards,') . self::CRLF .
+							$email->text_plain = __('Hi %s,', array($author['first_name'])) . PHP_EOL .
+									__('A new password has been requested for your account. Login using the following link, and change your password via the Authors area:') . PHP_EOL .
+									PHP_EOL . '	' . SYMPHONY_URL . "/login/{$token}/" . PHP_EOL . PHP_EOL .
+									__('It will expire in 2 hours. If you did not ask for a new password, please disregard this email.') . PHP_EOL . PHP_EOL .
+									__('Best Regards,') . PHP_EOL .
 									__('The Symphony Team');
 
 							$email->send();
@@ -318,9 +318,9 @@
 						Symphony::Database()->fetchVar('email', 0, "SELECT `email` FROM `tbl_authors` ORDER BY `id` ASC LIMIT 1"),
 						__('Symphony Concierge'),
 						__('New Symphony Account Password'),
-						__('Hi %s,', array($author['first_name'])) . self::CRLF .
-						__("As requested, here is your new Symphony Author Password for ") . URL . " " .self::CRLF ." $newpass" . self::CRLF . self::CRLF .
-						__('Best Regards,') . self::CRLF .
+						__('Hi %s,', array($author['first_name'])) . PHP_EOL .
+						__("As requested, here is your new Symphony Author Password for ") . URL . " " .PHP_EOL ." $newpass" . PHP_EOL . PHP_EOL .
+						__('Best Regards,') . PHP_EOL .
 						__('The Symphony Team')
 					);
 

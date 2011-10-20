@@ -199,7 +199,7 @@
 				$fieldset->setAttribute('class', 'settings');
 
 				$doc = $existing->documentation();
-				$fieldset->setValue('<legend>' . __('Description') . '</legend>' . self::CRLF . General::tabsToSpaces((is_object($doc) ? $doc->generate(true) : $doc), 2));
+				$fieldset->setValue('<legend>' . __('Description') . '</legend>' . PHP_EOL . General::tabsToSpaces((is_object($doc) ? $doc->generate(true) : $doc), 2));
 				$this->Form->appendChild($fieldset);
 			}
 
@@ -417,12 +417,12 @@
 					$documentation_parts[] = new XMLElement('p', __('Upon the event successfully saving the entry, this option takes input from the form and send an email to the desired recipient. <b>It currently does not work with "Allow Multiple".</b> The following are the recognised fields:'));
 
 					$documentation_parts[] = self::processDocumentationCode(
-						'send-email[sender-email] // '.__('Optional').self::CRLF.
-						'send-email[sender-name] // '.__('Optional').self::CRLF.
-						'send-email[reply-to-email] // '.__('Optional').self::CRLF.
-						'send-email[reply-to-name] // '.__('Optional').self::CRLF.
-						'send-email[subject]'.self::CRLF.
-						'send-email[body]'.self::CRLF.
+						'send-email[sender-email] // '.__('Optional').PHP_EOL.
+						'send-email[sender-name] // '.__('Optional').PHP_EOL.
+						'send-email[reply-to-email] // '.__('Optional').PHP_EOL.
+						'send-email[reply-to-name] // '.__('Optional').PHP_EOL.
+						'send-email[subject]'.PHP_EOL.
+						'send-email[body]'.PHP_EOL.
 						'send-email[recipient] // '.__('list of comma-separated author usernames.'));
 
 					$documentation_parts[] = new XMLElement('p', __('All of these fields can be set dynamically using the exact field name of another field in the form as shown below in the example form:'));
@@ -458,7 +458,7 @@
 				 */
 				Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $filters, 'documentation' => &$documentation_parts));
 
-				$documentation = join(self::CRLF, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $documentation_parts));
+				$documentation = join(PHP_EOL, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $documentation_parts));
 				$documentation = str_replace('\'', '\\\'', $documentation);
 
 				$eventShell = str_replace('<!-- CLASS NAME -->', $classname, $eventShell);
@@ -579,7 +579,7 @@
 		public function __injectFilters(&$shell, $elements){
 			if(!is_array($elements) || empty($elements)) return;
 
-			$shell = str_replace('<!-- FILTERS -->',  "'" . implode("'," . self::CRLF . "\t\t\t\t'", $elements) . "'", $shell);
+			$shell = str_replace('<!-- FILTERS -->',  "'" . implode("'," . PHP_EOL . "\t\t\t\t'", $elements) . "'", $shell);
 		}
 
 		public function __injectAboutInformation(&$shell, $details){

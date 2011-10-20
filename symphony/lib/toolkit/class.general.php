@@ -7,12 +7,6 @@
 	 * functions that are used throughout Symphony.
 	 */
 	Class General{
-		/**
-		 * The end-of-line constant.
-		 * @var string
-		 * @deprecated This will be removed in the next version of Symphony
-		 */
-		const CRLF = PHP_EOL;
 
 		/**
 		 * Convert any special characters into their entity equivalents.
