@@ -128,7 +128,7 @@
 					// Release date
 					$datetimeobj = new DateTimeObj();
 					$releasedate = Widget::TableData(Lang::localizeDate(
-						$datetimeobj->get(__SYM_DATETIME_FORMAT__, strtotime($r['release-date']))
+						$datetimeobj->format($r['release-date'], __SYM_DATETIME_FORMAT__)
 					));
 
 					// Authors
