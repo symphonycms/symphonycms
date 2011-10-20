@@ -6,20 +6,20 @@
 	 * The translation function accepts an English string and returns its translation
 	 * to the active system language. If the given string is not available in the
 	 * current dictionary the original English string will be returned. Given an optional
-	 * array of inserts the function will also replace translation placeholders using vsprintf().
+	 * `$inserts` array, the function will replace translation placeholders using `vsprintf()`.
 	 * Since Symphony 2.3, it is also possible to have multiple translation of the same string
-	 * according to the provided namespace. In your lang file, simply add a subarray to the
-	 * $dictionary array, with the key being the namespace itself and the value being a set of
-	 * translations for the strings beloning to that namespace.
+	 * according to the provided namespace. In your lang file, simply add a subarray to
+	 * `$dictionary`, with the key being the namespace itself and the value being a set of
+	 * translations for the strings belonging to that namespace.
 	 *
 	 * @param string $string
-	 *	The string that should be translated
-	 * @param array $inserts
-	 *	Optional array used to replace translation placeholders, defaults to NULL
-	 * @param string $namespace
-	 *	Optional string used to define the proper namespace, defaults to NULL
+	 *  The string that should be translated
+	 * @param array $inserts (optional)
+	 *  Optional array used to replace translation placeholders, defaults to NULL
+	 * @param string $namespace (optional)
+	 *  Optional string used to define the proper namespace, defaults to NULL
 	 * @return
-	 *	Returns the translated string
+	 *  Returns the translated string
 	 */
 	function __($string, $inserts=NULL, $namespace=NULL) {
 		return Lang::Dictionary()->translate($string, $inserts, $namespace);
@@ -29,9 +29,9 @@
 	 * The transliteration function replaces special characters.
 	 *
 	 * @param string $string
-	 *	The string that should be cleaned-up
+	 *  The string that should be cleaned-up
 	 * @return
-	 *	Returns the transliterated string
+	 *  Returns the transliterated string
 	 */
 	function _t($string) {
 		$patterns = array_keys(Lang::Transliterations());
@@ -61,32 +61,24 @@
 		 * @param array $strings
 		 *	Associative array mapping English strings and their translations, defaults to an empty array
 		 */
-		public function __construct(Array $strings=array()) {
+		public function __construct(array $strings = array()) {
 			$this->_strings = $strings;
 		}
 
 		/**
-		 * The translation function accepts an English string and returns its translation
-		 * to the active system language. If the given string is not available in the
-		 * current dictionary the original English string will be returned. Given an optional
-		 * array of inserts the function will also replace translation placeholders using vsprintf().
-		 * Since Symphony 2.3, it is also possible to have multiple translation of the same string
-		 * according to the provided namespace. In your lang file, simply add a subarray to the
-		 * $dictionary array, with the key being the namespace itself and the value being a set of
-		 * translations for the strings beloning to that namespace.
+		 * This function is an internal alias for `__()`.
 		 *
-		 * Note: If you like to translate strings, please use __() which is the common alias for this function.
-		 *
+		 * @see toolkit.__()
 		 * @param string $string
-		 *	The string that should be translated
-		 * @param array $inserts
-		 *	Optional array used to replace translation placeholders, defaults to NULL
-		 * @param string $namespace
-		 *	Optional string used to define the proper namespace, defaults to NULL
+		 *  The string that should be translated
+		 * @param array $inserts (optional)
+		 *  Optional array used to replace translation placeholders, defaults to NULL
+		 * @param string $namespace (optional)
+		 *  Optional string used to define the proper namespace, defaults to NULL
 		 * @return string
-		 *	Returns the translated string
+		 *  Returns the translated string
 		 */
-		public function translate($string, Array $inserts=NULL, $namespace=NULL) {
+		public function translate($string, array $inserts=NULL, $namespace=NULL) {
 			$translated = $this->find($string, $namespace);
 
 			// Default to English if no translation available
@@ -106,11 +98,11 @@
 		 * Given a string, return its translation.
 		 *
 		 * @param string $string
-		 *	The string to look for
-		 * @param string $namespace
-		 *	Optional namespace you want to search inside, defaults to NULL
+		 *  The string to look for
+		 * @param string $namespace (optional)
+		 *  Optional namespace you want to search inside, defaults to NULL
 		 * @return string|boolean
-		 *	Returns either the translation of the string or false if it could not be found
+		 *  Returns either the translation of the string or false if it could not be found
 		 */
 		public function find($string, $namespace=NULL) {
 			if(isset($namespace) && trim($namespace) !== '' && isset($this->_strings[$namespace][$string])) {
@@ -127,11 +119,11 @@
 		 * Given a source string an its translation, add both to the current dictionary.
 		 *
 		 * @param string $source
-		 *	English string
-		 * @param string $namespace
-		 *	Optional namespace you want to add the translation to, defaults to NULL
+		 *  English string
+		 * @param string $namespace (optional)
+		 *  Optional namespace you want to add the translation to, defaults to NULL
 		 * @param string $translation
-		 *	Translation
+		 *  Translation
 		 */
 		public function add($source, $translation, $namespace=NULL) {
 			if(isset($namespace) && trim($namespace) !== '') {
@@ -145,9 +137,9 @@
 		 * Given an associative array of strings, merge it with the current dictionary.
 		 *
 		 * @param array $string
-		 *	Associative array containing English strings and their translations
+		 *  Associative array containing English strings and their translations
 		 */
-		public function merge(Array $strings) {
+		public function merge(array $strings) {
 			if(is_array($strings)) {
 				$this->_strings = array_merge($this->_strings, $strings);
 			}
@@ -157,9 +149,9 @@
 		 * Given an English string, remove it from the current dictionary.
 		 *
 		 * @param string $string
-		 *	String to be removed from the dictionary.
-		 * @param string $namespace
-		 *	Optional namespace you want to remove the translation from, defaults to NULL
+		 *  String to be removed from the dictionary.
+		 * @param string $namespace (optional)
+		 *  Optional namespace you want to remove the translation from, defaults to NULL
 		 */
 		public function remove($string, $namespace=NULL) {
 			if(isset($namespace) && trim($namespace) !== '') {

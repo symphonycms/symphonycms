@@ -31,16 +31,16 @@
 		private $_errors = array();
 
 		/**
-		 * The XsltProcess constructor takes a two parameters for the
-		 * XML and the XSL and initalises the `$this->_xml` and `$this->_xsl`.
-		 * It checks to see if there is an existing XSLTProcessor
+		 * The `XsltProcess` constructor takes a two parameters for the
+		 * XML and the XSL and initialises the `$this->_xml` and `$this->_xsl` variables.
+		 * If an `XSLTProcessor` is not available, this function will return false
 		 *
 		 * @param string $xml
 		 *  The XML for the transformation to be applied to
 		 * @param string $xsl
 		 *  The XSL for the transformation
 		 * @return boolean
-		 *  True if there is an existing XsltProcessor class, false otherwise
+		 *  True if there is an existing `XsltProcessor` class, false otherwise
 		 */
 		public function __construct($xml=null, $xsl=null){
 
@@ -53,10 +53,10 @@
 		}
 
 		/**
-		 * Checks if there is an available XSLTProcessor
+		 * Checks if there is an available `XSLTProcessor`
 		 *
 		 * @return boolean
-		 *  True if there is an existing XsltProcessor class, false otherwise
+		 *  True if there is an existing `XsltProcessor` class, false otherwise
 		 */
 		public static function isXSLTProcessorAvailable(){
 			return (class_exists('XsltProcessor') || function_exists('xslt_process'));
@@ -80,7 +80,7 @@
 		 * @return string
 		 *  The string of the resulting transform.
 		 */
-		public function process($xml=null, $xsl=null, Array $parameters=array(), Array $register_functions=array()){
+		public function process($xml=null, $xsl=null, array $parameters=array(), array $register_functions=array()){
 
 			if($xml) $this->_xml = $xml;
 			if($xsl) $this->_xsl = $xsl;
@@ -105,12 +105,12 @@
 		}
 
 		/**
-		 * Uses DomDocument to transform the document. Any errors that
-		 * occur are trapped by custom error handlers, trapXMLError or
-		 * trapXSLError.
+		 * Uses `DomDocument` to transform the document. Any errors that
+		 * occur are trapped by custom error handlers, `trapXMLError` or
+		 * `trapXSLError`.
 		 *
 		 * @param XsltProcessor $XSLProc
-		 *  An instance of XsltProcessor
+		 *  An instance of `XsltProcessor`
 		 * @param string $xml
 		 *  The XML for the transformation to be applied to
 		 * @param string $xsl
@@ -119,7 +119,7 @@
 		 *  An array of available parameters the XSL will have access to
 		 * @return string
 		 */
-		private function __process(XsltProcessor $XSLProc, $xml, $xsl, Array $parameters = array()) {
+		private function __process(XsltProcessor $XSLProc, $xml, $xsl, array $parameters = array()) {
 
 			// Create instances of the DomDocument class
 			$xmlDoc = new DomDocument;

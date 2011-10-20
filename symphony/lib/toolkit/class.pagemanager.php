@@ -5,9 +5,9 @@
 	 */
 	/**
 	 * The `PageManager` class is responsible for providing basic CRUD operations
-	 * for the Symphony frontend pages. These pages are stored in the database in
-	 * `tbl_pages` and are resolved to an instance of `FrontendPage` class from URL.
-	 * Additionally, this managers provides functions to access the Page's types,
+	 * for Symphony frontend pages. These pages are stored in the database in
+	 * `tbl_pages` and are resolved to an instance of `FrontendPage` class from a URL.
+	 * Additionally, this manager provides functions to access the Page's types,
 	 * and any linked datasources or events.
 	 *
 	 * @since Symphony 2.3

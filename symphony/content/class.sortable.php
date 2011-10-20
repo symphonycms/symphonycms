@@ -4,7 +4,13 @@
 	 * @package content
 	 */
 	/**
-	 * This class handles sortable objects via `$_REQUEST` parameters.
+	 * This class handles sortable objects via the `$_REQUEST` parameters. `Sortable`
+	 * standardizes the ordering parameters, and provides a method, `buildTableHeaders`,
+	 * which builds the correct URL's and markup to sort backend objects and update the
+	 * Table UI appropriately.
+	 *
+	 * This class is designed to work in the Symphony backend only, and not on the
+	 * Frontend.
 	 *
 	 * @since Symphony 2.3
 	 */
@@ -12,9 +18,10 @@
 	Class Sortable {
 
 		/**
-		 * This method initializes the `$result`, `$sort` and `$order` variables by looking at
-		 * `$_REQUEST`. Then it calls the `sort()` method on the object being passed by `$object`
-		 * to actually sort the items.
+		 * This method initializes the `$result`, `$sort` and `$order` variables by using the
+		 * `$_REQUEST` array. The `$result` is passed by reference, and is return of calling the
+		 * `$object->sort()` method. It is this method that actually invokes the sorting inside
+		 * the `$object`.
 		 *
 		 * @param object $object
 		 *	The object responsible for sorting the items. It must implement a `sort()` method.
@@ -23,7 +30,7 @@
 		 *	to the client class of Sortable.
 		 * @param string $sort
 		 *	This variable stores the field (or axis) the objects are sorted by. Once set,
-		 *	its value is available to the client class of Sortable.
+		 *	its value is available to the client class of `Sortable`.
 		 * @param string $order
 		 *	This variable stores the sort order (i.e. 'asc' or 'desc'). Once set, its value
 		 *	is available to the client class of Sortable.
@@ -38,17 +45,17 @@
 		}
 
 		/**
-		 * This method build the markup for sorting-aware table headers. It accepts an array
-		 * of columns as shown below, as well as the current sorting axis `$sort` and the
-		 * current sort order `$order`. If `$extra_url_params` are provided, they are appended
-		 * to the redirect string upon clicking on a table header.
+		 * This method builds the markup for sorting-aware table headers. It accepts an
+		 * `$columns` array, as well as the current sorting axis `$sort` and the
+		 * current sort order, `$order`. If `$extra_url_params` are provided, they are
+		 * appended to the redirect string upon clicking on a table header.
 		 *
 		 *		'label' => 'Column label',
 		 *		'sortable' => (true|false),
 		 *		'handle' => 'handle for the column (i.e. the field ID), used as value for $sort',
 		 *		'attrs' => array(
 		 *			'HTML <a> attribute' => 'value',
-					[...]
+		 *			[...]
 		 *		)
 		 *
 		 * @param array $columns

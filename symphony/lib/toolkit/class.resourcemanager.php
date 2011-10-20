@@ -13,10 +13,10 @@
 	Class ResourceManager {
 
 		/**
-		 * A private method used to return the `tbl_pages` column related to the given type.
+		 * A private method used to return the `tbl_pages` column related to the given resource type.
 		 *
 		 * @param integer $type
-		 *  The type of the resource
+		 *  The type of the resource, , either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @return string
 		 *  A string representing the `tbl_pages` column to target.
 		 */
@@ -30,12 +30,12 @@
 		}
 
 		/**
-		 * A method used to return the Symphony Manager for the given type.
+		 * A method used to return the Manager for the given resource type.
 		 *
 		 * @param integer $type
-		 *  The type of the resource
+		 *  The type of the resource, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @return object
-		 *  An object representing the Symphony Manager class that handles the resource.
+		 *  An object representing the Manager class that handles the resource.
 		 */
 		public static function getManagerFromType($type) {
 			switch($type) {
@@ -165,7 +165,7 @@
 		 * Given the type and handle of a resource, return the extension it belongs to.
 		 *
 		 * @param integer $type
-		 *  The type of the resource.
+		 *  The type of the resource, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @param string $r_handle
 		 *  The handle of the resource.
 		 * @return string
@@ -183,11 +183,11 @@
 		}
 
 		/**
-		 * Given the resource handle, this function will return an associative array of Page information,
-		 * filtered by the pages the resource is attached to.
+		 * Given the resource handle, this function will return an associative
+		 * array of Page information, filtered by the pages the resource is attached to.
 		 *
 		 * @param integer $type
-		 *  The type of the resource.
+		 *  The type of the resource, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @param string $r_handle
 		 *  The handle of the resource.
 		 * @return array
@@ -206,10 +206,11 @@
 		}
 
 		/**
-		 * Given a resource and a page, this function attaches that resource to that page.
+		 * Given a resource type, a handle and a page, this function will attach
+		 * the given handle (which represents either a datasource or event) to that page.
 		 *
 		 * @param integer $type
-		 *  The type of the resource.
+		 *  The type of the resource, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @param string $r_handle
 		 *  The handle of the resource.
 		 * @param integer $page_id
@@ -240,10 +241,11 @@
 		}
 
 		/**
-		 * Given a resource and a page, this function detaches that resource from that page.
+		 * Given a resource type, a handle and a page, this function detaches
+		 * the given handle (which represents either a datasource or event) to that page.
 		 *
 		 * @param integer $type
-		 *  The type of the resource.
+		 *  The type of the resource, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @param string $r_handle
 		 *  The handle of the resource.
 		 * @param integer $page_id
