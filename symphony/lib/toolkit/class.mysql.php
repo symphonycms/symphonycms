@@ -775,29 +775,32 @@
 			$errornum = mysql_errno();
 
 			/**
-			 * After a query has successfully executed, that is it was considered
-			 * valid SQL, this delegate will provide the query, the query_hash and
-			 * the execution time of the query.
+			 * After a query execution has failed this delegate will provide the query, the query_hash,
+			 * the error message and the error number.
 			 *
 			 * Note that this function only starts logging once the ExtensionManager
 			 * is available, which means it will not fire for the first couple of
 			 * queries that set the character set.
 			 *
 			 * @since Symphony 2.3
-			 * @delegate LogQuery
+			 * @delegate QueryExectionError
 			 * @param string $context
 			 * '/frontend/' or '/backend/'
 			 * @param string $query
 			 *  The query that has just been executed
 			 * @param string $query_hash
 			 *  The hash used by Symphony to uniquely identify this query
-			 * @param float $execution_time
-			 *  The time that it took to run `$query`
+			 * @param string $msg
+			 *  The error message provided by MySQL which includes information on why the execution failed
+			 * @param int $num
+			 *  The error number that corresponds with the MySQL error message
 			 */
 			if(Symphony::ExtensionManager() instanceof ExtensionManager) {
 				Symphony::ExtensionManager()->notifyMembers('QueryExectionError', class_exists('Administration') ? '/backend/' : '/frontend/', array(
 					'query' => $this->_lastQuery,
 					'query_hash' => $this->_lastQueryHash,
+					'msg' => $msg,
+					'num' => $errornum
 				));
 			} else {
 				self::$_log['error'][] = array(
