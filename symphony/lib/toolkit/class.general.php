@@ -532,6 +532,43 @@
 		}
 
 		/**
+		 * Recursively deletes all files and directories given a directory. This
+		 * function has two path. This function optionally takes a `$silent` parameter,
+		 * which when false will throw an Exception if there is an error deleting a file
+		 * or folder.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $dir
+		 *  the path of the directory to delete
+		 * @param boolean $silent (optional)
+		 *  true if an exception should be raised if an error occurs, false
+		 *  otherwise. this defaults to true.
+		 * @return boolean
+		 */
+		public static function deleteDirectory($dir, $silent = true) {
+			try {
+				if (!file_exists($dir)) return true;
+
+				if (!is_dir($dir)) return unlink($dir);
+
+				foreach (scandir($dir) as $item) {
+					if ($item == '.' || $item == '..') continue;
+
+					if (!self::deleteDirectory($dir.DIRECTORY_SEPARATOR.$item)) return false;
+				}
+
+				return rmdir($dir);
+			}
+			catch(Exception $ex) {
+				if($slient == false){
+					throw new Exception(__('Unable to remove - %s', array($dir)));
+				}
+
+				return false;
+			}
+		}
+
+		/**
 		 * Search a multi-dimensional array for a value.
 		 *
 		 * @param mixed $needle
