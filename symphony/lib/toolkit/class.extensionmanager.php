@@ -178,18 +178,6 @@
 		}
 
 		/**
-		 * Custom user sorting function to sort extensions by name
-		 *
-		 * @link http://php.net/manual/en/function.strnatcasecmp.php
-		 * @param array $a
-		 * @param array $b
-		 * @return integer
-		 */
-		public function sortByName(array $a, array $b) {
-			return strnatcasecmp($a['name'], $b['name']);
-		}
-
-		/**
 		 * Determines whether the current extension is installed or not by checking
 		 * for an id in `tbl_extensions`
 		 *
@@ -591,6 +579,104 @@
 
 			return $result;
 		}
+
+		/**
+		 * Custom user sorting function used inside `fetch` to recursively sort authors
+		 * by their names.
+		 *
+		 * @param array $a
+		 * @param array $b
+		 * @return integer
+		 */
+		private static function sortByAuthor($a, $b, $i = 0) {
+			$first = $a; $second = $b;
+
+			if(isset($a[$i]))$first = $a[$i];
+			if(isset($b[$i])) $second = $b[$i];
+
+			if ($first == $a && $second == $b && $first['name'] == $second['name'])
+				return 1;
+			else if ($first['name'] == $second['name'])
+				return self::sortByAuthor($a, $b, $i + 1);
+			else
+				return ($first['name'] < $second['name']) ? -1 : 1;
+		}
+
+		/**
+		 * This function will return an associative array of Extension information. The
+		 * information returned is defined by the `$select` parameter, which will allow
+		 * a developer to restrict what information is returned about the Extension.
+		 * Optionally, `$where` (not implemented) and `$order_by` parameters allow a developer to
+		 * further refine their query.
+		 *
+		 * @param array $select (optional)
+		 *  Accepts an array of keys to return from the listAll() method. If omitted, all keys
+		 *  will be returned.
+		 * @param array $where (optional)
+		 *  Not implemented.
+		 * @param string $order_by (optional)
+		 *  Allows a developer to return the extensions in a particular order. The syntax is the
+		 *  same as other `fetch` methods. If omitted this will return resources ordered by `name`.
+		 * @return array
+		 *  An associative array of Extension information, formatted in the same way as the 
+		 *  listAll() method.
+		 */
+		public static function fetch(array $select = array(), array $where = array(), $order_by = null){
+			$extensions = self::listAll();
+
+			if(empty($select) && empty($where) && is_null($order_by)) return $extensions;
+
+			if(!is_null($order_by)){
+
+				$order_by = array_map('strtolower', explode(' ', $order_by));
+				$order = ($order_by[1] == 'desc') ? SORT_DESC : SORT_ASC;
+				$sort = $order_by[0];
+
+				if($sort == 'author'){
+					foreach($extensions as $key => $about){
+						$author[$key] = $about['author'];
+					}
+
+					$data = array();
+
+					uasort($author, array('self', 'sortByAuthor'));
+
+					if($order == SORT_DESC){
+						$author = array_reverse($author);
+					}
+
+					foreach($author as $key => $value){
+						$data[$key] = $extensions[$key];
+					}
+
+					$extensions = $data;
+				}
+				else if($sort == 'name'){
+					foreach($extensions as $key => $about){
+						$name[$key] = $about['name'];
+						$label[$key] = $key;
+					}
+
+					array_multisort($name, $order, $label, SORT_ASC, $extensions);
+				}
+
+			}
+
+			$data = array();
+
+			foreach($extensions as $i => $e){
+				$data[$i] = array();
+				foreach($e as $key => $value) {
+					// If $select is empty, we assume every field is requested
+					if(in_array($key, $select) || empty($select)) $data[$i][$key] = $value;
+				}
+			}
+
+			return $data;
+
+		}
+
+
 
 		/**
 		 * Returns information about an extension by it's name by calling

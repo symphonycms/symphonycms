@@ -19,8 +19,6 @@
 
 		public $_errors = array();
 
-		public abstract function getResourceFile($handle);
-
 		public function pagesFlatView(){
 			$pages = PageManager::fetch(false, array('id'));
 
@@ -34,67 +32,38 @@
 		public function __viewIndex($resource_type){
 			$this->setPageType('table');
 
-			$resources = new Sortable($sort, $order, array('type' => $resource_type));
-			$resources = $resources->sort();
+			Sortable::init($this, $resources, $sort, $order);
 
 			$columns = array(
 				array(
 					'label' => __('Name'),
-					'sortable' => true
+					'sortable' => true,
+					'handle' => 'name'
 				),
 				array(
 					'label' => __('Source'),
-					'sortable' => true
+					'sortable' => true,
+					'handle' => 'source'
 				),
 				array(
 					'label' => __('Pages'),
-					'sortable' => false
+					'sortable' => false,
 				),
 				array(
 					'label' => __('Release Date'),
-					'sortable' => true
+					'sortable' => true,
+					'handle' => 'release-date'
 				),
 				array(
 					'label' => __('Author'),
-					'sortable' => true
+					'sortable' => true,
+					'handle' => 'author'
 				)
 			);
 
-			$aTableHead = array();
-
-			foreach($columns as $i => $c) {
-				if($c['sortable']) {
-
-					if($i == $sort) {
-						$link = sprintf(
-							'?sort=%d&amp;order=%s%s',
-							$i, ($order == 'desc' ? 'asc' : 'desc'),
-							(isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
-						);
-						$label = Widget::Anchor(
-							$c['label'], $link,
-							__('Sort by %1$s %2$s', array(($order == 'desc' ? __('ascending') : __('descending')), strtolower($c['label']))),
-							'active'
-						);
-					}
-					else {
-						$link = sprintf(
-							'?sort=%d&amp;order=asc%s',
-							$i, (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
-						);
-						$label = Widget::Anchor(
-							$c['label'], $link,
-							__('Sort by %1$s %2$s', array(__('ascending'), strtolower($c['label'])))
-						);
-					}
-
-				}
-				else {
-					$label = $c['label'];
-				}
-
-				$aTableHead[] = array($label, 'col');
-			}
+			$aTableHead = Sortable::buildTableHeaders(
+				$columns, $sort, $order, (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
+			);
 
 			$aTableBody = array();
 
@@ -117,38 +86,20 @@
 					);
 
 					// Resource type/source
-					// If source is numeric, it's considered to be a Symphony Section
-					if($r['source'] > 0) {
-						$sectionData = SectionManager::fetch($r['source']);
-
-						if($sectionData !== false) {
-							$section = Widget::TableData(
-								Widget::Anchor(
-									$sectionData->get('name'),
-									SYMPHONY_URL . $_REQUEST['symphony-page'] .  'edit/' . $sectionData->get('id') . '/',
-									$sectionData->get('handle')
-								)
-							);
-						}
-						else {
-							$section = Widget::TableData(__('Unknown'), 'inactive');
-						}
+					if(isset($r['source']['id'])) {
+						$section = Widget::TableData(
+							Widget::Anchor(
+								$r['source']['name'],
+								SYMPHONY_URL . '/blueprints/sections/edit/' . $r['source']['id'] . '/',
+								$r['source']['handle']
+							)
+						);
 					}
-					// Source will be a class type
+					else if(isset($r['source']['name'])){
+						$section = Widget::TableData($r['source']['name']);
+					}
 					else {
-						// Resource provided by extension?
-						$extension = ResourceManager::__getExtensionFromHandle($resource_type, $r['handle']);
-
-						if(!empty($extension)) {
-							$extension = Symphony::ExtensionManager()->about($extension);
-							$section = Widget::TableData(__('Extension') . ': ' . $extension['name']);
-						}
-						else if(isset($r['source'])) {
-							$section = Widget::TableData(ucwords($r['source']));
-						}
-						else {
-							$section = Widget::TableData(__('Unknown'), 'inactive');
-						}
+						$section = Widget::TableData(__('Unknown'), 'inactive');
 					}
 
 					// Attached pages
@@ -176,10 +127,9 @@
 
 					// Release date
 					$datetimeobj = new DateTimeObj();
-					$releasedate = Widget::TableData($datetimeobj->get(
-						__SYM_DATETIME_FORMAT__,
-						strtotime($r['release-date']))
-					);
+					$releasedate = Widget::TableData(Lang::localizeDate(
+						$datetimeobj->format($r['release-date'], __SYM_DATETIME_FORMAT__)
+					));
 
 					// Authors
 					$author = $r['author']['name'];
@@ -239,6 +189,8 @@
 		}
 
 		public function __actionIndex($resource_type){
+			$manager = ResourceManager::getManagerFromType($resource_type);
+
 			if (isset($_POST['action']) && is_array($_POST['action'])) {
 				$checked = ($_POST['items']) ? @array_keys($_POST['items']) : NULL;
 
@@ -248,9 +200,11 @@
 						$canProceed = true;
 
 						foreach($checked as $handle) {
-							if (!General::deleteFile($this->getResourceFile($handle))) {
+							$path = $manager::__getDriverPath($handle);
+
+							if (!General::deleteFile($path)) {
 								$this->pageAlert(
-									__('Failed to delete <code>%s</code>. Please check permissions.', array(basename($this->getResourceFile($handle)))),
+									__('Failed to delete <code>%s</code>. Please check permissions.', array(basename($path))),
 									Alert::ERROR
 								);
 								$canProceed = false;
@@ -259,7 +213,7 @@
 
 						if ($canProceed) redirect(Administration::instance()->getCurrentPageURL());
 					}
-					else if(preg_match('/^(?:at|de)?tach-(to|from)-page-/', $_POST['with-selected'])) {
+					else if(preg_match('/^(at|de)?tach-(to|from)-page-/', $_POST['with-selected'])) {
 
 						if (substr($_POST['with-selected'], 0, 6) == 'detach') {
 							$page = str_replace('detach-from-page-', '', $_POST['with-selected']);
@@ -278,7 +232,7 @@
 
 						if($canProceed) redirect(Administration::instance()->getCurrentPageURL());
 					}
-					else if(preg_match('/^(?:at|de)?tach-all-pages$/', $_POST['with-selected'])) {
+					else if(preg_match('/^(at|de)?tach-all-pages$/', $_POST['with-selected'])) {
 						$pages = PageManager::fetch(false, array('id'));
 
 						if (substr($_POST['with-selected'], 0, 6) == 'detach') {

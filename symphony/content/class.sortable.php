@@ -4,55 +4,101 @@
 	 * @package content
 	 */
 	/**
-	 * This class handles object is sortable via `$_REQUEST` parameters
-	 * @todo Finish this class, document this class and it's methods
+	 * This class handles sortable objects via `$_REQUEST` parameters.
 	 *
 	 * @since Symphony 2.3
 	 */
 
-	class Sortable {
+	Class Sortable {
 
-		private $_result;
-
-		public function __construct(&$sort, &$order, array $params = array()) {
-			$sort = (isset($_REQUEST['sort']) && is_numeric($_REQUEST['sort'])) ? intval($_REQUEST['sort']) : 0;
+		/**
+		 * This method initializes the `$result`, `$sort` and `$order` variables by looking at
+		 * `$_REQUEST`. Then it calls the `sort()` method on the object being passed by `$object`
+		 * to actually sort the items.
+		 *
+		 * @param object $object
+		 *	The object responsible for sorting the items. It must implement a `sort()` method.
+		 * @param array $result
+		 *	This variable stores an array sorted objects. Once set, its value is available
+		 *	to the client class of Sortable.
+		 * @param string $sort
+		 *	This variable stores the field (or axis) the objects are sorted by. Once set,
+		 *	its value is available to the client class of Sortable.
+		 * @param string $order
+		 *	This variable stores the sort order (i.e. 'asc' or 'desc'). Once set, its value
+		 *	is available to the client class of Sortable.
+		 * @param array $params (optional)
+		 *	An array of parameters that can be passed to the context-based method.
+		 */
+		public static function init($object, &$result, &$sort, &$order, array $params = array()) {
+			$sort = (isset($_REQUEST['sort'])) ? $_REQUEST['sort'] : null;
 			$order = ($_REQUEST['order'] == 'desc' ? 'desc' : 'asc');
 
-			$function = str_replace('/', '_', trim($_REQUEST['symphony-page'], '/'));
+			$result = $object->sort($sort, $order, $params);
+		}
 
-			if(!method_exists($this, $function)) {
-				throw new Exception('Unable to find handler. Please make sure a handler exists for this context.');
+		/**
+		 * This method build the markup for sorting-aware table headers. It accepts an array
+		 * of columns as shown below, as well as the current sorting axis `$sort` and the
+		 * current sort order `$order`. If `$extra_url_params` are provided, they are appended
+		 * to the redirect string upon clicking on a table header.
+		 *
+		 *		'label' => 'Column label',
+		 *		'sortable' => (true|false),
+		 *		'handle' => 'handle for the column (i.e. the field ID), used as value for $sort',
+		 *		'attrs' => array(
+		 *			'HTML <a> attribute' => 'value',
+					[...]
+		 *		)
+		 *
+		 * @param array $columns
+		 *	An array of columns that will be converted into table headers.
+		 * @param string $sort
+		 *	The current field (or axis) the objects are sorted by.
+		 * @param string $order
+		 *	The current sort order (i.e. 'asc' or 'desc').
+		 * @param string $extra_url_params (optional)
+		 *	A string of URL parameters that will be appended to the redirect string.
+		 * @return array
+		 *	An array of table headers that can be directly passed to `Widget::TableHead`.
+		 */
+		public static function buildTableHeaders($columns, $sort, $order, $extra_url_params = null) {
+			$aTableHead = array();
+
+			foreach($columns as $c) {
+				if($c['sortable']) {
+
+					if($c['handle'] == $sort) {
+						$link = sprintf(
+							'?sort=%s&amp;order=%s%s',
+							$c['handle'], ($order == 'desc' ? 'asc' : 'desc'), $extra_url_params
+						);
+						$label = Widget::Anchor(
+							$c['label'], $link,
+							__('Sort by %1$s %2$s', array(($order == 'desc' ? __('ascending') : __('descending')), strtolower($c['label']))),
+							'active'
+						);
+					}
+					else {
+						$link = sprintf(
+							'?sort=%s&amp;order=asc%s',
+							$c['handle'], $extra_url_params
+						);
+						$label = Widget::Anchor(
+							$c['label'], $link,
+							__('Sort by %1$s %2$s', array(__('ascending'), strtolower($c['label'])))
+						);
+					}
+
+				}
+				else {
+					$label = $c['label'];
+				}
+
+				$aTableHead[] = array($label, 'col', $c['attrs']);
 			}
 
-			$this->_result = $this->$function($sort, $order, $params);
-		}
-
-		public function sort() {
-			return $this->_result;
-		}
-
-		private function blueprints_datasources($sort, $order, $params) {
-
-			switch($sort){
-				case 1:
-					$axis = 'source';
-					break;
-				case 3:
-					$axis = 'release-date';
-					break;
-				case 4:
-					$axis = 'author';
-					break;
-				default:
-					$axis = 'name';
-					break;
-			}
-
-			return ResourceManager::fetch($params['type'], array(), array(), $axis . ' ' . $order);
-		}
-
-		private function blueprints_events($sort, $order, $params) {
-			return $this->blueprints_datasources($sort, $order, $params);
+			return $aTableHead;
 		}
 
 	}

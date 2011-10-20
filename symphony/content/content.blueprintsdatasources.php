@@ -10,14 +10,16 @@
 	 */
 	require_once(TOOLKIT . '/class.datasourcemanager.php');
 	require_once(TOOLKIT . '/class.gateway.php');
-	require_once(CONTENT . '/class.resourcespage.php');
+	require_once(CONTENT . '/content.resourcespage.php');
 
 	Class contentBlueprintsDatasources extends ResourcesPage{
 
 		public $_errors = array();
 
-		public function getResourceFile($handle) {
-			return DatasourceManager::__getDriverPath($handle);
+		public function sort(&$sort, &$order, $params) {
+			if(is_null($sort)) $sort = 'name';
+
+			return ResourceManager::fetch(RESOURCE_TYPE_DS, array(), array(), $sort . ' ' . $order);
 		}
 
 		public function __viewIndex(){

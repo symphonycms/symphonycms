@@ -12,6 +12,14 @@
 
 	Class ResourceManager {
 
+		/**
+		 * A private method used to return the `tbl_pages` column related to the given type.
+		 *
+		 * @param integer $type
+		 *  The type of the resource
+		 * @return string
+		 *  A string representing the `tbl_pages` column to target.
+		 */
 		private static function getColumnFromType($type) {
 			switch($type) {
 				case RESOURCE_TYPE_EVENT:
@@ -21,7 +29,15 @@
 			}
 		}
 
-		private static function getManagerFromType($type) {
+		/**
+		 * A method used to return the Symphony Manager for the given type.
+		 *
+		 * @param integer $type
+		 *  The type of the resource
+		 * @return object
+		 *  An object representing the Symphony Manager class that handles the resource.
+		 */
+		public static function getManagerFromType($type) {
 			switch($type) {
 				case RESOURCE_TYPE_EVENT:
 					return EventManager;
@@ -57,6 +73,43 @@
 
 			$resources = $manager::listAll();
 
+			foreach($resources as &$r){
+				// If source is numeric, it's considered to be a Symphony Section
+				if($r['source'] > 0){
+					$section = SectionManager::fetch($r['source']);
+
+					if($section !== false){
+						$r['source'] = array(
+							'name' => $section->get('name'),
+							'handle' => $section->get('handle'),
+							'id' => $r['source']
+						);
+					}
+					else {
+						unset($r['source']);
+					}
+				}
+				// If source is set but no numeric, it's considered to be a Symphony Type (e.g. authors or navigation)
+				else if(isset($r['source'])){
+					$r['source'] = array(
+						'name' => ucwords($r['source']),
+						'handle' => $r['source']
+					);
+				}
+				// Resource provided by extension?
+				else {
+					$extension = self::__getExtensionFromHandle($type, $r['handle']);
+
+					if(!empty($extension)){
+						$extension = Symphony::ExtensionManager()->about($extension);
+						$r['source'] = array(
+							'name' => $extension['name'],
+							'handle' => Lang::createHandle($extension['name'])
+						);
+					}
+				}
+			}
+
 			if(empty($select) && empty($where) && is_null($order_by)) return $resources;
 
 			if(!is_null($order_by)){
@@ -83,7 +136,7 @@
 				}
 				else if($sort == 'source'){
 					foreach($resources as $key => $about){
-						$source[$key] = $about['source'];
+						$source[$key] = $about['source']['handle'];
 						$label[$key] = $key;
 					}
 
@@ -97,9 +150,9 @@
 
 			$data = array();
 
-			foreach($resources as $i => $r) {
+			foreach($resources as $i => $res){
 				$data[$i] = array();
-				foreach($r as $key => $value) {
+				foreach($res as $key => $value) {
 					// If $select is empty, we assume every field is requested
 					if(in_array($key, $select) || empty($select)) $data[$i][$key] = $value;
 				}
