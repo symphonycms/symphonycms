@@ -15,19 +15,19 @@
 
 	function writeConfig($dest, $conf, $mode){
 
-		$string  = "<?php\n";
+		$string	 = "<?php" . PHP_EOL;
 
-		$string .= "\n\t\$settings = array(";
-		foreach($conf as $group => $data){
-			$string .= "\r\n\r\n\r\n\t\t###### ".strtoupper($group)." ######";
-			$string .= "\r\n\t\t'$group' => array(";
+		$string .= PHP_EOL . "\t\$settings = array(";
+		foreach($conf['settings'] as $group => $data){
+			$string .= str_repeat(PHP_EOL, 3) . "\t\t###### ".strtoupper($group)." ######";
+			$string .= PHP_EOL . "\t\t'$group' => array(";
 			foreach($data as $key => $value){
-				$string .= "\r\n\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'NULL').",";
+				$string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'null').",";
 			}
-			$string .= "\r\n\t\t),";
-			$string .= "\r\n\t\t########";
+			$string .= PHP_EOL . "\t\t),";
+			$string .= PHP_EOL . "\t\t########";
 		}
-		$string .= "\r\n\t);\n\n";
+		$string .= PHP_EOL . "\t);" . PHP_EOL;
 
 		return General::writeFile($dest . '/config.php', $string, $mode);
 
