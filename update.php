@@ -486,6 +486,8 @@ Options +FollowSymlinks -Indexes
 				unset($settings['database']['character_encoding']);
 				unset($settings['database']['runtime_character_set_alter']);
 				unset($settings['symphony']['strict_error_handling']);
+				if($settings['symphony']['pagination_maximum_rows'] == '17')
+					$settings['symphony']['pagination_maximum_rows'] = '20';
 				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 

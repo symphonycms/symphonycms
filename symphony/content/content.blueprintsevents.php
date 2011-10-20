@@ -127,7 +127,7 @@
 					foreach($sections as $s) $options[] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
 				}
 
-				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
+				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'event-context')));
 				$div = new XMLElement('div');
 				if(isset($this->_errors['source'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['source']));
 				else $div->appendChild($label);
