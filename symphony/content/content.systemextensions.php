@@ -72,7 +72,7 @@
 					// compatibility of the extension. This won't prevent a user from installing
 					// it, but it will let them know that it requires a version of Symphony greater
 					// then what they have.
-					if(($meta = Symphony::ExtensionManager()->about($name, true)) instanceof DOMDocument) {
+					if($about['status'] != EXTENSION_ENABLED && ($meta = Symphony::ExtensionManager()->about($name, true)) instanceof DOMDocument) {
 						$xpath = new DOMXPath($meta);
 						$required_version = $xpath->evaluate('string(/extension/releases/release[1]/@min)');
 
