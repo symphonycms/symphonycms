@@ -68,11 +68,27 @@
 					$installed_version = Symphony::ExtensionManager()->fetchInstalledVersion($name);
 					$td2 = Widget::TableData(is_null($installed_version) ? __('Not Installed') : $installed_version);
 
+					// If the extension is using the new `extension.meta.xml` format, check the
+					// compatibility of the extension. This won't prevent a user from installing
+					// it, but it will let them know that it requires a version of Symphony greater
+					// then what they have.
+					if(($meta = Symphony::ExtensionManager()->about($name, true)) instanceof DOMDocument) {
+						$xpath = new DOMXPath($meta);
+						$required_version = $xpath->evaluate('string(/extension/releases/release[1]/@min)');
+
+						if(version_compare(Symphony::Configuration()->get('version', 'symphony'), $required_version, '<')) {
+							$about['status'] = EXTENSION_NOT_COMPATIBLE;
+						}
+					}
+
 					if($about['status'] == EXTENSION_ENABLED) {
 						$td3 = Widget::TableData(__('Yes'));
 					}
 					else if($about['status'] == EXTENSION_DISABLED) {
 						$td3 = Widget::TableData(__('Disabled'));
+					}
+					else if($about['status'] == EXTENSION_NOT_COMPATIBLE) {
+						$td3 = Widget::TableData(__('Requires Symphony %s', array($required_version)));
 					}
 					else if($about['status'] == EXTENSION_NOT_INSTALLED) {
 						$td3 = Widget::TableData(__('Enable to install %s', array($about['version'])));

@@ -838,3 +838,11 @@
 	 * @var integer
 	 */
 	define_safe('EXTENSION_REQUIRES_UPDATE', 13);
+
+	/**
+	 * Status when the extension is not compatible with the current version of
+	 * Symphony
+	 * @since Symphony 2.3
+	 * @var integer
+	 */
+	define_safe('EXTENSION_NOT_COMPATIBLE', 14);
