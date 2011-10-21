@@ -7,7 +7,6 @@
 	 * The Event Editor allows a developer to create events that typically
 	 * allow Frontend forms to populate Sections or edit Entries.
 	 */
-	require_once(TOOLKIT . '/class.eventmanager.php');
 	require_once(CONTENT . '/content.resourcespage.php');
 
 	Class contentBlueprintsEvents extends ResourcesPage {

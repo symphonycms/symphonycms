@@ -10,10 +10,7 @@
 	 * forms for the creation/editing of a Page
 	 */
 	require_once(TOOLKIT . '/class.administrationpage.php');
-	require_once(TOOLKIT . '/class.eventmanager.php');
-	require_once(TOOLKIT . '/class.datasourcemanager.php');
 	require_once(TOOLKIT . '/class.resourcemanager.php');
-	require_once(TOOLKIT . '/class.pagemanager.php');
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 
 	class contentBlueprintsPages extends AdministrationPage {
