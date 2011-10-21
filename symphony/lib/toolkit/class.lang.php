@@ -8,21 +8,30 @@
 	 * current dictionary the original English string will be returned. Given an optional
 	 * `$inserts` array, the function will replace translation placeholders using `vsprintf()`.
 	 * Since Symphony 2.3, it is also possible to have multiple translation of the same string
-	 * according to the provided namespace. In your lang file, simply add a subarray to
-	 * `$dictionary`, with the key being the namespace itself and the value being a set of
-	 * translations for the strings belonging to that namespace.
+	 * according to the page namespace (i.e. the `value returned by `Symphony`s getPageNamespace()
+	 * method). In your lang file, use the `$dictionary` key as namespace and its value as an array
+	 * of context-aware translations, as shown below:
 	 *
+	 * $dictionary = array(
+	 * 		[...]
+	 * 		'Create new' => 'Translation for Create New',
+	 * 		'/blueprints/datasources' => array(
+	 * 			'Create new' =>
+	 * 			'Translation fetched only when inside a /blueprints/datasources/* page'
+	 * 		),
+	 * 		[...]
+	 *	);
+	 *
+	 * @see core.Administration#getPageCallback()
 	 * @param string $string
 	 *  The string that should be translated
 	 * @param array $inserts (optional)
 	 *  Optional array used to replace translation placeholders, defaults to NULL
-	 * @param string $namespace (optional)
-	 *  Optional string used to define the proper namespace, defaults to NULL
 	 * @return
 	 *  Returns the translated string
 	 */
-	function __($string, $inserts=NULL, $namespace=NULL) {
-		return Lang::Dictionary()->translate($string, $inserts, $namespace);
+	function __($string, $inserts=NULL) {
+		return Lang::Dictionary()->translate($string, $inserts);
 	}
 
 	/**
@@ -74,17 +83,12 @@
 		 * @param array $inserts (optional)
 		 *  Optional array used to replace translation placeholders, defaults to NULL
 		 * @param string $namespace (optional)
-		 *  Optional string used to define the proper namespace, defaults to NULL
+		 *  Optional string used to define the namespace, defaults to NULL.
 		 * @return string
 		 *  Returns the translated string
 		 */
 		public function translate($string, array $inserts=NULL, $namespace=NULL) {
 			$translated = $this->find($string, $namespace);
-
-			// Default to English if no translation available
-			if($translated === false) {
-				$translated = $string;
-			}
 
 			// Replace translation placeholders
 			if(is_array($inserts) && !empty($inserts)) {
@@ -100,19 +104,23 @@
 		 * @param string $string
 		 *  The string to look for
 		 * @param string $namespace (optional)
-		 *  Optional namespace you want to search inside, defaults to NULL
-		 * @return string|boolean
-		 *  Returns either the translation of the string or false if it could not be found
+		 *  Optional string used to define the namespace, defaults to NULL.
+		 * @return string
+		 *  Returns either the translation of the string or the original string if it
+		 *  could not be found
 		 */
 		public function find($string, $namespace=NULL) {
+			if(is_null($namespace)) $namespace = Symphony::getPageNamespace();
+
 			if(isset($namespace) && trim($namespace) !== '' && isset($this->_strings[$namespace][$string])) {
 				return $this->_strings[$namespace][$string];
 			}
 			else if(isset($this->_strings[$string])) {
 				return $this->_strings[$string];
 			}
-
-			return false;
+			else {
+				return $string;
+			}
 		}
 
 		/**
@@ -121,7 +129,7 @@
 		 * @param string $source
 		 *  English string
 		 * @param string $namespace (optional)
-		 *  Optional namespace you want to add the translation to, defaults to NULL
+		 *  Optional string used to define the namespace, defaults to NULL.
 		 * @param string $translation
 		 *  Translation
 		 */
@@ -151,7 +159,7 @@
 		 * @param string $string
 		 *  String to be removed from the dictionary.
 		 * @param string $namespace (optional)
-		 *  Optional namespace you want to remove the translation from, defaults to NULL
+		 *  Optional string used to define the namespace, defaults to NULL.
 		 */
 		public function remove($string, $namespace=NULL) {
 			if(isset($namespace) && trim($namespace) !== '') {
@@ -561,7 +569,7 @@
 
 				// Translate names to English
 				foreach(self::$_dates as $english => $locale) {
-					$string = preg_replace('/\b' . $locale . '\b/i', $english, $string);
+					$string = preg_replace('/\b' . $english . '\b/i', $english, $string);
 				}
 
 				// Replace custom date and time separator with space:
