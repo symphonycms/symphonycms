@@ -739,11 +739,11 @@
 				$required_max_version = $xpath->evaluate('string(releases/release[1]/@max)', $extension);
 				$current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
 
-				if(isset($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {
+				if(!empty($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {
 					$about['status'][] = EXTENSION_NOT_COMPATIBLE;
 					$about['required_version'] = $required_min_version;
 				}
-				else if(isset($required_max_version) && version_compare($current_symphony_version, $required_max_version, '>')) {
+				else if(!empty($required_max_version) && version_compare($current_symphony_version, $required_max_version, '>')) {
 					$about['status'][] = EXTENSION_NOT_COMPATIBLE;
 					$about['required_version'] = $required_max_version;
 				}
