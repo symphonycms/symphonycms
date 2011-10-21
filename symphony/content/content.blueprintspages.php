@@ -12,6 +12,7 @@
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.eventmanager.php');
 	require_once(TOOLKIT . '/class.datasourcemanager.php');
+	require_once(TOOLKIT . '/class.resourcemanager.php');
 	require_once(TOOLKIT . '/class.pagemanager.php');
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 
@@ -526,7 +527,7 @@
 
 			$label = Widget::Label(__('Events'));
 
-			$events = EventManager::listAll();
+			$events = ResourceManager::fetch(RESOURCE_TYPE_EVENT, array(), array(), 'name ASC');
 			$options = array();
 
 			if(is_array($events) && !empty($events)) {
@@ -543,7 +544,7 @@
 
 			$label = Widget::Label(__('Data Sources'));
 
-			$datasources = DatasourceManager::listAll();
+			$datasources = ResourceManager::fetch(RESOURCE_TYPE_DS, array(), array(), 'name ASC');
 			$options = array();
 
 			if(is_array($datasources) && !empty($datasources)) {
