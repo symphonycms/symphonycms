@@ -226,7 +226,7 @@ var Symphony = {};
 				}
 
 				// Insert variables
-				if(string !== undefined && inserts !== undefined && inserts !== null) {
+				if(inserts !== undefined && inserts !== null) {
 					string = insert(string, inserts);
 				}
 

@@ -22,7 +22,7 @@
 	 * 		[...]
 	 *	);
 	 *
-	 * @see core.Administration#getPageCallback()
+	 * @see core.Symphony#getPageNamespace()
 	 * @param string $string
 	 *  The string that should be translated
 	 * @param array $inserts (optional)
@@ -569,6 +569,8 @@
 
 				// Translate names to English
 				foreach(self::$_dates as $english => $locale) {
+					// We do not use $locale in the regexp as it might be empty
+					// (i.e. you don't want to translate that string)
 					$string = preg_replace('/\b' . $english . '\b/i', $english, $string);
 				}
 
