@@ -112,7 +112,7 @@
 
 			if(empty($select) && empty($where) && is_null($order_by)) return $resources;
 
-			if(!is_null($order_by)){
+			if(!is_null($order_by) && !empty($resources)){
 
 				$order_by = array_map('strtolower', explode(' ', $order_by));
 				$order = ($order_by[1] == 'desc') ? SORT_DESC : SORT_ASC;
@@ -143,7 +143,12 @@
 					array_multisort($source, $order, $label, SORT_ASC, $resources);
 				}
 				else if($sort == 'name'){
-					if($order == SORT_ASC) krsort($resources);
+					foreach($resources as $key => $about){
+						$name[$key] = $about['name'];
+						$label[$key] = $key;
+					}
+
+					array_multisort($name, $order, $label, SORT_ASC, $resources);
 				}
 
 			}
