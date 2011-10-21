@@ -8,7 +8,6 @@
 	 * from the four Symphony types, Section, Authors, Navigation, Dynamic XML,
 	 * and Static XML
 	 */
-	require_once(TOOLKIT . '/class.datasourcemanager.php');
 	require_once(TOOLKIT . '/class.gateway.php');
 	require_once(CONTENT . '/content.resourcespage.php');
 

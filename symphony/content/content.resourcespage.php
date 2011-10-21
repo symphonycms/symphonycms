@@ -11,8 +11,6 @@
 	 */
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.resourcemanager.php');
-	require_once(TOOLKIT . '/class.sectionmanager.php');
-	require_once(TOOLKIT . '/class.pagemanager.php');
 	require_once(CONTENT . '/class.sortable.php');
 
 	Abstract Class ResourcesPage extends AdministrationPage{
