@@ -116,7 +116,9 @@
 		 * @return array
 		 *  An associative array describing this extension.
 		 */
-		abstract public function about();
+		public function about() {
+			return array();
+		}
 
 		/**
 		 * Extensions use delegates to perform logic at certain times
