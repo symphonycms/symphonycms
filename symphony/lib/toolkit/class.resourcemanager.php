@@ -143,7 +143,12 @@
 					array_multisort($source, $order, $label, SORT_ASC, $resources);
 				}
 				else if($sort == 'name'){
-					if($order == SORT_ASC) krsort($resources);
+					foreach($resources as $key => $about){
+						$name[$key] = $about['name'];
+						$label[$key] = $key;
+					}
+
+					array_multisort($name, $order, $label, SORT_ASC, $resources);
 				}
 
 			}
