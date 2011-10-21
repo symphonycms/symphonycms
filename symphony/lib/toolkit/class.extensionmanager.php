@@ -140,17 +140,23 @@
 		 *  `EXTENSION_NOT_INSTALLED`. If an extension doesn't exist,
 		 *  `EXTENSION_NOT_INSTALLED` will be returned.
 		 */
-		public static function fetchStatus($name){
+		public static function fetchStatus($about){
+			$return = array();
 			self::__buildExtensionList();
 
-			if(array_key_exists($name, self::$_extensions)) {
-				$status = self::$_extensions[$name]['status'];
+			if(array_key_exists($about['handle'], self::$_extensions)) {
+				if(self::$_extensions[$about['handle']]['status'] == 'enabled')
+					$return[] = EXTENSION_ENABLED;
+				else
+					$return[] = EXTENSION_DISABLED;
 			}
-			else return EXTENSION_NOT_INSTALLED;
-
-			if($status == 'enabled') return EXTENSION_ENABLED;
-
-			return EXTENSION_DISABLED;
+			else $return[] = EXTENSION_NOT_INSTALLED;
+			
+			if(self::__requiresUpdate($about['handle'], $about['version'])) {
+				$return[] = EXTENSION_REQUIRES_UPDATE;
+			}
+			
+			return $return;
 		}
 
 		/**
@@ -720,8 +726,23 @@
 					'name' => $xpath->evaluate('string(/extension/name)'),
 					'version' => $xpath->evaluate('string(/extension/releases/release[1]/@version)'),
 					'release-date' => $xpath->evaluate('string(/extension/releases/release[1]/@date)'),
-					'description' => $xpath->evaluate('string(/extension/description)')
+					'description' => $xpath->evaluate('string(/extension/description)'),
+					'status' => array()
 				);
+				
+				$required_version = null;
+				$required_min_version = $xpath->evaluate('string(/extension/releases/release[1]/@min)');
+				$required_max_version = $xpath->evaluate('string(/extension/releases/release[1]/@max)');
+				$current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
+
+				if(isset($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {
+					$about['status'][] = EXTENSION_NOT_COMPATIBLE;
+					$about['required_version'] = $required_min_version;
+				}
+				else if(isset($required_max_version) && version_compare($current_symphony_version, $required_max_version, '>')) {
+					$about['status'][] = EXTENSION_NOT_COMPATIBLE;
+					$about['required_version'] = $required_max_version;
+				}
 
 				foreach($xpath->query('/extension/authors/author') as $author) {
 					$a = array(
@@ -739,16 +760,12 @@
 			else {
 				$obj = self::getInstance($name);
 				$about = $obj->about();
+				$about['status'] = array();
 			}
 
 			$about['handle'] = $name;
 
-			if(self::__requiresUpdate($name, $about['version'])) {
-				$about['status'] = EXTENSION_REQUIRES_UPDATE;
-			}
-			else {
-				$about['status'] = self::fetchStatus($name);
-			}
+			$about['status'] = array_merge($about['status'], self::fetchStatus($about));
 
 			return $about;
 		}

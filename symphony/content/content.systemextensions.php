@@ -72,37 +72,20 @@
 					// compatibility of the extension. This won't prevent a user from installing
 					// it, but it will let them know that it requires a version of Symphony greater
 					// then what they have.
-					if($about['status'] != EXTENSION_ENABLED && ($meta = Symphony::ExtensionManager()->about($name, true)) instanceof DOMDocument) {
-						$xpath = new DOMXPath($meta);
-						$required_version = null;
-						$required_min_version = $xpath->evaluate('string(/extension/releases/release[1]/@min)');
-						$required_max_version = $xpath->evaluate('string(/extension/releases/release[1]/@max)');
-						$current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
-
-						if(isset($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {
-							$about['status'] = EXTENSION_NOT_COMPATIBLE;
-							$required_version = $required_min_version;
-						}
-						else if(isset($required_max_version) && version_compare($current_symphony_version, $required_max_version, '>')) {
-							$about['status'] = EXTENSION_NOT_COMPATIBLE;
-							$required_version = $required_max_version;
-						}
-					}
-
-					if($about['status'] == EXTENSION_ENABLED) {
-						$td3 = Widget::TableData(__('Yes'));
-					}
-					else if($about['status'] == EXTENSION_DISABLED) {
-						$td3 = Widget::TableData(__('Disabled'));
-					}
-					else if($about['status'] == EXTENSION_NOT_COMPATIBLE) {
-						$td3 = Widget::TableData(__('Requires Symphony %s', array($required_version)));
-					}
-					else if($about['status'] == EXTENSION_NOT_INSTALLED) {
+					if(in_array(EXTENSION_NOT_INSTALLED, $about['status'])) {
 						$td3 = Widget::TableData(__('Enable to install %s', array($about['version'])));
 					}
-					else if($about['status'] == EXTENSION_REQUIRES_UPDATE) {
+					if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
+						$td3 = Widget::TableData(__('Requires Symphony %s', array($about['required_version'])));
+					}
+					if(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
 						$td3 = Widget::TableData(__('Enable to update to %s', array($about['version'])));
+					}
+					if(in_array(EXTENSION_ENABLED, $about['status'])) {
+						$td3 = Widget::TableData(__('Yes'));
+					}
+					if(in_array(EXTENSION_DISABLED, $about['status'])) {
+						$td3 = Widget::TableData(__('Disabled'));
 					}
 
 					$td4 = Widget::TableData(NULL);
