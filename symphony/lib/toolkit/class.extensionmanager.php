@@ -720,19 +720,23 @@
 					throw new SymphonyErrorPage(__('The <code>extension.meta.xml</code> file for the %s extension is not valid XML.', array('<code>' . $name . '</code>')));
 				}
 
+				// If `$rawXML` is set, just return our DOMDocument instance
 				if($rawXML) return $meta;
 
+				// Load <extension>
+				$extension = $xpath->query('/extension')->item(0);
+
 				$about = array(
-					'name' => $xpath->evaluate('string(/extension/name)'),
-					'version' => $xpath->evaluate('string(/extension/releases/release[1]/@version)'),
-					'release-date' => $xpath->evaluate('string(/extension/releases/release[1]/@date)'),
-					'description' => $xpath->evaluate('string(/extension/description)'),
+					'name' => $xpath->evaluate('string(name)', $extension),
+					'version' => $xpath->evaluate('string(releases/release[1]/@version)', $extension),
+					'release-date' => $xpath->evaluate('string(releases/release[1]/@date)', $extension),
+					'description' => $xpath->evaluate('string(description)', $extension),
 					'status' => array()
 				);
 				
 				$required_version = null;
-				$required_min_version = $xpath->evaluate('string(/extension/releases/release[1]/@min)');
-				$required_max_version = $xpath->evaluate('string(/extension/releases/release[1]/@max)');
+				$required_min_version = $xpath->evaluate('string(releases/release[1]/@min)', $extension);
+				$required_max_version = $xpath->evaluate('string(releases/release[1]/@max)', $extension);
 				$current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
 
 				if(isset($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {
@@ -743,8 +747,8 @@
 					$about['status'][] = EXTENSION_NOT_COMPATIBLE;
 					$about['required_version'] = $required_max_version;
 				}
-
-				foreach($xpath->query('/extension/authors/author') as $author) {
+				// Add the <author> information
+				foreach($xpath->query('//author', $extension) as $author) {
 					$a = array(
 						'name' => $xpath->evaluate('string(name)', $author),
 						'website' => $xpath->evaluate('string(website)', $author),
@@ -754,7 +758,13 @@
 					$about['author'][] = array_filter($a);
 				}
 
-				$about = array_filter($about);
+				// Look for the latest <release> information
+				if($release = $xpath->query('//release[1]', $extension)->item(0)) {
+					$about += array(
+						'version' => $xpath->evaluate('string(@version)', $release),
+						'release-date' => $xpath->evaluate('string(@date)', $release)
+					);
+				}
 			}
 			// It doesn't, fallback to loading the extension
 			else {
