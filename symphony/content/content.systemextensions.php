@@ -74,10 +74,18 @@
 					// then what they have.
 					if($about['status'] != EXTENSION_ENABLED && ($meta = Symphony::ExtensionManager()->about($name, true)) instanceof DOMDocument) {
 						$xpath = new DOMXPath($meta);
-						$required_version = $xpath->evaluate('string(/extension/releases/release[1]/@min)');
+						$required_version = null;
+						$required_min_version = $xpath->evaluate('string(/extension/releases/release[1]/@min)');
+						$required_max_version = $xpath->evaluate('string(/extension/releases/release[1]/@max)');
+						$current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
 
-						if(version_compare(Symphony::Configuration()->get('version', 'symphony'), $required_version, '<')) {
+						if(isset($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {
 							$about['status'] = EXTENSION_NOT_COMPATIBLE;
+							$required_version = $required_min_version;
+						}
+						else if(isset($required_max_version) && version_compare($current_symphony_version, $required_max_version, '>')) {
+							$about['status'] = EXTENSION_NOT_COMPATIBLE;
+							$required_version = $required_max_version;
 						}
 					}
 
