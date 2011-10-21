@@ -151,11 +151,11 @@
 					$return[] = EXTENSION_DISABLED;
 			}
 			else $return[] = EXTENSION_NOT_INSTALLED;
-			
+
 			if(self::__requiresUpdate($about['handle'], $about['version'])) {
 				$return[] = EXTENSION_REQUIRES_UPDATE;
 			}
-			
+
 			return $return;
 		}
 
@@ -725,28 +725,34 @@
 
 				// Load <extension>
 				$extension = $xpath->query('/extension')->item(0);
-
 				$about = array(
 					'name' => $xpath->evaluate('string(name)', $extension),
-					'version' => $xpath->evaluate('string(releases/release[1]/@version)', $extension),
-					'release-date' => $xpath->evaluate('string(releases/release[1]/@date)', $extension),
-					'description' => $xpath->evaluate('string(description)', $extension),
 					'status' => array()
 				);
-				
-				$required_version = null;
-				$required_min_version = $xpath->evaluate('string(releases/release[1]/@min)', $extension);
-				$required_max_version = $xpath->evaluate('string(releases/release[1]/@max)', $extension);
-				$current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
 
-				if(!empty($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {
-					$about['status'][] = EXTENSION_NOT_COMPATIBLE;
-					$about['required_version'] = $required_min_version;
+				// Load the latest <release> information
+				if($release = $xpath->query('//release[1]', $extension)->item(0)) {
+					$about += array(
+						'version' => $xpath->evaluate('string(@version)', $release),
+						'release-date' => $xpath->evaluate('string(@date)', $release)
+					);
+
+					// If it exists, load in the 'min/max' version data for this release
+					$required_version = null;
+					$required_min_version = $xpath->evaluate('string(@min)', $release);
+					$required_max_version = $xpath->evaluate('string(@max)', $release);
+					$current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
+
+					if(!empty($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {
+						$about['status'][] = EXTENSION_NOT_COMPATIBLE;
+						$about['required_version'] = $required_min_version;
+					}
+					else if(!empty($required_max_version) && version_compare($current_symphony_version, $required_max_version, '>')) {
+						$about['status'][] = EXTENSION_NOT_COMPATIBLE;
+						$about['required_version'] = $required_max_version;
+					}
 				}
-				else if(!empty($required_max_version) && version_compare($current_symphony_version, $required_max_version, '>')) {
-					$about['status'][] = EXTENSION_NOT_COMPATIBLE;
-					$about['required_version'] = $required_max_version;
-				}
+
 				// Add the <author> information
 				foreach($xpath->query('//author', $extension) as $author) {
 					$a = array(
@@ -756,14 +762,6 @@
 					);
 
 					$about['author'][] = array_filter($a);
-				}
-
-				// Look for the latest <release> information
-				if($release = $xpath->query('//release[1]', $extension)->item(0)) {
-					$about += array(
-						'version' => $xpath->evaluate('string(@version)', $release),
-						'release-date' => $xpath->evaluate('string(@date)', $release)
-					);
 				}
 			}
 			// It doesn't, fallback to loading the extension
