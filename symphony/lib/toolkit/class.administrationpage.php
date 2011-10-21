@@ -697,11 +697,12 @@
 
 			// Loop over all the installed extensions to add in other navigation items
 			$extensions = Symphony::ExtensionManager()->listInstalledHandles();
-			foreach($extensions as $e){
-				$info = Symphony::ExtensionManager()->about($e);
+			foreach($extensions as $e) {
+				$extension = Symphony::ExtensionManager()->getInstance($e);
+				$extension_navigation = $extension->fetchNavigation();
 
-				if(isset($info['navigation']) && is_array($info['navigation']) && !empty($info['navigation'])){
-					foreach($info['navigation'] as $item){
+				if(is_array($extension_navigation) && !empty($extension_navigation)){
+					foreach($extension_navigation as $item){
 
 						$type = isset($item['children']) ? Extension::NAV_GROUP : Extension::NAV_CHILD;
 

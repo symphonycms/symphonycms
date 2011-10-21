@@ -111,6 +111,8 @@
 		 *		),
 		 *		'description' => 'A description about this extension'
 		 * `
+		 * @deprecated Since Symphony 2.3, the `about()` function is deprecated for extensions
+		 *  in favour of the `extension.meta.xml` file. It will be removed in Symphony 2.4.
 		 * @return array
 		 *  An associative array describing this extension.
 		 */

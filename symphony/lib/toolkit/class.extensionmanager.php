@@ -136,9 +136,9 @@
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return integer
-		 *  An extension status, `EXTENSION_ENABLED`, `EXTENSION_DISABLED`
-		 *  `EXTENSION_NOT_INSTALLED` and `EXTENSION_REQUIRES_UPDATE`.
-		 *  If an extension doesn't exist, null will be returned.
+		 *  An extension status, `EXTENSION_ENABLED`, `EXTENSION_DISABLED` or
+		 *  `EXTENSION_NOT_INSTALLED`. If an extension doesn't exist,
+		 *  `EXTENSION_NOT_INSTALLED` will be returned.
 		 */
 		public static function fetchStatus($name){
 			self::__buildExtensionList();
@@ -194,18 +194,25 @@
 
 		/**
 		 * Determines whether an extension needs to be updated or not using
-		 * PHP's version_compare function.
+		 * PHP's `version_compare` function. This function will return the
+		 * installed version if the extension requires an update, or
+		 * false otherwise.
 		 *
-		 * @param array $info
-		 *  The about array from the extension
-		 * @return boolean
+		 * @param string $name
+		 *  The name of the Extension Class minus the extension prefix.
+		 * @param string $file_version
+		 *  The version of the extension from the **file**, not the Database.
+		 * @return string|boolean
+		 *  If the given extension (by $name) requires updating, the installed
+		 *  version is returned, otherwise, if the extension doesn't require
+		 *  updating, false.
 		 */
-		private static function __requiresUpdate(array $info){
-			if($info['status'] == EXTENSION_NOT_INSTALLED) return false;
+		private static function __requiresUpdate($name, $file_version){
+			$installed_version = self::fetchInstalledVersion($name);
 
-			$current_version = self::fetchInstalledVersion($info['handle']);
+			if(is_null($installed_version)) return false;
 
-			return (version_compare($current_version, $info['version'], '<') ? $current_version : false);
+			return (version_compare($installed_version, $file_version, '<') ? $installed_version : false);
 		}
 
 		/**
@@ -223,36 +230,38 @@
 		public static function enable($name){
 			$obj = self::getInstance($name);
 
-			## If not installed, install it
+			// If not installed, install it
 			if(self::__requiresInstallation($name) && $obj->install() === false){
 				return false;
 			}
 
-			## If requires and upate before enabling, than update it first
-			elseif(($about = self::about($name)) && ($previousVersion = self::__requiresUpdate($about)) !== false) {
+			// If the extension requires updating before enabling, then update it
+			elseif(($about = self::about($name)) && ($previousVersion = self::__requiresUpdate($name, $about['version'])) !== false) {
 				$obj->update($previousVersion);
 			}
 
-			$info = $obj->about();
+			if(!isset($about)) $about = self::about($name);
 			$id = self::fetchExtensionID($name);
 
 			$fields = array(
 				'name' => $name,
 				'status' => 'enabled',
-				'version' => $info['version']
+				'version' => $about['version']
 			);
 
+			// If there's no $id, the extension needs to be installed
 			if(is_null($id)) {
 				Symphony::Database()->insert($fields, 'tbl_extensions');
 				self::__buildExtensionList(true);
 			}
+			// Extension is installed, so update!
 			else {
 				Symphony::Database()->update($fields, 'tbl_extensions', " `id` = '$id '");
 			}
 
 			self::registerDelegates($name);
 
-			## Now enable the extension
+			// Now enable the extension
 			$obj->enable();
 
 			return true;
@@ -276,7 +285,7 @@
 
 			self::__canUninstallOrDisable($obj);
 
-			$info = $obj->about();
+			$info = self::about($name);
 			$id = self::fetchExtensionID($name);
 
 			Symphony::Database()->update(array(
@@ -371,7 +380,7 @@
 			$classname = self::__getClassName($name);
 			$path = self::__getDriverPath($name);
 
-			if(!@file_exists($path)) return false;
+			if(!file_exists($path)) return false;
 
 			$delegates = Symphony::Database()->fetchCol('id', sprintf("
 					SELECT tbl_extensions_delegates.`id`
@@ -405,13 +414,13 @@
 		 */
 		private static function __canUninstallOrDisable(Extension $obj){
 			$extension_handle = strtolower(preg_replace('/^extension_/i', NULL, get_class($obj)));
+			$about = self::about($extension_handle);
 
 			// Fields:
 			if(is_dir(EXTENSIONS . "/{$extension_handle}/fields")){
 				foreach(glob(EXTENSIONS . "/{$extension_handle}/fields/field.*.php") as $file){
 					$type = preg_replace(array('/^field\./i', '/\.php$/i'), NULL, basename($file));
 					if(Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_fields` WHERE `type` = '{$type}'") > 0){
-						$about = $obj->about();
 						throw new Exception(
 							__(
 								"The field '%s', provided by the Extension '%s', is currently in use. Please remove it from your sections prior to uninstalling or disabling.",
@@ -427,7 +436,6 @@
 				foreach(glob(EXTENSIONS . "/{$extension_handle}/data-sources/data.*.php") as $file){
 					$handle = preg_replace(array('/^data\./i', '/\.php$/i'), NULL, basename($file));
 					if(Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0){
-						$about = $obj->about();
 						throw new Exception(
 							__(
 								"The Data Source '%s', provided by the Extension '%s', is currently in use. Please remove it from your pages prior to uninstalling or disabling.",
@@ -443,7 +451,6 @@
 				foreach(glob(EXTENSIONS . "/{$extension_handle}/events/event.*.php") as $file){
 					$handle = preg_replace(array('/^event\./i', '/\.php$/i'), NULL, basename($file));
 					if(Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `events` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0){
-						$about = $obj->about();
 						throw new Exception(
 							__(
 								"The Event '%s', provided by the Extension '%s', is currently in use. Please remove it from your pages prior to uninstalling or disabling.",
@@ -475,7 +482,6 @@
 						}
 
 						if($table > 0) {
-							$about = $obj->about();
 							throw new Exception(
 								__(
 									"The Text Formatter '%s', provided by the Extension '%s', is currently in use. Please remove it from your fields prior to uninstalling or disabling.",
@@ -618,7 +624,7 @@
 		 *  Allows a developer to return the extensions in a particular order. The syntax is the
 		 *  same as other `fetch` methods. If omitted this will return resources ordered by `name`.
 		 * @return array
-		 *  An associative array of Extension information, formatted in the same way as the 
+		 *  An associative array of Extension information, formatted in the same way as the
 		 *  listAll() method.
 		 */
 		public static function fetch(array $select = array(), array $where = array(), $order_by = null){
@@ -676,41 +682,73 @@
 
 		}
 
-
-
 		/**
-		 * Returns information about an extension by it's name by calling
-		 * it's own about method. This method checks if an extension needs
-		 * to be updated or not.
-		 * `
-		 *		'name' => 'Name of Extension',
-		 *		'version' => '1.8',
-		 *		'release-date' => 'YYYY-MM-DD',
-		 *		'author' => array(
-		 *			'name' => 'Author Name',
-		 *			'website' => 'Author Website',
-		 *			'email' => 'Author Email'
-		 *		),
-		 *		'description' => 'A description about this extension'
-		 * `
-		 * @see toolkit.ExtensionManager#__requiresUpdate()
+		 * This function will load an extension's meta information given the extension
+		 * `$name`. Since Symphony 2.3, this function will look for an `extension.meta.xml`
+		 * file inside the extension's folder. If this is not found, it will initialise
+		 * the extension and invoke the `about()` function. By default this extension will
+		 * return an associative array display the basic meta data about the given extension.
+		 * If the `$rawXML` parameter is passed true, and the extension has a `extension.meta.xml`
+		 * file, this function will return `DOMDocument` of the file.
+		 *
+		 * @deprecated Since Symphony 2.3, the `about()` function is deprecated for extensions
+		 *  in favour of the `extension.meta.xml` file.
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
+		 * @param boolean $rawXML
+		 *  If passed as true, and is available, this function will return the
+		 *  DOMDocument of representation of the given extension's `extension.meta.xml`
+		 *  file. If the file is not available, the extension will return the normal
+		 *  `about()` results. By default this is false.
 		 * @return array
 		 *  An associative array describing this extension
 		 */
-		public static function about($name){
-			$obj = self::getInstance($name);
+		public static function about($name, $rawXML = false) {
+			// See if the extension has the new meta format
+			if(file_exists(self::__getClassPath($name) . '/extension.meta.xml')) {
+				try {
+					$meta = new DOMDocument;
+					$meta->load(self::__getClassPath($name) . '/extension.meta.xml');
+					$xpath = new DOMXPath($meta);
+				} catch (Exception $ex) {
+					throw new SymphonyErrorPage(__('The <code>extension.meta.xml</code> file for the %s extension is not valid XML.', array('<code>' . $name . '</code>')));
+				}
 
-			$about = $obj->about();
+				if($rawXML) return $meta;
+
+				$about = array(
+					'name' => $xpath->evaluate('string(/extension/name)'),
+					'version' => $xpath->evaluate('string(/extension/releases/release[1]/@version)'),
+					'release-date' => $xpath->evaluate('string(/extension/releases/release[1]/@date)'),
+					'description' => $xpath->evaluate('string(/extension/description)')
+				);
+
+				foreach($xpath->query('/extension/authors/author') as $author) {
+					$a = array(
+						'name' => $xpath->evaluate('string(name)', $author),
+						'website' => $xpath->evaluate('string(website)', $author),
+						'email' => $xpath->evaluate('string(email)', $author)
+					);
+
+					$about['author'][] = array_filter($a);
+				}
+
+				$about = array_filter($about);
+			}
+			// It doesn't, fallback to loading the extension
+			else {
+				$obj = self::getInstance($name);
+				$about = $obj->about();
+			}
+
 			$about['handle'] = $name;
-			$about['status'] = self::fetchStatus($name);
 
-			$nav = $obj->fetchNavigation();
-
-			if(!is_null($nav)) $about['navigation'] = $nav;
-
-			if(self::__requiresUpdate($about)) $about['status'] = EXTENSION_REQUIRES_UPDATE;
+			if(self::__requiresUpdate($name, $about['version'])) {
+				$about['status'] = EXTENSION_REQUIRES_UPDATE;
+			}
+			else {
+				$about['status'] = self::fetchStatus($name);
+			}
 
 			return $about;
 		}
@@ -728,8 +766,11 @@
 				$path = self::__getDriverPath($name);
 
 				if(!is_file($path)){
-					throw new Exception(
-						__('Could not find extension at location %s', array($path))
+					throw new SymphonyErrorPage(
+						__('Could not find extension %s at location %s', array(
+							'<code>' . $name . '</code>',
+							'<code>' . $path . '</code>'
+						))
 					);
 				}
 
