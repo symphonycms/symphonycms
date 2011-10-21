@@ -218,7 +218,7 @@
 
 			if(is_null($installed_version)) return false;
 
-			return (version_compare($installed_version, $file_version, '<') ? $installed_version : false);
+			return (version_compare($installed_version, $file_version, '<') ? $file_version : false);
 		}
 
 		/**
