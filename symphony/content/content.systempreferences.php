@@ -16,7 +16,7 @@
 
 		public $_errors = array();
 
-		## Overload the parent 'view' function since we dont need the switchboard logic
+		// Overload the parent 'view' function since we dont need the switchboard logic
 		public function view() {
 			$this->setPageType('form');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Preferences'), __('Symphony'))));
@@ -61,7 +61,7 @@
 				$this->Form->appendChild($group);
 			}
 
-			//Get available EmailGateways
+			// Get available EmailGateways
 			$email_gateway_manager = new EmailGatewayManager($this);
 			$email_gateways = $email_gateway_manager->listAll();
 			if(count($email_gateways) >= 1){
@@ -116,7 +116,7 @@
 		}
 
 		public function action() {
-			##Do not proceed if the config file is read only
+			// Do not proceed if the config file is read only
 			if (!is_writable(CONFIG)) redirect(SYMPHONY_URL . '/system/preferences/');
 
 			/**

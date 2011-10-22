@@ -465,7 +465,7 @@
 				$eventShell = str_replace('<!-- DOCUMENTATION -->', General::tabsToSpaces($documentation, 2), $eventShell);
 				$eventShell = str_replace('<!-- ROOT ELEMENT -->', $rootelement, $eventShell);
 
-				## Remove left over placeholders
+				// Remove left over placeholders
 				$eventShell = preg_replace(array('/<!--[\w ]++-->/'), '', $eventShell);
 
 				if($this->_context[0] == 'new') {

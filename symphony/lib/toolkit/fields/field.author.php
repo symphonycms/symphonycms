@@ -57,7 +57,7 @@
 		}
 
 		public function allowDatasourceOutputGrouping(){
-			## Grouping follows the same rule as toggling.
+			// Grouping follows the same rule as toggling.
 			return $this->canToggle();
 		}
 
@@ -110,14 +110,14 @@
 
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 
-			## Allow multiple selection
+			// Allow multiple selection
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Allow selection of multiple authors', array($input->generate())));
 			$div->appendChild($label);
 
-			## Default to current logged in user
+			// Default to current logged in user
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][default_to_current_user]', 'yes', 'checkbox');
 			if($this->get('default_to_current_user') == 'yes') $input->setAttribute('checked', 'checked');

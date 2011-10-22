@@ -42,14 +42,14 @@
 
 					$entry_count = intval(Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries` WHERE `section_id` = '".$s->get('id')."' "));
 
-					## Setup each cell
+					// Setup each cell
 					$td1 = Widget::TableData(Widget::Anchor($s->get('name'), Administration::instance()->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', NULL, 'content'));
 					$td2 = Widget::TableData(Widget::Anchor("$entry_count", SYMPHONY_URL . '/publish/' . $s->get('handle') . '/'));
 					$td3 = Widget::TableData($s->get('navigation_group'));
 
 					$td3->appendChild(Widget::Input('items['.$s->get('id').']', 'on', 'checkbox'));
 
-					## Add a row to the body array, assigning each cell to the row
+					// Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
 
 				}
@@ -547,14 +547,14 @@
 					$existing_section = SectionManager::fetch($section_id);
 				}
 
-				## Check to ensure all the required section fields are filled
+				// Check to ensure all the required section fields are filled
 				if(!isset($meta['name']) || strlen(trim($meta['name'])) == 0){
 					$required = array('Name');
 					$this->_errors['name'] = __('This is a required field.');
 					$canProceed = false;
 				}
 
-				## Check for duplicate section handle
+				// Check for duplicate section handle
 				elseif($edit) {
 					if(
 						$meta['name'] != $existing_section->get('name')
@@ -569,17 +569,17 @@
 					$canProceed = false;
 				}
 
-				## Check to ensure all the required section fields are filled
+				// Check to ensure all the required section fields are filled
 				if(!isset($meta['navigation_group']) || strlen(trim($meta['navigation_group'])) == 0){
 					$required = array('Navigation Group');
 					$this->_errors['navigation_group'] = __('This is a required field.');
 					$canProceed = false;
 				}
 
-				## Basic custom field checking
+				// Basic custom field checking
 				if(is_array($fields) && !empty($fields)){
 
-					## Check for duplicate CF names
+					// Check for duplicate CF names
 					if($canProceed) {
 						$name_list = array();
 
@@ -607,7 +607,7 @@
 
 							if($field->mustBeUnique() && !in_array($field->get('type'), $unique)) $unique[] = $field->get('type');
 							elseif($field->mustBeUnique() && in_array($field->get('type'), $unique)){
-								## Warning. cannot have 2 of this field!
+								// Warning. cannot have 2 of this field!
 								$canProceed = false;
 								$this->_errors[$position] = array('label' => __('There is already a field of type <code>%s</code>. There can only be one per section.', array($field->handle())));
 							}
@@ -687,7 +687,7 @@
 
 					if($section_id && $canProceed) {
 						if($edit) {
-							## Delete missing CF's
+							// Delete missing CF's
 							$id_list = array();
 							if(is_array($fields) && !empty($fields)){
 								foreach($fields as $position => $data){
@@ -704,7 +704,7 @@
 							}
 						}
 
-						## Save each custom field
+						// Save each custom field
 						if(is_array($fields) && !empty($fields)){
 							foreach($fields as $position => $data){
 								$field = FieldManager::create($data['type']);
