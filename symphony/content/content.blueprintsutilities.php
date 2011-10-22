@@ -81,7 +81,7 @@
 			$this->Form->appendChild($tableActions);
 		}
 
-		## Both the Edit and New pages need the same form
+		// Both the Edit and New pages need the same form
 		public function __viewNew(){
 			$this->__form();
 		}
@@ -94,10 +94,10 @@
 			$this->setPageType('form');
 			$this->_existing_file = (isset($this->_context[1]) ? $this->_context[1] . '.xsl' : NULL);
 
-			## Handle unknown context
+			// Handle unknown context
 			if(!in_array($this->_context[0], array('new', 'edit'))) Administration::instance()->errorPageNotFound();
 
-			## Edit Utility context
+			// Edit Utility context
 			if($this->_context[0] == 'edit'){
 
 				$file_abs = UTILITIES . '/' . $this->_existing_file;
@@ -295,7 +295,7 @@
 
 			$file = UTILITIES . '/' . $fields['name'];
 
-			##Duplicate
+			// Duplicate
 			if($this->_context[0] == 'edit' && ($this->_existing_file != $fields['name'] && is_file($file)))
 				$this->_errors['name'] = __('A Utility with that name already exists. Please choose another.');
 
@@ -333,14 +333,14 @@
 					Symphony::ExtensionManager()->notifyMembers('UtilityPreEdit', '/blueprints/utilities/', array('file' => $file, 'contents' => &$fields['body']));
 				}
 
-				##Write the file
+				// Write the file
 				if(!$write = General::writeFile($file, $fields['body'], Symphony::Configuration()->get('write_mode', 'file')))
 					$this->pageAlert(__('Utility could not be written to disk. Please check permissions on <code>/workspace/utilities</code>.'), Alert::ERROR);
 
-				##Write Successful, add record to the database
+				// Write Successful, add record to the database
 				else{
 
-					## Remove any existing file if the filename has changed
+					// Remove any existing file if the filename has changed
 					if($this->_existing_file && $file != UTILITIES . '/' . $this->_existing_file) {
 						General::deleteFile(UTILITIES . '/' . $this->_existing_file);
 					}

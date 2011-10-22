@@ -335,12 +335,12 @@
 					}
 				}
 
-				##Grab the result
+				// Grab the result
 				$result = curl_exec($ch);
 
 				$this->_info_last = curl_getinfo($ch);
 
-				##Close the connection
+				// Close the connection
 				curl_close ($ch);
 
 				return $result;
@@ -352,7 +352,7 @@
 				$this->_port = (!is_null($this->_scheme) ? self::$ports[$this->_scheme] : 80);
 			}
 
-			##No CURL is available, use attempt to use normal sockets
+			// No CURL is available, use attempt to use normal sockets
 			$handle = @fsockopen($this->_host, $this->_port, $errno, $errstr, $this->_timeout);
 			if($handle === false) return false;
 
@@ -382,7 +382,7 @@
 
 			$status = socket_get_status($handle);
 
-			## Get rest of the page data
+			// Get rest of the page data
 			while (!feof($handle) && !$status['timed_out']){
 				$response .= fread($handle, 4096);
 				$status = stream_get_meta_data($handle);

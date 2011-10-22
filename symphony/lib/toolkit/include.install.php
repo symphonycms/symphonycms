@@ -11,7 +11,7 @@
 	define('_INSTALL_DOMAIN_', $clean_path);
 	define('_INSTALL_URL_', 'http://' . $clean_path);
 
-	## If its not an update, we need to set a couple of important constants.
+	// If its not an update, we need to set a couple of important constants.
 	define('__IN_SYMPHONY__', true);
 	define('DOCROOT', './');
 
@@ -23,7 +23,7 @@
 
 	define('REWRITE_BASE', $rewrite_base);
 
-	## Include some parts of the Symphony engine
+	// Include some parts of the Symphony engine
 	require_once(CORE . '/class.log.php');
 	require_once(CORE . '/class.datetimeobj.php');
 	require_once(TOOLKIT . '/class.mysql.php');
@@ -132,7 +132,7 @@
 			$data = str_replace('COLLATE utf8_unicode_ci', NULL, $data);
 		}
 
-		## Silently attempt to change the storage engine. This prevents INNOdb errors.
+		// Silently attempt to change the storage engine. This prevents INNOdb errors.
 		$db->query('SET storage_engine=MYISAM', $e);
 
 		$queries = preg_split('/;[\\r\\n]+/', $data, -1, PREG_SPLIT_NO_EMPTY);
@@ -373,35 +373,35 @@
 				$database_connection_error = true;
 			}
 
-			## Invalid path
+			// Invalid path
 			if(!@is_dir(rtrim($fields['docroot'], '/') . '/symphony')){
 				$Page->log->pushToLog("Configuration - Bad Document Root Specified: " . $fields['docroot'], E_NOTICE, true);
 				define("kENVIRONMENT_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'no-symphony-dir');
 			}
 
-			## Cannot write to workspace
+			// Cannot write to workspace
 			elseif(is_dir(rtrim($fields['docroot'], '/') . '/workspace') && !is_writable(rtrim($fields['docroot'], '/') . '/workspace')){
 				$Page->log->pushToLog("Configuration - Workspace folder not writable: " . $fields['docroot'] . '/workspace', E_NOTICE, true);
 				define("kENVIRONMENT_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'no-write-permission-workspace');
 			}
 
-			## Cannot write to root folder.
+			// Cannot write to root folder.
 			elseif(!is_writable(rtrim($fields['docroot'], '/'))){
 				$Page->log->pushToLog("Configuration - Root folder not writable: " . $fields['docroot'], E_NOTICE, true);
 				define("kENVIRONMENT_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'no-write-permission-root');
 			}
 
-			## Failed to establish database connection
+			// Failed to establish database connection
 			elseif($database_connection_error){
 				$Page->log->pushToLog("Configuration - Could not establish database connection", E_NOTICE, true);
 				define("kDATABASE_CONNECTION_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'no-database-connection');
 			}
 
-			## Incorrect MySQL version
+			// Incorrect MySQL version
 			elseif(version_compare($db->fetchVar('version', 0, "SELECT VERSION() AS `version`;"), '5.0', '<')){
 				$version = $db->fetchVar('version', 0, "SELECT VERSION() AS `version`;");
 				$Page->log->pushToLog('Configuration - MySQL Version is not correct. '.$version.' detected.', E_NOTICE, true);
@@ -412,56 +412,56 @@
 				if(!defined("ERROR")) define("ERROR", 'database-incorrect-version');
 			}
 
-			## Failed to select database
+			// Failed to select database
 			elseif(!$db->select($fields['database']['name'])){
 				$Page->log->pushToLog("Configuration - Database '".$fields['database']['name']."' Not Found", E_NOTICE, true);
 				define("kDATABASE_CONNECTION_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'no-database-connection');
 			}
 
-			## Failed to establish connection
+			// Failed to establish connection
 			elseif(is_array($tables) && !empty($tables)){
 				$Page->log->pushToLog("Configuration - Database table prefix clash with '".$fields['database']['name']."'", E_NOTICE, true);
 				define("kDATABASE_PREFIX_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'database-table-clash');
 			}
 
-			## Username Not Entered
+			// Username Not Entered
 			elseif(trim($fields['user']['username']) == ''){
 				$Page->log->pushToLog("Configuration - No username entered.", E_NOTICE, true);
 				define("kUSER_USERNAME_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'user-no-username');
 			}
 
-			## Password Not Entered
+			// Password Not Entered
 			elseif(trim($fields['user']['password']) == ''){
 				$Page->log->pushToLog("Configuration - No password entered.", E_NOTICE, true);
 				define("kUSER_PASSWORD_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'user-no-password');
 			}
 
-			## Password mismatch
+			// Password mismatch
 			elseif($fields['user']['password'] != $fields['user']['confirm-password']){
 				$Page->log->pushToLog("Configuration - Passwords did not match.", E_NOTICE, true);
 				define("kUSER_PASSWORD_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'user-password-mismatch');
 			}
 
-			## No Name entered
+			// No Name entered
 			elseif(trim($fields['user']['firstname']) == '' || trim($fields['user']['lastname']) == ''){
 				$Page->log->pushToLog("Configuration - Did not enter First and Last names.", E_NOTICE, true);
 				define("kUSER_NAME_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'user-no-name');
 			}
 
-			## Invalid Email
+			// Invalid Email
 			elseif(!preg_match('/^\w(?:\.?[\w%+-]+)*@\w(?:[\w-]*\.)+?[a-z]{2,}$/i', $fields['user']['email'])){
 				$Page->log->pushToLog("Configuration - Invalid email address supplied.", E_NOTICE, true);
 				define("kUSER_EMAIL_WARNING", true);
 				if(!defined("ERROR")) define("ERROR", 'user-invalid-email');
 			}
 
-			## Otherwise there are no error, proceed with installation
+			// Otherwise there are no error, proceed with installation
 			else{
 
 				$config = $fields;
@@ -606,7 +606,7 @@
 				$conf['settings']['region']['datetime_separator'] = ' ';
 				$conf['settings']['region']['timezone'] = $config['region']['timezone'];
 
-				## Create Manifest Directory structure
+				// Create Manifest Directory structure
 				$install_log->pushToLog("WRITING: Creating 'manifest' folder (/manifest)", E_NOTICE, true, true);
 				if(!General::realiseDirectory($kDOCROOT . '/manifest', $conf['settings']['directory']['write_mode'])){
 					define('_INSTALL_ERRORS_', "Could not create 'manifest' directory. Check permission on the root folder.");
@@ -703,7 +703,7 @@ Options +FollowSymlinks -Indexes
 
 				if(@!is_dir($fields['docroot'] . '/workspace')){
 
-					### Create the workspace folder structure
+					// Create the workspace folder structure
 					$install_log->pushToLog("WRITING: Creating 'workspace' folder (/workspace)", E_NOTICE, true, true);
 					if(!General::realiseDirectory($kDOCROOT . '/workspace', $conf['settings']['directory']['write_mode'])){
 						define('_INSTALL_ERRORS_', "Could not create 'workspace' directory. Check permission on the root folder.");
@@ -988,7 +988,7 @@ Options +FollowSymlinks -Indexes
 			$class = NULL;
 			if(defined('kDATABASE_VERSION_WARNING') && kDATABASE_VERSION_WARNING == true) $class = ' warning';
 
-			## fields[database][name]
+			// fields[database][name]
 			$label = Widget::label(__('Database'), Widget::input('fields[database][name]', $fields['database']['name']), $class);
 			$Database->appendChild($label);
 
@@ -1001,10 +1001,10 @@ Options +FollowSymlinks -Indexes
 			$Div = new XMLElement('div');
 			$Div->setAttribute('class', 'group' . $class);
 
-			## fields[database][username]
+			// fields[database][username]
 			$Div->appendChild(Widget::label(__('Username'), Widget::input('fields[database][username]', $fields['database']['username'])));
 
-			## fields[database][password]
+			// fields[database][password]
 			$Div->appendChild(Widget::label(__('Password'), Widget::input('fields[database][password]', $fields['database']['password'], 'password')));
 
 			$Database->appendChild($Div);
@@ -1019,10 +1019,10 @@ Options +FollowSymlinks -Indexes
 			$Div = new XMLElement('div');
 			$Div->setAttribute('class', 'group');
 
-			## fields[database][host]
+			// fields[database][host]
 			$Div->appendChild(Widget::label(__('Host'), Widget::input('fields[database][host]', $fields['database']['host'])));
 
-			## fields[database][port]
+			// fields[database][port]
 			$Div->appendChild(Widget::label(__('Port'), Widget::input('fields[database][port]', $fields['database']['port'])));
 
 			$Fieldset->appendChild($Div);
@@ -1030,7 +1030,7 @@ Options +FollowSymlinks -Indexes
 			$class = NULL;
 			if(defined('kDATABASE_PREFIX_WARNING') && kDATABASE_PREFIX_WARNING == true) $class = 'warning';
 
-			## fields[database][prefix]
+			// fields[database][prefix]
 			$Fieldset->appendChild(Widget::label(__('Table Prefix'), Widget::input('fields[database][prefix]', $fields['database']['prefix']), $class));
 
 			if(defined('ERROR') && defined('kDATABASE_PREFIX_WARNING'))
@@ -1038,7 +1038,7 @@ Options +FollowSymlinks -Indexes
 
 			$Page->setTemplateVar('TABLE-PREFIX', $fields['database']['prefix']);
 
-			## Use UTF-8 at all times unless otherwise specified
+			// Use UTF-8 at all times unless otherwise specified
 			$Fieldset->appendChild(Widget::label(__('Always use <code>UTF-8</code> encoding'), Widget::input('fields[database][use-server-encoding]', 'no', 'checkbox', !isset($fields['database']['use-server-encoding']) ? array() : array('checked' => 'checked')), 'option'));
 
 			$Fieldset->appendChild(new XMLElement('p', __("If unchecked, Symphony will use your database's default encoding instead of <code>UTF-8</code>.")));
@@ -1069,7 +1069,7 @@ Options +FollowSymlinks -Indexes
 			$class = NULL;
 			if(defined('kUSER_USERNAME_WARNING') && kUSER_PASSWORD_WARNING == true) $class = 'warning';
 
-			## fields[user][username]
+			// fields[user][username]
 			$User->appendChild(Widget::label(__('Username'), Widget::input('fields[user][username]', $fields['user']['username']), $class));
 
 			if(defined('ERROR') && defined('kUSER_USERNAME_WARNING'))
@@ -1081,10 +1081,10 @@ Options +FollowSymlinks -Indexes
 			$Div = new XMLElement('div');
 			$Div->setAttribute('class', 'group' . $class);
 
-			## fields[user][password]
+			// fields[user][password]
 			$Div->appendChild(Widget::label(__('Password'), Widget::input('fields[user][password]', $fields['user']['password'], 'password')));
 
-			## fields[user][confirm-password]
+			// fields[user][confirm-password]
 			$Div->appendChild(Widget::label(__('Confirm Password'), Widget::input('fields[user][confirm-password]', $fields['user']['confirm-password'], 'password')));
 
 			$User->appendChild($Div);
@@ -1113,7 +1113,7 @@ Options +FollowSymlinks -Indexes
 			$class = NULL;
 			if(defined('kUSER_EMAIL_WARNING') && kUSER_EMAIL_WARNING == true) $class = 'warning';
 
-			## fields[user][email]
+			// fields[user][email]
 			$Fieldset->appendChild(Widget::label(__('Email Address'), Widget::input('fields[user][email]', $fields['user']['email']), $class));
 
 			if(defined('ERROR') && defined('kUSER_EMAIL_WARNING'))
@@ -1130,10 +1130,10 @@ Options +FollowSymlinks -Indexes
 			$Submit = new XMLElement('div');
 			$Submit->setAttribute('class', 'submit');
 
-			### submit
+			// submit
 			$Submit->appendChild(Widget::input('submit', __('Install Symphony'), 'submit'));
 
-			### action[install]
+			// action[install]
 			$Submit->appendChild(Widget::input('action[install]', 'true', 'hidden'));
 
 			$Form->appendChild($Submit);

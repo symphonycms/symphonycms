@@ -28,7 +28,7 @@
 			$this->appendSubheading(__('Datasources'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a datasource'), 'create button', NULL, array('accesskey' => 'c')));
 		}
 
-		## Both the Edit and New pages need the same form
+		// Both the Edit and New pages need the same form
 		public function __viewNew(){
 			$this->__form();
 		}
@@ -1093,7 +1093,7 @@
 			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
 
-			##Check to make sure the classname is not empty after handlisation.
+			// Check to make sure the classname is not empty after handlisation.
 			if(empty($classname)) $this->_errors['name'] = __('Please ensure name contains at least one Latin-based alphabet.', array($classname));
 
 			$file = DATASOURCES . '/data.' . $classname . '.php';
@@ -1108,7 +1108,7 @@
 				elseif($classname != $existing_handle) $queueForDeletion = DATASOURCES . '/data.' . $existing_handle . '.php';
 			}
 
-			##Duplicate
+			// Duplicate
 			if($isDuplicate) $this->_errors['name'] = __('A Data source with the name <code>%s</code> name already exists', array($classname));
 
 			if(empty($this->_errors)){
@@ -1349,7 +1349,7 @@
 					));
 				}
 
-				## Remove left over placeholders
+				// Remove left over placeholders
 				$dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\r\n){2,}/', '/(\t+[\r\n]){2,}/'), '', $dsShell);
 
 				// Write the file
@@ -1362,7 +1362,7 @@
 					if($queueForDeletion){
 						General::deleteFile($queueForDeletion);
 
-						## Update pages that use this DS
+						// Update pages that use this DS
 						$pages = PageManager::fetch(false, array('data_sources', 'id'), array("
 							`data_sources` REGEXP '[[:<:]]" . $existing_handle . "[[:>:]]'
 						"));

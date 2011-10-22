@@ -108,7 +108,7 @@
 
 			$wrapper->appendChild($this->buildPublishLabel());
 
-			## Destination Folder
+			// Destination Folder
 			$ignore = array(
 				'/workspace/events',
 				'/workspace/data-sources',

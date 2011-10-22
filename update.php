@@ -106,13 +106,13 @@
 		$settings['symphony']['version'] = kVERSION;
 		$settings['general']['useragent'] = 'Symphony/' . kVERSION;
 
-		## Build is no longer used
+		// Build is no longer used
 		unset($settings['symphony']['build']);
 
-		## Remove the old Maintenance Mode setting
+		// Remove the old Maintenance Mode setting
 		unset($settings['public']['maintenance_mode']);
 
-		## Set the default language
+		// Set the default language
 		if(!isset($settings['symphony']['lang'])){
 			$settings['symphony']['lang'] = 'en';
 		}
@@ -151,7 +151,7 @@
 					$frontend->Database->query("ALTER TABLE `tbl_fields_author` ADD `default_to_current_user` ENUM('yes', 'no') NOT NULL");
 				}
 
-				## Change .htaccess from `page` to `symphony-page`
+				// Change .htaccess from `page` to `symphony-page`
 				$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
 
 				if($htaccess !== false){
@@ -163,7 +163,7 @@
 
 
 			if (version_compare($existing_version, '2.0.5', '<=')) {
-				## Rebuild the .htaccess here
+				// Rebuild the .htaccess here
 
 				$rewrite_base = trim(dirname($_SERVER['PHP_SELF']), DIRECTORY_SEPARATOR);
 
@@ -243,7 +243,7 @@ Options +FollowSymlinks -Indexes
 			}
 
 			if(version_compare($existing_version, '2.0.8RC3', '<=')){
-				## Add -Indexes to .htaccess
+				// Add -Indexes to .htaccess
 				$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
 
 				if($htaccess !== false && !preg_match('/-Indexes/', $htaccess)){
@@ -251,7 +251,7 @@ Options +FollowSymlinks -Indexes
 					@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 				}
 
-				## 2.1 uses SHA1 instead of MD5
+				// 2.1 uses SHA1 instead of MD5
 				// Change the author table to allow 40 character values
 				$frontend->Database->query(
 					"ALTER TABLE `tbl_authors` CHANGE `password` `password` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL"

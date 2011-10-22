@@ -74,7 +74,7 @@
 		}
 
 		public function allowDatasourceOutputGrouping(){
-			## Grouping follows the same rule as toggling.
+			// Grouping follows the same rule as toggling.
 			return $this->canToggle();
 		}
 
@@ -217,7 +217,7 @@
 
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 
-			## Allow selection of multiple items
+			// Allow selection of multiple items
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
@@ -226,7 +226,7 @@
 
 			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Values'));
 
-			## Sort options?
+			// Sort options?
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][sort_options]', 'yes', 'checkbox');
 			if($this->get('sort_options') == 'yes') $input->setAttribute('checked', 'checked');
