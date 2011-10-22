@@ -66,7 +66,7 @@
 							__('Data source created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
 							. __('Create another?')
-							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources" accesskey="a">'
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
 							. __('View all Data sources')
 							. '</a>'
 							, Alert::SUCCESS);
