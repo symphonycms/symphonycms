@@ -540,16 +540,17 @@
 
 		/**
 		 * Returns all the page types that exist in this Symphony install.
-		 * There are 5 default system page types, and new types can be added
+		 * There are 6 default system page types, and new types can be added
 		 * by Developers via the Page Editor.
 		 *
+		 * @since Symphony 2.3 introduced the JSON type.
 		 * @return array
 		 *  An array of strings of the page types used in this Symphony
 		 *  install. At the minimum, this will be an array with the values
-		 * 'index', 'XML', 'admin', '404' and '403'.
+		 * 'index', 'XML', 'JSON', 'admin', '404' and '403'.
 		 */
 		public static function fetchAvailablePageTypes(){
-			$system_types = array('index', 'XML', 'admin', '404', '403');
+			$system_types = array('index', 'XML', 'JSON', 'admin', '404', '403');
 
 			$types = PageManager::fetchPageTypes();
 

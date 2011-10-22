@@ -140,17 +140,23 @@
 		 *  `EXTENSION_NOT_INSTALLED`. If an extension doesn't exist,
 		 *  `EXTENSION_NOT_INSTALLED` will be returned.
 		 */
-		public static function fetchStatus($name){
+		public static function fetchStatus($about){
+			$return = array();
 			self::__buildExtensionList();
 
-			if(array_key_exists($name, self::$_extensions)) {
-				$status = self::$_extensions[$name]['status'];
+			if(array_key_exists($about['handle'], self::$_extensions)) {
+				if(self::$_extensions[$about['handle']]['status'] == 'enabled')
+					$return[] = EXTENSION_ENABLED;
+				else
+					$return[] = EXTENSION_DISABLED;
 			}
-			else return EXTENSION_NOT_INSTALLED;
+			else $return[] = EXTENSION_NOT_INSTALLED;
 
-			if($status == 'enabled') return EXTENSION_ENABLED;
+			if(self::__requiresUpdate($about['handle'], $about['version'])) {
+				$return[] = EXTENSION_REQUIRES_UPDATE;
+			}
 
-			return EXTENSION_DISABLED;
+			return $return;
 		}
 
 		/**
@@ -714,16 +720,41 @@
 					throw new SymphonyErrorPage(__('The <code>extension.meta.xml</code> file for the %s extension is not valid XML.', array('<code>' . $name . '</code>')));
 				}
 
+				// If `$rawXML` is set, just return our DOMDocument instance
 				if($rawXML) return $meta;
 
+				// Load <extension>
+				$extension = $xpath->query('/extension')->item(0);
 				$about = array(
-					'name' => $xpath->evaluate('string(/extension/name)'),
-					'version' => $xpath->evaluate('string(/extension/releases/release[1]/@version)'),
-					'release-date' => $xpath->evaluate('string(/extension/releases/release[1]/@date)'),
-					'description' => $xpath->evaluate('string(/extension/description)')
+					'name' => $xpath->evaluate('string(name)', $extension),
+					'status' => array()
 				);
 
-				foreach($xpath->query('/extension/authors/author') as $author) {
+				// Load the latest <release> information
+				if($release = $xpath->query('//release[1]', $extension)->item(0)) {
+					$about += array(
+						'version' => $xpath->evaluate('string(@version)', $release),
+						'release-date' => $xpath->evaluate('string(@date)', $release)
+					);
+
+					// If it exists, load in the 'min/max' version data for this release
+					$required_version = null;
+					$required_min_version = $xpath->evaluate('string(@min)', $release);
+					$required_max_version = $xpath->evaluate('string(@max)', $release);
+					$current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
+
+					if(!empty($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {
+						$about['status'][] = EXTENSION_NOT_COMPATIBLE;
+						$about['required_version'] = $required_min_version;
+					}
+					else if(!empty($required_max_version) && version_compare($current_symphony_version, $required_max_version, '>')) {
+						$about['status'][] = EXTENSION_NOT_COMPATIBLE;
+						$about['required_version'] = $required_max_version;
+					}
+				}
+
+				// Add the <author> information
+				foreach($xpath->query('//author', $extension) as $author) {
 					$a = array(
 						'name' => $xpath->evaluate('string(name)', $author),
 						'website' => $xpath->evaluate('string(website)', $author),
@@ -732,23 +763,17 @@
 
 					$about['author'][] = array_filter($a);
 				}
-
-				$about = array_filter($about);
 			}
 			// It doesn't, fallback to loading the extension
 			else {
 				$obj = self::getInstance($name);
 				$about = $obj->about();
+				$about['status'] = array();
 			}
 
 			$about['handle'] = $name;
 
-			if(self::__requiresUpdate($name, $about['version'])) {
-				$about['status'] = EXTENSION_REQUIRES_UPDATE;
-			}
-			else {
-				$about['status'] = self::fetchStatus($name);
-			}
+			$about['status'] = array_merge($about['status'], self::fetchStatus($about));
 
 			return $about;
 		}

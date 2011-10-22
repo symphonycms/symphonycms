@@ -192,8 +192,11 @@
 				));
 
 				if (is_null($devkit)) {
-					if(in_array('XML', $this->_pageData['type']) || in_array('xml', $this->_pageData['type'])) {
+					if(General::in_iarray('XML', $this->_pageData['type'])) {
 						$this->addHeaderToPage('Content-Type', 'text/xml; charset=utf-8');
+					}
+					else if(General::in_iarray('JSON', $this->_pageData['type'])) {
+						$this->addHeaderToPage('Content-Type', 'application/json; charset=utf-8');
 					}
 					else{
 						$this->addHeaderToPage('Content-Type', 'text/html; charset=utf-8');
@@ -249,8 +252,10 @@
 				return $devkit->build();
 			}
 
-			## EVENT DETAILS IN SOURCE
-			if ($this->is_logged_in && Symphony::Configuration()->get('display_event_xml_in_source', 'public') == 'yes') {
+			// Display the Event Results in the page source if the user is logged
+			// into Symphony, the page is not JSON and if it is enabled in the
+			// configuration.
+			if ($this->is_logged_in && !General::in_iarray('JSON', $this->_pageData['type']) && Symphony::Configuration()->get('display_event_xml_in_source', 'public') == 'yes') {
 				$output .= PHP_EOL . '<!-- ' . PHP_EOL . $this->_events_xml->generate(true) . ' -->';
 			}
 

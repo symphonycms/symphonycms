@@ -75,13 +75,16 @@
 			foreach($columns as $c) {
 				if($c['sortable']) {
 
+					$label = new XMLElement('span', $c['label']);
+					$label = $label->generate();
+
 					if($c['handle'] == $sort) {
 						$link = sprintf(
 							'?sort=%s&amp;order=%s%s',
 							$c['handle'], ($order == 'desc' ? 'asc' : 'desc'), $extra_url_params
 						);
-						$label = Widget::Anchor(
-							$c['label'], $link,
+						$th = Widget::Anchor(
+							$label, $link,
 							__('Sort by %1$s %2$s', array(($order == 'desc' ? __('ascending') : __('descending')), strtolower($c['label']))),
 							'active'
 						);
@@ -91,18 +94,18 @@
 							'?sort=%s&amp;order=asc%s',
 							$c['handle'], $extra_url_params
 						);
-						$label = Widget::Anchor(
-							$c['label'], $link,
+						$th = Widget::Anchor(
+							$label, $link,
 							__('Sort by %1$s %2$s', array(__('ascending'), strtolower($c['label'])))
 						);
 					}
 
 				}
 				else {
-					$label = $c['label'];
+					$th = $c['label'];
 				}
 
-				$aTableHead[] = array($label, 'col', $c['attrs']);
+				$aTableHead[] = array($th, 'col', $c['attrs']);
 			}
 
 			return $aTableHead;

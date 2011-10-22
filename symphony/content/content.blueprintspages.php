@@ -18,13 +18,15 @@
 		public $_errors = array();
 		protected $_hilights = array();
 
-		public function insertBreadcrumbs($page_id, $preserve_last = true) {
+		public function insertBreadcrumbs($page_id, $preserve_last = true, $page_editor = false) {
 			$pages = PageManager::resolvePage($page_id, 'handle');
 
 			foreach($pages as &$page){
 				$page = Widget::Anchor(
 					PageManager::fetchTitleFromHandle($page),
-					SYMPHONY_URL . '/blueprints/pages/?parent=' . PageManager::fetchIDFromHandle($page)
+					$page_editor
+						? SYMPHONY_URL . '/blueprints/pages/edit/' . PageManager::fetchIDFromHandle($page) . '/'
+						: SYMPHONY_URL . '/blueprints/pages/?parent=' . PageManager::fetchIDFromHandle($page)
 				);
 			}
 
@@ -229,7 +231,7 @@
 			));
 
 			$this->appendSubheading(__($filename ? $filename : __('Untitled')), Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/pages/edit/' . $pagedata['id'] . '/', __('Edit Page Configuration'), 'button', NULL, array('accesskey' => 't')));
-			$this->insertBreadcrumbs($pagedata['id']);
+			$this->insertBreadcrumbs($pagedata['id'], true, true);
 
 			if(!empty($_POST)) $fields = $_POST['fields'];
 

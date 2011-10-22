@@ -198,7 +198,7 @@
 				if(is_array($extensions) && !empty($extensions) && $this->__canAccessAlerts()) {
 					foreach($extensions as $name) {
 						$about = Symphony::ExtensionManager()->about($name);
-						if($about['status'] == EXTENSION_REQUIRES_UPDATE) {
+						if(in_array(EXTENSION_REQUIRES_UPDATE,$about['status'])) {
 							$this->Page->pageAlert(
 								__('An extension requires updating. <a href="%s">View Extensions</a>', array(SYMPHONY_URL . '/system/extensions/'))
 							);
