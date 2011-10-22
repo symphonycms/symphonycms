@@ -125,7 +125,7 @@
 				if($this->_invalidPassword){
 					$div = new XMLElement('div', NULL, array('class' => 'invalid'));
 					$div->appendChild($label);
-					$div->appendChild(new XMLElement('p', __('The supplied password was rejected. <a href="%s">Retrieve password?</a>', array(SYMPHONY_URL.'/login/retrieve-password/'))));
+					$div->appendChild(new XMLElement('p', __('The supplied password was rejected.') . ' <a href="' . SYMPHONY_URL.'/login/retrieve-password/">' . __('Retrieve password?') . '</a>'));
 					$fieldset->appendChild($div);
 				}
 

@@ -204,21 +204,24 @@
 			$fields['body'] = @file_get_contents($file_abs);
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
+			if($formHasErrors)
+				$this->pageAlert(
+					__('An error occurred while processing this form.')
+					. ' <a href="#error">'
+					. __('See below for details.')
+					. '</a>'
+					, Alert::ERROR);
 
 			// Status message:
 			if(isset($this->_context[2])) {
 				$this->pageAlert(
-					__(
-						'Page updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Pages</a>',
-						array(
-							DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-							SYMPHONY_URL . '/blueprints/pages/new/' . $link_suffix,
-							SYMPHONY_URL . '/blueprints/pages/' . $link_suffix,
-						)
-					),
-					Alert::SUCCESS
-				);
+					__('Page updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+					. ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
+					. __('Create another?')
+					. '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
+					. __('View all Pages')
+					. '</a>'
+					, Alert::SUCCESS);
 			}
 
 			$this->setTitle(__(
@@ -330,31 +333,25 @@
 
 					case 'saved':
 						$this->pageAlert(
-							__(
-								'Page updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Pages</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/pages/new/' . $link_suffix,
-									SYMPHONY_URL . '/blueprints/pages/' . $link_suffix,
-								)
-							),
-							Alert::SUCCESS);
+							__('Page updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
+							. __('View all Pages')
+							. '</a>'
+							, Alert::SUCCESS);
 
 						break;
 
 					case 'created':
 						$this->pageAlert(
-							__(
-								'Page created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Pages</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/pages/new/' . $link_suffix,
-									SYMPHONY_URL . '/blueprints/pages/' . $link_suffix,
-								)
-							),
-							Alert::SUCCESS);
-
-						break;
+							__('Page created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
+							. __('View all Pages')
+							. '</a>'
+							, Alert::SUCCESS);
 
 				}
 			}
@@ -642,7 +639,7 @@
 				Symphony::ExtensionManager()->notifyMembers('PageTemplatePreEdit', '/blueprints/pages/template/', array('file' => $file_abs, 'contents' => &$fields['body']));
 
 				if(!PageManager::writePageFiles($file_abs, $fields['body'])) {
-					$this->pageAlert(__('Page Template could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'), Alert::ERROR);
+					$this->pageAlert(__('Page Template could not be written to disk. Please check permissions on <code>%s</code>.', array('/workspace/pages')), Alert::ERROR);
 
 				}
 				else {
@@ -795,10 +792,7 @@
 						// If the file wasn't created, it's usually permissions related
 						if(!$file_created) {
 							$redirect = null;
-							return $this->pageAlert(
-								__('Page could not be written to disk. Please check permissions on <code>/workspace/pages</code>.'),
-								Alert::ERROR
-							);
+							return $this->pageAlert(__('Page Template could not be written to disk. Please check permissions on <code>%s</code>.', array('/workspace/pages')), Alert::ERROR);
 						}
 
 						// Insert the new data:
@@ -820,14 +814,11 @@
 
 							if(!$page_id = PageManager::add($fields)) {
 								$this->pageAlert(
-									__(
-										'Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.',
-										array(
-											SYMPHONY_URL . '/system/log/'
-										)
-									),
-									Alert::ERROR
-								);
+									__('Unknown errors occurred while attempting to save.')
+									. '<a href="' . SYMPHONY_URL . '/system/log/">'
+									. __('Check your activity log')
+									. '</a>.'
+									, Alert::ERROR);
 
 							}
 							else {
@@ -870,14 +861,11 @@
 
 							if(!PageManager::edit($page_id, $fields, true)) {
 								return $this->pageAlert(
-									__(
-										'Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.',
-										array(
-											SYMPHONY_URL . '/system/log/'
-										)
-									),
-									Alert::ERROR
-								);
+										__('Unknown errors occurred while attempting to save.')
+										. '<a href="' . SYMPHONY_URL . '/system/log/">'
+										. __('Check your activity log')
+										. '</a>.'
+										, Alert::ERROR);
 
 							}
 							else {
@@ -937,9 +925,11 @@
 				// duplicate page, return.
 				if(is_array($this->_errors) && !empty($this->_errors)) {
 					return $this->pageAlert(
-						__('An error occurred while processing this form. <a href="#error">See below for details.</a>'),
-						Alert::ERROR
-					);
+						__('An error occurred while processing this form.')
+						. ' <a href="#error">'
+						. __('See below for details.')
+						. '</a>'
+						, Alert::ERROR);
 				}
 			}
 		}
@@ -993,7 +983,7 @@
 					$this->_hilights[] = $page['id'];
 					$success = false;
 					$this->pageAlert(
-						__('One or more pages could not be deleted. Please check permissions on <code>/workspace/pages</code>.'),
+						__('One or more pages could not be deleted. Please check permissions on <code>%s</code>.', array('/workspace/pages')),
 						Alert::ERROR
 					);
 

@@ -112,7 +112,13 @@
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
+			if($formHasErrors)
+				$this->pageAlert(
+					__('An error occurred while processing this form.')
+					. ' <a href="#error">'
+					. __('See below for details.')
+					. '</a>'
+					, Alert::ERROR);
 
 			$showEmptyTemplate = (is_array($fields) && !empty($fields) ? false : true);
 
@@ -269,35 +275,37 @@
 			$types = array();
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
+			if($formHasErrors)
+				$this->pageAlert(
+					__('An error occurred while processing this form.')
+					. ' <a href="#error">'
+					. __('See below for details.')
+					. '</a>'
+					, Alert::ERROR);
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 
 					case 'saved':
 						$this->pageAlert(
-							__(
-								'Section updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Sections</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/sections/new/',
-									SYMPHONY_URL . '/blueprints/sections/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Section updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/sections/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/sections/" accesskey="a">'
+							. __('View all Sections')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 					case 'created':
 						$this->pageAlert(
-							__(
-								'Section created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Sections</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/sections/new/',
-									SYMPHONY_URL . '/blueprints/sections/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Section created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/sections/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/sections/" accesskey="a">'
+							. __('View all Sections')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 				}

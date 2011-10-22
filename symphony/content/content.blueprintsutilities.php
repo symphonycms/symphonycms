@@ -126,35 +126,37 @@
 			}
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
+			if($formHasErrors)
+				$this->pageAlert(
+					__('An error occurred while processing this form.')
+					. ' <a href="#error">'
+					. __('See below for details.')
+					. '</a>'
+					, Alert::ERROR);
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 
 					case 'saved':
 						$this->pageAlert(
-							__(
-								'Utility updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Utilities</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/utilities/new/',
-									SYMPHONY_URL . '/blueprints/utilities/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Utility updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/utilities/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/utilities/" accesskey="a">'
+							. __('View all Utilities')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 					case 'created':
 						$this->pageAlert(
-							__(
-								'Utility created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Utilities</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/utilities/new/',
-									SYMPHONY_URL . '/blueprints/utilities/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Utility created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/utilities/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/utilities/" accesskey="a">'
+							. __('View all Utilities')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 				}
@@ -335,7 +337,7 @@
 
 				##Write the file
 				if(!$write = General::writeFile($file, $fields['body'], Symphony::Configuration()->get('write_mode', 'file')))
-					$this->pageAlert(__('Utility could not be written to disk. Please check permissions on <code>/workspace/utilities</code>.'), Alert::ERROR);
+					$this->pageAlert(__('Utility could not be written to disk. Please check permissions on <code>%s</code>.', array('/workspace/utilities')), Alert::ERROR);
 
 				##Write Successful, add record to the database
 				else{

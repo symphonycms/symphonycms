@@ -39,35 +39,37 @@
 
 		public function __form(){
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
+			if($formHasErrors) 
+				$this->pageAlert(
+					__('An error occurred while processing this form.')
+					. ' <a href="#error">'
+					. __('See below for details.')
+					. '</a>'
+					, Alert::ERROR);
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 
 					case 'saved':
 						$this->pageAlert(
-							__(
-								'Data source updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Data sources</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/datasources/new/',
-									SYMPHONY_URL . '/blueprints/datasources/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Data source updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
+							. __('View all Data sources')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 					case 'created':
 						$this->pageAlert(
-							__(
-								'Data source created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Data sources</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/datasources/new/',
-									SYMPHONY_URL . '/blueprints/datasources/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Data source created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources" accesskey="a">'
+							. __('View all Data sources')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 				}
@@ -176,14 +178,11 @@
 				if(isset($cache_id) && in_array('clear_cache', $this->_context)) {
 					$cache->forceExpiry($cache_id);
 					$this->pageAlert(
-						__(
-							'Data source cache cleared <a href="%s" accesskey="a">View all Data sources</a>',
-							array(
-								SYMPHONY_URL . '/blueprints/datasources/'
-							)
-						),
-						Alert::SUCCESS
-					);
+						__('Data source cache cleared at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+						. '<a href="' . SYMPHONY_URL . '/blueprints/datasources" accesskey="a">'
+						. __('View all Data sources')
+						. '</a>'
+						, Alert::SUCCESS);
 				}
 			}
 
