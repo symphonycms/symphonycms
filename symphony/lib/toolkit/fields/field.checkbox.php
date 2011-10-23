@@ -87,7 +87,7 @@
 
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 
-			## Checkbox Default State
+			// Checkbox Default State
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][default_state]', 'on', 'checkbox');
 			if($this->get('default_state') == 'on') $input->setAttribute('checked', 'checked');
@@ -121,7 +121,7 @@
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL, $entry_id = null){
 
 			if(!$data){
-				## TODO: Don't rely on $_POST
+				// TODO: Don't rely on $_POST
 				if(isset($_POST) && !empty($_POST)) $value = 'no';
 				elseif($this->get('default_state') == 'on') $value = 'yes';
 				else $value = 'no';

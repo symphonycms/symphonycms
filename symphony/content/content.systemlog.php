@@ -1,13 +1,13 @@
 <?php
-    /**
-     * @package content
-     */
-    /**
-     * Displays the contents of the Symphony `ACTIVITY_LOG`
-     * log to any user who is logged in. If a user is not logged
-     * in, or the log file is unreadble, they will be directed
-     * to a 404 page
-     */
+	/**
+	 * @package content
+	 */
+	/**
+	 * Displays the contents of the Symphony `ACTIVITY_LOG`
+	 * log to any user who is logged in. If a user is not logged
+	 * in, or the log file is unreadble, they will be directed
+	 * to a 404 page
+	 */
 	Class contentSystemLog{
 
 		public function build(){

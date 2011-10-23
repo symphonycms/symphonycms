@@ -145,13 +145,13 @@
 		}
 
 		public function __loginFromToken($token){
-			##If token is invalid, return to login page
+			// If token is invalid, return to login page
 			if(!Administration::instance()->loginFromToken($token)) return false;
 
-			##If token is valid and it is not "emergency" login (forgotten password case), redirect to administration pages
+			// If token is valid and it is not "emergency" login (forgotten password case), redirect to administration pages
 			if(strlen($token) != 6) redirect(SYMPHONY_URL); // Regular token-based login
 
-			##Valid, emergency token - ask user to change password
+			// Valid, emergency token - ask user to change password
 			return true;
 		}
 
@@ -162,7 +162,7 @@
 				$actionParts = array_keys($_POST['action']);
 				$action = end($actionParts);
 
-				##Login Attempted
+				// Login Attempted
 				if($action == 'login'):
 
 					if(empty($_POST['username']) || empty($_POST['password']) || !Administration::instance()->login($_POST['username'], $_POST['password'])) {
@@ -198,7 +198,7 @@
 						redirect(SYMPHONY_URL);
 					}
 
-				##Reset of password requested
+				// Reset of password requested
 				elseif($action == 'reset'):
 
 					$author = Symphony::Database()->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_authors` WHERE `email` = '".Symphony::Database()->cleanValue($_POST['email'])."'");
@@ -265,7 +265,7 @@
 						$this->_email_sent = false;
 					}
 
-				##Change of password requested
+				// Change of password requested
 				elseif($action == 'change' && Administration::instance()->isLoggedIn()):
 
 					if(empty($_POST['password']) || empty($_POST['password-confirmation']) || $_POST['password'] != $_POST['password-confirmation']){

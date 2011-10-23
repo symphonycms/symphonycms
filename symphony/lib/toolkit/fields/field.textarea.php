@@ -98,7 +98,7 @@
 
 			$wrapper->appendChild($div);
 
-			## Textarea Size
+			// Textarea Size
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][size]', $this->get('size'));
 			$input->setAttribute('size', '3');
@@ -193,7 +193,7 @@
 
 			$result['value_formatted'] = $this->__applyFormatting($data, true, $errors);
 			if($result['value_formatted'] === false){
-				//run the formatter again, but this time do not validate. We will sanitize the output
+				// Run the formatter again, but this time do not validate. We will sanitize the output
 				$result['value_formatted'] = General::sanitize($this->__applyFormatting($data));
 			}
 
