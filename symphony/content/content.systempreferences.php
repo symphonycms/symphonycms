@@ -27,7 +27,7 @@
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
 			if (!is_writable(CONFIG)) {
-				$this->pageAlert(__('The Symphony configuration file, <code>%s</code>, is not writable. You will not be able to save changes to preferences.', array('/manifest/config.php')), Alert::ERROR);
+				$this->pageAlert(__('The Symphony configuration file, %s, is not writable. You will not be able to save changes to preferences.', array('<code>/manifest/config.php</code>')), Alert::ERROR);
 				$bIsWritable = false;
 
 			} else if ($formHasErrors) {

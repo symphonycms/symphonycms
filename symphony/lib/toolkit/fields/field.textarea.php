@@ -177,7 +177,7 @@
 			}
 
 			if($this->__applyFormatting($data, true, $errors) === false){
-				$message = __('"%1$s" contains invalid XML. The following error was returned: <code>%2$s</code>', array($this->get('label'), $errors[0]['message']));
+				$message = __('"%1$s" contains invalid XML. The following error was returned: %2$s', array($this->get('label'), '<code>' . $errors[0]['message'] . '</code>'));
 				return self::__INVALID_FIELDS__;
 			}
 

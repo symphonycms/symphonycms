@@ -77,8 +77,8 @@
 			$aTableHead = array(
 				array(__('Title'), 'col'),
 				array(__('Template'), 'col'),
-				array(__('<acronym title="Universal Resource Locator">URL</acronym>'), 'col'),
-				array(__('<acronym title="Universal Resource Locator">URL</acronym> Parameters'), 'col'),
+				array('<acronym title="' . __('Universal Resource Locator') . '">' . __('URL') . '</acronym>', 'col'),
+				array('<acronym title="' . __('Universal Resource Locator') . '">' . __('URL') . '</acronym>' . __('Parameters'), 'col'),
 				array(__('Type'), 'col')
 			);
 			$aTableBody = array();
@@ -620,7 +620,7 @@
 				$this->_errors['body'] = __('Body is a required field.');
 			}
 			else if(!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) {
-				$this->_errors['body'] = __('This document is not well formed. The following error was returned: <code>%s</code>', array($errors[0]['message']));
+				$this->_errors['body'] = __('This document is not well formed. The following error was returned: %s', array('<code>' . $errors[0]['message'] . '</code>'));
 			}
 
 			if(empty($this->_errors)) {
@@ -639,7 +639,7 @@
 				Symphony::ExtensionManager()->notifyMembers('PageTemplatePreEdit', '/blueprints/pages/template/', array('file' => $file_abs, 'contents' => &$fields['body']));
 
 				if(!PageManager::writePageFiles($file_abs, $fields['body'])) {
-					$this->pageAlert(__('Page Template could not be written to disk. Please check permissions on <code>%s</code>.', array('/workspace/pages')), Alert::ERROR);
+					$this->pageAlert(__('Page Template could not be written to disk. Please check permissions on %s.', array('<code>/workspace/pages</code>')), Alert::ERROR);
 
 				}
 				else {
@@ -792,7 +792,7 @@
 						// If the file wasn't created, it's usually permissions related
 						if(!$file_created) {
 							$redirect = null;
-							return $this->pageAlert(__('Page Template could not be written to disk. Please check permissions on <code>%s</code>.', array('/workspace/pages')), Alert::ERROR);
+							return $this->pageAlert(__('Page Template could not be written to disk. Please check permissions on %s.', array('<code>/workspace/pages</code>')), Alert::ERROR);
 						}
 
 						// Insert the new data:
@@ -983,7 +983,7 @@
 					$this->_hilights[] = $page['id'];
 					$success = false;
 					$this->pageAlert(
-						__('One or more pages could not be deleted. Please check permissions on <code>%s</code>.', array('/workspace/pages')),
+						__('One or more pages could not be deleted. Please check permissions on %s.', array('<code>/workspace/pages</code>')),
 						Alert::ERROR
 					);
 

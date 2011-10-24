@@ -69,7 +69,7 @@
 
 			if(!$section = SectionManager::fetch($ds->getSource())){
 				$about = $ds->about();
-				throw new Exception(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])));
+				throw new Exception(__('The section associated with the data source %s could not be found.', array('<code>' . $about['name'] . '</code>')));
 			}
 
 			if(!isset($ds->dsParamASSOCIATEDENTRYCOUNTS) || $ds->dsParamASSOCIATEDENTRYCOUNTS == 'yes'){
@@ -153,7 +153,7 @@
 
 	if(!$section = SectionManager::fetch($this->getSource())){
 		$about = $this->about();
-		trigger_error(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])), E_USER_ERROR);
+		trigger_error(__('The section associated with the data source %s could not be found.', array('<code>' . $about['name'] . '</code>')), E_USER_ERROR);
 	}
 
 	$sectioninfo = new XMLElement('section', General::sanitize($section->get('name')), array('id' => $section->get('id'), 'handle' => $section->get('handle')));

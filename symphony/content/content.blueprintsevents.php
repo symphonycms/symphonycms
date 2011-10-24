@@ -239,7 +239,7 @@
 				Symphony::ExtensionManager()->notifyMembers('EventPreDelete', '/blueprints/events/', array('file' => EVENTS . "/event." . $this->_context[1] . ".php"));
 
 				if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php')){
-					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
+					$this->pageAlert(__('Failed to delete %s. Please check permissions.', array('<code>' . $this->_context[1] . '</code>')), Alert::ERROR);
 				}
 
 				else {
@@ -296,7 +296,7 @@
 			}
 
 			// Duplicate
-			if($isDuplicate) $this->_errors['name'] = __('An Event with the name <code>%s</code> name already exists', array($classname));
+			if($isDuplicate) $this->_errors['name'] = __('An Event with the name %s name already exists', array('<code>' . $classname . '</code>'));
 
 			if(empty($this->_errors)){
 
@@ -517,7 +517,7 @@
 
 				// Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file')))
-					$this->pageAlert(__('Failed to write Event to <code>%s</code>. Please check permissions.', array(EVENTS)), Alert::ERROR);
+					$this->pageAlert(__('Failed to write Event to %s. Please check permissions.', array('<code>' . EVENTS . '</code>')), Alert::ERROR);
 
 				// Write Successful, add record to the database
 				else{

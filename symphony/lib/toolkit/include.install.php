@@ -407,7 +407,7 @@
 				$Page->log->pushToLog('Configuration - MySQL Version is not correct. '.$version.' detected.', E_NOTICE, true);
 				define("kDATABASE_VERSION_WARNING", true);
 
-				$warnings['database-incorrect-version'] = __('Symphony requires <code>MySQL 5.0</code> or greater to work, however version <code>%s</code> was detected. This requirement must be met before installation can proceed.', array($version));
+				$warnings['database-incorrect-version'] = __('Symphony requires <code>MySQL 5.0</code> or greater to work, however version %s was detected. This requirement must be met before installation can proceed.', array('<code>' . $version . '</code>'));
 
 				if(!defined("ERROR")) define("ERROR", 'database-incorrect-version');
 			}
@@ -1125,7 +1125,7 @@ Options +FollowSymlinks -Indexes
 
 		// START FORM SUBMIT AREA
 			$Form->appendChild(new XMLElement('h2', __('Install Symphony')));
-			$Form->appendChild(new XMLElement('p', __('Make sure that you delete <code>%s</code> file after Symphony has installed successfully.', array(kINSTALL_FILENAME))));
+			$Form->appendChild(new XMLElement('p', __('Make sure that you delete %s file after Symphony has installed successfully.', array('<code>' . kINSTALL_FILENAME . '</code>'))));
 
 			$Submit = new XMLElement('div');
 			$Submit->setAttribute('class', 'submit');

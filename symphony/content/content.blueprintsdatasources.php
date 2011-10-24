@@ -263,7 +263,11 @@
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual sections authors navigation ' . __('Sections') . ' ' . __('System'));
 			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to filter by page parameters.'));
+			$p = new XMLElement('p', 
+				__('Use %s syntax to filter by page parameters.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
 
@@ -446,7 +450,11 @@
 			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml remote_json');
 			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));
 
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to limit by page parameters.'));
+			$p = new XMLElement('p', 
+				__('Use %s syntax to limit by page parameters.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
 			$p->setAttribute('class', 'help contextual inverse navigation');
 			$fieldset->appendChild($p);
 
@@ -720,7 +728,11 @@
 			if(isset($this->_errors['dynamic_xml']['url'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['url']));
 			else $fieldset->appendChild($label);
 
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to specify dynamic portions of the URL.'));
+			$p = new XMLElement('p', 
+				__('Use %s syntax to specify dynamic portions of the URL.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
 
@@ -973,7 +985,7 @@
 				Symphony::ExtensionManager()->notifyMembers('DatasourcePreDelete', '/blueprints/datasources/', array('file' => DATASOURCES . "/data." . $this->_context[1] . ".php"));
 
 				if(!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php')){
-					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
+					$this->pageAlert(__('Failed to delete %s. Please check permissions.', array('<code>' . $this->_context[1] . '</code>')), Alert::ERROR);
 				}
 				else {
 					$pages = PageManager::fetch(false, array('data_sources', 'id'), array("
@@ -1108,7 +1120,7 @@
 			}
 
 			// Duplicate
-			if($isDuplicate) $this->_errors['name'] = __('A Data source with the name <code>%s</code> name already exists', array($classname));
+			if($isDuplicate) $this->_errors['name'] = __('A Data source with the name %s already exists', array('<code>' . $classname . '</code>'));
 
 			if(empty($this->_errors)){
 
@@ -1353,7 +1365,7 @@
 
 				// Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file')))
-					$this->pageAlert(__('Failed to write Data source to <code>%s</code>. Please check permissions.', array(DATASOURCES)), Alert::ERROR);
+					$this->pageAlert(__('Failed to write Data source to %s. Please check permissions.', array('<code>' . DATASOURCES . '</code>')), Alert::ERROR);
 
 				// Write Successful, add record to the database
 				else{

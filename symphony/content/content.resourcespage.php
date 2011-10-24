@@ -202,7 +202,7 @@
 
 							if (!General::deleteFile($path)) {
 								$this->pageAlert(
-									__('Failed to delete <code>%s</code>. Please check permissions.', array(basename($path))),
+									__('Failed to delete %s. Please check permissions.', array('<code>' . basename($path) . '</code>')),
 									Alert::ERROR
 								);
 								$canProceed = false;

@@ -1069,7 +1069,7 @@
 		 */
 		public function groupRecords($records){
 			throw new Exception(
-				__('Data source output grouping is not supported by the <code>%s</code> field', array($this->get('label')))
+				__('Data source output grouping is not supported by the %s field', array('<code>' . $this->get('label') . '</code>'))
 			);
 		}
 

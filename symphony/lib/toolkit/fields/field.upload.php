@@ -144,11 +144,11 @@
 
 		public function checkFields(&$errors, $checkForDuplicates=true){
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$errors['destination'] = __('Directory <code>%s</code> does not exist.', array($this->get('destination')));
+				$errors['destination'] = __('Directory %s does not exist.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
-				$errors['destination'] = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
+				$errors['destination'] = __('Destination folder, %s, is not writable. Please check permissions.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			parent::checkFields($errors, $checkForDuplicates);
@@ -177,11 +177,11 @@
 
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$flagWithError = __('The destination directory, <code>%s</code>, does not exist.', array($this->get('destination')));
+				$flagWithError = __('The destination directory, %s, does not exist.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			elseif(!$flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/')){
-				$flagWithError = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
+				$flagWithError = __('Destination folder, %s, is not writable. Please check permissions.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			$label = Widget::Label($this->label());
@@ -273,12 +273,12 @@
 			}
 
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$message = __('The destination directory, <code>%s</code>, does not exist.', array($this->get('destination')));
+				$message = __('The destination directory, %s, does not exist.', array('<code>' . $this->get('destination') . '</code>'));
 				return self::__ERROR__;
 			}
 
 			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
-				$message = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
+				$message = __('Destination folder, %s, is not writable. Please check permissions.', array('<code>' . $this->get('destination') . '</code>'));
 				return self::__ERROR__;
 			}
 
@@ -425,7 +425,7 @@
 			$data['name'] = Lang::createFilename($data['name']);
 
 			if(!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], Symphony::Configuration()->get('write_mode', 'file'))){
-				$message = __('There was an error while trying to upload the file <code>%1$s</code> to the target directory <code>%2$s</code>.', array($data['name'], 'workspace/'.ltrim($rel_path, '/')));
+				$message = __('There was an error while trying to upload the file %1$s to the target directory %2$s.', array('<code>' . $data['name'] . '</code>', '<code>workspace/'.ltrim($rel_path, '/') . '</code>'));
 				$status = self::__ERROR_CUSTOM__;
 				return;
 			}

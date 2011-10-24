@@ -568,12 +568,12 @@
 						$meta['name'] != $existing_section->get('name')
 						&& Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `handle` = '" . Lang::createHandle($meta['name']) . "' AND `id` != {$section_id} LIMIT 1")
 					){
-						$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
+						$this->_errors['name'] = __('A Section with the name %s name already exists', array('<code>' . $meta['name'] . '</code>'));
 						$canProceed = false;
 					}
 				}
 				elseif(Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `handle` = '" . Lang::createHandle($meta['name']). "' LIMIT 1")){
-					$this->_errors['name'] = __('A Section with the name <code>%s</code> name already exists', array($meta['name']));
+					$this->_errors['name'] = __('A Section with the name %s name already exists', array('<code>' . $meta['name'] . '</code>'));
 					$canProceed = false;
 				}
 
@@ -617,7 +617,7 @@
 							elseif($field->mustBeUnique() && in_array($field->get('type'), $unique)){
 								// Warning. cannot have 2 of this field!
 								$canProceed = false;
-								$this->_errors[$position] = array('label' => __('There is already a field of type <code>%s</code>. There can only be one per section.', array($field->handle())));
+								$this->_errors[$position] = array('label' => __('There is already a field of type %s. There can only be one per section.', array('<code>' . $field->handle() . '</code>')));
 							}
 
 							$errors = array();
