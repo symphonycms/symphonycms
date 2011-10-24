@@ -717,7 +717,7 @@
 					$meta->load(self::__getClassPath($name) . '/extension.meta.xml');
 					$xpath = new DOMXPath($meta);
 				} catch (Exception $ex) {
-					throw new SymphonyErrorPage(__('The <code>extension.meta.xml</code> file for the %s extension is not valid XML.', array('<code>' . $name . '</code>')));
+					throw new SymphonyErrorPage(__('The %1$s file for the %2$s extension is not valid XML.', array('<code>extension.meta.xml</code>', '<code>' . $name . '</code>')));
 				}
 
 				// If `$rawXML` is set, just return our DOMDocument instance

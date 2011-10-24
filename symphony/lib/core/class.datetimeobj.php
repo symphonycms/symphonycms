@@ -99,7 +99,7 @@
 		 *  A valid timezone identifier, such as UTC or Europe/Lisbon
 		 */
 		public static function setDefaultTimezone($timezone){
-			if(!@date_default_timezone_set($timezone)) trigger_error(__("Invalid timezone '{$timezone}'"), E_USER_WARNING);
+			if(!@date_default_timezone_set($timezone)) trigger_error(__('Invalid timezone %s', array($timezone)), E_USER_WARNING);
 		}
 
 		/**

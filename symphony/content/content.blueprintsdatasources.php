@@ -838,7 +838,11 @@
 			if(isset($this->_errors['remote_json']['url'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['remote_json']['url']));
 			else $fieldset->appendChild($label);
 
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to specify dynamic portions of the URL.'));
+			$p = new XMLElement('p', 
+				__('Use %s syntax to specify dynamic portions of the URL.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
 
