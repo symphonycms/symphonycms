@@ -305,8 +305,9 @@
 			$root_page = strpos('/', $page['path']) !== false ? array_shift(explode('/', $page['path'])) : '';
 			$current_path = explode(dirname($_SERVER['SCRIPT_NAME']), $_SERVER['REQUEST_URI'], 2);
 			$current_path = '/' . ltrim(end($current_path), '/');
-			$current_path = explode('?', $current_path, 2);
-			$current_path = current($current_path);
+			$split_path = explode('?', $current_path, 3);
+			$current_path = rtrim(current($split_path), '/');
+			$querystring = '?' . next($split_path);
 
 			// Get max upload size from php and symphony config then choose the smallest
 			$upload_size_php = ini_size_to_bytes(ini_get('upload_max_filesize'));
@@ -328,6 +329,7 @@
 				'current-page-id' => $page['id'],
 				'current-path' => $current_path,
 				'parent-path' => '/' . $page['path'],
+				'current-query-string' => $querystring,
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
@@ -493,7 +495,7 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => &$this->_page));
 
-			## Default to the index page if no page has been specified
+			// Default to the index page if no page has been specified
 			if((!$this->_page || $this->_page == '//') && is_null($row)) {
 				$row = PageManager::fetchPageByType('index');
 			}
@@ -528,7 +530,7 @@
 				if(!$this->__isSchemaValid($row['params'], $page_extra_bits)) return false;
 			}
 
-			##Process the extra URL params
+			// Process the extra URL params
 			$url_params = preg_split('/\//', $row['params'], -1, PREG_SPLIT_NO_EMPTY);
 
 			foreach($url_params as $var){
@@ -547,7 +549,7 @@
 
 			$row['type'] = PageManager::fetchPageTypes($row['id']);
 
-			## Make sure the user has permission to access this page
+			// Make sure the user has permission to access this page
 			if(!$this->is_logged_in && in_array('admin', $row['type'])){
 				$row = PageManager::fetchPageByType('403');
 
@@ -809,8 +811,8 @@
 			$orderedList = array();
 			$dsKeyArray = $this->__buildDatasourcePooledParamList(array_keys($dependenciesList));
 
-			## 1. First do a cleanup of each dependency list, removing non-existant DS's and find
-			##	the ones that have no dependencies, removing them from the list
+			// 1. First do a cleanup of each dependency list, removing non-existant DS's and find
+			//    the ones that have no dependencies, removing them from the list
 			foreach($dependenciesList as $handle => $dependencies){
 
 				$dependenciesList[$handle] = @array_intersect($dsKeyArray, $dependencies);
@@ -821,9 +823,10 @@
 				}
 			}
 
-			## 2. Iterate over the remaining DS's. Find if all their dependencies are
-			##	in the $orderedList array. Keep iterating until all DS's are in that list
-			##	  or there are circular dependencies (list doesn't change between iterations of the while loop)
+			// 2. Iterate over the remaining DS's. Find if all their dependencies are
+			//    in the $orderedList array. Keep iterating until all DS's are in that list
+			//    or there are circular dependencies (list doesn't change between iterations
+			//    of the while loop)
 			do{
 
 				$last_count = count($dependenciesList);

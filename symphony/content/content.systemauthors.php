@@ -54,6 +54,21 @@
 					'handle' => 'last_seen'
 				)
 			);
+			
+			if (Administration::instance()->Author->isDeveloper()) {
+				$columns = array_merge($columns, array(
+					array(
+						'label' => __('User Type'),
+						'sortable' => true,
+						'handle' => 'user_type'
+					),
+					array(
+						'label' => __('Language'),
+						'sortable' => true,
+						'handle' => 'language'
+					)
+				));
+			}
 
 			$aTableHead = Sortable::buildTableHeaders(
 				$columns, $sort, $order, (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
@@ -68,7 +83,7 @@
 			}
 			else{
 				foreach($authors as $a){
-					## Setup each cell
+					// Setup each cell
 					if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->get('id') == $a->get('id')) {
 						$td1 = Widget::TableData(
 							Widget::Anchor($a->getFullName(), Administration::instance()->getCurrentPageURL() . 'edit/' . $a->get('id') . '/', $a->get('username'), 'author')
@@ -86,6 +101,12 @@
 					} else {
 						$td3 = Widget::TableData(__('Unknown'), 'inactive');
 					}
+					
+					$td4 = Widget::TableData($a->isDeveloper()? __("Developer") : __("Author"));
+					
+					$languages = Lang::getAvailableLanguages();
+					
+					$td5 = Widget::TableData($a->get("language") == NULL ? __("System Default") : $languages[$a->get("language")]);
 
 					if (Administration::instance()->Author->isDeveloper()) {
 						if ($a->get('id') != Administration::instance()->Author->get('id')) {
@@ -93,8 +114,11 @@
 						}
 					}
 
-					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
+					// Add a row to the body array, assigning each cell to the row
+					if(Administration::instance()->Author->isDeveloper())
+						$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4, $td5));
+					else
+						$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
 				}
 			}
 
@@ -157,7 +181,7 @@
 			}
 		}
 
-		## Both the Edit and New pages need the same form
+		// Both the Edit and New pages need the same form
 		public function __viewNew(){
 			$this->__form();
 		}
@@ -170,7 +194,7 @@
 
 			require_once(TOOLKIT . '/class.field.php');
 
-			## Handle unknown context
+			// Handle unknown context
 			if(!in_array($this->_context[0], array('new', 'edit'))) Administration::instance()->errorPageNotFound();
 
 			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper()) {
@@ -232,7 +256,7 @@
 				Widget::Anchor(__('Authors'), SYMPHONY_URL . '/system/authors/'),
 			));
 
-			### Essentials ###
+			// Essentials
 			$group = new XMLElement('fieldset');
 			$group->setAttribute('class', 'settings');
 			$group->appendChild(new XMLElement('legend', __('Essentials')));
@@ -256,9 +280,8 @@
 			$group->appendChild((isset($this->_errors['email']) ? Widget::wrapFormElementWithError($label, $this->_errors['email']) : $label));
 
 			$this->Form->appendChild($group);
-			###
 
-			### Login Details ###
+			// Login Details
 			$group = new XMLElement('fieldset');
 			$group->setAttribute('class', 'settings');
 			$group->appendChild(new XMLElement('legend', __('Login Details')));
@@ -378,9 +401,8 @@
 			$group->appendChild($label);
 
 			$this->Form->appendChild($group);
-			###
 
-			### Custom Language Selection ###
+			// Custom Language Selection
 			$languages = Lang::getAvailableLanguages();
 			if(count($languages) > 1) {
 

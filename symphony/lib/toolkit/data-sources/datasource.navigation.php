@@ -53,7 +53,7 @@
 		}
 	}
 
-	### BEGIN XML GENERATION CODE ###
+// BEGIN XML GENERATION CODE
 
 	$result = new XMLElement($this->dsParamROOTELEMENT);
 	$type_sql = $parent_sql = null;

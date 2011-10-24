@@ -368,7 +368,7 @@
 				}
 			}
 
-			## Remove the unused DB records
+			// Remove the unused DB records
 			self::__cleanupDatabase();
 
 			return $id;
@@ -401,7 +401,7 @@
 				Symphony::Database()->delete('tbl_extensions_delegates', " `id` IN ('". implode("', '", $delegates). "') ");
 			}
 
-			## Remove the unused DB records
+			// Remove the unused DB records
 			self::__cleanupDatabase();
 
 			return true;
@@ -814,19 +814,19 @@
 		 * a new Delegate is added or removed.
 		 */
 		private static function __cleanupDatabase(){
-			## Grab any extensions sitting in the database
+			// Grab any extensions sitting in the database
 			$rows = Symphony::Database()->fetch("SELECT `name` FROM `tbl_extensions`");
 
-			## Iterate over each row
+			// Iterate over each row
 			if(is_array($rows) && !empty($rows)){
 				foreach($rows as $r){
 					$name = $r['name'];
 
-					## Grab the install location
+					// Grab the install location
 					$path = self::__getClassPath($name);
 					$existing_id = self::fetchExtensionID($name);
 
-					## If it doesnt exist, remove the DB rows
+					// If it doesnt exist, remove the DB rows
 					if(!@is_dir($path)){
 						Symphony::Database()->delete("tbl_extensions_delegates", " `extension_id` = $existing_id ");
 						Symphony::Database()->delete('tbl_extensions', " `id` = '$existing_id' LIMIT 1");
