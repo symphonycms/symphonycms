@@ -54,6 +54,21 @@
 					'handle' => 'last_seen'
 				)
 			);
+			
+			if (Administration::instance()->Author->isDeveloper()) {
+				$columns = array_merge($columns, array(
+					array(
+						'label' => __('User Type'),
+						'sortable' => true,
+						'handle' => 'user_type'
+					),
+					array(
+						'label' => __('Language'),
+						'sortable' => true,
+						'handle' => 'language'
+					)
+				));
+			}
 
 			$aTableHead = Sortable::buildTableHeaders(
 				$columns, $sort, $order, (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
@@ -86,6 +101,12 @@
 					} else {
 						$td3 = Widget::TableData(__('Unknown'), 'inactive');
 					}
+					
+					$td4 = Widget::TableData($a->isDeveloper()? __("Developer") : __("Author"));
+					
+					$languages = Lang::getAvailableLanguages();
+					
+					$td5 = Widget::TableData($a->get("language") == NULL ? __("System Default") : $languages[$a->get("language")]);
 
 					if (Administration::instance()->Author->isDeveloper()) {
 						if ($a->get('id') != Administration::instance()->Author->get('id')) {
@@ -94,7 +115,10 @@
 					}
 
 					// Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
+					if(Administration::instance()->Author->isDeveloper())
+						$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4, $td5));
+					else
+						$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
 				}
 			}
 
