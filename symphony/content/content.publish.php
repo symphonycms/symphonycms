@@ -67,7 +67,7 @@
 
 		public function __viewIndex(){
 			if(!$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle'])) {
-				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, %s for could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
+				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
 			}
 
 			$section = SectionManager::fetch($section_id);
@@ -473,7 +473,7 @@
 
 		public function __viewNew() {
 			if(!$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle'])) {
-				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, %s for could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
+				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
 			}
 
 			$section = SectionManager::fetch($section_id);
@@ -572,7 +572,7 @@
 				$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle']);
 
 				if(!$section = SectionManager::fetch($section_id)) {
-					Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, %s for could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
+					Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
 				}
 
 				$entry =& EntryManager::create();
