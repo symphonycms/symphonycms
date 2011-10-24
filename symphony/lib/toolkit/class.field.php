@@ -712,7 +712,7 @@
 				$errors['element_name'] = __('This is a required field.');
 			}
 			elseif (!$valid_name) {
-				$errors['element_name'] = __('Invalid element name. Must be valid QName.');
+				$errors['element_name'] = __('Invalid element name. Must be valid %s.', array('<code>QName</code>'));
 			}
 			elseif($checkForDuplicates) {
 				$sql_id = ($this->get('id') ? " AND f.id != '".$this->get('id')."' " : '');
