@@ -1165,7 +1165,7 @@ Options +FollowSymlinks -Indexes
 
 			if(in_array(MISSING_XSL, $Page->missing) || in_array(MISSING_XML, $Page->missing))
 				$messages[] = array(__('%s Processor', array('<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr>')),
-									__('Symphony needs an XSLT processor such as %1$s or %s to build pages.', array('Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr>', 'Sablotron')));
+									__('Symphony needs an XSLT processor such as %1$s or %2$s to build pages.', array('Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr>', 'Sablotron')));
 
 			$dl = new XMLElement('dl');
 			foreach($messages as $m){
