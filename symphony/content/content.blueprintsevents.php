@@ -189,8 +189,8 @@
 				$fieldset = new XMLElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Version')));
-				if(preg_match('/^\d+(\.\d+)*$/', $about['version'])) $fieldset->appendChild(new XMLElement('p', __('%s released on %s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
-				else $fieldset->appendChild(new XMLElement('p', __('Created by %s at %s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+				if(preg_match('/^\d+(\.\d+)*$/', $about['version'])) $fieldset->appendChild(new XMLElement('p', __('%1$s released on %2$s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+				else $fieldset->appendChild(new XMLElement('p', __('Created by %1$s at %2$s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
 				$this->Form->appendChild($fieldset);
 			}
 
@@ -239,7 +239,11 @@
 				Symphony::ExtensionManager()->notifyMembers('EventPreDelete', '/blueprints/events/', array('file' => EVENTS . "/event." . $this->_context[1] . ".php"));
 
 				if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php')){
-					$this->pageAlert(__('Failed to delete %s. Please check permissions.', array('<code>' . $this->_context[1] . '</code>')), Alert::ERROR);
+					$this->pageAlert(
+						__('Failed to delete %s.', array('<code>' . $this->_context[1] . '</code>'))
+						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/events</code>'))
+						, Alert::ERROR
+					);
 				}
 
 				else {
@@ -517,7 +521,11 @@
 
 				// Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file')))
-					$this->pageAlert(__('Failed to write Event to %s. Please check permissions.', array('<code>' . EVENTS . '</code>')), Alert::ERROR);
+					$this->pageAlert(
+						__('Failed to write Event to disk.')
+						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/events</code>'))
+						, Alert::ERROR
+					);
 
 				// Write Successful, add record to the database
 				else{

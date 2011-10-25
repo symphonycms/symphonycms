@@ -148,7 +148,7 @@
 			}
 
 			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
-				$errors['destination'] = __('Destination folder, %s, is not writable. Please check permissions.', array('<code>' . $this->get('destination') . '</code>'));
+				$errors['destination'] = __('Destination folder is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			parent::checkFields($errors, $checkForDuplicates);
@@ -181,7 +181,7 @@
 			}
 
 			elseif(!$flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/')){
-				$flagWithError = __('Destination folder, %s, is not writable. Please check permissions.', array('<code>' . $this->get('destination') . '</code>'));
+				$flagWithError = __('Destination folder is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			$label = Widget::Label($this->label());
@@ -278,7 +278,7 @@
 			}
 
 			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
-				$message = __('Destination folder, %s, is not writable. Please check permissions.', array('<code>' . $this->get('destination') . '</code>'));
+				$message = __('Destination folder is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
 				return self::__ERROR__;
 			}
 

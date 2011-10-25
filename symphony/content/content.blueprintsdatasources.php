@@ -527,7 +527,7 @@
 				Widget::Input('fields[max_records]', $fields['max_records'], NULL, array('size' => '6')),
 				Widget::Input('fields[page_number]', $fields['page_number'], NULL, array('size' => '6'))
 			);
-			$label->setValue(__('%s Paginate results, limiting to %s entries per page. Return page %s', array($input[0]->generate(false), $input[1]->generate(false), $input[2]->generate(false))));
+			$label->setValue(__('%1$s Paginate results, limiting to %2$s entries per page. Return page %3$s', array($input[0]->generate(false), $input[1]->generate(false), $input[2]->generate(false))));
 
 			if(isset($this->_errors['max_records'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['max_records']));
 			else if(isset($this->_errors['page_number'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['page_number']));
@@ -932,8 +932,8 @@
 					case 'version':
 						$fieldset = new XMLElement('fieldset');
 						$fieldset->appendChild(new XMLElement('legend', __('Version')));
-						if(preg_match('/^\d+(\.\d+)*$/', $value)) $fieldset->appendChild(new XMLElement('p', __('%s released on %s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
-						else $fieldset->appendChild(new XMLElement('p', __('Created by %s at %s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+						if(preg_match('/^\d+(\.\d+)*$/', $value)) $fieldset->appendChild(new XMLElement('p', __('%1$s released on %2$s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+						else $fieldset->appendChild(new XMLElement('p', __('Created by %1$s at %2$s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
 						break;
 
 					case 'description':
@@ -989,7 +989,11 @@
 				Symphony::ExtensionManager()->notifyMembers('DatasourcePreDelete', '/blueprints/datasources/', array('file' => DATASOURCES . "/data." . $this->_context[1] . ".php"));
 
 				if(!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php')){
-					$this->pageAlert(__('Failed to delete %s. Please check permissions.', array('<code>' . $this->_context[1] . '</code>')), Alert::ERROR);
+					$this->pageAlert(
+						__('Failed to delete %s.', array('<code>' . $this->_context[1] . '</code>'))
+						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/data-sources</code>'))
+						, Alert::ERROR
+					);
 				}
 				else {
 					$pages = PageManager::fetch(false, array('data_sources', 'id'), array("
@@ -1369,7 +1373,11 @@
 
 				// Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file')))
-					$this->pageAlert(__('Failed to write Data source to %s. Please check permissions.', array('<code>' . DATASOURCES . '</code>')), Alert::ERROR);
+					$this->pageAlert(
+						__('Failed to write Data source to disk.')
+						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/data-sources</code>'))
+						, Alert::ERROR
+					);
 
 				// Write Successful, add record to the database
 				else{

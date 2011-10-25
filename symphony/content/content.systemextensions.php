@@ -83,7 +83,7 @@
 					}
 					if(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
 						if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status']))
-							$td3 = Widget::TableData(__('New version %s, Requires Symphony %s', array($about['version'], $about['required_version'])));
+							$td3 = Widget::TableData(__('New version %1$s, Requires Symphony %2$s', array($about['version'], $about['required_version'])));
 						else
 							$td3 = Widget::TableData(__('Enable to update to %s', array($about['version'])));
 					}

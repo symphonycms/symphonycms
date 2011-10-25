@@ -242,7 +242,11 @@
 						$canProceed = true;
 						foreach($checked as $name) {
 							if (!General::deleteFile(UTILITIES . '/' . $name)) {
-								$this->pageAlert(__('Failed to delete %s. Please check permissions.', array('<code>' . $name . '</code>')),Alert::ERROR);
+								$this->pageAlert(
+									__('Failed to delete %s.', array('<code>' . $name . '</code>'))
+									. ' ' . __('Please check permissions on %s.', array('<code>/workspace/utilities</code>'))
+									, Alert::ERROR
+								);
 								$canProceed = false;
 							}
 						}
@@ -290,7 +294,7 @@
 			if(!isset($fields['name']) || trim($fields['name']) == '') $this->_errors['name'] = __('Name is a required field.');
 
 			if(!isset($fields['body']) || trim($fields['body']) == '') $this->_errors['body'] = __('Body is a required field.');
-			elseif(!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) $this->_errors['body'] = __('This document is not well formed. The following error was returned: %s', array('<code>' . $errors[0]['message'] . '</code>'));
+			elseif(!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) $this->_errors['body'] = __('This document is not well formed.') . ' ' . __('The following error was returned:') . ' <code>' . $errors[0]['message'] . '</code>';
 
 			$fields['name'] = Lang::createFilename($fields['name']);
 			if(General::right($fields['name'], 4) != '.xsl') $fields['name'] .= '.xsl';
@@ -337,7 +341,11 @@
 
 				// Write the file
 				if(!$write = General::writeFile($file, $fields['body'], Symphony::Configuration()->get('write_mode', 'file')))
-					$this->pageAlert(__('Utility could not be written to disk. Please check permissions on %s.', array('<code>/workspace/utilities</code>')), Alert::ERROR);
+					$this->pageAlert(
+						__('Utility could not be written to disk.')
+						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/utilities</code>'))
+						, Alert::ERROR
+					);
 
 				// Write Successful, add record to the database
 				else{
