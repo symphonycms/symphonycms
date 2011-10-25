@@ -397,7 +397,7 @@
 			if(!is_null($timestamp)) {
 				return array(
 					'value' => DateTimeObj::get('c', $timestamp),
-					'local' => DateTimeObj::get('U', $timestamp),
+					'local' => $timestamp,
 					'gmt' => DateTimeObj::getGMT('U', $timestamp)
 				);
 			}
