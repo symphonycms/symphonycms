@@ -728,16 +728,22 @@
 
 		/**
 		 * Returns the path to the current template by looking at the
-		 * `TEMPLATES` directory for the convention `tpl.*.php`. If the
-		 * template is not found, false is returned
+		 * `WORKSPACE/template/` directory, then at the `TEMPLATES`
+		 * directory for the convention `tpl.*.php`. If the template 
+		 * is not found, false is returned
 		 *
 		 * @return mixed
 		 *  String, which is the path to the template if the template is found,
 		 *  false otherwise
 		 */
 		public function getTemplate(){
-			$template = sprintf('%s/usererror.%s.php', TEMPLATE, $this->_template);
-			return (file_exists($template) ? $template : false);
+			$format = '%s/usererror.%s.php';
+			if(file_exists($template = sprintf($format, WORKSPACE . '/template', $this->_template)))
+				return $template;
+			elseif(file_exists($template = sprintf($format, TEMPLATE, $this->_template)))
+				return $template;
+			else
+				return false;
 		}
 	}
 
@@ -794,7 +800,7 @@
 				}
 			}
 
-			return sprintf(file_get_contents(TEMPLATE . '/fatalerror.database.tpl'),
+			return sprintf(file_get_contents(self::getTemplate('fatalerror.database')),
 				$e->getDatabaseErrorMessage(),
 				$e->getQuery(),
 				$trace,
