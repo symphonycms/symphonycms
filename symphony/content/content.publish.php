@@ -530,7 +530,7 @@
 
 			if ((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))) {
 				$primary->appendChild(new XMLElement('p', __(
-					'It looks like you\'re trying to create an entry. Perhaps you want fields first?')
+					'It looks like you’re trying to create an entry. Perhaps you want fields first?')
 					. ' <a href="' . SYMPHONY_URL . '/blueprints/sections/edit/' . $section->get('id') . '/">'
 					. __('Click here to create some.') . '</a>'
 				));
@@ -795,7 +795,7 @@
 
 			if((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))){
 				$primary->appendChild(new XMLElement('p',
-					__('It looks like you\'re trying to create an entry. Perhaps you want fields first?')
+					__('It looks like you’re trying to create an entry. Perhaps you want fields first?')
 					. ' <a href="' . SYMPHONY_URL . '/blueprints/sections/edit/'. $section->get('id') . '/">'
 					. __('Click here to create some.')
 					. '</a>'

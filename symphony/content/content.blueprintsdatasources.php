@@ -615,7 +615,7 @@
 				$param_names = '<code id="output-param-name">$ds-' . __('Untitled') . '</code>';
 			}
 
-			$p = new XMLElement('p', __('The parameters %s will be created with this field\'s value for XSLT or other data sources to use.', array($param_names)));
+			$p = new XMLElement('p', __('The parameters %s will be created with this field’s value for XSLT or other data sources to use.', array($param_names)));
 			$p->setAttribute('class', 'help');
 			$subfieldset->appendChild($p);
 

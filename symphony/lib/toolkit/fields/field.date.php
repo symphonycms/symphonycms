@@ -370,7 +370,7 @@
 
 			// Handle invalid dates
 			if(!DateTimeObj::validate($data)) {
-				$message = __("The date specified in '%s' is invalid.", array($this->get('label')));
+				$message = __('The date specified in ‘%s’ is invalid.', array($this->get('label')));
 				return self::__INVALID_FIELDS__;
 			}
 

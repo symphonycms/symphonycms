@@ -824,7 +824,7 @@
 			$has_no_value = is_array($data) ? empty($data) : strlen(trim($data)) == 0;
 
 			if ($this->get('required') == 'yes' && $has_no_value) {
-				$message = __("'%s' is a required field.", array($this->get('label')));
+				$message = __('‘%s’ is a required field.', array($this->get('label')));
 
 				return self::__MISSING_FIELDS__;
 			}

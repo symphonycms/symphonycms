@@ -346,7 +346,7 @@
 
 				$documentation_parts[] = self::processDocumentationCode($code);
 
-				$documentation_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? ' (<strong> ' . __('Notice that it is possible to get mixtures of success and failure messages when using the "Allow Multiple" option') . '</strong>)' : NULL) . ':');
+				$documentation_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? ' (<strong> ' . __('Notice that it is possible to get mixtures of success and failure messages when using the ‘Allow Multiple’ option') . '</strong>)' : NULL) . ':');
 
 				if($multiple){
 					$code = new XMLElement($rootelement);
@@ -416,7 +416,7 @@
 					$documentation_parts[] = new XMLElement('p', 
 						__('Upon the event successfully saving the entry, this option takes input from the form and send an email to the desired recipient.')
 						. ' <strong>'
-						. __('It currently does not work with "Allow Multiple"')
+						. __('It currently does not work with ‘Allow Multiple’')
 						. '</strong>. '
 						. __('The following are the recognised fields:')
 					);

@@ -286,7 +286,7 @@
 						throw new EmailValidationException(__('Recipient email address cannot be empty.'));
 					}
 					elseif(!filter_var($address, FILTER_VALIDATE_EMAIL)) {
-						throw new EmailValidationException(__('The email address "%s" is invalid.', array($address)));
+						throw new EmailValidationException(__('The email address ‘%s’ is invalid.', array($address)));
 					}
 				}
 			}

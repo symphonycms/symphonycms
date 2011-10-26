@@ -172,12 +172,12 @@
 			$message = NULL;
 
 			if($this->get('required') == 'yes' && strlen($data) == 0){
-				$message = __("'%s' is a required field.", array($this->get('label')));
+				$message = __('‘%s’ is a required field.', array($this->get('label')));
 				return self::__MISSING_FIELDS__;
 			}
 
 			if($this->__applyFormatting($data, true, $errors) === false){
-				$message = __('"%s" contains invalid XML.', array($this->get('label'))) . ' ' . __('The following error was returned:') . ' <code>' . $errors[0]['message'] . '</code>';
+				$message = __('‘%s’ contains invalid XML.', array($this->get('label'))) . ' ' . __('The following error was returned:') . ' <code>' . $errors[0]['message'] . '</code>';
 				return self::__INVALID_FIELDS__;
 			}
 

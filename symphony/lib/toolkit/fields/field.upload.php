@@ -240,7 +240,7 @@
 			if(empty($data) || $data['error'] == UPLOAD_ERR_NO_FILE) {
 
 				if($this->get('required') == 'yes'){
-					$message = __("'%s' is a required field.", array($this->get('label')));
+					$message = __('‘%s’ is a required field.', array($this->get('label')));
 					return self::__MISSING_FIELDS__;
 				}
 
@@ -264,7 +264,7 @@
 					$rule = $this->get('validator');
 
 					if(!General::validateString($file, $rule)){
-						$message = __("File chosen in '%s' does not match allowable file types for that field.", array($this->get('label')));
+						$message = __('File chosen in ‘%s’ does not match allowable file types for that field.', array($this->get('label')));
 						return self::__INVALID_FIELDS__;
 					}
 				}
@@ -286,24 +286,24 @@
 
 				switch($data['error']){
 					case UPLOAD_ERR_INI_SIZE:
-						$message = __('File chosen in "%1$s" exceeds the maximum allowed upload size of %2$s specified by your host.', array($this->get('label'), (is_numeric(ini_get('upload_max_filesize')) ? General::formatFilesize(ini_get('upload_max_filesize')) : ini_get('upload_max_filesize'))));
+						$message = __('File chosen in ‘%1$s’ exceeds the maximum allowed upload size of %2$s specified by your host.', array($this->get('label'), (is_numeric(ini_get('upload_max_filesize')) ? General::formatFilesize(ini_get('upload_max_filesize')) : ini_get('upload_max_filesize'))));
 						break;
 
 					case UPLOAD_ERR_FORM_SIZE:
-						$message = __('File chosen in "%1$s" exceeds the maximum allowed upload size of %2$s, specified by Symphony.', array($this->get('label'), General::formatFilesize($_POST['MAX_FILE_SIZE'])));
+						$message = __('File chosen in ‘%1$s’ exceeds the maximum allowed upload size of %2$s, specified by Symphony.', array($this->get('label'), General::formatFilesize($_POST['MAX_FILE_SIZE'])));
 						break;
 
 					case UPLOAD_ERR_PARTIAL:
 					case UPLOAD_ERR_NO_TMP_DIR:
-						$message = __("File chosen in '%s' was only partially uploaded due to an error.", array($this->get('label')));
+						$message = __('File chosen in ‘%s’ was only partially uploaded due to an error.', array($this->get('label')));
 						break;
 
 					case UPLOAD_ERR_CANT_WRITE:
-						$message = __("Uploading '%s' failed. Could not write temporary file to disk.", array($this->get('label')));
+						$message = __('Uploading ‘%s’ failed. Could not write temporary file to disk.', array($this->get('label')));
 						break;
 
 					case UPLOAD_ERR_EXTENSION:
-						$message = __("Uploading '%s' failed. File upload stopped by extension.", array($this->get('label')));
+						$message = __('Uploading ‘%s’ failed. File upload stopped by extension.', array($this->get('label')));
 						break;
 				}
 
@@ -317,7 +317,7 @@
 				$rule = $this->get('validator');
 
 				if(!General::validateString($data['name'], $rule)){
-					$message = __("File chosen in '%s' does not match allowable file types for that field.", array($this->get('label')));
+					$message = __('File chosen in ‘%s’ does not match allowable file types for that field.', array($this->get('label')));
 					return self::__INVALID_FIELDS__;
 				}
 

@@ -55,7 +55,7 @@
 	define('kFOOTER', $footer);
 
 	$warnings = array(
-		'no-symphony-dir' => __('No %s directory was found at this location. Please upload the contents of Symphony\'s install package here.', array('<code>/symphony</code>')),
+		'no-symphony-dir' => __('No %s directory was found at this location. Please upload the contents of Symphony’s install package here.', array('<code>/symphony</code>')),
 		'no-write-permission-workspace' => __('Symphony does not have write permission to the existing %1$s directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive %2$s command.', array('<code>/workspace</code>', '<code>chmod -R</code>')),
 		'no-write-permission-manifest' => __('Symphony does not have write permission to the %1$s directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive %2$s command.', array('<code>/manifest</code>', '<code>chmod -R</code>')),
 		'no-write-permission-root' => __('Symphony does not have write permission to the root directory. Please modify permission settings on this directory. This is necessary only if you are not including a workspace, and can be reverted once installation is complete.'),
@@ -1041,7 +1041,7 @@ Options +FollowSymlinks -Indexes
 			// Use UTF-8 at all times unless otherwise specified
 			$Fieldset->appendChild(Widget::label(__('Always use %s encoding', array('<code>UTF-8</code>')), Widget::input('fields[database][use-server-encoding]', 'no', 'checkbox', !isset($fields['database']['use-server-encoding']) ? array() : array('checked' => 'checked')), 'option'));
 
-			$Fieldset->appendChild(new XMLElement('p', __("If unchecked, Symphony will use your database's default encoding instead of %s.", array('<code>UTF-8</code>'))));
+			$Fieldset->appendChild(new XMLElement('p', __('If unchecked, Symphony will use your database’s default encoding instead of %s.', array('<code>UTF-8</code>'))));
 
 			$Database->appendChild($Fieldset);
 
