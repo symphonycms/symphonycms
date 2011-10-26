@@ -240,7 +240,7 @@
 					}
 
 					GenericExceptionHandler::$enabled = true;
-					throw new SymphonyErrorPage(trim($errstr), NULL, 'xslt-error', array('proc' => clone $this->Proc));
+					throw new SymphonyErrorPage(trim($errstr), NULL, 'xslt', array('proc' => clone $this->Proc));
 				}
 
 				Symphony::Profiler()->sample('Page creation complete');

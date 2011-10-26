@@ -411,7 +411,7 @@
 		 * page not found template
 		 */
 		public function errorPageNotFound(){
-			$this->customError(__('Page Not Found'), __('The page you requested does not exist.'), 'error', array('header' => 'HTTP/1.0 404 Not Found'));
+			$this->customError(__('Page Not Found'), __('The page you requested does not exist.'), 'generic', array('header' => 'HTTP/1.0 404 Not Found'));
 		}
 
 	}

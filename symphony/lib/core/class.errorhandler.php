@@ -191,7 +191,7 @@
 
 			}
 
-			return sprintf(file_get_contents(TEMPLATE . '/errorhandler.tpl'),
+			return sprintf(file_get_contents(TEMPLATE . '/fatalerror.generic.tpl'),
 				($e instanceof ErrorException ? GenericErrorHandler::$errorTypeStrings[$e->getSeverity()] : 'Fatal Error'),
 				$e->getMessage(),
 				$e->getFile(),
