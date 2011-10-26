@@ -95,9 +95,9 @@
 
 		/**
 		 * This function creates the initial `.xsl` template for the page, whether
-		 * that be from the `TEMPLATES/page.xsl` file, or from an existing template
-		 * with the same name. This function will handle the renaming of a page by
-		 * creating the new files using the old files as the templates then removing
+		 * that be from the `TEMPLATES/blueprints.page.xsl` file, or from an existing
+		 * template with the same name. This function will handle the renaming of a page
+		 * by creating the new files using the old files as the templates then removing
 		 * the old template. If a template already exists for a Page, it will not
 		 * be overridden and the function will return true.
 		 *
@@ -128,7 +128,7 @@
 
 			// Old file doesn't exist, use template:
 			if(!file_exists($old)) {
-				$data = file_get_contents(TEMPLATE . '/page.xsl');
+				$data = file_get_contents(TEMPLATE . '/blueprints.page.xsl');
 
 			}
 			else{
