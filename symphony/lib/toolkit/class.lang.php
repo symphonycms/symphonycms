@@ -17,7 +17,7 @@
 	 * 		'Create new' => 'Translation for Create New',
 	 * 		'/blueprints/datasources' => array(
 	 * 			'Create new' =>
-	 * 			'Translation fetched only when inside a /blueprints/datasources/* page'
+	 * 			'If we are inside a /blueprints/datasources/* page, this translation will be returned for the string'
 	 * 		),
 	 * 		[...]
 	 *	);
@@ -31,7 +31,7 @@
 	 *  Returns the translated string
 	 */
 	function __($string, $inserts=NULL) {
-		return Lang::Dictionary()->translate($string, $inserts);
+		return Lang::translate($string, $inserts);
 	}
 
 	/**
@@ -49,29 +49,92 @@
 	}
 
 	/**
-	 * The Dictionary class contains a dictionary of all strings of the active
-	 * system language. It allows strings to be added, removed, found or translated.
-	 * It also offers a function to merge different dictionaries which is used to combine
-	 * core and extension translations. The Dictionary class should only be used internally:
-	 * for string translations and languages activation please use the translation function
-	 * and make use of the Lang class provided in this file.
+	 * The Lang class loads and manages languages
 	 */
-	Class Dictionary {
+	Class Lang {
 
 		/**
-		 * An associative array mapping English strings and their translations
+		 * Array of transliterations
 		 * @var array
 		 */
-		private $_strings;
+		private static $_transliterations;
 
 		/**
-		 * The constructor for Dictionary.
-		 *
-		 * @param array $strings
-		 *	Associative array mapping English strings and their translations, defaults to an empty array
+		 * Code of active language
+		 * @var string
 		 */
-		public function __construct(array $strings = array()) {
-			$this->_strings = $strings;
+		private static $_lang;
+
+		/**
+		 * Context information of all available languages
+		 * @var array
+		 */
+		private static $_languages;
+
+		/**
+		 * Instance of the current Dictionary
+		 * @var Dictionary
+		 */
+		private static $_dictionary;
+
+		/**
+		 * Array of months and weekday for localized date output
+		 * @var array
+		 */
+		private static $_datetime_dictionary;
+
+		/**
+		 * Get dictionary
+		 *
+		 * @return array
+		 *	Return the current dictionary
+		 */
+		public static function Dictionary() {
+			return self::$_dictionary;
+		}
+
+		/**
+		 * Get languages
+		 *
+		 * @return array
+		 *	Return the array of languages
+		 */
+		public static function Languages() {
+			return self::$_languages;
+		}
+
+		/**
+		 * Get transliterations
+		 *
+		 * @return array
+		 *	Returns the array of transliterations
+		 */
+		public static function Transliterations() {
+			return self::$_transliterations;
+		}
+
+		/**
+		 * Initialize dictionary, transliterations and dates array
+		 */
+		public static function initialize() {
+			self::$_dictionary = array();
+
+			// Load default datetime strings
+			if(empty(self::$_datetime_dictionary)) {
+				require(TEMPLATE . '/lang.datetime.php');
+
+				foreach($datetime_strings as $string) {
+					self::$_datetime_dictionary[$string] = $string;
+				}
+			}
+
+			// Load default transliterations
+			if(empty(self::$_transliterations)) {
+				require(TEMPLATE . '/lang.transliterations.php');
+
+				self::$_transliterations = $transliterations;
+			}
+
 		}
 
 		/**
@@ -87,8 +150,8 @@
 		 * @return string
 		 *  Returns the translated string
 		 */
-		public function translate($string, array $inserts=NULL, $namespace=NULL) {
-			$translated = $this->find($string, $namespace);
+		public function translate($string, array $inserts = null, $namespace = NULL) {
+			$translated = self::find($string, $namespace);
 
 			// Replace translation placeholders
 			if(is_array($inserts) && !empty($inserts)) {
@@ -109,130 +172,18 @@
 		 *  Returns either the translation of the string or the original string if it
 		 *  could not be found
 		 */
-		public function find($string, $namespace=NULL) {
+		private function find($string, $namespace = NULL) {
 			if(is_null($namespace)) $namespace = Symphony::getPageNamespace();
 
-			if(isset($namespace) && trim($namespace) !== '' && isset($this->_strings[$namespace][$string])) {
-				return $this->_strings[$namespace][$string];
+			if(isset($namespace) && trim($namespace) !== '' && isset(self::$_dictionary[$namespace][$string])) {
+				return self::$_dictionary[$namespace][$string];
 			}
-			else if(isset($this->_strings[$string])) {
-				return $this->_strings[$string];
+			else if(isset(self::$_dictionary[$string])) {
+				return self::$_dictionary[$string];
 			}
 			else {
 				return $string;
 			}
-		}
-
-		/**
-		 * Given a source string an its translation, add both to the current dictionary.
-		 *
-		 * @param string $source
-		 *  English string
-		 * @param string $namespace (optional)
-		 *  Optional string used to define the namespace, defaults to NULL.
-		 * @param string $translation
-		 *  Translation
-		 */
-		public function add($source, $translation, $namespace=NULL) {
-			if(isset($namespace) && trim($namespace) !== '') {
-				$this->_strings[$namespace][$source] = $translation;
-			} else {
-				$this->_strings[$source] = $translation;
-			}
-		}
-
-		/**
-		 * Given an associative array of strings, merge it with the current dictionary.
-		 *
-		 * @param array $string
-		 *  Associative array containing English strings and their translations
-		 */
-		public function merge(array $strings) {
-			if(is_array($strings)) {
-				$this->_strings = array_merge($this->_strings, $strings);
-			}
-		}
-
-		/**
-		 * Given an English string, remove it from the current dictionary.
-		 *
-		 * @param string $string
-		 *  String to be removed from the dictionary.
-		 * @param string $namespace (optional)
-		 *  Optional string used to define the namespace, defaults to NULL.
-		 */
-		public function remove($string, $namespace=NULL) {
-			if(isset($namespace) && trim($namespace) !== '') {
-				unset($this->_strings[$namespace][$string]);
-			} else {
-				unset($this->_strings[$string]);
-			}
-		}
-
-	}
-
-	/**
-	 * The Lang class loads and manages languages
-	 */
-	Class Lang {
-
-		/**
-		 * Code of active language
-		 * @var string
-		 */
-		private static $_lang;
-
-		/**
-		 * Context information of all available languages
-		 * @var array
-		 */
-		public static $_languages;
-
-		/**
-		 * Instance of the current Dictionary
-		 * @var Dictionary
-		 */
-		private static $_dictionary;
-
-		/**
-		 * Array of transliterations
-		 * @var array
-		 */
-		private static $_transliterations;
-
-		/**
-		 * Array of months and weekday for localized date output
-		 * @var array
-		 */
-		public static $_dates;
-
-		/**
-		 * Get dictionary
-		 *
-		 * @return Dictionary
-		 *	Return the current dictionary
-		 */
-		public static function Dictionary() {
-			return self::$_dictionary;
-		}
-
-		/**
-		 * Get transliterations
-		 *
-		 * @return array
-		 *	Returns the array of transliterations
-		 */
-		public static function Transliterations() {
-			return self::$_transliterations;
-		}
-
-		/**
-		 * Initialize dictionary, transliterations and dates array
-		 */
-		public static function initialize() {
-			self::$_dictionary = new Dictionary();
-			self::$_transliterations = array();
-			self::$_dates = array();
 		}
 
 		/**
@@ -242,7 +193,7 @@
 		 *	Language code, e. g. 'en' or 'pt-br'
 		 * @param boolean $enabled
 		 */
-		public static function set($lang, $enabled=true) {
+		public static function set($lang, $enabled = true) {
 			if($lang && $lang != self::get()) {
 
 				// Store current language code
@@ -273,7 +224,7 @@
 		 *
 		 * @param boolean $enabled
 		 */
-		public static function activate($enabled=true) {
+		private static function activate($enabled = true) {
 
 			// Fetch all available languages
 			if(empty(self::$_languages)) {
@@ -329,7 +280,7 @@
 		 * status (enabled/disabled) can only be determined when the Extension Manager has been
 		 * initialized before. During installation all extension status are set to disabled.
 		 */
-		public static function fetch() {
+		private static function fetch() {
 			self::$_languages = array();
 
 			// Fetch list of active extensions
@@ -446,11 +397,11 @@
 		 * @param boolean $clear
 		 *	True, if the current dictionary should be cleared, defaults to false
 		 */
-		public static function load($path, $clear=false) {
+		private static function load($path, $clear = false) {
 
-			// Initialize or clear dictionary
-			if(!(self::$_dictionary instanceof Dictionary) || $clear === true) {
-				self::initialize();
+			// Clear dictionary if requested
+			if($clear === true) {
+				self::$_dictionary = array();
 			}
 
 			// Load language file
@@ -458,44 +409,20 @@
 				require($path);
 			}
 
-			// Define default dates
-			if(empty(self::$_dates)) {
-				$dates = array(
-					'yesterday', 'today', 'tomorrow', 'now',
-					'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
-					'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat',
-					'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',
-					'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-					'sec', 'second', 'min', 'minute', 'hour', 'day', 'fortnight', 'forthnight', 'month', 'year',
-					'secs', 'seconds', 'mins', 'minutes', 'hours', 'days', 'fortnights', 'forthnights', 'months', 'years',
-					'weekday', 'weekdays', 'week', 'weeks',
-					'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth', 'next', 'last', 'previous', 'this'
-				);
-				foreach($dates as $date) {
-					self::$_dates[$date] = $date;
-				}
-			}
-
-			// Merge dictionaries
+			// Merge dictionaries ($dictionary is declared inside $path)
 			if(isset($dictionary) && is_array($dictionary)) {
-				self::$_dictionary->merge($dictionary);
+				self::$_dictionary = array_merge(self::$_dictionary, $dictionary);
 
 				// Add date translations
-				foreach(self::$_dates as $key => $value) {
-					self::$_dates[$key] = __($key);
+				foreach(self::$_datetime_dictionary as $key => $value) {
+					self::$_datetime_dictionary[$key] = __($key);
 				}
 
 			}
 
-			// Populate transliterations
+			// Populate transliterations ($transliterations is declared inside $path)
 			if(isset($transliterations) && is_array($transliterations)) {
 				self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
-			}
-
-			// Use default if no transliterations are provided with the translations
-			if(empty(self::$_transliterations)) {
-				include(LANG . '/lang.en.php');
-				self::$_transliterations = $transliterations;
 			}
 
 		}
@@ -510,7 +437,7 @@
 		 * @return array
 		 *	Returns an associative array of language codes and names, e. g. 'en' => 'English'
 		 */
-		public static function getAvailableLanguages($enabled=true) {
+		public static function getAvailableLanguages($enabled = true) {
 			$languages = array();
 
 			// Get available languages
@@ -546,7 +473,7 @@
 
 			// Only translate dates in localized environments
 			if(self::isLocalized()) {
-				foreach(self::$_dates as $english => $locale) {
+				foreach(self::$_datetime_dictionary as $english => $locale) {
 					$string = preg_replace('/\b' . $english . '\b/i', $locale, $string);
 				}
 			}
@@ -568,7 +495,7 @@
 			if(self::isLocalized()) {
 
 				// Translate names to English
-				foreach(self::$_dates as $english => $locale) {
+				foreach(self::$_datetime_dictionary as $english => $locale) {
 					// We do not use $locale in the regexp as it might be empty
 					// (i.e. you don't want to translate that string)
 					$string = preg_replace('/\b' . $english . '\b/i', $english, $string);
@@ -604,7 +531,7 @@
 		 * @return string
 		 *	Returns resultant handle
 		 */
-		public static function createHandle($string, $max_length=255, $delim='-', $uriencode=false, $apply_transliteration=true, $additional_rule_set=NULL) {
+		public static function createHandle($string, $max_length = 255, $delim = '-', $uriencode = false, $apply_transliteration = true, $additional_rule_set = NULL) {
 			// Use the transliteration table if provided
 			if($apply_transliteration == true) $string = _t($string);
 
@@ -623,7 +550,7 @@
 		 * @return string
 		 *	Returns created filename
 		 */
-		public static function createFilename($string, $delim='-', $apply_transliteration=true) {
+		public static function createFilename($string, $delim='-', $apply_transliteration = true) {
 			// Use the transliteration table if provided
 			if($apply_transliteration == true) $string = _t($string);
 
