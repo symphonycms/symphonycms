@@ -1068,7 +1068,7 @@
 
 			if(empty($this->_errors)){
 
-				$dsShell = file_get_contents(TEMPLATE . '/blueprints.datasource.tpl');
+				$dsShell = file_get_contents($this->getTemplate('blueprints.datasource'));
 
 				$params = array(
 					'rootelement' => $rootelement,
