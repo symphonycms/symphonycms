@@ -278,7 +278,7 @@
 			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
 
-			##Check to make sure the classname is not empty after handlisation.
+			// Check to make sure the classname is not empty after handlisation.
 			if(empty($classname)) $this->_errors['name'] = __('Please ensure name contains at least one Latin-based alphabet.', array($classname));
 
 			$file = EVENTS . '/event.' . $classname . '.php';
@@ -293,7 +293,7 @@
 				elseif($classname != $existing_handle) $queueForDeletion = EVENTS . '/event.' . $existing_handle . '.php';
 			}
 
-			##Duplicate
+			// Duplicate
 			if($isDuplicate) $this->_errors['name'] = __('An Event with the name <code>%s</code> name already exists', array($classname));
 
 			if(empty($this->_errors)){
@@ -340,8 +340,6 @@
 
 				$documentation_parts[] = self::processDocumentationCode($code);
 
-				###
-
 				$documentation_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? __(' (<b>Notice that it is possible to get mixtures of success and failure messages when using the "Allow Multiple" option</b>)') : NULL) . ':');
 
 				if($multiple){
@@ -366,8 +364,6 @@
 				$code->setValue('...', false);
 				$documentation_parts[] = self::processDocumentationCode($code);
 
-				###
-
 				if(is_array($filters) && !empty($filters)){
 					$documentation_parts[] = new XMLElement('p', __('The following is an example of what is returned if any options return an error:'));
 
@@ -378,8 +374,6 @@
 					$code->setValue('...', false);
 					$documentation_parts[] = self::processDocumentationCode($code);
 				}
-
-				###
 
 				$documentation_parts[] = new XMLElement('h3', __('Example Front-end Form Markup'));
 
@@ -465,7 +459,7 @@
 				$eventShell = str_replace('<!-- DOCUMENTATION -->', General::tabsToSpaces($documentation, 2), $eventShell);
 				$eventShell = str_replace('<!-- ROOT ELEMENT -->', $rootelement, $eventShell);
 
-				## Remove left over placeholders
+				// Remove left over placeholders
 				$eventShell = preg_replace(array('/<!--[\w ]++-->/'), '', $eventShell);
 
 				if($this->_context[0] == 'new') {
