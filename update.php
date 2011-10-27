@@ -18,7 +18,7 @@
 		$string	 = "<?php" . PHP_EOL;
 
 		$string .= PHP_EOL . "\t\$settings = array(";
-		foreach($conf['settings'] as $group => $data){
+		foreach($conf as $group => $data){
 			$string .= str_repeat(PHP_EOL, 3) . "\t\t###### ".strtoupper($group)." ######";
 			$string .= PHP_EOL . "\t\t'$group' => array(";
 			foreach($data as $key => $value){
