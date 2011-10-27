@@ -70,21 +70,42 @@
 		private static $_datetime_dictionary;
 
 		/**
-		 * Get dictionary
+		 * Get the current dictionary
 		 *
 		 * @return array
-		 *	Return the current dictionary
+		 *	Return the dictionary
 		 */
 		public static function Dictionary() {
 			return self::$_dictionary;
 		}
 
 		/**
-		 * Get languages
+		 * Get a list of either enabled or disabled languages. Example:
 		 *
+		 *		array(
+		 *			[...]
+		 *
+		 *			'en' => array(
+		 *				'name' => 'English',
+		 *				'handle' => 'english',
+		 *				'extensions' => array()
+		 *			),
+		 *
+		 *			'it' => array(
+		 *				'name' => 'Italiano',
+		 *				'handle' => 'italian',
+		 *				'extensions' => array(
+		 *					[...]
+		 *				)
+		 *			),
+		 *
+		 *			[...]
+		 *		)
+		 *
+		 * @see toolkit.Lang#createLanguage()
 		 * @since Symphony 2.3
 		 * @return array
-		 *	Return the array of languages (both enabled and disabled)
+		 *	Return an array of languages (both enabled and disabled)
 		 */
 		public static function Languages() {
 			return self::$_languages;
@@ -94,7 +115,7 @@
 		 * Get transliterations
 		 *
 		 * @return array
-		 *	Returns the array of transliterations
+		 *	Returns the transliterations array
 		 */
 		public static function Transliterations() {
 			return self::$_transliterations;
