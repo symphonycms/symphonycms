@@ -63,6 +63,7 @@
 
 			// Timezone
 			if(isset($settings['timezone'])) {
+				self::$settings['timezone'] = $settings['timezone'];
 				self::setDefaultTimezone($settings['timezone']);
 			}
 		}
@@ -180,10 +181,15 @@
 			$date = self::parse($string);
 
 			// Timezone
-			if($timezone !== null) {
+			// If a timezone was given, apply it
+			if(!is_null($timezone)) {
 				$date->setTimezone(new DateTimeZone($timezone));
 			}
-			
+			// No timezone given, apply the default timezone
+			else if (isset(self::$settings['timezone'])) {
+				$date->setTimezone(new DateTimeZone(self::$settings['timezone']));
+			}
+
 			// Format date
 			$date = $date->format($format);
 
@@ -209,7 +215,7 @@
 		 *  The DateTime object, or if the date could not be parsed, false.
 		 */
 		public static function parse($string) {
-		
+
 			// Current date and time
 			if($string == 'now' || empty($string)) {
 				$date = new DateTime();
@@ -269,7 +275,7 @@
 			}
 
 			// Return date object
-			return $date;		
+			return $date;
 		}
 
 		/**
