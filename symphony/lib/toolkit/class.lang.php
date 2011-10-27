@@ -121,7 +121,7 @@
 
 			// Load default datetime strings
 			if(empty(self::$_datetime_dictionary)) {
-				require(TEMPLATE . '/lang.datetime.php');
+				require(LANG . '/datetime.php');
 
 				foreach($datetime_strings as $string) {
 					self::$_datetime_dictionary[$string] = $string;
@@ -130,7 +130,7 @@
 
 			// Load default transliterations
 			if(empty(self::$_transliterations)) {
-				require(TEMPLATE . '/lang.transliterations.php');
+				require(LANG . '/transliterations.php');
 
 				self::$_transliterations = $transliterations;
 			}
