@@ -14,11 +14,14 @@
 	 *
 	 * $dictionary = array(
 	 * 		[...]
+	 *
 	 * 		'Create new' => 'Translation for Create New',
+	 *
 	 * 		'/blueprints/datasources' => array(
 	 * 			'Create new' =>
 	 * 			'If we are inside a /blueprints/datasources/* page, this translation will be returned for the string'
 	 * 		),
+	 *
 	 * 		[...]
 	 *	);
 	 *
