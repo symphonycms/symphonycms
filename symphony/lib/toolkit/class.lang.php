@@ -369,7 +369,7 @@
 		 *  Returns the translated string
 		 */
 		public function translate($string, array $inserts = null, $namespace = null) {
-			if(is_null($namespace)) $namespace = Symphony::getPageNamespace();
+			if(is_null($namespace) && class_exists('Symphony')) $namespace = Symphony::getPageNamespace();
 
 			if(isset($namespace) && trim($namespace) !== '' && isset(self::$_dictionary[$namespace][$string])) {
 				$translated = self::$_dictionary[$namespace][$string];
@@ -395,17 +395,17 @@
 		 * Note: Beginning with Symphony 2.2 language files are only available
 		 * when the language extension is explicitly enabled.
 		 *
-		 * Since Symphony 2.3, this function doesn't accept any parameters.
-		 *
+		 * @param boolean $checkStatus (optional)
+		 *  If false, retrieves a list a languages that support core translation.
 		 * @return array
 		 *	Returns an associative array of language codes and names, e. g. 'en' => 'English'
 		 */
-		public static function getAvailableLanguages() {
+		public static function getAvailableLanguages($checkStatus = true) {
 			$languages = array();
 
 			// Get available languages
 			foreach(self::$_languages as $key => $language) {
-				if(self::isLanguageEnabled($key)){
+				if(self::isLanguageEnabled($key) || ($checkStatus == false && isset($language['handle']))){
 					$languages[$key] = $language['name'];
 				}
 			}
