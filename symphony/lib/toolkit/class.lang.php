@@ -186,9 +186,11 @@
 						$code = explode('.', $file);
 						$code = $code[1];
 
+						$lang = self::$_languages[$code];
+
 						// Handle and available extensions
-						$handle = (isset(self::$language[$code])) ? self::$language[$code]['handle'] : null;
-						$extensions = (isset(self::$language[$code])) ? self::$language[$code]['extensions'] : array();
+						$handle = (isset($lang)) ? $lang['handle'] : null;
+						$extensions = (isset($lang)) ? $lang['extensions'] : array();
 
 						// Core translations
 						if(strpos($extension->getFilename(), 'lang_') !== false){
@@ -203,8 +205,8 @@
 						// Merge languages ($about is declared inside $path)
 						$temp = self::createLanguage($code, $about['name'], $handle, $extensions);
 
-						if(isset(self::$_languages[$code])){
-							foreach(self::$_languages[$code] as $key => $value){
+						if(isset($lang)){
+							foreach($lang as $key => $value){
 								self::$_languages[$code][$key] = $temp[$code][$key];
 							}
 						}
@@ -282,7 +284,7 @@
 		public static function isLanguageEnabled($code) {
 			if($code == 'en') return true;
 
-			$handle = (isset(self::$language[$code])) ? self::$language[$code]['handle'] : '';
+			$handle = (isset(self::$_languages[$code])) ? self::$_languages[$code]['handle'] : '';
 			$enabled_extensions = array();
 
 			// Fetch list of active extensions
