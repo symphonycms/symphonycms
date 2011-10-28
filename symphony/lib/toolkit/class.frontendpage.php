@@ -348,6 +348,11 @@
 					// $url-amp;b. This pattern will remove amp; allow the correct param
 					// to be used, $url-b
 					$key = preg_replace('/^amp;/', null, $key);
+
+					// If the key gets replaced out, or is just a `/` then it will break the
+					// XML so prevent the parameter being set.
+					if(is_null($key) or $key == '/') continue;
+
 					$this->_param['url-' . $key] = $val;
 				}
 			}
