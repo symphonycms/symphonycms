@@ -286,8 +286,10 @@
 		}
 
 		/**
-		 * Test whether this field requires grouping. This default implementation
-		 * returns false.
+		 * Test whether this field requires grouping. If this function returns true
+		 * SQL statements generated in the `EntryManager` will include the `DISTINCT` keyword
+		 * to only return a single row for an entry regardless of how many 'matches' it
+		 * might have. This default implementation returns false.
 		 *
 		 * @return boolean
 		 *	true if this field requires grouping, false otherwise.
