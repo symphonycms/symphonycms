@@ -201,9 +201,13 @@
 							$path = $manager::__getDriverPath($handle);
 
 							if (!General::deleteFile($path)) {
+								$folder = str_replace(DOCROOT, '', $path);
+								$folder = str_replace('/' . basename($path), '', $folder);
+
 								$this->pageAlert(
-									__('Failed to delete <code>%s</code>. Please check permissions.', array(basename($path))),
-									Alert::ERROR
+									__('Failed to delete %s.', array('<code>' . basename($path) . '</code>'))
+									. ' ' . __('Please check permissions on %s', array('<code>' . $folder . '</code>'))
+									, Alert::ERROR
 								);
 								$canProceed = false;
 							}

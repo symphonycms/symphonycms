@@ -67,7 +67,7 @@
 
 		public function __viewIndex(){
 			if(!$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle'])) {
-				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])));
+				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
 			}
 
 			$section = SectionManager::fetch($section_id);
@@ -375,7 +375,7 @@
 				)));
 				
 				$pgform = Widget::Form(Administration::instance()->getCurrentPageURL(),'get','paginationform');
-				$pgform->setValue(__('Page %1$s of <span>%2$s</span>', array(Widget::Input('pg',$current_page)->generate(), max($current_page, $entries['total-pages']))));
+				$pgform->setValue(__('Page %1$s of %2$s', array(Widget::Input('pg',$current_page)->generate(), '<span>' . max($current_page, $entries['total-pages'] . '</span>'))));
 				
 				$li->appendChild($pgform);
 				$ul->appendChild($li);
@@ -473,7 +473,7 @@
 
 		public function __viewNew() {
 			if(!$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle'])) {
-				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', array($this->_context['section_handle'])));
+				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
 			}
 
 			$section = SectionManager::fetch($section_id);
@@ -530,11 +530,10 @@
 
 			if ((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))) {
 				$primary->appendChild(new XMLElement('p', __(
-					'It looks like you\'re trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>',
-					array(
-						SYMPHONY_URL . '/blueprints/sections/edit/' . $section->get('id') . '/'
-					)
-				)));
+					'It looks like you’re trying to create an entry. Perhaps you want fields first?')
+					. ' <a href="' . SYMPHONY_URL . '/blueprints/sections/edit/' . $section->get('id') . '/">'
+					. __('Click here to create some.') . '</a>'
+				));
 				$this->Form->appendChild($primary);
 			}
 
@@ -573,7 +572,7 @@
 				$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle']);
 
 				if(!$section = SectionManager::fetch($section_id)) {
-					Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking, <code>%s</code> for could not be found.', $this->_context['section_handle']));
+					Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
 				}
 
 				$entry =& EntryManager::create();
@@ -668,7 +667,7 @@
 
 		public function __viewEdit() {
 			if(!$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle'])) {
-				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, <code>%s</code>, could not be found.', array($this->_context['section_handle'])));
+				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
 			}
 
 			$section = SectionManager::fetch($section_id);
@@ -732,29 +731,24 @@
 
 					case 'saved':
 						$this->pageAlert(
-							__(
-								'Entry updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Entries</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . "/$link",
-									SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/'
-								)
-							),
-							Alert::SUCCESS);
-
+							__('Entry updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
+							. __('View all Entries')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 					case 'created':
 						$this->pageAlert(
-							__(
-								'Entry created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Entries</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . "/$link",
-									SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Entry created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
+							. __('View all Entries')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 				}
@@ -800,7 +794,12 @@
 			$main_fields = $section->fetchFields(NULL, 'main');
 
 			if((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))){
-				$primary->appendChild(new XMLElement('p', __('It looks like you\'re trying to create an entry. Perhaps you want fields first? <a href="%s">Click here to create some.</a>', array(SYMPHONY_URL . '/blueprints/sections/edit/'. $section->get('id') . '/'))));
+				$primary->appendChild(new XMLElement('p',
+					__('It looks like you’re trying to create an entry. Perhaps you want fields first?')
+					. ' <a href="' . SYMPHONY_URL . '/blueprints/sections/edit/'. $section->get('id') . '/">'
+					. __('Click here to create some.')
+					. '</a>'
+				));
 			}
 
 			else{

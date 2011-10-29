@@ -277,7 +277,7 @@
 					'database-error',
 					array(
 						'error' => $error,
-						'message' => __('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct. The following error was returned.')
+						'message' => __('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct.') . ' ' . __('The following error was returned:')
 					)
 				);
 			}

@@ -390,10 +390,8 @@
 
 				if(!file_exists($path)){
 					throw new Exception(
-						__(
-							'Could not find Field <code>%1$s</code> at <code>%2$s</code>. If the Field was provided by an Extension, ensure that it is installed, and enabled.',
-							array($type, $path)
-						)
+						__('Could not find Field %1$s at %2$s.', array('<code>' . $type . '</code>', '<code>' . $path . '</code>'))
+						. ' ' . __('If it was provided by an Extension, ensure that it is installed, and enabled.')
 					);
 				}
 

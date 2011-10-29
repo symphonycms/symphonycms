@@ -174,10 +174,8 @@
 
 			if(!is_file($path)){
 				throw new Exception(
-					__(
-						'Could not find Event <code>%s</code>. If the Event was provided by an Extension, ensure that it is installed, and enabled.',
-						array($handle)
-					)
+					__('Could not find Event %s.', array('<code>' . $handle . '</code>'))
+					. ' ' . __('If it was provided by an Extension, ensure that it is installed, and enabled.')
 				);
 			}
 
