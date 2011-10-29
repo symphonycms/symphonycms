@@ -139,7 +139,7 @@ var Symphony = {};
 		 * it offers private functions to handle variables and get the translations via
 		 * an synchronous AJAX request.
 		 * Since Symphony 2.3, it is also possible to define different translations
-		 * for the same string, by using namespaces.
+		 * for the same string, by using page namespaces.
 		 * This is a private object
 		 *
 		 * @class
@@ -160,11 +160,10 @@ var Symphony = {};
 			 *
 			 * @param {Object} strings
 			 *  Object with English string as key, value should be false
-			 * @param {String} namespace
-			 *  Optional namespace for the translation
 			 */
-			this.add = function(strings, namespace) {
-				var temp = {};
+			this.add = function(strings) {
+				var temp = {},
+					namespace = Symphony.Context.get('env')['page-namespace'];
 
 				// Don't process empty strings
 				if($.isEmptyObject(strings)) {
@@ -188,7 +187,7 @@ var Symphony = {};
 
 				// Save English strings
 				if(Symphony.Context.get('lang') == 'en') {
-					$.extend(Dictionary, temp);
+					$.extend(true, Dictionary, temp);
 				}
 
 				// Translate strings and defer merging objects until translate() has returned
@@ -206,15 +205,14 @@ var Symphony = {};
 			 *  English string to be translated
 			 * @param {Object} inserts
 			 *  Object with variable name and value pairs
-			 * @param {String} namespace
-			 *  Optional namespace for the translation
 			 * @return {String}
 			 *  Returns the translated string
 			 */
-			this.get = function(string, inserts, namespace) {
+			this.get = function(string, inserts) {
 
 				// Get translated string
-				var translatedString;
+				var translatedString,
+					namespace = Symphony.Context.get('env')['page-namespace'];
 
 				if($.type(namespace) === 'string' && $.trim(namespace) !== '' && Dictionary[namespace] !== undefined) {
 					translatedString = Dictionary[namespace][string];
@@ -270,7 +268,7 @@ var Symphony = {};
 			 * @private
 			 */
 			var translate = function(strings) {
-				// Load translations synchronous
+				// Load translations synchronously
 				$.ajax({
 					async: false,
 					type: 'GET',
@@ -278,11 +276,11 @@ var Symphony = {};
 					data: { 'strings': strings },
 					dataType: 'json',
 					success: function(result) {
-						$.extend(Dictionary, result);
+						$.extend(true, Dictionary, result);
 					},
 					error: function(jqXHR, textStatus, errorThrown) {
 						// Extend the existing dictionary since an error occurred
-						$.extend(Dictionary, strings);
+						$.extend(true, Dictionary, strings);
 					}
 				});
 			};

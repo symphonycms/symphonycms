@@ -520,6 +520,46 @@
 		public function resolvePagePath($page_id) {
 			return PageManager::resolvePage($page_id, 'handle');
 		}
+
+		/**
+		 * Returns the page namespace based on the current URL.
+		 * A few examples:
+		 *
+		 * /login
+		 * /publish
+		 * /blueprints/datasources
+		 * [...]
+		 * /extension/$extension_name/$page_name
+		 *
+		 * This method is especially useful in couple with the translation function.
+		 *
+		 * @see toolkit#__()
+		 * @return string
+		 *  The page namespace, without any action string (e.g. "new", "saved") or
+		 *  any value that depends upon the single setup (e.g. the section handle in
+		 *  /publish/$handle)
+		 */
+		public static function getPageNamespace() {
+			$page = getCurrentPage();
+
+			if(!is_null($page)) $page = trim($page, '/');
+
+			if(substr($page, 0, 7) == 'publish')
+				return '/publish';
+			else if(empty($page) && isset($_REQUEST['mode']))
+				return '/login';
+			else if(empty($page))
+				return null;
+			else {
+				$bits = explode('/', $page);
+
+				if($bits[0] == 'extension')
+					return sprintf('/%s/%s/%s', $bits[0], $bits[1], $bits[2]);
+				else
+					return sprintf('/%s/%s', $bits[0], $bits[1]);
+			}
+
+		}
 	}
 
 	/**

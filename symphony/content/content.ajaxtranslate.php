@@ -23,7 +23,7 @@
 					// Namespace found
 					foreach($value as $key_n => $value_n) {
 						$value_n = urldecode($value_n);
-						$new[$key][$value_n] = __($value_n, NULL, $key);
+						$new[$key][$value_n] = Lang::translate($value_n, NULL, $key);
 					 }
 
 				} else {
