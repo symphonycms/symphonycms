@@ -62,8 +62,8 @@
 
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.2.4');
-	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/2.2.4/');
+	define('kVERSION', '2.2.5RC1');
+	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/2.2.5/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
 
@@ -484,11 +484,11 @@ Options +FollowSymlinks -Indexes
 
 				.
 
-				(version_compare($existing_version, '2.0.2', '<') ? '<li>Since <code>2.0.2</code>, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></li>' : NULL)
+				(version_compare($existing_version, '2.0.2', '<') ? '<li>Since <code>2.0.2</code>, the built-in image manipulation features have been replaced with the <a href="http://github.com/symphonycms/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></li>' : NULL)
 
 				.
 
-				(!is_null($sbl_version) && version_compare($sbl_version, '1.19dev', '<') ? '<li>The "Select Box Link" field extension has been updated to 1.19, however this installation of Symphony appears to be running an older version ('.$sbl_version.'). Versions prior to 1.19 will not work correctly under Symphony <code>'.kVERSION.'</code>. The latest version can be download via the <a href="http://symphony-cms.com/download/extensions/view/20054/">Select Box Link download page</a> on the Symphony site.</li>' : NULL)
+				(!is_null($sbl_version) && version_compare($sbl_version, '1.22', '<') ? '<li>The "Select Box Link" field extension has been updated to 1.22, however this installation of Symphony appears to be running an older version ('.$sbl_version.'). Versions prior to 1.22 will not work correctly under Symphony <code>'.kVERSION.'</code>. The latest version can be download via the <a href="http://symphony-cms.com/download/extensions/view/20054/">Select Box Link download page</a> on the Symphony site.</li>' : NULL)
 
 				.'</ol>
 
