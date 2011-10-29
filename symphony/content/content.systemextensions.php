@@ -26,7 +26,7 @@
 
 			$this->Form->setAttribute('action', SYMPHONY_URL . '/system/extensions/');
 
-			Sortable::init($this, $extensions, $sort, $order);
+			Sortable::initialize($this, $extensions, $sort, $order);
 
 			$columns = array(
 				array(

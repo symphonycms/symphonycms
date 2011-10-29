@@ -37,7 +37,7 @@
 		 * @param array $params (optional)
 		 *	An array of parameters that can be passed to the context-based method.
 		 */
-		public static function init($object, &$result, &$sort, &$order, array $params = array()) {
+		public static function initialize($object, &$result, &$sort, &$order, array $params = array()) {
 			$sort = (isset($_REQUEST['sort'])) ? $_REQUEST['sort'] : null;
 			$order = ($_REQUEST['order'] == 'desc' ? 'desc' : 'asc');
 
