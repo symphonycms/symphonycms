@@ -408,10 +408,15 @@
 					if(count($parts) == 1) continue;
 
 					unset($element_names[$index]);
+
+					// Prevent attempting to look up 'system', which will arise
+					// from `system:pagination`, `system:id` etc.
+					if($parts[0] == 'system') continue;
+
 					$element_names[] = trim($parts[0]);
 				}
 
-				$schema_sql = sprintf(
+				$schema_sql = empty($element_names) ? null : sprintf(
 					"SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d AND `element_name` IN ('%s')",
 					$section_id,
 					implode("', '", array_unique($element_names))
@@ -425,8 +430,7 @@
 				);
 			}
 
-			$schema = Symphony::Database()->fetch($schema_sql);
-
+			$schema = is_null($schema_sql) ? array() : Symphony::Database()->fetch($schema_sql);
 			$raw = array();
 			$rows_string = '';
 
