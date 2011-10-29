@@ -42,35 +42,37 @@
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
+			if($formHasErrors) 
+				$this->pageAlert(
+					__('An error occurred while processing this form.')
+					. ' <a href="#error">'
+					. __('See below for details.')
+					. '</a>'
+					, Alert::ERROR);
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 
 					case 'saved':
 						$this->pageAlert(
-							__(
-								'Event updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Events</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/events/new/',
-									SYMPHONY_URL . '/blueprints/events/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Event updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/events/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/events/" accesskey="a">'
+							. __('View all Events')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 					case 'created':
 						$this->pageAlert(
-							__(
-								'Event created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Events</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/events/new/',
-									SYMPHONY_URL . '/blueprints/events/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Event created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/events/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/events/" accesskey="a">'
+							. __('View all Events')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 				}
@@ -187,8 +189,8 @@
 				$fieldset = new XMLElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Version')));
-				if(preg_match('/^\d+(\.\d+)*$/', $about['version'])) $fieldset->appendChild(new XMLElement('p', __('%s released on %s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
-				else $fieldset->appendChild(new XMLElement('p', __('Created by %s at %s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+				if(preg_match('/^\d+(\.\d+)*$/', $about['version'])) $fieldset->appendChild(new XMLElement('p', __('%1$s released on %2$s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+				else $fieldset->appendChild(new XMLElement('p', __('Created by %1$s at %2$s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
 				$this->Form->appendChild($fieldset);
 			}
 
@@ -237,7 +239,11 @@
 				Symphony::ExtensionManager()->notifyMembers('EventPreDelete', '/blueprints/events/', array('file' => EVENTS . "/event." . $this->_context[1] . ".php"));
 
 				if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php')){
-					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
+					$this->pageAlert(
+						__('Failed to delete %s.', array('<code>' . $this->_context[1] . '</code>'))
+						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/events</code>'))
+						, Alert::ERROR
+					);
 				}
 
 				else {
@@ -294,7 +300,7 @@
 			}
 
 			// Duplicate
-			if($isDuplicate) $this->_errors['name'] = __('An Event with the name <code>%s</code> name already exists', array($classname));
+			if($isDuplicate) $this->_errors['name'] = __('An Event with the name %s name already exists', array('<code>' . $classname . '</code>'));
 
 			if(empty($this->_errors)){
 
@@ -340,7 +346,7 @@
 
 				$documentation_parts[] = self::processDocumentationCode($code);
 
-				$documentation_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? __(' (<b>Notice that it is possible to get mixtures of success and failure messages when using the "Allow Multiple" option</b>)') : NULL) . ':');
+				$documentation_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? ' (<strong> ' . __('Notice that it is possible to get mixtures of success and failure messages when using the ‘Allow Multiple’ option') . '</strong>)' : NULL) . ':');
 
 				if($multiple){
 					$code = new XMLElement($rootelement);
@@ -407,7 +413,13 @@
 				if(in_array('send-email', $filters)){
 					$documentation_parts[] = new XMLElement('h3', __('Send Notification Email'));
 
-					$documentation_parts[] = new XMLElement('p', __('Upon the event successfully saving the entry, this option takes input from the form and send an email to the desired recipient. <b>It currently does not work with "Allow Multiple".</b> The following are the recognised fields:'));
+					$documentation_parts[] = new XMLElement('p', 
+						__('Upon the event successfully saving the entry, this option takes input from the form and send an email to the desired recipient.')
+						. ' <strong>'
+						. __('It currently does not work with ‘Allow Multiple’')
+						. '</strong>. '
+						. __('The following are the recognised fields:')
+					);
 
 					$documentation_parts[] = self::processDocumentationCode(
 						'send-email[sender-email] // '.__('Optional').PHP_EOL.
@@ -509,7 +521,11 @@
 
 				// Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file')))
-					$this->pageAlert(__('Failed to write Event to <code>%s</code>. Please check permissions.', array(EVENTS)), Alert::ERROR);
+					$this->pageAlert(
+						__('Failed to write Event to disk.')
+						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/events</code>'))
+						, Alert::ERROR
+					);
 
 				// Write Successful, add record to the database
 				else{

@@ -205,30 +205,24 @@
 				switch($this->_context[2]){
 					case 'saved':
 						$this->pageAlert(
-							__(
-								'Author updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Authors</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/system/authors/new/',
-									SYMPHONY_URL . '/system/authors/'
-								)
-							),
-							Alert::SUCCESS
-						);
+							__('Author updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
+							. __('View all Authors')
+							. '</a>'
+							, Alert::SUCCESS);
 					break;
 
 					case 'created':
 						$this->pageAlert(
-							__(
-								'Author created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Authors</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/system/authors/new/',
-									SYMPHONY_URL . '/system/authors/'
-								)
-							),
-							Alert::SUCCESS
-						);
+							__('Author created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
+							. __('View all Authors')
+							. '</a>'
+							, Alert::SUCCESS);
 					break;
 				}
 			}
@@ -357,7 +351,7 @@
 				}
 
 				$temp = SYMPHONY_URL . '/login/' . $author->createAuthToken() . '/';
-				$label->setValue(__('%1$s Allow remote login via <a href="%2$s">%2$s</a>', array($input->generate(), $temp)));
+				$label->setValue(__('%s Allow remote login via', array($input->generate())) . ' <a href="' . $temp . '">' . $temp . '</a>');
 				$group->appendChild($label);
 			}
 
@@ -517,7 +511,12 @@
 					$this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), Alert::ERROR);
 				}
 				else {
-					$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(SYMPHONY_URL . '/system/log/')), Alert::ERROR);
+					$this->pageAlert(
+						__('Unknown errors occurred while attempting to save.')
+						. '<a href="' . SYMPHONY_URL . '/system/log/">'
+						. __('Check your activity log')
+						. '</a>.'
+						, Alert::ERROR);
 				}
 			}
 		}
@@ -611,7 +610,12 @@
 					}
 
 					else {
-						$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(SYMPHONY_URL . '/system/log/')), Alert::ERROR);
+						$this->pageAlert(
+							__('Unknown errors occurred while attempting to save.')
+							. '<a href="' . SYMPHONY_URL . '/system/log/">'
+							. __('Check your activity log')
+							. '</a>.'
+							, Alert::ERROR);
 					}
 				}
 			}

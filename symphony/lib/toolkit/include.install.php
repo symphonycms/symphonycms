@@ -55,15 +55,15 @@
 	define('kFOOTER', $footer);
 
 	$warnings = array(
-		'no-symphony-dir' => __('No <code>/symphony</code> directory was found at this location. Please upload the contents of Symphony\'s install package here.'),
-		'no-write-permission-workspace' => __('Symphony does not have write permission to the existing <code>/workspace</code> directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive <code>chmod -R</code> command.'),
-		'no-write-permission-manifest' => __('Symphony does not have write permission to the <code>/manifest</code> directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive <code>chmod -R</code> command.'),
+		'no-symphony-dir' => __('No %s directory was found at this location. Please upload the contents of Symphony’s install package here.', array('<code>/symphony</code>')),
+		'no-write-permission-workspace' => __('Symphony does not have write permission to the existing %1$s directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive %2$s command.', array('<code>/workspace</code>', '<code>chmod -R</code>')),
+		'no-write-permission-manifest' => __('Symphony does not have write permission to the %1$s directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive %2$s command.', array('<code>/manifest</code>', '<code>chmod -R</code>')),
 		'no-write-permission-root' => __('Symphony does not have write permission to the root directory. Please modify permission settings on this directory. This is necessary only if you are not including a workspace, and can be reverted once installation is complete.'),
-		'no-write-permission-htaccess' => __('Symphony does not have write permission to the temporary <code>htaccess</code> file. Please modify permission settings on this file so it can be written to, and renamed.'),
-		'no-write-permission-symphony' => __('Symphony does not have write permission to the <code>/symphony</code> directory. Please modify permission settings on this directory. This is necessary only during installation, and can be reverted once installation is complete.'),
+		'no-write-permission-htaccess' => __('Symphony does not have write permission to the temporary %s file. Please modify permission settings on this file so it can be written to, and renamed.', array('<code>htaccess</code>')),
+		'no-write-permission-symphony' => __('Symphony does not have write permission to the %s directory. Please modify permission settings on this directory. This is necessary only during installation, and can be reverted once installation is complete.', array('<code>/symphony</code>')),
 		'no-database-connection' => __('Symphony was unable to connect to the specified database. You may need to modify host or port settings.'),
-		'database-incorrect-version' => __('Symphony requires <code>MySQL 4.1</code> or greater to work. This requirement must be met before installation can proceed.'),
-		'database-table-clash' => __('The table prefix <code><!-- TABLE-PREFIX --></code> is already in use. Please choose a different prefix to use with Symphony.'),
+		'database-incorrect-version' => __('Symphony requires %s or greater to work. This requirement must be met before installation can proceed.', array('<code>MySQL 4.1</code>')),
+		'database-table-clash' => __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.', array('<code><!-- TABLE-PREFIX --></code>')),
 		'user-password-mismatch' => __('The password and confirmation did not match. Please retype your password.'),
 		'user-invalid-email' => __('This is not a valid email address. You must provide an email address since you will need it if you forget your password.'),
 		'user-no-username' => __('You must enter a Username. This will be your Symphony login information.'),
@@ -72,7 +72,7 @@
 	);
 
 	$notices = array(
-		'existing-workspace' => __('An existing <code>/workspace</code> directory was found at this location. Symphony will use this workspace.')
+		'existing-workspace' => __('An existing %s directory was found at this location. Symphony will use this workspace.', array('<code>/workspace</code>'))
 	);
 
 	$languages = array();
@@ -407,7 +407,7 @@
 				$Page->log->pushToLog('Configuration - MySQL Version is not correct. '.$version.' detected.', E_NOTICE, true);
 				define("kDATABASE_VERSION_WARNING", true);
 
-				$warnings['database-incorrect-version'] = __('Symphony requires <code>MySQL 5.0</code> or greater to work, however version <code>%s</code> was detected. This requirement must be met before installation can proceed.', array($version));
+				$warnings['database-incorrect-version'] = __('Symphony requires %1$s or greater to work, however version %2$s was detected. This requirement must be met before installation can proceed.', array('<code>MySQL 5.0</code>', '<code>' . $version . '</code>'));
 
 				if(!defined("ERROR")) define("ERROR", 'database-incorrect-version');
 			}
@@ -1039,9 +1039,9 @@ Options +FollowSymlinks -Indexes
 			$Page->setTemplateVar('TABLE-PREFIX', $fields['database']['prefix']);
 
 			// Use UTF-8 at all times unless otherwise specified
-			$Fieldset->appendChild(Widget::label(__('Always use <code>UTF-8</code> encoding'), Widget::input('fields[database][use-server-encoding]', 'no', 'checkbox', !isset($fields['database']['use-server-encoding']) ? array() : array('checked' => 'checked')), 'option'));
+			$Fieldset->appendChild(Widget::label(__('Always use %s encoding', array('<code>UTF-8</code>')), Widget::input('fields[database][use-server-encoding]', 'no', 'checkbox', !isset($fields['database']['use-server-encoding']) ? array() : array('checked' => 'checked')), 'option'));
 
-			$Fieldset->appendChild(new XMLElement('p', __("If unchecked, Symphony will use your database's default encoding instead of <code>UTF-8</code>.")));
+			$Fieldset->appendChild(new XMLElement('p', __('If unchecked, Symphony will use your database’s default encoding instead of %s.', array('<code>UTF-8</code>'))));
 
 			$Database->appendChild($Fieldset);
 
@@ -1125,7 +1125,7 @@ Options +FollowSymlinks -Indexes
 
 		// START FORM SUBMIT AREA
 			$Form->appendChild(new XMLElement('h2', __('Install Symphony')));
-			$Form->appendChild(new XMLElement('p', __('Make sure that you delete <code>%s</code> file after Symphony has installed successfully.', array(kINSTALL_FILENAME))));
+			$Form->appendChild(new XMLElement('p', __('Make sure that you delete %s file after Symphony has installed successfully.', array('<code>' . kINSTALL_FILENAME . '</code>'))));
 
 			$Submit = new XMLElement('div');
 			$Submit->setAttribute('class', 'submit');
@@ -1152,20 +1152,20 @@ Options +FollowSymlinks -Indexes
 			$messages = array();
 
 			if(in_array(MISSING_PHP, $Page->missing))
-				$messages[] = array(__('<abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.1 or above'),
-									__('Symphony needs a recent version of <abbr title="PHP: Hypertext Pre-processor">PHP</abbr>.'));
+				$messages[] = array(__('%s or above', array('<abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.1')),
+									__('Symphony needs a recent version of %s.', array('<abbr title="PHP: Hypertext Pre-processor">PHP</abbr>')));
 
 			if(in_array(MISSING_MYSQL, $Page->missing))
-				$messages[] = array(__('My<abbr title="Structured Query Language">SQL</abbr> 4.1 or above'),
-								__('Symphony needs a recent version of My<abbr title="Structured Query Language">SQL</abbr>.'));
+				$messages[] = array(__('%s or above', array('My<abbr title="Structured Query Language">SQL</abbr> 4.1')),
+								__('Symphony needs a recent version of %s.', array('My<abbr title="Structured Query Language">SQL</abbr>')));
 
 			if(in_array(MISSING_ZLIB, $Page->missing))
 				$messages[] = array(__('ZLib Compression Library'),
 									__('Data retrieved from the Symphony support server is decompressed with the ZLib compression library.'));
 
 			if(in_array(MISSING_XSL, $Page->missing) || in_array(MISSING_XML, $Page->missing))
-				$messages[] = array(__('<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr> Processor'),
-									__('Symphony needs an XSLT processor such as Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr> or Sablotron to build pages.'));
+				$messages[] = array(__('%s Processor', array('<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr>')),
+									__('Symphony needs an XSLT processor such as %1$s or %2$s to build pages.', array('Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr>', 'Sablotron')));
 
 			$dl = new XMLElement('dl');
 			foreach($messages as $m){
@@ -1207,7 +1207,7 @@ Options +FollowSymlinks -Indexes
 		function failure(&$Page, &$Contents){
 
 			$Contents->appendChild(new XMLElement('h2', __('Installation Failure')));
-			$Contents->appendChild(new XMLElement('p', __('An error occurred during installation. You can view you log <a href="install-log.txt">here</a> for more details.')));
+			$Contents->appendChild(new XMLElement('p', __('An error occurred during installation.') . '<a href="install-log.txt">' . __('View your log for more details') . '</a>.'));
 
 			$Page->setTemplateVar('title', __('Installation Failure'));
 			$Page->setTemplateVar('tagline', __('Version %s', array(kVERSION)));

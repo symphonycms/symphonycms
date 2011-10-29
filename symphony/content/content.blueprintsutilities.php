@@ -126,35 +126,37 @@
 			}
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
+			if($formHasErrors)
+				$this->pageAlert(
+					__('An error occurred while processing this form.')
+					. ' <a href="#error">'
+					. __('See below for details.')
+					. '</a>'
+					, Alert::ERROR);
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 
 					case 'saved':
 						$this->pageAlert(
-							__(
-								'Utility updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Utilities</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/utilities/new/',
-									SYMPHONY_URL . '/blueprints/utilities/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Utility updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/utilities/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/utilities/" accesskey="a">'
+							. __('View all Utilities')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 					case 'created':
 						$this->pageAlert(
-							__(
-								'Utility created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Utilities</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/utilities/new/',
-									SYMPHONY_URL . '/blueprints/utilities/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Utility created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/utilities/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/utilities/" accesskey="a">'
+							. __('View all Utilities')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 				}
@@ -240,7 +242,11 @@
 						$canProceed = true;
 						foreach($checked as $name) {
 							if (!General::deleteFile(UTILITIES . '/' . $name)) {
-								$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($name)),Alert::ERROR);
+								$this->pageAlert(
+									__('Failed to delete %s.', array('<code>' . $name . '</code>'))
+									. ' ' . __('Please check permissions on %s.', array('<code>/workspace/utilities</code>'))
+									, Alert::ERROR
+								);
 								$canProceed = false;
 							}
 						}
@@ -288,7 +294,7 @@
 			if(!isset($fields['name']) || trim($fields['name']) == '') $this->_errors['name'] = __('Name is a required field.');
 
 			if(!isset($fields['body']) || trim($fields['body']) == '') $this->_errors['body'] = __('Body is a required field.');
-			elseif(!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) $this->_errors['body'] = __('This document is not well formed. The following error was returned: <code>%s</code>', array($errors[0]['message']));
+			elseif(!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) $this->_errors['body'] = __('This document is not well formed.') . ' ' . __('The following error was returned:') . ' <code>' . $errors[0]['message'] . '</code>';
 
 			$fields['name'] = Lang::createFilename($fields['name']);
 			if(General::right($fields['name'], 4) != '.xsl') $fields['name'] .= '.xsl';
@@ -335,7 +341,11 @@
 
 				// Write the file
 				if(!$write = General::writeFile($file, $fields['body'], Symphony::Configuration()->get('write_mode', 'file')))
-					$this->pageAlert(__('Utility could not be written to disk. Please check permissions on <code>/workspace/utilities</code>.'), Alert::ERROR);
+					$this->pageAlert(
+						__('Utility could not be written to disk.')
+						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/utilities</code>'))
+						, Alert::ERROR
+					);
 
 				// Write Successful, add record to the database
 				else{

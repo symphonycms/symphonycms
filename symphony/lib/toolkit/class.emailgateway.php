@@ -186,7 +186,7 @@
 				$this->_text_encoding = false;
 			}
 			else{
-				throw new EmailGatewayException(__('%s is not a supported encoding type. Please use "quoted-printable" or "base64". You can also use false for no encoding.', array($encoding)));
+				throw new EmailGatewayException(__('%1$s is not a supported encoding type. Please use %2$s or %3$s. You can also use %4$s for no encoding.', array($encoding, '<code>quoted-printable</code>', '<code>base-64</code>', '<code>false</code>')));
 			}
 		}
 
@@ -242,7 +242,7 @@
 		 */
 		public function appendHeaderField($name, $body){
 			if(is_array($body)){
-				throw new EmailGatewayException(__('appendHeaderField accepts strings only; arrays are not allowed.'));
+				throw new EmailGatewayException(__('%s accepts strings only; arrays are not allowed.', array('<code>appendHeaderField</code>')));
 			}
 			$this->_header_fields[$name] = $body;
 		}
@@ -286,7 +286,7 @@
 						throw new EmailValidationException(__('Recipient email address cannot be empty.'));
 					}
 					elseif(!filter_var($address, FILTER_VALIDATE_EMAIL)) {
-						throw new EmailValidationException(__('The email address "%s" is invalid.', array($address)));
+						throw new EmailValidationException(__('The email address ‘%s’ is invalid.', array($address)));
 					}
 				}
 			}
@@ -511,7 +511,7 @@
 				return $this->{'set'.$this->__toCamel($name, true)}($value);
 			}
 			else{
-				throw new EmailGatewayException(__('The %s gateway does not support the use of %s', array(get_class($this), $name)));
+				throw new EmailGatewayException(__('The %1$s gateway does not support the use of %2$s', array(get_class($this), $name)));
 			}
 		}
 

@@ -180,11 +180,13 @@
 			$path = self::__getDriverPath($name);
 
 			if(!is_file($path)){
-				trigger_error(__('Could not find Email Gateway <code>%s</code>. If the Email Gateway was provided by an Extensions, ensure that it is installed, and enabled.', array($name)), E_USER_ERROR);
-				return false;
+				throw new Exception(
+					__('Could not find Email Gateway %s.', array('<code>' . $name . '</code>'))
+					. ' ' . __('If it was provided by an Extension, ensure that it is installed, and enabled.')
+				);
 			}
 
-			if(!@class_exists($classname))
+			if(!class_exists($classname))
 				require_once($path);
 
 			return new $classname;

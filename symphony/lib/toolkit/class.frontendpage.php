@@ -556,7 +556,7 @@
 				if(empty($row)){
 					GenericExceptionHandler::$enabled = true;
 					throw new SymphonyErrorPage(
-						__('Please <a href="%s">login</a> to view this page.', array(SYMPHONY_URL . '/login/')),
+						__('Please login to view this page.') . ' <a href="' . SYMPHONY_URL . '/login/">' . __('Take me to the login page') . '</a>.',
 						__('Forbidden'),
 						'error',
 						array('header' => 'HTTP/1.0 403 Forbidden')
