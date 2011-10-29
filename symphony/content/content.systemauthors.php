@@ -35,7 +35,7 @@
 				$this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), Administration::instance()->getCurrentPageURL().'new/', __('Add a new author'), 'create button', NULL, array('accesskey' => 'c')));
 			} else $this->appendSubheading(__('Authors'));
 
-			Sortable::init($this, $authors, $sort, $order);
+			Sortable::initialize($this, $authors, $sort, $order);
 
 			$columns = array(
 				array(
