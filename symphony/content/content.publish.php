@@ -122,7 +122,7 @@
 
 			}
 
-			Sortable::init($this, $entries, $sort, $order, array(
+			Sortable::initialize($this, $entries, $sort, $order, array(
 				'current-section' => $section,
 				'filters' => ($filter_querystring ? "&amp;" . $filter_querystring : '')
 			));
