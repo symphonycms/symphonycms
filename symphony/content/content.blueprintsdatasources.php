@@ -39,35 +39,37 @@
 
 		public function __form(){
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
+			if($formHasErrors) 
+				$this->pageAlert(
+					__('An error occurred while processing this form.')
+					. ' <a href="#error">'
+					. __('See below for details.')
+					. '</a>'
+					, Alert::ERROR);
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 
 					case 'saved':
 						$this->pageAlert(
-							__(
-								'Data source updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Data sources</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/datasources/new/',
-									SYMPHONY_URL . '/blueprints/datasources/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Data source updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
+							. __('View all Data sources')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 					case 'created':
 						$this->pageAlert(
-							__(
-								'Data source created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Data sources</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/datasources/new/',
-									SYMPHONY_URL . '/blueprints/datasources/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Data source created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
+							. __('View all Data sources')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 				}
@@ -176,14 +178,11 @@
 				if(isset($cache_id) && in_array('clear_cache', $this->_context)) {
 					$cache->forceExpiry($cache_id);
 					$this->pageAlert(
-						__(
-							'Data source cache cleared <a href="%s" accesskey="a">View all Data sources</a>',
-							array(
-								SYMPHONY_URL . '/blueprints/datasources/'
-							)
-						),
-						Alert::SUCCESS
-					);
+						__('Data source cache cleared at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+						. '<a href="' . SYMPHONY_URL . '/blueprints/datasources" accesskey="a">'
+						. __('View all Data sources')
+						. '</a>'
+						, Alert::SUCCESS);
 				}
 			}
 
@@ -264,7 +263,11 @@
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual sections authors navigation ' . __('Sections') . ' ' . __('System'));
 			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to filter by page parameters.'));
+			$p = new XMLElement('p', 
+				__('Use %s syntax to filter by page parameters.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
 
@@ -447,7 +450,11 @@
 			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml remote_json');
 			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));
 
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to limit by page parameters.'));
+			$p = new XMLElement('p', 
+				__('Use %s syntax to limit by page parameters.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
 			$p->setAttribute('class', 'help contextual inverse navigation');
 			$fieldset->appendChild($p);
 
@@ -520,7 +527,7 @@
 				Widget::Input('fields[max_records]', $fields['max_records'], NULL, array('size' => '6')),
 				Widget::Input('fields[page_number]', $fields['page_number'], NULL, array('size' => '6'))
 			);
-			$label->setValue(__('%s Paginate results, limiting to %s entries per page. Return page %s', array($input[0]->generate(false), $input[1]->generate(false), $input[2]->generate(false))));
+			$label->setValue(__('%1$s Paginate results, limiting to %2$s entries per page. Return page %3$s', array($input[0]->generate(false), $input[1]->generate(false), $input[2]->generate(false))));
 
 			if(isset($this->_errors['max_records'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['max_records']));
 			else if(isset($this->_errors['page_number'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['page_number']));
@@ -608,7 +615,7 @@
 				$param_names = '<code id="output-param-name">$ds-' . __('Untitled') . '</code>';
 			}
 
-			$p = new XMLElement('p', __('The parameters %s will be created with this field\'s value for XSLT or other data sources to use.', array($param_names)));
+			$p = new XMLElement('p', __('The parameters %s will be created with this field’s value for XSLT or other data sources to use.', array($param_names)));
 			$p->setAttribute('class', 'help');
 			$subfieldset->appendChild($p);
 
@@ -721,7 +728,11 @@
 			if(isset($this->_errors['dynamic_xml']['url'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['url']));
 			else $fieldset->appendChild($label);
 
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to specify dynamic portions of the URL.'));
+			$p = new XMLElement('p', 
+				__('Use %s syntax to specify dynamic portions of the URL.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
 
@@ -827,7 +838,11 @@
 			if(isset($this->_errors['remote_json']['url'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['remote_json']['url']));
 			else $fieldset->appendChild($label);
 
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to specify dynamic portions of the URL.'));
+			$p = new XMLElement('p', 
+				__('Use %s syntax to specify dynamic portions of the URL.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
 
@@ -917,8 +932,8 @@
 					case 'version':
 						$fieldset = new XMLElement('fieldset');
 						$fieldset->appendChild(new XMLElement('legend', __('Version')));
-						if(preg_match('/^\d+(\.\d+)*$/', $value)) $fieldset->appendChild(new XMLElement('p', __('%s released on %s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
-						else $fieldset->appendChild(new XMLElement('p', __('Created by %s at %s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+						if(preg_match('/^\d+(\.\d+)*$/', $value)) $fieldset->appendChild(new XMLElement('p', __('%1$s released on %2$s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+						else $fieldset->appendChild(new XMLElement('p', __('Created by %1$s at %2$s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
 						break;
 
 					case 'description':
@@ -974,7 +989,11 @@
 				Symphony::ExtensionManager()->notifyMembers('DatasourcePreDelete', '/blueprints/datasources/', array('file' => DATASOURCES . "/data." . $this->_context[1] . ".php"));
 
 				if(!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php')){
-					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
+					$this->pageAlert(
+						__('Failed to delete %s.', array('<code>' . $this->_context[1] . '</code>'))
+						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/data-sources</code>'))
+						, Alert::ERROR
+					);
 				}
 				else {
 					$pages = PageManager::fetch(false, array('data_sources', 'id'), array("
@@ -1109,7 +1128,7 @@
 			}
 
 			// Duplicate
-			if($isDuplicate) $this->_errors['name'] = __('A Data source with the name <code>%s</code> name already exists', array($classname));
+			if($isDuplicate) $this->_errors['name'] = __('A Data source with the name %s already exists', array('<code>' . $classname . '</code>'));
 
 			if(empty($this->_errors)){
 
@@ -1354,7 +1373,11 @@
 
 				// Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file')))
-					$this->pageAlert(__('Failed to write Data source to <code>%s</code>. Please check permissions.', array(DATASOURCES)), Alert::ERROR);
+					$this->pageAlert(
+						__('Failed to write Data source to disk.')
+						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/data-sources</code>'))
+						, Alert::ERROR
+					);
 
 				// Write Successful, add record to the database
 				else{

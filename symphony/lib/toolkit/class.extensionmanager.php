@@ -428,10 +428,8 @@
 					$type = preg_replace(array('/^field\./i', '/\.php$/i'), NULL, basename($file));
 					if(Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_fields` WHERE `type` = '{$type}'") > 0){
 						throw new Exception(
-							__(
-								"The field '%s', provided by the Extension '%s', is currently in use. Please remove it from your sections prior to uninstalling or disabling.",
-								array(basename($file), $about['name'])
-							)
+							__('The field ‘%s’, provided by the Extension ‘%s’, is currently in use.', array(basename($file), $about['name']))
+							. ' ' . __("Please remove it from your sections prior to uninstalling or disabling.")
 						);
 					}
 				}
@@ -443,10 +441,8 @@
 					$handle = preg_replace(array('/^data\./i', '/\.php$/i'), NULL, basename($file));
 					if(Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0){
 						throw new Exception(
-							__(
-								"The Data Source '%s', provided by the Extension '%s', is currently in use. Please remove it from your pages prior to uninstalling or disabling.",
-								array(basename($file), $about['name'])
-							)
+							__('The Data Source ‘%s’, provided by the Extension ‘%s’, is currently in use.', array(basename($file), $about['name']))
+							. ' ' . __("Please remove it from your pages prior to uninstalling or disabling.")
 						);
 					}
 				}
@@ -458,10 +454,8 @@
 					$handle = preg_replace(array('/^event\./i', '/\.php$/i'), NULL, basename($file));
 					if(Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `events` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0){
 						throw new Exception(
-							__(
-								"The Event '%s', provided by the Extension '%s', is currently in use. Please remove it from your pages prior to uninstalling or disabling.",
-								array(basename($file), $about['name'])
-							)
+							__('The Event ‘%s’, provided by the Extension ‘%s’, is currently in use.', array(basename($file), $about['name']))
+							. ' ' . __("Please remove it from your pages prior to uninstalling or disabling.")
 						);
 					}
 				}
@@ -488,12 +482,10 @@
 						}
 
 						if($table > 0) {
-							throw new Exception(
-								__(
-									"The Text Formatter '%s', provided by the Extension '%s', is currently in use. Please remove it from your fields prior to uninstalling or disabling.",
-									array(basename($file), $about['name'])
-								)
-							);
+						throw new Exception(
+							__('The Text Formatter ‘%s’, provided by the Extension ‘%s’, is currently in use.', array(basename($file), $about['name']))
+							. ' ' . __("Please remove it from your pages prior to uninstalling or disabling.")
+						);
 						}
 					}
 				}
@@ -717,7 +709,7 @@
 					$meta->load(self::__getClassPath($name) . '/extension.meta.xml');
 					$xpath = new DOMXPath($meta);
 				} catch (Exception $ex) {
-					throw new SymphonyErrorPage(__('The <code>extension.meta.xml</code> file for the %s extension is not valid XML.', array('<code>' . $name . '</code>')));
+					throw new SymphonyErrorPage(__('The %1$s file for the %2$s extension is not valid XML.', array('<code>extension.meta.xml</code>', '<code>' . $name . '</code>')));
 				}
 
 				// If `$rawXML` is set, just return our DOMDocument instance

@@ -144,11 +144,11 @@
 
 		public function checkFields(&$errors, $checkForDuplicates=true){
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$errors['destination'] = __('Directory <code>%s</code> does not exist.', array($this->get('destination')));
+				$errors['destination'] = __('Directory %s does not exist.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
-				$errors['destination'] = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
+				$errors['destination'] = __('Destination folder is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			parent::checkFields($errors, $checkForDuplicates);
@@ -177,11 +177,11 @@
 
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$flagWithError = __('The destination directory, <code>%s</code>, does not exist.', array($this->get('destination')));
+				$flagWithError = __('The destination directory, %s, does not exist.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			elseif(!$flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/')){
-				$flagWithError = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
+				$flagWithError = __('Destination folder is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			$label = Widget::Label($this->label());
@@ -240,7 +240,7 @@
 			if(empty($data) || $data['error'] == UPLOAD_ERR_NO_FILE) {
 
 				if($this->get('required') == 'yes'){
-					$message = __("'%s' is a required field.", array($this->get('label')));
+					$message = __('‘%s’ is a required field.', array($this->get('label')));
 					return self::__MISSING_FIELDS__;
 				}
 
@@ -264,7 +264,7 @@
 					$rule = $this->get('validator');
 
 					if(!General::validateString($file, $rule)){
-						$message = __("File chosen in '%s' does not match allowable file types for that field.", array($this->get('label')));
+						$message = __('File chosen in ‘%s’ does not match allowable file types for that field.', array($this->get('label')));
 						return self::__INVALID_FIELDS__;
 					}
 				}
@@ -273,12 +273,12 @@
 			}
 
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$message = __('The destination directory, <code>%s</code>, does not exist.', array($this->get('destination')));
+				$message = __('The destination directory, %s, does not exist.', array('<code>' . $this->get('destination') . '</code>'));
 				return self::__ERROR__;
 			}
 
 			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
-				$message = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
+				$message = __('Destination folder is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
 				return self::__ERROR__;
 			}
 
@@ -286,24 +286,24 @@
 
 				switch($data['error']){
 					case UPLOAD_ERR_INI_SIZE:
-						$message = __('File chosen in "%1$s" exceeds the maximum allowed upload size of %2$s specified by your host.', array($this->get('label'), (is_numeric(ini_get('upload_max_filesize')) ? General::formatFilesize(ini_get('upload_max_filesize')) : ini_get('upload_max_filesize'))));
+						$message = __('File chosen in ‘%1$s’ exceeds the maximum allowed upload size of %2$s specified by your host.', array($this->get('label'), (is_numeric(ini_get('upload_max_filesize')) ? General::formatFilesize(ini_get('upload_max_filesize')) : ini_get('upload_max_filesize'))));
 						break;
 
 					case UPLOAD_ERR_FORM_SIZE:
-						$message = __('File chosen in "%1$s" exceeds the maximum allowed upload size of %2$s, specified by Symphony.', array($this->get('label'), General::formatFilesize($_POST['MAX_FILE_SIZE'])));
+						$message = __('File chosen in ‘%1$s’ exceeds the maximum allowed upload size of %2$s, specified by Symphony.', array($this->get('label'), General::formatFilesize($_POST['MAX_FILE_SIZE'])));
 						break;
 
 					case UPLOAD_ERR_PARTIAL:
 					case UPLOAD_ERR_NO_TMP_DIR:
-						$message = __("File chosen in '%s' was only partially uploaded due to an error.", array($this->get('label')));
+						$message = __('File chosen in ‘%s’ was only partially uploaded due to an error.', array($this->get('label')));
 						break;
 
 					case UPLOAD_ERR_CANT_WRITE:
-						$message = __("Uploading '%s' failed. Could not write temporary file to disk.", array($this->get('label')));
+						$message = __('Uploading ‘%s’ failed. Could not write temporary file to disk.', array($this->get('label')));
 						break;
 
 					case UPLOAD_ERR_EXTENSION:
-						$message = __("Uploading '%s' failed. File upload stopped by extension.", array($this->get('label')));
+						$message = __('Uploading ‘%s’ failed. File upload stopped by extension.', array($this->get('label')));
 						break;
 				}
 
@@ -317,7 +317,7 @@
 				$rule = $this->get('validator');
 
 				if(!General::validateString($data['name'], $rule)){
-					$message = __("File chosen in '%s' does not match allowable file types for that field.", array($this->get('label')));
+					$message = __('File chosen in ‘%s’ does not match allowable file types for that field.', array($this->get('label')));
 					return self::__INVALID_FIELDS__;
 				}
 
@@ -425,7 +425,7 @@
 			$data['name'] = Lang::createFilename($data['name']);
 
 			if(!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], Symphony::Configuration()->get('write_mode', 'file'))){
-				$message = __('There was an error while trying to upload the file <code>%1$s</code> to the target directory <code>%2$s</code>.', array($data['name'], 'workspace/'.ltrim($rel_path, '/')));
+				$message = __('There was an error while trying to upload the file %1$s to the target directory %2$s.', array('<code>' . $data['name'] . '</code>', '<code>workspace/'.ltrim($rel_path, '/') . '</code>'));
 				$status = self::__ERROR_CUSTOM__;
 				return;
 			}

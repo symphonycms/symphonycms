@@ -69,15 +69,6 @@
 		 */
 		public static function handler(Exception $e){
 			try{
-				// Exceptions should be logged if they are not caught.
-				if(self::$_Log instanceof Log){
-					self::$_Log->pushToLog(
-						sprintf(
-							'%s%s%s', $e->getMessage(), ($e->getFile() ? " in file " .  $e->getFile() : null), ($e->getLine() ? " on line " . $e->getLine() : null)
-						), $e->getCode(), true
-					);
-				}
-
 				// Instead of just throwing an empty page, return a 404 page.
 				if(self::$enabled !== true){
 					require_once(CORE . '/class.frontend.php');
@@ -90,6 +81,20 @@
 				}
 				else {
 					$class = __CLASS__;
+				}
+
+				// Exceptions should be logged if they are not caught.
+				if(self::$_Log instanceof Log){
+					self::$_Log->pushToLog(sprintf(
+							'%s %s - %s%s%s',
+							$class,
+							$e->getCode(),
+							$e->getMessage(),
+							($e->getFile() ? " in file " .  $e->getFile() : null),
+							($e->getLine() ? " on line " . $e->getLine() : null)
+						),
+						$e->getCode(), true
+					);
 				}
 
 				$output = call_user_func(array($class, 'render'), $e);

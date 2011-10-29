@@ -347,7 +347,12 @@
 					// this causes the $_GET to output they key as amp;b, which results in
 					// $url-amp;b. This pattern will remove amp; allow the correct param
 					// to be used, $url-b
-					$key = preg_replace('/^amp;/', null, $key);
+					$key = preg_replace('/(^amp;|\/)/', null, $key);
+
+					// If the key gets replaced out then it will break the XML so prevent
+					// the parameter being set.
+					if(empty($key)) continue;
+
 					$this->_param['url-' . $key] = $val;
 				}
 			}
@@ -420,7 +425,7 @@
 
 			$params = new XMLElement('params');
 			foreach($this->_param as $key => $value) {
-				$param = new XMLElement($key);
+				$param = new XMLElement(Lang::createHandle($key));
 
 				// DS output params get flattened to a string, so get the original pre-flattened array
 				if (isset($this->_env['pool'][$key])) $value = $this->_env['pool'][$key];
@@ -556,7 +561,7 @@
 				if(empty($row)){
 					GenericExceptionHandler::$enabled = true;
 					throw new SymphonyErrorPage(
-						__('Please <a href="%s">login</a> to view this page.', array(SYMPHONY_URL . '/login/')),
+						__('Please login to view this page.') . ' <a href="' . SYMPHONY_URL . '/login/">' . __('Take me to the login page') . '</a>.',
 						__('Forbidden'),
 						'error',
 						array('header' => 'HTTP/1.0 403 Forbidden')

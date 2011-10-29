@@ -177,17 +177,17 @@
 						$current_version = Symphony::Configuration()->get('version', 'symphony');
 						// The updater contains a version higher than the current Symphony version.
 						if(version_compare($current_version, $readme, '<')) {
-							$message = __('Run the updater to update Symphony to %s. <a href="%s">View Update</a>', array($readme, URL . "/update.php"));
+							$message = __('Run the updater to update Symphony to %s.', array($readme)) . ' <a href="' . URL . '/update.php">' . __('View Update') . '</a>';
 						}
 						// The updater contains a version lower than the current Symphony version.
 						// The updater is the same version as the current Symphony install.
 						else {
-							$message = __('Your Symphony installation is up to date, but an updater script was still detected. For security reasons, it should be removed. <a href="%s/update.php?action=remove">Remove Update Script</a>', array(URL));
+							$message = __('Your Symphony installation is up to date, but an updater script was still detected. For security reasons, it should be removed.') . ' <a href="' . URL . '/update.php?action=remove">' . __('Remove Update Script') . '</a>';
 						}
 					}
 					// Can't detect update Symphony version
 					else {
-						$message = __('An updater script has been found in your installation. <a href="%s">View Update</a>', array(URL . "/update.php"));
+						$message = __('An updater script has been found in your installation.') . ' <a href="' . URL . '/update.php">' . __('View Update') . '</a>';
 					}
 
 					$this->Page->pageAlert($message, Alert::NOTICE);
@@ -200,7 +200,7 @@
 						$about = Symphony::ExtensionManager()->about($name);
 						if(in_array(EXTENSION_REQUIRES_UPDATE,$about['status'])) {
 							$this->Page->pageAlert(
-								__('An extension requires updating. <a href="%s">View Extensions</a>', array(SYMPHONY_URL . '/system/extensions/'))
+								__('An extension requires updating.') . ' <a href="' . SYMPHONY_URL . '/system/extensions/">' . __('View Extensions') . '</a>'
 							);
 							break;
 						}

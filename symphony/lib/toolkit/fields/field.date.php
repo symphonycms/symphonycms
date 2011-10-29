@@ -370,7 +370,7 @@
 
 			// Handle invalid dates
 			if(!DateTimeObj::validate($data)) {
-				$message = __("The date specified in '%s' is invalid.", array($this->get('label')));
+				$message = __('The date specified in ‘%s’ is invalid.', array($this->get('label')));
 				return self::__INVALID_FIELDS__;
 			}
 
@@ -397,7 +397,7 @@
 			if(!is_null($timestamp)) {
 				return array(
 					'value' => DateTimeObj::get('c', $timestamp),
-					'local' => DateTimeObj::get('U', $timestamp),
+					'local' => $timestamp,
 					'gmt' => DateTimeObj::getGMT('U', $timestamp)
 				);
 			}

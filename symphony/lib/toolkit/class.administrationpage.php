@@ -255,18 +255,22 @@
 
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.js', 50);
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.color.js', 51);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.collapsible.js', 60);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.orderable.js', 61);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.selectable.js', 62);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.duplicator.js', 63);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.tags.js', 64);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.pickable.js', 65);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/admin.js', 71);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.js', 60);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.collapsible.js', 61);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.orderable.js', 62);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.selectable.js', 63);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.duplicator.js', 64);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.tags.js', 65);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.pickable.js', 66);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/admin.js', 70);
 
 			$this->addElementToHead(
 				new XMLElement(
 					'script',
-					"Symphony.Context.add('env', " . json_encode($this->_context) . "); Symphony.Context.add('root', '" . URL . "');",
+					"Symphony.Context.add('env', " . json_encode(array_merge(
+						array('page-namespace' => Symphony::getPageNamespace()),
+						$this->_context
+					)) . "); Symphony.Context.add('root', '" . URL . "');",
 					array('type' => 'text/javascript')
 				), 72
 			);
