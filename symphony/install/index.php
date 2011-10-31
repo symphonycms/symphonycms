@@ -1,34 +1,78 @@
 <?php
 
-	if(!defined('INSTALL_REQUIREMENTS_PASSED') || !INSTALL_REQUIREMENTS_PASSED){
-		die('<h1>Symphony Fatal Error</h1><p>This file cannot be accessed directly</p>');
+	header('Expires: Mon, 12 Dec 1982 06:14:00 GMT');
+	header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+	header('Cache-Control: no-cache, must-revalidate, max-age=0');
+	header('Pragma: no-cache');
+
+	function __errorHandler($errno=NULL, $errstr, $errfile=NULL, $errline=NULL, $errcontext=NULL){
+		return;
 	}
 
-	$clean_path = $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]);
-	$clean_path = rtrim($clean_path, '/\\');
-	$clean_path = preg_replace('/\/{2,}/i', '/', $clean_path);
-
-	define('_INSTALL_DOMAIN_', $clean_path);
-	define('_INSTALL_URL_', 'http://' . $clean_path);
-
-	// If its not an update, we need to set a couple of important constants.
-	define('__IN_SYMPHONY__', true);
-	define('DOCROOT', './');
-
-	$rewrite_base = trim(dirname($_SERVER['PHP_SELF']), '/\\');
-
-	if(strlen($rewrite_base) > 0){
-		$rewrite_base .= '/';
+	if(!defined('PHP_VERSION_ID')){
+		$version = PHP_VERSION;
+		define('PHP_VERSION_ID', ($version{0} * 10000 + $version{2} * 100 + $version{4}));
 	}
 
-	define('REWRITE_BASE', $rewrite_base);
+	if (PHP_VERSION_ID >= 50300){
+		error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+	}
+	else{
+		error_reporting(E_ALL ^ E_NOTICE);
+	}
 
-	// Include some parts of the Symphony engine
-	require_once(CORE . '/class.log.php');
-	require_once(CORE . '/class.datetimeobj.php');
-	require_once(TOOLKIT . '/class.mysql.php');
-	require_once(TOOLKIT . '/class.xmlelement.php');
-	require_once(TOOLKIT . '/class.widget.php');
+	set_error_handler('__errorHandler');
+	ini_set('display_errors', 1);
+
+	// Show PHP Info
+	if(isset($_REQUEST['info'])){
+		phpinfo();
+		exit();
+	}
+
+	// Set the current timezone, should that not be available
+	// default to GMT.
+	if(!date_default_timezone_set(@date_default_timezone_get())) {
+		date_default_timezone_set('GMT');
+	}
+
+	// Defines
+	define('kVERSION', '2.3dev');
+	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
+	define('kINSTALL_FILENAME', basename(__FILE__));
+	define('DOCROOT', rtrim(dirname(__FILE__), '\\/'));
+	define('INSTALL', DOCROOT . '/symphony/install');
+
+	// Required boot components
+	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
+	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
+
+	// System installer
+	require_once(INSTALL . '/lib/class.installer.php');
+
+	Installer::initialize();
+
+#	function getTableSchema(){
+#		return file_get_contents('install.sql');
+#	}
+
+#	function getWorkspaceData(){
+#		return file_get_contents('workspace/install.sql');
+#	}
+
+#	define('INSTALL_REQUIREMENTS_PASSED', true);
+#	include_once('./symphony/lib/toolkit/include.install.php');
+
+
+
+
+#	if(!defined('INSTALL_REQUIREMENTS_PASSED') || !INSTALL_REQUIREMENTS_PASSED){
+#		die('<h1>Symphony Fatal Error</h1><p>This file cannot be accessed directly</p>');
+#	}
+
+
+
+
 
 	define('BAD_BROWSER', 0);
 	define('MISSING_MYSQL', 3);
@@ -105,25 +149,25 @@
 
 	}
 
-	function writeConfig($dest, $conf, $mode){
+#	function writeConfig($dest, $conf, $mode){
 
-		$string	 = "<?php" . PHP_EOL;
+#		$string	 = "<?php" . PHP_EOL;
 
-		$string .= PHP_EOL . "\t\$settings = array(";
-		foreach($conf['settings'] as $group => $data){
-			$string .= str_repeat(PHP_EOL, 3) . "\t\t###### ".strtoupper($group)." ######";
-			$string .= PHP_EOL . "\t\t'$group' => array(";
-			foreach($data as $key => $value){
-				$string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'null').",";
-			}
-			$string .= PHP_EOL . "\t\t),";
-			$string .= PHP_EOL . "\t\t########";
-		}
-		$string .= PHP_EOL . "\t);" . PHP_EOL;
+#		$string .= PHP_EOL . "\t\$settings = array(";
+#		foreach($conf['settings'] as $group => $data){
+#			$string .= str_repeat(PHP_EOL, 3) . "\t\t###### ".strtoupper($group)." ######";
+#			$string .= PHP_EOL . "\t\t'$group' => array(";
+#			foreach($data as $key => $value){
+#				$string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'null').",";
+#			}
+#			$string .= PHP_EOL . "\t\t),";
+#			$string .= PHP_EOL . "\t\t########";
+#		}
+#		$string .= PHP_EOL . "\t);" . PHP_EOL;
 
-		return General::writeFile($dest . '/config.php', $string, $mode);
+#		return General::writeFile($dest . '/config.php', $string, $mode);
 
-	}
+#	}
 
 	function fireSql(&$db, $data, &$error, $use_server_encoding = false){
 
@@ -151,48 +195,48 @@
 	}
 
 
-	function checkRequirement($item, $type, $expected){
+#	function checkRequirement($item, $type, $expected){
 
-		switch($type){
+#		switch($type){
 
-			case 'func':
+#			case 'func':
 
-				$test = function_exists($item);
-				if($test != $expected) return false;
-				break;
+#				$test = function_exists($item);
+#				if($test != $expected) return false;
+#				break;
 
-			case 'setting':
-				$test = ini_get($item);
-				if(strtolower($test) != strtolower($expected)) return false;
-				break;
+#			case 'setting':
+#				$test = ini_get($item);
+#				if(strtolower($test) != strtolower($expected)) return false;
+#				break;
 
-			case 'ext':
-				foreach(explode(':', $item) as $ext){
-					$test = extension_loaded($ext);
-					if($test == $expected) return true;
-				}
+#			case 'ext':
+#				foreach(explode(':', $item) as $ext){
+#					$test = extension_loaded($ext);
+#					if($test == $expected) return true;
+#				}
 
-				return false;
-				break;
+#				return false;
+#				break;
 
-			 case 'version':
-				if(version_compare($item, $expected, '>=') != 1) return false;
-				break;
+#			 case 'version':
+#				if(version_compare($item, $expected, '>=') != 1) return false;
+#				break;
 
-			 case 'permission':
-				if(!is_writable($item)) return false;
-				break;
+#			 case 'permission':
+#				if(!is_writable($item)) return false;
+#				break;
 
-			 case 'remote':
-				$result = curler($item);
-				if(strpos(strtolower($result), 'error') !== false) return false;
-				break;
+#			 case 'remote':
+#				$result = curler($item);
+#				if(strpos(strtolower($result), 'error') !== false) return false;
+#				break;
 
-		}
+#		}
 
-		return true;
+#		return true;
 
-	}
+#	}
 
 	if(!function_exists('timezone_identifiers_list')){
 		function timezone_identifiers_list(){
@@ -296,24 +340,24 @@
 		}
 	}
 
-	Class SymphonyLog extends Log{
+#	Class SymphonyLog extends Log{
 
-		function SymphonyLog($path){
-			$this->setLogPath($path);
+#		function SymphonyLog($path){
+#			$this->setLogPath($path);
 
-			if(@file_exists($this->getLogPath())){
-				$this->open();
+#			if(@file_exists($this->getLogPath())){
+#				$this->open();
 
-			}else{
-				$this->open('OVERRIDE');
-				$this->writeToLog('Symphony Installer Log', true);
-				$this->writeToLog('Opened: '. DateTimeObj::get('c'), true);
-				$this->writeToLog('Version: '. kVERSION, true);
-				$this->writeToLog('Domain: '._INSTALL_URL_, true);
-				$this->writeToLog('--------------------------------------------', true);
-			}
-		}
-	}
+#			}else{
+#				$this->open('OVERRIDE');
+#				$this->writeToLog('Symphony Installer Log', true);
+#				$this->writeToLog('Opened: '. DateTimeObj::get('c'), true);
+#				$this->writeToLog('Version: '. kVERSION, true);
+#				$this->writeToLog('Domain: '._INSTALL_URL_, true);
+#				$this->writeToLog('--------------------------------------------', true);
+#			}
+#		}
+#	}
 
 	Class Action{
 
@@ -1182,16 +1226,16 @@ Options +FollowSymlinks -Indexes
 			$Page->setTemplateVar('languages', $languages);
 		}
 
-		function uptodate(&$Page, &$Contents){
-			$Contents->appendChild(new XMLElement('h2', __('Update Symphony')));
-			$Contents->appendChild(new XMLElement('p', __('You are already using the most recent version of Symphony. There is no need to run the installer, and can be safely deleted.')));
+#		function uptodate(&$Page, &$Contents){
+#			$Contents->appendChild(new XMLElement('h2', __('Update Symphony')));
+#			$Contents->appendChild(new XMLElement('p', __('You are already using the most recent version of Symphony. There is no need to run the installer, and can be safely deleted.')));
 
-			$Page->setTemplateVar('title', __('Update Symphony'));
-			$Page->setTemplateVar('tagline', __('Version %s', array(kVERSION)));
+#			$Page->setTemplateVar('title', __('Update Symphony'));
+#			$Page->setTemplateVar('tagline', __('Version %s', array(kVERSION)));
 
-			global $languages;
-			$Page->setTemplateVar('languages', $languages);
-		}
+#			global $languages;
+#			$Page->setTemplateVar('languages', $languages);
+#		}
 
 		function incorrectVersion(&$Page, &$Contents){
 			$Contents->appendChild(new XMLElement('h2', __('Update Symphony')));
@@ -1228,11 +1272,11 @@ Options +FollowSymlinks -Indexes
 	$Contents->appendChild(new XMLElement('h1', '<!-- TITLE --> <em><!-- TAGLINE --></em>'));
 	$Contents->appendChild(new XMLElement('ul', '<!-- LANGUAGES --><li class="more"><a href="http://symphony-cms.com/download/extensions/translations/">' . __('Symphony is also available in other languages') . '</a></li>'));
 
-	if(defined('__IS_UPDATE__') && __IS_UPDATE__ == true)
-		$Page->setPage('update');
+#	if(defined('__IS_UPDATE__') && __IS_UPDATE__ == true)
+#		$Page->setPage('update');
 
-	elseif(defined('__ALREADY_UP_TO_DATE__') && __ALREADY_UP_TO_DATE__ == true)
-		$Page->setPage('uptodate');
+#	elseif(defined('__ALREADY_UP_TO_DATE__') && __ALREADY_UP_TO_DATE__ == true)
+#		$Page->setPage('uptodate');
 
 	else{
 		$Page->setPage('index');
