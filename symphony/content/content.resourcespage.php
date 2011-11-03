@@ -30,7 +30,7 @@
 		public function __viewIndex($resource_type){
 			$this->setPageType('table');
 
-			Sortable::init($this, $resources, $sort, $order);
+			Sortable::initialize($this, $resources, $sort, $order);
 
 			$columns = array(
 				array(
