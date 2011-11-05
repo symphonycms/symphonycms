@@ -369,9 +369,11 @@
 		 *  Returns the translated string
 		 */
 		public function translate($string, array $inserts = null, $namespace = null) {
-			if(is_null($namespace) && class_exists('Symphony')) $namespace = Symphony::getPageNamespace();
+			if(is_null($namespace) && class_exists('Symphony')){
+				$namespace = Symphony::getPageNamespace();
+			}
 
-			if(isset($namespace) && trim($namespace) !== '' && isset(self::$_dictionary[$namespace][$string])) {
+			if(isset($namespace) && isset(self::$_dictionary[$namespace][$string])) {
 				$translated = self::$_dictionary[$namespace][$string];
 			}
 			else if(isset(self::$_dictionary[$string])) {
@@ -380,6 +382,8 @@
 			else {
 				$translated = $string;
 			}
+
+			$translated = empty($translated) ? $string : $translated;
 
 			// Replace translation placeholders
 			if(is_array($inserts) && !empty($inserts)) {

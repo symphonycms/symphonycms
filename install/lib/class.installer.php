@@ -16,8 +16,6 @@
 
 	Class Installer {
 
-		private static $_installation_completed = false;
-
 		private static $_page;
 
 		private static $_log;
@@ -199,6 +197,15 @@
 			$errors = array();
 			$fields = $_POST['fields'];
 
+#			// Configuration: Populating array
+#			$conf = self::$_conf->get();
+
+#			foreach($conf as $group => $settings){
+#				foreach($settings as $key => $value){
+#					if(isset($fields[$group][$key])){echo $key . " == " . $fields[$group][$key] . "\n";}
+#				}
+#			}
+
 			// Invalid path
 			if(!is_dir(rtrim($fields['docroot'], '/') . '/symphony')){
 				$errors['no-symphony-dir'] = array(
@@ -229,7 +236,7 @@
 
 			// Testing the database connection
 			try{
-				self::$_db->connect($fields['database']['host'], $fields['database']['username'], $fields['database']['password'], $fields['database']['port']);
+				self::$_db->connect($fields['database']['host'], $fields['database']['user'], $fields['database']['password'], $fields['database']['port']);
 			}
 			catch(DatabaseException $e){
 				$errors['no-database-connection'] = array(
@@ -241,7 +248,7 @@
 			try{
 
 				// Looking for the given database name
-				self::$_db->select($fields['database']['name']);
+				self::$_db->select($fields['database']['db']);
 
 				// Incorrect MySQL version
 				$version = self::$_db->fetchVar('version', 0, "SELECT VERSION() AS `version`;");
@@ -258,13 +265,13 @@
 					// Existing table prefix
 					$tables = self::$_db->fetch(sprintf(
 						"SHOW TABLES FROM `%s` LIKE '%s'",
-						mysql_escape_string($fields['database']['name']),
+						mysql_escape_string($fields['database']['db']),
 						mysql_escape_string($fields['database']['tbl_prefix']) . '%'
 					));
 
 					if(is_array($tables) && !empty($tables) && $fields['database']['drop-tables'] == 'no'){
 						$errors['database-table-clash']  = array(
-							'msg' => 'Database table prefix clash with ‘' . $fields['database']['name'] . '’',
+							'msg' => 'Database table prefix clash with ‘' . $fields['database']['db'] . '’',
 							'details' =>  __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.', array('<code>' . $fields['database']['tbl_prefix'] . '</code>'))
 						);
 					}
@@ -274,7 +281,7 @@
 			}
 			catch(DatabaseException $e){
 					$errors['unknown-database']  = array(
-						'msg' => 'Database ‘' . $fields['database']['name'] . '’ not found.',
+						'msg' => 'Database ‘' . $fields['database']['db'] . '’ not found.',
 						'details' =>  __('Symphony was unable to connect to the specified database.')
 					);
 			}
@@ -340,48 +347,6 @@
 			), true);
 			self::$_log->writeToLog(        '============================================' . PHP_EOL . PHP_EOL . PHP_EOL, true);
 
-			self::__displayPage(new InstallerPage('failure'));
-		}
-
-		private static function __install(){
-			$fields = $_POST['fields'];
-			$errors = array();
-
-			$start = time();
-
-			self::$_log->writeToLog(PHP_EOL . '============================================', true);
-			self::$_log->writeToLog(          'INSTALLATION PROCESS STARTED (' . DateTimeObj::get('c') . ')', true);
-			self::$_log->writeToLog(          '============================================', true);
-
-			// MySQL: Establishing connection
-			self::$_log->pushToLog('MYSQL: Establishing Connection...', E_NOTICE, true, true);
-
-			try{
-				self::$_db->connect($fields['database']['host'], $fields['database']['username'], $fields['database']['password'], $fields['database']['port']);
-			}
-			catch(DatabaseException $e){
-				self::__abort(
-					'There was a problem while trying to establish a connection to the MySQL server. Please check your settings.',
-				$start);
-			}
-
-			// MySQL: Selecting database
-			self::$_log->pushToLog('MYSQL: Selecting Database ‘' . $fields['database']['name'] . '’...', E_NOTICE, true, true);
-
-			try{
-				self::$_db->select($fields['database']['name']);
-			}
-			catch(DatabaseException $e){
-				self::__abort(
-					'Could not connect to specified database. Please check your settings.',
-				$start);
-			}
-
-			// MySQL: Setting prefix & character encoding
-			self::$_db->setPrefix($fields['database']['tbl_prefix']);
-			self::$_db->setCharacterEncoding();
-			self::$_db->setCharacterSet();
-
 #			if($fields['database']['drop-tables'] == 'yes'){
 
 #				// MySQL: Drop existing tables
@@ -406,8 +371,50 @@
 #				}
 #			}
 
+			self::__displayPage(new InstallerPage('failure'));
+		}
+
+		private static function __install(){
+			$fields = $_POST['fields'];
+			$errors = array();
+
+			$start = time();
+
+			self::$_log->writeToLog(PHP_EOL . '============================================', true);
+			self::$_log->writeToLog(          'INSTALLATION PROCESS STARTED (' . DateTimeObj::get('c') . ')', true);
+			self::$_log->writeToLog(          '============================================', true);
+
+			// MySQL: Establishing connection
+			self::$_log->pushToLog('MYSQL: Establishing Connection', E_NOTICE, true, true);
+
+			try{
+				self::$_db->connect($fields['database']['host'], $fields['database']['user'], $fields['database']['password'], $fields['database']['port']);
+			}
+			catch(DatabaseException $e){
+				self::__abort(
+					'There was a problem while trying to establish a connection to the MySQL server. Please check your settings.',
+				$start);
+			}
+
+			// MySQL: Selecting database
+			self::$_log->pushToLog('MYSQL: Selecting Database ‘' . $fields['database']['db'] . '’...', E_NOTICE, true, true);
+
+			try{
+				self::$_db->select($fields['database']['db']);
+			}
+			catch(DatabaseException $e){
+				self::__abort(
+					'Could not connect to specified database. Please check your settings.',
+				$start);
+			}
+
+			// MySQL: Setting prefix & character encoding
+			self::$_db->setPrefix($fields['database']['tbl_prefix']);
+			self::$_db->setCharacterEncoding();
+			self::$_db->setCharacterSet();
+
 			// MySQL: Importing schema
-			self::$_log->pushToLog('MYSQL: Importing Table Schema...', E_NOTICE, true, true);
+			self::$_log->pushToLog('MYSQL: Importing Table Schema', E_NOTICE, true, true);
 
 			try{
 				self::$_db->import(file_get_contents(INSTALL . '/includes/install.sql'), ($fields['database']['use-server-encoding'] != 'yes' ? true : false), true);
@@ -420,7 +427,7 @@
 			}
 
 			// MySQL: Creating default author
-			self::$_log->pushToLog('MYSQL: Creating Default Author...', E_NOTICE, true, true);
+			self::$_log->pushToLog('MYSQL: Creating Default Author', E_NOTICE, true, true);
 
 			try{
 				$author_sql = sprintf(
@@ -491,7 +498,9 @@
 			// Writing configuration file
 			self::$_log->pushToLog('WRITING: Configuration File', E_NOTICE, true, true);
 
-			if(!self::$_conf->write()){
+			self::$_conf->setArray($conf);
+
+			if(!self::$_conf->write($conf['file']['write_mode'])){
 				self::__abort(
 					'Could not create config file ‘' . CONFIG . '’. Check permission on /manifest.',
 				$start);
@@ -503,7 +512,7 @@
 			$rewrite_base = preg_replace('/\/install$/i', NULL, dirname($_SERVER['PHP_SELF']));
 			$htaccess = str_replace(
 				'<!-- REWRITE_BASE -->', $rewrite_base,
-				file_get_contents('assets/template.htaccess.txt')
+				file_get_contents(INSTALL . '/includes/htaccess.txt')
 			);
 
 			if(!General::writeFile(DOCROOT . "/.htaccess", $htaccess, $conf['file']['write_mode'], 'a')){
@@ -583,23 +592,23 @@
 			}
 
 			// Loading default language
-			if($_REQUEST['lang'] != 'en'){
+			if(isset($_REQUEST['lang']) && $_REQUEST['lang'] != 'en'){
 				self::$_log->pushToLog('CONFIGURING: Default language', E_NOTICE, true, true);
 
 				require_once(CORE . '/class.administration.php');
 
-				$language = Lang::getAvailableLanguages();
+				$language = Lang::Languages();
 				$language = $language[$_REQUEST['lang']];
 				$extension = Administration::instance()->ExtensionManager()->create('lang_' . $language['handle']);
 
 				if(Administration::instance()->ExtensionManager()->enable('lang_' . $language['handle'])){
 					self::$_conf->set('lang', $_REQUEST['lang'], 'symphony');
-					if(!self::$_conf->write()){
-						self::$_log->pushToLog('Could not write default language to config file.', E_NOTICE, true, true);
+					if(!self::$_conf->write($conf['file']['write_mode'])){
+						self::$_log->pushToLog('Could not write default language ‘' . $language['name'] . '’ to config file.', E_NOTICE, true, true);
 					}
 				}
 				else{
-					self::$_log->pushToLog('Could not enable the desired language.', E_NOTICE, true, true);
+					self::$_log->pushToLog('Could not enable the desired language ‘' . $language['name'] . '’.', E_NOTICE, true, true);
 				}
 			}
 

@@ -140,6 +140,9 @@
 					'database' => array(
 						'host'					=> $conf['database']['host'],
 						'port'					=> $conf['database']['port'],
+						'user'					=> $conf['database']['user'],
+						'password'				=> $conf['database']['password'],
+						'db'					=> $conf['database']['db'],
 						'tbl_prefix'			=> $conf['database']['tbl_prefix'],
 						'drop-tables'			=> 'yes',
 						'use-server-encoding'	=> 'yes',
@@ -232,7 +235,7 @@
 			$Database->appendChild(new XMLElement('p', __('Please provide Symphony with access to a database.')));
 
 			// Database name
-			$label = Widget::label(__('Database'), Widget::input('fields[database][name]', $fields['database']['name']), $class);
+			$label = Widget::label(__('Database'), Widget::input('fields[database][db]', $fields['database']['db']), $class);
 			$Database->appendChild($label);
 
 			$this->__appendError(
@@ -242,7 +245,7 @@
 
 			// Database credentials
 			$Div = new XMLElement('div', null, array('class' => 'group'));
-			$Div->appendChild(Widget::label(__('Username'), Widget::input('fields[database][username]', $fields['database']['username'])));
+			$Div->appendChild(Widget::label(__('Username'), Widget::input('fields[database][user]', $fields['database']['user'])));
 			$Div->appendChild(Widget::label(__('Password'), Widget::input('fields[database][password]', $fields['database']['password'], 'password')));
 			$Database->appendChild($Div);
 

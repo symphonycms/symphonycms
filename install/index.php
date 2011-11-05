@@ -46,7 +46,7 @@
 	$clean_path = preg_replace(array('/\/{2,}/i', '/\/install$/i'), array('/', NULL), $clean_path);
 
 	define('DOCROOT', $clean_path);
-	define('INSTALL', DOCROOT . '/install' );
+	define('INSTALL', DOCROOT . '/install');
 
 	// Required boot components
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
