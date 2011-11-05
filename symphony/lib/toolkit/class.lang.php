@@ -259,11 +259,11 @@
 		public static function set($code, $checkStatus = true) {
 			if(!$code || $code == self::get()) return;
 
+			// Store current language code
+			self::$_lang = $code;
+
 			// Language file available
 			if($code != 'en' && (self::isLanguageEnabled($code) || $checkStatus == false)) {
-
-				// Store current language code
-				self::$_lang = $code;
 
 				// Clear dictionary
 				self::$_dictionary = array();
@@ -282,7 +282,7 @@
 			}
 
 			// Language file unavailable, use default language
-			else {
+			elseif($code != 'en') {
 				self::$_lang = 'en';
 
 				// Log error, if possible
@@ -312,7 +312,7 @@
 			$enabled_extensions = array();
 
 			// Fetch list of active extensions
-			if(class_exists('Symphony')){
+			if(class_exists('Symphony') && (!is_null(Symphony::ExtensionManager()))){
 				$enabled_extensions = Symphony::ExtensionManager()->listInstalledHandles();
 			}
 

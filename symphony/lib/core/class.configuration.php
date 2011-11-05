@@ -170,4 +170,18 @@
 			return $string;
 		}
 
+		public function write($filename = null, $permissions=null){
+			$string = "<?php\n\t\$settings = " . (string)$this . ";\n";
+
+			if(is_null($filename) && defined(CONFIG)){
+				$filename = CONFIG;
+			}
+
+			if(is_null($permissions) && isset($this->_properties['file']['write_mode'])){
+				$permissions = $this->_properties['file']['write_mode'];
+			}
+
+			return General::writeFile($filename, $string, $permissions);
+		}
+
 	}
