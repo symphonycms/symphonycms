@@ -13,6 +13,7 @@
 	 * @param {Object} custom_settings An object specifying containing the attributes specified below
 	 * @param {String} [custom_settings.items='li'] Selector to find items to be orderable
 	 * @param {String} [custom_settings.handles='*'] Selector to find children that can be grabbed to re-order
+	 * @param {String} [custom_settings.ignore='input, textarea, select'] Selector to find elements that should not propagate to the handle
 	 * @param {Boolean} [custom_settings.delay_initialize=false] Initialise plugin extensions before the orderable itself is initialised
 	 *
 	 *	@example
@@ -27,6 +28,7 @@
 			settings = {
 				items:				'li',
 				handles:			'*',
+				ignore:				'input, textarea, select',
 				delay_initialize:	false
 			};
 
@@ -138,12 +140,13 @@
 
 				initialize: function() {
 					object.addClass('orderable');
+					
 					object.delegate(settings.items + ' ' + settings.handles, 'mousedown.orderable', function(event) {
 						var target = $(event.target),
 							item = $(this).parents(settings.items);
 
-						// Keep fields accessible inside orderable list
-						if(!target.is('input, textarea, select')) {
+						// Respect ignored elements
+						if(!target.is(settings.ignore)) {
 							start(item);
 							return false;
 						}

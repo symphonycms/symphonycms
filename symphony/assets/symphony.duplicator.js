@@ -10,18 +10,17 @@
 	 * @name $.symphonyDuplicator
 	 * @class
 	 *
-	 * @param {Object} custom_settings An object specifying containing the attributes specified below
-	 * @param {String} [custom_settings.instances='> li:not(.template)'] Selector to find children to use as instances
-	 * @param {String} [custom_settings.templates='> li.template'] Selector to find children to use as templates
-	 * @param {String} [custom_settings.headers='> :first-child'] Selector to find the header part of each instance
-	 * @param {Boolean} [custom_settings.orderable=false] Can instances be ordered
-	 * @param {Boolean} [custom_settings.collapsible=false] Can instances be collapsed
-	 * @param {Boolean} [custom_settings.constructable=true] Allow construction of new instances
-	 * @param {Boolean} [custom_settings.destructable=true] Allow destruction of instances
-	 * @param {Integer} [custom_settings.minimum=0] Do not allow instances to be removed below this limit
-	 * @param {Integer} [custom_settings.maximum=1000] Do not allow instances to be added above this limit
-	 * @param {String} [custom_settings.speed='fast'] Animation speed
-	 * @param {Boolean} [custom_settings.delay_initialize=false] Initialise plugin extensions before the duplicator itself is initialised
+	 * @param {Object} options An object specifying containing the attributes specified below
+	 * @param {String} [options.instances='> li:not(.template)'] Selector to find children to use as instances
+	 * @param {String} [options.templates='> li.template'] Selector to find children to use as templates
+	 * @param {String} [options.headers='> :first-child'] Selector to find the header part of each instance
+	 * @param {Boolean} [options.orderable=false] Can instances be ordered
+	 * @param {Boolean} [options.collapsible=false] Can instances be collapsed
+	 * @param {Boolean} [options.constructable=true] Allow construction of new instances
+	 * @param {Boolean} [options.destructable=true] Allow destruction of instances
+	 * @param {Integer} [optionss.minimum=0] Do not allow instances to be removed below this limit
+	 * @param {Integer} [options.maximum=1000] Do not allow instances to be added above this limit
+	 * @param {String} [options.speed='fast'] Animation speed
 	 *
 	 *	@example
 
@@ -30,7 +29,7 @@
 				collapsible: true
 			});
 	 */
-	$.fn.symphonyDuplicator = function(custom_settings) {
+	$.fn.symphonyDuplicator = function(options) {
 		var objects = this,
 			settings = {
 				instances:			'> li:not(.template)',	// What children do we use as instances?
@@ -42,458 +41,211 @@
 				destructable:		true,					// Allow destruction of instances?
 				minimum:			0,						// Do not allow instances to be removed below this limit.
 				maximum:			1000,					// Do not allow instances to be added above this limit.
-				speed:				'fast',					// Control the speed of any animations
-				delay_initialize:	false
+				speed:				'fast'					// Control the speed of any animations
 			};
 
-		$.extend(settings, custom_settings);
+		$.extend(settings, options);
 
 	/*-----------------------------------------------------------------------*/
 
 		// Language strings
 		Symphony.Language.add({
 			'Add item': false,
-			'Remove item': false,
-			'Expand all': false,
-			'Collapse all': false,
-			'All selected': false
+			'Remove item': false
 		});
 
-		// Collapsible
-		if(settings.collapsible) {
-			objects = objects.symphonyCollapsible({
-				items:			'.instance',
-				handles:		'.header span'
-			});
-		}
-
-		// Orderable
-		if(settings.orderable) {
-			objects = objects.symphonyOrderable({
-				items:			'.instance',
-				handles:		'.header'
-			});
-		}
-
-		// Duplicator
-		objects = objects.map(function() {
-			var object = this,
-				templates = [],
-				widgets = {
-					controls:		null,
-					selector:		null,
-					constructor:	null,
-					topcontrols:	null,
-					collapser:		null
-				},
-				silence = function() {
-					return false;
-				};
-
-			// Construct a new instance
-			var construct = function(source) {
-				var template = $(source).clone(true),
-					instance = prepare(template);
-
-				widgets.controls.before(instance);
-				object.trigger('construct', [instance]);
-				refresh(true);
-				updateUniqueness();
-
-				return instance;
-			};
-
-			var destruct = function(source) {
-				var instance = $(source).remove();
-
-				object.trigger('destruct', [instance]);
-				refresh();
-				updateUniqueness();
-
-				return instance;
-			};
-
-			// Prepare an instance
-			var prepare = function(source) {
-				var instance = $(source).addClass('instance expanded'),
-					header = instance.find(settings.headers).addClass('header').wrapInner('<span />'),
-					destructor = header.append('<a class="destructor" />').find('a.destructor:first').text(Symphony.Language.get('Remove item'));
-
-				header.nextAll().wrapAll('<div class="content" />');
-
-				destructor.bind('click.duplicator', function() {
-					if($(this).hasClass('disabled')) {
-						return;
-					}
-					destruct(source);
-				});
-
-				header.bind('selectstart.duplicator', silence);
-
-				return instance;
-			};
-
-			// Refresh disabled states
-			var refresh = function(input_focus) {
-				var constructor = settings.constructable,
-					selector = settings.constructable,
-					destructor = settings.destructable,
-					instances = object.children('.instance'),
-					empty = false;
-
-				// Update field names
-				instances.each(function(position) {
-					$(this).find('*[name]').each(function() {
-						var exp = /\[\-?[0-9]+\]/,
-							name = $(this).attr('name');
-
-						if (exp.test(name)) {
-							$(this).attr('name', name.replace(exp, '[' + position + ']'));
-						}
-					});
-				});
-
-				// Give focus to the first input in the first instance
-				if(input_focus) {
-					instances.filter(':last').find('input[type!="hidden"]:first').focus();
-				}
-
-				// No templates to add
-				if(templates.length < 1) {
-					constructor = false;
-				}
-
-				// Only one template
-				if(templates.length <= 1) {
-					selector = false;
-				}
-
-				// Maximum reached?
-				if(settings.maximum <= instances.length) {
-					constructor = false;
-					selector = false;
-				}
-
-				// Minimum reached?
-				if(settings.minimum >= instances.length) {
-					destructor = false;
-				}
-
-				// Constructor?
-				if(constructor) {
-					widgets.constructor.removeClass('disabled');
-				}
-				else {
-					widgets.constructor.addClass('disabled');
-				}
-
-				// Selector?
-				if(selector) {
-					widgets.selector.removeClass('disabled');
-				}
-				else {
-					widgets.selector.addClass('disabled');
-				}
-
-				// Destructor?
-				if(destructor) {
-					instances.find(settings.headers).find('.destructor').removeClass('disabled');
-				}
-				else {
-					instances.find(settings.headers).find('.destructor').addClass('disabled');
-				}
-
-				// Empty?
-				if(!empty) {
-					object.removeClass('empty');
-				}
-				else {
-					object.addClass('empty');
-				}
-
-				// Collapsible?
-				if(settings.collapsible) {
-					object.collapsible.initialize();
-				}
-
-				// Orderable?
-				if(settings.orderable) {
-					object.orderable.initialize();
-					object.bind('orderstop', function(event) {
-						object.trigger('savestate');
-					});
-				}
-			};
-
-			// Update uniqueness
-			var updateUniqueness = function() {
-				var instances = object.children('.instance'),
-					options = widgets.selector.find('option');
-
-				options.attr('disabled', false);
-
-				instances.each(function(position) {
-					var instance = $(this);
-
-					if (instance.hasClass('unique')) {
-						options.filter('[data-type=' + instance.attr('data-type') + ']').attr('disabled', 'disabled');
-
-						if (options.not(':disabled').length === 0) {
-							widgets.selector.prepend('<option class="all-selected">' + Symphony.Language.get('All selected') + '</option>');
-							widgets.selector.attr('disabled', 'disabled');
-							widgets.constructor.addClass('disabled');
-						} else {
-							widgets.selector.attr('disabled', false);
-							options.filter('.all-selected').remove();
-						};
-
-						widgets.selector.find('option').not(':disabled').first().attr('selected', 'selected');
-					};
-				});
-			};
-
-			var collapsingEnabled = function() {
-				widgets.topcontrols.removeClass('hidden');
-				widgets.collapser.removeClass('disabled');
-			};
-
-			var collapsingDisabled = function() {
-				widgets.topcontrols.addClass('hidden');
-				widgets.collapser.addClass('disabled');
-			};
-
-			var toCollapseAll = function() {
-				widgets.collapser.removeClass('compact').text(Symphony.Language.get('Collapse all'));
-			};
-
-			var toExpandAll = function() {
-				widgets.collapser.addClass('compact').text(Symphony.Language.get('Expand all'));
-			};
-
+	/*-----------------------------------------------------------------------*/
+	
+		objects.each(function() {
+			var object = $(this),
+				instances = object.find(settings.instances).addClass('instance'),
+				templates = object.find(settings.templates).addClass('template'),
+				items = instances.add(templates),
+				headers = items.find(settings.headers).addClass('header'),
+				duplicator = $('<div class="duplicator" />'),
+				controls = $('<div class="controls" />'),
+				selector = $('<select />'),
+				constructor = $('<a class="constructor">' + Symphony.Language.get('Add item') + '</a>');
+			
 		/*-------------------------------------------------------------------*/
 
-			if (object instanceof $ === false) {
-				object = $(object);
-			}
+			// Remove field indexes
+			items.on('constructstop.duplicator', function(event) {
+				var instance = $(this);
+			
+				// Loop over named fields
+				instance.find('*[name]').each(function() {
+					var field = $(this),
+						exp = /\[\-?[0-9]+\]/,						
+						name = field.attr('name');
 
-			object.duplicator = {
-				refresh: function() {
-					refresh();
-				},
-
-				initialize: function() {
-					object.addClass('duplicator');
-
-					// Prevent collapsing when ordering stops:
-					object.bind('orderstart.duplicator', function() {
-						if (settings.collapsible) {
-							object.collapsible.cancel();
-						}
-					});
-
-					// Refresh on reorder:
-					object.bind('orderstop.duplicator', function() {
-						refresh();
-					});
-
-					// Slide up on collapse:
-					object.bind('collapsestop.duplicator', function(event, item, instantly) {
-						if (instantly) {
-							item.find('> .content').hide();
-						} else {
-							item.find('> .content').show().slideUp(settings.speed);
-						}
-					});
-
-					// Slide down on expand:
-					object.bind('expandstop.duplicator', function(event, item, instantly) {
-						if (instantly) {
-							item.find('> .content').show();
-						} else {
-							item.find('> .content').hide().slideDown(settings.speed);
-						};
-					});
-
-					widgets.controls = object.append('<div class="controls" />').find('> .controls:last');
-					widgets.selector = widgets.controls.prepend('<select />').find('> select:first');
-					widgets.constructor = widgets.controls.append('<a class="constructor" />').find('> a.constructor:first').text(Symphony.Language.get('Add item'));
-
-					// Prepare instances:
-					object.find(settings.instances).each(function() {
-						var instance = prepare(this);
-
-						object.trigger('construct', [instance]);
-					});
-
-					// Store templates:
-					object.find(settings.templates).each(function(position) {
-						var template = $(this).clone(true),
-							header = template.find(settings.headers).addClass('header'),
-							option = widgets.selector.append('<option />').find('option:last'),
-							header_children = header.children(),
-							header_text = header.text();
-
-						if(header_children.length) {
-							header_text = header.get(0).childNodes[0].nodeValue + ' (' + header_children.filter(':eq(0)').text() + ')';
-						}
-						option.text(header_text).val(position).attr('data-type', template.attr('data-type'));
-
-						// HACK: preselect Text Input for Section editor
-						if (header_text == 'Text Input') {
-							option.attr('selected', 'selected');
-						}
-
-						templates.push(template.removeClass('template'));
-
-						// Remove template source
-						$(this).remove();
-					});
-
-					// Construct new template:
-					widgets.constructor.bind('selectstart.duplicator', silence);
-					widgets.constructor.bind('mousedown.duplicator', silence);
-					widgets.constructor.bind('click.duplicator', function() {
-						if($(this).hasClass('disabled')) {
-							return;
-						}
-
-						var position = widgets.selector.val();
-
-						if(position >= 0) {
-							construct(templates[position]);
-						}
-					});
-
-					if(settings.collapsible) {
-						widgets.topcontrols = object
-							.prepend('<div class="controls top hidden" />')
-							.find('> .controls:first')
-							.append(widgets.controls
-								.prepend('<a class="collapser disabled" />')
-								.find('> a.collapser:first')
-								.text(Symphony.Language.get('Collapse all'))
-								.clone()
-							);
-						widgets.collapser = object.find('.controls > .collapser');
-
-						if(object.children('.instance').length > 0) {
-							collapsingEnabled();
-						}
-
-						object.bind('construct.duplicator', function() {
-							var instances = object.children('.instance');
-
-							if(instances.length > 0) {
-								collapsingEnabled();
-							}
-						});
-
-						object.bind('destruct.duplicator', function() {
-							var instances = object.children('.instance');
-
-							if(instances.length < 1) {
-								collapsingDisabled();
-								toCollapseAll();
-							}
-						});
-
-						object.bind('collapsestop.duplicator destruct.duplicator', function() {
-							if(object.has('.expanded').length == 0) {
-								toExpandAll();
-							}
-						});
-
-						object.bind('expandstop.duplicator destruct.duplicator', function() {
-							if(object.has('.collapsed').length == 0) {
-								toCollapseAll();
-							}
-						});
-
-						widgets.collapser.bind('click.duplicator', function() {
-							var item = $(this);
-
-							if(item.is('.disabled')) return;
-
-							object.duplicator[item.is('.compact') ? 'expandAll' : 'collapseAll']();
-						});
+					// Symphony will receive a sorted array on submit, no need for hardcoded indexes
+					if(exp.test(name)) {
+						field.attr('name', name.replace(exp, '[]'));
 					}
+				});			
+			});
+			
+			// Construct instances
+			controls.on('click.duplicator', 'a.constructor:not(.disabled)', function(event) {
+				var instance = templates.filter('[data-type="' + selector.val() + '"]').clone();
 
-					refresh();
-					updateUniqueness();
-				},
-				
-				/**
-				 * Expand all closed items
-				 *
-				 * @name $.symphonyDuplicator#expandAll
-				 * @function
-				 * @requires $.symphonyCollapsible plugin
-				 * @requires constructor { collapsible: true }
-				 * @see $.symphonyCollapsible#expandAll
-				 */
-				expandAll: function() {
-					object.collapsible.expandAll();
-					toCollapseAll();
-				},
-				
-				/**
-				 * Collapse all open items
-				 *
-				 * @name $.symphonyDuplicator#collapseAll
-				 * @function
-				 * @requires $.symphonyCollapsible plugin
-				 * @requires constructor { collapsible: true }
-				 * @see $.symphonyCollapsible#collapseAll
-				 */
-				collapseAll: function() {
-					object.collapsible.collapseAll();
-					toExpandAll();
+				instance.trigger('constructstart.duplicator');
+				instance.trigger('construct.duplicator'); /* deprecated */
+				instance.hide().appendTo(object).slideDown(settings.speed, function() {
+
+					// Focus first input
+					instance.find('input[type!="hidden"]:first').focus();
+					instance.trigger('constructstop.duplicator');
+				});
+			});
+			
+			// Destruct instances
+			duplicator.on('click.duplicator', 'a.destructor:not(.disabled)', function(event) {
+				var instance = $(this).parents('.instance:first');
+
+				instance.trigger('destructstart.duplicator');
+				instance.trigger('destruct.duplicator'); /* deprecated */
+				instance.slideUp(settings.speed, function() {
+					$(this).remove();
+					instance.trigger('destructstop.duplicator');				
+				});
+			});
+			
+			// Lock constructor
+			duplicator.on('constructstop.duplicator', '.instance', function() {
+				if(duplicator.find('.instance').size() >= settings.maximum) {
+					constructor.addClass('disabled');
 				}
-			};
-
-			if (settings.delay_initialize !== true) {
-				object.duplicator.initialize();
-			}
-
-			return object;
-		});
-
-		return objects;
-	};
-
-
-	/**
-	 * This plugin creates a Symphony duplicator with name.
-	 *
-	 * @param {Object} custom_settings
-	 *  An object with custom duplicator settings
-	 */
-	$.fn.symphonyDuplicatorWithName = function(custom_settings) {
-		var objects = $(this).symphonyDuplicator($.extend(
-			custom_settings, {
-				delay_initialize:		true
-			}
-		));
-
-		objects = objects.map(function() {
-			var object = this;
-
-			object.bind('construct.duplicator', function(event, instance) {
-				var input = instance.find('input:visible:first'),
-					header = instance.find('.header:first > span:first'),
-					fallback = header.text(),
-					refresh = function() {
-						var value = input.val();
-						header.text(value ? value : fallback);
-					};
-
-				input.bind('change.duplicator', refresh).bind('keyup', refresh);
-
-				refresh();
+			});
+			
+			// Unlock constructor
+			duplicator.on('destructstart.duplicator', '.instance', function() {
+				if(duplicator.find('.instance').size() <= settings.maximum) {
+					constructor.removeClass('disabled');
+				}
+			});
+			
+			// Lock destructor
+			duplicator.on('destructstart.duplicator', '.instance', function() {
+				if(duplicator.find('.instance').size() - 1 == settings.minimum) {
+					duplicator.find('a.destructor').addClass('disabled');
+				}
 			});
 
-			object.duplicator.initialize();
-		});
+			// Unlock destructor
+			duplicator.on('constructstop.duplicator', '.instance', function() {
+				if(duplicator.find('.instance').size() > settings.minimum) {
+					duplicator.find('a.destructor').removeClass('disabled');
+				}
+			});
+			
+			// Lock unique instances
+			duplicator.on('constructstop.duplicator', '.instance', function(event) {
+				var instance = $(this);
+
+				if(instance.is('.unique')) {
+					selector.find('option[value="' + instance.attr('data-type') + '"]').attr('disabled', true);
+					
+					// Preselect first available instance
+					selector.find('option').attr('selected', false).filter(':not(:disabled):first').attr('selected', true);
+					
+					// All selected
+					if(selector.find('option:not(:disabled)').size() == 0) {
+						selector.attr('disabled', 'disabled');
+					}
+				}
+			});
+			
+			// Unlock unique instances
+			duplicator.on('destructstart.duplicator', '.instance', function(event) {
+				var instance = $(this),
+					option;
+
+				if(instance.is('.unique')) {
+					option = selector.attr('disabled', false).find('option[value="' + instance.attr('data-type') + '"]').attr('disabled', false);
+					
+					// Preselect instance if it's the only active one
+					if(selector.find('option:not(:disabled)').size() == 1) {
+						option.attr('selected', true);
+					}
+				}
+			});
+			
+			// Update title descriptions in header
+			duplicator.on('keyup.duplicator', '.instance input[name*="[label]"]', function(event) {
+				var input = $(this),
+					instance = input.parents('.instance:first'),
+					title = instance.find(settings.headers).find('span:first'),
+					description = title.find('i');
+					
+				// Create description
+				if(description.size() == 0) {
+					description = $('<i />').appendTo(title);
+				}
+				
+				// Update description
+				description.text($.trim(input.val()));
+			});
+			
+		/*-------------------------------------------------------------------*/
+
+			// Build interface			
+			duplicator.insertBefore(object).prepend(object);
+			headers.wrapInner('<span />').each(function() {
+				$(this).nextAll().wrapAll('<div class="content" />');
+			});
+
+			// Constructable interface
+			if(settings.constructable === true) {
+				duplicator.addClass('constructable');
+				controls.append(selector).append(constructor).appendTo(duplicator);
+
+				// Populate selector
+				templates.each(function() {
+					var template = $(this);
+					template.trigger('constructstart.duplicator');
+
+					// Append options
+					$('<option />', {
+						text: template.find(settings.headers).text(),
+						value: template.attr('data-type')
+					}).appendTo(selector);
+					
+					// Check uniqueness
+					template.trigger('constructstop.duplicator');
+				}).removeClass('template').addClass('instance').remove();
+			}
+			
+			// Destructable interface
+			if(settings.destructable === true) {
+				duplicator.addClass('destructable');
+				headers.append('<a class="destructor">' + Symphony.Language.get('Remove item') + '</a>')
+			}
+				
+			// Collapsible interface
+			if(settings.collapsible) {
+				duplicator.symphonyCollapsible({
+					items: '.instance',
+					handles: '.header span'
+				});
+			}
+	
+			// Orderable interface
+			if(settings.orderable) {
+				duplicator.symphonyOrderable({
+					items: '.instance',
+					handles: '.header',
+					ignore: 'span'
+				});
+			}			
+			
+			// Initialise existing instances
+			instances.trigger('constructstop.duplicator');
+			instances.find('input[name*="[label]"]').trigger('keyup.duplicator');
+		});				
+		
+	/*-----------------------------------------------------------------------*/
 
 		return objects;
 	};
