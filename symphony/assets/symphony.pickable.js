@@ -33,7 +33,7 @@
 		var pickables = $(settings.pickables).addClass('pickable');
 
 		// Process pickers
-		return objects.each(function() {
+		objects = objects.each(function() {
 			var picker = $(this),
 				select = picker.find('select'),
 				options = select.find('option');
@@ -54,6 +54,8 @@
 				pickables.filter('#' + select.val()).removeClass('pickable');
 			}
 		});
+		
+		return objects;
 	};
 
 })(jQuery.noConflict());
