@@ -40,7 +40,7 @@
 	define('DOMAIN', $clean_url);
 	define('URL', 'http://' . $clean_url);
 	define('INSTALL_URL', URL . '/install');
-	define('INSTALL_FILENAME', INSTALL_URL . '/index.php');
+	define('INSTALL_FILENAME', INSTALL_URL . '/install.php');
 
 	$clean_path = rtrim(dirname($_SERVER['SCRIPT_FILENAME']), '/\\');
 	$clean_path = preg_replace(array('/\/{2,}/i', '/\/install$/i'), array('/', NULL), $clean_path);

@@ -36,7 +36,7 @@
 					E_ERROR, true
 				);
 
-				self::__displayPage(new InstallerPage('existing'));
+				self::__render(new InstallerPage('existing'));
 			}
 
 			// Check essential requirements
@@ -55,7 +55,14 @@
 					);
 				}
 
-				self::__displayPage(new InstallerPage('requirements', array('errors' => $errors)));
+				self::__render(new InstallerPage('requirements', array('errors' => $errors)));
+			}
+
+			// If the user switch language while compiling the form, make sure
+			// the form values are preserved
+			if(!isset($_POST['fields']) && file_exists(INSTALL . '/includes/config_tmp.php')){
+				include_once(INSTALL . '/includes/config_tmp.php');
+				$_POST['fields'] = $settings;
 			}
 
 			// Check for configuration errors and, if there are no errors, install Symphony!
@@ -63,6 +70,8 @@
 				$errors = self::__checkConfiguration();
 
 				if(!empty($errors)){
+					General::writeFile(INSTALL . '/includes/config_tmp.php', General::array_to_string($_POST['fields']));
+
 					self::$_log->pushToLog(
 						sprintf('Installer - Wrong configuration.'),
 						E_ERROR, true
@@ -76,16 +85,20 @@
 					}
 				}
 				else{
-					// Install Symphony and rule the world
-					self::__install();
 
-					// Redirect to the login page
-					redirect(SYMPHONY_URL);
+					// At this point form values don't need to be preserved anymore
+					General::deleteFile(INSTALL . '/includes/config_tmp.php');
+
+					$disabled_extensions = self::__install();
+
+					self::__render(new InstallerPage('success', array(
+						'disabled-extensions' => $disabled_extensions
+					)));
 				}
 			}
 
 			// Display the Installation page
-			self::__displayPage(new InstallerPage('configuration', array(
+			self::__render(new InstallerPage('configuration', array(
 				'errors' => $errors,
 				'default-config' => self::$_conf->get()
 			)));
@@ -103,28 +116,14 @@
 			Lang::initialize();
 			Lang::set($lang, false);
 
-			// Initialize log
-			self::$_log = new Log(INSTALL . '/install-log.txt');
-
-			if(file_exists(self::$_log->getLogPath())){
-				self::$_log->open();
-			}
-			else{
-				self::$_log->open(Log::OVERWRITE);
-
-				self::$_log->writeToLog('Symphony Installer Log', true);
-				self::$_log->writeToLog('Opened: '. DateTimeObj::get('c'), true);
-				self::$_log->writeToLog('Version: '. VERSION, true);
-				self::$_log->writeToLog('Domain: '. DOMAIN, true);
-				self::$_log->writeToLog('--------------------------------------------', true);
-			}
-
 			// Initialize configuration
-			self::$_conf = new Configuration;
-
 			include_once(INSTALL . '/includes/defaultconfig.php'); // $conf
+			Symphony::initialiseConfiguration($conf);
+			self::$_conf = Symphony::Configuration();
 
-			self::$_conf->setArray($conf);
+			// Initialize log
+			Symphony::initialiseLog(false);
+			self::$_log = Symphony::Log();
 
 			// Initialize Database
 			self::$_db = new MySQL;
@@ -135,76 +134,59 @@
 			$errors = array();
 
 			// Check for PHP 5.2+
-
-				if(false || version_compare(phpversion(), '5.2', '<=')){
-					$errors[] = array(
-						'msg' => __('PHP Version is not correct'),
-						'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.', array('<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.2</code>', '<code>' . phpversion() . '</code>'))
-					);
-				}
+			if(false || version_compare(phpversion(), '5.2', '<=')){
+				$errors[] = array(
+					'msg' => __('PHP Version is not correct'),
+					'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.', array('<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.2</code>', '<code>' . phpversion() . '</code>'))
+				);
+			}
 
 			// Make sure the install.sql file exists
-
-				if(false || !file_exists(INSTALL . '/includes/install.sql') || !is_readable(INSTALL . '/includes/install.sql')){
-					$errors[] = array(
-						'msg' => __('Missing install.sql file'),
-						'details'  => __('It appears that %s is either missing or not readable. This is required to populate the database and must be uploaded before installation can commence. Ensure that PHP has read permissions.', array('<code>install.sql</code>'))
-					);
-				}
+			if(false || !file_exists(INSTALL . '/includes/install.sql') || !is_readable(INSTALL . '/includes/install.sql')){
+				$errors[] = array(
+					'msg' => __('Missing install.sql file'),
+					'details'  => __('It appears that %s is either missing or not readable. This is required to populate the database and must be uploaded before installation can commence. Ensure that PHP has read permissions.', array('<code>install.sql</code>'))
+				);
+			}
 
 			// Is MySQL available?
-
-				if(false || !function_exists('mysql_connect')){
-					$errors[] = array(
-						'msg' => __('MySQL extension not present'),
-						'details'  => __('Symphony requires MySQL to work.')
-					);
-				}
+			if(false || !function_exists('mysql_connect')){
+				$errors[] = array(
+					'msg' => __('MySQL extension not present'),
+					'details'  => __('Symphony requires MySQL to work.')
+				);
+			}
 
 			// Is ZLib available?
-
-				if(!extension_loaded('zlib')){
-					$errors[] = array(
-						'msg' => __('ZLib extension not present'),
-						'details' => __('Symphony needs the ZLib compression library to decompress data retrieved from the Symphony support server.')
-					);
-				}
+			if(!extension_loaded('zlib')){
+				$errors[] = array(
+					'msg' => __('ZLib extension not present'),
+					'details' => __('Symphony needs the ZLib compression library to decompress data retrieved from the Symphony support server.')
+				);
+			}
 
 			// Is libxml available?
-
-				if(!extension_loaded('xml') && !extension_loaded('libxml')){
-					$errors[] = array(
-						'msg' => __('XML extension not present'),
-						'details'  => __('Symphony needs the XML extension to pass data to the site frontend.')
-					);
-				}
+			if(!extension_loaded('xml') && !extension_loaded('libxml')){
+				$errors[] = array(
+					'msg' => __('XML extension not present'),
+					'details'  => __('Symphony needs the XML extension to pass data to the site frontend.')
+				);
+			}
 
 			// Is libxslt available?
-
-				if(!extension_loaded('xsl') && !extension_loaded('xslt') && !function_exists('domxml_xslt_stylesheet')){
-					$errors[] = array(
-						'msg' => __('XSLT extension not present'),
-						'details'  => __('Symphony needs an XSLT processor such as %s or Sablotron to build pages.', array('Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr>'))
-					);
-				}
+			if(!extension_loaded('xsl') && !extension_loaded('xslt') && !function_exists('domxml_xslt_stylesheet')){
+				$errors[] = array(
+					'msg' => __('XSLT extension not present'),
+					'details'  => __('Symphony needs an XSLT processor such as %s or Sablotron to build pages.', array('Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr>'))
+				);
+			}
 
 			return $errors;
 		}
 
 		private static function __checkConfiguration(){
-			if(!isset($_POST['fields'])) return array();
-
 			$errors = array();
 			$fields = $_POST['fields'];
-
-#			// Configuration: Populating array
-#			$conf = self::$_conf->get();
-
-#			foreach($conf as $group => $settings){
-#				foreach($settings as $key => $value){
-#					if(isset($fields[$group][$key])){echo $key . " == " . $fields[$group][$key] . "\n";}
-#				}
-#			}
 
 			// Invalid path
 			if(!is_dir(rtrim($fields['docroot'], '/') . '/symphony')){
@@ -236,7 +218,12 @@
 
 			// Testing the database connection
 			try{
-				self::$_db->connect($fields['database']['host'], $fields['database']['user'], $fields['database']['password'], $fields['database']['port']);
+				self::$_db->connect(
+					$fields['database']['host'],
+					$fields['database']['user'],
+					$fields['database']['password'],
+					$fields['database']['port']
+				);
 			}
 			catch(DatabaseException $e){
 				$errors['no-database-connection'] = array(
@@ -371,13 +358,12 @@
 #				}
 #			}
 
-			self::__displayPage(new InstallerPage('failure'));
+			self::__render(new InstallerPage('failure'));
 		}
 
 		private static function __install(){
 			$fields = $_POST['fields'];
 			$errors = array();
-
 			$start = time();
 
 			self::$_log->writeToLog(PHP_EOL . '============================================', true);
@@ -388,7 +374,12 @@
 			self::$_log->pushToLog('MYSQL: Establishing Connection', E_NOTICE, true, true);
 
 			try{
-				self::$_db->connect($fields['database']['host'], $fields['database']['user'], $fields['database']['password'], $fields['database']['port']);
+				self::$_db->connect(
+					$fields['database']['host'],
+					$fields['database']['user'],
+					$fields['database']['password'],
+					$fields['database']['port']
+				);
 			}
 			catch(DatabaseException $e){
 				self::__abort(
@@ -417,7 +408,11 @@
 			self::$_log->pushToLog('MYSQL: Importing Table Schema', E_NOTICE, true, true);
 
 			try{
-				self::$_db->import(file_get_contents(INSTALL . '/includes/install.sql'), ($fields['database']['use-server-encoding'] != 'yes' ? true : false), true);
+				self::$_db->import(
+					file_get_contents(INSTALL . '/includes/install.sql'),
+					($fields['database']['use-server-encoding'] != 'yes' ? true : false),
+					true
+				);
 			}
 			catch(DatabaseException $e){
 				$error = self::$_db->getLastError();
@@ -430,23 +425,19 @@
 			self::$_log->pushToLog('MYSQL: Creating Default Author', E_NOTICE, true, true);
 
 			try{
-				$author_sql = sprintf(
-					"INSERT INTO  `tbl_authors` (
-						`id` , `username` , `password` , `first_name` , `last_name` , `email` ,
-						`last_seen` , `user_type` , `primary` , `default_area` , `auth_token_active`
-					)
-					VALUES (
-						1, '%s', SHA1('%s'), '%s', '%s', '%s',
-						NULL , 'developer', 'yes', NULL, 'no'
-					);",
-					self::$_db->cleanValue($fields['user']['username']),
-					self::$_db->cleanValue($fields['user']['password']),
-					self::$_db->cleanValue($fields['user']['firstname']),
-					self::$_db->cleanValue($fields['user']['lastname']),
-					self::$_db->cleanValue($fields['user']['email'])
-				);
-
-				self::$_db->query($author_sql);
+				self::$_db->insert(array(
+					'id' 					=> 1,
+					'username' 				=> self::$_db->cleanValue($fields['user']['username']),
+					'password' 				=> sha1(self::$_db->cleanValue($fields['user']['password'])),
+					'first_name' 			=> self::$_db->cleanValue($fields['user']['firstname']),
+					'last_name' 			=> self::$_db->cleanValue($fields['user']['lastname']),
+					'email' 				=> self::$_db->cleanValue($fields['user']['email']),
+					'last_seen' 			=> NULL,
+					'user_type' 			=> 'developer',
+					'primary' 				=> 'yes',
+					'default_area' 			=> NULL,
+					'auth_token_active' 	=> 'no'
+				), 'tbl_authors');
 			}
 			catch(DatabaseException $e){
 				$error = self::$_db->getLastError();
@@ -569,7 +560,11 @@
 				self::$_log->pushToLog('MYSQL: Importing Workspace Data...', E_NOTICE, true, true);
 
 				try{
-					self::$_db->import(file_get_contents(DOCROOT . '/workspace/install.sql'), ($fields['database']['use-server-encoding'] != 'yes' ? true : false), true);
+					self::$_db->import(
+						file_get_contents(DOCROOT . '/workspace/install.sql'),
+						($fields['database']['use-server-encoding'] != 'yes' ? true : false),
+						true
+					);
 				}
 				catch(DatabaseException $e){
 					$error = self::$_db->getLastError();
@@ -591,6 +586,22 @@
 				}
 			}
 
+			// Loading existing extensions
+			self::$_log->pushToLog('CONFIGURING: Installing existing extensions', E_NOTICE, true, true);
+
+			$disabled_extensions = array();
+
+			$extensions = new DirectoryIterator(EXTENSIONS);
+			foreach($extensions as $extension) {
+				$handle = $extension->getPathname();
+				$ext = Administration::instance()->ExtensionManager()->create($handle);
+
+				if(!Administration::instance()->ExtensionManager()->enable($handle)){
+					$disabled_extensions[] = $handle;
+					self::$_log->pushToLog('Could not enable the extension ‘' . $handle . '’.', E_NOTICE, true, true);
+				}
+			}
+
 			// Loading default language
 			if(isset($_REQUEST['lang']) && $_REQUEST['lang'] != 'en'){
 				self::$_log->pushToLog('CONFIGURING: Default language', E_NOTICE, true, true);
@@ -601,7 +612,8 @@
 				$language = $language[$_REQUEST['lang']];
 				$extension = Administration::instance()->ExtensionManager()->create('lang_' . $language['handle']);
 
-				if(Administration::instance()->ExtensionManager()->enable('lang_' . $language['handle'])){
+				// Is the language extension enabled?
+				if(in_array('lang_' . $language['handle'], Administration::instance()->ExtensionManager()->listInstalledHandles())){
 					self::$_conf->set('lang', $_REQUEST['lang'], 'symphony');
 					if(!self::$_conf->write($conf['file']['write_mode'])){
 						self::$_log->pushToLog('Could not write default language ‘' . $language['name'] . '’ to config file.', E_NOTICE, true, true);
@@ -619,9 +631,11 @@
 				date('d.m.y H:i:s')
 			), true);
 			self::$_log->writeToLog(        '============================================' . PHP_EOL . PHP_EOL . PHP_EOL, true);
+
+			return $disabled_extensions;
 		}
 
-		private static function __displayPage(InstallerPage $page) {
+		private static function __render(InstallerPage $page) {
 			$output = $page->generate();
 
 			header('Content-Type: text/html; charset=utf-8');

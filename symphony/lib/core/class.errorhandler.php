@@ -24,7 +24,7 @@
 		 * An instance of the Symphony Log class, used to write errors to the log
 		 * @var Log
 		 */
-		protected static $_Log = null;
+		private static $_Log = null;
 
 		/**
 		 * Initialise will set the error handler to be the `__CLASS__::handler` function.

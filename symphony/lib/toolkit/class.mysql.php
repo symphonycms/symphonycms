@@ -792,7 +792,7 @@
 			$queries = preg_split('/;[\\r\\n]+/', $sql, -1, PREG_SPLIT_NO_EMPTY);
 
 			if(!is_array($queries) || empty($queries) || count($queries) <= 0){
-				throw new DatabaseException('The string passed to this function contained no queries.');
+				throw new Exception('The SQL string contains no queries.');
 			}
 
 			foreach($queries as $sql){
