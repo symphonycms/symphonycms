@@ -149,22 +149,22 @@
 		 * Setter for `$Configuration`. This function initialise the configuration
 		 * object and populate its properties based on the given $array.
 		 * 
-		 * @param array $array
+		 * @param array $data
 		 *  An array of settings to be stored into the Configuration object
 		 * @since Symphony 2.3
 		 */
-		public function initialiseConfiguration(array $array = array()){
+		public function initialiseConfiguration(array $data = array()){
 			if(self::$Configuration instanceof Configuration) return true;
 
-			if(empty($array)){
+			if(empty($data)){
 				// Includes the existing CONFIG file and initialises the Configuration
 				// by setting the values with the setArray function.
 				include(CONFIG);
-				$array = $settings;
+				$data = $settings;
 			}
 
 			self::$Configuration = new Configuration(true);
-			self::$Configuration->setArray($array);
+			self::$Configuration->setArray($data);
 		}
 
 		/**

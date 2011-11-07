@@ -1,37 +1,37 @@
 <?php
 
-	error_reporting(E_ALL ^ E_NOTICE);
+#	error_reporting(E_ALL ^ E_NOTICE);
 
-	function __errorHandler($errno=NULL, $errstr, $errfile=NULL, $errline=NULL, $errcontext=NULL){
-		return;
-	}
+#	function __errorHandler($errno=NULL, $errstr, $errfile=NULL, $errline=NULL, $errcontext=NULL){
+#		return;
+#	}
 
-	function tableContainsField($table, $field){
-		$sql = "DESC `{$table}` `{$field}`";
-		$results = Symphony::Database()->fetch($sql);
+#	function tableContainsField($table, $field){
+#		$sql = "DESC `{$table}` `{$field}`";
+#		$results = Symphony::Database()->fetch($sql);
 
-		return (is_array($results) && !empty($results));
-	}
+#		return (is_array($results) && !empty($results));
+#	}
 
-	function writeConfig($dest, $conf, $mode){
+#	function writeConfig($dest, $conf, $mode){
 
-		$string	 = "<?php" . PHP_EOL;
+#		$string	 = "<?php" . PHP_EOL;
 
-		$string .= PHP_EOL . "\t\$settings = array(";
-		foreach($conf as $group => $data){
-			$string .= str_repeat(PHP_EOL, 3) . "\t\t###### ".strtoupper($group)." ######";
-			$string .= PHP_EOL . "\t\t'$group' => array(";
-			foreach($data as $key => $value){
-				$string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'null').",";
-			}
-			$string .= PHP_EOL . "\t\t),";
-			$string .= PHP_EOL . "\t\t########";
-		}
-		$string .= PHP_EOL . "\t);" . PHP_EOL;
+#		$string .= PHP_EOL . "\t\$settings = array(";
+#		foreach($conf as $group => $data){
+#			$string .= str_repeat(PHP_EOL, 3) . "\t\t###### ".strtoupper($group)." ######";
+#			$string .= PHP_EOL . "\t\t'$group' => array(";
+#			foreach($data as $key => $value){
+#				$string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'null').",";
+#			}
+#			$string .= PHP_EOL . "\t\t),";
+#			$string .= PHP_EOL . "\t\t########";
+#		}
+#		$string .= PHP_EOL . "\t);" . PHP_EOL;
 
-		return General::writeFile($dest . '/config.php', $string, $mode);
+#		return General::writeFile($dest . '/config.php', $string, $mode);
 
-	}
+#	}
 
 	function loadOldStyleConfig(){
 		$config = preg_replace(array('/^<\?php/i', '/\?>$/i', '/if\(\!defined\([^\r\n]+/i', '/require_once[^\r\n]+/i'), NULL, file_get_contents('manifest/config.php'));
@@ -43,29 +43,29 @@
 		return $settings;
 	}
 
-	function render($output){
-		header('Expires: Mon, 12 Dec 1982 06:14:00 GMT');
-		header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-		header('Cache-Control: no-cache, must-revalidate, max-age=0');
-		header('Pragma: no-cache');
-		header(sprintf('Content-Length: %d', strlen($output)));
+#	function render($output){
+#		header('Expires: Mon, 12 Dec 1982 06:14:00 GMT');
+#		header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+#		header('Cache-Control: no-cache, must-revalidate, max-age=0');
+#		header('Pragma: no-cache');
+#		header(sprintf('Content-Length: %d', strlen($output)));
 
-		echo $output;
-		exit;
-	}
+#		echo $output;
+#		exit;
+#	}
 
-	define('DOCROOT', rtrim(dirname(__FILE__), '/'));
-	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . dirname($_SERVER['PHP_SELF']), '/'));
+#	define('DOCROOT', rtrim(dirname(__FILE__), '/'));
+#	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . dirname($_SERVER['PHP_SELF']), '/'));
 
-	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
-	require_once(TOOLKIT . '/class.general.php');
+#	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
+#	require_once(TOOLKIT . '/class.general.php');
 
-	set_error_handler('__errorHandler');
+#	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.3dev');
-	define('kCHANGELOG', 'https://gist.github.com/1162216');
-	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
-	define('kINSTALL_FILENAME', basename(__FILE__));
+#	define('kVERSION', '2.3dev');
+#	define('kCHANGELOG', 'https://gist.github.com/1162216');
+#	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
+#	define('kINSTALL_FILENAME', basename(__FILE__));
 
 		$shell = '<?xml version="1.0" encoding="utf-8"?>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
@@ -123,372 +123,372 @@
 			require_once(CORE . '/class.frontend.php');
 			$frontend = Frontend::instance();
 
-			if (version_compare($existing_version, '2.0.3', '<=')) {
+#			if (version_compare($existing_version, '2.0.3', '<=')) {
 
-				// Add Navigation Groups
-				if(!tableContainsField('tbl_sections', 'navigation_group')){
-					Symphony::Database()->query("ALTER TABLE `tbl_sections` ADD `navigation_group` VARCHAR( 50 ) NOT NULL DEFAULT 'Content'");
-					Symphony::Database()->query("ALTER TABLE `tbl_sections` ADD INDEX (`navigation_group`)");
-				}
+#				// Add Navigation Groups
+#				if(!tableContainsField('tbl_sections', 'navigation_group')){
+#					Symphony::Database()->query("ALTER TABLE `tbl_sections` ADD `navigation_group` VARCHAR( 50 ) NOT NULL DEFAULT 'Content'");
+#					Symphony::Database()->query("ALTER TABLE `tbl_sections` ADD INDEX (`navigation_group`)");
+#				}
 
-				// Added support for upload field to handle empty mimetypes.
-				$upload_fields = Symphony::Database()->fetch("SELECT id FROM tbl_fields WHERE `type` = 'upload'");
-				foreach ($upload_fields as $upload_field) {
-					Symphony::Database()->query("ALTER TABLE `tbl_entries_data_{$upload_field['id']}` CHANGE `mimetype` `mimetype` VARCHAR( 50 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL");
-				}
-			}
+#				// Added support for upload field to handle empty mimetypes.
+#				$upload_fields = Symphony::Database()->fetch("SELECT id FROM tbl_fields WHERE `type` = 'upload'");
+#				foreach ($upload_fields as $upload_field) {
+#					Symphony::Database()->query("ALTER TABLE `tbl_entries_data_{$upload_field['id']}` CHANGE `mimetype` `mimetype` VARCHAR( 50 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL");
+#				}
+#			}
 
 			if (version_compare($existing_version, '2.0.4', '<=')) {
-				$date_fields = Symphony::Database()->fetch("SELECT id FROM tbl_fields WHERE `type` = 'date'");
+#				$date_fields = Symphony::Database()->fetch("SELECT id FROM tbl_fields WHERE `type` = 'date'");
 
-				foreach ($date_fields as $field) {
-					Symphony::Database()->query("ALTER TABLE `tbl_entries_data_{$field['id']}` CHANGE `local` `local` INT(11) DEFAULT NULL;");
-					Symphony::Database()->query("ALTER TABLE `tbl_entries_data_{$field['id']}` CHANGE `gmt` `gmt` INT(11) DEFAULT NULL;");
-				}
+#				foreach ($date_fields as $field) {
+#					Symphony::Database()->query("ALTER TABLE `tbl_entries_data_{$field['id']}` CHANGE `local` `local` INT(11) DEFAULT NULL;");
+#					Symphony::Database()->query("ALTER TABLE `tbl_entries_data_{$field['id']}` CHANGE `gmt` `gmt` INT(11) DEFAULT NULL;");
+#				}
 
-				// Update author field table to support the default value checkbox
-				if(!tableContainsField('tbl_fields_author', 'default_to_current_user')){
-					Symphony::Database()->query("ALTER TABLE `tbl_fields_author` ADD `default_to_current_user` ENUM('yes', 'no') NOT NULL");
-				}
+#				// Update author field table to support the default value checkbox
+#				if(!tableContainsField('tbl_fields_author', 'default_to_current_user')){
+#					Symphony::Database()->query("ALTER TABLE `tbl_fields_author` ADD `default_to_current_user` ENUM('yes', 'no') NOT NULL");
+#				}
 
-				// Change .htaccess from `page` to `symphony-page`
-				$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
+#				// Change .htaccess from `page` to `symphony-page`
+#				$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
 
-				if($htaccess !== false){
-					$htaccess = str_replace('index.php?page=$1&%{QUERY_STRING}', 'index.php?symphony-page=$1&%{QUERY_STRING}', $htaccess);
-					@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
-				}
+#				if($htaccess !== false){
+#					$htaccess = str_replace('index.php?page=$1&%{QUERY_STRING}', 'index.php?symphony-page=$1&%{QUERY_STRING}', $htaccess);
+#					@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
+#				}
 
 			}
 
 			if (version_compare($existing_version, '2.0.5', '<=')) {
-				// Rebuild the .htaccess here
+#				// Rebuild the .htaccess here
 
-				$rewrite_base = trim(dirname($_SERVER['PHP_SELF']), DIRECTORY_SEPARATOR);
+#				$rewrite_base = trim(dirname($_SERVER['PHP_SELF']), DIRECTORY_SEPARATOR);
 
-				if(strlen($rewrite_base) > 0){
-					$rewrite_base .= '/';
-				}
+#				if(strlen($rewrite_base) > 0){
+#					$rewrite_base .= '/';
+#				}
 
-				$htaccess = '
-### Symphony 2.2.x ###
-Options +FollowSymlinks -Indexes
+#				$htaccess = '
+#### Symphony 2.2.x ###
+#Options +FollowSymlinks -Indexes
 
-<IfModule mod_rewrite.c>
+#<IfModule mod_rewrite.c>
 
-	RewriteEngine on
-	RewriteBase /'.$rewrite_base.'
+#	RewriteEngine on
+#	RewriteBase /'.$rewrite_base.'
 
-	### SECURITY - Protect crucial files
-	RewriteRule ^manifest/(.*)$ - [F]
-	RewriteRule ^workspace/utilities/(.*).xsl$ - [F]
-	RewriteRule ^workspace/pages/(.*).xsl$ - [F]
-	RewriteRule ^(.*).sql$ - [F]
+#	### SECURITY - Protect crucial files
+#	RewriteRule ^manifest/(.*)$ - [F]
+#	RewriteRule ^workspace/utilities/(.*).xsl$ - [F]
+#	RewriteRule ^workspace/pages/(.*).xsl$ - [F]
+#	RewriteRule ^(.*).sql$ - [F]
 
-	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
-	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
-	RewriteRule .* - [S=14]
+#	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
+#	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
+#	RewriteRule .* - [S=14]
 
-	### IMAGE RULES
-	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
+#	### IMAGE RULES
+#	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
 
-	### CHECK FOR TRAILING SLASH - Will ignore files
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_URI} !/$
-	RewriteCond %{REQUEST_URI} !(.*)/$
-	RewriteRule ^(.*)$ $1/ [L,R=301]
+#	### CHECK FOR TRAILING SLASH - Will ignore files
+#	RewriteCond %{REQUEST_FILENAME} !-f
+#	RewriteCond %{REQUEST_URI} !/$
+#	RewriteCond %{REQUEST_URI} !(.*)/$
+#	RewriteRule ^(.*)$ $1/ [L,R=301]
 
-	### URL Correction
-	RewriteRule ^(symphony/)?index.php(/.*/?) $1$2 [NC]
+#	### URL Correction
+#	RewriteRule ^(symphony/)?index.php(/.*/?) $1$2 [NC]
 
-	### ADMIN REWRITE
-	RewriteRule ^symphony\/?$ index.php?mode=administration&%{QUERY_STRING} [NC,L]
+#	### ADMIN REWRITE
+#	RewriteRule ^symphony\/?$ index.php?mode=administration&%{QUERY_STRING} [NC,L]
 
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule ^symphony(\/(.*\/?))?$ index.php?symphony-page=$1&mode=administration&%{QUERY_STRING}	[NC,L]
+#	RewriteCond %{REQUEST_FILENAME} !-d
+#	RewriteCond %{REQUEST_FILENAME} !-f
+#	RewriteRule ^symphony(\/(.*\/?))?$ index.php?symphony-page=$1&mode=administration&%{QUERY_STRING}	[NC,L]
 
-	### FRONTEND REWRITE - Will ignore files and folders
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule ^(.*\/?)$ index.php?symphony-page=$1&%{QUERY_STRING}	[L]
+#	### FRONTEND REWRITE - Will ignore files and folders
+#	RewriteCond %{REQUEST_FILENAME} !-d
+#	RewriteCond %{REQUEST_FILENAME} !-f
+#	RewriteRule ^(.*\/?)$ index.php?symphony-page=$1&%{QUERY_STRING}	[L]
 
-</IfModule>
-######
-';
+#</IfModule>
+#######
+#';
 
-				@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
+#				@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 
-				// No longer need symphony/.htaccess
-				if(file_exists(DOCROOT . '/symphony/.htaccess') && is_writable(DOCROOT . '/symphony/.htaccess')){
-					unlink(DOCROOT . '/symphony/.htaccess');
-				}
+#				// No longer need symphony/.htaccess
+#				if(file_exists(DOCROOT . '/symphony/.htaccess') && is_writable(DOCROOT . '/symphony/.htaccess')){
+#					unlink(DOCROOT . '/symphony/.htaccess');
+#				}
 
 			}
 
 			if(version_compare($existing_version, '2.0.6', '<=')){
-				Symphony::Database()->query('ALTER TABLE `tbl_extensions` CHANGE `version` `version` VARCHAR(20) NOT NULL');
+#				Symphony::Database()->query('ALTER TABLE `tbl_extensions` CHANGE `version` `version` VARCHAR(20) NOT NULL');
 			}
 
 			if(version_compare($existing_version, '2.0.7RC1', '<=')){
-				Symphony::Database()->query('ALTER TABLE `tbl_authors` ADD `language` VARCHAR(15) NULL DEFAULT NULL');
+#				Symphony::Database()->query('ALTER TABLE `tbl_authors` ADD `language` VARCHAR(15) NULL DEFAULT NULL');
 
-				$settings['symphony']['pages_table_nest_children'] = 'no';
-				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
+#				$settings['symphony']['pages_table_nest_children'] = 'no';
+#				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 
 			if(version_compare($existing_version, '2.0.8RC1', '<')){
-				Symphony::Database()->query('ALTER TABLE `tbl_fields_date` DROP `calendar`');
+#				Symphony::Database()->query('ALTER TABLE `tbl_fields_date` DROP `calendar`');
 			}
 
 			if(version_compare($existing_version, '2.0.8RC3', '<=')){
-				// Add -Indexes to .htaccess
-				$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
+#				// Add -Indexes to .htaccess
+#				$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
 
-				if($htaccess !== false && !preg_match('/-Indexes/', $htaccess)){
-					$htaccess = str_replace('Options +FollowSymlinks', 'Options +FollowSymlinks -Indexes', $htaccess);
-					@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
-				}
+#				if($htaccess !== false && !preg_match('/-Indexes/', $htaccess)){
+#					$htaccess = str_replace('Options +FollowSymlinks', 'Options +FollowSymlinks -Indexes', $htaccess);
+#					@file_put_contents(DOCROOT . '/.htaccess', $htaccess);
+#				}
 
-				// 2.1 uses SHA1 instead of MD5
-				// Change the author table to allow 40 character values
-				Symphony::Database()->query(
-					"ALTER TABLE `tbl_authors` CHANGE `password` `password` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL"
-				);
+#				// 2.1 uses SHA1 instead of MD5
+#				// Change the author table to allow 40 character values
+#				Symphony::Database()->query(
+#					"ALTER TABLE `tbl_authors` CHANGE `password` `password` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL"
+#				);
 
-				// Generate a new password for the primary author account
-				$new_password = General::generatePassword();
-				$username = Symphony::Database()->fetchVar('username', 0,
-					"SELECT `username` FROM `tbl_authors` WHERE `primary` = 'yes' LIMIT 1"
-				);
+#				// Generate a new password for the primary author account
+#				$new_password = General::generatePassword();
+#				$username = Symphony::Database()->fetchVar('username', 0,
+#					"SELECT `username` FROM `tbl_authors` WHERE `primary` = 'yes' LIMIT 1"
+#				);
 
-				Symphony::Database()->query(
-					sprintf("UPDATE `tbl_authors` SET `password` = SHA1('%s') WHERE `primary` = 'yes' LIMIT 1", $new_password)
-				);
+#				Symphony::Database()->query(
+#					sprintf("UPDATE `tbl_authors` SET `password` = SHA1('%s') WHERE `primary` = 'yes' LIMIT 1", $new_password)
+#				);
 
-				// Purge all sessions, forcing everyone to update their passwords
-				Symphony::Database()->query( "TRUNCATE TABLE `tbl_sessions`");
+#				// Purge all sessions, forcing everyone to update their passwords
+#				Symphony::Database()->query( "TRUNCATE TABLE `tbl_sessions`");
 
-				// Update Upload field
-				$upload_entry_tables = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");
+#				// Update Upload field
+#				$upload_entry_tables = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");
 
-				if(is_array($upload_entry_tables) && !empty($upload_entry_tables)) foreach($upload_entry_tables as $field) {
-					Symphony::Database()->query(sprintf(
-							"ALTER TABLE `tbl_entries_data_%d` CHANGE `size` `size` INT(11) UNSIGNED NULL DEFAULT NULL",
-							$field
-					));
-				}
+#				if(is_array($upload_entry_tables) && !empty($upload_entry_tables)) foreach($upload_entry_tables as $field) {
+#					Symphony::Database()->query(sprintf(
+#							"ALTER TABLE `tbl_entries_data_%d` CHANGE `size` `size` INT(11) UNSIGNED NULL DEFAULT NULL",
+#							$field
+#					));
+#				}
 			}
 
 			if(version_compare($existing_version, '2.1.0', '<=')){
-				Symphony::Database()->query(
-					'ALTER TABLE  `tbl_fields_input` CHANGE  `validator`  `validator` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;'
-				);
+#				Symphony::Database()->query(
+#					'ALTER TABLE  `tbl_fields_input` CHANGE  `validator`  `validator` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;'
+#				);
 
-				Symphony::Database()->query(
-					'ALTER TABLE  `tbl_fields_upload` CHANGE  `validator`  `validator` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;'
-				);
+#				Symphony::Database()->query(
+#					'ALTER TABLE  `tbl_fields_upload` CHANGE  `validator`  `validator` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;'
+#				);
 
-				Symphony::Database()->query(
-					'ALTER TABLE  `tbl_fields_taglist` CHANGE  `validator`  `validator` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;'
-				);
+#				Symphony::Database()->query(
+#					'ALTER TABLE  `tbl_fields_taglist` CHANGE  `validator`  `validator` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;'
+#				);
 			}
 
 		// Symphony 2.2
 
 			if(version_compare($existing_version, '2.2.0dev', '<=')){
 
-				if(tableContainsField('tbl_sections_association', 'cascading_deletion')) {
-					Symphony::Database()->query(
-						'ALTER TABLE `tbl_sections_association` CHANGE  `cascading_deletion` `hide_association` enum("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "no";'
-					);
+#				if(tableContainsField('tbl_sections_association', 'cascading_deletion')) {
+#					Symphony::Database()->query(
+#						'ALTER TABLE `tbl_sections_association` CHANGE  `cascading_deletion` `hide_association` enum("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "no";'
+#					);
 
-					// Update Select table to include the new association field
-					Symphony::Database()->query('ALTER TABLE `tbl_fields_select` ADD `show_association` ENUM( "yes", "no" ) COLLATE utf8_unicode_ci NOT NULL DEFAULT "yes"');
-				}
+#					// Update Select table to include the new association field
+#					Symphony::Database()->query('ALTER TABLE `tbl_fields_select` ADD `show_association` ENUM( "yes", "no" ) COLLATE utf8_unicode_ci NOT NULL DEFAULT "yes"');
+#				}
 
-				if(tableContainsField('tbl_authors', 'default_section')) {
-					// Allow Authors to be set to any area in the backend.
-					Symphony::Database()->query(
-						'ALTER TABLE `tbl_authors` CHANGE `default_section` `default_area` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL;'
-					);
-				}
+#				if(tableContainsField('tbl_authors', 'default_section')) {
+#					// Allow Authors to be set to any area in the backend.
+#					Symphony::Database()->query(
+#						'ALTER TABLE `tbl_authors` CHANGE `default_section` `default_area` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL;'
+#					);
+#				}
 			}
 
 			if(version_compare($existing_version, '2.2.0', '<')){
-				$settings['region']['datetime_separator'] = ' ';
-				$settings['symphony']['strict_error_handling'] = 'yes';
-				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
+#				$settings['region']['datetime_separator'] = ' ';
+#				$settings['symphony']['strict_error_handling'] = 'yes';
+#				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 
-				// We've added UNIQUE KEY indexes to the Author, Checkbox, Date, Input, Textarea and Upload Fields
-				// Time to go through the entry tables and make this change as well.
-				$author = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_author`");
-				$checkbox = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_checkbox`");
-				$date = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_date`");
-				$input = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_input`");
-				$textarea = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_textarea`");
-				$upload = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");
+#				// We've added UNIQUE KEY indexes to the Author, Checkbox, Date, Input, Textarea and Upload Fields
+#				// Time to go through the entry tables and make this change as well.
+#				$author = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_author`");
+#				$checkbox = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_checkbox`");
+#				$date = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_date`");
+#				$input = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_input`");
+#				$textarea = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_textarea`");
+#				$upload = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");
 
-				$field_ids = array_merge($author, $checkbox, $date, $input, $textarea, $upload);
+#				$field_ids = array_merge($author, $checkbox, $date, $input, $textarea, $upload);
 
-				foreach($field_ids as $id) {
-					$table = '`tbl_entries_data_' . $id . '`';
+#				foreach($field_ids as $id) {
+#					$table = '`tbl_entries_data_' . $id . '`';
 
-					try {
-						Symphony::Database()->query("ALTER TABLE " . $table . " DROP INDEX `entry_id`");
-					}
-					catch (Exception $ex) {}
+#					try {
+#						Symphony::Database()->query("ALTER TABLE " . $table . " DROP INDEX `entry_id`");
+#					}
+#					catch (Exception $ex) {}
 
-					try {
-						Symphony::Database()->query("CREATE UNIQUE INDEX `entry_id` ON " . $table . " (`entry_id`)");
-						Symphony::Database()->query("OPTIMIZE TABLE " . $table);
-					}
-					catch (Exception $ex) {}
-				}
-			}
+#					try {
+#						Symphony::Database()->query("CREATE UNIQUE INDEX `entry_id` ON " . $table . " (`entry_id`)");
+#						Symphony::Database()->query("OPTIMIZE TABLE " . $table);
+#					}
+#					catch (Exception $ex) {}
+#				}
+#			}
 
-			if(version_compare($existing_version, '2.2.1 Beta 1', '<')) {
-				try {
-					Symphony::Database()->query('CREATE INDEX `session_expires` ON `tbl_sessions` (`session_expires`)');
-					Symphony::Database()->query('OPTIMIZE TABLE `tbl_sessions`');
-				}
-				catch (Exception $ex) {}
-			}
+#			if(version_compare($existing_version, '2.2.1 Beta 1', '<')) {
+#				try {
+#					Symphony::Database()->query('CREATE INDEX `session_expires` ON `tbl_sessions` (`session_expires`)');
+#					Symphony::Database()->query('OPTIMIZE TABLE `tbl_sessions`');
+#				}
+#				catch (Exception $ex) {}
+#			}
 
-			if(version_compare($existing_version, '2.2.1 Beta 2', '<')) {
-				// Add Security Rules from 2.2 to .htaccess
-				try {
-					$htaccess = file_get_contents(DOCROOT . '/.htaccess');
+#			if(version_compare($existing_version, '2.2.1 Beta 2', '<')) {
+#				// Add Security Rules from 2.2 to .htaccess
+#				try {
+#					$htaccess = file_get_contents(DOCROOT . '/.htaccess');
 
-					if($htaccess !== false && !preg_match('/### SECURITY - Protect crucial files/', $htaccess)){
-						$security = '
-		### SECURITY - Protect crucial files
-		RewriteRule ^manifest/(.*)$ - [F]
-		RewriteRule ^workspace/utilities/(.*).xsl$ - [F]
-		RewriteRule ^workspace/pages/(.*).xsl$ - [F]
-		RewriteRule ^(.*).sql$ - [F]
-		RewriteRule (^|/)\. - [F]
+#					if($htaccess !== false && !preg_match('/### SECURITY - Protect crucial files/', $htaccess)){
+#						$security = '
+#		### SECURITY - Protect crucial files
+#		RewriteRule ^manifest/(.*)$ - [F]
+#		RewriteRule ^workspace/utilities/(.*).xsl$ - [F]
+#		RewriteRule ^workspace/pages/(.*).xsl$ - [F]
+#		RewriteRule ^(.*).sql$ - [F]
+#		RewriteRule (^|/)\. - [F]
 
-		### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"';
+#		### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"';
 
-						$htaccess = str_replace('### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"', $security, $htaccess);
-						file_put_contents(DOCROOT . '/.htaccess', $htaccess);
-					}
-				}
-				catch (Exception $ex) {}
+#						$htaccess = str_replace('### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"', $security, $htaccess);
+#						file_put_contents(DOCROOT . '/.htaccess', $htaccess);
+#					}
+#				}
+#				catch (Exception $ex) {}
 
-				// Add correct index to the `tbl_cache`
-				try {
-					Symphony::Database()->query('ALTER TABLE `tbl_cache` DROP INDEX `creation`');
-					Symphony::Database()->query('CREATE INDEX `expiry` ON `tbl_cache` (`expiry`)');
-					Symphony::Database()->query('OPTIMIZE TABLE `tbl_cache`');
-				}
-				catch (Exception $ex) {}
+#				// Add correct index to the `tbl_cache`
+#				try {
+#					Symphony::Database()->query('ALTER TABLE `tbl_cache` DROP INDEX `creation`');
+#					Symphony::Database()->query('CREATE INDEX `expiry` ON `tbl_cache` (`expiry`)');
+#					Symphony::Database()->query('OPTIMIZE TABLE `tbl_cache`');
+#				}
+#				catch (Exception $ex) {}
 
-				// Remove Hide Association field from Select Data tables
-				$select_tables = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_select`");
+#				// Remove Hide Association field from Select Data tables
+#				$select_tables = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_select`");
 
-				if(is_array($select_tables) && !empty($select_tables)) foreach($select_tables as $field) {
-					if(tableContainsField('tbl_entries_data_' . $field, 'show_association')) {
-						Symphony::Database()->query(sprintf(
-							"ALTER TABLE `tbl_entries_data_%d` DROP `show_association`",
-							$field
-						));
-					}
-				}
+#				if(is_array($select_tables) && !empty($select_tables)) foreach($select_tables as $field) {
+#					if(tableContainsField('tbl_entries_data_' . $field, 'show_association')) {
+#						Symphony::Database()->query(sprintf(
+#							"ALTER TABLE `tbl_entries_data_%d` DROP `show_association`",
+#							$field
+#						));
+#					}
+#				}
 
-				// Update Select table to include the sorting option
-				if(!tableContainsField('tbl_fields_select', 'sort_options')) {
-					Symphony::Database()->query('ALTER TABLE `tbl_fields_select` ADD `sort_options` ENUM( "yes", "no" ) COLLATE utf8_unicode_ci NOT NULL DEFAULT "no"');
-				}
+#				// Update Select table to include the sorting option
+#				if(!tableContainsField('tbl_fields_select', 'sort_options')) {
+#					Symphony::Database()->query('ALTER TABLE `tbl_fields_select` ADD `sort_options` ENUM( "yes", "no" ) COLLATE utf8_unicode_ci NOT NULL DEFAULT "no"');
+#				}
 
-				// Remove the 'driver' from the Config
-				unset($settings['database']['driver']);
-				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
+#				// Remove the 'driver' from the Config
+#				unset($settings['database']['driver']);
+#				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 
-				// Remove the NOT NULL from the Author tables
-				try {
-					$author = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_author`");
+#				// Remove the NOT NULL from the Author tables
+#				try {
+#					$author = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_author`");
 
-					foreach($author as $id) {
-						$table = '`tbl_entries_data_' . $id . '`';
+#					foreach($author as $id) {
+#						$table = '`tbl_entries_data_' . $id . '`';
 
-						Symphony::Database()->query(
-							'ALTER TABLE ' . $table . ' CHANGE `author_id` `author_id` int(11) unsigned NULL'
-						);
-					}
-				}
-				catch(Exception $ex) {}
+#						Symphony::Database()->query(
+#							'ALTER TABLE ' . $table . ' CHANGE `author_id` `author_id` int(11) unsigned NULL'
+#						);
+#					}
+#				}
+#				catch(Exception $ex) {}
 			}
 
 			if(version_compare($existing_version, '2.2.2 Beta 1', '<')) {
-				// Rename old variations of the query_caching configuration setting
-				if(isset($settings['database']['disable_query_caching'])) {
-					$settings['database']['query_caching'] = ($settings['database']['disable_query_caching'] == "no") ? "on" : "off";
-					unset($settings['database']['disable_query_caching']);
-				}
+#				// Rename old variations of the query_caching configuration setting
+#				if(isset($settings['database']['disable_query_caching'])) {
+#					$settings['database']['query_caching'] = ($settings['database']['disable_query_caching'] == "no") ? "on" : "off";
+#					unset($settings['database']['disable_query_caching']);
+#				}
 
-				// Add Session GC collection as a configuration parameter
-				$settings['symphony']['session_gc_divisor'] = '10';
+#				// Add Session GC collection as a configuration parameter
+#				$settings['symphony']['session_gc_divisor'] = '10';
 
-				// Save the manifest changes
-				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
+#				// Save the manifest changes
+#				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 
 			if(version_compare($existing_version, '2.2.2 Beta 2', '<')) {
-				try {
-					// Change Textareas to be MEDIUMTEXT columns
-					$textarea_tables = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_textarea`");
+#				try {
+#					// Change Textareas to be MEDIUMTEXT columns
+#					$textarea_tables = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_textarea`");
 
-					foreach($textarea_tables as $field) {
-						Symphony::Database()->query(sprintf(
-							"ALTER TABLE `tbl_entries_data_%d` CHANGE `value` `value` MEDIUMTEXT, CHANGE `value_formatted` `value_formatted` MEDIUMTEXT",
-							$field
-						));
-						Symphony::Database()->query(sprintf('OPTIMIZE TABLE `tbl_entries_data_%d`', $field));
-					}
-				}
-				catch(Exception $ex) {}
+#					foreach($textarea_tables as $field) {
+#						Symphony::Database()->query(sprintf(
+#							"ALTER TABLE `tbl_entries_data_%d` CHANGE `value` `value` MEDIUMTEXT, CHANGE `value_formatted` `value_formatted` MEDIUMTEXT",
+#							$field
+#						));
+#						Symphony::Database()->query(sprintf('OPTIMIZE TABLE `tbl_entries_data_%d`', $field));
+#					}
+#				}
+#				catch(Exception $ex) {}
 			}
 
 		// Symphony 2.3
 
 			if(version_compare($existing_version, '2.3dev', '<')) {
-				// Add Publish Label to `tbl_fields`
-				if(!tableContainsField('tbl_fields', 'publish_label')) {
-					Symphony::Database()->query('ALTER TABLE `tbl_fields` ADD `publish_label` VARCHAR(255) COLLATE utf8_unicode_ci NULL DEFAULT NULL');
-				}
+#				// Add Publish Label to `tbl_fields`
+#				if(!tableContainsField('tbl_fields', 'publish_label')) {
+#					Symphony::Database()->query('ALTER TABLE `tbl_fields` ADD `publish_label` VARCHAR(255) COLLATE utf8_unicode_ci NULL DEFAULT NULL');
+#				}
 
-				// Migrate any Checkbox's Long Description to Publish Label
-				try {
-					$checkboxes = Symphony::Database()->fetch("SELECT `field_id`, `description` FROM `tbl_fields_checkbox`");
+#				// Migrate any Checkbox's Long Description to Publish Label
+#				try {
+#					$checkboxes = Symphony::Database()->fetch("SELECT `field_id`, `description` FROM `tbl_fields_checkbox`");
 
-					foreach($checkboxes as $field) {
-						if(!isset($field['description'])) continue;
+#					foreach($checkboxes as $field) {
+#						if(!isset($field['description'])) continue;
 
-						Symphony::Database()->query(sprintf("
-							UPDATE `tbl_fields`
-							SET `publish_label` = '%s'
-							WHERE `id` = %d
-							LIMIT 1;
-							",
-							$field['description'],
-							$field['field_id']
-						));
-					}
+#						Symphony::Database()->query(sprintf("
+#							UPDATE `tbl_fields`
+#							SET `publish_label` = '%s'
+#							WHERE `id` = %d
+#							LIMIT 1;
+#							",
+#							$field['description'],
+#							$field['field_id']
+#						));
+#					}
 
-					Symphony::Database()->query("ALTER TABLE `tbl_fields_checkbox` DROP `description`");
-				} catch(Exception $ex) {}
+#					Symphony::Database()->query("ALTER TABLE `tbl_fields_checkbox` DROP `description`");
+#				} catch(Exception $ex) {}
 
-				unset($settings['symphony']['allow_page_subscription']);
-				unset($settings['database']['character_set']);
-				unset($settings['database']['character_encoding']);
-				unset($settings['database']['runtime_character_set_alter']);
-				unset($settings['symphony']['strict_error_handling']);
-				if($settings['symphony']['pagination_maximum_rows'] == '17') {
-					$settings['symphony']['pagination_maximum_rows'] = '20';
-				}
-				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
+#				unset($settings['symphony']['allow_page_subscription']);
+#				unset($settings['database']['character_set']);
+#				unset($settings['database']['character_encoding']);
+#				unset($settings['database']['runtime_character_set_alter']);
+#				unset($settings['symphony']['strict_error_handling']);
+#				if($settings['symphony']['pagination_maximum_rows'] == '17') {
+#					$settings['symphony']['pagination_maximum_rows'] = '20';
+#				}
+#				writeConfig(DOCROOT . '/manifest', $settings, $settings['file']['write_mode']);
 			}
 
 			$sbl_version = Symphony::Database()->fetchVar('version', 0,
@@ -503,29 +503,29 @@ Options +FollowSymlinks -Indexes
 				<ol>
 				'.
 
-				(version_compare($existing_version, '2.2.1', '<') ? '
-				<li>Version <code>2.2.1</code> introduces some improvements and fixes to Static XML Datasources. If you have any Static XML Datasources in your installation, please be sure to re-save them through the Data Source Editor to prevent unexpected results.</li>' : NULL)
+#				(version_compare($existing_version, '2.2.1', '<') ? '
+#				<li>Version <code>2.2.1</code> introduces some improvements and fixes to Static XML Datasources. If you have any Static XML Datasources in your installation, please be sure to re-save them through the Data Source Editor to prevent unexpected results.</li>' : NULL)
 
 				.
 
-				(version_compare($existing_version, '2.1.0', '<') ? '
-				<li>The password for user "<code>'.$username.'</code>" is now reset. The new temporary password is "<code>'.$new_password.'</code>". Please login and change it now.</li>' : NULL)
+#				(version_compare($existing_version, '2.1.0', '<') ? '
+#				<li>The password for user "<code>'.$username.'</code>" is now reset. The new temporary password is "<code>'.$new_password.'</code>". Please login and change it now.</li>' : NULL)
 
 				.
 
-				(file_exists(DOCROOT . '/symphony/.htaccess') ? '<li><strong>WARNING:</strong> The updater tried, but failed, to remove the file <code>symphony/.htaccess</code>. It is vitally important that this file be removed, otherwise the administration area will not function. If you have customisations to this file, you should be able to just remove the Symphony related block, but there are no guarantees.</li>' : NULL)
+#				(file_exists(DOCROOT . '/symphony/.htaccess') ? '<li><strong>WARNING:</strong> The updater tried, but failed, to remove the file <code>symphony/.htaccess</code>. It is vitally important that this file be removed, otherwise the administration area will not function. If you have customisations to this file, you should be able to just remove the Symphony related block, but there are no guarantees.</li>' : NULL)
+
+#				.
+
+#				(version_compare($existing_version, '2.0.5', '<') ? '<li>Version <code>2.0.5</code> introduced multiple includable elements, in the Data Source Editor, for a single field. After updating from <code>2.0.5</code> or lower, the DS editor will seem to "forget" about any <code>Textarea</code> fields selected when you are editing existing Data Sources. After updating, you must ensure you re-select them before saving. <strong>Note, this will only effect Data Sources that you edit and were created prior to <code>2.0.5</code></strong>. Until that point, the field will still be included in any front-end <code>XML</code></li>' : NULL)
+
+#				.
+
+#				(version_compare($existing_version, '2.0.5', '<=') ? '<li>As of 2.0.5, Symphony comes pre-packaged with the "Debug Dev Kit" and "Profile Dev Kit" extensions, which replace the built-in functionality. Prior to using them, you must ensure the folder <code>extensions/debugdevkit/lib/bitter/caches/</code> is writable by <code>PHP</code>.</li>' : NULL)
 
 				.
 
-				(version_compare($existing_version, '2.0.5', '<') ? '<li>Version <code>2.0.5</code> introduced multiple includable elements, in the Data Source Editor, for a single field. After updating from <code>2.0.5</code> or lower, the DS editor will seem to "forget" about any <code>Textarea</code> fields selected when you are editing existing Data Sources. After updating, you must ensure you re-select them before saving. <strong>Note, this will only effect Data Sources that you edit and were created prior to <code>2.0.5</code></strong>. Until that point, the field will still be included in any front-end <code>XML</code></li>' : NULL)
-
-				.
-
-				(version_compare($existing_version, '2.0.5', '<=') ? '<li>As of 2.0.5, Symphony comes pre-packaged with the "Debug Dev Kit" and "Profile Dev Kit" extensions, which replace the built-in functionality. Prior to using them, you must ensure the folder <code>extensions/debugdevkit/lib/bitter/caches/</code> is writable by <code>PHP</code>.</li>' : NULL)
-
-				.
-
-				(version_compare($existing_version, '2.0.2', '<') ? '<li>Since <code>2.0.2</code>, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></li>' : NULL)
+#				(version_compare($existing_version, '2.0.2', '<') ? '<li>Since <code>2.0.2</code>, the built-in image manipulation features have been replaced with the <a href="http://github.com/pointybeard/jit_image_manipulation/tree/master">JIT Image Manipulation</a> extension. Should you have uploaded (or cloned) this to your Extensions folder, be sure to <a href="'.URL.'/symphony/system/extensions/">enable it.</a></li>' : NULL)
 
 				.
 
@@ -559,36 +559,36 @@ Options +FollowSymlinks -Indexes
 	// Check if Symphony is already installed
 	if(file_exists('manifest/config.php')){
 
-		if(isset($settings['symphony']['version']) && version_compare(kVERSION, $settings['symphony']['version'], '<=')){
-			$code = sprintf($shell,
-'			<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
-			<h2>Existing Installation</h2>
-			<p>It appears that Symphony has already been installed at this location and is up to date.</p>
-			<br />
-			<p>This script, <code>update.php</code>, should be removed as a safety precaution. <a href="'.URL.'/update.php?action=remove">Click here</a> to remove this file and proceed to your administration area.</p>');
+#		if(isset($settings['symphony']['version']) && version_compare(kVERSION, $settings['symphony']['version'], '<=')){
+#			$code = sprintf($shell,
+#'			<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
+#			<h2>Existing Installation</h2>
+#			<p>It appears that Symphony has already been installed at this location and is up to date.</p>
+#			<br />
+#			<p>This script, <code>update.php</code>, should be removed as a safety precaution. <a href="'.URL.'/update.php?action=remove">Click here</a> to remove this file and proceed to your administration area.</p>');
 
-			render($code);
+#			render($code);
 		}
 
-		$code = sprintf($shell,
-'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
-				<h2>Update Existing Installation</h2>
-				<p>This script will update your existing Symphony '.$settings['symphony']['version'].' installation to version '.kVERSION.'.</p>
-				<br />
-				'.(version_compare($existing_version, '2.1.0', '<') ? '<p><strong>Pre-Installation Notes: </strong></p>' : NULL).'
-				<br />
-				<ol>
-				'.(version_compare($existing_version, '2.0.6', '<') ? '
-				<li>As of <code>2.0.6</code>, the core <code>.htaccess</code> has changed substantially. As a result, there is no fool proof way to automatically update it. Instead, if you have any customisations to your <code>.htaccess</code>, please back up the existing copy before updating. You will then need to manually migrate the customisations to the new <code>.htaccess</code>.</li>' : NULL) .'
+#		$code = sprintf($shell,
+#'				<h1>Update Symphony <em>Version '.kVERSION.'</em><em><a href="'.kCHANGELOG.'">change log</a></em></h1>
+#				<h2>Update Existing Installation</h2>
+#				<p>This script will update your existing Symphony '.$settings['symphony']['version'].' installation to version '.kVERSION.'.</p>
+#				<br />
+#				'.(version_compare($existing_version, '2.1.0', '<') ? '<p><strong>Pre-Installation Notes: </strong></p>' : NULL).'
+#				<br />
+#				<ol>
+#				'.(version_compare($existing_version, '2.0.6', '<') ? '
+#				<li>As of <code>2.0.6</code>, the core <code>.htaccess</code> has changed substantially. As a result, there is no fool proof way to automatically update it. Instead, if you have any customisations to your <code>.htaccess</code>, please back up the existing copy before updating. You will then need to manually migrate the customisations to the new <code>.htaccess</code>.</li>' : NULL) .'
 
-				'.(version_compare($existing_version, '2.1.0', '<') ? '
-				<li>As of version <code>2.1</code>, the <a href="http://php.net/sha1"><code>SHA1</code></a> algorithm is used instead of MD5 for generating password data. After updating, the owner\'s login password will be reset. Please also note that all other users\' passwords will no longer be valid and will require a manual reset through Symphony\'s forgotten password feature. Alternatively, as an administrator, you can also change your users\' password on their behalf.</li>' : NULL) .'
+#				'.(version_compare($existing_version, '2.1.0', '<') ? '
+#				<li>As of version <code>2.1</code>, the <a href="http://php.net/sha1"><code>SHA1</code></a> algorithm is used instead of MD5 for generating password data. After updating, the owner\'s login password will be reset. Please also note that all other users\' passwords will no longer be valid and will require a manual reset through Symphony\'s forgotten password feature. Alternatively, as an administrator, you can also change your users\' password on their behalf.</li>' : NULL) .'
 
-				</ol>
-				<div class="submit">
-					<input type="submit" name="action[update]" value="Update Symphony"/>
-				</div>');
+#				</ol>
+#				<div class="submit">
+#					<input type="submit" name="action[update]" value="Update Symphony"/>
+#				</div>');
 
-		render($code);
+#		render($code);
 
 	}

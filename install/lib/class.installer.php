@@ -1,6 +1,7 @@
 <?php
 
 	require_once(CORE . '/class.symphony.php');
+	require_once(CORE . '/class.administration.php');
 	require_once(CORE . '/class.errorhandler.php');
 	require_once(CORE . '/class.log.php');
 	require_once(CORE . '/class.configuration.php');
@@ -16,22 +17,27 @@
 
 	Class Installer {
 
-		private static $_page;
+		protected static $_log;
 
-		private static $_log;
+		protected static $_conf;
 
-		private static $_conf;
-
-		private static $_db;
+		protected static $_db;
 
 		public static function run(){
 
-			// Initialize everything that is needed
-			self::__initialize();
+			// Initialize language
+			$lang = 'en';
+			if(!empty($_REQUEST['lang'])){
+				$lang = preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']);
+			}
+			Lang::initialize();
+			Lang::set($lang, false);
 
 			// Check if Symphony is already installed
 			if(false || file_exists(DOCROOT . '/manifest/config.php')){
-				self::$_log->pushToLog(
+				Administration::instance();
+
+				Symphony::Log()->pushToLog(
 					sprintf('Installer - Existing Symphony Installation'),
 					E_ERROR, true
 				);
@@ -41,6 +47,9 @@
 
 			// Check essential requirements
 			$errors = self::__checkRequirements();
+
+			// Initialize everything that is needed
+			self::__initialize();
 
 			if(!empty($errors)){
 				self::$_log->pushToLog(
@@ -66,7 +75,7 @@
 			}
 
 			// Check for configuration errors and, if there are no errors, install Symphony!
-			if(isset($_POST['fields'])) {
+			if(isset($_REQUEST['action']['install']) && isset($_POST['fields'])) {
 				$errors = self::__checkConfiguration();
 
 				if(!empty($errors)){
@@ -104,25 +113,14 @@
 			)));
 		}
 
-		private static function __initialize(){
-
-			// Initialize language
-			$lang = 'en';
-
-			if(!empty($_REQUEST['lang'])){
-				$lang = preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']);
-			}
-
-			Lang::initialize();
-			Lang::set($lang, false);
-
+		protected static function __initialize(){
 			// Initialize configuration
 			include_once(INSTALL . '/includes/defaultconfig.php'); // $conf
 			Symphony::initialiseConfiguration($conf);
 			self::$_conf = Symphony::Configuration();
 
 			// Initialize log
-			Symphony::initialiseLog(false);
+			Symphony::initialiseLog('install.log');
 			self::$_log = Symphony::Log();
 
 			// Initialize Database
@@ -132,6 +130,14 @@
 
 		private static function __checkRequirements(){
 			$errors = array();
+
+			// Check for PHP 5.2+
+			if(false || version_compare(phpversion(), '5.2', '<=')){
+				$errors[] = array(
+					'msg' => __('PHP Version is not correct'),
+					'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.', array('<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.2</code>', '<code>' . phpversion() . '</code>'))
+				);
+			}
 
 			// Check for PHP 5.2+
 			if(false || version_compare(phpversion(), '5.2', '<=')){
@@ -457,30 +463,32 @@
 				}
 			}
 
+			$conf['docroot'] = rtrim($conf['docroot'], '/');
+
 			// Create manifest folder structure
 			self::$_log->pushToLog('WRITING: Creating ‘manifest’ folder (/manifest)', E_NOTICE, true, true);
-			if(!General::realiseDirectory(DOCROOT . '/manifest', $conf['directory']['write_mode'])){
+			if(!General::realiseDirectory($conf['docroot'] . '/manifest', $conf['directory']['write_mode'])){
 				self::__abort(
 					'Could not create ‘manifest’ directory. Check permission on the root folder.',
 				$start);
 			}
 
 			self::$_log->pushToLog('WRITING: Creating ‘logs’ folder (/manifest/logs)', E_NOTICE, true, true);
-			if(!General::realiseDirectory(DOCROOT . '/manifest/logs', $conf['directory']['write_mode'])){
+			if(!General::realiseDirectory($conf['docroot'] . '/manifest/logs', $conf['directory']['write_mode'])){
 				self::__abort(
 					'Could not create ‘logs’ directory. Check permission on /manifest.',
 				$start);
 			}
 
 			self::$_log->pushToLog('WRITING: Creating ‘cache’ folder (/manifest/cache)', E_NOTICE, true, true);
-			if(!General::realiseDirectory(DOCROOT . '/manifest/cache', $conf['directory']['write_mode'])){
+			if(!General::realiseDirectory($conf['docroot'] . '/manifest/cache', $conf['directory']['write_mode'])){
 				self::__abort(
 					'Could not create ‘cache’ directory. Check permission on /manifest.',
 				$start);
 			}
 
 			self::$_log->pushToLog('WRITING: Creating ‘tmp’ folder (/manifest/tmp)', E_NOTICE, true, true);
-			if(!General::realiseDirectory(DOCROOT . '/manifest/tmp', $conf['directory']['write_mode'])){
+			if(!General::realiseDirectory($conf['docroot'] . '/manifest/tmp', $conf['directory']['write_mode'])){
 				self::__abort(
 					'Could not create ‘tmp’ directory. Check permission on /manifest.',
 				$start);
@@ -506,7 +514,7 @@
 				file_get_contents(INSTALL . '/includes/htaccess.txt')
 			);
 
-			if(!General::writeFile(DOCROOT . "/.htaccess", $htaccess, $conf['file']['write_mode'], 'a')){
+			if(!General::writeFile($conf['docroot'] . "/.htaccess", $htaccess, $conf['file']['write_mode'], 'a')){
 				self::__abort(
 					'Could not write ‘.htaccess’ file. Check permission on ' . DOCROOT,
 				$start);
@@ -516,35 +524,35 @@
 
 				// Create workspace folder structure
 				self::$_log->pushToLog('WRITING: Creating ‘workspace’ folder (/workspace)', E_NOTICE, true, true);
-				if(!General::realiseDirectory(DOCROOT . '/workspace', $conf['directory']['write_mode'])){
+				if(!General::realiseDirectory($conf['docroot'] . '/workspace', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace’ directory. Check permission on the root folder.',
 					$start);
 				}
 
 				self::$_log->pushToLog('WRITING: Creating ‘data-sources’ folder (/workspace/data-sources)', E_NOTICE, true, true);
-				if(!General::realiseDirectory(DOCROOT . '/workspace/data-sources', $conf['directory']['write_mode'])){
+				if(!General::realiseDirectory($conf['docroot'] . '/workspace/data-sources', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace/data-sources’ directory. Check permission on the root folder.',
 					$start);
 				}
 
 				self::$_log->pushToLog('WRITING: Creating ‘events’ folder (/workspace/events)', E_NOTICE, true, true);
-				if(!General::realiseDirectory(DOCROOT . '/workspace/events', $conf['directory']['write_mode'])){
+				if(!General::realiseDirectory($conf['docroot'] . '/workspace/events', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace/events’ directory. Check permission on the root folder.',
 					$start);
 				}
 
 				self::$_log->pushToLog('WRITING: Creating ‘pages’ folder (/workspace/pages)', E_NOTICE, true, true);
-				if(!General::realiseDirectory(DOCROOT . '/workspace/pages', $conf['directory']['write_mode'])){
+				if(!General::realiseDirectory($conf['docroot'] . '/workspace/pages', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace/pages’ directory. Check permission on the root folder.',
 					$start);
 				}
 
 				self::$_log->pushToLog('WRITING: Creating ‘utilities’ folder (/workspace/utilities)', E_NOTICE, true, true);
-				if(!General::realiseDirectory(DOCROOT . '/workspace/utilities', $conf['directory']['write_mode'])){
+				if(!General::realiseDirectory($conf['docroot'] . '/workspace/utilities', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace/utilities’ directory. Check permission on the root folder.',
 					$start);
@@ -579,50 +587,48 @@
 
 				// Create extensions folder
 				self::$_log->pushToLog('WRITING: Creating ‘extensions’ folder (/extensions)', E_NOTICE, true, true);
-				if(!General::realiseDirectory(DOCROOT . '/extensions', $conf['directory']['write_mode'])){
+				if(!General::realiseDirectory($conf['docroot'] . '/extensions', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘extension’ directory. Check permission on the root folder.',
 					$start);
 				}
 			}
 
-			// Loading existing extensions
-			self::$_log->pushToLog('CONFIGURING: Installing existing extensions', E_NOTICE, true, true);
+#			// Loading existing extensions
+#			self::$_log->pushToLog('CONFIGURING: Installing existing extensions', E_NOTICE, true, true);
 
-			$disabled_extensions = array();
+#			$disabled_extensions = array();
 
-			$extensions = new DirectoryIterator(EXTENSIONS);
-			foreach($extensions as $extension) {
-				$handle = $extension->getPathname();
-				$ext = Administration::instance()->ExtensionManager()->create($handle);
+#			foreach(new DirectoryIterator(EXTENSIONS) as $e) {
+#				if(is_dir($e->getPathname())){
+#					$handle = $e->getPathname();
+#					$extension = Administration::instance()->ExtensionManager()->create($handle);
 
-				if(!Administration::instance()->ExtensionManager()->enable($handle)){
-					$disabled_extensions[] = $handle;
-					self::$_log->pushToLog('Could not enable the extension ‘' . $handle . '’.', E_NOTICE, true, true);
-				}
-			}
+#					if(!Administration::instance()->ExtensionManager()->enable($handle)){
+#						$disabled_extensions[] = $handle;
+#						self::$_log->pushToLog('Could not enable the extension ‘' . $handle . '’.', E_NOTICE, true, true);
+#					}
+#				}
+#			}
 
-			// Loading default language
-			if(isset($_REQUEST['lang']) && $_REQUEST['lang'] != 'en'){
-				self::$_log->pushToLog('CONFIGURING: Default language', E_NOTICE, true, true);
+#			// Loading default language
+#			if(isset($_REQUEST['lang']) && $_REQUEST['lang'] != 'en'){
+#				self::$_log->pushToLog('CONFIGURING: Default language', E_NOTICE, true, true);
 
-				require_once(CORE . '/class.administration.php');
+#				$language = Lang::Languages();
+#				$language = $language[$_REQUEST['lang']];
 
-				$language = Lang::Languages();
-				$language = $language[$_REQUEST['lang']];
-				$extension = Administration::instance()->ExtensionManager()->create('lang_' . $language['handle']);
-
-				// Is the language extension enabled?
-				if(in_array('lang_' . $language['handle'], Administration::instance()->ExtensionManager()->listInstalledHandles())){
-					self::$_conf->set('lang', $_REQUEST['lang'], 'symphony');
-					if(!self::$_conf->write($conf['file']['write_mode'])){
-						self::$_log->pushToLog('Could not write default language ‘' . $language['name'] . '’ to config file.', E_NOTICE, true, true);
-					}
-				}
-				else{
-					self::$_log->pushToLog('Could not enable the desired language ‘' . $language['name'] . '’.', E_NOTICE, true, true);
-				}
-			}
+#				// Is the language extension enabled?
+#				if(in_array('lang_' . $language['handle'], Administration::instance()->ExtensionManager()->listInstalledHandles())){
+#					self::$_conf->set('lang', $_REQUEST['lang'], 'symphony');
+#					if(!self::$_conf->write($conf['file']['write_mode'])){
+#						self::$_log->pushToLog('Could not write default language ‘' . $language['name'] . '’ to config file.', E_NOTICE, true, true);
+#					}
+#				}
+#				else{
+#					self::$_log->pushToLog('Could not enable the desired language ‘' . $language['name'] . '’.', E_NOTICE, true, true);
+#				}
+#			}
 
 			// Installation completed. Woo-hoo!
 			self::$_log->writeToLog(        '============================================', true);
@@ -632,10 +638,12 @@
 			), true);
 			self::$_log->writeToLog(        '============================================' . PHP_EOL . PHP_EOL . PHP_EOL, true);
 
-			return $disabled_extensions;
+			return array();
+#			return $disabled_extensions;
 		}
 
-		private static function __render(InstallerPage $page) {
+		protected static function __render(InstallerPage $page) {
+#			$page->initialize();
 			$output = $page->generate();
 
 			header('Content-Type: text/html; charset=utf-8');

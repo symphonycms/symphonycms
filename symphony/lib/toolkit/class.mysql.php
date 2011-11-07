@@ -701,6 +701,13 @@
 			return (empty($result) ? null : $result[$offset][$column]);
 		}
 
+		public function tableContainsField($table, $field){
+			$query = "DESC `{$table}` `{$field}`";
+			$results = $this->fetch($query);
+
+			return (is_array($results) && !empty($results));
+		}
+
 		/**
 		 * If an error occurs in a query, this function is called which logs
 		 * the last query and the error number and error message from MySQL

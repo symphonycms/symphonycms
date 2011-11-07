@@ -1,0 +1,84 @@
+============================================
+Log Created: 2011-11-07T00:53:04+01:00
+============================================
+Symphony Log
+Opened: 2011-11-07T00:53:04+01:00
+Version: 2.3dev
+Domain: localhost/symphony-installer
+--------------------------------------------
+
+============================================
+INSTALLATION PROCESS STARTED (2011-11-07T01:07:14+01:00)
+============================================
+07 November 2011 01:07 > Notice: MYSQL: Establishing Connection
+07 November 2011 01:07 > Notice: MYSQL: Selecting Database ‘symphony_test’...
+07 November 2011 01:07 > Notice: MYSQL: Importing Table Schema
+07 November 2011 01:07 > Notice: MYSQL: Creating Default Author
+07 November 2011 01:07 > Notice: WRITING: Creating ‘manifest’ folder (/manifest)
+07 November 2011 01:07 > Notice: WRITING: Creating ‘logs’ folder (/manifest/logs)
+07 November 2011 01:07 > Notice: WRITING: Creating ‘cache’ folder (/manifest/cache)
+07 November 2011 01:07 > Notice: WRITING: Creating ‘tmp’ folder (/manifest/tmp)
+07 November 2011 01:07 > Notice: WRITING: Configuration File
+07 November 2011 01:07 > Notice: CONFIGURING: Frontend
+07 November 2011 01:07 > Notice: WRITING: Creating ‘workspace’ folder (/workspace)
+07 November 2011 01:07 > Notice: WRITING: Creating ‘data-sources’ folder (/workspace/data-sources)
+07 November 2011 01:07 > Notice: WRITING: Creating ‘events’ folder (/workspace/events)
+07 November 2011 01:07 > Notice: WRITING: Creating ‘pages’ folder (/workspace/pages)
+07 November 2011 01:07 > Notice: WRITING: Creating ‘utilities’ folder (/workspace/utilities)
+07 November 2011 01:07 > Notice: CONFIGURING: Installing existing extensions
+
+============================================
+INSTALLATION PROCESS STARTED (2011-11-07T01:08:07+01:00)
+============================================
+07 November 2011 01:08 > Notice: MYSQL: Establishing Connection
+07 November 2011 01:08 > Notice: MYSQL: Selecting Database ‘symphony_test’...
+07 November 2011 01:08 > Notice: MYSQL: Importing Table Schema
+07 November 2011 01:08 > Notice: MYSQL: Creating Default Author
+07 November 2011 01:08 > Notice: WRITING: Creating ‘manifest’ folder (/manifest)
+07 November 2011 01:08 > Notice: WRITING: Creating ‘logs’ folder (/manifest/logs)
+07 November 2011 01:08 > Notice: WRITING: Creating ‘cache’ folder (/manifest/cache)
+07 November 2011 01:08 > Notice: WRITING: Creating ‘tmp’ folder (/manifest/tmp)
+07 November 2011 01:08 > Notice: WRITING: Configuration File
+07 November 2011 01:08 > Notice: CONFIGURING: Frontend
+07 November 2011 01:08 > Notice: WRITING: Creating ‘workspace’ folder (/workspace)
+07 November 2011 01:08 > Notice: WRITING: Creating ‘data-sources’ folder (/workspace/data-sources)
+07 November 2011 01:08 > Notice: WRITING: Creating ‘events’ folder (/workspace/events)
+07 November 2011 01:08 > Notice: WRITING: Creating ‘pages’ folder (/workspace/pages)
+07 November 2011 01:08 > Notice: WRITING: Creating ‘utilities’ folder (/workspace/utilities)
+07 November 2011 01:08 > Notice: CONFIGURING: Installing existing extensions
+07 November 2011 01:08 > UNKNOWN: SymphonyErrorPageHandler 0 - Could not find extension <code>/home/cybe/Documenti/Web/symphony-installer/extensions/author_roles</code> at location <code>/home/cybe/Documenti/Web/symphony-installer/extensions//home/cybe/documenti/web/symphony-installer/extensions/author_roles/extension.driver.php</code> in file /home/cybe/Documenti/GitHub/symphony-installer/symphony/lib/toolkit/class.extensionmanager.php on line 786
+07 November 2011 01:18 > Error: Installer - Existing Symphony Installation
+07 November 2011 01:18 > Error: Installer - Existing Symphony Installation
+07 November 2011 01:19 > Error: Installer - Wrong configuration.
+07 November 2011 01:19 > Error: Configuration - Could not establish database connection
+07 November 2011 01:19 > Error: Configuration - Database ‘symphony_test’ not found.
+07 November 2011 01:19 > Error: Configuration - No password entered.
+07 November 2011 01:19 > Error: Installer - Wrong configuration.
+07 November 2011 01:19 > Error: Configuration - Could not establish database connection
+07 November 2011 01:19 > Error: Configuration - Database ‘symphony_test’ not found.
+07 November 2011 01:19 > Error: Configuration - No password entered.
+
+============================================
+INSTALLATION PROCESS STARTED (2011-11-07T01:19:22+01:00)
+============================================
+07 November 2011 01:19 > Notice: MYSQL: Establishing Connection
+07 November 2011 01:19 > Notice: MYSQL: Selecting Database ‘symphony_test’...
+07 November 2011 01:19 > Notice: MYSQL: Importing Table Schema
+07 November 2011 01:19 > Notice: MYSQL: Creating Default Author
+07 November 2011 01:19 > Notice: WRITING: Creating ‘manifest’ folder (/manifest)
+07 November 2011 01:19 > Notice: WRITING: Creating ‘logs’ folder (/manifest/logs)
+07 November 2011 01:19 > Notice: WRITING: Creating ‘cache’ folder (/manifest/cache)
+07 November 2011 01:19 > Notice: WRITING: Creating ‘tmp’ folder (/manifest/tmp)
+07 November 2011 01:19 > Notice: WRITING: Configuration File
+07 November 2011 01:19 > Notice: CONFIGURING: Frontend
+07 November 2011 01:19 > Notice: WRITING: Creating ‘workspace’ folder (/workspace)
+07 November 2011 01:19 > Notice: WRITING: Creating ‘data-sources’ folder (/workspace/data-sources)
+07 November 2011 01:19 > Notice: WRITING: Creating ‘events’ folder (/workspace/events)
+07 November 2011 01:19 > Notice: WRITING: Creating ‘pages’ folder (/workspace/pages)
+07 November 2011 01:19 > Notice: WRITING: Creating ‘utilities’ folder (/workspace/utilities)
+============================================
+INSTALLATION COMPLETED: Execution Time - 1 sec (07.11.11 01:19:22)
+============================================
+
+
+
