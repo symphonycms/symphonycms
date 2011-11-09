@@ -99,7 +99,11 @@
 				General::cleanArray($_POST);
 			}
 
-			$this->initialiseConfiguration();
+			// Includes the existing CONFIG file and initialises the Configuration
+			// by setting the values with the setArray function.
+			include(CONFIG);
+			self::$Configuration = new Configuration(true);
+			self::$Configuration->setArray($settings);
 
 			define_safe('__SYM_DATE_FORMAT__', self::$Configuration->get('date_format', 'region'));
 			define_safe('__SYM_TIME_FORMAT__', self::$Configuration->get('time_format', 'region'));
@@ -165,6 +169,7 @@
 
 			self::$Configuration = new Configuration(true);
 			self::$Configuration->setArray($data);
+
 		}
 
 		/**
@@ -203,11 +208,12 @@
 			self::$Log->setDateTimeFormat(self::$Configuration->get('date_format', 'region') . ' ' . self::$Configuration->get('time_format', 'region'));
 
 			if(self::$Log->open(Log::APPEND, self::$Configuration->get('write_mode', 'file')) == 1){
-				self::$Log->writeToLog('Symphony Log', true);
-				self::$Log->writeToLog('Opened: '. DateTimeObj::get('c'), true);
-				self::$Log->writeToLog('Version: '. self::$Configuration->get('version', 'symphony'), true);
-				self::$Log->writeToLog('Domain: '. DOMAIN, true);
-				self::$Log->writeToLog('--------------------------------------------', true);
+				self::$log->writeToLog('Symphony Log');
+#				self::$Log->writeToLog('Symphony Log', true);
+#				self::$Log->writeToLog('Opened: '. DateTimeObj::get('c'), true);
+#				self::$Log->writeToLog('Version: '. self::$Configuration->get('version', 'symphony'), true);
+#				self::$Log->writeToLog('Domain: '. DOMAIN, true);
+#				self::$Log->writeToLog('--------------------------------------------', true);
 			}
 		}
 

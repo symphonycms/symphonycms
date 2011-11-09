@@ -45,11 +45,16 @@
 				self::__render(new InstallerPage('existing'));
 			}
 
-			// Check essential requirements
-			$errors = self::__checkRequirements();
-
 			// Initialize everything that is needed
 			self::__initialize();
+
+			// Make sure a log file is available
+			if(true || is_null(self::$_log)){
+				self::__render(new InstallerPage('missing-log'));
+			}
+
+			// Check essential requirements
+			$errors = self::__checkRequirements();
 
 			if(!empty($errors)){
 				self::$_log->pushToLog(
@@ -114,14 +119,27 @@
 		}
 
 		protected static function __initialize(){
+
 			// Initialize configuration
 			include_once(INSTALL . '/includes/defaultconfig.php'); // $conf
-			Symphony::initialiseConfiguration($conf);
-			self::$_conf = Symphony::Configuration();
+
+			self::$_conf = new Configuration(true);
+			self::$_conf->setArray($conf);
 
 			// Initialize log
-			Symphony::initialiseLog('install.log');
-			self::$_log = Symphony::Log();
+			if(!is_dir(INSTALL . '/logs') && !General::realiseDirectory(INSTALL . '/logs', $conf['directory']['write_mode'])){
+				self::$_log = null;
+			}
+			else{
+				self::$_log = new Log(INSTALL . '/logs/install');
+				self::$_log->setArchive((self::$_conf->get('archive', 'log') == '1' ? true : false));
+				self::$_log->setMaxSize(intval(self::$_conf->get('maxsize', 'log')));
+				self::$_log->setDateTimeFormat(self::$_conf->get('date_format', 'region') . ' ' . self::$_conf->get('time_format', 'region'));
+
+				if(self::$_log->open(Log::APPEND, self::$_conf->get('write_mode', 'file')) == 1){
+					self::$_log->initialise('Symphony Install Log');
+				}
+			}
 
 			// Initialize Database
 			self::$_db = new MySQL;

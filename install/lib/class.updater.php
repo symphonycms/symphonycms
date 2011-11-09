@@ -10,14 +10,29 @@
 
 		public static function run(){
 
+			// Initialize everything that is needed
+			self::__initialize();
+
+			// Initialize log
+			if(!is_dir(INSTALL . '/logs') && !General::realiseDirectory(INSTALL . '/logs', self::$_conf->get('write_mode', 'directory'))){
+				self::__render(new UpdaterPage('missing-log'));
+			}
+			else{
+				self::$_log = new Log(INSTALL . '/logs/update');
+				self::$_log->setArchive((self::$_conf->get('archive', 'log') == '1' ? true : false));
+				self::$_log->setMaxSize(intval(self::$_conf->get('maxsize', 'log')));
+				self::$_log->setDateTimeFormat(self::$_conf->get('date_format', 'region') . ' ' . self::$_conf->get('time_format', 'region'));
+
+				if(self::$_log->open(Log::APPEND, self::$_conf->get('write_mode', 'file')) == 1){
+					self::$_log->initialise('Symphony Update Log');
+				}
+			}
+
 			// Check if Symphony is installed or is already up-to-date
 			if(!file_exists(DOCROOT . '/manifest/config.php')){
 				self::__render(new UpdaterPage('missing'));
 			}
 			else{
-				// Initialize everything that is needed
-				self::__initialize();
-
 				if(false && self::$_conf->get('version', 'symphony') && version_compare(VERSION, self::$_conf->get('version', 'symphony'), '=')){
 					self::$_log->pushToLog(
 						sprintf('Updater - Already up-to-date'),
@@ -27,6 +42,8 @@
 					self::__render(new UpdaterPage('uptodate'));
 				}
 			}
+
+			
 
 			// Prepare updating
 			$migrations = array();
@@ -49,13 +66,13 @@
 			}
 
 			// Show start page
-			if(!isset($_POST['action']['update']){
+			if(!isset($_POST['action']['update'])){
 
 				$notes = array();
 
 				foreach($migrations as $version => $m){
-					if(!empty($m::pre_notes()))
-						$notes[$version] = $m::pre_notes();
+					$n = $m::pre_notes();
+					if(!empty($n)) $notes[$version] = $n;
 				}
 
 				self::__render(new UpdaterPage('ready', array(
@@ -70,8 +87,8 @@
 				$canProceed = true;
 
 				foreach($migrations as $version => $m){
-					if(!empty($m::post_notes()))
-						$notes[$version] = $m::post_notes();
+					$n = $m::post_notes();
+					if(!empty($n)) $notes[$version] = $n;
 
 					$canProceed = $m::run('upgrade');
 					if(!$canProceed) break;
@@ -94,9 +111,6 @@
 
 			// Initialize configuration
 			self::$_conf = Symphony::Configuration();
-
-			// Initialize log
-			self::$_log = Symphony::Log();
 
 			// Initialize Database
 			self::$_db = Symphony::Database();

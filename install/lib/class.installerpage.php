@@ -33,11 +33,11 @@
 		}
 
 		public function generate(){
-			$this->setTitle($this->_page_title);
-
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Lang::get());
-			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 0);
+
+			$this->setTitle($this->_page_title);
+			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 1);
 
 			$this->addStylesheetToHead(INSTALL_URL . '/assets/main.css', 'screen', 40);
 			$this->addScriptToHead(INSTALL_URL . '/assets/main.js', 50);
@@ -85,8 +85,16 @@
 			$this->Body->appendChild($languages);
 			$this->Body->appendChild($this->Form);
 
-			$function = 'view' . str_replace('_', '', ucfirst($this->_template));
+			$function = 'view' . str_replace('-', '', ucfirst($this->_template));
 			$this->$function();
+		}
+
+		protected function viewMissinglog() {
+			$h2 = new XMLElement('h2', __('Missing log file'));
+			$p = new XMLElement('p', __('Symphony couldn’t create a valid log file. Make sure the %s folder is writable.', array('<code>' . basename(INSTALL) . '</code>')));
+
+			$this->Form->appendChild($h2);
+			$this->Form->appendChild($p);
 		}
 
 		protected function viewExisting() {
