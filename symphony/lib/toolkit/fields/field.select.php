@@ -306,7 +306,7 @@
 			else $wrapper->appendChild($label);
 		}
 
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+		public function processRawFieldData($data, &$status, &$message, $simulate=false, $entry_id=NULL){
 			$status = self::__OK__;
 
 			if(!is_array($data)) return array('value' => $data, 'handle' => Lang::createHandle($data));

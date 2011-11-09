@@ -367,16 +367,16 @@
 
 				// Summary
 				$li = new XMLElement('li');
-				
+
 				$li->setAttribute('title', __('Viewing %1$s - %2$s of %3$s entries', array(
 					$entries['start'],
 					($current_page != $entries['total-pages']) ? $current_page * Symphony::Configuration()->get('pagination_maximum_rows', 'symphony') : $entries['total-entries'],
 					$entries['total-entries']
 				)));
-				
+
 				$pgform = Widget::Form(Administration::instance()->getCurrentPageURL(),'get','paginationform');
 				$pgform->setValue(__('Page %1$s of %2$s', array(Widget::Input('pg',$current_page)->generate(), '<span>' . max($current_page, $entries['total-pages'] . '</span>'))));
-				
+
 				$li->appendChild($pgform);
 				$ul->appendChild($li);
 
@@ -516,7 +516,7 @@
 					if(!isset($_POST['fields']) && $field = FieldManager::fetch($field_id)) {
 						$entry->setData(
 							$field->get('id'),
-							$field->processRawFieldData($value, $error, true)
+							$field->processRawFieldData($value, $error, $message, true)
 						);
 					}
 				}
@@ -604,13 +604,20 @@
 					}
 				}
 
-				if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)):
+				// Initial checks to see if the Entry is ok
+				if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
 					$this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
+				}
 
-				elseif(__ENTRY_OK__ != $entry->setDataFromPost($fields, $error)):
-					$this->pageAlert($error['message'], Alert::ERROR);
+				// Secondary checks, this will actually process the data and attempt to save
+				else if(__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
+					foreach($errors as $field_id => $message) {
+						$this->pageAlert($message, Alert::ERROR);
+					}
+				}
 
-				else:
+				// Everything is awesome. Dance.
+				else {
 					/**
 					 * Just prior to creation of an Entry
 					 *
@@ -623,13 +630,13 @@
 					 */
 					Symphony::ExtensionManager()->notifyMembers('EntryPreCreate', '/publish/new/', array('section' => $section, 'entry' => &$entry, 'fields' => &$fields));
 
+					// Check to see if the dancing was premature
 					if(!$entry->commit()){
 						define_safe('__SYM_DB_INSERT_FAILED__', true);
 						$this->pageAlert(NULL, Alert::ERROR);
-
 					}
 
-					else{
+					else {
 						/**
 						 * Creation of an Entry. New Entry object is provided.
 						 *
@@ -657,12 +664,9 @@
 							$entry->get('id'),
 							(!empty($prepopulate_querystring) ? "?" . $prepopulate_querystring : NULL)
 						));
-
 					}
-
-				endif;
+				}
 			}
-
 		}
 
 		public function __viewEdit() {
@@ -671,7 +675,6 @@
 			}
 
 			$section = SectionManager::fetch($section_id);
-
 			$entry_id = intval($this->_context['entry_id']);
 
 			EntryManager::setFetchSorting('id', 'DESC');
@@ -688,8 +691,7 @@
 				$entry =& EntryManager::create();
 				$entry->set('section_id', $existingEntry->get('section_id'));
 				$entry->set('id', $entry_id);
-
-				$entry->setDataFromPost($fields, $error, true);
+				$entry->setDataFromPost($fields, $errors, true);
 			}
 
 			// Editing an entry, so need to create some various objects
@@ -852,14 +854,20 @@
 				$post = General::getPostData();
 				$fields = $post['fields'];
 
-				if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)):
+				// Initial checks to see if the Entry is ok
+				if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
 					$this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
+				}
 
-				elseif(__ENTRY_OK__ != $entry->setDataFromPost($fields, $error, true)):
-					$this->pageAlert($error['message'], Alert::ERROR);
+				// Secondary checks, this will actually process the data and attempt to save
+				else if(__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
+					foreach($errors as $field_id => $message) {
+						$this->pageAlert($message, Alert::ERROR);
+					}
+				}
 
-				else:
-
+				// Everything is awesome. Dance.
+				else {
 					/**
 					 * Just prior to editing of an Entry.
 					 *
@@ -872,14 +880,13 @@
 					 */
 					Symphony::ExtensionManager()->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
 
+					// Check to see if the dancing was premature
 					if(!$entry->commit()){
 						define_safe('__SYM_DB_INSERT_FAILED__', true);
 						$this->pageAlert(NULL, Alert::ERROR);
-
 					}
 
 					else {
-
 						/**
 						 * Just after the editing of an Entry
 						 *
@@ -908,11 +915,10 @@
 							(!empty($prepopulate_querystring) ? "?" . $prepopulate_querystring : NULL)
 						));
 					}
-
-				endif;
+				}
 			}
 
-			elseif(@array_key_exists('delete', $_POST['action']) && is_numeric($entry_id)){
+			else if(@array_key_exists('delete', $_POST['action']) && is_numeric($entry_id)){
 				/**
 				 * Prior to deletion of entries. Array of Entry ID's is provided.
 				 * The array can be manipulated

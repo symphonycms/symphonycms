@@ -377,7 +377,7 @@
 			return self::__OK__;
 		}
 
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL) {
+		public function processRawFieldData($data, &$status, &$message, $simulate = false, $entry_id = null) {
 			$status = self::__OK__;
 			$timestamp = null;
 

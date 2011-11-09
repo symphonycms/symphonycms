@@ -340,7 +340,7 @@
 			return self::__OK__;
 		}
 
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+		public function processRawFieldData($data, &$status, &$message, $simulate=false, $entry_id=NULL){
 
 			$status = self::__OK__;
 
@@ -383,6 +383,7 @@
 				}
 
 				if(!file_exists($file) || !is_readable($file)){
+					$message = __('The file uploaded is no longer available. Please check that it exists, and is readable.');
 					$status = self::__INVALID_FIELDS__;
 					return $result;
 				}

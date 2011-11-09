@@ -108,23 +108,24 @@
 		 * the errors.
 		 *
 		 * @param array $data
-		 *	An associative array of the data for this entry where they key is the
-		 *	Field's handle for this Section and the value is the data from the form
-		 * @param array $error
-		 *	An array of errors, by reference. Defaults to empty
+		 *  An associative array of the data for this entry where they key is the
+		 *  Field's handle for this Section and the value is the data from the form
+		 * @param array $errors
+		 *  An associative array of errors, by reference. The key is the `field_id`, the value
+		 *  is the message text. Defaults to an empty array
 		 * @param boolean $simulate
-		 *	If $simulate is given as true, a dry run of this function will occur, where
-		 *	regardless of errors, an Entry will not be saved in the database. Defaults to
-		 *	false
+		 *  If $simulate is given as true, a dry run of this function will occur, where
+		 *  regardless of errors, an Entry will not be saved in the database. Defaults to
+		 *  false
 		 * @param boolean $ignore_missing_fields
-		 *	This parameter allows Entries to be updated, rather than replaced. This is
-		 *	useful if the input form only contains a couple of the fields for this Entry.
-		 *	Defaults to false, which will set Fields to their default values if they are not
-		 *	provided in the $data
+		 *  This parameter allows Entries to be updated, rather than replaced. This is
+		 *  useful if the input form only contains a couple of the fields for this Entry.
+		 *  Defaults to false, which will set Fields to their default values if they are not
+		 *  provided in the $data
 		 * @return integer
-		 *	Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
+		 *  Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
 		 */
-		public function setDataFromPost($data, &$error = null, $simulate = false, $ignore_missing_fields = false){
+		public function setDataFromPost($data, &$errors = null, $simulate = false, $ignore_missing_fields = false){
 			$status = __ENTRY_OK__;
 
 			// Entry has no ID, create it:
@@ -139,18 +140,18 @@
 
 			foreach($schema as $info){
 				$result = null;
-
+				$message = null;
 				$field = FieldManager::fetch($info['id']);
 
 				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
 
 				$result = $field->processRawFieldData(
-					(isset($data[$info['element_name']]) ? $data[$info['element_name']] : null), $s, $simulate, $this->get('id')
+					(isset($data[$info['element_name']]) ? $data[$info['element_name']] : null), $s, $message, $simulate, $this->get('id')
 				);
 
 				if($s != Field::__OK__){
 					$status = __ENTRY_FIELD_ERROR__;
-					$error = array('field_id' => $info['id'], 'message' => $m);
+					$error[$info['id']] = $message;
 				}
 
 				$this->setData($info['id'], $result);
@@ -209,6 +210,7 @@
 
 			foreach($schema as $info){
 				$result = null;
+				$message = null;
 				$field = FieldManager::fetch($info['id']);
 
 				if($ignore_missing_fields && !isset($data[$field->get('element_name')])) continue;
@@ -235,7 +237,7 @@
 			foreach($schema as $field){
 				if(isset($this->_data[$field->get('field_id')])) continue;
 
-				$result = $field->processRawFieldData(null, $status, false, $this->get('id'));
+				$result = $field->processRawFieldData(null, $status, $message, false, $this->get('id'));
 				$this->setData($field->get('field_id'), $result);
 			}
 

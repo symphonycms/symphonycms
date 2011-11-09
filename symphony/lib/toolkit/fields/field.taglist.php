@@ -196,7 +196,7 @@
 			}
 		}
 
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+		public function processRawFieldData($data, &$status, &$message, $simulate=false, $entry_id=NULL){
 			$status = self::__OK__;
 
 			$data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);

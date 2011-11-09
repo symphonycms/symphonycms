@@ -841,6 +841,9 @@
 		 *	post data from the entry form
 		 * @param integer $status
 		 *	the status code resultant from processing the data.
+		 * @param string $message
+		 *	the place to set any generated error message. any previous value for
+		 *	this variable will be overwritten.
 		 * @param boolean $simulate (optional)
 		 *	true if this will tell the CF's to simulate data creation, false
 		 *	otherwise. this defaults to false. this is important if clients
@@ -851,7 +854,7 @@
 		 * @return array
 		 *	the processed field data.
 		 */
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=null) {
+		public function processRawFieldData($data, &$status, &$message, $simulate=false, $entry_id=null) {
 
 			$status = self::__OK__;
 

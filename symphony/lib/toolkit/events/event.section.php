@@ -134,13 +134,13 @@
 				$result->setAttribute('result', 'error');
 				$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 
-				if(isset($errors['field_id'])){
-					$errors = array($errors);
-				}
-
-				foreach($errors as $err){
-					$field = FieldManager::fetch($err['field_id']);
-					$result->appendChild(new XMLElement($field->get('element_name'), null, array('type' => 'invalid')));
+				foreach($errors as $field_id => $message){
+					$field = FieldManager::fetch($field_id);
+					$result->appendChild(new XMLElement($field->get('element_name'), null, array(
+						'label' => General::sanitize($field->get('label')),
+						'type' => 'invalid',
+						'message' => General::sanitize($message)
+					)));
 				}
 
 				if(isset($post_values) && is_object($post_values)) $result->appendChild($post_values);
