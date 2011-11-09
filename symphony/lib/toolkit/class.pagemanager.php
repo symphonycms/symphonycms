@@ -712,6 +712,8 @@
 				LIMIT 1
 			");
 
+			if(empty($page)) return $page;
+
 			$path = array($page[$column]);
 
 			if (!is_null($page['parent'])) {

@@ -218,7 +218,7 @@
 
 			foreach($values as $v){
 				$p->appendChild($v);
-				$p->appendChild(new XMLElement('span', '&#8250;'));
+				$p->appendChild(new XMLElement('span', '&#8250;', array('class' => 'sep')));
 			}
 		}
 
