@@ -872,7 +872,7 @@ body, html {
 	border-bottom-color: rgba(0, 0, 0, 0.3);
 	color: rgba(0, 0, 0, 0.8);
 }
-#breadcrumbs span {
+#breadcrumbs .sep {
 	padding: 0 0.4em;
 }
 #context h2 {
