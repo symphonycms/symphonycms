@@ -1,15 +1,15 @@
 # Symphony 2 #
 
-- Version: 2.2.4
-- Date: October 22nd, 2011
-- Release Notes: <http://symphony-cms.com/download/releases/version/2.2.4/>
-- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.2.4>
+- Version: 2.2.5RC2
+- Date: November 9th, 2011
+- Release Notes: <http://symphony-cms.com/download/releases/version/2.2.5/>
+- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.2.5RC2>
 
 
 ## Overview
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as
-its core technologies. This repository represents version "2.2.4" and is considered stable.
+its core technologies. This repository represents version "2.2.5RC2" and is considered stable.
 
 Visit the forum at <http://symphony-cms.com/discuss/>
 
@@ -181,7 +181,7 @@ details for establishing a database connection and about your server environment
 
 3. Remove installer files (unless you're fine with revealing all your trade secrets):
 
-	`rm install.php install.sql workspace/install.sql update.php`
+	`rm install.php install.sql workspace/install.sql update.php install-log.txt`
 
 4. Dance like it's 2012!
 

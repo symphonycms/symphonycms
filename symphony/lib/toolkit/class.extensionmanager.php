@@ -606,7 +606,7 @@
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return Extension
 		 */
-		public function create($name){
+		public function &create($name){
 			if(!is_array(self::$_pool)) $this->flush();
 
 			if(!isset(self::$_pool[$name])){
