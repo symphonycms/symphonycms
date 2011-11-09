@@ -62,7 +62,7 @@
 
 	set_error_handler('__errorHandler');
 
-	define('kVERSION', '2.2.5RC1');
+	define('kVERSION', '2.2.5RC2');
 	define('kCHANGELOG', 'http://symphony-cms.com/download/releases/version/2.2.5/');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
