@@ -226,9 +226,8 @@
 				// Loop over all the recipients and attempt to send them an email
 				// Errors will be appended to the Event XML
 				$errors = array();
-				$authorManager = new AuthorManager(Frontend::instance());
 				foreach($fields['recipient'] as $recipient){
-					$author = $authorManager->fetchByUsername($recipient);
+					$author = AuthorManager::fetchByUsername($recipient);
 
 					if(is_null($author)) {
 						$errors['recipient'][$recipient] = __('Recipient not found');
@@ -279,7 +278,6 @@
 						// all exceptions are logged silently.
 						// Any custom event can change this behaviour.
 						$errors['email'][$author->get('email')] = $e->getMessage();
-						$emailError = true;
 					}
 				}
 
