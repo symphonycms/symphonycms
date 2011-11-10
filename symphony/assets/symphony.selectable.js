@@ -16,10 +16,11 @@
 	 * @name $.symphonySelectable
 	 * @class
 	 *
-	 * @param {Object} custom_settings An object specifying containing the attributes specified below
-	 * @param {String} [custom_settings.items='tbody tr:has(input)'] Selector to find items that are selectable
-	 * @param {String} [custom_settings.handles='td'] Selector to find children that can be clicked to select the
+	 * @param {Object} options An object specifying containing the attributes specified below
+	 * @param {String} [options.items='tbody tr:has(input)'] Selector to find items that are selectable
+	 * @param {String} [options.handles='td'] Selector to find children that can be clicked to select the
 	 * item. Needed to properly handle item highlighting when used in connection with the orderable plugin
+	 * @param {String} [options.ignore='a'] Selector to find elements that should not propagate to the handle
 	 *
 	 *	@example
 
@@ -28,30 +29,28 @@
 				event.stopPropagation();
 			});
 	 */
-	$.fn.symphonySelectable = function(custom_settings) {
+	$.fn.symphonySelectable = function(options) {
 		var objects = this,
 			settings = {
 				items: 'tbody tr:has(input)',
-				handles: 'td'
+				handles: 'td',
+				ignore: 'a'
 			};
 
-		$.extend(settings, custom_settings);
+		$.extend(settings, options);
 
 	/*-----------------------------------------------------------------------*/
 
-		// Make selectable
-		objects.addClass('selectable');
-
-		// Process selections
-		objects.delegate(settings.items, 'click.selectable', function(event) {
+		// Select
+		objects.on('click.selectable', settings.items, function(event) {
 			var item = $(this),
 				items = item.siblings().andSelf(),
 				object = $(event.liveFired),
 				target = $(event.target),
 				selection, deselection, first, last;
 
-			// Ignore clicks on links
-			if(target.is('a')) {
+			// Ignored elements
+			if(target.is(settings.ignore)) {
 				return true;
 			}
 
@@ -107,26 +106,21 @@
 				}
 			}
 
-		});
-
-		// Handle highlighting conflicts between orderable and selectable items
-		if(objects.is('.orderable')) {
-			objects.find(settings.items).bind('mousedown.selectable', function(event) {
-				$(this).addClass('selecting');
-			});
-			objects.find(settings.items).bind('mouseup.selectable mousemove.selectable', function(event) {
-				$(this).removeClass('selecting');
-			});
-		}
+		});	
 
 		// Remove all selections by doubleclicking the body
 		$('body').bind('dblclick.selectable', function() {
 			objects.find(settings.items).removeClass('selected').trigger('deselect');
 		});
 
-		// Return objects
-		return objects;
+	/*-----------------------------------------------------------------------*/
 
+		// Make selectable
+		objects.addClass('selectable');
+
+	/*-----------------------------------------------------------------------*/
+
+		return objects;
 	};
 
 })(jQuery.noConflict());
