@@ -18,11 +18,7 @@
 		$('.picker').symphonyPickable();
 
 		// Selectable
-		var selectable = $('table.selectable');
-		selectable.symphonySelectable();
-		selectable.find('a').mousedown(function(event) {
-			event.stopPropagation();
-		});
+		$('table.selectable').symphonySelectable();
 
 		// Orderable list
 		$('ul.orderable').symphonyOrderable();
@@ -34,18 +30,13 @@
 			handles: 'td'
 		});
 
-		// Don't start ordering while clicking on links
-		orderable.find('a').mousedown(function(event) {
-			event.stopPropagation();
-		});
-
 		// Store current sort order
-		orderable.live('orderstart', function() {
+		orderable.on('orderstart.orderable', function() {
 			old_sorting = orderable.find('input').map(function(e, i) { return this.name + '=' + (e + 1); }).get().join('&');
 		});
 
 		// Process sort order
-		orderable.live('orderstop', function() {
+		orderable.on('orderstop.orderable', function() {
 			orderable.addClass('busy');
 
 			// Get new sort order
@@ -55,14 +46,14 @@
 			if(new_sorting != old_sorting) {
 
 				// Update items
-				orderable.trigger('orderchange');
+				orderable.trigger('orderupdate');
 
 				// Send request
 				$.ajax({
 					type: 'POST',
 					url: Symphony.Context.get('root') + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
 					data: new_sorting,
-					success: function() {
+					success: function(a, b, c) {
 						Symphony.Message.clear('reorder');
 					},
 					error: function() {
@@ -77,7 +68,6 @@
 			else {
 				orderable.removeClass('busy');
 			}
-
 		});
 
 		// Duplicators
@@ -89,16 +79,6 @@
 			orderable: true,
 			collapsible: true
 		});
-		duplicator.bind('collapsestop', function(event, item) {
-			var instance = $(item);
-			instance.find('.header > span:not(:has(i))').append(
-				$('<i />').text(instance.find('label:first input').attr('value'))
-			);
-		});
-		duplicator.bind('expandstop', function(event, item) {
-			$(item).find('.header > span > i').remove();
-		});
-		duplicator.trigger('restorestate');
 
 		// Dim system messages
 		Symphony.Message.fade('silence', 10000);
