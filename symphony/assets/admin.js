@@ -53,7 +53,7 @@
 					type: 'POST',
 					url: Symphony.Context.get('root') + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
 					data: new_sorting,
-					success: function(a, b, c) {
+					success: function() {
 						Symphony.Message.clear('reorder');
 					},
 					error: function() {
