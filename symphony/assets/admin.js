@@ -15,7 +15,7 @@
 		$('.tags').symphonyTags();
 
 		// Pickers
-		$('.picker').symphonyPickable();
+		$('select[name="settings[Email][default_gateway]"]').symphonyPickable();
 
 		// Selectable
 		$('table.selectable').symphonySelectable();
