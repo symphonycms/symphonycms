@@ -76,18 +76,26 @@
 		 *	The number of rows to return
 		 * @param integer $start
 		 *	The offset start point for limiting, maps to the LIMIT {x}, {y} MySQL functionality
+		 * @param string $where
+		 *  Any custom WHERE clauses. The tbl_authors alias is `a`
+		 * @param string $joins
+		 *  Any custom JOIN's
 		 * @return array
-		 *	An array of Author objects.	 If no Authors are found, null is returned.
+		 *	An array of Author objects. If no Authors are found, null is returned.
 		 */
-		public static function fetch($sortby = 'id', $sortdirection = 'ASC', $limit = null, $start = null){
+		public static function fetch($sortby = 'id', $sortdirection = 'ASC', $limit = null, $start = null, $where = null, $joins = null){
 
 			$records = Symphony::Database()->fetch(sprintf("
-					SELECT *
-					FROM `tbl_authors`
+					SELECT a.*
+					FROM `tbl_authors` AS `a`
+					%s
+					WHERE %s
 					ORDER BY %s %s
 					%s %s
 				",
-				$sortby, $sortdirection,
+				$joins,
+				($where) ? $where : 1,
+				'a'.$sortby, $sortdirection,
 				($limit) ? "LIMIT " . $limit : '',
 				($start && $limit) ? ', ' . $start : ''
 			));
@@ -117,20 +125,11 @@
 		 *
 		 * @param integer|array $id
 		 *	A single ID or an array of ID's
-		 * @param string $sortby
-		 *	The field to sort the authors by, defaults to 'id'
-		 * @param string $sortdirection
-		 *	Available values of ASC (Ascending) or DESC (Descending), which refer to the
-		 *	sort order for the query. Defaults to ASC (Ascending)
-		 * @param integer $limit
-		 *	The number of rows to return
-		 * @param integer $start
-		 *	The offset start point for limiting, maps to the LIMIT {x}, {y} MySQL functionality
 		 * @return mixed
 		 *	If `$id` was an integer, the result will be an Author object, otherwise an array of
 		 *	Author objects will be returned. If no Authors are found, or no `$id` is given null is returned.
 		 */
-		public static function fetchByID($id, $sortby = 'id', $sortdirection = 'ASC', $limit = null, $start = null){
+		public static function fetchByID($id){
 
 			$return_single = false;
 
@@ -161,12 +160,8 @@
 					SELECT *
 					FROM `tbl_authors`
 					WHERE `id` IN (%s)
-					ORDER BY %s %s
-					%s
 				",
 				implode(",", $id),
-				$sortby, $sortdirection,
-				($limit) ? "LIMIT " . (($start) ? $start . ',':'') . $limit : ''
 			));
 
 			if(!is_array($records) || empty($records)) return ($return_single ? $authors[0] : $authors);
