@@ -56,13 +56,13 @@
 		/*-------------------------------------------------------------------*/
 			
 			// Collapse item
-			object.on('collapse.collapsible', settings.items, function(event, imediate) {
+			object.on('collapse.collapsible', settings.items, function(event, instantly) {
 				var item = $(this),
 					content = item.find(settings.content),
 					speed = 'fast';
 
-				// Imediate switch?
-				if(imediate === true) {
+				// Instant switch?
+				if(instantly === true) {
 					speed = 0;
 				}
 				
