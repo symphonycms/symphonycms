@@ -138,19 +138,12 @@ table.selectable input {
 }
 tr.selected td,
 tr.selecting td {
-	background-color: #5c83ba;
-	background: -moz-linear-gradient(
-		top,
-		#668abe,
-		#5981b9
-	);
-	background: -webkit-gradient(
-		linear,
-		left top,
-		left bottom,
-		color-stop(0, #668abe),
-		color-stop(1, #4D78B4)
-	);
+	background-color: #668abe;
+	background-image: -webkit-linear-gradient(top, #668abe, #4D78B4); 
+	background-image:    -moz-linear-gradient(top, #668abe, #4D78B4); 
+	background-image:     -ms-linear-gradient(top, #668abe, #4D78B4); 
+	background-image:      -o-linear-gradient(top, #668abe, #4D78B4); 
+	background-image:   linear-gradient(to bottom, #668abe, #4D78B4);
 	border-bottom: 1px solid #7492bc;
 	border-top: 1px solid #4D78B4;
 	text-shadow: 1px 1px rgba(0, 0, 0, 0.2);
@@ -169,23 +162,15 @@ tr.selected .inactive {
 tr.ordering {
 	cursor: move;
 }
-tr.ordering td,
-tr:nth-child(odd).ordering td {
-	background-color: #5c83ba;
-	background: -moz-linear-gradient(
-		top,
-		#4e79b4,
-		#456da3
-	);
-	background: -webkit-gradient(
-		linear,
-		left top,
-		left bottom,
-		color-stop(0, hsla(0, 0%, 50%, 1)),
-		color-stop(0.03, hsla(0, 0%, 35%, 1)),
-		color-stop(0.91, hsla(0, 0%, 25%, 1))
-	);
-	border-color: hsla(0, 0%, 25%, 1);
+tr.ordering td {
+	background-color: #4e79b4;
+	background-image: -webkit-linear-gradient(top, #4e79b4, #456da3); 
+	background-image:    -moz-linear-gradient(top, #4e79b4, #456da3); 
+	background-image:     -ms-linear-gradient(top, #4e79b4, #456da3); 
+	background-image:      -o-linear-gradient(top, #4e79b4, #456da3); 
+	background-image:   linear-gradient(to bottom, #4e79b4, #456da3);
+	border-bottom: 1px solid #36547f;
+	border-top: 1px solid #36547f;
 }
 tr.ordering td,
 tr.ordering a,
