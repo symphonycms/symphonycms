@@ -290,7 +290,7 @@
 		 * @param integer $start
 		 *  The starting offset of the entries to return
 		 * @param string $where
-		 *  Any custom WHERE clauses
+		 *  Any custom WHERE clauses. The tbl_entries alias is `e`
 		 * @param string $joins
 		 *  Any custom JOIN's
 		 * @param boolean $group
