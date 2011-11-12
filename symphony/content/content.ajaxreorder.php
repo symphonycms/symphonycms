@@ -29,7 +29,7 @@
 			switch($destination){
 				case self::kREORDER_PAGES:
 					foreach($items as $id => $position) {
-						if(!PageManager::update($id, array('sortorder' => $position))) {
+						if(!PageManager::edit($id, array('sortorder' => $position))) {
 							$this->_status = self::STATUS_ERROR;
 							$this->_Result->setValue(__('A database error occurred while attempting to reorder.'));
 							break;

@@ -1008,7 +1008,7 @@
 
 							$page['data_sources'] = implode(',', array_flip($data_sources));
 
-							PageManager::update($page['id'], $page);
+							PageManager::edit($page['id'], $page);
 						}
 					}
 					redirect(SYMPHONY_URL . '/blueprints/datasources/');
@@ -1394,7 +1394,7 @@
 							foreach($pages as $page) {
 								$page['data_sources'] = preg_replace('/\b'.$existing_handle.'\b/i', $classname, $page['data_sources']);
 
-								PageManager::update($page['id'], $page);
+								PageManager::edit($page['id'], $page);
 							}
 						}
 					}

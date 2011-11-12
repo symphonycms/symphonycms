@@ -258,7 +258,7 @@
 
 							$page['events'] = implode(',', array_flip($events));
 
-							PageManager::update($page['id'], $page);
+							PageManager::edit($page['id'], $page);
 						}
 					}
 
@@ -542,7 +542,7 @@
 
 								$page['events'] = preg_replace('/\b'.$existing_handle.'\b/i', $classname, $page['events']);
 
-								PageManager::update($page['id'], $page);
+								PageManager::edit($page['id'], $page);
 							}
 						}
 
