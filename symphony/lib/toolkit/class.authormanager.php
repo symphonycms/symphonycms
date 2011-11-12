@@ -95,7 +95,7 @@
 				",
 				$joins,
 				($where) ? $where : 1,
-				'a'.$sortby, $sortdirection,
+				'a.'.$sortby, $sortdirection,
 				($limit) ? "LIMIT " . $limit : '',
 				($start && $limit) ? ', ' . $start : ''
 			));
@@ -161,7 +161,7 @@
 					FROM `tbl_authors`
 					WHERE `id` IN (%s)
 				",
-				implode(",", $id),
+				implode(",", $id)
 			));
 
 			if(!is_array($records) || empty($records)) return ($return_single ? $authors[0] : $authors);
