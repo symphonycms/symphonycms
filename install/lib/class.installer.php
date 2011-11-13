@@ -22,7 +22,7 @@
 
 			// Include the default Config for installation.
 			// @todo This file doesn't exist yet.
-			include('includes/config.php');
+			include(INSTALL . '/includes/config_default.php');
 			$this->initialiseConfiguration($settings);
 
 			define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
