@@ -2,7 +2,11 @@
 
 	Abstract Class Migration {
 
-		final static function run($function){
+		static $existing_version = null;
+
+		final static function run($function, $existing_version = null) {
+			self::$existing_version = $existing_version;
+
 			try{
 				self::$function();
 

@@ -8,6 +8,9 @@
 
 	Class UpdaterPage extends InstallerPage {
 
+		// @todo We need a method to allow a user to remove the updater (from the
+		// Alert in the backend, it's update.php?remove in 2.2.x
+		// @todo We need to show the Change log/Release notes links.
 		public function __construct($template, $params = array()) {
 			parent::__construct($template, $params);
 

@@ -31,9 +31,6 @@
 			else{
 				// @todo Again, are we going to have a consolidated log, or individual logs.
 				Symphony::Log()->setLogPath(INSTALL . '/logs/update');
-				Symphony::Log()->setArchive((Symphony::Configuration()->get('archive', 'log') == '1' ? true : false));
-				Symphony::Log()->setMaxSize(intval(Symphony::Configuration()->get('maxsize', 'log')));
-				Symphony::Log()->setDateTimeFormat(Symphony::Configuration()->get('date_format', 'region') . ' ' . Symphony::Configuration()->get('time_format', 'region'));
 
 				if(Symphony::Log()->open(Log::APPEND, Symphony::Configuration()->get('write_mode', 'file')) == 1){
 					Symphony::Log()->initialise('Symphony Update Log');
@@ -63,7 +60,8 @@
 				if(!is_dir($m->getPathname())){
 					$version = str_replace('.php', '', $m->getFilename());
 
-					if(version_compare('2.0.0', $version, '<=')){
+					// @todo We'll need to test how this works with RC/Beta/Dev builds.
+					if(version_compare(Symphony::Configuration()->get('version', 'symphony'), $version, '<=')){
 						include_once($m->getPathname());
 						$classname = 'migration_' . str_replace('.', '', $version);
 						$migrations[$version] = new $classname();;
@@ -96,7 +94,7 @@
 					$n = $m::post_notes();
 					if(!empty($n)) $notes[$version] = $n;
 
-					$canProceed = $m::run('upgrade');
+					$canProceed = $m::run('upgrade', Symphony::Configuration()->get('version', 'symphony'));
 					if(!$canProceed) break;
 				}
 

@@ -701,9 +701,20 @@
 			return (empty($result) ? null : $result[$offset][$column]);
 		}
 
+		/**
+		 * This function takes `$table` and `$field` names and returns boolean
+		 * if the `$table` contains the `$field`.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $table
+		 *  The table name
+		 * @param string $field
+		 *  The field name
+		 * @return boolean
+		 *  True if `$table` contains `$field`, false otherwise
+		 */
 		public function tableContainsField($table, $field){
-			$query = "DESC `{$table}` `{$field}`";
-			$results = $this->fetch($query);
+			$results = $this->fetch("DESC `{$table}` `{$field}`");
 
 			return (is_array($results) && !empty($results));
 		}
