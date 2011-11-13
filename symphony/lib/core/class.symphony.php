@@ -150,6 +150,29 @@
 		}
 
 		/**
+		 * Setter for `$Configuration`. This function initialise the configuration
+		 * object and populate its properties based on the given $array.
+		 * 
+		 * @param array $data
+		 *  An array of settings to be stored into the Configuration object
+		 * @since Symphony 2.3
+		 */
+		public function initialiseConfiguration(array $data = array()){
+			if(self::$Configuration instanceof Configuration) return true;
+
+			if(empty($data)){
+				// Includes the existing CONFIG file and initialises the Configuration
+				// by setting the values with the setArray function.
+				include(CONFIG);
+				$data = $settings;
+			}
+
+			self::$Configuration = new Configuration(true);
+			self::$Configuration->setArray($data);
+
+		}
+
+		/**
 		 * Accessor for the current `Configuration` instance. This contains
 		 * representation of the the Symphony config file.
 		 *
@@ -174,18 +197,23 @@
 		 * settings in the 'log' group in the Configuration to create an instance. Date
 		 * formatting options are also retrieved from the configuration.
 		 */
-		public function initialiseLog(){
+		public function initialiseLog($filename = null){
 			if(self::$Log instanceof Log) return true;
 
-			self::$Log = new Log(ACTIVITY_LOG);
+			if(is_null($filename)) $filename = ACTIVITY_LOG;
+
+			self::$Log = new Log($filename);
 			self::$Log->setArchive((self::$Configuration->get('archive', 'log') == '1' ? true : false));
 			self::$Log->setMaxSize(intval(self::$Configuration->get('maxsize', 'log')));
 			self::$Log->setDateTimeFormat(self::$Configuration->get('date_format', 'region') . ' ' . self::$Configuration->get('time_format', 'region'));
 
 			if(self::$Log->open(Log::APPEND, self::$Configuration->get('write_mode', 'file')) == 1){
-				self::$Log->writeToLog('Symphony Log', true);
-				self::$Log->writeToLog('Version: '. self::$Configuration->get('version', 'symphony'), true);
-				self::$Log->writeToLog('--------------------------------------------', true);
+				self::$log->writeToLog('Symphony Log');
+#				self::$Log->writeToLog('Symphony Log', true);
+#				self::$Log->writeToLog('Opened: '. DateTimeObj::get('c'), true);
+#				self::$Log->writeToLog('Version: '. self::$Configuration->get('version', 'symphony'), true);
+#				self::$Log->writeToLog('Domain: '. DOMAIN, true);
+#				self::$Log->writeToLog('--------------------------------------------', true);
 			}
 		}
 
@@ -206,7 +234,6 @@
 		 * weeks.
 		 */
 		public function initialiseCookie(){
-
 			$cookie_path = @parse_url(URL, PHP_URL_PATH);
 			$cookie_path = '/' . trim($cookie_path, '/');
 

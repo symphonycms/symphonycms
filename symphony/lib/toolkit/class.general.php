@@ -96,10 +96,10 @@
 		 *	true if there are no errors in validating the XML, false otherwise.
 		 */
 		public static function validateXML($data, &$errors, $isFile=true, $xsltProcessor=NULL, $encoding='UTF-8') {
-			$_parser 	= null;
-			$_data	 	= null;
-			$_vals		= array();
-			$_index	= array();
+			$_parser = null;
+			$_data = null;
+			$_vals = array();
+			$_index = array();
 
 			$_data = ($isFile) ? file_get_contents($data) : $data;
 
@@ -124,13 +124,14 @@
 					return false;
 				}
 
-			}else{
+			}
+			else{
 
 				$_parser = xml_parser_create();
 				xml_parser_set_option($_parser, XML_OPTION_SKIP_WHITE, 0);
 				xml_parser_set_option($_parser, XML_OPTION_CASE_FOLDING, 0);
 
-				if(!xml_parse($_parser, $_data)) {
+				if(!xml_parse($_parser, $_data)){
 					$errors = array('error' => xml_get_error_code($_parser) . ': ' . xml_error_string(xml_get_error_code($_parser)),
 									'col' => xml_get_current_column_number($_parser),
 									'line' => (xml_get_current_line_number($_parser) - 2));
@@ -190,7 +191,8 @@
 		 * The elements of the path are separated by periods (.). For example,
 		 * given the following nested array structure:
 		 * `
-		 * array(1 =>
+		 * array(
+		 *		1 =>
 		 *			array('key' => 'value'),
 		 *		2 =>
 		 *			array('key2' => 'value2', 'key3' => 'value3')
@@ -844,6 +846,39 @@
 
 				$parent->appendChild($child);
 			}
+		}
+
+		/**
+		 * Given a two-dimensional or a simple array, this function returns a
+		 * string that, if eval'd, gives the array itself. This function is useful
+		 * in conjunction with `writeFile()` to save arrays to the file system for
+		 * future consumption.
+		 *
+		 * @since Symphony 2.3
+		 * @see toolkit.General#writeFile()
+		 * @param array $data
+		 *	the array to save as string.
+		 * @return string
+		 *	the PHP evaluable representation of the array passed as parameter.
+		 */
+		public static function array_to_string(array $data) {
+			$string = "<?php\n\t\$settings = array(";
+
+			foreach($data as $group => $settings){
+				if(is_array($settings)){
+					$string .= PHP_EOL . "\t\t'$group' => array(";
+					foreach($settings as $key => $value){
+						$string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'null').",";
+					}
+					$string .= PHP_EOL . "\t\t),";
+				}
+				else{
+					$string .= PHP_EOL . "\t\t'$group' => '$settings',";
+				}
+			}
+			$string .= PHP_EOL . "\t);\n\n";
+
+			return $string;
 		}
 
 		/**
