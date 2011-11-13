@@ -10,7 +10,8 @@
 	// System installer
 	require_once(INSTALL . '/lib/class.installer.php');
 
-	Installer::run();
+	$installer = Installer::instance();
+	$installer->run();
 
 	exit;
 

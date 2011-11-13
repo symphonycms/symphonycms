@@ -133,7 +133,7 @@
 		}
 
 		protected function viewSuccess() {
-			$this->Form->setAttribute('action', URL . '/symphony/');
+			$this->Form->setAttribute('action', SYMPHONY_URL);
 
 			// Remove language selection: installation has already completed
 			$this->Body->removeChildAt(1);
@@ -183,15 +183,12 @@
 			if(isset($_POST['fields'])){
 				$fields = $_POST['fields'];
 
-				if(!$fields['database']['drop-tables']){
-					$fields['database']['drop-tables'] = 'no';
-				}
-
 				if(!$fields['database']['use-server-encoding']){
 					$fields['database']['use-server-encoding'] = 'no';
 				}
 			}
 			else{
+				// @todo Dunno if this is needed, can't we just use the default Config values?
 				$fields = array(
 
 					'docroot'					=> DOCROOT,
@@ -203,7 +200,6 @@
 						'password'				=> $conf['database']['password'],
 						'db'					=> $conf['database']['db'],
 						'tbl_prefix'			=> $conf['database']['tbl_prefix'],
-						'drop-tables'			=> 'yes',
 						'use-server-encoding'	=> 'yes',
 					),
 
@@ -226,7 +222,7 @@
 			}
 
 			/* -----------------------------------------------
-			 * Environment settings 
+			 * Environment settings
 			 * -----------------------------------------------
 			 */
 
@@ -245,7 +241,7 @@
 			$this->Form->appendChild($Environment);
 
 			/* -----------------------------------------------
-			 * Website & Locale settings 
+			 * Website & Locale settings
 			 * -----------------------------------------------
 			 */
 
@@ -285,7 +281,7 @@
 			$this->Form->appendChild($Environment);
 
 			/* -----------------------------------------------
-			 * Database settings 
+			 * Database settings
 			 * -----------------------------------------------
 			 */
 
@@ -338,16 +334,6 @@
 				$label, $Fieldset
 			);
 
-			// Advanced configuration: Table Prefix: Drop existing tables
-			$Fieldset->appendChild(Widget::label(
-				__('Drop existing tables'),
-				Widget::input(
-					'fields[database][drop-tables]',
-					'yes', 'checkbox',
-					$fields['database']['drop-tables'] == 'yes' ? array('checked' => 'checked') : array()
-				),
-			'option'));
-
 			// Advanced configuration: Table Prefix: Use UTF-8 at all times unless otherwise specified
 			$Fieldset->appendChild(Widget::label(
 				__('Always use %s encoding', array('<code>UTF-8</code>')),
@@ -366,7 +352,7 @@
 			$this->Form->appendChild($Database);
 
 			/* -----------------------------------------------
-			 * Permission settings 
+			 * Permission settings
 			 * -----------------------------------------------
 			 */
 
@@ -382,7 +368,7 @@
 			$this->Form->appendChild($Permissions);
 
 			/* -----------------------------------------------
-			 * User settings 
+			 * User settings
 			 * -----------------------------------------------
 			 */
 

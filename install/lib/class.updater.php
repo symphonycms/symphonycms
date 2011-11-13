@@ -8,23 +8,35 @@
 
 	Class Updater extends Installer {
 
-		public static function run(){
+		/**
+		 * This function returns an instance of the Updater
+		 * class. It is the only way to create a new Updater, as
+		 * it implements the Singleton interface
+		 *
+		 * @return Updater
+		 */
+		public static function instance(){
+			if(!(self::$_instance instanceof Updater)) {
+				self::$_instance = new Updater;
+			}
 
-			// Initialize everything that is needed
-			self::__initialize();
+			return self::$_instance;
+		}
 
+		public function run() {
 			// Initialize log
-			if(!is_dir(INSTALL . '/logs') && !General::realiseDirectory(INSTALL . '/logs', self::$_conf->get('write_mode', 'directory'))){
+			if(!is_dir(INSTALL . '/logs') && !General::realiseDirectory(INSTALL . '/logs', Symphony::Configuration()->get('write_mode', 'directory'))){
 				self::__render(new UpdaterPage('missing-log'));
 			}
 			else{
-				self::$_log = new Log(INSTALL . '/logs/update');
-				self::$_log->setArchive((self::$_conf->get('archive', 'log') == '1' ? true : false));
-				self::$_log->setMaxSize(intval(self::$_conf->get('maxsize', 'log')));
-				self::$_log->setDateTimeFormat(self::$_conf->get('date_format', 'region') . ' ' . self::$_conf->get('time_format', 'region'));
+				// @todo Again, are we going to have a consolidated log, or individual logs.
+				Symphony::Log()->setLogPath(INSTALL . '/logs/update');
+				Symphony::Log()->setArchive((Symphony::Configuration()->get('archive', 'log') == '1' ? true : false));
+				Symphony::Log()->setMaxSize(intval(Symphony::Configuration()->get('maxsize', 'log')));
+				Symphony::Log()->setDateTimeFormat(Symphony::Configuration()->get('date_format', 'region') . ' ' . Symphony::Configuration()->get('time_format', 'region'));
 
-				if(self::$_log->open(Log::APPEND, self::$_conf->get('write_mode', 'file')) == 1){
-					self::$_log->initialise('Symphony Update Log');
+				if(Symphony::Log()->open(Log::APPEND, Symphony::Configuration()->get('write_mode', 'file')) == 1){
+					Symphony::Log()->initialise('Symphony Update Log');
 				}
 			}
 
@@ -33,8 +45,8 @@
 				self::__render(new UpdaterPage('missing'));
 			}
 			else{
-				if(false && self::$_conf->get('version', 'symphony') && version_compare(VERSION, self::$_conf->get('version', 'symphony'), '=')){
-					self::$_log->pushToLog(
+				if(false && Symphony::Configuration()->get('version', 'symphony') && version_compare(VERSION, Symphony::Configuration()->get('version', 'symphony'), '=')){
+					Symphony::Log()->pushToLog(
 						sprintf('Updater - Already up-to-date'),
 						E_ERROR, true
 					);
@@ -43,9 +55,8 @@
 				}
 			}
 
-			
-
 			// Prepare updating
+			// @todo We need a way to pass the current installed version to the upgrade function.
 			$migrations = array();
 
 			foreach(new DirectoryIterator(INSTALL . '/migrations') as $m){
@@ -53,21 +64,16 @@
 					$version = str_replace('.php', '', $m->getFilename());
 
 					if(version_compare('2.0.0', $version, '<=')){
-
 						include_once($m->getPathname());
 						$classname = 'migration_' . str_replace('.', '', $version);
-
-						$object = new $classname();
-						$migrations[$version] = $object;
-
+						$migrations[$version] = new $classname();;
 					}
 					else break;
 				}
 			}
 
 			// Show start page
-			if(!isset($_POST['action']['update'])){
-
+			if(!isset($_POST['action']['update'])) {
 				$notes = array();
 
 				foreach($migrations as $version => $m){
@@ -104,16 +110,6 @@
 
 			}
 
-		}
-
-		protected static function __initialize(){
-			Administration::instance();
-
-			// Initialize configuration
-			self::$_conf = Symphony::Configuration();
-
-			// Initialize Database
-			self::$_db = Symphony::Database();
 		}
 
 	}

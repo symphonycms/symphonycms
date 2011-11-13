@@ -10,6 +10,7 @@
 	// System updater
 	require_once(INSTALL . '/lib/class.updater.php');
 
-	Updater::run();
+	$updater = Updater::instance();
+	$updater->run();
 
 	exit;

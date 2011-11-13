@@ -1,4 +1,4 @@
-### Symphony 2.2.x ###
+### Symphony 2.3.x ###
 Options +FollowSymlinks -Indexes
 
 <IfModule mod_rewrite.c>

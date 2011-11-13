@@ -1,40 +1,80 @@
 <?php
 
-	require_once(CORE . '/class.symphony.php');
 	require_once(CORE . '/class.administration.php');
-	require_once(CORE . '/class.errorhandler.php');
-	require_once(CORE . '/class.log.php');
-	require_once(CORE . '/class.configuration.php');
-	require_once(CORE . '/class.datetimeobj.php');
-
-	require_once(TOOLKIT . '/class.general.php');
 	require_once(TOOLKIT . '/class.lang.php');
-	require_once(TOOLKIT . '/class.mysql.php');
-	require_once(TOOLKIT . '/class.xmlelement.php');
-	require_once(TOOLKIT . '/class.widget.php');
 
 	require_once(INSTALL . '/lib/class.installerpage.php');
 
-	Class Installer {
+	Class Installer extends Administration {
 
-		protected static $_log;
+		/**
+		 * Override the default Symphony constructor to initialise the Log, Config
+		 * and Database objects for installation/update. This allows us to use the
+		 * normal accessors.
+		 */
+		protected function __construct() {
+			if(get_magic_quotes_gpc()) {
+				General::cleanArray($_SERVER);
+				General::cleanArray($_COOKIE);
+				General::cleanArray($_GET);
+				General::cleanArray($_POST);
+			}
 
-		protected static $_conf;
+			// Include the default Config for installation.
+			// @todo This file doesn't exist yet.
+			include('includes/config.php');
+			$this->initialiseConfiguration($settings);
 
-		protected static $_db;
-
-		public static function run(){
+			define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
+			define_safe('__SYM_TIME_FORMAT__', self::Configuration()->get('time_format', 'region'));
+			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
+			DateTimeObj::setSettings(self::Configuration()->get('region'));
 
 			// Initialize language
-			$lang = 'en';
-			if(!empty($_REQUEST['lang'])){
-				$lang = preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']);
-			}
+			$lang = !empty($_REQUEST['lang']) ? preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']) : 'en';
 			Lang::initialize();
 			Lang::set($lang, false);
 
+			// @todo We need to decide if we are going to have a dedicated Log for Install/Update
+			// or if we are just going to use the single /manifest/logs/main.
+			if(file_exists(ACTIVITY_LOG)) {
+				$this->initialiseLog();
+			}
+			else if(!is_dir(INSTALL . '/logs') && General::realiseDirectory(INSTALL . '/logs', self::Configuration()->get('write_mode', 'directory'))) {
+				$this->initialiseLog(INSTALL . '/logs/main');
+			}
+			$this->initialiseDatabase();
+
+			GenericExceptionHandler::initialise(self::Log());
+			GenericErrorHandler::initialise(self::Log());
+		}
+
+		/**
+		 * This function returns an instance of the Installer
+		 * class. It is the only way to create a new Installer, as
+		 * it implements the Singleton interface
+		 *
+		 * @return Installer
+		 */
+		public static function instance(){
+			if(!(self::$_instance instanceof Installer)) {
+				self::$_instance = new Installer;
+			}
+
+			return self::$_instance;
+		}
+
+		/**
+		 * Overrides the default `initialiseDatabase()` method
+		 * This allows us to still use the normal accessor
+		 */
+		public function initialiseDatabase() {
+			$this->setDatabase();
+		}
+
+		public function run() {
 			// Check if Symphony is already installed
-			if(false || file_exists(DOCROOT . '/manifest/config.php')){
+			if(false || file_exists(DOCROOT . '/manifest/config.php')) {
 				Administration::instance();
 
 				Symphony::Log()->pushToLog(
@@ -45,25 +85,21 @@
 				self::__render(new InstallerPage('existing'));
 			}
 
-			// Initialize everything that is needed
-			self::__initialize();
-
 			// Make sure a log file is available
-			if(true || is_null(self::$_log)){
+			if(true || is_null(Symphony::Log())) {
 				self::__render(new InstallerPage('missing-log'));
 			}
 
-			// Check essential requirements
+			// Check essential server requirements
 			$errors = self::__checkRequirements();
-
 			if(!empty($errors)){
-				self::$_log->pushToLog(
+				Symphony::Log()->pushToLog(
 					sprintf('Installer - Missing requirements.'),
 					E_ERROR, true
 				);
 
 				foreach($errors as $err){
-					self::$_log->pushToLog(
+					Symphony::Log()->pushToLog(
 						sprintf('Requirement - %s', $err['msg']),
 						E_ERROR, true
 					);
@@ -76,30 +112,29 @@
 			// the form values are preserved
 			if(!isset($_POST['fields']) && file_exists(INSTALL . '/includes/config_tmp.php')){
 				include_once(INSTALL . '/includes/config_tmp.php');
+				$this->initialiseConfiguration($settings);
 				$_POST['fields'] = $settings;
 			}
 
 			// Check for configuration errors and, if there are no errors, install Symphony!
 			if(isset($_REQUEST['action']['install']) && isset($_POST['fields'])) {
 				$errors = self::__checkConfiguration();
-
 				if(!empty($errors)){
-					General::writeFile(INSTALL . '/includes/config_tmp.php', General::array_to_string($_POST['fields']));
+					Symphony::Configuration()->write(INSTALL . '/includes/config_tmp.php');
 
-					self::$_log->pushToLog(
+					Symphony::Log()->pushToLog(
 						sprintf('Installer - Wrong configuration.'),
 						E_ERROR, true
 					);
 
 					foreach($errors as $err){
-						self::$_log->pushToLog(
+						Symphony::Log()->pushToLog(
 							sprintf('Configuration - %s', $err['msg']),
 							E_ERROR, true
 						);
 					}
 				}
 				else{
-
 					// At this point form values don't need to be preserved anymore
 					General::deleteFile(INSTALL . '/includes/config_tmp.php');
 
@@ -114,48 +149,21 @@
 			// Display the Installation page
 			self::__render(new InstallerPage('configuration', array(
 				'errors' => $errors,
-				'default-config' => self::$_conf->get()
+				'default-config' => Symphony::Configuration()->get()
 			)));
 		}
 
-		protected static function __initialize(){
-
-			// Initialize configuration
-			include_once(INSTALL . '/includes/defaultconfig.php'); // $conf
-
-			self::$_conf = new Configuration(true);
-			self::$_conf->setArray($conf);
-
-			// Initialize log
-			if(!is_dir(INSTALL . '/logs') && !General::realiseDirectory(INSTALL . '/logs', $conf['directory']['write_mode'])){
-				self::$_log = null;
-			}
-			else{
-				self::$_log = new Log(INSTALL . '/logs/install');
-				self::$_log->setArchive((self::$_conf->get('archive', 'log') == '1' ? true : false));
-				self::$_log->setMaxSize(intval(self::$_conf->get('maxsize', 'log')));
-				self::$_log->setDateTimeFormat(self::$_conf->get('date_format', 'region') . ' ' . self::$_conf->get('time_format', 'region'));
-
-				if(self::$_log->open(Log::APPEND, self::$_conf->get('write_mode', 'file')) == 1){
-					self::$_log->initialise('Symphony Install Log');
-				}
-			}
-
-			// Initialize Database
-			self::$_db = new MySQL;
-
-		}
-
+		/**
+		 * This function checks the server can support a Symphony installation.
+		 * It checks that PHP is 5.2+, MySQL, Zlib, LibXML, XSLT modules are enabled
+		 * and a `install.sql` file exists.
+		 * If any of these requirements fail the installation will not proceed.
+		 *
+		 * @return array
+		 *  An associative array of errors, with `msg` and `details` keys
+		 */
 		private static function __checkRequirements(){
 			$errors = array();
-
-			// Check for PHP 5.2+
-			if(false || version_compare(phpversion(), '5.2', '<=')){
-				$errors[] = array(
-					'msg' => __('PHP Version is not correct'),
-					'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.', array('<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.2</code>', '<code>' . phpversion() . '</code>'))
-				);
-			}
 
 			// Check for PHP 5.2+
 			if(false || version_compare(phpversion(), '5.2', '<=')){
@@ -185,7 +193,7 @@
 			if(!extension_loaded('zlib')){
 				$errors[] = array(
 					'msg' => __('ZLib extension not present'),
-					'details' => __('Symphony needs the ZLib compression library to decompress data retrieved from the Symphony support server.')
+					'details' => __('Symphony uses the ZLib compression library for log rotation.')
 				);
 			}
 
@@ -208,6 +216,15 @@
 			return $errors;
 		}
 
+		/**
+		 * This function checks the current Configuration (which is the values entered
+		 * by the user on the installation form) to ensure that `/symphony` and `/workspace`
+		 * folders exist and are writable and that the Database credentials are correct.
+		 * Once those initial checks pass, the rest of the form values are validated.
+		 *
+		 * @return
+		 *  An associative array of errors if something went wrong, otherwise an empty array.
+		 */
 		private static function __checkConfiguration(){
 			$errors = array();
 			$fields = $_POST['fields'];
@@ -220,8 +237,7 @@
 				);
 			}
 
-			else{
-
+			else {
 				// Cannot write to root folder.
 				if(!is_writable(rtrim($fields['docroot'], '/'))){
 					$errors['no-write-permission-root'] = array(
@@ -237,12 +253,11 @@
 						'details' => __('Symphony does not have write permission to the existing %1$s directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive %2$s command.', array('<code>/workspace</code>', '<code>chmod -R</code>'))
 					);
 				}
-
 			}
 
 			// Testing the database connection
 			try{
-				self::$_db->connect(
+				Symphony::Database()->connect(
 					$fields['database']['host'],
 					$fields['database']['user'],
 					$fields['database']['password'],
@@ -257,13 +272,11 @@
 			}
 
 			try{
-
 				// Looking for the given database name
-				self::$_db->select($fields['database']['db']);
+				Symphony::Database()->select($fields['database']['db']);
 
 				// Incorrect MySQL version
-				$version = self::$_db->fetchVar('version', 0, "SELECT VERSION() AS `version`;");
-
+				$version = Symphony::Database()->fetchVar('version', 0, "SELECT VERSION() AS `version`;");
 				if(version_compare($version, '5.0', '<')){
 					$errors['database-incorrect-version']  = array(
 						'msg' => 'MySQL Version is not correct. '. $version . ' detected.',
@@ -271,10 +284,9 @@
 					);
 				}
 
-				else{
-
+				else {
 					// Existing table prefix
-					$tables = self::$_db->fetch(sprintf(
+					$tables = Symphony::Database()->fetch(sprintf(
 						"SHOW TABLES FROM `%s` LIKE '%s'",
 						mysql_escape_string($fields['database']['db']),
 						mysql_escape_string($fields['database']['tbl_prefix']) . '%'
@@ -286,9 +298,7 @@
 							'details' =>  __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.', array('<code>' . $fields['database']['tbl_prefix'] . '</code>'))
 						);
 					}
-
 				}
-
 			}
 			catch(DatabaseException $e){
 					$errors['unknown-database']  = array(
@@ -348,39 +358,19 @@
 			return $errors;
 		}
 
+		/**
+		 * If something went wrong, the `__abort` function will write an entry to the Log
+		 * file and display the failure page to the user.
+		 */
 		private static function __abort($message, $start){
-			self::$_log->pushToLog($message, E_ERROR, true);
+			Symphony::Log()->pushToLog($message, E_ERROR, true);
 
-			self::$_log->writeToLog(        '============================================', true);
-			self::$_log->writeToLog(sprintf('INSTALLATION ABORTED: Execution Time - %d sec (%s)', 
+			Symphony::Log()->writeToLog(        '============================================', true);
+			Symphony::Log()->writeToLog(sprintf('INSTALLATION ABORTED: Execution Time - %d sec (%s)',
 				max(1, time() - $start),
 				date('d.m.y H:i:s')
 			), true);
-			self::$_log->writeToLog(        '============================================' . PHP_EOL . PHP_EOL . PHP_EOL, true);
-
-#			if($fields['database']['drop-tables'] == 'yes'){
-
-#				// MySQL: Drop existing tables
-#				self::$_log->pushToLog('MYSQL: Drop existing tables...', E_NOTICE, true, true);
-
-#				try{
-#					$tables = self::$_db->fetch(sprintf(
-#						"SHOW TABLES FROM `%s` LIKE '%s'",
-#						mysql_escape_string($fields['database']['name']),
-#						mysql_escape_string($fields['database']['tbl_prefix']) . '%'
-#					));
-
-#					foreach($tables as $table){
-#						$_db->query('DROP TABLE IF EXISTS ' . $table);
-#					}
-#				}
-#				catch(DatabaseException $e){
-#					$error = self::$_db->getLastError();
-#					self::__abort(
-#						'There was an error while trying to removing tables from the database. MySQL returned: ' . $error['num'] . ': ' . $error['msg'],
-#					$start);
-#				}
-#			}
+			Symphony::Log()->writeToLog(        '============================================' . PHP_EOL . PHP_EOL . PHP_EOL, true);
 
 			self::__render(new InstallerPage('failure'));
 		}
@@ -390,15 +380,17 @@
 			$errors = array();
 			$start = time();
 
-			self::$_log->writeToLog(PHP_EOL . '============================================', true);
-			self::$_log->writeToLog(          'INSTALLATION PROCESS STARTED (' . DateTimeObj::get('c') . ')', true);
-			self::$_log->writeToLog(          '============================================', true);
+			Symphony::Log()->writeToLog(PHP_EOL . '============================================', true);
+			Symphony::Log()->writeToLog(          'INSTALLATION PROCESS STARTED (' . DateTimeObj::get('c') . ')', true);
+			Symphony::Log()->writeToLog(          '============================================', true);
 
 			// MySQL: Establishing connection
-			self::$_log->pushToLog('MYSQL: Establishing Connection', E_NOTICE, true, true);
+			// @todo This logic (until 403) is already done in checkConfiguration. Do we really need
+			// to repeat it?
+			Symphony::Log()->pushToLog('MYSQL: Establishing Connection', E_NOTICE, true, true);
 
 			try{
-				self::$_db->connect(
+				Symphony::Database()->connect(
 					$fields['database']['host'],
 					$fields['database']['user'],
 					$fields['database']['password'],
@@ -412,10 +404,10 @@
 			}
 
 			// MySQL: Selecting database
-			self::$_log->pushToLog('MYSQL: Selecting Database ‘' . $fields['database']['db'] . '’...', E_NOTICE, true, true);
+			Symphony::Log()->pushToLog('MYSQL: Selecting Database ‘' . $fields['database']['db'] . '’...', E_NOTICE, true, true);
 
 			try{
-				self::$_db->select($fields['database']['db']);
+				Symphony::Database()->select($fields['database']['db']);
 			}
 			catch(DatabaseException $e){
 				self::__abort(
@@ -424,38 +416,38 @@
 			}
 
 			// MySQL: Setting prefix & character encoding
-			self::$_db->setPrefix($fields['database']['tbl_prefix']);
-			self::$_db->setCharacterEncoding();
-			self::$_db->setCharacterSet();
+			Symphony::Database()->setPrefix($fields['database']['tbl_prefix']);
+			Symphony::Database()->setCharacterEncoding();
+			Symphony::Database()->setCharacterSet();
 
 			// MySQL: Importing schema
-			self::$_log->pushToLog('MYSQL: Importing Table Schema', E_NOTICE, true, true);
+			Symphony::Log()->pushToLog('MYSQL: Importing Table Schema', E_NOTICE, true, true);
 
 			try{
-				self::$_db->import(
+				Symphony::Database()->import(
 					file_get_contents(INSTALL . '/includes/install.sql'),
 					($fields['database']['use-server-encoding'] != 'yes' ? true : false),
 					true
 				);
 			}
 			catch(DatabaseException $e){
-				$error = self::$_db->getLastError();
+				$error = Symphony::Database()->getLastError();
 				self::__abort(
 					'There was an error while trying to import data to the database. MySQL returned: ' . $error['num'] . ': ' . $error['msg'],
 				$start);
 			}
 
 			// MySQL: Creating default author
-			self::$_log->pushToLog('MYSQL: Creating Default Author', E_NOTICE, true, true);
+			Symphony::Log()->pushToLog('MYSQL: Creating Default Author', E_NOTICE, true, true);
 
 			try{
-				self::$_db->insert(array(
+				Symphony::Database()->insert(array(
 					'id' 					=> 1,
-					'username' 				=> self::$_db->cleanValue($fields['user']['username']),
-					'password' 				=> sha1(self::$_db->cleanValue($fields['user']['password'])),
-					'first_name' 			=> self::$_db->cleanValue($fields['user']['firstname']),
-					'last_name' 			=> self::$_db->cleanValue($fields['user']['lastname']),
-					'email' 				=> self::$_db->cleanValue($fields['user']['email']),
+					'username' 				=> Symphony::Database()->cleanValue($fields['user']['username']),
+					'password' 				=> sha1(Symphony::Database()->cleanValue($fields['user']['password'])),
+					'first_name' 			=> Symphony::Database()->cleanValue($fields['user']['firstname']),
+					'last_name' 			=> Symphony::Database()->cleanValue($fields['user']['lastname']),
+					'email' 				=> Symphony::Database()->cleanValue($fields['user']['email']),
 					'last_seen' 			=> NULL,
 					'user_type' 			=> 'developer',
 					'primary' 				=> 'yes',
@@ -464,14 +456,14 @@
 				), 'tbl_authors');
 			}
 			catch(DatabaseException $e){
-				$error = self::$_db->getLastError();
+				$error = Symphony::Database()->getLastError();
 				self::__abort(
 					'There was an error while trying create the default author. MySQL returned: ' . $error['num'] . ': ' . $error['msg'],
 				$start);
 			}
 
 			// Configuration: Populating array
-			$conf = self::$_conf->get();
+			$conf = Symphony::Configuration()->get();
 
 			foreach($conf as $group => $settings){
 				foreach($settings as $key => $value){
@@ -484,28 +476,28 @@
 			$conf['docroot'] = rtrim($conf['docroot'], '/');
 
 			// Create manifest folder structure
-			self::$_log->pushToLog('WRITING: Creating ‘manifest’ folder (/manifest)', E_NOTICE, true, true);
+			Symphony::Log()->pushToLog('WRITING: Creating ‘manifest’ folder (/manifest)', E_NOTICE, true, true);
 			if(!General::realiseDirectory($conf['docroot'] . '/manifest', $conf['directory']['write_mode'])){
 				self::__abort(
 					'Could not create ‘manifest’ directory. Check permission on the root folder.',
 				$start);
 			}
 
-			self::$_log->pushToLog('WRITING: Creating ‘logs’ folder (/manifest/logs)', E_NOTICE, true, true);
+			Symphony::Log()->pushToLog('WRITING: Creating ‘logs’ folder (/manifest/logs)', E_NOTICE, true, true);
 			if(!General::realiseDirectory($conf['docroot'] . '/manifest/logs', $conf['directory']['write_mode'])){
 				self::__abort(
 					'Could not create ‘logs’ directory. Check permission on /manifest.',
 				$start);
 			}
 
-			self::$_log->pushToLog('WRITING: Creating ‘cache’ folder (/manifest/cache)', E_NOTICE, true, true);
+			Symphony::Log()->pushToLog('WRITING: Creating ‘cache’ folder (/manifest/cache)', E_NOTICE, true, true);
 			if(!General::realiseDirectory($conf['docroot'] . '/manifest/cache', $conf['directory']['write_mode'])){
 				self::__abort(
 					'Could not create ‘cache’ directory. Check permission on /manifest.',
 				$start);
 			}
 
-			self::$_log->pushToLog('WRITING: Creating ‘tmp’ folder (/manifest/tmp)', E_NOTICE, true, true);
+			Symphony::Log()->pushToLog('WRITING: Creating ‘tmp’ folder (/manifest/tmp)', E_NOTICE, true, true);
 			if(!General::realiseDirectory($conf['docroot'] . '/manifest/tmp', $conf['directory']['write_mode'])){
 				self::__abort(
 					'Could not create ‘tmp’ directory. Check permission on /manifest.',
@@ -513,18 +505,18 @@
 			}
 
 			// Writing configuration file
-			self::$_log->pushToLog('WRITING: Configuration File', E_NOTICE, true, true);
+			Symphony::Log()->pushToLog('WRITING: Configuration File', E_NOTICE, true, true);
 
-			self::$_conf->setArray($conf);
+			Symphony::Configuration()->setArray($conf);
 
-			if(!self::$_conf->write($conf['file']['write_mode'])){
+			if(!Symphony::Configuration()->write($conf['file']['write_mode'])){
 				self::__abort(
 					'Could not create config file ‘' . CONFIG . '’. Check permission on /manifest.',
 				$start);
 			}
 
 			// Writing htaccess file
-			self::$_log->pushToLog('CONFIGURING: Frontend', E_NOTICE, true, true);
+			Symphony::Log()->pushToLog('CONFIGURING: Frontend', E_NOTICE, true, true);
 
 			$rewrite_base = preg_replace('/\/install$/i', NULL, dirname($_SERVER['PHP_SELF']));
 			$htaccess = str_replace(
@@ -538,73 +530,70 @@
 				$start);
 			}
 
+			// Writing /workspace folder
 			if(!is_dir($fields['docroot'] . '/workspace')){
-
 				// Create workspace folder structure
-				self::$_log->pushToLog('WRITING: Creating ‘workspace’ folder (/workspace)', E_NOTICE, true, true);
+				Symphony::Log()->pushToLog('WRITING: Creating ‘workspace’ folder (/workspace)', E_NOTICE, true, true);
 				if(!General::realiseDirectory($conf['docroot'] . '/workspace', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace’ directory. Check permission on the root folder.',
 					$start);
 				}
 
-				self::$_log->pushToLog('WRITING: Creating ‘data-sources’ folder (/workspace/data-sources)', E_NOTICE, true, true);
+				Symphony::Log()->pushToLog('WRITING: Creating ‘data-sources’ folder (/workspace/data-sources)', E_NOTICE, true, true);
 				if(!General::realiseDirectory($conf['docroot'] . '/workspace/data-sources', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace/data-sources’ directory. Check permission on the root folder.',
 					$start);
 				}
 
-				self::$_log->pushToLog('WRITING: Creating ‘events’ folder (/workspace/events)', E_NOTICE, true, true);
+				Symphony::Log()->pushToLog('WRITING: Creating ‘events’ folder (/workspace/events)', E_NOTICE, true, true);
 				if(!General::realiseDirectory($conf['docroot'] . '/workspace/events', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace/events’ directory. Check permission on the root folder.',
 					$start);
 				}
 
-				self::$_log->pushToLog('WRITING: Creating ‘pages’ folder (/workspace/pages)', E_NOTICE, true, true);
+				Symphony::Log()->pushToLog('WRITING: Creating ‘pages’ folder (/workspace/pages)', E_NOTICE, true, true);
 				if(!General::realiseDirectory($conf['docroot'] . '/workspace/pages', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace/pages’ directory. Check permission on the root folder.',
 					$start);
 				}
 
-				self::$_log->pushToLog('WRITING: Creating ‘utilities’ folder (/workspace/utilities)', E_NOTICE, true, true);
+				Symphony::Log()->pushToLog('WRITING: Creating ‘utilities’ folder (/workspace/utilities)', E_NOTICE, true, true);
 				if(!General::realiseDirectory($conf['docroot'] . '/workspace/utilities', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace/utilities’ directory. Check permission on the root folder.',
 					$start);
 				}
-
 			}
 
 			else {
-
-				self::$_log->pushToLog('An existing ‘workspace’ directory was found at this location. Symphony will use this workspace.', E_NOTICE, true, true);
+				Symphony::Log()->pushToLog('An existing ‘workspace’ directory was found at this location. Symphony will use this workspace.', E_NOTICE, true, true);
 
 				// MySQL: Importing workspace data
-				self::$_log->pushToLog('MYSQL: Importing Workspace Data...', E_NOTICE, true, true);
+				Symphony::Log()->pushToLog('MYSQL: Importing Workspace Data...', E_NOTICE, true, true);
 
 				try{
-					self::$_db->import(
+					Symphony::Database()->import(
 						file_get_contents(DOCROOT . '/workspace/install.sql'),
 						($fields['database']['use-server-encoding'] != 'yes' ? true : false),
 						true
 					);
 				}
 				catch(DatabaseException $e){
-					$error = self::$_db->getLastError();
+					$error = Symphony::Database()->getLastError();
 					self::__abort(
 						'There was an error while trying to import data to the database. MySQL returned: ' . $error['num'] . ': ' . $error['msg'],
 					$start);
 				}
-
 			}
 
-			if(!is_dir($fields['docroot'] . '/extensions')){
-
+			// Write extensions folder
+			if(!is_dir($fields['docroot'] . '/extensions')) {
 				// Create extensions folder
-				self::$_log->pushToLog('WRITING: Creating ‘extensions’ folder (/extensions)', E_NOTICE, true, true);
+				Symphony::Log()->pushToLog('WRITING: Creating ‘extensions’ folder (/extensions)', E_NOTICE, true, true);
 				if(!General::realiseDirectory($conf['docroot'] . '/extensions', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘extension’ directory. Check permission on the root folder.',
@@ -612,61 +601,55 @@
 				}
 			}
 
-#			// Loading existing extensions
-#			self::$_log->pushToLog('CONFIGURING: Installing existing extensions', E_NOTICE, true, true);
+			// Install existing extensions
+			Symphony::Log()->pushToLog('CONFIGURING: Installing existing extensions', E_NOTICE, true, true);
+			$disabled_extensions = array();
+			foreach(new DirectoryIterator(EXTENSIONS) as $e) {
+				if(is_dir($e->getPathname())){
+					$handle = $e->getPathname();
 
-#			$disabled_extensions = array();
+					// @todo Need to test this, I think we can statically invoke this at the moment.
+					if(!ExtensionManager::enable($handle)){
+						$disabled_extensions[] = $handle;
+						Symphony::Log()->pushToLog('Could not enable the extension ‘' . $handle . '’.', E_NOTICE, true, true);
+					}
+				}
+			}
 
-#			foreach(new DirectoryIterator(EXTENSIONS) as $e) {
-#				if(is_dir($e->getPathname())){
-#					$handle = $e->getPathname();
-#					$extension = Administration::instance()->ExtensionManager()->create($handle);
+			// Loading default language
+			if(isset($_REQUEST['lang']) && $_REQUEST['lang'] != 'en'){
+				Symphony::Log()->pushToLog('CONFIGURING: Default language', E_NOTICE, true, true);
 
-#					if(!Administration::instance()->ExtensionManager()->enable($handle)){
-#						$disabled_extensions[] = $handle;
-#						self::$_log->pushToLog('Could not enable the extension ‘' . $handle . '’.', E_NOTICE, true, true);
-#					}
-#				}
-#			}
+				$language = Lang::Languages();
+				$language = $language[$_REQUEST['lang']];
 
-#			// Loading default language
-#			if(isset($_REQUEST['lang']) && $_REQUEST['lang'] != 'en'){
-#				self::$_log->pushToLog('CONFIGURING: Default language', E_NOTICE, true, true);
-
-#				$language = Lang::Languages();
-#				$language = $language[$_REQUEST['lang']];
-
-#				// Is the language extension enabled?
-#				if(in_array('lang_' . $language['handle'], Administration::instance()->ExtensionManager()->listInstalledHandles())){
-#					self::$_conf->set('lang', $_REQUEST['lang'], 'symphony');
-#					if(!self::$_conf->write($conf['file']['write_mode'])){
-#						self::$_log->pushToLog('Could not write default language ‘' . $language['name'] . '’ to config file.', E_NOTICE, true, true);
-#					}
-#				}
-#				else{
-#					self::$_log->pushToLog('Could not enable the desired language ‘' . $language['name'] . '’.', E_NOTICE, true, true);
-#				}
-#			}
+				// Is the language extension enabled?
+				if(in_array('lang_' . $language['handle'], ExtensionManager::listInstalledHandles())){
+					Symphony::Configuration()->set('lang', $_REQUEST['lang'], 'symphony');
+					if(!Symphony::Configuration()->write($conf['file']['write_mode'])){
+						Symphony::Log()->pushToLog('Could not write default language ‘' . $language['name'] . '’ to config file.', E_NOTICE, true, true);
+					}
+				}
+				else{
+					Symphony::Log()->pushToLog('Could not enable the desired language ‘' . $language['name'] . '’.', E_NOTICE, true, true);
+				}
+			}
 
 			// Installation completed. Woo-hoo!
-			self::$_log->writeToLog(        '============================================', true);
-			self::$_log->writeToLog(sprintf('INSTALLATION COMPLETED: Execution Time - %d sec (%s)',
+			Symphony::Log()->writeToLog(        '============================================', true);
+			Symphony::Log()->writeToLog(sprintf('INSTALLATION COMPLETED: Execution Time - %d sec (%s)',
 				max(1, time() - $start),
 				date('d.m.y H:i:s')
 			), true);
-			self::$_log->writeToLog(        '============================================' . PHP_EOL . PHP_EOL . PHP_EOL, true);
+			Symphony::Log()->writeToLog(        '============================================' . PHP_EOL . PHP_EOL . PHP_EOL, true);
 
-			return array();
-#			return $disabled_extensions;
+			return $disabled_extensions;
 		}
 
 		protected static function __render(InstallerPage $page) {
-#			$page->initialize();
 			$output = $page->generate();
 
 			header('Content-Type: text/html; charset=utf-8');
-#			header(sprintf('Content-Length: %d', strlen($output)));
-
 			echo $output;
 			exit;
 		}

@@ -170,14 +170,29 @@
 			return $string;
 		}
 
-		public function write($permissions = NULL){
+		/**
+		 * Function will write the current Configuration object to
+		 * a specified `$file` with the given `$permissions`.
+		 *
+		 * @param string $file
+		 *  the path of the file to write.
+		 * @param integer|null $permissions (optional)
+		 *  the permissions as an octal number to set set on the resulting file.
+		 *  If this is not provided it will use the permissions defined in [`write_mode`][`file`]
+		 * @return boolean
+		 */
+		public function write($file = null, $permissions = null){
 			if(is_null($permissions) && isset($this->_properties['write_mode']['file'])){
 				$permissions = $this->_properties['write_mode']['file'];
 			}
 
+			if(is_null($file)) {
+				$file = CONFIG;
+			}
+
 			$string = "<?php\n\t\$settings = " . (string)$this . ";\n";
 
-			return General::writeFile(CONFIG, $string, $permissions);
+			return General::writeFile($file, $string, $permissions);
 		}
 
 	}

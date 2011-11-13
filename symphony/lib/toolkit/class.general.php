@@ -849,39 +849,6 @@
 		}
 
 		/**
-		 * Given a two-dimensional or a simple array, this function returns a
-		 * string that, if eval'd, gives the array itself. This function is useful
-		 * in conjunction with `writeFile()` to save arrays to the file system for
-		 * future consumption.
-		 *
-		 * @since Symphony 2.3
-		 * @see toolkit.General#writeFile()
-		 * @param array $data
-		 *	the array to save as string.
-		 * @return string
-		 *	the PHP evaluable representation of the array passed as parameter.
-		 */
-		public static function array_to_string(array $data) {
-			$string = "<?php\n\t\$settings = array(";
-
-			foreach($data as $group => $settings){
-				if(is_array($settings)){
-					$string .= PHP_EOL . "\t\t'$group' => array(";
-					foreach($settings as $key => $value){
-						$string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'null').",";
-					}
-					$string .= PHP_EOL . "\t\t),";
-				}
-				else{
-					$string .= PHP_EOL . "\t\t'$group' => '$settings',";
-				}
-			}
-			$string .= PHP_EOL . "\t);\n\n";
-
-			return $string;
-		}
-
-		/**
 		 * Create a file at the input path with the (optional) input permissions
 		 * with the input content. This function will ignore errors in opening,
 		 * writing, closing and changing the permissions of the resulting file.
