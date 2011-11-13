@@ -37,7 +37,7 @@
 	}
 
 	// Defines
-	define('kVERSION', '2.2.4');
+	define('kVERSION', '2.2.5');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
 	define('DOCROOT', rtrim(dirname(__FILE__), '\\/'));
@@ -195,7 +195,7 @@
 		$conf['database']['character_set'] = 'utf8';
 		$conf['database']['character_encoding'] = 'utf8';
 		$conf['database']['runtime_character_set_alter'] = '1';
-		$conf['database']['query_caching'] = 'default';
+		$conf['database']['query_caching'] = 'on';
 		$conf['public']['display_event_xml_in_source'] = 'yes';
 		$conf['region']['time_format'] = 'H:i';
 		$conf['region']['date_format'] = 'd F Y';

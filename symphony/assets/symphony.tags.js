@@ -67,7 +67,7 @@
 
 			// Multiple
 			else {
-				var exp = new RegExp('^' + tag + '$', 'i'),
+				var exp = new RegExp('^' + tag.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") + '$', 'i'),
 					tags = value.split(/,\s*/),
 					removed = false;
 

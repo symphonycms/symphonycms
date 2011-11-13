@@ -419,7 +419,7 @@
 	$success = true;
 
 	if (in_array('expect-multiple', $this->eParamFILTERS)) {
-		if (is_array($post['fields']) && isset($post['fields'][0])) {
+		if (is_array($post['fields'])) {
 			foreach ($post['fields'] as $position => $fields) {
 				if (isset($post['id'][$position]) && is_numeric($post['id'][$position])) {
 					$entry_id = $post['id'][$position];

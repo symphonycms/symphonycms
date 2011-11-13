@@ -286,8 +286,10 @@
 		}
 
 		/**
-		 * Test whether this field requires grouping. This default implementation
-		 * returns false.
+		 * Test whether this field requires grouping. If this function returns true
+		 * SQL statements generated in the `EntryManager` will include the `DISTINCT` keyword
+		 * to only return a single row for an entry regardless of how many 'matches' it
+		 * might have. This default implementation returns false.
 		 *
 		 * @return boolean
 		 *	true if this field requires grouping, false otherwise.
@@ -1089,7 +1091,7 @@
 			$fields['element_name'] = Lang::createHandle($this->get('label'));
 			if(is_numeric($fields['element_name']{0})) $fields['element_name'] = 'field-' . $fields['element_name'];
 
-			$fields['label'] = $this->get('label');
+			$fields['label'] = General::sanitize($this->get('label'));
 			$fields['parent_section'] = $this->get('parent_section');
 			$fields['location'] = $this->get('location');
 			$fields['required'] = $this->get('required');

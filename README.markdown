@@ -1,15 +1,15 @@
 # Symphony 2 #
 
-- Version: 2.2.4
-- Date: October 22nd, 2011
-- Release Notes: <http://symphony-cms.com/download/releases/version/2.2.4/>
-- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.2.4>
+- Version: 2.2.5
+- Date: November 13th, 2011
+- Release Notes: <http://symphony-cms.com/download/releases/version/2.2.5/>
+- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.2.5>
 
 
 ## Overview
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as
-its core technologies. This repository represents version "2.2.4" and is considered stable.
+its core technologies. This repository represents version "2.2.5" and is considered stable.
 
 Visit the forum at <http://symphony-cms.com/discuss/>
 
@@ -23,19 +23,19 @@ Visit the forum at <http://symphony-cms.com/discuss/>
 
 ### A note for Windows developers
 
-While Windows is not officially supported for production, we understand many 
+While Windows is not officially supported for production, we understand many
 developers use WAMP for Symphony development before deploying to a production
-server. The Symphony team recommends that while using WAMP, developers use 
+server. The Symphony team recommends that while using WAMP, developers use
 the latest PHP 5.3.x version during development to minimise any potential issues.
-PHP5.3 provides numerous fixes and improvements to help minimise and standardise 
+PHP5.3 provides numerous fixes and improvements to help minimise and standardise
 the result of several functions that behave slightly differently depending on the OS
 
 ## Updating From an Older Version
 
 #### Versions Prior to 2.2
 
-2.2 introduces numerous improvements that may affect extension compatibility. 
-Before updating, be sure to consult the [extension compatibility table](http://symphony-cms.com/download/extensions/compatibility/) to 
+2.2 introduces numerous improvements that may affect extension compatibility.
+Before updating, be sure to consult the [extension compatibility table](http://symphony-cms.com/download/extensions/compatibility/) to
 verify that the extensions you're using have all been updated for Symphony 2.2.
 
 #### Versions Prior to 2.1
@@ -181,7 +181,7 @@ details for establishing a database connection and about your server environment
 
 3. Remove installer files (unless you're fine with revealing all your trade secrets):
 
-	`rm install.php install.sql workspace/install.sql update.php`
+	`rm install.php install.sql workspace/install.sql update.php install-log.txt`
 
 4. Dance like it's 2012!
 
@@ -192,4 +192,4 @@ Thanks to @DavidOliver for these quick scripts.
 To recursively chmod directories only:
 	`find /your/site/root -type d -exec chmod 755 {} \;`
 To recursively chmod files only:
- 	`find /your/site/root -type f -exec chmod 644 {} \;`. 
+ 	`find /your/site/root -type f -exec chmod 644 {} \;`.
