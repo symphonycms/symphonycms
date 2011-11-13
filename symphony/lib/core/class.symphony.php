@@ -192,7 +192,7 @@
 		 * @param string $filename (optional)
 		 *  The file to write the log to, if omitted this will default to `ACTIVITY_LOG`
 		 */
-		public function initialiseLog($filename = null){
+		public function initialiseLog($filename = null) {
 			if(self::$Log instanceof Log && self::$Log->getLogPath() == $filename) return true;
 
 			if(is_null($filename)) $filename = ACTIVITY_LOG;

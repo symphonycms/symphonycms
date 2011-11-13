@@ -40,13 +40,13 @@
 			if(file_exists(ACTIVITY_LOG)) {
 				$this->initialiseLog();
 			}
-			else if(!is_dir(INSTALL . '/logs') && General::realiseDirectory(INSTALL . '/logs', self::Configuration()->get('write_mode', 'directory'))) {
+			else if(true || !is_dir(INSTALL . '/logs') && General::realiseDirectory(INSTALL . '/logs', self::Configuration()->get('write_mode', 'directory'))) {
 				$this->initialiseLog(INSTALL . '/logs/main');
 			}
 			$this->initialiseDatabase();
 
-			GenericExceptionHandler::initialise(self::Log());
-			GenericErrorHandler::initialise(self::Log());
+			GenericExceptionHandler::initialise(Symphony::Log());
+			GenericErrorHandler::initialise(Symphony::Log());
 		}
 
 		/**
@@ -86,7 +86,7 @@
 			}
 
 			// Make sure a log file is available
-			if(true || is_null(Symphony::Log())) {
+			if(is_null(Symphony::Log())) {
 				self::__render(new InstallerPage('missing-log'));
 			}
 
@@ -292,7 +292,7 @@
 						mysql_escape_string($fields['database']['tbl_prefix']) . '%'
 					));
 
-					if(is_array($tables) && !empty($tables) && $fields['database']['drop-tables'] == 'no'){
+					if(is_array($tables) && !empty($tables)) {
 						$errors['database-table-clash']  = array(
 							'msg' => 'Database table prefix clash with ‘' . $fields['database']['db'] . '’',
 							'details' =>  __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.', array('<code>' . $fields['database']['tbl_prefix'] . '</code>'))

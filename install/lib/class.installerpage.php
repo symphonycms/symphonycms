@@ -19,6 +19,9 @@
 
 			// If the user is on a page he shouldn't see
 			// redirect him to the correct page
+			// @todo This causes issues when errors occur as the redirect will lose
+			// the `$params` state. Why are we redirecting? What is the purpose of the
+			// steps and how do they improve on what we had in 2.2.x?
 			if($template !== $_REQUEST['step']){
 				redirect(sprintf('?lang=%s&step=%s',
 					(isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en'),
@@ -190,9 +193,6 @@
 			else{
 				// @todo Dunno if this is needed, can't we just use the default Config values?
 				$fields = array(
-
-					'docroot'					=> DOCROOT,
-
 					'database' => array(
 						'host'					=> $conf['database']['host'],
 						'port'					=> $conf['database']['port'],
@@ -217,7 +217,6 @@
 						'time_format'			=> $conf['region']['time_format'],
 						'datetime_separator'	=> $conf['region']['datetime_separator'],
 					)
-
 				);
 			}
 
@@ -230,7 +229,7 @@
 			$Environment->appendChild(new XMLElement('legend', __('Environment Settings')));
 			$Environment->appendChild(new XMLElement('p', __('Symphony is ready to be installed at the following location.')));
 
-			$label = Widget::label(__('Root Path'), Widget::input('fields[docroot]', $fields['docroot']));
+			$label = Widget::label(__('Root Path'), Widget::input('fields[docroot]', getcwd_safe()));
 			$Environment->appendChild($label);
 
 			$this->__appendError(
