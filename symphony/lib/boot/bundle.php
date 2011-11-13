@@ -32,8 +32,8 @@
 
 	if (!file_exists(CONFIG)) {
 
-		if (file_exists(DOCROOT . '/install.php')) {
-			header(sprintf('Location: %s/install.php', URL));
+		if (file_exists(DOCROOT . '/install/install.php')) {
+			header(sprintf('Location: %s/install/install.php', URL));
 			exit();
 		}
 
