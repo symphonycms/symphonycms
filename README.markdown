@@ -1,15 +1,15 @@
 # Symphony 2 #
 
-- Version: 2.2.5RC3
-- Date: November 11th, 2011
+- Version: 2.2.5
+- Date: November 13th, 2011
 - Release Notes: <http://symphony-cms.com/download/releases/version/2.2.5/>
-- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.2.5RC3>
+- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.2.5>
 
 
 ## Overview
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as
-its core technologies. This repository represents version "2.2.5RC3" and is considered stable.
+its core technologies. This repository represents version "2.2.5" and is considered stable.
 
 Visit the forum at <http://symphony-cms.com/discuss/>
 
