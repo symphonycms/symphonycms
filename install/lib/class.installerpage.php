@@ -17,11 +17,7 @@
 		public function __construct($template, $params = array()) {
 			parent::__construct();
 
-			// If the user is on a page he shouldn't see
-			// redirect him to the correct page
-			// @todo This causes issues when errors occur as the redirect will lose
-			// the `$params` state. Why are we redirecting? What is the purpose of the
-			// steps and how do they improve on what we had in 2.2.x?
+			// If the user is on a page he shouldn't see redirect to the correct page
 			if($template !== $_REQUEST['step']){
 				redirect(sprintf('?lang=%s&step=%s',
 					(isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en'),

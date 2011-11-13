@@ -117,7 +117,7 @@
 			}
 
 			// Check for configuration errors and, if there are no errors, install Symphony!
-			if(isset($_REQUEST['action']['install']) && isset($_POST['fields'])) {
+			if(isset($_POST['fields'])) {
 				$errors = self::__checkConfiguration();
 				if(!empty($errors)){
 					Symphony::Configuration()->write(INSTALL . '/includes/config_tmp.php');
