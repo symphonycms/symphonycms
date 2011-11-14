@@ -116,6 +116,7 @@
 			$attr = array('accesskey' => 's');
 			if(!$bIsWritable) $attr['disabled'] = 'disabled';
 			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', $attr));
+			$this->Form->prependChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array_merge($attr, array('class' => 'irrelevant'))));
 
 			$this->Form->appendChild($div);
 		}
