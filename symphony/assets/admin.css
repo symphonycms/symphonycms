@@ -893,10 +893,7 @@ ul.tabs li a {
 	background: #fff;
 	padding: 18px 0 5em;
 	border-top: 1px solid rgba(191, 191, 183, 0.65);
-	-webkit-box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
-	-moz-box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
-	box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
-	height: 100%;
+	box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.05);
 }
 #contents h2 {
 	padding: 20px 18px 17px;
