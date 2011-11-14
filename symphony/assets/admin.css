@@ -201,7 +201,7 @@ tr.selecting .inactive {
 	color: #b4b4b4;
 }
 .irrelevant {
-	display: none;
+	display: none !important;
 }
 .selected, .selected a, .selected .inactive {
 	color: #fff;
