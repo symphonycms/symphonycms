@@ -259,9 +259,8 @@ ul.tags .more:hover {
 
 .group {
 	position: relative;
-	right: -0.75em;
-	margin: 0 0 0 -1.5em;
-	padding: 0 0.75em 0 3.65em;
+	margin: 0;
+	padding: 0;
 }
 .group:after {
 	content: "";
@@ -271,14 +270,14 @@ ul.tags .more:hover {
 }
 .group > * {
 	float: left;
-	margin-left: 2.95em;
 	width: 50%;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	padding: 0 0 0 9px;
 }
 .group > *:first-child {
-	margin-left: -2.95em;
-}
-.group > input[type=hidden]:first-child + * {
-	margin-left: -2.95em;
+	padding: 0 9px 0 0;
 }
 .group label > i,
 .secondary label > i {
@@ -288,6 +287,9 @@ ul.tags .more:hover {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	float: right;
+}
+.group > label:first-child > i {
+	padding: 0 9px 0 0;
 }
 .group label > i:hover,
 .secondary label > i:hover {
@@ -348,7 +350,7 @@ fieldset.settings {
 }
 fieldset.settings > legend {
 	position: absolute;
-	left: 0;
+	text-indent: -275px;
 	line-height: 1.5;
 }
 fieldset.settings > label {
