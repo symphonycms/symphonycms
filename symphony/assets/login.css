@@ -1,39 +1,32 @@
 form {
-	position: relative;
-	top: 40px;
-	left: 50%;
-	margin-left: -12.5em;
-	border: 1px solid #eee;
-	width: 25em;
+	margin: 80px auto;
+	width: 250px;
+	display: block;
+	border: 1px solid #d3d3d2;
+	background-color: #f5f5f3;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+	padding: 18px;
 }
 h1 {
-	margin: 0;
-	border: 1px solid #665;
-	border-top-color: #887;
-	border-bottom: none;
-	padding: 17px 19px;
-	background-color: #353530;
-	color: #fff;
+	margin: -19px -19px 18px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	border: 1px solid #424242;
+	border-bottom-color: rgba(255, 255, 255, 0.7);
+	background: #282828;
 	text-shadow: -1px 2px 3px #111;
-	font-weight: bold;
+	font-weight: normal;
 	line-height: 1;
+	padding: 18px;
+	color: #fff;
 }
 fieldset,
 .actions {
-	padding-left: 2em;
-	padding-right: 2em;
-	border-left: 1px solid #bba;
-	border-right: 1px solid #bba;
-	background-color: #ccb;
-}
-fieldset {
-	padding-bottom: 0.5em;
-	border-top: 1px solid #ddc;
+	padding: 0;
 }
 .actions {
 	overflow: hidden;
-	padding-bottom: 1em;
-	border-bottom: 1px solid #998;
 }
 .actions button {
 	float: right;
