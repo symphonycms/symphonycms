@@ -37,8 +37,14 @@
 		#F3F3EF
 	);
 	z-index: 10;
+	opacity: 1;
 	-moz-box-shadow: inset 0 -1px 2px #f3f3f3;
 	-webkit-box-shadow: inset 0 -1px 2px #f3f3f3;
+	-webkit-transition: opacity 0.25s ease-out;
+	-moz-transition: opacity 0.25s ease-out;
+	-ms-transition: opacity 0.25s ease-out;
+	-o-transition: opacity 0.25s ease-out;
+	transition: opacity 0.25s ease-out;
 }
 .duplicator .instance .header {
 	border-top: 1px solid #cfcfcf;
