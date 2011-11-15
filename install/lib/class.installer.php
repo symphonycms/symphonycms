@@ -21,7 +21,6 @@
 			}
 
 			// Include the default Config for installation.
-			// @todo This file doesn't exist yet.
 			include(INSTALL . '/includes/config_default.php');
 			$this->initialiseConfiguration($settings);
 
@@ -361,6 +360,7 @@
 		/**
 		 * If something went wrong, the `__abort` function will write an entry to the Log
 		 * file and display the failure page to the user.
+		 * @todo: Resume installation after an error has been fixed.
 		 */
 		private static function __abort($message, $start){
 			Symphony::Log()->pushToLog($message, E_ERROR, true);

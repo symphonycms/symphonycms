@@ -172,7 +172,6 @@
 				(isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en'),
 				'success'
 			), 'post');
-			$conf = $this->_params['default-config'];
 
 			/* -----------------------------------------------
 			 * Populating fields array
@@ -187,33 +186,11 @@
 				}
 			}
 			else{
-				// @todo Dunno if this is needed, can't we just use the default Config values?
-				$fields = array(
-					'database' => array(
-						'host'					=> $conf['database']['host'],
-						'port'					=> $conf['database']['port'],
-						'user'					=> $conf['database']['user'],
-						'password'				=> $conf['database']['password'],
-						'db'					=> $conf['database']['db'],
-						'tbl_prefix'			=> $conf['database']['tbl_prefix'],
-						'use-server-encoding'	=> 'yes',
-					),
+				$fields = $this->_params['default-config'];
 
-					'permission' => array(
-						'file'					=> '0644',
-						'directory'				=> '0755',
-					),
-
-					'general' => array(
-						'sitename'				=> $conf['general']['sitename'],
-					),
-
-					'region' => array(
-						'date_format'			=> $conf['region']['date_format'],
-						'time_format'			=> $conf['region']['time_format'],
-						'datetime_separator'	=> $conf['region']['datetime_separator'],
-					)
-				);
+				$fields['database']['use-server-encoding'] = 'no';
+				$fields['permissions']['file'] = '0644';
+				$fields['permissions']['directory'] = '0755';
 			}
 
 			/* -----------------------------------------------

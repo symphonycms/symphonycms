@@ -29,6 +29,11 @@
 
 		###### DATABASE ######
 		'database' => array(
+			'host' => 'localhost',
+			'port' => '3306',
+			'user' => '',
+			'password' => '',
+			'db' => '',
 			'character_set' => 'utf8',
 			'character_encoding' => 'utf8',
 			'tbl_prefix' => 'sym_',
