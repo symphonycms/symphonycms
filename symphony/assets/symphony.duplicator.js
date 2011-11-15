@@ -69,23 +69,6 @@
 			
 		/*-------------------------------------------------------------------*/
 
-			// Remove field indexes
-			items.on('constructstop.duplicator', function(event) {
-				var instance = $(this);
-			
-				// Loop over named fields
-				instance.find('*[name]').each(function() {
-					var field = $(this),
-						exp = /\[\-?[0-9]+\]/,						
-						name = field.attr('name');
-
-					// Symphony will receive a sorted array on submit, no need for hardcoded indexes
-					if(exp.test(name)) {
-						field.attr('name', name.replace(exp, '[]'));
-					}
-				});			
-			});
-			
 			// Construct instances
 			controls.on('click.duplicator', 'a.constructor:not(.disabled)', function(event) {
 				var instance = templates.filter('[data-type="' + selector.val() + '"]').clone();
@@ -187,7 +170,30 @@
 				// Update description
 				description.text($.trim(input.val()));
 			});
+
+			// Build field indexes
+			items.on('constructstop.duplicator refresh.duplicator', function(event) {
+				var instance = $(this),
+					position = instances.index(instance);
 			
+				// Loop over named fields
+				instance.find('*[name]').each(function() {
+					var field = $(this),
+						exp = /\[\-?[0-9]+\]/,						
+						name = field.attr('name');
+
+					// Set index
+					if(exp.test(name)) {
+						field.attr('name', name.replace(exp, '[' + position + ']'));
+					}
+				});			
+			});
+			
+			// Refresh field indexes
+			duplicator.on('orderchange', function(event) {
+				items.trigger('refresh.duplicator');
+			});
+						
 		/*-------------------------------------------------------------------*/
 
 			// Build interface			
