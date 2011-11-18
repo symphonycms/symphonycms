@@ -385,8 +385,6 @@
 			Symphony::Log()->writeToLog(          '============================================', true);
 
 			// MySQL: Establishing connection
-			// @todo This logic (until 403) is already done in checkConfiguration. Do we really need
-			// to repeat it?
 			Symphony::Log()->pushToLog('MYSQL: Establishing Connection', E_NOTICE, true, true);
 
 			try{
@@ -394,24 +392,13 @@
 					$fields['database']['host'],
 					$fields['database']['user'],
 					$fields['database']['password'],
-					$fields['database']['port']
+					$fields['database']['port'],
+					$fields['database']['db']
 				);
 			}
 			catch(DatabaseException $e){
 				self::__abort(
 					'There was a problem while trying to establish a connection to the MySQL server. Please check your settings.',
-				$start);
-			}
-
-			// MySQL: Selecting database
-			Symphony::Log()->pushToLog('MYSQL: Selecting Database ‘' . $fields['database']['db'] . '’...', E_NOTICE, true, true);
-
-			try{
-				Symphony::Database()->select($fields['database']['db']);
-			}
-			catch(DatabaseException $e){
-				self::__abort(
-					'Could not connect to specified database. Please check your settings.',
 				$start);
 			}
 

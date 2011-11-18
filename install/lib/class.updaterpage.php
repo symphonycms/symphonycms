@@ -76,7 +76,6 @@
 				$dl = new XMLElement('dl');
 
 				foreach($this->_params['notes'] as $version => $note){
-					var_dump($note);
 					if($note){
 						$dl->appendChild(new XMLElement('dt', $version));
 						$dl->appendChild(new XMLElement('dd', '<p>' . implode('</p><p>', $note) . '</p>'));

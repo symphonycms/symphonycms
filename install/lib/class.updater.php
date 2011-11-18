@@ -53,7 +53,6 @@
 			}
 
 			// Prepare updating
-			// @todo We need a way to pass the current installed version to the upgrade function.
 			$migrations = array();
 
 			foreach(new DirectoryIterator(INSTALL . '/migrations') as $m){
