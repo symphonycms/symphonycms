@@ -90,20 +90,18 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
-
-			$div->appendChild($this->buildPublishLabel());
-			$div->appendChild($this->buildFormatterSelect($this->get('formatter'), 'fields['.$this->get('sortorder').'][formatter]', __('Text Formatter')));
-
-			$wrapper->appendChild($div);
+			$wrapper->appendChild($this->buildPublishLabel());
 
 			// Textarea Size
-			$label = Widget::Label();
+			$label = Widget::Label(__('Number of default rows'));
 			$input = Widget::Input('fields['.$this->get('sortorder').'][size]', $this->get('size'));
-			$input->setAttribute('size', '3');
-			$label->setValue(__('Make textarea %s rows tall', array($input->generate())));
-			$wrapper->appendChild($label);
+			$label->appendChild($input);
+
+			$div = new XMLElement('div');
+			$div->setAttribute('class', 'group');
+			$div->appendChild($this->buildFormatterSelect($this->get('formatter'), 'fields['.$this->get('sortorder').'][formatter]', __('Text Formatter')));
+			$div->appendChild($label);
+			$wrapper->appendChild($div);
 
 			$div =  new XMLElement('div', NULL, array('class' => 'compact'));
 			$this->appendRequiredCheckbox($div);

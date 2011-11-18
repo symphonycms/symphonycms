@@ -176,16 +176,16 @@
 
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 
-			# Predefined Values
+			// Predefined Values
 			$label = Widget::Label(__('Predefined Values'));
 			$label->appendChild(new XMLElement('i', __('Optional')));
 			$input = Widget::Input('fields['.$this->get('sortorder').'][static_options]', General::sanitize($this->get('static_options')));
 			$label->appendChild($input);
 			$div->appendChild($label);
 
-			# Dynamic Values
+			// Dynamic Values
 			$label = Widget::Label(__('Dynamic Values'));
-			$label->appendChild(new XMLElement('i', 'Optional'));
+			$label->appendChild(new XMLElement('i', __('Optional')));
 
 			$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 			$field_groups = array();
@@ -224,14 +224,14 @@
 			$label->setValue(__('%s Allow selection of multiple options', array($input->generate())));
 			$div->appendChild($label);
 
-			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Values'));
-
 			// Sort options?
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][sort_options]', 'yes', 'checkbox');
 			if($this->get('sort_options') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Sort all options alphabetically', array($input->generate())));
 			$div->appendChild($label);
+
+			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Values'));
 
 			$this->appendShowColumnCheckbox($div);
 			$this->appendRequiredCheckbox($div);
@@ -269,7 +269,7 @@
 
 			$this->removeSectionAssociation($id);
 
-			// dynamic options isn't an array like in Select Box Link
+			// Dynamic Options isn't an array like in Select Box Link
 			$field_id = $this->get('dynamic_options');
 
 			if (!is_null($field_id)) {
