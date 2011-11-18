@@ -18,12 +18,16 @@
 			parent::__construct();
 
 			// If the user is on a page he shouldn't see redirect to the correct page
+			/*
+			 * @todo This is still buggy, when updating the viewSuccess page never gets
+			 *  there, with it commented it out it works ok.
 			if($template !== $_REQUEST['step']){
 				redirect(sprintf('?lang=%s&step=%s',
 					(isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en'),
 					$template
 				));
 			}
+			*/
 
 			$this->_template = $template;
 			$this->_params = $params;
@@ -97,7 +101,7 @@
 		}
 
 		protected function viewExisting() {
-			$h2 = new XMLElement('h2', __('Existing Symphony Installation'));
+			$h2 = new XMLElement('h2', __('Existing Installation'));
 			$p = new XMLElement('p', __('It appears that Symphony has already been installed at this location.'));
 
 			$this->Form->appendChild($h2);

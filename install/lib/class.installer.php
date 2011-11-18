@@ -77,7 +77,7 @@
 				Administration::instance();
 
 				Symphony::Log()->pushToLog(
-					sprintf('Installer - Existing Symphony Installation'),
+					sprintf('Installer - Existing Installation'),
 					E_ERROR, true
 				);
 
@@ -612,8 +612,8 @@
 
 				// Is the language extension enabled?
 				if(in_array('lang_' . $language['handle'], ExtensionManager::listInstalledHandles())){
-					Symphony::Configuration()->set('lang', $_REQUEST['lang'], 'symphony');
-					if(!Symphony::Configuration()->write($conf['file']['write_mode'])){
+					self::Configuration()->set('lang', $_REQUEST['lang'], 'symphony');
+					if(!self::Configuration()->write($conf['file']['write_mode'])){
 						Symphony::Log()->pushToLog('Could not write default language ‘' . $language['name'] . '’ to config file.', E_NOTICE, true, true);
 					}
 				}

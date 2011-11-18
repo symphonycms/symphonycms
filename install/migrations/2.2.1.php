@@ -2,19 +2,52 @@
 
 	Class migration_221 extends Migration{
 
+		static function run($function, $existing_version = null) {
+			self::$existing_version = $existing_version;
+
+			try{
+				$canProceed = self::$function();
+
+				return ($canProceed === false) ? false : true;
+			}
+			catch(DatabaseException $e){
+				$error = Symphony::Database()->getLastError();
+				Symphony::Log()->writeToLog('Could not complete upgrading. MySQL returned: ' . $error['num'] . ': ' . $error['msg'], E_ERROR, true);
+
+				return false;
+			}
+			catch(Exception $e){
+				Symphony::Log()->writeToLog('Could not complete upgrading because of the following error: ' . $e->getMessage(), E_ERROR, true);
+
+				return false;
+			}
+		}
+
+		static function getVersion(){
+			return '2.2.1';
+		}
+
+		static function getReleaseNotes(){
+			return 'http://symphony-cms.com/download/releases/version/2.2.1/';
+		}
+
 		static function upgrade(){
 
 			// 2.2.1 Beta 1
 			if(version_compare(self::$existing_version, '2.2.1 Beta 1', '<=')) {
+				Symphony::Configuration()->set('version', '2.2.1 Beta 1', 'symphony');
 				try {
 					Symphony::Database()->query('CREATE INDEX `session_expires` ON `tbl_sessions` (`session_expires`)');
 					Symphony::Database()->query('OPTIMIZE TABLE `tbl_sessions`');
 				}
 				catch (Exception $ex) {}
+				Symphony::Configuration()->write();
 			}
 
 			// 2.2.1 Beta 2
 			if(version_compare(self::$existing_version, '2.2.1 Beta 2', '<=')) {
+				Symphony::Configuration()->set('version', '2.2.1 Beta 2', 'symphony');
+
 				// Add Security Rules from 2.2 to .htaccess
 				try {
 					$htaccess = file_get_contents(DOCROOT . '/.htaccess');
@@ -78,10 +111,18 @@
 					}
 				}
 				catch(Exception $ex) {}
+
+				Symphony::Configuration()->write();
+			}
+
+			// 2.2.1
+			if(version_compare(self::$existing_version, '2.2.1', '<=')) {
+				Symphony::Configuration()->set('version', '2.2.1', 'symphony');
+				return Symphony::Configuration()->write();
 			}
 		}
 
-		static function post_notes(){
+		static function postUpdateNotes(){
 			return array(
 				__('Version %s introduces some improvements and fixes to Static XML Datasources. If you have any Static XML Datasources in your installation, please be sure to re-save them through the Data Source Editor to prevent unexpected results.', array('<code>2.2.1</code>'))
 			);

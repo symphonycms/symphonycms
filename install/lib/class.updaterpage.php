@@ -10,11 +10,57 @@
 
 		// @todo We need a method to allow a user to remove the updater (from the
 		// Alert in the backend, it's update.php?remove in 2.2.x
-		// @todo We need to show the Change log/Release notes links.
 		public function __construct($template, $params = array()) {
 			parent::__construct($template, $params);
 
+			$this->_template = $template;
 			$this->_page_title = __('Update Symphony');
+		}
+
+		protected function __build() {
+			HTMLPage::__build();
+
+			$this->Form = Widget::Form(sprintf('%s?lang=%s&step=%s',
+				SCRIPT_FILENAME,
+				(isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en'),
+				$this->_template
+			), 'post');
+
+			$title = new XMLElement('h1', $this->_page_title);
+			$version = new XMLElement('em', __('Version %s', array($this->_params['version'])));
+			$releasenotes = Widget::Anchor(__('Release Notes'), $this->_params['release-notes']);
+
+			$title->appendChild($version);
+			$title->appendChild(new XMLElement('em', $releasenotes));
+			$this->Body->appendChild($title);
+
+			$languages = new XMLElement('ul');
+
+			foreach(Lang::getAvailableLanguages(false) as $code => $lang) {
+				$languages->appendChild(new XMLElement(
+					'li',
+					Widget::Anchor(
+						$lang,
+						'?lang=' . $code . '&step=' . $this->_template
+					),
+					($_REQUEST['lang'] == $code || ($_REQUEST['lang'] == NULL && $code == 'en')) ? array('class' => 'selected') : array()
+				));
+			}
+
+			$languages->appendChild(new XMLElement(
+				'li',
+				Widget::Anchor(
+					__('Symphony is also available in other languages'),
+					'http://symphony-cms.com/download/extensions/translations/'
+				),
+				array('class' => 'more')
+			));
+
+			$this->Body->appendChild($languages);
+			$this->Body->appendChild($this->Form);
+
+			$function = 'view' . str_replace('-', '', ucfirst($this->_template));
+			$this->$function();
 		}
 
 		protected function viewMissing() {
@@ -68,9 +114,10 @@
 		}
 
 		protected function viewSuccess() {
-			$this->Form->setAttribute('action', URL . '/symphony/');
+			$this->Form->setAttribute('action', SYMPHONY_URL);
 
 			$h2 = new XMLElement('h2', __('Updating Complete'));
+			$this->Form->appendChild($h2);
 
 			if(!empty($this->_params['notes'])){
 				$dl = new XMLElement('dl');
@@ -82,13 +129,17 @@
 					}
 				}
 
-				$this->Form->appendChild($h2);
 				$this->Form->appendChild($dl);
 			}
 
 			$this->Form->appendChild(
 				new XMLElement('p',
-					__('Before proceeding, please make sure to delete the %s file for security reasons.', array('<code>' . basename(SCRIPT_FILENAME) . '</code>'))
+					__('Congratulations rock star, you have just updated your Symphony install to the latest and greatest!')
+				)
+			);
+			$this->Form->appendChild(
+				new XMLElement('p',
+					__('Before logging in, we recommend that the %s directory be removed for security.', array('<code>/install</code>'))
 				)
 			);
 

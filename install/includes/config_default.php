@@ -11,7 +11,7 @@
 		###### SYMPHONY ######
 		'symphony' => array(
 			'pagination_maximum_rows' => '20',
-			'lang' => Lang::get(),
+			'lang' => 'en',
 			'pages_table_nest_children' => 'no',
 			'version' => VERSION,
 			'cookie_prefix' => 'sym-',

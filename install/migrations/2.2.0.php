@@ -2,10 +2,40 @@
 
 	Class migration_220 extends Migration{
 
+		static function run($function, $existing_version = null) {
+			self::$existing_version = $existing_version;
+
+			try{
+				$canProceed = self::$function();
+
+				return ($canProceed === false) ? false : true;
+			}
+			catch(DatabaseException $e){
+				$error = Symphony::Database()->getLastError();
+				Symphony::Log()->writeToLog('Could not complete upgrading. MySQL returned: ' . $error['num'] . ': ' . $error['msg'], E_ERROR, true);
+
+				return false;
+			}
+			catch(Exception $e){
+				Symphony::Log()->writeToLog('Could not complete upgrading because of the following error: ' . $e->getMessage(), E_ERROR, true);
+
+				return false;
+			}
+		}
+
+		static function getVersion(){
+			return '2.2';
+		}
+
+		static function getReleaseNotes(){
+			return 'http://symphony-cms.com/download/releases/version/2.2/';
+		}
+
 		static function upgrade(){
 
 			// 2.2.0dev
 			if(version_compare(self::$existing_version, '2.2.0dev', '<=')) {
+				Symphony::Configuration()->set('version', '2.2dev', 'symphony');
 				if(Symphony::Database()->tableContainsField('tbl_sections_association', 'cascading_deletion')) {
 					Symphony::Database()->query(
 						'ALTER TABLE `tbl_sections_association` CHANGE  `cascading_deletion` `hide_association` enum("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "no";'
@@ -21,10 +51,12 @@
 						'ALTER TABLE `tbl_authors` CHANGE `default_section` `default_area` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL;'
 					);
 				}
+				Symphony::Configuration()->write();
 			}
 
 			// 2.2.0
 			if(version_compare(self::$existing_version, '2.2.0', '<=')) {
+				Symphony::Configuration()->set('version', '2.2', 'symphony');
 				Symphony::Configuration()->set('datetime_separator', ' ', 'region');
 				Symphony::Configuration()->set('strict_error_handling', 'yes', 'symphony');
 				Symphony::Configuration()->write();
