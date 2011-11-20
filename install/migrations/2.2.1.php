@@ -90,7 +90,7 @@
 				}
 
 				// Update Select table to include the sorting option
-				if(!tableContainsField('tbl_fields_select', 'sort_options')) {
+				if(!Symphony::Database()->tableContainsField('tbl_fields_select', 'sort_options')) {
 					Symphony::Database()->query('ALTER TABLE `tbl_fields_select` ADD `sort_options` ENUM( "yes", "no" ) COLLATE utf8_unicode_ci NOT NULL DEFAULT "no"');
 				}
 

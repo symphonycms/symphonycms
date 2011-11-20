@@ -48,44 +48,62 @@
 			return parent::generate();
 		}
 
-		protected function __build() {
+		protected function __build($version = VERSION, XMLElement $extra = null) {
 			parent::__build();
 
-			$this->Form = Widget::Form(sprintf('%s?lang=%s&step=%s',
-				SCRIPT_FILENAME,
-				(isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en'),
-				$this->_template
-			), 'post');
+#			$this->Form = Widget::Form(sprintf('%s?lang=%s&step=%s',
+#				SCRIPT_FILENAME,
+#				(isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en'),
+#				$this->_template
+#			), 'post');
+
+			$this->Form = Widget::Form(INSTALL_URL . '/index.php', 'post');
 
 			$title = new XMLElement('h1', $this->_page_title);
-			$version = new XMLElement('em', __('Version %s', array(VERSION)));
+			$version = new XMLElement('em', __('Version %s', array($version)));
 
 			$title->appendChild($version);
+
+			if(!is_null($extra)){
+				$title->appendChild($extra);
+			}
+
 			$this->Body->appendChild($title);
 
-			$languages = new XMLElement('ul');
+			if(isset($this->_params['show-languages']) && $this->_params['show-languages']){
+				$languages = new XMLElement('ul');
 
-			foreach(Lang::getAvailableLanguages(false) as $code => $lang) {
+				foreach(Lang::getAvailableLanguages(false) as $code => $lang) {
+#					$languages->appendChild(new XMLElement(
+#						'li',
+#						Widget::Anchor(
+#							$lang,
+#							'?lang=' . $code . '&step=' . $this->_template
+#						),
+#						($_REQUEST['lang'] == $code || ($_REQUEST['lang'] == NULL && $code == 'en')) ? array('class' => 'selected') : array()
+#					));
+					$languages->appendChild(new XMLElement(
+						'li',
+						Widget::Anchor(
+							$lang,
+							'?lang=' . $code
+						),
+						($_REQUEST['lang'] == $code || ($_REQUEST['lang'] == NULL && $code == 'en')) ? array('class' => 'selected') : array()
+					));
+				}
+
 				$languages->appendChild(new XMLElement(
 					'li',
 					Widget::Anchor(
-						$lang,
-						'?lang=' . $code . '&step=' . $this->_template
+						__('Symphony is also available in other languages'),
+						'http://symphony-cms.com/download/extensions/translations/'
 					),
-					($_REQUEST['lang'] == $code || ($_REQUEST['lang'] == NULL && $code == 'en')) ? array('class' => 'selected') : array()
+					array('class' => 'more')
 				));
+
+				$this->Body->appendChild($languages);
 			}
 
-			$languages->appendChild(new XMLElement(
-				'li',
-				Widget::Anchor(
-					__('Symphony is also available in other languages'),
-					'http://symphony-cms.com/download/extensions/translations/'
-				),
-				array('class' => 'more')
-			));
-
-			$this->Body->appendChild($languages);
 			$this->Body->appendChild($this->Form);
 
 			$function = 'view' . str_replace('-', '', ucfirst($this->_template));
@@ -100,13 +118,13 @@
 			$this->Form->appendChild($p);
 		}
 
-		protected function viewExisting() {
-			$h2 = new XMLElement('h2', __('Existing Installation'));
-			$p = new XMLElement('p', __('It appears that Symphony has already been installed at this location.'));
+#		protected function viewExisting() {
+#			$h2 = new XMLElement('h2', __('Existing Installation'));
+#			$p = new XMLElement('p', __('It appears that Symphony has already been installed at this location.'));
 
-			$this->Form->appendChild($h2);
-			$this->Form->appendChild($p);
-		}
+#			$this->Form->appendChild($h2);
+#			$this->Form->appendChild($p);
+#		}
 
 		protected function viewRequirements() {
 			$h2 = new XMLElement('h2', __('Outstanding Requirements'));
@@ -127,6 +145,27 @@
 			}
 		}
 
+		protected function viewLanguages() {
+			$h2 = new XMLElement('h2', __('Language selection'));
+			$p = new XMLElement('p', __('Please choose a language before installing Symphony.'));
+
+			$this->Form->appendChild($h2);
+			$this->Form->appendChild($p);
+
+			$languages = array();
+
+			foreach(Lang::getAvailableLanguages(false) as $code => $lang) {
+				$languages[] = array($code, ($code === 'en'), $lang);
+			}
+
+			$this->Form->appendChild(Widget::Select('lang', $languages));
+
+			$Submit = new XMLElement('div', null, array('class' => 'submit'));
+			$Submit->appendChild(Widget::input('action[proceed]', __('Proceed with installation'), 'submit'));
+
+			$this->Form->appendChild($Submit);
+		}
+
 		protected function viewFailure() {
 			$h2 = new XMLElement('h2', __('Installation Failure'));
 			$p = new XMLElement('p', __('An error occurred during installation.') . __('View your log for more details'));
@@ -137,9 +176,6 @@
 
 		protected function viewSuccess() {
 			$this->Form->setAttribute('action', SYMPHONY_URL);
-
-			// Remove language selection: installation has already completed
-			$this->Body->removeChildAt(1);
 
 			$h2 = new XMLElement('h2', __('Installation Complete'));
 			$this->Form->appendChild($h2);
@@ -171,11 +207,11 @@
 		}
 
 		protected function viewConfiguration() {
-			$this->Form->setAttribute('action', sprintf('%s?lang=%s&step=%s',
-				SCRIPT_FILENAME,
-				(isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en'),
-				'success'
-			), 'post');
+#			$this->Form->setAttribute('action', sprintf('%s?lang=%s&step=%s',
+#				SCRIPT_FILENAME,
+#				(isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en'),
+#				'success'
+#			), 'post');
 
 			/* -----------------------------------------------
 			 * Populating fields array
@@ -411,6 +447,8 @@
 
 			$Submit = new XMLElement('div', null, array('class' => 'submit'));
 			$Submit->appendChild(Widget::input('action[install]', __('Install Symphony'), 'submit'));
+
+			$Submit->appendChild(Widget::input('lang', Lang::get(), 'hidden'));
 
 			$this->Form->appendChild($Submit);
 		}

@@ -23,27 +23,45 @@
 			return self::$_instance;
 		}
 
+		/**
+		 * Initialises the language by looking at the existing
+		 * configuration
+		 */
+		public function initialiseLang(){
+			Lang::set(Symphony::Configuration()->get('lang', 'symphony'), false);
+		}
+
+		/**
+		 * Initialises the configuration object by loading the existing
+		 * website config file
+		 */
+		public function initialiseConfiguration(array $settings){
+			parent::initialiseConfiguration();
+		}
+
+		/**
+		 * Overrides the `initialiseLog()` method and writes
+		 * logs to logs/updater
+		 */
+		public function initialiseLog(){
+			if(is_dir(INSTALL_LOGS) || General::realiseDirectory(INSTALL_LOGS, self::Configuration()->get('write_mode', 'directory'))) {
+				parent::initialiseLog(INSTALL_LOGS . '/update');
+			}
+		}
+
 		public function run() {
-			// Check if Symphony is installed or is already up-to-date
-			if(!file_exists(DOCROOT . '/manifest/config.php')){
-				self::__render(new UpdaterPage('missing'));
-			}
-			else {
-				// Include the default Config for installation.
-				$this->initialiseConfiguration();
-			}
+#			// Check if Symphony is installed or is already up-to-date
+#			if(!file_exists(DOCROOT . '/manifest/config.php')){
+#				self::__render(new UpdaterPage('missing'));
+#			}
+#			else {
+#				// Include the default Config for installation.
+#				$this->initialiseConfiguration();
+#			}
 
 			// Initialize log
-			if(!is_dir(INSTALL . '/logs') && !General::realiseDirectory(INSTALL . '/logs', Symphony::Configuration()->get('write_mode', 'directory'))){
+			if(is_null(Symphony::Log())){
 				self::__render(new UpdaterPage('missing-log'));
-			}
-			else{
-				// @todo Again, are we going to have a consolidated log, or individual logs.
-				Symphony::Log()->setLogPath(INSTALL . '/logs/update');
-
-				if(Symphony::Log()->open(Log::APPEND, Symphony::Configuration()->get('write_mode', 'file')) == 1){
-					Symphony::Log()->initialise('Symphony Update Log');
-				}
 			}
 
 			// Get available migrations. This will only contain the migrations
@@ -89,7 +107,7 @@
 				// Show the update ready page, which will display the
 				// version and release notes of the most recent migration
 				self::__render(new UpdaterPage('ready', array(
-					'notes' => $notes,
+					'pre-notes' => $notes,
 					'version' => $m::getVersion(),
 					'release-notes' => $m::getReleaseNotes()
 				)));
@@ -117,7 +135,7 @@
 				}
 				else {
 					self::__render(new UpdaterPage('success', array(
-						'notes' => $notes,
+						'post-notes' => $notes,
 						'version' => $m::getVersion(),
 						'release-notes' => $m::getReleaseNotes()
 					)));

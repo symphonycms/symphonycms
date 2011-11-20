@@ -18,58 +18,74 @@
 		}
 
 		protected function __build() {
-			HTMLPage::__build();
+			parent::__build(
+				Symphony::Configuration()->get('version', 'symphony')
+			);
 
-			$this->Form = Widget::Form(sprintf('%s?lang=%s&step=%s',
-				SCRIPT_FILENAME,
-				(isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en'),
-				$this->_template
-			), 'post');
-
-			$title = new XMLElement('h1', $this->_page_title);
-			$version = new XMLElement('em', __('Version %s', array($this->_params['version'])));
-			$releasenotes = Widget::Anchor(__('Release Notes'), $this->_params['release-notes']);
-
-			$title->appendChild($version);
-			$title->appendChild(new XMLElement('em', $releasenotes));
-			$this->Body->appendChild($title);
-
-			$languages = new XMLElement('ul');
-
-			foreach(Lang::getAvailableLanguages(false) as $code => $lang) {
-				$languages->appendChild(new XMLElement(
-					'li',
-					Widget::Anchor(
-						$lang,
-						'?lang=' . $code . '&step=' . $this->_template
-					),
-					($_REQUEST['lang'] == $code || ($_REQUEST['lang'] == NULL && $code == 'en')) ? array('class' => 'selected') : array()
-				));
+			if(isset($this->_params['release-notes'])){
+				$h1 = $this->Body->getChildrenByName('h1');
+				$h1->appendChild(
+					new XMLElement(
+						'em',
+						Widget::Anchor(__('Release Notes'), $this->_params['release-notes'])
+					)
+				);
 			}
-
-			$languages->appendChild(new XMLElement(
-				'li',
-				Widget::Anchor(
-					__('Symphony is also available in other languages'),
-					'http://symphony-cms.com/download/extensions/translations/'
-				),
-				array('class' => 'more')
-			));
-
-			$this->Body->appendChild($languages);
-			$this->Body->appendChild($this->Form);
-
-			$function = 'view' . str_replace('-', '', ucfirst($this->_template));
-			$this->$function();
 		}
 
-		protected function viewMissing() {
-			$h2 = new XMLElement('h2', __('Missing Symphony Installation'));
-			$p = new XMLElement('p', __('It appears that Symphony has not been installed at this location.'));
+#		protected function __build() {
+#			HTMLPage::__build();
 
-			$this->Form->appendChild($h2);
-			$this->Form->appendChild($p);
-		}
+#			$this->Form = Widget::Form(sprintf('%s?lang=%s&step=%s',
+#				SCRIPT_FILENAME,
+#				(isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en'),
+#				$this->_template
+#			), 'post');
+
+#			$title = new XMLElement('h1', $this->_page_title);
+#			$version = new XMLElement('em', __('Version %s', array($this->_params['version'])));
+#			$releasenotes = Widget::Anchor(__('Release Notes'), $this->_params['release-notes']);
+
+#			$title->appendChild($version);
+#			$title->appendChild(new XMLElement('em', $releasenotes));
+#			$this->Body->appendChild($title);
+
+#			$languages = new XMLElement('ul');
+
+#			foreach(Lang::getAvailableLanguages(false) as $code => $lang) {
+#				$languages->appendChild(new XMLElement(
+#					'li',
+#					Widget::Anchor(
+#						$lang,
+#						'?lang=' . $code . '&step=' . $this->_template
+#					),
+#					($_REQUEST['lang'] == $code || ($_REQUEST['lang'] == NULL && $code == 'en')) ? array('class' => 'selected') : array()
+#				));
+#			}
+
+#			$languages->appendChild(new XMLElement(
+#				'li',
+#				Widget::Anchor(
+#					__('Symphony is also available in other languages'),
+#					'http://symphony-cms.com/download/extensions/translations/'
+#				),
+#				array('class' => 'more')
+#			));
+
+#			$this->Body->appendChild($languages);
+#			$this->Body->appendChild($this->Form);
+
+#			$function = 'view' . str_replace('-', '', ucfirst($this->_template));
+#			$this->$function();
+#		}
+
+#		protected function viewMissing() {
+#			$h2 = new XMLElement('h2', __('Missing Symphony Installation'));
+#			$p = new XMLElement('p', __('It appears that Symphony has not been installed at this location.'));
+
+#			$this->Form->appendChild($h2);
+#			$this->Form->appendChild($p);
+#		}
 
 		protected function viewUptodate() {
 			$h2 = new XMLElement('h2', __('Symphony is already up-to-date'));
@@ -81,16 +97,16 @@
 
 		protected function viewReady() {
 			$h2 = new XMLElement('h2', __('Updating Symphony'));
-			$p = new XMLElement('p', __('This script will update your existing Symphony installation to version %s.', array('<code>' . VERSION . '</code>')));
+			$p = new XMLElement('p', __('This script will update your existing Symphony installation to version %s.', array('<code>' . $this->_params['version'] . '</code>')));
 
 			$this->Form->appendChild($h2);
 			$this->Form->appendChild($p);
 
-			if(!empty($this->_params['notes'])){
+			if(!empty($this->_params['pre-notes'])){
 				$h2 = new XMLElement('h2', __('Pre-Installation Notes:'));
 				$dl = new XMLElement('dl');
 
-				foreach($this->_params['notes'] as $version => $note){
+				foreach($this->_params['pre-notes'] as $version => $note){
 					$dl->appendChild(new XMLElement('dt', $version));
 					$dl->appendChild(new XMLElement('dd', '<p>' . implode('</p><p>', $note) . '</p>'));
 				}
@@ -119,10 +135,10 @@
 			$h2 = new XMLElement('h2', __('Updating Complete'));
 			$this->Form->appendChild($h2);
 
-			if(!empty($this->_params['notes'])){
+			if(!empty($this->_params['post-notes'])){
 				$dl = new XMLElement('dl');
 
-				foreach($this->_params['notes'] as $version => $note){
+				foreach($this->_params['post-notes'] as $version => $note){
 					if($note){
 						$dl->appendChild(new XMLElement('dt', $version));
 						$dl->appendChild(new XMLElement('dd', '<p>' . implode('</p><p>', $note) . '</p>'));

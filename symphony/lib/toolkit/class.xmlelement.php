@@ -189,7 +189,8 @@
 		/**
 		 * Accessor to return an associative array of all `$this->_children`
 		 * whose's name matches the given `$name`. If no children are found,
-		 * an empty array will be returned
+		 * an empty array will be returned. Since Symphony 2.3, if the array
+		 * contains just one element, the element itself is returned.
 		 *
 		 * @since Symphony 2.2.2
 		 * @param string $name
@@ -205,7 +206,7 @@
 				$result[$i] = $child;
 			}
 
-			return $result;
+			return (count($result) == 1) ? $result[0] : $result;
 		}
 
 		/**

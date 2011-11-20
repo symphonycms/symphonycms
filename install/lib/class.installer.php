@@ -24,26 +24,22 @@
 			include(INSTALL . '/includes/config_default.php');
 			$this->initialiseConfiguration($settings);
 
+			// Initialize date/time
 			define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
 			define_safe('__SYM_TIME_FORMAT__', self::Configuration()->get('time_format', 'region'));
 			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
 			DateTimeObj::setSettings(self::Configuration()->get('region'));
 
 			// Initialize language
-			$lang = !empty($_REQUEST['lang']) ? preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']) : 'en';
-			Lang::initialize();
-			Lang::set($lang, false);
+			$this->initialiseLang();
 
-			// @todo We need to decide if we are going to have a dedicated Log for Install/Update
-			// or if we are just going to use the single /manifest/logs/main.
-			if(file_exists(ACTIVITY_LOG)) {
-				$this->initialiseLog();
-			}
-			else if(true || !is_dir(INSTALL . '/logs') && General::realiseDirectory(INSTALL . '/logs', self::Configuration()->get('write_mode', 'directory'))) {
-				$this->initialiseLog(INSTALL . '/logs/main');
-			}
+			// Initialize logs
+			$this->initialiseLog(INSTALL_LOGS . '/install');
+
+			// Initialize database
 			$this->initialiseDatabase();
 
+			// Initialize error handlers
 			GenericExceptionHandler::initialise(Symphony::Log());
 			GenericErrorHandler::initialise(Symphony::Log());
 		}
@@ -64,29 +60,51 @@
 		}
 
 		/**
+		 * Initialises the language by looking at the `lang` key,
+		 * passed via GET or POST
+		 */
+		public function initialiseLang(){
+			$lang = !empty($_REQUEST['lang']) ? preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']) : 'en';
+			Lang::initialize();
+			Lang::set($lang, false);
+		}
+
+		/**
+		 * Overrides the default `initialiseLog()` method and writes
+		 * logs to logs/installer
+		 */
+		public function initialiseLog($filename = null){
+			if(is_dir(INSTALL_LOGS) || General::realiseDirectory(INSTALL_LOGS, self::Configuration()->get('write_mode', 'directory'))) {
+				parent::initialiseLog($filename);
+			}
+		}
+
+		/**
 		 * Overrides the default `initialiseDatabase()` method
 		 * This allows us to still use the normal accessor
 		 */
-		public function initialiseDatabase() {
+		public function initialiseDatabase(){
 			$this->setDatabase();
 		}
 
 		public function run() {
-			// Check if Symphony is already installed
-			if(false || file_exists(DOCROOT . '/manifest/config.php')) {
-				Administration::instance();
+#			// Check if Symphony is already installed
+#			if(false || file_exists(DOCROOT . '/manifest/config.php')) {
+#				Administration::instance();
 
-				Symphony::Log()->pushToLog(
-					sprintf('Installer - Existing Installation'),
-					E_ERROR, true
-				);
+#				Symphony::Log()->pushToLog(
+#					sprintf('Installer - Existing Installation'),
+#					E_ERROR, true
+#				);
 
-				self::__render(new InstallerPage('existing'));
-			}
+#				self::__render(new InstallerPage('existing'));
+#			}
 
 			// Make sure a log file is available
 			if(is_null(Symphony::Log())) {
-				self::__render(new InstallerPage('missing-log'));
+				self::__render(new InstallerPage('missing-log', array(
+#					'show-languages' => true
+				)));
 			}
 
 			// Check essential server requirements
@@ -104,22 +122,23 @@
 					);
 				}
 
-				self::__render(new InstallerPage('requirements', array('errors' => $errors)));
+				self::__render(new InstallerPage('requirements', array(
+					'errors' => $errors,
+#					'show-languages' => true
+				)));
 			}
 
-			// If the user switch language while compiling the form, make sure
-			// the form values are preserved
-			if(!isset($_POST['fields']) && file_exists(INSTALL . '/includes/config_tmp.php')){
-				include_once(INSTALL . '/includes/config_tmp.php');
-				$this->initialiseConfiguration($settings);
-				$_POST['fields'] = $settings;
+			// If language is not set, show language selection pages
+			if(!isset($_POST['lang'])){
+				self::__render(new InstallerPage('languages', array(
+#					'show-languages' => true
+				)));
 			}
 
 			// Check for configuration errors and, if there are no errors, install Symphony!
 			if(isset($_POST['fields'])) {
 				$errors = self::__checkConfiguration();
 				if(!empty($errors)){
-					Symphony::Configuration()->write(INSTALL . '/includes/config_tmp.php');
 
 					Symphony::Log()->pushToLog(
 						sprintf('Installer - Wrong configuration.'),
@@ -134,9 +153,6 @@
 					}
 				}
 				else{
-					// At this point form values don't need to be preserved anymore
-					General::deleteFile(INSTALL . '/includes/config_tmp.php');
-
 					$disabled_extensions = self::__install();
 
 					self::__render(new InstallerPage('success', array(

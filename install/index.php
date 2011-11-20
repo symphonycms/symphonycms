@@ -44,8 +44,31 @@
 
 	define('DOCROOT', $clean_path);
 	define('INSTALL', DOCROOT . '/install');
+	define('INSTALL_LOGS', INSTALL . '/logs');
+
+	define('VERSION', '2.3dev');
+	define('SCRIPT_FILENAME', INSTALL_URL . '/index.php');
 
 	// Required boot components
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
+
+	// If Symphony is already installed, run the updater
+	if(file_exists(CONFIG)) {
+		// System updater
+		require_once(INSTALL . '/lib/class.updater.php');
+
+		$script = Updater::instance();
+	}
+	// If there's no config file, run the installer
+	else{
+		// System installer
+		require_once(INSTALL . '/lib/class.installer.php');
+
+		$script = Installer::instance();
+	}
+
+	$script->run();
+
+	exit;
 

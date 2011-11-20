@@ -203,11 +203,7 @@
 			self::$Log->setDateTimeFormat(self::Configuration()->get('date_format', 'region') . ' ' . self::Configuration()->get('time_format', 'region'));
 
 			if(self::$Log->open(Log::APPEND, self::Configuration()->get('write_mode', 'file')) == 1){
-				self::$Log->writeToLog('Symphony Log', true);
-				self::$Log->writeToLog('Opened: '. DateTimeObj::get('c'), true);
-				self::$Log->writeToLog('Version: '. self::Configuration()->get('version', 'symphony'), true);
-				self::$Log->writeToLog('Domain: '. DOMAIN, true);
-				self::$Log->writeToLog('--------------------------------------------', true);
+				self::$Log->initialise('Symphony Log');
 			}
 		}
 
