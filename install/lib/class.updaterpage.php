@@ -23,7 +23,7 @@
 			);
 
 			if(isset($this->_params['release-notes'])){
-				$h1 = $this->Body->getChildrenByName('h1');
+				$h1 = end($this->Body->getChildrenByName('h1'));
 				$h1->appendChild(
 					new XMLElement(
 						'em',
