@@ -24,7 +24,7 @@
 		public function __viewIndex(){
 			parent::__viewIndex(RESOURCE_TYPE_DS);
 
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Datasources'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Data Sources'), __('Symphony'))));
 			$this->appendSubheading(__('Datasources'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a datasource'), 'create button', NULL, array('accesskey' => 'c')));
 		}
 
