@@ -9,10 +9,10 @@
 			<item link="/blueprints/sections/new/" name="Section New" visible="no" />
 			<item link="/blueprints/sections/edit/" name="Section Edit" visible="no" />
 
-			<item link="/blueprints/datasources/" name="Datasources" />
-			<item link="/blueprints/datasources/new/" name="Datasource New" visible="no" />
-			<item link="/blueprints/datasources/edit/" name="Datasource Edit" visible="no" />
-			<item link="/blueprints/datasources/info/" name="Datasource Info" visible="no" />
+			<item link="/blueprints/datasources/" name="Data Sources" />
+			<item link="/blueprints/datasources/new/" name="Data Source New" visible="no" />
+			<item link="/blueprints/datasources/edit/" name="Data Source Edit" visible="no" />
+			<item link="/blueprints/datasources/info/" name="Data Source Info" visible="no" />
 
 			<item link="/blueprints/events/" name="Events" />
 			<item link="/blueprints/events/new/" name="Event New" visible="no" />

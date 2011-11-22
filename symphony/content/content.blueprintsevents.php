@@ -23,7 +23,7 @@
 			parent::__viewIndex(RESOURCE_TYPE_EVENT);
 
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Events'), __('Symphony'))));
-			$this->appendSubheading(__('Events'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create an event'), 'create button', NULL, array('accesskey' => 'c')));
+			$this->appendSubheading(__('Events'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a new event'), 'create button', NULL, array('accesskey' => 'c')));
 		}
 
 		public function __viewNew(){
