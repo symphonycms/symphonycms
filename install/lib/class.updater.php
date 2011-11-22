@@ -50,15 +50,6 @@
 		}
 
 		public function run() {
-#			// Check if Symphony is installed or is already up-to-date
-#			if(!file_exists(DOCROOT . '/manifest/config.php')){
-#				self::__render(new UpdaterPage('missing'));
-#			}
-#			else {
-#				// Include the default Config for installation.
-#				$this->initialiseConfiguration();
-#			}
-
 			// Initialize log
 			if(is_null(Symphony::Log())){
 				self::__render(new UpdaterPage('missing-log'));

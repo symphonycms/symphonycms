@@ -79,14 +79,6 @@
 #			$this->$function();
 #		}
 
-#		protected function viewMissing() {
-#			$h2 = new XMLElement('h2', __('Missing Symphony Installation'));
-#			$p = new XMLElement('p', __('It appears that Symphony has not been installed at this location.'));
-
-#			$this->Form->appendChild($h2);
-#			$this->Form->appendChild($p);
-#		}
-
 		protected function viewUptodate() {
 			$h2 = new XMLElement('h2', __('Symphony is already up-to-date'));
 			$p = new XMLElement('p', __('It appears that Symphony has already been installed at this location and is up to date.'));

@@ -118,14 +118,6 @@
 			$this->Form->appendChild($p);
 		}
 
-#		protected function viewExisting() {
-#			$h2 = new XMLElement('h2', __('Existing Installation'));
-#			$p = new XMLElement('p', __('It appears that Symphony has already been installed at this location.'));
-
-#			$this->Form->appendChild($h2);
-#			$this->Form->appendChild($p);
-#		}
-
 		protected function viewRequirements() {
 			$h2 = new XMLElement('h2', __('Outstanding Requirements'));
 			$p = new XMLElement('p', __('Symphony needs the following requirements satisfied before installation can proceed.'));

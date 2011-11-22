@@ -88,18 +88,6 @@
 		}
 
 		public function run() {
-#			// Check if Symphony is already installed
-#			if(false || file_exists(DOCROOT . '/manifest/config.php')) {
-#				Administration::instance();
-
-#				Symphony::Log()->pushToLog(
-#					sprintf('Installer - Existing Installation'),
-#					E_ERROR, true
-#				);
-
-#				self::__render(new InstallerPage('existing'));
-#			}
-
 			// Make sure a log file is available
 			if(is_null(Symphony::Log())) {
 				self::__render(new InstallerPage('missing-log', array(
