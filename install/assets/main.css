@@ -38,10 +38,14 @@ code {
 }
 
 /* Forms */
-fieldset {
+fieldset,
+div.warning {
 	margin-top: 82px;
 	padding-bottom: 1.5em;
 	border: none;
+}
+div.warning + fieldset {
+	margin-top: 1.75em;
 }
 legend {
 	padding-bottom: 1.25em;

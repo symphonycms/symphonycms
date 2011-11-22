@@ -240,30 +240,20 @@
 			$errors = array();
 			$fields = $_POST['fields'];
 
-			// Invalid path
-			if(!is_dir(rtrim($fields['docroot'], '/') . '/symphony')){
-				$errors['no-symphony-dir'] = array(
-					'msg' => 'Bad Document Root Specified: ' . $fields['docroot'],
-					'details' => __('No %s directory was found at this location. Please upload the contents of Symphony’s install package here.', array('<code>/symphony</code>'))
+			// Cannot write to root folder.
+			if(!is_writable(DOCROOT)){
+				$errors['no-write-permission-root'] = array(
+					'msg' => 'Root folder not writable: ' . DOCROOT,
+					'details' => __('Symphony does not have write permission to the root directory. Please modify permission settings on %s. This can be reverted once installation is complete.', array('<code>' . DOCROOT . '</code>'))
 				);
 			}
 
-			else {
-				// Cannot write to root folder.
-				if(!is_writable(rtrim($fields['docroot'], '/'))){
-					$errors['no-write-permission-root'] = array(
-						'msg' => 'Root folder not writable: ' . $fields['docroot'],
-						'details' => __('Symphony does not have write permission to the root directory. Please modify permission settings on this directory. This is necessary only if you are not including a workspace, and can be reverted once installation is complete.')
-					);
-				}
-
-				// Cannot write to workspace
-				if(is_dir(rtrim($fields['docroot'], '/') . '/workspace') && !is_writable(rtrim($fields['docroot'], '/') . '/workspace')){
-					$errors['no-write-permission-workspace'] = array(
-						'msg' => 'Workspace folder not writable: ' . $fields['docroot'] . '/workspace',
-						'details' => __('Symphony does not have write permission to the existing %1$s directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive %2$s command.', array('<code>/workspace</code>', '<code>chmod -R</code>'))
-					);
-				}
+			// Cannot write to workspace
+			if(is_dir(DOCROOT . '/workspace') && !is_writable(DOCROOT . '/workspace')){
+				$errors['no-write-permission-workspace'] = array(
+					'msg' => 'Workspace folder not writable: ' . DOCROOT . '/workspace',
+					'details' => __('Symphony does not have write permission to the existing %1$s directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive %2$s command.', array('<code>/workspace</code>', '<code>chmod -R</code>'))
+				);
 			}
 
 			// Testing the database connection
@@ -472,32 +462,30 @@
 				}
 			}
 
-			$conf['docroot'] = rtrim($conf['docroot'], '/');
-
 			// Create manifest folder structure
 			Symphony::Log()->pushToLog('WRITING: Creating ‘manifest’ folder (/manifest)', E_NOTICE, true, true);
-			if(!General::realiseDirectory($conf['docroot'] . '/manifest', $conf['directory']['write_mode'])){
+			if(!General::realiseDirectory(DOCROOT . '/manifest', $conf['directory']['write_mode'])){
 				self::__abort(
 					'Could not create ‘manifest’ directory. Check permission on the root folder.',
 				$start);
 			}
 
 			Symphony::Log()->pushToLog('WRITING: Creating ‘logs’ folder (/manifest/logs)', E_NOTICE, true, true);
-			if(!General::realiseDirectory($conf['docroot'] . '/manifest/logs', $conf['directory']['write_mode'])){
+			if(!General::realiseDirectory(DOCROOT . '/manifest/logs', $conf['directory']['write_mode'])){
 				self::__abort(
 					'Could not create ‘logs’ directory. Check permission on /manifest.',
 				$start);
 			}
 
 			Symphony::Log()->pushToLog('WRITING: Creating ‘cache’ folder (/manifest/cache)', E_NOTICE, true, true);
-			if(!General::realiseDirectory($conf['docroot'] . '/manifest/cache', $conf['directory']['write_mode'])){
+			if(!General::realiseDirectory(DOCROOT . '/manifest/cache', $conf['directory']['write_mode'])){
 				self::__abort(
 					'Could not create ‘cache’ directory. Check permission on /manifest.',
 				$start);
 			}
 
 			Symphony::Log()->pushToLog('WRITING: Creating ‘tmp’ folder (/manifest/tmp)', E_NOTICE, true, true);
-			if(!General::realiseDirectory($conf['docroot'] . '/manifest/tmp', $conf['directory']['write_mode'])){
+			if(!General::realiseDirectory(DOCROOT . '/manifest/tmp', $conf['directory']['write_mode'])){
 				self::__abort(
 					'Could not create ‘tmp’ directory. Check permission on /manifest.',
 				$start);
@@ -523,45 +511,45 @@
 				file_get_contents(INSTALL . '/includes/htaccess.txt')
 			);
 
-			if(!General::writeFile($conf['docroot'] . "/.htaccess", $htaccess, $conf['file']['write_mode'], 'a')){
+			if(!General::writeFile(DOCROOT . "/.htaccess", $htaccess, $conf['file']['write_mode'], 'a')){
 				self::__abort(
 					'Could not write ‘.htaccess’ file. Check permission on ' . DOCROOT,
 				$start);
 			}
 
 			// Writing /workspace folder
-			if(!is_dir($fields['docroot'] . '/workspace')){
+			if(!is_dir(DOCROOT . '/workspace')){
 				// Create workspace folder structure
 				Symphony::Log()->pushToLog('WRITING: Creating ‘workspace’ folder (/workspace)', E_NOTICE, true, true);
-				if(!General::realiseDirectory($conf['docroot'] . '/workspace', $conf['directory']['write_mode'])){
+				if(!General::realiseDirectory(DOCROOT . '/workspace', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace’ directory. Check permission on the root folder.',
 					$start);
 				}
 
 				Symphony::Log()->pushToLog('WRITING: Creating ‘data-sources’ folder (/workspace/data-sources)', E_NOTICE, true, true);
-				if(!General::realiseDirectory($conf['docroot'] . '/workspace/data-sources', $conf['directory']['write_mode'])){
+				if(!General::realiseDirectory(DOCROOT . '/workspace/data-sources', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace/data-sources’ directory. Check permission on the root folder.',
 					$start);
 				}
 
 				Symphony::Log()->pushToLog('WRITING: Creating ‘events’ folder (/workspace/events)', E_NOTICE, true, true);
-				if(!General::realiseDirectory($conf['docroot'] . '/workspace/events', $conf['directory']['write_mode'])){
+				if(!General::realiseDirectory(DOCROOT . '/workspace/events', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace/events’ directory. Check permission on the root folder.',
 					$start);
 				}
 
 				Symphony::Log()->pushToLog('WRITING: Creating ‘pages’ folder (/workspace/pages)', E_NOTICE, true, true);
-				if(!General::realiseDirectory($conf['docroot'] . '/workspace/pages', $conf['directory']['write_mode'])){
+				if(!General::realiseDirectory(DOCROOT . '/workspace/pages', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace/pages’ directory. Check permission on the root folder.',
 					$start);
 				}
 
 				Symphony::Log()->pushToLog('WRITING: Creating ‘utilities’ folder (/workspace/utilities)', E_NOTICE, true, true);
-				if(!General::realiseDirectory($conf['docroot'] . '/workspace/utilities', $conf['directory']['write_mode'])){
+				if(!General::realiseDirectory(DOCROOT . '/workspace/utilities', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘workspace/utilities’ directory. Check permission on the root folder.',
 					$start);
@@ -590,10 +578,10 @@
 			}
 
 			// Write extensions folder
-			if(!is_dir($fields['docroot'] . '/extensions')) {
+			if(!is_dir(DOCROOT . '/extensions')) {
 				// Create extensions folder
 				Symphony::Log()->pushToLog('WRITING: Creating ‘extensions’ folder (/extensions)', E_NOTICE, true, true);
-				if(!General::realiseDirectory($conf['docroot'] . '/extensions', $conf['directory']['write_mode'])){
+				if(!General::realiseDirectory(DOCROOT . '/extensions', $conf['directory']['write_mode'])){
 					self::__abort(
 						'Could not create ‘extension’ directory. Check permission on the root folder.',
 					$start);
