@@ -160,7 +160,7 @@
 
 		protected function viewFailure() {
 			$h2 = new XMLElement('h2', __('Installation Failure'));
-			$p = new XMLElement('p', __('An error occurred during installation.') . __('View your log for more details'));
+			$p = new XMLElement('p', __('An error occurred during installation.') . ' ' . __('View the %s for more details', array('<a href="' . INSTALL_URL . '/logs/install">log</a>')));
 
 			$this->Form->appendChild($h2);
 			$this->Form->appendChild($p);
@@ -230,19 +230,13 @@
 			 * -----------------------------------------------
 			 */
 
-			$Environment = new XMLElement('fieldset');
-			$Environment->appendChild(new XMLElement('legend', __('Environment Settings')));
-			$Environment->appendChild(new XMLElement('p', __('Symphony is ready to be installed at the following location.')));
-
-			$label = Widget::label(__('Root Path'), Widget::input('fields[docroot]', getcwd_safe()));
-			$Environment->appendChild($label);
+			$div = new XMLElement('div');
+			$this->Form->appendChild($div);
 
 			$this->__appendError(
-				array('no-symphony-dir', 'no-write-permission-root', 'no-write-permission-workspace'),
-				$label, $Environment
+				array('no-write-permission-root', 'no-write-permission-workspace'),
+				$div, $div
 			);
-
-			$this->Form->appendChild($Environment);
 
 			/* -----------------------------------------------
 			 * Website & Locale settings
