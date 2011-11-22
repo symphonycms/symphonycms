@@ -169,7 +169,7 @@
 			$errors = array();
 
 			// Check for PHP 5.2+
-			if(false || version_compare(phpversion(), '5.2', '<=')){
+			if(version_compare(phpversion(), '5.2', '<=')){
 				$errors[] = array(
 					'msg' => __('PHP Version is not correct'),
 					'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.', array('<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.2</code>', '<code>' . phpversion() . '</code>'))
@@ -177,7 +177,7 @@
 			}
 
 			// Make sure the install.sql file exists
-			if(false || !file_exists(INSTALL . '/includes/install.sql') || !is_readable(INSTALL . '/includes/install.sql')){
+			if(!file_exists(INSTALL . '/includes/install.sql') || !is_readable(INSTALL . '/includes/install.sql')){
 				$errors[] = array(
 					'msg' => __('Missing install.sql file'),
 					'details'  => __('It appears that %s is either missing or not readable. This is required to populate the database and must be uploaded before installation can commence. Ensure that PHP has read permissions.', array('<code>install.sql</code>'))
@@ -185,7 +185,7 @@
 			}
 
 			// Is MySQL available?
-			if(false || !function_exists('mysql_connect')){
+			if(!function_exists('mysql_connect')){
 				$errors[] = array(
 					'msg' => __('MySQL extension not present'),
 					'details'  => __('Symphony requires MySQL to work.')
@@ -213,6 +213,14 @@
 				$errors[] = array(
 					'msg' => __('XSLT extension not present'),
 					'details'  => __('Symphony needs an XSLT processor such as %s or Sablotron to build pages.', array('Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr>'))
+				);
+			}
+
+			// Is json_encode available?
+			if (!function_exists('json_decode')) {
+				$errors[] = array(
+					'msg' => __('JSON functionality is not present'),
+					'details'  => __('Symphony uses JSON functionality throughout the backend for translations and the interface.')
 				);
 			}
 
