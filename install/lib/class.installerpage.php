@@ -188,7 +188,7 @@
 
 			$this->Form->appendChild(
 				new XMLElement('p',
-					__('Before proceeding, please make sure to delete the %s file for security reasons.', array('<code>' . basename(SCRIPT_FILENAME) . '</code>'))
+					__('Before proceeding, please make sure to delete the %s folder for security reasons.', array('<code>' . basename(INSTALL) . '</code>'))
 				)
 			);
 

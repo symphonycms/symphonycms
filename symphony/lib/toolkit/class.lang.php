@@ -192,6 +192,7 @@
 
 			// Language extensions
 			foreach($extensions as $extension) {
+				if($extension->isDot() || $extension->isFile()) continue;
 
 				$folder = $extension->getPathname() . '/lang';
 				$directory = General::listStructure($folder);

@@ -505,7 +505,7 @@
 			// Writing htaccess file
 			Symphony::Log()->pushToLog('CONFIGURING: Frontend', E_NOTICE, true, true);
 
-			$rewrite_base = preg_replace('/\/install$/i', NULL, dirname($_SERVER['PHP_SELF']));
+			$rewrite_base = ltrim(preg_replace('/\/install$/i', NULL, dirname($_SERVER['PHP_SELF'])), '/');
 			$htaccess = str_replace(
 				'<!-- REWRITE_BASE -->', $rewrite_base,
 				file_get_contents(INSTALL . '/includes/htaccess.txt')
@@ -592,14 +592,17 @@
 			Symphony::Log()->pushToLog('CONFIGURING: Installing existing extensions', E_NOTICE, true, true);
 			$disabled_extensions = array();
 			foreach(new DirectoryIterator(EXTENSIONS) as $e) {
-				if(is_dir($e->getPathname())){
-					$handle = $e->getPathname();
+				if($e->isDot() || $e->isFile()) continue;
 
-					// @todo Need to test this, I think we can statically invoke this at the moment.
+				$handle = $e->getBasename();
+				try {
 					if(!ExtensionManager::enable($handle)){
 						$disabled_extensions[] = $handle;
 						Symphony::Log()->pushToLog('Could not enable the extension ‘' . $handle . '’.', E_NOTICE, true, true);
 					}
+				} catch(Exception $ex) {
+					$disabled_extensions[] = $handle;
+					Symphony::Log()->pushToLog('Could not enable the extension ‘' . $handle . '’. '. $ex->getMessage(), E_NOTICE, true, true);
 				}
 			}
 
