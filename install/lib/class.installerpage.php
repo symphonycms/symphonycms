@@ -338,7 +338,7 @@
 				Widget::input(
 					'fields[database][use-server-encoding]',
 					'yes', 'checkbox',
-					$fields['database']['use-server-encoding'] == 'yes' ? array('checked' => 'checked') : array()
+					$fields['database']['use-server-encoding'] == 'no' ? array('checked' => 'checked') : array()
 				),
 			'option'));
 			$Fieldset->appendChild(new XMLElement('p',
@@ -359,8 +359,8 @@
 			$Permissions->appendChild(new XMLElement('p', __('Symphony needs permission to read and write both files and directories.')));
 
 			$Div = new XMLElement('div', null, array('class' => 'group'));
-			$Div->appendChild(Widget::label(__('Files'), Widget::input('fields[permission][file]', $fields['permission']['file'])));
-			$Div->appendChild(Widget::label(__('Directories'), Widget::input('fields[permission][directory]', $fields['permission']['directory'])));
+			$Div->appendChild(Widget::label(__('Files'), Widget::input('fields[file][write_mode]', $fields['file']['write_mode'])));
+			$Div->appendChild(Widget::label(__('Directories'), Widget::input('fields[directory][write_mode]', $fields['directory']['write_mode'])));
 
 			$Permissions->appendChild($Div);
 			$this->Form->appendChild($Permissions);

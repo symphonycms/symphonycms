@@ -116,8 +116,8 @@
 				)));
 			}
 
-			// If language is not set, show language selection pages
-			if(!isset($_POST['lang'])){
+			// If language is not set and there is language packs available, show language selection pages
+			if(!isset($_POST['lang']) && count(Lang::getAvailableLanguages(false)) > 1){
 				self::__render(new InstallerPage('languages', array(
 #					'show-languages' => true
 				)));
@@ -415,7 +415,7 @@
 			try{
 				Symphony::Database()->import(
 					file_get_contents(INSTALL . '/includes/install.sql'),
-					($fields['database']['use-server-encoding'] != 'yes' ? true : false),
+					($fields['database']['use-server-encoding'] == 'no' ? true : false),
 					true
 				);
 			}
@@ -496,7 +496,7 @@
 
 			Symphony::Configuration()->setArray($conf);
 
-			if(!Symphony::Configuration()->write($conf['file']['write_mode'])){
+			if(!Symphony::Configuration()->write(CONFIG, $conf['file']['write_mode'])){
 				self::__abort(
 					'Could not create config file ‘' . CONFIG . '’. Check permission on /manifest.',
 				$start);

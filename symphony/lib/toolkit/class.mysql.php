@@ -796,7 +796,7 @@
 		 *  If one of the queries fails, false will be returned and no further queries
 		 *  will be executed, otherwise true will be returned.
 		 */
-		public function import($sql, $use_server_encoding = false, $force_engine = false){
+		public function import($sql, $use_server_encoding = true, $force_engine = false){
 			if($use_server_encoding){
 				$sql = str_replace('DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci', NULL, $sql);
 				$sql = str_replace('COLLATE utf8_unicode_ci', NULL, $sql);
