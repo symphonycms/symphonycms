@@ -158,6 +158,20 @@
 				}
 			});
 			
+			// Activate controls
+			object.on('activate.collapsible',  function(event) {
+				object.removeClass('empty');
+				object.find('div.controls.top').slideDown(100);
+				object.find('div.controls a.collapser').removeClass('disabled');
+			});
+			
+			// Deactivate controls
+			object.on('deactivate.collapsible', function(event) {
+				object.find('div.controls.top').slideUp(100);
+				object.find('div.controls a.collapser').addClass('disabled');
+				object.addClass('empty');
+			});
+			
 		/*-------------------------------------------------------------------*/
 
 			// Prepare interface
@@ -177,22 +191,32 @@
 				
 				// Existing top controls
 				if(top.is('.controls')) {
-					top.prepend(collapser);
+					top.prepend(collapser.clone());
 				}
 				
 				// Create missing top controls
 				else {
-					object.prepend(controls.addClass('top'));	
+					object.prepend(controls.clone().hide().addClass('top'));
 				}
 				
 				// Existing bottom controls
 				if(bottom.is('.controls')) {
-					bottom.prepend(collapser);
+					bottom.prepend(collapser.clone());
 				}
 				
 				// Create missing bottom controls
 				else {
-					object.append(controls);	
+					object.append(controls.clone());	
+				}
+				
+				// Activate controls
+				if(object.find(settings.items).size() > 0) {
+					object.trigger('activate.collapsible');
+				}
+				
+				// Deactivate controls
+				else {
+					object.trigger('deactivate.collapsible');
 				}
 			}
 			

@@ -77,7 +77,9 @@
 
 				instance.trigger('constructstart.duplicator');
 				instance.trigger('construct.duplicator'); /* deprecated */
-				instance.hide().appendTo(object).slideDown(settings.speed, function() {
+				instance.hide().appendTo(object);
+				instance.trigger('constructshow.duplicator');
+				instance.slideDown(settings.speed, function() {
 
 					// Focus first input
 					instance.find('input[type!="hidden"]:first').focus();
@@ -194,6 +196,20 @@
 			// Refresh field indexes
 			duplicator.on('orderchange', function(event) {
 				items.trigger('refresh.duplicator');
+			});
+
+			// Activate controls
+			duplicator.on('constructshow.duplicator', '.instance', function(event) {
+				if(duplicator.find('.instance').size() == 1) {
+					duplicator.trigger('activate.collapsible');
+				}
+			});
+			
+			// Deactivate controls
+			duplicator.on('destructstart.duplicator', '.instance', function(event) {
+				if(duplicator.find('.instance').size() == 1) {
+					duplicator.trigger('deactivate.collapsible');
+				}
 			});
 						
 		/*-------------------------------------------------------------------*/

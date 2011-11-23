@@ -107,62 +107,60 @@
 	padding: 1em 1em 0 1em;
 	position: relative;
 }
+
+/* Controls */
+
 .duplicator .controls {
 	clear: left;
 	background: #f5f5f3;
-	border-top: 1px solid #c2c2c2;
-	border-bottom: 1px solid rgba(207,207,207,0.9);
-	border-left: 1px solid rgba(207,207,207,0.75);
-	border-right: 1px solid rgba(207,207,207,0.75);
+	border: 1px solid rgba(207, 207, 207, 0.9);
+	border-top-color: #c2c2c2;
+	border-radius: 4px;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
 	cursor: default;
-	padding: 0 1em;
+	padding: 0.3em 1em;
 	text-align: right;
-	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
-}
-.duplicator .controls:after {
-	content: "";
-	display: block;
-	clear: left;
-	height: 0;
 }
 .duplicator .controls.top {
 	overflow: hidden;
+	border-top-color: rgba(207, 207, 207, 0.6);
 	border-bottom: none;
-	border-top: 1px solid rgba(207,207,207,0.6);
-	border-top-left-radius: 4px;
-	border-top-right-radius: 4px;
+	border-radius: 4px;
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 }
-.duplicator .controls.hidden {
-	display: none;
+.duplicator.empty .controls {
+	border-radius: 4px;
+}
+.duplicator .controls select {
+	margin: 0 0.75em 0 0;
+	width: 15em;
+	display: inline-block;
+}
+.duplicator .controls select option {
+	display: block;
+	margin: 0;
+	padding: 0 0 0 0.75em;
 }
 .duplicator .controls a {
 	border-bottom: none;
-}
-.duplicator .controls * {
-	vertical-align: middle;
+	padding: 0.2em 0;
 	display: inline-block;
-	margin: 0 0 0 0.75em;
-}
-.duplicator .controls select {
-	min-width: 15em;
-	width: auto;
-}
-.duplicator .controls .constructor {
+	text-decoration: none;
 	color: rgba(0, 0, 0, 0.4);
 	cursor: pointer;
-	padding: 0.5em 0;
-	text-decoration: none;
 }
-.duplicator .controls .constructor:hover {
+.duplicator .controls a:hover {
 	color: rgba(0, 0, 0, 0.7);
 }
-.duplicator .controls .constructor.disabled {
+.duplicator .controls a.disabled {
 	color: rgba(0, 0, 0, 0.2);
 	cursor: default;
 	opacity: 0.6;
+}
+.duplicator .controls a.collapser {
+	float: left;
 }
 
 /*-----------------------------------------------------------------------------
@@ -196,24 +194,4 @@
 }
 .duplicator .instance.collapsed .header span i {
 	opacity: 1;
-}
-/*-----------------------------------------------------------------------------
-	Duplicator - Collapsible
------------------------------------------------------------------------------*/
-
-.duplicator.collapsible .controls .collapser {
-	cursor: pointer;
-	float: left;
-	margin: 0;
-	padding: 0.5em 0;
-	color: rgba(0, 0, 0, 0.4);
-	text-decoration: none;
-}
-.duplicator.collapsible .controls .collapser:hover {
-	color: rgba(0, 0, 0, 0.7);
-}
-.duplicator.collapsible .controls .collapser.disabled {
-	color: rgba(0, 0, 0, 0.2);
-	cursor: default;
-	opacity: 0.6;
 }
