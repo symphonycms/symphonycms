@@ -24,8 +24,8 @@
 		public function __viewIndex(){
 			parent::__viewIndex(RESOURCE_TYPE_DS);
 
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Datasources'))));
-			$this->appendSubheading(__('Datasources'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a datasource'), 'create button', NULL, array('accesskey' => 'c')));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Data Sources'), __('Symphony'))));
+			$this->appendSubheading(__('Data Sources'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a new data source'), 'create button', NULL, array('accesskey' => 'c')));
 		}
 
 		// Both the Edit and New pages need the same form
