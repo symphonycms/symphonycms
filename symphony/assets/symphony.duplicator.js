@@ -14,6 +14,7 @@
 	 * @param {String} [options.instances='> li:not(.template)'] Selector to find children to use as instances
 	 * @param {String} [options.templates='> li.template'] Selector to find children to use as templates
 	 * @param {String} [options.headers='> :first-child'] Selector to find the header part of each instance
+	 * @param {String} [options.perselect=false] Default option for the selector
 	 * @param {Boolean} [options.orderable=false] Can instances be ordered
 	 * @param {Boolean} [options.collapsible=false] Can instances be collapsed
 	 * @param {Boolean} [options.constructable=true] Allow construction of new instances
@@ -32,16 +33,17 @@
 	$.fn.symphonyDuplicator = function(options) {
 		var objects = this,
 			settings = {
-				instances:			'> li:not(.template)',	// What children do we use as instances?
-				templates:			'> li.template',		// What children do we use as templates?
-				headers:			'> :first-child',		// What part of an instance is the header?
-				orderable:			false,					// Can instances be ordered?
-				collapsible:		false,					// Can instances be collapsed?
-				constructable:		true,					// Allow construction of new instances?
-				destructable:		true,					// Allow destruction of instances?
-				minimum:			0,						// Do not allow instances to be removed below this limit.
-				maximum:			1000,					// Do not allow instances to be added above this limit.
-				speed:				'fast'					// Control the speed of any animations
+				instances:			'> li:not(.template)',
+				templates:			'> li.template',
+				headers:			'> :first-child',
+				preselect:			false, 
+				orderable:			false,
+				collapsible:		false,
+				constructable:		true,
+				destructable:		true,
+				minimum:			0,
+				maximum:			1000,
+				speed:				'fast'
 			};
 
 		$.extend(settings, options);
@@ -75,7 +77,9 @@
 
 				instance.trigger('constructstart.duplicator');
 				instance.trigger('construct.duplicator'); /* deprecated */
-				instance.hide().appendTo(object).slideDown(settings.speed, function() {
+				instance.hide().appendTo(object);
+				instance.trigger('constructshow.duplicator');
+				instance.slideDown(settings.speed, function() {
 
 					// Focus first input
 					instance.find('input[type!="hidden"]:first').focus();
@@ -172,9 +176,9 @@
 			});
 
 			// Build field indexes
-			items.on('constructstop.duplicator refresh.duplicator', function(event) {
+			duplicator.on('constructstop.duplicator refresh.duplicator', '.instance', function(event) {
 				var instance = $(this),
-					position = instances.index(instance);
+					position = duplicator.find('.instance').index(instance);
 			
 				// Loop over named fields
 				instance.find('*[name]').each(function() {
@@ -190,8 +194,22 @@
 			});
 			
 			// Refresh field indexes
-			duplicator.on('orderchange', function(event) {
-				items.trigger('refresh.duplicator');
+			duplicator.on('orderstop.orderable', function(event) {
+				duplicator.find('.instance').trigger('refresh.duplicator');
+			});
+
+			// Activate controls
+			duplicator.on('constructshow.duplicator', '.instance', function(event) {
+				if(duplicator.find('.instance').size() == 1) {
+					duplicator.trigger('activate.collapsible');
+				}
+			});
+			
+			// Deactivate controls
+			duplicator.on('destructstart.duplicator', '.instance', function(event) {
+				if(duplicator.find('.instance').size() == 1) {
+					duplicator.trigger('deactivate.collapsible');
+				}
 			});
 						
 		/*-------------------------------------------------------------------*/
@@ -221,6 +239,11 @@
 					// Check uniqueness
 					template.trigger('constructstop.duplicator');
 				}).removeClass('template').addClass('instance').remove();
+			}
+				
+			// Select default
+			if(settings.preselect != false) {
+				selector.find('option[value="' + settings.preselect + '"]').attr('selected', true);
 			}
 			
 			// Destructable interface

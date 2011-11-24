@@ -39,6 +39,9 @@
 			var handle = $(this),
 				item = handle.parents(settings.items),
 				object = handle.parents('.orderable');
+
+			// Needed to prevent browsers from selecting texts and focusing textinputs
+			event.preventDefault();
 			
 			if(!handle.is(settings.ignore)) {
 				object.trigger('orderstart.orderable', [item]);

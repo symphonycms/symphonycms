@@ -72,12 +72,13 @@
 
 		// Duplicators
 		$('.filters-duplicator').symphonyDuplicator();
-
+		
 		// Collapsible duplicators
 		var duplicator = $('#fields-duplicator');
 		duplicator.symphonyDuplicator({
 			orderable: true,
-			collapsible: true
+			collapsible: true,
+			preselect: 'input'
 		});
 
 		// Dim system messages
