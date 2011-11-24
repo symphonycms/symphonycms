@@ -1035,6 +1035,11 @@
 			}
 			$files = array();
 
+			$prefix = str_replace($strip_root, '', $dir);
+			
+			if($prefix != "")
+				$prefix .= "/";
+
 			foreach(scandir($dir) as $file) {
 				if (
 					($file == '.' or $file == '..')
@@ -1045,23 +1050,23 @@
 
 				if(is_dir("$dir/$file")) {
 					if($recurse) {
-						$files[str_replace($strip_root, '', $dir) . "/$file/"] = self::listStructure("$dir/$file", $filters, $recurse, $sort, $strip_root, $exclude, $ignore_hidden);
+						$files["$prefix$file/"] = self::listStructure("$dir/$file", $filters, $recurse, $sort, $strip_root, $exclude, $ignore_hidden);
 					}
 
-					$files['dirlist'][] = $file;
+					$files['dirlist'][] = "$prefix$file/";
 				}
 				else if($filter_type == 'regex') {
 					if(preg_match($filters, $file)){
-						$files['filelist'][] = $file;
+						$files['filelist'][] = "$prefix$file";
 					}
 				}
 				else if($filter_type == 'file') {
 					if(in_array(self::getExtension($file), $filters)) {
-						$files['filelist'][] = $file;
+						$files['filelist'][] = "$prefix$file";
 					}
 				}
 				else if(is_null($filter_type)){
-					$files['filelist'][] = $file;
+					$files['filelist'][] = "$prefix$file";
 				}
 			}
 

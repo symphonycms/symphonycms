@@ -194,7 +194,7 @@
 			foreach($extensions as $extension) {
 
 				$folder = $extension->getPathname() . '/lang';
-				$directory = General::listStructure($folder);
+				$directory = General::listStructure($folder, array(), true, 'asc', $extension->getPathname() . '/lang');
 
 				if(is_array($directory['filelist']) && !empty($directory['filelist'])) {
 					foreach($directory['filelist'] as $file) {
