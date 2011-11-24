@@ -538,10 +538,15 @@
 		 *	Returns the transliterated string
 		 */
 		private static function applyTransliterations($string) {
-			$patterns = array_keys(self::$_transliterations);
-			$values = array_values(self::$_transliterations);
+			// Apply the straight transliterations with strtr as it's much faster
+			$string = strtr($string, self::$_transliterations['straight']);
 
-			return preg_replace($patterns, $values, $string);
+			// Apply the regex rules over the resulting $string
+			return preg_replace(
+				array_keys(self::$_transliterations['regexp']),
+				array_values(self::$_transliterations['regexp']),
+				$string
+			);
 		}
 
 		/**
