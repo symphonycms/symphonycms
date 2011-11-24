@@ -179,7 +179,7 @@
 			else $wrapper->appendChild($label);
 		}
 
-		public function processRawFieldData($data, &$status, &$message, $simulate=false, $entry_id=NULL){
+		public function processRawFieldData($data, &$status, &$message=null, $simulate=false, $entry_id=NULL){
 
 			$status = self::__OK__;
 
