@@ -317,6 +317,9 @@
 				if(!$existing) {
 					Administration::instance()->errorPageNotFound();
 				}
+				else {
+					$existing['type'] = PageManager::fetchPageTypes($page_id);
+				}
 			}
 
 			// Status message:
@@ -369,7 +372,6 @@
 
 				if(!is_null($fields['type'])) {
 					$fields['type'] = implode(', ', $fields['type']);
-					unset($fields['type']);
 				}
 
 				$fields['data_sources'] = preg_split('/,/i', $fields['data_sources'], -1, PREG_SPLIT_NO_EMPTY);
