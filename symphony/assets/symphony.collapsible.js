@@ -56,14 +56,13 @@
 		/*-------------------------------------------------------------------*/
 			
 			// Collapse item
-			object.on('collapse.collapsible', settings.items, function(event, instantly) {
+			object.on('collapse.collapsible', settings.items, function(event, speed) {
 				var item = $(this),
-					content = item.find(settings.content),
-					speed = 'fast';
+					content = item.find(settings.content);
 
-				// Instant switch?
-				if(instantly === true) {
-					speed = 0;
+				// Check speed
+				if(!$.isNumeric(speed)) {
+					speed = 'fast';
 				}
 				
 				// Collapse item				
@@ -138,7 +137,7 @@
 			});
 			
 			// Save states
-			object.on('collapsestop.collapsible expandstop.collapsible', settings.items, function(event) {
+			object.on('collapsestop.collapsible expandstop.collapsible store.collapsible', settings.items, function(event) {
 				if(settings.save_state === true && Symphony.Support.localStorage === true) {
 					var collapsed = object.find(settings.items).map(function(index) {
 						if($(this).is('.collapsed')) {
@@ -153,23 +152,42 @@
 			object.on('restore.collapsible', function(event) {
 				if(settings.save_state === true && Symphony.Support.localStorage === true && localStorage[storage]) {
 					$.each(localStorage[storage].split(','), function(index, value) {
-						object.find(settings.items).eq(value).trigger('collapse.collapsible', [true]);
+						object.find(settings.items).eq(value).trigger('collapse.collapsible', [0]);
 					});
 				}
 			});
 			
 			// Activate controls
-			object.on('activate.collapsible',  function(event) {
+			object.on('activate.collapsible',  function(event, speed) {
+			
+				// Check speed
+				if(!$.isNumeric(speed)) {
+					speed = 100;
+				}
+				
+				// Activate controls, show top control
 				object.removeClass('empty');
-				object.find('div.controls.top').slideDown(100);
+				object.find('div.controls.top').slideDown(speed);
 				object.find('div.controls a.collapser').removeClass('disabled');
 			});
 			
 			// Deactivate controls
-			object.on('deactivate.collapsible', function(event) {
-				object.find('div.controls.top').slideUp(100);
+			object.on('deactivate.collapsible', function(event, speed) {
+				
+				// Check speed
+				if(!$.isNumeric(speed)) {
+					speed = 100;
+				}
+				
+				// Deactivate controls, hide top control
+				object.find('div.controls.top').slideUp(speed);
 				object.find('div.controls a.collapser').addClass('disabled');
 				object.addClass('empty');
+			});
+			
+			// Refresh state storage
+			object.on('orderstop.orderable', function(event) {
+				object.find(settings.items).trigger('store.collapsible');
 			});
 			
 		/*-------------------------------------------------------------------*/
@@ -211,12 +229,12 @@
 				
 				// Activate controls
 				if(object.find(settings.items).size() > 0) {
-					object.trigger('activate.collapsible');
+					object.trigger('activate.collapsible', [0]);
 				}
 				
 				// Deactivate controls
 				else {
-					object.trigger('deactivate.collapsible');
+					object.trigger('deactivate.collapsible', [0]);
 				}
 			}
 			
