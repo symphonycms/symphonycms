@@ -176,9 +176,9 @@
 			});
 
 			// Build field indexes
-			items.on('constructstop.duplicator refresh.duplicator', function(event) {
+			duplicator.on('constructstop.duplicator refresh.duplicator', '.instance', function(event) {
 				var instance = $(this),
-					position = instances.index(instance);
+					position = duplicator.find('.instance').index(instance);
 			
 				// Loop over named fields
 				instance.find('*[name]').each(function() {
@@ -194,8 +194,8 @@
 			});
 			
 			// Refresh field indexes
-			duplicator.on('orderchange', function(event) {
-				items.trigger('refresh.duplicator');
+			duplicator.on('orderstop.orderable', function(event) {
+				duplicator.find('.instance').trigger('refresh.duplicator');
 			});
 
 			// Activate controls
