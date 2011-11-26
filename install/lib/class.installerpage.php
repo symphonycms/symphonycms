@@ -113,7 +113,7 @@
 
 		protected function viewLanguages() {
 			$h2 = new XMLElement('h2', __('Language selection'));
-			$p = new XMLElement('p', __('Please choose a language before installing Symphony.'));
+			$p = new XMLElement('p', __('This installation can speak in different languages, which one are you fluent in?'));
 
 			$this->Form->appendChild($h2);
 			$this->Form->appendChild($p);
@@ -148,8 +148,15 @@
 		protected function viewSuccess() {
 			$this->Form->setAttribute('action', SYMPHONY_URL);
 
-			$h2 = new XMLElement('h2', __('Installation Complete'));
-			$this->Form->appendChild($h2);
+			$div = new XMLElement('div');
+			$div->appendChild(
+				new XMLElement('h2', __('All done!'))
+			);
+			$div->appendChild(
+				new XMLElement('p', __('Symphony has now been installed and it\'s only a click away. Excited?'))
+			);
+			$this->Form->appendChild($div);
+
 
 			$extensions = ' ';
 			foreach($this->_params['disabled-extensions'] as $handle){
@@ -160,19 +167,19 @@
 			if(trim($extensions) != ''){
 				$this->Form->appendChild(
 					new XMLElement('p',
-						__('The following extensions couldn’t be enabled and must be manually installed:') . $extensions
+						__('Unfortunately the following extensions couldn’t be enabled and must be manually installed. Sorry about that.') . $extensions
 					)
 				);
 			}
 
 			$this->Form->appendChild(
 				new XMLElement('p',
-					__('Before proceeding, please make sure to delete the %s folder for security reasons.', array('<code>' . basename(INSTALL) . '</code>'))
+					__('Before proceeding, we recommend that the %s folder been removed to keep things nice and secure.', array('<code>' . basename(INSTALL) . '</code>'))
 				)
 			);
 
 			$submit = new XMLElement('div', null, array('class' => 'submit'));
-			$submit->appendChild(Widget::input('submit', __('I promise, now take me to the login page'), 'submit'));
+			$submit->appendChild(Widget::input('submit', __('Ok, now take me to the login page'), 'submit'));
 
 			$this->Form->appendChild($submit);
 		}
@@ -197,6 +204,19 @@
 				$fields['permissions']['file'] = '0644';
 				$fields['permissions']['directory'] = '0755';
 			}
+
+			/* -----------------------------------------------
+			 * Welcome
+			 * -----------------------------------------------
+			 */
+			$div = new XMLElement('div');
+			$div->appendChild(
+				new XMLElement('h2', __('Hello! You are about to install Symphony, a flexible and powerful CMS that gives you full control of your content.'))
+			);
+			$div->appendChild(
+				new XMLElement('p', __('It won\'t take more than a minute or two to install, so there\'s no need to put the kettle on just yet.'))
+			);
+			$this->Form->appendChild($div);
 
 			/* -----------------------------------------------
 			 * Environment settings
