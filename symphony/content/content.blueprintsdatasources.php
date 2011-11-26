@@ -9,7 +9,7 @@
 	 * and Static XML
 	 */
 	require_once(TOOLKIT . '/class.gateway.php');
-	require_once(CONTENT . '/content.resourcespage.php');
+	require_once(TOOLKIT . '/class.resourcespage.php');
 
 	Class contentBlueprintsDatasources extends ResourcesPage{
 
@@ -39,7 +39,7 @@
 
 		public function __form(){
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-			if($formHasErrors) 
+			if($formHasErrors)
 				$this->pageAlert(
 					__('An error occurred while processing this form.')
 					. ' <a href="#error">'
@@ -149,17 +149,9 @@
 						$fields['dynamic_xml']['url'] = $existing->dsParamURL;
 						$fields['dynamic_xml']['xpath'] = $existing->dsParamXPATH;
 						$fields['dynamic_xml']['cache'] = $existing->dsParamCACHE;
+						$fields['dynamic_xml']['format'] = $existing->dsParamFORMAT;
 						$fields['dynamic_xml']['timeout'] = (isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6);
 						$cache_id = md5($existing->dsParamURL . serialize($existing->dsParamFILTERS) . $existing->dsParamXPATH);
-
-						break;
-
-					case 'remote_json':
-						$fields['remote_json']['url'] = $existing->dsParamURL;
-						$fields['remote_json']['xpath'] = $existing->dsParamXPATH;
-						$fields['remote_json']['cache'] = $existing->dsParamCACHE;
-						$fields['remote_json']['timeout'] = (isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6);
-						$cache_id = md5($existing->dsParamURL . $existing->dsParamXPATH);
 
 						break;
 
@@ -188,10 +180,11 @@
 
 			else{
 
-				$fields['dynamic_xml']['url'] = $fields['remote_json']['url'] = 'http://';
-				$fields['dynamic_xml']['cache'] = $fields['remote_json']['cache'] = '30';
-				$fields['dynamic_xml']['xpath'] = $fields['remote_json']['xpath'] = '/';
-				$fields['dynamic_xml']['timeout'] = $fields['remote_json']['timeout'] = '6';
+				$fields['dynamic_xml']['url'] = 'http://';
+				$fields['dynamic_xml']['cache'] = '30';
+				$fields['dynamic_xml']['xpath'] = '/';
+				$fields['dynamic_xml']['timeout'] = '6';
+				$fields['dynamic_xml']['format'] = 'XML';
 
 				$fields['paginate_results'] = 'yes';
 				$fields['max_records'] = '20';
@@ -243,10 +236,7 @@
 				array('label' => __('Custom XML'), 'options' => array(
 						array('dynamic_xml', ($fields['source'] == 'dynamic_xml'), __('Dynamic XML')),
 						array('static_xml', ($fields['source'] == 'static_xml'), __('Static XML')),
-				)),
-				array('label' => __('Custom JSON'), 'options' => array(
-						array('remote_json', ($fields['source'] == 'remote_json'), __('Remote JSON')),
-				)),
+				))
 			);
 
 			if(is_array($sections) && !empty($sections)){
@@ -263,7 +253,7 @@
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual sections authors navigation ' . __('Sections') . ' ' . __('System'));
 			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
-			$p = new XMLElement('p', 
+			$p = new XMLElement('p',
 				__('Use %s syntax to filter by page parameters.', array(
 					'<code>{' . __('$param') . '}</code>'
 				))
@@ -447,10 +437,10 @@
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml remote_json');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml');
 			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));
 
-			$p = new XMLElement('p', 
+			$p = new XMLElement('p',
 				__('Use %s syntax to limit by page parameters.', array(
 					'<code>{' . __('$param') . '}</code>'
 				))
@@ -539,7 +529,7 @@
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml remote_json');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml');
 			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
 
 			$label = Widget::Label(__('Required URL Parameter'));
@@ -723,18 +713,34 @@
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual dynamic_xml');
 			$fieldset->appendChild(new XMLElement('legend', __('Dynamic XML')));
+
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group offset');
+
 			$label = Widget::Label(__('URL'));
 			$label->appendChild(Widget::Input('fields[dynamic_xml][url]', General::sanitize($fields['dynamic_xml']['url'])));
-			if(isset($this->_errors['dynamic_xml']['url'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['url']));
-			else $fieldset->appendChild($label);
+			if(isset($this->_errors['dynamic_xml']['url'])) $group->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['url']));
+			else $group->appendChild($label);
 
-			$p = new XMLElement('p', 
+			$p = new XMLElement('p',
 				__('Use %s syntax to specify dynamic portions of the URL.', array(
 					'<code>{' . __('$param') . '}</code>'
 				))
 			);
 			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
+			$label->appendChild($p);
+
+			$label = Widget::Label(__('Format'));
+			$label->appendChild(
+				Widget::Select('fields[dynamic_xml][format]', array(
+					array('xml', $fields['dynamic_xml']['format'] == 'xml', 'XML'),
+					array('json', $fields['dynamic_xml']['format'] == 'json', 'JSON')
+				))
+			);
+			if(isset($this->_errors['dynamic_xml']['format'])) $group->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['format']));
+			else $group->appendChild($label);
+
+			$fieldset->appendChild($group);
 
 			$div = new XMLElement('div');
 			$p = new XMLElement('p', __('Namespace Declarations'));
@@ -823,51 +829,6 @@
 
 			$label = Widget::Label();
 			$input = Widget::Input('fields[dynamic_xml][timeout]', max(1, intval($fields['dynamic_xml']['timeout'])), NULL, array('type' => 'hidden'));
-			$label->appendChild($input);
-			$fieldset->appendChild($label);
-
-			$this->Form->appendChild($fieldset);
-
-		// Remote JSON
-
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual remote_json');
-			$fieldset->appendChild(new XMLElement('legend', __('Remote JSON')));
-			$label = Widget::Label(__('URL'));
-			$label->appendChild(Widget::Input('fields[remote_json][url]', General::sanitize($fields['remote_json']['url'])));
-			if(isset($this->_errors['remote_json']['url'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['remote_json']['url']));
-			else $fieldset->appendChild($label);
-
-			$p = new XMLElement('p', 
-				__('Use %s syntax to specify dynamic portions of the URL.', array(
-					'<code>{' . __('$param') . '}</code>'
-				))
-			);
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
-
-			$label = Widget::Label(__('Included Elements'));
-			$label->appendChild(Widget::Input('fields[remote_json][xpath]', General::sanitize($fields['remote_json']['xpath'])));
-			if(isset($this->_errors['remote_json']['xpath'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['remote_json']['xpath']));
-			else $fieldset->appendChild($label);
-
-			$p = new XMLElement('p', __('Use an XPath expression to select which elements from the source JSON to include.'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
-
-			$label = Widget::Label();
-			$input = Widget::Input('fields[remote_json][cache]', max(1, intval($fields['remote_json']['cache'])), NULL, array('size' => '6'));
-			$label->setValue(__('Update cached result every %s minutes', array($input->generate(false))));
-			if(isset($this->_errors['remote_json']['cache'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['remote_json']['cache']));
-			else $fieldset->appendChild($label);
-
-			// Check for existing Cache objects
-			if(isset($cache_id)) {
-				$this->appendCacheInformation($fieldset, $cache, $cache_id);
-			}
-
-			$label = Widget::Label();
-			$input = Widget::Input('fields[remote_json][timeout]', max(1, intval($fields['remote_json']['timeout'])), NULL, array('type' => 'hidden'));
 			$label->appendChild($input);
 			$fieldset->appendChild($label);
 
@@ -1067,31 +1028,6 @@
 
 			}
 
-			elseif($fields['source'] == 'remote_json'){
-				// Use the TIMEOUT that was specified by the user for a real world indication
-				$timeout = (isset($fields['remote_json']['timeout']) ? (int)$fields['remote_json']['timeout'] : 6);
-
-				// If there is a parameter in the URL, we can't validate the existence of the URL
-				// as we don't have the environment details of where this datasource is going
-				// to be executed.
-				$fetch_URL = !preg_match('@{([^}]+)}@i', $fields['remote_json']['url']);
-
-				if($valid_url = self::__isValidURL($fields['remote_json']['url'], $timeout, $fetch_URL)) {
-					if(is_array($valid_url)) {
-						$data = $valid_url['data'];
-					}
-					else {
-						$this->_errors['remote_json']['url'] = $valid_url;
-					}
-				}
-
-				if(trim($fields['remote_json']['xpath']) == '') $this->_errors['remote_json']['xpath'] = __('This is a required field');
-
-				if(!is_numeric($fields['remote_json']['cache'])) $this->_errors['remote_json']['cache'] = __('Must be a valid number');
-				elseif($fields['remote_json']['cache'] < 1) $this->_errors['remote_json']['cache'] = __('Must be greater than zero');
-
-			}
-
 			elseif(is_numeric($fields['source'])) {
 
 				if(strlen(trim($fields['max_records'])) == 0 || (is_numeric($fields['max_records']) && $fields['max_records'] < 1)){
@@ -1109,7 +1045,7 @@
 				}
 			}
 
-			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
+			$classname = Lang::createHandle($fields['name'], 255, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
 
 			// Check to make sure the classname is not empty after handlisation.
@@ -1225,20 +1161,10 @@
 						$params['url'] = $fields['dynamic_xml']['url'];
 						$params['xpath'] = $fields['dynamic_xml']['xpath'];
 						$params['cache'] = $fields['dynamic_xml']['cache'];
+						$params['format'] = $fields['dynamic_xml']['format'];
 						$params['timeout'] = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : '6');
 
 						$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.dynamic_xml.php');", $dsShell);
-
-						break;
-
-					case 'remote_json':
-
-						$params['url'] = $fields['remote_json']['url'];
-						$params['xpath'] = $fields['remote_json']['xpath'];
-						$params['cache'] = $fields['remote_json']['cache'];
-						$params['timeout'] = (isset($fields['remote_json']['timeout']) ? (int)$fields['remote_json']['timeout'] : '6');
-
-						$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.remote_json.php');", $dsShell);
 
 						break;
 

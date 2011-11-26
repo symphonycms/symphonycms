@@ -1,13 +1,15 @@
 <?php
 
 	/**
-	 * @package content
+	 * @package toolkit
 	 */
 	/**
-	 * The ResourcesPages is an abstract class that controls the way "Datasource"
-	 * and "Events" index pages are displayed in the backend.
+	 * The `ResourcesPage` abstract class controls the way "Datasource"
+	 * and "Events" index pages are displayed in the backend. It extends the
+	 * `AdministrationPage` class.
 	 *
 	 * @since Symphony 2.3
+	 * @see toolkit.AdministrationPage
 	 */
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.resourcemanager.php');
