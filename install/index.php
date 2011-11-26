@@ -47,7 +47,6 @@
 	define('INSTALL_LOGS', INSTALL . '/logs');
 
 	define('VERSION', '2.3dev');
-	define('SCRIPT_FILENAME', INSTALL_URL . '/index.php');
 
 	// Required boot components
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');

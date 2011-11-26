@@ -90,9 +90,7 @@
 		public function run() {
 			// Make sure a log file is available
 			if(is_null(Symphony::Log())) {
-				self::__render(new InstallerPage('missing-log', array(
-#					'show-languages' => true
-				)));
+				self::__render(new InstallerPage('missing-log'));
 			}
 
 			// Check essential server requirements
@@ -110,17 +108,12 @@
 					);
 				}
 
-				self::__render(new InstallerPage('requirements', array(
-					'errors' => $errors,
-#					'show-languages' => true
-				)));
+				self::__render(new InstallerPage('requirements'));
 			}
 
 			// If language is not set and there is language packs available, show language selection pages
 			if(!isset($_POST['lang']) && count(Lang::getAvailableLanguages(false)) > 1){
-				self::__render(new InstallerPage('languages', array(
-#					'show-languages' => true
-				)));
+				self::__render(new InstallerPage('languages'));
 			}
 
 			// Check for configuration errors and, if there are no errors, install Symphony!

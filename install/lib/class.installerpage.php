@@ -17,18 +17,6 @@
 		public function __construct($template, $params = array()) {
 			parent::__construct();
 
-			// If the user is on a page he shouldn't see redirect to the correct page
-			/*
-			 * @todo This is still buggy, when updating the viewSuccess page never gets
-			 *  there, with it commented it out it works ok.
-			if($template !== $_REQUEST['step']){
-				redirect(sprintf('?lang=%s&step=%s',
-					(isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en'),
-					$template
-				));
-			}
-			*/
-
 			$this->_template = $template;
 			$this->_params = $params;
 
@@ -51,12 +39,6 @@
 		protected function __build($version = VERSION, XMLElement $extra = null) {
 			parent::__build();
 
-#			$this->Form = Widget::Form(sprintf('%s?lang=%s&step=%s',
-#				SCRIPT_FILENAME,
-#				(isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en'),
-#				$this->_template
-#			), 'post');
-
 			$this->Form = Widget::Form(INSTALL_URL . '/index.php', 'post');
 
 			$title = new XMLElement('h1', $this->_page_title);
@@ -74,14 +56,6 @@
 				$languages = new XMLElement('ul');
 
 				foreach(Lang::getAvailableLanguages(false) as $code => $lang) {
-#					$languages->appendChild(new XMLElement(
-#						'li',
-#						Widget::Anchor(
-#							$lang,
-#							'?lang=' . $code . '&step=' . $this->_template
-#						),
-#						($_REQUEST['lang'] == $code || ($_REQUEST['lang'] == NULL && $code == 'en')) ? array('class' => 'selected') : array()
-#					));
 					$languages->appendChild(new XMLElement(
 						'li',
 						Widget::Anchor(
@@ -150,6 +124,11 @@
 				$languages[] = array($code, ($code === 'en'), $lang);
 			}
 
+			if(count($languages) > 1){
+				$languages[0][1] = false;
+				$languages[1][1] = true;
+			}
+
 			$this->Form->appendChild(Widget::Select('lang', $languages));
 
 			$Submit = new XMLElement('div', null, array('class' => 'submit'));
@@ -199,12 +178,6 @@
 		}
 
 		protected function viewConfiguration() {
-#			$this->Form->setAttribute('action', sprintf('%s?lang=%s&step=%s',
-#				SCRIPT_FILENAME,
-#				(isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en'),
-#				'success'
-#			), 'post');
-
 			/* -----------------------------------------------
 			 * Populating fields array
 			 * -----------------------------------------------
@@ -429,7 +402,7 @@
 			 */
 
 			$this->Form->appendChild(new XMLElement('h2', __('Install Symphony')));
-			$this->Form->appendChild(new XMLElement('p', __('Make sure that you delete the %s file after Symphony has installed successfully.', array('<code>' . basename(SCRIPT_FILENAME) . '</code>'))));
+			$this->Form->appendChild(new XMLElement('p', __('Make sure that you delete the %s folder after Symphony has installed successfully.', array('<code>' . basename(INSTALL_URL) . '</code>'))));
 
 			$Submit = new XMLElement('div', null, array('class' => 'submit'));
 			$Submit->appendChild(Widget::input('action[install]', __('Install Symphony'), 'submit'));
