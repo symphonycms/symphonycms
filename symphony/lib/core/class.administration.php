@@ -392,26 +392,27 @@
 		}
 
 		/**
-		 * Writes the current Symphony Configuration object to a file in the
-		 * CONFIG directory. This will overwrite any existing configuration
-		 * file every time this function is called.
-		 *
-		 * @see core.Configuration#__toString()
-		 * @return boolean
-		 *  True if the Configuration object was successfully written, false otherwise
-		 */
-		public function saveConfig(){
-			$string  = "<?php\n\t\$settings = ".(string)self::Configuration().";\n";
-			return General::writeFile(CONFIG, $string, self::Configuration()->get('write_mode', 'file'));
-		}
-
-		/**
 		 * If a page is not found in the Symphony backend, this function should
 		 * be called which will raise a customError to display the default Symphony
 		 * page not found template
 		 */
 		public function errorPageNotFound(){
 			$this->customError(__('Page Not Found'), __('The page you requested does not exist.'), 'error', array('header' => 'HTTP/1.0 404 Not Found'));
+		}
+
+		/**
+		 * Writes the current Symphony Configuration object to a file in the
+		 * CONFIG directory. This will overwrite any existing configuration
+		 * file every time this function is called.
+		 *
+		 * @deprecated This function is deprecated in Symphony 2.3 and will be
+		 * removed in Symphony 2.4. Use `Configuration->write()` instead.
+		 * @see core.Configuration#write()
+		 * @return boolean
+		 *  True if the Configuration object was successfully written, false otherwise
+		 */
+		public function saveConfig(){
+			return self::Configuration()->write();
 		}
 
 	}

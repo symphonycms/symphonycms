@@ -702,6 +702,24 @@
 		}
 
 		/**
+		 * This function takes `$table` and `$field` names and returns boolean
+		 * if the `$table` contains the `$field`.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $table
+		 *  The table name
+		 * @param string $field
+		 *  The field name
+		 * @return boolean
+		 *  True if `$table` contains `$field`, false otherwise
+		 */
+		public function tableContainsField($table, $field){
+			$results = $this->fetch("DESC `{$table}` `{$field}`");
+
+			return (is_array($results) && !empty($results));
+		}
+
+		/**
 		 * If an error occurs in a query, this function is called which logs
 		 * the last query and the error number and error message from MySQL
 		 * before throwing a new DatabaseException
@@ -778,14 +796,26 @@
 		 *  If one of the queries fails, false will be returned and no further queries
 		 *  will be executed, otherwise true will be returned.
 		 */
-		public function import($sql){
+		public function import($sql, $use_server_encoding = true, $force_engine = false){
+			if($use_server_encoding){
+				$sql = str_replace('DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci', NULL, $sql);
+				$sql = str_replace('COLLATE utf8_unicode_ci', NULL, $sql);
+			}
+
+			if($force_engine){
+				// Silently attempt to change the storage engine. This prevents INNOdb errors.
+				$this->query('SET storage_engine=MYISAM');
+			}
+
 			$queries = preg_split('/;[\\r\\n]+/', $sql, -1, PREG_SPLIT_NO_EMPTY);
 
-			if(is_array($queries) && !empty($queries)){
-				foreach($queries as $sql){
-					if(trim($sql) != '') $result = $this->query($sql);
-					if(!$result) return false;
-				}
+			if(!is_array($queries) || empty($queries) || count($queries) <= 0){
+				throw new Exception('The SQL string contains no queries.');
+			}
+
+			foreach($queries as $sql){
+				if(trim($sql) != '') $result = $this->query($sql);
+				if(!$result) return false;
 			}
 
 			return true;

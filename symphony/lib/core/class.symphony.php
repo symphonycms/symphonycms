@@ -10,7 +10,6 @@
 	 * the Frontend and Administration classes
 	 */
 	require_once(CORE . '/class.errorhandler.php');
-
 	require_once(CORE . '/class.configuration.php');
 	require_once(CORE . '/class.log.php');
 	require_once(CORE . '/class.cookie.php');
@@ -99,24 +98,20 @@
 				General::cleanArray($_POST);
 			}
 
-			// Includes the existing CONFIG file and initialises the Configuration
-			// by setting the values with the setArray function.
-			include(CONFIG);
-			self::$Configuration = new Configuration(true);
-			self::$Configuration->setArray($settings);
+			$this->initialiseConfiguration();
 
-			define_safe('__SYM_DATE_FORMAT__', self::$Configuration->get('date_format', 'region'));
-			define_safe('__SYM_TIME_FORMAT__', self::$Configuration->get('time_format', 'region'));
-			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::$Configuration->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
-			DateTimeObj::setSettings(self::$Configuration->get('region'));
+			define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
+			define_safe('__SYM_TIME_FORMAT__', self::Configuration()->get('time_format', 'region'));
+			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
+			DateTimeObj::setSettings(self::Configuration()->get('region'));
 
 			// Initialize language management
 			Lang::initialize();
 
 			$this->initialiseLog();
 
-			GenericExceptionHandler::initialise(self::$Log);
-			GenericErrorHandler::initialise(self::$Log);
+			GenericExceptionHandler::initialise(self::Log());
+			GenericErrorHandler::initialise(self::Log());
 
 			$this->initialiseDatabase();
 			$this->initialiseExtensionManager();
@@ -150,6 +145,26 @@
 		}
 
 		/**
+		 * Setter for `$Configuration`. This function initialise the configuration
+		 * object and populate its properties based on the given $array.
+		 *
+		 * @since Symphony 2.3
+		 * @param array $data
+		 *  An array of settings to be stored into the Configuration object
+		 */
+		public function initialiseConfiguration(array $data = array()){
+			if(empty($data)){
+				// Includes the existing CONFIG file and initialises the Configuration
+				// by setting the values with the setArray function.
+				include(CONFIG);
+				$data = $settings;
+			}
+
+			self::$Configuration = new Configuration(true);
+			self::$Configuration->setArray($data);
+		}
+
+		/**
 		 * Accessor for the current `Configuration` instance. This contains
 		 * representation of the the Symphony config file.
 		 *
@@ -173,19 +188,22 @@
 		 * Setter for `$Log`. This function uses the configuration
 		 * settings in the 'log' group in the Configuration to create an instance. Date
 		 * formatting options are also retrieved from the configuration.
+		 *
+		 * @param string $filename (optional)
+		 *  The file to write the log to, if omitted this will default to `ACTIVITY_LOG`
 		 */
-		public function initialiseLog(){
-			if(self::$Log instanceof Log) return true;
+		public function initialiseLog($filename = null) {
+			if(self::$Log instanceof Log && self::$Log->getLogPath() == $filename) return true;
 
-			self::$Log = new Log(ACTIVITY_LOG);
-			self::$Log->setArchive((self::$Configuration->get('archive', 'log') == '1' ? true : false));
-			self::$Log->setMaxSize(intval(self::$Configuration->get('maxsize', 'log')));
-			self::$Log->setDateTimeFormat(self::$Configuration->get('date_format', 'region') . ' ' . self::$Configuration->get('time_format', 'region'));
+			if(is_null($filename)) $filename = ACTIVITY_LOG;
 
-			if(self::$Log->open(Log::APPEND, self::$Configuration->get('write_mode', 'file')) == 1){
-				self::$Log->writeToLog('Symphony Log', true);
-				self::$Log->writeToLog('Version: '. self::$Configuration->get('version', 'symphony'), true);
-				self::$Log->writeToLog('--------------------------------------------', true);
+			self::$Log = new Log($filename);
+			self::$Log->setArchive((self::Configuration()->get('archive', 'log') == '1' ? true : false));
+			self::$Log->setMaxSize(intval(self::Configuration()->get('maxsize', 'log')));
+			self::$Log->setDateTimeFormat(self::Configuration()->get('date_format', 'region') . ' ' . self::Configuration()->get('time_format', 'region'));
+
+			if(self::$Log->open(Log::APPEND, self::Configuration()->get('write_mode', 'file')) == 1){
+				self::$Log->initialise('Symphony Log');
 			}
 		}
 
@@ -206,12 +224,11 @@
 		 * weeks.
 		 */
 		public function initialiseCookie(){
-
 			$cookie_path = @parse_url(URL, PHP_URL_PATH);
 			$cookie_path = '/' . trim($cookie_path, '/');
 
 			define_safe('__SYM_COOKIE_PATH__', $cookie_path);
-			define_safe('__SYM_COOKIE_PREFIX_', self::$Configuration->get('cookie_prefix', 'symphony'));
+			define_safe('__SYM_COOKIE_PREFIX_', self::Configuration()->get('cookie_prefix', 'symphony'));
 
 			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX_, TWO_WEEKS, __SYM_COOKIE_PATH__);
 		}
@@ -242,9 +259,37 @@
 		}
 
 		/**
-		 * Setter for the `$Database`. This will create a new Database driver
-		 * and then attempt to create a connection to the database using the
-		 * connection details provided in the Symphony configuration. If any
+		 * Setter for `$Database`, accepts a Database object. If `$database`
+		 * is omitted, this function will set `$Database` to be of the `MySQL`
+		 * class.
+		 *
+		 * @since Symphony 2.3
+		 * @param StdClass $database (optional)
+		 *  The class to handle all Database operations, if omitted this function
+		 *  will set `self::$Database` to be an instance of the `MySQL` class.
+		 * @return boolean
+		 *  This function will always return true
+		 */
+		public function setDatabase(StdClass $database = null) {
+			if (self::Database()) return true;
+
+			self::$Database = !is_null($database) ? $database : new MySQL;
+
+			return true;
+		}
+
+		/**
+		 * Accessor for the current `$Database` instance.
+		 *
+		 * @return MySQL
+		 */
+		public static function Database(){
+			return self::$Database;
+		}
+
+		/**
+		 * This will initialise the Database class and attempt to create a connection
+		 * using the connection details provided in the Symphony configuration. If any
 		 * errors occur whilst doing so, a Symphony Error Page is displayed.
 		 *
 		 * @return boolean
@@ -252,25 +297,23 @@
 		 *  initialised successfully.
 		 */
 		public function initialiseDatabase(){
-			if (self::$Database) return true;
+			$this->setDatabase();
 
-			self::$Database = new MySQL;
-
-			$details = self::$Configuration->get('database');
+			$details = self::Configuration()->get('database');
 
 			try{
-				if(!self::$Database->connect($details['host'], $details['user'], $details['password'], $details['port'], $details['db'])) return false;
-				if(!self::$Database->isConnected()) return false;
+				if(!self::Database()->connect($details['host'], $details['user'], $details['password'], $details['port'], $details['db'])) return false;
+				if(!self::Database()->isConnected()) return false;
 
-				self::$Database->setPrefix($details['tbl_prefix']);
-				self::$Database->setCharacterEncoding();
-				self::$Database->setCharacterSet();
+				self::Database()->setPrefix($details['tbl_prefix']);
+				self::Database()->setCharacterEncoding();
+				self::Database()->setCharacterSet();
 
-				if(self::$Configuration->get('query_caching', 'database') == 'off') self::$Database->disableCaching();
-				elseif(self::$Configuration->get('query_caching', 'database') == 'on') self::$Database->enableCaching();
+				if(self::Configuration()->get('query_caching', 'database') == 'off') self::Database()->disableCaching();
+				elseif(self::Configuration()->get('query_caching', 'database') == 'on') self::Database()->enableCaching();
 			}
 			catch(DatabaseException $e){
-				$error = self::$Database->getlastError();
+				$error = self::Database()->getlastError();
 				throw new SymphonyErrorPage(
 					$error['num'] . ': ' . $error['msg'],
 					'Symphony Database Error',
@@ -283,15 +326,6 @@
 			}
 
 			return true;
-		}
-
-		/**
-		 * Accessor for the current `$Database` instance.
-		 *
-		 * @return MySQL
-		 */
-		public static function Database(){
-			return self::$Database;
 		}
 
 		/**
@@ -315,20 +349,20 @@
 		 */
 		public function login($username, $password, $isHash=false){
 
-			$username = self::$Database->cleanValue($username);
-			$password = self::$Database->cleanValue($password);
+			$username = self::Database()->cleanValue($username);
+			$password = self::Database()->cleanValue($password);
 
 			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
 
 				if(!$isHash) $password = General::hash($password);
 
-				$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
+				$id = self::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
 
 				if($id){
 					$this->Author = AuthorManager::fetchByID($id);
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
-					self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+					self::Database()->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 
 					return true;
 				}
@@ -352,12 +386,12 @@
 		 *  True if the Author is logged in, false otherwise
 		 */
 		public function loginFromToken($token){
-			$token = self::$Database->cleanValue($token);
+			$token = self::Database()->cleanValue($token);
 
 			if(strlen(trim($token)) == 0) return false;
 
 			if(strlen($token) == 6){
-				$row = self::$Database->fetchRow(0, sprintf("
+				$row = self::Database()->fetchRow(0, sprintf("
 						SELECT `a`.`id`, `a`.`username`, `a`.`password`
 						FROM `tbl_authors` AS `a`, `tbl_forgotpass` AS `f`
 						WHERE `a`.`id` = `f`.`author_id`
@@ -368,10 +402,10 @@
 					DateTimeObj::getGMT('c'), $token
 				));
 
-				self::$Database->delete('tbl_forgotpass', " `token` = '{$token}' ");
+				self::Database()->delete('tbl_forgotpass', " `token` = '{$token}' ");
 			}
 			else{
-				$row = self::$Database->fetchRow(0, sprintf(
+				$row = self::Database()->fetchRow(0, sprintf(
 					"SELECT `id`, `username`, `password`
 					FROM `tbl_authors`
 					WHERE SUBSTR(%s(CONCAT(`username`, `password`)), 1, 8) = '%s'
@@ -385,7 +419,7 @@
 				$this->Author = AuthorManager::fetchByID($row['id']);
 				$this->Cookie->set('username', $row['username']);
 				$this->Cookie->set('pass', $row['password']);
-				self::$Database->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+				self::Database()->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 
 				return true;
 			}
@@ -422,15 +456,15 @@
 			}
 			else{
 
-				$username = self::$Database->cleanValue($this->Cookie->get('username'));
-				$password = self::$Database->cleanValue($this->Cookie->get('pass'));
+				$username = self::Database()->cleanValue($this->Cookie->get('username'));
+				$password = self::Database()->cleanValue($this->Cookie->get('pass'));
 
 				if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
 
-					$id = self::$Database->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
+					$id = self::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
 
 					if($id){
-						self::$Database->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+						self::Database()->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
 						$this->Author = AuthorManager::fetchByID($id);
 
 						// Only set custom author language in the backend

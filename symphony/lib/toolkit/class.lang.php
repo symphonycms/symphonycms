@@ -191,6 +191,8 @@
 
 			// Language extensions
 			foreach($extensions as $extension) {
+				if($extension->isDot() || $extension->isFile()) continue;
+
 				// Core translations
 				$core_handle = (strpos($extension->getFilename(), 'lang_') !== false)
 					? str_replace('lang_', '', $extension->getFilename())

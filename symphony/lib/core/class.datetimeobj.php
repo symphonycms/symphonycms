@@ -312,4 +312,91 @@
 			return '<abbr class="timeago" title="' . self::get(DateTime::RFC2822) . '">' . self::get($format) . '</abbr>';
 		}
 
+		public static function getTimezones(){
+			include_once(TEMPLATE . '/date.timezones.php'); // $timezones
+
+			return $timezones;
+		}
+
+		public static function getTimezonesSelectOptions($selected){
+			$timezones = self::getTimezones();
+			$options = array();
+			$groups = array();
+
+			foreach($timezones as $tz){
+				if(preg_match('/\//', $tz)){
+					$parts = preg_split('/\//', $tz, 2, PREG_SPLIT_NO_EMPTY);
+					$groups[$parts[0]][] = $parts[1];
+				}
+				else $groups[$tz] = $tz;
+			}
+
+			foreach($groups as $key => $val){
+				if(is_array($val)){
+					$tmp = array('label' => $key, 'options' => array());
+					foreach($val as $zone){
+						$tmp['options'][] = array("$key/$zone", "$key/$zone" == $selected, str_replace('_', ' ', $zone));
+					}
+					$options[] = $tmp;
+				}
+				else $options[] = array($key, $key == $selected, str_replace('_', ' ', $key));
+			}
+
+			return $options;
+		}
+
+		public static function getDateFormats(){
+			return array(
+				'Y/m/d',	// e. g. 2011/01/20
+				'm/d/Y',	// e. g. 01/20/2011
+				'm/d/y',	// e. g. 10/20/11
+				'Y-m-d',	// e. g. 2011-01-20
+				'm-d-Y',	// e. g. 01-20-2011
+				'm-d-y',	// e. g. 01-20-11
+				'd.m.Y',	// e. g. 20.01.2011
+				'j.n.Y',	// e. g. 20.1.2011 - no leading zeros
+				'd.m.y',	// e. g. 20.01.11
+				'j.n.y',	// e. g. 20.1.11 - no leading zeros
+				'd F Y',	// e. g. 20 January 2011
+				'd M Y',	// e. g. 20 Jan 2011
+				'j. F Y',	// e. g. 20. January 2011 - no leading zeros
+				'j. M. Y',	// e. g. 20. Jan. 2011 - no leading zeros
+			);
+		}
+
+		public static function getDateFormatsSelectOptions($selected){
+			$formats = self::getDateFormats();
+			$options = array();
+
+			foreach($formats as $option) {
+				$leadingZero = '';
+				if(strpos($option, 'j') !== false || strpos($option, 'n') !== false) {
+					$leadingZero = ' (' . __('no leading zeros') . ')';
+				}
+				$options[] = array($option, $option == $selected, self::format('now', $option) . $leadingZero);
+			}
+
+			return $options;
+		}
+
+		public static function getTimeFormats(){
+			return array(
+				'H:i:s',	// e. g. 20:45:32
+				'H:i',		// e. g. 20:45
+				'g:i:s a',	// e. g. 8:45:32 pm
+				'g:i a',	// e. g. 8:45 pm
+			);
+		}
+
+		public static function getTimeFormatsSelectOptions($selected){
+			$formats = self::getTimeFormats();
+			$options = array();
+
+			foreach($formats as $option) {
+				$options[] = array($option, $option == $selected, self::get($option));
+			}
+
+			return $options;
+		}
+
 	}

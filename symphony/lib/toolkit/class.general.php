@@ -96,10 +96,10 @@
 		 *  true if there are no errors in validating the XML, false otherwise.
 		 */
 		public static function validateXML($data, &$errors, $isFile=true, $xsltProcessor=NULL, $encoding='UTF-8') {
-			$_parser 	= null;
-			$_data	 	= null;
-			$_vals		= array();
-			$_index	= array();
+			$_parser = null;
+			$_data = null;
+			$_vals = array();
+			$_index = array();
 
 			$_data = ($isFile) ? file_get_contents($data) : $data;
 
@@ -124,13 +124,14 @@
 					return false;
 				}
 
-			}else{
+			}
+			else{
 
 				$_parser = xml_parser_create();
 				xml_parser_set_option($_parser, XML_OPTION_SKIP_WHITE, 0);
 				xml_parser_set_option($_parser, XML_OPTION_CASE_FOLDING, 0);
 
-				if(!xml_parse($_parser, $_data)) {
+				if(!xml_parse($_parser, $_data)){
 					$errors = array('error' => xml_get_error_code($_parser) . ': ' . xml_error_string(xml_get_error_code($_parser)),
 									'col' => xml_get_current_column_number($_parser),
 									'line' => (xml_get_current_line_number($_parser) - 2));
