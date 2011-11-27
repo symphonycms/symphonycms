@@ -377,13 +377,13 @@
 			$string = preg_replace('/[\\.\'"]+/', NULL, $string);
 
 			// Trim it
-			if($max_length != NULL && is_numeric($max_length)) $string = General::limitWords($string, $max_length);
+			$string = General::limitWords($string, $max_length);
 
 			// Replace spaces (tab, newline etc) with the delimiter
 			$string = preg_replace('/[\s]+/', $delim, $string);
 
 			// Find all legal characters
-			preg_match_all('/[^<>?@:!-\/\[-`ëí;‘’…]+/u', $string, $matches);
+			preg_match_all('/[^<>?@:!-\/\[-`;‘’…]+/u', $string, $matches);
 
 			// Join only legal character with the $delim
 			$string = implode($delim, $matches[0]);
@@ -1036,7 +1036,7 @@
 			$files = array();
 
 			$prefix = str_replace($strip_root, '', $dir);
-			
+
 			if($prefix != "")
 				$prefix .= "/";
 
@@ -1155,7 +1155,7 @@
 			$result = '';
 			$length = 0;
 
-			while(is_array($array) && !empty($array) && $length > $maxChars){
+			while(!empty($array) && $length > $maxChars){
 				$length += strlen(array_pop($array)) + 1;
 			}
 

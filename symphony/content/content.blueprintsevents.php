@@ -7,7 +7,7 @@
 	 * The Event Editor allows a developer to create events that typically
 	 * allow Frontend forms to populate Sections or edit Entries.
 	 */
-	require_once(CONTENT . '/content.resourcespage.php');
+	require_once(TOOLKIT . '/class.resourcespage.php');
 
 	Class contentBlueprintsEvents extends ResourcesPage {
 
@@ -281,7 +281,7 @@
 			if(trim($fields['source']) == '') $this->_errors['source'] = __('This is a required field');
             $filters = (is_array($fields['filters'])) ? $fields['filters'] : array();
 
-			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
+			$classname = Lang::createHandle($fields['name'], 255, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
 
 			// Check to make sure the classname is not empty after handlisation.

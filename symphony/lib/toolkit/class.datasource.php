@@ -217,10 +217,9 @@
 
 		/**
 		 * This function will parse a string (usually a URL) and fully evaluate any
-		 * parameters (defined by {$param}) to return the absolute string value
+		 * parameters (defined by {$param}) to return the absolute string value.
 		 *
 		 * @since Symphony 2.3
-		 * @todo This belongs in the Dynamic XML/Remote JSON class, probably not here..
 		 * @param string $url
 		 *  The string (usually a URL) that contains the parameters (or doesn't)
 		 * @return string

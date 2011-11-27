@@ -182,29 +182,29 @@
 		/**
 		 * Fetch all languages available in the core language folder and the language extensions.
 		 * The function stores all language information in the private variable `$_languages`.
-		 * It contains an array with the name and handle of each language.
-		 * Furthermore it add an array of all extensions available in a specific language.
+		 * It contains an array with the name and handle of each language and an array of all
+		 * extensions available in that language.
 		 */
 		private static function fetch() {
-
 			// Fetch extensions
 			$extensions = new DirectoryIterator(EXTENSIONS);
 
 			// Language extensions
 			foreach($extensions as $extension) {
+				// Core translations
+				$core_handle = (strpos($extension->getFilename(), 'lang_') !== false)
+					? str_replace('lang_', '', $extension->getFilename())
+					: null;
 
-				$folder = $extension->getPathname() . '/lang';
-				$directory = General::listStructure($folder, array(), true, 'asc', $extension->getPathname() . '/lang');
+				// Loop over the `/lang` directory of this `$extension` searching for language
+				// files. If `/lang` isn't a directory, `UnexpectedValueException` will be
+				// thrown.
+				try {
+					$directory = new DirectoryIterator($extension->getPathname() . '/lang');
+					foreach($directory as $file) {
+						if($file->isDot()) continue;
 
-				if(is_array($directory['filelist']) && !empty($directory['filelist'])) {
-					foreach($directory['filelist'] as $file) {
-
-						// Fetch language file
-						$path = $folder . '/' . $file;
-						if(file_exists($path)) {
-							include($path);
-							unset($dictionary, $transliterations);
-						}
+						include($file->getPathname());
 
 						// Get language code
 						$code = explode('.', $file);
@@ -212,17 +212,16 @@
 
 						$lang = self::$_languages[$code];
 
-						// Handle and available extensions
-						$handle = (isset($lang)) ? $lang['handle'] : null;
+						// Available extensions
 						$extensions = (isset($lang)) ? $lang['extensions'] : array();
 
 						// Core translations
-						if(strpos($extension->getFilename(), 'lang_') !== false){
-							$handle = str_replace('lang_', '', $extension->getFilename());
+						if($core_handle){
+							$handle = $core_handle;
 						}
-
 						// Extension translations
 						else {
+							$handle = (isset($lang)) ? $lang['handle'] : null;
 							$extensions = array_merge(array($extension->getFilename()), $extensions);
 						}
 
@@ -237,10 +236,11 @@
 						else {
 							self::$_languages[$code] = $temp[$code];
 						}
-
 					}
 				}
-
+				catch (UnexpectedValueException $ex) {
+					continue;
+				}
 			}
 		}
 
