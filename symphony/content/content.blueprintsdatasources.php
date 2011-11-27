@@ -538,10 +538,10 @@
 
 			$label = Widget::Label(__('Required URL Parameter'));
 			$label->appendChild(new XMLElement('i', __('Optional')));
-			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param'])));
+			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), null, array('placeholder' => __('$param'))));
 			$fieldset->appendChild($label);
 
-			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value. Do not wrap the parameter with curly-braces.'));
+			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value.'));
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
 
@@ -553,29 +553,36 @@
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 
 			$subfieldset = new XMLElement('fieldset', NULL);
-			$subfieldset->appendChild(new XMLElement('legend', __('Parameter Output')));
+			$subfieldset->appendChild(new XMLElement('legend', __('Parameters Output')));
 
 			// Support multiple parameters
 			if(!is_array($fields['param'])) $fields['param'] = array($fields['param']);
 
-			$label = Widget::Label(__('Use Field'));
+			$label = Widget::Label(__('Use Fields'));
+			$prefix = '$ds-' . (isset($this->_context[1]) ? Lang::createHandle($fields['name']) : '?') . '.';
+
 			$options = array(
-				array('label' => __('Authors'), 'options' => array(
-						array('id', ($fields['source'] == 'authors' && in_array('id', $fields['param'])), __('Author ID')),
-						array('username', ($fields['source'] == 'authors' && in_array('username', $fields['param'])), __('Username')),
-						array('name', ($fields['source'] == 'authors' && in_array('name', $fields['param'])), __('Name')),
-						array('email', ($fields['source'] == 'authors' && in_array('email', $fields['param'])), __('Email')),
-						array('user_type', ($fields['source'] == 'authors' && in_array('user_type', $fields['param'])), __('User type')),
-						)
-					),
+				array('label' => __('Authors'), 'options' => array())
 			);
 
+			foreach(array('id', 'username', 'name', 'email', 'user_type') as $p){
+				$options[0]['options'][] = array(
+					$p,
+					($fields['source'] == 'authors' && in_array($p, $fields['param'])),
+					$prefix . $p
+				);
+			}
+
 			foreach($field_groups as $section_id => $section_data){
-				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array(
-					array('system:id', ($fields['source'] == $section_data['section']->get('id') && in_array('system:id', $fields['param'])), __('System ID')),
-					array('system:date', ($fields['source'] == $section_data['section']->get('id') && in_array('system:date',  $fields['param'])), __('System Date')),
-					array('system:author', ($fields['source'] == $section_data['section']->get('id') && in_array('system:author', $fields['param'])), __('System Author'))
-				));
+				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array());
+
+				foreach(array('id', 'date', 'author') as $p){
+					$optgroup['options'][] = array(
+						'system:' . $p,
+						($fields['source'] == $section_data['section']->get('id') && in_array('system:' . $p, $fields['param'])),
+						$prefix . 'system-' . $p
+					);
+				}
 
 				$authorOverride = false;
 
@@ -587,7 +594,7 @@
 						$optgroup['options'][] = array(
 							$input->get('element_name'),
 							($fields['source'] == $section_data['section']->get('id') && in_array($input->get('element_name'), $fields['param'])),
-							$input->get('label')
+							$prefix . $input->get('element_name')
 						);
 					}
 				}
@@ -597,21 +604,6 @@
 
 			$label->appendChild(Widget::Select('fields[param][]', $options, array('class' => 'filtered', 'multiple' => 'multiple')));
 			$subfieldset->appendChild($label);
-
-			$param_names = '';
-			if($this->_context[0] == 'edit') {
-				foreach($fields['param'] as $param) {
-					$param_names .= '<code id="output-param-name">$ds-' . $existing->dsParamROOTELEMENT . '.' . (is_null($param) ? '?' : str_replace(':', '-', $param)) .'</code>, ';
-				}
-				$param_names = trim($param_names, ', ');
-			}
-			else {
-				$param_names = '<code id="output-param-name">$ds-' . __('Untitled') . '</code>';
-			}
-
-			$p = new XMLElement('p', __('The parameters %s will be created with this field’s value for XSLT or other data sources to use.', array($param_names)));
-			$p->setAttribute('class', 'help');
-			$subfieldset->appendChild($p);
 
 			$div->appendChild($subfieldset);
 
