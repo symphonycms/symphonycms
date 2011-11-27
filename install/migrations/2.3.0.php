@@ -35,10 +35,11 @@
 			// 2.3dev
 			if(version_compare(self::$existing_version, '2.3dev', '<=')) {
 				Symphony::Configuration()->set('version', '2.3dev', 'symphony');
+				Symphony::Configuration()->set('useragent', 'Symphony/2.3dev', 'general');
 
 				// Add Publish Label to `tbl_fields`
 				if(!Symphony::Database()->tableContainsField('tbl_fields', 'publish_label')) {
-					Symphony::Database()->query('ALTER TABLE `tbl_fields` ADD `publish_label` VARCHAR(255) COLLATE utf8_unicode_ci NULL DEFAULT NULL');
+					Symphony::Database()->query('ALTER TABLE `tbl_fields` ADD `publish_label` VARCHAR(255) DEFAULT NULL');
 				}
 
 				// Migrate any Checkbox's Long Description to Publish Label

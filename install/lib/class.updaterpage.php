@@ -19,9 +19,13 @@
 
 		protected function __build() {
 			parent::__build(
-				Symphony::Configuration()->get('version', 'symphony')
+				// Replace the installed version with the updated version
+				isset($this->_params['version'])
+					? $this->_params['version']
+					: Symphony::Configuration()->get('version', 'symphony')
 			);
 
+			// Add Release Notes for the latest migration
 			if(isset($this->_params['release-notes'])){
 				$h1 = end($this->Body->getChildrenByName('h1'));
 				$h1->appendChild(
@@ -96,7 +100,7 @@
 
 			$this->Form->appendChild(
 				new XMLElement('p',
-					__('Congratulations rock star, you have just updated your Symphony install to the latest and greatest!')
+					__('Congratulations rock star! You just updated %s to the latest and greatest Symphony!', array(Symphony::Configuration()->get('sitename', 'general')))
 				)
 			);
 			$this->Form->appendChild(
@@ -106,7 +110,7 @@
 			);
 
 			$submit = new XMLElement('div', null, array('class' => 'submit'));
-			$submit->appendChild(Widget::input('submit', __('I promise, now take me to the login page'), 'submit'));
+			$submit->appendChild(Widget::input('submit', __('Ok, now take me to the login page'), 'submit'));
 
 			$this->Form->appendChild($submit);
 

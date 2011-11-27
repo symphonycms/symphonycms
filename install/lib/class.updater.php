@@ -49,6 +49,36 @@
 			}
 		}
 
+		/**
+		 * Overrides the default `initialiseDatabase()` method
+		 * This allows us to still use the normal accessor
+		 */
+		public function initialiseDatabase(){
+			parent::setDatabase();
+
+			$details = Symphony::Configuration()->get('database');
+
+			try{
+				Symphony::Database()->connect(
+					$details['host'],
+					$details['user'],
+					$details['password'],
+					$details['port'],
+					$details['db']
+				);
+			}
+			catch(DatabaseException $e){
+				self::__abort(
+					'There was a problem while trying to establish a connection to the MySQL server. Please check your settings.',
+				$start);
+			}
+
+			// MySQL: Setting prefix & character encoding
+			Symphony::Database()->setPrefix($details['tbl_prefix']);
+			Symphony::Database()->setCharacterEncoding();
+			Symphony::Database()->setCharacterSet();
+		}
+
 		public function run() {
 			// Initialize log
 			if(is_null(Symphony::Log())){

@@ -398,14 +398,14 @@
 		/**
 		 * Determines whether this query is a read operation, or if it is a write operation.
 		 * A write operation is determined as any query that starts with CREATE, INSERT,
-		 * REPLACE, UPDATE, DELETE, OPTIMIZE or TRUNCATE. Anything else is
+		 * REPLACE, ALTER, DELETE, UPDATE, OPTIMIZE or TRUNCATE. Anything else is
 		 * considered to be a read operation which are subject to query caching.
 		 *
 		 * @return integer
 		 *  `MySQL::__WRITE_OPERATION__` or `MySQL::__READ_OPERATION__`
 		 */
 		public function determineQueryType($query){
-			return (preg_match('/^(create|insert|replace|delete|update|optimize|truncate)/i', $query) ? MySQL::__WRITE_OPERATION__ : MySQL::__READ_OPERATION__);
+			return (preg_match('/^(create|insert|replace|alter|delete|update|optimize|truncate)/i', $query) ? MySQL::__WRITE_OPERATION__ : MySQL::__READ_OPERATION__);
 		}
 
 		/**
