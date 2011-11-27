@@ -23,7 +23,7 @@ pre code {
 	overflow: auto;
 }
 i, var {
-	color: rgba(0, 0, 0, 0.3);
+	color: #a9a9a9;
 	text-shadow: none;
 	font-style: normal;
 }
@@ -51,6 +51,7 @@ table {
 	width: 100%;
 	table-layout: fixed;
 	word-wrap: break-word;
+	margin-top: 8px;
 }
 th {
 	padding-right: 19px;
@@ -98,7 +99,7 @@ th a:after {
 th a:active,
 th a.active,
 th a.active:after {
-	color: rgba(0, 0, 0, 0.5);
+	color: #808080;
 }
 th a:after,
 th a.active:hover:after,
@@ -205,7 +206,7 @@ tr.selecting a {
 	color: #f2f2f2;
 }
 .help {
-	color: rgba(0, 0, 0, 0.55);
+	color: #808080;
 }
 p.label {
 	margin: 0 0 2px;
@@ -344,8 +345,8 @@ div.compact label i {
 
 fieldset.settings {
 	position: relative;
-	padding: 1em 0 1em 275px;
-	margin: 0 18px 1em;
+	padding: 10px 0 10px 275px;
+	margin: 0 18px 10px;
 	border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 fieldset.settings > legend {
@@ -365,7 +366,8 @@ fieldset.settings p.help {
 fieldset.settings li .label {
 	margin: 1em 0 1.25em;
 }
-fieldset.settings:first-child {
+fieldset.settings:first-of-type {
+	margin-top: 5px;
 	border-top: none;
 }
 fieldset.settings > legend + .help {
@@ -675,7 +677,7 @@ input[type=submit]:active,
 	white-space: nowrap;
 	font-size: 12px;
 	border-bottom: 1px solid #bbb;
-	box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 0 6px #a9a9a9;
 	background-color: #d7d7d2;
 	background-image: -webkit-linear-gradient(top, #efefed 0%, #efefed 33%, #d7d7d2 67%, #d7d7d2 100%); 
 	background-image:    -moz-linear-gradient(top, #efefed 0%, #efefed 33%, #d7d7d2 67%, #d7d7d2 100%); 
@@ -831,7 +833,7 @@ input[type=submit]:active,
 	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 #breadcrumbs a:hover {
-	border-bottom-color: rgba(0, 0, 0, 0.3);
+	border-bottom-color: #a9a9a9;
 	color: rgba(0, 0, 0, 0.8);
 }
 #breadcrumbs span {
@@ -878,7 +880,7 @@ ul.tabs li a {
 	clear: both;
 	position: relative;
 	background: #fff;
-	padding: 8px 0 5em;
+	padding: 0 0 5em;
 	border-top: 1px solid rgba(191, 191, 183, 0.65);
 	box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.05);
 }
@@ -980,6 +982,7 @@ ul.page input.error, ul.page input.error:focus {
 	float: left;
 	width: 60%;
 	padding: 0 0 2em 18px;
+	margin-top: 5px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -988,6 +991,7 @@ ul.page input.error, ul.page input.error:focus {
 	float: right;
 	width: 40%;
 	padding: 0 18px 2em;
+	margin-top: 5px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -995,7 +999,7 @@ ul.page input.error, ul.page input.error:focus {
 .primary label,
 .secondary label,
 .secondary .label {
-	margin-top: 11px;
+	margin: 10px 0 0;
 }
 .primary .group label,
 .secondary .group label {
@@ -1015,6 +1019,13 @@ ul.page input.error, ul.page input.error:focus {
 .primary label > span.frame:first-child,
 .secondary label > span.frame:first-child {
 	margin-top: 0;
+}
+.secondary .field-checkbox {
+	margin-top: 25px;
+	min-height: 30px;
+}
+.field {
+	min-height: 45px;
 }
 .file input {
 	margin: -3px 0;

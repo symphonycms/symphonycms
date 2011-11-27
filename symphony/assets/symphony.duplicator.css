@@ -104,7 +104,7 @@
 }
 .duplicator .instance .content {
 	border-top: 1px solid #DCDCD7;
-	padding: 1em 1em 0 1em;
+	padding: 1em 1em 0.01em 1em;
 	position: relative;
 }
 
