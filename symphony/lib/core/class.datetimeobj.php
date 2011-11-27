@@ -274,25 +274,6 @@
 				}
 			}
 
-			// Timezone
-			// If a timezone was given, apply it
-			if($timezone !== null) {
-				$date->setTimezone(new DateTimeZone($timezone));
-			}
-			// No timezone given, apply the default timezone
-			else if (isset(self::$settings['timezone'])) {
-				$date->setTimezone(new DateTimeZone(self::$settings['timezone']));
-			}
-
-			// Format date
-			$date = $date->format($format);
-
-			// Localize date
-			// Convert date string from English back to the activated Language
-			if($localize === true) {
-				$date = Lang::localizeDate($date);
-			}
-
 			// Return custom formatted date, use ISO 8601 date by default
 			return $date;
 		}
