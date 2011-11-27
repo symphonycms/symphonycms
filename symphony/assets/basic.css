@@ -8,6 +8,7 @@
  */
 
 html, body, div, span, applet, object, iframe,
+header, nav, section, aside, footer,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, font, img, ins, kbd, q, s, samp,
@@ -31,8 +32,8 @@ input, select, textarea, button {
 	vertical-align: baseline;
 }
 button::-moz-focus-inner {
-    border:0;
-    padding:0;
+	border:0;
+	padding:0;
 }
 ol, ul {
 	list-style: none;
@@ -41,16 +42,19 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
+header, nav, section, aside, footer {
+	display: block;
+}
 
 /*-----------------------------------------------------------------------------
 	Shared styles
 -----------------------------------------------------------------------------*/
 
 body {
-	font: 68.75%/1.5 Lucida Grande, Tahoma, Verdana, sans-serif;
+	font: 68.75%/1.5 Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
 }
 a {
-	color: #5072bf;
+	color: #3f69a5;
 	text-decoration: underline;
 	cursor: pointer;
 }
@@ -143,6 +147,10 @@ select[multiple] {
 button {
 	padding: 3.5px 6px 4px;
 }
+button,
+input[type=submit] {
+	font-family: Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
+}
 
 /*-----------------------------------------------------------------------------
 	Globals - Errors
@@ -151,10 +159,12 @@ button {
 .invalid {
 	color: #fff;
 	margin-bottom: 1.5em;
+	text-shadow: 1px 1px rgba(0, 0, 0, 0.25);
 }
 .invalid label {
 	margin-bottom: 0;
-	background-color: #d42;
+	padding: 0.75em 1em 0.75em 0.75em;
+	background-color: #EB6347;
 	border: 1px solid #c31;
 	border-bottom-width: 0;
 }
@@ -183,12 +193,15 @@ body .invalid label > i {
 }
 .invalid > label {
 	padding: 0.75em 1em 0.75em;
+	background-color: #EB6347;
+	border: 1px solid #c31;
+	border-bottom-width: 0;
 }
 .invalid > p {
 	clear: left;
 	margin: 0;
 	padding: 0 1em 0.75em;
-	background-color: #d42;
+	background-color: #EB6347;
 	border: 1px solid #c31;
 	border-top-width: 0;
 	border-bottom-color: #b21;

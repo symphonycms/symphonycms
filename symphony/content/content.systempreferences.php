@@ -14,22 +14,29 @@
 
 	class contentSystemPreferences extends AdministrationPage {
 
-		## Overload the parent 'view' function since we dont need the switchboard logic
+		public $_errors = array();
+
+		// Overload the parent 'view' function since we dont need the switchboard logic
 		public function view() {
 			$this->setPageType('form');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Preferences'))));
-			
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Preferences'), __('Symphony'))));
+
 			$this->appendSubheading(__('Preferences'));
 
 			$bIsWritable = true;
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
 			if (!is_writable(CONFIG)) {
-				$this->pageAlert(__('The Symphony configuration file, <code>/manifest/config.php</code>, is not writable. You will not be able to save changes to preferences.'), Alert::ERROR);
+				$this->pageAlert(__('The Symphony configuration file, %s, is not writable. You will not be able to save changes to preferences.', array('<code>/manifest/config.php</code>')), Alert::ERROR);
 				$bIsWritable = false;
 
 			} else if ($formHasErrors) {
-				$this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
+				$this->pageAlert(
+					__('An error occurred while processing this form.')
+					. ' <a href="#error">'
+					. __('See below for details.')
+					. '</a>'
+					, Alert::ERROR);
 
 			} else if (isset($this->_context[0]) && $this->_context[0] == 'success') {
 				$this->pageAlert(__('Preferences saved.'), Alert::SUCCESS);
@@ -59,7 +66,7 @@
 				$this->Form->appendChild($group);
 			}
 
-			//Get available EmailGateways
+			// Get available EmailGateways
 			$email_gateway_manager = new EmailGatewayManager($this);
 			$email_gateways = $email_gateway_manager->listAll();
 			if(count($email_gateways) >= 1){
@@ -71,7 +78,7 @@
 				ksort($email_gateways);
 
 				$default_gateway = $email_gateway_manager->getDefaultGateway();
-				$selected_is_installed = $email_gateway_manager->__find($default_gateway);
+				$selected_is_installed = $email_gateway_manager->__getClassPath($default_gateway);
 
 				$options = array();
 				foreach($email_gateways as $handle => $details) {
@@ -109,12 +116,13 @@
 			$attr = array('accesskey' => 's');
 			if(!$bIsWritable) $attr['disabled'] = 'disabled';
 			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', $attr));
+			$this->Form->prependChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array_merge($attr, array('class' => 'irrelevant'))));
 
 			$this->Form->appendChild($div);
 		}
 
 		public function action() {
-			##Do not proceed if the config file is read only
+			// Do not proceed if the config file is read only
 			if (!is_writable(CONFIG)) redirect(SYMPHONY_URL . '/system/preferences/');
 
 			/**

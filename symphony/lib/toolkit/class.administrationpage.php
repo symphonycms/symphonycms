@@ -12,24 +12,18 @@
 	 * and the view/action being the view.
 	 */
 
+	require_once(TOOLKIT . '/class.pagemanager.php');
 	require_once(TOOLKIT . '/class.htmlpage.php');
 	require_once(TOOLKIT . '/class.alert.php');
 
-	Class AdministrationPage extends HTMLPage{
+	Class AdministrationPage extends HTMLPage {
 
 		/**
-		 * An instance of the Administration class
-		 * @var Administration
-		 * @see core.Administration
-		 */
-		public $_Parent;
-
-		/**
-		 * An instance of the Alert class. Used to display page level
+		 * An instance of the `Alert` class. Used to display page level
 		 * messages to Symphony users.
 		 * @var Alert
 		 */
-		public $Alert = null;
+		public $Alert = array();
 
 		/**
 		 * As the name suggests, a `<div>` that holds the following `$Header`,
@@ -46,17 +40,26 @@
 		public $Header = null;
 
 		/**
+		 * A `<div>` that contains the breadcrumbs, the page title and some contextual
+		 * actions (e.g. "Create new").
+		 * @since Symphony 2.3
+		 * @var XMLElement
+		 */
+		public $Context = null;
+
+		/**
+		 * An object that stores the markup for the breadcrumbs and is only used
+		 * internally.
+		 * @since Symphony 2.3
+		 * @var XMLElement
+		 */
+		private $Breadcrumbs = null;
+
+		/**
 		 * A `<div>` that contains the content of a Symphony backend page.
 		 * @var XMLElement
 		 */
 		public $Contents = null;
-
-		/**
-		 * A `<div>` that contains the Symphony footer, typically the version and
-		 * the current Author's details.
-		 * @var XMLElement
-		 */
-		public $Footer = null;
 
 		/**
 		 * An associative array of the navigation where the key is the group
@@ -90,20 +93,14 @@
 		private $_body_class = '';
 
 		/**
-		 * Constructor takes the Administration instance and sets it
-		 * to be the `$this->_Parent`. Calls the parent constructor to set up
-		 * the basic HTML, Head and Body XMLElements. This function
-		 * also sets the XMLElement type to be HTML, instead of XML
-		 *
-		 * @param Administration $parent
-		 *  The Administration object that this page has been created from
-		 *  passed by reference
+		 * Constructor calls the parent constructor to set up
+		 * the basic HTML, Head and Body `XMLElement`'ss. This function
+		 * also sets the `XMLElement` element style to be HTML, instead of XML
 		 */
-		public function __construct(Administration &$parent){
+		public function __construct(){
 			parent::__construct();
 
 			$this->Html->setElementStyle('html');
-			$this->_Parent = $parent;
 		}
 
 		/**
@@ -128,25 +125,28 @@
 		 *  uses a space separator
 		 */
 		public function setBodyClass($class) {
-			# Prevents duplicate "index" classes
-			if ($this->_context['page'] != 'index' || $class != 'index')
+			// Prevents duplicate "index" classes
+			if (!isset($this->_context['page']) || $this->_context['page'] != 'index' || $class != 'index') {
 				$this->_body_class .= $class;
+			}
 		}
 
 		/**
-		 * Sets this page's `$Alert` to an instance of the Alert class of a
-		 * given Alter type. Unless the Alert is an Error, it is required
-		 * the a message be passed to this function.
+		 * Given a `$message` and an optional `$type`, this function will
+		 * add an Alert instance into this page's `$this->Alert` property.
+		 * Since Symphony 2.3, there may be more than one `Alert` per page.
+ 		 * Unless the Alert is an Error, it is required the `$message` be
+		 * passed to this function.
 		 *
 		 * @param string $message
 		 *  The message to display to users
 		 * @param string $type
 		 *  An Alert constant, being `Alert::NOTICE`, `Alert::ERROR` or
 		 *  `Alert::SUCCESS`. The differing types will show the error
-		 *  in a different style in the backend.
+		 *  in a different style in the backend. If omitted, this defaults
+		 *  to `Alert::NOTICE`.
 		 */
 		public function pageAlert($message = null, $type = Alert::NOTICE){
-
 			if(is_null($message) && $type == Alert::ERROR){
 				$message = 'There was a problem rendering this page. Please check the activity log for more details.';
 			}
@@ -155,36 +155,79 @@
 
 			if(strlen(trim($message)) == 0) throw new Exception('A message must be supplied unless flagged as Alert::ERROR');
 
-			if(!($this->Alert instanceof Alert) || ($this->Alert->type == Alert::NOTICE && in_array($type, array(Alert::ERROR, Alert::SUCCESS)))){
-				$this->Alert = new Alert($message, $type);
-			}
+			$this->Alert[] = new Alert($message, $type);
 		}
 
 		/**
-		 * Appends the heading of this Symphony page to the Form element.
-		 * If a link is provided, it will be append to `$value`
+		 * Appends the heading of this Symphony page to the Context element.
+		 * Action buttons can be provided (e.g. "Create new") as second parameter.
 		 *
+		 * @since Symphony 2.3
 		 * @param string $value
 		 *  The heading text
-		 * @param XMLElement|string $html
-		 *  Some HTML to append to the heading, this can be provided as an
-		 *  XMLElement or as a string. traditionally Symphony uses this to append
-		 *  a link to the heading
+		 * @param array|XMLElement|string $actions
+		 *  Some contextual actions to append to the heading, they can be provided as
+		 *  an array of XMLElements or strings. Traditionally Symphony uses this to append
+		 *  a "Create new" link to the Context div.
 		 */
-		public function appendSubheading($value, $html = null){
+		public function appendSubheading($value, $actions = null){
+			if(!is_array($actions) && $actions){ // Backward compatibility
+				$actions = array($actions);
+			}
 
-			if($html && is_object($html)) $value = '<span>' . $value . '</span> ' . $html->generate(false);
-			elseif($html) $value = '<span>' . $value . '</span> ' . $html;
+			if(!empty($actions)){
+				$ul = new XMLElement('ul', NULL, array('class' => 'actions'));
 
-			$this->Contents->prependChild(new XMLElement('h2', $value));
+				foreach($actions as $a){
+					$ul->appendChild(new XMLElement('li', $a));
+				}
+				$this->Context->appendChild($ul);
+			}
+
+			$this->Breadcrumbs->appendChild(new XMLElement('h2', $value));
+		}
+
+		/**
+		 * Allows developers to specify a list of nav items that build the path to the
+		 * current page or, in jargon, "breadcrumbs".
+		 *
+		 * @since Symphony 2.3
+		 * @param array $values
+		 *  An array of XMLElements or strings that compose the path. If breadcrumbs
+		 *  already exist, any new item will be appended to the rightmost part of the
+		 *  path.
+		 */
+		public function insertBreadcrumbs(array $values) {
+			if(empty($values)) return;
+
+			if($this->Breadcrumbs instanceof XMLELement
+				&& count($this->Breadcrumbs->getChildrenByName('nav')) === 1) {
+				$nav = $this->Breadcrumbs->getChildrenByName('nav');
+				$nav = $nav[0];
+
+				$p = $nav->getChildren();
+				$p = $p[0];
+			}
+			else {
+				$p = new XMLElement('p');
+				$nav = new XMLElement('nav');
+				$nav->appendChild($p);
+
+				$this->Breadcrumbs->prependChild($nav);
+			}
+
+			foreach($values as $v){
+				$p->appendChild($v);
+				$p->appendChild(new XMLElement('span', '&#8250;', array('class' => 'sep')));
+			}
 		}
 
 		/**
 		 * This function initialises a lot of the basic elements that make up a Symphony
 		 * backend page such as the default stylesheets and scripts, the navigation and
-		 * the footer. Any alerts are also appended by this function. view() is called to
-		 * build the actual content of the page. Delegates fire to allow extensions to add
-		 * elements to the `<head>` and footer.
+		 * the footer. Any alerts are also appended by this function. `view()` is called to
+		 * build the actual content of the page. Two delegates fire, `InitaliseAdminPageHead`
+		 * and `AppendElementBelowView` to allow extensions to add elements to the `<head>` and footer.
 		 *
 		 * @see view()
 		 * @uses InitaliseAdminPageHead
@@ -204,30 +247,36 @@
 
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Lang::get());
-			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
+			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 0);
+
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 40);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/admin.css', 'screen', 41);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.duplicator.css', 'screen', 70);
+
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.js', 50);
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.color.js', 51);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.collapsible.js', 60);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.orderable.js', 61);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.selectable.js', 62);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.duplicator.js', 63);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.tags.js', 64);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.pickable.js', 65);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/admin.js', 71);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.js', 60);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.collapsible.js', 61);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.orderable.js', 62);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.selectable.js', 63);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.duplicator.js', 64);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.tags.js', 65);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.pickable.js', 66);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/admin.js', 70);
 
 			$this->addElementToHead(
 				new XMLElement(
 					'script',
-					"Symphony.Context.add('env', " . json_encode($this->_context) . "); Symphony.Context.add('root', '" . URL . "');",
+					"Symphony.Context.add('env', " . json_encode(array_merge(
+						array('page-namespace' => Symphony::getPageNamespace()),
+						$this->_context
+					)) . "); Symphony.Context.add('root', '" . URL . "');",
 					array('type' => 'text/javascript')
 				), 72
 			);
 
 			/**
-			 * Allows developers to insert items into the page HEAD. Use `$context['parent']->Page`
+			 * Allows developers to insert items into the page HEAD. Use `Administration::instance()->Page`
 			 * for access to the page object
 			 *
 			 * @delegate InitaliseAdminPageHead
@@ -240,42 +289,34 @@
 
 			if(isset($_REQUEST['action'])){
 				$this->action();
-				Administration::instance()->Profiler->sample('Page action run', PROFILE_LAP);
+				Symphony::Profiler()->sample('Page action run', PROFILE_LAP);
 			}
 
+			// Wrapper + Header
 			$this->Wrapper = new XMLElement('div', NULL, array('id' => 'wrapper'));
-			$this->Header = new XMLElement('div', NULL, array('id' => 'header'));
+			$this->Header = new XMLElement('header', NULL, array('id' => 'header'));
 
 			$h1 = new XMLElement('h1');
 			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
 			$this->Header->appendChild($h1);
 
+			$this->appendUserLinks();
 			$this->appendNavigation();
 
+			// Context + Contents
+			$this->Context = new XMLElement('div', NULL, array('id' => 'context'));
+			$this->Breadcrumbs = new XMLElement('div', NULL, array('id' => 'breadcrumbs'));
+			$this->Context->appendChild($this->Breadcrumbs);
+
 			$this->Contents = new XMLElement('div', NULL, array('id' => 'contents'));
-
-			## Build the form
 			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
-
-			$this->view();
 			$this->Contents->appendChild($this->Form);
 
-			$this->Footer = new XMLElement('div', NULL, array('id' => 'footer'));
+			$this->view();
 
-			/**
-			 * Allows developers to add items just above the page footer. Use `$context['parent']->Page`
-			 * for access to the page object
-			 *
-			 * @delegate AppendElementBelowView
-			 * @param string $context
-			 *  '/backend/'
-			 */
-			Symphony::ExtensionManager()->notifyMembers('AppendElementBelowView', '/backend/');
-
-			$this->appendFooter();
 			$this->appendAlert();
 
-			Administration::instance()->Profiler->sample('Page content created', PROFILE_LAP);
+			Symphony::Profiler()->sample('Page content created', PROFILE_LAP);
 		}
 
 		/**
@@ -297,13 +338,9 @@
 				if(General::in_array_multi($page, $item['children'])){
 
 					if(is_array($item['children'])){
-						foreach($item['children'] as $c){
-							if($c['type'] == 'section' && $c['visible'] == 'no' && preg_match('#^' . $c['link'] . '#', $page)) {
-								$page_limit = 'developer';
-							}
-
+						foreach($item['children'] as $c) {
 							if($c['link'] == $page && isset($c['limit'])) {
-								$page_limit	= $c['limit'];
+								$page_limit = $c['limit'];
 							}
 						}
 					}
@@ -332,7 +369,7 @@
 		}
 
 		/**
-		 * Appends the `$this->Header`, `$this->Contents` and `$this->Footer`
+		 * Appends the `$this->Header`, `$this->Context` and `$this->Contents`
 		 * to `$this->Wrapper` before adding the ID and class attributes for
 		 * the `<body>` element. After this has completed the parent's generate
 		 * function is called which will convert the `XMLElement`'s into strings
@@ -342,8 +379,8 @@
 		 */
 		public function generate() {
 			$this->Wrapper->appendChild($this->Header);
+			$this->Wrapper->appendChild($this->Context);
 			$this->Wrapper->appendChild($this->Contents);
-			$this->Wrapper->appendChild($this->Footer);
 
 			$this->Body->appendChild($this->Wrapper);
 
@@ -376,6 +413,8 @@
 		 * @param array $context
 		 */
 		private function __appendBodyClass(array $context = array()){
+			$body_class = '';
+
 			foreach($context as $c) {
 				if (is_numeric($c)) $c = 'id-' . $c;
 				$body_class .= trim($c) . ' ';
@@ -443,8 +482,10 @@
 		/**
 		 * If `$this->Alert` is set, it will be prepended to the Form of this page.
 		 * A delegate is fired here to allow extensions to provide their
-		 * their own Alert messages to the page. Note that only one Alert
-		 * is allowed per page at any one time.
+		 * their own Alert messages to the page. Since Symphony 2.3, there may be
+		 * more than one `Alert` for a particular page. Alerts are displayed in
+		 * reverse order to what they were added, ie. the last Alert to be added will
+		 * be shown first, second will the be the second last Alert and so on.
 		 *
 		 * @uses AppendPageAlert
 		 */
@@ -459,8 +500,8 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AppendPageAlert', '/backend/');
 
-			if(($this->Alert instanceof Alert)){
-				$this->Header->prependChild($this->Alert->asXML());
+			foreach($this->Alert as $alert){
+				$this->Header->prependChild($alert->asXML());
 			}
 		}
 
@@ -491,11 +532,12 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('NavigationPreRender', '/backend/', array('navigation' => &$nav));
 
-			$xNav = new XMLElement('ul');
-			$xNav->setAttribute('id', 'nav');
+			$navElement = new XMLElement('nav', NULL, array('id' => 'nav'));
+			$contentNav = new XMLElement('ul', NULL, array('class' => 'content'));
+			$structureNav = new XMLElement('ul', NULL, array('class' => 'structure'));
 
 			foreach($nav as $n){
-				if($n['visible'] == 'no') continue;
+				if(isset($n['visible']) && $n['visible'] == 'no') continue;
 
 				$can_access = false;
 
@@ -543,14 +585,20 @@
 
 						if($hasChildren){
 							$xGroup->appendChild($xChildren);
-							$xNav->appendChild($xGroup);
+
+							if ($n['type'] === 'content')
+								$contentNav->appendChild($xGroup);
+							else if ($n['type'] === 'structure')
+								$structureNav->appendChild($xGroup);
 						}
 					}
 				}
 			}
 
-			$this->Header->appendChild($xNav);
-			Administration::instance()->Profiler->sample('Navigation Built', PROFILE_LAP);
+			$navElement->appendChild($contentNav);
+			$navElement->appendChild($structureNav);
+			$this->Header->appendChild($navElement);
+			Symphony::Profiler()->sample('Navigation Built', PROFILE_LAP);
 		}
 
 		/**
@@ -598,6 +646,7 @@
 
 				$nav[$index] = array(
 					'name' => __(strval($content->name)),
+					'type' => 'structure',
 					'index' => $index,
 					'children' => array()
 				);
@@ -634,6 +683,7 @@
 
 						$nav[$group_index] = array(
 							'name' => $s['navigation_group'],
+							'type' => 'content',
 							'index' => $group_index,
 							'children' => array()
 						);
@@ -651,13 +701,14 @@
 
 			// Loop over all the installed extensions to add in other navigation items
 			$extensions = Symphony::ExtensionManager()->listInstalledHandles();
-			foreach($extensions as $e){
-				$info = Symphony::ExtensionManager()->about($e);
+			foreach($extensions as $e) {
+				$extension = Symphony::ExtensionManager()->getInstance($e);
+				$extension_navigation = $extension->fetchNavigation();
 
-				if(isset($info['navigation']) && is_array($info['navigation']) && !empty($info['navigation'])){
-					foreach($info['navigation'] as $item){
+				if(is_array($extension_navigation) && !empty($extension_navigation)){
+					foreach($extension_navigation as $item){
 
-						$type = (isset($item['children']) ? Extension::NAV_GROUP : Extension::NAV_CHILD);
+						$type = isset($item['children']) ? Extension::NAV_GROUP : Extension::NAV_CHILD;
 
 						switch($type){
 							case Extension::NAV_GROUP:
@@ -666,9 +717,10 @@
 
 								$nav[$index] = array(
 									'name' => $item['name'],
+									'type' => isset($item['type']) ? $item['type'] : 'structure',
 									'index' => $index,
 									'children' => array(),
-									'limit' => (!is_null($item['limit']) ? $item['limit'] : null)
+									'limit' => isset($item['limit']) ? $item['limit'] : null
 								);
 
 								foreach($item['children'] as $child){
@@ -682,8 +734,8 @@
 									$nav[$index]['children'][] = array(
 										'link' => $link,
 										'name' => $child['name'],
-										'visible' => ($child['visible'] == 'no' ? 'no' : 'yes'),
-										'limit' => (!is_null($child['limit']) ? $child['limit'] : null)
+										'visible' => (isset($child['visible']) && $child['visible'] == 'no') ? 'no' : 'yes',
+										'limit' => isset($child['limit']) ? $child['limit'] : null
 									);
 								}
 
@@ -710,8 +762,8 @@
 								$child = array(
 									'link' => $link,
 									'name' => $item['name'],
-									'visible' => ($item['visible'] == 'no' ? 'no' : 'yes'),
-									'limit' => (!is_null($item['limit']) ? $item['limit'] : null)
+									'visible' => (isset($item['visible']) && $item['visible'] == 'no') ? 'no' : 'yes',
+									'limit' => isset($item['limit']) ? $item['limit'] : null
 								);
 
 								if ($group_index === false) {
@@ -721,7 +773,7 @@
 										'name' => $group_name,
 										'index' => $group_index,
 										'children' => array($child),
-										'limit' => (!is_null($item['limit']) ? $item['limit'] : null)
+										'limit' => isset($item['limit']) ? $item['limit'] : null
 									);
 								} else {
 									// add new location by index
@@ -840,16 +892,10 @@
 		 * this includes the installed Symphony version and the currently logged
 		 * in Author. A delegate is provided to allow extensions to manipulate the
 		 * footer HTML, which is an XMLElement of a `<ul>` element.
-		 *
-		 * @uses AddElementToFooter
+		 * Since Symphony 2.3, it no longer uses the `AddElementToFooter` delegate.
 		 */
-		public function appendFooter(){
-
-			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array('id' => 'version'));
-			$this->Footer->appendChild($version);
-
-			$ul = new XMLElement('ul');
-			$ul->setAttribute('id', 'usr');
+		public function appendUserLinks(){
+			$ul = new XMLElement('ul', NULL, array('id' => 'session'));
 
 			$li = new XMLElement('li');
 			$li->appendChild(
@@ -870,21 +916,9 @@
 
 			$li = new XMLElement('li');
 			$li->appendChild(Widget::Anchor(__('Logout'), SYMPHONY_URL . '/logout/', NULL, NULL, NULL, array('accesskey' => 'l')));
-
 			$ul->appendChild($li);
 
-			/**
-			 * Add new list elements to the footer
-			 *
-			 * @delegate AddElementToFooter
-			 * @param string $context
-			 *  '/backend/'
-			 * @param XMLElement $wrapper
-			 *  A XMLElement representing the `<ul>` at in the Symphony footer, passed by reference
-			 */
-			Symphony::ExtensionManager()->notifyMembers('AddElementToFooter', '/backend/', array('wrapper' => &$ul));
-
-			$this->Footer->appendChild($ul);
+			$this->Header->appendChild($ul);
 		}
 
 		/**
@@ -892,35 +926,17 @@
 		 * There are 5 default system page types, and new types can be added
 		 * by Developers via the Page Editor.
 		 *
+		 * @deprecated This function will be removed in Symphony 2.4.
+		 *  The preferred way to access the page types is via
+		 *  `PageManager::fetchAvailablePageTypes()`
+		 * @see toolkit.PageManager#fetchAvailablePageTypes
 		 * @return array
 		 *  An array of strings of the page types used in this Symphony
 		 *  install. At the minimum, this will be an array with the values
 		 * 'index', 'XML', 'admin', '404' and '403'.
 		 */
 		public function __fetchAvailablePageTypes(){
-			$system_types = array('index', 'XML', 'admin', '404', '403');
-
-			if(!$types = Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` ORDER BY `type` ASC")) return $system_types;
-
-			return (is_array($types) && !empty($types) ? General::array_remove_duplicates(array_merge($system_types, $types)) : $system_types);
-		}
-
-		/**
-		 * Will wrap a `<div>` around a desired element to trigger the default
-		 * Symphony error styling.
-		 *
-		 * @deprecated This function is deprecated and will be removed in the next
-		 *  version of Symphony. This preferred way to wrap an element with an
-		 *  error is using `Widget::wrapFormElementWithError`
-		 * @see toolkit.Widget::wrapFormElementWithError()
-		 * @param XMLElement $element
-		 *	The element that should be wrapped with an error
-		 * @param string $message
-		 *	The text for this error. This will be appended after the `$element`,
-		 *  but inside the wrapping `<div>`
-		 */
-		public function wrapFormElementWithError($element, $message = null){
-			return Widget::wrapFormElementWithError($element, $message);
+			return PageManager::fetchAvailablePageTypes();
 		}
 
 	}

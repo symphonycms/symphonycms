@@ -19,7 +19,6 @@
 	Class SMTP{
 
 		const TIMEOUT	= 30;
-		const EOL		= "\r\n";
 
 		protected $_host;
 		protected $_port;
@@ -389,7 +388,7 @@
 		protected function _send($request){
 			$this->checkConnection();
 
-			$result = fwrite($this->_connection, $request . self::EOL);
+			$result = fwrite($this->_connection, $request . '\r\n');
 			if($result === false){
 				throw new SMTPException(__('Could not send request: %s', array($request)));
 			}

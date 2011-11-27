@@ -323,9 +323,8 @@
 
 		/**
 		 * This will set the character encoding of the connection for sending and
-		 * receiving data. This function will only run if 'runtime_character_set_alter'
-		 * is set to 'true' in the Symphony config. This is set to true by default during
-		 * the Symphony installation. If no character encoding is provided, UTF-8
+		 * receiving data. This function will run every time the database class
+		 * is being initialized. If no character encoding is provided, UTF-8
 		 * is assumed.
 		 *
 		 * @link http://au2.php.net/manual/en/function.mysql-set-charset.php
@@ -450,8 +449,7 @@
 				}
 			}
 
-			$query_hash = md5($query.microtime());
-			self::$_log['query'][$query_hash] = array('query' => $query, 'start' => precision_timer());
+			$start = precision_timer();
 
 			$this->flush();
 			$this->_lastQuery = $query;
@@ -477,7 +475,12 @@
 				mysql_free_result($this->_result);
 			}
 
-			self::$_log['query'][$query_hash]['time'] = precision_timer('stop', self::$_log['query'][$query_hash]['start']);
+			$query_hash = md5($query.$start);
+			self::$_log['query'][$query_hash] = array(
+				'query' => $query,
+				'query_hash' => $query_hash,
+				'time' => precision_timer('stop', $start)
+			);
 
 			return true;
 		}
@@ -715,7 +718,7 @@
 				'num' => $errornum
 			);
 
-			throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query "%3$s"', array($errornum, $msg, $this->_lastQuery)), end(self::$_log['error']));
+			throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query: %3$s', array($errornum, $msg, $this->_lastQuery)), end(self::$_log['error']));
 		}
 
 		/**

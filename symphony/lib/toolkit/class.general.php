@@ -7,20 +7,14 @@
 	 * functions that are used throughout Symphony.
 	 */
 	Class General{
-		/**
-		 * The end-of-line constant.
-		 * @var string
-		 * @deprecated This will be removed in the next version of Symphony
-		 */
-		const CRLF = PHP_EOL;
 
 		/**
 		 * Convert any special characters into their entity equivalents.
 		 *
 		 * @param string $source
-		 *	a string to operate on.
+		 *  a string to operate on.
 		 * @return string
-		 *	the encoded version of the string.
+		 *  the encoded version of the string.
 		 */
 		public static function sanitize($source) {
 			$source = htmlspecialchars($source);
@@ -32,9 +26,9 @@
 		 * Revert any html entities to their character equivalents.
 		 *
 		 * @param string $str
-		 *	a string to operate on
+		 *  a string to operate on
 		 * @return string
-		 *	the decoded version of the string
+		 *  the decoded version of the string
 		 */
 		public static function reverse_sanitize($str){
 		   return htmlspecialchars_decode($str);
@@ -44,12 +38,12 @@
 		 * Validate a string against a set of regular expressions.
 		 *
 		 * @param array|string $string
-		 *	string to operate on
+		 *  string to operate on
 		 * @param array|string $rule
-		 *	a single rule or array of rules
+		 *  a single rule or array of rules
 		 * @return boolean
-		 *	false if any of the rules in $rule do not match any of the strings in
-		 *	`$string`, return true otherwise.
+		 *  false if any of the rules in $rule do not match any of the strings in
+		 *  `$string`, return true otherwise.
 		 */
 		public static function validateString($string, $rule){
 
@@ -71,12 +65,12 @@
 		 * Replace the tabs with spaces in the input string.
 		 *
 		 * @param string $string
-		 *	the string in which to replace the tabs with spaces.
+		 *  the string in which to replace the tabs with spaces.
 		 * @param integer $spaces (optional)
-		 *	the number of spaces to replace each tab with. This argument is optional
-		 *	with a default of 4.
+		 *  the number of spaces to replace each tab with. This argument is optional
+		 *  with a default of 4.
 		 * @return string
-		 *	the resulting string.
+		 *  the resulting string.
 		 */
 		public static function tabsToSpaces($string, $spaces=4){
 			return str_replace("\t", str_pad(NULL, $spaces), $string);
@@ -86,20 +80,20 @@
 		 * Checks an xml document for well-formedness.
 		 *
 		 * @param string $data
-		 *	filename, xml document as a string, or arbitrary string
+		 *  filename, xml document as a string, or arbitrary string
 		 * @param pointer &$errors
-		 *	pointer to an array which will contain any validation errors
+		 *  pointer to an array which will contain any validation errors
 		 * @param boolean $isFile (optional)
-		 *	if this is true, the method will attempt to read from a file, `$data`
-		 *	instead.
+		 *  if this is true, the method will attempt to read from a file, `$data`
+		 *  instead.
 		 * @param mixed $xsltProcessor (optional)
-		 *	if set, the validation will be done using this XSLT processor rather
-		 *	than the built in XML parser. the default is null.
+		 *  if set, the validation will be done using this XSLT processor rather
+		 *  than the built in XML parser. the default is null.
 		 * @param string $encoding (optional)
-		 *	if no XML header is expected, than this should be set to match the
-		 *	encoding of the XML
+		 *  if no XML header is expected, than this should be set to match the
+		 *  encoding of the XML
 		 * @return boolean
-		 *	true if there are no errors in validating the XML, false otherwise.
+		 *  true if there are no errors in validating the XML, false otherwise.
 		 */
 		public static function validateXML($data, &$errors, $isFile=true, $xsltProcessor=NULL, $encoding='UTF-8') {
 			$_parser 	= null;
@@ -154,9 +148,9 @@
 		 * Check that a string is a valid URL.
 		 *
 		 * @param string $url
-		 *	string to operate on
+		 *  string to operate on
 		 * @return string
-		 *	a blank string or a valid URL
+		 *  a blank string or a valid URL
 		 */
 		public static function validateURL($url = null){
 			if(is_null($url) || $url == '') return $url;
@@ -177,7 +171,7 @@
 		 * Strip any slashes from all array values.
 		 *
 		 * @param array &$arr
-		 *	Pointer to an array to operate on. Can be multi-dimensional.
+		 *  Pointer to an array to operate on. Can be multi-dimensional.
 		 */
 		public static function cleanArray(Array &$arr) {
 			foreach($arr as $k => $v){
@@ -197,22 +191,22 @@
 		 * given the following nested array structure:
 		 * `
 		 * array(1 =>
-		 *			array('key' => 'value'),
-		 *		2 =>
-		 *			array('key2' => 'value2', 'key3' => 'value3')
-		 *		)
+		 *  		array('key' => 'value'),
+		 *  	2 =>
+		 *  		array('key2' => 'value2', 'key3' => 'value3')
+		 *  	)
 		 * `
 		 * will flatten to:
 		 * `array('1.key' => 'value', '2.key2' => 'value2', '2.key3' => 'value3')`
 		 *
 		 * @param array &$source
-		 *	The array to flatten, passed by reference
+		 *  The array to flatten, passed by reference
 		 * @param array &$output (optional)
-		 *	The array in which to store the flattened input, passed by reference.
+		 *  The array in which to store the flattened input, passed by reference.
 		 *  if this is not provided then a new array will be created.
 		 * @param string $path (optional)
-		 *	the current prefix of the keys to insert into the output array. this
-		 *	defaults to null.
+		 *  the current prefix of the keys to insert into the output array. this
+		 *  defaults to null.
 		 */
 		public static function flattenArray(Array &$source, &$output = null, $path = null) {
 			if (is_null($output)) $output = array();
@@ -237,21 +231,21 @@
 		 * the following nested array structure:
 		 * `
 		 * array(1 =>
-		 *			array('key' => 'value'),
-		 *		2 =>
-		 *			array('key2' => 'value2', 'key3' => 'value3')
-		 *		)
+		 *  		array('key' => 'value'),
+		 *  	2 =>
+		 *  		array('key2' => 'value2', 'key3' => 'value3')
+		 *  	)
 		 * `
 		 * will flatten to:
 		 * `array('1:key' => 'value', '2:key2' => 'value2', '2:key3' => 'value3')`
 		 *
 		 *
 		 * @param array &$output
-		 *	The array in which to store the flattened input, passed by reference.
+		 *  The array in which to store the flattened input, passed by reference.
 		 * @param array &$source
-		 *	The array to flatten, passed by reference
+		 *  The array to flatten, passed by reference
 		 * @param string $path
-		 *	the current prefix of the keys to insert into the output array.
+		 *  the current prefix of the keys to insert into the output array.
 		 */
 		protected static function flattenArraySub(Array &$output, Array &$source, $path) {
 			foreach ($source as $key => $value) {
@@ -268,7 +262,7 @@
 		 * appropriately, this function will return the same password consistently.
 		 *
 		 * @return string
-		 *	the generated password.
+		 *  the generated password.
 		 */
 		public static function generatePassword(){
 
@@ -340,7 +334,7 @@
 				$email->sender_name = $from_name;
 				$email->sender_email_address = $from_email;
 
-				$email->recipients = $to_email;
+				$email->recipients = $email->setRecipients($to_email);
 				$email->text_plain = $message;
 				$email->subject = $subject;
 
@@ -359,18 +353,18 @@
 		 *
 		 * @since Symphony 2.2.1
 		 * @param string $string
-		 *	String to be cleaned up
+		 *  String to be cleaned up
 		 * @param int $max_length
-		 *	The maximum number of characters in the handle
+		 *  The maximum number of characters in the handle
 		 * @param string $delim
-		 *	All non-valid characters will be replaced with this
+		 *  All non-valid characters will be replaced with this
 		 * @param boolean $uriencode
-		 *	Force the resultant string to be uri encoded making it safe for URLs
+		 *  Force the resultant string to be uri encoded making it safe for URLs
 		 * @param array $additional_rule_set
-		 *	An array of REGEX patterns that should be applied to the `$string`. This
-		 *	occurs after the string has been trimmed and joined with the `$delim`
+		 *  An array of REGEX patterns that should be applied to the `$string`. This
+		 *  occurs after the string has been trimmed and joined with the `$delim`
 		 * @return string
-		 *	Returns resultant handle
+		 *  Returns resultant handle
 		 */
 		public static function createHandle($string, $max_length=255, $delim='-', $uriencode=false, $additional_rule_set=NULL) {
 
@@ -383,13 +377,13 @@
 			$string = preg_replace('/[\\.\'"]+/', NULL, $string);
 
 			// Trim it
-			if($max_length != NULL && is_numeric($max_length)) $string = General::limitWords($string, $max_length);
+			$string = General::limitWords($string, $max_length);
 
 			// Replace spaces (tab, newline etc) with the delimiter
 			$string = preg_replace('/[\s]+/', $delim, $string);
 
 			// Find all legal characters
-			preg_match_all('/[^<>?@:!-\/\[-`ëí;‘’…]+/u', $string, $matches);
+			preg_match_all('/[^<>?@:!-\/\[-`;‘’…]+/u', $string, $matches);
 
 			// Join only legal character with the $delim
 			$string = implode($delim, $matches[0]);
@@ -417,11 +411,11 @@
 		 *
 		 * @since Symphony 2.2.1
 		 * @param string $string
-		 *	String to be cleaned up
+		 *  String to be cleaned up
 		 * @param string $delim
-		 *	Replacement for invalid characters
+		 *  All non-valid characters will be replaced with this
 		 * @return string
-		 *	Returns created filename
+		 *  Returns created filename
 		 */
 		public static function createFilename($string, $delim='-') {
 
@@ -453,11 +447,11 @@
 		 * input string is returned.
 		 *
 		 * @param string $str
-		 *	the string to operate on
+		 *  the string to operate on
 		 * @param integer $val
-		 *	the number to compare lengths with
+		 *  the number to compare lengths with
 		 * @return string|boolean
-		 *	the resulting string or false on failure.
+		 *  the resulting string or false on failure.
 		 */
 		public static function substrmin($str, $val){
 			return(substr($str, 0, min(strlen($str), $val)));
@@ -469,11 +463,11 @@
 		 * the original input string is returned
 		 *
 		 * @param string $str
-		 *	the string to operate on
+		 *  the string to operate on
 		 * @param integer $val
-		 *	the number to compare lengths with
+		 *  the number to compare lengths with
 		 * @return string|boolean
-		 *	the resulting string or false on failure.
+		 *  the resulting string or false on failure.
 		 */
 		public static function substrmax($str, $val){
 			return(substr($str, 0, max(strlen($str), $val)));
@@ -483,12 +477,12 @@
 		 * Extract the last `$num` characters from a string.
 		 *
 		 * @param string $str
-		 *	the string to extract the characters from.
+		 *  the string to extract the characters from.
 		 * @param integer $num
-		 *	the number of characters to extract.
+		 *  the number of characters to extract.
 		 * @return string|boolean
-		 *	a string containing the last `$num` characters of the
-		 *	input string, or false on failure.
+		 *  a string containing the last `$num` characters of the
+		 *  input string, or false on failure.
 		 */
 		public static function right($str, $num){
 			$str = substr($str, strlen($str)-$num,  $num);
@@ -499,12 +493,12 @@
 		 * Extract the first `$num` characters from a string.
 		 *
 		 * @param string $str
-		 *	the string to extract the characters from.
+		 *  the string to extract the characters from.
 		 * @param integer $num
-		 *	the number of characters to extract.
+		 *  the number of characters to extract.
 		 * @return string|boolean
-		 *	a string containing the last `$num` characters of the
-		 *	input string, or false on failure.
+		 *  a string containing the last `$num` characters of the
+		 *  input string, or false on failure.
 		 */
 		public static function left($str, $num){
 			$str = substr($str, 0, $num);
@@ -532,17 +526,54 @@
 		}
 
 		/**
+		 * Recursively deletes all files and directories given a directory. This
+		 * function has two path. This function optionally takes a `$silent` parameter,
+		 * which when false will throw an Exception if there is an error deleting a file
+		 * or folder.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $dir
+		 *  the path of the directory to delete
+		 * @param boolean $silent (optional)
+		 *  true if an exception should be raised if an error occurs, false
+		 *  otherwise. this defaults to true.
+		 * @return boolean
+		 */
+		public static function deleteDirectory($dir, $silent = true) {
+			try {
+				if (!file_exists($dir)) return true;
+
+				if (!is_dir($dir)) return unlink($dir);
+
+				foreach (scandir($dir) as $item) {
+					if ($item == '.' || $item == '..') continue;
+
+					if (!self::deleteDirectory($dir.DIRECTORY_SEPARATOR.$item)) return false;
+				}
+
+				return rmdir($dir);
+			}
+			catch(Exception $ex) {
+				if($slient == false){
+					throw new Exception(__('Unable to remove - %s', array($dir)));
+				}
+
+				return false;
+			}
+		}
+
+		/**
 		 * Search a multi-dimensional array for a value.
 		 *
 		 * @param mixed $needle
-		 *	the value to search for.
+		 *  the value to search for.
 		 * @param array $haystack
-		 *	the multi-dimensional array to search.
+		 *  the multi-dimensional array to search.
 		 * @return boolean
-		 *	true if `$needle` is found in `$haystack`.
-		 *	true if `$needle` == `$haystack`.
-		 *	true if `$needle` is found in any of the arrays contained within `$haystack`.
-		 *	false otherwise.
+		 *  true if `$needle` is found in `$haystack`.
+		 *  true if `$needle` == `$haystack`.
+		 *  true if `$needle` is found in any of the arrays contained within `$haystack`.
+		 *  false otherwise.
 		 */
 		public static function in_array_multi($needle, $haystack){
 
@@ -568,12 +599,12 @@
 		 * Search an array for multiple values.
 		 *
 		 * @param array $needles
-		 *	the values to search the `$haystack` for.
+		 *  the values to search the `$haystack` for.
 		 * @param array $haystack
-		 *	the in which to search for the `$needles`
+		 *  the in which to search for the `$needles`
 		 * @return boolean
-		 *	true if any of the `$needles` are in `$haystack`,
-		 *	false otherwise.
+		 *  true if any of the `$needles` are in `$haystack`,
+		 *  false otherwise.
 		 */
 		public static function in_array_all($needles, $haystack){
 
@@ -589,9 +620,9 @@
 		 * is expected to conform to the structure of the `$_FILES` variable.
 		 *
 		 * @param array $filedata
-		 *	the raw `$_FILES` data structured array
+		 *  the raw `$_FILES` data structured array
 		 * @return array
-		 *	the flattened array.
+		 *  the flattened array.
 		 */
 		public static function processFilePostData($filedata){
 
@@ -624,8 +655,8 @@
 		 * to make it simpler to access multi-part/formdata.
 		 *
 		 * @return array
-		 *	a flat array containing the flattened contents of both `$_POST` and
-		 *	`$_FILES`.
+		 *  a flat array containing the flattened contents of both `$_POST` and
+		 *  `$_FILES`.
 		 */
 		public static function getPostData() {
 			if (!function_exists('merge_file_post_data')) {
@@ -670,12 +701,12 @@
 		 * index type of the input array, whatever that may do.
 		 *
 		 * @param array $array
-		 *	the array to find the next index for.
+		 *  the array to find the next index for.
 		 * @param mixed $seed (optional)
-		 *	the object with which the search for an empty index is initialized. this
-		 *	defaults to null.
+		 *  the object with which the search for an empty index is initialized. this
+		 *  defaults to null.
 		 * @return integer
-		 *	the minimum empty index into the input array.
+		 *  the minimum empty index into the input array.
 		 */
 		public static function array_find_available_index($array, $seed=NULL){
 
@@ -701,11 +732,11 @@
 		 * is returned, the input array is left unchanged.
 		 *
 		 * @param array $array
-		 *	the array to filter.
+		 *  the array to filter.
 		 * @param boolean $ignore_case
-		 *	true if the case of the values in the array should be ignored, false otherwise.
+		 *  true if the case of the values in the array should be ignored, false otherwise.
 		 * @return
-		 *	a new array containing only the unique elements of the input array.
+		 *  a new array containing only the unique elements of the input array.
 		 */
 		public static function array_remove_duplicates(array $array, $ignore_case=false){
 			return ($ignore_case == true ? self::array_iunique($array) : array_unique($array));
@@ -716,11 +747,11 @@
 		 * the case of the values.
 		 *
 		 * @param mixed $needle
-		 *	the object to search the array for.
+		 *  the object to search the array for.
 		 * @param array $haystack
-		 *	the array to search for the `$needle`.
+		 *  the array to search for the `$needle`.
 		 * @return boolean
-		 *	true if the `$needle` is in the `$haystack`, false otherwise.
+		 *  true if the `$needle` is in the `$haystack`, false otherwise.
 		 */
 		public static function in_iarray($needle, array $haystack){
 			foreach($haystack as $key => $value){
@@ -734,9 +765,9 @@
 		 * as a string and comparing them using a case insensitive comparison function.
 		 *
 		 * @param array $array
-		 *	the array to filter.
+		 *  the array to filter.
 		 * @return array
-		 *	a new array containing only the unique elements of the input array.
+		 *  a new array containing only the unique elements of the input array.
 		 */
 		public static function array_iunique(array $array){
 			$tmp = array();
@@ -778,12 +809,12 @@
 		 * The input XML element will be modified as a result of calling this.
 		 *
 		 * @param XMLElement $parent
-		 *	the XML element to append the formatted array data to.
+		 *  the XML element to append the formatted array data to.
 		 * @param array $data
-		 *	the array to format and append to the XML fragment.
+		 *  the array to format and append to the XML fragment.
 		 * @param boolean $validate
-		 *	true if the formatted array data should be validated as it is
-		 *	constructed, false otherwise.
+		 *  true if the formatted array data should be validated as it is
+		 *  constructed, false otherwise.
 		 */
 		public static function array_to_xml(XMLElement $parent, array $data, $validate=false) {
 			foreach ($data as $element_name => $value) {
@@ -822,21 +853,21 @@
 		 * If opening or writing the file fail then this will return false.
 		 *
 		 * @param string $file
-		 *	the path of the file to write.
+		 *  the path of the file to write.
 		 * @param mixed $data
-		 *	the data to write to the file.
+		 *  the data to write to the file.
 		 * @param integer|null $perm (optional)
-		 *	the permissions as an octal number to set set on the resulting file.
-		 *	this defaults to 0644 (if omitted or set to null)
+		 *  the permissions as an octal number to set set on the resulting file.
+		 *  this defaults to 0644 (if omitted or set to null)
 		 * @param string $mode (optional)
 		 * the mode that the file should be opened with, defaults to 'w'. See modes
 		 * at http://php.net/manual/en/function.fopen.php
 		 * @return boolean
-		 *	true if the file is successfully opened, written to, closed and has the
-		 *	required permissions set. false, otherwise.
+		 *  true if the file is successfully opened, written to, closed and has the
+		 *  required permissions set. false, otherwise.
 		 */
 		public static function writeFile($file, $data, $perm = 0644, $mode = 'w'){
-			if(!is_writable(dirname($file)) && (!is_readable($file) || !is_writable($file))) {
+			if((!is_writable(dirname($file)) || !is_readable(dirname($file))) && (!is_readable($file) || !is_writable($file))) {
 				return false;
 			}
 
@@ -873,14 +904,14 @@
 		 * on the value of the input variable $silent.
 		 *
 		 * @param string $file
-		 *	the path of the file to delete
+		 *  the path of the file to delete
 		 * @param boolean $silent (optional)
-		 *	true if an exception should be raised if an error occurs, false
-		 *	otherwise. this defaults to true.
+		 *  true if an exception should be raised if an error occurs, false
+		 *  otherwise. this defaults to true.
 		 * @return boolean
-		 *	true if the file is successfully unlinked, if the unlink fails and
-		 *	silent is set to true then an exception is thrown. if the unlink
-		 *	fails and silent is set to false then this returns false.
+		 *  true if the file is successfully unlinked, if the unlink fails and
+		 *  silent is set to true then an exception is thrown. if the unlink
+		 *  fails and silent is set to false then this returns false.
 		 */
 		public static function deleteFile($file, $slient=true){
 			try {
@@ -899,10 +930,10 @@
 		 * Extract the file extension from the input file path.
 		 *
 		 * @param string $file
-		 *	the path of the file to extract the extension of.
+		 *  the path of the file to extract the extension of.
 		 * @return array
-		 *	an array with a single key 'extension' and a value of the extension
-		 *	of the input path.
+		 *  an array with a single key 'extension' and a value of the extension
+		 *  of the input path.
 		 */
 		public static function getExtension($file){
 			return pathinfo($file, PATHINFO_EXTENSION);
@@ -913,24 +944,24 @@
 		 * structure of a given path.
 		 *
 		 * @param string $dir (optional)
-		 *	the path of the directory to construct the multi-dimensional array
-		 *	for. this defaults to '.'.
+		 *  the path of the directory to construct the multi-dimensional array
+		 *  for. this defaults to '.'.
 		 * @param string $filter (optional)
-		 *	A regular expression to filter the directories. This is positive filter, ie.
+		 *  A regular expression to filter the directories. This is positive filter, ie.
 		 * if the filter matches, the directory is included. Defaults to null.
 		 * @param boolean $recurse (optional)
-		 *	true if sub-directories should be traversed and reflected in the
-		 *	resulting array, false otherwise.
+		 *  true if sub-directories should be traversed and reflected in the
+		 *  resulting array, false otherwise.
 		 * @param mixed $strip_root (optional)
-		 *	null if the `$dir` should be stripped from the entries in the array.
-		 *	anything else if `$dir` should be retained. this defaults to null.
+		 *  If null, the full path to the file will be returned, otherwise the value
+		 *  of `strip_root` will be removed from the file path.
 		 * @param array $exclude (optional)
-		 *	ignore directories listed in this array. this defaults to an empty array.
+		 *  ignore directories listed in this array. this defaults to an empty array.
 		 * @param boolean $ignore_hidden (optional)
-		 *	ignore hidden directory (i.e.directories that begin with a period). this defaults
-		 *	to true.
+		 *  ignore hidden directory (i.e.directories that begin with a period). this defaults
+		 *  to true.
 		 * @return null|array
-		 *	return the array structure reflecting the input directory or null if
+		 *  return the array structure reflecting the input directory or null if
 		 * the input directory is not actually a directory.
 		 */
 		public static function listDirStructure($dir = '.', $filter = null, $recurse = true, $strip_root = null, $exclude = array(), $ignore_hidden = true) {
@@ -966,27 +997,27 @@
 		 * matching any input constraints.
 		 *
 		 * @param string $dir (optional)
-		 *	the path of the directory to construct the multi-dimensional array
-		 *	for. this defaults to '.'.
+		 *  the path of the directory to construct the multi-dimensional array
+		 *  for. this defaults to '.'.
 		 * @param array|string $filters (optional)
-		 *	either a regular expression to filter the files by or an array of
-		 *	files to include.
+		 *  either a regular expression to filter the files by or an array of
+		 *  files to include.
 		 * @param boolean $recurse (optional)
-		 *	true if sub-directories should be traversed and reflected in the
-		 *	resulting array, false otherwise.
+		 *  true if sub-directories should be traversed and reflected in the
+		 *  resulting array, false otherwise.
 		 * @param string $sort (optional)
-		 *	'asc' if the resulting filelist array should be sorted, anything else otherwise.
-		 *	this defaults to 'asc'.
+		 *  'asc' if the resulting filelist array should be sorted, anything else otherwise.
+		 *  this defaults to 'asc'.
 		 * @param mixed $strip_root (optional)
-		 *	null if the `$dir` should be stripped from the entries in the array.
-		 *	anything else if `$dir` should be retained. this defaults to null.
+		 *  If null, the full path to the file will be returned, otherwise the value
+		 *  of `strip_root` will be removed from the file path.
 		 * @param array $exclude (optional)
-		 *	ignore files listed in this array. this defaults to an empty array.
+		 *  ignore files listed in this array. this defaults to an empty array.
 		 * @param boolean $ignore_hidden (optional)
-		 *	ignore hidden files (i.e. files that begin with a period). this defaults
-		 *	to true.
+		 *  ignore hidden files (i.e. files that begin with a period). this defaults
+		 *  to true.
 		 * @return null|array
-		 *	return the array structure reflecting the input directory or null if
+		 *  return the array structure reflecting the input directory or null if
 		 * the input directory is not actually a directory.
 		 */
 		public static function listStructure($dir=".", $filters=array(), $recurse=true, $sort="asc", $strip_root=NULL, $exclude=array(), $ignore_hidden=true){
@@ -1004,6 +1035,11 @@
 			}
 			$files = array();
 
+			$prefix = str_replace($strip_root, '', $dir);
+
+			if($prefix != "")
+				$prefix .= "/";
+
 			foreach(scandir($dir) as $file) {
 				if (
 					($file == '.' or $file == '..')
@@ -1014,23 +1050,23 @@
 
 				if(is_dir("$dir/$file")) {
 					if($recurse) {
-						$files[str_replace($strip_root, '', $dir) . "/$file/"] = self::listStructure("$dir/$file", $filters, $recurse, $sort, $strip_root, $exclude, $ignore_hidden);
+						$files["$prefix$file/"] = self::listStructure("$dir/$file", $filters, $recurse, $sort, $strip_root, $exclude, $ignore_hidden);
 					}
 
-					$files['dirlist'][] = $file;
+					$files['dirlist'][] = "$prefix$file/";
 				}
 				else if($filter_type == 'regex') {
 					if(preg_match($filters, $file)){
-						$files['filelist'][] = $file;
+						$files['filelist'][] = "$prefix$file";
 					}
 				}
 				else if($filter_type == 'file') {
 					if(in_array(self::getExtension($file), $filters)) {
-						$files['filelist'][] = $file;
+						$files['filelist'][] = "$prefix$file";
 					}
 				}
 				else if(is_null($filter_type)){
-					$files['filelist'][] = $file;
+					$files['filelist'][] = "$prefix$file";
 				}
 			}
 
@@ -1042,69 +1078,19 @@
 		}
 
 		/**
-		 * Compare two file structures based on their modification time. Should only
-		 * be used in the context of a sort function such as usort. For example:
-		 * `usort($files, array('General', 'filemtimeSort'));`
-		 *
-		 * @param array $f1
-		 *	the first file structure array to compare.
-		 * @param array $f2
-		 *	the second file structure array to compare `$f1` to.
-		 * @return integer
-		 *	<1, 0, >1 if `$f1` is less than, equal to or greater than `$f2`.
-		 */
-		public static function filemtimeSort($f1, $f2){
-			return filemtime($f1['path'] . '/' . $f1['name']) - filemtime($f1['path'] . '/' . $f1['name']);
-		}
-
-		/**
-		 * Compare two file structure arrays based on their name. Names are
-		 * compared alphabetically. Should only be used in the context of a
-		 * sort function such as usort. For example:
-		 * `usort($files, array('General', 'fileSort'));`
-		 *
-		 * @param array $f1
-		 *	the first file structure array to compare.
-		 * @param array $f2
-		 *	the second file structure array to compare `$f1` to.
-		 * @return integer
-		 *	<1, 0, >1 if `$f1` is less than, equal to or greater than `$f2`.
-		 */
-		public static function fileSort($f1, $f2){
-			return strcmp($f1['name'], $f2['name']);
-		}
-
-		/**
-		 * Compare two file structure arrays based on their name. Names are compared
-		 * alphabetically reversed. For example "z" is less than "a". Should only
-		 * be used in the context of a sort function such as usort. For example:
-		 * `usort($files, array('General', 'fileSortR'));`
-		 *
-		 * @param array $f1
-		 *	the first file structure array to compare.
-		 * @param array $f2
-		 *	the second file structure array to compare `$f1` to.
-		 * @return integer
-		 *	<1, 0, >1 if `$f2` is less than, equal to or greater than `$f1`.
-		 */
-		public static function fileSortR($f1, $f2){
-			return strcmp($f2['name'], $f1['name']);
-		}
-
-		/**
 		 * Count the number of words in a string. Words are delimited by "spaces".
 		 * The characters included in the set of "spaces" are:
-		 *	'&#x2002;', '&#x2003;', '&#x2004;', '&#x2005;',
-		 *	'&#x2006;', '&#x2007;', '&#x2009;', '&#x200a;',
-		 *	'&#x200b;', '&#x2002f;', '&#x205f;'
+		 *  '&#x2002;', '&#x2003;', '&#x2004;', '&#x2005;',
+		 *  '&#x2006;', '&#x2007;', '&#x2009;', '&#x200a;',
+		 *  '&#x200b;', '&#x2002f;', '&#x205f;'
 		 * Any html/xml tags are first removed by strip_tags() and any included html
 		 * entities are decoded. The resulting string is then split by the above set
 		 * of spaces and the resulting size of the resulting array returned.
 		 *
 		 * @param string $string
-		 *	the string from which to count the contained words.
+		 *  the string from which to count the contained words.
 		 * @return integer
-		 *	the number of words contained in the input string.
+		 *  the number of words contained in the input string.
 		 */
 		public static function countWords($string){
 			$string = strip_tags($string);
@@ -1141,17 +1127,17 @@
 		 * then the ellipses are appended to the result which is then returned.
 		 *
 		 * @param string $string
-		 *	the string to truncate.
+		 *  the string to truncate.
 		 * @param integer maxChars (optional)
-		 *	the maximum length of the string to truncate the input string to. this
-		 *	defaults to 200 characters.
+		 *  the maximum length of the string to truncate the input string to. this
+		 *  defaults to 200 characters.
 		 * @param boolean $appendHellip (optional)
-		 *	true if the ellipses should be appended to the result in circumstances
-		 *	where the result is shorter than the input string. false otherwise. this
-		 *	defaults to false.
+		 *  true if the ellipses should be appended to the result in circumstances
+		 *  where the result is shorter than the input string. false otherwise. this
+		 *  defaults to false.
 		 * @return null|string
-		 *	if the resulting string contains only spaces then null is returned. otherwise
-		 *	a string that satisfies the input constraints.
+		 *  if the resulting string contains only spaces then null is returned. otherwise
+		 *  a string that satisfies the input constraints.
 		 */
 		public static function limitWords($string, $maxChars=200, $appendHellip=false) {
 
@@ -1169,7 +1155,7 @@
 			$result = '';
 			$length = 0;
 
-			while(is_array($array) && !empty($array) && $length > $maxChars){
+			while(!empty($array) && $length > $maxChars){
 				$length += strlen(array_pop($array)) + 1;
 			}
 
@@ -1187,15 +1173,15 @@
 		 * in the is_uploaded_file(), move_uploaded_file() and chmod() functions.
 		 *
 		 * @param string $dest_path
-		 *	the file path to which the source file is to be moved.
+		 *  the file path to which the source file is to be moved.
 		 * @param string #dest_name
-		 *	the file name within the file path to which the source file is to be moved.
+		 *  the file name within the file path to which the source file is to be moved.
 		 * @param string $tmp_name
-		 *	the full path name of the source file to move.
+		 *  the full path name of the source file to move.
 		 * @param integer $perm (optional)
-		 *	the permissions to apply to the moved file. this defaults to 0777.
+		 *  the permissions to apply to the moved file. this defaults to 0777.
 		 * @return boolean
-		 *	true if the file was moved and its permissions set as required. false otherwise.
+		 *  true if the file was moved and its permissions set as required. false otherwise.
 		 */
 		public static function uploadFile($dest_path, $dest_name, $tmp_name, $perm=0777){
 
@@ -1222,9 +1208,9 @@
 		 * 1,024 and 1,024*1,024-1 and bytes for values between 0 and 1,024.
 		 *
 		 * @param integer $file_size
-		 *	the number to format.
+		 *  the number to format.
 		 * @return string
-		 *	the formatted number.
+		 *  the formatted number.
 		 */
 		public static function formatFilesize($file_size){
 
@@ -1275,18 +1261,18 @@
 		 * Construct an XML fragment that describes a pagination structure.
 		 *
 		 * @param integer $total_entries (optional)
-		 *	the total number of entries that this structure is paginating. this
-		 *	defaults to 0.
+		 *  the total number of entries that this structure is paginating. this
+		 *  defaults to 0.
 		 * @param integer $total_pages (optional)
-		 *	the total number of pages within the pagination structure. this defaults
-		 *	to 0.
+		 *  the total number of pages within the pagination structure. this defaults
+		 *  to 0.
 		 * @param integer $entries_per_page (optional)
-		 *	the number of entries per page. this defaults to 1.
+		 *  the number of entries per page. this defaults to 1.
 		 * @param integer $current_page (optional)
-		 *	the current page within the total number of pages within this pagination
-		 *	structure. this defaults to 1.
+		 *  the current page within the total number of pages within this pagination
+		 *  structure. this defaults to 1.
 		 * @return XMLElement
-		 *	the constructed XML fragment.
+		 *  the constructed XML fragment.
 		 */
 		public static function buildPaginationElement($total_entries=0, $total_pages=0, $entries_per_page=1, $current_page=1){
 

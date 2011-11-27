@@ -98,7 +98,7 @@
 		 *  True when set, false when not set.
 		 */
 		public function __isset($name){
-			return (isset($this->{"_$name"}) && !is_null($this->{"_$name"}));
+			return isset($this->{"_$name"});
 		}
 
 		/**
@@ -109,10 +109,10 @@
 		public function asXML(){
 
 			$p = new XMLElement('p', $this->message);
-			$p->setAttribute('id', 'notice');
+			$p->setAttribute('class', 'notice');
 
 			if($this->type != self::NOTICE){
-				$p->setAttribute('class', $this->type);
+				$p->setAttribute('class', 'notice ' . $this->type);
 			}
 
 			return $p;

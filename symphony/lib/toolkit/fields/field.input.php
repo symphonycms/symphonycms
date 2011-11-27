@@ -12,8 +12,8 @@
 
 	Class fieldInput extends Field {
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function __construct(){
+			parent::__construct();
 			$this->_name = __('Text Input');
 			$this->_required = true;
 
@@ -63,7 +63,7 @@
 				  UNIQUE KEY `entry_id` (`entry_id`),
 				  KEY `handle` (`handle`),
 				  KEY `value` (`value`)
-				) ENGINE=MyISAM;
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			");
 		}
 
@@ -92,6 +92,7 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
+			$wrapper->appendChild($this->buildPublishLabel());
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');
 
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
@@ -123,7 +124,7 @@
 
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL, $entry_id = null){
 			$value = General::sanitize($data['value']);
-			$label = Widget::Label($this->get('label'));
+			$label = Widget::Label($this->label());
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? $value : NULL)));
 
@@ -135,19 +136,19 @@
 			$message = NULL;
 
 			if($this->get('required') == 'yes' && strlen($data) == 0){
-				$message = __("'%s' is a required field.", array($this->get('label')));
+				$message = __('‘%s’ is a required field.', array($this->get('label')));
 				return self::__MISSING_FIELDS__;
 			}
 
 			if(!$this->__applyValidationRules($data)){
-				$message = __("'%s' contains invalid data. Please check the contents.", array($this->get('label')));
+				$message = __('‘%s’ contains invalid data. Please check the contents.', array($this->get('label')));
 				return self::__INVALID_FIELDS__;
 			}
 
 			return self::__OK__;
 		}
 
-		public function processRawFieldData($data, &$status, $simulate = false, $entry_id = null) {
+		public function processRawFieldData($data, &$status, &$message=null, $simulate = false, $entry_id = null) {
 			$status = self::__OK__;
 
 			if (strlen(trim($data)) == 0) return array();
@@ -200,31 +201,9 @@
 			$field_id = $this->get('id');
 
 			if (self::isFilterRegex($data[0])) {
-				$this->_key++;
-
-				if (preg_match('/^regexp:/i', $data[0])) {
-					$pattern = preg_replace('/^regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'REGEXP';
-				} else {
-					$pattern = preg_replace('/^not-?regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'NOT REGEXP';
-				}
-				
-				if(strlen($pattern) == 0) return;
-
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND (
-						t{$field_id}_{$this->_key}.value {$regex} '{$pattern}'
-						OR t{$field_id}_{$this->_key}.handle {$regex} '{$pattern}'
-					)
-				";
-
-			} elseif ($andOperation) {
+				$this->buildRegexSQL($data[0], array('value', 'handle'), $joins, $where);
+			}
+			else if ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
 					$value = $this->cleanValue($value);
@@ -240,8 +219,9 @@
 						)
 					";
 				}
+			}
 
-			} else {
+			else {
 				if (!is_array($data)) $data = array($data);
 
 				foreach ($data as &$value) {
@@ -277,7 +257,7 @@
 			else {
 				$sort = sprintf(
 					'ORDER BY (
-						SELECT %s 
+						SELECT %s
 						FROM tbl_entries_data_%d AS `ed`
 						WHERE entry_id = e.id
 					) %s',
@@ -301,7 +281,7 @@
 				$data = $r->getData($this->get('id'));
 
 				$value = General::sanitize($data['value']);
-				$handle = Lang::createHandle($value);
+				$handle = Lang::createHandle($data['value']);
 
 				if(!isset($groups[$this->get('element_name')][$handle])){
 					$groups[$this->get('element_name')][$handle] = array(

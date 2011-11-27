@@ -8,13 +8,27 @@
 	 * from the four Symphony types, Section, Authors, Navigation, Dynamic XML,
 	 * and Static XML
 	 */
-	require_once(TOOLKIT . '/class.administrationpage.php');
-	require_once(TOOLKIT . '/class.datasourcemanager.php');
-	require_once(TOOLKIT . '/class.sectionmanager.php');
+	require_once(TOOLKIT . '/class.gateway.php');
+	require_once(TOOLKIT . '/class.resourcespage.php');
 
-	Class contentBlueprintsDatasources extends AdministrationPage{
+	Class contentBlueprintsDatasources extends ResourcesPage{
 
-		## Both the Edit and New pages need the same form
+		public $_errors = array();
+
+		public function sort(&$sort, &$order, $params) {
+			if(is_null($sort)) $sort = 'name';
+
+			return ResourceManager::fetch(RESOURCE_TYPE_DS, array(), array(), $sort . ' ' . $order);
+		}
+
+		public function __viewIndex(){
+			parent::__viewIndex(RESOURCE_TYPE_DS);
+
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Data Sources'), __('Symphony'))));
+			$this->appendSubheading(__('Data Sources'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a new data source'), 'create button', NULL, array('accesskey' => 'c')));
+		}
+
+		// Both the Edit and New pages need the same form
 		public function __viewNew(){
 			$this->__form();
 		}
@@ -24,43 +38,42 @@
 		}
 
 		public function __form(){
-
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
+			if($formHasErrors)
+				$this->pageAlert(
+					__('An error occurred while processing this form.')
+					. ' <a href="#error">'
+					. __('See below for details.')
+					. '</a>'
+					, Alert::ERROR);
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 
 					case 'saved':
 						$this->pageAlert(
-							__(
-								'Data source updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Data sources</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/datasources/new/',
-									SYMPHONY_URL . '/blueprints/components/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Data source updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
+							. __('View all Data sources')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 					case 'created':
 						$this->pageAlert(
-							__(
-								'Data source created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Data sources</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/datasources/new/',
-									SYMPHONY_URL . '/blueprints/components/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Data source created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
+							. __('View all Data sources')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 				}
 			}
-
-			$sectionManager = new SectionManager($this->_Parent);
 
 			if(isset($_POST['fields'])){
 				$fields = $_POST['fields'];
@@ -83,13 +96,13 @@
 			else if($this->_context[0] == 'edit'){
 				$isEditing = true;
 				$handle = $this->_context[1];
-
-				$datasourceManager = new DatasourceManager($this->_Parent);
-				$existing =& $datasourceManager->create($handle, NULL, false);
+				$existing =& DatasourceManager::create($handle, NULL, false);
+				$cache_id = null;
 
 				if (!$existing->allowEditorToParse()) redirect(SYMPHONY_URL . '/blueprints/datasources/info/' . $handle . '/');
 
 				$about = $existing->about();
+				$cache = new Cacheable(Symphony::Database());
 				$fields['name'] = $about['name'];
 
 				$fields['order'] = ($existing->dsParamORDER == 'rand' ? 'random' : $existing->dsParamORDER);
@@ -132,15 +145,13 @@
 						break;
 
 					case 'dynamic_xml':
-						$namespaces = $existing->dsParamFILTERS;
-
-						$fields['dynamic_xml'] = array('namespace' => array());
-						$fields['dynamic_xml']['namespace']['name'] = @array_keys($namespaces);
-						$fields['dynamic_xml']['namespace']['uri'] = @array_values($namespaces);
+						$fields['dynamic_xml']['namespace'] = $existing->dsParamFILTERS;
 						$fields['dynamic_xml']['url'] = $existing->dsParamURL;
 						$fields['dynamic_xml']['xpath'] = $existing->dsParamXPATH;
 						$fields['dynamic_xml']['cache'] = $existing->dsParamCACHE;
-						$fields['dynamic_xml']['timeout'] =	(isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6);
+						$fields['dynamic_xml']['format'] = $existing->dsParamFORMAT;
+						$fields['dynamic_xml']['timeout'] = (isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6);
+						$cache_id = md5($existing->dsParamURL . serialize($existing->dsParamFILTERS) . $existing->dsParamXPATH);
 
 						break;
 
@@ -155,6 +166,16 @@
 						break;
 				}
 
+				// If `clear_cache` is set, clear it..
+				if(isset($cache_id) && in_array('clear_cache', $this->_context)) {
+					$cache->forceExpiry($cache_id);
+					$this->pageAlert(
+						__('Data source cache cleared at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+						. '<a href="' . SYMPHONY_URL . '/blueprints/datasources" accesskey="a">'
+						. __('View all Data sources')
+						. '</a>'
+						, Alert::SUCCESS);
+				}
 			}
 
 			else{
@@ -163,6 +184,7 @@
 				$fields['dynamic_xml']['cache'] = '30';
 				$fields['dynamic_xml']['xpath'] = '/';
 				$fields['dynamic_xml']['timeout'] = '6';
+				$fields['dynamic_xml']['format'] = 'XML';
 
 				$fields['paginate_results'] = 'yes';
 				$fields['max_records'] = '20';
@@ -174,8 +196,11 @@
 			}
 
 			$this->setPageType('form');
-			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Data Sources'), $about['name'])));
+			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($about['name'], __('Data Sources'), __('Symphony'))));
 			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Data Sources'), SYMPHONY_URL . '/blueprints/datasources/'),
+			));
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
@@ -194,7 +219,7 @@
 
 			$label = Widget::Label(__('Source'));
 
-			$sections = $sectionManager->fetch(NULL, 'ASC', 'name');
+			$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 
 			if (!is_array($sections)) $sections = array();
 			$field_groups = array();
@@ -211,7 +236,7 @@
 				array('label' => __('Custom XML'), 'options' => array(
 						array('dynamic_xml', ($fields['source'] == 'dynamic_xml'), __('Dynamic XML')),
 						array('static_xml', ($fields['source'] == 'static_xml'), __('Static XML')),
-				)),
+				))
 			);
 
 			if(is_array($sections) && !empty($sections)){
@@ -219,7 +244,7 @@
 				foreach($sections as $s) $options[0]['options'][] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
 			}
 
-			$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
+			$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'ds-context')));
 			$group->appendChild($label);
 
 			$fieldset->appendChild($group);
@@ -228,7 +253,11 @@
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual sections authors navigation ' . __('Sections') . ' ' . __('System'));
 			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to filter by page parameters.'));
+			$p = new XMLElement('p',
+				__('Use %s syntax to filter by page parameters.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
 
@@ -341,10 +370,10 @@
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
 
-			$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` ORDER BY `title` ASC");
-
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tags');
+
+			$pages = PageManager::fetch(false, array('*'), array(), 'title ASC');
 
 			foreach($pages as $page){
 				$ul->appendChild(new XMLElement('li', preg_replace('/\/{2,}/i', '/', '/' . $page['path'] . '/' . $page['handle'])));
@@ -374,7 +403,11 @@
 
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tags');
-			if($types = $this->__fetchAvailablePageTypes()) foreach($types as $type) $ul->appendChild(new XMLElement('li', $type));
+			if($types = PageManager::fetchAvailablePageTypes()) {
+				foreach($types as $type) {
+					$ul->appendChild(new XMLElement('li', $type));
+				}
+			}
 
 			if(isset($fields['filter']['navigation']['type'])){
 				$li = new XMLElement('li');
@@ -407,7 +440,11 @@
 			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml');
 			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));
 
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to limit by page parameters.'));
+			$p = new XMLElement('p',
+				__('Use %s syntax to limit by page parameters.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
 			$p->setAttribute('class', 'help contextual inverse navigation');
 			$fieldset->appendChild($p);
 
@@ -484,7 +521,7 @@
 				Widget::Input('fields[max_records]', $fields['max_records'], NULL, array('size' => '6')),
 				Widget::Input('fields[page_number]', $fields['page_number'], NULL, array('size' => '6'))
 			);
-			$label->setValue(__('%s Paginate results, limiting to %s entries per page. Return page %s', array($input[0]->generate(false), $input[1]->generate(false), $input[2]->generate(false))));
+			$label->setValue(__('%1$s Paginate results, limiting to %2$s entries per page. Return page %3$s', array($input[0]->generate(false), $input[1]->generate(false), $input[2]->generate(false))));
 
 			if(isset($this->_errors['max_records'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['max_records']));
 			else if(isset($this->_errors['page_number'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['page_number']));
@@ -518,24 +555,26 @@
 			$subfieldset = new XMLElement('fieldset', NULL);
 			$subfieldset->appendChild(new XMLElement('legend', __('Parameter Output')));
 
+			// Support multiple parameters
+			if(!is_array($fields['param'])) $fields['param'] = array($fields['param']);
+
 			$label = Widget::Label(__('Use Field'));
 			$options = array(
-				array('', false, __('None')),
 				array('label' => __('Authors'), 'options' => array(
-						array('id', ($fields['source'] == 'authors' && $fields['param'] == 'id'), __('Author ID')),
-						array('username', ($fields['source'] == 'authors' && $fields['param'] == 'username'), __('Username')),
-						array('name', ($fields['source'] == 'authors' && $fields['param'] == 'name'), __('Name')),
-						array('email', ($fields['source'] == 'authors' && $fields['param'] == 'email'), __('Email')),
-						array('user_type', ($fields['source'] == 'authors' && $fields['param'] == 'user_type'), __('User type')),
+						array('id', ($fields['source'] == 'authors' && in_array('id', $fields['param'])), __('Author ID')),
+						array('username', ($fields['source'] == 'authors' && in_array('username', $fields['param'])), __('Username')),
+						array('name', ($fields['source'] == 'authors' && in_array('name', $fields['param'])), __('Name')),
+						array('email', ($fields['source'] == 'authors' && in_array('email', $fields['param'])), __('Email')),
+						array('user_type', ($fields['source'] == 'authors' && in_array('user_type', $fields['param'])), __('User type')),
 						)
 					),
 			);
 
 			foreach($field_groups as $section_id => $section_data){
 				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array(
-					array('system:id', ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == 'system:id'), __('System ID')),
-					array('system:date', ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == 'system:date'), __('System Date')),
-					array('system:author', ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == 'system:author'), __('System Author'))
+					array('system:id', ($fields['source'] == $section_data['section']->get('id') && in_array('system:id', $fields['param'])), __('System ID')),
+					array('system:date', ($fields['source'] == $section_data['section']->get('id') && in_array('system:date',  $fields['param'])), __('System Date')),
+					array('system:author', ($fields['source'] == $section_data['section']->get('id') && in_array('system:author', $fields['param'])), __('System Author'))
 				));
 
 				$authorOverride = false;
@@ -545,17 +584,32 @@
 
 						if(!$input->allowDatasourceParamOutput()) continue;
 
-						$optgroup['options'][] = array($input->get('element_name'), ($fields['source'] == $section_data['section']->get('id') && $fields['param'] == $input->get('element_name')), $input->get('label'));
+						$optgroup['options'][] = array(
+							$input->get('element_name'),
+							($fields['source'] == $section_data['section']->get('id') && in_array($input->get('element_name'), $fields['param'])),
+							$input->get('label')
+						);
 					}
 				}
 
 				$options[] = $optgroup;
 			}
 
-			$label->appendChild(Widget::Select('fields[param]', $options, array('class' => 'filtered')));
+			$label->appendChild(Widget::Select('fields[param][]', $options, array('class' => 'filtered', 'multiple' => 'multiple')));
 			$subfieldset->appendChild($label);
 
-			$p = new XMLElement('p', __('The parameter <code id="output-param-name">$ds-%s</code> will be created with this field\'s value for XSLT or other data sources to use.', array(($this->_context[0] == 'edit' ? $existing->dsParamROOTELEMENT : __('Untitled')))));
+			$param_names = '';
+			if($this->_context[0] == 'edit') {
+				foreach($fields['param'] as $param) {
+					$param_names .= '<code id="output-param-name">$ds-' . $existing->dsParamROOTELEMENT . '.' . (is_null($param) ? '?' : str_replace(':', '-', $param)) .'</code>, ';
+				}
+				$param_names = trim($param_names, ', ');
+			}
+			else {
+				$param_names = '<code id="output-param-name">$ds-' . __('Untitled') . '</code>';
+			}
+
+			$p = new XMLElement('p', __('The parameters %s will be created with this field’s value for XSLT or other data sources to use.', array($param_names)));
 			$p->setAttribute('class', 'help');
 			$subfieldset->appendChild($p);
 
@@ -658,17 +712,39 @@
 			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
 
+		// Dynamic XML
+
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual dynamic_xml');
 			$fieldset->appendChild(new XMLElement('legend', __('Dynamic XML')));
+
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group offset');
+
 			$label = Widget::Label(__('URL'));
 			$label->appendChild(Widget::Input('fields[dynamic_xml][url]', General::sanitize($fields['dynamic_xml']['url'])));
-			if(isset($this->_errors['dynamic_xml']['url'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['url']));
-			else $fieldset->appendChild($label);
+			if(isset($this->_errors['dynamic_xml']['url'])) $group->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['url']));
+			else $group->appendChild($label);
 
-			$p = new XMLElement('p', __('Use <code>{$param}</code> syntax to specify dynamic portions of the URL.'));
+			$p = new XMLElement('p',
+				__('Use %s syntax to specify dynamic portions of the URL.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
 			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
+			$label->appendChild($p);
+
+			$label = Widget::Label(__('Format'));
+			$label->appendChild(
+				Widget::Select('fields[dynamic_xml][format]', array(
+					array('xml', $fields['dynamic_xml']['format'] == 'xml', 'XML'),
+					array('json', $fields['dynamic_xml']['format'] == 'json', 'JSON')
+				))
+			);
+			if(isset($this->_errors['dynamic_xml']['format'])) $group->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['format']));
+			else $group->appendChild($label);
+
+			$fieldset->appendChild($group);
 
 			$div = new XMLElement('div');
 			$p = new XMLElement('p', __('Namespace Declarations'));
@@ -679,12 +755,16 @@
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
 
-			if(is_array($fields['dynamic_xml']['namespace']['name'])){
-
-				$namespaces = $fields['dynamic_xml']['namespace']['name'];
-				$uri = $fields['dynamic_xml']['namespace']['uri'];
-
-				for($ii = 0; $ii < count($namespaces); $ii++){
+			if(is_array($fields['dynamic_xml']['namespace']) && !empty($fields['dynamic_xml']['namespace'])){
+				$ii = 0;
+				foreach($fields['dynamic_xml']['namespace'] as $name => $uri) {
+					// Namespaces get saved to the file as $name => $uri, however in
+					// the $_POST they are represented as $index => array. This loop
+					// patches the difference.
+					if(is_array($uri)) {
+						$name = $uri['name'];
+						$uri = $uri['uri'];
+					}
 
 					$li = new XMLElement('li');
 					$li->appendChild(new XMLElement('h4', 'Namespace'));
@@ -693,15 +773,16 @@
 					$group->setAttribute('class', 'group');
 
 					$label = Widget::Label(__('Name'));
-					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]', General::sanitize($namespaces[$ii])));
+					$label->appendChild(Widget::Input("fields[dynamic_xml][namespace][$ii][name]", General::sanitize($name)));
 					$group->appendChild($label);
 
 					$label = Widget::Label(__('URI'));
-					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]', General::sanitize($uri[$ii])));
+					$label->appendChild(Widget::Input("fields[dynamic_xml][namespace][$ii][uri]", General::sanitize($uri)));
 					$group->appendChild($label);
 
 					$li->appendChild($group);
 					$ol->appendChild($li);
+					$ii++;
 				}
 			}
 
@@ -713,17 +794,21 @@
 			$group->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][-1][name]'));
 			$group->appendChild($label);
 
 			$label = Widget::Label(__('URI'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][-1][uri]'));
 			$group->appendChild($label);
 
 			$li->appendChild($group);
 			$ol->appendChild($li);
 
 			$div->appendChild($ol);
+			$div->appendChild(
+				new XMLElement('p', __('Namespaces will automatically be discovered when saving this datasource if it does not include any dynamic portions.'), array('class' => 'help'))
+			);
+
 			$fieldset->appendChild($div);
 
 			$label = Widget::Label(__('Included Elements'));
@@ -741,12 +826,19 @@
 			if(isset($this->_errors['dynamic_xml']['cache'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['cache']));
 			else $fieldset->appendChild($label);
 
+			// Check for existing Cache objects
+			if(isset($cache_id)) {
+				$this->appendCacheInformation($fieldset, $cache, $cache_id);
+			}
+
 			$label = Widget::Label();
 			$input = Widget::Input('fields[dynamic_xml][timeout]', max(1, intval($fields['dynamic_xml']['timeout'])), NULL, array('type' => 'hidden'));
 			$label->appendChild($input);
 			$fieldset->appendChild($label);
 
 			$this->Form->appendChild($fieldset);
+
+		// Static XML
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual static_xml');
@@ -776,11 +868,10 @@
 		public function __viewInfo(){
 			$this->setPageType('form');
 
-			$DSManager = new DatasourceManager($this->_Parent);
-			$datasource = $DSManager->create($this->_context[1], NULL, false);
+			$datasource = DatasourceManager::create($this->_context[1], NULL, false);
 			$about = $datasource->about();
 
-			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(__('Symphony'), __('Data Source'), $about['name'])));
+			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($about['name'], __('Data Source'), __('Symphony'))));
 			$this->appendSubheading($about['name']);
 			$this->Form->setAttribute('id', 'controller');
 
@@ -806,8 +897,8 @@
 					case 'version':
 						$fieldset = new XMLElement('fieldset');
 						$fieldset->appendChild(new XMLElement('legend', __('Version')));
-						if(preg_match('/^\d+(\.\d+)*$/', $value)) $fieldset->appendChild(new XMLElement('p', __('%s released on %s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
-						else $fieldset->appendChild(new XMLElement('p', __('Created by %s at %s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+						if(preg_match('/^\d+(\.\d+)*$/', $value)) $fieldset->appendChild(new XMLElement('p', __('%1$s released on %2$s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+						else $fieldset->appendChild(new XMLElement('p', __('Created by %1$s at %2$s', array($value, DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
 						break;
 
 					case 'description':
@@ -842,6 +933,10 @@
 
 		}
 
+		public function __actionIndex(){
+			return parent::__actionIndex(RESOURCE_TYPE_DS);
+		}
+
 		public function __actionEdit(){
 			if(array_key_exists('save', $_POST['action'])) return $this->__formAction();
 			elseif(array_key_exists('delete', $_POST['action'])){
@@ -859,25 +954,29 @@
 				Symphony::ExtensionManager()->notifyMembers('DatasourcePreDelete', '/blueprints/datasources/', array('file' => DATASOURCES . "/data." . $this->_context[1] . ".php"));
 
 				if(!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php')){
-					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
+					$this->pageAlert(
+						__('Failed to delete %s.', array('<code>' . $this->_context[1] . '</code>'))
+						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/data-sources</code>'))
+						, Alert::ERROR
+					);
 				}
-				else{
-
-					$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]".$this->_context[1]."[[:>:]]' ");
+				else {
+					$pages = PageManager::fetch(false, array('data_sources', 'id'), array("
+						`data_sources` REGEXP '[[:<:]]" . $this->_context[1] . "[[:>:]]'
+					"));
 
 					if(is_array($pages) && !empty($pages)){
 						foreach($pages as $page){
-
 							$data_sources = preg_split('/\s*,\s*/', $page['data_sources'], -1, PREG_SPLIT_NO_EMPTY);
 							$data_sources = array_flip($data_sources);
 							unset($data_sources[$this->_context[1]]);
 
 							$page['data_sources'] = implode(',', array_flip($data_sources));
 
-							Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
+							PageManager::edit($page['id'], $page);
 						}
 					}
-					redirect(SYMPHONY_URL . '/blueprints/components/');
+					redirect(SYMPHONY_URL . '/blueprints/datasources/');
 				}
 			}
 		}
@@ -909,8 +1008,22 @@
 			}
 
 			elseif($fields['source'] == 'dynamic_xml'){
+				// Use the TIMEOUT that was specified by the user for a real world indication
+				$timeout = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : 6);
 
-				if(trim($fields['dynamic_xml']['url']) == '') $this->_errors['dynamic_xml']['url'] = __('This is a required field');
+				// If there is a parameter in the URL, we can't validate the existence of the URL
+				// as we don't have the environment details of where this datasource is going
+				// to be executed.
+				$fetch_URL = !preg_match('@{([^}]+)}@i', $fields['dynamic_xml']['url']);
+
+				if($valid_url = self::__isValidURL($fields['dynamic_xml']['url'], $timeout, $fetch_URL)) {
+					if(is_array($valid_url)) {
+						$data = $valid_url['data'];
+					}
+					else {
+						$this->_errors['dynamic_xml']['url'] = $valid_url;
+					}
+				}
 
 				if(trim($fields['dynamic_xml']['xpath']) == '') $this->_errors['dynamic_xml']['xpath'] = __('This is a required field');
 
@@ -936,10 +1049,10 @@
 				}
 			}
 
-			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
+			$classname = Lang::createHandle($fields['name'], 255, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
 
-			##Check to make sure the classname is not empty after handlisation.
+			// Check to make sure the classname is not empty after handlisation.
 			if(empty($classname)) $this->_errors['name'] = __('Please ensure name contains at least one Latin-based alphabet.', array($classname));
 
 			$file = DATASOURCES . '/data.' . $classname . '.php';
@@ -954,8 +1067,8 @@
 				elseif($classname != $existing_handle) $queueForDeletion = DATASOURCES . '/data.' . $existing_handle . '.php';
 			}
 
-			##Duplicate
-			if($isDuplicate) $this->_errors['name'] = __('A Data source with the name <code>%s</code> name already exists', array($classname));
+			// Duplicate
+			if($isDuplicate) $this->_errors['name'] = __('A Data source with the name %s already exists', array('<code>' . $classname . '</code>'));
 
 			if(empty($this->_errors)){
 
@@ -979,6 +1092,8 @@
 				$filter = NULL;
 				$elements = NULL;
 
+				$placeholder = '<!-- GRAB -->';
+
 				switch($source){
 
 					case 'authors':
@@ -993,7 +1108,7 @@
 						$params['paramoutput'] = $fields['param'];
 						$params['sort'] = $fields['sort'];
 
-						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.author.php');", $dsShell);
+						$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.author.php');", $dsShell);
 
 						break;
 
@@ -1005,26 +1120,55 @@
 						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
 						$params['requiredparam'] = trim($fields['required_url_param']);
 
-						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.navigation.php');", $dsShell);
+						$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.navigation.php');", $dsShell);
 
 						break;
 
 					case 'dynamic_xml':
+						// Automatically detect namespaces
+						if(isset($data)) {
+							preg_match_all('/xmlns:([a-z][a-z-0-9\-]*)="([^\"]+)"/i', $data, $matches);
 
-						$namespaces = $fields['dynamic_xml']['namespace'];
+							if(!is_array($fields['dynamic_xml']['namespace'])) {
+								$fields['dynamic_xml']['namespace'] = array();
+							}
+
+							if (isset($matches[2][0])) {
+								$detected_namespaces = array();
+
+								foreach ($fields['dynamic_xml']['namespace'] as $index => $namespace) {
+									$detected_namespaces[] = $namespace['name'];
+									$detected_namespaces[] = $namespace['uri'];
+								}
+
+								foreach ($matches[2] as $index => $uri) {
+									$name = $matches[1][$index];
+
+									if (in_array($name, $detected_namespaces) or in_array($uri, $detected_namespaces)) continue;
+
+									$detected_namespaces[] = $name;
+									$detected_namespaces[] = $uri;
+
+									$fields['dynamic_xml']['namespace'][] = array(
+										'name' => $name,
+										'uri' => $uri
+									);
+								}
+							}
+						}
 
 						$filters = array();
-
-						for($ii = 0; $ii < count($namespaces['name']); $ii++){
-							$filters[$namespaces['name'][$ii]] = $namespaces['uri'][$ii];
+						if(is_array($fields['dynamic_xml']['namespace'])) foreach($fields['dynamic_xml']['namespace'] as $index => $data) {
+							$filters[$data['name']] = $data['uri'];
 						}
 
 						$params['url'] = $fields['dynamic_xml']['url'];
 						$params['xpath'] = $fields['dynamic_xml']['xpath'];
 						$params['cache'] = $fields['dynamic_xml']['cache'];
+						$params['format'] = $fields['dynamic_xml']['format'];
 						$params['timeout'] = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : '6');
 
-						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.dynamic_xml.php');", $dsShell);
+						$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.dynamic_xml.php');", $dsShell);
 
 						break;
 
@@ -1041,7 +1185,7 @@
 							'$this->dsSTATIC = \'%s\';',
 							addslashes(trim($fields['static_xml']))
 						);
-						$dsShell = str_replace('<!-- GRAB -->', $value . PHP_EOL . "include(TOOLKIT . '/data-sources/datasource.static.php');", $dsShell);
+						$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\t" . $value . PHP_EOL . "include(TOOLKIT . '/data-sources/datasource.static.php');", $dsShell);
 						break;
 
 					default:
@@ -1070,7 +1214,7 @@
 
 						if ($params['associatedentrycounts'] == NULL) $params['associatedentrycounts'] = 'no';
 
-						$dsShell = str_replace('<!-- GRAB -->', "include(TOOLKIT . '/data-sources/datasource.section.php');", $dsShell);
+						$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.section.php');", $dsShell);
 
 						break;
 
@@ -1088,9 +1232,6 @@
 					$dependencies = General::array_remove_duplicates($matches[1]);
 					$dsShell = str_replace('<!-- DS DEPENDENCY LIST -->', "'" . implode("', '", $dependencies) . "'", $dsShell);
 				}
-
-				## Remove left over placeholders
-				$dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\r\n){2,}/', '/(\t+[\r\n]){2,}/'), '', $dsShell);
 
 				if($this->_context[0] == 'new') {
 					/**
@@ -1157,27 +1298,33 @@
 					));
 				}
 
+				// Remove left over placeholders
+				$dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\r\n){2,}/', '/(\t+[\r\n]){2,}/'), '', $dsShell);
+
 				// Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file')))
-					$this->pageAlert(__('Failed to write Data source to <code>%s</code>. Please check permissions.', array(DATASOURCES)), Alert::ERROR);
+					$this->pageAlert(
+						__('Failed to write Data source to disk.')
+						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/data-sources</code>'))
+						, Alert::ERROR
+					);
 
 				// Write Successful, add record to the database
 				else{
 
 					if($queueForDeletion){
-
 						General::deleteFile($queueForDeletion);
 
-						## Update pages that use this DS
-						$sql = "SELECT * FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]".$existing_handle."[[:>:]]' ";
-						$pages = Symphony::Database()->fetch($sql);
+						// Update pages that use this DS
+						$pages = PageManager::fetch(false, array('data_sources', 'id'), array("
+							`data_sources` REGEXP '[[:<:]]" . $existing_handle . "[[:>:]]'
+						"));
 
 						if(is_array($pages) && !empty($pages)){
-							foreach($pages as $page){
-
+							foreach($pages as $page) {
 								$page['data_sources'] = preg_replace('/\b'.$existing_handle.'\b/i', $classname, $page['data_sources']);
 
-								Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
+								PageManager::edit($page['id'], $page);
 							}
 						}
 					}
@@ -1210,7 +1357,6 @@
 					}
 
 					redirect(SYMPHONY_URL . '/blueprints/datasources/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
-
 				}
 			}
 		}
@@ -1218,22 +1364,24 @@
 		public function __injectIncludedElements(&$shell, $elements){
 			if(!is_array($elements) || empty($elements)) return;
 
-			$shell = str_replace('<!-- INCLUDED ELEMENTS -->', "public \$dsParamINCLUDEDELEMENTS = array(" . self::CRLF . "\t\t\t\t'" . implode("'," . self::CRLF . "\t\t\t\t'", $elements) . "'" . self::CRLF . '		);' . self::CRLF, $shell);
+			$placeholder = '<!-- INCLUDED ELEMENTS -->';
+			$shell = str_replace($placeholder, "public \$dsParamINCLUDEDELEMENTS = array(" . PHP_EOL . "\t\t\t\t'" . implode("'," . PHP_EOL . "\t\t\t\t'", $elements) . "'" . PHP_EOL . '		);' . PHP_EOL . "\t\t" . $placeholder, $shell);
 		}
 
 		public function __injectFilters(&$shell, $filters){
 			if(!is_array($filters) || empty($filters)) return;
 
-			$string = 'public $dsParamFILTERS = array(' . self::CRLF;
+			$placeholder = '<!-- FILTERS -->';
+			$string = 'public $dsParamFILTERS = array(' . PHP_EOL;
 
 			foreach($filters as $key => $val){
 				if(trim($val) == '') continue;
-				$string .= "\t\t\t\t'$key' => '" . addslashes($val) . "'," . self::CRLF;
+				$string .= "\t\t\t\t'$key' => '" . addslashes($val) . "'," . PHP_EOL;
 			}
 
-			$string .= '		);' . self::CRLF;
+			$string .= "\t\t);" . PHP_EOL . "\t\t" . $placeholder;
 
-			$shell = str_replace('<!-- FILTERS -->', trim($string), $shell);
+			$shell = str_replace($placeholder, trim($string), $shell);
 		}
 
 		public function __injectAboutInformation(&$shell, $details){
@@ -1247,11 +1395,17 @@
 
 			$var_list = NULL;
 			foreach($vars as $key => $val){
-				if(trim($val) == '') continue;
-				$var_list .= '		public $dsParam' . strtoupper($key) . " = '" . addslashes($val) . "';" . PHP_EOL;
+				if(is_array($val)) {
+					$val = "array(" . PHP_EOL . "\t\t\t\t'" . implode("'," . PHP_EOL . "\t\t\t\t'", $val) . "'" . PHP_EOL . '		);';
+					$var_list .= '		public $dsParam' . strtoupper($key) . ' = ' . $val . PHP_EOL;
+				}
+				else if(trim($val) !== '') {
+					$var_list .= '		public $dsParam' . strtoupper($key) . " = '" . addslashes($val) . "';" . PHP_EOL;
+				}
 			}
 
-			$shell = str_replace('<!-- VAR LIST -->', trim($var_list), $shell);
+			$placeholder = '<!-- VAR LIST -->';
+			$shell = str_replace($placeholder, trim($var_list) . PHP_EOL . "\t\t" . $placeholder, $shell);
 		}
 
 		public function __appendAuthorFilter(&$wrapper, $h4_label, $name, $value=NULL, $templateOnly=true){
@@ -1283,6 +1437,68 @@
 
 		private static function __isValidPageString($string){
 			return (bool)preg_match('/^(?:\{\$[\w-]+(?::\$[\w-]+)*(?::\d+)?}|\d+)$/', $string);
+		}
+
+		/**
+		 * Given a `$url` and `$timeout`, this function will use the `Gateway`
+		 * class to determine that it is a valid URL and returns successfully
+		 * before the `$timeout`. If it does not, an error message will be
+		 * returned, otherwise true.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $url
+		 * @param integer $timeout
+		 *  If not provided, this will default to 6 seconds
+		 * @param boolean $fetch_URL
+		 *  Defaults to false, but when set to true, this function will use the
+		 *  `Gateway` class to attempt to validate the URL's existence and it
+		 *  returns before the `$timeout`
+		 * @return string|array
+		 *  Returns an array with the 'data' if it is a valid URL, otherwise a string
+		 *  containing an error message.
+		 */
+		public static function __isValidURL($url, $timeout = 6, $fetch_URL = false) {
+			// Check that URL was provided
+			if(trim($url) == '') {
+				return __('This is a required field');
+			}
+			// Check to see the URL works.
+			else if ($fetch_URL === true) {
+				$gateway = new Gateway;
+				$gateway->init($url);
+				$gateway->setopt('TIMEOUT', $timeout);
+				$data = $gateway->exec();
+
+				$info = $gateway->getInfoLast();
+
+				// 28 is CURLE_OPERATION_TIMEOUTED
+				if($info['curl_error'] == 28) {
+					return __('Request timed out. %d second limit reached.', array($timeout));
+				}
+				else if($data === false || $info['http_code'] != 200) {
+					return __('Failed to load URL, status code %d was returned.', array($info['http_code']));
+				}
+			}
+
+			return array('data' => $data);
+		}
+
+		public function appendCacheInformation(XMLElement $wrapper, Cacheable $cache, $cache_id) {
+			$cachedData = $cache->check($cache_id);
+			if(is_array($cachedData) && !empty($cachedData) && (time() < $cachedData['expiry'])) {
+				$a = Widget::Anchor(__('Clear now'), SYMPHONY_URL . getCurrentPage() . 'clear_cache/');
+				$wrapper->appendChild(
+					new XMLElement('p', __('Cache expires in %d minutes. %s', array(
+						($cachedData['expiry'] - time()) / 60,
+						$a->generate(false)
+					)), array('class' => 'help'))
+				);
+			}
+			else {
+				$wrapper->appendChild(
+					new XMLElement('p', __('Cache has expired or does not exist.'), array('class' => 'help'))
+				);
+			}
 		}
 
 	}

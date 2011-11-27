@@ -37,7 +37,7 @@
 	}
 
 	// Defines
-	define('kVERSION', '2.2.5');
+	define('kVERSION', '2.3dev');
 	define('kINSTALL_ASSET_LOCATION', './symphony/assets/installer');
 	define('kINSTALL_FILENAME', basename(__FILE__));
 	define('DOCROOT', rtrim(dirname(__FILE__), '\\/'));
@@ -115,7 +115,7 @@
 			<p>' . __('Symphony needs the following requirements satisfied before installation can proceed.') . '</p>
 
 			<dl>
-				<dt>' . __('%s 5.2 or above', array('<abbr title="PHP: Hypertext Pre-processor">PHP</abbr>')) . '</dt>
+				<dt>' . __('%s or above', array('<abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.2')) . '</dt>
 				<dd>' . __('Symphony needs a recent version of %s.', array('<abbr title="PHP: Hypertext Pre-processor">PHP</abbr>')) . '</dd>
 			</dl>
 
@@ -141,7 +141,7 @@
 		<body>
 			<h1>' . __('Install Symphony') .  '<em>' . __('Version') . ' ' . kVERSION . '</em></h1>
 			<h2>' . __('Missing File') . '</h2>
-			<p>' . __('It appears that <code>install.sql</code> is either missing or not readable. This is required to populate the database and must be uploaded before installation can commence. Ensure that <code>PHP</code> has read permissions.') . '</p>
+			<p>' . __('It appears that %s is either missing or not readable. This is required to populate the database and must be uploaded before installation can commence. Ensure that PHP has read permissions.', array('<code>install.sql</code>')) . '</p>
 
 		</body>
 
@@ -180,12 +180,10 @@
 		$conf = array();
 
 		$conf['admin']['max_upload_size'] = '5242880';
-		$conf['symphony']['pagination_maximum_rows'] = '17';
-		$conf['symphony']['allow_page_subscription'] = '1';
+		$conf['symphony']['pagination_maximum_rows'] = '20';
 		$conf['symphony']['lang'] = Lang::get();
 		$conf['symphony']['version'] = kVERSION;
 		$conf['symphony']['pages_table_nest_children'] = 'yes';
-		$conf['symphony']['strict_error_handling'] = 'yes';
 		$conf['symphony']['session_gc_divisor'] = '10';
 		$conf['log']['archive'] = '1';
 		$conf['log']['maxsize'] = '102400';

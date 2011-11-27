@@ -28,45 +28,45 @@
 	require_once(TOOLKIT . '/class.authormanager.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
 	require_once(TOOLKIT . '/class.emailgatewaymanager.php');
+	require_once(TOOLKIT . '/class.pagemanager.php');
 
 	Abstract Class Symphony implements Singleton{
 
 		/**
-		 * An instance of the Symphony class, either Administration or
-		 * Frontend.
+		 * An instance of the Symphony class, either `Administration` or `Frontend`.
 		 * @var Symphony
 		 */
 		protected static $_instance = null;
 
 		/**
-		 * An instance of the Configuration class
+		 * An instance of the `Configuration` class
 		 * @var Configuration
 		 */
-		public static $Configuration = null;
+		private static $Configuration = null;
 
 		/**
-		 * An instance of the Database class
+		 * An instance of the `Database` class
 		 * @var MySQL
 		 */
-		public static $Database = null;
+		private static $Database = null;
 
 		/**
-		 * An instance of the ExtensionManager class
+		 * An instance of the `ExtensionManager` class
 		 * @var ExtensionManager
 		 */
-		public static $ExtensionManager = null;
+		private static $ExtensionManager = null;
 
 		/**
-		 * An instance of the Log class
+		 * An instance of the `Log` class
 		 * @var Log
 		 */
-		public static $Log = null;
+		private static $Log = null;
 
 		/**
 		 * An instance of the Profiler class
 		 * @var Profiler
 		 */
-		public $Profiler = null;
+		private static $Profiler = null;
 
 		/**
 		 * An instance of the Cookie class
@@ -81,13 +81,6 @@
 		public $Author = null;
 
 		/**
-		 * The end-of-line constant.
-		 * @var string
-		 * @deprecated This will be removed in the next version of Symphony
-		 */
-		const CRLF = PHP_EOL;
-
-		/**
 		 * The Symphony constructor initialises the class variables of Symphony.
 		 * It will set the DateTime settings, define new date constants and initialise
 		 * the correct Language for the currently logged in Author. If magic quotes
@@ -96,8 +89,8 @@
 		 * the initial Configuration values from the `CONFIG` file
 		 */
 		protected function __construct(){
-			$this->Profiler = Profiler::instance();
-			$this->Profiler->sample('Engine Initialisation');
+			self::$Profiler = Profiler::instance();
+			self::$Profiler->sample('Engine Initialisation');
 
 			if(get_magic_quotes_gpc()) {
 				General::cleanArray($_SERVER);
@@ -123,7 +116,7 @@
 			$this->initialiseLog();
 
 			GenericExceptionHandler::initialise(self::$Log);
-			GenericErrorHandler::initialise(self::$Log, self::$Configuration->get('strict_error_handling', 'symphony'));
+			GenericErrorHandler::initialise(self::$Log);
 
 			$this->initialiseDatabase();
 			$this->initialiseExtensionManager();
@@ -157,13 +150,23 @@
 		}
 
 		/**
-		 * Accessor for the current Configuration instance. This contains
+		 * Accessor for the current `Configuration` instance. This contains
 		 * representation of the the Symphony config file.
 		 *
 		 * @return Configuration
 		 */
 		public static function Configuration(){
 			return self::$Configuration;
+		}
+
+		/**
+		 * Accessor for the current `Profiler` instance.
+		 *
+		 * @since Symphony 2.3
+		 * @return Profiler
+		 */
+		public static function Profiler(){
+			return self::$Profiler;
 		}
 
 		/**
@@ -184,6 +187,16 @@
 				self::$Log->writeToLog('Version: '. self::$Configuration->get('version', 'symphony'), true);
 				self::$Log->writeToLog('--------------------------------------------', true);
 			}
+		}
+
+		/**
+		 * Accessor for the current `Log` instance
+		 *
+		 * @since Symphony 2.3
+		 * @return Log
+		 */
+		public static function Log() {
+			return self::$Log;
 		}
 
 		/**
@@ -250,11 +263,8 @@
 				if(!self::$Database->isConnected()) return false;
 
 				self::$Database->setPrefix($details['tbl_prefix']);
-
-				if(self::$Configuration->get('runtime_character_set_alter', 'database') == '1'){
-					self::$Database->setCharacterEncoding(self::$Configuration->get('character_encoding', 'database'));
-					self::$Database->setCharacterSet(self::$Configuration->get('character_set', 'database'));
-				}
+				self::$Database->setCharacterEncoding();
+				self::$Database->setCharacterSet();
 
 				if(self::$Configuration->get('query_caching', 'database') == 'off') self::$Database->disableCaching();
 				elseif(self::$Configuration->get('query_caching', 'database') == 'on') self::$Database->enableCaching();
@@ -267,7 +277,7 @@
 					'database-error',
 					array(
 						'error' => $error,
-						'message' => __('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct. The following error was returned.')
+						'message' => __('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct.') . ' ' . __('The following error was returned:')
 					)
 				);
 			}
@@ -438,89 +448,6 @@
 		}
 
 		/**
-		 * Given the `$page_id` and a `$column`
-		 *
-		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
-		 * @return array
-		 * An array of the current Page, containing the `$column`
-		 * requested. The current page will be the last item the array, as all
-		 * parent pages are prepended to the start of the array
-		 */
-		public function resolvePage($page_id, $column) {
-			$path = array();
-			$page = self::$Database->fetchRow(0, "
-				SELECT
-					p.{$column},
-					p.parent
-				FROM
-					`tbl_pages` AS p
-				WHERE
-					p.id = '{$page_id}'
-					OR p.handle = '{$page_id}'
-				LIMIT 1
-			");
-
-			$path = array($page[$column]);
-
-			if (!is_null($page['parent'])) {
-				$next_parent = $page['parent'];
-
-				while (
-					$parent = self::$Database->fetchRow(0, "
-						SELECT
-							p.{$column},
-							p.parent
-						FROM
-							`tbl_pages` AS p
-						WHERE
-							p.id = '{$next_parent}'
-					")
-				) {
-					array_unshift($path, $parent[$column]);
-					$next_parent = $parent['parent'];
-				}
-			}
-
-			return $path;
-		}
-
-		/**
-		 * Given the `$page_id`, return the complete title of the
-		 * current page.
-		 *
-		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
-		 * @return string
-		 * The title of the current Page. If the page is a child of another
-		 * it will be prepended by the parent and a colon, ie. Articles: Read
-		 */
-		public function resolvePageTitle($page_id) {
-			$path = $this->resolvePage($page_id, 'title');
-
-			return implode(': ', $path);
-		}
-
-		/**
-		 * Given the `$page_id`, return the complete path to the
-		 * current page.
-		 *
-		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
-		 * @return string
-		 *  The complete path to the current Page including any parent
-		 *  Pages, ie. /articles/read
-		 */
-		public function resolvePagePath($page_id) {
-			$path = $this->resolvePage($page_id, 'handle');
-
-			return implode('/', $path);
-		}
-
-		/**
 		 * A wrapper for throwing a new Symphony Error page.
 		 *
 		 * @see core.SymphonyErrorPage
@@ -540,6 +467,98 @@
 		public function customError($heading, $message, $template='error', array $additional=array()){
 			GenericExceptionHandler::$enabled = true;
 			throw new SymphonyErrorPage($message, $heading, $template, $additional);
+		}
+
+		/**
+		 * Given the `$page_id` and a `$column`, this function will return an
+		 * array of the given `$column` for the Page, including all parents.
+		 *
+		 * @deprecated This function will be removed in Symphony 2.4. Use
+		 * `PageManager::resolvePage` instead.
+		 * @param mixed $page_id
+		 * The ID of the Page that currently being viewed, or the handle of the
+		 * current Page
+		 * @return array
+		 * An array of the current Page, containing the `$column`
+		 * requested. The current page will be the last item the array, as all
+		 * parent pages are prepended to the start of the array
+		 */
+		public function resolvePage($page_id, $column) {
+			return PageManager::resolvePage($page_id, $column);
+		}
+
+		/**
+		 * Given the `$page_id`, return the complete title of the
+		 * current page.
+		 *
+		 * @deprecated This function will be removed in Symphony 2.4. Use
+		 * `PageManager::resolvePageTitle` instead.
+		 * @param mixed $page_id
+		 * The ID of the Page that currently being viewed, or the handle of the
+		 * current Page
+		 * @return string
+		 * The title of the current Page. If the page is a child of another
+		 * it will be prepended by the parent and a colon, ie. Articles: Read
+		 */
+		public function resolvePageTitle($page_id) {
+			return PageManager::resolvePage($page_id, 'title');
+		}
+
+		/**
+		 * Given the `$page_id`, return the complete path to the
+		 * current page.
+		 *
+		 * @deprecated This function will be removed in Symphony 2.4. Use
+		 * `PageManager::resolvePagePath` instead.
+		 * @param mixed $page_id
+		 * The ID of the Page that currently being viewed, or the handle of the
+		 * current Page
+		 * @return string
+		 *  The complete path to the current Page including any parent
+		 *  Pages, ie. /articles/read
+		 */
+		public function resolvePagePath($page_id) {
+			return PageManager::resolvePage($page_id, 'handle');
+		}
+
+		/**
+		 * Returns the page namespace based on the current URL.
+		 * A few examples:
+		 *
+		 * /login
+		 * /publish
+		 * /blueprints/datasources
+		 * [...]
+		 * /extension/$extension_name/$page_name
+		 *
+		 * This method is especially useful in couple with the translation function.
+		 *
+		 * @see toolkit#__()
+		 * @return string
+		 *  The page namespace, without any action string (e.g. "new", "saved") or
+		 *  any value that depends upon the single setup (e.g. the section handle in
+		 *  /publish/$handle)
+		 */
+		public static function getPageNamespace() {
+			$page = getCurrentPage();
+
+			if(!is_null($page)) $page = trim($page, '/');
+
+			if(substr($page, 0, 7) == 'publish')
+				return '/publish';
+			else if(empty($page) && isset($_REQUEST['mode']))
+				return '/login';
+			else if(empty($page))
+				return null;
+			else {
+				$bits = explode('/', $page);
+
+				if($bits[0] == 'extension')
+					return sprintf('/%s/%s/%s', $bits[0], $bits[1], $bits[2]);
+				else
+					return sprintf('/%s/%s', $bits[0], $bits[1]);
+			}
+
 		}
 	}
 

@@ -14,8 +14,8 @@
 	 */
 	Class fieldAuthor extends Field {
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function __construct(){
+			parent::__construct();
 			$this->_name = __('Author');
 			$this->_required = true;
 		}
@@ -57,7 +57,7 @@
 		}
 
 		public function allowDatasourceOutputGrouping(){
-			## Grouping follows the same rule as toggling.
+			// Grouping follows the same rule as toggling.
 			return $this->canToggle();
 		}
 
@@ -74,7 +74,7 @@
 				  PRIMARY KEY  (`id`),
 				  UNIQUE KEY `entry_id` (`entry_id`),
 				  KEY `author_id` (`author_id`)
-				) ENGINE=MyISAM;"
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
 			);
 		}
 
@@ -106,16 +106,18 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
+			$wrapper->appendChild($this->buildPublishLabel());
+
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 
-			## Allow multiple selection
+			// Allow multiple selection
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Allow selection of multiple authors', array($input->generate())));
 			$div->appendChild($label);
 
-			## Default to current logged in user
+			// Default to current logged in user
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][default_to_current_user]', 'yes', 'checkbox');
 			if($this->get('default_to_current_user') == 'yes') $input->setAttribute('checked', 'checked');
@@ -170,14 +172,14 @@
 			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
 			if($this->get('allow_multiple_selection') == 'yes') $fieldname .= '[]';
 
-			$label = Widget::Label($this->get('label'));
+			$label = Widget::Label($this->label());
 			$label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : NULL)));
 
 			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
 			else $wrapper->appendChild($label);
 		}
 
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+		public function processRawFieldData($data, &$status, &$message=null, $simulate=false, $entry_id=NULL){
 
 			$status = self::__OK__;
 
@@ -265,10 +267,9 @@
 				";
 				$where .= "
 					AND (
-						 t{$field_id}_{$this->_key}.author_id {$regex} '{$pattern}'
-						 OR
-						 t{$field_id}_{$this->_key}_authors.username {$regex} '{$pattern}'
-						)
+						t{$field_id}_{$this->_key}.author_id {$regex} '{$pattern}'
+						OR t{$field_id}_{$this->_key}_authors.username {$regex} '{$pattern}'
+					)
 				";
 
 			} elseif ($andOperation) {

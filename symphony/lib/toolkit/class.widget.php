@@ -374,6 +374,35 @@
 
 			return $td;
 		}
+		
+		/**
+		 * Generates a XMLElement representation fo a `<time>`
+		 *
+		 * @since Symphony 2.3
+		 * @param string $string
+		 *  A string containing date and time, defaults to the current date and time
+		 * @param string $format (optional)
+		 *  A valid PHP date format, defaults to `__SYM_TIME_FORMAT__`
+		 * @param boolean $pubdate (optional)
+		 *  A flag to make the given date a publish date
+		 * @return XMLElement
+		 */
+		public static function Time($string, $format = __SYM_TIME_FORMAT__, $pubdate = false) {
+	
+			// Parse date
+			$date = DateTimeObj::parse($string);
+		
+			// Create element
+			$obj = new XMLElement('time', Lang::localizeDate($date->format($format)));
+			$obj->setAttribute('datetime', $date->format(DateTime::ISO8601));
+			
+			// Pubdate?
+			if($pubdate === true) {
+				$obj->setAttribute('pubdate', 'pubdate');
+			}
+			
+			return $obj;
+		}
 
 		/**
 		 * Generates a XMLElement representation of a `<select>`. This uses

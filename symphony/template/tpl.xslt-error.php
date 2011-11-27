@@ -55,7 +55,10 @@
 			case 'general':
 
 				$dl = new XMLElement('dl');
-				$dt = new XMLElement('dt', __('<a href="%s" title="Show debug view">Compile</a>', array('?debug'.$query_string)));
+				$dt = new XMLElement('dt', 
+					'<a href="?debug' . $query_string .'" title="'
+					. __('Show debug view') . '">' . __('Compile') . '</a>'
+				);
 				$dl->appendChild($dt);
 
 				foreach($data as $e){
@@ -82,7 +85,10 @@
 					$dl = new XMLElement('dl');
 
 					foreach($errors as $e){
-						$dt = new XMLElement('dt', __('<a href="%1$s" title="Show debug view for %2$s">Line %3$d</a>', array("?debug={$filename}{$query_string}#line-".$e['line'], $filename, $e['line'])));
+						$dt = new XMLElement('dt', 
+							'<a href="?debug=' .  $filename . $query_string . '#line-' . $e['line'] .'" title="'
+							. __('Show debug view for %s', array($filename)) . '">' . __('Line %d', array($e['line'])) . '</a>'
+						);
 						$dd = new XMLElement('dd', $e['raw']['message']);
 						$dl->appendChild($dt);
 						$dl->appendChild($dd);
@@ -105,8 +111,10 @@
 					$dl = new XMLElement('dl');
 
 					foreach($errors as $e){
-						$dt = new XMLElement('dt', __('<a href="%1$s" title="Show debug view for %2$s">Line %3$d</a>', array("?debug=u-{$filename}{$query_string}#line-".$e['line'], $filename, $e['line'])));
-
+						$dt = new XMLElement('dt', 
+							'<a href="?debug=u-' .  $filename . $query_string . '#line-' . $e['line'] .'" title="'
+							. __('Show debug view for %s', array($filename)) . '">' . __('Line %d', array($e['line'])) . '</a>'
+						);
 						$dd = new XMLElement('dd', $e['raw']['message']);
 						$dl->appendChild($dt);
 						$dl->appendChild($dd);
@@ -126,8 +134,11 @@
 				$dl = new XMLElement('dl');
 
 				foreach($data as $e){
-					$dt = new XMLElement('dt', __('Line %s', array($e['line'])));
-					$dt = new XMLElement('dt', __('<a href="%1$s" title="Show debug view for %2$s">Line %3$d</a>', array('?debug=xml'.$query_string.'#line-'.$e['line'], 'XML', $e['line'])));
+					$dt = new XMLElement('dt', __('Line %d', array($e['line'])));
+					$dt = new XMLElement('dt', 
+						'<a href="?debug=xml' . $query_string . '#line-' . $e['line'] .'" title="'
+						. __('Show debug view for XML') . '">' . __('Line %d', array($e['line'])) . '</a>'
+					);
 					$dd = new XMLElement('dd', $e['raw']['message']);
 					$dl->appendChild($dt);
 					$dl->appendChild($dd);

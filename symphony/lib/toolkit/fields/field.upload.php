@@ -17,8 +17,8 @@
 			'image/png',
 		);
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function __construct(){
+			parent::__construct();
 
 			$this->_name = __('File Upload');
 			$this->_required = true;
@@ -64,7 +64,7 @@
 				  UNIQUE KEY `entry_id` (`entry_id`),
 				  KEY `file` (`file`),
 				  KEY `mimetype` (`mimetype`)
-				) ENGINE=MyISAM;
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			");
 		}
 
@@ -106,7 +106,9 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			## Destination Folder
+			$wrapper->appendChild($this->buildPublishLabel());
+
+			// Destination Folder
 			$ignore = array(
 				'/workspace/events',
 				'/workspace/data-sources',
@@ -142,11 +144,11 @@
 
 		public function checkFields(&$errors, $checkForDuplicates=true){
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$errors['destination'] = __('Directory <code>%s</code> does not exist.', array($this->get('destination')));
+				$errors['destination'] = __('Directory %s does not exist.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
-				$errors['destination'] = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
+				$errors['destination'] = __('Destination folder is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			parent::checkFields($errors, $checkForDuplicates);
@@ -175,16 +177,15 @@
 
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$flagWithError = __('The destination directory, <code>%s</code>, does not exist.', array($this->get('destination')));
+				$flagWithError = __('The destination directory, %s, does not exist.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			elseif(!$flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/')){
-				$flagWithError = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
+				$flagWithError = __('Destination folder is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
-			$label = Widget::Label($this->get('label'));
-			$class = 'file';
-			$label->setAttribute('class', $class);
+			$label = Widget::Label($this->label());
+			$label->setAttribute('class', 'file');
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 
 			$span = new XMLElement('span', NULL, array('class' => 'frame'));
@@ -239,7 +240,7 @@
 			if(empty($data) || $data['error'] == UPLOAD_ERR_NO_FILE) {
 
 				if($this->get('required') == 'yes'){
-					$message = __("'%s' is a required field.", array($this->get('label')));
+					$message = __('‘%s’ is a required field.', array($this->get('label')));
 					return self::__MISSING_FIELDS__;
 				}
 
@@ -263,7 +264,7 @@
 					$rule = $this->get('validator');
 
 					if(!General::validateString($file, $rule)){
-						$message = __("File chosen in '%s' does not match allowable file types for that field.", array($this->get('label')));
+						$message = __('File chosen in ‘%s’ does not match allowable file types for that field.', array($this->get('label')));
 						return self::__INVALID_FIELDS__;
 					}
 				}
@@ -272,12 +273,12 @@
 			}
 
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$message = __('The destination directory, <code>%s</code>, does not exist.', array($this->get('destination')));
+				$message = __('The destination directory, %s, does not exist.', array('<code>' . $this->get('destination') . '</code>'));
 				return self::__ERROR__;
 			}
 
 			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
-				$message = __('Destination folder, <code>%s</code>, is not writable. Please check permissions.', array($this->get('destination')));
+				$message = __('Destination folder is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
 				return self::__ERROR__;
 			}
 
@@ -285,24 +286,24 @@
 
 				switch($data['error']){
 					case UPLOAD_ERR_INI_SIZE:
-						$message = __('File chosen in "%1$s" exceeds the maximum allowed upload size of %2$s specified by your host.', array($this->get('label'), (is_numeric(ini_get('upload_max_filesize')) ? General::formatFilesize(ini_get('upload_max_filesize')) : ini_get('upload_max_filesize'))));
+						$message = __('File chosen in ‘%1$s’ exceeds the maximum allowed upload size of %2$s specified by your host.', array($this->get('label'), (is_numeric(ini_get('upload_max_filesize')) ? General::formatFilesize(ini_get('upload_max_filesize')) : ini_get('upload_max_filesize'))));
 						break;
 
 					case UPLOAD_ERR_FORM_SIZE:
-						$message = __('File chosen in "%1$s" exceeds the maximum allowed upload size of %2$s, specified by Symphony.', array($this->get('label'), General::formatFilesize($_POST['MAX_FILE_SIZE'])));
+						$message = __('File chosen in ‘%1$s’ exceeds the maximum allowed upload size of %2$s, specified by Symphony.', array($this->get('label'), General::formatFilesize($_POST['MAX_FILE_SIZE'])));
 						break;
 
 					case UPLOAD_ERR_PARTIAL:
 					case UPLOAD_ERR_NO_TMP_DIR:
-						$message = __("File chosen in '%s' was only partially uploaded due to an error.", array($this->get('label')));
+						$message = __('File chosen in ‘%s’ was only partially uploaded due to an error.', array($this->get('label')));
 						break;
 
 					case UPLOAD_ERR_CANT_WRITE:
-						$message = __("Uploading '%s' failed. Could not write temporary file to disk.", array($this->get('label')));
+						$message = __('Uploading ‘%s’ failed. Could not write temporary file to disk.', array($this->get('label')));
 						break;
 
 					case UPLOAD_ERR_EXTENSION:
-						$message = __("Uploading '%s' failed. File upload stopped by extension.", array($this->get('label')));
+						$message = __('Uploading ‘%s’ failed. File upload stopped by extension.', array($this->get('label')));
 						break;
 				}
 
@@ -316,7 +317,7 @@
 				$rule = $this->get('validator');
 
 				if(!General::validateString($data['name'], $rule)){
-					$message = __("File chosen in '%s' does not match allowable file types for that field.", array($this->get('label')));
+					$message = __('File chosen in ‘%s’ does not match allowable file types for that field.', array($this->get('label')));
 					return self::__INVALID_FIELDS__;
 				}
 
@@ -339,7 +340,7 @@
 			return self::__OK__;
 		}
 
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+		public function processRawFieldData($data, &$status, &$message=null, $simulate=false, $entry_id=NULL){
 
 			$status = self::__OK__;
 
@@ -382,6 +383,7 @@
 				}
 
 				if(!file_exists($file) || !is_readable($file)){
+					$message = __('The file uploaded is no longer available. Please check that it exists, and is readable.');
 					$status = self::__INVALID_FIELDS__;
 					return $result;
 				}
@@ -424,7 +426,7 @@
 			$data['name'] = Lang::createFilename($data['name']);
 
 			if(!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], Symphony::Configuration()->get('write_mode', 'file'))){
-				$message = __('There was an error while trying to upload the file <code>%1$s</code> to the target directory <code>%2$s</code>.', array($data['name'], 'workspace/'.ltrim($rel_path, '/')));
+				$message = __('There was an error while trying to upload the file %1$s to the target directory %2$s.', array('<code>' . $data['name'] . '</code>', '<code>workspace/'.ltrim($rel_path, '/') . '</code>'));
 				$status = self::__ERROR_CUSTOM__;
 				return;
 			}
@@ -514,28 +516,9 @@
 			}
 
 			if (self::isFilterRegex($data[0])) {
-				$this->_key++;
-
-				if (preg_match('/^regexp:/i', $data[0])) {
-					$pattern = preg_replace('/^regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'REGEXP';
-				} else {
-					$pattern = preg_replace('/^not-?regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'NOT REGEXP';
-				}
-
-				if(strlen($pattern) == 0) return;
-
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND t{$field_id}_{$this->_key}.{$column} {$regex} '{$pattern}'
-				";
-
-			} elseif ($andOperation) {
+				$this->buildRegexSQL($data[0], array($column), $joins, $where);
+			}
+			else if ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
 					$value = $this->cleanValue($value);
@@ -548,8 +531,8 @@
 						AND t{$field_id}_{$this->_key}.{$column} = '{$value}'
 					";
 				}
-
-			} else {
+			}
+			else {
 				if (!is_array($data)) $data = array($data);
 
 				foreach ($data as &$value) {

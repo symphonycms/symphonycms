@@ -99,7 +99,7 @@
 		 */
 		public function get($name=null, $group=null){
 
-			## Return the whole array if no name or index is requested
+			// Return the whole array if no name or index is requested
 			if(!$name && !$group) return $this->_properties;
 
 			if($this->_forceLowerCase){
@@ -146,27 +146,26 @@
 		}
 
 		/**
-		 * The magic __toString function converts the internal `$this->_properties`
+		 * This magic `__toString` function converts the internal `$this->_properties`
 		 * array into a string representation. Symphony generates the `MANIFEST/config.php`
-		 * file in this manner. All values are run through PHP's addslashes before saving.
+		 * file in this manner. All values are run through PHP's `addslashes` prior to saving.
 		 *
 		 * @return string
-		 *  A string that contains a PHP representation of `$this->_properties`.
-		 *  This is used by Symphony to write as a file that is then read at a later date.
+		 *  A string that contains a array representation of `$this->_properties`.
+		 *  This is used by Symphony to write the `config.php` file.
 		 */
 		public function __toString(){
-
 			$string = 'array(';
 			foreach($this->_properties as $group => $data){
-				$string .= "\r\n\r\n\r\n\t\t###### ".strtoupper($group)." ######";
-				$string .= "\r\n\t\t'$group' => array(";
+				$string .= str_repeat(PHP_EOL, 3) . "\t\t###### ".strtoupper($group)." ######";
+				$string .= PHP_EOL . "\t\t'$group' => array(";
 				foreach($data as $key => $value){
-					$string .= "\r\n\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'null').",";
+					$string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'null').",";
 				}
-				$string .= "\r\n\t\t),";
-				$string .= "\r\n\t\t########";
+				$string .= PHP_EOL . "\t\t),";
+				$string .= PHP_EOL . "\t\t########";
 			}
-			$string .= "\r\n\t)";
+			$string .= PHP_EOL . "\t)";
 
 			return $string;
 		}

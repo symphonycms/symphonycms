@@ -13,9 +13,8 @@
 
 		public $_invalidPassword = false;
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
-
+		public function __construct(){
+			parent::__construct();
 			$this->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
 
 			$this->Html->setElementStyle('html');
@@ -25,9 +24,9 @@
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 40);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/login.css', 'screen', 40);
 
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Login'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Login'), __('Symphony'))));
 
-			Administration::instance()->Profiler->sample('Page template created', PROFILE_LAP);
+			Symphony::Profiler()->sample('Page template created', PROFILE_LAP);
 		}
 
 		public function build($context=NULL){
@@ -126,7 +125,7 @@
 				if($this->_invalidPassword){
 					$div = new XMLElement('div', NULL, array('class' => 'invalid'));
 					$div->appendChild($label);
-					$div->appendChild(new XMLElement('p', __('The supplied password was rejected. <a href="%s">Retrieve password?</a>', array(SYMPHONY_URL.'/login/retrieve-password/'))));
+					$div->appendChild(new XMLElement('p', __('The supplied password was rejected.') . ' <a href="' . SYMPHONY_URL.'/login/retrieve-password/">' . __('Retrieve password?') . '</a>'));
 					$fieldset->appendChild($div);
 				}
 
@@ -146,13 +145,13 @@
 		}
 
 		public function __loginFromToken($token){
-			##If token is invalid, return to login page
+			// If token is invalid, return to login page
 			if(!Administration::instance()->loginFromToken($token)) return false;
 
-			##If token is valid and it is not "emergency" login (forgotten password case), redirect to administration pages
+			// If token is valid and it is not "emergency" login (forgotten password case), redirect to administration pages
 			if(strlen($token) != 6) redirect(SYMPHONY_URL); // Regular token-based login
 
-			##Valid, emergency token - ask user to change password
+			// Valid, emergency token - ask user to change password
 			return true;
 		}
 
@@ -163,7 +162,7 @@
 				$actionParts = array_keys($_POST['action']);
 				$action = end($actionParts);
 
-				##Login Attempted
+				// Login Attempted
 				if($action == 'login'):
 
 					if(empty($_POST['username']) || empty($_POST['password']) || !Administration::instance()->login($_POST['username'], $_POST['password'])) {
@@ -199,7 +198,7 @@
 						redirect(SYMPHONY_URL);
 					}
 
-				##Reset of password requested
+				// Reset of password requested
 				elseif($action == 'reset'):
 
 					$author = Symphony::Database()->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_authors` WHERE `email` = '".Symphony::Database()->cleanValue($_POST['email'])."'");
@@ -218,11 +217,11 @@
 
 							$email->recipients = $author['email'];
 							$email->subject = __('New Symphony Account Password');
-							$email->text_plain = __('Hi %s,', array($author['first_name'])) . self::CRLF .
-									__('A new password has been requested for your account. Login using the following link, and change your password via the Authors area:') . self::CRLF .
-									self::CRLF . '	' . SYMPHONY_URL . "/login/{$token}/" . self::CRLF . self::CRLF .
-									__('It will expire in 2 hours. If you did not ask for a new password, please disregard this email.') . self::CRLF . self::CRLF .
-									__('Best Regards,') . self::CRLF .
+							$email->text_plain = __('Hi %s,', array($author['first_name'])) . PHP_EOL .
+									__('A new password has been requested for your account. Login using the following link, and change your password via the Authors area:') . PHP_EOL .
+									PHP_EOL . '	' . SYMPHONY_URL . "/login/{$token}/" . PHP_EOL . PHP_EOL .
+									__('It will expire in 2 hours. If you did not ask for a new password, please disregard this email.') . PHP_EOL . PHP_EOL .
+									__('Best Regards,') . PHP_EOL .
 									__('The Symphony Team');
 
 							$email->send();
@@ -266,7 +265,7 @@
 						$this->_email_sent = false;
 					}
 
-				##Change of password requested
+				// Change of password requested
 				elseif($action == 'change' && Administration::instance()->isLoggedIn()):
 
 					if(empty($_POST['password']) || empty($_POST['password-confirmation']) || $_POST['password'] != $_POST['password-confirmation']){
@@ -319,9 +318,9 @@
 						Symphony::Database()->fetchVar('email', 0, "SELECT `email` FROM `tbl_authors` ORDER BY `id` ASC LIMIT 1"),
 						__('Symphony Concierge'),
 						__('New Symphony Account Password'),
-						__('Hi %s,', array($author['first_name'])) . self::CRLF .
-						__("As requested, here is your new Symphony Author Password for ") . URL . " " .self::CRLF ." $newpass" . self::CRLF . self::CRLF .
-						__('Best Regards,') . self::CRLF .
+						__('Hi %s,', array($author['first_name'])) . PHP_EOL .
+						__("As requested, here is your new Symphony Author Password for ") . URL . " " .PHP_EOL ." $newpass" . PHP_EOL . PHP_EOL .
+						__('Best Regards,') . PHP_EOL .
 						__('The Symphony Team')
 					);
 

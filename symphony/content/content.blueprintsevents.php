@@ -7,11 +7,24 @@
 	 * The Event Editor allows a developer to create events that typically
 	 * allow Frontend forms to populate Sections or edit Entries.
 	 */
-	require_once(TOOLKIT . '/class.administrationpage.php');
-	require_once(TOOLKIT . '/class.eventmanager.php');
-	require_once(TOOLKIT . '/class.sectionmanager.php');
+	require_once(TOOLKIT . '/class.resourcespage.php');
 
-	Class contentBlueprintsEvents extends AdministrationPage{
+	Class contentBlueprintsEvents extends ResourcesPage {
+
+		public $_errors = array();
+
+		public function sort(&$sort, &$order, $params) {
+			if(is_null($sort)) $sort = 'name';
+
+			return ResourceManager::fetch(RESOURCE_TYPE_EVENT, array(), array(), $sort . ' ' . $order);
+		}
+
+		public function __viewIndex(){
+			parent::__viewIndex(RESOURCE_TYPE_EVENT);
+
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Events'), __('Symphony'))));
+			$this->appendSubheading(__('Events'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a new event'), 'create button', NULL, array('accesskey' => 'c')));
+		}
 
 		public function __viewNew(){
 			$this->__form();
@@ -29,35 +42,37 @@
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
-			if($formHasErrors) $this->pageAlert(__('An error occurred while processing this form. <a href="#error">See below for details.</a>'), Alert::ERROR);
+			if($formHasErrors) 
+				$this->pageAlert(
+					__('An error occurred while processing this form.')
+					. ' <a href="#error">'
+					. __('See below for details.')
+					. '</a>'
+					, Alert::ERROR);
 
 			if(isset($this->_context[2])){
 				switch($this->_context[2]){
 
 					case 'saved':
 						$this->pageAlert(
-							__(
-								'Event updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Events</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/events/new/',
-									SYMPHONY_URL . '/blueprints/components/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Event updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/events/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/events/" accesskey="a">'
+							. __('View all Events')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 					case 'created':
 						$this->pageAlert(
-							__(
-								'Event created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Events</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/blueprints/events/new/',
-									SYMPHONY_URL . '/blueprints/components/'
-								)
-							),
-							Alert::SUCCESS);
+							__('Event created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							. ' <a href="' . SYMPHONY_URL . '/blueprints/events/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/events/" accesskey="a">'
+							. __('View all Events')
+							. '</a>'
+							, Alert::SUCCESS);
 						break;
 
 				}
@@ -66,16 +81,11 @@
 			$isEditing = ($readonly ? true : false);
 			$fields = array();
 
-			$sectionManager = new SectionManager($this->_Parent);
-
 			if($this->_context[0] == 'edit' || $this->_context[0] == 'info'){
 				$isEditing = true;
 
 				$handle = $this->_context[1];
-
-				$EventManager = new EventManager($this->_Parent);
-				$existing =& $EventManager->create($handle);
-
+				$existing =& EventManager::create($handle);
 				$about = $existing->about();
 
 				if ($this->_context[0] == 'edit' && !$existing->allowEditorToParse()) redirect(SYMPHONY_URL . '/blueprints/events/info/' . $handle . '/');
@@ -88,8 +98,11 @@
 			if(isset($_POST['fields'])) $fields = $_POST['fields'];
 
 			$this->setPageType('form');
-			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Events'), $about['name'])));
+			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($about['name'], __('Events'), __('Symphony'))));
 			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Events'), SYMPHONY_URL . '/blueprints/events/'),
+			));
 
 			if(!$readonly):
 				$fieldset = new XMLElement('fieldset');
@@ -109,7 +122,7 @@
 
 				$label = Widget::Label(__('Source'));
 
-				$sections = $sectionManager->fetch(NULL, 'ASC', 'name');
+				$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 
 				$options = array();
 
@@ -117,7 +130,7 @@
 					foreach($sections as $s) $options[] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
 				}
 
-				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'context')));
+				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'event-context')));
 				$div = new XMLElement('div');
 				if(isset($this->_errors['source'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['source']));
 				else $div->appendChild($label);
@@ -176,8 +189,8 @@
 				$fieldset = new XMLElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Version')));
-				if(preg_match('/^\d+(\.\d+)*$/', $about['version'])) $fieldset->appendChild(new XMLElement('p', __('%s released on %s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
-				else $fieldset->appendChild(new XMLElement('p', __('Created by %s at %s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+				if(preg_match('/^\d+(\.\d+)*$/', $about['version'])) $fieldset->appendChild(new XMLElement('p', __('%1$s released on %2$s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+				else $fieldset->appendChild(new XMLElement('p', __('Created by %1$s at %2$s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
 				$this->Form->appendChild($fieldset);
 			}
 
@@ -187,7 +200,7 @@
 				$fieldset->setAttribute('class', 'settings');
 
 				$doc = $existing->documentation();
-				$fieldset->setValue('<legend>' . __('Description') . '</legend>' . self::CRLF . General::tabsToSpaces((is_object($doc) ? $doc->generate(true) : $doc), 2));
+				$fieldset->setValue('<legend>' . __('Description') . '</legend>' . PHP_EOL . General::tabsToSpaces((is_object($doc) ? $doc->generate(true) : $doc), 2));
 				$this->Form->appendChild($fieldset);
 			}
 
@@ -226,30 +239,37 @@
 				Symphony::ExtensionManager()->notifyMembers('EventPreDelete', '/blueprints/events/', array('file' => EVENTS . "/event." . $this->_context[1] . ".php"));
 
 				if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php')){
-					$this->pageAlert(__('Failed to delete <code>%s</code>. Please check permissions.', array($this->_context[1])), Alert::ERROR);
+					$this->pageAlert(
+						__('Failed to delete %s.', array('<code>' . $this->_context[1] . '</code>'))
+						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/events</code>'))
+						, Alert::ERROR
+					);
 				}
 
-				else{
-
-					$pages = Symphony::Database()->fetch("SELECT * FROM `tbl_pages` WHERE `events` REGEXP '[[:<:]]".$this->_context[1]."[[:>:]]' ");
-
+				else {
+					$pages = PageManager::fetch(false, array('events', 'id'), array("
+						`events` REGEXP '[[:<:]]" . $this->_context[1] . "[[:>:]]'
+					"));
 					if(is_array($pages) && !empty($pages)){
 						foreach($pages as $page){
-
 							$events = preg_split('/\s*,\s*/', $page['events'], -1, PREG_SPLIT_NO_EMPTY);
 							$events = array_flip($events);
 							unset($events[$this->_context[1]]);
 
 							$page['events'] = implode(',', array_flip($events));
 
-							Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
+							PageManager::edit($page['id'], $page);
 						}
 					}
 
-					redirect(SYMPHONY_URL . '/blueprints/components/');
+					redirect(SYMPHONY_URL . '/blueprints/events/');
 				}
 
 			}
+		}
+
+		public function __actionIndex(){
+			return parent::__actionIndex(RESOURCE_TYPE_EVENT);
 		}
 
 		public function __formAction(){
@@ -261,10 +281,10 @@
 			if(trim($fields['source']) == '') $this->_errors['source'] = __('This is a required field');
             $filters = (is_array($fields['filters'])) ? $fields['filters'] : array();
 
-			$classname = Lang::createHandle($fields['name'], NULL, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
+			$classname = Lang::createHandle($fields['name'], 255, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
 
-			##Check to make sure the classname is not empty after handlisation.
+			// Check to make sure the classname is not empty after handlisation.
 			if(empty($classname)) $this->_errors['name'] = __('Please ensure name contains at least one Latin-based alphabet.', array($classname));
 
 			$file = EVENTS . '/event.' . $classname . '.php';
@@ -279,8 +299,8 @@
 				elseif($classname != $existing_handle) $queueForDeletion = EVENTS . '/event.' . $existing_handle . '.php';
 			}
 
-			##Duplicate
-			if($isDuplicate) $this->_errors['name'] = __('An Event with the name <code>%s</code> name already exists', array($classname));
+			// Duplicate
+			if($isDuplicate) $this->_errors['name'] = __('An Event with the name %s name already exists', array('<code>' . $classname . '</code>'));
 
 			if(empty($this->_errors)){
 
@@ -326,9 +346,7 @@
 
 				$documentation_parts[] = self::processDocumentationCode($code);
 
-				###
-
-				$documentation_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? __(' (<b>Notice that it is possible to get mixtures of success and failure messages when using the "Allow Multiple" option</b>)') : NULL) . ':');
+				$documentation_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? ' (<strong> ' . __('Notice that it is possible to get mixtures of success and failure messages when using the ‘Allow Multiple’ option') . '</strong>)' : NULL) . ':');
 
 				if($multiple){
 					$code = new XMLElement($rootelement);
@@ -352,8 +370,6 @@
 				$code->setValue('...', false);
 				$documentation_parts[] = self::processDocumentationCode($code);
 
-				###
-
 				if(is_array($filters) && !empty($filters)){
 					$documentation_parts[] = new XMLElement('p', __('The following is an example of what is returned if any options return an error:'));
 
@@ -365,16 +381,13 @@
 					$documentation_parts[] = self::processDocumentationCode($code);
 				}
 
-				###
-
 				$documentation_parts[] = new XMLElement('h3', __('Example Front-end Form Markup'));
 
 				$documentation_parts[] = new XMLElement('p', __('This is an example of the form markup you can use on your frontend:'));
 				$container = new XMLElement('form', NULL, array('method' => 'post', 'action' => '', 'enctype' => 'multipart/form-data'));
 				$container->appendChild(Widget::Input('MAX_FILE_SIZE', min(ini_size_to_bytes(ini_get('upload_max_filesize')), Symphony::Configuration()->get('max_upload_size', 'admin')), 'hidden'));
 
-				$sectionManager = new SectionManager($this->_Parent);
-				$section = $sectionManager->fetch($fields['source']);
+				$section = SectionManager::fetch($fields['source']);
 
 				$section_fields = $section->fetchFields();
 				if(is_array($section_fields) && !empty($section_fields)) {
@@ -400,15 +413,21 @@
 				if(in_array('send-email', $filters)){
 					$documentation_parts[] = new XMLElement('h3', __('Send Notification Email'));
 
-					$documentation_parts[] = new XMLElement('p', __('Upon the event successfully saving the entry, this option takes input from the form and send an email to the desired recipient. <b>It currently does not work with "Allow Multiple".</b> The following are the recognised fields:'));
+					$documentation_parts[] = new XMLElement('p', 
+						__('Upon the event successfully saving the entry, this option takes input from the form and send an email to the desired recipient.')
+						. ' <strong>'
+						. __('It currently does not work with ‘Allow Multiple’')
+						. '</strong>. '
+						. __('The following are the recognised fields:')
+					);
 
 					$documentation_parts[] = self::processDocumentationCode(
-						'send-email[sender-email] // '.__('Optional').self::CRLF.
-						'send-email[sender-name] // '.__('Optional').self::CRLF.
-						'send-email[reply-to-email] // '.__('Optional').self::CRLF.
-						'send-email[reply-to-name] // '.__('Optional').self::CRLF.
-						'send-email[subject]'.self::CRLF.
-						'send-email[body]'.self::CRLF.
+						'send-email[sender-email] // '.__('Optional').PHP_EOL.
+						'send-email[sender-name] // '.__('Optional').PHP_EOL.
+						'send-email[reply-to-email] // '.__('Optional').PHP_EOL.
+						'send-email[reply-to-name] // '.__('Optional').PHP_EOL.
+						'send-email[subject]'.PHP_EOL.
+						'send-email[body]'.PHP_EOL.
 						'send-email[recipient] // '.__('list of comma-separated author usernames.'));
 
 					$documentation_parts[] = new XMLElement('p', __('All of these fields can be set dynamically using the exact field name of another field in the form as shown below in the example form:'));
@@ -444,7 +463,7 @@
 				 */
 				Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $filters, 'documentation' => &$documentation_parts));
 
-				$documentation = join(self::CRLF, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $documentation_parts));
+				$documentation = join(PHP_EOL, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $documentation_parts));
 				$documentation = str_replace('\'', '\\\'', $documentation);
 
 				$eventShell = str_replace('<!-- CLASS NAME -->', $classname, $eventShell);
@@ -452,7 +471,7 @@
 				$eventShell = str_replace('<!-- DOCUMENTATION -->', General::tabsToSpaces($documentation, 2), $eventShell);
 				$eventShell = str_replace('<!-- ROOT ELEMENT -->', $rootelement, $eventShell);
 
-				## Remove left over placeholders
+				// Remove left over placeholders
 				$eventShell = preg_replace(array('/<!--[\w ]++-->/'), '', $eventShell);
 
 				if($this->_context[0] == 'new') {
@@ -502,7 +521,11 @@
 
 				// Write the file
 				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file')))
-					$this->pageAlert(__('Failed to write Event to <code>%s</code>. Please check permissions.', array(EVENTS)), Alert::ERROR);
+					$this->pageAlert(
+						__('Failed to write Event to disk.')
+						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/events</code>'))
+						, Alert::ERROR
+					);
 
 				// Write Successful, add record to the database
 				else{
@@ -510,15 +533,16 @@
 					if($queueForDeletion){
 						General::deleteFile($queueForDeletion);
 
-						$sql = "SELECT * FROM `tbl_pages` WHERE `events` REGEXP '[[:<:]]".$existing_handle."[[:>:]]' ";
-						$pages = Symphony::Database()->fetch($sql);
+						$pages = PageManager::fetch(false, array('events', 'id'), array("
+							`events` REGEXP '[[:<:]]" . $existing_handle . "[[:>:]]'
+						"));
 
 						if(is_array($pages) && !empty($pages)){
 							foreach($pages as $page){
 
 								$page['events'] = preg_replace('/\b'.$existing_handle.'\b/i', $classname, $page['events']);
 
-								Symphony::Database()->update($page, 'tbl_pages', "`id` = '".$page['id']."'");
+								PageManager::edit($page['id'], $page);
 							}
 						}
 
@@ -564,7 +588,7 @@
 		public function __injectFilters(&$shell, $elements){
 			if(!is_array($elements) || empty($elements)) return;
 
-			$shell = str_replace('<!-- FILTERS -->',  "'" . implode("'," . self::CRLF . "\t\t\t\t'", $elements) . "'", $shell);
+			$shell = str_replace('<!-- FILTERS -->',  "'" . implode("'," . PHP_EOL . "\t\t\t\t'", $elements) . "'", $shell);
 		}
 
 		public function __injectAboutInformation(&$shell, $details){

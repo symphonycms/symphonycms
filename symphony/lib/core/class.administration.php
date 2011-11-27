@@ -37,7 +37,7 @@
 
 		/**
 		 * The class representation of the current Symphony backend page,
-		 * which is a subclass of the HTMLPage class. Symphony uses a convention
+		 * which is a subclass of the `HTMLPage` class. Symphony uses a convention
 		 * of prefixing backend page classes with 'content'. ie. 'contentBlueprintsSections'
 		 * @var HTMLPage
 		 */
@@ -56,26 +56,6 @@
 			}
 
 			return self::$_instance;
-		}
-
-		/**
-		 * The constructor for Administration calls the parent Symphony
-		 * constructor.
-		 *
-		 * @see core.Symphony#__construct()
-		 * @deprecated The constructor creates backwards compatible references
-		 *  to `$this->Database`, `$this->ExtensionManager` and `$this->Configuration`
-		 *  that act as alias for `Symphony::Database()`, `Symphony::ExtensionManager()`
-		 *  and `Symphony::Configuration()`. These will be removed in the
-		 *  next Symphony release
-		 */
-		protected function __construct(){
-			parent::__construct();
-
-			// Need this part for backwards compatiblity
-			$this->Database = Symphony::Database();
-			$this->Configuration = Symphony::Configuration();
-			$this->ExtensionManager = Symphony::ExtensionManager();
 		}
 
 		/**
@@ -175,13 +155,13 @@
 			}
 
 			include_once((isset($this->_callback['driverlocation']) ? $this->_callback['driverlocation'] : CONTENT) . '/content.' . $this->_callback['driver'] . '.php');
-			$this->Page = new $this->_callback['classname']($this);
+			$this->Page = new $this->_callback['classname'];
 
 			if(!$is_logged_in && $this->_callback['driver'] != 'login'){
 				if(is_callable(array($this->Page, 'handleFailedAuthorisation'))) $this->Page->handleFailedAuthorisation();
 				else{
 					include_once(CONTENT . '/content.login.php');
-					$this->Page = new contentLogin($this);
+					$this->Page = new contentLogin;
 					$this->Page->build();
 				}
 			}
@@ -197,17 +177,17 @@
 						$current_version = Symphony::Configuration()->get('version', 'symphony');
 						// The updater contains a version higher than the current Symphony version.
 						if(version_compare($current_version, $readme, '<')) {
-							$message = __('Run the updater to update Symphony to %s. <a href="%s">View Update</a>', array($readme, URL . "/update.php"));
+							$message = __('Run the updater to update Symphony to %s.', array($readme)) . ' <a href="' . URL . '/update.php">' . __('View Update') . '</a>';
 						}
 						// The updater contains a version lower than the current Symphony version.
 						// The updater is the same version as the current Symphony install.
 						else {
-							$message = __('Your Symphony installation is up to date, but an updater script was still detected. For security reasons, it should be removed. <a href="%s/update.php?action=remove">Remove Update Script</a>', array(URL));
+							$message = __('Your Symphony installation is up to date, but an updater script was still detected. For security reasons, it should be removed.') . ' <a href="' . URL . '/update.php?action=remove">' . __('Remove Update Script') . '</a>';
 						}
 					}
 					// Can't detect update Symphony version
 					else {
-						$message = __('An updater script has been found in your installation. <a href="%s">View Update</a>', array(URL . "/update.php"));
+						$message = __('An updater script has been found in your installation.') . ' <a href="' . URL . '/update.php">' . __('View Update') . '</a>';
 					}
 
 					$this->Page->pageAlert($message, Alert::NOTICE);
@@ -218,9 +198,9 @@
 				if(is_array($extensions) && !empty($extensions) && $this->__canAccessAlerts()) {
 					foreach($extensions as $name) {
 						$about = Symphony::ExtensionManager()->about($name);
-						if($about['status'] == EXTENSION_REQUIRES_UPDATE) {
+						if(in_array(EXTENSION_REQUIRES_UPDATE,$about['status'])) {
 							$this->Page->pageAlert(
-								__('An extension requires updating. <a href="%s">View Extensions</a>', array(SYMPHONY_URL . '/system/extensions/'))
+								__('An extension requires updating.') . ' <a href="' . SYMPHONY_URL . '/system/extensions/">' . __('View Extensions') . '</a>'
 							);
 							break;
 						}
@@ -357,7 +337,7 @@
 
 			}
 
-			## TODO: Add delegate for custom callback creation
+			// TODO: Add delegate for custom callback creation
 
 			return $callback;
 		}
@@ -379,7 +359,7 @@
 		 *  The HTML of the page to return
 		 */
 		public function display($page){
-			$this->Profiler->sample('Page build process started');
+			Symphony::Profiler()->sample('Page build process started');
 			$this->__buildPage($page);
 
 			/**
@@ -406,7 +386,7 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AdminPagePostGenerate', '/backend/', array('output' => &$output));
 
-			$this->Profiler->sample('Page built');
+			Symphony::Profiler()->sample('Page built');
 
 			return $output;
 		}
