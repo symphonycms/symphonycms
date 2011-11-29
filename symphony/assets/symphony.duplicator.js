@@ -72,14 +72,21 @@
 		/*-------------------------------------------------------------------*/
 
 			// Construct instances
-			controls.on('click.duplicator', 'a.constructor:not(.disabled)', function(event) {
+			controls.on('click.duplicator', 'a.constructor:not(.disabled)', function(event, speed) {
 				var instance = templates.filter('[data-type="' + selector.val() + '"]').clone();
 
 				instance.trigger('constructstart.duplicator');
 				instance.trigger('construct.duplicator'); /* deprecated */
 				instance.hide().appendTo(object);
+				
+				// Set speed
+				if(!speed) {
+					speed = settings.speed;
+				}	
+
+				// Show instance
 				instance.trigger('constructshow.duplicator');
-				instance.slideDown(settings.speed, function() {
+				instance.slideDown(speed, function() {
 
 					// Focus first input
 					instance.find('input[type!="hidden"]:first').focus();
@@ -227,13 +234,22 @@
 
 				// Populate selector
 				templates.each(function() {
-					var template = $(this);
+					var template = $(this),
+						title = template.find(settings.headers).text(),
+						value = template.attr('data-type');
+						
 					template.trigger('constructstart.duplicator');
+
+					// Check type connection 
+					if(!value) {
+						value = title;
+						template.attr('data-type', value);
+					}
 
 					// Append options
 					$('<option />', {
-						text: template.find(settings.headers).text(),
-						value: template.attr('data-type')
+						text: title,
+						value: value
 					}).appendTo(selector);
 					
 					// Check uniqueness
@@ -244,6 +260,17 @@
 			// Select default
 			if(settings.preselect != false) {
 				selector.find('option[value="' + settings.preselect + '"]').attr('selected', true);
+			}
+			
+			// Single template
+			if(templates.size() <= 1) {
+				selector.hide();
+				
+				// Single unique template
+				if(templates.is('.unique')) {
+					controls.find('a.constructor').trigger('click.duplicator', [0]);
+					controls.hide();
+				}
 			}
 			
 			// Destructable interface
