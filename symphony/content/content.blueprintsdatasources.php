@@ -788,17 +788,18 @@
 
 			$li = new XMLElement('li');
 			$li->setAttribute('class', 'template');
+			$li->setAttribute('data-type', 'namespace');
 			$li->appendChild(new XMLElement('h4', __('Namespace')));
 
 			$group = new XMLElement('div');
 			$group->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][-1][name]'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]'));
 			$group->appendChild($label);
 
 			$label = Widget::Label(__('URI'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][-1][uri]'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]'));
 			$group->appendChild($label);
 
 			$li->appendChild($group);
