@@ -483,7 +483,10 @@
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
-			if(!$file = $data['file']) return NULL;
+			if(!$file = $data['file']){
+				if($link) return parent::prepareTableValue(null, $link);
+				else return parent::prepareTableValue(null);
+			}
 
 			if($link){
 				$link->setValue(basename($file));
