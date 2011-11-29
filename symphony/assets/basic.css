@@ -206,6 +206,9 @@ body .invalid label > i {
 	border-top-width: 0;
 	border-bottom-color: #b21;
 }
+.invalid p.help {
+	color: #FFF;
+}
 .invalid a {
 	color: #fb9;
 	text-decoration: underline;
