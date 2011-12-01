@@ -596,7 +596,7 @@
 
 						foreach($fields as $position => $data){
 							if(trim($data['element_name']) == '')
-								$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], NULL, '-', false, true, array('@^[\d-]+@i' => ''));
+								$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], 255, '-', false, true, array('@^[\d-]+@i' => ''));
 
 							if(trim($data['element_name']) != '' && in_array($data['element_name'], $name_list)){
 								$this->_errors[$position] = array('label' => __('Two custom fields have the same element name. All element names must be unique.'));
