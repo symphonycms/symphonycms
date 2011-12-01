@@ -179,7 +179,7 @@
 				placeholder = $('<label>' + Symphony.Language.get('Password') + ' <span class="frame"><button>' + Symphony.Language.get('Change Password') + '</button></span></label>'),
 				invalid = password.has('.invalid');
 
-			if(invalid.size() == 0) {
+			if(invalid.length == 0) {
 
 				// Hide password fields
 				password.removeClass();
@@ -223,7 +223,7 @@
 			var select = $('select[name="with-selected"]'),
 				option = select.find('option:selected'),
 				input = $('table input:checked'),
-				count = input.size(),
+				count = input.length,
 				message = option.attr('data-message');
 
 			// Needs confirmation
@@ -240,6 +240,8 @@
 
 		$('#blueprints-datasources input[name="fields[name]"]').on('change', function(){
 			var value = $(this).val();
+
+			if(value == '' || $('select[name="fields[param][]"]:visible').length == 0) return;
 
 			$.ajax({
 				type: 'GET',
@@ -295,6 +297,12 @@
 
 		// Set data source manager context
 		$('#ds-context').change();
+
+		// Trigger the parameter name being remembered when the Datasource
+		// context changes
+		$('#ds-context').on('change', function() {
+			$('#blueprints-datasources input[name="fields[name]"]').trigger('change');
+		});
 
 		// Once pagination is disabled, max_records and page_number are disabled too
 		var max_record = $('input[name*=max_records]'),
@@ -355,8 +363,9 @@
 
 		// Validate pagination input on submit
 		$('.page form').submit(function() {
-			if(!$(this).find('input').val().match('^[0-9]+$') || $(this).find('input').val() > parseInt($(this).find('span').html())) {
-				$(this).find('input').addClass("error");
+			var $input = $(this).find('input');
+			if(!$input.val().match('^[0-9]+$') || $input.val() > parseInt($(this).find('span').html())) {
+				$input.addClass("error");
 				window.setTimeout(function() { $('.page form input').removeClass("error"); }, 500);
 				return false;
 			}

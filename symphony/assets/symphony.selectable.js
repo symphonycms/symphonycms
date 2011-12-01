@@ -60,10 +60,10 @@
 			}
 
 			// Range selection
-			if((event.shiftKey) && items.filter('.selected').size() > 0 && !object.is('.single')) {
+			if((event.shiftKey) && items.filter('.selected').length > 0 && !object.is('.single')) {
 
 				// Select upwards
-				if(item.prevAll().filter('.selected').size() > 0) {
+				if(item.prevAll().filter('.selected').length > 0) {
 					first = items.filter('.selected:first').index();
 					last = item.index() + 1;
 				}

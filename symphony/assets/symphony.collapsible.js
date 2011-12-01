@@ -122,7 +122,7 @@
 			object.on('collapsestop.collapsible', settings.items, function(event) {
 				var item = $(this);
 				
-				if(item.siblings().filter(':not(.collapsed)').size() == 0) {
+				if(item.siblings().filter(':not(.collapsed)').length == 0) {
 					object.find('a.collapser').text(Symphony.Language.get('Expand all'));
 				}
 			});
@@ -131,7 +131,7 @@
 			object.on('expandstop.collapsible', settings.items, function(event) {
 				var item = $(this);
 				
-				if(item.siblings().filter('.collapsed').size() == 0) {
+				if(item.siblings().filter('.collapsed').length == 0) {
 					object.find('a.collapser').text(Symphony.Language.get('Collapse all'));
 				}
 			});
@@ -228,7 +228,7 @@
 				}
 				
 				// Activate controls
-				if(object.find(settings.items).size() > 0) {
+				if(object.find(settings.items).length > 0) {
 					object.trigger('activate.collapsible', [0]);
 				}
 				
