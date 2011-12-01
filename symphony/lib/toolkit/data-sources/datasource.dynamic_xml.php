@@ -147,8 +147,6 @@
 			$result->appendChild(
 				new XMLElement('error', __('The %s class failed to acquire a lock.', array('<code>Mutex</code>')))
 			);
-
-			return $result;;
 		}
 	}
 
