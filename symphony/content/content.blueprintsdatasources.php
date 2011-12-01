@@ -180,7 +180,7 @@
 
 			else{
 
-				$fields['dynamic_xml']['url'] = 'http://';
+				$fields['dynamic_xml']['url'] = '';
 				$fields['dynamic_xml']['cache'] = '30';
 				$fields['dynamic_xml']['xpath'] = '/';
 				$fields['dynamic_xml']['timeout'] = '6';
@@ -722,7 +722,7 @@
 			$group->setAttribute('class', 'group offset');
 
 			$label = Widget::Label(__('URL'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][url]', General::sanitize($fields['dynamic_xml']['url'])));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][url]', General::sanitize($fields['dynamic_xml']['url']), 'text', array('placeholder' => 'http://')));
 			if(isset($this->_errors['dynamic_xml']['url'])) $group->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['url']));
 			else $group->appendChild($label);
 
@@ -1009,20 +1009,22 @@
 			}
 
 			elseif($fields['source'] == 'dynamic_xml'){
+				if(trim($fields['dynamic_xml']['url']) == '') $this->_errors['dynamic_xml']['url'] = __('This is a required field');
+
 				// Use the TIMEOUT that was specified by the user for a real world indication
 				$timeout = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : 6);
 
 				// If there is a parameter in the URL, we can't validate the existence of the URL
 				// as we don't have the environment details of where this datasource is going
 				// to be executed.
-				$fetch_URL = !preg_match('@{([^}]+)}@i', $fields['dynamic_xml']['url']);
+				if(!preg_match('@{([^}]+)}@i', $fields['dynamic_xml']['url'])) {
+					$valid_url = self::__isValidURL($fields['dynamic_xml']['url'], $timeout, $error);
 
-				if($valid_url = self::__isValidURL($fields['dynamic_xml']['url'], $timeout, $fetch_URL)) {
-					if(is_array($valid_url)) {
+					if($valid_url) {
 						$data = $valid_url['data'];
 					}
 					else {
-						$this->_errors['dynamic_xml']['url'] = $valid_url;
+						$this->_errors['dynamic_xml']['url'] = $error;
 					}
 				}
 
@@ -1054,7 +1056,7 @@
 			$rootelement = str_replace('_', '-', $classname);
 
 			// Check to make sure the classname is not empty after handlisation.
-			if(empty($classname)) $this->_errors['name'] = __('Please ensure name contains at least one Latin-based alphabet.', array($classname));
+			if(empty($classname) && !isset($this->_errors['name'])) $this->_errors['name'] = __('Please ensure name contains at least one Latin-based alphabet.', array($classname));
 
 			$file = DATASOURCES . '/data.' . $classname . '.php';
 
@@ -1450,35 +1452,35 @@
 		 * @param string $url
 		 * @param integer $timeout
 		 *  If not provided, this will default to 6 seconds
-		 * @param boolean $fetch_URL
-		 *  Defaults to false, but when set to true, this function will use the
-		 *  `Gateway` class to attempt to validate the URL's existence and it
-		 *  returns before the `$timeout`
-		 * @return string|array
+		 * @param string $error
+		 *  If this function returns false, this variable will be populated with the
+		 *  error message.
+		 * @return array|boolean
 		 *  Returns an array with the 'data' if it is a valid URL, otherwise a string
 		 *  containing an error message.
 		 */
-		public static function __isValidURL($url, $timeout = 6, $fetch_URL = false) {
-			// Check that URL was provided
-			if(trim($url) == '') {
-				return __('This is a required field');
+		public static function __isValidURL($url, $timeout = 6, &$error) {
+			if(!filter_var($url, FILTER_VALIDATE_URL)) {
+				$error = __('Invalid URL');
+				return false;
 			}
-			// Check to see the URL works.
-			else if ($fetch_URL === true) {
-				$gateway = new Gateway;
-				$gateway->init($url);
-				$gateway->setopt('TIMEOUT', $timeout);
-				$data = $gateway->exec();
 
-				$info = $gateway->getInfoLast();
+			// Check that URL was provided
+			$gateway = new Gateway;
+			$gateway->init($url);
+			$gateway->setopt('TIMEOUT', $timeout);
+			$data = $gateway->exec();
 
-				// 28 is CURLE_OPERATION_TIMEOUTED
-				if($info['curl_error'] == 28) {
-					return __('Request timed out. %d second limit reached.', array($timeout));
-				}
-				else if($data === false || $info['http_code'] != 200) {
-					return __('Failed to load URL, status code %d was returned.', array($info['http_code']));
-				}
+			$info = $gateway->getInfoLast();
+
+			// 28 is CURLE_OPERATION_TIMEOUTED
+			if($info['curl_error'] == 28) {
+				$error = __('Request timed out. %d second limit reached.', array($timeout));
+				return false;
+			}
+			else if($data === false || $info['http_code'] != 200) {
+				$error = __('Failed to load URL, status code %d was returned.', array($info['http_code']));
+				return false;
 			}
 
 			return array('data' => $data);

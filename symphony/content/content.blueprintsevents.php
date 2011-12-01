@@ -285,7 +285,7 @@
 			$rootelement = str_replace('_', '-', $classname);
 
 			// Check to make sure the classname is not empty after handlisation.
-			if(empty($classname)) $this->_errors['name'] = __('Please ensure name contains at least one Latin-based alphabet.', array($classname));
+			if(empty($classname) && !isset($this->_errors['name'])) $this->_errors['name'] = __('Please ensure name contains at least one Latin-based alphabet.', array($classname));
 
 			$file = EVENTS . '/event.' . $classname . '.php';
 
