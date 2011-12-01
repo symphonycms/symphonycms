@@ -11,6 +11,21 @@
 		// Initialize Symphony
 		Symphony.init();
 
+		// Catch all javascript errors and write them to the Symphony Log
+		window.onerror = function(errorMsg, url, line) {
+			$.ajax({
+				type: 'POST',
+				url: Symphony.Context.get('root') + '/symphony/ajax/log/',
+				data: {
+					'error': errorMsg,
+					'url': url,
+					'line': line
+				}
+			});
+
+			return false;
+		};
+
 		// Tags
 		$('.tags').symphonyTags();
 
@@ -72,7 +87,7 @@
 
 		// Duplicators
 		$('.filters-duplicator').symphonyDuplicator();
-		
+
 		// Collapsible duplicators
 		var duplicator = $('#fields-duplicator');
 		duplicator.symphonyDuplicator({
