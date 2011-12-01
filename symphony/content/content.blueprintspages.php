@@ -989,7 +989,7 @@
 
 						// Find and update children:
 						if($this->_context[0] == 'edit') {
-							$this->__updatePageChildren($page_id, $fields['path'] . '/' . $fields['handle']);
+							PageManager::editPageChildren($page_id, $fields['path'] . '/' . $fields['handle']);
 						}
 
 						if($redirect) redirect(SYMPHONY_URL . $redirect);
