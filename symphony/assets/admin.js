@@ -238,6 +238,25 @@
 			}
 		});
 
+		$('#blueprints-datasources input[name="fields[name]"]').on('change', function(){
+			var value = $(this).val();
+
+			$.ajax({
+				type: 'GET',
+				data: { 'string': value },
+				dataType: 'json',
+				url: Symphony.Context.get('root') + '/symphony/ajax/handle/',
+				success: function(result) {
+					$('select[name="fields[param][]"] option').each(function(){
+						var item = $(this),
+							field = item.text().split('.')[1];
+
+						item.text('$ds-' + result + '.' + field)
+					});
+				}
+			});
+		});
+
 		// Data source manager options
 		$('select.filtered > optgroup').each(function() {
 			var optgroup = $(this),
