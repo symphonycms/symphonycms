@@ -183,7 +183,7 @@
 						// The updater contains a version lower than the current Symphony version.
 						// The updater is the same version as the current Symphony install.
 						else {
-							$message = __('Your Symphony installation is up to date, but an updater script was still detected. For security reasons, it should be removed.') . ' <a href="' . URL . '/update.php?action=remove">' . __('Remove Update Script') . '</a>';
+							$message = __('Your Symphony installation is up to date, but an updater script was still detected. For security reasons, it should be removed.') . ' <a href="' . URL . '/install/?action=remove">' . __('Remove Update Script') . '</a>';
 						}
 					}
 					// Can't detect update Symphony version
