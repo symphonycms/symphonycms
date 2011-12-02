@@ -739,6 +739,7 @@
 			$fieldset->appendChild($group);
 
 			$div = new XMLElement('div');
+			$div->setAttribute('id', 'xml');
 			$p = new XMLElement('p', __('Namespace Declarations'));
 			$p->appendChild(new XMLElement('i', __('Optional')));
 			$p->setAttribute('class', 'label');

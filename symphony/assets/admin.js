@@ -32,6 +32,10 @@
 		// Pickers
 		$('select[name="settings[Email][default_gateway]"]').symphonyPickable();
 
+		$('select[name="fields[dynamic_xml][format]"]').symphonyPickable({
+		    pickables: '#xml'
+		});
+
 		// Selectable
 		$('table.selectable').symphonySelectable();
 
