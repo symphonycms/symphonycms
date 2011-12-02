@@ -108,11 +108,9 @@
 		 * @return Extension
 		 */
 		public static function getInstance($name){
-			foreach(self::$_pool as $key => $extension){
-				if($key == $name) return $extension;
-			}
-
-			return self::create($name);
+			return isset(self::$_pool[$name])
+				? self::$_pool[$name]
+				: self::create($name);
 		}
 
 		/**
