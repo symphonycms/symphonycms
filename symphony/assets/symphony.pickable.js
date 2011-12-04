@@ -44,7 +44,7 @@
 			related.hide();
 			
 			// Selection found
-			if(selection.size() == 1) {
+			if(selection.length == 1) {
 				selection.show().trigger('pick.pickable');
 				object.trigger('pickstop.pickable');
 			}
@@ -85,7 +85,7 @@
 				relation = object.attr('name') || object.attr('data-relation');
 
 			// Multiple items
-			if(choices.size() > 1) {
+			if(choices.length > 1) {
 				choices.each(function() {
 					pickables.filter('#' + $(this).val()).attr('data-relation', relation).hide();
 				});

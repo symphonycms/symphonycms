@@ -72,14 +72,21 @@
 		/*-------------------------------------------------------------------*/
 
 			// Construct instances
-			controls.on('click.duplicator', 'a.constructor:not(.disabled)', function(event) {
+			controls.on('click.duplicator', 'a.constructor:not(.disabled)', function(event, speed) {
 				var instance = templates.filter('[data-type="' + selector.val() + '"]').clone();
 
 				instance.trigger('constructstart.duplicator');
 				instance.trigger('construct.duplicator'); /* deprecated */
 				instance.hide().appendTo(object);
+				
+				// Set speed
+				if(!speed) {
+					speed = settings.speed;
+				}	
+
+				// Show instance
 				instance.trigger('constructshow.duplicator');
-				instance.slideDown(settings.speed, function() {
+				instance.slideDown(speed, function() {
 
 					// Focus first input
 					instance.find('input[type!="hidden"]:first').focus();
@@ -101,28 +108,28 @@
 			
 			// Lock constructor
 			duplicator.on('constructstop.duplicator', '.instance', function() {
-				if(duplicator.find('.instance').size() >= settings.maximum) {
+				if(duplicator.find('.instance').length >= settings.maximum) {
 					constructor.addClass('disabled');
 				}
 			});
 			
 			// Unlock constructor
 			duplicator.on('destructstart.duplicator', '.instance', function() {
-				if(duplicator.find('.instance').size() <= settings.maximum) {
+				if(duplicator.find('.instance').length <= settings.maximum) {
 					constructor.removeClass('disabled');
 				}
 			});
 			
 			// Lock destructor
 			duplicator.on('destructstart.duplicator', '.instance', function() {
-				if(duplicator.find('.instance').size() - 1 == settings.minimum) {
+				if(duplicator.find('.instance').length - 1 == settings.minimum) {
 					duplicator.find('a.destructor').addClass('disabled');
 				}
 			});
 
 			// Unlock destructor
 			duplicator.on('constructstop.duplicator', '.instance', function() {
-				if(duplicator.find('.instance').size() > settings.minimum) {
+				if(duplicator.find('.instance').length > settings.minimum) {
 					duplicator.find('a.destructor').removeClass('disabled');
 				}
 			});
@@ -138,7 +145,7 @@
 					selector.find('option').attr('selected', false).filter(':not(:disabled):first').attr('selected', true);
 					
 					// All selected
-					if(selector.find('option:not(:disabled)').size() == 0) {
+					if(selector.find('option:not(:disabled)').length == 0) {
 						selector.attr('disabled', 'disabled');
 					}
 				}
@@ -153,7 +160,7 @@
 					option = selector.attr('disabled', false).find('option[value="' + instance.attr('data-type') + '"]').attr('disabled', false);
 					
 					// Preselect instance if it's the only active one
-					if(selector.find('option:not(:disabled)').size() == 1) {
+					if(selector.find('option:not(:disabled)').length == 1) {
 						option.attr('selected', true);
 					}
 				}
@@ -167,7 +174,7 @@
 					description = title.find('i');
 					
 				// Create description
-				if(description.size() == 0) {
+				if(description.length == 0) {
 					description = $('<i />').appendTo(title);
 				}
 				
@@ -200,14 +207,14 @@
 
 			// Activate controls
 			duplicator.on('constructshow.duplicator', '.instance', function(event) {
-				if(duplicator.find('.instance').size() == 1) {
+				if(duplicator.find('.instance').length == 1) {
 					duplicator.trigger('activate.collapsible');
 				}
 			});
 			
 			// Deactivate controls
 			duplicator.on('destructstart.duplicator', '.instance', function(event) {
-				if(duplicator.find('.instance').size() == 1) {
+				if(duplicator.find('.instance').length == 1) {
 					duplicator.trigger('deactivate.collapsible');
 				}
 			});
@@ -227,13 +234,22 @@
 
 				// Populate selector
 				templates.each(function() {
-					var template = $(this);
+					var template = $(this),
+						title = template.find(settings.headers).text(),
+						value = template.attr('data-type');
+						
 					template.trigger('constructstart.duplicator');
+
+					// Check type connection 
+					if(!value) {
+						value = title;
+						template.attr('data-type', value);
+					}
 
 					// Append options
 					$('<option />', {
-						text: template.find(settings.headers).text(),
-						value: template.attr('data-type')
+						text: title,
+						value: value
 					}).appendTo(selector);
 					
 					// Check uniqueness
@@ -244,6 +260,17 @@
 			// Select default
 			if(settings.preselect != false) {
 				selector.find('option[value="' + settings.preselect + '"]').attr('selected', true);
+			}
+			
+			// Single template
+			if(templates.length <= 1) {
+				selector.hide();
+				
+				// Single unique template
+				if(templates.is('.unique')) {
+					controls.find('a.constructor').trigger('click.duplicator', [0]);
+					controls.hide();
+				}
 			}
 			
 			// Destructable interface

@@ -24,11 +24,11 @@
 		}
 
 		static function getVersion(){
-			return '2.3dev';
+			return '2.3beta1';
 		}
 
 		static function getReleaseNotes(){
-			return 'http://symphony-cms.com/download/releases/version/2.3/';
+			return 'https://gist.github.com/1162216';
 		}
 
 		static function upgrade(){
@@ -73,6 +73,14 @@
 				if(Symphony::Configuration()->get('pagination_maximum_rows', 'symphony') == '17'){
 					Symphony::Configuration()->set('pagination_maximum_rows', '20', 'symphony');
 				}
+
+				Symphony::Configuration()->write();
+			}
+
+			// 2.3 Beta 1
+			if(version_compare(self::$existing_version, '2.3beta1', '<=')) {
+				Symphony::Configuration()->set('version', '2.3beta1', 'symphony');
+				Symphony::Configuration()->set('useragent', 'Symphony/2.3 Beta 1', 'general');
 
 				return Symphony::Configuration()->write();
 			}

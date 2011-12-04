@@ -46,11 +46,19 @@
 	define('INSTALL', DOCROOT . '/install');
 	define('INSTALL_LOGS', INSTALL . '/logs');
 
-	define('VERSION', '2.3dev');
+	define('VERSION', '2.3beta1');
 
 	// Required boot components
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
+
+	// If prompt to remove, delete the entire `/install` directory
+	// and then redirect to Symphony
+	if(isset($_GET['action']) && $_GET['action'] == 'remove') {
+		require_once(DOCROOT . '/symphony/lib/toolkit/class.general.php');
+		General::deleteDirectory(INSTALL);
+		redirect(URL . '/symphony/');
+	}
 
 	// If Symphony is already installed, run the updater
 	if(file_exists(CONFIG)) {

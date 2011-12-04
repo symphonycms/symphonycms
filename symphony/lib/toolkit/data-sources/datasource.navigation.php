@@ -45,8 +45,10 @@
 				$oPage->appendChild($xTypes);
 			}
 
-			if($children = PageManager::fetch(false, array('*'), array(sprintf('`parent` = %d', $page['id'])))) {
-				foreach($children as $c) $oPage->appendChild(__buildPageXML($c, $page_types));
+			if($page['children'] != '0') {
+				if($children = PageManager::fetch(false, array('id, handle, title'), array(sprintf('`parent` = %d', $page['id'])))) {
+					foreach($children as $c) $oPage->appendChild(__buildPageXML($c, $page_types));
+				}
 			}
 
 			return $oPage;
@@ -68,7 +70,7 @@
 
 	// Build the Query appending the Parent and/or Type WHERE clauses
 	$pages = Symphony::Database()->fetch(sprintf("
-			SELECT DISTINCT p.*
+			SELECT DISTINCT p.id, p.title, p.handle, (SELECT COUNT(id) FROM `tbl_pages` WHERE parent = p.id) AS children
 			FROM `tbl_pages` AS p
 			LEFT JOIN `tbl_pages_types` AS pt ON (p.id = pt.page_id)
 			WHERE 1 = 1

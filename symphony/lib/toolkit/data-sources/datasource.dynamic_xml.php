@@ -147,8 +147,6 @@
 			$result->appendChild(
 				new XMLElement('error', __('The %s class failed to acquire a lock.', array('<code>Mutex</code>')))
 			);
-
-			return $result;;
 		}
 	}
 
@@ -192,7 +190,7 @@
 		else {
 			if($writeToCache) $cache->write($cache_id, $data, $this->dsParamCACHE);
 
-			$result->setValue(PHP_EOL . preg_replace('/([\r\n]+)/', '$1	', $ret));
+			$result->setValue(PHP_EOL . str_repeat("\t", 2) . preg_replace('/([\r\n]+)/', "$1\t", $ret));
 			$result->setAttribute('status', ($valid === true ? 'fresh' : 'stale'));
 			$result->setAttribute('creation', $creation);
 		}

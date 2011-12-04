@@ -107,13 +107,18 @@
 		 * Validate a given date and time string
 		 *
 		 * @param string $string
-		 *	A date and time string to validate
+		 *	A date and time string or timestamp to validate
 		 * @return boolean
 		 *	Returns true for valid dates, otherwise false
 		 */
 		public static function validate($string) {
 			try {
-				$date = new DateTime(Lang::standardizeDate($string));
+				if(is_numeric($string) && (int)$string == $string) {
+					$date = new DateTime('@' . $string);
+				}
+				else {
+					$date = new DateTime(Lang::standardizeDate($string));
+				}
 			}
 			catch(Exception $ex) {
 				return false;

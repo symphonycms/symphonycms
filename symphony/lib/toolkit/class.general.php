@@ -378,7 +378,7 @@
 			$string = preg_replace('/[\\.\'"]+/', NULL, $string);
 
 			// Trim it
-			$string = General::limitWords($string, $max_length);
+			if($max_length > 0) $string = General::limitWords($string, $max_length);
 
 			// Replace spaces (tab, newline etc) with the delimiter
 			$string = preg_replace('/[\s]+/', $delim, $string);

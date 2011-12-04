@@ -335,7 +335,7 @@ var Symphony = {};
 				Symphony.Message.Queue = $(Queue).filter(':not(.' + type + ')').get();
 
 				// Show previous message
-				if(message.size() > 0 && Queue.length > 0) {
+				if(message.length > 0 && Queue.length > 0) {
 					$(Queue.pop()).insertBefore('h1');
 				}
 			};
