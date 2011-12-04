@@ -443,8 +443,6 @@
 		 *	the input error collection. this defaults to null.
 		 */
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null){
-			
-
 			$wrapper->appendChild(new XMLElement('h4', $this->name()));
 			$wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][type]', $this->handle(), 'hidden'));
 			if($this->get('id')) $wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][id]', $this->get('id'), 'hidden'));
@@ -465,13 +463,6 @@
 		 *	the root xml element of the html display of this.
 		 */
 		public function buildSummaryBlock($errors = null){
-#			// Publish label
-#			$label = Widget::Label(__('Label'));
-#			$label->appendChild(new XMLElement('i', __('Optional')));
-#			$label->appendChild(
-#				Widget::Input('fields['.$this->get('sortorder').'][publish_label]', $this->get('publish_label'))
-#			);
-
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'group');
 
