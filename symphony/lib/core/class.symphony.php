@@ -317,7 +317,7 @@
 				throw new SymphonyErrorPage(
 					$error['num'] . ': ' . $error['msg'],
 					'Symphony Database Error',
-					'database-error',
+					'database',
 					array(
 						'error' => $error,
 						'message' => __('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct.') . ' ' . __('The following error was returned:')
@@ -491,14 +491,14 @@
 		 *  A description for this error, which can be provided as a string
 		 *  or as an XMLElement.
 		 * @param string $template
-		 *  A string for the error page template to use, defaults to 'error'. This
+		 *  A string for the error page template to use, defaults to 'generic'. This
 		 *  can be the name of any template file in the `TEMPLATES` directory.
 		 *  A template using the naming convention of `tpl.*.php`.
 		 * @param array $additional
 		 *  Allows custom information to be passed to the Symphony Error Page
 		 *  that the template may want to expose, such as custom Headers etc.
 		 */
-		public function customError($heading, $message, $template='error', array $additional=array()){
+		public function customError($heading, $message, $template='generic', array $additional=array()){
 			GenericExceptionHandler::$enabled = true;
 			throw new SymphonyErrorPage($message, $heading, $template, $additional);
 		}
@@ -648,12 +648,12 @@
 		private $_message;
 
 		/**
-		 * A string for the error page template to use, defaults to 'error'. This
+		 * A string for the error page template to use, defaults to 'generic'. This
 		 * can be the name of any template file in the `TEMPLATES` directory.
 		 * A template using the naming convention of `tpl.*.php`.
 		 * @var string
 		 */
-		private $_template = 'error';
+		private $_template = 'generic';
 
 		/**
 		 * If the message as provided as an XMLElement, it will be saved to
@@ -678,14 +678,14 @@
 		 * @param string $heading
 		 *  A heading for the error page, by default this is "Symphony Fatal Error"
 		 * @param string $template
-		 *  A string for the error page template to use, defaults to 'error'. This
+		 *  A string for the error page template to use, defaults to 'generic'. This
 		 *  can be the name of any template file in the `TEMPLATES` directory.
 		 *  A template using the naming convention of `tpl.*.php`.
 		 * @param array $additional
 		 *  Allows custom information to be passed to the Symphony Error Page
 		 *  that the template may want to expose, such as custom Headers etc.
 		 */
-		public function __construct($message, $heading='Symphony Fatal Error', $template='error', array $additional=NULL){
+		public function __construct($message, $heading='Symphony Fatal Error', $template='generic', array $additional=NULL){
 
 			if($message instanceof XMLElement){
 				$this->_messageObject = $message;
@@ -736,7 +736,7 @@
 		 *  false otherwise
 		 */
 		public function getTemplate(){
-			$template = sprintf('%s/tpl.%s.php', TEMPLATE, $this->_template);
+			$template = sprintf('%s/usererror.%s.php', TEMPLATE, $this->_template);
 			return (file_exists($template) ? $template : false);
 		}
 	}
@@ -794,7 +794,7 @@
 				}
 			}
 
-			return sprintf(file_get_contents(TEMPLATE . '/fatalerror.tpl'),
+			return sprintf(file_get_contents(TEMPLATE . '/fatalerror.database.tpl'),
 				$e->getDatabaseErrorMessage(),
 				$e->getQuery(),
 				$trace,
