@@ -464,14 +464,27 @@
 		 */
 		public function buildSummaryBlock($errors = null){
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
 
+			// Publish label
 			$label = Widget::Label(__('Label'));
-			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][label]', $this->get('label')));
+			$label->appendChild(
+				Widget::Input('fields['.$this->get('sortorder').'][label]', $this->get('label'))
+			);
 			if(isset($errors['label'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['label']));
 			else $div->appendChild($label);
 
-			$div->appendChild($this->buildLocationSelect($this->get('location'), 'fields['.$this->get('sortorder').'][location]'));
+			// Handle + placement
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
+
+			$label = Widget::Label(__('Handle'));
+			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][element_name]', $this->get('element_name')));
+			if(isset($errors['element_name'])) $group->appendChild(Widget::wrapFormElementWithError($label, $errors['element_name']));
+			else $group->appendChild($label);
+
+			$group->appendChild($this->buildLocationSelect($this->get('location'), 'fields['.$this->get('sortorder').'][location]'));
+
+			$div->appendChild($group);
 
 			return $div;
 		}
@@ -486,16 +499,16 @@
 		 * @return XMLElement
 		 *  the `XMLElement` of this widget.
 		 */
-		public function buildPublishLabel() {
-			// Publish label
-			$label = Widget::Label(__('Publish Label'));
-			$label->appendChild(new XMLElement('i', __('Optional')));
-			$label->appendChild(
-				Widget::Input('fields['.$this->get('sortorder').'][publish_label]', $this->get('publish_label'))
-			);
+#		public function buildPublishLabel() {
+#			// Publish label
+#			$label = Widget::Label(__('Publish Label'));
+#			$label->appendChild(new XMLElement('i', __('Optional')));
+#			$label->appendChild(
+#				Widget::Input('fields['.$this->get('sortorder').'][publish_label]', $this->get('publish_label'))
+#			);
 
-			return $label;
-		}
+#			return $label;
+#		}
 
 		/**
 		 * Build the location select widget. This widget allows users to select

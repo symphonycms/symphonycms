@@ -90,8 +90,6 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$wrapper->appendChild($this->buildPublishLabel());
-
 			// Textarea Size
 			$label = Widget::Label(__('Number of default rows'));
 			$input = Widget::Input('fields['.$this->get('sortorder').'][size]', $this->get('size'));

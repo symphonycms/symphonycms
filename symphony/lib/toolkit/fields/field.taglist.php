@@ -106,8 +106,6 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$wrapper->appendChild($this->buildPublishLabel());
-
 			$label = Widget::Label(__('Suggestion List'));
 
 			$sections = SectionManager::fetch(NULL, 'ASC', 'name');

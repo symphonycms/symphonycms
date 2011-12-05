@@ -106,8 +106,6 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$wrapper->appendChild($this->buildPublishLabel());
-
 			// Destination Folder
 			$ignore = array(
 				'/workspace/events',
