@@ -35,7 +35,12 @@ var Symphony = {};
 			Symphony.Context.add('lang', html.attr('lang'));
 
 			// Set browser support information
-			Symphony.Support.localStorage = ('localStorage' in window && window['localStorage'] !== null) ? true : false;
+			try {
+				Symphony.Support.localStorage = !!localStorage.getItem;
+			} catch(e) {
+				Symphony.Support.localStorage = false;
+			}
+
 			// Deep copy jQuery.support
 			$.extend(true, Symphony.Support, $.support);
 
@@ -123,7 +128,7 @@ var Symphony = {};
 				}
 
 				// Return false if group does not exist in Storage
-				if(typeof Storage[group] == 'undefined') {
+				if(typeof Storage[group] === undefined) {
 					return false;
 				}
 
@@ -186,7 +191,7 @@ var Symphony = {};
 				}
 
 				// Save English strings
-				if(Symphony.Context.get('lang') == 'en') {
+				if(Symphony.Context.get('lang') === 'en') {
 					$.extend(true, Dictionary, temp);
 				}
 
@@ -391,10 +396,10 @@ var Symphony = {};
 			this.distance = function(from, to) {
 
 				// Calculate time difference
-				var distance = to - from;
+				var distance = to - from,
 
 				// Convert time to minutes
-				var time = Math.floor(distance / 60000);
+					time = Math.floor(distance / 60000);
 
 				// Return relative date based on passed time
 				if(time < 1) {
@@ -422,7 +427,7 @@ var Symphony = {};
 
 		/**
 		 * A collection of properties that represent the presence of
- 		 * different browser features and also contains the test results
+		 * different browser features and also contains the test results
 		 * from jQuery.support.
 		 *
 		 * @class

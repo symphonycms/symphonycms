@@ -62,7 +62,7 @@
 			var new_sorting = orderable.find('input').map(function(e, i) { return this.name + '=' + (e + 1); }).get().join('&');
 
 			// Store new sort order
-			if(new_sorting != old_sorting) {
+			if(new_sorting !== old_sorting) {
 
 				// Update items
 				orderable.trigger('orderupdate');
@@ -140,10 +140,11 @@
 				statement = '<xsl:import href="../utilities/' + link + '"/>',
 				regexp = '^<xsl:import href="(?:\.\./utilities/)?' + link + '"',
 				newLine = '\n',
-				numberOfNewLines = 1;
+				numberOfNewLines = 1,
+				number_lines = lines.length;
 
 			if ($(this).hasClass('selected')) {
-				for (var i = 0; i < lines.length; i++) {
+				for (var i = 0; i < number_lines; i++) {
 					if ($.trim(lines[i]).match(regexp) != null) {
 						(lines[i + 1] === '' && $.trim(lines[i - 1]).substring(0, 11) !== '<xsl:import') ? lines.splice(i, 2) : lines.splice(i, 1);
 						break;
@@ -154,7 +155,7 @@
 				$(this).removeClass('selected');
 			}
 			else {
-				for (var i = 0; i < lines.length; i++) {
+				for (var i = 0; i < number_lines; i++) {
 					if ($.trim(lines[i]).substring(0, 4) === '<!--' || $.trim(lines[i]).match('^<xsl:(?:import|variable|output|comment|template)')) {
 
 						numberOfNewLines = $.trim(lines[i]).substring(0, 11) === '<xsl:import' ? 1 : 2;
