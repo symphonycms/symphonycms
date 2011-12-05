@@ -112,9 +112,7 @@
 			}
 
 			else{
-
-				$fields['body'] = file_get_contents(TEMPLATE . '/utility.xsl');
-
+				$fields['body'] = file_get_contents(TEMPLATE . '/blueprints.utility.xsl');
 			}
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));

@@ -306,7 +306,7 @@
 
 				$multiple = in_array('expect-multiple', $filters);
 
-				$eventShell = file_get_contents(TEMPLATE . '/event.tpl');
+				$eventShell = file_get_contents(TEMPLATE . '/blueprints.event.tpl');
 
 				$about = array(
 					'name' => $fields['name'],
