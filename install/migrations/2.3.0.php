@@ -24,7 +24,7 @@
 		}
 
 		static function getVersion(){
-			return '2.3beta1';
+			return '2.3beta2';
 		}
 
 		static function getReleaseNotes(){
@@ -78,9 +78,36 @@
 			}
 
 			// 2.3 Beta 1
-			if(version_compare(self::$existing_version, '2.3beta1', '<=')) {
+			if(version_compare(self::$existing_version, '2.3beta1', '<')) {
 				Symphony::Configuration()->set('version', '2.3beta1', 'symphony');
 				Symphony::Configuration()->set('useragent', 'Symphony/2.3 Beta 1', 'general');
+
+				return Symphony::Configuration()->write();
+			}
+
+			// 2.3 Beta 2
+			if(version_compare(self::$existing_version, '2.3beta2', '<=')) {
+
+				$fields = Symphony::Database()->fetch('SELECT `publish_label`, `label`, `id` FROM `tbl_fields`');
+
+				foreach($fields as $field){
+					if(!$field['publish_label']) continue;
+
+					Symphony::Database()->query(sprintf("
+						UPDATE `tbl_fields`
+						SET `label` = '%s'
+						WHERE `id` = %d
+						LIMIT 1;
+						",
+						$field['publish_label'],
+						$field['id']
+					));
+				}
+
+				Symphony::Database()->query("ALTER TABLE `tbl_fields` DROP `publish_label`");
+
+				Symphony::Configuration()->set('version', '2.3beta2', 'symphony');
+				Symphony::Configuration()->set('useragent', 'Symphony/2.3 Beta 2', 'general');
 
 				return Symphony::Configuration()->write();
 			}

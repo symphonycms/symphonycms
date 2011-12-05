@@ -464,37 +464,29 @@
 		 */
 		public function buildSummaryBlock($errors = null){
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
 
+			// Publish label
 			$label = Widget::Label(__('Label'));
-			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][label]', $this->get('label')));
+			$label->appendChild(
+				Widget::Input('fields['.$this->get('sortorder').'][label]', $this->get('label'))
+			);
 			if(isset($errors['label'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['label']));
 			else $div->appendChild($label);
 
-			$div->appendChild($this->buildLocationSelect($this->get('location'), 'fields['.$this->get('sortorder').'][location]'));
+			// Handle + placement
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
+
+			$label = Widget::Label(__('Handle'));
+			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][element_name]', $this->get('element_name')));
+			if(isset($errors['element_name'])) $group->appendChild(Widget::wrapFormElementWithError($label, $errors['element_name']));
+			else $group->appendChild($label);
+
+			$group->appendChild($this->buildLocationSelect($this->get('location'), 'fields['.$this->get('sortorder').'][location]'));
+
+			$div->appendChild($group);
 
 			return $div;
-		}
-
-		/**
-		 * Add the Publish Label widget to add to the settings panel. This holds
-		 * the Label that will be displayed in the backend of Symphony. This setting
-		 * allows a field's 'Label' to be changed without a developer having to update
-		 * references in the Datasources or XSLT.
-		 *
-		 * @since Symphony 2.3
-		 * @return XMLElement
-		 *  the `XMLElement` of this widget.
-		 */
-		public function buildPublishLabel() {
-			// Publish label
-			$label = Widget::Label(__('Publish Label'));
-			$label->appendChild(new XMLElement('i', __('Optional')));
-			$label->appendChild(
-				Widget::Input('fields['.$this->get('sortorder').'][publish_label]', $this->get('publish_label'))
-			);
-
-			return $label;
 		}
 
 		/**
@@ -1142,11 +1134,8 @@
 		public function commit(){
 			$fields = array();
 
-			$fields['element_name'] = Lang::createHandle($this->get('label'));
-			if(is_numeric($fields['element_name']{0})) $fields['element_name'] = 'field-' . $fields['element_name'];
-
 			$fields['label'] = General::sanitize($this->get('label'));
-			$fields['publish_label'] = General::sanitize($this->get('publish_label'));
+			$fields['element_name'] = ($this->get('element_name') ? $this->get('element_name') : Lang::createHandle($this->get('label')));
 			$fields['parent_section'] = $this->get('parent_section');
 			$fields['location'] = $this->get('location');
 			$fields['required'] = $this->get('required');
