@@ -490,27 +490,6 @@
 		}
 
 		/**
-		 * Add the Publish Label widget to add to the settings panel. This holds
-		 * the Label that will be displayed in the backend of Symphony. This setting
-		 * allows a field's 'Label' to be changed without a developer having to update
-		 * references in the Datasources or XSLT.
-		 *
-		 * @since Symphony 2.3
-		 * @return XMLElement
-		 *  the `XMLElement` of this widget.
-		 */
-#		public function buildPublishLabel() {
-#			// Publish label
-#			$label = Widget::Label(__('Publish Label'));
-#			$label->appendChild(new XMLElement('i', __('Optional')));
-#			$label->appendChild(
-#				Widget::Input('fields['.$this->get('sortorder').'][publish_label]', $this->get('publish_label'))
-#			);
-
-#			return $label;
-#		}
-
-		/**
 		 * Build the location select widget. This widget allows users to select
 		 * whether this field will appear in the main content column or in the sidebar
 		 * when creating a new entry.
@@ -1155,11 +1134,8 @@
 		public function commit(){
 			$fields = array();
 
-			$fields['element_name'] = Lang::createHandle($this->get('label'));
-			if(is_numeric($fields['element_name']{0})) $fields['element_name'] = 'field-' . $fields['element_name'];
-
 			$fields['label'] = General::sanitize($this->get('label'));
-			$fields['publish_label'] = General::sanitize($this->get('publish_label'));
+			$fields['element_name'] = ($this->get('element_name') ? $this->get('element_name') : Lang::createHandle($this->get('label')));
 			$fields['parent_section'] = $this->get('parent_section');
 			$fields['location'] = $this->get('location');
 			$fields['required'] = $this->get('required');
