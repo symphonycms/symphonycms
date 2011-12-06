@@ -251,7 +251,7 @@
 
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 40);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/admin.css', 'screen', 41);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.duplicator.css', 'screen', 70);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.duplicator.css', 'screen', 42);
 
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.js', 50);
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.color.js', 51);
