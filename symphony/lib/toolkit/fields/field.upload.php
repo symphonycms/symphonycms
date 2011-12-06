@@ -182,7 +182,7 @@
 				$flagWithError = __('Destination folder is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
-			$label = Widget::Label($this->label());
+			$label = Widget::Label($this->get('label'));
 			$label->setAttribute('class', 'file');
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 

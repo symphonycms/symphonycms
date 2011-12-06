@@ -307,20 +307,6 @@
 		}
 
 		/**
-		 * Returns the Publish Label of the field, if it that has not been set,
-		 * then this function will return the Label (or null)
-		 *
-		 * @since Symphony 2.3
-		 * @return string|null
-		 *  The field's Publish Label
-		 */
-		public function label(){
-			if(isset($this->_fields['publish_label'])) return $this->_fields['publish_label'];
-
-			return $this->_fields['label'];
-		}
-
-		/**
 		 * Clean the input value using html entity encode and the database specific
 		 * clean methods.
 		 *

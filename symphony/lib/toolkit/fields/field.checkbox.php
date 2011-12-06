@@ -130,7 +130,7 @@
 			$label = Widget::Label();
 			$input = Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, 'yes', 'checkbox', ($value == 'yes' ? array('checked' => 'checked') : NULL));
 
-			$label->setValue($input->generate(false) . ' ' . $this->label());
+			$label->setValue($input->generate(false) . ' ' . $this->get('label'));
 
 			$wrapper->appendChild($label);
 		}

@@ -166,7 +166,7 @@
 				$value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
 			}
 
-			$label = Widget::Label($this->label());
+			$label = Widget::Label($this->get('label'));
 
 			$label->appendChild(
 				Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? General::sanitize($value) : NULL))

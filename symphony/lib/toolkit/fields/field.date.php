@@ -351,7 +351,7 @@
 				$value = DateTimeObj::format($data['value'], DateTimeObj::getSetting('datetime_format'));
 			}
 
-			$label = Widget::Label($this->label());
+			$label = Widget::Label($this->get('label'));
 			$label->appendChild(Widget::Input("fields{$prefix}[{$name}]", $value));
 			$label->setAttribute('class', 'date');
 
