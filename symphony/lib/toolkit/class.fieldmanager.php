@@ -270,18 +270,27 @@
 						$field = self::create($f['type']);
 						$field->setArray($f);
 
-						// Get the context for this field from our previous
-						// queries.
+						// Get the context for this field from our previous queries.
 						$context = $field_contexts[$f['type']][$f['id']];
 
-						unset($context['id']);
-						$field->setArray($context);
+						try {
+							unset($context['id']);
+							$field->setArray($context);
+						}
+
+						catch (Exception $e) {
+							throw new Exception(__(
+								'Settings for field %s could not be found in table tbl_fields_%s.',
+								array($f['id'], $f['type'])
+							));
+						}
 
 						self::$_initialiased_fields[$f['id']] = $field;
 					}
 
 					// Check to see if there was any restricts imposed on the fields
-					if($restrict == Field::__FIELD_ALL__
+					if (
+						$restrict == Field::__FIELD_ALL__
 						|| ($restrict == Field::__TOGGLEABLE_ONLY__ && $field->canToggle())
 						|| ($restrict == Field::__UNTOGGLEABLE_ONLY__ && !$field->canToggle())
 						|| ($restrict == Field::__FILTERABLE_ONLY__ && $field->canFilter())
