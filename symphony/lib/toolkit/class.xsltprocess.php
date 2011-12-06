@@ -172,7 +172,7 @@
 		 * returning boolean. Optionally, a second parameter `$xml` can be
 		 * passed that will be used instead of `$this->_xml`.
 		 *
-		 * @since Symphony
+		 * @since Symphony 2.3
 		 * @param string $xsd
 		 *  The XSD to validate `$this->_xml` against
 		 * @param string $xml (optional)

@@ -161,7 +161,7 @@
 
 				foreach($visible_columns as $column){
 					$columns[] = array(
-						'label' => $column->label(),
+						'label' => $column->get('label'),
 						'sortable' => $column->isSortable(),
 						'handle' => $column->get('id'),
 						'attrs' => array(
