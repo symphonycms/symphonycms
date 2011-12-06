@@ -92,7 +92,6 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$wrapper->appendChild($this->buildPublishLabel());
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');
 
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));

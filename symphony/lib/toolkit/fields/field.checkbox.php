@@ -83,8 +83,6 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$wrapper->appendChild($this->buildPublishLabel());
-
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 
 			// Checkbox Default State
