@@ -78,11 +78,11 @@
 			}
 
 			// 2.3 Beta 1
-			if(version_compare(self::$existing_version, '2.3beta1', '<')) {
+			if(version_compare(self::$existing_version, '2.3beta1', '<=')) {
 				Symphony::Configuration()->set('version', '2.3beta1', 'symphony');
 				Symphony::Configuration()->set('useragent', 'Symphony/2.3 Beta 1', 'general');
 
-				return Symphony::Configuration()->write();
+				Symphony::Configuration()->write();
 			}
 
 			// 2.3 Beta 2
