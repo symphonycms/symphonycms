@@ -152,7 +152,10 @@
 			object.on('restore.collapsible', function(event) {
 				if(settings.save_state === true && Symphony.Support.localStorage === true && localStorage[storage]) {
 					$.each(localStorage[storage].split(','), function(index, value) {
-						object.find(settings.items).eq(value).trigger('collapse.collapsible', [0]);
+						var collapsed = object.find(settings.items).eq(value);
+						if(collapsed.has('.invalid').length == 0) {
+							collapsed.trigger('collapse.collapsible', [0]);
+						}
 					});
 				}
 			});
