@@ -4,7 +4,7 @@
 	 */
 
 	/**
-	 * This page controls the creation and maintainence of Symphony
+	 * This page controls the creation and maintenance of Symphony
 	 * Sections through the Section Index and Section Editor.
 	 */
 	require_once(TOOLKIT . '/class.administrationpage.php');
@@ -275,17 +275,17 @@
 			$types = array();
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-			if($formHasErrors)
+			if($formHasErrors) {
 				$this->pageAlert(
 					__('An error occurred while processing this form.')
 					. ' <a href="#error">'
 					. __('See below for details.')
 					. '</a>'
 					, Alert::ERROR);
-
-			if(isset($this->_context[2])){
-				switch($this->_context[2]){
-
+			}
+			// These alerts are only valid if the form doesn't have errors
+			else if(isset($this->_context[2])) {
+				switch($this->_context[2]) {
 					case 'saved':
 						$this->pageAlert(
 							__('Section updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
@@ -307,7 +307,6 @@
 							. '</a>'
 							, Alert::SUCCESS);
 						break;
-
 				}
 			}
 

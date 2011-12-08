@@ -222,16 +222,16 @@
 			$fields['body'] = @file_get_contents($file_abs);
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-			if($formHasErrors)
+			if($formHasErrors) {
 				$this->pageAlert(
 					__('An error occurred while processing this form.')
 					. ' <a href="#error">'
 					. __('See below for details.')
 					. '</a>'
 					, Alert::ERROR);
-
-			// Status message:
-			if(isset($this->_context[2])) {
+			}
+			// These alerts are only valid if the form doesn't have errors
+			else if(isset($this->_context[2])) {
 				$this->pageAlert(
 					__('Page updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
 					. ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
