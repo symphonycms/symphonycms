@@ -49,7 +49,7 @@
 				}
 				
 				// Undefined date and time
-				else {
+				if(!$.isNumeric(timestamp)) {
 					now = new Date();
 					timestamp = now.getTime();
 				} 
