@@ -22,15 +22,30 @@
 			$pages = PageManager::resolvePage($page_id, 'handle');
 
 			foreach($pages as &$page){
-				if(Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'no'){
-					$page = new XMLElement('span', PageManager::fetchTitleFromHandle($page));
+				// If we are viewing the Page Editor, the Breadcrumbs should link
+				// to the parent's Page Editor.
+				if($this->_context[0] == 'edit') {
+					$page = Widget::Anchor(
+						PageManager::fetchTitleFromHandle($page),
+						SYMPHONY_URL . '/blueprints/pages/edit/' . PageManager::fetchIDFromHandle($page) . '/'
+					);
 				}
-				else{
+
+				// If the pages index is nested, the Breadcrumb should link to the
+				// Pages Index filtered by parent
+				else if(Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes') {
 					$page = Widget::Anchor(
 						PageManager::fetchTitleFromHandle($page),
 						SYMPHONY_URL . '/blueprints/pages/?parent=' . PageManager::fetchIDFromHandle($page)
 					);
 				}
+
+				// If there is no nesting on the Pages Index, the breadcrumb is
+				// not a link, just plain text
+				else {
+					$page = new XMLElement('span', PageManager::fetchTitleFromHandle($page));
+				}
+
 			}
 
 			if(!$preserve_last) array_pop($pages);
