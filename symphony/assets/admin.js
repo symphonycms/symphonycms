@@ -100,9 +100,6 @@
 			preselect: 'input'
 		});
 
-		// Dim system messages
-		Symphony.Message.fade('silence', 10000);
-
 		// Relative times in system messages
 		$('abbr.timeago').each(function() {
 			var time = $(this).parent();
