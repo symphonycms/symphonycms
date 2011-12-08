@@ -303,13 +303,6 @@ var Symphony = {};
 		Message: new (function(){
 
 			/**
-			 * This array is private and can not be accessed directly.
-			 *
-			 * @private
-			 */
-			var Queue = [];
-
-			/**
 			 * Post system message
 			 *
 			 * @param {String} message
@@ -318,31 +311,30 @@ var Symphony = {};
 			 *  Message type to be used as class name
 			 */
 			this.post = function(message, type) {
-
-				// Store previous message
-				Queue = Queue.concat($('#notice').remove().get());
-
-				// Add new message
-				$('h1').before('<div id="notice" class="' + type + '">' + message + '</div>');
+				var notice = 'notice';
+				
+				// Check type
+				if(type) {
+					notice += ' ' + type;
+				}
+			
+				// Append message
+				$('<p />', {
+					class: notice,
+					html: message
+				}).hide().prependTo('header').slideDown('normal');
 			};
 
 			/**
-			 * Clear message by type
+			 * Clear last message of a type
 			 *
 			 * @param {String} type
 			 *  Message type
 			 */
 			this.clear = function(type) {
-				var message = $('#notice');
-
-				// Remove messages of specified type
-				message.filter('.' + type).remove();
-				Symphony.Message.Queue = $(Queue).filter(':not(.' + type + ')').get();
-
-				// Show previous message
-				if(message.length > 0 && Queue.length > 0) {
-					$(Queue.pop()).insertBefore('h1');
-				}
+				$('header p.notice').filter('.' + type).first().slideUp('normal', function() {
+					$(this).remove();
+				});
 			};
 
 			/**
