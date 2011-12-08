@@ -313,13 +313,13 @@
 		 *  date (RFC 2822) as the title element. The value is the current time as
 		 *  specified by the `$format`.
 		 */
-		public static function getTimeAgo($format){
-			return '<abbr class="timeago" title="' . self::get(DateTime::RFC2822) . '">' . self::get($format) . '</abbr>';
+		public static function getTimeAgo($format = __SYM_TIME_FORMAT__){
+			$time = Widget::Time($string, $format);
+			return $time->generate();
 		}
 
 		public static function getTimezones(){
 			include_once(TEMPLATE . '/date.timezones.php'); // $timezones
-
 			return $timezones;
 		}
 

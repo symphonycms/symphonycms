@@ -288,7 +288,7 @@
 
 					case 'saved':
 						$this->pageAlert(
-							__('Section updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							__('Section updated at %s.', array(DateTimeObj::getTimeAgo()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/sections/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/sections/" accesskey="a">'
@@ -299,7 +299,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Section created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							__('Section created at %s.', array(DateTimeObj::getTimeAgo()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/sections/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/sections/" accesskey="a">'

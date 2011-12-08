@@ -104,11 +104,15 @@
 		Symphony.Message.fade('silence', 10000);
 
 		// Relative times in system messages
-		$('abbr.timeago').each(function() {
-			var time = $(this).parent();
-			time.html(time.html().replace(Symphony.Language.get('at') + ' ', ''));
+		$('header p.notice').symphonyTimeAgo().each(function() {
+			var notice = $(this);
+			notice.html(notice.html().replace(Symphony.Language.get('at') + ' ', ''));
 		});
-		Symphony.Message.timer();
+		
+		// Update relative times in system messages
+		setInterval(function() {
+			$('header p.notice').symphonyTimeAgo();
+		}, 60000);		
 
 		// XSLT utilities
 		$('textarea').blur(function() {
