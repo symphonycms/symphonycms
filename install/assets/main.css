@@ -167,10 +167,6 @@ ul li.more a:hover {
 }
 
 /* Requirements */
-dl {
-	margin-top: 1.5em;
-	padding-left: 12em;
-}
 dt {
 	margin: 0 0 1.5em -12em;
 	float: left;
