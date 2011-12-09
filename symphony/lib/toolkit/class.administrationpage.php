@@ -321,22 +321,28 @@
 
 		/**
 		 * Checks the current Symphony Author can access the current page.
-		 * This includes the check to ensure that an Author cannot access a
-		 * hidden section.
+		 * This check uses the `ASSETS . /navigation.xml` file to determine
+		 * if the current page (or the current page namespace) can be viewed
+		 * by the currently logged in Author.
 		 *
+		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
 		 * @return boolean
 		 *  True if the Author can access the current page, false otherwise
 		 */
 		public function canAccessPage(){
-
 			$nav = $this->getNavigationArray();
 			$page = '/' . trim(getCurrentPage(), '/') . '/';
 
 			$page_limit = 'author';
 
 			foreach($nav as $item){
-				if(General::in_array_multi($page, $item['children'])){
-
+				if(
+					// If page directly matches one of the children
+					General::in_array_multi($page, $item['children'])
+					// If the page namespace matches one of the children (this will usually drop query
+					// string parameters such as /edit/1/)
+					or General::in_array_multi(Symphony::getPageNamespace() . '/', $item['children'])
+				) {
 					if(is_array($item['children'])){
 						foreach($item['children'] as $c) {
 							if($c['link'] == $page && isset($c['limit'])) {
@@ -348,24 +354,23 @@
 					if(isset($item['limit']) && $page_limit != 'primary'){
 						if($page_limit == 'author' && $item['limit'] == 'developer') $page_limit = 'developer';
 					}
-
 				}
 
-				elseif(isset($item['link']) && ($page == $item['link']) && isset($item['limit'])){
-					$page_limit	= $item['limit'];
+				else if(isset($item['link']) && $page == $item['link'] && isset($item['limit'])) {
+					$page_limit = $item['limit'];
 				}
 			}
 
-			if($page_limit == 'author')
+			if(
+				$page_limit == 'author'
+				or ($page_limit == 'developer' && Administration::instance()->Author->isDeveloper())
+				or ($page_limit == 'primary' && Administration::instance()->Author->isPrimaryAccount())
+			) {
 				return true;
-
-			elseif($page_limit == 'developer' && Administration::instance()->Author->isDeveloper())
-				return true;
-
-			elseif($page_limit == 'primary' && Administration::instance()->Author->isPrimaryAccount())
-				return true;
-
-			return false;
+			}
+			else {
+				return false;
+			}
 		}
 
 		/**
