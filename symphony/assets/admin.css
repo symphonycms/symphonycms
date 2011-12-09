@@ -49,9 +49,11 @@ label > i {
 table {
 	border-collapse: collapse;
 	width: 100%;
+	margin-top: 8px;
+}
+table.fixed {
 	table-layout: fixed;
 	word-wrap: break-word;
-	margin-top: 8px;
 }
 th {
 	padding-right: 19px;
