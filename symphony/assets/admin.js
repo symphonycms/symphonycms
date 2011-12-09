@@ -263,6 +263,38 @@
 			});
 		});
 
+    // Datasource collapsable links:
+    $('#blueprints-datasources.index table tr, #blueprints-events.index table tr').each(function(index){
+        var links = [];
+        $('td:eq(2) a', this).each(function(){
+            links.push($(this).remove());
+        });
+        $('td:eq(2)', this).html('');
+        for(var i=0, l=links.length; i<l; i++)
+        {
+            $('td:eq(2)', this).append(links[i]).append('<span>, </span>');
+        }
+        $("td:eq(2) a:gt(2)", this).each(function(){
+            $(this).hide().next().hide();
+        });
+        if(links.length > 3)
+        {
+            $('td:eq(2)', this).append('<a href="#" id="expand' + index + '" class="expand">(' + (links.length - 3) +
+                ' <span class="more">more</span><span class="less">less</span>...)</a>');
+            $('#expand' + index).click(function(){
+                if($(this).hasClass('expanded'))
+                {
+                    $(">a:gt(2), >span:gt(2)", $(this).parent()).not('.expand').hide(500);
+                    $(this).removeClass('expanded');
+                } else {
+                    $(">a, >span", $(this).parent()).show(500);
+                    $(this).addClass('expanded');
+                }
+                return false;
+            });
+        }
+    });
+
 		// Data source manager options
 		$('select.filtered > optgroup').each(function() {
 			var optgroup = $(this),
