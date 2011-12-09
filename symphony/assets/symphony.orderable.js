@@ -27,7 +27,7 @@
 			settings = {
 				items:				'li',
 				handles:			'*',
-				ignore:				'input, textarea, select'
+				ignore:				'input, textarea, select, a'
 			};
 
 		$.extend(settings, options);
@@ -42,26 +42,26 @@
 
 			// Needed to prevent browsers from selecting texts and focusing textinputs
 			event.preventDefault();
-			
-			if(!handle.is(settings.ignore)) {
+
+			if(!handle.is(settings.ignore) && !$(event.target).is(settings.ignore)) {
 				object.trigger('orderstart.orderable', [item]);
 				object.addClass('ordering');
 				item.addClass('ordering');
 			}
 		});
-		
+
 		// Stop ordering
 		objects.on('mouseup.orderable mouseleave.orderable', function(event) {
 			var object = $(this),
 				item = object.find('.ordering');
-		
+
 			if(object.is('.ordering')) {
 				item.removeClass('ordering');
 				object.removeClass('ordering');
 				object.trigger('orderstop.orderable', [item]);
 			}
 		});
-		
+
 		// Reorder items
 		$(document).on('mousemove.orderable', '.ordering:has(.ordering)', function(event) {
 			var object = $(this),
@@ -75,7 +75,7 @@
 			if(window.getSelection) {
 				window.getSelection().removeAllRanges();
 			}
-			
+
 			// Move item up
 			if(position < top) {
 				prev = item.prev(settings.items);
@@ -84,7 +84,7 @@
 					object.trigger('orderchange', [item]);
 				}
 			}
-			
+
 			// Move item down
 			else if(position > bottom) {
 				next = item.next(settings.items);
