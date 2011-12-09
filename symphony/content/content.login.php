@@ -319,7 +319,7 @@
 						__('Symphony Concierge'),
 						__('New Symphony Account Password'),
 						__('Hi %s,', array($author['first_name'])) . PHP_EOL .
-						__("As requested, here is your new Symphony Author Password for ") . URL . " " .PHP_EOL ." $newpass" . PHP_EOL . PHP_EOL .
+						__("As requested, here is your new Symphony Author password for ") . URL . " " .PHP_EOL ." $newpass" . PHP_EOL . PHP_EOL .
 						__('Best Regards,') . PHP_EOL .
 						__('The Symphony Team')
 					);

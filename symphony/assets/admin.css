@@ -717,7 +717,7 @@ input[type=submit]:active,
 	border-left: 1px solid transparent;
 	border-right: 1px solid transparent;
 	z-index: 3;
-	cursor: pointer;
+	cursor: default;
 }
 #nav > ul > li.active {
 	color: #fff;
@@ -772,6 +772,7 @@ input[type=submit]:active,
 	padding: 0 9px;
 	text-decoration: none;
 	border: 1px solid transparent;
+	cursor: pointer;
 }
 #nav ul a:hover {
 	color: #fff;
@@ -1082,6 +1083,21 @@ ul.page input.error, ul.page input.error:focus {
 }
 #blueprints-components .triple {
 	padding-top: 5px;
+}
+#blueprints-datasources a.expand, #blueprints-events a.expand {
+    text-decoration: none;
+}
+#blueprints-datasources a.expand span.less, #blueprints-events a.expand span.less {
+    display: none;
+}
+#blueprints-datasources a.expand span.more, #blueprints-events a.expand span.more {
+    display: inline;
+}
+#blueprints-datasources a.expanded span.less, #blueprints-events a.expanded span.less {
+    display: inline;
+}
+#blueprints-datasources a.expanded span.more, #blueprints-events a.expanded span.more {
+    display: none;
 }
 #components {
 	padding-bottom: 5px;

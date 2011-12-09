@@ -504,7 +504,7 @@
 			$column = new XMLElement('div');
 			$label = Widget::Label(__('URL Parameters'));
 			$label->appendChild(Widget::Input(
-				'fields[params]', $fields['params']
+				'fields[params]', $fields['params'], 'text', array('placeholder' => 'param1/param2')
 			));
 			$column->appendChild($label);
 
