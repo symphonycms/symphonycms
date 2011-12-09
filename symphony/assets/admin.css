@@ -717,7 +717,7 @@ input[type=submit]:active,
 	border-left: 1px solid transparent;
 	border-right: 1px solid transparent;
 	z-index: 3;
-	cursor: pointer;
+	cursor: default;
 }
 #nav > ul > li.active {
 	color: #fff;
@@ -772,6 +772,7 @@ input[type=submit]:active,
 	padding: 0 9px;
 	text-decoration: none;
 	border: 1px solid transparent;
+	cursor: pointer;
 }
 #nav ul a:hover {
 	color: #fff;
