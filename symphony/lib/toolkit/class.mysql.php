@@ -517,14 +517,18 @@
 					'execution_time' => precision_timer('stop', $start)
 				));
 			}
-			else {
-				// @todo Need to keep a running log of queries for possible debug backtrace, last 5 should do it..
-				self::$_log['query'][$query_hash] = array(
-					'query' => $query,
-					'query_hash' => $query_hash,
-					'execution_time' => precision_timer('stop', $start)
-				);
+
+			// Keep a running log of the last 5 queries so that if an Exception occurs,
+			// Symphony has some context to display in the Database Query Log
+			if(count(self::$_log) > 5) {
+				self::$_log = array_slice(self::$_log, -4);
 			}
+
+			self::$_log[$query_hash] = array(
+				'query' => $query,
+				'query_hash' => $query_hash,
+				'execution_time' => precision_timer('stop', $start)
+			);
 
 			return true;
 		}

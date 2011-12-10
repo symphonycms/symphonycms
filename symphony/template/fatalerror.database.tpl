@@ -84,7 +84,7 @@
 		<h3>Backtrace:</h3>
 		<ul>%s</ul>
 
-		<h3>Database Query Log:</h3>
+		<h3>Last 5 Database Queries:</h3>
 		<ul>%s</ul>
 	</div>
 </body>
