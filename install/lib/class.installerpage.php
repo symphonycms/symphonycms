@@ -174,7 +174,7 @@
 
 			$this->Form->appendChild(
 				new XMLElement('p',
-					__('Before proceeding, we recommend that the %s folder been removed to keep things nice and secure.', array('<code>' . basename(INSTALL) . '</code>'))
+					__('Before proceeding, we recommend that the %s folder be removed to keep things nice and secure.', array('<code>' . basename(INSTALL) . '</code>'))
 				)
 			);
 
