@@ -32,9 +32,9 @@
 
 	if (!file_exists(CONFIG)) {
 
-		if (file_exists(DOCROOT . '/install.php')) {
-			header(sprintf('Location: %s/install.php', URL));
-			exit();
+		if (file_exists(DOCROOT . '/install/index.php')) {
+			header(sprintf('Location: %s/install/', URL));
+			exit;
 		}
 
 		die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');

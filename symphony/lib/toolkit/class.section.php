@@ -12,35 +12,13 @@
 	 */
 	require_once(TOOLKIT . '/class.fieldmanager.php');
 
-	Class Section{
-		/**
-		 * The class who initialised this Section, usually SectionManager
-		 */
-		public $_Parent;
+	Class Section {
 
 		/**
 		 * An array of the Section's settings
-		 * @var array 
+		 * @var array
 		 */
 		protected $_data = array();
-
-		/**
-		 * An instance of the FieldManager class
-		 * @var FieldManager
-		 */
-		protected $_fieldManager;
-
-		/**
-		 * The construct function sets the parent variable of this Section and
-		 * initialises a new FieldManager object
-		 *
-		 * @param mixed $parent
-		 * The class that initialised this Section, usually SectionManager
-		 */
-		public function __construct(&$parent){
-			$this->_Parent = $parent;
-			$this->_fieldManager = new FieldManager($this->_Parent);
-		}
 
 		/**
 		 * A setter function that will save a section's setting into
@@ -68,6 +46,26 @@
 		public function get($setting = null){
 			if(is_null($setting)) return $this->_data;
 			return $this->_data[$setting];
+		}
+
+		/**
+		 * This function returns the default field this Section will
+		 * be sorted by (if visibile). If no fields exist or none of them
+		 * is visible in the entries list, 'id' is returned instead.
+		 *
+		 * @return string
+		 *  Either the field ID or the string 'id'.
+		 */
+		public function getDefaultSortingField(){
+			$fields = $this->fetchFields();
+
+			if(!empty($fields)){
+				foreach($fields as $f) {
+					if($f->get('show_column') == 'yes') return $f->get('id');
+				}
+			}
+
+			return 'id';
 		}
 
 		/**
@@ -107,7 +105,7 @@
 		 * @return array
 		 */
 		public function fetchVisibleColumns(){
-			return $this->_fieldManager->fetch(null, $this->get('id'), 'ASC', 'sortorder', null, null, " AND t1.show_column = 'yes' ");
+			return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', null, null, " AND t1.show_column = 'yes' ");
 		}
 
 		/**
@@ -122,7 +120,7 @@
 		 * @return array
 		 */
 		public function fetchFields($type = null, $location = null){
-			return $this->_fieldManager->fetch(null, $this->get('id'), 'ASC', 'sortorder', $type, $location);
+			return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', $type, $location);
 		}
 
 		/**
@@ -136,7 +134,7 @@
 		 * @return array
 		 */
 		public function fetchFilterableFields($location = null){
-			return $this->_fieldManager->fetch(null, $this->get('id'), 'ASC', 'sortorder', null, $location, null, Field::__FILTERABLE_ONLY__);
+			return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', null, $location, null, Field::__FILTERABLE_ONLY__);
 		}
 
 		/**
@@ -150,7 +148,7 @@
 		 * @return array
 		 */
 		public function fetchToggleableFields($location = null){
-			return $this->_fieldManager->fetch(null, $this->get('id'), 'ASC', 'sortorder', null, $location,null, Field::__TOGGLEABLE_ONLY__);
+			return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', null, $location,null, Field::__TOGGLEABLE_ONLY__);
 		}
 
 		/**
@@ -184,7 +182,7 @@
 
 				if($section_id) $section_id = $id;
 
-			}else{
+			} else{
 				$section_id = SectionManager::add($settings);
 			}
 

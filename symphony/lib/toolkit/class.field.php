@@ -102,37 +102,13 @@
 		protected $_fields = array();
 
 		/**
-		 * The class that initialised the Field, usually the FieldManager
-		 */
-		protected $_Parent;
-
-		/**
-		 * An instance of the Symphony class, either Frontend or Administration
-		 *
-		 * @deprecated This will be removed in the next major version of Symphony.
-		 * The preferred way to access the Symphony instance is via `Symphony::Engine()`
-		 * @var Symphony
-		 */
-		protected $_engine;
-
-		/**
-		 * A pointer to the `Symphony::Database()`.
-		 *
-		 * @deprecated This is deprecated and will be removed in the next major version
-		 * of Symphony. The preferred way to access the Database object is via
-		 * `Symphony::Database()`
-		 * @var MySQL
-		 */
-        protected $Database;
-
-		/**
 		 * Whether this field is required inherently, defaults to false.
 		 * @var boolean
 		 */
 		protected $_required = false;
 
 		/**
-		 * Whether this field can be viewed on the entries tabletable. Note
+		 * Whether this field can be viewed on the entries table. Note
 		 * that this is not the same variable as the one set when saving
 		 * a field in the section editor, rather just the if the field has
 		 * the ability to be shown. Defaults to true.
@@ -150,16 +126,9 @@
 
 		/**
 		 * Construct a new instance of this field.
-		 *
-		 * @param mixed $parent
-		 *  The class that created this Field object, usually the FieldManager,
-		 *  passed by reference.
 		 */
-		public function __construct(&$parent){
-			$this->_Parent = $parent;
-			$this->_engine = Symphony::Engine();
+		public function __construct(){
 			$this->_handle = (strtolower(get_class($this)) == 'field' ? 'field' : strtolower(substr(get_class($this), 5)));
-			$this->Database = Symphony::Database();
 		}
 
 		/**
@@ -207,7 +176,7 @@
 		 * @return array
 		 *	 the toggled data.
 		 */
-		public function toggleFieldData(Array $data, $newState, $entry_id=null){
+		public function toggleFieldData(array $data, $newState, $entry_id=null){
 			return $data;
 		}
 
@@ -373,7 +342,7 @@
 		 * @param array $array
 		 *	the associative array of settings for this field
 		 */
-		public function setArray(Array $array = array()){
+		public function setArray(array $array = array()){
 			if(empty($array)) return;
 
 			foreach($array as $setting => $value) {
@@ -390,7 +359,7 @@
 		 * @param array $settings
 		 *	the data array to initialize if necessary.
 		 */
-		public function setFromPOST(Array $settings = array()) {
+		public function setFromPOST(array $settings = array()) {
 			$settings['location'] = (isset($settings['location']) ? $settings['location'] : 'main');
 			$settings['required'] = (isset($settings['required']) && $settings['required'] == 'yes' ? 'yes' : 'no');
 			$settings['show_column'] = (isset($settings['show_column']) && $settings['show_column'] == 'yes' ? 'yes' : 'no');
@@ -403,17 +372,17 @@
 		 * settings of this Field instance are returned.
 		 *
 		 * @param string $setting (optional)
-		 *	the name of the setting to access the value for. This is optional and
-		 *	defaults to null in which case all settings are returned.
+		 *  the name of the setting to access the value for. This is optional and
+		 *  defaults to null in which case all settings are returned.
 		 * @return null|mixed|array
-		 *	the value of the setting if there is one, all settings if the input setting
-		 * was omitted or null if the setting was supplied but there is no value
-		 * for that setting.
+		 *  the value of the setting if there is one, all settings if the input setting
+		 *  was omitted or null if the setting was supplied but there is no value
+		 *  for that setting.
 		 */
 		public function get($setting = null){
 			if(is_null($setting)) return $this->_fields;
 
-			if (!isset($this->_fields[$setting])) return null;
+			if(!isset($this->_fields[$setting])) return null;
 
 			return $this->_fields[$setting];
 		}
@@ -447,7 +416,7 @@
 		 * @param array $settings
 		 *	the array of settings to populate with their defaults.
 		 */
-		public function findDefaults(Array &$settings){}
+		public function findDefaults(array &$settings){}
 
 		/**
 		 * Display the default settings panel, calls the `buildSummaryBlock`
@@ -481,14 +450,27 @@
 		 */
 		public function buildSummaryBlock($errors = null){
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
 
+			// Publish label
 			$label = Widget::Label(__('Label'));
-			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][label]', $this->get('label')));
+			$label->appendChild(
+				Widget::Input('fields['.$this->get('sortorder').'][label]', $this->get('label'))
+			);
 			if(isset($errors['label'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['label']));
 			else $div->appendChild($label);
 
-			$div->appendChild($this->buildLocationSelect($this->get('location'), 'fields['.$this->get('sortorder').'][location]'));
+			// Handle + placement
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
+
+			$label = Widget::Label(__('Handle'));
+			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][element_name]', $this->get('element_name')));
+			if(isset($errors['element_name'])) $group->appendChild(Widget::wrapFormElementWithError($label, $errors['element_name']));
+			else $group->appendChild($label);
+
+			$group->appendChild($this->buildLocationSelect($this->get('location'), 'fields['.$this->get('sortorder').'][location]'));
+
+			$div->appendChild($group);
 
 			return $div;
 		}
@@ -538,10 +520,9 @@
 		 */
 		public function buildFormatterSelect($selected = null, $name='fields[format]', $label_value){
 
-			include_once(TOOLKIT . '/class.textformattermanager.php');
+			require_once(TOOLKIT . '/class.textformattermanager.php');
 
-			$TFM = new TextformatterManager(Administration::instance());
-			$formatters = $TFM->listAll();
+			$formatters = TextformatterManager::listAll();
 
 			if(!$label_value) $label_value = __('Formatting');
 			$label = Widget::Label($label_value);
@@ -692,7 +673,7 @@
 		 *	returns the status of the checking. if errors has been populated with
 		 *	any errors `self::__ERROR__`, `self::__OK__` otherwise.
 		 */
-		public function checkFields(Array &$errors, $checkForDuplicates = true) {
+		public function checkFields(array &$errors, $checkForDuplicates = true) {
 			$parent_section = $this->get('parent_section');
 			$element_name = $this->get('element_name');
 
@@ -711,7 +692,7 @@
 				$errors['element_name'] = __('This is a required field.');
 			}
 			elseif (!$valid_name) {
-				$errors['element_name'] = __('Invalid element name. Must be valid QName.');
+				$errors['element_name'] = __('Invalid element name. Must be valid %s.', array('<code>QName</code>'));
 			}
 			elseif($checkForDuplicates) {
 				$sql_id = ($this->get('id') ? " AND f.id != '".$this->get('id')."' " : '');
@@ -823,7 +804,7 @@
 			$has_no_value = is_array($data) ? empty($data) : strlen(trim($data)) == 0;
 
 			if ($this->get('required') == 'yes' && $has_no_value) {
-				$message = __("'%s' is a required field.", array($this->get('label')));
+				$message = __('‘%s’ is a required field.', array($this->get('label')));
 
 				return self::__MISSING_FIELDS__;
 			}
@@ -838,6 +819,9 @@
 		 *	post data from the entry form
 		 * @param integer $status
 		 *	the status code resultant from processing the data.
+		 * @param string $message
+		 *	the place to set any generated error message. any previous value for
+		 *	this variable will be overwritten.
 		 * @param boolean $simulate (optional)
 		 *	true if this will tell the CF's to simulate data creation, false
 		 *	otherwise. this defaults to false. this is important if clients
@@ -848,7 +832,7 @@
 		 * @return array
 		 *	the processed field data.
 		 */
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=null) {
+		public function processRawFieldData($data, &$status, &$message=null, $simulate=false, $entry_id=null) {
 
 			$status = self::__OK__;
 
@@ -893,60 +877,108 @@
 		}
 
 		/**
-		 * Test whether the input string is a regular expression.
+		 * Test whether the input string is a regular expression, by searching
+		 * for the prefix of `regexp:` or `not-regexp:` in the given `$string`.
 		 *
 		 * @param string $string
-		 *	the string to test.
+		 *  The string to test.
 		 * @return boolean
-		 *	true if the string is prefixed with 'regexp:', false otherwise.
+		 *  True if the string is prefixed with `regexp:` or `not-regexp:`, false otherwise.
 		 */
 		protected static function isFilterRegex($string){
 			if(preg_match('/^regexp:/i', $string) || preg_match('/^not-?regexp:/i', $string)) return true;
 		}
 
 		/**
+		 * Builds a basic REGEX statement given a FILTER. This function supports
+		 * `regexp:` or `not-regexp`. Users should keep in mind this function
+		 * uses MySQL patterns, not the usual PHP patterns, the syntax between these
+		 * flavours differs at times.
+		 *
+		 * @since Symphony 2.3
+		 * @link http://dev.mysql.com/doc/refman/5.5/en/regexp.html
+		 * @param string $filter
+		 *  The full filter, eg. `regexp: ^[a-d]`
+		 * @param array $columns
+		 *  The array of columns that need the given `$filter` applied to. The conditions
+		 *  will be added using `OR`.
+		 * @param string $joins
+		 *  A string containing any table joins for the current SQL fragment. By default
+		 *  Datasources will always join to the `tbl_entries` table, which has an alias of
+		 *  `e`. This parameter is passed by reference.
+		 * @param string $where
+		 *  A string containing the WHERE conditions for the current SQL fragment. This
+		 *  is passed by reference and is expected to be used to add additional conditions
+		 *  specific to this field
+		 */
+		public function buildRegexSQL($filter, array $columns, &$joins, &$where) {
+			$this->_key++;
+			$field_id = $this->get('id');
+			$filter = $this->cleanValue($filter);
+
+			if (preg_match('/^regexp:/i', $filter)) {
+				$pattern = preg_replace('/^regexp:\s*/i', null, $filter);
+				$regex = 'REGEXP';
+			}
+			else {
+				$pattern = preg_replace('/^not-?regexp:\s*/i', null, $filter);
+				$regex = 'NOT REGEXP';
+			}
+
+			if(strlen($pattern) == 0) return;
+
+			$joins .= "
+				LEFT JOIN
+					`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+					ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+			";
+
+			$where .= "AND ( ";
+			foreach($columns as $key => $col) {
+				$modifier = ($key === 0) ? '' : 'OR';
+
+				$where .= "
+					{$modifier} t{$field_id}_{$this->_key}.{$col} {$regex} '{$pattern}'
+				";
+			}
+			$where .= ")";
+		}
+
+		/**
 		 * Construct the SQL statement fragments to use to retrieve the data of this
 		 * field when utilized as a data source.
 		 *
+		 * @see toolkit.Datasource#__determineFilterType
 		 * @param array $data
-		 *	the supplied form data to use to construct the query from
+		 *  An array of the data that contains the values for the filter as specified
+		 *  in the datasource editor. The value that is entered in the datasource editor
+		 *  is made into an array by using + or , to separate the filter.
 		 * @param string $joins
-		 *	the join sql statement fragment to append the additional join sql to.
+		 *  A string containing any table joins for the current SQL fragment. By default
+		 *  Datasources will always join to the `tbl_entries` table, which has an alias of
+		 *  `e`. This parameter is passed by reference.
 		 * @param string $where
-		 *	the where condition sql statement fragment to which the additional
-		 *	where conditions will be appended.
+		 *  A string containing the WHERE conditions for the current SQL fragment. This
+		 *  is passed by reference and is expected to be used to add additional conditions
+		 *  specifc to this field
 		 * @param boolean $andOperation (optional)
-		 *	true if the values of the input data should be appended as part of
-		 *	the where condition. this defaults to false.
+		 *  This parameter defines whether the `$data` provided should be treated as
+		 *  AND or OR conditions. This parameter will be set to true if $data used a
+		 *  + to separate the values, otherwise it will be false. It is false by default.
 		 * @return boolean
-		 *	true if the construction of the sql was successful, false otherwise.
+		 *  True if the construction of the SQL was successful, false otherwise.
 		 */
 		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
 
+			// REGEX filtering is a special case, and will only work on the first item
+			// in the array. You cannot specify multiple filters when REGEX is involved.
 			if (self::isFilterRegex($data[0])) {
-				$this->_key++;
-
-				if (preg_match('/^regexp:/i', $data[0])) {
-					$pattern = preg_replace('/^regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'REGEXP';
-				} else {
-					$pattern = preg_replace('/^not-?regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'NOT REGEXP';
-				}
-
-				if(strlen($pattern) == 0) return;
-
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND t{$field_id}_{$this->_key}.value {$regex} '{$pattern}'
-				";
-
+				$this->buildRegexSQL($data[0], array('value'), $joins, $where);
 			}
+
+			// AND operation, iterates over `$data` and uses a new JOIN for
+			// every item.
 			else if ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
@@ -960,11 +992,11 @@
 						AND t{$field_id}_{$this->_key}.value = '{$value}'
 					";
 				}
-
 			}
-			else {
-				if (!is_array($data)) $data = array($data);
 
+			// Default logic, this will use a single JOIN statement and collapse
+			// `$data` into a string to be used inconjuction with IN
+			else {
 				foreach ($data as &$value) {
 					$value = $this->cleanValue($value);
 				}
@@ -1020,7 +1052,7 @@
 		 */
 		public function groupRecords($records){
 			throw new Exception(
-				__('Data source output grouping is not supported by the <code>%s</code> field', array($this->get('label')))
+				__('Data source output grouping is not supported by the %s field', array('<code>' . $this->get('label') . '</code>'))
 			);
 		}
 
@@ -1088,10 +1120,8 @@
 		public function commit(){
 			$fields = array();
 
-			$fields['element_name'] = Lang::createHandle($this->get('label'));
-			if(is_numeric($fields['element_name']{0})) $fields['element_name'] = 'field-' . $fields['element_name'];
-
 			$fields['label'] = General::sanitize($this->get('label'));
+			$fields['element_name'] = ($this->get('element_name') ? $this->get('element_name') : Lang::createHandle($this->get('label')));
 			$fields['parent_section'] = $this->get('parent_section');
 			$fields['location'] = $this->get('location');
 			$fields['required'] = $this->get('required');
@@ -1128,7 +1158,7 @@
 				  PRIMARY KEY  (`id`),
 				  KEY `entry_id` (`entry_id`),
 				  KEY `value` (`value`)
-				) ENGINE=MyISAM;"
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
 			);
 		}
 

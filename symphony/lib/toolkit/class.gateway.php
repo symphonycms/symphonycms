@@ -234,7 +234,10 @@
 					break;
 
 				case 'POST':
-					$this->_method = ($value == 1 ? 'POST' : 'GET');
+				case 'GET':
+				case 'PUT':
+				case 'DELETE':
+					$this->_method = ($value == 1 ? $opt : 'GET');
 					break;
 
 				case 'POSTFIELDS':
@@ -306,13 +309,24 @@
 					curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 				}
 
-				if(is_array($this->_headers) && !empty($this->_headers)) {
-					curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_headers);
+				switch($this->_method) {
+					case 'POST':
+						curl_setopt($ch, CURLOPT_POST, 1);
+						curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postfields);
+						break;
+					case 'PUT':
+						curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+						curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postfields);
+						$this->setopt('HTTPHEADER', array('Content-Length:' => strlen($this->_postfields)));
+						break;
+					case 'DELETE':
+						curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+						curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postfields);
+						break;
 				}
 
-				if($this->_method == 'POST') {
-					curl_setopt($ch, CURLOPT_POST, 1);
-					curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postfields);
+				if(is_array($this->_headers) && !empty($this->_headers)) {
+					curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_headers);
 				}
 
 				if(is_array($this->_custom_opt) && !empty($this->_custom_opt)){
@@ -321,12 +335,12 @@
 					}
 				}
 
-				##Grab the result
+				// Grab the result
 				$result = curl_exec($ch);
 
 				$this->_info_last = curl_getinfo($ch);
 
-				##Close the connection
+				// Close the connection
 				curl_close ($ch);
 
 				return $result;
@@ -338,7 +352,7 @@
 				$this->_port = (!is_null($this->_scheme) ? self::$ports[$this->_scheme] : 80);
 			}
 
-			##No CURL is available, use attempt to use normal sockets
+			// No CURL is available, use attempt to use normal sockets
 			$handle = @fsockopen($this->_host, $this->_port, $errno, $errstr, $this->_timeout);
 			if($handle === false) return false;
 
@@ -350,7 +364,7 @@
 			$query .= 'Content-length: ' . strlen($this->_postfields) . PHP_EOL;
 			$query .= 'Connection: close' . PHP_EOL . PHP_EOL;
 
-			if($this->_method == 'POST') $query .= $this->_postfields;
+			if(in_array($this->_method, array('PUT', 'POST', 'DELETE'))) $query .= $this->_postfields;
 
 			// send request
 			if(!@fwrite($handle, $query)) return false;
@@ -368,7 +382,7 @@
 
 			$status = socket_get_status($handle);
 
-			## Get rest of the page data
+			// Get rest of the page data
 			while (!feof($handle) && !$status['timed_out']){
 				$response .= fread($handle, 4096);
 				$status = stream_get_meta_data($handle);

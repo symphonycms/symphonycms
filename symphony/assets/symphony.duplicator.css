@@ -3,155 +3,195 @@
 -----------------------------------------------------------------------------*/
 
 .duplicator {
-	background: #444433;
-	border: 1px solid #999988;
 	margin: 0;
 	list-style: none;
+	-webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	-moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+.duplicator ol {
+	margin: 0;
+	padding: 0;
 }
 .duplicator i {
-	color: #887;
+	color: rgba(0, 0, 0, 0.4);
+	background: none !important;
 }
 .invalid .duplicator {
 	border-color: #aa2211;
 }
-.duplicator > .instance {
+.duplicator .instance {
 	clear: left;
-	background: #ddddcc;
-	border-bottom: 1px solid #eeeedd;
+	border-left: 1px solid #D0D0CD;
+	border-right: 1px solid #D0D0CD;
+	background: #ECECEB;
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #ECECEB),
+		color-stop(1, #F3F3EF)
+	);
+	background: -moz-linear-gradient(
+		top,
+		#ECECEB,
+		#F3F3EF
+	);
+	z-index: 10;
+	opacity: 1;
+	-moz-box-shadow: inset 0 -1px 2px #f3f3f3;
+	-webkit-box-shadow: inset 0 -1px 2px #f3f3f3;
+	-webkit-transition: opacity 0.25s ease-out;
+	-moz-transition: opacity 0.25s ease-out;
+	-ms-transition: opacity 0.25s ease-out;
+	-o-transition: opacity 0.25s ease-out;
+	transition: opacity 0.25s ease-out;
 }
-.duplicator > .instance > .header {
-	background: #ccccbb;
-	border-bottom: 1px solid #eeeedd;
-	color: #666655;
+.duplicator .instance .header {
+	border-top: 1px solid #cfcfcf;
+	color: rgba(0, 0, 0, 0.65);
 	margin: 0;
-	padding: 0.5em 1.75em;
+	padding: 0.5em 1em;
 	position: relative;
+	background: #E5E5E4;
+	-moz-box-shadow: inset 0 -1px 1px #f3f3f3;
+	-webkit-box-shadow: inset 0 -1px 1px #f3f3f3;
+	text-shadow: 1px 1px 1px #f9f9f9;
 }
-.duplicator > .instance > .header > span > i {
+.duplicator .instance .header span i {
+	opacity: 0;
 	margin: 0 0 0 0.5em;
 	font-weight: normal;
+	-webkit-transition: opacity 0.25s ease-out;
+	-moz-transition: opacity 0.25s ease-out;
+	-ms-transition: opacity 0.25s ease-out;
+	-o-transition: opacity 0.25s ease-out;
+	transition: opacity 0.25s ease-out;
 }
-.duplicator > .instance > .header .destructor {
-	font-weight: normal;
-	color: #333322;
-	margin: 0 1.75em;
-	padding: 0.5em 0;
+.duplicator .instance .header .destructor {
+	text-indent: -9999px;
 	position: absolute;
-	right: 0;
+	top: 5px;
+	right: 7px;
+	padding: 3px 0 0 3px;
+
+	background: rgba(255, 255, 255, 0.2);
+	color: rgba(0, 0, 0, 0.3);
+	height: 11px;
+	width: 12px;
+	line-height: 0.5;
+	border: 1px solid rgba(255, 255, 255, 0.8);
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
 	text-decoration: none;
-	top: 0;
-	text-shadow: 1px 1px #DDDDCC;
 }
-.duplicator > .instance > .header .destructor:hover {
-	color: #555544;
+.duplicator .instance .header .destructor:after {
+	content: "\00d7";
+	position: absolute;
+	top: 4px;
+	right: 3px;
+	text-indent: 0;
 }
-.duplicator > .instance > .header .destructor.disabled {
+.duplicator .instance .header .destructor:hover {
+	color: rgba(0, 0, 0, 0.7);
+	background: rgba(255, 255, 255, 0.8);
+	border: 1px solid rgba(255, 255, 255, 1);
+}
+.duplicator .instance .header .destructor.disabled {
 	color: #333322;
 	cursor: default;
 	opacity: 0.4;
 }
-.duplicator > .instance > .content {
-	padding: 1em 1.75em 0 1.75em;
+.duplicator .instance .content {
+	border-top: 1px solid #DCDCD7;
+	padding: 1em 1em 0.01em 1em;
 	position: relative;
 }
-.duplicator > .controls {
+
+/* Controls */
+
+.duplicator .controls {
 	clear: left;
-	background: #aaaa99;
+	background: #f5f5f3;
+	border: 1px solid rgba(207, 207, 207, 0.9);
+	border-top-color: #c2c2c2;
+	border-radius: 4px;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
 	cursor: default;
-	padding: 0 1.75em;
-/*	position: relative;*/
+	padding: 0.3em 1em;
 	text-align: right;
-/*	z-index: 3;*/
 }
-.duplicator > .controls:after {
-	content: "";
-	display: block;
-	clear: left;
-	height: 0;
-}
-.duplicator > .controls.top {
+.duplicator .controls.top {
 	overflow: hidden;
-	border-bottom: 1px solid #eeeedd;
+	border-top-color: rgba(207, 207, 207, 0.6);
+	border-bottom: none;
+	border-radius: 4px;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
 }
-.duplicator > .controls.hidden {
-	display: none;
+.duplicator.empty .controls {
+	border-radius: 4px;
 }
-.duplicator > .controls > * {
-	vertical-align: middle;
-	display: -moz-inline-stack; /* Firefox 2 */
+.duplicator .controls select {
+	margin: 0 0.75em 0 0;
+	width: 15em;
 	display: inline-block;
-	margin: 0 0 0 0.75em;
 }
-.duplicator > .controls > select {
-	min-width: 15em;
-	width: auto;
+.duplicator .controls select option {
+	display: block;
+	margin: 0;
+	padding: 0 0 0 0.75em;
 }
-.duplicator > .controls > .constructor {
-	color: #f1f1f1;
-	cursor: pointer;
-	padding: 0.5em 0;
+.duplicator .controls a {
+	border-bottom: none;
+	padding: 0.2em 0;
+	display: inline-block;
 	text-decoration: none;
-	text-shadow: 1px 1px #8E8E80;
+	color: rgba(0, 0, 0, 0.4);
+	cursor: pointer;
 }
-.duplicator > .controls > .constructor:hover {
-	color: #ffffee;
+.duplicator .controls a:hover {
+	color: rgba(0, 0, 0, 0.7);
 }
-.duplicator > .controls > .constructor.disabled {
-	color: #eeeedd;
+.duplicator .controls a.disabled {
+	color: rgba(0, 0, 0, 0.2);
 	cursor: default;
 	opacity: 0.6;
+}
+.duplicator .controls a.collapser {
+	float: left;
 }
 
 /*-----------------------------------------------------------------------------
 	Duplicator - Orderable
 -----------------------------------------------------------------------------*/
 
-.duplicator.orderable > .instance > .header {
+.duplicator.orderable .instance .header {
 	cursor: move;
 }
-.duplicator.orderable > .instance > .header span {
+.duplicator.orderable .instance .header span {
 	cursor: pointer;
 }
-.duplicator.ordering > .instance {
-	opacity: 0.8;
+.duplicator.ordering .instance {
+	opacity: 0.5;
 }
-.duplicator > .instance.ordering {
-	border-top: 1px solid #eeeedd;
-	-moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
-	-webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
-	margin-top: -1px;
+.duplicator .instance.ordering {
 	opacity: 1;
-	z-index: 2;
+	border-bottom: 1px solid #D0D0CD;
+	-moz-box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+	-webkit-box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+	margin-bottom: -1px;
+	z-index: 1000;
 }
-.duplicator > .instance.ordering,
-.duplicator > .instance.ordering * {
+.duplicator .instance.ordering,
+.duplicator .instance.ordering * {
 	cursor: move;
 }
-.duplicator > .instance.collapsed {
-	border-bottom: none;
-}
-.duplicator > .instance.collapsed > .content {
+.duplicator .instance.collapsed .content {
 	display: none;
 }
-
-/*-----------------------------------------------------------------------------
-	Duplicator - Collapsible
------------------------------------------------------------------------------*/
-
-.duplicator.collapsible > .controls > .collapser {
-	cursor: pointer;
-	float: left;
-	margin: 0;
-	padding: 0.5em 0;
-	color: #eeeedd;
-	text-decoration: none;
-	text-shadow: 1px 1px #8E8E80;
-}
-.duplicator.collapsible > .controls > .collapser:hover {
-	color: #ffffee;
-}
-.duplicator.collapsible > .controls > .collapser.disabled {
-	color: #eeeedd;
-	cursor: default;
-	opacity: 0.6;
+.duplicator .instance.collapsed .header span i {
+	opacity: 1;
 }

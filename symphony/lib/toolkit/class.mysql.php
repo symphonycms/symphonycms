@@ -323,9 +323,8 @@
 
 		/**
 		 * This will set the character encoding of the connection for sending and
-		 * receiving data. This function will only run if 'runtime_character_set_alter'
-		 * is set to 'true' in the Symphony config. This is set to true by default during
-		 * the Symphony installation. If no character encoding is provided, UTF-8
+		 * receiving data. This function will run every time the database class
+		 * is being initialized. If no character encoding is provided, UTF-8
 		 * is assumed.
 		 *
 		 * @link http://au2.php.net/manual/en/function.mysql-set-charset.php
@@ -399,14 +398,14 @@
 		/**
 		 * Determines whether this query is a read operation, or if it is a write operation.
 		 * A write operation is determined as any query that starts with CREATE, INSERT,
-		 * REPLACE, UPDATE, DELETE, OPTIMIZE or TRUNCATE. Anything else is
+		 * REPLACE, ALTER, DELETE, UPDATE, OPTIMIZE or TRUNCATE. Anything else is
 		 * considered to be a read operation which are subject to query caching.
 		 *
 		 * @return integer
 		 *  `MySQL::__WRITE_OPERATION__` or `MySQL::__READ_OPERATION__`
 		 */
 		public function determineQueryType($query){
-			return (preg_match('/^(create|insert|replace|delete|update|optimize|truncate)/i', $query) ? MySQL::__WRITE_OPERATION__ : MySQL::__READ_OPERATION__);
+			return (preg_match('/^(create|insert|replace|alter|delete|update|optimize|truncate)/i', $query) ? MySQL::__WRITE_OPERATION__ : MySQL::__READ_OPERATION__);
 		}
 
 		/**
@@ -450,8 +449,7 @@
 				}
 			}
 
-			$query_hash = md5($query.microtime());
-			self::$_log['query'][$query_hash] = array('query' => $query, 'start' => precision_timer());
+			$start = precision_timer();
 
 			$this->flush();
 			$this->_lastQuery = $query;
@@ -477,7 +475,12 @@
 				mysql_free_result($this->_result);
 			}
 
-			self::$_log['query'][$query_hash]['time'] = precision_timer('stop', self::$_log['query'][$query_hash]['start']);
+			$query_hash = md5($query.$start);
+			self::$_log['query'][$query_hash] = array(
+				'query' => $query,
+				'query_hash' => $query_hash,
+				'time' => precision_timer('stop', $start)
+			);
 
 			return true;
 		}
@@ -588,7 +591,7 @@
 		 * @return boolean
 		 */
 		public function delete($table, $where = null){
-			$this->query("DELETE FROM $table WHERE $where");
+			return $this->query("DELETE FROM $table WHERE $where");
 		}
 
 		/**
@@ -699,6 +702,24 @@
 		}
 
 		/**
+		 * This function takes `$table` and `$field` names and returns boolean
+		 * if the `$table` contains the `$field`.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $table
+		 *  The table name
+		 * @param string $field
+		 *  The field name
+		 * @return boolean
+		 *  True if `$table` contains `$field`, false otherwise
+		 */
+		public function tableContainsField($table, $field){
+			$results = $this->fetch("DESC `{$table}` `{$field}`");
+
+			return (is_array($results) && !empty($results));
+		}
+
+		/**
 		 * If an error occurs in a query, this function is called which logs
 		 * the last query and the error number and error message from MySQL
 		 * before throwing a new DatabaseException
@@ -715,7 +736,7 @@
 				'num' => $errornum
 			);
 
-			throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query "%3$s"', array($errornum, $msg, $this->_lastQuery)), end(self::$_log['error']));
+			throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query: %3$s', array($errornum, $msg, $this->_lastQuery)), end(self::$_log['error']));
 		}
 
 		/**
@@ -775,14 +796,26 @@
 		 *  If one of the queries fails, false will be returned and no further queries
 		 *  will be executed, otherwise true will be returned.
 		 */
-		public function import($sql){
+		public function import($sql, $use_server_encoding = true, $force_engine = false){
+			if($use_server_encoding){
+				$sql = str_replace('DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci', NULL, $sql);
+				$sql = str_replace('COLLATE utf8_unicode_ci', NULL, $sql);
+			}
+
+			if($force_engine){
+				// Silently attempt to change the storage engine. This prevents INNOdb errors.
+				$this->query('SET storage_engine=MYISAM');
+			}
+
 			$queries = preg_split('/;[\\r\\n]+/', $sql, -1, PREG_SPLIT_NO_EMPTY);
 
-			if(is_array($queries) && !empty($queries)){
-				foreach($queries as $sql){
-					if(trim($sql) != '') $result = $this->query($sql);
-					if(!$result) return false;
-				}
+			if(!is_array($queries) || empty($queries) || count($queries) <= 0){
+				throw new Exception('The SQL string contains no queries.');
+			}
+
+			foreach($queries as $sql){
+				if(trim($sql) != '') $result = $this->query($sql);
+				if(!$result) return false;
 			}
 
 			return true;

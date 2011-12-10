@@ -11,8 +11,8 @@
 
 	Class fieldSelect extends Field {
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function __construct(){
+			parent::__construct();
 			$this->_name = __('Select Box');
 			$this->_required = true;
 			$this->_showassociation = true;
@@ -74,7 +74,7 @@
 		}
 
 		public function allowDatasourceOutputGrouping(){
-			## Grouping follows the same rule as toggling.
+			// Grouping follows the same rule as toggling.
 			return $this->canToggle();
 		}
 
@@ -97,7 +97,7 @@
 				  KEY `entry_id` (`entry_id`),
 				  KEY `handle` (`handle`),
 				  KEY `value` (`value`)
-				) ENGINE=MyISAM;
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			");
 		}
 
@@ -174,19 +174,18 @@
 
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 
-			# Predefined Values
+			// Predefined Values
 			$label = Widget::Label(__('Predefined Values'));
 			$label->appendChild(new XMLElement('i', __('Optional')));
 			$input = Widget::Input('fields['.$this->get('sortorder').'][static_options]', General::sanitize($this->get('static_options')));
 			$label->appendChild($input);
 			$div->appendChild($label);
 
-			# Dynamic Values
+			// Dynamic Values
 			$label = Widget::Label(__('Dynamic Values'));
-			$label->appendChild(new XMLElement('i', 'Optional'));
+			$label->appendChild(new XMLElement('i', __('Optional')));
 
-			$sectionManager = new SectionManager($this->_engine);
-			$sections = $sectionManager->fetch(NULL, 'ASC', 'name');
+			$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 			$field_groups = array();
 
 			if(is_array($sections) && !empty($sections))
@@ -216,24 +215,24 @@
 
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 
-			## Allow selection of multiple items
+			// Allow selection of multiple items
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Allow selection of multiple options', array($input->generate())));
 			$div->appendChild($label);
 
-			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Values'));
-
-			## Sort options?
+			// Sort options?
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][sort_options]', 'yes', 'checkbox');
 			if($this->get('sort_options') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Sort all options alphabetically', array($input->generate())));
 			$div->appendChild($label);
 
-			$this->appendRequiredCheckbox($div);
+			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Values'));
+
 			$this->appendShowColumnCheckbox($div);
+			$this->appendRequiredCheckbox($div);
 			$wrapper->appendChild($div);
 		}
 
@@ -268,7 +267,7 @@
 
 			$this->removeSectionAssociation($id);
 
-			// dynamic options isn't an array like in Select Box Link
+			// Dynamic Options isn't an array like in Select Box Link
 			$field_id = $this->get('dynamic_options');
 
 			if (!is_null($field_id)) {
@@ -305,7 +304,7 @@
 			else $wrapper->appendChild($label);
 		}
 
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+		public function processRawFieldData($data, &$status, &$message=null, $simulate=false, $entry_id=NULL){
 			$status = self::__OK__;
 
 			if(!is_array($data)) return array('value' => $data, 'handle' => Lang::createHandle($data));
@@ -389,31 +388,9 @@
 			$field_id = $this->get('id');
 
 			if (self::isFilterRegex($data[0])) {
-				$this->_key++;
-
-				if (preg_match('/^regexp:/i', $data[0])) {
-					$pattern = preg_replace('/^regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'REGEXP';
-				} else {
-					$pattern = preg_replace('/^not-?regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'NOT REGEXP';
-				}
-				
-				if(strlen($pattern) == 0) return;
-
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND (
-						t{$field_id}_{$this->_key}.value {$regex} '{$pattern}'
-						OR t{$field_id}_{$this->_key}.handle {$regex} '{$pattern}'
-					)
-				";
-
-			} elseif ($andOperation) {
+				$this->buildRegexSQL($data[0], array('value', 'handle'), $joins, $where);
+			}
+			else if ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
 					$value = $this->cleanValue($value);
@@ -429,8 +406,8 @@
 						)
 					";
 				}
-
-			} else {
+			}
+			else {
 				if (!is_array($data)) $data = array($data);
 
 				foreach ($data as &$value) {
