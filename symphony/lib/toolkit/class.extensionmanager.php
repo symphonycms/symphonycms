@@ -52,6 +52,7 @@
 					SELECT t1.name, t2.page, t2.delegate, t2.callback
 					FROM `tbl_extensions` as t1 INNER JOIN `tbl_extensions_delegates` as t2 ON t1.id = t2.extension_id
 					WHERE t1.status = 'enabled'
+					ORDER BY t2.delegate, t1.name
 				");
 
 				foreach($subscriptions as $subscription) {
