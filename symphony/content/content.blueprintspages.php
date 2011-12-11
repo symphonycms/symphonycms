@@ -218,7 +218,7 @@
 			// Status message:
 			if(isset($this->_context[2])) {
 				$this->pageAlert(
-					__('Page updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+					__('Page updated at %s.', array(DateTimeObj::getTimeAgo()))
 					. ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
 					. __('Create another?')
 					. '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
@@ -339,7 +339,7 @@
 
 					case 'saved':
 						$this->pageAlert(
-							__('Page updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							__('Page updated at %s.', array(DateTimeObj::getTimeAgo()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
@@ -351,7 +351,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Page created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							__('Page created at %s.', array(DateTimeObj::getTimeAgo()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
