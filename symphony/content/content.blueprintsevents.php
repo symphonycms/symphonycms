@@ -41,18 +41,17 @@
 		public function __form($readonly=false){
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-
-			if($formHasErrors) 
+			if($formHasErrors) {
 				$this->pageAlert(
 					__('An error occurred while processing this form.')
 					. ' <a href="#error">'
 					. __('See below for details.')
 					. '</a>'
 					, Alert::ERROR);
-
-			if(isset($this->_context[2])){
-				switch($this->_context[2]){
-
+			}
+			// These alerts are only valid if the form doesn't have errors
+			else if(isset($this->_context[2])) {
+				switch($this->_context[2]) {
 					case 'saved':
 						$this->pageAlert(
 							__('Event updated at %s.', array(DateTimeObj::getTimeAgo()))
@@ -74,7 +73,6 @@
 							. '</a>'
 							, Alert::SUCCESS);
 						break;
-
 				}
 			}
 

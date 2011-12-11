@@ -50,7 +50,14 @@
 		 *  The Page title
 		 */
 		public static function fetchTitleFromHandle($handle){
-			return Symphony::Database()->fetchVar('title', 0, "SELECT `title` FROM `tbl_pages` WHERE `handle` = '$handle' LIMIT 1");
+			return Symphony::Database()->fetchVar('title', 0, sprintf("
+					SELECT `title`
+					FROM `tbl_pages`
+					WHERE `handle` = '%s'
+					LIMIT 1
+				",
+					$handle
+			));
 		}
 
 		/**
@@ -62,7 +69,14 @@
 		 *  The Page ID
 		 */
 		public static function fetchIDFromHandle($handle){
-			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_pages` WHERE `handle` = '$handle' LIMIT 1");
+			return Symphony::Database()->fetchVar('id', 0, sprintf("
+					SELECT `id`
+					FROM `tbl_pages`
+					WHERE `handle` = '%s'
+					LIMIT 1
+				",
+					$handle
+			));
 		}
 
 		/**
@@ -293,15 +307,17 @@
 			// Delete from tbl_pages/tbl_page_types
 			if($can_proceed) {
 				PageManager::deletePageTypes($page_id);
-				Symphony::Database()->delete('tbl_pages', " `id` = '{$page_id}'");
-				Symphony::Database()->query("
-					UPDATE
-						tbl_pages
-					SET
-						`sortorder` = (`sortorder` + 1)
-					WHERE
-						`sortorder` < '$page_id'
-				");
+				Symphony::Database()->delete('tbl_pages', sprintf(" `page_id` = %d ", $page_id));
+				Symphony::Database()->query(sprintf("
+						UPDATE
+							tbl_pages
+						SET
+							`sortorder` = (`sortorder` + 1)
+						WHERE
+							`sortorder` < %d
+					",
+						$page_id
+				));
 			}
 
 			return $can_proceed;
@@ -318,7 +334,7 @@
 		public static function deletePageTypes($page_id = null) {
 			if(is_null($page_id)) return false;
 
-			return Symphony::Database()->delete('tbl_pages_types', " `page_id` = '{$page_id}'");
+			return Symphony::Database()->delete('tbl_pages_types', sprintf(" `page_id` = %d ", $page_id));
 		}
 
 		/**
@@ -700,17 +716,21 @@
 		 */
 		public static function resolvePage($page_id, $column) {
 			$path = array();
-			$page = Symphony::Database()->fetchRow(0, "
-				SELECT
-					p.{$column},
-					p.parent
-				FROM
-					`tbl_pages` AS p
-				WHERE
-					p.id = '{$page_id}'
-					OR p.handle = '{$page_id}'
-				LIMIT 1
-			");
+			$page = Symphony::Database()->fetchRow(0, sprintf("
+					SELECT
+						p.%s,
+						p.parent
+					FROM
+						`tbl_pages` AS p
+					WHERE
+						p.id = %d
+						OR p.handle = %s
+					LIMIT 1
+				",
+					$column,
+					$page_id,
+					$page_id
+			));
 
 			if(empty($page)) return $page;
 
@@ -720,15 +740,18 @@
 				$next_parent = $page['parent'];
 
 				while (
-					$parent = Symphony::Database()->fetchRow(0, "
-						SELECT
-							p.{$column},
-							p.parent
-						FROM
-							`tbl_pages` AS p
-						WHERE
-							p.id = '{$next_parent}'
-					")
+					$parent = Symphony::Database()->fetchRow(0, sprintf("
+							SELECT
+								p.%s,
+								p.parent
+							FROM
+								`tbl_pages` AS p
+							WHERE
+								p.id = %d
+						",
+							$column,
+							$next_parent
+					))
 				) {
 					array_unshift($path, $parent[$column]);
 					$next_parent = $parent['parent'];

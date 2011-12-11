@@ -29,16 +29,16 @@
 			if (!is_writable(CONFIG)) {
 				$this->pageAlert(__('The Symphony configuration file, %s, is not writable. You will not be able to save changes to preferences.', array('<code>/manifest/config.php</code>')), Alert::ERROR);
 				$bIsWritable = false;
-
-			} else if ($formHasErrors) {
+			} 
+			else if ($formHasErrors) {
 				$this->pageAlert(
 					__('An error occurred while processing this form.')
 					. ' <a href="#error">'
 					. __('See below for details.')
 					. '</a>'
 					, Alert::ERROR);
-
-			} else if (isset($this->_context[0]) && $this->_context[0] == 'success') {
+			} 
+			else if (isset($this->_context[0]) && $this->_context[0] == 'success') {
 				$this->pageAlert(__('Preferences saved.'), Alert::SUCCESS);
 			}
 

@@ -38,7 +38,7 @@
 			 * @param string $context
 			 * '/frontend/'
 			 * @param array $fields
-			 * @param string $event
+			 * @param Event $event
 			 * @param array $messages
 			 *  An associative array of array's which contain 4 values,
 			 *  the name of the filter (string), the status (boolean),
@@ -319,7 +319,7 @@
 			 * @param integer $entry_id
 			 * @param array $fields
 			 * @param Entry $entry
-			 * @param string $event
+			 * @param Event $event
 			 * @param array $messages
 			 *  An associative array of array's which contain 4 values,
 			 *  the name of the filter (string), the status (boolean),
@@ -356,7 +356,7 @@
 			 * @param string $context
 			 * '/frontend/'
 			 * @param array $fields
-			 * @param string $event
+			 * @param Event $event
 			 * @param array $messages
 			 *  An associative array of array's which contain 4 values,
 			 *  the name of the filter (string), the status (boolean),

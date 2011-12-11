@@ -22,15 +22,30 @@
 			$pages = PageManager::resolvePage($page_id, 'handle');
 
 			foreach($pages as &$page){
-				if(Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'no'){
-					$page = new XMLElement('span', PageManager::fetchTitleFromHandle($page));
+				// If we are viewing the Page Editor, the Breadcrumbs should link
+				// to the parent's Page Editor.
+				if($this->_context[0] == 'edit') {
+					$page = Widget::Anchor(
+						PageManager::fetchTitleFromHandle($page),
+						SYMPHONY_URL . '/blueprints/pages/edit/' . PageManager::fetchIDFromHandle($page) . '/'
+					);
 				}
-				else{
+
+				// If the pages index is nested, the Breadcrumb should link to the
+				// Pages Index filtered by parent
+				else if(Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes') {
 					$page = Widget::Anchor(
 						PageManager::fetchTitleFromHandle($page),
 						SYMPHONY_URL . '/blueprints/pages/?parent=' . PageManager::fetchIDFromHandle($page)
 					);
 				}
+
+				// If there is no nesting on the Pages Index, the breadcrumb is
+				// not a link, just plain text
+				else {
+					$page = new XMLElement('span', PageManager::fetchTitleFromHandle($page));
+				}
+
 			}
 
 			if(!$preserve_last) array_pop($pages);
@@ -207,16 +222,16 @@
 			$fields['body'] = @file_get_contents($file_abs);
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-			if($formHasErrors)
+			if($formHasErrors) {
 				$this->pageAlert(
 					__('An error occurred while processing this form.')
 					. ' <a href="#error">'
 					. __('See below for details.')
 					. '</a>'
 					, Alert::ERROR);
-
-			// Status message:
-			if(isset($this->_context[2])) {
+			}
+			// These alerts are only valid if the form doesn't have errors
+			else if(isset($this->_context[2])) {
 				$this->pageAlert(
 					__('Page updated at %s.', array(DateTimeObj::getTimeAgo()))
 					. ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
@@ -489,7 +504,7 @@
 			$column = new XMLElement('div');
 			$label = Widget::Label(__('URL Parameters'));
 			$label->appendChild(Widget::Input(
-				'fields[params]', $fields['params']
+				'fields[params]', $fields['params'], 'text', array('placeholder' => 'param1/param2')
 			));
 			$column->appendChild($label);
 
@@ -953,46 +968,6 @@
 						if($this->_context[0] == 'edit') {
 							PageManager::editPageChildren($page_id, $fields['path'] . '/' . $fields['handle']);
 						}
-					}
-
-					// Only proceed if there was no errors saving/creating the page
-					if(empty($this->_errors)) {
-						/**
-						 * Just before the page's types are saved into `tbl_pages_types`.
-						 * Use with caution as no further processing is done on the `$types`
-						 * array to prevent duplicate `$types` from occurring (ie. two index
-						 * page types). Your logic can use the contentBlueprintsPages::typeUsed
-						 * function to perform this logic.
-						 *
-						 * @delegate PageTypePreCreate
-						 * @since Symphony 2.2
-						 * @see content.contentBlueprintsPages#typeUsed()
-						 * @param string $context
-						 * '/blueprints/pages/'
-						 * @param integer $page_id
-						 *  The ID of the Page that was just created or updated
-						 * @param array $types
-						 *  An associative array of the types for this page passed by reference.
-						 */
-						Symphony::ExtensionManager()->notifyMembers('PageTypePreCreate', '/blueprints/pages/', array('page_id' => $page_id, 'types' => &$types));
-
-						// Assign page types:
-						if(is_array($types) && !empty($types)) {
-							foreach ($types as $type) Symphony::Database()->insert(
-								array(
-									'page_id' => $page_id,
-									'type' => $type
-								),
-								'tbl_pages_types'
-							);
-						}
-
-						// Find and update children:
-						if($this->_context[0] == 'edit') {
-							PageManager::editPageChildren($page_id, $fields['path'] . '/' . $fields['handle']);
-						}
-
-						if($redirect) redirect(SYMPHONY_URL . $redirect);
 					}
 				}
 

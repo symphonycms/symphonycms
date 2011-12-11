@@ -618,6 +618,9 @@
 							, Alert::ERROR);
 					}
 				}
+				else if(is_array($this->_errors) && !empty($this->_errors)) {
+					$this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), Alert::ERROR);
+				}
 			}
 			else if(@array_key_exists('delete', $_POST['action'])) {
 

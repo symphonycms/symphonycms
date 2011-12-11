@@ -129,10 +129,16 @@
 
 			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter_querystring ? "&amp;" . $filter_querystring : ''));
 
-			$this->appendSubheading($section->get('name'), array(
-				Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id, __('Edit Section Configuration'), 'button'),
+			$subheading_buttons = array(
 				Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($filter_querystring ? '?' . $prepopulate_querystring : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c'))
-			));
+			);
+
+			// Only show the Edit Section button if the Author is a developer. #938 ^BA
+			if(Administration::instance()->Author->isDeveloper()) {
+				array_unshift($subheading_buttons, Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id, __('Edit Section Configuration'), 'button'));
+			}
+
+			$this->appendSubheading($section->get('name'), $subheading_buttons);
 
 			// Check that the filtered query fails that the filter is dropped and an
 			// error is logged. #841 ^BA
@@ -499,9 +505,17 @@
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
 			$this->setTitle(__('%1$s &ndash; %2$s', array($section->get('name'), __('Symphony'))));
-			$this->appendSubheading(__('Untitled'),
-				Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id, __('Edit Section Configuration'), 'button')
-			);
+
+			// Only show the Edit Section button if the Author is a developer. #938 ^BA
+			if(Administration::instance()->Author->isDeveloper()) {
+				$this->appendSubheading(__('Untitled'),
+					Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id, __('Edit Section Configuration'), 'button')
+				);
+			}
+			else {
+				$this->appendSubheading(__('Untitled'));
+			}
+
 			$this->insertBreadcrumbs(array(
 				Widget::Anchor($section->get('name'), SYMPHONY_URL . '/publish/' . $this->_context['section_handle']),
 			));
@@ -798,9 +812,17 @@
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($title, $section->get('name'), __('Symphony'))));
-			$this->appendSubheading($title,
-				Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id, __('Edit Section Configuration'), 'button')
-			);
+
+			// Only show the Edit Section button if the Author is a developer. #938 ^BA
+			if(Administration::instance()->Author->isDeveloper()) {
+				$this->appendSubheading($title,
+					Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id, __('Edit Section Configuration'), 'button')
+				);
+			}
+			else {
+				$this->appendSubheading($title);
+			}
+
 			$this->insertBreadcrumbs(array(
 				Widget::Anchor($section->get('name'), SYMPHONY_URL . '/publish/' . $this->_context['section_handle']),
 			));

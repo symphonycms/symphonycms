@@ -591,7 +591,7 @@
 		 * @return boolean
 		 */
 		public function delete($table, $where = null){
-			$this->query("DELETE FROM $table WHERE $where");
+			return $this->query("DELETE FROM $table WHERE $where");
 		}
 
 		/**

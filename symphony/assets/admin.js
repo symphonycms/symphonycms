@@ -8,6 +8,10 @@
 	 */
 	$(document).ready(function() {
 
+		/*--------------------------------------------------------------------------
+			Core Functions
+		--------------------------------------------------------------------------*/
+
 		// Initialize Symphony
 		Symphony.init();
 
@@ -26,6 +30,10 @@
 			return false;
 		};
 
+		/*--------------------------------------------------------------------------
+			Plugins - Tags, Pickable and Selectable
+		--------------------------------------------------------------------------*/
+
 		// Tags
 		$('.tags').symphonyTags();
 
@@ -33,11 +41,15 @@
 		$('select[name="settings[Email][default_gateway]"]').symphonyPickable();
 
 		$('select[name="fields[dynamic_xml][format]"]').symphonyPickable({
-		    pickables: '#xml'
+			pickables: '#xml'
 		});
 
 		// Selectable
 		$('table.selectable').symphonySelectable();
+
+		/*--------------------------------------------------------------------------
+			Plugins - Orderable
+		--------------------------------------------------------------------------*/
 
 		// Orderable list
 		$('ul.orderable').symphonyOrderable();
@@ -89,6 +101,11 @@
 			}
 		});
 
+
+		/*--------------------------------------------------------------------------
+			Plugins - Duplicator and Collapsible
+		--------------------------------------------------------------------------*/
+
 		// Duplicators
 		$('.filters-duplicator').symphonyDuplicator();
 
@@ -100,6 +117,10 @@
 			preselect: 'input'
 		});
 
+		/*--------------------------------------------------------------------------
+			Plugins - System Messages
+		--------------------------------------------------------------------------*/
+
 		// Relative times in system messages
 		$('header p.notice').symphonyTimeAgo().each(function() {
 			var notice = $(this);
@@ -110,6 +131,10 @@
 		setInterval(function() {
 			$('header p.notice').symphonyTimeAgo();
 		}, 60000);		
+
+		/*--------------------------------------------------------------------------
+			Components - XSLT Editor
+		--------------------------------------------------------------------------*/
 
 		// XSLT utilities
 		$('textarea').blur(function() {
@@ -177,6 +202,10 @@
 			}
 		});
 
+		/*--------------------------------------------------------------------------
+			Components - User Password
+		--------------------------------------------------------------------------*/
+
 		// Change user password
 		$('#change-password').each(function() {
 			var password = $(this),
@@ -209,6 +238,10 @@
 			}
 
 		});
+
+		/*--------------------------------------------------------------------------
+			Components - Confirm Actions
+		--------------------------------------------------------------------------*/
 
 		// Confirm actions
 		$('button.confirm').live('click', function() {
@@ -244,6 +277,11 @@
 			}
 		});
 
+		/*--------------------------------------------------------------------------
+			Page - Datasource Editor
+		--------------------------------------------------------------------------*/
+
+		// Update DS Parameters selectbox as the user types a new name for the resource
 		$('#blueprints-datasources input[name="fields[name]"]').on('change', function(){
 			var value = $(this).val();
 
@@ -262,6 +300,48 @@
 						item.text('$ds-' + result + '.' + field)
 					});
 				}
+			});
+		});
+
+		// Datasource collapsable links
+		$('#blueprints-datasources.index table tr, #blueprints-events.index table tr').each(function() {
+			var links = [];
+			$('td:eq(2) a', this).each(function(){
+				links.push($(this));
+			});
+
+			// If there is less than 3, show them all by default
+			if(links.length <= 3) return;
+
+			// Clear the field and append the links
+			$('td:eq(2)', this).html('');
+			for(var i=0, l=links.length; i<l; i++) {
+				$('td:eq(2)', this).append(links[i]).append('<span>, </span>');
+			}
+			$("td:eq(2) a:gt(2)", this).each(function(){
+				$(this).hide().next().hide();
+			});
+
+			$('td:eq(2)', this).append(
+				'<a href="#" class="expand">' +
+				' <span class="more">' + (links.length - 3) + ' more</span>' +
+				' <span class="less">less</span>&hellip;</a>'
+			);
+
+			// Listen for click on the 'expand' links, to hide/show
+			$(this).on('click', '.expand', function() {
+				var $parent = $(this).parent();
+
+				if($(this).hasClass('expanded')) {
+					$(">a:gt(2), >span:gt(2)", $parent).not('.expand').hide();
+					$(this).removeClass('expanded');
+				}
+				else {
+					$(">a, >span", $parent).show();
+					$(this).addClass('expanded');
+				}
+
+				return false;
 			});
 		});
 
@@ -340,6 +420,20 @@
 			page_number.attr('disabled', false);
 		});
 
+		// Validate pagination input on submit
+		$('.page form').submit(function() {
+			var $input = $(this).find('input');
+			if(!$input.val().match('^[0-9]+$') || $input.val() > parseInt($(this).find('span').html())) {
+				$input.addClass('error');
+				window.setTimeout(function() { $('.page form input').removeClass("error"); }, 500);
+				return false;
+			}
+		});
+
+		/*--------------------------------------------------------------------------
+			Field - Upload
+		--------------------------------------------------------------------------*/
+
 		// Upload fields
 		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span').click(function(event) {
 			var span = $(this).parent(),
@@ -351,6 +445,10 @@
 			// Add new empty file input
 			span.empty().append('<input name="' + name + '" type="file">');
 		});
+
+		/*--------------------------------------------------------------------------
+			Miscellanea
+		--------------------------------------------------------------------------*/
 
 		// Focus first text-input or textarea when creating entries
 		if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'new' || Symphony.Context.get('env').page == 'new')) {
@@ -367,15 +465,21 @@
 			$(this).select();
 		});
 
-		// Validate pagination input on submit
-		$('.page form').submit(function() {
-			var $input = $(this).find('input');
-			if(!$input.val().match('^[0-9]+$') || $input.val() > parseInt($(this).find('span').html())) {
-				$input.addClass("error");
-				window.setTimeout(function() { $('.page form input').removeClass("error"); }, 500);
-				return false;
+		// Set table to "fixed mode" if its width exceeds the visibile viewport area.
+		// See https://github.com/symphonycms/symphony-2/issues/932.
+		$(window).resize(function() {
+			var table = $('table:first');
+
+			if(table.width() > $('html').width() && !table.hasClass('fixed')){
+				return table.addClass('fixed');
+			}
+
+			if(table.width() < $('html').width() && table.hasClass('fixed')){
+				return table.removeClass('fixed');
 			}
 		});
+
+		$(window).trigger('resize');
 	});
 
 })(jQuery.noConflict());
