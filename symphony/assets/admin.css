@@ -1010,7 +1010,7 @@ ul.page input.error, ul.page input.error:focus {
 .primary label,
 .secondary label,
 .secondary .label {
-	margin: 10px 0 0;
+	margin: 10px 0 1.5em;
 }
 .primary .group label,
 .secondary .group label {
