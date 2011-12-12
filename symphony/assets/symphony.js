@@ -311,7 +311,7 @@ var Symphony = {};
 			 *  Message type to be used as class name
 			 */
 			this.post = function(message, type) {
-				$('header div.notifier').trigger('attach.notify', [message, type];
+				$('header div.notifier').trigger('attach.notify', [message, type]);
 			};
 
 			/**
