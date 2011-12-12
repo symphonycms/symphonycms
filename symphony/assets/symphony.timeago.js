@@ -35,7 +35,7 @@
 				if(datetime) {
 	
 					// Parse ISO 8601
-					date = datetime.split(/[-T:+]+/);
+					date = datetime.split(/[-T:+]/);
 					timestamp = new Date(date[0], date[1] - 1, date[2], date[3], date[4], date[5]);
 				}
 				
