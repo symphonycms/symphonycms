@@ -20,7 +20,7 @@
 	
 		function parse(item) {
 			var timestamp = item.data('timestamp'),
-				datetime, now;
+				datetime, date, now;
 				
 			// Fetch stored timestamp
 			if($.isNumeric(timestamp)) {
@@ -33,23 +33,14 @@
 				
 				// Defined date and time
 				if(datetime) {
-					
-					// Browsers that understand ISO 8601
-					timestamp = Date.parse(datetime);
-					
-					// Browsers that understand ISO 8601 without timezone
-					if(isNaN(timestamp)) {
-						timestamp = Date.parse(datetime.substring(0, 19));
-					}
-				
-					// Browsers that don't understand ISO 8601
-					if(isNaN(timestamp)) {
-						timestamp = Date.parse(datetime.replace(/-/g, '/').replace(/T/g, ' ').replace(/Z/, ' UTC'));
-					}
+	
+					// Parse ISO 8601
+					date = datetime.split(/[-T:+]+/);
+					timestamp = new Date(date[0], date[1] - 1, date[2], date[3], date[4], date[5]);
 				}
 				
 				// Undefined date and time
-				if(!$.isNumeric(timestamp)) {
+				else {
 					now = new Date();
 					timestamp = now.getTime();
 				} 
