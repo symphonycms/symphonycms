@@ -52,7 +52,7 @@
 				switch($this->_context[2]) {
 					case 'saved':
 						$this->pageAlert(
-							__('Data source updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							__('Data source updated at %s.', array(DateTimeObj::getTimeAgo()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
@@ -63,7 +63,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Data source created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							__('Data source created at %s.', array(DateTimeObj::getTimeAgo()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
@@ -169,7 +169,7 @@
 				if(isset($cache_id) && in_array('clear_cache', $this->_context)) {
 					$cache->forceExpiry($cache_id);
 					$this->pageAlert(
-						__('Data source cache cleared at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+						__('Data source cache cleared at %s.', array(DateTimeObj::getTimeAgo()))
 						. '<a href="' . SYMPHONY_URL . '/blueprints/datasources" accesskey="a">'
 						. __('View all Data sources')
 						. '</a>'

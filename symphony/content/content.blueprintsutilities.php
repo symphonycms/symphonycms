@@ -129,7 +129,7 @@
 				switch($this->_context[2]) {
 					case 'saved':
 						$this->pageAlert(
-							__('Utility updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							__('Utility updated at %s.', array(DateTimeObj::getTimeAgo()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/utilities/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/utilities/" accesskey="a">'
@@ -140,7 +140,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Utility created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							__('Utility created at %s.', array(DateTimeObj::getTimeAgo()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/utilities/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/utilities/" accesskey="a">'

@@ -54,7 +54,7 @@
 				switch($this->_context[2]) {
 					case 'saved':
 						$this->pageAlert(
-							__('Event updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							__('Event updated at %s.', array(DateTimeObj::getTimeAgo()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/events/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/events/" accesskey="a">'
@@ -65,7 +65,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Event created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							__('Event created at %s.', array(DateTimeObj::getTimeAgo()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/events/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/events/" accesskey="a">'

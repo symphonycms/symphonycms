@@ -120,16 +120,8 @@
 		/*--------------------------------------------------------------------------
 			Plugins - System Messages
 		--------------------------------------------------------------------------*/
-
-		// Dim system messages
-		Symphony.Message.fade('silence', 10000);
-
-		// Relative times in system messages
-		$('abbr.timeago').each(function() {
-			var time = $(this).parent();
-			time.html(time.html().replace(Symphony.Language.get('at') + ' ', ''));
-		});
-		Symphony.Message.timer();
+		
+		$('header').symphonyNotify();
 
 		/*--------------------------------------------------------------------------
 			Components - XSLT Editor

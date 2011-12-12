@@ -303,13 +303,6 @@ var Symphony = {};
 		Message: new (function(){
 
 			/**
-			 * This array is private and can not be accessed directly.
-			 *
-			 * @private
-			 */
-			var Queue = [];
-
-			/**
 			 * Post system message
 			 *
 			 * @param {String} message
@@ -318,111 +311,18 @@ var Symphony = {};
 			 *  Message type to be used as class name
 			 */
 			this.post = function(message, type) {
-
-				// Store previous message
-				Queue = Queue.concat($('#notice').remove().get());
-
-				// Add new message
-				$('h1').before('<div id="notice" class="' + type + '">' + message + '</div>');
+				$('header div.notifier').trigger('attach.notify', [message, type]);
 			};
 
 			/**
-			 * Clear message by type
+			 * Clear last message of a type
 			 *
 			 * @param {String} type
 			 *  Message type
 			 */
 			this.clear = function(type) {
-				var message = $('#notice');
-
-				// Remove messages of specified type
-				message.filter('.' + type).remove();
-				Symphony.Message.Queue = $(Queue).filter(':not(.' + type + ')').get();
-
-				// Show previous message
-				if(message.length > 0 && Queue.length > 0) {
-					$(Queue.pop()).insertBefore('h1');
-				}
+				$('header p.notice').filter('.' + type).first().trigger('detach.notify');
 			};
-
-			/**
-			 * Fade message highlight color to grey
-			 */
-			this.fade = function(newclass, delay) {
-				var notice = $('#notice.success').addClass(newclass),
-					styles = {
-						'color': notice.css('color'),
-						'backgroundColor': notice.css('background-color'),
-						'borderTopColor': notice.css('border-top-color'),
-						'borderRightColor': notice.css('border-right-color'),
-						'borderBottomColor': notice.css('border-bottom-color'),
-						'borderLeftColor': notice.css('border-left-color')
-					};
-
-				// Delayed animation to new styles
-				if(notice.is(':visible')) {
-					notice.removeClass(newclass).delay(delay).animate(styles, 'slow', 'linear', function() {
-						$(this).removeClass('success');
-					});
-				}
-			};
-
-			/**
-			 * Convert absolute message time to relative time and update continuously
-			 */
-			this.timer = function() {
-				var time = Date.parse($('abbr.timeago').attr('title')),
-					to = new Date(),
-					from = new Date();
-
-				// Set time
-				from.setTime(time);
-
-				// Set relative time
-				$('abbr.timeago').text(this.distance(from, to));
-
-				// Update continuously
-				window.setTimeout("Symphony.Message.timer()", 60000);
-			};
-
-			/**
-			 * Calculate relative time.
-			 *
-			 * @param {Date} from
-			 *  Starting date
-			 * @param {Date} to
-			 *  Current date
-			 */
-			this.distance = function(from, to) {
-
-				// Calculate time difference
-				var distance = to - from,
-
-				// Convert time to minutes
-					time = Math.floor(distance / 60000);
-
-				// Return relative date based on passed time
-				if(time < 1) {
-					return Symphony.Language.get('just now');
-				}
-				if(time < 2) {
-					return Symphony.Language.get('a minute ago');
-				}
-				if(time < 45) {
-					return Symphony.Language.get('{$minutes} minutes ago', {
-						'minutes': time
-					});
-				}
-				if(time < 90) {
-					return Symphony.Language.get('about 1 hour ago');
-				}
-				else {
-					return Symphony.Language.get('about {$hours} hours ago', {
-						'hours': Math.floor(time / 60)
-					});
-				}
-			};
-
 		}),
 
 		/**
