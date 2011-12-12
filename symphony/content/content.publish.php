@@ -765,7 +765,7 @@
 
 					case 'saved':
 						$this->pageAlert(
-							__('Entry updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							__('Entry updated at %s.', array(DateTimeObj::getTimeAgo()))
 							. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
@@ -776,7 +776,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Entry created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							__('Entry created at %s.', array(DateTimeObj::getTimeAgo()))
 							. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
