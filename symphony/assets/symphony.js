@@ -311,18 +311,7 @@ var Symphony = {};
 			 *  Message type to be used as class name
 			 */
 			this.post = function(message, type) {
-				var notice = 'notice';
-				
-				// Check type
-				if(type) {
-					notice += ' ' + type;
-				}
-			
-				// Append message
-				$('<p />', {
-					class: notice,
-					html: message
-				}).hide().prependTo('header').slideDown('normal');
+				$('header div.notifier').trigger('attach.notify', [message, type];
 			};
 
 			/**
@@ -332,9 +321,7 @@ var Symphony = {};
 			 *  Message type
 			 */
 			this.clear = function(type) {
-				$('header p.notice').filter('.' + type).first().slideUp('normal', function() {
-					$(this).remove();
-				});
+				$('header p.notice').filter('.' + type).first().trigger('detach.notify');
 			};
 		}),
 
