@@ -130,13 +130,19 @@
 		}
 
 		/**
-		 * Returns the status of an Extension by name
+		 * Returns the status of an Extension given an associative array containing
+		 * the Extension `handle` and `version` where the `version` is the file
+		 * version, not the installed version. This function returns an array
+		 * which may include a maximum of two statuses.
 		 *
-		 * @param string $name
-		 *  The name of the Extension Class minus the extension prefix.
-		 * @return integer
-		 *  An extension status, `EXTENSION_ENABLED`, `EXTENSION_DISABLED` or
-		 *  `EXTENSION_NOT_INSTALLED`. If an extension doesn't exist,
+		 * @param array $about
+		 *  An associative array of the extension meta data, typically returned
+		 *  by `ExtensionManager::about()`. At the very least this array needs
+		 *  `handle` and `version` keys.
+		 * @return array
+		 *  An array of extension statuses, with the possible values being
+		 * `EXTENSION_ENABLED`, `EXTENSION_DISABLED`, `EXTENSION_REQUIRES_UPDATE`
+		 *  or `EXTENSION_NOT_INSTALLED`. If an extension doesn't exist,
 		 *  `EXTENSION_NOT_INSTALLED` will be returned.
 		 */
 		public static function fetchStatus($about){
@@ -180,6 +186,28 @@
 		public static function fetchExtensionID($name){
 			self::__buildExtensionList();
 			return self::$_extensions[$name]['id'];
+		}
+
+		public static function getProvidersOf($type = null) {
+			// Loop over all extensions and build an array of providable objects
+			if(is_null(self::$providers)) {
+				self::$providers = array();
+				foreach(self::listInstalledHandles() as $handle) {
+					$obj = self::getInstance($handle);
+
+					if(!method_exists($obj, 'providerOf')) continue;
+
+					// For each of the matching objects (by $type), resolve the object path
+					self::$providers = array_merge(self::$providers, $obj->providerOf);
+				}
+			}
+
+			// Return an array of objects
+			if(is_null($type)) return self::$providers;
+
+			if(!isset(self::$providers[$type])) return array();
+
+			return self::$providers[$type];
 		}
 
 		/**
