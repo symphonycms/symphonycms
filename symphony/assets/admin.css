@@ -587,6 +587,36 @@ input[type=submit]:active,
 	Globals - System Messages
 --------------------------------------------------------------------------*/
 
+div.notifier {
+	overflow: hidden;
+	background: #383838;
+	border-bottom: 1px solid #575757;
+}
+
+div.notifier nav {
+	position: absolute;
+	top: 0;
+	right: 18px;
+	text-decoration: none;
+	display: block;
+	padding: 4px 0;
+	cursor: pointer;
+}
+
+div.notifier nav:before {
+	content: "\2193";
+	padding-right: 3px;
+	opacity: 0.2;
+}
+
+div.notifier p.notice:last-child nav:before {
+	content: "\2191";
+}
+
+div.notifier nav:hover:before {
+	opacity: 0.5;
+}
+
 @-webkit-keyframes success {
 	to {
 		background-color: #383838;
@@ -631,15 +661,12 @@ input[type=submit]:active,
 
 .notice {
 	position: relative;
-	z-index: 2;
 	margin: 0;
-	padding: 4px 18px 0;
+	padding: 4px 90px 3px 18px;
 	border-bottom: 1px solid #575757;
 	color: #9b9b9b;
-	line-height: 1.6;
 	background: #383838;
-	height: 20px;
-	-webkit-transition: all 1s;
+	min-height: 16px;
 }
 .notice a {
 	color: #bdc3c3;

@@ -120,17 +120,8 @@
 		/*--------------------------------------------------------------------------
 			Plugins - System Messages
 		--------------------------------------------------------------------------*/
-
-		// Relative times in system messages
-		$('header p.notice').symphonyTimeAgo().each(function() {
-			var notice = $(this);
-			notice.html(notice.html().replace(Symphony.Language.get('at') + ' ', ''));
-		});
 		
-		// Update relative times in system messages
-		setInterval(function() {
-			$('header p.notice').symphonyTimeAgo();
-		}, 60000);		
+		$('header').symphonyNotify();
 
 		/*--------------------------------------------------------------------------
 			Components - XSLT Editor

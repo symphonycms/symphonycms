@@ -263,6 +263,7 @@
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.tags.js', 65);
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.pickable.js', 66);
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.timeago.js', 67);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.notify.js', 68);
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/admin.js', 70);
 
 			$this->addElementToHead(
