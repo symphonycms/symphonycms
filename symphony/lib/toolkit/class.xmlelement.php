@@ -178,12 +178,39 @@
 		}
 
 		/**
+		 * Retrieves a child-element by position
+		 *
+		 * @since Symphony 2.3
+		 * @param int $position
+		 * @return XMLElement
+		 */
+		public function getChild($position){
+			if(!isset($this->_children[$this->getRealIndex($position)])) return null;
+			return $this->_children[$this->getRealIndex($position)];
+		}
+
+		/**
 		 * Accessor for `$this->_children`
 		 *
 		 * @return array
 		 */
 		public function getChildren(){
 			return $this->_children;
+		}
+
+		/**
+		 * Retrieves child-element by name and position. If no child is found,
+		 * NULL will be returned.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $name
+		 * @return XMLElement
+		 */
+		public function getChildByName($name, $position) {
+			$result = array_values($this->getChildrenByName($name));
+
+			if(!isset($result[$position])) return null;
+			return $result[$position];
 		}
 
 		/**
