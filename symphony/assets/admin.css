@@ -587,55 +587,130 @@ input[type=submit]:active,
 	Globals - System Messages
 --------------------------------------------------------------------------*/
 
+div.notifier {
+	overflow: hidden;
+	background: #383838;
+	border-bottom: 1px solid #575757;
+}
+
+div.notifier nav {
+	position: absolute;
+	top: 0;
+	right: 18px;
+	text-decoration: none;
+	display: block;
+	padding: 4px 0;
+	cursor: pointer;
+}
+
+div.notifier nav:before {
+	content: "\2193";
+	padding-right: 3px;
+	opacity: 0.2;
+}
+
+div.notifier p.notice:last-child nav:before {
+	content: "\2191";
+}
+
+div.notifier nav:hover:before {
+	opacity: 0.5;
+}
+
+@-webkit-keyframes success {
+	to {
+		background-color: #383838;
+		border-color: #575757;
+		color: #9b9b9b;
+	}
+}
+@-webkit-keyframes successlink {
+	to {
+		color: #bdc3c3;
+		border-color: #7c7c7c;
+	}
+}
+
+@-moz-keyframes success {
+	to {
+		background-color: #383838;
+		border-color: #575757;
+		color: #9b9b9b;
+	}
+}
+@-moz-keyframes successlink {
+	to {
+		color: #bdc3c3;
+		border-color: #7c7c7c;
+	}
+}
+
+@-ms-keyframes success {
+	to {
+		background-color: #383838;
+		border-color: #575757;
+		color: #9b9b9b;
+	}
+}
+@-ms-keyframes successlink {
+	to {
+		color: #bdc3c3;
+		border-color: #7c7c7c;
+	}
+}
+
 .notice {
 	position: relative;
-	z-index: 2;
 	margin: 0;
-	padding: 4px 18px 0;
-	border-bottom: 1px solid rgba(100, 100, 100, 0.7);
-	color: rgba(255, 255, 255, 0.5);
-	line-height: 1.6;
+	padding: 4px 90px 3px 18px;
+	border-bottom: 1px solid #575757;
+	color: #9b9b9b;
 	background: #383838;
-	height: 20px;
-	-webkit-transition: all 5s ease-out;
+	min-height: 16px;
 }
-.notice.error {
-	background-color: #fff9a2;
-	border-color: #e7a973;
-	color: rgba(141, 45, 45, 0.67);
+.notice a {
+	color: #bdc3c3;
+	text-decoration: none;
+	border-bottom: 1px solid #7c7c7c;
+}
+.notice a:hover {
+	color: #e4ece4;
+	border-color: #9b9b9b;
+	text-decoration: none;
 }
 .notice.success {
 	background-color: #bfdc96;
 	border-color: #90c349;
-	color: rgba(46, 77, 28, 0.7);
+	color: #6d7841;
+	-webkit-animation: success 0.5s ease-out 10s 1 forwards;
+	-moz-animation: success 0.5s ease-out 10s 1 forwards;
+	-ms-animation: success 0.5s ease-out 10s 1 forwards;
+	animation: success 0.5s ease-out 10s 1 forwards;
 }
-.notice a,
-.notice button {
-	color: rgba(255, 255, 255, 0.7);
-	text-decoration: none;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+.notice.success a {
+	color: #4e5b39;
+	border-color: #a1bf7e;
+	-webkit-animation: successlink 0.5s ease-out 10s 1 forwards;
+	-moz-animation: successlink 0.5s ease-out 10s 1 forwards;
+	-ms-animation: successlink 0.5s ease-out 10s 1 forwards;
+	animation: successlink 0.5s ease-out 10s 1 forwards;
 }
-.notice a:hover,
-.notice button:hover {
-	color: rgba(255, 255, 255, 0.9);
-	border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-	text-decoration: none;
+.notice.success a:hover {
+	color: #333c25;
+	border-color: #4e5b39;
 }
-.notice button {
-	border: none;
-	background: none;
-	text-decoration: underline;
-	cursor: pointer;
+.notice.error {
+	background-color: #fff9a2;
+	border-color: #e7a973;
+	color: #bd7053;
 }
-.notice.success a,
-.notice.success button {
-	color: rgba(46, 77, 28, 0.9);
-	border-bottom: 1px solid rgba(46, 77, 28, 0.2);
+.notice.error a {
+	color: #b02d3c;
+	border-bottom: 1px solid #eed08a;
 }
-.notice.error a,
-.notice.error button {
-	color: rgba(169, 45, 45, 1);
-	border-bottom: 1px solid rgba(169, 45, 45, 0.2);
+.notice.error a:hover {
+	color: #87232e;
+	border-bottom: 1px solid #b02d3c;
 }
 
 /*--------------------------------------------------------------------------

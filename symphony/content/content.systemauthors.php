@@ -205,7 +205,7 @@
 				switch($this->_context[2]){
 					case 'saved':
 						$this->pageAlert(
-							__('Author updated at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							__('Author updated at %s.', array(DateTimeObj::getTimeAgo()))
 							. ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
@@ -216,7 +216,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Author created at %s.', array(DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__)))
+							__('Author created at %s.', array(DateTimeObj::getTimeAgo()))
 							. ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
