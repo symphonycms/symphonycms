@@ -9,25 +9,6 @@
 	Abstract Class TextFormatter{
 
 		/**
-		 * An instance of the Administration class
-		 * @var Administration
-		 * @see core.Administration
-		 */
-		protected $_Parent;
-
-		/**
-		 * The Text Formatter constructor sets the `$this->_Parent` variable
-		 * to the `$parent` provided as a parameter.
-		 *
-		 * @param Administration $parent
-		 *  The Administration object that this page has been created from
-		 *  passed by reference
-		 */
-		public function __construct(&$parent){
-			$this->_Parent = $parent;
-		}
-
-		/**
 		 * The about method allows a text formatter to provide
 		 * information about itself as an associative array. eg.
 		 * `array(

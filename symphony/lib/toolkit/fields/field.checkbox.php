@@ -5,14 +5,12 @@
 	 */
 	/**
 	 * Checkbox field simulates a HTML checkbox field, in that it represents a
-	 * simple yes/no field. Optionally a Developer can give a Checkbox field a
-	 * long description for the Publish page, as well as referencing the Checkbox
-	 * field with it's short name.
+	 * simple yes/no field.
 	 */
 	Class fieldCheckbox extends Field {
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function __construct(){
+			parent::__construct();
 			$this->_name = __('Checkbox');
 
 			$this->set('location', 'sidebar');
@@ -53,6 +51,10 @@
 			return true;
 		}
 
+		public function allowDatasourceParamOutput(){
+			return true;
+		}
+
 	/*-------------------------------------------------------------------------
 		Setup:
 	-------------------------------------------------------------------------*/
@@ -66,7 +68,7 @@
 				  PRIMARY KEY  (`id`),
 				  UNIQUE KEY `entry_id` (`entry_id`),
 				  KEY `value` (`value`)
-				) ENGINE=MyISAM;
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			");
 		}
 
@@ -81,15 +83,9 @@
 		public function displaySettingsPanel(&$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			## Long Description
-			$label = Widget::Label(__('Long Description'));
-			$label->appendChild(new XMLElement('i', __('Optional')));
-			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][description]', $this->get('description')));
-			$wrapper->appendChild($label);
-
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 
-			## Checkbox Default State
+			// Checkbox Default State
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][default_state]', 'on', 'checkbox');
 			if($this->get('default_state') == 'on') $input->setAttribute('checked', 'checked');
@@ -111,7 +107,6 @@
 
 			$fields['field_id'] = $id;
 			$fields['default_state'] = ($this->get('default_state') ? $this->get('default_state') : 'off');
-			if(trim($this->get('description')) != '') $fields['description'] = $this->get('description');
 
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
@@ -124,7 +119,7 @@
 		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL, $entry_id = null){
 
 			if(!$data){
-				## TODO: Don't rely on $_POST
+				// TODO: Don't rely on $_POST
 				if(isset($_POST) && !empty($_POST)) $value = 'no';
 				elseif($this->get('default_state') == 'on') $value = 'yes';
 				else $value = 'no';
@@ -135,12 +130,12 @@
 			$label = Widget::Label();
 			$input = Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, 'yes', 'checkbox', ($value == 'yes' ? array('checked' => 'checked') : NULL));
 
-			$label->setValue($input->generate(false) . ' ' . ($this->get('description') != NULL ? $this->get('description') : $this->get('label')));
+			$label->setValue($input->generate(false) . ' ' . $this->get('label'));
 
 			$wrapper->appendChild($label);
 		}
 
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+		public function processRawFieldData($data, &$status, &$message=null, $simulate = false, $entry_id = null){
 			$status = self::__OK__;
 
 			return array(
@@ -159,7 +154,11 @@
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
-			return ($data['value'] == 'yes' ? __('Yes') : __('No'));
+			return ($data['value'] == 'yes') ? __('Yes') : __('No');
+		}
+
+		public function getParameterPoolValue(array $data, $entry_id = null){
+			return ($data['value'] == 'yes') ? 'yes' : 'no';
 		}
 
 	/*-------------------------------------------------------------------------

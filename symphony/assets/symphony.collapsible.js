@@ -10,10 +10,13 @@
 	 * @name $.symphonyCollapsible
 	 * @class
 	 *
-	 * @param {Object} custom_settings An object specifying containing the attributes specified below
-	 * @param {String} [custom_settings.items='.instance'] Selector to find collapsible items within the container
-	 * @param {String} [custom_settings.handles='.header:first'] Selector to find clickable handles to trigger interaction
-	 * @param {Boolean} [custom_settings.delay_initialize=false] Initialise plugin extensions before the collapsible itself is initialised
+	 * @param {Object} options An object specifying containing the attributes specified below
+	 * @param {String} [options.items='.instance'] Selector to find collapsible items within the container
+	 * @param {String} [options.handles='.header:first'] Selector to find clickable handles to trigger interaction
+	 * @param {String} [options.content='.content'] Selector to find hideable content area
+	 * @param {String} [options.controls=true] Add controls to collapse/expand all instances
+	 * @param {String} [options.save_state=true] Stores states of instances using local storage
+	 * @param {String} [options.storage='symphony.collapsible.id.env'] Namespace used for local storage
 	 *
 	 *	@example
 
@@ -23,230 +26,226 @@
 			});
 			collapsible.collapseAll();
 	 */
-	$.fn.symphonyCollapsible = function(custom_settings) {
+	$.fn.symphonyCollapsible = function(options) {
 		var objects = this,
 			settings = {
 				items:				'.instance',
 				handles:			'.header:first',
-				delay_initialize:	false,
+				content:			'.content',
+				controls:			true,
 				save_state:			true,
-				storage: 'symphony.collapsible.' + $('body').attr('id') + (Symphony.Context.get('env')[1] ? '.' + Symphony.Context.get('env')[1] : '')
+				storage: 			'symphony.collapsible.' + $('body').attr('id') + (Symphony.Context.get('env')[1] ? '.' + Symphony.Context.get('env')[1] : '')
 			};
 		
-		$.extend(settings, custom_settings);
+		$.extend(settings, options);
 		
 	/*-----------------------------------------------------------------------*/
+
+		// Language strings
+		Symphony.Language.add({
+			'Expand all': false,
+			'Collapse all': false
+		});
+
+	/*-----------------------------------------------------------------------*/
 		
-		objects = objects.map(function(index) {
-			var object = this,
-				item = null,
+		objects.each(function(index) {
+			var object = $(this),
 				storage = settings.storage + '.' + index + '.collapsed';
-			
-			var start = function() {
-				item = $(this).parents(settings.items);
-				
-				$(document).bind('mouseup.collapsible', stop);
-				
-				if(item.is('.collapsed')) {
-					object.addClass('expanding');
-					item.addClass('expanding');
-					object.trigger('expandstart', [item]);
-				}
-				else {
-					object.addClass('collapsing');
-					item.addClass('collapsing');
-					object.trigger('collapsestart', [item]);
-				}
-				
-				return false;
-			};
-			
-			var stop = function() {
-				$(document).unbind('mouseup.collapsible', stop);
-				
-				if(item != null) {
-					object.removeClass('expanding collapsing');
-					item.removeClass('expanding collapsing');
-					
-					if(item.is('.collapsed')) {
-						item.removeClass('collapsed').addClass('expanded');
-						object.trigger('expandstop', [item]);
-					}
-					
-					else {
-						item.removeClass('expanded').addClass('collapsed');
-						object.trigger('collapsestop', [item]);
-					}
-					
-					item = null;
-				}
-				
-				if (settings.save_state) {
-					object.collapsible.saveState();
-				}
-				
-				return false;
-			};
 			
 		/*-------------------------------------------------------------------*/
 			
-			if(object instanceof $ === false) {	
-				object = $(object);
-			}
-			
-			object.collapsible = {
+			// Collapse item
+			object.on('collapse.collapsible', settings.items, function(event, speed) {
+				var item = $(this),
+					content = item.find(settings.content);
+
+				// Check speed
+				if(!$.isNumeric(speed)) {
+					speed = 'fast';
+				}
 				
-				/**
-				 * Cancel collapsing
-				 *
-				 * @name $.symphonyCollapsible#cancel
-				 * @function
-				 */
-				cancel: function() {
-					$(document).unbind('mouseup', stop);
+				// Collapse item				
+				item.trigger('collapsestart.collapsible');
+				content.slideUp(speed, function() {
+					item.addClass('collapsed');
+					item.trigger('collapsestop.collapsible');
+				});
+			});
+									
+			// Expand item
+			object.on('expand.collapsible', settings.items, function(event) {
+				var item = $(this),
+					content = item.find(settings.content);
+				
+				// Collapse item				
+				item.trigger('expandstart.collapsible');
+				content.slideDown('fast', function() {
+					item.removeClass('collapsed');
+					item.trigger('expandstop.collapsible');
+				});
+			});
+
+			// Toggle single item
+			object.on('click.collapsible', settings.handles, function() {
+				var handle = $(this),
+					item = handle.parents(settings.items);
 					
-					if(item != null) {
-						if(item.is('.collapsed')) {
-							object.removeClass('expanding');
-							item.removeClass('expanding');
-							object.trigger('expandcancel', [item]);
-						}
-						
-						else {
-							object.removeClass('collapsing');
-							item.removeClass('collapsing');
-							object.trigger('collapsecancel', [item]);
-						}
-					}
-				},
+				// Expand
+				if(item.is('.collapsed')) {
+					item.trigger('expand.collapsible');
+				}
 				
-				/**
-				 * Set up the collapsible items and bind event handlers
-				 *
-				 * @name $.symphonyCollapsible#initialize
-				 * @function
-				 */
-				initialize: function() {
-					object.addClass('collapsible');
-					object.find(settings.items).each(function() {
-						var item = $(this),
-							handle = item.find(settings.handles);
-						
-						handle.unbind('mousedown.collapsible', start);
-						handle.bind('mousedown.collapsible', start);
-					});
-					object.bind('restorestate.collapsible', function(event) {
-						if (settings.save_state) {
-							object.collapsible.restoreState();
-						}
-					});
-					object.bind('savestate.collapsible', function(event) {
-						if (settings.save_state) {
-							object.collapsible.saveState();
-						}
-					});
-				},
+				// Collapse
+				else {
+					item.trigger('collapse.collapsible');
+				}
+			});
+			
+			// Toggle all
+			object.on('click.collapsible', 'a.collapser', function(event) {
+				var collapser = $(this),
+					items = object.find(settings.items);
 				
-				/**
-				 * Collapse all open items
-				 *
-				 * @name $.symphonyCollapsible#collapseAll
-				 * @function
-				 */
-				collapseAll: function() {
-					object.find(settings.items).each(function() {
-						var item = $(this);
-						
-						if(item.is('.collapsed')) return;
-						
-						object.trigger('collapsestart', [item]);
-						item.removeClass('expanded').addClass('collapsed');
-						object.trigger('collapsestop', [item]);
-					});
-					if (settings.save_state) {
-						this.saveState();
-					}
-				},
+				// Collapse all
+				if(collapser.text() == Symphony.Language.get('Collapse all')) {
+					items.trigger('collapse.collapsible');
+				}
 				
-				/**
-				 * Expand all closed items
-				 *
-				 * @name $.symphonyCollapsible#expandAll
-				 * @function
-				 */
-				expandAll: function() {
-					object.find(settings.items).each(function() {
-						var item = $(this);
-						
-						if(item.is('.expanded')) return;
-						
-						object.trigger('expandstart', [item]);
-						item.removeClass('collapsed').addClass('expanded');
-						object.trigger('expandstop', [item]);
-					});
-					if (settings.save_state) {
-						this.saveState();
-					}
-				},
+				// Expand all
+				else {
+					items.trigger('expand.collapsible');
+				}
+			});
+			
+			// Update controls to expand all
+			object.on('collapsestop.collapsible', settings.items, function(event) {
+				var item = $(this);
 				
-				/**
-				 * Remember collapsed/expanded state between page refreshes.
-				 *
-				 * @name $.symphonyCollapsible#expandAll
-				 * @function
-				 */
-				saveState: function() {
-					var collapsed = [];
-					if (!Symphony.Support.localStorage) { return false; }
-					object.find(settings.items).each(function(index) {
-						var item = $(this);
-						
-						if(item.is('.collapsed')) {
-							collapsed.push(index);
+				if(item.siblings().filter(':not(.collapsed)').length == 0) {
+					object.find('a.collapser').text(Symphony.Language.get('Expand all'));
+				}
+			});
+					
+			// Update controls to collapse all
+			object.on('expandstop.collapsible', settings.items, function(event) {
+				var item = $(this);
+				
+				if(item.siblings().filter('.collapsed').length == 0) {
+					object.find('a.collapser').text(Symphony.Language.get('Collapse all'));
+				}
+			});
+			
+			// Save states
+			object.on('collapsestop.collapsible expandstop.collapsible store.collapsible', settings.items, function(event) {
+				if(settings.save_state === true && Symphony.Support.localStorage === true) {
+					var collapsed = object.find(settings.items).map(function(index) {
+						if($(this).is('.collapsed')) {
+							return index;
 						};
 					});
-					localStorage[storage] = collapsed;
-					return true;
-				},
-				
-				restoreState: function() {
-					var collapsed;
-					if (!Symphony.Support.localStorage || !localStorage[storage]) { return false; }
-					collapsed = localStorage[storage];
-					collapsed = collapsed.split(',');
-					$.each(collapsed, function(index, val) {
-						var item = object.find(settings.items).eq(val);
-						
-						if(item.is('.collapsed')) return;
-						
-						object.trigger('collapsestart', [item]);
-						item.removeClass('expanded').addClass('collapsed');
-						object.trigger('collapsestop', [item, true]);
-					});
-					return true;
+					localStorage[storage] = collapsed.get().join(',');
 				}
-			};
+			});
 			
-			if (settings.delay_initialize !== true) {
-				object.collapsible.initialize();
+			// Restore states
+			object.on('restore.collapsible', function(event) {
+				if(settings.save_state === true && Symphony.Support.localStorage === true && localStorage[storage]) {
+					$.each(localStorage[storage].split(','), function(index, value) {
+						var collapsed = object.find(settings.items).eq(value);
+						if(collapsed.has('.invalid').length == 0) {
+							collapsed.trigger('collapse.collapsible', [0]);
+						}
+					});
+				}
+			});
+			
+			// Activate controls
+			object.on('activate.collapsible',  function(event, speed) {
+			
+				// Check speed
+				if(!$.isNumeric(speed)) {
+					speed = 100;
+				}
+				
+				// Activate controls, show top control
+				object.removeClass('empty');
+				object.find('div.controls.top').slideDown(speed);
+				object.find('div.controls a.collapser').removeClass('disabled');
+			});
+			
+			// Deactivate controls
+			object.on('deactivate.collapsible', function(event, speed) {
+				
+				// Check speed
+				if(!$.isNumeric(speed)) {
+					speed = 100;
+				}
+				
+				// Deactivate controls, hide top control
+				object.find('div.controls.top').slideUp(speed);
+				object.find('div.controls a.collapser').addClass('disabled');
+				object.addClass('empty');
+			});
+			
+			// Refresh state storage
+			object.on('orderstop.orderable', function(event) {
+				object.find(settings.items).trigger('store.collapsible');
+			});
+			
+		/*-------------------------------------------------------------------*/
+
+			// Prepare interface
+			object.addClass('collapsible');
+
+			// Build controls
+			if(settings.controls === true) {
+				var top = object.find('> :first-child'),
+					bottom = object.find('> :last-child'),
+					collapser = $('<a />', {
+						class: 'collapser',
+						text: Symphony.Language.get('Collapse all')
+					}),
+					controls = $('<div />', {
+						class: 'controls'
+					}).append(collapser.clone());
+				
+				// Existing top controls
+				if(top.is('.controls')) {
+					top.prepend(collapser.clone());
+				}
+				
+				// Create missing top controls
+				else {
+					object.prepend(controls.clone().hide().addClass('top'));
+				}
+				
+				// Existing bottom controls
+				if(bottom.is('.controls')) {
+					bottom.prepend(collapser.clone());
+				}
+				
+				// Create missing bottom controls
+				else {
+					object.append(controls.clone());	
+				}
+				
+				// Activate controls
+				if(object.find(settings.items).length > 0) {
+					object.trigger('activate.collapsible', [0]);
+				}
+				
+				// Deactivate controls
+				else {
+					object.trigger('deactivate.collapsible', [0]);
+				}
 			}
 			
-			return object;
+			// Restore states
+			object.trigger('restore.collapsible');
 		});
-		
-		objects.collapsible = {
-			collapseAll: function() {
-				objects.each(function() {
-					this.collapsible.collapseAll();
-				});
-			},
-			
-			expandAll: function() {
-				objects.each(function() {
-					this.collapsible.expandAll();
-				});
-			}
-		};
+
+	/*-----------------------------------------------------------------------*/
 		
 		return objects;
 	};

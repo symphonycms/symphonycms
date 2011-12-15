@@ -1,8 +1,8 @@
 <?php
 
 	if(!function_exists('buildFilterElement')){
-		function buildFilterElement($name, $status, $message=NULL, array $attr=NULL){
-			$ret = new XMLElement('filter', (!$message || is_object($message) ? NULL : $message), array('name' => $name, 'status' => $status));
+		function buildFilterElement($name, $status, $message=null, array $attr=null){
+			$ret = new XMLElement('filter', (!$message || is_object($message) ? null : $message), array('name' => $name, 'status' => $status));
 			if(is_object($message)) $ret->appendChild($message);
 
 			if(is_array($attr)) $ret->setAttributeArray($attr);
@@ -18,7 +18,7 @@
 	}
 
 	if (!function_exists('__doit')) {
-		function __doit($source, $fields, &$result, &$event, $filters = array(), $position=NULL, $entry_id=NULL){
+		function __doit($source, $fields, &$result, &$event, $filters = array(), $position=null, $entry_id=null){
 
 			$post_values = new XMLElement('post-values');
 			$filter_results = array();
@@ -38,7 +38,7 @@
 			 * @param string $context
 			 * '/frontend/'
 			 * @param array $fields
-			 * @param string $event
+			 * @param Event $event
 			 * @param array $messages
 			 *  An associative array of array's which contain 4 values,
 			 *  the name of the filter (string), the status (boolean),
@@ -83,18 +83,14 @@
 			include_once(TOOLKIT . '/class.sectionmanager.php');
 			include_once(TOOLKIT . '/class.entrymanager.php');
 
-			$sectionManager = new SectionManager(Symphony::Engine());
-
-			if(!$section = $sectionManager->fetch($source)){
+			if(!$section = SectionManager::fetch($source)){
 				$result->setAttribute('result', 'error');
 				$result->appendChild(new XMLElement('message', __('Section is invalid')));
 				return false;
 			}
 
-			$entryManager = new EntryManager(Symphony::Engine());
-
-			if(isset($entry_id) && $entry_id != NULL){
-				$entry =& $entryManager->fetch($entry_id);
+			if(isset($entry_id)) {
+				$entry =& EntryManager::fetch($entry_id);
 				$entry = $entry[0];
 
 				if(!is_object($entry)){
@@ -105,7 +101,7 @@
 			}
 
 			else{
-				$entry =& $entryManager->create();
+				$entry =& EntryManager::create();
 				$entry->set('section_id', $source);
 			}
 
@@ -114,7 +110,7 @@
 				$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 
 				foreach($errors as $field_id => $message){
-					$field = $entryManager->fieldManager->fetch($field_id);
+					$field = FieldManager::fetch($field_id);
 
 					if(is_array($fields[$field->get('element_name')])) {
 						$type = array_reduce($fields[$field->get('element_name')], '__reduceType');
@@ -123,7 +119,7 @@
 						$type = ($fields[$field->get('element_name')] == '') ? 'missing' : 'invalid';
 					}
 
-					$result->appendChild(new XMLElement($field->get('element_name'), NULL, array(
+					$result->appendChild(new XMLElement($field->get('element_name'), null, array(
 						'label' => General::sanitize($field->get('label')),
 						'type' => $type,
 						'message' => General::sanitize($message)
@@ -138,13 +134,13 @@
 				$result->setAttribute('result', 'error');
 				$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 
-				if(isset($errors['field_id'])){
-					$errors = array($errors);
-				}
-
-				foreach($errors as $err){
-					$field = $entryManager->fieldManager->fetch($err['field_id']);
-					$result->appendChild(new XMLElement($field->get('element_name'), NULL, array('type' => 'invalid')));
+				foreach($errors as $field_id => $message){
+					$field = FieldManager::fetch($field_id);
+					$result->appendChild(new XMLElement($field->get('element_name'), null, array(
+						'label' => General::sanitize($field->get('label')),
+						'type' => 'invalid',
+						'message' => General::sanitize($message)
+					)));
 				}
 
 				if(isset($post_values) && is_object($post_values)) $result->appendChild($post_values);
@@ -169,7 +165,7 @@
 			if(in_array('send-email', $filters) && !in_array('expect-multiple', $filters)){
 
 				if(!function_exists('__sendEmailFindFormValue')){
-					function __sendEmailFindFormValue($needle, $haystack, $discard_field_name=true, $default=NULL, $collapse=true){
+					function __sendEmailFindFormValue($needle, $haystack, $discard_field_name=true, $default=null, $collapse=true){
 
 						if(preg_match('/^(fields\[[^\]]+\],?)+$/i', $needle)){
 							$parts = preg_split('/\,/i', $needle, -1, PREG_SPLIT_NO_EMPTY);
@@ -182,7 +178,7 @@
 							}
 
 							if(is_array($stack) && !empty($stack)) return ($collapse ? implode(' ', $stack) : $stack);
-							else $needle = NULL;
+							else $needle = null;
 						}
 
 						$needle = trim($needle);
@@ -201,26 +197,26 @@
 				$fields['recipient']		= array_map('trim', $fields['recipient']);
 
 				$fields['subject']			= __sendEmailFindFormValue($fields['subject'], $_POST['fields'], true, __('[Symphony] A new entry was created on %s', array(Symphony::Configuration()->get('sitename', 'general'))));
-				$fields['body']				= __sendEmailFindFormValue($fields['body'], $_POST['fields'], false, NULL, false);
-				$fields['sender-email']		= __sendEmailFindFormValue($fields['sender-email'], $_POST['fields'], true, NULL);
-				$fields['sender-name']		= __sendEmailFindFormValue($fields['sender-name'], $_POST['fields'], true, NULL);
+				$fields['body']				= __sendEmailFindFormValue($fields['body'], $_POST['fields'], false, null, false);
+				$fields['sender-email']		= __sendEmailFindFormValue($fields['sender-email'], $_POST['fields'], true, null);
+				$fields['sender-name']		= __sendEmailFindFormValue($fields['sender-name'], $_POST['fields'], true, null);
 
-				$fields['reply-to-name']	= __sendEmailFindFormValue($fields['reply-to-name'], $_POST['fields'], true, NULL);
-				$fields['reply-to-email']	= __sendEmailFindFormValue($fields['reply-to-email'], $_POST['fields'], true, NULL);
+				$fields['reply-to-name']	= __sendEmailFindFormValue($fields['reply-to-name'], $_POST['fields'], true, null);
+				$fields['reply-to-email']	= __sendEmailFindFormValue($fields['reply-to-email'], $_POST['fields'], true, null);
 
 				$edit_link = SYMPHONY_URL.'/publish/'.$section->get('handle').'/edit/'.$entry->get('id').'/';
 
 				$language = Symphony::Configuration()->get('lang', 'symphony');
 
-				$template_path = (file_exists(TEMPLATE . "/notification.{$language}.tpl")
-					? TEMPLATE . "/notification.{$language}.tpl"
-					: TEMPLATE . "/notification.tpl");
+				$template_path = (file_exists(TEMPLATE . "/email.entrycreated.{$language}.tpl")
+					? TEMPLATE . "/email.entrycreated.{$language}.tpl"
+					: TEMPLATE . "/email.entrycreated.tpl");
 
 				$body = sprintf(file_get_contents($template_path), $section->get('name'), $edit_link);
 
 				if(is_array($fields['body'])){
 					foreach($fields['body'] as $field_handle => $value){
-						$body .= "// $field_handle" . General::CRLF . $value . General::CRLF . General::CRLF;
+						$body .= "// $field_handle" . PHP_EOL . $value . PHP_EOL . PHP_EOL;
 					}
 				}
 				else {
@@ -230,9 +226,8 @@
 				// Loop over all the recipients and attempt to send them an email
 				// Errors will be appended to the Event XML
 				$errors = array();
-				$authorManager = new AuthorManager(Frontend::instance());
 				foreach($fields['recipient'] as $recipient){
-					$author = $authorManager->fetchByUsername($recipient);
+					$author = AuthorManager::fetchByUsername($recipient);
 
 					if(is_null($author)) {
 						$errors['recipient'][$recipient] = __('Recipient not found');
@@ -283,7 +278,6 @@
 						// all exceptions are logged silently.
 						// Any custom event can change this behaviour.
 						$errors['email'][$author->get('email')] = $e->getMessage();
-						$emailError = true;
 					}
 				}
 
@@ -325,7 +319,7 @@
 			 * @param integer $entry_id
 			 * @param array $fields
 			 * @param Entry $entry
-			 * @param string $event
+			 * @param Event $event
 			 * @param array $messages
 			 *  An associative array of array's which contain 4 values,
 			 *  the name of the filter (string), the status (boolean),
@@ -362,7 +356,7 @@
 			 * @param string $context
 			 * '/frontend/'
 			 * @param array $fields
-			 * @param string $event
+			 * @param Event $event
 			 * @param array $messages
 			 *  An associative array of array's which contain 4 values,
 			 *  the name of the filter (string), the status (boolean),
@@ -414,7 +408,7 @@
 		return $result;
 	}
 
-	$entry_id = $position = $fields = NULL;
+	$entry_id = $position = $fields = null;
 	$post = General::getPostData();
 	$success = true;
 
@@ -424,8 +418,11 @@
 				if (isset($post['id'][$position]) && is_numeric($post['id'][$position])) {
 					$entry_id = $post['id'][$position];
 				}
+				else {
+					$entry_id = null;
+				}
 
-				$entry = new XMLElement('entry', NULL, array('position' => $position));
+				$entry = new XMLElement('entry', null, array('position' => $position));
 
 				$ret = __doit(
 					self::getSource(), $fields, $entry, $this, $this->eParamFILTERS, $position, $entry_id
@@ -440,11 +437,11 @@
 
 	else {
 		$fields = $post['fields'];
-		$entry_id = NULL;
+		$entry_id = null;
 
 		if (isset($post['id']) && is_numeric($post['id'])) $entry_id = $post['id'];
 
-		$success = __doit(self::getSource(), $fields, $result, $this, $this->eParamFILTERS, NULL, $entry_id);
+		$success = __doit(self::getSource(), $fields, $result, $this, $this->eParamFILTERS, null, $entry_id);
 	}
 
 	if($success && isset($_REQUEST['redirect'])) redirect($_REQUEST['redirect']);

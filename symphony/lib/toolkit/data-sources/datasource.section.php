@@ -1,15 +1,75 @@
 <?php
 
+	if(!function_exists('processSystemParameters')) {
+		function processSystemParameters(Datasource $ds, Entry $entry, &$param_pool) {
+			if(!isset($ds->dsParamPARAMOUTPUT)) return;
+
+			// Support the legacy parameter `ds-datasource-handle`
+			$key = 'ds-' . $ds->dsParamROOTELEMENT;
+			$singleParam = count($ds->dsParamPARAMOUTPUT) == 1;
+
+			foreach($ds->dsParamPARAMOUTPUT as $param) {
+				// The new style of paramater is `ds-datasource-handle.field-handle`
+				$param_key = $key . '.' . str_replace(':', '-', $param);
+
+				if($param == 'system:id') {
+					$param_pool[$param_key][] = $entry->get('id');
+					if($singleParam) $param_pool[$key][] = $entry->get('id');
+				}
+				else if($param == 'system:author') {
+					$param_pool[$param_key][] = $entry->get('author_id');
+					if($singleParam) $param_pool[$key][] = $entry->get('author_id');
+				}
+				else if($param == 'system:date') {
+					$param_pool[$param_key][] = DateTimeObj::get('c', $entry->creationDate);
+					if($singleParam) $param_pool[$key][] = DateTimeObj::get('c', $entry->creationDate);
+				}
+			}
+		}
+	}
+
+	if(!function_exists('processParameters')) {
+		function processParameters(Datasource $ds, Entry $entry, array $fieldPool, $field_id, array $values, &$param_pool) {
+			if(!isset($ds->dsParamPARAMOUTPUT)) return;
+
+			// Support the legacy parameter `ds-datasource-handle`
+			$key = 'ds-' . $ds->dsParamROOTELEMENT;
+			$singleParam = count($ds->dsParamPARAMOUTPUT) == 1;
+
+			foreach($ds->dsParamPARAMOUTPUT as $param) {
+				if($fieldPool[$field_id]->get('element_name') !== $param) continue;
+
+				// The new style of paramater is `ds-datasource-handle.field-handle`
+				$param_key = $key . '.' . str_replace(':', '-', $param);
+
+				if(!isset($param_pool[$param_key]) || !is_array($param_pool[$param_key])) $param_pool[$param_key] = array();
+				if($singleParam && (!isset($param_pool[$key]) || !is_array($param_pool[$key]))) $param_pool[$key] = array();
+
+				$param_pool_values = $fieldPool[$field_id]->getParameterPoolValue($values, $entry->get('id'));
+
+				if(is_array($param_pool_values)){
+					$param_pool[$param_key] = array_merge($param_pool_values, $param_pool[$param_key]);
+
+					if($singleParam) $param_pool[$key] = array_merge($param_pool_values, $param_pool[$key]);
+				}
+				else{
+					$param_pool[$param_key][] = $param_pool_values;
+
+					if($singleParam) $param_pool[$key][] = $param_pool_values;
+				}
+			}
+		}
+	}
+
 	if(!function_exists('processRecordGroup')){
-		function processRecordGroup(&$wrapper, $element, $group, $ds, &$entryManager, &$fieldPool, &$param_pool, $param_output_only=false){
+		function processRecordGroup(&$wrapper, $element, $group, $ds, &$fieldPool, &$param_pool, $param_output_only=false){
 			$associated_sections = NULL;
 
 			$xGroup = new XMLElement($element, NULL, $group['attr']);
-			$key = 'ds-' . $ds->dsParamROOTELEMENT;
 
-			if(!$section = $entryManager->sectionManager->fetch($ds->getSource())){
+			if(!$section = SectionManager::fetch($ds->getSource())){
 				$about = $ds->about();
-				throw new Exception(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])));
+				throw new Exception(__('The section associated with the data source %s could not be found.', array('<code>' . $about['name'] . '</code>')));
 			}
 
 			if(!isset($ds->dsParamASSOCIATEDENTRYCOUNTS) || $ds->dsParamASSOCIATEDENTRYCOUNTS == 'yes'){
@@ -36,29 +96,18 @@
 						}
 					}
 
-					if(isset($ds->dsParamPARAMOUTPUT)){
-						if($ds->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
-						elseif($ds->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', $entry->creationDate);
-						elseif($ds->dsParamPARAMOUTPUT == 'system:author') $param_pool[$key][] = $entry->get('author_id');
-					}
+					processSystemParameters($ds, $entry, $param_pool);
+
+					$pool = FieldManager::fetch(array_keys($data));
+					$fieldPool += $pool;
 
 					foreach($data as $field_id => $values){
 
-						if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id]))
-							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
-
-						if(isset($ds->dsParamPARAMOUTPUT) && $ds->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
-							if(!isset($param_pool[$key]) || !is_array($param_pool[$key])) $param_pool[$key] = array();
-
-							$param_pool_values = $fieldPool[$field_id]->getParameterPoolValue($values, $entry->get('id'));
-
-							if(is_array($param_pool_values)){
-								$param_pool[$key] = array_merge($param_pool_values, $param_pool[$key]);
-							}
-							else{
-								$param_pool[$key][] = $param_pool_values;
-							}
+						if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id])) {
+							$fieldPool[$field_id] =& FieldManager::fetch($field_id);
 						}
+
+						processParameters($ds, $entry, $fieldPool, $field_id, $values, $param_pool);
 
 						if (!$param_output_only) if (is_array($ds->dsParamINCLUDEDELEMENTS)) foreach ($ds->dsParamINCLUDEDELEMENTS as $handle) {
 							list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
@@ -72,7 +121,7 @@
 						if(is_array($ds->dsParamINCLUDEDELEMENTS) && in_array('system:date', $ds->dsParamINCLUDEDELEMENTS)){
 							$xEntry->appendChild(
 								General::createXMLDateObject(
-									DateTimeObj::get('U', $entry->creationDate), 
+									DateTimeObj::get('U', $entry->creationDate),
 									'system-date'
 								)
 							);
@@ -85,7 +134,7 @@
 
 			if(is_array($group['groups']) && !empty($group['groups'])){
 				foreach($group['groups'] as $element => $group){
-					foreach($group as $g) processRecordGroup($xGroup, $element, $g, $ds, $entryManager, $fieldPool, $param_pool, $param_output_only);
+					foreach($group as $g) processRecordGroup($xGroup, $element, $g, $ds, $fieldPool, $param_pool, $param_output_only);
 				}
 			}
 
@@ -100,14 +149,11 @@
 	$joins = NULL;
 	$group = false;
 
-	$key = 'ds-' . $this->dsParamROOTELEMENT;
-
 	include_once(TOOLKIT . '/class.entrymanager.php');
-	$entryManager = new EntryManager($this->_Parent);
 
-	if(!$section = $entryManager->sectionManager->fetch($this->getSource())){
+	if(!$section = SectionManager::fetch($this->getSource())){
 		$about = $this->about();
-		trigger_error(__('The section associated with the data source <code>%s</code> could not be found.', array($about['name'])), E_USER_ERROR);
+		trigger_error(__('The section associated with the data source %s could not be found.', array('<code>' . $about['name'] . '</code>')), E_USER_ERROR);
 	}
 
 	$sectioninfo = new XMLElement('section', General::sanitize($section->get('name')), array('id' => $section->get('id'), 'handle' => $section->get('handle')));
@@ -124,6 +170,9 @@
 	}
 
 	if(is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
+		$pool = FieldManager::fetch(array_keys($this->dsParamFILTERS));
+		$fieldPool += $pool;
+
 		foreach($this->dsParamFILTERS as $field_id => $filter){
 
 			if((is_array($filter) && empty($filter)) || trim($filter) == '') continue;
@@ -139,14 +188,11 @@
 
 			else $value = $filter;
 
-			if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id]))
-				$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
-
 			if($field_id != 'id' && $field_id != 'system:date' && !($fieldPool[$field_id] instanceof Field)){
 				throw new Exception(
 					__(
-						'Error creating field object with id %1$d, for filtering in data source "%2$s". Check this field exists.',
-						array($field_id, $this->dsParamROOTELEMENT)
+						'Error creating field object with id %1$d, for filtering in data source %2$s. Check this field exists.',
+						array($field_id, '<code>' . $this->dsParamROOTELEMENT . '<code>')
 					)
 				);
 			}
@@ -174,24 +220,34 @@
 		}
 	}
 
-	if($this->dsParamSORT == 'system:id') $entryManager->setFetchSorting('id', $this->dsParamORDER);
-	elseif($this->dsParamSORT == 'system:date') $entryManager->setFetchSorting('date', $this->dsParamORDER);
-	else $entryManager->setFetchSorting($entryManager->fieldManager->fetchFieldIDFromElementName($this->dsParamSORT, $this->getSource()), $this->dsParamORDER);
+	if($this->dsParamSORT == 'system:id') EntryManager::setFetchSorting('id', $this->dsParamORDER);
+	elseif($this->dsParamSORT == 'system:date') EntryManager::setFetchSorting('date', $this->dsParamORDER);
+	else EntryManager::setFetchSorting(FieldManager::fetchFieldIDFromElementName($this->dsParamSORT, $this->getSource()), $this->dsParamORDER);
+
+	if(isset($this->dsParamPARAMOUTPUT) && !is_array($this->dsParamPARAMOUTPUT)) {
+		$this->dsParamPARAMOUTPUT = array($this->dsParamPARAMOUTPUT);
+	}
 
 	// combine INCLUDEDELEMENTS and PARAMOUTPUT into an array of field names
 	$datasource_schema = $this->dsParamINCLUDEDELEMENTS;
 	if (!is_array($datasource_schema)) $datasource_schema = array();
-	if ($this->dsParamPARAMOUTPUT) $datasource_schema[] = $this->dsParamPARAMOUTPUT;
-	if ($this->dsParamGROUP) $datasource_schema[] = $entryManager->fieldManager->fetchHandleFromID($this->dsParamGROUP);
+	if (is_array($this->dsParamPARAMOUTPUT)) {
+		foreach($this->dsParamPARAMOUTPUT as $p) {
+			$datasource_schema[] = $p;
+		}
+	}
+	if ($this->dsParamGROUP) $datasource_schema[] = FieldManager::fetchHandleFromID($this->dsParamGROUP);
 	if(!isset($this->dsParamPAGINATERESULTS)) $this->dsParamPAGINATERESULTS = 'yes';
 
-	$entries = $entryManager->fetchByPage(($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1),
-										  $this->getSource(),
-										  ($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : NULL),
-										  $where, $joins, $group,
-										  (!$include_pagination_element ? true : false),
-										  true,
-										  $datasource_schema);
+	$entries = EntryManager::fetchByPage(
+		($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1),
+		$this->getSource(),
+		($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : NULL),
+		$where, $joins, $group,
+		(!$include_pagination_element ? true : false),
+		true,
+		$datasource_schema
+	);
 
 	/**
 	 * Immediately after building entries allow modification of the Data Source entry list
@@ -224,21 +280,13 @@
 				$result->prependChild($pagination_element);
 			}
 		}
-
-		if(isset($this->dsParamPARAMOUTPUT)){
-			$param_pool[$key][] = '';
-		}
 	}
 
-	else{
-
+	else {
 		if(!$this->_param_output_only){
-			$result = new XMLElement($this->dsParamROOTELEMENT);
-
 			$result->appendChild($sectioninfo);
 
 			if($include_pagination_element){
-
 				$t = ($this->dsParamPAGINATERESULTS == 'yes' && isset($this->dsParamLIMIT) && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : $entries['total-entries']);
 
 				$pagination_element = General::buildPaginationElement(
@@ -250,20 +298,17 @@
 				if($pagination_element instanceof XMLElement && $result instanceof XMLElement){
 					$result->prependChild($pagination_element);
 				}
-
 			}
 		}
-
-		if(isset($this->dsParamPARAMOUTPUT) && !is_array($param_pool[$key])) $param_pool[$key] = array();
 
 		if(!isset($this->dsParamLIMIT) || $this->dsParamLIMIT > 0){
 
 			if(isset($this->dsParamGROUP)):
-				$fieldPool[$this->dsParamGROUP] =& $entryManager->fieldManager->fetch($this->dsParamGROUP);
+				$fieldPool[$this->dsParamGROUP] =& FieldManager::fetch($this->dsParamGROUP);
 				$groups = $fieldPool[$this->dsParamGROUP]->groupRecords($entries['records']);
 
 				foreach($groups as $element => $group){
-					foreach($group as $g) processRecordGroup($result, $element, $g, $this, $entryManager, $fieldPool, $param_pool, $this->_param_output_only);
+					foreach($group as $g) processRecordGroup($result, $element, $g, $this, $fieldPool, $param_pool, $this->_param_output_only);
 				}
 
 			else:
@@ -289,29 +334,18 @@
 						}
 					}
 
-					if(isset($this->dsParamPARAMOUTPUT)){
-						if($this->dsParamPARAMOUTPUT == 'system:id') $param_pool[$key][] = $entry->get('id');
-						elseif($this->dsParamPARAMOUTPUT == 'system:date') $param_pool[$key][] = DateTimeObj::get('c', $entry->creationDate);
-						elseif($this->dsParamPARAMOUTPUT == 'system:author') $param_pool[$key][] = $entry->get('author_id');
-					}
+					processSystemParameters($this, $entry, $param_pool);
+
+					$pool = FieldManager::fetch(array_keys($data));
+					$fieldPool += $pool;
 
 					foreach($data as $field_id => $values){
 
-						if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id]))
-							$fieldPool[$field_id] =& $entryManager->fieldManager->fetch($field_id);
-
-						if(isset($this->dsParamPARAMOUTPUT) && $this->dsParamPARAMOUTPUT == $fieldPool[$field_id]->get('element_name')){
-							if(!isset($param_pool[$key]) || !is_array($param_pool[$key])) $param_pool[$key] = array();
-
-							$param_pool_values = $fieldPool[$field_id]->getParameterPoolValue($values, $entry->get('id'));
-
-							if(is_array($param_pool_values)){
-								$param_pool[$key] = array_merge($param_pool_values, $param_pool[$key]);
-							}
-							else{
-								$param_pool[$key][] = $param_pool_values;
-							}
+						if(!isset($fieldPool[$field_id]) || !is_object($fieldPool[$field_id])) {
+							$fieldPool[$field_id] =& FieldManager::fetch($field_id);
 						}
+
+						processParameters($this, $entry, $fieldPool, $field_id, $values, $param_pool);
 
 						if (!$this->_param_output_only) foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {
 							list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
@@ -326,7 +360,7 @@
 					if(in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){
 						$xEntry->appendChild(
 							General::createXMLDateObject(
-								DateTimeObj::get('U', $entry->creationDate), 
+								DateTimeObj::get('U', $entry->creationDate),
 								'system-date'
 							)
 						);

@@ -7,12 +7,6 @@
 	 * of a page's headers.
 	 */
 	Abstract Class Page{
-		/**
-		 * The end-of-line constant.
-		 * @var string
-		 * @deprecated This will be removed in the next version of Symphony
-		 */
-		const CRLF = PHP_EOL;
 
 		/**
 		 * This stores the headers that will be sent when this page is

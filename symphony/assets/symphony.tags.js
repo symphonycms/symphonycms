@@ -20,17 +20,17 @@
 
 			$('.tags').symphonyTags();
 	 */
-	$.fn.symphonyTags = function(custom_settings) {
+	$.fn.symphonyTags = function(options) {
 		var objects = this,
 			settings = {
 				items: 'li'
 			};
 
-		$.extend(settings, custom_settings);
+		$.extend(settings, options);
 
 	/*-----------------------------------------------------------------------*/
 
-		return objects.delegate(settings.items, 'click.tags', function(event) {
+		objects.on('click.tags', settings.items, function(event) {
 			var item = $(this),
 				object = item.parent(),
 				input = object.prev().find('input'),
@@ -75,7 +75,7 @@
 				for(var index in tags) {
 
 					// Remove existing tag
-					if(tags[index].match(exp)) {
+					if(tags[index] == tag) {
 						tags.splice(index, 1);
 						removed = true;
 					}
@@ -95,6 +95,10 @@
 				input.val(tags.join(', '));
 			}
 		});
+
+	/*-----------------------------------------------------------------------*/
+
+		return objects;
 	};
 
 })(jQuery.noConflict());

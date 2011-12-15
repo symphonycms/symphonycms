@@ -288,4 +288,20 @@
 			$this->writeToLog('Log Closed: ' . DateTimeObj::get('c'), true);
 			$this->writeToLog("============================================" . PHP_EOL . PHP_EOL, true);
 		}
+
+		/* Initialises the log file by writing into it the log name, the date of
+		 * creation, the current Symphony version and the current domain.
+		 *
+		 * @param string $name
+		 *  The name of the log being initialised
+		 */
+		public function initialise($name){
+			$version = (is_null(Symphony::Configuration())) ? VERSION : Symphony::Configuration()->get('version', 'symphony');
+
+			$this->writeToLog($name, true);
+			$this->writeToLog('Opened:  '. DateTimeObj::get('c'), true);
+			$this->writeToLog('Version: '. $version, true);
+			$this->writeToLog('Domain:  '. DOMAIN, true);
+			$this->writeToLog('--------------------------------------------', true);
+		}
 	}

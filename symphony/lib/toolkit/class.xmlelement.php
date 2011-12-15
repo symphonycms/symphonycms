@@ -14,13 +14,6 @@
 	Class XMLElement {
 
 		/**
-		 * The end-of-line constant.
-		 * @var string
-		 * @deprecated This will be removed in the next version of Symphony
-		 */
-		const CRLF = PHP_EOL;
-
-		/**
 		 * This is an array of all HTML elements that are self closing.
 		 * @var array
 		 */
@@ -139,7 +132,7 @@
 		public function __construct($name, $value = null, Array $attributes = array(), $createHandle = false){
 
 			$this->_name = ($createHandle) ? Lang::createHandle($name) : $name;
-			$this->setValue($value);
+			$this->setValue(($value instanceof XMLElement) ? $value->generate(false) : $value);
 
 			if(is_array($attributes) && !empty($attributes)) {
 				$this->setAttributeArray($attributes);
@@ -196,7 +189,7 @@
 		/**
 		 * Accessor to return an associative array of all `$this->_children`
 		 * whose's name matches the given `$name`. If no children are found,
-		 * an empty array will be returned
+		 * an empty array will be returned.
 		 *
 		 * @since Symphony 2.2.2
 		 * @param string $name
@@ -557,7 +550,7 @@
 		 */
 		public function generate($indent = false, $tab_depth = 0, $hasParent = false){
 			$result = null;
-			$newline = ($indent ? self::CRLF : null);
+			$newline = ($indent ? PHP_EOL : null);
 
 			if(!$hasParent){
 				if($this->_includeHeader){
@@ -572,7 +565,7 @@
 				}
 
 				if(is_array($this->_processingInstructions) && !empty($this->_processingInstructions)){
-					$result .= implode(self::CRLF, $this->_processingInstructions);
+					$result .= implode(PHP_EOL, $this->_processingInstructions);
 				}
 			}
 

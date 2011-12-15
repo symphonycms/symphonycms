@@ -38,10 +38,14 @@ code {
 }
 
 /* Forms */
-fieldset {
+fieldset,
+div.warning {
 	margin-top: 82px;
 	padding-bottom: 1.5em;
 	border: none;
+}
+div.warning + fieldset {
+	margin-top: 1.75em;
 }
 legend {
 	padding-bottom: 1.25em;
@@ -135,7 +139,7 @@ h1 em {
 }
 ul {
 	position: fixed;
-	top: 130px;
+	top: 152px;
 	right: 50%;
 	margin: 0 16.7em 0 0;
 	color: #887;
@@ -163,10 +167,6 @@ ul li.more a:hover {
 }
 
 /* Requirements */
-dl {
-	margin-top: 1.5em;
-	padding-left: 12em;
-}
 dt {
 	margin: 0 0 1.5em -12em;
 	float: left;
