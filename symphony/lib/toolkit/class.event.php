@@ -117,6 +117,34 @@
 		}
 
 		/**
+		 * Returns the path to the email-notification-template by looking at the
+		 * `WORKSPACE/template/` directory, then at the `TEMPLATES`
+		 * directory for the convention `notification.*.tpl`. If the template 
+		 * is not found, false is returned
+		 *
+		 * @param string $language
+		 *  Language used in system
+		 * @return mixed
+		 *  String, which is the path to the template if the template is found,
+		 *  false otherwise
+		 */
+		public static function getNotificationTemplate($language) {
+			$langformat = '%s/email.entrycreated.%s.tpl';
+			$defaultformat = '%s/email.entrycreated.tpl';
+			if(file_exists($template = sprintf($langformat, WORKSPACE . '/template', $language)))
+				return $template;
+			elseif(file_exists($template = sprintf($defaultformat, WORKSPACE . '/template')))
+				return $template;
+			elseif(file_exists($template = sprintf($langformat, TEMPLATE, $language)))
+				return $template;
+			elseif(file_exists($template = sprintf($defaultformat, TEMPLATE)))
+				return $template;
+			else
+				return false;
+		}
+
+
+		/**
 		 * Priority determines Event importance and when it should be executed.
 		 * The default priority for an event is `Event::kNORMAL`, with `Event::kHIGH` and
 		 * `Event::kLOW` being the other available options. Events execution is `Event::kHIGH`

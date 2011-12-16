@@ -127,6 +127,29 @@
 				}
 			}
 		}
+		
+		
+		/**
+		 * Returns the path to the error-template by looking at the
+		 * `WORKSPACE/template/` directory, then at the `TEMPLATES`
+		 * directory for the convention `*.tpl`. If the template 
+		 * is not found, false is returned
+		 *
+		 * @param string $name
+		 *  Name of the template
+		 * @return mixed
+		 *  String, which is the path to the template if the template is found,
+		 *  false otherwise
+		 */
+		public static function getTemplate($name) {
+			$format = '%s/%s.tpl';
+			if(file_exists($template = sprintf(§format, WORKSPACE . '/template', $name)))
+				return $template;
+			elseif(file_exists($template = sprintf($format, TEMPLATE, $name)))
+				return $template;
+			else
+				return false;
+		}
 
 		/**
 		 * The render function will take an Exception and output a HTML page
@@ -196,7 +219,7 @@
 
 			}
 
-			return sprintf(file_get_contents(TEMPLATE . '/fatalerror.generic.tpl'),
+			return sprintf(file_get_contents(self::getTemplate('fatalerror.generic')),
 				($e instanceof ErrorException ? GenericErrorHandler::$errorTypeStrings[$e->getSeverity()] : 'Fatal Error'),
 				$e->getMessage(),
 				$e->getFile(),

@@ -208,9 +208,7 @@
 
 				$language = Symphony::Configuration()->get('lang', 'symphony');
 
-				$template_path = (file_exists(TEMPLATE . "/email.entrycreated.{$language}.tpl")
-					? TEMPLATE . "/email.entrycreated.{$language}.tpl"
-					: TEMPLATE . "/email.entrycreated.tpl");
+				$template_path = Event::getNotificationTemplate($language);
 
 				$body = sprintf(file_get_contents($template_path), $section->get('name'), $edit_link);
 

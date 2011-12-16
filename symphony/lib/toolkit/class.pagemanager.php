@@ -106,6 +106,27 @@
 
 			return true;
 		}
+		
+		
+		/**
+		 * Returns the path to the page-template by looking at the
+		 * `WORKSPACE/template/` directory, then at the `TEMPLATES`
+		 * directory for `page.xsl`. If the template is not found,
+		 * false is returned
+		 *
+		 * @return mixed
+		 *  String, which is the path to the template if the template is found,
+		 *  false otherwise
+		 */
+		public static function getTemplate() {
+			$format = '%s/%s.xsl';
+			if(file_exists($template = sprintf($format, WORKSPACE . '/template')))
+				return $template;
+			elseif(file_exists($template = sprintf($format, TEMPLATE)))
+				return $template;
+			else
+				return false;
+		}
 
 		/**
 		 * This function creates the initial `.xsl` template for the page, whether
@@ -142,8 +163,7 @@
 
 			// Old file doesn't exist, use template:
 			if(!file_exists($old)) {
-				$data = file_get_contents(TEMPLATE . '/blueprints.page.xsl');
-
+				$data = file_get_contents(self::getTemplate('blueprints.page'));
 			}
 			else{
 				$data = file_get_contents($old);
