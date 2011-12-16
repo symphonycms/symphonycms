@@ -223,14 +223,33 @@
 =======
 >>>>>>> Symphony no longer logs queries in the core, this can be done with an extension. Remove getLastError(), there is no need as DatabaseExceptions contain all necessary information.
 
+<<<<<<< HEAD
 			return sprintf(file_get_contents(self::getTemplate('fatalerror.generic')),
+=======
+			if(is_object(Symphony::Database())){
+				$debug = Symphony::Database()->debug();
+
+				if(!empty($debug) foreach($debug as $query){
+					$queries .= sprintf(
+						'<li%s><code>%s;</code> <small>[%01.4f]</small></li>',
+						($odd == true ? ' class="odd"' : NULL),
+						htmlspecialchars($query['query']),
+						(isset($query['execution_time']) ? $query['execution_time'] : NULL)
+					);
+					$odd = !$odd;
+				}
+			}
+
+			return sprintf(file_get_contents(TEMPLATE . '/fatalerror.generic.tpl'),
+>>>>>>> Slight backflip, queries are logged by the core but only if there is an authenticated user
 				($e instanceof ErrorException ? GenericErrorHandler::$errorTypeStrings[$e->getSeverity()] : 'Fatal Error'),
 				$e->getMessage(),
 				$e->getFile(),
 				$e->getLine(),
 				$markdown,
 				$lines,
-				$trace
+				$trace,
+				$queries
 			);
 
 		}

@@ -117,8 +117,7 @@
 			$this->initialiseExtensionManager();
 			$this->initialiseCookie();
 
-			// If the user is not a logged in Author, turn off the verbose error
-			// messages.
+			// If the user is not a logged in Author, turn off the verbose error messages.
 			if(!self::isLoggedIn() && is_null($this->Author)){
 				GenericExceptionHandler::$enabled = false;
 			}
@@ -788,6 +787,7 @@
 			if(is_object(Symphony::Database())){
 				$debug = Symphony::Database()->debug();
 
+<<<<<<< HEAD
 				if(count($debug['query']) > 0){
 					foreach($debug['query'] as $query){
 						$queries .= sprintf(
@@ -798,6 +798,16 @@
 						);
 						$odd = !$odd;
 					}
+=======
+				if(!empty($debug) foreach($debug as $query){
+					$queries .= sprintf(
+						'<li%s><code>%s;</code> <small>[%01.4f]</small></li>',
+						($odd == true ? ' class="odd"' : NULL),
+						htmlspecialchars($query['query']),
+						(isset($query['execution_time']) ? $query['execution_time'] : NULL)
+					);
+					$odd = !$odd;
+>>>>>>> Slight backflip, queries are logged by the core but only if there is an authenticated user
 				}
 			}
 

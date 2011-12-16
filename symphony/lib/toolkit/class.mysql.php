@@ -497,7 +497,19 @@
 					'query_hash' => $query_hash,
 					'execution_time' => precision_timer('stop', $start)
 				));
+
+				// If the ExceptionHandler is enabled, then the user is authenticated
+				// or we have a serious issue, so log the query.
+				if(GenericExceptionHandler::$enabled) {
+					self::$_log[$query_hash] = array(
+						'query' => $query,
+						'query_hash' => $query_hash,
+						'execution_time' => precision_timer('stop', $start)
+					);
+				}
 			}
+
+			// Symphony isn't ready yet. Log internally
 			else {
 				self::$_log[$query_hash] = array(
 					'query' => $query,
@@ -826,9 +838,7 @@
 			$query_timer = 0.0;
 			$slow_queries = array();
 
-			$query_log = $this->debug();
-
-			foreach($query_log as $key => $val)	{
+			foreach(self::$_log as $key => $val) {
 				$query_timer += $val['execution_time'];
 				if($val['execution_time'] > 0.0999) $slow_queries[] = $val;
 			}
