@@ -106,23 +106,25 @@
 
 			return true;
 		}
-		
-		
+
+
 		/**
 		 * Returns the path to the page-template by looking at the
 		 * `WORKSPACE/template/` directory, then at the `TEMPLATES`
-		 * directory for `page.xsl`. If the template is not found,
+		 * directory for `$name.xsl`. If the template is not found,
 		 * false is returned
 		 *
+		 * @param string $name
+		 *  Name of the template
 		 * @return mixed
 		 *  String, which is the path to the template if the template is found,
 		 *  false otherwise
 		 */
-		public static function getTemplate() {
+		public static function getTemplate($name) {
 			$format = '%s/%s.xsl';
-			if(file_exists($template = sprintf($format, WORKSPACE . '/template')))
+			if(file_exists($template = sprintf($format, WORKSPACE . '/template', $name)))
 				return $template;
-			elseif(file_exists($template = sprintf($format, TEMPLATE)))
+			elseif(file_exists($template = sprintf($format, TEMPLATE, $name)))
 				return $template;
 			else
 				return false;

@@ -732,6 +732,7 @@
 		 * directory for the convention `tpl.*.php`. If the template 
 		 * is not found, false is returned
 		 *
+		 * @since Symphony 2.3
 		 * @return mixed
 		 *  String, which is the path to the template if the template is found,
 		 *  false otherwise

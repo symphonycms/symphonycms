@@ -135,6 +135,7 @@
 		 * directory for the convention `*.tpl`. If the template 
 		 * is not found, false is returned
 		 *
+		 * @since Symphony 2.3
 		 * @param string $name
 		 *  Name of the template
 		 * @return mixed
