@@ -112,7 +112,7 @@
 			}
 
 			else{
-				$fields['body'] = file_get_contents(PageManager::getTemplate('blueprints.utility');
+				$fields['body'] = file_get_contents(PageManager::getTemplate('blueprints.utility'));
 			}
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
