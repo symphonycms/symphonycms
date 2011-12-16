@@ -216,6 +216,15 @@
 			}
 
 			return sprintf(file_get_contents(self::getTemplate('fatalerror.generic')),
+				($e instanceof ErrorException ? GenericErrorHandler::$errorTypeStrings[$e->getSeverity()] : 'Fatal Error'),
+				$e->getMessage(),
+				$e->getFile(),
+				$e->getLine(),
+				$markdown,
+				$lines,
+				$trace,
+				$queries
+			);
 		}
 	}
 
