@@ -84,15 +84,11 @@
 		const __READ_OPERATION__ = 1;
 
 		/**
-		 * Sets the current `$_log` to be an associative array with 'error'
-		 * and 'query' keys and empty array values.
+		 * Sets the current `$_log` to be an empty array
 		 *
 		 * @var array
 		 */
-		private static $_log = array(
-			'error' => array(),
-			'query' => array()
-		);
+		private static $_log = array();
 
 		/**
 		 * The number of queries this class has executed, defaults to 0.
@@ -128,19 +124,19 @@
 		/**
 		 * The last query that was executed by the class
 		 */
-		private $_lastQuery  = null;
+		private $_lastQuery = null;
 
 		/**
 		 * The hash value of the last query that was executed by the class
 		 */
-		private $_lastQueryHash  = null;
-		
-        /**
-         * The auto increment value returned by the last query that was executed
-         * by the class
-         */
-        private $_lastInsertID = null;
-        
+		private $_lastQueryHash = null;
+
+		/**
+		 * The auto increment value returned by the last query that was executed
+		 * by the class
+		 */
+		private $_lastInsertID = null;
+
 		/**
 		 * By default, an array of arrays or objects representing the result set
 		 * from the `$this->_lastQuery`
@@ -170,25 +166,10 @@
 		}
 
 		/**
-		 * Sets the current `$_log` to be an associative array with 'error'
-		 * and 'query' keys and empty array values.
+		 * Sets the current `$_log` to be an empty array
 		 */
 		public static function flushLog(){
-			self::$_log = array(
-				'error' => array(),
-				'query' => array()
-			);
-		}
-
-		/**
-		 * Returns the last error that occurred while querying MySQL
-		 *
-		 * @return array
-		 *  An associative array with the last query, error number and
-		 *  error message from MySQL.
-		 */
-		public static function getLastError(){
-			return current(self::$_log['error']);
+			self::$_log = array();
 		}
 
 		/**
@@ -517,18 +498,13 @@
 					'execution_time' => precision_timer('stop', $start)
 				));
 			}
-
-			// Keep a running log of the last 5 queries so that if an Exception occurs,
-			// Symphony has some context to display in the Database Query Log
-			if(count(self::$_log) > 5) {
-				self::$_log = array_slice(self::$_log, -4);
+			else {
+				self::$_log[$query_hash] = array(
+					'query' => $query,
+					'query_hash' => $query_hash,
+					'execution_time' => precision_timer('stop', $start)
+				);
 			}
-
-			self::$_log[$query_hash] = array(
-				'query' => $query,
-				'query_hash' => $query_hash,
-				'execution_time' => precision_timer('stop', $start)
-			);
 
 			return true;
 		}
@@ -850,7 +826,7 @@
 			$query_timer = 0.0;
 			$slow_queries = array();
 
-			$query_log = $this->debug('query');
+			$query_log = $this->debug();
 
 			foreach($query_log as $key => $val)	{
 				$query_timer += $val['execution_time'];

@@ -98,9 +98,6 @@
 
 		<h3>Backtrace:</h3>
 		<ul>%s</ul>
-
-		<h3>Last 5 Database Queries:</h3>
-		<ul>%s</ul>
 	</div>
 </body>
 </html>

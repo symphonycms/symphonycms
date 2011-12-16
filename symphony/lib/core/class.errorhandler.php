@@ -201,6 +201,7 @@
 
 			$queries = NULL;
 			$odd = true;
+<<<<<<< HEAD
 			if(is_object(Symphony::Database())){
 
 				$debug = Symphony::Database()->debug();
@@ -219,6 +220,8 @@
 				}
 
 			}
+=======
+>>>>>>> Symphony no longer logs queries in the core, this can be done with an extension. Remove getLastError(), there is no need as DatabaseExceptions contain all necessary information.
 
 			return sprintf(file_get_contents(self::getTemplate('fatalerror.generic')),
 				($e instanceof ErrorException ? GenericErrorHandler::$errorTypeStrings[$e->getSeverity()] : 'Fatal Error'),
@@ -227,8 +230,7 @@
 				$e->getLine(),
 				$markdown,
 				$lines,
-				$trace,
-				$queries
+				$trace
 			);
 
 		}

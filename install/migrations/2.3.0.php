@@ -10,9 +10,8 @@
 
 				return ($canProceed === false) ? false : true;
 			}
-			catch(DatabaseException $e){
-				$error = Symphony::Database()->getLastError();
-				Symphony::Log()->writeToLog('Could not complete upgrading. MySQL returned: ' . $error['num'] . ': ' . $error['msg'], E_ERROR, true);
+			catch(DatabaseException $e) {
+				Symphony::Log()->writeToLog('Could not complete upgrading. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(), E_ERROR, true);
 
 				return false;
 			}
