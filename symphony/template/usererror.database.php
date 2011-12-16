@@ -12,7 +12,7 @@
 	$Page->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 30);
 	$Page->addStylesheetToHead(SYMPHONY_URL . '/assets/error.css', 'screen', 30);
 
-	$Page->addHeaderToPage('HTTP/1.0 500 Server Error');
+	$Page->addHeaderToPage('Status', '500 Internal Server Error', 500);
 	$Page->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
 	$Page->addHeaderToPage('Symphony-Error-Type', 'database');
 	if(isset($e->getAdditional()->header)) $Page->addHeaderToPage($e->getAdditional()->header);

@@ -203,10 +203,10 @@
 					}
 
 					if(in_array('404', $this->_pageData['type'])){
-						$this->addHeaderToPage('HTTP/1.0 404 Not Found');
+						$this->addHeaderToPage('Status', '404 Not Found', 404);
 					}
 					elseif(in_array('403', $this->_pageData['type'])){
-						$this->addHeaderToPage('HTTP/1.0 403 Forbidden');
+						$this->addHeaderToPage('Status', '403 Forbidden', 403);
 					}
 				}
 
