@@ -235,7 +235,6 @@
 						array('navigation', ($fields['source'] == 'navigation'), __('Navigation')),
 				)),
 				array('label' => __('Custom XML'), 'options' => array(
-						array('dynamic_xml', ($fields['source'] == 'dynamic_xml'), __('Dynamic XML')),
 						array('static_xml', ($fields['source'] == 'static_xml'), __('Static XML')),
 				))
 			);
@@ -266,7 +265,7 @@
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual sections authors navigation ' . __('Sections') . ' ' . __('System'));
+			$fieldset->setAttribute('class', 'settings contextual authors navigation ' . __('Sections') . ' ' . __('System'));
 			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
 			$p = new XMLElement('p',
 				__('Use %s syntax to filter by page parameters.', array(
@@ -452,7 +451,7 @@
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml From_extensions');
 			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));
 
 			$p = new XMLElement('p',
@@ -464,7 +463,7 @@
 			$fieldset->appendChild($p);
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group contextual sections ' . __('Sections'));
+			$div->setAttribute('class', 'group contextual ' . __('Sections'));
 
 			$label = Widget::Label(__('Sort By'));
 
@@ -548,7 +547,7 @@
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml From_extensions');
 			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
 
 			$label = Widget::Label(__('Required URL Parameter'));
