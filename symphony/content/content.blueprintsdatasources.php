@@ -74,6 +74,8 @@
 				}
 			}
 
+			$provided = Symphony::ExtensionManager()->getProvidersOf('data-sources');
+
 			if(isset($_POST['fields'])){
 				$fields = $_POST['fields'];
 				$fields['paginate_results'] = ($fields['paginate_results'] == 'on') ? 'yes' : 'no';
@@ -238,6 +240,20 @@
 				))
 			);
 
+			// Loop over the datasource providers
+			if(!empty($provided)) {
+				$p = array('label' => __('From extensions'), 'options' => array());
+
+				foreach($provided as $providerClass => $provider) {
+					$p['options'][] = array(
+						$providerClass, ($fields['source'] == $providerClass), $provider
+					);
+				}
+
+				$options[] = $p;
+			}
+
+			// Add Sections
 			if(is_array($sections) && !empty($sections)){
 				array_unshift($options, array('label' => __('Sections'), 'options' => array()));
 				foreach($sections as $s) $options[0]['options'][] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
@@ -703,134 +719,6 @@
 			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
 
-		// Dynamic XML
-
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual dynamic_xml');
-			$fieldset->appendChild(new XMLElement('legend', __('Dynamic XML')));
-
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group offset');
-
-			$label = Widget::Label(__('URL'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][url]', General::sanitize($fields['dynamic_xml']['url']), 'text', array('placeholder' => 'http://')));
-			if(isset($this->_errors['dynamic_xml']['url'])) $group->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['url']));
-			else $group->appendChild($label);
-
-			$p = new XMLElement('p',
-				__('Use %s syntax to specify dynamic portions of the URL.', array(
-					'<code>{' . __('$param') . '}</code>'
-				))
-			);
-			$p->setAttribute('class', 'help');
-			$label->appendChild($p);
-
-			$label = Widget::Label(__('Format'));
-			$label->appendChild(
-				Widget::Select('fields[dynamic_xml][format]', array(
-					array('xml', $fields['dynamic_xml']['format'] == 'xml', 'XML'),
-					array('json', $fields['dynamic_xml']['format'] == 'json', 'JSON')
-				))
-			);
-			if(isset($this->_errors['dynamic_xml']['format'])) $group->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['format']));
-			else $group->appendChild($label);
-
-			$fieldset->appendChild($group);
-
-			$div = new XMLElement('div');
-			$div->setAttribute('id', 'xml');
-			$p = new XMLElement('p', __('Namespace Declarations'));
-			$p->appendChild(new XMLElement('i', __('Optional')));
-			$p->setAttribute('class', 'label');
-			$div->appendChild($p);
-
-			$ol = new XMLElement('ol');
-			$ol->setAttribute('class', 'filters-duplicator');
-
-			if(is_array($fields['dynamic_xml']['namespace']) && !empty($fields['dynamic_xml']['namespace'])){
-				$ii = 0;
-				foreach($fields['dynamic_xml']['namespace'] as $name => $uri) {
-					// Namespaces get saved to the file as $name => $uri, however in
-					// the $_POST they are represented as $index => array. This loop
-					// patches the difference.
-					if(is_array($uri)) {
-						$name = $uri['name'];
-						$uri = $uri['uri'];
-					}
-
-					$li = new XMLElement('li');
-					$li->appendChild(new XMLElement('h4', 'Namespace'));
-
-					$group = new XMLElement('div');
-					$group->setAttribute('class', 'group');
-
-					$label = Widget::Label(__('Name'));
-					$label->appendChild(Widget::Input("fields[dynamic_xml][namespace][$ii][name]", General::sanitize($name)));
-					$group->appendChild($label);
-
-					$label = Widget::Label(__('URI'));
-					$label->appendChild(Widget::Input("fields[dynamic_xml][namespace][$ii][uri]", General::sanitize($uri)));
-					$group->appendChild($label);
-
-					$li->appendChild($group);
-					$ol->appendChild($li);
-					$ii++;
-				}
-			}
-
-			$li = new XMLElement('li');
-			$li->setAttribute('class', 'template');
-			$li->setAttribute('data-type', 'namespace');
-			$li->appendChild(new XMLElement('h4', __('Namespace')));
-
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
-
-			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]'));
-			$group->appendChild($label);
-
-			$label = Widget::Label(__('URI'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]'));
-			$group->appendChild($label);
-
-			$li->appendChild($group);
-			$ol->appendChild($li);
-
-			$div->appendChild($ol);
-			$div->appendChild(
-				new XMLElement('p', __('Namespaces will automatically be discovered when saving this datasource if it does not include any dynamic portions.'), array('class' => 'help'))
-			);
-
-			$fieldset->appendChild($div);
-
-			$label = Widget::Label(__('Included Elements'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][xpath]', General::sanitize($fields['dynamic_xml']['xpath'])));
-			if(isset($this->_errors['dynamic_xml']['xpath'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['xpath']));
-			else $fieldset->appendChild($label);
-
-			$p = new XMLElement('p', __('Use an XPath expression to select which elements from the source XML to include.'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
-
-			$label = Widget::Label();
-			$input = Widget::Input('fields[dynamic_xml][cache]', (string)max(1, intval($fields['dynamic_xml']['cache'])), NULL, array('size' => '6'));
-			$label->setValue(__('Update cached result every %s minutes', array($input->generate(false))));
-			if(isset($this->_errors['dynamic_xml']['cache'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['cache']));
-			else $fieldset->appendChild($label);
-
-			// Check for existing Cache objects
-			if(isset($cache_id)) {
-				$this->appendCacheInformation($fieldset, $cache, $cache_id);
-			}
-
-			$label = Widget::Label();
-			$input = Widget::Input('fields[dynamic_xml][timeout]', (string)max(1, intval($fields['dynamic_xml']['timeout'])), NULL, array('type' => 'hidden'));
-			$label->appendChild($input);
-			$fieldset->appendChild($label);
-
-			$this->Form->appendChild($fieldset);
-
 		// Static XML
 
 			$fieldset = new XMLElement('fieldset');
@@ -843,6 +731,16 @@
 			else $fieldset->appendChild($label);
 
 			$this->Form->appendChild($fieldset);
+
+		// Call the provided datasources to let them inject their filters
+		// @todo Ideally when a new Datasource is chosen an AJAX request will fire
+		// to get the HTML from the extension. This is hardcoded for now into
+		// creating a 'big' page and then hiding the fields with JS
+			if(!empty($provided)) {
+				foreach($provided as $providerClass => $provider) {
+					$providerClass::buildEditor($this->Form, $this->_errors, $fields, $handle);
+				}
+			}
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');

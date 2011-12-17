@@ -43,6 +43,16 @@
 		private static $_extensions = array();
 
 		/**
+		 * An associative array of all the providers from the enabled extensions.
+		 * The key is the type of object, with the value being an associative array
+		 * with the name, classname and path to the object
+		 *
+		 * @since Symphony 2.3
+		 * @var array
+		 */
+		private static $_providers = array();
+
+		/**
 		 * The constructor will populate the `$_subscriptions` variable from
 		 * the `tbl_extension` and `tbl_extensions_delegates` tables.
 		 */
@@ -186,6 +196,40 @@
 		public static function fetchExtensionID($name){
 			self::__buildExtensionList();
 			return self::$_extensions[$name]['id'];
+		}
+
+		/**
+		 * Return an array all the Provider objects supplied by extensions,
+		 * optionally filtered by a given `$type`.
+		 *
+		 * @since Symphony 2.3
+		 * @todo Add information about the possible types
+		 * @param string $type
+		 *  This will only return Providers of this type. If null, which is
+		 *  default, all providers will be returned.
+		 * @return array
+		 *  An array of objects
+		 */
+		public static function getProvidersOf($type = null) {
+			// Loop over all extensions and build an array of providable objects
+			if(empty(self::$_providers)) {
+				self::$_providers = array();
+				foreach(self::listInstalledHandles() as $handle) {
+					$obj = self::getInstance($handle);
+
+					if(!method_exists($obj, 'providerOf')) continue;
+
+					// For each of the matching objects (by $type), resolve the object path
+					self::$_providers = array_merge(self::$_providers, $obj->providerOf());
+				}
+			}
+
+			// Return an array of objects
+			if(is_null($type)) return self::$_providers;
+
+			if(!isset(self::$_providers[$type])) return array();
+
+			return self::$_providers[$type];
 		}
 
 		/**
