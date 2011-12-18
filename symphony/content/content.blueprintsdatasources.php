@@ -878,8 +878,8 @@
 		public function __formAction(){
 
 			$fields = $_POST['fields'];
-
 			$this->_errors = array();
+			$provided = Symphony::ExtensionManager()->getProvidersOf('data-sources');
 
 			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
 
@@ -938,6 +938,16 @@
 				}
 				else if(!self::__isValidPageString($fields['page_number'])){
 					$this->_errors['page_number'] = __('Must be a valid number or parameter');
+				}
+			}
+
+			// See if a Provided Datasource is saved
+			elseif (!empty($provided)) {
+				foreach($provided as $providerClass => $provider) {
+					if($fields['source'] == $providerClass::getHandle()) {
+						$providerClass::validate($fields, $this->_errors);
+						break;
+					}
 				}
 			}
 
