@@ -284,6 +284,44 @@
 		CRUD
 	-------------------------------------------------------------------------*/
 
+		public static function validate(array &$settings, array &$errors) {
+			if(trim($fields[self::getHandle()]['url']) == '') {
+				$errors[self::getHandle()]['url'] = __('This is a required field');
+			}
+
+			// Use the TIMEOUT that was specified by the user for a real world indication
+			$timeout = isset($fields[self::getHandle()]['timeout'])
+				? (int)$fields[self::getHandle()]['timeout']
+				: 6;
+
+			// If there is a parameter in the URL, we can't validate the existence of the URL
+			// as we don't have the environment details of where this datasource is going
+			// to be executed.
+			if(!preg_match('@{([^}]+)}@i', $fields[self::getHandle()]['url'])) {
+				$valid_url = self::__isValidURL($fields[self::getHandle()]['url'], $timeout, $error);
+
+				if($valid_url) {
+					$data = $valid_url['data'];
+				}
+				else {
+					$errors[self::getHandle()]['url'] = $error;
+				}
+			}
+
+			if(trim($fields[self::getHandle()]['xpath']) == '') {
+				$errors[self::getHandle()]['xpath'] = __('This is a required field');
+			}
+
+			if(!is_numeric($fields[self::getHandle()]['cache'])) {
+				$errors[self::getHandle()]['cache'] = __('Must be a valid number');
+			}
+			else if($fields[self::getHandle()]['cache'] < 1) {
+				$errors[self::getHandle()]['cache'] = __('Must be greater than zero');
+			}
+
+			return empty($errors[self::getHandle()]);
+		}
+
 		/**
 		 * Similar to the create function, edit takes `$handle` and `$parameters`
 		 * to update an existing datasource. A third parameter, `$existing_handle` takes
@@ -302,38 +340,10 @@
 		 */
 		public static function save($file, array $parameters, array &$errors, $existing_file) {
 			var_dump($file, $parameters, $existing_file);
-			$settings = $parameters[self::getHandle()];
-
-			// Use the TIMEOUT that was specified by the user for a real world indication
-			$timeout = (isset($settings['timeout']) ? (int)$settings['timeout'] : 6);
-
-			// If there is a parameter in the URL, we can't validate the existence of the URL
-			// as we don't have the environment details of where this datasource is going
-			// to be executed.
-			$fetch_URL = !preg_match('@{([^}]+)}@i', $settings['url']);
-
-			if($valid_url = self::__isValidURL($settings['url'], $timeout, $fetch_URL)) {
-				if(is_array($valid_url)) {
-					$data = $valid_url['data'];
-				}
-				else {
-					$errors[self::getHandle()]['url'] = $valid_url;
-				}
-			}
-
-			if(trim($settings['xpath']) == '') {
-				$errors[self::getHandle()]['xpath'] = __('This is a required field');
-			}
-
-			if(!is_numeric($settings['cache'])) {
-				$errors[self::getHandle()]['cache'] = __('Must be a valid number');
-			}
-			else if($settings['cache'] < 1) {
-				$errors[self::getHandle()]['cache'] = __('Must be greater than zero');
-			}
+			exit;
 
 			// If errors occured, return false.
-			//if(!empty($errors)) return false;
+			//if(!empty(self::validate($parameters, $errors))) return false;
 			$classname = Lang::createHandle($parameters['name'], NULL, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
 
 			$data = array(
