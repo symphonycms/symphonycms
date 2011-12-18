@@ -276,7 +276,15 @@
 		$('#blueprints-datasources input[name="fields[name]"]').on('change', function(){
 			var value = $(this).val();
 
-			if(value == '' || $('select[name="fields[param][]"]:visible').length == 0) return;
+			if(value == '' || $('select[name="fields[param][]"]:visible').length == 0) {
+				$('select[name="fields[param][]"] option').each(function(){
+					var item = $(this),
+						field = item.text().split('.')[1];
+
+					item.text('$ds-' + '?' + '.' + field);
+				});
+				return;
+			}
 
 			$.ajax({
 				type: 'GET',
