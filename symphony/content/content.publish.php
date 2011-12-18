@@ -761,30 +761,31 @@
 					$link = preg_replace("/&amp;$/", '', $link);
 				}
 
-				switch($flag){
+				// These flags are only relevant if there are no errors
+				if(empty($this->_errors)) {
+					switch($flag){
+						case 'saved':
+							$this->pageAlert(
+								__('Entry updated at %s.', array(DateTimeObj::getTimeAgo()))
+								. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
+								. __('Create another?')
+								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
+								. __('View all Entries')
+								. '</a>'
+								, Alert::SUCCESS);
+							break;
 
-					case 'saved':
-						$this->pageAlert(
-							__('Entry updated at %s.', array(DateTimeObj::getTimeAgo()))
-							. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
-							. __('Create another?')
-							. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
-							. __('View all Entries')
-							. '</a>'
-							, Alert::SUCCESS);
-						break;
-
-					case 'created':
-						$this->pageAlert(
-							__('Entry created at %s.', array(DateTimeObj::getTimeAgo()))
-							. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
-							. __('Create another?')
-							. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
-							. __('View all Entries')
-							. '</a>'
-							, Alert::SUCCESS);
-						break;
-
+						case 'created':
+							$this->pageAlert(
+								__('Entry created at %s.', array(DateTimeObj::getTimeAgo()))
+								. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
+								. __('Create another?')
+								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
+								. __('View all Entries')
+								. '</a>'
+								, Alert::SUCCESS);
+							break;
+					}
 				}
 			}
 
