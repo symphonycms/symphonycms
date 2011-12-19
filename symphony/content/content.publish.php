@@ -21,24 +21,21 @@
 		public function sort(&$sort, &$order, $params) {
 			$section = $params['current-section'];
 
-			if(is_null($sort)){
-				$sort = $section->getDefaultSortingField();
+			if(!$sort){
+				$sort = ($section->get('entry_order')) ? $section->get('entry_order') : $section->getDefaultSortingField();
+				$order = $section->get('entry_order_direction');
+
+				$query = '?sort=' . $sort . '&order=' . $order;
+
+				redirect(Administration::instance()->getCurrentPageURL() . $query . $params['filters']);
 			}
+			else if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
+				SectionManager::edit(
+					$section->get('id'),
+					array('entry_order' => $sort, 'entry_order_direction' => $order)
+				);
 
-			if(is_numeric($sort)){
-				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
-					SectionManager::edit(
-						$section->get('id'),
-						array('entry_order' => $sort, 'entry_order_direction' => $order)
-					);
-
-					$query = '?sort=' . $sort . '&order=' . $order;
-
-					redirect(Administration::instance()->getCurrentPageURL() . $query . $params['filters']);
-				}
-			}
-			else if($sort == 'id'){
-				EntryManager::setFetchSortingField('id');
+				EntryManager::setFetchSortingField($sort);
 				EntryManager::setFetchSortingDirection($order);
 			}
 		}
