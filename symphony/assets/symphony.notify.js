@@ -52,7 +52,7 @@
 
 			// Load exclusion rules
 			if(Symphony.Support.localStorage === true) {
-				storage = $.parseJSON(localStorage[settings.storage]) || [];
+				storage = $.parseJSON(window.localStorage[settings.storage]) || [];
 			}
 
 			// Prepend item
@@ -196,9 +196,9 @@
 
 			// Store exclusion rule
 			if(Symphony.Support.localStorage === true) {
-				storage = $.parseJSON(localStorage[settings.storage]) || [];
+				storage = $.parseJSON(window.localStorage[settings.storage]) || [];
 				storage.push(text);
-				localStorage[settings.storage] = JSON.stringify(storage);
+				window.localStorage[settings.storage] = JSON.stringify(storage);
 			}
 
 			// Remove item
