@@ -141,7 +141,7 @@
 			if(is_null($this->get('last_name'))) $errors['last_name'] = __('Last name is required');
 
 			if($this->get('id')) {
-				$current_author = Symphony::Database()->fetch(sprintf("
+				$current_author = Symphony::Database()->fetchRow(0, sprintf("
 						SELECT `email`, `username`
 						FROM `tbl_authors`
 						WHERE `id` = %d
@@ -171,7 +171,7 @@
 							WHERE `email` = '%s'
 						",
 							$this->get('email')
-					)) != 1
+					)) != 0
 				) {
 					$errors['email'] = __('E-mail address is already taken');
 				}
@@ -205,7 +205,7 @@
 							WHERE `username` = '%s'
 						",
 							$this->get('username')
-					)) != 1
+					)) != 0
 				) {
 					$errors['username'] = __('Username is already taken');
 				}
