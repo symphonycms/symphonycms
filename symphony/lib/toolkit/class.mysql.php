@@ -775,7 +775,7 @@
 			 * queries that set the character set.
 			 *
 			 * @since Symphony 2.3
-			 * @delegate QueryExectionError
+			 * @delegate QueryExecutionError
 			 * @param string $context
 			 * '/frontend/' or '/backend/'
 			 * @param string $query
@@ -788,7 +788,7 @@
 			 *  The error number that corresponds with the MySQL error message
 			 */
 			if(Symphony::ExtensionManager() instanceof ExtensionManager) {
-				Symphony::ExtensionManager()->notifyMembers('QueryExectionError', class_exists('Administration') ? '/backend/' : '/frontend/', array(
+				Symphony::ExtensionManager()->notifyMembers('QueryExecutionError', class_exists('Administration') ? '/backend/' : '/frontend/', array(
 					'query' => $this->_lastQuery,
 					'query_hash' => $this->_lastQueryHash,
 					'msg' => $msg,
