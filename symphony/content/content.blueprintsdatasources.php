@@ -891,7 +891,6 @@
 			$provided = Symphony::ExtensionManager()->getProvidersOf('data-sources');
 			$providerClass = null;
 
-
 			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
 
 			if($fields['source'] == 'static_xml'){
@@ -955,8 +954,8 @@
 			// See if a Provided Datasource is saved
 			elseif (!empty($provided)) {
 				foreach($provided as $providerClass => $provider) {
-					if($fields['source'] == $providerClass::getHandle()) {
-						$providerClass::validate($fields, $this->_errors);
+					if($fields['source'] == $providerClass::getSource()) {
+						$providerClass::validate(&$fields, $this->_errors);
 						break;
 					}
 				}
