@@ -6,9 +6,9 @@
 
 		public static function buildEditor(XMLElement $wrapper, array &$errors = array(), array $settings = null, $handle = null);
 
-		public static function save($file, array $parameters, array &$errors, $existing_file);
+		public static function prepare(array $fields, array $parameters, $template);
 
-		public static function delete($file);
+		public function grab(array $param_pool);
 
 	}
 
@@ -16,23 +16,49 @@
 
 	Class DatasourceRemote extends DataSource implements iDatasource {
 
+		private static $url_result = null;
+
+		protected $parameters = array();
+
+		public function __construct($env = array(), $process_params = false) {
+			parent::__construct(null, $env, $process_params);
+
+			$this->parameters = array(
+				'url' => '',
+				'format' => 'xml',
+				'xpath' => '/',
+				'cache' => 30,
+				'timeout' => 6,
+				'namespaces' => array()
+			);
+		}
+
 	/*-------------------------------------------------------------------------
 		Utilities
 	-------------------------------------------------------------------------*/
 
 		/**
-		 * Returns the type of Datasource provided and it's name.
+		 * Returns the Datasource name.
 		 *
-		 * @return array
-		 * An associative array containing the Datasource classname and the
-		 * name of the Datasource.
+		 * @return string
 		 */
 		public static function getName() {
 			return __('Remote Datasource');
 		}
 
+		/**
+		 * Returns a safe handle used by the Datasource Editor to distinguish
+		 * the settings for this datasource.
+		 *
+		 * @return string
+		 */
 		public static function getHandle() {
 			return 'RemoteDatasource';
+		}
+
+
+		public function getSource(){
+			return __CLASS__;
 		}
 
 		/**
@@ -41,7 +67,7 @@
 		 * @return string
 		 */
 		public static function getTemplate(){
-			return EXTENSIONS . '/datasource_remote/templates/datasource.php';
+			return EXTENSIONS . '/datasource_remote/templates/blueprints.datasource.tpl';
 		}
 
 		/**
@@ -52,6 +78,7 @@
 		 * @return string
 		 */
 		public static function getSourceColumn($file) {
+			// @todo Load the file and return the URL.
 			return 'RemoteDatasource';
 		}
 
@@ -61,7 +88,6 @@
 		 * before the `$timeout`. If it does not, an error message will be
 		 * returned, otherwise true.
 		 *
-		 * @since Symphony 2.3
 		 * @param string $url
 		 * @param integer $timeout
 		 *  If not provided, this will default to 6 seconds
@@ -73,7 +99,7 @@
 		 *  Returns an array with the 'data' if it is a valid URL, otherwise a string
 		 *  containing an error message.
 		 */
-		public static function __isValidURL($url, $timeout = 6, $fetch_URL = false) {
+		public static function isValidURL($url, $timeout = 6, $fetch_URL = false) {
 			// Check that URL was provided
 			if(trim($url) == '') {
 				return __('This is a required field');
@@ -97,6 +123,33 @@
 			}
 
 			return array('data' => $data);
+		}
+
+		/**
+		 * Builds the namespaces out to be saved in the Datasource file
+		 *
+		 * @param array $namespaces
+		 *  An associative array of where the key is the namespace prefix
+		 *  and the value is the namespace URL.
+		 * @param string $template
+		 *  The template file, as defined by `getTemplate()`
+		 * @return string
+		 *  The template injected with the Namespaces (if any).
+		 */
+		public static function injectNamespaces(array $namespaces, &$template) {
+			if(empty($namespaces)) return;
+
+			$placeholder = '<!-- NAMESPACES -->';
+			$string = 'public $dsParamNAMESPACES = array(' . PHP_EOL;
+
+			foreach($filters as $key => $val){
+				if(trim($val) == '') continue;
+				$string .= "\t\t\t\t'$key' => '" . addslashes($val) . "'," . PHP_EOL;
+			}
+
+			$string .= "\t\t);" . PHP_EOL . "\t\t" . $placeholder;
+
+			$shell = str_replace($placeholder, trim($string), $shell);
 		}
 
 		/**
@@ -285,37 +338,37 @@
 	-------------------------------------------------------------------------*/
 
 		public static function validate(array &$settings, array &$errors) {
-			if(trim($fields[self::getHandle()]['url']) == '') {
+			if(trim($settings[self::getHandle()]['url']) == '') {
 				$errors[self::getHandle()]['url'] = __('This is a required field');
 			}
 
 			// Use the TIMEOUT that was specified by the user for a real world indication
-			$timeout = isset($fields[self::getHandle()]['timeout'])
-				? (int)$fields[self::getHandle()]['timeout']
+			$timeout = isset($settings[self::getHandle()]['timeout'])
+				? (int)$settings[self::getHandle()]['timeout']
 				: 6;
 
 			// If there is a parameter in the URL, we can't validate the existence of the URL
 			// as we don't have the environment details of where this datasource is going
 			// to be executed.
-			if(!preg_match('@{([^}]+)}@i', $fields[self::getHandle()]['url'])) {
-				$valid_url = self::__isValidURL($fields[self::getHandle()]['url'], $timeout, $error);
+			if(!preg_match('@{([^}]+)}@i', $settings[self::getHandle()]['url'])) {
+				$valid_url = self::isValidURL($settings[self::getHandle()]['url'], $timeout, $error);
 
-				if($valid_url) {
-					$data = $valid_url['data'];
+				if(is_array($valid_url)) {
+					self::$url_result = $valid_url['data'];
 				}
 				else {
 					$errors[self::getHandle()]['url'] = $error;
 				}
 			}
 
-			if(trim($fields[self::getHandle()]['xpath']) == '') {
+			if(trim($settings[self::getHandle()]['xpath']) == '') {
 				$errors[self::getHandle()]['xpath'] = __('This is a required field');
 			}
 
-			if(!is_numeric($fields[self::getHandle()]['cache'])) {
+			if(!is_numeric($settings[self::getHandle()]['cache'])) {
 				$errors[self::getHandle()]['cache'] = __('Must be a valid number');
 			}
-			else if($fields[self::getHandle()]['cache'] < 1) {
+			else if($settings[self::getHandle()]['cache'] < 1) {
 				$errors[self::getHandle()]['cache'] = __('Must be greater than zero');
 			}
 
@@ -328,62 +381,297 @@
 		 * the current datasource handle, which will allow this function to know which
 		 * file to load (and potentially rename if the handle has changed).
 		 *
-		 * @param string $file
-		 *  The desired filename to save the `$parameters` too using this Datasource's
-		 *  template.
-		 * @param array $parameters
+		 * @param array $fields
+		 *  An associative array of settings for this datasource, where the key
+		 *  is the name of the setting. These are user defined through the Datasource
+		 *  Editor.
+		 * @param array $params
 		 *  An associative array of parameters for this datasource, where the key
-		 *  is the name of the setting.
-		 * @param string $existing_file
-		 *  The current file representing the Datasource prior to being saved
-		 * @return boolean
+		 *  is the name of the parameter.
+		 * @param string $template
+		 *  The template file, which has already been altered by Symphony to remove
+		 *  any named tokens (ie. `<!-- CLASS NAME -->`).
+		 * @return string
+		 *  The completed template, ready to be saved.
 		 */
-		public static function save($file, array $parameters, array &$errors, $existing_file) {
-			var_dump($file, $parameters, $existing_file);
-			exit;
+		public static function prepare(array $fields, array $params, $template) {
+			// Automatically detect namespaces
+			if(!is_null(self::$url_result)) {
+				preg_match_all('/xmlns:([a-z][a-z-0-9\-]*)="([^\"]+)"/i', self::$url_result, $matches);
 
-			// If errors occured, return false.
-			//if(!empty(self::validate($parameters, $errors))) return false;
-			$classname = Lang::createHandle($parameters['name'], NULL, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
+				if(!is_array($fields[self::getHandle()]['namespace'])) {
+					$fields[self::getHandle()]['namespace'] = array();
+				}
 
-			$data = array(
-				$classname,
-				// Name
-				$parameters['name'],
-				// Author
-				Administration::instance()->Author->getFullName(),
-				URL,
-				Administration::instance()->Author->get('email'),
-				// About
-				DateTimeObj::getGMT('c'),
-				'Symphony ' . Symphony::Configuration()->get('version', 'symphony')
+				if (isset($matches[2][0])) {
+					$detected_namespaces = array();
+
+					foreach ($fields[self::getHandle()]['namespace'] as $index => $namespace) {
+						$detected_namespaces[] = $namespace['name'];
+						$detected_namespaces[] = $namespace['uri'];
+					}
+
+					foreach ($matches[2] as $index => $uri) {
+						$name = $matches[1][$index];
+
+						if (in_array($name, $detected_namespaces) or in_array($uri, $detected_namespaces)) continue;
+
+						$detected_namespaces[] = $name;
+						$detected_namespaces[] = $uri;
+
+						$fields[self::getHandle()]['namespace'][] = array(
+							'name' => $name,
+							'uri' => $uri
+						);
+					}
+				}
+			}
+
+			$namespaces = array();
+			if(is_array($parameters[self::getHandle()]['namespace'])) {
+				foreach($parameters[self::getHandle()]['namespace'] as $index => $data) {
+					$namespaces[$data['name']] = $data['uri'];
+				}
+			}
+			self::injectNamespaces($namespaces, $template);
+
+			$timeout = isset($fields[self::getHandle()]['timeout']) ? (int)$fields[self::getHandle()]['timeout'] : 6;
+
+			return sprintf($template,
+				$params['rootelement'], // rootelement
+				$fields[self::getHandle()]['url'], // url
+				$fields[self::getHandle()]['format'], // format
+				$fields[self::getHandle()]['xpath'], // xpath
+				$fields[self::getHandle()]['cache'], // cache
+				$timeout// timeout
 			);
-
-			// Load template, and insert parameters into it.
-			$template = file_get_contents(self::getTemplate());
-
-
-			var_dump($template, $data);
-
 		}
 
-		/**
-		 * Given a Datasource handle, this function will remove the Datasource from
-		 * the filesystem and from any pages that it was attached to.
-		 *
-		 * @see toolkit.DatasourceManager#__getHandleFromFilename
-		 * @param string $handle
-		 *  The handle of the datasource as returned by `DatasourceManager::__getHandleFromFilename`
-		 * @return boolean
-		 */
-		public static function delete($name) {
+		public function load(Datasource $existing) {
+			$fields = array();
 
+			$fields[self::getHandle()]['namespace'] = $existing->dsParamFILTERS;
+			$fields[self::getHandle()]['url'] = $existing->dsParamURL;
+			$fields[self::getHandle()]['xpath'] = $existing->dsParamXPATH;
+			$fields[self::getHandle()]['cache'] = $existing->dsParamCACHE;
+			$fields[self::getHandle()]['format'] = $existing->dsParamFORMAT;
+			$fields[self::getHandle()]['timeout'] = isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6;
+
+			return $fields;
 		}
 
 	/*-------------------------------------------------------------------------
 		Execution
 	-------------------------------------------------------------------------*/
 
+		public function grab(array $param_pool) {
+			$result = new XMLElement($this->dsParamROOTELEMENT);
+
+			try {
+				require_once(TOOLKIT . '/class.gateway.php');
+				require_once(TOOLKIT . '/class.xsltprocess.php');
+				require_once(CORE . '/class.cacheable.php');
+
+				$this->dsParamURL = $this->parseParamURL($this->dsParamURL);
+
+				if(isset($this->dsParamXPATH)) $this->dsParamXPATH = $this->__processParametersInString($this->dsParamXPATH, $this->_env);
+
+				if(!isset($this->dsParamFORMAT)) $this->dsParamFORMAT = 'xml';
+
+				$stylesheet = new XMLElement('xsl:stylesheet');
+				$stylesheet->setAttributeArray(array('version' => '1.0', 'xmlns:xsl' => 'http://www.w3.org/1999/XSL/Transform'));
+
+				$output = new XMLElement('xsl:output');
+				$output->setAttributeArray(array('method' => 'xml', 'version' => '1.0', 'encoding' => 'utf-8', 'indent' => 'yes', 'omit-xml-declaration' => 'yes'));
+				$stylesheet->appendChild($output);
+
+				$template = new XMLElement('xsl:template');
+				$template->setAttribute('match', '/');
+
+				$instruction = new XMLElement('xsl:copy-of');
+
+				// Namespaces
+				if(isset($this->dsParamFILTERS) && is_array($this->dsParamFILTERS)){
+					foreach($this->dsParamFILTERS as $name => $uri) {
+						$instruction->setAttribute('xmlns' . ($name ? ":{$name}" : NULL), $uri);
+					}
+				}
+
+				// XPath
+				$instruction->setAttribute('select', $this->dsParamXPATH);
+
+				$template->appendChild($instruction);
+				$stylesheet->appendChild($template);
+
+				$stylesheet->setIncludeHeader(true);
+
+				$xsl = $stylesheet->generate(true);
+
+				$cache_id = md5($this->dsParamURL . serialize($this->dsParamFILTERS) . $this->dsParamXPATH . $this->dsParamFORMAT);
+
+				$cache = new Cacheable(Symphony::Database());
+
+				$cachedData = $cache->check($cache_id);
+				$writeToCache = false;
+				$valid = true;
+				$creation = DateTimeObj::get('c');
+
+				// Execute if the cache doesn't exist, or if it is old.
+				if(
+					(!is_array($cachedData) || empty($cachedData)) // There's no cache.
+					|| (time() - $cachedData['creation']) > ($this->dsParamCACHE * 60) // The cache is old.
+				){
+					if(Mutex::acquire($cache_id, $this->dsParamTIMEOUT, TMP)) {
+						$ch = new Gateway;
+						$ch->init($this->dsParamURL);
+						$ch->setopt('TIMEOUT', $this->dsParamTIMEOUT);
+
+						// Set the approtiate Accept: headers depending on the format of the URL.
+						if($this->dsParamFORMAT == 'xml') {
+							$ch->setopt('HTTPHEADER', array('Accept: text/xml, */*'));
+						}
+						else {
+							$ch->setopt('HTTPHEADER', array('Accept: application/json, */*'));
+						}
+
+						$data = $ch->exec();
+						$info = $ch->getInfoLast();
+
+						Mutex::release($cache_id, TMP);
+
+						$data = trim($data);
+						$writeToCache = true;
+
+						// Handle any response that is not a 200, or the content type does not include XML, JSON, plain or text
+						if((int)$info['http_code'] != 200 || !preg_match('/(xml|json|plain|text)/i', $info['content_type'])){
+							$writeToCache = false;
+
+							$result->setAttribute('valid', 'false');
+
+							// 28 is CURLE_OPERATION_TIMEOUTED
+							if($info['curl_error'] == 28) {
+								$result->appendChild(
+									new XMLElement('error',
+										sprintf('Request timed out. %d second limit reached.', $timeout)
+									)
+								);
+							}
+							else{
+								$result->appendChild(
+									new XMLElement('error',
+										sprintf('Status code %d was returned. Content-type: %s', $info['http_code'], $info['content_type'])
+									)
+								);
+							}
+
+							return $result;
+						}
+
+						// Handle where there is `$data`
+						else if(strlen($data) > 0) {
+							// If it's JSON, convert it to XML
+							if($this->dsParamFORMAT == 'json') {
+								try {
+									require_once TOOLKIT . '/class.json.php';
+									$data = JSON::convertToXML($data);
+								}
+								catch (Exception $ex) {
+									$writeToCache = false;
+									$errors = array(
+										array('message' => $ex->getMessage())
+									);
+								}
+							}
+							// If the XML doesn't validate..
+							else if(!General::validateXML($data, $errors, false, new XsltProcess)) {
+								$writeToCache = false;
+							}
+
+							// If the `$data` is invalid, return a result explaining why
+							if($writeToCache === false) {
+								$result = new XMLElement('errors');
+
+								$result->setAttribute('valid', 'false');
+
+								$result->appendChild(new XMLElement('error', __('Data returned is invalid.')));
+
+								foreach($errors as $e) {
+									if(strlen(trim($e['message'])) == 0) continue;
+									$result->appendChild(new XMLElement('item', General::sanitize($e['message'])));
+								}
+
+								$result->appendChild($result);
+
+								return $result;
+							}
+						}
+						// If `$data` is empty, set the `force_empty_result` to true.
+						else if(strlen($data) == 0){
+							$this->_force_empty_result = true;
+						}
+					}
+
+					// Failed to acquire a lock
+					else {
+						$result->appendChild(
+							new XMLElement('error', __('The %s class failed to acquire a lock.', array('<code>Mutex</code>')))
+						);
+					}
+				}
+
+				// The cache is good, use it!
+				else {
+					$data = trim($cachedData['data']);
+					$creation = DateTimeObj::get('c', $cachedData['creation']);
+				}
+
+				// If `$writeToCache` is set to false, invalidate the old cache if it existed.
+				if(is_array($cachedData) && !empty($cachedData) && $writeToCache === false) {
+					$data = trim($cachedData['data']);
+					$valid = false;
+					$creation = DateTimeObj::get('c', $cachedData['creation']);
+
+					if(empty($data)) $this->_force_empty_result = true;
+				}
+
+				// If `force_empty_result` is false and `$result` is an instance of
+				// XMLElement, build the `$result`.
+				if(!$this->_force_empty_result && is_object($result)) {
+					$proc = new XsltProcess;
+					$ret = $proc->process($data, $xsl);
+
+					if($proc->isErrors()) {
+						$result->setAttribute('valid', 'false');
+						$error = new XMLElement('error', __('Transformed XML is invalid.'));
+						$result->appendChild($error);
+						$result = new XMLElement('errors');
+						foreach($proc->getError() as $e) {
+							if(strlen(trim($e['message'])) == 0) continue;
+							$result->appendChild(new XMLElement('item', General::sanitize($e['message'])));
+						}
+						$result->appendChild($result);
+					}
+
+					else if(strlen(trim($ret)) == 0) {
+						$this->_force_empty_result = true;
+					}
+
+					else {
+						if($writeToCache) $cache->write($cache_id, $data, $this->dsParamCACHE);
+
+						$result->setValue(PHP_EOL . str_repeat("\t", 2) . preg_replace('/([\r\n]+)/', "$1\t", $ret));
+						$result->setAttribute('status', ($valid === true ? 'fresh' : 'stale'));
+						$result->setAttribute('creation', $creation);
+					}
+				}
+			}
+			catch(Exception $e){
+				$result->appendChild(new XMLElement('error', $e->getMessage()));
+				return $result;
+			}
+
+			return $result;
+		}
 
 	}
 

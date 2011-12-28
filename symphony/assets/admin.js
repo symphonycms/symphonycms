@@ -120,7 +120,7 @@
 		/*--------------------------------------------------------------------------
 			Plugins - System Messages
 		--------------------------------------------------------------------------*/
-		
+
 		$('header').symphonyNotify();
 
 		/*--------------------------------------------------------------------------
@@ -380,14 +380,13 @@
 			});
 		});
 
-		// Set data source manager context
-		$('#ds-context').change();
-
-		// Trigger the parameter name being remembered when the Datasource
-		// context changes
-		$('#ds-context').on('change', function() {
-			$('#blueprints-datasources input[name="fields[name]"]').trigger('change');
-		});
+		$('#ds-context')
+			// Trigger the parameter name being remembered when the Datasource context changes
+			.on('change', function() {
+				$('#blueprints-datasources input[name="fields[name]"]').trigger('change');
+			})
+			// Set data source manager context
+			.change();
 
 		// Once pagination is disabled, max_records and page_number are disabled too
 		var max_record = $('input[name*=max_records]'),
