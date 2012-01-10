@@ -72,7 +72,7 @@
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `author_id` int(11) unsigned NULL,
 				  PRIMARY KEY  (`id`),
-				  UNIQUE KEY `entry_id` (`entry_id`),
+				  UNIQUE KEY `author` (`entry_id`, `author_id`),
 				  KEY `author_id` (`author_id`)
 				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
 			);
