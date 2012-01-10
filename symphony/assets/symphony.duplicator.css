@@ -68,34 +68,15 @@
 	transition: opacity 0.25s ease-out;
 }
 .duplicator .instance .header .destructor {
-	text-indent: -9999px;
 	position: absolute;
-	top: 5px;
-	right: 7px;
-	padding: 3px 0 0 3px;
+	top: 7px;
+	right: 1em;
 
-	background: rgba(255, 255, 255, 0.2);
 	color: rgba(0, 0, 0, 0.3);
-	height: 11px;
-	width: 12px;
-	line-height: 0.5;
-	border: 1px solid rgba(255, 255, 255, 0.8);
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
 	text-decoration: none;
-}
-.duplicator .instance .header .destructor:after {
-	content: "\00d7";
-	position: absolute;
-	top: 4px;
-	right: 3px;
-	text-indent: 0;
 }
 .duplicator .instance .header .destructor:hover {
 	color: rgba(0, 0, 0, 0.7);
-	background: rgba(255, 255, 255, 0.8);
-	border: 1px solid rgba(255, 255, 255, 1);
 }
 .duplicator .instance .header .destructor.disabled {
 	color: #333322;
@@ -148,7 +129,8 @@
 	padding: 0.2em 0;
 	display: inline-block;
 	text-decoration: none;
-	color: rgba(0, 0, 0, 0.4);
+	color: rgba(0, 0, 0, 0.5);
+	font-weight: bold;
 	cursor: pointer;
 }
 .duplicator .controls a:hover {
