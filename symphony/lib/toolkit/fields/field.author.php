@@ -60,6 +60,10 @@
 			## Grouping follows the same rule as toggling.
 			return $this->canToggle();
 		}
+		
+		public function allowDatasourceParamOutput(){
+			return true;
+		}
 
 	/*-------------------------------------------------------------------------
 		Setup:
@@ -233,6 +237,27 @@
 			}
 
 			return parent::prepareTableValue(array('value' => General::sanitize(implode(', ', $value))), $link, $entry_id);
+		}
+				
+		public function getParameterPoolValue($data, $entry_id=NULL, $link=NULL){
+			
+			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
+
+			if(empty($data['author_id'])) return NULL;
+
+			$value = array();
+
+			foreach($data['author_id'] as $author_id){
+				$author = AuthorManager::fetchByID($author_id);
+
+				if(!is_null($author)) {
+					//$value[] = $author->getFullName();
+					$value[] = (string)$author->get('id');
+				}
+			}
+
+			return parent::prepareTableValue(array('value' => General::sanitize(implode(', ', $value))), $link, $entry_id);
+			
 		}
 
 	/*-------------------------------------------------------------------------
