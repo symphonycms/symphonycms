@@ -61,6 +61,11 @@
 			return $this->canToggle();
 		}
 
+		public function allowDatasourceParamOutput() {
+			return true;
+		}
+
+
 	/*-------------------------------------------------------------------------
 		Setup:
 	-------------------------------------------------------------------------*/
@@ -233,6 +238,10 @@
 			}
 
 			return parent::prepareTableValue(array('value' => General::sanitize(implode(', ', $value))), $link, $entry_id);
+		}
+
+		public function getParameterPoolValue($data, $entry_id = null) {
+			return $data['author_id'];
 		}
 
 	/*-------------------------------------------------------------------------
