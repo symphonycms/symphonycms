@@ -242,27 +242,33 @@ ul.tags .more:hover {
 
 /*--- Group ---*/
 
-.group {
+#contents .group {
 	position: relative;
 	right: -0.75em;
 	margin: 0 0 0 -1.5em;
 	padding: 0 0.75em 0 3.65em;
 }
-.group:after {
+#contents .group:after {
 	content: "";
 	display: block;
 	clear: left;
 	height: 0;
 }
-.group > * {
+#contents .group > * {
 	float: left;
 	margin-left: 2.95em;
 	width: 50%;
 }
-.group > *:first-child {
+#contents .group form
+, #contents .group table 
+{
+	width: 100%;
+	float: none;
+}
+#contents .group > *:first-child {
 	margin-left: -2.95em;
 }
-.group > input[type=hidden]:first-child + * {
+#contents .group > input[type=hidden]:first-child + * {
 	margin-left: -2.95em;
 }
 .group label > i,
@@ -687,10 +693,14 @@ body, html {
 	margin: 0 -19px;
 	padding: 0;
 }
-.index .actions {
+.index #contents .actions {
 	text-align: right;
 	padding: 1.75em 1.75em 0 0;
 	height: 38px;
+
+	float: none;
+	width: auto;
+	/*padding: 0;*/
 }
 .index .actions select {
 	width: auto;
