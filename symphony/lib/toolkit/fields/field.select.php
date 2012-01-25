@@ -379,7 +379,7 @@
 				$optionlist = new XMLElement('ul');
 				$optionlist->setAttribute('class', 'tags');
 
-				foreach($existing_options as $option) $optionlist->appendChild(new XMLElement('li', $option));
+				foreach($existing_options as $option) $optionlist->appendChild(new XMLElement('li', htmlspecialchars($option)));
 
 				$wrapper->appendChild($optionlist);
 			}
