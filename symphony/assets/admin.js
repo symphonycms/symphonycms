@@ -110,17 +110,20 @@
 		$('.filters-duplicator').symphonyDuplicator();
 
 		// Collapsible duplicators
-		var duplicator = $('#fields-duplicator');
-		duplicator.symphonyDuplicator({
-			orderable: true,
-			collapsible: true,
-			preselect: 'input'
-		});
+		var duplicator = $('#fields-duplicator')
+			.symphonyDuplicator({
+				orderable: true,
+				collapsible: true,
+				preselect: 'input'
+			})
+			.on('constructshow.duplicator', function() {
+				$('.tags').symphonyTags();
+			});
 
 		/*--------------------------------------------------------------------------
 			Plugins - System Messages
 		--------------------------------------------------------------------------*/
-		
+
 		$('header').symphonyNotify();
 
 		/*--------------------------------------------------------------------------
