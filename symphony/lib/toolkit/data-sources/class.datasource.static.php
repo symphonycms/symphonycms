@@ -5,9 +5,9 @@
 		public function execute() {
 			include_once(TOOLKIT . '/class.xsltprocess.php');
 
-			$this->dsSTATIC = stripslashes($this->dsSTATIC);
+			$this->dsParamSTATIC = stripslashes($this->dsParamSTATIC);
 
-			if(!General::validateXML($this->dsSTATIC, $errors, false, new XsltProcess)) {
+			if(!General::validateXML($this->dsParamSTATIC, $errors, false, new XsltProcess)) {
 				$result->appendChild(
 					new XMLElement('error', __('XML is invalid.'))
 				);
@@ -20,8 +20,10 @@
 				$result->appendChild($element);
 			}
 			else {
-				$result->setValue($this->dsSTATIC);
+				$result->setValue($this->dsParamSTATIC);
 			}
+
+			return $result;
 		}
 	}
 

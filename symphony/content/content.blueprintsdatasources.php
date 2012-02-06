@@ -161,7 +161,7 @@
 
 						case 'static_xml':
 							$existing->grab();
-							$fields['static_xml'] = trim($existing->dsSTATIC);
+							$fields['static_xml'] = trim($existing->dsParamSTATIC);
 							break;
 
 						default:
@@ -1099,8 +1099,8 @@
 								$fields['static_xml'] = preg_replace('/^<\?xml[^>]+>/i', NULL, $fields['static_xml']);
 							}
 
-							$value = sprintf(
-								'$this->dsSTATIC = \'%s\';',
+							$params['static'] = sprintf(
+								'%s',
 								addslashes(trim($fields['static_xml']))
 							);
 							break;
