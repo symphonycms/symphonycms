@@ -2,7 +2,7 @@
 
 	Class StaticDatasource extends Datasource{
 
-		public function grab() {
+		public function execute() {
 			include_once(TOOLKIT . '/class.xsltprocess.php');
 
 			$this->dsSTATIC = stripslashes($this->dsSTATIC);

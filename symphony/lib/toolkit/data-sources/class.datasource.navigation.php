@@ -56,7 +56,7 @@
 
 // BEGIN XML GENERATION CODE
 
-		public function grab() {
+		public function execute() {
 
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 			$type_sql = $parent_sql = null;

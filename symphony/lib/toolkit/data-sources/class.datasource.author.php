@@ -42,7 +42,7 @@
 
 		}
 
-		public function grab() {
+		public function execute() {
 
 			$author_ids = array();
 

@@ -140,7 +140,7 @@
 			return;
 		}
 
-		public function grab() {
+		public function execute() {
 
 			$fieldPool = array();
 			$where = NULL;

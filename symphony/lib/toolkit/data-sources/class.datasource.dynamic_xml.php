@@ -6,7 +6,7 @@
 
 	Class DynamicXMLDatasource extends Datasource {
 
-		public function grab() {
+		public function execute() {
 
 			$this->dsParamURL = $this->parseParamURL($this->dsParamURL);
 
