@@ -2,14 +2,14 @@
 
 	Class SectionDatasource extends Datasource{
 
-		public function processSystemParameters(Datasource $ds, Entry $entry, &$param_pool) {
-			if(!isset($ds->dsParamPARAMOUTPUT)) return;
+		public function processSystemParameters(Entry $entry, &$param_pool) {
+			if(!isset($this->dsParamPARAMOUTPUT)) return;
 
 			// Support the legacy parameter `ds-datasource-handle`
-			$key = 'ds-' . $ds->dsParamROOTELEMENT;
-			$singleParam = count($ds->dsParamPARAMOUTPUT) == 1;
+			$key = 'ds-' . $this->dsParamROOTELEMENT;
+			$singleParam = count($this->dsParamPARAMOUTPUT) == 1;
 
-			foreach($ds->dsParamPARAMOUTPUT as $param) {
+			foreach($this->dsParamPARAMOUTPUT as $param) {
 				// The new style of paramater is `ds-datasource-handle.field-handle`
 				$param_key = $key . '.' . str_replace(':', '-', $param);
 
@@ -28,14 +28,14 @@
 			}
 		}
 
-		public function processParameters(Datasource $ds, Entry $entry, array $fieldPool, $field_id, array $values, &$param_pool) {
-			if(!isset($ds->dsParamPARAMOUTPUT)) return;
+		public function createOutputParameters(Entry $entry, array $fieldPool, $field_id, array $values, &$param_pool) {
+			if(!isset($this->dsParamPARAMOUTPUT)) return;
 
 			// Support the legacy parameter `ds-datasource-handle`
-			$key = 'ds-' . $ds->dsParamROOTELEMENT;
-			$singleParam = count($ds->dsParamPARAMOUTPUT) == 1;
+			$key = 'ds-' . $this->dsParamROOTELEMENT;
+			$singleParam = count($this->dsParamPARAMOUTPUT) == 1;
 
-			foreach($ds->dsParamPARAMOUTPUT as $param) {
+			foreach($this->dsParamPARAMOUTPUT as $param) {
 				if($fieldPool[$field_id]->get('element_name') !== $param) continue;
 
 				// The new style of paramater is `ds-datasource-handle.field-handle`
@@ -59,17 +59,17 @@
 			}
 		}
 
-		public function processRecordGroup(&$wrapper, $element, $group, $ds, &$fieldPool, &$param_pool, $param_output_only=false){
+		public function processRecordGroup($element, $group, &$fieldPool, &$param_pool, $param_output_only=false){
 			$associated_sections = NULL;
 
 			$xGroup = new XMLElement($element, NULL, $group['attr']);
 
-			if(!$section = SectionManager::fetch($ds->getSource())){
-				$about = $ds->about();
+			if(!$section = SectionManager::fetch($this->getSource())){
+				$about = $this->about();
 				throw new Exception(__('The section associated with the data source %s could not be found.', array('<code>' . $about['name'] . '</code>')));
 			}
 
-			if(!isset($ds->dsParamASSOCIATEDENTRYCOUNTS) || $ds->dsParamASSOCIATEDENTRYCOUNTS == 'yes'){
+			if(!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS == 'yes'){
 				$associated_sections = $section->fetchAssociatedSections();
 			}
 
@@ -93,7 +93,7 @@
 						}
 					}
 
-					$this->processSystemParameters($ds, $entry, $param_pool);
+					$this->processSystemParameters($entry, $param_pool);
 
 					$pool = FieldManager::fetch(array_keys($data));
 					$fieldPool += $pool;
@@ -104,18 +104,18 @@
 							$fieldPool[$field_id] =& FieldManager::fetch($field_id);
 						}
 
-						$this->processParameters($ds, $entry, $fieldPool, $field_id, $values, $param_pool);
+						$this->createOutputParameters($entry, $fieldPool, $field_id, $values, $param_pool);
 
-						if (!$param_output_only) if (is_array($ds->dsParamINCLUDEDELEMENTS)) foreach ($ds->dsParamINCLUDEDELEMENTS as $handle) {
+						if (!$param_output_only) if (is_array($this->dsParamINCLUDEDELEMENTS)) foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {
 							list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
 							if($fieldPool[$field_id]->get('element_name') == $handle) {
-								$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($ds->dsParamHTMLENCODE ? true : false), $mode, $entry->get('id'));
+								$fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE ? true : false), $mode, $entry->get('id'));
 							}
 						}
 					}
 
 					if(!$param_output_only){
-						if(is_array($ds->dsParamINCLUDEDELEMENTS) && in_array('system:date', $ds->dsParamINCLUDEDELEMENTS)){
+						if(is_array($this->dsParamINCLUDEDELEMENTS) && in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){
 							$xEntry->appendChild(
 								General::createXMLDateObject(
 									DateTimeObj::get('U', $entry->creationDate),
@@ -131,16 +131,18 @@
 
 			if(is_array($group['groups']) && !empty($group['groups'])){
 				foreach($group['groups'] as $element => $group){
-					foreach($group as $g) $this->processRecordGroup($xGroup, $element, $g, $ds, $fieldPool, $param_pool, $param_output_only);
+					foreach($group as $g) $this->processRecordGroup($xGroup, $element, $g, $fieldPool, $param_pool, $param_output_only);
 				}
 			}
 
-			if(!$param_output_only) $wrapper->appendChild($xGroup);
+			if(!$param_output_only) $this->appendChild($xGroup);
 
 			return;
 		}
 
-		public function execute() {
+		public function execute(&$param_pool) {
+
+			$result = new XMLElement($this->dsParamROOTELEMENT);
 
 			$fieldPool = array();
 			$where = NULL;
@@ -306,7 +308,7 @@
 						$groups = $fieldPool[$this->dsParamGROUP]->groupRecords($entries['records']);
 
 						foreach($groups as $element => $group){
-							foreach($group as $g) $this->processRecordGroup($result, $element, $g, $this, $fieldPool, $param_pool, $this->_param_output_only);
+							foreach($group as $g) $this->processRecordGroup($result, $element, $g, $fieldPool, $param_pool, $this->_param_output_only);
 						}
 
 					else:
@@ -332,7 +334,7 @@
 								}
 							}
 
-							$this->processSystemParameters($this, $entry, $param_pool);
+							$this->processSystemParameters($entry, $param_pool);
 
 							$pool = FieldManager::fetch(array_keys($data));
 							$fieldPool += $pool;
@@ -343,7 +345,7 @@
 									$fieldPool[$field_id] =& FieldManager::fetch($field_id);
 								}
 
-								$this->processParameters($this, $entry, $fieldPool, $field_id, $values, $param_pool);
+								$this->createOutputParameters($entry, $fieldPool, $field_id, $values, $param_pool);
 
 								if (!$this->_param_output_only) foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {
 									list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
@@ -371,5 +373,7 @@
 				}
 
 			}
+
+			return $result;
 		}
 	}

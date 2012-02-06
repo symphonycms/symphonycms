@@ -2,9 +2,10 @@
 
 	Class StaticDatasource extends Datasource{
 
-		public function execute() {
+		public function execute(&$param_pool) {
 			include_once(TOOLKIT . '/class.xsltprocess.php');
 
+			$result = new XMLElement($this->dsParamROOTELEMENT);
 			$this->dsParamSTATIC = stripslashes($this->dsParamSTATIC);
 
 			if(!General::validateXML($this->dsParamSTATIC, $errors, false, new XsltProcess)) {
@@ -26,5 +27,3 @@
 			return $result;
 		}
 	}
-
-?>

@@ -47,7 +47,7 @@
 
 			if($page['children'] != '0') {
 				if($children = PageManager::fetch(false, array('id, handle, title'), array(sprintf('`parent` = %d', $page['id'])))) {
-					foreach($children as $c) $oPage->appendChild(__buildPageXML($c, $page_types));
+					foreach($children as $c) $oPage->appendChild($this->__buildPageXML($c, $page_types));
 				}
 			}
 
@@ -56,17 +56,17 @@
 
 // BEGIN XML GENERATION CODE
 
-		public function execute() {
+		public function execute(&$param_pool) {
 
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 			$type_sql = $parent_sql = null;
 
 			if(trim($this->dsParamFILTERS['type']) != '') {
-				$type_sql = __processNavigationTypeFilter($this->dsParamFILTERS['type'], $this->__determineFilterType($this->dsParamFILTERS['type']));
+				$type_sql = $this->__processNavigationTypeFilter($this->dsParamFILTERS['type'], $this->__determineFilterType($this->dsParamFILTERS['type']));
 			}
 
 			if(trim($this->dsParamFILTERS['parent']) != '') {
-				$parent_sql = __processNavigationParentFilter($this->dsParamFILTERS['parent']);
+				$parent_sql = $this->__processNavigationParentFilter($this->dsParamFILTERS['parent']);
 			}
 
 			// Build the Query appending the Parent and/or Type WHERE clauses
@@ -104,8 +104,10 @@
 				}
 
 				foreach($pages as $page) {
-					$result->appendChild(__buildPageXML($page, $page_types));
+					$result->appendChild($this->__buildPageXML($page, $page_types));
 				}
 			}
+
+			return $result;
 		}
 	}

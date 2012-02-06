@@ -42,7 +42,7 @@
 
 		}
 
-		public function execute() {
+		public function execute(&$param_pool) {
 
 			$author_ids = array();
 
@@ -150,5 +150,7 @@
 					}
 				}
 			}
+			
+			return $result;
 		}
 	}

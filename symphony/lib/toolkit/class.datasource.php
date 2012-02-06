@@ -126,7 +126,24 @@
 		 *	The current parameter pool that this Datasource can use when filtering
 		 *	and finding Entries or data.
 		 */
-		public function grab(array $param = array()) {}
+		public function grab(&$param_pool=NULL){
+			try{
+				$result = $this->execute($param_pool);
+			}
+			catch(FrontendPageNotFoundException $e){
+				// Work around. This ensures the 404 page is displayed and
+				// is not picked up by the default catch() statement below
+				FrontendPageNotFoundExceptionHandler::render($e);
+			}
+			catch(Exception $e){
+				$result->appendChild(new XMLElement('error', $e->getMessage()));
+				return $result;
+			}
+
+			if($this->_force_empty_result) $result = $this->emptyXMLSet();
+
+			return $result;
+		}
 
 		/**
 		 * By default, all Symphony filters are considering to be AND filters, that is
@@ -373,7 +390,6 @@
 
 			return null;
 		}
-
 	}
 
 	/**

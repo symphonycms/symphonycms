@@ -6,7 +6,9 @@
 
 	Class DynamicXMLDatasource extends Datasource {
 
-		public function execute() {
+		public function execute(&$param_pool) {
+
+			$result = new XMLElement($this->dsParamROOTELEMENT);
 
 			$this->dsParamURL = $this->parseParamURL($this->dsParamURL);
 
@@ -203,5 +205,7 @@
 				}
 
 			}
+
+			return $result;
 		}
 	}
