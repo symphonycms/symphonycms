@@ -1,23 +1,28 @@
 <?php
 
-	include_once(TOOLKIT . '/class.xsltprocess.php');
+	Class StaticDatasource extends Datasource{
 
-	$this->dsSTATIC = stripslashes($this->dsSTATIC);
+		public function grab() {
+			include_once(TOOLKIT . '/class.xsltprocess.php');
 
-	if(!General::validateXML($this->dsSTATIC, $errors, false, new XsltProcess)) {
-		$result->appendChild(
-			new XMLElement('error', __('XML is invalid.'))
-		);
+			$this->dsSTATIC = stripslashes($this->dsSTATIC);
 
-		$element = new XMLElement('errors');
-		foreach($errors as $e) {
-			if(strlen(trim($e['message'])) == 0) continue;
-			$element->appendChild(new XMLElement('item', General::sanitize($e['message'])));
+			if(!General::validateXML($this->dsSTATIC, $errors, false, new XsltProcess)) {
+				$result->appendChild(
+					new XMLElement('error', __('XML is invalid.'))
+				);
+
+				$element = new XMLElement('errors');
+				foreach($errors as $e) {
+					if(strlen(trim($e['message'])) == 0) continue;
+					$element->appendChild(new XMLElement('item', General::sanitize($e['message'])));
+				}
+				$result->appendChild($element);
+			}
+			else {
+				$result->setValue($this->dsSTATIC);
+			}
 		}
-		$result->appendChild($element);
-	}
-	else {
-		$result->setValue($this->dsSTATIC);
 	}
 
 ?>
