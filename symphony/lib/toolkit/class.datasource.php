@@ -127,6 +127,8 @@
 		 *	and finding Entries or data.
 		 */
 		public function grab(&$param_pool=NULL){
+			$result = new XMLElement($this->dsParamROOTELEMENT);
+			
 			try{
 				$result = $this->execute($param_pool);
 			}
