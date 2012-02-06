@@ -974,7 +974,7 @@
 			if($isDuplicate) $this->_errors['name'] = __('A Data source with the name %s already exists', array('<code>' . $classname . '</code>'));
 
 			if(empty($this->_errors)){
-				$filters = NULL;
+				$filters = array();
 				$elements = NULL;
 				$placeholder = '<!-- GRAB -->';
 				$source = $fields['source'];
@@ -1004,7 +1004,6 @@
 
 				// Do dependencies, the template file must have <!-- CLASS NAME -->
 				// and <!-- DS DEPENDENCY LIST --> tokens
-				$dsShell = str_replace('<!-- CLASS NAME -->', $classname, $dsShell);
 				if(preg_match_all('@(\$ds-[-_0-9a-z]+)@i', $dsShell, $matches)){
 					$dependencies = General::array_remove_duplicates($matches[1]);
 					$dsShell = str_replace('<!-- DS DEPENDENCY LIST -->', "'" . implode("', '", $dependencies) . "'", $dsShell);
@@ -1018,6 +1017,7 @@
 					switch($source){
 						case 'authors':
 
+							$extends = 'AuthorDatasource';
 							$filters = $fields['filter']['author'];
 
 							$elements = $fields['xml_elements'];
@@ -1028,23 +1028,21 @@
 							$params['paramoutput'] = $fields['param'];
 							$params['sort'] = $fields['sort'];
 
-							$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.author.php');", $dsShell);
-
 							break;
 
 						case 'navigation':
 
+							$extends = 'NavigationDatasource';
 							$filters = $fields['filter']['navigation'];
 
 							$params['order'] = $fields['order'];
 							$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
 							$params['requiredparam'] = trim($fields['required_url_param']);
 
-							$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.navigation.php');", $dsShell);
-
 							break;
 
 						case 'dynamic_xml':
+							$extends = 'DynamicXMLDatasource';
 							// Automatically detect namespaces
 							if(isset($data)) {
 								preg_match_all('/xmlns:([a-z][a-z-0-9\-]*)="([^\"]+)"/i', $data, $matches);
@@ -1088,12 +1086,12 @@
 							$params['format'] = $fields['dynamic_xml']['format'];
 							$params['timeout'] = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : '6');
 
-							$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.dynamic_xml.php');", $dsShell);
 
 							break;
 
 						case 'static_xml':
 
+							$extends = 'StaticDatasource';
 							$fields['static_xml'] = trim($fields['static_xml']);
 
 							if(preg_match('/^<\?xml/i', $fields['static_xml']) == true){
@@ -1105,11 +1103,11 @@
 								'$this->dsSTATIC = \'%s\';',
 								addslashes(trim($fields['static_xml']))
 							);
-							$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\t" . $value . PHP_EOL . "include(TOOLKIT . '/data-sources/datasource.static.php');", $dsShell);
 							break;
 
 						default:
 
+							$extends = 'SectionDatasource';
 							$elements = $fields['xml_elements'];
 
 							if(is_array($fields['filter']) && !empty($fields['filter'])){
@@ -1134,8 +1132,6 @@
 
 							if ($params['associatedentrycounts'] == NULL) $params['associatedentrycounts'] = 'no';
 
-							$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.section.php');", $dsShell);
-
 							break;
 					}
 
@@ -1143,6 +1139,8 @@
 					$this->__injectIncludedElements($dsShell, $elements);
 					self::injectFilters($dsShell, $filters);
 
+					$dsShell = str_replace('<!-- CLASS NAME -->', $classname, $dsShell);
+					$dsShell = str_replace('<!-- CLASS EXTENDS -->', $extends, $dsShell);
 					$dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
 				}
 
