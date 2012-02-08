@@ -429,18 +429,32 @@
 					case 'delete':
 
 						/**
-						 * Prior to deletion of entries. Array of Entry ID's is provided.
-						 * The array can be manipulated
+						 * Prior to deletion of entries. An array of Entry ID's is provided which
+						 * can be manipulated. This delegate was renamed from `Delete` to `EntryPreDelete`
+						 * in Symphony 2.3.
 						 *
-						 * @delegate Delete
+						 * @delegate EntryPreDelete
 						 * @param string $context
 						 * '/publish/'
-						 * @param array $checked
-						 *	An array of Entry ID's passed by reference
+						 * @param array $entry_id
+						 *  An array of Entry ID's passed by reference
 						 */
-						Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
+						Symphony::ExtensionManager()->notifyMembers('EntryPreDelete', '/publish/', array('entry_id' => &$checked));
 
 						EntryManager::delete($checked);
+
+						/**
+						 * After the deletion of entries, this delegate provides an array of Entry ID's
+						 * that were deleted.
+						 *
+						 * @since Symphony 2.3
+						 * @delegate EntryPostDelete
+						 * @param string $context
+						 * '/publish/'
+						 * @param array $entry_id
+						 *  An array of Entry ID's that were deleted.
+						 */
+						Symphony::ExtensionManager()->notifyMembers('EntryPostDelete', '/publish/', array('entry_id' => $checked));
 
 						redirect($_SERVER['REQUEST_URI']);
 
@@ -761,30 +775,31 @@
 					$link = preg_replace("/&amp;$/", '', $link);
 				}
 
-				switch($flag){
+				// These flags are only relevant if there are no errors
+				if(empty($this->_errors)) {
+					switch($flag){
+						case 'saved':
+							$this->pageAlert(
+								__('Entry updated at %s.', array(DateTimeObj::getTimeAgo()))
+								. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
+								. __('Create another?')
+								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
+								. __('View all Entries')
+								. '</a>'
+								, Alert::SUCCESS);
+							break;
 
-					case 'saved':
-						$this->pageAlert(
-							__('Entry updated at %s.', array(DateTimeObj::getTimeAgo()))
-							. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
-							. __('Create another?')
-							. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
-							. __('View all Entries')
-							. '</a>'
-							, Alert::SUCCESS);
-						break;
-
-					case 'created':
-						$this->pageAlert(
-							__('Entry created at %s.', array(DateTimeObj::getTimeAgo()))
-							. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
-							. __('Create another?')
-							. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
-							. __('View all Entries')
-							. '</a>'
-							, Alert::SUCCESS);
-						break;
-
+						case 'created':
+							$this->pageAlert(
+								__('Entry created at %s.', array(DateTimeObj::getTimeAgo()))
+								. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
+								. __('Create another?')
+								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
+								. __('View all Entries')
+								. '</a>'
+								, Alert::SUCCESS);
+							break;
+					}
 				}
 			}
 
@@ -960,19 +975,33 @@
 
 			else if(@array_key_exists('delete', $_POST['action']) && is_numeric($entry_id)){
 				/**
-				 * Prior to deletion of entries. Array of Entry ID's is provided.
-				 * The array can be manipulated
+				 * Prior to deletion of entries. An array of Entry ID's is provided which
+				 * can be manipulated. This delegate was renamed from `Delete` to `EntryPreDelete`
+				 * in Symphony 2.3.
 				 *
-				 * @delegate Delete
+				 * @delegate EntryPreDelete
 				 * @param string $context
 				 * '/publish/'
-				 * @param array $checked
+				 * @param array $entry_id
 				 *	An array of Entry ID's passed by reference
 				 */
 				$checked = array($entry_id);
-				Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
+				Symphony::ExtensionManager()->notifyMembers('EntryPreDelete', '/publish/', array('entry_id' => &$checked));
 
 				EntryManager::delete($checked);
+
+				/**
+				 * After the deletion of entries, this delegate provides an array of Entry ID's
+				 * that were deleted.
+				 *
+				 * @since Symphony 2.3
+				 * @delegate EntryPostDelete
+				 * @param string $context
+				 * '/publish/'
+				 * @param array $entry_id
+				 *  An array of Entry ID's that were deleted.
+				 */
+				Symphony::ExtensionManager()->notifyMembers('EntryPostDelete', '/publish/', array('entry_id' => $checked));
 
 				redirect(SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/');
 			}

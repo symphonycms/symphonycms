@@ -145,7 +145,10 @@
 		// Failed to acquire a lock
 		else {
 			$result->appendChild(
-				new XMLElement('error', __('The %s class failed to acquire a lock.', array('<code>Mutex</code>')))
+				new XMLElement('error', __('The %s class failed to acquire a lock, check that %s exists and is writable.', array(
+					'<code>Mutex</code>',
+					'<code>' . TMP . '</code>'
+				)))
 			);
 		}
 	}

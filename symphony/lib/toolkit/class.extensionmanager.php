@@ -188,28 +188,6 @@
 			return self::$_extensions[$name]['id'];
 		}
 
-		public static function getProvidersOf($type = null) {
-			// Loop over all extensions and build an array of providable objects
-			if(is_null(self::$providers)) {
-				self::$providers = array();
-				foreach(self::listInstalledHandles() as $handle) {
-					$obj = self::getInstance($handle);
-
-					if(!method_exists($obj, 'providerOf')) continue;
-
-					// For each of the matching objects (by $type), resolve the object path
-					self::$providers = array_merge(self::$providers, $obj->providerOf);
-				}
-			}
-
-			// Return an array of objects
-			if(is_null($type)) return self::$providers;
-
-			if(!isset(self::$providers[$type])) return array();
-
-			return self::$providers[$type];
-		}
-
 		/**
 		 * Determines whether the current extension is installed or not by checking
 		 * for an id in `tbl_extensions`
@@ -735,22 +713,35 @@
 					$meta = new DOMDocument;
 					$meta->load(self::__getClassPath($name) . '/extension.meta.xml');
 					$xpath = new DOMXPath($meta);
-				} catch (Exception $ex) {
-					throw new SymphonyErrorPage(__('The %1$s file for the %2$s extension is not valid XML.', array('<code>extension.meta.xml</code>', '<code>' . $name . '</code>')));
+					$rootNamespace = $meta->lookupNamespaceUri($meta->namespaceURI);
+
+					if(is_null($rootNamespace)) {
+						throw new Exception(__('Missing default namespace definition.'));
+					}
+					else {
+						$xpath->registerNamespace('ext', $rootNamespace);
+					}
+				}
+				catch (Exception $ex) {
+					throw new SymphonyErrorPage(__('The %1$s file for the %2$s extension is not valid XML: %3$s', array(
+						'<code>extension.meta.xml</code>',
+						'<code>' . $name . '</code>',
+						'<br /><code>' . $ex->getMessage() . '</code>'
+					)));
 				}
 
 				// If `$rawXML` is set, just return our DOMDocument instance
 				if($rawXML) return $meta;
 
 				// Load <extension>
-				$extension = $xpath->query('/extension')->item(0);
+				$extension = $xpath->query('/ext:extension')->item(0);
 				$about = array(
-					'name' => $xpath->evaluate('string(name)', $extension),
+					'name' => $xpath->evaluate('string(ext:name)', $extension),
 					'status' => array()
 				);
 
 				// Load the latest <release> information
-				if($release = $xpath->query('//release[1]', $extension)->item(0)) {
+				if($release = $xpath->query('//ext:release[1]', $extension)->item(0)) {
 					$about += array(
 						'version' => $xpath->evaluate('string(@version)', $release),
 						'release-date' => $xpath->evaluate('string(@date)', $release)
@@ -762,28 +753,37 @@
 					$required_max_version = $xpath->evaluate('string(@max)', $release);
 					$current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
 
-					if(!empty($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {
+					// Min version
+					if(!empty($required_min_version) &&
+						version_compare($current_symphony_version, $required_min_version, '<')
+					) {
 						$about['status'][] = EXTENSION_NOT_COMPATIBLE;
 						$about['required_version'] = $required_min_version;
 					}
-					else if(!empty($required_max_version) && version_compare($current_symphony_version, $required_max_version, '>')) {
+
+					// Max version
+					else if(!empty($required_max_version) &&
+						version_compare($current_symphony_version, $required_max_version, '>')
+					) {
 						$about['status'][] = EXTENSION_NOT_COMPATIBLE;
 						$about['required_version'] = $required_max_version;
 					}
 				}
 
 				// Add the <author> information
-				foreach($xpath->query('//author', $extension) as $author) {
+				foreach($xpath->query('//ext:author', $extension) as $author) {
 					$a = array(
-						'name' => $xpath->evaluate('string(name)', $author),
-						'website' => $xpath->evaluate('string(website)', $author),
-						'email' => $xpath->evaluate('string(email)', $author)
+						'name' => $xpath->evaluate('string(ext:name)', $author),
+						'website' => $xpath->evaluate('string(ext:website)', $author),
+						'email' => $xpath->evaluate('string(ext:email)', $author)
 					);
 
 					$about['author'][] = array_filter($a);
 				}
 			}
-			// It doesn't, fallback to loading the extension
+
+			// It doesn't, fallback to loading the extension using the built in
+			// `about()` array.
 			else {
 				$obj = self::getInstance($name);
 				$about = $obj->about();

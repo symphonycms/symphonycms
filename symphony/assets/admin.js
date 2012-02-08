@@ -110,17 +110,20 @@
 		$('.filters-duplicator').symphonyDuplicator();
 
 		// Collapsible duplicators
-		var duplicator = $('#fields-duplicator');
-		duplicator.symphonyDuplicator({
-			orderable: true,
-			collapsible: true,
-			preselect: 'input'
-		});
+		var duplicator = $('#fields-duplicator')
+			.symphonyDuplicator({
+				orderable: true,
+				collapsible: true,
+				preselect: 'input'
+			})
+			.on('constructshow.duplicator', function() {
+				$('.tags').symphonyTags();
+			});
 
 		/*--------------------------------------------------------------------------
 			Plugins - System Messages
 		--------------------------------------------------------------------------*/
-		
+
 		$('header').symphonyNotify();
 
 		/*--------------------------------------------------------------------------
@@ -273,18 +276,18 @@
 		--------------------------------------------------------------------------*/
 
 		// Update DS Parameters selectbox as the user types a new name for the resource
-		$('#blueprints-datasources input[name="fields[name]"]').on('change, keyup', function(){
+		$('#blueprints-datasources input[name="fields[name]"]').on('change', function(){
 			var value = $(this).val();
 
 			if(value == '' || $('select[name="fields[param][]"]:visible').length == 0) {
-                $('select[name="fields[param][]"] option').each(function(){
-                    var item = $(this),
-                        field = item.text().split('.')[1];
+				$('select[name="fields[param][]"] option').each(function(){
+					var item = $(this),
+						field = item.text().split('.')[1];
 
-                    item.text('$ds-' + '?' + '.' + field);
-                });
-                return;
-            }
+					item.text('$ds-' + '?' + '.' + field);
+				});
+				return;
+			}
 
 			$.ajax({
 				type: 'GET',

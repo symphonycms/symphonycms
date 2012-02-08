@@ -413,9 +413,8 @@
 				);
 			}
 			catch(DatabaseException $e){
-				$error = Symphony::Database()->getLastError();
 				self::__abort(
-					'There was an error while trying to import data to the database. MySQL returned: ' . $error['num'] . ': ' . $error['msg'],
+					'There was an error while trying to import data to the database. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
 				$start);
 			}
 
@@ -438,9 +437,8 @@
 				), 'tbl_authors');
 			}
 			catch(DatabaseException $e){
-				$error = Symphony::Database()->getLastError();
 				self::__abort(
-					'There was an error while trying create the default author. MySQL returned: ' . $error['num'] . ': ' . $error['msg'],
+					'There was an error while trying create the default author. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
 				$start);
 			}
 
@@ -563,9 +561,8 @@
 					);
 				}
 				catch(DatabaseException $e){
-					$error = Symphony::Database()->getLastError();
 					self::__abort(
-						'There was an error while trying to import data to the database. MySQL returned: ' . $error['num'] . ': ' . $error['msg'],
+						'There was an error while trying to import data to the database. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
 					$start);
 				}
 			}

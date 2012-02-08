@@ -117,8 +117,7 @@
 			$this->initialiseExtensionManager();
 			$this->initialiseCookie();
 
-			// If the user is not a logged in Author, turn off the verbose error
-			// messages.
+			// If the user is not a logged in Author, turn off the verbose error messages.
 			if(!self::isLoggedIn() && is_null($this->Author)){
 				GenericExceptionHandler::$enabled = false;
 			}
@@ -728,16 +727,23 @@
 
 		/**
 		 * Returns the path to the current template by looking at the
-		 * `TEMPLATES` directory for the convention `tpl.*.php`. If the
-		 * template is not found, false is returned
+		 * `WORKSPACE/template/` directory, then at the `TEMPLATES`
+		 * directory for the convention `tpl.*.php`. If the template 
+		 * is not found, false is returned
 		 *
+		 * @since Symphony 2.3
 		 * @return mixed
 		 *  String, which is the path to the template if the template is found,
 		 *  false otherwise
 		 */
 		public function getTemplate(){
-			$template = sprintf('%s/usererror.%s.php', TEMPLATE, $this->_template);
-			return (file_exists($template) ? $template : false);
+			$format = '%s/usererror.%s.php';
+			if(file_exists($template = sprintf($format, WORKSPACE . '/template', $this->_template)))
+				return $template;
+			elseif(file_exists($template = sprintf($format, TEMPLATE, $this->_template)))
+				return $template;
+			else
+				return false;
 		}
 	}
 
@@ -781,20 +787,18 @@
 			if(is_object(Symphony::Database())){
 				$debug = Symphony::Database()->debug();
 
-				if(count($debug['query']) > 0){
-					foreach($debug['query'] as $query){
-						$queries .= sprintf(
-							'<li%s><code>%s;</code> <small>[%01.4f]</small></li>',
-							($odd == true ? ' class="odd"' : NULL),
-							htmlspecialchars($query['query']),
-							(isset($query['time']) ? $query['time'] : NULL)
-						);
-						$odd = !$odd;
-					}
+				if(!empty($debug)) foreach($debug as $query){
+					$queries .= sprintf(
+						'<li%s><code>%s;</code> <small>[%01.4f]</small></li>',
+						($odd == true ? ' class="odd"' : NULL),
+						htmlspecialchars($query['query']),
+						(isset($query['execution_time']) ? $query['execution_time'] : NULL)
+					);
+					$odd = !$odd;
 				}
 			}
 
-			return sprintf(file_get_contents(TEMPLATE . '/fatalerror.database.tpl'),
+			return sprintf(file_get_contents(self::getTemplate('fatalerror.database')),
 				$e->getDatabaseErrorMessage(),
 				$e->getQuery(),
 				$trace,

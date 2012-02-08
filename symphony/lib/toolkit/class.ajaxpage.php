@@ -102,19 +102,22 @@
 			switch($this->_status){
 				case self::STATUS_OK:
 					$status_message = '200 OK';
+					$code = 200;
 					break;
 
 				case self::STATUS_BAD:
 				case self::STATUS_ERROR:
 					$status_message = '400 Bad Request';
+					$code = 400;
 					break;
 
 				case self::STATUS_UNAUTHORISED:
 					$status_message = '401 Unauthorized';
+					$code = 401;
 					break;
 			}
 
-			$this->addHeaderToPage('HTTP/1.0 ' . $status_message);
+			$this->addHeaderToPage('Status', $status_message, $code);
 			$this->_Result->setAttribute('status', $this->_status);
 
 			parent::generate();
