@@ -8,7 +8,7 @@
 	 * objects for inclusion in Symphony backend pages.
 	 */
 	Class Widget{
-
+		
 		/**
 		 * Generates a XMLElement representation of `<label>`
 		 *
@@ -29,6 +29,12 @@
 		 * @return XMLElement
 		 */
 		public static function Label($name = null, XMLElement $child = null, $class = null, $id = null, Array $attributes = null){
+			General::ensureType(array(
+				array('var' => $name, 'type' => 'string', 'optional' => true),
+				array('var' => $class, 'type' => 'string', 'optional' => true),
+				array('var' => $id, 'type' => 'string', 'optional' => true)
+			));
+			
 			$obj = new XMLElement('label', ($name ? $name : null));
 
 			if(is_object($child)) $obj->appendChild($child);
@@ -60,6 +66,12 @@
 		 * @return XMLElement
 		 */
 		public static function Input($name, $value = null, $type = 'text', Array $attributes = null){
+			General::ensureType(array(
+				array('var' => $name, 'type' => 'string'),
+				array('var' => $value, 'type' => 'string', 'optional' => true),
+				array('var' => $type, 'type' => 'string'),
+			));
+			
 			$obj = new XMLElement('input');
 			$obj->setAttribute('name', $name);
 
@@ -93,6 +105,13 @@
 		 * @return XMLElement
 		 */
 		public static function Textarea($name, $rows = 15, $cols = 50, $value = null, Array $attributes = null){
+			General::ensureType(array(
+				array('var' => $name, 'type' => 'string'),
+				array('var' => $rows, 'type' => 'int'),
+				array('var' => $cols, 'type' => 'int'),
+				array('var' => $name, 'type' => 'string', 'optional' => true)
+			));
+			
 			$obj = new XMLElement('textarea', $value);
 
 			$obj->setSelfClosingTag(false);
@@ -129,6 +148,14 @@
 		 * @return XMLElement
 		 */
 		public static function Anchor($value, $href, $title = null, $class = null, $id = null, Array $attributes = null){
+			General::ensureType(array(
+				array('var' => $value, 'type' => 'string'),
+				array('var' => $href, 'type' => 'string'),
+				array('var' => $title, 'type' => 'string', 'optional' => true),
+				array('var' => $class, 'type' => 'string', 'optional' => true),
+				array('var' => $id, 'type' => 'string', 'optional' => true)
+			));
+			
 			$obj = new XMLElement('a', $value);
 			$obj->setAttribute('href', $href);
 
@@ -162,6 +189,13 @@
 		 * @return XMLElement
 		 */
 		public static function Form($action = null, $method = 'post', $class = null, $id = null, Array $attributes = null){
+			General::ensureType(array(
+				array('var' => $action, 'type' => 'string', 'optional' => true),
+				array('var' => $method, 'type' => 'string'),
+				array('var' => $class, 'type' => 'string', 'optional' => true),
+				array('var' => $id, 'type' => 'string', 'optional' => true)
+			));
+			
 			$obj = new XMLElement('form');
 			$obj->setAttribute('action', $action);
 			$obj->setAttribute('method', $method);
@@ -198,6 +232,11 @@
 		 * @return XMLElement
 		 */
 		public static function Table(XMLElement $header = null, XMLElement $footer = null, XMLElement $body = null, $class = null, $id = null, Array $attributes = null){
+			General::ensureType(array(
+				array('var' => $class, 'type' => 'string', 'optional' => true),
+				array('var' => $id, 'type' => 'string', 'optional' => true)
+			));
+			
  			$obj = new XMLElement('table');
 
 			if($class) $obj->setAttribute('class', $class);
@@ -213,7 +252,6 @@
 
 			return $obj;
 		}
-
 
 		/**
 		 * Generates a XMLElement representation of `<thead>` from an array
@@ -286,6 +324,11 @@
 		 * @return XMLElement
 		 */
 		public static function TableBody(Array $rows, $class = null, $id = null, Array $attributes = null){
+			General::ensureType(array(
+				array('var' => $class, 'type' => 'string', 'optional' => true),
+				array('var' => $id, 'type' => 'string', 'optional' => true)
+			));
+			
 			$tbody = new XMLElement('tbody');
 
 			if($class) $tbody->setAttribute('class', $class);
@@ -320,6 +363,12 @@
 		 * @return XMLElement
 		 */
 		public static function TableRow(Array $cells, $class = null, $id = null, $rowspan = null, Array $attributes = null){
+			General::ensureType(array(
+				array('var' => $class, 'type' => 'string', 'optional' => true),
+				array('var' => $id, 'type' => 'string', 'optional' => true),
+				array('var' => $rowspan, 'type' => 'string', 'optional' => true)
+			));
+			
 			$tr = new XMLElement('tr');
 
 			if($class) $tr->setAttribute('class', $class);
@@ -355,7 +404,12 @@
 		 * @return XMLElement
 		 */
 		public static function TableData($value, $class = null, $id = null, $colspan = null, Array $attributes = null){
-
+			General::ensureType(array(
+				array('var' => $class, 'type' => 'string', 'optional' => true),
+				array('var' => $id, 'type' => 'string', 'optional' => true),
+				array('var' => $colspan, 'type' => 'string', 'optional' => true)
+			));
+			
 			if(is_object($value)){
 				$td = new XMLElement('td');
 				$td->appendChild($value);
@@ -408,7 +462,7 @@
 		 * Generates a XMLElement representation of a `<select>`. This uses
 		 * the private function `__SelectBuildOption()` to build XMLElements of
 		 * options given the `$options` array.
-         * 
+         *
 		 * @see toolkit.Widget::__SelectBuildOption()
 		 * @param string $name
 		 *  The name attribute of the resulting `<select>`
@@ -436,6 +490,10 @@
 		 * @return XMLElement
 		 */
 		public static function Select($name, Array $options = null, Array $attributes = null){
+			General::ensureType(array(
+				array('var' => $name, 'type' => 'string')
+			));
+			
 			$obj = new XMLElement('select');
 			$obj->setAttribute('name', $name);
 
@@ -507,7 +565,7 @@
 
 			@list($value, $selected, $desc, $class, $id, $attributes) = $option;
 			if(!$desc) $desc = $value;
-
+			
 			$obj = new XMLElement('option', "$desc");
 			$obj->setSelfClosingTag(false);
 			$obj->setAttribute('value', "$value");
@@ -538,6 +596,10 @@
 		 * @return XMLElement
 		 */
 		public static function wrapFormElementWithError(XMLElement $element, $message){
+			General::ensureType(array(
+				array('var' => $message, 'type' => 'string')
+			));
+			
 			$div = new XMLElement('div');
 			$div->setAttributeArray(array('id' => 'error', 'class' => 'invalid'));
 
@@ -546,5 +608,4 @@
 
 			return $div;
 		}
-
 	}
