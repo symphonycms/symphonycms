@@ -30,9 +30,9 @@
 		 */
 		public static function Label($name = null, XMLElement $child = null, $class = null, $id = null, Array $attributes = null){
 			General::ensureType(array(
-				array('var' => $name, 'type' => 'string', 'optional' => true),
-				array('var' => $class, 'type' => 'string', 'optional' => true),
-				array('var' => $id, 'type' => 'string', 'optional' => true)
+				'name' => array('var' => $name, 'type' => 'string', 'optional' => true),
+				'class' => array('var' => $class, 'type' => 'string', 'optional' => true),
+				'id' => array('var' => $id, 'type' => 'string', 'optional' => true)
 			));
 			
 			$obj = new XMLElement('label', ($name ? $name : null));
@@ -67,9 +67,9 @@
 		 */
 		public static function Input($name, $value = null, $type = 'text', Array $attributes = null){
 			General::ensureType(array(
-				array('var' => $name, 'type' => 'string'),
-				array('var' => $value, 'type' => 'string', 'optional' => true),
-				array('var' => $type, 'type' => 'string'),
+				'name' => array('var' => $name, 'type' => 'string'),
+				'value' => array('var' => $value, 'type' => 'string', 'optional' => true),
+				'type' => array('var' => $type, 'type' => 'string'),
 			));
 			
 			$obj = new XMLElement('input');
@@ -106,10 +106,10 @@
 		 */
 		public static function Textarea($name, $rows = 15, $cols = 50, $value = null, Array $attributes = null){
 			General::ensureType(array(
-				array('var' => $name, 'type' => 'string'),
-				array('var' => $rows, 'type' => 'int'),
-				array('var' => $cols, 'type' => 'int'),
-				array('var' => $name, 'type' => 'string', 'optional' => true)
+				'name' => array('var' => $name, 'type' => 'string'),
+				'rows' => array('var' => $rows, 'type' => 'int'),
+				'cols' => array('var' => $cols, 'type' => 'int'),
+				'value' => array('var' => $value, 'type' => 'string', 'optional' => true)
 			));
 			
 			$obj = new XMLElement('textarea', $value);
@@ -149,11 +149,11 @@
 		 */
 		public static function Anchor($value, $href, $title = null, $class = null, $id = null, Array $attributes = null){
 			General::ensureType(array(
-				array('var' => $value, 'type' => 'string'),
-				array('var' => $href, 'type' => 'string'),
-				array('var' => $title, 'type' => 'string', 'optional' => true),
-				array('var' => $class, 'type' => 'string', 'optional' => true),
-				array('var' => $id, 'type' => 'string', 'optional' => true)
+				'value' => array('var' => $value, 'type' => 'string'),
+				'href' => array('var' => $href, 'type' => 'string'),
+				'title' => array('var' => $title, 'type' => 'string', 'optional' => true),
+				'class' => array('var' => $class, 'type' => 'string', 'optional' => true),
+				'id' => array('var' => $id, 'type' => 'string', 'optional' => true)
 			));
 			
 			$obj = new XMLElement('a', $value);
@@ -190,10 +190,10 @@
 		 */
 		public static function Form($action = null, $method = 'post', $class = null, $id = null, Array $attributes = null){
 			General::ensureType(array(
-				array('var' => $action, 'type' => 'string', 'optional' => true),
-				array('var' => $method, 'type' => 'string'),
-				array('var' => $class, 'type' => 'string', 'optional' => true),
-				array('var' => $id, 'type' => 'string', 'optional' => true)
+				'action' => array('var' => $action, 'type' => 'string', 'optional' => true),
+				'method' => array('var' => $method, 'type' => 'string'),
+				'class' => array('var' => $class, 'type' => 'string', 'optional' => true),
+				'id' => array('var' => $id, 'type' => 'string', 'optional' => true)
 			));
 			
 			$obj = new XMLElement('form');
@@ -233,8 +233,8 @@
 		 */
 		public static function Table(XMLElement $header = null, XMLElement $footer = null, XMLElement $body = null, $class = null, $id = null, Array $attributes = null){
 			General::ensureType(array(
-				array('var' => $class, 'type' => 'string', 'optional' => true),
-				array('var' => $id, 'type' => 'string', 'optional' => true)
+				'class' => array('var' => $class, 'type' => 'string', 'optional' => true),
+				'id' => array('var' => $id, 'type' => 'string', 'optional' => true)
 			));
 			
  			$obj = new XMLElement('table');
@@ -325,8 +325,8 @@
 		 */
 		public static function TableBody(Array $rows, $class = null, $id = null, Array $attributes = null){
 			General::ensureType(array(
-				array('var' => $class, 'type' => 'string', 'optional' => true),
-				array('var' => $id, 'type' => 'string', 'optional' => true)
+				'class' => array('var' => $class, 'type' => 'string', 'optional' => true),
+				'id' => array('var' => $id, 'type' => 'string', 'optional' => true)
 			));
 			
 			$tbody = new XMLElement('tbody');
@@ -364,9 +364,9 @@
 		 */
 		public static function TableRow(Array $cells, $class = null, $id = null, $rowspan = null, Array $attributes = null){
 			General::ensureType(array(
-				array('var' => $class, 'type' => 'string', 'optional' => true),
-				array('var' => $id, 'type' => 'string', 'optional' => true),
-				array('var' => $rowspan, 'type' => 'string', 'optional' => true)
+				'class' => array('var' => $class, 'type' => 'string', 'optional' => true),
+				'id' => array('var' => $id, 'type' => 'string', 'optional' => true),
+				'rowspan' => array('var' => $rowspan, 'type' => 'string', 'optional' => true)
 			));
 			
 			$tr = new XMLElement('tr');
@@ -405,9 +405,9 @@
 		 */
 		public static function TableData($value, $class = null, $id = null, $colspan = null, Array $attributes = null){
 			General::ensureType(array(
-				array('var' => $class, 'type' => 'string', 'optional' => true),
-				array('var' => $id, 'type' => 'string', 'optional' => true),
-				array('var' => $colspan, 'type' => 'string', 'optional' => true)
+				'class' => array('var' => $class, 'type' => 'string', 'optional' => true),
+				'id' => array('var' => $id, 'type' => 'string', 'optional' => true),
+				'colspan' => array('var' => $colspan, 'type' => 'string', 'optional' => true)
 			));
 			
 			if(is_object($value)){
@@ -491,7 +491,7 @@
 		 */
 		public static function Select($name, Array $options = null, Array $attributes = null){
 			General::ensureType(array(
-				array('var' => $name, 'type' => 'string')
+				'name' => array('var' => $name, 'type' => 'string')
 			));
 			
 			$obj = new XMLElement('select');
@@ -597,7 +597,7 @@
 		 */
 		public static function wrapFormElementWithError(XMLElement $element, $message){
 			General::ensureType(array(
-				array('var' => $message, 'type' => 'string')
+				'message' => array('var' => $message, 'type' => 'string')
 			));
 			
 			$div = new XMLElement('div');
