@@ -248,6 +248,7 @@
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Lang::get());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 0);
+			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge,chrome=1')), 1);
 
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 40);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/admin.css', 'screen', 41);
