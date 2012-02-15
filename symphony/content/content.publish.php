@@ -21,11 +21,35 @@
 		public function sort(&$sort, &$order, $params) {
 			$section = $params['current-section'];
 
-			if(is_null($sort)){
-				$sort = $section->getDefaultSortingField();
+			// Reset the Section's `entry_order` and `entry_order_direction`
+			// to defaults, which are `null` and `asc`.
+			if($params['unsort']) {
+				SectionManager::edit(
+					$section->get('id'),
+					array('entry_order' => null, 'entry_order_direction' => 'asc')
+				);
+				redirect(Administration::instance()->getCurrentPageURL());
 			}
 
-			if(is_numeric($sort)){
+			// If `$sort` is null, resolve it from `tbl_sections`, or just use
+			// the ID of the first available field.
+			if(is_null($sort)) {
+				if(is_null($section->get('entry_order'))) {
+					$sort = $section->getDefaultSortingField();
+				}
+				else {
+					$sort = $section->get('entry_order');
+				}
+			}
+
+			if(is_numeric($sort)) {
+				// Ensure that this field is infact sortable.
+				if(($field = FieldManager::fetch($sort)) !== false && !$field->isSortable()) {
+					$sort = null;
+				}
+
+				// If the sort order or direction differs from what is saved,
+				// update the database and then redirect to the new URL
 				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
 					SectionManager::edit(
 						$section->get('id'),
@@ -33,7 +57,6 @@
 					);
 
 					$query = '?sort=' . $sort . '&order=' . $order;
-
 					redirect(Administration::instance()->getCurrentPageURL() . $query . $params['filters']);
 				}
 			}
@@ -119,12 +142,12 @@
 
 				$filter_querystring = preg_replace("/&amp;$/", '', $filter_querystring);
 				$prepopulate_querystring = preg_replace("/&amp;$/", '', $prepopulate_querystring);
-
 			}
 
 			Sortable::initialize($this, $entries, $sort, $order, array(
 				'current-section' => $section,
-				'filters' => ($filter_querystring ? "&amp;" . $filter_querystring : '')
+				'filters' => ($filter_querystring ? "&amp;" . $filter_querystring : ''),
+				'unsort' => isset($_REQUEST['unsort'])
 			));
 
 			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter_querystring ? "&amp;" . $filter_querystring : ''));

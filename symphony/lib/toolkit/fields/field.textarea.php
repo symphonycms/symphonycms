@@ -92,7 +92,7 @@
 
 			// Textarea Size
 			$label = Widget::Label(__('Number of default rows'));
-			$input = Widget::Input('fields['.$this->get('sortorder').'][size]', $this->get('size'));
+			$input = Widget::Input('fields['.$this->get('sortorder').'][size]', (string)$this->get('size'));
 			$label->appendChild($input);
 
 			$div = new XMLElement('div');
@@ -138,7 +138,7 @@
 			$label = Widget::Label($this->get('label'));
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 
-			$textarea = Widget::Textarea('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, $this->get('size'), '50', (strlen($data['value']) != 0 ? General::sanitize($data['value']) : NULL));
+			$textarea = Widget::Textarea('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (int)$this->get('size'), 50, (strlen($data['value']) != 0 ? General::sanitize($data['value']) : NULL));
 
 			if($this->get('formatter') != 'none') $textarea->setAttribute('class', $this->get('formatter'));
 

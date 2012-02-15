@@ -1,14 +1,5 @@
-._*
-.Apple*
-.DS_Store
-*config.php
 .htaccess
 workspace/
 manifest/
-*.esproj
-*~
-*.geany
 install-log.txt
-_docs/
-symphony-2.wiki/
 install/logs/

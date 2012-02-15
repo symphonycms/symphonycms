@@ -1305,5 +1305,64 @@
 		public static function hash($input, $algorithm='sha1'){
 			return call_user_func($algorithm, $input);
 		}
-
+		
+		/**
+		 * Helper to cut down on variables' type check.
+		 * Currently known types are the PHP defaults.
+		 * Uses `is_XXX()` functions internally.
+		 *
+		 * @since Symphony 2.3
+		 *
+		 * @param array $params - an array of arrays containing variables info
+		 *
+		 * 	Array[
+		 * 		$key1 => $value1
+		 * 		$key2 => $value2
+		 *		...
+		 * 	]
+		 *
+		 *  $key = the name of the variable
+		 *  $value = Array[
+		 *		'var' => the variable to check
+		 *		'type' => enforced type. Must match the XXX part from an `is_XXX()` function
+		 *		'optional' => boolean. If this is set, the default value of the variable must be null
+		 *	]
+		 *
+		 * @throws InvalidArgumentException if validator doesn't exist.
+		 * @throws InvalidArgumentException if variable type validation fails.
+		 *
+		 * @example
+		 *  $color = 'red';
+		 *  $foo = null;
+		 *  $bar = 21;
+		 *
+		 * 	General::ensureType(array(
+		 * 		'color' => array('var' => $color, 'type'=> 'string'),               // success
+		 * 		'foo' => array('var' => $foo, 'type'=> 'int',  'optional' => true), // success
+		 * 		'bar' => array('var' => $bar, 'type'=> 'string')                    // fail
+		 * 	));
+		 */
+		public static function ensureType(array $params){
+			
+			foreach( $params as $name => $param ){
+				
+				if( isset($param['optional']) && ($param['optional'] === true) ){
+					if( is_null($param['var']) ) continue;
+					// if not null, check it's type
+				}
+				
+				// validate the validator
+				$validator = 'is_'.$param['type'];
+				
+				if( !function_exists($validator) ){
+					throw new InvalidArgumentException(__('Enforced type `%1$s` for argument `$%2$s` does not match any known variable types.', array($param['type'], $name)));
+				}
+				
+				// validate variable type
+				if( !call_user_func($validator, $param['var']) ){
+					throw new InvalidArgumentException(__('Argument `$%1$s` is not of type `%2$s`, given `%3$s`.', array($name, $param['type'], gettype($param['var']))));
+				}
+				
+			}
+		}
 	}
