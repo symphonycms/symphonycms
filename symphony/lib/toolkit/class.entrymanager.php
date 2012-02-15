@@ -341,13 +341,13 @@
 			}
 
 			else if (self::$_fetchSortField && $field = FieldManager::fetch(self::$_fetchSortField)) {
-				$field->buildSortingSQL($joins, $where, $sort, self::$_fetchSortDirection);
-				if (!$group) $group = $field->requiresSQLGrouping();
+				if($field->isSortable()) $field->buildSortingSQL($joins, $where, $sort, self::$_fetchSortDirection);
+				if(!$group) $group = $field->requiresSQLGrouping();
 			}
 
 			else if ($section->get('entry_order') && $field = FieldManager::fetch($section->get('entry_order'))) {
-				$field->buildSortingSQL($joins, $where, $sort, $section->get('entry_order_direction'));
-				if (!$group) $group = $field->requiresSQLGrouping();
+				if($field->isSortable()) $field->buildSortingSQL($joins, $where, $sort, $section->get('entry_order_direction'));
+				if(!$group) $group = $field->requiresSQLGrouping();
 			}
 
 			else {

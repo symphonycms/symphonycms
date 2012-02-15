@@ -49,20 +49,23 @@
 		}
 
 		/**
-		 * This function returns the default field this Section will
-		 * be sorted by (if visibile). If no fields exist or none of them
-		 * is visible in the entries list, 'id' is returned instead.
+		 * Returns the default field this Section will be sorted by.
+		 * This is determined by the first visible field that is allowed to
+		 * to be sorted (defined by the field's `isSortable()` function).
+		 * If no fields exist or none of them are visible in the entries table,
+		 * 'id' is returned instead.
 		 *
+		 * @since Symphony 2.3
 		 * @return string
 		 *  Either the field ID or the string 'id'.
 		 */
 		public function getDefaultSortingField(){
-			$fields = $this->fetchFields();
+			$fields = $this->fetchVisibleColumns();
 
-			if(!empty($fields)){
-				foreach($fields as $f) {
-					if($f->get('show_column') == 'yes') return $f->get('id');
-				}
+			foreach($fields as $field) {
+				if(!$field->isSortable()) continue;
+
+				return $field->get('id');
 			}
 
 			return 'id';
