@@ -79,7 +79,7 @@
 		 * section, but the field that links these sections has hidden this association
 		 * so an Articles column will not appear on the Author's Publish Index
 		 *
-		 * @param boolean $respect_visibilty
+		 * @param boolean $respect_visibility
 		 *  Whether to return all the section associations regardless of if they
 		 *  are deemed visible or not. Defaults to false, which will return all
 		 *  associations.

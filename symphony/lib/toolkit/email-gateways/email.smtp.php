@@ -250,11 +250,11 @@
 			$div->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('Host'));
-			$label->appendChild(Widget::Input('settings[email_smtp][host]',	 $this->_host));
+			$label->appendChild(Widget::Input('settings[email_smtp][host]', $this->_host));
 			$div->appendChild($label);
 
 			$label = Widget::Label(__('Port'));
-			$label->appendChild(Widget::Input('settings[email_smtp][port]', $this->_port));
+			$label->appendChild(Widget::Input('settings[email_smtp][port]', (string)$this->_port));
 			$div->appendChild($label);
 			$group->appendChild($div);
 

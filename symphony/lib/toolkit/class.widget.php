@@ -69,7 +69,7 @@
 			General::ensureType(array(
 				'name' => array('var' => $name, 'type' => 'string'),
 				'value' => array('var' => $value, 'type' => 'string', 'optional' => true),
-				'type' => array('var' => $type, 'type' => 'string'),
+				'type' => array('var' => $type, 'type' => 'string', 'optional' => true),
 			));
 
 			$obj = new XMLElement('input');
@@ -353,7 +353,7 @@
 		 *  The class attribute of the resulting `<tr>`
 		 * @param string $id (optional)
 		 *  The id attribute of the resulting `<tr>`
-		 * @param string $rowspan (optional)
+		 * @param int $rowspan (optional)
 		 *  The rowspan attribute of the resulting `<tr>`
 		 * @param array $attributes (optional)
 		 *  Any additional attributes can be included in an associative array with
@@ -366,7 +366,7 @@
 			General::ensureType(array(
 				'class' => array('var' => $class, 'type' => 'string', 'optional' => true),
 				'id' => array('var' => $id, 'type' => 'string', 'optional' => true),
-				'rowspan' => array('var' => $rowspan, 'type' => 'string', 'optional' => true)
+				'rowspan' => array('var' => $rowspan, 'type' => 'int', 'optional' => true)
 			));
 
 			$tr = new XMLElement('tr');
@@ -394,7 +394,7 @@
 		 *  The class attribute of the resulting `<td>`
 		 * @param string $id (optional)
 		 *  The id attribute of the resulting `<td>`
-		 * @param string $colspan (optional)
+		 * @param int $colspan (optional)
 		 *  The colspan attribute of the resulting `<td>`
 		 * @param array $attributes (optional)
 		 *  Any additional attributes can be included in an associative array with
@@ -407,7 +407,7 @@
 			General::ensureType(array(
 				'class' => array('var' => $class, 'type' => 'string', 'optional' => true),
 				'id' => array('var' => $id, 'type' => 'string', 'optional' => true),
-				'colspan' => array('var' => $colspan, 'type' => 'string', 'optional' => true)
+				'colspan' => array('var' => $colspan, 'type' => 'int', 'optional' => true)
 			));
 
 			if(is_object($value)){
@@ -430,7 +430,7 @@
 		}
 
 		/**
-		 * Generates a XMLElement representation fo a `<time>`
+		 * Generates a XMLElement representation of a `<time>`
 		 *
 		 * @since Symphony 2.3
 		 * @param string $string
