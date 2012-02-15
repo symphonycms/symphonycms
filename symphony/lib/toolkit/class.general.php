@@ -1355,12 +1355,12 @@
 				$validator = 'is_'.$param['type'];
 				
 				if( !function_exists($validator) ){
-					throw new InvalidArgumentException(__('Enforced type `%1$s` for argument `#%2$s` does not match any known variable types.', array($param['type'], $name)));
+					throw new InvalidArgumentException(__('Enforced type `%1$s` for argument `$%2$s` does not match any known variable types.', array($param['type'], $name)));
 				}
 				
 				// validate variable type
 				if( !call_user_func($validator, $param['var']) ){
-					throw new InvalidArgumentException(__('Argument `#%1$s` is not of type `%2$s`.', array($name, $param['type'])));
+					throw new InvalidArgumentException(__('Argument `$%1$s` is not of type `%2$s`, given `%3$s`.', array($name, $param['type'], gettype($param['var']))));
 				}
 				
 			}
