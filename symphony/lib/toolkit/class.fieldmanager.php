@@ -273,7 +273,7 @@
 						// Get the context for this field from our previous queries.
 						$context = $field_contexts[$f['type']][$f['id']];
 
-                        if (is_array($context) && !empty($context)) {
+    					if (is_array($context) && !empty($context)) {
     						try {
     							unset($context['id']);
     							$field->setArray($context);
@@ -285,7 +285,7 @@
     								array($f['id'], $f['type'])
     							));
     						}
-						}
+    					}
 
 						self::$_initialiased_fields[$f['id']] = $field;
 					}
