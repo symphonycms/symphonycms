@@ -273,16 +273,18 @@
 						// Get the context for this field from our previous queries.
 						$context = $field_contexts[$f['type']][$f['id']];
 
-						try {
-							unset($context['id']);
-							$field->setArray($context);
-						}
-
-						catch (Exception $e) {
-							throw new Exception(__(
-								'Settings for field %s could not be found in table tbl_fields_%s.',
-								array($f['id'], $f['type'])
-							));
+                        if (is_array($context) && !empty($context)) {
+    						try {
+    							unset($context['id']);
+    							$field->setArray($context);
+    						}
+    
+    						catch (Exception $e) {
+    							throw new Exception(__(
+    								'Settings for field %s could not be found in table tbl_fields_%s.',
+    								array($f['id'], $f['type'])
+    							));
+    						}
 						}
 
 						self::$_initialiased_fields[$f['id']] = $field;
