@@ -1,12 +1,13 @@
 /*---------------------------------------------------------------------------------
 	Reset
 ---------------------------------------------------------------------------------*/
-	
+
 	* {
 		border: none;
 		-ms-box-sizing: border-box;
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
 		color: inherit;
 		font: inherit;
 		line-height: 140%;
@@ -19,7 +20,7 @@
 		font: 80% sans-serif;
 		overflow: hidden;
 	}
-	
+
 	a {
 		color: hsl(210, 5%, 70%);
 		text-decoration: none;
@@ -28,11 +29,11 @@
 	a:hover {
 		color: hsl(210, 5%, 90%);
 	}
-	
+
 /*---------------------------------------------------------------------------------
 	Header
 ---------------------------------------------------------------------------------*/
-	
+
 	#header {
 		background: hsl(210, 5%, 20%);
 		border-left: 1px solid hsl(210, 5%, 30%);
@@ -59,7 +60,7 @@
 	#header h1 a {
 		color: #ffffff;
 	}
-	
+
 	#header #navigation {
 		margin: 5px 0 0 0;
 	}
@@ -67,7 +68,7 @@
 		display: inline;
 		margin: 0 0.5em 0 0;
 	}
-	
+
 	#header #jump {
 		float: left;
 		margin: 20px 0 0 -20px;
@@ -92,11 +93,11 @@
 		background: hsl(210, 5%, 25%);
 		color: hsl(210, 5%, 100%);
 	}
-	
+
 /*---------------------------------------------------------------------------------
 	Content
 ---------------------------------------------------------------------------------*/
-	
+
 	#content {
 		background: hsl(210, 5%, 10%);
 		bottom: 0;
@@ -106,5 +107,5 @@
 		right: 270px;
 		top: 0;
 	}
-	
+
 /*-------------------------------------------------------------------------------*/

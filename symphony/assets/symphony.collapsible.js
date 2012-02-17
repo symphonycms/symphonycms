@@ -144,14 +144,14 @@
 							return index;
 						};
 					});
-					localStorage[storage] = collapsed.get().join(',');
+					window.localStorage[storage] = collapsed.get().join(',');
 				}
 			});
 			
 			// Restore states
 			object.on('restore.collapsible', function(event) {
-				if(settings.save_state === true && Symphony.Support.localStorage === true && localStorage[storage]) {
-					$.each(localStorage[storage].split(','), function(index, value) {
+				if(settings.save_state === true && Symphony.Support.localStorage === true && window.localStorage[storage]) {
+					$.each(window.localStorage[storage].split(','), function(index, value) {
 						var collapsed = object.find(settings.items).eq(value);
 						if(collapsed.has('.invalid').length == 0) {
 							collapsed.trigger('collapse.collapsible', [0]);

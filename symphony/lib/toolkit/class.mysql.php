@@ -63,9 +63,10 @@
 	 * functions, some convenience functions are provided to return results
 	 * in different ways. Symphony uses a prefix to namespace it's tables in a
 	 * database, allowing it play nice with other applications installed on the
-	 * database. An errors that occur during a query throw a DatabaseException.
+	 * database. An errors that occur during a query throw a `DatabaseException`.
 	 * By default, Symphony logs all queries to be used for Profiling and Debug
-	 * devkit extensions.
+	 * devkit extensions when a Developer is logged in. When a developer is not
+	 * logged in, all queries and errors are made available with delegates.
 	 */
 	Class MySQL {
 
@@ -243,7 +244,7 @@
 
 		/**
 		 * Creates a connect to the database server given the credentials. If an
-		 * error occurs, a DatabaseException is thrown, otherwise true is returned
+		 * error occurs, a `DatabaseException` is thrown, otherwise true is returned
 		 *
 		 * @param string $host
 		 *  Defaults to null, which MySQL assumes as localhost.
@@ -409,6 +410,7 @@
 		 * of objects or an array of associative arrays. The default is objects. This
 		 * function will return boolean, but set `$this->_lastResult` to the result.
 		 *
+		 * @uses PostQueryExecution
 		 * @param string $query
 		 *  The full SQL query to execute.
 		 * @param string $type
@@ -449,7 +451,7 @@
 			$this->_lastQueryHash = $query_hash;
 			$this->_result = mysql_query($query, MySQL::$_connection['id']);
             $this->_lastInsertID = mysql_insert_id(MySQL::$_connection['id']);
-            
+
 			self::$_query_count++;
 
 			if(mysql_error()){
@@ -758,8 +760,9 @@
 		/**
 		 * If an error occurs in a query, this function is called which logs
 		 * the last query and the error number and error message from MySQL
-		 * before throwing a new DatabaseException
+		 * before throwing a `DatabaseException`
 		 *
+		 * @uses QueryExecutionError
 		 * @return DatabaseException
 		 */
 		private function __error() {
@@ -767,15 +770,15 @@
 			$errornum = mysql_errno();
 
 			/**
-			 * After a query execution has failed this delegate will provide the query, the query_hash,
-			 * the error message and the error number.
+			 * After a query execution has failed this delegate will provide the query,
+			 * query hash, error message and the error number.
 			 *
-			 * Note that this function only starts logging once the ExtensionManager
+			 * Note that this function only starts logging once the `ExtensionManager`
 			 * is available, which means it will not fire for the first couple of
 			 * queries that set the character set.
 			 *
 			 * @since Symphony 2.3
-			 * @delegate QueryExectionError
+			 * @delegate QueryExecutionError
 			 * @param string $context
 			 * '/frontend/' or '/backend/'
 			 * @param string $query
@@ -788,21 +791,19 @@
 			 *  The error number that corresponds with the MySQL error message
 			 */
 			if(Symphony::ExtensionManager() instanceof ExtensionManager) {
-				Symphony::ExtensionManager()->notifyMembers('QueryExectionError', class_exists('Administration') ? '/backend/' : '/frontend/', array(
+				Symphony::ExtensionManager()->notifyMembers('QueryExecutionError', class_exists('Administration') ? '/backend/' : '/frontend/', array(
 					'query' => $this->_lastQuery,
 					'query_hash' => $this->_lastQueryHash,
 					'msg' => $msg,
 					'num' => $errornum
 				));
-			} else {
-				self::$_log['error'][] = array(
-					'query' => $this->_lastQuery,
-					'msg' => $msg,
-					'num' => $errornum
-				);
 			}
 
-			throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query: %3$s', array($errornum, $msg, $this->_lastQuery)), end(self::$_log['error']));
+			throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query: %3$s', array($errornum, $msg, $this->_lastQuery)), array(
+				'msg' => $msg,
+				'error' => $errornum,
+				'query' => $this->_lastQuery
+			));
 		}
 
 		/**

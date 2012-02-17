@@ -5,8 +5,8 @@
 (function($) {
 
 	/**
-	 * This plugin shows and hides elements based on the value of a select box. 
-	 * If there is only one option, the select box will be hidden and 
+	 * This plugin shows and hides elements based on the value of a select box.
+	 * If there is only one option, the select box will be hidden and
 	 * the single element will be shown.
 	 *
 	 * @name $.symphonyPickable
@@ -34,7 +34,7 @@
 		objects.on('change.pickable', function(event) {
 			var object = $(this),
 				choice = object.val(),
-				relation = object.attr('name') || object.attr('data-relation'),
+				relation = object.attr('name') || object.attr('data-relation'),
 				related = pickables.filter('[data-relation="' + relation + '"]'),
 				selection = pickables.filter('#' + choice),
 				request;
@@ -42,17 +42,17 @@
 			// Hide all choices
 			object.trigger('pickstart.pickable');
 			related.hide();
-			
+
 			// Selection found
 			if(selection.length == 1) {
 				selection.show().trigger('pick.pickable');
 				object.trigger('pickstop.pickable');
 			}
-			
+
 			// Selection not found
 			else {
-				request = choice.data('request');
-				
+				request = object.data('request');
+
 				// Fetch selection
 				if(request) {
 					$.ajax({
@@ -71,7 +71,7 @@
 		});
 
 	/*-----------------------------------------------------------------------*/
-	
+
 		var content = $(settings.content),
 			pickables = $(settings.pickables);
 
@@ -96,12 +96,12 @@
 				object.hide();
 			}
 		});
-		
+
 		// Initialise content
 		objects.trigger('change.pickable');
-		
+
 	/*-----------------------------------------------------------------------*/
-		
+
 		return objects;
 	};
 

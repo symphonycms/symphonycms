@@ -21,21 +21,47 @@
 		public function sort(&$sort, &$order, $params) {
 			$section = $params['current-section'];
 
-			if(!$sort){
-				$sort = ($section->get('entry_order')) ? $section->get('entry_order') : $section->getDefaultSortingField();
-				$order = $section->get('entry_order_direction');
-
-				$query = '?sort=' . $sort . '&order=' . $order;
-
-				redirect(Administration::instance()->getCurrentPageURL() . $query . $params['filters']);
-			}
-			else if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
+			// Reset the Section's `entry_order` and `entry_order_direction`
+			// to defaults, which are `null` and `asc`.
+			if($params['unsort']) {
 				SectionManager::edit(
 					$section->get('id'),
-					array('entry_order' => $sort, 'entry_order_direction' => $order)
+					array('entry_order' => null, 'entry_order_direction' => 'asc')
 				);
+				redirect(Administration::instance()->getCurrentPageURL());
+			}
 
-				EntryManager::setFetchSortingField($sort);
+			// If `$sort` is null, resolve it from `tbl_sections`, or just use
+			// the ID of the first available field.
+			if(is_null($sort)) {
+				if(is_null($section->get('entry_order'))) {
+					$sort = $section->getDefaultSortingField();
+				}
+				else {
+					$sort = $section->get('entry_order');
+				}
+			}
+
+			if(is_numeric($sort)) {
+				// Ensure that this field is infact sortable.
+				if(($field = FieldManager::fetch($sort)) !== false && !$field->isSortable()) {
+					$sort = null;
+				}
+
+				// If the sort order or direction differs from what is saved,
+				// update the database and then redirect to the new URL
+				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
+					SectionManager::edit(
+						$section->get('id'),
+						array('entry_order' => $sort, 'entry_order_direction' => $order)
+					);
+
+					$query = '?sort=' . $sort . '&order=' . $order;
+					redirect(Administration::instance()->getCurrentPageURL() . $query . $params['filters']);
+				}
+			}
+			else if($sort == 'id'){
+				EntryManager::setFetchSortingField('id');
 				EntryManager::setFetchSortingDirection($order);
 			}
 		}
@@ -116,12 +142,12 @@
 
 				$filter_querystring = preg_replace("/&amp;$/", '', $filter_querystring);
 				$prepopulate_querystring = preg_replace("/&amp;$/", '', $prepopulate_querystring);
-
 			}
 
 			Sortable::initialize($this, $entries, $sort, $order, array(
 				'current-section' => $section,
-				'filters' => ($filter_querystring ? "&amp;" . $filter_querystring : '')
+				'filters' => ($filter_querystring ? "&amp;" . $filter_querystring : ''),
+				'unsort' => isset($_REQUEST['unsort'])
 			));
 
 			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter_querystring ? "&amp;" . $filter_querystring : ''));
@@ -426,18 +452,32 @@
 					case 'delete':
 
 						/**
-						 * Prior to deletion of entries. Array of Entry ID's is provided.
-						 * The array can be manipulated
+						 * Prior to deletion of entries. An array of Entry ID's is provided which
+						 * can be manipulated. This delegate was renamed from `Delete` to `EntryPreDelete`
+						 * in Symphony 2.3.
 						 *
-						 * @delegate Delete
+						 * @delegate EntryPreDelete
 						 * @param string $context
 						 * '/publish/'
-						 * @param array $checked
-						 *	An array of Entry ID's passed by reference
+						 * @param array $entry_id
+						 *  An array of Entry ID's passed by reference
 						 */
-						Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
+						Symphony::ExtensionManager()->notifyMembers('EntryPreDelete', '/publish/', array('entry_id' => &$checked));
 
 						EntryManager::delete($checked);
+
+						/**
+						 * After the deletion of entries, this delegate provides an array of Entry ID's
+						 * that were deleted.
+						 *
+						 * @since Symphony 2.3
+						 * @delegate EntryPostDelete
+						 * @param string $context
+						 * '/publish/'
+						 * @param array $entry_id
+						 *  An array of Entry ID's that were deleted.
+						 */
+						Symphony::ExtensionManager()->notifyMembers('EntryPostDelete', '/publish/', array('entry_id' => $checked));
 
 						redirect($_SERVER['REQUEST_URI']);
 
@@ -758,30 +798,31 @@
 					$link = preg_replace("/&amp;$/", '', $link);
 				}
 
-				switch($flag){
+				// These flags are only relevant if there are no errors
+				if(empty($this->_errors)) {
+					switch($flag){
+						case 'saved':
+							$this->pageAlert(
+								__('Entry updated at %s.', array(DateTimeObj::getTimeAgo()))
+								. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
+								. __('Create another?')
+								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
+								. __('View all Entries')
+								. '</a>'
+								, Alert::SUCCESS);
+							break;
 
-					case 'saved':
-						$this->pageAlert(
-							__('Entry updated at %s.', array(DateTimeObj::getTimeAgo()))
-							. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
-							. __('Create another?')
-							. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
-							. __('View all Entries')
-							. '</a>'
-							, Alert::SUCCESS);
-						break;
-
-					case 'created':
-						$this->pageAlert(
-							__('Entry created at %s.', array(DateTimeObj::getTimeAgo()))
-							. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
-							. __('Create another?')
-							. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
-							. __('View all Entries')
-							. '</a>'
-							, Alert::SUCCESS);
-						break;
-
+						case 'created':
+							$this->pageAlert(
+								__('Entry created at %s.', array(DateTimeObj::getTimeAgo()))
+								. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
+								. __('Create another?')
+								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
+								. __('View all Entries')
+								. '</a>'
+								, Alert::SUCCESS);
+							break;
+					}
 				}
 			}
 
@@ -957,19 +998,33 @@
 
 			else if(@array_key_exists('delete', $_POST['action']) && is_numeric($entry_id)){
 				/**
-				 * Prior to deletion of entries. Array of Entry ID's is provided.
-				 * The array can be manipulated
+				 * Prior to deletion of entries. An array of Entry ID's is provided which
+				 * can be manipulated. This delegate was renamed from `Delete` to `EntryPreDelete`
+				 * in Symphony 2.3.
 				 *
-				 * @delegate Delete
+				 * @delegate EntryPreDelete
 				 * @param string $context
 				 * '/publish/'
-				 * @param array $checked
+				 * @param array $entry_id
 				 *	An array of Entry ID's passed by reference
 				 */
 				$checked = array($entry_id);
-				Symphony::ExtensionManager()->notifyMembers('Delete', '/publish/', array('entry_id' => &$checked));
+				Symphony::ExtensionManager()->notifyMembers('EntryPreDelete', '/publish/', array('entry_id' => &$checked));
 
 				EntryManager::delete($checked);
+
+				/**
+				 * After the deletion of entries, this delegate provides an array of Entry ID's
+				 * that were deleted.
+				 *
+				 * @since Symphony 2.3
+				 * @delegate EntryPostDelete
+				 * @param string $context
+				 * '/publish/'
+				 * @param array $entry_id
+				 *  An array of Entry ID's that were deleted.
+				 */
+				Symphony::ExtensionManager()->notifyMembers('EntryPostDelete', '/publish/', array('entry_id' => $checked));
 
 				redirect(SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/');
 			}
@@ -997,3 +1052,4 @@
 		}
 
 	}
+

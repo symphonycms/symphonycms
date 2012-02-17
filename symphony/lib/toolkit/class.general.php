@@ -9,7 +9,9 @@
 	Class General{
 
 		/**
-		 * Convert any special characters into their entity equivalents.
+		 * Convert any special characters into their entity equivalents. Since
+		 * Symphony 2.3, this function assumes UTF-8 and will not double
+		 * encode strings.
 		 *
 		 * @param string $source
 		 *  a string to operate on.
@@ -17,7 +19,7 @@
 		 *  the encoded version of the string.
 		 */
 		public static function sanitize($source) {
-			$source = htmlspecialchars($source);
+			$source = htmlspecialchars($source, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
 
 			return $source;
 		}
@@ -31,7 +33,7 @@
 		 *  the decoded version of the string
 		 */
 		public static function reverse_sanitize($str){
-		   return htmlspecialchars_decode($str);
+		   return htmlspecialchars_decode($str, ENT_COMPAT);
 		}
 
 		/**
@@ -174,7 +176,7 @@
 		 * @param array &$arr
 		 *  Pointer to an array to operate on. Can be multi-dimensional.
 		 */
-		public static function cleanArray(Array &$arr) {
+		public static function cleanArray(array &$arr) {
 			foreach($arr as $k => $v){
 				if(is_array($v))
 					self::cleanArray($arr[$k]);
@@ -209,7 +211,7 @@
 		 *  the current prefix of the keys to insert into the output array. this
 		 *  defaults to null.
 		 */
-		public static function flattenArray(Array &$source, &$output = null, $path = null) {
+		public static function flattenArray(array &$source, &$output = null, $path = null) {
 			if (is_null($output)) $output = array();
 
 			foreach ($source as $key => $value) {
@@ -248,7 +250,7 @@
 		 * @param string $path
 		 *  the current prefix of the keys to insert into the output array.
 		 */
-		protected static function flattenArraySub(Array &$output, Array &$source, $path) {
+		protected static function flattenArraySub(array &$output, array &$source, $path) {
 			foreach ($source as $key => $value) {
 				$key = $path . ':' . $key;
 
@@ -259,7 +261,7 @@
 
 		/**
 		 * Create friendly passwords such as 4LargeWorms or 11HairyMonkeys. This
-		 * uses the rand() function. Thus, if the random number generated is seeded
+		 * uses the `rand()` function. Thus, if the random number generated is seeded
 		 * appropriately, this function will return the same password consistently.
 		 *
 		 * @return string
@@ -529,7 +531,7 @@
 		/**
 		 * Recursively deletes all files and directories given a directory. This
 		 * function has two path. This function optionally takes a `$silent` parameter,
-		 * which when false will throw an Exception if there is an error deleting a file
+		 * which when `false` will throw an `Exception` if there is an error deleting a file
 		 * or folder.
 		 *
 		 * @since Symphony 2.3
@@ -653,7 +655,7 @@
 		 * of both. If there is no merge_file_post_data function defined then
 		 * such a function is created. This is necessary to overcome PHP's ability
 		 * to handle forms. This overcomes PHP's convoluted `$_FILES` structure
-		 * to make it simpler to access multi-part/formdata.
+		 * to make it simpler to access `multi-part/formdata`.
 		 *
 		 * @return array
 		 *  a flat array containing the flattened contents of both `$_POST` and
@@ -1171,7 +1173,7 @@
 		/**
 		 * Move a file from the source path to the destination path and name and
 		 * set its permissions to the input permissions. This will ignore errors
-		 * in the is_uploaded_file(), move_uploaded_file() and chmod() functions.
+		 * in the `is_uploaded_file()`, `move_uploaded_file()` and `chmod()` functions.
 		 *
 		 * @param string $dest_path
 		 *  the file path to which the source file is to be moved.
@@ -1289,7 +1291,7 @@
 		}
 
 		/**
-		 * Uses SHA1 or MD5 to create a hash based on some input
+		 * Uses `SHA1` or `MD5` to create a hash based on some input
 		 * This function is currently very basic, but would allow
 		 * future expansion. Salting the hash comes to mind.
 		 *
@@ -1303,5 +1305,64 @@
 		public static function hash($input, $algorithm='sha1'){
 			return call_user_func($algorithm, $input);
 		}
-
+		
+		/**
+		 * Helper to cut down on variables' type check.
+		 * Currently known types are the PHP defaults.
+		 * Uses `is_XXX()` functions internally.
+		 *
+		 * @since Symphony 2.3
+		 *
+		 * @param array $params - an array of arrays containing variables info
+		 *
+		 * 	Array[
+		 * 		$key1 => $value1
+		 * 		$key2 => $value2
+		 *		...
+		 * 	]
+		 *
+		 *  $key = the name of the variable
+		 *  $value = Array[
+		 *		'var' => the variable to check
+		 *		'type' => enforced type. Must match the XXX part from an `is_XXX()` function
+		 *		'optional' => boolean. If this is set, the default value of the variable must be null
+		 *	]
+		 *
+		 * @throws InvalidArgumentException if validator doesn't exist.
+		 * @throws InvalidArgumentException if variable type validation fails.
+		 *
+		 * @example
+		 *  $color = 'red';
+		 *  $foo = null;
+		 *  $bar = 21;
+		 *
+		 * 	General::ensureType(array(
+		 * 		'color' => array('var' => $color, 'type'=> 'string'),               // success
+		 * 		'foo' => array('var' => $foo, 'type'=> 'int',  'optional' => true), // success
+		 * 		'bar' => array('var' => $bar, 'type'=> 'string')                    // fail
+		 * 	));
+		 */
+		public static function ensureType(array $params){
+			
+			foreach( $params as $name => $param ){
+				
+				if( isset($param['optional']) && ($param['optional'] === true) ){
+					if( is_null($param['var']) ) continue;
+					// if not null, check it's type
+				}
+				
+				// validate the validator
+				$validator = 'is_'.$param['type'];
+				
+				if( !function_exists($validator) ){
+					throw new InvalidArgumentException(__('Enforced type `%1$s` for argument `$%2$s` does not match any known variable types.', array($param['type'], $name)));
+				}
+				
+				// validate variable type
+				if( !call_user_func($validator, $param['var']) ){
+					throw new InvalidArgumentException(__('Argument `$%1$s` is not of type `%2$s`, given `%3$s`.', array($name, $param['type'], gettype($param['var']))));
+				}
+				
+			}
+		}
 	}

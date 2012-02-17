@@ -61,6 +61,11 @@
 			return $this->canToggle();
 		}
 
+		public function allowDatasourceParamOutput() {
+			return true;
+		}
+
+
 	/*-------------------------------------------------------------------------
 		Setup:
 	-------------------------------------------------------------------------*/
@@ -72,7 +77,7 @@
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `author_id` int(11) unsigned NULL,
 				  PRIMARY KEY  (`id`),
-				  UNIQUE KEY `entry_id` (`entry_id`),
+				  UNIQUE KEY `author` (`entry_id`, `author_id`),
 				  KEY `author_id` (`author_id`)
 				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
 			);
@@ -233,6 +238,10 @@
 			}
 
 			return parent::prepareTableValue(array('value' => General::sanitize(implode(', ', $value))), $link, $entry_id);
+		}
+
+		public function getParameterPoolValue($data, $entry_id = null) {
+			return $data['author_id'];
 		}
 
 	/*-------------------------------------------------------------------------

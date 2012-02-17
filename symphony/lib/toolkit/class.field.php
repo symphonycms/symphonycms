@@ -39,14 +39,15 @@
 
 		/**
 		 * If there already is an instance of this field in this section and
-		 * the mustBeUnique function returns true, this will be returned
+		 * `mustBeUnique()` returns true, this will be returned
 		 * @var integer
+		 * @see mustBeUnique()
 		 */
 		const __DUPLICATE__ = 300;
 
 		/**
 		 * Fields can returned this is an error occurred when saving the
-		 * field's settings that doesn't fit another Field constant
+		 * field's settings that doesn't fit another `Field` constant
 		 * @var integer
 		 */
 		const __ERROR_CUSTOM__ = 400;
@@ -58,31 +59,31 @@
 		const __INVALID_QNAME__ = 500;
 
 		/**
-		 * Used by the FieldManager to return fields that can be toggled
+		 * Used by the `FieldManager` to return fields that can be toggled
 		 * @var integer
 		 */
 		const __TOGGLEABLE_ONLY__ = 600;
 
 		/**
-		 * Used by the FieldManager to return fields that can't be toggled
+		 * Used by the `FieldManager` to return fields that can't be toggled
 		 * @var integer
 		 */
 		const __UNTOGGLEABLE_ONLY__ = 700;
 
 		/**
-		 * Used by the FieldManager to return fields that can be filtered
+		 * Used by the `FieldManager` to return fields that can be filtered
 		 * @var integer
 		 */
 		const __FILTERABLE_ONLY__ = 800;
 
 		/**
-		 * Used by the FieldManager to return fields that can't be filtered
+		 * Used by the `FieldManager` to return fields that can't be filtered
 		 * @var integer
 		 */
 		const __UNFILTERABLE_ONLY__ = 900;
 
 		/**
-		 * Used by the FieldManager to just return all fields
+		 * Used by the `FieldManager` to just return all fields
 		 * @var integer
 		 */
 		const __FIELD_ALL__ = 1000;
@@ -94,7 +95,7 @@
 		protected $_key = 0;
 
 		/**
-		 * An associative array of the settings for this Field instance
+		 * An associative array of the settings for this `Field` instance
 		 * @var array
 		 * @deprecated This variable will be renamed to `$_settings` in the next major
 		 *  release.
@@ -182,7 +183,7 @@
 
 		/**
 		 * Test whether this field can be filtered. This default implementation
-		 * prohibits filtering. Filtering allows the xml output results to be limited
+		 * prohibits filtering. Filtering allows the XML output results to be limited
 		 * according to an input parameter. Subclasses should override this if
 		 * filtering is supported.
 		 *
@@ -244,7 +245,7 @@
 		/**
 		 * Test whether this field supports data-source output grouping. This
 		 * default implementation prohibits grouping. Data-source grouping allows
-		 * clients of this field to group the xml output according to this field.
+		 * clients of this field to group the XML output according to this field.
 		 * Subclasses should override this if grouping is supported.
 		 *
 		 * @return boolean
@@ -321,7 +322,7 @@
 
 		/**
 		 * Fields have settings that define how that field will act in a section, including
-		 * if it's required, any validators, if it can be shown on the entries tableetc. This
+		 * if it's required, any validators, if it can be shown on the entries table etc. This
 		 * function will set a setting to a value.  This function will set a setting to a value
 		 * overwriting any existing value for this setting
 		 *
@@ -369,7 +370,7 @@
 
 		/**
 		 * Accessor to the a setting by name. If no setting is provided all the
-		 * settings of this Field instance are returned.
+		 * settings of this `Field` instance are returned.
 		 *
 		 * @param string $setting (optional)
 		 *  the name of the setting to access the value for. This is optional and
@@ -446,7 +447,7 @@
 		 * @param array $errors (optional)
 		 *	an array to append html formatted error messages to. this defaults to null.
 		 * @return XMLElement
-		 *	the root xml element of the html display of this.
+		 *	the root XML element of the html display of this.
 		 */
 		public function buildSummaryBlock($errors = null){
 			$div = new XMLElement('div');
@@ -543,9 +544,9 @@
 		}
 
 		/**
-		 * Append a validator selector to a given XMLElement. Note that this
+		 * Append a validator selector to a given `XMLElement`. Note that this
 		 * function differs from the other two similarly named build functions in
-		 * that it takes an XMLElement to append the Validator to as a parameter,
+		 * that it takes an `XMLElement` to append the Validator to as a parameter,
 		 * and does not return anything.
 		 *
 		 * @param XMLElement $wrapper
@@ -577,11 +578,11 @@
 		}
 
 		/**
-		 * Append and set a labelled html checkbox to the input xml element if this
+		 * Append and set a labelled html checkbox to the input XML element if this
 		 * field is set as a required field.
 		 *
 		 * @param XMLElement $wrapper
-		 *	the parent xml element to append the constructed html checkbox to if
+		 *	the parent XML element to append the constructed html checkbox to if
 		 *	necessary.
 		 */
 		public function appendRequiredCheckbox(XMLElement &$wrapper) {
@@ -603,11 +604,11 @@
 		}
 
 		/**
-		 * Append the show column html widget to the input parent xml element. This
+		 * Append the show column html widget to the input parent XML element. This
 		 * displays a column in the entries table or not.
 		 *
 		 * @param XMLElement $wrapper
-		 *	the parent xml element to append the checkbox to.
+		 *	the parent XML element to append the checkbox to.
 		 */
 		public function appendShowColumnCheckbox(XMLElement &$wrapper) {
 			if (!$this->_showcolumn) return;
@@ -629,13 +630,13 @@
 		}
 
 		/**
-		 * Append the show association html widget to the input parent xml element. This
+		 * Append the show association html widget to the input parent XML element. This
 		 * widget allows fields that provide linking to hide or show the column in the linked
 		 * section, similar to how the Show Column functionality works, but for the linked
 		 * section.
 		 *
 		 * @param XMLElement $wrapper
-		 *	the parent xml element to append the checkbox to.
+		 *	the parent XML element to append the checkbox to.
 		 * @param string $help (optional)
 		 *	a help message to show below the checkbox.
 		 */
@@ -725,7 +726,7 @@
 		 *	an associative array of data for this string. At minimum this requires a
 		 *  key of 'value'.
 		 * @param XMLElement $link (optional)
-		 *	an xml link structure to append the content of this to provided it is not
+		 *	an XML link structure to append the content of this to provided it is not
 		 *	null. it defaults to null.
 		 * @param integer $entry_id (optional)
 		 *  An option entry ID for more intelligent processing. defaults to null
@@ -759,10 +760,10 @@
 		/**
 		 * Display the publish panel for this field. The display panel is the
 		 * interface shown to Authors that allow them to input data into this
-		 * field for an Entry.
+		 * field for an `Entry`.
 		 *
 		 * @param XMLElement $wrapper
-		 *	the xml element to append the html defined user interface to this
+		 *	the XML element to append the html defined user interface to this
 		 *	field.
 		 * @param array $data (optional)
 		 *	any existing data that has been supplied for this field instance.
@@ -864,7 +865,7 @@
 
 		/**
 		 * Default accessor for the includable elements of this field. This array
-		 * will populate the Datasource included elements. Fields that have
+		 * will populate the `Datasource` included elements. Fields that have
 		 * different modes will override this and add new items to the array.
 		 * The Symphony convention is element_name : mode. Modes allow Fields to
 		 * output different XML in datasources.
@@ -890,7 +891,7 @@
 		}
 
 		/**
-		 * Builds a basic REGEX statement given a FILTER. This function supports
+		 * Builds a basic REGEXP statement given a `$filter`. This function supports
 		 * `regexp:` or `not-regexp`. Users should keep in mind this function
 		 * uses MySQL patterns, not the usual PHP patterns, the syntax between these
 		 * flavours differs at times.
@@ -1044,9 +1045,10 @@
 
 		/**
 		 * Default implementation of record grouping. This default implementation
-		 * will throw an Exception. Thus, clients must overload this method
+		 * will throw an `Exception`. Thus, clients must overload this method
 		 * for grouping to be successful.
 		 *
+		 * @throws Exception
 		 * @param array $records
 		 *	the records to group.
 		 */
@@ -1064,18 +1066,20 @@
 		 *  The data for this field from it's `tbl_entry_data_{id}` table
 		 * @param integer $entry_id
 		 *  The optional id of this field entry instance
-		 * @return string
-		 *  The formatted value to be used as the parameter
+		 * @return string|array
+		 *  The formatted value to be used as the parameter. Note that this can be
+		 *  an array or a string. When returning multiple values use array, otherwise
+		 *  use string.
 		 */
 		public function getParameterPoolValue(array $data, $entry_id=NULL){
 			return $this->prepareTableValue($data, null, $entry_id);
 		}
 
 		/**
-		 * Append the formatted xml output of this field as utilized as a data source.
+		 * Append the formatted XML output of this field as utilized as a data source.
 		 *
 		 * @param XMLElement $wrapper
-		 *	the xml element to append the xml representation of this to.
+		 *	the XML element to append the XML representation of this to.
 		 * @param array $data
 		 *	the current set of values for this field. the values are structured as
 		 *	for displayPublishPanel.
@@ -1098,7 +1102,7 @@
 		 * The default method for constructing the example form markup containing this
 		 * field when utilized as part of an event. This displays in the event documentation
 		 * and serves as a basic guide for how markup should be constructed on the
-		 * Frontend to save this field
+		 * `Frontend` to save this field
 		 *
 		 * @return XMLElement
 		 *  a label widget containing the formatted field element name of this.

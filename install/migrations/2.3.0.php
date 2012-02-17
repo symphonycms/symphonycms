@@ -23,7 +23,7 @@
 		}
 
 		static function getVersion(){
-			return '2.3beta2';
+			return '2.3beta3';
 		}
 
 		static function getReleaseNotes(){
@@ -129,6 +129,32 @@
 				// Update the version information
 				Symphony::Configuration()->set('version', '2.3beta2', 'symphony');
 				Symphony::Configuration()->set('useragent', 'Symphony/2.3 Beta 2', 'general');
+
+				Symphony::Configuration()->write();
+			}
+
+			// 2.3 Beta 3
+			if(version_compare(self::$existing_version, '2.3beta3', '<=')) {
+				$author_fields = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_author`");
+
+				foreach($author_fields as $id) {
+					$table = '`tbl_entries_data_' . $id . '`';
+
+					// MySQL doesn't support DROP IF EXISTS, so we'll try and catch.
+					try {
+						Symphony::Database()->query("ALTER TABLE " . $table . " DROP INDEX `entry_id`");
+					}
+					catch (Exception $ex) {}
+
+					try {
+						Symphony::Database()->query("CREATE UNIQUE INDEX `author` ON " . $table . " (`entry_id`, `author_id`)");
+						Symphony::Database()->query("OPTIMIZE TABLE " . $table);
+					}
+					catch (Exception $ex) {}
+				}
+
+				Symphony::Configuration()->set('version', '2.3beta3', 'symphony');
+				Symphony::Configuration()->set('useragent', 'Symphony/2.3 Beta 3', 'general');
 
 				return Symphony::Configuration()->write();
 			}
