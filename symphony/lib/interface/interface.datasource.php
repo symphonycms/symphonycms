@@ -75,7 +75,7 @@
 		 *  `settings()`.
 		 * @return
 		 */
-		public static function buildEditor(XMLElement $wrapper, array &$errors = array(), array $settings = null, $handle = null);
+		public static function buildEditor(XMLElement $wrapper, array &$errors = array(), array $settings = null);
 
 		/**
 		 * Given an array of settings, validate them, adding any errors
