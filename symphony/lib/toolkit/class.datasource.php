@@ -61,7 +61,7 @@
 		 *	If set to true, `Datasource::processParameters` will be called. By default
 		 *	this is true
 		 */
-		public function __construct($dummy, array $env = null, $process_params=true){
+		public function __construct($dummy, array $env = array(), $process_params=true){
 			if($process_params){
 				$this->processParameters($env);
 			}

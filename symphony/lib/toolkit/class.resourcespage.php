@@ -30,6 +30,8 @@
 		}
 
 		public function __viewIndex($resource_type){
+			$manager = ResourceManager::getManagerFromType($resource_type);
+
 			$this->setPageType('table');
 
 			Sortable::initialize($this, $resources, $sort, $order);
@@ -75,6 +77,8 @@
 			else {
 				foreach($resources as $r) {
 
+
+
 					// Resource name
 					$action = ($r['can_parse'] ? 'edit' : 'info');
 					$name = Widget::TableData(
@@ -94,6 +98,10 @@
 								$r['source']['handle']
 							)
 						);
+					}
+					else if(class_exists($r['source']['name']) && method_exists($r['source']['name'], 'getSourceColumn')) {
+						$class = $manager::__getClassName($r['handle']);
+						$section = Widget::TableData($class::getSourceColumn($r['handle']));
 					}
 					else if(isset($r['source']['name'])){
 						$section = Widget::TableData($r['source']['name']);
@@ -126,9 +134,8 @@
 					}
 
 					// Release date
-					$datetimeobj = new DateTimeObj();
 					$releasedate = Widget::TableData(Lang::localizeDate(
-						$datetimeobj->format($r['release-date'], __SYM_DATETIME_FORMAT__)
+						DateTimeObj::format($r['release-date'], __SYM_DATETIME_FORMAT__)
 					));
 
 					// Authors
@@ -264,7 +271,7 @@
 		/**
 		 * Returns the path to the component-template by looking at the
 		 * `WORKSPACE/template/` directory, then at the `TEMPLATES`
-		 * directory for the convention `*.tpl`. If the template 
+		 * directory for the convention `*.tpl`. If the template
 		 * is not found, false is returned
 		 *
 		 * @param string $name

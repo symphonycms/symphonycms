@@ -1,74 +1,44 @@
 <?php
 
-	Interface iDatasource {
-
-		public static function getTemplate();
-
-		public static function buildEditor(XMLElement $wrapper, array &$errors = array(), array $settings = null, $handle = null);
-
-		public static function prepare(array $fields, array $parameters, $template);
-
-		public function grab(array $param_pool);
-
-	}
-
 	require_once TOOLKIT . '/class.datasource.php';
+	require_once PROVIDER_INTERFACE . '/interface.datasource.php';
 
 	Class DatasourceRemote extends DataSource implements iDatasource {
 
 		private static $url_result = null;
 
-		protected $parameters = array();
+		public static function getName() {
+			return __('Remote Datasource');
+		}
 
-		public function __construct($env = array(), $process_params = false) {
-			parent::__construct(null, $env, $process_params);
+		public static function getClass() {
+			return __CLASS__;
+		}
 
-			$this->parameters = array(
-				'url' => '',
-				'format' => 'xml',
-				'xpath' => '/',
-				'cache' => 30,
-				'timeout' => 6,
-				'namespaces' => array()
-			);
+		public function getSource() {
+			return self::getClass();
+		}
+
+		public static function getTemplate(){
+			return EXTENSIONS . '/datasource_remote/templates/blueprints.datasource.tpl';
+		}
+
+		public function settings() {
+			$settings = array();
+
+			$settings[self::getClass()]['namespace'] = $this->dsParamFILTERS;
+			$settings[self::getClass()]['url'] = $this->dsParamURL;
+			$settings[self::getClass()]['xpath'] = $this->dsParamXPATH;
+			$settings[self::getClass()]['cache'] = $this->dsParamCACHE;
+			$settings[self::getClass()]['format'] = $this->dsParamFORMAT;
+			$settings[self::getClass()]['timeout'] = isset($this->dsParamTIMEOUT) ? $this->dsParamTIMEOUT : 6;
+
+			return $settings;
 		}
 
 	/*-------------------------------------------------------------------------
 		Utilities
 	-------------------------------------------------------------------------*/
-
-		/**
-		 * Returns the Datasource name.
-		 *
-		 * @return string
-		 */
-		public static function getName() {
-			return __('Remote Datasource');
-		}
-
-		/**
-		 * Returns a safe handle used by the Datasource Editor to distinguish
-		 * the settings for this datasource.
-		 *
-		 * @return string
-		 */
-		public static function getHandle() {
-			return 'RemoteDatasource';
-		}
-
-
-		public function getSource(){
-			return __CLASS__;
-		}
-
-		/**
-		 * Returns the path to the Datasource template
-		 *
-		 * @return string
-		 */
-		public static function getTemplate(){
-			return EXTENSIONS . '/datasource_remote/templates/blueprints.datasource.tpl';
-		}
 
 		/**
 		 * Returns the source value for display in the Datasources index
@@ -77,9 +47,15 @@
 		 *  The path to the Datasource file
 		 * @return string
 		 */
-		public static function getSourceColumn($file) {
-			// @todo Load the file and return the URL.
-			return 'RemoteDatasource';
+		public function getClassColumn($handle) {
+			$datasource = DatasourceManager::create($handle, array(), false);
+
+			if(isset($datasource->dsParamURL)) {
+				return Widget::Anchor(str_replace('http://www.', '', $datasource->dsParamURL), $datasource->dsParamURL);
+			}
+			else {
+				return 'Remote Datasource';
+			}
 		}
 
 		/**
@@ -153,162 +129,6 @@
 		}
 
 		/**
-		 * This function generates the UI for the Datasource Editor required
-		 * to create or edit an instance of this Datasource type. If the editor
-		 * is for editing, an instance of this Datasource should be passed with
-		 * the function so the interface can be built correctly
-		 *
-		 * @param XMLElement $wrapper
-		 *  An XMLElement for the Editor to be appended to. This is usually
-		 *  `AdministrationPage->Form`.
-		 * @param string $handle
-		 *  The handle of the datasource as returned by `DatasourceManager::__getHandleFromFilename`
-		 */
-		public static function buildEditor(XMLElement $wrapper, array &$errors = array(), array $settings = null, $handle = null) {
-			if(!is_null($handle)) {
-				$instance = DatasourceManager::create($handle, array(), false);
-				$cache = new Cacheable(Symphony::Database());
-			}
-
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual ' . __CLASS__);
-			$fieldset->appendChild(new XMLElement('legend', self::getName()));
-
-	// URL
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group offset');
-
-			$label = Widget::Label(__('URL'));
-			$label->appendChild(Widget::Input('fields[' . self::getHandle() . '][url]', General::sanitize($settings[self::getHandle()]['url']), 'text', array('placeholder' => 'http://')));
-			if(isset($errors[self::getHandle()]['url'])) {
-				$group->appendChild(Widget::wrapFormElementWithError($label, $errors[self::getHandle()]['url']));
-			}
-			else {
-				$group->appendChild($label);
-			}
-
-			$p = new XMLElement('p',
-				__('Use %s syntax to specify dynamic portions of the URL.', array(
-					'<code>{' . __('$param') . '}</code>'
-				))
-			);
-			$p->setAttribute('class', 'help');
-			$label->appendChild($p);
-
-			$label = Widget::Label(__('Format'));
-			$label->appendChild(
-				Widget::Select('fields[' . self::getHandle() . '][format]', array(
-					array('xml', $settings[self::getHandle()]['format'] == 'xml', 'XML'),
-					array('json', $settings[self::getHandle()]['format'] == 'json', 'JSON')
-				))
-			);
-			if(isset($errors[self::getHandle()]['format'])) $group->appendChild(Widget::wrapFormElementWithError($label, $errors[self::getHandle()]['format']));
-			else $group->appendChild($label);
-
-			$fieldset->appendChild($group);
-
-	// Namespaces
-
-			$div = new XMLElement('div');
-			$p = new XMLElement('p', __('Namespace Declarations'));
-			$p->appendChild(new XMLElement('i', __('Optional')));
-			$p->setAttribute('class', 'label');
-			$div->appendChild($p);
-
-			$ol = new XMLElement('ol');
-			$ol->setAttribute('class', 'filters-duplicator');
-
-			if(is_array($settings[self::getHandle()]['namespace']) && !empty($settings[self::getHandle()]['namespace'])){
-				$ii = 0;
-				foreach($settings[self::getHandle()]['namespace'] as $name => $uri) {
-					// Namespaces get saved to the file as $name => $uri, however in
-					// the $_POST they are represented as $index => array. This loop
-					// patches the difference.
-					if(is_array($uri)) {
-						$name = $uri['name'];
-						$uri = $uri['uri'];
-					}
-
-					$li = new XMLElement('li');
-					$li->appendChild(new XMLElement('h4', 'Namespace'));
-
-					$group = new XMLElement('div');
-					$group->setAttribute('class', 'group');
-
-					$label = Widget::Label(__('Name'));
-					$label->appendChild(Widget::Input("fields[" . self::getHandle() . "][namespace][$ii][name]", General::sanitize($name)));
-					$group->appendChild($label);
-
-					$label = Widget::Label(__('URI'));
-					$label->appendChild(Widget::Input("fields[" . self::getHandle() . "][namespace][$ii][uri]", General::sanitize($uri)));
-					$group->appendChild($label);
-
-					$li->appendChild($group);
-					$ol->appendChild($li);
-					$ii++;
-				}
-			}
-
-			$li = new XMLElement('li');
-			$li->setAttribute('class', 'template');
-			$li->appendChild(new XMLElement('h4', __('Namespace')));
-
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
-
-			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('fields[' . self::getHandle() . '][namespace][-1][name]'));
-			$group->appendChild($label);
-
-			$label = Widget::Label(__('URI'));
-			$label->appendChild(Widget::Input('fields[' . self::getHandle() . '][namespace][-1][uri]'));
-			$group->appendChild($label);
-
-			$li->appendChild($group);
-			$ol->appendChild($li);
-
-			$div->appendChild($ol);
-			$div->appendChild(
-				new XMLElement('p', __('Namespaces will automatically be discovered when saving this datasource if it does not include any dynamic portions.'), array('class' => 'help'))
-			);
-
-			$fieldset->appendChild($div);
-
-	// Included Elements
-
-			$label = Widget::Label(__('Included Elements'));
-			$label->appendChild(Widget::Input('fields[' . self::getHandle() . '][xpath]', General::sanitize($settings[self::getHandle()]['xpath'])));
-			if(isset($errors[self::getHandle()]['xpath'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $errors[self::getHandle()]['xpath']));
-			else $fieldset->appendChild($label);
-
-			$p = new XMLElement('p', __('Use an XPath expression to select which elements from the source XML to include.'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
-
-	// Caching
-
-			$label = Widget::Label();
-			$input = Widget::Input('fields[' . self::getHandle() . '][cache]', max(1, intval($settings[self::getHandle()]['cache'])), NULL, array('size' => '6'));
-			$label->setValue(__('Update cached result every %s minutes', array($input->generate(false))));
-			if(isset($errors[self::getHandle()]['cache'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $errors[self::getHandle()]['cache']));
-			else $fieldset->appendChild($label);
-
-			// Check for existing Cache objects
-			if(isset($cache_id)) {
-				self::buildCacheInformation($fieldset, $cache, $cache_id);
-			}
-
-	// Timeout
-
-			$label = Widget::Label();
-			$input = Widget::Input('fields[' . self::getHandle() . '][timeout]', max(1, intval($settings[self::getHandle()]['timeout'])), NULL, array('type' => 'hidden'));
-			$label->appendChild($input);
-			$fieldset->appendChild($label);
-
-			$wrapper->appendChild($fieldset);
-		}
-
-		/**
 		 * Helper function to build Cache information block
 		 *
 		 * @param XMLElement $wrapper
@@ -334,79 +154,204 @@
 		}
 
 	/*-------------------------------------------------------------------------
-		CRUD
+		Editor
 	-------------------------------------------------------------------------*/
 
+		public static function buildEditor(XMLElement $wrapper, array &$errors = array(), array $settings = null) {
+			if(!is_null($handle)) {
+				$instance = DatasourceManager::create($handle, array(), false);
+				$cache = new Cacheable(Symphony::Database());
+			}
+
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual ' . __CLASS__);
+			$fieldset->appendChild(new XMLElement('legend', self::getName()));
+
+	// URL
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group offset');
+
+			$label = Widget::Label(__('URL'));
+			$label->appendChild(Widget::Input('fields[' . self::getClass() . '][url]', General::sanitize($settings[self::getClass()]['url']), 'text', array('placeholder' => 'http://')));
+			if(isset($errors[self::getClass()]['url'])) {
+				$group->appendChild(Widget::wrapFormElementWithError($label, $errors[self::getClass()]['url']));
+			}
+			else {
+				$group->appendChild($label);
+			}
+
+			$p = new XMLElement('p',
+				__('Use %s syntax to specify dynamic portions of the URL.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
+			$p->setAttribute('class', 'help');
+			$label->appendChild($p);
+
+			$label = Widget::Label(__('Format'));
+			$label->appendChild(
+				Widget::Select('fields[' . self::getClass() . '][format]', array(
+					array('xml', $settings[self::getClass()]['format'] == 'xml', 'XML'),
+					array('json', $settings[self::getClass()]['format'] == 'json', 'JSON')
+				))
+			);
+			if(isset($errors[self::getClass()]['format'])) $group->appendChild(Widget::wrapFormElementWithError($label, $errors[self::getClass()]['format']));
+			else $group->appendChild($label);
+
+			$fieldset->appendChild($group);
+
+	// Namespaces
+
+			$div = new XMLElement('div');
+			$p = new XMLElement('p', __('Namespace Declarations'));
+			$p->appendChild(new XMLElement('i', __('Optional')));
+			$p->setAttribute('class', 'label');
+			$div->appendChild($p);
+
+			$ol = new XMLElement('ol');
+			$ol->setAttribute('class', 'filters-duplicator');
+
+			if(is_array($settings[self::getClass()]['namespace']) && !empty($settings[self::getClass()]['namespace'])){
+				$ii = 0;
+				foreach($settings[self::getClass()]['namespace'] as $name => $uri) {
+					// Namespaces get saved to the file as $name => $uri, however in
+					// the $_POST they are represented as $index => array. This loop
+					// patches the difference.
+					if(is_array($uri)) {
+						$name = $uri['name'];
+						$uri = $uri['uri'];
+					}
+
+					$li = new XMLElement('li');
+					$li->appendChild(new XMLElement('h4', 'Namespace'));
+
+					$group = new XMLElement('div');
+					$group->setAttribute('class', 'group');
+
+					$label = Widget::Label(__('Name'));
+					$label->appendChild(Widget::Input("fields[" . self::getClass() . "][namespace][$ii][name]", General::sanitize($name)));
+					$group->appendChild($label);
+
+					$label = Widget::Label(__('URI'));
+					$label->appendChild(Widget::Input("fields[" . self::getClass() . "][namespace][$ii][uri]", General::sanitize($uri)));
+					$group->appendChild($label);
+
+					$li->appendChild($group);
+					$ol->appendChild($li);
+					$ii++;
+				}
+			}
+
+			$li = new XMLElement('li');
+			$li->setAttribute('class', 'template');
+			$li->appendChild(new XMLElement('h4', __('Namespace')));
+
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
+
+			$label = Widget::Label(__('Name'));
+			$label->appendChild(Widget::Input('fields[' . self::getClass() . '][namespace][-1][name]'));
+			$group->appendChild($label);
+
+			$label = Widget::Label(__('URI'));
+			$label->appendChild(Widget::Input('fields[' . self::getClass() . '][namespace][-1][uri]'));
+			$group->appendChild($label);
+
+			$li->appendChild($group);
+			$ol->appendChild($li);
+
+			$div->appendChild($ol);
+			$div->appendChild(
+				new XMLElement('p', __('Namespaces will automatically be discovered when saving this datasource if it does not include any dynamic portions.'), array('class' => 'help'))
+			);
+
+			$fieldset->appendChild($div);
+
+	// Included Elements
+
+			$label = Widget::Label(__('Included Elements'));
+			$label->appendChild(Widget::Input('fields[' . self::getClass() . '][xpath]', General::sanitize($settings[self::getClass()]['xpath'])));
+			if(isset($errors[self::getClass()]['xpath'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $errors[self::getClass()]['xpath']));
+			else $fieldset->appendChild($label);
+
+			$p = new XMLElement('p', __('Use an XPath expression to select which elements from the source XML to include.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
+
+	// Caching
+
+			$label = Widget::Label();
+			$input = Widget::Input('fields[' . self::getClass() . '][cache]', (string)max(1, intval($settings[self::getClass()]['cache'])), NULL, array('size' => '6'));
+			$label->setValue(__('Update cached result every %s minutes', array($input->generate(false))));
+			if(isset($errors[self::getClass()]['cache'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $errors[self::getClass()]['cache']));
+			else $fieldset->appendChild($label);
+
+			// Check for existing Cache objects
+			if(isset($cache_id)) {
+				self::buildCacheInformation($fieldset, $cache, $cache_id);
+			}
+
+	// Timeout
+
+			$label = Widget::Label();
+			$input = Widget::Input('fields[' . self::getClass() . '][timeout]', (string)max(1, intval($settings[self::getClass()]['timeout'])), NULL, array('type' => 'hidden'));
+			$label->appendChild($input);
+			$fieldset->appendChild($label);
+
+			$wrapper->appendChild($fieldset);
+		}
+
 		public static function validate(array &$settings, array &$errors) {
-			if(trim($settings[self::getHandle()]['url']) == '') {
-				$errors[self::getHandle()]['url'] = __('This is a required field');
+			if(trim($settings[self::getClass()]['url']) == '') {
+				$errors[self::getClass()]['url'] = __('This is a required field');
 			}
 
 			// Use the TIMEOUT that was specified by the user for a real world indication
-			$timeout = isset($settings[self::getHandle()]['timeout'])
-				? (int)$settings[self::getHandle()]['timeout']
+			$timeout = isset($settings[self::getClass()]['timeout'])
+				? (int)$settings[self::getClass()]['timeout']
 				: 6;
 
 			// If there is a parameter in the URL, we can't validate the existence of the URL
 			// as we don't have the environment details of where this datasource is going
 			// to be executed.
-			if(!preg_match('@{([^}]+)}@i', $settings[self::getHandle()]['url'])) {
-				$valid_url = self::isValidURL($settings[self::getHandle()]['url'], $timeout, $error);
+			if(!preg_match('@{([^}]+)}@i', $settings[self::getClass()]['url'])) {
+				$valid_url = self::isValidURL($settings[self::getClass()]['url'], $timeout, $error);
 
 				if(is_array($valid_url)) {
 					self::$url_result = $valid_url['data'];
 				}
 				else {
-					$errors[self::getHandle()]['url'] = $error;
+					$errors[self::getClass()]['url'] = $error;
 				}
 			}
 
-			if(trim($settings[self::getHandle()]['xpath']) == '') {
-				$errors[self::getHandle()]['xpath'] = __('This is a required field');
+			if(trim($settings[self::getClass()]['xpath']) == '') {
+				$errors[self::getClass()]['xpath'] = __('This is a required field');
 			}
 
-			if(!is_numeric($settings[self::getHandle()]['cache'])) {
-				$errors[self::getHandle()]['cache'] = __('Must be a valid number');
+			if(!is_numeric($settings[self::getClass()]['cache'])) {
+				$errors[self::getClass()]['cache'] = __('Must be a valid number');
 			}
-			else if($settings[self::getHandle()]['cache'] < 1) {
-				$errors[self::getHandle()]['cache'] = __('Must be greater than zero');
+			else if($settings[self::getClass()]['cache'] < 1) {
+				$errors[self::getClass()]['cache'] = __('Must be greater than zero');
 			}
 
-			return empty($errors[self::getHandle()]);
+			return empty($errors[self::getClass()]);
 		}
 
-		/**
-		 * Similar to the create function, edit takes `$handle` and `$parameters`
-		 * to update an existing datasource. A third parameter, `$existing_handle` takes
-		 * the current datasource handle, which will allow this function to know which
-		 * file to load (and potentially rename if the handle has changed).
-		 *
-		 * @param array $fields
-		 *  An associative array of settings for this datasource, where the key
-		 *  is the name of the setting. These are user defined through the Datasource
-		 *  Editor.
-		 * @param array $params
-		 *  An associative array of parameters for this datasource, where the key
-		 *  is the name of the parameter.
-		 * @param string $template
-		 *  The template file, which has already been altered by Symphony to remove
-		 *  any named tokens (ie. `<!-- CLASS NAME -->`).
-		 * @return string
-		 *  The completed template, ready to be saved.
-		 */
-		public static function prepare(array $fields, array $params, $template) {
+		public static function prepare(array $settings, array $params, $template) {
 			// Automatically detect namespaces
 			if(!is_null(self::$url_result)) {
 				preg_match_all('/xmlns:([a-z][a-z-0-9\-]*)="([^\"]+)"/i', self::$url_result, $matches);
 
-				if(!is_array($fields[self::getHandle()]['namespace'])) {
-					$fields[self::getHandle()]['namespace'] = array();
+				if(!is_array($settings[self::getClass()]['namespace'])) {
+					$settings[self::getClass()]['namespace'] = array();
 				}
 
 				if (isset($matches[2][0])) {
 					$detected_namespaces = array();
 
-					foreach ($fields[self::getHandle()]['namespace'] as $index => $namespace) {
+					foreach ($settings[self::getClass()]['namespace'] as $index => $namespace) {
 						$detected_namespaces[] = $namespace['name'];
 						$detected_namespaces[] = $namespace['uri'];
 					}
@@ -419,7 +364,7 @@
 						$detected_namespaces[] = $name;
 						$detected_namespaces[] = $uri;
 
-						$fields[self::getHandle()]['namespace'][] = array(
+						$settings[self::getClass()]['namespace'][] = array(
 							'name' => $name,
 							'uri' => $uri
 						);
@@ -428,36 +373,23 @@
 			}
 
 			$namespaces = array();
-			if(is_array($parameters[self::getHandle()]['namespace'])) {
-				foreach($parameters[self::getHandle()]['namespace'] as $index => $data) {
+			if(is_array($parameters[self::getClass()]['namespace'])) {
+				foreach($parameters[self::getClass()]['namespace'] as $index => $data) {
 					$namespaces[$data['name']] = $data['uri'];
 				}
 			}
 			self::injectNamespaces($namespaces, $template);
 
-			$timeout = isset($fields[self::getHandle()]['timeout']) ? (int)$fields[self::getHandle()]['timeout'] : 6;
+			$timeout = isset($settings[self::getClass()]['timeout']) ? (int)$settings[self::getClass()]['timeout'] : 6;
 
 			return sprintf($template,
 				$params['rootelement'], // rootelement
-				$fields[self::getHandle()]['url'], // url
-				$fields[self::getHandle()]['format'], // format
-				$fields[self::getHandle()]['xpath'], // xpath
-				$fields[self::getHandle()]['cache'], // cache
+				$settings[self::getClass()]['url'], // url
+				$settings[self::getClass()]['format'], // format
+				$settings[self::getClass()]['xpath'], // xpath
+				$settings[self::getClass()]['cache'], // cache
 				$timeout// timeout
 			);
-		}
-
-		public function load(Datasource $existing) {
-			$fields = array();
-
-			$fields[self::getHandle()]['namespace'] = $existing->dsParamFILTERS;
-			$fields[self::getHandle()]['url'] = $existing->dsParamURL;
-			$fields[self::getHandle()]['xpath'] = $existing->dsParamXPATH;
-			$fields[self::getHandle()]['cache'] = $existing->dsParamCACHE;
-			$fields[self::getHandle()]['format'] = $existing->dsParamFORMAT;
-			$fields[self::getHandle()]['timeout'] = isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6;
-
-			return $fields;
 		}
 
 	/*-------------------------------------------------------------------------
@@ -478,6 +410,7 @@
 
 				if(!isset($this->dsParamFORMAT)) $this->dsParamFORMAT = 'xml';
 
+				// Builds a Default Stylesheet to transform the resulting XML with
 				$stylesheet = new XMLElement('xsl:stylesheet');
 				$stylesheet->setAttributeArray(array('version' => '1.0', 'xmlns:xsl' => 'http://www.w3.org/1999/XSL/Transform'));
 
@@ -502,13 +435,12 @@
 
 				$template->appendChild($instruction);
 				$stylesheet->appendChild($template);
-
 				$stylesheet->setIncludeHeader(true);
 
 				$xsl = $stylesheet->generate(true);
 
+				// Check for an existing Cache for this Datasource
 				$cache_id = md5($this->dsParamURL . serialize($this->dsParamFILTERS) . $this->dsParamXPATH . $this->dsParamFORMAT);
-
 				$cache = new Cacheable(Symphony::Database());
 
 				$cachedData = $cache->check($cache_id);
@@ -644,12 +576,12 @@
 						$result->setAttribute('valid', 'false');
 						$error = new XMLElement('error', __('Transformed XML is invalid.'));
 						$result->appendChild($error);
-						$result = new XMLElement('errors');
+						$errors = new XMLElement('errors');
 						foreach($proc->getError() as $e) {
 							if(strlen(trim($e['message'])) == 0) continue;
-							$result->appendChild(new XMLElement('item', General::sanitize($e['message'])));
+							$errors->appendChild(new XMLElement('item', General::sanitize($e['message'])));
 						}
-						$result->appendChild($result);
+						$result->appendChild($errors);
 					}
 
 					else if(strlen(trim($ret)) == 0) {
@@ -667,12 +599,10 @@
 			}
 			catch(Exception $e){
 				$result->appendChild(new XMLElement('error', $e->getMessage()));
-				return $result;
 			}
 
 			return $result;
 		}
-
 	}
 
 	return 'DatasourceRemote';
