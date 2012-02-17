@@ -97,7 +97,7 @@
 			else if($this->_context[0] == 'edit'){
 				$isEditing = true;
 				$handle = $this->_context[1];
-				$existing =& DatasourceManager::create($handle, NULL, false);
+				$existing =& DatasourceManager::create($handle, array(), false);
 				$cache_id = null;
 
 				if (!$existing->allowEditorToParse()) redirect(SYMPHONY_URL . '/blueprints/datasources/info/' . $handle . '/');
@@ -138,8 +138,8 @@
 
 				if(!empty($provided)) {
 					foreach($provided as $providerClass => $provider) {
-						if($fields['source'] == $providerClass::getSource()) {
-							$fields = array_merge($fields, $providerClass::load(&$existing));
+						if($fields['source'] == $providerClass::getClass()) {
+							$fields = array_merge($fields, $existing->settings());
 							break;
 						}
 					}
