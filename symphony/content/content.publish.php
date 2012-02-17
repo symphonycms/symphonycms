@@ -367,6 +367,9 @@
 
 			$tableActions = new XMLElement('div');
 			$tableActions->setAttribute('class', 'actions');
+			
+			$tableSelector = new XMLElement('fieldset', NULL, array('class' => 'selector'));
+			$tableActions->appendChild($tableSelector);
 
 			$options = array(
 				array(NULL, false, __('With Selected...')),
@@ -391,8 +394,8 @@
 				}
 			}
 
-			$tableActions->appendChild(Widget::Select('with-selected', $options));
-			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
+			$tableSelector->appendChild(Widget::Select('with-selected', $options));
+			$tableSelector->appendChild(new XMLElement('button', __('Apply'), array('name' => 'action[apply]', 'type' => 'submit')));
 
 			$this->Form->appendChild($tableActions);
 
