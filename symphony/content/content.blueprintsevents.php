@@ -383,7 +383,7 @@
 
 				$documentation_parts[] = new XMLElement('p', __('This is an example of the form markup you can use on your frontend:'));
 				$container = new XMLElement('form', NULL, array('method' => 'post', 'action' => '', 'enctype' => 'multipart/form-data'));
-				$container->appendChild(Widget::Input('MAX_FILE_SIZE', min(ini_size_to_bytes(ini_get('upload_max_filesize')), Symphony::Configuration()->get('max_upload_size', 'admin')), 'hidden'));
+				$container->appendChild(Widget::Input('MAX_FILE_SIZE', (string)min(ini_size_to_bytes(ini_get('upload_max_filesize')), Symphony::Configuration()->get('max_upload_size', 'admin')), 'hidden'));
 
 				$section = SectionManager::fetch($fields['source']);
 
