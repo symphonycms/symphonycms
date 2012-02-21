@@ -598,21 +598,22 @@ fieldset.apply:hover button {
 
 fieldset.apply button:before {
 	content: "";
-	background: url(images/arrows.png) 0 0 no-repeat;
+	background: url(images/arrows.png) 0 6px no-repeat;
 	display: block;
 	position: absolute;
-	top: 5px;
+	top: 0;
 	left: -12px;
 	height: 20px;
 	width: 10px;
+	opacity: 0.4;
 }
 
 fieldset.apply:hover button:before {
-	background-position: 0 -21px;
+	opacity: 1;
 }
 
 fieldset.apply.inactive:hover button:before {
-	background-position: 0 0;
+	opacity: 0.5;
 }
 
 /*--------------------------------------------------------------------------
