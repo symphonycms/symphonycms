@@ -445,22 +445,22 @@ fieldset.settings fieldset legend {
 input[type=submit],
 button,
 .button {
-    display: inline-block;
-    min-height: 20px;
-    margin-left: 0.7em;
-    padding: 0 0.7em;
-    background-color: #efefed; color: rgba(85, 85, 85, 0.95);
-    text-decoration: none;
-    background-image: -webkit-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
-    background-image: -moz-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
-    background-image: -ms-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
-    background-image: -o-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
-    background-image: linear-gradient(to bottom, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    border-bottom-color: rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
-    line-height: 1.85;
+	display: inline-block;
+	min-height: 20px;
+	margin-left: 0.7em;
+	padding: 0 0.7em;
+	background-color: #efefed; color: rgba(85, 85, 85, 0.95);
+	text-decoration: none;
+	background-image: -webkit-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
+	background-image: -moz-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
+	background-image: -ms-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
+	background-image: -o-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
+	background-image: linear-gradient(to bottom, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
+	border: 1px solid rgba(0, 0, 0, 0.25);
+	border-bottom-color: rgba(0, 0, 0, 0.3);
+	border-radius: 4px;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+	line-height: 1.85;
 }
 
 input[type=submit]:hover,
@@ -472,10 +472,10 @@ button:focus,
 .button:hover,
 .button:active,
 .button:focus {
-    color: #3c3c3c;
-    border-color: rgba(0, 0, 0, 0.4);
-    box-shadow: 0 0 7px rgba(0, 0, 0, 0.05), 0 0 1px 2px rgba(77, 120, 180, 0.1);
-    cursor: pointer;
+	color: #3c3c3c;
+	border-color: rgba(0, 0, 0, 0.4);
+	box-shadow: 0 0 7px rgba(0, 0, 0, 0.05), 0 0 1px 2px rgba(77, 120, 180, 0.1);
+	cursor: pointer;
 }
 
 /* Create buttons */
@@ -561,7 +561,7 @@ fieldset.apply select {
 	margin: 0.2em 1em 0 0;
 	min-width: 15em;
 	outline: none;
- 	padding: 0 0 0 0.7em;
+	padding: 0 0 0 0.7em;
 }
 
 fieldset.apply.inactive select {
@@ -1191,19 +1191,19 @@ ul.page input.error, ul.page input.error:focus {
 	padding-top: 5px;
 }
 #blueprints-datasources a.expand, #blueprints-events a.expand {
-    text-decoration: none;
+	text-decoration: none;
 }
 #blueprints-datasources a.expand span.less, #blueprints-events a.expand span.less {
-    display: none;
+	display: none;
 }
 #blueprints-datasources a.expand span.more, #blueprints-events a.expand span.more {
-    display: inline;
+	display: inline;
 }
 #blueprints-datasources a.expanded span.less, #blueprints-events a.expanded span.less {
-    display: inline;
+	display: inline;
 }
 #blueprints-datasources a.expanded span.more, #blueprints-events a.expanded span.more {
-    display: none;
+	display: none;
 }
 #components {
 	padding-bottom: 5px;
