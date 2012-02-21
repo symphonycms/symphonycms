@@ -585,6 +585,39 @@
 		}
 
 		/**
+		 * Generates a XMLElement representation of a `<fieldset>` containing 
+		 * the "With selected…" menu. This uses the private function `__SelectBuildOption()`
+		 * to build XMLElements of options given the `$options` array.
+         *
+         * @since Symphony 2.3
+		 * @see toolkit.Widget::__SelectBuildOption()
+		 * @param Array $options (optional)
+		 *  An array containing the data for each `<option>` for this
+		 *  `<select>`. If the array is associative, it is assumed that
+		 *  `<optgroup>` are to be created, otherwise it's an array of the
+		 *  containing the option data. If no options are provided an empty
+		 *  `<select>` XMLElement is returned.
+		 *  `
+		 *   array(
+		 *   	array($value, $selected, $desc, $class, $id, $attr)
+		 *   )
+		 *   array(
+		 *   	array('label' => 'Optgroup', 'options' = array(
+		 *  		array($value, $selected, $desc, $class, $id, $attr)
+		 *   	)
+		 *   )
+		 *  `
+		 * @return XMLElement
+		 */
+		public static function Apply(Array $options = null){
+			$fieldset = new XMLElement('fieldset', NULL, array('class' => 'apply'));
+			$fieldset->appendChild(Widget::Select('with-selected', $options));
+			$fieldset->appendChild(new XMLElement('button', __('Apply'), array('name' => 'action[apply]', 'type' => 'submit')));
+			
+			return $fieldset;
+		}
+
+		/**
 		 * Will wrap a `<div>` around a desired element to trigger the default
 		 * Symphony error styling.
 		 *

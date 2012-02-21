@@ -367,9 +367,6 @@
 
 			$tableActions = new XMLElement('div');
 			$tableActions->setAttribute('class', 'actions');
-			
-			$tableSelector = new XMLElement('fieldset', NULL, array('class' => 'selector'));
-			$tableActions->appendChild($tableSelector);
 
 			$options = array(
 				array(NULL, false, __('With Selected...')),
@@ -394,9 +391,7 @@
 				}
 			}
 
-			$tableSelector->appendChild(Widget::Select('with-selected', $options));
-			$tableSelector->appendChild(new XMLElement('button', __('Apply'), array('name' => 'action[apply]', 'type' => 'submit')));
-
+			$tableActions->appendChild(Widget::Apply($options));
 			$this->Form->appendChild($tableActions);
 
 			if($entries['total-pages'] > 1){
