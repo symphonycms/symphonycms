@@ -905,7 +905,7 @@ div.notifier nav:hover:before {
 #context {
 	clear: both;
 	margin: 0;
-	padding: 27px 18px 18px;
+	padding: 25px 18px 20px;
 	position: relative;
 	color: #000;
 	min-height: 18px;
@@ -926,7 +926,7 @@ div.notifier nav:hover:before {
 	padding: 0;
 	position: absolute;
 	right: 18px;
-	top: 25px;
+	top: 21px;
 }
 #context .actions li {
 	float: right;
@@ -1046,7 +1046,7 @@ ul.tabs li a {
 ul.page {
 	margin: 0;
 	margin-top: -58px;
-	padding: 20px 50px 0 19px;
+	padding: 23px 50px 0 19px;
 	height: 36px;
 	color: #887;
 	cursor: default;
