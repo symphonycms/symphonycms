@@ -181,9 +181,7 @@
 			$options[] = $group_attach;
 			$options[] = $group_detach;
 
-			$tableActions->appendChild(Widget::Select('with-selected', $options));
-			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
-
+			$tableActions->appendChild(Widget::Apply($options));
 			$this->Form->appendChild($tableActions);
 
 		}
