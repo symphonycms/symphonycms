@@ -124,7 +124,7 @@
 			if (empty($pagename)) {
 				$this->message = __('The page you requested does not exist.');
 			} else {
-				$this->message = __('The page you requested, %s, does not exist.', array('<code>' . getCurrentPage() . '</code>'));
+				$this->message = __('The page you requested, %s, does not exist.', array('<code>' . $pagename . '</code>'));
 			}
 			$this->code = E_USER_NOTICE;
 		}
