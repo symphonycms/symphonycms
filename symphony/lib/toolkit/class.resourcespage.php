@@ -33,8 +33,8 @@
 				}
 				else{
 					$sort = $config['sort'];
+					$order = $config['order'];
 				}
-				$order = $config['order'];
 			}
 
 			if($sort != $config['sort'] || $order != $config['order']){

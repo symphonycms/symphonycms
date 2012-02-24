@@ -20,29 +20,39 @@
 
 		public function sort(&$sort, &$order, $params) {
 			$section = $params['current-section'];
+			$handle = $section->get('handle');
+			$config = array(
+				'sort' => Symphony::Configuration()->get('section_' . $handle . '_sort', 'sorting'),
+				'order' => Symphony::Configuration()->get('section_' . $handle . '_direction', 'sorting'),
+			);
 
 			// Reset the Section's `entry_order` and `entry_order_direction`
 			// to defaults, which are `null` and `asc`.
 			if($params['unsort']) {
-				SectionManager::edit(
-					$section->get('id'),
-					array('entry_order' => null, 'entry_order_direction' => 'asc')
-				);
+#				SectionManager::edit(
+#					$section->get('id'),
+#					array('entry_order' => null, 'entry_order_direction' => 'asc')
+#				);
+				Symphony::Configuration()->remove('section_' . $handle . '_sort', 'sorting');
+				Symphony::Configuration()->remove('section_' . $handle . '_direction', 'sorting');
+
+				Symphony::Configuration()->write();
+
 				redirect(Administration::instance()->getCurrentPageURL());
 			}
 
 			// If `$sort` is null, resolve `$sort` and `$order` from `tbl_sections`,
 			// which contains the right values.
 			if(is_null($sort)) {
-				if(is_null($section->get('entry_order'))) {
+				if(is_null($config['sort'])) {
 					// If the stored `$sort` value is null, return
 					// the ID of the first sortable field.
 					$sort = $section->getDefaultSortingField();
 				}
 				else {
-					$sort = $section->get('entry_order');
+					$sort = $config['sort'];
+					$order = $config['order'];
 				}
-				$order = $section->get('entry_order_direction');
 			}
 
 			if(is_numeric($sort)) {
@@ -53,11 +63,16 @@
 
 				// If the sort order or direction differs from what is saved,
 				// update the database and then reload the page
-				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
-					SectionManager::edit(
-						$section->get('id'),
-						array('entry_order' => $sort, 'entry_order_direction' => $order)
-					);
+				if($config['sort'] != $sort || $config['order'] != $order){
+#					SectionManager::edit(
+#						$section->get('id'),
+#						array('entry_order' => $sort, 'entry_order_direction' => $order)
+#					);
+
+					Symphony::Configuration()->set('section_' . $handle . '_sort', $sort, 'sorting');
+					Symphony::Configuration()->set('section_' . $handle . '_direction', $order, 'sorting');
+
+					Symphony::Configuration()->write();
 
 					redirect(Administration::instance()->getCurrentPageURL() . $params['filters']);
 				}
