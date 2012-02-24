@@ -38,8 +38,19 @@
 		 *	An array of parameters that can be passed to the context-based method.
 		 */
 		public static function initialize($object, &$result, &$sort, &$order, array $params = array()) {
-			$sort = (isset($_REQUEST['sort'])) ? $_REQUEST['sort'] : null;
-			$order = ($_REQUEST['order'] == 'desc' ? 'desc' : 'asc');
+			if(isset($_REQUEST['sort'])){
+				$sort = $_REQUEST['sort'];
+			}
+			else {
+				$sort = null;
+			}
+
+			if(isset($_REQUEST['order']) && $_REQUEST['order'] == 'desc'){
+				$order = 'desc';
+			}
+			else {
+				$order = 'asc';
+			}
 
 			$result = $object->sort($sort, $order, $params);
 		}

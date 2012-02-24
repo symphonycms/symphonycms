@@ -19,6 +19,36 @@
 
 		public $_errors = array();
 
+		public function sort(&$sort, &$order, $params){
+			$type = ($params['type'] == RESOURCE_TYPE_DS ? 'datasource' : 'event');
+
+			$config = array(
+				'sort' => Symphony::Configuration()->get($type . '_index_sort', 'sorting'),
+				'order' => Symphony::Configuration()->get($type . '_index_direction', 'sorting'),
+			);
+
+			if(is_null($sort)) {
+				if(is_null($config['sort'])){
+					$sort = 'name';
+				}
+				else{
+					$sort = $config['sort'];
+				}
+				$order = $config['order'];
+			}
+
+			if($sort != $config['sort'] || $order != $config['order']){
+				Symphony::Configuration()->set($type . '_index_sort', $sort, 'sorting');
+				Symphony::Configuration()->set($type . '_index_direction', $order, 'sorting');
+
+				Symphony::Configuration()->write();
+
+				redirect(Administration::instance()->getCurrentPageURL());
+			}
+
+			return ResourceManager::fetch($params['type'], array(), array(), $sort . ' ' . $order);
+		}
+
 		public function pagesFlatView(){
 			$pages = PageManager::fetch(false, array('id'));
 
@@ -32,7 +62,9 @@
 		public function __viewIndex($resource_type){
 			$this->setPageType('table');
 
-			Sortable::initialize($this, $resources, $sort, $order);
+			Sortable::initialize($this, $resources, $sort, $order, array(
+				'type' => $resource_type,
+			));
 
 			$columns = array(
 				array(

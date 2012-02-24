@@ -20,7 +20,7 @@
 		 * A private method used to return the `tbl_pages` column related to the given resource type.
 		 *
 		 * @param integer $type
-		 *  The type of the resource, , either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
+		 *  The type of the resource, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @return string
 		 *  A string representing the `tbl_pages` column to target.
 		 */
@@ -148,7 +148,7 @@
 				}
 				else if($sort == 'name'){
 					foreach($resources as $key => $about){
-						$name[$key] = $about['name'];
+						$name[$key] = strtolower($about['name']);
 						$label[$key] = $key;
 					}
 

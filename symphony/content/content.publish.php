@@ -31,15 +31,18 @@
 				redirect(Administration::instance()->getCurrentPageURL());
 			}
 
-			// If `$sort` is null, resolve it from `tbl_sections`, or just use
-			// the ID of the first available field.
+			// If `$sort` is null, resolve `$sort` and `$order` from `tbl_sections`,
+			// which contains the right values.
 			if(is_null($sort)) {
 				if(is_null($section->get('entry_order'))) {
+					// If the stored `$sort` value is null, return
+					// the ID of the first sortable field.
 					$sort = $section->getDefaultSortingField();
 				}
 				else {
 					$sort = $section->get('entry_order');
 				}
+				$order = $section->get('entry_order_direction');
 			}
 
 			if(is_numeric($sort)) {
@@ -49,15 +52,14 @@
 				}
 
 				// If the sort order or direction differs from what is saved,
-				// update the database and then redirect to the new URL
+				// update the database and then reload the page
 				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
 					SectionManager::edit(
 						$section->get('id'),
 						array('entry_order' => $sort, 'entry_order_direction' => $order)
 					);
 
-					$query = '?sort=' . $sort . '&order=' . $order;
-					redirect(Administration::instance()->getCurrentPageURL() . $query . $params['filters']);
+					redirect(Administration::instance()->getCurrentPageURL() . $params['filters']);
 				}
 			}
 			else if($sort == 'id'){
