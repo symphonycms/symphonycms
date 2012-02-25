@@ -240,8 +240,6 @@
 			var password = $(this),
 				overlay = $('<div class="password"><span class="frame"><button>' + Symphony.Language.get('Change Password') + '</button></span></div>');
 		
-		console.log(Symphony.Context.get('env')[0]);
-		
 			// Add overlay
 			if(password.has('.invalid').length == 0 && Symphony.Context.get('env')[0] != 'new') {
 				overlay.insertBefore(password).find('button').on('click', function(event) {
