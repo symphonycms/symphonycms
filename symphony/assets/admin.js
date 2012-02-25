@@ -236,36 +236,17 @@
 		--------------------------------------------------------------------------*/
 
 		// Change user password
-		$('#change-password').each(function() {
+		$('#password').each(function() {
 			var password = $(this),
-				labels = password.find('label'),
-				help = password.next('p.help'),
-				placeholder = $('<label>' + Symphony.Language.get('Password') + ' <span class="frame"><button>' + Symphony.Language.get('Change Password') + '</button></span></label>'),
-				invalid = password.has('.invalid');
-
-			if(invalid.length == 0) {
-
-				// Hide password fields
-				password.removeClass();
-				labels.hide();
-				help.hide();
-
-				// Add placeholder
-				password.append(placeholder).find('button').click(function(event) {
+				overlay = $('<div class="password"><span class="frame"><button>' + Symphony.Language.get('Change Password') + '</button></span></div>');
+		
+			// Add overlay
+			if(password.has('.invalid').length == 0 && Symphony.Context.get('env')[0] != 'new') {
+				overlay.insertBefore(password).find('button').on('click', function(event) {
 					event.preventDefault();
-
-					// Hide placeholder
-					placeholder.hide();
-
-					// Shwo password fields
-					password.addClass('group');
-					if(password.find('input[name="fields[old-password]"]').length) password.addClass('triple');
-					labels.show();
-					help.show();
-				});
-
+					overlay.hide();
+				})
 			}
-
 		});
 
 		/*--------------------------------------------------------------------------

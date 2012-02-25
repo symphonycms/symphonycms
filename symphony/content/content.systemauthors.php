@@ -260,14 +260,14 @@
 			$group->appendChild(new XMLElement('legend', __('Essentials')));
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
+			$div->setAttribute('class', 'two columns');
 
-			$label = Widget::Label(__('First Name'));
+			$label = Widget::Label(__('First Name'), NULL, 'column');
 			$label->appendChild(Widget::Input('fields[first_name]', $author->get('first_name')));
 			$div->appendChild((isset($this->_errors['first_name']) ? Widget::wrapFormElementWithError($label, $this->_errors['first_name']) : $label));
 
 
-			$label = Widget::Label(__('Last Name'));
+			$label = Widget::Label(__('Last Name'), NULL, 'column');
 			$label->appendChild(Widget::Input('fields[last_name]', $author->get('last_name')));
 			$div->appendChild((isset($this->_errors['last_name']) ? Widget::wrapFormElementWithError($label, $this->_errors['last_name']) : $label));
 
@@ -285,7 +285,6 @@
 			$group->appendChild(new XMLElement('legend', __('Login Details')));
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('Username'));
 			$label->appendChild(Widget::Input('fields[username]', $author->get('username'), NULL));
@@ -293,7 +292,13 @@
 
 			// Only developers can change the user type. Primary account should NOT be able to change this
 			if (Administration::instance()->Author->isDeveloper() && !$author->isPrimaryAccount()) {
-				$label = Widget::Label(__('User Type'));
+			
+				// Create columns
+				$div->setAttribute('class', 'two columns');
+				$label->setAttribute('class', 'column');
+				
+				// User type
+				$label = Widget::Label(__('User Type'), NULL, 'column');
 
 				$options = array(
 					array('author', false, __('Author')),
@@ -306,40 +311,37 @@
 
 			$group->appendChild($div);
 
-			$div = new XMLElement('div', NULL, array('class' => 'group'));
-
-			if($this->_context[0] == 'edit') {
-				$div->setAttribute('id', 'change-password');
-
-				if(!Administration::instance()->Author->isDeveloper() || $isOwner === true){
-					$div->setAttribute('class', 'triple group');
-
-					$label = Widget::Label(__('Old Password'));
-					if(isset($this->_errors['old-password'])) {
-						$label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['old-password']));
-					}
-
-					$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password'));
-					$div->appendChild((isset($this->_errors['old-password']) ? Widget::wrapFormElementWithError($label, $this->_errors['old-password']) : $label));
-				}
+			// Password
+			$fieldset = new XMLElement('fieldset', NULL, array('class' => 'two columns', 'id' => 'password'));
+			$legend = new XMLElement('legend', __('Password'));
+			$help = new XMLElement('i', __('Leave password fields blank to keep the current password'));
+			$fieldset->appendChild($legend);
+			$fieldset->appendChild($help);
+			
+			// Password reset
+			if($this->_context[0] == 'edit' && (!Administration::instance()->Author->isDeveloper() || $isOwner === true)) {
+				$fieldset->setAttribute('class', 'three columns');
+				
+				$label = Widget::Label(NULL, NULL, 'column');
+				$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password', array('placeholder' => __('Old Password'))));
+				$fieldset->appendChild((isset($this->_errors['old-password']) ? Widget::wrapFormElementWithError($label, $this->_errors['password']) : $label));
 			}
+			
+			// New password
+			$callback = Administration::instance()->getPageCallback();
+			$placeholder = ($callback['context'][0] == 'edit' ? __('New Password') : __('Password'));
+			$label = Widget::Label(NULL, NULL, 'column');
+			$label->appendChild(Widget::Input('fields[password]', NULL, 'password', array('placeholder' => $placeholder)));
+			$fieldset->appendChild((isset($this->_errors['password']) ? Widget::wrapFormElementWithError($label, $this->_errors['password']) : $label));
 
-			$label = Widget::Label(($this->_context[0] == 'edit' ? __('New Password') : __('Password')));
-			$label->appendChild(Widget::Input('fields[password]', NULL, 'password'));
-			$div->appendChild((isset($this->_errors['password']) ? Widget::wrapFormElementWithError($label, $this->_errors['password']) : $label));
+			// Confirm password
+			$label = Widget::Label(NULL, NULL, 'column');
+			$label->appendChild(Widget::Input('fields[password-confirmation]', NULL, 'password', array('placeholder' => __('Confirm Password'))));
+			$fieldset->appendChild((isset($this->_errors['password-confirmation']) ? Widget::wrapFormElementWithError($label, $this->_errors['password']) : $label));
+			
+			$group->appendChild($fieldset);
 
-			$label = Widget::Label(($this->_context[0] == 'edit' ? __('Confirm New Password') : __('Confirm Password')));
-			if(isset($this->_errors['password-confirmation'])) {
-				$label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['password-confirmation']));
-			}
-			$label->appendChild(Widget::Input('fields[password-confirmation]', NULL, 'password'));
-			$div->appendChild($label);
-			$group->appendChild($div);
-
-			if($this->_context[0] == 'edit'){
-				$group->appendChild(new XMLElement('p', __('Leave password fields blank to keep the current password'), array('class' => 'help')));
-			}
-
+			// Auth token
 			if(Administration::instance()->Author->isDeveloper()) {
 				$label = Widget::Label();
 				$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
