@@ -136,8 +136,7 @@ table + fieldset {
 table.selectable input {
 	display: none;
 }
-tr.selected td,
-tr.selecting td {
+tr.selected td {
 	background-color: #668abe;
 	background-image: -webkit-linear-gradient(top, #668abe, #5c83ba);
 	background-image:    -moz-linear-gradient(top, #668abe, #5c83ba);
@@ -171,7 +170,7 @@ tr:nth-child(odd).ordering td {
 	background-image:      -o-linear-gradient(top, #4870a9, #446a9f);
 	background-image:   linear-gradient(to bottom, #4870a9, #446a9f);
 	border-bottom: 1px solid #3c5e8e;
-	border-top: 1px solid #3c5e8e;
+	border-top: 1px solid #2d466a;
 	text-shadow: 1px 1px rgba(0, 0, 0, 0.2);
 }
 tr.ordering td,
