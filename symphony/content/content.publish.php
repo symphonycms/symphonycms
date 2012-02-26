@@ -420,7 +420,12 @@
 				)));
 
 				$pgform = Widget::Form(Administration::instance()->getCurrentPageURL(),'get','paginationform');
-				$pgform->setValue(__('Page %1$s of %2$s', array(Widget::Input('pg', (string)$current_page)->generate(), '<span>' . max($current_page, $entries['total-pages'] . '</span>'))));
+				$pgmax = max($current_page, $entries['total-pages']); 
+				$pgform->appendChild(Widget::Input('pg', NULL, 'text', array(
+					'data-active' => __('Go to page …'),
+					'data-inactive' => __('Page %1$s of %2$s', array((string)$current_page, $pgmax)),
+					'data-max' => $pgmax
+				)));
 
 				$li->appendChild($pgform);
 				$ul->appendChild($li);
