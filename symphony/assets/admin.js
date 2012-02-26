@@ -181,14 +181,14 @@
 		pagegoto.val(pageinactive);
 		
 		// Display "Go to page …" placeholder
-		pagegoto.on('mouseover', function(event) {
+		pageform.on('mouseover', function(event) {
 			if(!pageform.is('.active') && pagegoto.val() == pageinactive) {
 				pagegoto.val(pageactive);
 			}
 		});
 		
 		// Display current page placeholder
-		pagegoto.on('mouseout', function(event) {
+		pageform.on('mouseout', function(event) {
 			if(!pageform.is('.active') && pagegoto.val() == pageactive) {
 				pagegoto.val(pageinactive);
 			}
