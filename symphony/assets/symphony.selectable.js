@@ -89,8 +89,8 @@
 			// Single selection
 			else {
 
-				// Press meta key to adjust current range, otherwise the selection will be removed
-				if(!event.metaKey || object.is('.single')) {
+				// Press meta or ctrl key to adjust current range, otherwise the selection will be removed
+				if((!event.metaKey && !event.ctrlKey) || object.is('.single')) {
 					deselection = items.not(item).filter('.selected').removeClass('selected').trigger('deselect');
 					deselection.find('input[type="checkbox"]').attr('checked', false);
 				}
