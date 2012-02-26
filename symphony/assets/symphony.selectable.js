@@ -18,9 +18,9 @@
 	 *
 	 * @param {Object} options An object specifying containing the attributes specified below
 	 * @param {String} [options.items='tbody tr:has(input)'] Selector to find items that are selectable
-	 * @param {String} [options.handles='td'] Selector to find children that can be clicked to select the
 	 * item. Needed to properly handle item highlighting when used in connection with the orderable plugin
 	 * @param {String} [options.ignore='a'] Selector to find elements that should not propagate to the handle
+	 * @param {String} [optinos.mode='single'] Either 'default' (click removes other selections) or 'additive' (click adds to exisiting selection)
 	 *
 	 *	@example
 
@@ -33,8 +33,8 @@
 		var objects = this,
 			settings = {
 				items: 'tbody tr:has(input)',
-				handles: 'td',
-				ignore: 'a'
+				ignore: 'a',
+				mode: 'single'
 			};
 
 		$.extend(settings, options);
@@ -90,7 +90,7 @@
 			else {
 
 				// Press meta or ctrl key to adjust current range, otherwise the selection will be removed
-				if((!event.metaKey && !event.ctrlKey) || object.is('.single')) {
+				if((!event.metaKey && !event.ctrlKey && settings.mode != 'additive') || object.is('.single')) {
 					deselection = items.not(item).filter('.selected').removeClass('selected').trigger('deselect');
 					deselection.find('input[type="checkbox"]').attr('checked', false);
 				}
