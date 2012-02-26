@@ -1064,7 +1064,7 @@ ul.page input {
 	color: #666;
 	border-radius: 4px;
 }
-ul.page input:hover {
+ul.page form:hover input {
 	color: #9e9e9e;
 }
 ul.page form.active input,
