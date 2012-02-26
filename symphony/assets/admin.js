@@ -162,6 +162,70 @@
 		}
 
 		/*--------------------------------------------------------------------------
+			Components - Pagination
+		--------------------------------------------------------------------------*/
+		
+		var pageform = $('ul.page form'),
+			pagegoto = pageform.find('input'),
+			pageactive = pagegoto.attr('data-active'),
+			pageinactive = pagegoto.attr('data-inactive'),
+			pagehelper = $('<span />').appendTo(pageform),
+			width;
+			
+		// Measure placeholder text
+		width = Math.max(pagehelper.text(pageactive).width(), pagehelper.text(pageinactive).width());
+		pagehelper.remove();
+		pagegoto.width(width + 20);
+			
+		// Set current page
+		pagegoto.val(pageinactive);
+		
+		// Display "Go to page …" placeholder
+		pageform.on('mouseover', function(event) {
+			if(!pageform.is('.active') && pagegoto.val() == pageinactive) {
+				pagegoto.val(pageactive);
+			}
+		});
+		
+		// Display current page placeholder
+		pageform.on('mouseout', function(event) {
+			if(!pageform.is('.active') && pagegoto.val() == pageactive) {
+				pagegoto.val(pageinactive);
+			}
+		});
+
+		// Edit page number
+		pagegoto.on('focus', function(event) {
+			if(pagegoto.val() == pageactive) {
+				pagegoto.val('');
+			}
+			pageform.addClass('active')
+		});
+		
+		// Stop editing page number
+		pagegoto.on('blur', function(event) {
+						
+			// Clear errors
+			if(pageform.is('.invalid') || pagegoto.val() == '') {
+				pageform.removeClass('invalid');
+				pagegoto.val(pageinactive);
+			}
+		
+			// Deactivate
+			if(pagegoto.val() == pageinactive) {
+				pageform.removeClass('active');
+			}
+		});
+		
+		// Validate page number
+		pageform.on('submit', function(event) {
+			if(pagegoto.val() > pagegoto.attr('data-max')) {
+				pageform.addClass('invalid');
+				return false;
+			}	
+		});
+
+		/*--------------------------------------------------------------------------
 			Components - XSLT Editor
 		--------------------------------------------------------------------------*/
 
