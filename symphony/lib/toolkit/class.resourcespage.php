@@ -20,28 +20,28 @@
 		public $_errors = array();
 
 		public function sort(&$sort, &$order, $params){
-			$type = ($params['type'] == RESOURCE_TYPE_DS ? 'datasource' : 'event');
+			$type = $params['type'];
 
-			$config = array(
-				'sort' => Symphony::Configuration()->get($type . '_index_sort', 'sorting'),
-				'order' => Symphony::Configuration()->get($type . '_index_direction', 'sorting'),
-			);
+			// If `?unsort` is appended to the URL, then sorting information are reverted
+			// to their defaults
+			if($params['unsort']) {
+				ResourceManager::setSortingField($type, 'name', false);
+				ResourceManager::setSortingOrder($type, 'asc');
 
-			if(is_null($sort)) {
-				if(is_null($config['sort'])){
-					$sort = 'name';
-				}
-				else{
-					$sort = $config['sort'];
-					$order = $config['order'];
-				}
+				redirect(Administration::instance()->getCurrentPageURL());
 			}
 
-			if($sort != $config['sort'] || $order != $config['order']){
-				Symphony::Configuration()->set($type . '_index_sort', $sort, 'sorting');
-				Symphony::Configuration()->set($type . '_index_direction', $order, 'sorting');
-
-				Symphony::Configuration()->write();
+			// By default, sorting information are retrieved from
+			// the filesystem and stored inside the `Configuration` object
+			if(is_null($sort) && is_null($order)){
+				$sort = ResourceManager::getSortingField($type);
+				$order = ResourceManager::getSortingOrder($type);
+			}
+			// If the sorting field or order differs from what is saved,
+			// update the config file and reload the page
+			else if($sort != ResourceManager::getSortingField($type) || $order != ResourceManager::getSortingOrder($type)){
+				ResourceManager::setSortingField($type, $sort, false);
+				ResourceManager::setSortingOrder($type, $order);
 
 				redirect(Administration::instance()->getCurrentPageURL());
 			}

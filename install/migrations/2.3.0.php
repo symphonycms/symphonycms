@@ -135,6 +135,8 @@
 
 			// 2.3 Beta 3
 			if(version_compare(self::$existing_version, '2.3beta3', '<=')) {
+
+				// Refresh indexes on existing Author field tables
 				$author_fields = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_author`");
 
 				foreach($author_fields as $id) {
@@ -153,6 +155,15 @@
 					catch (Exception $ex) {}
 				}
 
+				// Move section sorting data from the database to the filesystem. #977
+				$sections = Symphony::Database()->fetch("SELECT `handle`, `entry_order`, `entry_order_direction` FROM `tbl_sections`");
+
+				foreach($sections as $s) {
+					Symphony::Configuration()->set('section_' . $s['handle'] . '_sortby', $s['entry_order'], 'sorting');
+					Symphony::Configuration()->set('section_' . $s['handle'] . '_order', $s['entry_order_direction'], 'sorting');
+				}
+
+				// Update the version information
 				Symphony::Configuration()->set('version', '2.3beta3', 'symphony');
 				Symphony::Configuration()->set('useragent', 'Symphony/2.3 Beta 3', 'general');
 

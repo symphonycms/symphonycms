@@ -20,7 +20,7 @@
 		 * A private method used to return the `tbl_pages` column related to the given resource type.
 		 *
 		 * @param integer $type
-		 *  The type of the resource, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
+		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @return string
 		 *  A string representing the `tbl_pages` column to target.
 		 */
@@ -37,7 +37,7 @@
 		 * A method used to return the Manager for the given resource type.
 		 *
 		 * @param integer $type
-		 *  The type of the resource, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
+		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @return object
 		 *  An object representing the Manager class that handles the resource.
 		 */
@@ -48,6 +48,74 @@
 				case RESOURCE_TYPE_DS:
 					return DatasourceManager;
 			}
+		}
+
+		/**
+		 * Returns the axis a given resource type will be sorted by.
+		 * The following handles are available: `name`, `source`, `release-date`
+		 * and `author`. Defaults to 'name'.
+		 *
+		 * @since Symphony 2.3
+		 * @param integer $type
+		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
+		 * @return string
+		 *  The axis handle.
+		 */
+		public static function getSortingField($type){
+			$result = Symphony::Configuration()->get(self::getColumnFromType($type) . '_index_sortby', 'sorting');
+
+			return (is_null($result) ? 'name' : $result);
+		}
+
+		/**
+		 * Returns the sort order for a given resource type. Defaults to 'asc'.
+		 *
+		 * @since Symphony 2.3
+		 * @param integer $type
+		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
+		 * @return string
+		 *  Either 'asc' or 'desc'.
+		 */
+		public static function getSortingOrder($type){
+			$result = Symphony::Configuration()->get(self::getColumnFromType($type) . '_index_order', 'sorting');
+
+			return (is_null($result) ? 'asc' : $result);
+		}
+
+		/**
+		 * Saves the new axis a given resource type will be sorted by.
+		 *
+		 * @since Symphony 2.3
+		 * @param integer $type
+		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
+		 * @param string $sort
+		 *  The axis handle.
+		 * @param boolean $write
+		 *  If false, the new settings won't be written on the configuration file.
+		 *  Defaults to true.
+		 */
+		public static function setSortingField($type, $sort, $write = true){
+			Symphony::Configuration()->set(self::getColumnFromType($type) . '_index_sortby',  $sort , 'sorting');
+
+			if($write) Symphony::Configuration()->write();
+		}
+
+		/**
+		 * Saves the new sort order for a given resource type.
+		 *
+		 * @since Symphony 2.3
+		 * @param integer $type
+		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
+		 * @param string $order
+		 *  Either 'asc' or 'desc'.
+		 * @param boolean $write
+		 *  If false, the new settings won't be written on the configuration file.
+		 *  Defaults to true.
+		 */
+		public static function setSortingOrder($type, $order, $write = true){
+			Symphony::Configuration()->set(self::getColumnFromType($type) . '_index_order',  $order , 'sorting');
+
+			if($write) Symphony::Configuration()->write();
 		}
 
 		/**
@@ -174,7 +242,7 @@
 		 * Given the type and handle of a resource, return the extension it belongs to.
 		 *
 		 * @param integer $type
-		 *  The type of the resource, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
+		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @param string $r_handle
 		 *  The handle of the resource.
 		 * @return string
@@ -196,7 +264,7 @@
 		 * array of Page information, filtered by the pages the resource is attached to.
 		 *
 		 * @param integer $type
-		 *  The type of the resource, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
+		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @param string $r_handle
 		 *  The handle of the resource.
 		 * @return array
@@ -219,7 +287,7 @@
 		 * the given handle (which represents either a datasource or event) to that page.
 		 *
 		 * @param integer $type
-		 *  The type of the resource, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
+		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @param string $r_handle
 		 *  The handle of the resource.
 		 * @param integer $page_id
@@ -254,7 +322,7 @@
 		 * the given handle (which represents either a datasource or event) to that page.
 		 *
 		 * @param integer $type
-		 *  The type of the resource, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
+		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @param string $r_handle
 		 *  The handle of the resource.
 		 * @param integer $page_id

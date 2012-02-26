@@ -45,11 +45,11 @@
 				$sort = null;
 			}
 
-			if(isset($_REQUEST['order']) && $_REQUEST['order'] == 'desc'){
-				$order = 'desc';
+			if(isset($_REQUEST['order'])){
+				$order = ($_REQUEST['order'] == 'desc' ? 'desc' : 'asc');
 			}
 			else {
-				$order = 'asc';
+				$order = null;
 			}
 
 			$result = $object->sort($sort, $order, $params);

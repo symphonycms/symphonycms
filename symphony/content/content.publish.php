@@ -20,67 +20,46 @@
 
 		public function sort(&$sort, &$order, $params) {
 			$section = $params['current-section'];
-			$handle = $section->get('handle');
-			$config = array(
-				'sort' => Symphony::Configuration()->get('section_' . $handle . '_sort', 'sorting'),
-				'order' => Symphony::Configuration()->get('section_' . $handle . '_direction', 'sorting'),
-			);
 
-			// Reset the Section's `entry_order` and `entry_order_direction`
-			// to defaults, which are `null` and `asc`.
+			// If `?unsort` is appended to the URL, then sorting information are reverted
+			// to their defaults
 			if($params['unsort']) {
-#				SectionManager::edit(
-#					$section->get('id'),
-#					array('entry_order' => null, 'entry_order_direction' => 'asc')
-#				);
-				Symphony::Configuration()->remove('section_' . $handle . '_sort', 'sorting');
-				Symphony::Configuration()->remove('section_' . $handle . '_direction', 'sorting');
-
-				Symphony::Configuration()->write();
+				$section->setSortingField($section->getDefaultSortingField(), false);
+				$section->setSortingOrder('asc');
 
 				redirect(Administration::instance()->getCurrentPageURL());
 			}
 
-			// If `$sort` is null, resolve `$sort` and `$order` from `tbl_sections`,
-			// which contains the right values.
-			if(is_null($sort)) {
-				if(is_null($config['sort'])) {
-					// If the stored `$sort` value is null, return
-					// the ID of the first sortable field.
-					$sort = $section->getDefaultSortingField();
-				}
-				else {
-					$sort = $config['sort'];
-					$order = $config['order'];
+			// By default, sorting information are retrieved from
+			// the filesystem and stored inside the `Configuration` object
+			if(is_null($sort) && is_null($order)) {
+				$sort = $section->getSortingField();
+				$order = $section->getSortingOrder();
+
+				// Sorting by ID requires saving sort data to the `EntryManager`
+				// object for subsequent use
+				if($sort == 'id'){
+					EntryManager::setFetchSortingField('id');
+					EntryManager::setFetchSortingDirection($order);
 				}
 			}
-
-			if(is_numeric($sort)) {
-				// Ensure that this field is infact sortable.
-				if(($field = FieldManager::fetch($sort)) !== false && !$field->isSortable()) {
-					$sort = null;
+			else {
+				// Ensure that this field is infact sortable, otherwise
+				// fallback to IDs
+				if(($field = FieldManager::fetch($sort)) instanceof Field && !$field->isSortable()) {
+					$sort = $section->getDefaultSortingField();
 				}
 
 				// If the sort order or direction differs from what is saved,
-				// update the database and then reload the page
-				if($config['sort'] != $sort || $config['order'] != $order){
-#					SectionManager::edit(
-#						$section->get('id'),
-#						array('entry_order' => $sort, 'entry_order_direction' => $order)
-#					);
-
-					Symphony::Configuration()->set('section_' . $handle . '_sort', $sort, 'sorting');
-					Symphony::Configuration()->set('section_' . $handle . '_direction', $order, 'sorting');
-
-					Symphony::Configuration()->write();
+				// update the config file and reload the page
+				if($sort != $section->getSortingField() || $order != $section->getSortingOrder()){
+					$section->setSortingField($sort, false);
+					$section->setSortingOrder($order);
 
 					redirect(Administration::instance()->getCurrentPageURL() . $params['filters']);
 				}
 			}
-			else if($sort == 'id'){
-				EntryManager::setFetchSortingField('id');
-				EntryManager::setFetchSortingDirection($order);
-			}
+
 		}
 
 		public function action(){
