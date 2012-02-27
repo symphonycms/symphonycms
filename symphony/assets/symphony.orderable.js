@@ -46,7 +46,20 @@
 			if(!handle.is(settings.ignore) && !$(event.target).is(settings.ignore)) {
 				object.trigger('orderstart.orderable', [item]);
 				object.addClass('ordering');
-				item.addClass('ordering');
+				
+				// Highlight item
+				if(object.is('.selectable')) {
+				
+					// Avoid highlighting conflicts with selectable objects 
+					setTimeout(function() {
+						if(object.is('.ordering')) {
+							item.addClass('ordering'); 
+						}
+					}, 250);
+				}
+				else {
+					item.addClass('ordering');
+				}
 			}
 		});
 
