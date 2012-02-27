@@ -206,17 +206,17 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
+			$group->setAttribute('class', 'two columns');
 
 			$div = new XMLElement('div');
-			$label = Widget::Label(__('Name'));
+			$label = Widget::Label(__('Name'), NULL, 'column');
 			$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
 
 			if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
 			else $div->appendChild($label);
 			$group->appendChild($div);
 
-			$label = Widget::Label(__('Source'));
+			$label = Widget::Label(__('Source'), NULL, 'column');
 
 			$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 
@@ -448,9 +448,9 @@
 			$fieldset->appendChild($p);
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group contextual sections ' . __('Sections'));
+			$div->setAttribute('class', 'two columns contextual sections ' . __('Sections'));
 
-			$label = Widget::Label(__('Sort By'));
+			$label = Widget::Label(__('Sort By'), NULL, 'column');
 
 			$options = array(
 				array('label' => __('Authors'), 'options' => array(
@@ -496,7 +496,7 @@
 			$label->appendChild(Widget::Select('fields[sort]', $options, array('class' => 'filtered')));
 			$div->appendChild($label);
 
-			$label = Widget::Label(__('Sort Order'));
+			$label = Widget::Label(__('Sort Order'), NULL, 'column');
 
 			$options = array(
 				array('asc', ('asc' == $fields['order']), __('ascending')),
@@ -549,9 +549,9 @@
 			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
 			$fieldset->appendChild($label);
 
-			$div = new XMLElement('div', NULL, array('class' => 'group'));
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 
-			$subfieldset = new XMLElement('fieldset', NULL);
+			$subfieldset = new XMLElement('fieldset', NULL, array('class' => 'column'));
 			$subfieldset->appendChild(new XMLElement('legend', __('Parameters Output')));
 
 			// Support multiple parameters
@@ -606,7 +606,7 @@
 
 			$div->appendChild($subfieldset);
 
-			$subfieldset = new XMLElement('fieldset', NULL);
+			$subfieldset = new XMLElement('fieldset', NULL, array('class' => 'column'));
 			$subfieldset->appendChild(new XMLElement('legend', __('XML Output')));
 
 			$label = Widget::Label(__('Group By'));
@@ -710,9 +710,9 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Dynamic XML')));
 
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group offset');
+			$group->setAttribute('class', 'two columns');
 
-			$label = Widget::Label(__('URL'));
+			$label = Widget::Label(__('URL'), NULL, 'primary column');
 			$label->appendChild(Widget::Input('fields[dynamic_xml][url]', General::sanitize($fields['dynamic_xml']['url']), 'text', array('placeholder' => 'http://')));
 			if(isset($this->_errors['dynamic_xml']['url'])) $group->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['url']));
 			else $group->appendChild($label);
@@ -725,7 +725,7 @@
 			$p->setAttribute('class', 'help');
 			$label->appendChild($p);
 
-			$label = Widget::Label(__('Format'));
+			$label = Widget::Label(__('Format'), NULL, 'secondary column');
 			$label->appendChild(
 				Widget::Select('fields[dynamic_xml][format]', array(
 					array('xml', $fields['dynamic_xml']['format'] == 'xml', 'XML'),
