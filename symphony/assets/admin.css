@@ -330,11 +330,11 @@ fieldset.settings fieldset legend {
 #password {
 	border: none;
 	padding: 0;
-	margin: 0 0 0 -10px;
+	margin: 0 0 0 -15px;
 }
 #password legend {
-	padding: 0 0 0 10px;
-	margin: 0;
+	padding: 0 0 0 15px;
+	margin: 0 !important;
 	color: #222;
 	line-height: 1.5;
 	text-shadow: none;
@@ -1258,7 +1258,7 @@ ul.page form span {
 --------------------------------------------------------------------------*/
 
 .columns {
-	margin-left: -10px;
+	margin-left: -15px;
 	clear: both;
 }
 
@@ -1275,16 +1275,18 @@ ul.page form span {
 	-o-box-sizing: border-box;
 	box-sizing: border-box;
 	float: left;
-	padding-left: 10px;
+	padding: 0 0 0 15px;
 }
  
 .two.columns .column, .two.columns .invalid {
 	width: 50%;
 }
 .two.columns .column.primary {
+	margin: 0;
 	width: 75%;
 }
 .two.columns .column.secondary {
+	margin: 0;
 	width: 25%;
 }
  
@@ -1298,4 +1300,9 @@ ul.page form span {
 
 .columns .invalid .column {
 	width: 100%;
+}
+
+.columns legend {
+	margin: 0 0 0 -15px !important;
+	padding: 0 5px 0 15px !important;
 }
