@@ -19,6 +19,36 @@
 
 		public $_errors = array();
 
+		public function sort(&$sort, &$order, $params){
+			$type = $params['type'];
+
+			// If `?unsort` is appended to the URL, then sorting information are reverted
+			// to their defaults
+			if($params['unsort']) {
+				ResourceManager::setSortingField($type, 'name', false);
+				ResourceManager::setSortingOrder($type, 'asc');
+
+				redirect(Administration::instance()->getCurrentPageURL());
+			}
+
+			// By default, sorting information are retrieved from
+			// the filesystem and stored inside the `Configuration` object
+			if(is_null($sort) && is_null($order)){
+				$sort = ResourceManager::getSortingField($type);
+				$order = ResourceManager::getSortingOrder($type);
+			}
+			// If the sorting field or order differs from what is saved,
+			// update the config file and reload the page
+			else if($sort != ResourceManager::getSortingField($type) || $order != ResourceManager::getSortingOrder($type)){
+				ResourceManager::setSortingField($type, $sort, false);
+				ResourceManager::setSortingOrder($type, $order);
+
+				redirect(Administration::instance()->getCurrentPageURL());
+			}
+
+			return ResourceManager::fetch($params['type'], array(), array(), $sort . ' ' . $order);
+		}
+
 		public function pagesFlatView(){
 			$pages = PageManager::fetch(false, array('id'));
 
@@ -32,7 +62,9 @@
 		public function __viewIndex($resource_type){
 			$this->setPageType('table');
 
-			Sortable::initialize($this, $resources, $sort, $order);
+			Sortable::initialize($this, $resources, $sort, $order, array(
+				'type' => $resource_type,
+			));
 
 			$columns = array(
 				array(

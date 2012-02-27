@@ -21,49 +21,45 @@
 		public function sort(&$sort, &$order, $params) {
 			$section = $params['current-section'];
 
-			// Reset the Section's `entry_order` and `entry_order_direction`
-			// to defaults, which are `null` and `asc`.
+			// If `?unsort` is appended to the URL, then sorting information are reverted
+			// to their defaults
 			if($params['unsort']) {
-				SectionManager::edit(
-					$section->get('id'),
-					array('entry_order' => null, 'entry_order_direction' => 'asc')
-				);
+				$section->setSortingField($section->getDefaultSortingField(), false);
+				$section->setSortingOrder('asc');
+
 				redirect(Administration::instance()->getCurrentPageURL());
 			}
 
-			// If `$sort` is null, resolve it from `tbl_sections`, or just use
-			// the ID of the first available field.
-			if(is_null($sort)) {
-				if(is_null($section->get('entry_order'))) {
-					$sort = $section->getDefaultSortingField();
-				}
-				else {
-					$sort = $section->get('entry_order');
+			// By default, sorting information are retrieved from
+			// the filesystem and stored inside the `Configuration` object
+			if(is_null($sort) && is_null($order)) {
+				$sort = $section->getSortingField();
+				$order = $section->getSortingOrder();
+
+				// Sorting by ID requires saving sort data to the `EntryManager`
+				// object for subsequent use
+				if($sort == 'id'){
+					EntryManager::setFetchSortingField('id');
+					EntryManager::setFetchSortingDirection($order);
 				}
 			}
-
-			if(is_numeric($sort)) {
-				// Ensure that this field is infact sortable.
-				if(($field = FieldManager::fetch($sort)) !== false && !$field->isSortable()) {
-					$sort = null;
+			else {
+				// Ensure that this field is infact sortable, otherwise
+				// fallback to IDs
+				if(($field = FieldManager::fetch($sort)) instanceof Field && !$field->isSortable()) {
+					$sort = $section->getDefaultSortingField();
 				}
 
 				// If the sort order or direction differs from what is saved,
-				// update the database and then redirect to the new URL
-				if($section->get('entry_order') != $sort || $section->get('entry_order_direction') != $order){
-					SectionManager::edit(
-						$section->get('id'),
-						array('entry_order' => $sort, 'entry_order_direction' => $order)
-					);
+				// update the config file and reload the page
+				if($sort != $section->getSortingField() || $order != $section->getSortingOrder()){
+					$section->setSortingField($sort, false);
+					$section->setSortingOrder($order);
 
-					$query = '?sort=' . $sort . '&order=' . $order;
-					redirect(Administration::instance()->getCurrentPageURL() . $query . $params['filters']);
+					redirect(Administration::instance()->getCurrentPageURL() . $params['filters']);
 				}
 			}
-			else if($sort == 'id'){
-				EntryManager::setFetchSortingField('id');
-				EntryManager::setFetchSortingDirection($order);
-			}
+
 		}
 
 		public function action(){
@@ -1055,3 +1051,4 @@
 		}
 
 	}
+
