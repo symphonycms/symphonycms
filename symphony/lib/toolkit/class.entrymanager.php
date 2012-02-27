@@ -345,8 +345,8 @@
 				if(!$group) $group = $field->requiresSQLGrouping();
 			}
 
-			else if ($section->get('entry_order') && $field = FieldManager::fetch($section->get('entry_order'))) {
-				if($field->isSortable()) $field->buildSortingSQL($joins, $where, $sort, $section->get('entry_order_direction'));
+			else if ($section->getSortingField() && $field = FieldManager::fetch($section->getSortingField())) {
+				if($field->isSortable()) $field->buildSortingSQL($joins, $where, $sort, $section->getSortingOrder());
 				if(!$group) $group = $field->requiresSQLGrouping();
 			}
 

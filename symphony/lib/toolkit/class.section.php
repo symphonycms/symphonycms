@@ -72,6 +72,66 @@
 		}
 
 		/**
+		 * Returns the field this Section will be sorted by, or calls
+		 * `getDefaultSortingField()` if the configuration file doesn't
+		 * contain any settings for that Section.
+		 *
+		 * @since Symphony 2.3
+		 * @return string
+		 *  Either the field ID or the string 'id'.
+		 */
+		public function getSortingField(){
+			$result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_sortby', 'sorting');
+
+			return (is_null($result) ? $this->getDefaultSortingField() : $result);
+		}
+
+		/**
+		 * Returns the sort order for this Section. Defaults to 'asc'.
+		 *
+		 * @since Symphony 2.3
+		 * @return string
+		 *  Either 'asc' or 'desc'.
+		 */
+		public function getSortingOrder(){
+			$result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_order', 'sorting');
+
+			return (is_null($result) ? 'asc' : $result);
+		}
+
+		/**
+		 * Saves the new field this Section will be sorted by.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $sort
+		 *  The field ID or the string 'id'.
+		 * @param boolean $write
+		 *  If false, the new settings won't be written on the configuration file.
+		 *  Defaults to true.
+		 */
+		public function setSortingField($sort, $write = true){
+			Symphony::Configuration()->set('section_' . $this->get('handle') . '_sortby', $sort, 'sorting');
+
+			if($write) Symphony::Configuration()->write();
+		}
+
+		/**
+		 * Saves the new sort order for this Section.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $order
+		 *  Either 'asc' or 'desc'.
+		 * @param boolean $write
+		 *  If false, the new settings won't be written on the configuration file.
+		 *  Defaults to true.
+		 */
+		public function setSortingOrder($order, $write = true){
+			Symphony::Configuration()->set('section_' . $this->get('handle') . '_order', $order, 'sorting');
+
+			if($write) Symphony::Configuration()->write();
+		}
+
+		/**
 		 * Returns any section associations this section has with other sections
 		 * linked using fields. Has an optional parameter, respect_visibility that
 		 * will only return associations that are deemed visible by a field that

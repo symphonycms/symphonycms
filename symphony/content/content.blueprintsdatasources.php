@@ -15,12 +15,6 @@
 
 		public $_errors = array();
 
-		public function sort(&$sort, &$order, $params) {
-			if(is_null($sort)) $sort = 'name';
-
-			return ResourceManager::fetch(RESOURCE_TYPE_DS, array(), array(), $sort . ' ' . $order);
-		}
-
 		public function __viewIndex(){
 			parent::__viewIndex(RESOURCE_TYPE_DS);
 
