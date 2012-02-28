@@ -15,6 +15,7 @@
 			'image/jpeg',
 			'image/pjpeg',
 			'image/png',
+			'image/x-png',
 		);
 
 		public function __construct(){
