@@ -48,7 +48,7 @@
 				object.addClass('ordering');
 				
 				// Highlight item
-				if(object.is('.selectable')) {
+				if(object.is('.selectable, .collapsible')) {
 				
 					// Avoid highlighting conflicts with selectable objects 
 					setTimeout(function() {

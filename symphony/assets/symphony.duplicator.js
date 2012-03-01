@@ -58,26 +58,31 @@
 
 	/*-----------------------------------------------------------------------*/
 
-		objects.each(function() {
+		objects.each(function duplicator() {
 			var object = $(this),
 				instances = object.find(settings.instances).addClass('instance'),
 				templates = object.find(settings.templates).addClass('template'),
 				items = instances.add(templates),
-				headers = items.find(settings.headers).addClass('header'),
-				duplicator = $('<div class="duplicator" />'),
-				controls = $('<div class="controls" />'),
+				headers = items.find(settings.headers),
+				duplicator = $('<div class="duplicator empty" />'),
+				apply = $('<fieldset class="apply" />');
 				selector = $('<select />'),
-				constructor = $('<a class="constructor">' + Symphony.Language.get('Add item') + '</a>');
+				constructor = $('<button class="constructor">' + Symphony.Language.get('Add item') + '</button>');
 
 		/*-------------------------------------------------------------------*/
 
 			// Construct instances
-			controls.on('click.duplicator', 'a.constructor:not(.disabled)', function(event, speed) {
-				var instance = templates.filter('[data-type="' + selector.val() + '"]').clone();
+			apply.on('click.duplicator', 'button.constructor:not(.disabled)', function construct(event, speed) {
+				var instance = templates.filter('[data-type="' + $(this).prev('select').val() + '"]').clone();
+				
+				event.preventDefault();
 
 				instance.trigger('constructstart.duplicator');
 				instance.trigger('construct.duplicator'); /* deprecated */
 				instance.hide().appendTo(object);
+				
+				// Duplicator is not empty
+				duplicator.removeClass('empty');
 
 				// Set speed
 				if(!speed) {
@@ -95,47 +100,53 @@
 			});
 
 			// Destruct instances
-			duplicator.on('click.duplicator', 'a.destructor:not(.disabled)', function(event) {
+			duplicator.on('click.duplicator', 'a.destructor:not(.disabled)', function destruct(event) {
 				var instance = $(this).parents('.instance:first');
 
 				instance.trigger('destructstart.duplicator');
 				instance.trigger('destruct.duplicator'); /* deprecated */
 				instance.slideUp(settings.speed, function() {
 					$(this).remove();
+	
+					// Check if duplicator is empty
+					if(duplicator.find('.instance').length == 0) {
+						duplicator.addClass('empty');
+					}
+
 					instance.trigger('destructstop.duplicator');
 				});
 			});
 
 			// Lock constructor
-			duplicator.on('constructstop.duplicator', '.instance', function() {
+			duplicator.on('constructstop.duplicator', '.instance', function lockConstructor() {
 				if(duplicator.find('.instance').length >= settings.maximum) {
 					constructor.addClass('disabled');
 				}
 			});
 
 			// Unlock constructor
-			duplicator.on('destructstart.duplicator', '.instance', function() {
+			duplicator.on('destructstart.duplicator', '.instance', function unlockConstructor() {
 				if(duplicator.find('.instance').length <= settings.maximum) {
 					constructor.removeClass('disabled');
 				}
 			});
 
 			// Lock destructor
-			duplicator.on('destructstart.duplicator', '.instance', function() {
+			duplicator.on('destructstart.duplicator', '.instance', function lockDestructor() {
 				if(duplicator.find('.instance').length - 1 == settings.minimum) {
 					duplicator.find('a.destructor').addClass('disabled');
 				}
 			});
 
 			// Unlock destructor
-			duplicator.on('constructstop.duplicator', '.instance', function() {
+			duplicator.on('constructstop.duplicator', '.instance', function unlockDestructor() {
 				if(duplicator.find('.instance').length > settings.minimum) {
 					duplicator.find('a.destructor').removeClass('disabled');
 				}
 			});
 
 			// Lock unique instances
-			duplicator.on('constructstop.duplicator', '.instance', function(event) {
+			duplicator.on('constructstop.duplicator', '.instance', function lockUnique(event) {
 				var instance = $(this);
 
 				if(instance.is('.unique')) {
@@ -152,7 +163,7 @@
 			});
 
 			// Unlock unique instances
-			duplicator.on('destructstart.duplicator', '.instance', function(event) {
+			duplicator.on('destructstart.duplicator', '.instance', function unlockUnique(event) {
 				var instance = $(this),
 					option;
 
@@ -165,77 +176,48 @@
 					}
 				}
 			});
-
-			// Update title descriptions in header
-			duplicator.on('keyup.duplicator', '.instance input[name*="[label]"]', function(event) {
-				var input = $(this),
-					instance = input.parents('.instance:first'),
-					title = instance.find(settings.headers).find('span:first'),
-					description = title.find('i');
-
-				// Create description
-				if(description.length == 0) {
-					description = $('<i />').appendTo(title);
-				}
-
-				// Update description
-				description.text($.trim(input.val()));
-			});
-
+			
 			// Build field indexes
-			duplicator.on('constructstop.duplicator refresh.duplicator', '.instance', function(event) {
+			duplicator.on('constructstop.duplicator refresh.duplicator', '.instance', function buildIndexes(event) {
 				var instance = $(this),
 					position = duplicator.find('.instance').index(instance);
-
+ 
 				// Loop over named fields
 				instance.find('*[name]').each(function() {
 					var field = $(this),
 						exp = /\[\-?[0-9]+\]/,
 						name = field.attr('name');
-
+ 
 					// Set index
 					if(exp.test(name)) {
 						field.attr('name', name.replace(exp, '[' + position + ']'));
 					}
 				});
-			});
-
+			});	
+		
 			// Refresh field indexes
-			duplicator.on('orderstop.orderable', function(event) {
+			duplicator.on('orderstop.orderable', function refreshIndexes(event) {
 				duplicator.find('.instance').trigger('refresh.duplicator');
-			});
-
-			// Activate controls
-			duplicator.on('constructshow.duplicator', '.instance', function(event) {
-				if(duplicator.find('.instance').length == 1) {
-					duplicator.trigger('activate.collapsible');
-				}
-			});
-
-			// Deactivate controls
-			duplicator.on('destructstart.duplicator', '.instance', function(event) {
-				if(duplicator.find('.instance').length == 1) {
-					duplicator.trigger('deactivate.collapsible');
-				}
 			});
 
 		/*-------------------------------------------------------------------*/
 
 			// Build interface
 			duplicator.insertBefore(object).prepend(object);
-			headers.wrapInner('<span />').each(function() {
+			headers.each(function wrapContent() {
 				$(this).nextAll().wrapAll('<div class="content" />');
 			});
 
 			// Constructable interface
 			if(settings.constructable === true) {
 				duplicator.addClass('constructable');
-				controls.append(selector).append(constructor).appendTo(duplicator);
+				apply.append(selector).append(constructor);
+				apply.appendTo(duplicator);
 
 				// Populate selector
-				templates.each(function() {
+				templates.each(function createTemplates() {
 					var template = $(this),
-						title = template.find(settings.headers).text(),
+						title = template.find(settings.headers).attr('data-name') || template.find(settings.headers + ' :first-child').text(),
 						value = template.attr('data-type');
 
 					template.trigger('constructstart.duplicator');
@@ -264,12 +246,12 @@
 
 			// Single template
 			if(templates.length <= 1) {
-				selector.hide();
+				apply.addClass('single');
 
 				// Single unique template
 				if(templates.is('.unique')) {
-					controls.find('a.constructor').trigger('click.duplicator', [0]);
-					controls.hide();
+					constructor.trigger('click.duplicator', [0]);
+					apply.hide();
 				}
 			}
 
@@ -283,7 +265,7 @@
 			if(settings.collapsible) {
 				duplicator.symphonyCollapsible({
 					items: '.instance',
-					handles: '.header span'
+					handles: 'header'
 				});
 			}
 
@@ -291,14 +273,21 @@
 			if(settings.orderable) {
 				duplicator.symphonyOrderable({
 					items: '.instance',
-					handles: '.header',
-					ignore: 'span'
+					handles: 'header'
 				});
 			}
+			
+			// Catch errors
+			instances.filter(':has(.invalid)').addClass('conflict');
 
 			// Initialise existing instances
 			instances.trigger('constructstop.duplicator');
 			instances.find('input[name*="[label]"]').trigger('keyup.duplicator');
+			
+			// Check for existing instances
+			if(instances.length > 0) {
+				duplicator.removeClass('empty');
+			}
 		});
 
 	/*-----------------------------------------------------------------------*/

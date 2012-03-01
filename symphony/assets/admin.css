@@ -61,6 +61,7 @@ th {
 	text-align: left;
 	font-weight: normal;
 	line-height: 2;
+	white-space: nowrap;
 }
 td {
 	border: 1px solid #e6e6e5;
@@ -148,7 +149,9 @@ tr.selected td {
 	text-shadow: 1px 1px rgba(0, 0, 0, 0.2);
 }
 tr.selected td,
-tr.selected a {
+tr.selected a,
+tr.selecting td,
+tr.selecting a {
 	color: #fff;
 }
 tr.selected .inactive {
@@ -175,10 +178,6 @@ tr:nth-child(odd).ordering td {
 }
 tr.ordering td,
 tr.ordering a {
-	color: #fff;
-}
-tr.selecting td,
-tr.selecting a {
 	color: #fff;
 }
 
@@ -389,24 +388,6 @@ div.password {
 	display: none;
 }
 
-/* Settings: Duplicator */
-
-.settings .duplicator {
-	margin-bottom: 1.5em;
-}
-.settings .duplicator fieldset {
-	border-top: 1px solid #eed;
-}
-.settings .duplicator legend {
-	background: #DDC;
-	color: #665;
-}
-.settings .duplicator .group label > i:hover {
-	white-space:normal;
-	height:auto;
-	background: rgba(221, 221, 204, 0.8);
-}
-
 /*--------------------------------------------------------------------------
 	Globals - Buttons
 --------------------------------------------------------------------------*/
@@ -416,8 +397,8 @@ button,
 .button {
 	display: inline-block;
 	min-height: 20px;
-	margin-left: 0.7em;
-	padding: 0 0.7em;
+	margin-left: 10px;
+	padding: 0 10px;
 	background-color: #efefed; color: rgba(85, 85, 85, 0.95);
 	text-decoration: none;
 	background-image: -webkit-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
@@ -584,6 +565,26 @@ fieldset.apply:hover button:before {
 fieldset.apply.inactive:hover button:before {
 	opacity: 0.5;
 }
+
+/* Single select "With selected…" */
+fieldset.apply.single {
+	border: none;
+}
+fieldset.apply.single select {
+	display: none;
+}
+
+fieldset.apply.single button {
+	border: 1px solid rgba(0, 0, 0, 0.25);
+	border-bottom-color: rgba(0, 0, 0, 0.3);
+	border-radius: 4px;
+	height: auto;
+	white-space: nowrap;
+}
+fieldset.apply.single button:before {
+	display: none;
+}
+
 
 /*--------------------------------------------------------------------------
 	Globals - System Messages

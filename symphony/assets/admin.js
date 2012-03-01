@@ -109,8 +109,8 @@
 		// Duplicators
 		$('.filters-duplicator').symphonyDuplicator();
 
-		// Collapsible duplicators
-		var duplicator = $('#fields-duplicator')
+		// Field editor
+		$('#fields-duplicator')
 			.symphonyDuplicator({
 				orderable: true,
 				collapsible: true,
@@ -118,48 +118,90 @@
 			})
 			.on('constructshow.duplicator', function() {
 				$('.tags').symphonyTags();
+			})
+			.on('keyup', '.instance input[name*="[label]"]', function(event) {
+				var label = $(this),
+					value = label.val();
+					
+				// Empty label
+				if(value == '') {
+					value = Symphony.Language.get('Untitled Field');
+				}
+				
+				// Update title
+				label.parents('.instance').find('header strong').text(value);
+			})
+			.on('change', '.instance select[name*="[location]"]', function(event) {
+				var select = $(this);
+					
+				// Set location
+				select.parents('.instance').find('header').removeClass('main, sidebar').addClass(select.val());
+			});
+
+		// Highlight instances with the same location when ordering fields
+		$('div.duplicator')
+			.on('orderstart.orderable', function(event, item) {
+				var duplicator = $(this);
+			
+				setTimeout(function() {
+					if(duplicator.is('.ordering')) {
+						duplicator.find('li:has(.' + item.find('header').attr('class') + ')').not(item).addClass('highlight');
+					}
+				}, 250);
+			})
+			.on('orderstop.orderable', function(event, item) {
+				$(this).find('li.highlight').removeClass('highlight');
 			});
 
 		/*--------------------------------------------------------------------------
 			Plugins - System Messages
 		--------------------------------------------------------------------------*/
 
-		$('header').symphonyNotify();
+		$('#header').symphonyNotify();
 
 		/*--------------------------------------------------------------------------
 			Components - With Selected
 		--------------------------------------------------------------------------*/
 
-		var applicable = $('fieldset.apply'),
-			selection = $('table.selectable');
-		
-		// Set menu status
-		if(applicable.length > 0 && selection.length > 0) {
-			selection.on('select deselect check', 'tbody tr:has(input)', function(event) {
-				var select = applicable.find('select');
-			
-				// Activate menu
-				if(selection.has('.selected').length > 0) {
-					applicable.removeClass('inactive');
-					select.removeAttr('disabled');
-				}
+		$('fieldset.apply').each(function() {
+			var applicable = $(this),
+				selection = $('table.selectable'),
+				select = applicable.find('select'),
+				button = applicable.find('button');
 				
-				// Deactivate menu
-				else {
-					applicable.addClass('inactive');
-					select.attr('disabled', 'disabled');
-				}
-			});
-			
-			selection.find('tbody tr:has(input):first').trigger('check');
-			
-			// Respect menu state
-			applicable.find('button').on('click', function(event) {
-				if($(this).parent().is('.inactive')) {
-					return false;
-				}
-			});
-		}
+			// Set width
+			if(!applicable.is('.single')) {
+				applicable.width(select.outerWidth() + button.outerWidth() + 10);
+			}
+
+			// Set menu status
+			if(selection.length > 0) {
+				selection.on('select deselect check', 'tbody tr:has(input)', function(event) {
+					var select = applicable.find('select');
+				
+					// Activate menu
+					if(selection.has('.selected').length > 0) {
+						applicable.removeClass('inactive');
+						select.removeAttr('disabled');
+					}
+					
+					// Deactivate menu
+					else {
+						applicable.addClass('inactive');
+						select.attr('disabled', 'disabled');
+					}
+				});
+				
+				selection.find('tbody tr:has(input):first').trigger('check');
+				
+				// Respect menu state
+				applicable.find('button').on('click', function(event) {
+					if($(this).parent().is('.inactive')) {
+						return false;
+					}
+				});
+			}		
+		});
 
 		/*--------------------------------------------------------------------------
 			Components - Pagination

@@ -430,7 +430,15 @@
 		 *	the input error collection. this defaults to null.
 		 */
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null){
-			$wrapper->appendChild(new XMLElement('h4', $this->name()));
+			
+			// Create header
+			$location = ($this->get('location') ? $this->get('location') : 'main');
+			$header = new XMLElement('header', NULL, array('class' => $location, 'data-name' => $this->name()));
+			$label = (($this->get('label')) ? $this->get('label') : __('New Field'));
+			$header->appendChild(new XMLElement('h4', '<strong>' . $label . '</strong> <span class="type">' . $this->name() . '</span>'));
+			$wrapper->appendChild($header);
+			
+			// Create content
 			$wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][type]', $this->handle(), 'hidden'));
 			if($this->get('id')) $wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][id]', $this->get('id'), 'hidden'));
 
@@ -857,7 +865,7 @@
 		 *	the suffix to apply to the display of this.
 		 */
 		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null){
-			$wrapper->appendChild(new XMLElement('h4', $this->get('label') . ' <i>'.$this->Name().'</i>'));
+			$wrapper->appendChild(new XMLElement('header', '<h4>' . $this->get('label') . '</h4> <span>' . $this->name() . '</span>'));
 			$label = Widget::Label(__('Value'));
 			$label->appendChild(Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : null)));
 			$wrapper->appendChild($label);
