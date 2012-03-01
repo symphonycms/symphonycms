@@ -27,7 +27,7 @@
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-	padding: 0 0 0 9px;
+	padding: 0 0 0 5px;
 }
 .group.offset > *:first-child {
 	width: 75%;
@@ -37,7 +37,7 @@
 }
 
 .group > *:first-child {
-	padding: 0 9px 0 0;
+	padding: 0 5px 0 0;
 }
 .group label > i,
 .secondary label > i {
