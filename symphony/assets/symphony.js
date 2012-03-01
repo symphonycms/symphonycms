@@ -58,7 +58,8 @@ var Symphony = {};
 				'a minute ago': false,
 				'{$minutes} minutes ago': false,
 				'about 1 hour ago': false,
-				'about {$hours} hours ago': false
+				'about {$hours} hours ago': false,
+				'Untitled Field': false
 			});
 
 			/**

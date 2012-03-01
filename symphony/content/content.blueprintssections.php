@@ -201,11 +201,10 @@
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
+			$p = new XMLElement('p', __('Click to expand or collapse a field.') . '<br />' . __('Double click to expand or collapse all fields.'), array('class' => 'help'));
+			$fieldset->appendChild($p);
 
 			$div = new XMLElement('div');
-			$p = new XMLElement('p', __('Fields'));
-			$p->setAttribute('class', 'label');
-			$div->appendChild($p);
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');
@@ -415,11 +414,10 @@
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
+			$p = new XMLElement('p', __('Click to expand or collapse a field.') . '<br />' . __('Double click to expand or collapse all fields.'), array('class' => 'help'));
+			$fieldset->appendChild($p);
 
 			$div = new XMLElement('div');
-			$p = new XMLElement('p', __('Fields'));
-			$p->setAttribute('class', 'label');
-			$div->appendChild($p);
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');
