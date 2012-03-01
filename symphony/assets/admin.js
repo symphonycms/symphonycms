@@ -135,7 +135,7 @@
 				var select = $(this);
 					
 				// Set location
-				select.parents('.instance').find('header').removeClass('main, sidebar').addClass(select.val());
+				select.parents('.instance').find('header').removeClass('main').removeClass('sidebar').addClass(select.val());
 			});
 
 		// Highlight instances with the same location when ordering fields
