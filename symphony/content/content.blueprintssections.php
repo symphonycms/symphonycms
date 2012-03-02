@@ -269,6 +269,7 @@
 				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for could not be found.'));
 			}
 			$meta = $section->get();
+			$section_id = $meta['id'];
 			$types = array();
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));

@@ -328,7 +328,9 @@
 
 			// Verify page exists:
 			if($this->_context[0] == 'edit') {
-				if(!$page_id = $this->_context[1]) redirect(SYMPHONY_URL . '/blueprints/pages/');
+				if(!$page_id = $this->_context[1]) {
+					redirect(SYMPHONY_URL . '/blueprints/pages/');
+				}
 
 				$existing = PageManager::fetchPageByID($page_id);
 
