@@ -596,17 +596,17 @@
 	}
 
 	/**
-	 * The SymphonyErrorPageHandler extends the GenericExceptionHandler
-	 * to allow the template for the Exception to be provided from the `TEMPLATES`
+	 * The `SymphonyErrorPageHandler` extends the `GenericExceptionHandler`
+	 * to allow the template for the exception to be provided from the `TEMPLATES`
 	 * directory
 	 */
 	Class SymphonyErrorPageHandler extends GenericExceptionHandler {
 
 		/**
-		 * The render function will take a SymphonyErrorPage Exception and
+		 * The render function will take a `SymphonyErrorPage` exception and
 		 * output a HTML page. This function first checks to see if their is a custom
-		 * template for this Exception otherwise it reverts to using the default
-		 * `tpl.error.php`
+		 * template for this exception otherwise it reverts to using the default
+		 * `usererror.generic.php`
 		 *
 		 * @param SymphonyErrorPage $e
 		 *  The Exception object
@@ -624,9 +624,9 @@
 	}
 
 	/**
-	 * The SymphonyErrorPage extends the default Exception class. All
-	 * of these Exceptions will halt execution immediately and return the
-	 * Exception as a HTML page. By default the HTML template is `tpl.error.php`
+	 * `SymphonyErrorPage` extends the default `Exception` class. All
+	 * of these exceptions will halt execution immediately and return the
+	 * exception as a HTML page. By default the HTML template is `usererror.generic.php`
 	 * from the `TEMPLATES` directory.
 	 */
 
@@ -641,7 +641,7 @@
 
 		/**
 		 * A description for this error, which can be provided as a string
-		 * or as an XMLElement.
+		 * or as an `XMLElement`.
 		 * @var string|XMLElement
 		 */
 		private $_message;
@@ -649,13 +649,13 @@
 		/**
 		 * A string for the error page template to use, defaults to 'generic'. This
 		 * can be the name of any template file in the `TEMPLATES` directory.
-		 * A template using the naming convention of `tpl.*.php`.
+		 * A template using the naming convention of `usererror.*.php`.
 		 * @var string
 		 */
 		private $_template = 'generic';
 
 		/**
-		 * If the message as provided as an XMLElement, it will be saved to
+		 * If the message as provided as an `XMLElement`, it will be saved to
 		 * this parameter
 		 * @var XMLElement
 		 */
@@ -728,8 +728,8 @@
 		/**
 		 * Returns the path to the current template by looking at the
 		 * `WORKSPACE/template/` directory, then at the `TEMPLATES`
-		 * directory for the convention `tpl.*.php`. If the template 
-		 * is not found, false is returned
+		 * directory for the convention `usererror.*.php`. If the template
+		 * is not found, `false` is returned
 		 *
 		 * @since Symphony 2.3
 		 * @return mixed
@@ -748,14 +748,14 @@
 	}
 
 	/**
-	 * The DatabaseExceptionHandler provides a render function to provide
-	 * customised output for Database exceptions. It displays the Exception
+	 * The `DatabaseExceptionHandler` provides a render function to provide
+	 * customised output for database exceptions. It displays the exception
 	 * message as provided by the Database.
 	 */
 	Class DatabaseExceptionHandler extends GenericExceptionHandler {
 
 		/**
-		 * The render function will take a DatabaseException and output a
+		 * The render function will take a `DatabaseException` and output a
 		 * HTML page.
 		 *
 		 * @param DatabaseException $e
