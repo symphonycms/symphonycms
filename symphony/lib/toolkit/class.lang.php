@@ -426,7 +426,7 @@
 		 * @return boolean
 		 *	Returns true for localized system, false for English system
 		 */
-		public function isLocalized() {
+		public static function isLocalized() {
 			return (self::get() != 'en');
 		}
 
