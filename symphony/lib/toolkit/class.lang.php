@@ -370,7 +370,7 @@
 		 * @return string
 		 *  Returns the translated string
 		 */
-		public function translate($string, array $inserts = null, $namespace = null) {
+		public static function translate($string, array $inserts = null, $namespace = null) {
 			if(is_null($namespace) && class_exists('Symphony')){
 				$namespace = Symphony::getPageNamespace();
 			}
