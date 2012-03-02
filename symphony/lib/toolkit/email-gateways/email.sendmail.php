@@ -18,7 +18,7 @@
 		 *
 		 * @return array
 		 */
-		public function about() {
+		public static function about() {
 			return array(
 				'name' => __('Sendmail (default)'),
 			);
