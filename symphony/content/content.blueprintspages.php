@@ -18,7 +18,7 @@
 		public $_errors = array();
 		protected $_hilights = array();
 
-		public function insertBreadcrumbs($page_id, $preserve_last = true) {
+		public function insertBreadcrumbsUsingPageIdentifier($page_id, $preserve_last = true) {
 			if($page_id == 0) {
 				return parent::insertBreadcrumbs(
 					array(Widget::Anchor(__('Pages'), SYMPHONY_URL . '/blueprints/pages/'))
@@ -94,7 +94,7 @@
 			));
 
 			if(isset($parent)) {
-				$this->insertBreadcrumbs($parent['id'], false);
+				$this->insertBreadcrumbsUsingPageIdentifier($parent['id'], false);
 			}
 
 			$aTableHead = array(
@@ -255,7 +255,7 @@
 			));
 
 			$this->appendSubheading(__($filename ? $filename : __('Untitled')), Widget::Anchor(__('Edit Page'), SYMPHONY_URL . '/blueprints/pages/edit/' . $pagedata['id'] . '/', __('Edit Page Configuration'), 'button', NULL, array('accesskey' => 't')));
-			$this->insertBreadcrumbs($pagedata['id']);
+			$this->insertBreadcrumbsUsingPageIdentifier($pagedata['id']);
 
 			if(!empty($_POST)) $fields = $_POST['fields'];
 
@@ -425,10 +425,10 @@
 			}
 
 			if(isset($this->_context[1])) {
-				$this->insertBreadcrumbs($this->_context[1], false);
+				$this->insertBreadcrumbsUsingPageIdentifier($this->_context[1], false);
 			}
 			else {
-				$this->insertBreadcrumbs((int)$_GET['parent'], true);
+				$this->insertBreadcrumbsUsingPageIdentifier((int)$_GET['parent'], true);
 			}
 
 		// Title --------------------------------------------------------------
