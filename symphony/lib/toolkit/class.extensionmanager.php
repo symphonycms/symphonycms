@@ -10,7 +10,7 @@
 	 * as it's folder name (excluding the extension prefix).
 	 */
 
-	include_once(TOOLKIT . '/interface.fileresource.php');
+	include_once(FACE . '/interface.fileresource.php');
 	include_once(TOOLKIT . '/class.extension.php');
 
 	Class ExtensionManager implements FileResource {

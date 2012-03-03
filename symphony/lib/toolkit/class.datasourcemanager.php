@@ -12,7 +12,7 @@
 	 */
 
 	require_once(TOOLKIT . '/class.datasource.php');
-	require_once(TOOLKIT . '/interface.fileresource.php');
+	require_once(FACE . '/interface.fileresource.php');
 
 	Class DatasourceManager implements FileResource {
 

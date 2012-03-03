@@ -170,7 +170,7 @@
 	 * @since Symphony 2.3
 	 * @var string
 	 */
-	define_safe('PROVIDER_INTERFACE', LIBRARY . '/interface');
+	define_safe('FACE', LIBRARY . '/interface');
 
 	/**
 	 * The filesystem path to the `email-gateways` folder which is contained within

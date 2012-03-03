@@ -1,7 +1,7 @@
 <?php
 
 	require_once TOOLKIT . '/class.datasource.php';
-	require_once PROVIDER_INTERFACE . '/interface.datasource.php';
+	require_once FACE . '/interface.datasource.php';
 
 	Class DatasourceRemote extends DataSource implements iDatasource {
 
