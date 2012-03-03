@@ -203,7 +203,12 @@
 				Symphony::Configuration()->set('version', '2.3beta3', 'symphony');
 				Symphony::Configuration()->set('useragent', 'Symphony/2.3 Beta 3', 'general');
 
-				return Symphony::Configuration()->write();
+				if(Symphony::Configuration()->write() === false) {
+					throw new Exception('Failed to write configuration file, please check the file permissions.');
+				}
+				else {
+					return true;
+				}
 			}
 		}
 

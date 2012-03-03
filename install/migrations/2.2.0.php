@@ -54,11 +54,10 @@
 			}
 
 			// 2.2.0
-			if(version_compare(self::$existing_version, '2.2.0', '<=')) {
+			if(version_compare(self::$existing_version, '2.2', '<=')) {
 				Symphony::Configuration()->set('version', '2.2', 'symphony');
 				Symphony::Configuration()->set('datetime_separator', ' ', 'region');
 				Symphony::Configuration()->set('strict_error_handling', 'yes', 'symphony');
-				Symphony::Configuration()->write();
 
 				// We've added UNIQUE KEY indexes to the Author, Checkbox, Date, Input, Textarea and Upload Fields
 				// Time to go through the entry tables and make this change as well.
@@ -84,6 +83,13 @@
 						Symphony::Database()->query("OPTIMIZE TABLE " . $table);
 					}
 					catch (Exception $ex) {}
+				}
+
+				if(Symphony::Configuration()->write() === false) {
+					throw new Exception('Failed to write configuration file, please check the file permissions.');
+				}
+				else {
+					return true;
 				}
 			}
 		}

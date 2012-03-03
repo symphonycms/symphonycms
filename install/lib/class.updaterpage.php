@@ -52,6 +52,12 @@
 			$this->Form->appendChild($h2);
 			$this->Form->appendChild($p);
 
+			if(!is_writable(CONFIG)) {
+				$this->Form->appendChild(
+					new XMLElement('p', __('Please check that your configuration file is writable before proceeding'), array('class' => 'warning'))
+				);
+			}
+
 			if(!empty($this->_params['pre-notes'])){
 				$h2 = new XMLElement('h2', __('Pre-Installation Notes:'));
 				$dl = new XMLElement('dl');

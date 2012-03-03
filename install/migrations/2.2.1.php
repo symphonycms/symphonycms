@@ -117,7 +117,13 @@
 			// 2.2.1
 			if(version_compare(self::$existing_version, '2.2.1', '<=')) {
 				Symphony::Configuration()->set('version', '2.2.1', 'symphony');
-				return Symphony::Configuration()->write();
+
+				if(Symphony::Configuration()->write() === false) {
+					throw new Exception('Failed to write configuration file, please check the file permissions.');
+				}
+				else {
+					return true;
+				}
 			}
 		}
 
