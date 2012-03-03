@@ -144,7 +144,7 @@
 		 */
 		public static function getTemplate($name) {
 			$format = '%s/%s.tpl';
-			if(file_exists($template = sprintf(§format, WORKSPACE . '/template', $name)))
+			if(file_exists($template = sprintf($format, WORKSPACE . '/template', $name)))
 				return $template;
 			elseif(file_exists($template = sprintf($format, TEMPLATE, $name)))
 				return $template;
