@@ -65,11 +65,11 @@
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `value` varchar(80) default NULL,
-				  `local` int(11) default NULL,
-				  `gmt` int(11) default NULL,
+				  `date` DATETIME default NULL,
 				  PRIMARY KEY  (`id`),
 				  UNIQUE KEY `entry_id` (`entry_id`),
-				  KEY `value` (`value`)
+				  KEY `value` (`value`),
+				  KEY `date` (`date`)
 				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			");
 		}
@@ -268,8 +268,8 @@
 			if($andOperation) {
 				foreach($data as $date) {
 					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-					$where .= " AND (DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') >= '" . DateTimeObj::get('Y-m-d H:i:s', $date['start']) . "'
-								AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') <= '" . DateTimeObj::get('Y-m-d H:i:s', $date['end']) . "') ";
+					$where .= " AND (`t$field_id".$this->key."`.date >= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['start']) . "'
+								AND `t$field_id".$this->key."`.date <= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['end']) . "') ";
 
 					$this->key++;
 				}
@@ -279,8 +279,8 @@
 				$tmp = array();
 
 				foreach($data as $date) {
-					$tmp[] = "(DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') >= '" . DateTimeObj::get('Y-m-d H:i:s', $date['start']) . "'
-								AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') <= '" . DateTimeObj::get('Y-m-d H:i:s', $date['end']) . "') ";
+					$tmp[] = "`t$field_id".$this->key."`.date >= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['start']) . "'
+								AND `t$field_id".$this->key."`.date <= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['end']) . "' ";
 				}
 
 				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
@@ -395,8 +395,7 @@
 			if(!is_null($timestamp)) {
 				return array(
 					'value' => DateTimeObj::get('c', $timestamp),
-					'local' => $timestamp,
-					'gmt' => DateTimeObj::getGMT('U', $timestamp)
+					'date' => DateTimeObj::getGMT('c', $timestamp)
 				);
 			}
 
@@ -404,8 +403,7 @@
 			else {
 				return array(
 					'value' => null,
-					'local' => null,
-					'gmt' => null
+					'date' => null
 				);
 			}
 		}
