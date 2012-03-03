@@ -99,11 +99,11 @@
 		Settings:
 	-------------------------------------------------------------------------*/
 
-		public function findDefaults(&$fields){
-			if(!isset($fields['pre_populate_source'])) $fields['pre_populate_source'] = array('existing');
+		public function findDefaults(array &$settings){
+			if(!isset($settings['pre_populate_source'])) $settings['pre_populate_source'] = array('existing');
 		}
 
-		public function displaySettingsPanel(&$wrapper, $errors = null) {
+		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$label = Widget::Label(__('Suggestion List'));
@@ -160,7 +160,7 @@
 		Publish:
 	-------------------------------------------------------------------------*/
 
-		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null){
 			$value = NULL;
 			if(isset($data['value'])){
 				$value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
@@ -220,7 +220,7 @@
 		Output:
 	-------------------------------------------------------------------------*/
 
-		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
+		public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
 			if (!is_array($data) or empty($data)) return;
 
 			$list = new XMLElement($this->get('element_name'));
@@ -258,8 +258,8 @@
 		Filtering:
 	-------------------------------------------------------------------------*/
 
-		public function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-			parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
+		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null){
+			parent::displayDatasourceFilterPanel($wrapper, $data, $errors);
 
 			if($this->get('pre_populate_source') != NULL){
 

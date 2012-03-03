@@ -99,7 +99,7 @@
 					$m = new $classname();
 
 					if(version_compare(Symphony::Configuration()->get('version', 'symphony'), $m::getVersion(), '<')){
-						$migrations[$version] = $m;
+						$migrations[$m::getVersion()] = $m;
 					}
 				}
 			}

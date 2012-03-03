@@ -198,6 +198,11 @@ p.warning {
 	padding-top: 0;
 }
 
+p + p.warning {
+	margin-top: 1em;
+	padding-top: 1em;
+}
+
 /* Lists */
 ol{
 	margin-left: 1.5em;

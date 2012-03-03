@@ -127,12 +127,12 @@
 				}
 			}
 		}
-		
-		
+
+
 		/**
 		 * Returns the path to the error-template by looking at the
 		 * `WORKSPACE/template/` directory, then at the `TEMPLATES`
-		 * directory for the convention `*.tpl`. If the template 
+		 * directory for the convention `*.tpl`. If the template
 		 * is not found, false is returned
 		 *
 		 * @since Symphony 2.3
@@ -342,7 +342,7 @@
 				);
 			}
 
-			if(error_reporting() !== 0) {
+			if(self::isEnabled()) {
 				throw new ErrorException($message, 0, $code, $file, $line);
 			}
 		}

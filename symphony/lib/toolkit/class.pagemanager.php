@@ -56,7 +56,7 @@
 					WHERE `handle` = '%s'
 					LIMIT 1
 				",
-					$handle
+					Symphony::Database()->cleanValue($handle)
 			));
 		}
 
@@ -75,7 +75,7 @@
 					WHERE `handle` = '%s'
 					LIMIT 1
 				",
-					$handle
+					Symphony::Database()->cleanValue($handle)
 			));
 		}
 
@@ -483,7 +483,9 @@
 		public static function fetchPageByID($page_id = null, array $select = array()) {
 			if(is_null($page_id)) return null;
 
-			if(!is_array($page_id)) $page_id = array($page_id);
+			if(!is_array($page_id)) $page_id = array(
+				Symphony::Database()->cleanValue($page_id)
+			);
 
 			if(empty($select)) $select = array('*');
 
@@ -678,7 +680,7 @@
 					LIMIT 1
 				",
 				$page_id,
-				$type
+				Symphony::Database()->cleanValue($type)
 			));
 		}
 
@@ -729,12 +731,12 @@
 		 * array of the given `$column` for the Page, including all parents.
 		 *
 		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
+		 *  The ID of the Page that currently being viewed, or the handle of the
+		 *  current Page
 		 * @return array
-		 * An array of the current Page, containing the `$column`
-		 * requested. The current page will be the last item the array, as all
-		 * parent pages are prepended to the start of the array
+		 *  An array of the current Page, containing the `$column`
+		 *  requested. The current page will be the last item the array, as all
+		 *  parent pages are prepended to the start of the array
 		 */
 		public static function resolvePage($page_id, $column) {
 			$path = array();
@@ -746,12 +748,12 @@
 						`tbl_pages` AS p
 					WHERE
 						p.id = %d
-						OR p.handle = %s
+						OR p.handle = '%s'
 					LIMIT 1
 				",
 					$column,
 					$page_id,
-					$page_id
+					Symphony::Database()->cleanValue($page_id)
 			));
 
 			if(empty($page)) return $page;
@@ -789,11 +791,11 @@
 		 * separated by ': '.
 		 *
 		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
+		 *  The ID of the Page that currently being viewed, or the handle of the
+		 *  current Page
 		 * @return string
-		 * The title of the current Page. If the page is a child of another
-		 * it will be prepended by the parent and a colon, ie. Articles: Read
+		 *  The title of the current Page. If the page is a child of another
+		 *  it will be prepended by the parent and a colon, ie. Articles: Read
 		 */
 		public static function resolvePageTitle($page_id) {
 			$path = PageManager::resolvePage($page_id, 'title');
@@ -807,8 +809,8 @@
 		 * separated by '/'.
 		 *
 		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
+		 *  The ID of the Page that currently being viewed, or the handle of the
+		 *  current Page
 		 * @return string
 		 *  The complete path to the current Page including any parent
 		 *  Pages, ie. /articles/read

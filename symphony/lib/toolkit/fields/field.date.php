@@ -65,11 +65,11 @@
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `value` varchar(80) default NULL,
-				  `local` int(11) default NULL,
-				  `gmt` int(11) default NULL,
+				  `date` DATETIME default NULL,
 				  PRIMARY KEY  (`id`),
 				  UNIQUE KEY `entry_id` (`entry_id`),
-				  KEY `value` (`value`)
+				  KEY `value` (`value`),
+				  KEY `date` (`date`)
 				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			");
 		}
@@ -268,8 +268,8 @@
 			if($andOperation) {
 				foreach($data as $date) {
 					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-					$where .= " AND (DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') >= '" . DateTimeObj::get('Y-m-d H:i:s', $date['start']) . "'
-								AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') <= '" . DateTimeObj::get('Y-m-d H:i:s', $date['end']) . "') ";
+					$where .= " AND (`t$field_id".$this->key."`.date >= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['start']) . "'
+								AND `t$field_id".$this->key."`.date <= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['end']) . "') ";
 
 					$this->key++;
 				}
@@ -279,8 +279,8 @@
 				$tmp = array();
 
 				foreach($data as $date) {
-					$tmp[] = "(DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') >= '" . DateTimeObj::get('Y-m-d H:i:s', $date['start']) . "'
-								AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') <= '" . DateTimeObj::get('Y-m-d H:i:s', $date['end']) . "') ";
+					$tmp[] = "`t$field_id".$this->key."`.date >= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['start']) . "'
+								AND `t$field_id".$this->key."`.date <= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['end']) . "' ";
 				}
 
 				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
@@ -294,11 +294,11 @@
 		Settings:
 	-------------------------------------------------------------------------*/
 
-		public function findDefaults(&$fields) {
-			if(!isset($fields['pre_populate'])) $fields['pre_populate'] = 'yes';
+		public function findDefaults(array &$settings) {
+			if(!isset($settings['pre_populate'])) $settings['pre_populate'] = 'yes';
 		}
 
-		public function displaySettingsPanel(&$wrapper, $errors = null) {
+		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
@@ -332,7 +332,7 @@
 		Publish:
 	-------------------------------------------------------------------------*/
 
-		public function displayPublishPanel(&$wrapper, $data = null, $error = null, $prefix = null, $postfix = null) {
+		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null) {
 			$name = $this->get('element_name');
 			$value = null;
 
@@ -342,7 +342,7 @@
 			}
 
 			// Error entry, display original data
-			else if(!is_null($error)) {
+			else if(!is_null($flagWithError)) {
 				$value = $_POST['fields'][$name];
 			}
 
@@ -352,10 +352,10 @@
 			}
 
 			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Input("fields{$prefix}[{$name}]", $value));
+			$label->appendChild(Widget::Input("fields{$fieldnamePrefix}[{$name}]", $value));
 			$label->setAttribute('class', 'date');
 
-			if(!is_null($error)) {
+			if(!is_null($flagWithError)) {
 				$label = Widget::wrapFormElementWithError($label, $error);
 			}
 
@@ -395,8 +395,7 @@
 			if(!is_null($timestamp)) {
 				return array(
 					'value' => DateTimeObj::get('c', $timestamp),
-					'local' => $timestamp,
-					'gmt' => DateTimeObj::getGMT('U', $timestamp)
+					'date' => DateTimeObj::getGMT('c', $timestamp)
 				);
 			}
 
@@ -404,8 +403,7 @@
 			else {
 				return array(
 					'value' => null,
-					'local' => null,
-					'gmt' => null
+					'date' => null
 				);
 			}
 		}
@@ -414,7 +412,7 @@
 		Output:
 	-------------------------------------------------------------------------*/
 
-		public function appendFormattedElement($wrapper, $data, $encode = false) {
+		public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
 			if(isset($data['value'])) {
 
 				// Get date
@@ -440,7 +438,7 @@
 			return parent::prepareTableValue(array('value' => $value), $link, $entry_id = null);
 		}
 
-		public function getParameterPoolValue($data, $entry_id = null) {
+		public function getParameterPoolValue(array $data, $entry_id=NULL){
 			return DateTimeObj::get('Y-m-d H:i:s', $data['value']);
 		}
 

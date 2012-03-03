@@ -430,14 +430,14 @@
 		 *	the input error collection. this defaults to null.
 		 */
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null){
-			
+
 			// Create header
 			$location = ($this->get('location') ? $this->get('location') : 'main');
 			$header = new XMLElement('header', NULL, array('class' => $location, 'data-name' => $this->name()));
 			$label = (($this->get('label')) ? $this->get('label') : __('New Field'));
 			$header->appendChild(new XMLElement('h4', '<strong>' . $label . '</strong> <span class="type">' . $this->name() . '</span>'));
 			$wrapper->appendChild($header);
-			
+
 			// Create content
 			$wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][type]', $this->handle(), 'hidden'));
 			if($this->get('id')) $wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][id]', $this->get('id'), 'hidden'));
@@ -470,13 +470,16 @@
 
 			// Handle + placement
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
+			$group->setAttribute('class', 'two columns');
 
 			$label = Widget::Label(__('Handle'));
+			$label->setAttribute('class', 'column');
+
 			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][element_name]', $this->get('element_name')));
 			if(isset($errors['element_name'])) $group->appendChild(Widget::wrapFormElementWithError($label, $errors['element_name']));
 			else $group->appendChild($label);
 
+			// Location
 			$group->appendChild($this->buildLocationSelect($this->get('location'), 'fields['.$this->get('sortorder').'][location]'));
 
 			$div->appendChild($group);
@@ -503,6 +506,8 @@
 			if (!$label_value) $label_value = __('Placement');
 
 			$label = Widget::Label($label_value);
+			$label->setAttribute('class', 'column');
+
 			$options = array(
 				array('main', $selected == 'main', __('Main content')),
 				array('sidebar', $selected == 'sidebar', __('Sidebar'))
@@ -535,6 +540,7 @@
 
 			if(!$label_value) $label_value = __('Formatting');
 			$label = Widget::Label($label_value);
+			$label->setAttribute('class', 'column');
 
 			$options = array();
 
@@ -575,6 +581,7 @@
 			$rules = ($type == 'upload' ? $upload : $validators);
 
 			$label = Widget::Label(__('Validation Rule'));
+			$label->setAttribute('class', 'column');
 			$label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input($name, $selected));
 			$wrapper->appendChild($label);
@@ -859,15 +866,11 @@
 		 *	the input data. this defaults to null.
 		 * @param mixed errors (optional)
 		 *	the input error collection. this defaults to null.
-		 * @param string $fieldNamePrefix
-		 *	the prefix to apply to the display of this.
-		 * @param string $fieldNameSuffix
-		 *	the suffix to apply to the display of this.
 		 */
-		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null){
+		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null){
 			$wrapper->appendChild(new XMLElement('header', '<h4>' . $this->get('label') . '</h4> <span>' . $this->name() . '</span>'));
 			$label = Widget::Label(__('Value'));
-			$label->appendChild(Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : null)));
+			$label->appendChild(Widget::Input('fields[filter]['.$this->get('id').']', ($data ? General::sanitize($data) : null)));
 			$wrapper->appendChild($label);
 		}
 

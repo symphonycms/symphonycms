@@ -439,7 +439,9 @@
 
 			if(!empty($codes)){
 				$class = 'warning';
-				if($element->getAttribute('class')) $class = $element->getAttribute('class') . ' ' . $class;
+				if($element->getAttribute('class')) {
+					$class = $element->getAttribute('class') . ' ' . $class;
+				}
 
 				$element->setAttribute('class', $class);
 

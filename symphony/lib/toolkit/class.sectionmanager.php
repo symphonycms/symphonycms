@@ -116,11 +116,8 @@
 			$section_ids = array();
 
 			if(!is_null($section_id)) {
-				if(is_numeric($section_id)) {
-					$returnSingle = true;
-				}
-
 				if(!is_array($section_id)) {
+					$returnSingle = true;
 					$section_ids = array((int)$section_id);
 				}
 				else {

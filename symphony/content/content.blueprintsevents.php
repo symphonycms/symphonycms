@@ -102,20 +102,21 @@
 				$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
 				$group = new XMLElement('div');
-				$group->setAttribute('class', 'group');
+				$group->setAttribute('class', 'two columns');
 
+				// Name
 				$label = Widget::Label(__('Name'));
 				$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
 
 				$div = new XMLElement('div');
+				$div->setAttribute('class', 'column');
 				if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
 				else $div->appendChild($label);
 				$group->appendChild($div);
 
+				// Source
 				$label = Widget::Label(__('Source'));
-
 				$sections = SectionManager::fetch(NULL, 'ASC', 'name');
-
 				$options = array();
 
 				if(is_array($sections) && !empty($sections)){
@@ -123,7 +124,9 @@
 				}
 
 				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'event-context')));
+
 				$div = new XMLElement('div');
+				$div->setAttribute('class', 'column');
 				if(isset($this->_errors['source'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['source']));
 				else $div->appendChild($label);
 				$group->appendChild($div);
@@ -405,7 +408,7 @@
 				if(in_array('send-email', $filters)){
 					$documentation_parts[] = new XMLElement('h3', __('Send Notification Email'));
 
-					$documentation_parts[] = new XMLElement('p', 
+					$documentation_parts[] = new XMLElement('p',
 						__('Upon the event successfully saving the entry, this option takes input from the form and send an email to the desired recipient.')
 						. ' <strong>'
 						. __('It currently does not work with ‘Allow Multiple’')

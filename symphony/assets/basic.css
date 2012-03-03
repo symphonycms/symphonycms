@@ -159,7 +159,7 @@ input[type=submit] {
 	margin-bottom: 1.5em;
 	text-shadow: 1px 1px rgba(0, 0, 0, 0.25);
 }
-.invalid label {
+body .invalid label {
 	margin-bottom: 0;
 	padding: 0.75em 1em 0.75em 0.75em;
 	background-color: #EB6347;
@@ -171,7 +171,7 @@ body .invalid label > i {
 	background-color: #d42;
 	color: #EAC9C2;
 }
-.invalid label > i:hover {
+body .invalid label > i:hover {
 	background-color: rgba(221, 68, 34, 0.8) !important;
 }
 .invalid > .group > label {

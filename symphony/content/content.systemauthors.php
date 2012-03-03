@@ -413,9 +413,6 @@
 				$group->setAttribute('class', 'settings');
 				$group->appendChild(new XMLElement('legend', __('Custom Preferences')));
 
-				$div = new XMLElement('div');
-				$div->setAttribute('class', 'group');
-
 				$label = Widget::Label(__('Language'));
 
 				$options = array(
