@@ -134,8 +134,8 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
-			$div = new XMLElement('div', NULL, array('class' => 'group'));
-			$namediv = new XMLElement('div', NULL);
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+			$namediv = new XMLElement('div', NULL, array('class' => 'column'));
 
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
@@ -149,7 +149,7 @@
 			$namediv->appendChild($label);
 			$div->appendChild($namediv);
 
-			$navgroupdiv = new XMLElement('div', NULL);
+			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Created if does not exist') . '</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
@@ -348,8 +348,8 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
-			$div = new XMLElement('div', NULL, array('class' => 'group'));
-			$namediv = new XMLElement('div', NULL);
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+			$namediv = new XMLElement('div', NULL, array('class' => 'column'));
 
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
@@ -363,7 +363,7 @@
 			$namediv->appendChild($label);
 			$div->appendChild($namediv);
 
-			$navgroupdiv = new XMLElement('div', NULL);
+			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Choose only one. Created if does not exist') . '</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));

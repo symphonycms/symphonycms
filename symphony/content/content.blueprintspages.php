@@ -453,8 +453,9 @@
 		// Handle -------------------------------------------------------------
 
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
+			$group->setAttribute('class', 'two columns');
 			$column = new XMLElement('div');
+			$column->setAttribute('class', 'column');
 
 			$label = Widget::Label(__('URL Handle'));
 			$label->appendChild(Widget::Input(
@@ -506,6 +507,8 @@
 		// Parameters ---------------------------------------------------------
 
 			$column = new XMLElement('div');
+			$column->setAttribute('class', 'column');
+
 			$label = Widget::Label(__('URL Parameters'));
 			$label->appendChild(Widget::Input(
 				'fields[params]', $fields['params'], 'text', array('placeholder' => 'param1/param2')
@@ -543,9 +546,10 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Page Resources')));
 
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
+			$group->setAttribute('class', 'two columns');
 
 			$label = Widget::Label(__('Events'));
+			$label->setAttribute('class', 'column');
 
 			$events = ResourceManager::fetch(RESOURCE_TYPE_EVENT, array(), array(), 'name ASC');
 			$options = array();
@@ -563,6 +567,7 @@
 		// Data Sources -------------------------------------------------------
 
 			$label = Widget::Label(__('Data Sources'));
+			$label->setAttribute('class', 'column');
 
 			$datasources = ResourceManager::fetch(RESOURCE_TYPE_DS, array(), array(), 'name ASC');
 			$options = array();

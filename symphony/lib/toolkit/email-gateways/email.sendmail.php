@@ -136,13 +136,15 @@
 			$group->appendChild(new XMLElement('legend', __('Email: Sendmail')));
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
+			$div->setAttribute('class', 'two columns');
 
 			$label = Widget::Label(__('From Name'));
+			$label->setAttribute('class', 'column');
 			$label->appendChild(Widget::Input('settings[email_sendmail][from_name]', $this->_sender_name));
 			$div->appendChild($label);
 
 			$label = Widget::Label(__('From Email Address'));
+			$label->setAttribute('class', 'column');
 			$label->appendChild(Widget::Input('settings[email_sendmail][from_address]', $this->_sender_email_address));
 			$div->appendChild($label);
 

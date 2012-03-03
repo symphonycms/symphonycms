@@ -234,31 +234,36 @@
 			$group->appendChild(new XMLElement('legend', __('Email: SMTP')));
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
+			$div->setAttribute('class', 'two columns');
 
 			$label = Widget::Label(__('From Name'));
+			$label->setAttribute('class', 'column');
 			$label->appendChild(Widget::Input('settings[email_smtp][from_name]', $this->_sender_name));
 			$div->appendChild($label);
 
 			$label = Widget::Label(__('From Email Address'));
+			$label->setAttribute('class', 'column');
 			$label->appendChild(Widget::Input('settings[email_smtp][from_address]', $this->_sender_email_address));
 			$div->appendChild($label);
 
 			$group->appendChild($div);
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
+			$div->setAttribute('class', 'two columns');
 
 			$label = Widget::Label(__('Host'));
+			$label->setAttribute('class', 'column');
 			$label->appendChild(Widget::Input('settings[email_smtp][host]', $this->_host));
 			$div->appendChild($label);
 
 			$label = Widget::Label(__('Port'));
+			$label->setAttribute('class', 'column');
 			$label->appendChild(Widget::Input('settings[email_smtp][port]', (string)$this->_port));
 			$div->appendChild($label);
 			$group->appendChild($div);
 
 			$label = Widget::Label();
+			$label->setAttribute('class', 'column');
 			// To fix the issue with checkboxes that do not send a value when unchecked.
 			$options = array(
 				array('no',$this->_secure == 'no', __('No encryption')),
@@ -272,6 +277,7 @@
 			$group->appendChild(new XMLElement('p', __('For a secure connection, SSL and TLS are supported. Please check the manual of your email provider for more details.'), array('class' => 'help')));
 
 			$label = Widget::Label();
+			$label->setAttribute('class', 'column');
 			// To fix the issue with checkboxes that do not send a value when unchecked.
 			$group->appendChild(Widget::Input('settings[email_smtp][auth]', '0', 'hidden'));
 			$input = Widget::Input('settings[email_smtp][auth]', '1', 'checkbox');
@@ -282,13 +288,15 @@
 			$group->appendChild(new XMLElement('p', __('Some SMTP connections require authentication. If that is the case, enter the username/password combination below.'), array('class' => 'help')));
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
+			$div->setAttribute('class', 'two columns');
 
 			$label = Widget::Label(__('Username'));
+			$label->setAttribute('class', 'column');
 			$label->appendChild(Widget::Input('settings[email_smtp][username]', $this->_user));
 			$div->appendChild($label);
 
 			$label = Widget::Label(__('Password'));
+			$label->setAttribute('class', 'column');
 			$label->appendChild(Widget::Input('settings[email_smtp][password]', $this->_pass, 'password'));
 			$div->appendChild($label);
 			$group->appendChild($div);

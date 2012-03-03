@@ -92,11 +92,12 @@
 
 			// Textarea Size
 			$label = Widget::Label(__('Number of default rows'));
+			$label->setAttribute('class', 'column');
 			$input = Widget::Input('fields['.$this->get('sortorder').'][size]', (string)$this->get('size'));
 			$label->appendChild($input);
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
+			$div->setAttribute('class', 'two columns');
 			$div->appendChild($this->buildFormatterSelect($this->get('formatter'), 'fields['.$this->get('sortorder').'][formatter]', __('Text Formatter')));
 			$div->appendChild($label);
 			$wrapper->appendChild($div);

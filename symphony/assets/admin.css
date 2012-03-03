@@ -733,8 +733,6 @@ div.notifier nav:hover:before {
 	line-height: 1;
 	z-index: 10;
 	position: relative;
-	-webkit-box-shadow: 0px -3px 8px rgba(0, 0, 0, 0.3);
-	box-shadow: 0px -3px 8px rgba(0, 0, 0, 0.3);
 }
 #header h1 a, #session a {
 	border: none;
@@ -915,7 +913,7 @@ div.notifier nav:hover:before {
 }
 #breadcrumbs a, #breadcrumbs span {
 	padding: 0;
-	font: 127.28% Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
+	font: 127.28% 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 	color: rgba(0, 0, 0, 0.6);
 	text-shadow: 0 0 1px #fff;
 	float: left;
@@ -1042,7 +1040,7 @@ ul.page form {
 ul.page:hover form {
 	border-color: #dedede;
 }
-ul.page form:hover, 
+ul.page form:hover,
 ul.page form.active {
 	border-color: rgba(0, 0, 0, 0.4);
 	box-shadow: 0 0 7px rgba(0, 0, 0, 0.1);
@@ -1269,7 +1267,7 @@ ul.page form span {
 	display: block;
 }
 
-.column, .columns .invalid {
+.columns .column, .columns .invalid {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	-ms-box-sizing: border-box;
@@ -1278,7 +1276,7 @@ ul.page form span {
 	float: left;
 	padding: 0 0 0 15px;
 }
- 
+
 .two.columns .column, .two.columns .invalid {
 	width: 50%;
 }
@@ -1290,11 +1288,11 @@ ul.page form span {
 	margin: 0;
 	width: 25%;
 }
- 
+
 .three.columns .column {
 	width: 33.33%;
 }
- 
+
 .four.columns .column {
 	width: 25%;
 }
