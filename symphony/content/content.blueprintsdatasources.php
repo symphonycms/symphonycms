@@ -68,6 +68,8 @@
 				}
 			}
 
+			$provided = Symphony::ExtensionManager()->getProvidersOf('data-sources');
+
 			if(isset($_POST['fields'])){
 				$fields = $_POST['fields'];
 				$fields['paginate_results'] = ($fields['paginate_results'] == 'on') ? 'yes' : 'no';
@@ -89,7 +91,7 @@
 			else if($this->_context[0] == 'edit'){
 				$isEditing = true;
 				$handle = $this->_context[1];
-				$existing =& DatasourceManager::create($handle, NULL, false);
+				$existing =& DatasourceManager::create($handle, array(), false);
 				$cache_id = null;
 
 				if (!$existing->allowEditorToParse()) redirect(SYMPHONY_URL . '/blueprints/datasources/info/' . $handle . '/');
@@ -128,35 +130,45 @@
 
 				$fields['source'] = $existing->getSource();
 
-				switch($fields['source']){
-					case 'authors':
-						$fields['filter']['author'] = $existing->dsParamFILTERS;
-						break;
+				if(!empty($provided)) {
+					foreach($provided as $providerClass => $provider) {
+						if($fields['source'] == $providerClass::getClass()) {
+							$fields = array_merge($fields, $existing->settings());
+							break;
+						}
+					}
+				}
+				else {
+					switch($fields['source']){
+						case 'authors':
+							$fields['filter']['author'] = $existing->dsParamFILTERS;
+							break;
 
-					case 'navigation':
-						$fields['filter']['navigation'] = $existing->dsParamFILTERS;
-						break;
+						case 'navigation':
+							$fields['filter']['navigation'] = $existing->dsParamFILTERS;
+							break;
 
-					case 'dynamic_xml':
-						$fields['dynamic_xml']['namespace'] = $existing->dsParamFILTERS;
-						$fields['dynamic_xml']['url'] = $existing->dsParamURL;
-						$fields['dynamic_xml']['xpath'] = $existing->dsParamXPATH;
-						$fields['dynamic_xml']['cache'] = $existing->dsParamCACHE;
-						$fields['dynamic_xml']['format'] = $existing->dsParamFORMAT;
-						$fields['dynamic_xml']['timeout'] = (isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6);
-						$cache_id = md5($existing->dsParamURL . serialize($existing->dsParamFILTERS) . $existing->dsParamXPATH);
+						case 'dynamic_xml':
+							$fields['dynamic_xml']['namespace'] = $existing->dsParamFILTERS;
+							$fields['dynamic_xml']['url'] = $existing->dsParamURL;
+							$fields['dynamic_xml']['xpath'] = $existing->dsParamXPATH;
+							$fields['dynamic_xml']['cache'] = $existing->dsParamCACHE;
+							$fields['dynamic_xml']['format'] = $existing->dsParamFORMAT;
+							$fields['dynamic_xml']['timeout'] = (isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6);
+							$cache_id = md5($existing->dsParamURL . serialize($existing->dsParamFILTERS) . $existing->dsParamXPATH);
 
-						break;
+							break;
 
-					case 'static_xml':
-						$existing->grab();
-						$fields['static_xml'] = trim($existing->dsSTATIC);
-						break;
+						case 'static_xml':
+							$existing->grab();
+							$fields['static_xml'] = trim($existing->dsSTATIC);
+							break;
 
-					default:
-						$fields['filter'][$fields['source']] = $existing->dsParamFILTERS;
-						$fields['max_records'] = $existing->dsParamLIMIT;
-						break;
+						default:
+							$fields['filter'][$fields['source']] = $existing->dsParamFILTERS;
+							$fields['max_records'] = $existing->dsParamLIMIT;
+							break;
+					}
 				}
 
 				// If `clear_cache` is set, clear it..
@@ -227,11 +239,24 @@
 						array('navigation', ($fields['source'] == 'navigation'), __('Navigation')),
 				)),
 				array('label' => __('Custom XML'), 'options' => array(
-						array('dynamic_xml', ($fields['source'] == 'dynamic_xml'), __('Dynamic XML')),
 						array('static_xml', ($fields['source'] == 'static_xml'), __('Static XML')),
 				))
 			);
 
+			// Loop over the datasource providers
+			if(!empty($provided)) {
+				$p = array('label' => __('From extensions'), 'options' => array());
+
+				foreach($provided as $providerClass => $provider) {
+					$p['options'][] = array(
+						$providerClass, ($fields['source'] == $providerClass), $provider
+					);
+				}
+
+				$options[] = $p;
+			}
+
+			// Add Sections
 			if(is_array($sections) && !empty($sections)){
 				array_unshift($options, array('label' => __('Sections'), 'options' => array()));
 				foreach($sections as $s) $options[0]['options'][] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
@@ -244,7 +269,7 @@
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual sections authors navigation ' . __('Sections') . ' ' . __('System'));
+			$fieldset->setAttribute('class', 'settings contextual authors navigation ' . __('Sections') . ' ' . __('System'));
 			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
 			$p = new XMLElement('p',
 				__('Use %s syntax to filter by page parameters.', array(
@@ -421,7 +446,7 @@
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml From_extensions');
 			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));
 
 			$p = new XMLElement('p',
@@ -517,7 +542,7 @@
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml From_extensions');
 			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
 
 			$label = Widget::Label(__('Required URL Parameter'));
@@ -688,134 +713,6 @@
 			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
 
-		// Dynamic XML
-
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual dynamic_xml');
-			$fieldset->appendChild(new XMLElement('legend', __('Dynamic XML')));
-
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'two columns');
-
-			$label = Widget::Label(__('URL'), NULL, 'primary column');
-			$label->appendChild(Widget::Input('fields[dynamic_xml][url]', General::sanitize($fields['dynamic_xml']['url']), 'text', array('placeholder' => 'http://')));
-			if(isset($this->_errors['dynamic_xml']['url'])) $group->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['url']));
-			else $group->appendChild($label);
-
-			$p = new XMLElement('p',
-				__('Use %s syntax to specify dynamic portions of the URL.', array(
-					'<code>{' . __('$param') . '}</code>'
-				))
-			);
-			$p->setAttribute('class', 'help');
-			$label->appendChild($p);
-
-			$label = Widget::Label(__('Format'), NULL, 'secondary column');
-			$label->appendChild(
-				Widget::Select('fields[dynamic_xml][format]', array(
-					array('xml', $fields['dynamic_xml']['format'] == 'xml', 'XML'),
-					array('json', $fields['dynamic_xml']['format'] == 'json', 'JSON')
-				))
-			);
-			if(isset($this->_errors['dynamic_xml']['format'])) $group->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['format']));
-			else $group->appendChild($label);
-
-			$fieldset->appendChild($group);
-
-			$div = new XMLElement('div');
-			$div->setAttribute('id', 'xml');
-			$p = new XMLElement('p', __('Namespace Declarations'));
-			$p->appendChild(new XMLElement('i', __('Optional')));
-			$p->setAttribute('class', 'label');
-			$div->appendChild($p);
-
-			$ol = new XMLElement('ol');
-			$ol->setAttribute('class', 'filters-duplicator');
-
-			if(is_array($fields['dynamic_xml']['namespace']) && !empty($fields['dynamic_xml']['namespace'])){
-				$ii = 0;
-				foreach($fields['dynamic_xml']['namespace'] as $name => $uri) {
-					// Namespaces get saved to the file as $name => $uri, however in
-					// the $_POST they are represented as $index => array. This loop
-					// patches the difference.
-					if(is_array($uri)) {
-						$name = $uri['name'];
-						$uri = $uri['uri'];
-					}
-
-					$li = new XMLElement('li');
-					$li->appendChild(new XMLElement('header', '<h4>' . __('Namespace') . '</h4>'));
-
-					$group = new XMLElement('div');
-					$group->setAttribute('class', 'group');
-
-					$label = Widget::Label(__('Name'));
-					$label->appendChild(Widget::Input("fields[dynamic_xml][namespace][$ii][name]", General::sanitize($name)));
-					$group->appendChild($label);
-
-					$label = Widget::Label(__('URI'));
-					$label->appendChild(Widget::Input("fields[dynamic_xml][namespace][$ii][uri]", General::sanitize($uri)));
-					$group->appendChild($label);
-
-					$li->appendChild($group);
-					$ol->appendChild($li);
-					$ii++;
-				}
-			}
-
-			$li = new XMLElement('li');
-			$li->setAttribute('class', 'template');
-			$li->setAttribute('data-type', 'namespace');
-			$li->appendChild(new XMLElement('header', '<h4>' . __('Namespace') . '</h4>'));
-
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
-
-			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]'));
-			$group->appendChild($label);
-
-			$label = Widget::Label(__('URI'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]'));
-			$group->appendChild($label);
-
-			$li->appendChild($group);
-			$ol->appendChild($li);
-
-			$div->appendChild($ol);
-			$div->appendChild(
-				new XMLElement('p', __('Namespaces will automatically be discovered when saving this datasource if it does not include any dynamic portions.'), array('class' => 'help'))
-			);
-
-			$fieldset->appendChild($div);
-
-			$label = Widget::Label(__('Included Elements'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][xpath]', General::sanitize($fields['dynamic_xml']['xpath'])));
-			if(isset($this->_errors['dynamic_xml']['xpath'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['xpath']));
-			else $fieldset->appendChild($label);
-
-			$p = new XMLElement('p', __('Use an XPath expression to select which elements from the source XML to include.'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
-
-			$label = Widget::Label();
-			$input = Widget::Input('fields[dynamic_xml][cache]', (string)max(1, intval($fields['dynamic_xml']['cache'])), NULL, array('size' => '6'));
-			$label->setValue(__('Update cached result every %s minutes', array($input->generate(false))));
-			if(isset($this->_errors['dynamic_xml']['cache'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['cache']));
-			else $fieldset->appendChild($label);
-
-			// Check for existing Cache objects
-			if(isset($cache_id)) {
-				$this->appendCacheInformation($fieldset, $cache, $cache_id);
-			}
-
-			$label = Widget::Label();
-			$input = Widget::Input('fields[dynamic_xml][timeout]', (string)max(1, intval($fields['dynamic_xml']['timeout'])), NULL, array('type' => 'hidden'));
-			$label->appendChild($input);
-			$fieldset->appendChild($label);
-
-			$this->Form->appendChild($fieldset);
-
 		// Static XML
 
 			$fieldset = new XMLElement('fieldset');
@@ -828,6 +725,16 @@
 			else $fieldset->appendChild($label);
 
 			$this->Form->appendChild($fieldset);
+
+		// Call the provided datasources to let them inject their filters
+		// @todo Ideally when a new Datasource is chosen an AJAX request will fire
+		// to get the HTML from the extension. This is hardcoded for now into
+		// creating a 'big' page and then hiding the fields with JS
+			if(!empty($provided)) {
+				foreach($provided as $providerClass => $provider) {
+					$providerClass::buildEditor($this->Form, $this->_errors, $fields, $handle);
+				}
+			}
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
@@ -964,10 +871,10 @@
 		}
 
 		public function __formAction(){
-
 			$fields = $_POST['fields'];
-
 			$this->_errors = array();
+			$provided = Symphony::ExtensionManager()->getProvidersOf('data-sources');
+			$providerClass = null;
 
 			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
 
@@ -1029,6 +936,16 @@
 				}
 			}
 
+			// See if a Provided Datasource is saved
+			elseif (!empty($provided)) {
+				foreach($provided as $providerClass => $provider) {
+					if($fields['source'] == $providerClass::getSource()) {
+						$providerClass::validate(&$fields, $this->_errors);
+						break;
+					}
+				}
+			}
+
 			$classname = Lang::createHandle($fields['name'], 255, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
 
@@ -1051,9 +968,10 @@
 			if($isDuplicate) $this->_errors['name'] = __('A Data source with the name %s already exists', array('<code>' . $classname . '</code>'));
 
 			if(empty($this->_errors)){
-
-				$dsShell = file_get_contents($this->getTemplate('blueprints.datasource'));
-
+				$filters = NULL;
+				$elements = NULL;
+				$placeholder = '<!-- GRAB -->';
+				$source = $fields['source'];
 				$params = array(
 					'rootelement' => $rootelement,
 				);
@@ -1067,150 +985,159 @@
 					'author email' => Administration::instance()->Author->get('email')
 				);
 
-				$source = $fields['source'];
-
-				$filter = NULL;
-				$elements = NULL;
-
-				$placeholder = '<!-- GRAB -->';
-
-				switch($source){
-
-					case 'authors':
-
-						$filters = $fields['filter']['author'];
-
-						$elements = $fields['xml_elements'];
-
-						$params['order'] = $fields['order'];
-						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
-						$params['requiredparam'] = trim($fields['required_url_param']);
-						$params['paramoutput'] = $fields['param'];
-						$params['sort'] = $fields['sort'];
-
-						$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.author.php');", $dsShell);
-
-						break;
-
-					case 'navigation':
-
-						$filters = $fields['filter']['navigation'];
-
-						$params['order'] = $fields['order'];
-						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
-						$params['requiredparam'] = trim($fields['required_url_param']);
-
-						$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.navigation.php');", $dsShell);
-
-						break;
-
-					case 'dynamic_xml':
-						// Automatically detect namespaces
-						if(isset($data)) {
-							preg_match_all('/xmlns:([a-z][a-z-0-9\-]*)="([^\"]+)"/i', $data, $matches);
-
-							if(!is_array($fields['dynamic_xml']['namespace'])) {
-								$fields['dynamic_xml']['namespace'] = array();
-							}
-
-							if (isset($matches[2][0])) {
-								$detected_namespaces = array();
-
-								foreach ($fields['dynamic_xml']['namespace'] as $index => $namespace) {
-									$detected_namespaces[] = $namespace['name'];
-									$detected_namespaces[] = $namespace['uri'];
-								}
-
-								foreach ($matches[2] as $index => $uri) {
-									$name = $matches[1][$index];
-
-									if (in_array($name, $detected_namespaces) or in_array($uri, $detected_namespaces)) continue;
-
-									$detected_namespaces[] = $name;
-									$detected_namespaces[] = $uri;
-
-									$fields['dynamic_xml']['namespace'][] = array(
-										'name' => $name,
-										'uri' => $uri
-									);
-								}
-							}
-						}
-
-						$filters = array();
-						if(is_array($fields['dynamic_xml']['namespace'])) foreach($fields['dynamic_xml']['namespace'] as $index => $data) {
-							$filters[$data['name']] = $data['uri'];
-						}
-
-						$params['url'] = $fields['dynamic_xml']['url'];
-						$params['xpath'] = $fields['dynamic_xml']['xpath'];
-						$params['cache'] = $fields['dynamic_xml']['cache'];
-						$params['format'] = $fields['dynamic_xml']['format'];
-						$params['timeout'] = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : '6');
-
-						$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.dynamic_xml.php');", $dsShell);
-
-						break;
-
-					case 'static_xml':
-
-						$fields['static_xml'] = trim($fields['static_xml']);
-
-						if(preg_match('/^<\?xml/i', $fields['static_xml']) == true){
-							// Need to remove any XML declaration
-							$fields['static_xml'] = preg_replace('/^<\?xml[^>]+>/i', NULL, $fields['static_xml']);
-						}
-
-						$value = sprintf(
-							'$this->dsSTATIC = \'%s\';',
-							addslashes(trim($fields['static_xml']))
-						);
-						$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\t" . $value . PHP_EOL . "include(TOOLKIT . '/data-sources/datasource.static.php');", $dsShell);
-						break;
-
-					default:
-
-						$elements = $fields['xml_elements'];
-
-						if(is_array($fields['filter']) && !empty($fields['filter'])){
-							$filters = array();
-
-							foreach($fields['filter'] as $f){
-								foreach($f as $key => $val) $filters[$key] = $val;
-							}
-						}
-
-						$params['order'] = $fields['order'];
-						$params['group'] = $fields['group'];
-						$params['paginateresults'] = (isset($fields['paginate_results']) ? 'yes' : 'no');
-						$params['limit'] = $fields['max_records'];
-						$params['startpage'] = $fields['page_number'];
-						$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
-						$params['requiredparam'] = trim($fields['required_url_param']);
-						$params['paramoutput'] = $fields['param'];
-						$params['sort'] = $fields['sort'];
-						$params['htmlencode'] = $fields['html_encode'];
-						$params['associatedentrycounts'] = $fields['associated_entry_counts'];
-
-						if ($params['associatedentrycounts'] == NULL) $params['associatedentrycounts'] = 'no';
-
-						$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.section.php');", $dsShell);
-
-						break;
-
+				// If there is a provider, get their template
+				if($providerClass) {
+					$dsShell = file_get_contents($providerClass::getTemplate());
+				}
+				else {
+					$dsShell = file_get_contents($this->getTemplate('blueprints.datasource'));
 				}
 
-				$this->__injectVarList($dsShell, $params);
-				$this->__injectAboutInformation($dsShell, $about);
-				$this->__injectIncludedElements($dsShell, $elements);
-				$this->__injectFilters($dsShell, $filters);
+				// Author metadata
+				self::injectAboutInformation($dsShell, $about);
 
+				// Do dependencies, the template file must have <!-- CLASS NAME -->
+				// and <!-- DS DEPENDENCY LIST --> tokens
 				$dsShell = str_replace('<!-- CLASS NAME -->', $classname, $dsShell);
-				$dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
-
 				if(preg_match_all('@(\$ds-[-_0-9a-z]+)@i', $dsShell, $matches)){
 					$dependencies = General::array_remove_duplicates($matches[1]);
 					$dsShell = str_replace('<!-- DS DEPENDENCY LIST -->', "'" . implode("', '", $dependencies) . "'", $dsShell);
+				}
+
+				// If there is a provider, let them do the prepartion work
+				if($providerClass) {
+					$dsShell = $providerClass::prepare($fields, $params, $dsShell);
+				}
+				else {
+					switch($source){
+						case 'authors':
+
+							$filters = $fields['filter']['author'];
+
+							$elements = $fields['xml_elements'];
+
+							$params['order'] = $fields['order'];
+							$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
+							$params['requiredparam'] = trim($fields['required_url_param']);
+							$params['paramoutput'] = $fields['param'];
+							$params['sort'] = $fields['sort'];
+
+							$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.author.php');", $dsShell);
+
+							break;
+
+						case 'navigation':
+
+							$filters = $fields['filter']['navigation'];
+
+							$params['order'] = $fields['order'];
+							$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
+							$params['requiredparam'] = trim($fields['required_url_param']);
+
+							$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.navigation.php');", $dsShell);
+
+							break;
+
+						case 'dynamic_xml':
+							// Automatically detect namespaces
+							if(isset($data)) {
+								preg_match_all('/xmlns:([a-z][a-z-0-9\-]*)="([^\"]+)"/i', $data, $matches);
+
+								if(!is_array($fields['dynamic_xml']['namespace'])) {
+									$fields['dynamic_xml']['namespace'] = array();
+								}
+
+								if (isset($matches[2][0])) {
+									$detected_namespaces = array();
+
+									foreach ($fields['dynamic_xml']['namespace'] as $index => $namespace) {
+										$detected_namespaces[] = $namespace['name'];
+										$detected_namespaces[] = $namespace['uri'];
+									}
+
+									foreach ($matches[2] as $index => $uri) {
+										$name = $matches[1][$index];
+
+										if (in_array($name, $detected_namespaces) or in_array($uri, $detected_namespaces)) continue;
+
+										$detected_namespaces[] = $name;
+										$detected_namespaces[] = $uri;
+
+										$fields['dynamic_xml']['namespace'][] = array(
+											'name' => $name,
+											'uri' => $uri
+										);
+									}
+								}
+							}
+
+							$filters = array();
+							if(is_array($fields['dynamic_xml']['namespace'])) foreach($fields['dynamic_xml']['namespace'] as $index => $data) {
+								$filters[$data['name']] = $data['uri'];
+							}
+
+							$params['url'] = $fields['dynamic_xml']['url'];
+							$params['xpath'] = $fields['dynamic_xml']['xpath'];
+							$params['cache'] = $fields['dynamic_xml']['cache'];
+							$params['format'] = $fields['dynamic_xml']['format'];
+							$params['timeout'] = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : '6');
+
+							$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.dynamic_xml.php');", $dsShell);
+
+							break;
+
+						case 'static_xml':
+
+							$fields['static_xml'] = trim($fields['static_xml']);
+
+							if(preg_match('/^<\?xml/i', $fields['static_xml']) == true){
+								// Need to remove any XML declaration
+								$fields['static_xml'] = preg_replace('/^<\?xml[^>]+>/i', NULL, $fields['static_xml']);
+							}
+
+							$value = sprintf(
+								'$this->dsSTATIC = \'%s\';',
+								addslashes(trim($fields['static_xml']))
+							);
+							$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\t" . $value . PHP_EOL . "include(TOOLKIT . '/data-sources/datasource.static.php');", $dsShell);
+							break;
+
+						default:
+
+							$elements = $fields['xml_elements'];
+
+							if(is_array($fields['filter']) && !empty($fields['filter'])){
+								$filters = array();
+
+								foreach($fields['filter'] as $f){
+									foreach($f as $key => $val) $filters[$key] = $val;
+								}
+							}
+
+							$params['order'] = $fields['order'];
+							$params['group'] = $fields['group'];
+							$params['paginateresults'] = (isset($fields['paginate_results']) ? 'yes' : 'no');
+							$params['limit'] = $fields['max_records'];
+							$params['startpage'] = $fields['page_number'];
+							$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
+							$params['requiredparam'] = trim($fields['required_url_param']);
+							$params['paramoutput'] = $fields['param'];
+							$params['sort'] = $fields['sort'];
+							$params['htmlencode'] = $fields['html_encode'];
+							$params['associatedentrycounts'] = $fields['associated_entry_counts'];
+
+							if ($params['associatedentrycounts'] == NULL) $params['associatedentrycounts'] = 'no';
+
+							$dsShell = str_replace($placeholder, $placeholder . PHP_EOL . "\t\t\t\tinclude(TOOLKIT . '/data-sources/datasource.section.php');", $dsShell);
+
+							break;
+					}
+
+					$this->__injectVarList($dsShell, $params);
+					$this->__injectIncludedElements($dsShell, $elements);
+					self::injectFilters($dsShell, $filters);
+
+					$dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
 				}
 
 				if($this->_context[0] == 'new') {
@@ -1258,6 +1185,8 @@
 					 *  The path to the Datasource file
 					 * @param string $contents
 					 *  The contents for this Datasource as a string passed by reference
+					 * @param array $dependencies
+					 *  An array of dependencies that this datasource has
 					 * @param array $params
 					 *  An array of all the `$dsParam*` values
 					 * @param array $elements
@@ -1265,16 +1194,14 @@
 					 * @param array $filters
 					 *  An associative array of all the filters for this datasource with the key
 					 *  being the `field_id` and the value the filter.
-					 * @param array $dependencies
-					 *  An array of dependencies that this datasource has
 					 */
 					Symphony::ExtensionManager()->notifyMembers('DatasourcePreEdit', '/blueprints/datasources/', array(
 						'file' => $file,
 						'contents' => &$dsShell,
+						'dependencies' => $dependencies,
 						'params' => $params,
 						'elements' => $elements,
-						'filters' => $filters,
-						'dependencies' => $dependencies
+						'filters' => $filters
 					));
 				}
 
@@ -1341,15 +1268,8 @@
 			}
 		}
 
-		public function __injectIncludedElements(&$shell, $elements){
-			if(!is_array($elements) || empty($elements)) return;
-
-			$placeholder = '<!-- INCLUDED ELEMENTS -->';
-			$shell = str_replace($placeholder, "public \$dsParamINCLUDEDELEMENTS = array(" . PHP_EOL . "\t\t\t\t'" . implode("'," . PHP_EOL . "\t\t\t\t'", $elements) . "'" . PHP_EOL . '		);' . PHP_EOL . "\t\t" . $placeholder, $shell);
-		}
-
-		public function __injectFilters(&$shell, $filters){
-			if(!is_array($filters) || empty($filters)) return;
+		public static function injectFilters(&$shell, array $filters){
+			if(empty($filters)) return;
 
 			$placeholder = '<!-- FILTERS -->';
 			$string = 'public $dsParamFILTERS = array(' . PHP_EOL;
@@ -1364,10 +1284,19 @@
 			$shell = str_replace($placeholder, trim($string), $shell);
 		}
 
-		public function __injectAboutInformation(&$shell, $details){
-			if(!is_array($details) || empty($details)) return;
+		public static function injectAboutInformation(&$shell, array $details){
+			if(empty($details)) return;
 
-			foreach($details as $key => $val) $shell = str_replace('<!-- ' . strtoupper($key) . ' -->', addslashes($val), $shell);
+			foreach($details as $key => $val) {
+				$shell = str_replace('<!-- ' . strtoupper($key) . ' -->', addslashes($val), $shell);
+			}
+		}
+
+		public function __injectIncludedElements(&$shell, $elements){
+			if(!is_array($elements) || empty($elements)) return;
+
+			$placeholder = '<!-- INCLUDED ELEMENTS -->';
+			$shell = str_replace($placeholder, "public \$dsParamINCLUDEDELEMENTS = array(" . PHP_EOL . "\t\t\t\t'" . implode("'," . PHP_EOL . "\t\t\t\t'", $elements) . "'" . PHP_EOL . '		);' . PHP_EOL . "\t\t" . $placeholder, $shell);
 		}
 
 		public function __injectVarList(&$shell, $vars){
