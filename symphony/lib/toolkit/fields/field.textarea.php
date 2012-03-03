@@ -83,11 +83,11 @@
 		Settings:
 	-------------------------------------------------------------------------*/
 
-		public function findDefaults(&$fields){
-			if(!isset($fields['size'])) $fields['size'] = 15;
+		public function findDefaults(array &$settings){
+			if(!isset($settings['size'])) $settings['size'] = 15;
 		}
 
-		public function displaySettingsPanel(&$wrapper, $errors = null) {
+		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			// Textarea Size
@@ -106,12 +106,6 @@
 			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
 			$wrapper->appendChild($div);
-		}
-
-		public function checkFields(&$required, $checkForDuplicates=true, $checkForParentSection=true){
-			$required = array();
-			if($this->get('size') == '' || !is_numeric($this->get('size'))) $required[] = 'size';
-			return parent::checkFields($required, $checkForDuplicates, $checkForParentSection);
 		}
 
 		public function commit(){
@@ -135,7 +129,7 @@
 		Publish:
 	-------------------------------------------------------------------------*/
 
-		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null){
 			$label = Widget::Label($this->get('label'));
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 
@@ -214,7 +208,7 @@
 			);
 		}
 
-		public function appendFormattedElement(&$wrapper, $data, $encode = false, $mode = null) {
+		public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
 			if ($mode == null || $mode == 'formatted') {
 				if ($this->get('formatter') && isset($data['value_formatted'])) {
 					$value = $data['value_formatted'];

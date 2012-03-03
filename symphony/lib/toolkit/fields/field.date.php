@@ -294,11 +294,11 @@
 		Settings:
 	-------------------------------------------------------------------------*/
 
-		public function findDefaults(&$fields) {
-			if(!isset($fields['pre_populate'])) $fields['pre_populate'] = 'yes';
+		public function findDefaults(array &$settings) {
+			if(!isset($settings['pre_populate'])) $settings['pre_populate'] = 'yes';
 		}
 
-		public function displaySettingsPanel(&$wrapper, $errors = null) {
+		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
@@ -332,7 +332,7 @@
 		Publish:
 	-------------------------------------------------------------------------*/
 
-		public function displayPublishPanel(&$wrapper, $data = null, $error = null, $prefix = null, $postfix = null) {
+		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null) {
 			$name = $this->get('element_name');
 			$value = null;
 
@@ -342,7 +342,7 @@
 			}
 
 			// Error entry, display original data
-			else if(!is_null($error)) {
+			else if(!is_null($flagWithError)) {
 				$value = $_POST['fields'][$name];
 			}
 
@@ -352,10 +352,10 @@
 			}
 
 			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Input("fields{$prefix}[{$name}]", $value));
+			$label->appendChild(Widget::Input("fields{$fieldnamePrefix}[{$name}]", $value));
 			$label->setAttribute('class', 'date');
 
-			if(!is_null($error)) {
+			if(!is_null($flagWithError)) {
 				$label = Widget::wrapFormElementWithError($label, $error);
 			}
 
@@ -412,7 +412,7 @@
 		Output:
 	-------------------------------------------------------------------------*/
 
-		public function appendFormattedElement($wrapper, $data, $encode = false) {
+		public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
 			if(isset($data['value'])) {
 
 				// Get date
@@ -438,7 +438,7 @@
 			return parent::prepareTableValue(array('value' => $value), $link, $entry_id = null);
 		}
 
-		public function getParameterPoolValue($data, $entry_id = null) {
+		public function getParameterPoolValue(array $data, $entry_id=NULL){
 			return DateTimeObj::get('Y-m-d H:i:s', $data['value']);
 		}
 
