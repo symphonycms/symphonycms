@@ -253,9 +253,6 @@ fieldset.settings > legend {
 	text-indent: -275px;
 	line-height: 1.5;
 }
-fieldset.settings > label {
-/*	clear: left;*/
-}
 fieldset.settings select {
 	width: 100%;
 }
@@ -1055,9 +1052,11 @@ ul.page form span {
 
 .field {
 	min-height: 45px;
+	margin-bottom: 15px;
 }
 .field-checkbox {
-	min-height: 25px;
+	min-height: 15px;
+	margin-bottom: 0;
 }
 .field-checkbox:first-child {
 	margin-top: 20px;
