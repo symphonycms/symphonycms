@@ -74,7 +74,7 @@
 				duplicator = $('<div class="duplicator frame empty" />').insertBefore(object).prepend(object);
 			}
 			else {
-				duplicator.addClass('frame').addClass('empty');
+				duplicator.addClass('duplicator').addClass('empty');
 			}
 			
 		/*-------------------------------------------------------------------*/
