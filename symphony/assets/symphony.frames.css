@@ -13,7 +13,7 @@
 	content: "";
 	clear: both;
 }
-.frame ol, .frame ul {
+.frame ol, .frame ul:not(.tags) {
 	margin: 0;
 	padding: 0;
 	background: #f5f5f5;

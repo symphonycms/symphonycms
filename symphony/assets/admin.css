@@ -218,13 +218,16 @@ ul.tags {
 	color: rgba(0, 0, 0, 0.4);
 	list-style: none;
 }
-ul.tags li {
+ul.tags li, 
+ul.tags li:first-of-type, 
+ul.tags li:last-of-type {
 	display: inline;
 	padding: 0 6px 0 0;
-	border-top: none;
 	word-spacing: -1px;
 	cursor: pointer;
 	font-size: 90.91%;
+	float: none;
+	border: none;
 }
 ul.tags li:hover {
 	color: #554;
