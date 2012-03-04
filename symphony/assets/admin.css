@@ -1055,11 +1055,13 @@ ul.page form span {
 	margin-bottom: 15px;
 }
 div.field-checkbox {
-	padding: 20px 0 10px;
 	min-height: 14px;
 }
+div.field-checkbox:first-child {
+	padding: 20px 0 10px;
+}
 div.field-checkbox + div.field-checkbox {
-	margin-top: -46px;
+	margin-top: -26px;
 }
 .file input {
 	margin: -3px 0;
