@@ -58,17 +58,25 @@
 
 	/*-----------------------------------------------------------------------*/
 
-		objects.each(function duplicator() {
+		objects.each(function duplicators() {
 			var object = $(this),
 				instances = object.find(settings.instances).addClass('instance'),
 				templates = object.find(settings.templates).addClass('template'),
 				items = instances.add(templates),
 				headers = items.find(settings.headers),
 				duplicator = object.parent('.frame'),
-				apply = $('<fieldset class="apply" />');
+				apply = $('<fieldset class="apply" />'),
 				selector = $('<select />'),
 				constructor = $('<button class="constructor">' + Symphony.Language.get('Add item') + '</button>');
 
+			// Check duplicator frame
+			if(duplicator.length == 0) {
+				duplicator = $('<div class="duplicator frame empty" />').insertBefore(object).prepend(object);
+			}
+			else {
+				duplicator.addClass('frame').addClass('empty');
+			}
+			
 		/*-------------------------------------------------------------------*/
 
 			// Construct instances
@@ -76,7 +84,7 @@
 				var instance = templates.filter('[data-type="' + $(this).prev('select').val() + '"]').clone();
 				
 				event.preventDefault();
-
+				
 				instance.trigger('constructstart.duplicator');
 				instance.trigger('construct.duplicator'); /* deprecated */
 				instance.hide().appendTo(object);
@@ -107,7 +115,7 @@
 				instance.trigger('destruct.duplicator'); /* deprecated */
 				instance.slideUp(settings.speed, function() {
 					$(this).remove();
-	
+
 					// Check if duplicator is empty
 					if(duplicator.find('.instance').length == 0) {
 						duplicator.addClass('empty');
@@ -181,19 +189,19 @@
 			duplicator.on('constructstop.duplicator refresh.duplicator', '.instance', function buildIndexes(event) {
 				var instance = $(this),
 					position = duplicator.find('.instance').index(instance);
- 
+
 				// Loop over named fields
 				instance.find('*[name]').each(function() {
 					var field = $(this),
 						exp = /\[\-?[0-9]+\]/,
 						name = field.attr('name');
- 
+
 					// Set index
 					if(exp.test(name)) {
 						field.attr('name', name.replace(exp, '[' + position + ']'));
 					}
 				});
-			});	
+			});
 		
 			// Refresh field indexes
 			duplicator.on('orderstop.orderable', function refreshIndexes(event) {
@@ -201,14 +209,6 @@
 			});
 
 		/*-------------------------------------------------------------------*/
-
-			// Create duplicator frame
-			if(duplicator.length == 0) {
-				duplicator = $('<div class="duplicator frame empty" />').insertBefore(object).prepend(object);
-			}
-			else {
-				duplicator.addClass('frame').addClass('empty');
-			}
 			
 			// Create content area
 			headers.each(function wrapContent() {
@@ -265,7 +265,7 @@
 			// Destructable interface
 			if(settings.destructable === true) {
 				duplicator.addClass('destructable');
-				headers.append('<a class="destructor">' + Symphony.Language.get('Remove item') + '</a>')
+				headers.append('<a class="destructor">' + Symphony.Language.get('Remove item') + '</a>');
 			}
 
 			// Collapsible interface
