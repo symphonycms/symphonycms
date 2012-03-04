@@ -13,7 +13,7 @@
 	content: "";
 	clear: both;
 }
-.frame ol {
+.frame ol, .frame ul {
 	margin: 0;
 	padding: 0;
 	background: #f5f5f5;
@@ -31,10 +31,10 @@
 }
 
 /*--------------------------------------------------------------------------
-	Duplicators
+	Lists
 --------------------------------------------------------------------------*/
 
-.frame .instance {
+.frame li {
 	padding: 0 10px;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -44,21 +44,29 @@
 	border: 1px solid rgba(0, 0, 0, 0.2);
 	border-top-color: rgba(0, 0, 0, 0.25);
 	border-bottom: none;
+	min-height: 31px;
 }
-.frame .instance:first-of-type {
+.frame li:first-of-type {
 	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
 	border-top: 1px solid rgba(0, 0, 0, 0.2);
 }
-.frame .instance:last-of-type {
+.frame li:last-of-type {
 	border-bottom-left-radius: 4px;
 	border-bottom-right-radius: 4px;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
+/* Link lists */
+
+.frame li a:first-child {
+	margin-top: 6px;
+	display: inline-block;
+}
+
 /* Header */
 
-.frame .instance header {
+.frame li header {
 	position: relative;
 	color: rgba(0, 0, 0, 0.75);
 	margin: 0 -10px;
@@ -72,30 +80,30 @@
 	-o-transition: background 0.2s ease-in;
 	transition: background 0.2s ease-in;
 }
-.frame.collapsible .instance header {
+.frame.collapsible li header {
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
-.frame .instance.collapsed header {
+.frame li.collapsed header {
 	box-shadow: none;
 	border-bottom-color: transparent;
 }
-.frame .instance.expanding header {
+.frame li.expanding header {
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
 	border-bottom: 1px solid rgba(255, 255, 255, 0.75);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
-.frame .instance header h4 {
+.frame li header h4 {
 	display: inline;
 	font-weight: bold;
 }
-.frame .instance header span {
+.frame li header span {
 	margin: 0 0 0 10px;
 	font-weight: normal;
 	color: rgba(0, 0, 0, 0.5);
 }
-.frame .instance header.main:before,
-.frame .instance header.sidebar:before {
+.frame li header.main:before,
+.frame li header.sidebar:before {
 	content: "";
 	display: block;
 	width: 1px;
@@ -105,22 +113,22 @@
 	border-left: 6px solid rgba(0, 0, 0, 0.25);
 	border-right: 3px solid rgba(0, 0, 0, 0.1);
 }
-.frame .instance header.sidebar:before {
+.frame li header.sidebar:before {
 	border-left: 6px solid rgba(0, 0, 0, 0.1);
 	border-right: 3px solid rgba(0, 0, 0, 0.25);
 }
-.frame .instance.highlight header:before {
+.frame li.highlight header:before {
 	border-left: 6px solid rgba(0, 0, 0, 0.5);
 	border-right: 3px solid rgba(0, 0, 0, 0.2);
 }
-.frame .instance.highlight header.sidebar:before {
+.frame li.highlight header.sidebar:before {
 	border-left: 6px solid rgba(0, 0, 0, 0.2);
 	border-right: 3px solid rgba(0, 0, 0, 0.5);
 }
 
 /* Errors */
 
-.frame .instance.conflict.collapsed header {
+.frame li.conflict.collapsed header {
 	background: #fff9a2;
 	-webkit-transition: background 0.2s ease-in;
 	-moz-transition: background 0.2s ease-in;
@@ -128,51 +136,51 @@
 	-o-transition: background 0.2s ease-in;
 	transition: background 0.2s ease-in;
 }
-.frame .instance.conflict.ordering header {
+.frame li.conflict.ordering header {
 	background: none;
 }
 
 /* Content: light scheme */
 
-.frame .instance > div:first-of-type {
+.frame li > div:first-of-type {
 	padding-top: 10px;
 }
-.frame .instance .content {
+.frame li .content {
 	padding: 0 10px 10px;
 	margin: 0 -10px;
 	border-radius: 0 0 4px 4px;
 }
-.frame.collapsible .instance .content {
+.frame.collapsible li .content {
 	background: #e8e8e8;
 }
-.frame.collapsible .instance legend {
+.frame.collapsible li legend {
 	background: #e8e8e8;
 }
 
 /* Content: dark scheme */
-.frame.dark .instance header {
+.frame.dark li header {
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
 }
-.frame.dark .instance .content {
+.frame.dark li .content {
 	background: #383838;
 	color: #fff;
 	margin: 0 -11px;
 	padding: 10px 11px;
 }
-.frame.dark .instance legend {
+.frame.dark li legend {
 	background: #383838;
 }
-.frame.dark .instance .content i,
-.frame.dark .instance ul.tags {
+.frame.dark li .content i,
+.frame.dark li ul.tags {
 	color: rgba(255, 255, 255, 0.3);
 }
-.frame.dark .instance .content fieldset {
+.frame.dark li .content fieldset {
 	border-top-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Ordering */
+/* Selecting & ordering */
 
-.frame .instance.ordering {
+.frame li.selected, .frame li.ordering {
 	background-color: #668abe;
 	background-image: -webkit-linear-gradient(top, #668abe, #5c83ba);
 	background-image:    -moz-linear-gradient(top, #668abe, #5c83ba);
@@ -181,53 +189,59 @@
 	background-image:   linear-gradient(to bottom, #668abe, #5c83ba);
 	border-top: 1px solid #4D78B4;
 	border-bottom: 1px solid #4D78B4;
-	margin-bottom: -1px;
 	text-shadow: 1px 1px rgba(0, 0, 0, 0.2);
 }
-.frame .instance.ordering + .instance {
+.frame li.ordering {
+	margin-bottom: -1px;
+}
+.frame li.selected + li.selected {
+	border-top: none;
+	padding-top: 1px;
+}
+.frame li.ordering + li {
 	border-top: 1px solid #4D78B4;
 }
-.frame .instance.ordering:last-of-type {
+.frame li.ordering:last-of-type {
 	margin-bottom: 0;
 }
-.frame .instance.ordering header {
+.frame li.ordering header {
 	color: #fff;
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
 	cursor: move;
 }
-.frame .instance.ordering header span,
-.frame .instance.ordering header .destructor,
-.frame .instance.ordering .content i,
-.frame .instance.ordering ul.tags {
+.frame li.ordering header span,
+.frame li.ordering header .destructor,
+.frame li.ordering .content i,
+.frame li.ordering ul.tags {
 	color: rgba(255, 255, 255, 0.6);
 }
-.frame .instance.ordering .content,
-.frame .instance.ordering .content legend {
+.frame li.ordering .content,
+.frame li.ordering .content legend {
 	background: #668abe;
 	color: #fff;
 }
-.frame .instance.ordering .content input,
-.frame .instance.ordering .content textarea {
+.frame li.ordering .content input,
+.frame li.ordering .content textarea {
 	box-shadow: 0 0 0 1px #4D78B4;
 }
-.frame .instance.ordering .content fieldset {
+.frame li.ordering .content fieldset {
 	border-top-color: rgba(255, 255, 255, 0.2);
 }
-.frame .instance.highlight {
+.frame li.highlight {
 	background: #e8e8e8;
 }
-.frame .instance.ordering header:before {
+.frame li.ordering header:before {
 	border-left: 6px solid rgba(255, 255, 255, 0.7);
 	border-right: 3px solid rgba(255, 255, 255, 0.2);
 }
-.frame .instance.ordering header.sidebar:before {
+.frame li.ordering header.sidebar:before {
 	border-left: 6px solid rgba(255, 255, 255, 0.2);
 	border-right: 3px solid rgba(255, 255, 255, 0.7);
 }
 
 /* Destructor */
 
-.frame .instance header .destructor {
+.frame li header .destructor {
 	position: absolute;
 	top: 0.65em;
 	right: 10px;
@@ -235,10 +249,10 @@
 	text-decoration: none;
 	font-weight: normal;
 }
-.frame .instance header .destructor:hover {
+.frame li header .destructor:hover {
 	color: rgba(0, 0, 0, 0.7);
 }
-.frame .instance header .destructor.disabled {
+.frame li header .destructor.disabled {
 	color: rgba(0, 0, 0, 0.2);
 	cursor: default;
 	opacity: 0.4;
