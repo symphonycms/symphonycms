@@ -64,7 +64,7 @@
 				templates = object.find(settings.templates).addClass('template'),
 				items = instances.add(templates),
 				headers = items.find(settings.headers),
-				duplicator = $('<div class="duplicator empty" />'),
+				duplicator = object.parent('.frame'),
 				apply = $('<fieldset class="apply" />');
 				selector = $('<select />'),
 				constructor = $('<button class="constructor">' + Symphony.Language.get('Add item') + '</button>');
@@ -202,8 +202,15 @@
 
 		/*-------------------------------------------------------------------*/
 
-			// Build interface
-			duplicator.insertBefore(object).prepend(object);
+			// Create duplicator frame
+			if(duplicator.length == 0) {
+				duplicator = $('<div class="duplicator frame empty" />').insertBefore(object).prepend(object);
+			}
+			else {
+				duplicator.addClass('frame').addClass('empty');
+			}
+			
+			// Create content area
 			headers.each(function wrapContent() {
 				$(this).nextAll().wrapAll('<div class="content" />');
 			});

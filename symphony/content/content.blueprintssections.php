@@ -204,7 +204,7 @@
 			$p = new XMLElement('p', __('Click to expand or collapse a field.') . '<br />' . __('Double click to expand or collapse all fields.'), array('class' => 'help'));
 			$fieldset->appendChild($p);
 
-			$div = new XMLElement('div');
+			$div = new XMLElement('div', null, array('class' => 'frame'));
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');
@@ -418,7 +418,7 @@
 			$p = new XMLElement('p', __('Click to expand or collapse a field.') . '<br />' . __('Double click to expand or collapse all fields.'), array('class' => 'help'));
 			$fieldset->appendChild($p);
 
-			$div = new XMLElement('div');
+			$div = new XMLElement('div', null, array('class' => 'frame'));
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');
@@ -426,7 +426,7 @@
 			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $position => $field){
 
-					$wrapper = new XMLElement('li', NULL, array('class' => 'field-' . $field->handle() . ($field->mustBeUnique() ? ' unique' : NULL)));
+					$wrapper = new XMLElement('li', NULL, array('class' => 'instance field-' . $field->handle() . ($field->mustBeUnique() ? ' unique' : NULL)));
 					$wrapper->setAttribute('data-type', $field->handle());
 
 					$field->set('sortorder', $position);

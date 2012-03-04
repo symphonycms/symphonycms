@@ -212,24 +212,6 @@ tr.ordering a {
 p.label {
 	margin: 0 0 2px;
 }
-.frame {
-	display: block;
-	margin-bottom: 1.5em;
-	border: 1px solid #d3d3d2;
-	padding: 10px;
-	background-color: #f5f5f3;
-	text-align: center;
-	-webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-	border-radius: 4px;
-}
-.frame code {
-	color: #919183;
-}
-.frame button,
-.frame .button {
-	float: none;
-}
 
 /* Tags list */
 
@@ -257,12 +239,6 @@ ul.tags li.more {
 ul.tags .more:hover {
 	color: #222;
 }
-
-
-
-
-
-
 
 /* Settings */
 
@@ -1109,16 +1085,6 @@ ul.page form span {
 .secondary .help {
 	margin-top: 1.5em;
 }
-.primary label > * + .frame,
-.secondary label > * + .frame {
-	margin-top: 1.25em;
-}
-.primary label > i + .frame,
-.secondary label > i + .frame,
-.primary label > .frame:first-child,
-.secondary label > .frame:first-child {
-	margin-top: 0;
-}
 .secondary .field-checkbox {
 	margin-top: 25px;
 	min-height: 30px;
@@ -1250,58 +1216,4 @@ ul.page form span {
 	background-image:   linear-gradient(to bottom, #668abe, #5c83ba);
 	border-top: 1px solid #4D78B4;
 	text-shadow: 1px 1px rgba(0, 0, 0, 0.2);
-}
-
-/*--------------------------------------------------------------------------
-	Components - Grids
---------------------------------------------------------------------------*/
-
-.columns {
-	margin-left: -15px;
-	clear: both;
-}
-
-.columns:after {
-	content: "";
-	clear: both;
-	display: block;
-}
-
-.columns .column, .columns .invalid {
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	-ms-box-sizing: border-box;
-	-o-box-sizing: border-box;
-	box-sizing: border-box;
-	float: left;
-	padding: 0 0 0 15px;
-}
-
-.two.columns .column, .two.columns .invalid {
-	width: 50%;
-}
-.two.columns .column.primary {
-	margin: 0;
-	width: 75%;
-}
-.two.columns .column.secondary {
-	margin: 0;
-	width: 25%;
-}
-
-.three.columns .column {
-	width: 33.33%;
-}
-
-.four.columns .column {
-	width: 25%;
-}
-
-.columns .invalid .column {
-	width: 100%;
-}
-
-.columns legend {
-	margin: 0 0 0 -15px !important;
-	padding: 0 5px 0 15px !important;
 }

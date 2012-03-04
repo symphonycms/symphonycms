@@ -1,0 +1,54 @@
+/**
+ * @todo: Add description
+ * @since: Symphony 2.3
+ */ 
+
+.columns {
+	margin-left: -15px;
+	clear: both;
+}
+
+.columns:after {
+	content: "";
+	clear: both;
+	display: block;
+}
+
+.columns .column, .columns .invalid {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	box-sizing: border-box;
+	float: left;
+	padding: 0 0 0 15px;
+}
+
+.two.columns .column, .two.columns .invalid {
+	width: 50%;
+}
+.two.columns .column.primary {
+	margin: 0;
+	width: 75%;
+}
+.two.columns .column.secondary {
+	margin: 0;
+	width: 25%;
+}
+
+.three.columns .column {
+	width: 33.33%;
+}
+
+.four.columns .column {
+	width: 25%;
+}
+
+.columns .invalid .column {
+	width: 100%;
+}
+
+.columns legend {
+	margin: 0 0 0 -15px !important;
+	padding: 0 5px 0 15px !important;
+}

@@ -1,14 +1,19 @@
-.duplicator {
+/**
+ * @todo: Add description
+ * @since: Symphony 2.3
+ */ 
+
+.frame {
 	margin: 0;
 	padding: 0 0 10px;
 	list-style: none;
 	overflow: hidden;
 }
-.duplicator:after {
+.frame:after {
 	content: "";
 	clear: both;
 }
-.duplicator ol {
+.frame ol {
 	margin: 0;
 	padding: 0;
 	background: #f5f5f5;
@@ -21,13 +26,15 @@
 	box-sizing: border-box;
 	border: none;
 }
-.duplicator.empty ol {
+.frame.empty ol {
 	border: 1px dashed rgba(0, 0, 0, 0.2);
 }
 
-/* Instances */
+/*--------------------------------------------------------------------------
+	Duplicators
+--------------------------------------------------------------------------*/
 
-.duplicator .instance {
+.frame .instance {
 	padding: 0 10px;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -38,12 +45,12 @@
 	border-top-color: rgba(0, 0, 0, 0.25);
 	border-bottom: none;
 }
-.duplicator .instance:first-of-type {
+.frame .instance:first-of-type {
 	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
 	border-top: 1px solid rgba(0, 0, 0, 0.2);
 }
-.duplicator .instance:last-of-type {
+.frame .instance:last-of-type {
 	border-bottom-left-radius: 4px;
 	border-bottom-right-radius: 4px;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
@@ -51,12 +58,12 @@
 
 /* Header */
 
-.duplicator .instance header {
+.frame .instance header {
 	position: relative;
 	color: rgba(0, 0, 0, 0.75);
 	margin: 0 -10px;
 	padding: 8px 10px 7px;
-	cursor: move;
+	cursor: pointer;
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 	-webkit-transition: background 0.2s ease-in;
@@ -65,30 +72,30 @@
 	-o-transition: background 0.2s ease-in;
 	transition: background 0.2s ease-in;
 }
-.duplicator.collapsible .instance header {
+.frame.collapsible .instance header {
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
-.duplicator .instance.collapsed header {
+.frame .instance.collapsed header {
 	box-shadow: none;
 	border-bottom-color: transparent;
 }
-.duplicator .instance.expanding header {
+.frame .instance.expanding header {
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
 	border-bottom: 1px solid rgba(255, 255, 255, 0.75);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
-.duplicator .instance header h4 {
+.frame .instance header h4 {
 	display: inline;
 	font-weight: bold;
 }
-.duplicator .instance header span {
+.frame .instance header span {
 	margin: 0 0 0 10px;
 	font-weight: normal;
 	color: rgba(0, 0, 0, 0.5);
 }
-.duplicator .instance header.main:before,
-.duplicator .instance header.sidebar:before {
+.frame .instance header.main:before,
+.frame .instance header.sidebar:before {
 	content: "";
 	display: block;
 	width: 1px;
@@ -98,22 +105,22 @@
 	border-left: 6px solid rgba(0, 0, 0, 0.25);
 	border-right: 3px solid rgba(0, 0, 0, 0.1);
 }
-.duplicator .instance header.sidebar:before {
+.frame .instance header.sidebar:before {
 	border-left: 6px solid rgba(0, 0, 0, 0.1);
 	border-right: 3px solid rgba(0, 0, 0, 0.25);
 }
-.duplicator .instance.highlight header:before {
+.frame .instance.highlight header:before {
 	border-left: 6px solid rgba(0, 0, 0, 0.5);
 	border-right: 3px solid rgba(0, 0, 0, 0.2);
 }
-.duplicator .instance.highlight header.sidebar:before {
+.frame .instance.highlight header.sidebar:before {
 	border-left: 6px solid rgba(0, 0, 0, 0.2);
 	border-right: 3px solid rgba(0, 0, 0, 0.5);
 }
 
 /* Errors */
 
-.duplicator .instance.conflict.collapsed header {
+.frame .instance.conflict.collapsed header {
 	background: #fff9a2;
 	-webkit-transition: background 0.2s ease-in;
 	-moz-transition: background 0.2s ease-in;
@@ -121,47 +128,51 @@
 	-o-transition: background 0.2s ease-in;
 	transition: background 0.2s ease-in;
 }
-.duplicator .instance.conflict.ordering header {
+.frame .instance.conflict.ordering header {
 	background: none;
 }
 
 /* Content: light scheme */
 
-.duplicator .instance .content {
-	padding: 10px;
-	margin: 0 -10px;
+.frame .instance > div:first-of-type {
+	padding-top: 10px;
 }
-.duplicator.collapsible .instance .content {
+.frame .instance .content {
+	padding: 0 10px 10px;
+	margin: 0 -10px;
+	border-radius: 0 0 4px 4px;
+}
+.frame.collapsible .instance .content {
 	background: #e8e8e8;
 }
-.duplicator.collapsible .instance legend {
+.frame.collapsible .instance legend {
 	background: #e8e8e8;
 }
 
 /* Content: dark scheme */
-.duplicator.dark .instance header {
+.frame.dark .instance header {
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
 }
-.duplicator.dark .instance .content {
+.frame.dark .instance .content {
 	background: #383838;
 	color: #fff;
 	margin: 0 -11px;
 	padding: 10px 11px;
 }
-.duplicator.dark .instance legend {
+.frame.dark .instance legend {
 	background: #383838;
 }
-.duplicator.dark .instance .content i,
-.duplicator.dark .instance ul.tags {
+.frame.dark .instance .content i,
+.frame.dark .instance ul.tags {
 	color: rgba(255, 255, 255, 0.3);
 }
-.duplicator.dark .instance .content fieldset {
+.frame.dark .instance .content fieldset {
 	border-top-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Ordering */
 
-.duplicator .instance.ordering {
+.frame .instance.ordering {
 	background-color: #668abe;
 	background-image: -webkit-linear-gradient(top, #668abe, #5c83ba);
 	background-image:    -moz-linear-gradient(top, #668abe, #5c83ba);
@@ -173,49 +184,50 @@
 	margin-bottom: -1px;
 	text-shadow: 1px 1px rgba(0, 0, 0, 0.2);
 }
-.duplicator .instance.ordering + .instance {
+.frame .instance.ordering + .instance {
 	border-top: 1px solid #4D78B4;
 }
-.duplicator .instance.ordering:last-of-type {
+.frame .instance.ordering:last-of-type {
 	margin-bottom: 0;
 }
-.duplicator .instance.ordering header {
+.frame .instance.ordering header {
 	color: #fff;
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
+	cursor: move;
 }
-.duplicator .instance.ordering header span,
-.duplicator .instance.ordering header .destructor,
-.duplicator .instance.ordering .content i,
-.duplicator .instance.ordering ul.tags {
+.frame .instance.ordering header span,
+.frame .instance.ordering header .destructor,
+.frame .instance.ordering .content i,
+.frame .instance.ordering ul.tags {
 	color: rgba(255, 255, 255, 0.6);
 }
-.duplicator .instance.ordering .content,
-.duplicator .instance.ordering .content legend {
+.frame .instance.ordering .content,
+.frame .instance.ordering .content legend {
 	background: #668abe;
 	color: #fff;
 }
-.duplicator .instance.ordering .content input,
-.duplicator .instance.ordering .content textarea {
+.frame .instance.ordering .content input,
+.frame .instance.ordering .content textarea {
 	box-shadow: 0 0 0 1px #4D78B4;
 }
-.duplicator .instance.ordering .content fieldset {
+.frame .instance.ordering .content fieldset {
 	border-top-color: rgba(255, 255, 255, 0.2);
 }
-.duplicator .instance.highlight {
+.frame .instance.highlight {
 	background: #e8e8e8;
 }
-.duplicator .instance.ordering header:before {
+.frame .instance.ordering header:before {
 	border-left: 6px solid rgba(255, 255, 255, 0.7);
 	border-right: 3px solid rgba(255, 255, 255, 0.2);
 }
-.duplicator .instance.ordering header.sidebar:before {
+.frame .instance.ordering header.sidebar:before {
 	border-left: 6px solid rgba(255, 255, 255, 0.2);
 	border-right: 3px solid rgba(255, 255, 255, 0.7);
 }
 
 /* Destructor */
 
-.duplicator .instance header .destructor {
+.frame .instance header .destructor {
 	position: absolute;
 	top: 0.65em;
 	right: 10px;
@@ -223,18 +235,26 @@
 	text-decoration: none;
 	font-weight: normal;
 }
-.duplicator .instance header .destructor:hover {
+.frame .instance header .destructor:hover {
 	color: rgba(0, 0, 0, 0.7);
 }
-.duplicator .instance header .destructor.disabled {
+.frame .instance header .destructor.disabled {
 	color: rgba(0, 0, 0, 0.2);
 	cursor: default;
 	opacity: 0.4;
 }
 
-/* Controls */
+/* Templates */
 
-.duplicator .apply {
+.frame .template {
+	display: none;
+}
+
+/*--------------------------------------------------------------------------
+	Controls
+--------------------------------------------------------------------------*/
+
+.frame .apply {
 	clear: left;
 	cursor: default;
 	margin: 10px 0 0;
@@ -242,6 +262,40 @@
 	position: relative;
 	border-color: rgba(0, 0, 0, 0.25);
 }
-.duplicator .apply:hover {
+.frame .apply:hover {
 	border-color: rgba(0, 0, 0, 0.4);
+}
+
+/*--------------------------------------------------------------------------
+	Inline frames
+--------------------------------------------------------------------------*/
+
+span.frame {
+	display: block;
+	margin-bottom: 1.5em;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	padding: 10px;
+	background-color: #f5f5f3;
+	text-align: center;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+span.frame code {
+	color: #919183;
+}
+span.frame button,
+span.frame .button {
+	float: none;
+}
+.primary label > * + span.frame,
+.secondary label > * + span.frame {
+	margin-top: 1.25em;
+}
+.primary label > i + span.frame,
+.secondary label > i + span.frame,
+.primary label > span.frame:first-child,
+.secondary label > span.frame:first-child {
+	margin-top: 0;
 }
