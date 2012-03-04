@@ -204,7 +204,7 @@
 			$p = new XMLElement('p', __('Click to expand or collapse a field.') . '<br />' . __('Double click to expand or collapse all fields.'), array('class' => 'help'));
 			$fieldset->appendChild($p);
 
-			$div = new XMLElement('div');
+			$div = new XMLElement('div', null, array('class' => 'frame'));
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');
@@ -418,7 +418,7 @@
 			$p = new XMLElement('p', __('Click to expand or collapse a field.') . '<br />' . __('Double click to expand or collapse all fields.'), array('class' => 'help'));
 			$fieldset->appendChild($p);
 
-			$div = new XMLElement('div');
+			$div = new XMLElement('div', null, array('class' => 'frame'));
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');

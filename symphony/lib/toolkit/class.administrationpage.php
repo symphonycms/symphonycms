@@ -250,10 +250,11 @@
 			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 0);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge,chrome=1')), 1);
 
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/legacy.css', 'screen', 40);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 41);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/admin.css', 'screen', 42);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.duplicator.css', 'screen', 43);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.legacy.css', 'screen', 40);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.grids.css', 'screen', 41);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.frames.css', 'screen', 42);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 43);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/admin.css', 'screen', 44);
 
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.js', 50);
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.color.js', 51);

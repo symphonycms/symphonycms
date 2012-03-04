@@ -209,6 +209,7 @@
 		public function __viewTemplate() {
 			$this->setPageType('form');
 			$this->Form->setAttribute('action', SYMPHONY_URL . '/blueprints/pages/template/' . $this->_context[1] . '/');
+			$this->Form->setAttribute('class', 'columns');
 
 			$filename = $this->_context[1] . '.xsl';
 			$file_abs = PAGES . '/' . $filename;
@@ -262,7 +263,7 @@
 			$fields['body'] = General::sanitize($fields['body']);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'primary');
+			$fieldset->setAttribute('class', 'primary column');
 
 			$label = Widget::Label(__('Body'));
 			$label->appendChild(Widget::Textarea(
@@ -281,14 +282,18 @@
 
 			$utilities = General::listStructure(UTILITIES, array('xsl'), false, 'asc', UTILITIES);
 			$utilities = $utilities['filelist'];
-
+			
 			if(is_array($utilities) && !empty($utilities)) {
+				$this->Form->setAttribute('class', 'two columns');
+			
 				$div = new XMLElement('div');
-				$div->setAttribute('class', 'secondary');
+				$div->setAttribute('class', 'secondary column');
 
 				$p = new XMLElement('p', __('Utilities'));
 				$p->setAttribute('class', 'label');
 				$div->appendChild($p);
+
+				$frame = new XMLElement('div', null, array('class' => 'frame'));
 
 				$ul = new XMLElement('ul');
 				$ul->setAttribute('id', 'utilities');
@@ -302,7 +307,8 @@
 					$ul->appendChild($li);
 				}
 
-				$div->appendChild($ul);
+				$frame->appendChild($ul);
+				$div->appendChild($frame);
 				$this->Form->appendChild($div);
 			}
 

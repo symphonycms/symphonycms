@@ -91,6 +91,7 @@
 		public function __form(){
 			$this->setPageType('form');
 			$this->_existing_file = (isset($this->_context[1]) ? $this->_context[1] . '.xsl' : NULL);
+			$this->Form->setAttribute('class', 'columns');
 
 			// Handle unknown context
 			if(!in_array($this->_context[0], array('new', 'edit'))) Administration::instance()->errorPageNotFound();
@@ -160,7 +161,7 @@
 			$fields['body'] = General::sanitize($fields['body']);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'primary');
+			$fieldset->setAttribute('class', 'primary column');
 
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('fields[name]', $fields['name']));
@@ -176,13 +177,16 @@
 			$utilities = $utilities['filelist'];
 
 			if(is_array($utilities) && !empty($utilities)){
+				$this->Form->setAttribute('class', 'two columns');
 
 				$div = new XMLElement('div');
-				$div->setAttribute('class', 'secondary');
+				$div->setAttribute('class', 'secondary column');
 
 				$p = new XMLElement('p', __('Utilities'));
 				$p->setAttribute('class', 'label');
 				$div->appendChild($p);
+				
+				$frame = new XMLElement('div', null, array('class' => 'frame'));
 
 				$ul = new XMLElement('ul');
 				$ul->setAttribute('id', 'utilities');
@@ -199,7 +203,8 @@
 					$ul->appendChild($li);
 				}
 
-				$div->appendChild($ul);
+				$frame->appendChild($ul);
+				$div->appendChild($frame);
 
 				$this->Form->appendChild($div);
 
