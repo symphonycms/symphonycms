@@ -107,13 +107,22 @@
 		 * and be accessible in the XSLT. This function translates all ' into
 		 * `&apos;`, with the tradeoff being that a <xsl:value-of select='$param' />
 		 * that has a ' will output `&apos;` but the benefit that ' and " can be
-		 * in the params
+		 * in the params.
+		 *
+		 * It also makes sure that the characters used are valid.
 		 *
 		 * @link http://www.php.net/manual/en/xsltprocessor.setparameter.php#81077
+		 * @link http://www.w3.org/TR/xml/#charsets
+		 * @link http://www.phpedit.net/snippet/Remove-Invalid-XML-Characters
 		 * @param array $param
 		 *  An associative array of params for this page
 		 */
 		public function setRuntimeParam($param){
+			// Make the parameters valid XML:
+			foreach($this->_param as &	$p)
+			{
+				$p = XMLElement::stripInvalidXMLCharacters($p);
+			}
 			$this->_param = str_replace("'", "&apos;", $param);
 		}
 

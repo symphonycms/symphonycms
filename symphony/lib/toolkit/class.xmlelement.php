@@ -331,7 +331,35 @@
 		 */
 		public function setValue($value, $prepend=true){
 			if(!$prepend) $this->_placeValueAfterChildElements = true;
-			$this->_value = $value;
+			$this->_value = $this->stripInvalidXMLCharacters($value);
+		}
+
+		/**
+		 * This function removes characters that are not allowed in XML
+		 * @link http://www.w3.org/TR/xml/#charsets
+		 * @link http://www.phpedit.net/snippet/Remove-Invalid-XML-Characters
+		 * @param string $value
+		 * @return string
+		 */
+		public static function stripInvalidXMLCharacters($value)
+		{
+			$ret = '';
+			if (empty($value)) {
+				return $ret;
+			}
+			$length = strlen($value);
+			for ($i=0; $i < $length; $i++) {
+				$current = ord($value{$i});
+				if (($current == 0x9) ||
+					($current == 0xA) ||
+					($current == 0xD) ||
+					(($current >= 0x20) && ($current <= 0xD7FF)) ||
+					(($current >= 0xE000) && ($current <= 0xFFFD)) ||
+					(($current >= 0x10000) && ($current <= 0x10FFFF))) {
+					$ret .= chr($current);
+				}
+			}
+			return $ret;
 		}
 
 		/**

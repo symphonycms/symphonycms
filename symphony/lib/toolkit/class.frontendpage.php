@@ -329,7 +329,7 @@
 				'current-page-id' => $page['id'],
 				'current-path' => $current_path,
 				'parent-path' => '/' . $page['path'],
-				'current-query-string' => $querystring,
+				'current-query-string' => utf8_encode(urldecode($querystring)),
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
@@ -349,11 +349,11 @@
 					// to be used, $url-b
 					$key = preg_replace('/(^amp;|\/)/', null, $key);
 
-					// If the key gets replaced out then it will break the XML so prevent
-					// the parameter being set.
-					if(empty($key)) continue;
-
-					$this->_param['url-' . $key] = $val;
+					// The key gets sanitized later on, so make sure it doesn't end up empty:
+					if(General::createHandle($key))
+					{
+						$this->_param['url-' . $key] = utf8_encode(urldecode($val));
+					}
 				}
 			}
 
