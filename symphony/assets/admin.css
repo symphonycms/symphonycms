@@ -424,7 +424,7 @@ button.create:focus,
 .button.create:active,
 .button.create:focus {
 	border-color: rgba(50, 70, 23, 0.6);
-	color: #fff;
+	color: rgba(255, 255, 255, 0.99);
 }
 
 /* Delete buttons */
@@ -714,7 +714,7 @@ div.notifier nav:hover:before {
 	text-decoration: none;
 }
 #header h1 a:hover, #session a:hover {
-	color: #fff;
+	color: rgba(255, 255, 255, 0.99);
 }
 #session {
 	margin: -30px 0 0;
