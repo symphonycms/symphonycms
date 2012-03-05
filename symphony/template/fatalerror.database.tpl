@@ -74,7 +74,7 @@
 </head>
 <body>
 	<h1>Symphony Fatal Database Error</h1>
-	<div class="bubble">
+	<div class="frame">
 		<h2>%s</h2>
 		<p>An error occurred while attempting to execute the following query</p>
 		<ul>

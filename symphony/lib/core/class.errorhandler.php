@@ -173,7 +173,7 @@
 
 			foreach(self::__nearByLines($e->getLine(), $e->getFile()) as $line => $string){
 				$lines .= sprintf(
-					'<li%s%s><strong>%d:</strong> <code>%s</code></li>',
+					'<li%s%s><strong>%d</strong> <code>%s</code></li>',
 					($odd == true ? ' class="odd"' : NULL),
 					(($line+1) == $e->getLine() ? ' id="error"' : NULL),
 					++$line,
@@ -188,8 +188,7 @@
 
 			foreach($e->getTrace() as $t){
 				$trace .= sprintf(
-					'<li%s><code>[%s:%d] <strong>%s%s%s();</strong></code></li>',
-					($odd == true ? ' class="odd"' : NULL),
+					'<li><code><em>[%s:%d]</em></code></li><li><code>&#160;&#160;&#160;&#160;%s%s%s();</code></li>',
 					(isset($t['file']) ? $t['file'] : NULL),
 					(isset($t['line']) ? $t['line'] : NULL),
 					(isset($t['class']) ? $t['class'] : NULL),
@@ -206,25 +205,27 @@
 
 				if(!empty($debug)) foreach($debug as $query){
 					$queries .= sprintf(
-						'<li%s><code>%s;</code> <small>[%01.4f]</small></li>',
-						($odd == true ? ' class="odd"' : NULL),
-						htmlspecialchars($query['query']),
-						(isset($query['execution_time']) ? $query['execution_time'] : NULL)
+						'<li><em>[%01.4f]</em><code> %s;</code> </li>',
+						(isset($query['execution_time']) ? $query['execution_time'] : NULL),
+						htmlspecialchars($query['query'])
 					);
 					$odd = !$odd;
 				}
 			}
 
-			return sprintf(file_get_contents(self::getTemplate('fatalerror.generic')),
+			$html = sprintf(file_get_contents(self::getTemplate('fatalerror.generic')),
 				($e instanceof ErrorException ? GenericErrorHandler::$errorTypeStrings[$e->getSeverity()] : 'Fatal Error'),
 				$e->getMessage(),
 				$e->getFile(),
 				$e->getLine(),
-				$markdown,
 				$lines,
+				$markdown,
 				$trace,
 				$queries
 			);
+			$html = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $html);
+			
+			return $html;
 		}
 	}
 
