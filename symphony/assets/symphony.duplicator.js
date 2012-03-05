@@ -224,7 +224,7 @@
 				// Populate selector
 				templates.each(function createTemplates() {
 					var template = $(this),
-						title = template.find(settings.headers).attr('data-name') || template.find(settings.headers + ' :first-child').text(),
+						title = template.find(settings.headers).attr('data-name') || template.find(settings.headers + ' :first-child').text(),
 						value = template.attr('data-type');
 
 					template.trigger('constructstart.duplicator');
