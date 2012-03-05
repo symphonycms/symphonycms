@@ -242,7 +242,7 @@
 				if(pagegoto.val() == pageactive) {
 					pagegoto.val('');
 				}
-				pageform.addClass('active')
+				pageform.addClass('active');
 			});
 
 			// Stop editing page number
@@ -324,10 +324,11 @@
 				regexp = '^<xsl:import href="(?:\.\./utilities/)?' + link + '"',
 				newLine = '\n',
 				numberOfNewLines = 1,
-				number_lines = lines.length;
+				number_lines = lines.length,
+				i;
 
 			if ($(this).hasClass('selected')) {
-				for (var i = 0; i < number_lines; i++) {
+				for (i = 0; i < number_lines; i++) {
 					if ($.trim(lines[i]).match(regexp) != null) {
 						(lines[i + 1] === '' && $.trim(lines[i - 1]).substring(0, 11) !== '<xsl:import') ? lines.splice(i, 2) : lines.splice(i, 1);
 						break;
@@ -338,7 +339,7 @@
 				$(this).removeClass('selected');
 			}
 			else {
-				for (var i = 0; i < number_lines; i++) {
+				for (i = 0; i < number_lines; i++) {
 					if ($.trim(lines[i]).substring(0, 4) === '<!--' || $.trim(lines[i]).match('^<xsl:(?:import|variable|output|comment|template)')) {
 
 						numberOfNewLines = $.trim(lines[i]).substring(0, 11) === '<xsl:import' ? 1 : 2;
@@ -373,7 +374,7 @@
 				overlay.insertBefore(password).find('button').on('click', function(event) {
 					event.preventDefault();
 					overlay.hide();
-				})
+				});
 			}
 		});
 
@@ -443,7 +444,7 @@
 						var item = $(this),
 							field = item.text().split('.')[1];
 
-						item.text('$ds-' + result + '.' + field)
+						item.text('$ds-' + result + '.' + field);
 					});
 				}
 			});
@@ -569,7 +570,7 @@
 		// Validate pagination input on submit
 		$('.page form').submit(function() {
 			var $input = $(this).find('input');
-			if(!$input.val().match('^[0-9]+$') || $input.val() > parseInt($(this).find('span').html())) {
+			if(!$input.val().match('^[0-9]+$') || $input.val() > parseInt($(this).find('span').html(), 10)) {
 				$input.addClass('error');
 				window.setTimeout(function() { $('.page form input').removeClass("error"); }, 500);
 				return false;
