@@ -540,6 +540,7 @@
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
+			$this->Form->setAttribute('class', 'two columns');
 			$this->setTitle(__('%1$s &ndash; %2$s', array($section->get('name'), __('Symphony'))));
 
 			// Only show the Edit Section button if the Author is a developer. #938 ^BA
@@ -591,7 +592,7 @@
 			}
 
 			$primary = new XMLElement('fieldset');
-			$primary->setAttribute('class', 'primary');
+			$primary->setAttribute('class', 'primary column');
 
 			$sidebar_fields = $section->fetchFields(NULL, 'sidebar');
 			$main_fields = $section->fetchFields(NULL, 'main');
@@ -616,7 +617,7 @@
 
 				if (is_array($sidebar_fields) && !empty($sidebar_fields)) {
 					$sidebar = new XMLElement('fieldset');
-					$sidebar->setAttribute('class', 'secondary');
+					$sidebar->setAttribute('class', 'secondary column');
 
 					foreach ($sidebar_fields as $field) {
 						$sidebar->appendChild($this->__wrapFieldWithDiv($field, $entry));
@@ -848,6 +849,7 @@
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
+			$this->Form->setAttribute('class', 'two columns');
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($title, $section->get('name'), __('Symphony'))));
 
 			// Only show the Edit Section button if the Author is a developer. #938 ^BA
@@ -867,7 +869,7 @@
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
 
 			$primary = new XMLElement('fieldset');
-			$primary->setAttribute('class', 'primary');
+			$primary->setAttribute('class', 'primary column');
 
 			$sidebar_fields = $section->fetchFields(NULL, 'sidebar');
 			$main_fields = $section->fetchFields(NULL, 'main');
@@ -893,7 +895,7 @@
 
 				if(is_array($sidebar_fields) && !empty($sidebar_fields)){
 					$sidebar = new XMLElement('fieldset');
-					$sidebar->setAttribute('class', 'secondary');
+					$sidebar->setAttribute('class', 'secondary column');
 
 					foreach($sidebar_fields as $field){
 						$sidebar->appendChild($this->__wrapFieldWithDiv($field, $entry));

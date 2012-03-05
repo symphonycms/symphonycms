@@ -73,9 +73,15 @@ p {
 ul, ol {
 	margin: 0 0 1.5em 2.25em;
 }
-code {
+code,
+.code {
 	font: 110%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
 	font-size-adjust: 0.5;
+	-webkit-tab-size: 4;
+	-moz-tab-size: 4;
+	-ms-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
 }
 pre {
 	margin-bottom: 1.75em;
@@ -98,7 +104,7 @@ legend {
 }
 label {
 	display: block;
-	margin-bottom: 1.5em;
+	margin-bottom: 15px;
 }
 label input {
 	padding: 2px;
