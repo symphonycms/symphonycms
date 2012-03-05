@@ -13,37 +13,37 @@
 				items: 'time',
 				timestamp: 'datetime'
 			};
-		
+
 		$.extend(settings, options);
 
 	/*-----------------------------------------------------------------------*/
-	
+
 		function parse(item) {
 			var timestamp = item.data('timestamp'),
 				datetime, date, now;
-				
+
 			// Fetch stored timestamp
 			if($.isNumeric(timestamp)) {
 				return timestamp;
 			}
-			
+
 			// Parse date
 			else {
 				datetime = item.attr(settings.timestamp);
-				
+
 				// Defined date and time
 				if(datetime) {
-	
+
 					// Parse ISO 8601
 					date = datetime.split(/[-T:+]/);
 					timestamp = new Date(date[0], date[1] - 1, date[2], date[3], date[4], date[5]);
 				}
-				
+
 				// Undefined date and time
 				else {
 					now = new Date();
 					timestamp = now.getTime();
-				} 
+				}
 
 				// Store and return timestamp
 				item.data('timestamp', timestamp);
@@ -87,7 +87,7 @@
 			var item = $(this),
 				from = parse(item),
 				to = new Date();
-				
+
 			// Set relative time
 			item.text(say(from, to));
 		});

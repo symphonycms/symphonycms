@@ -76,19 +76,19 @@
 			else {
 				duplicator.addClass('duplicator').addClass('empty');
 			}
-			
+
 		/*-------------------------------------------------------------------*/
 
 			// Construct instances
 			apply.on('click.duplicator', 'button.constructor:not(.disabled)', function construct(event, speed) {
 				var instance = templates.filter('[data-type="' + $(this).prev('select').val() + '"]').clone();
-				
+
 				event.preventDefault();
-				
+
 				instance.trigger('constructstart.duplicator');
 				instance.trigger('construct.duplicator'); /* deprecated */
 				instance.hide().appendTo(object);
-				
+
 				// Duplicator is not empty
 				duplicator.removeClass('empty');
 
@@ -184,7 +184,7 @@
 					}
 				}
 			});
-			
+
 			// Build field indexes
 			duplicator.on('constructstop.duplicator refresh.duplicator', '.instance', function buildIndexes(event) {
 				var instance = $(this),
@@ -202,14 +202,14 @@
 					}
 				});
 			});
-		
+
 			// Refresh field indexes
 			duplicator.on('orderstop.orderable', function refreshIndexes(event) {
 				duplicator.find('.instance').trigger('refresh.duplicator');
 			});
 
 		/*-------------------------------------------------------------------*/
-			
+
 			// Create content area
 			headers.each(function wrapContent() {
 				$(this).nextAll().wrapAll('<div class="content" />');
@@ -283,14 +283,14 @@
 					handles: 'header'
 				});
 			}
-			
+
 			// Catch errors
 			instances.filter(':has(.invalid)').addClass('conflict');
 
 			// Initialise existing instances
 			instances.trigger('constructstop.duplicator');
 			instances.find('input[name*="[label]"]').trigger('keyup.duplicator');
-			
+
 			// Check for existing instances
 			if(instances.length > 0) {
 				duplicator.removeClass('empty');

@@ -122,18 +122,18 @@
 			.on('keyup', '.instance input[name*="[label]"]', function(event) {
 				var label = $(this),
 					value = label.val();
-					
+
 				// Empty label
 				if(value == '') {
 					value = Symphony.Language.get('Untitled Field');
 				}
-				
+
 				// Update title
 				label.parents('.instance').find('header strong').text(value);
 			})
 			.on('change', '.instance select[name*="[location]"]', function(event) {
 				var select = $(this);
-					
+
 				// Set location
 				select.parents('.instance').find('header').removeClass('main').removeClass('sidebar').addClass(select.val());
 			});
@@ -142,7 +142,7 @@
 		$('div.duplicator')
 			.on('orderstart.orderable', function(event, item) {
 				var duplicator = $(this);
-			
+
 				setTimeout(function() {
 					if(duplicator.is('.ordering')) {
 						duplicator.find('li:has(.' + item.find('header').attr('class') + ')').not(item).addClass('highlight');
@@ -168,7 +168,7 @@
 				selection = $('table.selectable'),
 				select = applicable.find('select'),
 				button = applicable.find('button');
-				
+
 			// Set width
 			if(!applicable.is('.single')) {
 				applicable.width(select.outerWidth() + button.outerWidth() + 10);
@@ -178,35 +178,35 @@
 			if(selection.length > 0) {
 				selection.on('select deselect check', 'tbody tr:has(input)', function(event) {
 					var select = applicable.find('select');
-				
+
 					// Activate menu
 					if(selection.has('.selected').length > 0) {
 						applicable.removeClass('inactive');
 						select.removeAttr('disabled');
 					}
-					
+
 					// Deactivate menu
 					else {
 						applicable.addClass('inactive');
 						select.attr('disabled', 'disabled');
 					}
 				});
-				
+
 				selection.find('tbody tr:has(input):first').trigger('check');
-				
+
 				// Respect menu state
 				applicable.find('button').on('click', function(event) {
 					if($(this).parent().is('.inactive')) {
 						return false;
 					}
 				});
-			}		
+			}
 		});
 
 		/*--------------------------------------------------------------------------
 			Components - Pagination
 		--------------------------------------------------------------------------*/
-		
+
 		var pageform = $('ul.page form');
 		if(pageform.length > 0) {
 			var	pagegoto = pageform.find('input'),
@@ -214,29 +214,29 @@
 				pageinactive = pagegoto.attr('data-inactive'),
 				pagehelper = $('<span />').appendTo(pageform),
 				width;
-				
+
 			// Measure placeholder text
 			width = Math.max(pagehelper.text(pageactive).width(), pagehelper.text(pageinactive).width());
 			pagehelper.remove();
 			pagegoto.width(width + 20);
-				
+
 			// Set current page
 			pagegoto.val(pageinactive);
-			
+
 			// Display "Go to page …" placeholder
 			pageform.on('mouseover', function(event) {
 				if(!pageform.is('.active') && pagegoto.val() == pageinactive) {
 					pagegoto.val(pageactive);
 				}
 			});
-			
+
 			// Display current page placeholder
 			pageform.on('mouseout', function(event) {
 				if(!pageform.is('.active') && pagegoto.val() == pageactive) {
 					pagegoto.val(pageinactive);
 				}
 			});
-	
+
 			// Edit page number
 			pagegoto.on('focus', function(event) {
 				if(pagegoto.val() == pageactive) {
@@ -244,28 +244,28 @@
 				}
 				pageform.addClass('active')
 			});
-			
+
 			// Stop editing page number
 			pagegoto.on('blur', function(event) {
-							
+
 				// Clear errors
 				if(pageform.is('.invalid') || pagegoto.val() == '') {
 					pageform.removeClass('invalid');
 					pagegoto.val(pageinactive);
 				}
-			
+
 				// Deactivate
 				if(pagegoto.val() == pageinactive) {
 					pageform.removeClass('active');
 				}
 			});
-			
+
 			// Validate page number
 			pageform.on('submit', function(event) {
 				if(pagegoto.val() > pagegoto.attr('data-max')) {
 					pageform.addClass('invalid');
 					return false;
-				}	
+				}
 			});
 		}
 
@@ -276,7 +276,7 @@
 		// XSLT utilities
 		$('#blueprints-utilities fieldset.primary textarea, #blueprints-pages fieldset.primary textarea')
 			.on('keydown', function(event) {
-			
+
 				// Allow tab insertion
 				if(event.which == 9) {
 					var start = this.selectionStart,
@@ -289,7 +289,7 @@
 					this.value = this.value.substring(0, start) + "\t" + this.value.substring(end, this.value.length);
 					this.selectionStart = start + 1;
 					this.selectionEnd = start + 1;
-					
+
 					// Restore scroll position
 					this.scrollTop = position;
    				}
@@ -297,15 +297,15 @@
 			.on('blur', function() {
 				var source = $(this).val(),
 					utilities = $('#utilities li');
-	
+
 				// Remove current selection
 				utilities.removeClass('selected');
-	
+
 				// Get utitities names
 				utilities.find('a').each(function() {
 					var utility = $(this),
 						expression = new RegExp('href=["\']?(?:\\.{2}/utilities/)?' + utility.text());
-	
+
 					// Check for utility occurrences
 					if(expression.test(source)) {
 						utility.parent().addClass('selected');
@@ -367,7 +367,7 @@
 		$('#password').each(function() {
 			var password = $(this),
 				overlay = $('<div class="password"><span class="frame"><button>' + Symphony.Language.get('Change Password') + '</button></span></div>');
-		
+
 			// Add overlay
 			if(password.has('.invalid').length == 0 && Symphony.Context.get('env')[0] != 'new') {
 				overlay.insertBefore(password).find('button').on('click', function(event) {
