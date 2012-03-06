@@ -54,7 +54,7 @@
 
 					$name->appendChild(Widget::Input('items[' . $u . ']', null, 'checkbox'));
 
-					$aTableBody[] = Widget::TableRow(array($name), null);
+					$aTableBody[] = Widget::TableRow(array($name));
 				}
 			}
 
