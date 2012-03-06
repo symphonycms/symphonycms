@@ -119,7 +119,6 @@
 			
 			// Save states
 			object.on('collapsestop.collapsible expandstop.collapsible store.collapsible', settings.items, function saveState(event) {
-				console.log('hey', settings.save_state, Symphony.Support.localStorage);
 				if(settings.save_state === true && Symphony.Support.localStorage === true) {
 					var collapsed = object.find(settings.items).map(function(index) {
 						if($(this).is('.collapsed')) {
