@@ -416,7 +416,7 @@
 				)));
 
 				$pgform = Widget::Form(Administration::instance()->getCurrentPageURL(),'get','paginationform');
-				$pgmax = max($current_page, $entries['total-pages']); 
+				$pgmax = max($current_page, $entries['total-pages']);
 				$pgform->appendChild(Widget::Input('pg', NULL, 'text', array(
 					'data-active' => __('Go to page …'),
 					'data-inactive' => __('Page %1$s of %2$s', array((string)$current_page, $pgmax)),
@@ -598,12 +598,15 @@
 			$main_fields = $section->fetchFields(NULL, 'main');
 
 			if ((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))) {
-				$primary->appendChild(new XMLElement('p', __(
-					'It looks like you’re trying to create an entry. Perhaps you want fields first?')
-					. ' <a href="' . SYMPHONY_URL . '/blueprints/sections/edit/' . $section->get('id') . '/">'
-					. __('Click here to create some.') . '</a>'
-				));
-				$this->Form->appendChild($primary);
+				$message = __('Fields must be added to this section before an entry can be created.');
+
+				if(Administration::instance()->Author->isDeveloper()) {
+					$message .= ' <a href="' . SYMPHONY_URL . '/blueprints/sections/edit/' . $section->get('id') . '/" accesskey="c">'
+					. __('Add fields')
+					. '</a>';
+				}
+
+				$this->pageAlert($message, Alert::ERROR);
 			}
 
 			else {
@@ -625,13 +628,13 @@
 
 					$this->Form->appendChild($sidebar);
 				}
+
+				$div = new XMLElement('div');
+				$div->setAttribute('class', 'actions');
+				$div->appendChild(Widget::Input('action[save]', __('Create Entry'), 'submit', array('accesskey' => 's')));
+
+				$this->Form->appendChild($div);
 			}
-
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'actions');
-			$div->appendChild(Widget::Input('action[save]', __('Create Entry'), 'submit', array('accesskey' => 's')));
-
-			$this->Form->appendChild($div);
 		}
 
 		public function __actionNew(){
@@ -875,15 +878,18 @@
 			$main_fields = $section->fetchFields(NULL, 'main');
 
 			if((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))){
-				$primary->appendChild(new XMLElement('p',
-					__('It looks like you’re trying to create an entry. Perhaps you want fields first?')
-					. ' <a href="' . SYMPHONY_URL . '/blueprints/sections/edit/'. $section->get('id') . '/">'
-					. __('Click here to create some.')
-					. '</a>'
-				));
+				$message = __('Fields must be added to this section before an entry can be created.');
+
+				if(Administration::instance()->Author->isDeveloper()) {
+					$message .= ' <a href="' . SYMPHONY_URL . '/blueprints/sections/edit/' . $section->get('id') . '/" accesskey="c">'
+					. __('Add fields')
+					. '</a>';
+				}
+
+				$this->pageAlert($message, Alert::ERROR);
 			}
 
-			else{
+			else {
 
 				if(is_array($main_fields) && !empty($main_fields)){
 					foreach($main_fields as $field){
@@ -904,18 +910,16 @@
 					$this->Form->appendChild($sidebar);
 				}
 
+				$div = new XMLElement('div');
+				$div->setAttribute('class', 'actions');
+				$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
+
+				$button = new XMLElement('button', __('Delete'));
+				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this entry'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this entry?')));
+				$div->appendChild($button);
+
+				$this->Form->appendChild($div);
 			}
-
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'actions');
-			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array('accesskey' => 's')));
-
-			$button = new XMLElement('button', __('Delete'));
-			$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this entry'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this entry?')));
-			$div->appendChild($button);
-
-			$this->Form->appendChild($div);
-
 		}
 
 		public function __actionEdit(){
