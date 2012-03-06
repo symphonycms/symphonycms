@@ -425,7 +425,21 @@
 
 			$params = new XMLElement('params');
 			foreach($this->_param as $key => $value) {
-				$param = new XMLElement(Lang::createHandle($key));
+				// To support multiple parameters using the 'datasource.field'
+				// we will pop off the field handle prior to sanitizing the
+				// key. This is because of a limitation where General::createHandle
+				// will strip '.' as it's technically punctuation.
+				if(strpos($key, '.') !== false) {
+					$parts = explode('.', $key);
+					$field_handle = '.' . array_pop($parts);
+					$key = implode('', $parts);
+				}
+				else {
+					$field_handle = '';
+				}
+
+				$key = Lang::createHandle($key) . $field_handle;
+				$param = new XMLElement($key);
 
 				// DS output params get flattened to a string, so get the original pre-flattened array
 				if (isset($this->_env['pool'][$key])) $value = $this->_env['pool'][$key];
@@ -445,7 +459,6 @@
 				}
 
 				$params->appendChild($param);
-
 			}
 			$xml->prependChild($params);
 
@@ -454,9 +467,9 @@
 			Symphony::Profiler()->sample('XML Generation', PROFILE_LAP);
 
 			$xsl = '<?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:import href="./workspace/pages/' . basename($page['filelocation']).'"/>
-</xsl:stylesheet>';
+			<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+				<xsl:import href="./workspace/pages/' . basename($page['filelocation']).'"/>
+			</xsl:stylesheet>';
 
 			$this->setXSL($xsl, false);
 			$this->setRuntimeParam($this->_param);
