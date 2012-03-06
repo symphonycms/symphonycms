@@ -98,7 +98,7 @@
 								$list->appendChild(
 									new XMLElement(
 										'li', 
-										'<code>&#160;&#160;&#160;&#160;line ' . $line . ':&#160;&#160;' . str_replace(' ', '&#160;', trim(htmlspecialchars(substr($parts[1], 0, $length))) . '<b>' . htmlspecialchars(substr($parts[1], $length, 1)) . '</b>' . htmlspecialchars(substr($parts[1], $length + 1))) . '</code>', 
+										'<code>&#160;&#160;&#160;&#160;' . str_replace(' ', '&#160;', trim(htmlspecialchars(substr($parts[1], 0, $length))) . '<b>' . htmlspecialchars(substr($parts[1], $length, 1)) . '</b>' . htmlspecialchars(substr($parts[1], $length + 1))) . '</code>', 
 										$class
 									)
 								);
