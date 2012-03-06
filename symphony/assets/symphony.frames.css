@@ -20,6 +20,7 @@
 	margin: -11px -11px 15px;
 	padding: 18px 11px;
 	border-radius: 4px 4px 0 0;
+	line-height: 1.5;
 }
 .frame h1 em {
 	color: rgba(255, 255, 255, 0.6);
