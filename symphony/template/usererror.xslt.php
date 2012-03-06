@@ -23,7 +23,7 @@
 	$ul = new XMLElement('ul');
 	$li = new XMLElement('li');
 	$li->appendChild(new XMLElement('h1', __('XSLT Processing Error')));
-	$li->appendChild(new XMLElement('p', __('This page could not be rendered due to the following XSLT processing errors.')));
+	$li->appendChild(new XMLElement('p', __('This page could not be rendered due to the following XSLT processing errors:')));
 	$ul->appendChild($li);
 
 	$errors_grouped = array();
@@ -42,6 +42,7 @@
 			$errors_grouped['utility'][$matches[1][0]][] = array('line'=>$matches[2][0], 'raw'=>$val);
 
 		else{
+			$val['parts'] = explode(' ', $val['message'], 3);
 			$errors_grouped['general'][] = $val;
 		}
 
@@ -57,8 +58,10 @@
 				$error = new XMLElement('li', '<header>' . __('General') . '<a class="button" href="?debug' . $query_string .'" title="' . __('Show debug view') . '">' . __('Debug') . '</a></header>');
 				$content = new XMLElement('div', null, array('class' => 'content'));
 				$list = new XMLElement('ul');
+				$file = null;
+				$line = null;
 
-				foreach($data as $index => $e){
+				foreach($data as $index => $e) {
 					
 					// Highlight error
 					$class = array();
@@ -66,43 +69,59 @@
 						$class = array('class' => 'error');
 					}
 	
+					// Don't show markers
 					if(strpos($e['message'], '^') === false) {
 						$parts = explode('(): ', $e['message']);
 
 						// Function
-						if(strpos($data[$index - 1]['message'], $parts[0]) === false) {
+						preg_match('/(.*)\:(\d+)\:/', $e['parts'][1], $current);
+						if($data[$index - 1]['parts'][0] != $e['parts'][0] || (strpos($data[$index - 1]['message'], '^') !== false && $data[$index - 2]['message'] != $data[$index + 1]['message'])) {
 							$list->appendChild(
 								new XMLElement(
 									'li', 
-									'<code><em>' . $parts[0] . '():</em></code>'
+									'<code><em>' . $e['parts'][0] . ' ' . $current[1] . '</em></code>'
 								)
 							);
+						}
+						
+						// Store current file and line
+						if(count($current) > 2) {
+							$file = $current[1];
+							$line = $current[2];
 						}
 						
 						// Error
 						if(!empty($class)) {
-							$position = explode('(): ', $data[$index + 1]['message']);
-							$length = max(0, strlen($position[1]) - 2);
-							$list->appendChild(
-								new XMLElement(
-									'li', 
-									'<code>&#160;&#160;&#160;&#160;' . str_replace(' ', '&#160;', htmlspecialchars(substr($parts[1], 0, $length)) . '<b>' . htmlspecialchars(substr($parts[1], $length, 1)) . '</b>' . htmlspecialchars(substr($parts[1], $length + 1))) . '</code>', 
-									$class
-								)
-							);
+							if(strpos($data[$index + 3]['message'], $parts[1]) === false) {
+								$position = explode('(): ', $data[$index + 1]['message']);
+								$length = max(0, strlen($position[1]) - 1);
+								$list->appendChild(
+									new XMLElement(
+										'li', 
+										'<code>&#160;&#160;&#160;&#160;line ' . $line . ':&#160;&#160;' . str_replace(' ', '&#160;', trim(htmlspecialchars(substr($parts[1], 0, $length))) . '<b>' . htmlspecialchars(substr($parts[1], $length, 1)) . '</b>' . htmlspecialchars(substr($parts[1], $length + 1))) . '</code>', 
+										$class
+									)
+								);
+								
+								// Show in debug
+								$filename = explode('/symphony-2/workspace/', $file);
+								$list->appendChild(
+									new XMLElement(
+										'li',
+										'<code>&#160;&#160;&#160;&#160;<a href="?debug=/workspace/' . $filename[1] . '#line-' . $line .'" title="' . __('Show debug view for %s', array($filename[1])) . '">' . __('Show line %d in debug view', array($line)) . '</a></code>'
+									)
+								);
+							}
 						}
 						
 						// Message
 						else {
-							foreach(explode(' : ', $parts[1]) as $message) {
-								$list->appendChild(
-									new XMLElement(
-										'li', 
-										'<code>&#160;&#160;&#160;&#160;' . str_replace(' ', '&#160;', $message) . '</code>', 
-										$class
-									)
-								);
-							}
+							$list->appendChild(
+								new XMLElement(
+									'li', 
+									'<code>&#160;&#160;&#160;&#160;' . (strpos($e['parts'][1], '/') !== 0 ? $e['parts'][1] . ' ' : '') . str_replace(' ', '&#160;', $e['parts'][2]) . '</code>'
+								)
+							);
 						}
 					}
 				}
@@ -126,7 +145,7 @@
 						$list->appendChild(
 							new XMLElement(
 								'li', 
-								'<code><em>' . $parts[0] . '</em></code>'
+								'<code><em>' . $parts[0] . '():</em></code>'
 							)
 						);
 						$list->appendChild(
@@ -163,7 +182,7 @@
 						$list->appendChild(
 							new XMLElement(
 								'li', 
-								'<code><em>' . $parts[0] . '</em></code>'
+								'<code><em>' . $parts[0] . '():</em></code>'
 							)
 						);
 						$list->appendChild(
@@ -200,7 +219,7 @@
 						$list->appendChild(
 							new XMLElement(
 								'li', 
-								'<code><em>' . $parts[0] . '</em></code>'
+								'<code><em>' . $parts[0] . '():</em></code>'
 							)
 						);
 						$list->appendChild(
