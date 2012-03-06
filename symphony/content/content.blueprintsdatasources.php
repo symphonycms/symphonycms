@@ -260,6 +260,8 @@
 
 				$ol = new XMLElement('ol');
 				$ol->setAttribute('class', 'filters-duplicator');
+				$ol->setAttribute('data-add', __('Add filter'));
+				$ol->setAttribute('data-remove', __('Remove filter'));
 
 				// Add system:id filter
 				if(isset($fields['filter'][$section_data['section']->get('id')]['id'])){
@@ -336,6 +338,8 @@
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
+			$ol->setAttribute('data-add', __('Add filter'));
+			$ol->setAttribute('data-remove', __('Remove filter'));
 
 			$this->__appendAuthorFilter($ol, __('ID'), 'id', $fields['filter']['author']['id'], (!isset($fields['filter']['author']['id'])));
 			$this->__appendAuthorFilter($ol, __('Username'), 'username', $fields['filter']['author']['username'], (!isset($fields['filter']['author']['username'])));
@@ -353,6 +357,8 @@
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
+			$ol->setAttribute('data-add', __('Add filter'));
+			$ol->setAttribute('data-remove', __('Remove filter'));
 
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tags');
@@ -731,6 +737,8 @@
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
+			$ol->setAttribute('data-add', __('Add filter'));
+			$ol->setAttribute('data-remove', __('Remove filter'));
 
 			if(is_array($fields['dynamic_xml']['namespace']) && !empty($fields['dynamic_xml']['namespace'])){
 				$ii = 0;
