@@ -8,29 +8,7 @@
 	<script type="text/javascript" src="{SYMPHONY_URL}/assets/jquery.js"></script>
 	<script type="text/javascript" src="{SYMPHONY_URL}/assets/symphony.js"></script>
 	<script type="text/javascript" src="{SYMPHONY_URL}/assets/symphony.collapsible.js"></script>
-	<script>
-	
-		jQuery(document).ready(function() {
-			
-			// Init Symphony
-			Symphony.init();
-			
-			// Init collapsibles
-			var collapsible = jQuery('.frame ul').symphonyCollapsible({
-				items: 'li',
-				handles: 'header',
-				content: '.content',
-				save_state: true,
-				storage: 'symphony.collapsible.error'
-			});
-			
-			// Hide backtrace and query log by default
-			if(!('symphony.collapsible.error.0.collapsed' in window.localStorage)) {
-				collapsible.trigger('collapse.collapsible', [0]);
-			};
-		});
-	
-	</script>
+	<script type="text/javascript" src="{SYMPHONY_URL}/assets/symphony.error.js"></script>
 </head>
 <body id="fatalerror">
 	<div class="frame">
