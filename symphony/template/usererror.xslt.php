@@ -115,7 +115,6 @@
 
 
 			case 'page':
-			case 'utility':
 				foreach($data as $filename => $errors){
 					$error = new XMLElement('li', '<header>' . $filename . '<a class="button" href="?debug=/workspace/pages/' .  $filename . $query_string .'" title="' . __('Show debug view') . '">' . __('Debug') . '</a></header>');
 					$content = new XMLElement('div', null, array('class' => 'content'));
