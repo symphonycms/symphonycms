@@ -329,7 +329,7 @@
 				'current-page-id' => $page['id'],
 				'current-path' => $current_path,
 				'parent-path' => '/' . $page['path'],
-				'current-query-string' => $querystring,
+				'current-query-string' => utf8_encode(urldecode($querystring)),
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
@@ -351,9 +351,9 @@
 
 					// If the key gets replaced out then it will break the XML so prevent
 					// the parameter being set.
-					if(empty($key)) continue;
+					if(!General::createHandle($key)) continue;
 
-					$this->_param['url-' . $key] = $val;
+					$this->_param['url-' . $key] = utf8_encode(urldecode($val));
 				}
 			}
 
