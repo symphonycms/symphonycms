@@ -208,6 +208,8 @@
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');
+			$ol->setAttribute('data-add', __('Add field'));
+			$ol->setAttribute('data-remove', __('Remove field'));
 
 			if(!$showEmptyTemplate){
 				foreach($fields as $position => $data){
@@ -422,6 +424,8 @@
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');
+			$ol->setAttribute('data-add', __('Add field'));
+			$ol->setAttribute('data-remove', __('Remove field'));
 
 			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $position => $field){
