@@ -82,8 +82,14 @@ span.frame {
 	display: block;
 	min-width: 500px;
 	max-width: 800px;
-	margin: 0 auto 100px;
+	margin: 0 auto;
 	overflow: visible;
+}
+#error .frame:after,
+#fatalerror .frame:after {
+	content: "";
+	display: block;
+	clear: both;
 }
 #error .frame {
 	border: 1px solid rgba(0, 0, 0, 0.2);
@@ -141,6 +147,9 @@ span.frame {
 #fatalerror .frame .content {
 	background: #fefefe;
 	padding-bottom: 0;
+}
+#fatalerror .frame .content:last-of-type ul {
+	border-radius: 0 0 4px 4px;
 }
 
 /*--------------------------------------------------------------------------
