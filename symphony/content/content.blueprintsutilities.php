@@ -28,28 +28,22 @@
 			$utilities = $utilities['filelist'];
 
 			$aTableHead = array(
-
 				array(__('Name'), 'col'),
 			);
 
 			$aTableBody = array();
 
 			if(!is_array($utilities) || empty($utilities)){
-
 				$aTableBody = array(
 					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
 				);
 			}
-
-			else{
-				
-				$bOdd = true;
-
+			else {
 				foreach($utilities as $u) {
 					$name = Widget::TableData(
 						Widget::Anchor(
 							$u,
-							URL . '/symphony/blueprints/utilities/edit/' . str_replace('.xsl', '', $u) . '/')
+							SYMPHONY_URL . '/blueprints/utilities/edit/' . str_replace('.xsl', '', $u) . '/')
 					);
 
 					$name->appendChild(Widget::Input('items[' . $u . ']', null, 'checkbox'));
@@ -59,17 +53,17 @@
 			}
 
 			$table = Widget::Table(
-				Widget::TableHead($aTableHead), 
-				NULL, 
+				Widget::TableHead($aTableHead),
+				NULL,
 				Widget::TableBody($aTableBody),
 				'selectable'
 			);
 
 			$this->Form->appendChild($table);
-			
+
 			$tableActions = new XMLElement('div');
 			$tableActions->setAttribute('class', 'actions');
-			
+
 			$options = array(
 				array(NULL, false, __('With Selected...')),
 				array('delete', false, __('Delete'), 'confirm'),
@@ -185,7 +179,7 @@
 				$p = new XMLElement('p', __('Utilities'));
 				$p->setAttribute('class', 'label');
 				$div->appendChild($p);
-				
+
 				$frame = new XMLElement('div', null, array('class' => 'frame'));
 
 				$ul = new XMLElement('ul');
