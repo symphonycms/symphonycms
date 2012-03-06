@@ -450,6 +450,7 @@ div.notifier nav:hover:before {
 	color: #bdc3c3;
 	text-decoration: none;
 	border-bottom: 1px solid #7c7c7c;
+	margin: 0 3px;
 }
 .notice a:hover {
 	color: #e4ece4;
@@ -515,7 +516,7 @@ div.notifier nav:hover:before {
 	text-decoration: none;
 }
 #header h1 a:hover, #session a:hover {
-	color: #fff;
+	color: rgba(255, 255, 255, 0.99);
 }
 #session {
 	margin: -30px 0 0;

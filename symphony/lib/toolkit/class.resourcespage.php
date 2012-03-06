@@ -176,7 +176,7 @@
 					$author = Widget::TableData($author);
 					$author->appendChild(Widget::Input('items[' . $r['handle'] . ']', null, 'checkbox'));
 
-					$aTableBody[] = Widget::TableRow(array($name, $section, $pagelinks, $releasedate, $author), null);
+					$aTableBody[] = Widget::TableRow(array($name, $section, $pagelinks, $releasedate, $author));
 				}
 			}
 

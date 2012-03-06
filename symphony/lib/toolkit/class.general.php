@@ -1305,7 +1305,7 @@
 		public static function hash($input, $algorithm='sha1'){
 			return call_user_func($algorithm, $input);
 		}
-		
+
 		/**
 		 * Helper to cut down on variables' type check.
 		 * Currently known types are the PHP defaults.
@@ -1343,26 +1343,24 @@
 		 * 	));
 		 */
 		public static function ensureType(array $params){
-			
 			foreach( $params as $name => $param ){
-				
 				if( isset($param['optional']) && ($param['optional'] === true) ){
 					if( is_null($param['var']) ) continue;
 					// if not null, check it's type
 				}
-				
+
 				// validate the validator
 				$validator = 'is_'.$param['type'];
-				
+
 				if( !function_exists($validator) ){
 					throw new InvalidArgumentException(__('Enforced type `%1$s` for argument `$%2$s` does not match any known variable types.', array($param['type'], $name)));
 				}
-				
+
 				// validate variable type
 				if( !call_user_func($validator, $param['var']) ){
 					throw new InvalidArgumentException(__('Argument `$%1$s` is not of type `%2$s`, given `%3$s`.', array($name, $param['type'], gettype($param['var']))));
 				}
-				
+
 			}
 		}
 	}
