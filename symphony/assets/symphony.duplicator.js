@@ -67,7 +67,7 @@
 				duplicator = object.parent('.frame'),
 				apply = $('<fieldset class="apply" />'),
 				selector = $('<select />'),
-				constructor = $('<button class="constructor">' + (object.attr('data-add') || Symphony.Language.get('Add item')) + '</button>');
+				constructor = $('<button type="button" class="constructor">' + (object.attr('data-add') || Symphony.Language.get('Add item')) + '</button>');
 
 			// Check duplicator frame
 			if(duplicator.length == 0) {
