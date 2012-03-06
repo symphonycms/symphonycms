@@ -10,7 +10,7 @@
 	$Page->Html->setAttribute('xml:lang', 'en');
 	$Page->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
 	$Page->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.basic.css', 'screen', 30);
-	$Page->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.frames.css', 'screen', 30);
+	$Page->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.frames.css', 'screen', 31);
 
 	$Page->addHeaderToPage('Status', '500 Internal Server Error', 500);
 	$Page->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');

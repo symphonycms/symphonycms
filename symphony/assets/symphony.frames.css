@@ -73,12 +73,17 @@ span.frame {
 	Error frames
 --------------------------------------------------------------------------*/
 
+#error,
+#fatalerror {
+	padding: 100px 50px;
+}
 #error .frame,
 #fatalerror .frame {
 	display: block;
 	min-width: 500px;
 	max-width: 800px;
-	margin: 100px auto;
+	margin: 0 auto 100px;
+	overflow: visible;
 }
 #error .frame {
 	border: 1px solid rgba(0, 0, 0, 0.2);
@@ -112,9 +117,20 @@ span.frame {
 #fatalerror .frame ul ul:first-child li:first-child {
 	border-top: none;
 }
-#fatalerror .frame ul ul li.error {
+#fatalerror .frame .error {
 	background-color: #fff9a2;
 	color: #bd7053;
+}
+#fatalerror .frame .error b {
+	background: rgba(167, 31, 45, 0.7);
+	color: #fff;
+	display: inline-block;
+	line-height: 1.8;
+	margin: -2px 0 -1px;
+	padding: 2px 0 1px;
+}
+#fatalerror .frame code a {
+	margin: 0;
 }
 #fatalerror .frame ul ul li strong,
 #fatalerror .frame ul ul li em {
@@ -404,20 +420,27 @@ span.frame {
 /* Destructor */
 
 .frame > ol > li header .destructor,
-.frame > ul > li header .destructor {
+.frame > ul > li header .destructor,
+.frame > ol > li header .button,
+.frame > ul > li header .button {
 	position: absolute;
 	top: 0.65em;
 	right: 10px;
 	color: rgba(0, 0, 0, 0.3);
 	text-decoration: none;
 	font-weight: normal;
+	margin: 0;
 }
 .frame > ol > li header .destructor:hover,
-.frame > ul > li header .destructor:hover {
+.frame > ul > li header .destructor:hover,
+.frame > ol > li header .button:hover,
+.frame > ul > li header .button:hover {
 	color: rgba(0, 0, 0, 0.7);
 }
 .frame > ol > li header .destructor.disabled,
-.frame > ul > li header .destructor.disabled {
+.frame > ul > li header .destructor.disabled,
+.frame > ol > li header .button.disabled,
+.frame > ul > li header .button.disabled {
 	color: rgba(0, 0, 0, 0.2);
 	cursor: default;
 	opacity: 0.4;
