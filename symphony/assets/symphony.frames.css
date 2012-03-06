@@ -48,7 +48,7 @@ span.frame {
 --------------------------------------------------------------------------*/
 
 #login .frame {
-	width: 300px;
+	width: 280px;
 	margin: 100px auto;
 	overflow: visible;
 	border: 1px solid rgba(0, 0, 0, 0.2);
@@ -61,7 +61,7 @@ span.frame {
 	box-sizing: border-box;
 }
 #login .frame fieldset {
-	padding: 15px 0 0;
+	padding: 0;
 }
 #login .frame legend {
 	display: none;
@@ -111,7 +111,7 @@ span.frame {
 #fatalerror .frame ul ul:first-child li:first-child {
 	border-top: none;
 }
-#fatalerror .frame ul ul li#error {
+#fatalerror .frame ul ul li.error {
 	background-color: #fff9a2;
 	color: #bd7053;
 }

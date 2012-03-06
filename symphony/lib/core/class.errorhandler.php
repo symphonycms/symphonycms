@@ -163,28 +163,17 @@
 		public static function render(Exception $e){
 
 			$lines = NULL;
-			$odd = true;
-
-			$markdown = "\t" . $e->getMessage() . "\n";
-			$markdown .= "\t" . $e->getFile() . " line " . $e->getLine() . "\n\n";
-			foreach(self::__nearByLines($e->getLine(), $e->getFile()) as $line => $string) {
-				$markdown .= "\t" . ($line+1) . $string;
-			}
 
 			foreach(self::__nearByLines($e->getLine(), $e->getFile()) as $line => $string){
 				$lines .= sprintf(
-					'<li%s%s><strong>%d</strong> <code>%s</code></li>',
-					($odd == true ? ' class="odd"' : NULL),
-					(($line+1) == $e->getLine() ? ' id="error"' : NULL),
+					'<li%s><strong>%d</strong> <code>%s</code></li>',
+					(($line+1) == $e->getLine() ? ' class="error"' : NULL),
 					++$line,
 					str_replace("\t", '&nbsp;&nbsp;&nbsp;&nbsp;', htmlspecialchars($string))
 				);
-
-				$odd = !$odd;
 			}
 
 			$trace = NULL;
-			$odd = true;
 
 			foreach($e->getTrace() as $t){
 				$trace .= sprintf(
@@ -195,11 +184,9 @@
 					(isset($t['type']) ? $t['type'] : NULL),
 					$t['function']
 				);
-				$odd = !$odd;
 			}
 
 			$queries = NULL;
-			$odd = true;
 			if(is_object(Symphony::Database())){
 				$debug = Symphony::Database()->debug();
 
@@ -209,7 +196,6 @@
 						(isset($query['execution_time']) ? $query['execution_time'] : NULL),
 						htmlspecialchars($query['query'])
 					);
-					$odd = !$odd;
 				}
 			}
 
@@ -219,7 +205,6 @@
 				$e->getFile(),
 				$e->getLine(),
 				$lines,
-				$markdown,
 				$trace,
 				$queries
 			);

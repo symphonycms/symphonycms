@@ -41,12 +41,6 @@
 				<ul>%s</ul>
 			</li>
 			<li>
-				<header>Markdown for copy/paste</header>
-				<div class="content">
-					<pre>%s</pre>
-				</div>
-			</li>
-			<li>
 				<header>Backtrace</header>
 				<div class="content">
 					<ul>%s</ul>
