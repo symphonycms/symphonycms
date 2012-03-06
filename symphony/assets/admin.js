@@ -177,8 +177,6 @@
 			// Set menu status
 			if(selection.length > 0) {
 				selection.on('select deselect check', 'tbody tr:has(input)', function(event) {
-					var select = applicable.find('select');
-
 					// Activate menu
 					if(selection.has('.selected').length > 0) {
 						applicable.removeClass('inactive');
@@ -195,8 +193,8 @@
 				selection.find('tbody tr:has(input):first').trigger('check');
 
 				// Respect menu state
-				applicable.find('button').on('click', function(event) {
-					if($(this).parent().is('.inactive')) {
+				button.on('click', function(event) {
+					if(applicable.is('.inactive')) {
 						return false;
 					}
 				});
