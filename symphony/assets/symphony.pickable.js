@@ -82,7 +82,7 @@
 		objects.each(function() {
 			var object = $(this),
 				choices = object.find('option'),
-				relation = object.attr('name') || object.attr('data-relation');
+				relation = object.attr('name') || object.attr('data-relation');
 
 			// Multiple items
 			if(choices.length > 1) {
