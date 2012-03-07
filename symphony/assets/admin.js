@@ -448,48 +448,6 @@
 			});
 		});
 
-		// Datasource collapsable links
-		$('#blueprints-datasources.index table tr, #blueprints-events.index table tr').each(function() {
-			var links = [];
-			$('td:eq(2) a', this).each(function(){
-				links.push($(this));
-			});
-
-			// If there is less than 3, show them all by default
-			if(links.length <= 3) return;
-
-			// Clear the field and append the links
-			$('td:eq(2)', this).html('');
-			for(var i=0, l=links.length; i<l; i++) {
-				$('td:eq(2)', this).append(links[i]).append('<span>, </span>');
-			}
-			$("td:eq(2) a:gt(2)", this).each(function(){
-				$(this).hide().next().hide();
-			});
-
-			$('td:eq(2)', this).append(
-				'<a href="#" class="expand">' +
-				' <span class="more">' + (links.length - 3) + ' more</span>' +
-				' <span class="less">less</span>&hellip;</a>'
-			);
-
-			// Listen for click on the 'expand' links, to hide/show
-			$(this).on('click', '.expand', function() {
-				var $parent = $(this).parent();
-
-				if($(this).hasClass('expanded')) {
-					$(">a:gt(2), >span:gt(2)", $parent).not('.expand').hide();
-					$(this).removeClass('expanded');
-				}
-				else {
-					$(">a, >span", $parent).show();
-					$(this).addClass('expanded');
-				}
-
-				return false;
-			});
-		});
-
 		// Data source manager options
 		$('select.filtered > optgroup').each(function() {
 			var optgroup = $(this),
