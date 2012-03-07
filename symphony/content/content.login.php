@@ -21,10 +21,13 @@
 			$this->Html->setDTD('<!DOCTYPE html>'); //PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"
 			$this->Html->setAttribute('lang', Lang::get());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 40);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/login.css', 'screen', 40);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.basic.css', 'screen', 40);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.frames.css', 'screen', 41);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.buttons.css', 'screen', 42);
 
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Login'), __('Symphony'))));
+			
+			$this->Body->setAttribute('id', 'login');
 
 			Symphony::Profiler()->sample('Page template created', PROFILE_LAP);
 		}
@@ -44,6 +47,7 @@
 			if(!$emergency && Administration::instance()->isLoggedIn()) redirect(SYMPHONY_URL);
 
 			$this->Form = Widget::Form('', 'post');
+			$this->Form->setAttribute('class', 'frame');
 
 			$this->Form->appendChild(new XMLElement('h1', __('Symphony')));
 
@@ -61,9 +65,7 @@
 					$fieldset->appendChild(new XMLElement('p', __('Enter your email address to be sent a remote login link with further instructions for logging in.')));
 
 					$label = Widget::Label(__('Email Address'));
-					$label->appendChild(Widget::Input('email', $_POST['email']));
-
-					$this->Body->setAttribute('onload', 'document.forms[0].elements.email.focus()');
+					$label->appendChild(Widget::Input('email', $_POST['email'], 'text', array('autofocus' => 'autofocus')));
 
 					if(isset($this->_email_sent) && !$this->_email_sent){
 						$div = new XMLElement('div', NULL, array('class' => 'invalid'));
@@ -114,10 +116,8 @@
 				$fieldset->appendChild(new XMLElement('legend', __('Login')));
 
 				$label = Widget::Label(__('Username'));
-				$label->appendChild(Widget::Input('username'));
+				$label->appendChild(Widget::Input('username', null, 'text', array('autofocus' => 'autofocus')));
 				$fieldset->appendChild($label);
-
-				$this->Body->setAttribute('onload', 'document.forms[0].elements.username.focus()');
 
 				$label = Widget::Label(__('Password'));
 				$label->appendChild(Widget::Input('password', NULL, 'password'));
@@ -125,7 +125,7 @@
 				if($this->_invalidPassword){
 					$div = new XMLElement('div', NULL, array('class' => 'invalid'));
 					$div->appendChild($label);
-					$div->appendChild(new XMLElement('p', __('The supplied password was rejected.') . ' <a href="' . SYMPHONY_URL.'/login/retrieve-password/">' . __('Retrieve password?') . '</a>'));
+					$div->appendChild(new XMLElement('p', __('The supplied password was rejected.') . ' <br /><a href="' . SYMPHONY_URL.'/login/retrieve-password/">' . __('Retrieve password?') . '</a>'));
 					$fieldset->appendChild($div);
 				}
 

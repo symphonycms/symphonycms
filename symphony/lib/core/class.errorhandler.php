@@ -163,68 +163,54 @@
 		public static function render(Exception $e){
 
 			$lines = NULL;
-			$odd = true;
-
-			$markdown = "\t" . $e->getMessage() . "\n";
-			$markdown .= "\t" . $e->getFile() . " line " . $e->getLine() . "\n\n";
-			foreach(self::__nearByLines($e->getLine(), $e->getFile()) as $line => $string) {
-				$markdown .= "\t" . ($line+1) . $string;
-			}
 
 			foreach(self::__nearByLines($e->getLine(), $e->getFile()) as $line => $string){
 				$lines .= sprintf(
-					'<li%s%s><strong>%d:</strong> <code>%s</code></li>',
-					($odd == true ? ' class="odd"' : NULL),
-					(($line+1) == $e->getLine() ? ' id="error"' : NULL),
+					'<li%s><strong>%d</strong> <code>%s</code></li>',
+					(($line+1) == $e->getLine() ? ' class="error"' : NULL),
 					++$line,
 					str_replace("\t", '&nbsp;&nbsp;&nbsp;&nbsp;', htmlspecialchars($string))
 				);
-
-				$odd = !$odd;
 			}
 
 			$trace = NULL;
-			$odd = true;
 
 			foreach($e->getTrace() as $t){
 				$trace .= sprintf(
-					'<li%s><code>[%s:%d] <strong>%s%s%s();</strong></code></li>',
-					($odd == true ? ' class="odd"' : NULL),
+					'<li><code><em>[%s:%d]</em></code></li><li><code>&#160;&#160;&#160;&#160;%s%s%s();</code></li>',
 					(isset($t['file']) ? $t['file'] : NULL),
 					(isset($t['line']) ? $t['line'] : NULL),
 					(isset($t['class']) ? $t['class'] : NULL),
 					(isset($t['type']) ? $t['type'] : NULL),
 					$t['function']
 				);
-				$odd = !$odd;
 			}
 
 			$queries = NULL;
-			$odd = true;
 			if(is_object(Symphony::Database())){
 				$debug = Symphony::Database()->debug();
 
 				if(!empty($debug)) foreach($debug as $query){
 					$queries .= sprintf(
-						'<li%s><code>%s;</code> <small>[%01.4f]</small></li>',
-						($odd == true ? ' class="odd"' : NULL),
-						htmlspecialchars($query['query']),
-						(isset($query['execution_time']) ? $query['execution_time'] : NULL)
+						'<li><em>[%01.4f]</em><code> %s;</code> </li>',
+						(isset($query['execution_time']) ? $query['execution_time'] : NULL),
+						htmlspecialchars($query['query'])
 					);
-					$odd = !$odd;
 				}
 			}
 
-			return sprintf(file_get_contents(self::getTemplate('fatalerror.generic')),
+			$html = sprintf(file_get_contents(self::getTemplate('fatalerror.generic')),
 				($e instanceof ErrorException ? GenericErrorHandler::$errorTypeStrings[$e->getSeverity()] : 'Fatal Error'),
 				$e->getMessage(),
 				$e->getFile(),
 				$e->getLine(),
-				$markdown,
 				$lines,
 				$trace,
 				$queries
 			);
+			$html = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $html);
+			
+			return $html;
 		}
 	}
 

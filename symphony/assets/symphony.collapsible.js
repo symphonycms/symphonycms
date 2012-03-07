@@ -32,7 +32,7 @@
 				handles:			'.header:first',
 				content:			'.content',
 				save_state:			true,
-				storage: 			'symphony.collapsible.' + $('body').attr('id') + (Symphony.Context.get('env')[1] ? '.' + Symphony.Context.get('env')[1] : '')
+				storage: 			'symphony.collapsible.' + $('body').attr('id') + (Symphony.Context.get('env') ? '.' + Symphony.Context.get('env')[1] : '')
 			};
 		
 		$.extend(settings, options);

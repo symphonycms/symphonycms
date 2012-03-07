@@ -766,44 +766,39 @@
 		public static function render(Exception $e){
 
 			$trace = NULL;
-			$odd = true;
 
 			foreach($e->getTrace() as $t){
 				$trace .= sprintf(
-					'<li%s><code>[%s:%d] <strong>%s%s%s();</strong></code></li>',
-					($odd == true ? ' class="odd"' : NULL),
+					'<li><code><em>[%s:%d]</em></code></li><li><code>&#160;&#160;&#160;&#160;%s%s%s();</code></li>',
 					$t['file'],
 					$t['line'],
 					(isset($t['class']) ? $t['class'] : NULL),
 					(isset($t['type']) ? $t['type'] : NULL),
 					$t['function']
 				);
-				$odd = !$odd;
 			}
 
 			$queries = NULL;
-			$odd = true;
 
 			if(is_object(Symphony::Database())){
 				$debug = Symphony::Database()->debug();
 
 				if(!empty($debug)) foreach($debug as $query){
 					$queries .= sprintf(
-						'<li%s><code>%s;</code> <small>[%01.4f]</small></li>',
-						($odd == true ? ' class="odd"' : NULL),
-						htmlspecialchars($query['query']),
-						(isset($query['execution_time']) ? $query['execution_time'] : NULL)
+						'<li><em>[%01.4f]</em><code> %s;</code> </li>',
+						(isset($query['execution_time']) ? $query['execution_time'] : NULL),
+						htmlspecialchars($query['query'])
 					);
-					$odd = !$odd;
 				}
 			}
 
-			return sprintf(file_get_contents(self::getTemplate('fatalerror.database')),
+			$html = sprintf(file_get_contents(self::getTemplate('fatalerror.database')),
 				$e->getDatabaseErrorMessage(),
 				$e->getQuery(),
 				$trace,
 				$queries
 			);
 
+			return str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $html);
 		}
 	}

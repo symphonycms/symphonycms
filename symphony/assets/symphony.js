@@ -169,7 +169,7 @@ var Symphony = {};
 			 */
 			this.add = function(strings) {
 				var temp = {},
-					namespace = Symphony.Context.get('env')['page-namespace'];
+					namespace = (Symphony.Context.get('env') ? Symphony.Context.get('env')['page-namespace'] : '');
 
 				// Don't process empty strings
 				if($.isEmptyObject(strings)) {

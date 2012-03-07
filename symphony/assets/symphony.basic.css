@@ -75,8 +75,7 @@ ul, ol {
 }
 code,
 .code {
-	font: 110%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
-	font-size-adjust: 0.5;
+	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
 	-webkit-tab-size: 4;
 	-moz-tab-size: 4;
 	-ms-tab-size: 4;
@@ -163,7 +162,6 @@ input[type=submit] {
 .invalid {
 	color: #fff;
 	margin-bottom: 1.5em;
-	text-shadow: 1px 1px rgba(0, 0, 0, 0.25);
 }
 body .invalid label {
 	margin-bottom: 0;
@@ -218,5 +216,5 @@ body .invalid label > i:hover {
 	text-decoration: underline;
 }
 .invalid a:hover {
-	color: #721;
+	color: #ffddcc;
 }
