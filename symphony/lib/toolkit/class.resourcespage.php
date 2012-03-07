@@ -154,7 +154,7 @@
 						$pagelinks = Widget::TableData(__('None'), 'inactive');
 					}
 					else {
-						$pagelinks = Widget::TableData($pages);
+						$pagelinks = Widget::TableData($pages, 'pages');
 					}
 
 					// Release date
