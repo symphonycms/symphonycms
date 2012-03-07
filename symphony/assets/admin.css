@@ -912,57 +912,6 @@ div.field-checkbox + div.field-checkbox {
 	Specific pages
 --------------------------------------------------------------------------*/
 
-#blueprints-components form {
-	margin: 0;
-}
-#blueprints-components .triple {
-	padding-top: 5px;
-}
-#blueprints-datasources a.expand, #blueprints-events a.expand {
-	text-decoration: none;
-}
-#blueprints-datasources a.expand span.less, #blueprints-events a.expand span.less {
-	display: none;
-}
-#blueprints-datasources a.expand span.more, #blueprints-events a.expand span.more {
-	display: inline;
-}
-#blueprints-datasources a.expanded span.less, #blueprints-events a.expanded span.less {
-	display: inline;
-}
-#blueprints-datasources a.expanded span.more, #blueprints-events a.expanded span.more {
-	display: none;
-}
-#components {
-	padding-bottom: 5px;
-	background-color: #fff;
-}
-#components h3 {
-	margin-top: 0.5em;
-	margin-bottom: 0.75em;
-}
-#components h3:after {
-	content: "";
-	display: block;
-	clear: left;
-	height: 0;
-}
-#components h3 span {
-	float: left;
-}
-#components h3 .button {
-	float: right;
-}
-#components ul {
-	margin: 0;
-	border-top: 1px solid #ddc;
-	padding-top: 0.75em;
-	list-style: none;
-}
-#components li {
-	margin-bottom: 0.75em;
-}
-#components .button {
-	margin-top: -0.25em;
-	font-weight: normal;
+#blueprints-datasources table td.pages {
+	width: 30%;
 }
