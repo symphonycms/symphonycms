@@ -67,7 +67,7 @@
 				duplicator = object.parent('.frame'),
 				apply = $('<fieldset class="apply" />'),
 				selector = $('<select />'),
-				constructor = $('<button type="button" class="constructor">' + Symphony.Language.get('Add item') + '</button>');
+				constructor = $('<button type="button" class="constructor">' + (object.attr('data-add') || Symphony.Language.get('Add item')) + '</button>');
 
 			// Check duplicator frame
 			if(duplicator.length == 0) {
@@ -265,7 +265,7 @@
 			// Destructable interface
 			if(settings.destructable === true) {
 				duplicator.addClass('destructable');
-				headers.append('<a class="destructor">' + Symphony.Language.get('Remove item') + '</a>');
+				headers.append('<a class="destructor">' + (object.attr('data-remove') || Symphony.Language.get('Remove item')) + '</a>');
 			}
 
 			// Collapsible interface
