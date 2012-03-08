@@ -67,10 +67,12 @@ form.columns .column.primary {
 	.two.columns .column.secondary {
 		width: 100%;
 	}
-	
 	.two.columns .column.secondary {
 		padding: 0;
 		border-top: 1px solid rgba(0, 0, 0, 0.1);
+	}
+	.two.columns .column.secondary p.label {
+		margin-top: 10px;
 	}
 
 }
