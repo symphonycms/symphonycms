@@ -569,10 +569,10 @@
 						`tbl_pages_types` AS pt
 					WHERE
 						%s
-					ORDER BY
-						pt.type ASC
 					GROUP BY
 						pt.type
+					ORDER BY
+						pt.type ASC
 				",
 				is_null($page_id)
 					? '1'

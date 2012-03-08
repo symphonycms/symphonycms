@@ -19,7 +19,7 @@
 	}
 
 	if (PHP_VERSION_ID >= 50300){
-		error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+		error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 	}
 	else{
 		error_reporting(E_ALL & ~E_NOTICE);

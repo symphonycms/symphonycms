@@ -244,6 +244,9 @@
 					// Check uniqueness
 					template.trigger('constructstop.duplicator');
 				}).removeClass('template').addClass('instance').remove();
+				
+				// Set width
+				apply.width(selector.outerWidth() + constructor.outerWidth() + 10);
 			}
 
 			// Select default

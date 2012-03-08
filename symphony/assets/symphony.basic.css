@@ -51,7 +51,7 @@ header, nav, section, aside, footer {
 -----------------------------------------------------------------------------*/
 
 body {
-	font: 68.75%/1.5 Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
+	font: 68.75%/1.5 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 }
 a {
 	color: #3f69a5;
@@ -65,7 +65,7 @@ a:active, a:focus {
 	color: #d42;
 }
 h1, h2 {
-	font: 127.28% Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
+	font: 127.28% 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 }
 p {
 	margin-bottom: 15px;
@@ -143,5 +143,5 @@ input[type=checkbox] {
 }
 button,
 input[type=submit] {
-	font-family: Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
+	font-family: 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 }
