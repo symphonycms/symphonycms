@@ -194,3 +194,11 @@ fieldset.apply.single button {
 fieldset.apply.single button:before {
 	display: none;
 }
+
+/* Inline buttons, aligned left */
+fieldset input[type=submit],
+fieldset button,
+fieldset .button {
+	margin-left: 0;
+	margin-right: 10px;
+}
