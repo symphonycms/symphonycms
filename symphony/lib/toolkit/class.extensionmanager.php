@@ -739,9 +739,18 @@
 					'name' => $xpath->evaluate('string(ext:name)', $extension),
 					'status' => array()
 				);
-
+				
+				// find the latest <release> (largest version number)
+				$latest_release_version = '0.0.0';
+				foreach($xpath->query('//ext:release', $extension) as $release) {
+					$version = $xpath->evaluate('string(@version)', $release);
+					if(version_compare($version, $latest_release_version, '>')) {
+						$latest_release_version = $version;
+					}
+				}
+				
 				// Load the latest <release> information
-				if($release = $xpath->query('//ext:release[1]', $extension)->item(0)) {
+				if($release = $xpath->query("//ext:release[@version='$latest_release_version']", $extension)->item(0)) {
 					$about += array(
 						'version' => $xpath->evaluate('string(@version)', $release),
 						'release-date' => $xpath->evaluate('string(@date)', $release)
