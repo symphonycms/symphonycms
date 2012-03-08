@@ -297,6 +297,28 @@ fieldset.settings fieldset legend {
 	color: #665;
 }
 
+@media screen and (max-width: 700px) {
+
+	fieldset.settings {
+		padding-left: 0;
+	}
+	fieldset.settings:first-of-type {
+		margin: 15px 18px 10px;
+		border-top: 1px solid rgba(0, 0, 0, 0.1);
+	}
+	fieldset.settings > legend {
+		position: relative;
+		text-indent: 0;
+		padding: 0 10px 0 0;
+	}
+	fieldset.settings > legend + .help {
+		position: relative;
+		margin: 0 0 15px;
+		width: auto;
+	}
+
+}
+
 /* Password */
 
 #password {
