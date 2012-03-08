@@ -319,16 +319,63 @@
 		}
 
 		/**
-		 * Loads in an array of all available Timezones from the `TEMPLATES`
-		 * directory and returns it. Timezones are in $zone/region format,
-		 * just as PHP expects them. ie. Australia/Brisbane.
+		 * This functions acts as a standard way to get the zones
+		 * available on the system. For PHP5.2, these constants are
+		 * just copied from PHP5.3
 		 *
 		 * @since Symphony 2.3
+		 * @link http://au2.php.net/manual/en/class.datetimezone.php
 		 * @return array
 		 */
-		public static function getTimezones(){
-			include_once(TEMPLATE . '/date.timezones.php'); // $timezones
-			return $timezones;
+		public static function getZones() {
+			if(PHP_VERSION_ID >= 50300) {
+				$ref = new ReflectionClass('DateTimeZone');
+				return $ref->getConstants();
+			}
+			else {
+				return array(
+					'AFRICA' => 1,
+					'AMERICA' => 2,
+					'ANTARCTICA' => 4,
+					'ARCTIC' => 8,
+					'ASIA' => 16,
+					'ATLANTIC' => 32,
+					'AUSTRALIA' => 64,
+					'EUROPE' => 128,
+					'INDIAN' => 256,
+					'PACIFIC' => 512,
+					'UTC' => 1024
+				);
+			}
+		}
+
+		/**
+		 * This functions acts as a standard way to get the timezones
+		 * regardless of PHP version. It accepts a single parameter,
+		 * zone, which returns the timezones associated with that 'zone'
+		 *
+		 * @since Symphony 2.3
+		 * @link http://au2.php.net/manual/en/class.datetimezone.php
+		 * @link http://au2.php.net/manual/en/datetimezone.listidentifiers.php
+		 * @param string $zone
+		 *  The zone for the timezones the field wants. This maps to the
+		 *  DateTimeZone constants
+		 * @return array
+		 */
+		public static function getTimezones($zone = null) {
+			// PHP5.3 supports the `$what` parameter of the listIdentifiers function
+			if(PHP_VERSION_ID >= 50300) {
+				return DateTimeZone::listIdentifiers(constant('DateTimeZone::' . $zone));
+			}
+			else {
+				$timezones = DateTimeZone::listIdentifiers();
+
+				foreach($timezones as $index => $timezone) {
+					if(stripos($timezone, $zone) === false) unset($timezones[$index]);
+				}
+
+				return $timezones;
+			}
 		}
 
 		/**
@@ -346,30 +393,28 @@
 		 *  An associative array, for use with `Widget::Select`
 		 */
 		public static function getTimezonesSelectOptions($selected = null){
-			$timezones = self::getTimezones();
-			$options = array();
+			$zones = self::getZones();
 			$groups = array();
 
-			foreach($timezones as $tz){
-				if(preg_match('/\//', $tz)){
-					$parts = preg_split('/\//', $tz, 2, PREG_SPLIT_NO_EMPTY);
-					$groups[$parts[0]][] = $parts[1];
+			foreach($zones as $zone => $value) {
+				if($value >= 1024) break;
+
+				$timezones = self::getTimezones($zone);
+				$options = array();
+
+				foreach($timezones as $timezone) {
+					$tz = new DateTime('now', new DateTimeZone($timezone));
+
+					$options[] = array($timezone, ($timezone == $selected), sprintf("%s %s",
+						str_replace('_', ' ', substr(strrchr($timezone, '/'),1)),
+						$tz->format('P')
+					));
 				}
-				else $groups[$tz] = $tz;
+
+				$groups[] = array('label' => ucwords(strtolower($zone)), 'options' => $options);
 			}
 
-			foreach($groups as $key => $val){
-				if(is_array($val)){
-					$tmp = array('label' => $key, 'options' => array());
-					foreach($val as $zone){
-						$tmp['options'][] = array("$key/$zone", "$key/$zone" == $selected, str_replace('_', ' ', $zone));
-					}
-					$options[] = $tmp;
-				}
-				else $options[] = array($key, $key == $selected, str_replace('_', ' ', $key));
-			}
-
-			return $options;
+			return $groups;
 		}
 
 		/**
