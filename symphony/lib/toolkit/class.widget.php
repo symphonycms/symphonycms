@@ -634,7 +634,7 @@
 			));
 
 			$div = new XMLElement('div');
-			$div->setAttributeArray(array('id' => 'error', 'class' => 'invalid'));
+			$div->setAttributeArray(array('class' => 'invalid'));
 
 			$div->appendChild($element);
 			$div->appendChild(new XMLElement('p', $message));
