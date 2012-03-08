@@ -297,6 +297,28 @@ fieldset.settings fieldset legend {
 	color: #665;
 }
 
+@media screen and (max-width: 700px) {
+
+	fieldset.settings {
+		padding-left: 0;
+	}
+	fieldset.settings:first-of-type {
+		margin: 15px 18px 10px;
+		border-top: 1px solid rgba(0, 0, 0, 0.1);
+	}
+	fieldset.settings > legend {
+		position: relative;
+		text-indent: 0;
+		padding: 0 10px 0 0;
+	}
+	fieldset.settings > legend + .help {
+		position: relative;
+		margin: 0 0 15px;
+		width: auto;
+	}
+
+}
+
 /* Password */
 
 #password {
@@ -854,17 +876,20 @@ ul.page form span {
 --------------------------------------------------------------------------*/
 
 .field {
-	min-height: 45px;
+	min-height: 47px;
 	margin-bottom: 15px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	box-sizing: border-box;
 }
 div.field-checkbox {
-	min-height: 14px;
+	min-height: 16px;
 }
 div.field-checkbox:first-child {
-	padding: 20px 0 10px;
-}
-div.field-checkbox + div.field-checkbox {
-	margin-top: -26px;
+	margin-top: 20px;
+	margin-bottom: 26px;
 }
 .file input {
 	margin: -3px 0;
