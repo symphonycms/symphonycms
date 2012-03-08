@@ -15,7 +15,7 @@
 
 		public $_errors = array();
 
-		public function __viewIndex(){
+		public function __viewIndex($resource_type){
 			parent::__viewIndex(RESOURCE_TYPE_DS);
 
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Data Sources'), __('Symphony'))));
@@ -648,7 +648,7 @@
 						array(
 							'system:pagination',
 							($fields['source'] == $section_data['section']->get('id') && in_array('system:pagination', $fields['xml_elements'])),
-							'pagination'
+							'system: pagination'
 						)
 					)
 				);
@@ -919,7 +919,7 @@
 
 		}
 
-		public function __actionIndex(){
+		public function __actionIndex($resource_type){
 			return parent::__actionIndex(RESOURCE_TYPE_DS);
 		}
 

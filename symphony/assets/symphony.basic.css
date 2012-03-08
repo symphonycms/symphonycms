@@ -51,7 +51,7 @@ header, nav, section, aside, footer {
 -----------------------------------------------------------------------------*/
 
 body {
-	font: 68.75%/1.5 Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
+	font: 68.75%/1.5 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 }
 a {
 	color: #3f69a5;
@@ -65,13 +65,13 @@ a:active, a:focus {
 	color: #d42;
 }
 h1, h2 {
-	font: 127.28% Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
+	font: 127.28% 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 }
 p {
-	margin-bottom: 1.5em;
+	margin-bottom: 15px;
 }
 ul, ol {
-	margin: 0 0 1.5em 2.25em;
+	margin: 0 0 15px 25px;
 }
 code,
 .code {
@@ -83,7 +83,7 @@ code,
 	tab-size: 4;
 }
 pre {
-	margin-bottom: 1.75em;
+	margin-bottom: 15px;
 }
 pre code {
 	display: block;
@@ -96,7 +96,7 @@ i code {
 
 fieldset {
 	position: relative;
-	padding: 1em 0;
+	padding: 10pxm 0;
 }
 legend {
 	line-height: 1;
@@ -114,107 +114,34 @@ label input {
 	width: 100%;
 	font-size: 109.09%;
 	font-family: inherit;
+	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	-ms-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
+	-o-box-sizing: border-box;
 	box-sizing: border-box;
-}
-label input[type=checkbox] {
-	position: relative;
-	top: 2px;
-}
-input[size],
-input[type=radio],
-input[type=checkbox] {
-	display: inline;
-	margin: 0 0.25em 0 0;
-	width: auto;
-}
-input[size],
-label + select {
-	margin-left: 0.25em;
 }
 select {
 	width: 100%;
 	display: block;
 	margin-top: 2px;
+	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	-ms-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
+	-o-box-sizing: border-box;
 	box-sizing: border-box;
 }
 select[multiple] {
 	width: 100%;
 	height: 10em;
 }
-button {
-	padding: 3.5px 6px 4px;
+input[size],
+input[type=radio],
+input[type=checkbox] {
+	display: inline;
+	width: auto;
+	margin-right: 5px;
 }
 button,
 input[type=submit] {
-	font-family: Lucida Grande, Leelawadee, Tahoma, Verdana, sans-serif;
-}
-
-/*-----------------------------------------------------------------------------
-	Globals - Errors
------------------------------------------------------------------------------*/
-
-.invalid {
-	color: #fff;
-	margin-bottom: 1.5em;
-}
-body .invalid label {
-	margin-bottom: 0;
-	padding: 0.75em 1em 0.75em 0.75em;
-	background-color: #EB6347;
-	border: 1px solid #c31;
-	border-bottom-width: 0;
-}
-body .invalid label > i {
-	top: 0.75em; right: 1em;
-	background-color: #d42;
-	color: #EAC9C2;
-}
-body .invalid label > i:hover {
-	background-color: rgba(221, 68, 34, 0.8) !important;
-}
-.invalid > .group > label {
-	float: right;
-	margin-left: -0.1em;
-	padding: 0.75em 1.1em 0.75em 0.75em;
-	border-left-width: 0;
-}
-.invalid > .group > label:first-child {
-	float: left;
-	margin-left: -2.94em;
-	margin-right: 0;
-	padding: 0.75em 0 0.75em 1em;
-	border-left-width: 1px;
-	border-right-width: 0;
-	border-left-color: #c31;
-}
-.invalid > label {
-	padding: 0.75em 1em 0.75em;
-	background-color: #EB6347;
-	border: 1px solid #c31;
-	border-bottom-width: 0;
-}
-.invalid > p {
-	clear: left;
-	margin: 0;
-	padding: 0 1em 0.75em;
-	background-color: #EB6347;
-	border: 1px solid #c31;
-	border-top-width: 0;
-	border-bottom-color: #b21;
-}
-.invalid p.help {
-	color: #FFF;
-}
-.invalid a {
-	color: #fb9;
-	text-decoration: underline;
-}
-.invalid a:hover {
-	color: #ffddcc;
+	font-family: 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 }

@@ -569,6 +569,8 @@
 						`tbl_pages_types` AS pt
 					WHERE
 						%s
+					GROUP BY
+						pt.type
 					ORDER BY
 						pt.type ASC
 				",
