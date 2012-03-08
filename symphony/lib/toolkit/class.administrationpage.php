@@ -503,7 +503,7 @@
 				Administration::instance()->errorPageNotFound();
 			}
 
-			$this->$function();
+			$this->$function(null);
 		}
 
 		/**
