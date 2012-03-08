@@ -32,7 +32,7 @@
 
 		/**
 		 * The URL of the current page that is being Rendered as returned
-		 * by getCurrentPage
+		 * by `getCurrentPage`
 		 *
 		 * @var string
 		 * @see boot#getCurrentPage()
@@ -55,7 +55,7 @@
 		 * @since Symphony 2.2.1
 		 * @var boolean
 		 */
-		 private $is_logged_in = false;
+		private $is_logged_in = false;
 
 		/**
 		 * When events are processed, the results of them often can't be reproduced
@@ -124,6 +124,16 @@
 		 */
 		public function Page(){
 			return $this->_page;
+		}
+
+		/**
+		 * Accessor function for the current page params, `$this->_param`
+		 *
+		 * @since Symphony 2.3
+		 * @return array
+		 */
+		public function Params(){
+			return $this->_param;
 		}
 
 		/**
