@@ -55,7 +55,6 @@
 .secondary label > i:hover {
 	white-space:normal;
 	height:auto;
-	background: rgba(255, 255, 255, 0.8);
 }
 
 /* Triple: Please use the use .columns rules */
@@ -88,7 +87,6 @@ div.compact label i {
 	overflow: none;
 	text-overflow: auto;
 	float: none;
-	color: #887;
 	display: block;
 	position: static;
 	padding-left: 1.75em;
