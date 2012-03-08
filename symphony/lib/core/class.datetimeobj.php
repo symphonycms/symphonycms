@@ -318,12 +318,34 @@
 			return $time->generate();
 		}
 
+		/**
+		 * Loads in an array of all available Timezones from the `TEMPLATES`
+		 * directory and returns it. Timezones are in $zone/region format,
+		 * just as PHP expects them. ie. Australia/Brisbane.
+		 *
+		 * @since Symphony 2.3
+		 * @return array
+		 */
 		public static function getTimezones(){
 			include_once(TEMPLATE . '/date.timezones.php'); // $timezones
 			return $timezones;
 		}
 
-		public static function getTimezonesSelectOptions($selected){
+		/**
+		 * Loads all available timezones using `getTimezones()` and builds an
+		 * array where timezones are grouped by their region (Europe/America etc.)
+		 * The options array that is returned is designed to be used with
+		 * `Widget::Select`
+		 *
+		 * @since Symphony 2.3
+		 * @see core.DateTimeObj#getTimezones()
+		 * @see core.Widget#Select()
+		 * @param string $selected
+		 *  A preselected timezone, defaults to null
+		 * @return array
+		 *  An associative array, for use with `Widget::Select`
+		 */
+		public static function getTimezonesSelectOptions($selected = null){
 			$timezones = self::getTimezones();
 			$options = array();
 			$groups = array();
@@ -350,6 +372,14 @@
 			return $options;
 		}
 
+		/**
+		 * Returns an array of the date formats Symphony supports. These
+		 * formats are a combination of valid PHP format tokens.
+		 *
+		 * @link http://au2.php.net/manual/en/function.date.php
+		 * @since Symphony 2.3
+		 * @return array
+		 */
 		public static function getDateFormats(){
 			return array(
 				'Y/m/d',	// e. g. 2011/01/20
@@ -369,7 +399,19 @@
 			);
 		}
 
-		public static function getDateFormatsSelectOptions($selected){
+		/**
+		 * Returns an array of the date formats Symphony supports by applying
+		 * the format to the current datetime. The array returned is for use with
+		 * `Widget::Select()`
+		 *
+		 * @since Symphony 2.3
+		 * @see core.Widget#Select()
+		 * @param string $selected
+		 *  A preselected date format, defaults to null
+		 * @return array
+		 *  An associative array, for use with `Widget::Select`
+		 */
+		public static function getDateFormatsSelectOptions($selected = null){
 			$formats = self::getDateFormats();
 			$options = array();
 
@@ -384,6 +426,14 @@
 			return $options;
 		}
 
+		/**
+		 * Returns an array of the time formats Symphony supports. These
+		 * formats are a combination of valid PHP format tokens.
+		 *
+		 * @link http://au2.php.net/manual/en/function.date.php
+		 * @since Symphony 2.3
+		 * @return array
+		 */
 		public static function getTimeFormats(){
 			return array(
 				'H:i:s',	// e. g. 20:45:32
@@ -393,7 +443,19 @@
 			);
 		}
 
-		public static function getTimeFormatsSelectOptions($selected){
+		/**
+		 * Returns an array of the time formats Symphony supports by applying
+		 * the format to the current datetime. The array returned is for use with
+		 * `Widget::Select()`
+		 *
+		 * @since Symphony 2.3
+		 * @see core.Widget#Select()
+		 * @param string $selected
+		 *  A preselected time format, defaults to null
+		 * @return array
+		 *  An associative array, for use with `Widget::Select`
+		 */
+		public static function getTimeFormatsSelectOptions($selected = null){
 			$formats = self::getTimeFormats();
 			$options = array();
 
