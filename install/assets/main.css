@@ -71,7 +71,7 @@ fieldset legend {
 	font-size: 127.28%;
 }
 fieldset fieldset {
-	padding-top: 40px !important;
+	padding-top: 30px !important;
 }
 fieldset fieldset legend {
 	position: absolute;
@@ -89,7 +89,7 @@ fieldset fieldset legend {
 	min-width: 0;
 }
 .option + p {
-	margin: 5px 0 0 20px;
+	margin: 5px 30px 0 20px;
 	color: rgba(0, 0, 0, 0.4);
 }
 .submit {
