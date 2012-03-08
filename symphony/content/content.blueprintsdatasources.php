@@ -648,7 +648,7 @@
 						array(
 							'system:pagination',
 							($fields['source'] == $section_data['section']->get('id') && in_array('system:pagination', $fields['xml_elements'])),
-							'pagination'
+							'system: pagination'
 						)
 					)
 				);
