@@ -442,7 +442,7 @@
 			}
 
 			if(!empty($codes)){
-				$class = 'warning';
+				$class = 'invalid';
 				if($element->getAttribute('class')) {
 					$class = $element->getAttribute('class') . ' ' . $class;
 				}
