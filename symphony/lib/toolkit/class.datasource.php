@@ -20,20 +20,6 @@
 	Class DataSource{
 
 		/**
-		 * The end-of-line constant.
-		 * @var string
-		 * @deprecated This will be removed in the next version of Symphony
-		 */
-		const CRLF = PHP_EOL;
-
-		/**
-		 * An instance of the Administration class
-		 * @var Administration
-		 * @see core.Administration
-		 */
-		protected $_Parent;
-
-		/**
 		 * Holds all the environment variables which include parameters set by
 		 * other Datasources or Events.
 		 * @var array
@@ -66,20 +52,16 @@
 		 * Constructor for the datasource sets the parent, if `$process_params` is set,
 		 * the `$env` variable will be run through `Datasource::processParameters`.
 		 *
-         * @see toolkit.Datasource#processParameters()
-		 * @param Administration $parent
-		 *  The Administration object that this page has been created from
-		 *  passed by reference
+		 * @see toolkit.Datasource#processParameters()
+		 * @todo Write the updater that removes the need for `$dummy`.
 		 * @param array $env
-		 *  The environment variables from the Frontend class which includes
-		 *  any params set by Symphony or Events or by other Datasources
+		 *	The environment variables from the Frontend class which includes
+		 *	any params set by Symphony or Events or by other Datasources
 		 * @param boolean $process_params
-		 *  If set to true, `Datasource::processParameters` will be called. By default
-		 *  this is true
+		 *	If set to true, `Datasource::processParameters` will be called. By default
+		 *	this is true
 		 */
-		public function __construct(&$parent, Array $env = null, $process_params=true){
-			$this->_Parent = $parent;
-
+		public function __construct($dummy, array $env = null, $process_params=true){
 			if($process_params){
 				$this->processParameters($env);
 			}
@@ -134,8 +116,8 @@
 		 * It is passed the current parameters.
 		 *
 		 * @param array $param
-		 *  The current parameter pool that this Datasource can use when filtering
-		 *  and finding Entries or data.
+		 *	The current parameter pool that this Datasource can use when filtering
+		 *	and finding Entries or data.
 		 */
 		public function grab(array $param = array()) {}
 
@@ -148,7 +130,7 @@
 		 * datasource
 		 *
 		 * @param string $value
-		 *  The filter string for a field.
+		 *	The filter string for a field.
 		 * @return DS_FILTER_OR or DS_FILTER_AND
 		 */
 		public function __determineFilterType($value){
@@ -160,8 +142,8 @@
 		 * which appends an XMLElement to the current root element.
 		 *
 		 * @param XMLElement $xml
-		 *  The root element XMLElement for this datasource. By default, this will
-		 *  the handle of the datasource, as defined by `$this->dsParamROOTELEMENT`
+		 *	The root element XMLElement for this datasource. By default, this will
+		 *	the handle of the datasource, as defined by `$this->dsParamROOTELEMENT`
 		 * @return XMLElement
 		 */
 		public function emptyXMLSet(XMLElement $xml = null){
@@ -186,8 +168,8 @@
 		 * pagination variables are also set by this function
 		 *
 		 * @param array $env
-		 *  The environment variables from the Frontend class which includes
-		 *  any params set by Symphony or Events or by other Datasources
+		 *	The environment variables from the Frontend class which includes
+		 *	any params set by Symphony or Events or by other Datasources
 		 */
 		public function processParameters(Array $env = array()){
 
@@ -234,6 +216,42 @@
 		}
 
 		/**
+		 * This function will parse a string (usually a URL) and fully evaluate any
+		 * parameters (defined by {$param}) to return the absolute string value.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $url
+		 *  The string (usually a URL) that contains the parameters (or doesn't)
+		 * @return string
+		 *  The parsed URL
+		 */
+		public function parseParamURL($url = null) {
+			if(!isset($url)) return null;
+
+			// urlencode parameters
+			$params = array();
+
+			if(preg_match_all('@{([^}]+)}@i', $url, $matches, PREG_SET_ORDER)){
+				foreach($matches as $m){
+					$params[$m[1]] = array(
+						'param' => preg_replace('/:encoded$/', NULL, $m[1]),
+						'encode' => preg_match('/:encoded$/', $m[1])
+					);
+				}
+			}
+
+			foreach($params as $key => $info){
+				$replacement = $this->__processParametersInString($info['param'], $this->_env, false);
+				if($info['encode'] == true){
+					$replacement = urlencode($replacement);
+				}
+				$url = str_replace("{{$key}}", $replacement, $url);
+			}
+
+			return $url;
+		}
+
+		/**
 		 * This function will replace any parameters in a string with their value.
 		 * Parameters are defined by being prefixed by a $ character. In certain
 		 * situations, the parameter will be surrounded by {}, which Symphony
@@ -241,21 +259,21 @@
 		 * omitted which is usually used to indicate that this parameter exists
 		 *
 		 * @param string $value
-		 *  The string with the parameters that need to be evaluated
+		 *	The string with the parameters that need to be evaluated
 		 * @param array $env
-		 *  The environment variables from the Frontend class which includes
-		 *  any params set by Symphony or Events or by other Datasources
+		 *	The environment variables from the Frontend class which includes
+		 *	any params set by Symphony or Events or by other Datasources
 		 * @param boolean $includeParenthesis
-		 *  Parameters will sometimes not be surrounded by {}. If this is the case
-		 *  setting this parameter to false will make this function automatically add
-		 *  them to the parameter. By default this is true, which means all parameters
-		 *  in the string already are surrounded by {}
+		 *	Parameters will sometimes not be surrounded by {}. If this is the case
+		 *	setting this parameter to false will make this function automatically add
+		 *	them to the parameter. By default this is true, which means all parameters
+		 *	in the string already are surrounded by {}
 		 * @param boolean $escape
-		 *  If set to true, the resulting value will be urlencoded before being returned.
-		 *  By default this is false
+		 *	If set to true, the resulting value will be urlencoded before being returned.
+		 *	By default this is false
 		 * @return string
-		 *  The string will all parameters evaluated. If a parameter was not found, it will
-		 *  not be replaced at all.
+		 *	The string will all parameters evaluated. If a parameter was not found, it will
+		 *	not be replaced at all.
 		 */
 		public function __processParametersInString($value, Array $env, $includeParenthesis=true, $escape=false){
 			if(trim($value) == '') return null;
@@ -306,7 +324,7 @@
 		 * Using regexp, this escapes any commas in the given string
 		 *
 		 * @param string $string
-		 *  The string to escape the commas in
+		 *	The string to escape the commas in
 		 * @return string
 		 */
 		public static function escapeCommas($string){
@@ -318,7 +336,7 @@
 		 * the escaping pattern applied to the string (and commas)
 		 *
 		 * @param string $string
-		 *  The string with the escaped commas in it to remove
+		 *	The string with the escaped commas in it to remove
 		 * @return string
 		 */
 		public static function removeEscapedCommas($string){
@@ -332,12 +350,12 @@
 		 * null is returned
 		 *
 		 * @param string $needle
-		 *  The parameter name
+		 *	The parameter name
 		 * @param array $env
-		 *  The environment variables from the Frontend class which includes
-		 *  any params set by Symphony or Events or by other Datasources
+		 *	The environment variables from the Frontend class which includes
+		 *	any params set by Symphony or Events or by other Datasources
 		 * @return mixed
-		 *  If the value is not found, null, otherwise a string or an array is returned
+		 *	If the value is not found, null, otherwise a string or an array is returned
 		 */
 		public static function findParameterInEnv($needle, $env){
 			if(isset($env['env']['url'][$needle])) return $env['env']['url'][$needle];

@@ -26,7 +26,7 @@
 		protected $_xml;
 
 		/**
-		 * The XSL to apply to the XML
+		 * The XSL to apply to the `$this->_xml`.
 		 * @var string
 		 */
 		protected $_xsl;
@@ -39,15 +39,16 @@
 		protected $_param = array();
 
 		/**
-		 * An array of functions to be made available during the XSLT transform
+		 * An array of the PHP functions to be made available during the XSLT
+		 * transform
 		 * @var array
 		 */
 		protected $_registered_php_functions = array();
 
 		/**
-		 * The constructor for the XSLTPage ensures that an XSLTProcessor
+		 * The constructor for the `XSLTPage` ensures that an `XSLTProcessor`
 		 * is available, and then sets an instance of it to `$this->Proc`, otherwise
-		 * throws a SymphonyErrorPage.
+		 * it will throw a `SymphonyErrorPage` exception.
 		 */
 		public function __construct(){
 
@@ -104,11 +105,11 @@
 		/**
 		 * Sets the parameters that will output with the resulting page
 		 * and be accessible in the XSLT. This function translates all ' into
-		 * `&apos;` to prevent the issue described on the setParameter page
-		 * http://www.php.net/manual/en/xsltprocessor.setparameter.php#81077
-		 * The tradeoff is that a <xsl:value-of select='$param' /> that has a '
-		 * will output `&apos;`, the benefit is that both ' and " can be in the params
+		 * `&apos;`, with the tradeoff being that a <xsl:value-of select='$param' />
+		 * that has a ' will output `&apos;` but the benefit that ' and " can be
+		 * in the params
 		 *
+		 * @link http://www.php.net/manual/en/xsltprocessor.setparameter.php#81077
 		 * @param array $param
 		 *  An associative array of params for this page
 		 */
@@ -117,12 +118,13 @@
 		}
 
 		/**
-		 * Returns an Iterator of errors from the XsltProcess. Use this function
-		 * inside a loop to get all the errors
+		 * Returns an iterator of errors from the `XsltProcess`. Use this function
+		 * inside a loop to get all the errors that occurring when transforming
+		 * `$this->_xml` with `$this->_xsl`.
 		 *
 		 * @return array
 		 *  An associative array containing the errors details from the
-		 *  XsltProcessor
+		 *  `XsltProcessor`
 		 */
 		public function getError(){
 			return $this->Proc->getError();
@@ -142,7 +144,7 @@
 		}
 
 		/**
-		 * The generate function calls on the XsltProcess to transform the
+		 * The generate function calls on the `XsltProcess` to transform the
 		 * XML with the given XSLT passing any parameters or functions
 		 * If no errors occur, the parent generate function is called to add
 		 * the page headers and a string containing the transformed result

@@ -1,14 +1,104 @@
-/* Basic elements */
 body {
-	margin: 0 auto;
-	padding: 0 5em 5em 20em;
-	max-width: 32em;
+	padding: 80px 100px 50px 50px;
 	background: #fff;
 	color: #222;
 	font: 68.75%/1.5 "Lucida Grande", Verdana, sans-serif;
 	cursor: default;
 }
-a {
+form {
+	margin: 0 auto;
+	position: relative;
+	width: 450px;
+	padding-left: 200px;
+}
+
+/* Sidebar */
+
+h1 {
+	position: fixed;
+	margin-left: -200px;
+	padding: 0 0 18px 0;
+	text-align: right;
+	font-weight: normal;
+	font-size: 1.25em;
+	width: 150px;
+}
+h1 em {
+	display: block;
+	margin-top: 0.5em;
+	color: rgba(0, 0, 0, 0.4);
+	text-align: right;
+	font-style: normal;
+	font-size: 73.33%;
+}
+ul {
+	position: fixed;
+	color: rgba(0, 0, 0, 0.4);
+	text-align: right;
+	font-style: normal;
+	list-style: none;
+	margin: 55px 0 0 -200px;
+	padding: 0 0 18px 0;
+	text-align: right;
+	font-weight: normal;
+	width: 150px;
+
+}
+ul li.selected a {
+	color: #000;
+	text-decoration: none;
+}
+ul li.more {
+	margin-top: 12px;
+}
+ul li.more a {
+	width: 150px;
+	color: rgba(0, 0, 0, 0.4);
+	display: block;
+	text-decoration: none;
+}
+ul li.more a:hover {
+	text-decoration: underline;
+}
+
+/* Content */
+
+h2 {
+	margin-bottom: 10px;
+}
+fieldset {
+	margin-top: 30px;
+}
+fieldset legend {
+	font-size: 127.28%;
+}
+fieldset fieldset {
+	padding-top: 30px !important;
+}
+fieldset fieldset legend {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	font-size: 1em;
+	color: rgba(0, 0, 0, 0.4);
+}
+.option {
+	margin: 0 0 0 20px;
+}
+.option input {
+	margin-left: -20px;
+	float: left;
+	min-width: 0;
+}
+.option + p {
+	margin: 5px 30px 0 20px;
+	color: rgba(0, 0, 0, 0.4);
+}
+.submit {
+	text-align: right;
+}
+
+/*a {
 	color: #57b;
 	text-decoration: underline;
 	cursor: pointer;
@@ -37,11 +127,15 @@ code {
 	padding: 0;
 }
 
-/* Forms */
-fieldset {
+/* Forms *!/
+fieldset,
+div.warning {
 	margin-top: 82px;
 	padding-bottom: 1.5em;
 	border: none;
+}
+div.warning + fieldset {
+	margin-top: 1.75em;
 }
 legend {
 	padding-bottom: 1.25em;
@@ -111,62 +205,9 @@ label input, select {
 	text-align: right;
 }
 
-/* Header */
-h1 {
-	position: fixed;
-	top: 80px;
-	right: 50%;
-	margin-right: 12em;
-	padding: 0 0 18px 0;
-	text-align: right;
-	text-shadow: -2px 2px 3px #ccc;
-	font-weight: normal;
-	font-size: 1.25em;
-	line-height: 18px;
-}
-h1 em {
-	display: block;
-	margin-top: 0.5em;
-	color: #887;
-	text-align: right;
-	text-shadow: -1px 2px 3px #ddd;
-	font-style: normal;
-	font-size: 73.33%;
-}
-ul {
-	position: fixed;
-	top: 130px;
-	right: 50%;
-	margin: 0 16.7em 0 0;
-	color: #887;
-	text-align: right;
-	text-shadow: -1px 2px 3px #ddd;
-	font-style: normal;
-	list-style: none;
-	font-size: 90.9%;
-}
-ul li.selected a {
-	color: #000;
-	text-decoration: none;
-}
-ul li.more {
-	margin-top: 12px;
-}
-ul li.more a {
-	width: 150px;
-	color: #887;
-	display: block;
-	text-decoration: none;
-}
-ul li.more a:hover {
-	text-decoration: underline;
-}
+/* Header *!/
 
-/* Requirements */
-dl {
-	margin-top: 1.5em;
-	padding-left: 12em;
-}
+/* Requirements *!/
 dt {
 	margin: 0 0 1.5em -12em;
 	float: left;
@@ -181,7 +222,7 @@ dd {
 	color: #665;
 }
 
-/* Messages */
+/* Messages *!/
 .note, .warning {
 	margin-top: 1.5em;
 	padding: 1em 1.25em;
@@ -198,10 +239,15 @@ p.warning {
 	padding-top: 0;
 }
 
-/* Lists */
+p + p.warning {
+	margin-top: 1em;
+	padding-top: 1em;
+}
+
+/* Lists *!/
 ol{
 	margin-left: 1.5em;
 }
 ol li{
 	margin-bottom: 1em;
-}
+}*/

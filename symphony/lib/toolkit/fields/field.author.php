@@ -14,8 +14,8 @@
 	 */
 	Class fieldAuthor extends Field {
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function __construct(){
+			parent::__construct();
 			$this->_name = __('Author');
 			$this->_required = true;
 		}
@@ -57,9 +57,14 @@
 		}
 
 		public function allowDatasourceOutputGrouping(){
-			## Grouping follows the same rule as toggling.
+			// Grouping follows the same rule as toggling.
 			return $this->canToggle();
 		}
+
+		public function allowDatasourceParamOutput() {
+			return true;
+		}
+
 
 	/*-------------------------------------------------------------------------
 		Setup:
@@ -72,9 +77,9 @@
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `author_id` int(11) unsigned NULL,
 				  PRIMARY KEY  (`id`),
-				  UNIQUE KEY `entry_id` (`entry_id`),
+				  UNIQUE KEY `author` (`entry_id`, `author_id`),
 				  KEY `author_id` (`author_id`)
-				) ENGINE=MyISAM;"
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
 			);
 		}
 
@@ -99,23 +104,23 @@
 		Settings:
 	-------------------------------------------------------------------------*/
 
-		public function findDefaults(&$fields){
-			if(!isset($fields['allow_multiple_selection'])) $fields['allow_multiple_selection'] = 'no';
+		public function findDefaults(array &$settings){
+			if(!isset($settings['allow_multiple_selection'])) $settings['allow_multiple_selection'] = 'no';
 		}
 
-		public function displaySettingsPanel(&$wrapper, $errors = null) {
+		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 
-			## Allow multiple selection
+			// Allow multiple selection
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Allow selection of multiple authors', array($input->generate())));
 			$div->appendChild($label);
 
-			## Default to current logged in user
+			// Default to current logged in user
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][default_to_current_user]', 'yes', 'checkbox');
 			if($this->get('default_to_current_user') == 'yes') $input->setAttribute('checked', 'checked');
@@ -148,7 +153,7 @@
 		Publish:
 	-------------------------------------------------------------------------*/
 
-		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL, $entry_id = null){
+		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null){
 
 			$value = isset($data['author_id']) ? $data['author_id'] : NULL;
 
@@ -177,7 +182,7 @@
 			else $wrapper->appendChild($label);
 		}
 
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+		public function processRawFieldData($data, &$status, &$message=null, $simulate=false, $entry_id=NULL){
 
 			$status = self::__OK__;
 
@@ -195,7 +200,7 @@
 		Output:
 	-------------------------------------------------------------------------*/
 
-		public function appendFormattedElement(&$wrapper, $data, $encode=false){
+		public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null){
 			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
 
 			$list = new XMLElement($this->get('element_name'));
@@ -235,6 +240,10 @@
 			return parent::prepareTableValue(array('value' => General::sanitize(implode(', ', $value))), $link, $entry_id);
 		}
 
+		public function getParameterPoolValue($data, $entry_id = null) {
+			return $data['author_id'];
+		}
+
 	/*-------------------------------------------------------------------------
 		Filtering:
 	-------------------------------------------------------------------------*/
@@ -265,10 +274,9 @@
 				";
 				$where .= "
 					AND (
-						 t{$field_id}_{$this->_key}.author_id {$regex} '{$pattern}'
-						 OR
-						 t{$field_id}_{$this->_key}_authors.username {$regex} '{$pattern}'
-						)
+						t{$field_id}_{$this->_key}.author_id {$regex} '{$pattern}'
+						OR t{$field_id}_{$this->_key}_authors.username {$regex} '{$pattern}'
+					)
 				";
 
 			} elseif ($andOperation) {

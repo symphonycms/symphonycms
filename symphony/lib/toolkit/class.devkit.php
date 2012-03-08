@@ -84,9 +84,9 @@
 			$this->setTitle(__(
 				'%1$s &ndash; %2$s &ndash; %3$s',
 				array(
-					__('Symphony'),
+					$this->_pagedata['title'],
 					__($this->_title),
-					$this->_pagedata['title']
+					__('Symphony')
 				)
 			));
 

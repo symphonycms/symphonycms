@@ -11,8 +11,8 @@
 
 	Class fieldSelect extends Field {
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function __construct(){
+			parent::__construct();
 			$this->_name = __('Select Box');
 			$this->_required = true;
 			$this->_showassociation = true;
@@ -51,7 +51,7 @@
 			return $states;
 		}
 
-		public function toggleFieldData($data, $newState){
+		public function toggleFieldData(array $data, $newState, $entry_id=null){
 			$data['value'] = $newState;
 			$data['handle'] = Lang::createHandle($newState);
 			return $data;
@@ -74,7 +74,7 @@
 		}
 
 		public function allowDatasourceOutputGrouping(){
-			## Grouping follows the same rule as toggling.
+			// Grouping follows the same rule as toggling.
 			return $this->canToggle();
 		}
 
@@ -97,7 +97,7 @@
 				  KEY `entry_id` (`entry_id`),
 				  KEY `handle` (`handle`),
 				  KEY `value` (`value`)
-				) ENGINE=MyISAM;
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			");
 		}
 
@@ -163,30 +163,29 @@
 		Settings:
 	-------------------------------------------------------------------------*/
 
-		public function findDefaults(&$fields){
-			if(!isset($fields['allow_multiple_selection'])) $fields['allow_multiple_selection'] = 'no';
-			if(!isset($fields['show_association'])) $fields['show_association'] = 'no';
-			if(!isset($fields['sort_options'])) $fields['sort_options'] = 'no';
+		public function findDefaults(array &$settings){
+			if(!isset($settings['allow_multiple_selection'])) $settings['allow_multiple_selection'] = 'no';
+			if(!isset($settings['show_association'])) $settings['show_association'] = 'no';
+			if(!isset($settings['sort_options'])) $settings['sort_options'] = 'no';
 		}
 
-		public function displaySettingsPanel(&$wrapper, $errors = null) {
+		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
 
-			# Predefined Values
+			// Predefined Values
 			$label = Widget::Label(__('Predefined Values'));
 			$label->appendChild(new XMLElement('i', __('Optional')));
 			$input = Widget::Input('fields['.$this->get('sortorder').'][static_options]', General::sanitize($this->get('static_options')));
 			$label->appendChild($input);
 			$div->appendChild($label);
 
-			# Dynamic Values
+			// Dynamic Values
 			$label = Widget::Label(__('Dynamic Values'));
-			$label->appendChild(new XMLElement('i', 'Optional'));
+			$label->appendChild(new XMLElement('i', __('Optional')));
 
-			$sectionManager = new SectionManager($this->_engine);
-			$sections = $sectionManager->fetch(NULL, 'ASC', 'name');
+			$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 			$field_groups = array();
 
 			if(is_array($sections) && !empty($sections))
@@ -216,28 +215,28 @@
 
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
 
-			## Allow selection of multiple items
+			// Allow selection of multiple items
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Allow selection of multiple options', array($input->generate())));
 			$div->appendChild($label);
 
-			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Values'));
-
-			## Sort options?
+			// Sort options?
 			$label = Widget::Label();
 			$input = Widget::Input('fields['.$this->get('sortorder').'][sort_options]', 'yes', 'checkbox');
 			if($this->get('sort_options') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Sort all options alphabetically', array($input->generate())));
 			$div->appendChild($label);
 
-			$this->appendRequiredCheckbox($div);
+			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Values'));
+
 			$this->appendShowColumnCheckbox($div);
+			$this->appendRequiredCheckbox($div);
 			$wrapper->appendChild($div);
 		}
 
-		public function checkFields(&$errors, $checkForDuplicates=true){
+		public function checkFields(array &$errors, $checkForDuplicates = true){
 			if(!is_array($errors)) $errors = array();
 
 			if($this->get('static_options') == '' && ($this->get('dynamic_options') == '' || $this->get('dynamic_options') == 'none'))
@@ -268,7 +267,7 @@
 
 			$this->removeSectionAssociation($id);
 
-			// dynamic options isn't an array like in Select Box Link
+			// Dynamic Options isn't an array like in Select Box Link
 			$field_id = $this->get('dynamic_options');
 
 			if (!is_null($field_id)) {
@@ -282,7 +281,7 @@
 		Publish:
 	-------------------------------------------------------------------------*/
 
-		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null){
 			$states = $this->getToggleStates();
 
 			if(!is_array($data['value'])) $data['value'] = array($data['value']);
@@ -305,7 +304,7 @@
 			else $wrapper->appendChild($label);
 		}
 
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+		public function processRawFieldData($data, &$status, &$message=null, $simulate=false, $entry_id=NULL){
 			$status = self::__OK__;
 
 			if(!is_array($data)) return array('value' => $data, 'handle' => Lang::createHandle($data));
@@ -326,7 +325,7 @@
 		Output:
 	-------------------------------------------------------------------------*/
 
-		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
+		public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
 			if (!is_array($data) or is_null($data['value'])) return;
 
 			$list = new XMLElement($this->get('element_name'));
@@ -367,8 +366,8 @@
 		Filtering:
 	-------------------------------------------------------------------------*/
 
-		public function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-			parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
+		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null){
+			parent::displayDatasourceFilterPanel($wrapper, $data, $errors);
 
 			$data = preg_split('/,\s*/i', $data);
 			$data = array_map('trim', $data);
@@ -379,7 +378,11 @@
 				$optionlist = new XMLElement('ul');
 				$optionlist->setAttribute('class', 'tags');
 
-				foreach($existing_options as $option) $optionlist->appendChild(new XMLElement('li', $option));
+				foreach($existing_options as $option) {
+					$optionlist->appendChild(
+						new XMLElement('li', General::sanitize($option))
+					);
+				};
 
 				$wrapper->appendChild($optionlist);
 			}
@@ -389,31 +392,9 @@
 			$field_id = $this->get('id');
 
 			if (self::isFilterRegex($data[0])) {
-				$this->_key++;
-
-				if (preg_match('/^regexp:/i', $data[0])) {
-					$pattern = preg_replace('/^regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'REGEXP';
-				} else {
-					$pattern = preg_replace('/^not-?regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'NOT REGEXP';
-				}
-				
-				if(strlen($pattern) == 0) return;
-
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND (
-						t{$field_id}_{$this->_key}.value {$regex} '{$pattern}'
-						OR t{$field_id}_{$this->_key}.handle {$regex} '{$pattern}'
-					)
-				";
-
-			} elseif ($andOperation) {
+				$this->buildRegexSQL($data[0], array('value', 'handle'), $joins, $where);
+			}
+			else if ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
 					$value = $this->cleanValue($value);
@@ -429,8 +410,8 @@
 						)
 					";
 				}
-
-			} else {
+			}
+			else {
 				if (!is_array($data)) $data = array($data);
 
 				foreach ($data as &$value) {

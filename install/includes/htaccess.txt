@@ -1,0 +1,45 @@
+### Symphony 2.3.x ###
+Options +FollowSymlinks -Indexes
+
+<IfModule mod_rewrite.c>
+
+	RewriteEngine on
+	RewriteBase /<!-- REWRITE_BASE -->
+
+	### SECURITY - Protect crucial files
+	RewriteRule ^manifest/(.*)$ - [F]
+	RewriteRule ^workspace/utilities/(.*).xsl$ - [F]
+	RewriteRule ^workspace/pages/(.*).xsl$ - [F]
+	RewriteRule ^(.*).sql$ - [F]
+	RewriteRule (^|/)\. - [F]
+
+	### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"
+	RewriteCond %{REQUEST_FILENAME} favicon.ico [NC]
+	RewriteRule .* - [S=14]
+
+	### IMAGE RULES
+	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
+
+	### CHECK FOR TRAILING SLASH - Will ignore files
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_URI} !/$
+	RewriteCond %{REQUEST_URI} !(.*)/$
+	RewriteRule ^(.*)$ $1/ [L,R=301]
+
+	### URL Correction
+	RewriteRule ^(symphony/)?index.php(/.*/?) $1$2 [NC]
+
+	### ADMIN REWRITE
+	RewriteRule ^symphony\/?$ index.php?mode=administration&%{QUERY_STRING} [NC,L]
+
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^symphony(\/(.*\/?))?$ index.php?symphony-page=$1&mode=administration&%{QUERY_STRING}	[NC,L]
+
+	### FRONTEND REWRITE - Will ignore files and folders
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^(.*\/?)$ index.php?symphony-page=$1&%{QUERY_STRING}	[L]
+
+</IfModule>
+######

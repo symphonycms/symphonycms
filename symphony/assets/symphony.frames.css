@@ -1,0 +1,530 @@
+/**
+ * @todo: Add description
+ * @since: Symphony 2.3
+ */ 
+
+.frame {
+	margin: 0;
+	padding: 0 0 10px;
+	list-style: none;
+	overflow: hidden;
+}
+.frame:after {
+	content: "";
+	clear: both;
+}
+
+.frame h1 {
+	background: #282828;
+	color: #fff;
+	margin: -11px -11px 15px;
+	padding: 18px 11px;
+	border-radius: 4px 4px 0 0;
+	line-height: 1.5;
+}
+.frame h1 em {
+	color: rgba(255, 255, 255, 0.6);
+	font-style: normal;
+}
+
+/*--------------------------------------------------------------------------
+	Inline frames (e. g. upload fields)
+--------------------------------------------------------------------------*/
+
+span.frame,
+fieldset.frame {
+	display: block;
+	margin-bottom: 15px;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	padding: 10px;
+	background-color: #f5f5f5;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+span.frame {
+	text-align: center;
+}
+
+/*--------------------------------------------------------------------------
+	Login
+--------------------------------------------------------------------------*/
+
+#login .frame {
+	width: 280px;
+	margin: 100px auto;
+	overflow: visible;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	padding: 10px;
+	background-color: #f5f5f3;
+	text-align: left;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+#login .frame fieldset {
+	padding: 0;
+}
+#login .frame legend {
+	display: none;
+}
+
+
+/*--------------------------------------------------------------------------
+	Error frames
+--------------------------------------------------------------------------*/
+
+#error,
+#fatalerror {
+	padding: 100px 50px;
+}
+#error .frame,
+#fatalerror .frame {
+	display: block;
+	min-width: 500px;
+	max-width: 800px;
+	margin: 0 auto;
+	overflow: visible;
+}
+#error .frame:after,
+#fatalerror .frame:after {
+	content: "";
+	display: block;
+	clear: both;
+}
+#error .frame {
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	background-color: #f5f5f3;
+	text-align: left;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	padding: 10px;
+}
+#fatalerror .frame {
+	padding: 10px 0;
+}
+#fatalerror .frame pre {
+	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
+}
+#fatalerror .frame pre,
+#fatalerror .frame ul ul {
+	background: #fefefe;
+	padding: 0 0 10px;
+	margin: 0 -10px;
+	overflow: auto;
+}
+#fatalerror .frame ul ul li {
+	border-top: 1px solid rgba(0, 0, 0, 0.05);
+	line-height: 1.8;
+	padding: 0 10px;
+	white-space: nowrap;
+}
+#fatalerror .frame ul ul li.full {
+	white-space: normal;
+}
+#fatalerror .frame ul ul:first-child li:first-child {
+	border-top: none;
+}
+#fatalerror .frame .error {
+	background-color: #fff9a2;
+	color: #bd7053;
+}
+#fatalerror .frame .error b {
+	background: rgba(167, 31, 45, 0.7);
+	color: #fff;
+	display: inline-block;
+	line-height: 1.8;
+	margin: -2px 0 -1px;
+	padding: 2px 0 1px;
+}
+#fatalerror .frame code a {
+	margin: 0;
+}
+#fatalerror .frame ul ul li strong,
+#fatalerror .frame ul ul li em {
+	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
+	color: rgba(0, 0, 0, 0.5);
+	font-style: normal;
+}
+#fatalerror .frame .content {
+	background: #fefefe;
+	padding-bottom: 0;
+}
+#fatalerror .frame .content:last-of-type ul {
+	border-radius: 0 0 4px 4px;
+}
+
+/*--------------------------------------------------------------------------
+	Framed lists (e. g. Duplicators)
+--------------------------------------------------------------------------*/
+
+.frame > ol, 
+.frame > ul {
+	margin: 0;
+	padding: 0;
+	background: #f5f5f5;
+	float: left;
+	width: 100%;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+	min-height: 30px;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	border: none;
+}
+.frame.empty > ol,
+.frame.empty > ul {
+	border: 1px dashed rgba(0, 0, 0, 0.2);
+}
+
+.frame > ol > li,
+.frame > ul > li {
+	padding: 0 10px;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	float: left;
+	clear: both;
+	width: 100%;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	border-top-color: rgba(0, 0, 0, 0.25);
+	border-bottom: none;
+	min-height: 31px;
+}
+.frame > ol > li:first-of-type,
+.frame > ul > li:first-of-type {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	border-top: 1px solid rgba(0, 0, 0, 0.2);
+}
+.frame > ol > li:last-of-type,
+.frame > ul > li:last-of-type {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+/* Link lists */
+
+.frame > ol > li a:first-child,
+.frame > ul > li a:first-child {
+	margin-top: 6px;
+	display: inline-block;
+}
+
+/* Header */
+
+.frame > ol > li header,
+.frame > ul > li header {
+	position: relative;
+	color: rgba(0, 0, 0, 0.75);
+	margin: 0 -10px;
+	padding: 8px 10px 7px;
+	cursor: pointer;
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	-webkit-transition: background 0.2s ease-in;
+	-moz-transition: background 0.2s ease-in;
+	-ms-transition: background 0.2s ease-in;
+	-o-transition: background 0.2s ease-in;
+	transition: background 0.2s ease-in;
+}
+.frame.collapsible > ol > li header,
+.frame.collapsible > ul > li header {
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+.frame > ol > li.collapsed header,
+.frame > ul > li.collapsed header {
+	box-shadow: none;
+	border-bottom-color: transparent;
+}
+.frame > ol > li.expanding header,
+.frame > ul > li.expanding header {
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+.frame > ol > li header h4,
+.frame > ul > li header h4 {
+	display: inline;
+	font-weight: bold;
+}
+.frame > ol > li header span,
+.frame > ul > li header span {
+	margin: 0 0 0 10px;
+	font-weight: normal;
+	color: rgba(0, 0, 0, 0.5);
+}
+.frame > ol > li header.main:before,
+.frame > ol > li header.sidebar:before,
+.frame > ul > li header.main:before,
+.frame > ul > li header.sidebar:before {
+	content: "";
+	display: block;
+	width: 1px;
+	height: 10px;
+	float: left;
+	margin: 3px 7px 0 0;
+	border-left: 6px solid rgba(0, 0, 0, 0.25);
+	border-right: 3px solid rgba(0, 0, 0, 0.1);
+}
+.frame > ol > li header.sidebar:before,
+.frame > ul > li header.sidebar:before {
+	border-left: 6px solid rgba(0, 0, 0, 0.1);
+	border-right: 3px solid rgba(0, 0, 0, 0.25);
+}
+.frame > ol > li.highlight header:before,
+.frame > ul > li.highlight header:before {
+	border-left: 6px solid rgba(0, 0, 0, 0.5);
+	border-right: 3px solid rgba(0, 0, 0, 0.2);
+}
+.frame > ol > li.highlight header.sidebar:before,
+.frame > ul > li.highlight header.sidebar:before {
+	border-left: 6px solid rgba(0, 0, 0, 0.2);
+	border-right: 3px solid rgba(0, 0, 0, 0.5);
+}
+
+/* Errors */
+
+.frame > ol > li.conflict.collapsed header,
+.frame > ul > li.conflict.collapsed header {
+	background: #fff9a2;
+	-webkit-transition: background 0.2s ease-in;
+	-moz-transition: background 0.2s ease-in;
+	-ms-transition: background 0.2s ease-in;
+	-o-transition: background 0.2s ease-in;
+	transition: background 0.2s ease-in;
+}
+.frame > ol > li.conflict.ordering header,
+.frame > ul > li.conflict.ordering header {
+	background: none;
+}
+
+/* Content: light scheme */
+
+.frame > ol > li > div:first-of-type,
+.frame > ul > li > div:first-of-type {
+	padding-top: 10px;
+}
+.frame > ol > li .content,
+.frame > ul > li .content {
+	padding: 0 10px 10px;
+	margin: 0 -10px;
+}
+.frame > ol > li:last-of-type .content,
+.frame > ul > li:last-of-type .content {
+	border-radius: 0 0 4px 4px;
+}
+.frame.collapsible > ol > li .content,
+.frame.collapsible > ul > li .content {
+	background: #e8e8e8;
+}
+.frame.collapsible > ol > li legend,
+.frame.collapsible > ul > li legend {
+	background: #e8e8e8;
+}
+
+/* Content: dark scheme */
+.frame.dark > ol > li .content,
+.frame.dark > ul > li .content {
+	background: #383838;
+	color: #fff;
+	margin: 0 -11px;
+	padding: 10px 11px;
+}
+.frame.dark > ol > li legend,
+.frame.dark > ul > li legend {
+	background: #383838;
+}
+.frame.dark > ol > li .content i,
+.frame.dark > ol > li ul.tags,
+.frame.dark > ul > li .content i,
+.frame.dark > ul > li ul.tags {
+	color: rgba(255, 255, 255, 0.3);
+}
+.frame.dark > ol > li .content fieldset,
+.frame.dark > ul > li .content fieldset {
+	border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Selecting & ordering */
+
+.frame > ol > li.selected, 
+.frame > ol > li.ordering,
+.frame > ul > li.selected, 
+.frame > ul > li.ordering {
+	background-color: #668abe;
+	background-image: -webkit-linear-gradient(top, #668abe, #5c83ba);
+	background-image:    -moz-linear-gradient(top, #668abe, #5c83ba);
+	background-image:     -ms-linear-gradient(top, #668abe, #5c83ba);
+	background-image:      -o-linear-gradient(top, #668abe, #5c83ba);
+	background-image:   linear-gradient(to bottom, #668abe, #5c83ba);
+	border-top: 1px solid #4D78B4;
+	border-bottom: 1px solid #4D78B4;
+	text-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+}
+.frame > ol > li.ordering,
+.frame > ul > li.ordering {
+	margin-bottom: -1px;
+}
+.frame > ol > li.selected + li.selected,
+.frame > ul > li.selected + li.selected {
+	border-top: none;
+	padding-top: 1px;
+}
+.frame > ol > li.ordering + li,
+.frame > ul > li.ordering + li {
+	border-top: 1px solid #4D78B4;
+}
+.frame > ol > li.ordering:last-of-type,
+.frame > ul > li.ordering:last-of-type {
+	margin-bottom: 0;
+}
+.frame > ol > li.ordering header,
+.frame > ul > li.ordering header {
+	color: #fff;
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
+	cursor: move;
+}
+.frame > ol > li.ordering header span,
+.frame > ol > li.ordering header .destructor,
+.frame > ol > li.ordering .content i,
+.frame > ol > li.ordering ul.tags,
+.frame > ul > li.ordering header span,
+.frame > ul > li.ordering header .destructor,
+.frame > ul > li.ordering .content i,
+.frame > ul > li.ordering ul.tags {
+	color: rgba(255, 255, 255, 0.6);
+}
+.frame > ol > li.ordering .content,
+.frame > ol > li.ordering .content legend,
+.frame > ul > li.ordering .content,
+.frame > ul > li.ordering .content legend {
+	background: #668abe;
+	color: #fff;
+}
+.frame > ol > li.ordering .content input,
+.frame > ol > li.ordering .content textarea,
+.frame > ul > li.ordering .content input,
+.frame > ul > li.ordering .content textarea {
+	box-shadow: 0 0 0 1px #4D78B4;
+}
+.frame > ol > li.ordering .content fieldset,
+.frame > ul > li.ordering .content fieldset {
+	border-top-color: rgba(255, 255, 255, 0.2);
+}
+.frame > ol > li.highlight,
+.frame > ul > li.highlight {
+	background: #e8e8e8;
+}
+.frame > ol > li.ordering header:befor,
+.frame > ul > li.ordering header:before {
+	border-left: 6px solid rgba(255, 255, 255, 0.7);
+	border-right: 3px solid rgba(255, 255, 255, 0.2);
+}
+.frame > ol > li.ordering header.sidebar:before,
+.frame > ul > li.ordering header.sidebar:before {
+	border-left: 6px solid rgba(255, 255, 255, 0.2);
+	border-right: 3px solid rgba(255, 255, 255, 0.7);
+}
+
+/* Destructor */
+
+.frame > ol > li header .destructor,
+.frame > ul > li header .destructor,
+.frame > ol > li header .button,
+.frame > ul > li header .button {
+	position: absolute;
+	top: 0.65em;
+	right: 10px;
+	color: rgba(0, 0, 0, 0.3);
+	text-decoration: none;
+	font-weight: normal;
+	margin: 0;
+}
+.frame > ol > li header .destructor:hover,
+.frame > ul > li header .destructor:hover,
+.frame > ol > li header .button:hover,
+.frame > ul > li header .button:hover {
+	color: rgba(0, 0, 0, 0.7);
+}
+.frame > ol > li header .destructor.disabled,
+.frame > ul > li header .destructor.disabled,
+.frame > ol > li header .button.disabled,
+.frame > ul > li header .button.disabled {
+	color: rgba(0, 0, 0, 0.2);
+	cursor: default;
+	opacity: 0.4;
+}
+
+/* Templates */
+
+.frame .template {
+	display: none;
+}
+
+/*--------------------------------------------------------------------------
+	Controls
+--------------------------------------------------------------------------*/
+
+.frame .apply {
+	clear: left;
+	cursor: default;
+	margin: 10px 0 0;
+	text-align: right;
+	position: relative;
+	border-color: rgba(0, 0, 0, 0.25);
+}
+.frame .apply:hover {
+	border-color: rgba(0, 0, 0, 0.4);
+}
+
+.frame .actions {
+	margin: 0 0 7px;
+	height: 20px;
+}
+.frame .actions button {
+	float: right;
+}
+
+
+/*-----------------------------------------------------------------------------
+	Globals - Errors
+-----------------------------------------------------------------------------*/
+
+.invalid {
+	background: #eb6347;
+	border: 1px solid #c31;
+	padding: 10px;
+	margin: 0 0 15px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	box-sizing: border-box;
+	display: block;
+	color: #fff;
+	border-radius: 4px;
+	box-shadow: 0 1px 2px rgba(204, 51, 17, 0.3);
+}
+.invalid > p {
+	clear: both;
+	margin: 0;
+}
+.invalid > p,
+.invalid a {
+	color: rgba(255, 255, 255, 0.7);
+}
+.invalid a:hover {
+	color: #fff;
+}
+.invalid label {
+	margin-bottom: 10px;
+}
+.invalid i {
+	color: rgba(255, 255, 255, 0.5);
+}

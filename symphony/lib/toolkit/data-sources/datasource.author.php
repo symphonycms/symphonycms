@@ -129,7 +129,7 @@
 				}
 
 				// Default Area
-				if(in_array('default-area', $this->dsParamINCLUDEDELEMENTS)) {
+				if(in_array('default-area', $this->dsParamINCLUDEDELEMENTS) && !is_null($author->get('default_area'))) {
 					// Section
 					if($section = Symphony::Database()->fetchRow(0, "SELECT `id`, `handle`, `name` FROM `tbl_sections` WHERE `id` = '".$author->get('default_area')."' LIMIT 1")){
 						$default_area = new XMLElement('default-area', $section['name']);

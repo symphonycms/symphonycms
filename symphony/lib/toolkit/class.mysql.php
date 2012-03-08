@@ -63,9 +63,10 @@
 	 * functions, some convenience functions are provided to return results
 	 * in different ways. Symphony uses a prefix to namespace it's tables in a
 	 * database, allowing it play nice with other applications installed on the
-	 * database. An errors that occur during a query throw a DatabaseException.
+	 * database. An errors that occur during a query throw a `DatabaseException`.
 	 * By default, Symphony logs all queries to be used for Profiling and Debug
-	 * devkit extensions.
+	 * devkit extensions when a Developer is logged in. When a developer is not
+	 * logged in, all queries and errors are made available with delegates.
 	 */
 	Class MySQL {
 
@@ -84,15 +85,11 @@
 		const __READ_OPERATION__ = 1;
 
 		/**
-		 * Sets the current `$_log` to be an associative array with 'error'
-		 * and 'query' keys and empty array values.
+		 * Sets the current `$_log` to be an empty array
 		 *
 		 * @var array
 		 */
-		private static $_log = array(
-			'error' => array(),
-			'query' => array()
-		);
+		private static $_log = array();
 
 		/**
 		 * The number of queries this class has executed, defaults to 0.
@@ -128,7 +125,18 @@
 		/**
 		 * The last query that was executed by the class
 		 */
-		private $_lastQuery  = null;
+		private $_lastQuery = null;
+
+		/**
+		 * The hash value of the last query that was executed by the class
+		 */
+		private $_lastQueryHash = null;
+
+		/**
+		 * The auto increment value returned by the last query that was executed
+		 * by the class
+		 */
+		private $_lastInsertID = null;
 
 		/**
 		 * By default, an array of arrays or objects representing the result set
@@ -155,28 +163,14 @@
 			$this->_result = null;
 			$this->_lastResult = array();
 			$this->_lastQuery = null;
+			$this->_lastQueryHash = null;
 		}
 
 		/**
-		 * Sets the current `$_log` to be an associative array with 'error'
-		 * and 'query' keys and empty array values.
+		 * Sets the current `$_log` to be an empty array
 		 */
 		public static function flushLog(){
-			self::$_log = array(
-				'error' => array(),
-				'query' => array()
-			);
-		}
-
-		/**
-		 * Returns the last error that occurred while querying MySQL
-		 *
-		 * @return array
-		 *  An associative array with the last query, error number and
-		 *  error message from MySQL.
-		 */
-		public static function getLastError(){
-			return current(self::$_log['error']);
+			self::$_log = array();
 		}
 
 		/**
@@ -250,7 +244,7 @@
 
 		/**
 		 * Creates a connect to the database server given the credentials. If an
-		 * error occurs, a DatabaseException is thrown, otherwise true is returned
+		 * error occurs, a `DatabaseException` is thrown, otherwise true is returned
 		 *
 		 * @param string $host
 		 *  Defaults to null, which MySQL assumes as localhost.
@@ -323,9 +317,8 @@
 
 		/**
 		 * This will set the character encoding of the connection for sending and
-		 * receiving data. This function will only run if 'runtime_character_set_alter'
-		 * is set to 'true' in the Symphony config. This is set to true by default during
-		 * the Symphony installation. If no character encoding is provided, UTF-8
+		 * receiving data. This function will run every time the database class
+		 * is being initialized. If no character encoding is provided, UTF-8
 		 * is assumed.
 		 *
 		 * @link http://au2.php.net/manual/en/function.mysql-set-charset.php
@@ -399,14 +392,14 @@
 		/**
 		 * Determines whether this query is a read operation, or if it is a write operation.
 		 * A write operation is determined as any query that starts with CREATE, INSERT,
-		 * REPLACE, UPDATE, DELETE, OPTIMIZE or TRUNCATE. Anything else is
+		 * REPLACE, ALTER, DELETE, UPDATE, OPTIMIZE or TRUNCATE. Anything else is
 		 * considered to be a read operation which are subject to query caching.
 		 *
 		 * @return integer
 		 *  `MySQL::__WRITE_OPERATION__` or `MySQL::__READ_OPERATION__`
 		 */
 		public function determineQueryType($query){
-			return (preg_match('/^(create|insert|replace|delete|update|optimize|truncate)/i', $query) ? MySQL::__WRITE_OPERATION__ : MySQL::__READ_OPERATION__);
+			return (preg_match('/^(create|insert|replace|alter|delete|update|optimize|truncate)/i', $query) ? MySQL::__WRITE_OPERATION__ : MySQL::__READ_OPERATION__);
 		}
 
 		/**
@@ -417,6 +410,7 @@
 		 * of objects or an array of associative arrays. The default is objects. This
 		 * function will return boolean, but set `$this->_lastResult` to the result.
 		 *
+		 * @uses PostQueryExecution
 		 * @param string $query
 		 *  The full SQL query to execute.
 		 * @param string $type
@@ -450,12 +444,13 @@
 				}
 			}
 
-			$query_hash = md5($query.microtime());
-			self::$_log['query'][$query_hash] = array('query' => $query, 'start' => precision_timer());
+			$start = precision_timer();
 
 			$this->flush();
 			$this->_lastQuery = $query;
+			$this->_lastQueryHash = $query_hash;
 			$this->_result = mysql_query($query, MySQL::$_connection['id']);
+            $this->_lastInsertID = mysql_insert_id(MySQL::$_connection['id']);
 
 			self::$_query_count++;
 
@@ -477,7 +472,53 @@
 				mysql_free_result($this->_result);
 			}
 
-			self::$_log['query'][$query_hash]['time'] = precision_timer('stop', self::$_log['query'][$query_hash]['start']);
+			$query_hash = md5($query.$start);
+			/**
+			 * After a query has successfully executed, that is it was considered
+			 * valid SQL, this delegate will provide the query, the query_hash and
+			 * the execution time of the query.
+			 *
+			 * Note that this function only starts logging once the ExtensionManager
+			 * is available, which means it will not fire for the first couple of
+			 * queries that set the character set.
+			 *
+			 * @since Symphony 2.3
+			 * @delegate LogQuery
+			 * @param string $context
+			 * '/frontend/' or '/backend/'
+			 * @param string $query
+			 *  The query that has just been executed
+			 * @param string $query_hash
+			 *  The hash used by Symphony to uniquely identify this query
+			 * @param float $execution_time
+			 *  The time that it took to run `$query`
+			 */
+			if(Symphony::ExtensionManager() instanceof ExtensionManager) {
+				Symphony::ExtensionManager()->notifyMembers('PostQueryExecution', class_exists('Administration') ? '/backend/' : '/frontend/', array(
+					'query' => $query,
+					'query_hash' => $query_hash,
+					'execution_time' => precision_timer('stop', $start)
+				));
+
+				// If the ExceptionHandler is enabled, then the user is authenticated
+				// or we have a serious issue, so log the query.
+				if(GenericExceptionHandler::$enabled) {
+					self::$_log[$query_hash] = array(
+						'query' => $query,
+						'query_hash' => $query_hash,
+						'execution_time' => precision_timer('stop', $start)
+					);
+				}
+			}
+
+			// Symphony isn't ready yet. Log internally
+			else {
+				self::$_log[$query_hash] = array(
+					'query' => $query,
+					'query_hash' => $query_hash,
+					'execution_time' => precision_timer('stop', $start)
+				);
+			}
 
 			return true;
 		}
@@ -490,7 +531,7 @@
 		 *  The last interested row's ID
 		 */
 		public function getInsertID(){
-			return mysql_insert_id(MySQL::$_connection['id']);
+			return $this->_lastInsertID;
 		}
 
 		/**
@@ -588,7 +629,7 @@
 		 * @return boolean
 		 */
 		public function delete($table, $where = null){
-			$this->query("DELETE FROM $table WHERE $where");
+			return $this->query("DELETE FROM $table WHERE $where");
 		}
 
 		/**
@@ -699,23 +740,70 @@
 		}
 
 		/**
+		 * This function takes `$table` and `$field` names and returns boolean
+		 * if the `$table` contains the `$field`.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $table
+		 *  The table name
+		 * @param string $field
+		 *  The field name
+		 * @return boolean
+		 *  True if `$table` contains `$field`, false otherwise
+		 */
+		public function tableContainsField($table, $field){
+			$results = $this->fetch("DESC `{$table}` `{$field}`");
+
+			return (is_array($results) && !empty($results));
+		}
+
+		/**
 		 * If an error occurs in a query, this function is called which logs
 		 * the last query and the error number and error message from MySQL
-		 * before throwing a new DatabaseException
+		 * before throwing a `DatabaseException`
 		 *
+		 * @uses QueryExecutionError
 		 * @return DatabaseException
 		 */
 		private function __error() {
 			$msg = mysql_error();
 			$errornum = mysql_errno();
 
-			self::$_log['error'][] = array(
-				'query' => $this->_lastQuery,
-				'msg' => $msg,
-				'num' => $errornum
-			);
+			/**
+			 * After a query execution has failed this delegate will provide the query,
+			 * query hash, error message and the error number.
+			 *
+			 * Note that this function only starts logging once the `ExtensionManager`
+			 * is available, which means it will not fire for the first couple of
+			 * queries that set the character set.
+			 *
+			 * @since Symphony 2.3
+			 * @delegate QueryExecutionError
+			 * @param string $context
+			 * '/frontend/' or '/backend/'
+			 * @param string $query
+			 *  The query that has just been executed
+			 * @param string $query_hash
+			 *  The hash used by Symphony to uniquely identify this query
+			 * @param string $msg
+			 *  The error message provided by MySQL which includes information on why the execution failed
+			 * @param int $num
+			 *  The error number that corresponds with the MySQL error message
+			 */
+			if(Symphony::ExtensionManager() instanceof ExtensionManager) {
+				Symphony::ExtensionManager()->notifyMembers('QueryExecutionError', class_exists('Administration') ? '/backend/' : '/frontend/', array(
+					'query' => $this->_lastQuery,
+					'query_hash' => $this->_lastQueryHash,
+					'msg' => $msg,
+					'num' => $errornum
+				));
+			}
 
-			throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query "%3$s"', array($errornum, $msg, $this->_lastQuery)), end(self::$_log['error']));
+			throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query: %3$s', array($errornum, $msg, $this->_lastQuery)), array(
+				'msg' => $msg,
+				'error' => $errornum,
+				'query' => $this->_lastQuery
+			));
 		}
 
 		/**
@@ -751,11 +839,9 @@
 			$query_timer = 0.0;
 			$slow_queries = array();
 
-			$query_log = $this->debug('query');
-
-			foreach($query_log as $key => $val)	{
-				$query_timer += $val['time'];
-				if($val['time'] > 0.0999) $slow_queries[] = $val;
+			foreach(self::$_log as $key => $val) {
+				$query_timer += $val['execution_time'];
+				if($val['execution_time'] > 0.0999) $slow_queries[] = $val;
 			}
 
 			return array(
@@ -775,14 +861,26 @@
 		 *  If one of the queries fails, false will be returned and no further queries
 		 *  will be executed, otherwise true will be returned.
 		 */
-		public function import($sql){
+		public function import($sql, $use_server_encoding = true, $force_engine = false){
+			if($use_server_encoding){
+				$sql = str_replace('DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci', NULL, $sql);
+				$sql = str_replace('COLLATE utf8_unicode_ci', NULL, $sql);
+			}
+
+			if($force_engine){
+				// Silently attempt to change the storage engine. This prevents INNOdb errors.
+				$this->query('SET storage_engine=MYISAM');
+			}
+
 			$queries = preg_split('/;[\\r\\n]+/', $sql, -1, PREG_SPLIT_NO_EMPTY);
 
-			if(is_array($queries) && !empty($queries)){
-				foreach($queries as $sql){
-					if(trim($sql) != '') $result = $this->query($sql);
-					if(!$result) return false;
-				}
+			if(!is_array($queries) || empty($queries) || count($queries) <= 0){
+				throw new Exception('The SQL string contains no queries.');
+			}
+
+			foreach($queries as $sql){
+				if(trim($sql) != '') $result = $this->query($sql);
+				if(!$result) return false;
 			}
 
 			return true;

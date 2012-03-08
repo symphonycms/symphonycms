@@ -100,20 +100,25 @@
 		 *  A valid timezone identifier, such as UTC or Europe/Lisbon
 		 */
 		public static function setDefaultTimezone($timezone){
-			if(!@date_default_timezone_set($timezone)) trigger_error(__("Invalid timezone '{$timezone}'"), E_USER_WARNING);
+			if(!@date_default_timezone_set($timezone)) trigger_error(__('Invalid timezone %s', array($timezone)), E_USER_WARNING);
 		}
 
 		/**
 		 * Validate a given date and time string
 		 *
 		 * @param string $string
-		 *	A date and time string to validate
+		 *	A date and time string or timestamp to validate
 		 * @return boolean
 		 *	Returns true for valid dates, otherwise false
 		 */
 		public static function validate($string) {
 			try {
-				$date = new DateTime(Lang::standardizeDate($string));
+				if(is_numeric($string) && (int)$string == $string) {
+					$date = new DateTime('@' . $string);
+				}
+				else {
+					$date = new DateTime(Lang::standardizeDate($string));
+				}
 			}
 			catch(Exception $ex) {
 				return false;
@@ -173,9 +178,48 @@
 		 * @param string $timezone (optional)
 		 *  The timezone associated with the timestamp
 		 * @return string|boolean
-		 *  The formatted date, of if the date could not be parsed, false.
+		 *  The formatted date, or if the date could not be parsed, false.
 		 */
 		public static function format($string = 'now', $format = DateTime::ISO8601, $localize = true, $timezone = null) {
+
+			// Parse date
+			$date = self::parse($string);
+
+			// Timezone
+			// If a timezone was given, apply it
+			if(!is_null($timezone)) {
+				$date->setTimezone(new DateTimeZone($timezone));
+			}
+			// No timezone given, apply the default timezone
+			else if (isset(self::$settings['timezone'])) {
+				$date->setTimezone(new DateTimeZone(self::$settings['timezone']));
+			}
+
+			// Format date
+			$date = $date->format($format);
+
+			// Localize date
+			// Convert date string from English back to the activated Language
+			if($localize === true) {
+				$date = Lang::localizeDate($date);
+			}
+
+			// Return custom formatted date, use ISO 8601 date by default
+			return $date;
+		}
+
+		/**
+		 * Parses the given string and returns a DateTime object.
+		 * Please note that for best compatibility with European dates it is recommended
+		 * that your site be in a PHP5.3 environment.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $string (optional)
+		 *  A string containing date and time, defaults to the current date and time
+		 * @return DateTime|boolean
+		 *  The DateTime object, or if the date could not be parsed, false.
+		 */
+		public static function parse($string) {
 
 			// Current date and time
 			if($string == 'now' || empty($string)) {
@@ -190,7 +234,7 @@
 			// Attempt to parse the date provided against the Symphony configuration setting
 			// in an effort to better support multilingual date formats. Should this fail
 			// this block will fallback to just passing the date to DateTime constructor,
-			// which will parse the date assuming it's in an English format.
+			// which will parse the date assuming it's in an American format.
 			else {
 				// Standardize date
 				// Convert date string to English
@@ -235,25 +279,6 @@
 				}
 			}
 
-			// Timezone
-			// If a timezone was given, apply it
-			if($timezone !== null) {
-				$date->setTimezone(new DateTimeZone($timezone));
-			}
-			// No timezone given, apply the default timezone
-			else if (isset(self::$settings['timezone'])) {
-				$date->setTimezone(new DateTimeZone(self::$settings['timezone']));
-			}
-
-			// Format date
-			$date = $date->format($format);
-
-			// Localize date
-			// Convert date string from English back to the activated Language
-			if($localize === true) {
-				$date = Lang::localizeDate($date);
-			}
-
 			// Return custom formatted date, use ISO 8601 date by default
 			return $date;
 		}
@@ -280,6 +305,7 @@
 		 * attribute. Symphony uses this in it's status messages so that it can
 		 * dynamically update how long ago the action took place using Javascript.
 		 *
+		 * @deprecated This will be removed in the next version of Symphony
 		 * @param string $format
 		 *  A valid PHP date format
 		 * @return string
@@ -287,8 +313,202 @@
 		 *  date (RFC 2822) as the title element. The value is the current time as
 		 *  specified by the `$format`.
 		 */
-		public static function getTimeAgo($format){
-			return '<abbr class="timeago" title="' . self::get(DateTime::RFC2822) . '">' . self::get($format) . '</abbr>';
+		public static function getTimeAgo($format = __SYM_TIME_FORMAT__){
+			$time = Widget::Time($string, $format);
+			return $time->generate();
+		}
+
+		/**
+		 * This functions acts as a standard way to get the zones
+		 * available on the system. For PHP5.2, these constants are
+		 * just copied from PHP5.3
+		 *
+		 * @since Symphony 2.3
+		 * @link http://au2.php.net/manual/en/class.datetimezone.php
+		 * @return array
+		 */
+		public static function getZones() {
+			if(PHP_VERSION_ID >= 50300) {
+				$ref = new ReflectionClass('DateTimeZone');
+				return $ref->getConstants();
+			}
+			else {
+				return array(
+					'AFRICA' => 1,
+					'AMERICA' => 2,
+					'ANTARCTICA' => 4,
+					'ARCTIC' => 8,
+					'ASIA' => 16,
+					'ATLANTIC' => 32,
+					'AUSTRALIA' => 64,
+					'EUROPE' => 128,
+					'INDIAN' => 256,
+					'PACIFIC' => 512,
+					'UTC' => 1024
+				);
+			}
+		}
+
+		/**
+		 * This functions acts as a standard way to get the timezones
+		 * regardless of PHP version. It accepts a single parameter,
+		 * zone, which returns the timezones associated with that 'zone'
+		 *
+		 * @since Symphony 2.3
+		 * @link http://au2.php.net/manual/en/class.datetimezone.php
+		 * @link http://au2.php.net/manual/en/datetimezone.listidentifiers.php
+		 * @param string $zone
+		 *  The zone for the timezones the field wants. This maps to the
+		 *  DateTimeZone constants
+		 * @return array
+		 */
+		public static function getTimezones($zone = null) {
+			// PHP5.3 supports the `$what` parameter of the listIdentifiers function
+			if(PHP_VERSION_ID >= 50300) {
+				return DateTimeZone::listIdentifiers(constant('DateTimeZone::' . $zone));
+			}
+			else {
+				$timezones = DateTimeZone::listIdentifiers();
+
+				foreach($timezones as $index => $timezone) {
+					if(stripos($timezone, $zone) === false) unset($timezones[$index]);
+				}
+
+				return $timezones;
+			}
+		}
+
+		/**
+		 * Loads all available timezones using `getTimezones()` and builds an
+		 * array where timezones are grouped by their region (Europe/America etc.)
+		 * The options array that is returned is designed to be used with
+		 * `Widget::Select`
+		 *
+		 * @since Symphony 2.3
+		 * @see core.DateTimeObj#getTimezones()
+		 * @see core.Widget#Select()
+		 * @param string $selected
+		 *  A preselected timezone, defaults to null
+		 * @return array
+		 *  An associative array, for use with `Widget::Select`
+		 */
+		public static function getTimezonesSelectOptions($selected = null){
+			$zones = self::getZones();
+			$groups = array();
+
+			foreach($zones as $zone => $value) {
+				if($value >= 1024) break;
+
+				$timezones = self::getTimezones($zone);
+				$options = array();
+
+				foreach($timezones as $timezone) {
+					$tz = new DateTime('now', new DateTimeZone($timezone));
+
+					$options[] = array($timezone, ($timezone == $selected), sprintf("%s %s",
+						str_replace('_', ' ', substr(strrchr($timezone, '/'),1)),
+						$tz->format('P')
+					));
+				}
+
+				$groups[] = array('label' => ucwords(strtolower($zone)), 'options' => $options);
+			}
+
+			return $groups;
+		}
+
+		/**
+		 * Returns an array of the date formats Symphony supports. These
+		 * formats are a combination of valid PHP format tokens.
+		 *
+		 * @link http://au2.php.net/manual/en/function.date.php
+		 * @since Symphony 2.3
+		 * @return array
+		 */
+		public static function getDateFormats(){
+			return array(
+				'Y/m/d',	// e. g. 2011/01/20
+				'm/d/Y',	// e. g. 01/20/2011
+				'm/d/y',	// e. g. 10/20/11
+				'Y-m-d',	// e. g. 2011-01-20
+				'm-d-Y',	// e. g. 01-20-2011
+				'm-d-y',	// e. g. 01-20-11
+				'd.m.Y',	// e. g. 20.01.2011
+				'j.n.Y',	// e. g. 20.1.2011 - no leading zeros
+				'd.m.y',	// e. g. 20.01.11
+				'j.n.y',	// e. g. 20.1.11 - no leading zeros
+				'd F Y',	// e. g. 20 January 2011
+				'd M Y',	// e. g. 20 Jan 2011
+				'j. F Y',	// e. g. 20. January 2011 - no leading zeros
+				'j. M. Y',	// e. g. 20. Jan. 2011 - no leading zeros
+			);
+		}
+
+		/**
+		 * Returns an array of the date formats Symphony supports by applying
+		 * the format to the current datetime. The array returned is for use with
+		 * `Widget::Select()`
+		 *
+		 * @since Symphony 2.3
+		 * @see core.Widget#Select()
+		 * @param string $selected
+		 *  A preselected date format, defaults to null
+		 * @return array
+		 *  An associative array, for use with `Widget::Select`
+		 */
+		public static function getDateFormatsSelectOptions($selected = null){
+			$formats = self::getDateFormats();
+			$options = array();
+
+			foreach($formats as $option) {
+				$leadingZero = '';
+				if(strpos($option, 'j') !== false || strpos($option, 'n') !== false) {
+					$leadingZero = ' (' . __('no leading zeros') . ')';
+				}
+				$options[] = array($option, $option == $selected, self::format('now', $option) . $leadingZero);
+			}
+
+			return $options;
+		}
+
+		/**
+		 * Returns an array of the time formats Symphony supports. These
+		 * formats are a combination of valid PHP format tokens.
+		 *
+		 * @link http://au2.php.net/manual/en/function.date.php
+		 * @since Symphony 2.3
+		 * @return array
+		 */
+		public static function getTimeFormats(){
+			return array(
+				'H:i:s',	// e. g. 20:45:32
+				'H:i',		// e. g. 20:45
+				'g:i:s a',	// e. g. 8:45:32 pm
+				'g:i a',	// e. g. 8:45 pm
+			);
+		}
+
+		/**
+		 * Returns an array of the time formats Symphony supports by applying
+		 * the format to the current datetime. The array returned is for use with
+		 * `Widget::Select()`
+		 *
+		 * @since Symphony 2.3
+		 * @see core.Widget#Select()
+		 * @param string $selected
+		 *  A preselected time format, defaults to null
+		 * @return array
+		 *  An associative array, for use with `Widget::Select`
+		 */
+		public static function getTimeFormatsSelectOptions($selected = null){
+			$formats = self::getTimeFormats();
+			$options = array();
+
+			foreach($formats as $option) {
+				$options[] = array($option, $option == $selected, self::get($option));
+			}
+
+			return $options;
 		}
 
 	}

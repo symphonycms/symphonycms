@@ -43,19 +43,6 @@
 	abstract Class Event implements iEvent{
 
 		/**
-		 * The end-of-line constant.
-		 * @var string
-		 * @deprecated This will be removed in the next version of Symphony
-		 */
-		const CRLF = PHP_EOL;
-
-		/**
-		 * The class that initialised the Entry, usually the EntryManager
-		 * @var mixed
-		 */
-		protected $_Parent;
-
-		/**
 		 * Represents High Priority, that this event should run first
 		 * @var integer
 		 */
@@ -82,18 +69,14 @@
 		protected $_env = array();
 
 		/**
-		 * The constructor for an Event sets `$this->_Parent` and `$this->_env`
-		 * from the given parameters
+		 * The constructor for an Event sets `$this->_env` from the given parameters
 		 *
-		 * @param Administration $parent
-		 *	The Administration object that this page has been created from
-		 *	passed by reference
+		 * @todo Write the updater that removes the need for `$dummy`.
 		 * @param array $env
-		 *	The environment variables from the Frontend class which includes
-		 *	any params set by Symphony or Datasources or by other Events
+		 *  The environment variables from the Frontend class which includes
+		 *  any params set by Symphony or Datasources or by other Events
 		 */
-		public function __construct(&$parent, Array $env = array()){
-			$this->_Parent = $parent;
+		public function __construct($dummy, array $env = array()){
 			$this->_env = $env;
 		}
 
@@ -121,8 +104,8 @@
 		}
 
 		/**
-		 * Returns a string of HTML or an XMLElement of documentation for the current event. 
-		 * By default this will be an example of a HTML form that can populate the chosen section and 
+		 * Returns a string of HTML or an XMLElement of documentation for the current event.
+		 * By default this will be an example of a HTML form that can populate the chosen section and
 		 * any filter information. Documentation is shown in the Symphony backend when a user tries to
 		 * edit an event but it's `allowEditorToParse()` returns `false`. If this is not implemented by
 		 * the event, a default Symphony message will appear.
@@ -134,9 +117,37 @@
 		}
 
 		/**
+		 * Returns the path to the email-notification-template by looking at the
+		 * `WORKSPACE/template/` directory, then at the `TEMPLATES`
+		 * directory for the convention `notification.*.tpl`. If the template 
+		 * is not found, false is returned
+		 *
+		 * @param string $language
+		 *  Language used in system
+		 * @return mixed
+		 *  String, which is the path to the template if the template is found,
+		 *  false otherwise
+		 */
+		public static function getNotificationTemplate($language) {
+			$langformat = '%s/email.entrycreated.%s.tpl';
+			$defaultformat = '%s/email.entrycreated.tpl';
+			if(file_exists($template = sprintf($langformat, WORKSPACE . '/template', $language)))
+				return $template;
+			elseif(file_exists($template = sprintf($defaultformat, WORKSPACE . '/template')))
+				return $template;
+			elseif(file_exists($template = sprintf($langformat, TEMPLATE, $language)))
+				return $template;
+			elseif(file_exists($template = sprintf($defaultformat, TEMPLATE)))
+				return $template;
+			else
+				return false;
+		}
+
+
+		/**
 		 * Priority determines Event importance and when it should be executed.
 		 * The default priority for an event is `Event::kNORMAL`, with `Event::kHIGH` and
-		 * `Event::kLOW` being the other available options. Events execution is `Event::HIGH`
+		 * `Event::kLOW` being the other available options. Events execution is `Event::kHIGH`
 		 * to `Event::kNORMAL` to `Event::kLOW`. If there are more than one event at the
 		 * same priority level, they are sorted alphabetically by event handle and executed
 		 * in that order for that priority.

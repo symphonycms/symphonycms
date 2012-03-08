@@ -5,55 +5,104 @@
 (function($) {
 
 	/**
-	 * This plugin shows and hides elements based on the value of a select box. 
-	 * If there is only one option, the select box will be hidden and 
+	 * This plugin shows and hides elements based on the value of a select box.
+	 * If there is only one option, the select box will be hidden and
 	 * the single element will be shown.
 	 *
 	 * @name $.symphonyPickable
 	 * @class
 	 *
-	 * @param {Object} custom_settings An object specifying containing the attributes specified below
-	 * @param {String} [custom_settings.pickables='.pickable'] Selector to find items to be pickable
+	 * @param {Object} options An object specifying containing the attributes specified below
+	 * @param {String} [options.pickables='.pickable'] Selector to find items to be pickable
 	 *
 	 *	@example
 
 			$('.picker').symphonyPickable();
 	 */
-	$.fn.symphonyPickable = function(custom_settings) {
+	$.fn.symphonyPickable = function(options) {
 		var objects = $(this),
 			settings = {
+				container: '#contents',
 				pickables: '.pickable'
 			};
 
-		$.extend(settings, custom_settings);
+		$.extend(settings, options);
 
 	/*-----------------------------------------------------------------------*/
 
-		// Pickables
-		var pickables = $(settings.pickables).addClass('pickable');
+		// Switch content
+		objects.on('change.pickable', function(event) {
+			var object = $(this),
+				choice = object.val(),
+				relation = object.attr('name') || object.attr('data-relation'),
+				related = pickables.filter('[data-relation="' + relation + '"]'),
+				selection = pickables.filter('#' + choice),
+				request;
 
-		// Process pickers
-		return objects.each(function() {
-			var picker = $(this),
-				select = picker.find('select'),
-				options = select.find('option');
+			// Hide all choices
+			object.trigger('pickstart.pickable');
+			related.hide();
+
+			// Selection found
+			if(selection.length == 1) {
+				selection.show().trigger('pick.pickable');
+				object.trigger('pickstop.pickable');
+			}
+
+			// Selection not found
+			else {
+				request = object.data('request');
+
+				// Fetch selection
+				if(request) {
+					$.ajax({
+						type: 'GET',
+						url: request,
+						data: { 'choice': choice },
+						dataType: 'html',
+						success: function(selection) {
+							content.append(selection);
+							selection.trigger('pick.pickable');
+							object.trigger('pickstop.pickable');
+						}
+					});
+				}
+			}
+		});
+
+	/*-----------------------------------------------------------------------*/
+
+		var content = $(settings.content),
+			pickables = $(settings.pickables);
+
+		// Make pickable
+		objects.addClass('pickable');
+
+		// Prepare content picking
+		objects.each(function() {
+			var object = $(this),
+				choices = object.find('option'),
+				relation = object.attr('name') || object.attr('data-relation');
 
 			// Multiple items
-			if(options.size() > 1) {
-				options.each(function() {
-					pickables.filter('#' + $(this).val()).hide();
+			if(choices.length > 1) {
+				choices.each(function() {
+					pickables.filter('#' + $(this).val()).attr('data-relation', relation).hide();
 				});
-				select.change(function() {
-					pickables.hide().filter('#' + $(this).val()).show();
-				}).change();
 			}
 
 			// Single item
 			else {
-				picker.hide();
-				pickables.filter('#' + select.val()).removeClass('pickable');
+				object.hide();
 			}
 		});
+
+		// Initialise content
+		objects.trigger('change.pickable');
+
+	/*-----------------------------------------------------------------------*/
+
+		return objects;
 	};
 
 })(jQuery.noConflict());

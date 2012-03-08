@@ -1,0 +1,147 @@
+/*-----------------------------------------------------------------------------
+	Reset
+-----------------------------------------------------------------------------*/
+
+/* Based on Eric Meyer's reset
+ * http://meyerweb.com/eric/tools/css/reset/
+ * v1.0 | 20080212
+ */
+
+html, body, div, span, applet, object, iframe,
+header, nav, section, aside, footer,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 1em;
+	vertical-align: baseline;
+	background: transparent;
+	text-decoration: none;
+}
+input, select, textarea, button {
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+	vertical-align: baseline;
+}
+button::-moz-focus-inner {
+	border:0;
+	padding:0;
+}
+ol, ul {
+	list-style: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+header, nav, section, aside, footer {
+	display: block;
+}
+
+/*-----------------------------------------------------------------------------
+	Shared styles
+-----------------------------------------------------------------------------*/
+
+body {
+	font: 68.75%/1.5 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
+}
+a {
+	color: #3f69a5;
+	text-decoration: underline;
+	cursor: pointer;
+}
+a:hover {
+	color: #000;
+}
+a:active, a:focus {
+	color: #d42;
+}
+h1, h2 {
+	font: 127.28%/1.7 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
+}
+p {
+	margin-bottom: 15px;
+}
+ul, ol {
+	margin: 0 0 15px 25px;
+}
+code,
+.code {
+	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
+	-webkit-tab-size: 4;
+	-moz-tab-size: 4;
+	-ms-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+}
+pre {
+	margin-bottom: 15px;
+}
+pre code {
+	display: block;
+	white-space: pre;
+}
+i code {
+	font-size: 1em;
+	font-size-adjust: 0;
+}
+
+fieldset {
+	position: relative;
+	padding: 10px 0;
+}
+legend {
+	line-height: 1;
+}
+label {
+	display: block;
+	margin-bottom: 15px;
+}
+label input {
+	padding: 2px;
+}
+textarea,
+label input {
+	margin-top: 2px;
+	width: 100%;
+	font-size: 109.09%;
+	font-family: inherit;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	box-sizing: border-box;
+}
+select {
+	width: 100%;
+	display: block;
+	margin-top: 2px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	box-sizing: border-box;
+}
+select[multiple] {
+	width: 100%;
+	height: 10em;
+}
+input[size],
+input[type=radio],
+input[type=checkbox] {
+	display: inline;
+	width: auto;
+	margin-right: 5px;
+}
+button,
+input[type=submit] {
+	font-family: 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
+}

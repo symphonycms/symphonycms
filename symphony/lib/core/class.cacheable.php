@@ -20,7 +20,7 @@
 		 *
 		 * @var MySQL
 		 */
-		public $Database;
+		private $Database;
 
 		/**
 		 * The constructor for the Cacheable takes an instance of the
