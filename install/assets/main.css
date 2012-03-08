@@ -33,14 +33,16 @@ h1 em {
 }
 ul {
 	position: fixed;
-	top: 152px;
-	right: 50%;
-	margin: 0 16.7em 0 0;
-	color: #887;
+	color: rgba(0, 0, 0, 0.4);
 	text-align: right;
 	font-style: normal;
 	list-style: none;
-	font-size: 90.9%;
+	margin: 55px 0 0 -200px;
+	padding: 0 0 18px 0;
+	text-align: right;
+	font-weight: normal;
+	width: 150px;
+
 }
 ul li.selected a {
 	color: #000;
@@ -51,7 +53,7 @@ ul li.more {
 }
 ul li.more a {
 	width: 150px;
-	color: #887;
+	color: rgba(0, 0, 0, 0.4);
 	display: block;
 	text-decoration: none;
 }
