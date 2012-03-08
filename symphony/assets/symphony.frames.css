@@ -120,6 +120,9 @@ span.frame {
 	padding: 0 10px;
 	white-space: nowrap;
 }
+#fatalerror .frame ul ul li.full {
+	white-space: normal;
+}
 #fatalerror .frame ul ul:first-child li:first-child {
 	border-top: none;
 }
