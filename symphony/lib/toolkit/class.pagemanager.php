@@ -571,6 +571,8 @@
 						%s
 					ORDER BY
 						pt.type ASC
+					GROUP BY
+						pt.type
 				",
 				is_null($page_id)
 					? '1'
