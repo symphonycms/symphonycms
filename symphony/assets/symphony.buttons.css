@@ -51,7 +51,7 @@ button.create,
 	border-color: rgba(50, 70, 23, 0.3);
 	border-bottom-color: rgba(50, 70, 23, 0.5);
 	color: rgba(255, 255, 255, 0.9);
-	text-shadow: 0 0 2px rgba(50, 70, 23, 0.5);
+	text-shadow: 1px 1px 1px rgba(50, 70, 23, 0.25);
 }
 
 button.create:hover,
