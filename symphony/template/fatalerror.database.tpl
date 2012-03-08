@@ -17,7 +17,7 @@
 				<h1><em>Symphony Fatal Database Error:</em> %s</h1>
 				<p>An error occurred while attempting to execute the following query</p>
 				<ul>
-					<li class="error">
+					<li class="error full">
 						<code>%s</code>
 					</li>
 				</ul>
