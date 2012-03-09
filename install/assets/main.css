@@ -108,3 +108,10 @@ fieldset fieldset legend {
 .submit {
 	text-align: right;
 }
+dt {
+	font-weight: bold;
+}
+dd {
+	margin-bottom: 15px;
+	color: rgba(0, 0, 0, 0.4);
+}
