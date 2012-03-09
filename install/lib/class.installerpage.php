@@ -35,7 +35,7 @@
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.frames.css', 'screen', 42);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.grids.css', 'screen', 42);
 			$this->addStylesheetToHead(INSTALL_URL . '/assets/main.css', 'screen', 49);
-			$this->addScriptToHead(INSTALL_URL . '/assets/main.js', 50);
+//			$this->addScriptToHead(INSTALL_URL . '/assets/main.js', 50);
 
 			return parent::generate();
 		}
