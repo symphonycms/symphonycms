@@ -66,14 +66,22 @@ ul li.more a:hover {
 h2 {
 	margin-bottom: 10px;
 }
+fieldset + h2 {
+	margin-top: 50px;
+}
 fieldset {
-	margin-top: 30px;
+	margin: 50px 0 0;
+	padding: 10px 0 0;
 }
 fieldset legend {
 	font-size: 127.28%;
 }
+fieldset > .columns:last-child .column {
+	margin-bottom: 0;
+}
 fieldset fieldset {
 	padding-top: 30px !important;
+	margin: 5px 0 0 !important;
 }
 fieldset fieldset legend {
 	position: absolute;
