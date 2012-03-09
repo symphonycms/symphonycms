@@ -366,8 +366,8 @@
 		Filtering:
 	-------------------------------------------------------------------------*/
 
-		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null){
-			parent::displayDatasourceFilterPanel($wrapper, $data, $errors);
+		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+			parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
 
 			$data = preg_split('/,\s*/i', $data);
 			$data = array_map('trim', $data);

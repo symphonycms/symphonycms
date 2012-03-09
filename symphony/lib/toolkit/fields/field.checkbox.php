@@ -165,8 +165,8 @@
 		Filtering:
 	-------------------------------------------------------------------------*/
 
-		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null){
-			parent::displayDatasourceFilterPanel($wrapper, $data, $errors);
+		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+			parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
 
 			$existing_options = array('yes', 'no');
 
