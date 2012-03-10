@@ -105,6 +105,7 @@ label {
 	display: block;
 	margin-bottom: 15px;
 }
+input[type=password],
 input[type=text],
 textarea,
 select[multiple] {
@@ -127,6 +128,8 @@ select[multiple] {
 input[type=text] {
 	height: 22px;
 }
+input[type=password]:active,
+input[type=password]:focus,
 input[type=text]:active,
 input[type=text]:focus,
 textarea:active,
