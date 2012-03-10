@@ -147,7 +147,7 @@ input[type=submit] {
 }
 a,
 select,
-input,
+input[type="reset"], input[type=button], input[type=submit],
 textarea,
 option,
 fieldset/*,
@@ -157,5 +157,13 @@ input:hover, input:focus, input:active,
 textarea:hover, textarea:focus, textarea:active,
 option:hover, option:focus, option:active,
 fieldset:hover, fieldset:focus, fieldset:active*/ {
-    outline: 0;
+	outline: 0;
+}
+button::-moz-focus-inner,
+input[type="reset"]::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner,
+select::-moz-focus-inner,
+input[type="file"] > input[type="button"]::-moz-focus-inner {
+	border: none;
 }

@@ -547,12 +547,12 @@ div.notifier nav:hover:before {
 	color: rgba(255, 255, 255, 0.85);
 	text-decoration: none;
 }
-#header h1 a:hover, #header h1 a:active, #header h1 a:focus,
-#session a:hover, #session a:active, #session a:focus {
+#header h1 a:hover, #header h1 a:focus,
+#session a:hover, #session a:focus {
 	color: rgba(255, 255, 255, 0.99);
 }
-#header h1 a:focus,
-#session a:focus {
+#header h1 a:active, #header h1 a:focus,
+#session a:active, #session a:focus {
 	border-bottom: 1px solid white;
 }
 #session {
@@ -735,7 +735,7 @@ div.notifier nav:hover:before {
 	text-decoration: none;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
-#breadcrumbs a:hover {
+#breadcrumbs a:hover, #breadcrumbs a:focus {
 	border-bottom-color: #a9a9a9;
 	color: rgba(0, 0, 0, 0.8);
 }
