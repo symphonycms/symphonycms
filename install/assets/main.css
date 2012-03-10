@@ -81,7 +81,8 @@ ul li.more a:hover {
 h2 {
 	margin-bottom: 10px;
 }
-fieldset + h2 {
+fieldset + h2,
+p + h2 {
 	margin-top: 50px;
 }
 fieldset {
@@ -124,9 +125,18 @@ fieldset fieldset legend {
 	text-align: right;
 }
 dt {
-	font-weight: bold;
+	font-weight: normal;
+	color: rgba(0, 0, 0, 0.4);
+	margin-bottom: 5px;
 }
 dd {
 	margin-bottom: 15px;
-	color: rgba(0, 0, 0, 0.4);
+	font-weight: normal;
+	margin-left: 10px;
+	position: relative;
+}
+dd:before {
+	content: "\00b7";
+	float: left;
+	margin: 0 0 0 -10px;
 }
