@@ -146,7 +146,7 @@ tr.selected td {
 	background-image:   linear-gradient(to bottom, #668abe, #5c83ba);
 	border-bottom: 1px solid #7492bc;
 	border-top: 1px solid #4D78B4;
-	text-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+/*	text-shadow: 1px 1px rgba(0, 0, 0, 0.2);*/
 }
 tr.selected td,
 tr.selected a,
@@ -156,7 +156,7 @@ tr.selecting a {
 }
 tr.selected .inactive {
 	color: rgba(255, 255, 255, 0.6);
-	text-shadow: 0 1px 1px rgb(63, 105, 165);
+/*	text-shadow: 0 1px 1px rgb(63, 105, 165);*/
 }
 
 /* Orderable */
