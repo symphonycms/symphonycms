@@ -145,3 +145,17 @@ button,
 input[type=submit] {
 	font-family: 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 }
+a,
+select,
+input,
+textarea,
+option,
+fieldset/*,
+a:hover, a:focus, a:active,
+select:hover, select:focus, select:active,
+input:hover, input:focus, input:active,
+textarea:hover, textarea:focus, textarea:active,
+option:hover, option:focus, option:active,
+fieldset:hover, fieldset:focus, fieldset:active*/ {
+    outline: 0;
+}

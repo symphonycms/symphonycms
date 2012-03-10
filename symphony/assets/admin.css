@@ -482,7 +482,9 @@ div.notifier nav:hover:before {
 	border-bottom: 1px solid #7c7c7c;
 	margin: 0 3px;
 }
-.notice a:hover {
+.notice a:hover,
+.notice a:active,
+.notice a:focus {
 	color: #e4ece4;
 	border-color: #9b9b9b;
 	text-decoration: none;
@@ -545,8 +547,13 @@ div.notifier nav:hover:before {
 	color: rgba(255, 255, 255, 0.85);
 	text-decoration: none;
 }
-#header h1 a:hover, #session a:hover {
+#header h1 a:hover, #header h1 a:active, #header h1 a:focus,
+#session a:hover, #session a:active, #session a:focus {
 	color: rgba(255, 255, 255, 0.99);
+}
+#header h1 a:focus,
+#session a:focus {
+	border-bottom: 1px solid white;
 }
 #session {
 	margin: -30px 0 0;

@@ -117,9 +117,11 @@ fieldset.apply select {
 	-ms-appearance: none;
 	-o-appearance: none;
 	appearance: none;
+	/* DavidOliver's note: start: causing outline when selected: */
 	background: transparent;
 	border: none;
 	border-radius: 5px;
+	/* DavidOliver's note: end: causing outline when selected: */
 	color: rgb(60, 60, 60);
 	cursor: pointer;
 	display: block;
