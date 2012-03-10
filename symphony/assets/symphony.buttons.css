@@ -38,6 +38,12 @@ button:focus,
 	cursor: pointer;
 }
 
+input[type=submit][disabled=disabled]:hover,
+input[type=submit][disabled=disabled]:active,
+input[type=submit][disabled=disabled]:focus {
+	cursor: not-allowed;
+}
+
 /* Create buttons */
 
 button.create,

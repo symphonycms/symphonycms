@@ -42,7 +42,6 @@ ul {
 	text-align: right;
 	font-weight: normal;
 	width: 150px;
-
 }
 ul li.selected a {
 	color: #000;
@@ -59,6 +58,22 @@ ul li.more a {
 }
 ul li.more a:hover {
 	text-decoration: underline;
+}
+
+/* Multiple errors */
+.invalid ul {
+	position: static;
+	margin: 0 0 0 13px;
+	padding: 0;
+	width: auto;
+	text-align: left;
+}
+.invalid li {
+	color: rgba(255, 255, 255, 0.7);
+	list-style-type: square;
+}
+.invalid li + li {
+	margin-top: 10px;
 }
 
 /* Content */
