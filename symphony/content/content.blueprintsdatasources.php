@@ -130,15 +130,17 @@
 
 				$fields['source'] = $existing->getSource();
 
+				$provided = false;
 				if(!empty($providers)) {
 					foreach($providers as $providerClass => $provider) {
 						if($fields['source'] == $providerClass::getClass()) {
 							$fields = array_merge($fields, $existing->settings());
+							$provided = true;
 							break;
 						}
 					}
 				}
-				else {
+				if($provided == false) {
 					switch($fields['source']){
 						case 'authors':
 							$fields['filter']['author'] = $existing->dsParamFILTERS;
