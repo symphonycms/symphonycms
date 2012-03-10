@@ -398,11 +398,7 @@
 			$Submit = new XMLElement('div', null, array('class' => 'submit'));
 			$Submit->appendChild(Widget::Input('lang', Lang::get(), 'hidden'));
 
-			$button = Widget::Input('action[install]', __('Install Symphony'), 'submit');
-			if(!empty($this->_params['errors'])) {
-				$button->setAttribute('disabled', 'disabled');
-			}
-			$Submit->appendChild($button);
+			$Submit->appendChild(Widget::Input('action[install]', __('Install Symphony'), 'submit'));
 
 			$this->Form->appendChild($Submit);
 		}
