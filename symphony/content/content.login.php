@@ -26,7 +26,7 @@
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.buttons.css', 'screen', 42);
 
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Login'), __('Symphony'))));
-			
+
 			$this->Body->setAttribute('id', 'login');
 
 			Symphony::Profiler()->sample('Page template created', PROFILE_LAP);
@@ -46,7 +46,7 @@
 
 			if(!$emergency && Administration::instance()->isLoggedIn()) redirect(SYMPHONY_URL);
 
-			$this->Form = Widget::Form('', 'post');
+			$this->Form = Widget::Form(SYMPHONY_URL . '/login/', 'post');
 			$this->Form->setAttribute('class', 'frame');
 
 			$this->Form->appendChild(new XMLElement('h1', __('Symphony')));
@@ -66,15 +66,10 @@
 
 					$label = Widget::Label(__('Email Address'));
 					$label->appendChild(Widget::Input('email', $_POST['email'], 'text', array('autofocus' => 'autofocus')));
-
 					if(isset($this->_email_sent) && !$this->_email_sent){
-						$div = new XMLElement('div', NULL, array('class' => 'invalid'));
-						$div->appendChild($label);
-						$div->appendChild(new XMLElement('p', __('There was a problem locating your account. Please check that you are using the correct email address.')));
-						$fieldset->appendChild($div);
+						$label = Widget::Error($label, __('There was a problem locating your account. Please check that you are using the correct email address.'));
 					}
-
-					else $fieldset->appendChild($label);
+					$fieldset->appendChild($label);
 
 					$this->Form->appendChild($fieldset);
 
@@ -94,15 +89,10 @@
 
 				$label = Widget::Label(__('Confirm New Password'));
 				$label->appendChild(Widget::Input('password-confirmation', NULL, 'password'));
-
 				if($this->_mismatchedPassword){
-					$div = new XMLElement('div', NULL, array('class' => 'invalid'));
-					$div->appendChild($label);
-					$div->appendChild(new XMLElement('p', __('The supplied password was rejected. Make sure it is not empty and that password matches password confirmation.')));
-					$fieldset->appendChild($div);
+					$label = Widget::Error($label, __('The supplied password was rejected. Make sure it is not empty and that password matches password confirmation.'));
 				}
-
-				else $fieldset->appendChild($label);
+				$fieldset->appendChild($label);
 
 				$this->Form->appendChild($fieldset);
 
@@ -116,20 +106,20 @@
 				$fieldset->appendChild(new XMLElement('legend', __('Login')));
 
 				$label = Widget::Label(__('Username'));
-				$label->appendChild(Widget::Input('username', null, 'text', array('autofocus' => 'autofocus')));
+				$label->appendChild(Widget::Input('username', $_POST['username'], 'text', array('autofocus' => 'autofocus')));
+				if(isset($_POST['action']) && empty($_POST['username'])) {
+					$label = Widget::Error($label, __('No username was entered.'));
+				}
 				$fieldset->appendChild($label);
 
 				$label = Widget::Label(__('Password'));
 				$label->appendChild(Widget::Input('password', NULL, 'password'));
-
 				if($this->_invalidPassword){
-					$div = new XMLElement('div', NULL, array('class' => 'invalid'));
-					$div->appendChild($label);
-					$div->appendChild(new XMLElement('p', __('The supplied password was rejected.') . ' <br /><a href="' . SYMPHONY_URL.'/login/retrieve-password/">' . __('Retrieve password?') . '</a>'));
-					$fieldset->appendChild($div);
+					$label =  Widget::Error($label, __('The supplied password was rejected.') .
+						' <br /><a href="' . SYMPHONY_URL.'/login/retrieve-password/">'. __('Retrieve password?') . '</a>'
+					);
 				}
-
-				else $fieldset->appendChild($label);
+				$fieldset->appendChild($label);
 
 				$this->Form->appendChild($fieldset);
 

@@ -107,7 +107,11 @@
 		--------------------------------------------------------------------------*/
 
 		// Duplicators
-		$('.filters-duplicator').symphonyDuplicator();
+		$('.filters-duplicator')
+			.symphonyDuplicator()
+			.on('constructshow.duplicator', function() {
+				$('.tags').symphonyTags();
+			});
 
 		// Field editor
 		$('#fields-duplicator')

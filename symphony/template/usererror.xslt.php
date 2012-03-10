@@ -36,7 +36,7 @@
 			$errors_grouped['xml'][] = array('line'=>$matches[1][0], 'raw'=>$val);
 
 		elseif(preg_match_all('/pages\/([^.\/]+\.xsl)\s+line\s+(\d+)/i', $val['message'], $matches))
-				$errors_grouped['page'][$matches[1][0]][] = array('line'=>$matches[2][0], 'raw'=>$val);
+			$errors_grouped['page'][$matches[1][0]][] = array('line'=>$matches[2][0], 'raw'=>$val);
 
 		elseif(preg_match_all('/utilities\/([^.\/]+\.xsl)\s+line\s+(\d+)/i', $val['message'], $matches))
 			$errors_grouped['utility'][$matches[1][0]][] = array('line'=>$matches[2][0], 'raw'=>$val);
@@ -62,13 +62,13 @@
 				$line = null;
 
 				foreach($data as $index => $e) {
-					
+
 					// Highlight error
 					$class = array();
 					if(strpos($data[$index + 1]['message'], '^') !== false) {
 						$class = array('class' => 'error');
 					}
-	
+
 					// Don't show markers
 					if(strpos($e['message'], '^') === false) {
 						$parts = explode('(): ', $e['message']);
@@ -78,18 +78,18 @@
 						if($data[$index - 1]['parts'][0] != $e['parts'][0] || (strpos($data[$index - 1]['message'], '^') !== false && $data[$index - 2]['message'] != $data[$index + 1]['message'])) {
 							$list->appendChild(
 								new XMLElement(
-									'li', 
+									'li',
 									'<code><em>' . $e['parts'][0] . ' ' . $current[1] . '</em></code>'
 								)
 							);
 						}
-						
+
 						// Store current file and line
 						if(count($current) > 2) {
 							$file = $current[1];
 							$line = $current[2];
 						}
-						
+
 						// Error
 						if(!empty($class)) {
 							if(strpos($data[$index + 3]['message'], $parts[1]) === false) {
@@ -97,14 +97,14 @@
 								$length = max(0, strlen($position[1]) - 1);
 								$list->appendChild(
 									new XMLElement(
-										'li', 
-										'<code>&#160;&#160;&#160;&#160;' . str_replace(' ', '&#160;', trim(htmlspecialchars(substr($parts[1], 0, $length))) . '<b>' . htmlspecialchars(substr($parts[1], $length, 1)) . '</b>' . htmlspecialchars(substr($parts[1], $length + 1))) . '</code>', 
+										'li',
+										'<code>&#160;&#160;&#160;&#160;' . str_replace(' ', '&#160;', trim(htmlspecialchars(substr($parts[1], 0, $length))) . '<b>' . htmlspecialchars(substr($parts[1], $length, 1)) . '</b>' . htmlspecialchars(substr($parts[1], $length + 1))) . '</code>',
 										$class
 									)
 								);
-								
+
 								// Show in debug
-								$filename = explode('/symphony-2/workspace/', $file);
+								$filename = explode(WORKSPACE . '/', $file);
 								$list->appendChild(
 									new XMLElement(
 										'li',
@@ -113,12 +113,12 @@
 								);
 							}
 						}
-						
+
 						// Message
 						else {
 							$list->appendChild(
 								new XMLElement(
-									'li', 
+									'li',
 									'<code>&#160;&#160;&#160;&#160;' . (strpos($e['parts'][1], '/') !== 0 ? $e['parts'][1] . ' ' : '') . str_replace(' ', '&#160;', $e['parts'][2]) . '</code>'
 								)
 							);
@@ -140,23 +140,25 @@
 					$list = new XMLElement('ul');
 
 					foreach($errors as $e){
-						$parts = explode('(): ', $e['raw']['message']);
-					
+						if(!is_array($e)) continue;
+
+						$parts = explode('(): ', $e['message']);
+
 						$list->appendChild(
 							new XMLElement(
-								'li', 
+								'li',
 								'<code><em>' . $parts[0] . '():</em></code>'
 							)
 						);
 						$list->appendChild(
 							new XMLElement(
-								'li', 
+								'li',
 								'<code>&#160;&#160;&#160;&#160;' . $parts[1] . '</code>'
 							)
 						);
 						$list->appendChild(
 							new XMLElement(
-								'li', 
+								'li',
 								'<code>&#160;&#160;&#160;&#160;<a href="?debug=/workspace/pages/' .  $filename . $query_string . '#line-' . $e['line'] .'" title="'
 							. __('Show debug view for %s', array($filename)) . '">' . __('Show line %d in debug view', array($e['line'])) . '</a></code>'
 							)
@@ -177,23 +179,25 @@
 					$list = new XMLElement('ul');
 
 					foreach($errors as $e){
-						$parts = explode('(): ', $e['raw']['message']);
-					
+						if(!is_array($e)) continue;
+
+						$parts = explode('(): ', $e['message']);
+
 						$list->appendChild(
 							new XMLElement(
-								'li', 
+								'li',
 								'<code><em>' . $parts[0] . '():</em></code>'
 							)
 						);
 						$list->appendChild(
 							new XMLElement(
-								'li', 
+								'li',
 								'<code>&#160;&#160;&#160;&#160;' . $parts[1] . '</code>'
 							)
 						);
 						$list->appendChild(
 							new XMLElement(
-								'li', 
+								'li',
 								'<code>&#160;&#160;&#160;&#160;<a href="?debug=/workspace/utilities/' .  $filename . $query_string . '#line-' . $e['line'] .'" title="'
 							. __('Show debug view for %s', array($filename)) . '">' . __('Show line %d in debug view', array($e['line'])) . '</a></code>'
 							)
@@ -214,25 +218,32 @@
 					$list = new XMLElement('ul');
 
 					foreach($errors as $e){
-						$parts = explode('(): ', $e['raw']['message']);
-					
+						if(!is_array($e)) continue;
+
+						$parts = explode('(): ', $e['message']);
+
+						// The line in the exception is where it was thrown, it's
+						// useless for the ?debug view. This gets the line from
+						// the ?debug page.
+						preg_match('/:\s(\d+)$/', $parts[1], $line);
+
 						$list->appendChild(
 							new XMLElement(
-								'li', 
+								'li',
 								'<code><em>' . $parts[0] . '():</em></code>'
 							)
 						);
 						$list->appendChild(
 							new XMLElement(
-								'li', 
+								'li',
 								'<code>&#160;&#160;&#160;&#160;' . $parts[1] . '</code>'
 							)
 						);
 						$list->appendChild(
 							new XMLElement(
-								'li', 
-								'<code>&#160;&#160;&#160;&#160;<a href="?debug=xml' . $query_string . '#line-' . $e['line'] .'" title="'
-							. __('Show debug view for XML', array($filename)) . '">' . __('Show line %d in debug view', array($e['line'])) . '</a></code>'
+								'li',
+								'<code>&#160;&#160;&#160;&#160;<a href="?debug=xml' . $query_string . '#line-' . $line[1] .'" title="'
+							. __('Show debug view for XML', array($filename)) . '">' . __('Show line %d in debug view', array($line[1])) . '</a></code>'
 							)
 						);
 					}
