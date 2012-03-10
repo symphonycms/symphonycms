@@ -30,8 +30,12 @@
 			$this->setTitle($this->_page_title);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 1);
 
-			$this->addStylesheetToHead(INSTALL_URL . '/assets/main.css', 'screen', 40);
-			$this->addScriptToHead(INSTALL_URL . '/assets/main.js', 50);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.basic.css', 'screen', 40);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.buttons.css', 'screen', 41);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.frames.css', 'screen', 42);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.grids.css', 'screen', 42);
+			$this->addStylesheetToHead(INSTALL_URL . '/assets/main.css', 'screen', 49);
+//			$this->addScriptToHead(INSTALL_URL . '/assets/main.js', 50);
 
 			return parent::generate();
 		}
@@ -50,7 +54,7 @@
 				$title->appendChild($extra);
 			}
 
-			$this->Body->appendChild($title);
+			$this->Form->appendChild($title);
 
 			if(isset($this->_params['show-languages']) && $this->_params['show-languages']){
 				$languages = new XMLElement('ul');
@@ -75,7 +79,7 @@
 					array('class' => 'more')
 				));
 
-				$this->Body->appendChild($languages);
+				$this->Form->appendChild($languages);
 			}
 
 			$this->Body->appendChild($this->Form);
@@ -211,10 +215,10 @@
 			 */
 			$div = new XMLElement('div');
 			$div->appendChild(
-				new XMLElement('h2', __('Hello! You are about to install Symphony, a flexible and powerful CMS that gives you full control of your content.'))
+				new XMLElement('h2', __('Hey! This is a cool message written by Allen Chang introducing you to the  Symphony ninja style.'))
 			);
 			$div->appendChild(
-				new XMLElement('p', __('It won\'t take more than a minute or two to install, so there\'s no need to put the kettle on just yet.'))
+				new XMLElement('p', __('Still seeing this message? Well, Allen seems not to have finished his text yet. Sorry!'))
 			);
 			$this->Form->appendChild($div);
 
@@ -247,7 +251,7 @@
 				$label, $Environment
 			);
 
-			$Fieldset = new XMLElement('fieldset');
+			$Fieldset = new XMLElement('fieldset', null, array('class' => 'frame'));
 			$Fieldset->appendChild(new XMLElement('legend', __('Date and Time')));
 			$Fieldset->appendChild(new XMLElement('p', __('Customise how Date and Time values are displayed throughout the Administration interface.')));
 
@@ -290,9 +294,9 @@
 			);
 
 			// Database credentials
-			$Div = new XMLElement('div', null, array('class' => 'group'));
-			$Div->appendChild(Widget::label(__('Username'), Widget::input('fields[database][user]', $fields['database']['user'])));
-			$Div->appendChild(Widget::label(__('Password'), Widget::input('fields[database][password]', $fields['database']['password'], 'password')));
+			$Div = new XMLElement('div', null, array('class' => 'two columns'));
+			$Div->appendChild(Widget::label(__('Username'), Widget::input('fields[database][user]', $fields['database']['user']), 'column'));
+			$Div->appendChild(Widget::label(__('Password'), Widget::input('fields[database][password]', $fields['database']['password'], 'password'), 'column'));
 			$Database->appendChild($Div);
 
 			$this->__appendError(
@@ -301,14 +305,14 @@
 			);
 
 			// Advanced configuration
-			$Fieldset = new XMLElement('fieldset');
+			$Fieldset = new XMLElement('fieldset', null, array('class' => 'frame'));
 			$Fieldset->appendChild(new XMLElement('legend', __('Advanced Configuration')));
 			$Fieldset->appendChild(new XMLElement('p', __('Leave these fields unless you are sure they need to be changed.')));
 
 			// Advanced configuration: Host, Port
-			$Div = new XMLElement('div', null, array('class' => 'group'));
-			$Div->appendChild(Widget::label(__('Host'), Widget::input('fields[database][host]', $fields['database']['host'])));
-			$Div->appendChild(Widget::label(__('Port'), Widget::input('fields[database][port]', $fields['database']['port'])));
+			$Div = new XMLElement('div', null, array('class' => 'two columns'));
+			$Div->appendChild(Widget::label(__('Host'), Widget::input('fields[database][host]', $fields['database']['host']), 'column'));
+			$Div->appendChild(Widget::label(__('Port'), Widget::input('fields[database][port]', $fields['database']['port']), 'column'));
 			$Fieldset->appendChild($Div);
 
 			$this->__appendError(
@@ -351,9 +355,9 @@
 			$Permissions->appendChild(new XMLElement('legend', __('Permission Settings')));
 			$Permissions->appendChild(new XMLElement('p', __('Symphony needs permission to read and write both files and directories.')));
 
-			$Div = new XMLElement('div', null, array('class' => 'group'));
-			$Div->appendChild(Widget::label(__('Files'), Widget::input('fields[file][write_mode]', $fields['file']['write_mode'])));
-			$Div->appendChild(Widget::label(__('Directories'), Widget::input('fields[directory][write_mode]', $fields['directory']['write_mode'])));
+			$Div = new XMLElement('div', null, array('class' => 'two columns'));
+			$Div->appendChild(Widget::label(__('Files'), Widget::input('fields[file][write_mode]', $fields['file']['write_mode']), 'column'));
+			$Div->appendChild(Widget::label(__('Directories'), Widget::input('fields[directory][write_mode]', $fields['directory']['write_mode']), 'column'));
 
 			$Permissions->appendChild($Div);
 			$this->Form->appendChild($Permissions);
@@ -377,9 +381,9 @@
 			);
 
 			// Password
-			$Div = new XMLElement('div', null, array('class' => 'group'));
-			$Div->appendChild(Widget::label(__('Password'), Widget::input('fields[user][password]', $fields['user']['password'], 'password')));
-			$Div->appendChild(Widget::label(__('Confirm Password'), Widget::input('fields[user][confirm-password]', $fields['user']['confirm-password'], 'password')));
+			$Div = new XMLElement('div', null, array('class' => 'two columns'));
+			$Div->appendChild(Widget::label(__('Password'), Widget::input('fields[user][password]', $fields['user']['password'], 'password'), 'column'));
+			$Div->appendChild(Widget::label(__('Confirm Password'), Widget::input('fields[user][confirm-password]', $fields['user']['confirm-password'], 'password'), 'column'));
 			$User->appendChild($Div);
 
 			$this->__appendError(
@@ -388,14 +392,14 @@
 			);
 
 			// Personal information
-			$Fieldset = new XMLElement('fieldset');
+			$Fieldset = new XMLElement('fieldset', null, array('class' => 'frame'));
 			$Fieldset->appendChild(new XMLElement('legend', __('Personal Information')));
 			$Fieldset->appendChild(new XMLElement('p', __('Please add the following personal details for this user.')));
 
 			// Personal information: First Name, Last Name
-			$Div = new XMLElement('div', null, array('class' => 'group'));
-			$Div->appendChild(Widget::label(__('First Name'), Widget::input('fields[user][firstname]', $fields['user']['firstname'])));
-			$Div->appendChild(Widget::label(__('Last Name'), Widget::input('fields[user][lastname]', $fields['user']['lastname'])));
+			$Div = new XMLElement('div', null, array('class' => 'two columns'));
+			$Div->appendChild(Widget::label(__('First Name'), Widget::input('fields[user][firstname]', $fields['user']['firstname']), 'column'));
+			$Div->appendChild(Widget::label(__('Last Name'), Widget::input('fields[user][lastname]', $fields['user']['lastname']), 'column'));
 			$Fieldset->appendChild($Div);
 
 			$this->__appendError(
@@ -438,7 +442,7 @@
 			}
 
 			if(!empty($codes)){
-				$class = 'warning';
+				$class = 'invalid';
 				if($element->getAttribute('class')) {
 					$class = $element->getAttribute('class') . ' ' . $class;
 				}
