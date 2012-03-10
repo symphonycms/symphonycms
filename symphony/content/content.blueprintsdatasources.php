@@ -207,15 +207,16 @@
 			$group = new XMLElement('div');
 			$group->setAttribute('class', 'two columns');
 
-			$div = new XMLElement('div');
-			$label = Widget::Label(__('Name'), NULL, 'column');
+			$div = new XMLElement('div', NULL, array('class' => 'column'));
+			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
 
 			if(isset($this->_errors['name'])) $div->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $div->appendChild($label);
 			$group->appendChild($div);
 
-			$label = Widget::Label(__('Source'), NULL, 'column');
+			$div = new XMLElement('div', NULL, array('class' => 'column'));
+			$label = Widget::Label(__('Source'));
 
 			$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 
@@ -257,7 +258,8 @@
 			}
 
 			$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'ds-context')));
-			$group->appendChild($label);
+			$div->appendChild($label);
+			$group->appendChild($div);
 
 			$fieldset->appendChild($group);
 			$this->Form->appendChild($fieldset);
