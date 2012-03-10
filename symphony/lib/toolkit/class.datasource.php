@@ -17,6 +17,7 @@
 	 * Symphony backend, which uses a Datasource template defined in
 	 * `TEMPLATE . /datasource.tpl`.
 	 */
+
 	Class DataSource{
 
 		/**
@@ -119,7 +120,26 @@
 		 *	The current parameter pool that this Datasource can use when filtering
 		 *	and finding Entries or data.
 		 */
-		public function grab(array $param = array()) {}
+		public function grab(&$param_pool=NULL){
+			$result = new XMLElement($this->dsParamROOTELEMENT);
+			
+			try{
+				$result = $this->execute($param_pool);
+			}
+			catch(FrontendPageNotFoundException $e){
+				// Work around. This ensures the 404 page is displayed and
+				// is not picked up by the default catch() statement below
+				FrontendPageNotFoundExceptionHandler::render($e);
+			}
+			catch(Exception $e){
+				$result->appendChild(new XMLElement('error', $e->getMessage()));
+				return $result;
+			}
+
+			if($this->_force_empty_result) $result = $this->emptyXMLSet();
+
+			return $result;
+		}
 
 		/**
 		 * By default, all Symphony filters are considering to be AND filters, that is
@@ -366,7 +386,6 @@
 
 			return null;
 		}
-
 	}
 
 	/**
@@ -382,3 +401,9 @@
 	 * @var integer
 	 */
 	define_safe('DS_FILTER_OR', 2);
+
+	require_once(TOOLKIT . '/data-sources/class.datasource.author.php');
+	require_once(TOOLKIT . '/data-sources/class.datasource.section.php');
+	require_once(TOOLKIT . '/data-sources/class.datasource.static.php');
+	require_once(TOOLKIT . '/data-sources/class.datasource.dynamic_xml.php');
+	require_once(TOOLKIT . '/data-sources/class.datasource.navigation.php');

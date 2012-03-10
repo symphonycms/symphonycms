@@ -2,7 +2,7 @@
 
 	require_once(TOOLKIT . '/class.event.php');
 
-	Class event<!-- CLASS NAME --> extends Event{
+	Class event<!-- CLASS NAME --> extends <!-- CLASS EXTENDS -->{
 
 		const ROOTELEMENT = '<!-- ROOT ELEMENT -->';
 
@@ -38,11 +38,6 @@
 
 		public function load(){
 			if(isset($_POST['action']['<!-- TRIGGER CONDITION -->'])) return $this->__trigger();
-		}
-
-		protected function __trigger(){
-			include(TOOLKIT . '/events/event.section.php');
-			return $result;
 		}
 
 	}

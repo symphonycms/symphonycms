@@ -279,6 +279,8 @@
 			$classname = Lang::createHandle($fields['name'], 255, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
 
+			$extends = 'SectionEvent';
+
 			// Check to make sure the classname is not empty after handlisation.
 			if(empty($classname) && !isset($this->_errors['name'])) $this->_errors['name'] = __('Please ensure name contains at least one Latin-based alphabet.', array($classname));
 
@@ -462,6 +464,7 @@
 				$documentation = str_replace('\'', '\\\'', $documentation);
 
 				$eventShell = str_replace('<!-- CLASS NAME -->', $classname, $eventShell);
+				$eventShell = str_replace('<!-- CLASS EXTENDS -->', $extends, $eventShell);
 				$eventShell = str_replace('<!-- SOURCE -->', $source, $eventShell);
 				$eventShell = str_replace('<!-- DOCUMENTATION -->', General::tabsToSpaces($documentation, 2), $eventShell);
 				$eventShell = str_replace('<!-- ROOT ELEMENT -->', $rootelement, $eventShell);

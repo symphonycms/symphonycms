@@ -40,6 +40,7 @@
 	 * Symphony backend, which uses an event template defined in `TEMPLATE . /event.tpl`
 	 * Events implement the iEvent interface, which defines the load and about functions.
 	 */
+
 	abstract Class Event implements iEvent{
 
 		/**
@@ -170,5 +171,9 @@
 		 *	Typically returns an XMLElement with the event information (success
 		 *	or failure included
 		 */
-		abstract protected function __trigger();
+		protected function __trigger(){
+			return $this->execute();
+		}
 	}
+
+	require_once(TOOLKIT . '/events/class.event.section.php');
