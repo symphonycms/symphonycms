@@ -25,9 +25,62 @@
 		const NAV_CHILD = 0;
 
 		/**
+		 * An associative array of the providers exposed by this extension. The
+		 * only valid key at the moment is `data-sources`, with a value of an
+		 * array of classname's and human readable object names.
+		 *
+		 * @since Symphony 2.3
+		 * @var array
+		 */
+		private static $provides = array();
+
+		/**
 		 * Default constructor for an Extension, at this time it does nothing
 		 */
 		public function __construct() {}
+
+		/**
+		 * Register all the providers that are exposed by this extension. At the
+		 * moment the core only supports `data-sources` objects, but this is
+		 * expected to change in the future
+		 *
+		 * @since Symphony 2.3
+		 * @return boolean
+		 *  This function will always return true (at the moment)
+		 */
+		public static function registerProviders() {
+			self::$provides = array(
+				'data-sources' => array(
+					'RemoteDatasource' => RemoteDatasource::getName()
+				)
+			);
+
+			return true;
+		}
+
+		/**
+		 * Accessor function determines if this extension provides any objects
+		 * of a given `$type`. If no `$type` is provided, this function will
+		 * return all provider objects.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $type
+		 *  The type of provider object to return, `data-sources` is the only
+		 *  valid type at this time.
+		 * @return array
+		 *  If no providers are found, then an empty array is returned, otherwise
+		 *  an associative array of classname => human name will be returned.
+		 *  eg. `array('RemoteDatasource' => 'Remote Datasource')`
+		 */
+		public static function providerOf($type = null) {
+			self::registerProviders();
+
+			if(is_null($type)) return self::$provides;
+
+			if(!isset(self::$provides[$type])) return array();
+
+			return self::$provides[$type];
+		}
 
 		/**
 		 * Any logic that assists this extension in being installed such as
