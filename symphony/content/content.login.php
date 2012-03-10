@@ -46,7 +46,7 @@
 
 			if(!$emergency && Administration::instance()->isLoggedIn()) redirect(SYMPHONY_URL);
 
-			$this->Form = Widget::Form('', 'post');
+			$this->Form = Widget::Form(SYMPHONY_URL.'/login/', 'post');
 			$this->Form->setAttribute('class', 'frame');
 
 			$this->Form->appendChild(new XMLElement('h1', __('Symphony')));

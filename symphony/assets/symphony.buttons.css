@@ -48,7 +48,7 @@ input[type=submit][disabled=disabled]:focus {
 
 button.create,
 .button.create {
-	background-color: none;
+	background-color: #83b340;
 	background-image: -webkit-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
 	background-image:    -moz-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
 	background-image:     -ms-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
@@ -117,9 +117,11 @@ fieldset.apply select {
 	-ms-appearance: none;
 	-o-appearance: none;
 	appearance: none;
+	/* DavidOliver's note: start: causing outline when selected: */
 	background: transparent;
 	border: none;
 	border-radius: 5px;
+	/* DavidOliver's note: end: causing outline when selected: */
 	color: rgb(60, 60, 60);
 	cursor: pointer;
 	display: block;

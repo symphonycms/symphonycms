@@ -288,7 +288,7 @@
 			$Div->appendChild(Widget::label(__('Username'), Widget::Input('fields[database][user]', $fields['database']['user']), 'column'));
 			$Div->appendChild(Widget::label(__('Password'), Widget::Input('fields[database][password]', $fields['database']['password'], 'password'), 'column'));
 
-			$this->__appendError(array('no-database-connection'), $Div);
+			$this->__appendError(array('database-invalid-credentials'), $Div);
 			$Database->appendChild($Div);
 
 			// Advanced configuration
@@ -398,11 +398,7 @@
 			$Submit = new XMLElement('div', null, array('class' => 'submit'));
 			$Submit->appendChild(Widget::Input('lang', Lang::get(), 'hidden'));
 
-			$button = Widget::Input('action[install]', __('Install Symphony'), 'submit');
-			if(!empty($this->_params['errors'])) {
-				$button->setAttribute('disabled', 'disabled');
-			}
-			$Submit->appendChild($button);
+			$Submit->appendChild(Widget::Input('action[install]', __('Install Symphony'), 'submit'));
 
 			$this->Form->appendChild($Submit);
 		}
