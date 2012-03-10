@@ -246,8 +246,9 @@
 						array('navigation', ($fields['source'] == 'navigation'), __('Navigation')),
 				)),
 				array('label' => __('Custom XML'), 'options' => array(
+						array('dynamic_xml', ($fields['source'] == 'dynamic_xml'), __('Dynamic XML')),
 						array('static_xml', ($fields['source'] == 'static_xml'), __('Static XML')),
-				))
+				)),
 			);
 
 			// Loop over the datasource providers
@@ -555,7 +556,7 @@
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml From_extensions');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml From_extensions');
 			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
 
 			$label = Widget::Label(__('Required URL Parameter'));
@@ -724,6 +725,104 @@
 			$div->appendChild($subfieldset);
 
 			$fieldset->appendChild($div);
+			$this->Form->appendChild($fieldset);
+
+		// Dynamic XML
+
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual dynamic_xml');
+			$fieldset->appendChild(new XMLElement('legend', __('Dynamic XML')));
+
+			$label = Widget::Label(__('URL'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][url]', General::sanitize($fields['dynamic_xml']['url'])));
+			if(isset($this->_errors['dynamic_xml']['url'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['dynamic_xml']['url']));
+			else $fieldset->appendChild($label);
+
+			$p = new XMLElement('p',
+				__('Use %s syntax to specify dynamic portions of the URL.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
+			$p->setAttribute('class', 'help');
+			$label->appendChild($p);
+
+			$div = new XMLElement('div');
+			$p = new XMLElement('p', __('Namespace Declarations'));
+			$p->appendChild(new XMLElement('i', __('Optional')));
+			$p->setAttribute('class', 'label');
+			$div->appendChild($p);
+
+			$ol = new XMLElement('ol');
+			$ol->setAttribute('class', 'filters-duplicator');
+			$ol->setAttribute('data-add', __('Add filter'));
+			$ol->setAttribute('data-remove', __('Remove filter'));
+
+			if(is_array($fields['dynamic_xml']['namespace']['name'])){
+				$namespaces = $fields['dynamic_xml']['namespace']['name'];
+				$uri = $fields['dynamic_xml']['namespace']['uri'];
+
+				for($ii = 0; $ii < count($namespaces); $ii++){
+					$li = new XMLElement('li');
+					$li->appendChild(new XMLElement('header', '<h4>' . __('Namespace') . '</h4>'));
+
+					$group = new XMLElement('div');
+					$group->setAttribute('class', 'group');
+
+					$label = Widget::Label(__('Name'));
+					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]', General::sanitize($namespaces[$ii])));
+					$group->appendChild($label);
+
+					$label = Widget::Label(__('URI'));
+					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]', General::sanitize($uri[$ii])));
+					$group->appendChild($label);
+
+					$li->appendChild($group);
+					$ol->appendChild($li);
+				}
+			}
+
+			$li = new XMLElement('li');
+			$li->setAttribute('class', 'template');
+			$li->setAttribute('data-type', 'namespace');
+			$li->appendChild(new XMLElement('header', '<h4>' . __('Namespace') . '</h4>'));
+
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'group');
+
+			$label = Widget::Label(__('Name'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]'));
+			$group->appendChild($label);
+
+			$label = Widget::Label(__('URI'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]'));
+			$group->appendChild($label);
+
+			$li->appendChild($group);
+			$ol->appendChild($li);
+
+			$div->appendChild($ol);
+			$fieldset->appendChild($div);
+
+			$label = Widget::Label(__('Included Elements'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][xpath]', General::sanitize($fields['dynamic_xml']['xpath'])));
+			if(isset($this->_errors['dynamic_xml']['xpath'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['dynamic_xml']['xpath']));
+			else $fieldset->appendChild($label);
+
+			$p = new XMLElement('p', __('Use an XPath expression to select which elements from the source XML to include.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
+
+			$label = Widget::Label();
+			$input = Widget::Input('fields[dynamic_xml][cache]', (string)max(1, intval($fields['dynamic_xml']['cache'])), NULL, array('size' => '6'));
+			$label->setValue(__('Update cached result every %s minutes', array($input->generate(false))));
+			if(isset($this->_errors['dynamic_xml']['cache'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['dynamic_xml']['cache']));
+			else $fieldset->appendChild($label);
+
+			$label = Widget::Label();
+			$input = Widget::Input('fields[dynamic_xml][timeout]', (string)max(1, intval($fields['dynamic_xml']['timeout'])), NULL, array('type' => 'hidden'));
+			$label->appendChild($input);
+			$fieldset->appendChild($label);
+
 			$this->Form->appendChild($fieldset);
 
 		// Static XML
@@ -956,6 +1055,7 @@
 						$providerClass::validate(&$fields, $this->_errors);
 						break;
 					}
+					unset($providerClass);
 				}
 			}
 
@@ -1024,9 +1124,10 @@
 				else {
 					switch($source){
 						case 'authors':
-
 							$extends = 'AuthorDatasource';
-							$filters = $fields['filter']['author'];
+							if(isset($fields['filter']['author'])) {
+								$filters = $fields['filter']['author'];
+							}
 
 							$elements = $fields['xml_elements'];
 
@@ -1039,9 +1140,10 @@
 							break;
 
 						case 'navigation':
-
 							$extends = 'NavigationDatasource';
-							$filters = $fields['filter']['navigation'];
+							if(isset($fields['filter']['navigation'])) {
+								$filters = $fields['filter']['navigation'];
+							}
 
 							$params['order'] = $fields['order'];
 							$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
@@ -1098,7 +1200,6 @@
 							break;
 
 						case 'static_xml':
-
 							$extends = 'StaticDatasource';
 							$fields['static_xml'] = trim($fields['static_xml']);
 
@@ -1114,7 +1215,6 @@
 							break;
 
 						default:
-
 							$extends = 'SectionDatasource';
 							$elements = $fields['xml_elements'];
 
@@ -1401,24 +1501,6 @@
 			}
 
 			return array('data' => $data);
-		}
-
-		public function appendCacheInformation(XMLElement $wrapper, Cacheable $cache, $cache_id) {
-			$cachedData = $cache->check($cache_id);
-			if(is_array($cachedData) && !empty($cachedData) && (time() < $cachedData['expiry'])) {
-				$a = Widget::Anchor(__('Clear now'), SYMPHONY_URL . getCurrentPage() . 'clear_cache/');
-				$wrapper->appendChild(
-					new XMLElement('p', __('Cache expires in %d minutes. %s', array(
-						($cachedData['expiry'] - time()) / 60,
-						$a->generate(false)
-					)), array('class' => 'help'))
-				);
-			}
-			else {
-				$wrapper->appendChild(
-					new XMLElement('p', __('Cache has expired or does not exist.'), array('class' => 'help'))
-				);
-			}
 		}
 
 	}
