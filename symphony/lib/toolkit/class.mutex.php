@@ -46,11 +46,17 @@
 			// Disable log temporarily because we actually depend on fopen()
 			// failing with E_WARNING here and we do not want Symphony to throw
 			// errors or spam logfiles.
-			GenericErrorHandler::$logDisabled = true;
-			$lock = fopen($lockFile, 'xb');
-			GenericErrorHandler::$logDisabled = false;
+			try {
+				GenericErrorHandler::$logDisabled = true;
+				$lock = fopen($lockFile, 'xb');
+				GenericErrorHandler::$logDisabled = false;
 
-			if(!$lock){
+				self::$lockFiles[$lockFile] = array('time' => time(), 'ttl' => $ttl);
+				fclose($lock);
+
+				return true;
+			}
+			catch(Exception $ex) {
 				// If, for some reason, lock file was not unlinked before,
 				// remove it if it is old enough.
 				if(file_exists($lockFile)){
@@ -62,11 +68,6 @@
 				// do the same check and unlink at the same time.
 				return false;
 			}
-
-			self::$lockFiles[$lockFile] = array('time' => time(), 'ttl' => $ttl);
-			fclose($lock);
-
-			return true;
 		}
 
 		/**

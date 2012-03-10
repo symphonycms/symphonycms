@@ -465,7 +465,7 @@
 			$label->appendChild(
 				Widget::Input('fields['.$this->get('sortorder').'][label]', $this->get('label'))
 			);
-			if(isset($errors['label'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['label']));
+			if(isset($errors['label'])) $div->appendChild(Widget::Error($label, $errors['label']));
 			else $div->appendChild($label);
 
 			// Handle + placement
@@ -476,7 +476,7 @@
 			$label->setAttribute('class', 'column');
 
 			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][element_name]', $this->get('element_name')));
-			if(isset($errors['element_name'])) $group->appendChild(Widget::wrapFormElementWithError($label, $errors['element_name']));
+			if(isset($errors['element_name'])) $group->appendChild(Widget::Error($label, $errors['element_name']));
 			else $group->appendChild($label);
 
 			// Location
@@ -866,11 +866,15 @@
 		 *	the input data. this defaults to null.
 		 * @param mixed errors (optional)
 		 *	the input error collection. this defaults to null.
+		 * @param string $fieldNamePrefix
+		 *  the prefix to apply to the display of this.
+		 * @param string $fieldNameSuffix
+		 *  the suffix to apply to the display of this.
 		 */
-		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null){
+		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null){
 			$wrapper->appendChild(new XMLElement('header', '<h4>' . $this->get('label') . '</h4> <span>' . $this->name() . '</span>'));
 			$label = Widget::Label(__('Value'));
-			$label->appendChild(Widget::Input('fields[filter]['.$this->get('id').']', ($data ? General::sanitize($data) : null)));
+			$label->appendChild(Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : null)));
 			$wrapper->appendChild($label);
 		}
 

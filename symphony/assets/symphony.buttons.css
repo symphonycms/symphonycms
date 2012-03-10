@@ -1,0 +1,210 @@
+/*--------------------------------------------------------------------------
+	Globals - Buttons
+--------------------------------------------------------------------------*/
+
+input[type=submit],
+button,
+.button {
+	display: inline-block;
+	min-height: 20px;
+	margin-left: 10px;
+	padding: 0 10px;
+	background-color: #efefed; color: rgba(85, 85, 85, 0.95);
+	text-decoration: none;
+	background-image: -webkit-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
+	background-image: -moz-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
+	background-image: -ms-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
+	background-image: -o-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
+	background-image: linear-gradient(to bottom, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
+	border: 1px solid rgba(0, 0, 0, 0.25);
+	border-bottom-color: rgba(0, 0, 0, 0.3);
+	border-radius: 4px;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+	line-height: 1.85;
+}
+
+input[type=submit]:hover,
+input[type=submit]:active,
+input[type=submit]:focus,
+button:hover,
+button:active,
+button:focus,
+.button:hover,
+.button:active,
+.button:focus {
+	color: #3c3c3c;
+	border-color: rgba(0, 0, 0, 0.4);
+	box-shadow: 0 0 7px rgba(0, 0, 0, 0.05), 0 0 1px 2px rgba(77, 120, 180, 0.1);
+	cursor: pointer;
+}
+
+input[type=submit][disabled=disabled]:hover,
+input[type=submit][disabled=disabled]:active,
+input[type=submit][disabled=disabled]:focus {
+	cursor: not-allowed;
+}
+
+/* Create buttons */
+
+button.create,
+.button.create {
+	background-color: none;
+	background-image: -webkit-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
+	background-image:    -moz-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
+	background-image:     -ms-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
+	background-image:      -o-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
+	background-image:   linear-gradient(to bottom, #92c44d 0%, #92c44d) 30%, #78a737 100%);
+	border-color: rgba(50, 70, 23, 0.3);
+	border-bottom-color: rgba(50, 70, 23, 0.5);
+	color: rgba(255, 255, 255, 0.9);
+	text-shadow: 1px 1px 1px rgba(50, 70, 23, 0.25);
+}
+
+button.create:hover,
+button.create:active,
+button.create:focus,
+.button.create:hover,
+.button.create:active,
+.button.create:focus {
+	border-color: rgba(50, 70, 23, 0.6);
+	color: #fff;
+}
+
+/* Delete buttons */
+
+button.delete:hover,
+button.delete:active,
+button.delete:focus,
+.button.delete:hover,
+.button.delete:active,
+.button.delete:focus {
+	background: #bd2c1f;
+	border-color: #912218;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.4), 0 0 1px 1px rgba(255, 255, 255, 0.9);
+	color: #fff;
+}
+
+/* "With selected…" menu */
+
+fieldset.apply,
+fieldset.apply.inactive:hover {
+	background: #fbfbfa;
+	border: 1px solid rgba(0, 0, 0, 0.25);
+	border-radius: 4px;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+	display: block;
+	float: right;
+	height: 1.85em;
+	margin: 0;
+	min-height: 20px;
+	padding: 0;
+	text-decoration: none;
+}
+
+fieldset.apply.inactive {
+	opacity: 0.5;
+}
+
+fieldset.apply:hover {
+	border-color: rgba(0, 0, 0, 0.4);
+	box-shadow: 0 0 7px rgba(0, 0, 0, 0.1);
+	color: rgb(60, 60, 60);
+}
+
+fieldset.apply select {
+	-webkit-appearance: none;
+	-moz-appearance: input;
+	-ms-appearance: none;
+	-o-appearance: none;
+	appearance: none;
+	background: transparent;
+	border: none;
+	border-radius: 5px;
+	color: rgb(60, 60, 60);
+	cursor: pointer;
+	display: block;
+	line-height: 1.5;
+	margin: 0.2em 1em 0 0;
+	min-width: 15em;
+	outline: none;
+	padding: 0 0 0 0.7em;
+}
+
+fieldset.apply.inactive select {
+	cursor: default;
+}
+
+fieldset.apply select:hover {
+	background-position: right -16px;
+}
+
+fieldset.apply button {
+	margin: 0;
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	border-left: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 0 4px 4px 0;
+	line-height: 1.85;
+	height: 1.85em;
+}
+
+fieldset.apply.inactive button,
+fieldset.apply.inactive button:hover {
+	color: rgba(60, 60, 60, 0.8);
+	border-left: 1px solid rgba(0, 0, 0, 0.15);
+	box-shadow: none;
+	cursor: default;
+}
+
+fieldset.apply:hover button {
+	border-left: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+fieldset.apply button:before {
+	content: "";
+	background: url(images/arrows.png) 0 6px no-repeat;
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 20px;
+	width: 10px;
+	opacity: 0.4;
+}
+
+fieldset.apply:hover button:before {
+	opacity: 1;
+}
+
+fieldset.apply.inactive:hover button:before {
+	opacity: 0.5;
+}
+
+/* Single select "With selected…" */
+fieldset.apply.single {
+	border: none;
+}
+fieldset.apply.single select {
+	display: none;
+}
+
+fieldset.apply.single button {
+	border: 1px solid rgba(0, 0, 0, 0.25);
+	border-bottom-color: rgba(0, 0, 0, 0.3);
+	border-radius: 4px;
+	height: auto;
+	white-space: nowrap;
+}
+fieldset.apply.single button:before {
+	display: none;
+}
+
+/* Inline buttons, aligned left */
+fieldset input[type=submit],
+fieldset button,
+fieldset .button {
+	margin-left: 0;
+	margin-right: 10px;
+}

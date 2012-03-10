@@ -13,7 +13,7 @@
 
 		public $_errors = array();
 
-		public function __viewIndex(){
+		public function __viewIndex($resource_type){
 			parent::__viewIndex(RESOURCE_TYPE_EVENT);
 
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Events'), __('Symphony'))));
@@ -110,7 +110,7 @@
 
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'column');
-				if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+				if(isset($this->_errors['name'])) $div->appendChild(Widget::Error($label, $this->_errors['name']));
 				else $div->appendChild($label);
 				$group->appendChild($div);
 
@@ -127,7 +127,7 @@
 
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'column');
-				if(isset($this->_errors['source'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['source']));
+				if(isset($this->_errors['source'])) $div->appendChild(Widget::Error($label, $this->_errors['source']));
 				else $div->appendChild($label);
 				$group->appendChild($div);
 
@@ -263,7 +263,7 @@
 			}
 		}
 
-		public function __actionIndex(){
+		public function __actionIndex($resource_type){
 			return parent::__actionIndex(RESOURCE_TYPE_EVENT);
 		}
 
@@ -400,7 +400,7 @@
 				$documentation_parts[] = self::processDocumentationCode(($multiple ? str_replace('fields[', 'fields[0][', $code) : $code));
 
 				$documentation_parts[] = new XMLElement('p', __('To edit an existing entry, include the entry ID value of the entry in the form. This is best as a hidden field like so:'));
-				$documentation_parts[] = self::processDocumentationCode(Widget::Input('id' . ($multiple ? '[0]' : NULL), 23, 'hidden'));
+				$documentation_parts[] = self::processDocumentationCode(Widget::Input('id' . ($multiple ? '[0]' : NULL), '23', 'hidden'));
 
 				$documentation_parts[] = new XMLElement('p', __('To redirect to a different location upon a successful save, include the redirect location in the form. This is best as a hidden field like so, where the value is the URL to redirect to:'));
 				$documentation_parts[] = self::processDocumentationCode(Widget::Input('redirect', URL.'/success/', 'hidden'));

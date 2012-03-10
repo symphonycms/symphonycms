@@ -585,7 +585,7 @@
 		}
 
 		/**
-		 * Generates a XMLElement representation of a `<fieldset>` containing 
+		 * Generates a XMLElement representation of a `<fieldset>` containing
 		 * the "With selected…" menu. This uses the private function `__SelectBuildOption()`
 		 * to build XMLElements of options given the `$options` array.
          *
@@ -613,14 +613,44 @@
 			$fieldset = new XMLElement('fieldset', NULL, array('class' => 'apply'));
 			$fieldset->appendChild(Widget::Select('with-selected', $options));
 			$fieldset->appendChild(new XMLElement('button', __('Apply'), array('name' => 'action[apply]', 'type' => 'submit')));
-			
+
 			return $fieldset;
+		}
+
+
+		/**
+		 * Will wrap a `<div>` around a desired element to trigger the default
+		 * Symphony error styling.
+		 *
+		 * @since Symphony 2.3
+		 * @param XMLElement $element
+		 *  The element that should be wrapped with an error
+		 * @param string $message
+		 *  The text for this error. This will be appended after the $element,
+		 *  but inside the wrapping `<div>`
+		 * @return XMLElement
+		 */
+		public static function Error(XMLElement $element, $message) {
+			General::ensureType(array(
+				'message' => array('var' => $message, 'type' => 'string')
+			));
+
+			$div = new XMLElement('div');
+			$div->setAttributeArray(array('class' => 'invalid'));
+
+			$div->appendChild($element);
+			$div->appendChild(new XMLElement('p', $message));
+
+			return $div;
 		}
 
 		/**
 		 * Will wrap a `<div>` around a desired element to trigger the default
 		 * Symphony error styling.
 		 *
+		 * @deprecated Since Symphony 2.3. This function will be removed in a
+		 *  future Symphony release. Use `Widget::Error` instead.
+		 * @see core.Widget#Error()
 		 * @param XMLElement $element
 		 *  The element that should be wrapped with an error
 		 * @param string $message
@@ -629,16 +659,6 @@
 		 * @return XMLElement
 		 */
 		public static function wrapFormElementWithError(XMLElement $element, $message){
-			General::ensureType(array(
-				'message' => array('var' => $message, 'type' => 'string')
-			));
-
-			$div = new XMLElement('div');
-			$div->setAttributeArray(array('id' => 'error', 'class' => 'invalid'));
-
-			$div->appendChild($element);
-			$div->appendChild(new XMLElement('p', $message));
-
-			return $div;
+			return Widget::Error($element, $message);
 		}
 	}

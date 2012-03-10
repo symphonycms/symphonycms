@@ -130,7 +130,7 @@
 
 			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][destination]', $options));
 
-			if(isset($errors['destination'])) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $errors['destination']));
+			if(isset($errors['destination'])) $wrapper->appendChild(Widget::Error($label, $errors['destination']));
 			else $wrapper->appendChild($label);
 
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload');
@@ -194,7 +194,7 @@
 
 			$label->appendChild($span);
 
-			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
+			if($flagWithError != NULL) $wrapper->appendChild(Widget::Error($label, $flagWithError));
 			else $wrapper->appendChild($label);
 		}
 

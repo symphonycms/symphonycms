@@ -15,7 +15,7 @@
 
 		public $_errors = array();
 
-		public function __viewIndex(){
+		public function __viewIndex($resource_type){
 			parent::__viewIndex(RESOURCE_TYPE_DS);
 
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Data Sources'), __('Symphony'))));
@@ -218,7 +218,7 @@
 			$label = Widget::Label(__('Name'), NULL, 'column');
 			$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
 
-			if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+			if(isset($this->_errors['name'])) $div->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $div->appendChild($label);
 			$group->appendChild($div);
 
@@ -285,6 +285,8 @@
 
 				$ol = new XMLElement('ol');
 				$ol->setAttribute('class', 'filters-duplicator');
+				$ol->setAttribute('data-add', __('Add filter'));
+				$ol->setAttribute('data-remove', __('Remove filter'));
 
 				// Add system:id filter
 				if(isset($fields['filter'][$section_data['section']->get('id')]['id'])){
@@ -361,6 +363,8 @@
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
+			$ol->setAttribute('data-add', __('Add filter'));
+			$ol->setAttribute('data-remove', __('Remove filter'));
 
 			$this->__appendAuthorFilter($ol, __('ID'), 'id', $fields['filter']['author']['id'], (!isset($fields['filter']['author']['id'])));
 			$this->__appendAuthorFilter($ol, __('Username'), 'username', $fields['filter']['author']['username'], (!isset($fields['filter']['author']['username'])));
@@ -378,6 +382,8 @@
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
+			$ol->setAttribute('data-add', __('Add filter'));
+			$ol->setAttribute('data-remove', __('Remove filter'));
 
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tags');
@@ -532,8 +538,8 @@
 			);
 			$label->setValue(__('%1$s Paginate results, limiting to %2$s entries per page. Return page %3$s', array($input[0]->generate(false), $input[1]->generate(false), $input[2]->generate(false))));
 
-			if(isset($this->_errors['max_records'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['max_records']));
-			else if(isset($this->_errors['page_number'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['page_number']));
+			if(isset($this->_errors['max_records'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['max_records']));
+			else if(isset($this->_errors['page_number'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['page_number']));
 			else $fieldset->appendChild($label);
 
 			$p = new XMLElement('p', __('Failing to paginate may degrade performance if the number of entries returned is very high.'), array('class' => 'help'));
@@ -667,7 +673,7 @@
 						array(
 							'system:pagination',
 							($fields['source'] == $section_data['section']->get('id') && in_array('system:pagination', $fields['xml_elements'])),
-							'pagination'
+							'system: pagination'
 						)
 					)
 				);
@@ -721,7 +727,7 @@
 			$label = Widget::Label(__('Body'));
 			$label->appendChild(Widget::Textarea('fields[static_xml]', 12, 50, General::sanitize(stripslashes($fields['static_xml'])), array('class' => 'code')));
 
-			if(isset($this->_errors['static_xml'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['static_xml']));
+			if(isset($this->_errors['static_xml'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['static_xml']));
 			else $fieldset->appendChild($label);
 
 			$this->Form->appendChild($fieldset);
@@ -818,7 +824,7 @@
 
 		}
 
-		public function __actionIndex(){
+		public function __actionIndex($resource_type){
 			return parent::__actionIndex(RESOURCE_TYPE_DS);
 		}
 

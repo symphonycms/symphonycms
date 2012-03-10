@@ -162,7 +162,7 @@
 						$pagelinks = Widget::TableData(__('None'), 'inactive');
 					}
 					else {
-						$pagelinks = Widget::TableData($pages);
+						$pagelinks = Widget::TableData($pages, 'pages');
 					}
 
 					// Release date
@@ -183,7 +183,7 @@
 					$author = Widget::TableData($author);
 					$author->appendChild(Widget::Input('items[' . $r['handle'] . ']', null, 'checkbox'));
 
-					$aTableBody[] = Widget::TableRow(array($name, $section, $pagelinks, $releasedate, $author), null);
+					$aTableBody[] = Widget::TableRow(array($name, $section, $pagelinks, $releasedate, $author));
 				}
 			}
 

@@ -5,12 +5,12 @@
 (function($) {
 
 	/**
-	 * This plugin makes items selectable. Clicking an item will select it 
-	 * by adding the class <code>.selected</code>. Holding down the shift key 
-	 * while clicking multiple items creates a selection range. Holding the meta key 
-	 * (which is <code>cmd</code> on a Mac or <code>ctrl</code> on Windows) allows 
-	 * the selection of multiple items or the modification of an already selected 
-	 * range of items. Doubleclicking outside the selection list will 
+	 * This plugin makes items selectable. Clicking an item will select it
+	 * by adding the class <code>.selected</code>. Holding down the shift key
+	 * while clicking multiple items creates a selection range. Holding the meta key
+	 * (which is <code>cmd</code> on a Mac or <code>ctrl</code> on Windows) allows
+	 * the selection of multiple items or the modification of an already selected
+	 * range of items. Doubleclicking outside the selection list will
 	 * remove the selection.
 	 *
 	 * @name $.symphonySelectable
@@ -98,15 +98,15 @@
 				// Toggle selection
 				if(item.is('.selected')) {
 					item.removeClass('selected').trigger('deselect');
-					item.find('input[type="checkbox"]').attr('checked', false);		
+					item.find('input[type="checkbox"]').attr('checked', false);
 				}
 				else {
 					item.addClass('selected').trigger('select');
-					item.find('input[type="checkbox"]').attr('checked', true);		
+					item.find('input[type="checkbox"]').attr('checked', true);
 				}
 			}
 
-		});	
+		});
 
 		// Remove all selections by doubleclicking the body
 		$('body').bind('dblclick.selectable', function() {
