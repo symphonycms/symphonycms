@@ -165,7 +165,9 @@
 				else
 					$return[] = EXTENSION_DISABLED;
 			}
-			else $return[] = EXTENSION_NOT_INSTALLED;
+			else {
+				$return[] = EXTENSION_NOT_INSTALLED;
+			}
 
 			if(self::__requiresUpdate($about['handle'], $about['version'])) {
 				$return[] = EXTENSION_REQUIRES_UPDATE;
@@ -783,7 +785,7 @@
 					'name' => $xpath->evaluate('string(ext:name)', $extension),
 					'status' => array()
 				);
-				
+
 				// find the latest <release> (largest version number)
 				$latest_release_version = '0.0.0';
 				foreach($xpath->query('//ext:release', $extension) as $release) {
@@ -792,7 +794,7 @@
 						$latest_release_version = $version;
 					}
 				}
-				
+
 				// Load the latest <release> information
 				if($release = $xpath->query("//ext:release[@version='$latest_release_version']", $extension)->item(0)) {
 					$about += array(
@@ -840,11 +842,16 @@
 			else {
 				$obj = self::getInstance($name);
 				$about = $obj->about();
+
+				// If this is empty then the extension has managed to not provide
+				// an `about()` function or an `extension.meta.xml` file. So
+				// ignore this extension even exists
+				if(empty($about)) return array();
+
 				$about['status'] = array();
 			}
 
 			$about['handle'] = $name;
-
 			$about['status'] = array_merge($about['status'], self::fetchStatus($about));
 
 			return $about;

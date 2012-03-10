@@ -100,8 +100,8 @@
 			$aTableHead = array(
 				array(__('Title'), 'col'),
 				array(__('Template'), 'col'),
-				array('<acronym title="' . __('Universal Resource Locator') . '">' . __('URL') . '</acronym>', 'col'),
-				array('<acronym title="' . __('Universal Resource Locator') . '">' . __('URL') . '</acronym> ' . __('Parameters'), 'col'),
+				array('<abbr title="' . __('Universal Resource Locator') . '">' . __('URL') . '</abbr>', 'col'),
+				array('<abbr title="' . __('Universal Resource Locator') . '">' . __('URL') . '</abbr> ' . __('Parameters'), 'col'),
 				array(__('Type'), 'col')
 			);
 			$aTableBody = array();
