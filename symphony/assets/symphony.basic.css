@@ -65,7 +65,7 @@ a:active, a:focus {
 	color: #d42;
 }
 h1, h2 {
-	font: 127.28% 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
+	font: 127.28%/1.7 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 }
 p {
 	margin-bottom: 15px;
@@ -96,7 +96,7 @@ i code {
 
 fieldset {
 	position: relative;
-	padding: 10pxm 0;
+	padding: 10px 0;
 }
 legend {
 	line-height: 1;
