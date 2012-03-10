@@ -108,7 +108,7 @@
 
 			$this->Form->appendChild(
 				new XMLElement('p',
-					__('Congratulations rock star! You just updated %s to the latest and greatest Symphony!', array(Symphony::Configuration()->get('sitename', 'general')))
+					__('And the crowd goes wild! A victory dance is in order; and look, you\'r mum is watching. She\'s proud.', array(Symphony::Configuration()->get('sitename', 'general')))
 				)
 			);
 			$this->Form->appendChild(
@@ -118,7 +118,7 @@
 			);
 
 			$submit = new XMLElement('div', null, array('class' => 'submit'));
-			$submit->appendChild(Widget::input('submit', __('Ok, now take me to the login page'), 'submit'));
+			$submit->appendChild(Widget::input('submit', __('Complete'), 'submit'));
 
 			$this->Form->appendChild($submit);
 
