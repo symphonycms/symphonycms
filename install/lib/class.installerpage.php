@@ -288,7 +288,7 @@
 			$Div->appendChild(Widget::label(__('Username'), Widget::Input('fields[database][user]', $fields['database']['user']), 'column'));
 			$Div->appendChild(Widget::label(__('Password'), Widget::Input('fields[database][password]', $fields['database']['password'], 'password'), 'column'));
 
-			$this->__appendError(array('no-database-connection'), $Div);
+			$this->__appendError(array('database-invalid-credentials'), $Div);
 			$Database->appendChild($Div);
 
 			// Advanced configuration
