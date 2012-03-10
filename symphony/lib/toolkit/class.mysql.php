@@ -801,7 +801,7 @@
 
 			throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query: %3$s', array($errornum, $msg, $this->_lastQuery)), array(
 				'msg' => $msg,
-				'error' => $errornum,
+				'num' => $errornum,
 				'query' => $this->_lastQuery
 			));
 		}

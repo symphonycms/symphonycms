@@ -209,7 +209,7 @@
 				$queries
 			);
 			$html = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $html);
-			
+
 			return $html;
 		}
 	}

@@ -312,13 +312,12 @@
 				elseif(self::Configuration()->get('query_caching', 'database') == 'on') self::Database()->enableCaching();
 			}
 			catch(DatabaseException $e){
-				$error = self::Database()->getlastError();
 				throw new SymphonyErrorPage(
-					$error['num'] . ': ' . $error['msg'],
+					$e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
 					'Symphony Database Error',
 					'database',
 					array(
-						'error' => $error,
+						'error' => $e,
 						'message' => __('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct.') . ' ' . __('The following error was returned:')
 					)
 				);
