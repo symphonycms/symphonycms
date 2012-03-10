@@ -121,6 +121,9 @@ select[multiple] {
 	font-size: 109.09%;
 	font-family: inherit;
 }
+select[multiple] {
+	font-size: 1em;
+}
 input[type=text] {
 	height: 22px;
 }
