@@ -156,10 +156,7 @@
 							$fields['dynamic_xml']['url'] = $existing->dsParamURL;
 							$fields['dynamic_xml']['xpath'] = $existing->dsParamXPATH;
 							$fields['dynamic_xml']['cache'] = $existing->dsParamCACHE;
-							$fields['dynamic_xml']['format'] = $existing->dsParamFORMAT;
 							$fields['dynamic_xml']['timeout'] = (isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6);
-							$cache_id = md5($existing->dsParamURL . serialize($existing->dsParamFILTERS) . $existing->dsParamXPATH);
-
 							break;
 
 						case 'static_xml':
@@ -176,17 +173,6 @@
 							$fields['max_records'] = $existing->dsParamLIMIT;
 							break;
 					}
-				}
-
-				// If `clear_cache` is set, clear it..
-				if(isset($cache_id) && in_array('clear_cache', $this->_context)) {
-					$cache->forceExpiry($cache_id);
-					$this->pageAlert(
-						__('Data source cache cleared at %s.', array(DateTimeObj::getTimeAgo()))
-						. '<a href="' . SYMPHONY_URL . '/blueprints/datasources" accesskey="a">'
-						. __('View all Data sources')
-						. '</a>'
-						, Alert::SUCCESS);
 				}
 			}
 

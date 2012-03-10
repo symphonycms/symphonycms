@@ -73,9 +73,12 @@
 		 *  An associative array of settings. This may be null on create, but
 		 *  will be populated with the Datasource's settings on edit using
 		 *  `settings()`.
+		 * @param string $handle
+		 *  If the datasource already exists (so it's being edited), the handle
+		 *  of the datasource will be passed to this function.
 		 * @return
 		 */
-		public static function buildEditor(XMLElement $wrapper, array &$errors = array(), array $settings = null);
+		public static function buildEditor(XMLElement $wrapper, array &$errors = array(), array $settings = null, $handle = null);
 
 		/**
 		 * Given an array of settings, validate them, adding any errors
