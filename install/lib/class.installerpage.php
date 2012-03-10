@@ -153,10 +153,10 @@
 
 			$div = new XMLElement('div');
 			$div->appendChild(
-				new XMLElement('h2', __('All done!'))
+				new XMLElement('h2', __('The floor is yours'))
 			);
 			$div->appendChild(
-				new XMLElement('p', __('Symphony has now been installed and it\'s only a click away. Excited?'))
+				new XMLElement('p', __('Thanks for taking the quick but epic installation journey with us. It\'s now your turn to shine!'))
 			);
 			$this->Form->appendChild($div);
 
@@ -214,11 +214,12 @@
 		 */
 			$div = new XMLElement('div');
 			$div->appendChild(
-				new XMLElement('h2', __('Hey! This is a cool message written by Allen Chang introducing you to the  Symphony ninja style.'))
+				new XMLElement('h2', __('Find something sturdy to hold on to because things are about to get awesome.'))
 			);
 			$div->appendChild(
-				new XMLElement('p', __('Still seeing this message? Well, Allen seems not to have finished his text yet. Sorry!'))
+				new XMLElement('p', __('Think of this as a pre-game warm up. You know you\'re going to kick-ass, so you\'re savouring every moment before the show. Welcome to the Symphony install page.'))
 			);
+
 			$this->Form->appendChild($div);
 
 		/* -----------------------------------------------
@@ -393,7 +394,7 @@
 		 */
 
 			$this->Form->appendChild(new XMLElement('h2', __('Install Symphony')));
-			$this->Form->appendChild(new XMLElement('p', __('Make sure that you delete the %s folder after Symphony has installed successfully.', array('<code>' . basename(INSTALL_URL) . '</code>'))));
+			$this->Form->appendChild(new XMLElement('p', __('The installation process goes by really quickly. Make sure to take a deep breath before you press that sweet button.', array('<code>' . basename(INSTALL_URL) . '</code>'))));
 
 			$Submit = new XMLElement('div', null, array('class' => 'submit'));
 			$Submit->appendChild(Widget::Input('lang', Lang::get(), 'hidden'));
