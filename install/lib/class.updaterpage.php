@@ -108,7 +108,7 @@
 
 			$this->Form->appendChild(
 				new XMLElement('p',
-					__('And the crowd goes wild! A victory dance is in order; and look, you\'r mum is watching. She\'s proud.', array(Symphony::Configuration()->get('sitename', 'general')))
+					__('And the crowd goes wild! A victory dance is in order; and look, your mum is watching. She\'s proud.', array(Symphony::Configuration()->get('sitename', 'general')))
 				)
 			);
 			$this->Form->appendChild(
