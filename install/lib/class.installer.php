@@ -566,17 +566,19 @@
 				// MySQL: Importing workspace data
 				Symphony::Log()->pushToLog('MYSQL: Importing Workspace Data...', E_NOTICE, true, true);
 
-				try{
-					Symphony::Database()->import(
-						file_get_contents(DOCROOT . '/workspace/install.sql'),
-						($fields['database']['use-server-encoding'] != 'yes' ? true : false),
-						true
-					);
-				}
-				catch(DatabaseException $e){
-					self::__abort(
-						'There was an error while trying to import data to the database. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
-					$start);
+				if(is_file(DOCROOT . '/workspace/install.sql')) {
+					try{
+						Symphony::Database()->import(
+							file_get_contents(DOCROOT . '/workspace/install.sql'),
+							($fields['database']['use-server-encoding'] != 'yes' ? true : false),
+							true
+						);
+					}
+					catch(DatabaseException $e){
+						self::__abort(
+							'There was an error while trying to import data to the database. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
+						$start);
+					}
 				}
 			}
 
