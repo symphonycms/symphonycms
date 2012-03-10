@@ -68,7 +68,7 @@
 				}
 			}
 
-			$provided = Symphony::ExtensionManager()->getProvidersOf('data-sources');
+			$providers = Symphony::ExtensionManager()->getProvidersOf('data-sources');
 
 			if(isset($_POST['fields'])){
 				$fields = $_POST['fields'];
@@ -130,8 +130,8 @@
 
 				$fields['source'] = $existing->getSource();
 
-				if(!empty($provided)) {
-					foreach($provided as $providerClass => $provider) {
+				if(!empty($providers)) {
+					foreach($providers as $providerClass => $provider) {
 						if($fields['source'] == $providerClass::getClass()) {
 							$fields = array_merge($fields, $existing->settings());
 							break;
@@ -248,10 +248,10 @@
 			);
 
 			// Loop over the datasource providers
-			if(!empty($provided)) {
+			if(!empty($providers)) {
 				$p = array('label' => __('From extensions'), 'options' => array());
 
-				foreach($provided as $providerClass => $provider) {
+				foreach($providers as $providerClass => $provider) {
 					$p['options'][] = array(
 						$providerClass, ($fields['source'] == $providerClass), $provider
 					);
@@ -740,8 +740,8 @@
 		// @todo Ideally when a new Datasource is chosen an AJAX request will fire
 		// to get the HTML from the extension. This is hardcoded for now into
 		// creating a 'big' page and then hiding the fields with JS
-			if(!empty($provided)) {
-				foreach($provided as $providerClass => $provider) {
+			if(!empty($providers)) {
+				foreach($providers as $providerClass => $provider) {
 					$providerClass::buildEditor($this->Form, $this->_errors, $fields, $handle);
 				}
 			}
@@ -883,7 +883,7 @@
 		public function __formAction(){
 			$fields = $_POST['fields'];
 			$this->_errors = array();
-			$provided = Symphony::ExtensionManager()->getProvidersOf('data-sources');
+			$providers = Symphony::ExtensionManager()->getProvidersOf('data-sources');
 			$providerClass = null;
 
 			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
@@ -947,8 +947,8 @@
 			}
 
 			// See if a Provided Datasource is saved
-			elseif (!empty($provided)) {
-				foreach($provided as $providerClass => $provider) {
+			elseif (!empty($providers)) {
+				foreach($providers as $providerClass => $provider) {
 					if($fields['source'] == $providerClass::getSource()) {
 						$providerClass::validate(&$fields, $this->_errors);
 						break;
