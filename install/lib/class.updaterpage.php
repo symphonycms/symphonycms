@@ -27,7 +27,7 @@
 
 			// Add Release Notes for the latest migration
 			if(isset($this->_params['release-notes'])){
-				$h1 = end($this->Body->getChildrenByName('h1'));
+				$h1 = end($this->Form->getChildrenByName('h1'));
 				if($h1 instanceof XMLElement) {
 					$h1->appendChild(
 						new XMLElement(
