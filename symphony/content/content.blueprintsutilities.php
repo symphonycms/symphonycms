@@ -159,11 +159,11 @@
 
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('fields[name]', $fields['name']));
-			$fieldset->appendChild((isset($this->_errors['name']) ? Widget::wrapFormElementWithError($label, $this->_errors['name']) : $label));
+			$fieldset->appendChild((isset($this->_errors['name']) ? Widget::Error($label, $this->_errors['name']) : $label));
 
 			$label = Widget::Label(__('Body'));
 			$label->appendChild(Widget::Textarea('fields[body]', 30, 80, $fields['body'], array('class' => 'code')));
-			$fieldset->appendChild((isset($this->_errors['body']) ? Widget::wrapFormElementWithError($label, $this->_errors['body']) : $label));
+			$fieldset->appendChild((isset($this->_errors['body']) ? Widget::Error($label, $this->_errors['body']) : $label));
 
 			$this->Form->appendChild($fieldset);
 

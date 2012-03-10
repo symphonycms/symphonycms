@@ -140,7 +140,7 @@
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
 
-			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
 
 			$label = Widget::Label();
@@ -154,7 +154,7 @@
 			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Created if does not exist') . '</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
-			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
+			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::Error($label, $this->_errors['navigation_group']));
 			else $navgroupdiv->appendChild($label);
 
 			if(is_array($sections) && !empty($sections)){
@@ -356,7 +356,7 @@
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
 
-			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
 
 			$label = Widget::Label();
@@ -370,7 +370,7 @@
 			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Choose only one. Created if does not exist') . '</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
-			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
+			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::Error($label, $this->_errors['navigation_group']));
 			else $navgroupdiv->appendChild($label);
 
 			if(is_array($sections) && !empty($sections)){

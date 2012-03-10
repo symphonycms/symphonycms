@@ -155,7 +155,7 @@
 
 			$label->appendChild($textarea);
 
-			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
+			if($flagWithError != NULL) $wrapper->appendChild(Widget::Error($label, $flagWithError));
 			else $wrapper->appendChild($label);
 		}
 

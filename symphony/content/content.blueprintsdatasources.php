@@ -206,7 +206,7 @@
 			$label = Widget::Label(__('Name'), NULL, 'column');
 			$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
 
-			if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+			if(isset($this->_errors['name'])) $div->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $div->appendChild($label);
 			$group->appendChild($div);
 
@@ -513,8 +513,8 @@
 			);
 			$label->setValue(__('%1$s Paginate results, limiting to %2$s entries per page. Return page %3$s', array($input[0]->generate(false), $input[1]->generate(false), $input[2]->generate(false))));
 
-			if(isset($this->_errors['max_records'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['max_records']));
-			else if(isset($this->_errors['page_number'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['page_number']));
+			if(isset($this->_errors['max_records'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['max_records']));
+			else if(isset($this->_errors['page_number'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['page_number']));
 			else $fieldset->appendChild($label);
 
 			$p = new XMLElement('p', __('Failing to paginate may degrade performance if the number of entries returned is very high.'), array('class' => 'help'));
@@ -705,7 +705,7 @@
 
 			$label = Widget::Label(__('URL'), NULL, 'primary column');
 			$label->appendChild(Widget::Input('fields[dynamic_xml][url]', General::sanitize($fields['dynamic_xml']['url']), 'text', array('placeholder' => 'http://')));
-			if(isset($this->_errors['dynamic_xml']['url'])) $group->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['url']));
+			if(isset($this->_errors['dynamic_xml']['url'])) $group->appendChild(Widget::Error($label, $this->_errors['dynamic_xml']['url']));
 			else $group->appendChild($label);
 
 			$p = new XMLElement('p',
@@ -723,7 +723,7 @@
 					array('json', $fields['dynamic_xml']['format'] == 'json', 'JSON')
 				))
 			);
-			if(isset($this->_errors['dynamic_xml']['format'])) $group->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['format']));
+			if(isset($this->_errors['dynamic_xml']['format'])) $group->appendChild(Widget::Error($label, $this->_errors['dynamic_xml']['format']));
 			else $group->appendChild($label);
 
 			$fieldset->appendChild($group);
@@ -799,7 +799,7 @@
 
 			$label = Widget::Label(__('Included Elements'));
 			$label->appendChild(Widget::Input('fields[dynamic_xml][xpath]', General::sanitize($fields['dynamic_xml']['xpath'])));
-			if(isset($this->_errors['dynamic_xml']['xpath'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['xpath']));
+			if(isset($this->_errors['dynamic_xml']['xpath'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['dynamic_xml']['xpath']));
 			else $fieldset->appendChild($label);
 
 			$p = new XMLElement('p', __('Use an XPath expression to select which elements from the source XML to include.'));
@@ -809,7 +809,7 @@
 			$label = Widget::Label();
 			$input = Widget::Input('fields[dynamic_xml][cache]', (string)max(1, intval($fields['dynamic_xml']['cache'])), NULL, array('size' => '6'));
 			$label->setValue(__('Update cached result every %s minutes', array($input->generate(false))));
-			if(isset($this->_errors['dynamic_xml']['cache'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['dynamic_xml']['cache']));
+			if(isset($this->_errors['dynamic_xml']['cache'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['dynamic_xml']['cache']));
 			else $fieldset->appendChild($label);
 
 			// Check for existing Cache objects
@@ -832,7 +832,7 @@
 			$label = Widget::Label(__('Body'));
 			$label->appendChild(Widget::Textarea('fields[static_xml]', 12, 50, General::sanitize(stripslashes($fields['static_xml'])), array('class' => 'code')));
 
-			if(isset($this->_errors['static_xml'])) $fieldset->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['static_xml']));
+			if(isset($this->_errors['static_xml'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['static_xml']));
 			else $fieldset->appendChild($label);
 
 			$this->Form->appendChild($fieldset);

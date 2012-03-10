@@ -422,14 +422,14 @@
 						}
 					}
 
-					$element = Widget::wrapFormElementWithError($element, __('The following errors have been reported:'));
+					$element = Widget::Error($element, __('The following errors have been reported:'));
 					$element->appendChild($ul);
 				}
 				else{
 					$code = array_pop($codes);
 
 					if(isset($this->_params['errors'][$code])){
-						$element = Widget::wrapFormElementWithError($element, $this->_params['errors'][$code]['details']);
+						$element = Widget::Error($element, $this->_params['errors'][$code]['details']);
 					}
 				}
 			}

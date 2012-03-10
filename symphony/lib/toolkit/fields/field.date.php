@@ -356,7 +356,7 @@
 			$label->setAttribute('class', 'date');
 
 			if(!is_null($flagWithError)) {
-				$label = Widget::wrapFormElementWithError($label, $error);
+				$label = Widget::Error($label, $error);
 			}
 
 			$wrapper->appendChild($label);

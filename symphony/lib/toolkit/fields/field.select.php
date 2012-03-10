@@ -208,7 +208,7 @@
 
 			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][dynamic_options]', $options));
 
-			if(isset($errors['dynamic_options'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['dynamic_options']));
+			if(isset($errors['dynamic_options'])) $div->appendChild(Widget::Error($label, $errors['dynamic_options']));
 			else $div->appendChild($label);
 
 			$wrapper->appendChild($div);
@@ -300,7 +300,7 @@
 			$label = Widget::Label($this->get('label'));
 			$label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : NULL)));
 
-			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
+			if($flagWithError != NULL) $wrapper->appendChild(Widget::Error($label, $flagWithError));
 			else $wrapper->appendChild($label);
 		}
 

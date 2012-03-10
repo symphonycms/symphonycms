@@ -465,7 +465,7 @@
 			$label->appendChild(
 				Widget::Input('fields['.$this->get('sortorder').'][label]', $this->get('label'))
 			);
-			if(isset($errors['label'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['label']));
+			if(isset($errors['label'])) $div->appendChild(Widget::Error($label, $errors['label']));
 			else $div->appendChild($label);
 
 			// Handle + placement
@@ -476,7 +476,7 @@
 			$label->setAttribute('class', 'column');
 
 			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][element_name]', $this->get('element_name')));
-			if(isset($errors['element_name'])) $group->appendChild(Widget::wrapFormElementWithError($label, $errors['element_name']));
+			if(isset($errors['element_name'])) $group->appendChild(Widget::Error($label, $errors['element_name']));
 			else $group->appendChild($label);
 
 			// Location

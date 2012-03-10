@@ -110,7 +110,7 @@
 
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'column');
-				if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+				if(isset($this->_errors['name'])) $div->appendChild(Widget::Error($label, $this->_errors['name']));
 				else $div->appendChild($label);
 				$group->appendChild($div);
 
@@ -127,7 +127,7 @@
 
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'column');
-				if(isset($this->_errors['source'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['source']));
+				if(isset($this->_errors['source'])) $div->appendChild(Widget::Error($label, $this->_errors['source']));
 				else $div->appendChild($label);
 				$group->appendChild($div);
 
