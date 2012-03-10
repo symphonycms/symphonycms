@@ -874,6 +874,10 @@ ul.page input {
 	line-height: 1;
 	color: #666;
 	border-radius: 4px;
+	padding: 0;
+	box-shadow: none;
+	font-size: 1em;
+	margin: 0;
 }
 ul.page form:hover input {
 	color: #9e9e9e;
