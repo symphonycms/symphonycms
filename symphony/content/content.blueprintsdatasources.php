@@ -140,6 +140,7 @@
 						}
 					}
 				}
+
 				if($provided == false) {
 					switch($fields['source']){
 						case 'authors':
@@ -1010,6 +1011,7 @@
 
 				// Do dependencies, the template file must have <!-- CLASS NAME -->
 				// and <!-- DS DEPENDENCY LIST --> tokens
+				$dsShell = str_replace('<!-- CLASS NAME -->', $classname, $dsShell);
 				if(preg_match_all('@(\$ds-[-_0-9a-z]+)@i', $dsShell, $matches)){
 					$dependencies = General::array_remove_duplicates($matches[1]);
 					$dsShell = str_replace('<!-- DS DEPENDENCY LIST -->', "'" . implode("', '", $dependencies) . "'", $dsShell);
@@ -1145,7 +1147,6 @@
 					$this->__injectIncludedElements($dsShell, $elements);
 					self::injectFilters($dsShell, $filters);
 
-					$dsShell = str_replace('<!-- CLASS NAME -->', $classname, $dsShell);
 					$dsShell = str_replace('<!-- CLASS EXTENDS -->', $extends, $dsShell);
 					$dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
 				}
