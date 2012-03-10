@@ -287,7 +287,7 @@
 			$div = new XMLElement('div');
 
 			$label = Widget::Label(__('Username'));
-			$label->appendChild(Widget::Input('fields[username]', $author->get('username'), NULL));
+			$label->appendChild(Widget::Input('fields[username]', $author->get('username')));
 			$div->appendChild((isset($this->_errors['username']) ? Widget::Error($label, $this->_errors['username']) : $label));
 
 			// Only developers can change the user type. Primary account should NOT be able to change this
