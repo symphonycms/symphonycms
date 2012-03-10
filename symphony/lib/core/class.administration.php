@@ -191,7 +191,24 @@
 				$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 				if(is_array($extensions) && !empty($extensions) && $this->__canAccessAlerts()) {
 					foreach($extensions as $name) {
-						$about = Symphony::ExtensionManager()->about($name);
+
+						try {
+							$about = Symphony::ExtensionManager()->about($name);
+						} catch (Exception $ex) {
+
+							// The extension cannot be found, show an error message and let the user remove it
+							if (isset($_POST['extension-force-remove'])) {
+								$name = $_POST['extension-force-remove'];
+
+								Symphony::ExtensionManager()->removeDelegates($name);
+								Symphony::Database()->delete('tbl_extensions', " `name` = '$name' ");
+								redirect(SYMPHONY_URL);
+							}
+							else {
+								throw new SymphonyErrorPage($ex->getMessage());
+							}
+						}
+
 						if(in_array(EXTENSION_REQUIRES_UPDATE,$about['status'])) {
 							$this->Page->pageAlert(
 								__('An extension requires updating.') . ' <a href="' . SYMPHONY_URL . '/system/extensions/">' . __('View extensions') . '</a>'

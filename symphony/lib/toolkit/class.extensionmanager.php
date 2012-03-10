@@ -861,12 +861,23 @@
 				$path = self::__getDriverPath($name);
 
 				if(!is_file($path)){
-					throw new SymphonyErrorPage(
-						__('Could not find extension %s at location %s', array(
+					$msg = new XMLElement('form', null, array('action' => SYMPHONY_URL. '/system/extensions/', 'method' => 'post'));
+					$msg->appendChild(
+						new XMLElement('p', __('Could not find extension %s at location %s.', array(
 							'<code>' . $name . '</code>',
 							'<code>' . $path . '</code>'
-						))
+						)))
 					);
+
+					$msg->appendChild(
+						Widget::Input('no-name', __('Uninstall'). ' '. $name, 'submit')
+					);
+
+					$msg->appendChild(
+						Widget::Input('extension-force-remove', $name, 'hidden')
+					);
+
+					throw new Exception($msg->generate());
 				}
 
 				if(!class_exists($classname)) require_once($path);
