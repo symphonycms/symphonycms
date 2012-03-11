@@ -1,6 +1,7 @@
 <?php
 	$settings = array(
 
+
 		###### ADMIN ######
 		'admin' => array(
 			'max_upload_size' => '5242880',
@@ -15,7 +16,7 @@
 			'pages_table_nest_children' => 'no',
 			'version' => VERSION,
 			'cookie_prefix' => 'sym-',
-			'session_gc_divisor' => '10'
+			'session_gc_divisor' => '10',
 		),
 		########
 
@@ -27,13 +28,14 @@
 		),
 		########
 
+
 		###### DATABASE ######
 		'database' => array(
 			'host' => 'localhost',
 			'port' => '3306',
-			'user' => '',
-			'password' => '',
-			'db' => '',
+			'user' => null,
+			'password' => null,
+			'db' => null,
 			'character_set' => 'utf8',
 			'character_encoding' => 'utf8',
 			'tbl_prefix' => 'sym_',
@@ -78,4 +80,11 @@
 		),
 		########
 
+
+		###### IMAGE ######
+		'image' => array(
+			'cache' => '1',
+			'quality' => '90',
+		),
+		########
 	);
