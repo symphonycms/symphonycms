@@ -41,7 +41,9 @@
 				object = handle.parents('.orderable');
 
 			// Needed to prevent browsers from selecting texts and focusing textinputs
-			event.preventDefault();
+			if(!$(event.target).is('input, textarea')) {
+				event.preventDefault();
+			}
 
 			if(!handle.is(settings.ignore) && !$(event.target).is(settings.ignore)) {
 				object.trigger('orderstart.orderable', [item]);
