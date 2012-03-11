@@ -192,6 +192,8 @@
 				$fields['associated_entry_counts'] = NULL;
 
 			}
+			
+			
 
 			$this->setPageType('form');
 			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($about['name'], __('Data Sources'), __('Symphony'))));
@@ -529,8 +531,8 @@
 			$label = Widget::Label();
 			$input = array(
 				Widget::Input('fields[paginate_results]', NULL, 'checkbox', ($fields['paginate_results'] == 'yes' ? array('checked' => 'checked') : NULL)),
-				Widget::Input('fields[max_records]', $fields['max_records'], NULL, array('size' => '6')),
-				Widget::Input('fields[page_number]', $fields['page_number'], NULL, array('size' => '6'))
+				Widget::Input('fields[max_records]', $fields['max_records'], 'text', array('size' => '6')),
+				Widget::Input('fields[page_number]', $fields['page_number'], 'text', array('size' => '6'))
 			);
 			$label->setValue(__('%1$s Paginate results, limiting to %2$s entries per page. Return page %3$s', array($input[0]->generate(false), $input[1]->generate(false), $input[2]->generate(false))));
 
@@ -673,11 +675,13 @@
 						)
 					)
 				);
+				
+				
 
 				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
 					foreach($section_data['fields'] as $field){
 						$elements = $field->fetchIncludableElements();
-
+						
 						if(is_array($elements) && !empty($elements)){
 							foreach($elements as $name){
 								$selected = false;
@@ -801,13 +805,13 @@
 			$fieldset->appendChild($p);
 
 			$label = Widget::Label();
-			$input = Widget::Input('fields[dynamic_xml][cache]', (string)max(1, intval($fields['dynamic_xml']['cache'])), NULL, array('size' => '6'));
+			$input = Widget::Input('fields[dynamic_xml][cache]', (string)max(1, intval($fields['dynamic_xml']['cache'])), 'text', array('size' => '6'));
 			$label->setValue(__('Update cached result every %s minutes', array($input->generate(false))));
 			if(isset($this->_errors['dynamic_xml']['cache'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['dynamic_xml']['cache']));
 			else $fieldset->appendChild($label);
 
 			$label = Widget::Label();
-			$input = Widget::Input('fields[dynamic_xml][timeout]', (string)max(1, intval($fields['dynamic_xml']['timeout'])), NULL, array('type' => 'hidden'));
+			$input = Widget::Input('fields[dynamic_xml][timeout]', (string)max(1, intval($fields['dynamic_xml']['timeout'])), 'text', array('type' => 'hidden'));
 			$label->appendChild($input);
 			$fieldset->appendChild($label);
 
