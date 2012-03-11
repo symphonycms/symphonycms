@@ -207,7 +207,7 @@
 						$name = $itemNode->hasAttribute('name') ? $itemNode->getAttribute('name') : null;
 						$value = $itemNode->textContent;
 						
-						if($name == null || $value == null || $group == null) {
+						if($name == null || $group == null) {
 							//TODO: I'm not familiar with Error handling in the Symphony Core.
 							//		As Configuration is a pretty important part of it, maybe this should get some attention.
 							throw new Exception();
