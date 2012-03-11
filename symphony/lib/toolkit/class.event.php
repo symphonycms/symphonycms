@@ -72,12 +72,11 @@
 		/**
 		 * The constructor for an Event sets `$this->_env` from the given parameters
 		 *
-		 * @todo Write the updater that removes the need for `$dummy`.
 		 * @param array $env
 		 *  The environment variables from the Frontend class which includes
 		 *  any params set by Symphony or Datasources or by other Events
 		 */
-		public function __construct($dummy, array $env = array()){
+		public function __construct(array $env = null){
 			$this->_env = $env;
 		}
 
@@ -120,7 +119,7 @@
 		/**
 		 * Returns the path to the email-notification-template by looking at the
 		 * `WORKSPACE/template/` directory, then at the `TEMPLATES`
-		 * directory for the convention `notification.*.tpl`. If the template 
+		 * directory for the convention `notification.*.tpl`. If the template
 		 * is not found, false is returned
 		 *
 		 * @param string $language
