@@ -116,7 +116,7 @@ fieldset.apply div {
 	text-align: left;
 	overflow: hidden;
 	float: left;
-	background: url(images/arrows.png) right -14px no-repeat;
+	background: url(../img/arrows.png) right -14px no-repeat;
 }
 fieldset.apply:hover div {
 	background-position: right 6px;

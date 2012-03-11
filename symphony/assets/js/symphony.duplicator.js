@@ -81,7 +81,7 @@
 
 			// Construct instances
 			apply.on('click.duplicator', 'button.constructor:not(.disabled)', function construct(event, speed) {
-				var instance = templates.filter('[data-type="' + $(this).prev('select').val() + '"]').clone();
+				var instance = templates.filter('[data-type="' + $(this).parent().find('select').val() + '"]').clone();
 
 				event.preventDefault();
 
