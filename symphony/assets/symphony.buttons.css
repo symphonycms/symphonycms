@@ -42,6 +42,7 @@ input[type=submit][disabled=disabled]:hover,
 input[type=submit][disabled=disabled]:active,
 input[type=submit][disabled=disabled]:focus {
 	cursor: not-allowed;
+	opacity: 0.5;
 }
 
 /* Create buttons */
