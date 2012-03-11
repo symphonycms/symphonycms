@@ -12,19 +12,6 @@
 	Abstract Class Extension{
 
 		/**
-		 * The end-of-line constant.
-		 * @var string
-		 * @deprecated This will be removed in the next version of Symphony
-		 */
-		const CRLF = PHP_EOL;
-
-		/**
-		 * The class that initialised the Entry, usually the EntryManager
-		 * @var mixed
-		 */
-		protected $_Parent;
-
-		/**
 		 * Determines that a new navigation group is to created in the Symphony backend
 		 * @var integer
 		 */
@@ -38,16 +25,49 @@
 		const NAV_CHILD = 0;
 
 		/**
-		 * The extension constructor takes an associative array of arguments
-		 * and sets the `$this->_Parent` variable using the 'parent' key. It appears that
-		 * this is the only key set in the `$args` array by Symphony
+		 * An associative array of the providers exposed by this extension. The
+		 * only valid key at the moment is `data-sources`, with a value of an
+		 * array of classname's and human readable object names.
 		 *
-		 * @param array $args
-		 *  An associative array of arguments, but default this will contain one,
-		 *  'parent'.
+		 * @since Symphony 2.3
+		 * @var array
 		 */
-		public function __construct(Array $args){
-			$this->_Parent =& $args['parent'];
+		private static $provides = array();
+
+		/**
+		 * Default constructor for an Extension, at this time it does nothing
+		 */
+		public function __construct() {}
+
+		/**
+		 * Register all the providers that are exposed by this extension. At the
+		 * moment the core only supports `data-sources` objects, but this is
+		 * expected to change in the future
+		 *
+		 * @since Symphony 2.3
+		 * @return boolean
+		 *  This function will always return true (at the moment)
+		 */
+		public static function registerProviders() {
+			return true;
+		}
+
+		/**
+		 * Accessor function determines if this extension provides any objects
+		 * of a given `$type`. If no `$type` is provided, this function will
+		 * return all provider objects.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $type
+		 *  The type of provider object to return, `data-sources` is the only
+		 *  valid type at this time.
+		 * @return array
+		 *  If no providers are found, then an empty array is returned, otherwise
+		 *  an associative array of classname => human name will be returned.
+		 *  eg. `array('RemoteDatasource' => 'Remote Datasource')`
+		 */
+		public static function providerOf($type = null) {
+			return array();
 		}
 
 		/**
@@ -132,10 +152,14 @@
 		 *		),
 		 *		'description' => 'A description about this extension'
 		 * `
+		 * @deprecated Since Symphony 2.3, the `about()` function is deprecated for extensions
+		 *  in favour of the `extension.meta.xml` file. It will be removed in Symphony 2.4.
 		 * @return array
 		 *  An associative array describing this extension.
 		 */
-		abstract public function about();
+		public function about() {
+			return array();
+		}
 
 		/**
 		 * Extensions use delegates to perform logic at certain times
@@ -145,7 +169,7 @@
 		 * This method returns an array with the delegate name, delegate
 		 * namespace, and then name of the method that should be called.
 		 * The method that is called is passed an associative array containing
-		 * the current context which is the `$this->_Parent`, current page object
+		 * the current context which is the current page object
 		 * and any other variables that is passed via this delegate. eg.
 		 *
 		 * `array(

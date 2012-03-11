@@ -11,33 +11,71 @@
 	 */
 	require_once(TOOLKIT . '/class.administrationpage.php');
 	require_once(TOOLKIT . '/class.sectionmanager.php');
+	require_once(CONTENT . '/class.sortable.php');
 
 	Class contentSystemAuthors extends AdministrationPage{
 
 		public $_Author;
 		public $_errors = array();
 
-		public function __construct(&$parent){
-			parent::__construct($parent);
+		public function sort(&$sort, &$order, $params){
+			if(is_null($sort) || $sort == 'name'){
+				$sort = 'name';
+				return AuthorManager::fetch("first_name $order,  last_name", $order);
+			}
+
+			return AuthorManager::fetch($sort, $order);
 		}
 
 		public function __viewIndex(){
-
 			$this->setPageType('table');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Authors'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Authors'), __('Symphony'))));
 
 			if (Administration::instance()->Author->isDeveloper()) {
 				$this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), Administration::instance()->getCurrentPageURL().'new/', __('Add a new author'), 'create button', NULL, array('accesskey' => 'c')));
 			} else $this->appendSubheading(__('Authors'));
 
-			$aTableHead = array(
-				array(__('Name'), 'col'),
-				array(__('Email Address'), 'col'),
-				array(__('Last Seen'), 'col'),
+			Sortable::initialize($this, $authors, $sort, $order);
+
+			$columns = array(
+				array(
+					'label' => __('Name'),
+					'sortable' => true,
+					'handle' => 'name'
+				),
+				array(
+					'label' => __('Email Address'),
+					'sortable' => true,
+					'handle' => 'email'
+				),
+				array(
+					'label' => __('Last Seen'),
+					'sortable' => true,
+					'handle' => 'last_seen'
+				)
+			);
+			
+			if (Administration::instance()->Author->isDeveloper()) {
+				$columns = array_merge($columns, array(
+					array(
+						'label' => __('User Type'),
+						'sortable' => true,
+						'handle' => 'user_type'
+					),
+					array(
+						'label' => __('Language'),
+						'sortable' => true,
+						'handle' => 'language'
+					)
+				));
+			}
+
+			$aTableHead = Sortable::buildTableHeaders(
+				$columns, $sort, $order, (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
 			);
 
 			$aTableBody = array();
-			$authors = AuthorManager::fetch();
+
 			if(!is_array($authors) || empty($authors)){
 				$aTableBody = array(
 					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
@@ -45,7 +83,7 @@
 			}
 			else{
 				foreach($authors as $a){
-					## Setup each cell
+					// Setup each cell
 					if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->get('id') == $a->get('id')) {
 						$td1 = Widget::TableData(
 							Widget::Anchor($a->getFullName(), Administration::instance()->getCurrentPageURL() . 'edit/' . $a->get('id') . '/', $a->get('username'), 'author')
@@ -61,8 +99,14 @@
 							DateTimeObj::format($a->get('last_seen'), __SYM_DATETIME_FORMAT__)
 						);
 					} else {
-						$td3 = Widget::TableData('Unknown', 'inactive');
+						$td3 = Widget::TableData(__('Unknown'), 'inactive');
 					}
+					
+					$td4 = Widget::TableData($a->isDeveloper()? __("Developer") : __("Author"));
+					
+					$languages = Lang::getAvailableLanguages();
+					
+					$td5 = Widget::TableData($a->get("language") == NULL ? __("System Default") : $languages[$a->get("language")]);
 
 					if (Administration::instance()->Author->isDeveloper()) {
 						if ($a->get('id') != Administration::instance()->Author->get('id')) {
@@ -70,8 +114,11 @@
 						}
 					}
 
-					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
+					// Add a row to the body array, assigning each cell to the row
+					if(Administration::instance()->Author->isDeveloper())
+						$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4, $td5));
+					else
+						$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
 				}
 			}
 
@@ -95,9 +142,7 @@
 				))
 				);
 
-				$tableActions->appendChild(Widget::Select('with-selected', $options));
-				$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
-
+				$tableActions->appendChild(Widget::Apply($options));
 				$this->Form->appendChild($tableActions);
 			}
 
@@ -134,7 +179,7 @@
 			}
 		}
 
-		## Both the Edit and New pages need the same form
+		// Both the Edit and New pages need the same form
 		public function __viewNew(){
 			$this->__form();
 		}
@@ -147,7 +192,7 @@
 
 			require_once(TOOLKIT . '/class.field.php');
 
-			## Handle unknown context
+			// Handle unknown context
 			if(!in_array($this->_context[0], array('new', 'edit'))) Administration::instance()->errorPageNotFound();
 
 			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper()) {
@@ -158,30 +203,24 @@
 				switch($this->_context[2]){
 					case 'saved':
 						$this->pageAlert(
-							__(
-								'Author updated at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Authors</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/system/authors/new/',
-									SYMPHONY_URL . '/system/authors/'
-								)
-							),
-							Alert::SUCCESS
-						);
+							__('Author updated at %s.', array(DateTimeObj::getTimeAgo()))
+							. ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
+							. __('View all Authors')
+							. '</a>'
+							, Alert::SUCCESS);
 					break;
 
 					case 'created':
 						$this->pageAlert(
-							__(
-								'Author created at %1$s. <a href="%2$s" accesskey="c">Create another?</a> <a href="%3$s" accesskey="a">View all Authors</a>',
-								array(
-									DateTimeObj::getTimeAgo(__SYM_TIME_FORMAT__),
-									SYMPHONY_URL . '/system/authors/new/',
-									SYMPHONY_URL . '/system/authors/'
-								)
-							),
-							Alert::SUCCESS
-						);
+							__('Author created at %s.', array(DateTimeObj::getTimeAgo()))
+							. ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
+							. __('Create another?')
+							. '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
+							. __('View all Authors')
+							. '</a>'
+							, Alert::SUCCESS);
 					break;
 				}
 			}
@@ -209,50 +248,57 @@
 				Administration::instance()->customError(__('Access Denied'), __('You are not authorised to edit other authors.'));
 			}
 
-			$this->setTitle(__(($this->_context[0] == 'new' ? '%1$s &ndash; %2$s &ndash; %3$s' : '%1$s &ndash; %2$s'), array(__('Symphony'), __('Authors'), $author->getFullName())));
+			$this->setTitle(__(($this->_context[0] == 'new' ? '%2$s &ndash; %3$s' : '%1$s &ndash; %2$s &ndash; %3$s'), array($author->getFullName(), __('Authors'), __('Symphony'))));
 			$this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $author->getFullName()));
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Authors'), SYMPHONY_URL . '/system/authors/'),
+			));
 
-			### Essentials ###
+			// Essentials
 			$group = new XMLElement('fieldset');
 			$group->setAttribute('class', 'settings');
 			$group->appendChild(new XMLElement('legend', __('Essentials')));
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
+			$div->setAttribute('class', 'two columns');
 
-			$label = Widget::Label(__('First Name'));
+			$label = Widget::Label(__('First Name'), NULL, 'column');
 			$label->appendChild(Widget::Input('fields[first_name]', $author->get('first_name')));
-			$div->appendChild((isset($this->_errors['first_name']) ? Widget::wrapFormElementWithError($label, $this->_errors['first_name']) : $label));
+			$div->appendChild((isset($this->_errors['first_name']) ? Widget::Error($label, $this->_errors['first_name']) : $label));
 
 
-			$label = Widget::Label(__('Last Name'));
+			$label = Widget::Label(__('Last Name'), NULL, 'column');
 			$label->appendChild(Widget::Input('fields[last_name]', $author->get('last_name')));
-			$div->appendChild((isset($this->_errors['last_name']) ? Widget::wrapFormElementWithError($label, $this->_errors['last_name']) : $label));
+			$div->appendChild((isset($this->_errors['last_name']) ? Widget::Error($label, $this->_errors['last_name']) : $label));
 
 			$group->appendChild($div);
 
 			$label = Widget::Label(__('Email Address'));
 			$label->appendChild(Widget::Input('fields[email]', $author->get('email')));
-			$group->appendChild((isset($this->_errors['email']) ? Widget::wrapFormElementWithError($label, $this->_errors['email']) : $label));
+			$group->appendChild((isset($this->_errors['email']) ? Widget::Error($label, $this->_errors['email']) : $label));
 
 			$this->Form->appendChild($group);
-			###
 
-			### Login Details ###
+			// Login Details
 			$group = new XMLElement('fieldset');
 			$group->setAttribute('class', 'settings');
 			$group->appendChild(new XMLElement('legend', __('Login Details')));
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('Username'));
-			$label->appendChild(Widget::Input('fields[username]', $author->get('username'), NULL));
-			$div->appendChild((isset($this->_errors['username']) ? Widget::wrapFormElementWithError($label, $this->_errors['username']) : $label));
+			$label->appendChild(Widget::Input('fields[username]', $author->get('username')));
+			$div->appendChild((isset($this->_errors['username']) ? Widget::Error($label, $this->_errors['username']) : $label));
 
 			// Only developers can change the user type. Primary account should NOT be able to change this
 			if (Administration::instance()->Author->isDeveloper() && !$author->isPrimaryAccount()) {
-				$label = Widget::Label(__('User Type'));
+			
+				// Create columns
+				$div->setAttribute('class', 'two columns');
+				$label->setAttribute('class', 'column');
+				
+				// User type
+				$label = Widget::Label(__('User Type'), NULL, 'column');
 
 				$options = array(
 					array('author', false, __('Author')),
@@ -265,40 +311,37 @@
 
 			$group->appendChild($div);
 
-			$div = new XMLElement('div', NULL, array('class' => 'group'));
-
-			if($this->_context[0] == 'edit') {
-				$div->setAttribute('id', 'change-password');
-
-				if(!Administration::instance()->Author->isDeveloper() || $isOwner === true){
-					$div->setAttribute('class', 'triple group');
-
-					$label = Widget::Label(__('Old Password'));
-					if(isset($this->_errors['old-password'])) {
-						$label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['old-password']));
-					}
-
-					$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password'));
-					$div->appendChild((isset($this->_errors['old-password']) ? Widget::wrapFormElementWithError($label, $this->_errors['old-password']) : $label));
-				}
+			// Password
+			$fieldset = new XMLElement('fieldset', NULL, array('class' => 'two columns', 'id' => 'password'));
+			$legend = new XMLElement('legend', __('Password'));
+			$help = new XMLElement('i', __('Leave password fields blank to keep the current password'));
+			$fieldset->appendChild($legend);
+			$fieldset->appendChild($help);
+			
+			// Password reset
+			if($this->_context[0] == 'edit' && (!Administration::instance()->Author->isDeveloper() || $isOwner === true)) {
+				$fieldset->setAttribute('class', 'three columns');
+				
+				$label = Widget::Label(NULL, NULL, 'column');
+				$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password', array('placeholder' => __('Old Password'))));
+				$fieldset->appendChild((isset($this->_errors['old-password']) ? Widget::Error($label, $this->_errors['password']) : $label));
 			}
+			
+			// New password
+			$callback = Administration::instance()->getPageCallback();
+			$placeholder = ($callback['context'][0] == 'edit' ? __('New Password') : __('Password'));
+			$label = Widget::Label(NULL, NULL, 'column');
+			$label->appendChild(Widget::Input('fields[password]', NULL, 'password', array('placeholder' => $placeholder)));
+			$fieldset->appendChild((isset($this->_errors['password']) ? Widget::Error($label, $this->_errors['password']) : $label));
 
-			$label = Widget::Label(($this->_context[0] == 'edit' ? __('New Password') : __('Password')));
-			$label->appendChild(Widget::Input('fields[password]', NULL, 'password'));
-			$div->appendChild((isset($this->_errors['password']) ? Widget::wrapFormElementWithError($label, $this->_errors['password']) : $label));
+			// Confirm password
+			$label = Widget::Label(NULL, NULL, 'column');
+			$label->appendChild(Widget::Input('fields[password-confirmation]', NULL, 'password', array('placeholder' => __('Confirm Password'))));
+			$fieldset->appendChild((isset($this->_errors['password-confirmation']) ? Widget::Error($label, $this->_errors['password']) : $label));
+			
+			$group->appendChild($fieldset);
 
-			$label = Widget::Label(($this->_context[0] == 'edit' ? __('Confirm New Password') : __('Confirm Password')));
-			if(isset($this->_errors['password-confirmation'])) {
-				$label->setAttributeArray(array('class' => 'contains-error', 'title' => $this->_errors['password-confirmation']));
-			}
-			$label->appendChild(Widget::Input('fields[password-confirmation]', NULL, 'password'));
-			$div->appendChild($label);
-			$group->appendChild($div);
-
-			if($this->_context[0] == 'edit'){
-				$group->appendChild(new XMLElement('p', __('Leave password fields blank to keep the current password'), array('class' => 'help')));
-			}
-
+			// Auth token
 			if(Administration::instance()->Author->isDeveloper()) {
 				$label = Widget::Label();
 				$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
@@ -308,14 +351,13 @@
 				}
 
 				$temp = SYMPHONY_URL . '/login/' . $author->createAuthToken() . '/';
-				$label->setValue(__('%1$s Allow remote login via <a href="%2$s">%2$s</a>', array($input->generate(), $temp)));
+				$label->setValue(__('%s Allow remote login via', array($input->generate())) . ' <a href="' . $temp . '">' . $temp . '</a>');
 				$group->appendChild($label);
 			}
 
 			$label = Widget::Label(__('Default Area'));
 
-			$sectionManager = new SectionManager($this->_Parent);
-			$sections = $sectionManager->fetch(NULL, 'ASC', 'sortorder');
+			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
 
 			$options = array();
 
@@ -341,7 +383,7 @@
 			* @delegate AddDefaultAuthorAreas
 			* @since Symphony 2.2
 			* @param string $context
-			* '/system/authors/
+			* '/system/authors/'
 			* @param array $options
 			* An associative array of options, suitable for use for the Widget::Select
 			* function. By default this will be an array of the Sections in the current
@@ -359,9 +401,8 @@
 			$group->appendChild($label);
 
 			$this->Form->appendChild($group);
-			###
 
-			### Custom Language Selection ###
+			// Custom Language Selection
 			$languages = Lang::getAvailableLanguages();
 			if(count($languages) > 1) {
 
@@ -371,9 +412,6 @@
 				$group = new XMLElement('fieldset');
 				$group->setAttribute('class', 'settings');
 				$group->appendChild(new XMLElement('legend', __('Custom Preferences')));
-
-				$div = new XMLElement('div');
-				$div->setAttribute('class', 'group');
 
 				$label = Widget::Label(__('Language'));
 
@@ -412,7 +450,7 @@
 			* @delegate AddElementstoAuthorForm
 			* @since Symphony 2.2
 			* @param string $context
-			* '/system/authors/
+			* '/system/authors/'
 			* @param XMLElement $form
 			* The contents of `$this->Form` after all the default form elements have been appended.
 			* @param Author $author
@@ -470,7 +508,12 @@
 					$this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), Alert::ERROR);
 				}
 				else {
-					$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(SYMPHONY_URL . '/system/log/')), Alert::ERROR);
+					$this->pageAlert(
+						__('Unknown errors occurred while attempting to save.')
+						. '<a href="' . SYMPHONY_URL . '/system/log/">'
+						. __('Check your activity log')
+						. '</a>.'
+						, Alert::ERROR);
 				}
 			}
 		}
@@ -564,8 +607,16 @@
 					}
 
 					else {
-						$this->pageAlert(__('Unknown errors occurred while attempting to save. Please check your <a href="%s">activity log</a>.', array(SYMPHONY_URL . '/system/log/')), Alert::ERROR);
+						$this->pageAlert(
+							__('Unknown errors occurred while attempting to save.')
+							. '<a href="' . SYMPHONY_URL . '/system/log/">'
+							. __('Check your activity log')
+							. '</a>.'
+							, Alert::ERROR);
 					}
+				}
+				else if(is_array($this->_errors) && !empty($this->_errors)) {
+					$this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), Alert::ERROR);
 				}
 			}
 			else if(@array_key_exists('delete', $_POST['action'])) {

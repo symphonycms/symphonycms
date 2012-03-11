@@ -25,7 +25,7 @@
 			// Might fail in non-standard uses, will then return an
 			// empty string.
 			$gateway_class = $trace[1]['class']?' (' . $trace[1]['class'] . ')':'';
-			Symphony::$Log->pushToLog(__('Email Gateway Error') . $gateway_class  . ': ' . $message, $code, true);
+			Symphony::Log()->pushToLog(__('Email Gateway Error') . $gateway_class  . ': ' . $message, $code, true);
 			parent::__construct($message);
 		}
 	}
@@ -130,7 +130,8 @@
 		public function setRecipients($email){
 			//TODO: sanitizing and security checking
 			if(!is_array($email)){
-				$email = Array($email);
+				$email = explode(',',$email);
+				array_walk($email, create_function('&$val', '$val = trim($val);'));
 			}
 			$this->_recipients = $email;
 		}
@@ -185,7 +186,7 @@
 				$this->_text_encoding = false;
 			}
 			else{
-				throw new EmailGatewayException(__('%s is not a supported encoding type. Please use "quoted-printable" or "base64". You can also use false for no encoding.', array($encoding)));
+				throw new EmailGatewayException(__('%1$s is not a supported encoding type. Please use %2$s or %3$s. You can also use %4$s for no encoding.', array($encoding, '<code>quoted-printable</code>', '<code>base-64</code>', '<code>false</code>')));
 			}
 		}
 
@@ -241,7 +242,7 @@
 		 */
 		public function appendHeaderField($name, $body){
 			if(is_array($body)){
-				throw new EmailGatewayException(__('appendHeaderField accepts strings only; arrays are not allowed.'));
+				throw new EmailGatewayException(__('%s accepts strings only; arrays are not allowed.', array('<code>appendHeaderField</code>')));
 			}
 			$this->_header_fields[$name] = $body;
 		}
@@ -285,7 +286,7 @@
 						throw new EmailValidationException(__('Recipient email address cannot be empty.'));
 					}
 					elseif(!filter_var($address, FILTER_VALIDATE_EMAIL)) {
-						throw new EmailValidationException(__('The email address "%s" is invalid.', array($address)));
+						throw new EmailValidationException(__('The email address ‘%s’ is invalid.', array($address)));
 					}
 				}
 			}
@@ -375,9 +376,12 @@
 		 */
 		protected function getSectionAttachments() {
 			$output = '';
-			foreach ($this->_attachments as $file) {
+			foreach ($this->_attachments as $filename => $file) {
+				if(is_numeric($filename)){
+					$filename = NULL;
+				}
 				$output .= $this->boundaryDelimiterLine('multipart/mixed')
-						 . $this->contentInfoString(NULL, $file)
+						 . $this->contentInfoString(NULL, $file, $filename)
 						 . EmailHelper::base64ContentTransferEncode(file_get_contents($file))
 				;
 			}
@@ -430,7 +434,7 @@
 		 * failure. Can be used to send to an email server directly.
 		 * @return string
 		 */
-		public function contentInfoArray($type = NULL, $file = NULL) {
+		public function contentInfoArray($type = NULL, $file = NULL, $filename = NULL) {
 			$description = array(
 				'multipart/mixed' => array(
 					"Content-Type" => 'multipart/mixed; boundary="'
@@ -450,11 +454,11 @@
 				),
 			);
 			$binary = array(
-				'Content-Type'				=> EmailHelper::getMimeType($file).'; name="'.basename($file).'"',
+				'Content-Type'				=> EmailHelper::getMimeType($file).'; name="'.(!is_null($filename)?$filename:basename($file)).'"',
 				'Content-Transfer-Encoding' => 'base64',
-				'Content-Disposition'		=> 'attachment; filename="'.basename($file).'"',
+				'Content-Disposition'		=> 'attachment; filename="' . (!is_null($filename)?$filename:basename($file)).'"',
 			);
-			return !empty($description[$type]) ? $description[$type] : ($file ? $binary : array());
+			return !empty($description[$type]) ? $description[$type] : ((!is_null($filename)?$filename:basename($file)) ? $binary : array());
 		}
 
 		/**
@@ -462,8 +466,8 @@
 		 *
 		 * @return string
 		 */
-		protected function contentInfoString($type = NULL, $file = NULL) {
-			$data = $this->contentInfoArray($type, $file);
+		protected function contentInfoString($type = NULL, $file = NULL, $filename = NULL) {
+			$data = $this->contentInfoArray($type, $file, $filename);
 			foreach ($data as $key => $value) {
 				$field[] = EmailHelper::fold(sprintf('%s: %s', $key, $value));
 			}
@@ -510,7 +514,7 @@
 				return $this->{'set'.$this->__toCamel($name, true)}($value);
 			}
 			else{
-				throw new EmailGatewayException(__('The %s gateway does not support the use of %s', array(get_class($this), $name)));
+				throw new EmailGatewayException(__('The %1$s gateway does not support the use of %2$s', array(get_class($this), $name)));
 			}
 		}
 

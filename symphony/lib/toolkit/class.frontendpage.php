@@ -20,32 +20,7 @@
 	require_once(TOOLKIT . '/class.eventmanager.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
 
-	Class FrontendPage extends XSLTPage{
-
-		/**
-		 * An instance of the Frontend class
-		 * @var Frontend
-		 * @see core.Frontend
-		 */
-		public $_Parent;
-
-		/**
-		  * An instance of the ExtensionManager
-		  * @var ExtensionManager
-		  */
-		public $ExtensionManager;
-
-		/**
-		 * An instance of the DatasourceManager
-		 * @var DatasourceManager
-		 */
-		public $DatasourceManager;
-
-		/**
-		 * An instance of the EventManager
-		 * @var EventManager
-		 */
-		public $EventManager;
+	Class FrontendPage extends XSLTPage {
 
 		/**
 		 * An associative array of all the parameters for this page including
@@ -57,7 +32,7 @@
 
 		/**
 		 * The URL of the current page that is being Rendered as returned
-		 * by getCurrentPage
+		 * by `getCurrentPage`
 		 *
 		 * @var string
 		 * @see boot#getCurrentPage()
@@ -80,8 +55,7 @@
 		 * @since Symphony 2.2.1
 		 * @var boolean
 		 */
-
-		 private $is_logged_in = false;
+		private $is_logged_in = false;
 
 		/**
 		 * When events are processed, the results of them often can't be reproduced
@@ -104,22 +78,10 @@
 		private $_env = array();
 
 		/**
-		 * Constructor function sets `$this->_Parent` and initialises the Managers
-		 * used on the FrontendPage, which are DatasourceManager, EventManager and
-		 * ExtensionManager
-		 *
-		 * @param Frontend $parent
-		 *  The Frontend object that this page has been created from
-		 *  passed by reference
+		 * Constructor function sets the `$is_logged_in` variable.
 		 */
-		public function __construct(&$parent){
+		public function __construct() {
 			parent::__construct();
-
-			$this->_Parent = $parent;
-
-			$this->DatasourceManager = new DatasourceManager($this->_Parent);
-			$this->EventManager = new EventManager($this->_Parent);
-			$this->ExtensionManager = Symphony::ExtensionManager();
 
 			$this->is_logged_in = Frontend::instance()->isLoggedIn();
 		}
@@ -131,6 +93,18 @@
 		 */
 		public function Env(){
 			return $this->_env;
+		}
+
+		/**
+		 * Setter function for `$this->_env`, which takes an associative array
+		 * of environment information and replaces the existing `$this->_env`.
+		 *
+		 * @since Symphony 2.3
+		 * @param array $env
+		 *  An associative array of new environment values
+		 */
+		public function setEnv(array $env = array()) {
+			$this->_env = $env;
 		}
 
 		/**
@@ -150,6 +124,16 @@
 		 */
 		public function Page(){
 			return $this->_page;
+		}
+
+		/**
+		 * Accessor function for the current page params, `$this->_param`
+		 *
+		 * @since Symphony 2.3
+		 * @return array
+		 */
+		public function Params(){
+			return $this->_param;
 		}
 
 		/**
@@ -188,16 +172,13 @@
 				 * @param mixed $devkit
 				 *  Allows a devkit to register to this page
 				 */
-				$this->ExtensionManager->notifyMembers(
-					'FrontendDevKitResolve', '/frontend/',
-					array(
-						'full_generate'	=> &$full_generate,
-						'devkit'		=> &$devkit
-					)
-				);
+				Symphony::ExtensionManager()->notifyMembers('FrontendDevKitResolve', '/frontend/', array(
+					'full_generate'	=> &$full_generate,
+					'devkit'		=> &$devkit
+				));
 			}
 
-			Frontend::instance()->Profiler->sample('Page creation process started');
+			Symphony::Profiler()->sample('Page creation process started');
 			$this->_page = $page;
 			$this->__buildPage();
 
@@ -214,28 +195,28 @@
 				 * @param string $xsl
 				 *  This pages XSLT
 				 */
-				$this->ExtensionManager->notifyMembers(
-					'FrontendOutputPreGenerate', '/frontend/',
-					array(
-						'page'	=> &$this,
-						'xml'	=> &$this->_xml,
-						'xsl'	=> $this->_xsl
-					)
-				);
+				Symphony::ExtensionManager()->notifyMembers('FrontendOutputPreGenerate', '/frontend/', array(
+					'page'	=> &$this,
+					'xml'	=> &$this->_xml,
+					'xsl'	=> $this->_xsl
+				));
 
 				if (is_null($devkit)) {
-					if(in_array('XML', $this->_pageData['type']) || in_array('xml', $this->_pageData['type'])) {
+					if(General::in_iarray('XML', $this->_pageData['type'])) {
 						$this->addHeaderToPage('Content-Type', 'text/xml; charset=utf-8');
+					}
+					else if(General::in_iarray('JSON', $this->_pageData['type'])) {
+						$this->addHeaderToPage('Content-Type', 'application/json; charset=utf-8');
 					}
 					else{
 						$this->addHeaderToPage('Content-Type', 'text/html; charset=utf-8');
 					}
 
 					if(in_array('404', $this->_pageData['type'])){
-						$this->addHeaderToPage('HTTP/1.0 404 Not Found');
+						$this->addHeaderToPage('Status', '404 Not Found', 404);
 					}
 					elseif(in_array('403', $this->_pageData['type'])){
-						$this->addHeaderToPage('HTTP/1.0 403 Forbidden');
+						$this->addHeaderToPage('Status', '403 Forbidden', 403);
 					}
 				}
 
@@ -245,7 +226,7 @@
 				 * @param string $context
 				 * '/frontend/'
 				 */
-				$this->ExtensionManager->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
+				Symphony::ExtensionManager()->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
 
 				$output = parent::generate();
 
@@ -257,22 +238,22 @@
 				 * @param string $output
 				 *  The generated output of this page, ie. a string of HTML, passed by reference
 				 */
-				$this->ExtensionManager->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
+				Symphony::ExtensionManager()->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
 
-				Frontend::instance()->Profiler->sample('XSLT Transformation', PROFILE_LAP);
+				Symphony::Profiler()->sample('XSLT Transformation', PROFILE_LAP);
 
 				if (is_null($devkit) && !$output) {
 					$errstr = NULL;
 
 					while (list($key, $val) = $this->Proc->getError()) {
-						$errstr .= 'Line: ' . $val['line'] . ' - ' . $val['message'] . self::CRLF;
+						$errstr .= 'Line: ' . $val['line'] . ' - ' . $val['message'] . PHP_EOL;
 					}
 
 					GenericExceptionHandler::$enabled = true;
-					throw new SymphonyErrorPage(trim($errstr), NULL, 'xslt-error', array('proc' => clone $this->Proc));
+					throw new SymphonyErrorPage(trim($errstr), NULL, 'xslt', array('proc' => clone $this->Proc));
 				}
 
-				Frontend::instance()->Profiler->sample('Page creation complete');
+				Symphony::Profiler()->sample('Page creation complete');
 			}
 
 			if (!is_null($devkit)) {
@@ -281,9 +262,11 @@
 				return $devkit->build();
 			}
 
-			## EVENT DETAILS IN SOURCE
-			if ($this->is_logged_in && Symphony::Configuration()->get('display_event_xml_in_source', 'public') == 'yes') {
-				$output .= self::CRLF . '<!-- ' . self::CRLF . $this->_events_xml->generate(true) . ' -->';
+			// Display the Event Results in the page source if the user is logged
+			// into Symphony, the page is not JSON and if it is enabled in the
+			// configuration.
+			if ($this->is_logged_in && !General::in_iarray('JSON', $this->_pageData['type']) && Symphony::Configuration()->get('display_event_xml_in_source', 'public') == 'yes') {
+				$output .= PHP_EOL . '<!-- ' . PHP_EOL . $this->_events_xml->generate(true) . ' -->';
 			}
 
 			return $output;
@@ -326,12 +309,15 @@
 			 *  An associative array of page data, which is a combination from `tbl_pages` and
 			 *  the path of the page on the filesystem. Passed by reference
 			 */
-			$this->ExtensionManager->notifyMembers('FrontendPageResolved', '/frontend/', array('page' => &$this, 'page_data' => &$page));
+			Symphony::ExtensionManager()->notifyMembers('FrontendPageResolved', '/frontend/', array('page' => &$this, 'page_data' => &$page));
 
 			$this->_pageData = $page;
-			$root_page = @array_shift(explode('/', $page['path']));
+			$root_page = strpos('/', $page['path']) !== false ? array_shift(explode('/', $page['path'])) : '';
 			$current_path = explode(dirname($_SERVER['SCRIPT_NAME']), $_SERVER['REQUEST_URI'], 2);
 			$current_path = '/' . ltrim(end($current_path), '/');
+			$split_path = explode('?', $current_path, 3);
+			$current_path = rtrim(current($split_path), '/');
+			$querystring = '?' . next($split_path);
 
 			// Get max upload size from php and symphony config then choose the smallest
 			$upload_size_php = ini_size_to_bytes(ini_get('upload_max_filesize'));
@@ -353,6 +339,7 @@
 				'current-page-id' => $page['id'],
 				'current-path' => $current_path,
 				'parent-path' => '/' . $page['path'],
+				'current-query-string' => utf8_encode(urldecode($querystring)),
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
@@ -374,9 +361,9 @@
 
 					// If the key gets replaced out then it will break the XML so prevent
 					// the parameter being set.
-					if(empty($key)) continue;
+					if(!General::createHandle($key)) continue;
 
-					$this->_param['url-' . $key] = $val;
+					$this->_param['url-' . $key] = utf8_encode(urldecode($val));
 				}
 			}
 
@@ -397,7 +384,7 @@
 			 * @param array $params
 			 *  An associative array of this page's parameters
 			 */
-			$this->ExtensionManager->notifyMembers('FrontendParamsResolve', '/frontend/', array('params' => &$this->_param));
+			Symphony::ExtensionManager()->notifyMembers('FrontendParamsResolve', '/frontend/', array('params' => &$this->_param));
 
 			$xml_build_start = precision_timer();
 
@@ -412,8 +399,8 @@
 
 			$this->processDatasources($page['data_sources'], $xml);
 
-			Frontend::instance()->Profiler->seed($xml_build_start);
-			Frontend::instance()->Profiler->sample('XML Built', PROFILE_LAP);
+			Symphony::Profiler()->seed($xml_build_start);
+			Symphony::Profiler()->sample('XML Built', PROFILE_LAP);
 
 			if(is_array($this->_env['pool']) && !empty($this->_env['pool'])) {
 				foreach($this->_env['pool'] as $handle => $p){
@@ -444,11 +431,25 @@
 			 * @param array $params
 			 *  An associative array of this page's parameters
 			 */
-			$this->ExtensionManager->notifyMembers('FrontendParamsPostResolve', '/frontend/', array('params' => &$this->_param));
+			Symphony::ExtensionManager()->notifyMembers('FrontendParamsPostResolve', '/frontend/', array('params' => &$this->_param));
 
 			$params = new XMLElement('params');
 			foreach($this->_param as $key => $value) {
-				$param = new XMLElement(Lang::createHandle($key));
+				// To support multiple parameters using the 'datasource.field'
+				// we will pop off the field handle prior to sanitizing the
+				// key. This is because of a limitation where General::createHandle
+				// will strip '.' as it's technically punctuation.
+				if(strpos($key, '.') !== false) {
+					$parts = explode('.', $key);
+					$field_handle = '.' . array_pop($parts);
+					$key = implode('', $parts);
+				}
+				else {
+					$field_handle = '';
+				}
+
+				$key = Lang::createHandle($key) . $field_handle;
+				$param = new XMLElement($key);
 
 				// DS output params get flattened to a string, so get the original pre-flattened array
 				if (isset($this->_env['pool'][$key])) $value = $this->_env['pool'][$key];
@@ -468,24 +469,23 @@
 				}
 
 				$params->appendChild($param);
-
 			}
 			$xml->prependChild($params);
 
-			Frontend::instance()->Profiler->seed();
+			Symphony::Profiler()->seed();
 			$this->setXML($xml->generate(true, 0));
-			Frontend::instance()->Profiler->sample('XML Generation', PROFILE_LAP);
+			Symphony::Profiler()->sample('XML Generation', PROFILE_LAP);
 
 			$xsl = '<?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:import href="./workspace/pages/' . basename($page['filelocation']).'"/>
-</xsl:stylesheet>';
+			<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+				<xsl:import href="./workspace/pages/' . basename($page['filelocation']).'"/>
+			</xsl:stylesheet>';
 
 			$this->setXSL($xsl, false);
 			$this->setRuntimeParam($this->_param);
 
-			Frontend::instance()->Profiler->seed($start);
-			Frontend::instance()->Profiler->sample('Page Built', PROFILE_LAP);
+			Symphony::Profiler()->seed($start);
+			Symphony::Profiler()->sample('Page Built', PROFILE_LAP);
 		}
 
 		/**
@@ -521,26 +521,16 @@
 			 * @param FrontendPage $page
 			 *  An instance of this FrontendPage
 			 */
-			$this->ExtensionManager->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => &$this->_page));
+			Symphony::ExtensionManager()->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => &$this->_page));
 
-			## Default to the index page if no page has been specified
-			if((!$this->_page || $this->_page == '//') && is_null($row) ){
-				$row = Symphony::Database()->fetchRow(0, "
-					SELECT `tbl_pages`.* FROM `tbl_pages`, `tbl_pages_types`
-					WHERE `tbl_pages_types`.page_id = `tbl_pages`.id
-					AND tbl_pages_types.`type` = 'index'
-					 LIMIT 1
-				");
+			// Default to the index page if no page has been specified
+			if((!$this->_page || $this->_page == '//') && is_null($row)) {
+				$row = PageManager::fetchPageByType('index');
 			}
 
-			elseif(is_null($row)){
-
-				$pathArr = preg_split('/\//', trim($this->_page, '/'), -1, PREG_SPLIT_NO_EMPTY);
-				$prevPage = NULL;
-
-				$valid_page_path = array();
+			else if(is_null($row)) {
 				$page_extra_bits = array();
-
+				$pathArr = preg_split('/\//', trim($this->_page, '/'), -1, PREG_SPLIT_NO_EMPTY);
 				$handle = array_pop($pathArr);
 
 				do {
@@ -553,8 +543,7 @@
 					);
 
 					if($row = Symphony::Database()->fetchRow(0, $sql)){
-						array_push($pathArr, $handle);
-						$valid_page_path = $pathArr;
+						$pathArr[] = $handle;
 
 						break 1;
 					}
@@ -564,12 +553,12 @@
 
 				} while($handle = array_pop($pathArr));
 
-				if(empty($valid_page_path)) return false;
+				if(empty($pathArr)) return false;
 
 				if(!$this->__isSchemaValid($row['params'], $page_extra_bits)) return false;
 			}
 
-			##Process the extra URL params
+			// Process the extra URL params
 			$url_params = preg_split('/\//', $row['params'], -1, PREG_SPLIT_NO_EMPTY);
 
 			foreach($url_params as $var){
@@ -577,55 +566,37 @@
 			}
 
 			if(isset($page_extra_bits)) {
-				if(is_array($page_extra_bits) && !empty($page_extra_bits)) $page_extra_bits = array_reverse($page_extra_bits);
+				if(!empty($page_extra_bits)) $page_extra_bits = array_reverse($page_extra_bits);
 
-				for($ii = 0; $ii < count($page_extra_bits); $ii++){
-					$this->_env['url'][$url_params[$ii]] = str_replace(' ', '+', $page_extra_bits[$ii]);
+				for($i = 0, $ii = count($page_extra_bits); $i < $ii; $i++){
+					$this->_env['url'][$url_params[$i]] = str_replace(' ', '+', $page_extra_bits[$i]);
 				}
 			}
 
 			if(!is_array($row) || empty($row)) return false;
 
-			$row['type'] = FrontendPage::fetchPageTypes($row['id']);
+			$row['type'] = PageManager::fetchPageTypes($row['id']);
 
-			## Make sure the user has permission to access this page
+			// Make sure the user has permission to access this page
 			if(!$this->is_logged_in && in_array('admin', $row['type'])){
-				$row = Symphony::Database()->fetchRow(0, "
-					SELECT `tbl_pages`.*
-					FROM `tbl_pages`, `tbl_pages_types`
-					WHERE `tbl_pages_types`.page_id = `tbl_pages`.id
-					AND tbl_pages_types.`type` = '403'
-					LIMIT 1
-				");
+				$row = PageManager::fetchPageByType('403');
 
 				if(empty($row)){
 					GenericExceptionHandler::$enabled = true;
 					throw new SymphonyErrorPage(
-						__('Please <a href="%s">login</a> to view this page.', array(SYMPHONY_URL . '/login/')),
+						__('Please login to view this page.') . ' <a href="' . SYMPHONY_URL . '/login/">' . __('Take me to the login page') . '</a>.',
 						__('Forbidden'),
 						'error',
 						array('header' => 'HTTP/1.0 403 Forbidden')
 					);
 				}
 
-				$row['type'] = FrontendPage::fetchPageTypes($row['id']);
+				$row['type'] = PageManager::fetchPageTypes($row['id']);
  			}
 
-			$row['filelocation'] = FrontendPage::resolvePageFileLocation($row['path'], $row['handle']);
+			$row['filelocation'] = PageManager::resolvePageFileLocation($row['path'], $row['handle']);
 
 			return $row;
-		}
-
-		/**
-		 * Given a page ID, return it's type from `tbl_pages`
-		 *
-		 * @param integer $page_id
-		 *  The page ID to find it's type
-		 * @return array
-		 *  An array of types that this page is set as
-		 */
-		public static function fetchPageTypes($page_id){
-			return Symphony::Database()->fetchCol('type', "SELECT `type` FROM `tbl_pages_types` WHERE `page_id` = '{$page_id}' ");
 		}
 
 		/**
@@ -648,24 +619,6 @@
 			$schema_arr = preg_split('/\//', $schema, -1, PREG_SPLIT_NO_EMPTY);
 
 			return (count($schema_arr) >= count($bits));
-		}
-
-		/**
-		 * Resolves the path to this page's XSLT file. The Symphony convention
-		 * is that they are stored in the `PAGES` folder. If this page has a parent
-		 * it will be as if all the / in the URL have been replaced with _. ie.
-		 * /articles/read/ will produce a file `articles_read.xsl`
-		 *
-		 * @param string $path
-		 *  The URL path to this page, excluding the current page. ie, /articles/read
-		 *  would make `$path` become articles/
-		 * @param string $handle
-		 *  The handle of the resolved page.
-		 * @return string
-		 *  The path to the XSLT of this page
-		 */
-		public static function resolvePageFileLocation($path, $handle){
-			return (PAGES . '/' . trim(str_replace('/', '_', $path . '_' . $handle), '_') . '.xsl');
 		}
 
 		/**
@@ -699,7 +652,7 @@
 			 * @param array $page_data
 			 *  An associative array of page meta data
 			 */
-			$this->ExtensionManager->notifyMembers('FrontendProcessEvents',	'/frontend/', array(
+			Symphony::ExtensionManager()->notifyMembers('FrontendProcessEvents',	'/frontend/', array(
 					'env' => $this->_env,
 					'events' => &$events,
 					'wrapper' => &$wrapper,
@@ -715,26 +668,26 @@
 
 				$pool = array();
 				foreach($events as $handle){
-					$pool[$handle] = $this->EventManager->create($handle, array('env' => $this->_env, 'param' => $this->_param));
+					$pool[$handle] = EventManager::create($handle, array('env' => $this->_env, 'param' => $this->_param));
 				}
 
 				uasort($pool, array($this, '__findEventOrder'));
 
 				foreach($pool as $handle => $event){
-					Frontend::instance()->Profiler->seed();
+					Symphony::Profiler()->seed();
 
 					$queries = Symphony::Database()->queryCount();
 
 					if($xml = $event->load()) {
 						if(is_object($xml)) $wrapper->appendChild($xml);
 						else $wrapper->setValue(
-							$wrapper->getValue() . self::CRLF . '	' . trim($xml)
+							$wrapper->getValue() . PHP_EOL . '    ' . trim($xml)
 						);
 					}
 
 					$queries = Symphony::Database()->queryCount() - $queries;
 
-					Frontend::instance()->Profiler->sample($handle, PROFILE_LAP, 'Event', $queries);
+					Symphony::Profiler()->sample($handle, PROFILE_LAP, 'Event', $queries);
 
 				}
 			}
@@ -749,7 +702,7 @@
 			 *  contained in a root XMLElement that is the handlised version of
 			 *  their name.
 			 */
-			$this->ExtensionManager->notifyMembers('FrontendEventPostProcess', '/frontend/', array('xml' => &$wrapper));
+			Symphony::ExtensionManager()->notifyMembers('FrontendEventPostProcess', '/frontend/', array('xml' => &$wrapper));
 
 		}
 
@@ -809,32 +762,61 @@
 			$dependencies = array();
 
 			foreach ($datasources as $handle) {
-				Frontend::instance()->Profiler->seed();
+				Symphony::Profiler()->seed();
 
-				$pool[$handle] =& $this->DatasourceManager->create($handle, NULL, false);
+				$pool[$handle] =& DatasourceManager::create($handle, array(), false);
 				$dependencies[$handle] = $pool[$handle]->getDependencies();
 			}
 
 			$dsOrder = $this->__findDatasourceOrder($dependencies);
 
 			foreach ($dsOrder as $handle) {
-				Frontend::instance()->Profiler->seed();
+				Symphony::Profiler()->seed();
 
 				$queries = Symphony::Database()->queryCount();
 
 				$ds = $pool[$handle];
 				$ds->processParameters(array('env' => $this->_env, 'param' => $this->_param));
 
-				if ($xml = $ds->grab($this->_env['pool'])) {
+				// default to no XML
+				$xml = NULL;
+
+
+				/**
+				 * Allows extensions to execute the data source themselves (e.g. for caching)
+				 * and providing their own output XML instead
+				 *
+				 * @delegate DataSourcePreExecute
+				 * @param string $context
+				 * '/frontend/'
+				 * @param boolean $datasource
+				 *  The Datasource object
+				 * @param mixed $xml
+				 *  The XML output of the data source. Can be an XMLElement or string.
+				 * @param mixed $paral_pool
+				 *  The existing param pool including output parameters of any previous data sources
+				 */
+				Symphony::ExtensionManager()->notifyMembers('DataSourcePreExecute', '/frontend/', array(
+					'datasource' => &$ds,
+					'xml' => &$xml,
+					'param_pool' => &$this->_env['pool']
+				));
+
+				// if the XML is still null, an extension has not run the data source, so run normally
+				if(is_null($xml)) {
+					$xml = $ds->grab($this->_env['pool']);
+				}
+
+				if ($xml) {
 					if (is_object($xml)) $wrapper->appendChild($xml);
 					else $wrapper->setValue(
-						$wrapper->getValue() . self::CRLF . '	' . trim($xml)
+						$wrapper->getValue() . PHP_EOL . '    ' . trim($xml)
 					);
 				}
 
 				$queries = Symphony::Database()->queryCount() - $queries;
 
-				Frontend::instance()->Profiler->sample($handle, PROFILE_LAP, 'Datasource', $queries);
+				Symphony::Profiler()->sample($handle, PROFILE_LAP, 'Datasource', $queries);
 
 				unset($ds);
 			}
@@ -857,8 +839,8 @@
 			$orderedList = array();
 			$dsKeyArray = $this->__buildDatasourcePooledParamList(array_keys($dependenciesList));
 
-			## 1. First do a cleanup of each dependency list, removing non-existant DS's and find
-			##	the ones that have no dependencies, removing them from the list
+			// 1. First do a cleanup of each dependency list, removing non-existant DS's and find
+			//    the ones that have no dependencies, removing them from the list
 			foreach($dependenciesList as $handle => $dependencies){
 
 				$dependenciesList[$handle] = @array_intersect($dsKeyArray, $dependencies);
@@ -869,9 +851,10 @@
 				}
 			}
 
-			## 2. Iterate over the remaining DS's. Find if all their dependencies are
-			##	in the $orderedList array. Keep iterating until all DS's are in that list
-			##	  or there are circular dependencies (list doesn't change between iterations of the while loop)
+			// 2. Iterate over the remaining DS's. Find if all their dependencies are
+			//    in the $orderedList array. Keep iterating until all DS's are in that list
+			//    or there are circular dependencies (list doesn't change between iterations
+			//    of the while loop)
 			do{
 
 				$last_count = count($dependenciesList);
@@ -910,6 +893,40 @@
 			}
 
 			return $list;
+		}
+
+		/**
+		 * Given a page ID, return it's type from `tbl_pages`
+		 *
+		 * @deprecated This function will be removed in Symphony 2.4. Use
+		 * `PageManager::fetchPageTypes` instead.
+		 * @param integer $page_id
+		 *  The page ID to find it's type
+		 * @return array
+		 *  An array of types that this page is set as
+		 */
+		public static function fetchPageTypes($page_id) {
+			return PageManager::fetchPageTypes($page_id);
+		}
+
+		/**
+		 * Resolves the path to this page's XSLT file. The Symphony convention
+		 * is that they are stored in the `PAGES` folder. If this page has a parent
+		 * it will be as if all the / in the URL have been replaced with _. ie.
+		 * /articles/read/ will produce a file `articles_read.xsl`
+		 *
+		 * @deprecated This function will be removed in Symphony 2.4. Use
+		 *  `PageManager::resolvePageFileLocation`
+		 * @param string $path
+		 *  The URL path to this page, excluding the current page. ie, /articles/read
+		 *  would make `$path` become articles/
+		 * @param string $handle
+		 *  The handle of the resolved page.
+		 * @return string
+		 *  The path to the XSLT of this page
+		 */
+		public static function resolvePageFileLocation($path, $handle) {
+			return PageManager::resolvePageFileLocation($path, $handle);
 		}
 
 	}

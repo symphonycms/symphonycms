@@ -37,7 +37,7 @@
 
 		/**
 		 * The class representation of the current Symphony backend page,
-		 * which is a subclass of the HTMLPage class. Symphony uses a convention
+		 * which is a subclass of the `HTMLPage` class. Symphony uses a convention
 		 * of prefixing backend page classes with 'content'. ie. 'contentBlueprintsSections'
 		 * @var HTMLPage
 		 */
@@ -56,26 +56,6 @@
 			}
 
 			return self::$_instance;
-		}
-
-		/**
-		 * The constructor for Administration calls the parent Symphony
-		 * constructor.
-		 *
-		 * @see core.Symphony#__construct()
-		 * @deprecated The constructor creates backwards compatible references
-		 *  to `$this->Database`, `$this->ExtensionManager` and `$this->Configuration`
-		 *  that act as alias for `Symphony::Database()`, `Symphony::ExtensionManager()`
-		 *  and `Symphony::Configuration()`. These will be removed in the
-		 *  next Symphony release
-		 */
-		protected function __construct(){
-			parent::__construct();
-
-			// Need this part for backwards compatiblity
-			$this->Database = Symphony::Database();
-			$this->Configuration = Symphony::Configuration();
-			$this->ExtensionManager = Symphony::ExtensionManager();
 		}
 
 		/**
@@ -175,13 +155,13 @@
 			}
 
 			include_once((isset($this->_callback['driverlocation']) ? $this->_callback['driverlocation'] : CONTENT) . '/content.' . $this->_callback['driver'] . '.php');
-			$this->Page = new $this->_callback['classname']($this);
+			$this->Page = new $this->_callback['classname'];
 
 			if(!$is_logged_in && $this->_callback['driver'] != 'login'){
 				if(is_callable(array($this->Page, 'handleFailedAuthorisation'))) $this->Page->handleFailedAuthorisation();
 				else{
 					include_once(CONTENT . '/content.login.php');
-					$this->Page = new contentLogin($this);
+					$this->Page = new contentLogin;
 					$this->Page->build();
 				}
 			}
@@ -189,25 +169,31 @@
 				if (!is_array($this->_callback['context'])) $this->_callback['context'] = array();
 
 				// Check for update Alert
-				if(file_exists(DOCROOT . '/update.php') && $this->__canAccessAlerts()) {
-					if(file_exists(DOCROOT . '/README.markdown') && is_readable(DOCROOT . '/README.markdown')) {
-						$readme = file(DOCROOT . '/README.markdown', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-						$readme = trim(str_replace('- Version:', '', $readme[1]));
+				// Scan install/migrations directory for the most recent updater and compare
+				if(file_exists(DOCROOT . '/install/index.php') && $this->__canAccessAlerts()) {
+					try{
+						$migration_file = end(scandir(DOCROOT . '/install/migrations'));
+						include_once(DOCROOT . '/install/lib/class.migration.php');
+						include_once(DOCROOT . '/install/migrations/' . $migration_file);
+
+						$migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
+						$migration_version = $migration_class::getVersion();
 
 						$current_version = Symphony::Configuration()->get('version', 'symphony');
+
 						// The updater contains a version higher than the current Symphony version.
-						if(version_compare($current_version, $readme, '<')) {
-							$message = __('Run the updater to update Symphony to %s. <a href="%s">View Update</a>', array($readme, URL . "/update.php"));
+						if(version_compare($current_version, $migration_version, '<')) {
+							$message = __('A migration has been found in your installation to update Symphony to %s.', array($migration_version)) . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
 						}
 						// The updater contains a version lower than the current Symphony version.
 						// The updater is the same version as the current Symphony install.
 						else {
-							$message = __('Your Symphony installation is up to date, but an updater script was still detected. For security reasons, it should be removed. <a href="%s/update.php?action=remove">Remove Update Script</a>', array(URL));
+							$message = __('Your Symphony installation is up to date, but the installer was still detected. For security reasons, it should be removed.') . ' <a href="' . URL . '/install/?action=remove">' . __('Remove installer?') . '</a>';
 						}
 					}
 					// Can't detect update Symphony version
-					else {
-						$message = __('An updater script has been found in your installation. <a href="%s">View Update</a>', array(URL . "/update.php"));
+					catch(Exception $e) {
+						$message = __('An update script has been found in your installation.') . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
 					}
 
 					$this->Page->pageAlert($message, Alert::NOTICE);
@@ -218,9 +204,9 @@
 				if(is_array($extensions) && !empty($extensions) && $this->__canAccessAlerts()) {
 					foreach($extensions as $name) {
 						$about = Symphony::ExtensionManager()->about($name);
-						if($about['status'] == EXTENSION_REQUIRES_UPDATE) {
+						if(in_array(EXTENSION_REQUIRES_UPDATE,$about['status'])) {
 							$this->Page->pageAlert(
-								__('An extension requires updating. <a href="%s">View Extensions</a>', array(SYMPHONY_URL . '/system/extensions/'))
+								__('An extension requires updating.') . ' <a href="' . SYMPHONY_URL . '/system/extensions/">' . __('View extensions') . '</a>'
 							);
 							break;
 						}
@@ -357,7 +343,7 @@
 
 			}
 
-			## TODO: Add delegate for custom callback creation
+			// TODO: Add delegate for custom callback creation
 
 			return $callback;
 		}
@@ -379,7 +365,7 @@
 		 *  The HTML of the page to return
 		 */
 		public function display($page){
-			$this->Profiler->sample('Page build process started');
+			Symphony::Profiler()->sample('Page build process started');
 			$this->__buildPage($page);
 
 			/**
@@ -406,23 +392,9 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AdminPagePostGenerate', '/backend/', array('output' => &$output));
 
-			$this->Profiler->sample('Page built');
+			Symphony::Profiler()->sample('Page built');
 
 			return $output;
-		}
-
-		/**
-		 * Writes the current Symphony Configuration object to a file in the
-		 * CONFIG directory. This will overwrite any existing configuration
-		 * file every time this function is called.
-		 *
-		 * @see core.Configuration#__toString()
-		 * @return boolean
-		 *  True if the Configuration object was successfully written, false otherwise
-		 */
-		public function saveConfig(){
-			$string  = "<?php\n\t\$settings = ".(string)self::Configuration().";\n";
-			return General::writeFile(CONFIG, $string, self::Configuration()->get('write_mode', 'file'));
 		}
 
 		/**
@@ -431,7 +403,22 @@
 		 * page not found template
 		 */
 		public function errorPageNotFound(){
-			$this->customError(__('Page Not Found'), __('The page you requested does not exist.'), 'error', array('header' => 'HTTP/1.0 404 Not Found'));
+			$this->customError(__('Page Not Found'), __('The page you requested does not exist.'), 'generic', array('header' => 'HTTP/1.0 404 Not Found'));
+		}
+
+		/**
+		 * Writes the current Symphony Configuration object to a file in the
+		 * CONFIG directory. This will overwrite any existing configuration
+		 * file every time this function is called.
+		 *
+		 * @deprecated This function is deprecated in Symphony 2.3 and will be
+		 * removed in Symphony 2.4. Use `Configuration->write()` instead.
+		 * @see core.Configuration#write()
+		 * @return boolean
+		 *  True if the Configuration object was successfully written, false otherwise
+		 */
+		public function saveConfig(){
+			return self::Configuration()->write();
 		}
 
 	}

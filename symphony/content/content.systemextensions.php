@@ -9,26 +9,48 @@
 	 * that are available in this Symphony installation.
 	 */
 	require_once(TOOLKIT . '/class.administrationpage.php');
+	require_once(CONTENT . '/class.sortable.php');
 
 	Class contentSystemExtensions extends AdministrationPage{
 
+		public function sort(&$sort, &$order, $params){
+			if(is_null($sort)) $sort = 'name';
+
+			return ExtensionManager::fetch(array(), array(), $sort . ' ' . $order);
+		}
+
 		public function __viewIndex(){
 			$this->setPageType('table');
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Symphony'), __('Extensions'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Extensions'), __('Symphony'))));
 			$this->appendSubheading(__('Extensions'));
 
 			$this->Form->setAttribute('action', SYMPHONY_URL . '/system/extensions/');
 
-			$extensions = Symphony::ExtensionManager()->listAll();
+			Sortable::initialize($this, $extensions, $sort, $order);
 
-			## Sort by extensions name:
-			uasort($extensions, array('ExtensionManager', 'sortByName'));
+			$columns = array(
+				array(
+					'label' => __('Name'),
+					'sortable' => true,
+					'handle' => 'name'
+				),
+				array(
+					'label' => __('Installed Version'),
+					'sortable' => false,
+				),
+				array(
+					'label' => __('Enabled'),
+					'sortable' => false,
+				),
+				array(
+					'label' => __('Authors'),
+					'sortable' => true,
+					'handle' => 'author'
+				)
+			);
 
-			$aTableHead = array(
-				array(__('Name'), 'col'),
-				array(__('Installed Version'), 'col'),
-				array(__('Enabled'), 'col'),
-				array(__('Author'), 'col'),
+			$aTableHead = Sortable::buildTableHeaders(
+				$columns, $sort, $order, (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : '')
 			);
 
 			$aTableBody = array();
@@ -46,21 +68,31 @@
 					$installed_version = Symphony::ExtensionManager()->fetchInstalledVersion($name);
 					$td2 = Widget::TableData(is_null($installed_version) ? __('Not Installed') : $installed_version);
 
-					if($about['status'] == EXTENSION_ENABLED) {
-						$td3 = Widget::TableData(__('Yes'));
-					}
-					else if($about['status'] == EXTENSION_DISABLED) {
-						$td3 = Widget::TableData(__('Disabled'));
-					}
-					else if($about['status'] == EXTENSION_NOT_INSTALLED) {
+					// If the extension is using the new `extension.meta.xml` format, check the
+					// compatibility of the extension. This won't prevent a user from installing
+					// it, but it will let them know that it requires a version of Symphony greater
+					// then what they have.
+					if(in_array(EXTENSION_NOT_INSTALLED, $about['status'])) {
 						$td3 = Widget::TableData(__('Enable to install %s', array($about['version'])));
 					}
-                    else if($about['status'] == EXTENSION_REQUIRES_UPDATE) {
-						$td3 = Widget::TableData(__('Enable to update to %s', array($about['version'])));
+					if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
+						$td3 = Widget::TableData(__('Requires Symphony %s', array($about['required_version'])));
+					}
+					if(in_array(EXTENSION_ENABLED, $about['status'])) {
+						$td3 = Widget::TableData(__('Yes'));
+					}
+					if(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
+						if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status']))
+							$td3 = Widget::TableData(__('New version %1$s, Requires Symphony %2$s', array($about['version'], $about['required_version'])));
+						else
+							$td3 = Widget::TableData(__('Enable to update to %s', array($about['version'])));
+					}
+					if(in_array(EXTENSION_DISABLED, $about['status'])) {
+						$td3 = Widget::TableData(__('Disabled'));
 					}
 
 					$td4 = Widget::TableData(NULL);
-					if($about['author'][0] && is_array($about['author'][0])) {
+					if(isset($about['author'][0]) && is_array($about['author'][0])) {
 						$authors = '';
 						foreach($about['author'] as $i => $author) {
 
@@ -90,8 +122,8 @@
 
 					$td4->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox'));
 
-					## Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4), ($about['status'] == EXTENSION_NOT_INSTALLED ? 'inactive' : NULL));
+					// Add a row to the body array, assigning each cell to the row
+					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4), (in_array(EXTENSION_NOT_INSTALLED, $about['status']) ? 'inactive' : NULL));
 
 				}
 			}
@@ -117,9 +149,7 @@
 				))
 			);
 
-			$tableActions->appendChild(Widget::Select('with-selected', $options));
-			$tableActions->appendChild(Widget::Input('action[apply]', __('Apply'), 'submit'));
-
+			$tableActions->appendChild(Widget::Apply($options));
 			$this->Form->appendChild($tableActions);
 
 		}

@@ -39,14 +39,15 @@
 
 		/**
 		 * If there already is an instance of this field in this section and
-		 * the mustBeUnique function returns true, this will be returned
+		 * `mustBeUnique()` returns true, this will be returned
 		 * @var integer
+		 * @see mustBeUnique()
 		 */
 		const __DUPLICATE__ = 300;
 
 		/**
 		 * Fields can returned this is an error occurred when saving the
-		 * field's settings that doesn't fit another Field constant
+		 * field's settings that doesn't fit another `Field` constant
 		 * @var integer
 		 */
 		const __ERROR_CUSTOM__ = 400;
@@ -58,31 +59,31 @@
 		const __INVALID_QNAME__ = 500;
 
 		/**
-		 * Used by the FieldManager to return fields that can be toggled
+		 * Used by the `FieldManager` to return fields that can be toggled
 		 * @var integer
 		 */
 		const __TOGGLEABLE_ONLY__ = 600;
 
 		/**
-		 * Used by the FieldManager to return fields that can't be toggled
+		 * Used by the `FieldManager` to return fields that can't be toggled
 		 * @var integer
 		 */
 		const __UNTOGGLEABLE_ONLY__ = 700;
 
 		/**
-		 * Used by the FieldManager to return fields that can be filtered
+		 * Used by the `FieldManager` to return fields that can be filtered
 		 * @var integer
 		 */
 		const __FILTERABLE_ONLY__ = 800;
 
 		/**
-		 * Used by the FieldManager to return fields that can't be filtered
+		 * Used by the `FieldManager` to return fields that can't be filtered
 		 * @var integer
 		 */
 		const __UNFILTERABLE_ONLY__ = 900;
 
 		/**
-		 * Used by the FieldManager to just return all fields
+		 * Used by the `FieldManager` to just return all fields
 		 * @var integer
 		 */
 		const __FIELD_ALL__ = 1000;
@@ -94,36 +95,12 @@
 		protected $_key = 0;
 
 		/**
-		 * An associative array of the settings for this Field instance
+		 * An associative array of the settings for this `Field` instance
 		 * @var array
 		 * @deprecated This variable will be renamed to `$_settings` in the next major
 		 *  release.
 		 */
 		protected $_fields = array();
-
-		/**
-		 * The class that initialised the Field, usually the FieldManager
-		 */
-		protected $_Parent;
-
-		/**
-		 * An instance of the Symphony class, either Frontend or Administration
-		 *
-		 * @deprecated This will be removed in the next major version of Symphony.
-		 * The preferred way to access the Symphony instance is via `Symphony::Engine()`
-		 * @var Symphony
-		 */
-		protected $_engine;
-
-		/**
-		 * A pointer to the `Symphony::Database()`.
-		 *
-		 * @deprecated This is deprecated and will be removed in the next major version
-		 * of Symphony. The preferred way to access the Database object is via
-		 * `Symphony::Database()`
-		 * @var MySQL
-		 */
-        protected $Database;
 
 		/**
 		 * Whether this field is required inherently, defaults to false.
@@ -132,7 +109,7 @@
 		protected $_required = false;
 
 		/**
-		 * Whether this field can be viewed on the entries tabletable. Note
+		 * Whether this field can be viewed on the entries table. Note
 		 * that this is not the same variable as the one set when saving
 		 * a field in the section editor, rather just the if the field has
 		 * the ability to be shown. Defaults to true.
@@ -150,16 +127,9 @@
 
 		/**
 		 * Construct a new instance of this field.
-		 *
-		 * @param mixed $parent
-		 *  The class that created this Field object, usually the FieldManager,
-		 *  passed by reference.
 		 */
-		public function __construct(&$parent){
-			$this->_Parent = $parent;
-			$this->_engine = Symphony::Engine();
+		public function __construct(){
 			$this->_handle = (strtolower(get_class($this)) == 'field' ? 'field' : strtolower(substr(get_class($this), 5)));
-			$this->Database = Symphony::Database();
 		}
 
 		/**
@@ -207,13 +177,13 @@
 		 * @return array
 		 *	 the toggled data.
 		 */
-		public function toggleFieldData(Array $data, $newState, $entry_id=null){
+		public function toggleFieldData(array $data, $newState, $entry_id=null){
 			return $data;
 		}
 
 		/**
 		 * Test whether this field can be filtered. This default implementation
-		 * prohibits filtering. Filtering allows the xml output results to be limited
+		 * prohibits filtering. Filtering allows the XML output results to be limited
 		 * according to an input parameter. Subclasses should override this if
 		 * filtering is supported.
 		 *
@@ -275,7 +245,7 @@
 		/**
 		 * Test whether this field supports data-source output grouping. This
 		 * default implementation prohibits grouping. Data-source grouping allows
-		 * clients of this field to group the xml output according to this field.
+		 * clients of this field to group the XML output according to this field.
 		 * Subclasses should override this if grouping is supported.
 		 *
 		 * @return boolean
@@ -352,7 +322,7 @@
 
 		/**
 		 * Fields have settings that define how that field will act in a section, including
-		 * if it's required, any validators, if it can be shown on the entries tableetc. This
+		 * if it's required, any validators, if it can be shown on the entries table etc. This
 		 * function will set a setting to a value.  This function will set a setting to a value
 		 * overwriting any existing value for this setting
 		 *
@@ -373,7 +343,7 @@
 		 * @param array $array
 		 *	the associative array of settings for this field
 		 */
-		public function setArray(Array $array = array()){
+		public function setArray(array $array = array()){
 			if(empty($array)) return;
 
 			foreach($array as $setting => $value) {
@@ -390,7 +360,7 @@
 		 * @param array $settings
 		 *	the data array to initialize if necessary.
 		 */
-		public function setFromPOST(Array $settings = array()) {
+		public function setFromPOST(array $settings = array()) {
 			$settings['location'] = (isset($settings['location']) ? $settings['location'] : 'main');
 			$settings['required'] = (isset($settings['required']) && $settings['required'] == 'yes' ? 'yes' : 'no');
 			$settings['show_column'] = (isset($settings['show_column']) && $settings['show_column'] == 'yes' ? 'yes' : 'no');
@@ -400,20 +370,20 @@
 
 		/**
 		 * Accessor to the a setting by name. If no setting is provided all the
-		 * settings of this Field instance are returned.
+		 * settings of this `Field` instance are returned.
 		 *
 		 * @param string $setting (optional)
-		 *	the name of the setting to access the value for. This is optional and
-		 *	defaults to null in which case all settings are returned.
+		 *  the name of the setting to access the value for. This is optional and
+		 *  defaults to null in which case all settings are returned.
 		 * @return null|mixed|array
-		 *	the value of the setting if there is one, all settings if the input setting
-		 * was omitted or null if the setting was supplied but there is no value
-		 * for that setting.
+		 *  the value of the setting if there is one, all settings if the input setting
+		 *  was omitted or null if the setting was supplied but there is no value
+		 *  for that setting.
 		 */
 		public function get($setting = null){
 			if(is_null($setting)) return $this->_fields;
 
-			if (!isset($this->_fields[$setting])) return null;
+			if(!isset($this->_fields[$setting])) return null;
 
 			return $this->_fields[$setting];
 		}
@@ -447,7 +417,7 @@
 		 * @param array $settings
 		 *	the array of settings to populate with their defaults.
 		 */
-		public function findDefaults(Array &$settings){}
+		public function findDefaults(array &$settings){}
 
 		/**
 		 * Display the default settings panel, calls the `buildSummaryBlock`
@@ -460,7 +430,15 @@
 		 *	the input error collection. this defaults to null.
 		 */
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null){
-			$wrapper->appendChild(new XMLElement('h4', $this->name()));
+
+			// Create header
+			$location = ($this->get('location') ? $this->get('location') : 'main');
+			$header = new XMLElement('header', NULL, array('class' => $location, 'data-name' => $this->name()));
+			$label = (($this->get('label')) ? $this->get('label') : __('New Field'));
+			$header->appendChild(new XMLElement('h4', '<strong>' . $label . '</strong> <span class="type">' . $this->name() . '</span>'));
+			$wrapper->appendChild($header);
+
+			// Create content
 			$wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][type]', $this->handle(), 'hidden'));
 			if($this->get('id')) $wrapper->appendChild(Widget::Input('fields['.$this->get('sortorder').'][id]', $this->get('id'), 'hidden'));
 
@@ -477,18 +455,34 @@
 		 * @param array $errors (optional)
 		 *	an array to append html formatted error messages to. this defaults to null.
 		 * @return XMLElement
-		 *	the root xml element of the html display of this.
+		 *	the root XML element of the html display of this.
 		 */
 		public function buildSummaryBlock($errors = null){
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'group');
 
+			// Publish label
 			$label = Widget::Label(__('Label'));
-			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][label]', $this->get('label')));
-			if(isset($errors['label'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['label']));
+			$label->appendChild(
+				Widget::Input('fields['.$this->get('sortorder').'][label]', $this->get('label'))
+			);
+			if(isset($errors['label'])) $div->appendChild(Widget::Error($label, $errors['label']));
 			else $div->appendChild($label);
 
-			$div->appendChild($this->buildLocationSelect($this->get('location'), 'fields['.$this->get('sortorder').'][location]'));
+			// Handle + placement
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'two columns');
+
+			$label = Widget::Label(__('Handle'));
+			$label->setAttribute('class', 'column');
+
+			$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][element_name]', $this->get('element_name')));
+			if(isset($errors['element_name'])) $group->appendChild(Widget::Error($label, $errors['element_name']));
+			else $group->appendChild($label);
+
+			// Location
+			$group->appendChild($this->buildLocationSelect($this->get('location'), 'fields['.$this->get('sortorder').'][location]'));
+
+			$div->appendChild($group);
 
 			return $div;
 		}
@@ -512,6 +506,8 @@
 			if (!$label_value) $label_value = __('Placement');
 
 			$label = Widget::Label($label_value);
+			$label->setAttribute('class', 'column');
+
 			$options = array(
 				array('main', $selected == 'main', __('Main content')),
 				array('sidebar', $selected == 'sidebar', __('Sidebar'))
@@ -538,13 +534,13 @@
 		 */
 		public function buildFormatterSelect($selected = null, $name='fields[format]', $label_value){
 
-			include_once(TOOLKIT . '/class.textformattermanager.php');
+			require_once(TOOLKIT . '/class.textformattermanager.php');
 
-			$TFM = new TextformatterManager(Administration::instance());
-			$formatters = $TFM->listAll();
+			$formatters = TextformatterManager::listAll();
 
 			if(!$label_value) $label_value = __('Formatting');
 			$label = Widget::Label($label_value);
+			$label->setAttribute('class', 'column');
 
 			$options = array();
 
@@ -562,9 +558,9 @@
 		}
 
 		/**
-		 * Append a validator selector to a given XMLElement. Note that this
+		 * Append a validator selector to a given `XMLElement`. Note that this
 		 * function differs from the other two similarly named build functions in
-		 * that it takes an XMLElement to append the Validator to as a parameter,
+		 * that it takes an `XMLElement` to append the Validator to as a parameter,
 		 * and does not return anything.
 		 *
 		 * @param XMLElement $wrapper
@@ -585,6 +581,7 @@
 			$rules = ($type == 'upload' ? $upload : $validators);
 
 			$label = Widget::Label(__('Validation Rule'));
+			$label->setAttribute('class', 'column');
 			$label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input($name, $selected));
 			$wrapper->appendChild($label);
@@ -596,11 +593,11 @@
 		}
 
 		/**
-		 * Append and set a labelled html checkbox to the input xml element if this
+		 * Append and set a labelled html checkbox to the input XML element if this
 		 * field is set as a required field.
 		 *
 		 * @param XMLElement $wrapper
-		 *	the parent xml element to append the constructed html checkbox to if
+		 *	the parent XML element to append the constructed html checkbox to if
 		 *	necessary.
 		 */
 		public function appendRequiredCheckbox(XMLElement &$wrapper) {
@@ -622,11 +619,11 @@
 		}
 
 		/**
-		 * Append the show column html widget to the input parent xml element. This
+		 * Append the show column html widget to the input parent XML element. This
 		 * displays a column in the entries table or not.
 		 *
 		 * @param XMLElement $wrapper
-		 *	the parent xml element to append the checkbox to.
+		 *	the parent XML element to append the checkbox to.
 		 */
 		public function appendShowColumnCheckbox(XMLElement &$wrapper) {
 			if (!$this->_showcolumn) return;
@@ -648,13 +645,13 @@
 		}
 
 		/**
-		 * Append the show association html widget to the input parent xml element. This
+		 * Append the show association html widget to the input parent XML element. This
 		 * widget allows fields that provide linking to hide or show the column in the linked
 		 * section, similar to how the Show Column functionality works, but for the linked
 		 * section.
 		 *
 		 * @param XMLElement $wrapper
-		 *	the parent xml element to append the checkbox to.
+		 *	the parent XML element to append the checkbox to.
 		 * @param string $help (optional)
 		 *	a help message to show below the checkbox.
 		 */
@@ -692,7 +689,7 @@
 		 *	returns the status of the checking. if errors has been populated with
 		 *	any errors `self::__ERROR__`, `self::__OK__` otherwise.
 		 */
-		public function checkFields(Array &$errors, $checkForDuplicates = true) {
+		public function checkFields(array &$errors, $checkForDuplicates = true) {
 			$parent_section = $this->get('parent_section');
 			$element_name = $this->get('element_name');
 
@@ -711,7 +708,7 @@
 				$errors['element_name'] = __('This is a required field.');
 			}
 			elseif (!$valid_name) {
-				$errors['element_name'] = __('Invalid element name. Must be valid QName.');
+				$errors['element_name'] = __('Invalid element name. Must be valid %s.', array('<code>QName</code>'));
 			}
 			elseif($checkForDuplicates) {
 				$sql_id = ($this->get('id') ? " AND f.id != '".$this->get('id')."' " : '');
@@ -744,7 +741,7 @@
 		 *	an associative array of data for this string. At minimum this requires a
 		 *  key of 'value'.
 		 * @param XMLElement $link (optional)
-		 *	an xml link structure to append the content of this to provided it is not
+		 *	an XML link structure to append the content of this to provided it is not
 		 *	null. it defaults to null.
 		 * @param integer $entry_id (optional)
 		 *  An option entry ID for more intelligent processing. defaults to null
@@ -778,10 +775,10 @@
 		/**
 		 * Display the publish panel for this field. The display panel is the
 		 * interface shown to Authors that allow them to input data into this
-		 * field for an Entry.
+		 * field for an `Entry`.
 		 *
 		 * @param XMLElement $wrapper
-		 *	the xml element to append the html defined user interface to this
+		 *	the XML element to append the html defined user interface to this
 		 *	field.
 		 * @param array $data (optional)
 		 *	any existing data that has been supplied for this field instance.
@@ -823,7 +820,7 @@
 			$has_no_value = is_array($data) ? empty($data) : strlen(trim($data)) == 0;
 
 			if ($this->get('required') == 'yes' && $has_no_value) {
-				$message = __("'%s' is a required field.", array($this->get('label')));
+				$message = __('‘%s’ is a required field.', array($this->get('label')));
 
 				return self::__MISSING_FIELDS__;
 			}
@@ -838,6 +835,9 @@
 		 *	post data from the entry form
 		 * @param integer $status
 		 *	the status code resultant from processing the data.
+		 * @param string $message
+		 *	the place to set any generated error message. any previous value for
+		 *	this variable will be overwritten.
 		 * @param boolean $simulate (optional)
 		 *	true if this will tell the CF's to simulate data creation, false
 		 *	otherwise. this defaults to false. this is important if clients
@@ -848,7 +848,7 @@
 		 * @return array
 		 *	the processed field data.
 		 */
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=null) {
+		public function processRawFieldData($data, &$status, &$message=null, $simulate=false, $entry_id=null) {
 
 			$status = self::__OK__;
 
@@ -867,12 +867,12 @@
 		 * @param mixed errors (optional)
 		 *	the input error collection. this defaults to null.
 		 * @param string $fieldNamePrefix
-		 *	the prefix to apply to the display of this.
+		 *  the prefix to apply to the display of this.
 		 * @param string $fieldNameSuffix
-		 *	the suffix to apply to the display of this.
+		 *  the suffix to apply to the display of this.
 		 */
 		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null){
-			$wrapper->appendChild(new XMLElement('h4', $this->get('label') . ' <i>'.$this->Name().'</i>'));
+			$wrapper->appendChild(new XMLElement('header', '<h4>' . $this->get('label') . '</h4> <span>' . $this->name() . '</span>'));
 			$label = Widget::Label(__('Value'));
 			$label->appendChild(Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : null)));
 			$wrapper->appendChild($label);
@@ -880,7 +880,7 @@
 
 		/**
 		 * Default accessor for the includable elements of this field. This array
-		 * will populate the Datasource included elements. Fields that have
+		 * will populate the `Datasource` included elements. Fields that have
 		 * different modes will override this and add new items to the array.
 		 * The Symphony convention is element_name : mode. Modes allow Fields to
 		 * output different XML in datasources.
@@ -893,60 +893,108 @@
 		}
 
 		/**
-		 * Test whether the input string is a regular expression.
+		 * Test whether the input string is a regular expression, by searching
+		 * for the prefix of `regexp:` or `not-regexp:` in the given `$string`.
 		 *
 		 * @param string $string
-		 *	the string to test.
+		 *  The string to test.
 		 * @return boolean
-		 *	true if the string is prefixed with 'regexp:', false otherwise.
+		 *  True if the string is prefixed with `regexp:` or `not-regexp:`, false otherwise.
 		 */
 		protected static function isFilterRegex($string){
 			if(preg_match('/^regexp:/i', $string) || preg_match('/^not-?regexp:/i', $string)) return true;
 		}
 
 		/**
+		 * Builds a basic REGEXP statement given a `$filter`. This function supports
+		 * `regexp:` or `not-regexp`. Users should keep in mind this function
+		 * uses MySQL patterns, not the usual PHP patterns, the syntax between these
+		 * flavours differs at times.
+		 *
+		 * @since Symphony 2.3
+		 * @link http://dev.mysql.com/doc/refman/5.5/en/regexp.html
+		 * @param string $filter
+		 *  The full filter, eg. `regexp: ^[a-d]`
+		 * @param array $columns
+		 *  The array of columns that need the given `$filter` applied to. The conditions
+		 *  will be added using `OR`.
+		 * @param string $joins
+		 *  A string containing any table joins for the current SQL fragment. By default
+		 *  Datasources will always join to the `tbl_entries` table, which has an alias of
+		 *  `e`. This parameter is passed by reference.
+		 * @param string $where
+		 *  A string containing the WHERE conditions for the current SQL fragment. This
+		 *  is passed by reference and is expected to be used to add additional conditions
+		 *  specific to this field
+		 */
+		public function buildRegexSQL($filter, array $columns, &$joins, &$where) {
+			$this->_key++;
+			$field_id = $this->get('id');
+			$filter = $this->cleanValue($filter);
+
+			if (preg_match('/^regexp:/i', $filter)) {
+				$pattern = preg_replace('/^regexp:\s*/i', null, $filter);
+				$regex = 'REGEXP';
+			}
+			else {
+				$pattern = preg_replace('/^not-?regexp:\s*/i', null, $filter);
+				$regex = 'NOT REGEXP';
+			}
+
+			if(strlen($pattern) == 0) return;
+
+			$joins .= "
+				LEFT JOIN
+					`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
+					ON (e.id = t{$field_id}_{$this->_key}.entry_id)
+			";
+
+			$where .= "AND ( ";
+			foreach($columns as $key => $col) {
+				$modifier = ($key === 0) ? '' : 'OR';
+
+				$where .= "
+					{$modifier} t{$field_id}_{$this->_key}.{$col} {$regex} '{$pattern}'
+				";
+			}
+			$where .= ")";
+		}
+
+		/**
 		 * Construct the SQL statement fragments to use to retrieve the data of this
 		 * field when utilized as a data source.
 		 *
+		 * @see toolkit.Datasource#__determineFilterType
 		 * @param array $data
-		 *	the supplied form data to use to construct the query from
+		 *  An array of the data that contains the values for the filter as specified
+		 *  in the datasource editor. The value that is entered in the datasource editor
+		 *  is made into an array by using + or , to separate the filter.
 		 * @param string $joins
-		 *	the join sql statement fragment to append the additional join sql to.
+		 *  A string containing any table joins for the current SQL fragment. By default
+		 *  Datasources will always join to the `tbl_entries` table, which has an alias of
+		 *  `e`. This parameter is passed by reference.
 		 * @param string $where
-		 *	the where condition sql statement fragment to which the additional
-		 *	where conditions will be appended.
+		 *  A string containing the WHERE conditions for the current SQL fragment. This
+		 *  is passed by reference and is expected to be used to add additional conditions
+		 *  specifc to this field
 		 * @param boolean $andOperation (optional)
-		 *	true if the values of the input data should be appended as part of
-		 *	the where condition. this defaults to false.
+		 *  This parameter defines whether the `$data` provided should be treated as
+		 *  AND or OR conditions. This parameter will be set to true if $data used a
+		 *  + to separate the values, otherwise it will be false. It is false by default.
 		 * @return boolean
-		 *	true if the construction of the sql was successful, false otherwise.
+		 *  True if the construction of the SQL was successful, false otherwise.
 		 */
 		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false) {
 			$field_id = $this->get('id');
 
+			// REGEX filtering is a special case, and will only work on the first item
+			// in the array. You cannot specify multiple filters when REGEX is involved.
 			if (self::isFilterRegex($data[0])) {
-				$this->_key++;
-
-				if (preg_match('/^regexp:/i', $data[0])) {
-					$pattern = preg_replace('/^regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'REGEXP';
-				} else {
-					$pattern = preg_replace('/^not-?regexp:\s*/i', null, $this->cleanValue($data[0]));
-					$regex = 'NOT REGEXP';
-				}
-
-				if(strlen($pattern) == 0) return;
-
-				$joins .= "
-					LEFT JOIN
-						`tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-						ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-				";
-				$where .= "
-					AND t{$field_id}_{$this->_key}.value {$regex} '{$pattern}'
-				";
-
+				$this->buildRegexSQL($data[0], array('value'), $joins, $where);
 			}
+
+			// AND operation, iterates over `$data` and uses a new JOIN for
+			// every item.
 			else if ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
@@ -960,11 +1008,11 @@
 						AND t{$field_id}_{$this->_key}.value = '{$value}'
 					";
 				}
-
 			}
-			else {
-				if (!is_array($data)) $data = array($data);
 
+			// Default logic, this will use a single JOIN statement and collapse
+			// `$data` into a string to be used inconjuction with IN
+			else {
 				foreach ($data as &$value) {
 					$value = $this->cleanValue($value);
 				}
@@ -1012,15 +1060,16 @@
 
 		/**
 		 * Default implementation of record grouping. This default implementation
-		 * will throw an Exception. Thus, clients must overload this method
+		 * will throw an `Exception`. Thus, clients must overload this method
 		 * for grouping to be successful.
 		 *
+		 * @throws Exception
 		 * @param array $records
 		 *	the records to group.
 		 */
 		public function groupRecords($records){
 			throw new Exception(
-				__('Data source output grouping is not supported by the <code>%s</code> field', array($this->get('label')))
+				__('Data source output grouping is not supported by the %s field', array('<code>' . $this->get('label') . '</code>'))
 			);
 		}
 
@@ -1032,18 +1081,20 @@
 		 *  The data for this field from it's `tbl_entry_data_{id}` table
 		 * @param integer $entry_id
 		 *  The optional id of this field entry instance
-		 * @return string
-		 *  The formatted value to be used as the parameter
+		 * @return string|array
+		 *  The formatted value to be used as the parameter. Note that this can be
+		 *  an array or a string. When returning multiple values use array, otherwise
+		 *  use string.
 		 */
 		public function getParameterPoolValue(array $data, $entry_id=NULL){
 			return $this->prepareTableValue($data, null, $entry_id);
 		}
 
 		/**
-		 * Append the formatted xml output of this field as utilized as a data source.
+		 * Append the formatted XML output of this field as utilized as a data source.
 		 *
 		 * @param XMLElement $wrapper
-		 *	the xml element to append the xml representation of this to.
+		 *	the XML element to append the XML representation of this to.
 		 * @param array $data
 		 *	the current set of values for this field. the values are structured as
 		 *	for displayPublishPanel.
@@ -1066,7 +1117,7 @@
 		 * The default method for constructing the example form markup containing this
 		 * field when utilized as part of an event. This displays in the event documentation
 		 * and serves as a basic guide for how markup should be constructed on the
-		 * Frontend to save this field
+		 * `Frontend` to save this field
 		 *
 		 * @return XMLElement
 		 *  a label widget containing the formatted field element name of this.
@@ -1088,10 +1139,8 @@
 		public function commit(){
 			$fields = array();
 
-			$fields['element_name'] = Lang::createHandle($this->get('label'));
-			if(is_numeric($fields['element_name']{0})) $fields['element_name'] = 'field-' . $fields['element_name'];
-
 			$fields['label'] = General::sanitize($this->get('label'));
+			$fields['element_name'] = ($this->get('element_name') ? $this->get('element_name') : Lang::createHandle($this->get('label')));
 			$fields['parent_section'] = $this->get('parent_section');
 			$fields['location'] = $this->get('location');
 			$fields['required'] = $this->get('required');
@@ -1128,7 +1177,7 @@
 				  PRIMARY KEY  (`id`),
 				  KEY `entry_id` (`entry_id`),
 				  KEY `value` (`value`)
-				) ENGINE=MyISAM;"
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
 			);
 		}
 

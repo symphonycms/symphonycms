@@ -40,21 +40,11 @@
 		 * The constructor for Frontend calls the parent Symphony constructor.
 		 *
 		 * @see core.Symphony#__construct()
-		 * @deprecated The constructor creates backwards compatible references
-		 *  to `$this->Database`, `$this->ExtensionManager` and `$this->Configuration`
-		 *  that act as alias for `Symphony::Database()`, `Symphony::ExtensionManager()`
-		 *  and `Symphony::Configuration()`. These will be removed in the
-		 *  next Symphony release
 		 */
 		protected function __construct() {
 			parent::__construct();
 
 			$this->_env = array();
-
-			// Need this part for backwards compatiblity
-			$this->Database = Symphony::Database();
-			$this->Configuration = Symphony::Configuration();
-			$this->ExtensionManager = Symphony::ExtensionManager();
 		}
 
 		/**
@@ -97,7 +87,7 @@
 		 *  The HTML of the page to return
 		 */
 		public function display($page) {
-			self::$_page = new FrontendPage($this);
+			self::$_page = new FrontendPage;
 
 			/**
 			 * `FrontendInitialised` is fired just after the `$_page` variable has been
@@ -105,8 +95,10 @@
 			 * fired just before the `FrontendPage->generate()`.
 			 *
 			 * @delegate FrontendInitialised
+			 * @param string $context
+			 *  '/frontend/'
 			 */
-			Frontend::instance()->ExtensionManager->notifyMembers('FrontendInitialised', '/frontend/');
+			Symphony::ExtensionManager()->notifyMembers('FrontendInitialised', '/frontend/');
 
 			$output = self::$_page->generate($page);
 
@@ -128,7 +120,12 @@
 		 */
 		public function __construct() {
 			parent::__construct();
-			$this->message = __('The page you requested, %s, does not exist.', array('<code>' . getCurrentPage() . '</code>'));
+			$pagename = getCurrentPage();
+			if (empty($pagename)) {
+				$this->message = __('The page you requested does not exist.');
+			} else {
+				$this->message = __('The page you requested, %s, does not exist.', array('<code>' . $pagename . '</code>'));
+			}
 			$this->code = E_USER_NOTICE;
 		}
 
@@ -152,14 +149,14 @@
 		 * @return string
 		 *  An HTML string
 		 */
-		public static function render($e){
-			$page_id = Symphony::Database()->fetchVar('page_id', 0, "SELECT `page_id` FROM `tbl_pages_types` WHERE `type` = '404' LIMIT 1");
+		public static function render(Exception $e){
+			$page = PageManager::fetchPageByType('404');
 
-			if(is_null($page_id)){
-				parent::render(new SymphonyErrorPage($e->getMessage(), __('Page Not Found'), 'error', array('header' => 'HTTP/1.0 404 Not Found')));
+			if(is_null($page['id'])){
+				parent::render(new SymphonyErrorPage($e->getMessage(), __('Page Not Found'), 'generic', array('header' => 'HTTP/1.0 404 Not Found')));
 			}
 			else{
-				$url = '/' . Frontend::instance()->resolvePagePath($page_id) . '/';
+				$url = '/' . PageManager::resolvePagePath($page['id']) . '/';
 
 				$output = Frontend::instance()->display($url);
 				header(sprintf('Content-Length: %d', strlen($output)));

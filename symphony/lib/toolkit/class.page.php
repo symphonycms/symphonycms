@@ -7,17 +7,11 @@
 	 * of a page's headers.
 	 */
 	Abstract Class Page{
-		/**
-		 * The end-of-line constant.
-		 * @var string
-		 * @deprecated This will be removed in the next version of Symphony
-		 */
-		const CRLF = PHP_EOL;
 
 		/**
 		 * This stores the headers that will be sent when this page is
 		 * generated as an associative array of header=>value.
-		 * @var array 
+		 * @var array
 		 */
 		protected $_headers = array();
 
@@ -36,9 +30,14 @@
 		 *  The header name, eg. Content-Type.
 		 * @param string $value (optional)
 		 *  The value for the header, eg. text/xml. Defaults to null.
+		 * @param integer $response_code (optional)
+		 *  The HTTP response code that should be set by PHP with this header, eg. 200
 		 */
-		public function addHeaderToPage($name, $value = null){
-			$this->_headers[strtolower($name)] = $name . (is_null($value) ? null : ":{$value}");
+		public function addHeaderToPage($name, $value = null, $response_code = null) {
+			$this->_headers[strtolower($name)] = array(
+				'header' => $name . (is_null($value) ? null : ":{$value}"),
+				'response_code' => $response_code
+			);
 		}
 
 		/**
@@ -62,14 +61,17 @@
 		/**
 		 * Iterates over the `$_headers` for this page
 		 * and outputs them using PHP's header() function.
-		 *
-		 * @return result of header();
 		 */
 		protected function __renderHeaders(){
 			if(!is_array($this->_headers) || empty($this->_headers)) return;
 
 			foreach($this->_headers as $value){
-				header($value);
+				if(isset($value['response_code'])) {
+					header($value['header'], true, $value['response_code']);
+				}
+				else {
+					header($value['header']);
+				}
 			}
 		}
 	}

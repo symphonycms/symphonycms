@@ -19,8 +19,8 @@
 
 		private $key;
 
-		public function __construct(&$parent) {
-			parent::__construct($parent);
+		public function __construct() {
+			parent::__construct();
 			$this->_name = __('Date');
 			$this->key = 1;
 
@@ -65,12 +65,12 @@
 				  `id` int(11) unsigned NOT NULL auto_increment,
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `value` varchar(80) default NULL,
-				  `local` int(11) default NULL,
-				  `gmt` int(11) default NULL,
+				  `date` DATETIME default NULL,
 				  PRIMARY KEY  (`id`),
 				  UNIQUE KEY `entry_id` (`entry_id`),
-				  KEY `value` (`value`)
-				) ENGINE=MyISAM;
+				  KEY `value` (`value`),
+				  KEY `date` (`date`)
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 			");
 		}
 
@@ -268,8 +268,8 @@
 			if($andOperation) {
 				foreach($data as $date) {
 					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-					$where .= " AND (DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') >= '" . DateTimeObj::get('Y-m-d H:i:s', $date['start']) . "'
-								AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') <= '" . DateTimeObj::get('Y-m-d H:i:s', $date['end']) . "') ";
+					$where .= " AND (`t$field_id".$this->key."`.date >= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['start']) . "'
+								AND `t$field_id".$this->key."`.date <= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['end']) . "') ";
 
 					$this->key++;
 				}
@@ -279,8 +279,8 @@
 				$tmp = array();
 
 				foreach($data as $date) {
-					$tmp[] = "(DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') >= '" . DateTimeObj::get('Y-m-d H:i:s', $date['start']) . "'
-								AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') <= '" . DateTimeObj::get('Y-m-d H:i:s', $date['end']) . "') ";
+					$tmp[] = "`t$field_id".$this->key."`.date >= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['start']) . "'
+								AND `t$field_id".$this->key."`.date <= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['end']) . "' ";
 				}
 
 				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
@@ -290,43 +290,15 @@
 			}
 		}
 
-		/**
-		 * @deprecated This function is never called by Symphony as all filtering is a range
-		 * now that time is taken into consideration. This will be removed in the next major version
-		 */
-		public function buildSimpleFilterSQL($data, &$joins, &$where, $andOperation=false) {
-			$field_id = $this->get('id');
-
-			if($andOperation) {
-				foreach($data as $date) {
-					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-					$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') = '".DateTimeObj::get('Y-m-d H:i:s', $date)."' ";
-
-					$this->key++;
-				}
-			}
-
-			else {
-				$tmp = array();
-				foreach($data as $date) {
-					$tmp[] = DateTimeObj::get('Y-m-d H:i:s', $date);
-				}
-
-				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-				$where .= " AND DATE_FORMAT(`t$field_id".$this->key."`.value, '%Y-%m-%d %H:%i:%s') IN ('".implode("', '", $tmp)."') ";
-				$this->key++;
-			}
-		}
-
 	/*-------------------------------------------------------------------------
 		Settings:
 	-------------------------------------------------------------------------*/
 
-		public function findDefaults(&$fields) {
-			if(!isset($fields['pre_populate'])) $fields['pre_populate'] = 'yes';
+		public function findDefaults(array &$settings) {
+			if(!isset($settings['pre_populate'])) $settings['pre_populate'] = 'yes';
 		}
 
-		public function displaySettingsPanel(&$wrapper, $errors = null) {
+		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$div = new XMLElement('div', NULL, array('class' => 'compact'));
@@ -360,7 +332,7 @@
 		Publish:
 	-------------------------------------------------------------------------*/
 
-		public function displayPublishPanel(&$wrapper, $data = null, $error = null, $prefix = null, $postfix = null) {
+		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null) {
 			$name = $this->get('element_name');
 			$value = null;
 
@@ -370,7 +342,7 @@
 			}
 
 			// Error entry, display original data
-			else if(!is_null($error)) {
+			else if(!is_null($flagWithError)) {
 				$value = $_POST['fields'][$name];
 			}
 
@@ -380,11 +352,11 @@
 			}
 
 			$label = Widget::Label($this->get('label'));
-			$label->appendChild(Widget::Input("fields{$prefix}[{$name}]", $value));
+			$label->appendChild(Widget::Input("fields{$fieldnamePrefix}[{$name}]", $value));
 			$label->setAttribute('class', 'date');
 
-			if(!is_null($error)) {
-				$label = Widget::wrapFormElementWithError($label, $error);
+			if(!is_null($flagWithError)) {
+				$label = Widget::Error($label, $error);
 			}
 
 			$wrapper->appendChild($label);
@@ -396,14 +368,14 @@
 
 			// Handle invalid dates
 			if(!DateTimeObj::validate($data)) {
-				$message = __("The date specified in '%s' is invalid.", array($this->get('label')));
+				$message = __('The date specified in ‘%s’ is invalid.', array($this->get('label')));
 				return self::__INVALID_FIELDS__;
 			}
 
 			return self::__OK__;
 		}
 
-		public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL) {
+		public function processRawFieldData($data, &$status, &$message=null, $simulate = false, $entry_id = null) {
 			$status = self::__OK__;
 			$timestamp = null;
 
@@ -423,8 +395,7 @@
 			if(!is_null($timestamp)) {
 				return array(
 					'value' => DateTimeObj::get('c', $timestamp),
-					'local' => $timestamp,
-					'gmt' => DateTimeObj::getGMT('U', $timestamp)
+					'date' => DateTimeObj::getGMT('c', $timestamp)
 				);
 			}
 
@@ -432,8 +403,7 @@
 			else {
 				return array(
 					'value' => null,
-					'local' => null,
-					'gmt' => null
+					'date' => null
 				);
 			}
 		}
@@ -442,8 +412,8 @@
 		Output:
 	-------------------------------------------------------------------------*/
 
-		public function appendFormattedElement($wrapper, $data, $encode = false) {
-			if(isset($data['value']) && !is_null($data['value'])) {
+		public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
+			if(isset($data['value'])) {
 
 				// Get date
 				if(is_array($data['value'])) {
@@ -468,7 +438,7 @@
 			return parent::prepareTableValue(array('value' => $value), $link, $entry_id = null);
 		}
 
-		public function getParameterPoolValue($data, $entry_id = null) {
+		public function getParameterPoolValue(array $data, $entry_id=NULL){
 			return DateTimeObj::get('Y-m-d H:i:s', $data['value']);
 		}
 
@@ -477,23 +447,27 @@
 	-------------------------------------------------------------------------*/
 
 		public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation=false) {
-			if(self::isFilterRegex($data[0])) return parent::buildDSRetrievalSQL($data, $joins, $where, $andOperation);
-
-			$parsed = array();
-
-			// For the filter provided, loop over each piece
-			foreach($data as $string) {
-				$type = self::parseFilter($string);
-
-				if($type == self::ERROR) return false;
-
-				if(!is_array($parsed[$type])) $parsed[$type] = array();
-
-				$parsed[$type][] = $string;
+			if(self::isFilterRegex($data[0])) {
+				$this->buildRegexSQL($data[0], array('value'), $joins, $where);
 			}
 
-			foreach($parsed as $value) {
-				$this->buildRangeFilterSQL($value, $joins, $where, $andOperation);
+			else {
+				$parsed = array();
+
+				// For the filter provided, loop over each piece
+				foreach($data as $string) {
+					$type = self::parseFilter($string);
+
+					if($type == self::ERROR) return false;
+
+					if(!is_array($parsed[$type])) $parsed[$type] = array();
+
+					$parsed[$type][] = $string;
+				}
+
+				foreach($parsed as $value) {
+					$this->buildRangeFilterSQL($value, $joins, $where, $andOperation);
+				}
 			}
 
 			return true;

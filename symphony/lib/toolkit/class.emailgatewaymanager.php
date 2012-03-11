@@ -9,13 +9,11 @@
 	 */
 
 	require_once(TOOLKIT . '/class.emailgateway.php');
-	require_once(TOOLKIT . '/class.manager.php');
+	require_once(FACE . '/interface.fileresource.php');
 
-	Class EmailGatewayManager extends Manager{
+	Class EmailGatewayManager implements FileResource {
 
-		protected $_default_gateway = 'sendmail';
-
-		public function __construct() {}
+		protected static $_default_gateway = 'sendmail';
 
 		/**
 		 * Sets the default gateway.
@@ -24,8 +22,8 @@
 		 * @param string $name
 		 * @return void
 		 */
-		public function setDefaultGateway($name){
-			if($this->__find($name)){
+		public static function setDefaultGateway($name){
+			if($this->__getClassPath($name)){
 				Symphony::Configuration()->set('default_gateway', $name, 'Email');
 				Administration::instance()->saveConfig();
 			}
@@ -40,14 +38,25 @@
 		 *
 		 * @return string
 		 */
-		public function getDefaultGateway(){
+		public static function getDefaultGateway(){
 			$gateway = Symphony::Configuration()->get('default_gateway', 'Email');
 			if($gateway){
 				return $gateway;
 			}
 			else{
-				return $this->_default_gateway;
+				return self::$_default_gateway;
 			}
+		}
+
+		/**
+		 * Returns the classname from the gateway name.
+		 * Does not check if the gateway exists.
+		 *
+		 * @param string $name
+		 * @return string
+		 */
+		public static function __getClassName($name){
+			return $name . 'Gateway';
 		}
 
 		/**
@@ -56,12 +65,11 @@
 		 * @param string $name
 		 * 	The gateway to look for
 		 * @return string|boolean
-		 *	If the gateway is found, the path to the folder containing the 
+		 *	If the gateway is found, the path to the folder containing the
 		 *  gateway is returned.
 		 *	If the gateway is not found, false is returned.
 		 */
-		public function __find($name){
-
+		public static function __getClassPath($name){
 			if(is_file(EMAILGATEWAYS . "/email.$name.php")) return EMAILGATEWAYS;
 			else{
 
@@ -78,27 +86,6 @@
 		}
 
 		/**
-		 * Returns the classname from the gateway name.
-		 * Does not check if the gateway exists.
-		 *
-		 * @param string $name
-		 * @return string
-		 */
-		public function __getClassName($name){
-			return $name . 'Gateway';
-		}
-
-		/**
-		 * Alias for __find
-		 *
-		 * @param string $name
-		 * @return string|boolean
-		 */
-		public function __getClassPath($name){
-			return $this->__find($name);
-		}
-
-		/**
 		 * Returns the path to the gateway file.
 		 *
 		 * @param string $name
@@ -106,8 +93,8 @@
 		 * @return string|boolean
 		 * @todo fix return if gateway does not exist.
 		 */
-		public function __getDriverPath($name){
-			return $this->__getClassPath($name) . "/email.$name.php";
+		public static function __getDriverPath($name){
+			return self::__getClassPath($name) . "/email.$name.php";
 		}
 
 		/**
@@ -117,28 +104,27 @@
 		 * @param string $filename
 		 * @return string|boolean
 		 */
-		public function __getHandleFromFilename($filename){
+		public static function __getHandleFromFilename($filename){
 			return preg_replace(array('/^email./i', '/.php$/i'), '', $filename);
 		}
 
 		/**
 		 * Returns an array of all gateways.
-		 * Each item in the array will contain the return value of the about() 
+		 * Each item in the array will contain the return value of the about()
 		 * function of each gateway.
 		 *
 		 * @return array
 		 */
-		public function listAll(){
+		public static function listAll(){
 
 			$result = array();
-			$people = array();
 
 			$structure = General::listStructure(EMAILGATEWAYS, '/email.[\\w-]+.php/', false, 'ASC', EMAILGATEWAYS);
 
 			if(is_array($structure['filelist']) && !empty($structure['filelist'])){
 				foreach($structure['filelist'] as $f){
 					$f = str_replace(array('email.', '.php'), '', $f);
-					$result[$f] = $this->about($f);
+					$result[$f] = self::about($f);
 				}
 			}
 
@@ -154,7 +140,7 @@
 					if(is_array($tmp['filelist']) && !empty($tmp['filelist'])){
 						foreach($tmp['filelist'] as $f){
 							$f = preg_replace(array('/^email./i', '/.php$/i'), '', $f);
-							$result[$f] = $this->about($f);
+							$result[$f] = self::about($f);
 						}
 					}
 				}
@@ -162,6 +148,22 @@
 
 			ksort($result);
 			return $result;
+		}
+
+		public static function about($name) {
+			$classname = self::__getClassName($name);
+			$path = self::__getDriverPath($name);
+
+			if(!@file_exists($path)) return false;
+
+			require_once($path);
+
+			$handle = self::__getHandleFromFilename(basename($path));
+
+			if(is_callable(array($classname, 'about'))){
+				$about = call_user_func(array($classname, 'about'));
+				return array_merge($about, array('handle' => $handle));
+			}
 		}
 
 		/**
@@ -173,21 +175,21 @@
 		 *	If the gateway is found, an instantiated object is returned.
 		 *	If the gateway is not found, an error is triggered.
 		 */
-		public function &create($name){
-
-			$classname = $this->__getClassName($name);
-			$path = $this->__getDriverPath($name);
+		public static function create($name){
+			$classname = self::__getClassName($name);
+			$path = self::__getDriverPath($name);
 
 			if(!is_file($path)){
-				trigger_error(__('Could not find Email Gateway <code>%s</code>. If the Email Gateway was provided by an Extensions, ensure that it is installed, and enabled.', array($name)), E_USER_ERROR);
-				return false;
+				throw new Exception(
+					__('Could not find Email Gateway %s.', array('<code>' . $name . '</code>'))
+					. ' ' . __('If it was provided by an Extension, ensure that it is installed, and enabled.')
+				);
 			}
 
-			if(!@class_exists($classname))
+			if(!class_exists($classname))
 				require_once($path);
 
 			return new $classname;
-
 		}
 
 	}
