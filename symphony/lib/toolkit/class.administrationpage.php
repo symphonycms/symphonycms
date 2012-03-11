@@ -266,25 +266,25 @@
 			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 0);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge,chrome=1')), 1);
 
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.legacy.css', 'screen', 40);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.basic.css', 'screen', 41);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.grids.css', 'screen', 42);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.frames.css', 'screen', 43);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.buttons.css', 'screen', 44);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/admin.css', 'screen', 45);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.legacy.css', 'screen', 40);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.basic.css', 'screen', 41);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.grids.css', 'screen', 42);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.frames.css', 'screen', 43);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.buttons.css', 'screen', 44);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/admin.css', 'screen', 45);
 
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.js', 50);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.color.js', 51);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.js', 60);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.collapsible.js', 61);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.orderable.js', 62);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.selectable.js', 63);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.duplicator.js', 64);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.tags.js', 65);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.pickable.js', 66);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.timeago.js', 67);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.notify.js', 68);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/admin.js', 70);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/jquery.js', 50);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/jquery.color.js', 51);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.js', 60);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.collapsible.js', 61);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.orderable.js', 62);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.selectable.js', 63);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.duplicator.js', 64);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.tags.js', 65);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.pickable.js', 66);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.timeago.js', 67);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.notify.js', 68);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/admin.js', 70);
 
 			$this->addElementToHead(
 				new XMLElement(
