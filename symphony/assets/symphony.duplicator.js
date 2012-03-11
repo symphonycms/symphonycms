@@ -218,7 +218,7 @@
 			// Constructable interface
 			if(settings.constructable === true) {
 				duplicator.addClass('constructable');
-				apply.append(selector).append(constructor);
+				apply.append($('<div />').append(selector)).append(constructor);
 				apply.appendTo(duplicator);
 
 				// Populate selector
@@ -244,9 +244,6 @@
 					// Check uniqueness
 					template.trigger('constructstop.duplicator');
 				}).removeClass('template').addClass('instance').remove();
-				
-				// Set width
-				apply.width(selector.outerWidth() + constructor.outerWidth() + 10);
 			}
 
 			// Select default

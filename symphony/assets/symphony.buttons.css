@@ -111,9 +111,22 @@ fieldset.apply:hover {
 	color: rgb(60, 60, 60);
 }
 
+fieldset.apply div {
+	text-align: left;
+	overflow: hidden;
+	float: left;
+	background: url(images/arrows.png) right -14px no-repeat;
+}
+fieldset.apply:hover div {
+	background-position: right 6px;
+}
+fieldset.applay.inactive div {
+	background: right -34px;
+}
+
 fieldset.apply select {
 	-webkit-appearance: none;
-	-moz-appearance: input;
+	-moz-appearance: none;
 	-ms-appearance: none;
 	-o-appearance: none;
 	appearance: none;
@@ -124,12 +137,13 @@ fieldset.apply select {
 	/* DavidOliver's note: end: causing outline when selected: */
 	color: rgb(60, 60, 60);
 	cursor: pointer;
-	display: block;
+	display: inline-block;
 	line-height: 1.5;
-	margin: 0.2em 1em 0 0;
-	min-width: 15em;
+	margin: 0.2em 0 0 0;
 	outline: none;
 	padding: 0 0 0 0.7em;
+	width: 110% !important;
+	min-width: 170px;
 }
 
 fieldset.apply.inactive select {
@@ -142,14 +156,12 @@ fieldset.apply select:hover {
 
 fieldset.apply button {
 	margin: 0;
-	position: absolute;
-	top: 0;
-	right: 0;
 	border: none;
 	border-left: 1px solid rgba(0, 0, 0, 0.15);
 	border-radius: 0 4px 4px 0;
 	line-height: 1.85;
 	height: 1.85em;
+	float: right;
 }
 
 fieldset.apply.inactive button,
@@ -162,26 +174,6 @@ fieldset.apply.inactive button:hover {
 
 fieldset.apply:hover button {
 	border-left: 1px solid rgba(0, 0, 0, 0.25);
-}
-
-fieldset.apply button:before {
-	content: "";
-	background: url(images/arrows.png) 0 6px no-repeat;
-	display: block;
-	position: absolute;
-	top: 0;
-	left: -12px;
-	height: 20px;
-	width: 10px;
-	opacity: 0.4;
-}
-
-fieldset.apply:hover button:before {
-	opacity: 1;
-}
-
-fieldset.apply.inactive:hover button:before {
-	opacity: 0.5;
 }
 
 /* Single select "With selected…" */
