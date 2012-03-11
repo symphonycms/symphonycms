@@ -30,10 +30,10 @@
 			$this->setTitle($this->_page_title);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 1);
 
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.basic.css', 'screen', 40);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.buttons.css', 'screen', 41);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.frames.css', 'screen', 42);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.grids.css', 'screen', 42);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.basic.css', 'screen', 40);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.buttons.css', 'screen', 41);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.frames.css', 'screen', 42);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.grids.css', 'screen', 42);
 			$this->addStylesheetToHead(INSTALL_URL . '/assets/main.css', 'screen', 49);
 
 			return parent::generate();
