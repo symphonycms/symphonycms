@@ -109,14 +109,15 @@ input[type=password],
 input[type=text],
 textarea,
 select[multiple] {
-	padding: 2px 5px;
+	padding: 2px 3px;
 	border: 1px solid rgba(0, 0, 0, 0.25);
-	box-shadow: inset 0 1px 2px #ddd;
+	box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.05);
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	-ms-box-sizing: border-box;
 	-o-box-sizing: border-box;
 	box-sizing: border-box;
+	border-radius: 2px;
 	margin-top: 2px;
 	width: 100%;
 	font-size: 109.09%;
@@ -138,7 +139,7 @@ select[multiple]:active,
 select[multiple]:focus {
 	outline: none;
 	border-color: rgba(0, 0, 0, 0.4);
-	box-shadow: 0 0 7px rgba(0, 0, 0, 0.05), 0 0 1px 2px rgba(77, 120, 180, 0.1);
+	box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
 }
 select {
 	width: 100%;
