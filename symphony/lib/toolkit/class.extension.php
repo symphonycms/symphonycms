@@ -67,13 +67,7 @@
 		 *  eg. `array('RemoteDatasource' => 'Remote Datasource')`
 		 */
 		public static function providerOf($type = null) {
-			self::registerProviders();
-
-			if(is_null($type)) return self::$provides;
-
-			if(!isset(self::$provides[$type])) return array();
-
-			return self::$provides[$type];
+			return array();
 		}
 
 		/**
