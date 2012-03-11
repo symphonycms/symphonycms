@@ -108,7 +108,9 @@
 					);
 				}
 
-				self::__render(new InstallerPage('requirements'));
+				self::__render(new InstallerPage('requirements', array(
+					'errors'=> $errors
+				)));
 			}
 
 			// If language is not set and there is language packs available, show language selection pages
@@ -120,7 +122,6 @@
 			if(isset($_POST['fields'])) {
 				$errors = self::__checkConfiguration();
 				if(!empty($errors)){
-
 					Symphony::Log()->pushToLog(
 						sprintf('Installer - Wrong configuration.'),
 						E_ERROR, true
@@ -217,22 +218,6 @@
 				);
 			}
 
-			return $errors;
-		}
-
-		/**
-		 * This function checks the current Configuration (which is the values entered
-		 * by the user on the installation form) to ensure that `/symphony` and `/workspace`
-		 * folders exist and are writable and that the Database credentials are correct.
-		 * Once those initial checks pass, the rest of the form values are validated.
-		 *
-		 * @return
-		 *  An associative array of errors if something went wrong, otherwise an empty array.
-		 */
-		private static function __checkConfiguration(){
-			$errors = array();
-			$fields = $_POST['fields'];
-
 			// Cannot write to root folder.
 			if(!is_writable(DOCROOT)){
 				$errors['no-write-permission-root'] = array(
@@ -248,6 +233,22 @@
 					'details' => __('Symphony does not have write permission to the existing %1$s directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive %2$s command.', array('<code>/workspace</code>', '<code>chmod -R</code>'))
 				);
 			}
+
+			return $errors;
+		}
+
+		/**
+		 * This function checks the current Configuration (which is the values entered
+		 * by the user on the installation form) to ensure that `/symphony` and `/workspace`
+		 * folders exist and are writable and that the Database credentials are correct.
+		 * Once those initial checks pass, the rest of the form values are validated.
+		 *
+		 * @return
+		 *  An associative array of errors if something went wrong, otherwise an empty array.
+		 */
+		private static function __checkConfiguration(){
+			$errors = array();
+			$fields = $_POST['fields'];
 
 			// Testing the database connection
 			try{

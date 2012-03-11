@@ -97,20 +97,14 @@
 
 		protected function viewRequirements() {
 			$h2 = new XMLElement('h2', __('Outstanding Requirements'));
-			$p = new XMLElement('p', __('Symphony needs the following requirements satisfied before installation can proceed.'));
 
 			$this->Form->appendChild($h2);
-			$this->Form->appendChild($p);
 
 			if(!empty($this->_params['errors'])){
-				$dl = new XMLElement('dl');
+				$div = new XMLElement('div');
+				$this->__appendError(array_keys($this->_params['errors']), $div, __('Symphony needs the following requirements satisfied before installation can proceed.'));
 
-				foreach($this->_params['errors'] as $err){
-					$dl->appendChild(new XMLElement('dt', $err['msg']));
-					$dl->appendChild(new XMLElement('dd', $err['details']));
-				}
-
-				$this->Form->appendChild($dl);
+				$this->Form->appendChild($div);
 			}
 		}
 
@@ -159,7 +153,6 @@
 				new XMLElement('p', __('Thanks for taking the quick but epic installation journey with us. It\'s now your turn to shine!'))
 			);
 			$this->Form->appendChild($div);
-
 
 			$extensions = ' ';
 			foreach($this->_params['disabled-extensions'] as $handle){
@@ -230,8 +223,10 @@
 			$fieldset = new XMLElement('fieldset');
 			$div = new XMLElement('div');
 			$this->__appendError(array('no-write-permission-root', 'no-write-permission-workspace'), $div);
-			$fieldset->appendChild($div);
-			$this->Form->appendChild($fieldset);
+			if($div->getNumberOfChildren() > 0) {
+				$fieldset->appendChild($div);
+				$this->Form->appendChild($fieldset);
+			}
 
 		/* -----------------------------------------------
 		 * Website & Locale settings
@@ -404,7 +399,11 @@
 			$this->Form->appendChild($Submit);
 		}
 
-		private function __appendError(array $codes, XMLElement &$element){
+		private function __appendError(array $codes, XMLElement &$element, $message = null){
+			if(is_null($message)) {
+				$message =  __('The following errors have been reported:');
+			}
+
 			foreach($codes as $i => $c){
 				if(!isset($this->_params['errors'][$c])) unset($codes[$i]);
 			}
@@ -419,7 +418,7 @@
 						}
 					}
 
-					$element = Widget::Error($element, __('The following errors have been reported:'));
+					$element = Widget::Error($element, $message);
 					$element->appendChild($ul);
 				}
 				else{
