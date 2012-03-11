@@ -114,6 +114,22 @@
 
 			return (isset($this->_properties[$name]) ? $this->_properties[$name] : null);
 		}
+		
+		/**
+		 * The hasValue function checks if a configuration setting
+		 * exists and whether it has value.
+		 * 
+		 * @param String $name The name of the setting
+		 * @param String $group The name of the group the setting is part of (optional)
+		 * @return boolean
+		 */
+		public function hasValue($name, $group=null) {
+			if($group) {
+				return (isset($this->_properties[$group][$name]) && !empty($this->_properties[$group][$name]));
+			} else {
+				return (isset($this->_properties[$name]) && !empty($this->_properties[$name]));
+			}
+		}
 
 		/**
 		 * The remove function will unset a property by `$name`.
@@ -175,11 +191,10 @@
 		 * 
 		 * @param string $file
 		 *  The path of the config file to load
-		 * @return boolean
 		 */
-		public function read($file = null) {
+		public function read($file = CONFIG, $override = false) {
 			$xmlDoc = new DOMDocument();
-			$xmlDoc->load(MANIFEST . '/config.xml');
+			$xmlDoc->load($file);
 			
 			$xpath = new DOMXPath($xmlDoc);
 			$xpath->registerNamespace('s','http://symphony-cms.com/2012/03/config');
@@ -193,10 +208,31 @@
 						$value = $itemNode->textContent;
 						
 						if($name == null || $value == null || $group == null) {
+							//TODO: I'm not familiar with Error handling in the Symphony Core.
+							//		As Configuration is a pretty important part of it, maybe this should get some attention.
 							throw new Exception();
 						} else {
-							$this->set($name,$value,$group);
+							if(!$this->hasValue($name,$group) || $override) {
+								$this->set($name,$value,$group);
+							}
 						}
+					}
+				}
+			}
+
+			// Import additional configuration files
+			$importNodes = $xpath->query('/s:configuration/s:import');
+			foreach($importNodes as $importNode) {
+				if($importNode->nodeType == XML_ELEMENT_NODE) {
+					$file = $importNode->hasAttribute('href') ? $importNode->getAttribute('href') : null;
+					$override = $importNode->hasAttribute('override') ? $importNode->getAttribute('override') : false;
+					$override = (strtolower($override) == 'true') ? true : false;
+					
+					// Ignore the import statement if the file does not exist, do not throw Exception!
+					// This allows specific environment configuration by adding
+					// an import for a file that only exists on that environment.
+					if(file_exists(MANIFEST . '/' . $file)) {
+						$this->read(MANIFEST . '/' . $file, $override);
 					}
 				}
 			}
