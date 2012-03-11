@@ -107,7 +107,7 @@
 
 				$label = Widget::Label(__('Username'));
 				$label->appendChild(Widget::Input('username', $_POST['username'], 'text', array('autofocus' => 'autofocus')));
-				if(isset($_POST['action']) && empty($_POST['username'])) {
+				if(isset($_POST['action'], $_POST['action']['login']) && empty($_POST['username'])) {
 					$label = Widget::Error($label, __('No username was entered.'));
 				}
 				$fieldset->appendChild($label);
