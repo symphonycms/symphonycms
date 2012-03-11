@@ -271,7 +271,8 @@
 			E_USER_ERROR			=> 'User Error',
 
 			E_STRICT				=> 'Strict Notice',
-			E_RECOVERABLE_ERROR		=> 'Recoverable Error'
+			E_RECOVERABLE_ERROR		=> 'Recoverable Error',
+			E_DEPRECATED			=> 'Deprecated Warning'
 		);
 
 		/**

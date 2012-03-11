@@ -19,7 +19,7 @@
 		 *  the encoded version of the string.
 		 */
 		public static function sanitize($source) {
-			$source = htmlspecialchars($source, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
+			$source = htmlspecialchars($source, ENT_COMPAT, 'UTF-8', false);
 
 			return $source;
 		}

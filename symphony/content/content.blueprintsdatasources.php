@@ -112,12 +112,12 @@
 				}
 
 				$fields['sort'] = $existing->dsParamSORT;
-				$fields['paginate_results'] = (isset($existing->dsParamPAGINATERESULTS) ? $existing->dsParamPAGINATERESULTS : 'yes');
+				$fields['paginate_results'] = isset($existing->dsParamPAGINATERESULTS) ? $existing->dsParamPAGINATERESULTS : 'yes';
 				$fields['page_number'] = $existing->dsParamSTARTPAGE;
-				$fields['group'] = $existing->dsParamGROUP;
-				$fields['html_encode'] = $existing->dsParamHTMLENCODE;
+				$fields['group'] = isset($existing->dsParamGROUP) ? $existing->dsParamGROUP : null;
+				$fields['html_encode'] = isset($existing->dsParamHTMLENCODE) ? $existing->dsParamHTMLENCODE : 'no';
 				$fields['associated_entry_counts'] = $existing->dsParamASSOCIATEDENTRYCOUNTS;
-				if ($fields['associated_entry_counts'] == NULL) $fields['associated_entry_counts'] = 'yes';
+				if(is_null($fields['associated_entry_counts'])) $fields['associated_entry_counts'] = 'yes';
 				if($existing->dsParamREDIRECTONEMPTY == 'yes') $fields['redirect_on_empty'] = 'yes';
 
 				if(!is_array($existing->dsParamFILTERS)) {
@@ -1040,7 +1040,7 @@
 			elseif (!empty($providers)) {
 				foreach($providers as $providerClass => $provider) {
 					if($fields['source'] == $providerClass::getSource()) {
-						$providerClass::validate(&$fields, $this->_errors);
+						$providerClass::validate($fields, $this->_errors);
 						break;
 					}
 					unset($providerClass);

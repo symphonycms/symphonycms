@@ -424,8 +424,10 @@
 
 			if(empty($query)) return false;
 
+			$start = precision_timer();
 			$query = trim($query);
 			$query_type = $this->determineQueryType($query);
+			$query_hash = md5($query.$start);
 
 			if(MySQL::$_connection['tbl_prefix'] != 'tbl_'){
 				$query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', MySQL::$_connection['tbl_prefix'].'\\1\\2', $query);
@@ -443,8 +445,6 @@
 					$query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_NO_CACHE ', $query);
 				}
 			}
-
-			$start = precision_timer();
 
 			$this->flush();
 			$this->_lastQuery = $query;
@@ -472,7 +472,8 @@
 				mysql_free_result($this->_result);
 			}
 
-			$query_hash = md5($query.$start);
+			$stop = precision_timer('stop', $start);
+
 			/**
 			 * After a query has successfully executed, that is it was considered
 			 * valid SQL, this delegate will provide the query, the query_hash and
@@ -497,7 +498,7 @@
 				Symphony::ExtensionManager()->notifyMembers('PostQueryExecution', class_exists('Administration') ? '/backend/' : '/frontend/', array(
 					'query' => $query,
 					'query_hash' => $query_hash,
-					'execution_time' => precision_timer('stop', $start)
+					'execution_time' => $stop
 				));
 
 				// If the ExceptionHandler is enabled, then the user is authenticated
@@ -506,7 +507,7 @@
 					self::$_log[$query_hash] = array(
 						'query' => $query,
 						'query_hash' => $query_hash,
-						'execution_time' => precision_timer('stop', $start)
+						'execution_time' => $stop
 					);
 				}
 			}
@@ -516,7 +517,7 @@
 				self::$_log[$query_hash] = array(
 					'query' => $query,
 					'query_hash' => $query_hash,
-					'execution_time' => precision_timer('stop', $start)
+					'execution_time' => $stop
 				);
 			}
 
