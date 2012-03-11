@@ -173,7 +173,7 @@
 		 * @param boolean $process_params
 		 * @return Datasource
 		 */
-		public static function create($handle, array $env = array(), $process_params=true){
+		public static function create($handle, array $env = null, $process_params=true){
 			$classname = self::__getClassName($handle);
 			$path = self::__getDriverPath($handle);
 

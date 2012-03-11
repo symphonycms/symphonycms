@@ -62,7 +62,7 @@
 		 *	If set to true, `Datasource::processParameters` will be called. By default
 		 *	this is true
 		 */
-		public function __construct($dummy, array $env = array(), $process_params=true){
+		public function __construct($dummy, array $env = null, $process_params=true){
 			if($process_params){
 				$this->processParameters($env);
 			}
@@ -191,7 +191,7 @@
 		 *	The environment variables from the Frontend class which includes
 		 *	any params set by Symphony or Events or by other Datasources
 		 */
-		public function processParameters(Array $env = array()){
+		public function processParameters(array $env = null){
 
 			if($env) $this->_env = $env;
 
@@ -295,7 +295,7 @@
 		 *	The string will all parameters evaluated. If a parameter was not found, it will
 		 *	not be replaced at all.
 		 */
-		public function __processParametersInString($value, Array $env, $includeParenthesis=true, $escape=false){
+		public function __processParametersInString($value, array $env, $includeParenthesis=true, $escape=false){
 			if(trim($value) == '') return null;
 
 			if(!$includeParenthesis) $value = '{'.$value.'}';
