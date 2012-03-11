@@ -549,7 +549,7 @@
 
 			$label = Widget::Label(__('Required URL Parameter'));
 			$label->appendChild(new XMLElement('i', __('Optional')));
-			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), null, array('placeholder' => __('$param'))));
+			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), 'text', array('placeholder' => __('$param'))));
 			$fieldset->appendChild($label);
 
 			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value.'));
