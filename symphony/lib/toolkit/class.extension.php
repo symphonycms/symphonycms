@@ -49,12 +49,6 @@
 		 *  This function will always return true (at the moment)
 		 */
 		public static function registerProviders() {
-			self::$provides = array(
-				'data-sources' => array(
-					'RemoteDatasource' => RemoteDatasource::getName()
-				)
-			);
-
 			return true;
 		}
 
