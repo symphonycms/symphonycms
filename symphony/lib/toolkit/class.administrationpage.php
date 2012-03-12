@@ -19,9 +19,10 @@
 	Class AdministrationPage extends HTMLPage {
 
 		/**
-		 * An instance of the `Alert` class. Used to display page level
-		 * messages to Symphony users.
-		 * @var Alert
+		 * An array of `Alert` objects used to display page level
+		 * messages to Symphony backend users one by one. Prior to Symphony 2.3
+		 * this variable only held a single `Alert` object.
+		 * @var array
 		 */
 		public $Alert = array();
 
@@ -54,6 +55,13 @@
 		 * @var XMLElement
 		 */
 		private $Breadcrumbs = null;
+
+		/**
+		 * An array of Drawer widgets for the current page
+		 * @since Symphony 2.3
+		 * @var array
+		 */
+		public $Drawer = array();
 
 		/**
 		 * A `<div>` that contains the content of a Symphony backend page.
@@ -191,25 +199,58 @@
 				$actions = array($actions);
 			}
 
-			if(!empty($actions)){
-				$ul = new XMLElement('ul', NULL, array('class' => 'actions'));
-
-				foreach($actions as $a){
-					$ul->appendChild(new XMLElement('li', $a));
-				}
-				$this->Context->appendChild($ul);
+			if(!empty($actions)) foreach($actions as $a){
+				$this->insertAction($a);
 			}
 
 			$this->Breadcrumbs->appendChild(new XMLElement('h2', $value));
 		}
 
 		/**
-		 * Allows developers to specify a list of nav items that build the path to the
-		 * current page or, in jargon, "breadcrumbs".
+		 * This function allows a user to insert an Action button to the page.
+		 * It accepts an `XMLElement` (which should be of the `Anchor` type),
+		 * an optional parameter `$prepend`, which when `true` will add this
+		 * action before any existing actions.
+		 *
+		 * @since Symphony 2.3
+		 * @see core.Widget#Anchor
+		 * @param XMLElement $action
+		 *  An Anchor element to add to the top of the page.
+		 * @param boolean $append
+		 *  If true, this will add the `$action` after existing actions, otherwise
+		 *  it will be added before existing actions. By default this is `true`,
+		 *  which will add the `$action` after current actions.
+		 */
+		public function insertAction(XMLElement $action, $append = true) {
+			$actions = $this->Context->getChildrenByName('ul');
+
+			// Actions haven't be added yet, create the element
+			if(empty($actions)) {
+				$ul = new XMLElement('ul', NULL, array('class' => 'actions'));
+				$this->Context->appendChild($ul);
+			}
+			else {
+				$ul = current($actions);
+				$this->Context->replaceChildAt(1, $ul);
+			}
+
+			$li = new XMLElement('li', $action);
+
+			if($append) {
+				$ul->prependChild($li);
+			}
+			else {
+				$ul->appendChild($li);
+			}
+		}
+
+		/**
+		 * Allows developers to specify a list of nav items that build the
+		 * path to the current page or, in jargon, "breadcrumbs".
 		 *
 		 * @since Symphony 2.3
 		 * @param array $values
-		 *  An array of XMLElements or strings that compose the path. If breadcrumbs
+		 *  An array of `XMLElement`'s or strings that compose the path. If breadcrumbs
 		 *  already exist, any new item will be appended to the rightmost part of the
 		 *  path.
 		 */
@@ -221,8 +262,7 @@
 				$nav = $this->Breadcrumbs->getChildrenByName('nav');
 				$nav = $nav[0];
 
-				$p = $nav->getChildren();
-				$p = $p[0];
+				$p = $nav->getChild(0);
 			}
 			else {
 				$p = new XMLElement('p');
@@ -235,6 +275,37 @@
 			foreach($values as $v){
 				$p->appendChild($v);
 				$p->appendChild(new XMLElement('span', '&#8250;', array('class' => 'sep')));
+			}
+		}
+
+		/**
+		 * Allows a Drawer element to added to the backend page in one of three
+		 * positions, `horizontal`, `vertical-left` or `vertical-right`. The button
+		 * to trigger the visibility of the drawer will be added after existing
+		 * actions by default.
+		 *
+		 * @since Symphony 2.3
+		 * @see core.Widget#Drawer
+		 * @param XMLElement $drawer
+		 *  An XMLElement representing the drawer, use `Widget::Drawer` to construct
+		 * @param string $position
+		 *  Where `$position` can be `horizontal`, `vertical-left` or
+		 *  `vertical-right`. Defaults to `horizontal`.
+		 * @param string $button
+		 *  If not passed, a button to open/close the drawer will not be added
+		 *  to the interface. Accepts 'prepend' or 'append' values, which will
+		 *  add the button before or after existing buttons. Defaults to `prepend`.
+		 *  If any other value is passed, no button will be added.
+		 */
+		public function insertDrawer(XMLElement $drawer, $position = 'horizontal', $button = 'append') {
+			$this->Drawer[$placement][] = $drawer;
+
+			if(in_array($append_button, array('prepend', 'append'))) {
+				$this->appendAction(Widget::Anchor(
+						$drawer->getAttribute('data-label'), $drawer->getAttribute('id'), null, 'drawer'
+					),
+					($button === 'prepend') ? false : true
+				);
 			}
 		}
 
@@ -297,6 +368,14 @@
 				), 72
 			);
 
+			// Initialise page containers
+			$this->Wrapper = new XMLElement('div', NULL, array('id' => 'wrapper'));
+			$this->Header = new XMLElement('header', NULL, array('id' => 'header'));
+			$this->Context = new XMLElement('div', NULL, array('id' => 'context'));
+			$this->Breadcrumbs = new XMLElement('div', NULL, array('id' => 'breadcrumbs'));
+			$this->Contents = new XMLElement('div', NULL, array('id' => 'contents'));
+			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
+
 			/**
 			 * Allows developers to insert items into the page HEAD. Use `Administration::instance()->Page`
 			 * for access to the page object
@@ -314,10 +393,6 @@
 				Symphony::Profiler()->sample('Page action run', PROFILE_LAP);
 			}
 
-			// Wrapper + Header
-			$this->Wrapper = new XMLElement('div', NULL, array('id' => 'wrapper'));
-			$this->Header = new XMLElement('header', NULL, array('id' => 'header'));
-
 			$h1 = new XMLElement('h1');
 			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
 			$this->Header->appendChild($h1);
@@ -325,16 +400,12 @@
 			$this->appendUserLinks();
 			$this->appendNavigation();
 
-			// Context + Contents
-			$this->Context = new XMLElement('div', NULL, array('id' => 'context'));
-			$this->Breadcrumbs = new XMLElement('div', NULL, array('id' => 'breadcrumbs'));
-			$this->Context->appendChild($this->Breadcrumbs);
-
-			$this->Contents = new XMLElement('div', NULL, array('id' => 'contents'));
-			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
-			$this->Contents->appendChild($this->Form);
+			// Add Breadcrumbs
+			$this->Context->prependChild($this->Breadcrumbs);
 
 			$this->view();
+
+			$this->Contents->appendChild($this->Form);
 
 			$this->appendAlert();
 
@@ -398,21 +469,41 @@
 		/**
 		 * Appends the `$this->Header`, `$this->Context` and `$this->Contents`
 		 * to `$this->Wrapper` before adding the ID and class attributes for
-		 * the `<body>` element. After this has completed the parent's generate
-		 * function is called which will convert the `XMLElement`'s into strings
-		 * ready for output
+		 * the `<body>` element. This function will also place any Drawer elements
+		 * in their relevant positions in the page. After this has completed the
+		 * parent `generate()` is called which will convert the `XMLElement`'s
+		 * into strings ready for output.
 		 *
+		 * @see core.HTMLPage#generate()
 		 * @return string
 		 */
 		public function generate() {
 			$this->Wrapper->appendChild($this->Header);
+
+			// Add horizontal drawers (inside #context)
+			if(isset($this->Drawer['horizontal'])) {
+				$this->Context->appendChildArray($this->Drawer['horizontal']);
+			}
+
 			$this->Wrapper->appendChild($this->Context);
+
+			// Add vertical-left drawers (between #context and #contents
+			if(isset($this->Drawer['vertical-left'])) {
+				$this->Contents->appendChildArray($this->Drawer['vertical-left']);
+			}
+
 			$this->Wrapper->appendChild($this->Contents);
+
+			// Add vertical-right drawers (after #contents
+			if(isset($this->Drawer['vertical-right'])) {
+				$this->Wrapper->appendChildArray($this->Drawer['vertical-right']);
+			}
 
 			$this->Body->appendChild($this->Wrapper);
 
 			$this->__appendBodyId();
 			$this->__appendBodyClass($this->_context);
+
 			return parent::generate();
 		}
 
