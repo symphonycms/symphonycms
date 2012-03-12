@@ -300,9 +300,9 @@
 		public function insertDrawer(XMLElement $drawer, $position = 'horizontal', $button = 'append') {
 			$this->Drawer[$position][] = $drawer;
 
-			if(in_array($append_button, array('prepend', 'append'))) {
-				$this->appendAction(Widget::Anchor(
-						$drawer->getAttribute('data-label'), $drawer->getAttribute('id'), null, 'drawer'
+			if(in_array($button, array('prepend', 'append'))) {
+				$this->insertAction(Widget::Anchor(
+						$drawer->getAttribute('data-label'), $drawer->getAttribute('id'), null, 'button drawer'
 					),
 					($button === 'append') ? true : false
 				);
