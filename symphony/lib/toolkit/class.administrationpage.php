@@ -489,7 +489,7 @@
 
 			// Add vertical-left drawers (between #context and #contents
 			if(isset($this->Drawer['vertical-left'])) {
-				$this->Contents->appendChildArray($this->Drawer['vertical-left']);
+				$this->Wrapper->appendChildArray($this->Drawer['vertical-left']);
 			}
 
 			$this->Wrapper->appendChild($this->Contents);
