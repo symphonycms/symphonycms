@@ -298,13 +298,13 @@
 		 *  If any other value is passed, no button will be added.
 		 */
 		public function insertDrawer(XMLElement $drawer, $position = 'horizontal', $button = 'append') {
-			$this->Drawer[$placement][] = $drawer;
+			$this->Drawer[$position][] = $drawer;
 
 			if(in_array($append_button, array('prepend', 'append'))) {
 				$this->appendAction(Widget::Anchor(
 						$drawer->getAttribute('data-label'), $drawer->getAttribute('id'), null, 'drawer'
 					),
-					($button === 'prepend') ? false : true
+					($button === 'append') ? true : false
 				);
 			}
 		}
