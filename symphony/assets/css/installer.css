@@ -5,8 +5,6 @@
 
 body {
 	padding: 80px 100px 50px 50px;
-	background: #fff;
-	color: #222;
 	font: 68.75%/1.5 "Lucida Grande", Verdana, sans-serif;
 	cursor: default;
 }
@@ -109,6 +107,8 @@ fieldset {
 
 fieldset legend {
 	font-size: 127.28%;
+	font-weight: normal;
+	color: #222;
 }
 
 fieldset > .columns:last-child .column {
