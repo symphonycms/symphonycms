@@ -79,10 +79,22 @@
 		 * @param array $array
 		 *  An associative array of properties, 'property' => 'value' or 'group' => array(
 		 *  'property' => 'value'
+		 * @param boolean $overwrite
+		 *  An optional boolean parameter to indicate if it is safe to use array_merge 
+		 *  or if the provided array should be integrated using the 'set()' method 
+		 *  to avoid possible change collision. Defaults to false.
 		 */
-		public function setArray(array $array){
+		public function setArray(array $array, $overwrite = false){
 			$array = General::array_map_recursive('stripslashes', $array);
-			$this->_properties = array_merge($this->_properties, $array);
+			if($overwrite) {
+				$this->_properties = array_merge($this->_properties, $array);
+			} else {
+				foreach($array as $set => $values) {
+					foreach($values as $key => $val) {
+						self::set($key, $val, $set);
+					}
+				}
+			}
 		}
 
 		/**

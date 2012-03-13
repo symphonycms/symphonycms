@@ -156,7 +156,7 @@
 				if (!is_array($this->_errors) || empty($this->_errors)) {
 
 					if(is_array($settings) && !empty($settings)){
-						Symphony::Configuration()->setArray($settings);
+						Symphony::Configuration()->setArray($settings, false);
 					}
 
 					Administration::instance()->saveConfig();
