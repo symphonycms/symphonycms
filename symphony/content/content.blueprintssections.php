@@ -134,13 +134,13 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
-			$div = new XMLElement('div', NULL, array('class' => 'group'));
-			$namediv = new XMLElement('div', NULL);
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+			$namediv = new XMLElement('div', NULL, array('class' => 'column'));
 
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
 
-			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
 
 			$label = Widget::Label();
@@ -149,12 +149,12 @@
 			$namediv->appendChild($label);
 			$div->appendChild($namediv);
 
-			$navgroupdiv = new XMLElement('div', NULL);
+			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Created if does not exist') . '</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
-			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
+			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::Error($label, $this->_errors['navigation_group']));
 			else $navgroupdiv->appendChild($label);
 
 			if(is_array($sections) && !empty($sections)){
@@ -204,10 +204,12 @@
 			$p = new XMLElement('p', __('Click to expand or collapse a field.') . '<br />' . __('Double click to expand or collapse all fields.'), array('class' => 'help'));
 			$fieldset->appendChild($p);
 
-			$div = new XMLElement('div');
+			$div = new XMLElement('div', null, array('class' => 'frame'));
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');
+			$ol->setAttribute('data-add', __('Add field'));
+			$ol->setAttribute('data-remove', __('Remove field'));
 
 			if(!$showEmptyTemplate){
 				foreach($fields as $position => $data){
@@ -348,13 +350,13 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
-			$div = new XMLElement('div', NULL, array('class' => 'group'));
-			$namediv = new XMLElement('div', NULL);
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+			$namediv = new XMLElement('div', NULL, array('class' => 'column'));
 
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
 
-			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
 
 			$label = Widget::Label();
@@ -363,12 +365,12 @@
 			$namediv->appendChild($label);
 			$div->appendChild($namediv);
 
-			$navgroupdiv = new XMLElement('div', NULL);
+			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Choose only one. Created if does not exist') . '</i>');
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
-			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
+			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::Error($label, $this->_errors['navigation_group']));
 			else $navgroupdiv->appendChild($label);
 
 			if(is_array($sections) && !empty($sections)){
@@ -418,10 +420,12 @@
 			$p = new XMLElement('p', __('Click to expand or collapse a field.') . '<br />' . __('Double click to expand or collapse all fields.'), array('class' => 'help'));
 			$fieldset->appendChild($p);
 
-			$div = new XMLElement('div');
+			$div = new XMLElement('div', null, array('class' => 'frame'));
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');
+			$ol->setAttribute('data-add', __('Add field'));
+			$ol->setAttribute('data-remove', __('Remove field'));
 
 			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $position => $field){

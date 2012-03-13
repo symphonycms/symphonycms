@@ -107,7 +107,11 @@
 		--------------------------------------------------------------------------*/
 
 		// Duplicators
-		$('.filters-duplicator').symphonyDuplicator();
+		$('.filters-duplicator')
+			.symphonyDuplicator()
+			.on('constructshow.duplicator', function() {
+				$('.tags').symphonyTags();
+			});
 
 		// Field editor
 		$('#fields-duplicator')
@@ -122,18 +126,18 @@
 			.on('keyup', '.instance input[name*="[label]"]', function(event) {
 				var label = $(this),
 					value = label.val();
-					
+
 				// Empty label
 				if(value == '') {
 					value = Symphony.Language.get('Untitled Field');
 				}
-				
+
 				// Update title
 				label.parents('.instance').find('header strong').text(value);
 			})
 			.on('change', '.instance select[name*="[location]"]', function(event) {
 				var select = $(this);
-					
+
 				// Set location
 				select.parents('.instance').find('header').removeClass('main').removeClass('sidebar').addClass(select.val());
 			});
@@ -142,7 +146,7 @@
 		$('div.duplicator')
 			.on('orderstart.orderable', function(event, item) {
 				var duplicator = $(this);
-			
+
 				setTimeout(function() {
 					if(duplicator.is('.ordering')) {
 						duplicator.find('li:has(.' + item.find('header').attr('class') + ')').not(item).addClass('highlight');
@@ -168,45 +172,39 @@
 				selection = $('table.selectable'),
 				select = applicable.find('select'),
 				button = applicable.find('button');
-				
-			// Set width
-			if(!applicable.is('.single')) {
-				applicable.width(select.outerWidth() + button.outerWidth() + 10);
-			}
 
 			// Set menu status
 			if(selection.length > 0) {
 				selection.on('select deselect check', 'tbody tr:has(input)', function(event) {
-					var select = applicable.find('select');
 				
 					// Activate menu
 					if(selection.has('.selected').length > 0) {
 						applicable.removeClass('inactive');
 						select.removeAttr('disabled');
 					}
-					
+
 					// Deactivate menu
 					else {
 						applicable.addClass('inactive');
 						select.attr('disabled', 'disabled');
 					}
 				});
-				
+
 				selection.find('tbody tr:has(input):first').trigger('check');
-				
+
 				// Respect menu state
-				applicable.find('button').on('click', function(event) {
-					if($(this).parent().is('.inactive')) {
+				button.on('click', function(event) {
+					if(applicable.is('.inactive')) {
 						return false;
 					}
 				});
-			}		
+			}
 		});
 
 		/*--------------------------------------------------------------------------
 			Components - Pagination
 		--------------------------------------------------------------------------*/
-		
+
 		var pageform = $('ul.page form');
 		if(pageform.length > 0) {
 			var	pagegoto = pageform.find('input'),
@@ -214,58 +212,58 @@
 				pageinactive = pagegoto.attr('data-inactive'),
 				pagehelper = $('<span />').appendTo(pageform),
 				width;
-				
+
 			// Measure placeholder text
 			width = Math.max(pagehelper.text(pageactive).width(), pagehelper.text(pageinactive).width());
 			pagehelper.remove();
 			pagegoto.width(width + 20);
-				
+
 			// Set current page
 			pagegoto.val(pageinactive);
-			
+
 			// Display "Go to page …" placeholder
 			pageform.on('mouseover', function(event) {
 				if(!pageform.is('.active') && pagegoto.val() == pageinactive) {
 					pagegoto.val(pageactive);
 				}
 			});
-			
+
 			// Display current page placeholder
 			pageform.on('mouseout', function(event) {
 				if(!pageform.is('.active') && pagegoto.val() == pageactive) {
 					pagegoto.val(pageinactive);
 				}
 			});
-	
+
 			// Edit page number
 			pagegoto.on('focus', function(event) {
 				if(pagegoto.val() == pageactive) {
 					pagegoto.val('');
 				}
-				pageform.addClass('active')
+				pageform.addClass('active');
 			});
-			
+
 			// Stop editing page number
 			pagegoto.on('blur', function(event) {
-							
+
 				// Clear errors
 				if(pageform.is('.invalid') || pagegoto.val() == '') {
 					pageform.removeClass('invalid');
 					pagegoto.val(pageinactive);
 				}
-			
+
 				// Deactivate
 				if(pagegoto.val() == pageinactive) {
 					pageform.removeClass('active');
 				}
 			});
-			
+
 			// Validate page number
 			pageform.on('submit', function(event) {
 				if(pagegoto.val() > pagegoto.attr('data-max')) {
 					pageform.addClass('invalid');
 					return false;
-				}	
+				}
 			});
 		}
 
@@ -274,24 +272,44 @@
 		--------------------------------------------------------------------------*/
 
 		// XSLT utilities
-		$('textarea').blur(function() {
-			var source = $(this).val(),
-				utilities = $('#utilities li');
+		$('#blueprints-utilities fieldset.primary textarea, #blueprints-pages fieldset.primary textarea')
+			.on('keydown', function(event) {
 
-			// Remove current selection
-			utilities.removeClass('selected');
+				// Allow tab insertion
+				if(event.which == 9) {
+					var start = this.selectionStart,
+						end = this.selectionEnd,
+						position = this.scrollTop;
 
-			// Get utitities names
-			utilities.find('a').each(function() {
-				var utility = $(this),
-					expression = new RegExp('href=["\']?(?:\\.{2}/utilities/)?' + utility.text());
+					event.preventDefault();
 
-				// Check for utility occurrences
-				if(expression.test(source)) {
-					utility.parent().addClass('selected');
-				}
-			});
-		}).blur();
+					// Add tab
+					this.value = this.value.substring(0, start) + "\t" + this.value.substring(end, this.value.length);
+					this.selectionStart = start + 1;
+					this.selectionEnd = start + 1;
+
+					// Restore scroll position
+					this.scrollTop = position;
+   				}
+			})
+			.on('blur', function() {
+				var source = $(this).val(),
+					utilities = $('#utilities li');
+
+				// Remove current selection
+				utilities.removeClass('selected');
+
+				// Get utitities names
+				utilities.find('a').each(function() {
+					var utility = $(this),
+						expression = new RegExp('href=["\']?(?:\\.{2}/utilities/)?' + utility.text());
+
+					// Check for utility occurrences
+					if(expression.test(source)) {
+						utility.parent().addClass('selected');
+					}
+				});
+			}).blur();
 
 		// Clickable utilities in the XSLT editor
 		$('#utilities li').click(function(event) {
@@ -304,10 +322,11 @@
 				regexp = '^<xsl:import href="(?:\.\./utilities/)?' + link + '"',
 				newLine = '\n',
 				numberOfNewLines = 1,
-				number_lines = lines.length;
+				number_lines = lines.length,
+				i;
 
 			if ($(this).hasClass('selected')) {
-				for (var i = 0; i < number_lines; i++) {
+				for (i = 0; i < number_lines; i++) {
 					if ($.trim(lines[i]).match(regexp) != null) {
 						(lines[i + 1] === '' && $.trim(lines[i - 1]).substring(0, 11) !== '<xsl:import') ? lines.splice(i, 2) : lines.splice(i, 1);
 						break;
@@ -318,7 +337,7 @@
 				$(this).removeClass('selected');
 			}
 			else {
-				for (var i = 0; i < number_lines; i++) {
+				for (i = 0; i < number_lines; i++) {
 					if ($.trim(lines[i]).substring(0, 4) === '<!--' || $.trim(lines[i]).match('^<xsl:(?:import|variable|output|comment|template)')) {
 
 						numberOfNewLines = $.trim(lines[i]).substring(0, 11) === '<xsl:import' ? 1 : 2;
@@ -347,13 +366,13 @@
 		$('#password').each(function() {
 			var password = $(this),
 				overlay = $('<div class="password"><span class="frame"><button>' + Symphony.Language.get('Change Password') + '</button></span></div>');
-		
+
 			// Add overlay
 			if(password.has('.invalid').length == 0 && Symphony.Context.get('env')[0] != 'new') {
 				overlay.insertBefore(password).find('button').on('click', function(event) {
 					event.preventDefault();
 					overlay.hide();
-				})
+				});
 			}
 		});
 
@@ -423,51 +442,9 @@
 						var item = $(this),
 							field = item.text().split('.')[1];
 
-						item.text('$ds-' + result + '.' + field)
+						item.text('$ds-' + result + '.' + field);
 					});
 				}
-			});
-		});
-
-		// Datasource collapsable links
-		$('#blueprints-datasources.index table tr, #blueprints-events.index table tr').each(function() {
-			var links = [];
-			$('td:eq(2) a', this).each(function(){
-				links.push($(this));
-			});
-
-			// If there is less than 3, show them all by default
-			if(links.length <= 3) return;
-
-			// Clear the field and append the links
-			$('td:eq(2)', this).html('');
-			for(var i=0, l=links.length; i<l; i++) {
-				$('td:eq(2)', this).append(links[i]).append('<span>, </span>');
-			}
-			$("td:eq(2) a:gt(2)", this).each(function(){
-				$(this).hide().next().hide();
-			});
-
-			$('td:eq(2)', this).append(
-				'<a href="#" class="expand">' +
-				' <span class="more">' + (links.length - 3) + ' more</span>' +
-				' <span class="less">less</span>&hellip;</a>'
-			);
-
-			// Listen for click on the 'expand' links, to hide/show
-			$(this).on('click', '.expand', function() {
-				var $parent = $(this).parent();
-
-				if($(this).hasClass('expanded')) {
-					$(">a:gt(2), >span:gt(2)", $parent).not('.expand').hide();
-					$(this).removeClass('expanded');
-				}
-				else {
-					$(">a, >span", $parent).show();
-					$(this).addClass('expanded');
-				}
-
-				return false;
 			});
 		});
 
@@ -507,14 +484,13 @@
 			});
 		});
 
-		// Set data source manager context
-		$('#ds-context').change();
-
-		// Trigger the parameter name being remembered when the Datasource
-		// context changes
-		$('#ds-context').on('change', function() {
-			$('#blueprints-datasources input[name="fields[name]"]').trigger('change');
-		});
+		$('#ds-context')
+			// Trigger the parameter name being remembered when the Datasource context changes
+			.on('change', function() {
+				$('#blueprints-datasources input[name="fields[name]"]').trigger('change');
+			})
+			// Set data source manager context
+			.change();
 
 		// Once pagination is disabled, max_records and page_number are disabled too
 		var max_record = $('input[name*=max_records]'),
@@ -549,7 +525,7 @@
 		// Validate pagination input on submit
 		$('.page form').submit(function() {
 			var $input = $(this).find('input');
-			if(!$input.val().match('^[0-9]+$') || $input.val() > parseInt($(this).find('span').html())) {
+			if(!$input.val().match('^[0-9]+$') || $input.val() > parseInt($(this).find('span').html(), 10)) {
 				$input.addClass('error');
 				window.setTimeout(function() { $('.page form input').removeClass("error"); }, 500);
 				return false;

@@ -13,7 +13,7 @@
 
 		public $_errors = array();
 
-		public function __viewIndex(){
+		public function __viewIndex($resource_type){
 			parent::__viewIndex(RESOURCE_TYPE_EVENT);
 
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Events'), __('Symphony'))));
@@ -102,20 +102,21 @@
 				$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
 				$group = new XMLElement('div');
-				$group->setAttribute('class', 'group');
+				$group->setAttribute('class', 'two columns');
 
+				// Name
 				$label = Widget::Label(__('Name'));
 				$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
 
 				$div = new XMLElement('div');
-				if(isset($this->_errors['name'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+				$div->setAttribute('class', 'column');
+				if(isset($this->_errors['name'])) $div->appendChild(Widget::Error($label, $this->_errors['name']));
 				else $div->appendChild($label);
 				$group->appendChild($div);
 
+				// Source
 				$label = Widget::Label(__('Source'));
-
 				$sections = SectionManager::fetch(NULL, 'ASC', 'name');
-
 				$options = array();
 
 				if(is_array($sections) && !empty($sections)){
@@ -123,8 +124,10 @@
 				}
 
 				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'event-context')));
+
 				$div = new XMLElement('div');
-				if(isset($this->_errors['source'])) $div->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['source']));
+				$div->setAttribute('class', 'column');
+				if(isset($this->_errors['source'])) $div->appendChild(Widget::Error($label, $this->_errors['source']));
 				else $div->appendChild($label);
 				$group->appendChild($div);
 
@@ -260,7 +263,7 @@
 			}
 		}
 
-		public function __actionIndex(){
+		public function __actionIndex($resource_type){
 			return parent::__actionIndex(RESOURCE_TYPE_EVENT);
 		}
 
@@ -275,6 +278,8 @@
 
 			$classname = Lang::createHandle($fields['name'], 255, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
+
+			$extends = 'SectionEvent';
 
 			// Check to make sure the classname is not empty after handlisation.
 			if(empty($classname) && !isset($this->_errors['name'])) $this->_errors['name'] = __('Please ensure name contains at least one Latin-based alphabet.', array($classname));
@@ -397,7 +402,7 @@
 				$documentation_parts[] = self::processDocumentationCode(($multiple ? str_replace('fields[', 'fields[0][', $code) : $code));
 
 				$documentation_parts[] = new XMLElement('p', __('To edit an existing entry, include the entry ID value of the entry in the form. This is best as a hidden field like so:'));
-				$documentation_parts[] = self::processDocumentationCode(Widget::Input('id' . ($multiple ? '[0]' : NULL), 23, 'hidden'));
+				$documentation_parts[] = self::processDocumentationCode(Widget::Input('id' . ($multiple ? '[0]' : NULL), '23', 'hidden'));
 
 				$documentation_parts[] = new XMLElement('p', __('To redirect to a different location upon a successful save, include the redirect location in the form. This is best as a hidden field like so, where the value is the URL to redirect to:'));
 				$documentation_parts[] = self::processDocumentationCode(Widget::Input('redirect', URL.'/success/', 'hidden'));
@@ -405,7 +410,7 @@
 				if(in_array('send-email', $filters)){
 					$documentation_parts[] = new XMLElement('h3', __('Send Notification Email'));
 
-					$documentation_parts[] = new XMLElement('p', 
+					$documentation_parts[] = new XMLElement('p',
 						__('Upon the event successfully saving the entry, this option takes input from the form and send an email to the desired recipient.')
 						. ' <strong>'
 						. __('It currently does not work with ‘Allow Multiple’')
@@ -459,6 +464,7 @@
 				$documentation = str_replace('\'', '\\\'', $documentation);
 
 				$eventShell = str_replace('<!-- CLASS NAME -->', $classname, $eventShell);
+				$eventShell = str_replace('<!-- CLASS EXTENDS -->', $extends, $eventShell);
 				$eventShell = str_replace('<!-- SOURCE -->', $source, $eventShell);
 				$eventShell = str_replace('<!-- DOCUMENTATION -->', General::tabsToSpaces($documentation, 2), $eventShell);
 				$eventShell = str_replace('<!-- ROOT ELEMENT -->', $rootelement, $eventShell);

@@ -192,7 +192,7 @@
 				throw new Exception(
 					__(
 						'Error creating field object with id %1$d, for filtering in data source %2$s. Check this field exists.',
-						array($field_id, '<code>' . $this->dsParamROOTELEMENT . '<code>')
+						array($field_id, '<code>' . $this->dsParamROOTELEMENT . '</code>')
 					)
 				);
 			}

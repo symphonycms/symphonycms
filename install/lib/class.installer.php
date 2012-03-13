@@ -108,7 +108,9 @@
 					);
 				}
 
-				self::__render(new InstallerPage('requirements'));
+				self::__render(new InstallerPage('requirements', array(
+					'errors'=> $errors
+				)));
 			}
 
 			// If language is not set and there is language packs available, show language selection pages
@@ -120,7 +122,6 @@
 			if(isset($_POST['fields'])) {
 				$errors = self::__checkConfiguration();
 				if(!empty($errors)){
-
 					Symphony::Log()->pushToLog(
 						sprintf('Installer - Wrong configuration.'),
 						E_ERROR, true
@@ -217,22 +218,6 @@
 				);
 			}
 
-			return $errors;
-		}
-
-		/**
-		 * This function checks the current Configuration (which is the values entered
-		 * by the user on the installation form) to ensure that `/symphony` and `/workspace`
-		 * folders exist and are writable and that the Database credentials are correct.
-		 * Once those initial checks pass, the rest of the form values are validated.
-		 *
-		 * @return
-		 *  An associative array of errors if something went wrong, otherwise an empty array.
-		 */
-		private static function __checkConfiguration(){
-			$errors = array();
-			$fields = $_POST['fields'];
-
 			// Cannot write to root folder.
 			if(!is_writable(DOCROOT)){
 				$errors['no-write-permission-root'] = array(
@@ -249,6 +234,22 @@
 				);
 			}
 
+			return $errors;
+		}
+
+		/**
+		 * This function checks the current Configuration (which is the values entered
+		 * by the user on the installation form) to ensure that `/symphony` and `/workspace`
+		 * folders exist and are writable and that the Database credentials are correct.
+		 * Once those initial checks pass, the rest of the form values are validated.
+		 *
+		 * @return
+		 *  An associative array of errors if something went wrong, otherwise an empty array.
+		 */
+		private static function __checkConfiguration(){
+			$errors = array();
+			$fields = $_POST['fields'];
+
 			// Testing the database connection
 			try{
 				Symphony::Database()->connect(
@@ -259,38 +260,51 @@
 				);
 			}
 			catch(DatabaseException $e){
-				$errors['no-database-connection'] = array(
-					'msg' => 'Could not establish database connection',
-					'details' => __('Symphony was unable to establish a valid database connection. You may need to modify username, password, host or port settings.')
-				);
+				// Invalid credentials
+				// @link http://dev.mysql.com/doc/refman/5.5/en/error-messages-server.html
+				if($e->getDatabaseErrorCode() === 1044 or $e->getDatabaseErrorCode() === 1045) {
+					$errors['database-invalid-credentials'] = array(
+						'msg' => 'Database credentials were denied',
+						'details' => __('Symphony was unable to access the database with these credentials.')
+					);
+				}
+				// Connection related
+				else {
+					$errors['no-database-connection'] = array(
+						'msg' => 'Could not establish database connection.',
+						'details' => __('Symphony was unable to establish a valid database connection. You may need to modify host or port settings.')
+					);
+				}
 			}
 
 			try{
-				// Looking for the given database name
-				Symphony::Database()->select($fields['database']['db']);
+				if(Symphony::Database()->isConnected()) {
+					// Looking for the given database name
+					Symphony::Database()->select($fields['database']['db']);
 
-				// Incorrect MySQL version
-				$version = Symphony::Database()->fetchVar('version', 0, "SELECT VERSION() AS `version`;");
-				if(version_compare($version, '5.0', '<')){
-					$errors['database-incorrect-version']  = array(
-						'msg' => 'MySQL Version is not correct. '. $version . ' detected.',
-						'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected. This requirement must be met before installation can proceed.', array('<code>MySQL 5.0</code>', '<code>' . $version . '</code>'))
-					);
-				}
-
-				else {
-					// Existing table prefix
-					$tables = Symphony::Database()->fetch(sprintf(
-						"SHOW TABLES FROM `%s` LIKE '%s'",
-						mysql_escape_string($fields['database']['db']),
-						mysql_escape_string($fields['database']['tbl_prefix']) . '%'
-					));
-
-					if(is_array($tables) && !empty($tables)) {
-						$errors['database-table-clash']  = array(
-							'msg' => 'Database table prefix clash with ‘' . $fields['database']['db'] . '’',
-							'details' =>  __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.', array('<code>' . $fields['database']['tbl_prefix'] . '</code>'))
+					// Incorrect MySQL version
+					$version = Symphony::Database()->fetchVar('version', 0, "SELECT VERSION() AS `version`;");
+					if(version_compare($version, '5.0', '<')){
+						$errors['database-incorrect-version']  = array(
+							'msg' => 'MySQL Version is not correct. '. $version . ' detected.',
+							'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected. This requirement must be met before installation can proceed.', array('<code>MySQL 5.0</code>', '<code>' . $version . '</code>'))
 						);
+					}
+
+					else {
+						// Existing table prefix
+						$tables = Symphony::Database()->fetch(sprintf(
+							"SHOW TABLES FROM `%s` LIKE '%s'",
+							mysql_escape_string($fields['database']['db']),
+							mysql_escape_string($fields['database']['tbl_prefix']) . '%'
+						));
+
+						if(is_array($tables) && !empty($tables)) {
+							$errors['database-table-clash']  = array(
+								'msg' => 'Database table prefix clash with ‘' . $fields['database']['db'] . '’',
+								'details' =>  __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.', array('<code>' . $fields['database']['tbl_prefix'] . '</code>'))
+							);
+						}
 					}
 				}
 			}
@@ -553,17 +567,19 @@
 				// MySQL: Importing workspace data
 				Symphony::Log()->pushToLog('MYSQL: Importing Workspace Data...', E_NOTICE, true, true);
 
-				try{
-					Symphony::Database()->import(
-						file_get_contents(DOCROOT . '/workspace/install.sql'),
-						($fields['database']['use-server-encoding'] != 'yes' ? true : false),
-						true
-					);
-				}
-				catch(DatabaseException $e){
-					self::__abort(
-						'There was an error while trying to import data to the database. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
-					$start);
+				if(is_file(DOCROOT . '/workspace/install.sql')) {
+					try{
+						Symphony::Database()->import(
+							file_get_contents(DOCROOT . '/workspace/install.sql'),
+							($fields['database']['use-server-encoding'] != 'yes' ? true : false),
+							true
+						);
+					}
+					catch(DatabaseException $e){
+						self::__abort(
+							'There was an error while trying to import data to the database. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
+						$start);
+					}
 				}
 			}
 

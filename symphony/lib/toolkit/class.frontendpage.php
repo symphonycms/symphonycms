@@ -32,7 +32,7 @@
 
 		/**
 		 * The URL of the current page that is being Rendered as returned
-		 * by getCurrentPage
+		 * by `getCurrentPage`
 		 *
 		 * @var string
 		 * @see boot#getCurrentPage()
@@ -55,7 +55,7 @@
 		 * @since Symphony 2.2.1
 		 * @var boolean
 		 */
-		 private $is_logged_in = false;
+		private $is_logged_in = false;
 
 		/**
 		 * When events are processed, the results of them often can't be reproduced
@@ -124,6 +124,16 @@
 		 */
 		public function Page(){
 			return $this->_page;
+		}
+
+		/**
+		 * Accessor function for the current page params, `$this->_param`
+		 *
+		 * @since Symphony 2.3
+		 * @return array
+		 */
+		public function Params(){
+			return $this->_param;
 		}
 
 		/**
@@ -329,7 +339,7 @@
 				'current-page-id' => $page['id'],
 				'current-path' => $current_path,
 				'parent-path' => '/' . $page['path'],
-				'current-query-string' => $querystring,
+				'current-query-string' => utf8_encode(urldecode($querystring)),
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
@@ -351,9 +361,9 @@
 
 					// If the key gets replaced out then it will break the XML so prevent
 					// the parameter being set.
-					if(empty($key)) continue;
+					if(!General::createHandle($key)) continue;
 
-					$this->_param['url-' . $key] = $val;
+					$this->_param['url-' . $key] = utf8_encode(urldecode($val));
 				}
 			}
 
@@ -425,7 +435,21 @@
 
 			$params = new XMLElement('params');
 			foreach($this->_param as $key => $value) {
-				$param = new XMLElement(Lang::createHandle($key));
+				// To support multiple parameters using the 'datasource.field'
+				// we will pop off the field handle prior to sanitizing the
+				// key. This is because of a limitation where General::createHandle
+				// will strip '.' as it's technically punctuation.
+				if(strpos($key, '.') !== false) {
+					$parts = explode('.', $key);
+					$field_handle = '.' . array_pop($parts);
+					$key = implode('', $parts);
+				}
+				else {
+					$field_handle = '';
+				}
+
+				$key = Lang::createHandle($key) . $field_handle;
+				$param = new XMLElement($key);
 
 				// DS output params get flattened to a string, so get the original pre-flattened array
 				if (isset($this->_env['pool'][$key])) $value = $this->_env['pool'][$key];
@@ -445,7 +469,6 @@
 				}
 
 				$params->appendChild($param);
-
 			}
 			$xml->prependChild($params);
 
@@ -454,9 +477,9 @@
 			Symphony::Profiler()->sample('XML Generation', PROFILE_LAP);
 
 			$xsl = '<?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:import href="./workspace/pages/' . basename($page['filelocation']).'"/>
-</xsl:stylesheet>';
+			<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+				<xsl:import href="./workspace/pages/' . basename($page['filelocation']).'"/>
+			</xsl:stylesheet>';
 
 			$this->setXSL($xsl, false);
 			$this->setRuntimeParam($this->_param);
@@ -741,7 +764,7 @@
 			foreach ($datasources as $handle) {
 				Symphony::Profiler()->seed();
 
-				$pool[$handle] =& DatasourceManager::create($handle, NULL, false);
+				$pool[$handle] =& DatasourceManager::create($handle, array(), false);
 				$dependencies[$handle] = $pool[$handle]->getDependencies();
 			}
 

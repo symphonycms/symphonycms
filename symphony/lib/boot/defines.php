@@ -165,8 +165,17 @@
 	define_safe('TOOLKIT', LIBRARY . '/toolkit');
 
 	/**
+	 * The filesystem path to the `interface` folder which is contained within
+	 * the `symphony/lib` folder.
+	 * @since Symphony 2.3
+	 * @var string
+	 */
+	define_safe('FACE', LIBRARY . '/interface');
+
+	/**
 	 * The filesystem path to the `email-gateways` folder which is contained within
 	 * the `symphony/lib/toolkit` folder.
+	 * @since Symphony 2.2
 	 * @var string
 	 */
 	define_safe('EMAILGATEWAYS', TOOLKIT . '/email-gateways');
@@ -223,7 +232,7 @@
 	/**
 	 * Returns the URL + /symphony. This should be used whenever the a developer
 	 * wants to link to the Symphony root
-	 * @var string
 	 * @since Symphony 2.2
+	 * @var string
 	 */
 	define_safe('SYMPHONY_URL', URL . '/symphony');

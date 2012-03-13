@@ -32,19 +32,19 @@
 				handles:			'.header:first',
 				content:			'.content',
 				save_state:			true,
-				storage: 			'symphony.collapsible.' + $('body').attr('id') + (Symphony.Context.get('env')[1] ? '.' + Symphony.Context.get('env')[1] : '')
+				storage: 			'symphony.collapsible.' + $('body').attr('id') + (Symphony.Context.get('env') ? '.' + Symphony.Context.get('env')[1] : '')
 			};
-		
+
 		$.extend(settings, options);
 
 	/*-----------------------------------------------------------------------*/
-		
+
 		objects.each(function collapsible(index) {
 			var object = $(this),
 				storage = settings.storage + '.' + index + '.collapsed';
-			
+
 		/*-------------------------------------------------------------------*/
-			
+
 			// Collapse item
 			object.on('collapse.collapsible', settings.items, function collapse(event, speed) {
 				var item = $(this),
@@ -54,8 +54,8 @@
 				if(!$.isNumeric(speed)) {
 					speed = 'fast';
 				}
-				
-				// Collapse item				
+
+				// Collapse item
 				item.trigger('collapsestart.collapsible');
 				object.addClass('collapsing');
 				item.addClass('collapsing');
@@ -66,13 +66,13 @@
 					item.trigger('collapsestop.collapsible');
 				});
 			});
-									
+
 			// Expand item
 			object.on('expand.collapsible', settings.items, function expand(event) {
 				var item = $(this),
 					content = item.find(settings.content);
-				
-				// Collapse item				
+
+				// Collapse item
 				item.trigger('expandstart.collapsible');
 				object.addClass('expanding');
 				item.addClass('expanding');
@@ -88,35 +88,35 @@
 			object.on('click.collapsible', settings.handles, function toggle(event) {
 				var handle = $(this),
 					item = handle.parents(settings.items);
-					
+
 				// Expand
 				if(item.is('.collapsed')) {
 					item.trigger('expand.collapsible');
 				}
-				
+
 				// Collapse
 				else {
 					item.trigger('collapse.collapsible');
 				}
 			});
-			
+
 			// Toggle all
 			object.on('dblclick.collapsible', settings.handles, function toogleAll(event) {
 				var handle = $(this),
 					item = handle.parents(settings.items),
 					items = object.find(settings.items);
-				
+
 				// Expand all
 				if(item.is('.collapsed')) {
 					items.trigger('expand.collapsible');
 				}
-				
+
 				// Collaps all
 				else {
 					items.trigger('collapse.collapsible');
 				}
 			});
-			
+
 			// Save states
 			object.on('collapsestop.collapsible expandstop.collapsible store.collapsible', settings.items, function saveState(event) {
 				if(settings.save_state === true && Symphony.Support.localStorage === true) {
@@ -128,7 +128,7 @@
 					window.localStorage[storage] = collapsed.get().join(',');
 				}
 			});
-			
+
 			// Restore states
 			object.on('restore.collapsible', function restoreState(event) {
 				if(settings.save_state === true && Symphony.Support.localStorage === true && window.localStorage[storage]) {
@@ -140,23 +140,23 @@
 					});
 				}
 			});
-			
+
 			// Refresh state storage
 			object.on('orderstop.orderable', function refreshState(event) {
 				object.find(settings.items).trigger('store.collapsible');
 			});
-			
+
 		/*-------------------------------------------------------------------*/
 
 			// Prepare interface
 			object.addClass('collapsible');
-			
+
 			// Restore states
 			object.trigger('restore.collapsible');
 		});
 
 	/*-----------------------------------------------------------------------*/
-		
+
 		return objects;
 	};
 

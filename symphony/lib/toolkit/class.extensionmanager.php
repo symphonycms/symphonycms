@@ -10,7 +10,7 @@
 	 * as it's folder name (excluding the extension prefix).
 	 */
 
-	include_once(TOOLKIT . '/interface.fileresource.php');
+	include_once(FACE . '/interface.fileresource.php');
 	include_once(TOOLKIT . '/class.extension.php');
 
 	Class ExtensionManager implements FileResource {
@@ -41,6 +41,16 @@
 		 * @var array
 		 */
 		private static $_extensions = array();
+
+		/**
+		 * An associative array of all the providers from the enabled extensions.
+		 * The key is the type of object, with the value being an associative array
+		 * with the name, classname and path to the object
+		 *
+		 * @since Symphony 2.3
+		 * @var array
+		 */
+		private static $_providers = array();
 
 		/**
 		 * The constructor will populate the `$_subscriptions` variable from
@@ -155,7 +165,9 @@
 				else
 					$return[] = EXTENSION_DISABLED;
 			}
-			else $return[] = EXTENSION_NOT_INSTALLED;
+			else {
+				$return[] = EXTENSION_NOT_INSTALLED;
+			}
 
 			if(self::__requiresUpdate($about['handle'], $about['version'])) {
 				$return[] = EXTENSION_REQUIRES_UPDATE;
@@ -186,6 +198,40 @@
 		public static function fetchExtensionID($name){
 			self::__buildExtensionList();
 			return self::$_extensions[$name]['id'];
+		}
+
+		/**
+		 * Return an array all the Provider objects supplied by extensions,
+		 * optionally filtered by a given `$type`.
+		 *
+		 * @since Symphony 2.3
+		 * @todo Add information about the possible types
+		 * @param string $type
+		 *  This will only return Providers of this type. If null, which is
+		 *  default, all providers will be returned.
+		 * @return array
+		 *  An array of objects
+		 */
+		public static function getProvidersOf($type = null) {
+			// Loop over all extensions and build an array of providable objects
+			if(empty(self::$_providers)) {
+				self::$_providers = array();
+				foreach(self::listInstalledHandles() as $handle) {
+					$obj = self::getInstance($handle);
+
+					if(!method_exists($obj, 'providerOf')) continue;
+
+					// For each of the matching objects (by $type), resolve the object path
+					self::$_providers = array_merge(self::$_providers, $obj->providerOf());
+				}
+			}
+
+			// Return an array of objects
+			if(is_null($type)) return self::$_providers;
+
+			if(!isset(self::$_providers[$type])) return array();
+
+			return self::$_providers[$type];
 		}
 
 		/**
@@ -740,8 +786,17 @@
 					'status' => array()
 				);
 
+				// find the latest <release> (largest version number)
+				$latest_release_version = '0.0.0';
+				foreach($xpath->query('//ext:release', $extension) as $release) {
+					$version = $xpath->evaluate('string(@version)', $release);
+					if(version_compare($version, $latest_release_version, '>')) {
+						$latest_release_version = $version;
+					}
+				}
+
 				// Load the latest <release> information
-				if($release = $xpath->query('//ext:release[1]', $extension)->item(0)) {
+				if($release = $xpath->query("//ext:release[@version='$latest_release_version']", $extension)->item(0)) {
 					$about += array(
 						'version' => $xpath->evaluate('string(@version)', $release),
 						'release-date' => $xpath->evaluate('string(@date)', $release)
@@ -787,11 +842,16 @@
 			else {
 				$obj = self::getInstance($name);
 				$about = $obj->about();
+
+				// If this is empty then the extension has managed to not provide
+				// an `about()` function or an `extension.meta.xml` file. So
+				// ignore this extension even exists
+				if(empty($about)) return array();
+
 				$about['status'] = array();
 			}
 
 			$about['handle'] = $name;
-
 			$about['status'] = array_merge($about['status'], self::fetchStatus($about));
 
 			return $about;

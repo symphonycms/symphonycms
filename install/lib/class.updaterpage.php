@@ -27,13 +27,15 @@
 
 			// Add Release Notes for the latest migration
 			if(isset($this->_params['release-notes'])){
-				$h1 = end($this->Body->getChildrenByName('h1'));
-				$h1->appendChild(
-					new XMLElement(
-						'em',
-						Widget::Anchor(__('Release Notes'), $this->_params['release-notes'])
-					)
-				);
+				$h1 = end($this->Form->getChildrenByName('h1'));
+				if($h1 instanceof XMLElement) {
+					$h1->appendChild(
+						new XMLElement(
+							'em',
+							Widget::Anchor(__('Release Notes'), $this->_params['release-notes'])
+						)
+					);
+				}
 			}
 		}
 
@@ -51,6 +53,12 @@
 
 			$this->Form->appendChild($h2);
 			$this->Form->appendChild($p);
+
+			if(!is_writable(CONFIG)) {
+				$this->Form->appendChild(
+					new XMLElement('p', __('Please check that your configuration file is writable before proceeding'), array('class' => 'warning'))
+				);
+			}
 
 			if(!empty($this->_params['pre-notes'])){
 				$h2 = new XMLElement('h2', __('Pre-Installation Notes:'));
@@ -100,7 +108,7 @@
 
 			$this->Form->appendChild(
 				new XMLElement('p',
-					__('Congratulations rock star! You just updated %s to the latest and greatest Symphony!', array(Symphony::Configuration()->get('sitename', 'general')))
+					__('And the crowd goes wild! A victory dance is in order; and look, your mum is watching. She\'s proud.', array(Symphony::Configuration()->get('sitename', 'general')))
 				)
 			);
 			$this->Form->appendChild(
@@ -110,7 +118,7 @@
 			);
 
 			$submit = new XMLElement('div', null, array('class' => 'submit'));
-			$submit->appendChild(Widget::input('submit', __('Ok, now take me to the login page'), 'submit'));
+			$submit->appendChild(Widget::input('submit', __('Complete'), 'submit'));
 
 			$this->Form->appendChild($submit);
 

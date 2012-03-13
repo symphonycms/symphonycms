@@ -388,7 +388,7 @@
 		protected function _send($request){
 			$this->checkConnection();
 
-			$result = fwrite($this->_connection, $request . '\r\n');
+			$result = fwrite($this->_connection, $request . "\r\n");
 			if($result === false){
 				throw new SMTPException(__('Could not send request: %s', array($request)));
 			}

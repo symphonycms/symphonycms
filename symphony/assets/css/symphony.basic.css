@@ -1,0 +1,191 @@
+/*-----------------------------------------------------------------------------
+	Reset
+-----------------------------------------------------------------------------*/
+
+/* Based on Eric Meyer's reset
+ * http://meyerweb.com/eric/tools/css/reset/
+ * v1.0 | 20080212
+ */
+
+html, body, div, span, applet, object, iframe,
+header, nav, section, aside, footer,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 1em;
+	vertical-align: baseline;
+	background: transparent;
+	text-decoration: none;
+}
+input, select, textarea, button {
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+	vertical-align: baseline;
+}
+button::-moz-focus-inner {
+	border:0;
+	padding:0;
+}
+ol, ul {
+	list-style: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+header, nav, section, aside, footer {
+	display: block;
+}
+
+/*-----------------------------------------------------------------------------
+	Shared styles
+-----------------------------------------------------------------------------*/
+
+body {
+	font: 68.75%/1.5 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
+}
+a {
+	color: #3f69a5;
+	text-decoration: underline;
+	cursor: pointer;
+}
+a:hover {
+	color: #000;
+}
+a:active, a:focus {
+	color: #d42;
+}
+h1, h2 {
+	font: 127.28%/1.35 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
+}
+p {
+	margin-bottom: 15px;
+}
+ul, ol {
+	margin: 0 0 15px 25px;
+}
+code,
+.code {
+	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
+	-webkit-tab-size: 4;
+	-moz-tab-size: 4;
+	-ms-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+}
+pre {
+	margin-bottom: 15px;
+}
+pre code {
+	display: block;
+	white-space: pre;
+}
+i code {
+	font-size: 1em;
+	font-size-adjust: 0;
+}
+
+fieldset {
+	position: relative;
+	padding: 10px 0;
+}
+legend {
+	line-height: 1;
+}
+label {
+	display: block;
+	margin-bottom: 15px;
+}
+input[type=password],
+input[type=text],
+textarea,
+select[multiple] {
+	padding: 2px 3px;
+	border: 1px solid rgba(0, 0, 0, 0.25);
+	box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.05);
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	box-sizing: border-box;
+	border-radius: 2px;
+	margin-top: 2px;
+	width: 100%;
+	font-size: 109.09%;
+	font-family: inherit;
+}
+select[multiple] {
+	font-size: 1em;
+}
+input[type=text] {
+	height: 22px;
+}
+input[type=password]:active,
+input[type=password]:focus,
+input[type=text]:active,
+input[type=text]:focus,
+textarea:active,
+textarea:focus,
+select[multiple]:active,
+select[multiple]:focus {
+	outline: none;
+	border-color: rgba(0, 0, 0, 0.4);
+	box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+}
+select {
+	width: 100%;
+	display: block;
+	margin-top: 2px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	box-sizing: border-box;
+}
+select[multiple] {
+	width: 100%;
+	height: 10em;
+	padding: 0;
+}
+input[size],
+input[type=radio],
+input[type=checkbox] {
+	display: inline;
+	width: auto;
+	margin-right: 5px;
+}
+button,
+input[type=submit] {
+	font-family: 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
+}
+a,
+select,
+input[type="reset"], input[type=button], input[type=submit],
+textarea,
+option,
+fieldset/*,
+a:hover, a:focus, a:active,
+select:hover, select:focus, select:active,
+input:hover, input:focus, input:active,
+textarea:hover, textarea:focus, textarea:active,
+option:hover, option:focus, option:active,
+fieldset:hover, fieldset:focus, fieldset:active*/ {
+	outline: 0;
+}
+button::-moz-focus-inner,
+input[type="reset"]::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner,
+select::-moz-focus-inner,
+input[type="file"] > input[type="button"]::-moz-focus-inner {
+	border: none;
+}

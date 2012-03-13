@@ -153,7 +153,7 @@
 			$page = PageManager::fetchPageByType('404');
 
 			if(is_null($page['id'])){
-				parent::render(new SymphonyErrorPage($e->getMessage(), __('Page Not Found'), 'error', array('header' => 'HTTP/1.0 404 Not Found')));
+				parent::render(new SymphonyErrorPage($e->getMessage(), __('Page Not Found'), 'generic', array('header' => 'HTTP/1.0 404 Not Found')));
 			}
 			else{
 				$url = '/' . PageManager::resolvePagePath($page['id']) . '/';

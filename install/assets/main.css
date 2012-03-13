@@ -1,153 +1,47 @@
-/* Basic elements */
 body {
-	margin: 0 auto;
-	padding: 0 5em 5em 20em;
-	max-width: 32em;
+	padding: 80px 100px 50px 50px;
 	background: #fff;
 	color: #222;
 	font: 68.75%/1.5 "Lucida Grande", Verdana, sans-serif;
 	cursor: default;
 }
-a {
-	color: #57b;
-	text-decoration: underline;
-	cursor: pointer;
-}
-a:hover {
-	color: #222;
-}
-h2 {
-	padding: 82px 0 1.5em;
-	color: #887;
-	text-shadow: -1px 2px 3px #ddd;
-	font-weight: normal;
-	font-size: 1em;
-}
-strong {
-	text-shadow: -1px 2px 2px #ddd;
-}
-abbr {
-	border: none;
-}
-code {
-	font: 108% Monaco, monospace;
-}
-* {
-	margin: 0;
-	padding: 0;
+form {
+	margin: 0 auto;
+	position: relative;
+	width: 450px;
+	padding-left: 200px;
 }
 
-/* Forms */
-fieldset,
-div.warning {
-	margin-top: 82px;
-	padding-bottom: 1.5em;
-	border: none;
-}
-div.warning + fieldset {
-	margin-top: 1.75em;
-}
-legend {
-	padding-bottom: 1.25em;
-	color: #887;
-	text-shadow: -1px 2px 3px #ddd;
-}
-legend+label {
-	margin-top: -0.2em;
-}
-fieldset fieldset {
-	position: relative;
-	margin-top: 1.75em;
-	padding: 0 1.75em 1.5em;
-	background: #eed;
-}
-fieldset fieldset legend {
-	float: left;
-	width: 100%;
-	padding: 1.5em 0 1.25em;
-	background: #eed;
-	color: #776;
-	text-shadow: -1px 2px 3px #ccc;
-}
-label {
-	display: block;
-	margin-top: 1.5em;
-}
-label input, select {
-	position: relative;
-	display: block;
-	margin-top: 0.25em;
-	min-width: 100%;
-	max-width: 100%;
-}
-.group {
-	padding: 1.5em 0 0;
-}
-.group:after {
-	content: " ";
-	height: 1%;
-	display: block;
-	clear: both;
-}
-.group label {
-	margin: 0;
-	float: right;
-	width: 48%;
-}
-.group label:first-child {
-	float: left;
-}
-.option {
-	padding-left: 1.75em;
-}
-.option input {
-	margin-left: -1.75em;
-	float: left;
-	min-width: 0;
-}
-.option + p {
-	margin: 0.5em 0 0 1.9em;
-	color: #998;
-	font-size: 91%;
-}
-.submit {
-	margin: 1.5em 0 5em;
-	text-align: right;
-}
+/* Sidebar */
 
-/* Header */
 h1 {
 	position: fixed;
-	top: 80px;
-	right: 50%;
-	margin-right: 12em;
+	margin-left: -200px;
 	padding: 0 0 18px 0;
 	text-align: right;
-	text-shadow: -2px 2px 3px #ccc;
 	font-weight: normal;
 	font-size: 1.25em;
-	line-height: 18px;
+	width: 150px;
 }
 h1 em {
 	display: block;
 	margin-top: 0.5em;
-	color: #887;
+	color: rgba(0, 0, 0, 0.4);
 	text-align: right;
-	text-shadow: -1px 2px 3px #ddd;
 	font-style: normal;
 	font-size: 73.33%;
 }
 ul {
 	position: fixed;
-	top: 152px;
-	right: 50%;
-	margin: 0 16.7em 0 0;
-	color: #887;
+	color: rgba(0, 0, 0, 0.4);
 	text-align: right;
-	text-shadow: -1px 2px 3px #ddd;
 	font-style: normal;
 	list-style: none;
-	font-size: 90.9%;
+	margin: 55px 0 0 -200px;
+	padding: 0 0 18px 0;
+	text-align: right;
+	font-weight: normal;
+	width: 150px;
 }
 ul li.selected a {
 	color: #000;
@@ -158,7 +52,7 @@ ul li.more {
 }
 ul li.more a {
 	width: 150px;
-	color: #887;
+	color: rgba(0, 0, 0, 0.4);
 	display: block;
 	text-decoration: none;
 }
@@ -166,42 +60,83 @@ ul li.more a:hover {
 	text-decoration: underline;
 }
 
-/* Requirements */
-dt {
-	margin: 0 0 1.5em -12em;
+/* Multiple errors */
+.invalid ul {
+	position: static;
+	margin: 0 0 0 13px;
+	padding: 0;
+	width: auto;
+	text-align: left;
+}
+.invalid li {
+	color: rgba(255, 255, 255, 0.7);
+	list-style-type: square;
+}
+.invalid li + li {
+	margin-top: 10px;
+}
+
+/* Content */
+
+h2 {
+	margin-bottom: 10px;
+}
+fieldset + h2,
+p + h2 {
+	margin-top: 50px;
+}
+fieldset {
+	margin: 50px 0 0;
+	padding: 10px 0 0;
+}
+fieldset legend {
+	font-size: 127.28%;
+}
+fieldset > .columns:last-child .column {
+	margin-bottom: 0;
+}
+fieldset fieldset {
+	padding-top: 30px !important;
+	margin: 5px 0 0 !important;
+}
+fieldset label + fieldset {
+	margin-top: 20px !important;
+}
+fieldset fieldset legend {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	font-size: 1em;
+	color: rgba(0, 0, 0, 0.4);
+}
+.option {
+	margin: 0 0 0 20px;
+}
+.option input {
+	margin-left: -20px;
 	float: left;
-	clear: both;
-	width: 10em;
+	min-width: 0;
+}
+.option + p {
+	margin: 5px 30px 0 20px;
+	color: rgba(0, 0, 0, 0.4);
+}
+.submit {
 	text-align: right;
-	text-shadow: -1px 2px 2px #ddd;
-	font-weight: bold;
+}
+dt {
+	font-weight: normal;
+	color: rgba(0, 0, 0, 0.4);
+	margin-bottom: 5px;
 }
 dd {
-	margin-bottom: 1.5em;
-	color: #665;
+	margin-bottom: 15px;
+	font-weight: normal;
+	margin-left: 10px;
+	position: relative;
 }
-
-/* Messages */
-.note, .warning {
-	margin-top: 1.5em;
-	padding: 1em 1.25em;
-	color: #fff;
-}
-.note {
-	background: #57b;
-}
-.warning {
-	background: #d41;
-}
-p.warning {
-	margin-top: 0;
-	padding-top: 0;
-}
-
-/* Lists */
-ol{
-	margin-left: 1.5em;
-}
-ol li{
-	margin-bottom: 1em;
+dd:before {
+	content: "\00b7";
+	float: left;
+	margin: 0 0 0 -10px;
 }

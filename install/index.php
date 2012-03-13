@@ -57,7 +57,7 @@
 	if(isset($_GET['action']) && $_GET['action'] == 'remove') {
 		require_once(DOCROOT . '/symphony/lib/toolkit/class.general.php');
 		General::deleteDirectory(INSTALL);
-		redirect(URL . '/symphony/');
+		redirect(SYMPHONY_URL);
 	}
 
 	// If Symphony is already installed, run the updater

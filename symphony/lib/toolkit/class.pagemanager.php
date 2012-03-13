@@ -569,6 +569,8 @@
 						`tbl_pages_types` AS pt
 					WHERE
 						%s
+					GROUP BY
+						pt.type
 					ORDER BY
 						pt.type ASC
 				",
@@ -669,7 +671,7 @@
 		 *  True if the type is used, false otherwise
 		 */
 		public static function hasPageTypeBeenUsed($page_id = null, $type) {
-			return (boolean)Symphony::Database()->fetchRow('id', 0, sprintf("
+			return (boolean)Symphony::Database()->fetchRow(0, sprintf("
 					SELECT
 						pt.id
 					FROM

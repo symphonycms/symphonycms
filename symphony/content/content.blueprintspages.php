@@ -18,7 +18,7 @@
 		public $_errors = array();
 		protected $_hilights = array();
 
-		public function insertBreadcrumbs($page_id, $preserve_last = true) {
+		public function insertBreadcrumbsUsingPageIdentifier($page_id, $preserve_last = true) {
 			if($page_id == 0) {
 				return parent::insertBreadcrumbs(
 					array(Widget::Anchor(__('Pages'), SYMPHONY_URL . '/blueprints/pages/'))
@@ -94,14 +94,14 @@
 			));
 
 			if(isset($parent)) {
-				$this->insertBreadcrumbs($parent['id'], false);
+				$this->insertBreadcrumbsUsingPageIdentifier($parent['id'], false);
 			}
 
 			$aTableHead = array(
 				array(__('Title'), 'col'),
 				array(__('Template'), 'col'),
-				array('<acronym title="' . __('Universal Resource Locator') . '">' . __('URL') . '</acronym>', 'col'),
-				array('<acronym title="' . __('Universal Resource Locator') . '">' . __('URL') . '</acronym> ' . __('Parameters'), 'col'),
+				array('<abbr title="' . __('Universal Resource Locator') . '">' . __('URL') . '</abbr>', 'col'),
+				array('<abbr title="' . __('Universal Resource Locator') . '">' . __('URL') . '</abbr> ' . __('Parameters'), 'col'),
 				array(__('Type'), 'col')
 			);
 			$aTableBody = array();
@@ -209,6 +209,7 @@
 		public function __viewTemplate() {
 			$this->setPageType('form');
 			$this->Form->setAttribute('action', SYMPHONY_URL . '/blueprints/pages/template/' . $this->_context[1] . '/');
+			$this->Form->setAttribute('class', 'columns');
 
 			$filename = $this->_context[1] . '.xsl';
 			$file_abs = PAGES . '/' . $filename;
@@ -255,14 +256,14 @@
 			));
 
 			$this->appendSubheading(__($filename ? $filename : __('Untitled')), Widget::Anchor(__('Edit Page'), SYMPHONY_URL . '/blueprints/pages/edit/' . $pagedata['id'] . '/', __('Edit Page Configuration'), 'button', NULL, array('accesskey' => 't')));
-			$this->insertBreadcrumbs($pagedata['id']);
+			$this->insertBreadcrumbsUsingPageIdentifier($pagedata['id']);
 
 			if(!empty($_POST)) $fields = $_POST['fields'];
 
 			$fields['body'] = General::sanitize($fields['body']);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'primary');
+			$fieldset->setAttribute('class', 'primary column');
 
 			$label = Widget::Label(__('Body'));
 			$label->appendChild(Widget::Textarea(
@@ -273,7 +274,7 @@
 			));
 
 			if(isset($this->_errors['body'])) {
-				$label = Widget::wrapFormElementWithError($label, $this->_errors['body']);
+				$label = Widget::Error($label, $this->_errors['body']);
 			}
 
 			$fieldset->appendChild($label);
@@ -281,14 +282,18 @@
 
 			$utilities = General::listStructure(UTILITIES, array('xsl'), false, 'asc', UTILITIES);
 			$utilities = $utilities['filelist'];
-
+			
 			if(is_array($utilities) && !empty($utilities)) {
+				$this->Form->setAttribute('class', 'two columns');
+			
 				$div = new XMLElement('div');
-				$div->setAttribute('class', 'secondary');
+				$div->setAttribute('class', 'secondary column');
 
 				$p = new XMLElement('p', __('Utilities'));
 				$p->setAttribute('class', 'label');
 				$div->appendChild($p);
+
+				$frame = new XMLElement('div', null, array('class' => 'frame'));
 
 				$ul = new XMLElement('ul');
 				$ul->setAttribute('id', 'utilities');
@@ -302,7 +307,8 @@
 					$ul->appendChild($li);
 				}
 
-				$div->appendChild($ul);
+				$frame->appendChild($ul);
+				$div->appendChild($frame);
 				$this->Form->appendChild($div);
 			}
 
@@ -427,10 +433,10 @@
 			}
 
 			if(isset($this->_context[1])) {
-				$this->insertBreadcrumbs($this->_context[1], false);
+				$this->insertBreadcrumbsUsingPageIdentifier($this->_context[1], false);
 			}
 			else {
-				$this->insertBreadcrumbs((int)$_GET['parent'], true);
+				$this->insertBreadcrumbsUsingPageIdentifier((int)$_GET['parent'], true);
 			}
 
 		// Title --------------------------------------------------------------
@@ -445,7 +451,7 @@
 			));
 
 			if(isset($this->_errors['title'])) {
-				$label = Widget::wrapFormElementWithError($label, $this->_errors['title']);
+				$label = Widget::Error($label, $this->_errors['title']);
 			}
 
 			$fieldset->appendChild($label);
@@ -453,8 +459,9 @@
 		// Handle -------------------------------------------------------------
 
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
+			$group->setAttribute('class', 'two columns');
 			$column = new XMLElement('div');
+			$column->setAttribute('class', 'column');
 
 			$label = Widget::Label(__('URL Handle'));
 			$label->appendChild(Widget::Input(
@@ -462,7 +469,7 @@
 			));
 
 			if(isset($this->_errors['handle'])) {
-				$label = Widget::wrapFormElementWithError($label, $this->_errors['handle']);
+				$label = Widget::Error($label, $this->_errors['handle']);
 			}
 
 			$column->appendChild($label);
@@ -506,6 +513,8 @@
 		// Parameters ---------------------------------------------------------
 
 			$column = new XMLElement('div');
+			$column->setAttribute('class', 'column');
+
 			$label = Widget::Label(__('URL Parameters'));
 			$label->appendChild(Widget::Input(
 				'fields[params]', $fields['params'], 'text', array('placeholder' => 'param1/param2')
@@ -518,7 +527,7 @@
 			$label->appendChild(Widget::Input('fields[type]', $fields['type']));
 
 			if(isset($this->_errors['type'])) {
-				$label = Widget::wrapFormElementWithError($label, $this->_errors['type']);
+				$label = Widget::Error($label, $this->_errors['type']);
 			}
 
 			$column->appendChild($label);
@@ -543,9 +552,10 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Page Resources')));
 
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
+			$group->setAttribute('class', 'two columns');
 
 			$label = Widget::Label(__('Events'));
+			$label->setAttribute('class', 'column');
 
 			$events = ResourceManager::fetch(RESOURCE_TYPE_EVENT, array(), array(), 'name ASC');
 			$options = array();
@@ -563,6 +573,7 @@
 		// Data Sources -------------------------------------------------------
 
 			$label = Widget::Label(__('Data Sources'));
+			$label->setAttribute('class', 'column');
 
 			$datasources = ResourceManager::fetch(RESOURCE_TYPE_DS, array(), array(), 'name ASC');
 			$options = array();
@@ -764,20 +775,6 @@
 
 					$autogenerated_handle = false;
 
-					if(empty($current)) {
-						$fields['sortorder'] = Symphony::Database()->fetchVar('next', 0, "
-							SELECT
-								MAX(p.sortorder) + 1 AS `next`
-							FROM
-								`tbl_pages` AS p
-							LIMIT 1
-						");
-
-						if(empty($fields['sortorder']) || !is_numeric($fields['sortorder'])) {
-							$fields['sortorder'] = 1;
-						}
-					}
-
 					if($fields['params']) {
 						$fields['params'] = trim(preg_replace('@\/{2,}@', '/', $fields['params']), '/');
 					}
@@ -798,6 +795,21 @@
 
 					// Check for duplicates:
 					$current = PageManager::fetchPageByID($page_id);
+
+					if(empty($current)) {
+						$fields['sortorder'] = Symphony::Database()->fetchVar('next', 0, "
+							SELECT
+								MAX(p.sortorder) + 1 AS `next`
+							FROM
+								`tbl_pages` AS p
+							LIMIT 1
+						");
+
+						if(empty($fields['sortorder']) || !is_numeric($fields['sortorder'])) {
+							$fields['sortorder'] = 1;
+						}
+					}
+
 					$where = array();
 
 					if(!empty($current)) {

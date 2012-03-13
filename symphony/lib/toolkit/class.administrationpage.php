@@ -79,8 +79,8 @@
 		 *  An associative array describing this pages context. This
 		 *  can include the section handle, the current entry_id, the page
 		 *  name and any flags such as 'saved' or 'created'. This variable
-		 * often provided in delegates so extensions can manipulate based
-		 * off the current context or add new keys.
+		 *  often provided in delegates so extensions can manipulate based
+		 *  off the current context or add new keys.
 		 * @var array
 		 */
 		public $_context = null;
@@ -94,7 +94,7 @@
 
 		/**
 		 * Constructor calls the parent constructor to set up
-		 * the basic HTML, Head and Body `XMLElement`'ss. This function
+		 * the basic HTML, Head and Body `XMLElement`'s. This function
 		 * also sets the `XMLElement` element style to be HTML, instead of XML
 		 */
 		public function __construct(){
@@ -104,12 +104,15 @@
 		}
 
 		/**
-		 * Adds either the tables or forms stylesheet to the page. By default
-		 * this is forms, but can be override by passing 'table' to the function.
-		 * The stylesheets reside in the `ASSETS` folder
+		 * Specifies the type of page that being created. This is used to
+		 * trigger various styling hooks. If your page is mainly a form,
+		 * pass 'form' as the parameter, if it's displaying a single entry,
+		 * pass 'single'. If any other parameter is passed, the 'index'
+		 * styling will be applied.
 		 *
 		 * @param string $type
-		 *  Either 'form' or 'table'. Defaults to 'form'
+		 *  Accepts 'form' or 'single', any other `$type` will trigger 'index'
+		 *  styling.
 		 */
 		public function setPageType($type = 'form'){
 			$this->setBodyClass($type == 'form' || $type == 'single' ? 'single' : 'index');
@@ -129,6 +132,19 @@
 			if (!isset($this->_context['page']) || $this->_context['page'] != 'index' || $class != 'index') {
 				$this->_body_class .= $class;
 			}
+		}
+
+		/**
+		 * Accessor for `$this->_context` which includes contextual information
+		 * about the current page such as the class, file location or page root.
+		 * This information varies depending on if the page is provided by an
+		 * extension, is for the publish area, is the login page or any other page
+		 *
+		 * @since Symphony 2.3
+		 * @return array
+		 */
+		public function getContext() {
+			return $this->_context;
 		}
 
 		/**
@@ -153,7 +169,7 @@
 
 			$message = __($message);
 
-			if(strlen(trim($message)) == 0) throw new Exception('A message must be supplied unless flagged as Alert::ERROR');
+			if(strlen(trim($message)) == 0) throw new Exception('A message must be supplied unless the alert is of type Alert::ERROR');
 
 			$this->Alert[] = new Alert($message, $type);
 		}
@@ -250,23 +266,25 @@
 			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 0);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge,chrome=1')), 1);
 
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/legacy.css', 'screen', 40);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 41);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/admin.css', 'screen', 42);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.duplicator.css', 'screen', 43);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.legacy.css', 'screen', 40);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.basic.css', 'screen', 41);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.grids.css', 'screen', 42);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.frames.css', 'screen', 43);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.buttons.css', 'screen', 44);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/admin.css', 'screen', 45);
 
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.js', 50);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.color.js', 51);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.js', 60);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.collapsible.js', 61);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.orderable.js', 62);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.selectable.js', 63);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.duplicator.js', 64);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.tags.js', 65);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.pickable.js', 66);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.timeago.js', 67);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.notify.js', 68);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/admin.js', 70);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/jquery.js', 50);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/jquery.color.js', 51);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.js', 60);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.collapsible.js', 61);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.orderable.js', 62);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.selectable.js', 63);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.duplicator.js', 64);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.tags.js', 65);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.pickable.js', 66);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.timeago.js', 67);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.notify.js', 68);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/admin.js', 70);
 
 			$this->addElementToHead(
 				new XMLElement(
@@ -485,7 +503,7 @@
 				Administration::instance()->errorPageNotFound();
 			}
 
-			$this->$function();
+			$this->$function(null);
 		}
 
 		/**

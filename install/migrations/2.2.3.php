@@ -32,7 +32,12 @@
 
 		static function upgrade(){
 			Symphony::Configuration()->set('version', '2.2.3', 'symphony');
-			return Symphony::Configuration()->write();
+			if(Symphony::Configuration()->write() === false) {
+				throw new Exception('Failed to write configuration file, please check the file permissions.');
+			}
+			else {
+				return true;
+			}
 		}
 
 	}
