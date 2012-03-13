@@ -154,6 +154,11 @@
 
 					$canProceed = $m::run('upgrade', Symphony::Configuration()->get('version', 'symphony'));
 
+					Symphony::Log()->pushToLog(
+						sprintf('Updater - Migration to %s was %s', $version, $canProceed ? 'successful' : 'unsuccessful'),
+						E_NOTICE, true
+					);
+
 					if(!$canProceed) break;
 				}
 
