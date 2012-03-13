@@ -673,6 +673,7 @@
 			$contents = new XMLElement('div', $content, array(
 				'class' => 'contents'
 			));
+			$contents->setElementStyle('html');
 
 			$drawer = new XMLElement('div', $contents, $attributes);
 			$drawer->setAttribute('data-open', ($open === true) ? 'true' : 'false');
