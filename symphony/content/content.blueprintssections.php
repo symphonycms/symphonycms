@@ -151,7 +151,7 @@
 
 			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
-			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Created if does not exist') . '</i>');
+			$label = Widget::Label(__('Navigation Group'));
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
 			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::Error($label, $this->_errors['navigation_group']));
@@ -367,7 +367,7 @@
 
 			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
-			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Choose only one. Created if does not exist') . '</i>');
+			$label = Widget::Label(__('Navigation Group'));
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
 			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::Error($label, $this->_errors['navigation_group']));
