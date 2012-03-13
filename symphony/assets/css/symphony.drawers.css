@@ -11,7 +11,7 @@
 	Horizontal drawers
 -----------------------------------------------------------------------------*/
 
-div.drawer {
+#context div.drawer {
 	margin-top: 35px;
 	width: 100%;
 	clear: both;
