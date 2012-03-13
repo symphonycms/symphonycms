@@ -14,12 +14,11 @@
 	Class XMLElement {
 
 		/**
-		 * This is an array of all HTML elements that are self closing.
+		 * This is an array of HTML elements that are self closing.
 		 * @var array
 		 */
 		protected static $no_end_tags = array(
-			'area', 'base', 'basefont', 'br', 'col', 'frame', 'hr', 'img',
-			'input', 'isindex', 'link', 'meta', 'param'
+			'area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param'
 		);
 
 		/**
