@@ -1,6 +1,6 @@
 /**
- * This file bundles basic style definitions shared across the different areas 
- * of Symphony. They are used by the installer, the front-end error messages and 
+ * This file bundles basic style definitions shared across the different areas
+ * of Symphony. They are used by the installer, the front-end error messages and
  * notifications and by the backend itself.
  */
 
@@ -60,7 +60,7 @@ body {
 
 /* Headlines */
 
-h1, 
+h1,
 h2 {
 	font: 127.28%/1.35 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 }
@@ -108,8 +108,8 @@ ul.tags {
 	list-style: none;
 }
 
-ul.tags li, 
-ul.tags li:first-of-type, 
+ul.tags li,
+ul.tags li:first-of-type,
 ul.tags li:last-of-type {
 	display: inline;
 	padding: 0 6px 0 0;
@@ -213,7 +213,7 @@ label > i {
 	display: none !important;
 }
 
-.selected, .selected a, 
+.selected, .selected a,
 .selected .inactive {
 	color: #fff;
 }

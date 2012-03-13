@@ -1,8 +1,8 @@
 /**
  * This file contains unified styles for inputs, text areas, multiple selects
- * and buttons that are shared across the system. It does not contain general 
+ * and buttons that are shared across the system. It does not contain general
  * label and fieldset definitions that differ in the different areas of Symphony.
- * 
+ *
  * @since Symphony 2.3
  */
 
@@ -29,12 +29,15 @@ select[multiple] {
 	font-size: 109.09%;
 	font-family: inherit;
 }
+
 select[multiple] {
 	font-size: 1em;
 }
+
 input[type=text] {
 	height: 22px;
 }
+
 input[type=password]:active,
 input[type=password]:focus,
 input[type=text]:active,
@@ -47,6 +50,7 @@ select[multiple]:focus {
 	border-color: rgba(0, 0, 0, 0.4);
 	box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
 }
+
 select {
 	width: 100%;
 	display: block;
@@ -109,7 +113,7 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
 .invalid input[type=text]:active,
 .invalid input[type=text]:focus,
 .invalid textarea:active,
-.inavlid textarea:focus {
+.invalid textarea:focus {
 	border-color: #9d270d;
 	box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
 }

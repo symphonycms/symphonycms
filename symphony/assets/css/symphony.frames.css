@@ -1,9 +1,9 @@
 /**
  * Frames are used in different areas of the system to group content,
- * e. g. in the section or data source editor. 
+ * e. g. in the section or data source editor.
  *
  * @since: Symphony 2.3
- */ 
+ */
 
 .frame {
 	margin: 0;
@@ -183,7 +183,7 @@ span.frame {
 	Framed lists (e. g. Duplicators)
 --------------------------------------------------------------------------*/
 
-.frame > ol, 
+.frame > ol,
 .frame > ul {
 	margin: 0;
 	padding: 0;
@@ -403,9 +403,9 @@ span.frame {
 
 /* Selecting & ordering */
 
-.frame > ol > li.selected, 
+.frame > ol > li.selected,
 .frame > ol > li.ordering,
-.frame > ul > li.selected, 
+.frame > ul > li.selected,
 .frame > ul > li.ordering {
 	background-color: #668abe;
 	background-image: -webkit-linear-gradient(top, #668abe, #5c83ba);
