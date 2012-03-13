@@ -609,6 +609,7 @@
 			$wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
 
 			$label = Widget::Label();
+			$label->setAttribute('class', 'column');
 			$input = Widget::Input($name, 'yes', 'checkbox');
 
 			if ($this->get('required') == 'yes') $input->setAttribute('checked', 'checked');
@@ -634,7 +635,7 @@
 			$wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
 
 			$label = Widget::Label();
-			$label->setAttribute('class', 'meta');
+			$label->setAttribute('class', 'column meta');
 			$input = Widget::Input($name, 'yes', 'checkbox');
 
 			if ($this->get('show_column') == 'yes') $input->setAttribute('checked', 'checked');
@@ -664,7 +665,7 @@
 			$wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
 
 			$label = Widget::Label();
-			$label->setAttribute('class', 'meta');
+			$label->setAttribute('class', 'column meta');
 			$input = Widget::Input($name, 'yes', 'checkbox');
 
 			if ($this->get('show_association') == 'yes') $input->setAttribute('checked', 'checked');
