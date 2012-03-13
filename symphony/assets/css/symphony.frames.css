@@ -1,5 +1,7 @@
 /**
- * @todo: Add description
+ * Frames are used in different areas of the system to group content,
+ * e. g. in the section or data source editor. 
+ *
  * @since: Symphony 2.3
  */ 
 
@@ -9,6 +11,7 @@
 	list-style: none;
 	overflow: hidden;
 }
+
 .frame:after {
 	content: "";
 	clear: both;
@@ -22,6 +25,7 @@
 	border-radius: 4px 4px 0 0;
 	line-height: 1.5;
 }
+
 .frame h1 em {
 	color: rgba(255, 255, 255, 0.6);
 	font-style: normal;
@@ -43,6 +47,7 @@ fieldset.frame {
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
+
 span.frame {
 	text-align: center;
 }
@@ -64,9 +69,11 @@ span.frame {
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
+
 #login .frame fieldset {
 	padding: 0;
 }
+
 #login .frame legend {
 	display: none;
 }
@@ -80,6 +87,7 @@ span.frame {
 #fatalerror {
 	padding: 100px 50px;
 }
+
 #error .frame,
 #fatalerror .frame {
 	display: block;
@@ -88,12 +96,14 @@ span.frame {
 	margin: 0 auto;
 	overflow: visible;
 }
+
 #error .frame:after,
 #fatalerror .frame:after {
 	content: "";
 	display: block;
 	clear: both;
 }
+
 #error .frame {
 	border: 1px solid rgba(0, 0, 0, 0.2);
 	background-color: #f5f5f3;
@@ -104,12 +114,15 @@ span.frame {
 	box-sizing: border-box;
 	padding: 10px;
 }
+
 #fatalerror .frame {
 	padding: 10px 0;
 }
+
 #fatalerror .frame pre {
 	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
 }
+
 #fatalerror .frame pre,
 #fatalerror .frame ul ul {
 	background: #fefefe;
@@ -117,18 +130,22 @@ span.frame {
 	margin: 0 -10px;
 	overflow: auto;
 }
+
 #fatalerror .frame ul ul li {
 	border-top: 1px solid rgba(0, 0, 0, 0.05);
 	line-height: 1.8;
 	padding: 0 10px;
 	white-space: nowrap;
 }
+
 #fatalerror .frame ul ul li.full {
 	white-space: normal;
 }
+
 #fatalerror .frame ul ul:first-child li:first-child {
 	border-top: none;
 }
+
 #fatalerror .frame .error {
 	background-color: #fff9a2;
 	color: #bd7053;
@@ -141,19 +158,23 @@ span.frame {
 	margin: -2px 0 -1px;
 	padding: 2px 0 1px;
 }
+
 #fatalerror .frame code a {
 	margin: 0;
 }
+
 #fatalerror .frame ul ul li strong,
 #fatalerror .frame ul ul li em {
 	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
 	color: rgba(0, 0, 0, 0.5);
 	font-style: normal;
 }
+
 #fatalerror .frame .content {
 	background: #fefefe;
 	padding-bottom: 0;
 }
+
 #fatalerror .frame .content:last-of-type ul {
 	border-radius: 0 0 4px 4px;
 }
@@ -176,6 +197,7 @@ span.frame {
 	box-sizing: border-box;
 	border: none;
 }
+
 .frame.empty > ol,
 .frame.empty > ul {
 	border: 1px dashed rgba(0, 0, 0, 0.2);
@@ -194,12 +216,14 @@ span.frame {
 	border-bottom: none;
 	min-height: 31px;
 }
+
 .frame > ol > li:first-of-type,
 .frame > ul > li:first-of-type {
 	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
 	border-top: 1px solid rgba(0, 0, 0, 0.2);
 }
+
 .frame > ol > li:last-of-type,
 .frame > ul > li:last-of-type {
 	border-bottom-left-radius: 4px;
@@ -223,7 +247,6 @@ span.frame {
 	color: rgba(0, 0, 0, 0.75);
 	margin: 0 -10px;
 	padding: 8px 10px 7px;
-	cursor: pointer;
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 	-webkit-transition: background 0.2s ease-in;
@@ -232,33 +255,49 @@ span.frame {
 	-o-transition: background 0.2s ease-in;
 	transition: background 0.2s ease-in;
 }
+
+.frame.orderable > ol > li header,
+.frame.orderable > ul > li header {
+	cursor: move;
+}
+
+.frame.collapsible > ol > li header,
+.frame.collapsible > ul > li header {
+	cursor: pointer;
+}
+
 .frame.collapsible > ol > li header,
 .frame.collapsible > ul > li header {
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
+
 .frame > ol > li.collapsed header,
 .frame > ul > li.collapsed header {
 	box-shadow: none;
 	border-bottom-color: transparent;
 }
+
 .frame > ol > li.expanding header,
 .frame > ul > li.expanding header {
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
 	border-bottom: 1px solid rgba(255, 255, 255, 0.75);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
+
 .frame > ol > li header h4,
 .frame > ul > li header h4 {
 	display: inline;
 	font-weight: bold;
 }
+
 .frame > ol > li header span,
 .frame > ul > li header span {
 	margin: 0 0 0 10px;
 	font-weight: normal;
 	color: rgba(0, 0, 0, 0.5);
 }
+
 .frame > ol > li header.main:before,
 .frame > ol > li header.sidebar:before,
 .frame > ul > li header.main:before,
@@ -272,16 +311,19 @@ span.frame {
 	border-left: 6px solid rgba(0, 0, 0, 0.25);
 	border-right: 3px solid rgba(0, 0, 0, 0.1);
 }
+
 .frame > ol > li header.sidebar:before,
 .frame > ul > li header.sidebar:before {
 	border-left: 6px solid rgba(0, 0, 0, 0.1);
 	border-right: 3px solid rgba(0, 0, 0, 0.25);
 }
+
 .frame > ol > li.highlight header:before,
 .frame > ul > li.highlight header:before {
 	border-left: 6px solid rgba(0, 0, 0, 0.5);
 	border-right: 3px solid rgba(0, 0, 0, 0.2);
 }
+
 .frame > ol > li.highlight header.sidebar:before,
 .frame > ul > li.highlight header.sidebar:before {
 	border-left: 6px solid rgba(0, 0, 0, 0.2);
@@ -299,6 +341,7 @@ span.frame {
 	-o-transition: background 0.2s ease-in;
 	transition: background 0.2s ease-in;
 }
+
 .frame > ol > li.conflict.ordering header,
 .frame > ul > li.conflict.ordering header {
 	background: none;
@@ -310,19 +353,23 @@ span.frame {
 .frame > ul > li > div:first-of-type {
 	padding-top: 10px;
 }
+
 .frame > ol > li .content,
 .frame > ul > li .content {
 	padding: 0 10px 10px;
 	margin: 0 -10px;
 }
+
 .frame > ol > li:last-of-type .content,
 .frame > ul > li:last-of-type .content {
 	border-radius: 0 0 4px 4px;
 }
+
 .frame.collapsible > ol > li .content,
 .frame.collapsible > ul > li .content {
 	background: #e8e8e8;
 }
+
 .frame.collapsible > ol > li legend,
 .frame.collapsible > ul > li legend {
 	background: #e8e8e8;
@@ -336,16 +383,19 @@ span.frame {
 	margin: 0 -11px;
 	padding: 10px 11px;
 }
+
 .frame.dark > ol > li legend,
 .frame.dark > ul > li legend {
 	background: #383838;
 }
+
 .frame.dark > ol > li .content i,
 .frame.dark > ol > li ul.tags,
 .frame.dark > ul > li .content i,
 .frame.dark > ul > li ul.tags {
 	color: rgba(255, 255, 255, 0.3);
 }
+
 .frame.dark > ol > li .content fieldset,
 .frame.dark > ul > li .content fieldset {
 	border-top-color: rgba(255, 255, 255, 0.1);
@@ -367,29 +417,35 @@ span.frame {
 	border-bottom: 1px solid #4D78B4;
 	text-shadow: 1px 1px rgba(0, 0, 0, 0.2);
 }
+
 .frame > ol > li.ordering,
 .frame > ul > li.ordering {
 	margin-bottom: -1px;
 }
+
 .frame > ol > li.selected + li.selected,
 .frame > ul > li.selected + li.selected {
 	border-top: none;
 	padding-top: 1px;
 }
+
 .frame > ol > li.ordering + li,
 .frame > ul > li.ordering + li {
 	border-top: 1px solid #4D78B4;
 }
+
 .frame > ol > li.ordering:last-of-type,
 .frame > ul > li.ordering:last-of-type {
 	margin-bottom: 0;
 }
+
 .frame > ol > li.ordering header,
 .frame > ul > li.ordering header {
 	color: #fff;
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
 	cursor: move;
 }
+
 .frame > ol > li.ordering header span,
 .frame > ol > li.ordering header .destructor,
 .frame > ol > li.ordering .content i,
@@ -400,6 +456,7 @@ span.frame {
 .frame > ul > li.ordering ul.tags {
 	color: rgba(255, 255, 255, 0.6);
 }
+
 .frame > ol > li.ordering .content,
 .frame > ol > li.ordering .content legend,
 .frame > ul > li.ordering .content,
@@ -407,25 +464,30 @@ span.frame {
 	background: #668abe;
 	color: #fff;
 }
+
 .frame > ol > li.ordering .content input,
 .frame > ol > li.ordering .content textarea,
 .frame > ul > li.ordering .content input,
 .frame > ul > li.ordering .content textarea {
 	box-shadow: 0 0 0 1px #4D78B4;
 }
+
 .frame > ol > li.ordering .content fieldset,
 .frame > ul > li.ordering .content fieldset {
 	border-top-color: rgba(255, 255, 255, 0.2);
 }
+
 .frame > ol > li.highlight,
 .frame > ul > li.highlight {
 	background: #e8e8e8;
 }
+
 .frame > ol > li.ordering header:befor,
 .frame > ul > li.ordering header:before {
 	border-left: 6px solid rgba(255, 255, 255, 0.7);
 	border-right: 3px solid rgba(255, 255, 255, 0.2);
 }
+
 .frame > ol > li.ordering header.sidebar:before,
 .frame > ul > li.ordering header.sidebar:before {
 	border-left: 6px solid rgba(255, 255, 255, 0.2);
@@ -446,12 +508,14 @@ span.frame {
 	font-weight: normal;
 	margin: 0;
 }
+
 .frame > ol > li header .destructor:hover,
 .frame > ul > li header .destructor:hover,
 .frame > ol > li header .button:hover,
 .frame > ul > li header .button:hover {
 	color: rgba(0, 0, 0, 0.7);
 }
+
 .frame > ol > li header .destructor.disabled,
 .frame > ul > li header .destructor.disabled,
 .frame > ol > li header .button.disabled,
@@ -479,6 +543,7 @@ span.frame {
 	position: relative;
 	border-color: rgba(0, 0, 0, 0.25);
 }
+
 .frame .apply:hover {
 	border-color: rgba(0, 0, 0, 0.4);
 }
@@ -487,13 +552,13 @@ span.frame {
 	margin: 0 0 7px;
 	height: 20px;
 }
+
 .frame .actions button {
 	float: right;
 }
 
-
 /*-----------------------------------------------------------------------------
-	Globals - Errors
+	Invalid states
 -----------------------------------------------------------------------------*/
 
 .invalid {
@@ -511,20 +576,25 @@ span.frame {
 	border-radius: 4px;
 	box-shadow: 0 1px 2px rgba(204, 51, 17, 0.3);
 }
+
 .invalid > p {
 	clear: both;
 	margin: 0;
 }
+
 .invalid > p,
 .invalid a {
 	color: rgba(255, 255, 255, 0.7);
 }
+
 .invalid a:hover {
 	color: #fff;
 }
+
 .invalid label {
 	margin-bottom: 10px;
 }
+
 .invalid i {
 	color: rgba(255, 255, 255, 0.5);
 }

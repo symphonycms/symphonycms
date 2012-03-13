@@ -5,7 +5,7 @@
 
 
 /*--------------------------------------------------------------------------
-	Deprecated - To be removed in Symphony 2.4
+	Deprecated - to be removed in Symphony 2.4
 --------------------------------------------------------------------------*/
 
 /* Group: Please use the use .columns rules */
@@ -15,12 +15,14 @@
 	margin: 0;
 	padding: 0;
 }
+
 .group:after {
 	content: "";
 	display: block;
 	clear: left;
 	height: 0;
 }
+
 .group > * {
 	float: left;
 	width: 50%;
@@ -29,9 +31,11 @@
 	box-sizing: border-box;
 	padding: 0 0 0 5px;
 }
+
 .group.offset > *:first-child {
 	width: 75%;
 }
+
 .group.offset > *:last-child {
 	width: 25%;
 }
@@ -39,6 +43,7 @@
 .group > *:first-child {
 	padding: 0 5px 0 0;
 }
+
 .group label > i,
 .secondary label > i {
 	max-width: 45%;
@@ -48,9 +53,11 @@
 	text-overflow: ellipsis;
 	float: right;
 }
+
 .group > label:first-child > i {
 	padding: 0 9px 0 0;
 }
+
 .group label > i:hover,
 .secondary label > i:hover {
 	white-space:normal;
@@ -71,15 +78,18 @@ div.compact:after {
 	clear: left;
 	height: 0;
 }
+
 div.compact label {
 	float: left;
 	width: 50%;
 	min-width: 250px;
 	margin-right: 1.5em;
 }
+
 div.compact label:nth-of-type(even) {
 	max-width: 45%;
 }
+
 div.compact label i {
 	max-width: 100%;
 	height: auto;
@@ -93,7 +103,7 @@ div.compact label i {
 }
 
 /*--------------------------------------------------------------------------
-	Deprecated - To be removed in Symphony 2.5
+	Deprecated - to be removed in Symphony 2.5
 --------------------------------------------------------------------------*/
 
 /* None */

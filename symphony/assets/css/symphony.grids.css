@@ -1,17 +1,25 @@
 /**
- * @todo: Add description
+ * Grids and columns
+ *
  * @since: Symphony 2.3
  */ 
+
+
+/*-----------------------------------------------------------------------------
+	General column definitions
+-----------------------------------------------------------------------------*/
 
 .columns {
 	margin-left: -15px;
 	clear: both;
 }
+
 .columns:after {
 	content: "";
 	clear: both;
 	display: block;
 }
+
 .columns .column,
 .columns > .invalid {
 	-webkit-box-sizing: border-box;
@@ -29,14 +37,17 @@
 .two.columns > .invalid {
 	width: 50%;
 }
+
 .three.columns .column,
 .three.columns > .invalid {
 	width: 33.33%;
 }
+
 .four.columns .column,
 .four.columns > .invalid {
 	width: 25%;
 }
+
 .columns legend {
 	margin: 0 0 0 -15px !important;
 	padding: 0 5px 0 15px !important;
@@ -48,14 +59,17 @@ form.columns {
 	margin: 0;
 	padding: 10px 18px 0;
 }
+
 form.columns .column.primary {
 	padding: 0;
 	width: 100%;
 }
+
 .two.columns .column.primary {
 	margin: 0;
 	width: 65%;
 }
+
 .two.columns .column.secondary {
 	margin: 0;
 	width: 35%;
@@ -67,10 +81,12 @@ form.columns .column.primary {
 	.two.columns .column.secondary {
 		width: 100%;
 	}
+	
 	.two.columns .column.secondary {
 		padding: 0;
 		border-top: 1px solid rgba(0, 0, 0, 0.1);
 	}
+	
 	.two.columns .column.secondary p.label {
 		margin-top: 10px;
 	}
@@ -85,6 +101,7 @@ form.columns .column.primary {
 	border-radius: 0;
 	box-shadow: none;
 }
+
 .columns > .invalid .column {
 	background-color: #eb6347;
 	border: 1px solid #c31;
@@ -95,6 +112,7 @@ form.columns .column.primary {
 	float: none;
 	margin: 0;
 }
+
 .columns > .invalid > p {
 	background-color: #eb6347;
 	border: 1px solid #c31;
@@ -104,8 +122,10 @@ form.columns .column.primary {
 	padding: 0 10px 10px;
 }
 
-/* Specials */
+/*-----------------------------------------------------------------------------
+	Special definition
+-----------------------------------------------------------------------------*/
 
-.columns .column.justified input[type=checkbox] {
-	margin-top: 23px;
+.columns .column.justified {
+	padding-top: 21px;
 }

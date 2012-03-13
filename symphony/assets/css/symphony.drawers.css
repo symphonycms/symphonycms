@@ -1,0 +1,26 @@
+/**
+ * Drawers are areas in the backend that contain additional information 
+ * like settings or documentation. They are hidden by default and can be 
+ * expanded on click.
+ *
+ * @since Symphony 2.3
+ */
+
+
+/*-----------------------------------------------------------------------------
+	Horizontal drawers
+-----------------------------------------------------------------------------*/
+
+div.drawer {
+    margin-top: 35px;
+    width: 100%;
+    clear: both;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/*-----------------------------------------------------------------------------
+	Vertical drawers
+-----------------------------------------------------------------------------*/
+
+/* None yet */

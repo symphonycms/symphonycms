@@ -1,0 +1,68 @@
+/**
+ * Tabs used to toggle content areas.
+ *
+ * @since Symphony 2.3
+ */
+
+
+.tabs {
+	list-style-type: none;
+	padding: 15px 0 0 0;
+	margin: 0 0 -20px -11px;
+	width: 100%;
+	clear: both;
+	position: relative;
+}
+
+.tabs li {
+	list-style-type: none;
+	display: inline-block;
+	padding: 5px 10px 2px;
+	margin: 0 5px 0 0;
+	cursor: pointer;
+	background: rgba(0, 0, 0, 0.03);
+	-moz-border-radius: 5px 5px 0 0;
+	-webkit-border-radius: 5px 5px 0 0;
+	border-radius: 5px 5px 0 0;
+	border: 1px solid #ddd;
+	color: #666;
+	position: relative;
+	top: 1px;
+}
+
+.tabs li:hover {
+	background: rgba(255, 255, 255, 0.4);
+}
+
+.tabs li.selected {
+	background-color: #fff;
+	border-bottom: 1px solid #fff;
+}
+
+.tabs li.invalid {
+	background: #eb6347;
+	border: 1px solid #c31;
+	color: #fff;
+}
+
+.tabs li.invalid span {
+	background-color: #aaa;
+	color: #fff;
+	display: inline-block;
+	font-weight: bold;
+	font-family: "Times New Roman", Times, serif;
+	font-size: 11px;
+	padding: 1px 5px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px 8px;
+	border-radius: 8px 8px;
+	line-height: 1;
+	margin: 0 -5px 0 5px;
+	position: relative;
+	top: -1px;
+}
+
+.tabs li:hover span,
+.tabs li.selected span {
+	background-color: #dd4422;
+}
