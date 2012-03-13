@@ -183,7 +183,7 @@
 
 						// The updater contains a version higher than the current Symphony version.
 						if(version_compare($current_version, $migration_version, '<')) {
-							$message = __('A migration has been found in your installation to update Symphony to %s.', array($migration_version)) . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
+							$message = __('An update has been found in your installation to upgrade Symphony to %s.', array($migration_version)) . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
 						}
 						// The updater contains a version lower than the current Symphony version.
 						// The updater is the same version as the current Symphony install.
