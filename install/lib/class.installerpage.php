@@ -154,7 +154,7 @@
 			);
 			$this->Form->appendChild($div);
 
-			$ul = new XMLElement('ul'):
+			$ul = new XMLElement('ul');
 			foreach($this->_params['disabled-extensions'] as $handle){
 				$ul->appendChild(
 					new XMLElement('li', '<code>' . $handle . '</code>')
