@@ -113,7 +113,7 @@
 			);
 			$this->Form->appendChild(
 				new XMLElement('p',
-					__('Before logging in, we recommend that the %s directory be removed for security.', array('<code>' . basename(INSTALL_URL) . '</code>'))
+					__('Your mum is also nagging you about removing that %s directory before you log in.', array('<code>' . basename(INSTALL_URL) . '</code>'))
 				)
 			);
 
