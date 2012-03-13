@@ -90,19 +90,25 @@
 			$migrations = array();
 
 			foreach(new DirectoryIterator(INSTALL . '/migrations') as $m){
-				if(!is_dir($m->getPathname())){
-					$version = str_replace('.php', '', $m->getFilename());
+				if($m->isDot() || $m->isDir()) continue;
 
-					// Include migration so we can see what the version is
-					include_once($m->getPathname());
-					$classname = 'migration_' . str_replace('.', '', $version);
-					$m = new $classname();
+				$version = str_replace('.php', '', $m->getFilename());
 
-					if(version_compare(Symphony::Configuration()->get('version', 'symphony'), $m::getVersion(), '<')){
-						$migrations[$m::getVersion()] = $m;
-					}
+				// Include migration so we can see what the version is
+				include_once($m->getPathname());
+				$classname = 'migration_' . str_replace('.', '', $version);
+
+				$m = new $classname();
+
+				if(version_compare(Symphony::Configuration()->get('version', 'symphony'), $m::getVersion(), '<')){
+					$migrations[$m::getVersion()] = $m;
 				}
 			}
+
+			// The DirectoryIterator may return files in a sporatic order
+			// on different servers. This will ensure the array is sorted
+			// correctly using `version_compare`
+			uksort($migrations, 'version_compare');
 
 			// If there are no applicable migrations then this is up to date
 			if(empty($migrations)) {
@@ -166,3 +172,4 @@
 		}
 
 	}
+
