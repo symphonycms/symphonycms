@@ -154,18 +154,20 @@
 			);
 			$this->Form->appendChild($div);
 
-			$extensions = ' ';
+			$ul = new XMLElement('ul');
 			foreach($this->_params['disabled-extensions'] as $handle){
-				$extensions .= '<code>' . $handle . '</code>, ';
+				$ul->appendChild(
+					new XMLElement('li', '<code>' . $handle . '</code>')
+				);
 			}
-			$extensions = rtrim($extensions, ', ');
 
-			if(trim($extensions) != ''){
+			if($ul->getNumberOfChildren() !== 0){
 				$this->Form->appendChild(
 					new XMLElement('p',
-						__('Unfortunately the following extensions couldn’t be enabled and must be manually installed. Sorry about that.') . $extensions
+						__('Unfortunately the following extensions couldn’t be enabled and must be manually installed. Sorry about that.')
 					)
 				);
+				$this->Form->appendChild($ul);
 			}
 
 			$this->Form->appendChild(
