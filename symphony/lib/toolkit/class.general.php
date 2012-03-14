@@ -984,7 +984,7 @@
 					if(!preg_match($filter, $file)) continue;
 				}
 
-				$files[] = str_replace($strip_root, '', $dir) ."/$file/";
+				$files[] = rtrim(str_replace($strip_root, '', $dir), '/') . "/$file/";
 
 				if ($recurse) {
 					$files = @array_merge($files, self::listDirStructure("$dir/$file", $filter, $recurse, $strip_root, $exclude, $ignore_hidden));
@@ -1040,8 +1040,9 @@
 
 			$prefix = str_replace($strip_root, '', $dir);
 
-			if($prefix != "")
+			if($prefix != "")  {
 				$prefix .= "/";
+			}
 
 			foreach(scandir($dir) as $file) {
 				if (
@@ -1051,25 +1052,28 @@
 					or in_array("$dir/$file", $exclude)
 				) continue;
 
+				$dir = rtrim($dir, '/');
+				$prefix = rtrim($prefix, '/');
+
 				if(is_dir("$dir/$file")) {
 					if($recurse) {
-						$files["$prefix$file/"] = self::listStructure("$dir/$file", $filters, $recurse, $sort, $strip_root, $exclude, $ignore_hidden);
+						$files["$prefix/$file/"] = self::listStructure("$dir/$file", $filters, $recurse, $sort, $strip_root, $exclude, $ignore_hidden);
 					}
 
-					$files['dirlist'][] = "$prefix$file/";
+					$files['dirlist'][] = "$prefix/$file/";
 				}
 				else if($filter_type == 'regex') {
 					if(preg_match($filters, $file)){
-						$files['filelist'][] = "$prefix$file";
+						$files['filelist'][] = "$prefix/$file";
 					}
 				}
 				else if($filter_type == 'file') {
 					if(in_array(self::getExtension($file), $filters)) {
-						$files['filelist'][] = "$prefix$file";
+						$files['filelist'][] = "$prefix/$file";
 					}
 				}
 				else if(is_null($filter_type)){
-					$files['filelist'][] = "$prefix$file";
+					$files['filelist'][] = "$prefix/$file";
 				}
 			}
 
