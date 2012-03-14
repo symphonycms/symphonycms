@@ -228,11 +228,9 @@
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			if($formHasErrors) {
 				$this->pageAlert(
-					__('An error occurred while processing this form.')
-					. ' <a href="#error">'
-					. __('See below for details.')
-					. '</a>'
-					, Alert::ERROR);
+					__('An error occurred while processing this form. See below for details.')
+					, Alert::ERROR
+				);
 			}
 			// These alerts are only valid if the form doesn't have errors
 			else if(isset($this->_context[2])) {
@@ -986,11 +984,9 @@
 				// duplicate page, return.
 				if(is_array($this->_errors) && !empty($this->_errors)) {
 					return $this->pageAlert(
-						__('An error occurred while processing this form.')
-						. ' <a href="#error">'
-						. __('See below for details.')
-						. '</a>'
-						, Alert::ERROR);
+						__('An error occurred while processing this form. See below for details.')
+						, Alert::ERROR
+					);
 				}
 			}
 		}
