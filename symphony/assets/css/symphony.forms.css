@@ -1,5 +1,125 @@
+/**
+ * This file contains unified styles for inputs, text areas, multiple selects
+ * and buttons that are shared across the system. It does not contain general
+ * label and fieldset definitions that differ in the different areas of Symphony.
+ *
+ * @since Symphony 2.3
+ */
+
+
 /*--------------------------------------------------------------------------
-	Globals - Buttons
+	Inputs, text areas, selects
+--------------------------------------------------------------------------*/
+
+input[type=password],
+input[type=text],
+textarea,
+select[multiple] {
+	padding: 2px 3px;
+	border: 1px solid rgba(0, 0, 0, 0.25);
+	box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.05);
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	box-sizing: border-box;
+	border-radius: 2px;
+	margin-top: 2px;
+	width: 100%;
+	font-size: 109.09%;
+	font-family: inherit;
+}
+
+select[multiple] {
+	font-size: 1em;
+}
+
+input[type=text] {
+	height: 22px;
+}
+
+input[type=password]:active,
+input[type=password]:focus,
+input[type=text]:active,
+input[type=text]:focus,
+textarea:active,
+textarea:focus,
+select[multiple]:active,
+select[multiple]:focus {
+	outline: none;
+	border-color: rgba(0, 0, 0, 0.4);
+	box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+}
+
+select {
+	width: 100%;
+	display: block;
+	margin-top: 2px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+select[multiple] {
+	width: 100%;
+	height: 10em;
+	padding: 0;
+}
+
+input[size],
+input[type=radio],
+input[type=checkbox] {
+	display: inline;
+	width: auto;
+	margin-right: 5px;
+}
+
+button,
+input[type=submit] {
+	font-family: 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
+}
+
+a,
+select,
+input[type="reset"], input[type=button], input[type=submit],
+textarea,
+option,
+fieldset {
+	outline: 0;
+}
+
+button::-moz-focus-inner,
+input[type="reset"]::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner,
+select::-moz-focus-inner,
+input[type="file"] > input[type="button"]::-moz-focus-inner {
+	border: none;
+}
+
+/* Errors */
+
+.invalid input[type=password],
+.invalid input[type=text],
+.invalid select[multiple],
+.invalid textarea {
+	border-color: #cc3311;
+}
+
+.invalid input[type=password]:active,
+.invalid input[type=password]:focus,
+.invalid input[type=text]:active,
+.invalid input[type=text]:focus,
+.invalid textarea:active,
+.invalid textarea:focus {
+	border-color: #9d270d;
+	box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+/*--------------------------------------------------------------------------
+	Buttons
 --------------------------------------------------------------------------*/
 
 input[type=submit],
@@ -79,9 +199,8 @@ button.delete:focus,
 .button.delete:hover,
 .button.delete:active,
 .button.delete:focus {
-	background: #bd2c1f;
-	border-color: #912218;
-	box-shadow: 0 0 5px rgba(0, 0, 0, 0.4), 0 0 1px 1px rgba(255, 255, 255, 0.9);
+	background: #dd4422;
+	border-color: #bb2211;
 	color: #fff;
 }
 
@@ -118,9 +237,11 @@ fieldset.apply div {
 	float: left;
 	background: url(../img/arrows.png) right -14px no-repeat;
 }
+
 fieldset.apply:hover div {
 	background-position: right 6px;
 }
+
 fieldset.applay.inactive div {
 	background: right -34px;
 }
@@ -178,9 +299,11 @@ fieldset.apply:hover button {
 }
 
 /* Single select "With selected…" */
+
 fieldset.apply.single {
 	border: none;
 }
+
 fieldset.apply.single select {
 	display: none;
 }
@@ -192,11 +315,13 @@ fieldset.apply.single button {
 	height: auto;
 	white-space: nowrap;
 }
+
 fieldset.apply.single button:before {
 	display: none;
 }
 
 /* Inline buttons, aligned left */
+
 fieldset input[type=submit],
 fieldset button,
 fieldset .button {

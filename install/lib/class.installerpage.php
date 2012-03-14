@@ -30,11 +30,11 @@
 			$this->setTitle($this->_page_title);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 1);
 
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.basic.css', 'screen', 40);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.buttons.css', 'screen', 41);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.frames.css', 'screen', 42);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.grids.css', 'screen', 42);
-			$this->addStylesheetToHead(INSTALL_URL . '/assets/main.css', 'screen', 49);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.css', 'screen', 30);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.grids.css', 'screen', 31);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.forms.css', 'screen', 32);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.frames.css', 'screen', 33);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/installer.css', 'screen', 40);
 
 			return parent::generate();
 		}
