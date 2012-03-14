@@ -221,8 +221,12 @@
 
 					if(!method_exists($obj, 'providerOf')) continue;
 
+					$providers = $obj->providerOf();
+
+					if(empty($providers)) continue;
+
 					// For each of the matching objects (by $type), resolve the object path
-					self::$_providers = array_merge(self::$_providers, $obj->providerOf());
+					self::$_providers = array_merge_recursive(self::$_providers, $obj->providerOf());
 				}
 			}
 
