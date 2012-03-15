@@ -1190,7 +1190,7 @@
 							break;
 
 						case 'static_xml':
-							$extends = 'StaticDatasource';
+							$extends = 'StaticXMLDatasource';
 							$fields['static_xml'] = trim($fields['static_xml']);
 
 							if(preg_match('/^<\?xml/i', $fields['static_xml']) == true){

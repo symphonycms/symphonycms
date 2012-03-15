@@ -1,6 +1,6 @@
 <?php
 
-	Class StaticDatasource extends Datasource{
+	Class StaticXMLDatasource extends Datasource {
 
 		public function execute(&$param_pool) {
 			include_once(TOOLKIT . '/class.xsltprocess.php');
@@ -26,4 +26,5 @@
 
 			return $result;
 		}
+
 	}
