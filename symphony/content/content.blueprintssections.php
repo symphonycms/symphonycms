@@ -40,8 +40,8 @@
 			else{
 				foreach($sections as $s){
 
-					$entry_count = intval(Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries` WHERE `section_id` = '".$s->get('id')."' "));
-
+                    $entry_count = EntryManager::fetchCount($s->get('id'));
+                    
 					// Setup each cell
 					$td1 = Widget::TableData(Widget::Anchor($s->get('name'), Administration::instance()->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', NULL, 'content'));
 					$td2 = Widget::TableData(Widget::Anchor("$entry_count", SYMPHONY_URL . '/publish/' . $s->get('handle') . '/'));
@@ -636,9 +636,8 @@
 
 					// If we are creating a new Section
 					if(!$edit) {
-						$next = Symphony::Database()->fetchVar('next', 0, 'SELECT MAX(`sortorder`) + 1 AS `next` FROM tbl_sections LIMIT 1');
 
-						$meta['sortorder'] = ($next ? $next : '1');
+						$meta['sortorder'] = SectionManager::fetchNextSortOrder();
 
 						/**
 						 * Just prior to saving the Section settings. Use with caution as

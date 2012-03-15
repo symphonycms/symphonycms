@@ -169,6 +169,23 @@
 		public static function fetchIDFromHandle($handle){
 			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_sections` WHERE `handle` = '$handle' LIMIT 1");
 		}
+		
+		/**
+		 * Work out the next available sort order for a new section
+		 *
+		 * @return integer
+		 *  Returns the next sort order
+		 */
+		public static function fetchNextSortOrder(){
+			$next = Symphony::Database()->fetchVar("next", 0, "
+				SELECT
+					MAX(p.sortorder) + 1 AS `next`
+				FROM
+					`tbl_sections` AS p
+				LIMIT 1
+			");
+			return ($next ? (int)$next : 1);
+		}
 
 		/**
 		 * Returns a new Section object, using the SectionManager
