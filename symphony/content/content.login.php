@@ -21,7 +21,7 @@
 			$this->Html->setDTD('<!DOCTYPE html>'); //PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"
 			$this->Html->setAttribute('lang', Lang::get());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphonyc.css', 'screen', 30);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.css', 'screen', 30);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.forms.css', 'screen', 31);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.frames.css', 'screen', 32);
 
@@ -54,6 +54,8 @@
 			$fieldset = new XMLElement('fieldset');
 
 			if($this->_context[0] == 'retrieve-password'):
+
+				$this->Form->setAttribute('action', SYMPHONY_URL.'/login/retrieve-password/');
 
 				if(isset($this->_email_sent) && $this->_email_sent){
 					$fieldset->appendChild(new XMLElement('p', __('An email containing a customised login link has been sent. It will expire in 2 hours.')));
@@ -98,7 +100,6 @@
 
 				$div = new XMLElement('div', NULL, array('class' => 'actions'));
 				$div->appendChild(new XMLElement('button', __('Save Changes'), array('name' => 'action[change]', 'type' => 'submit')));
-				if(!preg_match('@\/symphony\/login\/@i', $_SERVER['REQUEST_URI'])) $div->appendChild(Widget::Input('redirect', $_SERVER['REQUEST_URI'], 'hidden'));
 				$this->Form->appendChild($div);
 
 			else:
@@ -125,7 +126,6 @@
 
 				$div = new XMLElement('div', NULL, array('class' => 'actions'));
 				$div->appendChild(new XMLElement('button', __('Login'), array('name' => 'action[login]', 'type' => 'submit', 'accesskey' => 's')));
-				if(!preg_match('@\/symphony\/login\/@i', $_SERVER['REQUEST_URI'])) $div->appendChild(Widget::Input('redirect', $_SERVER['REQUEST_URI'], 'hidden'));
 				$this->Form->appendChild($div);
 
 			endif;
@@ -224,7 +224,7 @@
 						}
 
 						/**
-						 * When a password reset has occured and after the Password
+						 * When a password reset has occurred and after the Password
 						 * Reset email has been sent.
 						 *
 						 * @delegate AuthorPostPasswordResetSuccess
@@ -248,7 +248,7 @@
 						 * @param string $context
 						 * '/login/'
 						 * @param string $email
-						 *  The santizied Email of the Author who tried to request the password reset
+						 *  The sanitised Email of the Author who tried to request the password reset
 						 */
 						Symphony::ExtensionManager()->notifyMembers('AuthorPostPasswordResetFailure', '/login/', array('email' => Symphony::Database()->cleanValue($_POST['email'])));
 
