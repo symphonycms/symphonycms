@@ -41,10 +41,10 @@
 		public function view(){
 			$emergency = false;
 			if(isset($this->_context[0]) && in_array(strlen($this->_context[0]), array(6, 8))){
-				$emergency = $this->__loginFromToken($this->_context[0]);
+				if(!$this->__loginFromToken($this->_context[0])) {
+					if(Administration::instance()->isLoggedIn()) redirect(SYMPHONY_URL);
+				}
 			}
-
-			if(!$emergency && Administration::instance()->isLoggedIn()) redirect(SYMPHONY_URL);
 
 			$this->Form = Widget::Form(SYMPHONY_URL . '/login/', 'post');
 			$this->Form->setAttribute('class', 'frame');
@@ -81,27 +81,6 @@
 
 				}
 
-			elseif($emergency):
-
-				$fieldset->appendChild(new XMLElement('legend', __('New Password')));
-
-				$label = Widget::Label(__('New Password'));
-				$label->appendChild(Widget::Input('password', NULL, 'password'));
-				$fieldset->appendChild($label);
-
-				$label = Widget::Label(__('Confirm New Password'));
-				$label->appendChild(Widget::Input('password-confirmation', NULL, 'password'));
-				if($this->_mismatchedPassword){
-					$label = Widget::Error($label, __('The supplied password was rejected. Make sure it is not empty and that password matches password confirmation.'));
-				}
-				$fieldset->appendChild($label);
-
-				$this->Form->appendChild($fieldset);
-
-				$div = new XMLElement('div', NULL, array('class' => 'actions'));
-				$div->appendChild(new XMLElement('button', __('Save Changes'), array('name' => 'action[change]', 'type' => 'submit')));
-				$this->Form->appendChild($div);
-
 			else:
 
 				$fieldset->appendChild(new XMLElement('legend', __('Login')));
@@ -134,19 +113,7 @@
 
 		}
 
-		public function __loginFromToken($token){
-			// If token is invalid, return to login page
-			if(!Administration::instance()->loginFromToken($token)) return false;
-
-			// If token is valid and it is not "emergency" login (forgotten password case), redirect to administration pages
-			if(strlen($token) != 6) redirect(SYMPHONY_URL); // Regular token-based login
-
-			// Valid, emergency token - ask user to change password
-			return true;
-		}
-
 		public function action(){
-
 			if(isset($_POST['action'])){
 
 				$actionParts = array_keys($_POST['action']);
@@ -255,86 +222,18 @@
 						$this->_email_sent = false;
 					}
 
-				// Change of password requested
-				elseif($action == 'change' && Administration::instance()->isLoggedIn()):
-
-					if(empty($_POST['password']) || empty($_POST['password-confirmation']) || $_POST['password'] != $_POST['password-confirmation']){
-						$this->_mismatchedPassword = true;
-					}
-
-					else{
-						$author_id = Administration::instance()->Author->get('id');
-						$author = AuthorManager::fetchByID($author_id);
-
-						$author->set('password', General::hash(Symphony::Database()->cleanValue($_POST['password'])));
-
-						if(!$author->commit() || !Administration::instance()->login($author->get('username'), $_POST['password'])){
-							redirect(SYMPHONY_URL . "/system/authors/edit/{$author_id}/error/");
-						}
-
-						/**
-						 * When an Author changes their password as the result of a login
-						 * with an emergency token (ie. forgot password). Just after their
-						 * new password has been set successfully
-						 *
-						 * @delegate AuthorPostPasswordChange
-						 * @since Symphony 2.2
-						 * @param string $context
-						 * '/login/'
-						 * @param integer $author_id
-						 *  The ID of the Author who has just changed their password
-						 */
-						Symphony::ExtensionManager()->notifyMembers('AuthorPostPasswordChange', '/login/', array('author_id' => $author_id));
-
-						redirect(SYMPHONY_URL);
-					}
-
 				endif;
 			}
+		}
 
-			elseif($_REQUEST['action'] == 'resetpass' && isset($_REQUEST['token'])){
+		public function __loginFromToken($token){
+			// If token is invalid, return to login page
+			if(!Administration::instance()->loginFromToken($token)) return false;
 
-				$author = Symphony::Database()->fetchRow(0, "SELECT t1.`id`, t1.`email`, t1.`first_name`
-						FROM `tbl_authors` as t1, `tbl_forgotpass` as t2
-					 	WHERE t2.`token` = '".Symphony::Database()->cleanValue($_REQUEST['token'])."' AND t1.`id` = t2.`author_id`
-					 	LIMIT 1");
+			// If token is valid and is an 8 char shortcut
+			if(strlen($token) != 6) redirect(SYMPHONY_URL); // Regular token-based login
 
-				if(!empty($author)){
-
-					$newpass = General::generatePassword();
-
-					General::sendEmail(
-						$author['email'],
-						Symphony::Database()->fetchVar('email', 0, "SELECT `email` FROM `tbl_authors` ORDER BY `id` ASC LIMIT 1"),
-						__('Symphony Concierge'),
-						__('New Symphony Account Password'),
-						__('Hi %s,', array($author['first_name'])) . PHP_EOL .
-						__("As requested, here is your new Symphony Author password for ") . URL . " " .PHP_EOL ." $newpass" . PHP_EOL . PHP_EOL .
-						__('Best Regards,') . PHP_EOL .
-						__('The Symphony Team')
-					);
-
-					Symphony::Database()->update(array('password' => General::hash($newpass)), 'tbl_authors', " `id` = '".$author['id']."' LIMIT 1");
-					Symphony::Database()->delete('tbl_forgotpass', " `author_id` = '".$author['id']."'");
-
-					/**
-					 * Just after a Forgot Password email has been sent to the Author
-					 * who has requested a password reset.
-					 *
-					 * @delegate AuthorPostPasswordResetRequest
-					 * @since Symphony 2.2
-					 * @param string $context
-					 * '/login/'
-					 * @param integer $author_id
-					 *  The ID of the Author who has requested their password be reset
-					 */
-					Symphony::ExtensionManager()->notifyMembers('AuthorPostPasswordResetRequest', '/login/', array('author_id' => $author['id']));
-
-					$this->_alert = __('Password reset. Check your email');
-
-				}
-			}
-
+			return false;
 		}
 
 	}
