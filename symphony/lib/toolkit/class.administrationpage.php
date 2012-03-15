@@ -702,6 +702,7 @@
 			}
 
 			// Build the section navigation, grouped by their navigation groups
+			require_once TOOLKIT . '/class.sectionmanager.php';
 			$sections = SectionManager::fetch(NULL, 'asc', 'sortorder');
 			if(is_array($sections) && !empty($sections)){
 				foreach($sections as $s){
