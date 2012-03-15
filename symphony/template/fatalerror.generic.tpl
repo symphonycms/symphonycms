@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Symphony Error</title>
-	<link media="screen" href="{SYMPHONY_URL}/assets/css/symphony.basic.css" type="text/css" rel="stylesheet">
+	<link media="screen" href="{SYMPHONY_URL}/assets/css/symphony.css" type="text/css" rel="stylesheet">
 	<link media="screen" href="{SYMPHONY_URL}/assets/css/symphony.frames.css" type="text/css" rel="stylesheet">
 	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/jquery.js"></script>
 	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/symphony.js"></script>

@@ -198,7 +198,13 @@
 					}
 
 					if($field_id == 'id') {
-						$where = " AND `e`.id IN ('".implode("', '", $value)."') ";
+						$c = 'IN';
+						if(stripos($value[0], 'not:') === 0) {
+							$value[0] = preg_replace('/^not:\s*/', null, $value[0]);
+							$c = 'NOT IN';
+						}
+
+						$where = " AND `e`.id " . $c . " ('".implode("', '", $value)."') ";
 					}
 					else if($field_id == 'system:date') {
 						require_once(TOOLKIT . '/fields/field.date.php');

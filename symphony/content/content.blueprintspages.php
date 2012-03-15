@@ -228,11 +228,9 @@
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			if($formHasErrors) {
 				$this->pageAlert(
-					__('An error occurred while processing this form.')
-					. ' <a href="#error">'
-					. __('See below for details.')
-					. '</a>'
-					, Alert::ERROR);
+					__('An error occurred while processing this form. See below for details.')
+					, Alert::ERROR
+				);
 			}
 			// These alerts are only valid if the form doesn't have errors
 			else if(isset($this->_context[2])) {
@@ -797,17 +795,7 @@
 					$current = PageManager::fetchPageByID($page_id);
 
 					if(empty($current)) {
-						$fields['sortorder'] = Symphony::Database()->fetchVar('next', 0, "
-							SELECT
-								MAX(p.sortorder) + 1 AS `next`
-							FROM
-								`tbl_pages` AS p
-							LIMIT 1
-						");
-
-						if(empty($fields['sortorder']) || !is_numeric($fields['sortorder'])) {
-							$fields['sortorder'] = 1;
-						}
+						$fields['sortorder'] = PageManager::fetchNextSortOrder();
 					}
 
 					$where = array();
@@ -986,11 +974,9 @@
 				// duplicate page, return.
 				if(is_array($this->_errors) && !empty($this->_errors)) {
 					return $this->pageAlert(
-						__('An error occurred while processing this form.')
-						. ' <a href="#error">'
-						. __('See below for details.')
-						. '</a>'
-						, Alert::ERROR);
+						__('An error occurred while processing this form. See below for details.')
+						, Alert::ERROR
+					);
 				}
 			}
 		}

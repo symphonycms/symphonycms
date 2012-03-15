@@ -984,7 +984,7 @@
 					if(!preg_match($filter, $file)) continue;
 				}
 
-				$files[] = str_replace($strip_root, '', $dir) ."/$file/";
+				$files[] = rtrim(str_replace($strip_root, '', $dir), '/') ."/$file/";
 
 				if ($recurse) {
 					$files = @array_merge($files, self::listDirStructure("$dir/$file", $filter, $recurse, $strip_root, $exclude, $ignore_hidden));
@@ -1040,8 +1040,9 @@
 
 			$prefix = str_replace($strip_root, '', $dir);
 
-			if($prefix != "")
+			if($prefix != "" && substr($prefix, -1) != "/") {
 				$prefix .= "/";
+			}
 
 			foreach(scandir($dir) as $file) {
 				if (
@@ -1050,6 +1051,8 @@
 					or in_array($file, $exclude)
 					or in_array("$dir/$file", $exclude)
 				) continue;
+
+				$dir = rtrim($dir, '/');
 
 				if(is_dir("$dir/$file")) {
 					if($recurse) {

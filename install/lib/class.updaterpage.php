@@ -64,9 +64,11 @@
 				$h2 = new XMLElement('h2', __('Pre-Installation Notes:'));
 				$dl = new XMLElement('dl');
 
-				foreach($this->_params['pre-notes'] as $version => $note){
+				foreach($this->_params['pre-notes'] as $version => $notes){
 					$dl->appendChild(new XMLElement('dt', $version));
-					$dl->appendChild(new XMLElement('dd', '<p>' . implode('</p><p>', $note) . '</p>'));
+					foreach($notes as $note) {
+						$dl->appendChild(new XMLElement('dd', $note));
+					}
 				}
 
 				$this->Form->appendChild($h2);
@@ -96,10 +98,12 @@
 			if(!empty($this->_params['post-notes'])){
 				$dl = new XMLElement('dl');
 
-				foreach($this->_params['post-notes'] as $version => $note){
-					if($note){
+				foreach($this->_params['post-notes'] as $version => $notes){
+					if($notes) {
 						$dl->appendChild(new XMLElement('dt', $version));
-						$dl->appendChild(new XMLElement('dd', '<p>' . implode('</p><p>', $note) . '</p>'));
+						foreach($notes as $note) {
+							$dl->appendChild(new XMLElement('dd', $note));
+						}
 					}
 				}
 
@@ -113,7 +117,7 @@
 			);
 			$this->Form->appendChild(
 				new XMLElement('p',
-					__('Before logging in, we recommend that the %s directory be removed for security.', array('<code>' . basename(INSTALL_URL) . '</code>'))
+					__('Your mum is also nagging you about removing that %s directory before you log in.', array('<code>' . basename(INSTALL_URL) . '</code>'))
 				)
 			);
 

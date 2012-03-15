@@ -781,11 +781,11 @@
 				// default to no XML
 				$xml = NULL;
 
-
 				/**
 				 * Allows extensions to execute the data source themselves (e.g. for caching)
 				 * and providing their own output XML instead
 				 *
+				 * @since Symphony 2.3
 				 * @delegate DataSourcePreExecute
 				 * @param string $context
 				 * '/frontend/'
