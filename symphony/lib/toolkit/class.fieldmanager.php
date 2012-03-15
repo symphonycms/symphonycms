@@ -109,8 +109,7 @@
 		public static function add(array $fields){
 
 			if(!isset($fields['sortorder'])){
-				$next = Symphony::Database()->fetchVar("next", 0, 'SELECT MAX(`sortorder`) + 1 AS `next` FROM tbl_fields LIMIT 1');
-				$fields['sortorder'] = ($next ? $next : '1');
+				$fields['sortorder'] = self::fetchNextSortOrder();
 			}
 
 			if(!Symphony::Database()->insert($fields, 'tbl_fields')) return false;
@@ -351,6 +350,23 @@
 				Symphony::Database()->cleanValue($element_name),
 				(!is_null($section_id) ? " AND `parent_section` = $section_id " : "")
 			));
+		}
+		
+		/**
+		 * Work out the next available sort order for a new field
+		 *
+		 * @return integer
+		 *  Returns the next sort order
+		 */
+		public static function fetchNextSortOrder(){
+			$next = Symphony::Database()->fetchVar("next", 0, "
+				SELECT
+					MAX(p.sortorder) + 1 AS `next`
+				FROM
+					`tbl_fields` AS p
+				LIMIT 1
+			");
+			return ($next ? (int)$next : 1);
 		}
 
 		/**

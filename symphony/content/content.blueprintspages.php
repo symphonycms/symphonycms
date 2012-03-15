@@ -795,17 +795,7 @@
 					$current = PageManager::fetchPageByID($page_id);
 
 					if(empty($current)) {
-						$fields['sortorder'] = Symphony::Database()->fetchVar('next', 0, "
-							SELECT
-								MAX(p.sortorder) + 1 AS `next`
-							FROM
-								`tbl_pages` AS p
-							LIMIT 1
-						");
-
-						if(empty($fields['sortorder']) || !is_numeric($fields['sortorder'])) {
-							$fields['sortorder'] = 1;
-						}
+						$fields['sortorder'] = PageManager::fetchNextSortOrder();
 					}
 
 					$where = array();
