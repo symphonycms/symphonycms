@@ -636,9 +636,8 @@
 
 					// If we are creating a new Section
 					if(!$edit) {
-						$next = Symphony::Database()->fetchVar('next', 0, 'SELECT MAX(`sortorder`) + 1 AS `next` FROM tbl_sections LIMIT 1');
 
-						$meta['sortorder'] = ($next ? $next : '1');
+						$meta['sortorder'] = SectionManager::fetchNextSortOrder();
 
 						/**
 						 * Just prior to saving the Section settings. Use with caution as
