@@ -1,5 +1,5 @@
 <navigation>
-	<group name="Blueprints" limit="developer" index="100">
+	<group name="Blueprints" limit="developer" index="200">
 		<children>
 			<item link="/blueprints/pages/" name="Pages" />
 			<item link="/blueprints/pages/new/" name="Pages New" visible="no" />
@@ -25,7 +25,7 @@
 		</children>
 	</group>
 
-	<group name="System" index="200">
+	<group name="System" index="100">
 		<children>
 			<item link="/system/authors/" name="Authors" />
 			<item link="/system/authors/edit/" name="Author Edit" visible="no" />
@@ -41,4 +41,5 @@
 			<item link="/system/log/" limit="primary" visible="no" name="Activity Log" />
 		</children>
 	</group>
+
 </navigation>

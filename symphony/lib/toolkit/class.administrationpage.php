@@ -619,7 +619,7 @@
 							if ($n['type'] === 'content')
 								$contentNav->appendChild($xGroup);
 							else if ($n['type'] === 'structure')
-								$structureNav->appendChild($xGroup);
+								$structureNav->prependChild($xGroup);
 						}
 					}
 				}
