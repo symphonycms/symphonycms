@@ -186,9 +186,7 @@
 
 			if(!class_exists($classname)) require_once($path);
 
-			$dummy = array();
-
-			return new $classname($dummy, $env, $process_params);
+			return new $classname($env, $process_params);
 		}
 
 	}
