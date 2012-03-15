@@ -702,17 +702,17 @@
 			}
 
 			// Build the section navigation, grouped by their navigation groups
-			$sections = Symphony::Database()->fetch("SELECT * FROM `tbl_sections` ORDER BY `sortorder` ASC");
+			$sections = SectionManager::fetch(NULL, 'asc', 'sortorder');
 			if(is_array($sections) && !empty($sections)){
 				foreach($sections as $s){
 
-					$group_index = self::__navigationFindGroupIndex($nav, $s['navigation_group']);
+					$group_index = self::__navigationFindGroupIndex($nav, $s->get('navigation_group'));
 
 					if($group_index === false){
 						$group_index = General::array_find_available_index($nav, 0);
 
 						$nav[$group_index] = array(
-							'name' => $s['navigation_group'],
+							'name' => $s->get('navigation_group'),
 							'type' => 'content',
 							'index' => $group_index,
 							'children' => array()
@@ -720,11 +720,11 @@
 					}
 
 					$nav[$group_index]['children'][] = array(
-						'link' => '/publish/' . $s['handle'] . '/',
-						'name' => $s['name'],
+						'link' => '/publish/' . $s->get('handle') . '/',
+						'name' => $s->get('name'),
 						'type' => 'section',
-						'section' => array('id' => $s['id'], 'handle' => $s['handle']),
-						'visible' => ($s['hidden'] == 'no' ? 'yes' : 'no')
+						'section' => array('id' => $s->get('id'), 'handle' => $s->get('handle')),
+						'visible' => ($s->get('hidden') == 'no' ? 'yes' : 'no')
 					);
 				}
 			}
