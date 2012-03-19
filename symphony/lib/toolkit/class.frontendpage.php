@@ -835,16 +835,23 @@
 		 */
 		private function __findDatasourceOrder($dependenciesList){
 			if(!is_array($dependenciesList) || empty($dependenciesList)) return;
-
+			
+			foreach($dependenciesList as $handle => $dependencies) {
+				foreach($dependencies as $i => $dependency) {
+					$dependenciesList[$handle][$i] = reset(explode('.',$dependency));
+				}
+				
+			}
+			
 			$orderedList = array();
 			$dsKeyArray = $this->__buildDatasourcePooledParamList(array_keys($dependenciesList));
-
+			
 			// 1. First do a cleanup of each dependency list, removing non-existant DS's and find
 			//    the ones that have no dependencies, removing them from the list
 			foreach($dependenciesList as $handle => $dependencies){
 
 				$dependenciesList[$handle] = @array_intersect($dsKeyArray, $dependencies);
-
+				
 				if(empty($dependenciesList[$handle])){
 					unset($dependenciesList[$handle]);
 					$orderedList[] = str_replace('_', '-', $handle);
