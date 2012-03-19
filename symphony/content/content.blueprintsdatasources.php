@@ -1102,10 +1102,6 @@
 				// Do dependencies, the template file must have <!-- CLASS NAME -->
 				// and <!-- DS DEPENDENCY LIST --> tokens
 				$dsShell = str_replace('<!-- CLASS NAME -->', $classname, $dsShell);
-				if(preg_match_all('@(\$ds-[-_0-9a-z]+)@i', $dsShell, $matches)){
-					$dependencies = General::array_remove_duplicates($matches[1]);
-					$dsShell = str_replace('<!-- DS DEPENDENCY LIST -->', "'" . implode("', '", $dependencies) . "'", $dsShell);
-				}
 
 				// If there is a provider, let them do the prepartion work
 				if($providerClass) {
@@ -1236,7 +1232,12 @@
 					$this->__injectVarList($dsShell, $params);
 					$this->__injectIncludedElements($dsShell, $elements);
 					self::injectFilters($dsShell, $filters);
-
+					
+					if(preg_match_all('@(\$ds-[0-9a-z_\.\-]+)@i', $dsShell, $matches)){
+						$dependencies = General::array_remove_duplicates($matches[1]);
+						$dsShell = str_replace('<!-- DS DEPENDENCY LIST -->', "'" . implode("', '", $dependencies) . "'", $dsShell);
+					}
+					
 					$dsShell = str_replace('<!-- CLASS EXTENDS -->', $extends, $dsShell);
 					$dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
 				}
