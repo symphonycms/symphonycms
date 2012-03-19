@@ -471,7 +471,7 @@
 				// This is important, otherwise the `DateTime` constructor may break
 				// @todo Test if this separator is still required. It's a hidden setting
 				// and users are only aware of it if they go digging/pointed in the right direction
-				$separator = Symphony::$Configuration->get('datetime_separator', 'region');
+				$separator = Symphony::Configuration()->get('datetime_separator', 'region');
 				if($separator != ' ') {
 					$string = str_replace($separator, ' ', $string);
 				}
