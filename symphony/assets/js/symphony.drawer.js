@@ -169,7 +169,7 @@
 			var drawer = $(this),
 			position = drawer.data('position');
 
-			if (position == 'vertical-left' || position == 'vertical-left') {
+			if (position == 'vertical-left' || position == 'vertical-right') {
 				drawer.css({
 					top: contents.offset()['top']
 				});
