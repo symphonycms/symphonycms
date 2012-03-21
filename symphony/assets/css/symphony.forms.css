@@ -188,7 +188,7 @@ button.create:focus,
 .button.create:active,
 .button.create:focus {
 	border-color: rgba(50, 70, 23, 0.6);
-	color: #fff;
+	color: rgba(255, 255, 255, 0.99);
 }
 
 /* Delete buttons */
@@ -201,7 +201,7 @@ button.delete:focus,
 .button.delete:focus {
 	background: #dd4422;
 	border-color: #bb2211;
-	color: #fff;
+	color: rgba(255, 255, 255, 0.99);
 }
 
 /* "With selected…" menu */
