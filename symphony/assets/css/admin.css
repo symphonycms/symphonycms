@@ -5,6 +5,7 @@
 body {
 	background: #fff;
 	color: #222;
+	min-height: 100%;
 }
 #wrapper {
 	background: #F4F4F4;
@@ -236,6 +237,58 @@ ul.tags li.more {
 }
 ul.tags .more:hover {
 	color: #222;
+}
+
+/* Drawers */
+
+div.drawer.horizontal {
+	position: relative;
+	margin-top: 35px;
+	width: 100%;
+	clear: both;
+}
+div.drawer.horizontal:after {
+	content: ' ';
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	clear: both;
+	height: 0;
+}
+	div.drawer.horizontal .contents {
+		padding-top: 20px;
+		border-top: 1px solid rgba(0, 0, 0, 0.05);
+	}
+div.drawer.vertical-left,
+div.drawer.vertical-right {
+	position: absolute;
+	overflow: auto;
+	width: 300px;
+	bottom: 0;
+	/* height is set implicitly via `top` and `bottom` to allow for dynamic height */
+	background: #F4F4F4;
+	border-top: 1px solid rgba(191, 191, 183, 0.65);
+	-webkit-box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.05);
+}
+div.drawer.vertical-left {
+	left: 0;
+	border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+div.drawer.vertical-right {
+	right: 0;
+	border-left: 1px solid rgba(0, 0, 0, 0.05);
+}
+	div.drawer.vertical-left .contents,
+	div.drawer.vertical-right .contents {
+		padding: 20px;
+		width: 260px;
+	}
+#wrapper.drawer-vertical-left #contents {
+	margin-left: 301px;
+}
+#wrapper.drawer-vertical-right #contents {
+	margin-right: 301px;
 }
 
 /* Settings */

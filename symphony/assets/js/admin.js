@@ -31,7 +31,7 @@
 		};
 
 		/*--------------------------------------------------------------------------
-			Plugins - Tags, Pickable and Selectable
+			Plugins - Tags, Pickable, Selectable and Drawers
 		--------------------------------------------------------------------------*/
 
 		// Tags
@@ -46,6 +46,9 @@
 
 		// Selectable
 		$('table.selectable').symphonySelectable();
+
+		// Drawers
+		$('div.drawer').symphonyDrawer();
 
 		/*--------------------------------------------------------------------------
 			Plugins - Orderable
@@ -176,7 +179,7 @@
 			// Set menu status
 			if(selection.length > 0) {
 				selection.on('select deselect check', 'tbody tr:has(input)', function(event) {
-				
+
 					// Activate menu
 					if(selection.has('.selected').length > 0) {
 						applicable.removeClass('inactive');
