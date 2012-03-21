@@ -535,14 +535,14 @@
 
 				do {
 					$path = implode('/', $pathArr);
+					
+					$row = PageManager::fetch(true, array(), array(
+						sprintf("`path` %s", $path ? "='".Symphony::Database()->cleanValue($path)."'" : ' IS NULL'),
+						sprintf("`handle` = '%s'", Symphony::Database()->cleanValue($handle))
+					));
+					if($row) $row = reset($row);
 
-					$sql = sprintf(
-						"SELECT * FROM `tbl_pages` WHERE `path` %s AND `handle` = '%s' LIMIT 1",
-						($path ? " = '".Symphony::Database()->cleanValue($path)."'" : 'IS NULL'),
-						Symphony::Database()->cleanValue($handle)
-					);
-
-					if($row = Symphony::Database()->fetchRow(0, $sql)){
+					if($row){
 						$pathArr[] = $handle;
 
 						break 1;
