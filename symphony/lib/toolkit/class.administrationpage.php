@@ -298,6 +298,8 @@
 		 *  If any other value is passed, no button will be added.
 		 */
 		public function insertDrawer(XMLElement $drawer, $position = 'horizontal', $button = 'append') {
+			$drawer->addClass($position);
+			$drawer->setAttribute('data-position', $position);
 			$this->Drawer[$position][] = $drawer;
 
 			if(in_array($button, array('prepend', 'append'))) {
@@ -488,17 +490,17 @@
 
 			$this->Wrapper->appendChild($this->Context);
 
-			// Add vertical-left drawers (between #context and #contents
+			// Add vertical-left drawers (between #context and #contents)
 			if(isset($this->Drawer['vertical-left'])) {
 				$this->Wrapper->appendChildArray($this->Drawer['vertical-left']);
 			}
 
-			$this->Wrapper->appendChild($this->Contents);
-
-			// Add vertical-right drawers (after #contents
+			// Add vertical-right drawers (after #contents)
 			if(isset($this->Drawer['vertical-right'])) {
 				$this->Wrapper->appendChildArray($this->Drawer['vertical-right']);
 			}
+
+			$this->Wrapper->appendChild($this->Contents);
 
 			$this->Body->appendChild($this->Wrapper);
 
