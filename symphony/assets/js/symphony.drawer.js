@@ -102,7 +102,9 @@
 			var drawer = $(this),
 				position = drawer.data('position'),
 				top = contents.offset()['top'],
-				verticals = $('.drawer.vertical-left, .drawer.vertical-right');
+				verticals = $('.drawer.vertical-left, .drawer.vertical-right').filter(function(index) {
+					return $(this).data('open');
+				});
 
 			drawer.trigger('collapsestart.drawer');
 
