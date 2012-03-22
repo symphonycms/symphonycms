@@ -524,7 +524,26 @@
 					if(!is_array($array)) continue;
 
 					self::cleanFields($array);
-					$rows[] = '('.implode(', ', $array).')';
+					
+					// check for to see if relation_id is an array of id's
+					if(is_array($array['relation_id'])) {
+						foreach($array as $key => $values) {
+							// get the entry_id
+							$entry_id = $array['entry_id'];
+							// if $values is an array continue
+							if(is_array($values)) {
+								// build rows based on relation_id being an array of id's
+								foreach($values as $value) {
+									$rows[] = "($entry_id, '$value')";
+								}
+							}
+						}
+					}
+					// relation id is not an array of id's, implode
+					else {
+						$rows[] = '('.implode(', ', $array).')';
+					}
+					
 				}
 
 				$sql .= implode(", ", $rows);
