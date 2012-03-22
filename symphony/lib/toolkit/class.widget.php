@@ -678,7 +678,8 @@
 			$contents->setElementStyle('html');
 
 			$drawer = new XMLElement('div', $contents, $attributes);
-			$drawer->setAttribute('data-open', ($open === true) ? 'true' : 'false');
+			$drawer->setAttribute('data-default-state', $default_state);
+			$drawer->setAttribute('data-context', $context);
 			$drawer->setAttribute('data-label', $label);
 			$drawer->addClass('drawer');
 			$drawer->setAttribute('id', 'drawer-' . $id);

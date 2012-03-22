@@ -97,6 +97,11 @@
 				});
 			};
 
+			// store state
+			if(Symphony.Support.localStorage === true) {
+				window.localStorage['symphony.drawer.' + drawer.attr('id') + '.' + drawer.data('context')] = 'opened';
+			}
+
 			wrapper.addClass('drawer-' + position);
 			drawer.data('open', true);
 
@@ -170,6 +175,12 @@
 					}
 				});
 			};
+
+			// store state
+			if(Symphony.Support.localStorage === true) {
+				window.localStorage['symphony.drawer.' + drawer.attr('id') + '.' + drawer.data('context')] = 'closed';
+			}
+
 			wrapper.removeClass('drawer-' + position);
 			drawer.data('open', false);
 
@@ -193,17 +204,27 @@
 		objects.each(function() {
 			var drawer = $(this),
 				position = drawer.data('position'),
-				button = $('.button.drawer[href="#' + drawer.attr('id') + '"]');
+				button = $('.button.drawer[href="#' + drawer.attr('id') + '"]'),
+				storedState = window.localStorage['symphony.drawer.' + drawer.attr('id') + '.' + drawer.data('context')];
+
+			// Initial state
+			if (drawer.data('default-state') == 'opened') {
+				drawer.data('open', true);
+			};
+			// Restore state
+			if (Symphony.Support.localStorage === true) {
+				if (storedState === 'opened') {
+					drawer.data('open', true);
+				} else if (storedState === 'closed') {
+					drawer.data('open', false);
+				};
+			}
 
 			// Click event for the related button
 			button.on('click.drawer', function(event) {
 				event.preventDefault();
 				!drawer.data('open') ? drawer.trigger('expand.drawer') : drawer.trigger('collapse.drawer');
 			});
-
-			// Widget::Drawer($id, $label, $context, $default_state, $context, $attributes)
-			// data-default-state, data-context
-			// symphony.drawer.my_drawer.my_context = opened/closed/unset
 
 			// Initially opened drawers
 			drawer.data('open') ? drawer.trigger('expand.drawer', [0]) : drawer.trigger('collapse.drawer', [0, true]);
