@@ -767,7 +767,7 @@
 			 *
 			 * @delegate EntryPreRender
 			 * @param string $context
-			 * '/publish/new/'
+			 * '/publish/edit/'
 			 * @param Section $section
 			 * @param Entry $entry
 			 * @param array $fields
