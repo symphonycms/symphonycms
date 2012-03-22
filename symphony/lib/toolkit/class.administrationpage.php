@@ -304,7 +304,7 @@
 
 			if(in_array($button, array('prepend', 'append'))) {
 				$this->insertAction(Widget::Anchor(
-						$drawer->getAttribute('data-label'), '#' . $drawer->getAttribute('id'), null, 'button drawer'
+						$drawer->getAttribute('data-label'), '#' . $drawer->getAttribute('id'), null, 'button drawer ' . $position
 					),
 					($button === 'append') ? true : false
 				);

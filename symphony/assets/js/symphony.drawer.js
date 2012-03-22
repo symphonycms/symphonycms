@@ -14,8 +14,7 @@
 			contents = $('#contents'),
 			settings = {
 				verticalWidth: 300,
-				speed: 'fast',
-				button: null // TODO ?? for custom buttons
+				speed: 'fast'
 			};
 
 		$.extend(settings, options);
@@ -26,8 +25,11 @@
 		objects.on('expand.drawer', function(event, speed, stay) {
 			var drawer = $(this),
 				position = drawer.data('position'),
+				buttons = $('.button.drawer'),
+				samePositionButtons = buttons.filter('.' + position),
+				button = buttons.filter('[href="#' + drawer.attr('id') + '"]'),
 				top = contents.offset()['top'],
-				verticals = $('.drawer.vertical-left, .drawer.vertical-right').filter(function(index) {
+				verticals = $('div.drawer.vertical-left, div.drawer.vertical-right').filter(function(index) {
 					return $(this).data('open');
 				});
 
@@ -35,6 +37,10 @@
 
 			speed = (typeof speed === 'undefined' ? settings.speed : speed);
 			stay = (typeof stay === 'undefined' ? false : true);
+
+			// update button state
+			samePositionButtons.removeClass('selected');
+			button.addClass('selected');
 
 			// Close opened drawers from same region
 			$('.drawer.' + position).filter(function(index) {
@@ -101,8 +107,11 @@
 		objects.on('collapse.drawer', function(event, speed, stay) {
 			var drawer = $(this),
 				position = drawer.data('position'),
+				buttons = $('.button.drawer'),
+				samePositionButtons = buttons.filter('.' + position),
+				button = buttons.filter('[href="#' + drawer.attr('id') + '"]'),
 				top = contents.offset()['top'],
-				verticals = $('.drawer.vertical-left, .drawer.vertical-right').filter(function(index) {
+				verticals = $('div.drawer.vertical-left, div.drawer.vertical-right').filter(function(index) {
 					return $(this).data('open');
 				});
 
@@ -110,6 +119,9 @@
 
 			speed = (typeof speed === 'undefined' ? settings.speed : speed);
 			stay = (typeof stay === 'undefined' ? false : true);
+
+			// update button state
+			button.removeClass('selected');
 
 			if (position == 'vertical-left') {
 				drawer.animate({
@@ -181,13 +193,17 @@
 		objects.each(function() {
 			var drawer = $(this),
 				position = drawer.data('position'),
-				button = context.find('.actions').find('.drawer[href="#' + drawer.attr('id') + '"]');
+				button = $('.button.drawer[href="#' + drawer.attr('id') + '"]');
 
 			// Click event for the related button
 			button.on('click.drawer', function(event) {
 				event.preventDefault();
 				!drawer.data('open') ? drawer.trigger('expand.drawer') : drawer.trigger('collapse.drawer');
 			});
+
+			// Widget::Drawer($id, $label, $context, $default_state, $context, $attributes)
+			// data-default-state, data-context
+			// symphony.drawer.my_drawer.my_context = opened/closed/unset
 
 			// Initially opened drawers
 			drawer.data('open') ? drawer.trigger('expand.drawer', [0]) : drawer.trigger('collapse.drawer', [0, true]);

@@ -652,14 +652,16 @@
 		 * by the `XMLElement`, `$content`.
 		 *
 		 * @since Symphony 2.3
+		 * @param string $id
+		 *  The id attribute for this drawer
 		 * @param string $label
 		 *  A name for this drawer
 		 * @param XMLElement $content
 		 *  An XMLElement containing the HTML that should be contained inside
 		 *  the drawer.
-		 * @param boolean $open
+		 * @param string $default_state
 		 *  This parameter defines whether the drawer will be open or closed by
-		 *  default. It defaults to false, when means the drawer will be closed.
+		 *  default. It defaults to closed.
 		 * @param array $attributes (optional)
 		 *  Any additional attributes can be included in an associative array with
 		 *  the key being the name and the value being the value of the attribute.
@@ -667,8 +669,8 @@
 		 *  set by previous params, except the `id` attribute.
 		 * @return XMLElement
 		 */
-		public function Drawer($label='', XMLElement $content = null, $open = false, array $attributes = array()){
-			$handle = General::createHandle($label);
+		public function Drawer($id = '', $label = '', XMLElement $content = null, $default_state = 'closed', $context = '', array $attributes = array()){
+			$id = General::createHandle($id);
 
 			$contents = new XMLElement('div', $content, array(
 				'class' => 'contents'
@@ -679,7 +681,7 @@
 			$drawer->setAttribute('data-open', ($open === true) ? 'true' : 'false');
 			$drawer->setAttribute('data-label', $label);
 			$drawer->addClass('drawer');
-			$drawer->setAttribute('id', 'drawer-' . $handle);
+			$drawer->setAttribute('id', 'drawer-' . $id);
 
 			return $drawer;
 		}

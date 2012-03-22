@@ -38,6 +38,16 @@ button:focus,
 	cursor: pointer;
 }
 
+input[type=submit].selected,
+button.selected,
+.button.selected {
+	box-shadow: inset 2px 2px 3px rgba(0, 0, 0, 0.15), inset -1px -1px 2px rgba(255, 255, 255, 0.7);
+	cursor: pointer;
+	border-color: rgba(0, 0, 0, 0.25);
+	color: rgba(0, 0, 0, 1);
+	text-shadow: 1px 1px 1px rgba(255, 255, 255, 1);
+}
+
 input[type=submit][disabled=disabled]:hover,
 input[type=submit][disabled=disabled]:active,
 input[type=submit][disabled=disabled]:focus {
@@ -68,7 +78,7 @@ button.create:focus,
 .button.create:active,
 .button.create:focus {
 	border-color: rgba(50, 70, 23, 0.6);
-	color: #fff;
+	color: rgba(255, 255, 255, 0.99);
 }
 
 /* Delete buttons */
@@ -82,7 +92,7 @@ button.delete:focus,
 	background: #bd2c1f;
 	border-color: #912218;
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.4), 0 0 1px 1px rgba(255, 255, 255, 0.9);
-	color: #fff;
+	color: rgba(255, 255, 255, 0.99);
 }
 
 /* "With selected…" menu */
