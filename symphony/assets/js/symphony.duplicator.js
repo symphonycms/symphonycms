@@ -81,7 +81,7 @@
 
 			// Construct instances
 			apply.on('click.duplicator', 'button.constructor:not(.disabled)', function construct(event, speed) {
-				var instance = templates.filter('[data-type="' + $(this).parent().find('select').val() + '"]').clone();
+				var instance = templates.filter('[data-type="' + $(this).parent().find('select').val() + '"]').clone(true);
 
 				event.preventDefault();
 
@@ -243,7 +243,7 @@
 
 					// Check uniqueness
 					template.trigger('constructstop.duplicator');
-				}).removeClass('template').addClass('instance').remove();
+				}).removeClass('template').addClass('instance').detach();
 			}
 
 			// Select default
