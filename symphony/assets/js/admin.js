@@ -107,11 +107,7 @@
 		--------------------------------------------------------------------------*/
 
 		// Duplicators
-		$('.filters-duplicator')
-			.symphonyDuplicator()
-			.on('constructshow.duplicator', function() {
-				$('.tags').symphonyTags();
-			});
+		$('.filters-duplicator').symphonyDuplicator();
 
 		// Field editor
 		$('#fields-duplicator')
@@ -119,9 +115,6 @@
 				orderable: true,
 				collapsible: true,
 				preselect: 'input'
-			})
-			.on('constructshow.duplicator', function() {
-				$('.tags').symphonyTags();
 			})
 			.on('keyup', '.instance input[name*="[label]"]', function(event) {
 				var label = $(this),
