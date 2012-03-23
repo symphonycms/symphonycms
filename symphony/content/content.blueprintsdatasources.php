@@ -564,7 +564,7 @@
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 
 			$subfieldset = new XMLElement('fieldset', NULL, array('class' => 'column'));
-			$subfieldset->appendChild(new XMLElement('legend', __('Parameters Output')));
+			$subfieldset->appendChild(new XMLElement('legend', __('Output Parameters')));
 
 			// Support multiple parameters
 			if(!is_array($fields['param'])) $fields['param'] = array($fields['param']);
