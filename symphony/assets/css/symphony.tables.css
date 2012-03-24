@@ -40,7 +40,7 @@ tr:nth-child(even) td {
 }
 
 tbody a {
-	padding: 0.67em 0;
+	padding-top: 0.67em;
 }
 
 table input {
@@ -56,11 +56,14 @@ th span {
 	max-width: 90%;
 }
 
+th a {
+	border-bottom: none;
+}
+
 th a,
 th a:hover,
 th a:hover:after {
 	color: rgba(0, 0, 0, 0.6);
-	text-decoration: none;
 }
 
 th a:after {

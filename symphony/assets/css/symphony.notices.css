@@ -105,7 +105,7 @@ div.notifier nav:hover:before {
 .notice a {
 	color: #bdc3c3;
 	text-decoration: none;
-	border-bottom: 1px solid #7c7c7c;
+	border-bottom: 1px solid rgba(189, 195, 195, 0.2);
 	margin: 0 3px;
 }
 
