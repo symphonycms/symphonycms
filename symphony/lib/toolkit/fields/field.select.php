@@ -223,6 +223,8 @@
 			$label->setValue(__('%s Allow selection of multiple options', array($input->generate())));
 			$div->appendChild($label);
 
+			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Values'));
+
 			// Sort options?
 			$label = Widget::Label();
 			$label->setAttribute('class', 'column');
@@ -230,8 +232,6 @@
 			if($this->get('sort_options') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Sort all options alphabetically', array($input->generate())));
 			$div->appendChild($label);
-
-			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Values'));
 
 			$this->appendShowColumnCheckbox($div);
 			$this->appendRequiredCheckbox($div);
@@ -288,9 +288,9 @@
 
 			if(!is_array($data['value'])) $data['value'] = array($data['value']);
 
-			$options = array();
-
-			if ($this->get('required') != 'yes') $options[] = array(NULL, false, NULL);
+			$options = array(
+				array(NULL, false, NULL)
+			);
 
 			foreach($states as $handle => $v){
 				$options[] = array(General::sanitize($v), in_array($v, $data['value']), General::sanitize($v));
@@ -300,6 +300,7 @@
 			if($this->get('allow_multiple_selection') == 'yes') $fieldname .= '[]';
 
 			$label = Widget::Label($this->get('label'));
+			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : NULL)));
 
 			if($flagWithError != NULL) $wrapper->appendChild(Widget::Error($label, $flagWithError));
