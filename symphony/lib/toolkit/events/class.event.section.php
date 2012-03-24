@@ -15,11 +15,13 @@
 			return (empty($b)) ? 'missing' : 'invalid';
 		}
 
-		public function __doit($source, $fields, &$result, $filters = array(), $position=null, $entry_id=null){
+		public function __doit($fields, &$result, $position=null, $entry_id=null){
 
 			$post_values = new XMLElement('post-values');
 			$filter_results = array();
-			if(!is_array($filters)) $filters = array();
+			if(!is_array($this->eParamFILTERS)) {
+				$this->eParamFILTERS = array();
+			}
 
 			// Create the post data cookie element
 			if (is_array($fields) && !empty($fields)) {
@@ -80,7 +82,7 @@
 			include_once(TOOLKIT . '/class.sectionmanager.php');
 			include_once(TOOLKIT . '/class.entrymanager.php');
 
-			if(!$section = SectionManager::fetch($source)){
+			if(!$section = SectionManager::fetch($this->getSource())){
 				$result->setAttribute('result', 'error');
 				$result->appendChild(new XMLElement('message', __('Section is invalid')));
 				return false;
@@ -99,7 +101,7 @@
 
 			else{
 				$entry =& EntryManager::create();
-				$entry->set('section_id', $source);
+				$entry->set('section_id', $this->getSource());
 			}
 
 			if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))):
@@ -158,8 +160,7 @@
 			endif;
 
 			// PASSIVE FILTERS ONLY AT THIS STAGE. ENTRY HAS ALREADY BEEN CREATED.
-
-			if(in_array('send-email', $filters) && !in_array('expect-multiple', $filters)){
+			if(in_array('send-email', $this->eParamFILTERS) && !in_array('expect-multiple', $this->eParamFILTERS)){
 
 				if(!function_exists('__sendEmailFindFormValue')){
 					function __sendEmailFindFormValue($needle, $haystack, $discard_field_name=true, $default=null, $collapse=true){
@@ -420,7 +421,7 @@
 						$entry = new XMLElement('entry', null, array('position' => $position));
 
 						$ret = $this->__doit(
-							$this->getSource(), $fields, $entry, $this, $this->eParamFILTERS, $position, $entry_id
+							$fields, $entry, $position, $entry_id
 						);
 
 						if (!$ret) $success = false;
@@ -436,7 +437,7 @@
 
 				if (isset($post['id']) && is_numeric($post['id'])) $entry_id = $post['id'];
 
-				$success = $this->__doit($this->getSource(), $fields, $result, $this, $this->eParamFILTERS, null, $entry_id);
+				$success = $this->__doit($fields, $result, null, $entry_id);
 			}
 
 			if($success && isset($_REQUEST['redirect'])) redirect($_REQUEST['redirect']);
