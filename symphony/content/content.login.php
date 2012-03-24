@@ -86,15 +86,22 @@
 				$fieldset->appendChild(new XMLElement('legend', __('Login')));
 
 				$label = Widget::Label(__('Username'));
-				$label->appendChild(Widget::Input('username', $_POST['username'], 'text', array('autofocus' => 'autofocus')));
+				$username = Widget::Input('username', $_POST['username']);
+				if(!$this->_invalidPassword) {
+					$username->setAttribute('autofocus', 'autofocus');
+				}
+				$label->appendChild($username);
 				if(isset($_POST['action'], $_POST['action']['login']) && empty($_POST['username'])) {
+					$username->setAttribute('autofocus', 'autofocus');
 					$label = Widget::Error($label, __('No username was entered.'));
 				}
 				$fieldset->appendChild($label);
 
 				$label = Widget::Label(__('Password'));
-				$label->appendChild(Widget::Input('password', NULL, 'password'));
+				$password = Widget::Input('password', NULL, 'password');
+				$label->appendChild($password);
 				if($this->_invalidPassword){
+					$password->setAttribute('autofocus', 'autofocus');
 					$label =  Widget::Error($label, __('The supplied password was rejected.') .
 						' <br /><a href="' . SYMPHONY_URL.'/login/retrieve-password/">'. __('Retrieve password?') . '</a>'
 					);
