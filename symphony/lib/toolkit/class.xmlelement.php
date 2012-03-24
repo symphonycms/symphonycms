@@ -562,17 +562,18 @@
 
 		/**
 		 * This function strips characters that are not allowed in XML
+		 *
+		 * @since Symphony 2.3
 		 * @link http://www.w3.org/TR/xml/#charsets
 		 * @link http://www.phpedit.net/snippet/Remove-Invalid-XML-Characters
 		 * @param string $value
 		 * @return string
 		 */
-		public static function stripInvalidXMLCharacters($value)
-		{
-			if(Lang::isUnicodeCompiled())
-			{
+		public static function stripInvalidXMLCharacters($value) {
+			if(Lang::isUnicodeCompiled()) {
 				return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $value);
-			} else {
+			}
+			else {
 				$ret = '';
 				if (empty($value)) {
 					return $ret;
