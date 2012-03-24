@@ -90,13 +90,13 @@ a {
 a:hover,
 .inactive a:hover {
 	color: #000;
-	border-bottom-color: rgba(0, 0, 0, 0.1);
+	border-bottom-color: rgba(0, 0, 0, 0.3);
 }
 
 a:active, a:focus,
 .inactive a:active, .inactive a:focus {
 	color: #d42;
-	border-bottom-color: rgba(221, 68, 34, 0.1);
+	border-bottom-color: rgba(221, 68, 34, 0.3);
 }
 
 /* Lists */
@@ -228,7 +228,7 @@ label > i {
 }
 
 .selected, .selected a {
-	border-bottom-color: rgba(255, 255, 255, 0.1)
+	border-bottom-color: rgba(255, 255, 255, 0.2)
 }
 
 .selected a:hover {
