@@ -32,8 +32,8 @@
 
 #header h1 a, #session a {
 	border: none;
+	color: #e6e6e6;
 	color: rgba(255, 255, 255, 0.85);
-	text-decoration: none;
 }
 
 #header h1 a:hover, #header h1 a:focus,
@@ -41,8 +41,8 @@
 	color: rgba(255, 255, 255, 0.99);
 }
 
-#header h1 a:active, #header h1 a:focus,
-#session a:active, #session a:focus {
+#header h1 a:focus,
+#session a:focus {
 	border-bottom: 1px solid white;
 }
 
@@ -572,7 +572,7 @@ div.field-checkbox:first-child {
 	float: left;
 	max-width: 50%;
 	overflow: hidden;
-	text-overflow :ellipsis;
+	text-overflow: ellipsis;
 }
 
 .file em {

@@ -83,16 +83,20 @@ p.label {
 
 a {
 	color: #3f69a5;
-	text-decoration: underline;
+	border-bottom: 1px solid rgba(63, 105, 165, 0.15);
 	cursor: pointer;
 }
 
-a:hover {
+a:hover,
+.inactive a:hover {
 	color: #000;
+	border-bottom-color: rgba(0, 0, 0, 0.3);
 }
 
-a:active, a:focus {
+a:active, a:focus,
+.inactive a:active, .inactive a:focus {
 	color: #d42;
+	border-bottom-color: rgba(221, 68, 34, 0.3);
 }
 
 /* Lists */
@@ -126,11 +130,12 @@ ul.tags li:hover {
 
 ul.tags li.more {
 	color: #5072bf;
-	text-decoration: underline;
+	border-bottom: 1px solid rgba(63, 105, 165, 0.15);
 }
 
 ul.tags .more:hover {
 	color: #222;
+	border-bottom-color: rgba(0, 0, 0, 0.1);
 }
 
 /* Code */
@@ -209,6 +214,10 @@ label > i {
 	color: #b4b4b4;
 }
 
+.inactive a {
+	border-bottom-color: rgba(180, 180, 180, 0.3);
+}
+
 .irrelevant {
 	display: none !important;
 }
@@ -216,6 +225,10 @@ label > i {
 .selected, .selected a,
 .selected .inactive {
 	color: #fff;
+}
+
+.selected, .selected a {
+	border-bottom-color: rgba(255, 255, 255, 0.2)
 }
 
 .selected a:hover {
