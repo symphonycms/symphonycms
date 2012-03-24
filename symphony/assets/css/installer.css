@@ -67,7 +67,7 @@ ul li.more a {
 }
 
 ul li.more a:hover {
-	text-decoration: underline;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 /* Multiple errors */

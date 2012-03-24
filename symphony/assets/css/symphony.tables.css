@@ -40,7 +40,7 @@ tr:nth-child(even) td {
 }
 
 tbody a {
-	padding: 0.67em 0;
+	padding-top: 0.67em;
 }
 
 table input {
@@ -56,11 +56,14 @@ th span {
 	max-width: 90%;
 }
 
+th a {
+	border-bottom: none;
+}
+
 th a,
 th a:hover,
 th a:hover:after {
 	color: rgba(0, 0, 0, 0.6);
-	text-decoration: none;
 }
 
 th a:after {
@@ -114,6 +117,10 @@ table.selectable input {
 	display: none;
 }
 
+table.selectable td {
+	cursor: pointer;
+}
+
 tr.selected td {
 	background-color: #668abe;
 	background-image: -webkit-linear-gradient(top, #668abe, #5c83ba);
@@ -130,6 +137,16 @@ tr.selected a,
 tr.selecting td,
 tr.selecting a {
 	color: #fff;
+}
+
+tr.selected td a:hover {
+	color: white;
+	border-bottom-color: rgba(255, 255, 255, 0.5);
+}
+
+tr.selected td a:focus {
+	color: white;
+	border-bottom-color: white;
 }
 
 tr.selected .inactive {
