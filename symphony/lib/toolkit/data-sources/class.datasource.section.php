@@ -2,6 +2,14 @@
 
 	Class SectionDatasource extends Datasource{
 
+		public function setSource($source) {
+			$this->_source = (int)$source;
+		}
+
+		public function getSource() {
+			return $this->_source;
+		}
+
 		public function processSystemParameters(Entry $entry, &$param_pool) {
 			if(!isset($this->dsParamPARAMOUTPUT)) return;
 
@@ -151,7 +159,7 @@
 
 			include_once(TOOLKIT . '/class.entrymanager.php');
 
-			if(!$section = SectionManager::fetch($this->getSource())){
+			if(!$section = SectionManager::fetch((int)$this->getSource())){
 				$about = $this->about();
 				trigger_error(__('The section associated with the data source %s could not be found.', array('<code>' . $about['name'] . '</code>')), E_USER_ERROR);
 			}
