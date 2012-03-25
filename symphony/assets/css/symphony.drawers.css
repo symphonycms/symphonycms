@@ -13,21 +13,19 @@
 
 div.drawer.horizontal {
 	position: relative;
-	width: 100%;
-	clear: both;
-}
-div.drawer.horizontal:after {
-	content: ' ';
-	visibility: hidden;
-	display: block;
-	font-size: 0;
-	clear: both;
-	height: 0;
 }
 	div.drawer.horizontal .contents {
 		margin-top: 17px;
-		padding-top: 20px;
+		padding: 20px 0;
 		border-top: 1px solid rgba(0, 0, 0, 0.05);
+	}
+	div.drawer.horizontal .contents:after {
+		content: ' ';
+		visibility: hidden;
+		display: block;
+		font-size: 0;
+		clear: both;
+		height: 0;
 	}
 
 /*-----------------------------------------------------------------------------

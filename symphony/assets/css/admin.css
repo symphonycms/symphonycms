@@ -227,9 +227,6 @@
 	float: left;
 }
 
-#breadcrumbs {
-	float: left;
-}
 #breadcrumbs:after {
 	content: ' ';
 	visibility: hidden;
