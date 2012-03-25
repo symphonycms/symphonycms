@@ -26,8 +26,8 @@
 			var drawer = $(this),
 				position = drawer.data('position'),
 				buttons = $('.button.drawer'),
-				samePositionButtons = buttons.filter('.' + position),
 				button = buttons.filter('[href="#' + drawer.attr('id') + '"]'),
+				samePositionButtons = buttons.filter('.' + position),
 				top = contents.offset()['top'],
 				verticals = $('div.drawer.vertical-left, div.drawer.vertical-right').filter(function(index) {
 					return $(this).data('open');
@@ -40,7 +40,6 @@
 
 			// update button state
 			samePositionButtons.removeClass('selected');
-			button.addClass('selected');
 
 			// Close opened drawers from same region
 			$('.drawer.' + position).filter(function(index) {
@@ -63,6 +62,7 @@
 					complete: function() {
 						contents.css('margin-left', settings.verticalWidth + 1); // +1px right border
 						drawer.trigger('expandstop.drawer');
+						button.addClass('selected');
 					}
 				});
 			};
@@ -82,6 +82,7 @@
 					complete: function() {
 						contents.css('margin-right', settings.verticalWidth + 1); // +1px right border
 						drawer.trigger('expandstop.drawer');
+						button.addClass('selected');
 					}
 				});
 			};
@@ -96,6 +97,7 @@
 					complete: function() {
 						verticals.trigger('update.drawer');
 						drawer.trigger('expandstop.drawer');
+						button.addClass('selected');
 					}
 				});
 			};
@@ -114,7 +116,6 @@
 			var drawer = $(this),
 				position = drawer.data('position'),
 				buttons = $('.button.drawer'),
-				samePositionButtons = buttons.filter('.' + position),
 				button = buttons.filter('[href="#' + drawer.attr('id') + '"]'),
 				top = contents.offset()['top'],
 				verticals = $('div.drawer.vertical-left, div.drawer.vertical-right').filter(function(index) {
@@ -207,7 +208,7 @@
 			var drawer = $(this),
 				position = drawer.data('position'),
 				button = $('.button.drawer[href="#' + drawer.attr('id') + '"]'),
-				storedState = window.localStorage['symphony.drawer.' + drawer.attr('id') + '.' + drawer.data('context')];
+				storedState;
 
 			// Initial state
 			if (drawer.data('default-state') == 'opened') {
@@ -215,6 +216,7 @@
 			};
 			// Restore state
 			if (Symphony.Support.localStorage === true) {
+				storedState = window.localStorage['symphony.drawer.' + drawer.attr('id') + '.' + drawer.data('context')];
 				if (storedState === 'opened') {
 					drawer.data('open', true);
 				} else if (storedState === 'closed') {
