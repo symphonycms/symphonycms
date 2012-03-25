@@ -28,6 +28,7 @@
 				buttons = $('.button.drawer'),
 				button = buttons.filter('[href="#' + drawer.attr('id') + '"]'),
 				samePositionButtons = buttons.filter('.' + position),
+				context = drawer.data('context') ? '.' + drawer.data('context') : '',
 				top = contents.offset()['top'],
 				verticals = $('div.drawer.vertical-left, div.drawer.vertical-right').filter(function(index) {
 					return $(this).data('open');
@@ -104,7 +105,7 @@
 
 			// store state
 			if(Symphony.Support.localStorage === true) {
-				window.localStorage['symphony.drawer.' + drawer.attr('id')] = 'opened';
+				window.localStorage['symphony.drawer.' + drawer.attr('id') + context] = 'opened';
 			}
 
 			wrapper.addClass('drawer-' + position);
@@ -117,6 +118,7 @@
 				position = drawer.data('position'),
 				buttons = $('.button.drawer'),
 				button = buttons.filter('[href="#' + drawer.attr('id') + '"]'),
+				context = drawer.data('context') ? '.' + drawer.data('context') : '',
 				top = contents.offset()['top'],
 				verticals = $('div.drawer.vertical-left, div.drawer.vertical-right').filter(function(index) {
 					return $(this).data('open');
@@ -183,7 +185,7 @@
 
 			// store state
 			if(Symphony.Support.localStorage === true) {
-				window.localStorage['symphony.drawer.' + drawer.attr('id')] = 'closed';
+				window.localStorage['symphony.drawer.' + drawer.attr('id') + context] = 'closed';
 			}
 
 			wrapper.removeClass('drawer-' + position);
@@ -208,6 +210,7 @@
 			var drawer = $(this),
 				position = drawer.data('position'),
 				button = $('.button.drawer[href="#' + drawer.attr('id') + '"]'),
+				context = drawer.data('context') ? '.' + drawer.data('context') : '',
 				storedState;
 
 			// Initial state
@@ -216,7 +219,7 @@
 			};
 			// Restore state
 			if (Symphony.Support.localStorage === true) {
-				storedState = window.localStorage['symphony.drawer.' + drawer.attr('id')];
+				storedState = window.localStorage['symphony.drawer.' + drawer.attr('id') + context];
 				if (storedState === 'opened') {
 					drawer.data('open', true);
 				} else if (storedState === 'closed') {
