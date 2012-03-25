@@ -156,8 +156,7 @@
 				",
 				$this->get('id'),
 				($respect_visibility) ? "AND `sa`.`hide_association` = 'no'" : ""
-				)
-			);
+			));
 		}
 
 		/**

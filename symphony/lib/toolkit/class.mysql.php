@@ -634,6 +634,9 @@
 		}
 
 		/**
+		 * Returns an associative array that contains the results of the
+		 * given `$query`. Optionally, the resulting array can be indexed
+		 * by a particular column.
 		 *
 		 * @param string $query
 		 *  The full SQL query to execute. Defaults to null, which will

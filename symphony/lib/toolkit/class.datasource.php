@@ -130,7 +130,7 @@
 		 * @return XMLElement
 		 *  The XMLElement to add into the XML for a page.
 		 */
-		public function grab(&$param_pool=NULL){
+		public function grab(array &$param_pool=NULL){
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 
 			try{

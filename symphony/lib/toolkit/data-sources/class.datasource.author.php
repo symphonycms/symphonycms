@@ -1,5 +1,14 @@
 <?php
 
+	/**
+	 * @package data-sources
+	 */
+	/**
+	 * The `AuthorDatasource` extends the base `Datasource` class and allows
+	 * the retrieval of Author information from the current Symphony installation.
+	 *
+	 * @since Symphony 2.3
+	 */
 	Class AuthorDatasource extends Datasource{
 
 		public function __processAuthorFilter($field, $filter){ //, $filtertype=DS_FILTER_OR){
@@ -150,7 +159,7 @@
 					}
 				}
 			}
-			
+
 			return $result;
 		}
 	}

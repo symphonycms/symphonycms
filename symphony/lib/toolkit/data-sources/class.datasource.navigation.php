@@ -1,5 +1,15 @@
 <?php
 
+	/**
+	 * @package data-sources
+	 */
+	/**
+	 * The `NavigationDatasource` outputs the Symphony page structure as XML.
+	 * This datasource supports filtering to narrow down the results to only
+	 * show pages that match a particular page type, have a specific parent, etc.
+	 *
+	 * @since Symphony 2.3
+	 */
 	Class NavigationDatasource extends Datasource{
 
 		public function __processNavigationParentFilter($parent){

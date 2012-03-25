@@ -1,5 +1,16 @@
 <?php
 
+	/**
+	 * @package data-sources
+	 */
+	/**
+	 * The `DynamicXMLDatasource` allows a user to retrieve XML from an URL.
+	 * This datasource supports namespaces, partial results using XPath and
+	 * caching the result for a number of minutes.
+	 *
+	 * @since Symphony 2.3
+	 */
+
 	require_once(TOOLKIT . '/class.gateway.php');
 	require_once(TOOLKIT . '/class.xsltprocess.php');
 	require_once(CORE . '/class.cacheable.php');
@@ -13,8 +24,6 @@
 			$this->dsParamURL = $this->parseParamURL($this->dsParamURL);
 
 			if(isset($this->dsParamXPATH)) $this->dsParamXPATH = $this->__processParametersInString($this->dsParamXPATH, $this->_env);
-
-			if(!isset($this->dsParamFORMAT)) $this->dsParamFORMAT = 'xml';
 
 			$stylesheet = new XMLElement('xsl:stylesheet');
 			$stylesheet->setAttributeArray(array('version' => '1.0', 'xmlns:xsl' => 'http://www.w3.org/1999/XSL/Transform'));
@@ -43,7 +52,7 @@
 
 			$xsl = $stylesheet->generate(true);
 
-			$cache_id = md5($this->dsParamURL . serialize($this->dsParamFILTERS) . $this->dsParamXPATH . $this->dsParamFORMAT);
+			$cache_id = md5($this->dsParamURL . serialize($this->dsParamFILTERS) . $this->dsParamXPATH);
 
 			$cache = new Cacheable(Symphony::Database());
 
@@ -62,14 +71,7 @@
 					$ch = new Gateway;
 					$ch->init($this->dsParamURL);
 					$ch->setopt('TIMEOUT', $timeout);
-
-					// Set the approtiate Accept: headers depending on the format of the URL.
-					if($this->dsParamFORMAT == 'xml') {
-						$ch->setopt('HTTPHEADER', array('Accept: text/xml, */*'));
-					}
-					else {
-						$ch->setopt('HTTPHEADER', array('Accept: application/json, */*'));
-					}
+					$ch->setopt('HTTPHEADER', array('Accept: text/xml, */*'));
 
 					$data = $ch->exec();
 					$info = $ch->getInfoLast();
@@ -79,8 +81,8 @@
 					$data = trim($data);
 					$writeToCache = true;
 
-					// Handle any response that is not a 200, or the content type does not include XML, JSON, plain or text
-					if((int)$info['http_code'] != 200 || !preg_match('/(xml|json|plain|text)/i', $info['content_type'])){
+					// Handle any response that is not a 200, or the content type does not include XML, plain or text
+					if((int)$info['http_code'] != 200 || !preg_match('/(xml|plain|text)/i', $info['content_type'])){
 						$writeToCache = false;
 
 						$result->setAttribute('valid', 'false');
@@ -106,21 +108,8 @@
 
 					// Handle where there is `$data`
 					else if(strlen($data) > 0) {
-						// If it's JSON, convert it to XML
-						if($this->dsParamFORMAT == 'json') {
-							try {
-								require_once TOOLKIT . '/class.json.php';
-								$data = JSON::convertToXML($data);
-							}
-							catch (Exception $ex) {
-								$writeToCache = false;
-								$errors = array(
-									array('message' => $ex->getMessage())
-								);
-							}
-						}
 						// If the XML doesn't validate..
-						else if(!General::validateXML($data, $errors, false, new XsltProcess)) {
+						if(!General::validateXML($data, $errors, false, new XsltProcess)) {
 							$writeToCache = false;
 						}
 
