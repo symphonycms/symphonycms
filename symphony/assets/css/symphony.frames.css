@@ -504,7 +504,7 @@ span.frame {
 	top: 0.65em;
 	right: 10px;
 	color: rgba(0, 0, 0, 0.3);
-	text-decoration: none;
+	border-bottom: none;
 	font-weight: normal;
 	margin: 0;
 }
