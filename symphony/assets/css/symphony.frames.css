@@ -482,7 +482,7 @@ span.frame {
 	background: #e8e8e8;
 }
 
-.frame > ol > li.ordering header:befor,
+.frame > ol > li.ordering header:before,
 .frame > ul > li.ordering header:before {
 	border-left: 6px solid rgba(255, 255, 255, 0.7);
 	border-right: 3px solid rgba(255, 255, 255, 0.2);
