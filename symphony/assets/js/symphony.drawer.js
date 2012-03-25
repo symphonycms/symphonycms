@@ -104,7 +104,7 @@
 
 			// store state
 			if(Symphony.Support.localStorage === true) {
-				window.localStorage['symphony.drawer.' + drawer.attr('id') + '.' + drawer.data('context')] = 'opened';
+				window.localStorage['symphony.drawer.' + drawer.attr('id')] = 'opened';
 			}
 
 			wrapper.addClass('drawer-' + position);
@@ -183,7 +183,7 @@
 
 			// store state
 			if(Symphony.Support.localStorage === true) {
-				window.localStorage['symphony.drawer.' + drawer.attr('id') + '.' + drawer.data('context')] = 'closed';
+				window.localStorage['symphony.drawer.' + drawer.attr('id')] = 'closed';
 			}
 
 			wrapper.removeClass('drawer-' + position);
@@ -216,7 +216,7 @@
 			};
 			// Restore state
 			if (Symphony.Support.localStorage === true) {
-				storedState = window.localStorage['symphony.drawer.' + drawer.attr('id') + '.' + drawer.data('context')];
+				storedState = window.localStorage['symphony.drawer.' + drawer.attr('id')];
 				if (storedState === 'opened') {
 					drawer.data('open', true);
 				} else if (storedState === 'closed') {
