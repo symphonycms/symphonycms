@@ -609,6 +609,7 @@
 			$wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
 
 			$label = Widget::Label();
+			$label->setAttribute('class', 'column');
 			$input = Widget::Input($name, 'yes', 'checkbox');
 
 			if ($this->get('required') == 'yes') $input->setAttribute('checked', 'checked');
@@ -634,7 +635,7 @@
 			$wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
 
 			$label = Widget::Label();
-			$label->setAttribute('class', 'meta');
+			$label->setAttribute('class', 'column meta');
 			$input = Widget::Input($name, 'yes', 'checkbox');
 
 			if ($this->get('show_column') == 'yes') $input->setAttribute('checked', 'checked');
@@ -664,7 +665,7 @@
 			$wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
 
 			$label = Widget::Label();
-			$label->setAttribute('class', 'meta');
+			$label->setAttribute('class', 'column meta');
 			$input = Widget::Input($name, 'yes', 'checkbox');
 
 			if ($this->get('show_association') == 'yes') $input->setAttribute('checked', 'checked');
@@ -755,10 +756,10 @@
 			$value = strip_tags($data['value']);
 
 			if(function_exists('mb_substr') && function_exists('mb_strlen')) {
-				$value = (mb_strlen($value, 'utf-8') <= $max_length ? $value : mb_substr($value, 0, $max_length, 'utf-8') . '&hellip;');
+				$value = (mb_strlen($value, 'utf-8') <= $max_length ? $value : mb_substr($value, 0, $max_length, 'utf-8') . '…');
 			}
 			else {
-				$value = (strlen($value) <= $max_length ? $value : substr($value, 0, $max_length) . '&hellip;');
+				$value = (strlen($value) <= $max_length ? $value : substr($value, 0, $max_length) . '…');
 			}
 
 			if (strlen($value) == 0) $value = __('None');

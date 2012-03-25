@@ -35,11 +35,9 @@
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			if($formHasErrors) {
 				$this->pageAlert(
-					__('An error occurred while processing this form.')
-					. ' <a href="#error">'
-					. __('See below for details.')
-					. '</a>'
-					, Alert::ERROR);
+					__('An error occurred while processing this form. See below for details.')
+					, Alert::ERROR
+				);
 			}
 			// These alerts are only valid if the form doesn't have errors
 			else if(isset($this->_context[2])) {
@@ -566,7 +564,7 @@
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 
 			$subfieldset = new XMLElement('fieldset', NULL, array('class' => 'column'));
-			$subfieldset->appendChild(new XMLElement('legend', __('Parameters Output')));
+			$subfieldset->appendChild(new XMLElement('legend', __('Output Parameters')));
 
 			// Support multiple parameters
 			if(!is_array($fields['param'])) $fields['param'] = array($fields['param']);
@@ -710,7 +708,7 @@
 
 			$label = Widget::Label();
 			$label->setAttribute('class', 'contextual inverse authors');
-			$input = Widget::Input('fields[html_encode]', 'yes', 'checkbox', (isset($fields['html_encode']) ? array('checked' => 'checked') : NULL));
+			$input = Widget::Input('fields[html_encode]', 'yes', 'checkbox', (isset($fields['html_encode']) && $fields['html_encode'] == 'yes' ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s HTML-encode text', array($input->generate(false))));
 			$subfieldset->appendChild($label);
 
@@ -1104,10 +1102,6 @@
 				// Do dependencies, the template file must have <!-- CLASS NAME -->
 				// and <!-- DS DEPENDENCY LIST --> tokens
 				$dsShell = str_replace('<!-- CLASS NAME -->', $classname, $dsShell);
-				if(preg_match_all('@(\$ds-[-_0-9a-z]+)@i', $dsShell, $matches)){
-					$dependencies = General::array_remove_duplicates($matches[1]);
-					$dsShell = str_replace('<!-- DS DEPENDENCY LIST -->', "'" . implode("', '", $dependencies) . "'", $dsShell);
-				}
 
 				// If there is a provider, let them do the prepartion work
 				if($providerClass) {
@@ -1192,7 +1186,7 @@
 							break;
 
 						case 'static_xml':
-							$extends = 'StaticDatasource';
+							$extends = 'StaticXMLDatasource';
 							$fields['static_xml'] = trim($fields['static_xml']);
 
 							if(preg_match('/^<\?xml/i', $fields['static_xml']) == true){
@@ -1238,7 +1232,12 @@
 					$this->__injectVarList($dsShell, $params);
 					$this->__injectIncludedElements($dsShell, $elements);
 					self::injectFilters($dsShell, $filters);
-
+					
+					if(preg_match_all('@(\$ds-[0-9a-z_\.\-]+)@i', $dsShell, $matches)){
+						$dependencies = General::array_remove_duplicates($matches[1]);
+						$dsShell = str_replace('<!-- DS DEPENDENCY LIST -->', "'" . implode("', '", $dependencies) . "'", $dsShell);
+					}
+					
 					$dsShell = str_replace('<!-- CLASS EXTENDS -->', $extends, $dsShell);
 					$dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
 				}

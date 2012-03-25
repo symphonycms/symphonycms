@@ -81,7 +81,7 @@
 
 			// Construct instances
 			apply.on('click.duplicator', 'button.constructor:not(.disabled)', function construct(event, speed) {
-				var instance = templates.filter('[data-type="' + $(this).parent().find('select').val() + '"]').clone();
+				var instance = templates.filter('[data-type="' + $(this).parent().find('select').val() + '"]').clone(true);
 
 				event.preventDefault();
 
@@ -212,7 +212,11 @@
 
 			// Create content area
 			headers.each(function wrapContent() {
-				$(this).nextAll().wrapAll('<div class="content" />');
+				header = $(this);
+				
+				if(header.next('.content').length == 0) {
+					header.nextAll().wrapAll('<div class="content" />');
+				}
 			});
 
 			// Constructable interface
@@ -243,7 +247,7 @@
 
 					// Check uniqueness
 					template.trigger('constructstop.duplicator');
-				}).removeClass('template').addClass('instance').remove();
+				}).removeClass('template').addClass('instance').detach();
 			}
 
 			// Select default

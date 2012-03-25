@@ -30,11 +30,11 @@
 			$this->setTitle($this->_page_title);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 1);
 
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.basic.css', 'screen', 40);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.buttons.css', 'screen', 41);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.frames.css', 'screen', 42);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.grids.css', 'screen', 42);
-			$this->addStylesheetToHead(INSTALL_URL . '/assets/main.css', 'screen', 49);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.css', 'screen', 30);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.grids.css', 'screen', 31);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.forms.css', 'screen', 32);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.frames.css', 'screen', 33);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/installer.css', 'screen', 40);
 
 			return parent::generate();
 		}
@@ -89,20 +89,20 @@
 
 		protected function viewMissinglog() {
 			$h2 = new XMLElement('h2', __('Missing log file'));
-			$p = new XMLElement('p', __('Symphony couldn’t create a valid log file. Make sure the %s folder is writable.', array('<code>' . basename(INSTALL) . '</code>')));
+			$p = new XMLElement('p', __('Symphony tried to create a log file and failed. Make sure the %s folder is writable.', array('<code>' . basename(INSTALL) . '</code>')));
 
 			$this->Form->appendChild($h2);
 			$this->Form->appendChild($p);
 		}
 
 		protected function viewRequirements() {
-			$h2 = new XMLElement('h2', __('Outstanding Requirements'));
+			$h2 = new XMLElement('h2', __('System Requirements'));
 
 			$this->Form->appendChild($h2);
 
 			if(!empty($this->_params['errors'])){
 				$div = new XMLElement('div');
-				$this->__appendError(array_keys($this->_params['errors']), $div, __('Symphony needs the following requirements satisfied before installation can proceed.'));
+				$this->__appendError(array_keys($this->_params['errors']), $div, __('Symphony needs to meet the following requirements before thing can be taken to the "next level".'));
 
 				$this->Form->appendChild($div);
 			}
@@ -150,27 +150,29 @@
 				new XMLElement('h2', __('The floor is yours'))
 			);
 			$div->appendChild(
-				new XMLElement('p', __('Thanks for taking the quick but epic installation journey with us. It\'s now your turn to shine!'))
+				new XMLElement('p', __('Thanks for taking the quick, yet epic installation journey with us. It\'s now your turn to shine!'))
 			);
 			$this->Form->appendChild($div);
 
-			$extensions = ' ';
+			$ul = new XMLElement('ul');
 			foreach($this->_params['disabled-extensions'] as $handle){
-				$extensions .= '<code>' . $handle . '</code>, ';
+				$ul->appendChild(
+					new XMLElement('li', '<code>' . $handle . '</code>')
+				);
 			}
-			$extensions = rtrim($extensions, ', ');
 
-			if(trim($extensions) != ''){
+			if($ul->getNumberOfChildren() !== 0){
 				$this->Form->appendChild(
 					new XMLElement('p',
-						__('Unfortunately the following extensions couldn’t be enabled and must be manually installed. Sorry about that.') . $extensions
+						__('Looks like the following extensions couldn’t be enabled and must be manually installed. It\'s a minor setback in our otherwise prosperous future together.')
 					)
 				);
+				$this->Form->appendChild($ul);
 			}
 
 			$this->Form->appendChild(
 				new XMLElement('p',
-					__('Before proceeding, we recommend that the %s folder be removed to keep things nice and secure.', array('<code>' . basename(INSTALL) . '</code>'))
+					__('I think, you and I will achieve great things together. Just one last thing, how about we remove the %s folder and really secure the safety of our relationship.', array('<code>' . basename(INSTALL) . '</code>'))
 				)
 			);
 

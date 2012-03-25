@@ -339,7 +339,7 @@
 				'current-page-id' => $page['id'],
 				'current-path' => $current_path,
 				'parent-path' => '/' . $page['path'],
-				'current-query-string' => utf8_encode(urldecode($querystring)),
+				'current-query-string' => XMLElement::stripInvalidXMLCharacters(utf8_encode(urldecode($querystring))),
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
@@ -363,7 +363,7 @@
 					// the parameter being set.
 					if(!General::createHandle($key)) continue;
 
-					$this->_param['url-' . $key] = utf8_encode(urldecode($val));
+					$this->_param['url-' . $key] = XMLElement::stripInvalidXMLCharacters(utf8_encode(urldecode($val)));
 				}
 			}
 
@@ -781,11 +781,11 @@
 				// default to no XML
 				$xml = NULL;
 
-
 				/**
 				 * Allows extensions to execute the data source themselves (e.g. for caching)
 				 * and providing their own output XML instead
 				 *
+				 * @since Symphony 2.3
 				 * @delegate DataSourcePreExecute
 				 * @param string $context
 				 * '/frontend/'
@@ -835,16 +835,23 @@
 		 */
 		private function __findDatasourceOrder($dependenciesList){
 			if(!is_array($dependenciesList) || empty($dependenciesList)) return;
-
+			
+			foreach($dependenciesList as $handle => $dependencies) {
+				foreach($dependencies as $i => $dependency) {
+					$dependenciesList[$handle][$i] = reset(explode('.',$dependency));
+				}
+				
+			}
+			
 			$orderedList = array();
 			$dsKeyArray = $this->__buildDatasourcePooledParamList(array_keys($dependenciesList));
-
+			
 			// 1. First do a cleanup of each dependency list, removing non-existant DS's and find
 			//    the ones that have no dependencies, removing them from the list
 			foreach($dependenciesList as $handle => $dependencies){
 
 				$dependenciesList[$handle] = @array_intersect($dsKeyArray, $dependencies);
-
+				
 				if(empty($dependenciesList[$handle])){
 					unset($dependenciesList[$handle]);
 					$orderedList[] = str_replace('_', '-', $handle);

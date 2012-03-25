@@ -40,8 +40,8 @@
 			else{
 				foreach($sections as $s){
 
-					$entry_count = intval(Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries` WHERE `section_id` = '".$s->get('id')."' "));
-
+                    $entry_count = EntryManager::fetchCount($s->get('id'));
+                    
 					// Setup each cell
 					$td1 = Widget::TableData(Widget::Anchor($s->get('name'), Administration::instance()->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', NULL, 'content'));
 					$td2 = Widget::TableData(Widget::Anchor("$entry_count", SYMPHONY_URL . '/publish/' . $s->get('handle') . '/'));
@@ -110,13 +110,12 @@
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
-			if($formHasErrors)
+			if($formHasErrors) {
 				$this->pageAlert(
-					__('An error occurred while processing this form.')
-					. ' <a href="#error">'
-					. __('See below for details.')
-					. '</a>'
-					, Alert::ERROR);
+					__('An error occurred while processing this form. See below for details.')
+					, Alert::ERROR
+				);
+			}
 
 			$showEmptyTemplate = (is_array($fields) && !empty($fields) ? false : true);
 
@@ -151,7 +150,7 @@
 
 			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
-			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Created if does not exist') . '</i>');
+			$label = Widget::Label(__('Navigation Group'));
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
 			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::Error($label, $this->_errors['navigation_group']));
@@ -277,11 +276,9 @@
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			if($formHasErrors) {
 				$this->pageAlert(
-					__('An error occurred while processing this form.')
-					. ' <a href="#error">'
-					. __('See below for details.')
-					. '</a>'
-					, Alert::ERROR);
+					__('An error occurred while processing this form. See below for details.')
+					, Alert::ERROR
+				);
 			}
 			// These alerts are only valid if the form doesn't have errors
 			else if(isset($this->_context[2])) {
@@ -367,7 +364,7 @@
 
 			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
-			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Choose only one. Created if does not exist') . '</i>');
+			$label = Widget::Label(__('Navigation Group'));
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
 			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::Error($label, $this->_errors['navigation_group']));
@@ -639,9 +636,8 @@
 
 					// If we are creating a new Section
 					if(!$edit) {
-						$next = Symphony::Database()->fetchVar('next', 0, 'SELECT MAX(`sortorder`) + 1 AS `next` FROM tbl_sections LIMIT 1');
 
-						$meta['sortorder'] = ($next ? $next : '1');
+						$meta['sortorder'] = SectionManager::fetchNextSortOrder();
 
 						/**
 						 * Just prior to saving the Section settings. Use with caution as

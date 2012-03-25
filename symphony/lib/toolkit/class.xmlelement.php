@@ -14,12 +14,11 @@
 	Class XMLElement {
 
 		/**
-		 * This is an array of all HTML elements that are self closing.
+		 * This is an array of HTML elements that are self closing.
 		 * @var array
 		 */
 		protected static $no_end_tags = array(
-			'area', 'base', 'basefont', 'br', 'col', 'frame', 'hr', 'img',
-			'input', 'isindex', 'link', 'meta', 'param'
+			'area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param'
 		);
 
 		/**
@@ -559,6 +558,40 @@
 			if($index >= 0) return $index;
 
 			return $this->getNumberOfChildren() + $index;
+		}
+
+		/**
+		 * This function strips characters that are not allowed in XML
+		 *
+		 * @since Symphony 2.3
+		 * @link http://www.w3.org/TR/xml/#charsets
+		 * @link http://www.phpedit.net/snippet/Remove-Invalid-XML-Characters
+		 * @param string $value
+		 * @return string
+		 */
+		public static function stripInvalidXMLCharacters($value) {
+			if(Lang::isUnicodeCompiled()) {
+				return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $value);
+			}
+			else {
+				$ret = '';
+				if (empty($value)) {
+					return $ret;
+				}
+				$length = strlen($value);
+				for ($i=0; $i < $length; $i++) {
+					$current = ord($value{$i});
+					if (($current == 0x9) ||
+						($current == 0xA) ||
+						($current == 0xD) ||
+						(($current >= 0x20) && ($current <= 0xD7FF)) ||
+						(($current >= 0xE000) && ($current <= 0xFFFD)) ||
+						(($current >= 0x10000) && ($current <= 0x10FFFF))) {
+						$ret .= chr($current);
+					}
+				}
+				return $ret;
+			}
 		}
 
 		/**

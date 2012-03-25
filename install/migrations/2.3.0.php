@@ -23,7 +23,7 @@
 		}
 
 		static function getVersion(){
-			return '2.3beta3';
+			return '2.3beta2';
 		}
 
 		static function getReleaseNotes(){
@@ -214,7 +214,8 @@
 
 		static function preUpdateNotes(){
 			return array(
-				__("Please ensure all Authors have unique email addresses before updating.")
+				__("Symphony 2.3 is a major release that contains breaking changes from previous versions. It is highly recommended to review the releases notes and make a complete backup of your installation before updating as these changes may affect the functionality of your site."),
+				__("This release enforces that Authors must have unique email addresses. If multiple Authors have the same email address, this update will fail.")
 			);
 		}
 

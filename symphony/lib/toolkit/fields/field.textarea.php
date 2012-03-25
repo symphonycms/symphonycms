@@ -102,7 +102,7 @@
 			$div->appendChild($label);
 			$wrapper->appendChild($div);
 
-			$div =  new XMLElement('div', NULL, array('class' => 'compact'));
+			$div =  new XMLElement('div', NULL, array('class' => 'two columns'));
 			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
 			$wrapper->appendChild($div);

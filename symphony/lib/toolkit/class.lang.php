@@ -204,7 +204,7 @@
 				try {
 					$directory = new DirectoryIterator($extension->getPathname() . '/lang');
 					foreach($directory as $file) {
-						if ($file->isDot() || preg_match('%\.(?!php$)%', $file->getPathname())) continue;
+						if ($file->isDot() || !preg_match('/\.php/', $file->getPathname())) continue;
 
 						include($file->getPathname());
 
@@ -471,7 +471,7 @@
 				// This is important, otherwise the `DateTime` constructor may break
 				// @todo Test if this separator is still required. It's a hidden setting
 				// and users are only aware of it if they go digging/pointed in the right direction
-				$separator = Symphony::$Configuration->get('datetime_separator', 'region');
+				$separator = Symphony::Configuration()->get('datetime_separator', 'region');
 				if($separator != ' ') {
 					$string = str_replace($separator, ' ', $string);
 				}
