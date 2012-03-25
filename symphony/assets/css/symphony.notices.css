@@ -19,7 +19,6 @@ div.notifier nav {
 	position: absolute;
 	top: 0;
 	right: 18px;
-	text-decoration: none;
 	display: block;
 	padding: 4px 0;
 	cursor: pointer;
@@ -104,7 +103,6 @@ div.notifier nav:hover:before {
 
 .notice a {
 	color: #bdc3c3;
-	text-decoration: none;
 	border-bottom: 1px solid rgba(189, 195, 195, 0.2);
 	margin: 0 3px;
 }
@@ -114,7 +112,6 @@ div.notifier nav:hover:before {
 .notice a:focus {
 	color: #e4ece4;
 	border-color: #9b9b9b;
-	text-decoration: none;
 }
 
 /* Success messages */

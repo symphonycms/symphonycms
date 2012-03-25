@@ -164,7 +164,6 @@
 	display: block;
 	font-weight: normal;
 	padding: 0 9px;
-	text-decoration: none;
 	border: 1px solid transparent;
 	cursor: pointer;
 }
@@ -240,7 +239,6 @@
 }
 
 #breadcrumbs a {
-	text-decoration: none;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
@@ -465,7 +463,7 @@ ul.page li {
 ul.page a {
 	margin: 0 -0.67em;
 	padding: 0.67em;
-	text-decoration: none;
+	border-bottom: none;
 }
 
 ul.page form {
