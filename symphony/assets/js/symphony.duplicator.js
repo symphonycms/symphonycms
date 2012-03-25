@@ -212,7 +212,11 @@
 
 			// Create content area
 			headers.each(function wrapContent() {
-				$(this).nextAll().wrapAll('<div class="content" />');
+				header = $(this);
+				
+				if(header.next('.content').length == 0) {
+					header.nextAll().wrapAll('<div class="content" />');
+				}
 			});
 
 			// Constructable interface
