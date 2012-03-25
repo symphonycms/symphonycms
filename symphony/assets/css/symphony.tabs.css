@@ -88,7 +88,7 @@ ul.tabs li.selected:after {
 ul.tabs li a.destructor, 
 ul.tabs li.selected.invalid a.destructor {
 	line-height: 1;
-	text-decoration: none;
+	border-bottom: none;
 	color: rgba(0, 0, 0, 0.15);
 	text-shadow: 1px 1px #fff;
 	padding: 0 0 0 5px;

@@ -164,7 +164,6 @@
 	display: block;
 	font-weight: normal;
 	padding: 0 9px;
-	text-decoration: none;
 	border: 1px solid transparent;
 	cursor: pointer;
 }
@@ -240,7 +239,6 @@
 }
 
 #breadcrumbs a {
-	text-decoration: none;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
@@ -465,7 +463,7 @@ ul.page li {
 ul.page a {
 	margin: 0 -0.67em;
 	padding: 0.67em;
-	text-decoration: none;
+	border-bottom: none;
 }
 
 ul.page form {
@@ -578,13 +576,14 @@ div.field-checkbox:first-child {
 .file em {
 	float: right;
 	color: #998;
-	text-decoration: underline;
+	border-bottom: 1px solid rgba(153, 153, 136, 0.3);
 	font-style: normal;
 	cursor: pointer;
 }
 
 .file em:hover {
-	color: #d43;
+	color: #d42;
+	border-bottom-color: rgba(221, 68, 34, 0.3);
 }
 
 /* Actions */
