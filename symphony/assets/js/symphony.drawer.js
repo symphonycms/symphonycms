@@ -62,6 +62,7 @@
 					},
 					complete: function() {
 						contents.css('margin-left', settings.verticalWidth + 1); // +1px right border
+						drawer.trigger('expandstop.drawer');
 					}
 				});
 			};
@@ -80,6 +81,7 @@
 					},
 					complete: function() {
 						contents.css('margin-right', settings.verticalWidth + 1); // +1px right border
+						drawer.trigger('expandstop.drawer');
 					}
 				});
 			};
@@ -93,6 +95,7 @@
 					},
 					complete: function() {
 						verticals.trigger('update.drawer');
+						drawer.trigger('expandstop.drawer');
 					}
 				});
 			};
@@ -104,8 +107,6 @@
 
 			wrapper.addClass('drawer-' + position);
 			drawer.data('open', true);
-
-			drawer.trigger('expandstop.drawer');
 		});
 
 		// Collapse drawer
@@ -141,7 +142,8 @@
 					complete: function() {
 						drawer.css({
 							display: 'none'
-						});
+						})
+						.trigger('collapsestop.drawer');
 					}
 				});
 			};
@@ -158,7 +160,8 @@
 					complete: function() {
 						drawer.css({
 							display: 'none'
-						});
+						})
+						.trigger('collapsestop.drawer');
 					}
 				});
 			};
@@ -172,6 +175,7 @@
 					},
 					complete: function() {
 						verticals.trigger('update.drawer');
+						drawer.trigger('collapsestop.drawer');
 					}
 				});
 			};
@@ -183,8 +187,6 @@
 
 			wrapper.removeClass('drawer-' + position);
 			drawer.data('open', false);
-
-			drawer.trigger('collapsestop.drawer');
 		});
 
 		// Update drawer
