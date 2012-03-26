@@ -111,6 +111,8 @@
 				}
 
 				foreach($filters as $handle => $value) {
+                    // Get the ID of the field:
+                    // @Todo: change this query as soon as sections are stored in XML:
 					$field_id = Symphony::Database()->fetchVar('id', 0, sprintf("
 						SELECT `f`.`id`
 						FROM `tbl_fields` AS `f`
