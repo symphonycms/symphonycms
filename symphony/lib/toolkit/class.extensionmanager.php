@@ -481,7 +481,7 @@
 			if(is_dir(EXTENSIONS . "/{$extension_handle}/fields")){
 				foreach(glob(EXTENSIONS . "/{$extension_handle}/fields/field.*.php") as $file){
 					$type = preg_replace(array('/^field\./i', '/\.php$/i'), NULL, basename($file));
-					if(Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_fields` WHERE `type` = '{$type}'") > 0){
+					if(FieldManager::isTypeUsed($type)){
 						throw new Exception(
 							__('The field ‘%s’, provided by the Extension ‘%s’, is currently in use.', array(basename($file), $about['name']))
 							. ' ' . __("Please remove it from your sections prior to uninstalling or disabling.")

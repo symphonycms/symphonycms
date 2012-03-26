@@ -503,4 +503,9 @@
 
             return $schema;
         }
+
+        public static function isTypeUsed($type)
+        {
+            return Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_fields` WHERE `type` = '{$type}'") > 0;
+        }
 	}
