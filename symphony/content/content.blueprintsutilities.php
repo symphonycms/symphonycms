@@ -22,54 +22,48 @@
 		public function __viewIndex(){
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Utilities'), __('Symphony'))));
-			$this->appendSubheading(__('Utilities'), Widget::Anchor(__('Create New'), URL . '/symphony/blueprints/utilities/new/', __('Create a new utility'), 'create button'));
+			$this->appendSubheading(__('Utilities'), Widget::Anchor(__('Create New'), SYMPHONY_URL . '/blueprints/utilities/new/', __('Create a new utility'), 'create button'));
 
 			$utilities = General::listStructure(UTILITIES, array('xsl'), false, 'asc', UTILITIES);
 			$utilities = $utilities['filelist'];
 
 			$aTableHead = array(
-
 				array(__('Name'), 'col'),
 			);
 
 			$aTableBody = array();
 
 			if(!is_array($utilities) || empty($utilities)){
-
 				$aTableBody = array(
 					Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', NULL, count($aTableHead))), 'odd')
 				);
 			}
-
-			else{
-				
-				$bOdd = true;
-
+			else {
 				foreach($utilities as $u) {
 					$name = Widget::TableData(
 						Widget::Anchor(
 							$u,
-							URL . '/symphony/blueprints/utilities/edit/' . str_replace('.xsl', '', $u) . '/')
+							SYMPHONY_URL . '/blueprints/utilities/edit/' . str_replace('.xsl', '', $u) . '/')
 					);
 
 					$name->appendChild(Widget::Input('items[' . $u . ']', null, 'checkbox'));
 
-					$aTableBody[] = Widget::TableRow(array($name), null);
+					$aTableBody[] = Widget::TableRow(array($name));
 				}
 			}
 
 			$table = Widget::Table(
-				Widget::TableHead($aTableHead), 
-				NULL, 
+				Widget::TableHead($aTableHead),
+				NULL,
 				Widget::TableBody($aTableBody),
 				'selectable'
 			);
 
 			$this->Form->appendChild($table);
-			
+
 			$tableActions = new XMLElement('div');
 			$tableActions->setAttribute('class', 'actions');
-			
+
 			$options = array(
 				array(NULL, false, __('With Selected...')),
 				array('delete', false, __('Delete'), 'confirm'),
@@ -91,6 +85,7 @@
 		public function __form(){
 			$this->setPageType('form');
 			$this->_existing_file = (isset($this->_context[1]) ? $this->_context[1] . '.xsl' : NULL);
+			$this->Form->setAttribute('class', 'columns');
 
 			// Handle unknown context
 			if(!in_array($this->_context[0], array('new', 'edit'))) Administration::instance()->errorPageNotFound();
@@ -116,11 +111,9 @@
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			if($formHasErrors) {
 				$this->pageAlert(
-					__('An error occurred while processing this form.')
-					. ' <a href="#error">'
-					. __('See below for details.')
-					. '</a>'
-					, Alert::ERROR);
+					__('An error occurred while processing this form. See below for details.')
+					, Alert::ERROR
+				);
 			}
 			// These alerts are only valid if the form doesn't have errors
 			if(isset($this->_context[2])) {
@@ -160,15 +153,15 @@
 			$fields['body'] = General::sanitize($fields['body']);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'primary');
+			$fieldset->setAttribute('class', 'primary column');
 
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('fields[name]', $fields['name']));
-			$fieldset->appendChild((isset($this->_errors['name']) ? Widget::wrapFormElementWithError($label, $this->_errors['name']) : $label));
+			$fieldset->appendChild((isset($this->_errors['name']) ? Widget::Error($label, $this->_errors['name']) : $label));
 
 			$label = Widget::Label(__('Body'));
 			$label->appendChild(Widget::Textarea('fields[body]', 30, 80, $fields['body'], array('class' => 'code')));
-			$fieldset->appendChild((isset($this->_errors['body']) ? Widget::wrapFormElementWithError($label, $this->_errors['body']) : $label));
+			$fieldset->appendChild((isset($this->_errors['body']) ? Widget::Error($label, $this->_errors['body']) : $label));
 
 			$this->Form->appendChild($fieldset);
 
@@ -176,13 +169,16 @@
 			$utilities = $utilities['filelist'];
 
 			if(is_array($utilities) && !empty($utilities)){
+				$this->Form->setAttribute('class', 'two columns');
 
 				$div = new XMLElement('div');
-				$div->setAttribute('class', 'secondary');
+				$div->setAttribute('class', 'secondary column');
 
 				$p = new XMLElement('p', __('Utilities'));
 				$p->setAttribute('class', 'label');
 				$div->appendChild($p);
+
+				$frame = new XMLElement('div', null, array('class' => 'frame'));
 
 				$ul = new XMLElement('ul');
 				$ul->setAttribute('id', 'utilities');
@@ -199,7 +195,8 @@
 					$ul->appendChild($li);
 				}
 
-				$div->appendChild($ul);
+				$frame->appendChild($ul);
+				$div->appendChild($frame);
 
 				$this->Form->appendChild($div);
 

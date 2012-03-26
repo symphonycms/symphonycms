@@ -46,7 +46,7 @@
 	define('INSTALL', DOCROOT . '/install');
 	define('INSTALL_LOGS', INSTALL . '/logs');
 
-	define('VERSION', '2.3beta2');
+	define('VERSION', '2.3beta3');
 
 	// Required boot components
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
@@ -57,7 +57,7 @@
 	if(isset($_GET['action']) && $_GET['action'] == 'remove') {
 		require_once(DOCROOT . '/symphony/lib/toolkit/class.general.php');
 		General::deleteDirectory(INSTALL);
-		redirect(URL . '/symphony/');
+		redirect(SYMPHONY_URL);
 	}
 
 	// If Symphony is already installed, run the updater

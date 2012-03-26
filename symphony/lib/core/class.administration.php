@@ -169,17 +169,21 @@
 				if (!is_array($this->_callback['context'])) $this->_callback['context'] = array();
 
 				// Check for update Alert
-				// @todo Check migration files rather than this README trick/hack
+				// Scan install/migrations directory for the most recent updater and compare
 				if(file_exists(DOCROOT . '/install/index.php') && $this->__canAccessAlerts()) {
-					if(file_exists(DOCROOT . '/README.markdown') && is_readable(DOCROOT . '/README.markdown')) {
-						$readme = file(DOCROOT . '/README.markdown', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-						$readme = trim(str_replace('- Version:', '', $readme[1]));
+					try{
+						$migration_file = end(scandir(DOCROOT . '/install/migrations'));
+						include_once(DOCROOT . '/install/lib/class.migration.php');
+						include_once(DOCROOT . '/install/migrations/' . $migration_file);
+
+						$migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
+						$migration_version = $migration_class::getVersion();
 
 						$current_version = Symphony::Configuration()->get('version', 'symphony');
 
 						// The updater contains a version higher than the current Symphony version.
-						if(version_compare($current_version, $readme, '<')) {
-							$message = __('A migration has been found in your installation to update Symphony to %s.', array($readme)) . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
+						if(version_compare($current_version, $migration_version, '<')) {
+							$message = __('An update has been found in your installation to upgrade Symphony to %s.', array($migration_version)) . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
 						}
 						// The updater contains a version lower than the current Symphony version.
 						// The updater is the same version as the current Symphony install.
@@ -188,7 +192,7 @@
 						}
 					}
 					// Can't detect update Symphony version
-					else {
+					catch(Exception $e) {
 						$message = __('An update script has been found in your installation.') . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
 					}
 
@@ -252,7 +256,7 @@
 			if(!$page && $this->_callback) return $this->_callback;
 			elseif(!$page && !$this->_callback) trigger_error(__('Cannot request a page callback without first specifying the page.'));
 
-			$this->_currentPage = URL . preg_replace('/\/{2,}/', '/', '/symphony' . $page);
+			$this->_currentPage = SYMPHONY_URL . preg_replace('/\/{2,}/', '/', $page);
 			$bits = preg_split('/\//', trim($page, '/'), 3, PREG_SPLIT_NO_EMPTY);
 
 			$callback = array(
@@ -399,7 +403,7 @@
 		 * page not found template
 		 */
 		public function errorPageNotFound(){
-			$this->customError(__('Page Not Found'), __('The page you requested does not exist.'), 'error', array('header' => 'HTTP/1.0 404 Not Found'));
+			$this->customError(__('Page Not Found'), __('The page you requested does not exist.'), 'generic', array('header' => 'HTTP/1.0 404 Not Found'));
 		}
 
 		/**

@@ -8,7 +8,7 @@
 	 * current dictionary the original English string will be returned. Given an optional
 	 * `$inserts` array, the function will replace translation placeholders using `vsprintf()`.
 	 * Since Symphony 2.3, it is also possible to have multiple translation of the same string
-	 * according to the page namespace (i.e. the `value returned by `Symphony`s getPageNamespace()
+	 * according to the page namespace (i.e. the value returned by Symphony's `getPageNamespace()`
 	 * method). In your lang file, use the `$dictionary` key as namespace and its value as an array
 	 * of context-aware translations, as shown below:
 	 *
@@ -204,7 +204,7 @@
 				try {
 					$directory = new DirectoryIterator($extension->getPathname() . '/lang');
 					foreach($directory as $file) {
-						if($file->isDot()) continue;
+						if ($file->isDot() || !preg_match('/\.php/', $file->getPathname())) continue;
 
 						include($file->getPathname());
 
@@ -370,7 +370,7 @@
 		 * @return string
 		 *  Returns the translated string
 		 */
-		public function translate($string, array $inserts = null, $namespace = null) {
+		public static function translate($string, array $inserts = null, $namespace = null) {
 			if(is_null($namespace) && class_exists('Symphony')){
 				$namespace = Symphony::getPageNamespace();
 			}
@@ -426,7 +426,7 @@
 		 * @return boolean
 		 *	Returns true for localized system, false for English system
 		 */
-		public function isLocalized() {
+		public static function isLocalized() {
 			return (self::get() != 'en');
 		}
 
@@ -471,7 +471,7 @@
 				// This is important, otherwise the `DateTime` constructor may break
 				// @todo Test if this separator is still required. It's a hidden setting
 				// and users are only aware of it if they go digging/pointed in the right direction
-				$separator = Symphony::$Configuration->get('datetime_separator', 'region');
+				$separator = Symphony::Configuration()->get('datetime_separator', 'region');
 				if($separator != ' ') {
 					$string = str_replace($separator, ' ', $string);
 				}

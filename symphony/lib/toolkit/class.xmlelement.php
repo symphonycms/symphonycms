@@ -3,9 +3,9 @@
 	 * @package toolkit
 	 */
 	/**
-	 * XMLElement is a class used to simulate PHP's DOMElement
+	 * `XMLElement` is a class used to simulate PHP's `DOMElement`
 	 * class. Each object is a representation of a HTML element
-	 * and can store it's children in an array. When an XMLElement
+	 * and can store it's children in an array. When an `XMLElement`
 	 * is generated, it is output as an XML string.
 	 */
 
@@ -14,12 +14,11 @@
 	Class XMLElement {
 
 		/**
-		 * This is an array of all HTML elements that are self closing.
+		 * This is an array of HTML elements that are self closing.
 		 * @var array
 		 */
 		protected static $no_end_tags = array(
-			'area', 'base', 'basefont', 'br', 'col', 'frame', 'hr', 'img',
-			'input', 'isindex', 'link', 'meta', 'param'
+			'area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param'
 		);
 
 		/**
@@ -29,8 +28,8 @@
 		private $_name;
 
 		/**
-		 * The value of this XMLElement, it can be a string or another XMLElement object.
-		 * @var string|XMLElement
+		 * The value of this `XMLElement` as a string
+		 * @var string
 		 */
 		private $_value;
 
@@ -43,26 +42,26 @@
 		private $_attributes = array();
 
 		/**
-		 * Any children of this element as XMLElements
+		 * Children of this `XMLElement`, which will also be `XMLElement`'s
 		 * @var array
 		 */
 		private $_children = array();
 
 		/**
 		 * Any processing instructions that the XSLT should know about when a
-		 * XMLElement is generated
+		 * `XMLElement` is generated
 		 * @var array
 		 */
 		private $_processingInstructions = array();
 
 		/**
-		 * The DTD the should be output when a XMLElement is generated, defaults to null.
+		 * The DTD the should be output when a `XMLElement` is generated, defaults to null.
 		 * @var string
 		 */
 		private $_dtd = null;
 
 		/**
-		 * The encoding of the XMLElement, defaults to 'utf-8'
+		 * The encoding of the `XMLElement`, defaults to 'utf-8'
 		 * @var string
 		 */
 		private $_encoding = 'utf-8';
@@ -82,14 +81,14 @@
 
 		/**
 		 * When set to true this will include the XML declaration will be
-		 * output when the XML Element is generated. Defaults to false.
+		 * output when the `XMLElement` is generated. Defaults to `false`.
 		 * @var boolean
 		 */
 		private $_includeHeader = false;
 
 		/**
 		 * Specifies whether this HTML element has an closing element, or if
-		 * it self closing. Defaults to true.
+		 * it self closing. Defaults to `true`.
 		 *  eg. `<p></p>` or `<input />`
 		 * @var boolean
 		 */
@@ -97,28 +96,28 @@
 
 		/**
 		 * Specifies whether attributes need to have a value or if they can
-		 * be shorthand. Defaults to true. An example of this would be:
+		 * be shorthand. Defaults to `true`. An example of this would be:
 		 *  `<option selected>Value</option>`
 		 * @var boolean
 		 */
 		private $_allowEmptyAttributes = true;
 
 		/**
-		 * Defaults to false, which puts the value before any children elements.
+		 * Defaults to `false`, which puts the value before any children elements.
 		 * Setting to true will append any children first, then add the value
-		 * to the current XMLElement
+		 * to the current `XMLElement`
 		 * @var boolean
 		 */
 		private $_placeValueAfterChildElements = false;
 
 		/**
-		 * The constructor for the XMLElement
+		 * The constructor for the `XMLElement`
 		 *
 		 * @param string $name
-		 *  The name of the XMLElement, 'p'.
+		 *  The name of the `XMLElement`, 'p'.
 		 * @param string|XMLElement $value (optional)
-		 *  The value of this XMLElement, it can be a string
-		 *  or another XMLElement object.
+		 *  The value of this `XMLElement`, it can be a string
+		 *  or another `XMLElement` object.
 		 * @param array $attributes (optional)
 		 *  Any additional attributes can be included in an associative array with
 		 *  the key being the name and the value being the value of the attribute.
@@ -126,13 +125,13 @@
 		 *  set by previous params.
 		 * @param boolean $createHandle
 		 *  Whether this function should convert the `$name` to a handle. Defaults to
-		 *  false.
+		 *  `false`.
 		 * @return XMLElement
 		 */
 		public function __construct($name, $value = null, Array $attributes = array(), $createHandle = false){
 
 			$this->_name = ($createHandle) ? Lang::createHandle($name) : $name;
-			$this->setValue(($value instanceof XMLElement) ? $value->generate(false) : $value);
+			$this->setValue($value);
 
 			if(is_array($attributes) && !empty($attributes)) {
 				$this->setAttributeArray($attributes);
@@ -200,7 +199,7 @@
 
 		/**
 		 * Retrieves child-element by name and position. If no child is found,
-		 * NULL will be returned.
+		 * `NULL` will be returned.
 		 *
 		 * @since Symphony 2.3
 		 * @param string $name
@@ -236,7 +235,7 @@
 		}
 
 		/**
-		 * Adds processing instructions to this XMLElement
+		 * Adds processing instructions to this `XMLElement`
 		 *
 		 * @param string $pi
 		 */
@@ -245,7 +244,7 @@
 		}
 
 		/**
-		 * Sets the DTD for this XMLElement
+		 * Sets the DTD for this `XMLElement`
 		 *
 		 * @param string $dtd
 		 */
@@ -254,7 +253,7 @@
 		}
 
 		/**
-		 * Sets the encoding for this XMLElement for when
+		 * Sets the encoding for this `XMLElement` for when
 		 * it's generated.
 		 *
 		 * @param string $value
@@ -265,7 +264,7 @@
 
 		/**
 		 * Sets the version for the XML declaration of this
-		 * XMLElement
+		 * `XMLElement`
 		 *
 		 * @param string $value
 		 */
@@ -274,8 +273,8 @@
 		}
 
 		/**
-		 * Sets the style of the XMLElement. Used when the
-		 * XMLElement is being generated to determine whether
+		 * Sets the style of the `XMLElement`. Used when the
+		 * `XMLElement` is being generated to determine whether
 		 * needs to be closed, is self closing or is standalone.
 		 *
 		 * @param string $style (optional)
@@ -288,9 +287,9 @@
 		}
 
 		/**
-		 * Sets whether this XMLElement needs to output an
+		 * Sets whether this `XMLElement` needs to output an
 		 * XML declaration or not. This normally is only set to
-		 * true for the parent XMLElement, eg. 'html'.
+		 * true for the parent `XMLElement`, eg. 'html'.
 		 *
 		 * @param string $value (optional)
 		 *  Defaults to false
@@ -300,7 +299,7 @@
 		}
 
 		/**
-		 * Sets whether this XMLElement is self closing or not.
+		 * Sets whether this `XMLElement` is self closing or not.
 		 *
 		 * @param string $value (optional)
 		 *  Defaults to true
@@ -311,7 +310,7 @@
 
 		/**
 		 * Specifies whether attributes need to have a value
-		 * or if they can be shorthand on this XMLElement.
+		 * or if they can be shorthand on this `XMLElement`.
 		 *
 		 * @param string $value (optional)
 		 *  Defaults to true
@@ -321,7 +320,7 @@
 		}
 
 		/**
-		 * Sets the value of the XMLElement. Checks to see
+		 * Sets the value of the `XMLElement`. Checks to see
 		 * whether the value should be prepended or appended
 		 * to the children.
 		 *
@@ -330,6 +329,8 @@
 		 *  Defaults to true.
 		 */
 		public function setValue($value, $prepend=true){
+			$value = ($value instanceof XMLElement) ? $value->generate(false) : $value;
+
 			if(!$prepend) $this->_placeValueAfterChildElements = true;
 			$this->_value = $value;
 		}
@@ -348,7 +349,7 @@
 
 		/**
 		 * A convenience method to quickly add multiple attributes to
-		 * an XMLElement
+		 * an `XMLElement`
 		 *
 		 * @param array $attributes
 		 *  Associative array with the key being the name and
@@ -379,7 +380,7 @@
 		}
 
 		/**
-		 * Adds an XMLElement to the children array
+		 * Adds an `XMLElement` to the children array
 		 *
 		 * @param XMLElement $child
 		 */
@@ -390,7 +391,7 @@
 		}
 
 		/**
-		 * A convenience method to add children to an XMLElement
+		 * A convenience method to add children to an `XMLElement`
 		 * quickly.
 		 *
 		 * @param array $children
@@ -403,9 +404,9 @@
 		}
 
 		/**
-		 * Adds an XMLElement to the start of the children
+		 * Adds an `XMLElement` to the start of the children
 		 * array, this will mean it is output before any other
-		 * children when the XMLElement is generated
+		 * children when the `XMLElement` is generated
 		 *
 		 * @param XMLElement $child
 		 */
@@ -450,7 +451,7 @@
 		}
 
 		/**
-		 * Returns the number of children this XMLElement has.
+		 * Returns the number of children this `XMLElement` has.
 		 * @return integer
 		 */
 		public function getNumberOfChildren(){
@@ -460,8 +461,8 @@
 		/**
 		 * Given the position of the child in the `$this->_children`,
 		 * this function will unset the child at that position. This function
-		 * is not reversible. This function does not alter the key's of `$this->_children`
-		 * after removing a child
+		 * is not reversible. This function does not alter the key's of
+		 * `$this->_children` after removing a child
 		 *
 		 * @since Symphony 2.2.2
 		 * @param integer $index
@@ -483,10 +484,10 @@
 		}
 
 		/**
-		 * Given a desired index, and an XMLElement, this function will insert
+		 * Given a desired index, and an `XMLElement`, this function will insert
 		 * the child at that index in `$this->_children` shuffling all children
 		 * greater than `$index` down one. If the `$index` given is greater then
-		 * the number of children for this XMLElement, the `$child` will be
+		 * the number of children for this `XMLElement`, the `$child` will be
 		 * appended to the current `$this->_children` array.
 		 *
 		 * @since Symphony 2.2.2
@@ -518,7 +519,7 @@
 		}
 
 		/**
-		 * Given the position of the child to replace, and an XMLElement
+		 * Given the position of the child to replace, and an `XMLElement`
 		 * of the replacement child, this function will replace one child
 		 * with another
 		 *
@@ -560,7 +561,41 @@
 		}
 
 		/**
-		 * This function will turn the XMLElement into a string
+		 * This function strips characters that are not allowed in XML
+		 *
+		 * @since Symphony 2.3
+		 * @link http://www.w3.org/TR/xml/#charsets
+		 * @link http://www.phpedit.net/snippet/Remove-Invalid-XML-Characters
+		 * @param string $value
+		 * @return string
+		 */
+		public static function stripInvalidXMLCharacters($value) {
+			if(Lang::isUnicodeCompiled()) {
+				return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $value);
+			}
+			else {
+				$ret = '';
+				if (empty($value)) {
+					return $ret;
+				}
+				$length = strlen($value);
+				for ($i=0; $i < $length; $i++) {
+					$current = ord($value{$i});
+					if (($current == 0x9) ||
+						($current == 0xA) ||
+						($current == 0xD) ||
+						(($current >= 0x20) && ($current <= 0xD7FF)) ||
+						(($current >= 0xE000) && ($current <= 0xFFFD)) ||
+						(($current >= 0x10000) && ($current <= 0x10FFFF))) {
+						$ret .= chr($current);
+					}
+				}
+				return $ret;
+			}
+		}
+
+		/**
+		 * This function will turn the `XMLElement` into a string
 		 * representing the element as it would appear in the markup.
 		 * The result is valid XML.
 		 *

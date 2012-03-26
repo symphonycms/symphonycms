@@ -12,7 +12,7 @@
 	 */
 
 	require_once(TOOLKIT . '/class.datasource.php');
-	require_once(TOOLKIT . '/interface.fileresource.php');
+	require_once(FACE . '/interface.fileresource.php');
 
 	Class DatasourceManager implements FileResource {
 
@@ -186,9 +186,7 @@
 
 			if(!class_exists($classname)) require_once($path);
 
-			$dummy = array();
-
-			return new $classname($dummy, $env, $process_params);
+			return new $classname($env, $process_params);
 		}
 
 	}

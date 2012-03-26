@@ -37,7 +37,7 @@
 			// Create item
 			item = $('<p />', {
 				html: message.replace(Symphony.Language.get('at') + ' ', ''),
-				class: type
+				'class': type
 			}).addClass('notice active').symphonyTimeAgo();
 
 			// Add ignore link to notices)

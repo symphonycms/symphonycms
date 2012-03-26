@@ -376,9 +376,12 @@
 		 */
 		protected function getSectionAttachments() {
 			$output = '';
-			foreach ($this->_attachments as $file) {
+			foreach ($this->_attachments as $filename => $file) {
+				if(is_numeric($filename)){
+					$filename = NULL;
+				}
 				$output .= $this->boundaryDelimiterLine('multipart/mixed')
-						 . $this->contentInfoString(NULL, $file)
+						 . $this->contentInfoString(NULL, $file, $filename)
 						 . EmailHelper::base64ContentTransferEncode(file_get_contents($file))
 				;
 			}
@@ -431,7 +434,7 @@
 		 * failure. Can be used to send to an email server directly.
 		 * @return string
 		 */
-		public function contentInfoArray($type = NULL, $file = NULL) {
+		public function contentInfoArray($type = NULL, $file = NULL, $filename = NULL) {
 			$description = array(
 				'multipart/mixed' => array(
 					"Content-Type" => 'multipart/mixed; boundary="'
@@ -451,11 +454,11 @@
 				),
 			);
 			$binary = array(
-				'Content-Type'				=> EmailHelper::getMimeType($file).'; name="'.basename($file).'"',
+				'Content-Type'				=> EmailHelper::getMimeType($file).'; name="'.(!is_null($filename)?$filename:basename($file)).'"',
 				'Content-Transfer-Encoding' => 'base64',
-				'Content-Disposition'		=> 'attachment; filename="'.basename($file).'"',
+				'Content-Disposition'		=> 'attachment; filename="' . (!is_null($filename)?$filename:basename($file)).'"',
 			);
-			return !empty($description[$type]) ? $description[$type] : ($file ? $binary : array());
+			return !empty($description[$type]) ? $description[$type] : ((!is_null($filename)?$filename:basename($file)) ? $binary : array());
 		}
 
 		/**
@@ -463,8 +466,8 @@
 		 *
 		 * @return string
 		 */
-		protected function contentInfoString($type = NULL, $file = NULL) {
-			$data = $this->contentInfoArray($type, $file);
+		protected function contentInfoString($type = NULL, $file = NULL, $filename = NULL) {
+			$data = $this->contentInfoArray($type, $file, $filename);
 			foreach ($data as $key => $value) {
 				$field[] = EmailHelper::fold(sprintf('%s: %s', $key, $value));
 			}

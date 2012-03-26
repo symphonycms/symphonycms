@@ -116,11 +116,8 @@
 			$section_ids = array();
 
 			if(!is_null($section_id)) {
-				if(is_numeric($section_id)) {
-					$returnSingle = true;
-				}
-
 				if(!is_array($section_id)) {
+					$returnSingle = true;
 					$section_ids = array((int)$section_id);
 				}
 				else {
@@ -171,6 +168,23 @@
 		 */
 		public static function fetchIDFromHandle($handle){
 			return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_sections` WHERE `handle` = '$handle' LIMIT 1");
+		}
+		
+		/**
+		 * Work out the next available sort order for a new section
+		 *
+		 * @return integer
+		 *  Returns the next sort order
+		 */
+		public static function fetchNextSortOrder(){
+			$next = Symphony::Database()->fetchVar("next", 0, "
+				SELECT
+					MAX(p.sortorder) + 1 AS `next`
+				FROM
+					`tbl_sections` AS p
+				LIMIT 1
+			");
+			return ($next ? (int)$next : 1);
 		}
 
 		/**

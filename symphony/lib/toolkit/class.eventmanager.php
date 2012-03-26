@@ -20,7 +20,7 @@
 		 * the Symphony convention of `event.*.php`
 		 *
 		 * @param string $filename
-		 *	The filename of the Event
+		 *  The filename of the Event
 		 * @return string
 		 */
 		public static function __getHandleFromFilename($filename){
@@ -32,7 +32,7 @@
 		 * use an 'event' prefix.
 		 *
 		 * @param string $handle
-		 *	The Event handle
+		 *  The Event handle
 		 * @return string
 		 */
 		public static function __getClassName($handle){
@@ -44,10 +44,10 @@
 		 * and in all installed extension folders and returns the path to it's folder.
 		 *
 		 * @param string $handle
-		 *	The handle of the Event free from any Symphony conventions
-		 *	such as `event.*.php`
+		 *  The handle of the Event free from any Symphony conventions
+		 *  such as `event.*.php`
 		 * @return mixed
-		 *	If the Event is found, the function returns the path it's folder, otherwise false.
+		 *  If the Event is found, the function returns the path it's folder, otherwise false.
 		 */
 		public static function __getClassPath($handle){
 			if(is_file(EVENTS . "/event.$handle.php")) return EVENTS;
@@ -70,14 +70,13 @@
 		 *
 		 * @see toolkit.EventManager#__getClassPath()
 		 * @param string $handle
-		 *	The handle of the Event free from any Symphony conventions
-		 *	such as event.*.php
+		 *  The handle of the Event free from any Symphony conventions
+		 *  such as event.*.php
 		 * @return string
 		 */
 		public static function __getDriverPath($handle){
 			return self::__getClassPath($handle) . "/event.$handle.php";
 		}
-
 
 		/**
 		 * Finds all available Events by searching the events folder in the workspace
@@ -85,8 +84,8 @@
 		 *
 		 * @see toolkit.Manager#about()
 		 * @return array
-		 *	Associative array of Events with the key being the handle of the Event
-		 *	and the value being the Event's `about()` information.
+		 *  Associative array of Events with the key being the handle of the Event
+		 *  and the value being the Event's `about()` information.
 		 */
 		public static function listAll(){
 			$result = array();
@@ -162,13 +161,13 @@
 		 * Creates an instance of a given class and returns it.
 		 *
 		 * @param string $handle
-		 *	The handle of the Event to create
+		 *  The handle of the Event to create
 		 * @param array $env
-		 *	The environment variables from the Frontend class which includes
-		 *	any params set by Symphony or Datasources or by other Events
+		 *  The environment variables from the Frontend class which includes
+		 *  any params set by Symphony or Datasources or by other Events
 		 * @return Event
 		 */
-		public static function create($handle, array $env = array()){
+		public static function create($handle, array $env = null){
 			$classname = self::__getClassName($handle);
 			$path = self::__getDriverPath($handle);
 
@@ -179,10 +178,9 @@
 				);
 			}
 
-			if(!class_exists($classname))
-				require_once($path);
+			if(!class_exists($classname)) require_once($path);
 
-			return new $classname($dummy, $env);
+			return new $classname($env);
 		}
 
 	}

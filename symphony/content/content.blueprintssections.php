@@ -40,8 +40,8 @@
 			else{
 				foreach($sections as $s){
 
-					$entry_count = intval(Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries` WHERE `section_id` = '".$s->get('id')."' "));
-
+                    $entry_count = EntryManager::fetchCount($s->get('id'));
+                    
 					// Setup each cell
 					$td1 = Widget::TableData(Widget::Anchor($s->get('name'), Administration::instance()->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', NULL, 'content'));
 					$td2 = Widget::TableData(Widget::Anchor("$entry_count", SYMPHONY_URL . '/publish/' . $s->get('handle') . '/'));
@@ -110,13 +110,12 @@
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
-			if($formHasErrors)
+			if($formHasErrors) {
 				$this->pageAlert(
-					__('An error occurred while processing this form.')
-					. ' <a href="#error">'
-					. __('See below for details.')
-					. '</a>'
-					, Alert::ERROR);
+					__('An error occurred while processing this form. See below for details.')
+					, Alert::ERROR
+				);
+			}
 
 			$showEmptyTemplate = (is_array($fields) && !empty($fields) ? false : true);
 
@@ -134,13 +133,13 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
-			$div = new XMLElement('div', NULL, array('class' => 'group'));
-			$namediv = new XMLElement('div', NULL);
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+			$namediv = new XMLElement('div', NULL, array('class' => 'column'));
 
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
 
-			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
 
 			$label = Widget::Label();
@@ -149,12 +148,12 @@
 			$namediv->appendChild($label);
 			$div->appendChild($namediv);
 
-			$navgroupdiv = new XMLElement('div', NULL);
+			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
-			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Created if does not exist') . '</i>');
+			$label = Widget::Label(__('Navigation Group'));
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
-			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
+			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::Error($label, $this->_errors['navigation_group']));
 			else $navgroupdiv->appendChild($label);
 
 			if(is_array($sections) && !empty($sections)){
@@ -204,10 +203,12 @@
 			$p = new XMLElement('p', __('Click to expand or collapse a field.') . '<br />' . __('Double click to expand or collapse all fields.'), array('class' => 'help'));
 			$fieldset->appendChild($p);
 
-			$div = new XMLElement('div');
+			$div = new XMLElement('div', null, array('class' => 'frame'));
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');
+			$ol->setAttribute('data-add', __('Add field'));
+			$ol->setAttribute('data-remove', __('Remove field'));
 
 			if(!$showEmptyTemplate){
 				foreach($fields as $position => $data){
@@ -269,16 +270,15 @@
 				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for could not be found.'));
 			}
 			$meta = $section->get();
+			$section_id = $meta['id'];
 			$types = array();
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			if($formHasErrors) {
 				$this->pageAlert(
-					__('An error occurred while processing this form.')
-					. ' <a href="#error">'
-					. __('See below for details.')
-					. '</a>'
-					, Alert::ERROR);
+					__('An error occurred while processing this form. See below for details.')
+					, Alert::ERROR
+				);
 			}
 			// These alerts are only valid if the form doesn't have errors
 			else if(isset($this->_context[2])) {
@@ -347,13 +347,13 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
-			$div = new XMLElement('div', NULL, array('class' => 'group'));
-			$namediv = new XMLElement('div', NULL);
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+			$namediv = new XMLElement('div', NULL, array('class' => 'column'));
 
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
 
-			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['name']));
+			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
 
 			$label = Widget::Label();
@@ -362,12 +362,12 @@
 			$namediv->appendChild($label);
 			$div->appendChild($namediv);
 
-			$navgroupdiv = new XMLElement('div', NULL);
+			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
-			$label = Widget::Label(__('Navigation Group') . ' <i>' . __('Choose only one. Created if does not exist') . '</i>');
+			$label = Widget::Label(__('Navigation Group'));
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
 
-			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::wrapFormElementWithError($label, $this->_errors['navigation_group']));
+			if(isset($this->_errors['navigation_group'])) $navgroupdiv->appendChild(Widget::Error($label, $this->_errors['navigation_group']));
 			else $navgroupdiv->appendChild($label);
 
 			if(is_array($sections) && !empty($sections)){
@@ -417,10 +417,12 @@
 			$p = new XMLElement('p', __('Click to expand or collapse a field.') . '<br />' . __('Double click to expand or collapse all fields.'), array('class' => 'help'));
 			$fieldset->appendChild($p);
 
-			$div = new XMLElement('div');
+			$div = new XMLElement('div', null, array('class' => 'frame'));
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('id', 'fields-duplicator');
+			$ol->setAttribute('data-add', __('Add field'));
+			$ol->setAttribute('data-remove', __('Remove field'));
 
 			if(is_array($fields) && !empty($fields)){
 				foreach($fields as $position => $field){
@@ -634,9 +636,8 @@
 
 					// If we are creating a new Section
 					if(!$edit) {
-						$next = Symphony::Database()->fetchVar('next', 0, 'SELECT MAX(`sortorder`) + 1 AS `next` FROM tbl_sections LIMIT 1');
 
-						$meta['sortorder'] = ($next ? $next : '1');
+						$meta['sortorder'] = SectionManager::fetchNextSortOrder();
 
 						/**
 						 * Just prior to saving the Section settings. Use with caution as

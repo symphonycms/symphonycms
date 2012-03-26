@@ -51,7 +51,7 @@
 			return $states;
 		}
 
-		public function toggleFieldData($data, $newState){
+		public function toggleFieldData(array $data, $newState, $entry_id=null){
 			$data['value'] = $newState;
 			$data['handle'] = Lang::createHandle($newState);
 			return $data;
@@ -163,13 +163,13 @@
 		Settings:
 	-------------------------------------------------------------------------*/
 
-		public function findDefaults(&$fields){
-			if(!isset($fields['allow_multiple_selection'])) $fields['allow_multiple_selection'] = 'no';
-			if(!isset($fields['show_association'])) $fields['show_association'] = 'no';
-			if(!isset($fields['sort_options'])) $fields['sort_options'] = 'no';
+		public function findDefaults(array &$settings){
+			if(!isset($settings['allow_multiple_selection'])) $settings['allow_multiple_selection'] = 'no';
+			if(!isset($settings['show_association'])) $settings['show_association'] = 'no';
+			if(!isset($settings['sort_options'])) $settings['sort_options'] = 'no';
 		}
 
-		public function displaySettingsPanel(&$wrapper, $errors = null) {
+		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$div = new XMLElement('div', NULL, array('class' => 'group'));
@@ -208,35 +208,37 @@
 
 			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][dynamic_options]', $options));
 
-			if(isset($errors['dynamic_options'])) $div->appendChild(Widget::wrapFormElementWithError($label, $errors['dynamic_options']));
+			if(isset($errors['dynamic_options'])) $div->appendChild(Widget::Error($label, $errors['dynamic_options']));
 			else $div->appendChild($label);
 
 			$wrapper->appendChild($div);
 
-			$div = new XMLElement('div', NULL, array('class' => 'compact'));
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 
 			// Allow selection of multiple items
 			$label = Widget::Label();
+			$label->setAttribute('class', 'column');
 			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
 			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Allow selection of multiple options', array($input->generate())));
 			$div->appendChild($label);
 
+			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Values'));
+
 			// Sort options?
 			$label = Widget::Label();
+			$label->setAttribute('class', 'column');
 			$input = Widget::Input('fields['.$this->get('sortorder').'][sort_options]', 'yes', 'checkbox');
 			if($this->get('sort_options') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Sort all options alphabetically', array($input->generate())));
 			$div->appendChild($label);
-
-			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Values'));
 
 			$this->appendShowColumnCheckbox($div);
 			$this->appendRequiredCheckbox($div);
 			$wrapper->appendChild($div);
 		}
 
-		public function checkFields(&$errors, $checkForDuplicates=true){
+		public function checkFields(array &$errors, $checkForDuplicates = true){
 			if(!is_array($errors)) $errors = array();
 
 			if($this->get('static_options') == '' && ($this->get('dynamic_options') == '' || $this->get('dynamic_options') == 'none'))
@@ -281,14 +283,14 @@
 		Publish:
 	-------------------------------------------------------------------------*/
 
-		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null){
 			$states = $this->getToggleStates();
 
 			if(!is_array($data['value'])) $data['value'] = array($data['value']);
 
-			$options = array();
-
-			if ($this->get('required') != 'yes') $options[] = array(NULL, false, NULL);
+			$options = array(
+				array(NULL, false, NULL)
+			);
 
 			foreach($states as $handle => $v){
 				$options[] = array(General::sanitize($v), in_array($v, $data['value']), General::sanitize($v));
@@ -298,9 +300,10 @@
 			if($this->get('allow_multiple_selection') == 'yes') $fieldname .= '[]';
 
 			$label = Widget::Label($this->get('label'));
+			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : NULL)));
 
-			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
+			if($flagWithError != NULL) $wrapper->appendChild(Widget::Error($label, $flagWithError));
 			else $wrapper->appendChild($label);
 		}
 
@@ -325,7 +328,7 @@
 		Output:
 	-------------------------------------------------------------------------*/
 
-		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
+		public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
 			if (!is_array($data) or is_null($data['value'])) return;
 
 			$list = new XMLElement($this->get('element_name'));
@@ -366,7 +369,7 @@
 		Filtering:
 	-------------------------------------------------------------------------*/
 
-		public function displayDatasourceFilterPanel(&$wrapper, $data=NULL, $errors=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
 			parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
 
 			$data = preg_split('/,\s*/i', $data);

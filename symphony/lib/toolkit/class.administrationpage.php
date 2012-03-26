@@ -19,9 +19,10 @@
 	Class AdministrationPage extends HTMLPage {
 
 		/**
-		 * An instance of the `Alert` class. Used to display page level
-		 * messages to Symphony users.
-		 * @var Alert
+		 * An array of `Alert` objects used to display page level
+		 * messages to Symphony backend users one by one. Prior to Symphony 2.3
+		 * this variable only held a single `Alert` object.
+		 * @var array
 		 */
 		public $Alert = array();
 
@@ -56,6 +57,13 @@
 		private $Breadcrumbs = null;
 
 		/**
+		 * An array of Drawer widgets for the current page
+		 * @since Symphony 2.3
+		 * @var array
+		 */
+		public $Drawer = array();
+
+		/**
 		 * A `<div>` that contains the content of a Symphony backend page.
 		 * @var XMLElement
 		 */
@@ -79,8 +87,8 @@
 		 *  An associative array describing this pages context. This
 		 *  can include the section handle, the current entry_id, the page
 		 *  name and any flags such as 'saved' or 'created'. This variable
-		 * often provided in delegates so extensions can manipulate based
-		 * off the current context or add new keys.
+		 *  often provided in delegates so extensions can manipulate based
+		 *  off the current context or add new keys.
 		 * @var array
 		 */
 		public $_context = null;
@@ -94,7 +102,7 @@
 
 		/**
 		 * Constructor calls the parent constructor to set up
-		 * the basic HTML, Head and Body `XMLElement`'ss. This function
+		 * the basic HTML, Head and Body `XMLElement`'s. This function
 		 * also sets the `XMLElement` element style to be HTML, instead of XML
 		 */
 		public function __construct(){
@@ -104,12 +112,15 @@
 		}
 
 		/**
-		 * Adds either the tables or forms stylesheet to the page. By default
-		 * this is forms, but can be override by passing 'table' to the function.
-		 * The stylesheets reside in the `ASSETS` folder
+		 * Specifies the type of page that being created. This is used to
+		 * trigger various styling hooks. If your page is mainly a form,
+		 * pass 'form' as the parameter, if it's displaying a single entry,
+		 * pass 'single'. If any other parameter is passed, the 'index'
+		 * styling will be applied.
 		 *
 		 * @param string $type
-		 *  Either 'form' or 'table'. Defaults to 'form'
+		 *  Accepts 'form' or 'single', any other `$type` will trigger 'index'
+		 *  styling.
 		 */
 		public function setPageType($type = 'form'){
 			$this->setBodyClass($type == 'form' || $type == 'single' ? 'single' : 'index');
@@ -129,6 +140,19 @@
 			if (!isset($this->_context['page']) || $this->_context['page'] != 'index' || $class != 'index') {
 				$this->_body_class .= $class;
 			}
+		}
+
+		/**
+		 * Accessor for `$this->_context` which includes contextual information
+		 * about the current page such as the class, file location or page root.
+		 * This information varies depending on if the page is provided by an
+		 * extension, is for the publish area, is the login page or any other page
+		 *
+		 * @since Symphony 2.3
+		 * @return array
+		 */
+		public function getContext() {
+			return $this->_context;
 		}
 
 		/**
@@ -153,7 +177,7 @@
 
 			$message = __($message);
 
-			if(strlen(trim($message)) == 0) throw new Exception('A message must be supplied unless flagged as Alert::ERROR');
+			if(strlen(trim($message)) == 0) throw new Exception('A message must be supplied unless the alert is of type Alert::ERROR');
 
 			$this->Alert[] = new Alert($message, $type);
 		}
@@ -175,25 +199,58 @@
 				$actions = array($actions);
 			}
 
-			if(!empty($actions)){
-				$ul = new XMLElement('ul', NULL, array('class' => 'actions'));
-
-				foreach($actions as $a){
-					$ul->appendChild(new XMLElement('li', $a));
-				}
-				$this->Context->appendChild($ul);
+			if(!empty($actions)) foreach($actions as $a){
+				$this->insertAction($a);
 			}
 
 			$this->Breadcrumbs->appendChild(new XMLElement('h2', $value));
 		}
 
 		/**
-		 * Allows developers to specify a list of nav items that build the path to the
-		 * current page or, in jargon, "breadcrumbs".
+		 * This function allows a user to insert an Action button to the page.
+		 * It accepts an `XMLElement` (which should be of the `Anchor` type),
+		 * an optional parameter `$prepend`, which when `true` will add this
+		 * action before any existing actions.
+		 *
+		 * @since Symphony 2.3
+		 * @see core.Widget#Anchor
+		 * @param XMLElement $action
+		 *  An Anchor element to add to the top of the page.
+		 * @param boolean $append
+		 *  If true, this will add the `$action` after existing actions, otherwise
+		 *  it will be added before existing actions. By default this is `true`,
+		 *  which will add the `$action` after current actions.
+		 */
+		public function insertAction(XMLElement $action, $append = true) {
+			$actions = $this->Context->getChildrenByName('ul');
+
+			// Actions haven't be added yet, create the element
+			if(empty($actions)) {
+				$ul = new XMLElement('ul', NULL, array('class' => 'actions'));
+				$this->Context->appendChild($ul);
+			}
+			else {
+				$ul = current($actions);
+				$this->Context->replaceChildAt(1, $ul);
+			}
+
+			$li = new XMLElement('li', $action);
+
+			if($append) {
+				$ul->prependChild($li);
+			}
+			else {
+				$ul->appendChild($li);
+			}
+		}
+
+		/**
+		 * Allows developers to specify a list of nav items that build the
+		 * path to the current page or, in jargon, "breadcrumbs".
 		 *
 		 * @since Symphony 2.3
 		 * @param array $values
-		 *  An array of XMLElements or strings that compose the path. If breadcrumbs
+		 *  An array of `XMLElement`'s or strings that compose the path. If breadcrumbs
 		 *  already exist, any new item will be appended to the rightmost part of the
 		 *  path.
 		 */
@@ -205,8 +262,7 @@
 				$nav = $this->Breadcrumbs->getChildrenByName('nav');
 				$nav = $nav[0];
 
-				$p = $nav->getChildren();
-				$p = $p[0];
+				$p = $nav->getChild(0);
 			}
 			else {
 				$p = new XMLElement('p');
@@ -219,6 +275,39 @@
 			foreach($values as $v){
 				$p->appendChild($v);
 				$p->appendChild(new XMLElement('span', '&#8250;', array('class' => 'sep')));
+			}
+		}
+
+		/**
+		 * Allows a Drawer element to added to the backend page in one of three
+		 * positions, `horizontal`, `vertical-left` or `vertical-right`. The button
+		 * to trigger the visibility of the drawer will be added after existing
+		 * actions by default.
+		 *
+		 * @since Symphony 2.3
+		 * @see core.Widget#Drawer
+		 * @param XMLElement $drawer
+		 *  An XMLElement representing the drawer, use `Widget::Drawer` to construct
+		 * @param string $position
+		 *  Where `$position` can be `horizontal`, `vertical-left` or
+		 *  `vertical-right`. Defaults to `horizontal`.
+		 * @param string $button
+		 *  If not passed, a button to open/close the drawer will not be added
+		 *  to the interface. Accepts 'prepend' or 'append' values, which will
+		 *  add the button before or after existing buttons. Defaults to `prepend`.
+		 *  If any other value is passed, no button will be added.
+		 */
+		public function insertDrawer(XMLElement $drawer, $position = 'horizontal', $button = 'append') {
+			$drawer->addClass($position);
+			$drawer->setAttribute('data-position', $position);
+			$this->Drawer[$position][] = $drawer;
+
+			if(in_array($button, array('prepend', 'append'))) {
+				$this->insertAction(Widget::Anchor(
+						$drawer->getAttribute('data-label'), '#' . $drawer->getAttribute('id'), null, 'button drawer ' . $position
+					),
+					($button === 'append') ? true : false
+				);
 			}
 		}
 
@@ -250,23 +339,29 @@
 			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 0);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge,chrome=1')), 1);
 
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/legacy.css', 'screen', 40);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/basic.css', 'screen', 41);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/admin.css', 'screen', 42);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/symphony.duplicator.css', 'screen', 43);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.css', 'screen', 30);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.legacy.css', 'screen', 31);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.grids.css', 'screen', 32);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.forms.css', 'screen', 34);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.tables.css', 'screen', 34);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.frames.css', 'screen', 33);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.drawers.css', 'screen', 34);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.tabs.css', 'screen', 34);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.notices.css', 'screen', 34);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/admin.css', 'screen', 40);
 
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.js', 50);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/jquery.color.js', 51);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.js', 60);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.collapsible.js', 61);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.orderable.js', 62);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.selectable.js', 63);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.duplicator.js', 64);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.tags.js', 65);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.pickable.js', 66);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.timeago.js', 67);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/symphony.notify.js', 68);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/admin.js', 70);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/jquery.js', 50);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.js', 60);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.collapsible.js', 61);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.orderable.js', 62);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.selectable.js', 63);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.duplicator.js', 64);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.tags.js', 65);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.pickable.js', 66);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.timeago.js', 67);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.notify.js', 68);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.drawer.js', 69);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/admin.js', 70);
 
 			$this->addElementToHead(
 				new XMLElement(
@@ -278,6 +373,14 @@
 					array('type' => 'text/javascript')
 				), 72
 			);
+
+			// Initialise page containers
+			$this->Wrapper = new XMLElement('div', NULL, array('id' => 'wrapper'));
+			$this->Header = new XMLElement('header', NULL, array('id' => 'header'));
+			$this->Context = new XMLElement('div', NULL, array('id' => 'context'));
+			$this->Breadcrumbs = new XMLElement('div', NULL, array('id' => 'breadcrumbs'));
+			$this->Contents = new XMLElement('div', NULL, array('id' => 'contents'));
+			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
 
 			/**
 			 * Allows developers to insert items into the page HEAD. Use `Administration::instance()->Page`
@@ -296,10 +399,6 @@
 				Symphony::Profiler()->sample('Page action run', PROFILE_LAP);
 			}
 
-			// Wrapper + Header
-			$this->Wrapper = new XMLElement('div', NULL, array('id' => 'wrapper'));
-			$this->Header = new XMLElement('header', NULL, array('id' => 'header'));
-
 			$h1 = new XMLElement('h1');
 			$h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
 			$this->Header->appendChild($h1);
@@ -307,16 +406,12 @@
 			$this->appendUserLinks();
 			$this->appendNavigation();
 
-			// Context + Contents
-			$this->Context = new XMLElement('div', NULL, array('id' => 'context'));
-			$this->Breadcrumbs = new XMLElement('div', NULL, array('id' => 'breadcrumbs'));
-			$this->Context->appendChild($this->Breadcrumbs);
-
-			$this->Contents = new XMLElement('div', NULL, array('id' => 'contents'));
-			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
-			$this->Contents->appendChild($this->Form);
+			// Add Breadcrumbs
+			$this->Context->prependChild($this->Breadcrumbs);
 
 			$this->view();
+
+			$this->Contents->appendChild($this->Form);
 
 			$this->appendAlert();
 
@@ -380,21 +475,41 @@
 		/**
 		 * Appends the `$this->Header`, `$this->Context` and `$this->Contents`
 		 * to `$this->Wrapper` before adding the ID and class attributes for
-		 * the `<body>` element. After this has completed the parent's generate
-		 * function is called which will convert the `XMLElement`'s into strings
-		 * ready for output
+		 * the `<body>` element. This function will also place any Drawer elements
+		 * in their relevant positions in the page. After this has completed the
+		 * parent `generate()` is called which will convert the `XMLElement`'s
+		 * into strings ready for output.
 		 *
+		 * @see core.HTMLPage#generate()
 		 * @return string
 		 */
 		public function generate() {
 			$this->Wrapper->appendChild($this->Header);
+
+			// Add horizontal drawers (inside #context)
+			if(isset($this->Drawer['horizontal'])) {
+				$this->Context->appendChildArray($this->Drawer['horizontal']);
+			}
+
 			$this->Wrapper->appendChild($this->Context);
+
+			// Add vertical-left drawers (between #context and #contents)
+			if(isset($this->Drawer['vertical-left'])) {
+				$this->Wrapper->appendChildArray($this->Drawer['vertical-left']);
+			}
+
+			// Add vertical-right drawers (after #contents)
+			if(isset($this->Drawer['vertical-right'])) {
+				$this->Wrapper->appendChildArray($this->Drawer['vertical-right']);
+			}
+
 			$this->Wrapper->appendChild($this->Contents);
 
 			$this->Body->appendChild($this->Wrapper);
 
 			$this->__appendBodyId();
 			$this->__appendBodyClass($this->_context);
+
 			return parent::generate();
 		}
 
@@ -485,7 +600,7 @@
 				Administration::instance()->errorPageNotFound();
 			}
 
-			$this->$function();
+			$this->$function(null);
 		}
 
 		/**
@@ -598,7 +713,7 @@
 							if ($n['type'] === 'content')
 								$contentNav->appendChild($xGroup);
 							else if ($n['type'] === 'structure')
-								$structureNav->appendChild($xGroup);
+								$structureNav->prependChild($xGroup);
 						}
 					}
 				}
@@ -681,17 +796,18 @@
 			}
 
 			// Build the section navigation, grouped by their navigation groups
-			$sections = Symphony::Database()->fetch("SELECT * FROM `tbl_sections` ORDER BY `sortorder` ASC");
+			require_once TOOLKIT . '/class.sectionmanager.php';
+			$sections = SectionManager::fetch(NULL, 'asc', 'sortorder');
 			if(is_array($sections) && !empty($sections)){
 				foreach($sections as $s){
 
-					$group_index = self::__navigationFindGroupIndex($nav, $s['navigation_group']);
+					$group_index = self::__navigationFindGroupIndex($nav, $s->get('navigation_group'));
 
 					if($group_index === false){
 						$group_index = General::array_find_available_index($nav, 0);
 
 						$nav[$group_index] = array(
-							'name' => $s['navigation_group'],
+							'name' => $s->get('navigation_group'),
 							'type' => 'content',
 							'index' => $group_index,
 							'children' => array()
@@ -699,11 +815,11 @@
 					}
 
 					$nav[$group_index]['children'][] = array(
-						'link' => '/publish/' . $s['handle'] . '/',
-						'name' => $s['name'],
+						'link' => '/publish/' . $s->get('handle') . '/',
+						'name' => $s->get('name'),
 						'type' => 'section',
-						'section' => array('id' => $s['id'], 'handle' => $s['handle']),
-						'visible' => ($s['hidden'] == 'no' ? 'yes' : 'no')
+						'section' => array('id' => $s->get('id'), 'handle' => $s->get('handle')),
+						'visible' => ($s->get('hidden') == 'no' ? 'yes' : 'no')
 					);
 				}
 			}
@@ -924,7 +1040,7 @@
 			$ul->appendChild($li);
 
 			$li = new XMLElement('li');
-			$li->appendChild(Widget::Anchor(__('Logout'), SYMPHONY_URL . '/logout/', NULL, NULL, NULL, array('accesskey' => 'l')));
+			$li->appendChild(Widget::Anchor(__('Log out'), SYMPHONY_URL . '/logout/', NULL, NULL, NULL, array('accesskey' => 'l')));
 			$ul->appendChild($li);
 
 			$this->Header->appendChild($ul);

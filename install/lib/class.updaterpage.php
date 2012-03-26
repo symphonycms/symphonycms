@@ -27,13 +27,15 @@
 
 			// Add Release Notes for the latest migration
 			if(isset($this->_params['release-notes'])){
-				$h1 = end($this->Body->getChildrenByName('h1'));
-				$h1->appendChild(
-					new XMLElement(
-						'em',
-						Widget::Anchor(__('Release Notes'), $this->_params['release-notes'])
-					)
-				);
+				$h1 = end($this->Form->getChildrenByName('h1'));
+				if($h1 instanceof XMLElement) {
+					$h1->appendChild(
+						new XMLElement(
+							'em',
+							Widget::Anchor(__('Release Notes'), $this->_params['release-notes'])
+						)
+					);
+				}
 			}
 		}
 
@@ -52,13 +54,21 @@
 			$this->Form->appendChild($h2);
 			$this->Form->appendChild($p);
 
+			if(!is_writable(CONFIG)) {
+				$this->Form->appendChild(
+					new XMLElement('p', __('Please check that your configuration file is writable before proceeding'), array('class' => 'warning'))
+				);
+			}
+
 			if(!empty($this->_params['pre-notes'])){
 				$h2 = new XMLElement('h2', __('Pre-Installation Notes:'));
 				$dl = new XMLElement('dl');
 
-				foreach($this->_params['pre-notes'] as $version => $note){
+				foreach($this->_params['pre-notes'] as $version => $notes){
 					$dl->appendChild(new XMLElement('dt', $version));
-					$dl->appendChild(new XMLElement('dd', '<p>' . implode('</p><p>', $note) . '</p>'));
+					foreach($notes as $note) {
+						$dl->appendChild(new XMLElement('dd', $note));
+					}
 				}
 
 				$this->Form->appendChild($h2);
@@ -88,10 +98,12 @@
 			if(!empty($this->_params['post-notes'])){
 				$dl = new XMLElement('dl');
 
-				foreach($this->_params['post-notes'] as $version => $note){
-					if($note){
+				foreach($this->_params['post-notes'] as $version => $notes){
+					if($notes) {
 						$dl->appendChild(new XMLElement('dt', $version));
-						$dl->appendChild(new XMLElement('dd', '<p>' . implode('</p><p>', $note) . '</p>'));
+						foreach($notes as $note) {
+							$dl->appendChild(new XMLElement('dd', $note));
+						}
 					}
 				}
 
@@ -100,17 +112,17 @@
 
 			$this->Form->appendChild(
 				new XMLElement('p',
-					__('Congratulations rock star! You just updated %s to the latest and greatest Symphony!', array(Symphony::Configuration()->get('sitename', 'general')))
+					__('And the crowd goes wild! A victory dance is in order; and look, your mum is watching. She\'s proud.', array(Symphony::Configuration()->get('sitename', 'general')))
 				)
 			);
 			$this->Form->appendChild(
 				new XMLElement('p',
-					__('Before logging in, we recommend that the %s directory be removed for security.', array('<code>' . basename(INSTALL_URL) . '</code>'))
+					__('Your mum is also nagging you about removing that %s directory before you log in.', array('<code>' . basename(INSTALL_URL) . '</code>'))
 				)
 			);
 
 			$submit = new XMLElement('div', null, array('class' => 'submit'));
-			$submit->appendChild(Widget::input('submit', __('Ok, now take me to the login page'), 'submit'));
+			$submit->appendChild(Widget::input('submit', __('Complete'), 'submit'));
 
 			$this->Form->appendChild($submit);
 

@@ -318,38 +318,113 @@
 			return $time->generate();
 		}
 
-		public static function getTimezones(){
-			include_once(TEMPLATE . '/date.timezones.php'); // $timezones
-			return $timezones;
+		/**
+		 * This functions acts as a standard way to get the zones
+		 * available on the system. For PHP5.2, these constants are
+		 * just copied from PHP5.3
+		 *
+		 * @since Symphony 2.3
+		 * @link http://au2.php.net/manual/en/class.datetimezone.php
+		 * @return array
+		 */
+		public static function getZones() {
+			if(PHP_VERSION_ID >= 50300) {
+				$ref = new ReflectionClass('DateTimeZone');
+				return $ref->getConstants();
+			}
+			else {
+				return array(
+					'AFRICA' => 1,
+					'AMERICA' => 2,
+					'ANTARCTICA' => 4,
+					'ARCTIC' => 8,
+					'ASIA' => 16,
+					'ATLANTIC' => 32,
+					'AUSTRALIA' => 64,
+					'EUROPE' => 128,
+					'INDIAN' => 256,
+					'PACIFIC' => 512,
+					'UTC' => 1024
+				);
+			}
 		}
 
-		public static function getTimezonesSelectOptions($selected){
-			$timezones = self::getTimezones();
-			$options = array();
+		/**
+		 * This functions acts as a standard way to get the timezones
+		 * regardless of PHP version. It accepts a single parameter,
+		 * zone, which returns the timezones associated with that 'zone'
+		 *
+		 * @since Symphony 2.3
+		 * @link http://au2.php.net/manual/en/class.datetimezone.php
+		 * @link http://au2.php.net/manual/en/datetimezone.listidentifiers.php
+		 * @param string $zone
+		 *  The zone for the timezones the field wants. This maps to the
+		 *  DateTimeZone constants
+		 * @return array
+		 */
+		public static function getTimezones($zone = null) {
+			// PHP5.3 supports the `$what` parameter of the listIdentifiers function
+			if(PHP_VERSION_ID >= 50300) {
+				return DateTimeZone::listIdentifiers(constant('DateTimeZone::' . $zone));
+			}
+			else {
+				$timezones = DateTimeZone::listIdentifiers();
+
+				foreach($timezones as $index => $timezone) {
+					if(stripos($timezone, $zone) === false) unset($timezones[$index]);
+				}
+
+				return $timezones;
+			}
+		}
+
+		/**
+		 * Loads all available timezones using `getTimezones()` and builds an
+		 * array where timezones are grouped by their region (Europe/America etc.)
+		 * The options array that is returned is designed to be used with
+		 * `Widget::Select`
+		 *
+		 * @since Symphony 2.3
+		 * @see core.DateTimeObj#getTimezones()
+		 * @see core.Widget#Select()
+		 * @param string $selected
+		 *  A preselected timezone, defaults to null
+		 * @return array
+		 *  An associative array, for use with `Widget::Select`
+		 */
+		public static function getTimezonesSelectOptions($selected = null){
+			$zones = self::getZones();
 			$groups = array();
 
-			foreach($timezones as $tz){
-				if(preg_match('/\//', $tz)){
-					$parts = preg_split('/\//', $tz, 2, PREG_SPLIT_NO_EMPTY);
-					$groups[$parts[0]][] = $parts[1];
+			foreach($zones as $zone => $value) {
+				if($value >= 1024) break;
+
+				$timezones = self::getTimezones($zone);
+				$options = array();
+
+				foreach($timezones as $timezone) {
+					$tz = new DateTime('now', new DateTimeZone($timezone));
+
+					$options[] = array($timezone, ($timezone == $selected), sprintf("%s %s",
+						str_replace('_', ' ', substr(strrchr($timezone, '/'),1)),
+						$tz->format('P')
+					));
 				}
-				else $groups[$tz] = $tz;
+
+				$groups[] = array('label' => ucwords(strtolower($zone)), 'options' => $options);
 			}
 
-			foreach($groups as $key => $val){
-				if(is_array($val)){
-					$tmp = array('label' => $key, 'options' => array());
-					foreach($val as $zone){
-						$tmp['options'][] = array("$key/$zone", "$key/$zone" == $selected, str_replace('_', ' ', $zone));
-					}
-					$options[] = $tmp;
-				}
-				else $options[] = array($key, $key == $selected, str_replace('_', ' ', $key));
-			}
-
-			return $options;
+			return $groups;
 		}
 
+		/**
+		 * Returns an array of the date formats Symphony supports. These
+		 * formats are a combination of valid PHP format tokens.
+		 *
+		 * @link http://au2.php.net/manual/en/function.date.php
+		 * @since Symphony 2.3
+		 * @return array
+		 */
 		public static function getDateFormats(){
 			return array(
 				'Y/m/d',	// e. g. 2011/01/20
@@ -369,7 +444,19 @@
 			);
 		}
 
-		public static function getDateFormatsSelectOptions($selected){
+		/**
+		 * Returns an array of the date formats Symphony supports by applying
+		 * the format to the current datetime. The array returned is for use with
+		 * `Widget::Select()`
+		 *
+		 * @since Symphony 2.3
+		 * @see core.Widget#Select()
+		 * @param string $selected
+		 *  A preselected date format, defaults to null
+		 * @return array
+		 *  An associative array, for use with `Widget::Select`
+		 */
+		public static function getDateFormatsSelectOptions($selected = null){
 			$formats = self::getDateFormats();
 			$options = array();
 
@@ -384,6 +471,14 @@
 			return $options;
 		}
 
+		/**
+		 * Returns an array of the time formats Symphony supports. These
+		 * formats are a combination of valid PHP format tokens.
+		 *
+		 * @link http://au2.php.net/manual/en/function.date.php
+		 * @since Symphony 2.3
+		 * @return array
+		 */
 		public static function getTimeFormats(){
 			return array(
 				'H:i:s',	// e. g. 20:45:32
@@ -393,7 +488,19 @@
 			);
 		}
 
-		public static function getTimeFormatsSelectOptions($selected){
+		/**
+		 * Returns an array of the time formats Symphony supports by applying
+		 * the format to the current datetime. The array returned is for use with
+		 * `Widget::Select()`
+		 *
+		 * @since Symphony 2.3
+		 * @see core.Widget#Select()
+		 * @param string $selected
+		 *  A preselected time format, defaults to null
+		 * @return array
+		 *  An associative array, for use with `Widget::Select`
+		 */
+		public static function getTimeFormatsSelectOptions($selected = null){
 			$formats = self::getTimeFormats();
 			$options = array();
 

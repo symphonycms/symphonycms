@@ -9,7 +9,7 @@
 	 */
 
 	require_once(TOOLKIT . '/class.emailgateway.php');
-	require_once(TOOLKIT . '/interface.fileresource.php');
+	require_once(FACE . '/interface.fileresource.php');
 
 	Class EmailGatewayManager implements FileResource {
 

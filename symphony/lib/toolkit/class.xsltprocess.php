@@ -4,10 +4,10 @@
 	 * @package toolkit
 	 */
 	/**
-	 * The XsltProcess class is responsible for taking a chunk of XML
+	 * The `XsltProcess` class is responsible for taking a chunk of XML
 	 * and applying an XSLT stylesheet to it. Custom error handlers are
 	 * used to capture any errors that occurred during this process, and
-	 * are exposed to the ExceptionHandlers for output.
+	 * are exposed to the `ExceptionHandler`'s for display to the user.
 	 */
 
 	Class XsltProcess{

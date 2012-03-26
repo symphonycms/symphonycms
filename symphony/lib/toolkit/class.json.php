@@ -5,7 +5,7 @@
 	 */
 
 	/**
-	 * The JSONException class extends the base Exception class. It's only
+	 * The `JSONException` class extends the base `Exception` class. It's only
 	 * difference is that it will translate the `$code` to a human readable
 	 * error.
 	 *
@@ -16,7 +16,7 @@
 		/**
 		 * Constructor takes a `$message`, `$code` and the original Exception, `$ex`.
 		 * Upon translating the `$code` into a more human readable message, it will
-		 * initialise the base Exception class. If the `$code` is unfamiliar, the original
+		 * initialise the base `Exception` class. If the `$code` is unfamiliar, the original
 		 * `$message` will be passed.
 		 *
 		 * @param string $message
@@ -43,6 +43,9 @@
 				case JSON_ERROR_UTF8:
 					$message = __('Malformed UTF-8 characters, possibly incorrectly encoded.');
 				break;
+				default:
+					$message = __('Unknown JSON error');
+				break;
 			}
 
 			parent::__construct($message, $code, $ex);
@@ -50,7 +53,7 @@
 	}
 
 	/**
-	 * The JSON class takes a JSON formatted string and converts it to XML.
+	 * The `JSON` class takes a JSON formatted string and converts it to XML.
 	 * The majority of this class was originally written by Brent Burgoyne, thank you.
 	 *
 	 * @since Symphony 2.3

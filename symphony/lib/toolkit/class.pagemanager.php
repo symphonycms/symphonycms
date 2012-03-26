@@ -13,7 +13,7 @@
 	 * @since Symphony 2.3
 	 */
 	Class PageManager {
-
+        
 		/**
 		 * Given an associative array of data, where the key is the column name
 		 * in `tbl_pages` and the value is the data, this function will create a new
@@ -26,14 +26,7 @@
 		 */
 		public static function add(array $fields){
 			if(!isset($fields['sortorder'])){
-				$next = Symphony::Database()->fetchVar("next", 0, "
-					SELECT
-						MAX(p.sortorder) + 1 AS `next`
-					FROM
-						`tbl_pages` AS p
-					LIMIT 1
-				");
-				$fields['sortorder'] = ($next ? $next : '1');
+				$fields['sortorder'] = self::fetchNextSortOrder();
 			}
 
 			if(!Symphony::Database()->insert($fields, 'tbl_pages')) return false;
@@ -56,7 +49,7 @@
 					WHERE `handle` = '%s'
 					LIMIT 1
 				",
-					$handle
+					Symphony::Database()->cleanValue($handle)
 			));
 		}
 
@@ -75,7 +68,7 @@
 					WHERE `handle` = '%s'
 					LIMIT 1
 				",
-					$handle
+					Symphony::Database()->cleanValue($handle)
 			));
 		}
 
@@ -483,7 +476,9 @@
 		public static function fetchPageByID($page_id = null, array $select = array()) {
 			if(is_null($page_id)) return null;
 
-			if(!is_array($page_id)) $page_id = array($page_id);
+			if(!is_array($page_id)) $page_id = array(
+				Symphony::Database()->cleanValue($page_id)
+			);
 
 			if(empty($select)) $select = array('*');
 
@@ -567,6 +562,8 @@
 						`tbl_pages_types` AS pt
 					WHERE
 						%s
+					GROUP BY
+						pt.type
 					ORDER BY
 						pt.type ASC
 				",
@@ -595,6 +592,23 @@
 			return !empty($types)
 				? General::array_remove_duplicates(array_merge($system_types, $types))
 				: $system_types;
+		}
+		
+		/**
+		 * Work out the next available sort order for a new page
+		 *
+		 * @return integer
+		 *  Returns the next sort order
+		 */
+		public static function fetchNextSortOrder(){
+			$next = Symphony::Database()->fetchVar("next", 0, "
+				SELECT
+					MAX(p.sortorder) + 1 AS `next`
+				FROM
+					`tbl_pages` AS p
+				LIMIT 1
+			");
+			return ($next ? (int)$next : 1);
 		}
 
 		/**
@@ -667,7 +681,7 @@
 		 *  True if the type is used, false otherwise
 		 */
 		public static function hasPageTypeBeenUsed($page_id = null, $type) {
-			return (boolean)Symphony::Database()->fetchRow('id', 0, sprintf("
+			return (boolean)Symphony::Database()->fetchRow(0, sprintf("
 					SELECT
 						pt.id
 					FROM
@@ -678,7 +692,7 @@
 					LIMIT 1
 				",
 				$page_id,
-				$type
+				Symphony::Database()->cleanValue($type)
 			));
 		}
 
@@ -729,12 +743,12 @@
 		 * array of the given `$column` for the Page, including all parents.
 		 *
 		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
+		 *  The ID of the Page that currently being viewed, or the handle of the
+		 *  current Page
 		 * @return array
-		 * An array of the current Page, containing the `$column`
-		 * requested. The current page will be the last item the array, as all
-		 * parent pages are prepended to the start of the array
+		 *  An array of the current Page, containing the `$column`
+		 *  requested. The current page will be the last item the array, as all
+		 *  parent pages are prepended to the start of the array
 		 */
 		public static function resolvePage($page_id, $column) {
 			$path = array();
@@ -746,12 +760,12 @@
 						`tbl_pages` AS p
 					WHERE
 						p.id = %d
-						OR p.handle = %s
+						OR p.handle = '%s'
 					LIMIT 1
 				",
 					$column,
 					$page_id,
-					$page_id
+					Symphony::Database()->cleanValue($page_id)
 			));
 
 			if(empty($page)) return $page;
@@ -789,11 +803,11 @@
 		 * separated by ': '.
 		 *
 		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
+		 *  The ID of the Page that currently being viewed, or the handle of the
+		 *  current Page
 		 * @return string
-		 * The title of the current Page. If the page is a child of another
-		 * it will be prepended by the parent and a colon, ie. Articles: Read
+		 *  The title of the current Page. If the page is a child of another
+		 *  it will be prepended by the parent and a colon, ie. Articles: Read
 		 */
 		public static function resolvePageTitle($page_id) {
 			$path = PageManager::resolvePage($page_id, 'title');
@@ -807,8 +821,8 @@
 		 * separated by '/'.
 		 *
 		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
+		 *  The ID of the Page that currently being viewed, or the handle of the
+		 *  current Page
 		 * @return string
 		 *  The complete path to the current Page including any parent
 		 *  Pages, ie. /articles/read

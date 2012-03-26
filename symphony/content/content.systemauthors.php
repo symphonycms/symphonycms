@@ -264,18 +264,18 @@
 
 			$label = Widget::Label(__('First Name'), NULL, 'column');
 			$label->appendChild(Widget::Input('fields[first_name]', $author->get('first_name')));
-			$div->appendChild((isset($this->_errors['first_name']) ? Widget::wrapFormElementWithError($label, $this->_errors['first_name']) : $label));
+			$div->appendChild((isset($this->_errors['first_name']) ? Widget::Error($label, $this->_errors['first_name']) : $label));
 
 
 			$label = Widget::Label(__('Last Name'), NULL, 'column');
 			$label->appendChild(Widget::Input('fields[last_name]', $author->get('last_name')));
-			$div->appendChild((isset($this->_errors['last_name']) ? Widget::wrapFormElementWithError($label, $this->_errors['last_name']) : $label));
+			$div->appendChild((isset($this->_errors['last_name']) ? Widget::Error($label, $this->_errors['last_name']) : $label));
 
 			$group->appendChild($div);
 
 			$label = Widget::Label(__('Email Address'));
 			$label->appendChild(Widget::Input('fields[email]', $author->get('email')));
-			$group->appendChild((isset($this->_errors['email']) ? Widget::wrapFormElementWithError($label, $this->_errors['email']) : $label));
+			$group->appendChild((isset($this->_errors['email']) ? Widget::Error($label, $this->_errors['email']) : $label));
 
 			$this->Form->appendChild($group);
 
@@ -287,8 +287,8 @@
 			$div = new XMLElement('div');
 
 			$label = Widget::Label(__('Username'));
-			$label->appendChild(Widget::Input('fields[username]', $author->get('username'), NULL));
-			$div->appendChild((isset($this->_errors['username']) ? Widget::wrapFormElementWithError($label, $this->_errors['username']) : $label));
+			$label->appendChild(Widget::Input('fields[username]', $author->get('username')));
+			$div->appendChild((isset($this->_errors['username']) ? Widget::Error($label, $this->_errors['username']) : $label));
 
 			// Only developers can change the user type. Primary account should NOT be able to change this
 			if (Administration::instance()->Author->isDeveloper() && !$author->isPrimaryAccount()) {
@@ -324,7 +324,7 @@
 				
 				$label = Widget::Label(NULL, NULL, 'column');
 				$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password', array('placeholder' => __('Old Password'))));
-				$fieldset->appendChild((isset($this->_errors['old-password']) ? Widget::wrapFormElementWithError($label, $this->_errors['password']) : $label));
+				$fieldset->appendChild((isset($this->_errors['old-password']) ? Widget::Error($label, $this->_errors['password']) : $label));
 			}
 			
 			// New password
@@ -332,12 +332,12 @@
 			$placeholder = ($callback['context'][0] == 'edit' ? __('New Password') : __('Password'));
 			$label = Widget::Label(NULL, NULL, 'column');
 			$label->appendChild(Widget::Input('fields[password]', NULL, 'password', array('placeholder' => $placeholder)));
-			$fieldset->appendChild((isset($this->_errors['password']) ? Widget::wrapFormElementWithError($label, $this->_errors['password']) : $label));
+			$fieldset->appendChild((isset($this->_errors['password']) ? Widget::Error($label, $this->_errors['password']) : $label));
 
 			// Confirm password
 			$label = Widget::Label(NULL, NULL, 'column');
 			$label->appendChild(Widget::Input('fields[password-confirmation]', NULL, 'password', array('placeholder' => __('Confirm Password'))));
-			$fieldset->appendChild((isset($this->_errors['password-confirmation']) ? Widget::wrapFormElementWithError($label, $this->_errors['password']) : $label));
+			$fieldset->appendChild((isset($this->_errors['password-confirmation']) ? Widget::Error($label, $this->_errors['password']) : $label));
 			
 			$group->appendChild($fieldset);
 
@@ -412,9 +412,6 @@
 				$group = new XMLElement('fieldset');
 				$group->setAttribute('class', 'settings');
 				$group->appendChild(new XMLElement('legend', __('Custom Preferences')));
-
-				$div = new XMLElement('div');
-				$div->setAttribute('class', 'group');
 
 				$label = Widget::Label(__('Language'));
 

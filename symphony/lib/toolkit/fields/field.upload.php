@@ -73,7 +73,7 @@
 		Utilities:
 	-------------------------------------------------------------------------*/
 
-		public function entryDataCleanup($entry_id, $data){
+		public function entryDataCleanup($entry_id, $data=NULL){
 			$file_location = WORKSPACE . '/' . ltrim($data['file'], '/');
 
 			if(is_file($file_location)){
@@ -104,7 +104,7 @@
 		Settings:
 	-------------------------------------------------------------------------*/
 
-		public function displaySettingsPanel(&$wrapper, $errors = null) {
+		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			// Destination Folder
@@ -130,18 +130,18 @@
 
 			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][destination]', $options));
 
-			if(isset($errors['destination'])) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $errors['destination']));
+			if(isset($errors['destination'])) $wrapper->appendChild(Widget::Error($label, $errors['destination']));
 			else $wrapper->appendChild($label);
 
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload');
 
-			$div = new XMLElement('div', NULL, array('class' => 'compact'));
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
 			$wrapper->appendChild($div);
 		}
 
-		public function checkFields(&$errors, $checkForDuplicates=true){
+		public function checkFields(array &$errors, $checkForDuplicates = true){
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
 				$errors['destination'] = __('Directory %s does not exist.', array('<code>' . $this->get('destination') . '</code>'));
 			}
@@ -174,7 +174,7 @@
 		Publish:
 	-------------------------------------------------------------------------*/
 
-		public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
+		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null){
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
 				$flagWithError = __('The destination directory, %s, does not exist.', array('<code>' . $this->get('destination') . '</code>'));
 			}
@@ -194,7 +194,7 @@
 
 			$label->appendChild($span);
 
-			if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
+			if($flagWithError != NULL) $wrapper->appendChild(Widget::Error($label, $flagWithError));
 			else $wrapper->appendChild($label);
 		}
 
@@ -456,7 +456,7 @@
 		Output:
 	-------------------------------------------------------------------------*/
 
-		public function appendFormattedElement(&$wrapper, $data){
+		public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null){
 			// It is possible an array of NULL data will be passed in. Check for this.
 			if(!is_array($data) || !isset($data['file']) || is_null($data['file'])){
 				return;

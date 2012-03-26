@@ -32,11 +32,9 @@
 			} 
 			else if ($formHasErrors) {
 				$this->pageAlert(
-					__('An error occurred while processing this form.')
-					. ' <a href="#error">'
-					. __('See below for details.')
-					. '</a>'
-					, Alert::ERROR);
+					__('An error occurred while processing this form. See below for details.')
+					, Alert::ERROR
+				);
 			} 
 			else if (isset($this->_context[0]) && $this->_context[0] == 'success') {
 				$this->pageAlert(__('Preferences saved.'), Alert::SUCCESS);

@@ -68,6 +68,13 @@
 		private static $Profiler = null;
 
 		/**
+		 * The current page namespace, used for translations
+		 * @since Symphony 2.3
+		 * @var string
+		 */
+		private static $namespace = false;
+
+		/**
 		 * An instance of the Cookie class
 		 * @var Cookie
 		 */
@@ -312,13 +319,12 @@
 				elseif(self::Configuration()->get('query_caching', 'database') == 'on') self::Database()->enableCaching();
 			}
 			catch(DatabaseException $e){
-				$error = self::Database()->getlastError();
 				throw new SymphonyErrorPage(
-					$error['num'] . ': ' . $error['msg'],
+					$e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
 					'Symphony Database Error',
 					'database',
 					array(
-						'error' => $error,
+						'error' => $e,
 						'message' => __('There was a problem whilst attempting to establish a database connection. Please check all connection information is correct.') . ' ' . __('The following error was returned:')
 					)
 				);
@@ -573,40 +579,48 @@
 		 *  /publish/$handle)
 		 */
 		public static function getPageNamespace() {
+			if(self::$namespace !== false) return self::$namespace;
+
 			$page = getCurrentPage();
 
 			if(!is_null($page)) $page = trim($page, '/');
 
-			if(substr($page, 0, 7) == 'publish')
-				return '/publish';
-			else if(empty($page) && isset($_REQUEST['mode']))
-				return '/login';
-			else if(empty($page))
-				return null;
+			if(substr($page, 0, 7) == 'publish') {
+				self::$namespace = '/publish';
+			}
+			else if(empty($page) && isset($_REQUEST['mode'])) {
+				self::$namespace = '/login';
+			}
+			else if(empty($page)) {
+				self::$namespace = null;
+			}
 			else {
 				$bits = explode('/', $page);
 
-				if($bits[0] == 'extension')
-					return sprintf('/%s/%s/%s', $bits[0], $bits[1], $bits[2]);
-				else
-					return sprintf('/%s/%s', $bits[0], $bits[1]);
+				if($bits[0] == 'extension') {
+					self::$namespace = sprintf('/%s/%s/%s', $bits[0], $bits[1], $bits[2]);
+				}
+				else {
+					self::$namespace =  sprintf('/%s/%s', $bits[0], $bits[1]);
+				}
 			}
 
+			return self::$namespace;
 		}
 	}
 
 	/**
-	 * The SymphonyErrorPageHandler extends the GenericExceptionHandler
-	 * to allow the template for the Exception to be provided from the `TEMPLATES`
+	 * The `SymphonyErrorPageHandler` extends the `GenericExceptionHandler`
+	 * to allow the template for the exception to be provided from the `TEMPLATES`
 	 * directory
 	 */
 	Class SymphonyErrorPageHandler extends GenericExceptionHandler {
 
 		/**
-		 * The render function will take a SymphonyErrorPage Exception and
+		 * The render function will take a `SymphonyErrorPage` exception and
 		 * output a HTML page. This function first checks to see if their is a custom
-		 * template for this Exception otherwise it reverts to using the default
-		 * `tpl.error.php`
+		 * template for this exception otherwise it reverts to using the default
+		 * `usererror.generic.php`
 		 *
 		 * @param SymphonyErrorPage $e
 		 *  The Exception object
@@ -615,6 +629,8 @@
 		 */
 		public static function render(Exception $e){
 			if($e->getTemplate() === false){
+				if(isset($e->getAdditional()->header)) header($e->getAdditional()->header);
+
 				echo '<h1>Symphony Fatal Error</h1><p>'.$e->getMessage().'</p>';
 				exit;
 			}
@@ -624,9 +640,9 @@
 	}
 
 	/**
-	 * The SymphonyErrorPage extends the default Exception class. All
-	 * of these Exceptions will halt execution immediately and return the
-	 * Exception as a HTML page. By default the HTML template is `tpl.error.php`
+	 * `SymphonyErrorPage` extends the default `Exception` class. All
+	 * of these exceptions will halt execution immediately and return the
+	 * exception as a HTML page. By default the HTML template is `usererror.generic.php`
 	 * from the `TEMPLATES` directory.
 	 */
 
@@ -641,7 +657,7 @@
 
 		/**
 		 * A description for this error, which can be provided as a string
-		 * or as an XMLElement.
+		 * or as an `XMLElement`.
 		 * @var string|XMLElement
 		 */
 		private $_message;
@@ -649,13 +665,13 @@
 		/**
 		 * A string for the error page template to use, defaults to 'generic'. This
 		 * can be the name of any template file in the `TEMPLATES` directory.
-		 * A template using the naming convention of `tpl.*.php`.
+		 * A template using the naming convention of `usererror.*.php`.
 		 * @var string
 		 */
 		private $_template = 'generic';
 
 		/**
-		 * If the message as provided as an XMLElement, it will be saved to
+		 * If the message as provided as an `XMLElement`, it will be saved to
 		 * this parameter
 		 * @var XMLElement
 		 */
@@ -728,8 +744,8 @@
 		/**
 		 * Returns the path to the current template by looking at the
 		 * `WORKSPACE/template/` directory, then at the `TEMPLATES`
-		 * directory for the convention `tpl.*.php`. If the template 
-		 * is not found, false is returned
+		 * directory for the convention `usererror.*.php`. If the template
+		 * is not found, `false` is returned
 		 *
 		 * @since Symphony 2.3
 		 * @return mixed
@@ -748,14 +764,14 @@
 	}
 
 	/**
-	 * The DatabaseExceptionHandler provides a render function to provide
-	 * customised output for Database exceptions. It displays the Exception
+	 * The `DatabaseExceptionHandler` provides a render function to provide
+	 * customised output for database exceptions. It displays the exception
 	 * message as provided by the Database.
 	 */
 	Class DatabaseExceptionHandler extends GenericExceptionHandler {
 
 		/**
-		 * The render function will take a DatabaseException and output a
+		 * The render function will take a `DatabaseException` and output a
 		 * HTML page.
 		 *
 		 * @param DatabaseException $e
@@ -766,44 +782,39 @@
 		public static function render(Exception $e){
 
 			$trace = NULL;
-			$odd = true;
 
 			foreach($e->getTrace() as $t){
 				$trace .= sprintf(
-					'<li%s><code>[%s:%d] <strong>%s%s%s();</strong></code></li>',
-					($odd == true ? ' class="odd"' : NULL),
+					'<li><code><em>[%s:%d]</em></code></li><li><code>&#160;&#160;&#160;&#160;%s%s%s();</code></li>',
 					$t['file'],
 					$t['line'],
 					(isset($t['class']) ? $t['class'] : NULL),
 					(isset($t['type']) ? $t['type'] : NULL),
 					$t['function']
 				);
-				$odd = !$odd;
 			}
 
 			$queries = NULL;
-			$odd = true;
 
 			if(is_object(Symphony::Database())){
 				$debug = Symphony::Database()->debug();
 
 				if(!empty($debug)) foreach($debug as $query){
 					$queries .= sprintf(
-						'<li%s><code>%s;</code> <small>[%01.4f]</small></li>',
-						($odd == true ? ' class="odd"' : NULL),
-						htmlspecialchars($query['query']),
-						(isset($query['execution_time']) ? $query['execution_time'] : NULL)
+						'<li><em>[%01.4f]</em><code> %s;</code> </li>',
+						(isset($query['execution_time']) ? $query['execution_time'] : NULL),
+						htmlspecialchars($query['query'])
 					);
-					$odd = !$odd;
 				}
 			}
 
-			return sprintf(file_get_contents(self::getTemplate('fatalerror.database')),
+			$html = sprintf(file_get_contents(self::getTemplate('fatalerror.database')),
 				$e->getDatabaseErrorMessage(),
 				$e->getQuery(),
 				$trace,
 				$queries
 			);
 
+			return str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $html);
 		}
 	}
