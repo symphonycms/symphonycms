@@ -450,7 +450,7 @@
 		}
 
         /**
-         * Returns an array of ID's of field which are present in the section, but which not occur in the $id_list.
+         * Returns an array of ID's of fields which are present in the section, but which not occur in the $id_list.
          * @param $section_id   The ID of the section
          * @param $id_list      An array with ID's of fields
          * @return array        An array with ID's of fields
@@ -458,5 +458,49 @@
         public static function fetchRemovedFieldsFromSection($section_id, $id_list)
         {
             return Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '$section_id' AND `id` NOT IN ('".@implode("', '", $id_list)."')");
+        }
+
+        /**
+         * Return an array of ID's of fields which are present in the section
+         * @param $section_id           The ID of the section
+         * @param null $element_names   An array with elements names (if you want to get a subset of ID's)
+         * @return array                An array with ID's of fields
+         */
+        public static function fetchSchema($section_id, $element_names = null)
+        {
+            if (!is_null($element_names) && is_array($element_names)){
+
+                // allow for pseudo-fields containing colons (e.g. Textarea formatted/unformatted)
+                foreach ($element_names as $index => $name) {
+                    $parts = explode(':', $name, 2);
+
+                    if(count($parts) == 1) continue;
+
+                    unset($element_names[$index]);
+
+                    // Prevent attempting to look up 'system', which will arise
+                    // from `system:pagination`, `system:id` etc.
+                    if($parts[0] == 'system') continue;
+
+                    $element_names[] = trim($parts[0]);
+                }
+
+                $schema_sql = empty($element_names) ? null : sprintf(
+                    "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d AND `element_name` IN ('%s')",
+                    $section_id,
+                    implode("', '", array_unique($element_names))
+                );
+
+            }
+            else{
+                $schema_sql = sprintf(
+                    "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d",
+                    $section_id
+                );
+            }
+
+            $schema = is_null($schema_sql) ? array() : Symphony::Database()->fetch($schema_sql);
+
+            return $schema;
         }
 	}

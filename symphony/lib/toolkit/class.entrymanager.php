@@ -399,38 +399,8 @@
 			if (empty($rows)) return $entries;
 
 			// choose whether to get data from a subset of fields or all fields in a section
-			if (!is_null($element_names) && is_array($element_names)){
+			$schema = FieldManager::fetchSchema($section_id, $element_names);
 
-				// allow for pseudo-fields containing colons (e.g. Textarea formatted/unformatted)
-				foreach ($element_names as $index => $name) {
-					$parts = explode(':', $name, 2);
-
-					if(count($parts) == 1) continue;
-
-					unset($element_names[$index]);
-
-					// Prevent attempting to look up 'system', which will arise
-					// from `system:pagination`, `system:id` etc.
-					if($parts[0] == 'system') continue;
-
-					$element_names[] = trim($parts[0]);
-				}
-
-				$schema_sql = empty($element_names) ? null : sprintf(
-					"SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d AND `element_name` IN ('%s')",
-					$section_id,
-					implode("', '", array_unique($element_names))
-				);
-
-			}
-			else{
-				$schema_sql = sprintf(
-					"SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d",
-					$section_id
-				);
-			}
-
-			$schema = is_null($schema_sql) ? array() : Symphony::Database()->fetch($schema_sql);
 			$raw = array();
 			$rows_string = '';
 
