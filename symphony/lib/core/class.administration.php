@@ -256,7 +256,7 @@
 			if(!$page && $this->_callback) return $this->_callback;
 			elseif(!$page && !$this->_callback) trigger_error(__('Cannot request a page callback without first specifying the page.'));
 
-			$this->_currentPage = URL . preg_replace('/\/{2,}/', '/', '/symphony' . $page);
+			$this->_currentPage = SYMPHONY_URL . preg_replace('/\/{2,}/', '/', $page);
 			$bits = preg_split('/\//', trim($page, '/'), 3, PREG_SPLIT_NO_EMPTY);
 
 			$callback = array(

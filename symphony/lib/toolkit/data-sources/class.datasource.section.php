@@ -315,7 +315,7 @@
 				}
 				else if($field_id == 'system:date') {
 					require_once(TOOLKIT . '/fields/field.date.php');
-					$date = new fieldDate(Frontend::instance());
+					$date = new fieldDate();
 					$date->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == DS_FILTER_AND ? true : false));
 
 					$where = preg_replace('/`t\d+`.value/', '`e`.creation_date', $where);
