@@ -486,7 +486,7 @@
                 }
 
                 $schema_sql = empty($element_names) ? null : sprintf(
-                    "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d AND `element_name` IN ('%s')",
+                    "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d AND `element_name` IN ('%s') ORDER BY `sortorder` ASC;",
                     $section_id,
                     implode("', '", array_unique($element_names))
                 );
@@ -494,7 +494,7 @@
             }
             else{
                 $schema_sql = sprintf(
-                    "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d",
+                    "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d ORDER BY `sortorder` ASC;",
                     $section_id
                 );
             }
@@ -504,6 +504,11 @@
             return $schema;
         }
 
+        /**
+         * Check whether a field type is used or not
+         * @param $type     The type
+         * @return bool
+         */
         public static function isTypeUsed($type)
         {
             return Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_fields` WHERE `type` = '{$type}'") > 0;
