@@ -529,8 +529,8 @@
 			$label = Widget::Label();
 			$input = array(
 				Widget::Input('fields[paginate_results]', NULL, 'checkbox', ($fields['paginate_results'] == 'yes' ? array('checked' => 'checked') : NULL)),
-				Widget::Input('fields[max_records]', $fields['max_records'], 'text', array('size' => '6')),
-				Widget::Input('fields[page_number]', $fields['page_number'], 'text', array('size' => '6'))
+				Widget::Input('fields[max_records]', $fields['max_records'], 'text', array('size' => '7', 'placeholder' => '{$param}')),
+				Widget::Input('fields[page_number]', $fields['page_number'], 'text', array('size' => '7', 'placeholder' => '{$param}'))
 			);
 			$label->setValue(__('%1$s Paginate results, limiting to %2$s entries per page. Return page %3$s', array($input[0]->generate(false), $input[1]->generate(false), $input[2]->generate(false))));
 

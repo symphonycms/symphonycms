@@ -111,24 +111,11 @@
 				}
 
 				foreach($filters as $handle => $value) {
-					$field_id = Symphony::Database()->fetchVar('id', 0, sprintf("
-						SELECT `f`.`id`
-						FROM `tbl_fields` AS `f`
-						LEFT JOIN `tbl_sections` AS `s` ON (`s`.`id` = `f`.`parent_section`)
-						WHERE f.`element_name` = '%s'
-						AND `s`.`handle` = '%s'
-						LIMIT 1
-					",
-						Symphony::Database()->cleanValue($handle),
-						$section->get('handle'))
-					);
-
+					$field_id = FieldManager::fetchFieldIDFromElementName($handle, $section->get('id'));
 					$field = FieldManager::fetch($field_id);
 
-					if($field instanceof Field) {
-						// For deprecated reasons, call the old, typo'd function name until the switch to the
-						// properly named buildDSRetrievalSQL function.
-						$field->buildDSRetrivalSQL(array($value), $joins, $where, false);
+					if(!empty($value) && $field instanceof Field) {
+						$field->buildDSRetrievalSQL(array($value), $joins, $where, false);
 						$filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, rawurlencode($value));
 						$prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, rawurlencode($value));
 					} else {
@@ -829,11 +816,11 @@
 				}
 			}
 
-			// Determine the page title
-			$field_id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
-			$field = FieldManager::fetch($field_id);
+			// Determine the page title			
+			$fields = FieldManager::fetch(NULL, $section->get('id'));
+			$first_field = reset($fields);
 
-			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')), NULL, $entry_id)));
+			$title = trim(strip_tags($first_field->prepareTableValue($existingEntry->getData($first_field->get('id')), NULL, $entry_id)));
 
 			if (trim($title) == '') {
 				$title = __('Untitled');

@@ -554,6 +554,11 @@
 					$section_id = $this->_context[1];
 					$existing_section = SectionManager::fetch($section_id);
 				}
+				
+				// does a section already exist with the current section handle?
+				$section_matching_handle = SectionManager::fetchIDFromHandle(Lang::createHandle($meta['name']));
+				// if it does exist, it's not a conflicting section if it's the same as the one we're editing
+				if($section_matching_handle && (int)$section_matching_handle === (int)$section_id) $section_matching_handle = false;
 
 				// Check to ensure all the required section fields are filled
 				if(!isset($meta['name']) || strlen(trim($meta['name'])) == 0){
@@ -561,18 +566,14 @@
 					$this->_errors['name'] = __('This is a required field.');
 					$canProceed = false;
 				}
-
 				// Check for duplicate section handle
 				elseif($edit) {
-					if(
-						$meta['name'] != $existing_section->get('name')
-						&& Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `handle` = '" . Lang::createHandle($meta['name']) . "' AND `id` != {$section_id} LIMIT 1")
-					){
+					if($meta['name'] != $existing_section->get('name') && $section_matching_handle){
 						$this->_errors['name'] = __('A Section with the name %s name already exists', array('<code>' . $meta['name'] . '</code>'));
 						$canProceed = false;
 					}
 				}
-				elseif(Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `handle` = '" . Lang::createHandle($meta['name']). "' LIMIT 1")){
+				elseif($section_matching_handle){
 					$this->_errors['name'] = __('A Section with the name %s name already exists', array('<code>' . $meta['name'] . '</code>'));
 					$canProceed = false;
 				}
