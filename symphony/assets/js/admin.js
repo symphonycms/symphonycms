@@ -31,7 +31,7 @@
 		};
 
 		/*--------------------------------------------------------------------------
-			Plugins - Tags, Pickable, Selectable and Drawers
+			Plugins - Tags, Pickable, Selectable, Notify and Drawers
 		--------------------------------------------------------------------------*/
 
 		// Tags
@@ -46,6 +46,9 @@
 
 		// Selectable
 		$('table.selectable').symphonySelectable();
+
+		// Notify
+		$('#header').symphonyNotify();
 
 		// Drawers
 		$('div.drawer').symphonyDrawer();
@@ -152,12 +155,6 @@
 			.on('orderstop.orderable', function(event, item) {
 				$(this).find('li.highlight').removeClass('highlight');
 			});
-
-		/*--------------------------------------------------------------------------
-			Plugins - System Messages
-		--------------------------------------------------------------------------*/
-
-		$('#header').symphonyNotify();
 
 		/*--------------------------------------------------------------------------
 			Components - With Selected
