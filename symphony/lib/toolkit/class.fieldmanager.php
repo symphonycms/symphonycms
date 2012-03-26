@@ -152,7 +152,7 @@
 
 			Symphony::Database()->delete('tbl_fields', " `id` = '$id'");
 			Symphony::Database()->delete('tbl_fields_'.$existing->handle(), " `field_id` = '$id'");
-			Symphony::Database()->delete('tbl_sections_association', " `child_section_field_id` = '$id'");
+            SectionManager::removeSectionAssociation($id);
 
 			Symphony::Database()->query('DROP TABLE `tbl_entries_data_'.$id.'`');
 

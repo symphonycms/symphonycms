@@ -146,17 +146,7 @@
 		 * @return array
 		 */
 		public function fetchAssociatedSections($respect_visibility = false){
-			return Symphony::Database()->fetch(sprintf("
-					SELECT *
-					FROM `tbl_sections_association` AS `sa`, `tbl_sections` AS `s`
-					WHERE `sa`.`parent_section_id` = %d
-					AND `s`.`id` = `sa`.`child_section_id`
-					%s
-					ORDER BY `s`.`sortorder` ASC
-				",
-				$this->get('id'),
-				($respect_visibility) ? "AND `sa`.`hide_association` = 'no'" : ""
-			));
+            return SectionManager::fetchAssociatedSections($this->get('id'), $respect_visibility);
 		}
 
 		/**
