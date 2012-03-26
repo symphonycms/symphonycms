@@ -1206,6 +1206,8 @@
 		/**
 		 * Create an association between a section and a field.
 		 *
+		 * @deprecated This function will be removed in a future Symphony release,
+		 *  Use `SectionManager::createSectionAssociation` instead.
 		 * @param integer $parent_section_id
 		 *  The linked section id.
 		 * @param integer $child_field_id
@@ -1219,38 +1221,20 @@
 		 *  true if the association was successfully made, false otherwise.
 		 */
 		public function createSectionAssociation($parent_section_id = null, $child_field_id = null, $parent_field_id = null, $show_association = true){
-
-			if(is_null($parent_section_id) && (is_null($parent_field_id) || !$parent_field_id)) return false;
-
-			if(is_null($parent_section_id )) {
-				$parent_section_id = Symphony::Database()->fetchVar('parent_section', 0,
-					"SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$parent_field_id' LIMIT 1"
-				);
-			}
-
-			$child_section_id = Symphony::Database()->fetchVar('parent_section', 0,
-				"SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$child_field_id' LIMIT 1
-			");
-
-			$fields = array(
-				'parent_section_id' => $parent_section_id,
-				'parent_section_field_id' => $parent_field_id,
-				'child_section_id' => $child_section_id,
-				'child_section_field_id' => $child_field_id,
-				'hide_association' => ($show_association ? 'no' : 'yes')
-			);
-
-			return Symphony::Database()->insert($fields, 'tbl_sections_association');
+			return SectionManager::createSectionAssociation($parent_section_id, $child_field_id, $parent_field_id, $show_association);
 		}
 
 		/**
 		 * Permanently remove a section association for this field in the database.
 		 *
+		 * @deprecated This function will be removed in a future Symphony release,
+		 *  Use `SectionManager::removeSectionAssociation` instead.
 		 * @param integer $child_field_id
 		 *  the field ID of the linked section's linked field.
+		 * @return boolean
 		 */
 		public function removeSectionAssociation($child_field_id){
-			Symphony::Database()->delete('tbl_sections_association', " `child_section_field_id` = '$child_field_id' ");
+			return SectionManager::removeSectionAssociation($child_field_id);
 		}
 
 		/**

@@ -13,7 +13,7 @@
 	 * @since Symphony 2.3
 	 */
 	Class PageManager {
-        
+
 		/**
 		 * Given an associative array of data, where the key is the column name
 		 * in `tbl_pages` and the value is the data, this function will create a new
@@ -593,7 +593,7 @@
 				? General::array_remove_duplicates(array_merge($system_types, $types))
 				: $system_types;
 		}
-		
+
 		/**
 		 * Work out the next available sort order for a new page
 		 *
@@ -609,6 +609,25 @@
 				LIMIT 1
 			");
 			return ($next ? (int)$next : 1);
+		}
+
+		/**
+		 * Fetch an associated array with Page ID's and the types they're using.
+		 *
+		 * @return array
+		 *  A 2-dimensional associated array where the key is the page ID.
+		 */
+		public static function fetchAllPagesPageTypes() {
+			$types = Symphony::Database()->fetch("SELECT `page_id`,`type` FROM `tbl_pages_types`");
+			$page_types = array();
+
+			if(is_array($types)) {
+				foreach($types as $type) {
+					$page_types[$type['page_id']][] = $type['type'];
+				}
+			}
+
+			return $page_types;
 		}
 
 		/**
@@ -833,4 +852,45 @@
 			return implode('/', $path);
 		}
 
+		/**
+		 * Resolve a page by it's handle and path
+		 *
+		 * @param $handle
+		 *  The handle of the page
+		 * @param bool $path
+		 *  The path to the page
+		 * @return mixed
+		 *  Array if found, false if not
+		 */
+		public static function resolvePageByPath($handle, $path = false) {
+			return Symphony::Database()->fetchRow(0, sprintf(
+				"SELECT * FROM `tbl_pages` WHERE `path` %s AND `handle` = '%s' LIMIT 1",
+				($path ? " = '".Symphony::Database()->cleanValue($path)."'" : 'IS NULL'),
+				Symphony::Database()->cleanValue($handle)
+			));
+		}
+
+		/**
+		 * Check whether a datasource is used or not
+		 *
+		 * @param string $handle
+		 *  The datasource handle
+		 * @return boolean
+		 *  True if used, false if not
+		 */
+		public static function isDataSourceUsed($handle) {
+			return (boolean)Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0;
+		}
+
+		/**
+		 * Check whether a event is used or not
+		 *
+		 * @param string $handle
+		 *  The event handle
+		 * @return boolean
+		 *  True if used, false if not
+		 */
+		public static function isEventUsed($handle) {
+			return (boolean)Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `events` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0;
+		}
 	}

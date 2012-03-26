@@ -133,7 +133,7 @@
 
 		/**
 		 * Returns any section associations this section has with other sections
-		 * linked using fields. Has an optional parameter, respect_visibility that
+		 * linked using fields. Has an optional parameter, `$respect_visibility` that
 		 * will only return associations that are deemed visible by a field that
 		 * created the association. eg. An articles section may link to the authors
 		 * section, but the field that links these sections has hidden this association
@@ -146,22 +146,12 @@
 		 * @return array
 		 */
 		public function fetchAssociatedSections($respect_visibility = false){
-			return Symphony::Database()->fetch(sprintf("
-					SELECT *
-					FROM `tbl_sections_association` AS `sa`, `tbl_sections` AS `s`
-					WHERE `sa`.`parent_section_id` = %d
-					AND `s`.`id` = `sa`.`child_section_id`
-					%s
-					ORDER BY `s`.`sortorder` ASC
-				",
-				$this->get('id'),
-				($respect_visibility) ? "AND `sa`.`hide_association` = 'no'" : ""
-			));
+			return SectionManager::fetchAssociatedSections($this->get('id'), $respect_visibility);
 		}
 
 		/**
 		 * Returns an array of all the fields in this section that are to be displayed
-		 * on the entries tablepage ordered by the order in which they appear
+		 * on the entries table page ordered by the order in which they appear
 		 * in the Section Editor interface
 		 *
 		 * @return array
@@ -231,7 +221,7 @@
 		 *
 		 * @see toolkit.Field#commit()
 		 * @return boolean
-		 *	true if the commit was successful, false otherwise.
+		 *  true if the commit was successful, false otherwise.
 		 */
 		public function commit(){
 			$settings = $this->_data;
@@ -244,7 +234,7 @@
 
 				if($section_id) $section_id = $id;
 
-			} else{
+			} else {
 				$section_id = SectionManager::add($settings);
 			}
 
