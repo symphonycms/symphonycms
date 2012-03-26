@@ -110,9 +110,13 @@ ul.tabs li.selected a.destructor:hover {
 ul.tabs li.invalid {
 	background: #dd4422;
 	border-color: #bb2211;
-	color: #fb9;
+	color: rgba(255, 255, 255, 0.7);
 	text-shadow: 1px 1px 1px rgba(187, 34, 17, 1);
 	box-shadow: none;
+}
+
+ul.tabs li.invalid:hover {
+	color: rgba(255, 255, 255, 0.9);
 }
 
 ul.tabs li.invalid a.destructor {
