@@ -226,8 +226,12 @@
 	float: left;
 }
 
-#breadcrumbs {
-	float: left;
+#breadcrumbs:after {
+	content: ' ';
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	clear: both;
 }
 
 #breadcrumbs a, #breadcrumbs span {
