@@ -68,6 +68,13 @@
 		private static $Profiler = null;
 
 		/**
+		 * The current page namespace, used for translations
+		 * @since Symphony 2.3
+		 * @var string
+		 */
+		private static $namespace = false;
+
+		/**
 		 * An instance of the Cookie class
 		 * @var Cookie
 		 */
@@ -572,25 +579,33 @@
 		 *  /publish/$handle)
 		 */
 		public static function getPageNamespace() {
+			if(self::$namespace !== false) return self::$namespace;
+
 			$page = getCurrentPage();
 
 			if(!is_null($page)) $page = trim($page, '/');
 
-			if(substr($page, 0, 7) == 'publish')
-				return '/publish';
-			else if(empty($page) && isset($_REQUEST['mode']))
-				return '/login';
-			else if(empty($page))
-				return null;
+			if(substr($page, 0, 7) == 'publish') {
+				self::$namespace = '/publish';
+			}
+			else if(empty($page) && isset($_REQUEST['mode'])) {
+				self::$namespace = '/login';
+			}
+			else if(empty($page)) {
+				self::$namespace = null;
+			}
 			else {
 				$bits = explode('/', $page);
 
-				if($bits[0] == 'extension')
-					return sprintf('/%s/%s/%s', $bits[0], $bits[1], $bits[2]);
-				else
-					return sprintf('/%s/%s', $bits[0], $bits[1]);
+				if($bits[0] == 'extension') {
+					self::$namespace = sprintf('/%s/%s/%s', $bits[0], $bits[1], $bits[2]);
+				}
+				else {
+					self::$namespace =  sprintf('/%s/%s', $bits[0], $bits[1]);
+				}
 			}
 
+			return self::$namespace;
 		}
 	}
 
