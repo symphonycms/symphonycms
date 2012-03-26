@@ -37,6 +37,7 @@ div.drawer.vertical-right {
 	position: absolute;
 	overflow: auto;
 	width: 300px;
+	top: 0;
 	bottom: 0;
 	/* height is set implicitly via `top` and `bottom` to allow for dynamic height */
 	background: #F4F4F4;
@@ -63,4 +64,3 @@ div.drawer.vertical-right {
 #wrapper.drawer-vertical-right #contents {
 	margin-right: 301px;
 }
-

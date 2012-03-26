@@ -29,7 +29,7 @@
 				button = buttons.filter('[href="#' + drawer.attr('id') + '"]'),
 				samePositionButtons = buttons.filter('.' + position),
 				context = drawer.data('context') ? '.' + drawer.data('context') : '',
-				top = contents.offset()['top'],
+				top = contents.offset().top,
 				verticals = $('div.drawer.vertical-left, div.drawer.vertical-right').filter(function(index) {
 					return $(this).data('open');
 				});
@@ -47,7 +47,7 @@
 				return $(this).data('open');
 			}).trigger('collapse.drawer', [speed, true]);
 
-			if (position == 'vertical-left') {
+			if (position === 'vertical-left') {
 				drawer.css({
 					top: top,
 					width: 0,
@@ -66,8 +66,8 @@
 						button.addClass('selected');
 					}
 				});
-			};
-			if (position == 'vertical-right') {
+			}
+			else if (position === 'vertical-right') {
 				drawer.css({
 					top: top,
 					width: 0,
@@ -86,8 +86,8 @@
 						button.addClass('selected');
 					}
 				});
-			};
-			if (position == 'horizontal') {
+			}
+			else if (position === 'horizontal') {
 				drawer.animate({
 					height: 'show'
 				}, {
@@ -101,7 +101,7 @@
 						button.addClass('selected');
 					}
 				});
-			};
+			}
 
 			// store state
 			if(Symphony.Support.localStorage === true) {
@@ -119,7 +119,7 @@
 				buttons = $('.button.drawer'),
 				button = buttons.filter('[href="#' + drawer.attr('id') + '"]'),
 				context = drawer.data('context') ? '.' + drawer.data('context') : '',
-				top = contents.offset()['top'],
+				top = contents.offset().top,
 				verticals = $('div.drawer.vertical-left, div.drawer.vertical-right').filter(function(index) {
 					return $(this).data('open');
 				});
@@ -132,7 +132,7 @@
 			// update button state
 			button.removeClass('selected');
 
-			if (position == 'vertical-left') {
+			if (position === 'vertical-left') {
 				drawer.animate({
 					width: 0
 				}, {
@@ -140,7 +140,7 @@
 					step: function(now, fx){
 						if (!stay) {
 							contents.css('margin-left', now);
-						};
+						}
 					},
 					complete: function() {
 						drawer.css({
@@ -149,8 +149,8 @@
 						.trigger('collapsestop.drawer');
 					}
 				});
-			};
-			if (position == 'vertical-right') {
+			}
+			else if (position === 'vertical-right') {
 				drawer.animate({
 					width: 0
 				}, {
@@ -158,7 +158,7 @@
 					step: function(now, fx){
 						if (!stay) {
 							contents.css('margin-right', now);
-						};
+						}
 					},
 					complete: function() {
 						drawer.css({
@@ -167,8 +167,8 @@
 						.trigger('collapsestop.drawer');
 					}
 				});
-			};
-			if (position == 'horizontal') {
+			}
+			else if (position === 'horizontal') {
 				drawer.animate({
 					height: 'hide'
 				}, {
@@ -181,7 +181,7 @@
 						drawer.trigger('collapsestop.drawer');
 					}
 				});
-			};
+			}
 
 			// store state
 			if(Symphony.Support.localStorage === true) {
@@ -197,11 +197,11 @@
 			var drawer = $(this),
 			position = drawer.data('position');
 
-			if (position == 'vertical-left' || position == 'vertical-right') {
+			if (position === 'vertical-left' || position === 'vertical-right') {
 				drawer.css({
-					top: contents.offset()['top']
+					top: contents.offset().top
 				});
-			};
+			}
 		});
 
 	/*-----------------------------------------------------------------------*/
@@ -214,17 +214,18 @@
 				storedState;
 
 			// Initial state
-			if (drawer.data('default-state') == 'opened') {
+			if (drawer.data('default-state') === 'opened') {
 				drawer.data('open', true);
-			};
+			}
 			// Restore state
 			if (Symphony.Support.localStorage === true) {
 				storedState = window.localStorage['symphony.drawer.' + drawer.attr('id') + context];
 				if (storedState === 'opened') {
 					drawer.data('open', true);
-				} else if (storedState === 'closed') {
+				}
+				else if (storedState === 'closed') {
 					drawer.data('open', false);
-				};
+				}
 			}
 
 			// Click event for the related button
