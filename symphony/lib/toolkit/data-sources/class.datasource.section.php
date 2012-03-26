@@ -67,74 +67,97 @@
 		}
 
 		/**
-		 * Given an Entry object, this function will iterate over the `dsParamPARAMOUTPUT`
-		 * setting to see any of the Symphony system parameters need to be set.
-		 * The current system parameters supported are `system:id`, `system:author`
-		 * and `system:date`. If these parameters are found, the result is added
-		 * to the `$param_pool` array using the key, `ds-datasource-handle.parameter-name`
-		 * For the moment, this function also supports the pre Symphony 2.3 syntax,
-		 * `ds-datasource-handle` which did not support multiple parameters.
+		 * Given a name for the group, and an associative array that
+		 * contains three keys, `attr`, `records` and `groups`. Grouping
+		 * of Entries is done by the grouping Field at a PHP level, not
+		 * through the Database.
 		 *
-		 * @param Entry $entry
-		 *  The Entry object that contains the values that may need to be added
-		 *  into the parameter pool.
-		 * @param array $param_pool
-		 *  An array of parameters, passed by reference, where the key is the parameter
-		 *  name and an array of values.
+		 * @param string $element
+		 *  The name for the XML node for this group
+		 * @param array $group
+		 *  An associative array of the group data, includes `attr`, `records`
+		 *  and `groups` keys.
+		 * @return XMLElement
 		 */
-		public function processSystemParameters(Entry $entry, array &$param_pool) {
-			if(!isset($this->dsParamPARAMOUTPUT)) return;
+		public function processRecordGroup($element, array $group){
+			$xGroup = new XMLElement($element, NULL, $group['attr']);
 
-			// Support the legacy parameter `ds-datasource-handle`
-			$key = 'ds-' . $this->dsParamROOTELEMENT;
-			$singleParam = count($this->dsParamPARAMOUTPUT) == 1;
-
-			foreach($this->dsParamPARAMOUTPUT as $param) {
-				// The new style of paramater is `ds-datasource-handle.field-handle`
-				$param_key = $key . '.' . str_replace(':', '-', $param);
-
-				if($param == 'system:id') {
-					$param_pool[$param_key][] = $entry->get('id');
-					if($singleParam) $param_pool[$key][] = $entry->get('id');
+			if(is_array($group['records']) && !empty($group['records'])){
+				if(isset($group['records'][0])) {
+					$data = $group['records'][0]->getData();
+					$pool = FieldManager::fetch(array_keys($data));
+					self::$_fieldPool += $pool;
 				}
-				else if($param == 'system:author') {
-					$param_pool[$param_key][] = $entry->get('author_id');
-					if($singleParam) $param_pool[$key][] = $entry->get('author_id');
-				}
-				else if($param == 'system:date') {
-					$param_pool[$param_key][] = DateTimeObj::get('c', $entry->creationDate);
-					if($singleParam) $param_pool[$key][] = DateTimeObj::get('c', $entry->creationDate);
+
+				foreach($group['records'] as $entry){
+					$xGroup->appendChild(
+						$this->processEntry($entry)
+					);
 				}
 			}
+
+			if(is_array($group['groups']) && !empty($group['groups'])){
+				foreach($group['groups'] as $element => $group){
+					foreach($group as $g) {
+						$xGroup->appendChild(
+							$this->processRecordGroup($element, $g)
+						);
+					}
+				}
+			}
+
+			if(!$this->_param_output_only) return $xGroup;
 		}
 
-		public function processOutputParameters(Entry $entry, array &$param_pool, $field_id, array $values) {
-			if(!isset($this->dsParamPARAMOUTPUT)) return;
+		/**
+		 * Given an Entry object, this function will generate an XML representation
+		 * of the Entry to be returned. It will also add any parameters selected
+		 * by this datasource to the parameter pool.
+		 *
+		 * @param Entry $entry
+		 * @return XMLElement
+		 */
+		public function processEntry(Entry $entry) {
+			$data = $entry->getData();
 
-			// Support the legacy parameter `ds-datasource-handle`
-			$key = 'ds-' . $this->dsParamROOTELEMENT;
-			$singleParam = count($this->dsParamPARAMOUTPUT) == 1;
-			if($singleParam && (!isset($param_pool[$key]) || !is_array($param_pool[$key]))) $param_pool[$key] = array();
+			$xEntry = new XMLElement('entry');
+			$xEntry->setAttribute('id', $entry->get('id'));
 
-			foreach($this->dsParamPARAMOUTPUT as $param) {
-				if(self::$_fieldPool[$field_id]->get('element_name') !== $param) continue;
+			if(!empty($this->_associated_sections)) {
+				$this->setAssociatedEntryCounts($xEntry, $entry);
+			}
 
-				// The new style of paramater is `ds-datasource-handle.field-handle`
-				$param_key = $key . '.' . str_replace(':', '-', $param);
+			if($this->_can_process_system_parameters) {
+				$this->processSystemParameters($entry);
+			}
 
-				if(!isset($param_pool[$param_key]) || !is_array($param_pool[$param_key])) $param_pool[$param_key] = array();
-
-				$param_pool_values = self::$_fieldPool[$field_id]->getParameterPoolValue($values, $entry->get('id'));
-
-				if(is_array($param_pool_values)){
-					$param_pool[$param_key] = array_merge($param_pool_values, $param_pool[$param_key]);
-					if($singleParam) $param_pool[$key] = array_merge($param_pool_values, $param_pool[$key]);
+			foreach($data as $field_id => $values) {
+				if(!isset(self::$_fieldPool[$field_id]) || !is_object(self::$_fieldPool[$field_id])) {
+					self::$_fieldPool[$field_id] =& FieldManager::fetch($field_id);
 				}
-				else{
-					$param_pool[$param_key][] = $param_pool_values;
-					if($singleParam) $param_pool[$key][] = $param_pool_values;
+
+				$this->processOutputParameters($entry, $field_id, $values);
+
+				if (!$this->_param_output_only) foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {
+					list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
+					if(self::$_fieldPool[$field_id]->get('element_name') == $handle) {
+						self::$_fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE ? true : false), $mode, $entry->get('id'));
+					}
 				}
 			}
+
+			if($this->_param_output_only) continue;
+
+			if(in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){
+				$xEntry->appendChild(
+					General::createXMLDateObject(
+						DateTimeObj::get('U', $entry->creationDate),
+						'system-date'
+					)
+				);
+			}
+
+			return $xEntry;
 		}
 
 		/**
@@ -148,22 +171,167 @@
 		 *  be set on
 		 * @param Entry $entry
 		 *  The current entry object
-		 * @param array $associated_sections
-		 *  An array of the associated sections for this entryS
 		 */
-		public function setAssociatedEntryCounts(XMLElement &$xEntry, Entry $entry, array $associated_sections) {
-			$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts($associated_sections);
+		public function setAssociatedEntryCounts(XMLElement &$xEntry, Entry $entry) {
+			$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts($this->_associated_sections);
 			if(!empty($associated_entry_counts)){
 				foreach($associated_entry_counts as $section_id => $count){
-					foreach($associated_sections as $section) {
+					foreach($this->_associated_sections as $section) {
 						if ($section['id'] == $section_id) $xEntry->setAttribute($section['handle'], (string)$count);
 					}
 				}
 			}
 		}
 
+		/**
+		 * Given an Entry object, this function will iterate over the `dsParamPARAMOUTPUT`
+		 * setting to see any of the Symphony system parameters need to be set.
+		 * The current system parameters supported are `system:id`, `system:author`
+		 * and `system:date`. If these parameters are found, the result is added
+		 * to the `$param_pool` array using the key, `ds-datasource-handle.parameter-name`
+		 * For the moment, this function also supports the pre Symphony 2.3 syntax,
+		 * `ds-datasource-handle` which did not support multiple parameters.
+		 *
+		 * @param Entry $entry
+		 *  The Entry object that contains the values that may need to be added
+		 *  into the parameter pool.
+		 */
+		public function processSystemParameters(Entry $entry) {
+			if(!isset($this->dsParamPARAMOUTPUT)) return;
+
+			// Support the legacy parameter `ds-datasource-handle`
+			$key = 'ds-' . $this->dsParamROOTELEMENT;
+			$singleParam = count($this->dsParamPARAMOUTPUT) == 1;
+
+			foreach($this->dsParamPARAMOUTPUT as $param) {
+				// The new style of paramater is `ds-datasource-handle.field-handle`
+				$param_key = $key . '.' . str_replace(':', '-', $param);
+
+				if($param == 'system:id') {
+					$this->_param_pool[$param_key][] = $entry->get('id');
+					if($singleParam) $this->_param_pool[$key][] = $entry->get('id');
+				}
+				else if($param == 'system:author') {
+					$this->_param_pool[$param_key][] = $entry->get('author_id');
+					if($singleParam) $this->_param_pool[$key][] = $entry->get('author_id');
+				}
+				else if($param == 'system:date') {
+					$this->_param_pool[$param_key][] = DateTimeObj::get('c', $entry->creationDate);
+					if($singleParam) $this->_param_pool[$key][] = DateTimeObj::get('c', $entry->creationDate);
+				}
+			}
+		}
+
+		/**
+		 * Given an Entry object, a `$field_id` and an array of `$data`, this
+		 * function iterates over the `dsParamPARAMOUTPUT` and will call the
+		 * field's (identified by `$field_id`) `getParameterPoolValue` function
+		 * to add parameters to the `$this->_param_pool`.
+		 *
+		 * @param Entry $entry
+		 * @param integer $field_id
+		 * @param array $data
+		 */
+		public function processOutputParameters(Entry $entry, $field_id, array $data) {
+			if(!isset($this->dsParamPARAMOUTPUT)) return;
+
+			// Support the legacy parameter `ds-datasource-handle`
+			$key = 'ds-' . $this->dsParamROOTELEMENT;
+			$singleParam = count($this->dsParamPARAMOUTPUT) == 1;
+			if($singleParam && (!isset($this->_param_pool[$key]) || !is_array($this->_param_pool[$key]))) {
+				$this->_param_pool[$key] = array();
+			}
+
+			foreach($this->dsParamPARAMOUTPUT as $param) {
+				if(self::$_fieldPool[$field_id]->get('element_name') !== $param) continue;
+
+				// The new style of paramater is `ds-datasource-handle.field-handle`
+				$param_key = $key . '.' . str_replace(':', '-', $param);
+
+				if(!isset($this->_param_pool[$param_key]) || !is_array($this->_param_pool[$param_key])) {
+					$this->_param_pool[$param_key] = array();
+				}
+
+				$param_pool_values = self::$_fieldPool[$field_id]->getParameterPoolValue($data, $entry->get('id'));
+
+				if(is_array($param_pool_values)){
+					$this->_param_pool[$param_key] = array_merge($param_pool_values, $this->_param_pool[$param_key]);
+					if($singleParam) $this->_param_pool[$key] = array_merge($param_pool_values, $this->_param_pool[$key]);
+				}
+				else{
+					$this->_param_pool[$param_key][] = $param_pool_values;
+					if($singleParam) $this->_param_pool[$key][] = $param_pool_values;
+				}
+			}
+		}
+
+		/**
+		 * This function iterates over `dsParamFILTERS` and builds the relevant
+		 * `$where` and `$joins` parameters with SQL. This SQL is generated from
+		 * `Field->buildDSRetrievalSQL`. A third parameter, `$group` is populated
+		 * with boolean from `Field->requiresSQLGrouping()`
+		 *
+		 * @param string $where
+		 * @param string $joins
+		 * @param boolean $group
+		 */
+		public function processFilters(&$where, &$joins, &$group) {
+			if(!is_array($this->dsParamFILTERS) || empty($this->dsParamFILTERS)) return;
+
+			$pool = FieldManager::fetch(array_keys($this->dsParamFILTERS));
+			self::$_fieldPool += $pool;
+
+			foreach($this->dsParamFILTERS as $field_id => $filter){
+
+				if((is_array($filter) && empty($filter)) || trim($filter) == '') continue;
+
+				if(!is_array($filter)){
+					$filter_type = $this->__determineFilterType($filter);
+
+					$value = preg_split('/'.($filter_type == DS_FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
+					$value = array_map('trim', $value);
+					$value = array_map(array('Datasource', 'removeEscapedCommas'), $value);
+				}
+
+				else $value = $filter;
+
+				if($field_id != 'id' && $field_id != 'system:date' && !(self::$_fieldPool[$field_id] instanceof Field)){
+					throw new Exception(
+						__(
+							'Error creating field object with id %1$d, for filtering in data source %2$s. Check this field exists.',
+							array($field_id, '<code>' . $this->dsParamROOTELEMENT . '</code>')
+						)
+					);
+				}
+
+				if($field_id == 'id') {
+					$c = 'IN';
+					if(stripos($value[0], 'not:') === 0) {
+						$value[0] = preg_replace('/^not:\s*/', null, $value[0]);
+						$c = 'NOT IN';
+					}
+
+					$where = " AND `e`.id " . $c . " ('".implode("', '", $value)."') ";
+				}
+				else if($field_id == 'system:date') {
+					require_once(TOOLKIT . '/fields/field.date.php');
+					$date = new fieldDate(Frontend::instance());
+					$date->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == DS_FILTER_AND ? true : false));
+
+					$where = preg_replace('/`t\d+`.value/', '`e`.creation_date', $where);
+				}
+				else {
+					// For deprecated reasons, call the old, typo'd function name until the switch to the
+					// properly named buildDSRetrievalSQL function.
+					if(!self::$_fieldPool[$field_id]->buildDSRetrivalSQL($value, $joins, $where, ($filter_type == DS_FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
+					if(!$group) $group = self::$_fieldPool[$field_id]->requiresSQLGrouping();
+				}
+			}
+		}
+
 		public function execute(array &$param_pool) {
 			$result = new XMLElement($this->dsParamROOTELEMENT);
+			$this->_param_pool = $param_pool;
 
 			$where = NULL;
 			$joins = NULL;
@@ -191,6 +359,9 @@
 			if(is_array($this->dsParamINCLUDEDELEMENTS)) {
 				$include_pagination_element = in_array('system:pagination', $this->dsParamINCLUDEDELEMENTS);
 			}
+			else {
+				$this->dsParamINCLUDEDELEMENTS = array();
+			}
 
 			if(isset($this->dsParamPARAMOUTPUT) && !is_array($this->dsParamPARAMOUTPUT)) {
 				$this->dsParamPARAMOUTPUT = array($this->dsParamPARAMOUTPUT);
@@ -203,60 +374,7 @@
 			}
 
 			// Process Filters
-			if(is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
-				$pool = FieldManager::fetch(array_keys($this->dsParamFILTERS));
-				self::$_fieldPool += $pool;
-
-				foreach($this->dsParamFILTERS as $field_id => $filter){
-
-					if((is_array($filter) && empty($filter)) || trim($filter) == '') continue;
-
-					if(!is_array($filter)){
-						$filter_type = $this->__determineFilterType($filter);
-
-						$value = preg_split('/'.($filter_type == DS_FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
-						$value = array_map('trim', $value);
-						$value = array_map(array('Datasource', 'removeEscapedCommas'), $value);
-					}
-
-					else $value = $filter;
-
-					if($field_id != 'id' && $field_id != 'system:date' && !(self::$_fieldPool[$field_id] instanceof Field)){
-						throw new Exception(
-							__(
-								'Error creating field object with id %1$d, for filtering in data source %2$s. Check this field exists.',
-								array($field_id, '<code>' . $this->dsParamROOTELEMENT . '</code>')
-							)
-						);
-					}
-
-					if($field_id == 'id') {
-						$c = 'IN';
-						if(stripos($value[0], 'not:') === 0) {
-							$value[0] = preg_replace('/^not:\s*/', null, $value[0]);
-							$c = 'NOT IN';
-						}
-
-						$where = " AND `e`.id " . $c . " ('".implode("', '", $value)."') ";
-					}
-					else if($field_id == 'system:date') {
-						require_once(TOOLKIT . '/fields/field.date.php');
-						$date = new fieldDate(Frontend::instance());
-
-						// Create an empty string, we don't care about the Joins, we just want the WHERE clause.
-						$empty = "";
-						$date->buildDSRetrievalSQL($value, $empty, $where, ($filter_type == DS_FILTER_AND ? true : false));
-
-						$where = preg_replace('/`t\d+`.value/', '`e`.creation_date', $where);
-					}
-					else{
-						// For deprecated reasons, call the old, typo'd function name until the switch to the
-						// properly named buildDSRetrievalSQL function.
-						if(!self::$_fieldPool[$field_id]->buildDSRetrivalSQL($value, $joins, $where, ($filter_type == DS_FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
-						if(!$group) $group = self::$_fieldPool[$field_id]->requiresSQLGrouping();
-					}
-				}
-			}
+			$this->processFilters($where, $joins, $group);
 
 			// Process Sorting
 			if($this->dsParamSORT == 'system:id') {
@@ -272,9 +390,9 @@
 				);
 			}
 
-			// combine INCLUDEDELEMENTS and PARAMOUTPUT into an array of field names
+			// combine `INCLUDEDELEMENTS`, `PARAMOUTPUT` and `GROUP` into an
+			// array of field handles to optimise the `EntryManager` queries
 			$datasource_schema = $this->dsParamINCLUDEDELEMENTS;
-			if (!is_array($datasource_schema)) $datasource_schema = array();
 			if (is_array($this->dsParamPARAMOUTPUT)) {
 				$datasource_schema = array_merge($datasource_schema, $this->dsParamPARAMOUTPUT);
 			}
@@ -344,24 +462,26 @@
 					}
 				}
 
+				// If this datasource has a Limit greater than 0 or the Limit is not set
 				if(!isset($this->dsParamLIMIT) || $this->dsParamLIMIT > 0){
+					if (!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS == 'yes') {
+						$this->_associated_sections = $section->fetchAssociatedSections();
+					}
 
-					if(isset($this->dsParamGROUP)):
+					// If the datasource require's GROUPING
+					if(isset($this->dsParamGROUP)) {
 						self::$_fieldPool[$this->dsParamGROUP] =& FieldManager::fetch($this->dsParamGROUP);
 						$groups = self::$_fieldPool[$this->dsParamGROUP]->groupRecords($entries['records']);
 
 						foreach($groups as $element => $group){
 							foreach($group as $g) {
-								$this->processRecordGroup($result, $element, $g, $param_pool);
+								$result->appendChild(
+									$this->processRecordGroup($element, $g)
+								);
 							}
 						}
-
-					else:
-
-						if (!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS == 'yes') {
-							$associated_sections = $section->fetchAssociatedSections();
-						}
-
+					}
+					else {
 						if(isset($entries['records'][0])) {
 							$data = $entries['records'][0]->getData();
 							$pool = FieldManager::fetch(array_keys($data));
@@ -369,124 +489,17 @@
 						}
 
 						foreach($entries['records'] as $entry){
-							$data = $entry->getData();
-
-							$xEntry = new XMLElement('entry');
-							$xEntry->setAttribute('id', $entry->get('id'));
-
-							if(!empty($associated_sections)) {
-								$this->setAssociatedEntryCounts($xEntry, $entry, $associated_sections);
-							}
-
-							if($this->_can_process_system_parameters) {
-								$this->processSystemParameters($entry, $param_pool);
-							}
-
-							foreach($data as $field_id => $values) {
-								if(!isset(self::$_fieldPool[$field_id]) || !is_object(self::$_fieldPool[$field_id])) {
-									self::$_fieldPool[$field_id] =& FieldManager::fetch($field_id);
-								}
-
-								$this->processOutputParameters($entry, $param_pool, $field_id, $values);
-
-								if (!$this->_param_output_only) foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {
-									list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
-									if(self::$_fieldPool[$field_id]->get('element_name') == $handle) {
-										self::$_fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE ? true : false), $mode, $entry->get('id'));
-									}
-								}
-							}
-
-							if($this->_param_output_only) continue;
-
-							if(in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){
-								$xEntry->appendChild(
-									General::createXMLDateObject(
-										DateTimeObj::get('U', $entry->creationDate),
-										'system-date'
-									)
-								);
-							}
-
-							$result->appendChild($xEntry);
+							$result->appendChild(
+								$this->processEntry($entry)
+							);
 						}
-
-					endif;
+					}
 				}
-
 			}
+
+			$param_pool = $this->_param_pool;
 
 			return $result;
-		}
-
-		public function processRecordGroup(XMLElement $result, $element, $group, &$param_pool){
-			$associated_sections = NULL;
-
-			$xGroup = new XMLElement($element, NULL, $group['attr']);
-
-			if(!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS == 'yes'){
-				$associated_sections = $section->fetchAssociatedSections();
-			}
-
-			if(is_array($group['records']) && !empty($group['records'])){
-				if(isset($group['records'][0])) {
-					$data = $group['records'][0]->getData();
-					$pool = FieldManager::fetch(array_keys($data));
-					self::$_fieldPool += $pool;
-				}
-
-				foreach($group['records'] as $entry){
-					$data = $entry->getData();
-
-					$xEntry = new XMLElement('entry');
-					$xEntry->setAttribute('id', $entry->get('id'));
-
-					if(!empty($associated_sections)) {
-						$this->setAssociatedEntryCounts($xEntry, $entry, $associated_sections);
-					}
-
-					if($this->_can_process_system_parameters) {
-						$this->processSystemParameters($entry, $param_pool);
-					}
-
-					foreach($data as $field_id => $values){
-						if(!isset(self::$_fieldPool[$field_id]) || !is_object(self::$_fieldPool[$field_id])) {
-							self::$_fieldPool[$field_id] =& FieldManager::fetch($field_id);
-						}
-
-						$this->processOutputParameters($entry, $param_pool, $field_id, $values);
-
-						if (!$this->_param_output_only) if (is_array($this->dsParamINCLUDEDELEMENTS)) foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {
-							list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
-							if(self::$_fieldPool[$field_id]->get('element_name') == $handle) {
-								self::$_fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE ? true : false), $mode, $entry->get('id'));
-							}
-						}
-					}
-
-					if($this->_param_output_only) continue;
-
-					if(is_array($this->dsParamINCLUDEDELEMENTS) && in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){
-						$xEntry->appendChild(
-							General::createXMLDateObject(
-								DateTimeObj::get('U', $entry->creationDate),
-								'system-date'
-							)
-						);
-					}
-					$xGroup->appendChild($xEntry);
-				}
-			}
-
-			if(is_array($group['groups']) && !empty($group['groups'])){
-				foreach($group['groups'] as $element => $group){
-					foreach($group as $g) {
-						$this->processRecordGroup($xGroup, $element, $g, $param_pool);
-					}
-				}
-			}
-
-			if(!$this->_param_output_only) $result->appendChild($xGroup);
 		}
 
 	}
