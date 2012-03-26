@@ -13,6 +13,7 @@
 	require_once(CORE . '/class.symphony.php');
 	require_once(TOOLKIT . '/class.htmlpage.php');
 	require_once(TOOLKIT . '/class.ajaxpage.php');
+    require_once(TOOLKIT . '/class.sectionmanager.php');
 
 	Class Administration extends Symphony{
 
@@ -113,10 +114,17 @@
 					$default_area = null;
 
 					if(is_numeric($this->Author->get('default_area'))) {
-						$section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` WHERE `id` = '".$this->Author->get('default_area')."' LIMIT 1");
+                        $default_section = SectionManager::fetch($this->Author->get('default_area'));
+                        $section_handle = $default_section->get('handle');
 
 						if(!$section_handle){
-							$section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
+                            $all_sections = SectionManager::fetch();
+                            if(count($all_sections) > 0)
+                            {
+                                $section_handle = $all_sections[0]->get('handle');
+                            } else {
+                                $section_handle = null;
+                            }
 						}
 
 						if(!is_null($section_handle)) {
@@ -129,7 +137,13 @@
 
 					if(is_null($default_area)) {
 						if($this->Author->isDeveloper()) {
-							$section_handle = Symphony::Database()->fetchVar('handle', 0, "SELECT `handle` FROM `tbl_sections` ORDER BY `sortorder` LIMIT 1");
+                            $all_sections = SectionManager::fetch();
+                            if(count($all_sections) > 0)
+                            {
+                                $section_handle = $all_sections[0]->get('handle');
+                            } else {
+                                $section_handle = null;
+                            }
 
 							if(!is_null($section_handle)) {
 								// If there are sections created, redirect to the first one (sortorder)
