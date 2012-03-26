@@ -702,7 +702,10 @@
 								}
 							}
 
-							$missing_cfs = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '$section_id' AND `id` NOT IN ('".@implode("', '", $id_list)."')");
+                            // This variable represents the fields that occur in the database but are not sent by the browser.
+                            // This happens when editing a section and the user removes a field and saves the section. These 'missing fields'
+                            // need to be removed from the database.
+                            $missing_cfs = FieldManager::fetchRemovedFieldsFromSection($section_id, $id_list, true);
 
 							if(is_array($missing_cfs) && !empty($missing_cfs)){
 								foreach($missing_cfs as $id){
