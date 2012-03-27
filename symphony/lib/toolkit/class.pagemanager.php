@@ -833,4 +833,27 @@
 			return implode('/', $path);
 		}
 
+        /**
+         * Check whether a datasource is used or not
+         * @param string $handle
+         *  The datasource handle
+         * @return bool
+         *  True if used, false if not
+         */
+        public static function isDataSourceUsed($handle)
+        {
+            return Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0;
+        }
+
+        /**
+         * Check whether a event is used or not
+         * @param string $handle
+         *  The event handle
+         * @return bool
+         *  True if used, false if not
+         */
+        public static function isEventUsed($handle)
+        {
+            return Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `events` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0;
+        }
 	}

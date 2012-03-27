@@ -494,7 +494,7 @@
 			if(is_dir(EXTENSIONS . "/{$extension_handle}/data-sources")){
 				foreach(glob(EXTENSIONS . "/{$extension_handle}/data-sources/data.*.php") as $file){
 					$handle = preg_replace(array('/^data\./i', '/\.php$/i'), NULL, basename($file));
-					if(Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0){
+					if(PageManager::isDataSourceUsed($handle)){
 						throw new Exception(
 							__('The Data Source ‘%s’, provided by the Extension ‘%s’, is currently in use.', array(basename($file), $about['name']))
 							. ' ' . __("Please remove it from your pages prior to uninstalling or disabling.")
@@ -507,7 +507,7 @@
 			if(is_dir(EXTENSIONS . "/{$extension_handle}/events")){
 				foreach(glob(EXTENSIONS . "/{$extension_handle}/events/event.*.php") as $file){
 					$handle = preg_replace(array('/^event\./i', '/\.php$/i'), NULL, basename($file));
-					if(Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `events` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0){
+					if(PageManager::isEventUsed($handle)){
 						throw new Exception(
 							__('The Event ‘%s’, provided by the Extension ‘%s’, is currently in use.', array(basename($file), $about['name']))
 							. ' ' . __("Please remove it from your pages prior to uninstalling or disabling.")
