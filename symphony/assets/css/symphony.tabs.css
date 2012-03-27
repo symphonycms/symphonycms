@@ -8,6 +8,7 @@ ul.tabs {
 	clear: both;
 	list-style-type: none;
 	padding: 0;
+	margin: 0;
 	height: 23px;
 	position: relative;
 	top: 1px;
