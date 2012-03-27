@@ -4,11 +4,9 @@
  * @since Symphony 2.3
  */
 
-
 ul.tabs {
 	clear: both;
 	list-style-type: none;
-	margin: 40px 0 0 -11px;
 	padding: 0;
 	height: 23px;
 	position: relative;
@@ -118,4 +116,10 @@ ul.tabs li.invalid {
 ul.tabs li.invalid a.destructor {
 	color: #fb9;
 	text-shadow: none;
+}
+
+/* Tabs in context area */
+
+#context ul.tabs {
+	margin: 20px 0 0 -11px;
 }
