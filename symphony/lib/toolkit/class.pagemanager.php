@@ -881,4 +881,22 @@
 
             return $row;
         }
+
+        /**
+         * Fetch an associated array with Page ID's and the types they're using.
+         *
+         * @return array
+         *  A 2-dimensional associated array where the key is the page ID.
+         */
+        public static function fetchPageTypeArray()
+        {
+            $types = Symphony::Database()->fetch("SELECT `page_id`,`type` FROM `tbl_pages_types`");
+            $page_types = array();
+            if(is_array($types)) {
+                foreach($types as $type) {
+                    $page_types[$type['page_id']][] = $type['type'];
+                }
+            }
+            return $page_types;
+        }
 	}
