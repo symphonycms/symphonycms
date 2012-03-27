@@ -835,6 +835,7 @@
 
         /**
          * Check whether a datasource is used or not
+         *
          * @param string $handle
          *  The datasource handle
          * @return bool
@@ -847,6 +848,7 @@
 
         /**
          * Check whether a event is used or not
+         *
          * @param string $handle
          *  The event handle
          * @return bool
@@ -855,5 +857,28 @@
         public static function isEventUsed($handle)
         {
             return Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `events` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0;
+        }
+
+        /**
+         * Resolve a page by it's handle and path
+         *
+         * @param $handle
+         *  The handle of the page
+         * @param bool $path
+         *  The path to the page
+         * @return mixed
+         *  Array if found, false if not
+         */
+        public static function resolvePageByPath($handle, $path = false)
+        {
+            $sql = sprintf(
+                "SELECT * FROM `tbl_pages` WHERE `path` %s AND `handle` = '%s' LIMIT 1",
+                ($path ? " = '".Symphony::Database()->cleanValue($path)."'" : 'IS NULL'),
+                Symphony::Database()->cleanValue($handle)
+            );
+
+            $row = Symphony::Database()->fetchRow(0, $sql);
+
+            return $row;
         }
 	}
