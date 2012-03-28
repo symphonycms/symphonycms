@@ -36,7 +36,8 @@
 --------------------------------------------------------------------------*/
 
 span.frame,
-fieldset.frame {
+fieldset.frame,
+.frame.inline {
 	display: block;
 	margin-bottom: 15px;
 	border: 1px solid rgba(0, 0, 0, 0.2);
