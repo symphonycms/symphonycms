@@ -160,11 +160,11 @@ button:focus,
 input[type=submit].selected,
 button.selected,
 .button.selected {
-	box-shadow: inset 2px 2px 3px rgba(0, 0, 0, 0.15), inset -1px -1px 2px rgba(255, 255, 255, 0.7);
+	box-shadow: inset 2px 2px 7px rgba(0, 0, 0, 0.1), inset 1px 1px 2px rgba(0, 0, 0, 0.15), inset -2px -2px 2px rgba(255, 255, 255, 0.85);
 	cursor: pointer;
-	border-color: rgba(0, 0, 0, 0.25);
-	color: rgba(0, 0, 0, 1);
-	text-shadow: 1px 1px 1px rgba(255, 255, 255, 1);
+	color: rgba(0, 0, 0, 0.65);
+	border-color: rgba(0, 0, 0, 0.3);
+	text-shadow: -1px -1px 1px #fff;
 }
 
 input[type=submit][disabled=disabled]:hover,
