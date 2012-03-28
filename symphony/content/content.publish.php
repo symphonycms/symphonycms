@@ -100,7 +100,6 @@
 			$current_page = (isset($_REQUEST['pg']) && is_numeric($_REQUEST['pg']) ? max(1, intval($_REQUEST['pg'])) : 1);
 
 			if(isset($_REQUEST['filter'])) {
-
 				// legacy implementation, convert single filter to an array
 				// split string in the form ?filter=handle:value
 				if(!is_array($_REQUEST['filter'])) {
@@ -111,16 +110,9 @@
 				}
 
 				foreach($filters as $handle => $value) {
-					$field_id = Symphony::Database()->fetchVar('id', 0, sprintf("
-						SELECT `f`.`id`
-						FROM `tbl_fields` AS `f`
-						LEFT JOIN `tbl_sections` AS `s` ON (`s`.`id` = `f`.`parent_section`)
-						WHERE f.`element_name` = '%s'
-						AND `s`.`handle` = '%s'
-						LIMIT 1
-					",
+					$field_id = FieldManager::fetchFieldIDFromElementName(
 						Symphony::Database()->cleanValue($handle),
-						$section->get('handle'))
+						$section->get('id')
 					);
 
 					$field = FieldManager::fetch($field_id);
@@ -131,8 +123,9 @@
 						$field->buildDSRetrivalSQL(array($value), $joins, $where, false);
 						$filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, rawurlencode($value));
 						$prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, rawurlencode($value));
-					} else {
-						unset($filters[$i]);
+					}
+					else {
+						unset($filters[$handle]);
 					}
 				}
 
