@@ -113,19 +113,7 @@
 				foreach($filters as $handle => $value) {
                     // Get the ID of the field:
                     // @Todo: change this query as soon as sections are stored in XML:
-					$field_id = Symphony::Database()->fetchVar('id', 0, sprintf("
-						SELECT `f`.`id`
-						FROM `tbl_fields` AS `f`
-						LEFT JOIN `tbl_sections` AS `s` ON (`s`.`id` = `f`.`parent_section`)
-						WHERE f.`element_name` = '%s'
-						AND `s`.`handle` = '%s'
-						LIMIT 1
-					",
-						Symphony::Database()->cleanValue($handle),
-						$section->get('handle'))
-					);
-
-					$field = FieldManager::fetch($field_id);
+                    $field = FieldManager::fetchFieldFromHandle($handle, $section->get('handle'));
 
 					if($field instanceof Field) {
 						// For deprecated reasons, call the old, typo'd function name until the switch to the

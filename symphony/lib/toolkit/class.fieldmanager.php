@@ -506,11 +506,41 @@
 
         /**
          * Check whether a field type is used or not
-         * @param $type     The type
+         * @param $type
+         *  The type
          * @return bool
+         *  True if the type is used, false if not
          */
         public static function isTypeUsed($type)
         {
             return Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_fields` WHERE `type` = '{$type}'") > 0;
+        }
+
+        /**
+         * Fetch the field according to it's handle and section handle (since fields can share similar name in multiple
+         * sections)
+         *
+         * @param $handle
+         *  The handle of the field
+         * @param $sectionHandle
+         *  The handle of the section
+         * @return mixed
+         *  If found the field, otherwise false
+         */
+        public static function fetchFieldFromHandle($handle, $sectionHandle)
+        {
+            $field_id = Symphony::Database()->fetchVar('id', 0, sprintf("
+                SELECT `f`.`id`
+                FROM `tbl_fields` AS `f`
+                LEFT JOIN `tbl_sections` AS `s` ON (`s`.`id` = `f`.`parent_section`)
+                WHERE f.`element_name` = '%s'
+                AND `s`.`handle` = '%s'
+                LIMIT 1
+            ",
+                Symphony::Database()->cleanValue($handle),
+                $sectionHandle)
+            );
+
+            return FieldManager::fetch($field_id);
         }
 	}
