@@ -4,7 +4,7 @@
 
 	Class event<!-- CLASS NAME --> extends <!-- CLASS EXTENDS -->{
 
-		const ROOTELEMENT = '<!-- ROOT ELEMENT -->';
+		public $ROOTELEMENT = '<!-- ROOT ELEMENT -->';
 
 		public $eParamFILTERS = array(
 			<!-- FILTERS -->

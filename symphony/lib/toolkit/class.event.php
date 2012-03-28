@@ -23,7 +23,7 @@
 		 * action does exist, it typically calls the `__trigger()` method, otherwise void.
 		 *
 		 * @return mixed
-		 *	XMLElement with the event result or void if the action did not match
+		 *  XMLElement with the event result or void if the action did not match
 		 */
 		public function load();
 	}
@@ -86,7 +86,7 @@
 		 * used by the event editor.
 		 *
 		 * @return boolean
-		 *	 True if event can be edited, false otherwise. Defaults to false
+		 *   True if event can be edited, false otherwise. Defaults to false
 		 */
 		public static function allowEditorToParse(){
 			return false;
@@ -154,8 +154,8 @@
 		 *
 		 * @see toolkit.FrontendPage#__findEventOrder()
 		 * @return integer
-		 *	The available constants are `Event::kLOW`, `Event::kNORMAL` and `Event::kHIGH`.
-		 *	Defaults to `Event::kNORMAL`
+		 *  The available constants are `Event::kLOW`, `Event::kNORMAL` and `Event::kHIGH`.
+		 *  Defaults to `Event::kNORMAL`
 		 */
 		public function priority(){
 			return self::kNORMAL;
@@ -166,9 +166,9 @@
 		 * is to define the logic of this particular event. It assumes that this event
 		 * has already been triggered from the load function
 		 *
-		 * @return mixed
-		 *	Typically returns an XMLElement with the event information (success
-		 *	or failure included
+		 * @since Symphony 2.3
+		 * @return XMLElement
+		 *  Returns an `XMLElement` with the event information (success or failure included)
 		 */
 		protected function __trigger(){
 			return $this->execute();

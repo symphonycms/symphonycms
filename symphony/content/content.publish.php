@@ -100,7 +100,6 @@
 			$current_page = (isset($_REQUEST['pg']) && is_numeric($_REQUEST['pg']) ? max(1, intval($_REQUEST['pg'])) : 1);
 
 			if(isset($_REQUEST['filter'])) {
-
 				// legacy implementation, convert single filter to an array
 				// split string in the form ?filter=handle:value
 				if(!is_array($_REQUEST['filter'])) {
@@ -111,9 +110,12 @@
 				}
 
 				foreach($filters as $handle => $value) {
-                    // Get the ID of the field:
-                    // @Todo: change this query as soon as sections are stored in XML:
-                    $field = FieldManager::fetchFieldFromHandle($handle, $section->get('handle'));
+					$field_id = FieldManager::fetchFieldIDFromElementName(
+						Symphony::Database()->cleanValue($handle),
+						$section->get('id')
+					);
+
+					$field = FieldManager::fetch($field_id);
 
 					if($field instanceof Field) {
 						// For deprecated reasons, call the old, typo'd function name until the switch to the
@@ -121,8 +123,9 @@
 						$field->buildDSRetrivalSQL(array($value), $joins, $where, false);
 						$filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, rawurlencode($value));
 						$prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, rawurlencode($value));
-					} else {
-						unset($filters[$i]);
+					}
+					else {
+						unset($filters[$handle]);
 					}
 				}
 
@@ -820,10 +823,7 @@
 			}
 
 			// Determine the page title
-            $section_fields = FieldManager::fetch(null, $section->get('id'));
-            $keys = array_keys($section_fields);
-			$field_id = $section_fields[$keys[0]]->get('id');
-
+			$field_id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
 			$field = FieldManager::fetch($field_id);
 
 			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')), NULL, $entry_id)));
