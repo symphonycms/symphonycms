@@ -571,13 +571,15 @@ div.field-checkbox:first-child {
 }
 
 .file a {
-	float: left;
-	max-width: 50%;
-	overflow: hidden;
-	text-overflow: ellipsis;
+	display: inline;
+	/*float: left;*/
+	/*max-width: 50%;*/
+	/*overflow: hidden;*/
+	/*text-overflow: ellipsis;*/
 }
 
 .file em {
+	display: block;
 	float: right;
 	color: #998;
 	border-bottom: 1px solid rgba(153, 153, 136, 0.3);
