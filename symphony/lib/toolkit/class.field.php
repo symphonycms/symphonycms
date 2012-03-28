@@ -712,7 +712,7 @@
 				$errors['element_name'] = __('Invalid element name. Must be valid %s.', array('<code>QName</code>'));
 			}
 			elseif($checkForDuplicates) {
-                
+
 				if (FieldManager::fieldExists($element_name, $parent_section, $this->get('id'))) {
 					$errors['element_name'] = __('A field with that element name already exists. Please choose another.');
 				}
