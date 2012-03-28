@@ -572,4 +572,19 @@
             ";
             return Symphony::Database()->fetchRow(0, $sql);
         }
+
+        /**
+         * Fetch parent section ID
+         *
+         * @param $field_id
+         *  The ID of the field
+         * @return string
+         *  The ID of the parent section, or false if the field doesn't exist.
+         */
+        public static function fetchSectionID($field_id)
+        {
+            return Symphony::Database()->fetchVar('parent_section', 0,
+                "SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$field_id' LIMIT 1"
+            );
+        }
 	}

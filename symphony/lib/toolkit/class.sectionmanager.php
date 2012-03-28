@@ -75,10 +75,10 @@
 			EntryManager::delete($entries);
 
 			// Delete all the fields
-			$fields = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '$section_id'");
+            $fields = FieldManager::fetch(null, $section_id);
 
 			if(is_array($fields) && !empty($fields)){
-				foreach($fields as $field_id) FieldManager::delete($field_id);
+				foreach($fields as $field) FieldManager::delete($field->get('id'));
 			}
 
 			// Delete the section
@@ -218,14 +218,10 @@
             if(is_null($parent_section_id) && (is_null($parent_field_id) || !$parent_field_id)) return false;
 
             if(is_null($parent_section_id )) {
-                $parent_section_id = Symphony::Database()->fetchVar('parent_section', 0,
-                    "SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$parent_field_id' LIMIT 1"
-                );
+                $parent_section_id = FieldManager::fetchSectionID($parent_field_id);
             }
 
-            $child_section_id = Symphony::Database()->fetchVar('parent_section', 0,
-                "SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$child_field_id' LIMIT 1
-            ");
+            $child_section_id = FieldManager::fetchSectionID($child_field_id);
 
             $fields = array(
                 'parent_section_id' => $parent_section_id,
