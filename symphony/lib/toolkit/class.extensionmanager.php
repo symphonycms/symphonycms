@@ -520,29 +520,13 @@
 			if(is_dir(EXTENSIONS . "/{$extension_handle}/text-formatters")){
 				foreach(glob(EXTENSIONS . "/{$extension_handle}/text-formatters/formatter.*.php") as $file){
 					$handle = preg_replace(array('/^formatter\./i', '/\.php$/i'), NULL, basename($file));
-					$fields = Symphony::Database()->fetchCol('type', "SELECT DISTINCT `type` FROM `tbl_fields` WHERE `type` NOT IN ('author', 'checkbox', 'date', 'input', 'select', 'taglist', 'upload')");
-					if(!empty($fields)) foreach($fields as $field) {
-						try {
-							$table = Symphony::Database()->fetchVar('count', 0, sprintf("
-								SELECT COUNT(*) AS `count`
-								FROM `tbl_fields_%s`
-								WHERE `formatter` = '%s'
-							",
-								Symphony::Database()->cleanValue($field),
-								$handle
-							));
-						}
-						catch (DatabaseException $ex) {
-							// Table probably didn't have that column
-						}
-
-						if($table > 0) {
-						throw new Exception(
-							__('The Text Formatter ‘%s’, provided by the Extension ‘%s’, is currently in use.', array(basename($file), $about['name']))
-							. ' ' . __("Please remove it from your pages prior to uninstalling or disabling.")
-						);
-						}
-					}
+                    if(FieldManager::isTextFormatterUsed($handle))
+                    {
+                        throw new Exception(
+                            __('The Text Formatter ‘%s’, provided by the Extension ‘%s’, is currently in use.', array(basename($file), $about['name']))
+                            . ' ' . __("Please remove it from your pages prior to uninstalling or disabling.")
+                        );
+                    }
 				}
 			}
 		}

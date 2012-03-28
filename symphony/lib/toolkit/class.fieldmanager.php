@@ -587,4 +587,37 @@
                 "SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$field_id' LIMIT 1"
             );
         }
+
+        /**
+         * Check if a specific text formatter is used
+         *
+         * @param $handle
+         *  The handle of the textformatter
+         * @return bool
+         *  true if used, false if not
+         */
+        public static function isTextFormatterUsed($handle)
+        {
+            $fields = Symphony::Database()->fetchCol('type', "SELECT DISTINCT `type` FROM `tbl_fields` WHERE `type` NOT IN ('author', 'checkbox', 'date', 'input', 'select', 'taglist', 'upload')");
+            if(!empty($fields)) foreach($fields as $field) {
+                try {
+                    $table = Symphony::Database()->fetchVar('count', 0, sprintf("
+                        SELECT COUNT(*) AS `count`
+                        FROM `tbl_fields_%s`
+                        WHERE `formatter` = '%s'
+                    ",
+                        Symphony::Database()->cleanValue($field),
+                        $handle
+                    ));
+                }
+                catch (DatabaseException $ex) {
+                    // Table probably didn't have that column
+                }
+
+                if($table > 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
 	}
