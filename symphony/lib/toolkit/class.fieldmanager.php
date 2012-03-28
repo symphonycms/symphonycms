@@ -543,4 +543,33 @@
 
             return FieldManager::fetch($field_id);
         }
+
+        /**
+         * Check if a field already exists
+         *
+         * @param $element_name
+         *  The element name of the field
+         * @param $parent_section
+         *  The parent section in which the field exists
+         * @param bool|int $exclude_id
+         *  The ID to exclude
+         * @return bool|array
+         *  false if the field doesn't exist, the table row if it does
+         */
+        public static function fieldExists($element_name, $parent_section, $exclude_id = false)
+        {
+            $sql_id = $exclude_id ? " AND f.id != '".$exclude_id."' " : '';
+            $sql = "
+                SELECT
+                    f.*
+                FROM
+                    `tbl_fields` AS f
+                WHERE
+                    f.element_name = '{$element_name}'
+                    {$sql_id}
+                    AND f.parent_section = '{$parent_section}'
+                LIMIT 1
+            ";
+            return Symphony::Database()->fetchRow(0, $sql);
+        }
 	}

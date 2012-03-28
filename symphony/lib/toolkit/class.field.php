@@ -712,20 +712,8 @@
 				$errors['element_name'] = __('Invalid element name. Must be valid %s.', array('<code>QName</code>'));
 			}
 			elseif($checkForDuplicates) {
-				$sql_id = ($this->get('id') ? " AND f.id != '".$this->get('id')."' " : '');
-				$sql = "
-					SELECT
-						f.*
-					FROM
-						`tbl_fields` AS f
-					WHERE
-						f.element_name = '{$element_name}'
-						{$sql_id}
-						AND f.parent_section = '{$parent_section}'
-					LIMIT 1
-				";
-
-				if (Symphony::Database()->fetchRow(0, $sql)) {
+                
+				if (FieldManager::fieldExists($element_name, $parent_section, $this->get('id'))) {
 					$errors['element_name'] = __('A field with that element name already exists. Please choose another.');
 				}
 			}
