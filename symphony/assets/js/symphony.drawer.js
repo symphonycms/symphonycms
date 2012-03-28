@@ -63,7 +63,6 @@
 					complete: function() {
 						contents.css('margin-left', settings.verticalWidth + 1); // +1px right border
 						drawer.trigger('expandstop.drawer');
-						button.addClass('selected');
 					}
 				});
 			}
@@ -83,7 +82,6 @@
 					complete: function() {
 						contents.css('margin-right', settings.verticalWidth + 1); // +1px right border
 						drawer.trigger('expandstop.drawer');
-						button.addClass('selected');
 					}
 				});
 			}
@@ -98,10 +96,11 @@
 					complete: function() {
 						verticals.trigger('update.drawer');
 						drawer.trigger('expandstop.drawer');
-						button.addClass('selected');
 					}
 				});
 			}
+			
+			button.addClass('selected');
 
 			// store state
 			if(Symphony.Support.localStorage === true) {
