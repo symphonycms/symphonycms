@@ -1,5 +1,7 @@
 <?php
 
+	require_once TOOLKIT.'/class.managerlookup.php';
+
 	/**
 	 * @package toolkit
 	 */
@@ -12,8 +14,13 @@
 	 *
 	 * @since Symphony 2.3
 	 */
-	Class PageManager {
-        
+	Class PageManager extends ManagerLookup {
+
+		protected function _init()
+		{
+			$this->_setIndex(PAGES.'/*.xml', 'pages');
+		}
+
 		/**
 		 * Given an associative array of data, where the key is the column name
 		 * in `tbl_pages` and the value is the data, this function will create a new
@@ -30,8 +37,74 @@
 			}
 
 			if(!Symphony::Database()->insert($fields, 'tbl_pages')) return false;
+			$pageID = Symphony::Database()->getInsertID();
 
-			return Symphony::Database()->getInsertID();
+			// Generate the pages' XML:
+			$unique_hash = self::generatePageXML($fields);
+			// Store unique hash in the lookup table:
+			Symphony::Database()->insert(array('hash'=>$unique_hash), 'tbl_lookup_pages');
+
+			return $pageID;
+		}
+
+		/**
+		 * Generate the Page XML
+		 *
+		 * @param $fields
+		 *  Associative array of fields names => values for the Page
+		 * @return string
+		 *  The unique hash of this page
+		 */
+		public static function generatePageXML($fields)
+		{
+			// Generate Page XML-file:
+			// Generate a unique hash, this only happens the first time this page is created:
+			if(!isset($fields['unique_hash']))
+			{
+				$fields['unique_hash'] = md5($fields['title'].time());
+			}
+
+			// Generate datasources-xml:
+			$datasources = empty($fields['datasources']) ? '' :
+				'<datasource>'.implode('</datasource><datasource>', $fields['datasources']) .'</datasource>';
+
+			// Generate events-xml:
+			$events = empty($fields['events']) ? '' :
+				'<event>'.implode('</event><event>', $fields['events']) .'</event>';
+
+			// Generate the main XML:
+			$dom = new DOMDocument();
+			$dom->preserveWhiteSpace = false;
+			$dom->formatOutput = true;
+			$dom->loadXML(sprintf('
+				<page>
+					<title handle="%1$s">%2$s</title>
+					<unique_hash>%8$s</unique_hash>
+					<path>%3$s</path>
+					<params>%4$s</params>
+					<datasources>%5$s</datasources>
+					<events>%6$s</events>
+					<sortorder>%7$d</sortorder>
+				</page>
+				',
+				$fields['handle'],
+				$fields['title'],
+				$fields['path'],
+				$fields['params'],
+				$datasources,
+				$events,
+				$fields['sortorder'],
+				$fields['unique_hash']
+			));
+
+			// Save the XML:
+			General::writeFile(
+				self::resolvePageFileLocation($fields['path'], $fields['handle'], 'xml'),
+				$dom->saveXML(),
+				Symphony::Configuration()->get('write_mode', 'file')
+			);
+
+			return $fields['unique_hash'];
 		}
 
 		/**
@@ -39,7 +112,7 @@
 		 *
 		 * @param string $handle
 		 *  The handle of the page
-		 * @return integer
+		 * @return string
 		 *  The Page title
 		 */
 		public static function fetchTitleFromHandle($handle){
@@ -408,6 +481,9 @@
 		 *  found, null is returned.
 		 */
 		public static function fetch($include_types = true, array $select = array(), array $where = array(), $order_by = null, $hierarchical = false) {
+			// For testing:
+			// PageManager::instance();
+
 			if($hierarchical) $select = array_merge($select, array('id', 'parent'));
 			if(empty($select)) $select = array('*');
 
@@ -731,11 +807,13 @@
 		 *  would make `$path` become articles/
 		 * @param string $handle
 		 *  The handle of the page.
+		 * @param string $extension
+		 *  The extension of the file.
 		 * @return string
 		 *  The path to the XSLT of the page
 		 */
-		public static function resolvePageFileLocation($path, $handle){
-			return PAGES . '/' . PageManager::createFilePath($path, $handle) . '.xsl';
+		public static function resolvePageFileLocation($path, $handle, $extension = 'xsl'){
+			return PAGES . '/' . PageManager::createFilePath($path, $handle) . '.' . $extension;
 		}
 
 		/**
