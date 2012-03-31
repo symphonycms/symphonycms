@@ -339,7 +339,7 @@
 			$value = null;
 
 			// New entry
-			if(is_null($data) && is_null($error) && $this->get('pre_populate') == 'yes') {
+			if(is_null($data) && is_null($flagWithError) && $this->get('pre_populate') == 'yes') {
 				$value = DateTimeObj::format('now', DateTimeObj::getSetting('datetime_format'));
 			}
 
@@ -358,7 +358,7 @@
 			$label->setAttribute('class', 'date');
 
 			if(!is_null($flagWithError)) {
-				$label = Widget::Error($label, $error);
+				$label = Widget::Error($label, $flagWithError);
 			}
 
 			$wrapper->appendChild($label);
