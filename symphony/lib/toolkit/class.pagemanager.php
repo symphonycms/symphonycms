@@ -1,6 +1,6 @@
 <?php
 
-	require_once TOOLKIT.'/class.managerlookup.php';
+	require_once TOOLKIT.'/class.lookup.php';
 
 	/**
 	 * @package toolkit
@@ -14,12 +14,7 @@
 	 *
 	 * @since Symphony 2.3
 	 */
-	Class PageManager extends ManagerLookup {
-
-		protected function _init()
-		{
-			$this->_setIndex(PAGES.'/*.xml', 'pages');
-		}
+	Class PageManager {
 
 		/**
 		 * Given an associative array of data, where the key is the column name
@@ -36,13 +31,14 @@
 				$fields['sortorder'] = self::fetchNextSortOrder();
 			}
 
-			if(!Symphony::Database()->insert($fields, 'tbl_pages')) return false;
-			$pageID = Symphony::Database()->getInsertID();
+/*			if(!Symphony::Database()->insert($fields, 'tbl_pages')) return false;
+			$pageID = Symphony::Database()->getInsertID();*/
 
 			// Generate the pages' XML:
-			$unique_hash = self::generatePageXML($fields);
+			$unique_hash = self::__generatePageXML($fields);
+			
 			// Store unique hash in the lookup table:
-			Symphony::Database()->insert(array('hash'=>$unique_hash), 'tbl_lookup_pages');
+			$pageID = Lookup::index(Lookup::LOOKUP_PAGES)->save($unique_hash);
 
 			return $pageID;
 		}
@@ -55,7 +51,7 @@
 		 * @return string
 		 *  The unique hash of this page
 		 */
-		public static function generatePageXML($fields)
+		private function __generatePageXML($fields)
 		{
 			// Generate Page XML-file:
 			// Generate a unique hash, this only happens the first time this page is created:
@@ -72,6 +68,9 @@
 			$events = empty($fields['events']) ? '' :
 				'<event>'.implode('</event><event>', $fields['events']) .'</event>';
 
+			$types = empty($fields['types']) ? '' :
+				'<type>'.implode('</type><type>', $fields['types']) .'</type>';
+
 			// Generate the main XML:
 			$dom = new DOMDocument();
 			$dom->preserveWhiteSpace = false;
@@ -84,6 +83,7 @@
 					<params>%4$s</params>
 					<datasources>%5$s</datasources>
 					<events>%6$s</events>
+					<types>%9$s</types>
 					<sortorder>%7$d</sortorder>
 				</page>
 				',
@@ -94,7 +94,8 @@
 				$datasources,
 				$events,
 				$fields['sortorder'],
-				$fields['unique_hash']
+				$fields['unique_hash'],
+			    $types
 			));
 
 			// Save the XML:
@@ -103,6 +104,10 @@
 				$dom->saveXML(),
 				Symphony::Configuration()->get('write_mode', 'file')
 			);
+
+			// Re-index:
+			// @Todo: optimize the code with a save-function at the end?
+			Lookup::index(Lookup::LOOKUP_PAGES)->reIndex();
 
 			return $fields['unique_hash'];
 		}
@@ -116,14 +121,17 @@
 		 *  The Page title
 		 */
 		public static function fetchTitleFromHandle($handle){
-			return Symphony::Database()->fetchVar('title', 0, sprintf("
+/*			return Symphony::Database()->fetchVar('title', 0, sprintf("
 					SELECT `title`
 					FROM `tbl_pages`
 					WHERE `handle` = '%s'
 					LIMIT 1
 				",
 					Symphony::Database()->cleanValue($handle)
-			));
+			));*/
+
+			return (string)Lookup::index(Lookup::LOOKUP_PAGES)->xpath(
+				sprintf('page/title[@handle=\'%s\']', $handle));
 		}
 
 		/**
@@ -135,14 +143,18 @@
 		 *  The Page ID
 		 */
 		public static function fetchIDFromHandle($handle){
-			return Symphony::Database()->fetchVar('id', 0, sprintf("
+/*			return Symphony::Database()->fetchVar('id', 0, sprintf("
 					SELECT `id`
 					FROM `tbl_pages`
 					WHERE `handle` = '%s'
 					LIMIT 1
 				",
 					Symphony::Database()->cleanValue($handle)
-			));
+			));*/
+
+			$hash = Lookup::index(Lookup::LOOKUP_PAGES)->xpath(
+				sprintf('page[title/@handle=\'%s\']/hash', $handle));
+			return Lookup::index(Lookup::LOOKUP_PAGES)->getId($hash);
 		}
 
 		/**
@@ -160,7 +172,7 @@
 
 			PageManager::deletePageTypes($page_id);
 
-			foreach ($types as $type) {
+/*			foreach ($types as $type) {
 				Symphony::Database()->insert(
 					array(
 						'page_id' => $page_id,
@@ -168,7 +180,16 @@
 					),
 					'tbl_pages_types'
 				);
-			}
+			}*/
+
+			$_pages = self::fetch(false, array(), array(
+				'id' => array('eq', $page_id)
+			));
+
+			$_page = $_pages[0];
+			$_page['types'] = $types;
+
+			self::__generatePageXML($_page);
 
 			return true;
 		}
@@ -224,6 +245,7 @@
 		public static function createPageFiles($new_path, $new_handle, $old_path = null, $old_handle = null) {
 			$new = PageManager::resolvePageFileLocation($new_path, $new_handle);
 			$old = PageManager::resolvePageFileLocation($old_path, $old_handle);
+			$oldConfig = PageManager::resolvePageFileLocation($old_path, $old_handle, 'xml');
 			$data = null;
 
 			// Nothing to do:
@@ -255,6 +277,9 @@
 				// Remove the old file, in the case of a rename
 				if(file_exists($old)) {
 					General::deleteFile($old);
+				}
+				if(file_exists($oldConfig)) {
+					General::deleteFile($oldConfig);
 				}
 
 				/**
@@ -312,7 +337,24 @@
 
 			if(isset($fields['id'])) unset($fields['id']);
 
-			if(Symphony::Database()->update($fields, 'tbl_pages', "`id` = '$page_id'")) {
+			// Set the sortorder:
+			if(!isset($fields['sortorder']))
+			{
+				$_hash = Lookup::index(Lookup::LOOKUP_PAGES)->getHash($page_id);
+				$_sortorder = Lookup::index(Lookup::LOOKUP_PAGES)->xpath(
+					sprintf('page[unique_hash=\'%s\']/sortorder', $_hash));
+				$fields['sortorder'] = (int)$_sortorder[0];
+			}
+
+			self::__generatePageXML($fields);
+
+			if($delete_types) {
+				PageManager::deletePageTypes($page_id);
+			}
+
+			return true;
+
+/*			if(Symphony::Database()->update($fields, 'tbl_pages', "`id` = '$page_id'")) {
 				// If set, this will clear the page's types.
 				if($delete_types) {
 					PageManager::deletePageTypes($page_id);
@@ -322,7 +364,7 @@
 			}
 			else {
 				return false;
-			}
+			}*/
 		}
 
 		/**
@@ -394,7 +436,7 @@
 
 			// Delete from tbl_pages/tbl_page_types
 			if($can_proceed) {
-				PageManager::deletePageTypes($page_id);
+/*				PageManager::deletePageTypes($page_id);
 				Symphony::Database()->delete('tbl_pages', sprintf(" `id` = %d ", $page_id));
 				Symphony::Database()->query(sprintf("
 						UPDATE
@@ -405,7 +447,11 @@
 							`sortorder` < %d
 					",
 						$page_id
-				));
+				));*/
+
+				// Delete from lookup table:
+				Lookup::index(Lookup::LOOKUP_PAGES)->delete($page_id);
+
 			}
 
 			return $can_proceed;
@@ -422,7 +468,13 @@
 		public static function deletePageTypes($page_id = null) {
 			if(is_null($page_id)) return false;
 
-			return Symphony::Database()->delete('tbl_pages_types', sprintf(" `page_id` = %d ", $page_id));
+			// return Symphony::Database()->delete('tbl_pages_types', sprintf(" `page_id` = %d ", $page_id));
+
+			$_page = self::fetchPageByID($page_id);
+			unset($_page['type']);
+			self::__generatePageXML($_page);
+
+			return true;
 		}
 
 		/**
@@ -440,12 +492,13 @@
 		 */
 		public static function deletePageFiles($page_path, $handle) {
 			$file = PageManager::resolvePageFileLocation($page_path, $handle);
+			$configFile = PageManager::resolvePageFileLocation($page_path, $handle, 'xml');
 
 			// Nothing to do:
-			if(!file_exists($file)) return true;
+			if(!file_exists($file) && !file_exists($configFile)) return true;
 
 			// Delete it:
-			if(General::deleteFile($file)) return true;
+			if(General::deleteFile($file) && General::deleteFile($configFile)) return true;
 
 			return false;
 		}
@@ -481,15 +534,62 @@
 		 *  found, null is returned.
 		 */
 		public static function fetch($include_types = true, array $select = array(), array $where = array(), $order_by = null, $hierarchical = false) {
-			// For testing:
-			// PageManager::instance();
 
 			if($hierarchical) $select = array_merge($select, array('id', 'parent'));
 			if(empty($select)) $select = array('*');
 
 			if(is_null($order_by)) $order_by = 'sortorder ASC';
 
-			$pages = Symphony::Database()->fetch(sprintf("
+			$_where = array();
+			if(!empty($where))
+			{
+				// For now, convert MySQL to Lookup-actions (backward compatible):
+				foreach($where as $key => $action)
+				{
+					if(is_numeric($key))
+					{
+						// Numeric, so it was an indexed array
+						// for backward compatibility:
+						$a = explode(' ', $action);
+						if(count($a == 3))
+						{
+							if($a[1] == '=') 	{ $a[1] = 'eq'; }
+							if($a[1] == '!=') 	{ $a[1] = 'neq'; }
+							if($a[1] == '>') 	{ $a[1] = 'gt'; }
+							if($a[1] == '<') 	{ $a[1] = 'lt'; }
+							if($a[1] == '>=') 	{ $a[1] = 'gte'; }
+							if($a[1] == '<=') 	{ $a[1] = 'lte'; }
+							// Shortcut for ID:
+							if($a[0] == 'id')
+							{
+								$_where['unique_hash'] = array(
+									$a[1], Lookup::index(Lookup::LOOKUP_PAGES)->getHash($a[2])
+								);
+							} else {
+								$_where[$a[0]] = array($a[1], $a[2]);
+							}
+						} else {
+							print_r($where).'<br />';
+							print_r($a);
+						}
+					} else {
+						// Aha! An associated array!
+						// shortcut for ID:
+						if($key == 'id')
+						{
+							$_where['unique_hash'] = array(
+								$action[0], Lookup::index(Lookup::LOOKUP_PAGES)->getHash($action[1])
+							);
+						} else {
+							$_where[$key] = $action;
+						}
+					}
+				}
+			}
+
+			$_pages = Lookup::index(Lookup::LOOKUP_PAGES)->fetch($_where, 'sortorder', 'asc');
+			
+/*			$pages = Symphony::Database()->fetch(sprintf("
 					SELECT
 						%s
 					FROM
@@ -502,7 +602,26 @@
 				implode(',', $select),
 				empty($where) ? '1' : implode(' AND ', $where),
 				$order_by
-			));
+			));*/
+
+			$pages = array();
+			foreach($_pages as $_page)
+			{
+				$pages[] = array(
+					'id'			=> Lookup::index(Lookup::LOOKUP_PAGES)->getId((string)$_page->unique_hash),
+					'parent' 		=> (string)$_page->parent,
+					'title'  		=> (string)$_page->title,
+					'handle' 		=> (string)$_page->title->attributes()->handle,
+					'path'	 		=> (string)$_page->path,
+					'params' 		=> (string)$_page->params,
+					'data_sources' 	=> (string)$_page->datasources,
+					'events' 		=> (string)$_page->events,
+					'sortorder'		=> (string)$_page->sortorder,
+					'unique_hash'	=> (string)$_page->unique_hash
+				);
+			}
+
+			// print_r($pages);
 
 			// Fetch the Page Types for each page, if required
 			if($include_types){
@@ -552,17 +671,19 @@
 		public static function fetchPageByID($page_id = null, array $select = array()) {
 			if(is_null($page_id)) return null;
 
-			if(!is_array($page_id)) $page_id = array(
-				Symphony::Database()->cleanValue($page_id)
-			);
+			if(is_array($page_id)) $page_id = array_pop($page_id);
 
 			if(empty($select)) $select = array('*');
 
-			$page = PageManager::fetch(true, $select, array(
+/*			$page = PageManager::fetch(true, $select, array(
 				sprintf("id IN ('%s')", implode(',', $page_id))
+			));*/
+
+			$pages = PageManager::fetch(true, $select, array(
+		    	'id' => array('eq', $page_id)
 			));
 
-			return count($page) == 1 ? array_pop($page) : $page;
+			return !empty($pages) ? $pages[0] : null;
 		}
 
 		/**
@@ -579,6 +700,8 @@
 		 */
 		public static function fetchPageByType($type = null) {
 			if(is_null($type)) return PageManager::fetch();
+
+			
 
 			$pages = Symphony::Database()->fetch(sprintf("
 					SELECT
@@ -631,7 +754,25 @@
 		 *  An array of the Page Types
 		 */
 		public static function fetchPageTypes($page_id = null) {
-			return Symphony::Database()->fetchCol('type', sprintf("
+
+			if($page_id != null)
+			{
+				$_hash 	= Lookup::index(Lookup::LOOKUP_PAGES)->getHash($page_id);
+				$_types = Lookup::index(Lookup::LOOKUP_PAGES)->xpath(
+					sprintf('page[unique_hash=\'%s\']/types/type', $_hash)
+				);
+			} else {
+				$_types = Lookup::index(Lookup::LOOKUP_PAGES)->xpath('page/types/type');
+			}
+			$_array = array();
+			foreach($_types as $_type)
+			{
+				$_array[] = (string)$_type;
+			}
+
+			return $_array;
+
+/*			return Symphony::Database()->fetchCol('type', sprintf("
 					SELECT
 						type
 					FROM
@@ -646,7 +787,7 @@
 				is_null($page_id)
 					? '1'
 					: sprintf('pt.page_id = %d', $page_id)
-			));
+			));*/
 		}
 
 		/**
@@ -677,14 +818,16 @@
 		 *  Returns the next sort order
 		 */
 		public static function fetchNextSortOrder(){
-			$next = Symphony::Database()->fetchVar("next", 0, "
+/*			$next = Symphony::Database()->fetchVar("next", 0, "
 				SELECT
 					MAX(p.sortorder) + 1 AS `next`
 				FROM
 					`tbl_pages` AS p
 				LIMIT 1
 			");
-			return ($next ? (int)$next : 1);
+			return ($next ? (int)$next : 1);*/
+
+			return Lookup::index(Lookup::LOOKUP_PAGES)->getMax('sortorder') + 1;
 		}
 
 		/**
@@ -757,6 +900,8 @@
 		 *  True if the type is used, false otherwise
 		 */
 		public static function hasPageTypeBeenUsed($page_id = null, $type) {
+			
+
 			return (boolean)Symphony::Database()->fetchRow(0, sprintf("
 					SELECT
 						pt.id
@@ -830,7 +975,7 @@
 		 */
 		public static function resolvePage($page_id, $column) {
 			$path = array();
-			$page = Symphony::Database()->fetchRow(0, sprintf("
+/*			$page = Symphony::Database()->fetchRow(0, sprintf("
 					SELECT
 						p.%s,
 						p.parent
@@ -844,16 +989,23 @@
 					$column,
 					$page_id,
 					Symphony::Database()->cleanValue($page_id)
-			));
+			));*/
+
+			$pages = self::fetch(true, array(), array(
+				'id' => array('eq', $page_id)
+		    ));
+			$page = $pages[0];
 
 			if(empty($page)) return $page;
 
 			$path = array($page[$column]);
 
+			// @Todo: get parent according to path and stuff...
 			if (!is_null($page['parent'])) {
 				$next_parent = $page['parent'];
 
 				while (
+
 					$parent = Symphony::Database()->fetchRow(0, sprintf("
 							SELECT
 								p.%s,
