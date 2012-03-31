@@ -568,19 +568,25 @@ div.field-checkbox:first-child {
 .file span {
 	overflow: hidden;
 	text-align: left;
+	position: relative;
+	padding-right: 30%;
 }
 
 .file a {
 	display: inline;
+	word-wrap: break-word;
 	/*float: left;*/
 	/*max-width: 50%;*/
-	/*overflow: hidden;*/
-	/*text-overflow: ellipsis;*/
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .file em {
 	display: block;
-	float: right;
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	/*float: right;*/
 	color: #998;
 	border-bottom: 1px solid rgba(153, 153, 136, 0.3);
 	font-style: normal;
