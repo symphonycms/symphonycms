@@ -464,7 +464,7 @@
 
 				// Translate names to English
 				foreach(self::$_datetime_dictionary as $values) {
-					$string = preg_replace('/\b' . $values . '\b/i', $values, $string);
+					$string = preg_replace('/\b' . self::translate($values) . '\b/i' . (self::isUnicodeCompiled() == true ? 'u' : null), $values, $string);
 				}
 
 				// Replace custom date and time separator with space:
