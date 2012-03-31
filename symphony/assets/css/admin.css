@@ -577,8 +577,10 @@ div.field-checkbox:first-child {
 	word-wrap: break-word;
 	/*float: left;*/
 	/*max-width: 50%;*/
-	overflow: hidden;
-	text-overflow: ellipsis;
+	/*float: left;*/
+	/*max-width: 50%;*/
+	/*overflow: hidden;*/
+	/*text-overflow: ellipsis;*/
 }
 
 .file em {
