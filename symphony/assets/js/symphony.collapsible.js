@@ -31,6 +31,7 @@
 				items:				'.instance',
 				handles:			'.header:first',
 				content:			'.content',
+				ignore:				'.ignore',
 				save_state:			true,
 				storage: 			'symphony.collapsible.' + $('body').attr('id') + (Symphony.Context.get('env') ? '.' + Symphony.Context.get('env')[1] : '')
 			};
@@ -89,14 +90,17 @@
 				var handle = $(this),
 					item = handle.parents(settings.items);
 
-				// Expand
-				if(item.is('.collapsed')) {
-					item.trigger('expand.collapsible');
-				}
+				if(!handle.is(settings.ignore) && !$(event.target).is(settings.ignore)) {
 
-				// Collapse
-				else {
-					item.trigger('collapse.collapsible');
+					// Expand
+					if(item.is('.collapsed')) {
+						item.trigger('expand.collapsible');
+					}
+	
+					// Collapse
+					else {
+						item.trigger('collapse.collapsible');
+					}
 				}
 			});
 
@@ -106,14 +110,17 @@
 					item = handle.parents(settings.items),
 					items = object.find(settings.items);
 
-				// Expand all
-				if(item.is('.collapsed')) {
-					items.trigger('expand.collapsible');
-				}
+				if(!handle.is(settings.ignore) && !$(event.target).is(settings.ignore)) {
 
-				// Collaps all
-				else {
-					items.trigger('collapse.collapsible');
+					// Expand all
+					if(item.is('.collapsed')) {
+						items.trigger('expand.collapsible');
+					}
+	
+					// Collaps all
+					else {
+						items.trigger('collapse.collapsible');
+					}
 				}
 			});
 
