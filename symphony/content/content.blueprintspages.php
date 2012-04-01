@@ -622,6 +622,10 @@
 				$button = new XMLElement('button', __('Delete'));
 				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this page'), 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this page?')));
 				$div->appendChild($button);
+
+				// Add the unique hash field:
+				$hashField = Widget::Input('fields[unique_hash]', $fields['unique_hash'], 'hidden');
+				$div->appendChild($hashField);
 			}
 
 			$this->Form->appendChild($div);
