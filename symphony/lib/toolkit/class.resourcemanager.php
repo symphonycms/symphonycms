@@ -273,11 +273,29 @@
 		public static function getAttachedPages($type, $r_handle){
 			$col = self::getColumnFromType($type);
 
-			$pages = PageManager::fetch(false, array('id', 'title'), array(sprintf(
+/*			$pages = PageManager::fetch(false, array('id', 'title'), array(sprintf(
 				'`%s` = "%s" OR `%s` REGEXP "%s"',
 				$col, $r_handle,
 				$col, '^' . $r_handle . ',|,' . $r_handle . ',|,' . $r_handle . '$'
-			)));
+			)));*/
+
+			switch($col)
+			{
+				case 'data_sources' :
+					{
+						$pages = PageManager::fetch(false, array(), array(
+							'xpath' => sprintf('page[datasources/datasource=\'%s\']', $r_handle)
+						));
+						break;
+					}
+				case 'events' :
+					{
+						$pages = PageManager::fetch(false, array(), array(
+							'xpath' => sprintf('page[events/event=\'%s\']', $r_handle)
+						));
+						break;
+					}
+			}
 
 			return (is_null($pages) ? array() : $pages);
 		}
