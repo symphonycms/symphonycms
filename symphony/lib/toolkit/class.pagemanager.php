@@ -63,6 +63,7 @@
 		 */
 		private function __generatePageXML($fields)
 		{
+
 			// Generate Page XML-file:
 			// Generate a unique hash, this only happens the first time this page is created:
 			if(!isset($fields['unique_hash']))
@@ -71,13 +72,19 @@
 			}
 
 			// Generate datasources-xml:
-			$datasources = empty($fields['datasources']) ? '' :
-				'<datasource>'.implode('</datasource><datasource>', $fields['datasources']) .'</datasource>';
+			//print_r($fields['data_sources']);
+			$datasources = empty($fields['data_sources']) ? '' :
+				'<datasource>'.implode('</datasource><datasource>', explode(',', $fields['data_sources'])) .'</datasource>';
+
+			//echo '<xmp>'.$datasources.'</xmp>';
+
+			//die();
 
 			// Generate events-xml:
 			$events = empty($fields['events']) ? '' :
-				'<event>'.implode('</event><event>', $fields['events']) .'</event>';
+				'<event>'.implode('</event><event>', explode(',', $fields['events'])) .'</event>';
 
+			// Generate types-xml:
 			$types = empty($fields['types']) ? '' :
 				'<type>'.implode('</type><type>', $fields['types']) .'</type>';
 
@@ -89,6 +96,7 @@
 				<page>
 					<title handle="%1$s">%2$s</title>
 					<unique_hash>%8$s</unique_hash>
+					<parent>%10$s</parent>
 					<path>%3$s</path>
 					<params>%4$s</params>
 					<datasources>%5$s</datasources>
@@ -105,7 +113,8 @@
 				$events,
 				$fields['sortorder'],
 				$fields['unique_hash'],
-			    $types
+			    $types,
+			    self::index()->getHash($fields['parent'])
 			));
 
 			// Save the XML:
@@ -589,6 +598,9 @@
 							$_where['unique_hash'] = array(
 								$action[0], self::index()->getHash($action[1])
 							);
+						} elseif($key == 'xpath') {
+							// Xpath functionality:
+							$_where['xpath'] = $action;
 						} else {
 							$_where[$key] = $action;
 						}
@@ -618,15 +630,25 @@
 			foreach($_pages as $_page)
 			{
 				$page_id = self::index()->getId((string)$_page->unique_hash);
+				$_datasources = array();
+				foreach($_page->xpath('datasources/datasource') as $_datasource)
+				{
+					$_datasources[] = (string)$_datasource;
+				}
+				$_events = array();
+				foreach($_page->xpath('events/event') as $_event)
+				{
+					$_events[] = (string)$_event;
+				}
 				$pages[] = array(
 					'id'			=> $page_id,
-					'parent' 		=> self::__getParent($page_id),
+					'parent' 		=> self::__getParentID($page_id),
 					'title'  		=> (string)$_page->title,
 					'handle' 		=> (string)$_page->title->attributes()->handle,
-					'path'	 		=> (string)$_page->path,
+					'path'	 		=> (!empty($_page->path) ? (string)$_page->path : false),
 					'params' 		=> (string)$_page->params,
-					'data_sources' 	=> (string)$_page->datasources,
-					'events' 		=> (string)$_page->events,
+					'data_sources' 	=> implode(',', $_datasources),
+					'events' 		=> implode(',', $_events),
 					'sortorder'		=> (string)$_page->sortorder,
 					'unique_hash'	=> (string)$_page->unique_hash
 				);
@@ -671,15 +693,23 @@
 			}
 		}
 
-		private function __getParent($page_id)
+		/**
+		 * Get the parent ID of this page
+		 *
+		 * @param $page_id
+		 *  The Page ID
+		 * @return bool|int
+		 *  The Parent ID if found, false otherwise
+		 */
+		private function __getParentID($page_id)
 		{
 			$_hash = self::index()->getHash($page_id);
-			$_path = self::index()->xpath(
-				sprintf('page[unique_hash = \'%s\']/path', $_hash)
+			$_parent_hash = self::index()->xpath(
+				sprintf('page[unique_hash = \'%s\']/parent', $_hash), true
 			);
-			if(count($_path) == 1)
+			if(!empty($_parent_hash))
 			{
-				return (string)$_path[0];
+				return self::index()->getId($_parent_hash);
 			} else {
 				return false;
 			}
@@ -751,8 +781,7 @@
 										 
 			));*/
 
-			// @todo: once the fetch-method uses xpath for it's $where-parameter, this is going to be less ugly:
-			$pages = array();
+/*			$pages = array();
 			$_pages = self::index()->xpath(
 				sprintf('page[types/type = \'%s\']', $type)
 			);
@@ -770,7 +799,10 @@
 					'sortorder'		=> (string)$_page->sortorder,
 					'unique_hash'	=> (string)$_page->unique_hash
 				);
-			}
+			}*/
+			$pages = self::fetch(true, array(), array(
+				'xpath' => sprintf('page[types/type = \'%s\']', $type)
+			));
 
 			return count($pages) == 1 ? array_pop($pages) : $pages;
 		}
@@ -796,7 +828,7 @@
 
 			return PageManager::fetch(false, $select, array(
 				sprintf('id != %d', $page_id),
-				sprintf('parent = %d', $page_id)
+				sprintf('parent = %d', self::index()->getHash($page_id))
 			));
 		}
 
@@ -929,7 +961,7 @@
 			if(is_null($page_id)) return null;
 
 			$children = PageManager::fetch(false, array('id'), array(
-				sprintf('parent = %d', $page_id)
+				sprintf('parent = %d', self::index()->getHash($page_id))
 			));
 			$count = count($children);
 
@@ -987,7 +1019,14 @@
 		 *  True if the page has children, false otherwise
 		 */
 		public static function hasChildPages($page_id = null) {
-			return (boolean)Symphony::Database()->fetchVar('id', 0, sprintf("
+
+			$_hash = self::index()->getHash($page_id);
+			$_children = self::index()->xpath(
+				sprintf('page[parent=\'%s\']', $_hash)
+			);
+			return count($_children) > 0;
+
+/*			return (boolean)Symphony::Database()->fetchVar('id', 0, sprintf("
 					SELECT
 						p.id
 					FROM
@@ -997,7 +1036,7 @@
 					LIMIT 1
 				",
 				$page_id
-			));
+			));*/
 		}
 
 		/**
@@ -1057,7 +1096,7 @@
 				));
 			} else {
 				$pages = self::fetch(true, array(), array(
-					'handle' => array('eq', $page_id)
+					'xpath' => sprintf('page[title/@handle=\'%s\']', $page_id)
 				));
 			}
 			$page = $pages[0];
@@ -1066,13 +1105,15 @@
 
 			$path = array($page[$column]);
 
-			// @Todo: get parent according to path and stuff...
 			if (!is_null($page['parent'])) {
 				$next_parent = $page['parent'];
 
-				while (
+				$_continue = true;
 
-					$parent = Symphony::Database()->fetchRow(0, sprintf("
+				while ($_continue
+
+
+/*					$parent = Symphony::Database()->fetchRow(0, sprintf("
 							SELECT
 								p.%s,
 								p.parent
@@ -1083,10 +1124,18 @@
 						",
 							$column,
 							$next_parent
-					))
+					))*/
+
 				) {
-					array_unshift($path, $parent[$column]);
-					$next_parent = $parent['parent'];
+					$_page = self::fetch(true, array(), array('id' => array('eq', $next_parent)));
+					if(!empty($_page))
+					{
+						// array_unshift($path, $parent[$column]);
+						array_unshift($path, $_page[0][$column]);
+						$next_parent = $_page['parent'];
+					} else {
+						$_continue = false;
+					}
 				}
 			}
 
@@ -1125,7 +1174,7 @@
 		 */
 		public static function resolvePagePath($page_id) {
 			$path = PageManager::resolvePage($page_id, 'handle');
-			
+
 			return implode('/', $path);
 		}
 
@@ -1139,7 +1188,12 @@
          */
         public static function isDataSourceUsed($handle)
         {
-            return Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0;
+            $_page = self::index()->xpath(
+				sprintf('page[datasources/datasource=\'%s\'][1]', $handle), true
+			);
+			return $_page != false;
+			
+			// return Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `data_sources` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0;
         }
 
         /**
@@ -1152,7 +1206,12 @@
          */
         public static function isEventUsed($handle)
         {
-            return Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `events` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0;
+			$_page = self::index()->xpath(
+				sprintf('page[events/event=\'%s\'][1]', $handle), true
+			);
+			return $_page != false;
+			
+            // return Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_pages` WHERE `events` REGEXP '[[:<:]]{$handle}[[:>:]]' ") > 0;
         }
 
         /**
@@ -1167,15 +1226,28 @@
          */
         public static function resolvePageByPath($handle, $path = false)
         {
-            $sql = sprintf(
+/*            $sql = sprintf(
                 "SELECT * FROM `tbl_pages` WHERE `path` %s AND `handle` = '%s' LIMIT 1",
                 ($path ? " = '".Symphony::Database()->cleanValue($path)."'" : 'IS NULL'),
                 Symphony::Database()->cleanValue($handle)
             );
 
-            $row = Symphony::Database()->fetchRow(0, $sql);
+            $row = Symphony::Database()->fetchRow(0, $sql);*/
 
-            return $row;
+            // return $row;
+
+			$xpath = 'page[title/@handle=\''.$handle.'\'';
+			if($path != false) { $xpath .= ' and path=\''.$path.'\''; }
+			$xpath .= ']';
+			$pages = self::fetch(true, array(), array(
+				'xpath' => $xpath
+			));
+			if(count($pages) > 0)
+			{
+				return $pages[0];
+			} else {
+				return false;
+			}
         }
 
         /**
@@ -1186,13 +1258,22 @@
          */
         public static function fetchPageTypeArray()
         {
-            $types = Symphony::Database()->fetch("SELECT `page_id`,`type` FROM `tbl_pages_types`");
+/*            $types = Symphony::Database()->fetch("SELECT `page_id`,`type` FROM `tbl_pages_types`");
             $page_types = array();
             if(is_array($types)) {
                 foreach($types as $type) {
                     $page_types[$type['page_id']][] = $type['type'];
                 }
-            }
+            }*/
+
+			$page_types = array();
+			$_pages = self::fetch();
+
+			foreach($_pages as $_page)
+			{
+				$page_types[$_page['id']] = $_page['type'];
+			}
+
             return $page_types;
         }
 	}

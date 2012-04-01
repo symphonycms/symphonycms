@@ -115,11 +115,24 @@ class Lookup
 	 *
 	 * @param $path
 	 *  The XPath expression
-	 * @return SimpleXMLElement[]
+	 * @param bool $singleValue
+	 *  Does this function return a single value?
+	 * @return bool|SimpleXMLElement|SimpleXMLElement[]
 	 */
-	public function xpath($path)
+	public function xpath($path, $singleValue = false)
 	{
-		return $this->_index->xpath('/'.$this->_type.'/'.$path);
+		if(!$singleValue)
+		{
+			return $this->_index->xpath('/'.$this->_type.'/'.$path);
+		} else {
+			$_result = $this->_index->xpath('/'.$this->_type.'/'.$path);
+			if(count($_result) > 0)
+			{
+				return $_result[0];
+			} else {
+				return false;
+			}
+		}
 	}
 
 	/**
@@ -168,74 +181,69 @@ class Lookup
 		$array = array();
 
 		// @todo: one day, this whole fetch-function is going to use a nice simple xpath expression to get them pages
-/*		if($where != null && is_string($where))
+		if($where != null && isset($where['xpath']))
 		{
-			$array = $this->_index->xpath($where);
+			$array = $this->_index->xpath($where['xpath']);
 		} else {
-			// Just add them all:
 			foreach($this->_index->children() as $_item)
 			{
-				$array[] = $_item;
-			}
-		}*/
-		foreach($this->_index->children() as $_item)
-		{
-			if(!empty($where))
-			{
-				/* See if this item passes the filter:
-				 * array(
-			 	 *     'id'     => array('eq', 12),
-				 *     'name'   => array('neq', 'tom'),
-				 *     'nr'		=> array('gt', 10),
-				 *     'nr'     => array('lt', 20),
-				 *     'nr'     => array('gte', 10),
-				 *     'nr'     => array('lte', 20)
-				 * );
-				 */
-				$passes = false;
-				foreach($where as $key => $expression)
+				if(!empty($where))
 				{
-					switch($expression[0])
+					/* See if this item passes the filter:
+					 * array(
+					 *     'id'     => array('eq', 12),
+					 *     'name'   => array('neq', 'tom'),
+					 *     'nr'		=> array('gt', 10),
+					 *     'nr'     => array('lt', 20),
+					 *     'nr'     => array('gte', 10),
+					 *     'nr'     => array('lte', 20)
+					 * );
+					 */
+					$passes = false;
+					foreach($where as $key => $expression)
 					{
-						case 'eq' :
-							{
-								$passes = (string)$_item->$key == (string)$expression[1];
-								break;
-							}
-						case 'neq' :
-							{
-								$passes = (string)$_item->$key != (string)$expression[1];
-								break;
-							}
-						case 'gt' :
-							{
-								$passes = (float)$_item->$key > (float)$expression[1];
-								break;
-							}
-						case 'lt' :
-							{
-								$passes = (float)$_item->$key < (float)$expression[1];
-								break;
-							}
-						case 'gte' :
-							{
-								$passes = (float)$_item->$key >= (float)$expression[1];
-								break;
-							}
-						case 'lte' :
-							{
-								$passes = (float)$_item->$key <= (float)$expression[1];
-								break;
-							}
+						switch($expression[0])
+						{
+							case 'eq' :
+								{
+									$passes = (string)$_item->$key == (string)$expression[1];
+									break;
+								}
+							case 'neq' :
+								{
+									$passes = (string)$_item->$key != (string)$expression[1];
+									break;
+								}
+							case 'gt' :
+								{
+									$passes = (float)$_item->$key > (float)$expression[1];
+									break;
+								}
+							case 'lt' :
+								{
+									$passes = (float)$_item->$key < (float)$expression[1];
+									break;
+								}
+							case 'gte' :
+								{
+									$passes = (float)$_item->$key >= (float)$expression[1];
+									break;
+								}
+							case 'lte' :
+								{
+									$passes = (float)$_item->$key <= (float)$expression[1];
+									break;
+								}
+						}
 					}
-				}
-				if($passes)
-				{
+					if($passes)
+					{
+						$array[] = $_item;
+					}
+				} else {
+					// Just add it:
 					$array[] = $_item;
 				}
-			} else {
-				// Just add it:
-				$array[] = $_item;
 			}
 		}
 		// Order the array:
