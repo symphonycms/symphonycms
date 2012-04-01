@@ -185,6 +185,8 @@
 			// Parse date
 			$date = self::parse($string);
 
+			if($date === false) return false;
+
 			// Timezone
 			// If a timezone was given, apply it
 			if(!is_null($timezone)) {
