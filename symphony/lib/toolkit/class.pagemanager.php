@@ -355,14 +355,26 @@
 			if(isset($fields['id'])) unset($fields['id']);
 
 			// Set the sortorder:
-			if(!isset($fields['sortorder']))
+/*			if(!isset($fields['sortorder']))
 			{
 				$_hash = self::index()->getHash($page_id);
 				$_sortorder = self::index()->xpath(sprintf('page[unique_hash=\'%s\']/sortorder', $_hash));
 				$fields['sortorder'] = (int)$_sortorder[0];
+			}*/
+
+			// Load the original data:
+			$_data = self::fetch(true, array(), array(
+				'id' => array('eq', $page_id)
+			));
+			$_data = $_data[0];
+
+			// Merge the arrays (that's really all that edit does...):
+			foreach($fields as $key => $value)
+			{
+				$_data[$key] = $value;
 			}
 
-			self::__generatePageXML($fields);
+			self::__generatePageXML($_data);
 
 			if($delete_types) {
 				PageManager::deletePageTypes($page_id);
