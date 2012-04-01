@@ -466,6 +466,14 @@ span.frame {
 	color: #fff;
 }
 
+.frame.dark > ol > li.ordering .content,
+.frame.dark > ol > li.ordering .content legend,
+.frame.dark > ul > li.ordering .content,
+.frame.dark > ul > li.ordering .content legend {
+	background: #4D78B4;
+	color: #fff;
+}
+
 .frame > ol > li.ordering .content input,
 .frame > ol > li.ordering .content textarea,
 .frame > ul > li.ordering .content input,
