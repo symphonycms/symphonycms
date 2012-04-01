@@ -157,8 +157,8 @@ class Lookup
 	 *  The direction (asc or desc)
 	 * @param bool $sortNumeric
 	 *  Should sorting be numeric (default) or as a string?
-	 * @param array $where
-	 *  A 2-dimensional array with where statements.
+	 * @param string $where
+	 *  An xpath expression to filter on
 	 * @return array
 	 *  An array with SimpleXMLElements
 	 */
@@ -166,6 +166,18 @@ class Lookup
 	{
 		// Build the new array:
 		$array = array();
+
+		// @todo: one day, this whole fetch-function is going to use a nice simple xpath expression to get them pages
+/*		if($where != null && is_string($where))
+		{
+			$array = $this->_index->xpath($where);
+		} else {
+			// Just add them all:
+			foreach($this->_index->children() as $_item)
+			{
+				$array[] = $_item;
+			}
+		}*/
 		foreach($this->_index->children() as $_item)
 		{
 			if(!empty($where))

@@ -17,6 +17,16 @@
 	Class PageManager {
 
 		/**
+		 * Return the Lookup Index for Pages
+		 *
+		 * @return Lookup
+		 */
+		public static function index()
+		{
+			return Lookup::index(Lookup::LOOKUP_PAGES);
+		}
+
+		/**
 		 * Given an associative array of data, where the key is the column name
 		 * in `tbl_pages` and the value is the data, this function will create a new
 		 * Page and return a Page ID on success.
@@ -38,7 +48,7 @@
 			$unique_hash = self::__generatePageXML($fields);
 			
 			// Store unique hash in the lookup table:
-			$pageID = Lookup::index(Lookup::LOOKUP_PAGES)->save($unique_hash);
+			$pageID = self::index()->save($unique_hash);
 
 			return $pageID;
 		}
@@ -107,7 +117,7 @@
 
 			// Re-index:
 			// @Todo: optimize the code with a save-function at the end?
-			Lookup::index(Lookup::LOOKUP_PAGES)->reIndex();
+			self::index()->reIndex();
 
 			return $fields['unique_hash'];
 		}
@@ -130,8 +140,7 @@
 					Symphony::Database()->cleanValue($handle)
 			));*/
 
-			return (string)Lookup::index(Lookup::LOOKUP_PAGES)->xpath(
-				sprintf('page/title[@handle=\'%s\']', $handle));
+			return (string)self::index()->xpath(sprintf('page/title[@handle=\'%s\']', $handle));
 		}
 
 		/**
@@ -152,9 +161,8 @@
 					Symphony::Database()->cleanValue($handle)
 			));*/
 
-			$hash = Lookup::index(Lookup::LOOKUP_PAGES)->xpath(
-				sprintf('page[title/@handle=\'%s\']/hash', $handle));
-			return Lookup::index(Lookup::LOOKUP_PAGES)->getId($hash);
+			$hash = self::index()->xpath(sprintf('page[title/@handle=\'%s\']/hash', $handle));
+			return self::index()->getId($hash);
 		}
 
 		/**
@@ -340,9 +348,8 @@
 			// Set the sortorder:
 			if(!isset($fields['sortorder']))
 			{
-				$_hash = Lookup::index(Lookup::LOOKUP_PAGES)->getHash($page_id);
-				$_sortorder = Lookup::index(Lookup::LOOKUP_PAGES)->xpath(
-					sprintf('page[unique_hash=\'%s\']/sortorder', $_hash));
+				$_hash = self::index()->getHash($page_id);
+				$_sortorder = self::index()->xpath(sprintf('page[unique_hash=\'%s\']/sortorder', $_hash));
 				$fields['sortorder'] = (int)$_sortorder[0];
 			}
 
@@ -450,7 +457,7 @@
 				));*/
 
 				// Delete from lookup table:
-				Lookup::index(Lookup::LOOKUP_PAGES)->delete($page_id);
+				self::index()->delete($page_id);
 
 			}
 
@@ -540,7 +547,8 @@
 
 			if(is_null($order_by)) $order_by = 'sortorder ASC';
 
-			$_where = array();
+			// @todo: one day, this whole fetch-function is going to use a nice simple xpath expression to get them pages
+			$_where = null;
 			if(!empty($where))
 			{
 				// For now, convert MySQL to Lookup-actions (backward compatible):
@@ -563,12 +571,13 @@
 							if($a[0] == 'id')
 							{
 								$_where['unique_hash'] = array(
-									$a[1], Lookup::index(Lookup::LOOKUP_PAGES)->getHash($a[2])
+									$a[1], self::index()->getHash($a[2])
 								);
 							} else {
 								$_where[$a[0]] = array($a[1], $a[2]);
 							}
 						} else {
+							// For debugging now:
 							print_r($where).'<br />';
 							print_r($a);
 						}
@@ -578,7 +587,7 @@
 						if($key == 'id')
 						{
 							$_where['unique_hash'] = array(
-								$action[0], Lookup::index(Lookup::LOOKUP_PAGES)->getHash($action[1])
+								$action[0], self::index()->getHash($action[1])
 							);
 						} else {
 							$_where[$key] = $action;
@@ -587,7 +596,8 @@
 				}
 			}
 
-			$_pages = Lookup::index(Lookup::LOOKUP_PAGES)->fetch($_where, 'sortorder', 'asc');
+
+			$_pages = self::index()->fetch($_where, 'sortorder', 'asc');
 			
 /*			$pages = Symphony::Database()->fetch(sprintf("
 					SELECT
@@ -607,9 +617,10 @@
 			$pages = array();
 			foreach($_pages as $_page)
 			{
+				$page_id = self::index()->getId((string)$_page->unique_hash);
 				$pages[] = array(
-					'id'			=> Lookup::index(Lookup::LOOKUP_PAGES)->getId((string)$_page->unique_hash),
-					'parent' 		=> (string)$_page->parent,
+					'id'			=> $page_id,
+					'parent' 		=> self::__getParent($page_id),
 					'title'  		=> (string)$_page->title,
 					'handle' 		=> (string)$_page->title->attributes()->handle,
 					'path'	 		=> (string)$_page->path,
@@ -640,6 +651,14 @@
 			return !empty($pages) ? $pages : array();
 		}
 
+		/**
+		 * Recursive function to build a tree for the pages
+		 *
+		 * @param $parent_id
+		 * @param $pages
+		 * @param $results
+		 * @return
+		 */
 		private function __buildTreeView($parent_id, $pages, &$results) {
 			if (!is_array($pages)) return;
 
@@ -649,6 +668,20 @@
 
 					self::__buildTreeView($page['id'], $pages, $results[count($results) - 1]['children']);
 				}
+			}
+		}
+
+		private function __getParent($page_id)
+		{
+			$_hash = self::index()->getHash($page_id);
+			$_path = self::index()->xpath(
+				sprintf('page[unique_hash = \'%s\']/path', $_hash)
+			);
+			if(count($_path) == 1)
+			{
+				return (string)$_path[0];
+			} else {
+				return false;
 			}
 		}
 
@@ -701,9 +734,7 @@
 		public static function fetchPageByType($type = null) {
 			if(is_null($type)) return PageManager::fetch();
 
-			
-
-			$pages = Symphony::Database()->fetch(sprintf("
+/*			$pages = Symphony::Database()->fetch(sprintf("
 					SELECT
 						`p`.*
 					FROM
@@ -714,7 +745,32 @@
 						`pt`.type = '%s'
 				",
 				Symphony::Database()->cleanValue($type)
-			));
+			));*/
+
+/*			$pages = self::fetch(true, array(), array(
+										 
+			));*/
+
+			// @todo: once the fetch-method uses xpath for it's $where-parameter, this is going to be less ugly:
+			$pages = array();
+			$_pages = self::index()->xpath(
+				sprintf('page[types/type = \'%s\']', $type)
+			);
+			foreach($_pages as $_page)
+			{
+				$pages[] = array(
+					'id'			=> self::index()->getId((string)$_page->unique_hash),
+					'parent' 		=> (string)$_page->parent,
+					'title'  		=> (string)$_page->title,
+					'handle' 		=> (string)$_page->title->attributes()->handle,
+					'path'	 		=> (string)$_page->path,
+					'params' 		=> (string)$_page->params,
+					'data_sources' 	=> (string)$_page->datasources,
+					'events' 		=> (string)$_page->events,
+					'sortorder'		=> (string)$_page->sortorder,
+					'unique_hash'	=> (string)$_page->unique_hash
+				);
+			}
 
 			return count($pages) == 1 ? array_pop($pages) : $pages;
 		}
@@ -757,12 +813,10 @@
 
 			if($page_id != null)
 			{
-				$_hash 	= Lookup::index(Lookup::LOOKUP_PAGES)->getHash($page_id);
-				$_types = Lookup::index(Lookup::LOOKUP_PAGES)->xpath(
-					sprintf('page[unique_hash=\'%s\']/types/type', $_hash)
-				);
+				$_hash 	= self::index()->getHash($page_id);
+				$_types = self::index()->xpath(sprintf('page[unique_hash=\'%s\']/types/type', $_hash));
 			} else {
-				$_types = Lookup::index(Lookup::LOOKUP_PAGES)->xpath('page/types/type');
+				$_types = self::index()->xpath('page/types/type');
 			}
 			$_array = array();
 			foreach($_types as $_type)
@@ -827,7 +881,7 @@
 			");
 			return ($next ? (int)$next : 1);*/
 
-			return Lookup::index(Lookup::LOOKUP_PAGES)->getMax('sortorder') + 1;
+			return self::index()->getMax('sortorder') + 1;
 		}
 
 		/**
@@ -900,9 +954,15 @@
 		 *  True if the type is used, false otherwise
 		 */
 		public static function hasPageTypeBeenUsed($page_id = null, $type) {
-			
+			$xpath = 'page[types/type = \''.$type.'\'';
+			if($page_id != null) {
+				$hash  = self::index()->getHash($page_id);
+				$xpath.= ' and unique_hash != \''.$hash.'\'';
+			}
+			$xpath.= ']';
+			return count(self::index()->xpath($xpath)) > 0;
 
-			return (boolean)Symphony::Database()->fetchRow(0, sprintf("
+/*			return (boolean)Symphony::Database()->fetchRow(0, sprintf("
 					SELECT
 						pt.id
 					FROM
@@ -914,7 +974,7 @@
 				",
 				$page_id,
 				Symphony::Database()->cleanValue($type)
-			));
+			));*/
 		}
 
 		/**
@@ -990,10 +1050,16 @@
 					$page_id,
 					Symphony::Database()->cleanValue($page_id)
 			));*/
-
-			$pages = self::fetch(true, array(), array(
-				'id' => array('eq', $page_id)
-		    ));
+			if(is_numeric($page_id))
+			{
+				$pages = self::fetch(true, array(), array(
+					'id' => array('eq', $page_id)
+				));
+			} else {
+				$pages = self::fetch(true, array(), array(
+					'handle' => array('eq', $page_id)
+				));
+			}
 			$page = $pages[0];
 
 			if(empty($page)) return $page;
@@ -1059,7 +1125,7 @@
 		 */
 		public static function resolvePagePath($page_id) {
 			$path = PageManager::resolvePage($page_id, 'handle');
-
+			
 			return implode('/', $path);
 		}
 
