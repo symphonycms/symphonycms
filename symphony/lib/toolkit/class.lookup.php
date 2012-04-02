@@ -77,7 +77,8 @@ class Lookup
 		{
 			case self::LOOKUP_PAGES :
 				{
-					return Symphony::Database()->insert(array('hash'=>$hash), 'tbl_lookup_pages');
+					Symphony::Database()->insert(array('hash'=>$hash), 'tbl_lookup_pages');
+                    return Symphony::Database()->getInsertID();
 					break;
 				}
 		}
@@ -160,6 +161,36 @@ class Lookup
 		return Symphony::Database()->fetchVar('hash', 0,
 			sprintf('SELECT `hash` FROM `tbl_lookup_pages` WHERE `id` = %d;', $id));
 	}
+
+    /**
+     * Get all used hashes
+     *
+     * @return array
+     */
+    public function getAllHashes()
+    {
+        return Symphony::Database()->fetchCol('hash', 'SELECT `hash` FROM `tbl_lookup_pages`;');
+    }
+
+    /**
+     * Check if there are duplicate hashes. Returns false if not, otherwise the hash in question
+     *
+     * @return bool|string
+     */
+    public function hasDuplicateHashes()
+    {
+        $_hashes = array();
+        foreach($this->_index->children() as $_child)
+        {
+            if(!in_array((string)$_child->unique_hash, $_hashes))
+            {
+                $_hashes[] = (string)$_child->unique_hash;
+            } else {
+                return (string)$_child->unique_hash;
+            }
+        }
+        return false;
+    }
 
 	/**
 	 * Fetch the index
@@ -253,7 +284,19 @@ class Lookup
 			// Create an indexed array of items:
 			foreach($array as $_item)
 			{
-				$sorter[(string)$_item->$orderBy] = $_item;
+                // Prevent duplicate keys from being overwritten:
+                $ok = true;
+                $i  = 1;
+                while($ok)
+                {
+                    $key = (string)$_item->$orderBy.'_'.$i;
+                    if(!isset($sorter[$key]))
+                    {
+                        $sorter[$key] = $_item;
+                        $ok = false;
+                    }
+                    $i++;
+                }
 			}
 			// Sort the array:
 			if($sortNumeric) {

@@ -1,7 +1,5 @@
 <?php
 
-	require_once TOOLKIT.'/class.lookup.php';
-
 	/**
 	 * @package toolkit
 	 */
@@ -130,6 +128,43 @@
 
 			return $fields['unique_hash'];
 		}
+
+        /**
+         * This function checks if there are new pages added manually, or if there are pages deleted manually.
+         * If so, an entry in the lookup table needs to be added or deleted:
+         */
+        public static function checkLookups()
+        {
+            // First, check if there are duplicate unique hashes. This is ofcourse not done!
+            if($_hash = self::index()->hasDuplicateHashes())
+            {
+                throw new Exception(__('Duplicate unique hash found in Pages: '.$_hash));
+            }
+
+            // Secondly check if there are hashes in our index that aren't present in the lookup table. This would mean
+            // that a new page is added:
+            $_pages = self::index()->fetch();
+            foreach($_pages as $_page)
+            {
+                if(self::index()->getId((string)$_page->unique_hash) == false)
+                {
+                    // No ID found for this hash, this page is new!
+                    self::index()->save((string)$_page->unique_hash);
+                }
+            }
+
+            // Third, check if there are hashes in the lookup table that aren't used by any pages. This would mean
+            // that a page is deleted:
+            $_hashes = self::index()->getAllHashes();
+            foreach($_hashes as $_hash)
+            {
+                if(self::index()->xpath('page[unique_hash=\''.$_hash.'\']', true) === false)
+                {
+                    // No page found with this hash, this page is deleted.
+                    self::index()->delete($_hash);
+                }
+            }
+        }
 
 		/**
 		 * Return a Page title by the handle
@@ -862,11 +897,15 @@
 			} else {
 				$_types = self::index()->xpath('page/types/type');
 			}
+
 			$_array = array();
-			foreach($_types as $_type)
-			{
-				$_array[] = (string)$_type;
-			}
+            if($_types != false)
+            {
+                foreach($_types as $_type)
+                {
+                    $_array[] = (string)$_type;
+                }
+            }
 
 			return $_array;
 
@@ -1101,6 +1140,8 @@
 					$page_id,
 					Symphony::Database()->cleanValue($page_id)
 			));*/
+
+
 			if(is_numeric($page_id))
 			{
 				$pages = self::fetch(true, array(), array(
