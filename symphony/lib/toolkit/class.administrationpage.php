@@ -408,10 +408,9 @@
 
 			// Add Breadcrumbs
 			$this->Context->prependChild($this->Breadcrumbs);
+			$this->Contents->appendChild($this->Form);
 
 			$this->view();
-
-			$this->Contents->appendChild($this->Form);
 
 			$this->appendAlert();
 
