@@ -70,13 +70,8 @@
 			}
 
 			// Generate datasources-xml:
-			//print_r($fields['data_sources']);
 			$datasources = empty($fields['data_sources']) ? '' :
 				'<datasource>'.implode('</datasource><datasource>', explode(',', $fields['data_sources'])) .'</datasource>';
-
-			//echo '<xmp>'.$datasources.'</xmp>';
-
-			//die();
 
 			// Generate events-xml:
 			$events = empty($fields['events']) ? '' :
@@ -219,10 +214,10 @@
 		 *  An array of page types
 		 * @return boolean
 		 */
-		public static function addPageTypesToPage($page_id = null, array $types) {
+/*		public static function addPageTypesToPage($page_id = null, array $types) {
 			if(is_null($page_id)) return false;
 
-			PageManager::deletePageTypes($page_id);
+			PageManager::deletePageTypes($page_id);*/
 
 /*			foreach ($types as $type) {
 				Symphony::Database()->insert(
@@ -234,7 +229,7 @@
 				);
 			}*/
 
-			$_pages = self::fetch(false, array(), array(
+/*			$_pages = self::fetch(false, array(), array(
 				'id' => array('eq', $page_id)
 			));
 
@@ -244,7 +239,7 @@
 			self::__generatePageXML($_page);
 
 			return true;
-		}
+		}*/
 
 
 		/**
@@ -409,11 +404,16 @@
 				$_data[$key] = $value;
 			}
 
-			self::__generatePageXML($_data);
+            if($delete_types) {
+                $_data['types'] = array();
+            }
 
-			if($delete_types) {
-				PageManager::deletePageTypes($page_id);
-			}
+            if(isset($fields['types']))
+            {
+                $_data['types'] = $fields['types'];
+            }
+
+			self::__generatePageXML($_data);
 
 			return true;
 
@@ -528,7 +528,7 @@
 		 *  The ID of the Page that should be deleted.
 		 * @return boolean
 		 */
-		public static function deletePageTypes($page_id = null) {
+/*		public static function deletePageTypes($page_id = null) {
 			if(is_null($page_id)) return false;
 
 			// return Symphony::Database()->delete('tbl_pages_types', sprintf(" `page_id` = %d ", $page_id));
@@ -538,7 +538,7 @@
 			self::__generatePageXML($_page);
 
 			return true;
-		}
+		}*/
 
 		/**
 		 * Given a Page's `$path` and `$handle`, this function will remove

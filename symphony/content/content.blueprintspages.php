@@ -784,6 +784,27 @@
 					// Clean up type list
 					$types = preg_split('/\s*,\s*/', $fields['type'], -1, PREG_SPLIT_NO_EMPTY);
 					$types = @array_map('trim', $types);
+
+                    /**
+                     * Just before the page's types are saved into `tbl_pages_types`.
+                     * Use with caution as no further processing is done on the `$types`
+                     * array to prevent duplicate `$types` from occurring (ie. two index
+                     * page types). Your logic can use the PageManger::hasPageTypeBeenUsed
+                     * function to perform this logic.
+                     *
+                     * @delegate PageTypePreCreate
+                     * @since Symphony 2.2
+                     * @see toolkit.PageManager#hasPageTypeBeenUsed
+                     * @param string $context
+                     * '/blueprints/pages/'
+                     * @param integer $page_id
+                     *  The ID of the Page that was just created or updated
+                     * @param array $types
+                     *  An associative array of the types for this page passed by reference.
+                     */
+                    Symphony::ExtensionManager()->notifyMembers('PageTypePreCreate', '/blueprints/pages/', array('page_id' => $page_id, 'types' => &$types));
+
+                    $fields['types'] = $types;
 					unset($fields['type']);
 
 					$fields['parent'] = ($fields['parent'] != __('None') ? $fields['parent'] : null);
@@ -943,27 +964,6 @@
 
 					// Only proceed if there was no errors saving/creating the page
 					if(empty($this->_errors)) {
-						/**
-						 * Just before the page's types are saved into `tbl_pages_types`.
-						 * Use with caution as no further processing is done on the `$types`
-						 * array to prevent duplicate `$types` from occurring (ie. two index
-						 * page types). Your logic can use the PageManger::hasPageTypeBeenUsed
-						 * function to perform this logic.
-						 *
-						 * @delegate PageTypePreCreate
-						 * @since Symphony 2.2
-						 * @see toolkit.PageManager#hasPageTypeBeenUsed
-						 * @param string $context
-						 * '/blueprints/pages/'
-						 * @param integer $page_id
-						 *  The ID of the Page that was just created or updated
-						 * @param array $types
-						 *  An associative array of the types for this page passed by reference.
-						 */
-						Symphony::ExtensionManager()->notifyMembers('PageTypePreCreate', '/blueprints/pages/', array('page_id' => $page_id, 'types' => &$types));
-
-						// Assign page types:
-						PageManager::addPageTypesToPage($page_id, $types);
 
 						// Find and update children:
 						if($this->_context[0] == 'edit') {
