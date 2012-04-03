@@ -50,7 +50,8 @@
 		}
 
 		public function pagesFlatView(){
-			$pages = PageManager::fetch(false, array('id'));
+			// $pages = PageManager::fetch(false, array('id'));
+			$pages = PageManager::fetch();
 
 			foreach($pages as &$p) {
 				$p['title'] = PageManager::resolvePageTitle($p['id']);
@@ -274,7 +275,8 @@
 						if($canProceed) redirect(Administration::instance()->getCurrentPageURL());
 					}
 					else if(preg_match('/^(at|de)?tach-all-pages$/', $_POST['with-selected'])) {
-						$pages = PageManager::fetch(false, array('id'));
+						// $pages = PageManager::fetch(false, array('id'));
+						$pages = PageManager::fetch();
 
 						if (substr($_POST['with-selected'], 0, 6) == 'detach') {
 							foreach($checked as $handle) {

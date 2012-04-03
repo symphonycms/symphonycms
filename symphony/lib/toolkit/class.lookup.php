@@ -153,12 +153,14 @@ class Lookup
 	 */
 	public function getId($hash)
 	{
-		if(!isset($this->_cache['hash'][$hash]))
+		// The key of an associated index may not begin with a number:
+		$key = 'c_'.$hash;
+		if(!isset($this->_cache['hash'][$key]))
 		{
-			$this->_cache['hash'][$hash] = Symphony::Database()->fetchVar('id', 0,
+			$this->_cache['hash'][$key] = Symphony::Database()->fetchVar('id', 0,
 				sprintf('SELECT `id` FROM `tbl_lookup_pages` WHERE `hash` = \'%s\';', $hash));
 		}
-		return $this->_cache['hash'][$hash];
+		return $this->_cache['hash'][$key];
 	}
 
 	/**
@@ -222,75 +224,18 @@ class Lookup
 	 * @return array
 	 *  An array with SimpleXMLElements
 	 */
-	public function fetch($where = null, $orderBy = null, $orderDirection = 'asc', $sortNumeric = true)
+	public function fetch($xpath = null, $orderBy = null, $orderDirection = 'asc', $sortNumeric = true)
 	{
 		// Build the new array:
 		$array = array();
 
-		// @todo: one day, this whole fetch-function is going to use a nice simple xpath expression to get them pages
-		if($where != null && isset($where['xpath']))
+		if($xpath != null)
 		{
-			$array = $this->_index->xpath($where['xpath']);
+			$array = $this->xpath($xpath);
 		} else {
 			foreach($this->_index->children() as $_item)
 			{
-				if(!empty($where))
-				{
-					/* See if this item passes the filter:
-					 * array(
-					 *     'id'     => array('eq', 12),
-					 *     'name'   => array('neq', 'tom'),
-					 *     'nr'		=> array('gt', 10),
-					 *     'nr'     => array('lt', 20),
-					 *     'nr'     => array('gte', 10),
-					 *     'nr'     => array('lte', 20)
-					 * );
-					 */
-					$passes = false;
-					foreach($where as $key => $expression)
-					{
-						switch($expression[0])
-						{
-							case 'eq' :
-								{
-									$passes = (string)$_item->$key == (string)$expression[1];
-									break;
-								}
-							case 'neq' :
-								{
-									$passes = (string)$_item->$key != (string)$expression[1];
-									break;
-								}
-							case 'gt' :
-								{
-									$passes = (float)$_item->$key > (float)$expression[1];
-									break;
-								}
-							case 'lt' :
-								{
-									$passes = (float)$_item->$key < (float)$expression[1];
-									break;
-								}
-							case 'gte' :
-								{
-									$passes = (float)$_item->$key >= (float)$expression[1];
-									break;
-								}
-							case 'lte' :
-								{
-									$passes = (float)$_item->$key <= (float)$expression[1];
-									break;
-								}
-						}
-					}
-					if($passes)
-					{
-						$array[] = $_item;
-					}
-				} else {
-					// Just add it:
-					$array[] = $_item;
-				}
+				$array[] = $_item;
 			}
 		}
 		// Order the array:

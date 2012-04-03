@@ -77,7 +77,9 @@
 			}
 
 			if($page['children'] != '0') {
-				if($children = PageManager::fetch(false, array('id, handle, title'), array(sprintf('`parent` = %d', $page['id'])))) {
+				if($children = PageManager::fetch(
+					sprintf('page[parent=\'%s\']', PageManager::index()->getHash($page['id'])))
+				) {
 					foreach($children as $c) $oPage->appendChild($this->__buildPageXML($c, $page_types));
 				}
 			}
@@ -132,9 +134,7 @@
 			}
 			if($closebracket) { $xpath .= ']'; }
 
-			$pages = PageManager::fetch(true, array(), array(
-				'xpath' => $xpath
-		    ));
+			$pages = PageManager::fetch($xpath);
 
 			if((!is_array($pages) || empty($pages))){
 				if($this->dsParamREDIRECTONEMPTY == 'yes'){

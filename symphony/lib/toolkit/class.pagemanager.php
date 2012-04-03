@@ -393,9 +393,9 @@
 			}*/
 
 			// Load the original data:
-			$_data = self::fetch(true, array(), array(
-				'id' => array('eq', $page_id)
-			));
+			$_data = self::fetch(
+				sprintf('page[unique_hash=\'%s\']', self::index()->getHash($page_id))
+			);
 			$_data = $_data[0];
 
 			// Merge the arrays (that's really all that edit does...):
@@ -574,19 +574,14 @@
 		 * Optionally, `$where` and `$order_by` parameters allow a developer to
 		 * further refine their query.
 		 *
-		 * @param boolean $include_types
-		 *  Whether to include the resulting Page's Page Types in the return array,
-		 *  under the key `type`. Defaults to true.
-		 * @param array $select (optional)
-		 *  Accepts an array of columns to return from `tbl_pages`. If omitted,
-		 *  all columns from the table will be returned.
-		 * @param array $where (optional)
-		 *  Accepts an array of WHERE statements that will be appended with AND.
-		 *  If omitted, all pages will be returned.
+		 * @param string $xpath (optional)
+		 *  A XPath expression to filter pages out of the Pages Index.
 		 * @param string $order_by (optional)
-		 *  Allows a developer to return the Pages in a particular order. The string
-		 *  passed will be appended to `ORDER BY`. If omitted this will return
-		 *  Pages ordered by `sortorder`.
+		 *  Allows a developer to return the Pages in a particular order. If omitted
+		 *  this will return pages ordered by `sortorder`.
+		 * @param string $order_direction (optional
+		 *  The direction to order (`asc` or `desc`)
+		 *  Defaults to `asc`
 		 * @param boolean $hierarchical (optional)
 		 *  If true, builds a multidimensional array representing the pages hierarchy.
 		 *  Defaults to false.
@@ -596,15 +591,15 @@
 		 *  can be made multidimensional to reflect the pages hierarchy. If no Pages are
 		 *  found, null is returned.
 		 */
-		public static function fetch($include_types = true, array $select = array(), array $where = array(), $order_by = null, $hierarchical = false) {
+		// public static function fetch($include_types = true, array $select = array(), array $where = array(), $order_by = null, $hierarchical = false) {
+		public static function fetch($xpath = 'page', $order_by = 'sortorder', $order_direction = 'asc', $hierarchical = false) {
 
-			if($hierarchical) $select = array_merge($select, array('id', 'parent'));
-			if(empty($select)) $select = array('*');
+			// if($hierarchical) $select = array_merge($select, array('id', 'parent'));
+			// if(empty($select)) $select = array('*');
 
-			if(is_null($order_by)) $order_by = 'sortorder ASC';
+			// if(is_null($order_by)) $order_by = 'sortorder ASC';
 
-			// @todo: one day, this whole fetch-function is going to use a nice simple xpath expression to get them pages
-			$_where = null;
+/*			$_where = null;
 			if(!empty($where))
 			{
 				// For now, convert MySQL to Lookup-actions (backward compatible):
@@ -653,10 +648,9 @@
 						}
 					}
 				}
-			}
+			}*/
 
-
-			$_pages = self::index()->fetch($_where, 'sortorder', 'asc');
+			$_pages = self::index()->fetch($xpath, $order_by, $order_direction);
 			
 /*			$pages = Symphony::Database()->fetch(sprintf("
 					SELECT
@@ -673,21 +667,29 @@
 				$order_by
 			));*/
 
+			// Convert array of SimpleXMLElements to associated array:
 			$pages = array();
 			foreach($_pages as $_page)
 			{
+				// Set the page ID:
 				$page_id = self::index()->getId((string)$_page->unique_hash);
+
+				// Set the datasources:
 				$_datasources = array();
 				foreach($_page->xpath('datasources/datasource') as $_datasource)
 				{
 					$_datasources[] = (string)$_datasource;
 				}
+
+				// Set the events:
 				$_events = array();
 				foreach($_page->xpath('events/event') as $_event)
 				{
 					$_events[] = (string)$_event;
 				}
-				$pages[] = array(
+
+				// Set the page array:
+				$page = array(
 					'id'			=> $page_id,
 					'parent' 		=> self::__getParentID($page_id),
 					'title'  		=> (string)$_page->title,
@@ -697,22 +699,25 @@
 					'data_sources' 	=> implode(',', $_datasources),
 					'events' 		=> implode(',', $_events),
 					'sortorder'		=> (string)$_page->sortorder,
-					'unique_hash'	=> (string)$_page->unique_hash
+					'unique_hash'	=> (string)$_page->unique_hash,
+					'type'			=> PageManager::fetchPageTypes($page_id)
 				);
+
+				// Add the page to the pages array:
+				$pages[] = $page;
 			}
 
 			// print_r($pages);
 
 			// Fetch the Page Types for each page, if required
-			if($include_types){
+/*			if($include_types){
 				foreach($pages as &$page) {
 					$page['type'] = PageManager::fetchPageTypes($page['id']);
 				}
-			}
+			}*/
 
 			if($hierarchical){
 				$output = array();
-
 				self::__buildTreeView(null, $pages, $output);
 				$pages = $output;
 			}
@@ -789,9 +794,13 @@
 				sprintf("id IN ('%s')", implode(',', $page_id))
 			));*/
 
-			$pages = PageManager::fetch(true, $select, array(
+/*			$pages = PageManager::fetch(true, $select, array(
 		    	'id' => array('eq', $page_id)
-			));
+			));*/
+
+			$pages = PageManager::fetch(
+				sprintf('page[unique_hash=\'%s\']', self::index()->getHash($page_id))
+			);
 
 			return !empty($pages) ? $pages[0] : null;
 		}
@@ -847,9 +856,9 @@
 					'unique_hash'	=> (string)$_page->unique_hash
 				);
 			}*/
-			$pages = self::fetch(true, array(), array(
-				'xpath' => sprintf('page[types/type = \'%s\']', $type)
-			));
+			$pages = self::fetch(
+				sprintf('page[types/type = \'%s\']', $type)
+			);
 
 			return count($pages) == 1 ? array_pop($pages) : $pages;
 		}
@@ -873,10 +882,17 @@
 
 			if(empty($select)) $select = array('*');
 
-			return PageManager::fetch(false, $select, array(
+/*			return PageManager::fetch(false, $select, array(
 				sprintf('id != %d', $page_id),
 				sprintf('parent = %d', self::index()->getHash($page_id))
-			));
+			));*/
+
+			return PageManager::fetch(
+				sprintf('page[unique_hash!=\'%1$s\' and parent=\'%1$s\']',
+					self::index()->getHash($page_id))
+			);
+
+
 		}
 
 		/**
@@ -1011,9 +1027,14 @@
 		public static function getChildPagesCount($page_id = null) {
 			if(is_null($page_id)) return null;
 
-			$children = PageManager::fetch(false, array('id'), array(
+/*			$children = PageManager::fetch(false, array('id'), array(
 				sprintf('parent = %d', self::index()->getHash($page_id))
-			));
+			));*/
+
+			$children = PageManager::fetch(
+				sprintf('page[parent=\'%s\']', self::index()->getHash($page_id))
+			);
+
 			$count = count($children);
 
 			if($count > 0){
@@ -1118,13 +1139,15 @@
 		 * @param mixed $page_id
 		 *  The ID of the Page that currently being viewed, or the handle of the
 		 *  current Page
+		 * @param string $column
+		 *  The name of the column (title, handle, etc.)
 		 * @return array
 		 *  An array of the current Page, containing the `$column`
 		 *  requested. The current page will be the last item the array, as all
 		 *  parent pages are prepended to the start of the array
 		 */
 		public static function resolvePage($page_id, $column) {
-			$path = array();
+			// $path = array();
 /*			$page = Symphony::Database()->fetchRow(0, sprintf("
 					SELECT
 						p.%s,
@@ -1141,16 +1164,15 @@
 					Symphony::Database()->cleanValue($page_id)
 			));*/
 
-
 			if(is_numeric($page_id))
 			{
-				$pages = self::fetch(true, array(), array(
-					'id' => array('eq', $page_id)
-				));
+				$pages = self::fetch(
+					sprintf('page[unique_hash=\'%s\']', self::index()->getHash($page_id))
+				);
 			} else {
-				$pages = self::fetch(true, array(), array(
-					'xpath' => sprintf('page[title/@handle=\'%s\']', $page_id)
-				));
+				$pages = self::fetch(
+					sprintf('page[title/@handle=\'%s\']', $page_id)
+				);
 			}
 			$page = $pages[0];
 
@@ -1180,7 +1202,9 @@
 					))*/
 
 				) {
-					$_page = self::fetch(true, array(), array('id' => array('eq', $next_parent)));
+					$_page = self::fetch(
+						sprintf('page[unique_hash=\'%s\']', self::index()->getHash($next_parent))
+					);
 					if(!empty($_page))
 					{
 						// array_unshift($path, $parent[$column]);
@@ -1292,9 +1316,7 @@
 			$xpath = 'page[title/@handle=\''.$handle.'\'';
 			if($path != false) { $xpath .= ' and path=\''.$path.'\''; }
 			$xpath .= ']';
-			$pages = self::fetch(true, array(), array(
-				'xpath' => $xpath
-			));
+			$pages = self::fetch($xpath);
 			if(count($pages) > 0)
 			{
 				return $pages[0];

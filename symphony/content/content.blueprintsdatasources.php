@@ -384,7 +384,8 @@
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tags');
 
-			$pages = PageManager::fetch(false, array('*'), array(), 'title ASC');
+			// $pages = PageManager::fetch(false, array('*'), array(), 'title ASC');
+			$pages = PageManager::fetch('page', 'title');
 
 			foreach($pages as $page){
 				$ul->appendChild(new XMLElement('li', preg_replace('/\/{2,}/i', '/', '/' . $page['path'] . '/' . $page['handle'])));
@@ -948,9 +949,15 @@
 					);
 				}
 				else {
-					$pages = PageManager::fetch(false, array('data_sources', 'id'), array("
+
+/*					$pages = PageManager::fetch(false, array('data_sources', 'id'), array("
 						`data_sources` REGEXP '[[:<:]]" . $this->_context[1] . "[[:>:]]'
-					"));
+					"));*/
+
+					// Remove the datasource from the specific pages:
+					$pages = PageManager::fetch(
+						sprintf('page[datasources/datasource = \'%s\']', $this->_context[1])
+					);
 
 					if(is_array($pages) && !empty($pages)){
 						foreach($pages as $page){
@@ -1325,9 +1332,13 @@
 						General::deleteFile($queueForDeletion);
 
 						// Update pages that use this DS
-						$pages = PageManager::fetch(false, array('data_sources', 'id'), array("
+/*						$pages = PageManager::fetch(false, array('data_sources', 'id'), array("
 							`data_sources` REGEXP '[[:<:]]" . $existing_handle . "[[:>:]]'
-						"));
+						"));*/
+
+						$pages = PageManager::fetch(
+							sprintf('page[datasources/datasource = \'%s\']', $existing_handle)
+						);
 
 						if(is_array($pages) && !empty($pages)){
 							foreach($pages as $page) {

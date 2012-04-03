@@ -62,7 +62,8 @@
 		}
 
 		public function listAllPages($separator = '/') {
-			$pages = PageManager::fetch(false, array('id', 'handle', 'title', 'path'));
+			// $pages = PageManager::fetch(false, array('id', 'handle', 'title', 'path'));
+			$pages = PageManager::fetch();
 
 			foreach($pages as &$page){
 				$parents = explode('/', $page['path']);
@@ -106,17 +107,24 @@
 			);
 			$aTableBody = array();
 
+			$xpath = 'page';
+
 			if($nesting == true){
 				$aTableHead[] = array(__('Children'), 'col');
-				$where = array(
+/*				$where = array(
 					'parent ' . (isset($parent) ? " = {$parent['id']} " : ' IS NULL ')
-				);
+				);*/
+				if(isset($parent))
+				{
+					$xpath = sprintf('page[parent=\'%s\']', PageManager::index()->getHash($parent['id']));
+				}
 			}
 			else {
-				$where = array();
+				// $where = array();
 			}
 
-			$pages = PageManager::fetch(true, array('*'), $where);
+			// $pages = PageManager::fetch(true, array('*'), $where);
+			$pages = PageManager::fetch($xpath);
 
 			if(!is_array($pages) or empty($pages)) {
 				$aTableBody = array(Widget::TableRow(array(
@@ -216,9 +224,12 @@
 
 			$is_child = strrpos($this->_context[1],'_');
 			$pagename = ($is_child != false ? substr($this->_context[1], $is_child + 1) : $this->_context[1]);
-			$pagedata = PageManager::fetch(false, array('id'), array(
+/*			$pagedata = PageManager::fetch(false, array('id'), array(
 				"p.handle = '{$pagename}'"
-			));
+			));*/
+
+			$pagedata = PageManager::fetch(sprintf('page[title/@handle=\'%s\']', $pagename));
+			
 			$pagedata = array_pop($pagedata);
 
 			if(!is_file($file_abs)) redirect(SYMPHONY_URL . '/blueprints/pages/');
@@ -476,10 +487,13 @@
 
 			$label = Widget::Label(__('Parent Page'));
 
-			$where = array(
+/*			$where = array(
 				sprintf('id != %d', $page_id)
+			);*/
+			// $pages = PageManager::fetch(false, array('id'), $where, 'title ASC');
+			$pages = PageManager::fetch(
+				sprintf('page[unique_hash!=\'%s\']', PageManager::index()->getHash($page_id))
 			);
-			$pages = PageManager::fetch(false, array('id'), $where, 'title ASC');
 
 			$options = array(
 				array('', false, '/')
@@ -825,14 +839,20 @@
 
 					$where = array();
 
+					$xpath = 'page';
+
 					if(!empty($current)) {
-						$where[] = "p.id != {$page_id}";
+						// $where[] = "p.id != {$page_id}";
+						$where[] = 'unique_hash!=\''.PageManager::index()->getHash($page_id).'\'';
 					}
-					$where[] = "p.handle = '" . $fields['handle'] . "'";
+					// $where[] = "p.handle = '" . $fields['handle'] . "'";
+					$where[] = 'title/@handle=\''.$fields['handle'].'\'';
 					$where[] = (is_null($fields['path']))
-						? "p.path IS NULL"
-						: "p.path = '" . $fields['path'] . "'";
-					$duplicate = PageManager::fetch(false, array('*'), $where);
+						? 'path=\'\''
+						: 'path=\''.$fields['path'].'\'';
+					$xpath .= '['.implode(' and ', $where).']';
+					// $duplicate = PageManager::fetch(false, array('*'), $where);
+					$duplicate = PageManager::fetch($xpath);
 
 					// If duplicate
 					if(!empty($duplicate)) {
