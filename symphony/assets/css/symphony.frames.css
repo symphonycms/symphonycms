@@ -379,7 +379,7 @@ span.frame {
 /* Content: dark scheme */
 .frame.dark > ol > li .content,
 .frame.dark > ul > li .content {
-	background: #383838;
+	background: #323230;
 	color: #fff;
 	margin: 0 -11px;
 	padding: 10px 11px;
@@ -387,7 +387,7 @@ span.frame {
 
 .frame.dark > ol > li legend,
 .frame.dark > ul > li legend {
-	background: #383838;
+	background: #323230;
 }
 
 .frame.dark > ol > li .content i,
@@ -463,6 +463,14 @@ span.frame {
 .frame > ul > li.ordering .content,
 .frame > ul > li.ordering .content legend {
 	background: #668abe;
+	color: #fff;
+}
+
+.frame.dark > ol > li.ordering .content,
+.frame.dark > ol > li.ordering .content legend,
+.frame.dark > ul > li.ordering .content,
+.frame.dark > ul > li.ordering .content legend {
+	background: #4D78B4;
 	color: #fff;
 }
 
