@@ -20,9 +20,17 @@ class Lookup
 	/* @var $_index SimpleXMLElement */
 	private $_index;
 
+	// Keep track of the type
 	private $_type;
+
+	// The path to the XML-files (workspace/pages and workspace/sections)
 	private $_path;
+
+	// The element name to use as root-tag
 	private $_element_name;
+
+	// Internal cache (for this class)
+	private $_cache;
 
 	/**
 	 * Get the index
@@ -49,7 +57,7 @@ class Lookup
 	 */
 	private function __construct($type)
 	{
-		$this->_type = $type;
+		$this->_type  = $type;
 		// Create an index:
 		switch($this->_type)
 		{
@@ -145,8 +153,12 @@ class Lookup
 	 */
 	public function getId($hash)
 	{
-		return Symphony::Database()->fetchVar('id', 0,
-			sprintf('SELECT `id` FROM `tbl_lookup_pages` WHERE `hash` = \'%s\';', $hash));
+		if(!isset($this->_cache['hash'][$hash]))
+		{
+			$this->_cache['hash'][$hash] = Symphony::Database()->fetchVar('id', 0,
+				sprintf('SELECT `id` FROM `tbl_lookup_pages` WHERE `hash` = \'%s\';', $hash));
+		}
+		return $this->_cache['hash'][$hash];
 	}
 
 	/**
@@ -158,8 +170,12 @@ class Lookup
 	 */
 	public function getHash($id)
 	{
-		return Symphony::Database()->fetchVar('hash', 0,
-			sprintf('SELECT `hash` FROM `tbl_lookup_pages` WHERE `id` = %d;', $id));
+		if(!isset($this->_cache['id'][$id]))
+		{
+			$this->_cache['id'][$id] = Symphony::Database()->fetchVar('hash', 0,
+				sprintf('SELECT `hash` FROM `tbl_lookup_pages` WHERE `id` = %d;', $id));
+		}
+		return $this->_cache['id'][$id];
 	}
 
     /**
@@ -341,6 +357,10 @@ class Lookup
 	 */
 	public function reIndex()
 	{
+		// Clear the cache:
+		$this->_cache = array('id' => array(), 'hash' => array());
+
+		// Build the index:
 		$this->_index = new SimpleXMLElement('<'.$this->_element_name.'/>');
 		$_pages = glob($this->_path);
 		foreach($_pages as $_page)
