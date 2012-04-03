@@ -213,14 +213,14 @@ class Lookup
 	/**
 	 * Fetch the index
 	 *
+	 * @param string $xpath
+	 *  An xpath expression to filter on
 	 * @param $orderBy
 	 *  The key to order by
 	 * @param string $orderDirection
 	 *  The direction (asc or desc)
 	 * @param bool $sortNumeric
 	 *  Should sorting be numeric (default) or as a string?
-	 * @param string $where
-	 *  An xpath expression to filter on
 	 * @return array
 	 *  An array with SimpleXMLElements
 	 */
