@@ -1,0 +1,241 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Symphony 2 by symphonycms</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Symphony 2</h1>
+        <p>This is the official Symphony 2 repository.</p>
+        <p class="view"><a href="https://github.com/symphonycms/symphony-2">View the Project on GitHub <small>symphonycms/symphony-2</small></a></p>
+        <ul>
+          <li><a href="https://github.com/symphonycms/symphony-2/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/symphonycms/symphony-2/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/symphonycms/symphony-2">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Symphony 2</h1>
+
+<ul>
+<li>Version: 2.2.5</li>
+<li>Date: November 13th, 2011</li>
+<li>Release Notes: <a href="http://symphony-cms.com/download/releases/version/2.2.5/">http://symphony-cms.com/download/releases/version/2.2.5/</a>
+</li>
+<li>Github Repository: <a href="http://github.com/symphonycms/symphony-2/tree/2.2.5">http://github.com/symphonycms/symphony-2/tree/2.2.5</a>
+</li>
+</ul><h2>Overview</h2>
+
+<p>Symphony is a <code>PHP</code> &amp; <code>MySQL</code> based CMS that utilises <code>XML</code> and <code>XSLT</code> as
+its core technologies. This repository represents version "2.2.5" and is considered stable.</p>
+
+<p>Visit the forum at <a href="http://symphony-cms.com/discuss/">http://symphony-cms.com/discuss/</a></p>
+
+<h3>Symphony Server Requirements</h3>
+
+<ul>
+<li>PHP 5.2 or above</li>
+<li>PHP's LibXML module, with the XSLT extension enabled (--with-xsl)</li>
+<li>MySQL 5.0 or above</li>
+<li>An Apache or Litespeed webserver</li>
+<li>Apache's mod_rewrite module or equivalent</li>
+</ul><h3>A note for Windows developers</h3>
+
+<p>While Windows is not officially supported for production, we understand many
+developers use WAMP for Symphony development before deploying to a production
+server. The Symphony team recommends that while using WAMP, developers use
+the latest PHP 5.3.x version during development to minimise any potential issues.
+PHP5.3 provides numerous fixes and improvements to help minimise and standardise
+the result of several functions that behave slightly differently depending on the OS</p>
+
+<h2>Updating From an Older Version</h2>
+
+<h4>Versions Prior to 2.2</h4>
+
+<p>2.2 introduces numerous improvements that may affect extension compatibility.
+Before updating, be sure to consult the <a href="http://symphony-cms.com/download/extensions/compatibility/">extension compatibility table</a> to
+verify that the extensions you're using have all been updated for Symphony 2.2.</p>
+
+<h4>Versions Prior to 2.1</h4>
+
+<p>As of version <code>2.1</code>, Symphony stores passwords using the more secure
+<a href="http://php.net/sha1">SHA1</a> algorithm (previous versions used MD5).
+When updating to 2.1, the primary user's login password will be reset
+(the new password will be displayed by the updater—please note it).
+ <strong>Please also note that all other users' passwords will no longer be valid
+and will require a manual reset through Symphony's forgotten password feature.</strong>
+Alternatively, as an administrator, you can also change your users'
+passwords on their behalf.</p>
+
+<h4>Versions Prior to 2.0.5</h4>
+
+<p>Version <code>2.0.5</code> introduced multiple includable elements, in the Data Source
+Editor, for a single field. After updating from <code>2.0.5</code> or lower, the DS
+editor will seem to "forget" about any <code>Textarea</code> fields selected when you
+are editing existing Data Sources. After updating, you must ensure you
+re-select them before saving. Note, this will only effect Data Sources that
+you edit and were created prior to <code>2.0.5</code>. Until that point, the field will
+still be included in any front-end XML</p>
+
+<h3>Via Git</h3>
+
+<h4>Versions Prior to 2.1</h4>
+
+<p>As of version 2.1, we are now using <a href="http://github.com/blog/674-introducing-organizations">GitHub's organisations feature</a>.
+ As a result, all submodules—as well as the main Symphony 2 repo—are forks owned by the
+<a href="http://github.com/symphonycms/">Symphony CMS organisation</a>.</p>
+
+<p>To fully update your git-based installation, please <strong>edit your <code>.git/config</code>
+and the <code>.git/config</code> of each core extension</strong> (<code>debugdevkit</code>, <code>profiledevkit</code>,
+<code>markdown</code>, <code>maintenance_mode</code>, <code>selectbox_link_field</code>, <code>jit_image_manipulation</code>
+and <code>export_ensemble</code>) and change the URL of the remote repo from <code>symphony</code> or
+<code>pointybeard</code> to be <code>symphonycms</code>.</p>
+
+<p>For example:</p>
+
+<pre><code>[remote "origin"]
+    fetch = +refs/heads/*:refs/remotes/origin/*
+    url = git://github.com/pointybeard/markdown.git
+</code></pre>
+
+<p>Change <code>git://github.com/pointybeard/markdown.git</code> to <code>git://github.com/symphonycms/markdown.git</code></p>
+
+<ol>
+<li><p>Pull from the master branch at <code>git://github.com/symphonycms/symphony-2.git</code></p></li>
+<li>
+<p>Use the following command to get Extensions up to date:</p>
+
+<pre><code>git submodule init
+git submodule update
+</code></pre>
+</li>
+<li><p>If updating from a version older than <code>2.0.5</code>, enable <a href="http://github.com/symphonycms/debugdevkit/tree/master">Debug DevKit</a> and <a href="http://github.com/symphonycms/profiledevkit/tree/master">Profile DevKit</a> extensions.</p></li>
+<li><p>Go to <code><a href="http://yoursite.com/update.php">http://yoursite.com/update.php</a></code> to complete the update process.</p></li>
+<li><p>You and your website are now in the future. Buy yourself a silver jumpsuit.</p></li>
+</ol><h3>Via the old fashioned way</h3>
+
+<p>Follow the instructions below if you are updating from Symphony version 2.0 (not from Git)</p>
+
+<p><strong>Note:</strong> As of 2.0.6, there is no longer a need to backup <code>/symphony/.htaccess</code>.</p>
+
+<ol>
+<li><p>Upload <code>/symphony</code>, <code>index.php</code> &amp; <code>update.php</code>, replacing what is already on your server.</p></li>
+<li>
+<p>If you are updating from a version older than 2.0.5, download and install the Debug DevKit and Profile DevKit:</p>
+
+<ul>
+<li><a href="http://github.com/symphonycms/debugdevkit/tree/master">Debug DevKit</a></li>
+<li><a href="http://github.com/symphonycms/profiledevkit/tree/master">Profile DevKit</a></li>
+</ul>
+</li>
+<li><p>Go to <code><a href="http://yoursite.com/update.php">http://yoursite.com/update.php</a></code> to complete the update process.</p></li>
+<li><p>Call a friend and brag that your copy of Symphony is newer than theirs.</p></li>
+</ol><h2>Installing Symphony</h2>
+
+<h3>Via Git</h3>
+
+<ol>
+<li>
+<p>Clone the git repository to the location you desire using:</p>
+
+<pre><code>git clone git://github.com/symphonycms/symphony-2.git
+</code></pre>
+
+<p>Should you wish to make contributions back to the project, fork the master tree rather than cloning, and issue pull requests via github.</p>
+
+<p>The following repositories are included as submodules:</p>
+
+<ul>
+<li><a href="http://github.com/symphonycms/markdown">Markdown</a></li>
+<li><a href="http://github.com/symphonycms/maintenance_mode">Maintenance Mode</a></li>
+<li><a href="http://github.com/symphonycms/selectbox_link_field">Select Box Link Field</a></li>
+<li><a href="http://github.com/symphonycms/jit_image_manipulation">JIT Image Manipulation</a></li>
+<li><a href="http://github.com/symphonycms/export_ensemble">Export Ensemble</a></li>
+<li><a href="http://github.com/symphonycms/debugdevkit/tree/master">Debug DevKit</a></li>
+<li><a href="http://github.com/symphonycms/profiledevkit/tree/master">Profile DevKit</a></li>
+<li><a href="http://github.com/symphonycms/xssfilter/tree/master">XSS Filter</a></li>
+</ul>
+</li>
+<li>
+<p>Run the following command to ensure the submodules are cloned:</p>
+
+<pre><code>git submodule update --init
+</code></pre>
+</li>
+<li>
+<p><em>(Optional)</em> If you would like the <a href="http://github.com/symphonycms/workspace/tree">default ensemble</a> installed as well,
+you will need to use the following command from within the Symphony 2 folder you just created:</p>
+
+<pre><code>git clone git://github.com/symphonycms/workspace.git
+</code></pre>
+</li>
+<li><p>Point your web browser at <a href="http://yourwebsite.com/install.php">http://yourwebsite.com/install.php</a> and provide
+details for establishing a database connection and about your server environment.</p></li>
+<li><p>Chuckle villainously and tap your fingertips together (or pet a cat) as your installation completes.</p></li>
+</ol><h3>Via the old fashioned way</h3>
+
+<p><strong>Note: You can leave <code>/workspace</code> out if you do not want the default theme.</strong></p>
+
+<ol>
+<li>
+<p>This step assumes you downloaded a zip archive from the <a href="http://symphony-cms.com">Symphony website</a>.
+Upload the following files and directories to the root directory of your website:</p>
+
+<ul>
+<li>index.php</li>
+<li>install.php</li>
+<li>install.sql</li>
+<li>/symphony</li>
+<li>/workspace</li>
+<li>/extensions</li>
+</ul>
+</li>
+<li><p>Point your web browser at <a href="http://yourwebsite.com/install.php">http://yourwebsite.com/install.php</a> and provide
+details for establishing a database connection and about your server environment.</p></li>
+<li><p>Pose like you're being filmed for a dramatic close-up while your installation completes.</p></li>
+</ol><h2>Security</h2>
+
+<p><strong>Secure Production Sites: Change permissions and remove installer files.</strong></p>
+
+<ol>
+<li>
+<p>For a smooth install process, change permissions for your site root to <code>777</code>.</p>
+
+<p><code>cd /your/site/root</code>
+<code>chmod -R 777 .</code></p>
+</li>
+<li><p>Once successfully installed, you should change permissions to something tighter for security. Symphony recommends <code>755</code> for directories and <code>644</code> for files by default, but this might need to be changed depending on your server setup or workflow, eg. <code>775</code>/<code>664</code> or some alternative mixture</p></li>
+<li>
+<p>Remove installer files (unless you're fine with revealing all your trade secrets):</p>
+
+<p><code>rm install.php install.sql workspace/install.sql update.php install-log.txt</code></p>
+</li>
+<li><p>Dance like it's 2012!</p></li>
+</ol><h3>Notes</h3>
+
+<p>Thanks to <a href="/DavidOliver" class="user-mention">@DavidOliver</a> for these quick scripts.</p>
+
+<p>To recursively chmod directories only:
+    <code>find /your/site/root -type d -exec chmod 755 {} \;</code>
+To recursively chmod files only:
+    <code>find /your/site/root -type f -exec chmod 644 {} \;</code>.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/symphonycms">symphonycms</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
