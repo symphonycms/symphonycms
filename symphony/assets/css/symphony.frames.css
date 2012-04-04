@@ -371,9 +371,14 @@ span.frame {
 	background: #e8e8e8;
 }
 
+.frame.collapsible .content fieldset {
+	border-top-color: rgba(0, 0, 0, 0.15);
+}
+
 .frame.collapsible > ol > li legend,
 .frame.collapsible > ul > li legend {
 	background: #e8e8e8;
+	padding-left: 0;
 }
 
 /* Content: dark scheme */
@@ -387,7 +392,7 @@ span.frame {
 
 .frame.dark > ol > li legend,
 .frame.dark > ul > li legend {
-	background: #383838;
+	background: transparent
 }
 
 .frame.dark > ol > li .content i,
