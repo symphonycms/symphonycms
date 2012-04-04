@@ -734,7 +734,7 @@
 		 * @param string $query
 		 *  The full SQL query to execute. Defaults to null, which will
 		 *  use the `$this->_lastResult`
-		 * @return string
+		 * @return string|null
 		 *  Returns the value of the given column, if it doesn't exist, null will be
 		 *  returned
 		 */
