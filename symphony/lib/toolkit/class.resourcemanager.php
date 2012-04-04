@@ -273,11 +273,29 @@
 		public static function getAttachedPages($type, $r_handle){
 			$col = self::getColumnFromType($type);
 
-			$pages = PageManager::fetch(false, array('id', 'title'), array(sprintf(
+/*			$pages = PageManager::fetch(false, array('id', 'title'), array(sprintf(
 				'`%s` = "%s" OR `%s` REGEXP "%s"',
 				$col, $r_handle,
 				$col, '^' . $r_handle . ',|,' . $r_handle . ',|,' . $r_handle . '$'
-			)));
+			)));*/
+
+			switch($col)
+			{
+				case 'data_sources' :
+					{
+						$pages = PageManager::fetch(
+							sprintf('page[datasources/datasource=\'%s\']', $r_handle)
+						);
+						break;
+					}
+				case 'events' :
+					{
+						$pages = PageManager::fetch(
+							sprintf('page[events/event=\'%s\']', $r_handle)
+						);
+						break;
+					}
+			}
 
 			return (is_null($pages) ? array() : $pages);
 		}
@@ -296,9 +314,13 @@
 		public static function attach($type, $r_handle, $page_id) {
 			$col = self::getColumnFromType($type);
 
-			$pages = PageManager::fetch(false, array($col), array(sprintf(
+/*			$pages = PageManager::fetch(false, array($col), array(sprintf(
 				'`id` = %d', $page_id
-			)));
+			)));*/
+
+			$pages = PageManager::fetch(
+				sprintf('page[unique_hash=\'%s\']', PageManager::index()->getHash($page_id))
+			);
 
 			if (is_array($pages) && count($pages) == 1) {
 				$result = $pages[0][$col];
@@ -331,9 +353,13 @@
 		public static function detach($type, $r_handle, $page_id) {
 			$col = self::getColumnFromType($type);
 
-			$pages = PageManager::fetch(false, array($col), array(sprintf(
+/*			$pages = PageManager::fetch(false, array($col), array(sprintf(
 				'`id` = %d', $page_id
-			)));
+			)));*/
+
+			$pages = PageManager::fetch(
+				sprintf('page[unique_hash=\'%s\']', PageManager::index()->getHash($page_id))
+			);
 
 			if (is_array($pages) && count($pages) == 1) {
 				$result = $pages[0][$col];

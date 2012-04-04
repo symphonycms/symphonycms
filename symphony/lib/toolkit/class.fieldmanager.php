@@ -152,7 +152,7 @@
 
 			Symphony::Database()->delete('tbl_fields', " `id` = '$id'");
 			Symphony::Database()->delete('tbl_fields_'.$existing->handle(), " `field_id` = '$id'");
-			Symphony::Database()->delete('tbl_sections_association', " `child_section_field_id` = '$id'");
+            SectionManager::removeSectionAssociation($id);
 
 			Symphony::Database()->query('DROP TABLE `tbl_entries_data_'.$id.'`');
 
@@ -447,6 +447,177 @@
 		 */
 		public static function fetchTypes() {
 			return FieldManager::listAll();
-
 		}
+
+        /**
+         * Returns an array of ID's of fields which are present in the section, but which not occur in the $id_list.
+         * @param $section_id   The ID of the section
+         * @param $id_list      An array with ID's of fields
+         * @return array        An array with ID's of fields
+         */
+        public static function fetchRemovedFieldsFromSection($section_id, $id_list)
+        {
+            return Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '$section_id' AND `id` NOT IN ('".@implode("', '", $id_list)."')");
+        }
+
+        /**
+         * Return an array of ID's of fields which are present in the section
+         * @param $section_id           The ID of the section
+         * @param null $element_names   An array with elements names (if you want to get a subset of ID's)
+         * @return array                An array with ID's of fields
+         */
+        public static function fetchSchema($section_id, $element_names = null)
+        {
+            if (!is_null($element_names) && is_array($element_names)){
+
+                // allow for pseudo-fields containing colons (e.g. Textarea formatted/unformatted)
+                foreach ($element_names as $index => $name) {
+                    $parts = explode(':', $name, 2);
+
+                    if(count($parts) == 1) continue;
+
+                    unset($element_names[$index]);
+
+                    // Prevent attempting to look up 'system', which will arise
+                    // from `system:pagination`, `system:id` etc.
+                    if($parts[0] == 'system') continue;
+
+                    $element_names[] = trim($parts[0]);
+                }
+
+                $schema_sql = empty($element_names) ? null : sprintf(
+                    "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d AND `element_name` IN ('%s') ORDER BY `sortorder` ASC;",
+                    $section_id,
+                    implode("', '", array_unique($element_names))
+                );
+
+            }
+            else{
+                $schema_sql = sprintf(
+                    "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d ORDER BY `sortorder` ASC;",
+                    $section_id
+                );
+            }
+
+            $schema = is_null($schema_sql) ? array() : Symphony::Database()->fetch($schema_sql);
+
+            return $schema;
+        }
+
+        /**
+         * Check whether a field type is used or not
+         * @param $type
+         *  The type
+         * @return bool
+         *  True if the type is used, false if not
+         */
+        public static function isTypeUsed($type)
+        {
+            return Symphony::Database()->fetchVar('count', 0, "SELECT COUNT(*) AS `count` FROM `tbl_fields` WHERE `type` = '{$type}'") > 0;
+        }
+
+        /**
+         * Fetch the field according to it's handle and section handle (since fields can share similar name in multiple
+         * sections)
+         *
+         * @param $handle
+         *  The handle of the field
+         * @param $sectionHandle
+         *  The handle of the section
+         * @return mixed
+         *  If found the field, otherwise false
+         */
+        public static function fetchFieldFromHandle($handle, $sectionHandle)
+        {
+            $field_id = Symphony::Database()->fetchVar('id', 0, sprintf("
+                SELECT `f`.`id`
+                FROM `tbl_fields` AS `f`
+                LEFT JOIN `tbl_sections` AS `s` ON (`s`.`id` = `f`.`parent_section`)
+                WHERE f.`element_name` = '%s'
+                AND `s`.`handle` = '%s'
+                LIMIT 1
+            ",
+                Symphony::Database()->cleanValue($handle),
+                $sectionHandle)
+            );
+
+            return FieldManager::fetch($field_id);
+        }
+
+        /**
+         * Check if a field already exists
+         *
+         * @param $element_name
+         *  The element name of the field
+         * @param $parent_section
+         *  The parent section in which the field exists
+         * @param bool|int $exclude_id
+         *  The ID to exclude
+         * @return bool|array
+         *  false if the field doesn't exist, the table row if it does
+         */
+        public static function fieldExists($element_name, $parent_section, $exclude_id = false)
+        {
+            $sql_id = $exclude_id ? " AND f.id != '".$exclude_id."' " : '';
+            $sql = "
+                SELECT
+                    f.*
+                FROM
+                    `tbl_fields` AS f
+                WHERE
+                    f.element_name = '{$element_name}'
+                    {$sql_id}
+                    AND f.parent_section = '{$parent_section}'
+                LIMIT 1
+            ";
+            return Symphony::Database()->fetchRow(0, $sql);
+        }
+
+        /**
+         * Fetch parent section ID
+         *
+         * @param $field_id
+         *  The ID of the field
+         * @return string
+         *  The ID of the parent section, or false if the field doesn't exist.
+         */
+        public static function fetchSectionID($field_id)
+        {
+            return Symphony::Database()->fetchVar('parent_section', 0,
+                "SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$field_id' LIMIT 1"
+            );
+        }
+
+        /**
+         * Check if a specific text formatter is used
+         *
+         * @param $handle
+         *  The handle of the textformatter
+         * @return bool
+         *  true if used, false if not
+         */
+        public static function isTextFormatterUsed($handle)
+        {
+            $fields = Symphony::Database()->fetchCol('type', "SELECT DISTINCT `type` FROM `tbl_fields` WHERE `type` NOT IN ('author', 'checkbox', 'date', 'input', 'select', 'taglist', 'upload')");
+            if(!empty($fields)) foreach($fields as $field) {
+                try {
+                    $table = Symphony::Database()->fetchVar('count', 0, sprintf("
+                        SELECT COUNT(*) AS `count`
+                        FROM `tbl_fields_%s`
+                        WHERE `formatter` = '%s'
+                    ",
+                        Symphony::Database()->cleanValue($field),
+                        $handle
+                    ));
+                }
+                catch (DatabaseException $ex) {
+                    // Table probably didn't have that column
+                }
+
+                if($table > 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
 	}

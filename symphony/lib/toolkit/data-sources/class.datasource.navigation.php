@@ -16,7 +16,18 @@
 			$parent_paths = preg_split('/,\s*/', $parent, -1, PREG_SPLIT_NO_EMPTY);
 			$parent_paths = array_map(create_function('$a', 'return trim($a, " /");'), $parent_paths);
 
-			return (is_array($parent_paths) && !empty($parent_paths) ? " AND p.`path` IN ('".implode("', '", $parent_paths)."')" : null);
+			$xpath = '(';
+			$first = true;
+			foreach($parent_paths as $path) {
+				// $type_sql = " AND pt.type = '" . $type . "'";
+				if(!$first) { $xpath .= ' or '; }
+				$xpath .= 'path=\''.$path.'\'';
+				$first = false;
+			}
+			$xpath .= ')';
+
+			return $xpath;
+			// return (is_array($parent_paths) && !empty($parent_paths) ? " AND p.`path` IN ('".implode("', '", $parent_paths)."')" : null);
 		}
 
 		public function __processNavigationTypeFilter($filter, $filter_type = DS_FILTER_OR) {
@@ -26,15 +37,29 @@
 			$types = array_map(array('Datasource', 'removeEscapedCommas'), $types);
 
 			if($filter_type == DS_FILTER_OR) {
-				$type_sql = " AND pt.type IN ('" . implode("', '", $types) . "')";
+				// $type_sql = " AND pt.type IN ('" . implode("', '", $types) . "')";
+				$xpath = '(';
+				$first = true;
+				foreach($types as $type) {
+					// $type_sql = " AND pt.type = '" . $type . "'";
+					if(!$first) { $xpath .= ' or '; }
+					$xpath .= 'types/type=\''.$type.'\'';
+					$first = false;
+				}
+				$xpath .= ')';
 			}
 			else {
+				$xpath = '';
+				$first = true;
 				foreach($types as $type) {
-					$type_sql = " AND pt.type = '" . $type . "'";
+					// $type_sql = " AND pt.type = '" . $type . "'";
+					if(!$first) { $xpath .= ' and '; }
+					$xpath .= 'types/type=\''.$type.'\'';
+					$first = false;
 				}
 			}
 
-			return $type_sql;
+			return $xpath;
 		}
 
 		public function __buildPageXML($page, $page_types) {
@@ -52,7 +77,9 @@
 			}
 
 			if($page['children'] != '0') {
-				if($children = PageManager::fetch(false, array('id, handle, title'), array(sprintf('`parent` = %d', $page['id'])))) {
+				if($children = PageManager::fetch(
+					sprintf('page[parent=\'%s\']', PageManager::index()->getHash($page['id'])))
+				) {
 					foreach($children as $c) $oPage->appendChild($this->__buildPageXML($c, $page_types));
 				}
 			}
@@ -62,7 +89,7 @@
 
 		public function execute(&$param_pool) {
 			$result = new XMLElement($this->dsParamROOTELEMENT);
-			$type_sql = $parent_sql = null;
+/*			$type_sql = $parent_sql = null;
 
 			if(trim($this->dsParamFILTERS['type']) != '') {
 				$type_sql = $this->__processNavigationTypeFilter($this->dsParamFILTERS['type'], $this->__determineFilterType($this->dsParamFILTERS['type']));
@@ -86,7 +113,28 @@
 				!is_null($parent_sql) ? $parent_sql : " AND p.parent IS NULL ",
 				// Add Types SQL
 				!is_null($type_sql) ? $type_sql : ""
-			));
+			));*/
+
+			$xpath = 'page';
+			$closebracket = false;
+			if(trim($this->dsParamFILTERS['type']) != '') {
+				$closebracket = true;
+				$xpath .= '[';
+				$xpath .= $this->__processNavigationTypeFilter($this->dsParamFILTERS['type'], $this->__determineFilterType($this->dsParamFILTERS['type']));
+			}
+
+			if(trim($this->dsParamFILTERS['parent']) != '') {
+				if(!$closebracket) {
+					$closebracket = true;
+					$xpath .= '[';
+				} else {
+					$xpath .= ' and ';
+				}
+				$xpath .= $this->__processNavigationParentFilter($this->dsParamFILTERS['parent']);
+			}
+			if($closebracket) { $xpath .= ']'; }
+
+			$pages = PageManager::fetch($xpath);
 
 			if((!is_array($pages) || empty($pages))){
 				if($this->dsParamREDIRECTONEMPTY == 'yes'){
@@ -98,13 +146,7 @@
 			else {
 				// Build an array of all the types so that the page's don't have to do
 				// individual lookups.
-				$types = Symphony::Database()->fetch("SELECT `page_id`,`type` FROM `tbl_pages_types`");
-				$page_types = array();
-				if(is_array($types)) {
-					foreach($types as $type) {
-						$page_types[$type['page_id']][] = $type['type'];
-					}
-				}
+				$page_types = PageManager::fetchPageTypeArray();
 
 				foreach($pages as $page) {
 					$result->appendChild($this->__buildPageXML($page, $page_types));

@@ -142,9 +142,9 @@
 						// Default Area
 						if(in_array('default-area', $this->dsParamINCLUDEDELEMENTS) && !is_null($author->get('default_area'))) {
 							// Section
-							if($section = Symphony::Database()->fetchRow(0, "SELECT `id`, `handle`, `name` FROM `tbl_sections` WHERE `id` = '".$author->get('default_area')."' LIMIT 1")){
-								$default_area = new XMLElement('default-area', $section['name']);
-								$default_area->setAttributeArray(array('id' => $section['id'], 'handle' => $section['handle'], 'type' => 'section'));
+                            if($section = SectionManager::fetch($author->get('default_area'))){
+								$default_area = new XMLElement('default-area', $section->get('name'));
+								$default_area->setAttributeArray(array('id' => $section->get('id'), 'handle' => $section->get('handle'), 'type' => 'section'));
 								$xAuthor->appendChild($default_area);
 							}
 							// Pages

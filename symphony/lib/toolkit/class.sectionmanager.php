@@ -75,10 +75,10 @@
 			EntryManager::delete($entries);
 
 			// Delete all the fields
-			$fields = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '$section_id'");
+            $fields = FieldManager::fetch(null, $section_id);
 
 			if(is_array($fields) && !empty($fields)){
-				foreach($fields as $field_id) FieldManager::delete($field_id);
+				foreach($fields as $field) FieldManager::delete($field->get('id'));
 			}
 
 			// Delete the section
@@ -197,4 +197,82 @@
 			$obj = new Section;
 			return $obj;
 		}
+
+        /**
+         * Create an association between a section and a field.
+         *
+         * @param integer $parent_section_id
+         *  The linked section id.
+         * @param integer $child_field_id
+         *  The field ID of the field that is creating the association
+         * @param integer $parent_field_id (optional)
+         *  The field ID of the linked field in the linked section
+         * @param boolean $show_association (optional)
+         *  Whether of not the link should be shown on the entries table of the
+         *  linked section. This defaults to true.
+         * @return boolean
+         *  true if the association was successfully made, false otherwise.
+         */
+        public static function createSectionAssociation($parent_section_id = null, $child_field_id = null, $parent_field_id = null, $show_association = true){
+
+            if(is_null($parent_section_id) && (is_null($parent_field_id) || !$parent_field_id)) return false;
+
+            if(is_null($parent_section_id )) {
+                $parent_section_id = FieldManager::fetchSectionID($parent_field_id);
+            }
+
+            $child_section_id = FieldManager::fetchSectionID($child_field_id);
+
+            $fields = array(
+                'parent_section_id' => $parent_section_id,
+                'parent_section_field_id' => $parent_field_id,
+                'child_section_id' => $child_section_id,
+                'child_section_field_id' => $child_field_id,
+                'hide_association' => ($show_association ? 'no' : 'yes')
+            );
+
+            return Symphony::Database()->insert($fields, 'tbl_sections_association');
+        }
+
+        /**
+         * Permanently remove a section association for this field in the database.
+         *
+         * @param integer $child_field_id
+         *  the field ID of the linked section's linked field.
+         */
+        public static function removeSectionAssociation($child_field_id){
+            Symphony::Database()->delete('tbl_sections_association', " `child_section_field_id` = '$child_field_id' ");
+        }
+
+        /**
+         * Returns any section associations this section has with other sections
+         * linked using fields. Has an optional parameter, respect_visibility that
+         * will only return associations that are deemed visible by a field that
+         * created the association. eg. An articles section may link to the authors
+         * section, but the field that links these sections has hidden this association
+         * so an Articles column will not appear on the Author's Publish Index
+         *
+         * @param int $section_id
+         *  The ID of the section
+         * @param boolean $respect_visibility
+         *  Whether to return all the section associations regardless of if they
+         *  are deemed visible or not. Defaults to false, which will return all
+         *  associations.
+         * @return array
+         */
+        public static function fetchAssociatedSections($section_id, $respect_visibility = false){
+            return Symphony::Database()->fetch(sprintf("
+                    SELECT *
+                    FROM `tbl_sections_association` AS `sa`, `tbl_sections` AS `s`
+                    WHERE `sa`.`parent_section_id` = %d
+                    AND `s`.`id` = `sa`.`child_section_id`
+                    %s
+                    ORDER BY `s`.`sortorder` ASC
+                ",
+                $section_id,
+                ($respect_visibility) ? "AND `sa`.`hide_association` = 'no'" : ""
+            ));
+        }
+
+
 	}

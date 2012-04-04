@@ -536,13 +536,7 @@
 				do {
 					$path = implode('/', $pathArr);
 
-					$sql = sprintf(
-						"SELECT * FROM `tbl_pages` WHERE `path` %s AND `handle` = '%s' LIMIT 1",
-						($path ? " = '".Symphony::Database()->cleanValue($path)."'" : 'IS NULL'),
-						Symphony::Database()->cleanValue($handle)
-					);
-
-					if($row = Symphony::Database()->fetchRow(0, $sql)){
+					if($row = PageManager::resolvePageByPath($handle, $path)){
 						$pathArr[] = $handle;
 
 						break 1;

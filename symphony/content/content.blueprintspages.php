@@ -62,7 +62,8 @@
 		}
 
 		public function listAllPages($separator = '/') {
-			$pages = PageManager::fetch(false, array('id', 'handle', 'title', 'path'));
+			// $pages = PageManager::fetch(false, array('id', 'handle', 'title', 'path'));
+			$pages = PageManager::fetch();
 
 			foreach($pages as &$page){
 				$parents = explode('/', $page['path']);
@@ -106,17 +107,24 @@
 			);
 			$aTableBody = array();
 
+			$xpath = 'page';
+
 			if($nesting == true){
 				$aTableHead[] = array(__('Children'), 'col');
-				$where = array(
+/*				$where = array(
 					'parent ' . (isset($parent) ? " = {$parent['id']} " : ' IS NULL ')
-				);
+				);*/
+				if(isset($parent))
+				{
+					$xpath = sprintf('page[parent=\'%s\']', PageManager::index()->getHash($parent['id']));
+				}
 			}
 			else {
-				$where = array();
+				// $where = array();
 			}
 
-			$pages = PageManager::fetch(true, array('*'), $where);
+			// $pages = PageManager::fetch(true, array('*'), $where);
+			$pages = PageManager::fetch($xpath);
 
 			if(!is_array($pages) or empty($pages)) {
 				$aTableBody = array(Widget::TableRow(array(
@@ -216,9 +224,12 @@
 
 			$is_child = strrpos($this->_context[1],'_');
 			$pagename = ($is_child != false ? substr($this->_context[1], $is_child + 1) : $this->_context[1]);
-			$pagedata = PageManager::fetch(false, array('id'), array(
+/*			$pagedata = PageManager::fetch(false, array('id'), array(
 				"p.handle = '{$pagename}'"
-			));
+			));*/
+
+			$pagedata = PageManager::fetch(sprintf('page[title/@handle=\'%s\']', $pagename));
+			
 			$pagedata = array_pop($pagedata);
 
 			if(!is_file($file_abs)) redirect(SYMPHONY_URL . '/blueprints/pages/');
@@ -476,10 +487,13 @@
 
 			$label = Widget::Label(__('Parent Page'));
 
-			$where = array(
+/*			$where = array(
 				sprintf('id != %d', $page_id)
+			);*/
+			// $pages = PageManager::fetch(false, array('id'), $where, 'title ASC');
+			$pages = PageManager::fetch(
+				sprintf('page[unique_hash!=\'%s\']', PageManager::index()->getHash($page_id))
 			);
-			$pages = PageManager::fetch(false, array('id'), $where, 'title ASC');
 
 			$options = array(
 				array('', false, '/')
@@ -622,6 +636,10 @@
 				$button = new XMLElement('button', __('Delete'));
 				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this page'), 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this page?')));
 				$div->appendChild($button);
+
+				// Add the unique hash field:
+				$hashField = Widget::Input('fields[unique_hash]', $fields['unique_hash'], 'hidden');
+				$div->appendChild($hashField);
 			}
 
 			$this->Form->appendChild($div);
@@ -780,6 +798,27 @@
 					// Clean up type list
 					$types = preg_split('/\s*,\s*/', $fields['type'], -1, PREG_SPLIT_NO_EMPTY);
 					$types = @array_map('trim', $types);
+
+                    /**
+                     * Just before the page's types are saved into `tbl_pages_types`.
+                     * Use with caution as no further processing is done on the `$types`
+                     * array to prevent duplicate `$types` from occurring (ie. two index
+                     * page types). Your logic can use the PageManger::hasPageTypeBeenUsed
+                     * function to perform this logic.
+                     *
+                     * @delegate PageTypePreCreate
+                     * @since Symphony 2.2
+                     * @see toolkit.PageManager#hasPageTypeBeenUsed
+                     * @param string $context
+                     * '/blueprints/pages/'
+                     * @param integer $page_id
+                     *  The ID of the Page that was just created or updated
+                     * @param array $types
+                     *  An associative array of the types for this page passed by reference.
+                     */
+                    Symphony::ExtensionManager()->notifyMembers('PageTypePreCreate', '/blueprints/pages/', array('page_id' => $page_id, 'types' => &$types));
+
+                    $fields['types'] = $types;
 					unset($fields['type']);
 
 					$fields['parent'] = ($fields['parent'] != __('None') ? $fields['parent'] : null);
@@ -800,14 +839,20 @@
 
 					$where = array();
 
+					$xpath = 'page';
+
 					if(!empty($current)) {
-						$where[] = "p.id != {$page_id}";
+						// $where[] = "p.id != {$page_id}";
+						$where[] = 'unique_hash!=\''.PageManager::index()->getHash($page_id).'\'';
 					}
-					$where[] = "p.handle = '" . $fields['handle'] . "'";
+					// $where[] = "p.handle = '" . $fields['handle'] . "'";
+					$where[] = 'title/@handle=\''.$fields['handle'].'\'';
 					$where[] = (is_null($fields['path']))
-						? "p.path IS NULL"
-						: "p.path = '" . $fields['path'] . "'";
-					$duplicate = PageManager::fetch(false, array('*'), $where);
+						? 'path=\'\''
+						: 'path=\''.$fields['path'].'\'';
+					$xpath .= '['.implode(' and ', $where).']';
+					// $duplicate = PageManager::fetch(false, array('*'), $where);
+					$duplicate = PageManager::fetch($xpath);
 
 					// If duplicate
 					if(!empty($duplicate)) {
@@ -939,27 +984,6 @@
 
 					// Only proceed if there was no errors saving/creating the page
 					if(empty($this->_errors)) {
-						/**
-						 * Just before the page's types are saved into `tbl_pages_types`.
-						 * Use with caution as no further processing is done on the `$types`
-						 * array to prevent duplicate `$types` from occurring (ie. two index
-						 * page types). Your logic can use the PageManger::hasPageTypeBeenUsed
-						 * function to perform this logic.
-						 *
-						 * @delegate PageTypePreCreate
-						 * @since Symphony 2.2
-						 * @see toolkit.PageManager#hasPageTypeBeenUsed
-						 * @param string $context
-						 * '/blueprints/pages/'
-						 * @param integer $page_id
-						 *  The ID of the Page that was just created or updated
-						 * @param array $types
-						 *  An associative array of the types for this page passed by reference.
-						 */
-						Symphony::ExtensionManager()->notifyMembers('PageTypePreCreate', '/blueprints/pages/', array('page_id' => $page_id, 'types' => &$types));
-
-						// Assign page types:
-						PageManager::addPageTypesToPage($page_id, $types);
 
 						// Find and update children:
 						if($this->_context[0] == 'edit') {

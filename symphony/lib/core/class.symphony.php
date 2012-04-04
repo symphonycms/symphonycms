@@ -24,6 +24,8 @@
 	require_once(TOOLKIT . '/class.email.php');
 	require_once(TOOLKIT . '/class.mysql.php');
 
+    require_once TOOLKIT . '/class.lookup.php';
+
 	require_once(TOOLKIT . '/class.authormanager.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
 	require_once(TOOLKIT . '/class.emailgatewaymanager.php');
@@ -128,6 +130,9 @@
 			if(!self::isLoggedIn() && is_null($this->Author)){
 				GenericExceptionHandler::$enabled = false;
 			}
+
+            // Check if there are new pages added manually, or if there are pages deleted manually:
+            PageManager::checkLookups();
 
 			// Set system language
 			Lang::set(self::$Configuration->get('lang', 'symphony'));

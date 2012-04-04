@@ -712,20 +712,8 @@
 				$errors['element_name'] = __('Invalid element name. Must be valid %s.', array('<code>QName</code>'));
 			}
 			elseif($checkForDuplicates) {
-				$sql_id = ($this->get('id') ? " AND f.id != '".$this->get('id')."' " : '');
-				$sql = "
-					SELECT
-						f.*
-					FROM
-						`tbl_fields` AS f
-					WHERE
-						f.element_name = '{$element_name}'
-						{$sql_id}
-						AND f.parent_section = '{$parent_section}'
-					LIMIT 1
-				";
 
-				if (Symphony::Database()->fetchRow(0, $sql)) {
+				if (FieldManager::fieldExists($element_name, $parent_section, $this->get('id'))) {
 					$errors['element_name'] = __('A field with that element name already exists. Please choose another.');
 				}
 			}
@@ -1219,28 +1207,7 @@
 		 *  true if the association was successfully made, false otherwise.
 		 */
 		public function createSectionAssociation($parent_section_id = null, $child_field_id = null, $parent_field_id = null, $show_association = true){
-
-			if(is_null($parent_section_id) && (is_null($parent_field_id) || !$parent_field_id)) return false;
-
-			if(is_null($parent_section_id )) {
-				$parent_section_id = Symphony::Database()->fetchVar('parent_section', 0,
-					"SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$parent_field_id' LIMIT 1"
-				);
-			}
-
-			$child_section_id = Symphony::Database()->fetchVar('parent_section', 0,
-				"SELECT `parent_section` FROM `tbl_fields` WHERE `id` = '$child_field_id' LIMIT 1
-			");
-
-			$fields = array(
-				'parent_section_id' => $parent_section_id,
-				'parent_section_field_id' => $parent_field_id,
-				'child_section_id' => $child_section_id,
-				'child_section_field_id' => $child_field_id,
-				'hide_association' => ($show_association ? 'no' : 'yes')
-			);
-
-			return Symphony::Database()->insert($fields, 'tbl_sections_association');
+			return SectionManager::createSectionAssociation($parent_section_id, $child_field_id, $parent_field_id, $show_association);
 		}
 
 		/**
@@ -1250,7 +1217,7 @@
 		 *  the field ID of the linked section's linked field.
 		 */
 		public function removeSectionAssociation($child_field_id){
-			Symphony::Database()->delete('tbl_sections_association', " `child_section_field_id` = '$child_field_id' ");
+			SectionManager::removeSectionAssociation($child_field_id);
 		}
 
 		/**

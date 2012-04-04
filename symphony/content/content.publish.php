@@ -823,7 +823,10 @@
 			}
 
 			// Determine the page title
-			$field_id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
+            $section_fields = FieldManager::fetch(null, $section->get('id'));
+            $keys = array_keys($section_fields);
+            $field_id = $section_fields[$keys[0]]->get('id');
+
 			$field = FieldManager::fetch($field_id);
 
 			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')), NULL, $entry_id)));
