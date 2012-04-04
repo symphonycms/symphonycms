@@ -87,6 +87,40 @@ div.notifier nav:hover:before {
 	}
 }
 
+/* Opera */
+
+@-o-keyframes success {
+	to {
+		background-color: #383838;
+		border-color: #575757;
+		color: #9b9b9b;
+	}
+}
+
+@-o-keyframes successlink {
+	to {
+		color: #bdc3c3;
+		border-color: #7c7c7c;
+	}
+}
+
+/* W3C */
+
+@keyframes success {
+	to {
+		background-color: #383838;
+		border-color: #575757;
+		color: #9b9b9b;
+	}
+}
+
+@keyframes successlink {
+	to {
+		color: #bdc3c3;
+		border-color: #7c7c7c;
+	}
+}
+
 /*-----------------------------------------------------------------------------
 	Message types
 -----------------------------------------------------------------------------*/
@@ -123,6 +157,7 @@ div.notifier nav:hover:before {
 	-webkit-animation: success 0.5s ease-out 10s 1 forwards;
 	-moz-animation: success 0.5s ease-out 10s 1 forwards;
 	-ms-animation: success 0.5s ease-out 10s 1 forwards;
+	-o-animation: success 0.5s ease-out 10s 1 forwards;
 	animation: success 0.5s ease-out 10s 1 forwards;
 }
 
@@ -132,6 +167,7 @@ div.notifier nav:hover:before {
 	-webkit-animation: successlink 0.5s ease-out 10s 1 forwards;
 	-moz-animation: successlink 0.5s ease-out 10s 1 forwards;
 	-ms-animation: successlink 0.5s ease-out 10s 1 forwards;
+	-o-animation: successlink 0.5s ease-out 10s 1 forwards;
 	animation: successlink 0.5s ease-out 10s 1 forwards;
 }
 

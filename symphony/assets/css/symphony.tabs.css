@@ -31,8 +31,6 @@ ul.tabs li {
 	display: block;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
-	-ms-box-sizing: border-box;
-	-o-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
@@ -43,7 +41,7 @@ ul.tabs li:hover {
 	color: rgba(0, 0, 0, 0.65);
 }
 
-ul.tabs li.selected, 
+ul.tabs li.selected,
 ul.tabs li.invalid.selected,
 ul.tabs li.invalid.selected:hover {
 	background: #fff;
@@ -84,7 +82,7 @@ ul.tabs li.selected:after {
 
 /* Destructor */
 
-ul.tabs li a.destructor, 
+ul.tabs li a.destructor,
 ul.tabs li.selected.invalid a.destructor {
 	line-height: 1;
 	border-bottom: none;
@@ -99,7 +97,7 @@ ul.tabs li.selected.invalid:hover a.destructor {
 	color: rgba(0, 0, 0, 0.2);
 }
 
-ul.tabs li a.destructor:hover, 
+ul.tabs li a.destructor:hover,
 ul.tabs li.selected a.destructor:hover {
 	color: rgba(0, 0, 0, 0.5);
 }
@@ -111,6 +109,7 @@ ul.tabs li.invalid {
 	border-color: #bb2211;
 	color: rgba(255, 255, 255, 0.7);
 	text-shadow: 1px 1px 1px rgba(187, 34, 17, 1);
+	-webkit-box-shadow: none;
 	box-shadow: none;
 }
 
