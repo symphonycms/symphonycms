@@ -326,30 +326,85 @@
 		}
 
 		/**
-		 * Given an element name and it's section, return it's ID. Symphony enforces
+		 * Given an `$element_name` and a `$section_id`, return the Field ID. Symphony enforces
 		 * a uniqueness constraint on a section where every field must have a unique
 		 * label (and therefore handle) so whilst it is impossible to have two fields
 		 * from the same section, it would be possible to have two fields with the same
-		 * name from different sections. Passing the $section_id allows you to specify
-		 * which section should be searched.
+		 * name from different sections. Passing the `$section_id` lets you to specify
+		 * which section should be searched. If `$element_name` is null, this function will
+		 * return all the Field ID's from the given `$section_id`.
 		 *
-		 * @param string $element_name
-		 *  The handle of the Field label
+		 * @since Symphony 2.3 This function can now accept $element_name as an array
+		 *  of handles. These handles can now also include the handle's mode, eg. `title: formatted`
+		 *
+		 * @param string|array $element_name
+		 *  The handle of the Field label, or an array of handles. These handles may contain
+		 *  a mode as well, eg. `title: formatted`.
 		 * @param integer $section_id
 		 *  The section that this field belongs too
-		 * @return integer
-		 *  The field ID
+		 * @return mixed
+		 *  The field ID, or an array of field ID's
 		 */
 		public static function fetchFieldIDFromElementName($element_name, $section_id = null){
-			return Symphony::Database()->fetchVar('id', 0, sprintf("
-					SELECT `id`
-					FROM `tbl_fields`
-					WHERE `element_name` = '%s' %s
-					LIMIT 1
-				",
-				Symphony::Database()->cleanValue($element_name),
-				(!is_null($section_id) ? " AND `parent_section` = $section_id " : "")
-			));
+			if(is_null($element_name)) {
+				$schema_sql = sprintf("
+						SELECT `id`
+						FROM `tbl_fields`
+						WHERE `parent_section` = %d
+						ORDER BY `sortorder` ASC
+					",
+					$section_id
+				);
+			}
+
+			else {
+				$element_names = !is_array($element_name) ? array($element_name) : $element_name;
+
+				// allow for pseudo-fields containing colons (e.g. Textarea formatted/unformatted)
+				foreach ($element_names as $index => $name) {
+					$parts = explode(':', $name, 2);
+
+					if(count($parts) == 1) continue;
+
+					unset($element_names[$index]);
+
+					// Prevent attempting to look up 'system', which will arise
+					// from `system:pagination`, `system:id` etc.
+					if($parts[0] == 'system') continue;
+
+					$element_names[] = Symphony::Database()->cleanValue(trim($parts[0]));
+				}
+
+				$schema_sql = empty($element_names) ? null : sprintf("
+						SELECT `id`
+						FROM `tbl_fields`
+						WHERE 1
+						%s
+						AND `element_name` IN ('%s')
+						ORDER BY `sortorder` ASC
+					",
+					!is_null($section_id) ? sprintf("AND `parent_section` = %d", $section_id) : "",
+					implode("', '", array_unique($element_names))
+				);
+			}
+
+			if(is_null($schema_sql)) return false;
+
+			$result = Symphony::Database()->fetch($schema_sql);
+
+			if(count($result) == 1) {
+				return (int)$result[0]['id'];
+			}
+			else if(empty($result)) {
+				return false;
+			}
+			else {
+				foreach($result as &$r) {
+					$r = (int)$r['id'];
+				}
+
+				return $result;
+			}
 		}
 
 		/**
@@ -367,6 +422,28 @@
 				LIMIT 1
 			");
 			return ($next ? (int)$next : 1);
+		}
+
+		/**
+		 * Given a `$section_id`, this function returns an array of the installed
+		 * fields schema. This includes the `id`, `element_name`, `type`
+		 * and `location`.
+		 *
+		 * @since Symphony 2.3
+		 * @param integer $section_id
+		 * @return array
+		 *  An associative array that contains four keys, `id`, `element_name`,
+		 * `type` and `location`
+		 */
+		public static function fetchFieldsSchema($section_id) {
+			return Symphony::Database()->fetch(sprintf("
+					SELECT `id`, `element_name`, `type`, `location`
+					FROM `tbl_fields`
+					WHERE `parent_section` = %d
+					ORDER BY `sortorder` ASC
+				",
+				$section_id
+			));
 		}
 
 		/**
@@ -437,6 +514,55 @@
 		}
 
 		/**
+		 * Return boolean if the given `$field_type` is in use anywhere in the
+		 * current Symphony install.
+		 *
+		 * @since Symphony 2.3
+		 * @param string $field_type
+		 * @return boolean
+		 */
+		public static function isFieldUsed($field_type) {
+			return Symphony::Database()->fetchVar('count', 0, sprintf("
+				SELECT COUNT(*) AS `count` FROM `tbl_fields` WHERE `type` = '%s'
+				", $field_type
+			)) > 0;
+		}
+
+		/**
+		 * Check if a specific text formatter is used by a Field
+		 *
+		 * @since Symphony 2.3
+		 * @param $text_formatter_handle
+		 *  The handle of the `TextFormatter`
+		 * @return boolean
+		 *  true if used, false if not
+		 */
+		public static function isTextFormatterUsed($text_formatter_handle) {
+			$fields = Symphony::Database()->fetchCol('type', "SELECT DISTINCT `type` FROM `tbl_fields` WHERE `type` NOT IN ('author', 'checkbox', 'date', 'input', 'select', 'taglist', 'upload')");
+			if(!empty($fields)) foreach($fields as $field) {
+				try {
+					$table = Symphony::Database()->fetchVar('count', 0, sprintf("
+						SELECT COUNT(*) AS `count`
+						FROM `tbl_fields_%s`
+						WHERE `formatter` = '%s'
+					",
+						Symphony::Database()->cleanValue($field),
+						$text_formatter_handle
+					));
+				}
+				catch (DatabaseException $ex) {
+					// Table probably didn't have that column
+				}
+
+				if($table > 0) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/**
 		 * Returns an array of all available field handles discovered in the
 		 * `TOOLKIT . /fields` or `EXTENSIONS . /{}/fields`.
 		 *
@@ -447,6 +573,5 @@
 		 */
 		public static function fetchTypes() {
 			return FieldManager::listAll();
-
 		}
 	}

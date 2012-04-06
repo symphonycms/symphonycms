@@ -210,7 +210,7 @@
 		 * @return array
 		 */
 		public function fetchFieldsSchema(){
-			return Symphony::Database()->fetch("SELECT `id`, `element_name`, `type`, `location` FROM `tbl_fields` WHERE `parent_section` = '".$this->get('id')."' ORDER BY `sortorder` ASC");
+			return FieldManager::fetchFieldsSchema($this->get('id'));
 		}
 
 		/**

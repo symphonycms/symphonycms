@@ -595,10 +595,11 @@
 								$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], 255, '-', false, true, array('@^[\d-]+@i' => ''));
 
 							if(trim($data['element_name']) != '' && in_array($data['element_name'], $name_list)){
-								$this->_errors[$position] = array('label' => __('Two custom fields have the same element name. All element names must be unique.'));
+								$this->_errors[$position] = array('label' => __('A field with that name already exists. All names must be unique.'));
 								$canProceed = false;
 								break;
 							}
+
 							$name_list[] = $data['element_name'];
 						}
 					}
@@ -610,6 +611,10 @@
 							$field = FieldManager::create($data['type']);
 							$field->setFromPOST($data);
 
+							if($existing_section) {
+								$field->set('parent_section', $existing_section->get('id'));
+							}
+
 							if($field->mustBeUnique() && !in_array($field->get('type'), $unique)) $unique[] = $field->get('type');
 							elseif($field->mustBeUnique() && in_array($field->get('type'), $unique)){
 								// Warning. cannot have 2 of this field!
@@ -619,7 +624,7 @@
 
 							$errors = array();
 
-							if(Field::__OK__ != $field->checkFields($errors, false, false) && !empty($errors)){
+							if(Field::__OK__ != $field->checkFields($errors, false) && !empty($errors)){
 								$this->_errors[$position] = $errors;
 								$canProceed = false;
 								break;
