@@ -391,7 +391,6 @@ span.frame {
 .frame.collapsible > ol > li legend,
 .frame.collapsible > ul > li legend {
 	background: #e8e8e8;
-	padding-left: 0;
 }
 
 /* Content: dark scheme */
