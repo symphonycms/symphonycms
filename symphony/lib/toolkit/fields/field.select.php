@@ -235,6 +235,7 @@
 			$label->setValue(__('%s Sort all options alphabetically', array($input->generate())));
 			$div->appendChild($label);
 
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 			$this->appendShowColumnCheckbox($div);
 			$this->appendRequiredCheckbox($div);
 			$wrapper->appendChild($div);

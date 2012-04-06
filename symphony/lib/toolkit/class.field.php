@@ -593,7 +593,7 @@
 		}
 
 		/**
-		 * Append and set a labelled html checkbox to the input XML element if this
+		 * Append and set a labeled html checkbox to the input XML element if this
 		 * field is set as a required field.
 		 *
 		 * @param XMLElement $wrapper
@@ -640,7 +640,7 @@
 
 			if ($this->get('show_column') == 'yes') $input->setAttribute('checked', 'checked');
 
-			$label->setValue(__('%s Display field’s value in entries table', array($input->generate())));
+			$label->setValue(__('%s Display in entries table', array($input->generate())));
 
 			$wrapper->appendChild($label);
 		}
@@ -670,7 +670,7 @@
 
 			if ($this->get('show_association') == 'yes') $input->setAttribute('checked', 'checked');
 
-			$label->setValue(__('%s Display relationship in linked sections', array($input->generate())));
+			$label->setValue(__('%s Display relationship in entries table', array($input->generate())));
 
 			if ($help) $label->appendChild(new XMLElement('i', $help));
 

@@ -112,7 +112,6 @@
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-
 			// Allow multiple selection
 			$label = Widget::Label();
 			$label->setAttribute('class', 'column');
@@ -129,6 +128,7 @@
 			$label->setValue(__('%s Select current user by default', array($input->generate())));
 			$div->appendChild($label);
 
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
 			$wrapper->appendChild($div);
