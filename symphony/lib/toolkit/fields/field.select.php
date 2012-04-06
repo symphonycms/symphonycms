@@ -172,10 +172,11 @@
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$div = new XMLElement('div', NULL, array('class' => 'group'));
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 
 			// Predefined Values
 			$label = Widget::Label(__('Predefined Values'));
+			$label->setAttribute('class', 'column');
 			$label->appendChild(new XMLElement('i', __('Optional')));
 			$input = Widget::Input('fields['.$this->get('sortorder').'][static_options]', General::sanitize($this->get('static_options')));
 			$label->appendChild($input);
@@ -183,6 +184,7 @@
 
 			// Dynamic Values
 			$label = Widget::Label(__('Dynamic Values'));
+			$label->setAttribute('class', 'column');
 			$label->appendChild(new XMLElement('i', __('Optional')));
 
 			$sections = SectionManager::fetch(NULL, 'ASC', 'name');
