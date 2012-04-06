@@ -43,8 +43,10 @@ fieldset.frame,
 	border: 1px solid rgba(0, 0, 0, 0.2);
 	padding: 10px;
 	background-color: #f5f5f5;
+	-webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	border-radius: 4px;
+	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
@@ -65,8 +67,10 @@ span.frame {
 	padding: 10px;
 	background-color: #f5f5f3;
 	text-align: left;
+	-webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	border-radius: 4px;
+	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
@@ -109,8 +113,10 @@ span.frame {
 	border: 1px solid rgba(0, 0, 0, 0.2);
 	background-color: #f5f5f3;
 	text-align: left;
+	-webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	border-radius: 4px;
+	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	padding: 10px;
@@ -191,9 +197,11 @@ span.frame {
 	background: #f5f5f5;
 	float: left;
 	width: 100%;
+	-webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	border-radius: 4px;
 	min-height: 30px;
+	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	border: none;
@@ -207,6 +215,7 @@ span.frame {
 .frame > ol > li,
 .frame > ul > li {
 	padding: 0 10px;
+	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	float: left;
@@ -248,6 +257,7 @@ span.frame {
 	color: rgba(0, 0, 0, 0.75);
 	margin: 0 -10px;
 	padding: 8px 10px 7px;
+	-webkit-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 	-webkit-transition: background 0.2s ease-in;
@@ -269,18 +279,21 @@ span.frame {
 
 .frame.collapsible > ol > li header,
 .frame.collapsible > ul > li header {
+	-webkit-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .frame > ol > li.collapsed header,
 .frame > ul > li.collapsed header {
+	-webkit-box-shadow: none;
 	box-shadow: none;
 	border-bottom-color: transparent;
 }
 
 .frame > ol > li.expanding header,
 .frame > ul > li.expanding header {
+	-webkit-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
 	border-bottom: 1px solid rgba(255, 255, 255, 0.75);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.15);
@@ -371,9 +384,14 @@ span.frame {
 	background: #e8e8e8;
 }
 
+.frame.collapsible .content fieldset {
+	border-top-color: rgba(0, 0, 0, 0.15);
+}
+
 .frame.collapsible > ol > li legend,
 .frame.collapsible > ul > li legend {
 	background: #e8e8e8;
+	padding-left: 0;
 }
 
 /* Content: dark scheme */
@@ -387,7 +405,7 @@ span.frame {
 
 .frame.dark > ol > li legend,
 .frame.dark > ul > li legend {
-	background: #323230;
+	background: transparent;
 }
 
 .frame.dark > ol > li .content i,
@@ -443,6 +461,7 @@ span.frame {
 .frame > ol > li.ordering header,
 .frame > ul > li.ordering header {
 	color: #fff;
+	-webkit-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.075);
 	cursor: move;
 }
@@ -478,6 +497,7 @@ span.frame {
 .frame > ol > li.ordering .content textarea,
 .frame > ul > li.ordering .content input,
 .frame > ul > li.ordering .content textarea {
+	-webkit-box-shadow: 0 0 0 1px #4D78B4;
 	box-shadow: 0 0 0 1px #4D78B4;
 }
 
@@ -506,9 +526,7 @@ span.frame {
 /* Destructor */
 
 .frame > ol > li header .destructor,
-.frame > ul > li header .destructor,
-.frame > ol > li header .button,
-.frame > ul > li header .button {
+.frame > ul > li header .destructor {
 	position: absolute;
 	top: 0.65em;
 	right: 10px;
@@ -520,17 +538,17 @@ span.frame {
 
 .frame > ol > li header .destructor:hover,
 .frame > ul > li header .destructor:hover,
-.frame > ol > li header .button:hover,
-.frame > ul > li header .button:hover {
+.frame > ol + fieldset .constructor:hover,
+.frame > ol + fieldset .constructor:hover {
 	color: rgba(0, 0, 0, 0.7);
 }
 
 .frame > ol > li header .destructor.disabled,
 .frame > ul > li header .destructor.disabled,
-.frame > ol > li header .button.disabled,
-.frame > ul > li header .button.disabled {
+.frame > ol + fieldset .constructor.disabled,
+.frame > ol + fieldset .constructor.disabled {
 	color: rgba(0, 0, 0, 0.2);
-	cursor: default;
+	cursor: not-allowed;
 	opacity: 0.4;
 }
 
@@ -577,12 +595,11 @@ span.frame {
 	margin: 0 0 15px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
-	-ms-box-sizing: border-box;
-	-o-box-sizing: border-box;
 	box-sizing: border-box;
 	display: block;
 	color: #fff;
 	border-radius: 4px;
+	-webkit-box-shadow: 0 1px 2px rgba(204, 51, 17, 0.3);
 	box-shadow: 0 1px 2px rgba(204, 51, 17, 0.3);
 }
 

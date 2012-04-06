@@ -98,13 +98,7 @@
 			else {
 				// Build an array of all the types so that the page's don't have to do
 				// individual lookups.
-				$types = Symphony::Database()->fetch("SELECT `page_id`,`type` FROM `tbl_pages_types`");
-				$page_types = array();
-				if(is_array($types)) {
-					foreach($types as $type) {
-						$page_types[$type['page_id']][] = $type['type'];
-					}
-				}
+				$page_types = PageManager::fetchAllPagesPageTypes();
 
 				foreach($pages as $page) {
 					$result->appendChild($this->__buildPageXML($page, $page_types));

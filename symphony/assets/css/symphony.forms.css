@@ -20,8 +20,6 @@ select[multiple] {
 	box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.05);
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
-	-ms-box-sizing: border-box;
-	-o-box-sizing: border-box;
 	box-sizing: border-box;
 	border-radius: 2px;
 	margin-top: 2px;
@@ -48,6 +46,7 @@ select[multiple]:active,
 select[multiple]:focus {
 	outline: none;
 	border-color: rgba(0, 0, 0, 0.4);
+	-webkit-box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
 	box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
 }
 
@@ -57,8 +56,6 @@ select {
 	margin-top: 2px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
-	-ms-box-sizing: border-box;
-	-o-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
@@ -115,6 +112,7 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
 .invalid textarea:active,
 .invalid textarea:focus {
 	border-color: #9d270d;
+	-webkit-box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
 	box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
@@ -138,6 +136,7 @@ button,
 	border: 1px solid rgba(0, 0, 0, 0.25);
 	border-bottom-color: rgba(0, 0, 0, 0.3);
 	border-radius: 4px;
+	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
 	line-height: 1.85;
 }
@@ -153,6 +152,7 @@ button:focus,
 .button:focus {
 	color: #3c3c3c;
 	border-color: rgba(0, 0, 0, 0.4);
+	-webkit-box-shadow: 0 0 7px rgba(0, 0, 0, 0.05), 0 0 1px 2px rgba(77, 120, 180, 0.1);
 	box-shadow: 0 0 7px rgba(0, 0, 0, 0.05), 0 0 1px 2px rgba(77, 120, 180, 0.1);
 	cursor: pointer;
 }
@@ -235,6 +235,7 @@ fieldset.apply.inactive {
 
 fieldset.apply:hover {
 	border-color: rgba(0, 0, 0, 0.4);
+	-webkit-box-shadow: 0 0 7px rgba(0, 0, 0, 0.1);
 	box-shadow: 0 0 7px rgba(0, 0, 0, 0.1);
 	color: rgb(60, 60, 60);
 }
@@ -298,6 +299,7 @@ fieldset.apply.inactive button,
 fieldset.apply.inactive button:hover {
 	color: rgba(60, 60, 60, 0.8);
 	border-left: 1px solid rgba(0, 0, 0, 0.15);
+	-webkit-box-shadow: none;
 	box-shadow: none;
 	cursor: default;
 }

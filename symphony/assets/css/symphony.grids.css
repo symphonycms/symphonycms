@@ -24,8 +24,6 @@
 .columns > .invalid {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
-	-ms-box-sizing: border-box;
-	-o-box-sizing: border-box;
 	box-sizing: border-box;
 	float: left;
 	padding: 0 0 0 15px;
@@ -53,6 +51,10 @@
 	padding: 0 5px 0 15px !important;
 }
 
+.columns legend + * {
+	margin-top: 10px;
+}
+
 /* Unequal columns */
 
 form.columns {
@@ -76,21 +78,20 @@ form.columns .column.primary {
 }
 
 @media screen and (max-width: 700px) {
-
 	.two.columns .column.primary,
 	.two.columns .column.secondary {
 		width: 100%;
 	}
-	
+
 	.two.columns .column.secondary {
-		padding: 0;
+		padding: 20px 0 0 0;
+		margin-top: 15px;
 		border-top: 1px solid rgba(0, 0, 0, 0.1);
 	}
-	
+
 	.two.columns .column.secondary p.label {
 		margin-top: 10px;
 	}
-
 }
 
 /* Errors in columns */
@@ -99,6 +100,7 @@ form.columns .column.primary {
 	background: none;
 	border: none;
 	border-radius: 0;
+	-webkit-box-shadow: none;
 	box-shadow: none;
 }
 
@@ -118,6 +120,7 @@ form.columns .column.primary {
 	border: 1px solid #c31;
 	border-top: 0;
 	border-radius: 0 0 4px 4px;
+	webkit-box-shadow: 0 1px 2px rgba(204, 51, 17, 0.3);
 	box-shadow: 0 1px 2px rgba(204, 51, 17, 0.3);
 	padding: 0 10px 10px;
 }

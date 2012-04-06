@@ -40,8 +40,8 @@
 			else{
 				foreach($sections as $s){
 
-                    $entry_count = EntryManager::fetchCount($s->get('id'));
-                    
+					$entry_count = EntryManager::fetchCount($s->get('id'));
+
 					// Setup each cell
 					$td1 = Widget::TableData(Widget::Anchor($s->get('name'), Administration::instance()->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', NULL, 'content'));
 					$td2 = Widget::TableData(Widget::Anchor("$entry_count", SYMPHONY_URL . '/publish/' . $s->get('handle') . '/'));
@@ -557,7 +557,6 @@
 
 				// Check to ensure all the required section fields are filled
 				if(!isset($meta['name']) || strlen(trim($meta['name'])) == 0){
-					$required = array('Name');
 					$this->_errors['name'] = __('This is a required field.');
 					$canProceed = false;
 				}
@@ -566,20 +565,20 @@
 				elseif($edit) {
 					if(
 						$meta['name'] != $existing_section->get('name')
-						&& Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `handle` = '" . Lang::createHandle($meta['name']) . "' AND `id` != {$section_id} LIMIT 1")
-					){
+						&& $s = SectionManager::fetchIDFromHandle(Lang::createHandle($meta['name']))
+						&& !is_null($s) && $s != $section_id
+					) {
 						$this->_errors['name'] = __('A Section with the name %s name already exists', array('<code>' . $meta['name'] . '</code>'));
 						$canProceed = false;
 					}
 				}
-				elseif(Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_sections` WHERE `handle` = '" . Lang::createHandle($meta['name']). "' LIMIT 1")){
+				elseif(!is_null(SectionManager::fetchIDFromHandle(Lang::createHandle($meta['name'])))) {
 					$this->_errors['name'] = __('A Section with the name %s name already exists', array('<code>' . $meta['name'] . '</code>'));
 					$canProceed = false;
 				}
 
 				// Check to ensure all the required section fields are filled
 				if(!isset($meta['navigation_group']) || strlen(trim($meta['navigation_group'])) == 0){
-					$required = array('Navigation Group');
 					$this->_errors['navigation_group'] = __('This is a required field.');
 					$canProceed = false;
 				}
@@ -596,10 +595,11 @@
 								$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], 255, '-', false, true, array('@^[\d-]+@i' => ''));
 
 							if(trim($data['element_name']) != '' && in_array($data['element_name'], $name_list)){
-								$this->_errors[$position] = array('label' => __('Two custom fields have the same element name. All element names must be unique.'));
+								$this->_errors[$position] = array('label' => __('A field with that name already exists. All names must be unique.'));
 								$canProceed = false;
 								break;
 							}
+
 							$name_list[] = $data['element_name'];
 						}
 					}
@@ -608,10 +608,12 @@
 						$unique = array();
 
 						foreach($fields as $position => $data){
-							$required = NULL;
-
 							$field = FieldManager::create($data['type']);
 							$field->setFromPOST($data);
+
+							if($existing_section) {
+								$field->set('parent_section', $existing_section->get('id'));
+							}
 
 							if($field->mustBeUnique() && !in_array($field->get('type'), $unique)) $unique[] = $field->get('type');
 							elseif($field->mustBeUnique() && in_array($field->get('type'), $unique)){
@@ -622,7 +624,7 @@
 
 							$errors = array();
 
-							if(Field::__OK__ != $field->checkFields($errors, false, false) && !empty($errors)){
+							if(Field::__OK__ != $field->checkFields($errors, false) && !empty($errors)){
 								$this->_errors[$position] = $errors;
 								$canProceed = false;
 								break;

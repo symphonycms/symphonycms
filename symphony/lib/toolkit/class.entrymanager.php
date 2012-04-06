@@ -398,39 +398,9 @@
 
 			if (empty($rows)) return $entries;
 
-			// choose whether to get data from a subset of fields or all fields in a section
-			if (!is_null($element_names) && is_array($element_names)){
+			$schema = FieldManager::fetchFieldIDFromElementName($element_names, $section_id);
+			if(is_int($schema)) $schema = array($schema);
 
-				// allow for pseudo-fields containing colons (e.g. Textarea formatted/unformatted)
-				foreach ($element_names as $index => $name) {
-					$parts = explode(':', $name, 2);
-
-					if(count($parts) == 1) continue;
-
-					unset($element_names[$index]);
-
-					// Prevent attempting to look up 'system', which will arise
-					// from `system:pagination`, `system:id` etc.
-					if($parts[0] == 'system') continue;
-
-					$element_names[] = trim($parts[0]);
-				}
-
-				$schema_sql = empty($element_names) ? null : sprintf(
-					"SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d AND `element_name` IN ('%s')",
-					$section_id,
-					implode("', '", array_unique($element_names))
-				);
-
-			}
-			else{
-				$schema_sql = sprintf(
-					"SELECT `id` FROM `tbl_fields` WHERE `parent_section` = %d",
-					$section_id
-				);
-			}
-
-			$schema = is_null($schema_sql) ? array() : Symphony::Database()->fetch($schema_sql);
 			$raw = array();
 			$rows_string = '';
 
@@ -442,8 +412,7 @@
 			$rows_string = trim($rows_string, ',');
 
 			// Append field data:
-			foreach ($schema as $f) {
-				$field_id = $f['id'];
+			if(is_array($schema)) foreach ($schema as $field_id) {
 
 				try{
 					$row = Symphony::Database()->fetch("SELECT * FROM `tbl_entries_data_{$field_id}` WHERE `entry_id` IN ($rows_string) ORDER BY `id` ASC");

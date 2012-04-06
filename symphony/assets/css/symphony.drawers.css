@@ -14,19 +14,21 @@
 div.drawer.horizontal {
 	position: relative;
 }
-	div.drawer.horizontal .contents {
-		margin-top: 17px;
-		padding: 20px 0;
-		border-top: 1px solid rgba(0, 0, 0, 0.05);
-	}
-	div.drawer.horizontal .contents:after {
-		content: ' ';
-		visibility: hidden;
-		display: block;
-		font-size: 0;
-		clear: both;
-		height: 0;
-	}
+
+div.drawer.horizontal .contents {
+	margin-top: 17px;
+	padding: 20px 0;
+	border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+div.drawer.horizontal .contents:after {
+	content: ' ';
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	clear: both;
+	height: 0;
+}
 
 /*-----------------------------------------------------------------------------
 	Vertical drawers
@@ -45,22 +47,27 @@ div.drawer.vertical-right {
 	-webkit-box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.05);
 }
+
 div.drawer.vertical-left {
 	left: 0;
 	border-right: 1px solid rgba(0, 0, 0, 0.05);
 }
+
 div.drawer.vertical-right {
 	right: 0;
 	border-left: 1px solid rgba(0, 0, 0, 0.05);
 }
-	div.drawer.vertical-left .contents,
-	div.drawer.vertical-right .contents {
-		padding: 20px;
-		width: 260px;
-	}
+
+div.drawer.vertical-left .contents,
+div.drawer.vertical-right .contents {
+	padding: 20px;
+	width: 260px;
+}
+
 #wrapper.drawer-vertical-left #contents {
 	margin-left: 301px;
 }
+
 #wrapper.drawer-vertical-right #contents {
 	margin-right: 301px;
 }
