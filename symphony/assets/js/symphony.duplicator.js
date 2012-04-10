@@ -60,22 +60,34 @@
 
 		objects.each(function duplicators() {
 			var object = $(this),
-				instances = object.find(settings.instances).addClass('instance'),
-				templates = object.find(settings.templates).addClass('template'),
-				items = instances.add(templates),
-				headers = items.find(settings.headers),
-				duplicator = object.parent('.frame'),
 				apply = $('<fieldset class="apply" />'),
 				selector = $('<select />'),
-				constructor = $('<button type="button" class="constructor">' + (object.attr('data-add') || Symphony.Language.get('Add item')) + '</button>');
-
-			// Check duplicator frame
-			if(duplicator.length == 0) {
-				duplicator = $('<div class="duplicator frame empty" />').insertBefore(object).prepend(object);
+				constructor = $('<button type="button" class="constructor">' + (object.attr('data-add') || Symphony.Language.get('Add item')) + '</button>'),
+				duplicator, list, instances, templates, items, headers;
+				
+			// New API (applying the plugin to the frame)
+			if(object.is('.frame')) {
+				duplicator = object;
+				list = duplicator.find('> ol, > ul');
 			}
+			
+			// Old API (applying the plugin to the list)
 			else {
-				duplicator.addClass('duplicator').addClass('empty');
+				list = object;
+				duplicator = object.parent('.frame');
+	
+				// Check if duplicator frame exists
+				if(duplicator.length == 0) {
+					duplicator = $('<div class="frame" />').insertBefore(object).prepend(object);
+				}
 			}
+
+			// Prepare duplicator
+			duplicator.addClass('duplicator').addClass('empty');
+			instances = list.find(settings.instances).addClass('instance');
+			templates = list.find(settings.templates).addClass('template');
+			items = instances.add(templates);
+			headers = items.find(settings.headers);
 
 		/*-------------------------------------------------------------------*/
 
@@ -87,7 +99,7 @@
 
 				instance.trigger('constructstart.duplicator');
 				instance.trigger('construct.duplicator'); /* deprecated */
-				instance.hide().appendTo(object);
+				instance.hide().appendTo(list);
 
 				// Duplicator is not empty
 				duplicator.removeClass('empty');
@@ -228,7 +240,7 @@
 				// Populate selector
 				templates.each(function createTemplates() {
 					var template = $(this),
-						title = template.find(settings.headers).attr('data-name') || template.find(settings.headers + ' :first-child').text(),
+						title = template.find(settings.headers).attr('data-name') || template.find(settings.headers).text(),
 						value = template.attr('data-type');
 
 					template.trigger('constructstart.duplicator');
@@ -269,7 +281,7 @@
 			// Destructable interface
 			if(settings.destructable === true) {
 				duplicator.addClass('destructable');
-				headers.append('<a class="destructor">' + (object.attr('data-remove') || Symphony.Language.get('Remove item')) + '</a>');
+				headers.append('<a class="destructor">' + (list.attr('data-remove') || Symphony.Language.get('Remove item')) + '</a>');
 			}
 
 			// Collapsible interface

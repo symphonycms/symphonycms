@@ -391,7 +391,6 @@ span.frame {
 .frame.collapsible > ol > li legend,
 .frame.collapsible > ul > li legend {
 	background: #e8e8e8;
-	padding-left: 0;
 }
 
 /* Content: dark scheme */
@@ -526,7 +525,9 @@ span.frame {
 /* Destructor */
 
 .frame > ol > li header .destructor,
-.frame > ul > li header .destructor {
+.frame > ul > li header .destructor,
+.frame > ol > li header .button,
+.frame > ul > li header .button {
 	position: absolute;
 	top: 0.65em;
 	right: 10px;
@@ -538,6 +539,8 @@ span.frame {
 
 .frame > ol > li header .destructor:hover,
 .frame > ul > li header .destructor:hover,
+.frame > ol > li header .button:hover,
+.frame > ul > li header .button:hover,
 .frame > ol + fieldset .constructor:hover,
 .frame > ol + fieldset .constructor:hover {
 	color: rgba(0, 0, 0, 0.7);
@@ -545,6 +548,8 @@ span.frame {
 
 .frame > ol > li header .destructor.disabled,
 .frame > ul > li header .destructor.disabled,
+.frame > ol > li header .button.disabled,
+.frame > ul > li header .button.disabled,
 .frame > ol + fieldset .constructor.disabled,
 .frame > ol + fieldset .constructor.disabled {
 	color: rgba(0, 0, 0, 0.2);
