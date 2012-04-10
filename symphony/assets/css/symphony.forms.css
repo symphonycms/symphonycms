@@ -218,6 +218,12 @@ button.delete:focus,
 	color: rgba(255, 255, 255, 0.99);
 }
 
+/* Installer */
+
+.submit input {
+	margin-top: 15px;
+}
+
 /* "With selected…" menu */
 
 fieldset.apply,
