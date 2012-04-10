@@ -453,16 +453,17 @@
 
 			foreach($records as $r){
 				$data = $r->getData($this->get('id'));
-
 				$value = General::sanitize($data['value']);
-				$handle = Lang::createHandle($value);
 
-				if(!isset($groups[$this->get('element_name')][$handle])){
-					$groups[$this->get('element_name')][$handle] = array('attr' => array('handle' => $handle, 'value' => $value),
-																		 'records' => array(), 'groups' => array());
+				if(!isset($groups[$this->get('element_name')][$data['handle']])){
+					$groups[$this->get('element_name')][$data['handle']] = array(
+						'attr' => array('handle' => $data['handle'], 'value' => $value),
+						'records' => array(),
+						'groups' => array()
+					);
 				}
 
-				$groups[$this->get('element_name')][$handle]['records'][] = $r;
+				$groups[$this->get('element_name')][$data['handle']]['records'][] = $r;
 			}
 
 			return $groups;
