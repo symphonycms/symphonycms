@@ -38,9 +38,9 @@
 		 * setting to a value overwriting any existing value for this setting
 		 *
 		 * @param string $setting
-		 *	the setting key.
+		 *  the setting key.
 		 * @param mixed $value
-		 *	the value of the setting.
+		 *  the value of the setting.
 		 */
 		public function set($setting, $value){
 			$this->_fields[$setting] = $value;
@@ -51,10 +51,10 @@
 		 * settings of this Entry instance are returned.
 		 *
 		 * @param string $setting (optional)
-		 *	the name of the setting to access the value for. This is optional and
-		 *	defaults to null in which case all settings are returned.
+		 *  the name of the setting to access the value for. This is optional and
+		 *  defaults to null in which case all settings are returned.
 		 * @return null|mixed|array
-		 *	the value of the setting if there is one, all settings if the input setting
+		 *  the value of the setting if there is one, all settings if the input setting
 		 * was omitted or null if the setting was supplied but there is no value
 		 * for that setting.
 		 */
@@ -92,9 +92,9 @@
 		 * Set the data for a Field in this Entry, given the Field ID and it's data
 		 *
 		 * @param integer $field_id
-		 *	The ID of the Field this data is for
+		 *  The ID of the Field this data is for
 		 * @param mixed $data
-		 *	Often an array
+		 *  Often an array
 		 */
 		public function setData($field_id, $data){
 			$this->_data[$field_id] = $data;
@@ -151,7 +151,7 @@
 
 				if($s != Field::__OK__){
 					$status = __ENTRY_FIELD_ERROR__;
-					$error[$info['id']] = $message;
+					$errors[$info['id']] = $message;
 				}
 
 				$this->setData($info['id'], $result);
@@ -172,14 +172,14 @@
 		 * assigned to this Entry will be returned.
 		 *
 		 * @param integer $field_id
-		 *	The ID of the Field whose data you want
+		 *  The ID of the Field whose data you want
 		 * @param boolean $asObject
-		 *	If true, the data will be returned as an object instead of an
-		 *	array. Defaults to false. Note that if a `$field_id` is not provided
-		 *	the result will always be an array.
+		 *  If true, the data will be returned as an object instead of an
+		 *  array. Defaults to false. Note that if a `$field_id` is not provided
+		 *  the result will always be an array.
 		 * @return array|object
-		 *	Depending on the value of `$asObject`, return the field's data
-		 *	as either an array or an object
+		 *  Depending on the value of `$asObject`, return the field's data
+		 *  as either an array or an object
 		 */
 		public function getData($field_id=null, $asObject=false){
 			if(!$field_id) return $this->_data;
@@ -191,17 +191,17 @@
 		 * in this Entry's Section and call their `checkPostFieldData()` function.
 		 *
 		 * @param array $data
-		 *	An associative array of the data for this entry where they key is the
-		 *	Field's handle for this Section and the value is the data from the form
+		 *  An associative array of the data for this entry where they key is the
+		 *  Field's handle for this Section and the value is the data from the form
 		 * @param array $error
-		 *	An array of errors, by reference. Defaults to empty
+		 *  An array of errors, by reference. Defaults to empty
 		 * @param boolean $ignore_missing_fields
-		 *	This parameter allows Entries to be updated, rather than replaced. This is
-		 *	useful if the input form only contains a couple of the fields for this Entry.
-		 *	Defaults to false, which will check all Fields even if they are not
-		 *	provided in the $data
+		 *  This parameter allows Entries to be updated, rather than replaced. This is
+		 *  useful if the input form only contains a couple of the fields for this Entry.
+		 *  Defaults to false, which will check all Fields even if they are not
+		 *  provided in the $data
 		 * @return integer
-		 *	Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
+		 *  Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
 		 */
 		public function checkPostData($data, &$errors = null, $ignore_missing_fields=false){
 			$status = __ENTRY_OK__;
@@ -225,8 +225,8 @@
 		}
 
 		/**
-		 * Iterates over all the Fields in this Entry calling their `processRawFieldData()`
-		 * function to set default values for this Entry.
+		 * Iterates over all the Fields in this Entry calling their 
+		 * `processRawFieldData()` function to set default values for this Entry.
 		 *
 		 * @see toolkit.Field#processRawFieldData()
 		 */
@@ -246,13 +246,15 @@
 		}
 
 		/**
-		 * Commits this Entry's data to the database, by utilising the EntryManager's
-		 * add/edit functions. The commit function first finds all the default data for this
-		 * before calling it's Manager
+		 * Commits this Entry's data to the database, by first finding the default
+		 * data for this `Entry` and then utilising the `EntryManager`'s
+		 * add or edit function. The `EntryManager::edit` function is used if
+		 * the current `Entry` object has an ID, otherwise `EntryManager::add`
+		 * is used.
 		 *
 		 * @see toolkit.Entry#findDefaultData()
 		 * @return boolean
-		 *	true if the commit was successful, false otherwise.
+		 *  true if the commit was successful, false otherwise.
 		 */
 		public function commit(){
 			$this->findDefaultData();
@@ -265,11 +267,11 @@
 		 * array. If there are no associated entries, null will be returned.
 		 *
 		 * @param array $associated_sections
-		 *	An associative array of sections to return the Entry counts from. Defaults to
-		 *	null, which will fetch all the associations of this Entry.
+		 *  An associative array of sections to return the Entry counts from. Defaults to
+		 *  null, which will fetch all the associations of this Entry.
 		 * @return array
-		 *	An associative array with the key being the associated Section's ID and the
-		 *	value being the number of entries associated with this Entry.
+		 *  An associative array with the key being the associated Section's ID and the
+		 *  value being the number of entries associated with this Entry.
 		 */
 		public function fetchAllAssociatedEntryCounts($associated_sections = null) {
 			if(is_null($this->get('section_id'))) return null;
@@ -291,9 +293,9 @@
 
 				if(!is_null($parent_section_field_id)){
 					$search_value = $field->fetchAssociatedEntrySearchValue(
-							$this->getData($as['parent_section_field_id']),
-							$as['parent_section_field_id'],
-							$this->get('id')
+						$this->getData($as['parent_section_field_id']),
+						$as['parent_section_field_id'],
+						$this->get('id')
 					);
 				}
 
