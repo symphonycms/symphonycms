@@ -168,7 +168,7 @@
 
 			// Set menu status
 			if(selection.length > 0) {
-				selection.on('select deselect check', 'tbody tr:has(input)', function(event) {
+				selection.on('select deselect check', 'tbody tr', function(event) {
 
 					// Activate menu
 					if(selection.has('.selected').length > 0) {
@@ -183,7 +183,7 @@
 					}
 				});
 
-				selection.find('tbody tr:has(input):first').trigger('check');
+				selection.find('tbody tr:first').trigger('check');
 
 				// Respect menu state
 				button.on('click', function(event) {
