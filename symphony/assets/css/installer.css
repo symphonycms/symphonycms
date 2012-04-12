@@ -37,7 +37,7 @@ h1 em {
 	font-size: 73.33%;
 }
 
-ul {
+h1 + ul {
 	position: fixed;
 	color: rgba(0, 0, 0, 0.4);
 	text-align: right;
@@ -50,23 +50,23 @@ ul {
 	width: 150px;
 }
 
-ul li.selected a {
+h1 + ul li.selected a {
 	color: #000;
 	text-decoration: none;
 }
 
-ul li.more {
+h1 + ul li.more {
 	margin-top: 12px;
 }
 
-ul li.more a {
+h1 + ul li.more a {
 	width: 150px;
 	color: rgba(0, 0, 0, 0.4);
 	display: block;
 	text-decoration: none;
 }
 
-ul li.more a:hover {
+h1 + ul li.more a:hover {
 	border-bottom: 1px solid rgba(0, 0, 0, 0.3);
 }
 
@@ -158,11 +158,19 @@ dt {
 	margin-bottom: 5px;
 }
 
+ul {
+	margin-left: 0;
+}
+
 dd,
 ul li {
 	margin: 0 0 15px 10px;
 	font-weight: normal;
 	position: relative;
+}
+
+ul li {
+	margin: 0 0 0 10px;
 }
 
 dd:before,
