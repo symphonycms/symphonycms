@@ -598,7 +598,7 @@
 			Symphony::Log()->pushToLog('CONFIGURING: Installing existing extensions', E_NOTICE, true, true);
 			$disabled_extensions = array();
 			foreach(new DirectoryIterator(EXTENSIONS) as $e) {
-				if($e->isDot() || $e->isFile()) continue;
+				if($e->isDot() || $e->isFile() || !is_file($e->getRealPath() . '/extension.driver.php')) continue;
 
 				$handle = $e->getBasename();
 				try {
