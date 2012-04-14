@@ -2,85 +2,212 @@
  * @package assets
  */
 
-
 /**
  * The Symphony object provides language, message and context management.
  *
  * @class
  */
-var Symphony = {};
+var Symphony = (function($) {
 
+	// Internal Symphony storage
+	var Storage = {
+		Context: {},
+		Dictionary: {},
+		Support: {}
+	};
 
-(function($) {
+/*-----------------------------------------------------------------------*/
 
-	Symphony = {
+	// Add data to Symphony context
+	function addContext(group, values) {
 
+		// Extend existing group
+		if(Storage.Context[group] && $.type(values) !== 'string') {
+			$.extend(Storage.Context[group], values);
+		}
+
+		// Add new group
+		else {
+			Storage.Context[group] = values;
+		}
+
+		// Always return
+		return true;
+	};
+
+	// Get data from Symphony context
+	function getContext(group) {
+
+		// Return full context, if no group is set
+		if(!group) {
+			return Storage;
+		}
+
+		// Return false if group does not exist in Storage
+		if(typeof Storage.Context[group] === undefined) {
+			return false;
+		}
+
+		// Default: Return context group
+		return Storage.Context[group];
+	};
+
+	// Register language string
+	function addStrings(strings) {
+		var temp = {},
+			namespace = (Symphony.Context.get('env') ? Symphony.Context.get('env')['page-namespace'] : '');
+
+		// Don't process empty strings
+		if($.isEmptyObject(strings)) {
+			return true;
+		}
+
+		// Set key as value
+		if($.type(namespace) === 'string' && $.trim(namespace) !== '') {
+			if (!temp[namespace]) {
+				temp[namespace] = {};
+			}
+
+			$.each(strings, function(key, value) {
+				temp[namespace][key] = key;
+			});
+		} else {
+			$.each(strings, function(key, value) {
+				temp[key] = key;
+			});
+		}
+
+		// Save English strings
+		if(Symphony.Context.get('lang') === 'en') {
+			$.extend(true, Storage.Dictionary, temp);
+		}
+
+		// Translate strings and defer merging objects until translate() has returned
+		else {
+			translate(temp);
+		}
+	};	
+	
+	// Get localised string
+	function getString(string, inserts) {
+
+		// Get translated string
+		var translatedString,
+			namespace = (Symphony.Context.get('env') ? Symphony.Context.get('env')['page-namespace'] : '');
+
+		if($.type(namespace) === 'string' && $.trim(namespace) !== '' && Storage.Dictionary[namespace] !== undefined) {
+			translatedString = Storage.Dictionary[namespace][string];
+		} else {
+			translatedString = Storage.Dictionary[string];
+		}
+
+		// Return string if it cannot be found in the dictionary
+		if(translatedString !== false) {
+			string = translatedString;
+		}
+
+		// Insert variables
+		if(inserts !== undefined && inserts !== null) {
+			string = replaceVariables(string, inserts);
+		}
+
+		// Return translated string
+		return string;
+	};
+	
+	// Replace variables
+	function replaceVariables(string, inserts) {
+		$.each(inserts, function(index, value) {
+			string = string.replace('{$' + index + '}', value);
+		});
+		return string;
+	};
+
+	// Get localised strings
+	function translate(strings) {
+		$.ajax({
+			async: false,
+			type: 'GET',
+			url: Symphony.Context.get('root') + '/symphony/ajax/translate/',
+			data: { 'strings': strings },
+			dataType: 'json',
+			
+			// Add localised strings
+			success: function(result) {
+				$.extend(true, Storage.Dictionary, result);
+			},
+
+			// Use English strings on error
+			error: function(jqXHR, textStatus, errorThrown) {
+				$.extend(true, Storage.Dictionary, strings);
+			}
+		});
+	};
+
+	// Set system message
+	function postMessage(message, type) {
+		$('header div.notifier').trigger('attach.notify', [message, type]);
+	};
+	
+	// Remove system message
+	function clearMessage(type) {
+		$('header p.notice').filter('.' + type).first().trigger('detach.notify');
+	};
+
+/*-----------------------------------------------------------------------*/
+
+	// Set browser support information
+	try {
+		Storage.Support.localStorage = !!localStorage.getItem;
+	} catch(e) {
+		Storage.Support.localStorage = false;
+	}
+
+	// Deep copy jQuery.support
+	$.extend(true, Storage.Support, $.support);
+	
+/*-------------------------------------------------------------------------
+	Symphony API
+-------------------------------------------------------------------------*/
+
+	return {
+	
 		/**
 		 * The Context object contains general information about the system,
 		 * the backend, the current user. It includes an add and a get function.
 		 * This is a private object and can only be accessed via add and get.
 		 *
 		 * @class
-		 */
-		Context: new (function(){
-
-			/**
-			 * This object is private and can not be accessed without
-			 * Symphony.Context.add() and Symphony.Context.get() which interact
-			 * with the dictionary.
-			 *
-			 * @private
-			 */
-			var Storage = {};
-
-			/**
+		 */ 	
+	 	Context: {
+	 	
+	 		/**
 			 * Add data to the Context object
 			 *
 			 * @param {String} group
 			 *  Name of the data group
 			 * @param {String|Object} values
 			 *  Object or string to be stored
+			 *
+			 * @example
+		
+					Symphony.Context.add(group, values);
 			 */
-			this.add = function(group, values) {
-
-				// Extend existing group
-				if(Storage[group] && $.type(values) !== 'string') {
-					$.extend(Storage[group], values);
-				}
-
-				// Add new group
-				else {
-					Storage[group] = values;
-				}
-
-				// Always return
-				return true;
-			};
+			add: addContext,
 
 			/**
 			 * Get data from the Context object
 			 *
 			 * @param {String} group
 			 *  Name of the group to be returned
+			 *
+			 * @example
+		
+					Symphony.Context.get(group);
 			 */
-			this.get = function(group) {
-
-				// Return full context, if no group is set
-				if(!group) {
-					return Storage;
-				}
-
-				// Return false if group does not exist in Storage
-				if(typeof Storage[group] === undefined) {
-					return false;
-				}
-
-				// Default: Return context group
-				return Storage[group];
-			};
-
-		}),
-
+			get: getContext
+		},
+		
 		/**
 		 * The Language object stores the dictionary with all needed translations.
 		 * It offers public functions to add strings and get their translation and
@@ -92,57 +219,19 @@ var Symphony = {};
 		 *
 		 * @class
 		 */
-		Language: new (function(){
-
-			/**
-			 * This object is private and can not be accessed without
-			 * Symphony.Language.add() to add and Symphony.Language.get() which
-			 * interact with the dictionary.
-			 *
-			 * @private
-			 */
-			var Dictionary = {};
+		Language: {
 
 			/**
 			 * Add strings to the Dictionary
 			 *
 			 * @param {Object} strings
 			 *  Object with English string as key, value should be false
+			 *
+			 * @example
+		
+					Symphony.Language.add(strings);
 			 */
-			this.add = function(strings) {
-				var temp = {},
-					namespace = (Symphony.Context.get('env') ? Symphony.Context.get('env')['page-namespace'] : '');
-
-				// Don't process empty strings
-				if($.isEmptyObject(strings)) {
-					return true;
-				}
-
-				// Set key as value
-				if($.type(namespace) === 'string' && $.trim(namespace) !== '') {
-					if (!temp[namespace]) {
-						temp[namespace] = {};
-					}
-
-					$.each(strings, function(key, value) {
-						temp[namespace][key] = key;
-					});
-				} else {
-					$.each(strings, function(key, value) {
-						temp[key] = key;
-					});
-				}
-
-				// Save English strings
-				if(Symphony.Context.get('lang') === 'en') {
-					$.extend(true, Dictionary, temp);
-				}
-
-				// Translate strings and defer merging objects until translate() has returned
-				else {
-					translate(temp);
-				}
-			};
+			add: addStrings,
 
 			/**
 			 * Get translated string from the Dictionary.
@@ -155,86 +244,14 @@ var Symphony = {};
 			 *  Object with variable name and value pairs
 			 * @return {String}
 			 *  Returns the translated string
+			 *
+			 * @example
+		
+					Symphony.Language.get(string);
 			 */
-			this.get = function(string, inserts) {
-
-				// Get translated string
-				var translatedString,
-					namespace = Symphony.Context.get('env')['page-namespace'];
-
-				if($.type(namespace) === 'string' && $.trim(namespace) !== '' && Dictionary[namespace] !== undefined) {
-					translatedString = Dictionary[namespace][string];
-				} else {
-					translatedString = Dictionary[string];
-				}
-
-				// Return string if it cannot be found in the dictionary
-				if(translatedString !== false) {
-					string = translatedString;
-				}
-
-				// Insert variables
-				if(inserts !== undefined && inserts !== null) {
-					string = insert(string, inserts);
-				}
-
-				// Return translated string
-				return string;
-			};
-
-			/**
-			 * This private function replaces variables with a specified value.
-			 * It can not be called directly.
-			 *
-			 * @param {String} string
-			 *  Translated string with variables
-			 * @param {Object} inserts
-			 *  Object with variable name and value pairs
-			 * @return {String}
-			 *  Returns translated strings with all variables replaced by their actual value
-			 *
-			 * @private
-			 */
-			var insert = function(string, inserts) {
-
-				// Replace variables
-				$.each(inserts, function(index, value) {
-					string = string.replace('{$' + index + '}', value);
-				});
-				return string;
-			};
-
-			/**
-			 * This private function sends a synchronous AJAX request to fetch the translations
-			 * for the English strings in the dictionary. It can not be called directly
-			 *
-			 * @param {Object} strings
-			 *  Object of strings to be translated
-			 * @return {Object}
-			 *  Object with original string and translation pairs
-			 *
-			 * @private
-			 */
-			var translate = function(strings) {
-				// Load translations synchronously
-				$.ajax({
-					async: false,
-					type: 'GET',
-					url: Symphony.Context.get('root') + '/symphony/ajax/translate/',
-					data: { 'strings': strings },
-					dataType: 'json',
-					success: function(result) {
-						$.extend(true, Dictionary, result);
-					},
-					error: function(jqXHR, textStatus, errorThrown) {
-						// Extend the existing dictionary since an error occurred
-						$.extend(true, Dictionary, strings);
-					}
-				});
-			};
-
-		}),
-
+			get: getString
+		},
+		
 		/**
 		 * The message object handles system messages that should be displayed on the fly.
 		 * It offers a post and a clear function to set and remove messages. Absolute dates
@@ -243,7 +260,7 @@ var Symphony = {};
 		 * @class
 		 * @private
 		 */
-		Message: new (function(){
+		Messages: {
 
 			/**
 			 * Post system message
@@ -252,42 +269,37 @@ var Symphony = {};
 			 *  Message to be shown
 			 * @param {String} type
 			 *  Message type to be used as class name
+			 *
+			 * @example
+		
+					Symphony.Language.get(message, type);
 			 */
-			this.post = function(message, type) {
-				$('header div.notifier').trigger('attach.notify', [message, type]);
-			};
+			post: postMessage,
 
 			/**
 			 * Clear last message of a type
 			 *
 			 * @param {String} type
 			 *  Message type
+			 *
+			 * @example
+		
+					Symphony.Language.get(type);
 			 */
-			this.clear = function(type) {
-				$('header p.notice').filter('.' + type).first().trigger('detach.notify');
-			};
-		}),
-
+			clear: clearMessage
+		},
+		
 		/**
 		 * A collection of properties that represent the presence of
 		 * different browser features and also contains the test results
 		 * from jQuery.support.
 		 *
 		 * @class
+		 *
+		 * @example
+	
+				Symphony.Support.localStorage;
 		 */
-		Support: {
-
-			/**
-			 * Does the browser have support for the HTML5 localStorage API
-			 * @type Boolean
-			 * @default false*
-			 * @example
-
-				if(Symphony.Support.localStorage) { ... }
-
-			 */
-			localStorage: false
-		}
+		Support: Storage.Support
 	};
-
-})(jQuery.noConflict());
+}(jQuery.noConflict()));
