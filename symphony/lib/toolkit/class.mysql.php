@@ -861,16 +861,15 @@
 		 *
 		 * @param string $sql
 		 *  A string containing SQL queries delimited by `;`
+		 * @param boolean $force_engine
+		 *  If set to true, this will set MySQL's default storage engine to MyISAM.
+		 *  Defaults to false, which will use MySQL's default storage engine when
+		 *  tables don't explicitly define which engine they should be created with
 		 * @return boolean
 		 *  If one of the queries fails, false will be returned and no further queries
 		 *  will be executed, otherwise true will be returned.
 		 */
-		public function import($sql, $use_server_encoding = true, $force_engine = false){
-			if($use_server_encoding){
-				$sql = str_replace('DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci', NULL, $sql);
-				$sql = str_replace('COLLATE utf8_unicode_ci', NULL, $sql);
-			}
-
+		public function import($sql, $force_engine = false){
 			if($force_engine){
 				// Silently attempt to change the storage engine. This prevents INNOdb errors.
 				$this->query('SET storage_engine=MYISAM');

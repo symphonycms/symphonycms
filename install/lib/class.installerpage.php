@@ -188,20 +188,7 @@
 		 * -----------------------------------------------
 		 */
 
-			if(isset($_POST['fields'])){
-				$fields = $_POST['fields'];
-
-				if(!$fields['database']['use-server-encoding']){
-					$fields['database']['use-server-encoding'] = 'no';
-				}
-			}
-			else{
-				$fields = $this->_params['default-config'];
-
-				$fields['database']['use-server-encoding'] = 'no';
-				$fields['permissions']['file'] = '0644';
-				$fields['permissions']['directory'] = '0755';
-			}
+			$fields = isset($_POST['fields']) ? $_POST['fields'] : $this->_params['default-config'];
 
 		/* -----------------------------------------------
 		 * Welcome
@@ -307,19 +294,6 @@
 
 			$this->__appendError(array('database-table-clash'), $label);
 			$Fieldset->appendChild($label);
-
-			// Advanced configuration: Table Prefix: Use UTF-8 at all times unless otherwise specified
-			$Fieldset->appendChild(Widget::label(
-				__('Always use %s encoding', array('<code>UTF-8</code>')),
-				Widget::Input(
-					'fields[database][use-server-encoding]',
-					'yes', 'checkbox',
-					$fields['database']['use-server-encoding'] == 'no' ? array('checked' => 'checked') : array()
-				),
-			'option'));
-			$Fieldset->appendChild(new XMLElement('p',
-				__('If unchecked, Symphony will use your database’s default encoding instead of %s.', array('<code>UTF-8</code>'))
-			));
 
 			$Database->appendChild($Fieldset);
 			$this->Form->appendChild($Database);

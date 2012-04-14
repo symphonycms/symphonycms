@@ -420,11 +420,7 @@
 			Symphony::Log()->pushToLog('MYSQL: Importing Table Schema', E_NOTICE, true, true);
 
 			try{
-				Symphony::Database()->import(
-					file_get_contents(INSTALL . '/includes/install.sql'),
-					($fields['database']['use-server-encoding'] == 'no' ? true : false),
-					true
-				);
+				Symphony::Database()->import(file_get_contents(INSTALL . '/includes/install.sql'), true);
 			}
 			catch(DatabaseException $e){
 				self::__abort(

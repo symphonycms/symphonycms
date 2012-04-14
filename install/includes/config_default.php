@@ -36,8 +36,6 @@
 			'user' => null,
 			'password' => null,
 			'db' => null,
-			'character_set' => 'utf8',
-			'character_encoding' => 'utf8',
 			'tbl_prefix' => 'sym_',
 		),
 		########
