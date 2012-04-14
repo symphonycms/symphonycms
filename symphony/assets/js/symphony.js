@@ -16,64 +16,6 @@ var Symphony = {};
 	Symphony = {
 
 		/**
-		 * Initialize the Symphony object
-		 */
-		init: function() {
-			var html = $('html'),
-				user = $('#usr li:first a');
-
-			// Set JavaScript status
-			html.addClass('active');
-
-			// Set basic context information
-			Symphony.Context.add('user', {
-				fullname: user.text(),
-				name: user.data('name'),
-				type: user.data('type'),
-				id: user.data('id')
-			});
-			Symphony.Context.add('lang', html.attr('lang'));
-
-			// Set browser support information
-			try {
-				Symphony.Support.localStorage = !!localStorage.getItem;
-			} catch(e) {
-				Symphony.Support.localStorage = false;
-			}
-
-			// Deep copy jQuery.support
-			$.extend(true, Symphony.Support, $.support);
-
-			// Initialise language
-			Symphony.Language.add({
-				'Add item': false,
-				'Remove selected items': false,
-				'Are you sure you want to proceed?': false,
-				'Reordering was unsuccessful.': false,
-				'Password': false,
-				'Change Password': false,
-				'Remove File': false,
-				'at': false,
-				'just now': false,
-				'a minute ago': false,
-				'{$minutes} minutes ago': false,
-				'about 1 hour ago': false,
-				'about {$hours} hours ago': false,
-				'Untitled Field': false
-			});
-
-			/**
-			 * @deprecated You should now use Symphony.Context.get('root')
-			 */
-			Symphony.WEBSITE = Symphony.Context.get('root');
-
-			/**
-			 * @deprecated You should now use Symphony.Context.get('lang')
-			 */
-			Symphony.Language.NAME = Symphony.Context.get('lang');
-		},
-
-		/**
 		 * The Context object contains general information about the system,
 		 * the backend, the current user. It includes an add and a get function.
 		 * This is a private object and can only be accessed via add and get.

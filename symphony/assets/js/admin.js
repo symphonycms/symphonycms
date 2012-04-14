@@ -13,8 +13,46 @@
 		--------------------------------------------------------------------------*/
 
 		// Initialize Symphony
-		Symphony.init();
+		var html = $('html').addClass('active'),
+			user = $('#usr li:first a');
 
+		// Set basic context information
+		Symphony.Context.add('user', {
+			fullname: user.text(),
+			name: user.data('name'),
+			type: user.data('type'),
+			id: user.data('id')
+		});
+		Symphony.Context.add('lang', html.attr('lang'));
+
+		// Set browser support information
+		try {
+			Symphony.Support.localStorage = !!localStorage.getItem;
+		} catch(e) {
+			Symphony.Support.localStorage = false;
+		}
+
+		// Deep copy jQuery.support
+		$.extend(true, Symphony.Support, $.support);
+
+		// Initialise core language strings
+		Symphony.Language.add({
+			'Add item': false,
+			'Remove selected items': false,
+			'Are you sure you want to proceed?': false,
+			'Reordering was unsuccessful.': false,
+			'Password': false,
+			'Change Password': false,
+			'Remove File': false,
+			'at': false,
+			'just now': false,
+			'a minute ago': false,
+			'{$minutes} minutes ago': false,
+			'about 1 hour ago': false,
+			'about {$hours} hours ago': false,
+			'Untitled Field': false
+		});
+			
 		// Catch all javascript errors and write them to the Symphony Log
 		window.onerror = function(errorMsg, url, line) {
 			$.ajax({
