@@ -5,7 +5,19 @@
 (function($) {
 
 	/**
-	 * @todo: documentation
+	 * Notify combines multiple system messages to an interface that focusses 
+	 * on a single message at a time and offers a navigation to move between message. 
+	 *
+	 * @name $.symphonyNotify
+	 * @class
+	 *
+	 * @param {Object} options An object specifying containing the attributes specified below
+	 * @param {String} [options.items='p.notice'] Selector to find messages
+	 * @param {String} [options.storage='symphony.notify.root'] Namespace used for local storage
+	 *
+	 *	@example
+
+			$('#messages').symphonyNotify();
 	 */
 	$.fn.symphonyNotify = function(options) {
 		var objects = this,
@@ -26,7 +38,7 @@
 	/*-----------------------------------------------------------------------*/
 
 		// Attach message
-		objects.on('attach.notify', function(event, message, type) {
+		objects.on('attach.notify', function attachMessage(event, message, type) {
 			var object = $(this),
 				notifier = object.find('div.notifier'),
 				items = notifier.find(settings.items),
@@ -69,7 +81,7 @@
 		});
 
 		// Detach message
-		objects.on('deattach.notify', settings.items, function(event) {
+		objects.on('detach.notify', settings.items, function detachMessage(event) {
 			var item = $(this),
 				notifier = item.parents('div.notifier');
 
@@ -112,7 +124,7 @@
 		});
 
 		// Resize notifier
-		objects.on('resize.notify attachstop.notify movestop.notify', 'div.notifier', function(event) {
+		objects.on('resize.notify attachstop.notify movestop.notify', 'div.notifier', function resizeNotifer(event) {
 			var notifier = $(this),
 				active = notifier.find('.active'),
 				speed = 100;
@@ -126,7 +138,7 @@
 		});
 
 		// Count messages
-		objects.on('attachstop.notify detachstop.notify', 'div.notifier', function(event) {
+		objects.on('attachstop.notify detachstop.notify', 'div.notifier', function toggleNavigator(event) {
 			var notifier = $(this),
 				items = notifier.find(settings.items);
 
@@ -142,7 +154,7 @@
 		});
 
 		// Next message
-		objects.on('click', 'nav', function(event) {
+		objects.on('click', 'nav', function switchMessage(event) {
 			var nav = $(this),
 				notifier = $(this).parents('div.notifier');
 
@@ -151,7 +163,7 @@
 		});
 
 		// Move messages
-		objects.on('move.notify', 'div.notifier', function(event) {
+		objects.on('move.notify', 'div.notifier', function moveMessage(event) {
 			var notifier = $(this),
 				current = notifier.find('.active'),
 				next = current.next(settings.items),
@@ -187,7 +199,7 @@
 		});
 
 		// Ignore message
-		objects.on('click', 'a.ignore', function(event) {
+		objects.on('click', 'a.ignore', function ignoreMessage(event) {
 			var ignore = $(this),
 				item = ignore.parents(settings.items),
 				notifier = item.parents('div.notifier'),
@@ -202,7 +214,7 @@
 			}
 
 			// Remove item
-			item.trigger('deattach.notify');
+			item.trigger('detach.notify');
 		});
 
 	/*-----------------------------------------------------------------------*/

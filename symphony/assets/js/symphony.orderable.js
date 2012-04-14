@@ -5,7 +5,7 @@
 (function($) {
 
 	/**
-	 * This plugin allows items to be orderable.
+	 * Create orderable elements.
 	 *
 	 * @name $.symphonyOrderable
 	 * @class
@@ -35,7 +35,7 @@
 	/*-----------------------------------------------------------------------*/
 
 		// Start ordering
-		objects.on('mousedown.orderable', settings.items + ' ' + settings.handles, function(event) {
+		objects.on('mousedown.orderable', settings.items + ' ' + settings.handles, function startOrdering(event) {
 			var handle = $(this),
 				item = handle.parents(settings.items),
 				object = handle.parents('.orderable');
@@ -66,7 +66,7 @@
 		});
 
 		// Stop ordering
-		objects.on('mouseup.orderable mouseleave.orderable', function(event) {
+		objects.on('mouseup.orderable mouseleave.orderable', function stopOrdering(event) {
 			var object = $(this),
 				item = object.find('.ordering');
 
@@ -77,8 +77,8 @@
 			}
 		});
 
-		// Reorder items
-		$(document).on('mousemove.orderable', '.ordering:has(.ordering)', function(event) {
+		// Order items
+		$(document).on('mousemove.orderable', '.ordering:has(.ordering)', function order(event) {
 			var object = $(this),
 				item = object.find('.ordering'),
 				top = item.offset().top,

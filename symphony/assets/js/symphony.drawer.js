@@ -5,7 +5,20 @@
 (function($) {
 
 	/**
-	 * @todo: documentation
+	 * Drawers are hidden areas in the backend that are used to 
+	 * display additional content on request. There are three different 
+	 * types of drawers: horizontal, vertical left and vertical right.
+	 *
+	 * @name $.symphonyDrawer
+	 * @class
+	 *
+	 * @param {Object} options An object specifying containing the attributes specified below
+	 * @param {Integer} [options.verticalWidth=300] Width of the vertical drawers
+	 * @param {String} [options.speed='fast'] Animation speed
+	 *
+	 *	@example
+
+			$('.drawer').symphonyDrawer();
 	 */
 	$.fn.symphonyDrawer = function(options) {
 		var objects = this,
@@ -22,7 +35,7 @@
 	/*-----------------------------------------------------------------------*/
 
 		// Expand drawer
-		objects.on('expand.drawer', function(event, speed, stay) {
+		objects.on('expand.drawer', function expand(event, speed, stay) {
 			var drawer = $(this),
 				position = drawer.data('position'),
 				buttons = $('.button.drawer'),
@@ -112,7 +125,7 @@
 		});
 
 		// Collapse drawer
-		objects.on('collapse.drawer', function(event, speed, stay) {
+		objects.on('collapse.drawer', function collapse(event, speed, stay) {
 			var drawer = $(this),
 				position = drawer.data('position'),
 				buttons = $('.button.drawer'),
@@ -192,7 +205,7 @@
 		});
 
 		// Update drawer
-		objects.on('update.drawer', function(event) {
+		objects.on('update.drawer', function update(event) {
 			var drawer = $(this),
 			position = drawer.data('position');
 
@@ -205,7 +218,7 @@
 
 	/*-----------------------------------------------------------------------*/
 
-		objects.each(function() {
+		objects.each(function drawers() {
 			var drawer = $(this),
 				position = drawer.data('position'),
 				button = $('.button.drawer[href="#' + drawer.attr('id') + '"]'),

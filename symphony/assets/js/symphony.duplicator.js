@@ -5,7 +5,8 @@
 (function($) {
 
 	/**
-	 * This plugin creates a Symphony duplicator.
+	 * Duplicators are advanced lists used throughout the 
+	 * Symphony backend to manage repeatable content.
 	 *
 	 * @name $.symphonyDuplicator
 	 * @class
@@ -62,13 +63,13 @@
 			var object = $(this),
 				apply = $('<fieldset class="apply" />'),
 				selector = $('<select />'),
-				constructor = $('<button type="button" class="constructor">' + (object.attr('data-add') || Symphony.Language.get('Add item')) + '</button>'),
-				duplicator, list, instances, templates, items, headers;
+				constructor = $('<button type="button" class="constructor" />'),
+				duplicator, list, instances, templates, items, headers, constructor, apply, selector;
 				
 			// New API (applying the plugin to the frame)
 			if(object.is('.frame')) {
 				duplicator = object;
-				list = duplicator.find('> ol, > ul');
+				list = duplicator.find('> ol');
 			}
 			
 			// Old API (applying the plugin to the list)
@@ -78,16 +79,17 @@
 	
 				// Check if duplicator frame exists
 				if(duplicator.length == 0) {
-					duplicator = $('<div class="frame" />').insertBefore(object).prepend(object);
+					duplicator = $('<div class="frame" />').insertBefore(list).prepend(list);
 				}
 			}
 
-			// Prepare duplicator
+			// Initialise duplicator components
 			duplicator.addClass('duplicator').addClass('empty');
 			instances = list.find(settings.instances).addClass('instance');
 			templates = list.find(settings.templates).addClass('template');
 			items = instances.add(templates);
 			headers = items.find(settings.headers);
+			constructor.text(list.attr('data-add') || Symphony.Language.get('Add item'));
 
 		/*-------------------------------------------------------------------*/
 
@@ -222,7 +224,7 @@
 
 		/*-------------------------------------------------------------------*/
 
-			// Create content area
+			// Wrap content, if needed
 			headers.each(function wrapContent() {
 				header = $(this);
 				

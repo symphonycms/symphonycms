@@ -5,7 +5,7 @@
 (function($) {
 
 	/**
-	 * This plugin makes items selectable. Clicking an item will select it
+	 * Create selectable elements. Clicking an item will select it
 	 * by adding the class <code>.selected</code>. Holding down the shift key
 	 * while clicking multiple items creates a selection range. Holding the meta key
 	 * (which is <code>cmd</code> on a Mac or <code>ctrl</code> on Windows) allows
@@ -42,7 +42,7 @@
 	/*-----------------------------------------------------------------------*/
 
 		// Select
-		objects.on('click.selectable', settings.items, function(event) {
+		objects.on('click.selectable', settings.items, function select(event) {
 			var item = $(this),
 				items = item.siblings().andSelf(),
 				object = $(event.liveFired),
@@ -109,7 +109,7 @@
 		});
 
 		// Remove all selections by doubleclicking the body
-		$('body').bind('dblclick.selectable', function() {
+		$('body').bind('dblclick.selectable', function removeAllSelection() {
 			objects.find(settings.items).removeClass('selected').trigger('deselect');
 		});
 

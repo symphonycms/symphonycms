@@ -5,7 +5,18 @@
 (function($) {
 
 	/**
-	 * @todo: documentation
+	 * Convert absolute to relative dates.
+	 *
+	 * @name $.symphonyTimeAgo
+	 * @class
+	 *
+	 * @param {Object} options An object specifying containing the attributes specified below
+	 * @param {String} [options.items='time'] Selector to find the absolute date
+	 * @param {String} [options.timestamp='datetime'] Attribute of `object.items` representing the timestamp of the given date
+	 *
+	 *	@example
+
+			$('.notifier').symphonyTimeAgo();
 	 */
 	$.fn.symphonyTimeAgo = function(options) {
 		var objects = this,
@@ -83,7 +94,7 @@
 
 	/*-----------------------------------------------------------------------*/
 
-		objects.find(settings.items).each(function() {
+		objects.find(settings.items).each(function timeago() {
 			var item = $(this),
 				from = parse(item),
 				to = new Date();

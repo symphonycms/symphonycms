@@ -5,7 +5,7 @@
 (function($) {
 
 	/**
-	 * This plugin inserts tags from a list into an input field. It offers three modes:
+	 * Insert tags from a list into an input field based on three modes:
 	 * singular - allowing only one tag at a time (add a class of .singular)
 	 * multiple - allowing multiple tags, comma separated
 	 * inline - which adds tags at the current cursor position (add a class of .inline)
@@ -30,7 +30,7 @@
 
 	/*-----------------------------------------------------------------------*/
 
-		objects.on('click.tags', settings.items, function(event) {
+		objects.on('click.tags', settings.items, function tag(event) {
 			var item = $(this),
 				object = item.parent(),
 				input = object.prev().find('input'),

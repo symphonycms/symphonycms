@@ -5,7 +5,7 @@
 (function($) {
 
 	/**
-	 * This plugin shows and hides elements based on the value of a select box.
+	 * Show and hide elements based on the value of a select box.
 	 * If there is only one option, the select box will be hidden and
 	 * the single element will be shown.
 	 *
@@ -13,6 +13,7 @@
 	 * @class
 	 *
 	 * @param {Object} options An object specifying containing the attributes specified below
+	 * @param {String} [options.content='#contents'] Selector to find the container that wrapps all pickable areas
 	 * @param {String} [options.pickables='.pickable'] Selector to find items to be pickable
 	 *
 	 *	@example
@@ -22,7 +23,7 @@
 	$.fn.symphonyPickable = function(options) {
 		var objects = $(this),
 			settings = {
-				container: '#contents',
+				content: '#contents',
 				pickables: '.pickable'
 			};
 
@@ -31,7 +32,7 @@
 	/*-----------------------------------------------------------------------*/
 
 		// Switch content
-		objects.on('change.pickable', function(event) {
+		objects.on('change.pickable', function pick(event) {
 			var object = $(this),
 				choice = object.val(),
 				relation = object.attr('name') || object.attr('data-relation'),
@@ -79,7 +80,7 @@
 		objects.addClass('pickable');
 
 		// Prepare content picking
-		objects.each(function() {
+		objects.each(function init() {
 			var object = $(this),
 				choices = object.find('option'),
 				relation = object.attr('name') || object.attr('data-relation');
