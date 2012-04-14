@@ -260,7 +260,7 @@ var Symphony = (function($) {
 		 * @class
 		 * @private
 		 */
-		Messages: {
+		Message: {
 
 			/**
 			 * Post system message
