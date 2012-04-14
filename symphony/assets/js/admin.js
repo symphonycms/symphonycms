@@ -25,16 +25,6 @@
 		});
 		Symphony.Context.add('lang', html.attr('lang'));
 
-		// Set browser support information
-		try {
-			Symphony.Support.localStorage = !!localStorage.getItem;
-		} catch(e) {
-			Symphony.Support.localStorage = false;
-		}
-
-		// Deep copy jQuery.support
-		$.extend(true, Symphony.Support, $.support);
-
 		// Initialise core language strings
 		Symphony.Language.add({
 			'Add item': false,
