@@ -40,7 +40,7 @@ var Symphony = (function($) {
 
 		// Return full context, if no group is set
 		if(!group) {
-			return Storage;
+			return Storage.Context;
 		}
 
 		// Return false if group does not exist in Storage
