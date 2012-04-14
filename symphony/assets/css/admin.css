@@ -614,3 +614,9 @@ div.field-checkbox:first-child {
 	float: left;
 	margin-left: 0;
 }
+
+#version {
+	color: #9E9E9E;
+	margin: 33px 0 0 19px;
+	float: left;
+}
