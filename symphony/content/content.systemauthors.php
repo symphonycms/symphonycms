@@ -32,7 +32,7 @@
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Authors'), __('Symphony'))));
 
 			if (Administration::instance()->Author->isDeveloper()) {
-				$this->appendSubheading(__('Authors'), Widget::Anchor(__('Add an Author'), Administration::instance()->getCurrentPageURL().'new/', __('Add a new author'), 'create button', NULL, array('accesskey' => 'c')));
+				$this->appendSubheading(__('Authors'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a new author'), 'create button', NULL, array('accesskey' => 'c')));
 			} else $this->appendSubheading(__('Authors'));
 
 			Sortable::initialize($this, $authors, $sort, $order);
