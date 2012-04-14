@@ -403,7 +403,7 @@ fieldset.settings fieldset legend {
 
 #password i {
 	position: absolute;
-	top: 0;
+	top: -10px;
 	right: 0;
 }
 
