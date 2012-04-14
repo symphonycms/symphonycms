@@ -529,7 +529,7 @@ span.frame {
 .frame > ol > li header .button,
 .frame > ul > li header .button {
 	position: absolute;
-	top: 0.65em;
+	top: 8px;
 	right: 10px;
 	color: rgba(0, 0, 0, 0.3);
 	border-bottom: none;
