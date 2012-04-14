@@ -27,19 +27,10 @@
 
 		// Initialise core language strings
 		Symphony.Language.add({
-			'Add item': false,
-			'Remove selected items': false,
 			'Are you sure you want to proceed?': false,
 			'Reordering was unsuccessful.': false,
-			'Password': false,
 			'Change Password': false,
 			'Remove File': false,
-			'at': false,
-			'just now': false,
-			'a minute ago': false,
-			'{$minutes} minutes ago': false,
-			'about 1 hour ago': false,
-			'about {$hours} hours ago': false,
 			'Untitled Field': false
 		});
 			
