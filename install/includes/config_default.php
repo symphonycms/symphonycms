@@ -75,8 +75,7 @@
 		'region' => array(
 			'time_format' => 'g:i a',
 			'date_format' => 'm/d/Y',
-			'datetime_separator' => ' ',
-			'timezone' => 'GMT',
+			'datetime_separator' => ' '
 		),
 		########
 
