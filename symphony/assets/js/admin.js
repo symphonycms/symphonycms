@@ -7,14 +7,12 @@
 	 * Symphony core interactions
 	 */
 	$(document).ready(function() {
+		var html = $('html').addClass('active'),
+			user = $('#usr li:first a');
 
 		/*--------------------------------------------------------------------------
 			Core Functions
 		--------------------------------------------------------------------------*/
-
-		// Initialize Symphony
-		var html = $('html').addClass('active'),
-			user = $('#usr li:first a');
 
 		// Set basic context information
 		Symphony.Context.add('user', {
