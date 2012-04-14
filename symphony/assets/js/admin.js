@@ -60,88 +60,78 @@
 		--------------------------------------------------------------------------*/
 
 		// Tags
-		$('.tags').symphonyTags();
+		contents.find('.tags').symphonyTags();
 
 		// Pickers
-		$('select[name="settings[Email][default_gateway]"]').symphonyPickable();
-
-		$('select[name="fields[dynamic_xml][format]"]').symphonyPickable({
+		contents.find('select[name="settings[Email][default_gateway]"]').symphonyPickable();
+		contents.find('select[name="fields[dynamic_xml][format]"]').symphonyPickable({
 			pickables: '#xml'
 		});
 
 		// Selectable
-		$('table.selectable').symphonySelectable();
+		contents.find('table.selectable').symphonySelectable();
 
 		// Notify
-		$('#header').symphonyNotify();
+		header.symphonyNotify();
 
 		// Drawers
-		$('div.drawer').symphonyDrawer();
+		wrapper.find('div.drawer').symphonyDrawer();
 
 		/*--------------------------------------------------------------------------
 			Plugins - Orderable
 		--------------------------------------------------------------------------*/
 
 		// Orderable list
-		$('ul.orderable').symphonyOrderable();
+		contents.find('ul.orderable').symphonyOrderable();
 
 		// Orderable tables
-		var old_sorting, orderable = $('table.orderable');
-		orderable.symphonyOrderable({
-			items: 'tr',
-			handles: 'td'
-		});
-
-		// Store current sort order
-		orderable.on('orderstart.orderable', function() {
-			old_sorting = orderable.find('input').map(function(e, i) { return this.name + '=' + (e + 1); }).get().join('&');
-		});
-
-		// Process sort order
-		orderable.on('orderstop.orderable', function() {
-			orderable.addClass('busy');
-
-			// Get new sort order
-			var new_sorting = orderable.find('input').map(function(e, i) { return this.name + '=' + (e + 1); }).get().join('&');
-
-			// Store new sort order
-			if(new_sorting !== old_sorting) {
-
-				// Update items
-				orderable.trigger('orderupdate');
-
-				// Send request
-				$.ajax({
-					type: 'POST',
-					url: Symphony.Context.get('root') + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
-					data: new_sorting,
-					success: function() {
-						Symphony.Message.clear('reorder');
-					},
-					error: function() {
-						Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'reorder error');
-					},
-					complete: function() {
-						orderable.removeClass('busy').find('tr').removeClass('selected');
-						old_sorting = '';
-					}
-				});
-			}
-			else {
-				orderable.removeClass('busy');
-			}
-		});
-
+		contents.find('table.orderable')
+			.symphonyOrderable({
+				items: 'tr',
+				handles: 'td'
+			})
+			.on('orderstart.orderable', function() {
+	
+				// Store current sort order
+				oldSorting = $(this).find('input').map(function(e, i) { return this.name + '=' + (e + 1); }).get().join('&');
+			})
+			.on('orderstop.orderable', function() {
+				var orderable = $(this).addClass('busy'),
+					newSorting = orderable.find('input').map(function(e, i) { return this.name + '=' + (e + 1); }).get().join('&');
+	
+				// Store sort order, if changed
+				if(newSorting !== oldSorting) {
+	
+					// Update items
+					orderable.trigger('orderupdate');
+	
+					// Send request
+					$.ajax({
+						type: 'POST',
+						url: Symphony.Context.get('root') + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
+						data: newSorting,
+						error: function() {
+							Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'error');
+						},
+						complete: function() {
+							orderable.removeClass('busy').find('tr').removeClass('selected');
+						}
+					});
+				}
+				else {
+					orderable.removeClass('busy');
+				}
+			});
 
 		/*--------------------------------------------------------------------------
 			Plugins - Duplicator and Collapsible
 		--------------------------------------------------------------------------*/
 
 		// Duplicators
-		$('.filters-duplicator').symphonyDuplicator();
+		contents.find('.filters-duplicator').symphonyDuplicator();
 
 		// Field editor
-		$('#fields-duplicator')
+		contents.find('#fields-duplicator')
 			.symphonyDuplicator({
 				orderable: true,
 				collapsible: true,
@@ -167,7 +157,7 @@
 			});
 
 		// Highlight instances with the same location when ordering fields
-		$('div.duplicator')
+		contents.find('div.duplicator')
 			.on('orderstart.orderable', function(event, item) {
 				var duplicator = $(this);
 
@@ -185,7 +175,7 @@
 			Components - With Selected
 		--------------------------------------------------------------------------*/
 
-		$('fieldset.apply').each(function() {
+		contents.find('fieldset.apply').each(function() {
 			var applicable = $(this),
 				selection = $('table.selectable'),
 				select = applicable.find('select'),
@@ -223,9 +213,9 @@
 			Components - Pagination
 		--------------------------------------------------------------------------*/
 
-		var pageform = $('ul.page form');
-		if(pageform.length > 0) {
-			var	pagegoto = pageform.find('input'),
+		if(pagination.length > 0) {
+			var	pageform = pagination.find('form'),
+				pagegoto = pageform.find('input'),
 				pageactive = pagegoto.attr('data-active'),
 				pageinactive = pagegoto.attr('data-inactive'),
 				pagehelper = $('<span />').appendTo(pageform),
@@ -289,145 +279,139 @@
 			Components - XSLT Editor
 		--------------------------------------------------------------------------*/
 
-		// XSLT utilities
-		$('#blueprints-utilities fieldset.primary textarea, #blueprints-pages fieldset.primary textarea')
-			.on('keydown', function(event) {
+		if(body.is('#blueprints-utilities') || body.is('#blueprints-pages')) {
 
-				// Allow tab insertion
-				if(event.which == 9) {
-					var start = this.selectionStart,
-						end = this.selectionEnd,
-						position = this.scrollTop;
-
-					event.preventDefault();
-
-					// Add tab
-					this.value = this.value.substring(0, start) + "\t" + this.value.substring(end, this.value.length);
-					this.selectionStart = start + 1;
-					this.selectionEnd = start + 1;
-
-					// Restore scroll position
-					this.scrollTop = position;
-   				}
-			})
-			.on('blur', function() {
-				var source = $(this).val(),
-					utilities = $('#utilities li');
-
-				// Remove current selection
-				utilities.removeClass('selected');
-
-				// Get utitities names
-				utilities.find('a').each(function() {
-					var utility = $(this),
-						expression = new RegExp('href=["\']?(?:\\.{2}/utilities/)?' + utility.text());
-
-					// Check for utility occurrences
-					if(expression.test(source)) {
-						utility.parent().addClass('selected');
-					}
-				});
-			}).blur();
-
-		// Clickable utilities in the XSLT editor
-		$('#utilities li').click(function(event) {
-			if ($(event.target).is('a')) return;
-
-			var editor = $('textarea.code'),
-				lines = editor.val().split('\n'),
-				link = $(this).find('a').text(),
-				statement = '<xsl:import href="../utilities/' + link + '"/>',
-				regexp = '^<xsl:import href="(?:\.\./utilities/)?' + link + '"',
-				newLine = '\n',
-				numberOfNewLines = 1,
-				number_lines = lines.length,
-				i;
-
-			if ($(this).hasClass('selected')) {
-				for (i = 0; i < number_lines; i++) {
-					if ($.trim(lines[i]).match(regexp) != null) {
-						(lines[i + 1] === '' && $.trim(lines[i - 1]).substring(0, 11) !== '<xsl:import') ? lines.splice(i, 2) : lines.splice(i, 1);
-						break;
-					}
-				}
-
-				editor.val(lines.join(newLine));
-				$(this).removeClass('selected');
-			}
-			else {
-				for (i = 0; i < number_lines; i++) {
-					if ($.trim(lines[i]).substring(0, 4) === '<!--' || $.trim(lines[i]).match('^<xsl:(?:import|variable|output|comment|template)')) {
-
-						numberOfNewLines = $.trim(lines[i]).substring(0, 11) === '<xsl:import' ? 1 : 2;
-
-						if (Symphony.Context.get('env')[0] != 'template') {
-							lines[i] = statement.replace('../utilities/', '') + Array(numberOfNewLines + 1).join(newLine) + lines[i];
+			// XSLT utilities
+			contents.find('fieldset.primary textarea')
+				.on('keydown', function(event) {
+	
+					// Allow tab insertion
+					if(event.which == 9) {
+						var start = this.selectionStart,
+							end = this.selectionEnd,
+							position = this.scrollTop;
+	
+						event.preventDefault();
+	
+						// Add tab
+						this.value = this.value.substring(0, start) + "\t" + this.value.substring(end, this.value.length);
+						this.selectionStart = start + 1;
+						this.selectionEnd = start + 1;
+	
+						// Restore scroll position
+						this.scrollTop = position;
+	   				}
+				})
+				.on('blur', function() {
+					var source = $(this).val(),
+						utilities = $('#utilities li');
+	
+					// Remove current selection
+					utilities.removeClass('selected');
+	
+					// Get utitities names
+					utilities.find('a').each(function() {
+						var utility = $(this),
+							expression = new RegExp('href=["\']?(?:\\.{2}/utilities/)?' + utility.text());
+	
+						// Check for utility occurrences
+						if(expression.test(source)) {
+							utility.parent().addClass('selected');
 						}
-						else {
-							// we are inside the page template editor
-							lines[i] = statement + Array(numberOfNewLines + 1).join(newLine) + lines[i];
+					});
+				}).blur();
+	
+			// Clickable utilities in the XSLT editor
+			contents.find('#utilities li').click(function(event) {
+				if($(event.target).is('a')) return;
+	
+				var utility = $(this),
+					editor = $('textarea.code'),
+					lines = editor.val().split('\n'),
+					link = $(this).find('a').text(),
+					statement = '<xsl:import href="../utilities/' + link + '"/>',
+					regexp = '^<xsl:import href="(?:\.\./utilities/)?' + link + '"',
+					newLine = '\n',
+					numberOfNewLines = 1,
+					number_lines = lines.length,
+					i;
+	
+				if ($(this).hasClass('selected')) {
+					for(i = 0; i < number_lines; i++) {
+						if($.trim(lines[i]).match(regexp) != null) {
+							(lines[i + 1] === '' && $.trim(lines[i - 1]).substring(0, 11) !== '<xsl:import') ? lines.splice(i, 2) : lines.splice(i, 1);
+							break;
 						}
-						break;
 					}
+	
+					editor.val(lines.join(newLine));
+					utility.removeClass('selected');
 				}
-
-				editor.val(lines.join(newLine));
-				$(this).addClass('selected');
-			}
-		});
+				else {
+					for(i = 0; i < number_lines; i++) {
+						if($.trim(lines[i]).substring(0, 4) === '<!--' || $.trim(lines[i]).match('^<xsl:(?:import|variable|output|comment|template)')) {
+	
+							numberOfNewLines = $.trim(lines[i]).substring(0, 11) === '<xsl:import' ? 1 : 2;
+	
+							if(Symphony.Context.get('env')[0] != 'template') {
+								lines[i] = statement.replace('../utilities/', '') + Array(numberOfNewLines + 1).join(newLine) + lines[i];
+							}
+							else {
+								// we are inside the page template editor
+								lines[i] = statement + Array(numberOfNewLines + 1).join(newLine) + lines[i];
+							}
+							break;
+						}
+					}
+	
+					editor.val(lines.join(newLine));
+					utility.addClass('selected');
+				}
+			});
+		}
 
 		/*--------------------------------------------------------------------------
 			Components - User Password
 		--------------------------------------------------------------------------*/
 
-		// Change user password
-		$('#password').each(function() {
-			var password = $(this),
-				overlay = $('<div class="password"><span class="frame"><button type="button">' + Symphony.Language.get('Change Password') + '</button></span></div>');
+		if(body.is('#system-authors')) {
 
-			// Add overlay
-			if(password.has('.invalid').length == 0 && Symphony.Context.get('env')[0] != 'new') {
-				overlay.insertBefore(password).find('button').on('click', function(event) {
-					event.preventDefault();
-					overlay.hide();
-				});
-			}
-		});
+			// Change user password
+			contents.find('#password').each(function() {
+				var password = $(this),
+					overlay = $('<div class="password"><span class="frame"><button type="button">' + Symphony.Language.get('Change Password') + '</button></span></div>');
+	
+				// Add overlay
+				if(password.has('.invalid').length == 0 && Symphony.Context.get('env')[0] != 'new') {
+					overlay.insertBefore(password).find('button').on('click', function(event) {
+						event.preventDefault();
+						overlay.hide();
+					});
+				}
+			});
+		}
 
 		/*--------------------------------------------------------------------------
 			Components - Confirm Actions
 		--------------------------------------------------------------------------*/
 
 		// Confirm actions
-		$('button.confirm').live('click', function() {
+		contents.find('button.confirm').on('click', function() {
 			var button = $(this),
 				name = document.title.split(/[\u2013]\s*/g)[2],
-				message = button.attr('data-message');
-
-			// Set default message
-			if(!message) {
-				message = Symphony.Language.get('Are you sure you want to proceed?');
-			}
+				message = button.attr('data-message') || Symphony.Language.get('Are you sure you want to proceed?');
 
 			return confirm(message);
 		});
 
 		// Confirm with selected actions
-		$('form').submit(function(event) {
+		contents.find('form').on('submit', function(event) {
 			var select = $('select[name="with-selected"]'),
 				option = select.find('option:selected'),
-				input = $('table input:checked'),
-				count = input.length,
-				message = option.attr('data-message');
+				message = option.attr('data-message') ||  Symphony.Language.get('Are you sure you want to proceed?');
 
 			// Needs confirmation
 			if(option.is('.confirm')) {
-
-				// Set default message
-				if(!message) {
-					message = Symphony.Language.get('Are you sure you want to proceed?');
-				}
-
 				return confirm(message);
 			}
 		});
@@ -435,127 +419,118 @@
 		/*--------------------------------------------------------------------------
 			Page - Datasource Editor
 		--------------------------------------------------------------------------*/
+		
+		if(body.is('#blueprints-datasources')) {
+			var maxRecord = $('input[name*=max_records]'),
+				pageNumber = $('input[name*=page_number]');
 
-		// Update DS Parameters selectbox as the user types a new name for the resource
-		$('#blueprints-datasources input[name="fields[name]"]').on('change', function(){
-			var value = $(this).val();
-
-			if(value == '' || $('select[name="fields[param][]"]:visible').length == 0) {
-				$('select[name="fields[param][]"] option').each(function(){
-					var item = $(this),
-						field = item.text().split('.')[1];
-
-					item.text('$ds-' + '?' + '.' + field);
-				});
-				return;
-			}
-
-			$.ajax({
-				type: 'GET',
-				data: { 'string': value },
-				dataType: 'json',
-				url: Symphony.Context.get('root') + '/symphony/ajax/handle/',
-				success: function(result) {
+			// Update Data Source output parameter
+			contents.find('input[name="fields[name]"]').on('change', function(){
+				var value = $(this).val();
+	
+				if(value == '' || $('select[name="fields[param][]"]:visible').length == 0) {
 					$('select[name="fields[param][]"] option').each(function(){
 						var item = $(this),
 							field = item.text().split('.')[1];
-
-						item.text('$ds-' + result + '.' + field);
+	
+						item.text('$ds-' + '?' + '.' + field);
 					});
+					return;
 				}
+	
+				$.ajax({
+					type: 'GET',
+					data: { 'string': value },
+					dataType: 'json',
+					url: Symphony.Context.get('root') + '/symphony/ajax/handle/',
+					success: function(result) {
+						$('select[name="fields[param][]"] option').each(function(){
+							var item = $(this),
+								field = item.text().split('.')[1];
+	
+							item.text('$ds-' + result + '.' + field);
+						});
+					}
+				});
 			});
-		});
-
-		// Data source manager options
-		$('select.filtered > optgroup').each(function() {
-			var optgroup = $(this),
-				select = optgroup.parents('select'),
-				label = optgroup.attr('label'),
-				options = optgroup.remove().find('option').addClass('optgroup');
-
-			// Fix for Webkit browsers to initially show the options
-			if (select.attr('multiple')) {
-				select.scrollTop(0);
-			}
-
-			// Show only relevant options based on context
-			$('#ds-context').change(function() {
-				if($(this).find('option:selected').text() == label) {
-					select.find('option.optgroup').remove();
-					select.append(options.clone(true));
+	
+			// Data source manager options
+			contents.find('select.filtered > optgroup').each(function() {
+				var optgroup = $(this),
+					select = optgroup.parents('select'),
+					label = optgroup.attr('label'),
+					options = optgroup.remove().find('option').addClass('optgroup');
+	
+				// Fix for Webkit browsers to initially show the options
+				if (select.attr('multiple')) {
+					select.scrollTop(0);
 				}
+	
+				// Show only relevant options based on context
+				$('#ds-context').change(function() {
+					if($(this).find('option:selected').text() == label) {
+						select.find('option.optgroup').remove();
+						select.append(options.clone(true));
+					}
+				});
 			});
-		});
-
-		// Data source manager context
-		$('*.contextual').each(function() {
-			var area = $(this);
-
-			$('#ds-context').change(function() {
-				var select = $(this),
-					optgroup = select.find('option:selected').parent(),
-					value = select.val().replace(/\W+/g, '_'),
-					group = optgroup.attr('label').replace(/\W+/g, '_');
-
-				// Show only relevant interface components based on context
-				area[(area.hasClass(value) || area.hasClass(group)) ^ area.hasClass('inverse') ? 'removeClass' : 'addClass']('irrelevant');
+	
+			// Data source manager context
+			contents.find('.contextual').each(function() {
+				var area = $(this);
+	
+				$('#ds-context').on('change', function() {
+					var select = $(this),
+						optgroup = select.find('option:selected').parent(),
+						value = select.val().replace(/\W+/g, '_'),
+						group = optgroup.attr('label').replace(/\W+/g, '_');
+	
+					// Show only relevant interface components based on context
+					area[(area.hasClass(value) || area.hasClass(group)) ^ area.hasClass('inverse') ? 'removeClass' : 'addClass']('irrelevant');
+				});
 			});
-		});
-
-		$('#ds-context')
+	
 			// Trigger the parameter name being remembered when the Datasource context changes
-			.on('change', function() {
-				$('#blueprints-datasources input[name="fields[name]"]').trigger('change');
-			})
-			// Set data source manager context
-			.change();
-
-		// Once pagination is disabled, max_records and page_number are disabled too
-		var max_record = $('input[name*=max_records]'),
-			page_number = $('input[name*=page_number]');
-
-		$('input[name*=paginate_results]').change(function(event) {
-
-			// Turn on pagination
-			if($(this).is(':checked')) {
-				max_record.attr('disabled', false);
-				page_number.attr('disabled', false);
-			}
-
-			// Turn off pagination
-			else {
-				max_record.attr('disabled', true);
-				page_number.attr('disabled', true);
-			}
-		}).change();
-
-		// Disable paginate_results checking/unchecking when clicking on either max_records or page_number
-		max_record.add(page_number).click(function(event) {
-			event.preventDefault();
-		});
-
-		// Enabled fields on submit
-		$('form').bind('submit', function() {
-			max_record.attr('disabled', false);
-			page_number.attr('disabled', false);
-		});
-
-		// Validate pagination input on submit
-		$('.page form').submit(function() {
-			var $input = $(this).find('input');
-			if(!$input.val().match('^[0-9]+$') || $input.val() > parseInt($(this).find('span').html(), 10)) {
-				$input.addClass('error');
-				window.setTimeout(function() { $('.page form input').removeClass("error"); }, 500);
-				return false;
-			}
-		});
+			contents.find('#ds-context')
+				.on('change', function() {		
+					$('input[name="fields[name]"]').trigger('change');
+				})
+				.change();
+	
+			// Once pagination is disabled, maxRecords and pageNumber are disabled too
+			contents.find('input[name*=paginate_results]').on('change', function(event) {
+	
+				// Turn on pagination
+				if($(this).is(':checked')) {
+					maxRecord.attr('disabled', false);
+					pageNumber.attr('disabled', false);
+				}
+	
+				// Turn off pagination
+				else {
+					maxRecord.attr('disabled', true);
+					pageNumber.attr('disabled', true);
+				}
+			}).change();
+	
+			// Disable paginate_results checking/unchecking when clicking on either maxRecords or pageNumber
+			maxRecord.add(pageNumber).click(function(event) {
+				event.preventDefault();
+			});
+	
+			// Enabled fields on submit
+			contents.find('form').on('submit', function() {
+				maxRecord.attr('disabled', false);
+				pageNumber.attr('disabled', false);
+			});
+		}
 
 		/*--------------------------------------------------------------------------
 			Field - Upload
 		--------------------------------------------------------------------------*/
 
 		// Upload fields
-		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span').click(function(event) {
+		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span').on('click', function(event) {
 			var span = $(this).parent(),
 				name = span.find('input').attr('name');
 
@@ -572,17 +547,12 @@
 
 		// Focus first text-input or textarea when creating entries
 		if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'new' || Symphony.Context.get('env').page == 'new')) {
-			$('input[type="text"], textarea').first().focus();
+			contents.find('input[type="text"], textarea').first().focus();
 		}
 
 		// Accessible navigation
-		$('#nav').delegate('a', 'focus blur', function() {
+		nav.on('focus blur', 'a', function() {
 			$(this).parents('li').eq(1).toggleClass('current');
-		});
-
-		// Auto-highlight content in pagination input
-		$('.page input').focus(function() {
-			$(this).select();
 		});
 
 		// Set table to "fixed mode" if its width exceeds the visibile viewport area.
@@ -597,9 +567,7 @@
 			if(table.width() < $('html').width() && table.hasClass('fixed')){
 				return table.removeClass('fixed');
 			}
-		});
-
-		$(window).trigger('resize');
+		}).trigger('resize');
 	});
 
 })(jQuery.noConflict());
