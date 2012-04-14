@@ -16,7 +16,7 @@
 	 * @param {Object} custom_settings An object specifying containing the attributes specified below
 	 * @param {String} [custom_settings.items='li'] Selector to find collapsible items within the container
 	 *
-	 *	@example
+	 * @example
 
 			$('.tags').symphonyTags();
 	 */

@@ -17,7 +17,7 @@
 	 * @param {String} [options.save_state=true] Stores states of instances using local storage
 	 * @param {String} [options.storage='symphony.collapsible.id.env'] Namespace used for local storage
 	 *
-	 *	@example
+	 * @example
 
 			var collapsible = $('#duplicator').symphonyCollapsible({
 				items:		'.instance',

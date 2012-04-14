@@ -24,7 +24,7 @@
 	 * @param {Integer} [options.maximum=1000] Do not allow instances to be added above this limit
 	 * @param {String} [options.speed='fast'] Animation speed
 	 *
-	 *	@example
+	 * @example
 
 			$('.duplicator').symphonyDuplicator({
 				orderable: true,

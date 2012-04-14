@@ -16,7 +16,7 @@
 	 * @param {String} [options.content='#contents'] Selector to find the container that wrapps all pickable areas
 	 * @param {String} [options.pickables='.pickable'] Selector to find items to be pickable
 	 *
-	 *	@example
+	 * @example
 
 			$('.picker').symphonyPickable();
 	 */

@@ -16,7 +16,7 @@
 	 * @param {Integer} [options.verticalWidth=300] Width of the vertical drawers
 	 * @param {String} [options.speed='fast'] Animation speed
 	 *
-	 *	@example
+	 * @example
 
 			$('.drawer').symphonyDrawer();
 	 */

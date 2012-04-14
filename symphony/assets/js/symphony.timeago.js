@@ -14,7 +14,7 @@
 	 * @param {String} [options.items='time'] Selector to find the absolute date
 	 * @param {String} [options.timestamp='datetime'] Attribute of `object.items` representing the timestamp of the given date
 	 *
-	 *	@example
+	 * @example
 
 			$('.notifier').symphonyTimeAgo();
 	 */

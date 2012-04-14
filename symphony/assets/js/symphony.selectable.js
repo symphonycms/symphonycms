@@ -22,7 +22,7 @@
 	 * @param {String} [options.ignore='a'] Selector to find elements that should not propagate to the handle
 	 * @param {String} [optinos.mode='single'] Either 'default' (click removes other selections) or 'additive' (click adds to exisiting selection)
 	 *
-	 *	@example
+	 * @example
 
 			var selectable = $('table').symphonySelectable();
 			selectable.find('a').mousedown(function(event) {

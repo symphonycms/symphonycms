@@ -15,7 +15,7 @@
 	 * @param {String} [options.items='p.notice'] Selector to find messages
 	 * @param {String} [options.storage='symphony.notify.root'] Namespace used for local storage
 	 *
-	 *	@example
+	 * @example
 
 			$('#messages').symphonyNotify();
 	 */

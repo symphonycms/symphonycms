@@ -15,7 +15,7 @@
 	 * @param {String} [options.handles='*'] Selector to find children that can be grabbed to re-order
 	 * @param {String} [options.ignore='input, textarea, select'] Selector to find elements that should not propagate to the handle
 	 *
-	 *	@example
+	 * @example
 
 			$('table').symphonyOrderable({
 				items: 'tr',
