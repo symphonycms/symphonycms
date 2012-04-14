@@ -254,6 +254,10 @@
 			return parent::prepareTableValue(array('value' => General::sanitize($value)), $link, $entry_id = null);
 		}
 
+		public function getParameterPoolValue($data, $entry_id = null) {
+			return $data['handle'];
+		}
+
 	/*-------------------------------------------------------------------------
 		Filtering:
 	-------------------------------------------------------------------------*/

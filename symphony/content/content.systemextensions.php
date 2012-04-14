@@ -137,6 +137,11 @@
 
 			$this->Form->appendChild($table);
 
+			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array(
+				'id' => 'version'
+			));
+			$this->Form->appendChild($version);
+
 			$tableActions = new XMLElement('div');
 			$tableActions->setAttribute('class', 'actions');
 

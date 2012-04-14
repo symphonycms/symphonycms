@@ -565,16 +565,18 @@ div.field-checkbox:first-child {
 	font: inherit;
 }
 
-.file span {
-	overflow: hidden;
+.file span.frame {
 	text-align: left;
 }
 
-.file a {
+.file span.frame span {
 	float: left;
 	max-width: 50%;
 	overflow: hidden;
-	text-overflow: ellipsis;
+}
+
+.file a {
+	word-wrap: break-word;
 }
 
 .file em {
@@ -611,4 +613,10 @@ div.field-checkbox:first-child {
 .single #contents .actions button {
 	float: left;
 	margin-left: 0;
+}
+
+#version {
+	color: #9E9E9E;
+	margin: 33px 0 0 19px;
+	float: left;
 }
