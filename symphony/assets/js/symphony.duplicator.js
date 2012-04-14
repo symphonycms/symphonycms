@@ -73,6 +73,7 @@
 			}
 			
 			// Old API (applying the plugin to the list)
+			// @deprecated to be removed in Symphony 2.4
 			else {
 				list = object;
 				duplicator = object.parent('.frame');
@@ -91,7 +92,9 @@
 			headers = items.find(settings.headers);
 			constructor.text(list.attr('data-add') || Symphony.Language.get('Add item'));
 
-		/*-------------------------------------------------------------------*/
+		/*---------------------------------------------------------------------
+			Events
+		---------------------------------------------------------------------*/
 
 			// Construct instances
 			apply.on('click.duplicator', 'button.constructor:not(.disabled)', function construct(event, speed) {
@@ -222,7 +225,9 @@
 				duplicator.find('.instance').trigger('refresh.duplicator');
 			});
 
-		/*-------------------------------------------------------------------*/
+		/*---------------------------------------------------------------------
+			Initialisation
+		---------------------------------------------------------------------*/
 
 			// Wrap content, if needed
 			headers.each(function wrapContent() {

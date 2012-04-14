@@ -44,7 +44,9 @@
 			var object = $(this),
 				storage = settings.storage + '.' + index + '.collapsed';
 
-		/*-------------------------------------------------------------------*/
+		/*---------------------------------------------------------------------
+			Events
+		---------------------------------------------------------------------*/
 
 			// Collapse item
 			object.on('collapse.collapsible', settings.items, function collapse(event, speed) {
@@ -153,7 +155,9 @@
 				object.find(settings.items).trigger('store.collapsible');
 			});
 
-		/*-------------------------------------------------------------------*/
+		/*---------------------------------------------------------------------
+			Initialisation
+		---------------------------------------------------------------------*/
 
 			// Prepare interface
 			object.addClass('collapsible');
