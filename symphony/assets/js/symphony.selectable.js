@@ -80,11 +80,11 @@
 				selection = items.slice(first, last);
 
 				// Deselect items outside the selection range
-				deselection = items.filter('.selected').not(selection).removeClass('selected').trigger('deselect');
+				deselection = items.filter('.selected').not(selection).removeClass('selected').trigger('deselect.selectable');
 				deselection.find('input[type="checkbox"]').attr('checked', false);
 
 				// Select range
-				selection.addClass('selected').trigger('select');
+				selection.addClass('selected').trigger('select.selectable');
 				selection.find('input[type="checkbox"]').attr('checked', true);
 			}
 
@@ -93,17 +93,17 @@
 
 				// Press meta or ctrl key to adjust current range, otherwise the selection will be removed
 				if((!event.metaKey && !event.ctrlKey && settings.mode != 'additive') || object.is('.single')) {
-					deselection = items.not(item).filter('.selected').removeClass('selected').trigger('deselect');
+					deselection = items.not(item).filter('.selected').removeClass('selected').trigger('deselect.selectable');
 					deselection.find('input[type="checkbox"]').attr('checked', false);
 				}
 
 				// Toggle selection
 				if(item.is('.selected')) {
-					item.removeClass('selected').trigger('deselect');
+					item.removeClass('selected').trigger('deselect.selectable');
 					item.find('input[type="checkbox"]').attr('checked', false);
 				}
 				else {
-					item.addClass('selected').trigger('select');
+					item.addClass('selected').trigger('select.selectable');
 					item.find('input[type="checkbox"]').attr('checked', true);
 				}
 			}
@@ -112,7 +112,7 @@
 
 		// Remove all selections by doubleclicking the body
 		$('body').bind('dblclick.selectable', function removeAllSelection() {
-			objects.find(settings.items).removeClass('selected').trigger('deselect');
+			objects.find(settings.items).removeClass('selected').trigger('deselect.selectable');
 		});
 
 	/*-------------------------------------------------------------------------
