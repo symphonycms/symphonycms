@@ -173,7 +173,7 @@
 				);
 					
 				// Prepare field recovery
-				$('#' + id).data('field', item).on('click', function() {
+				$('#' + id).data('field', item).on('click.admin', function() {
 					var undo = $(this),
 						message = undo.parent(), 
 						field = undo.data('field').hide(),
