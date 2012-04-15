@@ -5,7 +5,7 @@
 (function($) {
 
 	/**
-	 * This plugin makes items collapsible.
+	 * Create collapsible elements.
 	 *
 	 * @name $.symphonyCollapsible
 	 * @class
@@ -17,7 +17,7 @@
 	 * @param {String} [options.save_state=true] Stores states of instances using local storage
 	 * @param {String} [options.storage='symphony.collapsible.id.env'] Namespace used for local storage
 	 *
-	 *	@example
+	 * @example
 
 			var collapsible = $('#duplicator').symphonyCollapsible({
 				items:		'.instance',
@@ -44,7 +44,9 @@
 			var object = $(this),
 				storage = settings.storage + '.' + index + '.collapsed';
 
-		/*-------------------------------------------------------------------*/
+		/*---------------------------------------------------------------------
+			Events
+		---------------------------------------------------------------------*/
 
 			// Collapse item
 			object.on('collapse.collapsible', settings.items, function collapse(event, speed) {
@@ -153,7 +155,9 @@
 				object.find(settings.items).trigger('store.collapsible');
 			});
 
-		/*-------------------------------------------------------------------*/
+		/*---------------------------------------------------------------------
+			Initialisation
+		---------------------------------------------------------------------*/
 
 			// Prepare interface
 			object.addClass('collapsible');

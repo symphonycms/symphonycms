@@ -5,7 +5,7 @@
 (function($) {
 
 	/**
-	 * This plugin allows items to be orderable.
+	 * Create orderable elements.
 	 *
 	 * @name $.symphonyOrderable
 	 * @class
@@ -15,7 +15,7 @@
 	 * @param {String} [options.handles='*'] Selector to find children that can be grabbed to re-order
 	 * @param {String} [options.ignore='input, textarea, select'] Selector to find elements that should not propagate to the handle
 	 *
-	 *	@example
+	 * @example
 
 			$('table').symphonyOrderable({
 				items: 'tr',
@@ -32,10 +32,12 @@
 
 		$.extend(settings, options);
 
-	/*-----------------------------------------------------------------------*/
+	/*-------------------------------------------------------------------------
+		Events
+	-------------------------------------------------------------------------*/
 
 		// Start ordering
-		objects.on('mousedown.orderable', settings.items + ' ' + settings.handles, function(event) {
+		objects.on('mousedown.orderable', settings.items + ' ' + settings.handles, function startOrdering(event) {
 			var handle = $(this),
 				item = handle.parents(settings.items),
 				object = handle.parents('.orderable');
@@ -66,7 +68,7 @@
 		});
 
 		// Stop ordering
-		objects.on('mouseup.orderable mouseleave.orderable', function(event) {
+		objects.on('mouseup.orderable mouseleave.orderable', function stopOrdering(event) {
 			var object = $(this),
 				item = object.find('.ordering');
 
@@ -77,8 +79,8 @@
 			}
 		});
 
-		// Reorder items
-		$(document).on('mousemove.orderable', '.ordering:has(.ordering)', function(event) {
+		// Order items
+		$(document).on('mousemove.orderable', '.ordering:has(.ordering)', function order(event) {
 			var object = $(this),
 				item = object.find('.ordering'),
 				top = item.offset().top,
@@ -110,7 +112,9 @@
 			}
 		});
 
-	/*-----------------------------------------------------------------------*/
+	/*-------------------------------------------------------------------------
+		Initialisation
+	-------------------------------------------------------------------------*/
 
 		// Make orderable
 		objects.addClass('orderable');
