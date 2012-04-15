@@ -5,7 +5,7 @@
 (function($) {
 
 	/**
-	 * This plugin makes items selectable. Clicking an item will select it
+	 * Create selectable elements. Clicking an item will select it
 	 * by adding the class <code>.selected</code>. Holding down the shift key
 	 * while clicking multiple items creates a selection range. Holding the meta key
 	 * (which is <code>cmd</code> on a Mac or <code>ctrl</code> on Windows) allows
@@ -22,7 +22,7 @@
 	 * @param {String} [options.ignore='a'] Selector to find elements that should not propagate to the handle
 	 * @param {String} [optinos.mode='single'] Either 'default' (click removes other selections) or 'additive' (click adds to exisiting selection)
 	 *
-	 *	@example
+	 * @example
 
 			var selectable = $('table').symphonySelectable();
 			selectable.find('a').mousedown(function(event) {
@@ -39,10 +39,12 @@
 
 		$.extend(settings, options);
 
-	/*-----------------------------------------------------------------------*/
+	/*-------------------------------------------------------------------------
+		Events
+	-------------------------------------------------------------------------*/
 
 		// Select
-		objects.on('click.selectable', settings.items, function(event) {
+		objects.on('click.selectable', settings.items, function select(event) {
 			var item = $(this),
 				items = item.siblings().andSelf(),
 				object = $(event.liveFired),
@@ -78,11 +80,11 @@
 				selection = items.slice(first, last);
 
 				// Deselect items outside the selection range
-				deselection = items.filter('.selected').not(selection).removeClass('selected').trigger('deselect');
+				deselection = items.filter('.selected').not(selection).removeClass('selected').trigger('deselect.selectable');
 				deselection.find('input[type="checkbox"]').attr('checked', false);
 
 				// Select range
-				selection.addClass('selected').trigger('select');
+				selection.addClass('selected').trigger('select.selectable');
 				selection.find('input[type="checkbox"]').attr('checked', true);
 			}
 
@@ -91,17 +93,17 @@
 
 				// Press meta or ctrl key to adjust current range, otherwise the selection will be removed
 				if((!event.metaKey && !event.ctrlKey && settings.mode != 'additive') || object.is('.single')) {
-					deselection = items.not(item).filter('.selected').removeClass('selected').trigger('deselect');
+					deselection = items.not(item).filter('.selected').removeClass('selected').trigger('deselect.selectable');
 					deselection.find('input[type="checkbox"]').attr('checked', false);
 				}
 
 				// Toggle selection
 				if(item.is('.selected')) {
-					item.removeClass('selected').trigger('deselect');
+					item.removeClass('selected').trigger('deselect.selectable');
 					item.find('input[type="checkbox"]').attr('checked', false);
 				}
 				else {
-					item.addClass('selected').trigger('select');
+					item.addClass('selected').trigger('select.selectable');
 					item.find('input[type="checkbox"]').attr('checked', true);
 				}
 			}
@@ -109,11 +111,13 @@
 		});
 
 		// Remove all selections by doubleclicking the body
-		$('body').bind('dblclick.selectable', function() {
-			objects.find(settings.items).removeClass('selected').trigger('deselect');
+		$('body').bind('dblclick.selectable', function removeAllSelection() {
+			objects.find(settings.items).removeClass('selected').trigger('deselect.selectable');
 		});
 
-	/*-----------------------------------------------------------------------*/
+	/*-------------------------------------------------------------------------
+		Initialisation
+	-------------------------------------------------------------------------*/
 
 		// Make selectable
 		objects.addClass('selectable');
