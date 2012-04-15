@@ -169,7 +169,7 @@
 					Symphony.Language.get('The field “{$title}” ({$type}) has been removed.', {
 						title: title,
 						type: type
-					}) + '<a id="' + id + '">' + Symphony.Language.get('Undo?') + '</a>']
+					}) + '<a id="' + id + '">' + Symphony.Language.get('Undo?') + '</a>', 'protected']
 				);
 					
 				// Prepare field recovery

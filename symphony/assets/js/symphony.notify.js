@@ -55,7 +55,7 @@
 			}).addClass('notice active').symphonyTimeAgo();
 
 			// Add ignore link to notices)
-			if(!item.is('.error') && !item.is('.success')) {
+			if(!item.is('.error') && !item.is('.success') && !item.is('.protected')) {
 				item.html(item.html() + ' <a class="ignore">' + Symphony.Language.get('Ignore?') + '</a>');
 			}
 
