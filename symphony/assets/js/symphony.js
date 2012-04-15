@@ -17,105 +17,8 @@ var Symphony = (function($) {
 	};
 
 /*-----------------------------------------------------------------------*/
-
-	// Add data to Symphony context
-	function addContext(group, values) {
-
-		// Extend existing group
-		if(Storage.Context[group] && $.type(values) !== 'string') {
-			$.extend(Storage.Context[group], values);
-		}
-
-		// Add new group
-		else {
-			Storage.Context[group] = values;
-		}
-
-		// Always return
-		return true;
-	};
-
-	// Get data from Symphony context
-	function getContext(group) {
-
-		// Return full context, if no group is set
-		if(!group) {
-			return Storage.Context;
-		}
-
-		// Return false if group does not exist in Storage
-		if(typeof Storage.Context[group] === undefined) {
-			return false;
-		}
-
-		// Default: Return context group
-		return Storage.Context[group];
-	};
-
-	// Register language string
-	function addStrings(strings) {
-		var temp = {},
-			namespace = (Symphony.Context.get('env') ? Symphony.Context.get('env')['page-namespace'] : '');
-
-		// Don't process empty strings
-		if($.isEmptyObject(strings)) {
-			return true;
-		}
-
-		// Set key as value
-		if($.type(namespace) === 'string' && $.trim(namespace) !== '') {
-			if (!temp[namespace]) {
-				temp[namespace] = {};
-			}
-
-			$.each(strings, function(key, value) {
-				temp[namespace][key] = key;
-			});
-		} else {
-			$.each(strings, function(key, value) {
-				temp[key] = key;
-			});
-		}
-
-		// Save English strings
-		if(Symphony.Context.get('lang') === 'en') {
-			$.extend(true, Storage.Dictionary, temp);
-		}
-
-		// Translate strings and defer merging objects until translate() has returned
-		else {
-			translate(temp);
-		}
-	};	
 	
-	// Get localised string
-	function getString(string, inserts) {
-
-		// Get translated string
-		var translatedString,
-			namespace = (Symphony.Context.get('env') ? Symphony.Context.get('env')['page-namespace'] : '');
-
-		if($.type(namespace) === 'string' && $.trim(namespace) !== '' && Storage.Dictionary[namespace] !== undefined) {
-			translatedString = Storage.Dictionary[namespace][string];
-		} else {
-			translatedString = Storage.Dictionary[string];
-		}
-
-		// Return string if it cannot be found in the dictionary
-		if(translatedString !== false) {
-			string = translatedString;
-		}
-
-		// Insert variables
-		if(inserts !== undefined && inserts !== null) {
-			string = replaceVariables(string, inserts);
-		}
-
-		// Return translated string
-		return string;
-	};
-	
-	// Replace variables
+	// Replace variables in string
 	function replaceVariables(string, inserts) {
 		$.each(inserts, function(index, value) {
 			string = string.replace('{$' + index + '}', value);
@@ -142,16 +45,6 @@ var Symphony = (function($) {
 				$.extend(true, Storage.Dictionary, strings);
 			}
 		});
-	};
-
-	// Set system message
-	function postMessage(message, type) {
-		$('header div.notifier').trigger('attach.notify', [message, type]);
-	};
-	
-	// Remove system message
-	function clearMessage(type) {
-		$('header p.notice').filter('.' + type).first().trigger('detach.notify');
 	};
 
 /*-----------------------------------------------------------------------*/
@@ -188,24 +81,44 @@ var Symphony = (function($) {
 			 *  Name of the data group
 			 * @param {String|Object} values
 			 *  Object or string to be stored
-			 *
-			 * @example
-		
-					Symphony.Context.add(group, values);
 			 */
-			add: addContext,
+			add: function addContext(group, values) {
+		
+				// Extend existing group
+				if(Storage.Context[group] && $.type(values) !== 'string') {
+					$.extend(Storage.Context[group], values);
+				}
+		
+				// Add new group
+				else {
+					Storage.Context[group] = values;
+				}
+		
+				// Always return
+				return true;
+			},
 
 			/**
 			 * Get data from the Context object
 			 *
 			 * @param {String} group
 			 *  Name of the group to be returned
-			 *
-			 * @example
-		
-					Symphony.Context.get(group);
 			 */
-			get: getContext
+			get: function getContext(group) {
+		
+				// Return full context, if no group is set
+				if(!group) {
+					return Storage.Context;
+				}
+		
+				// Return false if group does not exist in Storage
+				if(typeof Storage.Context[group] === undefined) {
+					return false;
+				}
+		
+				// Default: Return context group
+				return Storage.Context[group];
+			}
 		},
 		
 		/**
@@ -226,12 +139,41 @@ var Symphony = (function($) {
 			 *
 			 * @param {Object} strings
 			 *  Object with English string as key, value should be false
-			 *
-			 * @example
-		
-					Symphony.Language.add(strings);
 			 */
-			add: addStrings,
+			add: function addStrings(strings) {
+				var temp = {},
+					namespace = (Symphony.Context.get('env') ? Symphony.Context.get('env')['page-namespace'] : '');
+		
+				// Don't process empty strings
+				if($.isEmptyObject(strings)) {
+					return true;
+				}
+		
+				// Set key as value
+				if($.type(namespace) === 'string' && $.trim(namespace) !== '') {
+					if (!temp[namespace]) {
+						temp[namespace] = {};
+					}
+		
+					$.each(strings, function(key, value) {
+						temp[namespace][key] = key;
+					});
+				} else {
+					$.each(strings, function(key, value) {
+						temp[key] = key;
+					});
+				}
+		
+				// Save English strings
+				if(Symphony.Context.get('lang') === 'en') {
+					$.extend(true, Storage.Dictionary, temp);
+				}
+		
+				// Translate strings and defer merging objects until translate() has returned
+				else {
+					translate(temp);
+				}
+			},
 
 			/**
 			 * Get translated string from the Dictionary.
@@ -244,12 +186,32 @@ var Symphony = (function($) {
 			 *  Object with variable name and value pairs
 			 * @return {String}
 			 *  Returns the translated string
-			 *
-			 * @example
-		
-					Symphony.Language.get(string);
 			 */
-			get: getString
+			get: function getString(string, inserts) {
+		
+				// Get translated string
+				var translatedString,
+					namespace = (Symphony.Context.get('env') ? Symphony.Context.get('env')['page-namespace'] : '');
+		
+				if($.type(namespace) === 'string' && $.trim(namespace) !== '' && Storage.Dictionary[namespace] !== undefined) {
+					translatedString = Storage.Dictionary[namespace][string];
+				} else {
+					translatedString = Storage.Dictionary[string];
+				}
+		
+				// Return string if it cannot be found in the dictionary
+				if(translatedString !== false) {
+					string = translatedString;
+				}
+		
+				// Insert variables
+				if(inserts !== undefined && inserts !== null) {
+					string = replaceVariables(string, inserts);
+				}
+		
+				// Return translated string
+				return string;
+			}
 		},
 		
 		/**
@@ -258,7 +220,8 @@ var Symphony = (function($) {
 		 * and times will be replaced by a representation relative to the user's system time.
 		 *
 		 * @class
-		 * @private
+		 * @deprecated
+		 *	To be removed in Symphony 2.4 – please use Notify methods directly
 		 */
 		Message: {
 
@@ -269,24 +232,24 @@ var Symphony = (function($) {
 			 *  Message to be shown
 			 * @param {String} type
 			 *  Message type to be used as class name
-			 *
-			 * @example
-		
-					Symphony.Language.get(message, type);
+			 * @deprecated
+			 *	To be removed in Symphony 2.4 – please use Notify methods directly
 			 */
-			post: postMessage,
+			post: function postMessage(message, type) {
+				$('header div.notifier').trigger('attach.notify', [message, type]);
+			},
 
 			/**
 			 * Clear last message of a type
 			 *
 			 * @param {String} type
 			 *  Message type
-			 *
-			 * @example
-		
-					Symphony.Language.get(type);
+			 * @deprecated
+			 *	To be removed in Symphony 2.4 – please use Notify methods directly
 			 */
-			clear: clearMessage
+			clear: function clearMessage(type) {
+				$('header p.notice').filter('.' + type).first().trigger('detach.notify');
+			}
 		},
 		
 		/**
@@ -295,15 +258,13 @@ var Symphony = (function($) {
 		 * from jQuery.support.
 		 *
 		 * @class
-		 *
-		 * @example
-	
-				Symphony.Support.localStorage;
 		 */
 		Support: Storage.Support,
 		
 		/**
 		 * A namespace for extension to store global functions
+		 *
+		 * @since Symphony 2.3
 		 */
 		Extensions: {}
 	};
