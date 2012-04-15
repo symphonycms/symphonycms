@@ -39,7 +39,7 @@
 			'Remove File': false,
 			'Untitled Field': false,
 			'The field “{$title}” ({$type}) has been removed.': false,
-			'Undo': false
+			'Undo?': false
 		});
 			
 		// Catch all javascript errors and write them to the Symphony Log
@@ -168,7 +168,7 @@
 					Symphony.Language.get('The field “{$title}” ({$type}) has been removed.', {
 						title: title,
 						type: type
-					}) + '<a id="' + id + '">' + Symphony.Language.get('Undo') + '</a>']
+					}) + '<a id="' + id + '">' + Symphony.Language.get('Undo?') + '</a>']
 				);
 					
 				// Prepare field recovery
