@@ -37,7 +37,9 @@
 			'Reordering was unsuccessful.': false,
 			'Change Password': false,
 			'Remove File': false,
-			'Untitled Field': false
+			'Untitled Field': false,
+			'The field “{$title}” ({$type}) has been removed.': false,
+			'Undo': false
 		});
 			
 		// Catch all javascript errors and write them to the Symphony Log
@@ -154,6 +156,33 @@
 
 				// Set location
 				select.parents('.instance').find('header').removeClass('main').removeClass('sidebar').addClass(select.val());
+			})
+			.on('destructstart.duplicator', function(event) {
+				var item = $(event.target).clone(),
+					title = item.find('header strong').text(),
+					type = item.find('header span').text(),
+					id = new Date().getTime();
+				
+				// Offer undo option after removing a field
+				header.find('div.notifier').trigger('attach.notify', [
+					Symphony.Language.get('The field “{$title}” ({$type}) has been removed.', {
+						title: title,
+						type: type
+					}) + '<a id="' + id + '">' + Symphony.Language.get('Undo') + '</a>']
+				);
+					
+				// Prepare field recovery
+				$('#' + id).data('field', item).on('click', function() {
+					var undo = $(this),
+						message = undo.parent(), 
+						field = undo.data('field');
+				
+					// Add field
+					$('#fields-duplicator').hide().prepend(field).slideDown();
+					
+					// Clear system message
+					message.trigger('detach.notify');
+				});
 			});
 
 		// Highlight instances with the same location when ordering fields
