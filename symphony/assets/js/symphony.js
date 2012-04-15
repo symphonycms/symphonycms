@@ -300,6 +300,11 @@ var Symphony = (function($) {
 	
 				Symphony.Support.localStorage;
 		 */
-		Support: Storage.Support
+		Support: Storage.Support,
+		
+		/**
+		 * A namespace for extension to store global functions
+		 */
+		Extensions: {}
 	};
 }(jQuery.noConflict()));
