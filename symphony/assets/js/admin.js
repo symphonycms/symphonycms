@@ -15,6 +15,7 @@
 			sessions = header.find('#sessions'),
 			context = wrapper.find('#context'),
 			contents = wrapper.find('#contents'),
+			form = contents.find('> form'),
 			user = sessions.find(' li:first a'),
 			pagination = contents.find('ul.page');
 
@@ -309,7 +310,7 @@
 	--------------------------------------------------------------------------*/
 
 		// Confirm actions
-		contents.find('button.confirm').on('click', function() {
+		contents.on('click', 'button.confirm', function() {
 			var button = $(this),
 				name = document.title.split(/[\u2013]\s*/g)[2],
 				message = button.attr('data-message') || Symphony.Language.get('Are you sure you want to proceed?');
@@ -318,7 +319,7 @@
 		});
 
 		// Confirm with selected actions
-		contents.find('form').on('submit', function(event) {
+		form.on('submit', function(event) {
 			var select = $('select[name="with-selected"]'),
 				option = select.find('option:selected'),
 				message = option.attr('data-message') ||  Symphony.Language.get('Are you sure you want to proceed?');
@@ -548,7 +549,7 @@
 			});
 	
 			// Enabled fields on submit
-			contents.find('form').on('submit', function() {
+			form.on('submit', function() {
 				maxRecord.attr('disabled', false);
 				pageNumber.attr('disabled', false);
 			});
