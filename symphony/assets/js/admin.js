@@ -106,7 +106,7 @@
 				if(newSorting !== oldSorting) {
 	
 					// Update items
-					orderable.trigger('orderupdate');
+					orderable.trigger('orderupdate.admin');
 	
 					// Send request
 					$.ajax({
@@ -140,7 +140,7 @@
 				collapsible: true,
 				preselect: 'input'
 			})
-			.on('keyup', '.instance input[name*="[label]"]', function(event) {
+			.on('keyup.admin', '.instance input[name*="[label]"]', function(event) {
 				var label = $(this),
 					value = label.val();
 
@@ -152,7 +152,7 @@
 				// Update title
 				label.parents('.instance').find('header strong').text(value);
 			})
-			.on('change', '.instance select[name*="[location]"]', function(event) {
+			.on('change.admin', '.instance select[name*="[location]"]', function(event) {
 				var select = $(this);
 
 				// Set location
@@ -220,7 +220,7 @@
 
 			// Set menu status
 			if(selection.length > 0) {
-				selection.on('select deselect check', 'tbody tr', function(event) {
+				selection.on('select.selectable deselect.selectable check.selectable', 'tbody tr', function(event) {
 
 					// Activate menu
 					if(selection.has('.selected').length > 0) {
@@ -267,21 +267,21 @@
 			pagegoto.val(pageinactive);
 
 			// Display "Go to page …" placeholder
-			pageform.on('mouseover', function(event) {
+			pageform.on('mouseover.admin', function(event) {
 				if(!pageform.is('.active') && pagegoto.val() == pageinactive) {
 					pagegoto.val(pageactive);
 				}
 			});
 
 			// Display current page placeholder
-			pageform.on('mouseout', function(event) {
+			pageform.on('mouseout.admin', function(event) {
 				if(!pageform.is('.active') && pagegoto.val() == pageactive) {
 					pagegoto.val(pageinactive);
 				}
 			});
 
 			// Edit page number
-			pagegoto.on('focus', function(event) {
+			pagegoto.on('focus.admin', function(event) {
 				if(pagegoto.val() == pageactive) {
 					pagegoto.val('');
 				}
@@ -289,7 +289,7 @@
 			});
 
 			// Stop editing page number
-			pagegoto.on('blur', function(event) {
+			pagegoto.on('blur.admin', function(event) {
 
 				// Clear errors
 				if(pageform.is('.invalid') || pagegoto.val() == '') {
@@ -304,7 +304,7 @@
 			});
 
 			// Validate page number
-			pageform.on('submit', function(event) {
+			pageform.on('submit.admin', function(event) {
 				if(pagegoto.val() > pagegoto.attr('data-max')) {
 					pageform.addClass('invalid');
 					return false;
@@ -317,7 +317,7 @@
 	--------------------------------------------------------------------------*/
 
 		// Confirm actions
-		contents.on('click', 'button.confirm', function() {
+		contents.on('click.admin', 'button.confirm', function() {
 			var button = $(this),
 				name = document.title.split(/[\u2013]\s*/g)[2],
 				message = button.attr('data-message') || Symphony.Language.get('Are you sure you want to proceed?');
@@ -326,7 +326,7 @@
 		});
 
 		// Confirm with selected actions
-		form.on('submit', function(event) {
+		form.on('submit.admin', function(event) {
 			var select = $('select[name="with-selected"]'),
 				option = select.find('option:selected'),
 				message = option.attr('data-message') ||  Symphony.Language.get('Are you sure you want to proceed?');
@@ -345,7 +345,7 @@
 
 			// XSLT utilities
 			contents.find('fieldset.primary textarea')
-				.on('keydown', function(event) {
+				.on('keydown.admin', function(event) {
 	
 					// Allow tab insertion
 					if(event.which == 9) {
@@ -364,7 +364,7 @@
 						this.scrollTop = position;
 	   				}
 				})
-				.on('blur', function() {
+				.on('blur.admin', function() {
 					var source = $(this).val(),
 						utilities = $('#utilities li');
 	
@@ -381,10 +381,10 @@
 							utility.parent().addClass('selected');
 						}
 					});
-				}).trigger('blur');
+				}).trigger('blur.admin');
 	
 			// Clickable utilities in the XSLT editor
-			contents.find('#utilities li').on('click', function(event) {
+			contents.find('#utilities li').on('click.admin', function(event) {
 				if($(event.target).is('a')) return;
 	
 				var utility = $(this),
@@ -516,7 +516,7 @@
 			contents.find('.contextual').each(function() {
 				var area = $(this);
 	
-				$('#ds-context').on('change', function() {
+				$('#ds-context').on('change.admin', function() {
 					var select = $(this),
 						optgroup = select.find('option:selected').parent(),
 						value = select.val().replace(/\W+/g, '_'),
@@ -529,13 +529,13 @@
 	
 			// Trigger the parameter name being remembered when the Datasource context changes
 			contents.find('#ds-context')
-				.on('change', function() {		
+				.on('change.admin', function() {		
 					$('input[name="fields[name]"]').trigger('change');
 				})
-				.trigger('change');
+				.trigger('change.admin');
 	
 			// Once pagination is disabled, maxRecords and pageNumber are disabled too
-			contents.find('input[name*=paginate_results]').on('change', function(event) {
+			contents.find('input[name*=paginate_results]').on('change.admin', function(event) {
 	
 				// Turn on pagination
 				if($(this).is(':checked')) {
@@ -548,15 +548,15 @@
 					maxRecord.attr('disabled', true);
 					pageNumber.attr('disabled', true);
 				}
-			}).trigger('change');
+			}).trigger('change.admin');
 	
 			// Disable paginate_results checking/unchecking when clicking on either maxRecords or pageNumber
-			maxRecord.add(pageNumber).on('click', function(event) {
+			maxRecord.add(pageNumber).on('click.admin', function(event) {
 				event.preventDefault();
 			});
 	
 			// Enabled fields on submit
-			form.on('submit', function() {
+			form.on('submit.admin', function() {
 				maxRecord.attr('disabled', false);
 				pageNumber.attr('disabled', false);
 			});
@@ -567,7 +567,7 @@
 	--------------------------------------------------------------------------*/
 
 		// Upload fields
-		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span.frame').on('click', function(event) {
+		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span.frame').on('click.admin', function(event) {
 			var span = $(this).parent(),
 				name = span.find('input').attr('name');
 
@@ -588,13 +588,13 @@
 		}
 
 		// Accessible navigation
-		nav.on('focus blur', 'a', function() {
+		nav.on('focus.admin blur.admin', 'a', function() {
 			$(this).parents('li').eq(1).toggleClass('current');
 		});
 
 		// Set table to "fixed mode" if its width exceeds the visibile viewport area.
 		// See https://github.com/symphonycms/symphony-2/issues/932.
-		$(window).resize(function() {
+		$(window).trigger('resize.admin', function() {
 			var table = $('table:first');
 
 			if(table.width() > $('html').width() && !table.hasClass('fixed')){
@@ -604,7 +604,7 @@
 			if(table.width() < $('html').width() && table.hasClass('fixed')){
 				return table.removeClass('fixed');
 			}
-		}).trigger('resize');
+		}).trigger('resize.admin');
 	});
 
 })(jQuery.noConflict());
