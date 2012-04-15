@@ -276,7 +276,32 @@
 		}
 
 	/*--------------------------------------------------------------------------
-		Components - XSLT Editor
+		Components - Confirm Actions
+	--------------------------------------------------------------------------*/
+
+		// Confirm actions
+		contents.find('button.confirm').on('click', function() {
+			var button = $(this),
+				name = document.title.split(/[\u2013]\s*/g)[2],
+				message = button.attr('data-message') || Symphony.Language.get('Are you sure you want to proceed?');
+
+			return confirm(message);
+		});
+
+		// Confirm with selected actions
+		contents.find('form').on('submit', function(event) {
+			var select = $('select[name="with-selected"]'),
+				option = select.find('option:selected'),
+				message = option.attr('data-message') ||  Symphony.Language.get('Are you sure you want to proceed?');
+
+			// Needs confirmation
+			if(option.is('.confirm')) {
+				return confirm(message);
+			}
+		});
+
+	/*--------------------------------------------------------------------------
+		Blueprints - Pages and Utilities
 	--------------------------------------------------------------------------*/
 
 		if(body.is('#blueprints-utilities') || body.is('#blueprints-pages')) {
@@ -371,7 +396,7 @@
 		}
 
 	/*--------------------------------------------------------------------------
-		Components - User Password
+		System - Authors
 	--------------------------------------------------------------------------*/
 
 		if(body.is('#system-authors')) {
@@ -392,32 +417,7 @@
 		}
 
 	/*--------------------------------------------------------------------------
-		Components - Confirm Actions
-	--------------------------------------------------------------------------*/
-
-		// Confirm actions
-		contents.find('button.confirm').on('click', function() {
-			var button = $(this),
-				name = document.title.split(/[\u2013]\s*/g)[2],
-				message = button.attr('data-message') || Symphony.Language.get('Are you sure you want to proceed?');
-
-			return confirm(message);
-		});
-
-		// Confirm with selected actions
-		contents.find('form').on('submit', function(event) {
-			var select = $('select[name="with-selected"]'),
-				option = select.find('option:selected'),
-				message = option.attr('data-message') ||  Symphony.Language.get('Are you sure you want to proceed?');
-
-			// Needs confirmation
-			if(option.is('.confirm')) {
-				return confirm(message);
-			}
-		});
-
-	/*--------------------------------------------------------------------------
-		Page - Datasource Editor
+		Blueprints - Datasource Editor
 	--------------------------------------------------------------------------*/
 		
 		if(body.is('#blueprints-datasources')) {
