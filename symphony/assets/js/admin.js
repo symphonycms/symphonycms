@@ -319,10 +319,10 @@
 							utility.parent().addClass('selected');
 						}
 					});
-				}).blur();
+				}).trigger('blur');
 	
 			// Clickable utilities in the XSLT editor
-			contents.find('#utilities li').click(function(event) {
+			contents.find('#utilities li').on('click', function(event) {
 				if($(event.target).is('a')) return;
 	
 				var utility = $(this),
@@ -495,7 +495,7 @@
 				.on('change', function() {		
 					$('input[name="fields[name]"]').trigger('change');
 				})
-				.change();
+				.trigger('change');
 	
 			// Once pagination is disabled, maxRecords and pageNumber are disabled too
 			contents.find('input[name*=paginate_results]').on('change', function(event) {
@@ -511,10 +511,10 @@
 					maxRecord.attr('disabled', true);
 					pageNumber.attr('disabled', true);
 				}
-			}).change();
+			}).trigger('change');
 	
 			// Disable paginate_results checking/unchecking when clicking on either maxRecords or pageNumber
-			maxRecord.add(pageNumber).click(function(event) {
+			maxRecord.add(pageNumber).on('click', function(event) {
 				event.preventDefault();
 			});
 	
@@ -530,7 +530,7 @@
 	--------------------------------------------------------------------------*/
 
 		// Upload fields
-		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span.frame').click(function(event) {
+		$('<em>' + Symphony.Language.get('Remove File') + '</em>').appendTo('label.file:has(a) span.frame').on('click', function(event) {
 			var span = $(this).parent(),
 				name = span.find('input').attr('name');
 
