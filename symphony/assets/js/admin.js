@@ -176,10 +176,17 @@
 				$('#' + id).data('field', item).on('click', function() {
 					var undo = $(this),
 						message = undo.parent(), 
-						field = undo.data('field');
+						field = undo.data('field').hide(),
+						list = $('#fields-duplicator'),
+						duplicator = list.parent().removeClass('empty');
 				
 					// Add field
-					$('#fields-duplicator').hide().prepend(field).slideDown();
+					field.trigger('constructstart.duplicator');
+					list.prepend(field);
+					field.trigger('constructshow.duplicator');
+					field.slideDown('fast', function() {
+						field.trigger('constructstop.duplicator');
+					});
 					
 					// Clear system message
 					message.trigger('detach.notify');
