@@ -133,7 +133,7 @@
 
 			// Adjust height
 			if(!notifier.is('.constructing')) {
-				notifier.animate({
+				notifier.show().animate({
 					height: active.innerHeight()
 				}, 100);
 			}
