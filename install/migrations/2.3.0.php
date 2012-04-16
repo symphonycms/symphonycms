@@ -23,7 +23,7 @@
 		}
 
 		static function getVersion(){
-			return '2.3beta3';
+			return '2.3RC1';
 		}
 
 		static function getReleaseNotes(){
@@ -200,8 +200,8 @@
 				}
 
 				// Update the version information
-				Symphony::Configuration()->set('version', '2.3beta3', 'symphony');
-				Symphony::Configuration()->set('useragent', 'Symphony/2.3 Beta 3', 'general');
+				Symphony::Configuration()->set('version', '2.3RC1', 'symphony');
+				Symphony::Configuration()->set('useragent', 'Symphony/2.3 RC1', 'general');
 
 				if(Symphony::Configuration()->write() === false) {
 					throw new Exception('Failed to write configuration file, please check the file permissions.');
