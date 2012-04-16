@@ -236,7 +236,7 @@
 		 *  query string.
 		 * @return string
 		 */
-		public function __buildQueryString(Array $exclude=array()){
+		public function __buildQueryString(array $exclude=array()){
 			$exclude[] = 'page';
 
 			// Generate the full query string and then parse it back to an array
@@ -247,7 +247,9 @@
 			// the query string again
 			$post_exclusion = array_diff_key($query, array_fill_keys($exclude, true));
 
-			return urldecode(http_build_query($post_exclusion, null, '&'));
+			$query = http_build_query($post_exclusion, null, '&');
+
+			return filter_var(urldecode($query), FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH | FILTER_SANITIZE_STRING);
 		}
 
 	}

@@ -58,7 +58,9 @@
 	 *	@return string
 	 */
 	function getCurrentPage() {
-		return isset($_GET['symphony-page']) ? '/' . trim($_GET['symphony-page'], '/') . '/' : null;
+		if(!isset($_GET['symphony-page'])) return null;
+
+		return '/' . filter_var(trim($_GET['symphony-page'], '/'), FILTER_SANITIZE_STRING) . '/';
 	}
 
 	/**
