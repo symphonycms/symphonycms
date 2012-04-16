@@ -574,4 +574,27 @@
 		public static function fetchTypes() {
 			return FieldManager::listAll();
 		}
+
+		/**
+		 * Save the options for this field
+		 *
+		 * @param $id_field
+		 *  The ID of the field
+		 * @param $fields
+		 *  The fields data
+		 * @return bool
+		 *  True on success, false on failure
+		 */
+		public static function saveOptions($id_field, $fields)
+		{
+			// Get the type of this field:
+			$type = self::fetchFieldTypeFromID($id_field);
+			// Insert into the type table:
+			if(!isset($fields['field_id']))
+			{
+				$fields['field_id'] = $id_field;
+			}
+			return Symphony::Database()->insert($fields, 'tbl_fields_'.$type);
+		}
+
 	}
