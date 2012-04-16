@@ -393,6 +393,7 @@
 			Symphony::ExtensionManager()->notifyMembers('InitaliseAdminPageHead', '/backend/');
 
 			$this->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
+			$this->addHeaderToPage('X-Frame-Options', 'SAMEORIGIN');
 
 			if(isset($_REQUEST['action'])){
 				$this->action();
