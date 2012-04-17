@@ -32,7 +32,8 @@
 
 		Symphony.Language.add({
 			'Ignore?': false,
-			'next': false
+			'next': false,
+			'at': false
 		});
 
 	/*-------------------------------------------------------------------------
