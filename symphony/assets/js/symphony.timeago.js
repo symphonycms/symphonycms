@@ -27,6 +27,16 @@
 
 		$.extend(settings, options);
 
+	/*-----------------------------------------------------------------------*/
+
+		Symphony.Language.add({
+			'just now': false,
+			'a minute ago': false,
+			'{$minutes} minutes ago': false,
+			'about 1 hour ago': false,
+			'about {$hours} hours ago': false
+		});
+
 	/*-------------------------------------------------------------------------
 		Functions
 	-------------------------------------------------------------------------*/
