@@ -462,7 +462,7 @@
 				pageNumber = $('input[name*=page_number]');
 
 			// Update Data Source output parameter
-			contents.find('input[name="fields[name]"]').on('change', function(){
+			contents.find('input[name="fields[name]"]').on('change.admin', function(){
 				var value = $(this).val();
 	
 				if(value == '' || $('select[name="fields[param][]"]:visible').length == 0) {
@@ -504,7 +504,7 @@
 				}
 	
 				// Show only relevant options based on context
-				$('#ds-context').change(function() {
+				$('#ds-context').on('change.admin', function() {
 					if($(this).find('option:selected').text() == label) {
 						select.find('option.optgroup').remove();
 						select.append(options.clone(true));
