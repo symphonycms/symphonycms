@@ -167,7 +167,7 @@ var Symphony = (function($) {
 					
 					// Check if strings have already been translated
 					$.each(strings, function checkStrings(index, key) {
-						if(key in strings) {
+						if(key in Storage.Dictionary) {
 							delete strings[key];
 						}
 					})
