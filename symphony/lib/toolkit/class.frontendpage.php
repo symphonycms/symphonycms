@@ -580,7 +580,7 @@
 					throw new SymphonyErrorPage(
 						__('Please login to view this page.') . ' <a href="' . SYMPHONY_URL . '/login/">' . __('Take me to the login page') . '</a>.',
 						__('Forbidden'),
-						'error',
+						'generic',
 						array('header' => 'HTTP/1.0 403 Forbidden')
 					);
 				}
