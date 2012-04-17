@@ -21,8 +21,10 @@
 			foreach($strings as $key => $value) {
 				// Check value
 				if(empty($value) || $value = 'false') {
-					$value = General::sanitize($key);
+					$value = $key;
 				}
+
+				$value = General::sanitize($value);
 
 				// Translate
 				$new[$value] = Lang::translate(urldecode($value), null, $namespace);
