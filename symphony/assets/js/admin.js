@@ -238,7 +238,7 @@
 				selection.find('tbody tr:first').trigger('check');
 
 				// Respect menu state
-				button.on('click', function(event) {
+				button.on('click.admin', function(event) {
 					if(applicable.is('.inactive')) {
 						return false;
 					}
@@ -445,7 +445,7 @@
 	
 				// Add overlay
 				if(password.has('.invalid').length == 0 && Symphony.Context.get('env')[0] != 'new') {
-					overlay.insertBefore(password).find('button').on('click', function(event) {
+					overlay.insertBefore(password).find('button').on('click.admin', function(event) {
 						event.preventDefault();
 						overlay.hide();
 					});
