@@ -5,8 +5,8 @@
 (function($) {
 
 	/**
-	 * Notify combines multiple system messages to an interface that focusses 
-	 * on a single message at a time and offers a navigation to move between message. 
+	 * Notify combines multiple system messages to an interface that focusses
+	 * on a single message at a time and offers a navigation to move between message.
 	 *
 	 * @name $.symphonyNotify
 	 * @class

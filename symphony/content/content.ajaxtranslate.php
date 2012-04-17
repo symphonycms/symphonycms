@@ -15,16 +15,15 @@
 
 		public function view(){
 			$strings = $_GET['strings'];
-			$namespace = (empty($_GET['namespace']) ? null : $_GET['namespace']);
+			$namespace = (empty($_GET['namespace']) ? null : General::sanitize($_GET['namespace']));
 
 			$new = array();
 			foreach($strings as $key => $value) {
-			
 				// Check value
 				if(empty($value) || $value = 'false') {
-					$value = $key;
+					$value = General::sanitize($key);
 				}
-				
+
 				// Translate
 				$new[$value] = Lang::translate(urldecode($value), null, $namespace);
 			}

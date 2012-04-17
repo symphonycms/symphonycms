@@ -98,7 +98,7 @@
 					if(item.is('.collapsed')) {
 						item.trigger('expand.collapsible');
 					}
-	
+
 					// Collapse
 					else {
 						item.trigger('collapse.collapsible');
@@ -118,7 +118,7 @@
 					if(item.is('.collapsed')) {
 						items.trigger('expand.collapsible');
 					}
-	
+
 					// Collaps all
 					else {
 						items.trigger('collapse.collapsible');

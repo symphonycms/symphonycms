@@ -5,7 +5,7 @@
 (function($) {
 
 	/**
-	 * Duplicators are advanced lists used throughout the 
+	 * Duplicators are advanced lists used throughout the
 	 * Symphony backend to manage repeatable content.
 	 *
 	 * @name $.symphonyDuplicator
@@ -65,19 +65,19 @@
 				selector = $('<select />'),
 				constructor = $('<button type="button" class="constructor" />'),
 				duplicator, list, instances, templates, items, headers, constructor, apply, selector;
-				
+
 			// New API (applying the plugin to the frame)
 			if(object.is('.frame')) {
 				duplicator = object;
 				list = duplicator.find('> ol');
 			}
-			
+
 			// Old API (applying the plugin to the list)
 			// @deprecated to be removed in Symphony 2.4
 			else {
 				list = object;
 				duplicator = object.parent('.frame');
-	
+
 				// Check if duplicator frame exists
 				if(duplicator.length == 0) {
 					duplicator = $('<div class="frame" />').insertBefore(list).prepend(list);
@@ -232,7 +232,7 @@
 			// Wrap content, if needed
 			headers.each(function wrapContent() {
 				header = $(this);
-				
+
 				if(header.next('.content').length == 0) {
 					header.nextAll().wrapAll('<div class="content" />');
 				}

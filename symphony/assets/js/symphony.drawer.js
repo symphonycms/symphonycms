@@ -5,8 +5,8 @@
 (function($) {
 
 	/**
-	 * Drawers are hidden areas in the backend that are used to 
-	 * display additional content on request. There are three different 
+	 * Drawers are hidden areas in the backend that are used to
+	 * display additional content on request. There are three different
 	 * types of drawers: horizontal, vertical left and vertical right.
 	 *
 	 * @name $.symphonyDrawer
@@ -114,7 +114,7 @@
 					}
 				});
 			}
-			
+
 			button.addClass('selected');
 
 			// store state
