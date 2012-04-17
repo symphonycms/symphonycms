@@ -21,13 +21,12 @@
 			foreach($strings as $key => $value) {
 			
 				// Check value
-				$value = urldecode($value);
-				if(empty($value)) {
-					$value = urldecode($key);
+				if(empty($value) || $value = 'false') {
+					$value = $key;
 				}
 				
 				// Translate
-				$new[$value] = Lang::translate($value, null, $namespace);
+				$new[$value] = Lang::translate(urldecode($value), null, $namespace);
 			}
 			$this->_Result = json_encode($new);
 		}
