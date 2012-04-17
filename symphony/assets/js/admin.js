@@ -238,7 +238,7 @@
 				selection.find('tbody tr:first').trigger('check');
 
 				// Respect menu state
-				button.on('click', function(event) {
+				button.on('click.admin', function(event) {
 					if(applicable.is('.inactive')) {
 						return false;
 					}
@@ -445,7 +445,7 @@
 	
 				// Add overlay
 				if(password.has('.invalid').length == 0 && Symphony.Context.get('env')[0] != 'new') {
-					overlay.insertBefore(password).find('button').on('click', function(event) {
+					overlay.insertBefore(password).find('button').on('click.admin', function(event) {
 						event.preventDefault();
 						overlay.hide();
 					});
@@ -462,7 +462,7 @@
 				pageNumber = $('input[name*=page_number]');
 
 			// Update Data Source output parameter
-			contents.find('input[name="fields[name]"]').on('change', function(){
+			contents.find('input[name="fields[name]"]').on('change.admin', function(){
 				var value = $(this).val();
 	
 				if(value == '' || $('select[name="fields[param][]"]:visible').length == 0) {
@@ -504,7 +504,7 @@
 				}
 	
 				// Show only relevant options based on context
-				$('#ds-context').change(function() {
+				$('#ds-context').on('change.admin', function() {
 					if($(this).find('option:selected').text() == label) {
 						select.find('option.optgroup').remove();
 						select.append(options.clone(true));
@@ -530,7 +530,7 @@
 			// Trigger the parameter name being remembered when the Datasource context changes
 			contents.find('#ds-context')
 				.on('change.admin', function() {		
-					$('input[name="fields[name]"]').trigger('change');
+					$('input[name="fields[name]"]').trigger('change.admin');
 				})
 				.trigger('change.admin');
 	
