@@ -15,21 +15,19 @@
 
 		public function view(){
 			$strings = $_GET['strings'];
+			$namespace = (empty($_GET['namespace']) ? null : $_GET['namespace']);
 
 			$new = array();
 			foreach($strings as $key => $value) {
-				if(is_array($value)) {
-
-					// Namespace found
-					foreach($value as $key_n => $value_n) {
-						$value_n = urldecode($value_n);
-						$new[$key][$value_n] = Lang::translate($value_n, NULL, $key);
-					 }
-
-				} else {
-					$value = urldecode($value);
-					$new[$value] = __($value);
+			
+				// Check value
+				$value = urldecode($value);
+				if(empty($value)) {
+					$value = urldecode($key);
 				}
+				
+				// Translate
+				$new[$value] = Lang::translate($value, null, $namespace);
 			}
 			$this->_Result = json_encode($new);
 		}

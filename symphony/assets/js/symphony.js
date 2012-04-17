@@ -30,11 +30,22 @@ var Symphony = (function($) {
 
 	// Get localised strings
 	function translate(strings) {
+		var namespace = $.trim(Symphony.Context.get('env')['page-namespace']),
+			data = {
+				'strings': strings
+			};
+		
+		// Validate and set namespace
+		if($.type(namespace) === 'string' && namespace !== '') {
+			data['namespace'] = namespace;
+		}
+	
+		// Request translations
 		$.ajax({
 			async: false,
 			type: 'GET',
 			url: Symphony.Context.get('root') + '/symphony/ajax/translate/',
-			data: { 'strings': strings },
+			data: data,
 			dataType: 'json',
 			
 			// Add localised strings
@@ -143,37 +154,26 @@ var Symphony = (function($) {
 			 *  Object with English string as key, value should be false
 			 */
 			add: function addStrings(strings) {
-				var temp = {},
-					namespace = (Symphony.Context.get('env') ? Symphony.Context.get('env')['page-namespace'] : '');
 		
-				// Don't process empty strings
-				if($.isEmptyObject(strings)) {
-					return true;
-				}
-		
-				// Set key as value
-				if($.type(namespace) === 'string' && $.trim(namespace) !== '') {
-					if (!temp[namespace]) {
-						temp[namespace] = {};
-					}
-		
-					$.each(strings, function(key, value) {
-						temp[namespace][key] = key;
-					});
-				} else {
-					$.each(strings, function(key, value) {
-						temp[key] = key;
-					});
-				}
-		
-				// Save English strings
+				// English system
 				if(Symphony.Context.get('lang') === 'en') {
-					$.extend(true, Storage.Dictionary, temp);
+					$.extend(true, Storage.Dictionary, strings);
 				}
 		
-				// Translate strings and defer merging objects until translate() has returned
+				// Localised system
 				else {
-					translate(temp);
+					
+					// Check if strings have already been translated
+					$.each(strings, function checkStrings(index, key) {
+						if(key in strings) {
+							delete strings[key];
+						}
+					})
+					
+					// Translate strings
+					if(!$.isEmptyObject(strings)) {
+						translate(strings);
+					}
 				}
 			},
 
@@ -190,20 +190,11 @@ var Symphony = (function($) {
 			 *  Returns the translated string
 			 */
 			get: function getString(string, inserts) {
+				var translation = Storage.Dictionary[string];
 		
-				// Get translated string
-				var translatedString,
-					namespace = (Symphony.Context.get('env') ? Symphony.Context.get('env')['page-namespace'] : '');
-		
-				if($.type(namespace) === 'string' && $.trim(namespace) !== '' && Storage.Dictionary[namespace] !== undefined) {
-					translatedString = Storage.Dictionary[namespace][string];
-				} else {
-					translatedString = Storage.Dictionary[string];
-				}
-		
-				// Return string if it cannot be found in the dictionary
-				if($.type(translatedString) === 'string') {
-					string = translatedString;
+				// Validate and set translation
+				if($.type(translation) === 'string') {
+					string = translation;
 				}
 		
 				// Insert variables
