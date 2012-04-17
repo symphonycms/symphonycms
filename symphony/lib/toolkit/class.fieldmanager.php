@@ -581,23 +581,23 @@
 		 * @since Symphony 2.3
 		 * @param $field_id
 		 *  The ID of the field
-		 * @param $fields
+		 * @param $settings
 		 *  The fields data
 		 * @return bool
 		 *  True on success, false on failure
 		 */
-		public static function saveSettings($field_id, $fields)
+		public static function saveSettings($field_id, $settings)
 		{
 			// Get the type of this field:
 			$type = self::fetchFieldTypeFromID($field_id);
 			// Delete the original settings:
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$type."` WHERE `field_id` = '$field_id' LIMIT 1");
 			// Insert the new settings into the type table:
-			if(!isset($fields['field_id']))
+			if(!isset($settings['field_id']))
 			{
-				$fields['field_id'] = $field_id;
+				$settings['field_id'] = $field_id;
 			}
-			return Symphony::Database()->insert($fields, 'tbl_fields_'.$type);
+			return Symphony::Database()->insert($settings, 'tbl_fields_'.$type);
 		}
 
 	}
