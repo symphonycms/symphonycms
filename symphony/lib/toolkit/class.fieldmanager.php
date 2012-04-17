@@ -576,8 +576,9 @@
 		}
 
 		/**
-		 * Save the options for this field
+		 * Save the settings for this field
 		 *
+		 * @since Symphony 2.3
 		 * @param $id_field
 		 *  The ID of the field
 		 * @param $fields
@@ -585,11 +586,13 @@
 		 * @return bool
 		 *  True on success, false on failure
 		 */
-		public static function saveOptions($id_field, $fields)
+		public static function saveSettings($id_field, $fields)
 		{
 			// Get the type of this field:
 			$type = self::fetchFieldTypeFromID($id_field);
-			// Insert into the type table:
+			// Delete the original settings:
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$type."` WHERE `field_id` = '$id_field' LIMIT 1");
+			// Insert the new settings into the type table:
 			if(!isset($fields['field_id']))
 			{
 				$fields['field_id'] = $id_field;
