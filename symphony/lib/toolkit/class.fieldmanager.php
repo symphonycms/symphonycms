@@ -579,23 +579,23 @@
 		 * Save the settings for this field
 		 *
 		 * @since Symphony 2.3
-		 * @param $id_field
+		 * @param $field_id
 		 *  The ID of the field
 		 * @param $fields
 		 *  The fields data
 		 * @return bool
 		 *  True on success, false on failure
 		 */
-		public static function saveSettings($id_field, $fields)
+		public static function saveSettings($field_id, $fields)
 		{
 			// Get the type of this field:
-			$type = self::fetchFieldTypeFromID($id_field);
+			$type = self::fetchFieldTypeFromID($field_id);
 			// Delete the original settings:
-			Symphony::Database()->query("DELETE FROM `tbl_fields_".$type."` WHERE `field_id` = '$id_field' LIMIT 1");
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$type."` WHERE `field_id` = '$field_id' LIMIT 1");
 			// Insert the new settings into the type table:
 			if(!isset($fields['field_id']))
 			{
-				$fields['field_id'] = $id_field;
+				$fields['field_id'] = $field_id;
 			}
 			return Symphony::Database()->insert($fields, 'tbl_fields_'.$type);
 		}
