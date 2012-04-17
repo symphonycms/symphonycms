@@ -20,9 +20,11 @@ var Symphony = (function($) {
 	
 	// Replace variables in string
 	function replaceVariables(string, inserts) {
-		$.each(inserts, function(index, value) {
-			string = string.replace('{$' + index + '}', value);
-		});
+		if($.type(string) === 'string' && $.type(inserts) === 'object') {
+			$.each(inserts, function(index, value) {
+				string = string.replace('{$' + index + '}', value);
+			});
+		}
 		return string;
 	};
 
@@ -200,14 +202,12 @@ var Symphony = (function($) {
 				}
 		
 				// Return string if it cannot be found in the dictionary
-				if(translatedString !== false) {
+				if($.type(translatedString) === 'string') {
 					string = translatedString;
 				}
 		
 				// Insert variables
-				if(inserts !== undefined && inserts !== null) {
-					string = replaceVariables(string, inserts);
-				}
+				string = replaceVariables(string, inserts);
 		
 				// Return translated string
 				return string;
