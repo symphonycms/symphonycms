@@ -574,4 +574,30 @@
 		public static function fetchTypes() {
 			return FieldManager::listAll();
 		}
+
+		/**
+		 * Save the settings for this field
+		 *
+		 * @since Symphony 2.3
+		 * @param $field_id
+		 *  The ID of the field
+		 * @param $settings
+		 *  The fields data
+		 * @return bool
+		 *  True on success, false on failure
+		 */
+		public static function saveSettings($field_id, $settings)
+		{
+			// Get the type of this field:
+			$type = self::fetchFieldTypeFromID($field_id);
+			// Delete the original settings:
+			Symphony::Database()->query("DELETE FROM `tbl_fields_".$type."` WHERE `field_id` = '$field_id' LIMIT 1");
+			// Insert the new settings into the type table:
+			if(!isset($settings['field_id']))
+			{
+				$settings['field_id'] = $field_id;
+			}
+			return Symphony::Database()->insert($settings, 'tbl_fields_'.$type);
+		}
+
 	}
