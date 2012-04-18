@@ -13,6 +13,13 @@
 
 	Class EmailGatewayManager implements FileResource {
 
+		/**
+		 * The default gateway to use when one is not provided. This value can
+		 * be overridden with the `setDefaultGateway` function. Defaults to 'sendmail'.
+		 *
+		 * @see setDefaultGateway()
+		 * @var string
+		 */
 		protected static $_default_gateway = 'sendmail';
 
 		/**
@@ -63,11 +70,11 @@
 		 * Finds the gateway by name
 		 *
 		 * @param string $name
-		 * 	The gateway to look for
+		 *  The gateway to look for
 		 * @return string|boolean
-		 *	If the gateway is found, the path to the folder containing the
+		 *  If the gateway is found, the path to the folder containing the
 		 *  gateway is returned.
-		 *	If the gateway is not found, false is returned.
+		 *  If the gateway is not found, false is returned.
 		 */
 		public static function __getClassPath($name){
 			if(is_file(EMAILGATEWAYS . "/email.$name.php")) return EMAILGATEWAYS;
@@ -170,10 +177,10 @@
 		 * Creates a new object from a gateway name.
 		 *
 		 * @param string $name
-		 * 	The gateway to look for
+		 *  The gateway to look for
 		 * @return EmailGateway
-		 *	If the gateway is found, an instantiated object is returned.
-		 *	If the gateway is not found, an error is triggered.
+		 *  If the gateway is found, an instantiated object is returned.
+		 *  If the gateway is not found, an error is triggered.
 		 */
 		public static function create($name){
 			$classname = self::__getClassName($name);

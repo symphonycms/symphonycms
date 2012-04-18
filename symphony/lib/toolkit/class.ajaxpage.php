@@ -42,16 +42,16 @@
 		protected $_Result;
 
 		/**
-		 * The HTTP status code of the page using the AJAXPage constants
+		 * The HTTP status code of the page using the `AJAXPage` constants
 		 * `STATUS_OK`, `STATUS_BAD`, `STATUS_ERROR` or `STATUS_UNAUTHORISED`
 		 * @var integer
 		 */
 		protected $_status;
 
 		/**
-		 * The constructor for AJAXPage. This sets the page status to `STATUS_OK`,
-		 * the default content type to text/xml and initialises `$this->_Result`
-		 * with an XMLElement. The constructor also starts the Profiler for this
+		 * The constructor for `AJAXPage`. This sets the page status to `STATUS_OK`,
+		 * the default content type to `text/xml` and initialises `$this->_Result`
+		 * with an `XMLElement`. The constructor also starts the Profiler for this
 		 * page template.
 		 *
 		 * @see toolkit.Profiler
@@ -92,7 +92,7 @@
 
 		/**
 		 * The generate functions outputs the correct headers for
-		 * this AJAXPage, adds `$this->_status` code to the root attribute
+		 * this `AJAXPage`, adds `$this->_status` code to the root attribute
 		 * before calling the parent generate function and generating
 		 * the `$this->_Result` XMLElement
 		 *
@@ -125,7 +125,7 @@
 		}
 
 		/**
-		 * All classes that extend the AJAXPage class must define a view method
+		 * All classes that extend the `AJAXPage` class must define a view method
 		 * which contains the logic for the content of this page. The resulting HTML
 		 * is append to `$this->_Result` where it is generated on build
 		 *

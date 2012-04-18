@@ -587,7 +587,7 @@
 		/**
 		 * Generates a XMLElement representation of a `<fieldset>` containing
 		 * the "With selected…" menu. This uses the private function `__SelectBuildOption()`
-		 * to build XMLElements of options given the `$options` array.
+		 * to build `XMLElement`'s of options given the `$options` array.
 		 *
 		 * @since Symphony 2.3
 		 * @see toolkit.Widget::__SelectBuildOption()

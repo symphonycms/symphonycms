@@ -23,7 +23,7 @@
 	 * 		),
 	 *
 	 * 		[...]
-	 *	);
+	 *  );
 	 *
 	 * @see core.Symphony#getPageNamespace()
 	 * @param string $string
@@ -76,7 +76,7 @@
 		 * Get the current dictionary
 		 *
 		 * @return array
-		 *	Return the dictionary
+		 *  Return the dictionary
 		 */
 		public static function Dictionary() {
 			return self::$_dictionary;
@@ -85,30 +85,30 @@
 		/**
 		 * Get a list of either enabled or disabled languages. Example:
 		 *
-		 *		array(
-		 *			[...]
+		 *  	array(
+		 *  		[...]
 		 *
-		 *			'en' => array(
-		 *				'name' => 'English',
-		 *				'handle' => 'english',
-		 *				'extensions' => array()
-		 *			),
+		 *  		'en' => array(
+		 *  			'name' => 'English',
+		 *  			'handle' => 'english',
+		 *  			'extensions' => array()
+		 *  		),
 		 *
-		 *			'it' => array(
-		 *				'name' => 'Italiano',
-		 *				'handle' => 'italian',
-		 *				'extensions' => array(
-		 *					[...]
-		 *				)
-		 *			),
+		 *  		'it' => array(
+		 *  			'name' => 'Italiano',
+		 *  			'handle' => 'italian',
+		 *  			'extensions' => array(
+		 *  				[...]
+		 *  			)
+		 *  		),
 		 *
-		 *			[...]
-		 *		)
+		 *  		[...]
+		 *  	)
 		 *
 		 * @see toolkit.Lang#createLanguage()
 		 * @since Symphony 2.3
 		 * @return array
-		 *	Return an array of languages (both enabled and disabled)
+		 *  Return an array of languages (both enabled and disabled)
 		 */
 		public static function Languages() {
 			return self::$_languages;
@@ -118,7 +118,7 @@
 		 * Get transliterations
 		 *
 		 * @return array
-		 *	Returns the transliterations array
+		 *  Returns the transliterations array
 		 */
 		public static function Transliterations() {
 			return self::$_transliterations;
@@ -158,14 +158,14 @@
 		 *
 		 * @since Symphony 2.3
 		 * @param string $code
-		 *	Language code, e. g. 'en' or 'pt-br'
+		 *  Language code, e. g. 'en' or 'pt-br'
 		 * @param string $name
-		 *	Language name
+		 *  Language name
 		 * @param string $handle (optional)
-		 *	Handle for the given language, used to build a valid 'lang_$handle' extension's handle.
-		 *	Defaults to null.
+		 *  Handle for the given language, used to build a valid 'lang_$handle' extension's handle.
+		 *  Defaults to null.
 		 * @param array $extensions (optional)
-		 *	An array of extensions that support the given language.
+		 *  An array of extensions that support the given language.
 		 * @return array
 		 *  An array of Language information.
 		 */
@@ -184,6 +184,8 @@
 		 * The function stores all language information in the private variable `$_languages`.
 		 * It contains an array with the name and handle of each language and an array of all
 		 * extensions available in that language.
+		 *
+		 * @throws UnexpectedValueException
 		 */
 		private static function fetch() {
 			// Fetch extensions
@@ -254,7 +256,7 @@
 		 * when the core dictionary of the specific language is available.
 		 *
 		 * @param string $code
-		 *	Language code, e. g. 'en' or 'pt-br'
+		 *  Language code, e. g. 'en' or 'pt-br'
 		 * @param boolean $checkStatus (optional)
 		 *  If false, set the language even if it's not enabled. Defaults to true.
 		 */
@@ -303,7 +305,7 @@
 		 *
 		 * @since Symphony 2.3
 		 * @param string $code
-		 *	Language code, e. g. 'en' or 'pt-br'
+		 *  Language code, e. g. 'en' or 'pt-br'
 		 * @return boolean
 		 *  If true, the language is enabled.
 		 */
@@ -326,7 +328,7 @@
 		 * about, dictionary and transliterations.
 		 *
 		 * @param string $path
-		 *	Path of the language file that should be loaded
+		 *  Path of the language file that should be loaded
 		 */
 		private static function load($path) {
 
@@ -404,7 +406,7 @@
 		 * @param boolean $checkStatus (optional)
 		 *  If false, retrieves a list a languages that support core translation.
 		 * @return array
-		 *	Returns an associative array of language codes and names, e. g. 'en' => 'English'
+		 *  Returns an associative array of language codes and names, e. g. 'en' => 'English'
 		 */
 		public static function getAvailableLanguages($checkStatus = true) {
 			$languages = array();
@@ -424,7 +426,7 @@
 		 * Check if Symphony is localised.
 		 *
 		 * @return boolean
-		 *	Returns true for localized system, false for English system
+		 *  Returns true for localized system, false for English system
 		 */
 		public static function isLocalized() {
 			return (self::get() != 'en');
@@ -434,9 +436,9 @@
 		 * Localize dates.
 		 *
 		 * @param string $string
-		 *	Standard date that should be localized
+		 *  Standard date that should be localized
 		 * @return string
-		 *	Return the given date with translated month and day names
+		 *  Return the given date with translated month and day names
 		 */
 		public static function localizeDate($string) {
 			// Only translate dates in localized environments
@@ -453,9 +455,9 @@
 		 * Standardize dates.
 		 *
 		 * @param string $string
-		 *	Localized date that should be standardized
+		 *  Localized date that should be standardized
 		 * @return string
-		 *	Returns the given date with English month and day names
+		 *  Returns the given date with English month and day names
 		 */
 		public static function standardizeDate($string) {
 
@@ -484,20 +486,20 @@
 		 * Given a string, this will clean it for use as a Symphony handle. Preserves multi-byte characters.
 		 *
 		 * @param string $string
-		 *	String to be cleaned up
+		 *  String to be cleaned up
 		 * @param int $max_length
-		 *	The maximum number of characters in the handle
+		 *  The maximum number of characters in the handle
 		 * @param string $delim
-		 *	All non-valid characters will be replaced with this
+		 *  All non-valid characters will be replaced with this
 		 * @param boolean $uriencode
-		 *	Force the resultant string to be uri encoded making it safe for URLs
+		 *  Force the resultant string to be uri encoded making it safe for URLs
 		 * @param boolean $apply_transliteration
-		 *	If true, this will run the string through an array of substitution characters
+		 *  If true, this will run the string through an array of substitution characters
 		 * @param array $additional_rule_set
-		 *	An array of REGEX patterns that should be applied to the `$string`. This
-		 *	occurs after the string has been trimmed and joined with the `$delim`
+		 *  An array of REGEX patterns that should be applied to the `$string`. This
+		 *  occurs after the string has been trimmed and joined with the `$delim`
 		 * @return string
-		 *	Returns resultant handle
+		 *  Returns resultant handle
 		 */
 		public static function createHandle($string, $max_length = 255, $delim = '-', $uriencode = false, $apply_transliteration = true, $additional_rule_set = NULL) {
 
@@ -513,13 +515,13 @@
 		 * Given a string, this will clean it for use as a filename. Preserves multi-byte characters.
 		 *
 		 * @param string $string
-		 *	String to be cleaned up
+		 *  String to be cleaned up
 		 * @param string $delim
-		 *	Replacement for invalid characters
+		 *  Replacement for invalid characters
 		 * @param boolean $apply_transliteration
-		 *	If true, umlauts and special characters will be substituted
+		 *  If true, umlauts and special characters will be substituted
 		 * @return string
-		 *	Returns created filename
+		 *  Returns created filename
 		 */
 		public static function createFilename($string, $delim='-', $apply_transliteration = true) {
 
@@ -537,9 +539,9 @@
 		 *
 		 * @since Symphony 2.3
 		 * @param string $string
-		 *	The string that should be cleaned-up
+		 *  The string that should be cleaned-up
 		 * @return
-		 *	Returns the transliterated string
+		 *  Returns the transliterated string
 		 */
 		private static function applyTransliterations($string) {
 			// Apply the straight transliterations with strtr as it's much faster

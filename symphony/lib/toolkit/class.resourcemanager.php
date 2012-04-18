@@ -4,8 +4,8 @@
 	 * @package toolkit
 	 */
 	/**
-	 * The ResourcesManager is a class used to collect some methods for both Datasources
-	 * and Events.
+	 * The ResourcesManager is a class used to collect some methods for both
+	 * Datasources and Events.
 	 *
 	 * @since Symphony 2.3
 	 */
@@ -17,7 +17,8 @@
 	Class ResourceManager {
 
 		/**
-		 * A private method used to return the `tbl_pages` column related to the given resource type.
+		 * A private method used to return the `tbl_pages` column related to
+		 * the given resource type.
 		 *
 		 * @param integer $type
 		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
@@ -55,7 +56,6 @@
 		 * The following handles are available: `name`, `source`, `release-date`
 		 * and `author`. Defaults to 'name'.
 		 *
-		 * @since Symphony 2.3
 		 * @param integer $type
 		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @return string
@@ -70,7 +70,6 @@
 		/**
 		 * Returns the sort order for a given resource type. Defaults to 'asc'.
 		 *
-		 * @since Symphony 2.3
 		 * @param integer $type
 		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @return string
@@ -85,7 +84,6 @@
 		/**
 		 * Saves the new axis a given resource type will be sorted by.
 		 *
-		 * @since Symphony 2.3
 		 * @param integer $type
 		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @param string $sort
@@ -103,7 +101,6 @@
 		/**
 		 * Saves the new sort order for a given resource type.
 		 *
-		 * @since Symphony 2.3
 		 * @param integer $type
 		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @param string $order
@@ -128,7 +125,7 @@
 		 * @param integer $type
 		 *  The type of the resource (needed to retrieve the correct Manager)
 		 * @param array $select (optional)
-		 *  Accepts an array of keys to return from the manager listAll() method. If omitted,
+		 *  Accepts an array of keys to return from the manager's `listAll()` method. If omitted,
 		 *  all keys will be returned.
 		 * @param array $where (optional)
 		 *  Not implemented.
@@ -137,7 +134,7 @@
 		 *  same as other `fetch` methods. If omitted this will return resources ordered by `name`.
 		 * @return array
 		 *  An associative array of resource information, formatted in the same way as the resource's
-		 *  manager listAll() method.
+		 *  manager `listAll()` method.
 		 */
 		public static function fetch($type, array $select = array(), array $where = array(), $order_by = null) {
 			$manager = self::getManagerFromType($type);
