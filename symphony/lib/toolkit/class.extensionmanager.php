@@ -668,8 +668,9 @@
 
 			if(empty($select) && empty($where) && is_null($order_by)) return $extensions;
 
-			if(!is_null($order_by)){
+			if(empty($extensions)) return array();
 
+			if(!is_null($order_by)){
 				$order_by = array_map('strtolower', explode(' ', $order_by));
 				$order = ($order_by[1] == 'desc') ? SORT_DESC : SORT_ASC;
 				$sort = $order_by[0];
