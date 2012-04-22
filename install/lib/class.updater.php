@@ -100,8 +100,8 @@
 
 				$m = new $classname();
 
-				if(version_compare(Symphony::Configuration()->get('version', 'symphony'), $m::getVersion(), '<')){
-					$migrations[$m::getVersion()] = $m;
+				if(version_compare(Symphony::Configuration()->get('version', 'symphony'), call_user_func(array($m, 'getVersion')), '<')){
+					$migrations[call_user_func(array($m, 'getVersion'))] = $m;
 				}
 			}
 
@@ -127,7 +127,7 @@
 				// Loop over all available migrations showing there
 				// pre update notes.
 				foreach($migrations as $version => $m){
-					$n = $m::preUpdateNotes();
+					$n = call_user_func(array($m, 'preUpdateNotes'));
 					if(!empty($n)) $notes[$version] = $n;
 				}
 
@@ -135,8 +135,8 @@
 				// version and release notes of the most recent migration
 				self::__render(new UpdaterPage('ready', array(
 					'pre-notes' => $notes,
-					'version' => $m::getVersion(),
-					'release-notes' => $m::getReleaseNotes()
+					'version' => call_user_func(array($m, 'getVersion')),
+					'release-notes' => call_user_func(array($m, 'getReleaseNotes'))
 				)));
 			}
 
@@ -149,10 +149,10 @@
 				// the upgrades. If any upgrade throws an uncaught exception or
 				// returns false, this will break and the failure page shown
 				foreach($migrations as $version => $m){
-					$n = $m::postUpdateNotes();
+					$n = call_user_func(array($m, 'postUpdateNotes'));
 					if(!empty($n)) $notes[$version] = $n;
 
-					$canProceed = $m::run('upgrade', Symphony::Configuration()->get('version', 'symphony'));
+					$canProceed = call_user_func(array($m, 'run'), 'upgrade', Symphony::Configuration()->get('version', 'symphony'));
 
 					Symphony::Log()->pushToLog(
 						sprintf('Updater - Migration to %s was %s', $version, $canProceed ? 'successful' : 'unsuccessful'),
@@ -168,8 +168,8 @@
 				else {
 					self::__render(new UpdaterPage('success', array(
 						'post-notes' => $notes,
-						'version' => $m::getVersion(),
-						'release-notes' => $m::getReleaseNotes()
+						'version' => call_user_func(array($m, 'getVersion')),
+						'release-notes' => call_user_func(array($m, 'getReleaseNotes'))
 					)));
 				}
 			}
