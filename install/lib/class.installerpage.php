@@ -236,9 +236,9 @@
 
 			// Timezones
 			$options = DateTimeObj::getTimezonesSelectOptions((
-				isset($fields['region']['timezone'])
-				? $fields['region']['timezone']
-				: date_default_timezone_get()
+				isset($fields['region']['timezone']) && !empty($fields['region']['timezone'])
+					? $fields['region']['timezone']
+					: date_default_timezone_get()
 			));
 			$Fieldset->appendChild(Widget::label(__('Region'), Widget::Select('fields[region][timezone]', $options)));
 

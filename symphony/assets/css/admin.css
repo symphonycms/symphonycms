@@ -567,6 +567,7 @@ div.field-checkbox:first-child {
 
 .file span.frame {
 	text-align: left;
+	margin-top: 1px;
 }
 
 .file span.frame span {

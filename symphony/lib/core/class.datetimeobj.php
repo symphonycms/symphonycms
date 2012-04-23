@@ -62,7 +62,7 @@
 			}
 
 			// Timezone
-			if(isset($settings['timezone'])) {
+			if(isset($settings['timezone']) && !empty($settings['timezone'])) {
 				self::$settings['timezone'] = $settings['timezone'];
 				self::setDefaultTimezone($settings['timezone']);
 			}
