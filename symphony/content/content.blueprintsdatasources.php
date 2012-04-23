@@ -834,7 +834,7 @@
 		// creating a 'big' page and then hiding the fields with JS
 			if(!empty($providers)) {
 				foreach($providers as $providerClass => $provider) {
-					call_user_func(array($providerClass, 'buildEditor'), $this->Form, $this->_errors, $fields, $handle);
+					call_user_func(array($providerClass, 'buildEditor'), $this->Form, &$this->_errors, $fields, $handle);
 				}
 			}
 
@@ -1042,7 +1042,7 @@
 			elseif (!empty($providers)) {
 				foreach($providers as $providerClass => $provider) {
 					if($fields['source'] == call_user_func(array($providerClass, 'getSource'))) {
-						call_user_func(array($providerClass, 'validate'), $fields, $this->_errors);
+						call_user_func(array($providerClass, 'validate'), &$fields, &$this->_errors);
 						break;
 					}
 					unset($providerClass);

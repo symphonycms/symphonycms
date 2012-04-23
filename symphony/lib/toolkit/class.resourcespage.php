@@ -166,7 +166,7 @@
 						);
 					}
 					else if(class_exists($r['source']['name']) && method_exists($r['source']['name'], 'getSourceColumn')) {
-						$class = call_user_func(array($manager, '__getClassName'), $r['handle']));
+						$class = call_user_func(array($manager, '__getClassName'), $r['handle']);
 						$section = Widget::TableData(call_user_func(array($class, 'getSourceColumn'), $r['handle']));
 					}
 					else if(isset($r['source']['name'])){
