@@ -608,12 +608,12 @@ span.frame {
 	box-shadow: 0 1px 2px rgba(204, 51, 17, 0.3);
 }
 
-.invalid > p {
+.invalid p {
 	clear: both;
 	margin: 0;
 }
 
-.invalid > p,
+.invalid p,
 .invalid a {
 	color: rgba(255, 255, 255, 0.7);
 }
