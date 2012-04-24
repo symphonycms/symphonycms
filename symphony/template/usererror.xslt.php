@@ -30,12 +30,11 @@
 
 	list($key, $val) = $e->getAdditional()->proc->getError(false, true);
 
-	do{
-
+	do {
 		if(preg_match('/^loadXML\(\)/i', $val['message']) && preg_match_all('/line:\s+(\d+)/i', $val['message'], $matches))
 			$errors_grouped['xml'][] = array('line'=>$matches[1][0], 'raw'=>$val);
 
-		elseif(preg_match_all('/pages\/([^.\/]+\.xsl)\s+line\s+(\d+)/i', $val['message'], $matches))
+		elseif(preg_match_all('/pages\/([^.\/]+\.xsl)\s+line\s+(\d+)/i', $val['message'], $matches) || preg_match_all('/pages\/([^.\/]+\.xsl):(\d+):/i', $val['message'], $matches))
 			$errors_grouped['page'][$matches[1][0]][] = array('line'=>$matches[2][0], 'raw'=>$val);
 
 		elseif(preg_match_all('/utilities\/([^.\/]+\.xsl)\s+line\s+(\d+)/i', $val['message'], $matches))
@@ -46,10 +45,11 @@
 			$errors_grouped['general'][] = $val;
 		}
 
-	}while(list($key, $val) = $e->getAdditional()->proc->getError());
+	} while(list($key, $val) = $e->getAdditional()->proc->getError());
 
 	$query_string = General::sanitize($Page->__buildQueryString());
 	if(strlen(trim($query_string)) > 0) $query_string = "&amp;{$query_string}";
+
 	foreach($errors_grouped as $group => $data){
 
 		switch($group){
@@ -142,7 +142,7 @@
 					foreach($errors as $e){
 						if(!is_array($e)) continue;
 
-						$parts = explode('(): ', $e['message']);
+						$parts = explode('(): ', $e['raw']['message']);
 
 						$list->appendChild(
 							new XMLElement(
@@ -181,7 +181,7 @@
 					foreach($errors as $e){
 						if(!is_array($e)) continue;
 
-						$parts = explode('(): ', $e['message']);
+						$parts = explode('(): ', $e['raw']['message']);
 
 						$list->appendChild(
 							new XMLElement(
@@ -222,11 +222,6 @@
 
 						$parts = explode('(): ', $e['message']);
 
-						// The line in the exception is where it was thrown, it's
-						// useless for the ?debug view. This gets the line from
-						// the ?debug page.
-						preg_match('/:\s(\d+)$/', $parts[1], $line);
-
 						$list->appendChild(
 							new XMLElement(
 								'li',
@@ -239,13 +234,29 @@
 								'<code>&#160;&#160;&#160;&#160;' . $parts[1] . '</code>'
 							)
 						);
-						$list->appendChild(
-							new XMLElement(
-								'li',
-								'<code>&#160;&#160;&#160;&#160;<a href="?debug=xml' . $query_string . '#line-' . $line[1] .'" title="'
-							. __('Show debug view for XML', array($filename)) . '">' . __('Show line %d in debug view', array($line[1])) . '</a></code>'
-							)
-						);
+
+						if(strpos($e['file'], WORKSPACE) !== false) {
+							// The line in the exception is where it was thrown, it's
+							// useless for the ?debug view. This gets the line from
+							// the ?debug page.
+							preg_match('/:\s(\d+)$/', $parts[1], $line);
+
+							$list->appendChild(
+								new XMLElement(
+									'li',
+									'<code>&#160;&#160;&#160;&#160;<a href="?debug=xml' . $query_string . '#line-' . $line[1] .'" title="'
+								. __('Show debug view for %s', array($filename)) . '">' . __('Show line %d in debug view', array($line[1])) . '</a></code>'
+								)
+							);
+						}
+						else {
+							$list->appendChild(
+								new XMLElement(
+									'li',
+									'<code>&#160;&#160;&#160;&#160;' . $e['file'] . ':' . $e['line']. '</code>'
+								)
+							);
+						}
 					}
 
 					$content->appendChild($list);
