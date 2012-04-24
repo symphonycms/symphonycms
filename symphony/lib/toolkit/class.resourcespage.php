@@ -166,8 +166,8 @@
 						);
 					}
 					else if(class_exists($r['source']['name']) && method_exists($r['source']['name'], 'getSourceColumn')) {
-						$class = $manager::__getClassName($r['handle']);
-						$section = Widget::TableData($class::getSourceColumn($r['handle']));
+						$class = call_user_func(array($manager, '__getClassName'), $r['handle']);
+						$section = Widget::TableData(call_user_func(array($class, 'getSourceColumn'), $r['handle']));
 					}
 					else if(isset($r['source']['name'])){
 						$section = Widget::TableData($r['source']['name']);
@@ -282,7 +282,7 @@
 						$canProceed = true;
 
 						foreach($checked as $handle) {
-							$path = $manager::__getDriverPath($handle);
+							$path = call_user_func(array($manager, '__getDriverPath'), $handle);
 
 							if (!General::deleteFile($path)) {
 								$folder = str_replace(DOCROOT, '', $path);

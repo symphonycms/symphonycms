@@ -203,7 +203,7 @@
 						include_once(DOCROOT . '/install/migrations/' . $migration_file);
 
 						$migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
-						$migration_version = $migration_class::getVersion();
+						$migration_version = call_user_func(array($migration_class, 'getVersion'));
 
 						$current_version = Symphony::Configuration()->get('version', 'symphony');
 
