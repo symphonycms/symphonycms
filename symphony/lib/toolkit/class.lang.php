@@ -245,6 +245,9 @@
 				catch (UnexpectedValueException $ex) {
 					continue;
 				}
+				catch (RuntimeException $ex) {
+					continue;
+				}
 			}
 		}
 
