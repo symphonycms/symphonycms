@@ -231,7 +231,7 @@
 
 			// Wrap content, if needed
 			headers.each(function wrapContent() {
-				header = $(this);
+				var header = $(this);
 
 				if(header.next('.content').length == 0) {
 					header.nextAll().wrapAll('<div class="content" />');
