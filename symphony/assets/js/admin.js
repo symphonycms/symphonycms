@@ -140,7 +140,7 @@
 				collapsible: true,
 				preselect: 'input'
 			})
-			.on('blur.admin input.admin keyup.admin', '.instance input[name*="[label]"]', function(event) {
+			.on('blur.admin input.admin', '.instance input[name*="[label]"]', function(event) {
 				var label = $(this),
 					value = label.val();
 
@@ -151,6 +151,8 @@
 
 				// Update title
 				label.parents('.instance').find('header strong').text(value);
+
+				return false;
 			})
 			.on('change.admin', '.instance select[name*="[location]"]', function(event) {
 				var select = $(this);
@@ -462,7 +464,7 @@
 				pageNumber = $('input[name*=page_number]');
 
 			// Update Data Source output parameter
-			contents.find('input[name="fields[name]"]').on('blur.admin input.admin keyup.admin', function(){
+			contents.find('input[name="fields[name]"]').on('blur.admin input.admin', function(){
 				var value = $(this).val();
 
 				if(value == '' || $('select[name="fields[param][]"]:visible').length == 0) {
@@ -472,13 +474,15 @@
 
 						item.text('$ds-' + '?' + '.' + field);
 					});
-					return;
+
+					return false;
 				}
 
 				$.ajax({
 					type: 'GET',
 					data: { 'string': value },
 					dataType: 'json',
+					async: false,
 					url: Symphony.Context.get('root') + '/symphony/ajax/handle/',
 					success: function(result) {
 						$('select[name="fields[param][]"] option').each(function(){
@@ -487,6 +491,8 @@
 
 							item.text('$ds-' + result + '.' + field);
 						});
+
+						return false;
 					}
 				});
 			});
