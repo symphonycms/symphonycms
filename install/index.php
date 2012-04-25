@@ -46,7 +46,7 @@
 	define('INSTALL', DOCROOT . '/install');
 	define('INSTALL_LOGS', INSTALL . '/logs');
 
-	define('VERSION', '2.3RC1');
+	define('VERSION', '2.3RC2');
 
 	// Required boot components
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
