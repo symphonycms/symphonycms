@@ -125,6 +125,6 @@
 		 * @return XMLElement
 		 *  This Datasource should return an `XMLElement` object.
 		 */
-		public function grab(array $param_pool);
+		public function grab(array &$param_pool=NULL);
 
 	}
