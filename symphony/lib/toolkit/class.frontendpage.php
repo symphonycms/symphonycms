@@ -312,7 +312,8 @@
 			Symphony::ExtensionManager()->notifyMembers('FrontendPageResolved', '/frontend/', array('page' => &$this, 'page_data' => &$page));
 
 			$this->_pageData = $page;
-			$root_page = strpos('/', $page['path']) !== false ? array_shift(explode('/', $page['path'])) : '';
+			$path = explode('/', $page['path']);
+			$root_page = is_array($path) ? array_shift($path) : $path;
 			$current_path = explode(dirname($_SERVER['SCRIPT_NAME']), $_SERVER['REQUEST_URI'], 2);
 			$current_path = '/' . ltrim(end($current_path), '/');
 			$split_path = explode('?', $current_path, 3);
@@ -829,23 +830,23 @@
 		 */
 		private function __findDatasourceOrder($dependenciesList){
 			if(!is_array($dependenciesList) || empty($dependenciesList)) return;
-			
+
 			foreach($dependenciesList as $handle => $dependencies) {
 				foreach($dependencies as $i => $dependency) {
 					$dependenciesList[$handle][$i] = reset(explode('.',$dependency));
 				}
-				
+
 			}
-			
+
 			$orderedList = array();
 			$dsKeyArray = $this->__buildDatasourcePooledParamList(array_keys($dependenciesList));
-			
+
 			// 1. First do a cleanup of each dependency list, removing non-existant DS's and find
 			//    the ones that have no dependencies, removing them from the list
 			foreach($dependenciesList as $handle => $dependencies){
 
 				$dependenciesList[$handle] = @array_intersect($dsKeyArray, $dependencies);
-				
+
 				if(empty($dependenciesList[$handle])){
 					unset($dependenciesList[$handle]);
 					$orderedList[] = str_replace('_', '-', $handle);
