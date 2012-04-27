@@ -497,9 +497,14 @@
 								 * @param Entry $entry
 								 * @param array $fields
 								 */
-								Symphony::ExtensionManager()->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$entry[0], 'fields' => $fields));
+								Symphony::ExtensionManager()->notifyMembers('EntryPreEdit', '/publish/edit/', array(
+									'section' => $section,
+									'entry' => &$entry[0],
+									'fields' => $fields
+								));
 
-								$entry[0]->setData($field_id, $field->toggleFieldData($entry[0]->getData($field_id), $value, $entry_id));
+								$existing_data = $entry[0]->getData($field_id);
+								$entry[0]->setData($field_id, $field->toggleFieldData(is_array($existing_data) ? $existing_data : array(), $value, $entry_id));
 								$entry[0]->commit();
 
 								/**
@@ -512,7 +517,11 @@
 								 * @param Entry $entry
 								 * @param array $fields
 								 */
-								Symphony::ExtensionManager()->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $entry[0], 'fields' => $fields));
+								Symphony::ExtensionManager()->notifyMembers('EntryPostEdit', '/publish/edit/', array(
+									'section' => $section,
+									'entry' => $entry[0],
+									'fields' => $fields
+								));
 							}
 
 							redirect($_SERVER['REQUEST_URI']);

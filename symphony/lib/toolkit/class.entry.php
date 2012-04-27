@@ -179,7 +179,8 @@
 		 *  the result will always be an array.
 		 * @return array|object
 		 *  Depending on the value of `$asObject`, return the field's data
-		 *  as either an array or an object
+		 *  as either an array or an object. If no data exists, null will be
+		 *  returned.
 		 */
 		public function getData($field_id=null, $asObject=false){
 			if(!$field_id) return $this->_data;
