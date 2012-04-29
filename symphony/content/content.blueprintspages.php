@@ -258,7 +258,7 @@
 
 			if(!empty($_POST)) $fields = $_POST['fields'];
 
-			$fields['body'] = General::sanitize($fields['body']);
+			$fields['body'] = htmlentities($fields['body'], ENT_COMPAT, 'UTF-8');
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'primary column');
@@ -296,11 +296,8 @@
 				$ul = new XMLElement('ul');
 				$ul->setAttribute('id', 'utilities');
 
-				foreach ($utilities as $index => $util) {
+				foreach ($utilities as $util) {
 					$li = new XMLElement('li');
-
-					if($index % 2 != 1) $li->setAttribute('class', 'odd');
-
 					$li->appendChild(Widget::Anchor($util, SYMPHONY_URL . '/blueprints/utilities/edit/' . str_replace('.xsl', '', $util) . '/', NULL));
 					$ul->appendChild($li);
 				}

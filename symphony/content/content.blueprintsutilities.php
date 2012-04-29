@@ -148,9 +148,9 @@
 				Widget::Anchor(__('Utilities'), SYMPHONY_URL . '/blueprints/utilities/'),
 			));
 
-			if(!empty($_POST)) $fields = $_POST['fields'];
+			if(!empty($_POST)) $fields = $_POST['fields'];;
 
-			$fields['body'] = General::sanitize($fields['body']);
+			$fields['body'] = htmlentities($fields['body'], ENT_COMPAT, 'UTF-8');
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'primary column');
@@ -183,14 +183,8 @@
 				$ul = new XMLElement('ul');
 				$ul->setAttribute('id', 'utilities');
 
-				$i = 0;
 				foreach($utilities as $util){
 					$li = new XMLElement('li');
-
-					if ($i++ % 2 != 1) {
-						$li->setAttribute('class', 'odd');
-					}
-
 					$li->appendChild(Widget::Anchor($util, SYMPHONY_URL . '/blueprints/utilities/edit/' . str_replace('.xsl', '', $util) . '/', NULL));
 					$ul->appendChild($li);
 				}
