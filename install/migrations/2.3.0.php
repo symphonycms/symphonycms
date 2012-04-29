@@ -198,17 +198,17 @@
 
 					Symphony::Database()->query("OPTIMIZE TABLE " . $table);
 				}
+			}
 
-				// Update the version information
-				Symphony::Configuration()->set('version', self::getVersion(), 'symphony');
-				Symphony::Configuration()->set('useragent', 'Symphony/' . self::getVersion(), 'general');
+			// Update the version information
+			Symphony::Configuration()->set('version', self::getVersion(), 'symphony');
+			Symphony::Configuration()->set('useragent', 'Symphony/' . self::getVersion(), 'general');
 
-				if(Symphony::Configuration()->write() === false) {
-					throw new Exception('Failed to write configuration file, please check the file permissions.');
-				}
-				else {
-					return true;
-				}
+			if(Symphony::Configuration()->write() === false) {
+				throw new Exception('Failed to write configuration file, please check the file permissions.');
+			}
+			else {
+				return true;
 			}
 		}
 
