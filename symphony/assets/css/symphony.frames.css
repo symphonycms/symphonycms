@@ -249,11 +249,6 @@ span.frame {
 	display: inline-block;
 }
 
-.frame > ol > li:nth-child(2n),
-.frame > ul > li:nth-child(2n) {
-	background: #FFF;
-}
-
 /* Header */
 
 .frame > ol > li header,

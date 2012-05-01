@@ -616,8 +616,16 @@ div.field-checkbox:first-child {
 	margin-left: 0;
 }
 
-#version {
-	color: #9E9E9E;
-	margin: 33px 0 0 19px;
-	float: left;
-}
+/*--------------------------------------------------------------------
+	Misc
+--------------------------------------------------------------------*/
+
+	#utilities > li:nth-child(2n) {
+		background: #FFF;
+	}
+
+	#version {
+		color: #9E9E9E;
+		margin: 33px 0 0 19px;
+		float: left;
+	}
