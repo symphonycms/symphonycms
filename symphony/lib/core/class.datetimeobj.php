@@ -117,7 +117,7 @@
 					$date = new DateTime('@' . $string);
 				}
 				else {
-					$date = new DateTime(Lang::standardizeDate($string));
+					$date = self::parse($string);
 				}
 			}
 			catch(Exception $ex) {
