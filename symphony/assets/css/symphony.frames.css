@@ -260,11 +260,6 @@ span.frame {
 	-webkit-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-	-webkit-transition: background 0.2s ease-in;
-	-moz-transition: background 0.2s ease-in;
-	-ms-transition: background 0.2s ease-in;
-	-o-transition: background 0.2s ease-in;
-	transition: background 0.2s ease-in;
 }
 
 .frame.orderable > ol > li header,
@@ -349,11 +344,6 @@ span.frame {
 .frame > ol > li.conflict.collapsed header,
 .frame > ul > li.conflict.collapsed header {
 	background: #fff9a2;
-	-webkit-transition: background 0.2s ease-in;
-	-moz-transition: background 0.2s ease-in;
-	-ms-transition: background 0.2s ease-in;
-	-o-transition: background 0.2s ease-in;
-	transition: background 0.2s ease-in;
 }
 
 .frame > ol > li.conflict.ordering header,
