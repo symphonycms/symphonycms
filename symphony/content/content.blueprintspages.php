@@ -745,7 +745,7 @@
 
 				$fields['handle'] = PageManager::createHandle($fields['handle']);
 				if(empty($fields['handle']) && !isset($this->_errors['title'])) {
-					$this->_errors['handle'] = __('Please ensure handle contains at least one Latin-based alphabet.');
+					$this->_errors['handle'] = __('Please ensure handle contains at least one Latin-based character.');
 				}
 
 				/**

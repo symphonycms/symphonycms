@@ -568,12 +568,12 @@
 						&& $s = SectionManager::fetchIDFromHandle(Lang::createHandle($meta['name']))
 						&& !is_null($s) && $s != $section_id
 					) {
-						$this->_errors['name'] = __('A Section with the name %s name already exists', array('<code>' . $meta['name'] . '</code>'));
+						$this->_errors['name'] = __('A Section with the name %s already exists', array('<code>' . $meta['name'] . '</code>'));
 						$canProceed = false;
 					}
 				}
 				elseif(!is_null(SectionManager::fetchIDFromHandle(Lang::createHandle($meta['name'])))) {
-					$this->_errors['name'] = __('A Section with the name %s name already exists', array('<code>' . $meta['name'] . '</code>'));
+					$this->_errors['name'] = __('A Section with the name %s already exists', array('<code>' . $meta['name'] . '</code>'));
 					$canProceed = false;
 				}
 
