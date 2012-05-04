@@ -90,9 +90,11 @@
 				}
 
 				foreach($group['records'] as $entry){
-					$xGroup->appendChild(
-						$this->processEntry($entry)
-					);
+					$xEntry = $this->processEntry($entry);
+
+					if($xEntry instanceof XMLElement) {
+						$xGroup->appendChild($xEntry);
+					}
 				}
 			}
 
@@ -115,7 +117,8 @@
 		 * by this datasource to the parameter pool.
 		 *
 		 * @param Entry $entry
-		 * @return XMLElement
+		 * @return XMLElement|boolean
+		 *  Returns boolean when only parameters are to be returned.
 		 */
 		public function processEntry(Entry $entry) {
 			$data = $entry->getData();
@@ -146,7 +149,7 @@
 				}
 			}
 
-			if($this->_param_output_only) continue;
+			if($this->_param_output_only) return true;
 
 			if(in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){
 				$xEntry->appendChild(
@@ -489,9 +492,11 @@
 						}
 
 						foreach($entries['records'] as $entry){
-							$result->appendChild(
-								$this->processEntry($entry)
-							);
+							$xEntry = $this->processEntry($entry);
+
+							if($xEntry instanceof XMLElement) {
+								$result->appendChild($xEntry);
+							}
 						}
 					}
 				}
