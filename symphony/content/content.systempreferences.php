@@ -29,13 +29,13 @@
 			if (!is_writable(CONFIG)) {
 				$this->pageAlert(__('The Symphony configuration file, %s, is not writable. You will not be able to save changes to preferences.', array('<code>/manifest/config.php</code>')), Alert::ERROR);
 				$bIsWritable = false;
-			} 
+			}
 			else if ($formHasErrors) {
 				$this->pageAlert(
 					__('An error occurred while processing this form. See below for details.')
 					, Alert::ERROR
 				);
-			} 
+			}
 			else if (isset($this->_context[0]) && $this->_context[0] == 'success') {
 				$this->pageAlert(__('Preferences saved.'), Alert::SUCCESS);
 			}
@@ -114,7 +114,6 @@
 			$attr = array('accesskey' => 's');
 			if(!$bIsWritable) $attr['disabled'] = 'disabled';
 			$div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', $attr));
-			$this->Form->prependChild(Widget::Input('action[save]', __('Save Changes'), 'submit', array_merge($attr, array('class' => 'irrelevant'))));
 
 			$this->Form->appendChild($div);
 		}
