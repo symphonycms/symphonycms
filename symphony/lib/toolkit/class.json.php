@@ -90,8 +90,13 @@
 			}
 
 			$data = json_decode($json);
-			if(json_last_error() !== JSON_ERROR_NONE) {
-				throw new JSONException(__("JSON not formatted correctly"), json_last_error());
+			if(function_exists('json_last_error') {
+				if(json_last_error() !== JSON_ERROR_NONE) {
+					throw new JSONException(__("JSON not formatted correctly"), json_last_error());
+				}
+			}
+			else if(!$data) {
+				throw new JSONException(__("JSON not formatted correctly"));
 			}
 
 			$data_element = self::_process($data, self::$dom->createElement('data'));
