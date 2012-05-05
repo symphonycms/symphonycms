@@ -132,7 +132,9 @@ div.notifier nav:hover:before {
 	border-bottom: 1px solid #575757;
 	color: #9b9b9b;
 	background: #383838;
-	min-height: 16px;
+	min-height: 23px;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .notice a {

@@ -109,33 +109,33 @@
 			// Fade item
 			item.animate({
 				opacity: 0
-			}, 'normal', function() {
-				var items = item.siblings(),
-					notifier = item.parents('div.notifier');
+			}, 'normal', function removeItem() {
 
-				// No items
-				if(items.length == 0) {
-					notifier.slideUp('fast');
-					notifier.trigger('detachstop.notify', [item]);
+				// No other items
+				if(item.siblings().length == 0) {
+					notifier.trigger('resize.notify');
 				}
 
 				// More item
 				else {
 					notifier.trigger('move.notify');
 				}
+
+				// Remove item
+				item.remove();
+				notifier.trigger('detachstop.notify', [item]);
 			});
 		});
 
 		// Resize notifier
-		objects.on('resize.notify attachstop.notify movestop.notify', 'div.notifier', function resizeNotifer(event) {
+		objects.on('resize.notify attachstop.notify', 'div.notifier', function resizeNotifer(event, item) {
 			var notifier = $(this),
-				active = notifier.find('.active'),
-				speed = 100;
+				active = item || notifier.find('.active:not(:animated)');				
 
 			// Adjust height
 			if(!notifier.is('.constructing')) {
 				notifier.show().animate({
-					height: active.innerHeight()
+					height: active.innerHeight() || 0
 				}, 100);
 			}
 		});
@@ -196,7 +196,7 @@
 			// Move to next message
 			notifier.animate({
 				scrollTop: offset
-			}, 'fast', function() {
+			}, 'fast', function stopMovingMessage() {
 				notifier.trigger('movestop.notify');
 			});
 		});
@@ -225,7 +225,7 @@
 	-------------------------------------------------------------------------*/
 
 		// Build interface
-		objects.each(function() {
+		objects.each(function initNotify() {
 			var object = $(this),
 				notifier = $('<div class="notifier" />').prependTo(object),
 				items = $(object.find(settings.items).get().reverse());
@@ -233,7 +233,7 @@
 			// Construct notifier
 			notifier.addClass('constructing');
 			notifier.height(items.last().innerHeight());
-			items.each(function() {
+			items.each(function buildMessages() {
 				var item = $(this).remove(),
 					message = item.html(),
 					type = item.attr('class');
@@ -252,7 +252,7 @@
 			}
 
 			// Update relative times in system messages
-			setInterval(function() {
+			setInterval(function updateRelativeTimes() {
 				$('header p.notice').symphonyTimeAgo();
 			}, 60000);
 		});
