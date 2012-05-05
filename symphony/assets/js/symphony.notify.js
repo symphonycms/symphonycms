@@ -196,7 +196,7 @@
 			// Move to next message
 			notifier.animate({
 				scrollTop: offset
-			}, 'fast', function() {
+			}, 'fast', function stopMovingMessage() {
 				notifier.trigger('movestop.notify');
 			});
 		});
@@ -225,7 +225,7 @@
 	-------------------------------------------------------------------------*/
 
 		// Build interface
-		objects.each(function() {
+		objects.each(function initNotify() {
 			var object = $(this),
 				notifier = $('<div class="notifier" />').prependTo(object),
 				items = $(object.find(settings.items).get().reverse());
@@ -233,7 +233,7 @@
 			// Construct notifier
 			notifier.addClass('constructing');
 			notifier.height(items.last().innerHeight());
-			items.each(function() {
+			items.each(function buildMessages() {
 				var item = $(this).remove(),
 					message = item.html(),
 					type = item.attr('class');
@@ -252,7 +252,7 @@
 			}
 
 			// Update relative times in system messages
-			setInterval(function() {
+			setInterval(function updateRelativeTimes() {
 				$('header p.notice').symphonyTimeAgo();
 			}, 60000);
 		});
