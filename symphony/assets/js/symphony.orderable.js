@@ -14,6 +14,7 @@
 	 * @param {String} [options.items='li'] Selector to find items to be orderable
 	 * @param {String} [options.handles='*'] Selector to find children that can be grabbed to re-order
 	 * @param {String} [options.ignore='input, textarea, select'] Selector to find elements that should not propagate to the handle
+	 * @param {String} [options.delay=250] Time used to delay actions
 	 *
 	 * @example
 
@@ -27,7 +28,8 @@
 			settings = {
 				items:				'li',
 				handles:			'*',
-				ignore:				'input, textarea, select, a'
+				ignore:				'input, textarea, select, a',
+				delay:				250
 			};
 
 		$.extend(settings, options);
@@ -54,12 +56,14 @@
 				// Highlight item
 				if(object.is('.selectable, .collapsible')) {
 
-					// Avoid highlighting conflicts with selectable objects
+					// Delay ordering to avoid conflicts with scripts bound to the click event
+					object.trigger('orderstartlock', [item]);
 					setTimeout(function() {
 						if(object.is('.ordering')) {
 							item.addClass('ordering');
+							object.trigger('orderstartunlock', [item]);
 						}
-					}, 250);
+					}, settings.delay);
 				}
 				else {
 					item.addClass('ordering');
@@ -77,11 +81,13 @@
 				object.removeClass('ordering');
 				object.trigger('orderstop.orderable', [item]);
 
-				// Avoid conflicts with collapsible objects
+				// Lock item to avoid conflicts with scripts bound to the click event
+				object.trigger('orderstoplock.orderable', [item]);
 				item.addClass('locked');
 				setTimeout(function() {
 					item.removeClass('locked');
-				}, 250);
+					object.trigger('orderstopunlock.orderable', [item]);
+				}, settings.delay);
 			}
 		});
 
