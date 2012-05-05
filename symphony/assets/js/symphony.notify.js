@@ -144,8 +144,6 @@
 		objects.on('attachstop.notify detachstop.notify', 'div.notifier', function toggleNavigator(event) {
 			var notifier = $(this),
 				items = notifier.find(settings.items);
-				
-				console.log('nav', items.find('nav'), items.length);
 
 			// Hide navigator
 			if(items.length == 1) {
