@@ -76,6 +76,12 @@
 				item.removeClass('ordering');
 				object.removeClass('ordering');
 				object.trigger('orderstop.orderable', [item]);
+
+				// Avoid conflicts with collapsible objects
+				item.addClass('locked');
+				setTimeout(function() {
+					item.removeClass('locked');
+				}, 250);
 			}
 		});
 
