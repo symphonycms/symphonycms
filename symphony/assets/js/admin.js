@@ -12,11 +12,11 @@
 			wrapper = html.find('#wrapper'),
 			header = wrapper.find('#header'),
 			nav = wrapper.find('#nav'),
-			sessions = header.find('#sessions'),
+			session = header.find('#session'),
 			context = wrapper.find('#context'),
 			contents = wrapper.find('#contents'),
 			form = contents.find('> form'),
-			user = sessions.find(' li:first a'),
+			user = session.find('li:first a'),
 			pagination = contents.find('ul.page');
 
 	/*--------------------------------------------------------------------------
