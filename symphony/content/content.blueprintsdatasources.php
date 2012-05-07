@@ -876,9 +876,11 @@
 
 				switch($key) {
 					case 'author':
-						$fieldset = new XMLElement('fieldset');
-						$fieldset->appendChild(new XMLElement('legend', __('Author')));
-						$fieldset->appendChild(new XMLElement('p', $link->generate(false)));
+						if($link) {
+							$fieldset = new XMLElement('fieldset');
+							$fieldset->appendChild(new XMLElement('legend', __('Author')));
+							$fieldset->appendChild(new XMLElement('p', $link->generate(false)));
+						}
 						break;
 
 					case 'version':
