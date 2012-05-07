@@ -92,7 +92,7 @@
 				var handle = $(this),
 					item = handle.parents(settings.items);
 
-				if(!handle.is(settings.ignore) && !$(event.target).is(settings.ignore)) {
+				if(!handle.is(settings.ignore) && !$(event.target).is(settings.ignore) && !item.is('.locked')) {
 
 					// Expand
 					if(item.is('.collapsed')) {
