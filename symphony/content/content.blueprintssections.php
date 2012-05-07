@@ -595,7 +595,7 @@
 								$data['element_name'] = $fields[$position]['element_name'] = Lang::createHandle($data['label'], 255, '-', false, true, array('@^[\d-]+@i' => ''));
 
 							if(trim($data['element_name']) != '' && in_array($data['element_name'], $name_list)){
-								$this->_errors[$position] = array('label' => __('A field with that name already exists. All names must be unique.'));
+								$this->_errors[$position] = array('element_name' => __('A field with this handle already exists. All handle must be unique.'));
 								$canProceed = false;
 								break;
 							}
