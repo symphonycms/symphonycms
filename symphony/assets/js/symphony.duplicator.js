@@ -42,6 +42,7 @@
 				collapsible:		false,
 				constructable:		true,
 				destructable:		true,
+				save_state:			true,
 				minimum:			0,
 				maximum:			1000,
 				speed:				'fast'
@@ -295,7 +296,8 @@
 			if(settings.collapsible) {
 				duplicator.symphonyCollapsible({
 					items: '.instance',
-					handles: 'header'
+					handles: 'header',
+					save_state: settings.save_state
 				});
 			}
 
