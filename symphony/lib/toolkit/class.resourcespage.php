@@ -296,6 +296,12 @@
 								);
 								$canProceed = false;
 							}
+							else {
+								$pages = ResourceManager::getAttachedPages($resource_type, $handle);
+								foreach($pages as $page) {
+									ResourceManager::detach($resource_type, $handle, $page['id']);
+								}
+							}
 						}
 
 						if ($canProceed) redirect(Administration::instance()->getCurrentPageURL());
