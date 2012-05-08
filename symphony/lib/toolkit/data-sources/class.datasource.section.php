@@ -414,7 +414,7 @@
 			);
 
 			/**
-			 * Immediately after building entries allow modification of the Data Source entry list
+			 * Immediately after building entries allow modification of the Data Source entries array
 			 *
 			 * @delegate DataSourceEntriesBuilt
 			 * @param string $context
