@@ -105,8 +105,13 @@
 			 * '/system/preferences/'
 			 * @param XMLElement $wrapper
 			 *  An XMLElement of the current page
+			 * @param array $errors
+			 *  An array of errors
 			 */
-			Symphony::ExtensionManager()->notifyMembers('AddCustomPreferenceFieldsets', '/system/preferences/', array('wrapper' => &$this->Form));
+			Symphony::ExtensionManager()->notifyMembers('AddCustomPreferenceFieldsets', '/system/preferences/', array(
+				'wrapper' => &$this->Form,
+				'errors' => $this->_errors
+			));
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
@@ -138,7 +143,7 @@
 
 				/**
 				 * Just prior to saving the preferences and writing them to the `CONFIG`
-				 * Allows extensions to preform custom validaton logic on the settings.
+				 * Allows extensions to preform custom validation logic on the settings.
 				 *
 				 * @delegate Save
 				 * @param string $context
