@@ -402,6 +402,7 @@ span.frame {
 .frame.collapsible > ol > li legend,
 .frame.collapsible > ul > li legend {
 	background: #e8e8e8;
+	padding-right: 5px;
 }
 
 /* Content: dark scheme */
@@ -473,7 +474,7 @@ span.frame {
 
 .frame > ol > li.collapsed.ordering header,
 .frame > ul > li.collapsed.ordering header {
-	border-bottom-color: none;
+	border-bottom-color: #5c83ba;
 }
 
 .frame > ol > li.ordering header span,
