@@ -604,12 +604,11 @@
 		}
 
 		/**
-		 * If `$this->Alert` is set, it will be prepended to the Form of this page.
-		 * A delegate is fired here to allow extensions to provide their
-		 * their own Alert messages to the page. Since Symphony 2.3, there may be
-		 * more than one `Alert` for a particular page. Alerts are displayed in
-		 * reverse order to what they were added, ie. the last Alert to be added will
-		 * be shown first, second will the be the second last Alert and so on.
+		 * If `$this->Alert` is set, it will be added to this page. The
+		 * `AppendPageAlert` delegate is fired to allow extensions to provide their
+		 * their own Alert messages for this page. Since Symphony 2.3, there may be
+		 * more than one `Alert` per page. Alerts are displayed in the order of
+		 * severity, with Errors first, then Success alerts followed by Notices.
 		 *
 		 * @uses AppendPageAlert
 		 */
@@ -624,8 +623,21 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('AppendPageAlert', '/backend/');
 
+			// Errors first, success next, then notices.
+			function sortAlerts($a, $b) {
+				if($a->{'type'} == $b->{'type'}) return 0;
+
+				if(
+					($a->{'type'} == Alert::ERROR && $a->{'type'} != $b->{'type'})
+					or ($a->{'type'} == Alert::SUCCESS && $b->{'type'} == Alert::NOTICE)
+				) return -1;
+
+				return 1;
+			}
+
+			usort($this->Alert, 'sortAlerts');
 			foreach($this->Alert as $alert){
-				$this->Header->prependChild($alert->asXML());
+				$this->Header->appendChild($alert->asXML());
 			}
 		}
 
