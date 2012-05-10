@@ -206,7 +206,7 @@
 				try {
 					$directory = new DirectoryIterator($extension->getPathname() . '/lang');
 					foreach($directory as $file) {
-						if ($file->isDot() || !preg_match('/\.php/', $file->getPathname())) continue;
+						if ($file->isDot() || !preg_match('/\.php$/', $file->getPathname())) continue;
 
 						include($file->getPathname());
 
