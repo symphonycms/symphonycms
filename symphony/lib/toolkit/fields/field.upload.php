@@ -385,7 +385,11 @@
 					return $result;
 				}
 				else{
-					if(empty($result['mimetype'])) $result['mimetype'] = (function_exists('mime_content_type') ? mime_content_type($file) : 'application/octet-stream');
+					if(empty($result['mimetype'])) $result['mimetype'] = (function_exists('mime_content_type')
+						? mime_content_type($file)
+						: (function_exists('finfo_file')
+							? finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file)
+							: 'application/octet-stream'));
 					if(empty($result['size'])) $result['size'] = filesize($file);
 					if(empty($result['meta'])) $result['meta'] = serialize(self::getMetaInfo($file, $result['mimetype']));
 				}
@@ -439,7 +443,11 @@
 
 			// If browser doesn't send MIME type (e.g. .flv in Safari)
 			if (strlen(trim($data['type'])) == 0){
-				$data['type'] = (function_exists('mime_content_type') ? mime_content_type($file) : 'application/octet-stream');
+				$data['type'] = (function_exists('mime_content_type')
+					? mime_content_type($file)
+					: (function_exists('finfo_file')
+						? finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file)
+						: 'application/octet-stream'));
 			}
 
 			return array(
