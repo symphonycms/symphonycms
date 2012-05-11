@@ -1,9 +1,8 @@
 <?php
 
 	/**
-	 * @package toolkit
+	 * @package interface
 	 */
-
 	/**
 	 * The `FileResource` interface defines the minimum functions required
 	 * by managers that manage Symphony's file based objects. This interface
