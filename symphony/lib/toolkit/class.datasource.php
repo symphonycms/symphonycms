@@ -66,7 +66,7 @@
 			// The old signature was array/array/boolean
 			// The new signature is array/boolean
 			$arguments = func_get_args();
-			if(is_bool($arguements[1]) && is_bool($arguments[2])) {
+			if(is_bool($arguments[1]) && is_bool($arguments[2])) {
 				$env = $arguments[0];
 				$process_params = $arguments[1];
 			}
