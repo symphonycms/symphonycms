@@ -744,8 +744,8 @@
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
-			$ol->setAttribute('data-add', __('Add filter'));
-			$ol->setAttribute('data-remove', __('Remove filter'));
+			$ol->setAttribute('data-add', __('Add namespace'));
+			$ol->setAttribute('data-remove', __('Remove namespace'));
 
 			if(is_array($fields['dynamic_xml']['namespace']['name'])){
 				$namespaces = $fields['dynamic_xml']['namespace']['name'];
