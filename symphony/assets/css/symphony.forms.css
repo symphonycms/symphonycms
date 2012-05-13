@@ -178,7 +178,11 @@ button.selected,
 
 input[type=submit][disabled=disabled]:hover,
 input[type=submit][disabled=disabled]:active,
-input[type=submit][disabled=disabled]:focus {
+input[type=submit][disabled=disabled]:focus,
+button[disabled=disabled],
+button[disabled=disabled]:hover,
+button[disabled=disabled]:active,
+button[disabled=disabled]:focus {
 	cursor: not-allowed;
 	opacity: 0.5;
 }
