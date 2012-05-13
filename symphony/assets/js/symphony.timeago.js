@@ -56,10 +56,10 @@
 
 				// Defined date and time
 				if(datetime) {
-
-					// Parse ISO 8601
+					// Parse ISO 8601 and convert to UTC so that all time 
+					// comparisons are done in the user's local time. #1262
 					date = datetime.split(/[-T:+]/);
-					timestamp = new Date(date[0], date[1] - 1, date[2], date[3], date[4], date[5]);
+					timestamp = new Date(Date.UTC(date[0], date[1] - 1, date[2], date[3], date[4], date[5]));
 				}
 
 				// Undefined date and time
