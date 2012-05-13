@@ -240,19 +240,9 @@
 				}
 
 				else {
-					$pages = PageManager::fetch(false, array('events', 'id'), array("
-						`events` REGEXP '[[:<:]]" . $this->_context[1] . "[[:>:]]'
-					"));
-					if(is_array($pages) && !empty($pages)){
-						foreach($pages as $page){
-							$events = preg_split('/\s*,\s*/', $page['events'], -1, PREG_SPLIT_NO_EMPTY);
-							$events = array_flip($events);
-							unset($events[$this->_context[1]]);
-
-							$page['events'] = implode(',', array_flip($events));
-
-							PageManager::edit($page['id'], $page);
-						}
+					$pages = ResourceManager::getAttachedPages(RESOURCE_TYPE_EVENT, $this->_context[1]);
+					foreach($pages as $page) {
+						ResourceManager::detach(RESOURCE_TYPE_EVENT, $this->_context[1], $page['id']);
 					}
 
 					redirect(SYMPHONY_URL . '/blueprints/events/');

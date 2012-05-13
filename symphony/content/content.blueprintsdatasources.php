@@ -950,21 +950,11 @@
 					);
 				}
 				else {
-					$pages = PageManager::fetch(false, array('data_sources', 'id'), array("
-						`data_sources` REGEXP '[[:<:]]" . $this->_context[1] . "[[:>:]]'
-					"));
-
-					if(is_array($pages) && !empty($pages)){
-						foreach($pages as $page){
-							$data_sources = preg_split('/\s*,\s*/', $page['data_sources'], -1, PREG_SPLIT_NO_EMPTY);
-							$data_sources = array_flip($data_sources);
-							unset($data_sources[$this->_context[1]]);
-
-							$page['data_sources'] = implode(',', array_flip($data_sources));
-
-							PageManager::edit($page['id'], $page);
-						}
+					$pages = ResourceManager::getAttachedPages(RESOURCE_TYPE_DS, $this->_context[1]);
+					foreach($pages as $page) {
+						ResourceManager::detach(RESOURCE_TYPE_DS, $this->_context[1], $page['id']);
 					}
+
 					redirect(SYMPHONY_URL . '/blueprints/datasources/');
 				}
 			}
