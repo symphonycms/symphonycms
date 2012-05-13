@@ -327,7 +327,7 @@
 		 *  name and any flags such as 'saved' or 'created'. This list is not exhaustive
 		 *  and extensions can add their own keys to the array.
 		 */
-		public function build(Array $context = array()){
+		public function build(array $context = array()){
 			$this->_context = $context;
 
 			if(!$this->canAccessPage()){
@@ -635,9 +635,17 @@
 				return 1;
 			}
 
+			if(!is_array($this->Alert) || empty($this->Alert)) return;
+
 			usort($this->Alert, 'sortAlerts');
+
+			// Using prependChild ruins our order (it's backwards, but with most
+			// recent notices coming after oldest notices), so reversing the array
+			// fixes this. We need to prepend so that without Javascript the notices
+			// are at the top of the markup. See #1312
+			$this->Alert = array_reverse($this->Alert);
 			foreach($this->Alert as $alert){
-				$this->Header->appendChild($alert->asXML());
+				$this->Header->prependChild($alert->asXML());
 			}
 		}
 
@@ -971,7 +979,7 @@
 		 * @return integer|boolean
 		 *  If the group is found, the index will be returned, otherwise false.
 		 */
-		private static function __navigationFindGroupIndex(Array $nav, $group){
+		private static function __navigationFindGroupIndex(array $nav, $group){
 			foreach($nav as $index => $item){
 				if($item['name'] == $group) return $index;
 			}
@@ -997,15 +1005,15 @@
 		 * @param string $pageroot
 		 *  The current page the Author is the viewing, minus any flags or URL
 		 *  parameters such as a Symphony object ID. eg. Section ID, Entry ID. This
-		 *  parameter is also be a regex, but this is highly unlikely.
+		 *  parameter is also be a regular expression, but this is highly unlikely.
 		 * @param boolean $pattern
-		 *  If set to true, the `$pageroot` represents a regex, and preg_match is
-		 *  invoked to determine the active navigation item. Defaults to false
+		 *  If set to true, the `$pageroot` represents a regular expression which will
+		 *  determine if the active navigation item
 		 * @return boolean
 		 *  Returns true if an active link was found, false otherwise. If true, the
 		 *  navigation group of the active link will be given the CSS class 'active'
 		 */
-		private static function __findActiveNavigationGroup(Array &$nav, $pageroot, $pattern=false){
+		private static function __findActiveNavigationGroup(array &$nav, $pageroot, $pattern=false){
 			foreach($nav as $index => $contents){
 				if(is_array($contents['children']) && !empty($contents['children'])){
 					foreach($contents['children'] as $item) {
