@@ -60,6 +60,7 @@ ul.tabs li.selected:before {
 	left: -4px;
 	bottom: -1px;
 	display: block;
+	-webkit-border-radius: 0 0 2px 0;
 	border-radius: 0 0 2px 0;
 	border: none;
 	border-bottom: 1px solid #ccc;
@@ -74,6 +75,7 @@ ul.tabs li.selected:after {
 	right: -4px;
 	bottom: -1px;
 	display: block;
+	-webkit-border-radius: 0 0 0 2px;
 	border-radius: 0 0 0 2px;
 	border: none;
 	border-bottom: 1px solid #ccc;

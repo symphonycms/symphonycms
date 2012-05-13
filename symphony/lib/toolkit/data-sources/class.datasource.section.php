@@ -281,7 +281,7 @@
 		public function processFilters(&$where, &$joins, &$group) {
 			if(!is_array($this->dsParamFILTERS) || empty($this->dsParamFILTERS)) return;
 
-			$pool = FieldManager::fetch(array_keys($this->dsParamFILTERS));
+			$pool = FieldManager::fetch(array_filter(array_keys($this->dsParamFILTERS), 'is_int'));
 			self::$_fieldPool += $pool;
 
 			foreach($this->dsParamFILTERS as $field_id => $filter){
@@ -414,7 +414,7 @@
 			);
 
 			/**
-			 * Immediately after building entries allow modification of the Data Source entry list
+			 * Immediately after building entries allow modification of the Data Source entries array
 			 *
 			 * @delegate DataSourceEntriesBuilt
 			 * @param string $context

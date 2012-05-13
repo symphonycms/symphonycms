@@ -186,6 +186,7 @@
 		 * extensions available in that language.
 		 *
 		 * @throws UnexpectedValueException
+		 * @throws RuntimeException
 		 */
 		private static function fetch() {
 			// Fetch extensions
@@ -206,14 +207,13 @@
 				try {
 					$directory = new DirectoryIterator($extension->getPathname() . '/lang');
 					foreach($directory as $file) {
-						if ($file->isDot() || !preg_match('/\.php/', $file->getPathname())) continue;
+						if ($file->isDot() || !preg_match('/\.php$/', $file->getPathname())) continue;
 
 						include($file->getPathname());
 
 						// Get language code
 						$code = explode('.', $file);
 						$code = $code[1];
-
 						$lang = self::$_languages[$code];
 
 						// Available extensions
@@ -229,11 +229,15 @@
 							$extensions = array_merge(array($extension->getFilename()), $extensions);
 						}
 
-						// Merge languages ($about is declared inside $path)
+						// Merge languages ($about is declared inside the included $file)
 						$temp = self::createLanguage($code, $about['name'], $handle, $extensions);
 
 						if(isset($lang)){
 							foreach($lang as $key => $value){
+								// Prevent missing or nulled values overwriting existing values
+								// which can occur if a translation file is not correct.
+								if(!isset($temp[$code][$key]) || empty($temp[$code][$key])) continue;
+
 								self::$_languages[$code][$key] = $temp[$code][$key];
 							}
 						}
@@ -269,12 +273,11 @@
 			// Store current language code
 			self::$_lang = $code;
 
+			// Clear dictionary
+			self::$_dictionary = array();
+
 			// Language file available
 			if($code != 'en' && (self::isLanguageEnabled($code) || $checkStatus == false)) {
-
-				// Clear dictionary
-				self::$_dictionary = array();
-
 				// Load core translations
 				self::load(vsprintf('%s/lang_%s/lang/lang.%s.php', array(
 					EXTENSIONS, self::$_languages[$code]['handle'], $code
@@ -289,11 +292,14 @@
 			}
 
 			// Language file unavailable, use default language
-			elseif($code != 'en') {
+			else {
 				self::$_lang = 'en';
 
+				include(LANG . '/transliterations.php');
+				self::$_transliterations = $transliterations;
+
 				// Log error, if possible
-				if(class_exists('Symphony')) {
+				if(class_exists('Symphony') && Symphony::Log() instanceof Log) {
 					Symphony::Log()->pushToLog(
 						__('The selected language could not be found. Using default English dictionary instead.'),
 						E_ERROR,
@@ -334,7 +340,6 @@
 		 *  Path of the language file that should be loaded
 		 */
 		private static function load($path) {
-
 			// Load language file
 			if(file_exists($path)) {
 				require($path);
@@ -349,7 +354,6 @@
 			if(isset($transliterations) && is_array($transliterations)) {
 				self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
 			}
-
 		}
 
 		/**
@@ -463,7 +467,6 @@
 		 *  Returns the given date with English month and day names
 		 */
 		public static function standardizeDate($string) {
-
 			// Only standardize dates in localized environments
 			if(self::isLocalized()) {
 
@@ -505,7 +508,6 @@
 		 *  Returns resultant handle
 		 */
 		public static function createHandle($string, $max_length = 255, $delim = '-', $uriencode = false, $apply_transliteration = true, $additional_rule_set = NULL) {
-
 			// Use the transliteration table if provided
 			if($apply_transliteration == true){
 				$string = self::applyTransliterations($string);
@@ -527,7 +529,6 @@
 		 *  Returns created filename
 		 */
 		public static function createFilename($string, $delim='-', $apply_transliteration = true) {
-
 			// Use the transliteration table if provided
 			if($apply_transliteration == true){
 				$string = self::applyTransliterations($string);

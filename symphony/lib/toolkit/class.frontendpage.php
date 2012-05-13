@@ -173,7 +173,7 @@
 				 *  Allows a devkit to register to this page
 				 */
 				Symphony::ExtensionManager()->notifyMembers('FrontendDevKitResolve', '/frontend/', array(
-					'full_generate'	=> &$full_generate,
+					'full_generate' => &$full_generate,
 					'devkit'		=> &$devkit
 				));
 			}
@@ -587,7 +587,7 @@
 				}
 
 				$row['type'] = PageManager::fetchPageTypes($row['id']);
- 			}
+			}
 
 			$row['filelocation'] = PageManager::resolvePageFileLocation($row['path'], $row['handle']);
 
@@ -676,7 +676,7 @@
 					if($xml = $event->load()) {
 						if(is_object($xml)) $wrapper->appendChild($xml);
 						else $wrapper->setValue(
-							$wrapper->getValue() . PHP_EOL . '    ' . trim($xml)
+							$wrapper->getValue() . PHP_EOL . '	  ' . trim($xml)
 						);
 					}
 
@@ -787,8 +787,8 @@
 				 * @param boolean $datasource
 				 *  The Datasource object
 				 * @param mixed $xml
-				 *  The XML output of the data source. Can be an XMLElement or string.
-				 * @param mixed $paral_pool
+				 *  The XML output of the data source. Can be an `XMLElement` or string.
+				 * @param mixed $param_pool
 				 *  The existing param pool including output parameters of any previous data sources
 				 */
 				Symphony::ExtensionManager()->notifyMembers('DataSourcePreExecute', '/frontend/', array(
@@ -802,11 +802,37 @@
 					$xml = $ds->grab($this->_env['pool']);
 				}
 
-				if ($xml) {
-					if (is_object($xml)) $wrapper->appendChild($xml);
-					else $wrapper->setValue(
-						$wrapper->getValue() . PHP_EOL . '    ' . trim($xml)
-					);
+				if($xml) {
+					/**
+					 * After the datasource has executed, either by itself or via the
+					 * `DataSourcePreExecute` delegate, and if the `$xml` variable is truthy,
+					 * this delegate allows extensions to modify the output XML and parameter pool
+					 *
+					 * @since Symphony 2.3
+					 * @delegate DataSourcePostExecute
+					 * @param string $context
+					 * '/frontend/'
+					 * @param boolean $datasource
+					 *  The Datasource object
+					 * @param mixed $xml
+					 *  The XML output of the data source. Can be an `XMLElement` or string.
+					 * @param mixed $param_pool
+					 *  The existing param pool including output parameters of any previous data sources
+					 */
+					Symphony::ExtensionManager()->notifyMembers('DataSourcePostExecute', '/frontend/', array(
+						'datasource' => $ds,
+						'xml' => &$xml,
+						'param_pool' => &$this->_env['pool']
+					));
+
+					if ($xml instanceof XMLElement) {
+						$wrapper->appendChild($xml);
+					}
+					else {
+						$wrapper->setValue(
+							$wrapper->getValue() . PHP_EOL . '	  ' . trim($xml)
+						);
+					}
 				}
 
 				$queries = Symphony::Database()->queryCount() - $queries;
@@ -842,7 +868,7 @@
 			$dsKeyArray = $this->__buildDatasourcePooledParamList(array_keys($dependenciesList));
 
 			// 1. First do a cleanup of each dependency list, removing non-existant DS's and find
-			//    the ones that have no dependencies, removing them from the list
+			//	  the ones that have no dependencies, removing them from the list
 			foreach($dependenciesList as $handle => $dependencies){
 
 				$dependenciesList[$handle] = @array_intersect($dsKeyArray, $dependencies);
@@ -854,9 +880,9 @@
 			}
 
 			// 2. Iterate over the remaining DS's. Find if all their dependencies are
-			//    in the $orderedList array. Keep iterating until all DS's are in that list
-			//    or there are circular dependencies (list doesn't change between iterations
-			//    of the while loop)
+			//	  in the $orderedList array. Keep iterating until all DS's are in that list
+			//	  or there are circular dependencies (list doesn't change between iterations
+			//	  of the while loop)
 			do{
 
 				$last_count = count($dependenciesList);

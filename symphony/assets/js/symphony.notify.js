@@ -130,7 +130,7 @@
 		// Resize notifier
 		objects.on('resize.notify attachstop.notify', 'div.notifier', function resizeNotifer(event, item) {
 			var notifier = $(this),
-				active = item || notifier.find('.active:not(:animated)');				
+				active = item || notifier.find('.active:not(:animated)');
 
 			// Adjust height
 			if(!notifier.is('.constructing')) {

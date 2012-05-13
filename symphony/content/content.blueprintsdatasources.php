@@ -173,9 +173,7 @@
 					}
 				}
 			}
-
-			else{
-
+			else {
 				$fields['dynamic_xml']['url'] = '';
 				$fields['dynamic_xml']['cache'] = '30';
 				$fields['dynamic_xml']['xpath'] = '/';
@@ -188,10 +186,7 @@
 
 				$fields['order'] = 'desc';
 				$fields['associated_entry_counts'] = NULL;
-
 			}
-			
-			
 
 			$this->setPageType('form');
 			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($about['name'], __('Data Sources'), __('Symphony'))));
@@ -673,13 +668,13 @@
 						)
 					)
 				);
-				
-				
+
+
 
 				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
 					foreach($section_data['fields'] as $field){
 						$elements = $field->fetchIncludableElements();
-						
+
 						if(is_array($elements) && !empty($elements)){
 							foreach($elements as $name){
 								$selected = false;
@@ -744,14 +739,20 @@
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'filters-duplicator');
-			$ol->setAttribute('data-add', __('Add filter'));
-			$ol->setAttribute('data-remove', __('Remove filter'));
+			$ol->setAttribute('data-add', __('Add namespace'));
+			$ol->setAttribute('data-remove', __('Remove namespace'));
 
-			if(is_array($fields['dynamic_xml']['namespace']['name'])){
-				$namespaces = $fields['dynamic_xml']['namespace']['name'];
-				$uri = $fields['dynamic_xml']['namespace']['uri'];
+			if(is_array($fields['dynamic_xml']['namespace'])){
+				$i = 0;
+				foreach($fields['dynamic_xml']['namespace'] as $name => $uri){
+					// Namespaces get saved to the file as $name => $uri, however in
+					// the $_POST they are represented as $index => array. This loop
+					// patches the difference.
+					if(is_array($uri)) {
+						$name = $uri['name'];
+						$uri = $uri['uri'];
+					}
 
-				for($ii = 0; $ii < count($namespaces); $ii++){
 					$li = new XMLElement('li');
 					$li->appendChild(new XMLElement('header', '<h4>' . __('Namespace') . '</h4>'));
 
@@ -759,15 +760,16 @@
 					$group->setAttribute('class', 'group');
 
 					$label = Widget::Label(__('Name'));
-					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]', General::sanitize($namespaces[$ii])));
+					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][' . $i .'][name]', General::sanitize($name)));
 					$group->appendChild($label);
 
 					$label = Widget::Label(__('URI'));
-					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]', General::sanitize($uri[$ii])));
+					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][' . $i .'][uri]', General::sanitize($uri)));
 					$group->appendChild($label);
 
 					$li->appendChild($group);
 					$ol->appendChild($li);
+					$i++;
 				}
 			}
 
@@ -780,11 +782,11 @@
 			$group->setAttribute('class', 'group');
 
 			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][name][]'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][-1][name]'));
 			$group->appendChild($label);
 
 			$label = Widget::Label(__('URI'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][uri][]'));
+			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][-1][uri]'));
 			$group->appendChild($label);
 
 			$li->appendChild($group);
@@ -950,21 +952,11 @@
 					);
 				}
 				else {
-					$pages = PageManager::fetch(false, array('data_sources', 'id'), array("
-						`data_sources` REGEXP '[[:<:]]" . $this->_context[1] . "[[:>:]]'
-					"));
-
-					if(is_array($pages) && !empty($pages)){
-						foreach($pages as $page){
-							$data_sources = preg_split('/\s*,\s*/', $page['data_sources'], -1, PREG_SPLIT_NO_EMPTY);
-							$data_sources = array_flip($data_sources);
-							unset($data_sources[$this->_context[1]]);
-
-							$page['data_sources'] = implode(',', array_flip($data_sources));
-
-							PageManager::edit($page['id'], $page);
-						}
+					$pages = ResourceManager::getAttachedPages(RESOURCE_TYPE_DS, $this->_context[1]);
+					foreach($pages as $page) {
+						ResourceManager::detach(RESOURCE_TYPE_DS, $this->_context[1], $page['id']);
 					}
+
 					redirect(SYMPHONY_URL . '/blueprints/datasources/');
 				}
 			}
@@ -1152,9 +1144,9 @@
 								if (isset($matches[2][0])) {
 									$detected_namespaces = array();
 
-									foreach ($fields['dynamic_xml']['namespace'] as $index => $namespace) {
-										$detected_namespaces[] = $namespace['name'];
-										$detected_namespaces[] = $namespace['uri'];
+									foreach ($fields['dynamic_xml']['namespace'] as $name => $uri) {
+										$detected_namespaces[] = $name;
+										$detected_namespaces[] = $uri;
 									}
 
 									foreach ($matches[2] as $index => $uri) {
@@ -1183,7 +1175,6 @@
 							$params['cache'] = $fields['dynamic_xml']['cache'];
 							$params['format'] = $fields['dynamic_xml']['format'];
 							$params['timeout'] = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : '6');
-
 
 							break;
 
@@ -1234,12 +1225,12 @@
 					$this->__injectVarList($dsShell, $params);
 					$this->__injectIncludedElements($dsShell, $elements);
 					self::injectFilters($dsShell, $filters);
-					
+
 					if(preg_match_all('@(\$ds-[0-9a-z_\.\-]+)@i', $dsShell, $matches)){
 						$dependencies = General::array_remove_duplicates($matches[1]);
 						$dsShell = str_replace('<!-- DS DEPENDENCY LIST -->', "'" . implode("', '", $dependencies) . "'", $dsShell);
 					}
-					
+
 					$dsShell = str_replace('<!-- CLASS EXTENDS -->', $extends, $dsShell);
 					$dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
 				}

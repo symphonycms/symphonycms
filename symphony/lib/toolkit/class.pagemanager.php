@@ -483,7 +483,7 @@
 			if(empty($select)) $select = array('*');
 
 			$page = PageManager::fetch(true, $select, array(
-				sprintf("id IN ('%s')", implode(',', $page_id))
+				sprintf("id IN (%s)", implode(',', $page_id))
 			));
 
 			return count($page) == 1 ? array_pop($page) : $page;
