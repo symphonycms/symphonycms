@@ -76,6 +76,7 @@ p {
 }
 
 p.label {
+	position: relative;
 	margin: 0 0 2px;
 }
 
@@ -196,7 +197,8 @@ label {
 	position: relative;
 }
 
-label > i {
+label > i,
+p.label > i {
 	position: absolute;
 	right: 0;
 	top: 0;
