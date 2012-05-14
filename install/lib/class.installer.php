@@ -371,7 +371,7 @@
 		 * file and display the failure page to the user.
 		 * @todo: Resume installation after an error has been fixed.
 		 */
-		private static function __abort($message, $start){
+		protected static function __abort($message, $start){
 			Symphony::Log()->pushToLog($message, E_ERROR, true);
 
 			Symphony::Log()->writeToLog(        '============================================', true);
