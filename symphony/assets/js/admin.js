@@ -536,7 +536,7 @@
 			// Trigger the parameter name being remembered when the Datasource context changes
 			contents.find('#ds-context')
 				.on('change.admin', function() {
-					$('input[name="fields[name]"]').trigger('change.admin');
+					contents.find('input[name="fields[name]"]').trigger('blur.admin');
 				})
 				.trigger('change.admin');
 
