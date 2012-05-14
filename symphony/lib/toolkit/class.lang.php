@@ -299,9 +299,9 @@
 				self::$_transliterations = $transliterations;
 
 				// Log error, if possible
-				if(class_exists('Symphony') && Symphony::Log() instanceof Log) {
+				if($code != 'en' && class_exists('Symphony') && Symphony::Log() instanceof Log) {
 					Symphony::Log()->pushToLog(
-						__('The selected language could not be found. Using default English dictionary instead.'),
+						__('The selected language, %s, could not be found. Using default English dictionary instead.', array($code)),
 						E_ERROR,
 						true
 					);
