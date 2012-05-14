@@ -36,12 +36,8 @@
 				$sort = $section->getSortingField();
 				$order = $section->getSortingOrder();
 
-				// Sorting by ID requires saving sort data to the `EntryManager`
-				// object for subsequent use
-				if($sort == 'id'){
-					EntryManager::setFetchSortingField('id');
-					EntryManager::setFetchSortingDirection($order);
-				}
+				// Set the sorting in the `EntryManager` for subsequent use
+				EntryManager::setFetchSorting($sort, $order);
 			}
 			else {
 				// Ensure that this field is infact sortable, otherwise
