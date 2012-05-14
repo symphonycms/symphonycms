@@ -165,7 +165,7 @@
 						}
 					}
 
-					Administration::instance()->saveConfig();
+					Symphony::Configuration()->write();
 
 					redirect(SYMPHONY_URL . '/system/preferences/success/');
 				}
