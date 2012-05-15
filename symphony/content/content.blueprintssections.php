@@ -627,7 +627,6 @@
 							if(Field::__OK__ != $field->checkFields($errors, false) && !empty($errors)){
 								$this->_errors[$position] = $errors;
 								$canProceed = false;
-								break;
 							}
 						}
 					}
