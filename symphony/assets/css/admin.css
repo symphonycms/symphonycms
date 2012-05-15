@@ -632,6 +632,10 @@ div.field-checkbox:first-child {
 		background: #FFF;
 	}
 
+	#utilities > li.selected {
+		background: #668abe;
+	}
+
 	#version {
 		color: #9E9E9E;
 		margin: 33px 0 0 19px;
