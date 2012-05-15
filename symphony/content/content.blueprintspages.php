@@ -280,10 +280,10 @@
 
 			$utilities = General::listStructure(UTILITIES, array('xsl'), false, 'asc', UTILITIES);
 			$utilities = $utilities['filelist'];
-			
+
 			if(is_array($utilities) && !empty($utilities)) {
 				$this->Form->setAttribute('class', 'two columns');
-			
+
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'secondary column');
 
@@ -1035,7 +1035,19 @@
 					continue;
 				}
 
-				PageManager::delete($page_id, false);
+				if(PageManager::delete($page_id, false)) {
+					/**
+					 * Fires after a Page has been deleted
+					 *
+					 * @delegate PagePostDelete
+					 * @since Symphony 2.3
+					 * @param string $context
+					 * '/blueprints/pages/'
+					 * @param array $page_id
+					 *  The page ID that was just deleted
+					 */
+					Symphony::ExtensionManager()->notifyMembers('PagePostDelete', '/blueprints/pages/', array('page_id' => $page_id));
+				}
 			}
 
 			if($success) redirect($redirect);
