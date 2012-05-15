@@ -113,7 +113,7 @@ span.frame {
 }
 
 #error .frame {
-	border: 1px solid #b8b8b8; 
+	border: 1px solid #b8b8b8;
 	background-color: #f5f5f3;
 	text-align: left;
 	-webkit-box-shadow: 0 1px 2px #e5e5e5;
@@ -372,14 +372,9 @@ span.frame {
 
 /* Content: light scheme */
 
-.frame > ol > li > div:first-of-type,
-.frame > ul > li > div:first-of-type {
-	padding-top: 10px;
-}
-
 .frame > ol > li .content,
 .frame > ul > li .content {
-	padding: 0 10px;
+	padding: 10px 10px 0.1px 10px;
 	margin: 0 -10px;
 	width: 100%;
 }
