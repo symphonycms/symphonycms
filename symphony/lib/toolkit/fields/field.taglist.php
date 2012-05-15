@@ -191,6 +191,32 @@
 			}
 		}
 
+		public function checkPostFieldData($data, &$message, $entry_id = null){
+			$message = NULL;
+
+			$has_no_value = is_array($data) ? empty($data) : strlen(trim($data)) == 0;
+
+			if ($this->get('required') == 'yes' && $has_no_value) {
+				$message = __('‘%s’ is a required field.', array($this->get('label')));
+
+				return self::__MISSING_FIELDS__;
+			}
+
+			if($this->get('validator')) {
+				$data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
+				$data = array_map('trim', $data);
+
+				if(empty($data)) return self::__OK__;
+
+				if(!General::validateString($data, $this->get('validator'))) {
+					$message = __("'%s' contains invalid data. Please check the contents.", array($this->get('label')));
+					return self::__INVALID_FIELDS__;
+				}
+			}
+
+			return self::__OK__;
+		}
+
 		public function processRawFieldData($data, &$status, &$message=null, $simulate=false, $entry_id=NULL){
 			$status = self::__OK__;
 
