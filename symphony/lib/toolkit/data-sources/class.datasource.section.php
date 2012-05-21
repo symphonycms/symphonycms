@@ -356,7 +356,7 @@
 				$this->_force_empty_result = false; //this is so the section info element doesn't disappear.
 				$result = $this->emptyXMLSet();
 				$result->prependChild($sectioninfo);
-				return;
+				return $result;
 			}
 
 			if(is_array($this->dsParamINCLUDEDELEMENTS)) {
