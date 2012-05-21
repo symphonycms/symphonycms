@@ -315,12 +315,11 @@
 		 * This function initialises a lot of the basic elements that make up a Symphony
 		 * backend page such as the default stylesheets and scripts, the navigation and
 		 * the footer. Any alerts are also appended by this function. `view()` is called to
-		 * build the actual content of the page. Two delegates fire, `InitaliseAdminPageHead`
-		 * and `AppendElementBelowView` to allow extensions to add elements to the `<head>` and footer.
+		 * build the actual content of the page. The `InitaliseAdminPageHead` delegate
+		 * allows extensions to add elements to the `<head>`.
 		 *
 		 * @see view()
 		 * @uses InitaliseAdminPageHead
-		 * @uses AppendElementBelowView
 		 * @param array $context
 		 *  An associative array describing this pages context. This
 		 *  can include the section handle, the current entry_id, the page
