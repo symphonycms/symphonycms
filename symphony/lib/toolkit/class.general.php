@@ -260,50 +260,6 @@
 		}
 
 		/**
-		 * Create friendly passwords such as 4LargeWorms or 11HairyMonkeys. This
-		 * uses the `rand()` function. Thus, if the random number generated is seeded
-		 * appropriately, this function will return the same password consistently.
-		 *
-		 * @return string
-		 *  the generated password.
-		 */
-		public static function generatePassword(){
-
-			$words = array(
-				array(
-					__('Large'),
-					__('Small'),
-					__('Hot'),
-					__('Cold'),
-					__('Big'),
-					__('Hairy'),
-					__('Round'),
-					__('Lumpy'),
-					__('Coconut'),
-					__('Encumbered')
-				),
-
-				array(
-					__('Cats'),
-					__('Dogs'),
-					__('Weasels'),
-					__('Birds'),
-					__('Worms'),
-					__('Bugs'),
-					__('Pigs'),
-					__('Monkeys'),
-					__('Pirates'),
-					__('Aardvarks'),
-					__('Men'),
-					__('Women')
-				)
-			);
-
-			return (rand(2, 15) . $words[0][rand(0, count($words[0]) - 1)] . $words[1][rand(0, count($words[1]) - 1)]);
-
-		}
-
-		/**
 		 * Allows you to send emails. It initializes the core email class.
 		 *
 		 * @deprecated Since Symphony 2.2
