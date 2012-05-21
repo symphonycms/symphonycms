@@ -61,7 +61,6 @@ div.drawer.vertical-right {
 div.drawer.vertical-left .contents,
 div.drawer.vertical-right .contents {
 	padding: 20px;
-	width: 260px;
 }
 
 #wrapper.drawer-vertical-left #contents {
