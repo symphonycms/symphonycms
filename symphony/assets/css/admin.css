@@ -589,6 +589,7 @@ div.field-checkbox:first-child {
 
 .file a {
 	word-wrap: break-word;
+	overflow-wrap: break-word;
 }
 
 .file em {
