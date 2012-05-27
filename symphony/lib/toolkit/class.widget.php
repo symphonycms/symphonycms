@@ -449,6 +449,7 @@
 			// Create element
 			$obj = new XMLElement('time', Lang::localizeDate($date->format($format)));
 			$obj->setAttribute('datetime', $date->format(DateTime::ISO8601));
+			$obj->setAttribute('utc', strtotime($date->format(DateTime::ISO8601)));
 
 			// Pubdate?
 			if($pubdate === true) {
