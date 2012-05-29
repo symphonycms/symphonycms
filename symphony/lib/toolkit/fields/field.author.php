@@ -127,6 +127,7 @@
 			if($this->get('default_to_current_user') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Select current user by default', array($input->generate())));
 			$div->appendChild($label);
+			$wrapper->appendChild($div);
 
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 			$this->appendRequiredCheckbox($div);

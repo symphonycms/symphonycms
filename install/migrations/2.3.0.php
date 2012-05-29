@@ -23,11 +23,11 @@
 		}
 
 		static function getVersion(){
-			return '2.3RC3';
+			return '2.3';
 		}
 
 		static function getReleaseNotes(){
-			return 'https://gist.github.com/1162216';
+			return 'http://symphony-cms.com/download/releases/version/2.3/';
 		}
 
 		static function upgrade(){

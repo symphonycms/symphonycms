@@ -12,7 +12,7 @@
 	 *
 	 * @param {Object} options An object specifying containing the attributes specified below
 	 * @param {String} [options.items='time'] Selector to find the absolute date
-	 * @param {String} [options.timestamp='datetime'] Attribute of `object.items` representing the timestamp of the given date
+	 * @param {String} [options.timestamp='utc'] Attribute of `object.items` representing the timestamp of the given date
 	 *
 	 * @example
 
@@ -22,7 +22,7 @@
 		var objects = this,
 			settings = {
 				items: 'time',
-				timestamp: 'datetime'
+				timestamp: 'utc'
 			};
 
 		$.extend(settings, options);
@@ -43,7 +43,7 @@
 
 		function parse(item) {
 			var timestamp = item.data('timestamp'),
-				datetime, date, now;
+				datetime;
 
 			// Fetch stored timestamp
 			if($.isNumeric(timestamp)) {
@@ -56,16 +56,14 @@
 
 				// Defined date and time
 				if(datetime) {
-					// Parse ISO 8601 and convert to UTC so that all time 
-					// comparisons are done in the user's local time. #1262
-					date = datetime.split(/[-T:+]/);
-					timestamp = new Date(Date.UTC(date[0], date[1] - 1, date[2], date[3], date[4], date[5]));
+					// Datetime will be in seconds since Epoch, JS requires
+					// millseconds, so multiply by 1000.
+					timestamp = new Date(datetime * 1000);
 				}
 
 				// Undefined date and time
 				else {
-					now = new Date();
-					timestamp = now.getTime();
+					timestamp = new Date().getTime();
 				}
 
 				// Store and return timestamp

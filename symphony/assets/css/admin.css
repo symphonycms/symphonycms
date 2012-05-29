@@ -8,7 +8,9 @@
 --------------------------------------------------------------------------*/
 
 #wrapper {
-	background: #F4F4F4;
+	background: #fff;
+	position: relative;
+	min-height: 100%;
 }
 
 /* Header */
@@ -207,6 +209,7 @@
 	padding: 25px 18px 0;
 	position: relative;
 	color: #000;
+	background-color: #f4f4f4;
 	min-height: 38px;
 	z-index: 1000;
 }
@@ -601,6 +604,7 @@ div.field-checkbox:first-child {
 
 .file a {
 	word-wrap: break-word;
+	overflow-wrap: break-word;
 }
 
 .file em {
@@ -645,6 +649,10 @@ div.field-checkbox:first-child {
 
 	#utilities > li:nth-child(2n) {
 		background: #FFF;
+	}
+
+	#utilities > li.selected {
+		background: #668abe;
 	}
 
 	#version {

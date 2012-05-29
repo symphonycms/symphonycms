@@ -22,8 +22,10 @@
 		public function __construct() {
 			parent::__construct();
 			$this->_name = __('Date');
+			$this->_required = true;
 			$this->key = 1;
 
+			$this->set('required', 'no');
 			$this->set('location', 'sidebar');
 		}
 
@@ -310,6 +312,10 @@
 			$label->setValue(__('%s Pre-populate with current date', array($input->generate())));
 			$div->appendChild($label);
 
+			$wrapper->appendChild($div);
+
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
 			$wrapper->appendChild($div);
 		}
@@ -352,6 +358,7 @@
 			}
 
 			$label = Widget::Label($this->get('label'));
+			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input("fields{$fieldnamePrefix}[{$name}]", $value));
 			$label->setAttribute('class', 'date');
 
@@ -363,8 +370,16 @@
 		}
 
 		public function checkPostFieldData($data, &$message, $entry_id=NULL) {
-			if(empty($data)) return self::__OK__;
 			$message = NULL;
+
+			// If this field is required
+			if($this->get('required') == 'yes' && strlen(trim($data)) == 0){
+				$message = __('‘%s’ is a required field.', array($this->get('label')));
+				return self::__MISSING_FIELDS__;
+			}
+			else if(empty($data)) {
+				return self::__OK__;
+			}
 
 			// Handle invalid dates
 			if(!DateTimeObj::validate($data)) {

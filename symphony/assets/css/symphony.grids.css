@@ -94,7 +94,7 @@ form.columns .column.primary {
 	.two.columns .column.secondary p.label {
 		margin-top: 10px;
 	}
-	
+
 }
 
 /* Errors in columns */
@@ -118,6 +118,15 @@ form.columns .column.primary {
 	width: 100%;
 	float: none;
 	margin: 0;
+}
+
+.columns > .invalid > .column > i {
+	top: 10px;
+	right: 10px;
+}
+
+.columns > .invalid > .column > .tags {
+	margin-bottom: 0;
 }
 
 .columns > .invalid > p {
