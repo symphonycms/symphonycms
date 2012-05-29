@@ -1,13 +1,13 @@
 # Symphony 2 #
 
-- Version: 2.3
-- Date: 29th May 2012
-- Release Notes: <http://symphony-cms.com/download/releases/version/2.3/>
-- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.3>
+- Version: 2.3.1dev
+- Date: unreleased
+- Release Notes: <https://gist.github.com/2828337>
+- Github Repository: <http://github.com/symphonycms/symphony-2/tree/integration>
 
 ## Overview
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.3` and is considered stable.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.3.1dev` and is considered unstable.
 
 Visit the forum at <http://symphony-cms.com/discuss/>
 
@@ -80,7 +80,7 @@ Follow the instructions below if you are updating from Symphony 2.0 (not from Gi
 
 **Note:** As of 2.0.6, there is no longer a need to backup `/symphony/.htaccess`.
 
-1. Upload `/symphony`, `index.php` & `update.php`, replacing what is already on your server.
+1. Upload `/symphony`, `/install` & `index.php`, replacing what is already on your server.
 
 2. If you are updating from a version older than 2.0.5, download and install the Debug DevKit and Profile DevKit:
 
