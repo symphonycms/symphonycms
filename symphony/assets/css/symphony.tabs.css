@@ -12,6 +12,7 @@ ul.tabs {
 	height: 23px;
 	position: relative;
 	top: 1px;
+	z-index: 10;
 }
 
 ul.tabs li {
