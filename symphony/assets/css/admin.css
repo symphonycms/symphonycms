@@ -211,7 +211,6 @@
 	color: #000;
 	background-color: #f4f4f4;
 	min-height: 38px;
-	z-index: 1000;
 }
 
 #context:after {
