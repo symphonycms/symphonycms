@@ -207,7 +207,10 @@
 		}
 
 		public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
-			if ($mode == null || $mode == 'formatted') {
+			$attributes = array();
+			if (!is_null($mode)) $attributes['mode'] = $mode;
+
+			if ($mode == 'formatted') {
 				if ($this->get('formatter') && isset($data['value_formatted'])) {
 					$value = $data['value_formatted'];
 				}
@@ -215,9 +218,6 @@
 				else {
 					$value = $this->__replaceAmpersands($data['value']);
 				}
-
-				$attributes = array();
-				if ($mode == 'formatted') $attributes['mode'] = $mode;
 
 				$wrapper->appendChild(
 					new XMLElement(
@@ -227,14 +227,12 @@
 					)
 				);
 			}
-			else if ($mode == 'unformatted') {
+			else if ($mode == null || $mode == 'unformatted') {
 				$wrapper->appendChild(
 					new XMLElement(
 						$this->get('element_name'),
 						sprintf('<![CDATA[%s]]>', str_replace(']]>',']]]]><![CDATA[>',$data['value'])),
-						array(
-							'mode' => $mode
-						)
+						$attributes
 					)
 				);
 			}
