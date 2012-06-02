@@ -104,14 +104,14 @@ Follow the instructions below if you are updating from Symphony 2.0 (not from Gi
 
 	The following repositories are included as submodules:
 
-	- [Markdown](http://github.com/symphonycms/markdown)
-	- [Maintenance Mode](http://github.com/symphonycms/maintenance_mode)
-	- [Select Box Link Field](http://github.com/symphonycms/selectbox_link_field)
-	- [JIT Image Manipulation](http://github.com/symphonycms/jit_image_manipulation)
-	- [Export Ensemble](http://github.com/symphonycms/export_ensemble)
-	- [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)
-	- [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master)
-	- [XSS Filter](http://github.com/symphonycms/xssfilter/tree/master)
+		- [Markdown](http://github.com/symphonycms/markdown)
+		- [Maintenance Mode](http://github.com/symphonycms/maintenance_mode)
+		- [Select Box Link Field](http://github.com/symphonycms/selectbox_link_field)
+		- [JIT Image Manipulation](http://github.com/symphonycms/jit_image_manipulation)
+		- [Export Ensemble](http://github.com/symphonycms/export_ensemble)
+		- [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)
+		- [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master)
+		- [XSS Filter](http://github.com/symphonycms/xssfilter/tree/master)
 
 3. Run the following command to ensure the submodules are cloned:
 
@@ -134,11 +134,11 @@ details for establishing a database connection and about your server environment
 
 1. This step assumes you downloaded a zip archive from the [Symphony website](http://symphony-cms.com). Upload the following files and directories to the root directory of your website:
 
-	- index.php
-	- /install
-	- /symphony
-	- /workspace
-	- /extensions
+		- index.php
+		- /install
+		- /symphony
+		- /workspace
+		- /extensions
 
 2. Point your web browser at <http://yourwebsite.com/install/> and provide
 details for establishing a database connection and about your server environment.
@@ -169,8 +169,8 @@ Thanks to @DavidOliver for these quick scripts.
 
 To recursively chmod directories only:
 
-	`find /your/site/root -type d -exec chmod 755 {} \;`
+	find /your/site/root -type d -exec chmod 755 {} \;
 
 To recursively chmod files only:
 
- 	`find /your/site/root -type f -exec chmod 644 {} \;`.
+	find /your/site/root -type f -exec chmod 644 {} \;

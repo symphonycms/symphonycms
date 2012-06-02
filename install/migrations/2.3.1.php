@@ -1,6 +1,6 @@
 <?php
 
-	Class migration_230 extends Migration{
+	Class migration_231 extends Migration{
 
 		static function run($function, $existing_version = null) {
 			self::$existing_version = $existing_version;
