@@ -59,21 +59,21 @@
 
 			return false;
 		};
-		
+
 		// Navigation and notifier sizing
 		$(window).on('resize.admin', function() {
 			var width = navContent.width() + navStructure.width() + 20;
-			
+
 			// Compact mode
 			if(width > $(window).width()) {
 				nav.removeClass('wide');
 			}
-			
+
 			// Wide mode
 			else {
 				nav.addClass('wide');
 			}
-			
+
 			// Refresh Notify height
 			header.find('.notifier').trigger('resize.notify');
 		});
