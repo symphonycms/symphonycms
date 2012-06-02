@@ -478,7 +478,7 @@
 		 *  	array($value, $selected, $desc, $class, $id, $attr)
 		 *   )
 		 *   array(
-		 *  	array('label' => 'Optgroup', 'options' = array(
+		 *  	array('label' => 'Optgroup', 'data-label' => 'optgroup', 'options' = array(
 		 *  		array($value, $selected, $desc, $class, $id, $attr)
 		 *  	)
 		 *   )
@@ -517,6 +517,10 @@
 				if(isset($o['label'])) {
 					$optgroup = new XMLElement('optgroup');
 					$optgroup->setAttribute('label', $o['label']);
+
+					if(isset($o['data-label'])) {
+						$optgroup->setAttribute('data-label', $o['data-label']);
+					}
 
 					foreach($o['options'] as $option){
 						$optgroup->appendChild(
@@ -619,7 +623,6 @@
 
 			return $fieldset;
 		}
-
 
 		/**
 		 * Will wrap a `<div>` around a desired element to trigger the default

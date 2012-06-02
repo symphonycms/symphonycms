@@ -546,7 +546,7 @@
 					var select = $(this),
 						optgroup = select.find('option:selected').parent(),
 						value = select.val().replace(/\W+/g, '_'),
-						group = optgroup.attr('label').replace(/\W+/g, '_');
+						group = optgroup.data('label') || optgroup.attr('label').replace(/\W+/g, '_');
 
 					// Show only relevant interface components based on context
 					area[(area.hasClass(value) || area.hasClass(group)) ^ area.hasClass('inverse') ? 'removeClass' : 'addClass']('irrelevant');

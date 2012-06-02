@@ -235,7 +235,7 @@
 
 			// Loop over the datasource providers
 			if(!empty($providers)) {
-				$p = array('label' => __('From extensions'), 'options' => array());
+				$p = array('label' => __('From extensions'), 'data-label' => 'from_extensions', 'options' => array());
 
 				foreach($providers as $providerClass => $provider) {
 					$p['options'][] = array(
@@ -443,7 +443,7 @@
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml From_extensions');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml from_extensions');
 			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));
 
 			$p = new XMLElement('p',
@@ -539,7 +539,7 @@
 			$this->Form->appendChild($fieldset);
 
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml From_extensions');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml from_extensions');
 			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
 
 			$label = Widget::Label(__('Required URL Parameter'));
