@@ -784,11 +784,11 @@
 				 * @delegate DataSourcePreExecute
 				 * @param string $context
 				 * '/frontend/'
-				 * @param boolean $datasource
+				 * @param DataSource $datasource
 				 *  The Datasource object
 				 * @param mixed $xml
 				 *  The XML output of the data source. Can be an `XMLElement` or string.
-				 * @param mixed $param_pool
+				 * @param array $param_pool
 				 *  The existing param pool including output parameters of any previous data sources
 				 */
 				Symphony::ExtensionManager()->notifyMembers('DataSourcePreExecute', '/frontend/', array(
@@ -812,11 +812,11 @@
 					 * @delegate DataSourcePostExecute
 					 * @param string $context
 					 * '/frontend/'
-					 * @param boolean $datasource
+					 * @param DataSource $datasource
 					 *  The Datasource object
 					 * @param mixed $xml
 					 *  The XML output of the data source. Can be an `XMLElement` or string.
-					 * @param mixed $param_pool
+					 * @param array $param_pool
 					 *  The existing param pool including output parameters of any previous data sources
 					 */
 					Symphony::ExtensionManager()->notifyMembers('DataSourcePostExecute', '/frontend/', array(
