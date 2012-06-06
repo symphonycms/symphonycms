@@ -417,11 +417,16 @@
 
 			if($existing) {
 				$template_name = $fields['handle'];
+				$page_url = URL . '/' . PageManager::resolvePagePath($page_id) . '/';
 				if($existing['parent']){
 					$parents = PageManager::resolvePagePath($existing['parent']);
 					$template_name = PageManager::createFilePath($parents, $fields['handle']);
 				}
-				$this->appendSubheading(__($title ? $title : __('Untitled')), Widget::Anchor(__('Edit Template'), SYMPHONY_URL . '/blueprints/pages/template/' . $template_name, __('Edit Page Template'), 'button', NULL, array('accesskey' => 't')));
+
+				$this->appendSubheading($title, array(
+					Widget::Anchor(__('View Page'), $page_url, __('View Page on Frontend'), 'button', NULL, array('target' => '_blank', 'accesskey' => 'v')),
+					Widget::Anchor(__('Edit Template'), SYMPHONY_URL . '/blueprints/pages/template/' . $template_name, __('Edit Page Template'), 'button', NULL, array('accesskey' => 't'))
+				));
 			}
 			else {
 				$this->appendSubheading(($title ? $title : __('Untitled')));
