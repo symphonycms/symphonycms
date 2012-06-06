@@ -364,7 +364,15 @@
 					// the parameter being set.
 					if(!General::createHandle($key)) continue;
 
-					$this->_param['url-' . $key] = XMLElement::stripInvalidXMLCharacters(utf8_encode(urldecode($val)));
+					// Handle ?foo[bar]=hi as well as straight ?foo=hi RE: #1348
+					if(is_array($val)) foreach($val as &$v) {
+						$v = XMLElement::stripInvalidXMLCharacters(utf8_encode(urldecode($v)));
+					}
+					else {
+						$val = XMLElement::stripInvalidXMLCharacters(utf8_encode(urldecode($val)));
+					}
+
+					$this->_param['url-' . $key] = $val;
 				}
 			}
 
