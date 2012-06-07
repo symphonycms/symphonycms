@@ -305,8 +305,8 @@ span.frame {
 	font-weight: bold;
 }
 
-.frame > ol > li header .type,
-.frame > ul > li header .type {
+.frame > ol > li header span,
+.frame > ul > li header span {
 	margin: 0 0 0 10px;
 	font-weight: normal;
 	color: #a1a1a1;
@@ -356,7 +356,7 @@ span.frame {
 	background: none;
 }
 
-.frame > ol > li.conflict.collapsed header .type,
+.frame > ol > li.conflict.collapsed header span,
 .frame > ol > li.conflict.collapsed header .destructor {
 	color: #BD7053;
 }
