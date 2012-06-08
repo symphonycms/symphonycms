@@ -340,7 +340,7 @@
 				'current-page-id' => $page['id'],
 				'current-path' => $current_path,
 				'parent-path' => '/' . $page['path'],
-				'current-query-string' => self:sanitizeParameter($querystring),
+				'current-query-string' => self::sanitizeParameter($querystring),
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
@@ -365,7 +365,7 @@
 					if(!General::createHandle($key)) continue;
 
 					// Handle ?foo[bar]=hi as well as straight ?foo=hi RE: #1348
-					$val = General::array_map_recursive(array('FrontendPage', 'sanitizeParameters'), $val);
+					$val = General::array_map_recursive(array('FrontendPage', 'sanitizeParameter'), $val);
 
 					$this->_param['url-' . $key] = $val;
 				}
