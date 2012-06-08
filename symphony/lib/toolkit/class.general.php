@@ -513,7 +513,7 @@
 				return rmdir($dir);
 			}
 			catch(Exception $ex) {
-				if($slient == false){
+				if($silent === false){
 					throw new Exception(__('Unable to remove - %s', array($dir)));
 				}
 
