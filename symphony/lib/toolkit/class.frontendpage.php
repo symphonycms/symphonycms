@@ -340,7 +340,7 @@
 				'current-page-id' => $page['id'],
 				'current-path' => $current_path,
 				'parent-path' => '/' . $page['path'],
-				'current-query-string' => XMLElement::stripInvalidXMLCharacters(utf8_encode(urldecode($querystring))),
+				'current-query-string' => self:sanitizeParameter($querystring),
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
@@ -365,12 +365,7 @@
 					if(!General::createHandle($key)) continue;
 
 					// Handle ?foo[bar]=hi as well as straight ?foo=hi RE: #1348
-					if(is_array($val)) foreach($val as &$v) {
-						$v = XMLElement::stripInvalidXMLCharacters(utf8_encode(urldecode($v)));
-					}
-					else {
-						$val = XMLElement::stripInvalidXMLCharacters(utf8_encode(urldecode($val)));
-					}
+					$val = General::array_map_recursive(array('FrontendPage', 'sanitizeParameters'), $val);
 
 					$this->_param['url-' . $key] = $val;
 				}
@@ -929,6 +924,20 @@
 			}
 
 			return $list;
+		}
+
+		/**
+		 * Given a string (expected to be a URL parameter) this function will
+		 * ensure it is safe to embed in an XML document.
+		 *
+		 * @since Symphony 2.3.1
+		 * @param string $parameter
+		 *  The string to sanitize for XML
+		 * @return string
+		 *  The sanitized string
+		 */
+		public static function sanitizeParameter($parameter) {
+			return XMLElement::stripInvalidXMLCharacters(utf8_encode(urldecode($parameter)));
 		}
 
 		/**
