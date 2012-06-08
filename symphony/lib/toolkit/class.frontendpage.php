@@ -365,7 +365,12 @@
 					if(!General::createHandle($key)) continue;
 
 					// Handle ?foo[bar]=hi as well as straight ?foo=hi RE: #1348
-					$val = General::array_map_recursive(array('FrontendPage', 'sanitizeParameter'), $val);
+					if(is_array($val)) {
+						$val = General::array_map_recursive(array('FrontendPage', 'sanitizeParameter'), $val);
+					}
+					else {
+						$val = self::sanitizeParameter($val);
+					}
 
 					$this->_param['url-' . $key] = $val;
 				}
