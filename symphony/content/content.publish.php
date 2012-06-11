@@ -482,6 +482,8 @@
 
 							foreach($checked as $entry_id){
 								$entry = EntryManager::fetch($entry_id);
+								$existing_data = $entry[0]->getData($field_id);
+								$entry[0]->setData($field_id, $field->toggleFieldData(is_array($existing_data) ? $existing_data : array(), $value, $entry_id));
 
 								/**
 								 * Just prior to editing of an Entry
@@ -499,8 +501,6 @@
 									'fields' => $fields
 								));
 
-								$existing_data = $entry[0]->getData($field_id);
-								$entry[0]->setData($field_id, $field->toggleFieldData(is_array($existing_data) ? $existing_data : array(), $value, $entry_id));
 								$entry[0]->commit();
 
 								/**
