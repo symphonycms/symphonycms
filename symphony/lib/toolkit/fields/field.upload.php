@@ -481,17 +481,19 @@
 
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
 			if(!$file = $data['file']){
-				if($link) return parent::prepareTableValue(null, $link);
-				else return parent::prepareTableValue(null);
+				if($link) return parent::prepareTableValue(null, $link, $entry_id);
+				else return parent::prepareTableValue(null, $link, $entry_id);
 			}
 
 			if($link){
 				$link->setValue(basename($file));
+				$link->setAttribute('data-path', $file);
 				return $link->generate();
 			}
 
-			else{
+			else {
 				$link = Widget::Anchor(basename($file), URL . '/workspace' . $file);
+				$link->setAttribute('data-path', $file);
 				return $link->generate();
 			}
 		}
@@ -506,12 +508,12 @@
 			if (preg_match('/^mimetype:/', $data[0])) {
 				$data[0] = str_replace('mimetype:', '', $data[0]);
 				$column = 'mimetype';
-
-			} else if (preg_match('/^size:/', $data[0])) {
+			}
+			else if (preg_match('/^size:/', $data[0])) {
 				$data[0] = str_replace('size:', '', $data[0]);
 				$column = 'size';
-
-			} else {
+			}
+			else {
 				$column = 'file';
 			}
 
