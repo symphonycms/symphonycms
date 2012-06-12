@@ -696,7 +696,7 @@
 				}
 				else if($sort == 'name'){
 					foreach($extensions as $key => $about){
-						$name[$key] = $about['name'];
+						$name[$key] = strtolower($about['name']);
 						$label[$key] = $key;
 					}
 
