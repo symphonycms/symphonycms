@@ -112,7 +112,7 @@
 					$field = FieldManager::fetch($field_id);
 
 					if(is_array($fields[$field->get('element_name')])) {
-						$type = array_reduce($fields[$field->get('element_name')], '__reduceType');
+						$type = array_reduce($fields[$field->get('element_name')], array('SectionEvent', '__reduceType'));
 					}
 					else {
 						$type = ($fields[$field->get('element_name')] == '') ? 'missing' : 'invalid';
