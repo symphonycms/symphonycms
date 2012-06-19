@@ -12,7 +12,9 @@
 		public function __construct(){
 			parent::__construct();
 			$this->_name = __('Checkbox');
+			$this->_required = true;
 
+			$this->set('required', 'no');
 			$this->set('location', 'sidebar');
 		}
 	/*-------------------------------------------------------------------------
@@ -84,16 +86,18 @@
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+			$this->appendRequiredCheckbox($div);
+			$this->appendShowColumnCheckbox($div);
+			$wrapper->appendChild($div);
 
 			// Checkbox Default State
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 			$label = Widget::Label();
 			$label->setAttribute('class', 'column');
 			$input = Widget::Input('fields['.$this->get('sortorder').'][default_state]', 'on', 'checkbox');
 			if($this->get('default_state') == 'on') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Checked by default', array($input->generate())));
 			$div->appendChild($label);
-
-			$this->appendShowColumnCheckbox($div);
 			$wrapper->appendChild($div);
 		}
 
@@ -116,7 +120,6 @@
 	-------------------------------------------------------------------------*/
 
 		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null){
-
 			if(!$data){
 				// TODO: Don't rely on $_POST
 				if(isset($_POST) && !empty($_POST)) $value = 'no';
@@ -127,11 +130,13 @@
 			else $value = ($data['value'] == 'yes' ? 'yes' : 'no');
 
 			$label = Widget::Label();
+			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 			$input = Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, 'yes', 'checkbox', ($value == 'yes' ? array('checked' => 'checked') : NULL));
 
 			$label->setValue($input->generate(false) . ' ' . $this->get('label'));
 
-			$wrapper->appendChild($label);
+			if($flagWithError != NULL) $wrapper->appendChild(Widget::Error($label, $flagWithError));
+			else $wrapper->appendChild($label);
 		}
 
 		public function processRawFieldData($data, &$status, &$message=null, $simulate = false, $entry_id = null){
@@ -226,17 +231,17 @@
 
 				if(strpos($data, $default_state) !== false) {
 					$where .= "
-				    	AND (
-				    		t{$field_id}_{$this->_key}.value IN ('{$data}')
-				            OR
-				            t{$field_id}_{$this->_key}.value IS NULL
-				    	)
-				    ";
+						AND (
+							t{$field_id}_{$this->_key}.value IN ('{$data}')
+							OR
+							t{$field_id}_{$this->_key}.value IS NULL
+						)
+					";
 				}
 				else {
 					$where .= "
-				        AND (t{$field_id}_{$this->_key}.value IN ('{$data}'))
-				    ";
+						AND (t{$field_id}_{$this->_key}.value IN ('{$data}'))
+					";
 				}
 			}
 
@@ -270,7 +275,6 @@
 	-------------------------------------------------------------------------*/
 
 		public function groupRecords($records){
-
 			if(!is_array($records) || empty($records)) return;
 
 			$groups = array($this->get('element_name') => array());
