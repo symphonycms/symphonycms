@@ -304,6 +304,11 @@
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+			$this->appendRequiredCheckbox($div);
+			$this->appendShowColumnCheckbox($div);
+			$wrapper->appendChild($div);
+
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 
 			$label = Widget::Label();
 			$label->setAttribute('class', 'column');
@@ -312,11 +317,6 @@
 			$label->setValue(__('%s Pre-populate with current date', array($input->generate())));
 			$div->appendChild($label);
 
-			$wrapper->appendChild($div);
-
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-			$this->appendRequiredCheckbox($div);
-			$this->appendShowColumnCheckbox($div);
 			$wrapper->appendChild($div);
 		}
 
