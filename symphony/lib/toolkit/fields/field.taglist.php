@@ -14,6 +14,9 @@
 		public function __construct(){
 			parent::__construct();
 			$this->_name = __('Tag List');
+			$this->_required = true;
+
+			$this->set('required', 'no');
 		}
 
 	/*-------------------------------------------------------------------------
@@ -135,7 +138,10 @@
 
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');
 
-			$this->appendShowColumnCheckbox($wrapper);
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+			$this->appendRequiredCheckbox($div);
+			$this->appendShowColumnCheckbox($div);
+			$wrapper->appendChild($div);
 		}
 
 		public function commit(){
@@ -164,6 +170,7 @@
 			}
 
 			$label = Widget::Label($this->get('label'));
+			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 
 			$label->appendChild(
 				Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? General::sanitize($value) : NULL))
@@ -193,6 +200,11 @@
 
 		public function checkPostFieldData($data, &$message, $entry_id = null){
 			$message = NULL;
+
+			if($this->get('required') == 'yes' && strlen($data) == 0){
+				$message = __('‘%s’ is a required field.', array($this->get('label')));
+				return self::__MISSING_FIELDS__;
+			}
 
 			if($this->get('validator')) {
 				$data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
