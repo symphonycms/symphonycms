@@ -193,12 +193,12 @@
 				 * @param string $xml
 				 *  This pages XML, including the Parameters, Datasource and Event XML, by reference
 				 * @param string $xsl
-				 *  This pages XSLT
+				 *  This pages XSLT, by reference
 				 */
 				Symphony::ExtensionManager()->notifyMembers('FrontendOutputPreGenerate', '/frontend/', array(
 					'page'	=> &$this,
 					'xml'	=> &$this->_xml,
-					'xsl'	=> $this->_xsl
+					'xsl'	=> &$this->_xsl
 				));
 
 				if (is_null($devkit)) {
