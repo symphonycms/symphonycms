@@ -5,8 +5,9 @@
 	/**
 	 * SHA1 is a cryptography class for hashing and comparing messages
 	 * using the SHA1-Algorithm
-	 * This code exists only for backwards-compatibility-purposes
-	 * and should not be used when writing new features.
+	 *
+	 * @deprecated This code is regarded as insecure and exists only for backwards-compatibility-purposes.
+	 * It should not be used when writing new password-related features.
 	 */
 	Class SHA1 extends Cryptography{
 
@@ -15,8 +16,6 @@
 		 *
 		 * @param string $input
 		 * the string to be hashed
-		 * @param string $algorithm
-		 * a valid PHP function handle
 		 * @return string
 		 * the hashed string
 		 */
@@ -28,11 +27,11 @@
 		 * Compares a given hash with a cleantext password.
 		 *
 		 * @param string $input
-		 * the string to be compared
-		 * @param string $algorithm
-		 * a valid PHP function handle
-		 * @return string
-		 * the hashed string
+		 * the cleartext password
+		 * @param string $hash
+		 * the hash the password should be checked against
+		 * @return bool
+		 * the result of the comparison
 		 */
 		public static function compare($input, $hash){
 			return ($hash == self::hash($input));

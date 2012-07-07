@@ -3,8 +3,14 @@
 	 * @package toolkit
 	 */
 	/**
-	 * Cryptography is a utility class that offers a number of cryptography-
-	 * related functions such as message digestation.
+	 * Cryptography is a utility class that offers a number of general purpose cryptography-
+	 * related functions for message digestation as well as (backwards-)compatibility
+	 * checking. The message digestation algorithms are placed in the subclasses
+	 * `MD5`, `SHA1` and `SSHA1`.
+
+	 * @see toolkit.MD5
+	 * @see toolkit.SHA1
+	 * @see toolkit.SSHA1
 	 */
 	require_once(TOOLKIT . '/class.md5.php');
 	require_once(TOOLKIT . '/class.sha1.php');
@@ -13,14 +19,17 @@
 	Class Cryptography{
 		
 		/**
-		 * Uses `SHA1` or `MD5` to create a hash based on some input
-		 * This function is currently very basic, but would allow
-		 * future expansion. Salting the hash comes to mind.
+		 * Uses an instance of `MD5`, `SHA1` or `SSHA1` to create a hash
 		 *
+		 * @see toolkit.MD5#hash()
+		 * @see toolkit.SHA1#hash()
+		 * @see toolkit.SSHA1#hash()
+	 	 *
 		 * @param string $input
 		 * the string to be hashed
 		 * @param string $algorithm
-		 * a valid PHP function handle
+		 * a handle for the algorithm to be used
+		 * @deprecated This parameter will be removed in a future release. The use of i.e. `SHA1::hash()` is recommended instead when not using the default algorithm.
 		 * @return string
 		 * the hashed string
 		 */
@@ -40,15 +49,19 @@
 		}
 
 		/**
-		 * Compares a given hash with a cleantext password. Extracts the salt
-		 * from the hash if required.
+		 * Compares a given hash with a cleantext password by figuring out the
+		 * algorithm that has been used and then calling the approriate sub-class
+		 *
+		 * @see toolkit.MD5#compare()
+		 * @see toolkit.SHA1#compare()
+		 * @see toolkit.SSHA1#compare()
 		 *
 		 * @param string $input
-		 * the string to be compared
-		 * @param string $algorithm
-		 * a valid PHP function handle
-		 * @return string
-		 * the hashed string
+		 * the cleartext password
+		 * @param string $hash
+		 * the hash the password should be checked against
+		 * @return bool
+		 * the result of the comparison
 		 */
 		public static function compare($input, $hash, $isHash=false){
 			$version = substr($hash, 0, 5);
@@ -115,6 +128,8 @@
 		/**
 		 * Generates a salt to be used in message digestation.
 		 *
+		 * @param int $length
+		 * the length of the salt
 		 * @return string
 		 * a hexadecimal string
 		 */

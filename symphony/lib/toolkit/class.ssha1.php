@@ -19,8 +19,8 @@
 		 *
 		 * @param string $input
 		 * the string to be hashed
-		 * @param string $algorithm
-		 * a valid PHP function handle
+		 * @param string $salt
+		 * an optional salt
 		 * @return string
 		 * the hashed string
 		 */
@@ -36,11 +36,11 @@
 		 * from the hash.
 		 *
 		 * @param string $input
-		 * the string to be compared
-		 * @param string $algorithm
-		 * a valid PHP function handle
-		 * @return string
-		 * the hashed string
+		 * the cleartext password
+		 * @param string $hash
+		 * the hash the password should be checked against
+		 * @return bool
+		 * the result of the comparison
 		 */
 		public static function compare($input, $hash){
 			$salt = self::extractSalt($hash, self::SALT_LENGTH);
