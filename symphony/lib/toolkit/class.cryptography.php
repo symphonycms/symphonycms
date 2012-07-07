@@ -24,7 +24,7 @@
 		 * @return string
 		 * the hashed string
 		 */
-		public static function hash($input, $algorithm='sha1'){
+		public static function hash($input, $algorithm='ssha1'){
 			switch($algorithm) {
 				case 'md5':
 					return MD5::hash($input);

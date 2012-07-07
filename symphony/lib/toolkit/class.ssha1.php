@@ -26,7 +26,7 @@
 		 */
 		public static function hash($input, $salt=NULL){
 			if($salt === NULL)
-				$salt = self::generateSalt(SALT_LENGTH);
+				$salt = self::generateSalt(self::SALT_LENGTH);
 
 			return $salt . sha1($salt . $input);
 		}
@@ -43,9 +43,9 @@
 		 * the hashed string
 		 */
 		public static function compare($input, $hash){
-			$salt = self::extractSalt($hash, SALT_LENGTH);
-			$hash = self::extractHash($hash, SALT_LENGTH);
+			$salt = self::extractSalt($hash, self::SALT_LENGTH);
+			$hash = self::extractHash($hash, self::SALT_LENGTH);
 
-			return ($hash == self::hash($input, $salt));
+			return ($salt . $hash == self::hash($input, $salt));
 		}
 	}
