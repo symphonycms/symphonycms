@@ -1264,7 +1264,7 @@
 		 * the hashed string
 		 */
 		public static function hash($input, $algorithm='sha1'){
-			return call_user_func($algorithm, $input);
+			return hash($algorithm, $input);
 		}
 
 		/**
