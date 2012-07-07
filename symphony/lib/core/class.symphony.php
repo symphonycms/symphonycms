@@ -359,14 +359,12 @@
 
 			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
 
-				if(!$isHash) $password = General::hash($password);
-
 				$author = AuthorManager::fetch('id', 'ASC', 1, null, sprintf("
-						`username` = '%s' AND `password` = '%s'
-					", $username, $password
+						`username` = '%s'
+					", $username
 				));
 
-				if(!empty($author)) {
+				if(!empty($author) && Cryptography::compare($password, current($author)->get('password'), $isHash)) {
 					$this->Author = current($author);
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
@@ -474,11 +472,11 @@
 				if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
 
 					$author = AuthorManager::fetch('id', 'ASC', 1, null, sprintf("
-							`username` = '%s' AND `password` = '%s'
-						", $username, $password
+							`username` = '%s'
+						", $username
 					));
 
-					if(!empty($author)) {
+					if(!empty($author) && Cryptography::compare($password, current($author)->get('password'), $isHash)) {
 						$this->Author = current($author);
 						self::Database()->update(array(
 							'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
