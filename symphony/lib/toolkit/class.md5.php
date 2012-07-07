@@ -20,6 +20,7 @@
 		 * the hashed string
 		 */
 		public static function hash($input){
+			Symphony::Log()->writeToLog('Deprecated: The use of MD5::hash() is discouraged due to severe security flaws.', E_NOTICE, true);
 			return md5($input);
 		}
 
