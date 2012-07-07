@@ -21,6 +21,19 @@
 		 * the hashed string
 		 */
 		public static function hash($input, $algorithm='sha1'){
-			return hash($algorithm, $input);
+			$salt = self::generateSalt();
+
+			return $salt . hash($algorithm, $salt . $input);
+		}
+
+		/**
+		 * Generates a salt to be used in message digestation.
+		 *
+		 * @return string
+		 * a hexadecimal string
+		 */
+		public static function generateSalt($length=10) {
+			mt_srand(microtime(true)*100000 + memory_get_usage(true));
+			return substr(sha1(uniqid(mt_rand(), true)), 0, $length);
 		}
 	}
