@@ -1264,7 +1264,7 @@
 		 * the hashed string
 		 */
 		public static function hash($input, $algorithm='sha1'){
-			return hash($algorithm, $input);
+			return Cryptography::hash($input, $algorithm);
 		}
 
 		/**
