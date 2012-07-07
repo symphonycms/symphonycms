@@ -50,7 +50,7 @@
 		 * @return string
 		 * the hashed string
 		 */
-		public static function compare($input, $hash, $isHash){
+		public static function compare($input, $hash, $isHash=false){
 			$version = substr($hash, 0, 5);
 
 			if($version == 'SSHA1') { // salted SHA1
