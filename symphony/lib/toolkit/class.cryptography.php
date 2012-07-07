@@ -15,15 +15,17 @@
 	require_once(TOOLKIT . '/cryptography/class.md5.php');
 	require_once(TOOLKIT . '/cryptography/class.sha1.php');
 	require_once(TOOLKIT . '/cryptography/class.ssha1.php');
+	require_once(TOOLKIT . '/cryptography/class.pbkdf2.php');
 
 	Class Cryptography{
 		
 		/**
-		 * Uses an instance of `MD5`, `SHA1` or `SSHA1` to create a hash
+		 * Uses an instance of `MD5`, `SHA1`, `SSHA1` or `PBKDF2` to create a hash
 		 *
 		 * @see toolkit.MD5#hash()
 		 * @see toolkit.SHA1#hash()
 		 * @see toolkit.SSHA1#hash()
+		 * @see toolkit.PBKDF2#hash()
 	 	 *
 		 * @param string $input
 		 * the string to be hashed
@@ -33,7 +35,7 @@
 		 * @return string
 		 * the hashed string
 		 */
-		public static function hash($input, $algorithm='ssha1'){
+		public static function hash($input, $algorithm='pbkdf2'){
 			switch($algorithm) {
 				case 'md5':
 					return MD5::hash($input);
@@ -42,8 +44,11 @@
 					return SHA1::hash($input);
 					break;
 				case 'ssha1':
-				default:
 					return "SSHA1" . SSHA1::hash($input);
+					break;
+				case 'pbkdf2':
+				default:
+					return "PBKDF" . PBKDF2::hash($input);
 					break;
 			}
 		}
@@ -55,6 +60,7 @@
 		 * @see toolkit.MD5#compare()
 		 * @see toolkit.SHA1#compare()
 		 * @see toolkit.SSHA1#compare()
+		 * @see toolkit.PBKDF2#compare()
 		 *
 		 * @param string $input
 		 * the cleartext password
@@ -66,6 +72,9 @@
 		public static function compare($input, $hash, $isHash=false){
 			$version = substr($hash, 0, 5);
 
+			if($version == 'PBKDF') { // salted PBKDF2
+				return PBKDF2::compare($input, $hash);
+			}
 			if($version == 'SSHA1') { // salted SHA1
 				return SSHA1::compare($input, $hash);
 			}
@@ -89,8 +98,8 @@
 		public static function requiresMigration($hash){
 			$version = substr($hash, 0, 5);
 
-			if($version == 'SSHA1') { // salted SHA1
-				return SSHA1::requiresMigration($hash);
+			if($version == 'PBKDF') { // salted PBKDF2
+				return false;
 			}
 			else {
 				return true;
