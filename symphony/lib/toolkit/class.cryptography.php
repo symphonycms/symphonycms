@@ -65,6 +65,26 @@
 		}
 
 		/**
+		 * Checks if provided hash has been computed by most recent algorithm
+		 * returns true if otherwise
+		 *
+		 * @param string $hash
+		 * the hash to be checked
+		 * @return bool
+		 * whether the hash should be re-computed
+		 */
+		public static function requiresMigration($hash){
+			$version = substr($hash, 0, 5);
+
+			if($version == 'SSHA1') { // salted SHA1
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+
+		/**
 		 * Extracts the hash from a hash/salt-combination
 		 *
 		 * @param string $input

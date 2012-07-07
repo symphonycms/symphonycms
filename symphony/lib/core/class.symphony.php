@@ -366,6 +366,10 @@
 
 				if(!empty($author) && Cryptography::compare($password, current($author)->get('password'), $isHash)) {
 					$this->Author = current($author);
+					if(Cryptography::requiresMigration($this->Author->get('password'))){
+						$this->Author->get('password') = Cryptography::hash($password);
+						self::Database()->update(array('password' => $this->Author->get('password')), 'tbl_authors', " `id` = '" . $this->Author->get('id') . "'");
+					}
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
 					self::Database()->update(array(
