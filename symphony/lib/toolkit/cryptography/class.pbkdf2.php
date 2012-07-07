@@ -3,8 +3,8 @@
 	 * @package toolkit
 	 */
 	/**
-	 * SHA1 is a cryptography class for hashing and comparing messages
-	 * using the SHA1-Algorithm with salting.
+	 * PBKDF2 is a cryptography class for hashing and comparing messages
+	 * using the PBKDF2-Algorithm with salting.
 	 * This is the most advanced hashing algorithm Symphony provides.
 	 */
 	Class PBKDF2 extends Cryptography{

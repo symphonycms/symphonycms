@@ -5,7 +5,9 @@
 	/**
 	 * SHA1 is a cryptography class for hashing and comparing messages
 	 * using the SHA1-Algorithm with salting.
-	 * This is the most advanced hashing algorithm Symphony provides.
+	 *
+	 * @deprecated This code is regarded as insecure and exists only for backwards-compatibility-purposes.
+	 * It should not be used when writing new password-related features.
 	 */
 	Class SSHA1 extends Cryptography{
 
