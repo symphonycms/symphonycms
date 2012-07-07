@@ -99,7 +99,7 @@
 			$version = substr($hash, 0, 5);
 
 			if($version == 'PBKDF') { // salted PBKDF2
-				return false;
+				return PBKDF2::requiresMigration($hash);
 			}
 			else {
 				return true;

@@ -56,7 +56,7 @@
 				$key .= $ib;
 			}
 
-			return $salt . substr(base64_encode($key), 0, self::KEY_LENGTH);
+			return sprintf("%03d%08d", self::SALT_LENGTH, self::ITERATIONS) . $salt . substr(base64_encode($key), 0, self::KEY_LENGTH);
 		}
 
 		/**
@@ -74,6 +74,55 @@
 			$salt = self::extractSalt($hash, self::SALT_LENGTH);
 			$hash = self::extractHash($hash, self::SALT_LENGTH);
 
-			return ($salt . $hash == self::hash($input, $salt));
+			return (sprintf("%03d%08d", self::SALT_LENGTH, self::ITERATIONS) . $salt . $hash == self::hash($input, $salt));
+		}
+
+		/**
+		 * Extracts the hash from a hash/salt-combination
+		 *
+		 * @param string $input
+		 * the hashed string
+		 * @param int $length
+		 * the length of the salt
+		 * @return string
+		 * the hash
+		 */
+		public static function extractHash($input, $length){
+			return substr($input, 26);
+		}
+
+		/**
+		 * Extracts the salt from a hash/salt-combination
+		 *
+		 * @param string $input
+		 * the hashed string
+		 * @param int $length
+		 * the length of the salt
+		 * @return string
+		 * the salt
+		 */
+		public static function extractSalt($input, $length){
+			return substr($input, 16, $length);
+		}
+
+		/**
+		 * Checks if provided hash has been computed by most recent algorithm
+		 * returns true if otherwise
+		 *
+		 * @param string $hash
+		 * the hash to be checked
+		 * @return bool
+		 * whether the hash should be re-computed
+		 */
+		public static function requiresMigration($hash){
+			$version = substr($hash, 0, 5);
+			$saltlength = intval(substr($hash, 5, 3));
+			$iterations = intval(substr($hash, 8, 16));
+			$keylength = strlen($hash) - 5 - 3 - $saltlength - 8;
+
+			if($saltlength != self::SALT_LENGTH || $iterations != self::ITERATIONS || $keylength != self::KEY_LENGTH)
+				return true;
+			else
+				return false;
 		}
 	}
