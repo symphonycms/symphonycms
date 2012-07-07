@@ -116,7 +116,7 @@
 		 * @return string
 		 */
 		public function createAuthToken(){
-			return General::substrmin(Cryptography::hash($this->get('username') . $this->get('password')), 8);
+			return General::substrmin(SHA1::hash($this->get('username') . $this->get('password')), 8);
 		}
 
 		/**
