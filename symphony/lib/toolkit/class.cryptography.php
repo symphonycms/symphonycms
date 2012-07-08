@@ -90,39 +90,11 @@
 			$version = substr($hash, 0, 5);
 
 			if($version == 'SSHA1') { // salted SHA1
-				return false;
+				return SSHA1::requiresMigration($hash);
 			}
 			else {
 				return true;
 			}
-		}
-
-		/**
-		 * Extracts the hash from a hash/salt-combination
-		 *
-		 * @param string $input
-		 * the hashed string
-		 * @param int $length
-		 * the length of the salt
-		 * @return string
-		 * the hash
-		 */
-		public static function extractHash($input, $length){
-			return substr($input, 5+$length);
-		}
-
-		/**
-		 * Extracts the salt from a hash/salt-combination
-		 *
-		 * @param string $input
-		 * the hashed string
-		 * @param int $length
-		 * the length of the salt
-		 * @return string
-		 * the salt
-		 */
-		public static function extractSalt($input, $length){
-			return substr($input, 5, $length);
 		}
 
 		/**
