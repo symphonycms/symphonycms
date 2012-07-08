@@ -66,7 +66,7 @@
 				$key .= $ib;
 			}
 
-			return "PBKDF" . sprintf("%03d%08d", strlen($salt), $iterations) . $salt . substr(base64_encode($key), 0, $keylength);
+			return "PBKDF" . sprintf("%03d%08d", strlen($salt), $iterations) . $salt . base64_encode(substr($key, 0, $keylength));
 		}
 
 		/**
