@@ -38,6 +38,10 @@
 		 * the string to be hashed
 		 * @param string $salt
 		 * an optional salt
+		 * @param int $iterations
+		 * an optional number of iterations to be used
+		 * @param string $keylength
+		 * an optional length the key will be cropped to fit
 		 * @return string
 		 * the hashed string
 		 */
@@ -90,8 +94,6 @@
 		 *
 		 * @param string $input
 		 * the hashed string
-		 * @param int $length
-		 * the length of the salt
 		 * @return string
 		 * the hash
 		 */
@@ -105,8 +107,6 @@
 		 *
 		 * @param string $input
 		 * the hashed string
-		 * @param int $length
-		 * the length of the salt
 		 * @return string
 		 * the salt
 		 */
@@ -120,24 +120,20 @@
 		 *
 		 * @param string $input
 		 * the hashed string
-		 * @param int $length
-		 * the length of the salt
-		 * @return string
-		 * the salt
+		 * @return int
+		 * the saltlength
 		 */
 		public static function extractSaltlength($input){
 			return intval(substr($input, 5, 3));
 		}
 
 		/**
-		 * Extracts the saltlength from a hash/salt-combination
+		 * Extracts the number of iterations from a hash/salt-combination
 		 *
 		 * @param string $input
 		 * the hashed string
-		 * @param int $length
-		 * the length of the salt
-		 * @return string
-		 * the salt
+		 * @return int
+		 * the number of iterations
 		 */
 		public static function extractIterations($input){
 			return intval(substr($input, 8, 8));
