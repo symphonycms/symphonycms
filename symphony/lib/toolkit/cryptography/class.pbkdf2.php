@@ -41,9 +41,15 @@
 		 * @return string
 		 * the hashed string
 		 */
-		public static function hash($input, $salt=NULL){
+		public static function hash($input, $salt=NULL, $iterations=NULL, $keylength=NULL){
 			if($salt === NULL)
 				$salt = self::generateSalt(self::SALT_LENGTH);
+
+			if($iterations === NULL)
+				$iterations = self::ITERATIONS;
+
+			if($keylength === NULL)
+				$keylength = self::KEY_LENGTH;
 
 			$hashlength = strlen(hash(self::ALGORITHM, null, true));
 			$blocks = ceil(self::KEY_LENGTH / $hashlength);
@@ -51,12 +57,12 @@
 
 			for ($block = 1; $block <= $blocks; $block++) {
 				$ib = $b = hash_hmac(self::ALGORITHM, $salt . pack('N', $block), $input, true);
-				for ($i = 1; $i < self::ITERATIONS; $i++)
+				for ($i = 1; $i < $iterations; $i++)
 					$ib ^= ($b = hash_hmac(self::ALGORITHM, $b, $input, true));
 				$key .= $ib;
 			}
 
-			return sprintf("%03d%08d", self::SALT_LENGTH, self::ITERATIONS) . $salt . substr(base64_encode($key), 0, self::KEY_LENGTH);
+			return sprintf("%03d%08d", strlen($salt), $iterations) . $salt . substr(base64_encode($key), 0, $keylength);
 		}
 
 		/**
@@ -71,10 +77,12 @@
 		 * the result of the comparison
 		 */
 		public static function compare($input, $hash){
-			$salt = self::extractSalt($hash, self::SALT_LENGTH);
-			$hash = self::extractHash($hash, self::SALT_LENGTH);
+			$salt = self::extractSalt($hash);
+			$iterations = self::extractIterations($hash);
+			$hash = self::extractHash($hash);
+			$keylength = strlen($hash);
 
-			return (sprintf("%03d%08d", self::SALT_LENGTH, self::ITERATIONS) . $salt . $hash == self::hash($input, $salt));
+			return (sprintf("%03d%08d", strlen($salt), $iterations) . $salt . $hash == self::hash($input, $salt, $iterations, $keylength));
 		}
 
 		/**
@@ -87,8 +95,9 @@
 		 * @return string
 		 * the hash
 		 */
-		public static function extractHash($input, $length){
-			return substr($input, 26);
+		public static function extractHash($input){
+			$length = self::extractSaltlength($input);
+			return substr($input, 16+$length);
 		}
 
 		/**
@@ -101,8 +110,37 @@
 		 * @return string
 		 * the salt
 		 */
-		public static function extractSalt($input, $length){
+		public static function extractSalt($input){
+			$length = self::extractSaltlength($input);
 			return substr($input, 16, $length);
+		}
+
+		/**
+		 * Extracts the saltlength from a hash/salt-combination
+		 *
+		 * @param string $input
+		 * the hashed string
+		 * @param int $length
+		 * the length of the salt
+		 * @return string
+		 * the salt
+		 */
+		public static function extractSaltlength($input){
+			return intval(substr($input, 5, 3));
+		}
+
+		/**
+		 * Extracts the saltlength from a hash/salt-combination
+		 *
+		 * @param string $input
+		 * the hashed string
+		 * @param int $length
+		 * the length of the salt
+		 * @return string
+		 * the salt
+		 */
+		public static function extractIterations($input){
+			return intval(substr($input, 8, 8));
 		}
 
 		/**
@@ -116,11 +154,11 @@
 		 */
 		public static function requiresMigration($hash){
 			$version = substr($hash, 0, 5);
-			$saltlength = intval(substr($hash, 5, 3));
-			$iterations = intval(substr($hash, 8, 16));
-			$keylength = strlen($hash) - 5 - 3 - $saltlength - 8;
+			$length = self::extractSaltlength($hash);
+			$iterations = self::extractIterations($hash);
+			$keylength = strlen(self::extractHash($hash));
 
-			if($saltlength != self::SALT_LENGTH || $iterations != self::ITERATIONS || $keylength != self::KEY_LENGTH)
+			if($length != self::SALT_LENGTH || $iterations != self::ITERATIONS || $keylength != self::KEY_LENGTH)
 				return true;
 			else
 				return false;
