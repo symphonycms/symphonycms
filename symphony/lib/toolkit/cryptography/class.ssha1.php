@@ -14,7 +14,7 @@
 		/**
 		 * Salt length
 		 */
-		const SALT_LENGTH = 10;
+		const SALT_LENGTH = 20;
 
 		/**
 		 * Uses `SHA1` and random salt generation to create a hash based on some input
