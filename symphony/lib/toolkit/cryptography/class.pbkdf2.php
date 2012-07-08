@@ -66,7 +66,7 @@
 				$key .= $ib;
 			}
 
-			return sprintf("%03d%08d", strlen($salt), $iterations) . $salt . substr(base64_encode($key), 0, $keylength);
+			return "PBKDF" . sprintf("%03d%08d", strlen($salt), $iterations) . $salt . substr(base64_encode($key), 0, $keylength);
 		}
 
 		/**
@@ -83,10 +83,9 @@
 		public static function compare($input, $hash){
 			$salt = self::extractSalt($hash);
 			$iterations = self::extractIterations($hash);
-			$hash = self::extractHash($hash);
-			$keylength = strlen($hash);
+			$keylength = strlen(self::extractHash($hash));
 
-			return (sprintf("%03d%08d", strlen($salt), $iterations) . $salt . $hash == self::hash($input, $salt, $iterations, $keylength));
+			return $hash == self::hash($input, $salt, $iterations, $keylength);
 		}
 
 		/**

@@ -44,11 +44,11 @@
 					return SHA1::hash($input);
 					break;
 				case 'ssha1':
-					return "SSHA1" . SSHA1::hash($input);
+					return SSHA1::hash($input);
 					break;
 				case 'pbkdf2':
 				default:
-					return "PBKDF" . PBKDF2::hash($input);
+					return PBKDF2::hash($input);
 					break;
 			}
 		}
