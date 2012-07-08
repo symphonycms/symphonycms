@@ -12,9 +12,9 @@
 	 * @see toolkit.SHA1
 	 * @see toolkit.SSHA1
 	 */
-	require_once(TOOLKIT . '/class.md5.php');
-	require_once(TOOLKIT . '/class.sha1.php');
-	require_once(TOOLKIT . '/class.ssha1.php');
+	require_once(TOOLKIT . '/cryptography/class.md5.php');
+	require_once(TOOLKIT . '/cryptography/class.sha1.php');
+	require_once(TOOLKIT . '/cryptography/class.ssha1.php');
 
 	Class Cryptography{
 		
