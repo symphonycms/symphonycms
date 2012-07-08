@@ -30,7 +30,7 @@
 			if($salt === NULL)
 				$salt = self::generateSalt(self::SALT_LENGTH);
 
-			return sprintf("%03d", strlen($salt)) . $salt . sha1($salt . $input);
+			return "SSHA1" . sprintf("%03d", strlen($salt)) . $salt . sha1($salt . $input);
 		}
 
 		/**
@@ -46,9 +46,8 @@
 		 */
 		public static function compare($input, $hash){
 			$salt = self::extractSalt($hash);
-			$hash = self::extractHash($hash);
 
-			return (sprintf("%03d", strlen($salt)) . $salt . $hash == self::hash($input, $salt));
+			return $hash == self::hash($input, $salt);
 		}
 
 		/**

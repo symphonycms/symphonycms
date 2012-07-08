@@ -48,7 +48,7 @@
 					break;
 				case 'pbkdf2':
 				default:
-					return PBKDF2::hash($input);
+					return SSHA1::hash($input);
 					break;
 			}
 		}
