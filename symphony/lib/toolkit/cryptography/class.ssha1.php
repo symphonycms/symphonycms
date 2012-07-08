@@ -30,7 +30,7 @@
 			if($salt === NULL)
 				$salt = self::generateSalt(self::SALT_LENGTH);
 
-			return sprintf("%03d", self::SALT_LENGTH) . $salt . sha1($salt . $input);
+			return sprintf("%03d", strlen($salt)) . $salt . sha1($salt . $input);
 		}
 
 		/**
@@ -45,10 +45,10 @@
 		 * the result of the comparison
 		 */
 		public static function compare($input, $hash){
-			$salt = self::extractSalt($hash, self::SALT_LENGTH);
-			$hash = self::extractHash($hash, self::SALT_LENGTH);
+			$salt = self::extractSalt($hash);
+			$hash = self::extractHash($hash);
 
-			return (sprintf("%03d", self::SALT_LENGTH) . $salt . $hash == self::hash($input, $salt));
+			return (sprintf("%03d", strlen($salt)) . $salt . $hash == self::hash($input, $salt));
 		}
 
 		/**
@@ -61,7 +61,8 @@
 		 * @return string
 		 * the hash
 		 */
-		public static function extractHash($input, $length){
+		public static function extractHash($input){
+			$length = self::extractSaltlength($input);
 			return substr($input, 8+$length);
 		}
 
@@ -75,8 +76,23 @@
 		 * @return string
 		 * the salt
 		 */
-		public static function extractSalt($input, $length){
+		public static function extractSalt($input){
+			$length = self::extractSaltlength($input);
 			return substr($input, 8, $length);
+		}
+
+		/**
+		 * Extracts the saltlength from a hash/salt-combination
+		 *
+		 * @param string $input
+		 * the hashed string
+		 * @param int $length
+		 * the length of the salt
+		 * @return string
+		 * the salt
+		 */
+		public static function extractSaltlength($input){
+			return intval(substr($input, 5, 3));
 		}
 
 		/**
@@ -90,9 +106,9 @@
 		 */
 		public static function requiresMigration($hash){
 			$version = substr($hash, 0, 5);
-			$saltlength = intval(substr($hash, 5, 3));
+			$length = self::extractSaltlength($hash);
 
-			if($saltlength != self::SALT_LENGTH)
+			if($length != self::SALT_LENGTH)
 				return true;
 			else
 				return false;
