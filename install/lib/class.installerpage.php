@@ -189,6 +189,7 @@
 		 */
 
 			$fields = isset($_POST['fields']) ? $_POST['fields'] : $this->_params['default-config'];
+			$symphony_page = isset($_POST['symphony-page']) ? $_POST['symphony-page'] : 'symphony';
 
 		/* -----------------------------------------------
 		 * Welcome
@@ -228,6 +229,11 @@
 			$label = Widget::label(__('Name'), Widget::Input('fields[general][sitename]', $fields['general']['sitename']));
 
 			$this->__appendError(array('general-no-sitename'), $label);
+			$Environment->appendChild($label);
+
+			$label = Widget::label(__('Admin Path'), Widget::Input('symphony-path', $symphony_path);
+
+			$this->__appendError(array('no-symphony-path'), $label);
 			$Environment->appendChild($label);
 
 			$Fieldset = new XMLElement('fieldset', null, array('class' => 'frame'));

@@ -41,6 +41,23 @@
 			else {
 				return true;
 			}
+
+			try {
+				$htaccess = file_get_contents(DOCROOT . '/.htaccess');
+
+				if($htaccess !== false && !preg_match('/SetEnv SYMPHONY_PATH/', $htaccess)){
+					$addition = '
+		Options +FollowSymlinks -Indexes
+		
+		SetEnv SYMPHONY_PATH symphony
+
+		';
+
+					$htaccess = str_replace('Options +FollowSymlinks -Indexes', $addition, $htaccess);
+					file_put_contents(DOCROOT . '/.htaccess', $htaccess);
+				}
+			}
+			catch (Exception $ex) {}
 		}
 
 	}
