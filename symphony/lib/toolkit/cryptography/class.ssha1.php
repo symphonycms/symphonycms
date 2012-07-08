@@ -56,8 +56,6 @@
 		 *
 		 * @param string $input
 		 * the hashed string
-		 * @param int $length
-		 * the length of the salt
 		 * @return string
 		 * the hash
 		 */
@@ -71,8 +69,6 @@
 		 *
 		 * @param string $input
 		 * the hashed string
-		 * @param int $length
-		 * the length of the salt
 		 * @return string
 		 * the salt
 		 */
@@ -86,10 +82,8 @@
 		 *
 		 * @param string $input
 		 * the hashed string
-		 * @param int $length
-		 * the length of the salt
-		 * @return string
-		 * the salt
+		 * @return int
+		 * the saltlength
 		 */
 		public static function extractSaltlength($input){
 			return intval(substr($input, 5, 3));
