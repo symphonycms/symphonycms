@@ -12,7 +12,7 @@
 		/**
 		 * Salt length
 		 */
-		const SALT_LENGTH = 10;
+		const SALT_LENGTH = 20;
 
 		/**
 		 * Key length
