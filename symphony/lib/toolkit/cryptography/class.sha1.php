@@ -24,6 +24,18 @@
 		}
 
 		/**
+		 * Uses `SHA1` to create a hash from the contents of a file
+		 *
+		 * @param string $input
+		 * the file to be hashed
+		 * @return string
+		 * the hashed string
+		 */
+		public static function file($input){
+			return sha1_file($input);
+		}
+
+		/**
 		 * Compares a given hash with a cleantext password.
 		 *
 		 * @param string $input
