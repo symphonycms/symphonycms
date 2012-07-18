@@ -29,7 +29,7 @@ SetEnv SYMPHONY_PATH <!-- SYMPHONY_PATH -->
 	RewriteRule ^(.*)$ $1/ [L,R=301]
 
 	### URL Correction
-	RewriteRule ^(.*/)?index.php(/.*/?) $1$2 [NC]
+	RewriteRule ^(.*/)?index.php/(.*/?) $1$2 [NC]
 
 	### SYMPHONY REWRITE - Will ignore files and folders
 	RewriteCond %{REQUEST_FILENAME} !-d
