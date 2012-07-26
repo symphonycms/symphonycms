@@ -18,6 +18,8 @@
 			parent::__construct();
 			$this->_name = __('Author');
 			$this->_required = true;
+
+			$this->set('author_types', array());
 		}
 
 	/*-------------------------------------------------------------------------
@@ -87,6 +89,13 @@
 		Utilities:
 	-------------------------------------------------------------------------*/
 
+		public function set($field, $value){
+			if($field === 'author_types' && !is_array($value)){
+				$value = explode(',', $value);
+			}
+			$this->_fields[$field] = $value;
+		}
+
 		/**
 		 * Determines based on the input value whether we want to filter the Author
 		 * field by ID or by the Author's Username
@@ -106,10 +115,32 @@
 
 		public function findDefaults(array &$settings){
 			if(!isset($settings['allow_multiple_selection'])) $settings['allow_multiple_selection'] = 'no';
+			if(!isset($settings['author_types'])) $settings['author_types'] = array('developer', 'author');
 		}
 
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+
+			// Choose between Authors/Developers or both
+			$label = Widget::Label(__('Author types'));
+			$label->setAttribute('class', 'column');
+			$types = $this->get('author_types');
+			$options = array(
+				array('author', empty($types) ? true : in_array('author', $types), __('Author')),
+				array('developer', empty($types) ? true : in_array('developer', $types), __('Developer'))
+			);
+			$label->appendChild(
+				Widget::Select('fields['.$this->get('sortorder').'][author_types][]', $options, array(
+					'multiple' => 'multiple'
+				))
+			);
+			$div->appendChild($label);
+
+			if(isset($errors['author_types'])) {
+				$wrapper->appendChild(Widget::Error($div, $errors['author_types']));
+			}
+			else $wrapper->appendChild($div);
 
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 			// Allow multiple selection
@@ -135,6 +166,17 @@
 			$wrapper->appendChild($div);
 		}
 
+		public function checkFields(array &$errors, $checkForDuplicates = true) {
+			parent::checkFields($errors, $checkForDuplicates);
+
+			$types = $this->get('author_types');
+			if(empty($types)){
+				$errors['author_types'] = __('This is a required field.');
+			}
+
+			return (is_array($errors) && !empty($errors) ? self::__ERROR__ : self::__OK__);
+		}
+
 		public function commit(){
 			if(!parent::commit()) return false;
 
@@ -146,6 +188,7 @@
 
 			$fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
 			$fields['default_to_current_user'] = ($this->get('default_to_current_user') ? $this->get('default_to_current_user') : 'no');
+			if($this->get('author_types') != '') $fields['author_types'] = implode(',', $this->get('author_types'));
 
 			return FieldManager::saveSettings($id, $fields);
 		}
@@ -155,7 +198,6 @@
 	-------------------------------------------------------------------------*/
 
 		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null){
-
 			$value = isset($data['author_id']) ? $data['author_id'] : NULL;
 
 			if ($this->get('default_to_current_user') == 'yes' && empty($data) && empty($_POST)) {
@@ -168,9 +210,28 @@
 
 			if ($this->get('required') != 'yes') $options[] = array(NULL, false, NULL);
 
-			$authors = AuthorManager::fetch();
+			// Custom where to only show Authors based off the Author Types setting
+			$types = $this->get('author_types');
+			if(!empty($types)) {
+				$types = implode('","', $this->get('author_types'));
+				$where = 'user_type IN ("' . $types . '")';
+			}
+
+			$authors = AuthorManager::fetch('id', 'ASC', null, null, $where);
+			$found = false;
 			foreach($authors as $a){
+				if(in_array($a->get('id'), $value)) $found = true;
+
 				$options[] = array($a->get('id'), in_array($a->get('id'), $value), $a->getFullName());
+			}
+
+			// Ensure the selected Author is included in the options (incase
+			// the settings change after the original entry was created)
+			if(!$found && !is_null($value)) {
+				$authors = AuthorManager::fetchByID($value);
+				foreach($authors as $a){
+					$options[] = array($a->get('id'), in_array($a->get('id'), $value), $a->getFullName());
+				}
 			}
 
 			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
@@ -184,7 +245,6 @@
 		}
 
 		public function processRawFieldData($data, &$status, &$message=null, $simulate=false, $entry_id=NULL){
-
 			$status = self::__OK__;
 
 			if(!is_array($data) && !is_null($data)) return array('author_id' => $data);
@@ -205,9 +265,9 @@
 			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
 
 			$list = new XMLElement($this->get('element_name'));
-			foreach($data['author_id'] as $author_id){
-				$author = AuthorManager::fetchByID($author_id);
+			$authors = AuthorManager::fetchByID($data['author_id']);
 
+			foreach($authors as $author) {
 				if(is_null($author)) continue;
 
 				$list->appendChild(new XMLElement(
@@ -223,16 +283,14 @@
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
-
 			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
 
 			if(empty($data['author_id'])) return NULL;
 
 			$value = array();
+			$authors = AuthorManager::fetchByID($data['author_id']);
 
-			foreach($data['author_id'] as $author_id){
-				$author = AuthorManager::fetchByID($author_id);
-
+			foreach($authors as $author) {
 				if(!is_null($author)) {
 					$value[] = $author->getFullName();
 				}
@@ -280,7 +338,8 @@
 					)
 				";
 
-			} elseif ($andOperation) {
+			}
+			elseif ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
 					$value = $this->cleanValue($value);
@@ -310,7 +369,8 @@
 					}
 				}
 
-			} else {
+			}
+			else {
 				if (!is_array($data)) $data = array($data);
 
 				foreach ($data as &$value) {
