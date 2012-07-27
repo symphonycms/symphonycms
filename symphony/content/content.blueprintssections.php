@@ -267,7 +267,7 @@
 			$section_id = $this->_context[1];
 
 			if(!$section = SectionManager::fetch($section_id)) {
-				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for could not be found.'));
+				Administration::instance()->customError(__('Unknown Section'), __('The Section, %s, could not be found.', array($section_id)));
 			}
 			$meta = $section->get();
 			$section_id = $meta['id'];

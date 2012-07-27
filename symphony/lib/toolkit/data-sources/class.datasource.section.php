@@ -344,7 +344,7 @@
 
 			if(!$section = SectionManager::fetch((int)$this->getSource())){
 				$about = $this->about();
-				trigger_error(__('The section associated with the data source %s could not be found.', array('<code>' . $about['name'] . '</code>')), E_USER_ERROR);
+				trigger_error(__('The Section, %s, associated with the Data source, %s, could not be found.', array($this->getSource(), '<code>' . $about['name'] . '</code>')), E_USER_ERROR);
 			}
 
 			$sectioninfo = new XMLElement('section', General::sanitize($section->get('name')), array(

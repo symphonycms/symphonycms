@@ -143,11 +143,11 @@
 
 		public function checkFields(array &$errors, $checkForDuplicates = true){
 			if(!is_dir(DOCROOT . $this->get('destination') . '/')){
-				$errors['destination'] = __('Directory %s does not exist.', array('<code>' . $this->get('destination') . '</code>'));
+				$errors['destination'] = __('The destination directory, %s, does not exist.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
-				$errors['destination'] = __('Destination folder is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
+				$errors['destination'] = __('The destination directory is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			parent::checkFields($errors, $checkForDuplicates);
@@ -178,7 +178,7 @@
 			}
 
 			elseif(!$flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/')){
-				$flagWithError = __('Destination folder is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
+				$flagWithError = __('The destination directory is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
 			}
 
 			$label = Widget::Label($this->get('label'));
@@ -275,7 +275,7 @@
 			}
 
 			elseif(!is_writable(DOCROOT . $this->get('destination') . '/')){
-				$message = __('Destination folder is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
+				$message = __('The destination directory is not writable.') . ' ' . __('Please check permissions on %s.', array('<code>' . $this->get('destination') . '</code>'));
 				return self::__ERROR__;
 			}
 
