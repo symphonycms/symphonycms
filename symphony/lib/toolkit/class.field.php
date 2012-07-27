@@ -666,13 +666,15 @@
 
 			$label = Widget::Label();
 			$label->setAttribute('class', 'column');
+			if($help) $label->addClass('inline-help');
 			$input = Widget::Input($name, 'yes', 'checkbox');
 
 			if ($this->get('show_association') == 'yes') $input->setAttribute('checked', 'checked');
 
-			$label->setValue(__('%s Display relationship in entries table', array($input->generate())));
-
-			if ($help) $label->appendChild(new XMLElement('i', $help));
+			$label->setValue(__('%s Display relationship in entries table %s', array(
+				$input->generate(),
+				($help) ? ' <i>(' . $help . ')</i>' : ''
+			)));
 
 			$wrapper->appendChild($label);
 		}
