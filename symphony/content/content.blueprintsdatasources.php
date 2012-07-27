@@ -984,7 +984,7 @@
 
 					General::validateXML($fields['static_xml'], $xml_errors, false, new XsltProcess());
 
-					if(!empty($xml_errors)) $this->_errors['static_xml'] = __('XML is invalid');
+					if(!empty($xml_errors)) $this->_errors['static_xml'] = __('XML is invalid.');
 				}
 			}
 
