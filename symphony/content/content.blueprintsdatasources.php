@@ -1304,15 +1304,15 @@
 				$dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\r\n){2,}/', '/(\t+[\r\n]){2,}/'), '', $dsShell);
 
 				// Write the file
-				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file')))
+				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file'))) {
 					$this->pageAlert(
 						__('Failed to write Data source to disk.')
 						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/data-sources</code>'))
 						, Alert::ERROR
 					);
-
+				}
 				// Write Successful, add record to the database
-				else{
+				else {
 
 					if($queueForDeletion){
 						General::deleteFile($queueForDeletion);
@@ -1342,7 +1342,9 @@
 						 * @param string $file
 						 *  The path to the Datasource file
 						 */
-						Symphony::ExtensionManager()->notifyMembers('DatasourcePostCreate', '/blueprints/datasources/', array('file' => $file));
+						Symphony::ExtensionManager()->notifyMembers('DatasourcePostCreate', '/blueprints/datasources/', array(
+							'file' => $file
+						));
 					}
 					else {
 						/**
@@ -1354,8 +1356,15 @@
 						 * '/blueprints/datasources/'
 						 * @param string $file
 						 *  The path to the Datasource file
+						 * @param string $previous_file
+						 *  The path of the previous Datasource file in the case where a Datasource may
+						 *  have been renamed. To get the handle from this value, see
+						 *  `DatasourceManager::__getHandleFromFilename`
 						 */
-						Symphony::ExtensionManager()->notifyMembers('DatasourcePostEdit', '/blueprints/datasources/', array('file' => $file));
+						Symphony::ExtensionManager()->notifyMembers('DatasourcePostEdit', '/blueprints/datasources/', array(
+							'file' => $file,
+							'previous_file' => ($queueForDeletion) ? $queueForDeletion : null
+						));
 					}
 
 					redirect(SYMPHONY_URL . '/blueprints/datasources/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');

@@ -506,15 +506,15 @@
 				}
 
 				// Write the file
-				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file')))
+				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file'))) {
 					$this->pageAlert(
 						__('Failed to write Event to disk.')
 						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/events</code>'))
 						, Alert::ERROR
 					);
-
+				}
 				// Write Successful, add record to the database
-				else{
+				else {
 
 					if($queueForDeletion){
 						General::deleteFile($queueForDeletion);
@@ -531,7 +531,6 @@
 								PageManager::edit($page['id'], $page);
 							}
 						}
-
 					}
 
 					if($this->_context[0] == 'new') {
@@ -545,7 +544,9 @@
 						 * @param string $file
 						 *  The path to the Event file
 						 */
-						Symphony::ExtensionManager()->notifyMembers('EventPostCreate', '/blueprints/events/', array('file' => $file));
+						Symphony::ExtensionManager()->notifyMembers('EventPostCreate', '/blueprints/events/', array(
+							'file' => $file
+						));
 					}
 					else {
 						/**
@@ -557,8 +558,15 @@
 						 * '/blueprints/events/'
 						 * @param string $file
 						 *  The path to the Event file
+						 * @param string $previous_file
+						 *  The path of the previous Event file in the case where an Event may
+						 *  have been renamed. To get the handle from this value, see
+						 *  `EventManager::__getHandleFromFilename`
 						 */
-						Symphony::ExtensionManager()->notifyMembers('EventPostEdit', '/blueprints/events/', array('file' => $file));
+						Symphony::ExtensionManager()->notifyMembers('EventPostEdit', '/blueprints/events/', array(
+							'file' => $file,
+							'previous_file' => ($queueForDeletion) ? $queueForDeletion : null
+						));
 					}
 
 					redirect(SYMPHONY_URL . '/blueprints/events/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
