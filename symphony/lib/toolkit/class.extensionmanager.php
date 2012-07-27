@@ -292,7 +292,10 @@
 			$obj = self::getInstance($name);
 
 			// If not installed, install it
-			if(self::__requiresInstallation($name) && $obj->install() === false){
+			if(self::__requiresInstallation($name) && $obj->install() === false) {
+				// If the installation failed, run the uninstall method which
+				// should rollback the install method. #1326
+				$obj->uninstall();
 				return false;
 			}
 

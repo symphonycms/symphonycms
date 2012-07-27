@@ -184,7 +184,6 @@
 							foreach($checked as $name){
 								if(Symphony::ExtensionManager()->enable($name) === false) return;
 							}
-
 							break;
 
 						case 'disable':
@@ -223,7 +222,6 @@
 							foreach($checked as $name){
 								Symphony::ExtensionManager()->uninstall($name);
 							}
-
 							break;
 					}
 
