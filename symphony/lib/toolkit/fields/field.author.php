@@ -4,6 +4,8 @@
 	 * @package toolkit
 	 */
 
+	require_once FACE . '/interface.exportablefield.php';
+
 	/**
 	 * The Author field allows Symphony Authors to be selected in your entries.
 	 * It is a read only field, new Authors cannot be added from the Frontend using
@@ -12,8 +14,7 @@
 	 * The Author field allows filtering by Author ID or Username.
 	 * Sorting is done based on the Author's first name and last name.
 	 */
-	Class fieldAuthor extends Field {
-
+	class FieldAuthor extends Field implements ExportableField {
 		public function __construct(){
 			parent::__construct();
 			$this->_name = __('Author');
@@ -242,6 +243,80 @@
 
 		public function getParameterPoolValue($data, $entry_id = null) {
 			return $data['author_id'];
+		}
+
+	/*-------------------------------------------------------------------------
+		Export:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Return a list of supported export modes for use with `prepareExportValue`.
+		 *
+		 * @return array
+		 */
+		public function getExportModes() {
+			return array(
+				'listAuthor' =>			ExportableField::LIST_OF
+										^ ExportableField::AUTHOR,
+				'listAuthorObject' =>	ExportableField::LIST_OF
+										^ ExportableField::AUTHOR
+										^ ExportableField::OBJECT,
+				'listAuthorToValue'	=>	ExportableField::LIST_OF
+										^ ExportableField::AUTHOR
+										^ ExportableField::VALUE,
+				'listValue' =>			ExportableField::LIST_OF
+										^ ExportableField::VALUE
+			);
+		}
+
+		/**
+		 * Give the field some data and ask it to return a value using one of many
+		 * possible modes.
+		 *
+		 * @param mixed $data
+		 * @param integer $mode
+		 * @param integer $entry_id
+		 * @return array|null
+		 */
+		public function prepareExportValue($data, $mode, $entry_id = null) {
+			$modes = (object)$this->getExportModes();
+
+			if (isset($data['author_id']) === false) return null;
+
+			// Make sure we have an array to work with:
+			if (is_array($data['author_id']) === false) {
+				$data['author_id'] = array(
+					$data['author_id']
+				);
+			}
+
+			// Return the author IDs:
+			if ($mode === $modes->listAuthor) {
+				return $data['author_id'];
+			}
+
+			// All other modes require full data:
+			$items = array();
+
+			foreach ($data['author_id'] as $author_id) {
+				$author = AuthorManager::fetchByID($author_id);
+
+				if ($author === null) continue;
+
+				if ($mode === $modes->listAuthorObject) {
+					$items[] = $author;
+				}
+
+				else if ($mode === $modes->listValue) {
+					$items[] = $author->getFullName();
+				}
+
+				else if ($mode === $modes->listAuthorToValue) {
+					$items[$author_id] = $author->getFullName();
+				}
+			}
+
+			return $items;
 		}
 
 	/*-------------------------------------------------------------------------

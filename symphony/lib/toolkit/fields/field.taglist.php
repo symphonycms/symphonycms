@@ -3,14 +3,15 @@
 	 * @package toolkit
 	 */
 
+	require_once FACE . '/interface.exportablefield.php';
+
 	/**
 	 * The Tag List field is really a different interface for the Select Box
 	 * field, offering a tag interface that can have static suggestions,
 	 * suggestions from another field or a dynamic list based on what an Author
 	 * has previously used for this field.
 	 */
-
-	Class fieldTagList extends Field {
+	Class fieldTagList extends Field implements ExportableField {
 		public function __construct(){
 			parent::__construct();
 			$this->_name = __('Tag List');
@@ -271,6 +272,69 @@
 
 		public function getParameterPoolValue($data, $entry_id = null) {
 			return $data['handle'];
+		}
+
+	/*-------------------------------------------------------------------------
+		Export:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Return a list of supported export modes for use with `prepareExportValue`.
+		 *
+		 * @return array
+		 */
+		public function getExportModes() {
+			return array(
+				'listHandle' =>			ExportableField::LIST_OF
+										^ ExportableField::HANDLE,
+				'listHandleToValue' =>	ExportableField::LIST_OF
+										^ ExportableField::VALUE,
+				'listValue' =>			ExportableField::LIST_OF
+										^ ExportableField::HANDLE
+										^ ExportableField::VALUE
+			);
+		}
+
+		/**
+		 * Give the field some data and ask it to return a value using one of many
+		 * possible modes.
+		 *
+		 * @param mixed $data
+		 * @param integer $mode
+		 * @param integer $entry_id
+		 * @return array|null
+		 */
+		public function prepareExportValue($data, $mode, $entry_id = null) {
+			$modes = (object)$this->getExportModes();
+
+			if (isset($data['handle']) && is_array($data['handle']) === false) {
+				$data['handle'] = array(
+					$data['handle']
+				);
+			}
+
+			if (isset($data['value']) && is_array($data['value']) === false) {
+				$data['value'] = array(
+					$data['value']
+				);
+			}
+
+			// Handle => Unformatted pairs:
+			if ($mode === $modes->listHandleToValue && isset($data['handle'], $data['value'])) {
+				return array_combine($data['handle'], $data['value']);
+			}
+
+			// Array of handles:
+			if ($mode === $modes->listHandle && isset($data['handle'])) {
+				return $data['handle'];
+			}
+
+			// Array of unformatted values:
+			if ($mode === $modes->listValue && isset($data['value'])) {
+				return $data['value'];
+			}
+
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------

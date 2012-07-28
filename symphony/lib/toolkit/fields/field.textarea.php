@@ -3,11 +3,13 @@
 	/**
 	 * @package toolkit
 	 */
+
+	require_once FACE . '/interface.exportablefield.php';
+
 	/**
 	 * A simple Textarea field that essentially maps to HTML's `<textarea/>`.
 	 */
-
-	Class fieldTextarea extends Field {
+	Class fieldTextarea extends Field implements ExportableField {
 
 		public function __construct(){
 			parent::__construct();
@@ -238,6 +240,65 @@
 					)
 				);
 			}
+		}
+
+	/*-------------------------------------------------------------------------
+		Export:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Return a list of supported export modes for use with `prepareExportValue`.
+		 *
+		 * @return array
+		 */
+		public function getExportModes() {
+			return array(
+				'getFormatted' =>	ExportableField::FORMATTED,
+				'getHandle' =>		ExportableField::HANDLE,
+				'getUnformatted' =>	ExportableField::UNFORMATTED
+			);
+		}
+
+		/**
+		 * Give the field some data and ask it to return a value using one of many
+		 * possible modes.
+		 *
+		 * @param mixed $data
+		 * @param integer $mode
+		 * @param integer $entry_id
+		 * @return string|null
+		 */
+		public function prepareExportValue($data, $mode, $entry_id = null) {
+			$modes = (object)$this->getExportModes();
+
+			// Export handles:
+			if ($mode === $modes->getHandle) {
+				if (isset($data['handle'])) {
+					return $data['handle'];
+				}
+
+				else if (isset($data['value'])) {
+					return General::createHandle($data['value']);
+				}
+			}
+
+			// Export unformatted:
+			if ($mode === $modes->getUnformatted && isset($data['value'])) {
+				return $data['value'];
+			}
+
+			// Export formatted:
+			if ($mode === $modes->getFormatted) {
+				if (isset($data['value_formatted'])) {
+					return $data['value_formatted'];
+				}
+
+				else if (isset($data['value'])) {
+					return General::sanitize($data['value']);
+				}
+			}
+
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------
