@@ -1213,7 +1213,8 @@
 				array(
 					'iso' => DateTimeObj::get('c', $timestamp),
 					'time' => DateTimeObj::get($time_format, $timestamp),
-					'weekday' => DateTimeObj::get('N', $timestamp)
+					'weekday' => DateTimeObj::get('N', $timestamp),
+					'offset' => DateTimeObj::get('O', $timestamp)
 				)
 			);
 
