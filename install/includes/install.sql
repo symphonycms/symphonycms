@@ -40,11 +40,15 @@ CREATE TABLE `tbl_entries` (
   `author_id` int(11) unsigned NOT NULL,
   `creation_date` datetime NOT NULL,
   `creation_date_gmt` datetime NOT NULL,
+  `modification_date` datetime NOT NULL,
+  `modification_date_gmt` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `section_id` (`section_id`),
   KEY `author_id` (`author_id`),
   KEY `creation_date` (`creation_date`),
   KEY `creation_date_gmt` (`creation_date_gmt`)
+  KEY `modification_date` (`creation_date`),
+  KEY `modification_date_gmt` (`creation_date_gmt`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- *** STRUCTURE: `tbl_extensions` ***

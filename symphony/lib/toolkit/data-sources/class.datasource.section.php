@@ -27,7 +27,9 @@
 		private static $_system_parameters = array(
 			'system:id',
 			'system:author',
-			'system:date'
+			'system:creation-date',
+			'system:modification-date',
+			'system:date' // deprecated
 		);
 
 		/**
@@ -151,13 +153,21 @@
 
 			if($this->_param_output_only) return true;
 
-			if(in_array('system:date', $this->dsParamINCLUDEDELEMENTS)){
-				$xEntry->appendChild(
+			if(in_array('system:date', $this->dsParamINCLUDEDELEMENTS)) {
+				$xDate = new XMLElement('system-date');
+				$xDate->appendChild(
 					General::createXMLDateObject(
-						DateTimeObj::get('U', $entry->creationDate),
-						'system-date'
+						DateTimeObj::get('U', $entry->get('creation_date')),
+						'created'
 					)
 				);
+				$xDate->appendChild(
+					General::createXMLDateObject(
+						DateTimeObj::get('U', $entry->get('modification_date')),
+						'modified'
+					)
+				);
+				$xEntry->appendChild($xDate);
 			}
 
 			return $xEntry;
@@ -210,17 +220,21 @@
 				// The new style of paramater is `ds-datasource-handle.field-handle`
 				$param_key = $key . '.' . str_replace(':', '-', $param);
 
-				if($param == 'system:id') {
+				if($param === 'system:id') {
 					$this->_param_pool[$param_key][] = $entry->get('id');
 					if($singleParam) $this->_param_pool[$key][] = $entry->get('id');
 				}
-				else if($param == 'system:author') {
+				else if($param === 'system:author') {
 					$this->_param_pool[$param_key][] = $entry->get('author_id');
 					if($singleParam) $this->_param_pool[$key][] = $entry->get('author_id');
 				}
-				else if($param == 'system:date') {
-					$this->_param_pool[$param_key][] = DateTimeObj::get('c', $entry->creationDate);
-					if($singleParam) $this->_param_pool[$key][] = DateTimeObj::get('c', $entry->creationDate);
+				else if($param === 'system:creation-date' or $param === 'system:date') {
+					$this->_param_pool[$param_key][] = $entry->get('creation_date');
+					if($singleParam) $this->_param_pool[$key][] = $entry->get('creation_date');
+				}
+				else if($param === 'system:modification-date') {
+					$this->_param_pool[$param_key][] = $entry->get('modification_date');
+					if($singleParam) $this->_param_pool[$key][] = $entry->get('modification_date');
 				}
 			}
 		}
@@ -284,21 +298,18 @@
 			$pool = FieldManager::fetch(array_filter(array_keys($this->dsParamFILTERS), 'is_int'));
 			self::$_fieldPool += $pool;
 
-			foreach($this->dsParamFILTERS as $field_id => $filter){
-
+			foreach($this->dsParamFILTERS as $field_id => $filter) {
 				if((is_array($filter) && empty($filter)) || trim($filter) == '') continue;
 
-				if(!is_array($filter)){
+				if(!is_array($filter)) {
 					$filter_type = $this->__determineFilterType($filter);
-
 					$value = preg_split('/'.($filter_type == DS_FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
 					$value = array_map('trim', $value);
 					$value = array_map(array('Datasource', 'removeEscapedCommas'), $value);
 				}
-
 				else $value = $filter;
 
-				if($field_id != 'id' && $field_id != 'system:date' && !(self::$_fieldPool[$field_id] instanceof Field)){
+				if(!in_array($field_id, self::$_system_parameters) && $field_id != 'id' && !(self::$_fieldPool[$field_id] instanceof Field)){
 					throw new Exception(
 						__(
 							'Error creating field object with id %1$d, for filtering in data source %2$s. Check this field exists.',
@@ -314,14 +325,18 @@
 						$c = 'NOT IN';
 					}
 
-					$where = " AND `e`.id " . $c . " ('".implode("', '", $value)."') ";
+					$where = " AND `e`.id " . $c . " (".implode(", ", $value).") ";
 				}
-				else if($field_id == 'system:date') {
+				else if($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
 					require_once(TOOLKIT . '/fields/field.date.php');
 					$date = new fieldDate();
 					$date->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == DS_FILTER_AND ? true : false));
 
-					$where = preg_replace('/`t\d+`.value/', '`e`.creation_date', $where);
+					// Erase joins, `tbl_entries` is always joined on.
+					$joins = '';
+
+					// Replace the date field where with the `creation_date` or `modification_date`.
+					$where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $where);
 				}
 				else {
 					// For deprecated reasons, call the old, typo'd function name until the switch to the
@@ -383,8 +398,11 @@
 			if($this->dsParamSORT == 'system:id') {
 				EntryManager::setFetchSorting('id', $this->dsParamORDER);
 			}
-			else if($this->dsParamSORT == 'system:date') {
-				EntryManager::setFetchSorting('date', $this->dsParamORDER);
+			else if($this->dsParamSORT == 'system:date' || $this->dsParamSORT == 'system:creation-date') {
+				EntryManager::setFetchSorting('system:creation-date', $this->dsParamORDER);
+			}
+			else if($this->dsParamSORT == 'system:modification-date') {
+				EntryManager::setFetchSorting('system:modification-date', $this->dsParamORDER);
 			}
 			else {
 				EntryManager::setFetchSorting(

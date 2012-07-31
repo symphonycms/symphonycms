@@ -1211,6 +1211,7 @@
 				(!is_null($namespace) ? $namespace . ':' : '') . $element,
 				DateTimeObj::get($date_format, $timestamp),
 				array(
+					'iso' => DateTimeObj::get('c', $timestamp),
 					'time' => DateTimeObj::get($time_format, $timestamp),
 					'weekday' => DateTimeObj::get('N', $timestamp)
 				)
