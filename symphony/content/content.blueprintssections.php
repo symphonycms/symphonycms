@@ -121,7 +121,6 @@
 
 			if(!$showEmptyTemplate) ksort($fields);
 
-			$meta['entry_order'] = (isset($meta['entry_order']) ? $meta['entry_order'] : 'date');
 			$meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
 
 			// Set navigation group, if not already set
@@ -324,8 +323,6 @@
 				$fields = FieldManager::fetch(NULL, $section_id);
 				$fields = array_values($fields);
 			}
-
-			$meta['entry_order'] = (isset($meta['entry_order']) ? $meta['entry_order'] : 'date');
 
 			if(isset($_POST['meta'])){
 				$meta = $_POST['meta'];
