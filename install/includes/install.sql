@@ -46,9 +46,9 @@ CREATE TABLE `tbl_entries` (
   KEY `section_id` (`section_id`),
   KEY `author_id` (`author_id`),
   KEY `creation_date` (`creation_date`),
-  KEY `creation_date_gmt` (`creation_date_gmt`)
-  KEY `modification_date` (`creation_date`),
-  KEY `modification_date_gmt` (`creation_date_gmt`)
+  KEY `creation_date_gmt` (`creation_date_gmt`),
+  KEY `modification_date` (`modification_date`),
+  KEY `modification_date_gmt` (`modification_date_gmt`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- *** STRUCTURE: `tbl_extensions` ***
