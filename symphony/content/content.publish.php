@@ -636,9 +636,7 @@
 		}
 
 		public function __actionNew(){
-
 			if(array_key_exists('save', $_POST['action']) || array_key_exists("done", $_POST['action'])) {
-
 				$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle']);
 
 				if(!$section = SectionManager::fetch($section_id)) {
@@ -646,10 +644,10 @@
 				}
 
 				$entry =& EntryManager::create();
-				$entry->set('section_id', $section_id);
 				$entry->set('author_id', Administration::instance()->Author->get('id'));
-				$entry->set('creation_date', DateTimeObj::get('Y-m-d H:i:s'));
-				$entry->set('creation_date_gmt', DateTimeObj::getGMT('Y-m-d H:i:s'));
+				$entry->set('section_id', $section_id);
+				$entry->set('creation_date', DateTimeObj::get('c'));
+				$entry->set('modification_date', DateTimeObj::get('c'));
 
 				$fields = $_POST['fields'];
 
@@ -759,8 +757,11 @@
 				$fields = $_POST['fields'];
 
 				$entry =& EntryManager::create();
-				$entry->set('section_id', $existingEntry->get('section_id'));
 				$entry->set('id', $entry_id);
+				$entry->set('author_id', $existingEntry->get('author_id'));
+				$entry->set('section_id', $existingEntry->get('section_id'));
+				$entry->set('creation_date', $existingEntry->get('creation_date'));
+				$entry->set('modification_date', $existingEntry->get('modification_date'));
 				$entry->setDataFromPost($fields, $errors, true);
 			}
 

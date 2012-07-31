@@ -373,7 +373,8 @@
 			$sql = "
 				SELECT  ".($group ? 'DISTINCT ' : '')."`e`.id,
 						`e`.section_id, e.`author_id`,
-						UNIX_TIMESTAMP(e.`creation_date`) AS `creation_date`
+						UNIX_TIMESTAMP(e.`creation_date`) AS `creation_date`,
+						UNIX_TIMESTAMP(e.`modification_date`) AS `modification_date`
 				FROM `tbl_entries` AS `e`
 				$joins
 				WHERE 1
