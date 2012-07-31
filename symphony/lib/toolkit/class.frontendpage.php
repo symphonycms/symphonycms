@@ -291,7 +291,6 @@
 		 * @see resolvePage()
 		 */
 		private function __buildPage(){
-
 			$start = precision_timer();
 
 			if(!$page = $this->resolvePage()){
@@ -517,7 +516,6 @@
 		 *  An associative array of page details
 		 */
 		public function resolvePage($page = null){
-
 			if($page) $this->_page = $page;
 
 			$row = null;
@@ -536,7 +534,7 @@
 			if((!$this->_page || $this->_page == '//') && is_null($row)) {
 				$row = PageManager::fetchPageByType('index');
 			}
-
+			// Not the index page (or at least not on first impression)
 			else if(is_null($row)) {
 				$page_extra_bits = array();
 				$pathArr = preg_split('/\//', trim($this->_page, '/'), -1, PREG_SPLIT_NO_EMPTY);
@@ -556,9 +554,25 @@
 
 				} while($handle = array_pop($pathArr));
 
-				if(empty($pathArr)) return false;
-
-				if(!$this->__isSchemaValid($row['params'], $page_extra_bits)) return false;
+				// If the `$pathArr` is empty, that means a page hasn't resolved for
+				// the given `$page`, however in some cases the index page may allow
+				// parameters, so we'll check.
+				if(empty($pathArr)) {
+					// If the index page does not handle parameters, then return false
+					// (which will give up the 404), otherwise treat the `$page` as
+					// parameters of the index. RE: #1351
+					$index = PageManager::fetchPageByType('index');
+					if(!$this->__isSchemaValid($index['params'], $page_extra_bits)) {
+						return false;
+					}
+					else {
+						$row = $index;
+					}
+				}
+				// Page resolved, check the schema (are the parameters valid?)
+				else if(!$this->__isSchemaValid($row['params'], $page_extra_bits)) {
+					return false;
+				}
 			}
 
 			// Process the extra URL params
