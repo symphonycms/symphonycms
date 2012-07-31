@@ -92,7 +92,7 @@
 
 						// Error
 						if(!empty($class)) {
-							if(strpos($data[$index + 3]['message'], $parts[1]) === false) {
+							if(isset($data[$index + 3]) && !empty($parts[1]) && strpos($data[$index + 3]['message'], $parts[1]) === false) {
 								$position = explode('(): ', $data[$index + 1]['message']);
 								$length = max(0, strlen($position[1]) - 1);
 								$list->appendChild(
@@ -103,14 +103,16 @@
 									)
 								);
 
-								// Show in debug
-								$filename = explode(WORKSPACE . '/', $file);
-								$list->appendChild(
-									new XMLElement(
-										'li',
-										'<code>&#160;&#160;&#160;&#160;<a href="?debug=/workspace/' . $filename[1] . '#line-' . $line .'" title="' . __('Show debug view for %s', array($filename[1])) . '">' . __('Show line %d in debug view', array($line)) . '</a></code>'
-									)
-								);
+								if(isset($file, $line)) {
+									// Show in debug
+									$filename = explode(WORKSPACE . '/', $file);
+									$list->appendChild(
+										new XMLElement(
+											'li',
+											'<code>&#160;&#160;&#160;&#160;<a href="?debug=/workspace/' . $filename[1] . '#line-' . $line .'" title="' . __('Show debug view for %s', array($filename[1])) . '">' . __('Show line %d in debug view', array($line)) . '</a></code>'
+										)
+									);
+								}
 							}
 						}
 
