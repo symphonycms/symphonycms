@@ -551,8 +551,21 @@
 				$this->appendSubheading(__('Untitled'));
 			}
 
+			// Build filtered breadcrumb [#1378}
+			if(isset($_REQUEST['prepopulate'])){
+				$link = '?';
+				foreach($_REQUEST['prepopulate'] as $field_id => $value) {
+					$handle = FieldManager::fetchHandleFromID($field_id);
+					$link .= "filter[$handle]=$value&amp;";
+				}
+				$link = preg_replace("/&amp;$/", '', $link);
+			}
+			else {
+				$link = '';
+			}
+
 			$this->insertBreadcrumbs(array(
-				Widget::Anchor($section->get('name'), SYMPHONY_URL . '/publish/' . $this->_context['section_handle']),
+				Widget::Anchor($section->get('name'), SYMPHONY_URL . '/publish/' . $this->_context['section_handle'] . '/' . $link),
 			));
 
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
