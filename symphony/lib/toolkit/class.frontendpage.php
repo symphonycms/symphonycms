@@ -337,7 +337,7 @@
 				'root-page' => ($root_page ? $root_page : $page['handle']),
 				'current-page' => $page['handle'],
 				'current-page-id' => $page['id'],
-				'current-path' => $current_path,
+				'current-path' => ($current_path == '') ? '/' : $current_path,
 				'parent-path' => '/' . $page['path'],
 				'current-query-string' => self::sanitizeParameter($querystring),
 				'current-url' => URL . $current_path,
