@@ -13,6 +13,11 @@
 		return ($mode == 'administration' ? Administration::instance() : Frontend::instance());
 	}
 
+	if(strpos($_GET['symphony-page'], SYMPHONY_PATH, 0) === 0) {
+		$_GET['symphony-page'] = str_replace(SYMPHONY_PATH . '/', '', $_GET['symphony-page']);
+		$_GET['mode'] = 'administration';
+	}
+
 	$renderer = (isset($_GET['mode']) && strtolower($_GET['mode']) == 'administration'
 			? 'administration'
 			: 'frontend');

@@ -249,6 +249,7 @@
 		private static function __checkConfiguration(){
 			$errors = array();
 			$fields = $_POST['fields'];
+			$symphony_path = $_POST['symphony-path'];
 
 			// Testing the database connection
 			try{
@@ -363,6 +364,14 @@
 				);
 			}
 
+			// Admin path not entered
+			if(trim($symphony_path == ''){
+				$errors['no-symphony-path']  = array(
+					'msg' => 'No Symphony path entered.',
+					'details' => __('You must enter a path for accessing Symphony, or leave the default. This will be used to access Symphony\'s backend.')
+				);
+			}
+
 			return $errors;
 		}
 
@@ -386,6 +395,7 @@
 
 		private static function __install(){
 			$fields = $_POST['fields'];
+			$symphony_path = $_POST['symphony-path'];
 			$errors = array();
 			$start = time();
 
@@ -510,6 +520,10 @@
 			$htaccess = str_replace(
 				'<!-- REWRITE_BASE -->', $rewrite_base,
 				file_get_contents(INSTALL . '/includes/htaccess.txt')
+			);
+			$htaccess = str_replace(
+				'<!-- SYMPHONY_PATH -->', $symphony_path,
+				$htaccess
 			);
 
 			if(!General::writeFile(DOCROOT . "/.htaccess", $htaccess, $conf['file']['write_mode'], 'a')){

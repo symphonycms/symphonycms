@@ -230,9 +230,16 @@
 	define_safe('URL', 'http' . (defined('__SECURE__') && __SECURE__ ? 's' : '') . '://' . DOMAIN);
 
 	/**
+	 * Returns the keyword used to access Symphony admin, as defined during installation.
+	 * @since Symphony 2.3.1
+	 * @var string
+	 */
+	define_safe('SYMPHONY_PATH', (getenv('SYMPHONY_PATH') ? getenv('SYMPHONY_PATH') : 'symphony'));
+
+	/**
 	 * Returns the URL + /symphony. This should be used whenever the a developer
 	 * wants to link to the Symphony root
 	 * @since Symphony 2.2
 	 * @var string
 	 */
-	define_safe('SYMPHONY_URL', URL . '/symphony');
+	define_safe('SYMPHONY_URL', URL . '/' . SYMPHONY_PATH);
