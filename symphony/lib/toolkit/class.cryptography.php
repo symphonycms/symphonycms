@@ -70,12 +70,12 @@
 		 * the result of the comparison
 		 */
 		public static function compare($input, $hash, $isHash=false){
-			$version = substr($hash, 0, 5);
+			$version = substr($hash, 0, 8);
 
-			if($version == 'PBKDF') { // salted PBKDF2
+			if($version == 'PBKDF2v1') { // salted PBKDF2
 				return PBKDF2::compare($input, $hash);
 			}
-			if($version == 'SSHA1') { // salted SHA1
+			if($version == 'SSHA1Xv1') { // salted SHA1
 				return SSHA1::compare($input, $hash);
 			}
 			elseif(strlen($hash) == 40){ // legacy, unsalted SHA1
@@ -96,12 +96,12 @@
 		 * whether the hash should be re-computed
 		 */
 		public static function requiresMigration($hash){
-			$version = substr($hash, 0, 5);
+			$version = substr($hash, 0, 8);
 
-			if($version == 'PBKDF') { // salted PBKDF2
+			if($version == 'PBKDF2v1') { // salted PBKDF2
 				return PBKDF2::requiresMigration($hash);
 			}
-			else {
+			else { // everything else
 				return true;
 			}
 		}

@@ -30,6 +30,11 @@
 		const ALGORITHM = 'sha256';
 
 		/**
+		 * Prefix to identify the algorithm used
+		 */
+		const PREFIX = 'PBKDF2v1';
+
+		/**
 		 * Uses `PBKDF2` and random salt generation to create a hash based on some input.
 		 * Original implementation was under public domain, taken from
 		 * http://www.itnewb.com/tutorial/Encrypting-Passwords-with-PHP-for-Storage-Using-the-RSA-PBKDF2-Standard
@@ -66,7 +71,7 @@
 				$key .= $ib;
 			}
 
-			return "PBKDF" . sprintf("%03d%08d", strlen($salt), $iterations) . $salt . base64_encode(substr($key, 0, $keylength));
+			return self::PREFIX . sprintf("%03d%08d", strlen($salt), $iterations) . $salt . base64_encode(substr($key, 0, $keylength));
 		}
 
 		/**
@@ -98,7 +103,7 @@
 		 */
 		public static function extractHash($input){
 			$length = self::extractSaltlength($input);
-			return substr($input, 16+$length);
+			return substr($input, 19+$length);
 		}
 
 		/**
@@ -111,7 +116,7 @@
 		 */
 		public static function extractSalt($input){
 			$length = self::extractSaltlength($input);
-			return substr($input, 16, $length);
+			return substr($input, 19, $length);
 		}
 
 		/**
@@ -123,7 +128,7 @@
 		 * the saltlength
 		 */
 		public static function extractSaltlength($input){
-			return intval(substr($input, 5, 3));
+			return intval(substr($input, 8, 3));
 		}
 
 		/**
@@ -135,7 +140,7 @@
 		 * the number of iterations
 		 */
 		public static function extractIterations($input){
-			return intval(substr($input, 8, 8));
+			return intval(substr($input, 11, 8));
 		}
 
 		/**
@@ -148,7 +153,7 @@
 		 * whether the hash should be re-computed
 		 */
 		public static function requiresMigration($hash){
-			$version = substr($hash, 0, 5);
+			$version = substr($hash, 0, 8);
 			$length = self::extractSaltlength($hash);
 			$iterations = self::extractIterations($hash);
 			$keylength = strlen(self::extractHash($hash));

@@ -17,6 +17,11 @@
 		const SALT_LENGTH = 20;
 
 		/**
+		 * Prefix to identify the algorithm used
+		 */
+		const PREFIX = 'SSHA1Xv1';
+
+		/**
 		 * Uses `SHA1` and random salt generation to create a hash based on some input
 		 *
 		 * @param string $input
@@ -30,7 +35,7 @@
 			if($salt === NULL)
 				$salt = self::generateSalt(self::SALT_LENGTH);
 
-			return "SSHA1" . sprintf("%03d", strlen($salt)) . $salt . sha1($salt . $input);
+			return self::PREFIX . sprintf("%03d", strlen($salt)) . $salt . sha1($salt . $input);
 		}
 
 		/**
@@ -60,7 +65,7 @@
 		 */
 		public static function extractHash($input){
 			$length = self::extractSaltlength($input);
-			return substr($input, 8+$length);
+			return substr($input, 11+$length);
 		}
 
 		/**
@@ -73,7 +78,7 @@
 		 */
 		public static function extractSalt($input){
 			$length = self::extractSaltlength($input);
-			return substr($input, 8, $length);
+			return substr($input, 11, $length);
 		}
 
 		/**
@@ -85,7 +90,7 @@
 		 * the saltlength
 		 */
 		public static function extractSaltlength($input){
-			return intval(substr($input, 5, 3));
+			return intval(substr($input, 8, 3));
 		}
 
 		/**
@@ -98,7 +103,7 @@
 		 * whether the hash should be re-computed
 		 */
 		public static function requiresMigration($hash){
-			$version = substr($hash, 0, 5);
+			$version = substr($hash, 0, 8);
 			$length = self::extractSaltlength($hash);
 
 			if($length != self::SALT_LENGTH)
