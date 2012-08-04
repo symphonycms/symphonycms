@@ -3,15 +3,16 @@
 	/**
 	 * @package toolkit
 	 */
+
+	require_once FACE . '/interface.exportablefield.php';
+
 	/**
 	 * A simple Date field that stores a full ISO date. Symphony will attempt
 	 * to localize the date on a per Author basis. The field essentially maps to
 	 * PHP's `strtotime`, so it is very flexible in terms of what an Author can
 	 * input into it.
 	 */
-
-	Class fieldDate extends Field{
-
+	Class fieldDate extends Field implements ExportableField {
 		const SIMPLE = 0;
 		const REGEXP = 1;
 		const RANGE = 3;
@@ -455,6 +456,41 @@
 
 		public function getParameterPoolValue(array $data, $entry_id=NULL){
 			return DateTimeObj::get('Y-m-d H:i:s', $data['value']);
+		}
+
+	/*-------------------------------------------------------------------------
+		Export:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Return a list of supported export modes for use with `prepareExportValue`.
+		 *
+		 * @return array
+		 */
+		public function getExportModes() {
+			return array(
+				'getObject' =>		ExportableField::OBJECT,
+				'getValue' =>		ExportableField::VALUE
+			);
+		}
+
+		/**
+		 * Give the field some data and ask it to return a value using one of many
+		 * possible modes.
+		 *
+		 * @param mixed $data
+		 * @param integer $mode
+		 * @param integer $entry_id
+		 * @return DateTime|null
+		 */
+		public function prepareExportValue($data, $mode, $entry_id = null) {
+			$modes = (object)$this->getExportModes();
+
+			if ($mode === $modes->getObject && isset($data['value'])) {
+				return new DateTime($data['value']);
+			}
+
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------

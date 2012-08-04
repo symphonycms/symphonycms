@@ -3,11 +3,13 @@
 	/**
 	 * @package toolkit
 	 */
+
+	require_once FACE . '/interface.exportablefield.php';
+
 	/**
 	 * A simple Upload field that essentially maps to HTML's `<input type='file '/>`.
 	 */
-
-	Class fieldUpload extends Field {
+	Class fieldUpload extends Field implements ExportableField {
 
 		protected static $imageMimeTypes = array(
 			'image/gif',
@@ -491,6 +493,51 @@
 				$link->setAttribute('data-path', $file);
 				return $link->generate();
 			}
+		}
+
+	/*-------------------------------------------------------------------------
+		Export:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Return a list of supported export modes for use with `prepareExportValue`.
+		 *
+		 * @return array
+		 */
+		public function getExportModes() {
+			return array(
+				'getFilename' =>		ExportableField::VALUE,
+				'getObject' =>			ExportableField::OBJECT
+			);
+		}
+
+		/**
+		 * Give the field some data and ask it to return a value using one of many
+		 * possible modes.
+		 *
+		 * @param mixed $data
+		 * @param integer $mode
+		 * @param integer $entry_id
+		 * @return array|null
+		 */
+		public function prepareExportValue($data, $mode, $entry_id = null) {
+			$modes = (object)$this->getExportModes();
+
+			if ($mode === $modes->getFilename && isset($data['file'])) {
+				return realpath(WORKSPACE . $data['file']);
+			}
+
+			if ($mode === $modes->getObject && isset($data['file'])) {
+				$object = (object)$data;
+
+				if (isset($object->meta)) {
+					$object->meta = unserialize($object->meta);
+				}
+
+				return $object;
+			}
+
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------

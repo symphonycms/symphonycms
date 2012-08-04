@@ -4,13 +4,13 @@
 	 * @package toolkit
 	 */
 
+	require_once TOOLKIT . '/class.xsltprocess.php';
+	require_once FACE . '/interface.exportablefield.php';
+
 	/**
 	 * A simple Input field that essentially maps to HTML's `<input type='text'/>`.
 	 */
-
-	require_once(TOOLKIT . '/class.xsltprocess.php');
-
-	Class fieldInput extends Field {
+	Class fieldInput extends Field implements ExportableField {
 
 		public function __construct(){
 			parent::__construct();
@@ -187,6 +187,53 @@
 					$this->get('element_name'), $value, array('handle' => $data['handle'])
 				)
 			);
+		}
+
+	/*-------------------------------------------------------------------------
+		Export:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Return a list of supported export modes for use with `prepareExportValue`.
+		 *
+		 * @return array
+		 */
+		public function getExportModes() {
+			return array(
+				'getHandle' =>		ExportableField::HANDLE,
+				'getUnformatted' =>	ExportableField::UNFORMATTED
+			);
+		}
+
+		/**
+		 * Give the field some data and ask it to return a value using one of many
+		 * possible modes.
+		 *
+		 * @param mixed $data
+		 * @param integer $mode
+		 * @param integer $entry_id
+		 * @return string|null
+		 */
+		public function prepareExportValue($data, $mode, $entry_id = null) {
+			$modes = (object)$this->getExportModes();
+
+			// Export handles:
+			if ($mode === $modes->getHandle) {
+				if (isset($data['handle'])) {
+					return $data['handle'];
+				}
+
+				else if (isset($data['value'])) {
+					return General::createHandle($data['value']);
+				}
+			}
+
+			// Export unformatted:
+			if ($mode === $modes->getUnformatted && isset($data['value'])) {
+				return $data['value'];
+			}
+
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------
