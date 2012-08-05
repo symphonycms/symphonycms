@@ -75,7 +75,7 @@
 			if($version == 'PBKDF2v1') { // salted PBKDF2
 				return PBKDF2::compare($input, $hash);
 			}
-			if($version == 'SSHA1Xv1') { // salted SHA1
+			elseif($version == 'SSHA1Xv1') { // salted SHA1
 				return SSHA1::compare($input, $hash);
 			}
 			elseif(strlen($hash) == 40){ // legacy, unsalted SHA1
@@ -83,6 +83,9 @@
 			}
 			elseif(strlen($hash) == 32){ // legacy, unsalted MD5
 				return MD5::compare($input, $hash);
+			}
+			else { // the hash provided doesn't make any sense
+				return false;
 			}
 		}
 
@@ -98,7 +101,7 @@
 		public static function requiresMigration($hash){
 			$version = substr($hash, 0, 8);
 
-			if($version == 'PBKDF2v1') { // salted PBKDF2
+			if($version == 'PBKDF2v1') { // salted PBKDF2, let the responsible class decide
 				return PBKDF2::requiresMigration($hash);
 			}
 			else { // everything else
