@@ -162,14 +162,19 @@
 				}
 			}
 
-			if(!$this->_callback = $this->getPageCallback($page)){
-				$this->errorPageNotFound();
+			if(!$this->_callback = $this->getPageCallback($page)) {
+				if($page === '/publish/') {
+					$sections = SectionManager::fetch(null, 'ASC', 'sortorder');
+					$section = current($sections);
+					redirect(SYMPHONY_URL . '/publish/' . $section->get('handle'));
+				}
+				else $this->errorPageNotFound();
 			}
 
 			include_once($this->_callback['driver_location']);
 			$this->Page = new $this->_callback['classname'];
 
-			if(!$is_logged_in && $this->_callback['driver'] != 'login'){
+			if(!$is_logged_in && $this->_callback['driver'] != 'login') {
 				if(is_callable(array($this->Page, 'handleFailedAuthorisation'))) {
 					$this->Page->handleFailedAuthorisation();
 				}
