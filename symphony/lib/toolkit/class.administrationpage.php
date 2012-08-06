@@ -532,9 +532,9 @@
 		 * Given the context of the current page, loop over all the values
 		 * of the array and append them to the page's body class. If an
 		 * context value is numeric it will be prepended by 'id-', and also
-		 * added a data attribute, `data-id` since Symphony 2.3.1. If the
-		 * context value is the Section handle, this will be added as a
-		 * data attribute, `data-section-handle` since Symphony 2.3.1.
+		 * added a data attribute, `data-id` since Symphony 2.3.1. Also since
+		 * Symphony 2.3.1, if the key is non numeric, it will be added to the
+		 * body as a data attribute instead of a class.
 		 *
 		 * @deprecated Numeric values will no longer be added as a class (using `id-x`)
 		 * in Symphony 2.4. The data attribute, `data-id` is available since
