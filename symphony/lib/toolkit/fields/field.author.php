@@ -283,25 +283,16 @@
 			$wrapper->appendChild($list);
 		}
 
-		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
-			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
+		public function prepareTableValue($data, XMLElement $link = null, $entry_id = null){
+			$value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::VALUE, $entry_id);
 
-			if(empty($data['author_id'])) return NULL;
-
-			$value = array();
-			$authors = AuthorManager::fetchByID($data['author_id']);
-
-			foreach($authors as $author) {
-				if(!is_null($author)) {
-					$value[] = $author->getFullName();
-				}
-			}
+			if(is_null($value)) return null;
 
 			return parent::prepareTableValue(array('value' => General::sanitize(implode(', ', $value))), $link, $entry_id);
 		}
 
 		public function getParameterPoolValue($data, $entry_id = null) {
-			return $data['author_id'];
+			return $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::AUTHOR, $entry_id);
 		}
 
 	/*-------------------------------------------------------------------------
@@ -316,15 +307,15 @@
 		public function getExportModes() {
 			return array(
 				'listAuthor' =>			ExportableField::LIST_OF
-										^ ExportableField::AUTHOR,
+										+ ExportableField::AUTHOR,
 				'listAuthorObject' =>	ExportableField::LIST_OF
-										^ ExportableField::AUTHOR
-										^ ExportableField::OBJECT,
+										+ ExportableField::AUTHOR
+										+ ExportableField::OBJECT,
 				'listAuthorToValue'	=>	ExportableField::LIST_OF
-										^ ExportableField::AUTHOR
-										^ ExportableField::VALUE,
+										+ ExportableField::AUTHOR
+										+ ExportableField::VALUE,
 				'listValue' =>			ExportableField::LIST_OF
-										^ ExportableField::VALUE
+										+ ExportableField::VALUE
 			);
 		}
 
@@ -357,10 +348,9 @@
 			// All other modes require full data:
 			$items = array();
 
-			foreach ($data['author_id'] as $author_id) {
-				$author = AuthorManager::fetchByID($author_id);
-
-				if ($author === null) continue;
+			$authors = AuthorManager::fetchByID($data['author_id']);
+			foreach ($authors as $author) {
+				if(is_null($author)) continue;
 
 				if ($mode === $modes->listAuthorObject) {
 					$items[] = $author;

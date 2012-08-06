@@ -160,11 +160,11 @@
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
-			return ($data['value'] == 'yes') ? __('Yes') : __('No');
+			return $this->prepareExportValue($data, ExportableField::FORMATTED, $entry_id);
 		}
 
 		public function getParameterPoolValue(array $data, $entry_id = null){
-			return ($data['value'] == 'yes') ? 'yes' : 'no';
+			return $this->prepareExportValue($data, ExportableField::UNFORMATTED, $entry_id);
 		}
 
 	/*-------------------------------------------------------------------------
@@ -179,6 +179,7 @@
 		public function getExportModes() {
 			return array(
 				'getBoolean' =>		ExportableField::BOOLEAN,
+				'getFormatted' =>	ExportableField::FORMATTED,
 				'getUnformatted' =>	ExportableField::UNFORMATTED
 			);
 		}
@@ -200,8 +201,13 @@
 				return ($data['value'] == 'yes' ? 'yes' : 'no');
 			}
 
+			// Export formatted:
+			else if($mode === $modes->getFormatted && isset($data['value'])) {
+				return ($data['value'] == 'yes') ? __('Yes') : __('No');
+			}
+
 			// Export boolean:
-			if ($mode === $modes->getBoolean && isset($data['value'])) {
+			else if ($mode === $modes->getBoolean && isset($data['value'])) {
 				return ($data['value'] == 'yes' ? true : false);
 			}
 

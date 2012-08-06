@@ -8,53 +8,54 @@
 	 * The `ExportableField` interface defines the functions required to implement
 	 * the field export API proposal.
 	 *
+	 * @since Symphony 2.3.1
 	 * @link https://github.com/symphonycms/symphony-2/issues/1394
 	 */
 	interface ExportableField {
 		/**
 		 * Select an array of values from a field.
 		 */
-		const LIST_OF = 0x1100000;
+		const LIST_OF = 1100;
 
 		/**
 		 * Select a `boolean` from a field.
 		 */
-		const BOOLEAN = 0x2010000;
+		const BOOLEAN = 1101;
 
 		/**
 		 * Select an `object` from a field.
 		 */
-		const OBJECT = 0x2020000;
+		const OBJECT = 1102;
 
 		/**
 		 * Select an entry ID from a field.
 		 */
-		const ENTRY = 0x4010000;
+		const ENTRY = 1103;
 
 		/**
 		 * Select an author ID from a field.
 		 */
-		const AUTHOR = 0x4040000;
+		const AUTHOR = 1104;
 
 		/**
 		 * Select handles from a field.
 		 */
-		const HANDLE = 0x8010000;
+		const HANDLE = 1105;
 
 		/**
 		 * Select raw values from a field.
 		 */
-		const VALUE = 0x8020000;
+		const VALUE = 1106;
 
 		/**
 		 * Select formatted values from a field.
 		 */
-		const FORMATTED = 0x8040000;
+		const FORMATTED = 1107;
 
 		/**
 		 * Select unformatted values from a field.
 		 */
-		const UNFORMATTED = 0x8080000;
+		const UNFORMATTED = 1108;
 
 		/**
 		 * Return a list of supported export modes for use with `prepareExportValue`.

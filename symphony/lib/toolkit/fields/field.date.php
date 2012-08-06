@@ -487,7 +487,15 @@
 			$modes = (object)$this->getExportModes();
 
 			if ($mode === $modes->getObject && isset($data['value'])) {
-				return new DateTime($data['value']);
+				$timezone = Symphony::Configuration()->get('timezone', 'region');
+				$date = new DateTime($data['value']);
+				$date->setTimezone(new DateTimeZone($timezone));
+
+				return $date;
+			}
+
+			else if ($mode === $modes->getValue && isset($data['value'])) {
+				return $data['value'];
 			}
 
 			return null;

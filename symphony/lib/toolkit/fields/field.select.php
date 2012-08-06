@@ -355,15 +355,13 @@
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
-			$value = $data['value'];
-
-			if(!is_array($value)) $value = array($value);
+			$value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::VALUE, $entry_id);
 
 			return parent::prepareTableValue(array('value' => implode(', ', $value)), $link, $entry_id = null);
 		}
 
 		public function getParameterPoolValue($data, $entry_id = null) {
-			return $data['handle'];
+			return $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::HANDLE, $entry_id);
 		}
 
 	/*-------------------------------------------------------------------------
@@ -378,12 +376,12 @@
 		public function getExportModes() {
 			return array(
 				'listHandle' =>			ExportableField::LIST_OF
-										^ ExportableField::HANDLE,
-				'listHandleToValue' =>	ExportableField::LIST_OF
-										^ ExportableField::VALUE,
+										+ ExportableField::HANDLE,
 				'listValue' =>			ExportableField::LIST_OF
-										^ ExportableField::HANDLE
-										^ ExportableField::VALUE
+										+ ExportableField::VALUE,
+				'listHandleToValue' =>	ExportableField::LIST_OF
+										+ ExportableField::HANDLE
+										+ ExportableField::VALUE
 			);
 		}
 

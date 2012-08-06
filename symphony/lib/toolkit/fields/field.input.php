@@ -229,7 +229,7 @@
 			}
 
 			// Export unformatted:
-			if ($mode === $modes->getUnformatted && isset($data['value'])) {
+			else if ($mode === $modes->getUnformatted && isset($data['value'])) {
 				return $data['value'];
 			}
 

@@ -251,8 +251,8 @@
 		 */
 		public function getExportModes() {
 			return array(
-				'getFormatted' =>	ExportableField::FORMATTED,
 				'getHandle' =>		ExportableField::HANDLE,
+				'getFormatted' =>	ExportableField::FORMATTED,
 				'getUnformatted' =>	ExportableField::UNFORMATTED
 			);
 		}
