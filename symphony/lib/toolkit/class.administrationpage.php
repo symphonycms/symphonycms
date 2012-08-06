@@ -550,8 +550,8 @@
 				}
 				// Prevent the section_handle from being added as a class,
 				// instead add this as a data attribute. #1397 ^BA
-				else if($key === "section_handle") {
-					$this->Body->setAttribute('data-section-handle', $value);
+				else if(!is_numeric($key) and isset($value)) {
+					$this->Body->setAttribute('data-' . str_replace('_', '-', $key), $value);
 					continue;
 				}
 
