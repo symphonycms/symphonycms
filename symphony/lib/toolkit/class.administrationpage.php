@@ -531,20 +531,39 @@
 		/**
 		 * Given the context of the current page, loop over all the values
 		 * of the array and append them to the page's body class. If an
-		 * context value is numeric it will be prepended by 'id-'.
+		 * context value is numeric it will be prepended by 'id-', and also
+		 * added a data attribute, `data-id` since Symphony 2.3.1. If the
+		 * context value is the Section handle, this will be added as a
+		 * data attribute, `data-section-handle` since Symphony 2.3.1.
 		 *
+		 * @deprecated Numeric values will no longer be added as a class (using `id-x`)
+		 * in Symphony 2.4. The data attribute, `data-id` is available since
+		 * Symphony 2.3.1
 		 * @param array $context
 		 */
 		private function __appendBodyClass(array $context = array()){
 			$body_class = '';
+			foreach($context as $key => $value) {
+				if (is_numeric($value)) {
+					$this->Body->setAttribute('data-id', $value);
+					$value = 'id-' . $value;
+				}
+				// Prevent the section_handle from being added as a class,
+				// instead add this as a data attribute. #1397 ^BA
+				else if($key === "section_handle") {
+					$this->Body->setAttribute('data-section-handle', $value);
+					continue;
+				}
 
-			foreach($context as $c) {
-				if (is_numeric($c)) $c = 'id-' . $c;
-				$body_class .= trim($c) . ' ';
+				$body_class .= trim($value) . ' ';
 			}
+
 			$classes = array_merge(explode(' ', trim($body_class)), explode(' ', trim($this->_body_class)));
 			$body_class = trim(implode(' ', $classes));
-			if (!empty($body_class)) $this->Body->setAttribute('class', $body_class);
+
+			if (!empty($body_class)) {
+				$this->Body->setAttribute('class', $body_class);
+			}
 		}
 
 		/**

@@ -89,7 +89,6 @@
 
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array($section->get('name'), __('Symphony'))));
-			$this->Form->setAttribute("class", $this->_context['section_handle']);
 
 			$filters = array();
 			$filter_querystring = $prepopulate_querystring = $where = $joins = NULL;
@@ -208,8 +207,8 @@
 			}
 
 			/**
-			 * Allows the creation of custom entries tablecolumns. Called
-			 * after all the Section Visible columns have been added  as well
+			 * Allows the creation of custom table columns for each entry. Called
+			 * after all the Section Visible columns have been added as well
 			 * as the Section Associations
 			 *
 			 * @delegate AddCustomPublishColumn

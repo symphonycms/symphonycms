@@ -352,7 +352,6 @@
 				$callback['driver'] = strtolower($callback['driver']);
 
 				if(!is_file(CONTENT . '/content.' . $callback['driver'] . '.php')) return false;
-
 			}
 
 			// TODO: Add delegate for custom callback creation
