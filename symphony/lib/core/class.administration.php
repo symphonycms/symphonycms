@@ -191,21 +191,37 @@
 				$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 				if(is_array($extensions) && !empty($extensions) && $this->__canAccessAlerts()) {
 					foreach($extensions as $name) {
-
 						try {
 							$about = Symphony::ExtensionManager()->about($name);
-						} catch (Exception $ex) {
+						}
+						catch (Exception $ex) {
+							// The extension cannot be found, show an error message and let the user remove 
+							// or rename the extension folder.
+							if (isset($_POST['extension-missing'])) {
+								if(isset($_POST['action']['delete'])) {
+									Symphony::ExtensionManager()->cleanupDatabase();
+								}
+								else if (isset($_POST['action']['rename'])) {
+									if(!rename(EXTENSIONS . '/' . $_POST['existing-folder'], EXTENSIONS . '/' . $_POST['new-folder'])) {
+										throw new SymphonyErrorPage(
+											__('Could not find extension %s at location %s.', array(
+												'<code>' . $ex->getAdditional()->name . '</code>',
+												'<code>' . $ex->getAdditional()->path . '</code>'
+											)),
+											'Symphony Extension Missing Error',
+											'missing_extension', array(
+												'name' => $ex->getAdditional()->name,
+												'path' => $ex->getAdditional()->path,
+												'rename_failed' => true
+											)
+										);
+									}
+								}
 
-							// The extension cannot be found, show an error message and let the user remove it
-							if (isset($_POST['extension-force-remove'])) {
-								$name = $_POST['extension-force-remove'];
-
-								Symphony::ExtensionManager()->removeDelegates($name);
-								Symphony::Database()->delete('tbl_extensions', " `name` = '$name' ");
-								redirect(SYMPHONY_URL);
+								redirect(SYMPHONY_URL . '/system/extensions/');
 							}
 							else {
-								throw new SymphonyErrorPage($ex->getMessage());
+								throw $ex;
 							}
 						}
 
