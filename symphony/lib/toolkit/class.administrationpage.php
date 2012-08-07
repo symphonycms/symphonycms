@@ -529,30 +529,23 @@
 		}
 
 		/**
-		 * Given the context of the current page, loop over all the values
-		 * of the array and append them to the page's body class. If an
-		 * context value is numeric it will be prepended by 'id-', and also
-		 * added a data attribute, `data-id` since Symphony 2.3.1. Also since
-		 * Symphony 2.3.1, if the key is non numeric, it will be added to the
-		 * body as a data attribute instead of a class.
+		 * Given the context of the current page, which is an associative
+		 * array, this function will append the values to the page's body as
+		 * classes. If an context value is numeric it will be prepended by 'id-',
+		 * otherwise all classes will be prefixed by the context key.
 		 *
-		 * @deprecated Numeric values will no longer be added as a class (using `id-x`)
-		 * in Symphony 2.4. The data attribute, `data-id` is available since
-		 * Symphony 2.3.1
 		 * @param array $context
 		 */
 		private function __appendBodyClass(array $context = array()){
 			$body_class = '';
 			foreach($context as $key => $value) {
 				if (is_numeric($value)) {
-					$this->Body->setAttribute('data-id', $value);
 					$value = 'id-' . $value;
 				}
-				// Prevent the section_handle from being added as a class,
-				// instead add this as a data attribute. #1397 ^BA
+				// Add prefixes to all context values by making the
+				// class be {key}-{value}. #1397 ^BA
 				else if(!is_numeric($key) and isset($value)) {
-					$this->Body->setAttribute('data-' . str_replace('_', '-', $key), $value);
-					continue;
+					$value = str_replace('_', '-', $key) . '-'. $value;
 				}
 
 				$body_class .= trim($value) . ' ';
