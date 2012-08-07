@@ -451,22 +451,22 @@ div.password {
 	Index page
 --------------------------------------------------------------------------*/
 
-.index h2 {
+.page-index h2 {
 	border: none;
 }
 
-.index form {
+.page-index form {
 	margin: 0;
 	padding: 0;
 }
 
-.index .actions {
+.page-index .actions {
 	text-align: right;
 	padding: 30px 18px 0;
 	height: 38px;
 }
 
-.index .actions + ul.page {
+.page-index .actions + ul.page {
 	margin-top: -58px;
 }
 
@@ -621,23 +621,23 @@ div.field-checkbox:first-child {
 
 /* Actions */
 
-.single #contents .actions {
+.page-single #contents .actions {
 	clear: both;
 	border-top: 1px solid rgba(0, 0, 0, 0.1);
 	padding: 1.75em 0 0;
 	margin: 0 18px;
 }
 
-.single #contents .columns .actions {
+.page-single #contents .columns .actions {
 	margin: 0;
 }
 
-.single #contents .actions input {
+.page-single #contents .actions input {
 	float: right;
 	margin-left: 1em;
 }
 
-.single #contents .actions button {
+.page-single #contents .actions button {
 	float: left;
 	margin-left: 0;
 }
