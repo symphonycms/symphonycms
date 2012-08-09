@@ -93,7 +93,10 @@
 	}
 	else if($e->getAdditional()->rename_failed) {
 		$div->appendChild(
-			new XMLElement('p', __('Sorry, but Symphony was unable to rename the folder. Try uninstalling the extension to continue.'))
+			new XMLElement('p', __('Sorry, but Symphony was unable to rename the folder. You can try renaming %s to %s yourself, or you can uninstall the extension to continue.', array(
+				'<code>' . $match . '</code>',
+				'<code>' . $e->getAdditional()->name . '</code>'
+			)))
 		);
 	}
 	else {
