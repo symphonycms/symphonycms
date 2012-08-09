@@ -47,29 +47,36 @@
 
 	// Fetch extensions
 	$extensions = new DirectoryIterator(EXTENSIONS);
-	$matches = array();
+	$match = "";
 
 	// Look for folders that could be the same as the desired extension
 	foreach($extensions as $extension) {
 		if($extension->isDot() || $extension->isFile()) continue;
 
-		// If we find folders that are at least a 75% match, give the user the chance to rename
-		similar_text($e->getAdditional()->name, $extension->getFilename(), $percent);
-		if($percent > 75) $matches[$extension->getFilename()] = $percent;
+		// See if we can find an extension in any of the folders that has the id we are looking for in `extension.meta.xml`
+		if(file_exists($extension->getPathname() . "/extension.meta.xml")) {
+			$xsl = file_get_contents($extension->getPathname() . "/extension.meta.xml");
+			$xsl = @new SimpleXMLElement($xsl);
+			$xsl->registerXPathNamespace("ext", "http://symphony-cms.com/schemas/extension/1.0");
+			$result = $xsl->xpath("//ext:extension[@id = '" . $e->getAdditional()->name . "']");
+			if(!empty($result)) {
+				$match = $extension->getFilename();
+				break;
+			}
+		}
 	}
 
 	// If we've found a similar folder
-	if(!empty($matches) && $e->getAdditional()->rename_failed !== true) {
-		arsort($matches, SORT_NUMERIC);
+	if($match != "" && $e->getAdditional()->rename_failed !== true) {
 		$div->appendChild(
 			new XMLElement('p', __('Often the cause of this error is a misnamed extension folder. You can try renaming %s to %s, or you can uninstall the extension to continue.', array(
-				'<code>' . key($matches) . '</code>',
-				'<code>' . $e->getAdditional()->name . '</code>'
+				'<code>extensions/' . $match . '</code>',
+				'<code>extensions/' . $e->getAdditional()->name . '</code>'
 			)))
 		);
 
 		$form->appendChild(
-			Widget::Input('existing-folder', key($matches), 'hidden')
+			Widget::Input('existing-folder', $match, 'hidden')
 		);
 		$form->appendChild(
 			Widget::Input('new-folder', $e->getAdditional()->name, 'hidden')
@@ -86,7 +93,10 @@
 	}
 	else if($e->getAdditional()->rename_failed) {
 		$div->appendChild(
-			new XMLElement('p', __('Sorry, but Symphony was unable to rename the folder. Try uninstalling the extension to continue.'))
+			new XMLElement('p', __('Sorry, but Symphony was unable to rename the folder. You can try renaming %s to %s yourself, or you can uninstall the extension to continue.', array(
+				'<code>extensions/' . $match . '</code>',
+				'<code>extensions/' . $e->getAdditional()->name . '</code>'
+			)))
 		);
 	}
 	else {
