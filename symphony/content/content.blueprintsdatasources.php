@@ -90,12 +90,10 @@
 				$isEditing = true;
 				$handle = $this->_context[1];
 				$existing =& DatasourceManager::create($handle, array(), false);
-				$cache_id = null;
 
 				if (!$existing->allowEditorToParse()) redirect(SYMPHONY_URL . '/blueprints/datasources/info/' . $handle . '/');
 
 				$about = $existing->about();
-				$cache = new Cacheable(Symphony::Database());
 				$fields['name'] = $about['name'];
 
 				$fields['order'] = ($existing->dsParamORDER == 'rand' ? 'random' : $existing->dsParamORDER);

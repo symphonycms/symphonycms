@@ -13,27 +13,26 @@
 
 		public $_errors = array();
 
-		public function __viewIndex($resource_type){
+		public function __viewIndex($resource_type) {
 			parent::__viewIndex(RESOURCE_TYPE_EVENT);
 
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Events'), __('Symphony'))));
 			$this->appendSubheading(__('Events'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a new event'), 'create button', NULL, array('accesskey' => 'c')));
 		}
 
-		public function __viewNew(){
+		public function __viewNew() {
 			$this->__form();
 		}
 
-		public function __viewEdit(){
+		public function __viewEdit() {
 			$this->__form();
 		}
 
-		public function __viewInfo(){
+		public function __viewInfo() {
 			$this->__form(true);
 		}
 
-		public function __form($readonly=false){
-
+		public function __form($readonly=false) {
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 			if($formHasErrors) {
 				$this->pageAlert(
@@ -71,21 +70,24 @@
 			$isEditing = ($readonly ? true : false);
 			$fields = array();
 
-			if($this->_context[0] == 'edit' || $this->_context[0] == 'info'){
-				$isEditing = true;
+			if(isset($_POST['fields'])) {
+				$fields = $_POST['fields'];
+			}
 
+			else if($this->_context[0] == 'edit' || $this->_context[0] == 'info') {
+				$isEditing = true;
 				$handle = $this->_context[1];
 				$existing =& EventManager::create($handle);
 				$about = $existing->about();
 
-				if ($this->_context[0] == 'edit' && !$existing->allowEditorToParse()) redirect(SYMPHONY_URL . '/blueprints/events/info/' . $handle . '/');
+				if ($this->_context[0] == 'edit' && !$existing->allowEditorToParse()) {
+					redirect(SYMPHONY_URL . '/blueprints/events/info/' . $handle . '/');
+				}
 
 				$fields['name'] = $about['name'];
 				$fields['source'] = $existing->getSource();
 				$fields['filters'] = $existing->eParamFILTERS;
 			}
-
-			if(isset($_POST['fields'])) $fields = $_POST['fields'];
 
 			$this->setPageType('form');
 			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($about['name'], __('Events'), __('Symphony'))));
@@ -94,7 +96,7 @@
 				Widget::Anchor(__('Events'), SYMPHONY_URL . '/blueprints/events/'),
 			));
 
-			if(!$readonly):
+			if(!$readonly) {
 				$fieldset = new XMLElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
@@ -108,8 +110,12 @@
 
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'column');
-				if(isset($this->_errors['name'])) $div->appendChild(Widget::Error($label, $this->_errors['name']));
-				else $div->appendChild($label);
+				if(isset($this->_errors['name'])) {
+					$div->appendChild(Widget::Error($label, $this->_errors['name']));
+				}
+				else {
+					$div->appendChild($label);
+				}
 				$group->appendChild($div);
 
 				// Source
@@ -117,18 +123,24 @@
 				$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 				$options = array();
 
-				if(is_array($sections) && !empty($sections)){
-					foreach($sections as $s) $options[] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
+				if(is_array($sections) && !empty($sections)) {
+					foreach($sections as $s) {
+						$options[] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
+					}
 				}
 
 				$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'event-context')));
 
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'column');
-				if(isset($this->_errors['source'])) $div->appendChild(Widget::Error($label, $this->_errors['source']));
-				else $div->appendChild($label);
-				$group->appendChild($div);
+				if(isset($this->_errors['source'])) {
+					$div->appendChild(Widget::Error($label, $this->_errors['source']));
+				}
+				else {
+					$div->appendChild($label);
+				}
 
+				$group->appendChild($div);
 				$fieldset->appendChild($group);
 
 				$label = Widget::Label(__('Filter Options'));
@@ -151,14 +163,15 @@
 				 * @param array $options
 				 *  An array of all the filters that are available, passed by reference
 				 */
-				Symphony::ExtensionManager()->notifyMembers('AppendEventFilter', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $filters, 'options' => &$options));
+				Symphony::ExtensionManager()->notifyMembers('AppendEventFilter', '/blueprints/events/' . $this->_context[0] . '/', array(
+					'selected' => $filters,
+					'options' => &$options
+				));
 
 				$label->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
-
 				$fieldset->appendChild($label);
-
 				$this->Form->appendChild($fieldset);
-			endif;
+			}
 
 			if($readonly) {
 				// Author
@@ -172,18 +185,28 @@
 					$link = $about['author']['name'];
 				}
 
-				$fieldset = new XMLElement('fieldset');
-				$fieldset->setAttribute('class', 'settings');
-				$fieldset->appendChild(new XMLElement('legend', __('Author')));
-				$fieldset->appendChild(new XMLElement('p', $link->generate(false)));
-				$this->Form->appendChild($fieldset);
+				if($link) {
+					$fieldset = new XMLElement('fieldset');
+					$fieldset->setAttribute('class', 'settings');
+					$fieldset->appendChild(new XMLElement('legend', __('Author')));
+					$fieldset->appendChild(new XMLElement('p', $link->generate(false)));
+					$this->Form->appendChild($fieldset);
+				}
 
 				// Version
 				$fieldset = new XMLElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Version')));
-				if(preg_match('/^\d+(\.\d+)*$/', $about['version'])) $fieldset->appendChild(new XMLElement('p', __('%1$s released on %2$s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
-				else $fieldset->appendChild(new XMLElement('p', __('Created by %1$s at %2$s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__)))));
+				if(preg_match('/^\d+(\.\d+)*$/', $about['version'])) {
+					$fieldset->appendChild(
+						new XMLElement('p', __('%1$s released on %2$s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__))))
+					);
+				}
+				else {
+					$fieldset->appendChild(
+						new XMLElement('p', __('Created by %1$s at %2$s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__))))
+					);
+				}
 				$this->Form->appendChild($fieldset);
 			}
 
@@ -201,23 +224,28 @@
 			$div->setAttribute('class', 'actions');
 			$div->appendChild(Widget::Input('action[save]', ($isEditing ? __('Save Changes') : __('Create Event')), 'submit', array('accesskey' => 's')));
 
-			if($isEditing){
+			if($isEditing) {
 				$button = new XMLElement('button', __('Delete'));
 				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this event'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this event?')));
 				$div->appendChild($button);
 			}
 
-			if(!$readonly) $this->Form->appendChild($div);
-
+			if(!$readonly) {
+				$this->Form->appendChild($div);
+			}
 		}
 
-		public function __actionNew(){
-			if(array_key_exists('save', $_POST['action'])) return $this->__formAction();
+		public function __actionNew() {
+			if(array_key_exists('save', $_POST['action'])) {
+				return $this->__formAction();
+			}
 		}
 
-		public function __actionEdit(){
-			if(array_key_exists('save', $_POST['action'])) return $this->__formAction();
-			elseif(array_key_exists('delete', $_POST['action'])){
+		public function __actionEdit() {
+			if(array_key_exists('save', $_POST['action'])) {
+				return $this->__formAction();
+			}
+			else if(array_key_exists('delete', $_POST['action'])) {
 
 				/**
 				 * Prior to deleting the Event file. Target file path is provided.
@@ -231,7 +259,7 @@
 				 */
 				Symphony::ExtensionManager()->notifyMembers('EventPreDelete', '/blueprints/events/', array('file' => EVENTS . "/event." . $this->_context[1] . ".php"));
 
-				if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php')){
+				if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php')) {
 					$this->pageAlert(
 						__('Failed to delete %s.', array('<code>' . $this->_context[1] . '</code>'))
 						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/events</code>'))
@@ -247,17 +275,15 @@
 
 					redirect(SYMPHONY_URL . '/blueprints/events/');
 				}
-
 			}
 		}
 
-		public function __actionIndex($resource_type){
+		public function __actionIndex($resource_type) {
 			return parent::__actionIndex(RESOURCE_TYPE_EVENT);
 		}
 
-		public function __formAction(){
+		public function __formAction() {
 			$fields = $_POST['fields'];
-
 			$this->_errors = array();
 
 			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
@@ -266,28 +292,34 @@
 
 			$classname = Lang::createHandle($fields['name'], 255, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
 			$rootelement = str_replace('_', '-', $classname);
-
 			$extends = 'SectionEvent';
 
 			// Check to make sure the classname is not empty after handlisation.
-			if(empty($classname) && !isset($this->_errors['name'])) $this->_errors['name'] = __('Please ensure name contains at least one Latin-based character.', array($classname));
+			if(empty($classname) && !isset($this->_errors['name'])) {
+				$this->_errors['name'] = __('Please ensure name contains at least one Latin-based character.', array($classname));
+			}
 
 			$file = EVENTS . '/event.' . $classname . '.php';
-
 			$isDuplicate = false;
 			$queueForDeletion = NULL;
 
-			if($this->_context[0] == 'new' && is_file($file)) $isDuplicate = true;
-			elseif($this->_context[0] == 'edit'){
+			if($this->_context[0] == 'new' && is_file($file)) {
+				$isDuplicate = true;
+			}
+			else if($this->_context[0] == 'edit') {
 				$existing_handle = $this->_context[1];
-				if($classname != $existing_handle && is_file($file)) $isDuplicate = true;
-				elseif($classname != $existing_handle) $queueForDeletion = EVENTS . '/event.' . $existing_handle . '.php';
+				if($classname != $existing_handle && is_file($file)) {
+					$isDuplicate = true;
+				}
+				else if($classname != $existing_handle) {
+					$queueForDeletion = EVENTS . '/event.' . $existing_handle . '.php';
+				}
 			}
 
 			// Duplicate
 			if($isDuplicate) $this->_errors['name'] = __('An Event with the name %s already exists', array('<code>' . $classname . '</code>'));
 
-			if(empty($this->_errors)){
+			if(empty($this->_errors)) {
 
 				$multiple = in_array('expect-multiple', $filters);
 
@@ -316,7 +348,7 @@
 				$documentation_parts[] = new XMLElement('h3', __('Success and Failure XML Examples'));
 				$documentation_parts[] = new XMLElement('p', __('When saved successfully, the following XML will be returned:'));
 
-				if($multiple){
+				if($multiple) {
 					$code = new XMLElement($rootelement);
 					$entry = new XMLElement('entry', NULL, array('index' => '0', 'result' => 'success' , 'type' => 'create | edit'));
 					$entry->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
@@ -324,16 +356,15 @@
 					$code->appendChild($entry);
 				}
 
-				else{
+				else {
 					$code = new XMLElement($rootelement, NULL, array('result' => 'success' , 'type' => 'create | edit'));
 					$code->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
 				}
 
 				$documentation_parts[] = self::processDocumentationCode($code);
-
 				$documentation_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? ' (<strong> ' . __('Notice that it is possible to get mixtures of success and failure messages when using the ‘Allow Multiple’ option') . '</strong>)' : NULL) . ':');
 
-				if($multiple){
+				if($multiple) {
 					$code = new XMLElement($rootelement);
 
 					$entry = new XMLElement('entry', NULL, array('index' => '0', 'result' => 'error'));
@@ -346,7 +377,7 @@
 					$code->appendChild($entry);
 				}
 
-				else{
+				else {
 					$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
 					$code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 					$code->appendChild(new XMLElement('field-name', NULL, array('type' => 'invalid | missing')));
@@ -355,7 +386,7 @@
 				$code->setValue('...', false);
 				$documentation_parts[] = self::processDocumentationCode($code);
 
-				if(is_array($filters) && !empty($filters)){
+				if(is_array($filters) && !empty($filters)) {
 					$documentation_parts[] = new XMLElement('p', __('The following is an example of what is returned if any options return an error:'));
 
 					$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
@@ -395,7 +426,7 @@
 				$documentation_parts[] = new XMLElement('p', __('To redirect to a different location upon a successful save, include the redirect location in the form. This is best as a hidden field like so, where the value is the URL to redirect to:'));
 				$documentation_parts[] = self::processDocumentationCode(Widget::Input('redirect', URL.'/success/', 'hidden'));
 
-				if(in_array('send-email', $filters)){
+				if(in_array('send-email', $filters)) {
 					$documentation_parts[] = new XMLElement('h3', __('Send Notification Email'));
 
 					$documentation_parts[] = new XMLElement('p',
@@ -446,7 +477,10 @@
 				 * @param array $documentation
 				 *  An array of all the documentation XMLElements, passed by reference
 				 */
-				Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $this->_context[0] . '/', array('selected' => $filters, 'documentation' => &$documentation_parts));
+				Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $this->_context[0] . '/', array(
+					'selected' => $filters,
+					'documentation' => &$documentation_parts
+				));
 
 				$documentation = join(PHP_EOL, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $documentation_parts));
 				$documentation = str_replace('\'', '\\\'', $documentation);
@@ -516,7 +550,7 @@
 				// Write Successful, add record to the database
 				else {
 
-					if($queueForDeletion){
+					if($queueForDeletion) {
 						General::deleteFile($queueForDeletion);
 
 						$pages = PageManager::fetch(false, array('events', 'id'), array("
@@ -575,17 +609,17 @@
 			}
 		}
 
-		public static function processDocumentationCode($code){
+		public static function processDocumentationCode($code) {
 			return new XMLElement('pre', '<code>' . str_replace('<', '&lt;', str_replace('&', '&amp;', trim((is_object($code) ? $code->generate(true) : $code)))) . '</code>', array('class' => 'XML'));
 		}
 
-		public function __injectFilters(&$shell, $elements){
+		public function __injectFilters(&$shell, $elements) {
 			if(!is_array($elements) || empty($elements)) return;
 
 			$shell = str_replace('<!-- FILTERS -->',  "'" . implode("'," . PHP_EOL . "\t\t\t\t'", $elements) . "'", $shell);
 		}
 
-		public function __injectAboutInformation(&$shell, $details){
+		public function __injectAboutInformation(&$shell, $details) {
 			if(!is_array($details) || empty($details)) return;
 
 			foreach($details as $key => $val) $shell = str_replace('<!-- ' . strtoupper($key) . ' -->', addslashes($val), $shell);
