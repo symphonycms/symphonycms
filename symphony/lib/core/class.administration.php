@@ -202,7 +202,7 @@
 									Symphony::ExtensionManager()->cleanupDatabase();
 								}
 								else if (isset($_POST['action']['rename'])) {
-									if(!rename(EXTENSIONS . '/' . $_POST['existing-folder'], EXTENSIONS . '/' . $_POST['new-folder'])) {
+									if(!@rename(EXTENSIONS . '/' . $_POST['existing-folder'], EXTENSIONS . '/' . $_POST['new-folder'])) {
 										throw new SymphonyErrorPage(
 											__('Could not find extension %s at location %s.', array(
 												'<code>' . $ex->getAdditional()->name . '</code>',
