@@ -47,7 +47,7 @@
 
 	// Fetch extensions
 	$extensions = new DirectoryIterator(EXTENSIONS);
-	$matches = array();
+	$match = "";
 
 	// Look for folders that could be the same as the desired extension
 	foreach($extensions as $extension) {
@@ -60,23 +60,23 @@
 			$xsl->registerXPathNamespace("ext", "http://symphony-cms.com/schemas/extension/1.0");
 			$result = $xsl->xpath("//ext:extension[@id = '" . $e->getAdditional()->name . "']");
 			if(!empty($result)) {
-				$matches[$extension->getFilename()] = 100;
+				$match = $extension->getFilename();
+				break;
 			}
 		}
 	}
 
 	// If we've found a similar folder
-	if(!empty($matches) && $e->getAdditional()->rename_failed !== true) {
-		arsort($matches, SORT_NUMERIC);
+	if($match != "" && $e->getAdditional()->rename_failed !== true) {
 		$div->appendChild(
 			new XMLElement('p', __('Often the cause of this error is a misnamed extension folder. You can try renaming %s to %s, or you can uninstall the extension to continue.', array(
-				'<code>' . key($matches) . '</code>',
+				'<code>' . $match . '</code>',
 				'<code>' . $e->getAdditional()->name . '</code>'
 			)))
 		);
 
 		$form->appendChild(
-			Widget::Input('existing-folder', key($matches), 'hidden')
+			Widget::Input('existing-folder', $match, 'hidden')
 		);
 		$form->appendChild(
 			Widget::Input('new-folder', $e->getAdditional()->name, 'hidden')
