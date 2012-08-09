@@ -70,8 +70,8 @@
 	if($match != "" && $e->getAdditional()->rename_failed !== true) {
 		$div->appendChild(
 			new XMLElement('p', __('Often the cause of this error is a misnamed extension folder. You can try renaming %s to %s, or you can uninstall the extension to continue.', array(
-				'<code>' . $match . '</code>',
-				'<code>' . $e->getAdditional()->name . '</code>'
+				'<code>extensions/' . $match . '</code>',
+				'<code>extensions/' . $e->getAdditional()->name . '</code>'
 			)))
 		);
 
@@ -94,8 +94,8 @@
 	else if($e->getAdditional()->rename_failed) {
 		$div->appendChild(
 			new XMLElement('p', __('Sorry, but Symphony was unable to rename the folder. You can try renaming %s to %s yourself, or you can uninstall the extension to continue.', array(
-				'<code>' . $match . '</code>',
-				'<code>' . $e->getAdditional()->name . '</code>'
+				'<code>extensions/' . $match . '</code>',
+				'<code>extensions/' . $e->getAdditional()->name . '</code>'
 			)))
 		);
 	}
