@@ -90,7 +90,7 @@
 			$migrations = array();
 
 			foreach(new DirectoryIterator(INSTALL . '/migrations') as $m){
-				if($m->isDot() || $m->isDir() || $m->getExtension() != 'php') continue;
+				if($m->isDot() || $m->isDir() || General::getExtension($m->getFilename()) !== 'php') continue;
 
 				$version = str_replace('.php', '', $m->getFilename());
 
