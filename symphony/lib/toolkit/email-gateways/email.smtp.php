@@ -71,7 +71,9 @@
 			}
 			$settings['secure'] = $this->_secure;
 			try{
-				$this->_SMTP = new SMTP($this->_host, $this->_port, $settings);
+				if(!is_a($this->_SMTP, 'SMTP')){
+					$this->_SMTP = new SMTP($this->_host, $this->_port, $settings);
+				}
 
 				// Encode recipient names (but not any numeric array indexes)
 				foreach($this->_recipients as $name => $email){
@@ -129,11 +131,31 @@
 
 				// Send the email
 				$this->_SMTP->sendMail($this->_sender_email_address, $this->_recipients, $this->_subject, $this->_body);
+				if($this->_keepalive == false){
+					$this->closeConnection();
+				}
 			}
 			catch(SMTPException $e){
 				throw new EmailGatewayException($e->getMessage());
 			}
 			return true;
+		}
+
+		public function openConnection(){
+			return parent::openConnection();
+		}
+
+		public function closeConnection(){
+			if(is_a($this->_SMTP, 'SMTP')){
+				try{
+					$this->_SMTP->quit();
+					return parent::closeConnection();
+				}
+				catch(Exception $e){
+				}
+			}
+			parent::closeConnection();
+			return false;
 		}
 
 		/**

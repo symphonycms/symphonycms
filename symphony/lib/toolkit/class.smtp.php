@@ -34,7 +34,7 @@
 
 		protected $_ip = '127.0.0.1';
 
-		protected $_connection;
+		protected $_connection = false;
 
 		protected $_transport = 'tcp';
 
@@ -131,7 +131,9 @@
 		 * @return bool
 		 */
 		public function sendMail($from, $to, $subject, $message){
+			file_put_contents('logging.txt',print_r($this->_connection, true),FILE_APPEND);
 			$this->_connect($this->_host, $this->_port);
+			file_put_contents('logging.txt',print_r($this->_connection, true),FILE_APPEND);
 			$this->helo();
 			if($this->_secure == 'tls'){
 				$this->_tls();
@@ -147,7 +149,7 @@
 				$this->rcpt($recipient);
 			}
 			$this->data($message);
-			$this->quit();
+			$this->rset();
 		}
 
 		/**
@@ -201,7 +203,6 @@
 		 * @return void
 		 */
 		public function mail($from){
-			$this->checkConnection();
 
 			if($this->_helo == false){
 				throw new SMTPException(__('Must call EHLO (or HELO) before calling MAIL'));
@@ -227,7 +228,6 @@
 		 * @return void
 		 */
 		public function rcpt($to){
-			$this->checkConnection();
 
 			if($this->_mail == false){
 				throw new SMTPException(__('Must call MAIL before calling RCPT'));
@@ -247,7 +247,6 @@
 		 * @return void
 		 */
 		public function data($data){
-			$this->checkConnection();
 
 			if($this->_rcpt == false){
 				throw new SMTPException(__('Must call RCPT before calling DATA'));
@@ -308,7 +307,6 @@
 		 * @return void
 		 */
 		public function quit(){
-			$this->checkConnection();
 			$this->_send('QUIT');
 			$this->_expect(221, 300);
 			$this->_connection = null;
@@ -322,7 +320,6 @@
 		 * @return void
 		 */
 		protected function _auth(){
-			$this->checkConnection();
 			if($this->_helo == false){
 				throw new SMTPException(__('Must call EHLO (or HELO) before calling AUTH'));
 			}
@@ -346,7 +343,6 @@
 		 * @return void
 		 */
 		protected function _ehlo(){
-			$this->checkConnection();
 			$this->_send('EHLO [' . $this->_ip . ']');
 			$this->_expect(array(250, 220), 300);
 		}
@@ -358,7 +354,6 @@
 		 * @return void
 		 */
 		protected function _helo(){
-			$this->checkConnection();
 			$this->_send('HELO [' . $this->_ip . ']');
 			$this->_expect(array(250, 220), 300);
 		}
@@ -477,19 +472,21 @@
 			$errorStr = '';
 
 			$remoteAddr = $this->_transport . '://' . $host . ':' . $port;
-			$this->_connection = @stream_socket_client($remoteAddr, $errorNum, $errorStr, self::TIMEOUT);
-
-			if($this->_connection === false){
-				if($errorNum == 0){
-					throw new SMTPException(__('Unable to open socket. Unknown error'));
+			file_put_contents('logging2.txt',var_export($this->_connection, true), FILE_APPEND);
+			if(!is_resource($this->_connection)){
+				$this->_connection = @stream_socket_client($remoteAddr, $errorNum, $errorStr, self::TIMEOUT);
+				if($this->_connection === false){
+					if($errorNum == 0){
+						throw new SMTPException(__('Unable to open socket. Unknown error'));
+					}
+					else{
+						throw new SMTPException(__('Unable to open socket. %s', array($errorStr)));
+					}
 				}
-				else{
-					throw new SMTPException(__('Unable to open socket. %s', array($errorStr)));
-				}
-			}
 
-			if(@stream_set_timeout($this->_connection, self::TIMEOUT) === false){
-				throw new SMTPException(__('Unable to set timeout.'));
+				if(@stream_set_timeout($this->_connection, self::TIMEOUT) === false){
+					throw new SMTPException(__('Unable to set timeout.'));
+				}
 			}
 		}
 	}

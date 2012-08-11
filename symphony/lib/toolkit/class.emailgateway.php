@@ -59,6 +59,9 @@
 		protected $_boundary_mixed;
 		protected $_boundary_alter;
 		protected $_text_encoding = 'quoted-printable';
+		
+		// Introduced in 2.3.1
+		protected $_keepalive = false;
 
 		/**
 		 * @return void
@@ -76,6 +79,30 @@
 		 * @return void
 		 */
 		public function send(){
+		}
+
+		/**
+		 * Open new connection to the email server.
+		 * This function is used to allow persistent connections.
+		 * Introduced in 2.3.1
+		 * 
+		 * @return boolean
+		 */
+		public function openConnection(){
+			$this->_keepalive = true;
+			return true;
+		}
+
+		/**
+		 * Close the connection to the email Server.
+		 * This function is used to allow persistent connections.
+		 * Introduced in 2.3.1
+		 * 
+		 * @return boolean
+		 */
+		public function closeConnection(){
+			$this->_keepalive = false;
+			return true;
 		}
 
 		/**
@@ -581,6 +608,10 @@
 			$string[0] = strtolower($string[0]);
 			$func = create_function('$c', 'return "_" . strtolower($c[1]);');
 			return preg_replace_callback('/([A-Z])/', $func, $str);
+		}
+
+		public function __destruct(){
+			$this->closeConnection();
 		}
 
 	}
