@@ -131,16 +131,7 @@
 		 * @return bool
 		 */
 		public function sendMail($from, $to, $subject, $message){
-			file_put_contents('logging.txt',print_r($this->_connection, true),FILE_APPEND);
 			$this->_connect($this->_host, $this->_port);
-			file_put_contents('logging.txt',print_r($this->_connection, true),FILE_APPEND);
-			$this->helo();
-			if($this->_secure == 'tls'){
-				$this->_tls();
-			}
-			if(($this->_user !== null) && ($this->_pass !== null)){
-				$this->_auth();
-			}
 			$this->mail($from);
 			if(!is_array($to)){
 				$to = array($to);
@@ -461,7 +452,7 @@
 		}
 
 		/**
-		 * Connect to the host.
+		 * Connect to the host, and perform basic functions like helo and auth.
 		 *
 		 * @param string $host
 		 * @param int $port
@@ -472,7 +463,6 @@
 			$errorStr = '';
 
 			$remoteAddr = $this->_transport . '://' . $host . ':' . $port;
-			file_put_contents('logging2.txt',var_export($this->_connection, true), FILE_APPEND);
 			if(!is_resource($this->_connection)){
 				$this->_connection = @stream_socket_client($remoteAddr, $errorNum, $errorStr, self::TIMEOUT);
 				if($this->_connection === false){
@@ -483,9 +473,15 @@
 						throw new SMTPException(__('Unable to open socket. %s', array($errorStr)));
 					}
 				}
-
 				if(@stream_set_timeout($this->_connection, self::TIMEOUT) === false){
 					throw new SMTPException(__('Unable to set timeout.'));
+				}
+				$this->helo();
+				if($this->_secure == 'tls'){
+					$this->_tls();
+				}
+				if(($this->_user !== null) && ($this->_pass !== null)){
+					$this->_auth();
 				}
 			}
 		}
