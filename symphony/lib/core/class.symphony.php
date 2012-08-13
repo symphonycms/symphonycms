@@ -353,7 +353,6 @@
 		 *  True if the Author was logged in, false otherwise
 		 */
 		public function login($username, $password, $isHash=false){
-
 			$username = self::Database()->cleanValue($username);
 			$password = self::Database()->cleanValue($password);
 
@@ -361,13 +360,20 @@
 
 				if(!$isHash) $password = General::hash($password);
 
-				$id = self::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
+				$author = AuthorManager::fetch('id', 'ASC', 1, null, sprintf("
+						`username` = '%s' AND `password` = '%s'
+					", $username, $password
+				));
 
-				if($id){
-					$this->Author = AuthorManager::fetchByID($id);
+				if(!empty($author)) {
+					$this->Author = current($author);
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $password);
-					self::Database()->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
+					self::Database()->update(array(
+						'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
+						'tbl_authors',
+						sprintf(" `id` = %d", $this->Author->get('id'))
+					);
 
 					return true;
 				}
@@ -466,11 +472,18 @@
 
 				if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
 
-					$id = self::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_authors` WHERE `username` = '$username' AND `password` = '$password' LIMIT 1");
+					$author = AuthorManager::fetch('id', 'ASC', 1, null, sprintf("
+							`username` = '%s' AND `password` = '%s'
+						", $username, $password
+					));
 
-					if($id){
-						self::Database()->update(array('last_seen' => DateTimeObj::get('Y-m-d H:i:s')), 'tbl_authors', " `id` = '$id'");
-						$this->Author = AuthorManager::fetchByID($id);
+					if(!empty($author)) {
+						$this->Author = current($author);
+						self::Database()->update(array(
+							'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
+							'tbl_authors',
+							sprintf(" `id` = %d", $this->Author->get('id'))
+						);
 
 						// Only set custom author language in the backend
 						if(class_exists('Administration')) {
