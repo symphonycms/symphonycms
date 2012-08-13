@@ -331,10 +331,8 @@
 		public function prepareExportValue($data, $mode, $entry_id = null) {
 			$modes = (object)$this->getExportModes();
 
-			if (isset($data['author_id']) === false) return null;
-
 			// Make sure we have an array to work with:
-			if (is_array($data['author_id']) === false) {
+			if (isset($data['author_id']) && is_array($data['author_id']) === false) {
 				$data['author_id'] = array(
 					$data['author_id']
 				);
@@ -342,15 +340,19 @@
 
 			// Return the author IDs:
 			if ($mode === $modes->listAuthor) {
-				return $data['author_id'];
+				return isset($data['author_id'])
+					? $data['author_id']
+					: array();
 			}
 
 			// All other modes require full data:
+			$authors = isset($data['author_id'])
+				? AuthorManager::fetchByID($data['author_id'])
+				: array();
 			$items = array();
 
-			$authors = AuthorManager::fetchByID($data['author_id']);
 			foreach ($authors as $author) {
-				if(is_null($author)) continue;
+				if (is_null($author)) continue;
 
 				if ($mode === $modes->listAuthorObject) {
 					$items[] = $author;
