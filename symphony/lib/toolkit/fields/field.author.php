@@ -315,7 +315,8 @@
 										+ ExportableField::AUTHOR
 										+ ExportableField::VALUE,
 				'listValue' =>			ExportableField::LIST_OF
-										+ ExportableField::VALUE
+										+ ExportableField::VALUE,
+				'getPostdata' =>		ExportableField::POSTDATA
 			);
 		}
 
@@ -339,7 +340,7 @@
 			}
 
 			// Return the author IDs:
-			if ($mode === $modes->listAuthor) {
+			if ($mode === $modes->listAuthor || $mode === $modes->getPostdata) {
 				return isset($data['author_id'])
 					? $data['author_id']
 					: array();

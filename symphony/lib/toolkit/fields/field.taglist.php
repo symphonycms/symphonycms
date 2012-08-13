@@ -4,6 +4,7 @@
 	 */
 
 	require_once FACE . '/interface.exportablefield.php';
+	require_once FACE . '/interface.importablefield.php';
 
 	/**
 	 * The Tag List field is really a different interface for the Select Box
@@ -11,7 +12,7 @@
 	 * suggestions from another field or a dynamic list based on what an Author
 	 * has previously used for this field.
 	 */
-	Class fieldTagList extends Field implements ExportableField {
+	class FieldTagList extends Field implements ExportableField, ImportableField {
 		public function __construct(){
 			parent::__construct();
 			$this->_name = __('Tag List');
@@ -287,6 +288,42 @@
 		}
 
 	/*-------------------------------------------------------------------------
+		Import:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Give the field some data and ask it to return a value.
+		 *
+		 * @param mixed $data
+		 * @param integer $entry_id
+		 * @return array|null
+		 */
+		public function prepareImportValue($data, $entry_id = null) {
+			$data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
+			$data = array_map('trim', $data);
+			$result = array();
+
+			if (empty($data)) return null;
+
+			$result = array(
+				'value' =>	array(),
+				'handle' =>	array()
+			);
+
+			// Do a case insensitive removal of duplicates:
+			$data = General::array_remove_duplicates($data, true);
+
+			sort($data);
+
+			foreach ($data as $value) {
+				$result['value'][] = $value;
+				$result['handle'][] = Lang::createHandle($value);
+			}
+
+			return $result;
+		}
+
+	/*-------------------------------------------------------------------------
 		Export:
 	-------------------------------------------------------------------------*/
 
@@ -303,7 +340,8 @@
 										+ ExportableField::VALUE,
 				'listHandleToValue' =>	ExportableField::LIST_OF
 										+ ExportableField::HANDLE
-										+ ExportableField::VALUE
+										+ ExportableField::VALUE,
+				'getPostdata' =>		ExportableField::POSTDATA
 			);
 		}
 
@@ -331,7 +369,7 @@
 				);
 			}
 
-			// Handle => Unformatted pairs:
+			// Handle => value pairs:
 			if ($mode === $modes->listHandleToValue) {
 				return isset($data['handle'], $data['value'])
 					? array_combine($data['handle'], $data['value'])
@@ -339,17 +377,24 @@
 			}
 
 			// Array of handles:
-			if ($mode === $modes->listHandle) {
+			else if ($mode === $modes->listHandle) {
 				return isset($data['handle'])
 					? $data['handle']
 					: array();
 			}
 
-			// Array of unformatted values:
-			if ($mode === $modes->listValue) {
+			// Array of values:
+			else if ($mode === $modes->listValue) {
 				return isset($data['value'])
 					? $data['value']
 					: array();
+			}
+
+			// Comma seperated values:
+			else if ($mode === $modes->getPostdata) {
+				return isset($data['value'])
+					? implode(', ', $data['value'])
+					: null;
 			}
 		}
 

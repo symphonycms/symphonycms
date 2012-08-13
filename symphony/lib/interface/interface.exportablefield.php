@@ -43,19 +43,24 @@
 		const HANDLE = 1105;
 
 		/**
-		 * Select raw values from a field.
+		 * Select raw values from a field, oriented towards the human readable.
 		 */
 		const VALUE = 1106;
 
 		/**
+		 * Select raw values from a field, as expected by `prepareImportValue`.
+		 */
+		const POSTDATA = 1107;
+
+		/**
 		 * Select formatted values from a field.
 		 */
-		const FORMATTED = 1107;
+		const FORMATTED = 1108;
 
 		/**
 		 * Select unformatted values from a field.
 		 */
-		const UNFORMATTED = 1108;
+		const UNFORMATTED = 1109;
 
 		/**
 		 * Return a list of supported export modes for use with `prepareExportValue`.

@@ -5,12 +5,13 @@
 	 */
 
 	require_once FACE . '/interface.exportablefield.php';
+	require_once FACE . '/interface.importablefield.php';
 
 	/**
 	 * A simple Select field that essentially maps to HTML's `<select/>`. The
 	 * options for this field can be static, or feed from another field.
 	 */
-	Class fieldSelect extends Field implements ExportableField {
+	class FieldSelect extends Field implements ExportableField, ImportableField {
 		public function __construct(){
 			parent::__construct();
 			$this->_name = __('Select Box');
@@ -365,6 +366,37 @@
 		}
 
 	/*-------------------------------------------------------------------------
+		Import:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Give the field some data and ask it to return a value.
+		 *
+		 * @param mixed $data
+		 * @param integer $entry_id
+		 * @return array|null
+		 */
+		public function prepareImportValue($data, $entry_id = null) {
+			if (empty($data)) return null;
+
+			$result = array(
+				'value' =>	array(),
+				'handle' =>	array()
+			);
+
+			if (is_array($data) === false) {
+				$data = array($data);
+			}
+
+			foreach ($data as $value) {
+				$result['value'][] = $value;
+				$result['handle'][] = Lang::createHandle($value);
+			}
+
+			return $result;
+		}
+
+	/*-------------------------------------------------------------------------
 		Export:
 	-------------------------------------------------------------------------*/
 
@@ -381,7 +413,8 @@
 										+ ExportableField::VALUE,
 				'listHandleToValue' =>	ExportableField::LIST_OF
 										+ ExportableField::HANDLE
-										+ ExportableField::VALUE
+										+ ExportableField::VALUE,
+				'getPostdata' =>		ExportableField::POSTDATA
 			);
 		}
 
@@ -392,7 +425,7 @@
 		 * @param mixed $data
 		 * @param integer $mode
 		 * @param integer $entry_id
-		 * @return array|null
+		 * @return array
 		 */
 		public function prepareExportValue($data, $mode, $entry_id = null) {
 			$modes = (object)$this->getExportModes();
@@ -409,7 +442,7 @@
 				);
 			}
 
-			// Handle => Unformatted pairs:
+			// Handle => Value pairs:
 			if ($mode === $modes->listHandleToValue) {
 				return isset($data['handle'], $data['value'])
 					? array_combine($data['handle'], $data['value'])
@@ -417,14 +450,14 @@
 			}
 
 			// Array of handles:
-			if ($mode === $modes->listHandle) {
+			else if ($mode === $modes->listHandle) {
 				return isset($data['handle'])
 					? $data['handle']
 					: array();
 			}
 
-			// Array of unformatted values:
-			if ($mode === $modes->listValue) {
+			// Array of values:
+			else if ($mode === $modes->listValue || $mode === $modes->getPostdata) {
 				return isset($data['value'])
 					? $data['value']
 					: array();
