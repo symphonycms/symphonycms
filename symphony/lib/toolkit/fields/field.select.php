@@ -410,21 +410,25 @@
 			}
 
 			// Handle => Unformatted pairs:
-			if ($mode === $modes->listHandleToValue && isset($data['handle'], $data['value'])) {
-				return array_combine($data['handle'], $data['value']);
+			if ($mode === $modes->listHandleToValue) {
+				return isset($data['handle'], $data['value'])
+					? array_combine($data['handle'], $data['value'])
+					: array();
 			}
 
 			// Array of handles:
-			if ($mode === $modes->listHandle && isset($data['handle'])) {
-				return $data['handle'];
+			if ($mode === $modes->listHandle) {
+				return isset($data['handle'])
+					? $data['handle']
+					: array();
 			}
 
 			// Array of unformatted values:
-			if ($mode === $modes->listValue && isset($data['value'])) {
-				return $data['value'];
+			if ($mode === $modes->listValue) {
+				return isset($data['value'])
+					? $data['value']
+					: array();
 			}
-
-			return null;
 		}
 
 	/*-------------------------------------------------------------------------
