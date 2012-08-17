@@ -325,13 +325,22 @@
 					 * @param string $context
 					 * '/publish/'
 					 * @param array $tableData
-					 *	An array of `Widget::TableData`, passed by reference
+					 *  An array of `Widget::TableData`, passed by reference
 					 * @param integer $section_id
-					 *	The current Section ID
-					 * @param integer $entry_id
-					 *	The Entry ID for this row
+					 *  The current Section ID
+					 * @param Entry $entry_id
+					 *  The entry object, please note that this is by error and this will
+					 *  be removed in Symphony 2.4. The entry object is available in
+					 *  the 'entry' key as of Symphony 2.3.1.
+					 * @param Entry $entry
+					 *  The entry object for this row
 					 */
-					Symphony::ExtensionManager()->notifyMembers('AddCustomPublishColumnData', '/publish/', array('tableData' => &$tableData, 'section_id' => $section->get('id'), 'entry_id' => $entry));
+					Symphony::ExtensionManager()->notifyMembers('AddCustomPublishColumnData', '/publish/', array(
+						'tableData' => &$tableData,
+						'section_id' => $section->get('id'),
+						'entry_id' => $entry,
+						'entry' => $entry
+					));
 
 					$tableData[count($tableData) - 1]->appendChild(Widget::Input('items['.$entry->get('id').']', NULL, 'checkbox'));
 
