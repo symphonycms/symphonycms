@@ -6,12 +6,12 @@
 
 	require_once TOOLKIT . '/class.xsltprocess.php';
 	require_once FACE . '/interface.exportablefield.php';
+	require_once FACE . '/interface.importablefield.php';
 
 	/**
 	 * A simple Input field that essentially maps to HTML's `<input type='text'/>`.
 	 */
-	Class fieldInput extends Field implements ExportableField {
-
+	class FieldInput extends Field implements ExportableField, ImportableField {
 		public function __construct(){
 			parent::__construct();
 			$this->_name = __('Text Input');
@@ -190,6 +190,24 @@
 		}
 
 	/*-------------------------------------------------------------------------
+		Import:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Give the field some data and ask it to return a value.
+		 *
+		 * @param mixed $data
+		 * @param integer $entry_id
+		 * @return array
+		 */
+		public function prepareImportValue($data, $entry_id = null) {
+			return array(
+				'handle' =>	Lang::createHandle($data),
+				'value' =>	$data
+			);
+		}
+
+	/*-------------------------------------------------------------------------
 		Export:
 	-------------------------------------------------------------------------*/
 
@@ -201,7 +219,8 @@
 		public function getExportModes() {
 			return array(
 				'getHandle' =>		ExportableField::HANDLE,
-				'getUnformatted' =>	ExportableField::UNFORMATTED
+				'getUnformatted' =>	ExportableField::UNFORMATTED,
+				'getPostdata' =>	ExportableField::POSTDATA
 			);
 		}
 
@@ -229,8 +248,10 @@
 			}
 
 			// Export unformatted:
-			else if ($mode === $modes->getUnformatted && isset($data['value'])) {
-				return $data['value'];
+			else if ($mode === $modes->getUnformatted || $mode === $modes->getPostdata) {
+				return isset($data['value'])
+					? $data['value']
+					: null;
 			}
 
 			return null;

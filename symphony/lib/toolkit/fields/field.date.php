@@ -5,6 +5,7 @@
 	 */
 
 	require_once FACE . '/interface.exportablefield.php';
+	require_once FACE . '/interface.importablefield.php';
 
 	/**
 	 * A simple Date field that stores a full ISO date. Symphony will attempt
@@ -12,7 +13,7 @@
 	 * PHP's `strtotime`, so it is very flexible in terms of what an Author can
 	 * input into it.
 	 */
-	Class fieldDate extends Field implements ExportableField {
+	class FieldDate extends Field implements ExportableField, ImportableField {
 		const SIMPLE = 0;
 		const REGEXP = 1;
 		const RANGE = 3;
@@ -459,6 +460,49 @@
 		}
 
 	/*-------------------------------------------------------------------------
+		Import:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Give the field some data and ask it to return a value.
+		 *
+		 * @param mixed $data
+		 * @param integer $entry_id
+		 * @return array
+		 */
+		public function prepareImportValue($data, $entry_id = null) {
+			$value = $date = null;
+
+			// Prepopulate date:
+			if ($data === null || $data === '') {
+				if ($this->get('pre_populate') == 'yes') {
+					$timestamp = time();
+				}
+			}
+
+			// DateTime to timestamp:
+			else if ($data instanceof DateTime) {
+				$timestamp = $data->getTimestamp();
+			}
+
+			// Convert given date to timestamp:
+			else if (DateTimeObj::validate($data)) {
+				$timestamp = DateTimeObj::get('U', $data);
+			}
+
+			// Valid date found:
+			if (isset($timestamp)) {
+				$value = DateTimeObj::get('c', $timestamp);
+				$date = DateTimeObj::getGMT('c', $timestamp);
+			}
+
+			return array(
+				'value' =>	$value,
+				'date' =>	$date
+			);
+		}
+
+	/*-------------------------------------------------------------------------
 		Export:
 	-------------------------------------------------------------------------*/
 
@@ -470,7 +514,7 @@
 		public function getExportModes() {
 			return array(
 				'getObject' =>		ExportableField::OBJECT,
-				'getValue' =>		ExportableField::VALUE
+				'getPostdata' =>	ExportableField::POSTDATA
 			);
 		}
 
@@ -486,16 +530,22 @@
 		public function prepareExportValue($data, $mode, $entry_id = null) {
 			$modes = (object)$this->getExportModes();
 
-			if ($mode === $modes->getObject && isset($data['value'])) {
+			if ($mode === $modes->getObject) {
 				$timezone = Symphony::Configuration()->get('timezone', 'region');
-				$date = new DateTime($data['value']);
+				$date = new DateTime(
+					isset($data['value'])
+						? $data['value']
+						: 'now'
+				);
 				$date->setTimezone(new DateTimeZone($timezone));
 
 				return $date;
 			}
 
-			else if ($mode === $modes->getValue && isset($data['value'])) {
-				return $data['value'];
+			else if ($mode === $modes->getPostdata) {
+				return isset($data['value'])
+					? $data['value']
+					: null;
 			}
 
 			return null;

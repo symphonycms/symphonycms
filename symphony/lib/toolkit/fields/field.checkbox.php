@@ -5,12 +5,13 @@
 	 */
 
 	require_once FACE . '/interface.exportablefield.php';
+	require_once FACE . '/interface.importablefield.php';
 
 	/**
 	 * Checkbox field simulates a HTML checkbox field, in that it represents a
 	 * simple yes/no field.
 	 */
-	Class fieldCheckbox extends Field implements ExportableField {
+	class FieldCheckbox extends Field implements ExportableField, ImportableField {
 		public function __construct(){
 			parent::__construct();
 			$this->_name = __('Checkbox');
@@ -168,6 +169,23 @@
 		}
 
 	/*-------------------------------------------------------------------------
+		Import:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Give the field some data and ask it to return a value.
+		 *
+		 * @param mixed $data
+		 * @param integer $entry_id
+		 * @return array
+		 */
+		public function prepareImportValue($data, $entry_id = null) {
+			return array(
+				'value' => (strtolower($data) == 'yes' || strtolower($data) == 'on' ? 'yes' : 'no')
+			);
+		}
+
+	/*-------------------------------------------------------------------------
 		Export:
 	-------------------------------------------------------------------------*/
 
@@ -179,8 +197,8 @@
 		public function getExportModes() {
 			return array(
 				'getBoolean' =>		ExportableField::BOOLEAN,
-				'getFormatted' =>	ExportableField::FORMATTED,
-				'getUnformatted' =>	ExportableField::UNFORMATTED
+				'getValue' =>		ExportableField::VALUE,
+				'getPostdata' =>	ExportableField::POSTDATA
 			);
 		}
 
@@ -197,18 +215,31 @@
 			$modes = (object)$this->getExportModes();
 
 			// Export unformatted:
-			if ($mode === $modes->getUnformatted && isset($data['value'])) {
-				return ($data['value'] == 'yes' ? 'yes' : 'no');
+			if ($mode === $modes->getPostdata) {
+				return (
+					isset($data['value'])
+					&& $data['value'] == 'yes'
+						? 'yes'
+						: 'no'
+				);
 			}
 
 			// Export formatted:
-			else if($mode === $modes->getFormatted && isset($data['value'])) {
-				return ($data['value'] == 'yes') ? __('Yes') : __('No');
+			else if ($mode === $modes->getValue) {
+				return (
+					isset($data['value'])
+					&& $data['value'] == 'yes'
+						? __('Yes')
+						: __('No')
+				);
 			}
 
 			// Export boolean:
-			else if ($mode === $modes->getBoolean && isset($data['value'])) {
-				return ($data['value'] == 'yes' ? true : false);
+			else if ($mode === $modes->getBoolean) {
+				return (
+					isset($data['value'])
+					&& $data['value'] == 'yes'
+				);
 			}
 
 			return null;
