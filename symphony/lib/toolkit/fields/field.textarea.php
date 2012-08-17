@@ -5,11 +5,12 @@
 	 */
 
 	require_once FACE . '/interface.exportablefield.php';
+	require_once FACE . '/interface.importablefield.php';
 
 	/**
 	 * A simple Textarea field that essentially maps to HTML's `<textarea/>`.
 	 */
-	Class fieldTextarea extends Field implements ExportableField {
+	Class fieldTextarea extends Field implements ExportableField, ImportableField {
 
 		public function __construct(){
 			parent::__construct();
@@ -241,6 +242,30 @@
 		}
 
 	/*-------------------------------------------------------------------------
+		Import:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Give the field some data and ask it to return a value.
+		 *
+		 * @param mixed $data
+		 * @param integer $entry_id
+		 * @return array
+		 */
+		public function prepareImportValue($data, $entry_id = null) {
+			$result = array(
+				'value' =>				$data,
+				'value_formatted' =>	$this->__applyFormatting($data, true, $errors)
+			);
+
+			if ($result['value_formatted'] === false) {
+				$result['value_formatted'] = General::sanitize($this->__applyFormatting($data));
+			}
+
+			return $result;
+		}
+
+	/*-------------------------------------------------------------------------
 		Export:
 	-------------------------------------------------------------------------*/
 
@@ -253,7 +278,8 @@
 			return array(
 				'getHandle' =>		ExportableField::HANDLE,
 				'getFormatted' =>	ExportableField::FORMATTED,
-				'getUnformatted' =>	ExportableField::UNFORMATTED
+				'getUnformatted' =>	ExportableField::UNFORMATTED,
+				'getPostdata' =>	ExportableField::POSTDATA
 			);
 		}
 
@@ -281,12 +307,14 @@
 			}
 
 			// Export unformatted:
-			if ($mode === $modes->getUnformatted && isset($data['value'])) {
-				return $data['value'];
+			else if ($mode === $modes->getUnformatted || $mode === $modes->getPostdata) {
+				return isset($data['value'])
+					? $data['value']
+					: null;
 			}
 
 			// Export formatted:
-			if ($mode === $modes->getFormatted) {
+			else if ($mode === $modes->getFormatted) {
 				if (isset($data['value_formatted'])) {
 					return $data['value_formatted'];
 				}
