@@ -39,10 +39,6 @@
 			return true;
 		}
 
-		public function canImport() {
-			return true;
-		}
-
 		public function isSortable() {
 			return true;
 		}

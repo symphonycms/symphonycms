@@ -29,10 +29,6 @@
 			return true;
 		}
 
-		public function canImport(){
-			return true;
-		}
-
 		public function canPrePopulate(){
 			return true;
 		}

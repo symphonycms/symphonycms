@@ -195,20 +195,6 @@
 		}
 
 		/**
-		 * Test whether this field can be imported. This default implementation
-		 * prohibits importing. Subclasses should override this is importing is
-		 * supported.
-		 *
-		 * @deprecated This function will be removed in the next major release. It
-		 *  is unused by Symphony.
-		 * @return boolean
-		 *	true if this can be imported, false otherwise.
-		 */
-		public function canImport(){
-			return false;
-		}
-
-		/**
 		 * Test whether this field can be prepopulated with data. This default
 		 * implementation does not support pre-population and, thus, returns false.
 		 *
