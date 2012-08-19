@@ -36,7 +36,7 @@
 		// Switch content
 		objects.on('change.pickable', function pick(event) {
 			var object = $(this),
-				choice = object.val(),
+				choice = object.find(':selected').closest('optgroup').attr('data-label') || object.val(),
 				relation = object.attr('name') || object.attr('data-relation'),
 				related = pickables.filter('[data-relation="' + relation + '"]'),
 				selection = pickables.filter('#' + choice),
@@ -92,7 +92,10 @@
 			// Multiple items
 			if(choices.length > 1) {
 				choices.each(function() {
-					pickables.filter('#' + $(this).val()).attr('data-relation', relation).hide();
+					var choice = $(this),
+						choice_relation = choice.closest('optgroup').attr('data-label') || choice.val();
+
+					pickables.filter('#' + choice_relation).attr('data-relation', relation).hide();
 				});
 			}
 
