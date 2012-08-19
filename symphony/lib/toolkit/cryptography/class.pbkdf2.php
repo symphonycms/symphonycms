@@ -71,7 +71,7 @@
 				$key .= $ib;
 			}
 
-			return self::PREFIX . "|" . $iterations . "|" . $salt . "|" . substr(base64_encode($key), 0, $keylength);
+			return self::PREFIX . "|" . $iterations . "|" . $salt . "|" . base64_encode(substr($key, 0, $keylength));
 		}
 
 		/**
@@ -88,7 +88,7 @@
 		public static function compare($input, $hash){
 			$salt = self::extractSalt($hash);
 			$iterations = self::extractIterations($hash);
-			$keylength = strlen(self::extractHash($hash));
+			$keylength = strlen(base64_decode(self::extractHash($hash)));
 
 			return $hash == self::hash($input, $salt, $iterations, $keylength);
 		}
@@ -157,7 +157,7 @@
 			$version = substr($hash, 0, 8);
 			$length = self::extractSaltlength($hash);
 			$iterations = self::extractIterations($hash);
-			$keylength = strlen(self::extractHash($hash));
+			$keylength = strlen(base64_decode(self::extractHash($hash)));
 
 			if($length != self::SALT_LENGTH || $iterations != self::ITERATIONS || $keylength != self::KEY_LENGTH)
 				return true;
