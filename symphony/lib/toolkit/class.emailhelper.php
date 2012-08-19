@@ -12,9 +12,12 @@
 		/**
 		 * Folding an email header field body as required by RFC2822.
 		 *
-		 * @param string $input header field body string
-		 * @param string $max_length defaults to 75
-		 * @return string folded output string
+		 * @param string $input
+		 *  header field body string
+		 * @param integer $max_length 
+		 *  defaults to 75
+		 * @return string 
+		 *  folded output string
 		 */
 		public static function fold($input, $max_length=75) {
 			return @wordwrap($input, $max_length, "\r\n ");
@@ -44,12 +47,14 @@
 		 * except the first byte will have a leading '10' bit pattern,
 		 * which means an ASCII value >=128 and <=191.
 		 *
-		 * @param string $input string to encode
-		 * @param string $max_length maximum line length (default: 75 chars)
-		 * @return string $output encoded string
-		 *
 		 * @author Elmar Bartel
 		 * @author Michael Eichelsdoerfer
+		 * @param string $input
+		 *  string to encode
+		 * @param integer $max_length
+		 *  maximum line length (default: 75 chars)
+		 * @return string $output
+		 *  encoded string
 		 */
 		public static function qEncode($input, $max_length=75) {
 
@@ -129,12 +134,14 @@
 		 * as 'user relevant' line breaks and encodes them as RFC822 line
 		 * breaks as required by RFC2045.
 		 *
-		 * @param string $input string to encode
-		 * @param string $max_length maximum line length (default: 76 chars)
-		 * @return string $output encoded string
-		 *
 		 * @author Elmar Bartel
 		 * @author Michael Eichelsdoerfer
+		 * @param string $input
+		 *  string to encode
+		 * @param integer $max_length
+		 *  maximum line length (default: 76 chars)
+		 * @return string $output
+		 *  encoded string
 		 */
 		public static function qpContentTransferEncode($input, $max_length=76) {
 			$qpHexDigits  = '0123456789ABCDEF';
@@ -220,22 +227,24 @@
 		 * This function will encode attachments according to RFC2045.
 		 * Line length must not exceed the default (76 characters).
 		 *
-		 * @param string $data
-		 * @return void
 		 * @author Michael Eichelsdoerfer
+		 * @param string $data
+		 * @param integer $length
+		 * @return void
 		 */
 		public static function base64ContentTransferEncode($data, $length=76) {
 			return chunk_split(base64_encode($data), $length);
 		}
 
 		/**
-		 * Implode an array to a comma-separated list
+		 * Implodes an associative array or straight array to a
+		 * comma-separated string
 		 *
-		 * @param string $arr input array
+		 * @param array $array
 		 * @return string
 		 */
-		public static function arrayToList(array $arr = array()){
-			foreach($arr as $name => $email){
+		public static function arrayToList(array $array = array()){
+			foreach($array as $name => $email){
 				if(is_numeric($name)){
 					$return[] = $email;
 				}
@@ -250,14 +259,14 @@
 		 * Gets mime type of a file.
 		 *
 		 * For email attachments, the mime type is very important.
-		 * Uses the php 5.3 function (finfo_open), if this function is not found,
-		 * fallback to a fallback function.
-		 * Will use application/octet-stream as a fallback when no matches were found.
+		 * Uses the PHP 5.3 function `finfo_open` when available, otherwise falls
+		 * back to using a mapping of known of common mimetypes. If no matches
+		 * are found `application/octet-stream` will be returned.
 		 *
+ 		 * @author Michael Eichelsdoerfer
+		 * @author Huib Keemink
 		 * @param string $file
 		 * @return string MIMEtype
-		 * @author Michael Eichelsdoerfer
-		 * @author Huib Keemink
 		 */
 		public function getMimeType($file) {
 			if (!empty($file)) {

@@ -58,7 +58,7 @@
 		/**
 		 * Send an email using an SMTP server
 		 *
-		 * @return bool
+		 * @return boolean
 		 */
 		public function send(){
 
@@ -181,13 +181,8 @@
 		 * @return void
 		 */
 		public function setPort($port = null){
-			if($port == null){
-				if($this->_protocol == 'ssl'){
-					$port = 465;
-				}
-				else{
-					$port = 25;
-				}
+			if(is_null($port)) {
+				$port = ($this->_protocol == 'ssl') ? 465 : 25;
 			}
 			$this->_port = $port;
 		}
@@ -215,7 +210,7 @@
 		/**
 		 * Use AUTH login or no auth.
 		 *
-		 * @param bool $auth
+		 * @param boolean $auth
 		 * @return void
 		 */
 		public function setAuth($auth = false){
@@ -225,7 +220,9 @@
 		/**
 		 * Sets the encryption used.
 		 *
-		 * @param string|null|false $secure The encryption used. Can be 'ssl', 'tls' or false
+		 * @param string $secure 
+		 *  The encryption used. Can be 'ssl', 'tls'. Anything else defaults to
+		 *  a non secure TCP connection
 		 * @return void
 		 */
 		public function setSecure($secure = null){
@@ -233,18 +230,18 @@
 				$this->_protocol = 'tcp';
 				$this->_secure = 'tls';
 			}
-			elseif($secure == 'ssl'){
+			else if($secure == 'ssl') {
 				$this->_protocol = 'ssl';
 				$this->_secure = 'ssl';
 			}
-			else{
+			else {
 				$this->_protocol = 'tcp';
 				$this->_secure = 'no';
 			}
 		}
 
 		/**
-		 * Builds the preferences pane, shown in the symphony backend.
+		 * Builds the preferences pane, shown in the Symphony backend.
 		 *
 		 * @return XMLElement
 		 */
