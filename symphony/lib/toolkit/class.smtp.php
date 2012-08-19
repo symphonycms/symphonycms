@@ -35,6 +35,7 @@
 
 		protected $_ip = '127.0.0.1';
 		protected $_connection = false;
+
 		protected $_helo = false;
 		protected $_mail = false;
 		protected $_data = false;
@@ -314,7 +315,7 @@
 			if($this->_helo == false){
 				throw new SMTPException(__('Must call EHLO (or HELO) before calling AUTH'));
 			}
-			if($this->_auth !== false){
+			else if($this->_auth !== false){
 				throw new SMTPException(__('Can not call AUTH again.'));
 			}
 
@@ -393,18 +394,17 @@
 			$this->checkConnection();
 
 			if ($timeout !== null) {
-			   stream_set_timeout($this->_connection, $timeout);
+				stream_set_timeout($this->_connection, $timeout);
 			}
 
 			$response = fgets($this->_connection, 1024);
-
 			$info = stream_get_meta_data($this->_connection);
 
 			if (!empty($info['timed_out'])) {
 				throw new SMTPException(__('%s has timed out', array($this->_host)));
 			}
 
-			if ($response === false) {
+			else if ($response === false) {
 				throw new SMTPException(__('Could not read from %s', array($this->_host)));
 			}
 

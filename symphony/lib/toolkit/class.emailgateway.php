@@ -59,6 +59,9 @@
 		protected $_boundary_mixed;
 		protected $_boundary_alter;
 		protected $_text_encoding = 'quoted-printable';
+		
+		// Introduced in 2.3.1
+		protected $_keepalive = false;
 
 		/**
 		 * Indicates whether the connection to the SMTP server should be
@@ -107,6 +110,30 @@
 		 * This function is used to allow persistent connections.
 		 *
 		 * @since Symphony 2.3.1
+		 * @return boolean
+		 */
+		public function closeConnection(){
+			$this->_keepalive = false;
+			return true;
+		}
+
+		/**
+		 * Open new connection to the email server.
+		 * This function is used to allow persistent connections.
+		 * Introduced in 2.3.1
+		 * 
+		 * @return boolean
+		 */
+		public function openConnection(){
+			$this->_keepalive = true;
+			return true;
+		}
+
+		/**
+		 * Close the connection to the email Server.
+		 * This function is used to allow persistent connections.
+		 * Introduced in 2.3.1
+		 * 
 		 * @return boolean
 		 */
 		public function closeConnection(){
