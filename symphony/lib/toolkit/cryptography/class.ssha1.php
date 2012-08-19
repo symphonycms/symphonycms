@@ -64,7 +64,7 @@
 		 * the hash
 		 */
 		public static function extractHash($input){
-			$data = explode("|",$input);
+			$data = explode("|",$input, 3);
 			return $data[2];
 		}
 
@@ -77,7 +77,7 @@
 		 * the salt
 		 */
 		public static function extractSalt($input){
-			$data = explode("|",$input);
+			$data = explode("|",$input, 3);
 			return $data[1];
 		}
 

@@ -102,7 +102,7 @@
 		 * the hash
 		 */
 		public static function extractHash($input){
-			$data = explode("|",$input);
+			$data = explode("|",$input, 4);
 			return $data[3];
 		}
 
@@ -115,7 +115,7 @@
 		 * the salt
 		 */
 		public static function extractSalt($input){
-			$data = explode("|",$input);
+			$data = explode("|",$input, 4);
 			return $data[2];
 		}
 
@@ -140,7 +140,7 @@
 		 * the number of iterations
 		 */
 		public static function extractIterations($input){
-			$data = explode("|",$input);
+			$data = explode("|",$input, 4);
 			return $data[1];
 		}
 
