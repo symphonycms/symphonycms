@@ -221,16 +221,6 @@
 				$fieldset->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
 				$div->appendChild($fieldset);
 
-				// If we are editing an event, it assumed that the event has documentation
-				if($isEditing && method_exists($existing, 'documentation')) {
-					// Description
-					$fieldset = new XMLElement('fieldset');
-					$fieldset->setAttribute('class', 'settings');
-
-					$doc = $existing->documentation();
-					$fieldset->setValue('<legend>' . __('Description') . '</legend>' . PHP_EOL . General::tabsToSpaces((is_object($doc) ? $doc->generate(true) : $doc), 2));
-					$div->appendChild($fieldset);
-				}
 				$this->Form->appendChild($div);
 
 			// Providers
@@ -285,6 +275,17 @@
 						new XMLElement('p', __('Created by %1$s at %2$s', array($about['version'], DateTimeObj::format($about['release-date'], __SYM_DATE_FORMAT__))))
 					);
 				}
+				$this->Form->appendChild($fieldset);
+			}
+
+			// If we are editing an event, it assumed that the event has documentation
+			if($isEditing && method_exists($existing, 'documentation')) {
+				// Description
+				$fieldset = new XMLElement('fieldset');
+				$fieldset->setAttribute('class', 'settings');
+
+				$doc = $existing->documentation();
+				$fieldset->setValue('<legend>' . __('Description') . '</legend>' . PHP_EOL . General::tabsToSpaces((is_object($doc) ? $doc->generate(true) : $doc), 2));
 				$this->Form->appendChild($fieldset);
 			}
 
