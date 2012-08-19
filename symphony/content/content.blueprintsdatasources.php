@@ -1145,7 +1145,6 @@
 				self::injectAboutInformation($dsShell, $about);
 
 				// Do dependencies, the template file must have <!-- CLASS NAME -->
-				// and <!-- DS DEPENDENCY LIST --> tokens
 				$dsShell = str_replace('<!-- CLASS NAME -->', $classname, $dsShell);
 
 				// If there is a provider, let them do the prepartion work

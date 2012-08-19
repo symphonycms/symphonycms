@@ -85,7 +85,7 @@
 		 * @param string $joins
 		 *  Any custom JOIN's
 		 * @return array
-		 *  An array of Author objects. If no Authors are found, null is returned.
+		 *  An array of Author objects. If no Authors are found, an empty array is returned.
 		 */
 		public static function fetch($sortby = 'id', $sortdirection = 'ASC', $limit = null, $start = null, $where = null, $joins = null) {
 
