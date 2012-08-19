@@ -237,10 +237,14 @@
 				if(!empty($providers)) {
 					foreach($providers as $providerClass => $provider) {
 						if (PHP_VERSION_ID >= 50300) {
+							if($isEditing && $fields['source'] !== $providerClass::getSource()) continue;
+
 							$providerClass::buildEditor($this->Form, $this->_errors, $fields, $handle);
 						}
 						// PHP 5.2 does not support late static binding..
 						else{
+							if($isEditing && $fields['source'] !== call_user_func(array($providerClass, 'getSource'))) continue;
+
 							call_user_func(array($providerClass, 'buildEditor'), $this->Form, &$this->_errors, $fields, $handle);
 						}
 					}
