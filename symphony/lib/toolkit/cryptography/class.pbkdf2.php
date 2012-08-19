@@ -71,7 +71,7 @@
 				$key .= $ib;
 			}
 
-			return self::PREFIX . sprintf("%04d%08d", strlen($salt), $iterations/10000) . $salt . substr(base64_encode($key), 0, $keylength);
+			return self::PREFIX . "|" . $iterations . "|" . $salt . "|" . substr(base64_encode($key), 0, $keylength);
 		}
 
 		/**
@@ -102,8 +102,8 @@
 		 * the hash
 		 */
 		public static function extractHash($input){
-			$length = self::extractSaltlength($input);
-			return substr($input, 20+$length);
+			$data = explode("|",$input);
+			return $data[3];
 		}
 
 		/**
@@ -115,8 +115,8 @@
 		 * the salt
 		 */
 		public static function extractSalt($input){
-			$length = self::extractSaltlength($input);
-			return substr($input, 20, $length);
+			$data = explode("|",$input);
+			return $data[2];
 		}
 
 		/**
@@ -128,7 +128,7 @@
 		 * the saltlength
 		 */
 		public static function extractSaltlength($input){
-			return intval(substr($input, 8, 4));
+			return strlen(self::extractSalt($input));
 		}
 
 		/**
@@ -140,7 +140,8 @@
 		 * the number of iterations
 		 */
 		public static function extractIterations($input){
-			return intval(substr($input, 12, 8))*10000;
+			$data = explode("|",$input);
+			return $data[1];
 		}
 
 		/**

@@ -35,7 +35,7 @@
 			if($salt === NULL)
 				$salt = self::generateSalt(self::SALT_LENGTH);
 
-			return self::PREFIX . sprintf("%03d", strlen($salt)) . $salt . sha1($salt . $input);
+			return self::PREFIX . "|" . $salt . "|" . sha1($salt . $input);
 		}
 
 		/**
@@ -64,8 +64,8 @@
 		 * the hash
 		 */
 		public static function extractHash($input){
-			$length = self::extractSaltlength($input);
-			return substr($input, 11+$length);
+			$data = explode("|",$input);
+			return $data[2];
 		}
 
 		/**
@@ -77,8 +77,8 @@
 		 * the salt
 		 */
 		public static function extractSalt($input){
-			$length = self::extractSaltlength($input);
-			return substr($input, 11, $length);
+			$data = explode("|",$input);
+			return $data[1];
 		}
 
 		/**
@@ -90,7 +90,7 @@
 		 * the saltlength
 		 */
 		public static function extractSaltlength($input){
-			return intval(substr($input, 8, 3));
+			return strlen(self::extractSalt($input));
 		}
 
 		/**
