@@ -80,9 +80,6 @@
 		var content = $(settings.content),
 			pickables = $(settings.pickables);
 
-		// Make pickable
-		objects.addClass('pickable');
-
 		// Prepare content picking
 		objects.each(function init() {
 			var object = $(this),
