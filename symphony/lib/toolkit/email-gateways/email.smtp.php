@@ -248,7 +248,7 @@
 		public function getPreferencesPane(){
 			parent::getPreferencesPane();
 			$group = new XMLElement('fieldset');
-			$group->setAttribute('class', 'settings pickable');
+			$group->setAttribute('class', 'settings condensed pickable');
 			$group->setAttribute('id', 'smtp');
 			$group->appendChild(new XMLElement('legend', __('Email: SMTP')));
 
