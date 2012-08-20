@@ -131,7 +131,7 @@
 		public function getPreferencesPane() {
 			parent::getPreferencesPane();
 			$group = new XMLElement('fieldset');
-			$group->setAttribute('class', 'settings emailgateway pickable');
+			$group->setAttribute('class', 'settings condensed pickable');
 			$group->setAttribute('id', 'sendmail');
 			$group->appendChild(new XMLElement('legend', __('Email: Sendmail')));
 

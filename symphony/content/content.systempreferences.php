@@ -68,7 +68,7 @@
 			$email_gateway_manager = new EmailGatewayManager($this);
 			$email_gateways = $email_gateway_manager->listAll();
 			if(count($email_gateways) >= 1){
-				$group = new XMLElement('fieldset', NULL, array('class' => 'settings emailgateway'));
+				$group = new XMLElement('fieldset', NULL, array('class' => 'settings condensed'));
 				$group->appendChild(new XMLElement('legend', __('Default Email Settings')));
 				$label = Widget::Label(__('Gateway'));
 
