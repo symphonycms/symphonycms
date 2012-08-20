@@ -389,18 +389,26 @@ fieldset.settings fieldset legend {
 
 }
 
-/* Pickable */
+/* Email Gateways */
 
-.active .settings.picker {
+.active .settings.emailgateway:not(.pickable) {
+	margin-bottom: 5px;
+}
+
+.active .settings.emailgateway:not(.pickable) label {
+	margin-bottom: 0;
+}
+
+.active .settings.pickable.emailgateway {
 	border-bottom: none;
 	margin-bottom: 0;
 	padding-bottom: 0;
 }
-.active .settings.pickable {
+.active .settings.pickable.emailgateway {
 	border-top: 0;
 	padding-top: 0;
 }
-.active .settings.pickable legend {
+.active .settings.pickable.emailgateway legend {
 	display: none;
 }
 
