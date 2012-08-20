@@ -298,6 +298,10 @@
 			$pool = FieldManager::fetch(array_filter(array_keys($this->dsParamFILTERS), 'is_int'));
 			self::$_fieldPool += $pool;
 
+			if(!is_string($where)) {
+				$where = '';
+			}
+
 			foreach($this->dsParamFILTERS as $field_id => $filter) {
 				if((is_array($filter) && empty($filter)) || trim($filter) == '') continue;
 
@@ -325,18 +329,18 @@
 						$c = 'NOT IN';
 					}
 
-					$where = " AND `e`.id " . $c . " (".implode(", ", $value).") ";
+					$where .= " AND `e`.id " . $c . " (".implode(", ", $value).") ";
 				}
 				else if($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
 					require_once(TOOLKIT . '/fields/field.date.php');
+					$date_joins = '';
+					$date_where = '';
 					$date = new fieldDate();
-					$date->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == DS_FILTER_AND ? true : false));
-
-					// Erase joins, `tbl_entries` is always joined on.
-					$joins = '';
+					$date->buildDSRetrievalSQL($value, $fake_joins, $date_where, ($filter_type == DS_FILTER_AND ? true : false));
 
 					// Replace the date field where with the `creation_date` or `modification_date`.
-					$where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $where);
+					$date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
+					$where .= $date_where;
 				}
 				else {
 					// For deprecated reasons, call the old, typo'd function name until the switch to the
