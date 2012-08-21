@@ -336,7 +336,7 @@
 					$date_joins = '';
 					$date_where = '';
 					$date = new fieldDate();
-					$date->buildDSRetrievalSQL($value, $fake_joins, $date_where, ($filter_type == DS_FILTER_AND ? true : false));
+					$date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == DS_FILTER_AND ? true : false));
 
 					// Replace the date field where with the `creation_date` or `modification_date`.
 					$date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
