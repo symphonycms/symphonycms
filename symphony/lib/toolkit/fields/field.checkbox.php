@@ -157,11 +157,11 @@
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
-			return $this->prepareExportValue($data, ExportableField::FORMATTED, $entry_id);
+			return $this->prepareExportValue($data, ExportableField::VALUE, $entry_id);
 		}
 
 		public function getParameterPoolValue(array $data, $entry_id = null){
-			return $this->prepareExportValue($data, ExportableField::UNFORMATTED, $entry_id);
+			return $this->prepareExportValue($data, ExportableField::POSTDATA, $entry_id);
 		}
 
 	/*-------------------------------------------------------------------------
