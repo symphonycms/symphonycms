@@ -92,7 +92,7 @@
 			else {
 
 				// Press meta or ctrl key to adjust current range, otherwise the selection will be removed
-				if((!event.metaKey && !event.ctrlKey && settings.mode != 'additive') || object.is('.single')) {
+				if((!event.metaKey && !event.ctrlKey && settings.mode != 'additive' &&  !target.is('input')) || object.is('.single')) {
 					deselection = items.not(item).filter('.selected').removeClass('selected').trigger('deselect.selectable');
 					deselection.find('input[type="checkbox"]').attr('checked', false);
 				}
