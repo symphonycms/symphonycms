@@ -20,21 +20,21 @@
 		public static function getName();
 
 		/**
-		 * Returns the `__CLASS__` on the provided event, this is often
-		 * used as a way to namespace settings in forms and provide a unique
-		 * handle for this event type
-		 *
-		 * @return string
-		 */
-		public static function getClass();
-
-		/**
 		 * Returns the absolute path to the template that this template will
 		 * use to save instances of this event in the `events` folder.
 		 *
 		 * @return string
 		 */
 		public static function getTemplate();
+
+		/**
+		 * Returns the `__CLASS__` on the provided event, this is often
+		 * used as a way to namespace settings in forms and provide a unique
+		 * handle for this event type
+		 *
+		 * @return string
+		 */
+		public static function getSource();
 
 		/**
 		 * This function returns all the settings of the current event
@@ -135,6 +135,6 @@
 		 * @return XMLElement
 		 *  This event should return an `XMLElement` object.
 		 */
-		public function execute(array &$param_pool=NULL);
+		public function execute();
 
 	}

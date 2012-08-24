@@ -10,6 +10,7 @@
 	 */
 	require_once(TOOLKIT . '/class.gateway.php');
 	require_once(TOOLKIT . '/class.resourcespage.php');
+	require_once FACE . '/interface.provider.php';
 
 	Class contentBlueprintsDatasources extends ResourcesPage{
 
@@ -66,7 +67,7 @@
 				}
 			}
 
-			$providers = Symphony::ExtensionManager()->getProvidersOf('data-sources');
+			$providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::DATASOURCE);
 
 			if(isset($_POST['fields'])){
 				$fields = $_POST['fields'];
@@ -1012,7 +1013,7 @@
 		public function __formAction(){
 			$fields = $_POST['fields'];
 			$this->_errors = array();
-			$providers = Symphony::ExtensionManager()->getProvidersOf('data-sources');
+			$providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::DATASOURCE);
 			$providerClass = null;
 
 			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');

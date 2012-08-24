@@ -20,15 +20,6 @@
 		public static function getName();
 
 		/**
-		 * Returns the `__CLASS__` on the provided datasource, this is often
-		 * used as a way to namespace settings in forms and provide a unique
-		 * handle for this datasource type
-		 *
-		 * @return string
-		 */
-		public static function getClass();
-
-		/**
 		 * Returns the absolute path to the template that this template will
 		 * use to save instances of this datasource in the `DATASOURCES` folder.
 		 *
@@ -41,7 +32,6 @@
 		 * of old core objects and for the moment it should return the same
 		 * value as `getClass`.
 		 *
-		 * @see getClass()
 		 * @return string
 		 */
 		public function getSource();
@@ -126,6 +116,6 @@
 		 * @return XMLElement
 		 *  This Datasource should return an `XMLElement` object.
 		 */
-		public function grab(array &$param_pool=NULL);
+		public function execute(array &$param_pool=NULL);
 
 	}

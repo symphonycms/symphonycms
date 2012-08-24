@@ -8,6 +8,7 @@
 	 * allow Frontend forms to populate Sections or edit Entries.
 	 */
 	require_once(TOOLKIT . '/class.resourcespage.php');
+	require_once FACE . '/interface.provider.php';
 
 	Class contentBlueprintsEvents extends ResourcesPage {
 
@@ -69,7 +70,7 @@
 
 			$isEditing = ($readonly ? true : false);
 			$fields = array();
-			$providers = Symphony::ExtensionManager()->getProvidersOf('events');
+			$providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::EVENT);
 
 			if(isset($_POST['fields'])) {
 				$fields = $_POST['fields'];
@@ -355,7 +356,7 @@
 		public function __formAction() {
 			$fields = $_POST['fields'];
 			$this->_errors = array();
-			$providers = Symphony::ExtensionManager()->getProvidersOf('events');
+			$providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::EVENT);
 			$providerClass = null;
 
 			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
