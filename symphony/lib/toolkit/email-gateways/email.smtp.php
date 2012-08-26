@@ -44,16 +44,7 @@
 		 */
 		public function __construct(){
 			parent::__construct();
-			$this->setSenderEmailAddress(Symphony::Configuration()->get('from_address', 'email_smtp') ? Symphony::Configuration()->get('from_address', 'email_smtp') : 'noreply@' . HTTP_HOST);
-			$this->setSenderName(Symphony::Configuration()->get('from_name', 'email_smtp') ? Symphony::Configuration()->get('from_name', 'email_smtp') : 'Symphony');
-			$this->setSecure(Symphony::Configuration()->get('secure', 'email_smtp'));
-			$this->setHost(Symphony::Configuration()->get('host', 'email_smtp'));
-			$this->setPort(Symphony::Configuration()->get('port', 'email_smtp'));
-			if(Symphony::Configuration()->get('auth', 'email_smtp') == 1){
-				$this->setAuth(true);
-				$this->setUser(Symphony::Configuration()->get('username', 'email_smtp'));
-				$this->setPass(Symphony::Configuration()->get('password', 'email_smtp'));
-			}
+			$this->setConfiguration(Symphony::Configuration()->get('email_smtp'));
 		}
 
 		/**
@@ -264,13 +255,20 @@
 		 * @return void
 		 */
 		public function setConfiguration($config){
-			$this->setFrom($config['from_name'], $config['from_address']);
+			$this->setFrom($config['from_address'],$config['from_name']);
 			$this->setHost($config['host']);
 			$this->setPort($config['port']);
 			$this->setSecure($config['secure']);
-			$this->setAuth($config['auth']);
-			$this->setUser($config['username']);
-			$this->setPass($config['password']);
+			if($config['auth'] == 1){
+				$this->setAuth(true);
+				$this->setUser($config['username']);
+				$this->setPass($config['password']);
+			}
+			else{
+				$this->setAuth(false);
+				$this->setUser('');
+				$this->setPass('');
+			}
 		}
 
 		/**

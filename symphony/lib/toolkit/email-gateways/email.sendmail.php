@@ -29,10 +29,9 @@
 		 *
 		 * @return void
 		 */
-		public function __construct() {
+		public function __construct(){
 			parent::__construct();
-			$this->setSenderEmailAddress(Symphony::Configuration()->get('from_address', 'email_sendmail') ? Symphony::Configuration()->get('from_address', 'email_sendmail') : 'noreply@' . HTTP_HOST);
-			$this->setSenderName(Symphony::Configuration()->get('from_name', 'email_sendmail') ? Symphony::Configuration()->get('from_name', 'email_sendmail') : 'Symphony');
+			$this->setConfiguration(Symphony::Configuration()->get('email_sendmail'));
 		}
 
 		/**
@@ -133,7 +132,7 @@
 		 * @return void
 		 */
 		public function setConfiguration($config){
-			$this->setFrom($config['from_name'], $config['from_address']);
+			$this->setFrom($config['from_address'],$config['from_name']);
 		}
 
 		/**
