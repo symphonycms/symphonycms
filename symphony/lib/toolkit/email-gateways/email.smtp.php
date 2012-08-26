@@ -24,6 +24,7 @@
 		protected $_auth = false;
 		protected $_user;
 		protected $_pass;
+		protected $_envelope_from;
 
 		/**
 		 * Returns the name, used in the dropdown menu in the preferences pane.
@@ -129,8 +130,8 @@
 					$this->_SMTP->setHeader($name, EmailHelper::fold($body));
 				}
 
-				// Send the email
-				$this->_SMTP->sendMail($this->_sender_email_address, $this->_recipients, $this->_subject, $this->_body);
+				// Send the email command. If the envelope from variable is set, use that for the MAIL command. This improves bounce handling.
+				$this->_SMTP->sendMail(is_null($this->_envelope_from)?$this->_sender_email_address:$this->_envelope_from, $this->_recipients, $this->_subject, $this->_body);
 				if($this->_keepalive == false){
 					$this->closeConnection();
 				}
@@ -238,6 +239,19 @@
 				$this->_protocol = 'tcp';
 				$this->_secure = 'no';
 			}
+		}
+
+		/**
+		 * Sets the envelope_from address. This is only available via the API, as it is an expert-only feature.
+		 *
+		 * @since 2.3.1
+		 * @return void
+		 */
+		public function setEnvelopeFrom($envelope_from = null){
+			if(preg_match('%[\r\n]%', $envelope_from)){
+				throw new EmailValidationException(__('The Envelope From Address can not contain carriage return or newlines.'));
+			}
+			$this->_envelope_from = $envelope_from;
 		}
 
 		/**
