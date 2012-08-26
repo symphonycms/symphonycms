@@ -29,10 +29,9 @@
 		 *
 		 * @return void
 		 */
-		public function __construct() {
+		public function __construct(){
 			parent::__construct();
-			$this->setSenderEmailAddress(Symphony::Configuration()->get('from_address', 'email_sendmail') ? Symphony::Configuration()->get('from_address', 'email_sendmail') : 'noreply@' . HTTP_HOST);
-			$this->setSenderName(Symphony::Configuration()->get('from_name', 'email_sendmail') ? Symphony::Configuration()->get('from_name', 'email_sendmail') : 'Symphony');
+			$this->setConfiguration(Symphony::Configuration()->get('email_sendmail'));
 		}
 
 		/**
@@ -121,6 +120,19 @@
 				throw new EmailGatewayException($e->getMessage());
 			}
 			return true;
+		}
+
+		/**
+		 * Sets all configuration entries from an array.
+		 *
+		 * @throws EmailValidationException
+		 * @param array $configuration
+		 * @since 2.3.1
+		 *  All configuration entries stored in a single array. The array should have the format of the $_POST array created by the preferences HTML.
+		 * @return void
+		 */
+		public function setConfiguration($config){
+			$this->setFrom($config['from_address'],$config['from_name']);
 		}
 
 		/**
