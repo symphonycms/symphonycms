@@ -255,6 +255,25 @@
 		}
 
 		/**
+		 * Sets all configuration entries from an array.
+		 *
+		 * @throws EmailValidationException
+		 * @param array $configuration
+		 * @since 2.3.1
+		 *  All configuration entries stored in a single array. The array should have the format of the $_POST array created by the preferences HTML.
+		 * @return void
+		 */
+		public function setConfiguration($config){
+			$this->setFrom($config['from_name'], $config['from_address']);
+			$this->setHost($config['host']);
+			$this->setPort($config['port']);
+			$this->setSecure($config['secure']);
+			$this->setAuth($config['auth']);
+			$this->setUser($config['username']);
+			$this->setPass($config['password']);
+		}
+
+		/**
 		 * Builds the preferences pane, shown in the Symphony backend.
 		 *
 		 * @return XMLElement

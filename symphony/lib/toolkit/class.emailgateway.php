@@ -272,6 +272,21 @@
 		}
 
 		/**
+		 * Sets all configuration entries from an array.
+		 * This enables extensions like the ENM to create email settings panes that work regardless of the email gateway.
+		 * Every gateway should extend this method to add their own settings.
+		 *
+		 * @throws EmailValidationException
+		 * @param array $configuration
+		 * @since 2.3.1
+		 *  All configuration entries stored in a single array. The array should have the format of the $_POST array created by the preferences HTML.
+		 * @return void
+		 */
+		public function setConfiguration($config){
+			return true;
+		}
+
+		/**
 		 * Appends a single header field to the header fields array.
 		 * The header field should be presented as a name/body pair.
 		 *
