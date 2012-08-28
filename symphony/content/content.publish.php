@@ -796,7 +796,7 @@
 					$filter .= '?';
 					foreach($_REQUEST['prepopulate'] as $field_id => $value) {
 						$link .= "prepopulate[$field_id]=$value&amp;";
-						$field_name = Symphony::Database()->fetchVar('element_name', 0, "SELECT `element_name` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' AND `id` = ".$field_id." ORDER BY `sortorder` LIMIT 1");
+						$field_name = FieldManager::fetchHandleFromID($field_id);
 						$filter .= "filter[$field_name]=$value&amp;";
 					}
 					$link = preg_replace("/&amp;$/", '', $link);
