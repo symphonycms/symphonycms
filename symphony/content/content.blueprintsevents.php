@@ -287,8 +287,13 @@
 				$fieldset->setAttribute('class', 'settings');
 
 				$doc = $existing->documentation();
-				$fieldset->setValue('<legend>' . __('Description') . '</legend>' . PHP_EOL . General::tabsToSpaces((is_object($doc) ? $doc->generate(true) : $doc), 2));
-				$this->Form->appendChild($fieldset);
+				if($doc) {
+					$fieldset->setValue(
+						'<legend>' . __('Description') . '</legend>' . PHP_EOL .
+						General::tabsToSpaces(is_object($doc) ? $doc->generate(true) : $doc, 2)
+					);
+					$this->Form->appendChild($fieldset);
+				}
 			}
 
 			$div = new XMLElement('div');
