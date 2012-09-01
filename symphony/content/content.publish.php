@@ -252,7 +252,7 @@
 					else {
 						$link = Widget::Anchor(
 							__('None'),
-							Administration::instance()->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/',
+							Administration::instance()->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/'.($filter_querystring ? '?' . $prepopulate_querystring : ''),
 							$entry->get('id'),
 							'content'
 						);
@@ -815,10 +815,14 @@
 
 				if(isset($_REQUEST['prepopulate'])){
 					$link .= '?';
+					$filter .= '?';
 					foreach($_REQUEST['prepopulate'] as $field_id => $value) {
 						$link .= "prepopulate[$field_id]=$value&amp;";
+						$field_name = FieldManager::fetchHandleFromID($field_id);
+						$filter .= "filter[$field_name]=$value&amp;";
 					}
 					$link = preg_replace("/&amp;$/", '', $link);
+					$filter = preg_replace("/&amp;$/", '', $filter);
 				}
 
 				// These flags are only relevant if there are no errors
@@ -829,7 +833,7 @@
 								__('Entry updated at %s.', array(DateTimeObj::getTimeAgo()))
 								. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
 								. __('Create another?')
-								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
+								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/'.$filter.'" accesskey="a">'
 								. __('View all Entries')
 								. '</a>'
 								, Alert::SUCCESS);
