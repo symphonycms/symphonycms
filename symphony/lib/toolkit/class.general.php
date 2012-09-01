@@ -872,12 +872,12 @@
 		 *  silent is set to true then an exception is thrown. if the unlink
 		 *  fails and silent is set to false then this returns false.
 		 */
-		public static function deleteFile($file, $slient=true){
+		public static function deleteFile($file, $silent=true){
 			try {
 				return unlink($file);
 			}
 			catch(Exception $ex) {
-				if($slient == false){
+				if($silent == false){
 					throw new Exception(__('Unable to remove file - %s', array($file)));
 				}
 
