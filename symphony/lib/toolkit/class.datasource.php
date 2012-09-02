@@ -120,6 +120,15 @@
 		}
 
 		/**
+		 * @deprecated This function has been renamed to `execute` as of
+		 *  Symphony 2.3.1, please use `execute()` instead.
+		 * @see execute()
+		 */
+		public function grab(array &$param_pool=NULL) {
+			return $this->execute($param_pool);
+		}
+
+		/**
 		 * The meat of the Datasource, this function includes the datasource
 		 * type's file that will preform the logic to return the data for this datasource
 		 * It is passed the current parameters.
@@ -130,7 +139,7 @@
 		 * @return XMLElement
 		 *  The XMLElement to add into the XML for a page.
 		 */
-		public function grab(array &$param_pool=NULL){
+		public function execute(array &$param_pool=NULL) {
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 
 			try{

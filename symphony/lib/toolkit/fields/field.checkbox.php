@@ -3,12 +3,15 @@
 	/**
 	 * @package toolkit
 	 */
+
+	require_once FACE . '/interface.exportablefield.php';
+	require_once FACE . '/interface.importablefield.php';
+
 	/**
 	 * Checkbox field simulates a HTML checkbox field, in that it represents a
 	 * simple yes/no field.
 	 */
-	Class fieldCheckbox extends Field {
-
+	class FieldCheckbox extends Field implements ExportableField, ImportableField {
 		public function __construct(){
 			parent::__construct();
 			$this->_name = __('Checkbox');
@@ -38,10 +41,6 @@
 		}
 
 		public function canFilter(){
-			return true;
-		}
-
-		public function canImport(){
 			return true;
 		}
 
@@ -158,11 +157,88 @@
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
-			return ($data['value'] == 'yes') ? __('Yes') : __('No');
+			return $this->prepareExportValue($data, ExportableField::VALUE, $entry_id);
 		}
 
 		public function getParameterPoolValue(array $data, $entry_id = null){
-			return ($data['value'] == 'yes') ? 'yes' : 'no';
+			return $this->prepareExportValue($data, ExportableField::POSTDATA, $entry_id);
+		}
+
+	/*-------------------------------------------------------------------------
+		Import:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Give the field some data and ask it to return a value.
+		 *
+		 * @param mixed $data
+		 * @param integer $entry_id
+		 * @return array
+		 */
+		public function prepareImportValue($data, $entry_id = null) {
+			return array(
+				'value' => (strtolower($data) == 'yes' || strtolower($data) == 'on' ? 'yes' : 'no')
+			);
+		}
+
+	/*-------------------------------------------------------------------------
+		Export:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Return a list of supported export modes for use with `prepareExportValue`.
+		 *
+		 * @return array
+		 */
+		public function getExportModes() {
+			return array(
+				'getBoolean' =>		ExportableField::BOOLEAN,
+				'getValue' =>		ExportableField::VALUE,
+				'getPostdata' =>	ExportableField::POSTDATA
+			);
+		}
+
+		/**
+		 * Give the field some data and ask it to return a value using one of many
+		 * possible modes.
+		 *
+		 * @param mixed $data
+		 * @param integer $mode
+		 * @param integer $entry_id
+		 * @return string|boolean|null
+		 */
+		public function prepareExportValue($data, $mode, $entry_id = null) {
+			$modes = (object)$this->getExportModes();
+
+			// Export unformatted:
+			if ($mode === $modes->getPostdata) {
+				return (
+					isset($data['value'])
+					&& $data['value'] == 'yes'
+						? 'yes'
+						: 'no'
+				);
+			}
+
+			// Export formatted:
+			else if ($mode === $modes->getValue) {
+				return (
+					isset($data['value'])
+					&& $data['value'] == 'yes'
+						? __('Yes')
+						: __('No')
+				);
+			}
+
+			// Export boolean:
+			else if ($mode === $modes->getBoolean) {
+				return (
+					isset($data['value'])
+					&& $data['value'] == 'yes'
+				);
+			}
+
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------

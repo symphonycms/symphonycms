@@ -26,6 +26,7 @@
 		 * Sets the default gateway.
 		 * Will throw an exception if the gateway can not be found.
 		 *
+		 * @throws EmailGatewayException
 		 * @param string $name
 		 * @return void
 		 */

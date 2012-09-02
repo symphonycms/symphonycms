@@ -86,10 +86,7 @@
 		contents.find('.tags').symphonyTags();
 
 		// Pickers
-		contents.find('select[name="settings[Email][default_gateway]"]').symphonyPickable();
-		contents.find('select[name="fields[dynamic_xml][format]"]').symphonyPickable({
-			pickables: '#xml'
-		});
+		contents.find('select.picker').symphonyPickable();
 
 		// Selectable
 		contents.find('table.selectable').symphonySelectable();

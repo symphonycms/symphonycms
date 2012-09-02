@@ -82,14 +82,13 @@
 
 		public function __viewIndex(){
 			if(!$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle'])) {
-				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
+				Administration::instance()->customError(__('Unknown Section'), __('The Section, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
 			}
 
 			$section = SectionManager::fetch($section_id);
 
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array($section->get('name'), __('Symphony'))));
-			$this->Form->setAttribute("class", $this->_context['section_handle']);
 
 			$filters = array();
 			$filter_querystring = $prepopulate_querystring = $where = $joins = NULL;
@@ -208,8 +207,8 @@
 			}
 
 			/**
-			 * Allows the creation of custom entries tablecolumns. Called
-			 * after all the Section Visible columns have been added  as well
+			 * Allows the creation of custom table columns for each entry. Called
+			 * after all the Section Visible columns have been added as well
 			 * as the Section Associations
 			 *
 			 * @delegate AddCustomPublishColumn
@@ -253,7 +252,7 @@
 					else {
 						$link = Widget::Anchor(
 							__('None'),
-							Administration::instance()->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/',
+							Administration::instance()->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/'.($filter_querystring ? '?' . $prepopulate_querystring : ''),
 							$entry->get('id'),
 							'content'
 						);
@@ -326,13 +325,22 @@
 					 * @param string $context
 					 * '/publish/'
 					 * @param array $tableData
-					 *	An array of `Widget::TableData`, passed by reference
+					 *  An array of `Widget::TableData`, passed by reference
 					 * @param integer $section_id
-					 *	The current Section ID
-					 * @param integer $entry_id
-					 *	The Entry ID for this row
+					 *  The current Section ID
+					 * @param Entry $entry_id
+					 *  The entry object, please note that this is by error and this will
+					 *  be removed in Symphony 2.4. The entry object is available in
+					 *  the 'entry' key as of Symphony 2.3.1.
+					 * @param Entry $entry
+					 *  The entry object for this row
 					 */
-					Symphony::ExtensionManager()->notifyMembers('AddCustomPublishColumnData', '/publish/', array('tableData' => &$tableData, 'section_id' => $section->get('id'), 'entry_id' => $entry));
+					Symphony::ExtensionManager()->notifyMembers('AddCustomPublishColumnData', '/publish/', array(
+						'tableData' => &$tableData,
+						'section_id' => $section->get('id'),
+						'entry_id' => $entry,
+						'entry' => $entry
+					));
 
 					$tableData[count($tableData) - 1]->appendChild(Widget::Input('items['.$entry->get('id').']', NULL, 'checkbox'));
 
@@ -531,7 +539,7 @@
 
 		public function __viewNew() {
 			if(!$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle'])) {
-				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
+				Administration::instance()->customError(__('Unknown Section'), __('The Section, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
 			}
 
 			$section = SectionManager::fetch($section_id);
@@ -551,8 +559,21 @@
 				$this->appendSubheading(__('Untitled'));
 			}
 
+			// Build filtered breadcrumb [#1378}
+			if(isset($_REQUEST['prepopulate'])){
+				$link = '?';
+				foreach($_REQUEST['prepopulate'] as $field_id => $value) {
+					$handle = FieldManager::fetchHandleFromID($field_id);
+					$link .= "filter[$handle]=$value&amp;";
+				}
+				$link = preg_replace("/&amp;$/", '', $link);
+			}
+			else {
+				$link = '';
+			}
+
 			$this->insertBreadcrumbs(array(
-				Widget::Anchor($section->get('name'), SYMPHONY_URL . '/publish/' . $this->_context['section_handle']),
+				Widget::Anchor($section->get('name'), SYMPHONY_URL . '/publish/' . $this->_context['section_handle'] . '/' . $link),
 			));
 
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
@@ -636,20 +657,18 @@
 		}
 
 		public function __actionNew(){
-
 			if(array_key_exists('save', $_POST['action']) || array_key_exists("done", $_POST['action'])) {
-
 				$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle']);
 
 				if(!$section = SectionManager::fetch($section_id)) {
-					Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
+					Administration::instance()->customError(__('Unknown Section'), __('The Section, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
 				}
 
 				$entry =& EntryManager::create();
-				$entry->set('section_id', $section_id);
 				$entry->set('author_id', Administration::instance()->Author->get('id'));
-				$entry->set('creation_date', DateTimeObj::get('Y-m-d H:i:s'));
-				$entry->set('creation_date_gmt', DateTimeObj::getGMT('Y-m-d H:i:s'));
+				$entry->set('section_id', $section_id);
+				$entry->set('creation_date', DateTimeObj::get('c'));
+				$entry->set('modification_date', DateTimeObj::get('c'));
 
 				$fields = $_POST['fields'];
 
@@ -741,7 +760,7 @@
 
 		public function __viewEdit() {
 			if(!$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle'])) {
-				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
+				Administration::instance()->customError(__('Unknown Section'), __('The Section, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
 			}
 
 			$section = SectionManager::fetch($section_id);
@@ -750,7 +769,7 @@
 			EntryManager::setFetchSorting('id', 'DESC');
 
 			if(!$existingEntry = EntryManager::fetch($entry_id)) {
-				Administration::instance()->customError(__('Unknown Entry'), __('The entry you are looking for could not be found.'));
+				Administration::instance()->customError(__('Unknown Entry'), __('The Entry, %s, could not be found.', array($entry_id)));
 			}
 			$existingEntry = $existingEntry[0];
 
@@ -759,8 +778,11 @@
 				$fields = $_POST['fields'];
 
 				$entry =& EntryManager::create();
-				$entry->set('section_id', $existingEntry->get('section_id'));
 				$entry->set('id', $entry_id);
+				$entry->set('author_id', $existingEntry->get('author_id'));
+				$entry->set('section_id', $existingEntry->get('section_id'));
+				$entry->set('creation_date', $existingEntry->get('creation_date'));
+				$entry->set('modification_date', $existingEntry->get('modification_date'));
 				$entry->setDataFromPost($fields, $errors, true);
 			}
 
@@ -793,10 +815,14 @@
 
 				if(isset($_REQUEST['prepopulate'])){
 					$link .= '?';
+					$filter .= '?';
 					foreach($_REQUEST['prepopulate'] as $field_id => $value) {
 						$link .= "prepopulate[$field_id]=$value&amp;";
+						$field_name = FieldManager::fetchHandleFromID($field_id);
+						$filter .= "filter[$field_name]=$value&amp;";
 					}
 					$link = preg_replace("/&amp;$/", '', $link);
+					$filter = preg_replace("/&amp;$/", '', $filter);
 				}
 
 				// These flags are only relevant if there are no errors
@@ -807,7 +833,7 @@
 								__('Entry updated at %s.', array(DateTimeObj::getTimeAgo()))
 								. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
 								. __('Create another?')
-								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
+								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/'.$filter.'" accesskey="a">'
 								. __('View all Entries')
 								. '</a>'
 								, Alert::SUCCESS);
@@ -926,7 +952,7 @@
 
 			if(@array_key_exists('save', $_POST['action']) || @array_key_exists("done", $_POST['action'])){
 				if(!$ret = EntryManager::fetch($entry_id)) {
-					Administration::instance()->customError(__('Unknown Entry'), __('The entry you are looking for could not be found.'));
+					Administration::instance()->customError(__('Unknown Entry'), __('The Entry, %s, could not be found.', array($entry_id)));
 				}
 				$entry = $ret[0];
 

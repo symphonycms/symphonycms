@@ -3,14 +3,16 @@
 	 * @package toolkit
 	 */
 
+	require_once FACE . '/interface.exportablefield.php';
+	require_once FACE . '/interface.importablefield.php';
+
 	/**
 	 * The Tag List field is really a different interface for the Select Box
 	 * field, offering a tag interface that can have static suggestions,
 	 * suggestions from another field or a dynamic list based on what an Author
 	 * has previously used for this field.
 	 */
-
-	Class fieldTagList extends Field {
+	class FieldTagList extends Field implements ExportableField, ImportableField {
 		public function __construct(){
 			parent::__construct();
 			$this->_name = __('Tag List');
@@ -24,10 +26,6 @@
 	-------------------------------------------------------------------------*/
 
 		public function canFilter() {
-			return true;
-		}
-
-		public function canImport(){
 			return true;
 		}
 
@@ -282,7 +280,118 @@
 		}
 
 		public function getParameterPoolValue($data, $entry_id = null) {
-			return $data['handle'];
+			return $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::HANDLE, $entry_id);
+		}
+
+	/*-------------------------------------------------------------------------
+		Import:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Give the field some data and ask it to return a value.
+		 *
+		 * @param mixed $data
+		 * @param integer $entry_id
+		 * @return array|null
+		 */
+		public function prepareImportValue($data, $entry_id = null) {
+			$data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
+			$data = array_map('trim', $data);
+			$result = array();
+
+			if (empty($data)) return null;
+
+			$result = array(
+				'value' =>	array(),
+				'handle' =>	array()
+			);
+
+			// Do a case insensitive removal of duplicates:
+			$data = General::array_remove_duplicates($data, true);
+
+			sort($data);
+
+			foreach ($data as $value) {
+				$result['value'][] = $value;
+				$result['handle'][] = Lang::createHandle($value);
+			}
+
+			return $result;
+		}
+
+	/*-------------------------------------------------------------------------
+		Export:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Return a list of supported export modes for use with `prepareExportValue`.
+		 *
+		 * @return array
+		 */
+		public function getExportModes() {
+			return array(
+				'listHandle' =>			ExportableField::LIST_OF
+										+ ExportableField::HANDLE,
+				'listValue' =>			ExportableField::LIST_OF
+										+ ExportableField::VALUE,
+				'listHandleToValue' =>	ExportableField::LIST_OF
+										+ ExportableField::HANDLE
+										+ ExportableField::VALUE,
+				'getPostdata' =>		ExportableField::POSTDATA
+			);
+		}
+
+		/**
+		 * Give the field some data and ask it to return a value using one of many
+		 * possible modes.
+		 *
+		 * @param mixed $data
+		 * @param integer $mode
+		 * @param integer $entry_id
+		 * @return array|null
+		 */
+		public function prepareExportValue($data, $mode, $entry_id = null) {
+			$modes = (object)$this->getExportModes();
+
+			if (isset($data['handle']) && is_array($data['handle']) === false) {
+				$data['handle'] = array(
+					$data['handle']
+				);
+			}
+
+			if (isset($data['value']) && is_array($data['value']) === false) {
+				$data['value'] = array(
+					$data['value']
+				);
+			}
+
+			// Handle => value pairs:
+			if ($mode === $modes->listHandleToValue) {
+				return isset($data['handle'], $data['value'])
+					? array_combine($data['handle'], $data['value'])
+					: array();
+			}
+
+			// Array of handles:
+			else if ($mode === $modes->listHandle) {
+				return isset($data['handle'])
+					? $data['handle']
+					: array();
+			}
+
+			// Array of values:
+			else if ($mode === $modes->listValue) {
+				return isset($data['value'])
+					? $data['value']
+					: array();
+			}
+
+			// Comma seperated values:
+			else if ($mode === $modes->getPostdata) {
+				return isset($data['value'])
+					? implode(', ', $data['value'])
+					: null;
+			}
 		}
 
 	/*-------------------------------------------------------------------------

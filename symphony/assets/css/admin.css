@@ -389,18 +389,26 @@ fieldset.settings fieldset legend {
 
 }
 
-/* Pickable */
+/* Condensed, pickable settings, e. g. email gateways */
 
-.active .settings.picker {
+.active .settings.condensed:not(.pickable) {
+	margin-bottom: 5px;
+}
+
+.active .settings.condensed:not(.pickable) label {
+	margin-bottom: 0;
+}
+
+.active .settings.pickable.condensed {
 	border-bottom: none;
 	margin-bottom: 0;
 	padding-bottom: 0;
 }
-.active .settings.pickable {
+.active .settings.pickable.condensed {
 	border-top: 0;
 	padding-top: 0;
 }
-.active .settings.pickable legend {
+.active .settings.pickable.condensed legend {
 	display: none;
 }
 
@@ -451,21 +459,25 @@ div.password {
 	Index page
 --------------------------------------------------------------------------*/
 
+.page-index h2,
 .index h2 {
 	border: none;
 }
 
+.page-index form,
 .index form {
 	margin: 0;
 	padding: 0;
 }
 
+.page-index .actions,
 .index .actions {
 	text-align: right;
 	padding: 30px 18px 0;
 	height: 38px;
 }
 
+.page-index .actions + ul.page,
 .index .actions + ul.page {
 	margin-top: -58px;
 }
@@ -621,6 +633,7 @@ div.field-checkbox:first-child {
 
 /* Actions */
 
+.page-single #contents .actions,
 .single #contents .actions {
 	clear: both;
 	border-top: 1px solid rgba(0, 0, 0, 0.1);
@@ -628,15 +641,18 @@ div.field-checkbox:first-child {
 	margin: 0 18px;
 }
 
+.page-single #contents .columns .actions,
 .single #contents .columns .actions {
 	margin: 0;
 }
 
+.page-single #contents .actions input,
 .single #contents .actions input {
 	float: right;
 	margin-left: 1em;
 }
 
+.page-single #contents .actions button,
 .single #contents .actions button {
 	float: left;
 	margin-left: 0;

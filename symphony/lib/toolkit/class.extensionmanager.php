@@ -292,7 +292,10 @@
 			$obj = self::getInstance($name);
 
 			// If not installed, install it
-			if(self::__requiresInstallation($name) && $obj->install() === false){
+			if(self::__requiresInstallation($name) && $obj->install() === false) {
+				// If the installation failed, run the uninstall method which
+				// should rollback the install method. #1326
+				$obj->uninstall();
 				return false;
 			}
 
@@ -369,7 +372,10 @@
 		 * Uninstalling an extension will unregister all delegate subscriptions and
 		 * remove all extension settings. Symphony checks that an extension can
 		 * be uninstalled using the `canUninstallorDisable()` before calling
-		 * the extension's `uninstall()` function.
+		 * the extension's `uninstall()` function. Alternatively, if this function
+		 * is called because the extension described by `$name` cannot be found
+		 * it's delegates and extension meta information will just be removed from the
+		 * database.
 		 *
 		 * @see toolkit.ExtensionManager#removeDelegates()
 		 * @see toolkit.ExtensionManager#__canUninstallOrDisable()
@@ -377,16 +383,24 @@
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @return boolean
 		 */
-		public static function uninstall($name){
-			$obj = self::getInstance($name);
-
-			self::__canUninstallOrDisable($obj);
-
-			$obj->uninstall();
+		public static function uninstall($name) {
+			// If this function is called because the extension doesn't exist,
+			// then catch the error and just remove from the database. This
+			// means that the uninstall() function will not run on the extension,
+			// which may be a blessing in disguise as no entry data will be removed
+			try {
+				$obj = self::getInstance($name);
+				self::__canUninstallOrDisable($obj);
+				$obj->uninstall();
+			}
+			catch(Exception $ex) {
+				if($ex->getHeading() !== 'Symphony Extension Missing Error') {
+					throw $ex;
+				}
+			}
 
 			self::removeDelegates($name);
-
-			Symphony::Database()->delete('tbl_extensions', " `name` = '$name' ");
+			Symphony::Database()->delete('tbl_extensions', sprintf(" `name` = '%s' ", $name));
 
 			return true;
 		}
@@ -424,16 +438,16 @@
 			}
 
 			// Remove the unused DB records
-			self::__cleanupDatabase();
+			self::cleanupDatabase();
 
 			return $id;
 		}
 
 		/**
 		 * This function will remove all delegate subscriptions for an extension
-		 * given an extension's name. This triggers `__cleanupDatabase()`
+		 * given an extension's name. This triggers `cleanupDatabase()`
 		 *
-		 * @see toolkit.ExtensionManager#__cleanupDatabase()
+		 * @see toolkit.ExtensionManager#cleanupDatabase()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 */
@@ -457,7 +471,7 @@
 			}
 
 			// Remove the unused DB records
-			self::__cleanupDatabase();
+			self::cleanupDatabase();
 
 			return true;
 		}
@@ -764,11 +778,18 @@
 					)));
 				}
 
+				// Load <extension>
+				$extension = $xpath->query('/ext:extension')->item(0);
+
+				// Check to see that the extension is named correctly, if it is
+				// not, then return nothing
+				if(self::__getClassName($name) != self::__getClassName($xpath->evaluate('string(@id)', $extension))) {
+					return array();
+				}
+
 				// If `$rawXML` is set, just return our DOMDocument instance
 				if($rawXML) return $meta;
 
-				// Load <extension>
-				$extension = $xpath->query('/ext:extension')->item(0);
 				$about = array(
 					'name' => $xpath->evaluate('string(ext:name)', $extension),
 					'status' => array()
@@ -857,12 +878,17 @@
 				$classname = self::__getClassName($name);
 				$path = self::__getDriverPath($name);
 
-				if(!is_file($path)){
+				if(!is_file($path)) {
 					throw new SymphonyErrorPage(
-						__('Could not find extension %s at location %s', array(
+						__('Could not find extension %s at location %s.', array(
 							'<code>' . $name . '</code>',
 							'<code>' . $path . '</code>'
-						))
+						)),
+						'Symphony Extension Missing Error',
+						'missing_extension', array(
+							'name' => $name,
+							'path' => $path
+						)
 					);
 				}
 
@@ -880,7 +906,7 @@
 		 * stray delegates are not in `tbl_extensions_delegates`. It is called when
 		 * a new Delegate is added or removed.
 		 */
-		private static function __cleanupDatabase(){
+		public static function cleanupDatabase() {
 			// Grab any extensions sitting in the database
 			$rows = Symphony::Database()->fetch("SELECT `name` FROM `tbl_extensions`");
 

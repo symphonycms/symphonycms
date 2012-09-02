@@ -425,7 +425,7 @@
 
 				$this->appendSubheading($title, array(
 					Widget::Anchor(__('View Page'), $page_url, __('View Page on Frontend'), 'button', NULL, array('target' => '_blank', 'accesskey' => 'v')),
-					Widget::Anchor(__('Edit Template'), SYMPHONY_URL . '/blueprints/pages/template/' . $template_name, __('Edit Page Template'), 'button', NULL, array('accesskey' => 't'))
+					Widget::Anchor(__('Edit Page Template'), SYMPHONY_URL . '/blueprints/pages/template/' . $template_name, __('Edit Page Template'), 'button', NULL, array('accesskey' => 't'))
 				));
 			}
 			else {

@@ -209,6 +209,10 @@ p.label > i {
 	top: 0;
 }
 
+label.inline-help > i {
+	position: relative;
+}
+
 /* States */
 
 .busy,
