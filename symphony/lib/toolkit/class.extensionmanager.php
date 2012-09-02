@@ -564,7 +564,6 @@
 		 *		'page' => $page,
 		 *		'delegate' => $delegate
 		 *	);
-		 *
 		 */
 		public static function notifyMembers($delegate, $page, array $context=array()){
 			// Make sure $page is an array
@@ -589,12 +588,17 @@
 
 			$context += array('page' => $page, 'delegate' => $delegate);
 
-			foreach($services as $s){
+			foreach($services as $s) {
 				$obj = self::getInstance($s['name']);
+				$queries = Symphony::Database()->queryCount();
+				Symphony::Profiler()->seed();
 
 				if(is_object($obj) && method_exists($obj, $s['callback'])) {
 					$obj->{$s['callback']}($context);
 				}
+
+				$queries = Symphony::Database()->queryCount() - $queries;
+				Symphony::Profiler()->sample($delegate . '|' . $s['name'], PROFILE_LAP, 'Delegate', $queries);
 			}
 		}
 

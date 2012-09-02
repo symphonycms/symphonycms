@@ -779,8 +779,6 @@
 			$dependencies = array();
 
 			foreach ($datasources as $handle) {
-				Symphony::Profiler()->seed();
-
 				$pool[$handle] =& DatasourceManager::create($handle, array(), false);
 				$dependencies[$handle] = $pool[$handle]->getDependencies();
 			}
