@@ -64,7 +64,7 @@
 			else{
 				foreach($extensions as $name => $about){
 
-					$td1 = Widget::TableData((!empty($about['table-link']) && $about['status'] == EXTENSION_ENABLED ? Widget::Anchor($about['name'], Administration::instance()->getCurrentPageURL() . 'extension/' . trim($about['table-link'], '/') . '/') : $about['name']));
+					$td1 = Widget::TableData($about['name']));
 					$installed_version = Symphony::ExtensionManager()->fetchInstalledVersion($name);
 					$td2 = Widget::TableData(is_null($installed_version) ? __('Not Installed') : $installed_version);
 
