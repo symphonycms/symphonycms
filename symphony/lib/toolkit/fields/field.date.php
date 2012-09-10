@@ -408,7 +408,7 @@
 			if(!is_null($timestamp)) {
 				return array(
 					'value' => DateTimeObj::get('c', $timestamp),
-					'date' => DateTimeObj::getGMT('c', $timestamp)
+					'date' => DateTimeObj::getGMT('Y-m-d H:i:s', $timestamp)
 				);
 			}
 
@@ -489,7 +489,7 @@
 			// Valid date found:
 			if (isset($timestamp)) {
 				$value = DateTimeObj::get('c', $timestamp);
-				$date = DateTimeObj::getGMT('c', $timestamp);
+				$date = DateTimeObj::getGMT('Y-m-d H:i:s', $timestamp);
 			}
 
 			return array(
