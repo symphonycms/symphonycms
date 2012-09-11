@@ -113,7 +113,8 @@
 				'/workspace/data-sources',
 				'/workspace/text-formatters',
 				'/workspace/pages',
-				'/workspace/utilities'
+				'/workspace/utilities',
+				'/workspace/template'
 			);
 			$directories = General::listDirStructure(WORKSPACE, null, true, DOCROOT, $ignore);
 
