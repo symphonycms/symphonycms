@@ -879,7 +879,7 @@
 					}
 					// PHP 5.2 does not support late static binding..
 					else{
-						call_user_func(array($providerClass, 'buildEditor'), $this->Form, &$this->_errors, $fields, $handle);
+						call_user_func_array(array($providerClass, 'buildEditor'), $this->Form, array(&$this->_errors, $fields, $handle));
 					}
 				}
 			}
@@ -1087,7 +1087,7 @@
 					}
 					// PHP 5.2 does not support late static binding..
 					else if($fields['source'] == call_user_func(array($providerClass, 'getSource'))) {
-						call_user_func(array($providerClass, 'validate'), &$fields, &$this->_errors);
+						call_user_func_array(array($providerClass, 'validate'), array(&$fields, &$this->_errors));
 						break;
 					}
 
