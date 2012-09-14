@@ -258,6 +258,7 @@
 #breadcrumbs a, #breadcrumbs span {
 	padding: 0;
 	font: 127.28%/1.35 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
+	color: #2E2E2E;
 	color: rgba(0, 0, 0, 0.6);
 	text-shadow: 0 0 1px #fff;
 	float: left;
@@ -269,6 +270,7 @@
 
 #breadcrumbs a:hover, #breadcrumbs a:focus {
 	border-bottom-color: #a9a9a9;
+	color: #2E2E2E;
 	color: rgba(0, 0, 0, 0.8);
 }
 
