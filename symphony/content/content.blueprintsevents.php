@@ -366,7 +366,7 @@
 
 			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
 			if(trim($fields['source']) == '') $this->_errors['source'] = __('This is a required field');
-            $filters = (is_array($fields['filters'])) ? $fields['filters'] : array();
+			$filters = (is_array($fields['filters'])) ? $fields['filters'] : array();
 
 			// See if a Provided Datasource is saved
 			if (!empty($providers)) {
@@ -417,7 +417,6 @@
 			if($isDuplicate) $this->_errors['name'] = __('An Event with the name %s already exists', array('<code>' . $classname . '</code>'));
 
 			if(empty($this->_errors)) {
-				$filters = array();
 				$multiple = in_array('expect-multiple', $filters);
 				$elements = NULL;
 				$placeholder = '<!-- GRAB -->';
@@ -582,7 +581,7 @@
 
 					/**
 					 * Allows adding documentation for new filters. A reference to the $documentation
-	 				 * array is provided, along with selected filters
+					 * array is provided, along with selected filters
 					 * @delegate AppendEventFilterDocumentation
 					 * @param string $context
 					 * '/blueprints/events/(edit|new|info)/'
