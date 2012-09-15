@@ -589,14 +589,18 @@
 			$context += array('page' => $page, 'delegate' => $delegate);
 
 			foreach($services as $s) {
-				$obj = self::getInstance($s['name']);
-				$queries = Symphony::Database()->queryCount();
+				// Initial seeding and query count
 				Symphony::Profiler()->seed();
+				$queries = Symphony::Database()->queryCount();
 
+				// Get instance of extension and execute the callback passing
+				// the `$context` along
+				$obj = self::getInstance($s['name']);
 				if(is_object($obj) && method_exists($obj, $s['callback'])) {
 					$obj->{$s['callback']}($context);
 				}
 
+				// Complete the Profiling sample
 				$queries = Symphony::Database()->queryCount() - $queries;
 				Symphony::Profiler()->sample($delegate . '|' . $s['name'], PROFILE_LAP, 'Delegate', $queries);
 			}
