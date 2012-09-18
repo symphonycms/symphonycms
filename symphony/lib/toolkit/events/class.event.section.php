@@ -225,7 +225,7 @@
 				foreach($fields['recipient'] as $recipient){
 					$author = AuthorManager::fetchByUsername($recipient);
 
-					if(is_null($author)) {
+					if(empty($author)) {
 						$errors['recipient'][$recipient] = __('Recipient not found');
 						continue;
 					}
