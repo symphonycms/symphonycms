@@ -393,7 +393,7 @@
 				self::__canUninstallOrDisable($obj);
 				$obj->uninstall();
 			}
-			catch(Exception $ex) {
+			catch(SymphonyErrorPage $ex) {
 				if($ex->getHeading() !== 'Symphony Extension Missing Error') {
 					throw $ex;
 				}
