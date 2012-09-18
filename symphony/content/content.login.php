@@ -32,14 +32,13 @@
 			Symphony::Profiler()->sample('Page template created', PROFILE_LAP);
 		}
 
-		public function build($context=NULL){
+		public function build($context=NULL) {
 			if($context) $this->_context = $context;
 			if(isset($_REQUEST['action'])) $this->action();
 			$this->view();
 		}
 
-		public function view(){
-			$emergency = false;
+		public function view() {
 			if(isset($this->_context[0]) && in_array(strlen($this->_context[0]), array(6, 8))){
 				if(!$this->__loginFromToken($this->_context[0])) {
 					if(Administration::instance()->isLoggedIn()) redirect(SYMPHONY_URL);
@@ -48,27 +47,26 @@
 
 			$this->Form = Widget::Form(SYMPHONY_URL . '/login/', 'post');
 			$this->Form->setAttribute('class', 'frame');
-
 			$this->Form->appendChild(new XMLElement('h1', __('Symphony')));
 
 			$fieldset = new XMLElement('fieldset');
 
+			// Display retrieve password UI
 			if($this->_context[0] == 'retrieve-password'):
 
 				$this->Form->setAttribute('action', SYMPHONY_URL.'/login/retrieve-password/');
 
-				if(isset($this->_email_sent) && $this->_email_sent){
+				if(isset($this->_email_sent) && $this->_email_sent) {
 					$fieldset->appendChild(new XMLElement('p', __('An email containing a customised login link has been sent. It will expire in 2 hours.')));
 					$this->Form->appendChild($fieldset);
 				}
-
-				else{
+				else {
 
 					$fieldset->appendChild(new XMLElement('p', __('Enter your email address to be sent a remote login link with further instructions for logging in.')));
 
 					$label = Widget::Label(__('Email Address'));
-					$label->appendChild(Widget::Input('email', $_POST['email'], 'text', array('autofocus' => 'autofocus')));
-					if(isset($this->_email_sent) && !$this->_email_sent){
+					$label->appendChild(Widget::Input('email', General::sanitize($_POST['email']), 'text', array('autofocus' => 'autofocus')));
+					if(isset($this->_email_sent) && !$this->_email_sent) {
 						$label = Widget::Error($label, __('There was a problem locating your account. Please check that you are using the correct email address.'));
 					}
 					$fieldset->appendChild($label);
@@ -78,15 +76,15 @@
 					$div = new XMLElement('div', NULL, array('class' => 'actions'));
 					$div->appendChild(new XMLElement('button', __('Send Email'), array('name' => 'action[reset]', 'type' => 'submit')));
 					$this->Form->appendChild($div);
-
 				}
 
+			// Normal login
 			else:
 
 				$fieldset->appendChild(new XMLElement('legend', __('Login')));
 
 				$label = Widget::Label(__('Username'));
-				$username = Widget::Input('username', $_POST['username']);
+				$username = Widget::Input('username', General::sanitize($_POST['username']));
 				if(!$this->_invalidPassword) {
 					$username->setAttribute('autofocus', 'autofocus');
 				}
@@ -117,7 +115,6 @@
 			endif;
 
 			$this->Body->appendChild($this->Form);
-
 		}
 
 		public function action(){
@@ -128,8 +125,10 @@
 
 				// Login Attempted
 				if($action == 'login'):
+					$username = Symphony::Database()->cleanValue($_POST['username']);
+					$password = Symphony::Database()->cleanValue($_POST['password']);
 
-					if(empty($_POST['username']) || empty($_POST['password']) || !Administration::instance()->login($_POST['username'], $_POST['password'])) {
+					if(empty($username) || empty($password) || !Administration::instance()->login($username, $password)) {
 						/**
 						 * A failed login attempt into the Symphony backend
 						 *
@@ -140,7 +139,7 @@
 						 * @param string $username
 						 *  The username of the Author who attempted to login.
 						 */
-						Symphony::ExtensionManager()->notifyMembers('AuthorLoginFailure', '/login/', array('username' => $_POST['username']));
+						Symphony::ExtensionManager()->notifyMembers('AuthorLoginFailure', '/login/', array('username' => $username));
 						$this->_invalidPassword = true;
 					}
 
@@ -155,7 +154,7 @@
 						 * @param string $username
 						 *  The username of the Author who logged in.
 						 */
-						Symphony::ExtensionManager()->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => $_POST['username']));
+						Symphony::ExtensionManager()->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => $username));
 
 						if(isset($_POST['redirect'])) redirect(URL . str_replace(parse_url(URL, PHP_URL_PATH), '', $_POST['redirect']));
 
@@ -168,7 +167,6 @@
 					$author = Symphony::Database()->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_authors` WHERE `email` = '".Symphony::Database()->cleanValue($_POST['email'])."'");
 
 					if(!empty($author)){
-
 						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' ");
 
 						if(!$token = Symphony::Database()->fetchVar('token', 0, "SELECT `token` FROM `tbl_forgotpass` WHERE `expiry` > '".DateTimeObj::getGMT('c')."' AND `author_id` = ".$author['id'])){

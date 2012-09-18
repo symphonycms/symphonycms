@@ -233,8 +233,7 @@
 				$author = $this->_Author;
 			}
 			else if($this->_context[0] == 'edit') {
-
-				if(!$author_id = $this->_context[1]) redirect(SYMPHONY_URL . '/system/authors/');
+				if(!$author_id = (int)$this->_context[1]) redirect(SYMPHONY_URL . '/system/authors/');
 
 				if(!$author = AuthorManager::fetchByID($author_id)){
 					Administration::instance()->customError(__('Author not found'), __('The author profile you requested does not exist.'));
@@ -520,7 +519,7 @@
 
 		public function __actionEdit(){
 
-			if(!$author_id = $this->_context[1]) redirect(SYMPHONY_URL . '/system/authors/');
+			if(!$author_id = (int)$this->_context[1]) redirect(SYMPHONY_URL . '/system/authors/');
 
 			$isOwner = ($author_id == Administration::instance()->Author->get('id'));
 

@@ -692,7 +692,6 @@
 
 				foreach($pool as $handle => $event){
 					Symphony::Profiler()->seed();
-
 					$queries = Symphony::Database()->queryCount();
 
 					if($xml = $event->load()) {
@@ -703,9 +702,7 @@
 					}
 
 					$queries = Symphony::Database()->queryCount() - $queries;
-
 					Symphony::Profiler()->sample($handle, PROFILE_LAP, 'Event', $queries);
-
 				}
 			}
 

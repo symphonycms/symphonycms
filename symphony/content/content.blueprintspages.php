@@ -329,7 +329,7 @@
 
 			// Verify page exists:
 			if($this->_context[0] == 'edit') {
-				if(!$page_id = $this->_context[1]) {
+				if(!$page_id = (int)$this->_context[1]) {
 					redirect(SYMPHONY_URL . '/blueprints/pages/');
 				}
 
@@ -432,8 +432,8 @@
 				$this->appendSubheading(($title ? $title : __('Untitled')));
 			}
 
-			if(isset($this->_context[1])) {
-				$this->insertBreadcrumbsUsingPageIdentifier($this->_context[1], false);
+			if(isset($page_id)) {
+				$this->insertBreadcrumbsUsingPageIdentifier($page_id, false);
 			}
 			else {
 				$this->insertBreadcrumbsUsingPageIdentifier((int)$_GET['parent'], true);

@@ -129,8 +129,7 @@
 		 * @param array $errors
 		 * @return boolean
 		 */
-		public function validate(&$errors){
-
+		public function validate(&$errors) {
 			require_once(TOOLKIT . '/util.validators.php');
 
 			$errors = array();
@@ -170,7 +169,7 @@
 							FROM `tbl_authors`
 							WHERE `email` = '%s'
 						",
-							$this->get('email')
+							General::sanitize($this->get('email'))
 					)) != 0
 				) {
 					$errors['email'] = __('E-mail address is already taken');
@@ -184,7 +183,7 @@
 					WHERE `email` = '%s'
 					LIMIT 1
 				",
-					$this->get('email')
+					General::sanitize($this->get('email'))
 			))) {
 				$errors['email'] = __('E-mail address is already taken');
 			}
@@ -196,7 +195,7 @@
 
 			// Check that if it's an existing Author that the username is not already
 			// in use by another Author if they are trying to change it.
-			elseif ($this->get('id')) {
+			else if ($this->get('id')) {
 				if(
 					$current_author['username'] != $this->get('username') &&
 					Symphony::Database()->fetchVar('count', 0, sprintf("
@@ -204,7 +203,7 @@
 							FROM `tbl_authors`
 							WHERE `username` = '%s'
 						",
-							$this->get('username')
+							General::sanitize($this->get('username'))
 					)) != 0
 				) {
 					$errors['username'] = __('Username is already taken');
@@ -218,7 +217,7 @@
 					WHERE `username` = '%s'
 					LIMIT 1
 				",
-					$this->get('username')
+					General::sanitize($this->get('username'))
 			))) {
 				$errors['username'] = __('Username is already taken');
 			}
