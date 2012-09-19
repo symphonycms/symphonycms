@@ -55,8 +55,8 @@
 						$security = '
 			### SECURITY - Protect crucial files
 			RewriteRule ^manifest/(.*)$ - [F]
-			RewriteRule ^workspace/(pages|utilities)/(.*).xsl$ - [F]
-			RewriteRule ^(.*).sql$ - [F]
+			RewriteRule ^workspace/(pages|utilities)/(.*)\.xsl$ - [F]
+			RewriteRule ^(.*)\.sql$ - [F]
 			RewriteRule (^|/)\. - [F]
 
 			### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"';
