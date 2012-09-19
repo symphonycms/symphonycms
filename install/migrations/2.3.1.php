@@ -34,6 +34,26 @@
 			// 2.3.1dev
 			if(version_compare(self::$existing_version, '2.3.1dev', '<=')) {
 
+				// Add Security Rules from 2.2 to .htaccess
+				try {
+					$htaccess = file_get_contents(DOCROOT . '/.htaccess');
+
+					if($htaccess !== false && preg_match('/### SECURITY - Protect crucial files/', $htaccess)){
+						$security = '
+			### SECURITY - Protect crucial files
+			RewriteRule ^manifest/(.*)$ - [F]
+			RewriteRule ^workspace/(pages|utilities)/(.*)\.xsl$ - [F]
+			RewriteRule ^(.*)\.sql$ - [F]
+			RewriteRule (^|/)\. - [F]
+
+			### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"';
+
+						$htaccess = str_replace('### SECURITY - Protect crucial files.*### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"', $security, $htaccess);
+						file_put_contents(DOCROOT . '/.htaccess', $htaccess);
+					}
+				}
+				catch (Exception $ex) {}
+
 				// Remove unused setting from the Author field
 				$author_table = 'tbl_fields_author';
 				if(Symphony::Database()->tableContainsField($author_table, 'allow_author_change')) {

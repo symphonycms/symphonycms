@@ -55,8 +55,7 @@
 						$security = '
 			### SECURITY - Protect crucial files
 			RewriteRule ^manifest/(.*)$ - [F]
-			RewriteRule ^workspace/utilities/(.*).xsl$ - [F]
-			RewriteRule ^workspace/pages/(.*).xsl$ - [F]
+			RewriteRule ^workspace/(pages|utilities)/(.*).xsl$ - [F]
 			RewriteRule ^(.*).sql$ - [F]
 			RewriteRule (^|/)\. - [F]
 
