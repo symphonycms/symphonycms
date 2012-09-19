@@ -79,6 +79,11 @@
 			return true;
 		}
 
+		public function requiresSQLGrouping(){
+			// SQL grouping follows the opposite rule as toggling.
+			return !$this->canToggle();
+		}
+
 	/*-------------------------------------------------------------------------
 		Setup:
 	-------------------------------------------------------------------------*/
