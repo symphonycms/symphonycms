@@ -53,7 +53,6 @@
 
 			// Display retrieve password UI
 			if($this->_context[0] == 'retrieve-password'):
-
 				$this->Form->setAttribute('action', SYMPHONY_URL.'/login/retrieve-password/');
 
 				if(isset($this->_email_sent) && $this->_email_sent) {
@@ -61,7 +60,6 @@
 					$this->Form->appendChild($fieldset);
 				}
 				else {
-
 					$fieldset->appendChild(new XMLElement('p', __('Enter your email address to be sent further instructions for logging in.')));
 
 					$label = Widget::Label(__('Email Address'));
@@ -132,6 +130,12 @@
 				);
 				$this->Form->appendChild($div);
 
+				if(isset($this->_context['redirect'])) {
+					$this->Form->appendChild(
+						Widget::Input('redirect', SYMPHONY_URL . General::sanitize($this->_context['redirect']), 'hidden')
+					);
+				}
+
 			endif;
 
 			$this->Body->appendChild($this->Form);
@@ -176,9 +180,7 @@
 						 */
 						Symphony::ExtensionManager()->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => $username));
 
-						if(isset($_POST['redirect'])) redirect(URL . str_replace(parse_url(URL, PHP_URL_PATH), '', $_POST['redirect']));
-
-						redirect(SYMPHONY_URL);
+						isset($_POST['redirect']) ? redirect($_POST['redirect']) : redirect(SYMPHONY_URL);
 					}
 
 				// Reset of password requested

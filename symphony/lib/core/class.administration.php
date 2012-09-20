@@ -107,7 +107,6 @@
 					$page  = "/login";
 				}
 				else {
-
 					// Will redirect an Author to their default area of the Backend
 					// Integers are indicative of section's, text is treated as the path
 					// to the page after `SYMPHONY_URL`
@@ -137,11 +136,7 @@
 					if(is_null($default_area)) {
 						if($this->Author->isDeveloper()) {
 							$all_sections = SectionManager::fetch();
-							if(!empty($all_sections)) {
-								$section_handle = $all_sections[0]->get('handle');
-							} else {
-								$section_handle = null;
-							}
+							$section_handle = !empty($all_sections) ? $all_sections[0]->get('handle') : null;
 
 							if(!is_null($section_handle)) {
 								// If there are sections created, redirect to the first one (sortorder)
@@ -181,7 +176,7 @@
 				else {
 					include_once(CONTENT . '/content.login.php');
 					$this->Page = new contentLogin;
-					$this->Page->build();
+					$this->Page->build(array('redirect' => $page));
 				}
 			}
 			else {
@@ -195,7 +190,7 @@
 							$about = Symphony::ExtensionManager()->about($name);
 						}
 						catch (Exception $ex) {
-							// The extension cannot be found, show an error message and let the user remove 
+							// The extension cannot be found, show an error message and let the user remove
 							// or rename the extension folder.
 							if (isset($_POST['extension-missing'])) {
 								if(isset($_POST['action']['delete'])) {
