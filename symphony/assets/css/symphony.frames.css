@@ -86,6 +86,11 @@ span.frame {
 	display: none;
 }
 
+#login .frame .action-link  {
+	margin-top: 3px;
+	float: left;
+}
+
 
 /*--------------------------------------------------------------------------
 	Error frames
