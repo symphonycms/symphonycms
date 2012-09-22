@@ -34,8 +34,6 @@
 			// 2.3.1dev
 			if(version_compare(self::$existing_version, '2.3.1dev', '<=')) {
 
-				catch (Exception $ex) {}
-
 				// Remove unused setting from the Author field
 				$author_table = 'tbl_fields_author';
 				if(Symphony::Database()->tableContainsField($author_table, 'allow_author_change')) {
@@ -91,6 +89,7 @@
 						file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 					}
 				}
+				catch (Exception $ex) {}
 			}
 
 			// Update the version information
