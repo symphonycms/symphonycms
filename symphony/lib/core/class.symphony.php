@@ -371,7 +371,7 @@
 						self::Database()->update(array('password' => $this->Author->get('password')), 'tbl_authors', " `id` = '" . $this->Author->get('id') . "'");
 					}
 					$this->Cookie->set('username', $username);
-					$this->Cookie->set('pass', $password);
+					$this->Cookie->set('pass', $this->Author->get('password'));
 					self::Database()->update(array(
 						'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
 						'tbl_authors',
@@ -480,7 +480,7 @@
 						", $username
 					));
 
-					if(!empty($author) && Cryptography::compare($password, current($author)->get('password'), $isHash)) {
+					if(!empty($author) && Cryptography::compare($password, current($author)->get('password'), true)) {
 						$this->Author = current($author);
 						self::Database()->update(array(
 							'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),

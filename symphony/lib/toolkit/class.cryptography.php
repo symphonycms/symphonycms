@@ -72,7 +72,10 @@
 		public static function compare($input, $hash, $isHash=false){
 			$version = substr($hash, 0, 8);
 
-			if($version == 'PBKDF2v1') { // salted PBKDF2
+			if($isHash == true) {
+				return $input == $hash;
+			}
+			elseif($version == 'PBKDF2v1') { // salted PBKDF2
 				return PBKDF2::compare($input, $hash);
 			}
 			elseif($version == 'SSHA1Xv1') { // salted SHA1
