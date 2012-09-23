@@ -106,17 +106,17 @@
 		}
 
 		/**
-		 * Creates an author token using the `General::hash` function and the
+		 * Creates an author token using the `Cryptography::hash` function and the
 		 * current Author's username and password. The default hash function
 		 * is SHA1
 		 *
-		 * @see toolkit.General#hash()
+		 * @see toolkit.Cryptography#hash()
 		 * @see toolkit.General#substrmin()
 		 *
 		 * @return string
 		 */
 		public function createAuthToken(){
-			return General::substrmin(General::hash($this->get('username') . $this->get('password')), 8);
+			return General::substrmin(SHA1::hash($this->get('username') . $this->get('password')), 8);
 		}
 
 		/**

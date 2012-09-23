@@ -19,6 +19,7 @@
 	require_once(TOOLKIT . '/class.xmlelement.php');
 	require_once(TOOLKIT . '/class.widget.php');
 	require_once(TOOLKIT . '/class.general.php');
+	require_once(TOOLKIT . '/class.cryptography.php');
 	require_once(TOOLKIT . '/class.profiler.php');
 	require_once(TOOLKIT . '/class.author.php');
 	require_once(TOOLKIT . '/class.email.php');
@@ -358,17 +359,19 @@
 
 			if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
 
-				if(!$isHash) $password = General::hash($password);
-
 				$author = AuthorManager::fetch('id', 'ASC', 1, null, sprintf("
-						`username` = '%s' AND `password` = '%s'
-					", $username, $password
+						`username` = '%s'
+					", $username
 				));
 
-				if(!empty($author)) {
+				if(!empty($author) && Cryptography::compare($password, current($author)->get('password'), $isHash)) {
 					$this->Author = current($author);
+					if(Cryptography::requiresMigration($this->Author->get('password'))){
+						$this->Author->set('password', Cryptography::hash($password));
+						self::Database()->update(array('password' => $this->Author->get('password')), 'tbl_authors', " `id` = '" . $this->Author->get('id') . "'");
+					}
 					$this->Cookie->set('username', $username);
-					$this->Cookie->set('pass', $password);
+					$this->Cookie->set('pass', $this->Author->get('password'));
 					self::Database()->update(array(
 						'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
 						'tbl_authors',
@@ -473,11 +476,11 @@
 				if(strlen(trim($username)) > 0 && strlen(trim($password)) > 0){
 
 					$author = AuthorManager::fetch('id', 'ASC', 1, null, sprintf("
-							`username` = '%s' AND `password` = '%s'
-						", $username, $password
+							`username` = '%s'
+						", $username
 					));
 
-					if(!empty($author)) {
+					if(!empty($author) && Cryptography::compare($password, current($author)->get('password'), true)) {
 						$this->Author = current($author);
 						self::Database()->update(array(
 							'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
