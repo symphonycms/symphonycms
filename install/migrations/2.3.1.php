@@ -34,8 +34,6 @@
 			// 2.3.1dev
 			if(version_compare(self::$existing_version, '2.3.1dev', '<=')) {
 
-				catch (Exception $ex) {}
-
 				// Remove unused setting from the Author field
 				$author_table = 'tbl_fields_author';
 				if(Symphony::Database()->tableContainsField($author_table, 'allow_author_change')) {
@@ -88,7 +86,11 @@
 						$htaccess = str_replace('### SECURITY - Protect crucial files.*### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"', $security, $htaccess);
 						file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 					}
+
+					// Increase length of password field to accomodate longer hashes
+					Symphony::Database()->query("ALTER TABLE `tbl_authors` CHANGE `password` `password` VARCHAR( 150 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL");
 				}
+				catch (Exception $ex) {}
 			}
 
 			// Update the version information
