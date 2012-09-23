@@ -6,26 +6,25 @@
 	 * Cryptography is a utility class that offers a number of general purpose cryptography-
 	 * related functions for message digestation as well as (backwards-)compatibility
 	 * checking. The message digestation algorithms are placed in the subclasses
-	 * `MD5`, `SHA1` and `SSHA1`.
-
-	 * @see toolkit.MD5
-	 * @see toolkit.SHA1
-	 * @see toolkit.SSHA1
+	 * `MD5`, `SHA1` and `PBKDF2`.
+	 *
+	 * @since Symphony 2.3.1
+	 * @see cryptography.MD5
+	 * @see cryptography.SHA1
+	 * @see cryptography.PBKDF2
 	 */
 	require_once(TOOLKIT . '/cryptography/class.md5.php');
 	require_once(TOOLKIT . '/cryptography/class.sha1.php');
-	require_once(TOOLKIT . '/cryptography/class.ssha1.php');
 	require_once(TOOLKIT . '/cryptography/class.pbkdf2.php');
 
 	Class Cryptography{
 		
 		/**
-		 * Uses an instance of `MD5`, `SHA1`, `SSHA1` or `PBKDF2` to create a hash
+		 * Uses an instance of `MD5`, `SHA1` or `PBKDF2` to create a hash
 		 *
-		 * @see toolkit.MD5#hash()
-		 * @see toolkit.SHA1#hash()
-		 * @see toolkit.SSHA1#hash()
-		 * @see toolkit.PBKDF2#hash()
+		 * @see cryptography.MD5#hash()
+		 * @see cryptography.SHA1#hash()
+		 * @see cryptography.PBKDF2#hash()
 	 	 *
 		 * @param string $input
 		 * the string to be hashed
@@ -43,9 +42,6 @@
 				case 'sha1':
 					return SHA1::hash($input);
 					break;
-				case 'ssha1':
-					return SSHA1::hash($input);
-					break;
 				case 'pbkdf2':
 				default:
 					return PBKDF2::hash($input);
@@ -57,16 +53,15 @@
 		 * Compares a given hash with a cleantext password by figuring out the
 		 * algorithm that has been used and then calling the approriate sub-class
 		 *
-		 * @see toolkit.MD5#compare()
-		 * @see toolkit.SHA1#compare()
-		 * @see toolkit.SSHA1#compare()
-		 * @see toolkit.PBKDF2#compare()
+		 * @see cryptography.MD5#compare()
+		 * @see cryptography.SHA1#compare()
+		 * @see cryptography.PBKDF2#compare()
 		 *
 		 * @param string $input
 		 * the cleartext password
 		 * @param string $hash
 		 * the hash the password should be checked against
-		 * @return bool
+		 * @return boolean
 		 * the result of the comparison
 		 */
 		public static function compare($input, $hash, $isHash=false){
@@ -77,9 +72,6 @@
 			}
 			elseif($version == 'PBKDF2v1') { // salted PBKDF2
 				return PBKDF2::compare($input, $hash);
-			}
-			elseif($version == 'SSHA1Xv1') { // salted SHA1
-				return SSHA1::compare($input, $hash);
 			}
 			elseif(strlen($hash) == 40){ // legacy, unsalted SHA1
 				return SHA1::compare($input, $hash);
@@ -98,7 +90,7 @@
 		 *
 		 * @param string $hash
 		 * the hash to be checked
-		 * @return bool
+		 * @return boolean
 		 * whether the hash should be re-computed
 		 */
 		public static function requiresMigration($hash){
@@ -115,7 +107,7 @@
 		/**
 		 * Generates a salt to be used in message digestation.
 		 *
-		 * @param int $length
+		 * @param integer $length
 		 * the length of the salt
 		 * @return string
 		 * a hexadecimal string

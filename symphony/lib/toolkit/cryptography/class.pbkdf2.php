@@ -1,11 +1,14 @@
 <?php
 	/**
-	 * @package toolkit
+	 * @package cryptography
 	 */
 	/**
 	 * PBKDF2 is a cryptography class for hashing and comparing messages
 	 * using the PBKDF2-Algorithm with salting.
 	 * This is the most advanced hashing algorithm Symphony provides.
+	 *
+	 * @since Symphony 2.3.1
+	 * @see toolkit.Cryptography
 	 */
 	Class PBKDF2 extends Cryptography{
 
@@ -43,7 +46,7 @@
 		 * the string to be hashed
 		 * @param string $salt
 		 * an optional salt
-		 * @param int $iterations
+		 * @param integer $iterations
 		 * an optional number of iterations to be used
 		 * @param string $keylength
 		 * an optional length the key will be cropped to fit
@@ -82,7 +85,7 @@
 		 * the cleartext password
 		 * @param string $hash
 		 * the hash the password should be checked against
-		 * @return bool
+		 * @return boolean
 		 * the result of the comparison
 		 */
 		public static function compare($input, $hash){
@@ -124,7 +127,7 @@
 		 *
 		 * @param string $input
 		 * the hashed string
-		 * @return int
+		 * @return integer
 		 * the saltlength
 		 */
 		public static function extractSaltlength($input){
@@ -136,7 +139,7 @@
 		 *
 		 * @param string $input
 		 * the hashed string
-		 * @return int
+		 * @return integer
 		 * the number of iterations
 		 */
 		public static function extractIterations($input){
@@ -150,7 +153,7 @@
 		 *
 		 * @param string $hash
 		 * the hash to be checked
-		 * @return bool
+		 * @return boolean
 		 * whether the hash should be re-computed
 		 */
 		public static function requiresMigration($hash){

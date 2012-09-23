@@ -1,11 +1,13 @@
 <?php
 	/**
-	 * @package toolkit
+	 * @package cryptography
 	 */
 	/**
 	 * MD5 is a cryptography class for hashing and comparing messages
 	 * using the MD5-Algorithm
 	 *
+	 * @since Symphony 2.3.1
+	 * @see toolkit.Cryptography
 	 * @deprecated This code is regarded as insecure and exists only for backwards-compatibility-purposes.
 	 * It should not be used when writing new password-related features.
 	 */
@@ -20,7 +22,7 @@
 		 * the hashed string
 		 */
 		public static function hash($input){
-			Symphony::Log()->writeToLog('Deprecated: The use of MD5::hash() is discouraged due to severe security flaws.', E_NOTICE, true);
+			Symphony::Log()->pushToLog('The use of MD5::hash() is discouraged due to severe security flaws.', E_DEPRECATED, true);
 			return md5($input);
 		}
 

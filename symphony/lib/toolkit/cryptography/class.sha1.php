@@ -1,11 +1,13 @@
 <?php
 	/**
-	 * @package toolkit
+	 * @package cryptography
 	 */
 	/**
 	 * SHA1 is a cryptography class for hashing and comparing messages
 	 * using the SHA1-Algorithm
 	 *
+	 * @since Symphony 2.3.1
+	 * @see toolkit.Cryptography
 	 * @deprecated This code is regarded as insecure and exists only for backwards-compatibility-purposes.
 	 * It should not be used when writing new password-related features.
 	 */
@@ -42,7 +44,7 @@
 		 * the cleartext password
 		 * @param string $hash
 		 * the hash the password should be checked against
-		 * @return bool
+		 * @return boolean
 		 * the result of the comparison
 		 */
 		public static function compare($input, $hash){
