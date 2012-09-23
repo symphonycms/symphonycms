@@ -66,8 +66,6 @@
 				if(Symphony::Database()->tableContainsField('tbl_sections', 'entry_order_direction')) {
 					Symphony::Database()->query("ALTER TABLE `tbl_sections` DROP `entry_order_direction`;");
 				}
-
-				Symphony::Database()->query("ALTER TABLE `tbl_authors` CHANGE `password` `password` VARCHAR( 150 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL");
 			}
 
 			if(version_compare(self::$existing_version, '2.3.1RC1', '<=')) {
@@ -88,6 +86,9 @@
 						$htaccess = str_replace('### SECURITY - Protect crucial files.*### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"', $security, $htaccess);
 						file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 					}
+
+					// Increase length of password field to accomodate longer hashes
+					Symphony::Database()->query("ALTER TABLE `tbl_authors` CHANGE `password` `password` VARCHAR( 150 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL");
 				}
 				catch (Exception $ex) {}
 			}
