@@ -233,8 +233,7 @@
 				$author = $this->_Author;
 			}
 			else if($this->_context[0] == 'edit') {
-
-				if(!$author_id = $this->_context[1]) redirect(SYMPHONY_URL . '/system/authors/');
+				if(!$author_id = (int)$this->_context[1]) redirect(SYMPHONY_URL . '/system/authors/');
 
 				if(!$author = AuthorManager::fetchByID($author_id)){
 					Administration::instance()->customError(__('Author not found'), __('The author profile you requested does not exist.'));
@@ -476,7 +475,7 @@
 				$this->_Author->set('first_name', General::sanitize($fields['first_name']));
 				$this->_Author->set('last_name', General::sanitize($fields['last_name']));
 				$this->_Author->set('last_seen', NULL);
-				$this->_Author->set('password', (trim($fields['password']) == '' ? '' : General::hash($fields['password'])));
+				$this->_Author->set('password', (trim($fields['password']) == '' ? '' : Cryptography::hash($fields['password'])));
 				$this->_Author->set('default_area', $fields['default_area']);
 				$this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
 				$this->_Author->set('language', $fields['language']);
@@ -520,7 +519,7 @@
 
 		public function __actionEdit(){
 
-			if(!$author_id = $this->_context[1]) redirect(SYMPHONY_URL . '/system/authors/');
+			if(!$author_id = (int)$this->_context[1]) redirect(SYMPHONY_URL . '/system/authors/');
 
 			$isOwner = ($author_id == Administration::instance()->Author->get('id'));
 
@@ -533,7 +532,7 @@
 				if($fields['email'] != $this->_Author->get('email')) $changing_email = true;
 
 				// Check the old password was correct
-				if(isset($fields['old-password']) && strlen(trim($fields['old-password'])) > 0 && General::hash(trim($fields['old-password'])) == $this->_Author->get('password')) {
+				if(isset($fields['old-password']) && strlen(trim($fields['old-password'])) > 0 && Cryptography::compare(trim($fields['old-password']), $this->_Author->get('password'))) {
 					$authenticated = true;
 				}
 				// Developers don't need to specify the old password, unless it's their own account
@@ -557,7 +556,7 @@
 				$this->_Author->set('language', $fields['language']);
 
 				if(trim($fields['password']) != ''){
-					$this->_Author->set('password', General::hash($fields['password']));
+					$this->_Author->set('password', Cryptography::hash($fields['password']));
 					$changing_password = true;
 				}
 

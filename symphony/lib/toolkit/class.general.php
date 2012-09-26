@@ -513,7 +513,7 @@
 				return rmdir($dir);
 			}
 			catch(Exception $ex) {
-				if($slient == false){
+				if($silent === false){
 					throw new Exception(__('Unable to remove - %s', array($dir)));
 				}
 
@@ -872,12 +872,12 @@
 		 *  silent is set to true then an exception is thrown. if the unlink
 		 *  fails and silent is set to false then this returns false.
 		 */
-		public static function deleteFile($file, $slient=true){
+		public static function deleteFile($file, $silent=true){
 			try {
 				return unlink($file);
 			}
 			catch(Exception $ex) {
-				if($slient == false){
+				if($silent == false){
 					throw new Exception(__('Unable to remove file - %s', array($file)));
 				}
 
@@ -1211,8 +1211,10 @@
 				(!is_null($namespace) ? $namespace . ':' : '') . $element,
 				DateTimeObj::get($date_format, $timestamp),
 				array(
+					'iso' => DateTimeObj::get('c', $timestamp),
 					'time' => DateTimeObj::get($time_format, $timestamp),
-					'weekday' => DateTimeObj::get('N', $timestamp)
+					'weekday' => DateTimeObj::get('N', $timestamp),
+					'offset' => DateTimeObj::get('O', $timestamp)
 				)
 			);
 
@@ -1262,7 +1264,7 @@
 		 * the hashed string
 		 */
 		public static function hash($input, $algorithm='sha1'){
-			return call_user_func($algorithm, $input);
+			return Cryptography::hash($input, $algorithm);
 		}
 
 		/**

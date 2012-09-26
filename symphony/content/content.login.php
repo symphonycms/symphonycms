@@ -11,7 +11,7 @@
 	 */
 	Class contentLogin extends HTMLPage{
 
-		public $_invalidPassword = false;
+		public $failedLoginAttempt = false;
 
 		public function __construct(){
 			parent::__construct();
@@ -32,14 +32,13 @@
 			Symphony::Profiler()->sample('Page template created', PROFILE_LAP);
 		}
 
-		public function build($context=NULL){
+		public function build($context=NULL) {
 			if($context) $this->_context = $context;
 			if(isset($_REQUEST['action'])) $this->action();
 			$this->view();
 		}
 
-		public function view(){
-			$emergency = false;
+		public function view() {
 			if(isset($this->_context[0]) && in_array(strlen($this->_context[0]), array(6, 8))){
 				if(!$this->__loginFromToken($this->_context[0])) {
 					if(Administration::instance()->isLoggedIn()) redirect(SYMPHONY_URL);
@@ -48,27 +47,24 @@
 
 			$this->Form = Widget::Form(SYMPHONY_URL . '/login/', 'post');
 			$this->Form->setAttribute('class', 'frame');
-
 			$this->Form->appendChild(new XMLElement('h1', __('Symphony')));
 
 			$fieldset = new XMLElement('fieldset');
 
+			// Display retrieve password UI
 			if($this->_context[0] == 'retrieve-password'):
-
 				$this->Form->setAttribute('action', SYMPHONY_URL.'/login/retrieve-password/');
 
-				if(isset($this->_email_sent) && $this->_email_sent){
+				if(isset($this->_email_sent) && $this->_email_sent) {
 					$fieldset->appendChild(new XMLElement('p', __('An email containing a customised login link has been sent. It will expire in 2 hours.')));
 					$this->Form->appendChild($fieldset);
 				}
-
-				else{
-
-					$fieldset->appendChild(new XMLElement('p', __('Enter your email address to be sent a remote login link with further instructions for logging in.')));
+				else {
+					$fieldset->appendChild(new XMLElement('p', __('Enter your email address to be sent further instructions for logging in.')));
 
 					$label = Widget::Label(__('Email Address'));
-					$label->appendChild(Widget::Input('email', $_POST['email'], 'text', array('autofocus' => 'autofocus')));
-					if(isset($this->_email_sent) && !$this->_email_sent){
+					$label->appendChild(Widget::Input('email', General::sanitize($_POST['email']), 'text', array('autofocus' => 'autofocus')));
+					if(isset($this->_email_sent) && !$this->_email_sent) {
 						$label = Widget::Error($label, __('There was a problem locating your account. Please check that you are using the correct email address.'));
 					}
 					$fieldset->appendChild($label);
@@ -76,18 +72,31 @@
 					$this->Form->appendChild($fieldset);
 
 					$div = new XMLElement('div', NULL, array('class' => 'actions'));
-					$div->appendChild(new XMLElement('button', __('Send Email'), array('name' => 'action[reset]', 'type' => 'submit')));
+					$div->appendChild(
+						new XMLElement('button', __('Send Email'), array('name' => 'action[reset]', 'type' => 'submit'))
+					);
+					$div->appendChild(
+						Widget::Anchor(__('Cancel'), SYMPHONY_URL.'/login/', null, 'action-link')
+					);
 					$this->Form->appendChild($div);
-
 				}
 
+			// Normal login
 			else:
 
 				$fieldset->appendChild(new XMLElement('legend', __('Login')));
 
+				// Display error message
+				if($this->failedLoginAttempt){
+					$p = new XMLElement('p');
+					$p = Widget::Error($p, __('The login details provided are incorrect.'));
+					$fieldset->appendChild($p);
+				}
+
+				// Username
 				$label = Widget::Label(__('Username'));
-				$username = Widget::Input('username', $_POST['username']);
-				if(!$this->_invalidPassword) {
+				$username = Widget::Input('username', General::sanitize($_POST['username']));
+				if(!$this->failedLoginAttempt) {
 					$username->setAttribute('autofocus', 'autofocus');
 				}
 				$label->appendChild($username);
@@ -97,39 +106,53 @@
 				}
 				$fieldset->appendChild($label);
 
+				// Password
 				$label = Widget::Label(__('Password'));
 				$password = Widget::Input('password', NULL, 'password');
 				$label->appendChild($password);
-				if($this->_invalidPassword){
+				if(isset($_POST['action'], $_POST['action']['login']) && empty($_POST['password'])) {
 					$password->setAttribute('autofocus', 'autofocus');
-					$label =  Widget::Error($label, __('The supplied password was rejected.') .
-						' <br /><a href="' . SYMPHONY_URL.'/login/retrieve-password/">'. __('Retrieve password?') . '</a>'
-					);
+					$label = Widget::Error($label, __('No password was entered.'));
+				}
+				else if($this->failedLoginAttempt) {
+					$password->setAttribute('autofocus', 'autofocus');
 				}
 				$fieldset->appendChild($label);
-
 				$this->Form->appendChild($fieldset);
 
+				// Actions
 				$div = new XMLElement('div', NULL, array('class' => 'actions'));
-				$div->appendChild(new XMLElement('button', __('Login'), array('name' => 'action[login]', 'type' => 'submit', 'accesskey' => 's')));
+				$div->appendChild(
+					new XMLElement('button', __('Login'), array('name' => 'action[login]', 'type' => 'submit', 'accesskey' => 's'))
+				);
+				$div->appendChild(
+					Widget::Anchor(__('Retrieve password?'), SYMPHONY_URL.'/login/retrieve-password/', null, 'action-link')
+				);
 				$this->Form->appendChild($div);
+
+				if(isset($this->_context['redirect'])) {
+					$this->Form->appendChild(
+						Widget::Input('redirect', SYMPHONY_URL . General::sanitize($this->_context['redirect']), 'hidden')
+					);
+				}
 
 			endif;
 
 			$this->Body->appendChild($this->Form);
-
 		}
 
-		public function action(){
-			if(isset($_POST['action'])){
+		public function action() {
+			if(isset($_POST['action'])) {
 
 				$actionParts = array_keys($_POST['action']);
 				$action = end($actionParts);
 
 				// Login Attempted
 				if($action == 'login'):
+					$username = Symphony::Database()->cleanValue($_POST['username']);
+					$password = Symphony::Database()->cleanValue($_POST['password']);
 
-					if(empty($_POST['username']) || empty($_POST['password']) || !Administration::instance()->login($_POST['username'], $_POST['password'])) {
+					if(empty($username) || empty($password) || !Administration::instance()->login($username, $password)) {
 						/**
 						 * A failed login attempt into the Symphony backend
 						 *
@@ -140,11 +163,11 @@
 						 * @param string $username
 						 *  The username of the Author who attempted to login.
 						 */
-						Symphony::ExtensionManager()->notifyMembers('AuthorLoginFailure', '/login/', array('username' => $_POST['username']));
-						$this->_invalidPassword = true;
+						Symphony::ExtensionManager()->notifyMembers('AuthorLoginFailure', '/login/', array('username' => $username));
+						$this->failedLoginAttempt = true;
 					}
 
-					else{
+					else {
 						/**
 						 * A successful login attempt into the Symphony backend
 						 *
@@ -155,11 +178,9 @@
 						 * @param string $username
 						 *  The username of the Author who logged in.
 						 */
-						Symphony::ExtensionManager()->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => $_POST['username']));
+						Symphony::ExtensionManager()->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => $username));
 
-						if(isset($_POST['redirect'])) redirect(URL . str_replace(parse_url(URL, PHP_URL_PATH), '', $_POST['redirect']));
-
-						redirect(SYMPHONY_URL);
+						isset($_POST['redirect']) ? redirect($_POST['redirect']) : redirect(SYMPHONY_URL);
 					}
 
 				// Reset of password requested
@@ -168,11 +189,10 @@
 					$author = Symphony::Database()->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_authors` WHERE `email` = '".Symphony::Database()->cleanValue($_POST['email'])."'");
 
 					if(!empty($author)){
-
 						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' ");
 
 						if(!$token = Symphony::Database()->fetchVar('token', 0, "SELECT `token` FROM `tbl_forgotpass` WHERE `expiry` > '".DateTimeObj::getGMT('c')."' AND `author_id` = ".$author['id'])){
-							$token = substr(General::hash(time() . rand(0, 1000)), 0, 6);
+							$token = substr(SHA1::hash(time() . rand(0, 1000)), 0, 6);
 							Symphony::Database()->insert(array('author_id' => $author['id'], 'token' => $token, 'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))), 'tbl_forgotpass');
 						}
 
@@ -193,10 +213,6 @@
 						}
 						catch(Exception $e) {}
 
-						catch(EmailGatewayException $e){
-							throw new SymphonyErrorPage('Error sending email. ' . $e->getMessage());
-						}
-
 						/**
 						 * When a password reset has occurred and after the Password
 						 * Reset email has been sent.
@@ -211,7 +227,7 @@
 						Symphony::ExtensionManager()->notifyMembers('AuthorPostPasswordResetSuccess', '/login/', array('author_id' => $author['id']));
 					}
 
-					else{
+					else {
 
 						/**
 						 * When a password reset has been attempted, but Symphony doesn't

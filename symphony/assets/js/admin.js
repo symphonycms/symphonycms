@@ -12,6 +12,8 @@
 			wrapper = html.find('#wrapper'),
 			header = wrapper.find('#header'),
 			nav = wrapper.find('#nav'),
+			navContent = nav.find('ul.content'),
+			navStructure = nav.find('ul.structure'),
 			session = header.find('#session'),
 			context = wrapper.find('#context'),
 			contents = wrapper.find('#contents'),
@@ -58,6 +60,24 @@
 			return false;
 		};
 
+		// Navigation and notifier sizing
+		$(window).on('resize.admin', function() {
+			var width = navContent.width() + navStructure.width() + 20;
+
+			// Compact mode
+			if(width > $(window).width()) {
+				nav.removeClass('wide');
+			}
+
+			// Wide mode
+			else {
+				nav.addClass('wide');
+			}
+
+			// Refresh Notify height
+			header.find('.notifier').trigger('resize.notify');
+		});
+
 	/*--------------------------------------------------------------------------
 		Plugins - Tags, Pickable, Selectable, Notify and Drawers
 	--------------------------------------------------------------------------*/
@@ -66,10 +86,7 @@
 		contents.find('.tags').symphonyTags();
 
 		// Pickers
-		contents.find('select[name="settings[Email][default_gateway]"]').symphonyPickable();
-		contents.find('select[name="fields[dynamic_xml][format]"]').symphonyPickable({
-			pickables: '#xml'
-		});
+		contents.find('select.picker').symphonyPickable();
 
 		// Selectable
 		contents.find('table.selectable').symphonySelectable();
@@ -526,7 +543,7 @@
 					var select = $(this),
 						optgroup = select.find('option:selected').parent(),
 						value = select.val().replace(/\W+/g, '_'),
-						group = optgroup.attr('label').replace(/\W+/g, '_');
+						group = optgroup.data('label') || optgroup.attr('label').replace(/\W+/g, '_');
 
 					// Show only relevant interface components based on context
 					area[(area.hasClass(value) || area.hasClass(group)) ^ area.hasClass('inverse') ? 'removeClass' : 'addClass']('irrelevant');

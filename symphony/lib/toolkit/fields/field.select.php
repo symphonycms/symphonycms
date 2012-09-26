@@ -4,13 +4,14 @@
 	 * @package toolkit
 	 */
 
+	require_once FACE . '/interface.exportablefield.php';
+	require_once FACE . '/interface.importablefield.php';
+
 	/**
 	 * A simple Select field that essentially maps to HTML's `<select/>`. The
 	 * options for this field can be static, or feed from another field.
 	 */
-
-	Class fieldSelect extends Field {
-
+	class FieldSelect extends Field implements ExportableField, ImportableField {
 		public function __construct(){
 			parent::__construct();
 			$this->_name = __('Select Box');
@@ -61,10 +62,6 @@
 			return true;
 		}
 
-		public function canImport(){
-			return true;
-		}
-
 		public function canPrePopulate(){
 			return true;
 		}
@@ -80,6 +77,11 @@
 
 		public function allowDatasourceParamOutput(){
 			return true;
+		}
+
+		public function requiresSQLGrouping(){
+			// SQL grouping follows the opposite rule as toggling.
+			return !$this->canToggle();
 		}
 
 	/*-------------------------------------------------------------------------
@@ -225,7 +227,7 @@
 			$label->setValue(__('%s Allow selection of multiple options', array($input->generate())));
 			$div->appendChild($label);
 
-			$this->appendShowAssociationCheckbox($div, __('Available when using Dynamic Values'));
+			$this->appendShowAssociationCheckbox($div, __('available when using Dynamic Values'));
 
 			// Sort options?
 			$label = Widget::Label();
@@ -355,15 +357,112 @@
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
-			$value = $data['value'];
-
-			if(!is_array($value)) $value = array($value);
+			$value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::VALUE, $entry_id);
 
 			return parent::prepareTableValue(array('value' => implode(', ', $value)), $link, $entry_id = null);
 		}
 
 		public function getParameterPoolValue($data, $entry_id = null) {
-			return $data['handle'];
+			return $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::HANDLE, $entry_id);
+		}
+
+	/*-------------------------------------------------------------------------
+		Import:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Give the field some data and ask it to return a value.
+		 *
+		 * @param mixed $data
+		 * @param integer $entry_id
+		 * @return array|null
+		 */
+		public function prepareImportValue($data, $entry_id = null) {
+			if (empty($data)) return null;
+
+			$result = array(
+				'value' =>	array(),
+				'handle' =>	array()
+			);
+
+			if (is_array($data) === false) {
+				$data = array($data);
+			}
+
+			foreach ($data as $value) {
+				$result['value'][] = $value;
+				$result['handle'][] = Lang::createHandle($value);
+			}
+
+			return $result;
+		}
+
+	/*-------------------------------------------------------------------------
+		Export:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Return a list of supported export modes for use with `prepareExportValue`.
+		 *
+		 * @return array
+		 */
+		public function getExportModes() {
+			return array(
+				'listHandle' =>			ExportableField::LIST_OF
+										+ ExportableField::HANDLE,
+				'listValue' =>			ExportableField::LIST_OF
+										+ ExportableField::VALUE,
+				'listHandleToValue' =>	ExportableField::LIST_OF
+										+ ExportableField::HANDLE
+										+ ExportableField::VALUE,
+				'getPostdata' =>		ExportableField::POSTDATA
+			);
+		}
+
+		/**
+		 * Give the field some data and ask it to return a value using one of many
+		 * possible modes.
+		 *
+		 * @param mixed $data
+		 * @param integer $mode
+		 * @param integer $entry_id
+		 * @return array
+		 */
+		public function prepareExportValue($data, $mode, $entry_id = null) {
+			$modes = (object)$this->getExportModes();
+
+			if (isset($data['handle']) && is_array($data['handle']) === false) {
+				$data['handle'] = array(
+					$data['handle']
+				);
+			}
+
+			if (isset($data['value']) && is_array($data['value']) === false) {
+				$data['value'] = array(
+					$data['value']
+				);
+			}
+
+			// Handle => Value pairs:
+			if ($mode === $modes->listHandleToValue) {
+				return isset($data['handle'], $data['value'])
+					? array_combine($data['handle'], $data['value'])
+					: array();
+			}
+
+			// Array of handles:
+			else if ($mode === $modes->listHandle) {
+				return isset($data['handle'])
+					? $data['handle']
+					: array();
+			}
+
+			// Array of values:
+			else if ($mode === $modes->listValue || $mode === $modes->getPostdata) {
+				return isset($data['value'])
+					? $data['value']
+					: array();
+			}
 		}
 
 	/*-------------------------------------------------------------------------
