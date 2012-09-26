@@ -3,16 +3,21 @@
 	/**
 	 * @package toolkit
 	 */
+
+	require_once FACE . '/interface.exportablefield.php';
+	require_once FACE . '/interface.importablefield.php';
+
 	/**
 	 * Checkbox field simulates a HTML checkbox field, in that it represents a
 	 * simple yes/no field.
 	 */
-	Class fieldCheckbox extends Field {
-
+	class FieldCheckbox extends Field implements ExportableField, ImportableField {
 		public function __construct(){
 			parent::__construct();
 			$this->_name = __('Checkbox');
+			$this->_required = true;
 
+			$this->set('required', 'no');
 			$this->set('location', 'sidebar');
 		}
 	/*-------------------------------------------------------------------------
@@ -36,10 +41,6 @@
 		}
 
 		public function canFilter(){
-			return true;
-		}
-
-		public function canImport(){
 			return true;
 		}
 
@@ -84,16 +85,18 @@
 			parent::displaySettingsPanel($wrapper, $errors);
 
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+			$this->appendRequiredCheckbox($div);
+			$this->appendShowColumnCheckbox($div);
+			$wrapper->appendChild($div);
 
 			// Checkbox Default State
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 			$label = Widget::Label();
 			$label->setAttribute('class', 'column');
 			$input = Widget::Input('fields['.$this->get('sortorder').'][default_state]', 'on', 'checkbox');
 			if($this->get('default_state') == 'on') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Checked by default', array($input->generate())));
 			$div->appendChild($label);
-
-			$this->appendShowColumnCheckbox($div);
 			$wrapper->appendChild($div);
 		}
 
@@ -116,7 +119,6 @@
 	-------------------------------------------------------------------------*/
 
 		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null){
-
 			if(!$data){
 				// TODO: Don't rely on $_POST
 				if(isset($_POST) && !empty($_POST)) $value = 'no';
@@ -127,11 +129,13 @@
 			else $value = ($data['value'] == 'yes' ? 'yes' : 'no');
 
 			$label = Widget::Label();
+			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 			$input = Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, 'yes', 'checkbox', ($value == 'yes' ? array('checked' => 'checked') : NULL));
 
 			$label->setValue($input->generate(false) . ' ' . $this->get('label'));
 
-			$wrapper->appendChild($label);
+			if($flagWithError != NULL) $wrapper->appendChild(Widget::Error($label, $flagWithError));
+			else $wrapper->appendChild($label);
 		}
 
 		public function processRawFieldData($data, &$status, &$message=null, $simulate = false, $entry_id = null){
@@ -153,11 +157,88 @@
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
-			return ($data['value'] == 'yes') ? __('Yes') : __('No');
+			return $this->prepareExportValue($data, ExportableField::VALUE, $entry_id);
 		}
 
 		public function getParameterPoolValue(array $data, $entry_id = null){
-			return ($data['value'] == 'yes') ? 'yes' : 'no';
+			return $this->prepareExportValue($data, ExportableField::POSTDATA, $entry_id);
+		}
+
+	/*-------------------------------------------------------------------------
+		Import:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Give the field some data and ask it to return a value.
+		 *
+		 * @param mixed $data
+		 * @param integer $entry_id
+		 * @return array
+		 */
+		public function prepareImportValue($data, $entry_id = null) {
+			return array(
+				'value' => (strtolower($data) == 'yes' || strtolower($data) == 'on' ? 'yes' : 'no')
+			);
+		}
+
+	/*-------------------------------------------------------------------------
+		Export:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Return a list of supported export modes for use with `prepareExportValue`.
+		 *
+		 * @return array
+		 */
+		public function getExportModes() {
+			return array(
+				'getBoolean' =>		ExportableField::BOOLEAN,
+				'getValue' =>		ExportableField::VALUE,
+				'getPostdata' =>	ExportableField::POSTDATA
+			);
+		}
+
+		/**
+		 * Give the field some data and ask it to return a value using one of many
+		 * possible modes.
+		 *
+		 * @param mixed $data
+		 * @param integer $mode
+		 * @param integer $entry_id
+		 * @return string|boolean|null
+		 */
+		public function prepareExportValue($data, $mode, $entry_id = null) {
+			$modes = (object)$this->getExportModes();
+
+			// Export unformatted:
+			if ($mode === $modes->getPostdata) {
+				return (
+					isset($data['value'])
+					&& $data['value'] == 'yes'
+						? 'yes'
+						: 'no'
+				);
+			}
+
+			// Export formatted:
+			else if ($mode === $modes->getValue) {
+				return (
+					isset($data['value'])
+					&& $data['value'] == 'yes'
+						? __('Yes')
+						: __('No')
+				);
+			}
+
+			// Export boolean:
+			else if ($mode === $modes->getBoolean) {
+				return (
+					isset($data['value'])
+					&& $data['value'] == 'yes'
+				);
+			}
+
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------
@@ -226,17 +307,17 @@
 
 				if(strpos($data, $default_state) !== false) {
 					$where .= "
-				    	AND (
-				    		t{$field_id}_{$this->_key}.value IN ('{$data}')
-				            OR
-				            t{$field_id}_{$this->_key}.value IS NULL
-				    	)
-				    ";
+						AND (
+							t{$field_id}_{$this->_key}.value IN ('{$data}')
+							OR
+							t{$field_id}_{$this->_key}.value IS NULL
+						)
+					";
 				}
 				else {
 					$where .= "
-				        AND (t{$field_id}_{$this->_key}.value IN ('{$data}'))
-				    ";
+						AND (t{$field_id}_{$this->_key}.value IN ('{$data}'))
+					";
 				}
 			}
 
@@ -270,7 +351,6 @@
 	-------------------------------------------------------------------------*/
 
 		public function groupRecords($records){
-
 			if(!is_array($records) || empty($records)) return;
 
 			$groups = array($this->get('element_name') => array());

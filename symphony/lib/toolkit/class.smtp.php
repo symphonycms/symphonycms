@@ -18,27 +18,23 @@
 	 */
 	Class SMTP{
 
-		const TIMEOUT	= 30;
+		const TIMEOUT = 30;
 
 		protected $_host;
 		protected $_port;
-
 		protected $_user = null;
 		protected $_pass = null;
+		protected $_transport = 'tcp';
+		protected $_secure = false;
 
-		protected $_header_fields = Array();
+		protected $_header_fields = array();
 
 		protected $_from = null;
 		protected $_subject = null;
 		protected $_to = array();
 
 		protected $_ip = '127.0.0.1';
-
-		protected $_connection;
-
-		protected $_transport = 'tcp';
-
-		protected $_secure = false;
+		protected $_connection = false;
 
 		protected $_helo = false;
 		protected $_mail = false;
@@ -49,17 +45,17 @@
 		/**
 		 * Constructor.
 		 *
-		 *	Host to connect to. Defaults to localhost (127.0.0.1)
 		 * @param string $host
-		 *	When ssl is used, defaults to 465
-		 *	When no ssl is used, and ini_get returns no value, defaults to 25.
-		 * @param int $port
-		 *	Currently supports 3 values:
-		 *		$options['secure'] can be ssl, tls or null.
-		 *		$options['username'] the username used to login to the server. Leave empty for no authentication.
-		 *		$options['password'] the password used to login to the server. Leave empty for no authentication.
-		 *		$options['local_ip'] the ip address used in the ehlo/helo commands. Only ip's are accepted.
+		 *  Host to connect to. Defaults to localhost (127.0.0.1)
+		 * @param integer $port
+		 *  When ssl is used, defaults to 465
+		 *  When no ssl is used, and ini_get returns no value, defaults to 25.
 		 * @param array $options
+		 *  Currently supports 3 values:
+		 *  	$options['secure'] can be ssl, tls or null.
+		 *  	$options['username'] the username used to login to the server. Leave empty for no authentication.
+		 *  	$options['password'] the password used to login to the server. Leave empty for no authentication.
+		 *  	$options['local_ip'] the ip address used in the ehlo/helo commands. Only ip's are accepted.
 		 * @return void
 		 */
 		public function __construct($host = '127.0.0.1', $port = null, $options = array()){
@@ -91,9 +87,11 @@
 			else{
 				$this->_ip = $options['local_ip'];
 			}
+			
 			if ($port == null) {
 				$port = 25;
 			}
+			
 			if(($options['username'] !== null) && ($options['password'] !== null)){
 				$this->_user = $options['username'];
 				$this->_pass = $options['password'];
@@ -106,6 +104,8 @@
 		/**
 		 * Checks to see if `$this->_connection` is a valid resource. Throws an
 		 * exception if there is no connection, otherwise returns true.
+		 *
+		 * @throws SMTPException
 		 * @return boolean
 		 */
 		public function checkConnection() {
@@ -122,23 +122,16 @@
 		 * right before the actual email is sent. This is to make sure the connection does not time out.
 		 *
 		 * @param string $from
-		 *	The from string. Should have the following format: email@domain.tld
+		 *  The from string. Should have the following format: email@domain.tld
 		 * @param string $to
-		 *	The email address to send the email to.
+		 *  The email address to send the email to.
 		 * @param string $subject
-		 *	The subject to send the email to.
+		 *  The subject to send the email to.
 		 * @param string $message
-		 * @return bool
+		 * @return boolean
 		 */
 		public function sendMail($from, $to, $subject, $message){
 			$this->_connect($this->_host, $this->_port);
-			$this->helo();
-			if($this->_secure == 'tls'){
-				$this->_tls();
-			}
-			if(($this->_user !== null) && ($this->_pass !== null)){
-				$this->_auth();
-			}
 			$this->mail($from);
 			if(!is_array($to)){
 				$to = array($to);
@@ -147,12 +140,13 @@
 				$this->rcpt($recipient);
 			}
 			$this->data($message);
-			$this->quit();
+			$this->rset();
 		}
 
 		/**
 		 * Sets a header to be sent in the email.
 		 *
+		 * @throws SMTPException
 		 * @param string $header
 		 * @param string $value
 		 * @return void
@@ -168,10 +162,10 @@
 		/**
 		 * Initiates the ehlo/helo requests.
 		 *
+		 * @throws SMTPException
 		 * @return void
 		 */
 		public function helo(){
-
 			if($this->_mail !== false){
 				throw new SMTPException(__('Can not call HELO on existing session'));
 			}
@@ -190,30 +184,28 @@
 			}
 
 			$this->_helo = true;
-
 		}
 
 		/**
 		 * Calls the MAIL command on the server.
 		 *
+		 * @throws SMTPException
 		 * @param string $from
-		 *	The email address to send the email from.
+		 *  The email address to send the email from.
 		 * @return void
 		 */
 		public function mail($from){
-			$this->checkConnection();
 
 			if($this->_helo == false){
 				throw new SMTPException(__('Must call EHLO (or HELO) before calling MAIL'));
 			}
-			if($this->_mail !== false){
+			else if($this->_mail !== false){
 				throw new SMTPException(__('Only one call to MAIL may be made at a time.'));
 			}
 			$this->_send('MAIL FROM:<' . $from . '>');
 			$this->_expect(250, 300);
 
 			$this->_from = $from;
-
 			$this->_mail = true;
 			$this->_rcpt = false;
 			$this->_data = false;
@@ -222,13 +214,12 @@
 		/**
 		 * Calls the RCPT command on the server. May be called multiple times for more than one recipient.
 		 *
+		 * @throws SMTPException
 		 * @param string $to
-		 *	The address to send the email to.
+		 *  The address to send the email to.
 		 * @return void
 		 */
 		public function rcpt($to){
-			$this->checkConnection();
-
 			if($this->_mail == false){
 				throw new SMTPException(__('Must call MAIL before calling RCPT'));
 			}
@@ -243,12 +234,11 @@
 		 * Calls the data command on the server.
 		 * Also includes header fields in the command.
 		 *
+		 * @throws SMTPException
 		 * @param string $data
 		 * @return void
 		 */
 		public function data($data){
-			$this->checkConnection();
-
 			if($this->_rcpt == false){
 				throw new SMTPException(__('Must call RCPT before calling DATA'));
 			}
@@ -260,7 +250,7 @@
 				// Every header can contain an array. Will insert multiple header fields of that type with the contents of array.
 				// Useful for multiple recipients, for instance.
 				if(!is_array($body)){
-					$body = Array($body);
+					$body = array($body);
 				}
 				foreach($body as $val){
 					$this->_send($name . ': ' . $val);
@@ -308,7 +298,6 @@
 		 * @return void
 		 */
 		public function quit(){
-			$this->checkConnection();
 			$this->_send('QUIT');
 			$this->_expect(221, 300);
 			$this->_connection = null;
@@ -319,14 +308,14 @@
 		 * Currently supports the AUTH LOGIN command.
 		 * May be extended if more methods are needed.
 		 *
+		 * @throws SMTPException
 		 * @return void
 		 */
 		protected function _auth(){
-			$this->checkConnection();
 			if($this->_helo == false){
 				throw new SMTPException(__('Must call EHLO (or HELO) before calling AUTH'));
 			}
-			if($this->_auth !== false){
+			else if($this->_auth !== false){
 				throw new SMTPException(__('Can not call AUTH again.'));
 			}
 
@@ -346,7 +335,6 @@
 		 * @return void
 		 */
 		protected function _ehlo(){
-			$this->checkConnection();
 			$this->_send('EHLO [' . $this->_ip . ']');
 			$this->_expect(array(250, 220), 300);
 		}
@@ -358,7 +346,6 @@
 		 * @return void
 		 */
 		protected function _helo(){
-			$this->checkConnection();
 			$this->_send('HELO [' . $this->_ip . ']');
 			$this->_expect(array(250, 220), 300);
 		}
@@ -383,7 +370,7 @@
 		 * Send a request to the host, appends the request with a line break.
 		 *
 		 * @param string $request
-		 * @return bool|integer number of characters written.
+		 * @return boolean|integer number of characters written.
 		 */
 		protected function _send($request){
 			$this->checkConnection();
@@ -398,30 +385,30 @@
 		/**
 		 * Get a line from the stream.
 		 *
-		 * @var	   integer $timeout Per-request timeout value if applicable
+		 * @param integer $timeout 
+		 *  Per-request timeout value if applicable. Defaults to null which 
+		 *  will not set a timeout.
 		 * @return string
 		 */
-		protected function _receive($timeout = null)
-		{
+		protected function _receive($timeout = null) {
 			$this->checkConnection();
 
 			if ($timeout !== null) {
-			   stream_set_timeout($this->_connection, $timeout);
+				stream_set_timeout($this->_connection, $timeout);
 			}
 
-			$reponse = fgets($this->_connection, 1024);
-
+			$response = fgets($this->_connection, 1024);
 			$info = stream_get_meta_data($this->_connection);
 
 			if (!empty($info['timed_out'])) {
 				throw new SMTPException(__('%s has timed out', array($this->_host)));
 			}
 
-			if ($reponse === false) {
+			else if ($response === false) {
 				throw new SMTPException(__('Could not read from %s', array($this->_host)));
 			}
 
-			return $reponse;
+			return $response;
 		}
 
 		/**
@@ -429,10 +416,14 @@
 		 *
 		 * Read the response from the stream and check for expected return code.
 		 *
+		 * @throws SMTPException
 		 * @param  string|array $code
-		 *	One or more codes that indicate a successful response
+		 *  One or more codes that indicate a successful response
+		 * @param integer $timeout 
+		 *  Per-request timeout value if applicable. Defaults to null which 
+		 *  will not set a timeout.
 		 * @return string
-		 *	Last line of response string
+		 *  Last line of response string
 		 */
 		protected function _expect($code, $timeout = null){
 			$this->_response = array();
@@ -466,10 +457,11 @@
 		}
 
 		/**
-		 * Connect to the host.
+		 * Connect to the host, and perform basic functions like helo and auth.
 		 *
+		 * @throws SMTPException
 		 * @param string $host
-		 * @param int $port
+		 * @param integer $port
 		 * @return void
 		 */
 		protected function _connect($host, $port){
@@ -477,19 +469,28 @@
 			$errorStr = '';
 
 			$remoteAddr = $this->_transport . '://' . $host . ':' . $port;
-			$this->_connection = @stream_socket_client($remoteAddr, $errorNum, $errorStr, self::TIMEOUT);
-
-			if($this->_connection === false){
-				if($errorNum == 0){
-					throw new SMTPException(__('Unable to open socket. Unknown error'));
+			if(!is_resource($this->_connection)){
+				$this->_connection = @stream_socket_client($remoteAddr, $errorNum, $errorStr, self::TIMEOUT);
+				if($this->_connection === false){
+					if($errorNum == 0){
+						throw new SMTPException(__('Unable to open socket. Unknown error'));
+					}
+					else{
+						throw new SMTPException(__('Unable to open socket. %s', array($errorStr)));
+					}
 				}
-				else{
-					throw new SMTPException(__('Unable to open socket. %s', array($errorStr)));
-				}
-			}
 
-			if(@stream_set_timeout($this->_connection, self::TIMEOUT) === false){
-				throw new SMTPException(__('Unable to set timeout.'));
+				if(@stream_set_timeout($this->_connection, self::TIMEOUT) === false){
+					throw new SMTPException(__('Unable to set timeout.'));
+				}
+
+				$this->helo();
+				if($this->_secure == 'tls'){
+					$this->_tls();
+				}
+				if(($this->_user !== null) && ($this->_pass !== null)){
+					$this->_auth();
+				}
 			}
 		}
 	}

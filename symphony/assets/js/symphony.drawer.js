@@ -119,7 +119,13 @@
 
 			// store state
 			if(Symphony.Support.localStorage === true) {
-				window.localStorage['symphony.drawer.' + drawer.attr('id') + context] = 'opened';
+				// Put in a try/catch incase we exceed storage space
+				try {
+					window.localStorage['symphony.drawer.' + drawer.attr('id') + context] = 'opened';
+				}
+				catch(e) {
+					window.onerror(e.message);
+				}
 			}
 
 			wrapper.addClass('drawer-' + position);
@@ -199,7 +205,13 @@
 
 			// store state
 			if(Symphony.Support.localStorage === true) {
-				window.localStorage['symphony.drawer.' + drawer.attr('id') + context] = 'closed';
+				// Put in a try/catch incase we exceed storage space
+				try {
+					window.localStorage['symphony.drawer.' + drawer.attr('id') + context] = 'closed';
+				}
+				catch(e) {
+					window.onerror(e.message);
+				}
 			}
 
 			wrapper.removeClass('drawer-' + position);

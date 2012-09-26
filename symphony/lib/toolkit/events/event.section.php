@@ -85,7 +85,7 @@
 
 			if(!$section = SectionManager::fetch($source)){
 				$result->setAttribute('result', 'error');
-				$result->appendChild(new XMLElement('message', __('Section is invalid')));
+				$result->appendChild(new XMLElement('message', __('The Section, %s, could not be found.', array($this->getSource()))));
 				return false;
 			}
 
@@ -95,7 +95,7 @@
 
 				if(!is_object($entry)){
 					$result->setAttribute('result', 'error');
-					$result->appendChild(new XMLElement('message', __('Invalid Entry ID specified. Could not create Entry object.')));
+					$result->appendChild(new XMLElement('message', __('The Entry, %s, could not be found.', array($entry_id))));
 					return false;
 				}
 			}
@@ -227,7 +227,7 @@
 				foreach($fields['recipient'] as $recipient){
 					$author = AuthorManager::fetchByUsername($recipient);
 
-					if(is_null($author)) {
+					if(empty($author)) {
 						$errors['recipient'][$recipient] = __('Recipient not found');
 						continue;
 					}

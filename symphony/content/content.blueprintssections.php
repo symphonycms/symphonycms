@@ -121,7 +121,6 @@
 
 			if(!$showEmptyTemplate) ksort($fields);
 
-			$meta['entry_order'] = (isset($meta['entry_order']) ? $meta['entry_order'] : 'date');
 			$meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
 
 			// Set navigation group, if not already set
@@ -267,7 +266,7 @@
 			$section_id = $this->_context[1];
 
 			if(!$section = SectionManager::fetch($section_id)) {
-				Administration::instance()->customError(__('Unknown Section'), __('The Section you are looking for could not be found.'));
+				Administration::instance()->customError(__('Unknown Section'), __('The Section, %s, could not be found.', array($section_id)));
 			}
 			$meta = $section->get();
 			$section_id = $meta['id'];
@@ -324,8 +323,6 @@
 				$fields = FieldManager::fetch(NULL, $section_id);
 				$fields = array_values($fields);
 			}
-
-			$meta['entry_order'] = (isset($meta['entry_order']) ? $meta['entry_order'] : 'date');
 
 			if(isset($_POST['meta'])){
 				$meta = $_POST['meta'];

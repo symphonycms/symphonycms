@@ -29,10 +29,9 @@
 		 *
 		 * @return void
 		 */
-		public function __construct() {
+		public function __construct(){
 			parent::__construct();
-			$this->setSenderEmailAddress(Symphony::Configuration()->get('from_address', 'email_sendmail') ? Symphony::Configuration()->get('from_address', 'email_sendmail') : 'noreply@' . HTTP_HOST);
-			$this->setSenderName(Symphony::Configuration()->get('from_name', 'email_sendmail') ? Symphony::Configuration()->get('from_name', 'email_sendmail') : 'Symphony');
+			$this->setConfiguration(Symphony::Configuration()->get('email_sendmail'));
 		}
 
 		/**
@@ -124,6 +123,19 @@
 		}
 
 		/**
+		 * Sets all configuration entries from an array.
+		 *
+		 * @throws EmailValidationException
+		 * @param array $configuration
+		 * @since 2.3.1
+		 *  All configuration entries stored in a single array. The array should have the format of the $_POST array created by the preferences HTML.
+		 * @return void
+		 */
+		public function setConfiguration($config){
+			$this->setFrom($config['from_address'],$config['from_name']);
+		}
+
+		/**
 		 * Builds the preferences pane, shown in the symphony backend.
 		 *
 		 * @return XMLElement
@@ -131,7 +143,7 @@
 		public function getPreferencesPane() {
 			parent::getPreferencesPane();
 			$group = new XMLElement('fieldset');
-			$group->setAttribute('class', 'settings pickable');
+			$group->setAttribute('class', 'settings condensed pickable');
 			$group->setAttribute('id', 'sendmail');
 			$group->appendChild(new XMLElement('legend', __('Email: Sendmail')));
 
