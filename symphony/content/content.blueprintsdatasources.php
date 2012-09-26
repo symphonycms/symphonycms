@@ -976,19 +976,24 @@
 			if(array_key_exists('save', $_POST['action'])) return $this->__formAction();
 			elseif(array_key_exists('delete', $_POST['action'])){
 
+				$file = DATASOURCES."/data.".$this->_context[1].".php";
+
 				/**
 				 * Prior to deleting the Datasource file. Target file path is provided.
 				 *
 				 * @delegate DatasourcePreDelete
-				 * @since Symphony 2.2
+				 * @since    Symphony 2.2
+				 *
 				 * @param string $context
 				 * '/blueprints/datasources/'
 				 * @param string $file
-				 *  The path to the Datasource file
+				 *  The path to the Datasource file as string passed by reference
 				 */
-				Symphony::ExtensionManager()->notifyMembers('DatasourcePreDelete', '/blueprints/datasources/', array('file' => DATASOURCES . "/data." . $this->_context[1] . ".php"));
+				Symphony::ExtensionManager()->notifyMembers( 'DatasourcePreDelete', '/blueprints/datasources/', array(
+					'file' => &$file
+				) );
 
-				if(!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php')){
+				if( !General::deleteFile( $file ) ){
 					$this->pageAlert(
 						__('Failed to delete %s.', array('<code>' . $this->_context[1] . '</code>'))
 						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/data-sources</code>'))
@@ -1296,7 +1301,7 @@
 					 * @param string $context
 					 * '/blueprints/datasources/'
 					 * @param string $file
-					 *  The path to the Datasource file
+					 *  The path to the Datasource file as a string passed by reference
 					 * @param string $contents
 					 *  The contents for this Datasource as a string passed by reference
 					 * @param array $params
@@ -1310,7 +1315,7 @@
 					 *  An array of dependencies that this datasource has
 					 */
 					Symphony::ExtensionManager()->notifyMembers('DatasourcePreCreate', '/blueprints/datasources/', array(
-						'file' => $file,
+						'file' => &$file,
 						'contents' => &$dsShell,
 						'params' => $params,
 						'elements' => $elements,
@@ -1328,7 +1333,7 @@
 					 * @param string $context
 					 * '/blueprints/datasources/'
 					 * @param string $file
-					 *  The path to the Datasource file
+					 *  The path to the Datasource file as a string passed by reference
 					 * @param string $contents
 					 *  The contents for this Datasource as a string passed by reference
 					 * @param array $dependencies
@@ -1342,7 +1347,7 @@
 					 *  being the `field_id` and the value the filter.
 					 */
 					Symphony::ExtensionManager()->notifyMembers('DatasourcePreEdit', '/blueprints/datasources/', array(
-						'file' => $file,
+						'file' => &$file,
 						'contents' => &$dsShell,
 						'dependencies' => $dependencies,
 						'params' => $params,
