@@ -177,7 +177,13 @@
 		 */
 		public function prepareImportValue($data, $entry_id = null) {
 			return array(
-				'value' => (strtolower($data) == 'yes' || strtolower($data) == 'on' ? 'yes' : 'no')
+				'value' =>	(
+								$data === true
+								|| strtolower($data) == 'yes'
+								|| strtolower($data) == 'on'
+									? 'yes'
+									: 'no'
+							)
 			);
 		}
 
