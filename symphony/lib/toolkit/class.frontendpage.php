@@ -319,8 +319,6 @@
 			$current_path = rtrim(current($split_path), '/');
 			$querystring = '?' . next($split_path);
 
-			$pm = Symphony::PageManager()->fetchPageTypes();
-
 			// Get max upload size from php and symphony config then choose the smallest
 			$upload_size_php = ini_size_to_bytes(ini_get('upload_max_filesize'));
 			$upload_size_sym = Symphony::Configuration()->get('max_upload_size','admin');
