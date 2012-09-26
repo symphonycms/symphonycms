@@ -323,19 +323,24 @@
 			}
 			else if(array_key_exists('delete', $_POST['action'])) {
 
+				$file = EVENTS."/event.".$this->_context[1].".php";
+
 				/**
 				 * Prior to deleting the Event file. Target file path is provided.
 				 *
 				 * @delegate EventPreDelete
-				 * @since Symphony 2.2
+				 * @since    Symphony 2.2
+				 *
 				 * @param string $context
 				 * '/blueprints/events/'
 				 * @param string $file
-				 *  The path to the Event file
+				 *  The path to the Event file as string passed by reference
 				 */
-				Symphony::ExtensionManager()->notifyMembers('EventPreDelete', '/blueprints/events/', array('file' => EVENTS . "/event." . $this->_context[1] . ".php"));
+				Symphony::ExtensionManager()->notifyMembers( 'EventPreDelete', '/blueprints/events/', array(
+					'file' => &$file
+				) );
 
-				if(!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php')) {
+				if( !General::deleteFile( $file ) ){
 					$this->pageAlert(
 						__('Failed to delete %s.', array('<code>' . $this->_context[1] . '</code>'))
 						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/events</code>'))
@@ -619,14 +624,14 @@
 					 * @param string $context
 					 * '/blueprints/events/'
 					 * @param string $file
-					 *  The path to the Event file
+					 *  The path to the Event file as string passed by reference
 					 * @param string $contents
 					 *  The contents for this Event as a string passed by reference
 					 * @param array $filters
 					 *  An array of the filters attached to this event
 					 */
 					Symphony::ExtensionManager()->notifyMembers('EventPreCreate', '/blueprints/events/', array(
-						'file' => $file,
+						'file' => &$file,
 						'contents' => &$eventShell,
 						'filters' => $filters
 					));
@@ -641,14 +646,14 @@
 					 * @param string $context
 					 * '/blueprints/events/'
 					 * @param string $file
-					 *  The path to the Event file
+					 *  The path to the Event file as string passed by reference
 					 * @param string $contents
 					 *  The contents for this Event as a string passed by reference
 					 * @param array $filters
 					 *  An array of the filters attached to this event
 					 */
 					Symphony::ExtensionManager()->notifyMembers('EventPreEdit', '/blueprints/events/', array(
-						'file' => $file,
+						'file' => &$file,
 						'contents' => &$eventShell,
 						'filters' => $filters
 					));
