@@ -204,6 +204,12 @@
 
 			$this->Form->appendChild($div);
 
+			if(!empty($this->_params['errors'])) {
+				$this->Form->appendChild(
+					Widget::Error(new XMLElement('p'), __('Oops, a minor hurdle on your path to glory! There appears to be something wrong with the details entered below.'))
+				);
+			}
+
 		/* -----------------------------------------------
 		 * Environment settings
 		 * -----------------------------------------------
@@ -384,7 +390,7 @@
 				if(!isset($this->_params['errors'][$c])) unset($codes[$i]);
 			}
 
-			if(!empty($codes)){
+			if(!empty($codes)) {
 				if(count($codes) > 1){
 					$ul = new XMLElement('ul');
 

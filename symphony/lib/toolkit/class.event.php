@@ -3,31 +3,6 @@
 	 * @package toolkit
 	 */
 
-	 /**
-	  * The iEvent interface provides two functions, about and load that
-	  * Events can implement.
-	  */
-	interface iEvent{
-		/**
-		 * Return an associative array of meta information about this event such
-		 * creation date, who created it and the name.
-		 *
-		 * @return array
-		 */
-		public static function about();
-
-		/**
-		 * The load functions determines whether an event will be executed or not
-		 * by comparing the Event's action with the `$_POST` data. This function will
-		 * be called every time a page is loaded that an event is attached too. If the
-		 * action does exist, it typically calls the `__trigger()` method, otherwise void.
-		 *
-		 * @return mixed
-		 *  XMLElement with the event result or void if the action did not match
-		 */
-		public function load();
-	}
-
 	/**
 	 * The abstract Event classes defines some base methods that all Events inherit.
 	 * It has one abstract method, `__trigger()`, which Events must implement. Event
@@ -40,8 +15,7 @@
 	 * Symphony backend, which uses an event template defined in `TEMPLATE . /event.tpl`
 	 * Events implement the iEvent interface, which defines the load and about functions.
 	 */
-
-	abstract Class Event implements iEvent{
+	abstract Class Event {
 
 		/**
 		 * Represents High Priority, that this event should run first

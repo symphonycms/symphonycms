@@ -193,12 +193,12 @@
 				 * @param string $xml
 				 *  This pages XML, including the Parameters, Datasource and Event XML, by reference
 				 * @param string $xsl
-				 *  This pages XSLT
+				 *  This pages XSLT, by reference
 				 */
 				Symphony::ExtensionManager()->notifyMembers('FrontendOutputPreGenerate', '/frontend/', array(
 					'page'	=> &$this,
 					'xml'	=> &$this->_xml,
-					'xsl'	=> $this->_xsl
+					'xsl'	=> &$this->_xsl
 				));
 
 				if (is_null($devkit)) {
@@ -291,7 +291,6 @@
 		 * @see resolvePage()
 		 */
 		private function __buildPage(){
-
 			$start = precision_timer();
 
 			if(!$page = $this->resolvePage()){
@@ -338,9 +337,9 @@
 				'root-page' => ($root_page ? $root_page : $page['handle']),
 				'current-page' => $page['handle'],
 				'current-page-id' => $page['id'],
-				'current-path' => $current_path,
+				'current-path' => ($current_path == '') ? '/' : $current_path,
 				'parent-path' => '/' . $page['path'],
-				'current-query-string' => XMLElement::stripInvalidXMLCharacters(utf8_encode(urldecode($querystring))),
+				'current-query-string' => self::sanitizeParameter($querystring),
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
@@ -364,7 +363,15 @@
 					// the parameter being set.
 					if(!General::createHandle($key)) continue;
 
-					$this->_param['url-' . $key] = XMLElement::stripInvalidXMLCharacters(utf8_encode(urldecode($val)));
+					// Handle ?foo[bar]=hi as well as straight ?foo=hi RE: #1348
+					if(is_array($val)) {
+						$val = General::array_map_recursive(array('FrontendPage', 'sanitizeParameter'), $val);
+					}
+					else {
+						$val = self::sanitizeParameter($val);
+					}
+
+					$this->_param['url-' . $key] = $val;
 				}
 			}
 
@@ -509,7 +516,6 @@
 		 *  An associative array of page details
 		 */
 		public function resolvePage($page = null){
-
 			if($page) $this->_page = $page;
 
 			$row = null;
@@ -528,7 +534,7 @@
 			if((!$this->_page || $this->_page == '//') && is_null($row)) {
 				$row = PageManager::fetchPageByType('index');
 			}
-
+			// Not the index page (or at least not on first impression)
 			else if(is_null($row)) {
 				$page_extra_bits = array();
 				$pathArr = preg_split('/\//', trim($this->_page, '/'), -1, PREG_SPLIT_NO_EMPTY);
@@ -548,9 +554,25 @@
 
 				} while($handle = array_pop($pathArr));
 
-				if(empty($pathArr)) return false;
-
-				if(!$this->__isSchemaValid($row['params'], $page_extra_bits)) return false;
+				// If the `$pathArr` is empty, that means a page hasn't resolved for
+				// the given `$page`, however in some cases the index page may allow
+				// parameters, so we'll check.
+				if(empty($pathArr)) {
+					// If the index page does not handle parameters, then return false
+					// (which will give up the 404), otherwise treat the `$page` as
+					// parameters of the index. RE: #1351
+					$index = PageManager::fetchPageByType('index');
+					if(!$this->__isSchemaValid($index['params'], $page_extra_bits)) {
+						return false;
+					}
+					else {
+						$row = $index;
+					}
+				}
+				// Page resolved, check the schema (are the parameters valid?)
+				else if(!$this->__isSchemaValid($row['params'], $page_extra_bits)) {
+					return false;
+				}
 			}
 
 			// Process the extra URL params
@@ -670,7 +692,6 @@
 
 				foreach($pool as $handle => $event){
 					Symphony::Profiler()->seed();
-
 					$queries = Symphony::Database()->queryCount();
 
 					if($xml = $event->load()) {
@@ -681,9 +702,7 @@
 					}
 
 					$queries = Symphony::Database()->queryCount() - $queries;
-
 					Symphony::Profiler()->sample($handle, PROFILE_LAP, 'Event', $queries);
-
 				}
 			}
 
@@ -757,8 +776,6 @@
 			$dependencies = array();
 
 			foreach ($datasources as $handle) {
-				Symphony::Profiler()->seed();
-
 				$pool[$handle] =& DatasourceManager::create($handle, array(), false);
 				$dependencies[$handle] = $pool[$handle]->getDependencies();
 			}
@@ -784,11 +801,11 @@
 				 * @delegate DataSourcePreExecute
 				 * @param string $context
 				 * '/frontend/'
-				 * @param boolean $datasource
+				 * @param DataSource $datasource
 				 *  The Datasource object
 				 * @param mixed $xml
 				 *  The XML output of the data source. Can be an `XMLElement` or string.
-				 * @param mixed $param_pool
+				 * @param array $param_pool
 				 *  The existing param pool including output parameters of any previous data sources
 				 */
 				Symphony::ExtensionManager()->notifyMembers('DataSourcePreExecute', '/frontend/', array(
@@ -812,11 +829,11 @@
 					 * @delegate DataSourcePostExecute
 					 * @param string $context
 					 * '/frontend/'
-					 * @param boolean $datasource
+					 * @param DataSource $datasource
 					 *  The Datasource object
 					 * @param mixed $xml
 					 *  The XML output of the data source. Can be an `XMLElement` or string.
-					 * @param mixed $param_pool
+					 * @param array $param_pool
 					 *  The existing param pool including output parameters of any previous data sources
 					 */
 					Symphony::ExtensionManager()->notifyMembers('DataSourcePostExecute', '/frontend/', array(
@@ -921,6 +938,20 @@
 			}
 
 			return $list;
+		}
+
+		/**
+		 * Given a string (expected to be a URL parameter) this function will
+		 * ensure it is safe to embed in an XML document.
+		 *
+		 * @since Symphony 2.3.1
+		 * @param string $parameter
+		 *  The string to sanitize for XML
+		 * @return string
+		 *  The sanitized string
+		 */
+		public static function sanitizeParameter($parameter) {
+			return XMLElement::stripInvalidXMLCharacters(utf8_encode(urldecode($parameter)));
 		}
 
 		/**

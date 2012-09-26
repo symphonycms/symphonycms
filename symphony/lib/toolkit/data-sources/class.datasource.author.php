@@ -84,6 +84,11 @@
 				throw new FrontendPageNotFoundException;
 			}
 
+			elseif(!is_array($authors) || empty($authors)){
+				$result = $this->emptyXMLSet();
+				return $result;
+			}
+
 			else{
 
 				if(!$this->_param_output_only) $result = new XMLElement($this->dsParamROOTELEMENT);
