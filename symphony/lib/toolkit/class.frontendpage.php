@@ -337,7 +337,6 @@
 				'root-page' => ($root_page ? $root_page : $page['handle']),
 				'current-page' => $page['handle'],
 				'current-page-id' => $page['id'],
-				'page-types' => implode($page['type'], ', '),
 				'current-path' => ($current_path == '') ? '/' : $current_path,
 				'parent-path' => '/' . $page['path'],
 				'current-query-string' => self::sanitizeParameter($querystring),
@@ -384,6 +383,9 @@
 
 			// Flatten parameters:
 			General::flattenArray($this->_param);
+
+			// Add Page Types to parameters so they are not flattened too early
+			$this->_param['page-types'] = $page['type'];
 
 			/**
 			 * Just after having resolved the page params, but prior to any commencement of output creation
