@@ -4,6 +4,8 @@
 	 * @package toolkit
 	 */
 
+	require_once FACE . '/interface.exportablefield.php';
+
 	/**
 	 * The Author field allows Symphony Authors to be selected in your entries.
 	 * It is a read only field, new Authors cannot be added from the Frontend using
@@ -12,12 +14,13 @@
 	 * The Author field allows filtering by Author ID or Username.
 	 * Sorting is done based on the Author's first name and last name.
 	 */
-	Class fieldAuthor extends Field {
-
+	class FieldAuthor extends Field implements ExportableField {
 		public function __construct(){
 			parent::__construct();
 			$this->_name = __('Author');
 			$this->_required = true;
+
+			$this->set('author_types', array());
 		}
 
 	/*-------------------------------------------------------------------------
@@ -45,10 +48,6 @@
 		}
 
 		public function canFilter(){
-			return true;
-		}
-
-		public function canImport(){
 			return true;
 		}
 
@@ -87,6 +86,13 @@
 		Utilities:
 	-------------------------------------------------------------------------*/
 
+		public function set($field, $value){
+			if($field === 'author_types' && !is_array($value)){
+				$value = explode(',', $value);
+			}
+			$this->_fields[$field] = $value;
+		}
+
 		/**
 		 * Determines based on the input value whether we want to filter the Author
 		 * field by ID or by the Author's Username
@@ -106,10 +112,32 @@
 
 		public function findDefaults(array &$settings){
 			if(!isset($settings['allow_multiple_selection'])) $settings['allow_multiple_selection'] = 'no';
+			if(!isset($settings['author_types'])) $settings['author_types'] = array('developer', 'author');
 		}
 
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+
+			// Choose between Authors/Developers or both
+			$label = Widget::Label(__('Author types'));
+			$label->setAttribute('class', 'column');
+			$types = $this->get('author_types');
+			$options = array(
+				array('author', empty($types) ? true : in_array('author', $types), __('Author')),
+				array('developer', empty($types) ? true : in_array('developer', $types), __('Developer'))
+			);
+			$label->appendChild(
+				Widget::Select('fields['.$this->get('sortorder').'][author_types][]', $options, array(
+					'multiple' => 'multiple'
+				))
+			);
+			$div->appendChild($label);
+
+			if(isset($errors['author_types'])) {
+				$wrapper->appendChild(Widget::Error($div, $errors['author_types']));
+			}
+			else $wrapper->appendChild($div);
 
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 			// Allow multiple selection
@@ -127,11 +155,23 @@
 			if($this->get('default_to_current_user') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue(__('%s Select current user by default', array($input->generate())));
 			$div->appendChild($label);
+			$wrapper->appendChild($div);
 
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
 			$wrapper->appendChild($div);
+		}
+
+		public function checkFields(array &$errors, $checkForDuplicates = true) {
+			parent::checkFields($errors, $checkForDuplicates);
+
+			$types = $this->get('author_types');
+			if(empty($types)){
+				$errors['author_types'] = __('This is a required field.');
+			}
+
+			return (is_array($errors) && !empty($errors) ? self::__ERROR__ : self::__OK__);
 		}
 
 		public function commit(){
@@ -145,6 +185,7 @@
 
 			$fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
 			$fields['default_to_current_user'] = ($this->get('default_to_current_user') ? $this->get('default_to_current_user') : 'no');
+			if($this->get('author_types') != '') $fields['author_types'] = implode(',', $this->get('author_types'));
 
 			return FieldManager::saveSettings($id, $fields);
 		}
@@ -154,7 +195,6 @@
 	-------------------------------------------------------------------------*/
 
 		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null){
-
 			$value = isset($data['author_id']) ? $data['author_id'] : NULL;
 
 			if ($this->get('default_to_current_user') == 'yes' && empty($data) && empty($_POST)) {
@@ -167,9 +207,28 @@
 
 			if ($this->get('required') != 'yes') $options[] = array(NULL, false, NULL);
 
-			$authors = AuthorManager::fetch();
+			// Custom where to only show Authors based off the Author Types setting
+			$types = $this->get('author_types');
+			if(!empty($types)) {
+				$types = implode('","', $this->get('author_types'));
+				$where = 'user_type IN ("' . $types . '")';
+			}
+
+			$authors = AuthorManager::fetch('id', 'ASC', null, null, $where);
+			$found = false;
 			foreach($authors as $a){
+				if(in_array($a->get('id'), $value)) $found = true;
+
 				$options[] = array($a->get('id'), in_array($a->get('id'), $value), $a->getFullName());
+			}
+
+			// Ensure the selected Author is included in the options (incase
+			// the settings change after the original entry was created)
+			if(!$found && !is_null($value)) {
+				$authors = AuthorManager::fetchByID($value);
+				foreach($authors as $a){
+					$options[] = array($a->get('id'), in_array($a->get('id'), $value), $a->getFullName());
+				}
 			}
 
 			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
@@ -183,7 +242,6 @@
 		}
 
 		public function processRawFieldData($data, &$status, &$message=null, $simulate=false, $entry_id=NULL){
-
 			$status = self::__OK__;
 
 			if(!is_array($data) && !is_null($data)) return array('author_id' => $data);
@@ -204,9 +262,9 @@
 			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
 
 			$list = new XMLElement($this->get('element_name'));
-			foreach($data['author_id'] as $author_id){
-				$author = AuthorManager::fetchByID($author_id);
+			$authors = AuthorManager::fetchByID($data['author_id']);
 
+			foreach($authors as $author) {
 				if(is_null($author)) continue;
 
 				$list->appendChild(new XMLElement(
@@ -221,27 +279,92 @@
 			$wrapper->appendChild($list);
 		}
 
-		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
+		public function prepareTableValue($data, XMLElement $link = null, $entry_id = null){
+			$value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::VALUE, $entry_id);
 
-			if(!is_array($data['author_id'])) $data['author_id'] = array($data['author_id']);
-
-			if(empty($data['author_id'])) return NULL;
-
-			$value = array();
-
-			foreach($data['author_id'] as $author_id){
-				$author = AuthorManager::fetchByID($author_id);
-
-				if(!is_null($author)) {
-					$value[] = $author->getFullName();
-				}
-			}
+			if(is_null($value)) return null;
 
 			return parent::prepareTableValue(array('value' => General::sanitize(implode(', ', $value))), $link, $entry_id);
 		}
 
 		public function getParameterPoolValue($data, $entry_id = null) {
-			return $data['author_id'];
+			return $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::AUTHOR, $entry_id);
+		}
+
+	/*-------------------------------------------------------------------------
+		Export:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Return a list of supported export modes for use with `prepareExportValue`.
+		 *
+		 * @return array
+		 */
+		public function getExportModes() {
+			return array(
+				'listAuthor' =>			ExportableField::LIST_OF
+										+ ExportableField::AUTHOR,
+				'listAuthorObject' =>	ExportableField::LIST_OF
+										+ ExportableField::AUTHOR
+										+ ExportableField::OBJECT,
+				'listAuthorToValue'	=>	ExportableField::LIST_OF
+										+ ExportableField::AUTHOR
+										+ ExportableField::VALUE,
+				'listValue' =>			ExportableField::LIST_OF
+										+ ExportableField::VALUE,
+				'getPostdata' =>		ExportableField::POSTDATA
+			);
+		}
+
+		/**
+		 * Give the field some data and ask it to return a value using one of many
+		 * possible modes.
+		 *
+		 * @param mixed $data
+		 * @param integer $mode
+		 * @param integer $entry_id
+		 * @return array|null
+		 */
+		public function prepareExportValue($data, $mode, $entry_id = null) {
+			$modes = (object)$this->getExportModes();
+
+			// Make sure we have an array to work with:
+			if (isset($data['author_id']) && is_array($data['author_id']) === false) {
+				$data['author_id'] = array(
+					$data['author_id']
+				);
+			}
+
+			// Return the author IDs:
+			if ($mode === $modes->listAuthor || $mode === $modes->getPostdata) {
+				return isset($data['author_id'])
+					? $data['author_id']
+					: array();
+			}
+
+			// All other modes require full data:
+			$authors = isset($data['author_id'])
+				? AuthorManager::fetchByID($data['author_id'])
+				: array();
+			$items = array();
+
+			foreach ($authors as $author) {
+				if (is_null($author)) continue;
+
+				if ($mode === $modes->listAuthorObject) {
+					$items[] = $author;
+				}
+
+				else if ($mode === $modes->listValue) {
+					$items[] = $author->getFullName();
+				}
+
+				else if ($mode === $modes->listAuthorToValue) {
+					$items[$author_id] = $author->getFullName();
+				}
+			}
+
+			return $items;
 		}
 
 	/*-------------------------------------------------------------------------
@@ -279,7 +402,8 @@
 					)
 				";
 
-			} elseif ($andOperation) {
+			}
+			elseif ($andOperation) {
 				foreach ($data as $value) {
 					$this->_key++;
 					$value = $this->cleanValue($value);
@@ -309,7 +433,8 @@
 					}
 				}
 
-			} else {
+			}
+			else {
 				if (!is_array($data)) $data = array($data);
 
 				foreach ($data as &$value) {

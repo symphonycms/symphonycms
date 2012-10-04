@@ -134,7 +134,14 @@
 							return index;
 						};
 					});
-					window.localStorage[storage] = collapsed.get().join(',');
+
+					// Put in a try/catch incase something goes wrong (no space, privileges etc)
+					try {
+						window.localStorage[storage] = collapsed.get().join(',');
+					}
+					catch(e) {
+						window.onerror(e.message);
+					}
 				}
 			});
 

@@ -529,22 +529,34 @@
 		}
 
 		/**
-		 * Given the context of the current page, loop over all the values
-		 * of the array and append them to the page's body class. If an
-		 * context value is numeric it will be prepended by 'id-'.
+		 * Given the context of the current page, which is an associative
+		 * array, this function will append the values to the page's body as
+		 * classes. If an context value is numeric it will be prepended by 'id-',
+		 * otherwise all classes will be prefixed by the context key.
 		 *
 		 * @param array $context
 		 */
 		private function __appendBodyClass(array $context = array()){
 			$body_class = '';
+			foreach($context as $key => $value) {
+				if (is_numeric($value)) {
+					$value = 'id-' . $value;
+				}
+				// Add prefixes to all context values by making the
+				// class be {key}-{value}. #1397 ^BA
+				else if(!is_numeric($key) and isset($value)) {
+					$value = str_replace('_', '-', $key) . '-'. $value;
+				}
 
-			foreach($context as $c) {
-				if (is_numeric($c)) $c = 'id-' . $c;
-				$body_class .= trim($c) . ' ';
+				$body_class .= trim($value) . ' ';
 			}
+
 			$classes = array_merge(explode(' ', trim($body_class)), explode(' ', trim($this->_body_class)));
 			$body_class = trim(implode(' ', $classes));
-			if (!empty($body_class)) $this->Body->setAttribute('class', $body_class);
+
+			if (!empty($body_class)) {
+				$this->Body->setAttribute('class', $body_class);
+			}
 		}
 
 		/**
