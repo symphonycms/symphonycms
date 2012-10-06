@@ -245,12 +245,9 @@
 		 */
 		public static function arrayToList(array $array = array()){
 			foreach($array as $name => $email){
-				if(is_numeric($name)){
-					$return[] = $email;
-				}
-				else{
-					$return[] = $name . ' <' . $email . '>';
-				}
+				$return[] = empty($name)
+				            ? $email
+				            : $name . ' <' . $email . '>';
 			}
 			return implode(', ', $return);
 		}

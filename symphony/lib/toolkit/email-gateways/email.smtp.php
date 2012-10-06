@@ -69,8 +69,8 @@
 
 				// Encode recipient names (but not any numeric array indexes)
 				foreach($this->_recipients as $name => $email){
-					$name = is_numeric($name) ? $name : EmailHelper::qEncode($name);
-					$recipients[$name] =  $email;
+					$name = empty($name) ? $name : EmailHelper::qEncode($name);
+					$recipients[$name] = $email;
 				}
 
 				// Combine keys and values into a recipient list (name <email>, name <email>).
