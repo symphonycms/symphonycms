@@ -77,15 +77,12 @@
 				$recipient_list = EmailHelper::arrayToList($recipients);
 
 				// Encode the subject
-				$this->_subject	 = EmailHelper::qEncode($this->_subject);
-
-				// Encode the sender name if it's not empty
-				$this->_sender_name = empty($this->_sender_name) ? NULL : EmailHelper::qEncode($this->_sender_name);
+				$subject = EmailHelper::qEncode((string)$this->_subject);
 
 				// Build the 'From' header field body
 				$from = empty($this->_sender_name)
-						? $this->_sender_email_address
-						: $this->_sender_name . ' <' . $this->_sender_email_address . '>';
+				        ? $this->_sender_email_address
+				        : EmailHelper::qEncode($this->_sender_name) . ' <' . $this->_sender_email_address . '>';
 
 				// Build the 'Reply-To' header field body
 				if(!empty($this->_reply_to_email_address)){
@@ -97,24 +94,30 @@
 					}
 				}
 				if(!empty($reply_to)){
-					$this->_header_fields = array_merge(array(
-						'Reply-To' => $reply_to,
-					),$this->_header_fields);
+					$this->_header_fields = array_merge(
+						$this->_header_fields,
+						array(
+							'Reply-To' => $reply_to,
+						)
+					);
 				}
 
 				// Build the body text using attachments, html-text and plain-text.
 				$this->prepareMessageBody();
 
 				// Build the header fields
-				$this->_header_fields = array_merge(Array(
-					'Message-ID'   => sprintf('<%s@%s>', md5(uniqid()) , HTTP_HOST),
-					'Date'		   => date('r'),
-					'From'		   => $from,
-					'Subject'	   => $this->_subject,
-					'To'		   => $recipient_list,
-					'X-Mailer'	   => 'Symphony Email Module',
-					'MIME-Version' => '1.0'
-				),$this->_header_fields);
+				$this->_header_fields = array_merge(
+					$this->_header_fields,
+					array(
+						'Message-ID'   => sprintf('<%s@%s>', md5(uniqid()) , HTTP_HOST),
+						'Date'         => date('r'),
+						'From'         => $from,
+						'Subject'      => $subject,
+						'To'           => $recipient_list,
+						'X-Mailer'     => 'Symphony Email Module',
+						'MIME-Version' => '1.0'
+					)
+				);
 
 				// Set header fields and fold header field bodies
 				foreach($this->_header_fields as $name => $body){
@@ -126,11 +129,25 @@
 				if($this->_keepalive == false){
 					$this->closeConnection();
 				}
+				$this->reset();
 			}
 			catch(SMTPException $e){
 				throw new EmailGatewayException($e->getMessage());
 			}
 			return true;
+		}
+
+		/**
+		 * Resets the headers, body, subject
+		 *
+		 * @return void
+		 */
+		public function reset(){
+			$this->_header_fields = array();
+			$this->_envelope_from = null;
+			$this->_recipients = array();
+			$this->_subject = null;
+			$this->_body = null;
 		}
 
 		public function openConnection(){
