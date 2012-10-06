@@ -14,9 +14,9 @@
 		 *
 		 * @param string $input
 		 *  header field body string
-		 * @param integer $max_length 
+		 * @param integer $max_length
 		 *  defaults to 75
-		 * @return string 
+		 * @return string
 		 *  folded output string
 		 */
 		public static function fold($input, $max_length=75) {

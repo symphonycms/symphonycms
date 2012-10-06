@@ -62,6 +62,7 @@
 				$settings['password'] = $this->_pass;
 			}
 			$settings['secure'] = $this->_secure;
+
 			try{
 				if(!is_a($this->_SMTP, 'SMTP')){
 					$this->_SMTP = new SMTP($this->_host, $this->_port, $settings);
@@ -226,7 +227,7 @@
 		/**
 		 * Sets the encryption used.
 		 *
-		 * @param string $secure 
+		 * @param string $secure
 		 *  The encryption used. Can be 'ssl', 'tls'. Anything else defaults to
 		 *  a non secure TCP connection
 		 * @return void
