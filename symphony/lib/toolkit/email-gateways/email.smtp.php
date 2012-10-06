@@ -86,12 +86,9 @@
 
 				// Build the 'Reply-To' header field body
 				if(!empty($this->_reply_to_email_address)){
-					if(!empty($this->_reply_to_name)){
-						$reply_to = EmailHelper::qEncode($this->_reply_to_name) . ' <'.$this->_reply_to_email_address.'>';
-					}
-					else{
-						$reply_to = $this->_reply_to_email_address;
-					}
+					$reply_to = empty($this->_reply_to_name)
+					            ? $this->_reply_to_email_address
+					            : EmailHelper::qEncode($this->_reply_to_name) . ' <'.$this->_reply_to_email_address.'>';
 				}
 				if(!empty($reply_to)){
 					$this->_header_fields = array_merge(
