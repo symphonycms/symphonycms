@@ -347,6 +347,7 @@
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.drawers.css', 'screen', 34);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.tabs.css', 'screen', 34);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.notices.css', 'screen', 34);
+			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.ajaxloader.css', 'screen', 35);
 			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/admin.css', 'screen', 40);
 
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/jquery.js', 50);
@@ -360,7 +361,8 @@
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.timeago.js', 67);
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.notify.js', 68);
 			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.drawer.js', 69);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/admin.js', 70);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.ajaxloader.js', 70);
+			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/admin.js', 71);
 
 			$this->addElementToHead(
 				new XMLElement(

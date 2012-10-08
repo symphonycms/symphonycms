@@ -1,0 +1,9 @@
+.ajaxloader {
+	background: rgba(255,255,255,0.8) url('../img/ajax-loader.gif') center no-repeat;
+	height: 100%;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+	z-index: 25000;
+}
