@@ -844,7 +844,7 @@
 								__('Entry created at %s.', array(DateTimeObj::getTimeAgo()))
 								. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
 								. __('Create another?')
-								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/" accesskey="a">'
+								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/'.$filter.'" accesskey="a">'
 								. __('View all Entries')
 								. '</a>'
 								, Alert::SUCCESS);
