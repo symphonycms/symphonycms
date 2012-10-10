@@ -89,6 +89,27 @@
 		}
 
 		/**
+		 * Returns the most recent version found in the `/install/migrations` folder.
+		 * Returns a version string to be used in `version_compare()` if an updater
+		 * has been found. Returns `FALSE` otherwise.
+		 * 
+		 * @return mixed
+		 */
+		public function getMigrationVersion(){
+			if(file_exists(DOCROOT . '/install/index.php')){
+				$migration_file = end(scandir(DOCROOT . '/install/migrations'));
+				include_once(DOCROOT . '/install/lib/class.migration.php');
+				include_once(DOCROOT . '/install/migrations/' . $migration_file);
+
+				$migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
+				return call_user_func(array($migration_class, 'getVersion'));
+			}
+			else{
+				return FALSE;
+			}
+		}
+
+		/**
 		 * Given the URL path of a Symphony backend page, this function will
 		 * attempt to resolve the URL to a Symphony content page in the backend
 		 * or a page provided by an extension. This function checks to ensure a user
@@ -233,13 +254,7 @@
 				// Scan install/migrations directory for the most recent updater and compare
 				if(file_exists(DOCROOT . '/install/index.php') && $this->__canAccessAlerts()) {
 					try{
-						$migration_file = end(scandir(DOCROOT . '/install/migrations'));
-						include_once(DOCROOT . '/install/lib/class.migration.php');
-						include_once(DOCROOT . '/install/migrations/' . $migration_file);
-
-						$migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
-						$migration_version = call_user_func(array($migration_class, 'getVersion'));
-
+						$migration_version = $this->getMigrationVersion();
 						$current_version = Symphony::Configuration()->get('version', 'symphony');
 
 						// The updater contains a version higher than the current Symphony version.
