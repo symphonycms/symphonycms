@@ -14,9 +14,9 @@
 		 *
 		 * @param string $input
 		 *  header field body string
-		 * @param integer $max_length 
+		 * @param integer $max_length
 		 *  defaults to 75
-		 * @return string 
+		 * @return string
 		 *  folded output string
 		 */
 		public static function fold($input, $max_length=75) {
@@ -245,12 +245,9 @@
 		 */
 		public static function arrayToList(array $array = array()){
 			foreach($array as $name => $email){
-				if(is_numeric($name)){
-					$return[] = $email;
-				}
-				else{
-					$return[] = $name . ' <' . $email . '>';
-				}
+				$return[] = empty($name)
+				            ? $email
+				            : $name . ' <' . $email . '>';
 			}
 			return implode(', ', $return);
 		}
