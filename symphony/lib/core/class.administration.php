@@ -96,7 +96,7 @@
 		 * @return mixed
 		 */
 		public function getMigrationVersion(){
-			if(file_exists(DOCROOT . '/install/index.php')){
+			if($this->isInstallerAvailable()){
 				$migration_file = end(scandir(DOCROOT . '/install/migrations'));
 				include_once(DOCROOT . '/install/lib/class.migration.php');
 				include_once(DOCROOT . '/install/migrations/' . $migration_file);
@@ -109,6 +109,30 @@
 			}
 		}
 
+		/**
+		 * Checks if an update is available and applicable for the current install.
+		 * 
+		 * @return boolean
+		 */
+		public function isUpgradeAvailable(){
+			if($this->isInstallerAvailable()){
+				$migration_version = $this->getMigrationVersion();
+				$current_version = Symphony::Configuration()->get('version', 'symphony');
+				return version_compare($current_version, $migration_version, '<');
+			}
+			else{
+				return FALSE;
+			}
+		}
+
+		/**
+		 * Checks if the installer/upgrader is available.
+		 * 
+		 * @return boolean
+		 */
+		public function isInstallerAvailable(){
+			return file_exists(DOCROOT . '/install/index.php');
+		}
 		/**
 		 * Given the URL path of a Symphony backend page, this function will
 		 * attempt to resolve the URL to a Symphony content page in the backend
@@ -252,13 +276,10 @@
 
 				// Check for update Alert
 				// Scan install/migrations directory for the most recent updater and compare
-				if(file_exists(DOCROOT . '/install/index.php') && $this->__canAccessAlerts()) {
+				if($this->isInstallerAvailable() && $this->__canAccessAlerts()) {
 					try{
-						$migration_version = $this->getMigrationVersion();
-						$current_version = Symphony::Configuration()->get('version', 'symphony');
-
 						// The updater contains a version higher than the current Symphony version.
-						if(version_compare($current_version, $migration_version, '<')) {
+						if($this->isUpgradeAvailable()) {
 							$message = __('An update has been found in your installation to upgrade Symphony to %s.', array($migration_version)) . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
 						}
 						// The updater contains a version lower than the current Symphony version.

@@ -368,9 +368,7 @@
 					$this->Author = current($author);
 
 					// Only migrate hashes if there is no update available as the update might change the tbl_authors table.
-					$migration_version = Administration::instance()->getMigrationVersion();
-					$current_version = Symphony::Configuration()->get('version', 'symphony');
-					if(!version_compare($current_version, $migration_version, '<') && Cryptography::requiresMigration($this->Author->get('password'))){
+					if(!Administration::instance()->isUpgradeAvailable() && Cryptography::requiresMigration($this->Author->get('password'))){
 						$this->Author->set('password', Cryptography::hash($password));
 						self::Database()->update(array('password' => $this->Author->get('password')), 'tbl_authors', " `id` = '" . $this->Author->get('id') . "'");
 					}
