@@ -93,6 +93,7 @@
 		 * Returns a version string to be used in `version_compare()` if an updater
 		 * has been found. Returns `FALSE` otherwise.
 		 * 
+		 * @since Symphony 2.3.1
 		 * @return mixed
 		 */
 		public function getMigrationVersion(){
@@ -110,8 +111,9 @@
 		}
 
 		/**
-		 * Checks if an update is available and applicable for the current install.
+		 * Checks if an update is available and applicable for the current installation.
 		 * 
+		 * @since Symphony 2.3.1
 		 * @return boolean
 		 */
 		public function isUpgradeAvailable(){
@@ -128,6 +130,7 @@
 		/**
 		 * Checks if the installer/upgrader is available.
 		 * 
+		 * @since Symphony 2.3.1
 		 * @return boolean
 		 */
 		public function isInstallerAvailable(){
