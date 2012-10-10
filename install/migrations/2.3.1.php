@@ -23,7 +23,7 @@
 		}
 
 		static function getVersion(){
-			return '2.3.1RC1';
+			return '2.3.1RC2';
 		}
 
 		static function getReleaseNotes(){
