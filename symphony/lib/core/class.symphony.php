@@ -366,10 +366,13 @@
 
 				if(!empty($author) && Cryptography::compare($password, current($author)->get('password'), $isHash)) {
 					$this->Author = current($author);
-					if(Cryptography::requiresMigration($this->Author->get('password'))){
+
+					// Only migrate hashes if there is no update available as the update might change the tbl_authors table.
+					if(!Administration::instance()->isUpgradeAvailable() && Cryptography::requiresMigration($this->Author->get('password'))){
 						$this->Author->set('password', Cryptography::hash($password));
 						self::Database()->update(array('password' => $this->Author->get('password')), 'tbl_authors', " `id` = '" . $this->Author->get('id') . "'");
 					}
+
 					$this->Cookie->set('username', $username);
 					$this->Cookie->set('pass', $this->Author->get('password'));
 					self::Database()->update(array(

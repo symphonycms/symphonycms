@@ -89,6 +89,54 @@
 		}
 
 		/**
+		 * Returns the most recent version found in the `/install/migrations` folder.
+		 * Returns a version string to be used in `version_compare()` if an updater
+		 * has been found. Returns `FALSE` otherwise.
+		 * 
+		 * @since Symphony 2.3.1
+		 * @return mixed
+		 */
+		public function getMigrationVersion(){
+			if($this->isInstallerAvailable()){
+				$migration_file = end(scandir(DOCROOT . '/install/migrations'));
+				include_once(DOCROOT . '/install/lib/class.migration.php');
+				include_once(DOCROOT . '/install/migrations/' . $migration_file);
+
+				$migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
+				return call_user_func(array($migration_class, 'getVersion'));
+			}
+			else{
+				return FALSE;
+			}
+		}
+
+		/**
+		 * Checks if an update is available and applicable for the current installation.
+		 * 
+		 * @since Symphony 2.3.1
+		 * @return boolean
+		 */
+		public function isUpgradeAvailable(){
+			if($this->isInstallerAvailable()){
+				$migration_version = $this->getMigrationVersion();
+				$current_version = Symphony::Configuration()->get('version', 'symphony');
+				return version_compare($current_version, $migration_version, '<');
+			}
+			else{
+				return FALSE;
+			}
+		}
+
+		/**
+		 * Checks if the installer/upgrader is available.
+		 * 
+		 * @since Symphony 2.3.1
+		 * @return boolean
+		 */
+		public function isInstallerAvailable(){
+			return file_exists(DOCROOT . '/install/index.php');
+		}
+		/**
 		 * Given the URL path of a Symphony backend page, this function will
 		 * attempt to resolve the URL to a Symphony content page in the backend
 		 * or a page provided by an extension. This function checks to ensure a user
@@ -231,19 +279,10 @@
 
 				// Check for update Alert
 				// Scan install/migrations directory for the most recent updater and compare
-				if(file_exists(DOCROOT . '/install/index.php') && $this->__canAccessAlerts()) {
+				if($this->isInstallerAvailable() && $this->__canAccessAlerts()) {
 					try{
-						$migration_file = end(scandir(DOCROOT . '/install/migrations'));
-						include_once(DOCROOT . '/install/lib/class.migration.php');
-						include_once(DOCROOT . '/install/migrations/' . $migration_file);
-
-						$migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
-						$migration_version = call_user_func(array($migration_class, 'getVersion'));
-
-						$current_version = Symphony::Configuration()->get('version', 'symphony');
-
 						// The updater contains a version higher than the current Symphony version.
-						if(version_compare($current_version, $migration_version, '<')) {
+						if($this->isUpgradeAvailable()) {
 							$message = __('An update has been found in your installation to upgrade Symphony to %s.', array($migration_version)) . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
 						}
 						// The updater contains a version lower than the current Symphony version.
