@@ -137,7 +137,7 @@
 			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter_querystring ? "&amp;" . $filter_querystring : ''));
 
 			$subheading_buttons = array(
-				Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($filter_querystring ? '?' . $prepopulate_querystring : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c'))
+				Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($prepopulate_querystring ? '?' . $prepopulate_querystring : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c'))
 			);
 
 			// Only show the Edit Section button if the Author is a developer. #938 ^BA
@@ -765,6 +765,7 @@
 
 			$section = SectionManager::fetch($section_id);
 			$entry_id = intval($this->_context['entry_id']);
+			$base = '/publish/'.$this->_context['section_handle'] . '/';
 
 			EntryManager::setFetchSorting('id', 'DESC');
 
@@ -805,24 +806,28 @@
 			 * @param Entry $entry
 			 * @param array $fields
 			 */
-			Symphony::ExtensionManager()->notifyMembers('EntryPreRender', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
+			Symphony::ExtensionManager()->notifyMembers('EntryPreRender', '/publish/edit/', array(
+				'section' => $section,
+				'entry' => &$entry,
+				'fields' => $fields
+			));
 
-			if(isset($this->_context['flag'])){
-
-				$link = 'publish/'.$this->_context['section_handle'].'/new/';
+			if(isset($this->_context['flag'])) {
+				$new_link = $base . 'new/';
+				$filter_link = $base;
 
 				list($flag, $field_id, $value) = preg_split('/:/i', $this->_context['flag'], 3);
 
 				if(isset($_REQUEST['prepopulate'])){
-					$link .= '?';
-					$filter .= '?';
+					$new_link .= '?';
+					$filter_link .= '?';
 					foreach($_REQUEST['prepopulate'] as $field_id => $value) {
-						$link .= "prepopulate[$field_id]=$value&amp;";
+						$new_link .= "prepopulate[$field_id]=$value&amp;";
 						$field_name = FieldManager::fetchHandleFromID($field_id);
-						$filter .= "filter[$field_name]=$value&amp;";
+						$filter_link .= "filter[$field_name]=$value&amp;";
 					}
-					$link = preg_replace("/&amp;$/", '', $link);
-					$filter = preg_replace("/&amp;$/", '', $filter);
+					$new_link = preg_replace("/&amp;$/", '', $new_link);
+					$filter_link = preg_replace("/&amp;$/", '', $filter_link);
 				}
 
 				// These flags are only relevant if there are no errors
@@ -831,9 +836,9 @@
 						case 'saved':
 							$this->pageAlert(
 								__('Entry updated at %s.', array(DateTimeObj::getTimeAgo()))
-								. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
+								. ' <a href="' . SYMPHONY_URL . $new_link . '" accesskey="c">'
 								. __('Create another?')
-								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/'.$filter.'" accesskey="a">'
+								. '</a> <a href="' . SYMPHONY_URL . $filter_link . '" accesskey="a">'
 								. __('View all Entries')
 								. '</a>'
 								, Alert::SUCCESS);
@@ -842,9 +847,9 @@
 						case 'created':
 							$this->pageAlert(
 								__('Entry created at %s.', array(DateTimeObj::getTimeAgo()))
-								. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
+								. ' <a href="' . SYMPHONY_URL . $new_link . '" accesskey="c">'
 								. __('Create another?')
-								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/'.$filter.'" accesskey="a">'
+								. '</a> <a href="' . SYMPHONY_URL . $filter_link . '" accesskey="a">'
 								. __('View all Entries')
 								. '</a>'
 								, Alert::SUCCESS);
@@ -890,7 +895,7 @@
 			}
 
 			$this->insertBreadcrumbs(array(
-				Widget::Anchor($section->get('name'), SYMPHONY_URL . '/publish/' . $this->_context['section_handle']),
+				Widget::Anchor($section->get('name'), SYMPHONY_URL . (isset($filter_link) ? $filter_link : $base)),
 			));
 
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
