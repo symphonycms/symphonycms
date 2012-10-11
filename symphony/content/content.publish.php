@@ -807,6 +807,8 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('EntryPreRender', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
 
+			$filter = '';
+
 			if(isset($this->_context['flag'])){
 
 				$link = 'publish/'.$this->_context['section_handle'].'/new/';
@@ -890,7 +892,7 @@
 			}
 
 			$this->insertBreadcrumbs(array(
-				Widget::Anchor($section->get('name'), SYMPHONY_URL . '/publish/' . $this->_context['section_handle']),
+				Widget::Anchor($section->get('name'), SYMPHONY_URL . '/publish/' . $this->_context['section_handle'] . '/' . $filter),
 			));
 
 			$this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
