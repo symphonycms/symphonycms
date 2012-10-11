@@ -788,6 +788,7 @@
 			if(isset($this->_context['flag'])){
 
 				$link = 'publish/'.$this->_context['section_handle'].'/new/';
+				$filter = 'publish/'.$this->_context['section_handle'].'/';
 
 				list($flag, $field_id, $value) = preg_split('/:/i', $this->_context['flag'], 3);
 
@@ -811,7 +812,7 @@
 								__('Entry updated at %s.', array(DateTimeObj::getTimeAgo()))
 								. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
 								. __('Create another?')
-								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/'.$filter.'" accesskey="a">'
+								. '</a> <a href="' . SYMPHONY_URL .'/'.$filter.'" accesskey="a">'
 								. __('View all Entries')
 								. '</a>'
 								, Alert::SUCCESS);
@@ -822,7 +823,7 @@
 								__('Entry created at %s.', array(DateTimeObj::getTimeAgo()))
 								. ' <a href="' . SYMPHONY_URL . '/' . $link . '" accesskey="c">'
 								. __('Create another?')
-								. '</a> <a href="' . SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/'.$filter.'" accesskey="a">'
+								. '</a> <a href="' . SYMPHONY_URL .'/"'.$filter.' accesskey="a">'
 								. __('View all Entries')
 								. '</a>'
 								, Alert::SUCCESS);
