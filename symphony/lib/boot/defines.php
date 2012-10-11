@@ -5,6 +5,12 @@
 	 */
 
 	/**
+	 * Use the Front-End-Https header to support downstream HTTPS proxies
+	 */
+	$headers = apache_request_headers();
+	$https_on = ( $headers['Front-End-Https'] == 'on' || getenv('HTTPS') ? 'on' : 'off' );
+
+	/**
 	 * Used to determine if Symphony has been loaded, useful to prevent
 	 * files from being accessed directly.
 	 * @var boolean
@@ -221,7 +227,7 @@
 	 * If HTTPS is on, `__SECURE__` will be set to true, otherwise false
 	 * @var string|boolean
 	 */
-	define_safe('__SECURE__', (HTTPS == 'on'));
+	define_safe('__SECURE__', ($https_on == 'on'));
 
 	/**
 	 * The base URL of this Symphony install, minus the symphony path.
