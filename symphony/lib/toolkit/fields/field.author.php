@@ -214,6 +214,7 @@
 					$author->getFullName(),
 					array(
 						'id' => (string)$author->get('id'),
+						'email' => md5($author->get('email')),
 						'username' => General::sanitize($author->get('username'))
 					)
 				));
