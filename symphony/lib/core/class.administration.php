@@ -89,6 +89,54 @@
 		}
 
 		/**
+		 * Returns the most recent version found in the `/install/migrations` folder.
+		 * Returns a version string to be used in `version_compare()` if an updater
+		 * has been found. Returns `FALSE` otherwise.
+		 * 
+		 * @since Symphony 2.3.1
+		 * @return mixed
+		 */
+		public function getMigrationVersion(){
+			if($this->isInstallerAvailable()){
+				$migration_file = end(scandir(DOCROOT . '/install/migrations'));
+				include_once(DOCROOT . '/install/lib/class.migration.php');
+				include_once(DOCROOT . '/install/migrations/' . $migration_file);
+
+				$migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
+				return call_user_func(array($migration_class, 'getVersion'));
+			}
+			else{
+				return FALSE;
+			}
+		}
+
+		/**
+		 * Checks if an update is available and applicable for the current installation.
+		 * 
+		 * @since Symphony 2.3.1
+		 * @return boolean
+		 */
+		public function isUpgradeAvailable(){
+			if($this->isInstallerAvailable()){
+				$migration_version = $this->getMigrationVersion();
+				$current_version = Symphony::Configuration()->get('version', 'symphony');
+				return version_compare($current_version, $migration_version, '<');
+			}
+			else{
+				return FALSE;
+			}
+		}
+
+		/**
+		 * Checks if the installer/upgrader is available.
+		 * 
+		 * @since Symphony 2.3.1
+		 * @return boolean
+		 */
+		public function isInstallerAvailable(){
+			return file_exists(DOCROOT . '/install/index.php');
+		}
+		/**
 		 * Given the URL path of a Symphony backend page, this function will
 		 * attempt to resolve the URL to a Symphony content page in the backend
 		 * or a page provided by an extension. This function checks to ensure a user
@@ -107,7 +155,6 @@
 					$page  = "/login";
 				}
 				else {
-
 					// Will redirect an Author to their default area of the Backend
 					// Integers are indicative of section's, text is treated as the path
 					// to the page after `SYMPHONY_URL`
@@ -137,11 +184,7 @@
 					if(is_null($default_area)) {
 						if($this->Author->isDeveloper()) {
 							$all_sections = SectionManager::fetch();
-							if(!empty($all_sections)) {
-								$section_handle = $all_sections[0]->get('handle');
-							} else {
-								$section_handle = null;
-							}
+							$section_handle = !empty($all_sections) ? $all_sections[0]->get('handle') : null;
 
 							if(!is_null($section_handle)) {
 								// If there are sections created, redirect to the first one (sortorder)
@@ -162,19 +205,26 @@
 				}
 			}
 
-			if(!$this->_callback = $this->getPageCallback($page)){
-				$this->errorPageNotFound();
+			if(!$this->_callback = $this->getPageCallback($page)) {
+				if($page === '/publish/') {
+					$sections = SectionManager::fetch(null, 'ASC', 'sortorder');
+					$section = current($sections);
+					redirect(SYMPHONY_URL . '/publish/' . $section->get('handle'));
+				}
+				else $this->errorPageNotFound();
 			}
 
-			include_once((isset($this->_callback['driverlocation']) ? $this->_callback['driverlocation'] : CONTENT) . '/content.' . $this->_callback['driver'] . '.php');
+			include_once($this->_callback['driver_location']);
 			$this->Page = new $this->_callback['classname'];
 
-			if(!$is_logged_in && $this->_callback['driver'] != 'login'){
-				if(is_callable(array($this->Page, 'handleFailedAuthorisation'))) $this->Page->handleFailedAuthorisation();
-				else{
+			if(!$is_logged_in && $this->_callback['driver'] != 'login') {
+				if(is_callable(array($this->Page, 'handleFailedAuthorisation'))) {
+					$this->Page->handleFailedAuthorisation();
+				}
+				else {
 					include_once(CONTENT . '/content.login.php');
 					$this->Page = new contentLogin;
-					$this->Page->build();
+					$this->Page->build(array('redirect' => $page));
 				}
 			}
 			else {
@@ -184,7 +234,40 @@
 				$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 				if(is_array($extensions) && !empty($extensions) && $this->__canAccessAlerts()) {
 					foreach($extensions as $name) {
-						$about = Symphony::ExtensionManager()->about($name);
+						try {
+							$about = Symphony::ExtensionManager()->about($name);
+						}
+						catch (Exception $ex) {
+							// The extension cannot be found, show an error message and let the user remove
+							// or rename the extension folder.
+							if (isset($_POST['extension-missing'])) {
+								if(isset($_POST['action']['delete'])) {
+									Symphony::ExtensionManager()->cleanupDatabase();
+								}
+								else if (isset($_POST['action']['rename'])) {
+									if(!@rename(EXTENSIONS . '/' . $_POST['existing-folder'], EXTENSIONS . '/' . $_POST['new-folder'])) {
+										throw new SymphonyErrorPage(
+											__('Could not find extension %s at location %s.', array(
+												'<code>' . $ex->getAdditional()->name . '</code>',
+												'<code>' . $ex->getAdditional()->path . '</code>'
+											)),
+											'Symphony Extension Missing Error',
+											'missing_extension', array(
+												'name' => $ex->getAdditional()->name,
+												'path' => $ex->getAdditional()->path,
+												'rename_failed' => true
+											)
+										);
+									}
+								}
+
+								redirect(SYMPHONY_URL . '/system/extensions/');
+							}
+							else {
+								throw $ex;
+							}
+						}
+
 						if(in_array(EXTENSION_REQUIRES_UPDATE,$about['status'])) {
 							$this->Page->pageAlert(
 								__('An extension requires updating.') . ' <a href="' . SYMPHONY_URL . '/system/extensions/">' . __('View extensions') . '</a>'
@@ -196,19 +279,10 @@
 
 				// Check for update Alert
 				// Scan install/migrations directory for the most recent updater and compare
-				if(file_exists(DOCROOT . '/install/index.php') && $this->__canAccessAlerts()) {
+				if($this->isInstallerAvailable() && $this->__canAccessAlerts()) {
 					try{
-						$migration_file = end(scandir(DOCROOT . '/install/migrations'));
-						include_once(DOCROOT . '/install/lib/class.migration.php');
-						include_once(DOCROOT . '/install/migrations/' . $migration_file);
-
-						$migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
-						$migration_version = call_user_func(array($migration_class, 'getVersion'));
-
-						$current_version = Symphony::Configuration()->get('version', 'symphony');
-
 						// The updater contains a version higher than the current Symphony version.
-						if(version_compare($current_version, $migration_version, '<')) {
+						if($this->isUpgradeAvailable()) {
 							$message = __('An update has been found in your installation to upgrade Symphony to %s.', array($migration_version)) . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
 						}
 						// The updater contains a version lower than the current Symphony version.
@@ -254,45 +328,50 @@
 		 * the slashes and the resulting pieces used to determine if the page
 		 * is provided by an extension, is a section (index or entry creation)
 		 * or finally a standard Symphony content page. If no page driver can
-		 * be found, this function will return false
+		 * be found, this function will return false.
 		 *
+		 * @uses AdminPagePostCallback
 		 * @param string $page
 		 *  The full path (including the domain) of the Symphony backend page
 		 * @return array|boolean
 		 *  If successful, this function will return an associative array that at the
-		 *  very least will return the page's classname, pageroot, driver and
-		 *  context, otherwise this will return false.
+		 *  very least will return the page's classname, pageroot, driver, driver_location
+		 *  and context, otherwise this will return false.
 		 */
 		public function getPageCallback($page = null){
-
-			if(!$page && $this->_callback) return $this->_callback;
-			elseif(!$page && !$this->_callback) trigger_error(__('Cannot request a page callback without first specifying the page.'));
+			if(!$page && $this->_callback) {
+				return $this->_callback;
+			}
+			else if (!$page && !$this->_callback) {
+				trigger_error(__('Cannot request a page callback without first specifying the page.'));
+			}
 
 			$this->_currentPage = SYMPHONY_URL . preg_replace('/\/{2,}/', '/', $page);
 			$bits = preg_split('/\//', trim($page, '/'), 3, PREG_SPLIT_NO_EMPTY);
-
 			$callback = array(
 				'driver' => null,
+				'driver_location' => null,
 				'context' => null,
 				'classname' => null,
 				'pageroot' => null
 			);
 
-			if($bits[0] == 'login'){
+			// Login page, /symphony/login/
+			if($bits[0] == 'login') {
 				$callback = array(
 					'driver' => 'login',
+					'driver_location' => CONTENT . '/content.login.php',
 					'context' => preg_split('/\//', $bits[1] . '/' . $bits[2], -1, PREG_SPLIT_NO_EMPTY),
 					'classname' => 'contentLogin',
 					'pageroot' => '/login/'
 				);
 			}
 
-			elseif($bits[0] == 'extension' && isset($bits[1])){
-
+			// Extension page, /symphony/extension/{extension_name}/
+			else if($bits[0] == 'extension' && isset($bits[1])) {
 				$extension_name = $bits[1];
 				$bits = preg_split('/\//', trim($bits[2], '/'), 2, PREG_SPLIT_NO_EMPTY);
 
-				$callback['driverlocation'] = EXTENSIONS . '/' . $extension_name . '/content/';
 				$callback['driver'] = 'index';
 				$callback['classname'] = 'contentExtension' . ucfirst($extension_name) . 'Index';
 				$callback['pageroot'] = '/extension/' . $extension_name. '/';
@@ -305,15 +384,16 @@
 
 				if(isset($bits[1])) $callback['context'] = preg_split('/\//', $bits[1], -1, PREG_SPLIT_NO_EMPTY);
 
-				if(!is_file($callback['driverlocation'] . '/content.' . $callback['driver'] . '.php')) return false;
-
+				$callback['driver_location'] = EXTENSIONS . '/' . $extension_name . '/content/content.' . $callback['driver'] . '.php';
 			}
 
-			elseif($bits[0] == 'publish'){
+			// Publish page, /symphony/publish/{section_handle}/
+			else if($bits[0] == 'publish') {
 				if(!isset($bits[1])) return false;
 
 				$callback = array(
 					'driver' => 'publish',
+					'driver_location' => $callback['driver_location'] = CONTENT . '/content.publish.php',
 					'context' => array(
 						'section_handle' => $bits[1],
 						'page' => null,
@@ -324,40 +404,69 @@
 					'classname' => 'contentPublish'
 				);
 
-				if(isset($bits[2])){
+				if(isset($bits[2])) {
 					$extras = preg_split('/\//', $bits[2], -1, PREG_SPLIT_NO_EMPTY);
-
 					$callback['context']['page'] = $extras[0];
-					if(isset($extras[1])) $callback['context']['entry_id'] = intval($extras[1]);
 
+					if(isset($extras[1])) $callback['context']['entry_id'] = intval($extras[1]);
 					if(isset($extras[2])) $callback['context']['flag'] = $extras[2];
 				}
-
-				else $callback['context']['page'] = 'index';
-
+				else {
+					$callback['context']['page'] = 'index';
+				}
 			}
 
-			else{
+			// Everything else
+			else {
 				$callback['driver'] = ucfirst($bits[0]);
 				$callback['pageroot'] = '/' . $bits[0] . '/';
 
-				if(isset($bits[1])){
+				if(isset($bits[1])) {
 					$callback['driver'] = $callback['driver'] . ucfirst($bits[1]);
 					$callback['pageroot'] .= $bits[1] . '/';
 				}
 
-				if(isset($bits[2])) $callback['context'] = preg_split('/\//', $bits[2], -1, PREG_SPLIT_NO_EMPTY);
+				if(isset($bits[2])) {
+					$callback['context'] = preg_split('/\//', $bits[2], -1, PREG_SPLIT_NO_EMPTY);
+				}
 
 				$callback['classname'] = 'content' . $callback['driver'];
 				$callback['driver'] = strtolower($callback['driver']);
-
-				if(!is_file(CONTENT . '/content.' . $callback['driver'] . '.php')) return false;
-
+				$callback['driver_location'] = CONTENT . '/content.' . $callback['driver'] . '.php';
 			}
 
-			// TODO: Add delegate for custom callback creation
+			/**
+			 * Immediately after determining which class will resolve the current page, this
+			 * delegate allows extension to modify the routing or provide additional information.
+			 *
+			 * @since Symphony 2.3.1
+			 * @delegate AdminPagePostCallback
+			 * @param string $context
+			 *  '/backend/'
+			 * @param string $page
+			 *  The current URL string, after the SYMPHONY_URL constant (which is `/symphony/`
+			 *  at the moment.
+			 * @param array $parts
+			 *  An array representation of `$page`
+			 * @param array $callback
+			 *  An associative array that contains `driver`, `pageroot`, `classname` and
+			 *  `context` keys. The `driver_location` is the path to the class to render this
+			 *  page, `driver` should be the view to render, the `classname` the name of the
+			 *  class, `pageroot` the rootpage, before any extra URL params and `context` can
+			 *  provide additional information about the page
+			 */
+			Symphony::ExtensionManager()->notifyMembers('AdminPagePostCallback', '/backend/', array(
+				'page' => $this->_currentPage,
+				'parts' => $bits,
+				'callback' => &$callback
+			));
 
-			return $callback;
+			if(isset($callback['driver_location']) && !is_file($callback['driver_location'])) {
+				return false;
+			}
+			else {
+				return $callback;
+			}
 		}
 
 		/**

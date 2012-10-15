@@ -86,6 +86,11 @@ span.frame {
 	display: none;
 }
 
+#login .frame .action-link  {
+	margin-top: 3px;
+	float: left;
+}
+
 
 /*--------------------------------------------------------------------------
 	Error frames
@@ -267,6 +272,10 @@ span.frame {
 	color: #3d3d3d;
 	margin: 0 -10px;
 	padding: 8px 10px 7px;
+}
+
+.frame > ol > li header:not(:only-child),
+.frame > ul > li header:not(:only-child) {
 	-webkit-box-shadow: 0 3px 10px #ededed;
 	box-shadow: 0 3px 10px #ededed;
 	border-bottom: 1px solid #dcdcdc;

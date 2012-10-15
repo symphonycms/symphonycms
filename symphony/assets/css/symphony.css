@@ -114,6 +114,7 @@ ul, ol {
 ul.tags {
 	margin: -0.75em 0 1.5em 0;
 	padding: 0;
+	color: #A2A2A2;
 	color: rgba(0, 0, 0, 0.4);
 	list-style: none;
 }
@@ -207,6 +208,10 @@ p.label > i {
 	position: absolute;
 	right: 0;
 	top: 0;
+}
+
+label.inline-help > i {
+	position: relative;
 }
 
 /* States */

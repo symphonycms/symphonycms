@@ -29,10 +29,9 @@
 		 *
 		 * @return void
 		 */
-		public function __construct() {
+		public function __construct(){
 			parent::__construct();
-			$this->setSenderEmailAddress(Symphony::Configuration()->get('from_address', 'email_sendmail') ? Symphony::Configuration()->get('from_address', 'email_sendmail') : 'noreply@' . HTTP_HOST);
-			$this->setSenderName(Symphony::Configuration()->get('from_name', 'email_sendmail') ? Symphony::Configuration()->get('from_name', 'email_sendmail') : 'Symphony');
+			$this->setConfiguration(Symphony::Configuration()->get('email_sendmail'));
 		}
 
 		/**
@@ -56,50 +55,50 @@
 			try {
 				// Encode recipient names (but not any numeric array indexes)
 				foreach($this->_recipients as $name => $email) {
-					$name = is_numeric($name) ? $name : EmailHelper::qEncode($name);
-					$recipients[$name] =  $email;
+					$name = empty($name) ? $name : EmailHelper::qEncode($name);
+					$recipients[$name] = $email;
 				}
 
 				// Combine keys and values into a recipient list (name <email>, name <email>).
 				$recipient_list = EmailHelper::arrayToList($recipients);
 
 				// Encode the subject
-				$this->_subject  = EmailHelper::qEncode($this->_subject);
-
-				// Encode the sender name if it's not empty
-				$this->_sender_name = empty($this->_sender_name) ? NULL : EmailHelper::qEncode($this->_sender_name);
+				$subject = EmailHelper::qEncode((string)$this->_subject);
 
 				// Build the 'From' header field body
 				$from = empty($this->_sender_name)
 				        ? $this->_sender_email_address
-				        : $this->_sender_name . ' <' . $this->_sender_email_address . '>';
+				        : EmailHelper::qEncode($this->_sender_name) . ' <' . $this->_sender_email_address . '>';
 
 				// Build the 'Reply-To' header field body
-				if (!empty($this->_reply_to_email_address)) {
-					if (!empty($this->_reply_to_name)) {
-						$reply_to = EmailHelper::qEncode($this->_reply_to_name) . ' <'.$this->_reply_to_email_address.'>';
-					}
-					else {
-						$reply_to = $this->_reply_to_email_address;
-					}
+				if(!empty($this->_reply_to_email_address)){
+					$reply_to = empty($this->_reply_to_name)
+					            ? $this->_reply_to_email_address
+					            : EmailHelper::qEncode($this->_reply_to_name) . ' <'.$this->_reply_to_email_address.'>';
 				}
-				if (!empty($reply_to)) {
-					$this->_header_fields = array_merge(array(
-						'Reply-To' => $reply_to,
-					),$this->_header_fields);
+				if(!empty($reply_to)){
+					$this->_header_fields = array_merge(
+						$this->_header_fields,
+						array(
+							'Reply-To' => $reply_to,
+						)
+					);
 				}
 
 				// Build the message from the attachments, the html-text and the plain-text.
 				$this->prepareMessageBody();
 
 				// Build the header fields
-				$this->_header_fields = array_merge(array(
-					'Message-ID'   => sprintf('<%s@%s>', md5(uniqid()), HTTP_HOST),
-					'Date'         => date('r'),
-					'From'         => $from,
-					'X-Mailer'     => 'Symphony Email Module',
-					'MIME-Version' => '1.0',
-				),$this->_header_fields);
+				$this->_header_fields = array_merge(
+					$this->_header_fields,
+					array(
+						'Message-ID'   => sprintf('<%s@%s>', md5(uniqid()), HTTP_HOST),
+						'Date'         => date('r'),
+						'From'         => $from,
+						'X-Mailer'     => 'Symphony Email Module',
+						'MIME-Version' => '1.0',
+					)
+				);
 
 				// Format header fields
 				foreach ($this->_header_fields as $name => $body) {
@@ -115,12 +114,25 @@
 				$header_fields = implode("\r\n", $header_fields);
 
 				// Send the email
-				mail($recipient_list, $this->_subject, $this->_body, $header_fields, "-f{$this->_sender_email_address}");
+				mail($recipient_list, $subject, $this->_body, $header_fields, "-f{$this->_sender_email_address}");
 			}
 			catch (Exception $e) {
 				throw new EmailGatewayException($e->getMessage());
 			}
 			return true;
+		}
+
+		/**
+		 * Sets all configuration entries from an array.
+		 *
+		 * @throws EmailValidationException
+		 * @param array $configuration
+		 * @since 2.3.1
+		 *  All configuration entries stored in a single array. The array should have the format of the $_POST array created by the preferences HTML.
+		 * @return void
+		 */
+		public function setConfiguration($config){
+			$this->setFrom($config['from_address'],$config['from_name']);
 		}
 
 		/**
@@ -131,7 +143,7 @@
 		public function getPreferencesPane() {
 			parent::getPreferencesPane();
 			$group = new XMLElement('fieldset');
-			$group->setAttribute('class', 'settings pickable');
+			$group->setAttribute('class', 'settings condensed pickable');
 			$group->setAttribute('id', 'sendmail');
 			$group->appendChild(new XMLElement('legend', __('Email: Sendmail')));
 
@@ -153,4 +165,3 @@
 			return $group;
 		}
 	}
-

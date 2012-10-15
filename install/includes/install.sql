@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS `tbl_authors`;
 CREATE TABLE `tbl_authors` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `password` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(150) COLLATE utf8_unicode_ci NOT NULL,
   `first_name` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `last_name` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -40,11 +40,15 @@ CREATE TABLE `tbl_entries` (
   `author_id` int(11) unsigned NOT NULL,
   `creation_date` datetime NOT NULL,
   `creation_date_gmt` datetime NOT NULL,
+  `modification_date` datetime NOT NULL,
+  `modification_date_gmt` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `section_id` (`section_id`),
   KEY `author_id` (`author_id`),
   KEY `creation_date` (`creation_date`),
-  KEY `creation_date_gmt` (`creation_date_gmt`)
+  KEY `creation_date_gmt` (`creation_date_gmt`),
+  KEY `modification_date` (`modification_date`),
+  KEY `modification_date_gmt` (`modification_date_gmt`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- *** STRUCTURE: `tbl_extensions` ***
@@ -93,9 +97,9 @@ DROP TABLE IF EXISTS `tbl_fields_author`;
 CREATE TABLE `tbl_fields_author` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `field_id` int(11) unsigned NOT NULL,
-  `allow_author_change` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL,
   `allow_multiple_selection` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `default_to_current_user` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL,
+  `author_types` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `field_id` (`field_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -234,8 +238,6 @@ CREATE TABLE `tbl_sections` (
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `handle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `sortorder` int(11) NOT NULL DEFAULT '0',
-  `entry_order` varchar(7) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `entry_order_direction` enum('asc','desc') COLLATE utf8_unicode_ci DEFAULT 'asc',
   `hidden` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `navigation_group` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Content',
   PRIMARY KEY (`id`),

@@ -95,7 +95,7 @@
 		 *  An Entry object to insert into the database
 		 * @return boolean
 		 */
-		public static function add(Entry $entry){
+		public static function add(Entry $entry) {
 			$fields = $entry->get();
 
 			Symphony::Database()->insert($fields, 'tbl_entries');
@@ -141,12 +141,23 @@
 		 *  An Entry object
 		 * @return boolean
 		 */
-		public static function edit(Entry $entry){
+		public static function edit(Entry $entry) {
+			// Update modification date.
+			Symphony::Database()->update(array(
+					'modification_date' => $entry->get('modification_date'),
+					'modification_date_gmt' => $entry->get('modification_date_gmt')
+				),
+				'tbl_entries',
+				sprintf(' `id` = %d', $entry->get('id'))
+			);
+
+			// Iterate over all data for this entry, deleting existing data first
+			// then inserting a new row for the data
 			foreach ($entry->getData() as $field_id => $field) {
 				if (empty($field_id)) continue;
 
 				try{
-					Symphony::Database()->delete('tbl_entries_data_' . $field_id, " `entry_id` = '".$entry->get('id')."'");
+					Symphony::Database()->delete('tbl_entries_data_' . $field_id, sprintf(' `entry_id` = %d', $entry->get('id')));
 				}
 				catch(Exception $e){
 					// Discard?
@@ -175,7 +186,6 @@
 				}
 
 				Symphony::Database()->insert($fields, 'tbl_entries_data_' . $field_id);
-
 			}
 
 			return true;
@@ -209,11 +219,13 @@
 				if($section instanceof Section) {
 					$fields = $section->fetchFields();
 					$data = array();
+
 					foreach($fields as $field) {
 						$reflection = new ReflectionClass($field);
 						// This field overrides the default implementation, so pass it data.
 						$data[$field->get('element_name')] = $reflection->getMethod('entryDataCleanup')->class == 'Field' ? false : true;
 					}
+
 					$data = array_filter($data);
 					if(empty($data)) {
 						$needs_data = false;
@@ -317,9 +329,7 @@
 			if (!$entry_id && !$section_id) return false;
 
 			if (!$section_id) $section_id = self::fetchEntrySectionID($entry_id);
-
 			$section = SectionManager::fetch($section_id);
-
 			if (!is_object($section)) return false;
 
 			// SORTING
@@ -332,8 +342,12 @@
 				$sort = 'ORDER BY RAND() ';
 			}
 
-			else if (self::$_fetchSortField == 'date') {
-				$sort = 'ORDER BY `e`.`creation_date` ' . self::$_fetchSortDirection;
+			else if (self::$_fetchSortField === 'date' || self::$_fetchSortField === 'system:creation-date') {
+				$sort = 'ORDER BY `e`.`creation_date_gmt` ' . self::$_fetchSortDirection;
+			}
+
+			else if (self::$_fetchSortField === 'system:modification-date') {
+				$sort = 'ORDER BY `e`.`modification_date_gmt` ' . self::$_fetchSortDirection;
 			}
 
 			else if (self::$_fetchSortField == 'id') {
@@ -359,7 +373,8 @@
 			$sql = "
 				SELECT  ".($group ? 'DISTINCT ' : '')."`e`.id,
 						`e`.section_id, e.`author_id`,
-						UNIX_TIMESTAMP(e.`creation_date`) AS `creation_date`
+						UNIX_TIMESTAMP(e.`creation_date`) AS `creation_date`,
+						UNIX_TIMESTAMP(e.`modification_date`) AS `modification_date`
 				FROM `tbl_entries` AS `e`
 				$joins
 				WHERE 1
@@ -470,10 +485,19 @@
 			foreach ($raw as $entry) {
 				$obj = self::create();
 
-				$obj->creationDate = DateTimeObj::get('c', $entry['meta']['creation_date']);
 				$obj->set('id', $entry['meta']['id']);
 				$obj->set('author_id', $entry['meta']['author_id']);
 				$obj->set('section_id', $entry['meta']['section_id']);
+				$obj->set('creation_date', DateTimeObj::get('c', $entry['meta']['creation_date']));
+
+				if(isset($entry['meta']['modification_date'])) {
+					$obj->set('modification_date', DateTimeObj::get('c', $entry['meta']['modification_date']));
+				}
+				else {
+					$obj->set('modification_date', $obj->get('creation_date'));
+				}
+
+				$obj->creationDate = $obj->get('creation_date');
 
 				if(isset($entry['fields']) && is_array($entry['fields'])){
 					foreach ($entry['fields'] as $field_id => $data) $obj->setData($field_id, $data);

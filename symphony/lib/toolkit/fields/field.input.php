@@ -4,14 +4,14 @@
 	 * @package toolkit
 	 */
 
+	require_once TOOLKIT . '/class.xsltprocess.php';
+	require_once FACE . '/interface.exportablefield.php';
+	require_once FACE . '/interface.importablefield.php';
+
 	/**
 	 * A simple Input field that essentially maps to HTML's `<input type='text'/>`.
 	 */
-
-	require_once(TOOLKIT . '/class.xsltprocess.php');
-
-	Class fieldInput extends Field {
-
+	class FieldInput extends Field implements ExportableField, ImportableField {
 		public function __construct(){
 			parent::__construct();
 			$this->_name = __('Text Input');
@@ -25,10 +25,6 @@
 	-------------------------------------------------------------------------*/
 
 		public function canFilter(){
-			return true;
-		}
-
-		public function canImport(){
 			return true;
 		}
 
@@ -187,6 +183,74 @@
 					$this->get('element_name'), $value, array('handle' => $data['handle'])
 				)
 			);
+		}
+
+	/*-------------------------------------------------------------------------
+		Import:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Give the field some data and ask it to return a value.
+		 *
+		 * @param mixed $data
+		 * @param integer $entry_id
+		 * @return array
+		 */
+		public function prepareImportValue($data, $entry_id = null) {
+			return array(
+				'handle' =>	Lang::createHandle($data),
+				'value' =>	$data
+			);
+		}
+
+	/*-------------------------------------------------------------------------
+		Export:
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Return a list of supported export modes for use with `prepareExportValue`.
+		 *
+		 * @return array
+		 */
+		public function getExportModes() {
+			return array(
+				'getHandle' =>		ExportableField::HANDLE,
+				'getUnformatted' =>	ExportableField::UNFORMATTED,
+				'getPostdata' =>	ExportableField::POSTDATA
+			);
+		}
+
+		/**
+		 * Give the field some data and ask it to return a value using one of many
+		 * possible modes.
+		 *
+		 * @param mixed $data
+		 * @param integer $mode
+		 * @param integer $entry_id
+		 * @return string|null
+		 */
+		public function prepareExportValue($data, $mode, $entry_id = null) {
+			$modes = (object)$this->getExportModes();
+
+			// Export handles:
+			if ($mode === $modes->getHandle) {
+				if (isset($data['handle'])) {
+					return $data['handle'];
+				}
+
+				else if (isset($data['value'])) {
+					return General::createHandle($data['value']);
+				}
+			}
+
+			// Export unformatted:
+			else if ($mode === $modes->getUnformatted || $mode === $modes->getPostdata) {
+				return isset($data['value'])
+					? $data['value']
+					: null;
+			}
+
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------

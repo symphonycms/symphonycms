@@ -24,6 +24,7 @@
 		protected $_auth = false;
 		protected $_user;
 		protected $_pass;
+		protected $_envelope_from;
 
 		/**
 		 * Returns the name, used in the dropdown menu in the preferences pane.
@@ -43,22 +44,13 @@
 		 */
 		public function __construct(){
 			parent::__construct();
-			$this->setSenderEmailAddress(Symphony::Configuration()->get('from_address', 'email_smtp') ? Symphony::Configuration()->get('from_address', 'email_smtp') : 'noreply@' . HTTP_HOST);
-			$this->setSenderName(Symphony::Configuration()->get('from_name', 'email_smtp') ? Symphony::Configuration()->get('from_name', 'email_smtp') : 'Symphony');
-			$this->setSecure(Symphony::Configuration()->get('secure', 'email_smtp'));
-			$this->setHost(Symphony::Configuration()->get('host', 'email_smtp'));
-			$this->setPort(Symphony::Configuration()->get('port', 'email_smtp'));
-			if(Symphony::Configuration()->get('auth', 'email_smtp') == 1){
-				$this->setAuth(true);
-				$this->setUser(Symphony::Configuration()->get('username', 'email_smtp'));
-				$this->setPass(Symphony::Configuration()->get('password', 'email_smtp'));
-			}
+			$this->setConfiguration(Symphony::Configuration()->get('email_smtp'));
 		}
 
 		/**
 		 * Send an email using an SMTP server
 		 *
-		 * @return bool
+		 * @return boolean
 		 */
 		public function send(){
 
@@ -70,70 +62,107 @@
 				$settings['password'] = $this->_pass;
 			}
 			$settings['secure'] = $this->_secure;
+
 			try{
-				$this->_SMTP = new SMTP($this->_host, $this->_port, $settings);
+				if(!is_a($this->_SMTP, 'SMTP')){
+					$this->_SMTP = new SMTP($this->_host, $this->_port, $settings);
+				}
 
 				// Encode recipient names (but not any numeric array indexes)
 				foreach($this->_recipients as $name => $email){
-					$name = is_numeric($name) ? $name : EmailHelper::qEncode($name);
-					$recipients[$name] =  $email;
+					$name = empty($name) ? $name : EmailHelper::qEncode($name);
+					$recipients[$name] = $email;
 				}
 
 				// Combine keys and values into a recipient list (name <email>, name <email>).
 				$recipient_list = EmailHelper::arrayToList($recipients);
 
 				// Encode the subject
-				$this->_subject	 = EmailHelper::qEncode($this->_subject);
-
-				// Encode the sender name if it's not empty
-				$this->_sender_name = empty($this->_sender_name) ? NULL : EmailHelper::qEncode($this->_sender_name);
+				$subject = EmailHelper::qEncode((string)$this->_subject);
 
 				// Build the 'From' header field body
 				$from = empty($this->_sender_name)
-						? $this->_sender_email_address
-						: $this->_sender_name . ' <' . $this->_sender_email_address . '>';
+				        ? $this->_sender_email_address
+				        : EmailHelper::qEncode($this->_sender_name) . ' <' . $this->_sender_email_address . '>';
 
 				// Build the 'Reply-To' header field body
 				if(!empty($this->_reply_to_email_address)){
-					if(!empty($this->_reply_to_name)){
-						$reply_to = EmailHelper::qEncode($this->_reply_to_name) . ' <'.$this->_reply_to_email_address.'>';
-					}
-					else{
-						$reply_to = $this->_reply_to_email_address;
-					}
+					$reply_to = empty($this->_reply_to_name)
+					            ? $this->_reply_to_email_address
+					            : EmailHelper::qEncode($this->_reply_to_name) . ' <'.$this->_reply_to_email_address.'>';
 				}
 				if(!empty($reply_to)){
-					$this->_header_fields = array_merge(array(
-						'Reply-To' => $reply_to,
-					),$this->_header_fields);
+					$this->_header_fields = array_merge(
+						$this->_header_fields,
+						array(
+							'Reply-To' => $reply_to,
+						)
+					);
 				}
 
 				// Build the body text using attachments, html-text and plain-text.
 				$this->prepareMessageBody();
 
 				// Build the header fields
-				$this->_header_fields = array_merge(Array(
-					'Message-ID'   => sprintf('<%s@%s>', md5(uniqid()) , HTTP_HOST),
-					'Date'		   => date('r'),
-					'From'		   => $from,
-					'Subject'	   => $this->_subject,
-					'To'		   => $recipient_list,
-					'X-Mailer'	   => 'Symphony Email Module',
-					'MIME-Version' => '1.0'
-				),$this->_header_fields);
+				$this->_header_fields = array_merge(
+					$this->_header_fields,
+					array(
+						'Message-ID'   => sprintf('<%s@%s>', md5(uniqid()) , HTTP_HOST),
+						'Date'         => date('r'),
+						'From'         => $from,
+						'Subject'      => $subject,
+						'To'           => $recipient_list,
+						'X-Mailer'     => 'Symphony Email Module',
+						'MIME-Version' => '1.0'
+					)
+				);
 
 				// Set header fields and fold header field bodies
 				foreach($this->_header_fields as $name => $body){
 					$this->_SMTP->setHeader($name, EmailHelper::fold($body));
 				}
 
-				// Send the email
-				$this->_SMTP->sendMail($this->_sender_email_address, $this->_recipients, $this->_subject, $this->_body);
+				// Send the email command. If the envelope from variable is set, use that for the MAIL command. This improves bounce handling.
+				$this->_SMTP->sendMail(is_null($this->_envelope_from)?$this->_sender_email_address:$this->_envelope_from, $this->_recipients, $this->_subject, $this->_body);
+				if($this->_keepalive == false){
+					$this->closeConnection();
+				}
+				$this->reset();
 			}
 			catch(SMTPException $e){
 				throw new EmailGatewayException($e->getMessage());
 			}
 			return true;
+		}
+
+		/**
+		 * Resets the headers, body, subject
+		 *
+		 * @return void
+		 */
+		public function reset(){
+			$this->_header_fields = array();
+			$this->_envelope_from = null;
+			$this->_recipients = array();
+			$this->_subject = null;
+			$this->_body = null;
+		}
+
+		public function openConnection(){
+			return parent::openConnection();
+		}
+
+		public function closeConnection(){
+			if(is_a($this->_SMTP, 'SMTP')){
+				try{
+					$this->_SMTP->quit();
+					return parent::closeConnection();
+				}
+				catch(Exception $e){
+				}
+			}
+			parent::closeConnection();
+			return false;
 		}
 
 		/**
@@ -159,13 +188,8 @@
 		 * @return void
 		 */
 		public function setPort($port = null){
-			if($port == null){
-				if($this->_protocol == 'ssl'){
-					$port = 465;
-				}
-				else{
-					$port = 25;
-				}
+			if(is_null($port)) {
+				$port = ($this->_protocol == 'ssl') ? 465 : 25;
 			}
 			$this->_port = $port;
 		}
@@ -193,7 +217,7 @@
 		/**
 		 * Use AUTH login or no auth.
 		 *
-		 * @param bool $auth
+		 * @param boolean $auth
 		 * @return void
 		 */
 		public function setAuth($auth = false){
@@ -203,7 +227,9 @@
 		/**
 		 * Sets the encryption used.
 		 *
-		 * @param string|null|false $secure The encryption used. Can be 'ssl', 'tls' or false
+		 * @param string $secure
+		 *  The encryption used. Can be 'ssl', 'tls'. Anything else defaults to
+		 *  a non secure TCP connection
 		 * @return void
 		 */
 		public function setSecure($secure = null){
@@ -211,25 +237,64 @@
 				$this->_protocol = 'tcp';
 				$this->_secure = 'tls';
 			}
-			elseif($secure == 'ssl'){
+			else if($secure == 'ssl') {
 				$this->_protocol = 'ssl';
 				$this->_secure = 'ssl';
 			}
-			else{
+			else {
 				$this->_protocol = 'tcp';
 				$this->_secure = 'no';
 			}
 		}
 
 		/**
-		 * Builds the preferences pane, shown in the symphony backend.
+		 * Sets the envelope_from address. This is only available via the API, as it is an expert-only feature.
+		 *
+		 * @since 2.3.1
+		 * @return void
+		 */
+		public function setEnvelopeFrom($envelope_from = null){
+			if(preg_match('%[\r\n]%', $envelope_from)){
+				throw new EmailValidationException(__('The Envelope From Address can not contain carriage return or newlines.'));
+			}
+			$this->_envelope_from = $envelope_from;
+		}
+
+		/**
+		 * Sets all configuration entries from an array.
+		 *
+		 * @throws EmailValidationException
+		 * @param array $configuration
+		 * @since 2.3.1
+		 *  All configuration entries stored in a single array. The array should have the format of the $_POST array created by the preferences HTML.
+		 * @return void
+		 */
+		public function setConfiguration($config){
+			$this->setFrom($config['from_address'],$config['from_name']);
+			$this->setHost($config['host']);
+			$this->setPort($config['port']);
+			$this->setSecure($config['secure']);
+			if($config['auth'] == 1){
+				$this->setAuth(true);
+				$this->setUser($config['username']);
+				$this->setPass($config['password']);
+			}
+			else{
+				$this->setAuth(false);
+				$this->setUser('');
+				$this->setPass('');
+			}
+		}
+
+		/**
+		 * Builds the preferences pane, shown in the Symphony backend.
 		 *
 		 * @return XMLElement
 		 */
 		public function getPreferencesPane(){
 			parent::getPreferencesPane();
 			$group = new XMLElement('fieldset');
-			$group->setAttribute('class', 'settings pickable');
+			$group->setAttribute('class', 'settings condensed pickable');
 			$group->setAttribute('id', 'smtp');
 			$group->appendChild(new XMLElement('legend', __('Email: SMTP')));
 

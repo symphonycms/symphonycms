@@ -44,13 +44,14 @@
 
 	define('DOCROOT', $clean_path);
 	define('INSTALL', DOCROOT . '/install');
-	define('INSTALL_LOGS', INSTALL . '/logs');
 
-	define('VERSION', '2.3');
+	define('VERSION', '2.3.1RC2');
 
 	// Required boot components
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
+
+	define('INSTALL_LOGS', MANIFEST . '/logs');
 
 	// If prompt to remove, delete the entire `/install` directory
 	// and then redirect to Symphony
