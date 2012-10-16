@@ -7,8 +7,7 @@
 	/**
 	 * Use the Front-End-Https header to support downstream HTTPS proxies
 	 */
-	$headers = apache_request_headers();
-	$https_on = ( $headers['X-Forwarded-Proto'] == 'https' ||
+	$https_on = ( $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' ||
 		getenv('HTTPS') ? 'on' : 'off' );
 
 	/**
