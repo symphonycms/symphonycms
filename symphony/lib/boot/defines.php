@@ -8,7 +8,8 @@
 	 * Use the Front-End-Https header to support downstream HTTPS proxies
 	 */
 	$headers = apache_request_headers();
-	$https_on = ( $headers['Front-End-Https'] == 'on' || getenv('HTTPS') ? 'on' : 'off' );
+	$https_on = ( $headers['X-Forwarded-Proto
+'] == 'on' || getenv('HTTPS') ? 'on' : 'off' );
 
 	/**
 	 * Used to determine if Symphony has been loaded, useful to prevent
