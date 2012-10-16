@@ -133,10 +133,19 @@
 				active = item || notifier.find('.active:not(:animated)');
 
 			// Adjust height
-			if(!notifier.is('.constructing')) {
+			if(!notifier.is('.constructing') && notifier.is(':visible')) {
+
 				notifier.show().animate({
+
 					height: active.innerHeight() || 0
-				}, 100);
+
+				}, 100, function() {
+
+					if (notifier.innerHeight() === 0) {
+
+						notifier.hide();
+					}
+				});
 			}
 		});
 
