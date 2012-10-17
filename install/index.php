@@ -45,7 +45,7 @@
 	define('DOCROOT', $clean_path);
 	define('INSTALL', DOCROOT . '/install');
 
-	define('VERSION', '2.3.1RC2');
+	define('VERSION', '2.3.1RC3');
 
 	// Required boot components
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
