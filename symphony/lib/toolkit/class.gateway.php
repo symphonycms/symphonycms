@@ -100,7 +100,7 @@
 		 * A URL encoded string of the `$_POST` fields, as built by
 		 * http_build_query()
 		 *
-		 * @link http://www.php.net/manual/en/function.http-build-query.php
+		 * @link http://php.net/manual/en/function.http-build-query.php
 		 * @var string
 		 */
 		private $_postfields = '';
@@ -127,7 +127,7 @@
 		 * An array of custom options for the CURL request, this
 		 * can be any option as listed on the PHP manual
 		 *
-		 * @link http://au2.php.net/manual/en/function.curl-setopt.php
+		 * @link http://php.net/manual/en/function.curl-setopt.php
 		 * @var array
 		 */
 		private $_custom_opt = array();
@@ -137,7 +137,7 @@
 		 * been executed. At minimum, regardless of if CURL or Sockets
 		 * are used, the HTTP Code, URL and Content Type will be returned
 		 *
-		 * @link http://au2.php.net/manual/en/function.curl-getinfo.php
+		 * @link http://php.net/manual/en/function.curl-getinfo.php
 		 */
 		private $_info_last = array();
 
@@ -182,7 +182,7 @@
 		 * such as 'URL', which will take a full formatted URL string and set any
 		 * authentication or SSL curl options automatically
 		 *
-		 * @link http://au2.php.net/manual/en/function.curl-setopt.php
+		 * @link http://php.net/manual/en/function.curl-setopt.php
 		 * @param string $opt
 		 *	A string representing a CURL constant. Symphony will intercept the
 		 *	following, URL, POST, POSTFIELDS, USERAGENT, HTTPHEADER,
@@ -447,7 +447,7 @@
 		 * the HTTP Code, Content Type, URL and Total Time of the resulting
 		 * request
 		 *
-		 * @link http://au2.php.net/manual/en/function.curl-getinfo.php
+		 * @link http://php.net/manual/en/function.curl-getinfo.php
 		 * @return array
 		 */
 		public function getInfoLast(){
