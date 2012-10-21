@@ -159,7 +159,7 @@
 			$return = array();
 			self::__buildExtensionList();
 
-			if(array_key_exists($about['handle'], self::$_extensions)) {
+			if(isset($about['handle']) && array_key_exists($about['handle'], self::$_extensions)) {
 				if(self::$_extensions[$about['handle']]['status'] == 'enabled')
 					$return[] = EXTENSION_ENABLED;
 				else
@@ -169,7 +169,7 @@
 				$return[] = EXTENSION_NOT_INSTALLED;
 			}
 
-			if(self::__requiresUpdate($about['handle'], $about['version'])) {
+			if(isset($about['handle']) && self::__requiresUpdate($about['handle'], $about['version'])) {
 				$return[] = EXTENSION_REQUIRES_UPDATE;
 			}
 
