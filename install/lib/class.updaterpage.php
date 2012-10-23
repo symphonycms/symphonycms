@@ -15,7 +15,7 @@
 			$this->_page_title = __('Update Symphony');
 		}
 
-		protected function __build() {
+		protected function __build($version = VERSION, XMLElement $extra = null) {
 			parent::__build(
 				// Replace the installed version with the updated version
 				isset($this->_params['version'])
