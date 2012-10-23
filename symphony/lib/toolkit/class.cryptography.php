@@ -18,7 +18,7 @@
 	require_once(TOOLKIT . '/cryptography/class.pbkdf2.php');
 
 	Class Cryptography{
-		
+
 		/**
 		 * Uses an instance of `MD5`, `SHA1` or `PBKDF2` to create a hash
 		 *
@@ -34,7 +34,7 @@
 		 * @return string
 		 * the hashed string
 		 */
-		public static function hash($input, $algorithm='pbkdf2'){
+		public static function hash($input){
 			switch($algorithm) {
 				case 'md5':
 					return MD5::hash($input);
