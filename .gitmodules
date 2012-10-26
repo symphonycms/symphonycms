@@ -1,6 +1,6 @@
 [submodule "extensions/export_ensemble"]
 	path = extensions/export_ensemble
-	url = git://github.com/symphonycms/export_ensemble.git
+	url = git://github.com/nils-werner/export_ensemble.git
 [submodule "extensions/markdown"]
 	path = extensions/markdown
 	url = git://github.com/symphonycms/markdown.git
@@ -12,7 +12,7 @@
 	url = git://github.com/symphonycms/selectbox_link_field.git
 [submodule "extensions/jit_image_manipulation"]
 	path = extensions/jit_image_manipulation
-	url = git://github.com/symphonycms/jit_image_manipulation.git
+	url = git://github.com/nils-werner/jit_image_manipulation.git
 [submodule "extensions/profiledevkit"]
 	path = extensions/profiledevkit
 	url = git://github.com/symphonycms/profiledevkit.git
