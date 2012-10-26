@@ -105,12 +105,14 @@
 						$can_parse = false;
 						$type = null;
 
+						$obj = new $classname;
+
 						if(method_exists($classname,'allowEditorToParse')) {
-							$can_parse = call_user_func(array($classname, 'allowEditorToParse'));
+							$can_parse = $obj->allowEditorToParse();
 						}
 
 						if(method_exists($classname,'getSource')) {
-							$type = call_user_func(array($classname, 'getSource'));
+							$type = $obj->getSource();
 						}
 
 						$about['can_parse'] = $can_parse;
@@ -156,8 +158,10 @@
 
 			$handle = self::__getHandleFromFilename(basename($path));
 
+			$obj = new $classname;
+
 			if(is_callable(array($classname, 'about'))){
-				$about = call_user_func(array($classname, 'about'));
+				$about = $obj->about();
 				return array_merge($about, array('handle' => $handle));
 			}
 		}
