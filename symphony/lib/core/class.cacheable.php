@@ -12,7 +12,7 @@
 	  */
 	require_once(TOOLKIT . '/class.mutex.php');
 
-	Class Cacheable{
+	Class Cacheable {
 
 		/**
 		 * An instance of the MySQL class to communicate with `tbl_cache`
@@ -30,7 +30,7 @@
 		 *  An instance of the MySQL class to store the cached
 		 *  data in.
 		 */
-		public function __construct(MySQL $Database){
+		public function __construct(MySQL $Database) {
 			$this->Database = $Database;
 		}
 
@@ -53,7 +53,7 @@
 		 * @return boolean
 		 *  If an error occurs, this function will return false otherwise true
 		 */
-		public function write($hash, $data, $ttl = null){
+		public function write($hash, $data, $ttl = null) {
 
 			if(!Mutex::acquire($hash, 2, TMP)) return false;
 
@@ -83,7 +83,7 @@
 		 * @return string|boolean
 		 *  The compressed data, or false if an error occurred
 		 */
-		public function compressData($data){
+		public function compressData($data) {
 			if(!$data = base64_encode(gzcompress($data))) return false;
 			return $data;
 		}
@@ -97,7 +97,7 @@
 		 * @return string|boolean
 		 *  The decompressed data, or false if an error occurred
 		 */
-		public function decompressData($data){
+		public function decompressData($data) {
 			if(!$data = gzuncompress(base64_decode($data))) return false;
 			return $data;
 		}
@@ -114,7 +114,7 @@
 		 *  expiry time, the hash and the data. If the object is not found, false will
 		 *  be returned.
 		 */
-		public function check($hash){
+		public function check($hash) {
 
 			if($c = $this->Database->fetchRow(0, "SELECT SQL_NO_CACHE * FROM `tbl_cache` WHERE `hash` = '$hash' AND (`expiry` IS NULL OR UNIX_TIMESTAMP() <= `expiry`) LIMIT 1")){
 				if(!$c['data'] = $this->decompressData($c['data'])){
@@ -123,7 +123,6 @@
 				}
 
 				return $c;
-
 			}
 
 			$this->clean();
@@ -137,8 +136,8 @@
 		 * @param string $hash
 		 *  The hash of the Cached object, as defined by the user
 		 */
-		public function forceExpiry($hash){
-			$this->Database->query("DELETE FROM `tbl_cache` WHERE `hash` = '$hash' LIMIT 1");
+		public function forceExpiry($hash) {
+			$this->Database->query("DELETE FROM `tbl_cache` WHERE `hash` = '$hash'");
 		}
 
 		/**
@@ -147,7 +146,7 @@
 		 *
 		 * @see core.Cacheable#optimise()
 		 */
-		public function clean(){
+		public function clean() {
 			$this->Database->query("DELETE FROM `tbl_cache` WHERE UNIX_TIMESTAMP() > `expiry`");
 			$this->__optimise();
 		}
@@ -155,7 +154,7 @@
 		/**
 		 * Runs a MySQL OPTIMIZE query on `tbl_cache`
 		 */
-		private function __optimise(){
+		private function __optimise() {
 			$this->Database->query('OPTIMIZE TABLE `tbl_cache`');
 		}
 
