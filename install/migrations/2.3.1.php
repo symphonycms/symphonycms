@@ -23,11 +23,11 @@
 		}
 
 		static function getVersion(){
-			return '2.3.1RC3';
+			return '2.3.1';
 		}
 
 		static function getReleaseNotes(){
-			return 'https://gist.github.com/2828337';
+			return 'http://getsymphony.com/download/releases/version/2.3.1/';
 		}
 
 		static function upgrade(){
