@@ -250,7 +250,7 @@
 			if(!isset($manager)) throw new Exception(__('Unable to find a Manager class for this resource.'));
 
 			$type = str_replace('_', '-', self::getColumnFromType($type));
-			preg_match('/extensions\/(.*)\/' . $type . '/', call_user_func(array($manager, '__getClassPath'), $r_handle), $data);
+			preg_match('/^extensions\/(.*)\/' . $type . '/', call_user_func(array($manager, '__getClassPath'), $r_handle), $data);
 
 			$data = array_splice($data, 1);
 			return $data[0];

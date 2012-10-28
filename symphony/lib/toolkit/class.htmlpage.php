@@ -153,7 +153,7 @@
 			foreach($this->_head as $position => $element){
 				if($element->getName() != $elementName) continue;
 
-				unset($this->_head[$index]);
+				unset($this->_head[$position]);
 			}
 		}
 
