@@ -339,7 +339,7 @@
 				'current-page-id' => $page['id'],
 				'current-path' => ($current_path == '') ? '/' : $current_path,
 				'parent-path' => '/' . $page['path'],
-				'current-query-string' => self::sanitizeParameter($querystring),
+				'current-query-string' => '<![CDATA[' . self::sanitizeParameter($querystring) . ']]>',
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
@@ -474,6 +474,9 @@
 				}
 				else if(is_array($value)) {
 					$param->setValue(General::sanitize($value[0]));
+				}
+				else if($key == 'current-query-string') {
+					$param->setValue($value);
 				}
 				else {
 					$param->setValue(General::sanitize($value));
