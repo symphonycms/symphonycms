@@ -201,6 +201,9 @@
 					? str_replace('lang_', '', $extension->getFilename())
 					: null;
 
+				//If there is no lang folder ignore this extension
+				if(!file_exists($extension->getPathname() . '/lang')) continue;
+
 				// Loop over the `/lang` directory of this `$extension` searching for language
 				// files. If `/lang` isn't a directory, `UnexpectedValueException` will be
 				// thrown.
