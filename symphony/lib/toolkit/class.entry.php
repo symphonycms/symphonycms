@@ -76,8 +76,8 @@
 		 */
 		public function assignEntryId() {
 			$fields = $this->get();
-			$fields['creation_date'] = $fields['modification_date'] = DateTimeObj::get('c');
-			$fields['creation_date_gmt'] = $fields['modification_date_gmt'] = DateTimeObj::getGMT('c');
+			$fields['creation_date'] = $fields['modification_date'] = DateTimeObj::get('Y-m-d H:i:s');
+			$fields['creation_date_gmt'] = $fields['modification_date_gmt'] = DateTimeObj::getGMT('Y-m-d H:i:s');
 			$fields['author_id'] = is_null($this->get('author_id')) ? '1' : $this->get('author_id'); // Author_id cannot be null
 
 			Symphony::Database()->insert($fields, 'tbl_entries');
