@@ -591,7 +591,7 @@
 			if(!is_array($fields['param'])) $fields['param'] = array($fields['param']);
 
 			$label = Widget::Label(__('Use Fields'));
-			$prefix = '$ds-' . (isset($this->_context[1]) ? Lang::createHandle($fields['name']) : '?') . '.';
+			$prefix = '$ds-' . (isset($this->_context[1]) ? Lang::createHandle($fields['name']) : __('unnamed')) . '.';
 
 			$options = array(
 				array('label' => __('Authors'), 'options' => array())
