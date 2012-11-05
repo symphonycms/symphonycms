@@ -617,7 +617,7 @@
 
 		// Set table to "fixed mode" if its width exceeds the visibile viewport area.
 		// See https://github.com/symphonycms/symphony-2/issues/932.
-		$(window).trigger('resize.admin', function() {
+		$(window).trigger('resize.admin table.admin', function() {
 			var table = $('table:first');
 
 			if(table.width() > $('html').width() && !table.hasClass('fixed')){
@@ -627,7 +627,7 @@
 			if(table.width() < $('html').width() && table.hasClass('fixed')){
 				return table.removeClass('fixed');
 			}
-		}).trigger('resize.admin');
+		}).trigger('table.admin');
 	});
 
 })(jQuery.noConflict());
