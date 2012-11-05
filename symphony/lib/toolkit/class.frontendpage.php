@@ -159,6 +159,11 @@
 			$devkit = null;
 			$output = null;
 
+			$this->addHeaderToPage('Cache-Control', 'no-cache, must-revalidate, max-age=0');
+			$this->addHeaderToPage('Expires', 'Mon, 12 Dec 1982 06:14:00 GMT');
+			$this->addHeaderToPage('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
+			$this->addHeaderToPage('Pragma', 'no-cache');
+
 			if ($this->is_logged_in) {
 				/**
 				 * Allows a devkit object to be specified, and stop continued execution:
