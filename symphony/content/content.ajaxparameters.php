@@ -27,7 +27,7 @@
 			$datasources = DatasourceManager::listAll();
 			foreach($datasources as $datasource) {
 				$current = DatasourceManager::create($datasource['handle']);
-				$prefix = '{$ds-' . $datasource['handle'] . '.';
+				$prefix = '{$ds-' . Lang::createHandle($datasource['name']) . '.';
 				$suffix = '}';
 				
 				// Get parameters
