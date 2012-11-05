@@ -583,6 +583,9 @@
 				maxRecord.attr('disabled', false);
 				pageNumber.attr('disabled', false);
 			});
+			
+			// Enable parameter suggestions
+			contents.find('.duplicator:has(.filters-duplicator)').symphonySuggestions();
 		}
 
 	/*--------------------------------------------------------------------------
