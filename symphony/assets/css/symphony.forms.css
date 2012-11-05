@@ -379,9 +379,12 @@ fieldset .button {
 	Dropdowns
 --------------------------------------------------------------------------*/
 
-ul.suggestions {
+.suggestions {
+	overflow: visible;
+}
+
+ul.suggestionlist {
 	position: absolute;
-	top: 40px;
 	border-radius: 0 0 4px 4px;
 	border: 1px solid #c0c0c0;
 	border-top: none;
@@ -401,10 +404,21 @@ ul.suggestions {
 	background: #fff;
 }
 
-ul.suggestions li {
+ul.suggestionlist li {
 	height: 22px;
-	padding: 2px 3px;
+	padding: 2px 5px;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
+	border-bottom: 1px solid #f3f3f3;
+}
+
+ul.suggestionlist li:last-of-type {
+	border-bottom: none;
+}
+
+ul.suggestionlist li.active {
+	background: #668ABE;
+	color: #fff;
+	cursor: pointer;
 }
 
