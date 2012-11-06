@@ -199,8 +199,6 @@
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
-			$p = new XMLElement('p', __('Click to expand or collapse a field.') . '<br />' . __('Double click to expand or collapse all fields.'), array('class' => 'help'));
-			$fieldset->appendChild($p);
 
 			$div = new XMLElement('div', null, array('class' => 'frame'));
 
@@ -408,11 +406,8 @@
 				'errors' => &$this->_errors
 			));
 
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings');
+			$fieldset = new XMLElement('fieldset', null, array('id' => 'fields', 'class' => 'settings'));
 			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
-			$p = new XMLElement('p', __('Click to expand or collapse a field.') . '<br />' . __('Double click to expand or collapse all fields.'), array('class' => 'help'));
-			$fieldset->appendChild($p);
 
 			$div = new XMLElement('div', null, array('class' => 'frame'));
 
