@@ -215,7 +215,7 @@
 
 			if($env) $this->_env = $env;
 
-			if((isset($this->_env) && is_array($this->_env)) && is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
+			if((isset($this->_env) && is_array($this->_env)) && isset($this->dsParamFILTERS) && is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
 				foreach($this->dsParamFILTERS as $key => $value){
 					$value = stripslashes($value);
 					$new_value = $this->__processParametersInString($value, $this->_env);
@@ -247,9 +247,9 @@
 				$this->dsParamINCLUDEDELEMENTS = null; // don't query any fields in this section
 			}
 
-			$this->_param_output_only = ((!is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) && !isset($this->dsParamGROUP));
+			$this->_param_output_only = ((!isset($this->dsParamINCLUDEDELEMENTS) || !is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) && !isset($this->dsParamGROUP));
 
-			if($this->dsParamREDIRECTONEMPTY == 'yes' && $this->_force_empty_result){
+			if(isset($this->dsParamREDIRECTONEMPTY) && $this->dsParamREDIRECTONEMPTY == 'yes' && $this->_force_empty_result){
 				throw new FrontendPageNotFoundException;
 			}
 
