@@ -630,4 +630,4 @@
 		}).trigger('resize.admin');
 	});
 
-})(jQuery.noConflict());
+})(window.jQuery);

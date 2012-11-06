@@ -136,4 +136,4 @@
 		return objects;
 	};
 
-})(jQuery.noConflict());
+})(window.jQuery);
