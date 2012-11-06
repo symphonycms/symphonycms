@@ -88,7 +88,7 @@
 		 * @return boolean
 		 * the result of the comparison
 		 */
-		public static function compare($input, $hash){
+		public static function compare($input, $hash, $isHash=false){
 			$salt = self::extractSalt($hash);
 			$iterations = self::extractIterations($hash);
 			$keylength = strlen(base64_decode(self::extractHash($hash)));
