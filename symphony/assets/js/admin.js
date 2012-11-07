@@ -43,6 +43,7 @@
 			'Untitled Field': false,
 			'The field “{$title}” ({$type}) has been removed.': false,
 			'Undo?': false,
+			'unnamed': false,
 			'Expand all fields': false,
 			'Collapse all fields': false
 		});
@@ -532,42 +533,54 @@
 	--------------------------------------------------------------------------*/
 
 		if(body.is('#blueprints-datasources')) {
-			var maxRecord = $('input[name*=max_records]'),
-				pageNumber = $('input[name*=page_number]');
-
-			// Update Data Source output parameter
-			contents.find('input[name="fields[name]"]').on('blur.admin input.admin', function(){
-				var value = $(this).val();
-
-				if(value == '' || $('select[name="fields[param][]"]:visible').length == 0) {
-					$('select[name="fields[param][]"] option').each(function(){
-						var item = $(this),
-							field = item.text().split('.')[1];
-
-						item.text('$ds-' + '?' + '.' + field);
-					});
-
-					return false;
-				}
-
-				$.ajax({
-					type: 'GET',
-					data: { 'string': value },
-					dataType: 'json',
-					async: false,
-					url: Symphony.Context.get('root') + '/symphony/ajax/handle/',
-					success: function(result) {
-						$('select[name="fields[param][]"] option').each(function(){
-							var item = $(this),
-								field = item.text().split('.')[1];
-
-							item.text('$ds-' + result + '.' + field);
+			var dsName = contents.find('input[name="fields[name]"]').attr('data-updated', 0),
+				dsNameChangeCount = 0,
+				dsParams = contents.find('select[name="fields[param][]"]'),
+				dsMaxRecord = contents.find('input[name*=max_records]'),
+				dsPageNumber = contents.find('input[name*=page_number]');
+			
+			// Update data source handle
+			dsName.on('blur.admin input.admin', function updateDsHandle() {
+				var current = dsNameChangeCount = dsNameChangeCount + 1,
+					value = dsName.val();
+				
+				setTimeout(function fetchDsHandle() {
+					if(dsNameChangeCount == current) {
+						$.ajax({
+							type: 'GET',
+							data: { 'string': value },
+							dataType: 'json',
+							url: Symphony.Context.get('root') + '/symphony/ajax/handle/',
+							success: function(result) {
+								if(dsNameChangeCount == current) {
+									dsName.data('handle', result);
+									dsParams.trigger('update.admin');
+								}
+							}
 						});
-
-						return false;
 					}
-				});
+				}, 500);
 			});
+			
+			// Update output parameters
+			dsParams.on('update.admin', function updateDsParams() {
+				var params = $(this),
+					handle = dsName.data('handle') || Symphony.Language.get('unnamed');
+				
+				// Process parameters
+				if(parseInt(dsName.attr('data-updated')) !== 0) {
+					params.find('option').each(function updateDsParam() {
+						var param = $(this),
+							field = param.val();
+						
+						// Set parameter
+						param.text('$ds-' + handle + '.' + field);
+					});
+				}
+				
+				// Updated
+				dsName.attr('data-updated', 1);
+			}).trigger('update.admin');
 
 			// Data source manager options
 			contents.find('select.filtered > optgroup').each(function() {
@@ -612,31 +625,31 @@
 				})
 				.trigger('change.admin');
 
-			// Once pagination is disabled, maxRecords and pageNumber are disabled too
+			// Once pagination is disabled, dsMaxRecords and dsPageNumber are disabled too
 			contents.find('input[name*=paginate_results]').on('change.admin', function(event) {
 
 				// Turn on pagination
 				if($(this).is(':checked')) {
-					maxRecord.attr('disabled', false);
-					pageNumber.attr('disabled', false);
+					dsMaxRecord.attr('disabled', false);
+					dsPageNumber.attr('disabled', false);
 				}
 
 				// Turn off pagination
 				else {
-					maxRecord.attr('disabled', true);
-					pageNumber.attr('disabled', true);
+					dsMaxRecord.attr('disabled', true);
+					dsPageNumber.attr('disabled', true);
 				}
 			}).trigger('change.admin');
 
-			// Disable paginate_results checking/unchecking when clicking on either maxRecords or pageNumber
-			maxRecord.add(pageNumber).on('click.admin', function(event) {
+			// Disable paginate_results checking/unchecking when clicking on either dsMaxRecords or dsPageNumber
+			dsMaxRecord.add(dsPageNumber).on('click.admin', function(event) {
 				event.preventDefault();
 			});
 
 			// Enabled fields on submit
 			form.on('submit.admin', function() {
-				maxRecord.attr('disabled', false);
-				pageNumber.attr('disabled', false);
+				dsMaxRecord.attr('disabled', false);
+				dsPageNumber.attr('disabled', false);
 			});
 			
 			// Enable parameter suggestions
