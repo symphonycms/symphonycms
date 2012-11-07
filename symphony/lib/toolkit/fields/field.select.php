@@ -115,7 +115,7 @@
 			return Symphony::Database()->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
 		}
 
-		public function fetchAssociatedEntrySearchValue($data){
+		public function fetchAssociatedEntrySearchValue($data, $field_id = null, $parent_entry_id = null){
 			if(!is_array($data)) return $data;
 
 			return $data['value'];
@@ -362,7 +362,7 @@
 			return parent::prepareTableValue(array('value' => implode(', ', $value)), $link, $entry_id = null);
 		}
 
-		public function getParameterPoolValue($data, $entry_id = null) {
+		public function getParameterPoolValue(array $data, $entry_id = null) {
 			return $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::HANDLE, $entry_id);
 		}
 
