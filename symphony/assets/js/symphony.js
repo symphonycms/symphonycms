@@ -261,4 +261,4 @@ var Symphony = (function($) {
 		 */
 		Extensions: {}
 	};
-}(jQuery.noConflict()));
+}(window.jQuery));

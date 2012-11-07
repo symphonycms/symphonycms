@@ -320,44 +320,55 @@ fieldset.settings {
 	margin: 0 18px 10px;
 	border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
+
 fieldset.settings > legend {
 	position: absolute;
 	text-indent: -275px;
 	line-height: 1.5;
 }
+
 fieldset.settings select {
 	width: 100%;
 }
+
 fieldset.settings p.help {
 	margin: -0.5em 0 1.5em;
 }
+
 fieldset.settings input + p.help,
 fieldset.settings select + p.help {
 	margin-top: 1em;
 }
+
 fieldset.settings li .label {
 	margin: 1em 0 1.25em;
 }
+
 fieldset.settings:first-of-type {
 	margin-top: 5px;
 	border-top: none;
 }
+
 fieldset.settings > legend + .help {
 	position: absolute;
 	margin: 1.75em 0 0 -275px;
 	width: 22em;
 }
+
 fieldset.settings > legend + .help p {
 	margin: 0 0 1.5em;
 }
+
 fieldset.settings > *:first-child {
 	margin-top: 0;
 }
+
 fieldset.settings fieldset {
 	margin-top: 0.5em;
 	padding-bottom: 0;
 	border-top: 1px solid #ddc;
 }
+
 fieldset.settings fieldset legend {
 	display: inline;
 	margin: 0;
@@ -374,15 +385,18 @@ fieldset.settings fieldset legend {
 	fieldset.settings {
 		padding-left: 0;
 	}
+	
 	fieldset.settings:first-of-type {
 		margin: 15px 18px 10px;
 		border-top: 1px solid rgba(0, 0, 0, 0.1);
 	}
+	
 	fieldset.settings > legend {
 		position: relative;
 		text-indent: 0;
 		padding: 0 10px 0 0;
 	}
+	
 	fieldset.settings > legend + .help {
 		position: relative;
 		margin: 0 0 15px;
@@ -664,16 +678,25 @@ div.field-checkbox:first-child {
 	Misc
 --------------------------------------------------------------------*/
 
-	#utilities > li:nth-child(2n) {
-		background: #FFF;
-	}
+#utilities > li:nth-child(2n) {
+	background: #FFF;
+}
 
-	#utilities > li.selected {
-		background: #668abe;
-	}
+#utilities > li.selected {
+	background: #668abe;
+}
 
-	#version {
-		color: #9E9E9E;
-		margin: 33px 0 0 19px;
-		float: left;
-	}
+#version {
+	color: #9E9E9E;
+	margin: 33px 0 0 19px;
+	float: left;
+}
+
+#fields p.help.toggle a {
+	color: #808080;
+}
+
+#fields .fixed {
+	position: fixed;
+	top: 20px;
+}
