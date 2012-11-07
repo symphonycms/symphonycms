@@ -41,6 +41,17 @@
 		}
 
 		/**
+		 * Removes a header from the $_headers array using the $name
+		 * as the key.
+		 *
+		 * @param string $name
+		 *  The header name, eg. Expires.
+		 */
+		public function removeHeaderFromPage($name) {
+			unset($this->_headers[strtolower($name)]);
+		}
+
+		/**
 		 * Accessor function for `$_headers`
 		 *
 		 * @return array
