@@ -791,8 +791,14 @@
 
 				// Check to see that the extension is named correctly, if it is
 				// not, then return nothing
-				if(self::__getClassName($name) != self::__getClassName($xpath->evaluate('string(@id)', $extension))) {
-					return array();
+				$xmlClassName = $xpath->evaluate('string(@id)', $extension);
+				if(self::__getClassName($name) != self::__getClassName($xmlClassName)) {
+					throw new SymphonyErrorPage(
+						__('The classname %1$s specified in the %2$s file is not the same as the name of the extension (%3$s)', array(
+							sprintf('<code>%s</code>', $xmlClassName),
+							'<code>extension.meta.xml</code>',
+							$name
+					)));
 				}
 
 				// If `$rawXML` is set, just return our DOMDocument instance
