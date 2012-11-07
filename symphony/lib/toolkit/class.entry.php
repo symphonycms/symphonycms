@@ -243,8 +243,8 @@
 				$this->setData($field->get('field_id'), $result);
 			}
 
-			$this->set('modification_date', DateTimeObj::get('c'));
-			$this->set('modification_date_gmt', DateTimeObj::getGMT('c'));
+			$this->set('modification_date', DateTimeObj::get('Y-m-d H:i:s'));
+			$this->set('modification_date_gmt', DateTimeObj::getGMT('Y-m-d H:i:s'));
 
 			if(!$this->get('creation_date')) $this->set('creation_date', $this->get('modification_date'));
 			if(!$this->get('creation_date_gmt')) $this->set('creation_date_gmt', $this->get('modification_date_gmt'));
