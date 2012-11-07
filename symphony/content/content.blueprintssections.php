@@ -125,8 +125,10 @@
 
 			$types = array();
 
-			$fields = is_array($_POST['fields']) ? $_POST['fields'] : array();
-			$meta = $_POST['meta'];
+			$m = array('name'=>null, 'something'=>null);
+
+			$fields = (isset($_POST['fields']) && is_array($_POST['fields'])) ? $_POST['fields'] : array();
+			$meta = (isset($_POST['meta']) && is_array($_POST['meta'])) ? $_POST['fields'] : array('name'=>null);
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
