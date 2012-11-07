@@ -42,7 +42,9 @@
 			'Remove File': false,
 			'Untitled Field': false,
 			'The field “{$title}” ({$type}) has been removed.': false,
-			'Undo?': false
+			'Undo?': false,
+			'Expand all fields': false,
+			'Collapse all fields': false
 		});
 
 		// Catch all javascript errors and write them to the Symphony Log
@@ -355,6 +357,59 @@
 				return confirm(message);
 			}
 		});
+
+	/*--------------------------------------------------------------------------
+		Blueprints - Sections
+	--------------------------------------------------------------------------*/
+
+		if(body.is('#blueprints-sections')) {
+			var fieldLegend = contents.find('#fields legend'),
+				fieldExpand = $('<a />', {
+					class: 'expand',
+					text: Symphony.Language.get('Expand all fields')
+				}),
+				fieldCollapse = $('<a />', {
+					class: 'collapse',
+					text: Symphony.Language.get('Collapse all fields')
+				}),
+				fieldToggle = $('<p />', {
+					class: 'help toggle'
+				}).append(fieldExpand).append('<br />').append(fieldCollapse),
+				fieldLegendTop,	fieldToggleTop;
+
+			// Add toggle controls
+			fieldLegend.after(fieldToggle);
+			fieldLegendTop = fieldLegend.offset().top;
+			fieldToggleTop = fieldToggle.offset().top;
+			
+			// Fix toggle controls
+			$(window).on('scroll.admin', function fixFieldControls(event) {
+				var top = $(this).scrollTop() + 20;
+				
+				if(top >= fieldLegendTop) {
+					fieldLegend.add(fieldToggle).addClass('fixed');
+				} 
+				else {
+					fieldLegend.add(fieldToggle).removeClass('fixed');
+				}
+    		});
+
+			// Toggle fields
+			fieldToggle.on('click.admin', 'p.help.toggle a', function toggleFields(event) {
+				var control = $(this),
+					fields = contents.find('#fields-duplicator > .instance');
+				
+				// Expand
+				if(control.is('.expand')) {
+					fields.trigger('expand.collapsible');
+				}
+				
+				// Collapse
+				else {
+					fields.trigger('collapse.collapsible');
+				}	
+			});
+		}
 
 	/*--------------------------------------------------------------------------
 		Blueprints - Pages and Utilities
