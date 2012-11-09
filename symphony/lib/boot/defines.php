@@ -133,7 +133,7 @@
 	 * for this install.
 	 * @var string
 	 */
-	define_safe('CONFIG', MANIFEST . '/config.php');
+	define_safe('CONFIG', MANIFEST . '/config.xml');
 
 	/**
 	 * The filesystem path to the `boot` folder which is contained within

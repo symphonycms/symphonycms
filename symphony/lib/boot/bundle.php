@@ -37,7 +37,8 @@
 			exit;
 		}
 
-		die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');
+		die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.xml</code> exists.</p>');
 	}
 
-	include(CONFIG);
+	require_once(DOCROOT . '/symphony/lib/core/class.configuration.php');
+	$Configuration = new Configuration(true);
