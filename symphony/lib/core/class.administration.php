@@ -268,7 +268,7 @@
 							}
 						}
 
-						if(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
+						if(array_key_exists('status', $about) && in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
 							$this->Page->pageAlert(
 								__('An extension requires updating.') . ' <a href="' . SYMPHONY_URL . '/system/extensions/">' . __('View extensions') . '</a>'
 							);
