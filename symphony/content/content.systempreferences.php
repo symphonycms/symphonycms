@@ -128,9 +128,9 @@
 			if (!is_writable(CONFIG)) redirect(SYMPHONY_URL . '/system/preferences/');
 
 			/**
-			 * This is where Extensions can hook on to custom actions they may need to provide
-			 * as a result of adding some custom actions through the `AddCustomPreferenceFieldsets`
-			 * delegate
+			 * Extensions can listen for any custom actions that were added
+			 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
+			 * delegates.
 			 *
 			 * @delegate CustomActions
 			 * @param string $context

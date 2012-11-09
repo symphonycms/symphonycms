@@ -54,7 +54,7 @@
 					'handle' => 'last_seen'
 				)
 			);
-			
+
 			if (Administration::instance()->Author->isDeveloper()) {
 				$columns = array_merge($columns, array(
 					array(
@@ -101,11 +101,11 @@
 					} else {
 						$td3 = Widget::TableData(__('Unknown'), 'inactive');
 					}
-					
+
 					$td4 = Widget::TableData($a->isDeveloper()? __("Developer") : __("Author"));
-					
+
 					$languages = Lang::getAvailableLanguages();
-					
+
 					$td5 = Widget::TableData($a->get("language") == NULL ? __("System Default") : $languages[$a->get("language")]);
 
 					if (Administration::instance()->Author->isDeveloper()) {
@@ -138,17 +138,49 @@
 				$options = array(
 					array(NULL, false, __('With Selected...')),
 					array('delete', false, __('Delete'), 'confirm', null, array(
-					'data-message' => __('Are you sure you want to delete the selected authors?')
-				))
+						'data-message' => __('Are you sure you want to delete the selected authors?')
+					))
 				);
 
-				$tableActions->appendChild(Widget::Apply($options));
-				$this->Form->appendChild($tableActions);
+				/**
+				 * Allows an extension to modify the existing options for this page's
+				 * With Selected menu. If the `$options` parameter is an empty array,
+				 * the 'With Selected' menu will not be rendered.
+				 *
+				 * @delegate AddCustomActions
+				 * @since Symphony 2.3.2
+				 * @param string $context
+				 * '/system/authors/'
+				 * @param array $options
+				 *  An array of arrays, where each child array represents an option
+				 *  in the With Selected menu. Options should follow the same format
+				 *  expected by `Widget::__SelectBuildOption`. Passed by reference.
+				 */
+				Symphony::ExtensionManager()->notifyMembers('AddCustomActions', '/system/authors/', array(
+					'options' => &$options
+				));
+
+				if(!empty($options)) {
+					$tableActions->appendChild(Widget::Apply($options));
+					$this->Form->appendChild($tableActions);
+				}
 			}
 
 		}
 
 		public function __actionIndex(){
+			/**
+			 * Extensions can listen for any custom actions that were added
+			 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
+			 * delegates.
+			 *
+			 * @delegate CustomActions
+			 * @since Symphony 2.3.2
+			 * @param string $context
+			 * '/system/authors/'
+			 */
+			Symphony::ExtensionManager()->notifyMembers('CustomActions', '/system/authors/');
+
 			if($_POST['with-selected'] == 'delete' && is_array($_POST['items'])){
 
 				$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
@@ -291,11 +323,11 @@
 
 			// Only developers can change the user type. Primary account should NOT be able to change this
 			if (Administration::instance()->Author->isDeveloper() && !$author->isPrimaryAccount()) {
-			
+
 				// Create columns
 				$div->setAttribute('class', 'two columns');
 				$label->setAttribute('class', 'column');
-				
+
 				// User type
 				$label = Widget::Label(__('User Type'), NULL, 'column');
 
@@ -316,16 +348,16 @@
 			$help = new XMLElement('i', __('Leave password fields blank to keep the current password'));
 			$fieldset->appendChild($legend);
 			$fieldset->appendChild($help);
-			
+
 			// Password reset
 			if($this->_context[0] == 'edit' && (!Administration::instance()->Author->isDeveloper() || $isOwner === true)) {
 				$fieldset->setAttribute('class', 'three columns');
-				
+
 				$label = Widget::Label(NULL, NULL, 'column');
 				$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password', array('placeholder' => __('Old Password'))));
 				$fieldset->appendChild((isset($this->_errors['old-password']) ? Widget::Error($label, $this->_errors['password']) : $label));
 			}
-			
+
 			// New password
 			$callback = Administration::instance()->getPageCallback();
 			$placeholder = ($callback['context'][0] == 'edit' ? __('New Password') : __('Password'));
@@ -337,7 +369,7 @@
 			$label = Widget::Label(NULL, NULL, 'column');
 			$label->appendChild(Widget::Input('fields[password-confirmation]', NULL, 'password', array('placeholder' => __('Confirm Password'))));
 			$fieldset->appendChild((isset($this->_errors['password-confirmation']) ? Widget::Error($label, $this->_errors['password']) : $label));
-			
+
 			$group->appendChild($fieldset);
 
 			// Auth token

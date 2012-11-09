@@ -15,10 +15,6 @@
 		public $_errors = array();
 		public $_existing_file;
 
-		public function __construct(){
-			parent::__construct();
-		}
-
 		public function __viewIndex(){
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Utilities'), __('Symphony'))));
@@ -193,7 +189,6 @@
 				$div->appendChild($frame);
 
 				$this->Form->appendChild($div);
-
 			}
 
 			$div = new XMLElement('div');
@@ -211,6 +206,18 @@
 		}
 
 		public function __actionIndex(){
+			/**
+			 * Extensions can listen for any custom actions that were added
+			 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
+			 * delegates.
+			 *
+			 * @delegate CustomActions
+			 * @since Symphony 2.3.2
+			 * @param string $context
+			 * '/blueprints/utilities/'
+			 */
+			Symphony::ExtensionManager()->notifyMembers('CustomActions', '/blueprints/utilities/');
+
 			$checked = ($_POST['items']) ? @array_keys($_POST['items']) : NULL;
 
 			if(is_array($checked) && !empty($checked)){
