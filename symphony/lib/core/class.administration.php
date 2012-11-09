@@ -268,7 +268,7 @@
 							}
 						}
 
-						if(in_array(EXTENSION_REQUIRES_UPDATE,$about['status'])) {
+						if(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
 							$this->Page->pageAlert(
 								__('An extension requires updating.') . ' <a href="' . SYMPHONY_URL . '/system/extensions/">' . __('View extensions') . '</a>'
 							);
@@ -283,7 +283,7 @@
 					try{
 						// The updater contains a version higher than the current Symphony version.
 						if($this->isUpgradeAvailable()) {
-							$message = __('An update has been found in your installation to upgrade Symphony to %s.', array($migration_version)) . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
+							$message = __('An update has been found in your installation to upgrade Symphony to %s.', array($this->getMigrationVersion())) . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
 						}
 						// The updater contains a version lower than the current Symphony version.
 						// The updater is the same version as the current Symphony install.
