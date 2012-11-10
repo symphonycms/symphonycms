@@ -36,7 +36,7 @@
 		 * website config file
 		 */
 		public function initialiseConfiguration(array $settings){
-			parent::initialiseConfiguration();
+			parent::initialiseConfiguration($settings);
 		}
 
 		/**

@@ -39,6 +39,8 @@
 		 */
 		public function __construct($forceLowerCase=false){
 			$this->_forceLowerCase = $forceLowerCase;
+			$this->_migrateToXML();
+			$this->read();
 		}
 
 		/**
@@ -76,11 +78,23 @@
 		 *
 		 * @param array $array
 		 *  An associative array of properties, 'property' => 'value' or 'group' => array(
-		 *  'property' => 'value'
+		 *  'property' => 'value')
+		 * @param boolean $overwrite
+		 *  An optional boolean parameter to indicate if it is safe to use array_merge 
+		 *  or if the provided array should be integrated using the 'set()' method 
+		 *  to avoid possible change collision. Defaults to false.
 		 */
-		public function setArray(array $array){
+		public function setArray(array $array, $overwrite = false){
 			$array = General::array_map_recursive('stripslashes', $array);
-			$this->_properties = array_merge($this->_properties, $array);
+			if($overwrite) {
+				$this->_properties = array_merge($this->_properties, $array);
+			} else {
+				foreach($array as $set => $values) {
+					foreach($values as $key => $val) {
+						self::set($key, $val, $set);
+					}
+				}
+			}
 		}
 
 		/**
@@ -111,6 +125,22 @@
 			}
 
 			return (isset($this->_properties[$name]) ? $this->_properties[$name] : null);
+		}
+		
+		/**
+		 * The hasValue function checks if a configuration setting
+		 * exists and whether it has value.
+		 * 
+		 * @param String $name The name of the setting
+		 * @param String $group The name of the group the setting is part of (optional)
+		 * @return boolean
+		 */
+		public function hasValue($name, $group=null) {
+			if($group) {
+				return (isset($this->_properties[$group][$name]) && !empty($this->_properties[$group][$name]));
+			} else {
+				return (isset($this->_properties[$name]) && !empty($this->_properties[$name]));
+			}
 		}
 
 		/**
@@ -155,21 +185,71 @@
 		 *  This is used by Symphony to write the `config.php` file.
 		 */
 		public function __toString(){
-			$string = 'array(';
+			$string = '';
 			foreach($this->_properties as $group => $data){
-				$string .= str_repeat(PHP_EOL, 3) . "\t\t###### ".strtoupper($group)." ######";
-				$string .= PHP_EOL . "\t\t'$group' => array(";
+				$string .= str_repeat(PHP_EOL, 2) . "\t" . '<group name="'.$group.'">';
 				foreach($data as $key => $value){
-					$string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'null').",";
+					$string .= PHP_EOL . "\t\t" . '<item name="'.$key.'">'.(strlen($value) > 0 ? addslashes($value) : '')."</item>";
 				}
-				$string .= PHP_EOL . "\t\t),";
-				$string .= PHP_EOL . "\t\t########";
+				$string .= PHP_EOL . "\t</group>";
 			}
-			$string .= PHP_EOL . "\t)";
-
 			return $string;
 		}
 
+		/**
+		 * Function will load the Configuration settings into 
+		 * the Properties array
+		 * 
+		 * @param string $file
+		 *  The path of the config file to load
+		 * @return boolean
+		 */
+		public function read($file = CONFIG, $override = false) {
+			$xmlDoc = new DOMDocument();
+			$xmlDoc->load($file);
+			
+			$xpath = new DOMXPath($xmlDoc);
+			$xpath->registerNamespace('s','http://symphony-cms.com/2012/03/config');
+			$groupNodes = $xpath->query('/s:configuration/s:group');
+			
+			foreach($groupNodes as $groupNode) {
+				foreach($groupNode->childNodes as $itemNode) {
+					if($itemNode->nodeType == XML_ELEMENT_NODE) {
+						$group = $groupNode->hasAttribute('name') ? $groupNode->getAttribute('name') : null;
+						$name = $itemNode->hasAttribute('name') ? $itemNode->getAttribute('name') : null;
+						$value = $itemNode->textContent;
+						
+						if($name == null || $group == null) {
+							//TODO: I'm not familiar with Error handling in the Symphony Core.
+							//		As Configuration is a pretty important part of it, maybe this should get some attention.
+							throw new Exception();
+						} else {
+							if(!$this->hasValue($name,$group) || $override) {
+								$this->set($name,$value,$group);
+							}
+						}
+					}
+				}
+			}
+
+			// Import additional configuration files
+			$importNodes = $xpath->query('/s:configuration/s:import');
+			foreach($importNodes as $importNode) {
+				if($importNode->nodeType == XML_ELEMENT_NODE) {
+					$file = $importNode->hasAttribute('href') ? $importNode->getAttribute('href') : null;
+					$override = $importNode->hasAttribute('override') ? $importNode->getAttribute('override') : false;
+					$override = (strtolower($override) == 'true') ? true : false;
+					
+					// Ignore the import statement if the file does not exist, do not throw Exception!
+					// This allows specific environment configuration by adding
+					// an import for a file that only exists on that environment.
+					if(file_exists(MANIFEST . '/' . $file)) {
+						$this->read(MANIFEST . '/' . $file, $override);
+					}
+				}
+			}
+ 		}
+		
 		/**
 		 * Function will write the current Configuration object to
 		 * a specified `$file` with the given `$permissions`.
@@ -190,9 +270,29 @@
 				$file = CONFIG;
 			}
 
-			$string = "<?php\n\t\$settings = " . (string)$this . ";\n";
+			$string = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<configuration xmlns="http://symphony-cms.com/2012/03/config">' . (string)$this . "\n\n</configuration>\n";
 
 			return General::writeFile($file, $string, $permissions);
 		}
 
+		/**
+		 * Migration Assistant for pre-XML based configuration
+		 * This will load the config.php file and transform the settings to XML
+		 * The method can be removed when backwards-compatibility with 2.2.x line is broken.
+		 */
+		private function _migrateToXML() {
+			if(file_exists(MANIFEST . '/config.php')) {
+				include(MANIFEST . '/config.php');
+				foreach($settings as $group=>$items) {
+					foreach ($items as $name=>$value) {
+						$this->set($name,$value,$group);
+					}
+				}
+				$this->write(MANIFEST . '/config.xml');
+				
+				# Migration is done, let's delete the old config file
+				unlink(MANIFEST . '/config.php');
+			}
+		}
+		
 	}
