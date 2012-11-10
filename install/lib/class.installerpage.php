@@ -241,6 +241,11 @@
 			$this->__appendError(array('general-no-sitename'), $label);
 			$Environment->appendChild($label);
 
+			$label = Widget::label(__('Admin Path'), Widget::Input('fields[symphony][admin-path]', $fields['symphony']['admin-path']));
+
+			$this->__appendError(array('no-symphony-path'), $label);
+			$Environment->appendChild($label);
+
 			$Fieldset = new XMLElement('fieldset', null, array('class' => 'frame'));
 			$Fieldset->appendChild(new XMLElement('legend', __('Date and Time')));
 			$Fieldset->appendChild(new XMLElement('p', __('Customise how Date and Time values are displayed throughout the Administration interface.')));
