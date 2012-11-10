@@ -9,9 +9,9 @@
 	$Page->Html->setDTD('<!DOCTYPE html>');
 	$Page->Html->setAttribute('xml:lang', 'en');
 	$Page->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
-	$Page->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.css', 'screen', 30);
-	$Page->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.frames.css', 'screen', 31);
-	$Page->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.forms.css', 'screen', 32);
+	$Page->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.css', 'screen', 30);
+	$Page->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.frames.css', 'screen', 31);
+	$Page->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.forms.css', 'screen', 32);
 
 	$Page->addHeaderToPage('Status', '500 Internal Server Error', 500);
 	$Page->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
