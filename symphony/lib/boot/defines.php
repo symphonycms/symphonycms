@@ -241,7 +241,7 @@
 	 * @since Symphony 2.2
 	 * @var string
 	 */
-	define_safe('SYMPHONY_URL', URL . '/symphony');
+	define_safe('SYMPHONY_URL', URL . '/' . $Configuration->get('admin-path', 'symphony'));
 
 	/**
 	 * Returns the folder name for Symphony as an application
