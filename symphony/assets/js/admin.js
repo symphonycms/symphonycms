@@ -63,8 +63,8 @@
 			return false;
 		};
 
-		// Navigation and notifier sizing
-		$(window).on('resize.admin', function() {
+		// Navigation sizing
+		$(window).on('resize.admin nav.admin', function(event) {
 			var width = navContent.width() + navStructure.width() + 20;
 
 			// Compact mode
@@ -76,11 +76,36 @@
 			else {
 				nav.addClass('wide');
 			}
-
-			// Refresh Notify height
+		}).trigger('nav.admin');
+		
+		// Accessible navigation
+		nav.on('focus.admin blur.admin', 'a', function() {
+			$(this).parents('li').eq(1).toggleClass('current');
+		});
+		
+		// Notifier sizing 
+		$(window).on('resize.admin', function(event) {
 			header.find('.notifier').trigger('resize.notify');
 		});
+		
+		// Table sizing
+		$(window).on('resize.admin table.admin', function(event) {
+			var table = $('table:first');
+			
+			// Fix table size, if width exceeds the visibile viewport area.
+			if(table.width() > $('html').width()){
+				table.addClass('fixed');
+			}
+			else {
+				table.removeClass('fixed');
+			}
+		}).trigger('table.admin');
 
+		// Focus first text-input or textarea when creating entries
+		if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'new' || Symphony.Context.get('env').page == 'new')) {
+			contents.find('input[type="text"], textarea').first().focus();
+		}
+		
 	/*--------------------------------------------------------------------------
 		Plugins - Tags, Pickable, Selectable, Notify and Drawers
 	--------------------------------------------------------------------------*/
@@ -508,27 +533,6 @@
 		}
 
 	/*--------------------------------------------------------------------------
-		System - Authors
-	--------------------------------------------------------------------------*/
-
-		if(body.is('#system-authors')) {
-
-			// Change user password
-			contents.find('#password').each(function() {
-				var password = $(this),
-					overlay = $('<div class="password"><span class="frame"><button type="button">' + Symphony.Language.get('Change Password') + '</button></span></div>');
-
-				// Add overlay
-				if(password.has('.invalid').length == 0 && Symphony.Context.get('env')[0] != 'new') {
-					overlay.insertBefore(password).find('button').on('click.admin', function(event) {
-						event.preventDefault();
-						overlay.hide();
-					});
-				}
-			});
-		}
-
-	/*--------------------------------------------------------------------------
 		Blueprints - Datasource Editor
 	--------------------------------------------------------------------------*/
 
@@ -657,6 +661,27 @@
 		}
 
 	/*--------------------------------------------------------------------------
+		System - Authors
+	--------------------------------------------------------------------------*/
+
+		if(body.is('#system-authors')) {
+
+			// Change user password
+			contents.find('#password').each(function() {
+				var password = $(this),
+					overlay = $('<div class="password"><span class="frame"><button type="button">' + Symphony.Language.get('Change Password') + '</button></span></div>');
+
+				// Add overlay
+				if(password.has('.invalid').length == 0 && Symphony.Context.get('env')[0] != 'new') {
+					overlay.insertBefore(password).find('button').on('click.admin', function(event) {
+						event.preventDefault();
+						overlay.hide();
+					});
+				}
+			});
+		}
+
+	/*--------------------------------------------------------------------------
 		Field - Upload
 	--------------------------------------------------------------------------*/
 
@@ -672,33 +697,6 @@
 			span.empty().append('<input name="' + name + '" type="file">');
 		});
 
-	/*--------------------------------------------------------------------------
-		Miscellanea
-	--------------------------------------------------------------------------*/
-
-		// Focus first text-input or textarea when creating entries
-		if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'new' || Symphony.Context.get('env').page == 'new')) {
-			contents.find('input[type="text"], textarea').first().focus();
-		}
-
-		// Accessible navigation
-		nav.on('focus.admin blur.admin', 'a', function() {
-			$(this).parents('li').eq(1).toggleClass('current');
-		});
-
-		// Set table to "fixed mode" if its width exceeds the visibile viewport area.
-		// See https://github.com/symphonycms/symphony-2/issues/932.
-		$(window).trigger('resize.admin table.admin', function() {
-			var table = $('table:first');
-
-			if(table.width() > $('html').width() && !table.hasClass('fixed')){
-				return table.addClass('fixed');
-			}
-
-			if(table.width() < $('html').width() && table.hasClass('fixed')){
-				return table.removeClass('fixed');
-			}
-		}).trigger('table.admin');
 	});
 
 })(window.jQuery);
