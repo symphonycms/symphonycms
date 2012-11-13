@@ -198,11 +198,13 @@
 			);
 
 			$child_sections = array();
+			$child_sections_fields = array();
 			$associated_sections = $section->fetchAssociatedSections(true);
 			if(is_array($associated_sections) && !empty($associated_sections)){
 				foreach($associated_sections as $key => $as){
 					$child_sections[$key] = SectionManager::fetch($as['child_section_id']);
-					$aTableHead[] = array($child_sections[$key]->get('name'), 'col');
+					$child_sections_fields[$key] = FieldManager::fetch($as['child_section_field_id']);
+					$aTableHead[] = array($child_sections_fields[$key]->get('label') . "<br />(from ". $child_sections[$key]->get('name') . ")", 'col');
 				}
 			}
 
