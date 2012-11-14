@@ -697,7 +697,7 @@
 					Administration::instance()->customError(__('Unknown Section'), __('The Section, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
 				}
 
-				$entry =& EntryManager::create();
+				$entry = EntryManager::create();
 				$entry->set('author_id', Administration::instance()->Author->get('id'));
 				$entry->set('section_id', $section_id);
 				$entry->set('creation_date', DateTimeObj::get('c'));
@@ -850,7 +850,7 @@
 				$new_link = $base . 'new/';
 				$filter_link = $base;
 
-				list($flag, $field_id, $value) = preg_split('/:/i', $this->_context['flag'], 3);
+				list($flag, $field_id, $value) = array_pad(preg_split('/:/i', $this->_context['flag'], 3), 3, null);
 
 				if(isset($_REQUEST['prepopulate'])){
 					$new_link .= '?';
