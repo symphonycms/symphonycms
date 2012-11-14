@@ -1327,4 +1327,18 @@
 
 			}
 		}
+
+		/**
+		 * Wrap a value in CDATA tags for XSL output of non encoded data
+		 *
+		 * @since Symphony 2.3.2
+		 * @param string @value
+		 *	The string to wrap in CDATA
+		 * @return string
+		 *	The wrapped string
+		 */
+		public static function wrapInCDATA($value) {
+			return '<![CDATA[' . $value . ']]>';
+		}
+
 	}
