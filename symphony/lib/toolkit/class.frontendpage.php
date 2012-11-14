@@ -235,7 +235,7 @@
 
 				$backup_param = $this->_param;
 
-				$this->_param['current-query-string'] = $this->wrapParameterInCDATA($this->_param['current-query-string']);
+				$this->_param['current-query-string'] = General::wrapInCDATA($this->_param['current-query-string']);
 
 				$output = parent::generate();
 
@@ -487,7 +487,7 @@
 					$param->setValue(General::sanitize($value[0]));
 				}
 				else if($key == 'current-query-string') {
-					$param->setValue($this->wrapParameterInCDATA($value));
+					$param->setValue(General::wrapInCDATA($value));
 				}
 				else {
 					$param->setValue(General::sanitize($value));
@@ -969,19 +969,6 @@
 		 */
 		public static function sanitizeParameter($parameter) {
 			return XMLElement::stripInvalidXMLCharacters(utf8_encode(urldecode($parameter)));
-		}
-
-		/**
-		 * Wrap a value in CDATA tags for XSL output of non encoded data
-		 *
-		 * @since Symphony 2.3.2
-		 * @param string @value
-		 *	The string to wrap in CDATA
-		 * @return string
-		 *	The wrapped string
-		 */
-		public static function wrapParameterInCDATA($parameter) {
-			return '<![CDATA[' . $parameter . ']]>';
 		}
 
 		/**
