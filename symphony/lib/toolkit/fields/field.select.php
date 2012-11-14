@@ -288,15 +288,16 @@
 
 		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null){
 			$states = $this->getToggleStates();
+			$value = isset($data['value']) ? $data['value'] : null;
 
-			if(!is_array($data['value'])) $data['value'] = array($data['value']);
+			if(!is_array($value)) $value = array($value);
 
 			$options = array(
-				array(NULL, false, NULL)
+				array(null, false, null)
 			);
 
 			foreach($states as $handle => $v){
-				$options[] = array(General::sanitize($v), in_array($v, $data['value']), General::sanitize($v));
+				$options[] = array(General::sanitize($v), in_array($v, $value), General::sanitize($v));
 			}
 
 			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
@@ -306,7 +307,7 @@
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : NULL)));
 
-			if($flagWithError != NULL) $wrapper->appendChild(Widget::Error($label, $flagWithError));
+			if($flagWithError != null) $wrapper->appendChild(Widget::Error($label, $flagWithError));
 			else $wrapper->appendChild($label);
 		}
 
