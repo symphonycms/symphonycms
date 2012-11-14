@@ -233,7 +233,13 @@
 				 */
 				Symphony::ExtensionManager()->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
 
+				$backup_param = $this->_param;
+
+				$this->_param['current-query-string'] = $this->wrapParameterInCDATA($this->_param['current-query-string']);
+
 				$output = parent::generate();
+
+				$this->_param = $backup_param;
 
 				/**
 				 * Immediately after generating the page. Provided with string containing page source
@@ -344,7 +350,7 @@
 				'current-page-id' => $page['id'],
 				'current-path' => ($current_path == '') ? '/' : $current_path,
 				'parent-path' => '/' . $page['path'],
-				'current-query-string' => '<![CDATA[' . self::sanitizeParameter($querystring) . ']]>',
+				'current-query-string' => self::sanitizeParameter($querystring),
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
@@ -481,7 +487,7 @@
 					$param->setValue(General::sanitize($value[0]));
 				}
 				else if($key == 'current-query-string') {
-					$param->setValue($value);
+					$param->setValue($this->wrapParameterInCDATA($value));
 				}
 				else {
 					$param->setValue(General::sanitize($value));
@@ -966,6 +972,19 @@
 		}
 
 		/**
+		 * Wrap a value in CDATA tags for XSL output of non encoded data
+		 *
+		 * @since Symphony 2.3.2
+		 * @param string @value
+		 *	The string to wrap in CDATA
+		 * @return string
+		 *	The wrapped string
+		 */
+		public static function wrapParameterInCDATA($parameter) {
+			return '<![CDATA[' . $parameter . ']]>';
+		}
+
+		/**
 		 * Given a page ID, return it's type from `tbl_pages`
 		 *
 		 * @deprecated This function will be removed in Symphony 2.4. Use
@@ -1000,3 +1019,4 @@
 		}
 
 	}
+
