@@ -828,7 +828,7 @@
 		public static function writeFile($file, $data, $perm = 0644, $mode = 'w'){
 			if(
 				(!is_writable(dirname($file)) || !is_readable(dirname($file))) // Folder
-				|| (!is_readable($file) || !is_writable($file)) // File
+				|| (file_exists($file) && (!is_readable($file) || !is_writable($file))) // File
 			) {
 				return false;
 			}
