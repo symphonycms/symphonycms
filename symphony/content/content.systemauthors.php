@@ -355,7 +355,7 @@
 
 				$label = Widget::Label(NULL, NULL, 'column');
 				$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password', array('placeholder' => __('Old Password'))));
-				$fieldset->appendChild((isset($this->_errors['old-password']) ? Widget::Error($label, $this->_errors['password']) : $label));
+				$fieldset->appendChild((isset($this->_errors['old-password']) ? Widget::Error($label, $this->_errors['old-password']) : $label));
 			}
 
 			// New password
