@@ -129,7 +129,7 @@
 		 *  `$this->_head`.
 		 * @param boolean $allowDuplicate
 		 *  If set to false, make this function check if there is already an XMLElement that as the same name in the head.
-		 *  Defaults to true.
+		 *  Defaults to true. @since Symphony 2.3.2
 		 * @return integer
 		 *  Returns the position that the `$object` has been set in the `$this->_head`
 		 */
@@ -148,13 +148,7 @@
 			
 			// check if we allow duplicate
 			if (!$allowDuplicate && !empty($this->_head)) {
-				//var_dump($this->_head);
-				foreach ($this->_head as $key => $element) {
-					if ($element->getName() == $object->getName()) {
-						// remove old element
-						unset($this->_head[$key]);
-					}
-				}
+				$this->removeFromHead($object->getName());
 			}
 			
 			// append new element
