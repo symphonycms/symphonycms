@@ -122,10 +122,6 @@ table.selectable input {
 	display: none;
 }
 
-table.selectable td {
-	cursor: pointer;
-}
-
 tr.selected td {
 	background-color: #668abe;
 	background-image: -webkit-linear-gradient(top, #668abe, #5c83ba);
