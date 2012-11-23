@@ -103,7 +103,6 @@
 
 				if(!headers_sent()) {
 					header('Content-Type: text/html; charset=utf-8');
-					header(sprintf('Content-Length: %d', strlen($output)));
 				}
 
 				echo $output;
@@ -115,7 +114,6 @@
 
 					if(!headers_sent()) {
 						header('Content-Type: text/html; charset=utf-8');
-						header(sprintf('Content-Length: %d', strlen($output)));
 					}
 
 					echo $output;

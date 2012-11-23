@@ -110,7 +110,6 @@
 	$Page->Body->appendChild($div);
 
 	$output = $Page->generate();
-	header(sprintf('Content-Length: %d', strlen($output)));
 	echo $output;
 
 	exit;
