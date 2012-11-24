@@ -159,7 +159,6 @@
 				$url = '/' . PageManager::resolvePagePath($page['id']) . '/';
 
 				$output = Frontend::instance()->display($url);
-				header(sprintf('Content-Length: %d', strlen($output)));
 				echo $output;
 				exit;
 			}
