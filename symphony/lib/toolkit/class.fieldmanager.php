@@ -182,7 +182,7 @@
 			Symphony::Database()->delete('tbl_fields_'.$existing->handle(), " `field_id` = '$id'");
 			SectionManager::removeSectionAssociation($id);
 
-			Symphony::Database()->query('DROP TABLE `tbl_entries_data_'.$id.'`');
+			Symphony::Database()->query('DROP TABLE IF EXISTS `tbl_entries_data_'.$id.'`');
 
 			return true;
 		}
