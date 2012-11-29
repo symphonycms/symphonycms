@@ -199,13 +199,15 @@
 				$later = $parts['end'];
 
 				// Switch between earlier than and later than logic
+				// The earlier/later range is defined by MySQL's support. RE: #1560
+				// @link http://dev.mysql.com/doc/refman/5.0/en/datetime.html
 				switch($match[2]) {
 					case 'later':
-						$string = $later . ' to 2038-01-01 23:59:59';
+						$string = $later . ' to 9999-12-31 23:59:59';
 						break;
 
 					case 'earlier':
-						$string = '0000-01-01 to ' . $earlier;
+						$string = '1000-01-01 00:00:00 to ' . $earlier;
 						break;
 				}
 			}
