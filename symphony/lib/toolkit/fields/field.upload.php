@@ -183,7 +183,7 @@
 				));
 			}
 
-			else if ($flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/') === false) {
+			else if ($flagWithError && is_writable(DOCROOT . $this->get('destination') . '/') === false) {
 				$flagWithError = __('Destination folder is not writable.')
 					. ' '
 					. __('Please check permissions on %s.', array(
