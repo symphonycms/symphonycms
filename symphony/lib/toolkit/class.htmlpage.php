@@ -63,6 +63,7 @@
 		/**
 		 * Setter function for the `<title>` of a backend page. Uses the
 		 * `addElementToHead()` function to place into the `$this->_head` array.
+		 * Makes sure that only one title can be set.
 		 *
 		 * @see addElementToHead()
 		 * @param string $title
@@ -71,7 +72,9 @@
 		 */
 		public function setTitle($title){
 			return $this->addElementToHead(
-				new XMLElement('title', $title)
+				new XMLElement('title', $title),
+				null,
+				false
 			);
 		}
 
@@ -124,10 +127,15 @@
 		 * @param integer $position
 		 *  Defaults to null which will put the `$object` at the end of the
 		 *  `$this->_head`.
+		 * @param boolean $allowDuplicate
+		 *  If set to false, make this function check if there is already an XMLElement that as the same name in the head.
+		 *  Defaults to true. @since Symphony 2.3.2
 		 * @return integer
 		 *  Returns the position that the `$object` has been set in the `$this->_head`
 		 */
-		public function addElementToHead(XMLElement $object, $position = null){
+		public function addElementToHead(XMLElement $object, $position = null, $allowDuplicate = true){
+			
+			// find the right position
 			if(($position && isset($this->_head[$position]))) {
 				$position = General::array_find_available_index($this->_head, $position);
 			}
@@ -137,7 +145,13 @@
 				else
 					$position = 0;
 			}
-
+			
+			// check if we allow duplicate
+			if (!$allowDuplicate && !empty($this->_head)) {
+				$this->removeFromHead($object->getName());
+			}
+			
+			// append new element
 			$this->_head[$position] = $object;
 
 			return $position;
