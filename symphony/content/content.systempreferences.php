@@ -157,12 +157,8 @@
 
 				if (!is_array($this->_errors) || empty($this->_errors)) {
 
-					if(is_array($settings) && !empty($settings)){
-						foreach($settings as $set => $values) {
-							foreach($values as $key => $val) {
-								Symphony::Configuration()->set($key, $val, $set);
-							}
-						}
+					if(is_array($settings) && !empty($settings)) {
+						Symphony::Configuration()->setArray($settings, false);
 					}
 
 					Symphony::Configuration()->write();
