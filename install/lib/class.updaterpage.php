@@ -8,8 +8,6 @@
 
 	Class UpdaterPage extends InstallerPage {
 
-		// @todo We need a method to allow a user to remove the updater (from the
-		// Alert in the backend, it's update.php?remove in 2.2.x
 		public function __construct($template, $params = array()) {
 			parent::__construct($template, $params);
 
@@ -125,7 +123,6 @@
 			$submit->appendChild(Widget::input('submit', __('Complete'), 'submit'));
 
 			$this->Form->appendChild($submit);
-
 		}
 
 	}
