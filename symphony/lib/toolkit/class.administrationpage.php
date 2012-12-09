@@ -315,11 +315,11 @@
 		 * This function initialises a lot of the basic elements that make up a Symphony
 		 * backend page such as the default stylesheets and scripts, the navigation and
 		 * the footer. Any alerts are also appended by this function. `view()` is called to
-		 * build the actual content of the page. The `InitaliseAdminPageHead` delegate
+		 * build the actual content of the page. The `InitialiseAdminPageHead` delegate
 		 * allows extensions to add elements to the `<head>`.
 		 *
 		 * @see view()
-		 * @uses InitaliseAdminPageHead
+		 * @uses InitialiseAdminPageHead
 		 * @param array $context
 		 *  An associative array describing this pages context. This
 		 *  can include the section handle, the current entry_id, the page
@@ -383,13 +383,19 @@
 			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
 
 			/**
-			 * Allows developers to insert items into the page HEAD. Use `Administration::instance()->Page`
-			 * for access to the page object
+			 * Allows developers to insert items into the page HEAD. Use
+			 * `Administration::instance()->Page` for access to the page object.
 			 *
-			 * @delegate InitaliseAdminPageHead
+			 * @since In Symphony 2.3.2 this delegate was renamed from
+			 *  `InitaliseAdminPageHead` to the correct spelling of
+			 *  `InitialiseAdminPageHead`. The old delegate is supported
+			 *  until Symphony 2.5.
+			 *
+			 * @delegate InitialiseAdminPageHead
 			 * @param string $context
 			 *  '/backend/'
 			 */
+			Symphony::ExtensionManager()->notifyMembers('InitialiseAdminPageHead', '/backend/');
 			Symphony::ExtensionManager()->notifyMembers('InitaliseAdminPageHead', '/backend/');
 
 			$this->addHeaderToPage('Content-Type', 'text/html; charset=UTF-8');
