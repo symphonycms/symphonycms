@@ -56,16 +56,19 @@
 				$this->Form->setAttribute('action', SYMPHONY_URL.'/login/retrieve-password/');
 
 				if(isset($this->_email_sent) && $this->_email_sent) {
-					$fieldset->appendChild(new XMLElement('p', __('An email containing a customised login link has been sent. It will expire in 2 hours.')));
+					$fieldset->appendChild(new XMLElement('p', __('An email containing a customised login link has been sent to %s. It will expire in 2 hours.', array(
+						'<code>' . $this->_email_sent_to . '</code>')
+					)));
+					$fieldset->appendChild(new XMLElement('p', Widget::Anchor(__('Login'), SYMPHONY_URL.'/login/', null)));
 					$this->Form->appendChild($fieldset);
 				}
 				else {
-					$fieldset->appendChild(new XMLElement('p', __('Enter your email address to be sent further instructions for logging in.')));
+					$fieldset->appendChild(new XMLElement('p', __('Enter your email address or username to be sent further instructions for logging in.')));
 
-					$label = Widget::Label(__('Email Address'));
+					$label = Widget::Label(__('Email Address or Username'));
 					$label->appendChild(Widget::Input('email', General::sanitize($_POST['email']), 'text', array('autofocus' => 'autofocus')));
 					if(isset($this->_email_sent) && !$this->_email_sent) {
-						$label = Widget::Error($label, __('There was a problem locating your account. Please check that you are using the correct email address.'));
+						$label = Widget::Error($label, __('Unfortunately no account was found using this information.'));
 					}
 					$fieldset->appendChild($label);
 
@@ -186,14 +189,23 @@
 				// Reset of password requested
 				elseif($action == 'reset'):
 
-					$author = Symphony::Database()->fetchRow(0, "SELECT `id`, `email`, `first_name` FROM `tbl_authors` WHERE `email` = '".Symphony::Database()->cleanValue($_POST['email'])."'");
+					$author = Symphony::Database()->fetchRow(0, sprintf("
+							SELECT `id`, `email`, `first_name`
+							FROM `tbl_authors`
+							WHERE `email` = '%1\$s' OR `username` = '%1\$s'
+						", Symphony::Database()->cleanValue($_POST['email'])
+					));
 
 					if(!empty($author)){
 						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' ");
 
 						if(!$token = Symphony::Database()->fetchVar('token', 0, "SELECT `token` FROM `tbl_forgotpass` WHERE `expiry` > '".DateTimeObj::getGMT('c')."' AND `author_id` = ".$author['id'])){
 							$token = substr(SHA1::hash(time() . rand(0, 1000)), 0, 6);
-							Symphony::Database()->insert(array('author_id' => $author['id'], 'token' => $token, 'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))), 'tbl_forgotpass');
+							Symphony::Database()->insert(array(
+								'author_id' => $author['id'],
+								'token' => $token,
+								'expiry' => DateTimeObj::getGMT('c', time() + (120 * 60))
+							), 'tbl_forgotpass');
 						}
 
 						try{
@@ -210,6 +222,7 @@
 
 							$email->send();
 							$this->_email_sent = true;
+							$this->_email_sent_to = $author['email']; // Set this so we can display a customised message
 						}
 						catch(Exception $e) {}
 
