@@ -329,7 +329,14 @@
 						$c = 'NOT IN';
 					}
 
-					$where .= " AND `e`.id " . $c . " (".implode(", ", $value).") ";
+					// Cast all ID's to integers.
+					$value = array_map(create_function('$x', 'return (int)$x;'),$value);
+					$value = array_filter($value);
+
+					// If there are no ID's, no need to filter. RE: #1567
+					if(!empty($value)) {
+						$where .= " AND `e`.id " . $c . " (".implode(", ", $value).") ";
+					}
 				}
 				else if($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
 					require_once(TOOLKIT . '/fields/field.date.php');
