@@ -73,7 +73,7 @@
 					'content'		=> 'text/html; charset=UTF-8'
 				)
 			));
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/devkit.css', 'screen');
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/devkit.css', 'screen');
 		}
 
 		/**
