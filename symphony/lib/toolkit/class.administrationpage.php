@@ -338,30 +338,30 @@
 			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 0);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge,chrome=1')), 1);
 
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.css', 'screen', 30);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.legacy.css', 'screen', 31);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.grids.css', 'screen', 32);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.forms.css', 'screen', 34);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.tables.css', 'screen', 34);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.frames.css', 'screen', 33);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.drawers.css', 'screen', 34);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.tabs.css', 'screen', 34);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.notices.css', 'screen', 34);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/admin.css', 'screen', 40);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.css', 'screen', 30);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.legacy.css', 'screen', 31);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.grids.css', 'screen', 32);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.forms.css', 'screen', 34);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.tables.css', 'screen', 34);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.frames.css', 'screen', 33);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.drawers.css', 'screen', 34);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.tabs.css', 'screen', 34);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.notices.css', 'screen', 34);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/admin.css', 'screen', 40);
 
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/jquery.js', 50);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.js', 60);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.collapsible.js', 61);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.orderable.js', 62);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.selectable.js', 63);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.duplicator.js', 64);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.tags.js', 65);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.suggestions.js', 66);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.pickable.js', 67);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.timeago.js', 68);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.notify.js', 69);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/symphony.drawer.js', 70);
-			$this->addScriptToHead(SYMPHONY_URL . '/assets/js/admin.js', 80);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/jquery.js', 50);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.js', 60);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.collapsible.js', 61);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.orderable.js', 62);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.selectable.js', 63);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.duplicator.js', 64);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.tags.js', 65);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.suggestions.js', 66);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.pickable.js', 67);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.timeago.js', 68);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.notify.js', 69);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.drawer.js', 70);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/admin.js', 80);
 
 			$this->addElementToHead(
 				new XMLElement(
