@@ -32,7 +32,7 @@
 
 	if (!file_exists(CONFIG)) {
 
-		if (file_exists(DOCROOT . '/install/index.php')) {
+		if (file_exists(DOCROOT . '/install/index.php') && !preg_match('%/install/index.php$%', $_SERVER['SCRIPT_FILENAME'])) {
 			header(sprintf('Location: %s/install/', URL));
 			exit;
 		}
