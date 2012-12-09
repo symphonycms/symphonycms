@@ -138,6 +138,24 @@
 			else $wrapper->appendChild($label);
 		}
 
+		public function checkPostFieldData($data, &$message, $entry_id = null){
+			$message = NULL;
+
+			// Check if any value was passed
+			$has_no_value = is_array($data) ? empty($data) : strlen(trim($data)) == 0;
+			// Check that the value passed was 'on' or 'yes', if it's not
+			// then the field has 'no value' in the context of being required. RE: #1569
+			$has_no_value = ($has_no_value === false) ? !in_array(strtolower($data), array('on', 'yes')) : false;
+
+			if ($this->get('required') == 'yes' && $has_no_value) {
+				$message = __('‘%s’ is a required field.', array($this->get('label')));
+
+				return self::__MISSING_FIELDS__;
+			}
+
+			return self::__OK__;
+		}
+
 		public function processRawFieldData($data, &$status, &$message=null, $simulate = false, $entry_id = null){
 			$status = self::__OK__;
 
