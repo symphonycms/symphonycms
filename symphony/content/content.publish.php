@@ -142,7 +142,7 @@
 
 			// Only show the Edit Section button if the Author is a developer. #938 ^BA
 			if(Administration::instance()->Author->isDeveloper()) {
-				array_unshift($subheading_buttons, Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id, __('Edit Section Configuration'), 'button'));
+				array_unshift($subheading_buttons, Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id . '/', __('Edit Section Configuration'), 'button'));
 			}
 
 			$this->appendSubheading($section->get('name'), $subheading_buttons);
@@ -584,7 +584,7 @@
 			// Only show the Edit Section button if the Author is a developer. #938 ^BA
 			if(Administration::instance()->Author->isDeveloper()) {
 				$this->appendSubheading(__('Untitled'),
-					Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id, __('Edit Section Configuration'), 'button')
+					Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id . '/', __('Edit Section Configuration'), 'button')
 				);
 			}
 			else {
@@ -919,7 +919,7 @@
 			// Only show the Edit Section button if the Author is a developer. #938 ^BA
 			if(Administration::instance()->Author->isDeveloper()) {
 				$this->appendSubheading($title,
-					Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id, __('Edit Section Configuration'), 'button')
+					Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id . '/', __('Edit Section Configuration'), 'button')
 				);
 			}
 			else {
