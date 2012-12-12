@@ -86,17 +86,8 @@
 				}
 
 				// Exceptions should be logged if they are not caught.
-				if(self::$_Log instanceof Log){
-					self::$_Log->pushToLog(sprintf(
-							'%s %s - %s%s%s',
-							$class,
-							$e->getCode(),
-							$e->getMessage(),
-							($e->getFile() ? " in file " .  $e->getFile() : null),
-							($e->getLine() ? " on line " . $e->getLine() : null)
-						),
-						$e->getCode(), true
-					);
+				if(self::$_Log instanceof Log) {
+					self::$_Log->pushExceptionToLog($e, true);
 				}
 
 				$output = call_user_func(array($class, 'render'), $e);
@@ -323,8 +314,8 @@
 			if(!self::$logDisabled && !in_array($code, array(E_STRICT)) && self::$_Log instanceof Log){
 				self::$_Log->pushToLog(
 					sprintf(
-						'%s %s - %s%s%s',
-						__CLASS__, $code, $message, ($file ? " in file $file" : null), ($line ? " on line $line" : null)
+						'%s %s: %s%s%s',
+						__CLASS__, $code, $message, ($line ? " on line $line" : null), ($file ? " of file $file" : null)
 					), $code, true
 				);
 			}
