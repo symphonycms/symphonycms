@@ -722,7 +722,7 @@
 						$label[$key] = $key;
 					}
 
-					array_multisort($name, $order, $label, SORT_ASC, $extensions);
+					array_multisort($name, $order, $label, $order, $extensions);
 				}
 
 			}
