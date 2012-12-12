@@ -386,8 +386,8 @@
 				}
 			}
 
-			if(is_array($_COOKIE[__SYM_COOKIE_PREFIX_]) && !empty($_COOKIE[__SYM_COOKIE_PREFIX_])){
-				foreach($_COOKIE[__SYM_COOKIE_PREFIX_] as $key => $val){
+			if(is_array($_COOKIE[__SYM_COOKIE_PREFIX__]) && !empty($_COOKIE[__SYM_COOKIE_PREFIX__])){
+				foreach($_COOKIE[__SYM_COOKIE_PREFIX__] as $key => $val){
 					$this->_param['cookie-' . $key] = $val;
 				}
 			}

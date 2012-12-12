@@ -229,6 +229,14 @@
 		 * function on the current URL to set a cookie using the cookie_prefix
 		 * defined in the Symphony configuration. The cookie will last two
 		 * weeks.
+		 *
+		 * This function also defines two constants, `__SYM_COOKIE_PATH__`
+		 * and `__SYM_COOKIE_PREFIX__`.
+		 *
+		 * @deprecated Prior to Symphony 2.3.2, the constant `__SYM_COOKIE_PREFIX_`
+		 *  had a typo where it was missing the second underscore. Symphony will
+		 *  support both constants, `__SYM_COOKIE_PREFIX_` and `__SYM_COOKIE_PREFIX__`
+		 *  until Symphony 2.5
 		 */
 		public function initialiseCookie(){
 			$cookie_path = @parse_url(URL, PHP_URL_PATH);
@@ -236,8 +244,9 @@
 
 			define_safe('__SYM_COOKIE_PATH__', $cookie_path);
 			define_safe('__SYM_COOKIE_PREFIX_', self::Configuration()->get('cookie_prefix', 'symphony'));
+			define_safe('__SYM_COOKIE_PREFIX__', self::Configuration()->get('cookie_prefix', 'symphony'));
 
-			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX_, TWO_WEEKS, __SYM_COOKIE_PATH__);
+			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX__, TWO_WEEKS, __SYM_COOKIE_PATH__);
 		}
 
 		/**
