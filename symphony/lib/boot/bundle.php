@@ -31,11 +31,15 @@
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
 
 	if (!file_exists(CONFIG)) {
+		
+		$bInsideInstaller = (bool)preg_match('%/install/index.php$%', $_SERVER['SCRIPT_FILENAME']);
 
-		if (file_exists(DOCROOT . '/install/index.php') && !preg_match('%/install/index.php$%', $_SERVER['SCRIPT_FILENAME'])) {
+		if (!$bInsideInstaller && file_exists(DOCROOT . '/install/index.php')) {
 			header(sprintf('Location: %s/install/', URL));
 			exit;
 		}
-
-		die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');
+		
+		elseif(!$bInsideInstaller){
+			die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');
+		}
 	}
