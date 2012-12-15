@@ -52,7 +52,6 @@
 		}
 
 		public function execute(&$param_pool) {
-
 			$author_ids = array();
 
 			if(is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
@@ -93,13 +92,29 @@
 
 				if(!$this->_param_output_only) $result = new XMLElement($this->dsParamROOTELEMENT);
 
-				foreach($authors as $author){
+				$singleParam = false;
+				$key = 'ds-' . $this->dsParamROOTELEMENT;
 
-					if(isset($this->dsParamPARAMOUTPUT)){
-						$key = 'ds-' . $this->dsParamROOTELEMENT;
-						if(!is_array($param_pool[$key])) $param_pool[$key] = array();
+				if(isset($this->dsParamPARAMOUTPUT)) {
+					if(!is_array($this->dsParamPARAMOUTPUT)) {
+						$this->dsParamPARAMOUTPUT = array($this->dsParamPARAMOUTPUT);
+					}
 
-						$param_pool[$key][] = ($this->dsParamPARAMOUTPUT == 'name' ? $author->getFullName() : $author->get($this->dsParamPARAMOUTPUT));
+					$singleParam = count($this->dsParamPARAMOUTPUT) === 1;
+				}
+
+				foreach($authors as $author) {
+					if(isset($this->dsParamPARAMOUTPUT)) foreach($this->dsParamPARAMOUTPUT as $param) {
+						// The new style of paramater is `ds-datasource-handle.field-handle`
+						$param_key = $key . '.' . str_replace(':', '-', $param);
+
+						if(!is_array($param_pool[$param_key])) $param_pool[$param_key] = array();
+						$param_pool[$param_key][] = ($param === 'name' ? $author->getFullName() : $author->get($param));
+
+						if($singleParam) {
+							if(!is_array($param_pool[$key])) $param_pool[$key] = array();
+							$param_pool[$key][] = ($param === 'name' ? $author->getFullName() : $author->get($param));
+						}
 					}
 
 					if($this->_param_output_only) continue;
