@@ -329,7 +329,7 @@
 						$c = 'NOT IN';
 					}
 
-					$where .= " AND `e`.id " . $c . " (".implode(", ", $value).") ";
+					$where .= " AND `e`.id " . $c . " ('".implode(", ", $value)."') ";
 				}
 				else if($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
 					require_once(TOOLKIT . '/fields/field.date.php');
