@@ -239,7 +239,8 @@
 						$field_pool[$column->get('id')] = $column;
 					}
 				}
-				$link_column = end(array_reverse($visible_columns));
+				$link_column = array_reverse($visible_columns);
+				$link_column = end($link_column);
 				reset($visible_columns);
 
 				foreach($entries['records'] as $entry) {
@@ -696,7 +697,7 @@
 					Administration::instance()->customError(__('Unknown Section'), __('The Section, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')));
 				}
 
-				$entry =& EntryManager::create();
+				$entry = EntryManager::create();
 				$entry->set('author_id', Administration::instance()->Author->get('id'));
 				$entry->set('section_id', $section_id);
 				$entry->set('creation_date', DateTimeObj::get('c'));
@@ -822,6 +823,7 @@
 			// Editing an entry, so need to create some various objects
 			else {
 				$entry = $existingEntry;
+				$fields = array();
 
 				if (!$section) {
 					$section = SectionManager::fetch($entry->get('section_id'));
@@ -848,7 +850,7 @@
 				$new_link = $base . 'new/';
 				$filter_link = $base;
 
-				list($flag, $field_id, $value) = preg_split('/:/i', $this->_context['flag'], 3);
+				list($flag, $field_id, $value) = array_pad(preg_split('/:/i', $this->_context['flag'], 3), 3, null);
 
 				if(isset($_REQUEST['prepopulate'])){
 					$new_link .= '?';

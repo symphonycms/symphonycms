@@ -69,7 +69,8 @@
 			}
 
 			$isEditing = ($readonly ? true : false);
-			$fields = array();
+			$fields = array("name"=>null, "filters"=>null);
+			$about = array("name"=>null);
 			$providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::EVENT);
 
 			if(isset($_POST['fields'])) {
@@ -140,6 +141,7 @@
 				$label = Widget::Label(__('Source'));
 				$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 				$options = array();
+				$section_options = array();
 
 				if(is_array($sections) && !empty($sections)) {
 					$section_options = array('label' => __('Sections'), 'data-label' => 'Sections', 'options' => array());

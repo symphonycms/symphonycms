@@ -53,6 +53,8 @@
 	-------------------------------------------------------------------------*/
 
 		protected function __applyFormatting($data, $validate=false, &$errors=NULL){
+			$result = '';
+
 			if($this->get('formatter')) {
 				$formatter = TextformatterManager::create($this->get('formatter'));
 				$result = $formatter->run($data);
@@ -130,7 +132,8 @@
 			$label = Widget::Label($this->get('label'));
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 
-			$textarea = Widget::Textarea('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (int)$this->get('size'), 50, (strlen($data['value']) != 0 ? General::sanitize($data['value']) : NULL));
+			$value = isset($data['value']) ? $data['value'] : null;
+			$textarea = Widget::Textarea('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (int)$this->get('size'), 50, (strlen($value) != 0 ? General::sanitize($value) : null));
 
 			if($this->get('formatter') != 'none') $textarea->setAttribute('class', $this->get('formatter'));
 

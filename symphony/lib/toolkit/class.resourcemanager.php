@@ -39,15 +39,15 @@
 		 *
 		 * @param integer $type
 		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
-		 * @return object
-		 *  An object representing the Manager class that handles the resource.
+		 * @return string
+		 *  An string representing the name of the Manager class that handles the resource.
 		 */
 		public static function getManagerFromType($type) {
 			switch($type) {
 				case RESOURCE_TYPE_EVENT:
-					return EventManager;
+					return 'EventManager';
 				case RESOURCE_TYPE_DS:
-					return DatasourceManager;
+					return 'DatasourceManager';
 			}
 		}
 
@@ -253,7 +253,10 @@
 			preg_match('/^extensions\/(.*)\/' . $type . '/', call_user_func(array($manager, '__getClassPath'), $r_handle), $data);
 
 			$data = array_splice($data, 1);
-			return $data[0];
+			if(empty($data))
+				return NULL;
+			else
+				return $data[0];
 		}
 
 		/**

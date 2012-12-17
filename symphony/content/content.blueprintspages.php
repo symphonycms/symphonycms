@@ -343,7 +343,8 @@
 
 		public function __viewEdit() {
 			$this->setPageType('form');
-			$fields = array();
+			$fields = array("title"=>null, "handle"=>null, "parent"=>null, "params"=>null, "type"=>null, "data_sources"=>null);
+			$existing = $fields;
 
 			$nesting = (Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes');
 
@@ -435,6 +436,8 @@
 				)
 			));
 
+			$page_id = isset($page_id) ? $page_id : null;
+
 			if($existing) {
 				$template_name = $fields['handle'];
 				$page_url = URL . '/' . PageManager::resolvePagePath($page_id) . '/';
@@ -449,13 +452,14 @@
 				));
 			}
 			else {
-				$this->appendSubheading(($title ? $title : __('Untitled')));
+				$this->appendSubheading((($title == '') ? $title : __('Untitled')));
 			}
 
 			if(isset($page_id)) {
 				$this->insertBreadcrumbsUsingPageIdentifier($page_id, false);
 			}
 			else {
+				$_GET['parent'] = isset($_GET['parent']) ? $_GET['parent'] : null;
 				$this->insertBreadcrumbsUsingPageIdentifier((int)$_GET['parent'], true);
 			}
 
