@@ -922,6 +922,7 @@
 			if(is_array($rows) && !empty($rows)){
 				foreach($rows as $r){
 					$name = $r['name'];
+					$status = isset($r['status']) ? $r['status'] : null;
 
 					// Grab the install location
 					$path = self::__getClassPath($name);
@@ -932,7 +933,7 @@
 						Symphony::Database()->delete("tbl_extensions_delegates", " `extension_id` = $existing_id ");
 						Symphony::Database()->delete('tbl_extensions', " `id` = '$existing_id' LIMIT 1");
 					}
-					elseif ($r['status'] == 'disabled') {
+					elseif ($status == 'disabled') {
 						Symphony::Database()->delete("tbl_extensions_delegates", " `extension_id` = $existing_id ");
 					}
 				}

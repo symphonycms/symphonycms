@@ -68,6 +68,9 @@
 			}
 
 			$providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::DATASOURCE);
+			$isEditing = false;
+			$about = null;
+			$fields = array('name'=>null, 'source'=>null, 'filter'=>null, 'required_url_param'=>null, 'param'=>null);
 
 			if(isset($_POST['fields'])){
 				$fields = $_POST['fields'];
@@ -752,6 +755,8 @@
 
 		// Dynamic XML
 
+			$fields['dynamic_xml'] = array('url'=>null, 'xpath'=>null, 'namespace'=>null, 'cache'=>null, 'timeout'=>null);
+
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual dynamic_xml');
 			$fieldset->appendChild(new XMLElement('legend', __('Dynamic XML')));
@@ -856,6 +861,8 @@
 			$this->Form->appendChild($fieldset);
 
 		// Static XML
+
+			$fields['static_xml'] = null;
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual static_xml');

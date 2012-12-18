@@ -43,7 +43,7 @@
 
 			// If `?unsort` is appended to the URL, then sorting information are reverted
 			// to their defaults
-			if($params['unsort']) {
+			if(isset($params['unsort'])) {
 				ResourceManager::setSortingField($type, 'name', false);
 				ResourceManager::setSortingOrder($type, 'asc');
 

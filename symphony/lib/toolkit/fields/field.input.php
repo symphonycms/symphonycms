@@ -103,7 +103,7 @@
 
 			if($id === false) return false;
 
-			$fields = array();
+			$fields = array('validator'=>null);
 
 			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
 
@@ -115,7 +115,7 @@
 	-------------------------------------------------------------------------*/
 
 		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null){
-			$value = General::sanitize($data['value']);
+			$value = General::sanitize(isset($data['value']) ? $data['value'] : null);
 			$label = Widget::Label($this->get('label'));
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? $value : NULL)));

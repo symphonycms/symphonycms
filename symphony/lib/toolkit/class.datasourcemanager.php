@@ -105,12 +105,20 @@
 						$can_parse = false;
 						$type = null;
 
-						if(method_exists($classname,'allowEditorToParse')) {
-							$can_parse = call_user_func(array($classname, 'allowEditorToParse'));
+						try {
+							$method = new ReflectionMethod($classname, 'allowEditorToParse');
+							$can_parse = $method->invoke(new $classname);
+						}
+						catch (ReflectionException $e){
+							$can_parse = array();
 						}
 
-						if(method_exists($classname,'getSource')) {
-							$type = call_user_func(array($classname, 'getSource'));
+						try {
+							$method = new ReflectionMethod($classname, 'getSource');
+							$type = $method->invoke(new $classname);
+						}
+						catch (ReflectionException $e){
+							$type = array();
 						}
 
 						$about['can_parse'] = $can_parse;
@@ -156,10 +164,15 @@
 
 			$handle = self::__getHandleFromFilename(basename($path));
 
-			if(is_callable(array($classname, 'about'))){
-				$about = call_user_func(array($classname, 'about'));
-				return array_merge($about, array('handle' => $handle));
+			try {
+				$method = new ReflectionMethod($classname, 'about');
+				$about = $method->invoke(new $classname);
 			}
+			catch (ReflectionException $e){
+				$about = array();
+			}
+
+			return array_merge($about, array('handle' => $handle));
 		}
 
 		/**

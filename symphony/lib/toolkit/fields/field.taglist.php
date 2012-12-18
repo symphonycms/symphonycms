@@ -279,7 +279,7 @@
 			return parent::prepareTableValue(array('value' => General::sanitize($value)), $link, $entry_id = null);
 		}
 
-		public function getParameterPoolValue($data, $entry_id = null) {
+		public function getParameterPoolValue(array $data, $entry_id=NULL) {
 			return $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::HANDLE, $entry_id);
 		}
 
