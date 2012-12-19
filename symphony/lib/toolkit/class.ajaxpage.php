@@ -9,44 +9,13 @@
 
 	require_once(TOOLKIT . '/class.page.php');
 
-	Abstract Class AjaxPage extends Page{
-
-		/**
-		 * Refers to the HTTP status code, 200 OK
-		 * @var integer
-		 */
-		const STATUS_OK = 200;
-
-		/**
-		 * Refers to the HTTP status code, 400 Bad Request
-		 * @var integer
-		 */
-		const STATUS_BAD = 400;
-
-		/**
-		 * Refers to the HTTP status code, 400 Bad Request
-		 * @var integer
-		 */
-		const STATUS_ERROR = 400;
-
-		/**
-		 * Refers to the HTTP status code, 401 Unauthorized
-		 * @var integer
-		 */
-		const STATUS_UNAUTHORISED = 401;
+	Abstract Class AjaxPage extends Page {
 
 		/**
 		 * The root node for the response of the AJAXPage
 		 * @var XMLElement
 		 */
 		protected $_Result;
-
-		/**
-		 * The HTTP status code of the page using the `AJAXPage` constants
-		 * `STATUS_OK`, `STATUS_BAD`, `STATUS_ERROR` or `STATUS_UNAUTHORISED`
-		 * @var integer
-		 */
-		protected $_status;
 
 		/**
 		 * The constructor for `AJAXPage`. This sets the page status to `STATUS_OK`,
