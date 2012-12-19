@@ -31,6 +31,19 @@
 		}
 
 		static function upgrade(){
+			//	Update DB for the new Mime-type length
+			if(version_compare($symphony_version, '2.3.1', '<')){
+				$upload_entry_tables = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");
+
+				if(is_array($upload_entry_tables) && !empty($upload_entry_tables)){
+					foreach($upload_entry_tables as $field){
+						Symphony::Database()->query(sprintf(
+							"ALTER TABLE `tbl_entries_data_%d` CHANGE `mimetype` `mimetype` varchar(100) DEFAULT NULL",
+							$field
+						));
+					}
+				}
+			}
 			// Update the version information
 			Symphony::Configuration()->set('version', self::getVersion(), 'symphony');
 			Symphony::Configuration()->set('useragent', 'Symphony/' . self::getVersion(), 'general');
