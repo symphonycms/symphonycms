@@ -1341,7 +1341,7 @@
 		 *	The wrapped string
 		 */
 		public static function wrapInCDATA($value) {
-			return '<![CDATA[' . $value . ']]>';
+			return (!empty($value)) ? '<![CDATA[' . $value . ']]>' : $value;
 		}
 
 	}
