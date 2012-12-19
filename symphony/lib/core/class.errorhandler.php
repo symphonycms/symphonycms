@@ -90,22 +90,25 @@
 					self::$_Log->pushExceptionToLog($e, true);
 				}
 
-				$output = call_user_func(array($class, 'render'), $e);
-
 				if(!headers_sent()) {
+					Page::renderStatusCode(Page::HTTP_STATUS_ERROR);
 					header('Content-Type: text/html; charset=utf-8');
 				}
+
+				$output = call_user_func(array($class, 'render'), $e);
 
 				echo $output;
 				exit;
 			}
 			catch(Exception $e){
 				try {
-					$output = call_user_func(array('GenericExceptionHandler', 'render'), $e);
 
 					if(!headers_sent()) {
+						Page::renderStatusCode(Page::HTTP_STATUS_ERROR);
 						header('Content-Type: text/html; charset=utf-8');
 					}
+
+					$output = call_user_func(array('GenericExceptionHandler', 'render'), $e);
 
 					echo $output;
 					exit;
@@ -288,7 +291,7 @@
 		 * @return boolean
 		 */
 		public static function isEnabled(){
-			return (bool)error_reporting() AND self::$enabled;
+			return (bool)error_reporting() && self::$enabled;
 		}
 
 		/**
