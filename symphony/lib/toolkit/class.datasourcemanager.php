@@ -104,22 +104,20 @@
 
 						$can_parse = false;
 						$type = null;
+						$env = array();
+						$class = new $classname($env, false);
 
 						try {
 							$method = new ReflectionMethod($classname, 'allowEditorToParse');
-							$can_parse = $method->invoke(new $classname);
+							$can_parse = $method->invoke($class);
 						}
-						catch (ReflectionException $e){
-							$can_parse = array();
-						}
+						catch (ReflectionException $e) {}
 
 						try {
 							$method = new ReflectionMethod($classname, 'getSource');
-							$type = $method->invoke(new $classname);
+							$type = $method->invoke($class);
 						}
-						catch (ReflectionException $e){
-							$type = array();
-						}
+						catch (ReflectionException $e) {}
 
 						$about['can_parse'] = $can_parse;
 						$about['source'] = $type;
@@ -163,10 +161,12 @@
 			require_once($path);
 
 			$handle = self::__getHandleFromFilename(basename($path));
+			$env = array();
+			$class = new $classname($env, false);
 
 			try {
 				$method = new ReflectionMethod($classname, 'about');
-				$about = $method->invoke(new $classname);
+				$about = $method->invoke($class);
 			}
 			catch (ReflectionException $e){
 				$about = array();
