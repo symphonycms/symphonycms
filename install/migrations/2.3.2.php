@@ -31,8 +31,8 @@
 		}
 
 		static function upgrade(){
-			//	Update DB for the new Mime-type length
-			if(version_compare($symphony_version, '2.3.1', '<')){
+			//  Update DB for the new Mime-type length. #1534
+			if(version_compare(self::$existing_version, '2.3.2beta1', '<=')) {
 				$upload_entry_tables = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");
 
 				if(is_array($upload_entry_tables) && !empty($upload_entry_tables)){
