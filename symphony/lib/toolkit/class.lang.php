@@ -214,7 +214,7 @@
 						// Get language code
 						$code = explode('.', $file);
 						$code = $code[1];
-						$lang = self::$_languages[$code];
+						$lang = isset(self::$_languages[$code]) ? self::$_languages[$code] : null;
 
 						// Available extensions
 						$extensions = (isset($lang)) ? $lang['extensions'] : array();

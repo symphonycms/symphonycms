@@ -375,6 +375,7 @@
 			// Auth token
 			if(Administration::instance()->Author->isDeveloper()) {
 				$label = Widget::Label();
+				$group->appendChild(Widget::Input('fields[auth_token_active]', 'no', 'hidden'));
 				$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
 
 				if($author->isTokenActive()) {
@@ -510,7 +511,7 @@
 				$this->_Author->set('password', (trim($fields['password']) == '' ? '' : Cryptography::hash($fields['password'])));
 				$this->_Author->set('default_area', $fields['default_area']);
 				$this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
-				$this->_Author->set('language', $fields['language']);
+				$this->_Author->set('language', isset($fields['language']) ? $fields['language'] : null);
 
 				if($this->_Author->validate($this->_errors)) {
 					if($fields['password'] != $fields['password-confirmation']){
@@ -585,7 +586,7 @@
 				$this->_Author->set('username', $fields['username']);
 				$this->_Author->set('first_name', General::sanitize($fields['first_name']));
 				$this->_Author->set('last_name', General::sanitize($fields['last_name']));
-				$this->_Author->set('language', $fields['language']);
+				$this->_Author->set('language', isset($fields['language']) ? $fields['language'] : null);
 
 				if(trim($fields['password']) != ''){
 					$this->_Author->set('password', Cryptography::hash($fields['password']));

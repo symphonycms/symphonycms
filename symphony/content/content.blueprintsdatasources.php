@@ -69,14 +69,17 @@
 
 			$providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::DATASOURCE);
 			$isEditing = false;
-			$about = null;
+			$about = $handle = null;
 			$fields = array('name'=>null, 'source'=>null, 'filter'=>null, 'required_url_param'=>null, 'param'=>null);
 
 			if(isset($_POST['fields'])){
 				$fields = $_POST['fields'];
 				$fields['paginate_results'] = ($fields['paginate_results'] == 'on') ? 'yes' : 'no';
 
-				if(!in_array($fields['source'], array('authors', 'navigation', 'dynamic_xml', 'static_xml')) && is_array($fields['filter']) && !empty($fields['filter'])){
+				if(
+					!in_array($fields['source'], array('authors', 'navigation', 'dynamic_xml', 'static_xml'))
+					&& !empty($fields['filter']) && is_array($fields['filter'])
+				) {
 					$filters = array();
 					foreach($fields['filter'] as $f){
 						foreach($f as $key => $val) $filters[$key] = $val;
@@ -94,15 +97,16 @@
 				$isEditing = true;
 				$handle = $this->_context[1];
 				$existing =& DatasourceManager::create($handle, array(), false);
+				$order = isset($existing->dsParamORDER) ? $existing->dsParamORDER : 'asc';
 
 				if (!$existing->allowEditorToParse()) redirect(SYMPHONY_URL . '/blueprints/datasources/info/' . $handle . '/');
 
 				$about = $existing->about();
 				$fields['name'] = $about['name'];
 
-				$fields['order'] = ($existing->dsParamORDER == 'rand' ? 'random' : $existing->dsParamORDER);
-				$fields['param'] = $existing->dsParamPARAMOUTPUT;
-				$fields['required_url_param'] = trim($existing->dsParamREQUIREDPARAM);
+				$fields['order'] = ($order == 'rand') ? 'random' : $order;
+				$fields['param'] = isset($existing->dsParamPARAMOUTPUT) ? $existing->dsParamPARAMOUTPUT : null;
+				$fields['required_url_param'] = isset($existing->dsParamREQUIREDPARAM) ? trim($existing->dsParamREQUIREDPARAM) : null;
 
 				if(isset($existing->dsParamINCLUDEDELEMENTS) && is_array($existing->dsParamINCLUDEDELEMENTS)){
 					$fields['xml_elements'] = $existing->dsParamINCLUDEDELEMENTS;
@@ -111,16 +115,15 @@
 					$fields['xml_elements'] = array();
 				}
 
-				$fields['sort'] = $existing->dsParamSORT;
+				$fields['sort'] = isset($existing->dsParamSORT) ? $existing->dsParamSORT : null;
 				$fields['paginate_results'] = isset($existing->dsParamPAGINATERESULTS) ? $existing->dsParamPAGINATERESULTS : 'yes';
-				$fields['page_number'] = $existing->dsParamSTARTPAGE;
+				$fields['page_number'] = isset($existing->dsParamSTARTPAGE) ? $existing->dsParamSTARTPAGE : '1';
 				$fields['group'] = isset($existing->dsParamGROUP) ? $existing->dsParamGROUP : null;
 				$fields['html_encode'] = isset($existing->dsParamHTMLENCODE) ? $existing->dsParamHTMLENCODE : 'no';
-				$fields['associated_entry_counts'] = $existing->dsParamASSOCIATEDENTRYCOUNTS;
-				if(is_null($fields['associated_entry_counts'])) $fields['associated_entry_counts'] = 'yes';
-				if($existing->dsParamREDIRECTONEMPTY == 'yes') $fields['redirect_on_empty'] = 'yes';
+				$fields['associated_entry_counts'] = isset($existing->dsParamASSOCIATEDENTRYCOUNTS) ? $existing->dsParamASSOCIATEDENTRYCOUNTS : 'no';
+				$fields['redirect_on_empty'] = isset($existing->dsParamREDIRECTONEMPTY) ? $existing->dsParamREDIRECTONEMPTY : 'no';
 
-				if(!is_array($existing->dsParamFILTERS)) {
+				if(!isset($existing->dsParamFILTERS) || !is_array($existing->dsParamFILTERS)) {
 					$existing->dsParamFILTERS = array();
 				}
 
@@ -354,11 +357,15 @@
 
 						if(!$input->canFilter()) continue;
 
-						if(isset($fields['filter'][$section_id][$input->get('id')])){
+						if(isset($fields['filter'][$section_id], $fields['filter'][$section_id][$input->get('id')])) {
 							$wrapper = new XMLElement('li');
 							$wrapper->setAttribute('class', 'unique');
 							$wrapper->setAttribute('data-type', $input->get('element_name'));
-							$input->displayDatasourceFilterPanel($wrapper, $fields['filter'][$section_id][$input->get('id')], $this->_errors[$input->get('id')], $section_id);
+							$errors = isset($this->_errors[$input->get('id')])
+								? $this->_errors[$input->get('id')]
+								: array();
+
+							$input->displayDatasourceFilterPanel($wrapper, $fields['filter'][$section_id][$input->get('id')], $errors, $section_id);
 							$ol->appendChild($wrapper);
 						}
 
@@ -374,7 +381,6 @@
 				$div->appendChild($ol);
 
 				$fieldset->appendChild($div);
-
 			}
 
 			$div = new XMLElement('div');
@@ -384,6 +390,17 @@
 			$ol->setAttribute('class', 'filters-duplicator');
 			$ol->setAttribute('data-add', __('Add filter'));
 			$ol->setAttribute('data-remove', __('Remove filter'));
+
+			if(!isset($fields['filter']['author'])) {
+				$fields['filter']['author'] = array(
+					'id' => null,
+					'username' => null,
+					'first_name' => null,
+					'last_name' => null,
+					'email' => null,
+					'user_type' => null
+				);
+			}
 
 			$this->__appendAuthorFilter($ol, __('ID'), 'id', $fields['filter']['author']['id'], (!isset($fields['filter']['author']['id'])));
 			$this->__appendAuthorFilter($ol, __('Username'), 'username', $fields['filter']['author']['username'], (!isset($fields['filter']['author']['username'])));
@@ -553,7 +570,7 @@
 			$label = Widget::Label();
 			$input = array(
 				Widget::Input('fields[paginate_results]', NULL, 'checkbox', ($fields['paginate_results'] == 'yes' ? array('checked' => 'checked') : NULL)),
-				Widget::Input('fields[max_records]', $fields['max_records'], 'text', array('size' => '6')),
+				Widget::Input('fields[max_records]', isset($fields['max_records']) ? $fields['max_records'] : '10', 'text', array('size' => '6')),
 				Widget::Input('fields[page_number]', $fields['page_number'], 'text', array('size' => '6'))
 			);
 			$label->setValue(__('%1$s Paginate results, limiting to %2$s entries per page. Return page %3$s', array($input[0]->generate(false), $input[1]->generate(false), $input[2]->generate(false))));
@@ -591,7 +608,12 @@
 			$subfieldset->appendChild(new XMLElement('legend', __('Output Parameters')));
 
 			// Support multiple parameters
-			if(!is_array($fields['param'])) $fields['param'] = array($fields['param']);
+			if(!isset($fields['param'])) {
+				$fields['param'] = array();
+			}
+			else if(!is_array($fields['param'])) {
+				$fields['param'] = array($fields['param']);
+			}
 
 			$label = Widget::Label(__('Use Fields'));
 			$prefix = '$ds-' . (isset($this->_context[1]) ? Lang::createHandle($fields['name']) : __('unnamed')) . '.';

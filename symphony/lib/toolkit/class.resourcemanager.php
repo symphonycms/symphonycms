@@ -144,7 +144,7 @@
 
 			foreach($resources as &$r){
 				// If source is numeric, it's considered to be a Symphony Section
-				if($r['source'] > 0){
+				if(isset($r['source']) && $r['source'] > 0) {
 					$section = SectionManager::fetch($r['source']);
 
 					if($section !== false){

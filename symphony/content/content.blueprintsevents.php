@@ -142,11 +142,12 @@
 				$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 				$options = array();
 				$section_options = array();
+				$source = isset($fields['source']) ? $fields['source'] : null;
 
 				if(is_array($sections) && !empty($sections)) {
 					$section_options = array('label' => __('Sections'), 'data-label' => 'Sections', 'options' => array());
 					foreach($sections as $s) {
-						$section_options['options'][] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
+						$section_options['options'][] = array($s->get('id'), $source == $s->get('id'), General::sanitize($s->get('name')));
 					}
 				}
 
@@ -199,7 +200,7 @@
 				$p->setAttribute('class', 'help');
 				$fieldset->appendChild($p);
 
-				$filters = is_array($fields['filters']) ? $fields['filters'] : array();
+				$filters = isset($fields['filters']) ? $fields['filters'] : array();
 				$options = array(
 					array('admin-only', in_array('admin-only', $filters), __('Admin Only')),
 					array('send-email', in_array('send-email', $filters), __('Send Notification Email')),
@@ -368,7 +369,7 @@
 
 			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
 			if(trim($fields['source']) == '') $this->_errors['source'] = __('This is a required field');
-			$filters = (is_array($fields['filters'])) ? $fields['filters'] : array();
+			$filters = isset($fields['filters']) ? $fields['filters'] : array();
 
 			// See if a Provided Datasource is saved
 			if (!empty($providers)) {

@@ -228,14 +228,15 @@
 
 		public function __viewTemplate() {
 			$this->setPageType('form');
-			$this->Form->setAttribute('action', SYMPHONY_URL . '/blueprints/pages/template/' . $this->_context[1] . '/');
+			$handle = isset($this->_context[1]) ? $this->_context[1] : null;
+			$this->Form->setAttribute('action', SYMPHONY_URL . '/blueprints/pages/template/' . $handle . '/');
 			$this->Form->setAttribute('class', 'columns');
 
-			$filename = $this->_context[1] . '.xsl';
+			$filename = $handle . '.xsl';
 			$file_abs = PAGES . '/' . $filename;
 
-			$is_child = strrpos($this->_context[1],'_');
-			$pagename = ($is_child != false ? substr($this->_context[1], $is_child + 1) : $this->_context[1]);
+			$is_child = strrpos($handle,'_');
+			$pagename = ($is_child != false ? substr($handle, $is_child + 1) : $handle);
 			$pagedata = PageManager::fetch(false, array('id'), array(
 				"p.handle = '{$pagename}'"
 			));
@@ -438,7 +439,7 @@
 
 			$page_id = isset($page_id) ? $page_id : null;
 
-			if($existing) {
+			if(!empty($title)) {
 				$template_name = $fields['handle'];
 				$page_url = URL . '/' . PageManager::resolvePagePath($page_id) . '/';
 				if($existing['parent']){
@@ -452,7 +453,7 @@
 				));
 			}
 			else {
-				$this->appendSubheading((($title == '') ? $title : __('Untitled')));
+				$this->appendSubheading(!empty($title) ? $title : __('Untitled'));
 			}
 
 			if(isset($page_id)) {
@@ -585,7 +586,7 @@
 			$options = array();
 
 			if(is_array($events) && !empty($events)) {
-				if(!is_array($fields['events'])) $fields['events'] = array();
+				if(!isset($fields['events'])) $fields['events'] = array();
 				foreach ($events as $name => $about) $options[] = array(
 					$name, in_array($name, $fields['events']), $about['name']
 				);
@@ -603,7 +604,7 @@
 			$options = array();
 
 			if(is_array($datasources) && !empty($datasources)) {
-				if(!is_array($fields['data_sources'])) $fields['data_sources'] = array();
+				if(!isset($fields['data_sources'])) $fields['data_sources'] = array();
 				foreach ($datasources as $name => $about) $options[] = array(
 					$name, in_array($name, $fields['data_sources']), $about['name']
 				);

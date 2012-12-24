@@ -225,7 +225,7 @@
 	 */
 	define_safe('__SECURE__',
 		(HTTPS == 'on' ||
-			$_SERVER['HTTP_X_FORWARDED_PROTO'] &&
+			isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
 			$_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')
 	);
 

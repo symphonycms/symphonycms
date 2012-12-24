@@ -146,7 +146,7 @@
 			else {
 				foreach($resources as $r) {
 					// Resource name
-					$action = ($r['can_parse'] ? 'edit' : 'info');
+					$action = isset($r['can_parse']) && $r['can_parse'] === true ? 'edit' : 'info';
 					$name = Widget::TableData(
 						Widget::Anchor(
 							$r['name'],
@@ -156,7 +156,7 @@
 					);
 
 					// Resource type/source
-					if(isset($r['source']['id'])) {
+					if(isset($r['source'], $r['source']['id'])) {
 						$section = Widget::TableData(
 							Widget::Anchor(
 								$r['source']['name'],
@@ -165,11 +165,11 @@
 							)
 						);
 					}
-					else if(class_exists($r['source']['name']) && method_exists($r['source']['name'], 'getSourceColumn')) {
+					else if(isset($r['source']) && class_exists($r['source']['name']) && method_exists($r['source']['name'], 'getSourceColumn')) {
 						$class = call_user_func(array($manager, '__getClassName'), $r['handle']);
 						$section = Widget::TableData(call_user_func(array($class, 'getSourceColumn'), $r['handle']));
 					}
-					else if(isset($r['source']['name'])){
+					else if(isset($r['source'], $r['source']['name'])) {
 						$section = Widget::TableData($r['source']['name']);
 					}
 					else {

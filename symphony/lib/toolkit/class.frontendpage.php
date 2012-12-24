@@ -333,14 +333,15 @@
 			// Get max upload size from php and symphony config then choose the smallest
 			$upload_size_php = ini_size_to_bytes(ini_get('upload_max_filesize'));
 			$upload_size_sym = Symphony::Configuration()->get('max_upload_size','admin');
+			$date = new DateTime();
 
 			$this->_param = array(
-				'today' => DateTimeObj::get('Y-m-d'),
-				'current-time' => DateTimeObj::get('H:i'),
-				'this-year' => DateTimeObj::get('Y'),
-				'this-month' => DateTimeObj::get('m'),
-				'this-day' => DateTimeObj::get('d'),
-				'timezone' => DateTimeObj::get('P'),
+				'today' => $date->format('Y-m-d'),
+				'current-time' => $date->format('H:i'),
+				'this-year' => $date->format('Y'),
+				'this-month' => $date->format('m'),
+				'this-day' => $date->format('d'),
+				'timezone' => $date->format('P'),
 				'website-name' => Symphony::Configuration()->get('sitename', 'general'),
 				'page-title' => $page['title'],
 				'root' => URL,
