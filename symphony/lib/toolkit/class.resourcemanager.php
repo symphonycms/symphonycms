@@ -292,6 +292,7 @@
 		 *  The handle of the resource.
 		 * @param integer $page_id
 		 *  The ID of the page.
+		 * @return boolean
 		 */
 		public static function attach($type, $r_handle, $page_id) {
 			$col = self::getColumnFromType($type);
@@ -327,6 +328,7 @@
 		 *  The handle of the resource.
 		 * @param integer $page_id
 		 *  The ID of the page.
+		 * @return boolean
 		 */
 		public static function detach($type, $r_handle, $page_id) {
 			$col = self::getColumnFromType($type);

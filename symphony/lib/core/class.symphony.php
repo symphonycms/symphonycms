@@ -650,7 +650,7 @@
 		 * template for this exception otherwise it reverts to using the default
 		 * `usererror.generic.php`
 		 *
-		 * @param SymphonyErrorPage $e
+		 * @param Exception $e
 		 *  The Exception object
 		 * @return string
 		 *  An HTML string
@@ -682,13 +682,6 @@
 		 * @return string
 		 */
 		private $_heading;
-
-		/**
-		 * A description for this error, which can be provided as a string
-		 * or as an `XMLElement`.
-		 * @var string|XMLElement
-		 */
-		private $_message;
 
 		/**
 		 * A string for the error page template to use, defaults to 'generic'. This
@@ -802,7 +795,7 @@
 		 * The render function will take a `DatabaseException` and output a
 		 * HTML page.
 		 *
-		 * @param DatabaseException $e
+		 * @param Exception $e
 		 *  The Exception object
 		 * @return string
 		 *  An HTML string

@@ -170,7 +170,7 @@ var Symphony = (function($) {
 						if(key in Storage.Dictionary) {
 							delete strings[key];
 						}
-					})
+					});
 
 					// Translate strings
 					if(!$.isEmptyObject(strings)) {

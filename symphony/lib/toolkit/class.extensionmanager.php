@@ -450,6 +450,7 @@
 		 * @see toolkit.ExtensionManager#cleanupDatabase()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
+		 * @return boolean
 		 */
 		public static function removeDelegates($name){
 			$classname = self::__getClassName($name);

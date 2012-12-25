@@ -47,8 +47,8 @@
 	 * @param string $value
 	 *	The value of the desired constant
 	 */
-	function define_safe($name, $val){
-		if(!defined($name)) define($name, $val);
+	function define_safe($name, $value){
+		if(!defined($name)) define($name, $value);
 	}
 
 	/**

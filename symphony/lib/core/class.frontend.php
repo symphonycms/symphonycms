@@ -144,7 +144,7 @@
 		 * that has been given the '404' page type, otherwise it will just use the default
 		 * Symphony error page template to output the exception
 		 *
-		 * @param FrontendPageNotFoundException $e
+		 * @param Exception $e
 		 *  The Exception object
 		 * @return string
 		 *  An HTML string

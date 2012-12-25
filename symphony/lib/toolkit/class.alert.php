@@ -37,14 +37,14 @@
 		 * The message for this Alert, this text will be displayed to the user
 		 * @var string
 		 */
-		private $_message;
+		private $message;
 
 		/**
 		 * The Alert constant to represent the style that this alert should
 		 * take on. Defaults to `Alert::NOTICE`.
 		 * @var string
 		 */
-		private $_type;
+		private $type;
 
 		/**
 		 * Constructor for the Alert class initialises some default

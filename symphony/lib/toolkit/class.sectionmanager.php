@@ -63,7 +63,7 @@
 		 *
 		 * @param integer $section_id
 		 *  The ID of the Section to delete
-		 * @param boolean
+		 * @return boolean
 		 *  Returns true when completed
 		 */
 		public static function delete($section_id){

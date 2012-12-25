@@ -94,7 +94,7 @@ div.compact label i {
 	max-width: 100%;
 	height: auto;
 	white-space: normal;
-	overflow: none;
+	overflow: auto;
 	text-overflow: auto;
 	float: none;
 	display: block;

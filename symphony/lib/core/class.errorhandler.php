@@ -29,7 +29,7 @@
 		/**
 		 * Initialise will set the error handler to be the `__CLASS__::handler` function.
 		 *
-		 * @param Log|null $log
+		 * @param Log $log
 		 *  An instance of a Symphony Log object to write errors to
 		 */
 		public static function initialise(Log $Log = null){

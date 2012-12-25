@@ -466,7 +466,7 @@
 				})
 				.on('blur.admin', function() {
 					var source = $(this).val(),
-						utilities = $('#utilities li');
+						utilities = $('#utilities').find('li');
 
 					// Remove current selection
 					utilities.removeClass('selected');

@@ -41,7 +41,6 @@
 			$states = array();
 
 			foreach ($values as $value) {
-				$value = $value;
 				$states[$value] = $value;
 			}
 

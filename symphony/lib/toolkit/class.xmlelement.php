@@ -383,6 +383,7 @@
 		 * Adds an `XMLElement` to the children array
 		 *
 		 * @param XMLElement $child
+		 * @return boolean
 		 */
 		public function appendChild(XMLElement $child){
 			$this->_children[] = $child;

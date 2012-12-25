@@ -293,7 +293,8 @@
 				$email->sender_name = $from_name;
 				$email->sender_email_address = $from_email;
 
-				$email->recipients = $email->setRecipients($to_email);
+				$email->setRecipients($to_email);
+
 				$email->text_plain = $message;
 				$email->subject = $subject;
 

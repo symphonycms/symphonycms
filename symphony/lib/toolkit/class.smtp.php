@@ -179,7 +179,7 @@
 			catch(SMTPException $e){
 				$this->_helo();
 			}
-			catch(SMTPException $e){
+			catch(Exception $e){
 				throw $e;
 			}
 
