@@ -71,7 +71,7 @@
 		 * @return string
 		 */
 		public function __get($name){
-			return $this->{"_$name"};
+			return $this->{"$name"};
 		}
 
 		/**
@@ -84,7 +84,7 @@
 		 *  The value of the variable that is being set
 		 */
 		public function __set($name, $value){
-			$this->{"_$name"} = $value;
+			$this->{"$name"} = $value;
 		}
 
 		/**
@@ -98,7 +98,7 @@
 		 *  True when set, false when not set.
 		 */
 		public function __isset($name){
-			return isset($this->{"_$name"});
+			return isset($this->{"$name"});
 		}
 
 		/**
