@@ -395,6 +395,13 @@
 				return $result;
 			}
 
+			if($this->_negate_result == true){
+				$this->_negate_result = false; //this is so the section info element doesn't disappear.
+				$result = $this->negateXMLSet();
+				$result->prependChild($sectioninfo);
+				return $result;
+			}
+
 			if(is_array($this->dsParamINCLUDEDELEMENTS)) {
 				$include_pagination_element = in_array('system:pagination', $this->dsParamINCLUDEDELEMENTS);
 			}
