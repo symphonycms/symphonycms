@@ -69,6 +69,14 @@
 		protected $_force_empty_result = false;
 
 		/**
+		 * When there is a negating parameter, this parameter will
+		 * be set to true, which will inject the default Symphony 'Results Negated'
+		 * message into the datasource's result
+		 * @var boolean
+		 */
+		protected $_negate_result = false;
+
+		/**
 		 * Constructor for the datasource sets the parent, if `$process_params` is set,
 		 * the `$env` variable will be run through `Datasource::processParameters`.
 		 *
@@ -177,6 +185,8 @@
 
 			if($this->_force_empty_result) $result = $this->emptyXMLSet();
 
+			if($this->_negate_result) $result = $this->negateXMLSet();
+
 			return $result;
 		}
 
@@ -214,12 +224,37 @@
 		}
 
 		/**
+		 * If the datasource has been negated this function calls `Datasource::__negateResult`
+		 * which appends an XMLElement to the current root element.
+		 *
+		 * @param XMLElement $xml
+		 *  The root element XMLElement for this datasource. By default, this will
+		 *  the handle of the datasource, as defined by `$this->dsParamROOTELEMENT`
+		 * @return XMLElement
+		 */
+		public function negateXMLSet(XMLElement $xml = null){
+			if(is_null($xml)) $xml = new XMLElement($this->dsParamROOTELEMENT);
+			$xml->appendChild($this->__negateResult());
+
+			return $xml;
+		}
+
+		/**
 		 * Returns an error XMLElement with 'No records found' text
 		 *
 		 * @return XMLElement
 		 */
 		public function __noRecordsFound(){
 			return new XMLElement('error', __('No records found.'));
+		}
+
+		/**
+		 * Returns an error XMLElement with 'Result Negated' text
+		 *
+		 * @return XMLElement
+		 */
+		public function __negateResult(){
+			return new XMLElement('error', __('Results Negated.'));
 		}
 
 		/**
@@ -232,7 +267,7 @@
 		 *  any params set by Symphony or Events or by other Datasources
 		 */
 		public function processParameters(array $env = null){
-
+			
 			if($env) $this->_env = $env;
 
 			if((isset($this->_env) && is_array($this->_env)) && isset($this->dsParamFILTERS) && is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
@@ -269,6 +304,16 @@
 				&& $this->__processParametersInString(trim($this->dsParamREQUIREDPARAM), $this->_env, false) == ''
 			) {
 				$this->_force_empty_result = true; // don't output any XML
+				$this->dsParamPARAMOUTPUT = null; // don't output any parameters
+				$this->dsParamINCLUDEDELEMENTS = null; // don't query any fields in this section
+			}
+
+			if(
+				isset($this->dsParamNEGATEPARAM)
+				&& strlen(trim($this->dsParamNEGATEPARAM)) > 0
+				&& $this->__processParametersInString(trim($this->dsParamNEGATEPARAM), $this->_env, false) != ''
+			) {
+				$this->_negate_result = true; // don't output any XML
 				$this->dsParamPARAMOUTPUT = null; // don't output any parameters
 				$this->dsParamINCLUDEDELEMENTS = null; // don't query any fields in this section
 			}
