@@ -71,7 +71,7 @@
 			$providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::DATASOURCE);
 			$isEditing = false;
 			$about = $handle = null;
-			$fields = array('name'=>null, 'source'=>null, 'filter'=>null, 'required_url_param'=>null, 'param'=>null);
+			$fields = array('name'=>null, 'source'=>null, 'filter'=>null, 'required_url_param'=>null, 'negate_url_param'=>null, 'param'=>null);
 
 			if(isset($_POST['fields'])){
 				$fields = $_POST['fields'];
@@ -112,6 +112,7 @@
 				$fields['order'] = ($order == 'rand') ? 'random' : $order;
 				$fields['param'] = isset($existing->dsParamPARAMOUTPUT) ? $existing->dsParamPARAMOUTPUT : null;
 				$fields['required_url_param'] = isset($existing->dsParamREQUIREDPARAM) ? trim($existing->dsParamREQUIREDPARAM) : null;
+				$fields['negate_url_param'] = isset($existing->dsParamNEGATEPARAM) ? trim($existing->dsParamNEGATEPARAM) : null;
 
 				if(isset($existing->dsParamINCLUDEDELEMENTS) && is_array($existing->dsParamINCLUDEDELEMENTS)){
 					$fields['xml_elements'] = $existing->dsParamINCLUDEDELEMENTS;
@@ -623,6 +624,15 @@
 			$fieldset->appendChild($label);
 
 			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
+
+			$label = Widget::Label(__('Negating URL Parameter'));
+			$label->appendChild(new XMLElement('i', __('Optional')));
+			$label->appendChild(Widget::Input('fields[negate_url_param]', trim($fields['negate_url_param']), 'text', array('placeholder' => __('$param'))));
+			$fieldset->appendChild($label);
+
+			$p = new XMLElement('p', __('An empty result will be returned when this parameter has a value.'));
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
 
@@ -1230,6 +1240,7 @@
 							$params['order'] = $fields['order'];
 							$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
 							$params['requiredparam'] = trim($fields['required_url_param']);
+							$params['negateparam'] = trim($fields['negate_url_param']);
 							$params['paramoutput'] = $fields['param'];
 							$params['sort'] = $fields['sort'];
 
@@ -1244,6 +1255,7 @@
 							$params['order'] = $fields['order'];
 							$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
 							$params['requiredparam'] = trim($fields['required_url_param']);
+							$params['negateparam'] = trim($fields['negate_url_param']);
 
 							break;
 
@@ -1329,6 +1341,7 @@
 							$params['startpage'] = $fields['page_number'];
 							$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
 							$params['requiredparam'] = trim($fields['required_url_param']);
+							$params['negateparam'] = trim($fields['negate_url_param']);
 							$params['paramoutput'] = $fields['param'];
 							$params['sort'] = $fields['sort'];
 							$params['htmlencode'] = $fields['html_encode'];
