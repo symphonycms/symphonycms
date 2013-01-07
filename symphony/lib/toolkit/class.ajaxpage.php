@@ -29,8 +29,7 @@
 			$this->_Result = new XMLElement('result');
 			$this->_Result->setIncludeHeader(true);
 
-			$this->_status = self::STATUS_OK;
-
+			$this->setHttpStatus(self::HTTP_STATUS_OK);
 			$this->addHeaderToPage('Content-Type', 'text/xml');
 
 			Symphony::Profiler()->sample('Page template created', PROFILE_LAP);
@@ -42,7 +41,7 @@
 		 * appends a message for generation
 		 */
 		public function handleFailedAuthorisation(){
-			$this->_status = self::STATUS_UNAUTHORISED;
+			$this->setHttpStatus(self::HTTP_STATUS_UNAUTHORIZED);
 			$this->_Result->setValue(__('You are not authorised to access this page.'));
 		}
 
@@ -61,35 +60,18 @@
 
 		/**
 		 * The generate functions outputs the correct headers for
-		 * this `AJAXPage`, adds `$this->_status` code to the root attribute
+		 * this `AJAXPage`, adds `$this->getHttpStatusCode()` code to the root attribute
 		 * before calling the parent generate function and generating
 		 * the `$this->_Result` XMLElement
 		 *
 		 * @return string
 		 */
-		public function generate(){
-			switch($this->_status){
-				case self::STATUS_OK:
-					$status_message = '200 OK';
-					$code = 200;
-					break;
-
-				case self::STATUS_BAD:
-				case self::STATUS_ERROR:
-					$status_message = '400 Bad Request';
-					$code = 400;
-					break;
-
-				case self::STATUS_UNAUTHORISED:
-					$status_message = '401 Unauthorized';
-					$code = 401;
-					break;
-			}
-
-			$this->addHeaderToPage('Status', $status_message, $code);
-			$this->_Result->setAttribute('status', $this->_status);
+		public function generate() {
+			// Set the actual status code in the xml response
+			$this->_Result->setAttribute('status', $this->getHttpStatusCode());
 
 			parent::generate();
+
 			return $this->_Result->generate(true);
 		}
 
