@@ -72,7 +72,7 @@
 		 * @since 2.3.2
 		 * @var Array
 		 */
-		private final static $HTTP_STATUSES = array (
+		private static $HTTP_STATUSES = array (
 			// 200
 			HTTP_STATUS_OK => 'OK',
 			// 300
