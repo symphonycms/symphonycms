@@ -233,7 +233,7 @@
 
 			foreach($this->_headers as $value){
 				if(isset($value['response_code'])) {
-					header(self::getHttpStatusString($value['header']), true, $value['response_code']);
+					header(self::getHttpStatusValue($value['header']), true, $value['response_code']);
 				}
 				else {
 					header($value['header']);
