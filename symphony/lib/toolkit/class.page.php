@@ -8,8 +8,6 @@
 	 */
 	Abstract Class Page {
 
-		// see: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html for status codes
-
 		/**
 		 * Refers to the HTTP status code, 200 OK
 		 * @since 2.3.2
@@ -94,6 +92,8 @@
 		 * This method returns the full HTTP Status value.
 		 * If `$status_code` is null, it returns all the values
 		 * currently registered.
+		 *
+		 * @see: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
 		 *
 		 * @since 2.3.2
 		 *
