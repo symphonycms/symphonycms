@@ -461,15 +461,16 @@
 		Import:
 	-------------------------------------------------------------------------*/
 
-		/**
-		 * Give the field some data and ask it to return a value.
-		 *
-		 * @param mixed $data
-		 * @param integer $entry_id
-		 * @return array
-		 */
-		public function prepareImportValue($data, $entry_id = null) {
-			$value = $date = null;
+		public function getImportModes() {
+			return array(
+				'getValue' =>		ImportableField::STRING_VALUE,
+				'getPostdata' =>	ImportableField::ARRAY_VALUE
+			);
+		}
+
+		public function prepareImportValue($data, $mode, $entry_id = null) {
+			$value = $message = null;
+			$modes = (object)$this->getImportModes();
 
 			// Prepopulate date:
 			if ($data === null || $data === '') {
@@ -491,13 +492,16 @@
 			// Valid date found:
 			if (isset($timestamp)) {
 				$value = DateTimeObj::get('c', $timestamp);
-				$date = DateTimeObj::getGMT('Y-m-d H:i:s', $timestamp);
+			}
+			
+			if($mode === $modes->getValue) {
+				return $value;
+			}
+			else if($mode === $modes->getPostdata) {
+				return $this->processRawFieldData($data, Field::__OK__, $message, true, $entry_id);
 			}
 
-			return array(
-				'value' =>	$value,
-				'date' =>	$date
-			);
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------

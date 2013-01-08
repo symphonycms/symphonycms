@@ -127,6 +127,10 @@
 		public function checkPostFieldData($data, &$message, $entry_id=NULL){
 			$message = NULL;
 
+			if(is_array($data) && isset($data['value'])) {
+				$data = $data['value'];
+			}
+
 			if($this->get('required') == 'yes' && strlen($data) == 0){
 				$message = __('‘%s’ is a required field.', array($this->get('label')));
 				return self::__MISSING_FIELDS__;
@@ -189,18 +193,25 @@
 		Import:
 	-------------------------------------------------------------------------*/
 
-		/**
-		 * Give the field some data and ask it to return a value.
-		 *
-		 * @param mixed $data
-		 * @param integer $entry_id
-		 * @return array
-		 */
-		public function prepareImportValue($data, $entry_id = null) {
+		public function getImportModes() {
 			return array(
-				'handle' =>	Lang::createHandle($data),
-				'value' =>	$data
+				'getValue' =>		ImportableField::STRING_VALUE,
+				'getPostdata' =>	ImportableField::ARRAY_VALUE
 			);
+		}
+
+		public function prepareImportValue($data, $mode, $entry_id = null) {
+			$message = null;
+			$modes = (object)$this->getImportModes();
+
+			if($mode === $modes->getValue) {
+				return $data;
+			}
+			else if($mode === $modes->getPostdata) {
+				return $this->processRawFieldData($data, Field::__OK__, $message, true, $entry_id);
+			}
+
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------

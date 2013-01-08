@@ -186,15 +186,17 @@
 		Import:
 	-------------------------------------------------------------------------*/
 
-		/**
-		 * Give the field some data and ask it to return a value.
-		 *
-		 * @param mixed $data
-		 * @param integer $entry_id
-		 * @return array
-		 */
-		public function prepareImportValue($data, $entry_id = null) {
+		public function getImportModes() {
 			return array(
+				'getValue' =>		ImportableField::STRING_VALUE,
+				'getPostdata' =>	ImportableField::ARRAY_VALUE
+			);
+		}
+
+		public function prepareImportValue($data, $mode, $entry_id = null) {
+			$modes = (object)$this->getImportModes();
+
+			$result = array(
 				'value' =>	(
 								$data === true
 								|| strtolower($data) == 'yes'
@@ -203,6 +205,15 @@
 									: 'no'
 							)
 			);
+
+			if($mode === $modes->getValue) {
+				return $result['value'];
+			}
+			else if($mode === $modes->getPostdata) {
+				return $result;
+			}
+
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------

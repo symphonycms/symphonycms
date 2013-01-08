@@ -548,15 +548,25 @@
 		Import:
 	-------------------------------------------------------------------------*/
 
-		/**
-		 * Give the field some data and ask it to return a value.
-		 *
-		 * @param mixed $data
-		 * @param integer $entry_id
-		 * @return array|null
-		 */
-		public function prepareImportValue($data, $entry_id = null) {
-			return $this->processRawFieldData($data, $status, $message, false, $entry_id);
+		public function getImportModes() {
+			return array(
+				'getValue' =>		ImportableField::STRING_VALUE,
+				'getPostdata' =>	ImportableField::ARRAY_VALUE
+			);
+		}
+
+		public function prepareImportValue($data, $mode, $entry_id = null) {
+			$message = null;
+			$modes = (object)$this->getImportModes();
+
+			if($mode === $modes->getValue) {
+				return $data;
+			}
+			else if($mode === $modes->getPostdata) {
+				return $this->processRawFieldData($data, Field::__OK__, $message, true, $entry_id);
+			}
+
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------

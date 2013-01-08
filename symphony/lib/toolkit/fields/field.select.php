@@ -313,11 +313,19 @@
 		public function processRawFieldData($data, &$status, &$message=null, $simulate=false, $entry_id=NULL){
 			$status = self::__OK__;
 
-			if(!is_array($data)) return array('value' => $data, 'handle' => Lang::createHandle($data));
+			if(!is_array($data)) {
+				return array(
+					'value' => $data,
+					'handle' => Lang::createHandle($data)
+				);
+			}
 
-			if(empty($data)) return NULL;
+			if(empty($data)) return null;
 
-			$result = array('value' => array(), 'handle' => array());
+			$result = array(
+				'value' => array(),
+				'handle' => array()
+			);
 
 			foreach($data as $value){
 				$result['value'][] = $value;
@@ -370,31 +378,33 @@
 		Import:
 	-------------------------------------------------------------------------*/
 
-		/**
-		 * Give the field some data and ask it to return a value.
-		 *
-		 * @param mixed $data
-		 * @param integer $entry_id
-		 * @return array|null
-		 */
-		public function prepareImportValue($data, $entry_id = null) {
-			if (empty($data)) return null;
-
-			$result = array(
-				'value' =>	array(),
-				'handle' =>	array()
+		public function getImportModes() {
+			return array(
+				'getValue' =>		ImportableField::STRING_VALUE,
+				'getPostdata' =>	ImportableField::ARRAY_VALUE
 			);
+		}
 
-			if (is_array($data) === false) {
+		public function prepareImportValue($data, $mode, $entry_id = null) {
+			$message = null;
+			$modes = (object)$this->getImportModes();
+
+			if(!is_array($data)) {
 				$data = array($data);
 			}
 
-			foreach ($data as $value) {
-				$result['value'][] = $value;
-				$result['handle'][] = Lang::createHandle($value);
+			if($mode === $modes->getValue) {
+				if ($this->get('allow_multiple_selection') === 'no') {
+					$data = array(implode('', $data));
+				}
+
+				return $data;
+			}
+			else if($mode === $modes->getPostdata) {
+				return $this->processRawFieldData($data, Field::__OK__, $message, true, $entry_id);
 			}
 
-			return $result;
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------
