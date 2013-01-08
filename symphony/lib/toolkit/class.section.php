@@ -146,8 +146,48 @@
 		 * @return array
 		 */
 		public function fetchAssociatedSections($respect_visibility = false){
-			return SectionManager::fetchAssociatedSections($this->get('id'), $respect_visibility);
+			return SectionManager::fetchChildAssociations($this->get('id'), $respect_visibility);
 		}
+
+        /**
+         * Returns any section associations this section has with other sections
+         * linked using fields, and where this section is the parent in the association.
+         * Has an optional parameter, `$respect_visibility` that
+         * will only return associations that are deemed visible by a field that
+         * created the association. eg. An articles section may link to the authors
+         * section, but the field that links these sections has hidden this association
+         * so an Articles column will not appear on the Author's Publish Index
+         *
+         * @since Symphony 2.4
+         * @param boolean $respect_visibility
+         *  Whether to return all the section associations regardless of if they
+         *  are deemed visible or not. Defaults to false, which will return all
+         *  associations.
+         * @return array
+         */
+        public function fetchChildAssociations($respect_visibility = false){
+            return SectionManager::fetchChildAssociations($this->get('id'), $respect_visibility);
+        }
+
+        /**
+         * Returns any section associations this section has with other sections
+         * linked using fields, and where this section is the child in the association.
+         * Has an optional parameter, `$respect_visibility` that
+         * will only return associations that are deemed visible by a field that
+         * created the association. eg. An articles section may link to the authors
+         * section, but the field that links these sections has hidden this association
+         * so an Articles column will not appear on the Author's Publish Index
+         *
+         * @since Symphony 2.4
+         * @param boolean $respect_visibility
+         *  Whether to return all the section associations regardless of if they
+         *  are deemed visible or not. Defaults to false, which will return all
+         *  associations.
+         * @return array
+         */
+        public function fetchParentAssociations($respect_visibility = false){
+            return SectionManager::fetchParentAssociations($this->get('id'), $respect_visibility);
+        }
 
 		/**
 		 * Returns an array of all the fields in this section that are to be displayed
