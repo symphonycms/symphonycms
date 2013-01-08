@@ -147,30 +147,57 @@
 
 		/**
 		 * When the Symphony navigation is being generated, this method will be
-		 * called to allow extension to inject any custom backend pages into the
-		 * navigation. If an extension wants to create a new group in the navigation
-		 * it is possible by returning an array with the group information and then an
-		 * array of links for this group. The extension can also inject link items into existing
+		 * called to allow extensions to inject any custom backend pages into the
+		 * navigation.
+		 *
+		 * The extension can also inject link items into existing
 		 * group's of the navigation using the 'location' key, which will accept a numeric
-		 * index of the existing group, or the handle of an existing group.  Navigation items
+		 * index of the existing group, or the handle of an existing group. Navigation items
 		 * in Symphony are initially provided from the `ASSETS . /navigation.xml` file
 		 * which defines the default Blueprints and System groups. The indexes for these
-		 * groups are 100 and 200 respectively. Groups cannot provide a link, this is done
-		 * by the children. All links are relative to the Extension by default
-		 * (ie. `EXTENSIONS . /extension_handle/`. An example of a returned navigation
-		 * array is provided below. Note that if an extension wants to edit the current navigation,
-		 * this is not possible through this function and rather it should be done using the
-		 * `NavigationPreRender` delegate.
+		 * groups are 100 and 200 respectively.
 		 *
-		 * `array(
-		 * 	'name' => 'New Group',
+		 * A simple case would look like this.
+		 *
+		 * `return array(
+		 *		array(
+		 *			'name' => 'Extension Name',
+		 *			'link' => '/link/relative/to/extension/handle/',
+		 *			'location' => 200
+		 *		)
+		 *	)
+		 * );`
+		 *
+		 * If an extension wants to create a new group in the navigation
+		 * it is possible by returning an array with the group information and then an
+		 * array of links for this group. Groups cannot provide a link, this is done
+		 * by the children. An example of a returned navigation
+		 * array is provided below.
+		 *
+		 * `return array(
+		 *		'name' => 'New Group',
 		 *		'children' => array(
 		 *			array(
 		 *				'name' => 'Extension Name',
 		 *				'link' => '/link/relative/to/extension/handle/'
 		 *			)
 		 *		)
-		 * )`
+		 * );`
+		 *
+		 * All links are relative to the Extension by default
+		 * (ie. `EXTENSIONS . /extension_handle/`. )
+		 * Set the 'relative' key to false tobe able to create links
+		 * relative to /symphony/.
+		 *
+		 *
+		 *
+		 *
+		 * Note that if an extension wants to edit the current navigation,
+		 * this is not possible through this function and rather it should be done using the
+		 * `NavigationPreRender` delegate.
+		 *
+		 *
+		 *
 		 *
 		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
 		 * @return array
