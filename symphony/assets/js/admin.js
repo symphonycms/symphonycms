@@ -405,8 +405,11 @@
 
 			// Add toggle controls
 			fieldLegend.after(fieldToggle);
-			fieldLegendTop = fieldLegend.offset().top;
-			fieldToggleTop = fieldToggle.offset().top;
+			// Check if there is DOM Element
+			// This prevents a bug in the section page
+			// since offset will return null on empty selections
+			fieldLegendTop = !!fieldLegend.length ? fieldLegend.offset().top : 0;
+			fieldToggleTop = !!fieldToggle.length ? fieldToggle.offset().top : 0;
 			
 			// Fix toggle controls
 			$(window).on('scroll.admin', function fixFieldControls(event) {
