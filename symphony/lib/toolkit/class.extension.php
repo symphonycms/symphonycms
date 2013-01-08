@@ -189,15 +189,50 @@
 		 * Set the 'relative' key to false tobe able to create links
 		 * relative to /symphony/.
 		 *
+		 * `return array(
+		 *		array(
+		 *			'name' => 'Extension Name',
+		 *			'link' => '/link/retative/to/symphony/',
+		 *			'relative' => false,
+		 *			'location' => 200
+		 *		)
+		 *	)
+		 * );`
 		 *
+		 * Links can also be hidden dynamicaly usign two other keys:
+		 * 'visible' and 'limit'. When 'visible' is set to 'no', the link
+		 * will not be rendered. Leave unset of set it dynamycally in order
+		 * to fit your needs
 		 *
+		 * `return array(
+		 *		array(
+		 *			'name' => 'Extension Name',
+		 *			'link' => '/.../',
+		 *			'visible' => $this->shouldWeOrNot() ? 'yes' : 'no'
+		 *		)
+		 *	)
+		 * );`
+		 *
+		 * The 'limit' key is specificaly designed to restrict the rendering process
+		 * of a link if the current user does not have access to it based on its role.
+		 * Symphony supports three basic roles witch are 'author', 'developer' and 'primary'.
+		 *
+		 * Note that setting 'visible' to 'no' will hide the link no matter what.
+		 *
+		 * `return array(
+		 *		array(
+		 *			'name' => 'Developers Only',
+		 *			'link' => '/developers-only/',
+		 *			'limit' => 'developer'
+		 *		)
+		 *	)
+		 * );`
+		 *
+		 * The 'limit' key is also available for navigation groups.
 		 *
 		 * Note that if an extension wants to edit the current navigation,
 		 * this is not possible through this function and rather it should be done using the
 		 * `NavigationPreRender` delegate.
-		 *
-		 *
-		 *
 		 *
 		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
 		 * @return array
