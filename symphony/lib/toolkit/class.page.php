@@ -124,7 +124,7 @@
 		public static final function setHttpStatusValue($status_code, $string_value) {
 			if (!$string_value) {
 				unset(self::$HTTP_STATUSES[$status_code]);
-			} else if (is_int($status_code) && $status_code > 100 && $status_code < 600) {
+			} else if (is_int($status_code) && $status_code >= 100 && $status_code < 600) {
 				self::$HTTP_STATUSES[$status_code] = $string_value;
 			} else {
 				// Throw error ?
