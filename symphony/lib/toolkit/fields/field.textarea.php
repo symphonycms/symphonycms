@@ -252,14 +252,14 @@
 		}
 
 		public function prepareImportValue($data, $mode, $entry_id = null) {
-			$message = null;
+			$message = $status = null;
 			$modes = (object)$this->getImportModes();
 
 			if($mode === $modes->getValue) {
 				return $data;
 			}
 			else if($mode === $modes->getPostdata) {
-				return $this->processRawFieldData($data, Field::__OK__, $message, true, $entry_id);
+				return $this->processRawFieldData($data, $status, $message, true, $entry_id);
 			}
 
 			return null;

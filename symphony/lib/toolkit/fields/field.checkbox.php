@@ -194,23 +194,16 @@
 		}
 
 		public function prepareImportValue($data, $mode, $entry_id = null) {
+			$value = $status = $message = null;
 			$modes = (object)$this->getImportModes();
 
-			$result = array(
-				'value' =>	(
-								$data === true
-								|| strtolower($data) == 'yes'
-								|| strtolower($data) == 'on'
-									? 'yes'
-									: 'no'
-							)
-			);
+			$value = $this->processRawFieldData($data, $status, $message, true, $entry_id);
 
 			if($mode === $modes->getValue) {
-				return $result['value'];
+				return $value['value'];
 			}
 			else if($mode === $modes->getPostdata) {
-				return $result;
+				return $value;
 			}
 
 			return null;

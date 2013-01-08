@@ -469,7 +469,7 @@
 		}
 
 		public function prepareImportValue($data, $mode, $entry_id = null) {
-			$value = $message = null;
+			$value = $status = $message = null;
 			$modes = (object)$this->getImportModes();
 
 			// Prepopulate date:
@@ -498,7 +498,7 @@
 				return $value;
 			}
 			else if($mode === $modes->getPostdata) {
-				return $this->processRawFieldData($data, Field::__OK__, $message, true, $entry_id);
+				return $this->processRawFieldData($data, $status, $message, true, $entry_id);
 			}
 
 			return null;
