@@ -37,6 +37,10 @@
 					"ALTER TABLE `tbl_authors` CHANGE `user_type` `user_type` enum('author', 'manager', 'developer') DEFAULT 'author'",
 					$field
 				));
+
+                if(!Symphony::Configuration()->get('association_maximum_rows', 'symphony')) {
+                    Symphony::Configuration()->set('association_maximum_rows', '5', 'symphony');
+                }
 			}
             return true;
 		}

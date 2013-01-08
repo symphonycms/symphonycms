@@ -159,7 +159,7 @@
 		 * Given a `$message` and an optional `$type`, this function will
 		 * add an Alert instance into this page's `$this->Alert` property.
 		 * Since Symphony 2.3, there may be more than one `Alert` per page.
- 		 * Unless the Alert is an Error, it is required the `$message` be
+		 * Unless the Alert is an Error, it is required the `$message` be
 		 * passed to this function.
 		 *
 		 * @param string $message
@@ -349,8 +349,9 @@
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.forms.css', 'screen', 34);
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.tables.css', 'screen', 34);
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.frames.css', 'screen', 33);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.drawers.css', 'screen', 34);
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.tabs.css', 'screen', 34);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.drawers.css', 'screen', 34);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.associations.css', 'screen', 34);
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.notices.css', 'screen', 34);
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/admin.css', 'screen', 40);
 
