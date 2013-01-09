@@ -531,7 +531,7 @@
 		 *  Allows custom information to be passed to the Symphony Error Page
 		 *  that the template may want to expose, such as custom Headers etc.
 		 */
-		public function customError($heading, $message, $template='generic', array $additional=array()){
+		public function customError($heading, $message, $template='generic', array $additional=NULL){
 			GenericExceptionHandler::$enabled = true;
 			throw new SymphonyErrorPage($message, $heading, $template, $additional);
 		}
