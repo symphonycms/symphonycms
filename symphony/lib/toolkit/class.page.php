@@ -89,7 +89,7 @@
 
 		/**
 		 *
-		 * This method returns the full HTTP Status value.
+		 * This method returns the string HTTP Status value.
 		 * If `$status_code` is null, it returns all the values
 		 * currently registered.
 		 *
@@ -113,6 +113,9 @@
 		 * Sets the `$sting_value` for the specified `$status_code`.
 		 * If `$sting_value` is null, the `$status_code` is removed from
 		 * the array.
+		 *
+		 * This allow developers to register customs HTTP_STATUS into the
+		 * static `Page::$HTTP_STATUSES` array and use `$page->setHttpStatus()`.
 		 *
 		 * @since 2.3.2
 		 *
@@ -139,7 +142,7 @@
 		 *
 		 * @var integer
 		 */
-		protected $_status;
+		protected $_status = NULL;
 
 		/**
 		 * This stores the headers that will be sent when this page is
@@ -197,7 +200,9 @@
 		 *   The HTTP Status numeric value.
 		 */
 		public function setHttpStatus($status_code) {
-			$this->addHeaderToPage('Status', null, $status_code);
+			$this->addHeaderToPage('Status', NULL, $status_code);
+			// Assure we clear the legacy value
+			$this->_status = NULL;
 		}
 
 		/**
@@ -210,6 +215,11 @@
 		 * @return integer
 		 */
 		public function getHttpStatusCode() {
+			// Legacy check
+			if ($this->_status != NULL) {
+				$this->setHttpStatus($this->_status);
+			}
+
 			if (isset($this->_headers['status'])) {
 				return $this->_headers['status']['response_code'];
 			}
@@ -241,6 +251,11 @@
 		 */
 		protected function __renderHeaders(){
 			if(!is_array($this->_headers) || empty($this->_headers)) return;
+
+			// Legacy check
+			if ($this->_status != NULL) {
+				$this->setHttpStatus($this->_status);
+			}
 
 			foreach($this->_headers as $key => $value){
 				// If this is the http status
