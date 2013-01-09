@@ -186,7 +186,7 @@
 		 *   The HTTP Status numeric value.
 		 */
 		public function setHttpStatus($status_code) {
-			$this->addHeaderToPage('status', null, $status_code);
+			$this->addHeaderToPage('Status', null, $status_code);
 		}
 
 		/**
@@ -231,9 +231,17 @@
 		protected function __renderHeaders(){
 			if(!is_array($this->_headers) || empty($this->_headers)) return;
 
-			foreach($this->_headers as $value){
-				if(isset($value['response_code'])) {
-					header(self::getHttpStatusValue($value['header']), true, $value['response_code']);
+			foreach($this->_headers as $key => $value){
+				// If this is the http status
+				if($key == 'status' && isset($value['response_code'])) {
+					$res_code = intval($value['response_code']);
+					// See https://github.com/symphonycms/symphony-2/issues/1558#issuecomment-10663716
+					// for explanation of the format
+					header(
+						vsprintf("Status: %d %s", $res_code, self::getHttpStatusValue($res_code)),
+						true,
+						$res_code
+						);
 				}
 				else {
 					header($value['header']);
