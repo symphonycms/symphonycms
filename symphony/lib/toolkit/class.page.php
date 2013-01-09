@@ -264,7 +264,7 @@
 					// See https://github.com/symphonycms/symphony-2/issues/1558#issuecomment-10663716
 					// for explanation of the format
 					header(
-						vsprintf("Status: %d %s", $res_code, self::getHttpStatusValue($res_code)),
+						sprintf("Status: %d %s", $res_code, self::getHttpStatusValue($res_code)),
 						true,
 						$res_code
 						);
