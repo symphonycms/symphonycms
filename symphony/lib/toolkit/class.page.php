@@ -131,6 +131,15 @@
 			}
 		}
 
+		/**
+		 * The HTTP status code of the page using the `HTTP_STATUSES` constants
+		 *
+		 * @deprecated @since 2.3.2
+		 * @see $this->setHttpStatus and self::$HTTP_STATUSES
+		 *
+		 * @var integer
+		 */
+		protected $_status;
 
 		/**
 		 * This stores the headers that will be sent when this page is
@@ -138,6 +147,8 @@
 		 * @var array
 		 */
 		protected $_headers = array();
+
+
 
 		/**
 		 * Initialises the Page object by setting the headers to empty
