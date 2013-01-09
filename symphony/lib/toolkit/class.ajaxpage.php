@@ -18,7 +18,7 @@
 		protected $_Result;
 
 		/**
-		 * The constructor for `AJAXPage`. This sets the page status to `STATUS_OK`,
+		 * The constructor for `AJAXPage`. This sets the page status to `Page::HTTP_STATUS_OK`,
 		 * the default content type to `text/xml` and initialises `$this->_Result`
 		 * with an `XMLElement`. The constructor also starts the Profiler for this
 		 * page template.
@@ -37,7 +37,7 @@
 
 		/**
 		 * This function is called when a user is not authenticated to the Symphony
-		 * backend. It sets the status of this page to `STATUS_UNAUTHORISED` and
+		 * backend. It sets the status of this page to `Page::HTTP_STATUS_UNAUTHORIZED` and
 		 * appends a message for generation
 		 */
 		public function handleFailedAuthorisation(){
