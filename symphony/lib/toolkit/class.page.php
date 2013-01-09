@@ -97,7 +97,7 @@
 		 *
 		 * @since 2.3.2
 		 *
-		 * @param int $status_code (optional)
+		 * @param integer $status_code (optional)
 		 *   The HTTP Status code to get the value for.
 		 * @return mixed (Array | String)
 		 */
@@ -116,7 +116,7 @@
 		 *
 		 * @since 2.3.2
 		 *
-		 * @param int $status_code
+		 * @param integer $status_code
 		 *  The HTTP Status numeric code.
 		 * @param string $string_value
 		 *  The HTTP Status string value.
@@ -182,7 +182,7 @@
 		 *
 		 * @since 2.3.2
 		 *
-		 * @param int $status_code
+		 * @param integer $status_code
 		 *   The HTTP Status numeric value.
 		 */
 		public function setHttpStatus($status_code) {
@@ -196,7 +196,7 @@
 		 *
 		 * @since 2.3.2
 		 *
-		 * @return int
+		 * @return integer
 		 */
 		public function getHttpStatusCode() {
 			if (isset($this->_headers['status'])) {
