@@ -83,8 +83,8 @@
 		public function __viewIndex(){
 			if(!$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle'])) {
 				Administration::instance()->throwCustomError(
-					__('Unknown Section'),
 					__('The Section, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')),
+					__('Unknown Section'),
 					Page::HTTP_STATUS_NOT_FOUND
 				);
 			}
@@ -577,8 +577,8 @@
 		public function __viewNew() {
 			if(!$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle'])) {
 				Administration::instance()->throwCustomError(
-					__('Unknown Section'),
 					__('The Section, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')),
+					__('Unknown Section'),
 					Page::HTTP_STATUS_NOT_FOUND
 				);
 			}
@@ -703,8 +703,8 @@
 
 				if(!$section = SectionManager::fetch($section_id)) {
 					Administration::instance()->throwCustomError(
-						__('Unknown Section'),
 						__('The Section, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')),
+						__('Unknown Section'),
 						Page::HTTP_STATUS_NOT_FOUND
 					);
 				}
@@ -806,8 +806,8 @@
 		public function __viewEdit() {
 			if(!$section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle'])) {
 				Administration::instance()->throwCustomError(
-					__('Unknown Section'),
 					__('The Section, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')),
+					__('Unknown Section'),
 					Page::HTTP_STATUS_NOT_FOUND
 				);
 			}
@@ -1011,9 +1011,9 @@
 
 			if(@array_key_exists('save', $_POST['action']) || @array_key_exists("done", $_POST['action'])){
 				if(!$ret = EntryManager::fetch($entry_id)) {
-					Administration::instance()->throwCustomError
-						(__('Unknown Entry'),
+					Administration::instance()->throwCustomError(
 						__('The Entry, %s, could not be found.', array($entry_id)),
+						__('Unknown Entry'),
 						Page::HTTP_STATUS_NOT_FOUND
 					);
 				}

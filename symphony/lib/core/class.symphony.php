@@ -330,8 +330,8 @@
 			}
 			catch(DatabaseException $e){
 				$this->throwCustomError(
-					__('Symphony Database Error'),
 					$e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
+					__('Symphony Database Error'),
 					Page::HTTP_STATUS_ERROR,
 					'database',
 					array(
@@ -535,7 +535,7 @@
 		 *  that the template may want to expose, such as custom Headers etc.
 		 */
 		public function customError($heading, $message, $template='generic', array $additional=array()){
-			$this->throwCustomError($heading, $message, Page::HTTP_STATUS_ERROR, $template, $additional);
+			$this->throwCustomError($message, $heading, Page::HTTP_STATUS_ERROR, $template, $additional);
 		}
 
 		/**
@@ -544,11 +544,11 @@
 		 * This methods sets the `GenericExceptionHandler::$enabled` value to `true`.
 		 *
 		 * @see core.SymphonyErrorPage
-		 * @param string $heading
-		 *  A heading for the error page
 		 * @param string|XMLElement $message
 		 *  A description for this error, which can be provided as a string
 		 *  or as an XMLElement.
+		 * @param string $heading
+		 *  A heading for the error page
 		 * @param integer $status
 		 *  Properly sets the HTTP status code for the response. Defaults to
 		 *  `Page::HTTP_STATUS_ERROR`. Use `Page::HTTP_STATUS_XXX` to set this value.
@@ -560,7 +560,7 @@
 		 *  Allows custom information to be passed to the Symphony Error Page
 		 *  that the template may want to expose, such as custom Headers etc.
 		 */
-		public function throwCustomError($heading, $message, $status=Page::HTTP_STATUS_ERROR, $template='generic', array $additional=array()){
+		public function throwCustomError($message, $heading='Symphony Fatal Error', $status=Page::HTTP_STATUS_ERROR, $template='generic', array $additional=array()){
 			GenericExceptionHandler::$enabled = true;
 			throw new SymphonyErrorPage($message, $heading, $template, $additional, $status);
 		}

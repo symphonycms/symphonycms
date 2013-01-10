@@ -228,7 +228,11 @@
 			if(!in_array($this->_context[0], array('new', 'edit'))) Administration::instance()->errorPageNotFound();
 
 			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper()) {
-				Administration::instance()->throwCustomError(__('Access Denied'), __('You are not authorised to access this page.'), Page::HTTP_STATUS_UNAUTHORIZED);
+				Administration::instance()->throwCustomError(
+					__('You are not authorised to access this page.'),
+					__('Access Denied'),
+					Page::HTTP_STATUS_UNAUTHORIZED
+				);
 			}
 
 			if(isset($this->_context[2])){
@@ -268,7 +272,11 @@
 				if(!$author_id = (int)$this->_context[1]) redirect(SYMPHONY_URL . '/system/authors/');
 
 				if(!$author = AuthorManager::fetchByID($author_id)){
-					Administration::instance()->throwCustomError(__('Author not found'), __('The author profile you requested does not exist.'), Page::HTTP_STATUS_NOT_FOUND);
+					Administration::instance()->throwCustomError(
+						__('The author profile you requested does not exist.'),
+						__('Author not found'),
+						Page::HTTP_STATUS_NOT_FOUND
+					);
 				}
 			}
 			else $author = new Author;
@@ -276,7 +284,11 @@
 			if($this->_context[0] == 'edit' && $author->get('id') == Administration::instance()->Author->get('id')) $isOwner = true;
 
 			if ($this->_context[0] == 'edit' && !$isOwner && !Administration::instance()->Author->isDeveloper()) {
-				Administration::instance()->throwCustomError(__('Access Denied'), __('You are not authorised to edit other authors.'), Page::HTTP_STATUS_FORBIDDEN);
+				Administration::instance()->throwCustomError(
+					__('You are not authorised to edit other authors.'),
+					__('Access Denied'),
+					Page::HTTP_STATUS_FORBIDDEN
+				);
 			}
 
 			$this->setTitle(__(($this->_context[0] == 'new' ? '%2$s &ndash; %3$s' : '%1$s &ndash; %2$s &ndash; %3$s'), array($author->getFullName(), __('Authors'), __('Symphony'))));

@@ -623,8 +623,8 @@
 
 				if(empty($row)){
 					Frontend::instance()->throwCustomError(
-						__('Forbidden'),
 						__('Please login to view this page.') . ' <a href="' . SYMPHONY_URL . '/login/">' . __('Take me to the login page') . '</a>.',
+						__('Forbidden'),
 						Page::HTTP_STATUS_FORBIDDEN
 					);
 				}
