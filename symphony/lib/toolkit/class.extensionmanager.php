@@ -394,7 +394,9 @@
 				$obj->uninstall();
 			}
 			catch(SymphonyErrorPage $ex) {
-				if($ex->getTemplateName() !== 'missing_extension') {
+				// Create a consistant key
+				$key = str_replace('-', '_', $ex->getTemplateName());
+				if($key !== 'missing_extension') {
 					throw $ex;
 				}
 			}
