@@ -260,7 +260,7 @@
 			self::$ExtensionManager = new ExtensionManager;
 
 			if(!(self::$ExtensionManager instanceof ExtensionManager)){
-				throw new SymphonyErrorPage(__('Error creating Symphony extension manager.'));
+				$this->throwCustomError(__('Error creating Symphony extension manager.'));
 			}
 		}
 

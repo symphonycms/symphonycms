@@ -780,11 +780,13 @@
 					}
 				}
 				catch (Exception $ex) {
-					throw new SymphonyErrorPage(__('The %1$s file for the %2$s extension is not valid XML: %3$s', array(
-						'<code>extension.meta.xml</code>',
-						'<code>' . $name . '</code>',
-						'<br /><code>' . $ex->getMessage() . '</code>'
-					)));
+					Symphony::instance()->throwCustomError(
+						__('The %1$s file for the %2$s extension is not valid XML: %3$s', array(
+							'<code>extension.meta.xml</code>',
+							'<code>' . $name . '</code>',
+							'<br /><code>' . $ex->getMessage() . '</code>'
+						))
+					);
 				}
 
 				// Load <extension>
@@ -888,13 +890,14 @@
 				$path = self::__getDriverPath($name);
 
 				if(!is_file($path)) {
-					throw new SymphonyErrorPage(
+					Symphony::instance()->throwCustomError(
 						__('Could not find extension %s at location %s.', array(
 							'<code>' . $name . '</code>',
 							'<code>' . $path . '</code>'
 						)),
 						'Symphony Extension Missing Error',
-						'missing_extension', array(
+						'missing_extension',
+						array(
 							'name' => $name,
 							'path' => $path
 						)
