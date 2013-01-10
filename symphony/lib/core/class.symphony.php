@@ -686,6 +686,7 @@
 		 */
 		public static function render(Exception $e){
 			if($e->getTemplate() === false){
+				Page::renderStatusCode($e->getHttpStatusCode());
 				if(isset($e->getAdditional()->header)) header($e->getAdditional()->header);
 
 				echo '<h1>Symphony Fatal Error</h1><p>'.$e->getMessage().'</p>';

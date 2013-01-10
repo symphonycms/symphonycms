@@ -121,7 +121,7 @@
 		 *  The formatted HTTP Status string
 		 */
 		public static final function getHeaderStatusString($status_code) {
-			return sprintf("Status: %d %s", $res_code, self::getHttpStatusValue($status_code));
+			return sprintf("Status: %d %s", $status_code, self::getHttpStatusValue($status_code));
 		}
 
 		/**
@@ -270,7 +270,7 @@
 		 * @param integer $status_code
 		 */
 		public static final function renderStatusCode($status_code) {
-			header(self::getHeaderStatusString($res_code), true, $res_code);
+			header(self::getHeaderStatusString($status_code), true, $status_code);
 		}
 
 		/**
