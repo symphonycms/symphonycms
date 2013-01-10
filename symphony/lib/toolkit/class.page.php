@@ -216,9 +216,9 @@
 		 *   The HTTP Status numeric value.
 		 */
 		public function setHttpStatus($status_code) {
-			$this->addHeaderToPage('Status', NULL, $status_code);
+			$this->addHeaderToPage('Status', null, $status_code);
 			// Assure we clear the legacy value
-			$this->_status = NULL;
+			$this->_status = null;
 		}
 
 		/**
@@ -232,7 +232,7 @@
 		 */
 		public function getHttpStatusCode() {
 			// Legacy check
-			if ($this->_status != NULL) {
+			if ($this->_status != null) {
 				$this->setHttpStatus($this->_status);
 			}
 
@@ -281,7 +281,7 @@
 			if(!is_array($this->_headers) || empty($this->_headers)) return;
 
 			// Legacy check
-			if ($this->_status != NULL) {
+			if ($this->_status != null) {
 				$this->setHttpStatus($this->_status);
 			}
 
