@@ -832,6 +832,16 @@
 			else
 				return false;
 		}
+
+		/**
+		 * A Simple getter to the template name in order to be able
+		 * to indentify which type of exception this is.
+		 *
+		 * @since Symphony 2.3.2
+		 */
+		public function getTemplateName() {
+			return $this->_template;
+		}
 	}
 
 	/**

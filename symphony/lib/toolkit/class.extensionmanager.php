@@ -394,7 +394,7 @@
 				$obj->uninstall();
 			}
 			catch(SymphonyErrorPage $ex) {
-				if($ex->getHeading() !== 'Symphony Extension Missing Error') {
+				if($ex->getTemplateName() !== 'missing_extension') {
 					throw $ex;
 				}
 			}
@@ -895,7 +895,7 @@
 							'<code>' . $name . '</code>',
 							'<code>' . $path . '</code>'
 						)),
-						'Symphony Extension Missing Error',
+						__('Symphony Extension Missing Error'),
 						'missing_extension',
 						array(
 							'name' => $name,
