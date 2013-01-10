@@ -284,7 +284,11 @@
 			$section_id = $this->_context[1];
 
 			if(!$section = SectionManager::fetch($section_id)) {
-				Administration::instance()->customError(__('Unknown Section'), __('The Section, %s, could not be found.', array($section_id)));
+				Administration::instance()->throwCustomError(
+					__('Unknown Section'),
+					__('The Section, %s, could not be found.', array($section_id)),
+					Page::HTTP_STATUS_NOT_FOUND
+				);
 			}
 			$meta = $section->get();
 			$section_id = $meta['id'];

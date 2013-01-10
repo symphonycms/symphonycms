@@ -330,7 +330,7 @@
 			$this->_context = $context;
 
 			if(!$this->canAccessPage()){
-				Administration::instance()->customError(__('Access Denied'), __('You are not authorised to access this page.'));
+				Administration::instance()->throwCustomError(__('Access Denied'), __('You are not authorised to access this page.'), Page::HTTP_STATUS_UNAUTHORIZED);
 			}
 
 			$this->Html->setDTD('<!DOCTYPE html>');

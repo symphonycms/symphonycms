@@ -10,14 +10,14 @@
 
 		/**
 		 * Refers to the HTTP status code, 200 OK
-		 * @since 2.3.2
+		 * @since Symphony 2.3.2
 		 * @var integer
 		 */
 		const HTTP_STATUS_OK = 200;
 
 		/**
 		 * Refers to the HTTP status code, 301 Moved Permanently
-		 * @since 2.3.2
+		 * @since Symphony 2.3.2
 		 * @var integer
 		 */
 		const HTTP_STATUS_MOVED_PERMANENT = 301;
@@ -25,35 +25,35 @@
 		/**
 		 * Refers to the HTTP status code, 302 Found
 		 * This is used as a temporary redirect
-		 * @since 2.3.2
+		 * @since Symphony 2.3.2
 		 * @var integer
 		 */
 		const HTTP_STATUS_FOUND = 302;
 
 		/**
 		 * Refers to the HTTP status code, 400 Bad Request
-		 * @since 2.3.2
+		 * @since Symphony 2.3.2
 		 * @var integer
 		 */
 		const HTTP_STATUS_BAD_REQUEST = 400;
 
 		/**
 		 * Refers to the HTTP status code, 401 Unauthorized
-		 * @since 2.3.2
+		 * @since Symphony 2.3.2
 		 * @var integer
 		 */
 		const HTTP_STATUS_UNAUTHORIZED = 401;
 
 		/**
 		 * Refers to the HTTP status code, 403 Forbidden
-		 * @since 2.3.2
+		 * @since Symphony 2.3.2
 		 * @var integer
 		 */
 		const HTTP_STATUS_FORBIDDEN = 403;
 
 		/**
 		 * Refers to the HTTP status code, 404 Not Found
-		 * @since 2.3.2
+		 * @since Symphony 2.3.2
 		 * @var integer
 		 */
 		const HTTP_STATUS_NOT_FOUND = 404;
@@ -61,7 +61,7 @@
 
 		/**
 		 * Refers to the HTTP status code, 500 Internal Server Error
-		 * @since 2.3.2
+		 * @since Symphony 2.3.2
 		 * @var integer
 		 */
 		const HTTP_STATUS_ERROR = 500;
@@ -69,7 +69,7 @@
 
 		/**
 		 * Keyed array of all the string
-		 * @since 2.3.2
+		 * @since Symphony 2.3.2
 		 * @var Array
 		 */
 		private static $HTTP_STATUSES = array (
@@ -95,17 +95,33 @@
 		 *
 		 * @see: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
 		 *
-		 * @since 2.3.2
+		 * @since Symphony 2.3.2
 		 *
 		 * @param integer $status_code (optional)
-		 *   The HTTP Status code to get the value for.
-		 * @return mixed (Array | String)
+		 *  The HTTP Status code to get the value for.
+		 * @return array|string
+		 *  Returns string if the $status_code is not null. Array otherwise
 		 */
 		public static final function getHttpStatusValue($status_code=NULL) {
 			if (!$status_code) {
 				self::$HTTP_STATUSES;
 			}
 			return self::$HTTP_STATUSES[$status_code];
+		}
+
+		/**
+		 * This method format the provided `$status_code` to used
+		 * php's `header()` function.
+		 *
+		 * @since Symphony 2.3.2
+		 *
+		 * @param integer $res_code
+		 *  The HTTP Status code to get the value for
+		 * @return string
+		 *  The formatted HTTP Status string
+		 */
+		public static final function getHeaderStatusString($status_code) {
+			return sprintf("Status: %d %s", $res_code, self::getHttpStatusValue($status_code));
 		}
 
 		/**
@@ -117,7 +133,7 @@
 		 * This allow developers to register customs HTTP_STATUS into the
 		 * static `Page::$HTTP_STATUSES` array and use `$page->setHttpStatus()`.
 		 *
-		 * @since 2.3.2
+		 * @since Symphony 2.3.2
 		 *
 		 * @param integer $status_code
 		 *  The HTTP Status numeric code.
@@ -137,7 +153,7 @@
 		/**
 		 * The HTTP status code of the page using the `HTTP_STATUSES` constants
 		 *
-		 * @deprecated @since 2.3.2
+		 * @deprecated @since Symphony 2.3.2
 		 * @see $this->setHttpStatus and self::$HTTP_STATUSES
 		 *
 		 * @var integer
@@ -194,7 +210,7 @@
 		 * Shorthand for `addHeaderToPage` in order to set the
 		 * HTTP Status header.
 		 *
-		 * @since 2.3.2
+		 * @since Symphony 2.3.2
 		 *
 		 * @param integer $status_code
 		 *   The HTTP Status numeric value.
@@ -210,7 +226,7 @@
 		 * Gets the current HTTP Status.
 		 * If none is set, it assumes HTTP_STATUS_OK
 		 *
-		 * @since 2.3.2
+		 * @since Symphony 2.3.2
 		 *
 		 * @return integer
 		 */
@@ -246,6 +262,18 @@
 		}
 
 		/**
+		 * This method calls php's `header()` function
+		 * in order to set the HTTP status code properly on all platforms.
+		 *
+		 * @see https://github.com/symphonycms/symphony-2/issues/1558#issuecomment-10663716
+		 *
+		 * @param integer $status_code
+		 */
+		public static final function renderStatusCode($status_code) {
+			header(self::getHeaderStatusString($res_code), true, $res_code);
+		}
+
+		/**
 		 * Iterates over the `$_headers` for this page
 		 * and outputs them using PHP's header() function.
 		 */
@@ -261,13 +289,7 @@
 				// If this is the http status
 				if($key == 'status' && isset($value['response_code'])) {
 					$res_code = intval($value['response_code']);
-					// See https://github.com/symphonycms/symphony-2/issues/1558#issuecomment-10663716
-					// for explanation of the format
-					header(
-						sprintf("Status: %d %s", $res_code, self::getHttpStatusValue($res_code)),
-						true,
-						$res_code
-						);
+					self::renderStatusCode($res_code);
 				}
 				else {
 					header($value['header']);
