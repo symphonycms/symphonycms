@@ -260,7 +260,7 @@
 			self::$ExtensionManager = new ExtensionManager;
 
 			if(!(self::$ExtensionManager instanceof ExtensionManager)){
-				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
+				$this->throwCustomError(__('Error creating Symphony extension manager.'));
 			}
 		}
 
@@ -329,9 +329,10 @@
 				elseif(self::Configuration()->get('query_caching', 'database') == 'on') self::Database()->enableCaching();
 			}
 			catch(DatabaseException $e){
-				throw new SymphonyErrorPage(
+				$this->throwCustomError(
 					$e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
-					'Symphony Database Error',
+					__('Symphony Database Error'),
+					Page::HTTP_STATUS_ERROR,
 					'database',
 					array(
 						'error' => $e,
@@ -517,7 +518,9 @@
 		/**
 		 * A wrapper for throwing a new Symphony Error page.
 		 *
-		 * @see core.SymphonyErrorPage
+		 * @deprecated @since Symphony 2.3.2
+		 *
+		 * @see `throwCustomError`
 		 * @param string $heading
 		 *  A heading for the error page
 		 * @param string|XMLElement $message
@@ -532,8 +535,34 @@
 		 *  that the template may want to expose, such as custom Headers etc.
 		 */
 		public function customError($heading, $message, $template='generic', array $additional=array()){
+			$this->throwCustomError($message, $heading, Page::HTTP_STATUS_ERROR, $template, $additional);
+		}
+
+		/**
+		 * A wrapper for throwing a new Symphony Error page.
+		 *
+		 * This methods sets the `GenericExceptionHandler::$enabled` value to `true`.
+		 *
+		 * @see core.SymphonyErrorPage
+		 * @param string|XMLElement $message
+		 *  A description for this error, which can be provided as a string
+		 *  or as an XMLElement.
+		 * @param string $heading
+		 *  A heading for the error page
+		 * @param integer $status
+		 *  Properly sets the HTTP status code for the response. Defaults to
+		 *  `Page::HTTP_STATUS_ERROR`. Use `Page::HTTP_STATUS_XXX` to set this value.
+		 * @param string $template
+		 *  A string for the error page template to use, defaults to 'generic'. This
+		 *  can be the name of any template file in the `TEMPLATES` directory.
+		 *  A template using the naming convention of `tpl.*.php`.
+		 * @param array $additional
+		 *  Allows custom information to be passed to the Symphony Error Page
+		 *  that the template may want to expose, such as custom Headers etc.
+		 */
+		public function throwCustomError($message, $heading='Symphony Fatal Error', $status=Page::HTTP_STATUS_ERROR, $template='generic', array $additional=array()){
 			GenericExceptionHandler::$enabled = true;
-			throw new SymphonyErrorPage($message, $heading, $template, $additional);
+			throw new SymphonyErrorPage($message, $heading, $template, $additional, $status);
 		}
 
 		/**
@@ -657,6 +686,7 @@
 		 */
 		public static function render(Exception $e){
 			if($e->getTemplate() === false){
+				Page::renderStatusCode($e->getHttpStatusCode());
 				if(isset($e->getAdditional()->header)) header($e->getAdditional()->header);
 
 				echo '<h1>Symphony Fatal Error</h1><p>'.$e->getMessage().'</p>';
@@ -706,6 +736,13 @@
 		private $_additional = null;
 
 		/**
+		 * A simple container for the response status code.
+		 * Full value is setted usign `$Page->setHttpStatus()`
+		 * in the template.
+		 */
+		private $_status = Page::HTTP_STATUS_ERROR;
+
+		/**
 		 * Constructor for SymphonyErrorPage sets it's class variables
 		 *
 		 * @param string|XMLElement $message
@@ -720,8 +757,11 @@
 		 * @param array $additional
 		 *  Allows custom information to be passed to the Symphony Error Page
 		 *  that the template may want to expose, such as custom Headers etc.
+		 * @param integer $status
+		 *  Properly sets the HTTP status code for the response. Defaults to
+		 *  `Page::HTTP_STATUS_ERROR`
 		 */
-		public function __construct($message, $heading='Symphony Fatal Error', $template='generic', array $additional=NULL){
+		public function __construct($message, $heading='Symphony Fatal Error', $template='generic', array $additional=array(), $status=Page::HTTP_STATUS_ERROR){
 
 			if($message instanceof XMLElement){
 				$this->_messageObject = $message;
@@ -733,6 +773,7 @@
 			$this->_heading = $heading;
 			$this->_template = $template;
 			$this->_additional = (object)$additional;
+			$this->_status = $status;
 		}
 
 		/**
@@ -763,6 +804,15 @@
 		}
 
 		/**
+		 * Accessor for `$_status`
+		 *
+		 * @return integer
+		 */
+		public function getHttpStatusCode() {
+			return $this->_status;
+		}
+
+		/**
 		 * Returns the path to the current template by looking at the
 		 * `WORKSPACE/template/` directory, then at the `TEMPLATES`
 		 * directory for the convention `usererror.*.php`. If the template
@@ -781,6 +831,16 @@
 				return $template;
 			else
 				return false;
+		}
+
+		/**
+		 * A Simple getter to the template name in order to be able
+		 * to indentify which type of exception this is.
+		 *
+		 * @since Symphony 2.3.2
+		 */
+		public function getTemplateName() {
+			return $this->_template;
 		}
 	}
 

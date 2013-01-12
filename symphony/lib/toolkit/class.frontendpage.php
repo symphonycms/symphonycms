@@ -218,10 +218,10 @@
 					}
 
 					if(in_array('404', $this->_pageData['type'])){
-						$this->addHeaderToPage('Status', '404 Not Found', 404);
+						$this->setHttpStatus(self::HTTP_STATUS_NOT_FOUND);
 					}
-					elseif(in_array('403', $this->_pageData['type'])){
-						$this->addHeaderToPage('Status', '403 Forbidden', 403);
+					else if(in_array('403', $this->_pageData['type'])){
+						$this->setHttpStatus(self::HTTP_STATUS_FORBIDDEN);
 					}
 				}
 
@@ -260,8 +260,13 @@
 						$errstr .= 'Line: ' . $val['line'] . ' - ' . $val['message'] . PHP_EOL;
 					}
 
-					GenericExceptionHandler::$enabled = true;
-					throw new SymphonyErrorPage(trim($errstr), NULL, 'xslt', array('proc' => clone $this->Proc));
+					Frontend::instance()->throwCustomError(
+						trim($errstr),
+						__('XSLT Processing Error'),
+						Page::HTTP_STATUS_ERROR,
+						'xslt',
+						array('proc' => clone $this->Proc)
+					);
 				}
 
 				Symphony::Profiler()->sample('Page creation complete');
@@ -617,12 +622,10 @@
 				$row = PageManager::fetchPageByType('403');
 
 				if(empty($row)){
-					GenericExceptionHandler::$enabled = true;
-					throw new SymphonyErrorPage(
+					Frontend::instance()->throwCustomError(
 						__('Please login to view this page.') . ' <a href="' . SYMPHONY_URL . '/login/">' . __('Take me to the login page') . '</a>.',
 						__('Forbidden'),
-						'generic',
-						array('header' => 'HTTP/1.0 403 Forbidden')
+						Page::HTTP_STATUS_FORBIDDEN
 					);
 				}
 
