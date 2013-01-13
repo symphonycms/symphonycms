@@ -44,6 +44,7 @@
 					}
 				}
 			}
+
 			// Update the version information
 			Symphony::Configuration()->set('version', self::getVersion(), 'symphony');
 			Symphony::Configuration()->set('useragent', 'Symphony/' . self::getVersion(), 'general');

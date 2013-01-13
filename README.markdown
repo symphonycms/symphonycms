@@ -1,15 +1,15 @@
 # Symphony 2
 
-- Version: 2.3.1
-- Date: 29th October 2012
-- Release Notes: <http://getsymphony.com/download/releases/version/2.3.1/>
-- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.3.1>
+- Version: 2.3.2 Beta 1
+- Date: 13th January 2013
+- Release Notes: <https://gist.github.com/4075748>
+- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.3.2beta1>
 
 ## Overview
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.3.1` and is considered stable.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.3.2 Beta 1` and is considered unstable.
 
-Visit the forum at <http://symphony-cms.com/discuss/>
+Visit [the forum](http://getsymphony.com/discuss/) or learn how you can [contribute to Symphony](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony).
 
 ### Symphony Server Requirements
 
@@ -35,7 +35,7 @@ Symphony `2.3` officially only supports updating from a `2.2.x` release. There a
 
 #### Versions prior to 2.2
 
-Symphony `2.2` introduces numerous improvements that may affect extension compatibility. Before updating, be sure to consult the [extension compatibility table](http://symphony-cms.com/download/extensions/compatibility/) to verify that the extensions you're using have all been updated for Symphony `2.2`.
+Symphony `2.2` introduces numerous improvements that may affect extension compatibility. Before updating, be sure to consult the [extension compatibility table](http://getsymphony.com/download/extensions/compatibility/) to verify that the extensions you're using have all been updated for Symphony `2.2`.
 
 #### Versions prior to 2.1
 
@@ -87,7 +87,7 @@ Follow the instructions below if you are updating from Symphony 2.0 (not from Gi
 	- [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)
 	- [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master)
 
-3. Go to `http://yoursite.com/install/` to complete the update process.
+3. Go to `http://example.com/install/` to complete the update process.
 
 4. Call a friend and brag that your copy of Symphony is newer than theirs.
 
@@ -122,7 +122,7 @@ you will need to use the following command from within the Symphony 2 folder you
 
 		git clone git://github.com/symphonycms/workspace.git
 
-5. Point your web browser at <http://yourwebsite.com/install/> and provide
+5. Point your web browser at <http://example.com/install/> and provide
 details for establishing a database connection and about your server environment.
 
 6. Chuckle villainously and tap your fingertips together (or pet a cat) as your installation completes.
@@ -132,7 +132,7 @@ details for establishing a database connection and about your server environment
 
 **Note: You can leave `/workspace` out if you do not want the default theme.**
 
-1. This step assumes you downloaded a zip archive from the [Symphony website](http://symphony-cms.com). Upload the following files and directories to the root directory of your website:
+1. This step assumes you downloaded a zip archive from the [Symphony website](http://getsymphony.com). Upload the following files and directories to the root directory of your website:
 
 		- index.php
 		- /install
@@ -140,7 +140,7 @@ details for establishing a database connection and about your server environment
 		- /workspace
 		- /extensions
 
-2. Point your web browser at <http://yourwebsite.com/install/> and provide
+2. Point your web browser at <http://example.com/install/> and provide
 details for establishing a database connection and about your server environment.
 
 3. Pose like you're being filmed for a dramatic close-up while your installation completes.
