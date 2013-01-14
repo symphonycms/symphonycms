@@ -76,6 +76,13 @@
 		private static $namespace = false;
 
 		/**
+		 * A previous exception that has been fired. Defaults to null.
+		 * @since Symphony 2.3.2
+		 * @var Exception
+		 */
+		private $exception = null;
+
+		/**
 		 * An instance of the Cookie class
 		 * @var Cookie
 		 */
@@ -563,6 +570,27 @@
 		public function throwCustomError($message, $heading='Symphony Fatal Error', $status=Page::HTTP_STATUS_ERROR, $template='generic', array $additional=array()){
 			GenericExceptionHandler::$enabled = true;
 			throw new SymphonyErrorPage($message, $heading, $template, $additional, $status);
+		}
+
+		/**
+		 * Setter accepts a previous Exception. Useful for determining the context
+		 * of a current exception (ie. detecting recursion).
+		 *
+		 * @since Symphony 2.3.2
+		 * @param Exception $ex
+		 */
+		public function setException(Exception $ex) {
+			$this->exception = $ex;
+		}
+
+		/**
+		 * Accessor for `$this->exception`.
+		 *
+		 * @since Symphony 2.3.2
+		 * @return Exception|null
+		 */
+		public function getException() {
+			return $this->exception;
 		}
 
 		/**

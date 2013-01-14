@@ -13,6 +13,9 @@
 	 * @since Symphony 2.3
 	 * @link http://symphony-cms.com/learn/concepts/view/data-sources/
 	 */
+
+	require_once(TOOLKIT . '/class.entrymanager.php');
+
 	Class SectionDatasource extends Datasource {
 
 		/**
@@ -361,12 +364,9 @@
 		public function execute(array &$param_pool) {
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 			$this->_param_pool = $param_pool;
-
-			$where = NULL;
-			$joins = NULL;
+			$where = null;
+			$joins = null;
 			$group = false;
-
-			include_once(TOOLKIT . '/class.entrymanager.php');
 
 			if(!$section = SectionManager::fetch((int)$this->getSource())){
 				$about = $this->about();
@@ -459,7 +459,7 @@
 			));
 
 			if(($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records'])) || $this->dsParamSTARTPAGE == '0'){
-				if($this->dsParamREDIRECTONEMPTY == 'yes'){
+				if($this->dsParamREDIRECTONEMPTY == 'yes') {
 					throw new FrontendPageNotFoundException;
 				}
 				$this->_force_empty_result = false;
