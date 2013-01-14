@@ -27,7 +27,7 @@
 	 * @name $.symphonyPickable
 	 * @class
 	 *
-	 * @param {Object} options An object containing the elements specified below
+	 * @param {Object} options An object containing the element selectors specified below
 	 * @param {String} [options.content='#contents'] Selector to find the container that wrapps all pickable areas
 	 * @param {String} [options.pickables='.pickable'] Selector to find items to be pickable
 	 *
