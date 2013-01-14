@@ -6,8 +6,13 @@
 
 	/**
 	 * Show and hide elements based on the value of a select box.
-	 * If there is only one option, the select box will be hidden and
-	 * the single element will be shown.
+	 *
+	 * Pickable knows two display modes for the select box it is applied to: 
+	 * `always` and `multiple`. If the mode is set to `always`, the select box 
+	 * will appear independent of the option count. If the mode is set to `multiple`, 
+	 * the select box will only display, if more than one option exists. The modes 
+	 * can be set via the `data-display` attribute, it defaults to `multiple` for 
+	 * compatiblity reasons.
 	 *
 	 * @name $.symphonyPickable
 	 * @class
@@ -84,10 +89,11 @@
 		objects.each(function init() {
 			var object = $(this),
 				choices = object.find('option'),
-				relation = object.attr('name') || object.attr('data-relation');
+				relation = object.attr('name') || object.attr('data-relation'),
+				display = object.attr('data-display') || 'multiple';
 
 			// Multiple items
-			if(choices.length > 1) {
+			if(choices.length > 1 || display == 'always') {
 				choices.each(function() {
 					var choice = $(this),
 						choice_relation = choice.closest('optgroup').attr('data-label') || choice.val();
