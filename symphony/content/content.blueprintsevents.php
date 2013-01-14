@@ -169,7 +169,8 @@
 				$label->appendChild(
 					Widget::Select('fields[source]', $options, array(
 						'id' => 'event-context',
-						'class' => 'picker'
+						'class' => 'picker',
+						'data-display' => 'always'
 					))
 				);
 
