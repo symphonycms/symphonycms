@@ -18,7 +18,11 @@
 	 * automatically using the `data-relation` attribute or – if it does not exist – 
 	 * the select box name. 
 	 *
-	 * Options are linked to their content areas by their text values.	 
+	 * Options are linked to their content areas using their values: 
+	 * the `id` of a pickable content area has to match the option's text. 
+	 * If no content area of the given `id` is found, Pickable checks for a `data-request` 
+	 * attribute containing an URL to fetch the needed content remotely. In order to do so, 
+	 * the given URL has to return the content `div` without any additional wrapping markup.
 	 *
 	 * @name $.symphonyPickable
 	 * @class
@@ -91,7 +95,7 @@
 		var content = $(settings.content),
 			pickables = $(settings.pickables);
 
-		// Prepare content picking
+		// Prepare picking and show content of initially selected option
 		objects.each(function init() {
 			var object = $(this),
 				choices = object.find('option'),
@@ -103,7 +107,7 @@
 				pickables.filter('#' + $(this).val()).attr('data-relation', relation).hide();
 			});
 
-			// Hide select boxes with single options
+			// Hide select boxes with single option
 			if(choices.length == 1 && display == 'multiple') {
 				object.hide();
 			}
