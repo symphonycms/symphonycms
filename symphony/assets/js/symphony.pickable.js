@@ -48,7 +48,7 @@
 		objects.on('change.pickable', function pick(event) {
 			var object = $(this),
 				choice = object.val(),
-				relation = object.attr('name') || object.attr('data-relation'),
+				relation = object.attr('data-relation') || object.attr('name'),
 				related = pickables.filter('[data-relation="' + relation + '"]'),
 				selection = pickables.filter('#' + choice),
 				request;
