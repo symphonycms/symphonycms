@@ -199,9 +199,21 @@
 		 *	)
 		 * );`
 		 *
+		 * You can also set the `target` attribute on your links via the 'target' attribute.
+		 * This works both on links in standard menus and on child links of groups.
+		 *
+		 * `return array(
+		 *		array(
+		 *			'name' => 'Extension Name',
+		 *			'link' => '/.../',
+		 *			'target' => '_blank'
+		 *		)
+		 *	)
+		 * );`
+		 *
 		 * Links can also be hidden dynamicaly usign two other keys:
 		 * 'visible' and 'limit'. When 'visible' is set to 'no', the link
-		 * will not be rendered. Leave unset of set it dynamycally in order
+		 * will not be rendered. Leave unset or set it dynamycally in order
 		 * to fit your needs
 		 *
 		 * `return array(
