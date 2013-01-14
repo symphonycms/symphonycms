@@ -729,25 +729,28 @@
 
 					if(is_array($n['children']) && !empty($n['children'])){
 						foreach($n['children'] as $c){
-							if($c['visible'] == 'no') continue;
+							// adapt for Yes and yes
+							if(strtolower($c['visible']) != 'yes') continue;
 
 							$can_access_child = false;
 
-							if(!isset($c['limit']) || $c['limit'] == 'author')
+							if(!isset($c['limit']) || $c['limit'] == 'author') {
 								$can_access_child = true;
-
-							elseif($c['limit'] == 'developer' && Administration::instance()->Author->isDeveloper())
+							}
+							else if($c['limit'] == 'developer' && Administration::instance()->Author->isDeveloper()) {
 								$can_access_child = true;
-
-							elseif($c['limit'] == 'primary' && Administration::instance()->Author->isPrimaryAccount())
+							}
+							else if($c['limit'] == 'primary' && Administration::instance()->Author->isPrimaryAccount()) {
 								$can_access_child = true;
+							}
 
 							if($can_access_child) {
 								$xChild = new XMLElement('li');
-								$xChild->appendChild(
-									Widget::Anchor($c['name'], SYMPHONY_URL . $c['link'])
-								);
-
+								$linkChild = Widget::Anchor($c['name'], SYMPHONY_URL . $c['link']);
+								if (isset($c['target'])) {
+									$linkChild->setAttribute('target', $c['target']);
+								}
+								$xChild->appendChild($linkChild);
 								$xChildren->appendChild($xChild);
 								$hasChildren = true;
 							}
@@ -784,18 +787,17 @@
 		}
 
 		/**
-		 * This function populates the `$_navigation` array with an associative array
-		 * of all the navigation groups and their links. Symphony only supports one
-		 * level of navigation, so children links cannot have children links. The default
-		 * Symphony navigation is found in the `ASSETS/navigation.xml` folder. This is
-		 * loaded first, and then the Section navigation is built, followed by the Extension
-		 * navigation. Additionally, this function will set the active group of the navigation
-		 * by checking the current page against the array of links.
+		 * This method fills the `$nav` array with value
+		 * from the `ASSETS/navigation.xml` file
 		 *
 		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
+		 *
+		 * @since Symphony 2.3.2
+		 *
+		 * @param array $nav
+		 *  The navigation array that will receive nav nodes
 		 */
-		public function __buildNavigation(){
-			$nav = array();
+		private function buildXmlNavigation(&$nav){
 			$xml = simplexml_load_file(ASSETS . '/navigation.xml');
 
 			// Loop over the default Symphony navigation file, converting
@@ -840,7 +842,18 @@
 					}
 				}
 			}
+		}
 
+		/**
+		 * This method fills the `$nav` array with value
+		 * from each Section
+		 *
+		 * @since Symphony 2.3.2
+		 *
+		 * @param array $nav
+		 *  The navigation array that will receive nav nodes
+		 */
+		private function buildSectionNavigation(&$nav) {
 			// Build the section navigation, grouped by their navigation groups
 			require_once TOOLKIT . '/class.sectionmanager.php';
 			$sections = SectionManager::fetch(NULL, 'asc', 'sortorder');
@@ -869,7 +882,18 @@
 					);
 				}
 			}
+		}
 
+		/**
+		 * This method fills the `$nav` array with value
+		 * from each Extension's `fetchNavigation` method
+		 *
+		 * @since Symphony 2.3.2
+		 *
+		 * @param array $nav
+		 *  The navigation array that will receive nav nodes
+		 */
+		private function buildExtensionsNavigation(&$nav) {
 			// Loop over all the installed extensions to add in other navigation items
 			$extensions = Symphony::ExtensionManager()->listInstalledHandles();
 			foreach($extensions as $e) {
@@ -886,6 +910,7 @@
 
 								$index = General::array_find_available_index($nav, $item['location']);
 
+								// Actual group
 								$nav[$index] = array(
 									'name' => $item['name'],
 									'type' => isset($item['type']) ? $item['type'] : 'structure',
@@ -894,6 +919,7 @@
 									'limit' => isset($item['limit']) ? $item['limit'] : null
 								);
 
+								// Render its children
 								foreach($item['children'] as $child){
 									if(!isset($child['relative']) || $child['relative'] == true){
 										$link = '/extension/' . $e . '/' . ltrim($child['link'], '/');
@@ -906,7 +932,8 @@
 										'link' => $link,
 										'name' => $child['name'],
 										'visible' => (isset($child['visible']) && $child['visible'] == 'no') ? 'no' : 'yes',
-										'limit' => isset($child['limit']) ? $child['limit'] : null
+										'limit' => isset($child['limit']) ? $child['limit'] : null,
+										'target' => isset($child['target']) ? $child['target'] : null
 									);
 								}
 
@@ -934,7 +961,8 @@
 									'link' => $link,
 									'name' => $item['name'],
 									'visible' => (isset($item['visible']) && $item['visible'] == 'no') ? 'no' : 'yes',
-									'limit' => isset($item['limit']) ? $item['limit'] : null
+									'limit' => isset($item['limit']) ? $item['limit'] : null,
+									'target' => isset($item['target']) ? $item['target'] : null
 								);
 
 								if ($group_index === false) {
@@ -957,6 +985,26 @@
 				}
 
 			}
+		}
+
+		/**
+		 * This function populates the `$_navigation` array with an associative array
+		 * of all the navigation groups and their links. Symphony only supports one
+		 * level of navigation, so children links cannot have children links. The default
+		 * Symphony navigation is found in the `ASSETS/navigation.xml` folder. This is
+		 * loaded first, and then the Section navigation is built, followed by the Extension
+		 * navigation. Additionally, this function will set the active group of the navigation
+		 * by checking the current page against the array of links.
+		 *
+		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
+		 * @link https://github.com/symphonycms/symphony-2/blob/master/symphony/lib/toolkit/class.extension.php
+		 */
+		public function __buildNavigation(){
+			$nav = array();
+
+			$this->buildXmlNavigation($nav);
+			$this->buildSectionNavigation($nav);
+			$this->buildExtensionsNavigation($nav);
 
 			/**
 			 * After building the Navigation properties array. This is specifically
