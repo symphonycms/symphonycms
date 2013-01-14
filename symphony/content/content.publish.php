@@ -723,11 +723,11 @@
 
 					foreach($filedata as $handle => $data){
 						if(!isset($fields[$handle])) $fields[$handle] = $data;
-						elseif(isset($data['error']) && $data['error'] == 4) $fields['handle'] = NULL;
+						elseif(isset($data['error']) && $data['error'] == UPLOAD_ERR_NO_FILE) $fields[$handle] = NULL;
 						else{
 
 							foreach($data as $ii => $d){
-								if(isset($d['error']) && $d['error'] == 4) $fields[$handle][$ii] = NULL;
+								if(isset($d['error']) && $d['error'] == UPLOAD_ERR_NO_FILE) $fields[$handle][$ii] = NULL;
 								elseif(is_array($d) && !empty($d)){
 
 									foreach($d as $key => $val)

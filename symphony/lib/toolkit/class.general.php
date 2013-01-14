@@ -595,7 +595,7 @@
 
 							if(!is_array($result[$handle][$index])) $result[$handle][$index] = array();
 
-							if(!is_array($pair)) $result[$handle][$index][] = $pair;
+							if(!is_array($pair)) $result[$handle][$index][$key] = $pair;
 							else $result[$handle][$index][array_pop(array_keys($pair))][$key] = array_pop(array_values($pair));
 						}
 					}
