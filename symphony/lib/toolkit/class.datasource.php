@@ -272,7 +272,6 @@
 			if(isset($this->dsParamREDIRECTONEMPTY) && $this->dsParamREDIRECTONEMPTY == 'yes' && $this->_force_empty_result){
 				throw new FrontendPageNotFoundException;
 			}
-
 		}
 
 		/**

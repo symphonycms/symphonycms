@@ -234,11 +234,8 @@
 				Symphony::ExtensionManager()->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
 
 				$backup_param = $this->_param;
-
 				$this->_param['current-query-string'] = General::wrapInCDATA($this->_param['current-query-string']);
-
 				$output = parent::generate();
-
 				$this->_param = $backup_param;
 
 				/**
@@ -805,14 +802,21 @@
 
 			foreach ($dsOrder as $handle) {
 				Symphony::Profiler()->seed();
-
 				$queries = Symphony::Database()->queryCount();
 
-				$ds = $pool[$handle];
-				$ds->processParameters(array('env' => $this->_env, 'param' => $this->_param));
-
 				// default to no XML
-				$xml = NULL;
+				$xml = null;
+				$ds = $pool[$handle];
+
+				// Handle redirect on empty setting correctly RE: #1539
+				try {
+					$ds->processParameters(array('env' => $this->_env, 'param' => $this->_param));
+				}
+				catch(FrontendPageNotFoundException $e){
+					// Work around. This ensures the 404 page is displayed and
+					// is not picked up by the default catch() statement below
+					FrontendPageNotFoundExceptionHandler::render($e);
+				}
 
 				/**
 				 * Allows extensions to execute the data source themselves (e.g. for caching)
@@ -874,9 +878,7 @@
 				}
 
 				$queries = Symphony::Database()->queryCount() - $queries;
-
 				Symphony::Profiler()->sample($handle, PROFILE_LAP, 'Datasource', $queries);
-
 				unset($ds);
 			}
 		}

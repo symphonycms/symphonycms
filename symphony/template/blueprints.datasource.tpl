@@ -36,8 +36,10 @@
 		}
 
 		public function execute($param_pool = null) {
+			$result = new XMLElement($this->dsParamROOTELEMENT);
+
 			try{
-				$result = parent::execute();
+				$result = parent::execute($param_pool);
 			}
 			catch(FrontendPageNotFoundException $e){
 				// Work around. This ensures the 404 page is displayed and
