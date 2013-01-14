@@ -729,25 +729,28 @@
 
 					if(is_array($n['children']) && !empty($n['children'])){
 						foreach($n['children'] as $c){
-							if($c['visible'] == 'no') continue;
+							// adapt for Yes and yes
+							if(strtolower($c['visible']) != 'yes') continue;
 
 							$can_access_child = false;
 
-							if(!isset($c['limit']) || $c['limit'] == 'author')
+							if(!isset($c['limit']) || $c['limit'] == 'author') {
 								$can_access_child = true;
-
-							elseif($c['limit'] == 'developer' && Administration::instance()->Author->isDeveloper())
+							}
+							else if($c['limit'] == 'developer' && Administration::instance()->Author->isDeveloper()) {
 								$can_access_child = true;
-
-							elseif($c['limit'] == 'primary' && Administration::instance()->Author->isPrimaryAccount())
+							}
+							else if($c['limit'] == 'primary' && Administration::instance()->Author->isPrimaryAccount()) {
 								$can_access_child = true;
+							}
 
 							if($can_access_child) {
 								$xChild = new XMLElement('li');
-								$xChild->appendChild(
-									Widget::Anchor($c['name'], SYMPHONY_URL . $c['link'])
-								);
-
+								$linkChild = Widget::Anchor($c['name'], SYMPHONY_URL . $c['link']);
+								if (isset($c['target'])) {
+									$linkChild->setAttribute('target', $c['target']);
+								}
+								$xChild->appendChild($linkChild);
 								$xChildren->appendChild($xChild);
 								$hasChildren = true;
 							}
@@ -907,6 +910,7 @@
 
 								$index = General::array_find_available_index($nav, $item['location']);
 
+								// Actual group
 								$nav[$index] = array(
 									'name' => $item['name'],
 									'type' => isset($item['type']) ? $item['type'] : 'structure',
@@ -915,6 +919,7 @@
 									'limit' => isset($item['limit']) ? $item['limit'] : null
 								);
 
+								// Render its children
 								foreach($item['children'] as $child){
 									if(!isset($child['relative']) || $child['relative'] == true){
 										$link = '/extension/' . $e . '/' . ltrim($child['link'], '/');
@@ -927,7 +932,8 @@
 										'link' => $link,
 										'name' => $child['name'],
 										'visible' => (isset($child['visible']) && $child['visible'] == 'no') ? 'no' : 'yes',
-										'limit' => isset($child['limit']) ? $child['limit'] : null
+										'limit' => isset($child['limit']) ? $child['limit'] : null,
+										'target' => isset($child['target']) ? $child['target'] : null
 									);
 								}
 
@@ -955,7 +961,8 @@
 									'link' => $link,
 									'name' => $item['name'],
 									'visible' => (isset($item['visible']) && $item['visible'] == 'no') ? 'no' : 'yes',
-									'limit' => isset($item['limit']) ? $item['limit'] : null
+									'limit' => isset($item['limit']) ? $item['limit'] : null,
+									'target' => isset($item['target']) ? $item['target'] : null
 								);
 
 								if ($group_index === false) {
