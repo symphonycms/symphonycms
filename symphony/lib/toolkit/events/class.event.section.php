@@ -71,7 +71,7 @@
 		 * @param array $post_values
 		 * @return XMLElement
 		 */
-		public static function appendErrors(XMLElement $result, array $fields, $errors, $post_values) {
+		public static function appendErrors(XMLElement $result, array $fields, $errors, $post_values = array()) {
 			$result->setAttribute('result', 'error');
 			$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 
@@ -556,7 +556,7 @@
 		 * @param Section $section
 		 *  This current Entry that has just been updated or created
 		 */
-		public function processSendMailFilter(XMLElement $result, array $send_mail, array &$fields, Section $section, Entry $entry) {
+		public function processSendMailFilter(XMLElement $result, array $send_email, array &$fields, Section $section, Entry $entry) {
 			$fields['recipient']		= self::replaceFieldToken($send_email['recipient'], $fields);
 			$fields['recipient']		= preg_split('/\,/i', $fields['recipient'], -1, PREG_SPLIT_NO_EMPTY);
 			$fields['recipient']		= array_map('trim', $fields['recipient']);
