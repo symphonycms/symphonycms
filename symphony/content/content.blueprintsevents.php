@@ -145,7 +145,7 @@
 				$source = isset($fields['source']) ? $fields['source'] : null;
 
 				if(is_array($sections) && !empty($sections)) {
-					$section_options = array('label' => __('Sections'), 'data-label' => 'Sections', 'options' => array());
+					$section_options = array('label' => __('Sections'), 'options' => array());
 					foreach($sections as $s) {
 						$section_options['options'][] = array($s->get('id'), $source == $s->get('id'), General::sanitize($s->get('name')));
 					}
@@ -187,13 +187,11 @@
 				$fieldset->appendChild($group);
 				$this->Form->appendChild($fieldset);
 
-			// Filters
-				$div = new XMLElement('div');
-				$div->setAttribute('id', 'Sections');
-				$div->setAttribute('class', 'pickable');
-
+				// Filters
 				$fieldset = new XMLElement('fieldset');
-				$fieldset->setAttribute('class', 'settings');
+				$fieldset->setAttribute('id', 'sections');
+				$fieldset->setAttribute('class', 'settings pickable');
+				$fieldset->setAttribute('data-relation', 'event-context');
 				$fieldset->appendChild(new XMLElement('legend', __('Filters')));
 				$p = new XMLElement('p',
 					__('Event Filters add additional conditions or actions to an event.')
@@ -225,9 +223,8 @@
 				));
 
 				$fieldset->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
-				$div->appendChild($fieldset);
 
-				$this->Form->appendChild($div);
+				$this->Form->appendChild($fieldset);
 
 			// Providers
 				if(!empty($providers)) {
