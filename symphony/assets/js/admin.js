@@ -664,6 +664,19 @@
 		}
 
 	/*--------------------------------------------------------------------------
+		Blueprints - Event Editor
+	--------------------------------------------------------------------------*/
+
+		// This is transitional code needed until the event editor makes proper use of Pickable. 
+		// This is schedules to be removed in Symphony 2.4.
+		if(body.is('#blueprints-events')) {
+			var eventSections = $('#sections');
+			$('#event-context').find('option').each(function() {
+				eventSections.clone().attr('id', 'choice' + $(this).val()).insertAfter(eventSections);
+			}).trigger('change.pickable');
+		}
+
+	/*--------------------------------------------------------------------------
 		System - Authors
 	--------------------------------------------------------------------------*/
 
