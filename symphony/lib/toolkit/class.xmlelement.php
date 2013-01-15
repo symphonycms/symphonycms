@@ -129,8 +129,7 @@
 		 * @return XMLElement
 		 */
 		public function __construct($name, $value = null, Array $attributes = array(), $createHandle = false){
-
-			$this->_name = ($createHandle) ? Lang::createHandle($name) : $name;
+			$this->setName($name, $createHandle);
 			$this->setValue($value);
 
 			if(is_array($attributes) && !empty($attributes)) {
@@ -317,6 +316,20 @@
 		 */
 		public function setAllowEmptyAttributes($value = true){
 			$this->_allowEmptyAttributes = $value;
+		}
+
+		/**
+		 * Sets the name of this `XMLElement`, ie. 'p' => <p />
+		 *
+		 * @since Symphony 2.3.2
+		 * @param string $name
+		 *  The name of the `XMLElement`, 'p'.
+		 * @param boolean $createHandle
+		 *  Whether this function should convert the `$name` to a handle. Defaults to
+		 *  `false`.
+		 */
+		public function setName($name, $createHandle = false) {
+			$this->_name = ($createHandle) ? Lang::createHandle($name) : $name;
 		}
 
 		/**
