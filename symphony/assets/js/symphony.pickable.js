@@ -98,7 +98,7 @@
 				relation = object.attr('id') || object.attr('name');
 
 			object.find('option').each(function() {
-				$('#' + $(this).val()).attr('data-relation', relation).hide();
+				$('#' + $(this).val()).attr('data-relation', relation);
 			});
 		});
 
