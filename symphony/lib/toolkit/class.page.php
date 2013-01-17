@@ -35,7 +35,6 @@
 
 		/**
 		 * Refers to the HTTP status code, 304 Not Modified
-		 * This is used as a temporary redirect
 		 *
 		 * @since Symphony 2.3.2
 		 * @var integer
