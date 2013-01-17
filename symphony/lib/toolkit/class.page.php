@@ -34,6 +34,15 @@
 		const HTTP_STATUS_FOUND = 302;
 
 		/**
+		 * Refers to the HTTP status code, 304 Not Modified
+		 * This is used as a temporary redirect
+		 *
+		 * @since Symphony 2.3.2
+		 * @var integer
+		 */
+		const HTTP_NOT_MODIFIED = 304;
+
+		/**
 		 * Refers to the HTTP status code, 400 Bad Request
 		 *
 		 * @since Symphony 2.3.2
@@ -87,6 +96,7 @@
 			// 300
 			HTTP_STATUS_MOVED_PERMANENT => 'Moved Permanently',
 			HTTP_STATUS_FOUND => 'Found',
+			HTTP_NOT_MODIFIED => 'Not Modified',
 			// 400
 			HTTP_STATUS_BAD_REQUEST => 'Bad Request',
 			HTTP_STATUS_UNAUTHORIZED => 'Unauthorized',
@@ -102,7 +112,7 @@
 		 * If `$status_code` is null, it returns all the values
 		 * currently registered.
 		 *
-		 * @see: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+		 * @link http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
 		 *
 		 * @since Symphony 2.3.2
 		 *
