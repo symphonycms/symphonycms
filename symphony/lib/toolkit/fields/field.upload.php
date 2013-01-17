@@ -474,7 +474,7 @@
 			if (strlen(trim($data['type'])) == 0) {
 				$data['type'] = (
 					function_exists('mime_content_type')
-						? mime_content_type($file)
+						? mime_content_type(WORKSPACE . $file)
 						: 'application/octet-stream'
 				);
 			}
