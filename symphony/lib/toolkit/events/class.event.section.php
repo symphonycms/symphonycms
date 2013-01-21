@@ -368,7 +368,7 @@
 		 * @param integer $entry_id
 		 * @return boolean
 		 */
-		protected function processPreSaveFilters(XMLElement $result, array $fields, XMLElement $post_values, $entry_id = null) {
+		protected function processPreSaveFilters(XMLElement $result, array &$fields, XMLElement &$post_values, $entry_id = null) {
 			$can_proceed = true;
 
 			/**
