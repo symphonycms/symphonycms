@@ -23,7 +23,7 @@
 			$this->_page_title = __('Install Symphony');
 		}
 
-		public function generate(){
+		public function generate($page = null) {
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Lang::get());
 
@@ -41,7 +41,7 @@
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.frames.css', 'screen', 33);
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/installer.css', 'screen', 40);
 
-			return parent::generate();
+			return parent::generate($page);
 		}
 
 		protected function __build($version = VERSION, XMLElement $extra = null) {

@@ -295,8 +295,8 @@
 						// Existing table prefix
 						$tables = Symphony::Database()->fetch(sprintf(
 							"SHOW TABLES FROM `%s` LIKE '%s'",
-							mysql_escape_string($fields['database']['db']),
-							mysql_escape_string($fields['database']['tbl_prefix']) . '%'
+							mysql_real_escape_string($fields['database']['db'], Symphony::Database()->getConnectionResource()),
+							mysql_real_escape_string($fields['database']['tbl_prefix'], Symphony::Database()->getConnectionResource()) . '%'
 						));
 
 						if(is_array($tables) && !empty($tables)) {

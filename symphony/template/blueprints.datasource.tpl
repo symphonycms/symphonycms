@@ -35,7 +35,7 @@
 			return true;
 		}
 
-		public function execute($param_pool = null) {
+		public function execute(array &$param_pool = null) {
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 
 			try{

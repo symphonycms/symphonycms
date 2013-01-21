@@ -4,7 +4,7 @@
 
 	// Set the current timezone, should that not be available
 	// default to GMT.
-	if(!date_default_timezone_set(date_default_timezone_get())) {
+	if(!date_default_timezone_set(@date_default_timezone_get())) {
 		date_default_timezone_set('GMT');
 	}
 

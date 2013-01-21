@@ -151,13 +151,13 @@
 		 *
 		 * @return string
 		 */
-		public function generate(){
+		public function generate($page = null){
 
 			$result = $this->Proc->process($this->_xml, $this->_xsl, $this->_param, $this->_registered_php_functions);
 
 			if($this->Proc->isErrors()) return false;
 
-			parent::generate();
+			parent::generate($page);
 
 			return $result;
 		}

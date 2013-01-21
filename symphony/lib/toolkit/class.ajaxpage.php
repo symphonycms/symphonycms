@@ -66,11 +66,11 @@
 		 *
 		 * @return string
 		 */
-		public function generate() {
+		public function generate($page = null) {
 			// Set the actual status code in the xml response
 			$this->_Result->setAttribute('status', $this->getHttpStatusCode());
 
-			parent::generate();
+			parent::generate($page);
 
 			return $this->_Result->generate(true);
 		}
