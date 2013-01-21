@@ -89,18 +89,18 @@
 		 */
 		public static $HTTP_STATUSES = array(
 			// 200
-			HTTP_STATUS_OK => 'OK',
+			self::HTTP_STATUS_OK => 'OK',
 			// 300
-			HTTP_STATUS_MOVED_PERMANENT => 'Moved Permanently',
-			HTTP_STATUS_FOUND => 'Found',
-			HTTP_NOT_MODIFIED => 'Not Modified',
+			self::HTTP_STATUS_MOVED_PERMANENT => 'Moved Permanently',
+			self::HTTP_STATUS_FOUND => 'Found',
+			self::HTTP_NOT_MODIFIED => 'Not Modified',
 			// 400
-			HTTP_STATUS_BAD_REQUEST => 'Bad Request',
-			HTTP_STATUS_UNAUTHORIZED => 'Unauthorized',
-			HTTP_STATUS_FORBIDDEN => 'Forbidden',
-			HTTP_STATUS_NOT_FOUND => 'Not Found',
+			self::HTTP_STATUS_BAD_REQUEST => 'Bad Request',
+			self::HTTP_STATUS_UNAUTHORIZED => 'Unauthorized',
+			self::HTTP_STATUS_FORBIDDEN => 'Forbidden',
+			self::HTTP_STATUS_NOT_FOUND => 'Not Found',
 			// 500
-			HTTP_STATUS_ERROR => 'Internal Server Error',
+			self::HTTP_STATUS_ERROR => 'Internal Server Error',
 		);
 
 		/**
@@ -166,7 +166,6 @@
 		}
 
 		/**
-		 *
 		 * Sets the `$sting_value` for the specified `$status_code`.
 		 * If `$sting_value` is null, the `$status_code` is removed from
 		 * the array.
