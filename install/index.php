@@ -16,17 +16,19 @@
 
 	// Defines some constants
 	$clean_url = rtrim($_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']), '/\\');
-	$clean_url = preg_replace(array('/\/{2,}/i', '/\/install$/i'), array('/', NULL), $clean_url);
+	$clean_url = preg_replace(array('/\/{2,}/i', '/install$/i'), array('/', NULL), $clean_url);
+	$clean_url = rtrim($clean_url, '/\\');
 	define('DOMAIN', $clean_url);
 
 	$clean_path = rtrim(dirname(__FILE__), '/\\');
-	$clean_path = preg_replace(array('/\/{2,}/i', '/\/install$/i'), array('/', NULL), $clean_path);
+	$clean_path = preg_replace(array('/\/{2,}/i', '/install$/i'), array('/', NULL), $clean_path);
+	$clean_path = rtrim($clean_path, '/\\');
 	define('DOCROOT', $clean_path);
 
 	// Required boot components
 	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
 
-	define('VERSION', '2.3.1');
+	define('VERSION', '2.3.2beta1');
 	define('INSTALL', DOCROOT . '/install');
 	define('INSTALL_LOGS', MANIFEST . '/logs');
 	define('INSTALL_URL', URL . '/install');
